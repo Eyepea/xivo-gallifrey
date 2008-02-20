@@ -49,6 +49,7 @@ class IncomingCall:
                 self.parking = None
                 self.parkexten = None
                 self.peerchannel = None
+                self.aboute = None
                 self.appelaboute = None
                 self.tocall = False
                 self.toretrieve = None
@@ -525,7 +526,8 @@ class IncomingCall:
                                                            ','.join(self.languages_sv),
                                                            self.commid]
                                                 req = 'ACDAddRequest' + chr(2) + chr(2).join(request[:6]) + chr(2) + chr(2).join(request[6:]) + chr(2) + str(self.soperat_port) + chr(3)
-                                                self.soperat_socket.send(req)
+                                                if self.soperat_socket is not None:
+                                                        self.soperat_socket.send(req)
                                         break
                                 
                 if whattodo is not None:
@@ -657,13 +659,20 @@ class IncomingCall:
                                                       %(intext, normstd, num, ncherche, npatiente, wtime, withsda, which)
                                                 if which == 6:
                                                         # number is a Repondeur file
-                                                        whattodo = Action('rep', 0, num.strip('.wav').strip('.WAV'))
+                                                        whattodo = Action('rep', 0, self.__wavstrip(num))
                                                 else:
                                                         if normstd == '1':
                                                                 wtime = ''
                                                         whattodo = Action('bas', 0, '-'.join([num, wtime, ncherche, npatiente]))
 
                 return whattodo
+
+
+        def __wavstrip(self, filename):
+                if filename.find('.wav') == len(filename) - 4 or filename.find('.WAV') == len(filename) - 4:
+                        return filename[:-4]
+                else:
+                        return filename
 
 
         def __spanprofiles_secretariat(self):
@@ -699,7 +708,7 @@ class IncomingCall:
 
 
         def __typep_rep(self, clients_profil):
-                filename = clients_profil[8].strip('.wav').strip('.WAV')
+                filename = self.__wavstrip(clients_profil[8])
                 print '  COMING CALL : __typep_rep', filename
                 whattodo = Action('rep', 0, filename)
                 return whattodo
@@ -717,7 +726,7 @@ class IncomingCall:
 
                         print '  COMING CALL : __typep_mes, typep is MES : %s' % str(clients_messagerie_item)
                         self.statacd2_tt = 'TT_MES'
-                        filename = clients_messagerie_item[3].strip('.wav').strip('.WAV')
+                        filename = self.__wavstrip(clients_messagerie_item[3])
                         maxlength = str(clients_messagerie_item[4])
                         whattodo = Action('mes', 0, ';'.join([filename, maxlength]))
                 else:

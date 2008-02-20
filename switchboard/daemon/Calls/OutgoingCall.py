@@ -26,6 +26,7 @@ class OutgoingCall:
                 self.parking = None
                 self.parkexten = None
                 self.peerchannel = None
+                self.aboute = None
                 self.appelaboute = None
                 self.tocall = False
                 self.toretrieve = None

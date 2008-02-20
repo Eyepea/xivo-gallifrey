@@ -412,7 +412,7 @@ class CallBoosterCommand(BaseCommand):
                         ic1 = self.__incallref_from_channel(event.get('Channel1'))
                         ic2 = self.__incallref_from_channel(event.get('Channel2'))
                         if ic1 is not None:
-                                print 'LINK without Agent', ic1.sdanum, ic1.commid, ic1.appelaboute
+                                print 'LINK without Agent (1)', ic1.sdanum, ic1.commid, ic1.appelaboute, ic1.aboute
                                 if ic1.appelaboute is not None:
                                         connid_socket = ic1.uinfo['connection']
                                         reply = '%s,%d,,Raccroche/' % (ic1.commid, 1)
@@ -420,6 +420,15 @@ class CallBoosterCommand(BaseCommand):
                                         reply = '%s,%d,,Raccroche/' % (ic1.appelaboute, 1)
                                         connid_socket.send(reply)
                                 ic1.set_timestamp_stat('link')
+                        if ic2 is not None:
+                                print 'LINK without Agent (2)', ic2.sdanum, ic2.commid, ic2.appelaboute, ic2.aboute
+                                if ic2.aboute is not None:
+                                        connid_socket = ic2.uinfo['connection']
+                                        reply = '%s,%d,,Raccroche/' % (ic2.commid, 1)
+                                        connid_socket.send(reply)
+                                        reply = '%s,%d,,Raccroche/' % (ic2.aboute, 1)
+                                        connid_socket.send(reply)
+                                ic2.set_timestamp_stat('link')
                 return
 
 
@@ -465,6 +474,8 @@ class CallBoosterCommand(BaseCommand):
                                                                         print 'but PARKING :', anycall.parking
                                                                 elif anycall.appelaboute is not None:
                                                                         print 'but appelaboute :', anycall.appelaboute
+                                                                elif anycall.aboute is not None:
+                                                                        print 'but aboute :', anycall.aboute
                                                                 else:
                                                                         print anycall.dir
                                                                         calltounlink = anycall
@@ -489,8 +500,11 @@ class CallBoosterCommand(BaseCommand):
                         ic1 = self.__incallref_from_channel(event.get('Channel1'))
                         ic2 = self.__incallref_from_channel(event.get('Channel2'))
                         if ic1 is not None:
-                                log_debug(SYSLOG_INFO, 'UNLINK without Agent sda=%s commid=%s' % (ic1.sdanum, ic1.commid))
+                                log_debug(SYSLOG_INFO, 'UNLINK without Agent (1) sda=%s commid=%s' % (ic1.sdanum, ic1.commid))
                                 ic1.set_timestamp_stat('unlink')
+                        if ic2 is not None:
+                                log_debug(SYSLOG_INFO, 'UNLINK without Agent (2) sda=%s commid=%s' % (ic2.sdanum, ic2.commid))
+                                ic2.set_timestamp_stat('unlink')
                 return
 
 
@@ -888,17 +902,6 @@ class CallBoosterCommand(BaseCommand):
                 return
 
 
-        def __ping_noreply(self):
-                print '__ping_noreply', time.asctime()
-                thname = threading.currentThread().getName()
-                print 'timer/Ping :', thname
-                for astid in self.ulist:
-                        for agname, userinfo in self.ulist[astid].list.iteritems():
-                                if 'timer' in userinfo:
-                                        print userinfo['timer'].getName(), thname
-                return
-
-
         def userevent(self, astid, event):
                 print 'userevent :', astid, event
                 appdatas = event.get('AppData').split('-', 1)
@@ -999,8 +1002,9 @@ class CallBoosterCommand(BaseCommand):
                                                         topark.append(j)
                                                         if calls.dir == 'o':
                                                                 mohclass = '/'.join([calls.nsoc, calls.ncli, calls.ncol])
-                                                                print 'it seems the mohclass will soon be set to %s' % mohclass
-                                                                self.amis[astid].setvar(calls.peerchannel, 'CB_MOH', mohclass)
+                                                                true_mohclass = self.__moh_check(mohclass)
+                                                                print 'the mohclass will be set to %s and not %s' % (true_mohclass, mohclass)
+                                                                self.amis[astid].setvar(calls.peerchannel, 'CB_MOH', true_mohclass)
                                                         self.amis[astid].transfer(calls.peerchannel, PARK_EXTEN, 'default')
                                         userinfo['calls'][calltoforce.commid] = calltoforce
                         else:
@@ -1028,8 +1032,9 @@ class CallBoosterCommand(BaseCommand):
                                                 anycall.parking = reference
                                                 if anycall.dir == 'o':
                                                         mohclass = '/'.join([anycall.nsoc, anycall.ncli, anycall.ncol])
-                                                        print 'it seems the mohclass will soon be set to %s' % mohclass
-                                                        self.amis[astid].setvar(anycall.peerchannel, 'CB_MOH', mohclass)
+                                                        true_mohclass = self.__moh_check(mohclass)
+                                                        print 'the mohclass will be set to %s and not %s' % (true_mohclass, mohclass)
+                                                        self.amis[astid].setvar(anycall.peerchannel, 'CB_MOH', true_mohclass)
                                                 self.amis[astid].transfer(anycall.peerchannel, PARK_EXTEN, 'default')
                                                 ntowait += 1
                                 userinfo['calls'][comm_id_outgoing] = outCall
@@ -1082,23 +1087,25 @@ class CallBoosterCommand(BaseCommand):
                         print 'Aboute', agentname, refcomm_out, refcomm_in
 
                         if refcomm_in in userinfo['calls']:
-                                callbackexten = userinfo['calls'][refcomm_in].parkexten
+                                incall = userinfo['calls'][refcomm_in]
+                                callbackexten = incall.parkexten
                         if refcomm_out in userinfo['calls']:
-                                chan = userinfo['calls'][refcomm_in].peerchannel
+                                chan = userinfo['calls'][refcomm_out].peerchannel
+                                incall.aboute = refcomm_out
                         if callbackexten is not None:
                                 self.amis[astid].transfer(chan, callbackexten, 'default')
 
 
                 elif cname == 'AppelAboute': # transfer
                         mreference = parsedcommand.args[1]
-                        [dest, refcomm, idsoc, idcli, idcol] = mreference.split('|')
+                        [dest, refcomm_in, idsoc, idcli, idcol] = mreference.split('|')
 
                         time.sleep(0.2)
                         self.commidcurr += 1
                         comm_id_outgoing = str(self.commidcurr)
 
-                        if refcomm in userinfo['calls']:
-                                incall = userinfo['calls'][refcomm]
+                        if refcomm_in in userinfo['calls']:
+                                incall = userinfo['calls'][refcomm_in]
                                 print "AppelAboute", incall.dir, incall.peerchannel
                                 incall.appelaboute = comm_id_outgoing
                                 incall.set_timestamp_stat('appelaboute')
@@ -1130,8 +1137,9 @@ class CallBoosterCommand(BaseCommand):
                                                 anycall.parking = reference
                                                 if anycall.dir == 'o':
                                                         mohclass = '/'.join([anycall.nsoc, anycall.ncli, anycall.ncol])
-                                                        print 'it seems the mohclass will soon be set to %s' % mohclass
-                                                        self.amis[astid].setvar(anycall.peerchannel, 'CB_MOH', mohclass)
+                                                        true_mohclass = self.__moh_check(mohclass)
+                                                        print 'the mohclass will be set to %s and not %s' % (true_mohclass, mohclass)
+                                                        self.amis[astid].setvar(anycall.peerchannel, 'CB_MOH', true_mohclass)
                                                 self.amis[astid].transfer(anycall.peerchannel, PARK_EXTEN, 'default')
                                                 # the reply will be sent when the parkedcall signal is received
                                         else:
@@ -1157,8 +1165,9 @@ class CallBoosterCommand(BaseCommand):
                                                                 print '#', calls.peerchannel
                                                                 if calls.dir == 'o':
                                                                         mohclass = '/'.join([calls.nsoc, calls.ncli, calls.ncol])
-                                                                        print 'it seems the mohclass will soon be set to %s' % mohclass
-                                                                        self.amis[astid].setvar(calls.peerchannel, 'CB_MOH', mohclass)
+                                                                        true_mohclass = self.__moh_check(mohclass)
+                                                                        print 'the mohclass will be set to %s and not %s' % (true_mohclass, mohclass)
+                                                                        self.amis[astid].setvar(calls.peerchannel, 'CB_MOH', true_mohclass)
                                                                 self.amis[astid].transfer(calls.peerchannel, PARK_EXTEN, 'default')
                                                 if len(topark) > 0:
                                                         anycall.toretrieve = callbackexten
@@ -1196,6 +1205,9 @@ class CallBoosterCommand(BaseCommand):
 
 
                 elif cname == 'Sortie':
+                        if 'timer' in userinfo:
+                                userinfo['timer'].cancel()
+                                del userinfo['timer']
                         userinfo['cbstatus'] = 'Sortie'
 
 
@@ -1365,6 +1377,18 @@ class CallBoosterCommand(BaseCommand):
                 return None
 
 
+        def __moh_check(self, path):
+                columns = ('category', 'var_name', 'var_val')
+                self.cursor_xivo.query("SELECT ${columns} FROM musiconhold WHERE var_name = %s AND category = %s",
+                                       columns,
+                                       ('directory', path))
+                results = self.cursor_xivo.fetchall()
+                if results == ():
+                        return 'callbooster'
+                else:
+                        return path
+
+
         # updated when it receives a reply from a remote Operat server
         def svreply(self, msg):
                 params = msg.strip(chr(4)).split(chr(3))
@@ -1436,15 +1460,28 @@ class CallBoosterCommand(BaseCommand):
                                                 if val != 0:
                                                         req = 'ACDCheckRequest' + chr(2) + chr(2).join(v[2:8]) + chr(3)
                                                         print 'req =', v, req
-                                                        self.soperat_socket.send(req)
+                                                        if self.soperat_socket is not None:
+                                                                self.soperat_socket.send(req)
                                                         ic.svirt['timer'] = None
                                                 else:
                                                         print 'check if someone has taken the call ...'
 
 
+        def __ping_noreply(self):
+                print '__ping_noreply (timer finished)', time.asctime()
+                thisthread = threading.currentThread()
+                print 'timer/Ping :', thisthread, dir(thisthread)
+                for astid in self.ulist:
+                        for agname, userinfo in self.ulist[astid].list.iteritems():
+                                if 'timer' in userinfo:
+                                        if thisthread == userinfo['timer']:
+                                                print 'the user to disconnect is ...', userinfo
+                return
+
+
         # checking if any news from pending requests
         def __svcheck(self):
-                print 'a timer has finished ... checking pending requests ...'
+                print '__svcheck (timer finished)', time.asctime()
                 thisthread = threading.currentThread()
                 self.tqueue.put(thisthread)
                 os.write(self.queued_threads_pipe[1], 'a')

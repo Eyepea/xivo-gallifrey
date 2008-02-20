@@ -2446,13 +2446,15 @@ while True: # loops over the reloads
 
         if 'advert' in xivoconf_general: with_advert = True
 
-        # log_debug(SYSLOG_INFO, '# connection to Operat')
+
         OperatSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
                 OperatSock.connect((address_operat, port_operat))
         except Exception, exc:
-                print 'could not connect to Operat Serveur', exc
-        # log_debug(SYSLOG_INFO, '# connection to Operat done')
+                log_debug(SYSLOG_WARNING, 'WARNING - Could not connect to Operat Serveur (%s, %d) : %s'
+                          % (address_operat, port_operat, str(exc)))
+                OperatSock = None
+
 
         queued_threads_pipe = os.pipe()
         AMI_array_user_commands = {}
@@ -2747,7 +2749,8 @@ while True: # loops over the reloads
         Fsock.listen(10)
         ins.append(Fsock)
 
-        ins.append(OperatSock)
+        if OperatSock is not None:
+                ins.append(OperatSock)
         ins.append(queued_threads_pipe[0])
 
         # Receive messages
@@ -2863,7 +2866,12 @@ while True: # loops over the reloads
 
                         elif OperatSock in i:
                                 msg = OperatSock.recv(BUFSIZE_LARGE)
-                                commandclass.svreply(msg)
+                                if len(msg) == 0:
+                                        OperatSock.close()
+                                        ins.remove(OperatSock)
+                                        log_debug(SYSLOG_WARNING, 'WARNING - Operat Serveur has closed the connection')
+                                else:
+                                        commandclass.svreply(msg)
 
                         elif queued_threads_pipe[0] in i:
                                 commandclass.checkqueue()
