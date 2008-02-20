@@ -166,7 +166,7 @@ agi.set_variable('CB_AGI_STATUS', action)
 
 print_verbose('CB : received ACTION=%s WAIT=%ds ARG=%s WHERE=%s QUEUENAME=%s' %(action, int(delay), argum, where, queuename))
 
-if action == 'sec':
+if action == 'secretariat':
         if argum is None:
                 agi.set_variable('CB_FIRST_WELCOME', 'already')
 
@@ -208,4 +208,7 @@ agi.set_variable('CB_AGI_WHERE', where)
 # setting the Queue() to call
 agi.set_variable('CB_AGI_QUEUE_NAME', queuename)
 # delay to set for Queue()
-agi.set_variable('CB_AGI_QUEUE_WAIT', delay)
+if delay == 0:
+        agi.set_variable('CB_AGI_QUEUE_WAIT', 36000)
+else:
+        agi.set_variable('CB_AGI_QUEUE_WAIT', delay)

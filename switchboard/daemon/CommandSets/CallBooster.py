@@ -37,7 +37,7 @@ def varlog(syslogprio, string):
 
 def log_debug(syslogprio, string):
         if syslogprio <= SYSLOG_INFO:
-                print '#debug# ' + string
+                print '#debug# %s' % string
         return varlog(syslogprio, string)
 
 
@@ -164,17 +164,31 @@ class CallBoosterCommand(BaseCommand):
 
 
         def __socname(self, idsoc):
-                columns = ('N', 'NOM', 'ID', 'Dossier')
+                columns = ('ID', 'Dossier')
                 self.cursor_operat.query('USE system')
                 self.cursor_operat.query('SELECT ${columns} FROM societes WHERE ID = %s',
                                          columns,
                                          idsoc)
                 results = self.cursor_operat.fetchall()
                 if len(results) > 0:
-                        sname = results[0][3].lower()
+                        sname = results[0][1].lower()
                 else:
-                        sname = 'adh_inconnu'
+                        sname = 'perm_inconnue'
                 return sname
+
+
+        def __local_nsoc(self, idsoc):
+                columns = ('N', 'ID')
+                self.cursor_operat.query('USE system')
+                self.cursor_operat.query('SELECT ${columns} FROM societes WHERE ID = %s',
+                                         columns,
+                                         idsoc)
+                results = self.cursor_operat.fetchall()
+                if len(results) > 0:
+                        nsoc = results[0][0].lower()
+                else:
+                        nsoc = '0'
+                return nsoc
 
 
         def getuserlist(self):
@@ -361,7 +375,7 @@ class CallBoosterCommand(BaseCommand):
         def link(self, astid, event):
                 ch1 = event.get('Channel1').split('/')
                 ch2 = event.get('Channel2').split('/')
-                print 'LINK', ch1, ch2
+                print 'LINK', ch1, ch2, time.time()
                 if ch1[0] == 'Agent':
                         # OUTGOING CALL
                         agentnum = ch1[1]
@@ -1021,7 +1035,7 @@ class CallBoosterCommand(BaseCommand):
                         socname = self.__socname(idsoc)
                         outCall = OutgoingCall.OutgoingCall(comm_id_outgoing, astid, self.cursor_operat, socname,
                                                             userinfo, agentnum, agentname, dest,
-                                                            idsoc, idcli, idcol)
+                                                            self.__local_nsoc(idsoc), idcli, idcol)
 
                         if len(userinfo['calls']) > 0:
                                 print 'Appel : there are already ongoing calls'
@@ -1114,7 +1128,7 @@ class CallBoosterCommand(BaseCommand):
                                 socname = self.__socname(idsoc)
                                 outCall = OutgoingCall.OutgoingCall(comm_id_outgoing, astid, self.cursor_operat, socname,
                                                                     userinfo, agentnum, agentname, dest,
-                                                                    idsoc, idcli, idcol)
+                                                                    self.__local_nsoc(idsoc), idcli, idcol)
                                 userinfo['calls'][comm_id_outgoing] = outCall
                                 retval = 1
                                 reply = '%s,%d,%s,Appel/' % (comm_id_outgoing, retval, dest)
@@ -1235,6 +1249,7 @@ class CallBoosterCommand(BaseCommand):
                                         self.amis[astid].queueadd(qname, agname)
                                         self.amis[astid].queuepause(qname, agname, 'false')
                                         del userinfo['sendfiche']
+                                        print 'fiche has been sent :', time.time()
                                 return
 
                         try:
@@ -1727,8 +1742,8 @@ class CallBoosterCommand(BaseCommand):
                         tattabo = int(bil['appelaboute'])
                 if 'linkaboute' in bil:
                         tabo = int(bil['linkaboute'])
-                if 'sec' in bil:
-                        tacd = int(bil['sec'])
+                if 'secretariat' in bil:
+                        tacd = int(bil['secretariat'])
                         if 'link' in bil:
                                 tope = int(bil['link'])
                 if 'tel' in bil:
@@ -1973,30 +1988,34 @@ class CallBoosterCommand(BaseCommand):
                         print ' NCOMING CALL : findaction result : %s / %s / %s / %s' % (action, delay, argument, newupto)
 
                         if action == 'mes' or action == 'rep' or action == 'tel' or action == 'fic' or action == 'bas' or action == 'intro':
-                                # maybe we had been in 'sec' mode previously, so that we shouldn't wait anymore
+                                # maybe we had been in 'secretariat' mode previously, so that we shouldn't wait anymore
                                 thiscall.waiting = False
                                 # send CLR-ACD to the users who had received an Indispo as concerning this call
                                 self.__clear_call_fromqueues(astid, thiscall)
-                        elif action == 'sec':
+                        elif action == 'secretariat':
                                 thiscall.waiting = True
-                                print 'elect : calling __choose()'
+                                log_debug(SYSLOG_INFO, 'elect : calling __choose()')
                                 todo = self.__choose(astid)
                                 # once all the queues have been spanned, send the push / queues where needed
                                 argument = 'welcome'
+                                nevt = 0
                                 for opername, couplelist in todo.iteritems():
                                         for td in couplelist:
-                                                log_debug(SYSLOG_INFO, 'elect : sec / %s / %s / %s' % (opername, td[0], td[1].sdanum))
+                                                log_debug(SYSLOG_INFO, 'elect : secretariat / %s / %s / %s' % (opername, td[0], td[1].sdanum))
                                                 if td[0] == 'push':
                                                         if thiscall == td[1]:
+                                                                nevt += 1
                                                                 self.__clear_call_fromqueues(astid, td[1])
                                                                 self.__sendfiche(astid, opername, td[1])
-                                                                delay = 30
+                                                                delay = 100
                                                                 argument = None
                                                         else:
                                                                 pass
                                                 elif td[0] == 'queue':
-                                                        if delay > 0:
-                                                                self.__addtoqueue(astid, opername, td[1])
+                                                        nevt += 1
+                                                        self.__addtoqueue(astid, opername, td[1])
+                                if nevt == 0:
+                                        action = 'bypass'
                         elif action == 'exit':
                                 self.__update_taxes(thiscall, 'Termine')
                                 self.__update_stat_acd2(thiscall)

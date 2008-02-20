@@ -2837,7 +2837,7 @@ while True: # loops over the reloads
 
                         elif Fsock in i:
                                 [conn, Fsockparams] = Fsock.accept()
-                                log_debug(SYSLOG_INFO, "TCP (F) socket opened on   %s:%d" % (Fsockparams[0], Fsockparams[1]))
+                                log_debug(SYSLOG_INFO, "TCP (F) socket opened on   %s:%d on %s" % (Fsockparams[0], Fsockparams[1], time.time()))
                                 # appending the opened socket to the ones watched
                                 ins.append(conn)
                                 conn.setblocking(0)

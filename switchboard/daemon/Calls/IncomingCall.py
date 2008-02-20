@@ -512,7 +512,7 @@ class IncomingCall:
                                 if len(self.list_operators) == 0 and len(self.list_svirt) == 0:
                                         upto += 1
                                 else:
-                                        whattodo = Action('sec', delay, None)
+                                        whattodo = Action('secretariat', delay, None)
                                         for ngroup, perms in self.list_svirt.iteritems():
                                                 request = [str(self.nsoc_global),
                                                            self.ncli,
