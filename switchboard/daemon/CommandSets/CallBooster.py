@@ -1995,7 +1995,8 @@ class CallBoosterCommand(BaseCommand):
                                                         else:
                                                                 pass
                                                 elif td[0] == 'queue':
-                                                        self.__addtoqueue(astid, opername, td[1])
+                                                        if delay > 0:
+                                                                self.__addtoqueue(astid, opername, td[1])
                         elif action == 'exit':
                                 self.__update_taxes(thiscall, 'Termine')
                                 self.__update_stat_acd2(thiscall)
