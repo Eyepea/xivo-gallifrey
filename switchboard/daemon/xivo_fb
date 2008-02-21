@@ -880,6 +880,7 @@ def handle_ami_event(astid, idata):
                         clid  = this_event.get('CallerID')
                         qname = this_event.get('Queue')
                         count = int(this_event.get('Count'))
+                        commandclass.join(astid, this_event)
                         # log_debug(SYSLOG_INFO, 'AMI:Join: %s queue=%s %s count=%s %s' % (astid, qname, chan, count, clid))
                         if len(clid) > 0:
                                 if qname not in plist_thisast.queues:
@@ -2874,7 +2875,11 @@ while True: # loops over the reloads
                                         commandclass.svreply(msg)
 
                         elif queued_threads_pipe[0] in i:
-                                commandclass.checkqueue()
+                                disconnlist = commandclass.checkqueue()
+                                for userinfo in disconnlist:
+                                        print 'checkqueue return :', userinfo
+                                        userinfo['connection'].close()
+                                        ulist[userinfo['astid']].disconnect_user(userinfo['user'])
 
                         # advertising from other xivo_daemon's around
                         elif xdal in i:

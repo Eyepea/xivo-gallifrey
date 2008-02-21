@@ -55,6 +55,7 @@ class IncomingCall:
                 self.toretrieve = None
                 self.svirt = None
                 self.forceacd = None
+                self.agentlist = []
 
                 self.stimes = {time.time() : 'init'}
                 self.ttimes = {time.time() : 'init'}
@@ -292,6 +293,8 @@ class IncomingCall:
                 if len(self.true_clients_profil) == 0:
                         self.statacd2_tt = 'TT_SND'
 
+                if 'SEC' in self.true_clients_profil and 'PH1' not in self.true_clients_profil and 'PH2' not in self.true_clients_profil:
+                        del self.true_clients_profil['SEC']
                 for typep in self.true_clients_profil:
                         print 'INCOMING CALL : phases', typep, self.true_clients_profil[typep]
 
