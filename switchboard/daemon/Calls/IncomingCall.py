@@ -61,6 +61,7 @@ class IncomingCall:
                 self.ttimes = {time.time() : 'init'}
                 self.uinfo = None
                 self.statdone = False
+                self.secours_allowed = False
 
                 self.dialplan = {'welcome' : 0,
                                  'callerid' : 1,
@@ -293,8 +294,6 @@ class IncomingCall:
                 if len(self.true_clients_profil) == 0:
                         self.statacd2_tt = 'TT_SND'
 
-                if 'SEC' in self.true_clients_profil and 'PH1' not in self.true_clients_profil and 'PH2' not in self.true_clients_profil:
-                        del self.true_clients_profil['SEC']
                 for typep in self.true_clients_profil:
                         print 'INCOMING CALL : phases', typep, self.true_clients_profil[typep]
 
@@ -689,6 +688,15 @@ class IncomingCall:
                 typet = clients_profil[7]
                 detail = clients_profil[8]
                 delaigrp = clients_profil[10]
+                if typep in ['PH1', 'PH2']:
+                        if typet == 'S':
+                                self.secours_allowed = True
+                        else:
+                                self.secours_allowed = False
+
+                if typep == 'SEC' and not self.secours_allowed:
+                        return None
+
                 if typet == 'S':
                         print '  COMING CALL : __typep_phases, typep/typet is %s/Secretariat' % typep
                         whattodo = self.__typet_secretariat(nprof, detail, delaigrp)
