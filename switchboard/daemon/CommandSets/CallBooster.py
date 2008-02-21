@@ -185,7 +185,7 @@ class CallBoosterCommand(BaseCommand):
                                          idsoc)
                 results = self.cursor_operat.fetchall()
                 if len(results) > 0:
-                        nsoc = results[0][0].lower()
+                        nsoc = str(results[0][0])
                 else:
                         nsoc = '0'
                 return nsoc
@@ -1019,6 +1019,7 @@ class CallBoosterCommand(BaseCommand):
                                                                 true_mohclass = self.__moh_check(mohclass)
                                                                 print 'the mohclass will be set to %s and not %s' % (true_mohclass, mohclass)
                                                                 self.amis[astid].setvar(calls.peerchannel, 'CB_MOH', true_mohclass)
+                                                        self.amis[astid].setvar(calls.peerchannel, 'DIGITSMUTE', '1')
                                                         self.amis[astid].transfer(calls.peerchannel, PARK_EXTEN, 'default')
                                         userinfo['calls'][calltoforce.commid] = calltoforce
                         else:
@@ -1049,6 +1050,7 @@ class CallBoosterCommand(BaseCommand):
                                                         true_mohclass = self.__moh_check(mohclass)
                                                         print 'the mohclass will be set to %s and not %s' % (true_mohclass, mohclass)
                                                         self.amis[astid].setvar(anycall.peerchannel, 'CB_MOH', true_mohclass)
+                                                self.amis[astid].setvar(anycall.peerchannel, 'DIGITSMUTE', '1')
                                                 self.amis[astid].transfer(anycall.peerchannel, PARK_EXTEN, 'default')
                                                 ntowait += 1
                                 userinfo['calls'][comm_id_outgoing] = outCall
@@ -1154,6 +1156,7 @@ class CallBoosterCommand(BaseCommand):
                                                         true_mohclass = self.__moh_check(mohclass)
                                                         print 'the mohclass will be set to %s and not %s' % (true_mohclass, mohclass)
                                                         self.amis[astid].setvar(anycall.peerchannel, 'CB_MOH', true_mohclass)
+                                                self.amis[astid].setvar(anycall.peerchannel, 'DIGITSMUTE', '1')
                                                 self.amis[astid].transfer(anycall.peerchannel, PARK_EXTEN, 'default')
                                                 # the reply will be sent when the parkedcall signal is received
                                         else:
@@ -1182,6 +1185,7 @@ class CallBoosterCommand(BaseCommand):
                                                                         true_mohclass = self.__moh_check(mohclass)
                                                                         print 'the mohclass will be set to %s and not %s' % (true_mohclass, mohclass)
                                                                         self.amis[astid].setvar(calls.peerchannel, 'CB_MOH', true_mohclass)
+                                                                self.amis[astid].setvar(calls.peerchannel, 'DIGITSMUTE', '1')
                                                                 self.amis[astid].transfer(calls.peerchannel, PARK_EXTEN, 'default')
                                                 if len(topark) > 0:
                                                         anycall.toretrieve = callbackexten
