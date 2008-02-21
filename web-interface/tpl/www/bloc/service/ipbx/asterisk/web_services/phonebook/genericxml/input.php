@@ -1,7 +1,8 @@
 <?php
 	header('Content-Type: text/xml; charset=utf-8');
+	$taginput = $this->get_var('taginput');
 ?>
-<SnomIPPhoneInput>
+<<?=$taginput?>>
 	<Title><?=$this->bbf('phone_menu');?></Title>
 	<Prompt><?=$this->bbf('phone_prompt');?></Prompt>
 	<URL><?=$this->url('service/ipbx/web_services/phonebook/search',true);?></URL>
@@ -11,4 +12,4 @@
 		<DefaultValue />
 		<InputFlags>a</InputFlags>
 	</InputItem>
-</SnomIPPhoneInput>
+</<?=$taginput?>>

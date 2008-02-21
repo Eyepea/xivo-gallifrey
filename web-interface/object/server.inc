@@ -18,16 +18,16 @@ class xivo_server extends xivo_libdatastorage_abstract
 
 	function _prepare($data)
 	{
-		$data['disable'] = (bool) $data['disable'];
 		$data['ssl'] = (bool) $data['ssl'];
+		$data['disable'] = (bool) $data['disable'];
 		$data['identity'] = $data['name'].' ('.$data['host'].')';
-		
-		$data['url_http'] = '://'.$data['host'].':'.$data['port'];
 
 		if($data['ssl'] === true)
-			$data['url_http'] = 'https'.$data['url_http'];
+			$data['url'] = 'https';
 		else
-			$data['url_http'] = 'http'.$data['url_http'];
+			$data['url'] = 'http';
+
+		$data['url'] .= '://'.$data['host'].':'.$data['port'];
 
 		return($data);
 	}
@@ -36,7 +36,7 @@ class xivo_server extends xivo_libdatastorage_abstract
 	{
 		if(is_array($arr) === false)
 			return(false);
-		else if(empty($id) === false)
+		else if(empty($id) === true || isset($arr['dcreate']) === false)
 			$arr['dcreate'] = gmmktime();
 
 		return(parent::add($arr,$id));

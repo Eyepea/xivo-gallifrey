@@ -97,10 +97,10 @@ Fichier son des beeps :
 ; fm_agent_custom-beep-opt-default
 Défaut
 
-; bt-inqueue
+; bt_inqueue
 Ajouter ->
 
-; bt-outqueue
+; bt_outqueue
 <- Enlever
 
 ; col_queue-name

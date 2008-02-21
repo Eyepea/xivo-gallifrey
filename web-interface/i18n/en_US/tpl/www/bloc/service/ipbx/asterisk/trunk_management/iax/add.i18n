@@ -73,16 +73,16 @@ All
 ; fm_trunk_codec-allow
 Enable:
 
-; bt-upcodec
+; bt_upcodec
 Up one or more codecs
 
-; bt-downcodec
+; bt_downcodec
 Down one or more codecs
 
-; bt-incodec
+; bt_incodec
 Add one or more codecs ->
 
-; bt-outcodec
+; bt_outcodec
 <- Remove one or more codecs
 
 ; fm_register

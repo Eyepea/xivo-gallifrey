@@ -10,7 +10,7 @@ $array['root']['add']['valid'] = array('key' => array('true' => 1,'false' => 1))
 $array['root']['add']['meta'] = array('key' => array('root' => 1));
 */
 $array['root']['edit'] = array();
-$array['root']['edit']['passwd'] = array('cast' => 'alnumpunct','minlen' => 4,'maxlen' => 64);
+$array['root']['edit']['passwd'] = array('minlen' => 4,'maxlen' => 64,'regexp' => '/^[a-zA-Z0-9-\._~\!\$&\'\(\)\*\+,;=:%]+$/');
 /*
 $array['root']['edit']['valid'] = array('key' => array('true' => 1,'false' => 1));
 $array['root']['edit']['meta'] = array('key' => array('root' => 1,'admin' => 1));
@@ -22,7 +22,7 @@ $array['admin']['add']['valid'] = array('key' => array('true' => 1,'false' => 1)
 $array['admin']['add']['meta'] = array('key' => array('root' => 1));
 */
 $array['admin']['edit'] = array();
-$array['admin']['edit']['passwd'] = array('cast' => 'alnumpunct','minlen' => 4,'maxlen' => 64);
+$array['admin']['edit']['passwd'] = array('minlen' => 4,'maxlen' => 64,'regexp' => '/^[a-zA-Z0-9-\._~\!\$&\'\(\)\*\+,;=:%]+$/');
 $array['admin']['edit']['valid'] = array('bool' => true);
 //$array['admin']['edit']['meta'] = array('key' => array('root' => 1,'admin' => 1));
 

@@ -107,7 +107,7 @@ $array['filter'] = array();
 $array['filter']['context'] = array('set' => false,
 				    'chk' => 2,
 				    'callback' => 'xivo_service_asterisk::chk_context',
-				    'callbackparam' => array(XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES));
+				    'callbackparam' => array(array(XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['mailbox'] = array('minlen' => 1,'maxlen' => 40,'cast' => '/^[0-9#\*]+$/');
 $array['filter']['password'] = array('regexp' => '/^[0-9#\*]+$/','maxlen' => 80);
 $array['filter']['fullname'] = array('cast' => 'sgraph','maxlen' => 80);
@@ -116,15 +116,15 @@ $array['filter']['pager'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9#
 $array['filter']['dialout'] = array('set' => false,
 				    'chk' => 2,
 				    'callback' => 'xivo_service_asterisk::chk_context',
-				    'callbackparam' => array(XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES));
+				    'callbackparam' => array(array(XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['callback'] = array('set' => false,
 				     'chk' => 2,
 				     'callback' => 'xivo_service_asterisk::chk_context',
-				     'callbackparam' => array(XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES));
+				     'callbackparam' => array(array(XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['exitcontext'] = array('set' => false,
 				     'chk' => 2,
 				     'callback' => 'xivo_service_asterisk::chk_context',
-				     'callbackparam' => array(XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES));
+				     'callbackparam' => array(array(XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['tz'] = array('set' => false,'chk' => 2,'minlen' => 1,'maxlen' => 80,'regexp' => '/^[a-z0-9_-]+$/i');
 $array['filter']['language'] = array('set' => false,'chk' => 2,'minlen' => 2,'maxlen' => 2,'regexp' => '/^[a-z]{2}$/');
 $array['filter']['attach'] = array('bool' => true);

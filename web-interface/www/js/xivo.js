@@ -108,20 +108,15 @@ function xivo_etag(tag,obj,nb)
 {
 	if(xivo_is_string(tag) == false)
 		return(false);
-
-	if(xivo_is_undef(obj) == true)
+	else if(xivo_is_undef(obj) == true)
 		obj = document;
 	
-	if(xivo_is_object(obj) == false)
+	if(xivo_is_object(obj) == false
+	|| xivo_is_undef(obj.getElementsByTagName) == true)
 		return(false);
-
-	if(xivo_is_undef(obj.getElementsByTagName) == true)
-		return(false);
-
-	if(xivo_is_undef(nb) == true)
+	else if(xivo_is_undef(nb) == true)
 		return(obj.getElementsByTagName(tag));
-
-	if(xivo_is_uint(nb) == false)
+	else if(xivo_is_uint(nb) == false)
 		nb = 0;
 
 	if(xivo_is_undef(obj.getElementsByTagName(tag)[nb]) == true)
@@ -134,20 +129,15 @@ function xivo_ename(name,obj,nb)
 {
 	if(xivo_is_string(name) == false)
 		return(false);
-
-	if(xivo_is_undef(obj) == true)
+	else if(xivo_is_undef(obj) == true)
 		obj = document;
 	
-	if(xivo_is_object(obj) == false)
+	if(xivo_is_object(obj) == false
+	|| xivo_is_undef(obj.getElementsByName) == true)
 		return(false);
-
-	if(xivo_is_undef(obj.getElementsByName) == true)
-		return(false);
-
-	if(xivo_is_undef(nb) == true)
+	else if(xivo_is_undef(nb) == true)
 		return(obj.getElementsByName(name));
-
-	if(xivo_is_uint(nb) == false)
+	else if(xivo_is_uint(nb) == false)
 		nb = 0;
 
 	if(xivo_is_undef(obj.getElementsByName(name)[nb]) == true)
@@ -323,8 +313,7 @@ function xivo_chg_property_attrib(elem,arr,type)
 
 		if(nproperty.length > 2 || xivo_is_undef(elem[nproperty[0]]) == true)
 			continue;
-
-		if(nproperty[0] == 'style')
+		else if(nproperty[0] == 'style')
 		{
 			xivo_chg_style_attrib(elem,nproperty[1],type);
 			continue;

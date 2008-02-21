@@ -1,7 +1,10 @@
 ; phone_noentry
-No entries
+No entry
 
 ; phone_name-local
+%s
+
+; phone_name-empty
 %s
 
 ; phone_name-mobile

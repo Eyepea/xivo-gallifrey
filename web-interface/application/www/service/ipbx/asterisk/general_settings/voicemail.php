@@ -78,7 +78,7 @@ if(isset($_QR['fm_send']) === true && xivo_issa('voicemail',$_QR) === true)
 			array_unshift($result['voicemail']['format'],$_QR['voicemail']['attachformat']);
 		}
 
-		$result['voicemail']['format'] = implode(',',$result['voicemail']['format']);
+		$result['voicemail']['format'] = implode('|',$result['voicemail']['format']);
 	}
 
 	if($edit === true)
@@ -110,7 +110,7 @@ if(xivo_issa('format',$element['voicemail']) === true
 && xivo_ak('format',$return['voicemail']) === true
 && empty($return['voicemail']['format']) === false)
 {
-	$return['voicemail']['format'] = explode(',',$return['voicemail']['format']);
+	$return['voicemail']['format'] = explode('|',$return['voicemail']['format']);
 	$element['voicemail']['format']['value'] = array_diff($element['voicemail']['format']['value'],
 							      $return['voicemail']['format']);
 }

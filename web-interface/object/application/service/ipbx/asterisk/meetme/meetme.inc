@@ -21,8 +21,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		|| ($this->_appmeetme = &$this->_service->get_apprealstatic('meetme')) === false
 		|| ($this->_meetmeroom = &$this->_appmeetme->get_module('room')) === false)
 			return(false);
-		
-		if((bool) $components === true)
+		else if((bool) $components === true)
 			$this->load_components();
 
 		return(true);

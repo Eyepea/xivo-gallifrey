@@ -16,16 +16,16 @@ Name:
 ; fm_outcalltrunk
 Trunks:
 
-; bt-inoutcalltrunk
+; bt_inoutcalltrunk
 Add one or more trunks ->
 
-; bt-outoutcalltrunk
+; bt_outoutcalltrunk
 <- Remove one or more trunks
 
-; bt-upoutcalltrunk
+; bt_upoutcalltrunk
 Up one or more trunks
 
-; bt-downoutcalltrunk
+; bt_downoutcalltrunk
 Down one or more trunks
 
 ; fm_outcall_mode
@@ -100,10 +100,10 @@ Unlimited
 ; fm_outcall_hangupringtime-opt
 %s min. %s sec.
 
-; bt-inrightcall
+; bt_inrightcall
 Add one or more call permissions ->
 
-; bt-outrightcall
+; bt_outrightcall
 <- Remove one or more call permissions
 
 ; create_rightcall

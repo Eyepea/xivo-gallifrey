@@ -88,16 +88,16 @@ Tous
 ; fm_trunk_codec-allow
 Activer :
 
-; bt-upcodec
+; bt_upcodec
 Monter un ou plusieurs codecs
 
-; bt-downcodec
+; bt_downcodec
 Descendre un ou plusieurs codecs
 
-; bt-incodec
+; bt_incodec
 Ajouter un ou plusieurs codecs ->
 
-; bt-outcodec
+; bt_outcodec
 <- Enlever un ou plusieurs codecs
 
 ; fm_register

@@ -13,22 +13,22 @@ Name:
 ; fm_agents
 Agents:
 
-; bt-inagent
+; bt_inagent
 Add one or more agents ->
 
-; bt-outagent
+; bt_outagent
 <- Remove one or more agents
 
-; bt-upagent
+; bt_upagent
 Up one or more agents
 
-; bt-downagent
+; bt_downagent
 Down one or more agents
 
-; bt-inqueue
+; bt_inqueue
 Add one or more queues ->
 
-; bt-outqueue
+; bt_outqueue
 <- Remove one or more queues ->
 
 ; col_queue-name

@@ -112,10 +112,10 @@ Create a schedule
 ; add_playback-sound
 Add an audio file
 
-; bt-inrightcall
+; bt_inrightcall
 Add one or more call permissions ->
 
-; bt-outrightcall
+; bt_outrightcall
 <- Remove one or more call permissions
 
 ; create_rightcall

@@ -4,6 +4,12 @@ Aucune entrée
 ; phone_name-local
 %s
 
+; phone_name-empty
+%s
+
+; phone_name-custom
+%s (%s)
+
 ; phone_name-mobile
 %s (Mobile)
 

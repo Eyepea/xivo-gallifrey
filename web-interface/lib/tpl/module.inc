@@ -62,9 +62,9 @@ class xivo_tpl_module
 		return($this->_tpl->file_time($file));
 	}
 
-	function url($url)
+	function url($url,$full=false)
 	{
-		return($this->_tpl->url($url));
+		return($this->_tpl->url($url,$full));
 	}
 
 	function &_get_module($name)

@@ -104,14 +104,8 @@
 		if(xivo_user::chk_acl('system_management','configfiles') === true):
 			echo '<dd id="mn-system-management--configfiles">',$url->href_html($this->bbf('mn_left_systemmanagement-configfiles'),'service/ipbx/system_management/configfiles','act=list'),'</dd>';
 		endif;
-		if(xivo_user::chk_acl('system_management','isdncard') === true):
-			echo '<dd id="mn-system-management--isdncard">',$url->href_html($this->bbf('mn_left_systemmanagement-systemhardware'),'service/ipbx/system_management/isdncard','act=list'),'</dd>';
-		endif;
-		if(xivo_user::chk_acl('system_management','modules') === true):
-			echo '<dd id="mn-system-management--modules">',$url->href_html($this->bbf('mn_left_systemmanagement-modulessettings'),'service/ipbx/system_management/modules','act=list'),'</dd>';
-		endif;
-		if(xivo_user::chk_acl('system_management','manager') === true):
-			echo '<dd id="mn-system-management--manager">',$url->href_html($this->bbf('mn_left_systemmanagement-manager'),'service/ipbx/system_management/manager','act=list'),'</dd>';
+		if(xivo_user::chk_acl('system_management','serverldap') === true):
+			echo '<dd id="mn-system-management--serverldap">',$url->href_html($this->bbf('mn_left_systemmanagement-serverldap'),'service/ipbx/system_management/serverldap','act=list'),'</dd>';
 		endif;
 	endif;
 

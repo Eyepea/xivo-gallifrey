@@ -13,7 +13,7 @@ CSV Export
 ; number_cdr-result
 Result(s) : %s
 
-; bt-showcalendar
+; bt_showcalendar
 Calendar
 
 ; fm_dbeg

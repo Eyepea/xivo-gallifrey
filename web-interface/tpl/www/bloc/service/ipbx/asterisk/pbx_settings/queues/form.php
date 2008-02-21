@@ -83,9 +83,9 @@ endif;
 	</div>
 	<div class="inout-list">
 
-		<a href="#" onclick="xivo_fm_move_selected('it-userlist','it-user'); return(false);" title="<?=$this->bbf('bt-inuser');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-inuser'),'class="bt-inlist" id="bt-inuser" border="0"');?></a><br />
+		<a href="#" onclick="xivo_fm_move_selected('it-userlist','it-user'); return(false);" title="<?=$this->bbf('bt_inuser');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inuser'),'class="bt-inlist" id="bt-inuser" border="0"');?></a><br />
 
-		<a href="#" onclick="xivo_fm_move_selected('it-user','it-userlist'); return(false);" title="<?=$this->bbf('bt-outuser');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outuser'),'class="bt-outlist" id="bt-outuser" border="0"');?></a>
+		<a href="#" onclick="xivo_fm_move_selected('it-user','it-userlist'); return(false);" title="<?=$this->bbf('bt_outuser');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outuser'),'class="bt-outlist" id="bt-outuser" border="0"');?></a>
 
 	</div>
 	<div class="slt-inlist">
@@ -116,9 +116,9 @@ endif;
 			</div>
 			<div class="inout-list">
 
-			<a href="#" onclick="xivo_fm_move_selected('it-agentgrouplist','it-agentgroup'); return(false);" title="<?=$this->bbf('bt-inagentgroup');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-inagentgroup'),'class="bt-inlist" id="bt-inagentgroup" border="0"');?></a><br />
+			<a href="#" onclick="xivo_fm_move_selected('it-agentgrouplist','it-agentgroup'); return(false);" title="<?=$this->bbf('bt_inagentgroup');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inagentgroup'),'class="bt-inlist" id="bt-inagentgroup" border="0"');?></a><br />
 
-			<a href="#" onclick="xivo_fm_move_selected('it-agentgroup','it-agentgrouplist'); return(false);" title="<?=$this->bbf('bt-outagentgroup');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outagentgroup'),'class="bt-outlist" id="bt-outagentgroup" border="0"');?></a>
+			<a href="#" onclick="xivo_fm_move_selected('it-agentgroup','it-agentgrouplist'); return(false);" title="<?=$this->bbf('bt_outagentgroup');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outagentgroup'),'class="bt-outlist" id="bt-outagentgroup" border="0"');?></a>
 
 			</div>
 			<div class="slt-inlist">
@@ -140,9 +140,9 @@ endif;
 			</div>
 			<div class="inout-list">
 
-			<a href="#" onclick="xivo_fm_move_selected('it-agentlist','it-agent'); return(false);" title="<?=$this->bbf('bt-inagent');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-inagent'),'class="bt-inlist" id="bt-inagent" border="0"');?></a><br />
+			<a href="#" onclick="xivo_fm_move_selected('it-agentlist','it-agent'); return(false);" title="<?=$this->bbf('bt_inagent');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inagent'),'class="bt-inlist" id="bt-inagent" border="0"');?></a><br />
 
-			<a href="#" onclick="xivo_fm_move_selected('it-agent','it-agentlist'); return(false);" title="<?=$this->bbf('bt-outagent');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outagent'),'class="bt-outlist" id="bt-outagent" border="0"');?></a>
+			<a href="#" onclick="xivo_fm_move_selected('it-agent','it-agentlist'); return(false);" title="<?=$this->bbf('bt_outagent');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outagent'),'class="bt-outlist" id="bt-outagent" border="0"');?></a>
 
 			</div>
 			<div class="slt-inlist">

@@ -16,16 +16,16 @@ Nom :
 ; fm_outcalltrunk
 Interconnexions :
 
-; bt-inoutcalltrunk
+; bt_inoutcalltrunk
 Ajouter une ou plusieurs interconnexions ->
 
-; bt-outoutcalltrunk
+; bt_outoutcalltrunk
 <- Enlever une ou plusieurs interconnexions
 
-; bt-upoutcalltrunk
+; bt_upoutcalltrunk
 Monter une ou plusieurs interconnexions
 
-; bt-downoutcalltrunk
+; bt_downoutcalltrunk
 Descendre une ou plusieurs interconnexions
 
 ; fm_outcall_mode
@@ -100,10 +100,10 @@ Illimité
 ; fm_outcall_hangupringtime-opt
 %s min. %s sec.
 
-; bt-inrightcall
+; bt_inrightcall
 Ajouter un ou plusieurs droits d'appels ->
 
-; bt-outrightcall
+; bt_outrightcall
 <- Enlever un ou plusieurs droits d'appels
 
 ; create_rightcall

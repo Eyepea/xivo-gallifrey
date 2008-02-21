@@ -203,7 +203,6 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		{
 			$this->_set_result('outcall',$this->_outcall->get_filter_result());
 			$this->_set_error('outcall',$this->_outcall->get_filter_error());
-
 			return(false);
 		}
 
@@ -367,8 +366,14 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 			switch($key)
 			{
+				case 'outcall':
+					$this->_outcall->delete($outcallid);
+					break;
 				case 'exten':
 					$this->_extensions->delete_exten($val);
+					break;
+				case 'extenumbers':
+					$this->_extenumbers->delete($this->_status,$val);
 					break;
 				case 'outcalltrunk':
 					$this->_outcalltrunk->delete_where(array('outcallid' => $outcallid));
@@ -467,27 +472,38 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 			switch($key)
 			{
-				case 'exten':
-					if($this->_origin['exten'] === false)
-						$this->_extensions->delete_exten($val);
+				case 'outcall':
+					if(isset($this->_origin['outcall']) === true
+					&& $this->_origin['outcall'] !== false)
+						$this->_outcall->edit_origin($this->_origin['outcall']);
 					else
+						$this->delete_outcall();
+					break;
+				case 'exten':
+					if(isset($this->_origin['exten']) === true
+					&& $this->_origin['exten'] !== false)
 						$this->_extensions->edit_origin($this->_origin['exten']);
+					else
+						$this->_extensions->delete_exten($val);
+					break;
+				case 'extenumbers':
+					if(isset($this->_origin['extenumbers']) === true
+					&& $this->_origin['extenumbers'] !== false)
+						$this->_extenumbers->edit_origin($this->_origin['extenumbers']);
+					else
+						$this->delete_extenumbers();
 					break;
 				case 'outcalltrunk':
 					$this->delete_outcalltrunk();
-					$this->_outcalltrunk->add_origin_list($this->_origin['outcalltrunk']);
+
+					if(isset($this->_origin['outcalltrunk']) === true
+					&& $this->_origin['outcalltrunk'] !== false)
+						$this->_outcalltrunk->add_origin_list($this->_origin['outcalltrunk']);
 					break;
 				case 'rightcall':
 					if(xivo_issa('outcall',$this->_info) === true)
 						$this->_rightcall->reverse_edit($this->_status,'outcall',$this->_info['outcall']['id']);
 					break;
-				default:
-					if(($module = &$this->_service->get_module($key)) === false)
-						continue;
-					else if($this->_origin[$key] === false)
-						$module->delete($val);
-					else
-						$module->edit_origin($this->_origin[$key]);
 			}
 		}
 
@@ -581,20 +597,29 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 			switch($key)
 			{
+				case 'outcall':
+					if(isset($this->_origin['outcall']) === true
+					&& $this->_origin['outcall'] !== false)
+						$this->_outcall->add_origin($this->_origin['outcall']);
+					break;
 				case 'exten':
-					if($this->_origin['exten'] !== false)
+					if(isset($this->_origin['exten']) === true
+					&& $this->_origin['exten'] !== false)
 						$this->_extensions->add_origin($this->_origin['exten']);
 					break;
+				case 'extenumbers':
+					if(isset($this->_origin['extenumbers']) === true
+					&& $this->_origin['extenumbers'] !== false)
+						$this->_extenumbers->add_origin($this->_origin['extenumbers']);
+					break;
 				case 'outcalltrunk':
-					$this->_outcalltrunk->add_origin_list($this->_origin['outcalltrunk']);
+					if(isset($this->_origin['outcalltrunk']) === true
+					&& $this->_origin['outcalltrunk'] !== false)
+						$this->_outcalltrunk->add_origin_list($this->_origin['outcalltrunk']);
 					break;
 				case 'rightcall':
 					$this->_rightcall->add_origin_list();
 					break;
-				default:
-					if(($module = &$this->_service->get_module($key)) !== false
-					&& $this->_origin[$key] !== false)
-						$module->add_origin($this->_origin[$key]);
 			}
 		}
 
@@ -603,38 +628,38 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 	function enable()
 	{
+		$r = true;
 		$this->_status = 'enable';
 		$this->_return = array();
 
 		if($this->enable_outcall() === false
 		|| $this->enable_exten() === false)
 		{
+			$r = false;
 			$this->_reverse_enable_disable();
-			$this->_status = '';
-			return(false);
 		}
 
 		$this->_status = '';
 
-		return(true);
+		return($r);
 	}
 
 	function disable()
 	{
+		$r = true;
 		$this->_status = 'disable';
 		$this->_return = array();
 
 		if($this->disable_outcall() === false
 		|| $this->disable_exten() === false)
 		{
+			$r = false;
 			$this->_reverse_enable_disable();
-			$this->_status = '';
-			return(false);
 		}
 
 		$this->_status = '';
 
-		return(true);
+		return($r);
 	}
 
 	function enable_outcall()

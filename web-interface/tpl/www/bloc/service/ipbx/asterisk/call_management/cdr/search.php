@@ -86,12 +86,12 @@
 <div class="fm-field fm-desc-inline">
 <div class="fm-multifield">
 <?=$form->text(array('desc' => $this->bbf('fm_dbeg'),'field' => false,'name' => 'dbeg','labelid' => 'dbeg','default' => $element['dbeg']['default'],'value' => $info['dbeg']));?>
-<a href="#" onclick="xivo_eid('cal-dend').style.display = xivo_eid('cal-dend').style.display == 'block' ? 'none'  : 'none'; xivo_calendar_display('cal-dbeg','it-dbeg');" onmouseover="xivo_calendar_body();" onmouseout="xivo_calendar_body('cal-dbeg','it-dbeg');" title="<?=$this->bbf('bt-showcalendar');?>"><?=$url->img_html('img/site/button/row-down.gif',$this->bbf('bt-showcalendar'),'id="bt-showcalbeg" border="0" style="vertical-align: bottom;padding-left: 2px;"');?></a>
+<a href="#" onclick="xivo_eid('cal-dend').style.display = 'none'; xivo_calendar_display('cal-dbeg','it-dbeg');" onmouseover="xivo_calendar_body();" onmouseout="xivo_calendar_body('cal-dbeg','it-dbeg');" title="<?=$this->bbf('bt_showcalendar');?>"><?=$url->img_html('img/site/button/row-down.gif',$this->bbf('bt_showcalendar'),'id="bt-showcalbeg" border="0" style="vertical-align: bottom;padding-left: 2px;"');?></a>
 </div>
 <div id="cal-dbeg" onmouseover="xivo_calendar_body();" onmouseout="xivo_calendar_body('cal-dbeg','it-dbeg');" class="b-nodisplay"></div>
 <div class="fm-multifield">
 <?=$form->text(array('desc' => $this->bbf('fm_dend'),'field' => false,'name' => 'dend','labelid' => 'dend','value' => $info['dend']));?>
-<a href="#" onclick="xivo_eid('cal-dbeg').style.display = xivo_eid('cal-dbeg').style.display == 'block' ? 'none'  : 'none';xivo_calendar_display('cal-dend','it-dend');" onmouseover="xivo_calendar_body();" onmouseout="xivo_calendar_body('cal-dend','it-dend');" title="<?=$this->bbf('bt-showcalendar');?>"><?=$url->img_html('img/site/button/row-down.gif',$this->bbf('bt-showcalendar'),'id="bt-showcalend" border="0" style="vertical-align: bottom;padding-left: 2px;"');?></a>
+<a href="#" onclick="xivo_eid('cal-dbeg').style.display = 'none';xivo_calendar_display('cal-dend','it-dend');" onmouseover="xivo_calendar_body();" onmouseout="xivo_calendar_body('cal-dend','it-dend');" title="<?=$this->bbf('bt_showcalendar');?>"><?=$url->img_html('img/site/button/row-down.gif',$this->bbf('bt_showcalendar'),'id="bt-showcalend" border="0" style="vertical-align: bottom;padding-left: 2px;"');?></a>
 </div>
 <div id="cal-dend" onmouseover="xivo_calendar_body();" onmouseout="xivo_calendar_body('cal-dend','it-dend');" class="b-nodisplay"></div>
 </div>

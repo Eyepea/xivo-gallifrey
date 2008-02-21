@@ -28,10 +28,10 @@ Agents
 ; create_user
 Create an user
 
-; bt-inuser
+; bt_inuser
 Add one or more users ->
 
-; bt-outuser
+; bt_outuser
 <- Remove one or more users
 
 ; create_agent-group
@@ -40,10 +40,10 @@ Create an agent group
 ; fm_agentgroup
 Groups:
 
-; bt-inagentgroup
+; bt_inagentgroup
 Add one or more agent groups
 
-; bt-outagentgroup
+; bt_outagentgroup
 <- Remove one or more agent groups
 
 ; create_agent
@@ -52,10 +52,10 @@ Create an agent
 ; fm_agent
 Agents:
 
-; bt-inagent
+; bt_inagent
 Add one or more agents ->
 
-; bt-outagent
+; bt_outagent
 <- Remove one or more agents
 
 ; fm_qfeatures_name

@@ -166,10 +166,10 @@ Secretary
 ; fld-callgroup
 Groups
 
-; bt-ingroup
+; bt_ingroup
 Add one or more groups ->
 
-; bt-outgroup
+; bt_outgroup
 <- Remove one or more groups
 
 ; col_group-name
@@ -202,10 +202,10 @@ Call limit
 ; no_queue
 No queues
 
-; bt-inqueue
+; bt_inqueue
 Add one or more queues ->
 
-; bt-outqueue
+; bt_outqueue
 <- Remove one or more queues
 
 ; fm_codec-custom
@@ -220,16 +220,16 @@ All
 ; fm_protocol_codec-allow
 Enable:
 
-; bt-upcodec
+; bt_upcodec
 Up one or more codecs
 
-; bt-downcodec
+; bt_downcodec
 Down one or more codecs
 
-; bt-incodec
+; bt_incodec
 Add one or more codecs ->
 
-; bt-outcodec
+; bt_outcodec
 <- Remove one or more codecs
 
 ; fm_voicemail-active
@@ -259,10 +259,10 @@ Delete message after notification:
 ; fm_userfeatures_description
 Description:
 
-; bt-inrightcall
+; bt_inrightcall
 Add one or more call permission ->
 
-; bt-outrightcall
+; bt_outrightcall
 <- Delete one or more call permission
 
 ; create_rightcall

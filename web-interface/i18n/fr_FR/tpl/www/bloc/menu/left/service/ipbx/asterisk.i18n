@@ -97,14 +97,8 @@ Configuration IPBX
 ; mn_left_systemmanagement-configfiles
 Fichiers de configuration
 
-; mn_left_systemmanagement-systemhardware
-Gestion cartes ISDN
-
-; mn_left_systemmanagement-modulessettings
-Gestion des modules
-
-; mn_left_systemmanagement-manager
-Gestion du manager
+; mn_left_systemmanagement-serverldap
+Serveurs LDAP
 
 ; mn_left_ti_controlsystem
 Système de contrôle

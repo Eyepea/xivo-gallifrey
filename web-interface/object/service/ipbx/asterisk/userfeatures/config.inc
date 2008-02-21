@@ -139,7 +139,7 @@ $array['element']['outcallerid-custom']['unset'] = true;
 $array['element']['internal'] = array();
 $array['element']['internal']['value'] = array(0,1);
 $array['element']['internal']['default'] = 0;
-$array['element']['internal']['setdef'] = true;
+$array['element']['internal']['forcedef'] = true;
 
 $array['element']['bsfilter'] = array();
 $array['element']['bsfilter']['value'] = array('no','boss','secretary');
@@ -161,8 +161,9 @@ $array['filter']['number'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9
 $array['filter']['context'] = array('set' => false,
 				    'chk' => 2,
 				    'callback' => 'xivo_service_asterisk::chk_context',
-				    'callbackparam' => array(XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTIFICATION,
-							     XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES));
+				    'callbackparam' => array(array(
+				    			XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTIFICATION,
+							XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['ringseconds'] = array('set' => false,'chk' => 2,'key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['simultcalls'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,20));
 $array['filter']['enableclient'] = array('bool' => true);

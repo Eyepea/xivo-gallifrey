@@ -43,6 +43,8 @@ class xivo_datastorage_adapter_mysql extends xivo_datastorage_adapter_abstract_s
 
 		if(isset($param['pass']) === true)
 			$this->_param['pass'] = (string) $param['pass'];
+		else if(isset($param['passwd']) === true)
+			$this->_param['pass'] = (string) $param['passwd'];
 
 		if(isset($param['db']) === true)
 			$this->_param['db'] = (string) $param['db'];

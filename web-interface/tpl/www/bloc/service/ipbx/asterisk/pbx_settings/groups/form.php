@@ -48,9 +48,9 @@ endif;
 	</div>
 	<div class="inout-list">
 
-		<a href="#" onclick="xivo_fm_move_selected('it-userlist','it-user'); return(false);" title="<?=$this->bbf('bt-inuser');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-inuser'),'class="bt-inlist" id="bt-inuser" border="0"');?></a><br />
+		<a href="#" onclick="xivo_fm_move_selected('it-userlist','it-user'); return(false);" title="<?=$this->bbf('bt_inuser');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inuser'),'class="bt-inlist" id="bt-inuser" border="0"');?></a><br />
 
-		<a href="#" onclick="xivo_fm_move_selected('it-user','it-userlist'); return(false);" title="<?=$this->bbf('bt-outuser');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outuser'),'class="bt-outlist" id="bt-outuser" border="0"');?></a>
+		<a href="#" onclick="xivo_fm_move_selected('it-user','it-userlist'); return(false);" title="<?=$this->bbf('bt_outuser');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outuser'),'class="bt-outlist" id="bt-outuser" border="0"');?></a>
 
 	</div>
 	<div class="slt-inlist">
@@ -80,9 +80,9 @@ endif;
 			</div>
 			<div class="inout-list">
 
-		<a href="#" onclick="xivo_fm_move_selected('it-rightcalllist','it-rightcall'); return(false);" title="<?=$this->bbf('bt-inrightcall');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-inrightcall'),'class="bt-inlist" id="bt-inrightcall" border="0"');?></a><br />
+		<a href="#" onclick="xivo_fm_move_selected('it-rightcalllist','it-rightcall'); return(false);" title="<?=$this->bbf('bt_inrightcall');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inrightcall'),'class="bt-inlist" id="bt-inrightcall" border="0"');?></a><br />
 
-		<a href="#" onclick="xivo_fm_move_selected('it-rightcall','it-rightcalllist'); return(false);" title="<?=$this->bbf('bt-outrightcall');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outrightcall'),'class="bt-outlist" id="bt-outrightcall" border="0"');?></a>
+		<a href="#" onclick="xivo_fm_move_selected('it-rightcall','it-rightcalllist'); return(false);" title="<?=$this->bbf('bt_outrightcall');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outrightcall'),'class="bt-outlist" id="bt-outrightcall" border="0"');?></a>
 
 			</div>
 			<div class="slt-inlist">

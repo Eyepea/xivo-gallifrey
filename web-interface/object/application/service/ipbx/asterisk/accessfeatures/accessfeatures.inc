@@ -5,20 +5,19 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 class xivo_application_service_asterisk_accessfeatures extends xivo_application_asterisk_abstract
 {
 	var $_accessfeatures	= null;
-	var $_param		= array('type'	=> '');
-	var $_type		= '';
+	var $_param		= array('feature'	=> '');
 
 	function xivo_application_service_asterisk_accessfeatures(&$service,$param=array())
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
 
 		if($this->set_params($param) === false
-		|| isset($param['type']) === false
+		|| isset($param['feature']) === false
 		|| ($this->_accessfeatures = &$this->_service->get_module('accessfeatures')) === false
-		|| $this->_accessfeatures->chk_element_value('type',$param['type']) === false)
+		|| $this->_accessfeatures->chk_element_value('feature',$param['feature']) === false)
 			return(false);
 
-		$this->_param['type'] = $param['type'];
+		$this->_param['feature'] = $param['feature'];
 
 		return(true);
 	}
@@ -29,7 +28,7 @@ class xivo_application_service_asterisk_accessfeatures extends xivo_application_
 		$this->_origin = false;
 
 		$where = array();
-		$where['type'] = $this->_param['type'];
+		$where['feature'] = $this->_param['feature'];
 
 		if(($this->_info = $this->_accessfeatures->get_all_where($where)) === false)
 			return(false);
@@ -57,7 +56,7 @@ class xivo_application_service_asterisk_accessfeatures extends xivo_application_
 			return(null);
 
 		$info = array();
-		$info['type'] = $this->_param['type'];
+		$info['feature'] = $this->_param['feature'];
 		
 		$tmp = array();
 
@@ -166,7 +165,7 @@ class xivo_application_service_asterisk_accessfeatures extends xivo_application_
 			return(null);
 
 		$where = array();
-		$where['type'] = $this->_param['type'];
+		$where['feature'] = $this->_param['feature'];
 
 		if(($r = $this->_accessfeatures->delete_where($where)) === false)
 			$this->_reverse_delete();

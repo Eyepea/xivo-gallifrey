@@ -4,26 +4,38 @@ Propriétés du carnet d'adresses
 ; smenu_access
 Hôtes
 
-; smenu_servers
-Serveurs
+; smenu_serversxivo
+Serveurs XIVO
+
+; smenu_serversldap
+Serveurs LDAP
 
 ; accessfeatures_add
 Ajouter un hôte :
 
-; bt-addaccess
+; bt_addaccess
 Ajouter un hôte
 
-; bt-deleteaccess
+; bt_deleteaccess
 Supprimer un ou plusieurs hôtes
 
-; bt-inserverfeatures
-Ajouter un ou plusieurs serveurs ->
+; bt_inserverxivo
+Ajouter un ou plusieurs serveurs XIVO ->
 
-; bt-outserverfeatures
-<- Enlever un ou plusieurs serveurs
+; bt_outserverxivo
+<- Enlever un ou plusieurs serveurs XIVO
 
-; create_server
-Créer un serveur
+; create_serverxivo
+Créer un serveur XIVO
+
+; bt_inserverldap
+Ajouter un ou plusieurs serveurs LDAP ->
+
+; bt_outserverldap
+<- Enlever un ou plusieurs serveurs LDAP
+
+; create_serverldap
+Créer un serveur LDAP
 
 ; fm_success-save
 Propriétés du carnet d'adresses sauvegardés avec succès

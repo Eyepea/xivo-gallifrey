@@ -13,22 +13,22 @@ Nom :
 ; fm_agents
 Agents :
 
-; bt-inagent
+; bt_inagent
 Ajouter un ou plusieurs agents ->
 
-; bt-outagent
+; bt_outagent
 <- Enlever un ou plusieurs agents
 
-; bt-upagent
+; bt_upagent
 Monter un ou plusieurs agents
 
-; bt-downagent
+; bt_downagent
 Descendre un ou plusieurs agents
 
-; bt-inqueue
+; bt_inqueue
 Ajouter une ou plusieurs files d'attente ->
 
-; bt-outqueue
+; bt_outqueue
 <- Enlever une ou plusieurs files d'attente
 
 ; col_queue-name

@@ -37,46 +37,46 @@ Extensions:
 ; rightcallexten_add-extension
 Add an extension:
 
-; bt-addexten
+; bt_addexten
 Add an extension
 
-; bt-deleteexten
+; bt_deleteexten
 Delete one or more extensions
 
 ; fm_rightcall_description
 Description:
 
-; bt-inuser
+; bt_inuser
 Add one or more users ->
 
-; bt-outuser
+; bt_outuser
 <- Remove one or more users
 
 ; create_user
 Create an user
 
-; bt-ingroup
+; bt_ingroup
 Add one or more groups ->
 
-; bt-outgroup
+; bt_outgroup
 <- Remove one or more groups
 
 ; create_group
 Create a group
 
-; bt-inincall
+; bt_inincall
 Add one or more incoming calls ->
 
-; bt-outincall
+; bt_outincall
 <- Remove one or more incoming calls
 
 ; create_incall
 Create an incoming call
 
-; bt-inoutcall
+; bt_inoutcall
 Add one or more outgoing calls ->
 
-; bt-outoutcall
+; bt_outoutcall
 <- Remove one or more outgoing calls
 
 ; create_outcall

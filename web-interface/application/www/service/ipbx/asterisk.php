@@ -9,7 +9,7 @@ $meetmestat['enable'] = $meetmestat['disable'] = $meetmestat['total'] = 0;
 $activecalls = 0;
 
 if(($recvactivecalls = $ipbx->discuss('show channels',true)) !== false
-&& ($nb = count($recvactivecalls) - 1) !== 0
+&& ($nb = count($recvactivecalls) - 1) > 0
 && ($pos = strpos($recvactivecalls[$nb],' ')) !== false
 && $pos !== 0)
 	$activecalls = substr($recvactivecalls[$nb],0,$pos);

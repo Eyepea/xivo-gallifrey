@@ -46,16 +46,16 @@ Désactivé
 ; fm_queue_timeout-opt
 %s secondes
 
-; bt-inuser
+; bt_inuser
 Ajouter un ou plusieurs utilisateurs ->
 
-; bt-outuser
+; bt_outuser
 <- Enlever un ou plusieurs utilisateurs
 
-; bt-inrightcall
+; bt_inrightcall
 Ajouter un ou plusieurs droits d'appels ->
 
-; bt-outrightcall
+; bt_outrightcall
 <- Enlever un ou plusieurs droits d'appels
 
 ; create_rightcall

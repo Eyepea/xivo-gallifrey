@@ -9,9 +9,8 @@
 
 	if($this->get_var('act') === 'add'):
 		$invalid_boss = false;
-	elseif(xivo_issa('callfiltermember',$info) === false):
-		$invalid_boss = true;
-	elseif(xivo_issa('boss',$info['callfiltermember']) === false):
+	elseif(xivo_issa('callfiltermember',$info) === false
+	|| xivo_issa('boss',$info['callfiltermember']) === false):
 		$invalid_boss = true;
 	else:
 		$invalid_boss = false;
@@ -55,9 +54,9 @@
 	</div>
 	<div class="inout-list">
 
-		<a href="#" onclick="xivo_fm_move_selected('it-callfiltermember-secretarylist','it-callfiltermember-secretary'); return(false);" title="<?=$this->bbf('bt-insecretary');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-insecretary'),'class="bt-inlist" id="bt-insecretary" border="0"');?></a><br />
+		<a href="#" onclick="xivo_fm_move_selected('it-callfiltermember-secretarylist','it-callfiltermember-secretary'); return(false);" title="<?=$this->bbf('bt_insecretary');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_insecretary'),'class="bt-inlist" id="bt-insecretary" border="0"');?></a><br />
 
-		<a href="#" onclick="xivo_fm_move_selected('it-callfiltermember-secretary','it-callfiltermember-secretarylist'); return(false);" title="<?=$this->bbf('bt-outsecretary');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outsecretary'),'class="bt-outlist" id="bt-outsecretary" border="0"');?></a>
+		<a href="#" onclick="xivo_fm_move_selected('it-callfiltermember-secretary','it-callfiltermember-secretarylist'); return(false);" title="<?=$this->bbf('bt_outsecretary');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outsecretary'),'class="bt-outlist" id="bt-outsecretary" border="0"');?></a>
 	</div>
 	<div class="slt-inlist">
 
@@ -65,9 +64,9 @@
 
 		<div class="bt-updown">
 
-			<a href="#" onclick="xivo_fm_order_selected('it-callfiltermember-secretary',1); return(false);" title="<?=$this->bbf('bt-upsecretary');?>"><?=$url->img_html('img/site/button/row-up.gif',$this->bbf('bt-upsecretary'),'class="bt-uplist" id="bt-upsecretary" border="0"');?></a><br />
+			<a href="#" onclick="xivo_fm_order_selected('it-callfiltermember-secretary',1); return(false);" title="<?=$this->bbf('bt_upsecretary');?>"><?=$url->img_html('img/site/button/row-up.gif',$this->bbf('bt_upsecretary'),'class="bt-uplist" id="bt-upsecretary" border="0"');?></a><br />
 
-			<a href="#" onclick="xivo_fm_order_selected('it-callfiltermember-secretary',-1); return(false);" title="<?=$this->bbf('bt-downsecretary');?>"><?=$url->img_html('img/site/button/row-down.gif',$this->bbf('bt-downsecretary'),'class="bt-downlist" id="bt-downsecretary" border="0"');?></a>
+			<a href="#" onclick="xivo_fm_order_selected('it-callfiltermember-secretary',-1); return(false);" title="<?=$this->bbf('bt_downsecretary');?>"><?=$url->img_html('img/site/button/row-down.gif',$this->bbf('bt_downsecretary'),'class="bt-downlist" id="bt-downsecretary" border="0"');?></a>
 
 		</div>
 

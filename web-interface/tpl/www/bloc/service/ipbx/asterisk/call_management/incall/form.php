@@ -125,9 +125,9 @@ echo $form->text(array('desc' => $this->bbf('fm_incall_custom-typeval'),'name' =
 			</div>
 			<div class="inout-list">
 
-		<a href="#" onclick="xivo_fm_move_selected('it-rightcalllist','it-rightcall'); return(false);" title="<?=$this->bbf('bt-inrightcall');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-inrightcall'),'class="bt-inlist" id="bt-inrightcall" border="0"');?></a><br />
+		<a href="#" onclick="xivo_fm_move_selected('it-rightcalllist','it-rightcall'); return(false);" title="<?=$this->bbf('bt_inrightcall');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inrightcall'),'class="bt-inlist" id="bt-inrightcall" border="0"');?></a><br />
 
-		<a href="#" onclick="xivo_fm_move_selected('it-rightcall','it-rightcalllist'); return(false);" title="<?=$this->bbf('bt-outrightcall');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outrightcall'),'class="bt-outlist" id="bt-outrightcall" border="0"');?></a>
+		<a href="#" onclick="xivo_fm_move_selected('it-rightcall','it-rightcalllist'); return(false);" title="<?=$this->bbf('bt_outrightcall');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outrightcall'),'class="bt-outlist" id="bt-outrightcall" border="0"');?></a>
 
 			</div>
 			<div class="slt-inlist">

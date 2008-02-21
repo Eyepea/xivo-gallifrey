@@ -46,16 +46,16 @@ Disabled
 ; fm_queue_timeout-opt
 %s seconds
 
-; bt-inuser
+; bt_inuser
 Add one or more users ->
 
-; bt-outuser
+; bt_outuser
 <- Remove one or more users
 
-; bt-inrightcall
+; bt_inrightcall
 Add one or more call permission ->
 
-; bt-outrightcall
+; bt_outrightcall
 <- Remove one or more call permission
 
 ; create_rightcall

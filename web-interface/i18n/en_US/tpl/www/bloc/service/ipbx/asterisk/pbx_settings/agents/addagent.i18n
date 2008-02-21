@@ -97,10 +97,10 @@ Beeps audio file:
 ; fm_agent_custom-beep-opt-default
 Default
 
-; bt-inqueue
+; bt_inqueue
 Add ->
 
-; bt-outqueue
+; bt_outqueue
 <- Remove
 
 ; col_queue-name

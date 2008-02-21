@@ -10,16 +10,16 @@ Servers
 ; accessfeatures_add
 Add an host:
 
-; bt-addaccess
+; bt_addaccess
 Add an host
 
-; bt-deleteaccess
+; bt_deleteaccess
 Delete one or more hosts
 
-; bt-inserverfeatures
+; bt_inserverfeatures
 Add one or more servers ->
 
-; bt-outserverfeatures
+; bt_outserverfeatures
 <- Remove one or more servers
 
 ; create_server

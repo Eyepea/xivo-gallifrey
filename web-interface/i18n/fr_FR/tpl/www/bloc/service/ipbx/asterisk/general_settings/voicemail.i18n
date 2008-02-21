@@ -184,10 +184,10 @@ Mise en relation avec un opérateur :
 ; fm_voicemail-format
 Formats d'enregistrement :
 
-; bt-informat
+; bt_informat
 Ajouter un ou plusieurs formats ->
 
-; bt-outformat
+; bt_outformat
 <- Enlever un ou plusieurs formats
 
 ; fm_voicemail-maxlogins

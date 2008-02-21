@@ -112,10 +112,10 @@ Créer un horaire
 ; add_playback-sound
 Ajouter un fichier son
 
-; bt-inrightcall
+; bt_inrightcall
 Ajouter un ou plusieurs droits d'appels ->
 
-; bt-outrightcall
+; bt_outrightcall
 <- Enlever un ou plusieurs droits d'appels
 
 ; create_rightcall

@@ -70,16 +70,16 @@ Unlimited
 ; fld-callfilter-secretary
 Secretary
 
-; bt-insecretary
+; bt_insecretary
 Add one or more secretaries ->
 
-; bt-outsecretary
+; bt_outsecretary
 <- Remove one or more secretaries
 
-; bt-upsecretary
+; bt_upsecretary
 Up one or more secretaries
 
-; bt-downsecretary
+; bt_downsecretary
 Down one or more secretaries
 
 ; fld-dialstatus-noanswer

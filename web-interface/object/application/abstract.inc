@@ -44,6 +44,14 @@ class xivo_application_abstract extends xivo_libconfig_abstract
 		return(true);
 	}
 
+	function load_init($param=null)
+	{
+		if(is_array($param) === true)
+			$this->set_params($param);
+
+		return(null);
+	}
+
 	function load_components()
 	{
 		return(null);

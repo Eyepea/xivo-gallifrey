@@ -88,9 +88,9 @@
 	</div>
 	<div class="inout-list">
 
-		<a href="#" onclick="xivo_informat(); return(false);" title="<?=$this->bbf('bt-informat');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-informat'),'class="bt-inlist" id="bt-informat" border="0"');?></a><br />
+		<a href="#" onclick="xivo_informat(); return(false);" title="<?=$this->bbf('bt_informat');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_informat'),'class="bt-inlist" id="bt-informat" border="0"');?></a><br />
 
-		<a href="#" onclick="xivo_outformat(); return(false);" title="<?=$this->bbf('bt-outformat');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outformat'),'class="bt-outlist" id="bt-outformat" border="0"');?></a>
+		<a href="#" onclick="xivo_outformat(); return(false);" title="<?=$this->bbf('bt_outformat');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outformat'),'class="bt-outlist" id="bt-outformat" border="0"');?></a>
 	</div>
 	<div class="slt-inlist">
 

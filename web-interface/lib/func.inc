@@ -839,4 +839,36 @@ function xivo_printf_strip($format,$argc=0)
 	return($format);
 }
 
+function xivo_replacef($search,$replace,$subject)
+{
+	if(is_scalar($subject) === false)
+		return(false);
+	else if(xivo_haslen($search) === false)
+		return($subject);
+	else if(strpos($search,'%') !== false)
+		return(false);
+
+	$split = preg_split('/(%+)/',$subject,-1,(PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE));
+
+	if(($nb = count($split)) === 0)
+		return($subject);
+
+	$r = '';
+
+	$len = strlen($search);
+
+	for($i = 0,$j = 1;$i < $nb;$i++,$j++)
+	{
+		if($split[$i]{0} === '%'
+		&& isset($split[$j]) === true
+		&& substr($split[$j],0,$len) === $search
+		&& (strlen($split[$i]) % 2) === 1)
+			$r .= substr($split[$i++],1).$replace.substr($split[$j++],$len);
+		else
+			$r .= $split[$i];
+	}
+	
+	return($r);
+}
+
 ?>

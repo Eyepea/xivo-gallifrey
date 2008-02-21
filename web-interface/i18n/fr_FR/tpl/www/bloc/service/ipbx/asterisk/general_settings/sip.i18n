@@ -370,16 +370,16 @@ Tous
 ; fm_codec-allow
 Codecs activés :
 
-; bt-upcodec
+; bt_upcodec
 Monter un ou plusieurs codecs
 
-; bt-downcodec
+; bt_downcodec
 Descendre un ou plusieurs codecs
 
-; bt-incodec
+; bt_incodec
 Ajouter un ou plusieurs codecs ->
 
-; bt-outcodec
+; bt_outcodec
 <- Enlever un ou plusieurs codecs
 
 ; fm_context

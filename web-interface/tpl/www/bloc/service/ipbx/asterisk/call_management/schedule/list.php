@@ -109,7 +109,7 @@
 							   array($monthbeg,$monthend));
 			endif;
 
-			$ref['publicholiday'] = (int) $ref['publicholiday'];
+			$ref['publicholiday'] = intval((bool) $ref['publicholiday']);
 
 			$mod = $j % 2 === 0 ? 1 : 2;
 ?>

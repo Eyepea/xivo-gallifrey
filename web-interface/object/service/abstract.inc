@@ -276,7 +276,8 @@ class xivo_service_abstract
 		if(isset($this->_application[$name]) === true)
 		{
 			if(is_array($param) === true)
-				$this->_application[$name]->set_params($param);
+				$this->_application[$name]->load_init($param);
+
 			if($components === true)
 				$this->_application[$name]->load_components();
 			return(true);

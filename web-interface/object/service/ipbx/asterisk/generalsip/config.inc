@@ -350,7 +350,7 @@ $array['filter']['useragent'] = array('cast' => 'sgraph','maxlen' => 80);
 $array['filter']['checkmwi'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['regcontext'] = array('set' => false,'chk' => 2,
 				       'callback' => 'xivo_service_asterisk::chk_context',
-				       'callbackparam' => array(XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTIFICATION));
+				       'callbackparam' => array(array(XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTIFICATION)));
 $array['filter']['callerid'] = array('regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 80);
 $array['filter']['fromdomain'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-\.]+$/i','maxlen' => 80);
 $array['filter']['sipdebug'] = array('bool' => true);
@@ -408,7 +408,7 @@ $array['filter']['registerattempts'] = array('key' => array(0,10,20,30,40,50,60,
 $array['filter']['notifyringing'] = array('bool' => true);
 $array['filter']['context'] = array('set' => false,'chk' => 2,
 				    'callback' => 'xivo_service_asterisk::chk_context',
-				    'callbackparam' => array(XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTIFICATION));
+				    'callbackparam' => array(array(XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTIFICATION)));
 $array['filter']['nat'] = array('key' => array('no','yes','never','route'));
 $array['filter']['dtmfmode'] = array('key' => array('rfc2833','inband','info','auto'));
 $array['filter']['qualify'] = array('key' => array('no','yes',500,1000,1500,2000,2500,3000,3500,4000));

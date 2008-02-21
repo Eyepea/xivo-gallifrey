@@ -70,16 +70,16 @@ Illimité
 ; fld-callfilter-secretary
 Secrétaire
 
-; bt-insecretary
+; bt_insecretary
 Ajouter une ou plusieurs secrétaires ->
 
-; bt-outsecretary
+; bt_outsecretary
 <- Enlever une ou plusieurs secrétaires
 
-; bt-upsecretary
+; bt_upsecretary
 Monter une ou plusieurs secrétaires 
 
-; bt-downsecretary
+; bt_downsecretary
 Descendre une ou plusieurs secrétaires
 
 ; fld-dialstatus-noanswer

@@ -58,7 +58,7 @@
 				$passwd = $ref['rightcall']['passwd'];
 			endif;
 
-			$ref['rightcall']['authorization'] = (int) $ref['rightcall']['authorization'];
+			$ref['rightcall']['authorization'] = intval((bool) $ref['rightcall']['authorization']);
 
 			$mod = $j % 2 === 0 ? 1 : 2;
 ?>

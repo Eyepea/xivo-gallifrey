@@ -166,10 +166,10 @@ Secrétaire
 ; fld-callgroup
 Groupes
 
-; bt-ingroup
+; bt_ingroup
 Ajouter un ou plusieurs groupes ->
 
-; bt-outgroup
+; bt_outgroup
 <- Enlever un ou plusieurs groupes
 
 ; col_group-name
@@ -202,10 +202,10 @@ Nb Appels
 ; no_queue
 Aucune file d'attente
 
-; bt-inqueue
+; bt_inqueue
 Ajouter une ou plusieurs files d'attente ->
 
-; bt-outqueue
+; bt_outqueue
 <- Enlever une ou plusieurs files d'attente
 
 ; fm_codec-custom
@@ -220,16 +220,16 @@ Tous
 ; fm_protocol_codec-allow
 Activer :
 
-; bt-upcodec
+; bt_upcodec
 Monter un ou plusieurs codecs
 
-; bt-downcodec
+; bt_downcodec
 Descendre un ou plusieurs codecs
 
-; bt-incodec
+; bt_incodec
 Ajouter un ou plusieurs codecs ->
 
-; bt-outcodec
+; bt_outcodec
 <- Enlever un ou plusieurs codecs
 
 ; fm_voicemail-active
@@ -259,10 +259,10 @@ Supprimer message après notification :
 ; fm_userfeatures_description
 Description :
 
-; bt-inrightcall
+; bt_inrightcall
 Ajouter un ou plusieurs droits d'appels ->
 
-; bt-outrightcall
+; bt_outrightcall
 <- Enlever un ou plusieurs droits d'appels
 
 ; create_rightcall

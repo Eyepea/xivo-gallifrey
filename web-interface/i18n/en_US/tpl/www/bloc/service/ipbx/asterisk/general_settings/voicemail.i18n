@@ -184,10 +184,10 @@ Get transfered to an operator:
 ; fm_voicemail-format
 Recording formats:
 
-; bt-informat
+; bt_informat
 Add one or more formats ->
 
-; bt-outformat
+; bt_outformat
 <- Remove one or more formats
 
 ; fm_voicemail-maxlogins

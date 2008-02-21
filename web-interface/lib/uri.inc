@@ -186,8 +186,7 @@ class xivo_uri
 			{
 				if($this->valid_user($authority['user']) === false)
 					return(false);
-
-				if($decode === true)
+				else if($decode === true)
 					$authority['user'] = urldecode($authority['user']);
 			}
 
@@ -195,8 +194,7 @@ class xivo_uri
 			{
 				if($this->valid_passwd($authority['passwd']) === false)
 					return(false);
-
-				if($decode === true)
+				else if($decode === true)
 					$authority['passwd'] = urldecode($authority['passwd']);
 			}
 
@@ -204,8 +202,7 @@ class xivo_uri
 			{
 				if($this->valid_host($authority['host']) === false)
 					return(false);
-
-				if($decode === true && $this->get_host_type($authority['host']) === $this->_host['reg_name'])
+				else if($decode === true && $this->get_host_type($authority['host']) === $this->_host['reg_name'])
 					$authority['host'] = urldecode($authority['host']);
 			}
 
@@ -217,11 +214,10 @@ class xivo_uri
 		{
 			if($this->valid_path($uri['path']) === false)
 				return(false);
-
-			if(isset($authority) === true && $uri['path']{0} !== '/')
+			else if(isset($authority) === true && $uri['path']{0} !== '/')
 				return(false);
-
-			if(isset($authority,$uri['scheme']) === false && ($pos = strpos($uri['path'],':')) !== false
+			else if(isset($authority,$uri['scheme']) === false
+			&& ($pos = strpos($uri['path'],':')) !== false
 			&& ($poslash = strpos($uri['path'],'/')) !== false && $pos < $poslash)
 				return(false);
 
@@ -239,18 +235,15 @@ class xivo_uri
 				{
 					if($this->valid_query($ref[0]) === false)
 						return(false);
-
-					if($decode === true)
+					else if($decode === true)
 						$ref[0] = urldecode($ref[0]);
 				}
 
 				if(xivo_haslen($ref,1) === false)
 					continue;
-			
-				if($this->valid_query($ref[1]) === false)
+				else if($this->valid_query($ref[1]) === false)
 					return(false);
-
-				if($decode === true)
+				else if($decode === true)
 					$ref[1] = urldecode($ref[1]);
 			}
 		}
@@ -259,8 +252,7 @@ class xivo_uri
 		{
 			if($this->valid_fragment($uri['fragment']) === false)
 				return(false);
-
-			if($decode === true)
+			else if($decode === true)
 				$uri['fragment'] = urldecode($uri['fragment']);
 		}
 
@@ -326,8 +318,7 @@ class xivo_uri
 
 		if($hostport === '')
 			return($r);
-
-		if($hostport{0} === '[')
+		else if($hostport{0} === '[')
 		{
 			if(preg_match('/^\[([\da-fA-F:\.]+|'.
 				      $this->_regexp['ipv_future'].
@@ -448,8 +439,7 @@ class xivo_uri
 
 		if(isset($this->_encode[$type]) === false)
 			return(urlencode($str));
-
-		if(preg_match_all('/'.$this->_encode[$type].'+/',$str,$match,PREG_OFFSET_CAPTURE) === 0)
+		else if(preg_match_all('/'.$this->_encode[$type].'+/',$str,$match,PREG_OFFSET_CAPTURE) === 0)
 			return($str);
 
 		$match = $match[0];

@@ -29,9 +29,9 @@
 		<?=$form->select(array('name' => 'rightcallexten[]','label' => false,'id' => 'it-exten','key' => true,'altkey' => 'exten','multiple' => true,'size' => 5,'field' => false),$rcallexten);?>
 		<div class="bt-adddelete">
 
-			<a href="#" onclick="xivo_fm_select_add_exten('it-exten',prompt('<?=$dhtml->escape($this->bbf('rightcallexten_add-extension'));?>')); return(false);" title="<?=$this->bbf('bt-addexten');?>"><?=$url->img_html('img/site/button/mini/blue/add.gif',$this->bbf('bt-addexten'),'class="bt-addlist" id="bt-addexten" border="0"');?></a><br />
+			<a href="#" onclick="xivo_fm_select_add_exten('it-exten',prompt('<?=$dhtml->escape($this->bbf('rightcallexten_add-extension'));?>')); return(false);" title="<?=$this->bbf('bt_addexten');?>"><?=$url->img_html('img/site/button/mini/blue/add.gif',$this->bbf('bt_addexten'),'class="bt-addlist" id="bt-addexten" border="0"');?></a><br />
 
-			<a href="#" onclick="xivo_fm_select_delete_entry('it-exten'); return(false);" title="<?=$this->bbf('bt-deleteexten');?>"><?=$url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('bt-deleteexten'),'class="bt-deletelist" id="bt-deleteexten" border="0"');?></a>
+			<a href="#" onclick="xivo_fm_select_delete_entry('it-exten'); return(false);" title="<?=$this->bbf('bt_deleteexten');?>"><?=$url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('bt_deleteexten'),'class="bt-deletelist" id="bt-deleteexten" border="0"');?></a>
 
 		</div>
 	</div>
@@ -57,9 +57,9 @@
 			</div>
 			<div class="inout-list">
 
-		<a href="#" onclick="xivo_fm_move_selected('it-userlist','it-user'); return(false);" title="<?=$this->bbf('bt-inuser');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-inuser'),'class="bt-inlist" id="bt-inuser" border="0"');?></a><br />
+		<a href="#" onclick="xivo_fm_move_selected('it-userlist','it-user'); return(false);" title="<?=$this->bbf('bt_inuser');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inuser'),'class="bt-inlist" id="bt-inuser" border="0"');?></a><br />
 
-		<a href="#" onclick="xivo_fm_move_selected('it-user','it-userlist'); return(false);" title="<?=$this->bbf('bt-outuser');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outuser'),'class="bt-outlist" id="bt-outuser" border="0"');?></a>
+		<a href="#" onclick="xivo_fm_move_selected('it-user','it-userlist'); return(false);" title="<?=$this->bbf('bt_outuser');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outuser'),'class="bt-outlist" id="bt-outuser" border="0"');?></a>
 
 			</div>
 			<div class="slt-inlist">
@@ -90,9 +90,9 @@
 			</div>
 			<div class="inout-list">
 
-		<a href="#" onclick="xivo_fm_move_selected('it-grouplist','it-group'); return(false);" title="<?=$this->bbf('bt-ingroup');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-ingroup'),'class="bt-inlist" id="bt-ingroup" border="0"');?></a><br />
+		<a href="#" onclick="xivo_fm_move_selected('it-grouplist','it-group'); return(false);" title="<?=$this->bbf('bt_ingroup');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_ingroup'),'class="bt-inlist" id="bt-ingroup" border="0"');?></a><br />
 
-		<a href="#" onclick="xivo_fm_move_selected('it-group','it-grouplist'); return(false);" title="<?=$this->bbf('bt-outgroup');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outgroup'),'class="bt-outlist" id="bt-outgroup" border="0"');?></a>
+		<a href="#" onclick="xivo_fm_move_selected('it-group','it-grouplist'); return(false);" title="<?=$this->bbf('bt_outgroup');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outgroup'),'class="bt-outlist" id="bt-outgroup" border="0"');?></a>
 
 			</div>
 			<div class="slt-inlist">
@@ -123,9 +123,9 @@
 			</div>
 			<div class="inout-list">
 
-		<a href="#" onclick="xivo_fm_move_selected('it-incalllist','it-incall'); return(false);" title="<?=$this->bbf('bt-inincall');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-inincall'),'class="bt-inlist" id="bt-inincall" border="0"');?></a><br />
+		<a href="#" onclick="xivo_fm_move_selected('it-incalllist','it-incall'); return(false);" title="<?=$this->bbf('bt_inincall');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inincall'),'class="bt-inlist" id="bt-inincall" border="0"');?></a><br />
 
-		<a href="#" onclick="xivo_fm_move_selected('it-incall','it-incalllist'); return(false);" title="<?=$this->bbf('bt-outincall');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outincall'),'class="bt-outlist" id="bt-outincall" border="0"');?></a>
+		<a href="#" onclick="xivo_fm_move_selected('it-incall','it-incalllist'); return(false);" title="<?=$this->bbf('bt_outincall');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outincall'),'class="bt-outlist" id="bt-outincall" border="0"');?></a>
 
 			</div>
 			<div class="slt-inlist">
@@ -156,9 +156,9 @@
 			</div>
 			<div class="inout-list">
 
-		<a href="#" onclick="xivo_fm_move_selected('it-outcalllist','it-outcall'); return(false);" title="<?=$this->bbf('bt-inoutcall');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-inoutcall'),'class="bt-inlist" id="bt-inoutcall" border="0"');?></a><br />
+		<a href="#" onclick="xivo_fm_move_selected('it-outcalllist','it-outcall'); return(false);" title="<?=$this->bbf('bt_inoutcall');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inoutcall'),'class="bt-inlist" id="bt-inoutcall" border="0"');?></a><br />
 
-		<a href="#" onclick="xivo_fm_move_selected('it-outcall','it-outcalllist'); return(false);" title="<?=$this->bbf('bt-outoutcall');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outoutcall'),'class="bt-outlist" id="bt-outoutcall" border="0"');?></a>
+		<a href="#" onclick="xivo_fm_move_selected('it-outcall','it-outcalllist'); return(false);" title="<?=$this->bbf('bt_outoutcall');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outoutcall'),'class="bt-outlist" id="bt-outoutcall" border="0"');?></a>
 
 			</div>
 			<div class="slt-inlist">

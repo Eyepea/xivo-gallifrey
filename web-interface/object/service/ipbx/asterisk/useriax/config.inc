@@ -118,7 +118,7 @@ $array['filter']['callgroup'] = array('set' => false,'chk' => 2,'regexp' => '/^(
 $array['filter']['context'] = array('set' => false,
 				    'chk' => 2,
 				    'callback' => 'xivo_service_asterisk::chk_context',
-				    'callbackparam' => array(XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES));
+				    'callbackparam' => array(array(XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['qualify'] = array('bool' => true);
 $array['filter']['disallow'] = array('set' => false,'chk' => 2,'key' => array('all'));
 $array['filter']['allow'] = array('set' => false,'chk' => 2,'value' => array(

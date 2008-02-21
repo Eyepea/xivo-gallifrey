@@ -106,9 +106,9 @@
 		<?=$form->select(array('name' => 'codeclist','label' => false,'id' => 'it-iax-codeclist','multiple' => true,'size' => 5,'field' => false,'key' => false,'bbf' => 'ast_codec_name_type-'),$element['protocol']['iax']['allow']['value']);?>
 	</div>
 	<div class="inout-list">
-		<a href="#" onclick="xivo_fm_move_selected('it-'+xivo_protocol+'-codeclist','it-'+xivo_protocol+'-codec'); return(false);" title="<?=$this->bbf('bt-incodec');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-incodec'),'class="bt-inlist" id="bt-incodec" border="0"');?></a><br />
+		<a href="#" onclick="xivo_fm_move_selected('it-'+xivo_protocol+'-codeclist','it-'+xivo_protocol+'-codec'); return(false);" title="<?=$this->bbf('bt_incodec');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_incodec'),'class="bt-inlist" id="bt-incodec" border="0"');?></a><br />
 
-		<a href="#" onclick="xivo_fm_move_selected('it-'+xivo_protocol+'-codec','it-'+xivo_protocol+'-codeclist'); return(false);" title="<?=$this->bbf('bt-outcodec');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outcodec'),'class="bt-outlist" id="bt-outcodec" border="0"');?></a>
+		<a href="#" onclick="xivo_fm_move_selected('it-'+xivo_protocol+'-codec','it-'+xivo_protocol+'-codeclist'); return(false);" title="<?=$this->bbf('bt_outcodec');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outcodec'),'class="bt-outlist" id="bt-outcodec" border="0"');?></a>
 	</div>
 	<div class="slt-inlist">
 
@@ -118,9 +118,9 @@
 
 		<div class="bt-updown">
 
-			<a href="#" onclick="xivo_fm_order_selected('it-'+xivo_protocol+'-codec',1); return(false);" title="<?=$this->bbf('bt-upcodec');?>"><?=$url->img_html('img/site/button/row-up.gif',$this->bbf('bt-upcodec'),'class="bt-uplist" id="bt-upcodec" border="0"');?></a><br />
+			<a href="#" onclick="xivo_fm_order_selected('it-'+xivo_protocol+'-codec',1); return(false);" title="<?=$this->bbf('bt_upcodec');?>"><?=$url->img_html('img/site/button/row-up.gif',$this->bbf('bt_upcodec'),'class="bt-uplist" id="bt-upcodec" border="0"');?></a><br />
 
-			<a href="#" onclick="xivo_fm_order_selected('it-'+xivo_protocol+'-codec',-1); return(false);" title="<?=$this->bbf('bt-downcodec');?>"><?=$url->img_html('img/site/button/row-down.gif',$this->bbf('bt-downcodec'),'class="bt-downlist" id="bt-downcodec" border="0"');?></a>
+			<a href="#" onclick="xivo_fm_order_selected('it-'+xivo_protocol+'-codec',-1); return(false);" title="<?=$this->bbf('bt_downcodec');?>"><?=$url->img_html('img/site/button/row-down.gif',$this->bbf('bt_downcodec'),'class="bt-downlist" id="bt-downcodec" border="0"');?></a>
 
 		</div>
 
@@ -263,9 +263,9 @@
 			</div>
 			<div class="inout-list">
 
-		<a href="#" onclick="xivo_fm_move_selected('it-rightcalllist','it-rightcall'); return(false);" title="<?=$this->bbf('bt-inrightcall');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-inrightcall'),'class="bt-inlist" id="bt-inrightcall" border="0"');?></a><br />
+		<a href="#" onclick="xivo_fm_move_selected('it-rightcalllist','it-rightcall'); return(false);" title="<?=$this->bbf('bt_inrightcall');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inrightcall'),'class="bt-inlist" id="bt-inrightcall" border="0"');?></a><br />
 
-		<a href="#" onclick="xivo_fm_move_selected('it-rightcall','it-rightcalllist'); return(false);" title="<?=$this->bbf('bt-outrightcall');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outrightcall'),'class="bt-outlist" id="bt-outrightcall" border="0"');?></a>
+		<a href="#" onclick="xivo_fm_move_selected('it-rightcall','it-rightcalllist'); return(false);" title="<?=$this->bbf('bt_outrightcall');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outrightcall'),'class="bt-outlist" id="bt-outrightcall" border="0"');?></a>
 
 			</div>
 			<div class="slt-inlist">

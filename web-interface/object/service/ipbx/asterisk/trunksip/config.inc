@@ -123,8 +123,9 @@ $array['filter']['callerid'] = array('set' => false,'chk' => 2,'maxlen' => 160);
 $array['filter']['context'] = array('set' => false,
 				    'chk' => 2,
 				    'callback' => 'xivo_service_asterisk::chk_context',
-				    'callbackparam' => array(XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTIFICATION,
-							     XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES));
+				    'callbackparam' => array(array(
+				    			XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTIFICATION,
+							XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['call-limit'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,30));
 $array['filter']['host'] = array('set' => false,'chk' => 2,
 				 'key' => array('dynamic','static'),

@@ -2085,8 +2085,13 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 			if(xivo_issa('voicemail',$ref) === true)
 			{
-				$ref['voicemail']['voicemail-active'] = true;
-				$ref['ufeatures']['enablevoicemail'] = true;
+				if(xivo_haslen($ref['voicemail'],'email') === true)
+				{
+					$ref['voicemail']['voicemail-active'] = true;
+					$ref['ufeatures']['enablevoicemail'] = true;
+				}
+				else
+					unset($ref['voicemail']);
 			}
 
 			if(xivo_issa('protocol',$ref) === false

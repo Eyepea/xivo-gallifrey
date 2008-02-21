@@ -608,12 +608,15 @@ switch($act)
 			$agentval = $result['afeatures']['number'].',';
 
 			if($result['afeatures']['passwd'] !== '')
-				$agentval .= $result['afeatures']['passwd'];
+				$agentval .= $result['afeatures']['passwd'].',';
 
-			if($result['afeatures']['firstname'] !== '' || $result['afeatures']['lastname'] !== '')
-				$agentval .= ','.$result['afeatures']['firstname'].' '.$result['afeatures']['lastname'];
+			if($result['afeatures']['firstname'] !== '')
+				$agentval .= $result['afeatures']['firstname'].' ';
 
-			$_QR['agent']['agent'] = rtrim($agentval,',');
+			if($result['afeatures']['lastname'] !== '')
+				$agentval .= $result['afeatures']['lastname'];
+
+			$_QR['agent']['agent'] = rtrim($agentval,', ');
 			$_QR['agent']['group'] = $result['afeatures']['numgroup'];
 
 			if(($result['agent'] = $agent->chk_values($_QR['agent'])) === false)
@@ -791,12 +794,15 @@ switch($act)
 			$agentval = $result['afeatures']['number'].',';
 
 			if($result['afeatures']['passwd'] !== '')
-				$agentval .= $result['afeatures']['passwd'];
+				$agentval .= $result['afeatures']['passwd'].',';
 
-			if($result['afeatures']['firstname'] !== '' || $result['afeatures']['lastname'] !== '')
-				$agentval .= ','.$result['afeatures']['firstname'].' '.$result['afeatures']['lastname'];
+			if($result['afeatures']['firstname'] !== '')
+				$agentval .= $result['afeatures']['firstname'].' ';
 
-			$_QR['agent']['agent'] = rtrim($agentval,',');
+			if($result['afeatures']['lastname'] !== '')
+				$agentval .= $result['afeatures']['lastname'];
+
+			$_QR['agent']['agent'] = rtrim($agentval,', ');
 			$_QR['agent']['group'] = $result['afeatures']['numgroup'];
 
 			if(($result['agent'] = $agent->chk_values($_QR['agent'])) === false)

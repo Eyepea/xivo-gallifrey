@@ -565,11 +565,9 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 
 	function aggregate_where($all=false)
 	{
-		$all = (bool) $all;
-
 		if($this->_where === '')
 			return(false);
-		else if($all === true || isset($this->_aggwhere[0]) === false)
+		else if((bool) $all === true || isset($this->_aggwhere[0]) === false)
 		{
 			$this->_where = '('.$this->_where.')';
 			$this->_aggwhere[] = strlen($this->_where)+1;
@@ -607,15 +605,13 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 
 	function aggregate_joinwhere($table,$all=false)
 	{
-		$all = (bool) $all;
-
 		if(isset($this->_joinwhere[$table]) === false
 		|| $this->_joinwhere[$table] === '')
 			return(false);
 		else if(isset($this->_aggjoinwhere[$table]) === false)
 			$this->_aggjoinwhere[$table] = array();
 
-		if($all === true || isset($this->_aggjoinwhere[$table][0]) === false)
+		if((bool) $all === true || isset($this->_aggjoinwhere[$table][0]) === false)
 		{
 			$this->_joinwhere[$table] = '('.$this->_joinwhere[$table].')';
 			$this->_aggjoinwhere[$table][] = strlen($this->_joinwhere[$table])+1;

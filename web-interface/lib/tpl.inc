@@ -494,20 +494,17 @@ class xivo_tpl
 		$r = '';
 
 		$url = (string) $url;
-		$full = (bool) $full;
-		
+
 		if(isset($url{0}) === false)
 			return($r);
-
-		if($url{0} === '#')
+		else if($url{0} === '#')
 			return($url);
-
-		if(isset($this->_url[$url]) === true)
+		else if(isset($this->_url[$url]) === true)
 			$url = $this->_url[$url];
 
 		$r = $url{0} !== '/' ? $this->get_option('script_root').'/'.$url : $url;
 
-		if($full === true)
+		if((bool) $full === true)
 			$r = rtrim(XIVO_URL,'/').'/'.ltrim($url,'/');
 
 		return($r);

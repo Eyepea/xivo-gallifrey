@@ -48,7 +48,7 @@
 				$icon = 'enable';
 			endif;
 
-			$ref['ssl'] = (int) $ref['ssl'];
+			$ref['ssl'] = intval((bool) $ref['ssl']);
 
 			$mod = $j % 2 === 0 ? 1 : 2;
 ?>

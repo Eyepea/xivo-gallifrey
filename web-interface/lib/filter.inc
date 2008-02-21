@@ -447,7 +447,11 @@ class xivo_filter
 		{
 			$args = array();
 			$args[0] = $value;
-			$args[1] = (array) $param;
+
+			if(is_array($param) === true)
+				$args = array_merge($args,$param);
+			else
+				$args[1] = $param;
 
 			return(call_user_func_array($func,$args));
 		}
