@@ -23,8 +23,11 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-from itertools import chain
-import uriparse, re, string
+import re
+import string
+
+# Right from RFC 3986 section B
+RFC3986_MATCHER = re.compile('^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?').match
 
 # Near RFC 3986 definitions
 ALPHA = string.ascii_letters
@@ -79,7 +82,7 @@ AUTHORITY_HOST = 2
 AUTHORITY_PORT = 3
 
 def __all_in(s, charset):
-	return False not in map(lambda c:c in charset, s)
+	return not s.translate(BYTES_VAL, charset)
 
 def __split_sz(s, n):
 	return [s[b:b+n] for b in range(0,len(s),n)]
@@ -205,7 +208,7 @@ class InvalidQueryError(InvalidURIError):
 class InvalidFragmentError(InvalidURIError):
     """Invalid content for the fragment part of an URI"""
 
-PERCENT_CODE_RE = re.compile('\%[\da-fA-F][\da-fA-F]')
+PERCENT_CODE_SUB = re.compile('\%[\da-fA-F][\da-fA-F]').sub
 
 def pct_decode(s):
 	"""Returns the percent-decoded version of string s
@@ -225,10 +228,7 @@ def pct_decode(s):
 	"""
 	if s is None:
 		return None
-	split = PERCENT_CODE_RE.split(s)
-	findall = map(lambda e: chr(int(e[1:],16)), PERCENT_CODE_RE.findall(s))
-	findall.append('')
-	return ''.join(chain(*zip(split,findall)))
+	return PERCENT_CODE_SUB(lambda mo: chr(int(mo.group(0)[1:],16)), s)
 
 def pct_encode(s, encdct):
 	"""Returns a translated version of s where each character is mapped to a
@@ -393,10 +393,20 @@ def unsplit_query(query):
 			return ''
 	return '&'.join(map(unsplit_assignment, query))
 
+def basic_urisplit(uri):
+	""" Basic URI Parser according to RFC 3986
+	
+	>>> urisplit("scheme://authority/path?query#fragment")
+	('scheme', 'authority', 'path', 'query', 'fragment') 
+	
+	"""
+	p = RFC3986_MATCHER(uri).groups()
+	return (p[1], p[3], p[4], p[6], p[8]) 
+
 def uri_split_tree(uri):
 	"""Returns (scheme, (user, passwd, host, port), path,
 	            ((k1, v1), (k2, v2), ...), fragment) using
-	uriparse.urisplit(), then split_authority() and split_query() on the
+	basic_urisplit(), then split_authority() and split_query() on the
 	result.
 	
 	>>> uri_split_tree(
@@ -411,7 +421,7 @@ def uri_split_tree(uri):
 	 'frag+++%42')
 	
 	"""
-	scheme, authority, path, query, fragment = uriparse.urisplit(uri)
+	scheme, authority, path, query, fragment = basic_urisplit(uri)
 	if authority:
 		authority = split_authority(authority)
 	if query:
@@ -679,6 +689,7 @@ uri_help_unsplit = uri_tree_prechk_code_norm_unsplit
 # TODO: write non regression tests
 #
 # ex: ('http', ('xilun:/?#[]@!$&\'"()*+,;=-._~%:@/?% ', 'kikoolol/?#[]@!$&\'"()*+,;=-._~%:@/?% ', 'www./?#[]@!$&\'"()*+,;=-._~%:@/? %xivo.fr', '8080'), '/kikoololerie//?#[]@!$&\'"()*+,;=-. _~%:@/?%', (('k1/?#[]@!$&\'"()*+,;=-._~%:@/?% ', 'v1/?#[]@!$&\'"()*+,;=-._~%:@/?% '), ('k2/?#[]@!$&\'"()*+,;=-._~%:@/?% ', 'v2/?#[]@!$&\'"()*+,;=-._~%:@/?% ')), 'foobar2000/?#[]@!$&\'"()*+,;=-._~%:@/?% ')
+#     -> "http://xilun%3A%2F%3F%23%5B%5D%40!$&'%22()*+,;=-._~%25%3A%40%2F%3F%25%20:kikoolol%2F%3F%23%5B%5D%40!$&'%22()*+,;=-._~%25:%40%2F%3F%25%20@www.%2F%3F%23%5B%5D%40!$&'%22()*+,;=-._~%25%3A%40%2F%3F%20%25xivo.fr:8080/kikoololerie//%3F%23%5B%5D@!$&'%22()*+,;=-.%20_~%25:@/%3F%25?k1/?%23%5B%5D@!$%26'%22()*%2B,;%3D-._~%25:@/?%25+=v1/?%23%5B%5D@!$%26'%22()*%2B,;=-._~%25:@/?%25+&k2/?%23%5B%5D@!$%26'%22()*%2B,;%3D-._~%25:@/?%25+=v2/?%23%5B%5D@!$%26'%22()*%2B,;=-._~%25:@/?%25+#foobar2000/?%23%5B%5D@!$&'%22()*+,;=-._~%25:@/?%25%20"
 #     (None, None, ':blabla', None, None)
 #     (None, None, '//foobar', None, None)
 #     ('http', None, '//foobar', None, None)

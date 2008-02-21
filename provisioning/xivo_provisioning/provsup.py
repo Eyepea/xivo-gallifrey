@@ -3,7 +3,7 @@
 Copyright (C) 2007, Proformatique
 
 """
-# Dependencies/highly recommended? : arping wget
+# Dependencies/highly recommended? : arping curl
 
 __version__ = "$Revision$ $Date$"
 
