@@ -2781,6 +2781,7 @@ while True: # loops over the reloads
                                         t._Thread__stop()
                                 sys.exit(5)
                         else:
+                                print '--- exception --- after select :', exc
                                 send_msg_to_cti_clients("ERROR server_reloaded")
                                 askedtoquit = True
                                 for s in ins:
@@ -2879,6 +2880,7 @@ while True: # loops over the reloads
                                 for userinfo in disconnlist:
                                         print 'checkqueue return :', userinfo
                                         userinfo['connection'].close()
+                                        ins.remove(userinfo['connection'])
                                         ulist[userinfo['astid']].disconnect_user(userinfo['user'])
 
                         # advertising from other xivo_daemon's around

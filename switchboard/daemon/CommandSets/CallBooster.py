@@ -83,6 +83,8 @@ class CallBoosterCommand(BaseCommand):
                 self.tqueue = Queue.Queue()
                 self.queued_threads_pipe = queued_threads_pipe
                 self.alerts = {}
+                self.nalerts_called = 0
+                self.nalerts_simult = 1
 
 
         def __sendfiche_a(self, userinfo, incall):
@@ -939,15 +941,39 @@ class CallBoosterCommand(BaseCommand):
                 dtmfreply = appdatas[0]
                 rid = appdatas[1]
                 if rid in self.alerts:
-                        print self.alerts[rid]
+                        print len(self.alerts), self.alerts[rid]
+                        [refalerte, dummy] = rid.split('-')
+                        self.cursor_operat.query("USE system")
+                        self.cursor_operat.query("INSERT INTO suivisalertes VALUES (0, %s, 0, %s, %s, %d, %d, %d, "
+                                                 "'table', 'type', 'ficmsg', %d, '34535', %d, 'groupage', 'nom', 'prenom', 'civ', 3)"
+                                                 % (refalerte, dtmfreply, dtmfreply, 4, 5, 6, 8, 2))
+                        self.conn_operat.commit()
                         del self.alerts[rid]
-                # for rid, al in self.alerts.iteritems():
-                # issue one or more new calls ?
+                        self.nalerts_called -= 1
+                self.__alert_calls(astid)
                 return
 
-        # self.cursor_operat.query('USE %s_mvts' % self.__socname(idsoc))
-        # self.cursor_operat.query('DELETE FROM alertes WHERE N = %s' % nalerte)
-        # system / compteurs, suivisalertes
+
+##        ['N', 'int(11)', '', 'PRI', None, 'auto_increment']
+##        ['RefAlerte', 'int(11)', '', 'MUL', '0', '']
+##        ['RefEquipier', 'int(11)', '', '', '0', '']
+##        ['Etat', 'varchar(12)', '', 'MUL', '', '']
+##        ['Resultat', 'varchar(30)', '', '', '', '']
+##        ['NSoc', 'int(11)', '', '', '0', '']
+##        ['NCli', 'int(11)', '', '', '0', '']
+##        ['NCol', 'int(11)', '', '', '0', '']
+##        ['TableEquipier', 'varchar(80)', '', '', '', '']
+##        ['TypeAlerte', 'varchar(20)', '', '', '', '']
+##        ['FichierMessage', 'varchar(80)', '', '', '', '']
+##        ['RefQuestion', 'int(11)', '', '', '0', '']
+##        ['CallingNumber', 'varchar(15)', '', '', '', '']
+##        ['nbTentatives', 'int(11)', '', '', '1', '']
+##        ['Groupage', 'varchar(30)', '', 'MUL', '', '']
+##        ['Nom', 'varchar(30)', '', '', '', '']
+##        ['Prenom', 'varchar(30)', '', '', '', '']
+##        ['Civilite', 'varchar(10)', '', '', '', '']
+##        ['Stop_Decroche', 'tinyint(4)', '', '', '0', '']
+
 
         def manage_srv2clt(self, userinfo_by_requester, connid, parsedcommand, cfg):
                 """
@@ -1333,6 +1359,8 @@ class CallBoosterCommand(BaseCommand):
                                                  columns,
                                                  nalerte)
                         results = self.cursor_operat.fetchall()
+                        self.cursor_operat.query("UPDATE alertes SET Etat = 'Traitement' WHERE N = %s" % nalerte)
+                        self.conn_operat.commit()
                         for rr in results:
                                 numstruct = rr[1]
                                 filename = rr[2] # message file name
@@ -1387,22 +1415,31 @@ class CallBoosterCommand(BaseCommand):
                                                                              }
                                         except Exception, exc:
                                                 print 'grouplist %s : %s' % (gl, str(exc))
-
-
-##                        for rid, al in self.alerts.iteritems():
-##                                # print rid, al
-##                                if al['numbers'][0] == '0450029451' and al['status'] == 'init':
-##                                        self.amis[astid].aoriginate_var('sip', '102', 'dest 102',
-##                                                                        'cidFB', 'automated call', 'alerte-callbooster',
-##                                                                        {'CB_ALERT_MESSAGE' : 'fr/ss-noservice',
-##                                                                         'CB_ALERT_ID' : rid,
-##                                                                         'CB_ALERT_ALLOWED' : al['digits-allowed'],
-##                                                                         'CB_ALERT_REPEAT' : al['digits-repeat']},
-##                                                                        al['timetoring'])
-##                                        al['status'] = 'called'
-
+                        # initiate alerts if needed
+                        self.__alert_calls(astid)
                 else:
                         print 'CallBooster : unmanaged command <%s>' % cname
+
+
+        def __alert_calls(self, astid):
+                ncalls = 0
+                for rid, al in self.alerts.iteritems():
+                        if al['status'] == 'init' and self.nalerts_called < self.nalerts_simult:
+                                ncalls += 1
+                                dstnum = al['numbers'][0]
+                                print 'calling %s (or should be ...)' % dstnum
+                                dstnum = '102' # for tesing purposes only !!
+                                self.amis[astid].aoriginate_var('local', '%s@default' % dstnum, 'dest %s' % dstnum,
+                                                                'cidFB', 'automated call', 'alerte-callbooster',
+                                                                {'CB_ALERT_MESSAGE' : 'fr/ss-noservice',
+                                                                 'CB_ALERT_ID' : rid,
+                                                                 'CB_ALERT_ALLOWED' : al['digits-allowed'],
+                                                                 'CB_ALERT_REPEAT' : al['digits-repeat']},
+                                                                al['timetoring'])
+                                al['status'] = 'called'
+                                self.nalerts_called += 1
+                print '%d this time' % ncalls
+                return
 
         def park_srv2clt(self, function, args):
                 return ''

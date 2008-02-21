@@ -27,8 +27,8 @@ def print_verbose(txt):
         agi.verbose("dtmf_callbooster : %s" % txt)
 
 dtmfnum = agi.get_variable('CB_DTMF')
-repeat  = agi.get_variable('CB_ALERTE_REPEAT')
-allowed = agi.get_variable('CB_ALERTE_ALLOWED')
+repeat  = agi.get_variable('CB_ALERT_REPEAT')
+allowed = agi.get_variable('CB_ALERT_ALLOWED')
 
 if dtmfnum not in allowed.split(';'):
         agi.set_variable('CB_SVI_ACTION', 'reread')
