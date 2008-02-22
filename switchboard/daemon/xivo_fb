@@ -776,7 +776,7 @@ def handle_ami_event(astid, idata):
                                 this_event[myfieldvalue[0]] = myfieldvalue[1]
                 evfunction = this_event.get('Event')
                 verboselog("/%s/ %s" %(astid, str(this_event)), True, False)
-                #print '////////', evfunction, '   ------  ', this_event
+                # print '////////', evfunction, '   ------  ', this_event
                 if evfunction == 'Dial':
                         src     = this_event.get("Source")
                         dst     = this_event.get("Destination")
@@ -1136,9 +1136,7 @@ def handle_ami_event(astid, idata):
                                 send_msg_to_cti_clients(strupdate)
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- (UserEventFeature) <%s> : %s' %(str(this_event), str(exc)))
-                elif evfunction == 'UserEventUserFeature':
-                        pass
-                elif evfunction == 'UserEventACB':
+                elif evfunction is not None and evfunction.find('UserEvent') == 0:
                         commandclass.userevent(astid, this_event)
                 elif evfunction == 'Newexten': # in order to handle outgoing calls ?
                         chan    = this_event.get('Channel')

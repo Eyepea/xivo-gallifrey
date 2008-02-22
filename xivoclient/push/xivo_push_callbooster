@@ -186,6 +186,7 @@ if action == 'rep':
 if action == 'mes':
         argums = argum.split(';')
         if 'soundpath' in dialplan:
+                agi.set_variable('CB_AGI_MES_INDEX', argums[2])
                 acc = dialplan['soundpath'].split('/')
                 findpath_and_set(acc, argums[0], 'Repondeurs', 'CB_AGI_MES_MES')
         agi.set_variable('CB_AGI_MES_SDA', mysda)

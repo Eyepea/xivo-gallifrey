@@ -729,7 +729,7 @@ class IncomingCall:
 
 
         def __typep_mes(self, clients_profil):
-                columns = ('NCLI', 'NCOL', 'NPROF', 'NomMess', 'Duree', 'Envoie', 'Mail', 'Conserve')
+                columns = ('N', 'NCLI', 'NCOL', 'NPROF', 'NomMess', 'Duree', 'Envoie', 'Mail', 'Conserve')
                 self.cursor_operat.query('USE %s_clients' % self.socname)
                 self.cursor_operat.query('SELECT ${columns} FROM messagerie WHERE NCLI = %s AND NCOL = %s AND NPROF = %s',
                                          columns,
@@ -740,9 +740,10 @@ class IncomingCall:
 
                         print '  COMING CALL : __typep_mes, typep is MES : %s' % str(clients_messagerie_item)
                         self.statacd2_tt = 'TT_MES'
-                        filename = self.__wavstrip(clients_messagerie_item[3])
-                        maxlength = str(clients_messagerie_item[4])
-                        whattodo = Action('mes', 0, ';'.join([filename, maxlength]))
+                        filename = self.__wavstrip(clients_messagerie_item[4])
+                        maxlength = str(clients_messagerie_item[5])
+                        msgindice = str(clients_messagerie_item[0])
+                        whattodo = Action('mes', 0, ';'.join([filename, maxlength, msgindice]))
                 else:
                         whattodo = None
                 return whattodo

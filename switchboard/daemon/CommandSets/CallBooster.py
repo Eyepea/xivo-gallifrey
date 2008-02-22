@@ -87,6 +87,7 @@ class CallBoosterCommand(BaseCommand):
                 self.alerts = {}
                 self.nalerts_called = 0
                 self.nalerts_simult = 1
+                self.waitingmessages = {}
 
 
         def __sendfiche_a(self, userinfo, incall):
@@ -571,31 +572,46 @@ class CallBoosterCommand(BaseCommand):
                 sdanum = event.get('Mailbox').split('@')[0]
                 dirname ='/var/spool/asterisk/voicemail/default/%s/INBOX' % sdanum
 
-                nsoc = 0
-                ncli = 0
-                ncol = 0
-                if sdanum in incoming_calls:
-                        lst = incoming_calls[sdanum]
-                        for chan, ic in lst.iteritems():
-                                nsoc = ic.nsoc
-                                ncli = ic.ncli
-                                ncol = ic.ncol
+                idx = 0
+                if sdanum in self.waitingmessages:
+                        lst = self.waitingmessages[sdanum]
+                        if len(lst) > 0:
+                                idx = lst.pop()
+                        else:
+                                print 'messagewaiting : no item in waitingmessages for %s' % sdanum
+                else:
+                        print 'messagewaiting : no sda %s in waitingmessages' % sdanum
+                print 'found index = %s' % (idx)
+
+                self.cursor_operat.query('USE system')
+                columns = ('NSDA', 'NSOC', 'NCLI', 'NCOL', 'NOM')
+                self.cursor_operat.query('SELECT ${columns} FROM sda WHERE NSDA = %s',
+                                         columns,
+                                         sdanum)
+                system_sda = self.cursor_operat.fetchall()
+                [dsda, nsoc, ncli, ncol, collabname] = ['dummy', 0, 0, 0, 'inconnu']
+                if len(system_sda) > 0:
+                        [dsda, nsoc, ncli, ncol, collabname] = system_sda[0]
+
 
                 n = 0
                 # {'Old': '0', 'Mailbox': '101@default', 'Waiting': '1', 'Privilege': 'call,all', 'New': '1', 'Event': 'MessageWaiting'}
-                self.cursor_operat.query('USE system')
+
                 for msg in os.listdir(dirname):
                         fullpath = '/'.join([dirname, msg])
                         if msg.find('.wav') > 0:
                                 print 'full path is', fullpath, 'renaming',
-                                newpath = '/var/spool/asterisk/voicemail/%s.%s.%02d.wav\\Déclenché en automatique' % (sdanum, datetime, n)
-                                print 'as %s' % newpath
+                                newfilepath = '/usr/share/asterisk/sounds/callbooster/%s/%s/%s/Messagerie' % (nsoc, ncli, ncol)
+                                newfilename = '%s.%s.%02d.wav' % (sdanum, datetime, n)
+                                print 'as %s/%s' % (newfilepath, newfilename)
                                 n += 1
-                                os.rename(fullpath, newpath)
+                                if not os.path.exists(newfilepath):
+                                        os.makedirs(newfilepath, 02775)
+                                os.rename(fullpath, '%s/%s' % (newfilepath, newfilename))
                                 self.cursor_operat.query("INSERT INTO suivis (`NOM`,`NSOC`,`NCLI`,`NCOL`,`NSTRUCT`,`TypeT`,`DateP`,`NAPL`,`ETAT`,`STATUT`) "
-                                                         "VALUES ('%s', %d, %d, %d, %d, '%s', '%s', '%s', '%s', '%s')"
-                                                         % ('collab', int(nsoc), int(ncli), int(ncol), 2, 'AUDIO',
-                                                            datetime, 'ACD', 'ATT', newpath))
+                                                         "VALUES ('%s', %d, %d, %d, %s, '%s', '%s', '%s', '%s', '%s')"
+                                                         % (collabname, nsoc, ncli, ncol, idx, 'AUDIO',
+                                                            datetime, 'ACD', 'ATT', '%s\\Declenche en automatique' % newfilename))
                         else:
                                 print 'full path is', fullpath, 'deleting'
                                 os.remove(fullpath)
@@ -976,20 +992,29 @@ class CallBoosterCommand(BaseCommand):
 
         def userevent(self, astid, event):
                 print 'userevent :', astid, event
-                appdatas = event.get('AppData').split('-', 1)
-                dtmfreply = appdatas[0]
-                rid = appdatas[1]
-                if rid in self.alerts:
-                        print len(self.alerts), self.alerts[rid]
-                        [refalerte, dummy] = rid.split('-')
-                        self.cursor_operat.query("USE system")
-                        self.cursor_operat.query("INSERT INTO suivisalertes VALUES (0, %s, 0, %s, %s, %d, %d, %d, "
-                                                 "'table', 'type', 'ficmsg', %d, '34535', %d, 'groupage', 'nom', 'prenom', 'civ', 3)"
-                                                 % (refalerte, dtmfreply, dtmfreply, 4, 5, 6, 8, 2))
-                        self.conn_operat.commit()
-                        del self.alerts[rid]
-                        self.nalerts_called -= 1
-                self.__alert_calls(astid)
+                evfunction = event.get('Event')
+                if evfunction == 'UserEventAlertCB':
+                        appdatas = event.get('AppData').split('-', 1)
+                        dtmfreply = appdatas[0]
+                        rid = appdatas[1]
+                        if rid in self.alerts:
+                                print len(self.alerts), self.alerts[rid]
+                                [refalerte, dummy] = rid.split('-')
+                                self.cursor_operat.query("USE system")
+                                self.cursor_operat.query("INSERT INTO suivisalertes VALUES (0, %s, 0, %s, %s, %d, %d, %d, "
+                                                         "'table', 'type', 'ficmsg', %d, '34535', %d, 'groupage', 'nom', 'prenom', 'civ', 3)"
+                                                         % (refalerte, dtmfreply, dtmfreply, 4, 5, 6, 8, 2))
+                                self.conn_operat.commit()
+                                del self.alerts[rid]
+                                self.nalerts_called -= 1
+                        self.__alert_calls(astid)
+                elif evfunction == 'UserEventVoiceMailCB':
+                        appdatas = event.get('AppData').split('-')
+                        indice = appdatas[0]
+                        sdanum = appdatas[1]
+                        if sdanum not in self.waitingmessages:
+                                self.waitingmessages[sdanum] = []
+                        self.waitingmessages[sdanum].append(indice)
                 return
 
 
