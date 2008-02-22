@@ -527,7 +527,10 @@ class IncomingCall:
                                                            ','.join(self.competences),
                                                            ','.join(self.languages_sv),
                                                            self.commid]
-                                                req = 'ACDAddRequest' + chr(2) + chr(2).join(request[:6]) + chr(2) + chr(2).join(request[6:]) + chr(2) + str(self.soperat_port) + chr(3)
+                                                req = 'ACDAddRequest' + chr(2) \
+                                                      + chr(2).join(request[:6]) + chr(2) \
+                                                      + chr(2).join(request[6:]) \
+                                                      + chr(2) + str(self.soperat_port) + chr(3)
                                                 if self.soperat_socket is not None:
                                                         self.soperat_socket.send(req)
                                         break
@@ -543,11 +546,11 @@ class IncomingCall:
                 columns = ('NCLI', 'NCOL', 'NOM', 'NTEL', 'TypeN', 'ModeA', 'NbC', 'NbP', 'DSonn', 'SDA', 'Ordre')
                 self.cursor_operat.query('USE %s_clients' % self.socname)
                 if self.whereph == 'SEC':
-                        self.cursor_operat.query('SELECT ${columns} FROM fichier WHERE NCLI = 0 AND NCOL = 0 AND NOM = %s',
+                        self.cursor_operat.query('SELECT ${columns} FROM fichier WHERE NCLI = 0 AND NCOL = 0 AND NOM = %s ORDER BY Ordre',
                                                  columns,
                                                  (detail))
                 else:
-                        self.cursor_operat.query('SELECT ${columns} FROM fichier WHERE NCLI = %s AND NCOL = %s AND NOM = %s',
+                        self.cursor_operat.query('SELECT ${columns} FROM fichier WHERE NCLI = %s AND NCOL = %s AND NOM = %s ORDER BY Ordre',
                                                  columns,
                                                  (self.ncli, self.ncol, detail))
                 clients_fichier = self.cursor_operat.fetchall()
