@@ -26,6 +26,7 @@ DATETIMEFMT = DATEFMT + ' %H:%M:%S'
 PARK_EXTEN = '700'
 TRUNKNAME = 'FT'
 TSLOTTIME = 1800
+TIMEOUTPING = 5
 
 incoming_calls = {}
 outgoing_calls = {}
@@ -587,7 +588,7 @@ class CallBoosterCommand(BaseCommand):
                         fullpath = '/'.join([dirname, msg])
                         if msg.find('.wav') > 0:
                                 print 'full path is', fullpath, 'renaming'
-                                newpath = '/var/spool/asterisk/voicemail/%s.%s.%02d.wav' % (sdanum, datetime, n)
+                                newpath = '/var/spool/asterisk/voicemail/%s.%s.%02d.wav\\Déclenché en automatique' % (sdanum, datetime, n)
                                 n += 1
                                 os.rename(fullpath, newpath)
                                 self.cursor_operat.query("INSERT INTO suivis (`NOM`,`NSOC`,`NCLI`,`NCOL`,`NSTRUCT`,`TypeT`,`DateP`,`NAPL`,`ETAT`,`STATUT`) "
@@ -1249,7 +1250,6 @@ class CallBoosterCommand(BaseCommand):
                         reply = ',,,Pong/'
                         connid_socket.send(reply)
 
-                        TIMEOUTPING = 120
                         if 'timer' in userinfo:
                                 isalive = userinfo['timer'].isAlive()
                                 userinfo['timer'].cancel()
@@ -1271,21 +1271,24 @@ class CallBoosterCommand(BaseCommand):
                                 userinfo['timer'].cancel()
                                 del userinfo['timer']
                         userinfo['cbstatus'] = 'Sortie'
+                        self.__choose_and_queuepush(astid, cname)
+
+
+                elif cname == 'Change':
+                        self.__choose_and_queuepush(astid, cname)
 
 
                 elif cname == 'Pause':
                         userinfo['cbstatus'] = 'Pause'
 
 
-                elif cname == 'Prêt' or cname == 'Change' or cname == 'Sonn':
+                elif cname == 'Prêt' or cname == 'Sonn':
                         if cname == 'Prêt':
                                 reference = parsedcommand.args[1]
                                 if userinfo['cbstatus'] == 'Pause':
                                         # XXX send current Indispo's to the user ?
                                         pass
                                 userinfo['cbstatus'] = 'Pret' + reference
-                        elif cname == 'Change': # we must take into account new parameters
-                                reference = '0'
                         elif cname == 'Sonn':
                                 userinfo['cbstatus'] = 'Sonn'
                                 reference = '1'
@@ -1300,32 +1303,8 @@ class CallBoosterCommand(BaseCommand):
                                         print 'fiche has been sent :', time.time()
                                 return
 
-                        try:
-                                print 'manage : calling __choose()'
-                                todo = self.__choose(astid)
-                                print 'CHOOSE (after Pret)', todo
-                                for opername, mtd in todo.iteritems():
-                                        if len(mtd) > 0:
-                                                td = mtd[0]
-                                                # print 'pretx', td
-                                                if td[0] == 'push':
-                                                        self.__clear_call_fromqueues(astid, td[1])
-                                                        self.__sendfiche(astid, opername, td[1])
-                                                        print 'manage : fiche sent to %s' % opername
-                                                elif td[0] == 'enqueue':
-                                                        print 'manage : enqueue %s (pret)' % opername
-                                                        self.__addtoqueue(astid, opername, td[1])
-                                                elif td[0] == 'dequeue':
-                                                        print 'manage : dequeue %s (pret)' % opername
-                                                        userinfo = self.ulist[astid].finduser(opername)
-                                                        td[1].agentlist.remove(opername)
-                                                        self.amis[astid].queueremove(td[1].queuename, 'Agent/%s' % userinfo['agentnum'])
-                                                        nagents = len(td[1].agentlist)
-                                                        print 'nagents = %d' % nagents
-                                                        if nagents == 0:
-                                                                self.amis[astid].queueremove(td[1].queuename, 'Agent/6999')
-                        except Exception, exc:
-                                print '--- exception --- manage_srv2clt (Pret %s) : %s' % (reference, str(exc))
+                        self.__choose_and_queuepush(astid, 'Pret')
+
 
                 elif cname == 'Enregistre':
                         reference = parsedcommand.args[1]
@@ -1404,21 +1383,50 @@ class CallBoosterCommand(BaseCommand):
                                                         rid = '%s-%06d' % (nalerte, nid)
                                                         nid += 1
                                                         self.alerts[rid] = {'nsoc' : idsoc,
-                                                                             'group' : gl,
-                                                                             'questionkind' : nquestion,
-                                                                             'digits-allowed' : results3[0][5],
-                                                                             'digits-end' : results3[0][6],
-                                                                             'digits-repeat' : results3[0][7],
-                                                                             'numbers' : r4[4:8],
-                                                                             'timetoring' : int(r4[13]),
-                                                                             'status' : 'init'
-                                                                             }
+                                                                            'group' : gl,
+                                                                            'questionkind' : nquestion,
+                                                                            'digits-allowed' : results3[0][5],
+                                                                            'digits-end' : results3[0][6],
+                                                                            'digits-repeat' : results3[0][7],
+                                                                            'numbers' : r4[4:8],
+                                                                            'timetoring' : int(r4[13]),
+                                                                            'status' : 'init'
+                                                                            }
                                         except Exception, exc:
                                                 print 'grouplist %s : %s' % (gl, str(exc))
                         # initiate alerts if needed
                         self.__alert_calls(astid)
                 else:
                         print 'CallBooster : unmanaged command <%s>' % cname
+
+
+        def __choose_and_queuepush(self, astid, name):
+                try:
+                        print '__choose_and_queuepush : MANAGE (after %s)' % name
+                        todo = self.__choose(astid)
+                        print '__choose_and_queuepush : CHOOSE (after %s)' % name, todo
+                        for opername_iter, mtd in todo.iteritems():
+                                if len(mtd) > 0:
+                                        td = mtd[0]
+                                        # print 'pretx', td
+                                        if td[0] == 'push':
+                                                self.__clear_call_fromqueues(astid, td[1])
+                                                self.__sendfiche(astid, opername_iter, td[1])
+                                                print 'manage : fiche sent to %s' % opername_iter
+                                        elif td[0] == 'enqueue':
+                                                print 'manage : enqueue %s (pret)' % opername_iter
+                                                self.__addtoqueue(astid, opername_iter, td[1])
+                                        elif td[0] == 'dequeue':
+                                                print 'manage : dequeue %s (pret)' % opername_iter
+                                                userinfo = self.ulist[astid].finduser(opername_iter)
+                                                td[1].agentlist.remove(opername_iter)
+                                                self.amis[astid].queueremove(td[1].queuename, 'Agent/%s' % userinfo['agentnum'])
+                                                nagents = len(td[1].agentlist)
+                                                print 'nagents = %d' % nagents
+                                                if nagents == 0:
+                                                        self.amis[astid].queueremove(td[1].queuename, 'Agent/6999')
+                except Exception, exc:
+                        print '--- exception --- __choose_and_queuepush (%s) : %s' % (name, str(exc))
 
 
         def __alert_calls(self, astid):
@@ -1539,14 +1547,15 @@ class CallBoosterCommand(BaseCommand):
                                 print 'checkqueue (Ping)', tname
                                 for astid in self.ulist:
                                         for agname, userinfo in self.ulist[astid].list.iteritems():
-                                                if 'timer' in userinfo:
-                                                        if thisthread == userinfo['timer']:
-                                                                agentnum = userinfo['agentnum']
-                                                                self.cursor_operat.query('USE agents')
-                                                                self.cursor_operat.query("UPDATE acd SET Etat = 'Sortie' WHERE NOPE = %d"
-                                                                                         % (int(agentnum) - STARTAGENTNUM))
-                                                                self.conn_operat.commit()
-                                                                disconnlist.append(userinfo)
+                                                if 'timer' in userinfo and userinfo['timer'] == thisthread:
+                                                        agentnum = userinfo['agentnum']
+                                                        self.cursor_operat.query('USE agents')
+                                                        self.cursor_operat.query("UPDATE acd SET Etat = 'Sortie' WHERE NOPE = %d"
+                                                                                 % (int(agentnum) - STARTAGENTNUM))
+                                                        self.conn_operat.commit()
+                                                        self.__choose_and_queuepush(astid, 'Unping')
+                                                        del userinfo['timer']
+                                                        disconnlist.append(userinfo)
 
                         elif tname.find('SV') == 0:
                                 print 'checkqueue (SV)', tname
@@ -2008,18 +2017,20 @@ class CallBoosterCommand(BaseCommand):
                                                 for opername in to_enqueue:
                                                         todo_by_oper[opername].append(['enqueue', incall])
                                         else:
+                                                opername_push = None
                                                 if len(topush) == 1: # somebody available
-                                                        opername = topush.keys()[0]
+                                                        opername_push = topush.keys()[0]
                                                 else: # choose among the pushers, according to prio and busyness
                                                         maxp = 0
                                                         minb = 100000
                                                         for opn, sel in topush.iteritems():
                                                                 [p, b] = sel
                                                                 if p > maxp or p >= maxp and b < minb:
-                                                                        opername = opn
+                                                                        opername_push = opn
                                                                         maxp = p
                                                                         minb = b
-                                                todo_by_oper[opername].append(['push', incall])
+                                                if opername_push is not None:
+                                                        todo_by_oper[opername_push].append(['push', incall])
                 return todo_by_oper
 
 
@@ -2089,23 +2100,23 @@ class CallBoosterCommand(BaseCommand):
                                 # once all the queues have been spanned, send the push / queues where needed
                                 argument = 'welcome'
                                 nevt = 0
-                                for opername, couplelist in todo.iteritems():
+                                for opername_iter, couplelist in todo.iteritems():
                                         for td in couplelist:
-                                                log_debug(SYSLOG_INFO, 'elect : secretariat / %s / %s / %s' % (opername, td[0], td[1].sdanum))
+                                                log_debug(SYSLOG_INFO, 'elect : secretariat / %s / %s / %s' % (opername_iter, td[0], td[1].sdanum))
                                                 if td[0] == 'push':
                                                         if thiscall == td[1]:
                                                                 nevt += 1
                                                                 self.__clear_call_fromqueues(astid, td[1])
-                                                                self.__sendfiche(astid, opername, td[1])
+                                                                self.__sendfiche(astid, opername_iter, td[1])
                                                                 delay = 100
                                                                 argument = None
                                                         else:
                                                                 pass
                                                 elif td[0] == 'enqueue':
                                                         nevt += 1
-                                                        self.__addtoqueue(astid, opername, td[1])
+                                                        self.__addtoqueue(astid, opername_iter, td[1])
                                                 elif td[0] == 'dequeue':
-                                                        print 'dequeue after Incall ???', opername, td
+                                                        print 'dequeue after Incall ???', opername_iter, td
                                                         pass
                                 if nevt == 0:
                                         action = 'noqueue'
