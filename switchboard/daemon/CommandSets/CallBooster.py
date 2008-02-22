@@ -823,8 +823,21 @@ class CallBoosterCommand(BaseCommand):
                                 if filename.find('M018.') == 0:
                                         self.listreps.append(dirname)
 
+
         def pre_reload(self):
                 print 'pre_reload'
+                self.__synchro_agents()
+                self.__synchro_sda_voicemail()
+                return
+
+
+        def pre_moh_reload(self):
+                print 'pre_moh_reload'
+                self.__synchro_moh_filesystem()
+                return
+
+
+        def __synchro_agents(self):
                 columns = ('CODE', 'NOM')
                 self.cursor_operat.query('USE agents')
                 self.cursor_operat.query('SELECT ${columns} FROM agents',
@@ -874,11 +887,36 @@ class CallBoosterCommand(BaseCommand):
                                 self.cursor_xivo.query("INSERT INTO agentfeatures VALUES "
                                                        "(0, %d, %d, '%s', '%s', '%s', '', 0, 1)"
                                                        % (last_insert_id, 1, ag[1], '', agnum))
+                                self.conn_xivo.commit()
                 return
 
 
-        def pre_moh_reload(self):
-                print 'pre_moh_reload'
+        def __synchro_sda_voicemail(self):
+                columns = ('NSDA', 'NOM')
+                self.cursor_operat.query('USE system')
+                self.cursor_operat.query('SELECT ${columns} FROM sda',
+                                         columns)
+                system_sda = self.cursor_operat.fetchall()
+                for operat_sda in system_sda:
+                        sdanum = operat_sda[0]
+                        columns = ('mailbox',)
+                        self.cursor_xivo.query('SELECT ${columns} FROM uservoicemail WHERE mailbox = %s',
+                                               columns,
+                                               sdanum)
+                        issdainxivo = self.cursor_xivo.fetchall()
+                        if len(issdainxivo) > 0:
+                                print '  defined :  %s (%s)' %(sdanum, operat_sda[1])
+                        else:
+                                print 'undefined :  %s (%s)' %(sdanum, operat_sda[1])
+                                self.cursor_xivo.query("INSERT INTO uservoicemail VALUES "
+                                                       "(0, 'default', '%s', '', '%s', '%s', '', NULL, NULL, NULL, '', 'eu-fr', 0, "
+                                                       "NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, 'no', NULL, 0)"
+                                                       % (sdanum, operat_sda[1], 'none@none.none'))
+                                self.conn_xivo.commit()
+                return
+
+
+        def __synchro_moh_filesystem(self):
                 REPFILES = '/usr/share/asterisk/sounds/callbooster'
                 MOHFILES = '/usr/share/asterisk/moh/callbooster'
                 columns = ('category', 'var_name', 'var_val')

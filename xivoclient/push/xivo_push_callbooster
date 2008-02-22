@@ -39,8 +39,9 @@ def rfindpath(acc, mfile, kind):
                 partfile = '%s/%s/%s/%s' % (path_sounds_byadh, '/'.join(acc), kind, mfile)
         else:
                 partfile = '%s/%s' % (path_sounds_global.get(kind), mfile)
-        fullfile = '%s/%s.wav' % (path_sounds_asterisk, partfile)
-        if os.path.exists(fullfile):
+        fullfile1 = '%s/%s.wav' % (path_sounds_asterisk, partfile)
+        fullfile2 = '%s/%s.WAV' % (path_sounds_asterisk, partfile)
+        if os.path.exists(fullfile1) or os.path.exists(fullfile2):
                 return [acc, partfile]
         else:
                 if len(acc) == 3:
