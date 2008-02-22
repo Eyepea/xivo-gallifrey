@@ -587,15 +587,15 @@ class CallBoosterCommand(BaseCommand):
                 for msg in os.listdir(dirname):
                         fullpath = '/'.join([dirname, msg])
                         if msg.find('.wav') > 0:
-                                print 'full path is', fullpath, 'renaming'
+                                print 'full path is', fullpath, 'renaming',
                                 newpath = '/var/spool/asterisk/voicemail/%s.%s.%02d.wav\\Déclenché en automatique' % (sdanum, datetime, n)
+                                print 'as %s' % newpath
                                 n += 1
                                 os.rename(fullpath, newpath)
                                 self.cursor_operat.query("INSERT INTO suivis (`NOM`,`NSOC`,`NCLI`,`NCOL`,`NSTRUCT`,`TypeT`,`DateP`,`NAPL`,`ETAT`,`STATUT`) "
                                                          "VALUES ('%s', %d, %d, %d, %d, '%s', '%s', '%s', '%s', '%s')"
-                                                         % ('collab', nsoc, ncli, ncol, 2, 'AUDIO',
-                                                            datetime, 'ACD', 'ATT',
-                                                            newpath))
+                                                         % ('collab', int(nsoc), int(ncli), int(ncol), 2, 'AUDIO',
+                                                            datetime, 'ACD', 'ATT', newpath))
                         else:
                                 print 'full path is', fullpath, 'deleting'
                                 os.remove(fullpath)
