@@ -495,46 +495,48 @@ class IncomingCall:
 
                 print '  COMING CALL : __typet_secretariat, upto = ', upto
                 while True: # loop over the detailed items
-                                self.wherephS = upto
-                                if upto > ngroupes:
-                                        whattodo = None
-                                        break
+                        self.wherephS = upto
+                        if upto > ngroupes:
+                                whattodo = None
+                                break
 
-                                print '  COMING CALL : __typet_secretariat, prevnum = %d / grouplist = %s' % (self.wherephS, ';'.join(detail_tab[0:upto+1]))
-                                [self.list_operators, self.list_svirt] = self.__list_operators(nprof, detail_tab, upto)
-                                print '  COMING CALL : __typet_secretariat, operators and rooms :', self.list_operators, self.list_svirt
+                        print '  COMING CALL : __typet_secretariat, prevnum = %d / grouplist = %s' % (self.wherephS, ';'.join(detail_tab[0:upto+1]))
+                        [self.list_operators, self.list_svirt] = self.__list_operators(nprof, detail_tab, upto)
+                        print '  COMING CALL : __typet_secretariat, operators and rooms :', self.list_operators, self.list_svirt
 
-                                if upto == ngroupes or len(self.list_operators) == 0 and len(self.list_svirt) == 0:
-                                        delay = 0
-                                else:
-                                        delay = int(delaigrp_tab[upto])
+                        if upto == ngroupes or len(self.list_operators) == 0 and len(self.list_svirt) == 0:
+                                delay = 0
+                        else:
+                                delay = int(delaigrp_tab[upto])
 
-                                print '  COMING CALL : __typet_secretariat, upto = %d, delay = %d s' % (upto, delay)
+                        print '  COMING CALL : __typet_secretariat, upto = %d, delay = %d s' % (upto, delay)
 
-                                if len(self.list_operators) == 0 and len(self.list_svirt) == 0:
-                                        upto += 1
-                                else:
-                                        whattodo = Action('secretariat', delay, None)
-                                        for ngroup, perms in self.list_svirt.iteritems():
-                                                request = [str(self.nsoc_global),
-                                                           self.ncli,
-                                                           self.ncol,
-                                                           self.sdanum,
-                                                           self.commid,
-                                                           ngroup,
-                                                           self.cidnum,
-                                                           perms,
-                                                           ','.join(self.competences),
-                                                           ','.join(self.languages_sv),
-                                                           self.commid]
-                                                req = 'ACDAddRequest' + chr(2) \
-                                                      + chr(2).join(request[:6]) + chr(2) \
-                                                      + chr(2).join(request[6:]) \
-                                                      + chr(2) + str(self.soperat_port) + chr(3)
-                                                if self.soperat_socket is not None:
-                                                        self.soperat_socket.send(req)
-                                        break
-                                
+                        if len(self.list_operators) == 0 and len(self.list_svirt) == 0:
+                                upto += 1
+                        else:
+                                whattodo = Action('secretariat', delay, None)
+                                for ngroup, perms in self.list_svirt.iteritems():
+                                        request = [str(self.nsoc_global),
+                                                   self.ncli,
+                                                   self.ncol,
+                                                   self.sdanum,
+                                                   self.commid,
+                                                   ngroup,
+                                                   self.cidnum,
+                                                   perms,
+                                                   ','.join(self.competences),
+                                                   ','.join(self.languages_sv),
+                                                   self.commid]
+                                        req = 'ACDAddRequest' + chr(2) \
+                                              + chr(2).join(request[:6]) + chr(2) \
+                                              + chr(2).join(request[6:]) \
+                                              + chr(2) + str(self.soperat_port) + chr(3)
+                                        if self.soperat_socket is not None:
+                                                self.soperat_socket.send(req)
+                                break
+
+                print '  COMING CALL : __typet_secretariat, operators and rooms :', self.list_operators, self.list_svirt
+
                 if whattodo is not None:
                         print '  COMING CALL : __typet_secretariat : ', upto, whattodo.status()
                 else:

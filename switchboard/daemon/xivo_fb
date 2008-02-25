@@ -2875,12 +2875,17 @@ while True: # loops over the reloads
 
                         elif queued_threads_pipe[0] in i:
                                 disconnlist = commandclass.checkqueue()
-                                for userinfo in disconnlist:
-                                        print 'checkqueue return :', userinfo
-                                        userinfo['connection'].close()
-                                        ins.remove(userinfo['connection'])
-                                        ulist[userinfo['astid']].disconnect_user(userinfo['user'])
-
+                                try:
+                                        for userinfo in disconnlist:
+                                                print 'checkqueue return :', userinfo
+                                                if 'connection' in userinfo:
+                                                        userinfo['connection'].close()
+                                                        ins.remove(userinfo['connection'])
+                                                else:
+                                                        log_debug(SYSLOG_WARNING, 'WARNING - no connection field present in userinfo')
+                                                ulist[userinfo['astid']].disconnect_user(userinfo['user'])
+                                except Exception, exc:
+                                        log_debug(SYSLOG_ERR, '--- exception --- %s' % str(exc))
                         # advertising from other xivo_daemon's around
                         elif xdal in i:
                                 [data, addrsip] = xdal.recvfrom(BUFSIZE_UDP)

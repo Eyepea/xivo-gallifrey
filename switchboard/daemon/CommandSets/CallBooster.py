@@ -43,10 +43,6 @@ def log_debug(syslogprio, string):
         return varlog(syslogprio, string)
 
 
-# update features set var_val = '36000' where id = 3;
-# |  3 |          0 |          0 |         0 | features.conf | general    | parkingtime          | 36000       |
-# delete from musiconhold where category = "1/3/0";
-
 class CallBoosterCommand(BaseCommand):
         """
         CallBoosterCommand class.
@@ -88,6 +84,7 @@ class CallBoosterCommand(BaseCommand):
                 self.nalerts_called = 0
                 self.nalerts_simult = 1
                 self.waitingmessages = {}
+                self.alerts_uniqueids = {}
 
 
         def __sendfiche_a(self, userinfo, incall):
@@ -123,7 +120,9 @@ class CallBoosterCommand(BaseCommand):
                                 userinfo['startcontact'] = time.time()
                                 userinfo['startcontactth'] = 10
                                 self.amis[astid].aoriginate_var('sip', phonenum, 'Log %s' % phonenum,
-                                                                agentnum, agentname, 'default', {'CB_MES_LOGAGENT' : agentname}, 100)
+                                                                agentnum, agentname, 'ctx-callbooster-agentlogin',
+                                                                {'CB_MES_LOGAGENT' : agentname,
+                                                                 'CB_AGENT_NUMBER' : agentnum}, 100)
                         self.__sendfiche_a(userinfo, incall)
                         print '__sendfiche', incall.queuename, agentnum
                         userinfo['queuelist'][incall.queuename] = incall
@@ -331,7 +330,9 @@ class CallBoosterCommand(BaseCommand):
 
                                 # XXX : sip/phonenum => IAX2/trunkname/number
                                 self.amis[astid].aoriginate_var('sip', phonenum, 'Log %s' % phonenum,
-                                                                agentnum, 'agentname', 'default', {'CB_MES_LOGAGENT' : 'agentname'}, 100)
+                                                                agentnum, 'agentname', 'default',
+                                                                {'CB_MES_LOGAGENT' : 'agentname',
+                                                                 'CB_AGENT_NUMBER' : agentnum}, 100)
                                 del self.pending_sv_fiches[callref]
 
                                 # adds the user at once
@@ -534,35 +535,61 @@ class CallBoosterCommand(BaseCommand):
                 return
 
 
-        def __originatefailure(self, astid, event, kind):
-                print '__originatefailure (%s) :' % kind, astid, event
-                # __originatefailure clg {'Uniqueid': '<null>', 'Exten': '6104', 'Reason': '0', 'Context': 'default', 'Privilege': 'call,all', 'Event': 'AOriginateFailure', 'Channel': 'sip/101'} a
-                return
-
-
-        def aoriginatefailure(self, astid, event):
-                self.__originatefailure(astid, event, 'a')
-                return
-
-
-        def originatefailure(self, astid, event):
-                self.__originatefailure(astid, event, '')
-                return
-
-
         def __originatesuccess(self, astid, event, kind):
-                print '__originatesuccess (%s) :' % kind, astid, event
-                # __originatesuccess clg {'Uniqueid': '<null>', 'Exten': '6104', 'Reason': '0', 'Context': 'default', 'Privilege': 'call,all', 'Event': 'AOriginateSuccess', 'Channel': 'sip/101'} a
+                context = event.get('Context')
+                if context == 'ctx-callbooster-alert':
+                        uniqueid = event.get('Uniqueid')
+                        channel = event.get('Channel')
+                        print '__originatesuccess', uniqueid, channel
+                        self.alerts_uniqueids[uniqueid] = channel
+                        # store the uniqueid in order to detect the appropriate Hangup later on ...
+                else:
+                        print '__originatesuccess (%s) :' % kind, astid, event
+                return
+
+
+        def __originatefailure(self, astid, event, kind):
+                context = event.get('Context')
+                if context == 'ctx-callbooster-alert':
+                        channel = event.get('Channel')
+                        reason = event.get('Reason')
+                        if reason == '0':
+                                print context, channel, 'UNREACHABLE'
+                        elif reason == '3':
+                                print context, channel, 'TIMEOUT'
+                        else:
+                                print context, channel, reason
+                        num = channel[6:-8]
+                        toremove = None
+                        for i, h in self.alerts.iteritems():
+                                # print num, i, h
+                                if num in h['numbers'] and h['status'] > 0:
+                                        if h['numbers'][h['status'] - 1] == num:
+                                                print num, i, h['numbers'], h['status']
+                                                if len(h['numbers']) == h['status']:
+                                                        toremove = i
+                        if toremove is not None: # otherwise it will naturally step to the next number
+                                # fill DB for it
+                                del self.alerts[toremove]
+
+                        self.nalerts_called -= 1
+                        self.__alert_calls(astid)
+                else:
+                        print '__originatefailure (%s) :' % kind, astid, event
                 return
 
 
         def aoriginatesuccess(self, astid, event):
                 self.__originatesuccess(astid, event, 'a')
                 return
-
-
         def originatesuccess(self, astid, event):
                 self.__originatesuccess(astid, event, '')
+                return
+        def aoriginatefailure(self, astid, event):
+                self.__originatefailure(astid, event, 'a')
+                return
+        def originatefailure(self, astid, event):
+                self.__originatefailure(astid, event, '')
                 return
 
 
@@ -618,11 +645,6 @@ class CallBoosterCommand(BaseCommand):
 
 
                 # ','2008-01-06_09;27;09,060;;.WAV\\Déclenché en automatique');
-                # NOM : Nom du collaborateur (ou du client s'il s'agit d'une SDA où NCOL=0)
-                # NSOC : Numero de l'adhérent
-                # NCLI : Numero du Client
-                # NCOL : Numero du Collaborateur
-                # NSTRUCT : Indice de l'enregistrement de la table `messagerie` utilisé pour cette messagerie
                 # DateP : Date et Heure d'envoi programmé
                 # STATUT : Doit contenir le nom du fichier message à envoyer plus la chaine '\Déclenché en automatique'
 
@@ -663,16 +685,20 @@ class CallBoosterCommand(BaseCommand):
                                                 reply = ',%d,,AppelOpe/' % code
                                                 uinfo['connection'].send(reply)
 
+
         def dial(self, astid, event):
-                #print 'DIAL', event
+                srcuniqueid = event.get('SrcUniqueID')
+                destuniqueid = event.get('DestUniqueID')
+                print 'DIAL', srcuniqueid, destuniqueid, event
                 return
 
 
         def hangup(self, astid, event):
                 chan = event.get('Channel')
+                uniqueid = event.get('Uniqueid')
                 thiscall = self.__incallref_from_channel(chan)
                 if thiscall is not None:
-                        print 'HANGUP => __update_stat_acd2', chan, thiscall.queuename, thiscall.uinfo
+                        print 'HANGUP => __update_stat_acd2', uniqueid, chan, thiscall.queuename, thiscall.uinfo
                         if thiscall.uinfo is not None:
                                 if 'startcontact' in thiscall.uinfo and 'chancon' in thiscall.uinfo:
                                         reply = ',-1,,AppelOpe/'
@@ -684,7 +710,28 @@ class CallBoosterCommand(BaseCommand):
                         # removes the call from incoming call list
                         incoming_calls[thiscall.sdanum].pop(chan)
                 else:
-                        print 'HANGUP (not incoming call)', event
+                        print 'HANGUP (not incoming call)', uniqueid, event
+                if uniqueid in self.alerts_uniqueids:
+                        # should not come here after success since it is deleted in uservent treatment
+                        print 'HANGUP ALERT', uniqueid, self.alerts_uniqueids[uniqueid]
+
+                        channel = self.alerts_uniqueids[uniqueid]
+                        num = channel[6:-8]
+                        toremove = None
+                        for i, h in self.alerts.iteritems():
+                                # print num, i, h
+                                if num in h['numbers'] and h['status'] > 0:
+                                        if h['numbers'][h['status'] - 1] == num:
+                                                print num, i, h['numbers'], h['status']
+##                                                if len(h['numbers']) == h['status']:
+##                                                        toremove = i
+##                        if toremove is not None: # otherwise it will naturally step to the next number
+##                                # fill DB for it
+##                                del self.alerts[toremove]
+
+                        del self.alerts_uniqueids[uniqueid]
+                        self.nalerts_called -= 1
+                        self.__alert_calls(astid)
                 return
 
 
@@ -993,17 +1040,39 @@ class CallBoosterCommand(BaseCommand):
         def userevent(self, astid, event):
                 print 'userevent :', astid, event
                 evfunction = event.get('Event')
+                uniqueid = event.get('Uniqueid')
+                if uniqueid in self.alerts_uniqueids:
+                        del self.alerts_uniqueids[uniqueid]
                 if evfunction == 'UserEventAlertCB':
                         appdatas = event.get('AppData').split('-', 1)
                         dtmfreply = appdatas[0]
                         rid = appdatas[1]
                         if rid in self.alerts:
+                                aldetail = self.alerts[rid]
                                 print len(self.alerts), self.alerts[rid]
                                 [refalerte, dummy] = rid.split('-')
                                 self.cursor_operat.query("USE system")
-                                self.cursor_operat.query("INSERT INTO suivisalertes VALUES (0, %s, 0, %s, %s, %d, %d, %d, "
-                                                         "'table', 'type', 'ficmsg', %d, '34535', %d, 'groupage', 'nom', 'prenom', 'civ', 3)"
-                                                         % (refalerte, dtmfreply, dtmfreply, 4, 5, 6, 8, 2))
+                                self.cursor_operat.query("INSERT INTO suivisalertes VALUES "
+                                                         "(0, %s, %d, '%s', %s, %s, %s, %s, "
+                                                         "'%s', '%s', '%s', %s, '%s', %s, '%s', '%s', '%s', '%s', %s)"
+                                                         % (refalerte,
+                                                            1, # RefEquipier
+                                                            'TermineUNDEF',
+                                                            dtmfreply,
+                                                            aldetail['contact']['nsoc'],
+                                                            aldetail['contact']['ncli'],
+                                                            aldetail['contact']['ncol'],
+                                                            'TableEquipierUNDEF',
+                                                            aldetail['contact']['typealerte'],
+                                                            aldetail['filename'],
+                                                            aldetail['contact']['refquestion'],
+                                                            aldetail['contact']['callingnum'],
+                                                            aldetail['contact']['nbtentatives'],
+                                                            'GroupageUNDEF',
+                                                            aldetail['contact']['nom'],
+                                                            aldetail['contact']['prenom'],
+                                                            aldetail['contact']['civ'],
+                                                            aldetail['contact']['stopdecroche']))
                                 self.conn_operat.commit()
                                 del self.alerts[rid]
                                 self.nalerts_called -= 1
@@ -1016,27 +1085,6 @@ class CallBoosterCommand(BaseCommand):
                                 self.waitingmessages[sdanum] = []
                         self.waitingmessages[sdanum].append(indice)
                 return
-
-
-##        ['N', 'int(11)', '', 'PRI', None, 'auto_increment']
-##        ['RefAlerte', 'int(11)', '', 'MUL', '0', '']
-##        ['RefEquipier', 'int(11)', '', '', '0', '']
-##        ['Etat', 'varchar(12)', '', 'MUL', '', '']
-##        ['Resultat', 'varchar(30)', '', '', '', '']
-##        ['NSoc', 'int(11)', '', '', '0', '']
-##        ['NCli', 'int(11)', '', '', '0', '']
-##        ['NCol', 'int(11)', '', '', '0', '']
-##        ['TableEquipier', 'varchar(80)', '', '', '', '']
-##        ['TypeAlerte', 'varchar(20)', '', '', '', '']
-##        ['FichierMessage', 'varchar(80)', '', '', '', '']
-##        ['RefQuestion', 'int(11)', '', '', '0', '']
-##        ['CallingNumber', 'varchar(15)', '', '', '', '']
-##        ['nbTentatives', 'int(11)', '', '', '1', '']
-##        ['Groupage', 'varchar(30)', '', 'MUL', '', '']
-##        ['Nom', 'varchar(30)', '', '', '', '']
-##        ['Prenom', 'varchar(30)', '', '', '', '']
-##        ['Civilite', 'varchar(10)', '', '', '', '']
-##        ['Stop_Decroche', 'tinyint(4)', '', '', '0', '']
 
 
         def manage_srv2clt(self, userinfo_by_requester, connid, parsedcommand, cfg):
@@ -1072,7 +1120,9 @@ class CallBoosterCommand(BaseCommand):
                                         log_debug(SYSLOG_WARNING, 'AppelOpe : %s phone is already logged in as agent number %s' % (phonenum, agentnum))
                                 log_debug(SYSLOG_INFO, 'AppelOpe : aoriginate_var for phonenum = %s' % phonenum)
                                 self.amis[astid].aoriginate_var('sip', phonenum, 'Log %s' % phonenum,
-                                                                agentnum, opername, 'default', {'CB_MES_LOGAGENT' : opername}, 100)
+                                                                agentnum, opername, 'ctx-callbooster-agentlogin',
+                                                                {'CB_MES_LOGAGENT' : opername,
+                                                                 'CB_AGENT_NUMBER' : agentnum}, 100)
                         else:
                                 reply = ',%d,,AppelOpe/' % (-3)
                                 connid_socket.send(reply)
@@ -1177,8 +1227,9 @@ class CallBoosterCommand(BaseCommand):
                                         userinfo['calls'][comm_id_outgoing].tocall = True
                                         phonenum = userinfo_by_requester[5]
                                         self.amis[astid].aoriginate_var('sip', phonenum, 'Log %s' % phonenum,
-                                                                        agentnum, opername, 'default', {'CB_MES_LOGAGENT' : opername}, 100)
-
+                                                                        agentnum, opername, 'ctx-callbooster-agentlogin',
+                                                                        {'CB_MES_LOGAGENT' : opername,
+                                                                         'CB_AGENT_NUMBER' : agentnum}, 100)
                 elif cname == 'Raccroche':
                         reference = parsedcommand.args[1]
                         try:
@@ -1402,13 +1453,13 @@ class CallBoosterCommand(BaseCommand):
                         self.cursor_operat.query('SELECT ${columns} FROM alertes WHERE N = %s',
                                                  columns,
                                                  nalerte)
-                        results = self.cursor_operat.fetchall()
+                        mvts_alertes = self.cursor_operat.fetchall()
                         self.cursor_operat.query("UPDATE alertes SET Etat = 'Traitement' WHERE N = %s" % nalerte)
                         self.conn_operat.commit()
-                        for rr in results:
+                        for rr in mvts_alertes:
                                 numstruct = rr[1]
                                 filename = rr[2] # message file name
-                                grouplist = rr[3].split(',')
+                                grouplist = rr[3].split(';')
                                 intervsuivi = rr[4] # in seconds
 
                                 # Alerte command => fetch details
@@ -1420,9 +1471,14 @@ class CallBoosterCommand(BaseCommand):
                                 self.cursor_operat.query('SELECT ${columns} FROM alerte_struct WHERE N = %s',
                                                          columns,
                                                          numstruct)
-                                results2 = self.cursor_operat.fetchall()
-                                nquestion = results2[0][3]
-                                callingnum = results2[0][7]
+                                clients_alerte_struct = self.cursor_operat.fetchall()
+                                if len(clients_alerte_struct) > 0:
+                                        nquestion = clients_alerte_struct[0][3]
+                                        typealerte = clients_alerte_struct[0][6]
+                                        callingnum = clients_alerte_struct[0][7]
+                                        nbtentatives = clients_alerte_struct[0][8]
+                                        alertetous = clients_alerte_struct[0][9]
+                                        stopdecroche = clients_alerte_struct[0][10]
 
                                 # Fetch question details
                                 columns = ('N', 'Libelle', 'Descriptif', 'Fichier', 'Type_saisie',
@@ -1433,7 +1489,13 @@ class CallBoosterCommand(BaseCommand):
                                 self.cursor_operat.query('SELECT ${columns} FROM questions WHERE N = %s',
                                                          columns,
                                                          nquestion)
-                                results3 = self.cursor_operat.fetchall()
+                                system_questions = self.cursor_operat.fetchall()
+                                if len(system_questions) > 0:
+                                        filename = system_questions[0][3]
+                                        filename = 'fr/ss-noservice'
+                                        digits_allowed = system_questions[0][5]
+                                        digits_end = system_questions[0][6]
+                                        digits_repeat = system_questions[0][7]
 
                                 nid = 0
                                 for gl in grouplist:
@@ -1442,20 +1504,38 @@ class CallBoosterCommand(BaseCommand):
                                                            'tel1', 'tel2', 'tel3', 'tel4',
                                                            'Civilite', 'Fax', 'eMail', 'SMS', 'Code', 'DureeSonnerie')
                                                 self.cursor_operat.query('USE %s_annexe' % self.__socname(idsoc))
-                                                self.cursor_operat.query('SELECT * FROM %s' % gl)
-                                                results4 = self.cursor_operat.fetchall()
-                                                for r4 in results4:
+                                                self.cursor_operat.query('SELECT * FROM %s ORDER BY N' % gl)
+                                                base_annexe_results = self.cursor_operat.fetchall()
+                                                for annx in base_annexe_results:
+##                                                        pass
+##                                                if True:
                                                         rid = '%s-%06d' % (nalerte, nid)
                                                         nid += 1
+                                                        listnums = []
+                                                        for inum in annx[4:8]:
+                                                                if inum != '': listnums.append(inum)
                                                         self.alerts[rid] = {'nsoc' : idsoc,
                                                                             'group' : gl,
-                                                                            'questionkind' : nquestion,
-                                                                            'digits-allowed' : results3[0][5],
-                                                                            'digits-end' : results3[0][6],
-                                                                            'digits-repeat' : results3[0][7],
-                                                                            'numbers' : r4[4:8],
-                                                                            'timetoring' : int(r4[13]),
-                                                                            'status' : 'init'
+                                                                            'filename' : filename,
+                                                                            'digits-allowed' : digits_allowed,
+                                                                            'digits-end' : digits_end,
+                                                                            'digits-repeat' : digits_repeat,
+                                                                            'numbers' : listnums,
+                                                                            'timetoring' : int(annx[13]),
+                                                                            'contact' : {'nom' : annx[2],
+                                                                                         'prenom' : annx[3],
+                                                                                         'civ' : annx[8],
+                                                                                         'nsoc' : idsoc,
+                                                                                         'ncli' : idcli,
+                                                                                         'ncol' : idcol,
+                                                                                         'refquestion' : nquestion,
+                                                                                         'typealerte' : typealerte,
+                                                                                         'callingnum' : callingnum,
+                                                                                         'nbtentatives' : nbtentatives,
+                                                                                         'alertetous' : alertetous,
+                                                                                         'stopdecroche' : stopdecroche
+                                                                                         },
+                                                                            'status' : 0
                                                                             }
                                         except Exception, exc:
                                                 print 'grouplist %s : %s' % (gl, str(exc))
@@ -1495,24 +1575,28 @@ class CallBoosterCommand(BaseCommand):
 
 
         def __alert_calls(self, astid):
+                # missing : sth to prevent the second / third choice to be called while a former one is being tried
+                # status when all the numbers have been spanned ?
+                LOCNUMS = ['101', '102', '103', '102'] # for testing purposes only !!
                 ncalls = 0
                 for rid, al in self.alerts.iteritems():
-                        if al['status'] == 'init' and self.nalerts_called < self.nalerts_simult:
+                        if al['status'] < len(al['numbers']) and self.nalerts_called < self.nalerts_simult:
                                 ncalls += 1
-                                dstnum = al['numbers'][0]
-                                print 'calling %s (or should be ...)' % dstnum
-                                dstnum = '102' # for tesing purposes only !!
+                                dstnum = al['numbers'][al['status']]
+                                print 'calling', al['contact']['nom'], '(%s) (or should be ...)' % dstnum
+                                # dstnum = LOCNUMS[al['status']] # for testing purposes only !!
                                 self.amis[astid].aoriginate_var('local', '%s@default' % dstnum, 'dest %s' % dstnum,
                                                                 'cidFB', 'automated call', 'ctx-callbooster-alert',
-                                                                {'CB_ALERT_MESSAGE' : 'fr/ss-noservice',
+                                                                {'CB_ALERT_MESSAGE' : al['filename'],
                                                                  'CB_ALERT_ID' : rid,
                                                                  'CB_ALERT_ALLOWED' : al['digits-allowed'],
                                                                  'CB_ALERT_REPEAT' : al['digits-repeat']},
                                                                 al['timetoring'])
-                                al['status'] = 'called'
+                                al['status'] += 1
                                 self.nalerts_called += 1
                 print '%d calls issued' % ncalls
                 return
+
 
         def park_srv2clt(self, function, args):
                 return ''
@@ -1754,9 +1838,9 @@ class CallBoosterCommand(BaseCommand):
                         self.cursor_operat.query('SELECT ${columns} FROM stat_acd WHERE DATE = %s',
                                                  columns,
                                                  datetime)
-                        results = self.cursor_operat.fetchall()
-                        if len(results) > 0:
-                                r = results[0]
+                        system_stat_acd = self.cursor_operat.fetchall()
+                        if len(system_stat_acd) > 0:
+                                r = system_stat_acd[0]
                                 [nnc, nnv, nhdv, nv, ttime,
                                  ntt_raf, ntt_asd, ntt_snd, ntt_sfa, ntt_sop,
                                  ntt_tel, ntt_fic, ntt_bas, ntt_mes, ntt_rep,
@@ -1789,7 +1873,7 @@ class CallBoosterCommand(BaseCommand):
                         ntt_mes = ntt_mes + tt_mes
                         ntt_rep = ntt_rep + tt_rep
                         
-                        if len(results) > 0:
+                        if len(system_stat_acd) > 0:
                                 self.cursor_operat.query("UPDATE stat_acd SET SDA_NC = %d, SDA_NV = %d, SDA_HDV = %d, SDA_V = %d,"
                                                          " TT_RAF = %d, TT_ASD = %d, TT_SND = %d, TT_SFA = %d, TT_SOP = %d,"
                                                          " TT_TEL = %d, TT_FIC = %d, TT_BAS = %d, TT_MES = %d, TT_REP = %d"
@@ -2165,6 +2249,8 @@ class CallBoosterCommand(BaseCommand):
                                 # once all the queues have been spanned, send the push / queues where needed
                                 argument = 'welcome'
                                 nevt = 0
+                                self.amis[astid].queueadd(thiscall.queuename, GHOST_AGENT)
+                                self.amis[astid].queuepause(thiscall.queuename, GHOST_AGENT, 'false')
                                 for opername_iter, couplelist in todo.iteritems():
                                         for td in couplelist:
                                                 log_debug(SYSLOG_INFO, 'elect : secretariat / %s / %s / %s' % (opername_iter, td[0], td[1].sdanum))
