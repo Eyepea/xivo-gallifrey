@@ -339,7 +339,7 @@ class IncomingCall:
                 return True
 
 
-        def __local_group_composition(self):
+        def __local_group_composition__(self):
                 columns = ('CODE', 'NOM', 'GL')
                 self.cursor_operat.query('USE agents')
                 self.cursor_operat.query('SELECT ${columns} FROM agents WHERE GL = 1',
@@ -352,7 +352,7 @@ class IncomingCall:
                 return lstlocal
 
 
-        def __localN_group_composition(self, nprof, ngroup):
+        def __localN_group_composition__(self, nprof, ngroup):
                 columns = ('NPERM', 'NGROUP', 'NOM', 'NPROF')
                 self.cursor_operat.query('USE %s_clients' % self.socname)
                 self.cursor_operat.query('SELECT ${columns} FROM groupes WHERE NGROUP = %s AND NPROF = %s',
@@ -362,7 +362,7 @@ class IncomingCall:
                 list_operators = []
                 list_permanences = []
 
-                print '  COMING CALL : __localN_group_composition, ngroup = %s / nprof = %s' % (ngroup, nprof), clients_groupes_liste
+                print '  COMING CALL : __localN_group_composition__, ngroup = %s / nprof = %s' % (ngroup, nprof), clients_groupes_liste
                 if int(ngroup) < 0:
                         for clients_groupes in clients_groupes_liste:
                                 nom = clients_groupes[2]
@@ -459,7 +459,7 @@ class IncomingCall:
                         return None
 
 
-        def __list_operators(self, nprof, detail_tab, upto):
+        def __list_operators__(self, nprof, detail_tab, upto):
                 """
                 Returns the list of agents, as well as thir status, that are available for the groups defined from
                 index 0 to upto.
@@ -469,11 +469,11 @@ class IncomingCall:
                 for num in xrange(upto):
                         id = detail_tab[num]
                         if id == '0': # local group
-                                for lgc in self.__local_group_composition():
+                                for lgc in self.__local_group_composition__():
                                         if lgc not in listopers:
                                                 listopers.append(lgc)
                         else: # localN and globalN groups
-                                [lopers, lperms] = self.__localN_group_composition(nprof, id)
+                                [lopers, lperms] = self.__localN_group_composition__(nprof, id)
                                 for lgc in lopers:
                                         if lgc not in listopers:
                                                 listopers.append(lgc)
@@ -484,7 +484,7 @@ class IncomingCall:
                 return [listopers, listperms]
 
 
-        def __typet_secretariat(self, nprof, detail, delaigrp):
+        def __typet_secretariat__(self, nprof, detail, delaigrp):
                 whattodo = None
                 if len(detail) == 0:
                         detail = '0'
@@ -497,33 +497,34 @@ class IncomingCall:
                 else:
                         upto = self.wherephS + 1
 
-                print '  COMING CALL : __typet_secretariat, upto = ', upto
-                __list_svirt = {}
+                print '  COMING CALL : __typet_secretariat__, upto = ', upto
+                list_svirt_tmp = {}
                 while True: # loop over the detailed items
                         self.wherephS = upto
                         if upto > ngroupes:
                                 whattodo = None
                                 break
 
-                        print '  COMING CALL : __typet_secretariat, prevnum = %d / grouplist = %s' % (self.wherephS, ';'.join(detail_tab[0:upto+1]))
-                        [self.list_operators, __list_svirt] = self.__list_operators(nprof, detail_tab, upto)
-                        print '  COMING CALL : __typet_secretariat, operators and rooms :', self.list_operators, __list_svirt
+                        print '  COMING CALL : __typet_secretariat__, prevnum = %d / grouplist = %s' % (self.wherephS, ';'.join(detail_tab[0:upto+1]))
+                        [self.list_operators, list_svirt_tmp] = self.__list_operators__(nprof, detail_tab, upto)
+                        print '  COMING CALL : __typet_secretariat__, operators and rooms :', self.list_operators, list_svirt_tmp
 
-                        if upto == ngroupes or len(self.list_operators) == 0 and len(__list_svirt) == 0:
+                        if upto == ngroupes or len(self.list_operators) == 0 and len(list_svirt_tmp) == 0:
                                 delay = 0
                         else:
                                 delay = int(delaigrp_tab[upto])
 
-                        print '  COMING CALL : __typet_secretariat, upto = %d, delay = %d s' % (upto, delay)
+                        print '  COMING CALL : __typet_secretariat__, upto = %d, delay = %d s' % (upto, delay)
 
-                        if len(self.list_operators) == 0 and len(__list_svirt) == 0:
+                        if len(self.list_operators) == 0 and len(list_svirt_tmp) == 0:
                                 upto += 1
                         else:
+                                self.statacd2_tt = 'TT_SOP' # vs. TT_SFA ?
                                 whattodo = Action('secretariat', delay, None)
                                 break
 
                 self.list_svirt = []
-                for ngroup, perms in __list_svirt.iteritems():
+                for ngroup, perms in list_svirt_tmp.iteritems():
                         request = [str(self.nsoc_global),
                                    self.ncli,
                                    self.ncol,
@@ -538,13 +539,13 @@ class IncomingCall:
                         self.list_svirt.append(request)
 
                 if whattodo is not None:
-                        print '  COMING CALL : __typet_secretariat : ', upto, whattodo.status()
+                        print '  COMING CALL : __typet_secretariat__ : ', upto, whattodo.status()
                 else:
-                        print '  COMING CALL : __typet_secretariat : ', upto, whattodo
+                        print '  COMING CALL : __typet_secretariat__ : ', upto, whattodo
                 return whattodo
 
 
-        def __get_fichier(self, detail):
+        def __get_fichier__(self, detail):
                 columns = ('NCLI', 'NCOL', 'NOM', 'NTEL', 'TypeN', 'ModeA', 'NbC', 'NbP', 'DSonn', 'SDA', 'Ordre')
                 self.cursor_operat.query('USE %s_clients' % self.socname)
                 if self.whereph == 'SEC':
@@ -559,8 +560,8 @@ class IncomingCall:
                 return clients_fichier
 
 
-        def __typet_fichier(self, detail):
-                results = self.__get_fichier(detail)
+        def __typet_fichier__(self, detail):
+                results = self.__get_fichier__(detail)
                 nresults = len(results)
                 if nresults > 0:
                         if self.wherephF is None:
@@ -582,8 +583,8 @@ class IncomingCall:
                 return whattodo
 
 
-        def __typet_telephone(self, detail):
-                results = self.__get_fichier(detail)
+        def __typet_telephone__(self, detail):
+                results = self.__get_fichier__(detail)
                 nresults = len(results)
                 if nresults > 0:
                         if self.wherephF is None:
@@ -602,7 +603,7 @@ class IncomingCall:
                 return whattodo
 
 
-        def __typet_base(self, detail):
+        def __typet_base__(self, detail):
                 whattodo = None
                 columns = ('NCLI', 'NCOL', 'Nom', 'DateJ', 'Plages', 'Plage1', 'Plage2', 'Plage3', 'Plage4')
                 self.cursor_operat.query('USE %s_clients' % self.socname)
@@ -677,7 +678,7 @@ class IncomingCall:
                                                       %(intext, normstd, num, ncherche, npatiente, wtime, withsda, which)
                                                 if which == 6:
                                                         # number is a Repondeur file
-                                                        whattodo = Action('rep', 0, self.__wavstrip(num))
+                                                        whattodo = Action('rep', 0, self.__wavstrip__(num))
                                                 else:
                                                         if normstd == '1':
                                                                 wtime = ''
@@ -686,20 +687,20 @@ class IncomingCall:
                 return whattodo
 
 
-        def __wavstrip(self, filename):
+        def __wavstrip__(self, filename):
                 if filename.find('.wav') == len(filename) - 4 or filename.find('.WAV') == len(filename) - 4:
                         return filename[:-4]
                 else:
                         return filename
 
 
-        def __spanprofiles_secretariat(self):
+        def __spanprofiles_secretariat__(self):
                 """
                 To be called by the main loop, for each incoming call, in order to decide later on who will be chosen.
                 """
 
 
-        def __typep_phases(self, typep, clients_profil):
+        def __typep_phases__(self, typep, clients_profil):
                 nprof = clients_profil[0]
                 typet = clients_profil[7]
                 detail = clients_profil[8]
@@ -710,38 +711,42 @@ class IncomingCall:
                         else:
                                 self.secours_allowed = False
 
-                if typep == 'SEC' and not self.secours_allowed:
-                        return None
+                if typep == 'SEC':
+                        if self.secours_allowed:
+                                self.stimes[time.time()] = 'secours'
+                        else:
+                                return None
 
                 if typet == 'S':
-                        print '  COMING CALL : __typep_phases, typep/typet is %s/Secretariat' % typep
-                        whattodo = self.__typet_secretariat(nprof, detail, delaigrp)
+                        print '  COMING CALL : __typep_phases__, typep/typet is %s/Secretariat' % typep
+                        whattodo = self.__typet_secretariat__(nprof, detail, delaigrp)
                 elif typet == 'F':
-                        print '  COMING CALL : __typep_phases, typep/typet is %s/Fichier' % typep
-                        whattodo = self.__typet_fichier(detail)
+                        print '  COMING CALL : __typep_phases__, typep/typet is %s/Fichier' % typep
+                        whattodo = self.__typet_fichier__(detail)
                 elif typet == 'T':
-                        print '  COMING CALL : __typep_phases, typep/typet is %s/Telephone' % typep
-                        whattodo = self.__typet_telephone(detail)
+                        print '  COMING CALL : __typep_phases__, typep/typet is %s/Telephone' % typep
+                        whattodo = self.__typet_telephone__(detail)
                 elif typet == 'B':
-                        print '  COMING CALL : __typep_phases, typep/typet is %s/Base' % typep
-                        whattodo = self.__typet_base(detail)
+                        print '  COMING CALL : __typep_phases__, typep/typet is %s/Base' % typep
+                        whattodo = self.__typet_base__(detail)
                 elif typet == '0':
-                        print '  COMING CALL : __typep_phases, typep/typet is %s/Aucun' % typep
+                        print '  COMING CALL : __typep_phases__, typep/typet is %s/Aucun' % typep
                         whattodo = None
                 else:
-                        print '  COMING CALL : __typep_phases, typep/typet is %s/%s' % (typep, typet)
+                        print '  COMING CALL : __typep_phases__, typep/typet is %s/%s' % (typep, typet)
                         whattodo = None
                 return whattodo
 
 
-        def __typep_rep(self, clients_profil):
-                filename = self.__wavstrip(clients_profil[8])
-                print '  COMING CALL : __typep_rep', filename
+        def __typep_rep__(self, clients_profil):
+                filename = self.__wavstrip__(clients_profil[8])
+                print '  COMING CALL : __typep_rep__', filename
+                self.statacd2_tt = 'TT_REP'
                 whattodo = Action('rep', 0, filename)
                 return whattodo
 
 
-        def __typep_mes(self, clients_profil):
+        def __typep_mes__(self, clients_profil):
                 columns = ('N', 'NCLI', 'NCOL', 'NPROF', 'NomMess', 'Duree', 'Envoie', 'Mail', 'Conserve')
                 self.cursor_operat.query('USE %s_clients' % self.socname)
                 self.cursor_operat.query('SELECT ${columns} FROM messagerie WHERE NCLI = %s AND NCOL = %s AND NPROF = %s',
@@ -751,9 +756,9 @@ class IncomingCall:
                 if len(clients_messagerie) > 0:
                         clients_messagerie_item = clients_messagerie[0]
 
-                        print '  COMING CALL : __typep_mes, typep is MES : %s' % str(clients_messagerie_item)
+                        print '  COMING CALL : __typep_mes__, typep is MES : %s' % str(clients_messagerie_item)
                         self.statacd2_tt = 'TT_MES'
-                        filename = self.__wavstrip(clients_messagerie_item[4])
+                        filename = self.__wavstrip__(clients_messagerie_item[4])
                         maxlength = str(clients_messagerie_item[5])
                         msgindice = str(clients_messagerie_item[0])
                         whattodo = Action('mes', 0, ';'.join([filename, maxlength, msgindice]))
@@ -762,8 +767,8 @@ class IncomingCall:
                 return whattodo
 
 
-        def __spanprofiles(self):
-                print '  COMING CALL : __spanprofiles : where s = %s/%s/%s' % (self.whereph, self.wherephS, self.wherephF)
+        def __spanprofiles__(self):
+                print '  COMING CALL : __spanprofiles__ : where s = %s/%s/%s' % (self.whereph, self.wherephS, self.wherephF)
 
                 whattodo = None
                 if self.whereph == 'INTRO':
@@ -775,7 +780,7 @@ class IncomingCall:
                         if whattodo is None:
                                 if self.whereph == thisstep:
                                         if thisstep in self.true_clients_profil:
-                                                whattodo = self.__typep_phases(thisstep, self.true_clients_profil.get(thisstep))
+                                                whattodo = self.__typep_phases__(thisstep, self.true_clients_profil.get(thisstep))
                                                 if whattodo is None:
                                                         self.whereph = nextstep
                                                         self.wherephS = None
@@ -786,7 +791,7 @@ class IncomingCall:
                 if whattodo is None:
                         if self.whereph == 'REP':
                                 if 'REP' in self.true_clients_profil:
-                                        whattodo = self.__typep_rep(self.true_clients_profil.get('REP'))
+                                        whattodo = self.__typep_rep__(self.true_clients_profil.get('REP'))
                                         if whattodo is None:
                                                 self.whereph = 'MES'
                                 else:
@@ -795,7 +800,7 @@ class IncomingCall:
                 if whattodo is None:
                         if self.whereph == 'MES':
                                 if 'MES' in self.true_clients_profil:
-                                        whattodo = self.__typep_mes(self.true_clients_profil.get('MES'))
+                                        whattodo = self.__typep_mes__(self.true_clients_profil.get('MES'))
                                         if whattodo is None:
                                                 self.whereph = 'END'
                                 else:
@@ -803,9 +808,9 @@ class IncomingCall:
 
                 if whattodo is None:
                         # if we get there nothing has been found
-                        print '  COMING CALL : __spanprofiles, before return :', whattodo, self.whereph, self.wherephS, self.wherephF
+                        print '  COMING CALL : __spanprofiles__, before return :', whattodo, self.whereph, self.wherephS, self.wherephF
                 else:
-                        print '  COMING CALL : __spanprofiles, before return :', whattodo.status(), self.whereph, self.wherephS, self.wherephF
+                        print '  COMING CALL : __spanprofiles__, before return :', whattodo.status(), self.whereph, self.wherephS, self.wherephF
                 return [whattodo, self.whereph]
 
 
@@ -829,11 +834,11 @@ class IncomingCall:
                 whattodo = Action('exit', 0, None)
                 newupto = None
                 try:
-                        [whattodo, newupto] = self.__spanprofiles()
+                        [whattodo, newupto] = self.__spanprofiles__()
                         if whattodo is None:
                                 whattodo = Action('exit', 0, None)
                         self.set_timestamp_stat(whattodo.action)
                 except Exception, exc:
-                        print 'exception when calling __spanprofiles() : %s' % str(exc)
+                        print 'exception when calling __spanprofiles__() : %s' % str(exc)
 
                 return [whattodo.action, whattodo.delay, whattodo.argument, newupto]
