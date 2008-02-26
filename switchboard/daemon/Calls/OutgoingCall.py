@@ -1,11 +1,27 @@
-# $Revision$
-# $Date$
-
-__version__ = "$Revision$ $Date$"
+__version__   = '$Revision$'
+__date__      = '$Date$'
+__copyright__ = 'Copyright (C) 2007, 2008, Proformatique'
+__author__    = 'Corentin Le Gall'
 
 import time
 
 class OutgoingCall:
+        """
+        Class for outgoing calls management.
+        """
+        
+        parking = None
+        parkexten = None
+        peerchannel = None
+        aboute = None
+        appelaboute = None
+        tocall = False
+        toretrieve = None
+        forceacd = None
+        
+        stimes = {time.time() : 'init'}
+        ttimes = {time.time() : 'init'}
+
         def __init__(self, commid, astid,
                      cursor_operat, socname,
                      uinfo, agentnum, agentname, dest, nsoc, ncli, ncol):
@@ -16,25 +32,12 @@ class OutgoingCall:
                 self.ncol   = ncol
                 self.taxes  = None
                 self.ctime  = time.localtime()
-                self.parking = None
                 self.dest = dest
                 self.agentnum  = agentnum
                 self.agentname = agentname
                 self.astid = astid
                 self.uinfo = uinfo
                 
-                self.parking = None
-                self.parkexten = None
-                self.peerchannel = None
-                self.aboute = None
-                self.appelaboute = None
-                self.tocall = False
-                self.toretrieve = None
-                self.forceacd = None
-                
-                self.stimes = {time.time() : 'init'}
-                self.ttimes = {time.time() : 'init'}
-
                 self.cursor_operat = cursor_operat
                 columns = ('N', 'NLIST')
                 self.cursor_operat.query('USE %s_clients' % socname)

@@ -1,5 +1,7 @@
-
-__version__ = '$Revision$ $Date$'
+__version__   = '$Revision$'
+__date__      = '$Date$'
+__copyright__ = 'Copyright (C) 2007, 2008, Proformatique'
+__author__    = 'Corentin Le Gall'
 
 import xivo_commandsets
 from xivo_commandsets import BaseCommand

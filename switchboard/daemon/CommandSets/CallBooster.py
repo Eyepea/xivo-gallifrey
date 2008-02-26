@@ -1,8 +1,9 @@
-
-__version__   = '$Revision$ $Date$'
+__version__   = '$Revision$'
+__date__      = '$Date$'
 __copyright__ = 'Copyright (C) 2007, 2008, Proformatique'
 __author__    = 'Corentin Le Gall'
 
+import xivo.to_path
 import anysql
 import ConfigParser
 import random
@@ -48,22 +49,31 @@ class CallBoosterCommand(BaseCommand):
         CallBoosterCommand class.
         Defines the behaviour of commands.
         """
+
+        commidcurr = 200000
+        pending_sv_fiches = {}
+        tqueue = Queue.Queue()
+        alerts = {}
+        nalerts_called = 0
+        nalerts_simult = 1
+        waitingmessages = {}
+        alerts_uniqueids = {}
+        commands = ['Init',
+                    'AppelOpe', 'TransfertOpe', 'RaccrocheOpe',
+                    'Appel', 'Aboute', 'AppelAboute', 'Raccroche',
+                    'Enregistre', 'Alerte',
+                    'Ping',
+                    'Attente', 'Reprise',
+                    'Sonn',
+                    'Prêt', 'ForceACD',
+                    'Pause',
+                    'Sortie',
+                    'Change']
+        
         def __init__(self, ulist, amis, operatsocket, operatport, operatini, queued_threads_pipe):
 		BaseCommand.__init__(self)
-                self.commands = ['Init',
-                                 'AppelOpe', 'TransfertOpe', 'RaccrocheOpe',
-                                 'Appel', 'Aboute', 'AppelAboute', 'Raccroche',
-                                 'Enregistre', 'Alerte',
-                                 'Ping',
-                                 'Attente', 'Reprise',
-                                 'Sonn',
-                                 'Prêt', 'ForceACD',
-                                 'Pause',
-                                 'Sortie',
-                                 'Change']
                 self.ulist = ulist
                 self.amis  = amis
-                self.commidcurr = 200000
                 self.soperat_socket = operatsocket
                 self.soperat_port   = operatport
                 opconf = ConfigParser.ConfigParser()
@@ -77,19 +87,14 @@ class CallBoosterCommand(BaseCommand):
                         self.opend = opconf_so.get('opend')
                 else:
                         self.opend = '20:00'
-                self.pending_sv_fiches = {}
-                self.tqueue = Queue.Queue()
                 self.queued_threads_pipe = queued_threads_pipe
-                self.alerts = {}
-                self.nalerts_called = 0
-                self.nalerts_simult = 1
-                self.waitingmessages = {}
-                self.alerts_uniqueids = {}
 
 
         def __sendfiche_a(self, userinfo, incall):
+                """Sends the Fiche informations (incall) to the appropriate user (userinfo)
+                """
                 userinfo['calls'][incall.commid] = incall
-                # CLR-ACD to,be sent only if there was an Indispo sent previously
+                # CLR-ACD to be sent only if there was an Indispo sent previously
                 if incall.dialplan['callerid'] == 1:
                         cnum = incall.cidnum
                 else:
@@ -1492,7 +1497,7 @@ class CallBoosterCommand(BaseCommand):
                                 system_questions = self.cursor_operat.fetchall()
                                 if len(system_questions) > 0:
                                         filename = system_questions[0][3]
-                                        filename = 'fr/ss-noservice'
+                                        filename = 'fr/ss-noservice' # XXX for testing purposes
                                         digits_allowed = system_questions[0][5]
                                         digits_end = system_questions[0][6]
                                         digits_repeat = system_questions[0][7]
@@ -1735,6 +1740,7 @@ class CallBoosterCommand(BaseCommand):
                 os.write(self.queued_threads_pipe[1], 'ping-')
                 return
 
+
         # checking if any news from pending requests
         def __svcheck(self):
                 thisthread = threading.currentThread()
@@ -1744,6 +1750,7 @@ class CallBoosterCommand(BaseCommand):
                 self.tqueue.put(thisthread)
                 os.write(self.queued_threads_pipe[1], 'svcheck-')
                 return
+
 
         def __init_taxes(self, call, numbertobill, fromN, toN, fromS, toS, NOpe):
                 try:
@@ -2197,7 +2204,7 @@ class CallBoosterCommand(BaseCommand):
                         print ' NCOMING CALL ## building an IncomingCall structure ##'
                         thiscall = IncomingCall.IncomingCall(self.cursor_operat,
                                                              cidnum, sdanum, queuenum,
-                                                             self.soperat_socket, self.soperat_port, self.opejd, self.opend)
+                                                             self.opejd, self.opend)
 
                         if thiscall.statacd2_state != 'NC':
                                 thiscall.setclicolnames()
@@ -2244,13 +2251,22 @@ class CallBoosterCommand(BaseCommand):
                         elif action == 'secretariat':
                                 thiscall.waiting = True
                                 log_debug(SYSLOG_INFO, 'elect : calling __choose()')
+                                print ' NCOMING CALL : secretariat /////', thiscall.list_operators, thiscall.list_svirt
+                                for request in thiscall.list_svirt:
+                                        req = 'ACDAddRequest' + chr(2) \
+                                              + chr(2).join(request[:6]) + chr(2) \
+                                              + chr(2).join(request[6:]) \
+                                              + chr(2) + str(self.soperat_port) + chr(3)
+                                        if self.soperat_socket is not None:
+                                                self.soperat_socket.send(req)
                                 todo = self.__choose(astid)
                                 print 'CHOOSE (after Incall)', todo
+
+                                self.amis[astid].queueadd(thiscall.queuename, GHOST_AGENT)
+                                self.amis[astid].queuepause(thiscall.queuename, GHOST_AGENT, 'false')
                                 # once all the queues have been spanned, send the push / queues where needed
                                 argument = 'welcome'
                                 nevt = 0
-                                self.amis[astid].queueadd(thiscall.queuename, GHOST_AGENT)
-                                self.amis[astid].queuepause(thiscall.queuename, GHOST_AGENT, 'false')
                                 for opername_iter, couplelist in todo.iteritems():
                                         for td in couplelist:
                                                 log_debug(SYSLOG_INFO, 'elect : secretariat / %s / %s / %s' % (opername_iter, td[0], td[1].sdanum))
@@ -2270,7 +2286,8 @@ class CallBoosterCommand(BaseCommand):
                                                         print 'dequeue after Incall ???', opername_iter, td
                                                         pass
                                 if nevt == 0:
-                                        action = 'noqueue'
+                                        if len(thiscall.list_svirt) == 0:
+                                                action = 'noqueue'
                         elif action == 'exit':
                                 self.__update_taxes(thiscall, 'Termine')
                                 self.__update_stat_acd2(thiscall)
@@ -2301,4 +2318,3 @@ class CallBoosterCommand(BaseCommand):
 
 
 xivo_commandsets.CommandClasses['callbooster'] = CallBoosterCommand
-

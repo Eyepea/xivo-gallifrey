@@ -73,7 +73,7 @@ class AsteriskConfig:
                 self.capas_i = capas_i
                 self.capafeatures = capafeatures
                 self.cdr_db_uri  = cdr_db_uri
-                self.cdr_db_conn = anysql.connect_by_uri(cdr_db_uri)
+                # self.cdr_db_conn = anysql.connect_by_uri(cdr_db_uri)
                 # charset = 'utf8' : add ?charset=utf8 to the URI
 
                 self.realm = realm

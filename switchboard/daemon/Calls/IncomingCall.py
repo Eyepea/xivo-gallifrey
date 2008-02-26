@@ -1,7 +1,7 @@
-# $Revision$
-# $Date$
-
-__version__ = "$Revision$ $Date$"
+__version__   = '$Revision$'
+__date__      = '$Date$'
+__copyright__ = 'Copyright (C) 2007, 2008, Proformatique'
+__author__    = 'Corentin Le Gall'
 
 import socket
 import time
@@ -21,59 +21,59 @@ class Action:
 
 
 class IncomingCall:
-        def __init__(self, cursor_operat, cidnum, sdanum, queuenum, soperat_socket, soperat_port, opejd, opend):
-                self.dir       = 'i'
+        """
+        Class for incoming calls management.
+        """
+        
+        dir = 'i'
+        ctime = time.localtime()
+        nsoc = 0 # None
+        ncli = 0 # None
+        ncol = 0 # None
+        whereph = 'INTRO'
+        wherephS = None
+        wherephF = None
+        cliname = ''
+        colname = ''
+        socname = ''
+        statacd2_state = 'NC'
+        statacd2_tt = 'TT_RAF'
+        
+        waiting = True
+        parking = None
+        parkexten = None
+        peerchannel = None
+        aboute = None
+        appelaboute = None
+        tocall = False
+        toretrieve = None
+        svirt = None
+        forceacd = None
+        agentlist = []
+        
+        stimes = {time.time() : 'init'}
+        ttimes = {time.time() : 'init'}
+        uinfo = None
+        statdone = False
+        secours_allowed = False
+        
+        dialplan = {'welcome' : 0,
+                    'callerid' : 1,
+                    'record' : None,
+                    'rescue' : 1,
+                    'rescue_details' : None,
+                    'hassun' : False,
+                    'sun' : False,
+                    'sounds' : []}
+        
+        def __init__(self, cursor_operat, cidnum, sdanum, queuenum, opejd, opend):
                 self.cidnum    = cidnum
                 self.sdanum    = sdanum
-                self.num       = 0
                 self.queuename = 'qcb_%05d' % queuenum
                 self.commid    = str(100000 + queuenum)
-                self.ctime     = time.localtime()
-                #                self.chan = None
                 self.cursor_operat = cursor_operat
-                self.whereph = 'INTRO'
-                self.wherephS = None
-                self.wherephF = None
-                self.nsoc = 0 # None
-                self.ncli = 0 # None
-                self.ncol = 0 # None
                 self.opejd = opejd.split(':')
                 self.opend = opend.split(':')
-                self.cliname = ''
-                self.colname = ''
-                self.socname = ''
-                self.statacd2_state = 'NC'
-                self.statacd2_tt = 'TT_RAF'
-
-                self.waiting = True
-                self.parking = None
-                self.parkexten = None
-                self.peerchannel = None
-                self.aboute = None
-                self.appelaboute = None
-                self.tocall = False
-                self.toretrieve = None
-                self.svirt = None
-                self.forceacd = None
-                self.agentlist = []
-
-                self.stimes = {time.time() : 'init'}
-                self.ttimes = {time.time() : 'init'}
-                self.uinfo = None
-                self.statdone = False
-                self.secours_allowed = False
-
-                self.dialplan = {'welcome' : 0,
-                                 'callerid' : 1,
-                                 'record' : None,
-                                 'rescue' : 1,
-                                 'rescue_details' : None,
-                                 'hassun' : False,
-                                 'sun' : False,
-                                 'sounds' : []}
-                self.soperat_socket = soperat_socket
-                self.soperat_port   = soperat_port
-
 
                 columns = ('NSDA', 'NSOC', 'NCLI', 'NCOL', 'NOM', 'DateD', 'DateF', 'Valide')
                 self.cursor_operat.query('USE system')
@@ -120,10 +120,13 @@ class IncomingCall:
                         else:
                                 self.statacd2_state = 'NV'
 
+
         def settaxes(self, triplet):
                 self.taxes = triplet
 
+
         def setclicolnames(self):
+                """Sets the name of CLIent and COLlaborator"""
                 columns = ('N', 'NLIST')
                 self.cursor_operat.query('USE %s_clients' % self.socname)
                 self.cursor_operat.query('SELECT ${columns} FROM clients WHERE N = %s',
@@ -140,6 +143,7 @@ class IncomingCall:
                 results = self.cursor_operat.fetchall()
                 if len(results) > 0:
                         self.colname = results[0][1]
+
 
         def get_sda_profiles(self, nsda):
                 self.elect_competence = None
@@ -494,6 +498,7 @@ class IncomingCall:
                         upto = self.wherephS + 1
 
                 print '  COMING CALL : __typet_secretariat, upto = ', upto
+                __list_svirt = {}
                 while True: # loop over the detailed items
                         self.wherephS = upto
                         if upto > ngroupes:
@@ -501,41 +506,36 @@ class IncomingCall:
                                 break
 
                         print '  COMING CALL : __typet_secretariat, prevnum = %d / grouplist = %s' % (self.wherephS, ';'.join(detail_tab[0:upto+1]))
-                        [self.list_operators, self.list_svirt] = self.__list_operators(nprof, detail_tab, upto)
-                        print '  COMING CALL : __typet_secretariat, operators and rooms :', self.list_operators, self.list_svirt
+                        [self.list_operators, __list_svirt] = self.__list_operators(nprof, detail_tab, upto)
+                        print '  COMING CALL : __typet_secretariat, operators and rooms :', self.list_operators, __list_svirt
 
-                        if upto == ngroupes or len(self.list_operators) == 0 and len(self.list_svirt) == 0:
+                        if upto == ngroupes or len(self.list_operators) == 0 and len(__list_svirt) == 0:
                                 delay = 0
                         else:
                                 delay = int(delaigrp_tab[upto])
 
                         print '  COMING CALL : __typet_secretariat, upto = %d, delay = %d s' % (upto, delay)
 
-                        if len(self.list_operators) == 0 and len(self.list_svirt) == 0:
+                        if len(self.list_operators) == 0 and len(__list_svirt) == 0:
                                 upto += 1
                         else:
                                 whattodo = Action('secretariat', delay, None)
-                                for ngroup, perms in self.list_svirt.iteritems():
-                                        request = [str(self.nsoc_global),
-                                                   self.ncli,
-                                                   self.ncol,
-                                                   self.sdanum,
-                                                   self.commid,
-                                                   ngroup,
-                                                   self.cidnum,
-                                                   perms,
-                                                   ','.join(self.competences),
-                                                   ','.join(self.languages_sv),
-                                                   self.commid]
-                                        req = 'ACDAddRequest' + chr(2) \
-                                              + chr(2).join(request[:6]) + chr(2) \
-                                              + chr(2).join(request[6:]) \
-                                              + chr(2) + str(self.soperat_port) + chr(3)
-                                        if self.soperat_socket is not None:
-                                                self.soperat_socket.send(req)
                                 break
 
-                print '  COMING CALL : __typet_secretariat, operators and rooms :', self.list_operators, self.list_svirt
+                self.list_svirt = []
+                for ngroup, perms in __list_svirt.iteritems():
+                        request = [str(self.nsoc_global),
+                                   self.ncli,
+                                   self.ncol,
+                                   self.sdanum,
+                                   self.commid,
+                                   ngroup,
+                                   self.cidnum,
+                                   perms,
+                                   ','.join(self.competences),
+                                   ','.join(self.languages_sv),
+                                   self.commid]
+                        self.list_svirt.append(request)
 
                 if whattodo is not None:
                         print '  COMING CALL : __typet_secretariat : ', upto, whattodo.status()
@@ -613,6 +613,7 @@ class IncomingCall:
                 if len(clients_gardes) > 0 and self.wherephF is None:
                         nows = time.mktime(self.ctime)
                         str_today = time.strftime(DATEFMT, self.ctime)
+                        str_yesterday = time.strftime(DATEFMT, time.localtime(nows - 86400))
                         realidx = None
                         for b in clients_gardes:
                                 if str(b[3])[:10] == str_today:
@@ -646,7 +647,17 @@ class IncomingCall:
                                                 realbase = b
                                                 break
 
-                        if realidx is not None:
+                        if realidx is None:
+                                # trying a match with yesterday's last span
+                                for b in clients_gardes:
+                                        if str(b[3])[:10] == str_yesterday:
+                                                realidx = 3
+                                                realbase = b
+                                                break
+
+                        if realidx is None:
+                                print 'WARNING - did not found BASE entry for this date and time'
+                        else:
                                 fichenum = realbase[5 + realidx].split('.')[0]
                                 print 'Base', plbase, realidx, realbase
                                 if fichenum != '0':
@@ -813,8 +824,8 @@ class IncomingCall:
                 return
 
 
-        # called from elect() (called from push AGI)
         def findaction(self, upto):
+                """Lookups the action to perform, after an AGI request has been issued"""
                 whattodo = Action('exit', 0, None)
                 newupto = None
                 try:
@@ -826,6 +837,3 @@ class IncomingCall:
                         print 'exception when calling __spanprofiles() : %s' % str(exc)
 
                 return [whattodo.action, whattodo.delay, whattodo.argument, newupto]
-
-        def showstatus(self):
-                print 'showstatus', self.cidnum, self.__spanprofiles()
