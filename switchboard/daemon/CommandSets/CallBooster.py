@@ -1116,10 +1116,12 @@ class CallBoosterCommand(BaseCommand):
                         else:
                                 print 'SDA undefined :  %s (%s)' %(sdanum, operat_sda[1])
                                 try:
-                                        self.cursor_xivo.query("INSERT INTO uservoicemail VALUES "
-                                                               "(0, 'default', '%s', '', '%s', '%s', '', NULL, NULL, NULL, '', 'eu-fr', 0, "
-                                                               "NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, 'no', NULL, 0)"
-                                                               % (sdanum, operat_sda[1], 'none@none.none'))
+                                        columns = ('context', 'mailbox', 'password', 'fullname', 'email', 'tz',
+                                                   'attach', 'saycid' , 'review', 'operator', 'envelope', 'sayduration', 'saydurationm')
+                                        self.cursor_xivo.query("INSERT INTO uservoicemail (${columns}) "
+                                                               "VALUES (%s, %s, %s, %s, %s, %s, %s, NULL, NULL, NULL, NULL, NULL, NULL)",
+                                                               columns,
+                                                               ('default', sdanum, '', operat_sda[1], 'none@none.none', 'eu-fr', '0'))
                                         self.conn_xivo.commit()
                                 except Exception, exc:
                                         print '--- exception --- could not insert voicemailed SDA (%s) : %s' % (sdanum, str(exc))
