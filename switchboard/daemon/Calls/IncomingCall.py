@@ -1,3 +1,13 @@
+# -*- coding: latin-1 -*-
+
+"""
+The Incoming Calls' properties are managed here.
+The constructor does the first database requests according to the SDA, and the instance thus created is managed by the CallBooster class.
+As time goes by, further updates or requests are made to one given instance, through get_sda_profiles() first, through findaction() or check_operator_status() then.
+- findaction() loops over the Dialplan iterations
+- check_operator_status() might be called during the Dialplan process, or during Status updates from any Agent
+"""
+
 __version__   = '$Revision$'
 __date__      = '$Date$'
 __copyright__ = 'Copyright (C) 2007, 2008, Proformatique'
@@ -10,15 +20,6 @@ PDISPO = u'Pr\xeat'
 WEEKDAY = ['LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM', 'DIM']
 DATEFMT = '%Y-%m-%d'
 DATETIMEFMT = DATEFMT + ' %H:%M:%S'
-
-class Action:
-        def __init__(self, action, delay, arg):
-                self.action = action
-                self.delay = delay
-                self.argument = arg
-        def status(self):
-                return '[Action : %s/%s/%s]' % (self.action, self.delay, self.argument)
-
 
 class IncomingCall:
         """
@@ -67,6 +68,11 @@ class IncomingCall:
                     'sounds' : []}
         
         def __init__(self, cursor_operat, cidnum, sdanum, queuenum, opejd, opend):
+                """
+                Sets the queue properties and does the first requests in order to know whether
+                the SDA can be handled.
+                This constructor is called only once (of course) for each incoming call.
+                """
                 self.cidnum    = cidnum
                 self.sdanum    = sdanum
                 self.queuename = 'qcb_%05d' % queuenum
@@ -122,11 +128,17 @@ class IncomingCall:
 
 
         def settaxes(self, triplet):
+                """
+                Sets the call's tax informations.
+                """
                 self.taxes = triplet
+                return
 
 
         def setclicolnames(self):
-                """Sets the name of CLIent and COLlaborator"""
+                """
+                Sets the name of CLIent and COLlaborator
+                """
                 columns = ('N', 'NLIST')
                 self.cursor_operat.query('USE %s_clients' % self.socname)
                 self.cursor_operat.query('SELECT ${columns} FROM clients WHERE N = %s',
@@ -146,6 +158,10 @@ class IncomingCall:
 
 
         def get_sda_profiles(self, nsda):
+                """
+                Reads the available scenarios according to the SDA, the date and time, and
+                the current occupation of the SDA.
+                """
                 self.elect_competence = None
 
                 columns = ('N', 'NCLI', 'NCOL', 'NSDA', 'Script', 'Flag', 'Priorite', 'CompLocale', 'VoiesSim')
@@ -331,8 +347,6 @@ class IncomingCall:
 
                 print 'day/night status', self.dialplan['hassun'], self.dialplan['sun'], time1, time2, timex, self.period, self.dialplan['M001003']
 
-
-
                 # print out a summary of dialplan statuses
                 print 'INCOMING CALL : dialplan settings =', self.dialplan
 
@@ -340,6 +354,9 @@ class IncomingCall:
 
 
         def __local_group_composition__(self):
+                """
+                Returns the local group composition (code number 0).
+                """
                 columns = ('CODE', 'NOM', 'GL')
                 self.cursor_operat.query('USE agents')
                 self.cursor_operat.query('SELECT ${columns} FROM agents WHERE GL = 1',
@@ -353,6 +370,9 @@ class IncomingCall:
 
 
         def __localN_group_composition__(self, nprof, ngroup):
+                """
+                Returns the group composition according to 'nprof' and 'ngroup'.
+                """
                 columns = ('NPERM', 'NGROUP', 'NOM', 'NPROF')
                 self.cursor_operat.query('USE %s_clients' % self.socname)
                 self.cursor_operat.query('SELECT ${columns} FROM groupes WHERE NGROUP = %s AND NPROF = %s',
@@ -386,6 +406,10 @@ class IncomingCall:
 
 
         def check_operator_status(self, operatorname):
+                """
+                Finds the operator availability, according to one's properties
+                and the current call's.
+                """
                 columns = ('CODE', 'NOM')
                 # AGPI : records outgoing calls
                 self.cursor_operat.query('USE agents')
@@ -461,7 +485,7 @@ class IncomingCall:
 
         def __list_operators__(self, nprof, detail_tab, upto):
                 """
-                Returns the list of agents, as well as thir status, that are available for the groups defined from
+                Returns the list of agents, as well as their status, that are available for the groups defined from
                 index 0 to upto.
                 """
                 listopers = []
@@ -485,6 +509,9 @@ class IncomingCall:
 
 
         def __typet_secretariat__(self, nprof, detail, delaigrp):
+                """
+                Handles the 'Secretariat' actions of 'PH' scenarios.
+                """
                 whattodo = None
                 if len(detail) == 0:
                         detail = '0'
@@ -520,7 +547,9 @@ class IncomingCall:
                                 upto += 1
                         else:
                                 self.statacd2_tt = 'TT_SOP' # vs. TT_SFA ?
-                                whattodo = Action('secretariat', delay, None)
+                                whattodo = {'action'   : 'secretariat',
+                                            'delay'    : delay,
+                                            'argument' : None}
                                 break
 
                 self.list_svirt = []
@@ -538,14 +567,14 @@ class IncomingCall:
                                    self.commid]
                         self.list_svirt.append(request)
 
-                if whattodo is not None:
-                        print '  COMING CALL : __typet_secretariat__ : ', upto, whattodo.status()
-                else:
-                        print '  COMING CALL : __typet_secretariat__ : ', upto, whattodo
+                print '  COMING CALL : __typet_secretariat__ : ', upto, whattodo
                 return whattodo
 
 
         def __get_fichier__(self, detail):
+                """
+                Reads the 'fichier' entries for 'F' and 'T' actions.
+                """
                 columns = ('NCLI', 'NCOL', 'NOM', 'NTEL', 'TypeN', 'ModeA', 'NbC', 'NbP', 'DSonn', 'SDA', 'Ordre')
                 self.cursor_operat.query('USE %s_clients' % self.socname)
                 if self.whereph == 'SEC':
@@ -561,6 +590,9 @@ class IncomingCall:
 
 
         def __typet_fichier__(self, detail):
+                """
+                Handles the 'Fichier' actions of 'PH' scenarios.
+                """
                 results = self.__get_fichier__(detail)
                 nresults = len(results)
                 if nresults > 0:
@@ -575,7 +607,9 @@ class IncomingCall:
                                 print 'Fichier %s : %s (%s) %s %s %s' % (str(b), b[3], b[5], b[6], b[7], delay)
                                 if b[5] == 'STAND':
                                         delay = ''
-                                whattodo = Action('fic', 0, '%s-%s-%s-%s' %(b[3], delay, b[6], b[7]))
+                                whattodo = {'action'   : 'fic',
+                                            'delay'    : 0,
+                                            'argument' : '%s-%s-%s-%s' %(b[3], delay, b[6], b[7])}
                         else:
                                 whattodo = None
                 else:
@@ -584,6 +618,9 @@ class IncomingCall:
 
 
         def __typet_telephone__(self, detail):
+                """
+                Handles the 'Telephone' actions of 'PH' scenarios.
+                """
                 results = self.__get_fichier__(detail)
                 nresults = len(results)
                 if nresults > 0:
@@ -595,7 +632,9 @@ class IncomingCall:
                                 print 'Telephone %s : %s (%s) %s %s %s' % (str(b), b[3], b[5], b[6], b[7], delay)
                                 if b[5] == 'STAND':
                                         delay = ''
-                                whattodo = Action('tel', 0, '%s-%s-%s-%s' %(b[3], delay, b[6], b[7]))
+                                whattodo = {'action'   : 'tel',
+                                            'delay'    : 0,
+                                            'argument' : '%s-%s-%s-%s' %(b[3], delay, b[6], b[7])}
                         else:
                                 whattodo = None
                 else:
@@ -604,6 +643,9 @@ class IncomingCall:
 
 
         def __typet_base__(self, detail):
+                """
+                Handles the 'Base' actions of 'PH' scenarios.
+                """
                 whattodo = None
                 columns = ('NCLI', 'NCOL', 'Nom', 'DateJ', 'Plages', 'Plage1', 'Plage2', 'Plage3', 'Plage4')
                 self.cursor_operat.query('USE %s_clients' % self.socname)
@@ -678,16 +720,23 @@ class IncomingCall:
                                                       %(intext, normstd, num, ncherche, npatiente, wtime, withsda, which)
                                                 if which == 6:
                                                         # number is a Repondeur file
-                                                        whattodo = Action('rep', 0, self.__wavstrip__(num))
+                                                        whattodo = {'action'   : 'rep',
+                                                                    'delay'    : 0,
+                                                                    'argument' : self.__wavstrip__(num)}
                                                 else:
                                                         if normstd == '1':
                                                                 wtime = ''
-                                                        whattodo = Action('bas', 0, '-'.join([num, wtime, ncherche, npatiente]))
+                                                        whattodo = {'action'   : 'bas',
+                                                                    'delay'    : 0,
+                                                                    'argument' : '-'.join([num, wtime, ncherche, npatiente])}
 
                 return whattodo
 
 
         def __wavstrip__(self, filename):
+                """
+                Utility to remove '.wav' and '.WAV' extensions.
+                """
                 if filename.find('.wav') == len(filename) - 4 or filename.find('.WAV') == len(filename) - 4:
                         return filename[:-4]
                 else:
@@ -701,6 +750,9 @@ class IncomingCall:
 
 
         def __typep_phases__(self, typep, clients_profil):
+                """
+                Handles the 'PH1', 'PH2' (and casually 'SEC') scenarios.
+                """
                 nprof = clients_profil[0]
                 typet = clients_profil[7]
                 detail = clients_profil[8]
@@ -739,14 +791,22 @@ class IncomingCall:
 
 
         def __typep_rep__(self, clients_profil):
+                """
+                Handles a 'REP' scenario.
+                """
                 filename = self.__wavstrip__(clients_profil[8])
                 print '  COMING CALL : __typep_rep__', filename
                 self.statacd2_tt = 'TT_REP'
-                whattodo = Action('rep', 0, filename)
+                whattodo = {'action'   : 'rep',
+                            'delay'    : 0,
+                            'argument' : filename}
                 return whattodo
 
 
         def __typep_mes__(self, clients_profil):
+                """
+                Handles a 'MES' scenario.
+                """
                 columns = ('N', 'NCLI', 'NCOL', 'NPROF', 'NomMess', 'Duree', 'Envoie', 'Mail', 'Conserve')
                 self.cursor_operat.query('USE %s_clients' % self.socname)
                 self.cursor_operat.query('SELECT ${columns} FROM messagerie WHERE NCLI = %s AND NCOL = %s AND NPROF = %s',
@@ -761,19 +821,26 @@ class IncomingCall:
                         filename = self.__wavstrip__(clients_messagerie_item[4])
                         maxlength = str(clients_messagerie_item[5])
                         msgindice = str(clients_messagerie_item[0])
-                        whattodo = Action('mes', 0, ';'.join([filename, maxlength, msgindice]))
+                        whattodo = {'action'   : 'mes',
+                                    'delay'    : 0,
+                                    'argument' : ';'.join([filename, maxlength, msgindice])}
                 else:
                         whattodo = None
                 return whattodo
 
 
         def __spanprofiles__(self):
+                """
+                Handles the steps of an incoming call treatment PH1 / PH2 / REP / MES ...
+                """
                 print '  COMING CALL : __spanprofiles__ : where s = %s/%s/%s' % (self.whereph, self.wherephS, self.wherephF)
 
                 whattodo = None
                 if self.whereph == 'INTRO':
                         if self.dialplan['welcome'] == 1:
-                                whattodo = Action('intro', 0, None)
+                                whattodo = {'action'   : 'intro',
+                                            'delay'    : 0,
+                                            'argument' : None}
                         self.whereph = 'PH1'
 
                 for [thisstep, nextstep] in ['PH1', 'PH2'], ['PH2', 'SEC'], ['SEC', 'REP']:
@@ -806,22 +873,26 @@ class IncomingCall:
                                 else:
                                         self.whereph = 'END'
 
-                if whattodo is None:
-                        # if we get there nothing has been found
-                        print '  COMING CALL : __spanprofiles__, before return :', whattodo, self.whereph, self.wherephS, self.wherephF
-                else:
-                        print '  COMING CALL : __spanprofiles__, before return :', whattodo.status(), self.whereph, self.wherephS, self.wherephF
+                print '  COMING CALL : __spanprofiles__, before return :', whattodo, self.whereph, self.wherephS, self.wherephF
                 return [whattodo, self.whereph]
 
 
         def set_timestamp_tax(self, status):
+                """
+                Sets the timestamps related to a status' change.
+                It allows primarily to compute the ringing time.
+                """
                 try:
                         self.ttimes[time.time()] = status
                 except Exception, exc:
                         print '--- exception --- set_timestamp_tax (%s) : %s' % (status, str(exc))
                 return
-        
+
+
         def set_timestamp_stat(self, status):
+                """
+                Sets the status' change at a given time, in order to build the call history later on.
+                """
                 try:
                         self.stimes[time.time()] = status
                 except Exception, exc:
@@ -830,15 +901,22 @@ class IncomingCall:
 
 
         def findaction(self, upto):
-                """Lookups the action to perform, after an AGI request has been issued"""
-                whattodo = Action('exit', 0, None)
+                """
+                Looks up the action to perform, after an AGI request has been issued.
+                This is a public function entry point (from CallBooster class for instance) for __spanprofiles__().
+                """
+                whattodo = {'action'   : 'exit',
+                            'delay'    : 0,
+                            'argument' : None}
                 newupto = None
                 try:
                         [whattodo, newupto] = self.__spanprofiles__()
                         if whattodo is None:
-                                whattodo = Action('exit', 0, None)
-                        self.set_timestamp_stat(whattodo.action)
+                                whattodo = {'action'   : 'exit',
+                                            'delay'    : 0,
+                                            'argument' : None}
+                        self.set_timestamp_stat(whattodo['action'])
                 except Exception, exc:
                         print 'exception when calling __spanprofiles__() : %s' % str(exc)
 
-                return [whattodo.action, whattodo.delay, whattodo.argument, newupto]
+                return [whattodo['action'], whattodo['delay'], whattodo['argument'], newupto]

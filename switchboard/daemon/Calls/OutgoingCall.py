@@ -1,3 +1,10 @@
+# -*- coding: latin-1 -*-
+
+"""
+The Outgoing Calls' properties are managed here.
+Not so much actions as in IncomingCall are performed here : apart from the basic database requests, this is more used in a 'structure' way than a true 'class' way.
+"""
+
 __version__   = '$Revision$'
 __date__      = '$Date$'
 __copyright__ = 'Copyright (C) 2007, 2008, Proformatique'
@@ -10,6 +17,8 @@ class OutgoingCall:
         Class for outgoing calls management.
         """
         
+        dir = 'o'
+        ctime = time.localtime()
         parking = None
         parkexten = None
         peerchannel = None
@@ -25,13 +34,14 @@ class OutgoingCall:
         def __init__(self, commid, astid,
                      cursor_operat, socname,
                      uinfo, agentnum, agentname, dest, nsoc, ncli, ncol):
-                self.dir    = 'o'
+                """
+                Sets the call properties.
+                """
                 self.commid = commid
                 self.nsoc   = nsoc
                 self.ncli   = ncli
                 self.ncol   = ncol
                 self.taxes  = None
-                self.ctime  = time.localtime()
                 self.dest = dest
                 self.agentnum  = agentnum
                 self.agentname = agentname
@@ -58,20 +68,33 @@ class OutgoingCall:
 
                 return
 
+
         def set_timestamp_tax(self, status):
+                """
+                Sets the timestamps related to a status' change.
+                It allows primarily to compute the ringing time.
+                """
                 try:
                         self.ttimes[time.time()] = status
                 except Exception, exc:
                         print '--- exception --- set_timestamp_tax (%s) : %s' % (status, str(exc))
                 return
-        
+
+
         def set_timestamp_stat(self, status):
+                """
+                Sets the status' change at a given time, in order to build the call history later on.
+                """
                 try:
                         self.stimes[time.time()] = status
                 except Exception, exc:
                         print '--- exception --- set_timestamp_stat (%s) : %s' % (status, str(exc))
                 return
-        
-        def settaxes(self, triplet):
-                self.taxes = triplet
 
+
+        def settaxes(self, triplet):
+                """
+                Sets the call's tax informations.
+                """
+                self.taxes = triplet
+                return

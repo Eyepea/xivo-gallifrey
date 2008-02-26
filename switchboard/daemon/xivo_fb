@@ -1,4 +1,6 @@
 #!/usr/bin/python
+# -*- coding: latin-1 -*-
+
 # $Revision$
 # $Date$
 #
@@ -223,6 +225,8 @@ Communication with CTI clients
 """
 
 def send_msg_to_cti_client(uinfo, message):
+        if message is None:
+                return
         try:
                 if 'tcpmode' in uinfo:
                         conntype = uinfo.get('tcpmode')
@@ -384,13 +388,13 @@ def manage_login(cfg, requester_ip, requester_port, socket):
         for argum in commandclass.required_login_params():
                 if argum not in cfg:
                         log_debug(SYSLOG_WARNING, 'missing argument when user attempts to log in : <%s>' % argum)
-                        return commandclass.loginko_srv2clt(cfg, 'missing:%s' % argum)
+                        return commandclass.loginko(cfg, 'missing:%s' % argum)
 
         if cfg.get('astid') in configs:
                 astid  = cfg.get('astid')
         else:
                 log_debug(SYSLOG_INFO, "login command attempt from SB : asterisk name <%s> unknown" % cfg.get('astid'))
-                return commandclass.loginko_srv2clt(cfg, 'asterisk_name')
+                return commandclass.loginko(cfg, 'asterisk_name')
         proto    = cfg.get('proto').lower()
         userid   = cfg.get('userid')
         state    = cfg.get('state')
@@ -402,17 +406,17 @@ def manage_login(cfg, requester_ip, requester_port, socket):
                 version = '0'
 
         if int(version) < REQUIRED_CLIENT_VERSION:
-                return commandclass.loginko_srv2clt(cfg, 'version_client:%s;%d' % (version, REQUIRED_CLIENT_VERSION))
+                return commandclass.loginko(cfg, 'version_client:%s;%d' % (version, REQUIRED_CLIENT_VERSION))
 
         capa_user = []
         ulist[astid].acquire()
         try:
                 userinfo = ulist[astid].finduser(userid)
                 if userinfo == None:
-                        repstr = commandclass.loginko_srv2clt(cfg, 'user_not_found')
+                        repstr = commandclass.loginko(cfg, 'user_not_found')
                         log_debug(SYSLOG_INFO, "no user found %s" % str(cfg))
                 elif password != userinfo['passwd']:
-                        repstr = commandclass.loginko_srv2clt(cfg, 'login_passwd')
+                        repstr = commandclass.loginko(cfg, 'login_passwd')
                 else:
                         reterror = check_user_connection(userinfo, whoami)
                         if reterror is None:
@@ -426,7 +430,7 @@ def manage_login(cfg, requester_ip, requester_port, socket):
                                              whoami, whatsmyos, True, state,
                                              False, socket.makefile('w'))
 
-                                repstr = commandclass.loginok_srv2clt(userinfo, capa_user, [XIVOVERSION, __revision__], configs, cfg)
+                                repstr = commandclass.loginok(userinfo, capa_user, [XIVOVERSION, __revision__], configs, cfg)
                                 userinfo['connection'] = socket
                                 u_phonenum = userinfo.get('phonenum')
                                 if u_phonenum is None:
@@ -439,7 +443,7 @@ def manage_login(cfg, requester_ip, requester_port, socket):
                                                                                               userinfo.get('phonenum')]
                                 plist[astid].send_availstate_update(userid, state)
                         else:
-                                repstr = commandclass.loginko_srv2clt(cfg, reterror)
+                                repstr = commandclass.loginko(cfg, reterror)
         finally:
                 ulist[astid].release()
 
@@ -672,7 +676,7 @@ def manage_tcp_connection(connid, allow_events):
                 elif usefulmsg != "":
                     if allow_events: # i.e. if SB-style connection
                         command = commandclass.parsecommand(usefulmsg)
-                        if command.name in commandclass.get_list_commands_clt2srv():
+                        if command.name in commandclass.get_list_commands():
                                 if command.type == xivo_commandsets.CMD_LOGIN:
                                         try:
                                                 cfg = commandclass.get_login_params(asterisklist[0], command, connid[0])

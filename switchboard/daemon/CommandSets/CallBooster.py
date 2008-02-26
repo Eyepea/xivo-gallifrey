@@ -1,3 +1,13 @@
+# -*- coding: latin-1 -*-
+
+"""
+This is the CallBooster core class.
+The main inputs are :
+- the Agents' commands
+- the Asterisk events
+- the incoming calls
+"""
+
 __version__   = '$Revision$'
 __date__      = '$Date$'
 __copyright__ = 'Copyright (C) 2007, 2008, Proformatique'
@@ -29,6 +39,7 @@ TRUNKNAME = 'FT'
 TSLOTTIME = 1800
 TIMEOUTPING = 120
 GHOST_AGENT = 'Agent/6999'
+DECSTRING = 'Déclenché en automatique'
 
 incoming_calls = {}
 outgoing_calls = {}
@@ -71,6 +82,9 @@ class CallBoosterCommand(BaseCommand):
                     'Change']
         
         def __init__(self, ulist, amis, operatsocket, operatport, operatini, queued_threads_pipe):
+                """
+                Defines the basic arguments.
+                """
 		BaseCommand.__init__(self)
                 self.ulist = ulist
                 self.amis  = amis
@@ -111,8 +125,10 @@ class CallBoosterCommand(BaseCommand):
                 return
 
 
-        # the call comes here when the AGI has directly found a peer
         def __sendfiche__(self, astid, dest, incall):
+                """
+                The call comes here when the AGI has directly found a peer.
+                """
                 userinfo = self.ulist[astid].finduser(dest)
                 log_debug(SYSLOG_INFO, '__sendfiche__ : userinfo = %s' % str(userinfo))
                 if userinfo is not None:
@@ -137,6 +153,11 @@ class CallBoosterCommand(BaseCommand):
 
 
         def __clear_call_fromqueues__(self, astid, incall):
+                """
+                Removes the 'incall' call references from all the queues and updates the relevant information
+                to logged-in agents.
+                """
+                # XXX queue ~= call ...
                 for opername, userinfo in self.ulist[astid].list.iteritems():
                         if incall.queuename in userinfo['queuelist']:
                                 del userinfo['queuelist'][incall.queuename]
@@ -157,6 +178,9 @@ class CallBoosterCommand(BaseCommand):
 
 
         def __addtoqueue__(self, astid, dest, incall):
+                """
+                Adds the 'dest' Agent to 'incall' call's queue.
+                """
                 print '__addtoqueue__', dest, incall.commid, incall.sdanum
                 self.amis[astid].queueadd(incall.queuename, GHOST_AGENT)
                 self.amis[astid].queuepause(incall.queuename, GHOST_AGENT, 'false')
@@ -181,6 +205,9 @@ class CallBoosterCommand(BaseCommand):
 
 
         def __socname__(self, idsoc):
+                """
+                Returns the 'Permanence' name that matches 'idsoc'.
+                """
                 columns = ('ID', 'Dossier')
                 self.cursor_operat.query('USE system')
                 self.cursor_operat.query('SELECT ${columns} FROM societes WHERE ID = %s',
@@ -195,6 +222,9 @@ class CallBoosterCommand(BaseCommand):
 
 
         def __local_nsoc__(self, idsoc):
+                """
+                Returns the company's ID that matches 'idsoc'.
+                """
                 columns = ('N', 'ID')
                 self.cursor_operat.query('USE system')
                 self.cursor_operat.query('SELECT ${columns} FROM societes WHERE ID = %s',
@@ -209,6 +239,10 @@ class CallBoosterCommand(BaseCommand):
 
 
         def getuserlist(self):
+                """
+                Returns the Agents' list, as defined in Operat DataBase.
+                Sets XIVO's musiconhold class according to the 'silent or not' option.
+                """
                 localulist = {}
                 try:
                         columns = ('CODE', 'NOM', 'PASS', 'AGPI')
@@ -286,16 +320,17 @@ class CallBoosterCommand(BaseCommand):
                 self.cursor_xivo   = self.conn_xivo.cursor()
 
 
-        def get_list_commands_clt2srv(self):
-                """Defines the list of allowed commands."""
+        def get_list_commands(self):
+                """
+                Defines the list of allowed commands (client to server direction).
+                """
                 return self.commands
 
 
-        def get_list_commands_srv2clt(self):
-                return None
-
-
         def parsecommand(self, linein):
+                """
+                Sets the Command kind and args according to this class' syntax.
+                """
                 params = linein.split(',')
                 print 'CallBooster : command', params
                 cmd = xivo_commandsets.Command(params[-1], params[:-1])
@@ -375,11 +410,16 @@ class CallBoosterCommand(BaseCommand):
 
 
         def required_login_params(self):
-                """Returns the list of login parameters"""
+                """
+                Returns the list of required login parameters
+                """
                 return ['astid', 'proto', 'ident', 'userid', 'version', 'computername', 'phonenum', 'computeripref', 'srvnum']
 
 
         def connected_srv2clt(self, conn, id):
+                """
+                Sends a 'connected' status to the client once the TCP link has been setup.
+                """
                 msg = 'Connect%s/' % id
                 print 'CallBooster', 'sending %s' % msg
                 conn.send(msg)
@@ -680,15 +720,14 @@ class CallBoosterCommand(BaseCommand):
                                 n += 1
                                 if not os.path.exists(newfilepath):
                                         os.makedirs(newfilepath, 02775)
-                                os.rename(fullpath, '%s/%s' % (newfilepath, newfilename))
+                                os.system('mv %s %s/%s' % (fullpath, newfilepath, newfilename))
                                 self.cursor_operat.query("INSERT INTO suivis (`NOM`,`NSOC`,`NCLI`,`NCOL`,`NSTRUCT`,`TypeT`,`DateP`,`NAPL`,`ETAT`,`STATUT`) "
                                                          "VALUES ('%s', %d, %d, %d, %s, '%s', '%s', '%s', '%s', '%s')"
                                                          % (collabname, nsoc, ncli, ncol, idx, 'AUDIO',
-                                                            datetime, 'ACD', 'ATT', '%s\\Declenche en automatique' % newfilename))
+                                                            datetime, 'ACD', 'ATT', '%s\\\\%s' % (newfilename, DECSTRING.decode('latin1'))))
                         else:
                                 print 'full path is', fullpath, 'deleting'
                                 os.remove(fullpath)
-
 
                 # ','2008-01-06_09;27;09,060;;.WAV\\Déclenché en automatique');
                 # DateP : Date et Heure d'envoi programmé
@@ -777,15 +816,15 @@ class CallBoosterCommand(BaseCommand):
                         num = channel[6:-8]
                         toremove = None
                         for i, h in self.alerts.iteritems():
-                                # print num, i, h
+                                stopdecroche = h['contact']['stopdecroche']
                                 if num in h['numbers'] and h['status'] > 0:
                                         if h['numbers'][h['status'] - 1] == num:
-                                                print num, i, h['numbers'], h['status']
-##                                                if len(h['numbers']) == h['status']:
-##                                                        toremove = i
-##                        if toremove is not None: # otherwise it will naturally step to the next number
-##                                # fill DB for it
-##                                del self.alerts[toremove]
+                                                print 'HANGUP ALERT', num, i, h['numbers'], h['status'], h['contact']['stopdecroche']
+                                                if len(h['numbers']) == h['status'] or stopdecroche == 1:
+                                                        toremove = i
+                        if toremove is not None: # otherwise it will naturally step to the next number
+                                # fill DB for it
+                                del self.alerts[toremove]
 
                         del self.alerts_uniqueids[uniqueid]
                         self.nalerts_called -= 1
@@ -880,6 +919,9 @@ class CallBoosterCommand(BaseCommand):
 
 
         def parkedcallgiveup(self, astid, event):
+                """
+                Function called when an AMI ParkedCallGiveUp Event is read.
+                """
                 print 'GIVEUP-PARKEDCALL', astid, event
                 chan = event.get('Channel')
 
@@ -901,6 +943,11 @@ class CallBoosterCommand(BaseCommand):
 
 
         def agent_was_logged_in(self, astid, event):
+                """
+                Function called when an AMI Agents Event is read AND that this Agent is not Logged Off.
+                This is primarily called at FB's startup and avoids an already-logged-in agent to be
+                logged in again.
+                """
                 agentnum = event.get('Agent')
                 agentchannel = event.get('LoggedInChan')
                 print 'agent_was_logged_in', astid, event
@@ -910,6 +957,10 @@ class CallBoosterCommand(BaseCommand):
 
 
         def agentlogin(self, astid, event):
+                """
+                Function called when an AMI Agentlogin Event is read.
+                This is used to send the right acknowledgement to the agent's Operat.
+                """
                 agentnum = event.get('Agent')
                 agentchannel = event.get('Channel')
                 print 'agentlogin', astid, event
@@ -934,6 +985,10 @@ class CallBoosterCommand(BaseCommand):
 
 
         def agentlogoff(self, astid, event):
+                """
+                Function called when an AMI Agentlogoff Event is read.
+                This occurs when an agent hangs up.
+                """
                 agentnum = event.get('Agent')
                 print 'agentlogoff', astid, event
                 for opername, userinfo in self.ulist[astid].list.iteritems():
@@ -947,7 +1002,11 @@ class CallBoosterCommand(BaseCommand):
                 return
 
 
-        def __walkdir__(self, args, dirname, filenames):
+        def __callback_walkdir__(self, args, dirname, filenames):
+                """
+                Function called in order to know the presence of M018 files in a given tree.
+                This is used in order to setup an MOH class in XIVO with a symlink towards these files.
+                """
                 if dirname[-5:] == '/Sons':
                         for filename in filenames:
                                 if filename.find('M018.') == 0:
@@ -955,6 +1014,10 @@ class CallBoosterCommand(BaseCommand):
 
 
         def pre_reload(self):
+                """
+                This function is called when the XIVO web-interface sends an 'update' to the FB daemon.
+                We sync the agents and voicemails definitions from Operat to XIVO then.
+                """
                 print 'pre_reload'
                 self.__synchro_agents__()
                 self.__synchro_sda_voicemail__()
@@ -962,12 +1025,19 @@ class CallBoosterCommand(BaseCommand):
 
 
         def pre_moh_reload(self):
+                """
+                This function is called when the XIVO web-interface sends an 'moh update' to the FB daemon.
+                We sync the moh definitions from Operat to XIVO then.
+                """
                 print 'pre_moh_reload'
                 self.__synchro_moh_filesystem__()
                 return
 
 
         def __synchro_agents__(self):
+                """
+                Syncs the 'agent' and 'agentfeatures' tables (XIVO) from 'agents' in Operat.
+                """
                 columns = ('CODE', 'NOM')
                 self.cursor_operat.query('USE agents')
                 self.cursor_operat.query('SELECT ${columns} FROM agents',
@@ -994,34 +1064,41 @@ class CallBoosterCommand(BaseCommand):
                                                agnum)
                         isaginxivo = self.cursor_xivo.fetchall()
                         if len(isaginxivo) > 0:
-                                print '  defined :  %s  =>  %s' %(ag[1], agnum)
+                                print 'Agent   defined :  %s  =>  %s' %(ag[1], agnum)
                         else:
-                                print 'undefined :  %s  =>  %s' %(ag[1], agnum)
-                                columns = ('var_metric',)
-                                self.cursor_xivo.query('SELECT ${columns} FROM agent ORDER BY var_metric DESC LIMIT 1',
-                                                       columns)
-                                cnum = self.cursor_xivo.fetchall()
-                                curnum = cnum[0][0] + 2
-                                self.cursor_xivo.query("ALTER TABLE agent AUTO_INCREMENT = 0")
-                                self.cursor_xivo.query("INSERT INTO agent VALUES "
-                                                       "(0, %d, %d, 0, 'agents.conf', 'agents', '%s', '%s')"
-                                                       % (1, curnum, 'agent', '%s,,%s' % (agnum, ag[1])))
-                                self.cursor_xivo.query('SELECT LAST_INSERT_ID()') # last_insert_id
-                                results = self.cursor_xivo.fetchall()
-                                last_insert_id = results[0][0]
-                                for p, vp in agent_params.iteritems():
+                                print 'Agent undefined :  %s  =>  %s' %(ag[1], agnum)
+                                try:
+                                        columns = ('var_metric',)
+                                        self.cursor_xivo.query('SELECT ${columns} FROM agent ORDER BY var_metric DESC LIMIT 1',
+                                                               columns)
+                                        cnum = self.cursor_xivo.fetchall()
+                                        curnum = cnum[0][0] + 2
+                                        self.cursor_xivo.query("ALTER TABLE agent AUTO_INCREMENT = 0")
                                         self.cursor_xivo.query("INSERT INTO agent VALUES "
                                                                "(0, %d, %d, 0, 'agents.conf', 'agents', '%s', '%s')"
-                                                               % (1, curnum - 1, p, vp))
-                                self.cursor_xivo.query("ALTER TABLE agentfeatures AUTO_INCREMENT = 0")
-                                self.cursor_xivo.query("INSERT INTO agentfeatures VALUES "
-                                                       "(0, %d, %d, '%s', '%s', '%s', '', 0, 1)"
-                                                       % (last_insert_id, 1, ag[1], '', agnum))
-                                self.conn_xivo.commit()
+                                                               % (1, curnum, 'agent', '%s,,%s' % (agnum, ag[1])))
+                                        self.cursor_xivo.query('SELECT LAST_INSERT_ID()') # last_insert_id
+                                        results = self.cursor_xivo.fetchall()
+                                        last_insert_id = results[0][0]
+                                        for p, vp in agent_params.iteritems():
+                                                self.cursor_xivo.query("INSERT INTO agent VALUES "
+                                                                       "(0, %d, %d, 0, 'agents.conf', 'agents', '%s', '%s')"
+                                                                       % (1, curnum - 1, p, vp))
+                                        self.cursor_xivo.query("ALTER TABLE agentfeatures AUTO_INCREMENT = 0")
+                                        self.cursor_xivo.query("INSERT INTO agentfeatures VALUES "
+                                                               "(0, %d, %d, '%s', '%s', '%s', '', 0, 1)"
+                                                               % (last_insert_id, 1, ag[1], '', agnum))
+                                        self.conn_xivo.commit()
+                                except Exception, exc:
+                                        print '--- exception --- could not insert agent (%s) : %s' % (ag[1], str(exc))
                 return
 
 
         def __synchro_sda_voicemail__(self):
+                """
+                Syncs the 'uservoicemail' table (XIVO) from 'sda' in Operat,
+                since any SDA number shall be associated with a voicemail entry.
+                """
                 columns = ('NSDA', 'NOM')
                 self.cursor_operat.query('USE system')
                 self.cursor_operat.query('SELECT ${columns} FROM sda',
@@ -1035,23 +1112,29 @@ class CallBoosterCommand(BaseCommand):
                                                sdanum)
                         issdainxivo = self.cursor_xivo.fetchall()
                         if len(issdainxivo) > 0:
-                                print '  defined :  %s (%s)' %(sdanum, operat_sda[1])
+                                print 'SDA   defined :  %s (%s)' %(sdanum, operat_sda[1])
                         else:
-                                print 'undefined :  %s (%s)' %(sdanum, operat_sda[1])
-                                self.cursor_xivo.query("INSERT INTO uservoicemail VALUES "
-                                                       "(0, 'default', '%s', '', '%s', '%s', '', NULL, NULL, NULL, '', 'eu-fr', 0, "
-                                                       "NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, 'no', NULL, 0)"
-                                                       % (sdanum, operat_sda[1], 'none@none.none'))
-                                self.conn_xivo.commit()
+                                print 'SDA undefined :  %s (%s)' %(sdanum, operat_sda[1])
+                                try:
+                                        self.cursor_xivo.query("INSERT INTO uservoicemail VALUES "
+                                                               "(0, 'default', '%s', '', '%s', '%s', '', NULL, NULL, NULL, '', 'eu-fr', 0, "
+                                                               "NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, 'no', NULL, 0)"
+                                                               % (sdanum, operat_sda[1], 'none@none.none'))
+                                        self.conn_xivo.commit()
+                                except Exception, exc:
+                                        print '--- exception --- could not insert voicemailed SDA (%s) : %s' % (sdanum, str(exc))
                 return
 
 
         def __synchro_moh_filesystem__(self):
+                """
+                Syncs the 'musiconhold' table (XIVO) from the CallBooster sound directories.
+                """
                 REPFILES = '/usr/share/asterisk/sounds/callbooster'
                 MOHFILES = '/usr/share/asterisk/moh/callbooster'
                 columns = ('category', 'var_name', 'var_val')
                 self.listreps = []
-                os.path.walk(REPFILES, self.__walkdir__, None)
+                os.path.walk(REPFILES, self.__callback_walkdir__, None)
                 for r in self.listreps:
                         acc = r[len(REPFILES)+1:-5]
                         self.cursor_xivo.query("SELECT ${columns} FROM musiconhold WHERE category = %s AND var_name = %s",
@@ -1090,6 +1173,12 @@ class CallBoosterCommand(BaseCommand):
 
 
         def __outcall__(self, call):
+                """
+                Issues an outgoing call according to 'call' definitions.
+                The relevant conditions are assumed to hold at this point :
+                - other communications have been parked (Attente)
+                - the calling Agent has been logged in
+                """
                 # BEGIN OUTGOING CALL (Agent should be logged then)
                 retval = 1
                 reply = '%s,%d,%s,Appel/' % (call.commid, retval, call.dest)
@@ -1106,6 +1195,13 @@ class CallBoosterCommand(BaseCommand):
 
 
         def userevent(self, astid, event):
+                """
+                Function called when an AMI UserEventXXX Event is read, where XXX is almost any string.
+                This is used for 2 user-defined events :
+                * UserEventAlertCB : we fall here when a 'good' reply has been given by the DTMF Read()
+                * UserEventVoiceMailCB : this allows us to connect the voicemail call details to the
+                upcoming messagewaiting Event.
+                """
                 print 'userevent :', astid, event
                 evfunction = event.get('Event')
                 uniqueid = event.get('Uniqueid')
@@ -1452,7 +1548,7 @@ class CallBoosterCommand(BaseCommand):
                         else:
                                 print 'timer/Ping : first setup for this connection'
 
-                        timer = threading.Timer(TIMEOUTPING, self.__ping_noreply__)
+                        timer = threading.Timer(TIMEOUTPING, self.__callback_ping_noreply__)
                         timer.start()
                         userinfo['timer'] = timer
 
@@ -1521,7 +1617,7 @@ class CallBoosterCommand(BaseCommand):
                         system_ressource_struct = self.cursor_operat.fetchall()
                         for srs in system_ressource_struct:
                                 print 'A/ (# outgoing lines according to date & time) :', srs
-                                nsimlines = int(srs[7])
+                                self.nalerts_simult = int(srs[7]) - 1 # XXX remove -1
 
                         columns = ('N', 'NAlerteStruct', 'NomFichierMessage', 'ListeGroupes', 'interval_suivi')
                         self.cursor_operat.query('USE %s_mvts' % self.__socname__(idsoc))
@@ -1618,13 +1714,17 @@ class CallBoosterCommand(BaseCommand):
                         self.__alert_calls__(astid)
                 else:
                         print 'CallBooster : unmanaged command <%s>' % cname
+                return
 
 
-        def __choose_and_queuepush__(self, astid, name):
+        def __choose_and_queuepush__(self, astid, info_whocalled):
+                """
+                To be called any time one would like to update the queues's status.
+                """
                 try:
-                        print '__choose_and_queuepush__ : MANAGE (after %s)' % name
+                        print '__choose_and_queuepush__ : MANAGE (after %s)' % info_whocalled
                         todo = self.__choose__(astid)
-                        print '__choose_and_queuepush__ : CHOOSE (after %s)' % name, todo
+                        print '__choose_and_queuepush__ : CHOOSE (after %s)' % info_whocalled, todo
                         for opername_iter, mtd in todo.iteritems():
                                 if len(mtd) > 0:
                                         td = mtd[0]
@@ -1646,53 +1746,57 @@ class CallBoosterCommand(BaseCommand):
                                                 if nagents == 0:
                                                         self.amis[astid].queueremove(td[1].queuename, GHOST_AGENT)
                 except Exception, exc:
-                        print '--- exception --- __choose_and_queuepush__ (%s) : %s' % (name, str(exc))
+                        print '--- exception --- __choose_and_queuepush__ (%s) : %s' % (info_whocalled, str(exc))
 
 
         def __alert_calls__(self, astid):
+                """
+                Spans the still-to-call numbers and calls them if all the allowed lines are not used.
+                """
                 # missing : sth to prevent the second / third choice to be called while a former one is being tried
                 # status when all the numbers have been spanned ?
-                LOCNUMS = ['101', '102', '103', '102'] # for testing purposes only !!
+                LOCNUMS = ['103', '102', '103', '102'] # for testing purposes only !!
                 ncalls = 0
                 for rid, al in self.alerts.iteritems():
                         if al['status'] < len(al['numbers']) and self.nalerts_called < self.nalerts_simult:
                                 ncalls += 1
                                 dstnum = al['numbers'][al['status']]
                                 print 'calling', al['contact']['nom'], '(%s) (or should be ...)' % dstnum
-                                # dstnum = LOCNUMS[al['status']] # for testing purposes only !!
+                                dstnum = LOCNUMS[al['status']] # XXX for testing purposes only !!
                                 self.amis[astid].aoriginate_var('local', '%s@default' % dstnum, 'dest %s' % dstnum,
                                                                 'cidFB', 'automated call', 'ctx-callbooster-alert',
                                                                 {'CB_ALERT_MESSAGE' : al['filename'],
                                                                  'CB_ALERT_ID' : rid,
                                                                  'CB_ALERT_ALLOWED' : al['digits-allowed'],
                                                                  'CB_ALERT_REPEAT' : al['digits-repeat']},
-                                                                al['timetoring'])
+                                                                5) # al['timetoring'])
                                 al['status'] += 1
                                 self.nalerts_called += 1
                 print '%d calls issued' % ncalls
                 return
 
 
-        def park_srv2clt(self, function, args):
-                return ''
-        def update_srv2clt(self, phoneinfo):
-                return None
-        def message_srv2clt(self, sender, message):
-                return 'message=%s::%s' %(sender, message)
-        def dmessage_srv2clt(self, message):
-                return self.message_srv2clt('daemon-announce', message)
-        def loginko_srv2clt(self, cfg, errorstring):
-                print 'loginko_srv2clt', cfg, errorstring
+        def loginko(self, cfg, errorstring):
+                """
+                Actions to perform when login was KO.
+                """
+                print 'loginko', cfg, errorstring
                 return '%s,1,,Init/' % cfg.get('srvnum')
-        def loginok_srv2clt(self, userinfo, capa_user, versions, configs, cfg):
+
+
+        def loginok(self, userinfo, capa_user, versions, configs, cfg):
+                """
+                Actions to perform when login was OK.
+                Replies Init/
+                """
                 return '%s,1,,Init/' % cfg.get('srvnum')
-        def features_srv2clt(self, direction, message):
-                return 'features%s=%s' %(direction, message)
-        def phones_srv2clt(self, function, args):
-                return None
 
 
         def __moh_check__(self, path):
+                """
+                Checks whether the 'path' class is defined in XIVO, and falls back to the common moh class
+                if needed.
+                """
                 columns = ('category', 'var_name', 'var_val')
                 self.cursor_xivo.query("SELECT ${columns} FROM musiconhold WHERE var_name = %s AND category = %s",
                                        columns,
@@ -1732,7 +1836,7 @@ class CallBoosterCommand(BaseCommand):
                                                                                                cnum)
                                                         self.pending_sv_fiches[ic.commid] = reply
                                                 elif val == 'Attente':
-                                                        timer = threading.Timer(5, self.__svcheck__)
+                                                        timer = threading.Timer(5, self.__callback_svcheck__)
                                                         timer.start()
                                                         ic.svirt = {'params' : params,
                                                                     'timer' : timer,
@@ -1748,7 +1852,7 @@ class CallBoosterCommand(BaseCommand):
                                         if ic.commid == commid :
                                                 iic = ic
                         if iic is not None:
-                                timer = threading.Timer(5, self.__svcheck__)
+                                timer = threading.Timer(5, self.__callback_svcheck__)
                                 timer.start()
                                 iic.svirt['timer'] = timer
                                 iic.svirt['val'] = val
@@ -1763,6 +1867,9 @@ class CallBoosterCommand(BaseCommand):
 
 
         def checkqueue(self):
+                """
+                Checks the contents of queues (when triggered by the local pipe).
+                """
                 buf = os.read(self.queued_threads_pipe[0], 1024)
                 print 'checkqueue, size =', self.tqueue.qsize()
                 disconnlist = []
@@ -1803,21 +1910,26 @@ class CallBoosterCommand(BaseCommand):
                 return disconnlist
 
 
-        def __ping_noreply__(self):
+        def __callback_ping_noreply__(self):
+                """
+                This function is called when 2 mins have elapsed since the previously received ping.
+                """
                 thisthread = threading.currentThread()
                 tname = thisthread.getName()
-                print '__ping_noreply__ (timer finished)', time.asctime(), tname
+                print '__callback_ping_noreply__ (timer finished)', time.asctime(), tname
                 thisthread.setName('Ping-' + tname)
                 self.tqueue.put(thisthread)
                 os.write(self.queued_threads_pipe[1], 'ping-')
                 return
 
 
-        # checking if any news from pending requests
-        def __svcheck__(self):
+        def __callback_svcheck__(self):
+                """
+                This function is called once the 5 seconds have elapsed after an SV request.
+                """
                 thisthread = threading.currentThread()
                 tname = thisthread.getName()
-                print '__svcheck__ (timer finished)', time.asctime(), tname
+                print '__callback_svcheck__ (timer finished)', time.asctime(), tname
                 thisthread.setName('SV-' + tname)
                 self.tqueue.put(thisthread)
                 os.write(self.queued_threads_pipe[1], 'svcheck-')
@@ -1825,6 +1937,9 @@ class CallBoosterCommand(BaseCommand):
 
 
         def __init_taxes__(self, call, numbertobill, fromN, toN, fromS, toS, NOpe):
+                """
+                Fills the 'taxes' table at the start of a call.
+                """
                 try:
                         [juridict, impulsion] = self.__gettaxes__(numbertobill)
                         call.settaxes(impulsion)
@@ -1902,7 +2017,10 @@ class CallBoosterCommand(BaseCommand):
         def __update_stat_acd__(self, state, t0, in_period,
                                 tt_raf, tt_asd, tt_snd, tt_sfa, tt_sop,
                                 tt_tel, tt_fic, tt_bas, tt_mes, tt_rep):
-                
+                """
+                Changes the 30min-updated stats (stat_acd) once the per-call ones (stat_acd2)
+                have been filled in.
+                """
                 datetime = time.strftime(DATETIMEFMT, time.localtime(int(t0 / TSLOTTIME) * TSLOTTIME))
                 period = '_'.join(in_period).strip('_')
                 log_debug(SYSLOG_INFO, '__update_stat_acd__ : datetime = %s (period = %s)' %(datetime, period))
@@ -2113,6 +2231,9 @@ class CallBoosterCommand(BaseCommand):
 
 
         def __gettaxes__(self, num):
+                """
+                Returns the tax informations according to the phone number 'num'.
+                """
                 # num = '003%d' % random.randint(0, 999999999) # fake, for testing purposes ...
                 juridict = self.__juridictions__(num)
                 if juridict is not None:
@@ -2129,6 +2250,9 @@ class CallBoosterCommand(BaseCommand):
 
 
         def __juridictions__(self, num):
+                """
+                Returns the 'Juridiction' ID according to the phone number 'num'.
+                """
                 columns = ('Numero', 'Juridiction', 'Type_Num', 'Description', 'Local')
                 self.cursor_operat.query('USE system')
                 self.cursor_operat.query("SELECT ${columns} FROM juridict",
@@ -2149,6 +2273,9 @@ class CallBoosterCommand(BaseCommand):
 
 
         def __impulsion__(self, jur):
+                """
+                Returns the tax informations according to the 'Juridiction' ID.
+                """
                 columns = ('Juridiction', 'Info', 'NbTaxePC', 'DureePC', 'DureeTaxe')
                 self.cursor_operat.query('USE system')
                 self.cursor_operat.query('SELECT ${columns} FROM impulsion WHERE Juridiction = %s',
@@ -2164,6 +2291,9 @@ class CallBoosterCommand(BaseCommand):
 
 
         def __listqueues__(self):
+                """
+                Returns the unsorted list of currently used queues.
+                """
                 l = []
                 for sdanum, inc in incoming_calls.iteritems():
                         for chan, icall in inc.iteritems():
@@ -2172,6 +2302,9 @@ class CallBoosterCommand(BaseCommand):
 
 
         def __choosequeuenum__(self):
+                """
+                Chooses a queue number among the available ones.
+                """
                 lst = self.__listqueues__()
                 for qnum in xrange(10):
                         qname = 'qcb_%05d' % qnum
@@ -2181,6 +2314,9 @@ class CallBoosterCommand(BaseCommand):
 
 
         def __incallref_from_channel__(self, chan):
+                """
+                Returns the IncomingCall reference that is associated with Asterisk channel reference 'chan'.
+                """
                 thiscall = None
                 for sdanum, inc in incoming_calls.iteritems():
                         if chan in inc:
@@ -2191,7 +2327,7 @@ class CallBoosterCommand(BaseCommand):
 
         def __choose__(self, astid):
                 """
-                After a login, a Change, a Pret's, a logoff, a new incoming/outgoing call
+                After a login, a Change, a Pret's, a logoff, a new incoming/outgoing call.
                 """
                 # choose, according to other incoming calls & logged in/out, if one has to wait or push
                 byprio = []
@@ -2387,6 +2523,34 @@ class CallBoosterCommand(BaseCommand):
                                     'queuename' : None,
                                     'dialplan' : None}
                 return whattodo
+
+
+
+        # No-action methods for CallBooster class.
+
+        def park_srv2clt(self, function, args):
+                """Does nothing in CallBooster"""
+                return None
+        
+        def update_srv2clt(self, phoneinfo):
+                """Does nothing in CallBooster"""
+                return None
+        
+        def message_srv2clt(self, sender, message):
+                """Does nothing in CallBooster"""
+                return None
+        
+        def dmessage_srv2clt(self, message):
+                """Does nothing in CallBooster"""
+                return None
+        
+        def features_srv2clt(self, direction, message):
+                """Does nothing in CallBooster"""
+                return None
+        
+        def phones_srv2clt(self, function, args):
+                """Does nothing in CallBooster"""
+                return None
 
 
 xivo_commandsets.CommandClasses['callbooster'] = CallBoosterCommand
