@@ -679,6 +679,8 @@ class CallBoosterCommand(BaseCommand):
         def messagewaiting(self, astid, event):
                 """
                 Function called when an AMI MessageWaiting Event is read.
+                Appropriate parameters are inserted into the 'suivis' table, in order for FB to tell the
+                Tacheron program to send the voicemail.
                 """
                 print 'messagewaiting', astid, event
                 datetime = time.strftime('%Y-%m-%d_%H-%M-%S')
@@ -706,10 +708,7 @@ class CallBoosterCommand(BaseCommand):
                 if len(system_sda) > 0:
                         [dsda, nsoc, ncli, ncol, collabname] = system_sda[0]
 
-
                 n = 0
-                # {'Old': '0', 'Mailbox': '101@default', 'Waiting': '1', 'Privilege': 'call,all', 'New': '1', 'Event': 'MessageWaiting'}
-
                 for msg in os.listdir(dirname):
                         fullpath = '/'.join([dirname, msg])
                         if msg.find('.wav') > 0:
@@ -721,6 +720,7 @@ class CallBoosterCommand(BaseCommand):
                                 if not os.path.exists(newfilepath):
                                         os.makedirs(newfilepath, 02775)
                                 os.system('mv %s %s/%s' % (fullpath, newfilepath, newfilename))
+                                # DateP : Date et Heure d'envoi programmé
                                 self.cursor_operat.query("INSERT INTO suivis (`NOM`,`NSOC`,`NCLI`,`NCOL`,`NSTRUCT`,`TypeT`,`DateP`,`NAPL`,`ETAT`,`STATUT`) "
                                                          "VALUES ('%s', %d, %d, %d, %s, '%s', '%s', '%s', '%s', '%s')"
                                                          % (collabname, nsoc, ncli, ncol, idx, 'AUDIO',
@@ -728,10 +728,6 @@ class CallBoosterCommand(BaseCommand):
                         else:
                                 print 'full path is', fullpath, 'deleting'
                                 os.remove(fullpath)
-
-                # ','2008-01-06_09;27;09,060;;.WAV\\Déclenché en automatique');
-                # DateP : Date et Heure d'envoi programmé
-                # STATUT : Doit contenir le nom du fichier message à envoyer plus la chaine '\Déclenché en automatique'
 
 
         def newcallerid(self, astid, event):
@@ -1112,9 +1108,9 @@ class CallBoosterCommand(BaseCommand):
                                                sdanum)
                         issdainxivo = self.cursor_xivo.fetchall()
                         if len(issdainxivo) > 0:
-                                print 'SDA   defined :  %s (%s)' %(sdanum, operat_sda[1])
+                                print 'SDA     defined :  %s (%s)' %(sdanum, operat_sda[1])
                         else:
-                                print 'SDA undefined :  %s (%s)' %(sdanum, operat_sda[1])
+                                print 'SDA   undefined :  %s (%s)' %(sdanum, operat_sda[1])
                                 try:
                                         columns = ('context', 'mailbox', 'password', 'fullname', 'email', 'tz',
                                                    'attach', 'saycid' , 'review', 'operator', 'envelope', 'sayduration', 'saydurationm')
@@ -1619,7 +1615,7 @@ class CallBoosterCommand(BaseCommand):
                         system_ressource_struct = self.cursor_operat.fetchall()
                         for srs in system_ressource_struct:
                                 print 'A/ (# outgoing lines according to date & time) :', srs
-                                self.nalerts_simult = int(srs[7]) - 1 # XXX remove -1
+                                self.nalerts_simult = int(srs[7])
 
                         columns = ('N', 'NAlerteStruct', 'NomFichierMessage', 'ListeGroupes', 'interval_suivi')
                         self.cursor_operat.query('USE %s_mvts' % self.__socname__(idsoc))
@@ -1665,7 +1661,7 @@ class CallBoosterCommand(BaseCommand):
                                 system_questions = self.cursor_operat.fetchall()
                                 if len(system_questions) > 0:
                                         filename = system_questions[0][3]
-                                        filename = 'fr/ss-noservice' # XXX for testing purposes
+                                        # filename = 'fr/ss-noservice' # XXX
                                         digits_allowed = system_questions[0][5]
                                         digits_end = system_questions[0][6]
                                         digits_repeat = system_questions[0][7]
@@ -1680,8 +1676,6 @@ class CallBoosterCommand(BaseCommand):
                                                 self.cursor_operat.query('SELECT * FROM %s ORDER BY N' % gl)
                                                 base_annexe_results = self.cursor_operat.fetchall()
                                                 for annx in base_annexe_results:
-##                                                        pass
-##                                                if True:
                                                         rid = '%s-%06d' % (nalerte, nid)
                                                         nid += 1
                                                         listnums = []
@@ -1764,14 +1758,14 @@ class CallBoosterCommand(BaseCommand):
                                 ncalls += 1
                                 dstnum = al['numbers'][al['status']]
                                 print 'calling', al['contact']['nom'], '(%s) (or should be ...)' % dstnum
-                                dstnum = LOCNUMS[al['status']] # XXX for testing purposes only !!
+                                # dstnum = LOCNUMS[al['status']] # XXX for testing purposes only !!
                                 self.amis[astid].aoriginate_var('local', '%s@default' % dstnum, 'dest %s' % dstnum,
                                                                 'cidFB', 'automated call', 'ctx-callbooster-alert',
                                                                 {'CB_ALERT_MESSAGE' : al['filename'],
                                                                  'CB_ALERT_ID' : rid,
                                                                  'CB_ALERT_ALLOWED' : al['digits-allowed'],
                                                                  'CB_ALERT_REPEAT' : al['digits-repeat']},
-                                                                5) # al['timetoring'])
+                                                                al['timetoring'])
                                 al['status'] += 1
                                 self.nalerts_called += 1
                 print '%d calls issued' % ncalls
