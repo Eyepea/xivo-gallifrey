@@ -37,12 +37,11 @@ class SwissvoiceProv(BaseProv):
 		if self.phone["model"] != "ip10s":
 			raise ValueError, "Unknown Swissvoice model '%s'" % self.phone["model"]
 	def __action(self, command, user, passwd):
-                ## wget options                                ## curl options
-		# -q -- quiet                                  # -s -- silent
-		# -nv -- non-verbose                           #
-		# -O /dev/null -- send result into /dev/null   # -o /dev/null
-		# -T 30 -- timeout after 30s                   # --connect-timeout 30
-		# -t 1 -- don't retry                          # -retry 0
+		## curl options
+		# -s			-- silent
+		# -o /dev/null		-- dump result
+		# --connect-timeout 30  -- timeout after 30s
+		# -retry 0		-- don't retry
 		url_rep1 = "Administrator_Settings"
 		url_rep2 = "reboot_choice_B.html?WINDWEB_URL=/Administrator_Settings/reboot_choice_B.html"
 		url_rep3 = "&EraseFlash=0&Reboot=+Reboot"
