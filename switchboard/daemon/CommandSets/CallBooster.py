@@ -106,6 +106,8 @@ class CallBoosterCommand(BaseCommand):
                 else:
                         self.opend = '20:00'
                 self.queued_threads_pipe = queued_threads_pipe
+                self.normal_calls = []
+                self.originated_calls = []
 
 
         def __sendfiche_a__(self, userinfo, incall):
@@ -374,8 +376,7 @@ class CallBoosterCommand(BaseCommand):
                                 connid.send(self.pending_sv_fiches[callref])
                                 agentnum = str(STARTAGENTNUM + int(nope))
 
-                                # XXX : sip/phonenum => IAX2/trunkname/number
-                                self.amis[astid].aoriginate_var('sip', phonenum, 'Log %s' % phonenum,
+                                self.amis[astid].aoriginate_var('iax2/trunkname', phonenum, 'Log %s' % phonenum,
                                                                 agentnum, 'agentname', 'default',
                                                                 {'CB_MES_LOGAGENT' : 'agentname',
                                                                  'CB_AGENT_NUMBER' : agentnum}, 100)
@@ -515,6 +516,12 @@ class CallBoosterCommand(BaseCommand):
                                         reply = '%s,%d,,Raccroche/' % (ic2.aboute, 1)
                                         connid_socket.send(reply)
                                 ic2.set_timestamp_stat('link')
+
+                uniqueid1 = event.get('Uniqueid1')
+                if uniqueid1 in self.normal_calls:
+                        print '(NORMAL LINK)', uniqueid1, event
+                        # self.__update_taxes__
+                
                 return
 
 
@@ -614,6 +621,8 @@ class CallBoosterCommand(BaseCommand):
                         # store the uniqueid in order to detect the appropriate Hangup later on ...
                 else:
                         print '__originatesuccess__ (%s) :' % kind, astid, event
+                        uniqueid = event.get('Uniqueid')
+                        self.originated_calls.append(uniqueid)
                 return
 
 
@@ -667,6 +676,8 @@ class CallBoosterCommand(BaseCommand):
                                                 # uinfo['connection'].send(reply)
                 else:
                         print '__originatefailure__ (%s) :' % kind, astid, event
+                        uniqueid = event.get('Uniqueid')
+                        self.originated_calls.append(uniqueid)
                 return
 
 
@@ -799,7 +810,12 @@ class CallBoosterCommand(BaseCommand):
                 """
                 srcuniqueid = event.get('SrcUniqueID')
                 destuniqueid = event.get('DestUniqueID')
-                # print 'DIAL', srcuniqueid, destuniqueid, event
+                if srcuniqueid in self.originated_calls:
+                        self.originated_calls.remove(srcuniqueid)
+                else:
+                        self.normal_calls.append(srcuniqueid)
+                        print '(NORMAL DIAL)', srcuniqueid, destuniqueid, event
+                        # self.__init_taxes__(call, event.get('Destination'), event.get('CallerID'), '103', TAXES_PABX, TAXES_TRUNKNAME, 0)
                 return
 
 
@@ -824,6 +840,8 @@ class CallBoosterCommand(BaseCommand):
                         incoming_calls[thiscall.sdanum].pop(chan)
                 else:
                         print 'HANGUP (not incoming call)', uniqueid, event
+
+
                 if uniqueid in self.alerts_uniqueids:
                         # should not come here after success since it is deleted in uservent treatment
                         print 'HANGUP ALERT', uniqueid, self.alerts_uniqueids[uniqueid]
@@ -846,6 +864,10 @@ class CallBoosterCommand(BaseCommand):
                         del self.alerts_uniqueids[uniqueid]
                         self.nalerts_called -= 1
                         self.__alert_calls__(astid)
+                elif uniqueid in self.normal_calls:
+                        print '(NORMAL HANGUP)', uniqueid, event
+                        self.normal_calls.remove(uniqueid)
+                        # self.__update_taxes__
                 return
 
 
@@ -1209,7 +1231,7 @@ class CallBoosterCommand(BaseCommand):
                                                      'Appel %s' % call.dest,
                                                      'default')
                 self.__init_taxes__(call, call.dest, call.agentnum, call.dest,
-                                    TAXES_PABX, TAXES_TRUNKNAME, int(call.agentnum) - STARTAGENTNUM)
+                                    TAXES_CTI, TAXES_TRUNKNAME, int(call.agentnum) - STARTAGENTNUM)
                 return
 
 
@@ -2458,7 +2480,7 @@ class CallBoosterCommand(BaseCommand):
                         if thiscall.statacd2_state != 'NC':
                                 thiscall.setclicolnames()
 
-                        self.__init_taxes__(thiscall, cidnum, cidnum, sdanum, TAXES_TRUNKNAME, TAXES_PABX, 0)
+                        self.__init_taxes__(thiscall, cidnum, cidnum, sdanum, TAXES_TRUNKNAME, TAXES_CTI, 0)
 
                         if thiscall.statacd2_state == 'V':
                                 print ' NCOMING CALL ## calling get_sda_profiles ##'
