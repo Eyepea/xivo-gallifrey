@@ -16,7 +16,6 @@ __author__    = 'Corentin Le Gall'
 import socket
 import time
 
-PDISPO = u'Pr\xeat'
 WEEKDAY = ['LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM', 'DIM']
 DATEFMT = '%Y-%m-%d'
 DATETIMEFMT = DATEFMT + ' %H:%M:%S'
@@ -452,7 +451,7 @@ class IncomingCall:
                                 if cid not in agent_comp: comp_allowed = False
 
                         if not (language_allowed and comp_allowed):
-                                print operatorname, ':', language_allowed, comp_allowed
+                                print operatorname.encode('latin1'), ':', language_allowed, comp_allowed
                                 return None
 
                         columns = ('NOPE', 'AdrNet', 'CompLocale', 'Etat', 'Voie',
@@ -464,22 +463,17 @@ class IncomingCall:
                         agents_acd = self.cursor_operat.fetchall()
                         if len(agents_acd) > 0:
                                 dispo = agents_acd[0]
-                                if dispo[3] == PDISPO:
-                                        truedispo = 'Pret'
-                                else:
-                                        truedispo = dispo[3]
-
                                 bness = dispo[5] * 8 + dispo[6] * 4 + dispo[7] * 2 + dispo[8]
                                 print 'busy-ness :', dispo[5], dispo[6], dispo[7], dispo[8], bness
-                                if truedispo == 'Pret':
+                                if dispo[3] == 'Prêt'.decode('latin1'):
                                         status = 'Pret%d' % dispo[4]
                                 else:
-                                        status = truedispo
+                                        status = dispo[3]
                                 return [status, dispo[1], dispo[9], dispo[11], bness]
                         else:
                                 return None
                 else:
-                        print '  COMING CALL : check_operator_status() : no match for %s in agents.agents' % operatorname
+                        print '  COMING CALL : check_operator_status() : no match for %s in agents.agents' % operatorname.encode('latin1')
                         return None
 
 
@@ -552,7 +546,7 @@ class IncomingCall:
                                             'argument' : None}
                                 break
 
-                self.list_svirt = []
+                self.list_svirt = {}
                 for ngroup, perms in list_svirt_tmp.iteritems():
                         request = [str(self.nsoc_global),
                                    self.ncli,
@@ -565,7 +559,8 @@ class IncomingCall:
                                    ','.join(self.competences),
                                    ','.join(self.languages_sv),
                                    self.commid]
-                        self.list_svirt.append(request)
+                        self.list_svirt[ngroup + '.' + perms] = {'status' : 'init',
+                                                                 'request' : request}
 
                 print '  COMING CALL : __typet_secretariat__ : ', upto, whattodo
                 return whattodo

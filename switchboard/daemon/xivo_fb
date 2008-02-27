@@ -1,6 +1,4 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
-
 # $Revision$
 # $Date$
 #
@@ -2875,7 +2873,7 @@ while True: # loops over the reloads
                                         ins.remove(OperatSock)
                                         log_debug(SYSLOG_WARNING, 'WARNING - Operat Serveur has closed the connection')
                                 else:
-                                        commandclass.svreply(msg)
+                                        commandclass.svreply(asterisklist[0], msg)
 
                         elif queued_threads_pipe[0] in i:
                                 disconnlist = commandclass.checkqueue()
