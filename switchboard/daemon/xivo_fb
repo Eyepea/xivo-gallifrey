@@ -918,7 +918,8 @@ def handle_ami_event(astid, idata):
                 elif evfunction == 'Agentcallbacklogin':
                         log_debug(SYSLOG_INFO, '//AMI:Agentcallbacklogin// %s : %s' %(astid, str(this_event)))
                 elif evfunction == 'Agentcallbacklogoff':
-                        log_debug(SYSLOG_INFO, '//AMI:Agentcallbacklogoff// %s : %s' %(astid, str(this_event)))
+                        commandclass.agentcallbacklogoff(astid, this_event)
+                        # log_debug(SYSLOG_INFO, '//AMI:Agentcallbacklogoff// %s : %s' %(astid, str(this_event)))
                 elif evfunction == 'AgentCalled':
                         log_debug(SYSLOG_INFO, '//AMI:AgentCalled// %s : %s' %(astid, str(this_event)))
                         
@@ -964,7 +965,8 @@ def handle_ami_event(astid, idata):
                 elif evfunction == 'FaxReceived':
                         log_debug(SYSLOG_INFO, '//AMI:FaxReceived// %s : %s' %(astid, str(this_event)))
                 elif evfunction == 'Registry':
-                        log_debug(SYSLOG_INFO, '//AMI:Registry// %s : %s' %(astid, str(this_event)))
+                        log_debug(SYSLOG_INFO, 'AMI:Registry: %s : username=%s channel=%s domain=%s status=%s'
+                                  %(astid, this_event.get('Username'), this_event.get('Channel'), this_event.get('Domain'), this_event.get('Status')))
                 elif evfunction == 'MeetmeJoin':
                         channel = this_event.get('Channel')
                         meetme  = this_event.get('Meetme')
@@ -2867,7 +2869,11 @@ while True: # loops over the reloads
                                         log_debug(SYSLOG_ERR, '--- exception --- F tcp connection : %s' % str(exc))
 
                         elif OperatSock in i:
-                                msg = OperatSock.recv(BUFSIZE_LARGE)
+                                try:
+                                        msg = OperatSock.recv(BUFSIZE_LARGE)
+                                except Exception, exc:
+                                        log_debug(SYSLOG_ERR, '--- exception --- OperatSock : %s' % str(exc))
+                                        msg = ''
                                 if len(msg) == 0:
                                         OperatSock.close()
                                         ins.remove(OperatSock)

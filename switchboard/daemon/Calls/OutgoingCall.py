@@ -19,7 +19,7 @@ class OutgoingCall:
         
         dir = 'o'
         ctime = time.localtime()
-        parking = None
+        parking = False
         parkexten = None
         peerchannel = None
         aboute = None
@@ -41,6 +41,7 @@ class OutgoingCall:
                 self.nsoc   = nsoc
                 self.ncli   = ncli
                 self.ncol   = ncol
+                self.mohclass = '/'.join([nsoc, ncli, ncol])
                 self.taxes  = None
                 self.dest = dest
                 self.agentnum  = agentnum

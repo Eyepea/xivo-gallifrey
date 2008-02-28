@@ -40,7 +40,7 @@ class IncomingCall:
         statacd2_tt = 'TT_RAF'
         
         waiting = True
-        parking = None
+        parking = False
         parkexten = None
         peerchannel = None
         aboute = None
@@ -198,7 +198,7 @@ class IncomingCall:
 
                 self.period = ['JOUR', '']
                 weekday_today = WEEKDAY[self.ctime[6]]
-                if weekday_today == 'SAM' or weekday_today == 'DIM':
+                if weekday_today == 'DIM' or weekday_today == 'SAM' and self.ctime[3] >= 12:
                         self.period[1] = 'WE'
                 today_ferie = time.strftime('%d-%m', self.ctime)
                 for z in system_jferies:
@@ -368,9 +368,9 @@ class IncomingCall:
                 return lstlocal
 
 
-        def __localN_group_composition__(self, nprof, ngroup):
+        def __groups_composition__(self, nprof, ngroup):
                 """
-                Returns the group composition according to 'nprof' and 'ngroup'.
+                Returns the groups' composition according to 'nprof' and 'ngroup'.
                 """
                 columns = ('NPERM', 'NGROUP', 'NOM', 'NPROF')
                 self.cursor_operat.query('USE %s_clients' % self.socname)
@@ -381,7 +381,7 @@ class IncomingCall:
                 list_operators = []
                 list_permanences = []
 
-                print '  COMING CALL : __localN_group_composition__, ngroup = %s / nprof = %s' % (ngroup, nprof), clients_groupes_liste
+                print '  COMING CALL : __groups_composition__, ngroup = %s / nprof = %s' % (ngroup, nprof), clients_groupes_liste
                 if int(ngroup) < 0:
                         for clients_groupes in clients_groupes_liste:
                                 nom = clients_groupes[2]
@@ -491,7 +491,7 @@ class IncomingCall:
                                         if lgc not in listopers:
                                                 listopers.append(lgc)
                         else: # localN and globalN groups
-                                [lopers, lperms] = self.__localN_group_composition__(nprof, id)
+                                [lopers, lperms] = self.__groups_composition__(nprof, id)
                                 for lgc in lopers:
                                         if lgc not in listopers:
                                                 listopers.append(lgc)
@@ -507,6 +507,7 @@ class IncomingCall:
                 Handles the 'Secretariat' actions of 'PH' scenarios.
                 """
                 whattodo = None
+                # if no detail is provided, consider the 'local' group is there
                 if len(detail) == 0:
                         detail = '0'
 
@@ -533,14 +534,18 @@ class IncomingCall:
                         if upto == ngroupes or len(self.list_operators) == 0 and len(list_svirt_tmp) == 0:
                                 delay = 0
                         else:
-                                delay = int(delaigrp_tab[upto])
+                                if upto > 0:
+                                        delay = int(delaigrp_tab[upto] - delaigrp_tab[upto - 1])
+                                else:
+                                        # should not occur
+                                        delay = int(delaigrp_tab[0])
 
                         print '  COMING CALL : __typet_secretariat__, upto = %d, delay = %d s' % (upto, delay)
 
                         if len(self.list_operators) == 0 and len(list_svirt_tmp) == 0:
                                 upto += 1
                         else:
-                                self.statacd2_tt = 'TT_SOP' # vs. TT_SFA ?
+                                self.statacd2_tt = 'TT_SFA'
                                 whattodo = {'action'   : 'secretariat',
                                             'delay'    : delay,
                                             'argument' : None}
