@@ -610,15 +610,23 @@ class CallBoosterCommand(BaseCommand):
                 whether the Question has been answered.
                 """
                 context = event.get('Context')
+                uniqueid = event.get('Uniqueid')
                 if context == 'ctx-callbooster-alert':
-                        uniqueid = event.get('Uniqueid')
                         channel = event.get('Channel')
                         print '__originatesuccess__', uniqueid, channel
                         self.alerts_uniqueids[uniqueid] = channel
                         # stores the uniqueid in order to detect the appropriate Hangup later on ...
+                elif context == 'ctx-callbooster-agentlogin':
+                        channel = event.get('Channel')
+                        reason = event.get('Reason')
+                        exten = event.get('Exten')
+                        print '__originatesuccess__ (agentlogin) (%s) :' % kind, astid, event
+                        for opername, uinfo in self.ulist[astid].list.iteritems():
+                                if 'agentnum' in uinfo and uinfo['agentnum'] == exten:
+                                        if 'sendfiche' in uinfo:
+                                                del uinfo['sendfiche']
                 else:
                         print '__originatesuccess__ (%s) :' % kind, astid, event
-                        uniqueid = event.get('Uniqueid')
                         self.originated_calls.append(uniqueid)
                 return
 
@@ -669,6 +677,12 @@ class CallBoosterCommand(BaseCommand):
                                         # reasons : '1' after timeout, '8' unreachable
                                         if 'timer-agentlogin' in uinfo:
                                                 print '__originatefailure__ (agentlogin)', uinfo['timer-agentlogin-iter']
+
+                                                if 'sendfiche' in uinfo:
+                                                        self.amis[astid].queueremove(uinfo['sendfiche'][0], GHOST_AGENT)
+                                                        self.amis[astid].queueremove(uinfo['sendfiche'][0], uinfo['sendfiche'][1])
+                                                        del uinfo['sendfiche']
+
                                                 uinfo['timer-agentlogin'].cancel()
                                                 if uinfo['timer-agentlogin-iter'] < 3:
                                                         # we fall here when the failure has not been issued by the timeout
@@ -1594,7 +1608,6 @@ class CallBoosterCommand(BaseCommand):
                                         [qname, agname] = userinfo['sendfiche']
                                         self.amis[astid].queueadd(qname, agname)
                                         self.amis[astid].queuepause(qname, agname, 'false')
-                                        del userinfo['sendfiche']
                                         print 'fiche has been sent :', time.time()
                                 return
 
