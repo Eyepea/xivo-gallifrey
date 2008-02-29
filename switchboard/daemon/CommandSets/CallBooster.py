@@ -464,7 +464,7 @@ class CallBoosterCommand(BaseCommand):
                 """
                 ch1 = event.get('Channel1').split('/')
                 ch2 = event.get('Channel2').split('/')
-                print 'LINK', ch1, ch2, time.time()
+                print 'LINK', event
                 if ch1[0] == 'Agent':
                         # OUTGOING CALL
                         agentnum = ch1[1]
@@ -539,7 +539,7 @@ class CallBoosterCommand(BaseCommand):
                 We must be careful anyway, not to count twice some of these events, since two
                 Hangup Events will also be issued.
                 """
-                # print '// unlink //', event
+                print 'UNLINK', event
                 ch1 = event.get('Channel1').split('/')
                 ch2 = event.get('Channel2').split('/')
                 if ch1[0] == 'Agent':
@@ -825,6 +825,7 @@ class CallBoosterCommand(BaseCommand):
                 """
                 Function called when an AMI Hangup Event is read.
                 """
+                print 'HANGUP', event
                 chan = event.get('Channel')
                 uniqueid = event.get('Uniqueid')
                 thiscall = self.__incallref_from_channel__(chan)
@@ -851,10 +852,10 @@ class CallBoosterCommand(BaseCommand):
                         num = channel[6:-8]
                         toremove = None
                         for i, h in self.alerts.iteritems():
-                                stopdecroche = h['contact']['stopdecroche']
+                                stopdecroche = h['stopdecroche']
                                 if num in h['numbers'] and h['status'] > 0:
                                         if h['numbers'][h['status'] - 1] == num:
-                                                print 'HANGUP ALERT', num, i, h['numbers'], h['status'], h['contact']['stopdecroche']
+                                                print 'HANGUP ALERT', num, i, h['numbers'], h['status'], h['stopdecroche']
                                                 h['locked'] = False
                                                 if len(h['numbers']) == h['status'] or stopdecroche == 1:
                                                         toremove = i
@@ -888,7 +889,7 @@ class CallBoosterCommand(BaseCommand):
                 """
                 Function called when an AMI ParkedCall Event is read.
                 """
-                print 'PARKEDCALL', astid, event
+                print 'PARKEDCALL', event
                 # PARKEDCALL clg {'From': 'SIP/101-081c0438', 'CallerID': '101', 'Timeout': '45', 'CallerIDName': 'User1'}
                 chan  = event.get('Channel')
                 exten = event.get('Exten')
@@ -941,7 +942,7 @@ class CallBoosterCommand(BaseCommand):
                 """
                 Function called when an AMI UnParkedCall Event is read.
                 """
-                print 'UNPARKEDCALL', astid, event
+                print 'UNPARKEDCALL', event
                 chan = event.get('Channel')
 
                 # find the channel among the incoming calls, otherwise among outgoing ones
@@ -1009,6 +1010,9 @@ class CallBoosterCommand(BaseCommand):
                 for opername, userinfo in self.ulist[astid].list.iteritems():
                         if 'agentnum' in userinfo and userinfo['agentnum'] == agentnum:
                                 userinfo['agentchannel'] = agentchannel
+                                if 'timer-agentlogin' in userinfo:
+                                        userinfo['timer-agentlogin'].cancel()
+                                        del userinfo['timer-agentlogin']
                                 if 'startcontact' in userinfo:
                                         del userinfo['startcontact']
                                         del userinfo['startcontactth']
@@ -1256,26 +1260,26 @@ class CallBoosterCommand(BaseCommand):
                 print '__fill_alert_result__', status
                 self.cursor_operat.query("USE system")
                 self.cursor_operat.query("INSERT INTO suivisalertes VALUES "
-                                         "(0, %s, %d, '%s', %s, %s, %s, %s, "
+                                         "(0, %s, %d, '%s', '%s', %s, %s, %s, "
                                          "'%s', '%s', '%s', %s, '%s', %s, '%s', '%s', '%s', '%s', %s)"
                                          % (alertdetail['refalerte'],
-                                            1, # RefEquipier
+                                            alertdetail['refequipier'],
                                             'Fini', # Init, Traitement ...
-                                            status,
-                                            alertdetail['contact']['nsoc'],
-                                            alertdetail['contact']['ncli'],
-                                            alertdetail['contact']['ncol'],
-                                            'TableEquipierUNDEF',
-                                            alertdetail['contact']['typealerte'],
+                                            status.decode('latin1'),
+                                            alertdetail['nsoc'],
+                                            alertdetail['ncli'],
+                                            alertdetail['ncol'],
+                                            alertdetail['tableequipier'],
+                                            alertdetail['typealerte'],
                                             alertdetail['filename'],
-                                            alertdetail['contact']['refquestion'],
-                                            alertdetail['contact']['callingnum'],
-                                            alertdetail['contact']['nbtentatives'],
+                                            alertdetail['refquestion'],
+                                            alertdetail['callingnum'],
+                                            alertdetail['nbtentatives'],
                                             alertdetail['group'],
-                                            alertdetail['contact']['nom'],
-                                            alertdetail['contact']['prenom'],
-                                            alertdetail['contact']['civ'],
-                                            alertdetail['contact']['stopdecroche']))
+                                            alertdetail['nom'],
+                                            alertdetail['prenom'],
+                                            alertdetail['civ'],
+                                            alertdetail['stopdecroche']))
                 self.conn_operat.commit()
                 return
 
@@ -1350,6 +1354,9 @@ class CallBoosterCommand(BaseCommand):
                                 if 'agentchannel' in userinfo:
                                         log_debug(SYSLOG_WARNING, 'AppelOpe : %s phone is already logged in as agent number %s' % (phonenum, agentnum))
                                 log_debug(SYSLOG_INFO, 'AppelOpe : aoriginate_var for phonenum = %s' % phonenum)
+                                userinfo['timer-agentlogin'] = threading.Timer(10, self.__callback_agentlogin__)
+                                userinfo['timer-agentlogin'].start()
+                                userinfo['timer-agentlogin-iter'] = 0
                                 self.amis[astid].aoriginate_var('sip', phonenum, 'Log %s' % phonenum,
                                                                 agentnum, opername, 'ctx-callbooster-agentlogin',
                                                                 {'CB_MES_LOGAGENT' : opername,
@@ -1440,6 +1447,9 @@ class CallBoosterCommand(BaseCommand):
                                         userinfo['calls'][comm_id_outgoing] = outCall
                                         userinfo['calls'][comm_id_outgoing].tocall = True
                                         phonenum = userinfo_by_requester[5]
+                                        userinfo['timer-agentlogin'] = threading.Timer(10, self.__callback_agentlogin__)
+                                        userinfo['timer-agentlogin'].start()
+                                        userinfo['timer-agentlogin-iter'] = 0
                                         self.amis[astid].aoriginate_var('sip', phonenum, 'Log %s' % phonenum,
                                                                         agentnum, opername, 'ctx-callbooster-agentlogin',
                                                                         {'CB_MES_LOGAGENT' : opername,
@@ -1556,26 +1566,26 @@ class CallBoosterCommand(BaseCommand):
                         reply = ',,,Pong/'
                         connid_socket.send(reply)
 
-                        if 'timer' in userinfo:
-                                isalive = userinfo['timer'].isAlive()
-                                userinfo['timer'].cancel()
-                                del userinfo['timer']
+                        if 'timer-ping' in userinfo:
+                                isalive = userinfo['timer-ping'].isAlive()
+                                userinfo['timer-ping'].cancel()
+                                del userinfo['timer-ping']
                                 if isalive:
-                                        print 'timer/Ping : was running, renew the timer'
+                                        print 'timer-ping : was running, renew the timer'
                                 else:
-                                        print 'timer/Ping : received a Ping but the timer was out ... should have been removed when out'
+                                        print 'timer-ping : received a Ping but the timer was out ... should have been removed when out'
                         else:
-                                print 'timer/Ping : first setup for this connection'
+                                print 'timer-ping : first setup for this connection'
 
                         timer = threading.Timer(TIMEOUTPING, self.__callback_ping_noreply__)
                         timer.start()
-                        userinfo['timer'] = timer
+                        userinfo['timer-ping'] = timer
 
 
                 elif cname == 'Sortie':
-                        if 'timer' in userinfo:
-                                userinfo['timer'].cancel()
-                                del userinfo['timer']
+                        if 'timer-ping' in userinfo:
+                                userinfo['timer-ping'].cancel()
+                                del userinfo['timer-ping']
                         userinfo['cbstatus'] = 'Sortie'
                         self.__choose_and_queuepush__(astid, cname)
 
@@ -1662,12 +1672,12 @@ class CallBoosterCommand(BaseCommand):
                                                          numstruct)
                                 clients_alerte_struct = self.cursor_operat.fetchall()
                                 if len(clients_alerte_struct) > 0:
-                                        nquestion = clients_alerte_struct[0][3]
-                                        typealerte = clients_alerte_struct[0][6]
-                                        callingnum = clients_alerte_struct[0][7]
-                                        nbtentatives = clients_alerte_struct[0][8]
-                                        alertetous = clients_alerte_struct[0][9]
-                                        stopdecroche = clients_alerte_struct[0][10]
+                                        nquestion     = clients_alerte_struct[0][3]
+                                        typealerte    = clients_alerte_struct[0][6]
+                                        callingnum    = clients_alerte_struct[0][7]
+                                        nbtentatives  = clients_alerte_struct[0][8]
+                                        alertetous    = clients_alerte_struct[0][9]
+                                        stopdecroche  = clients_alerte_struct[0][10]
 
                                 # Fetch question details
                                 columns = ('N', 'Libelle', 'Descriptif', 'Fichier', 'Type_saisie',
@@ -1699,10 +1709,12 @@ class CallBoosterCommand(BaseCommand):
                                                         rid = '%s-%06d' % (nalerte, nid)
                                                         nid += 1
                                                         listnums = []
+                                                        blistnums = []
                                                         for inum in annx[4:8]:
-                                                                if inum != '': listnums.append(inum)
+                                                                if inum != '': blistnums.append(inum)
+                                                        for k in xrange(int(nbtentatives)):
+                                                                listnums.extend(blistnums)                                                        
                                                         self.alerts[rid] = {'nsoc' : idsoc,
-                                                                            'group' : gl,
                                                                             'filename' : filename,
                                                                             'digits-allowed' : digits_allowed,
                                                                             'digits-end' : digits_end,
@@ -1710,19 +1722,21 @@ class CallBoosterCommand(BaseCommand):
                                                                             'numbers' : listnums,
                                                                             'timetoring' : int(annx[13]),
                                                                             'refalerte' : nalerte,
-                                                                            'contact' : {'nom' : annx[2],
-                                                                                         'prenom' : annx[3],
-                                                                                         'civ' : annx[8],
-                                                                                         'nsoc' : idsoc,
-                                                                                         'ncli' : idcli,
-                                                                                         'ncol' : idcol,
-                                                                                         'refquestion' : nquestion,
-                                                                                         'typealerte' : typealerte,
-                                                                                         'callingnum' : callingnum,
-                                                                                         'nbtentatives' : nbtentatives,
-                                                                                         'alertetous' : alertetous,
-                                                                                         'stopdecroche' : stopdecroche
-                                                                                         },
+                                                                            'refequipier' : annx[0],
+                                                                            'group' : annx[1],
+                                                                            'tableequipier' : gl,
+                                                                            'nom' : annx[2],
+                                                                            'prenom' : annx[3],
+                                                                            'civ' : annx[8],
+                                                                            'nsoc' : idsoc,
+                                                                            'ncli' : idcli,
+                                                                            'ncol' : idcol,
+                                                                            'refquestion' : nquestion,
+                                                                            'typealerte' : typealerte,
+                                                                            'callingnum' : callingnum,
+                                                                            'nbtentatives' : nbtentatives,
+                                                                            'alertetous' : alertetous,
+                                                                            'stopdecroche' : stopdecroche,
                                                                             'status' : 0,
                                                                             'locked' : False
                                                                             }
@@ -1785,7 +1799,7 @@ class CallBoosterCommand(BaseCommand):
                         if al['status'] < len(al['numbers']) and not al['locked'] and self.nalerts_called < self.nalerts_simult:
                                 ncalls += 1
                                 dstnum = al['numbers'][al['status']]
-                                print 'calling', al['contact']['nom'], '(%s) (or should be ...)' % dstnum
+                                print 'calling', al['nom'], '(%s) (or should be ...)' % dstnum
                                 ### dstnum = LOCNUMS[al['status']] # XXX for testing purposes only !!
                                 self.amis[astid].aoriginate_var('local', '%s@default' % dstnum, 'dest %s' % dstnum,
                                                                 'cidFB', 'automated call', 'ctx-callbooster-alert',
@@ -1938,14 +1952,14 @@ class CallBoosterCommand(BaseCommand):
                                 print 'checkqueue (Ping)', tname
                                 for astid in self.ulist:
                                         for opername, userinfo in self.ulist[astid].list.iteritems():
-                                                if 'timer' in userinfo and userinfo['timer'] == thisthread:
+                                                if 'timer-ping' in userinfo and userinfo['timer-ping'] == thisthread:
                                                         agentnum = userinfo['agentnum']
                                                         self.cursor_operat.query('USE agents')
                                                         self.cursor_operat.query("UPDATE acd SET Etat = 'Sortie' WHERE NOPE = %d"
                                                                                  % (int(agentnum) - STARTAGENTNUM))
                                                         self.conn_operat.commit()
                                                         self.__choose_and_queuepush__(astid, 'Unping')
-                                                        del userinfo['timer']
+                                                        del userinfo['timer-ping']
                                                         disconnlist.append(userinfo)
 
                         elif tname.find('SV') == 0:
@@ -1967,6 +1981,23 @@ class CallBoosterCommand(BaseCommand):
                                                                         if self.soperat_socket is not None:
                                                                                 self.soperat_socket.send(req)
                                                                         ic.svirt['timer'] = None
+                        elif tname.find('AgentLogin') == 0:
+                                print 'checkqueue (AgentLogin)', tname
+                                for astid in self.ulist:
+                                        for opername, userinfo in self.ulist[astid].list.iteritems():
+                                                if 'timer-agentlogin' in userinfo and userinfo['timer-agentlogin'] == thisthread:
+                                                        if userinfo['timer-agentlogin-iter'] < 2:
+                                                                self.__send_msg__(userinfo, ',-2,,AppelOpe/')
+                                                                userinfo['timer-agentlogin'] = threading.Timer(10, self.__callback_agentlogin__)
+                                                                userinfo['timer-agentlogin'].start()
+                                                                userinfo['timer-agentlogin-iter'] += 1
+                                                        else:
+                                                                self.__send_msg__(userinfo, ',-3,,AppelOpe/')
+                                                                del userinfo['timer-agentlogin']
+                                                                del userinfo['timer-agentlogin-iter']
+                                                                if 'chancon' in userinfo:
+                                                                        self.amis[astid].hangup(userinfo['chancon'], '')
+                                                                        # del userinfo['chancon']
                         else:
                                 print 'checkqueue (unknown event kind)', tname
                 return disconnlist
@@ -1995,6 +2026,19 @@ class CallBoosterCommand(BaseCommand):
                 thisthread.setName('SV-' + tname)
                 self.tqueue.put(thisthread)
                 os.write(self.queued_threads_pipe[1], 'svcheck-')
+                return
+
+
+        def __callback_agentlogin__(self):
+                """
+                This function is called once the 10 seconds after agent login attempt have been spent.
+                """
+                thisthread = threading.currentThread()
+                tname = thisthread.getName()
+                print '__callback_agentlogin__ (timer finished)', time.asctime(), tname
+                thisthread.setName('AgentLogin-' + tname)
+                self.tqueue.put(thisthread)
+                os.write(self.queued_threads_pipe[1], 'agentlogin-')
                 return
 
 

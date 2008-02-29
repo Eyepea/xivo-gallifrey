@@ -2216,7 +2216,7 @@ def connect_user(userinfo, sessionid, iip, iport,
                         userinfo['state'] = 'undefinedstate-connect'
                 if whoami == 'XC':
                         conngui_xc = conngui_xc + 1
-                else:
+                elif whoami == 'SB':
                         conngui_sb = conngui_sb + 1
         except Exception, exc:
                 log_debug(SYSLOG_ERR, "--- exception --- connect_user %s : %s" %(str(userinfo), str(exc)))
