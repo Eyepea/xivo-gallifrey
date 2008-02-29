@@ -169,14 +169,9 @@ class CallBoosterCommand(BaseCommand):
                                 print 'sendfiche, the agent is online :', userinfo['agentchannel']
                         else:
                                 phonenum = userinfo['phonenum']
-                                agentname = userinfo['user']
+                                opername = userinfo['user']
                                 log_debug(SYSLOG_INFO, 'sendfiche, the agent is not online ... we re going to call him : %s (%s)' % (phonenum, str(userinfo)))
-                                userinfo['startcontact'] = time.time()
-                                userinfo['startcontactth'] = 10
-                                self.amis[astid].aoriginate_var('sip', phonenum, 'Log %s' % phonenum,
-                                                                agentnum, agentname, 'ctx-callbooster-agentlogin',
-                                                                {'CB_MES_LOGAGENT' : agentname,
-                                                                 'CB_AGENT_NUMBER' : agentnum}, 100)
+                                self.__agentlogin__(astid, userinfo, phonenum, agentnum, opername)
                         incall.statacd2_tt = 'TT_SOP'
                         self.__sendfiche_a__(userinfo, incall)
                         print '__sendfiche__', incall.queuename, agentnum
@@ -671,8 +666,18 @@ class CallBoosterCommand(BaseCommand):
                         print '__originatefailure__ (agentlogin) (%s) :' % kind, astid, event
                         for opername, uinfo in self.ulist[astid].list.iteritems():
                                 if 'agentnum' in uinfo and uinfo['agentnum'] == exten:
-                                        self.__send_msg__(uinfo, ',0,,AppelOpe/')
-                                        # self.__send_msg__(uinfo, ',-3,,AppelOpe/')
+                                        # reasons : '1' after timeout, '8' unreachable
+                                        if 'timer-agentlogin' in uinfo:
+                                                print '__originatefailure__ (agentlogin)', uinfo['timer-agentlogin-iter']
+                                                uinfo['timer-agentlogin'].cancel()
+                                                if uinfo['timer-agentlogin-iter'] < 3:
+                                                        # we fall here when the failure has not been issued by the timeout
+                                                        self.__send_msg__(uinfo, ',0,,AppelOpe/')
+                                                del uinfo['timer-agentlogin']
+                                                del uinfo['timer-agentlogin-iter']
+                                        else:
+                                                log_debug(SYSLOG_WARNING, '__originatefailure__ (agentlogin) : No timer was on, should not happen (%s)' % exten)
+                                                self.__send_msg__(uinfo, ',0,,AppelOpe/')
                 else:
                         print '__originatefailure__ (%s) :' % kind, astid, event
                         uniqueid = event.get('Uniqueid')
@@ -744,7 +749,7 @@ class CallBoosterCommand(BaseCommand):
                         if msg.find('.wav') > 0:
                                 print 'full path is', fullpath, 'renaming',
                                 newfilepath = '/usr/share/asterisk/sounds/callbooster/%s/%s/%s/Messagerie' % (nsoc, ncli, ncol)
-                                newfilename = '%s.%s.%02d.wav' % (sdanum, datetime, n)
+                                newfilename = '%s-%s-%02d.wav' % (sdanum, datetime, n)
                                 print 'as %s/%s' % (newfilepath, newfilename)
                                 n += 1
                                 if not os.path.exists(newfilepath):
@@ -770,40 +775,8 @@ class CallBoosterCommand(BaseCommand):
                 channel = event.get('Channel')
                 for opername, userinfo in self.ulist[astid].list.iteritems():
                         if 'agentnum' in userinfo and userinfo['agentnum'] == agentnum:
-                                userinfo['chancon'] = channel
+                                userinfo['agent-wouldbe-channel'] = channel
                 return
-
-
-        def queuememberstatus(self, astid, event):
-                """
-                Function called when an AMI QueueMemberStatus Event is read.
-                Such events occur while an Agent's phone is called and does not reply.
-                It is used in order to send progress reports to Operat.
-                """
-                agentid = event.get('Location')
-                status = event.get('Status')
-                queue = event.get('Queue')
-                for opername, uinfo in self.ulist[astid].list.iteritems():
-                        if 'agentnum' in uinfo and uinfo['agentnum'] == agentid.split('/')[1]:
-                                if 'startcontact' in uinfo:
-                                        dtime = time.time() - int(uinfo['startcontact'])
-                                        thresh = uinfo['startcontactth']
-                                        print 'queuememberstatus', agentid, status, queue, dtime, uinfo
-                                        if status == '5' and dtime > thresh:
-                                                if thresh == 10:
-                                                        code = -2
-                                                        uinfo['startcontactth'] = 20
-                                                elif thresh == 20:
-                                                        code = -2
-                                                        uinfo['startcontactth'] = 30
-                                                else:
-                                                        code = -3
-                                                        del uinfo['startcontact']
-                                                        del uinfo['startcontactth']
-                                                        if 'chancon' in uinfo:
-                                                                self.amis[astid].hangup(uinfo['chancon'], '')
-                                                                del uinfo['chancon']
-                                                self.__send_msg__(uinfo, ',%d,,AppelOpe/' % code)
 
 
         def dial(self, astid, event):
@@ -832,9 +805,9 @@ class CallBoosterCommand(BaseCommand):
                 if thiscall is not None:
                         print 'HANGUP => __update_stat_acd2__', uniqueid, chan, thiscall.queuename, thiscall.uinfo
                         if thiscall.uinfo is not None:
-                                if 'startcontact' in thiscall.uinfo and 'chancon' in thiscall.uinfo:
+                                if 'agent-wouldbe-channel' in thiscall.uinfo and 'agentchannel' not in thiscall.uinfo:
                                         self.__send_msg__(thiscall.uinfo, ',-1,,AppelOpe/')
-                                        self.amis[astid].hangup(thiscall.uinfo['chancon'], '')
+                                        self.amis[astid].hangup(thiscall.uinfo['agent-wouldbe-channel'], '')
                         self.__update_taxes__(thiscall, 'Termine')
                         self.__update_stat_acd2__(thiscall)
                         self.__clear_call_fromqueues__(astid, thiscall)
@@ -1010,12 +983,17 @@ class CallBoosterCommand(BaseCommand):
                 for opername, userinfo in self.ulist[astid].list.iteritems():
                         if 'agentnum' in userinfo and userinfo['agentnum'] == agentnum:
                                 userinfo['agentchannel'] = agentchannel
+                                if 'agent-wouldbe-channel' in userinfo:
+                                        if userinfo['agent-wouldbe-channel'] != agentchannel:
+                                                print userinfo['agent-wouldbe-channel'], agentchannel
+                                        del userinfo['agent-wouldbe-channel']
+                                else:
+                                        print 'no agent-wouldbe-channel'
+
                                 if 'timer-agentlogin' in userinfo:
                                         userinfo['timer-agentlogin'].cancel()
                                         del userinfo['timer-agentlogin']
-                                if 'startcontact' in userinfo:
-                                        del userinfo['startcontact']
-                                        del userinfo['startcontactth']
+                                        del userinfo['timer-agentlogin-iter']
                                 # maybe we don't need to send an AppelOpe reply if it has not been explicitly required
                                 # reply = ',%d,,AppelOpe/' % (-3)
                                 self.__send_msg__(userinfo, ',1,,AppelOpe/')
@@ -1025,6 +1003,10 @@ class CallBoosterCommand(BaseCommand):
                                                 time.sleep(1) # otherwise the Agent's channel is not found
                                                 anycall.tocall = False
                                                 self.__outcall__(anycall)
+                return
+
+
+        def queuememberstatus(self, astid, event):
                 return
 
 
@@ -1317,6 +1299,15 @@ class CallBoosterCommand(BaseCommand):
                         self.waitingmessages[sdanum].append(indice)
                 return
 
+        def __agentlogin__(self, astid, userinfo, phonenum, agentnum, opername):
+                userinfo['timer-agentlogin'] = threading.Timer(10, self.__callback_agentlogin__)
+                userinfo['timer-agentlogin'].start()
+                userinfo['timer-agentlogin-iter'] = 0
+                self.amis[astid].aoriginate_var('sip', phonenum, 'Log %s' % phonenum,
+                                                agentnum, opername, 'ctx-callbooster-agentlogin',
+                                                {'CB_MES_LOGAGENT' : opername,
+                                                 'CB_AGENT_NUMBER' : agentnum}, 100)
+
 
         def manage_srv2clt(self, userinfo_by_requester, connid, parsedcommand, cfg):
                 """
@@ -1354,13 +1345,7 @@ class CallBoosterCommand(BaseCommand):
                                 if 'agentchannel' in userinfo:
                                         log_debug(SYSLOG_WARNING, 'AppelOpe : %s phone is already logged in as agent number %s' % (phonenum, agentnum))
                                 log_debug(SYSLOG_INFO, 'AppelOpe : aoriginate_var for phonenum = %s' % phonenum)
-                                userinfo['timer-agentlogin'] = threading.Timer(10, self.__callback_agentlogin__)
-                                userinfo['timer-agentlogin'].start()
-                                userinfo['timer-agentlogin-iter'] = 0
-                                self.amis[astid].aoriginate_var('sip', phonenum, 'Log %s' % phonenum,
-                                                                agentnum, opername, 'ctx-callbooster-agentlogin',
-                                                                {'CB_MES_LOGAGENT' : opername,
-                                                                 'CB_AGENT_NUMBER' : agentnum}, 100)
+                                self.__agentlogin__(astid, userinfo, phonenum, agentnum, opername)
                         else:
                                 reply = ',%d,,AppelOpe/' % (-3)
                                 connid_socket.send(reply)
@@ -1447,13 +1432,7 @@ class CallBoosterCommand(BaseCommand):
                                         userinfo['calls'][comm_id_outgoing] = outCall
                                         userinfo['calls'][comm_id_outgoing].tocall = True
                                         phonenum = userinfo_by_requester[5]
-                                        userinfo['timer-agentlogin'] = threading.Timer(10, self.__callback_agentlogin__)
-                                        userinfo['timer-agentlogin'].start()
-                                        userinfo['timer-agentlogin-iter'] = 0
-                                        self.amis[astid].aoriginate_var('sip', phonenum, 'Log %s' % phonenum,
-                                                                        agentnum, opername, 'ctx-callbooster-agentlogin',
-                                                                        {'CB_MES_LOGAGENT' : opername,
-                                                                         'CB_AGENT_NUMBER' : agentnum}, 100)
+                                        self.__agentlogin__(astid, userinfo, phonenum, agentnum, opername)
                 elif cname == 'Raccroche':
                         reference = parsedcommand.args[1]
                         try:
@@ -1625,6 +1604,15 @@ class CallBoosterCommand(BaseCommand):
                 elif cname == 'Enregistre':
                         reference = parsedcommand.args[1]
                         connid_socket.send(',,,Enregistre/')
+
+##                        if 'agentchannel' in userinfo:
+##                                print 'sendfiche, the agent is online :', userinfo['agentchannel']
+##                        else:
+##                                phonenum = userinfo['phonenum']
+##                                opername = userinfo['user']
+##                                log_debug(SYSLOG_INFO, 'sendfiche, the agent is not online ... we re going to call him : %s (%s)' % (phonenum, str(userinfo)))
+##                                self.__agentlogin__(astid, userinfo, phonenum, agentnum, opername)
+
                         self.amis[astid].aoriginate_var('Agent', agentnum, opername,
                                                         'record_exten', 'Enregistre', 'ctx-callbooster-record',
                                                         {'CB_RECORD_FILENAME' : reference[0]}, 100)
@@ -1645,7 +1633,8 @@ class CallBoosterCommand(BaseCommand):
                         system_ressource_struct = self.cursor_operat.fetchall()
                         for srs in system_ressource_struct:
                                 print 'A/ (# outgoing lines according to date & time) :', srs
-                                self.nalerts_simult = int(srs[7])
+                                if srs[4] == 'ALERTE':
+                                        self.nalerts_simult = int(srs[7])
 
                         columns = ('N', 'NAlerteStruct', 'NomFichierMessage', 'ListeGroupes', 'interval_suivi')
                         self.cursor_operat.query('USE %s_mvts' % self.__socname__(idsoc))
@@ -1678,6 +1667,9 @@ class CallBoosterCommand(BaseCommand):
                                         nbtentatives  = clients_alerte_struct[0][8]
                                         alertetous    = clients_alerte_struct[0][9]
                                         stopdecroche  = clients_alerte_struct[0][10]
+
+                                if typealerte != 'Tel':
+                                        break
 
                                 # Fetch question details
                                 columns = ('N', 'Libelle', 'Descriptif', 'Fichier', 'Type_saisie',
@@ -1993,11 +1985,10 @@ class CallBoosterCommand(BaseCommand):
                                                                 userinfo['timer-agentlogin-iter'] += 1
                                                         else:
                                                                 self.__send_msg__(userinfo, ',-3,,AppelOpe/')
-                                                                del userinfo['timer-agentlogin']
-                                                                del userinfo['timer-agentlogin-iter']
-                                                                if 'chancon' in userinfo:
-                                                                        self.amis[astid].hangup(userinfo['chancon'], '')
-                                                                        # del userinfo['chancon']
+                                                                userinfo['timer-agentlogin-iter'] += 1
+                                                                if 'agent-wouldbe-channel' in userinfo:
+                                                                        self.amis[astid].hangup(userinfo['agent-wouldbe-channel'], '')
+                                                                        del userinfo['agent-wouldbe-channel']
                         else:
                                 print 'checkqueue (unknown event kind)', tname
                 return disconnlist
