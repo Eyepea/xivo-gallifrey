@@ -76,8 +76,7 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 		|| $this->_sockprov['list']->is_open() === false
 		|| ($write = $this->_mk_sockprov_http('list')) === false)
 			return(($this->_list = false));
-		else if(($write = $this->_mk_sockprov_http('list')) === false
-		|| $this->_sockprov['list']->write($write) === false
+		else if($this->_sockprov['list']->write($write) === false
 		|| ($read = $this->_sockprov['list']->read_binary()) === false
 		|| ($recv = $this->_parse_sockprov_recv($read)) === false
 		|| isset($recv['status']) === false
