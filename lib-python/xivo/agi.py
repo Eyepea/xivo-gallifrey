@@ -33,9 +33,9 @@ To use this library please see the example :
 __version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2004 Karl Putland 
-    Upstream Author: Karl Putland <kputland@users.sourceforge.net>
+    Upstream Original Author: Karl Putland <kputland@users.sourceforge.net>
 
-    Copyright (C) 2007, Proformatique
+    Copyright (C) 2007, 2008  Proformatique
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -60,7 +60,9 @@ __license__ = """
 #     - removed stderr
 #     - removed double quoting from database_get()
 
-import sys, pprint, re
+import sys
+import pprint
+import re
 from types import ListType
 import signal
 from itertools import *
@@ -72,10 +74,10 @@ DEFAULT_RECORD  = 20000 # 20sec record time
 re_code = re.compile(r'(^\d*)\s*(.*)')
 re_kv = re.compile(r'(?P<key>\w+)=(?P<value>[^\s]+)\s*(?:\((?P<data>.*)\))*')
 
-__all__ = ['AGIException', 'AGIError', 'AGIUnknownError', 'AGIAppError',
+__all__ = ('AGIException', 'AGIError', 'AGIUnknownError', 'AGIAppError',
            'AGIHangup', 'AGISIGHUPHangup', 'AGISIGPIPEHangup',
            'AGIResultHangup', 'AGIDBError', 'AGIUsageError',
-           'AGIInvalidCommand', 'AGI']
+           'AGIInvalidCommand', 'AGI')
 
 class AGIException(Exception): pass
 class AGIError(AGIException): pass
