@@ -326,15 +326,15 @@ def manage_tcp(connid):
                 msg = connid.recv(BUFSIZE_LARGE)
         except socket.timeout, exc:
                 msg = ''
-                log_debug(SYSLOG_ERR, '--- exception --- UI connection : a socket timeout occured when recv from %s : %s'
+                log_debug(SYSLOG_ERR, '--- exception --- F connection : a socket timeout occured when recv from %s : %s'
                           %(requester, str(exc)))
         except socket.error, exc:
                 msg = ''
-                log_debug(SYSLOG_ERR, '--- exception --- UI connection : a socket error occured when recv from %s : %s'
+                log_debug(SYSLOG_ERR, '--- exception --- F connection : a socket error occured when recv from %s : %s'
                           %(requester, str(exc)))
         except Exception, exc:
                 msg = ''
-                log_debug(SYSLOG_ERR, '--- exception --- UI connection : an Exception occured when recv from %s : %s - %s'
+                log_debug(SYSLOG_ERR, '--- exception --- F connection : an Exception occured when recv from %s : %s - %s'
                           %(requester, str(exc), exc.__class__))
         if len(msg) == 0:
                 try:
@@ -343,7 +343,7 @@ def manage_tcp(connid):
                         tcpopens_fc.remove(connid)
                         log_debug(SYSLOG_INFO, "TCP (F) socket closed from %s" % requester)
                 except Exception, exc:
-                        log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : a problem occured when trying to close %s : %s'
+                        log_debug(SYSLOG_ERR, '--- exception --- F connection [%s] : a problem occured when trying to close %s : %s'
                                   %(msg, str(connid), str(exc)))
         else:
                 re_push = re.match('PUSH <(\S+)> <(\S+)> <(\S+)> <(\S+)>', msg.strip())
@@ -640,7 +640,7 @@ def handle_ami_event(astid, idata):
                         clidn   = this_event.get("CallerIDName")
                         context = this_event.get("Context")
                         try:
-                                commandclass.dial(astid, this_event)
+                                commandclass.ami_dial(astid, this_event)
                                 # plist_thisast.handle_ami_event_dial(src, dst, clid, clidn)
                                 #print "dial", context, x
                         except Exception, exc:
@@ -695,14 +695,14 @@ def handle_ami_event(astid, idata):
                                         log_debug(SYSLOG_ERR, '--- exception --- handle_ami_event/Link : %s' % str(exc))
 
                         try:
-                                commandclass.link(astid, this_event)
+                                commandclass.ami_link(astid, this_event)
                                 
                                 #plist_thisast.handle_ami_event_link(src, dst, clid1, clid2)
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- AMI / Link : %s (%s)' % (str(exc), str(this_event)))
                 elif evfunction == 'Unlink':
                         try:
-                                commandclass.unlink(astid, this_event)
+                                commandclass.ami_unlink(astid, this_event)
 
                                 #src   = this_event.get("Channel1")
                                 #dst   = this_event.get("Channel2")
@@ -713,7 +713,7 @@ def handle_ami_event(astid, idata):
                                 log_debug(SYSLOG_ERR, '--- exception --- AMI / Unlink : %s (%s)' % (str(exc), str(this_event)))
                 elif evfunction == 'Hangup':
                         try:
-                                commandclass.hangup(astid, this_event)
+                                commandclass.ami_hangup(astid, this_event)
 
                                 #chan  = this_event.get("Channel")
                                 #cause = this_event.get("Cause-txt")
@@ -736,7 +736,7 @@ def handle_ami_event(astid, idata):
                         clid  = this_event.get('CallerID')
                         qname = this_event.get('Queue')
                         count = int(this_event.get('Count'))
-                        commandclass.join(astid, this_event)
+                        commandclass.ami_join(astid, this_event)
                         # log_debug(SYSLOG_INFO, 'AMI:Join: %s queue=%s %s count=%s %s' % (astid, qname, chan, count, clid))
                         if len(clid) > 0:
                                 if qname not in plist_thisast.queues:
@@ -764,15 +764,15 @@ def handle_ami_event(astid, idata):
                         # <-> register's ? notify's ?
                         pass
                 elif evfunction == 'Agentlogin':
-                        commandclass.agentlogin(astid, this_event)
+                        commandclass.ami_agentlogin(astid, this_event)
                         # log_debug(SYSLOG_INFO, '//AMI:Agentlogin// %s : %s' %(astid, str(this_event)))
                 elif evfunction == 'Agentlogoff':
-                        commandclass.agentlogoff(astid, this_event)
+                        commandclass.ami_agentlogoff(astid, this_event)
                         # log_debug(SYSLOG_INFO, '//AMI:Agentlogoff// %s : %s' %(astid, str(this_event)))
                 elif evfunction == 'Agentcallbacklogin':
                         log_debug(SYSLOG_INFO, '//AMI:Agentcallbacklogin// %s : %s' %(astid, str(this_event)))
                 elif evfunction == 'Agentcallbacklogoff':
-                        commandclass.agentcallbacklogoff(astid, this_event)
+                        commandclass.ami_agentcallbacklogoff(astid, this_event)
                         # log_debug(SYSLOG_INFO, '//AMI:Agentcallbacklogoff// %s : %s' %(astid, str(this_event)))
                 elif evfunction == 'AgentCalled':
                         log_debug(SYSLOG_INFO, '//AMI:AgentCalled// %s : %s' %(astid, str(this_event)))
@@ -783,7 +783,7 @@ def handle_ami_event(astid, idata):
                         cfrom   = this_event.get('From')
                         exten   = this_event.get('Exten')
                         timeout = this_event.get('Timeout')
-                        commandclass.parkedcall(astid, this_event)
+                        commandclass.ami_parkedcall(astid, this_event)
                         # log_debug(SYSLOG_INFO, 'AMI:ParkedCall: %s : %s %s %s %s' %(astid, channel, cfrom, exten, timeout))
                         # send_msg_to_cti_clients(commandclass.park_srv2clt('parked', [astid, channel, cfrom, exten, timeout]))
                 elif evfunction == 'UnParkedCall':
@@ -791,7 +791,7 @@ def handle_ami_event(astid, idata):
                         channel = this_event.get('Channel')
                         cfrom   = this_event.get('From')
                         exten   = this_event.get('Exten')
-                        commandclass.unparkedcall(astid, this_event)
+                        commandclass.ami_unparkedcall(astid, this_event)
                         # log_debug(SYSLOG_INFO, 'AMI:UnParkedCall: %s : %s %s %s' %(astid, channel, cfrom, exten))
                         # send_msg_to_cti_clients(commandclass.park_srv2clt('unparked', [astid, channel, cfrom, exten]))
                 elif evfunction == 'ParkedCallTimeOut':
@@ -804,7 +804,7 @@ def handle_ami_event(astid, idata):
                         # when the peer is tired
                         channel = this_event.get('Channel')
                         exten   = this_event.get('Exten')
-                        commandclass.parkedcallgiveup(astid, this_event)
+                        commandclass.ami_parkedcallgiveup(astid, this_event)
                         # log_debug(SYSLOG_INFO, 'AMI:ParkedCallGiveUp: %s : %s %s' %(astid, channel, exten))
                         # send_msg_to_cti_clients(commandclass.park_srv2clt('giveup', [astid, channel, exten]))
                 elif evfunction == 'ParkedCallsComplete':
@@ -866,14 +866,14 @@ def handle_ami_event(astid, idata):
                         #                 5                  AST_DEVICE_UNAVAILABLE
                         #                 6 AST_EXTENSION_RINGING = 8  appele
                 elif evfunction == 'OriginateSuccess':
-                        commandclass.originatesuccess(astid, this_event)
+                        commandclass.ami_originatesuccess(astid, this_event)
                 elif evfunction == 'AOriginateSuccess':
-                        commandclass.aoriginatesuccess(astid, this_event)
+                        commandclass.ami_aoriginatesuccess(astid, this_event)
                 elif evfunction == 'OriginateFailure':
-                        commandclass.originatefailure(astid, this_event)
+                        commandclass.ami_originatefailure(astid, this_event)
                         # log_debug(SYSLOG_INFO, 'AMI:OriginateFailure: %s - reason = %s' % (astid, this_event.get('Reason')))
                 elif evfunction == 'AOriginateFailure':
-                        commandclass.aoriginatefailure(astid, this_event)
+                        commandclass.ami_aoriginatefailure(astid, this_event)
                         # log_debug(SYSLOG_INFO, 'AMI:AOriginateFailure: %s - reason = %s' % (astid, this_event.get('Reason')))
                         #define AST_CONTROL_HANGUP              1
                         #define AST_CONTROL_RING                2
@@ -887,6 +887,7 @@ def handle_ami_event(astid, idata):
                         #define AST_CONTROL_WINK                10
                 elif evfunction == 'Rename':
                         # appears when there is a transfer
+                        continue
                         channel_old = this_event.get('Oldname')
                         channel_new = this_event.get('Newname')
                         if channel_old.find('<MASQ>') < 0 and channel_new.find('<MASQ>') < 0 and \
@@ -953,7 +954,7 @@ def handle_ami_event(astid, idata):
                         chan    = this_event.get('Channel')
                         clid    = this_event.get('CallerID')
                         clidn   = this_event.get('CallerIDName')
-                        commandclass.newcallerid(astid, this_event)
+                        commandclass.ami_newcallerid(astid, this_event)
                         # log_debug(SYSLOG_INFO, 'AMI:Newcallerid: %s channel=%s callerid=%s calleridname=%s'
                         # %(astid, chan, clid, clidn))
                         # plist_thisast.normal_channel_fills(chan, clid,
@@ -995,7 +996,7 @@ def handle_ami_event(astid, idata):
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- (UserEventFeature) <%s> : %s' %(str(this_event), str(exc)))
                 elif evfunction is not None and evfunction.startswith('UserEvent'):
-                        commandclass.userevent(astid, this_event)
+                        commandclass.ami_userevent(astid, this_event)
                 elif evfunction == 'Newexten': # in order to handle outgoing calls ?
                         chan    = this_event.get('Channel')
                         exten   = this_event.get('Extension')
@@ -1040,7 +1041,7 @@ def handle_ami_event(astid, idata):
                                 pass
 
                 elif evfunction == 'MessageWaiting':
-                        commandclass.messagewaiting(astid, this_event)
+                        commandclass.ami_messagewaiting(astid, this_event)
 ##                        mwi_string = '%s waiting=%s; new=%s; old=%s' \
 ##                                     % (this_event.get('Mailbox'), str(this_event.get('Waiting')), str(this_event.get('New')), str(this_event.get('Old')))
 ##                        log_debug(SYSLOG_INFO, 'AMI:MessageWaiting: %s : %s' % (astid, mwi_string))
@@ -1058,7 +1059,7 @@ def handle_ami_event(astid, idata):
                         qname    = this_event.get('Queue')
                         location = this_event.get('Location')
                         status   = int(this_event.get('Status'))
-                        commandclass.queuememberstatus(astid, this_event)
+                        commandclass.ami_queuememberstatus(astid, this_event)
                         # print 'QueueMemberStatus', qname, location, status, time.time()
 
 ##                        if qname in plist_thisast.queues and (status == 1 or status == 2 or status == 6):
@@ -2673,25 +2674,25 @@ while True: # loops over the reloads
                                 log_debug(SYSLOG_INFO, "TCP (SB)  socket opened on   %s:%d" % (UIsockparams[0], UIsockparams[1]))
                                 commandclass.connected_srv2clt(conn, '%s:%d' % (UIsockparams[0], UIsockparams[1]))
                                 # appending the opened socket to the ones watched
-                                fdlist_full.append(conn)
                                 conn.setblocking(0)
-                                tcpopens_sb.append([conn, UIsockparams[0], UIsockparams[1]])
+                                fdlist_full.append(conn)
+                                tcpopens_sb.append(conn)
                         elif UIsock2 in i:
                                 [conn, UIsock2params] = UIsock2.accept()
                                 log_debug(SYSLOG_INFO, "TCP (SB)  socket opened on   %s:%d" % (UIsock2params[0], UIsock2params[1]))
                                 commandclass.connected_srv2clt(conn, '%s:%d' % (UIsock2params[0], UIsock2params[1]))
                                 # appending the opened socket to the ones watched
-                                fdlist_full.append(conn)
                                 conn.setblocking(0)
-                                tcpopens_sb.append([conn, UIsock2params[0], UIsock2params[1]])
+                                fdlist_full.append(conn)
+                                tcpopens_sb.append(conn)
                         # the new UI (WEBI) connections are catched here
                         elif WEBIsock in i:
                                 [conn, WEBIsockparams] = WEBIsock.accept()
                                 log_debug(SYSLOG_INFO, "TCP (WEBI) socket opened on   %s:%d" % (WEBIsockparams[0], WEBIsockparams[1]))
                                 # appending the opened socket to the ones watched
-                                fdlist_full.append(conn)
                                 conn.setblocking(0)
-                                tcpopens_webi.append([conn, WEBIsockparams[0], WEBIsockparams[1]])
+                                fdlist_full.append(conn)
+                                tcpopens_webi.append(conn)
 
                         elif Fsock in i:
                                 [conn, Fsockparams] = Fsock.accept()
@@ -2702,23 +2703,24 @@ while True: # loops over the reloads
                                 tcpopens_fc.append(conn)
 
                         # open UI (SB) connections
-                        elif filter(lambda j: j[0] in i, tcpopens_sb):
-                                conn = filter(lambda j: j[0] in i, tcpopens_sb)[0]
+                        elif filter(lambda j: j in i, tcpopens_sb):
+                                conn = filter(lambda j: j in i, tcpopens_sb)[0]
                                 try:
-                                        manage_tcp_connection(conn[0], True)
+                                        manage_tcp_connection(conn, True)
                                 except Exception, exc:
                                         log_debug(SYSLOG_ERR, '--- exception --- XC/SB tcp connection : %s' % str(exc))
                         # open UI (WEBI) connections
-                        elif filter(lambda j: j[0] in i, tcpopens_webi):
-                                conn = filter(lambda j: j[0] in i, tcpopens_webi)[0]
+                        elif filter(lambda j: j in i, tcpopens_webi):
+                                conn = filter(lambda j: j in i, tcpopens_webi)[0]
                                 try:
-                                        manage_tcp_connection(conn[0], False)
+                                        manage_tcp_connection(conn, False)
                                 except Exception, exc:
                                         log_debug(SYSLOG_ERR, '--- exception --- WEBI tcp connection : %s' % str(exc))
+                        # AGI connections
                         elif filter(lambda j: j in i, tcpopens_fc):
-                                conn = filter(lambda j: j in i, tcpopens_fc)
+                                conn = filter(lambda j: j in i, tcpopens_fc)[0]
                                 try:
-                                        manage_tcp(conn[0])
+                                        manage_tcp(conn)
                                 except Exception, exc:
                                         log_debug(SYSLOG_ERR, '--- exception --- F tcp connection : %s' % str(exc))
 

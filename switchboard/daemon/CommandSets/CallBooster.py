@@ -5,7 +5,28 @@ This is the CallBooster core class.
 The main inputs are :
 - the Agents' commands
 - the Asterisk events
-- the incoming calls
+- the Incoming calls (through the AGI)
+
+According to these inputs, the main functions taken care of are :
+- Alerte's
+- Taxes adn statistics
+- Login / logouts
+- Issue the Outgoing calls
+- Handle the Incoming calls
+
+
+There are about 5 different kinds of calls to manage here :
+- (A) the Incoming Calls whose destination is one of the Agents' queue
+- (B) the Incoming Calls whose destination is finally a phone number (Tel/Fic/Base)
+- (C) the Outgoing Calls initiated by Operat
+- (D) the Calls initiated by an Alerte
+- (E) the regular Calls
+Properties that can be catched :
+- (B), (C), (D) and (E) go through Dial()
+- one can set a given mark to identify (C)
+- when (B) occurs, we can send an UserEventDialCB from the DialPlan
+
+
 """
 
 __version__   = '$Revision$'
@@ -100,7 +121,7 @@ class CallBoosterCommand(BaseCommand):
         outgoing_calls = {}
         outgoing_calls_ng = {}
         normal_calls = []
-        originated_calls = []
+        originated_calls = {}
 
         def __init__(self, ulist, amis, operatsocket, operatport, operatini, queued_threads_pipe):
                 """
@@ -125,6 +146,22 @@ class CallBoosterCommand(BaseCommand):
                 self.queued_threads_pipe = queued_threads_pipe
 
 
+        def loginko(self, cfg, errorstring):
+                """
+                Actions to perform when login was KO.
+                """
+                print 'loginko', cfg, errorstring
+                return '%s,0,,Init/' % cfg.get('srvnum')
+
+
+        def loginok(self, userinfo, capa_user, versions, configs, cfg):
+                """
+                Actions to perform when login was OK.
+                Replies Init/
+                """
+                return '%s,1,,Init/' % cfg.get('srvnum')
+
+
         def __send_msg__(self, uinfo, msg):
                 """
                 Sends a message 'msg' to destination 'uinfo', after having proceeded a few checks.
@@ -137,86 +174,6 @@ class CallBoosterCommand(BaseCommand):
                                 print '--- exception --- (CallBooster) could not send <%s> to user : %s' % (msg, str(exc))
                 else:
                         print '(CallBooster) could not send <%s> to user (no connection field defined)' % msg
-                return
-
-
-        def __sendfiche_a__(self, userinfo, incall):
-                """
-                Sends the Fiche informations (incall) to the appropriate user (userinfo)
-                """
-                userinfo['calls'][incall.commid] = incall
-                # CLR-ACD to be sent only if there was an Indispo sent previously
-                if incall.dialplan['callerid'] == 1:
-                        cnum = incall.cidnum
-                else:
-                        cnum = ''
-                incall.waiting = False
-                incall.uinfo = userinfo
-                self.__send_msg__(incall.uinfo, '%s,%s,%s,Fiche/' % (incall.commid, incall.sdanum, cnum))
-                return
-
-
-        def __sendfiche__(self, astid, dest, incall):
-                """
-                The call comes here when the AGI has directly found a peer.
-                """
-                userinfo = self.ulist[astid].finduser(dest)
-                log_debug(SYSLOG_INFO, '__sendfiche__ : userinfo = %s' % str(userinfo))
-                if userinfo is not None:
-                        agentnum = userinfo['agentnum']
-                        if 'agentchannel' in userinfo:
-                                print 'sendfiche, the agent is online :', userinfo['agentchannel']
-                        else:
-                                phonenum = userinfo['phonenum']
-                                opername = userinfo['user']
-                                log_debug(SYSLOG_INFO, 'sendfiche, the agent is not online ... we re going to call him : %s (%s)' % (phonenum, str(userinfo)))
-                                self.__agentlogin__(astid, userinfo, phonenum, agentnum, opername)
-                        incall.statacd2_tt = 'TT_SOP'
-                        self.__sendfiche_a__(userinfo, incall)
-                        print '__sendfiche__', incall.queuename, agentnum
-                        userinfo['queuelist'][incall.queuename] = incall
-                        userinfo['sendfiche'] = [incall.queuename, 'Agent/%s' % agentnum]
-                return
-
-
-        def __clear_call_fromqueues__(self, astid, incall):
-                """
-                Removes the 'incall' call references from all the operator queues, and
-                sends the relevant information to the agents.
-                """
-                for opername, userinfo in self.ulist[astid].list.iteritems():
-                        if incall.queuename in userinfo['queuelist']:
-                                del userinfo['queuelist'][incall.queuename]
-                                agentnum = userinfo['agentnum']
-                                print '__clear_call_fromqueues__ : removing %s (queue %s) for agent %s' %(incall.sdanum, incall.queuename, agentnum)
-                                if opername in incall.agentlist:
-                                        incall.agentlist.remove(opername)
-                                else:
-                                        print opername, 'not in agentlist', incall.agentlist
-                                self.amis[astid].queueremove(incall.queuename, 'Agent/%s' % agentnum)
-                                self.__send_msg__(userinfo, '%s,%s,,CLR-ACD/' % (incall.commid, incall.sdanum))
-                return
-
-
-        def __addtoqueue__(self, astid, dest, incall):
-                """
-                Adds the 'dest' Agent to 'incall' call's queue.
-                """
-                print '__addtoqueue__', dest, incall.commid, incall.sdanum
-                self.amis[astid].queueadd(incall.queuename, GHOST_AGENT)
-                self.amis[astid].queuepause(incall.queuename, GHOST_AGENT, 'false')
-                userinfo = self.ulist[astid].finduser(dest)
-                if userinfo is not None:
-                        if incall.queuename not in userinfo['queuelist']:
-                                agentnum = userinfo['agentnum']
-                                # this is the Indispo list
-                                userinfo['queuelist'][incall.queuename] = incall
-                                incall.agentlist.append(dest)
-                                self.amis[astid].queueadd(incall.queuename, 'Agent/%s' % agentnum)
-                                self.amis[astid].queuepause(incall.queuename, 'Agent/%s' % agentnum, 'true')
-                                self.__send_msg__(userinfo, '%s,%s,,Indispo/' % (incall.commid, incall.sdanum))
-                        else:
-                                print '__addtoqueue__ : %s is already in the queuelist of %s' % (incall.queuename, dest)
                 return
 
 
@@ -440,15 +397,45 @@ class CallBoosterCommand(BaseCommand):
                 return
 
 
-        # kind of calls
-        # - agent login / logout
-        # - outgoing
-        #
-        # - incoming (sda) : choice => agent
-        #
+        def __uinfo_by_agentnum__(self, astid, agentnum):
+                """
+                Sets the userinfo according to the agent's phonenumber
+                """
+                userinfo = None
+                for opername, uinfo in self.ulist[astid].list.iteritems():
+                        if 'agentnum' in uinfo and uinfo['agentnum'] == agentnum:
+                                userinfo = uinfo
+                                break
+                return userinfo
 
-        # Asterisk AMI events
-        def link(self, astid, event):
+
+        # To follow are the methods to handle Asterisk AMI events
+        def ami_dial(self, astid, event):
+                """
+                Function called when an AMI Dial Event is read.
+                """
+                srcuniqueid = event.get('SrcUniqueID')
+                destuniqueid = event.get('DestUniqueID')
+                source = event.get('Source')
+                destination = event.get('Destination')
+                
+                if srcuniqueid in self.originated_calls:
+                        self.originated_calls[destuniqueid] = self.originated_calls[srcuniqueid]
+                        if destination.startswith('Local/'):
+                                print 'DIAL originated call', source, destination, 'remembering'
+                                dui = destuniqueid.split('.')
+                                nextsrcuniqueid = '.'.join([dui[0], str(int(dui[1]) + 1)])
+                                self.originated_calls[nextsrcuniqueid] = self.originated_calls[srcuniqueid]
+                        else:
+                                print 'DIAL originated call', source, destination
+                else:
+                        print '(NORMAL DIAL)', srcuniqueid, destuniqueid, event
+                        self.normal_calls.append(srcuniqueid)
+                        # self.__init_taxes__(call, event.get('Destination'), event.get('CallerID'), '103', TAXES_PABX, TAXES_TRUNKNAME, 0)
+                return
+
+
+        def ami_link(self, astid, event):
                 """
                 Function called when an AMI Link Event is read.
                 We have a few different cases to handle here :
@@ -456,151 +443,268 @@ class CallBoosterCommand(BaseCommand):
                 - when a user is removed from its Parking place (Reprise command)
                 - when a connection has been established after an Aboute or AppelAboute command
                 """
-                ch1 = event.get('Channel1').split('/')
-                ch2 = event.get('Channel2').split('/')
-                print 'LINK', event
+                uniqueid1 = event.get('Uniqueid1')
+                uniqueid2 = event.get('Uniqueid2')
+                channel1 = event.get('Channel1')
+                channel2 = event.get('Channel2')
 
-                if ch1[0] == 'Agent':
-                        # OUTGOING CALL
-                        agentnum = ch1[1]
-                        peer = event.get('Channel2')
-                        callerid = event.get('CallerID2')
-                elif ch2[0] == 'Agent':
-                        # INCOMING CALL
-                        agentnum = ch2[1]
-                        peer = event.get('Channel1')
-                        callerid = event.get('CallerID1')
-                if ch1[0] == 'Agent' or ch2[0] == 'Agent':
-
-                        userinfo = self.__uinfo_by_agentnum__(astid, agentnum)
-                        if userinfo is None:
-                                log_debug(SYSLOG_WARNING, '(link) no user found for agent number %s' % agentnum)
+                if uniqueid1 in self.originated_calls:
+                        # either Incoming+Tel, Outgoing, (Alert)
+                        print 'LINK originated call', channel1, channel2, self.originated_calls[uniqueid1]
+                        if self.originated_calls[uniqueid1] == 'dialcb':
+                                ic1 = self.__incallref_from_channel__(event.get('Channel1'))
+                                if ic1 is not None:
+                                        print 'LINK Incoming+Tel', event, ic1
                                 return
 
-                        print 'LINK for Agent/%s : %s (peer = %s)' % (userinfo['agentnum'], userinfo['user'], peer)
-                        for callnum, anycall in userinfo['calls'].iteritems():
-                                if anycall.peerchannel is None:
-                                        # New Call
-                                        anycall.peerchannel = peer
-                                        print 'LINK (new call)', callnum, callerid, anycall.dir, anycall.peerchannel, peer
-                                        anycall.set_timestamp_stat('link')
-                                        if anycall.dir == 'o':
-                                                self.outgoing_calls[peer] = anycall
+                        if channel1.startswith('Local/'):
+                                # OUTGOING CALL PART 1
+                                self.outgoing_calls_ng[channel1] = event
+                        if channel1.startswith('Agent/'):
+                                # OUTGOING CALL PART 2
+                                rchannel2 = channel2.replace(',1', ',2')
+                                agentnum = channel1.split('/')[1]
+                                userinfo = self.__uinfo_by_agentnum__(astid, agentnum)
+                                if userinfo is None:
+                                        log_debug(SYSLOG_WARNING, '(link) no user found for agent number %s' % agentnum)
+                                        return
+                                if rchannel2 in self.outgoing_calls_ng:
+                                        # find the call that matches
+                                        mycall = None
+                                        for anycommid, anycall in userinfo['calls'].iteritems():
+                                                if anycall.dir == 'o' and anycall.peerchannel is None and channel2[6:].split('@')[0] == anycall.dest:
+                                                        mycall = anycall
+                                                        break
+                                        if mycall is not None:
+                                                print mycall, mycall.dest, mycall.parking
+                                                mycall.peerchannel = self.outgoing_calls_ng[rchannel2]['Channel2']
+                                                mycall.set_timestamp_tax('link')
                                                 # self.__update_taxes__(anycall.call, 'Decroche')
-                                                self.__send_msg__(userinfo, '%s,1,%s,Decroche/' % (callnum, callerid))
-                                        anycall.set_timestamp_tax('link')
-                                elif anycall.peerchannel == peer:
-                                        if anycall.parking:
-                                                print 'LINK but UNPARKING :', callnum, anycall.dir, anycall.parking, anycall.peerchannel, peer
-                                                anycall.parking = False
+                                                self.__send_msg__(userinfo, '%s,1,%s,Decroche/' % (mycall.commid, mycall.dest))
+                                                self.outgoing_calls[mycall.peerchannel] = mycall
                                         else:
-                                                print 'LINK but ?', callnum, peer
+                                                print 'found no current call for dest number %s' % channel2[6:].split('@')[0]
                                 else:
-                                        print 'LINK', callnum, 'ignoring'
+                                        # for unparking status detection
+                                        mycall = None
+                                        for anycommid, anycall in userinfo['calls'].iteritems():
+                                                if channel2 == anycall.peerchannel:
+                                                        anycall.parking = False
                 else:
-                        ic1 = self.__incallref_from_channel__(event.get('Channel1'))
-                        ic2 = self.__incallref_from_channel__(event.get('Channel2'))
-                        if ic1 is not None:
-                                print 'LINK without Agent (1)', ic1.sdanum, ic1.commid, ic1.appelaboute, ic1.aboute
-                                if ic1.appelaboute is not None:
-                                        self.__send_msg__(ic1.uinfo, '%s,1,,Raccroche/' % ic1.commid)
-                                        self.__send_msg__(ic1.uinfo, '%s,1,,Raccroche/' % ic1.appelaboute)
-                                ic1.set_timestamp_stat('link')
-                        if ic2 is not None:
-                                print 'LINK without Agent (2)', ic2.sdanum, ic2.commid, ic2.appelaboute, ic2.aboute
-                                if ic2.aboute is not None:
-                                        self.__send_msg__(ic2.uinfo, '%s,1,,Raccroche/' % ic2.commid)
-                                        self.__send_msg__(ic2.uinfo, '%s,1,,Raccroche/' % ic2.appelaboute)
-                                ic2.set_timestamp_stat('link')
-
-                uniqueid1 = event.get('Uniqueid1')
-                if uniqueid1 in self.normal_calls:
-                        print '(NORMAL LINK)', uniqueid1, event
-                        # self.__update_taxes__
-                
+                        # Incoming or Normal/Alert
+                        if channel2.startswith('Agent/'):
+                                print 'LINK NOT originated call Incoming', channel1, channel2
+                                # LINK FOR INCOMING CALL
+                                agentnum = channel2.split('/')[1]
+                                userinfo = self.__uinfo_by_agentnum__(astid, agentnum)
+                                if userinfo is None:
+                                        log_debug(SYSLOG_WARNING, '(link) no user found for agent number %s' % agentnum)
+                                        return
+                                # find the call that matches
+                                mycall = None
+                                for anycommid, anycall in userinfo['calls'].iteritems():
+                                        if anycall.dir == 'i' and anycall.peerchannel is None:
+                                                mycall = anycall
+                                                break
+                                if mycall is not None:
+                                        print mycall, mycall.parking
+                                        mycall.peerchannel = channel1
+                                        mycall.set_timestamp_stat('link')
+                                        mycall.set_timestamp_tax('link')
+                        else:
+                                # Actually, while an Alert event is an Originated one, it might come here since the Dial event
+                                # comes before the OriginateSuccess or OriginateFailure
+                                ic1 = self.__incallref_from_channel__(event.get('Channel1'))
+                                ic2 = self.__incallref_from_channel__(event.get('Channel2'))
+                                if ic1 is not None:
+                                        print 'LINK without Agent (1)', ic1.sdanum, ic1.commid, ic1.appelaboute, ic1.aboute
+                                        if ic1.appelaboute is not None:
+                                                self.__send_msg__(ic1.uinfo, '%s,1,,Raccroche/' % ic1.commid)
+                                                self.__send_msg__(ic1.uinfo, '%s,1,,Raccroche/' % ic1.appelaboute)
+                                        ic1.set_timestamp_stat('link')
+                                elif ic2 is not None:
+                                        print 'LINK after Aboute', ic2.sdanum, ic2.commid, ic2.appelaboute, ic2.aboute
+                                        if ic2.aboute is not None:
+                                                self.__send_msg__(ic2.uinfo, '%s,1,,Raccroche/' % ic2.commid)
+                                                self.__send_msg__(ic2.uinfo, '%s,1,,Raccroche/' % ic2.aboute)
+                                        ic2.set_timestamp_stat('link')
+                                else:
+                                        print '(NORMAL LINK)', event
+                                        # self.__update_taxes__
                 return
 
 
-        def unlink(self, astid, event):
+        def ami_unlink(self, astid, event):
                 """
                 Function called when an AMI Unlink Event is read.
                 We have a few different cases to handle here :
                 - when an established call is over
                 - when a peer is put into a Parking (Attente command)
                 We must be careful anyway, not to count twice some of these events, since two
-                Hangup Events will also be issued.
+                Hangup Events will also be issued for each Unlink event.
                 """
-                print 'UNLINK', event
-                ch1 = event.get('Channel1').split('/')
-                ch2 = event.get('Channel2').split('/')
-                if ch1[0] == 'Agent':
-                        # OUTGOING CALL
-                        agentnum = ch1[1]
-                        peer = event.get('Channel2')
-                        callerid = event.get('CallerID2')
-                elif ch2[0] == 'Agent':
-                        # INCOMING CALL
-                        agentnum = ch2[1]
-                        peer = event.get('Channel1')
-                        callerid = event.get('CallerID1')
-                if ch1[0] == 'Agent' or ch2[0] == 'Agent':
+                uniqueid1 = event.get('Uniqueid1')
+                uniqueid2 = event.get('Uniqueid2')
+                channel1 = event.get('Channel1')
+                channel2 = event.get('Channel2')
 
-                        userinfo = self.__uinfo_by_agentnum__(astid, agentnum)
-                        if userinfo is None:
-                                log_debug(SYSLOG_WARNING, '(unlink) no user found for agent number %s' % agentnum)
-                                return
-                        
-                        print 'UNLINK : userinfo =', userinfo['calls']
-                        # lookup the call to unlink
-                        calltounlink = None
-                        for callnum, anycall in userinfo['calls'].iteritems():
-                                print 'UNLINK', callnum, peer, anycall.peerchannel,
-                                if anycall.peerchannel is None:
-                                        print 'no action since peerchannel is None'
-                                elif anycall.peerchannel == peer:
-                                        if anycall.parking:
-                                                print 'but PARKING'
-                                        elif anycall.appelaboute is not None:
-                                                print 'but appelaboute :', anycall.appelaboute
-                                        elif anycall.aboute is not None:
-                                                print 'but aboute :', anycall.aboute
+                if uniqueid1 in self.originated_calls:
+                        # either Incoming+Tel, Outgoing, (Alert)
+                        print 'UNLINK originated call', channel1, channel2
+                        if self.originated_calls[uniqueid1] == 'dialcb':
+                                ic1 = self.__incallref_from_channel__(event.get('Channel1'))
+                                if ic1 is not None:
+                                        print 'UNLINK Incoming+Tel', event, ic1
+                                        self.originated_calls[uniqueid1] = 'unlink'
+                                        if uniqueid2 in self.originated_calls:
+                                                self.originated_calls[uniqueid2] = 'unlink'
                                         else:
-                                                print anycall.dir
-                                                calltounlink = anycall
-                                                break
+                                                print 'WARNING UNLINK %s but not %s' % (uniqueid1, uniqueid2)
                                 else:
-                                        print 'else', anycall.peerchannel
-                        
-                        if calltounlink is not None:
-                                if calltounlink.dir == 'i':
-                                        print 'unlink INCOMING CALL => __update_stat_acd2__', peer
-                                        self.__update_stat_acd2__(calltounlink)
-                                self.__update_taxes__(calltounlink, 'Termine')
+                                        del self.originated_calls[uniqueid1]
+                                        if uniqueid2 in self.originated_calls:
+                                                del self.originated_calls[uniqueid2]
+                                return
 
-                                # the link had been established => send Annule
-                                self.__send_msg__(userinfo, '%s,1,,Annule/' % callnum)
+                        self.originated_calls[uniqueid1] = 'unlink'
+                        if uniqueid2 in self.originated_calls:
+                                self.originated_calls[uniqueid2] = 'unlink'
+                        else:
+                                print 'WARNING UNLINK %s but not %s' % (uniqueid1, uniqueid2)
 
-                                # remove call from incoming or outgoing list
-                                userinfo['calls'].pop(callnum)
+                        if channel1.startswith('Agent/'):
+                                # ESTABLISHED OUTGOING CALL hanged up
+                                # - or aboute proceeding
+                                agentnum = channel1.split('/')[1]
+                                userinfo = self.__uinfo_by_agentnum__(astid, agentnum)
+                                if userinfo is None:
+                                        log_debug(SYSLOG_WARNING, 'UNLINK : no user found for agent number %s' % agentnum)
+                                        return
+                                mycall = None
+                                # in 'aboute' case, channel2 is of the kind AsyncGoto/SIP/101-081fafb8<ZOMBIE>,
+                                # while peerchannel is of the kind SIP/101-081fafb8, so no call will be found
+                                for anycommid, anycall in userinfo['calls'].iteritems():
+                                        if anycall.peerchannel == channel2:
+                                                mycall = anycall
+                                                break
+                                if mycall is not None:
+                                        print 'I am about to break the OUTGOING call <%s>' % mycall.commid, mycall.parking
+                                        self.__send_msg__(userinfo, '%s,1,,Annule/' % mycall.commid)
+                                        self.__update_taxes__(mycall, 'Termine')
+                                        userinfo['calls'].pop(mycall.commid)
+
                 else:
-                        ic1 = self.__incallref_from_channel__(event.get('Channel1'))
-                        ic2 = self.__incallref_from_channel__(event.get('Channel2'))
-                        if ic1 is not None:
-                                log_debug(SYSLOG_INFO, 'UNLINK without Agent (1) sda=%s commid=%s' % (ic1.sdanum, ic1.commid))
-                                ic1.set_timestamp_stat('unlink')
-                        if ic2 is not None:
-                                log_debug(SYSLOG_INFO, 'UNLINK without Agent (2) sda=%s commid=%s' % (ic2.sdanum, ic2.commid))
-                                ic2.set_timestamp_stat('unlink')
+                        # Incoming or Normal/Alert
+                        if channel2.startswith('Agent/'):
+                                print 'UNLINK NOT originated call Incoming', channel1, channel2
+                                # ESTABLISHED INCOMING CALL hanged up
+                                # - or parking proceeding
+                                # - or appelaboute proceeding
+                        
+                                agentnum = channel2.split('/')[1]
+                                userinfo = self.__uinfo_by_agentnum__(astid, agentnum)
+                                if userinfo is None:
+                                        log_debug(SYSLOG_WARNING, 'UNLINK : no user found for agent number %s' % agentnum)
+                                        return
+                                mycall = None
+                                for anycommid, anycall in userinfo['calls'].iteritems():
+                                        if anycall.peerchannel == channel1:
+                                                mycall = anycall
+                                                break
+                                if mycall is not None:
+                                        print 'UNLINK : I am about to break the INCOMING call <%s>' % mycall.commid, mycall.parking
+                                        if mycall.parking:
+                                                print 'UNLINK : HOWEVER it seems this is not worth since it had been set as a parked one ...'
+                                        elif mycall.appelaboute is not None:
+                                                print 'UNLINK : HOWEVER it seems this is not worth since it had been set as an appelaboute one ...', mycall.appelaboute
+                                        else:
+                                                self.__send_msg__(userinfo, '%s,1,,Annule/' % mycall.commid)
+                                                self.__update_stat_acd2__(mycall)
+                                                self.__update_taxes__(mycall, 'Termine')
+                                                userinfo['calls'].pop(mycall.commid)
+                        else:
+                                ic1 = self.__incallref_from_channel__(event.get('Channel1'))
+                                ic2 = self.__incallref_from_channel__(event.get('Channel2'))
+                                if ic1 is not None:
+                                        log_debug(SYSLOG_INFO, 'UNLINK without Agent (1) sda=%s commid=%s' % (ic1.sdanum, ic1.commid))
+                                        ic1.set_timestamp_stat('unlink')
+                                elif ic2 is not None:
+                                        log_debug(SYSLOG_INFO, 'UNLINK without Agent (2) sda=%s commid=%s' % (ic2.sdanum, ic2.commid))
+                                        ic2.set_timestamp_stat('unlink')
+                                else:
+                                        print '(NORMAL UNLINK)', event
+                                        # self.__update_taxes__
                 return
 
 
-        def __uinfo_by_agentnum__(self, astid, agentnum):
-                userinfo = None
-                for opername, uinfo in self.ulist[astid].list.iteritems():
-                        if 'agentnum' in uinfo and uinfo['agentnum'] == agentnum:
-                                userinfo = uinfo
-                                break
-                return userinfo
+        """
+        Hangup Cases :
+        * link established
+        - peer hangs up
+        - agent hangs up (button or phone)
+        * link not established
+        - only the caller can hangup
+        * special cases :
+        - during parking (park giveup)
+        - during a call establishment (agent is being called but does not reply)
+        - alerts
+        """
+        def ami_hangup(self, astid, event):
+                """
+                Function called when an AMI Hangup Event is read.
+                When the call has already been established (the peers are linked), an Unlink event should
+                have been issued previously.
+                """
+                chan = event.get('Channel')
+                uniqueid = event.get('Uniqueid')
+                
+                thiscall = self.__incallref_from_channel__(chan)
+                if thiscall is not None:
+                        print 'HANGUP => __update_stat_acd2__', uniqueid, chan, thiscall.queuename, thiscall.uinfo
+                        if thiscall.uinfo is not None:
+                                if 'agent-wouldbe-channel' in thiscall.uinfo and 'agentchannel' not in thiscall.uinfo:
+                                        self.__send_msg__(thiscall.uinfo, ',-1,,AppelOpe/')
+                                        self.amis[astid].hangup(thiscall.uinfo['agent-wouldbe-channel'], '')
+                        self.__update_taxes__(thiscall, 'Termine')
+                        self.__update_stat_acd2__(thiscall)
+                        self.__clear_call_fromqueues__(astid, thiscall)
+                        # removes the call from incoming call list
+                        self.incoming_calls[thiscall.sdanum].pop(chan)
+
+                if uniqueid in self.alerts_uniqueids:
+                        # should not come here after success since it is deleted in uservent treatment
+                        print 'HANGUP ALERT', uniqueid, self.alerts_uniqueids[uniqueid]
+
+                        channel = self.alerts_uniqueids[uniqueid]
+                        num = channel[6:-8] # very rough way to extract number from 'local/<num>@default'
+                        toremove = None
+                        for i, h in self.alerts.iteritems():
+                                stopdecroche = h['stopdecroche']
+                                if num in h['numbers'] and h['status'] > 0:
+                                        if h['numbers'][h['status'] - 1] == num:
+                                                print 'HANGUP ALERT', num, i, h['numbers'], h['status'], h['stopdecroche']
+                                                h['locked'] = False
+                                                if len(h['numbers']) == h['status'] or stopdecroche == 1:
+                                                        toremove = i
+                        if toremove is not None: # otherwise it will naturally step to the next number
+                                self.__fill_alert_result__(self.alerts[toremove], 'Décroché')
+                                del self.alerts[toremove]
+
+                        del self.alerts_uniqueids[uniqueid]
+                        self.nalerts_called -= 1
+                        self.__alert_calls__(astid)
+                elif uniqueid in self.originated_calls:
+                        val = self.originated_calls[uniqueid]
+                        if val == 'unlink':
+                                print 'HANGUP originated call (already unlinked)', chan
+                        else:
+                                print 'HANGUP originated call', chan
+                        del self.originated_calls[uniqueid]
+                elif uniqueid in self.normal_calls:
+                        print '(NORMAL HANGUP)', uniqueid, event
+                        self.normal_calls.remove(uniqueid)
+                        # self.__update_taxes__
+                return
 
 
         def __originatesuccess__(self, astid, event, kind):
@@ -616,7 +720,7 @@ class CallBoosterCommand(BaseCommand):
                         channel = event.get('Channel')
                         print '__originatesuccess__', uniqueid, channel
                         self.alerts_uniqueids[uniqueid] = channel
-                        # stores the uniqueid in order to detect the appropriate Hangup later on ...
+                        self.originated_calls[uniqueid] = 'origsuccess-alert'
                 elif context == 'ctx-callbooster-agentlogin':
                         channel = event.get('Channel')
                         reason = event.get('Reason')
@@ -630,7 +734,7 @@ class CallBoosterCommand(BaseCommand):
                                 log_debug(SYSLOG_WARNING, '__originatesuccess__ (agentlogin) : No user found for exten %s' % exten)
                 else:
                         print '__originatesuccess__ (%s) :' % kind, astid, event
-                        self.originated_calls.append(uniqueid)
+                        self.originated_calls[uniqueid] = 'origsuccess'
                 return
 
 
@@ -700,29 +804,29 @@ class CallBoosterCommand(BaseCommand):
                 else:
                         print '__originatefailure__ (%s) :' % kind, astid, event
                         uniqueid = event.get('Uniqueid')
-                        self.originated_calls.append(uniqueid)
+                        self.originated_calls[uniqueid] = 'origfailure'
                 return
 
 
-        def aoriginatesuccess(self, astid, event):
+        def ami_aoriginatesuccess(self, astid, event):
                 """
                 Function called when an AMI AOriginateSuccess Event is read.
                 """
                 self.__originatesuccess__(astid, event, 'a')
                 return
-        def originatesuccess(self, astid, event):
+        def ami_originatesuccess(self, astid, event):
                 """
                 Function called when an AMI OriginateSuccess Event is read.
                 """
                 self.__originatesuccess__(astid, event, '')
                 return
-        def aoriginatefailure(self, astid, event):
+        def ami_aoriginatefailure(self, astid, event):
                 """
                 Function called when an AMI AOriginateFailure Event is read.
                 """
                 self.__originatefailure__(astid, event, 'a')
                 return
-        def originatefailure(self, astid, event):
+        def ami_originatefailure(self, astid, event):
                 """
                 Function called when an AMI OriginateFailure Event is read.
                 """
@@ -730,7 +834,7 @@ class CallBoosterCommand(BaseCommand):
                 return
 
 
-        def messagewaiting(self, astid, event):
+        def ami_messagewaiting(self, astid, event):
                 """
                 Function called when an AMI MessageWaiting Event is read.
                 Appropriate parameters are inserted into the 'suivis' table, in order for FB to tell the
@@ -784,7 +888,7 @@ class CallBoosterCommand(BaseCommand):
                                 os.remove(fullpath)
 
 
-        def newcallerid(self, astid, event):
+        def ami_newcallerid(self, astid, event):
                 """
                 Function called when an AMI NewCallerId Event is read.
                 This is used in order to know which asterisk channel to hang-up in order to stop
@@ -803,75 +907,7 @@ class CallBoosterCommand(BaseCommand):
                 return
 
 
-        def dial(self, astid, event):
-                """
-                Function called when an AMI Dial Event is read.
-                """
-                print 'DIAL', event
-                srcuniqueid = event.get('SrcUniqueID')
-                destuniqueid = event.get('DestUniqueID')
-                if srcuniqueid in self.originated_calls:
-                        self.originated_calls.remove(srcuniqueid)
-                else:
-                        self.normal_calls.append(srcuniqueid)
-                        print '(NORMAL DIAL)', srcuniqueid, destuniqueid, event
-                        # self.__init_taxes__(call, event.get('Destination'), event.get('CallerID'), '103', TAXES_PABX, TAXES_TRUNKNAME, 0)
-                return
-
-
-        def hangup(self, astid, event):
-                """
-                Function called when an AMI Hangup Event is read.
-                """
-                print 'HANGUP', event
-                chan = event.get('Channel')
-                uniqueid = event.get('Uniqueid')
-                thiscall = self.__incallref_from_channel__(chan)
-                if thiscall is not None:
-                        print 'HANGUP => __update_stat_acd2__', uniqueid, chan, thiscall.queuename, thiscall.uinfo
-                        if thiscall.uinfo is not None:
-                                if 'agent-wouldbe-channel' in thiscall.uinfo and 'agentchannel' not in thiscall.uinfo:
-                                        self.__send_msg__(thiscall.uinfo, ',-1,,AppelOpe/')
-                                        self.amis[astid].hangup(thiscall.uinfo['agent-wouldbe-channel'], '')
-                        self.__update_taxes__(thiscall, 'Termine')
-                        self.__update_stat_acd2__(thiscall)
-                        self.__clear_call_fromqueues__(astid, thiscall)
-                        # removes the call from incoming call list
-                        self.incoming_calls[thiscall.sdanum].pop(chan)
-                else:
-                        print 'HANGUP (not incoming call)', uniqueid, event
-
-
-                if uniqueid in self.alerts_uniqueids:
-                        # should not come here after success since it is deleted in uservent treatment
-                        print 'HANGUP ALERT', uniqueid, self.alerts_uniqueids[uniqueid]
-
-                        channel = self.alerts_uniqueids[uniqueid]
-                        num = channel[6:-8] # very rough way to extract number from 'local/<num>@default'
-                        toremove = None
-                        for i, h in self.alerts.iteritems():
-                                stopdecroche = h['stopdecroche']
-                                if num in h['numbers'] and h['status'] > 0:
-                                        if h['numbers'][h['status'] - 1] == num:
-                                                print 'HANGUP ALERT', num, i, h['numbers'], h['status'], h['stopdecroche']
-                                                h['locked'] = False
-                                                if len(h['numbers']) == h['status'] or stopdecroche == 1:
-                                                        toremove = i
-                        if toremove is not None: # otherwise it will naturally step to the next number
-                                self.__fill_alert_result__(self.alerts[toremove], 'Décroché')
-                                del self.alerts[toremove]
-
-                        del self.alerts_uniqueids[uniqueid]
-                        self.nalerts_called -= 1
-                        self.__alert_calls__(astid)
-                elif uniqueid in self.normal_calls:
-                        print '(NORMAL HANGUP)', uniqueid, event
-                        self.normal_calls.remove(uniqueid)
-                        # self.__update_taxes__
-                return
-
-
-        def join(self, astid, event):
+        def ami_join(self, astid, event):
                 """
                 Function called when an AMI Join Event is read.
                 """
@@ -883,7 +919,7 @@ class CallBoosterCommand(BaseCommand):
                 return
         
 
-        def parkedcall(self, astid, event):
+        def ami_parkedcall(self, astid, event):
                 """
                 Function called when an AMI ParkedCall Event is read.
                 """
@@ -936,7 +972,7 @@ class CallBoosterCommand(BaseCommand):
                 return
 
 
-        def unparkedcall(self, astid, event):
+        def ami_unparkedcall(self, astid, event):
                 """
                 Function called when an AMI UnParkedCall Event is read.
                 """
@@ -958,7 +994,7 @@ class CallBoosterCommand(BaseCommand):
                 return
 
 
-        def parkedcallgiveup(self, astid, event):
+        def ami_parkedcallgiveup(self, astid, event):
                 """
                 Function called when an AMI ParkedCallGiveUp Event is read.
                 """
@@ -982,24 +1018,7 @@ class CallBoosterCommand(BaseCommand):
                 return
 
 
-        def agent_was_logged_in(self, astid, event):
-                """
-                Function called when an AMI Agents Event is read AND that this Agent is not Logged Off.
-                This is primarily called at FB's startup and avoids an already-logged-in agent to be
-                logged in again.
-                """
-                agentnum = event.get('Agent')
-                agentchannel = event.get('LoggedInChan')
-
-                userinfo = self.__uinfo_by_agentnum__(astid, agentnum)
-                if userinfo is not None:
-                        userinfo['agentchannel'] = agentchannel
-                else:
-                        log_debug(SYSLOG_WARNING, 'agent_was_logged_in : No user found for agent number %s' % agentnum)
-                return
-
-
-        def agentlogin(self, astid, event):
+        def ami_agentlogin(self, astid, event):
                 """
                 Function called when an AMI Agentlogin Event is read.
                 This is used to send the right acknowledgement to the agent's Operat.
@@ -1034,7 +1053,7 @@ class CallBoosterCommand(BaseCommand):
                 return
 
 
-        def agentlogoff(self, astid, event):
+        def ami_agentlogoff(self, astid, event):
                 """
                 Function called when an AMI Agentlogoff Event is read.
                 This occurs when an agent hangs up.
@@ -1052,7 +1071,7 @@ class CallBoosterCommand(BaseCommand):
                 return
 
 
-        def agentcallbacklogoff(self, astid, event):
+        def ami_agentcallbacklogoff(self, astid, event):
                 """
                 Function called when an AMI Agentcallbacklogoff Event is read.
                 This occurs after the RaccrocheOpe has been sent.
@@ -1060,6 +1079,52 @@ class CallBoosterCommand(BaseCommand):
                 print 'agentcallbacklogoff', astid, event
                 return
 
+
+        def ami_userevent(self, astid, event):
+                """
+                Function called when an AMI UserEventXXX Event is read, where XXX is almost any string.
+                This is used for 2 user-defined events :
+                * UserEventAlertCB : we fall here when a 'good' reply has been given by the DTMF Read()
+                * UserEventVoiceMailCB : this allows us to connect the voicemail call details to the
+                upcoming messagewaiting Event.
+                * UserEventDialCB : in order to track Operat-originated Dial's
+                """
+                print 'userevent :', astid, event
+                evfunction = event.get('Event')
+                uniqueid = event.get('Uniqueid')
+                if uniqueid in self.alerts_uniqueids:
+                        del self.alerts_uniqueids[uniqueid]
+                if evfunction == 'UserEventAlertCB':
+                        appdatas = event.get('AppData').split('-', 1)
+                        [dtmfreply, rid] = appdatas
+                        if rid in self.alerts:
+                                aldetail = self.alerts[rid]
+                                print len(self.alerts), self.alerts[rid]
+                                self.__fill_alert_result__(aldetail, dtmfreply)
+                                mygroup = self.alerts[rid]['group'] # or tableequipier ??
+                                del self.alerts[rid]
+                                self.nalerts_called -= 1
+                                if aldetail['alertetous'] == 1:
+                                        for riditer, ald in self.alerts.iteritems():
+                                                if ald['group'] == mygroup:
+                                                        del self.alerts[riditer]
+                        else:
+                                log_debug(SYSLOG_WARNING, 'received an Alert ACK %s for a seemingly not requested alert !' % rid)
+                        self.__alert_calls__(astid)
+                elif evfunction == 'UserEventVoiceMailCB':
+                        appdatas = event.get('AppData').split('-')
+                        indice = appdatas[0]
+                        sdanum = appdatas[1]
+                        if sdanum not in self.waitingmessages:
+                                self.waitingmessages[sdanum] = []
+                        self.waitingmessages[sdanum].append(indice)
+                elif evfunction == 'UserEventDialCB':
+                        dialid = event.get('AppData')
+                        self.originated_calls[dialid] = 'dialcb'
+                return
+
+
+        # XIVO synchronization methods
 
         def __callback_walkdir__(self, args, dirname, filenames):
                 """
@@ -1231,6 +1296,107 @@ class CallBoosterCommand(BaseCommand):
                 return
 
 
+        # INCOMING calls management
+
+        def __sendfiche_a__(self, userinfo, incall):
+                """
+                Sends the Fiche informations (incall) to the appropriate user (userinfo)
+                """
+                userinfo['calls'][incall.commid] = incall
+                # CLR-ACD to be sent only if there was an Indispo sent previously
+                if incall.dialplan['callerid'] == 1:
+                        cnum = incall.cidnum
+                else:
+                        cnum = ''
+                incall.waiting = False
+                incall.uinfo = userinfo
+                self.__send_msg__(incall.uinfo, '%s,%s,%s,Fiche/' % (incall.commid, incall.sdanum, cnum))
+                return
+
+
+        def __sendfiche__(self, astid, dest, incall):
+                """
+                The call comes here when the AGI has directly found a peer.
+                """
+                userinfo = self.ulist[astid].finduser(dest)
+                log_debug(SYSLOG_INFO, '__sendfiche__ : userinfo = %s' % str(userinfo))
+                if userinfo is not None:
+                        agentnum = userinfo['agentnum']
+                        if 'agentchannel' in userinfo:
+                                print 'sendfiche, the agent is online :', userinfo['agentchannel']
+                        else:
+                                phonenum = userinfo['phonenum']
+                                opername = userinfo['user']
+                                log_debug(SYSLOG_INFO, 'sendfiche, the agent is not online ... we re going to call him : %s (%s)' % (phonenum, str(userinfo)))
+                                self.__schedule_agentlogin__(astid, userinfo, phonenum, agentnum, opername)
+                        incall.statacd2_tt = 'TT_SOP'
+                        self.__sendfiche_a__(userinfo, incall)
+                        print '__sendfiche__', incall.queuename, agentnum
+                        userinfo['queuelist'][incall.queuename] = incall
+                        userinfo['sendfiche'] = [incall.queuename, 'Agent/%s' % agentnum]
+                return
+
+
+        def __clear_call_fromqueues__(self, astid, incall):
+                """
+                Removes the 'incall' call references from all the operator queues, and
+                sends the relevant information to the agents.
+                """
+                for opername, userinfo in self.ulist[astid].list.iteritems():
+                        if incall.queuename in userinfo['queuelist']:
+                                del userinfo['queuelist'][incall.queuename]
+                                agentnum = userinfo['agentnum']
+                                print '__clear_call_fromqueues__ : removing %s (queue %s) for agent %s' %(incall.sdanum, incall.queuename, agentnum)
+                                if opername in incall.agentlist:
+                                        incall.agentlist.remove(opername)
+                                else:
+                                        print opername, 'not in agentlist', incall.agentlist
+                                self.amis[astid].queueremove(incall.queuename, 'Agent/%s' % agentnum)
+                                self.__send_msg__(userinfo, '%s,%s,,CLR-ACD/' % (incall.commid, incall.sdanum))
+                return
+
+
+        def __addtoqueue__(self, astid, dest, incall):
+                """
+                Adds the 'dest' Agent to 'incall' call's queue.
+                """
+                print '__addtoqueue__', dest, incall.commid, incall.sdanum
+                self.amis[astid].queueadd(incall.queuename, GHOST_AGENT)
+                self.amis[astid].queuepause(incall.queuename, GHOST_AGENT, 'false')
+                userinfo = self.ulist[astid].finduser(dest)
+                if userinfo is not None:
+                        if incall.queuename not in userinfo['queuelist']:
+                                agentnum = userinfo['agentnum']
+                                # this is the Indispo list
+                                userinfo['queuelist'][incall.queuename] = incall
+                                incall.agentlist.append(dest)
+                                self.amis[astid].queueadd(incall.queuename, 'Agent/%s' % agentnum)
+                                self.amis[astid].queuepause(incall.queuename, 'Agent/%s' % agentnum, 'true')
+                                self.__send_msg__(userinfo, '%s,%s,,Indispo/' % (incall.commid, incall.sdanum))
+                        else:
+                                print '__addtoqueue__ : %s is already in the queuelist of %s' % (incall.queuename, dest)
+                return
+
+
+        # Agent
+
+        def agent_was_logged_in(self, astid, event):
+                """
+                Function called when an AMI Agents Event is read AND that this Agent is not Logged Off.
+                This is primarily called at FB's startup and avoids an already-logged-in agent to be
+                logged in again.
+                """
+                agentnum = event.get('Agent')
+                agentchannel = event.get('LoggedInChan')
+
+                userinfo = self.__uinfo_by_agentnum__(astid, agentnum)
+                if userinfo is not None:
+                        userinfo['agentchannel'] = agentchannel
+                else:
+                        log_debug(SYSLOG_WARNING, 'agent_was_logged_in : No user found for agent number %s' % agentnum)
+                return
+
+
         def __outcall__(self, call):
                 """
                 Issues an outgoing call according to 'call' definitions.
@@ -1243,11 +1409,14 @@ class CallBoosterCommand(BaseCommand):
                 self.__send_msg__(call.uinfo, '%s,%d,%s,Appel/' % (call.commid, retval, call.dest))
                 [dorecord, dummy1, dummy2] = call.uinfo['options'].split(':')
 
-                print 'OUTCALL'
-                self.amis[call.astid].aoriginate('Agent', call.agentnum, call.agentname,
-                                                 call.dest,
-                                                 'Appel %s' % call.dest,
-                                                 'default')
+                print 'OUTCALL for destination %s' % call.dest
+                self.amis[call.astid].aoriginate_var('Agent', call.agentnum, call.agentname,
+                                                     call.dest,
+                                                     'Appel %s' % call.dest,
+                                                     'ctx-callbooster-outcall',
+                                                     {'CB_OUTCALL_NUMBER' : call.dest,
+                                                      'CB_OUTCALL_RECORD_FILENAME' : 'myfilenamerecord'},
+                                                     100)
                 self.__init_taxes__(call, call.dest, call.agentnum, call.dest,
                                     TAXES_CTI, TAXES_TRUNKNAME, int(call.agentnum) - STARTAGENTNUM)
                 return
@@ -1284,48 +1453,7 @@ class CallBoosterCommand(BaseCommand):
                 return
 
 
-        def userevent(self, astid, event):
-                """
-                Function called when an AMI UserEventXXX Event is read, where XXX is almost any string.
-                This is used for 2 user-defined events :
-                * UserEventAlertCB : we fall here when a 'good' reply has been given by the DTMF Read()
-                * UserEventVoiceMailCB : this allows us to connect the voicemail call details to the
-                upcoming messagewaiting Event.
-                """
-                print 'userevent :', astid, event
-                evfunction = event.get('Event')
-                uniqueid = event.get('Uniqueid')
-                if uniqueid in self.alerts_uniqueids:
-                        del self.alerts_uniqueids[uniqueid]
-                if evfunction == 'UserEventAlertCB':
-                        appdatas = event.get('AppData').split('-', 1)
-                        dtmfreply = appdatas[0]
-                        rid = appdatas[1]
-                        if rid in self.alerts:
-                                aldetail = self.alerts[rid]
-                                print len(self.alerts), self.alerts[rid]
-                                self.__fill_alert_result__(aldetail, dtmfreply)
-                                mygroup = self.alerts[rid]['group'] # or tableequipier ??
-                                del self.alerts[rid]
-                                self.nalerts_called -= 1
-                                if aldetail['alertetous'] == 1:
-                                        for riditer, ald in self.alerts.iteritems():
-                                                if ald['group'] == mygroup:
-                                                        del self.alerts[riditer]
-                        else:
-                                log_debug(SYSLOG_WARNING, 'received an Alert ACK %s for a seemingly not requested alert !' % rid)
-                        self.__alert_calls__(astid)
-                elif evfunction == 'UserEventVoiceMailCB':
-                        appdatas = event.get('AppData').split('-')
-                        indice = appdatas[0]
-                        sdanum = appdatas[1]
-                        if sdanum not in self.waitingmessages:
-                                self.waitingmessages[sdanum] = []
-                        self.waitingmessages[sdanum].append(indice)
-                return
-
-
-        def __agentlogin__(self, astid, userinfo, phonenum, agentnum, opername):
+        def __schedule_agentlogin__(self, astid, userinfo, phonenum, agentnum, opername):
                 """
                 Initiates the timer for log in an Agent, then requests the Originate action.
                 """
@@ -1340,12 +1468,63 @@ class CallBoosterCommand(BaseCommand):
 
         def manage_srv2clt(self, userinfo_by_requester, connid, parsedcommand, cfg):
                 """
-                Defines the actions to be proceeded according to the client's commands.
-                - AppelOpe :
-                - RaccrocheOpe :
-                - TransfertOpe :
-                - ForceACD :
+                Defines the actions to be proceeded according to Operat's commands.
+                - Aboute       : links together 2 already established calls
+
+                - AppelAboute  : forwards an incoming call to a given phone number
+
+                - Appel        : initiates / originates an outgoing call from an Agent
+
+                - AppelOpe     : calls the Agent's phone at startup (AgentLogin)
+
+                - Alerte       : initiates a call campaign.
+
+                - Attente      : holds a given peer, thanks to the Park() feature, used with a
+                10 hours timeout. Please note that this park process takes a few steps :
+                -- 'Attente' command => dial the 700 in order to Park() (parking => true)
+                -- 'Unlink' is applied to the parked Channel => we must be careful not to handle it
+                -- 'ParkedCall' is received => acknowledgement and callback extension setting (701 ...)
+                ... and for the unpark part (i.e. 'Reprise' command) :
+                -- 'Reprise' command => first checks other calls' parking statuses, parks them if needed
+                -- once every call is parked, dials the right number (701 ...) to recover
+                -- 'UnparkedCall' is received
+                -- 'Link' is applied to the parked Channel (parking => false)
+
+                - Change       : updates the queues and agents' statuses
+
+                - Enregistre   : records a voice message
+
+                - ForceACD     : forces one given incoming/pending call to be chosen by the agent
+
+                - Pause        : sets the Pause state
+
+                - Ping         : received every 60 seconds, one replies 'Pong' and set a timer in order for
+                broken connections to be tracked
+
+                - Prêt         : according to its argument (0 / 1), sets the availability of the client.
+                '0' when the client can receive a call and fiche.
+                '1' when it can't anymore : this is also useful to acknowledge the fiche reception
+
+                - Raccroche    : hangs up the defined call
+
+                - RaccrocheOpe : hangs up the Agent's phone
+
+                - Reprise      : the pending command for 'Attente', in order to retrieve a parked call.
+                We have to be sure that other ongoing calls (if any) are in Attente mode.
+                See 'Attente' command above for details.
+
+                - Sonn         : 
+
+                - Sortie       : leaves the FB
+
+                - TransfertOpe : transfers a call to another operator
+
+                XIVO-related commands :
+                - SynchroXivoAgents :
+                - SynchroXivoSDA :
+                - SynchroXivoMOH :
                 """
+
                 cname = parsedcommand.name
                 connid_socket = connid[1]
                 astid = userinfo_by_requester[0]
@@ -1374,7 +1553,7 @@ class CallBoosterCommand(BaseCommand):
                                 if 'agentchannel' in userinfo:
                                         log_debug(SYSLOG_WARNING, 'AppelOpe : %s phone is already logged in as agent number %s' % (phonenum, agentnum))
                                 log_debug(SYSLOG_INFO, 'AppelOpe : aoriginate_var for phonenum = %s' % phonenum)
-                                self.__agentlogin__(astid, userinfo, phonenum, agentnum, opername)
+                                self.__schedule_agentlogin__(astid, userinfo, phonenum, agentnum, opername)
                         else:
                                 reply = ',%d,,AppelOpe/' % (-3)
                                 connid_socket.send(reply)
@@ -1444,7 +1623,7 @@ class CallBoosterCommand(BaseCommand):
                                                             self.__local_nsoc__(idsoc), idcli, idcol)
 
                         if len(userinfo['calls']) > 0:
-                                print 'Appel : there are already ongoing calls'
+                                print 'Appel : there are already ongoing calls', userinfo['calls']
                                 ntowait = 0
                                 for callnum, anycall in userinfo['calls'].iteritems():
                                         ntowait += self.__park__(astid, anycall)
@@ -1454,7 +1633,7 @@ class CallBoosterCommand(BaseCommand):
                                 else:
                                         self.__outcall__(outCall)
                         else:
-                                # print 'Appel', userinfo
+                                print 'Appel', userinfo
                                 if 'agentchannel' in userinfo:
                                         userinfo['calls'][comm_id_outgoing] = outCall
                                         self.__outcall__(outCall)
@@ -1462,9 +1641,9 @@ class CallBoosterCommand(BaseCommand):
                                         userinfo['calls'][comm_id_outgoing] = outCall
                                         userinfo['calls'][comm_id_outgoing].tocall = True
                                         phonenum = userinfo_by_requester[5]
-                                        self.__agentlogin__(astid, userinfo, phonenum, agentnum, opername)
+                                        self.__schedule_agentlogin__(astid, userinfo, phonenum, agentnum, opername)
                 elif cname == 'Raccroche':
-                        reference = parsedcommand.args[1]
+                        reference = parsedcommand.args[1].strip()
                         try:
                             if reference in userinfo['calls']:
                                 # END OF INCOMING OR OUTGOING CALL
@@ -1531,15 +1710,8 @@ class CallBoosterCommand(BaseCommand):
                                 connid_socket.send(reply)
 
 
-                # the park/unpark process takes ~ 6 steps:
-                # - send Attente to Park (parking => true)
-                # - 'Unlink' is applied to the parked Channel => we must remember it anyway ...
-                # - 'ParkedCall' is received => reply is sent
-                # - send Reprise
-                # - 'UnparkedCall' is received => reply is sent
-                # ' 'Link' is applied to the parked Channel (parking => false)
                 elif cname == 'Attente':
-                        reference = parsedcommand.args[1]
+                        reference = parsedcommand.args[1].strip()
                         if reference in userinfo['calls']:
                                 anycall = userinfo['calls'][reference]
                                 self.__park__(astid, anycall)
@@ -1548,7 +1720,7 @@ class CallBoosterCommand(BaseCommand):
 
 
                 elif cname == 'Reprise':
-                        reference = parsedcommand.args[1]
+                        reference = parsedcommand.args[1].strip()
                         if reference in userinfo['calls']:
                                 anycall = userinfo['calls'][reference]
                                 if anycall.parking:
@@ -1640,7 +1812,7 @@ class CallBoosterCommand(BaseCommand):
 ##                                phonenum = userinfo['phonenum']
 ##                                opername = userinfo['user']
 ##                                log_debug(SYSLOG_INFO, 'sendfiche, the agent is not online ... we re going to call him : %s (%s)' % (phonenum, str(userinfo)))
-##                                self.__agentlogin__(astid, userinfo, phonenum, agentnum, opername)
+##                                self.__schedule_agentlogin__(astid, userinfo, phonenum, agentnum, opername)
 
                         self.amis[astid].aoriginate_var('Agent', agentnum, opername,
                                                         'record_exten', 'Enregistre', 'ctx-callbooster-record',
@@ -1821,7 +1993,7 @@ class CallBoosterCommand(BaseCommand):
                                 ncalls += 1
                                 dstnum = al['numbers'][al['status']]
                                 print 'calling', al['nom'], '(%s) (or should be ...)' % dstnum
-                                ### dstnum = LOCNUMS[al['status']] # XXX for testing purposes only !!
+                                # dstnum = LOCNUMS[al['status']] # XXX for testing purposes only !!
                                 self.amis[astid].aoriginate_var('local', '%s@default' % dstnum, 'dest %s' % dstnum,
                                                                 'cidFB', 'automated call', 'ctx-callbooster-alert',
                                                                 {'CB_ALERT_MESSAGE' : al['filename'],
@@ -1834,22 +2006,6 @@ class CallBoosterCommand(BaseCommand):
                                 self.nalerts_called += 1
                 print '%d calls issued' % ncalls
                 return
-
-
-        def loginko(self, cfg, errorstring):
-                """
-                Actions to perform when login was KO.
-                """
-                print 'loginko', cfg, errorstring
-                return '%s,0,,Init/' % cfg.get('srvnum')
-
-
-        def loginok(self, userinfo, capa_user, versions, configs, cfg):
-                """
-                Actions to perform when login was OK.
-                Replies Init/
-                """
-                return '%s,1,,Init/' % cfg.get('srvnum')
 
 
         def __moh_check__(self, path):
@@ -2060,6 +2216,8 @@ class CallBoosterCommand(BaseCommand):
                 os.write(self.queued_threads_pipe[1], 'agentlogin-')
                 return
 
+
+        # Taxes and statistics
 
         def __init_taxes__(self, call, numbertobill, fromN, toN, fromS, toS, NOpe):
                 """
@@ -2397,6 +2555,8 @@ class CallBoosterCommand(BaseCommand):
                         imp = None
                 return imp
 
+        # Taxes and statistics - END
+        
 
         def __listqueues__(self):
                 """
@@ -2435,7 +2595,8 @@ class CallBoosterCommand(BaseCommand):
 
         def __choose__(self, astid):
                 """
-                After a login, a Change, a Pret's, a logoff, a new incoming/outgoing call.
+                This is the main entry to choose among availabilities.
+                It has to be called after most events, like Login, Change, Pret's, Logoff, new incoming/outgoing calls.
                 """
                 # choose, according to other incoming calls & logged in/out, if one has to wait or push
                 byprio = []
@@ -2509,6 +2670,9 @@ class CallBoosterCommand(BaseCommand):
         def elect(self, astid, inchannel, cidnum, sdanum, upto):
                 """
                 Called by an Incoming Call in order to find the proper agent.
+                It is actually called once the AGI has given some basic informations.
+                When the call comes first, it instantiates an IncomingCall object, which will be updated later on,
+                according to the dialplan choices.
                 """
                 action = 'exit'
                 delay = 0
@@ -2584,6 +2748,9 @@ class CallBoosterCommand(BaseCommand):
                                 todo = self.__choose__(astid)
                                 print 'CHOOSE (after Incall)', todo
 
+                                """
+                                We set the Ghost Agent into the queue, in order not leave right now.
+                                """
                                 self.amis[astid].queueadd(thiscall.queuename, GHOST_AGENT)
                                 self.amis[astid].queuepause(thiscall.queuename, GHOST_AGENT, 'false')
                                 # once all the queues have been spanned, send the push / queues where needed
@@ -2666,7 +2833,7 @@ class CallBoosterCommand(BaseCommand):
                 """Does nothing in CallBooster"""
                 return None
 
-        def queuememberstatus(self, astid, event):
+        def ami_queuememberstatus(self, astid, event):
                 return
 
 xivo_commandsets.CommandClasses['callbooster'] = CallBoosterCommand
