@@ -17,9 +17,6 @@ FK_TABLE		= 'phonefunckey'
 XNUM_TABLE		= 'extenumbers'
 TECH			= 'sip' # only allowed tech right now
 
-# encodings.latin_1 and _sre mainly for freezing
-import encodings.latin_1
-import _sre
 import sys
 
 def help_screen():
