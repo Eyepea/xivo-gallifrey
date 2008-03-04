@@ -15,16 +15,16 @@ According to these inputs, the main functions taken care of are :
 - Handle the Incoming calls
 
 
-There are about 5 different kinds of calls to manage here :
-- (A) the Incoming Calls whose destination is one of the Agents' queue
-- (B) the Incoming Calls whose destination is finally a phone number (Tel/Fic/Base)
-- (C) the Outgoing Calls initiated by Operat
-- (D) the Calls initiated by an Alerte
-- (E) the regular Calls
-Properties that can be catched :
-- (B), (C), (D) and (E) go through Dial()
-- one can set a given mark to identify (C)
-- when (B) occurs, we can send an UserEventDialCB from the DialPlan
+#  There are about 5 different kinds of calls to manage here :
+#     - (A) the Incoming Calls whose destination is one of the Agents' queue
+#     - (B) the Incoming Calls whose destination is finally a phone number (Tel/Fic/Base)
+#     - (C) the Outgoing Calls initiated by Operat
+#     - (D) the Calls initiated by an Alerte
+#     - (E) the regular Calls
+#  Properties that can be catched :
+#  - (B), (C), (D) and (E) go through Dial()
+#  - one can set a given mark to identify (C)
+#  - when (B) occurs, we can send an UserEventDialCB from the DialPlan
 
 
 """
@@ -459,16 +459,48 @@ class CallBoosterCommand(BaseCommand):
 
                         if channel1.startswith('Local/'):
                                 # OUTGOING CALL PART 1
-                                self.outgoing_calls_ng[channel1] = event
+                                rchannel1 = channel1.replace(',2', ',1')
+                                if channel1.find(',2') > 0:
+                                        self.outgoing_calls_ng[channel1] = event
+
+                                if rchannel1 in self.outgoing_calls_ng:
+                                        # if 'Agent/' has been received before 'Local/'
+                                        nevent = self.outgoing_calls_ng[rchannel1]
+                                        agentnum = nevent.get('Channel1').split('/')[1]
+                                        userinfo = self.__uinfo_by_agentnum__(astid, agentnum)
+                                        if userinfo is None:
+                                                log_debug(SYSLOG_WARNING, '(link) no user found for agent number %s' % agentnum)
+                                                return
+                                        mycall = None
+                                        for anycommid, anycall in userinfo['calls'].iteritems():
+                                                if anycall.dir == 'o' and anycall.peerchannel is None and nevent.get('Channel2')[6:].split('@')[0] == anycall.dest:
+                                                        mycall = anycall
+                                                        break
+                                        if mycall is not None:
+                                                print mycall, mycall.dest, mycall.parking
+                                                mycall.peerchannel = channel2
+                                                mycall.set_timestamp_tax('link')
+                                                # self.__update_taxes__(anycall.call, 'Decroche')
+                                                self.__send_msg__(userinfo, '%s,1,%s,Decroche/' % (mycall.commid, mycall.dest))
+                                                self.outgoing_calls[mycall.peerchannel] = mycall
+                                        del self.outgoing_calls_ng[rchannel1]
+                                else:
+                                        # no corresponding action
+                                        pass
+
                         if channel1.startswith('Agent/'):
                                 # OUTGOING CALL PART 2
                                 rchannel2 = channel2.replace(',1', ',2')
+                                if channel2.find(',1') > 0:
+                                        self.outgoing_calls_ng[channel2] = event
+
                                 agentnum = channel1.split('/')[1]
                                 userinfo = self.__uinfo_by_agentnum__(astid, agentnum)
                                 if userinfo is None:
                                         log_debug(SYSLOG_WARNING, '(link) no user found for agent number %s' % agentnum)
                                         return
                                 if rchannel2 in self.outgoing_calls_ng:
+                                        # if 'Local/' has been received before 'Agent/'
                                         # find the call that matches
                                         mycall = None
                                         for anycommid, anycall in userinfo['calls'].iteritems():
@@ -484,6 +516,7 @@ class CallBoosterCommand(BaseCommand):
                                                 self.outgoing_calls[mycall.peerchannel] = mycall
                                         else:
                                                 print 'found no current call for dest number %s' % channel2[6:].split('@')[0]
+                                        del self.outgoing_calls_ng[rchannel2]
                                 else:
                                         # for unparking status detection
                                         mycall = None
@@ -525,8 +558,7 @@ class CallBoosterCommand(BaseCommand):
                                 elif ic2 is not None:
                                         print 'LINK after Aboute', ic2.sdanum, ic2.commid, ic2.appelaboute, ic2.aboute
                                         if ic2.aboute is not None:
-                                                self.__send_msg__(ic2.uinfo, '%s,1,,Raccroche/' % ic2.commid)
-                                                self.__send_msg__(ic2.uinfo, '%s,1,,Raccroche/' % ic2.aboute)
+                                                self.__send_msg__(ic2.uinfo, '%s|%s,1,,Aboute/' % (ic2.aboute, ic2.commid))
                                         ic2.set_timestamp_stat('link')
                                 else:
                                         print '(NORMAL LINK)', event
@@ -907,18 +939,6 @@ class CallBoosterCommand(BaseCommand):
                 return
 
 
-        def ami_join(self, astid, event):
-                """
-                Function called when an AMI Join Event is read.
-                """
-                chan  = event.get('Channel')
-                clid  = event.get('CallerID')
-                qname = event.get('Queue')
-                count = int(event.get('Count'))
-                log_debug(SYSLOG_INFO, 'AMI:Join: %s queue=%s %s count=%s %s' % (astid, qname, chan, count, clid))
-                return
-        
-
         def ami_parkedcall(self, astid, event):
                 """
                 Function called when an AMI ParkedCall Event is read.
@@ -1124,6 +1144,27 @@ class CallBoosterCommand(BaseCommand):
                 return
 
 
+        def ami_agents(self, astid, event):
+                """
+                Function called when an AMI Agents Event is read.
+                Checks which Agents are not Logged Off.
+                This is primarily called at FB's startup and avoids an already-logged-in agent to be
+                logged in again.
+                """
+                agentnum = event.get('Agent')
+                agentchannel = event.get('LoggedInChan')
+                status = event.get('Status')
+                
+                if status != 'AGENT_LOGGEDOFF':
+                        userinfo = self.__uinfo_by_agentnum__(astid, agentnum)
+                        if userinfo is not None:
+                                userinfo['agentchannel'] = agentchannel
+                        else:
+                                log_debug(SYSLOG_WARNING, 'agent_was_logged_in : No user found for agent number %s' % agentnum)
+
+                return
+
+
         # XIVO synchronization methods
 
         def __callback_walkdir__(self, args, dirname, filenames):
@@ -1133,7 +1174,7 @@ class CallBoosterCommand(BaseCommand):
                 """
                 if dirname[-5:] == '/Sons':
                         for filename in filenames:
-                                if filename.find('M018.') == 0:
+                                if filename.startswith('M018.'):
                                         self.listreps.append(dirname)
 
 
@@ -1375,25 +1416,6 @@ class CallBoosterCommand(BaseCommand):
                                 self.__send_msg__(userinfo, '%s,%s,,Indispo/' % (incall.commid, incall.sdanum))
                         else:
                                 print '__addtoqueue__ : %s is already in the queuelist of %s' % (incall.queuename, dest)
-                return
-
-
-        # Agent
-
-        def agent_was_logged_in(self, astid, event):
-                """
-                Function called when an AMI Agents Event is read AND that this Agent is not Logged Off.
-                This is primarily called at FB's startup and avoids an already-logged-in agent to be
-                logged in again.
-                """
-                agentnum = event.get('Agent')
-                agentchannel = event.get('LoggedInChan')
-
-                userinfo = self.__uinfo_by_agentnum__(astid, agentnum)
-                if userinfo is not None:
-                        userinfo['agentchannel'] = agentchannel
-                else:
-                        log_debug(SYSLOG_WARNING, 'agent_was_logged_in : No user found for agent number %s' % agentnum)
                 return
 
 
@@ -2833,7 +2855,30 @@ class CallBoosterCommand(BaseCommand):
                 """Does nothing in CallBooster"""
                 return None
 
+
         def ami_queuememberstatus(self, astid, event):
-                return
+                """Does nothing in CallBooster"""
+                return None
+
+        def ami_status(self, astid, event):
+                """Does nothing in CallBooster"""
+                return None
+
+        def ami_join(self, astid, event):
+                """Does nothing in CallBooster"""
+                return None
+
+        def ami_leave(self, astid, event):
+                """Does nothing in CallBooster"""
+                return None
+
+        def ami_parkedcalltimeout(self, astid, event):
+                """Does nothing in CallBooster (since the timeout is almost infinite (10 hours))"""
+                return None
+
+        def ami_rename(self, astid, event):
+                """Does nothing in CallBooster"""
+                print event
+                return None
 
 xivo_commandsets.CommandClasses['callbooster'] = CallBoosterCommand
