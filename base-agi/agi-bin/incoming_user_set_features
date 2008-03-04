@@ -34,6 +34,7 @@ from agi import *
 import agitb
 
 agi = AGI()
+agi.DEBUG_PASSTHROUGH = 1
 agitb.enable(agi)
 db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
 
@@ -75,38 +76,25 @@ context = agi.get_variable('REAL_CONTEXT')
 zone = agi.get_variable('REAL_CALLTYPE')
 bypass = agi.get_variable('XIVO_BSFILTER_BYPASS')
 
+# Modify below if columns is modified and contains any vars not of the form
+# [a-zA-Z_][a-zA-Z0-9_]*
+columns = ('id', 'protocol' , 'protocolid', 'name', 'ringseconds', 'simultcalls', 'enablevoicemail', 'enablexfer', 'enableautomon', 'callrecord', 'callfilter', 'enablednd', 'enableunc', 'destunc', 'enablerna', 'destrna', 'enablebusy', 'destbusy', 'musiconhold', 'bsfilter')
 cursor.query("SELECT ${columns} FROM userfeatures "
              "WHERE number = %s "
              "AND context = %s "
              "AND internal = 0 "
              "AND commented = 0",
-             ('id', 'protocol' , 'protocolid', 'name', 'ringseconds', 'simultcalls', 'enablevoicemail', 'enablexfer', 'enableautomon', 'callrecord', 'callfilter', 'enablednd', 'enableunc', 'destunc', 'enablerna', 'destrna', 'enablebusy', 'destbusy', 'musiconhold', 'bsfilter'),
+             columns,
              (dstnum, context))
 res = cursor.fetchone()
 
 if not res:
 	agi_helpers.dp_break(agi, "Unknown number '%s'" % dstnum)
 
-id = res['id']
-protocol = res['protocol']
-protocolid = res['protocolid']
-name = res['name']
-simultcalls = res['simultcalls']
-ringseconds = res['ringseconds']
-enablednd = res['enablednd']
-enablevoicemail = res['enablevoicemail']
-enablexfer = res['enablexfer']
-enableautomon = res['enableautomon']
-callfilter = res['callfilter']
-enableunc = res['enableunc']
-destunc = res['destunc']
-enablebusy = res['enablebusy']
-destbusy = res['destbusy']
-enablerna = res['enablerna']
-destrna = res['destrna']
-callrecord = res['callrecord']
-musiconhold = res['musiconhold']
-bsfilter = res['bsfilter']
+# Populate locals()
+# works if columns contains vars of the form [a-zA-Z_][a-zA-Z0-9_]*
+for var in columns:
+	exec ("%s = res['%s']" % (var, var))
 
 # Special case. If a boss-secretary filter is set, the code will prematurely
 # exit because the other normally set variables become useless.
