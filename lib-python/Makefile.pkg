@@ -9,7 +9,7 @@ include ../autobuild-classic.mk
 
 DEB_PKG="pf-xivo-lib-python"
 DEB_TB_DEPS=""
-DEB_TAR_EXTRA_OPTIONS="--exclude=*.pyc"
+DEB_TAR_EXTRA_OPTIONS=--exclude="*.pyc" --exclude=Tests --exclude=Todo
 
 default:
 
