@@ -1643,7 +1643,7 @@ class CallBoosterCommand(BaseCommand):
                                         phonenum = userinfo_by_requester[5]
                                         self.__schedule_agentlogin__(astid, userinfo, phonenum, agentnum, opername)
                 elif cname == 'Raccroche':
-                        reference = parsedcommand.args[1].strip()
+                        reference = parsedcommand.args[1]
                         try:
                             if reference in userinfo['calls']:
                                 # END OF INCOMING OR OUTGOING CALL
@@ -1711,7 +1711,7 @@ class CallBoosterCommand(BaseCommand):
 
 
                 elif cname == 'Attente':
-                        reference = parsedcommand.args[1].strip()
+                        reference = parsedcommand.args[1]
                         if reference in userinfo['calls']:
                                 anycall = userinfo['calls'][reference]
                                 self.__park__(astid, anycall)
@@ -1720,7 +1720,7 @@ class CallBoosterCommand(BaseCommand):
 
 
                 elif cname == 'Reprise':
-                        reference = parsedcommand.args[1].strip()
+                        reference = parsedcommand.args[1]
                         if reference in userinfo['calls']:
                                 anycall = userinfo['calls'][reference]
                                 if anycall.parking:

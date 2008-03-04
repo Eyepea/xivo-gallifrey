@@ -533,7 +533,7 @@ def manage_tcp_connection(connid, allow_events):
                                         try:
                                                 cfg = commandclass.get_login_params(asterisklist[0], command, connid)
                                                 repstr = manage_login(cfg, requester_ip, requester_port, connid)
-                                                connid.send(repstr + '\n')
+                                                connid.send(repstr)
                                         except Exception, exc:
                                                 log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : a problem occured when sending to %s : %s'
                                                           %(command.name, requester, str(exc)))
