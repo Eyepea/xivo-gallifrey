@@ -34,7 +34,7 @@ from agi import *
 import agitb
 
 agi = AGI()
-agi.DEBUG_PASSTHROUGH = 1
+# agi.DEBUG_PASSTHROUGH = 1
 agitb.enable(agi)
 db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
 
