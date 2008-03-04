@@ -8,23 +8,8 @@ include ../autobuild.mk
 include ../autobuild-classic.mk
 
 DEB_PKG="pf-xivo-provisioning"
-DEB_TB_DEPS="python python2.4-dev upx-ucl"
-DEB_TAR_EXTRA_OPTIONS="--exclude=*.py"
-
-DESTDIR?=.
-FREEZEPATH?=$(realpath ../tools/python-freeze/)
+DEB_TB_DEPS=""
+DEB_TAR_EXTRA_OPTIONS="--exclude=*.pyc"
 
 default:
-
-prepare-tarball::
-	@PYTHONPATH=../lib-python/xivo/ /usr/bin/python2.4 -c "from xivo_provisioning import to_path"
-	@cd xivo_provisioning && \
-	PYTHONPATH=../../lib-python/xivo/ /usr/bin/python2.4 -c "from Phones import *" && \
-	PYTHONPATH=../../lib-python/xivo/ /usr/bin/python2.4 -c "import provsup" && \
-	${FREEZEPATH}/local_freeze.py ${FREEZEPATH}/freeze.py provsup.py,autoprov.py && \
-	cp initconfig.py initconfig
-
-clean-tarball::
-	@find . ${FREEZEPATH} ../lib-python/xivo/ -name "*.pyc" -exec rm -f {} \;
-	@rm -f xivo_provisioning/autoprov xivo_provisioning/initconfig
 
