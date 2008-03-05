@@ -4,8 +4,11 @@ Phonebook properties
 ; smenu_access
 Hosts
 
-; smenu_servers
-Servers
+; smenu_xivoservers
+XIVO servers
+
+; smenu_ldapfilters
+LDAP filters
 
 ; accessfeatures_add
 Add an host:
@@ -16,14 +19,23 @@ Add an host
 ; bt_deleteaccess
 Delete one or more hosts
 
-; bt_inserverfeatures
-Add one or more servers ->
+; bt_inxivoserver
+Add one or more XIVO servers ->
 
-; bt_outserverfeatures
-<- Remove one or more servers
+; bt_outxivoserver
+<- Remove one or more XIVO servers
 
-; create_server
-Create a server
+; create_xivoserver
+Create a XIVO server
+
+; bt_inldapfilter
+Add one or more LDAP filters ->
+
+; bt_outldapfilter
+<- Remove one or more LDAP filters
+
+; create_ldapfilter
+Create a LDAP filter
 
 ; fm_success-save
 Phonebook properties successfully saved

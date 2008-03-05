@@ -97,8 +97,8 @@ Configuration IPBX
 ; mn_left_systemmanagement-configfiles
 Fichiers de configuration
 
-; mn_left_systemmanagement-serverldap
-Serveurs LDAP
+; mn_left_systemmanagement-ldapfilter
+Filtres LDAP
 
 ; mn_left_ti_controlsystem
 Système de contrôle

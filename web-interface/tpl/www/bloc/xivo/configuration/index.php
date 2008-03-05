@@ -3,6 +3,7 @@
 
 	$userstat = $this->get_var('userstat');
 	$serverstat = $this->get_var('serverstat');
+	$ldapserverstat = $this->get_var('ldapserverstat');
 ?>
 <div id="index" class="b-infos">
 	<h3 class="sb-top xspan"><span class="span-left">&nbsp;</span><span class="span-center"><?=$this->bbf('title_content_name');?></span><span class="span-right">&nbsp;</span></h3>
@@ -26,6 +27,12 @@
 					<td class="td-center"><?=$serverstat['enable']?></td>
 					<td class="td-center"><?=$serverstat['disable']?></td>
 					<td class="td-right"><?=$serverstat['total']?></td>
+				</tr>
+				<tr class="l-infos-1on2">
+					<td class="td-left txt-left"><?=$this->bbf('stats_type-ldapserver');?></td>
+					<td class="td-center"><?=$ldapserverstat['enable']?></td>
+					<td class="td-center"><?=$ldapserverstat['disable']?></td>
+					<td class="td-right"><?=$ldapserverstat['total']?></td>
 				</tr>
 			</table>
 		</div>

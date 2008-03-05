@@ -35,19 +35,19 @@ Audio files
 Customized
 
 ; incall_type-application-faxtomail
-FaxToMail : %s
+FaxToMail: %s
 
 ; incall_type-application-disa
-DISA : %s
+DISA: %s
 
 ; incall_type-application-directory
-Directory : %s
+Directory: %s
 
 ; incall_type-application-voicemail
-Voicemail : %s
+Voicemail: %s
 
 ; incall_type-application-callback
-Callback : %s
+Callback: %s
 
 ; no_incall
 No incoming calls found

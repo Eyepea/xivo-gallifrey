@@ -3,9 +3,12 @@
 xivo::load_class('xivo_server',XIVO_PATH_OBJECT,null,false);
 $_SVR = new xivo_server();
 
-$userstat = $serverstat = array();
-$userstat['enable'] = $serverstat['enable'] = 0;
-$userstat['disable'] = $serverstat['disable'] = 0;
+xivo::load_class('xivo_ldapserver',XIVO_PATH_OBJECT,null,false);
+$_LDAPSVR = new xivo_ldapserver();
+
+$userstat = $serverstat = $ldapserver = array();
+$userstat['enable'] = $serverstat['enable'] = $ldapserverstat['enable'] = 0;
+$userstat['disable'] = $serverstat['disable'] = $ldapserverstat['disable'] = 0;
 
 if(($enableuser = $_USR->get_nb(true)) !== false)
 	$userstat['enable'] = $enableuser;
@@ -23,8 +26,17 @@ if(($disableserver = $_SVR->get_nb(null,true)) !== false)
 
 $serverstat['total'] = $serverstat['enable'] + $serverstat['disable'];
 
+if(($enableldapserver = $_LDAPSVR->get_nb(null,false)) !== false)
+	$ldapserverstat['enable'] = $enableldapserver;
+
+if(($disableldapserver = $_LDAPSVR->get_nb(null,true)) !== false)
+	$ldapserverstat['disable'] = $disableldapserver;
+
+$ldapserverstat['total'] = $ldapserverstat['enable'] + $ldapserverstat['disable'];
+
 $_HTML->set_var('userstat',$userstat);
 $_HTML->set_var('serverstat',$serverstat);
+$_HTML->set_var('ldapserverstat',$ldapserverstat);
 
 $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

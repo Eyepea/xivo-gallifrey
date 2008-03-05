@@ -1,0 +1,89 @@
+; title_content_name
+LDAP filters > Add
+
+; smenu_general
+General
+
+; smenu_attributs
+Attributes
+
+; fm_ldapfilter_name
+Name:
+
+; fm_ldapfilter_ldapserverid
+LDAP Server:
+
+; create_ldapserver
+Create a LDAP server
+
+; fm_ldapfilter_user
+User:
+
+; fm_ldapfilter_passwd
+Password:
+
+; fm_ldapfilter_basedn
+Base DN:
+
+; fm_ldapfilter_filter
+Filter:
+
+; fm_ldapfilter_additionaltype
+Phone number type:
+
+; fm_ldapfilter_additionaltype-opt-home
+Home
+
+; fm_ldapfilter_additionaltype-opt-office
+Office
+
+; fm_ldapfilter_additionaltype-opt-mobile
+Mobile
+
+; fm_ldapfilter_additionaltype-opt-fax
+Fax
+
+; fm_ldapfilter_additionaltype-opt-other
+Other
+
+; fm_ldapfilter_additionaltype-opt-custom
+Custom
+
+; fm_ldapfilter_description
+Description:
+
+; fld-ldapfilter-attrdisplayname
+Display name
+
+; bt_ldapfilter-attrdisplayname-add
+Add an attribute
+
+; bt_delete_ldapfilter-attrdisplayname
+Delete one or more attributes
+
+; add_ldapfilter-attrdisplayname
+Add an attribute to the display name:
+
+; bt_up_ldapfilter-attrdisplayname
+Up one or more attributes
+
+; bt_down_ldapfilter-attrdisplayname
+Down one or more attributes
+
+; fld-ldapfilter-attrphonenumber
+Phone number
+
+; bt_ldapfilter-attrphonenumber-add
+Add an attribute
+
+; bt_delete_ldapfilter-attrphonenumber
+Delete one or more attributes
+
+; add_ldapfilter-attrphonenumber
+Add an attribute to the phone number:
+
+; bt_up_ldapfilter-attrphonenumber
+Up one or more attributes
+
+; bt_down_ldapfilter-attrphonenumber
+Down one or more attributes

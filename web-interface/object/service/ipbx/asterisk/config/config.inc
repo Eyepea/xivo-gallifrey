@@ -173,6 +173,9 @@ $array['module']['groupfeatures']['datastorage'] = true;
 $array['module']['incall'] = array();
 $array['module']['incall']['datastorage'] = true;
 
+$array['module']['ldapfilter'] = array();
+$array['module']['ldapfilter']['datastorage'] = true;
+
 $array['module']['meetmefeatures'] = array();
 $array['module']['meetmefeatures']['datastorage'] = true;
 
@@ -220,9 +223,6 @@ $array['module']['schedule']['datastorage'] = true;
 
 $array['module']['serverfeatures'] = array();
 $array['module']['serverfeatures']['datastorage'] = true;
-
-$array['module']['ldapserver'] = array();
-$array['module']['ldapserver']['datastorage'] = true;
 
 $array['module']['sounds'] = array();
 $array['module']['sounds']['datastorage'] = false;

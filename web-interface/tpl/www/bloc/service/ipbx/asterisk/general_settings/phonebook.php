@@ -19,16 +19,16 @@
 			<div class="tab"><span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_access');?></a></span></div><span class="span-right">&nbsp;</span>
 		</li>
 		<li id="smenu-tab-2" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-xivoserver');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
-			<div class="tab"><span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_serversxivo');?></a></span></div><span class="span-right">&nbsp;</span>
+			<div class="tab"><span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_xivoservers');?></a></span></div><span class="span-right">&nbsp;</span>
 		</li>
 		<li id="smenu-tab-3" class="moo-last" onclick="xivo_smenu_click(this,'moc','sb-part-last',1);" onmouseout="xivo_smenu_out(this,'moo',1);" onmouseover="xivo_smenu_over(this,'mov',1);">
-			<div class="tab"><span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_serversldap');?></a></span></div><span class="span-right">&nbsp;</span>
+			<div class="tab"><span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_ldapfilters');?></a></span></div><span class="span-right">&nbsp;</span>
 		</li>
 	</ul>
 </div>
 
 <div class="sb-content">
-<form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-access'); xivo_fm_select('it-xivoserver'); xivo_fm_select('it-ldapserver');">
+<form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-access'); xivo_fm_select('it-xivoserver'); xivo_fm_select('it-ldapfilter');">
 
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
@@ -79,7 +79,7 @@
 		<div class="clearboth"></div>
 <?php
 	else:
-		echo '<div class="txt-center">',$url->href_html($this->bbf('create_xivoserver'),'xivo/configuration/servers','act=add'),'</div>';
+		echo '<div class="txt-center">',$url->href_html($this->bbf('create_xivoserver'),'xivo/configuration/manage/servers','act=add'),'</div>';
 	endif;
 ?>
 
@@ -88,31 +88,31 @@
 <div id="sb-part-last" class="b-nodisplay">
 
 <?php
-	if($info['ldapserver']['list'] !== false):
+	if($info['ldapfilter']['list'] !== false):
 ?>
-		<div id="ldapserverlist" class="fm-field fm-multilist">
+		<div id="ldapfilterlist" class="fm-field fm-multilist">
 			<div class="slt-outlist">
 
-		<?=$form->select(array('name' => 'ldapserverlist','label' => false,'id' => 'it-ldapserverlist','key' => 'identity','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$info['ldapserver']['list']);?>
+		<?=$form->select(array('name' => 'ldapfilterlist','label' => false,'id' => 'it-ldapfilterlist','key' => 'identity','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$info['ldapfilter']['list']);?>
 
 			</div>
 			<div class="inout-list">
 
-		<a href="#" onclick="xivo_fm_move_selected('it-ldapserverlist','it-ldapserver'); return(false);" title="<?=$this->bbf('bt_inldapserver');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inldapserver'),'class="bt-inlist" id="bt-inldapserver" border="0"');?></a><br />
+		<a href="#" onclick="xivo_fm_move_selected('it-ldapfilterlist','it-ldapfilter'); return(false);" title="<?=$this->bbf('bt_inldapfilter');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inldapfilter'),'class="bt-inlist" id="bt-inldapfilter" border="0"');?></a><br />
 
-		<a href="#" onclick="xivo_fm_move_selected('it-ldapserver','it-ldapserverlist'); return(false);" title="<?=$this->bbf('bt_outldapserver');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outldapserver'),'class="bt-outlist" id="bt-outldapserver" border="0"');?></a>
+		<a href="#" onclick="xivo_fm_move_selected('it-ldapfilter','it-ldapfilterlist'); return(false);" title="<?=$this->bbf('bt_outldapfilter');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outldapfilter'),'class="bt-outlist" id="bt-outldapfilter" border="0"');?></a>
 
 			</div>
 			<div class="slt-inlist">
 
-		<?=$form->select(array('name' => 'ldapserver[]','label' => false,'id' => 'it-ldapserver','key' => 'identity','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$info['ldapserver']['slt']);?>
+		<?=$form->select(array('name' => 'ldapfilter[]','label' => false,'id' => 'it-ldapfilter','key' => 'identity','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$info['ldapfilter']['slt']);?>
 
 			</div>
 		</div>
 		<div class="clearboth"></div>
 <?php
 	else:
-		echo '<div class="txt-center">',$url->href_html($this->bbf('create_ldapserver'),'service/ipbx/system_management/ldapserver','act=add'),'</div>';
+		echo '<div class="txt-center">',$url->href_html($this->bbf('create_ldapfilter'),'service/ipbx/system_management/ldapfilter','act=add'),'</div>';
 	endif;
 ?>
 

@@ -7,7 +7,7 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 	var $_dso		= null;
 	var $_accessfeatures	= null;
 	var $_appxivoserver	= false;
-	var $_appldapserver	= false;
+	var $_appldapfilter	= false;
 	var $_curl		= false;
 	var $_phonebook		= false;
 	var $_phonebooknumber	= false;
@@ -51,10 +51,10 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 		return(true);
 	}
 
-	function _load_ldapserver()
+	function _load_ldapfilter()
 	{
-		if(is_object($this->_appldapserver) === false
-		&& ($this->_appldapserver = $this->_service->get_application('serverfeatures',
+		if(is_object($this->_appldapfilter) === false
+		&& ($this->_appldapfilter = $this->_service->get_application('serverfeatures',
 									    array('feature'	=> 'phonebook',
 									    	  'type'	=> 'ldap'))) === false)
 			return(false);
@@ -222,34 +222,32 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 		return($r);
 	}
 
-	function get_phonebook_search_from_ldapserver($query,$disable=null)
+	function get_phonebook_search_from_ldapfilter($query,$disable=null)
 	{
 		if(xivo_haslen($query) === false
-		|| $this->_load_ldapserver() === false
-		|| ($rs = $this->_appldapserver->get_servers_list($disable)) === false
+		|| $this->_load_ldapfilter() === false
+		|| ($rs = $this->_appldapfilter->get_servers_list($disable)) === false
 		|| ($nb = count($rs)) === 0)
 			return(false);
 
-		$option = &$this->_conf['ldapserver']['option'];
-		
 		$r = array();
 
 		for($i = 0;$i < $nb;$i++)
 		{
+			$ldapfilter = &$rs[$i]['server']['ldapfilter'];
 			$ldapserver = &$rs[$i]['server']['ldapserver'];
-			$xldapserver = &$rs[$i]['server']['xldapserver'];
 
-			if($xldapserver === false
-			|| isset($ldapserver['attrphonenumber'][0]) === false)
+			if($ldapserver === false
+			|| isset($ldapfilter['attrphonenumber'][0]) === false)
 				continue;
-			else if(xivo_haslen($ldapserver['filter']) === true)
+			else if(xivo_haslen($ldapfilter['filter']) === true)
 			{
-				$xldapserver['user'] = $ldapserver['user'];
-				$xldapserver['passwd'] = $ldapserver['passwd'];
+				$ldapserver['user'] = $ldapfilter['user'];
+				$ldapserver['passwd'] = $ldapfilter['passwd'];
 
-				$dso = xivo_datastorage::factory('ldap',$xldapserver);
+				$dso = xivo_datastorage::factory('ldap',$ldapserver);
 
-				if(($filter = xivo_replacef('Q',$dso->escape_string($query),$ldapserver['filter'])) === false)
+				if(($filter = xivo_replacef('Q',$dso->escape_string($query),$ldapfilter['filter'])) === false)
 				{
 					$dso->close();
 					continue;
@@ -258,31 +256,31 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 					$filter = '('.$filter.')';
 
 				$search = array();
-				$search['from'] = $ldapserver['basedn'];
-				$search['column'] = array_merge($ldapserver['attrdisplayname'],$ldapserver['attrphonenumber']);
-				$search['where'] = '(&'.$filter.'(|('.implode('=*)(',$ldapserver['attrdisplayname']).'=*))'.
-						   '(|('.implode('=*)(',$ldapserver['attrphonenumber']).'=*)))';
+				$search['from'] = $ldapfilter['basedn'];
+				$search['column'] = array_merge($ldapfilter['attrdisplayname'],$ldapfilter['attrphonenumber']);
+				$search['where'] = '(&'.$filter.'(|('.implode('=*)(',$ldapfilter['attrdisplayname']).'=*))'.
+						   '(|('.implode('=*)(',$ldapfilter['attrphonenumber']).'=*)))';
 
 				if(($res = $dso->select_all($search,true,true)) !== false
-				&& ($recv = $this->_prepare_ldapserver_recv($res,
-									    $ldapserver['attrdisplayname'],
-									    $ldapserver['attrphonenumber'],
-									    $ldapserver['additionaltype'],
-									    $ldapserver['additionaltext'])) !== false)
+				&& ($recv = $this->_prepare_ldapfilter_recv($res,
+									    $ldapfilter['attrdisplayname'],
+									    $ldapfilter['attrphonenumber'],
+									    $ldapfilter['additionaltype'],
+									    $ldapfilter['additionaltext'])) !== false)
 					$r = array_merge($r,$recv);
 
 				$dso->close();
 			}
 			else
 			{
-				$columns = array_merge($ldapserver['attrdisplayname'],$ldapserver['attrphonenumber']);
+				$columns = array_merge($ldapfilter['attrdisplayname'],$ldapfilter['attrphonenumber']);
 
-				$xldapserver['user'] = $ldapserver['user'];
-				$xldapserver['passwd'] = $ldapserver['passwd'];
+				$ldapserver['user'] = $ldapfilter['user'];
+				$ldapserver['passwd'] = $ldapfilter['passwd'];
 
-				$dso = xivo_datastorage::factory('ldap',$xldapserver);
+				$dso = xivo_datastorage::factory('ldap',$ldapserver);
 
-				$dso->new_select($ldapserver['basedn'],$columns);
+				$dso->new_select($ldapfilter['basedn'],$columns);
 
 				$cnt = count($columns);
 
@@ -291,28 +289,28 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 
 				$dso->aggregate_where();
 
-				$cnt = count($ldapserver['attrdisplayname']);
+				$cnt = count($ldapfilter['attrdisplayname']);
 
-				$dso->andwherenotnull($ldapserver['attrdisplayname'][0]);
+				$dso->andwherenotnull($ldapfilter['attrdisplayname'][0]);
 			
 				for($j = 1;$j < $cnt;$j++)
-					$dso->orwherenotnull($ldapserver['attrdisplayname'][$j]);
+					$dso->orwherenotnull($ldapfilter['attrdisplayname'][$j]);
 
 				$dso->aggregate_where();
 
-				$cnt = count($ldapserver['attrphonenumber']);
+				$cnt = count($ldapfilter['attrphonenumber']);
 
-				$dso->andwherenotnull($ldapserver['attrphonenumber'][0]);
+				$dso->andwherenotnull($ldapfilter['attrphonenumber'][0]);
 			
 				for($j = 1;$j < $cnt;$j++)
-					$dso->orwherenotnull($ldapserver['attrphonenumber'][$j]);
+					$dso->orwherenotnull($ldapfilter['attrphonenumber'][$j]);
 
 				if(($res = $dso->select_all(null,true,true)) !== false
-				&& ($recv = $this->_prepare_ldapserver_recv($res,
-									    $ldapserver['attrdisplayname'],
-									    $ldapserver['attrphonenumber'],
-									    $ldapserver['additionaltype'],
-									    $ldapserver['additionaltext'])) !== false)
+				&& ($recv = $this->_prepare_ldapfilter_recv($res,
+									    $ldapfilter['attrdisplayname'],
+									    $ldapfilter['attrphonenumber'],
+									    $ldapfilter['additionaltype'],
+									    $ldapfilter['additionaltext'])) !== false)
 					$r = array_merge($r,$recv);
 
 				$dso->close();
@@ -325,7 +323,7 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 		return($r);
 	}
 
-	function _prepare_ldapserver_recv($recv,$attrdisplayname,$attrphonenumber,$additionaltype,$additionaltext)
+	function _prepare_ldapfilter_recv($recv,$attrdisplayname,$attrphonenumber,$additionaltype,$additionaltext)
 	{
 		if(is_array($recv) === false
 		|| is_array($attrdisplayname) === false

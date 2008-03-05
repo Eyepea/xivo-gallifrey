@@ -82,6 +82,10 @@ $array['incall'] = array();
 $array['incall']['table'] = 'incall';
 $array['incall']['primary'] = array('id' => '');
 
+$array['ldapfilter'] = array();
+$array['ldapfilter']['table'] = 'ldapfilter';
+$array['ldapfilter']['primary'] = array('id' => '');
+
 $array['meetme'] = array();
 $array['meetme']['table'] = 'meetme';
 $array['meetme']['primary'] = array('id' => '');
@@ -149,10 +153,6 @@ $array['schedule']['primary'] = array('id' => '');
 $array['serverfeatures'] = array();
 $array['serverfeatures']['table'] = 'serverfeatures';
 $array['serverfeatures']['primary'] = array('id' => '');
-
-$array['ldapserver'] = array();
-$array['ldapserver']['table'] = 'ldapserver';
-$array['ldapserver']['primary'] = array('id' => '');
 
 $array['trunkcustom'] = array();
 $array['trunkcustom']['table'] = 'usercustom';

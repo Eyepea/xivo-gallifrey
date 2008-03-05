@@ -122,7 +122,7 @@ Enable voicemail:
 Enable call transfer:
 
 ; fm_userfeatures_enableautomon
-Enable online call recording : 
+Enable online call recording: 
 
 ; fm_userfeatures_callrecord
 Call recording:

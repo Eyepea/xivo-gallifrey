@@ -19,6 +19,9 @@ Utilisateur
 ; stats_type-server
 Serveur
 
+; stats_type-ldapserver
+Serveur LDAP
+
 ; info_soft_label
 Logiciel :
 

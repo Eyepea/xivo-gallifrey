@@ -2,15 +2,15 @@
 
 $appaccessfeatures = &$ipbx->get_application('accessfeatures',array('feature' => 'phonebook'));
 $appxivoserver = $ipbx->get_application('serverfeatures',array('feature' => 'phonebook','type' => 'xivo'));
-$appldapserver = $ipbx->get_application('serverfeatures',array('feature' => 'phonebook','type' => 'ldap'));
+$appldapfilter = $ipbx->get_application('serverfeatures',array('feature' => 'phonebook','type' => 'ldap'));
 
 $info = array();
 $info['xivoserver'] = array();
-$info['ldapserver'] = array();
+$info['ldapfilter'] = array();
 
 $info['xivoserver']['info'] = $appxivoserver->get();
-$info['ldapserver']['info'] = $appldapserver->get();
-$info['xivoserver']['slt'] = $info['ldapserver']['slt'] = false;
+$info['ldapfilter']['info'] = $appldapfilter->get();
+$info['xivoserver']['slt'] = $info['ldapfilter']['slt'] = false;
 
 xivo::load_class('xivo_sort');
 
@@ -24,13 +24,13 @@ $serversort = new xivo_sort(array('key' => 'identity'));
 if(($info['xivoserver']['list'] = $appxivoserver->get_server_list()) !== false)
 	uasort($info['xivoserver']['list'],array(&$serversort,'str_usort'));
 
-if(($info['ldapserver']['list'] = $appldapserver->get_server_list()) !== false)
-	uasort($info['ldapserver']['list'],array(&$serversort,'str_usort'));
+if(($info['ldapfilter']['list'] = $appldapfilter->get_server_list()) !== false)
+	uasort($info['ldapfilter']['list'],array(&$serversort,'str_usort'));
 
 $error = array();
 $error['accessfeatures'] = array();
 $error['xivoserver'] = array();
-$error['ldapserver'] = array();
+$error['ldapfilter'] = array();
 
 $fm_save = null;
 
@@ -68,16 +68,16 @@ if(isset($_QR['fm_send']) === true)
 	else if($fm_save !== false)
 		$fm_save = true;
 
-	if(isset($_QR['ldapserver']) === false)
-		$_QR['ldapserver'] = array();
+	if(isset($_QR['ldapfilter']) === false)
+		$_QR['ldapfilter'] = array();
 
-	if($appldapserver->set($_QR['ldapserver']) !== false)
-		$appldapserver->save();
+	if($appldapfilter->set($_QR['ldapfilter']) !== false)
+		$appldapfilter->save();
 
-	$info['ldapserver']['info'] = $appldapserver->get_result();
-	$error['ldapserver'] = $appldapserver->get_error();
+	$info['ldapfilter']['info'] = $appldapfilter->get_result();
+	$error['ldapfilter'] = $appldapfilter->get_error();
 
-	if(isset($error['ldapserver'][0]) === true)
+	if(isset($error['ldapfilter'][0]) === true)
 		$fm_save = false;
 	else if($fm_save !== false)
 		$fm_save = true;
@@ -98,18 +98,18 @@ if($info['xivoserver']['list'] !== false
 	}
 }
 
-if($info['ldapserver']['list'] !== false
-&& $info['ldapserver']['info'] !== false)
+if($info['ldapfilter']['list'] !== false
+&& $info['ldapfilter']['info'] !== false)
 {
-	$info['ldapserver']['slt'] = xivo_array_intersect_key($info['ldapserver']['info'],
-							      $info['ldapserver']['list'],
+	$info['ldapfilter']['slt'] = xivo_array_intersect_key($info['ldapfilter']['info'],
+							      $info['ldapfilter']['list'],
 							      'serverid');
 
-	if($info['ldapserver']['slt'] !== false)
+	if($info['ldapfilter']['slt'] !== false)
 	{
-		$info['ldapserver']['list'] = xivo_array_diff_key($info['ldapserver']['list'],
-								  $info['ldapserver']['slt']);
-		uasort($info['ldapserver']['slt'],array(&$serversort,'str_usort'));
+		$info['ldapfilter']['list'] = xivo_array_diff_key($info['ldapfilter']['list'],
+								  $info['ldapfilter']['slt']);
+		uasort($info['ldapfilter']['slt'],array(&$serversort,'str_usort'));
 	}
 }
 

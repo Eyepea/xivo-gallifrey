@@ -44,7 +44,7 @@ $url = $_HTML->url('service/ipbx/web_services/phonebook/local').
 if(($rsx = $phonebook->get_phonebook_search_from_xivoserver($url,false)) !== false)
 	$rs = array_merge($rs,$rsx);
 
-if(($rsl = $phonebook->get_phonebook_search_from_ldapserver($_QR['name'],false)) !== false)
+if(($rsl = $phonebook->get_phonebook_search_from_ldapfilter($_QR['name'],false)) !== false)
 	$rs = array_merge($rs,$rsl);
 
 if(($nb = count($rs)) === 0 || $nb <= 16)

@@ -29,7 +29,7 @@ class xivo_application_service_asterisk_serverfeatures extends xivo_application_
 			&& ($this->_server = new xivo_server()) !== false)
 				return(true);
 			else if($this->_param['type'] === 'ldap'
-			&& ($this->_server = &$this->_service->get_application('ldapserver')) !== false)
+			&& ($this->_server = &$this->_service->get_application('ldapfilter')) !== false)
 				return(true);
 		}
 
@@ -60,7 +60,7 @@ class xivo_application_service_asterisk_serverfeatures extends xivo_application_
 		if($this->_param['type'] === 'xivo')
 			return($this->_server->get_all(null,true,null,null,true));
 		else if($this->_param['type'] === 'ldap')
-			return($this->_server->get_ldapservers_list(null,null,null,true));
+			return($this->_server->get_ldapfilters_list(null,null,null,true));
 
 		return(false);
 	}

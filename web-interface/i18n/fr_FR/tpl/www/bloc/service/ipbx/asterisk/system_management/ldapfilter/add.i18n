@@ -1,0 +1,89 @@
+; title_content_name
+Filtres LDAP > Ajouter
+
+; smenu_general
+Général
+
+; smenu_attributs
+Attributs
+
+; fm_ldapfilter_name
+Nom :
+
+; fm_ldapfilter_ldapserverid
+Serveur LDAP :
+
+; create_ldapserver
+Créer un serveur LDAP
+
+; fm_ldapfilter_user
+Utilisateur :
+
+; fm_ldapfilter_passwd
+Mot de passe :
+
+; fm_ldapfilter_basedn
+Base DN :
+
+; fm_ldapfilter_filter
+Filtre :
+
+; fm_ldapfilter_additionaltype
+Type de numéro de téléphone :
+
+; fm_ldapfilter_additionaltype-opt-home
+Domicile
+
+; fm_ldapfilter_additionaltype-opt-office
+Bureau
+
+; fm_ldapfilter_additionaltype-opt-mobile
+Mobile
+
+; fm_ldapfilter_additionaltype-opt-fax
+Fax
+
+; fm_ldapfilter_additionaltype-opt-other
+Autre
+
+; fm_ldapfilter_additionaltype-opt-custom
+Personnalisé
+
+; fm_ldapfilter_description
+Description :
+
+; fld-ldapfilter-attrdisplayname
+Nom affiché
+
+; bt_ldapfilter-attrdisplayname-add
+Ajouter un attribut
+
+; bt_delete_ldapfilter-attrdisplayname
+Supprimer un ou plusieurs attributs
+
+; add_ldapfilter-attrdisplayname
+Ajouter un attribut pour le nom affiché :
+
+; bt_up_ldapfilter-attrdisplayname
+Monter un ou plusieurs attributs
+
+; bt_down_ldapfilter-attrdisplayname
+Descendre un ou plusieurs attributs
+
+; fld-ldapfilter-attrphonenumber
+Numéro de téléphone
+
+; bt_ldapfilter-attrphonenumber-add
+Ajouter un attribut
+
+; bt_delete_ldapfilter-attrphonenumber
+Supprimer un ou plusieurs attributs
+
+; add_ldapfilter-attrphonenumber
+Ajouter un attribut pour le numéro de téléphone :
+
+; bt_up_ldapfilter-attrphonenumber
+Monter un ou plusieurs attributs
+
+; bt_down_ldapfilter-attrphonenumber
+Descendre un ou plusieurs attributs

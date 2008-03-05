@@ -9,3 +9,6 @@ Users
 
 ; mn_left_manage-servers
 Servers
+
+; mn_left_manage-ldapservers
+LDAP Servers

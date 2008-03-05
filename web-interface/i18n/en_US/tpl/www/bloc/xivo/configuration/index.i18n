@@ -19,6 +19,9 @@ User
 ; stats_type-server
 Server
 
+; stats_type-ldapserver
+LDAP Server
+
 ; info_soft_label
 Software:
 

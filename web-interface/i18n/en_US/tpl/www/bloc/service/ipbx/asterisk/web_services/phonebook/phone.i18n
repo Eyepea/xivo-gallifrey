@@ -1,11 +1,17 @@
 ; phone_noentry
 No entry
 
+; phone_back
+Back
+
 ; phone_name-local
 %s
 
 ; phone_name-empty
 %s
+
+; phone_name-custom
+%s (%s)
 
 ; phone_name-mobile
 %s (Cellphone)

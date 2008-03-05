@@ -4,11 +4,11 @@ Propriétés du carnet d'adresses
 ; smenu_access
 Hôtes
 
-; smenu_serversxivo
+; smenu_xivoservers
 Serveurs XIVO
 
-; smenu_serversldap
-Serveurs LDAP
+; smenu_ldapfilters
+Filtres LDAP
 
 ; accessfeatures_add
 Ajouter un hôte :
@@ -19,23 +19,23 @@ Ajouter un hôte
 ; bt_deleteaccess
 Supprimer un ou plusieurs hôtes
 
-; bt_inserverxivo
+; bt_inxivoserver
 Ajouter un ou plusieurs serveurs XIVO ->
 
-; bt_outserverxivo
+; bt_outxivoserver
 <- Enlever un ou plusieurs serveurs XIVO
 
-; create_serverxivo
+; create_xivoserver
 Créer un serveur XIVO
 
-; bt_inserverldap
-Ajouter un ou plusieurs serveurs LDAP ->
+; bt_inldapfilter
+Ajouter un ou plusieurs filtres LDAP ->
 
-; bt_outserverldap
-<- Enlever un ou plusieurs serveurs LDAP
+; bt_outldapfilter
+<- Enlever un ou plusieurs filtres LDAP
 
-; create_serverldap
-Créer un serveur LDAP
+; create_ldapfilter
+Créer un filtre LDAP
 
 ; fm_success-save
 Propriétés du carnet d'adresses sauvegardés avec succès

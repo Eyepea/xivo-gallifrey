@@ -1,0 +1,23 @@
+; title_content_name
+Serveurs LDAP > Ajouter
+
+; fm_name
+Nom :
+
+; fm_host
+Hôte :
+
+; fm_port
+Port :
+
+; fm_ssl
+SSL :
+
+; fm_protocolversion
+Version du protocole :
+
+; fm_protocolversion-opt
+%s
+
+; fm_description
+Description :

@@ -35,7 +35,7 @@ Conference room
 Initialized
 
 ; stats_calls-active
-Active Call(s) : %s
+Active Call(s): %s
 
 ; info_service_label
 Software:

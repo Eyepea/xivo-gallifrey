@@ -14,7 +14,7 @@ Mobile phone
 E-mail
 
 ; number_phonebook-result
-Result(s) : %s
+Result(s): %s
 
 ; no_phonebook
 Could not find any entries in the phonebook

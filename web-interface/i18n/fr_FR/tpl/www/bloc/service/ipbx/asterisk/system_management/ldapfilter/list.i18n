@@ -1,0 +1,23 @@
+; col_name
+Nom
+
+; col_host
+Hôte
+
+; col_port
+Port
+
+; col_ssl
+SSL
+
+; ssl_1
+Oui
+
+; ssl_0
+Non
+
+; no_ldapfilter
+Aucun filtre LDAP trouvé
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer ce filtre LDAP ?
