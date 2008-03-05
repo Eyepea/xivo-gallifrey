@@ -49,7 +49,6 @@ import xivo_commandsets
 from Calls import IncomingCall
 from Calls import OutgoingCall
 from xivo_commandsets import BaseCommand
-from xivo_common import *
 from easyslog import *
 
 
@@ -552,13 +551,14 @@ class CallBoosterCommand(BaseCommand):
                                 if ic1 is not None:
                                         print 'LINK without Agent (1)', ic1.sdanum, ic1.commid, ic1.appelaboute, ic1.aboute
                                         if ic1.appelaboute is not None:
-                                                self.__send_msg__(ic1.uinfo, '%s,1,,Raccroche/' % ic1.commid)
-                                                self.__send_msg__(ic1.uinfo, '%s,1,,Raccroche/' % ic1.appelaboute)
+                                                self.__send_msg__(ic1.uinfo, '%s|%s,1,%s,AppelAboute/'
+                                                                  % (ic1.appelaboute, ic1.commid, ic1.appelaboute))
                                         ic1.set_timestamp_stat('link')
                                 elif ic2 is not None:
                                         print 'LINK after Aboute', ic2.sdanum, ic2.commid, ic2.appelaboute, ic2.aboute
                                         if ic2.aboute is not None:
-                                                self.__send_msg__(ic2.uinfo, '%s|%s,1,,Aboute/' % (ic2.aboute, ic2.commid))
+                                                self.__send_msg__(ic2.uinfo, '%s|%s,1,,Aboute/'
+                                                                  % (ic2.aboute, ic2.commid))
                                         ic2.set_timestamp_stat('link')
                                 else:
                                         print '(NORMAL LINK)', event
@@ -1488,7 +1488,7 @@ class CallBoosterCommand(BaseCommand):
                                                  'CB_AGENT_NUMBER' : agentnum}, 100)
 
 
-        def manage_srv2clt(self, userinfo_by_requester, connid, parsedcommand, cfg):
+        def manage_cticommand(self, userinfo, connid_socket, parsedcommand, cfg):
                 """
                 Defines the actions to be proceeded according to Operat's commands.
                 - Aboute       : links together 2 already established calls
@@ -1548,21 +1548,19 @@ class CallBoosterCommand(BaseCommand):
                 """
 
                 cname = parsedcommand.name
-                connid_socket = connid[1]
-                astid = userinfo_by_requester[0]
-                log_debug(SYSLOG_INFO, 'manage_srv2clt : %s / %s' % (cname, str(userinfo_by_requester)))
+                astid = userinfo.get('astid')
+                opername = userinfo.get('user')
+                phonenum = userinfo.get('phonenum')
+                agentnum = userinfo.get('agentnum')
 
-                if len(parsedcommand.args) > 0:
-                        opername = parsedcommand.args[0]
-                else:
-                        for opername, userinfo in self.ulist[astid].list.iteritems():
-                                if 'connection' in userinfo:
-                                        print 'manage_srv2clt (connected)', opername, userinfo
-                                        if userinfo['connection'] == connid_socket:
-                                                opername = userinfo['user']
-                userinfo = self.ulist[astid].finduser(opername)
-                if 'agentnum' in userinfo:
-                        agentnum = userinfo['agentnum']
+                if userinfo.get('connection') != connid_socket:
+                        log_debug(SYSLOG_WARNING, 'manage_cticommand (%s) : sockets mismatch for %s' % (cname.encode('latin1'),
+                                                                                                        opername.encode('latin1')))
+                        return
+                log_debug(SYSLOG_INFO, 'manage_cticommand (%s) : operator %s, phonenum %s, agentnum %s' % (cname.decode('latin1').encode('utf8'),
+                                                                                                           opername.decode('latin1').encode('utf8'),
+                                                                                                           phonenum, agentnum))
+                if 'agentnum' is not None:
                         agentid = 'Agent/%s' % agentnum
                 else:
                         print '--- no agentnum defined in userinfo'
@@ -1571,7 +1569,6 @@ class CallBoosterCommand(BaseCommand):
                         if len(parsedcommand.args) == 2:
                                 # the phonenum comes from the first Init/ command, therefore doesn't need
                                 # to be fetched from the 'postes' table
-                                phonenum = userinfo_by_requester[5]
                                 if 'agentchannel' in userinfo:
                                         log_debug(SYSLOG_WARNING, 'AppelOpe : %s phone is already logged in as agent number %s' % (phonenum, agentnum))
                                 log_debug(SYSLOG_INFO, 'AppelOpe : aoriginate_var for phonenum = %s' % phonenum)
@@ -1662,7 +1659,6 @@ class CallBoosterCommand(BaseCommand):
                                 else:
                                         userinfo['calls'][comm_id_outgoing] = outCall
                                         userinfo['calls'][comm_id_outgoing].tocall = True
-                                        phonenum = userinfo_by_requester[5]
                                         self.__schedule_agentlogin__(astid, userinfo, phonenum, agentnum, opername)
                 elif cname == 'Raccroche':
                         reference = parsedcommand.args[1]
@@ -1718,7 +1714,7 @@ class CallBoosterCommand(BaseCommand):
                         if refcomm_in in userinfo['calls']:
                                 incall = userinfo['calls'][refcomm_in]
                                 print "AppelAboute", incall.dir, incall.peerchannel
-                                incall.appelaboute = comm_id_outgoing
+                                incall.appelaboute = dest
                                 incall.set_timestamp_stat('appelaboute')
                                 r = self.amis[astid].transfer(incall.peerchannel, dest, 'default')
 
@@ -1727,8 +1723,7 @@ class CallBoosterCommand(BaseCommand):
                                                                     userinfo, agentnum, opername, dest,
                                                                     self.__local_nsoc__(idsoc), idcli, idcol)
                                 userinfo['calls'][comm_id_outgoing] = outCall
-                                retval = 1
-                                reply = '%s,%d,%s,Appel/' % (comm_id_outgoing, retval, dest)
+                                reply = '%s,1,,Attente/' % refcomm_in
                                 connid_socket.send(reply)
 
 
