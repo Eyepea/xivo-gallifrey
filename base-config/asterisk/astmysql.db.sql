@@ -7,15 +7,15 @@ DROP TABLE IF EXISTS `accessfeatures`;
 CREATE TABLE `accessfeatures` (
  `id` int(10) unsigned auto_increment,
  `host` varchar(255) NOT NULL DEFAULT '',
- `type` enum('phonebook') NOT NULL,
+ `feature` enum('phonebook') NOT NULL,
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX `accessfeatures__idx__host` ON `accessfeatures`(`host`);
-CREATE INDEX `accessfeatures__idx__type` ON `accessfeatures`(`type`);
+CREATE INDEX `accessfeatures__idx__feature` ON `accessfeatures`(`feature`);
 CREATE INDEX `accessfeatures__idx__commented` ON `accessfeatures`(`commented`);
-CREATE UNIQUE INDEX `accessfeatures__uidx__host_type` ON `accessfeatures`(`host`,`type`);
+CREATE UNIQUE INDEX `accessfeatures__uidx__host_feature` ON `accessfeatures`(`host`,`feature`);
 
 
 DROP TABLE IF EXISTS `agent`;
@@ -58,8 +58,8 @@ CREATE TABLE `agentfeatures` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX `agentfeatures__idx__commented` ON `agentfeatures`(`commented`);
-CREATE UNIQUE INDEX `agentfeatures__uidx__number` ON `agentfeatures`(`number`);
 CREATE UNIQUE INDEX `agentfeatures__uidx__agentid` ON `agentfeatures`(`agentid`);
+CREATE UNIQUE INDEX `agentfeatures__uidx__number` ON `agentfeatures`(`number`);
 
 
 DROP TABLE IF EXISTS `agentgroup`;
@@ -585,6 +585,29 @@ CREATE INDEX `incall__idx__commented` ON `incall`(`commented`);
 CREATE UNIQUE INDEX `incall__uidx__exten_context` ON `incall`(`exten`,`context`);
 
 
+DROP TABLE IF EXISTS `ldapserver`;
+CREATE TABLE `ldapserver` (
+ `id` int(10) unsigned auto_increment,
+ `ldapserverid` int(10) unsigned NOT NULL,
+ `name` varchar(128) NOT NULL DEFAULT '',
+ `user` varchar(255) NOT NULL DEFAULT '',
+ `passwd` varchar(255) NOT NULL DEFAULT '',
+ `basedn` varchar(255) NOT NULL DEFAULT '',
+ `filter` varchar(255) NOT NULL DEFAULT '',
+ `attrdisplayname` varchar(255) NOT NULL DEFAULT '',
+ `attrphonenumber` varchar(255) NOT NULL DEFAULT '',
+ `additionaltype` enum('office','home','mobile','fax','other','custom') NOT NULL,
+ `additionaltext` varchar(16) NOT NULL DEFAULT '',
+ `commented` tinyint(1) NOT NULL DEFAULT 0,
+ `description` text NOT NULL,
+ PRIMARY KEY(`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE INDEX `ldapserver__idx__ldapserverid` ON `ldapserver`(`ldapserverid`);
+CREATE INDEX `ldapserver__idx__commented` ON `ldapserver`(`commented`);
+CREATE UNIQUE INDEX `ldapserver__uidx__name` ON `ldapserver`(`name`);
+
+
 DROP TABLE IF EXISTS `meetme`;
 CREATE TABLE `meetme` (
  `id` int(10) unsigned auto_increment,
@@ -951,15 +974,17 @@ DROP TABLE IF EXISTS `serverfeatures`;
 CREATE TABLE `serverfeatures` (
  `id` int(10) unsigned auto_increment,
  `serverid` int(10) unsigned NOT NULL,
- `type` enum('phonebook') NOT NULL,
+ `feature` enum('phonebook') NOT NULL,
+ `type` enum('xivo','ldap') NOT NULL,
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
 CREATE INDEX `serverfeatures__idx__serverid` ON `serverfeatures`(`serverid`);
+CREATE INDEX `serverfeatures__idx__feature` ON `serverfeatures`(`feature`);
 CREATE INDEX `serverfeatures__idx__type` ON `serverfeatures`(`type`);
 CREATE INDEX `serverfeatures__idx__commented` ON `serverfeatures`(`commented`);
-CREATE UNIQUE INDEX `serverfeatures__uidx__serverid_type` ON `serverfeatures`(`serverid`,`type`);
+CREATE UNIQUE INDEX `serverfeatures__uidx__serverid_feature` ON `serverfeatures`(`serverid`,`feature`);
 
 
 DROP TABLE IF EXISTS `trunkfeatures`;

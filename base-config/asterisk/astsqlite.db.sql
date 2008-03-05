@@ -4,15 +4,15 @@ DROP TABLE accessfeatures;
 CREATE TABLE accessfeatures (
  id integer unsigned,
  host varchar(255) NOT NULL DEFAULT '',
- type varchar(9) NOT NULL,
+ feature varchar(9) NOT NULL,
  commented tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(id)
 );
 
 CREATE INDEX accessfeatures__idx__host ON accessfeatures(host);
-CREATE INDEX accessfeatures__idx__type ON accessfeatures(type);
+CREATE INDEX accessfeatures__idx__feature ON accessfeatures(feature);
 CREATE INDEX accessfeatures__idx__commented ON accessfeatures(commented);
-CREATE UNIQUE INDEX accessfeatures__uidx__host_type ON accessfeatures(host,type);
+CREATE UNIQUE INDEX accessfeatures__uidx__host_type ON accessfeatures(host,feature);
 
 
 DROP TABLE agent;
@@ -582,6 +582,29 @@ CREATE INDEX incall__idx__commented ON incall(commented);
 CREATE UNIQUE INDEX incall__uidx__exten_context ON incall(exten,context);
 
 
+DROP TABLE ldapserver;
+CREATE TABLE ldapserver (
+ id integer unsigned,
+ ldapserverid integer unsigned NOT NULL,
+ name varchar(128) NOT NULL DEFAULT '',
+ user varchar(255) NOT NULL DEFAULT '',
+ passwd varchar(255) NOT NULL DEFAULT '',
+ basedn varchar(255) NOT NULL DEFAULT '',
+ filter varchar(255) NOT NULL DEFAULT '',
+ attrdisplayname varchar(255) NOT NULL DEFAULT '',
+ attrphonenumber varchar(255) NOT NULL DEFAULT '',
+ additionaltype varchar(6) NOT NULL,
+ additionaltext varchar(16) NOT NULL DEFAULT '',
+ commented tinyint(1) NOT NULL DEFAULT 0,
+ description text NOT NULL,
+ PRIMARY KEY(id)
+);
+
+CREATE INDEX ldapserver__idx__ldapserverid ON ldapserver(ldapserverid);
+CREATE INDEX ldapserver__idx__commented ON ldapserver(commented);
+CREATE UNIQUE INDEX ldapserver__uidx__name ON ldapserver(name);
+
+
 DROP TABLE meetme;
 CREATE TABLE meetme (
  id integer unsigned,
@@ -948,15 +971,17 @@ DROP TABLE serverfeatures;
 CREATE TABLE serverfeatures (
  id integer unsigned,
  serverid integer unsigned NOT NULL,
- type varchar(9) NOT NULL,
+ feature varchar(9) NOT NULL,
+ type char(4) NOT NULL,
  commented tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(id)
 );
 
 CREATE INDEX serverfeatures__idx__serverid ON serverfeatures(serverid);
+CREATE INDEX serverfeatures__idx__feature ON serverfeatures(feature);
 CREATE INDEX serverfeatures__idx__type ON serverfeatures(type);
 CREATE INDEX serverfeatures__idx__commented ON serverfeatures(commented);
-CREATE UNIQUE INDEX serverfeatures__uidx__serverid_type ON serverfeatures(serverid,type);
+CREATE UNIQUE INDEX serverfeatures__uidx__serverid_feature ON serverfeatures(serverid,feature);
 
 
 DROP TABLE trunkfeatures;
