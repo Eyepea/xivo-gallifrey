@@ -24,7 +24,7 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301, USA
 """
 
-CONFIG_FILE		= '/etc/xivo/provisioning.conf' # can be overridden by cmd line param
+CONFIG_FILE		= '/etc/pf-xivo/provisioning.conf' # can be overridden by cmd line param
 GETOPT_SHORTOPTS	= 'c:h'
 
 import sys
