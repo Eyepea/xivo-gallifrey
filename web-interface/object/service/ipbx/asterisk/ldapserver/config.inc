@@ -6,21 +6,8 @@ $array['element'] = array();
 $array['element']['name'] = array();
 $array['element']['name']['default'] = '';
 
-$array['element']['host'] = array();
-$array['element']['host']['default'] = '';
-
-$array['element']['port'] = array();
-$array['element']['port']['default'] = 389;
-
-$array['element']['ssl'] = array();
-$array['element']['ssl']['value'] = array(0,1);
-$array['element']['ssl']['default'] = 0;
-$array['element']['ssl']['set'] = true;
-
-$array['element']['protocolversion'] = array();
-$array['element']['protocolversion']['value'] = array('2','3');
-$array['element']['protocolversion']['default'] = '3';
-$array['element']['protocolversion']['setdef'] = true;
+$array['element']['ldapserverid'] = array();
+$array['element']['ldapserverid']['default'] = '';
 
 $array['element']['user'] = array();
 $array['element']['user']['default'] = '';
@@ -58,10 +45,7 @@ $array['element']['description']['default'] = '';
 
 $array['filter'] = array();
 $array['filter']['name'] = array('maxlen' => 128,'regexp' => '/^[a-z0-9_-]+$/i');
-$array['filter']['host'] = array('callback' => 'xivo_filter::chk_host_ipv4_strict');
-$array['filter']['port'] = array('cast' => 'uint','between' => array(1,65535));
-$array['filter']['ssl'] = array('bool' => true);
-$array['filter']['protocolversion'] = array('key' => array('2','3'));
+$array['filter']['ldapserverid'] = array('cast' => 'ulongint');
 $array['filter']['user'] = array('maxlen' => 255,'regexp' => '/^[a-zA-Z0-9-\._~\!\$&\'\(\)\*\+,;=%]+$/');
 $array['filter']['passwd'] = array('maxlen' => 255,'regexp' => '/^[a-zA-Z0-9-\._~\!\$&\'\(\)\*\+,;=:%]+$/');
 $array['filter']['basedn'] = array('minlen' => 1,'maxlen' => 255,'callback' => 'ldap_explode_dn','callbackparam' => 1);

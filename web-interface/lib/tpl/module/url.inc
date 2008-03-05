@@ -11,9 +11,9 @@ class xivo_tpl_url extends xivo_tpl_module
 		$this->_tpl = &$tpl;
 	}
 
-	function href($url='',$param='',$fullurl=false,$sep=null,$sid=true,$pre='',$key='')
+	function href($url='',$param='',$absolute=false,$sep=null,$sid=true,$pre='',$key='')
 	{
-		$url = $this->url($url,$fullurl);
+		$url = $this->url($url,$absolute);
 
 		if(isset($url{0}) === true && $url{0} === '#')
 			return($url);
@@ -43,9 +43,9 @@ class xivo_tpl_url extends xivo_tpl_module
 		return($r);
 	}
 
-	function href_html($content,$url='',$param='',$opt='',$title=null,$fullurl=false,$sep='&amp;',$sid=true,$pre='',$key='')
+	function href_html($content,$url='',$param='',$opt='',$title=null,$absolute=false,$sep='&amp;',$sid=true,$pre='',$key='')
 	{
-		$url = $this->href($url,$param,$sep,$fullurl,$sid,$pre,$key);
+		$url = $this->href($url,$param,$absolute,$sep,$sid,$pre,$key);
 
 		return($this->_mk_href_html($content,$url,$opt,$title));
 	}
@@ -103,7 +103,7 @@ class xivo_tpl_url extends xivo_tpl_module
 		return($r);
 	}
 
-	function pager($nb,$page,$prev=false,$next=false,$url='',$param='',$opt='',$fullurl=false,$sep=null,$sid=true,$pre='',$key='')
+	function pager($nb,$page,$prev=false,$next=false,$url='',$param='',$opt='',$absolute=false,$sep=null,$sid=true,$pre='',$key='')
 	{
 		$r = '';
 
@@ -145,7 +145,7 @@ class xivo_tpl_url extends xivo_tpl_module
 		else
 			$param .= $sep;
 
-		$url = $this->url($url,$fullurl).$param.'page=';
+		$url = $this->url($url,$absolute).$param.'page=';
 
 		if((bool) $prev === true)
 			$r .= $this->_mk_href_html($this->bbf('page_previous'),$url.($page - 1),$opt,$this->bbf('page_previous')).' - ';

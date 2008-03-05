@@ -4,16 +4,16 @@
 <div class="b-infos b-form">
 	<h3 class="sb-top xspan"><span class="span-left">&nbsp;</span><span class="span-center"><?=$this->bbf('title_content_name');?></span><span class="span-right">&nbsp;</span></h3>
 
-	<?=$this->file_include('bloc/service/ipbx/asterisk/system_management/serverldap/submenu');?>
+	<?=$this->file_include('bloc/service/ipbx/asterisk/system_management/ldapserver/submenu');?>
 
 	<div class="sb-content">
-<form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-serverldap-attrdisplayname'); xivo_fm_select('it-serverldap-attrphonenumber');">
+<form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-ldapserver-attrdisplayname'); xivo_fm_select('it-ldapserver-attrphonenumber');">
 
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
 <?=$form->hidden(array('name' => 'act','value' => 'add'));?>
 
-<?=$this->file_include('bloc/service/ipbx/asterisk/system_management/serverldap/form');?>
+<?=$this->file_include('bloc/service/ipbx/asterisk/system_management/ldapserver/form');?>
 
 <?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>
 

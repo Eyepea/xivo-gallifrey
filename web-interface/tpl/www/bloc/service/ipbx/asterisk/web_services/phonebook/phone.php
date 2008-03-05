@@ -10,6 +10,7 @@ switch($vendor)
 		$vendor = 'genericxml';
 		$param['tagmenu'] = 'ThomsonPhoneMenu';
 		$param['tagdirectory'] = 'ThomsonPhoneBook';
+		$param['argseparator'] = '&amp;';
 		$param['taginput'] = '';
 		break;
 	case 'snom':
@@ -17,6 +18,7 @@ switch($vendor)
 		$param['tagmenu'] = 'SnomIPPhoneMenu';
 		$param['tagdirectory'] = 'SnomIPPhoneDirectory';
 		$param['taginput'] = 'SnomIPPhoneInput';
+		$param['argseparator'] = '&';
 		break;
 	default:
 		xivo_die('Error/Invalid Vendor and User-Agent');

@@ -18,7 +18,7 @@
 		<li id="smenu-tab-1" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-first');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
 			<div class="tab"><span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_access');?></a></span></div><span class="span-right">&nbsp;</span>
 		</li>
-		<li id="smenu-tab-2" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-serverxivo');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
+		<li id="smenu-tab-2" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-xivoserver');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
 			<div class="tab"><span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_serversxivo');?></a></span></div><span class="span-right">&nbsp;</span>
 		</li>
 		<li id="smenu-tab-3" class="moo-last" onclick="xivo_smenu_click(this,'moc','sb-part-last',1);" onmouseout="xivo_smenu_out(this,'moo',1);" onmouseover="xivo_smenu_over(this,'mov',1);">
@@ -28,7 +28,7 @@
 </div>
 
 <div class="sb-content">
-<form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-access'); xivo_fm_select('it-serverxivo'); xivo_fm_select('it-serverldap');">
+<form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-access'); xivo_fm_select('it-xivoserver'); xivo_fm_select('it-ldapserver');">
 
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
@@ -52,34 +52,34 @@
 
 </div>
 
-<div id="sb-part-serverxivo" class="b-nodisplay">
+<div id="sb-part-xivoserver" class="b-nodisplay">
 
 <?php
-	if($info['serverxivo']['list'] !== false):
+	if($info['xivoserver']['list'] !== false):
 ?>
-		<div id="serverxivolist" class="fm-field fm-multilist">
+		<div id="xivoserverlist" class="fm-field fm-multilist">
 			<div class="slt-outlist">
 
-		<?=$form->select(array('name' => 'serverxivolist','label' => false,'id' => 'it-serverxivolist','key' => 'identity','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$info['serverxivo']['list']);?>
+		<?=$form->select(array('name' => 'xivoserverlist','label' => false,'id' => 'it-xivoserverlist','key' => 'identity','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$info['xivoserver']['list']);?>
 
 			</div>
 			<div class="inout-list">
 
-		<a href="#" onclick="xivo_fm_move_selected('it-serverxivolist','it-serverxivo'); return(false);" title="<?=$this->bbf('bt_inserverxivo');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inserverxivo'),'class="bt-inlist" id="bt-inserverxivo" border="0"');?></a><br />
+		<a href="#" onclick="xivo_fm_move_selected('it-xivoserverlist','it-xivoserver'); return(false);" title="<?=$this->bbf('bt_inxivoserver');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inxivoserver'),'class="bt-inlist" id="bt-inxivoserver" border="0"');?></a><br />
 
-		<a href="#" onclick="xivo_fm_move_selected('it-serverxivo','it-serverxivolist'); return(false);" title="<?=$this->bbf('bt_outserverxivo');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outserverxivo'),'class="bt-outlist" id="bt-outserverxivo" border="0"');?></a>
+		<a href="#" onclick="xivo_fm_move_selected('it-xivoserver','it-xivoserverlist'); return(false);" title="<?=$this->bbf('bt_outxivoserver');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outxivoserver'),'class="bt-outlist" id="bt-outxivoserver" border="0"');?></a>
 
 			</div>
 			<div class="slt-inlist">
 
-		<?=$form->select(array('name' => 'serverxivo[]','label' => false,'id' => 'it-serverxivo','key' => 'identity','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$info['serverxivo']['slt']);?>
+		<?=$form->select(array('name' => 'xivoserver[]','label' => false,'id' => 'it-xivoserver','key' => 'identity','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$info['xivoserver']['slt']);?>
 
 			</div>
 		</div>
 		<div class="clearboth"></div>
 <?php
 	else:
-		echo '<div class="txt-center">',$url->href_html($this->bbf('create_serverxivo'),'xivo/configuration/servers','act=add'),'</div>';
+		echo '<div class="txt-center">',$url->href_html($this->bbf('create_xivoserver'),'xivo/configuration/servers','act=add'),'</div>';
 	endif;
 ?>
 
@@ -88,31 +88,31 @@
 <div id="sb-part-last" class="b-nodisplay">
 
 <?php
-	if($info['serverldap']['list'] !== false):
+	if($info['ldapserver']['list'] !== false):
 ?>
-		<div id="serverldaplist" class="fm-field fm-multilist">
+		<div id="ldapserverlist" class="fm-field fm-multilist">
 			<div class="slt-outlist">
 
-		<?=$form->select(array('name' => 'serverldaplist','label' => false,'id' => 'it-serverldaplist','key' => 'identity','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$info['serverldap']['list']);?>
+		<?=$form->select(array('name' => 'ldapserverlist','label' => false,'id' => 'it-ldapserverlist','key' => 'identity','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$info['ldapserver']['list']);?>
 
 			</div>
 			<div class="inout-list">
 
-		<a href="#" onclick="xivo_fm_move_selected('it-serverldaplist','it-serverldap'); return(false);" title="<?=$this->bbf('bt_inserverldap');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inserverldap'),'class="bt-inlist" id="bt-inserverldap" border="0"');?></a><br />
+		<a href="#" onclick="xivo_fm_move_selected('it-ldapserverlist','it-ldapserver'); return(false);" title="<?=$this->bbf('bt_inldapserver');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inldapserver'),'class="bt-inlist" id="bt-inldapserver" border="0"');?></a><br />
 
-		<a href="#" onclick="xivo_fm_move_selected('it-serverldap','it-serverldaplist'); return(false);" title="<?=$this->bbf('bt_outserverldap');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outserverldap'),'class="bt-outlist" id="bt-outserverldap" border="0"');?></a>
+		<a href="#" onclick="xivo_fm_move_selected('it-ldapserver','it-ldapserverlist'); return(false);" title="<?=$this->bbf('bt_outldapserver');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outldapserver'),'class="bt-outlist" id="bt-outldapserver" border="0"');?></a>
 
 			</div>
 			<div class="slt-inlist">
 
-		<?=$form->select(array('name' => 'serverldap[]','label' => false,'id' => 'it-serverldap','key' => 'identity','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$info['serverldap']['slt']);?>
+		<?=$form->select(array('name' => 'ldapserver[]','label' => false,'id' => 'it-ldapserver','key' => 'identity','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$info['ldapserver']['slt']);?>
 
 			</div>
 		</div>
 		<div class="clearboth"></div>
 <?php
 	else:
-		echo '<div class="txt-center">',$url->href_html($this->bbf('create_serverldap'),'service/ipbx/system_management/serverldap','act=add'),'</div>';
+		echo '<div class="txt-center">',$url->href_html($this->bbf('create_ldapserver'),'service/ipbx/system_management/ldapserver','act=add'),'</div>';
 	endif;
 ?>
 

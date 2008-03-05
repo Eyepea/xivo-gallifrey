@@ -99,12 +99,10 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 			if(isset($a[$i]) === false)
 				continue;
 
-			$file = (string) $a[$i];
-
-			$path = $this->get_option('script_path').XIVO_SEP_DIR.ltrim($file,XIVO_SEP_DIR);
+			$path = $this->get_option('script_path').XIVO_SEP_DIR.ltrim($a[$i],XIVO_SEP_DIR);
 
 			if(xivo_file::is_f_r($path) !== false)
-				$this->_css[] = $file;
+				$this->_css[] = $a[$i];
 		}
 	}
 
@@ -120,11 +118,10 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 			if(isset($a[$i]) === false)
 				continue;
 
-			$file = (string) $a[$i];
-			$path = $this->get_option('script_path').XIVO_SEP_DIR.ltrim($file,XIVO_SEP_DIR);
+			$path = $this->get_option('script_path').XIVO_SEP_DIR.ltrim($a[$i],XIVO_SEP_DIR);
 
 			if(xivo_file::is_f_r($path) !== false)
-				$this->_js[] = $file;
+				$this->_js[] = $a[$i];
 		}
 	}
 
@@ -200,7 +197,7 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 		if(is_scalar($str) === false)
 			return(false);
 
-		echo '<script type="text/javascript">',"\n",'<!--',"\n",(string) $str,"\n",'-->',"\n",'</script>',"\n";
+		echo '<script type="text/javascript">',"\n",'<!--',"\n",$str,"\n",'-->',"\n",'</script>',"\n";
 	}
 
 	function write_css($str)
@@ -211,7 +208,7 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 		if(is_scalar($str) === false)
 			return(false);
 
-		echo '<style type="text/css">',"\n",'<!--',"\n",(string) $str,"\n",'-->',"\n",'</style>',"\n";
+		echo '<style type="text/css">',"\n",'<!--',"\n",$str,"\n",'-->',"\n",'</style>',"\n";
 	}
 
 	function load_css()
@@ -241,10 +238,9 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 	{
 		$r = '';
 
-		$file = (string) $file;
 		$path = $this->get_option('tpl_path').XIVO_SEP_DIR.ltrim($file,XIVO_SEP_DIR);
 
-		if(xivo_file::is_i($path) === false)
+		if(($path = xivo_file::is_f_r($path)) === false)
 			return($r);
 
 		$this->set_file('dhtml',$path);

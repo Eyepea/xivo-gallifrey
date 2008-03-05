@@ -797,6 +797,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	function set_voicemail($arr,$context,$number='')
 	{
 		if(is_array($arr) === false
+		|| empty($arr) === true
 		|| $this->_uservoicemail === false)
 			return(false);
 
@@ -811,7 +812,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 			$this->_set_result('voicemail',$rs);
 			$this->_set_error('voicemail',$this->_uservoicemail->get_filter_error());
-
 			return(false);
 		}
 
@@ -2083,15 +2083,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		{
 			$ref = &$data[$i];
 
-			if(xivo_issa('voicemail',$ref) === true)
+			if(xivo_issa('voicemail',$ref) === true && empty($ref['voicemail']) === false)
 			{
-				if(xivo_haslen($ref['voicemail'],'email') === true)
-				{
-					$ref['voicemail']['voicemail-active'] = true;
-					$ref['ufeatures']['enablevoicemail'] = true;
-				}
-				else
-					unset($ref['voicemail']);
+				$ref['voicemail']['voicemail-active'] = true;
+				$ref['ufeatures']['enablevoicemail'] = true;
 			}
 
 			if(xivo_issa('protocol',$ref) === false

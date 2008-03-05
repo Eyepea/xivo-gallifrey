@@ -98,7 +98,13 @@ echo	'<div id="fd-incall-application-typeval" class="fm-field">',
 
 if($list['sounds'] !== false):
 
-	echo $form->select(array('desc' => $this->bbf('fm_incall_sound-typeval'),'name' => 'incall[typeval]','labelid' => 'incall-sound-typeval','default' => $element['incall']['typeval']['default'],'value' => $incall['sound']),$list['sounds']);
+	if($this->get_var('act') === 'edit' && $type === 'sound'):
+		$invalid = true;
+	else:
+		$invalid = false;
+	endif;
+
+	echo $form->select(array('desc' => $this->bbf('fm_incall_sound-typeval'),'name' => 'incall[typeval]','labelid' => 'incall-sound-typeval','invalid' => $invalid,'default' => $element['incall']['typeval']['default'],'value' => $incall['sound']),$list['sounds']);
 
 else:
 

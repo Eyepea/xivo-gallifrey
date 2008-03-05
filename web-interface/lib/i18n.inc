@@ -555,86 +555,70 @@ class xivo_i18n
 
 	function _get_cache_file()
 	{
+		static $cached = array();
+
 		if(is_array($this->_file) === false)
 			return(false);
-		else if($this->_mk_babelfish() === true)
-			return(true);
-		else if(($cache = $this->_dso->get_cache($this->_file)) === false || xivo_issa('obj',$cache) === false)
-			return(false);
-
-		$this->_file['filectime'] = $cache['filectime'];
-
-		$r = false;
-
-		if(isset($cache['obj']['content']) === true)
-		{
-			$r = true;
-
-			$_SESSION['_i18n']['babelfish'][$this->_file['namespace']][$this->_file['locale']][$this->_file['path']] = array(
-						'finfo'		=> $this->_file,
-						'copy'		=> $cache['obj']['copy'],
-						'load'		=> $cache['obj']['load'],
-						'content'	=> $cache['obj']['content']);
-
-			$this->_mk_babelfish();
-		}
-
-		return($r);
-	}
-
-	function _mk_babelfish()
-	{
-		if(is_array($this->_file) === false)
-			return(false);
-
-		$ref_sess = &$_SESSION['_i18n']['babelfish'];
 
 		$namespace = $this->_file['namespace'];
 
-		if(isset($ref_sess[$namespace]) === false)
-			$ref_sess[$namespace] = array();
+		if(isset($cached[$namespace]) === false)
+			$cached[$namespace] = array();
 
-		if(isset($ref_sess[$namespace][$this->_file['locale']]) === false)
-			$ref_sess[$namespace][$this->_file['locale']] = array();
+		if(isset($cached[$namespace][$this->_file['locale']]) === false)
+			$cached[$namespace][$this->_file['locale']] = array();
 
-		if(isset($ref_sess[$namespace][$this->_file['locale']][$this->_file['path']]) === false)
-			return(false);
+		$content = false;
 
-		$ref_file = &$ref_sess[$namespace][$this->_file['locale']][$this->_file['path']];
-
-		$r = false;
-
-		if(xivo_issa('finfo',$ref_file) === true && $ref_file['finfo']['filemtime'] === $this->_file['filemtime'])
+		if(isset($cached[$namespace][$this->_file['locale']][$this->_file['path']]) === false)
 		{
-			$r = true;
+			if(($cache = $this->_dso->get_cache($this->_file)) === false
+			|| xivo_issa('obj',$cache) === false)
+				return(false);
 
-			if($ref_file['copy'] !== false)
-			{
-				$_file = $this->_file;
-				$this->_file = $ref_file['finfo'];
-				$this->_file['locale'] = $ref_file['copy'];
-				$this->_load_file($ref_file['finfo']['filename'],$ref_file['finfo']['namespace']);
-				$this->_file = $_file;
-			}
+			$cached[$namespace][$this->_file['locale']][$this->_file['path']] = array(
+							'finfo'	=> $this->_file,
+							'copy'	=> $cache['obj']['copy'],
+							'load'	=> $cache['obj']['load']);
 
-			if(is_array($ref_file['load']) === true
-			&& empty($ref_file['load']) === false)
-			{
-				$_file = $this->_file;
-				$this->_file = $ref_file['finfo'];
+			$this->_file['filectime'] = $cache['filectime'];
 
-				reset($ref_file['load']);
-
-				while(list($key) = each($ref_file['load']))
-					$this->_load_file($key,$ref_file['finfo']['namespace']);
-				
-				$this->_file = $_file;
-			}
-
-			$this->_set_babelfish($namespace,$ref_file['content']);
+			$content = $cache['obj']['content'];
 		}
 
-		return($r);
+		$ref = &$cached[$namespace][$this->_file['locale']][$this->_file['path']];
+
+		if(xivo_issa('finfo',$ref) === false
+		|| $ref['finfo']['filemtime'] !== $this->_file['filemtime'])
+			return(false);
+
+		if($ref['copy'] !== false)
+		{
+			$_file = $this->_file;
+			$this->_file = $ref['finfo'];
+			$this->_file['locale'] = $ref['copy'];
+			$this->_load_file($ref['finfo']['filename'],$ref['finfo']['namespace']);
+			$this->_file = $_file;
+		}
+
+		if(is_array($ref['load']) === true
+		&& empty($ref['load']) === false)
+		{
+			$_file = $this->_file;
+			$this->_file = $ref['finfo'];
+
+			reset($ref['load']);
+
+			while(list($key) = each($ref['load']))
+				$this->_load_file($key,$ref['finfo']['namespace']);
+				
+			$this->_file = $_file;
+		}
+
+		if($content !== false)
+			$this->_set_babelfish($namespace,$content);
+
+		return(true);
 	}
 
 	function _parse_file()

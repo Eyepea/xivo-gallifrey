@@ -25,8 +25,8 @@ if($prevpos > 0):
 
 	echo	'<',$tagmenu,'>',"\n",
 		'<MenuItem>',"\n",
-		'<Name>[&lt;&lt; ',$this->bbf('page_previous'),']</Name>',"\n",
-		'<URL>',$url->href('service/ipbx/web_services/phonebook/search',$prevparam,true,null,false),'</URL>',"\n",
+		'<Name>[',xivo_htmlsc($this->bbf('phone_back'),ENT_NOQUOTES),']</Name>',"\n",
+		'<URL>',$url->href('service/ipbx/web_services/phonebook/search',$prevparam,true,$this->get_var('argseparator'),false),'</URL>',"\n",
 		'</MenuItem>',"\n",
 		'</',$tagmenu,'>',"\n";
 endif;
@@ -52,8 +52,8 @@ else:
 		endif;
 
 		echo	'<DirectoryEntry>',"\n",
-			'<Name>',$name,'</Name>',"\n",
-			'<Telephone>',$ref['phone'],'</Telephone>',"\n",
+			'<Name>',xivo_htmlsc($name,ENT_NOQUOTES),'</Name>',"\n",
+			'<Telephone>',xivo_htmlsc($ref['phone'],ENT_NOQUOTES),'</Telephone>',"\n",
 			'</DirectoryEntry>',"\n";
 	endfor;
 endif;

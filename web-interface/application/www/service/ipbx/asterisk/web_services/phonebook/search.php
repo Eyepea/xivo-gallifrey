@@ -22,9 +22,9 @@ $_HTML->set_var('vendor',$vendor);
 if(isset($_QR['name']) === false || xivo_haslen($_QR['name']) === false)
 {
 	if($vendor === 'snom')
-		$this->set_var('act','input');
+		$_HTML->set_var('act','input');
 	else
-		$this->set_var('act','directory');
+		$_HTML->set_var('act','directory');
 
 	$_HTML->display($path.'/phone');
 	die();
@@ -41,10 +41,10 @@ if(($rsu = $phonebook->get_user_search($_QR['name'],false)) !== false)
 $url = $_HTML->url('service/ipbx/web_services/phonebook/local').
        '?'.'name='.$_QR['name'].'&vendor='.$vendor;
 
-if(($rsx = $phonebook->get_phonebook_search_from_serverxivo($url,false)) !== false)
+if(($rsx = $phonebook->get_phonebook_search_from_xivoserver($url,false)) !== false)
 	$rs = array_merge($rs,$rsx);
 
-if(($rsl = $phonebook->get_phonebook_search_from_serverldap($_QR['name'],false)) !== false)
+if(($rsl = $phonebook->get_phonebook_search_from_ldapserver($_QR['name'],false)) !== false)
 	$rs = array_merge($rs,$rsl);
 
 if(($nb = count($rs)) === 0 || $nb <= 16)
@@ -56,9 +56,9 @@ if(($nb = count($rs)) === 0 || $nb <= 16)
 	die();
 }
 
-$maxnode = floor(log($nb,16));
+$maxnode = (int) floor(log($nb,16));
 
-if($node === 0 || $node >= $maxnode)
+if($node === 0 || $node > $maxnode)
 {
 	$node = $maxnode;
 	$beg = $prevpos = 0;

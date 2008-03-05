@@ -1,11 +1,11 @@
 <?php
 
 $array = array();
-$array['serverxivo'] = array();
-$array['serverxivo']['option'] = array();
-$array['serverxivo']['option']['ssl_verifypeer'] = false;
+$array['xivoserver'] = array();
+$array['xivoserver']['option'] = array();
+$array['xivoserver']['option']['ssl_verifypeer'] = false;
 
-$array['serverldap'] = array();
+$array['ldapserver'] = array();
 
 $array['vendor'] = array();
 $array['vendor']['thomson'] = 'thomson';

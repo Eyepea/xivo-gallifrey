@@ -104,8 +104,8 @@
 		if(xivo_user::chk_acl('system_management','configfiles') === true):
 			echo '<dd id="mn-system-management--configfiles">',$url->href_html($this->bbf('mn_left_systemmanagement-configfiles'),'service/ipbx/system_management/configfiles','act=list'),'</dd>';
 		endif;
-		if(xivo_user::chk_acl('system_management','serverldap') === true):
-			echo '<dd id="mn-system-management--serverldap">',$url->href_html($this->bbf('mn_left_systemmanagement-serverldap'),'service/ipbx/system_management/serverldap','act=list'),'</dd>';
+		if(xivo_user::chk_acl('system_management','ldapserver') === true):
+			echo '<dd id="mn-system-management--ldapserver">',$url->href_html($this->bbf('mn_left_systemmanagement-ldapserver'),'service/ipbx/system_management/ldapserver','act=list'),'</dd>';
 		endif;
 	endif;
 

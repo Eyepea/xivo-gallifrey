@@ -282,7 +282,6 @@ class xivo_file
 
 	function load_file($file,$dir='',$once=false,$verif=true)
 	{
-		$file = (string) $file;
 		$path = '';
 		
 		if(preg_match('/^[a-z0-9\-_.]+$/i',$file) !== 1)
@@ -302,12 +301,13 @@ class xivo_file
 			$path = $file;
 			$verif = false;
 		}
-		else if(($dir = xivo_file::is_d_r($dir)) !== false)
-			$path = $dir.XIVO_SEP_DIR.$file;
+		else if(is_readable($dir) === true && is_dir($dir) === true)
+			$path = rtrim($dir,XIVO_SEP_DIR).XIVO_SEP_DIR.$file;
 		else
 			return(false);
 
-		if(xivo_file::is_i($path,$verif) === false)
+		if((bool) $verif === true
+		&& (is_file($path) === false || is_readable($path) === false) === true)
 			return(false);
 		else if($once === false)
 			return((bool) require($path));
@@ -315,14 +315,15 @@ class xivo_file
 		return((bool) require_once($path));
 	}
 
-	function is_i($file,$verif=true)
+	function is_includable($file,$verif=true)
 	{
-		if((bool) $verif === true && ($file = xivo_file::is_f_r($file)) === false)
+		if((bool) $verif === true
+		&& (is_file($file) === false || is_readable($file) === false) === true)
 			return(false);
 		else if(($r = is_resource(($f = fopen($file,'r',true)))) === true)
 			fclose($f);
 
-		return($r);
+		return(true);
 	}
 
 	function required($arr,$once=false,$includable=false)
@@ -334,8 +335,9 @@ class xivo_file
 
 		$path = implode($arr,XIVO_SEP_DIR);
 
-		if(((bool) $includable === true && xivo_file::is_i($path) === false) === true
-		|| ($path = xivo_file::is_f_r($path)) === false)
+		if(($path = xivo_file::is_f_r($path)) === false
+		|| ((bool) $includable === true
+		   && xivo_file::is_includable($path) === false) === true)
 			return(false);
 		else if((bool) $once === false)
 			return((bool) require($path));
@@ -345,245 +347,189 @@ class xivo_file
 
 	function is_r($file)
 	{
-		$file = (string) $file;
-
 		return(is_readable($file));
 	}
 
 	function is_w($file)
 	{
-		$file = (string) $file;
-
 		return(is_writeable($file));
 	}
 
 	function is_x($file)
 	{
-		$file = (string) $file;
-
 		return(is_executable($file));
 	}
 
 	function is_rw($file)
 	{
-		$file = (string) $file;
-
 		return((is_readable($file) === true && is_writeable($file) === true));
 	}
 
 	function is_rx($file)
 	{
-		$file = (string) $file;
-
 		return((is_readable($file) === true && is_executable($file) === true));
 	}
 
 	function is_wx($file)
 	{
-		$file = (string) $file;
-
 		return((is_writeable($file) === true && is_executable($file) === true));
 	}
 
 	function is_rwx($file)
 	{
-		$file = (string) $file;
-
 		return((is_readable($file) === true && is_writeable($file) === true && is_executable($file) === true));
 	}
 
 	function is_f($file)
 	{
-		$r = false;
+		if(is_file($file) === true)
+			return(realpath($file));
 
-		$file = (string) $file;
-
-		if(is_file($file) === true && ($file = realpath($file)) !== false)
-			$r = $file;
-
-		return($r);
+		return(false);
 	}
 
 	function is_f_r($file)
 	{
-		$r = false;
+		if(is_readable($file) === true)
+			return(xivo_file::is_f($file));
 
-		if(is_readable($file) === true && ($file = xivo_file::is_f($file)) !== false)
-			$r = $file;
-
-		return($r);	
+		return(false);
 	}
 
 	function is_f_w($file)
 	{
-		$r = false;
+		if(is_writeable($file) === true)
+			return(xivo_file::is_f($file));
 
-		if(is_writeable($file) === true && ($file = xivo_file::is_f($file)) !== false)
-			$r = $file;
-
-		return($r);	
+		return(false);
 	}
 
 	function is_f_x($file)
 	{
-		$r = false;
+		if(is_executable($file) === true)
+			return(xivo_file::is_f($file));
 
-		if(is_executable($file) === true && ($file = xivo_file::is_f($file)) !== false)
-			$r = $file;
-
-		return($r);	
+		return(false);
 	}
 
 	function is_f_rw($file)
 	{
-		$r = false;
+		if(xivo_file::is_rw($file) === true)
+			return(xivo_file::is_f($file));
 
-		if(xivo_file::is_rw($file) === true && ($file = xivo_file::is_f($file)) !== false)
-			$r = $file;
-
-		return($r);	
+		return(false);
 	}
 
 	function is_f_rx($file)
 	{
-		$r = false;
+		if(xivo_file::is_rx($file) === true)
+			return(xivo_file::is_f($file));
 
-		if(xivo_file::is_rx($file) === true && ($file = xivo_file::is_f($file)) !== false)
-			$r = $file;
-
-		return($r);	
+		return(false);
 	}
 
 	function is_f_wx($file)
 	{
-		$r = false;
+		if(xivo_file::is_wx($file) === true)
+			return(xivo_file::is_f($file));
 
-		if(xivo_file::is_wx($file) === true && ($file = xivo_file::is_f($file)) !== false)
-			$r = $file;
-
-		return($r);	
+		return(false);	
 	}
 
 	function is_f_rwx($file)
 	{
-		$r = false;
+		if(xivo_file::is_rwx($file) === true)
+			return(xivo_file::is_f($file));
 
-		if(xivo_file::is_rwx($file) === true && ($file = xivo_file::is_f($file)) !== false)
-			$r = $file;
-
-		return($r);	
+		return(false);	
 	}
 
 	function is_d($dir,$t=false)
 	{
-		$r = false;
-
-		$dir = (string) $dir;
-
 		if((bool) $t === true)
 			$dir = dirname($dir);
 
-		if(is_dir($dir) === true && ($dir = realpath($dir)) !== false)
-			$r = $dir;
+		if(is_dir($dir) === true)
+			return(realpath($dir));
 
-		return($r);
+		return(false);
 	}
 
 	function is_d_r($dir,$t=false)
 	{
-		$r = false;
-
-		$dir = (string) $dir;
-
 		if((bool) $t === true)
 			$dir = dirname($dir);
 
-		if(is_readable($dir) === true && ($dir = xivo_file::is_d($dir)) !== false)
-			$r = $dir;
+		if(is_readable($dir) === true)
+			return(xivo_file::is_d($dir));
 
-		return($r);
+		return(false);
 	}
 
 	function is_d_w($dir,$t=false)
 	{
-		$r = false;
-
-		$dir = (string) $dir;
-
 		if((bool) $t === true)
 			$dir = dirname($dir);
 
-		if(is_writeable($dir) === true && ($dir = xivo_file::is_d($dir)) !== false)
-			$r = $dir;
+		if(is_writeable($dir) === true)
+			return(xivo_file::is_d($dir));
 
-		return($r);
+		return(false);
 	}
 
 	function is_d_x($dir,$t=false)
 	{
-		$r = false;
- 
-		$dir = (string) $dir;
-
 		if((bool) $t === true)
 			$dir = dirname($dir);
 
-		if(is_executable($dir) === true && ($dir = xivo_file::is_d($dir)) !== false)
-			$r = $dir;
+		if(is_executable($dir) === true)
+			return(xivo_file::is_d($dir));
 
-		return($r);
+		return(false);
 	}
 
 	function is_d_rw($dir,$t=false)
 	{
-		$r = false;
-
 		if((bool) $t === true)
 			$dir = dirname($dir);
 
-		if(xivo_file::is_rw($dir) === true && ($dir = xivo_file::is_d($dir)) !== false)
-			$r = $dir;
+		if(xivo_file::is_rw($dir) === true)
+			return(xivo_file::is_d($dir));
 
-		return($r);
+		return(false);
 	}
 
 	function is_d_rx($dir,$t=false)
 	{
-		$r = false;
-
 		if((bool) $t === true)
 			$dir = dirname($dir);
 
-		if(xivo_file::is_rx($dir) === true && ($dir = xivo_file::is_d($dir)) !== false)
-			$r = $dir;
+		if(xivo_file::is_rx($dir) === true)
+			return(xivo_file::is_d($dir));
 
-		return($r);
+		return(false);
 	}
 
 	function is_d_wx($dir,$t=false)
 	{
-		$r = false;
-
 		if((bool) $t === true)
 			$dir = dirname($dir);
 
-		if(xivo_file::is_wx($dir) === true && ($dir = xivo_file::is_d($dir)) !== false)
-			$r = $dir;
+		if(xivo_file::is_wx($dir) === true)
+			return(xivo_file::is_d($dir));
 
-		return($r);
+		return(false);
 	}
 
 	function is_d_rwx($dir,$t=false)
 	{
-		$r = false;
-
 		if((bool) $t === true)
 			$dir = dirname($dir);
 
-		if(xivo_file::is_rwx($dir) === true && ($dir = xivo_file::is_d($dir)) !== false)
-			$r = $dir;
+		if(xivo_file::is_rwx($dir) === true)
+			return(xivo_file::is_d($dir));
 
-		return($r);
+		return(false);
 	}
 
 	function put_contents($filename,$data,$flags=0)
@@ -722,12 +668,10 @@ class xivo_file
 
 	function rm($file)
 	{
-		$r = false;
-
 		if(xivo_file::is_d_w($file,true) !== false && unlink($file) !== false)
-			$r = true;
+			return(true);
 
-		return($r);
+		return(false);
 	}
 
 	function rmdir($dir)

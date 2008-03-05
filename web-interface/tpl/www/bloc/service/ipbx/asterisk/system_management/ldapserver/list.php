@@ -11,7 +11,7 @@
 			    $pager['page'],
 			    $pager['prev'],
 			    $pager['next'],
-			    'service/ipbx/system_management/serverldap',
+			    'service/ipbx/system_management/ldapserver',
 			    array('act' => $act));
 ?>
 <div class="b-list">
@@ -20,7 +20,7 @@
 		echo '<div class="b-page">',$page,'</div>';
 	endif;
 ?>
-<form action="#" name="fm-serverldap-list" method="post" accept-charset="utf-8">
+<form action="#" name="fm-ldapserver-list" method="post" accept-charset="utf-8">
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'act','value' => $act));?>
 <?=$form->hidden(array('name' => 'page','value' => $pager['page']));?>
@@ -39,7 +39,7 @@
 	if($list === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
-		<td colspan="8" class="td-single"><?=$this->bbf('no_serverldap');?></td>
+		<td colspan="8" class="td-single"><?=$this->bbf('no_ldapserver');?></td>
 	</tr>
 <?php
 	else:
@@ -47,25 +47,33 @@
 
 			$ref = &$list[$i];
 
-			if($ref['commented'] === true):
+			if(is_array($ref['xldapserver']) === false):
+				$icon = 'unavailable';
+				$host = $port = '-';
+				$ssl = 0;
+			elseif($ref['ldapserver']['commented'] === true):
 				$icon = 'disable';
+				$host = $ref['xldapserver']['host'];
+				$port = $ref['xldapserver']['port'];
+				$ssl = intval((bool) $ref['xldapserver']['ssl']);
 			else:
 				$icon = 'enable';
+				$host = $ref['xldapserver']['host'];
+				$port = $ref['xldapserver']['port'];
+				$ssl = intval((bool) $ref['xldapserver']['ssl']);
 			endif;
-
-			$ref['ssl'] = intval((bool) $ref['ssl']);
 
 			$mod = $i % 2 === 0 ? 1 : 2;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
-		<td class="td-left"><?=$form->checkbox(array('name' => 'serverldaps[]','value' => $ref['id'],'label' => false,'id' => 'it-serverldaps-'.$i,'checked' => false,'field' => false));?></td>
-		<td class="txt-left"><label for="it-serverldaps-<?=$i?>" id="lb-serverldaps-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['name']?></label></td>
-		<td><?=$ref['host'];?></td>
-		<td><?=$ref['port'];?></td>
-		<td><?=$this->bbf('ssl_'.$ref['ssl']);?></td>
+		<td class="td-left"><?=$form->checkbox(array('name' => 'ldapservers[]','value' => $ref['ldapserver']['id'],'label' => false,'id' => 'it-ldapservers-'.$i,'checked' => false,'field' => false));?></td>
+		<td class="txt-left"><label for="it-ldapservers-<?=$i?>" id="lb-ldapservers-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['ldapserver']['name']?></label></td>
+		<td><?=$host;?></td>
+		<td><?=$port;?></td>
+		<td><?=$this->bbf('ssl_'.$ssl);?></td>
 		<td class="td-right" colspan="3">
-		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/system_management/serverldap',array('act' => 'edit','id' => $ref['id']),null,$this->bbf('opt_modify'));?>
-		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/system_management/serverldap',array('act' => 'delete','id' => $ref['id'],'page' => $pager['page']),'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',$this->bbf('opt_delete'));?>
+		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/system_management/ldapserver',array('act' => 'edit','id' => $ref['ldapserver']['id']),null,$this->bbf('opt_modify'));?>
+		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/system_management/ldapserver',array('act' => 'delete','id' => $ref['ldapserver']['id'],'page' => $pager['page']),'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',$this->bbf('opt_delete'));?>
 		</td>
 	</tr>
 <?php

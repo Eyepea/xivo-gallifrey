@@ -1,4 +1,4 @@
-GRANT ALL PRIVILEGES ON xivo.* TO xivo@localhost IDENTIFIED BY PASSWORD '*DBA86DFECE903EB25FE460A66BDCDA790A1CA4A4';
+GRANT ALL PRIVILEGES ON `xivo`.* TO `xivo`@`localhost` IDENTIFIED BY PASSWORD '*DBA86DFECE903EB25FE460A66BDCDA790A1CA4A4';
 CREATE DATABASE IF NOT EXISTS `xivo` DEFAULT CHARACTER SET utf8;
 USE `xivo`;
 
@@ -17,6 +17,27 @@ CREATE INDEX `i18ncache__idx__language` ON `i18ncache`(`language`);
 CREATE INDEX `i18ncache__idx__dupdate` ON `i18ncache`(`dupdate`);
 
 
+DROP TABLE IF EXISTS `ldapserver`;
+CREATE TABLE `ldapserver` (
+ `id` int(10) unsigned auto_increment,
+ `name` varchar(64) NOT NULL DEFAULT '',
+ `host` varchar(255) NOT NULL DEFAULT '',
+ `port` smallint unsigned NOT NULL,
+ `ssl` tinyint(1) NOT NULL DEFAULT 0,
+ `protocolversion` enum('2','3') NOT NULL DEFAULT '3',
+ `disable` tinyint(1) NOT NULL DEFAULT 0,
+ `dcreate` int(10) unsigned NOT NULL DEFAULT 0,
+ `description` text NOT NULL,
+ PRIMARY KEY(`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE INDEX `ldapserver__idx__host` ON `ldapserver`(`host`);
+CREATE INDEX `ldapserver__idx__port` ON `ldapserver`(`port`);
+CREATE INDEX `ldapserver__idx__disable` ON `ldapserver`(`disable`);
+CREATE UNIQUE INDEX `ldapserver__uidx__name` ON `ldapserver`(`name`);
+CREATE UNIQUE INDEX `ldapserver__uidx__host_port` ON `ldapserver`(`host`,`port`);
+
+
 DROP TABLE IF EXISTS `server`;
 CREATE TABLE `server` (
  `id` int(10) unsigned auto_increment,
@@ -32,7 +53,6 @@ CREATE TABLE `server` (
 
 CREATE INDEX `server__idx__host` ON `server`(`host`);
 CREATE INDEX `server__idx__port` ON `server`(`port`);
-CREATE INDEX `server__idx__ssl` ON `server`(`ssl`);
 CREATE INDEX `server__idx__disable` ON `server`(`disable`);
 CREATE UNIQUE INDEX `server__uidx__name` ON `server`(`name`);
 CREATE UNIQUE INDEX `server__uidx__host_port` ON `server`(`host`,`port`);

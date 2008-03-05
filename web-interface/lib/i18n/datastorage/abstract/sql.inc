@@ -30,9 +30,7 @@ class xivo_i18n_abstract_sql
 
 		$arr['obj'] = serialize($arr['obj']);
 
-		$r = $this->_dso->replace($this->_param['table'],$arr);
-
-		return($r);
+		return($this->_dso->replace($this->_param['table'],$arr));
 	}
 
 	function get_cache($arr)

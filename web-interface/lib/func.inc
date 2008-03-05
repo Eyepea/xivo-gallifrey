@@ -282,26 +282,33 @@ function xivo_instanceof($obj,$name)
 	return(true);
 }
 
-function xivo_trunc(&$str,$nb=0,$end='',$chr=null)
+function xivo_trunc(&$str,$nb=0,$end='',$chr=null,$trim=false)
 {
 	$r = strval($str);
 	$nb = (int) $nb;
 	$end = (string) $end;
 	$chr = $chr === null ? ' ' : (string) $chr;
 	
-	$len = strlen($r);
+	$len = mb_strlen($r);
 
 	if($nb < 1)
-		$nb = strlen($r);
+		$nb = mb_strlen($r);
 
-	if($len > $nb && ($sub = substr($r,0,$nb)) !== '')
+	if($len > $nb && ($sub = mb_substr($r,0,$nb)) !== '')
 	{
 		$r = $sub;
-		if(($spos = strrpos($sub,$chr)) !== false)
-			$r = substr($r,0,$spos);
+
+		if($chr !== '' && ($spos = mb_strrpos($sub,$chr)) !== false)
+			$r = mb_substr($r,0,$spos);
+
+		if((bool) $trim === true)
+			$r = trim($r);
+
 		if(isset($end{0}) === true)
 	       		$r .= $end;
 	}
+	else if((bool) $trim === true)
+		$r = trim($r);
 
 	return($r);
 }

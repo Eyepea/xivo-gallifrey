@@ -109,7 +109,13 @@ endif;
 
 if($list['sounds'] !== false):
 
-	echo $form->select(array('desc' => $this->bbf('fm_schedule_sound-typeval'),'name' => 'schedule['.$typevalname.']','labelid' => 'schedule-sound-'.$typevalname,'default' => $element['schedule'][$typevalname]['default'],'value' => $info['schedule']['sound'][$typename]),$list['sounds']);
+	if($this->get_var('act') === 'edit' && $type === 'sound'):
+		$invalid = true;
+	else:
+		$invalid = false;
+	endif;
+
+	echo $form->select(array('desc' => $this->bbf('fm_schedule_sound-typeval'),'name' => 'schedule['.$typevalname.']','labelid' => 'schedule-sound-'.$typevalname,'invalid' => $invalid,'default' => $element['schedule'][$typevalname]['default'],'value' => $info['schedule']['sound'][$typename]),$list['sounds']);
 
 else:
 

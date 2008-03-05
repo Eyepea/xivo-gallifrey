@@ -33,14 +33,14 @@ function xivo_chg_additionaltype(type)
 		disabled = false;
 	}
 
-	xivo_eid('fd-serverldap-additionaltext').style.display = display;
-	xivo_eid('it-serverldap-additionaltext').disabled = disabled;
+	xivo_eid('fd-ldapserver-additionaltext').style.display = display;
+	xivo_eid('it-ldapserver-additionaltext').disabled = disabled;
 }
 
-function xivo_serverldap_onload()
+function xivo_ldapserver_onload()
 {
-	if(xivo_eid('it-serverldap-additionaltype') != false)
-		xivo_chg_additionaltype(xivo_eid('it-serverldap-additionaltype').value);
+	if(xivo_eid('it-ldapserver-additionaltype') != false)
+		xivo_chg_additionaltype(xivo_eid('it-ldapserver-additionaltype').value);
 }
 
-xivo_winload.push('xivo_serverldap_onload();');
+xivo_winload.push('xivo_ldapserver_onload();');

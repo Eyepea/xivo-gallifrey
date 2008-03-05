@@ -49,7 +49,7 @@ class xivo_gatearray
 		else
 			$path = rtrim($path,DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.$file.'.inc';
 
-		if(xivo_file::is_i($path) === false)
+		if(xivo_file::is_includable($path) === false)
 			return(false);
 		else if(isset($this->_array[$name]) === false)
 		{
@@ -71,7 +71,7 @@ class xivo_gatearray
 
 		$path = (string) $path.'.inc';
 
-		if(xivo_file::is_i($path) === false)
+		if(xivo_file::is_includable($path) === false)
 			return(false);
 		else if((bool) $once === false)
 			require($path);

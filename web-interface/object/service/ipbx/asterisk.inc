@@ -557,7 +557,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 								     $info['schedule']['typevalfalse'],
 								     $info['schedule']['applicationvalfalse'],
 								     $info['schedule']['id'])) === false) === true)
-				continue;
+				$info['schedule']['linked'] = false;
 
 			if($info['typetrue'] === true)
 				$info['typetrue'] = false;

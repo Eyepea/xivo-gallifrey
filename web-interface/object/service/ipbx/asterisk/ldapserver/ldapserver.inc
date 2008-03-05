@@ -2,15 +2,15 @@
 
 xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
-class xivo_service_asterisk_serverldap extends xivo_service_asterisk_abstract
+class xivo_service_asterisk_ldapserver extends xivo_service_asterisk_abstract
 {
 	var $_dso		= null;
-	var $_name		= 'serverldap';
+	var $_name		= 'ldapserver';
 	var $_filter		= false;
 	var $_origin		= false;
 	var $_origin_list	= false;
 
-	function xivo_service_asterisk_serverldap(&$sre,&$dso)
+	function xivo_service_asterisk_ldapserver(&$sre,&$dso)
 	{
 		if(is_object($sre) === false)
 			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
@@ -26,9 +26,7 @@ class xivo_service_asterisk_serverldap extends xivo_service_asterisk_abstract
 
 	function _prepare($data)
 	{
-		$data['ssl'] = (bool) $data['ssl'];
 		$data['commented'] = (bool) $data['commented'];
-		$data['identity'] = $data['name'].' ('.$data['host'].')';
 
 		if(is_scalar($data['attrdisplayname']) === true)
 			$data['attrdisplayname'] = explode(',',$data['attrdisplayname']);

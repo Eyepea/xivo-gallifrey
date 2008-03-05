@@ -324,7 +324,10 @@ class xivo_i18n_mediator
 		$locales[] = $info['locale'];
 		$locales[] = $info['lang'];
 
-		return(setlocale(LC_ALL,$locales));
+		$r = setlocale(LC_ALL,$locales);
+		setlocale(LC_MESSAGES,NULL);
+
+		return($r);
 	}
 
 	function chk_locale($locale)

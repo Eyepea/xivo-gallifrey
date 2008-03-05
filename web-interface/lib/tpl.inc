@@ -302,36 +302,22 @@ class xivo_tpl
 
 	function get_prepend($ext='')
 	{
-		$r = false;
-
 		$ext = (string) $ext;
 
 		if($ext === '')
 			$ext = XIVO_TPL_FILE_EXT;
 
-		$prepend = $this->get_option('script_path').XIVO_SEP_DIR.'prepend.'.$ext;
-
-		if(xivo_file::is_i($prepend) === true)
-			$r = $prepend;
-
-		return($r);
+		return(xivo_file::is_f_r($this->get_option('script_path').XIVO_SEP_DIR.'prepend.'.$ext));
 	}
 
 	function get_append($ext='')
 	{
-		$r = false;
-
 		$ext = (string) $ext;
 
 		if($ext === '')
 			$ext = XIVO_TPL_FILE_EXT;
 
-		$append = $this->get_option('script_path').XIVO_SEP_DIR.'append.'.$ext;
-
-		if(xivo_file::is_i($append) === true)
-			$r = $append;
-
-		return($r);
+		return(xivo_file::is_f_r($this->get_option('script_path').XIVO_SEP_DIR.'append.'.$ext));
 	}
 
 	function set_bloc($name,$file,$ext='')
@@ -372,7 +358,7 @@ class xivo_tpl
 
 		$file = 'struct'.XIVO_SEP_DIR.ltrim($file,XIVO_SEP_DIR).'.'.$ext;
 
-		if(xivo_file::is_i($this->get_option('tpl_path').XIVO_SEP_DIR.$file) === false)
+		if(xivo_file::is_f_r($this->get_option('tpl_path').XIVO_SEP_DIR.$file) === false)
 			return(false);
 
 		$this->set_file('structure',$file);
@@ -385,7 +371,7 @@ class xivo_tpl
 
 	function mk_struct()
 	{
-		if(xivo_file::is_i($this->get_option('tpl_path').XIVO_SEP_DIR.$this->get_file('structure')) === false)
+		if(xivo_file::is_f_r($this->get_option('tpl_path').XIVO_SEP_DIR.$this->get_file('structure')) === false)
 			return(false);
 		else if($this->get_option('overload_i18n') !== false)
 			$this->load_i18n_file($this->get_file('structure'));
@@ -412,7 +398,7 @@ class xivo_tpl
 		if((bool) $overload_i18n === true)
 			$this->set_option('overload_i18n',true);
 
-		if(xivo_file::is_i($path) === false)
+		if(xivo_file::is_f_r($path) === false)
 			return(false);
 		
 		$this->set_file('display',$path);
@@ -425,12 +411,12 @@ class xivo_tpl
 		{
 			ob_start();
 
-			if(xivo_file::is_i($this->get_option('tpl_path').XIVO_SEP_DIR.'prepend.'.$ext) === true)
+			if(xivo_file::is_f_r($this->get_option('tpl_path').XIVO_SEP_DIR.'prepend.'.$ext) !== false)
 				include($this->get_option('tpl_path').XIVO_SEP_DIR.'prepend.'.$ext);
 
 			include($this->get_file('display'));
 
-			if(xivo_file::is_i($this->get_option('tpl_path').XIVO_SEP_DIR.'append.'.$ext) === true)
+			if(xivo_file::is_f_r($this->get_option('tpl_path').XIVO_SEP_DIR.'append.'.$ext) !== false)
 				include($this->get_option('tpl_path').XIVO_SEP_DIR.'append.'.$ext);
 
 			ob_end_clean();
@@ -440,12 +426,12 @@ class xivo_tpl
 
 		ob_start();
 		
-		if(xivo_file::is_i($this->get_option('tpl_path').XIVO_SEP_DIR.'prepend.'.$ext) === true)
+		if(xivo_file::is_f_r($this->get_option('tpl_path').XIVO_SEP_DIR.'prepend.'.$ext) !== false)
 			include($this->get_option('tpl_path').XIVO_SEP_DIR.'prepend.'.$ext);
 
 		include($this->get_file('display'));
 
-		if(xivo_file::is_i($this->get_option('tpl_path').XIVO_SEP_DIR.'append.'.$ext) === true)
+		if(xivo_file::is_f_r($this->get_option('tpl_path').XIVO_SEP_DIR.'append.'.$ext) !== false)
 			include($this->get_option('tpl_path').XIVO_SEP_DIR.'append.'.$ext);
 
 		ob_end_flush();
@@ -464,7 +450,7 @@ class xivo_tpl
 
 		$path = $this->get_option('tpl_path').XIVO_SEP_DIR.$file.$ext;
 
-		if(xivo_file::is_i($path) === false)
+		if(($path = xivo_file::is_f_r($path)) === false)
 			return(false);
 
 		$this->set_file('tpl',$path);
@@ -489,7 +475,7 @@ class xivo_tpl
 		return($r);
 	}
 
-	function url($url='',$full=false)
+	function url($url='',$absolute=false)
 	{
 		$r = '';
 
@@ -504,7 +490,7 @@ class xivo_tpl
 
 		$r = $url{0} !== '/' ? $this->get_option('script_root').'/'.$url : $url;
 
-		if((bool) $full === true)
+		if((bool) $absolute === true)
 			$r = rtrim(XIVO_URL,'/').'/'.ltrim($url,'/');
 
 		return($r);

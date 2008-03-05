@@ -101,7 +101,13 @@ echo	'<div id="fd-dialstatus-',$status,'-application-typeval" class="fm-field">'
 
 if($list['sounds'] !== false):
 
-	echo $form->select(array('desc' => $this->bbf('fm_dialstatus_sound-typeval'),'name' => 'dialstatus['.$status.'][typeval]','labelid' => 'dialstatus-'.$status.'-sound-typeval','default' => $element['dialstatus']['typeval']['default'],'value' => $this->get_varra('dialstatus',array($status,'sound'))),$list['sounds']);
+	if($this->get_var('act') === 'edit' && $type === 'sound'):
+		$invalid = true;
+	else:
+		$invalid = false;
+	endif;
+
+	echo $form->select(array('desc' => $this->bbf('fm_dialstatus_sound-typeval'),'name' => 'dialstatus['.$status.'][typeval]','labelid' => 'dialstatus-'.$status.'-sound-typeval','invalid' => $invalid,'default' => $element['dialstatus']['typeval']['default'],'value' => $this->get_varra('dialstatus',array($status,'sound'))),$list['sounds']);
 
 else:
 

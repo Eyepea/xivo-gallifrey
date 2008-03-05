@@ -162,16 +162,7 @@ switch($act)
 		break;
 	case 'edit':
 		if(isset($_QR['id']) === false
-		|| ($info['schedule'] = $schedule->get($_QR['id'])) === false
-		|| ($info['schedule']['linked'] === true
-		   && (($info['typetrue'] = $schedule->is_valid($info['schedule']['typetrue'],
-								$info['schedule']['typevaltrue'],
-								$info['schedule']['applicationvaltrue'],
-								$info['schedule']['id'])) === false
-		      || ($info['typefalse'] = $schedule->is_valid($info['schedule']['typefalse'],
-								   $info['schedule']['typevalfalse'],
-								   $info['schedule']['applicationvalfalse'],
-								   $info['schedule']['id'])) === false) === true) === true)
+		|| ($info['schedule'] = $schedule->get($_QR['id'])) === false)
 			$_QRY->go($_HTML->url('service/ipbx/call_management/schedule'),$param);
 
 		$edit = true;

@@ -8,11 +8,13 @@ $node = $this->get_var('node');
 
 $tagmenu = $this->get_var('tagmenu');
 $tagdirectory = $this->get_var('tagdirectory');
+$argseparator = $this->get_var('argseparator');
 
 if(is_array($list) === false || ($nb = count($list)) === 0):
 	echo	'<',$tagdirectory,'>',"\n",
 		'<DirectoryEntry>',"\n",
 		'<Name>',$this->bbf('phone_noentry'),'</Name>',"\n",
+		'<Telephone></Telephone>',"\n",
 		'</DirectoryEntry>',"\n",
 		'</',$tagdirectory,'>';
 else:
@@ -28,8 +30,8 @@ else:
 		$prevparam['prevpos'] = $this->get_var('prevpos');
 
 		echo	'<MenuItem>',"\n",
-			'<Name>[&lt;&lt; ',$this->bbf('page_previous'),']</Name>',"\n",
-			'<URL>',$url->href('service/ipbx/web_services/phonebook/search',$prevparam,true,null,false),'</URL>',"\n",
+			'<Name>[',xivo_htmlsc($this->bbf('phone_back'),ENT_NOQUOTES),']</Name>',"\n",
+			'<URL>',$url->href('service/ipbx/web_services/phonebook/search',$prevparam,true,$argseparator,false),'</URL>',"\n",
 			'</MenuItem>',"\n";
 	endif;
 
@@ -63,8 +65,11 @@ else:
 		$param['pos'] = $ref[2];
 
 		echo	'<MenuItem>',"\n",
-			'<Name>',$name1,' -&gt; ',$name2,'</Name>',"\n",
-			'<URL>',$url->href('service/ipbx/web_services/phonebook/search',$param,true,null,false),'</URL>',"\n",
+			'<Name>',xivo_htmlsc(xivo_trunc($name1,8,'.','',true),ENT_NOQUOTES),
+				' - ',
+				xivo_htmlsc(xivo_trunc($name2,8,'.','',true),ENT_NOQUOTES),
+			'</Name>',"\n",
+			'<URL>',$url->href('service/ipbx/web_services/phonebook/search',$param,true,$argseparator,false),'</URL>',"\n",
 			'</MenuItem>',"\n";
 	endfor;
 

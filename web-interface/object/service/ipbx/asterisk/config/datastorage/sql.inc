@@ -150,9 +150,9 @@ $array['serverfeatures'] = array();
 $array['serverfeatures']['table'] = 'serverfeatures';
 $array['serverfeatures']['primary'] = array('id' => '');
 
-$array['serverldap'] = array();
-$array['serverldap']['table'] = 'serverldap';
-$array['serverldap']['primary'] = array('id' => '');
+$array['ldapserver'] = array();
+$array['ldapserver']['table'] = 'ldapserver';
+$array['ldapserver']['primary'] = array('id' => '');
 
 $array['trunkcustom'] = array();
 $array['trunkcustom']['table'] = 'usercustom';

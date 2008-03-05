@@ -608,21 +608,26 @@ switch($act)
 			$agentval = $result['afeatures']['number'].',';
 
 			if($result['afeatures']['passwd'] !== '')
-				$agentval .= $result['afeatures']['passwd'].',';
+				$agentval .= $result['afeatures']['passwd'];
+
+			$agentname = ',';
 
 			if($result['afeatures']['firstname'] !== '')
-				$agentval .= $result['afeatures']['firstname'].' ';
+				$agentname .= $result['afeatures']['firstname'].' ';
 
 			if($result['afeatures']['lastname'] !== '')
-				$agentval .= $result['afeatures']['lastname'];
+				$agentname .= $result['afeatures']['lastname'];
 
-			$_QR['agent']['agent'] = rtrim($agentval,', ');
+			$agentval .= rtrim($agentname,' ');
+
+			$_QR['agent']['agent'] = rtrim($agentval,',');
 			$_QR['agent']['group'] = $result['afeatures']['numgroup'];
 
 			if(($result['agent'] = $agent->chk_values($_QR['agent'])) === false)
 			{
 				$add = false;
 				$result['agent'] = $agent->get_filter_result();
+				xivo_var_dump($agent->get_filter_error());
 			}
 
 			$aqueue_where = array(
@@ -794,15 +799,19 @@ switch($act)
 			$agentval = $result['afeatures']['number'].',';
 
 			if($result['afeatures']['passwd'] !== '')
-				$agentval .= $result['afeatures']['passwd'].',';
+				$agentval .= $result['afeatures']['passwd'];
+
+			$agentname = ',';
 
 			if($result['afeatures']['firstname'] !== '')
-				$agentval .= $result['afeatures']['firstname'].' ';
+				$agentname .= $result['afeatures']['firstname'].' ';
 
 			if($result['afeatures']['lastname'] !== '')
-				$agentval .= $result['afeatures']['lastname'];
+				$agentname .= $result['afeatures']['lastname'];
 
-			$_QR['agent']['agent'] = rtrim($agentval,', ');
+			$agentval .= rtrim($agentname,' ');
+
+			$_QR['agent']['agent'] = rtrim($agentval,',');
 			$_QR['agent']['group'] = $result['afeatures']['numgroup'];
 
 			if(($result['agent'] = $agent->chk_values($_QR['agent'])) === false)

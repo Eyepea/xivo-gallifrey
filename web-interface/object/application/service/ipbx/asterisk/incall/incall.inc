@@ -66,8 +66,8 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		$this->_origin['exten'] = false;
 
 		$this->_info['exten'] = $this->_extensions->get_exten('macro',
-								    $this->_info['incall']['exten'],
-								    $this->_info['incall']['context']);
+								      $this->_info['incall']['exten'],
+								      $this->_info['incall']['context']);
 
 		$this->_origin['exten'] = $this->_extensions->get_origin();
 

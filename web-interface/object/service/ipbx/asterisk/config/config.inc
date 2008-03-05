@@ -221,8 +221,8 @@ $array['module']['schedule']['datastorage'] = true;
 $array['module']['serverfeatures'] = array();
 $array['module']['serverfeatures']['datastorage'] = true;
 
-$array['module']['serverldap'] = array();
-$array['module']['serverldap']['datastorage'] = true;
+$array['module']['ldapserver'] = array();
+$array['module']['ldapserver']['datastorage'] = true;
 
 $array['module']['sounds'] = array();
 $array['module']['sounds']['datastorage'] = false;

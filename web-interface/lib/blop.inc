@@ -508,10 +508,9 @@ class blop
 
 	function load_init($file,$name='')
 	{
-		$file = (string) $file;
 		$name = (string) $name;
 
-		if(xivo_file::is_i($file) === false
+		if(($file = xivo_file::is_f_r($file)) === false
 		|| ($init = parse_ini_file($file,true)) === false
 		|| empty($init) === true
 		|| ($name !== '' && isset($init[$name]) === false) === true)
@@ -571,10 +570,8 @@ class blop
 	{
 		if(is_array($file) === true)
 			$file = implode(XIVO_SEP_DIR,$file);
-		else
-			$file = (string) $file;
 
-		if(xivo_file::is_i($file) === false)
+		if(($file = xivo_file::is_f_r($file)) === false)
 			return(false);
 		else if((bool) $once === true)
 			require_once($file);

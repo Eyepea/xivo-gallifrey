@@ -29,7 +29,7 @@ class xivo_application_service_asterisk_serverfeatures extends xivo_application_
 			&& ($this->_server = new xivo_server()) !== false)
 				return(true);
 			else if($this->_param['type'] === 'ldap'
-			&& ($this->_server = &$this->_service->get_module('serverldap')) !== false)
+			&& ($this->_server = &$this->_service->get_application('ldapserver')) !== false)
 				return(true);
 		}
 
@@ -57,16 +57,12 @@ class xivo_application_service_asterisk_serverfeatures extends xivo_application_
 
 	function get_server_list()
 	{
-		if(($arr = $this->_server->get_all()) === false
-		|| ($nb = count($arr)) === 0)
-			return(false);
+		if($this->_param['type'] === 'xivo')
+			return($this->_server->get_all(null,true,null,null,true));
+		else if($this->_param['type'] === 'ldap')
+			return($this->_server->get_ldapservers_list(null,null,null,true));
 
-		$r = array();
-
-		for($i = 0;$i < $nb;$i++)
-			$r[$arr[$i]['id']] = $arr[$i];
-
-		return($r);
+		return(false);
 	}
 
 	function get_servers_list($disable=null,$opts=null,$assoc=false)
@@ -76,9 +72,8 @@ class xivo_application_service_asterisk_serverfeatures extends xivo_application_
 		else
 			$opts = $this->_param;
 
-		$rs = $this->_serverfeatures->get_all_where($opts,$disable);
-
-		if($rs === false || ($nb = count($rs)) === 0)
+		if(($rs = $this->_serverfeatures->get_all_where($opts,$disable)) === false
+		|| ($nb = count($rs)) === 0)
 			return(false);
 
 		$r = $info = array();
