@@ -73,10 +73,6 @@ from Phones import *
 from agi import *
 agi = AGI()
 
-def agi_verbose_debug(txt):
-	if pgc['debug_agi']:
-		agi.verbose(txt)
-
 def return_exit(error, playback=None):
 	agi.verbose("%s" % error)
 	if playback:
@@ -111,9 +107,7 @@ def phone_desc_by_ua(ua):
 
 def main():
 	provsup.LoadConfig(CONFIG_FILE)
-	if len(sys.argv) >= 4:
-		agi_verbose_debug("Argument number ok")
-	else:
+	if len(sys.argv) < 4:
 		return_exit("Too few arguments")
 
 	sip_uri = sys.argv[1]

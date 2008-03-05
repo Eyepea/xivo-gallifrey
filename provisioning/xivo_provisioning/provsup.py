@@ -47,7 +47,6 @@ ProvGeneralConf = {
 	'arping_cmd':			"sudo /usr/sbin/arping",
 	'arping_sleep_us':		150000,
 	'log_level':			"notice",
-	'debug_agi':			0,
 	'curl_cmd':			"/usr/bin/curl",
 	'curl_to_s':			30,
 	'telnet_to_s':			30,
