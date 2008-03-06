@@ -89,7 +89,6 @@ class AsteriskConfig:
         # \sa update_phonelist
         def get_phonelist_fromurl(self):
                 phonelist = {}
-                userslist = {}
                 try:
                         if self.userlist_kind == 'file':
                                 f = urllib.urlopen(self.userlist_url)
@@ -97,7 +96,7 @@ class AsteriskConfig:
                                 f = urllib.urlopen(self.userlist_url + "?sum=%s" % self.userlist_md5)
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, "--- exception --- %s : unable to open URL %s : %s" %(self.astid, self.userlist_url, str(exc)))
-                        return [userslist, phonelist]
+                        return phonelist
 
                 t1 = time.time()
                 try:
@@ -132,7 +131,7 @@ class AsteriskConfig:
                         log_debug(SYSLOG_INFO, "%s : URL %s has read %d bytes in %f seconds" %(self.astid, self.userlist_url, len(fulltable), (t2-t1)))
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, "--- exception --- %s : a problem occured when building phone list : %s" %(self.astid, str(exc)))
-                        return [userslist, phonelist]
+                        return phonelist
                 
                 try:
                         # updates other accounts
@@ -158,16 +157,14 @@ class AsteriskConfig:
                                                 else:
                                                         argg = ''
                                                 if argg != '':
-                                                        userslist[argg] = [sso_tech, sso_phoneid, sso_passwd, sso_context, sso_phonenum, None,
-                                                                           bool(int(isinitialized)), sso_cti_allowed]
                                                         if bool(int(isinitialized)):
                                                                 phonelist[argg] = fullname, firstname, lastname, sso_phonenum, sso_context, bool(int(enable_hint))
                                 except Exception, exc:
                                         log_debug(SYSLOG_ERR, '--- exception --- %s : a problem occured when building phone list : %s' %(self.astid, str(exc)))
-                                        return [userslist, phonelist]
+                                        return phonelist
                         if phonelist is not None:
                                 log_debug(SYSLOG_INFO, '%s : found %d ids in phone list, among which %d ids are registered as users'
                                           %(self.astid, len(phone_list), len(phonelist)))
                 finally:
                         f.close()
-                return [userslist, phonelist]
+                return phonelist

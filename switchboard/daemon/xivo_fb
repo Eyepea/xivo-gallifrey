@@ -133,204 +133,45 @@ from BackSQL import backmysql
 from BackSQL import backsqlite
 
 # XIVO modules
-import sendfiche
 import xivo_ami
-import xivo_ldap
 import xivo_commandsets
 import xivo_astcfg
 from xivo_log import *
-
-# the first line would be better, but the second one is useful because of freezing needs
 from CommandSets import *
-# import XivoSimple
 
-ulist = {}
 configs = {}
 plist = {}
-contexts_cl = {}
-
-allowed_states = ['available', 'away', 'outtolunch', 'donotdisturb', 'berightback']
 
 # global : userlist
 # liste des champs :
 #  user :             user name
 #  passwd :           password
-#  sessionid :        session id generated at connection
-#  sessiontimestamp : last time when the client proved itself to be ALIVE :)
-#  ip :               ip address of the client (current session)
-#  port :             port here the client is listening.
-#  state :            cf. allowed_states
-# The user identifier will likely be its phone number
 
 PIDFILE = '/var/run/xivo_fb.pid'
 # TODO: command line parameter
 
 BUFSIZE_LARGE = 8192
-BUFSIZE_UDP = 2048
 BUFSIZE_ANY = 512
-
-SUBSCRIBES_N_PER_UNIT_OF_TIME = 20
-SUBSCRIBES_TIME_UNIT_IN_S     = 1
 
 socket.setdefaulttimeout(2)
 XIVO_CLI_WEBI_HEADER = 'XIVO-CLI-WEBI'
 REQUIRED_CLIENT_VERSION = 2025
 XIVOVERSION = '0.3'
-PDF2FAX= '/usr/share/asterisk/bin/pdf2fax'
-
-# capabilities
-CAPA_CUSTINFO    = 1 <<  0
-CAPA_PRESENCE    = 1 <<  1
-CAPA_HISTORY     = 1 <<  2
-CAPA_DIRECTORY   = 1 <<  3
-CAPA_DIAL        = 1 <<  4
-CAPA_FEATURES    = 1 <<  5
-CAPA_PEERS       = 1 <<  6
-CAPA_MESSAGE     = 1 <<  7
-CAPA_SWITCHBOARD = 1 <<  8
-CAPA_AGENTS      = 1 <<  9
-CAPA_FAX         = 1 << 10
-CAPA_DATABASE    = 1 << 11
-
-# this list shall be defined through more options in WEB Interface
-CAPA_ALMOST_ALL = CAPA_CUSTINFO | CAPA_PRESENCE | CAPA_HISTORY  | CAPA_DIRECTORY | \
-                  CAPA_DIAL | CAPA_FEATURES | CAPA_PEERS | \
-                  CAPA_SWITCHBOARD | CAPA_AGENTS | CAPA_FAX | CAPA_DATABASE
-
-map_capas = {
-        'customerinfo'     : CAPA_CUSTINFO,
-        'presence'         : CAPA_PRESENCE,
-        'history'          : CAPA_HISTORY,
-        'directory'        : CAPA_DIRECTORY,
-        'dial'             : CAPA_DIAL,
-        'features'         : CAPA_FEATURES,
-        'peers'            : CAPA_PEERS,
-        'instantmessaging' : CAPA_MESSAGE,
-        'switchboard'      : CAPA_SWITCHBOARD,
-        'agents'           : CAPA_AGENTS,
-        'fax'              : CAPA_FAX,
-        'database'         : CAPA_DATABASE
-        }
-
-PATH_SPOOL_ASTERISK_FAX = '/var/spool/asterisk/fax'
-
-"""
-Functions related to user-driven requests : history, directory, ...
-These functions should not deal with CTI clients directly, however.
-"""
 
 
-
-
-"""
-Communication with CTI clients
-"""
-
-def manage_login(cfg, connid):
-        global userinfo_by_requester
-        requester_ip = connid.getpeername()[0]
-        requester_port = str(connid.getpeername()[1])
-        requester = ':'.join([requester_ip, requester_port])
-        for argum in commandclass.required_login_params():
-                if argum not in cfg:
-                        log_debug(SYSLOG_WARNING, 'missing argument when user attempts to log in : <%s>' % argum)
-                        return commandclass.loginko(cfg, 'missing:%s' % argum)
-
-        if cfg.get('astid') in configs:
-                astid  = cfg.get('astid')
-        else:
-                log_debug(SYSLOG_INFO, "login command attempt from SB : asterisk name <%s> unknown" % cfg.get('astid'))
-                return commandclass.loginko(cfg, 'asterisk_name')
-        proto    = cfg.get('proto').lower()
-        userid   = cfg.get('userid')
-        state    = cfg.get('state')
-        [whoami, whatsmyos] = cfg.get('ident').split("@")
-        password = cfg.get('passwd')
-        version  = cfg.get('version')
-        phonenum = cfg.get('phonenum')
-        if version == '':
-                version = '0'
-
-        if int(version) < REQUIRED_CLIENT_VERSION:
-                return commandclass.loginko(cfg, 'version_client:%s;%d' % (version, REQUIRED_CLIENT_VERSION))
-
-        capa_user = []
-        userinfo = ulist[astid].finduser(userid)
-        if userinfo == None:
-                repstr = commandclass.loginko(cfg, 'user_not_found')
-                log_debug(SYSLOG_INFO, "no user found %s" % str(cfg))
-        elif password != userinfo['passwd']:
-                repstr = commandclass.loginko(cfg, 'login_passwd')
-        else:
-                        reterror = check_user_connection(userinfo, whoami)
-                        if reterror is None:
-                                for capa in configs[astid].capas_s:
-                                        if capa in map_capas and (map_capas[capa] & userinfo.get('capas')):
-                                                capa_user.append(capa)
-
-                                sessionid = '%u' % random.randint(0,999999999)
-                                connect_user(userinfo, sessionid,
-                                             requester_ip, requester_port,
-                                             whoami, whatsmyos, True, state,
-                                             False, connid.makefile('w'))
-
-                                repstr = commandclass.loginok(userinfo, capa_user, [XIVOVERSION, __revision__], configs, cfg)
-                                userinfo['connection'] = connid
-                                u_phonenum = userinfo.get('phonenum')
-                                if u_phonenum is None:
-                                        userinfo['phonenum'] = phonenum
-                                userinfo_by_requester[connid] = userinfo
-                        else:
-                                repstr = commandclass.loginko(cfg, reterror)
-
-        print 'manage_login', repstr
-        return repstr
-
-
-# AGI connection (formerly known as 'Fiche')
-def manage_agi_connections_tcp(connid):
-        global fdlist_full
-        requester = ':'.join([connid.getpeername()[0], str(connid.getpeername()[1])])
-
-        try:
-                msg = connid.recv(BUFSIZE_LARGE)
-        except socket.timeout, exc:
-                msg = ''
-                log_debug(SYSLOG_ERR, '--- exception --- F connection : a socket timeout occured when recv from %s : %s'
-                          %(requester, str(exc)))
-        except socket.error, exc:
-                msg = ''
-                log_debug(SYSLOG_ERR, '--- exception --- F connection : a socket error occured when recv from %s : %s'
-                          %(requester, str(exc)))
-        except Exception, exc:
-                msg = ''
-                log_debug(SYSLOG_ERR, '--- exception --- F connection : an Exception occured when recv from %s : %s - %s'
-                          %(requester, str(exc), exc.__class__))
-        if len(msg) == 0:
-                try:
-                        connid.close()
-                        fdlist_full.remove(connid)
-                        tcpopens_fc.remove(connid)
-                        log_debug(SYSLOG_INFO, "TCP (F) socket closed from %s" % requester)
-                except Exception, exc:
-                        log_debug(SYSLOG_ERR, '--- exception --- F connection [%s] : a problem occured when trying to close %s : %s'
-                                  %(msg, str(connid), str(exc)))
-        else:
-                re_push = re.match('PUSH <(\S+)> <(\S+)> <(\S+)> <(\S+)>', msg.strip())
-                if re_push != None:
-                        inchannel = re_push.group(1)
-                        cidnum    = re_push.group(2)
-                        sdanum    = re_push.group(3)
-                        prevupto  = re_push.group(4)
-                        print 'INCOMING CALL ## PUSH received #', inchannel, cidnum, sdanum, prevupto
-                        whattodo = commandclass.elect(asterisklist[0], inchannel, cidnum, sdanum, prevupto)
-                        msgforagi = 'PULL_START %s PULL_STOP' % pickle.dumps(whattodo)
-                        print 'INCOMING CALL ## sending pickled reply to AGI'
-                        connid.send(msgforagi)
-                        connid.close()
-                        fdlist_full.remove(connid)
-                        tcpopens_fc.remove(connid)
-                        log_debug(SYSLOG_INFO, "TCP (F) socket closed from %s" % requester)
+# AGI connection
+def manage_agi_connections_tcp(connid, msg):
+        re_push = re.match('PUSH <(\S+)> <(\S+)> <(\S+)> <(\S+)>', msg.strip())
+        if re_push != None:
+                inchannel = re_push.group(1)
+                cidnum    = re_push.group(2)
+                sdanum    = re_push.group(3)
+                prevupto  = re_push.group(4)
+                print 'INCOMING CALL ## PUSH received #', inchannel, cidnum, sdanum, prevupto
+                whattodo = commandclass.elect(asterisklist[0], inchannel, cidnum, sdanum, prevupto)
+                msgforagi = 'PULL_START %s PULL_STOP' % pickle.dumps(whattodo)
+                print 'INCOMING CALL ## sending pickled reply to AGI'
+                connid.send(msgforagi)
 
 
 ## \brief Deals with requests from the UI clients.
@@ -338,11 +179,11 @@ def manage_agi_connections_tcp(connid):
 # \param allow_events tells if this connection belongs to events-allowed ones
 # (for switchboard) or to events-disallowed ones (for WEBI CLI commands)
 # \return none
-def manage_webi_cti_connections_tcp(connid, allow_events):
+def manage_webi_cti_connections_tcp(connid, allow_events, sep):
         global AMI_array_user_commands, fdlist_full
         requester_ip = connid.getpeername()[0]
-        requester_port = str(connid.getpeername()[1])
-        requester = ':'.join([requester_ip, requester_port])
+        requester_port = connid.getpeername()[1]
+        requester = '%s:%d' % (requester_ip, requester_port)
 
         try:
                 msg = connid.recv(BUFSIZE_LARGE)
@@ -367,8 +208,7 @@ def manage_webi_cti_connections_tcp(connid, allow_events):
                                 log_debug(SYSLOG_INFO, "TCP (SB)  socket closed from %s" % requester)
                                 if connid in userinfo_by_requester:
                                         userinfo = userinfo_by_requester.get(connid)
-                                        astid = userinfo.get('astid')
-                                        ulist[astid].disconnect_user(userinfo.get('user'))
+                                        ulist.disconnect_user(userinfo)
                                         del userinfo_by_requester[connid]
                         else:
                                 tcpopens_webi.remove(connid)
@@ -377,12 +217,10 @@ def manage_webi_cti_connections_tcp(connid, allow_events):
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : a problem occured when trying to close %s : %s'
                                   %(msg, str(connid), str(exc)))
-        else:
-            if allow_events:
-                    multimsg = msg.split('/')
-            else:
-                    multimsg = msg.split('\n')
-            for usefulmsgpart in multimsg:
+                return
+
+        multimsg = msg.split(sep)
+        for usefulmsgpart in multimsg:
                 usefulmsg = usefulmsgpart.split('\r')[0]
                 # debug/setup functions
                 if usefulmsg == "show_infos":
@@ -392,51 +230,13 @@ def manage_webi_cti_connections_tcp(connid, allow_events):
                                         'xivo_version=%s;' \
                                         'server_version=%s;' \
                                         'clients_required_version=%d;' \
-                                        'uptime=%d s;' \
-                                        'logged_sb=%d/%d;' \
-                                        'logged_xc=%d/%d' \
+                                        'uptime=%d s' \
                                         %(XIVOVERSION,
                                           __revision__,
-                                          REQUIRED_CLIENT_VERSION, time_uptime,
-                                          conngui_sb, maxgui_sb, conngui_xc, maxgui_xc)
+                                          REQUIRED_CLIENT_VERSION, time_uptime)
                                 connid.send(reply + "\n")
                                 # connid.send("server capabilities = %s\n" %(",".join()))
                                 connid.send("%s:OK\n" %(XIVO_CLI_WEBI_HEADER))
-                                if not allow_events:
-                                        connid.close()
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : KO when sending to %s : %s'
-                                          %(usefulmsg, requester, str(exc)))
-                elif usefulmsg == "show_phones":
-                        try:
-                                for astid, plast in plist.iteritems():
-                                        k1 = plast.normal.keys()
-                                        k1.sort()
-                                        for kk in k1:
-                                                canal = plast.normal[kk].chann
-                                                connid.send('%10s %10s %6s [%s : %12s - %4d s] %4d %s\n'
-                                                               %(plast.astid,
-                                                                 kk,
-                                                                 plast.normal[kk].towatch,
-                                                                 plast.normal[kk].tech,
-                                                                 plast.normal[kk].hintstatus,
-                                                                 int(time.time() - plast.normal[kk].lasttime),
-                                                                 len(canal),
-                                                                 str(canal.keys())))
-                                connid.send("%s:OK\n" %(XIVO_CLI_WEBI_HEADER))
-                                if not allow_events:
-                                        connid.close()
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : KO when sending to %s : %s'
-                                          %(usefulmsg, requester, str(exc)))
-                elif usefulmsg == "show_busy":
-                        try:
-                                for astid, plast in plist.iteritems():
-                                        connid.send('%s : normal=%d queues=%d\n'
-                                                       %(astid, len(plast.normal), len(plast.queues)))
-                                connid.send("%s:OK\n" %(XIVO_CLI_WEBI_HEADER))
-                                if not allow_events:
-                                        connid.close()
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : KO when sending to %s : %s'
                                           %(usefulmsg, requester, str(exc)))
@@ -444,13 +244,11 @@ def manage_webi_cti_connections_tcp(connid, allow_events):
                         try:
                                 for astid in configs:
                                         connid.send("on <%s> :\n" % astid)
-                                        for user,info in ulist[astid].listusers().iteritems():
+                                        for user,info in ulist.byast[astid].listusers().iteritems():
                                                 connid.send('%s %s\n' %(user, info))
                                 if connid in userinfo_by_requester:
                                         connid.send('%s\n' % str(userinfo_by_requester[connid]))
                                 connid.send("%s:OK\n" %(XIVO_CLI_WEBI_HEADER))
-                                if not allow_events:
-                                        connid.close()
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : KO when sending to %s : %s'
                                           %(usefulmsg, requester, str(exc)))
@@ -458,13 +256,11 @@ def manage_webi_cti_connections_tcp(connid, allow_events):
                         try:
                                 for astid in configs:
                                         connid.send("on <%s> :\n" % astid)
-                                        for user,info in ulist[astid].listconnected().iteritems():
+                                        for user,info in ulist.byast[astid].listconnected().iteritems():
                                                 connid.send('%s %s\n' %(user, info))
                                 if connid in userinfo_by_requester:
                                         connid.send('%s\n' % str(userinfo_by_requester[connid]))
                                 connid.send("%s:OK\n" %(XIVO_CLI_WEBI_HEADER))
-                                if not allow_events:
-                                        connid.close()
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : KO when sending to %s : %s'
                                           %(usefulmsg, requester, str(exc)))
@@ -475,8 +271,6 @@ def manage_webi_cti_connections_tcp(connid, allow_events):
                                 for amis in AMI_array_user_commands:
                                         connid.send("commands : %s : %s\n" %(amis, str(AMI_array_user_commands[amis])))
                                 connid.send("%s:OK\n" %(XIVO_CLI_WEBI_HEADER))
-                                if not allow_events:
-                                        connid.close()
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : KO when sending to %s : %s'
                                           %(usefulmsg, requester, str(exc)))
@@ -486,25 +280,32 @@ def manage_webi_cti_connections_tcp(connid, allow_events):
                         if command.name in commandclass.get_list_commands():
                                 if command.type == xivo_commandsets.CMD_LOGIN:
                                         try:
-                                                cfg = commandclass.get_login_params(asterisklist[0], command, connid)
-                                                repstr = manage_login(cfg, connid)
-                                                connid.send(repstr)
+                                                loginparams = commandclass.get_login_params(asterisklist[0], command, connid)
+                                                uinfo = commandclass.manage_login(loginparams)
+                                                print uinfo
+                                                if uinfo.__class__ == 'str':
+                                                        commandclass.loginko(loginparams, uinfo, connid)
+                                                else:
+                                                        uinfo['login']['connection'] = connid
+                                                        commandclass.loginok(loginparams, uinfo)
+                                                        userinfo_by_requester[connid] = uinfo
                                         except Exception, exc:
                                                 log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : a problem occured when sending to %s : %s'
                                                           %(command.name, requester, str(exc)))
                                 else:
-                                        log_debug(SYSLOG_INFO, "%s is attempting a %s (TCP) : %s" %(requester, command.name, str(command.args)))
                                         try:
                                                 if connid in userinfo_by_requester:
                                                         resp = commandclass.manage_cticommand(userinfo_by_requester[connid],
                                                                                               connid,
                                                                                               command,
                                                                                               configs)
-                                                        try:
-                                                                if resp is not None:
+                                                        if resp is not None:
+                                                                try:
                                                                         connid.send(resp + '\n')
-                                                        except Exception, exc:
-                                                                log_debug(SYSLOG_ERR, '--- exception --- (sending TCP) %s' % str(exc))
+                                                                except Exception, exc:
+                                                                        log_debug(SYSLOG_ERR, '--- exception --- (sending TCP) %s' % str(exc))
+                                                else:
+                                                        log_debug(SYSLOG_WARNING, "%s is attempting a %s (TCP) : %s" %(requester, command.name, str(command.args)))
                                         except Exception, exc:
                                                 log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : a problem occured when sending to %s : %s'
                                                           %(command.name, requester, str(exc)))
@@ -547,15 +348,17 @@ def manage_webi_cti_connections_tcp(connid, allow_events):
                                                 connid.send('%s:KO <Exception : %s>\n' %(XIVO_CLI_WEBI_HEADER, str(exc)))
                                 else:
                                         connid.send('%s:KO <NOT ALLOWED>\n' %(XIVO_CLI_WEBI_HEADER))
-                                try:
-                                        connid.close()
-                                        fdlist_full.remove(connid)
-                                        tcpopens_webi.remove(connid)
-                                        log_debug(SYSLOG_INFO, 'TCP (WEBI) socket closed towards %s' % requester)
-                                except Exception, exc:
-                                        log_debug(SYSLOG_ERR, '--- exception --- (%s) WEBI could not close properly %s'
-                                                  %(astid, requester))
 
+
+        if not allow_events:
+                try:
+                        connid.close()
+                        fdlist_full.remove(connid)
+                        tcpopens_webi.remove(connid)
+                        log_debug(SYSLOG_INFO, 'TCP (WEBI) socket closed towards %s' % requester)
+                except Exception, exc:
+                        log_debug(SYSLOG_ERR, '--- exception --- (%s) WEBI could not close properly %s'
+                                  %(astid, requester))
 
 
 """
@@ -838,8 +641,8 @@ def update_amisocks(astid):
                                 AMI_array_events_fd[astid] = als0.fd
                                 fdlist_full.append(als0.fd)
                                 log_debug(SYSLOG_INFO, '%s : AMI : connected' % astid)
-                                for x in plist[astid].normal.itervalues():
-                                        x.clear_channels()
+##                                for x in plist[astid].normal.itervalues():
+##                                        x.clear_channels()
                                 ret = als0.sendstatus()
                                 if not ret:
                                         log_debug(SYSLOG_INFO, '%s : could not send status command' % astid)
@@ -868,83 +671,11 @@ def update_amisocks(astid):
                 log_debug(SYSLOG_ERR, '--- exception --- %s (update_amisocks command) : %s' % (astid, str(exc)))
 
 
-## \brief Updates the list of sip numbers according to the SSO then sends old and new peers to the UIs.
-# The reconnection to the AMI is also done here when it has been broken.
-# If the AMI sockets are dead, a reconnection is also attempted here.
-# \param astid the asterisk Id
-# \return none
-# \sa get_phonelist_fromurl
-def update_phonelist(astid):
-        global plist
-
-        try:
-                dt1 = time.time()
-                [userl, sipnuml] = configs[astid].get_phonelist_fromurl()
-                userl = commandclass.getuserlist()
-                for ul, vv in userl.iteritems():
-                        ulist[astid].adduser(userl[ul])
-                # print sipnuml
-                if sipnuml is None:
-                        return
-                dt2 = time.time()
-                for x in configs[astid].extrachannels.split(','):
-                        if x != '': sipnuml[x] = [x, '', '', x.split('/')[1], '', False]
-                sipnumlistnew = dict.fromkeys(sipnuml.keys())
-        except Exception, exc:
-                log_debug(SYSLOG_ERR, '--- exception --- %s : get_phonelist_fromurl failed : %s' %(astid, str(exc)))
-                sipnuml = {}
-
-        sipnumlistold = dict.fromkeys(filter(lambda j: plist[astid].normal[j].towatch, plist[astid].normal))
-        dt3 = time.time()
-        for snl in sipnumlistold:
-                pln = plist[astid].normal[snl]
-                if snl not in sipnumlistnew:
-                        ulist[astid].deluser(pln.tech.lower() + pln.phoneid)
-                        del plist[astid].normal[snl] # or = "Absent"/0 ?
-                else:
-                        pln.updateIfNeeded(sipnuml[snl])
-        dt4 = time.time()
-        for snl in sipnumlistnew:
-                if snl not in sipnumlistold:
-                        if astid in AMI_array_events_fd:
-                                AMI_array_events_fd[astid].write('Action: ExtensionState\r\n'
-                                                                 'Exten: %s\r\n'
-                                                                 'Context: %s\r\n'
-                                                                 '\r\n'
-                                                                 %(sipnuml[snl][3], sipnuml[snl][4]))
-                        if snl.find("SIP") == 0:
-                                plist[astid].normal[snl] = LineProp("SIP",
-                                                                    snl.split("/")[1],
-                                                                    sipnuml[snl][3],
-                                                                    sipnuml[snl][4],
-                                                                    "Timeout", True)
-                                # replaced previous 'BefSubs' initial status here : avoids flooding of Timeout's
-                                # when many phones are added at once
-                        elif snl.find("IAX2") == 0:
-                                plist[astid].normal[snl] = LineProp("IAX2",
-                                                                    snl.split("/")[1],
-                                                                    sipnuml[snl][3],
-                                                                    sipnuml[snl][4],
-                                                                    "Ready", True)
-                        elif snl.find("mISDN") == 0:
-                                plist[astid].normal[snl] = LineProp("mISDN",
-                                                                    snl.split("/")[1],
-                                                                    sipnuml[snl][3],
-                                                                    sipnuml[snl][4],
-                                                                    "Ready", True)
-                        elif snl.find("Zap") == 0:
-                                plist[astid].normal[snl] = LineProp("Zap",
-                                                                    snl.split("/")[1],
-                                                                    sipnuml[snl][3],
-                                                                    sipnuml[snl][4],
-                                                                    "Ready", True)
-                        else:
-                                log_debug(SYSLOG_WARNING, 'format <%s> not supported' % snl)
-                                
-                        if snl in plist[astid].normal:
-                                plist[astid].normal[snl].set_callerid(sipnuml[snl])
-
-        dt5 = time.time()
+def update_user_list(astid):
+        userl = commandclass.getuserlist()
+        print userl
+        for ul, vv in userl.iteritems():
+                ulist.adduser(astid, vv)
 
 
 ## \brief Connects to the AMI through AMIClass.
@@ -964,143 +695,58 @@ def connect_to_AMI(address, loginname, password, events_on):
                 lAMIsock = False
         return lAMIsock
 
-## \class PhoneList
-# \brief Properties of the lines of a given Asterisk
-class PhoneList:
-        ## \var astid
-        # \brief Asterisk id, the same as the one given in the configs
-
-        ## \var normal
-        # \brief "Normal" phone lines, like SIP, IAX, Zap, ...
-
-        ## \var queues
-        # \brief To store queues' statuses
-
-        ##  \brief Class initialization.
-        def __init__(self, iastid, icclass):
-                self.astid = iastid
-                self.commandclass = icclass
-                self.normal = {}
-                self.queues = {}
-
-## file xivo_lineprop : BEGIN
-
-## \class LineProp
-# \brief Properties of a phone line. It might contain many channels.
-class LineProp:
-        ## \var tech
-        # \brief Protocol of the phone (SIP, IAX2, ...)
-        
-        ## \var phoneid
-        # \brief Phone identifier
-        
-        ## \var phonenum
-        # \brief Phone number
-        
-        ## \var context
-        # \brief Context
-        
-        ## \var lasttime
-        # \brief Last time the phone has received a reply from a SUBSCRIBE
-        
-        ## \var chann
-        # \brief List of Channels, with their properties as ChannelStatus
-        
-        ## \var hintstatus
-        # \brief Status given through SIP presence detection
-        
-        ## \var imstat
-        # \brief Instant Messaging status, as given by Xivo Clients
-        
-        ## \var voicemail
-        # \brief Voicemail status
-        
-        ## \var queueavail
-        # \brief Queue availability
-        
-        ## \var callerid
-        # \brief Caller ID
-        
-        ## \var towatch
-        # \brief Boolean value that tells whether this phone is watched by the switchboards
-        
-        ##  \brief Class initialization.
-        def __init__(self, itech, iphoneid, iphonenum, icontext, ihintstatus, itowatch):
-                self.tech = itech
-                self.phoneid  = iphoneid
-                self.phonenum = iphonenum
-                self.context = icontext
-                self.lasttime = 0
-                self.chann = {}
-                self.hintstatus = ihintstatus # Asterisk "hints" status
-                self.imstat = "unknown"  # XMPP / Instant Messaging status
-                self.voicemail = ""  # Voicemail status
-                self.queueavail = "" # Availability as a queue member
-                self.calleridfull = "nobody"
-                self.calleridfirst = "nobody"
-                self.calleridlast = "nobody"
-                self.groups = ""
-                self.towatch = itowatch
-
-        def set_callerid(self, icallerid):
-                self.calleridfull  = icallerid[0]
-                self.calleridfirst = icallerid[1]
-                self.calleridlast  = icallerid[2]
-
-        def updateIfNeeded(self, icallerid):
-                if icallerid[0:3] != (self.calleridfull, self.calleridfirst, self.calleridlast):
-                        log_debug(SYSLOG_INFO, 'updated parameters for user <%s/%s> : %s => %s'
-                                  % (self.tech, self.phoneid,
-                                     (self.calleridfull, self.calleridfirst, self.calleridlast),
-                                     icallerid[0:3]))
-                        self.calleridfull  = icallerid[0]
-                        self.calleridfirst = icallerid[1]
-                        self.calleridlast  = icallerid[2]
-        ##  \brief Removes all channels.
-        def clear_channels(self):
-                self.chann = {}
-
-## file xivo_lineprop : END
 
 ## file xivo_astusers : BEGIN
 
-## \class AsteriskConfig
-# \brief Properties of an Asterisk server
-class AsteriskUsers:
+class XivoUsers:
+        def __init__(self):
+                self.list = {}
+                self.byast = {}
+                return
+
+        def set_ast_list(self, astid):
+                self.byast[astid] = XivoUsers_byast(astid)
+                return
+
+        def adduser(self, astid, userparams):
+                self.byast[astid].adduser(userparams)
+                return
+
+        def disconnect_user(self, userinfo):
+                astid = userinfo.get('astid')
+                username = userinfo.get('user')
+                self.byast[astid].disconnect_user(username)
+                return
+
+        def update_user_glist(self):
+                nlist = commandclass.getuserlist_ng(asterisklist[0])
+                self.list = nlist
+                return
+
+## \class XivoUsers
+# \brief Properties of Asterisk Users
+class XivoUsers_byast:
         def __init__(self, iastid):
                 self.astid = iastid
-                self.lock = threading.Condition()
                 self.list = {}
                 return
 
         def adduser(self, inparams):
-                [tech, user, passwd, context, phonenum, agentnum, isinitialized, cti_allowed, options] = inparams
+                [user, phonenum, agentnum, options] = inparams
                 if self.list.has_key(user):
                         # updates
-                        self.list[user]['tech']     = tech
-                        self.list[user]['passwd']   = passwd
-                        self.list[user]['context']  = context
                         self.list[user]['phonenum'] = phonenum
                         self.list[user]['agentnum'] = agentnum
-                        self.list[user]['init']     = isinitialized
                 else:
                         self.list[user] = {'astid'    : self.astid,
-                                           'tech'     : tech,
                                            'user'     : user,
-                                           'passwd'   : passwd,
-                                           'context'  : context,
                                            'phonenum' : phonenum,
                                            'agentnum' : agentnum,
                                            'cbstatus' : 'undefined',
+                                           'login'    : {},
                                            'calls'    : {},
                                            'queuelist': {},
-                                           'init'     : isinitialized,
-                                           'options'  : options,
-                                           'capas'    : 0}
-                        if cti_allowed == '1':
-                                self.list[user]['capas'] = CAPA_ALMOST_ALL
-                        else:
-                                self.list[user]['capas'] = 0
+                                           'options'  : options}
 
         def deluser(self, user):
                 if self.list.has_key(user):
@@ -1111,20 +757,8 @@ class AsteriskUsers:
 
         def disconnect_user(self, user):
                 userinfo = self.list[user]
-                if 'sessionid' in userinfo:
-                        del userinfo['sessionid']
-                        del userinfo['sessiontimestamp']
-                        del userinfo['logintimestamp']
-                        del userinfo['ip']
-                        del userinfo['port']
-                        del userinfo['cticlienttype']
-                        del userinfo['cticlientos']
-                        del userinfo['tcpmode']
-                        del userinfo['socket']
-                        if 'connection' in userinfo:
-                                del userinfo['connection']
-                        if 'monit' in userinfo:
-                                del userinfo['monit']
+                if 'connection' in userinfo.get('login'):
+                        del userinfo.get('login')['connection']
 
         def listusers(self):
                 lst = {}
@@ -1141,80 +775,6 @@ class AsteriskUsers:
 
 ## file xivo_astusers : END
 
-
-def check_user_connection(userinfo, whoami):
-        if userinfo.has_key('init'):
-                if not userinfo['init']:
-                        return 'uninit_phone'
-        if userinfo.has_key('sessiontimestamp'):
-                if time.time() - userinfo.get('sessiontimestamp') < xivoclient_session_timeout:
-                        if 'lastconnwins' in userinfo:
-                                if userinfo['lastconnwins'] is True:
-                                        # one should then disconnect the first peer
-                                        pass
-                                else:
-                                        return 'already_connected'
-                        else:
-                                return 'already_connected'
-        if whoami == 'XC':
-                if conngui_xc >= maxgui_xc:
-                        return 'xcusers:%d' % maxgui_xc
-        else:
-                if conngui_sb >= maxgui_sb:
-                        return 'sbusers:%d' % maxgui_sb
-        return None
-
-
-def connect_user(userinfo, sessionid, iip, iport,
-                 whoami, whatsmyos, tcpmode, state,
-                 lastconnwins, socket):
-        global conngui_xc, conngui_sb
-        try:
-                userinfo['sessionid'] = sessionid
-                userinfo['sessiontimestamp'] = time.time()
-                userinfo['logintimestamp'] = time.time()
-                userinfo['ip'] = iip
-                userinfo['port'] = iport
-                userinfo['cticlienttype'] = whoami
-                userinfo['cticlientos'] = whatsmyos
-                userinfo['tcpmode'] = tcpmode
-                userinfo['socket'] = socket
-                # lastconnwins was introduced in the aim of forcing a new connection to take on for
-                # a given user, however it might breed problems if the previously logged-in process
-                # tries to reconnect ... unless we send something asking to Kill the process
-                userinfo['lastconnwins'] = False # lastconnwins
-
-                # we first check if 'state' has already been set for this customer, in which case
-                # the CTI clients will be sent back this previous state
-                if 'state' in userinfo:
-                        futurestate = userinfo.get('state')
-                        # only if it was a "defined" state anyway
-                        if futurestate in allowed_states:
-                                state = futurestate
-
-                if state in allowed_states:
-                        userinfo['state'] = state
-                else:
-                        log_debug(SYSLOG_WARNING, '(user %s) : state <%s> is not an allowed one => undefinedstate-connect'
-                                  % (userinfo.get('user'), state))
-                        userinfo['state'] = 'undefinedstate-connect'
-                if whoami == 'XC':
-                        conngui_xc = conngui_xc + 1
-                elif whoami == 'SB':
-                        conngui_sb = conngui_sb + 1
-        except Exception, exc:
-                log_debug(SYSLOG_ERR, "--- exception --- connect_user %s : %s" %(str(userinfo), str(exc)))
-
-
-def getboolean(fname, string):
-        if string not in fname:
-                return True
-        else:
-                value = fname.get(string)
-                if value in ['false', '0', 'False']:
-                        return False
-                else:
-                        return True
 
 
 ## \brief Handler for catching signals (in the main thread)
@@ -1261,6 +821,7 @@ signal.signal(signal.SIGTERM, sighandler)
 signal.signal(signal.SIGHUP, sighandler_reload)
 
 nreload = 0
+ulist = XivoUsers()
 
 while True: # loops over the reloads
         askedtoquit = False
@@ -1276,22 +837,17 @@ while True: # loops over the reloads
         
         # global default definitions
         commandset = 'xivosimple'
-        port_ui_srv = 4949
+        ports_cti = [4949, 4946]
         port_webi = 5004
         port_operat = 4950
         port_comm_agi_daemon = 4970
-        port_sv = 4946
         xivo_db = 'mysql://asterisk:proformatique@127.0.0.1:3306/asterisk?charset=utf8'
         xivoclient_session_timeout = 60
         phonelist_update_period = 60
         asterisklist = []
         contextlist = []
-        maxgui_sb = 3
-        maxgui_xc = 10
-        conngui_xc = 0
-        conngui_sb = 0
-        evt_filename = "/var/log/pf-xivo-cti-server/ami_events.log"
-        gui_filename = "/var/log/pf-xivo-cti-server/gui.log"
+        evt_filename = '/var/log/pf-xivo-cti-server/ami_events.log'
+        gui_filename = '/var/log/pf-xivo-cti-server/gui.log'
         with_advert = False
         address_operat = ''
 
@@ -1304,12 +860,10 @@ while True: # loops over the reloads
         # loads the general configuration
         if 'commandset' in xivoconf_general:
                 commandset = xivoconf_general['commandset']
-        if 'port_switchboard' in xivoconf_general:
-                port_ui_srv = int(xivoconf_general['port_switchboard'])
+        if 'ports_cti' in xivoconf_general:
+                ports_cti = xivoconf_general['ports_cti'].split(',')
         if 'port_webi' in xivoconf_general:
                 port_webi = int(xivoconf_general['port_webi'])
-        if 'port_sv' in xivoconf_general:
-                port_sv = int(xivoconf_general['port_sv'])
         if 'port_operat' in xivoconf_general:
                 port_operat = int(xivoconf_general['port_operat'])
         if 'port_comm_agi_daemon' in xivoconf_general:
@@ -1326,10 +880,6 @@ while True: # loops over the reloads
                 phonelist_update_period = int(xivoconf_general['phonelist_update_period'])
         if 'asterisklist' in xivoconf_general:
                 asterisklist = xivoconf_general['asterisklist'].split(',')
-        if 'maxgui_sb' in xivoconf_general:
-                maxgui_sb = int(xivoconf_general['maxgui_sb'])
-        if 'maxgui_xc' in xivoconf_general:
-                maxgui_xc = int(xivoconf_general['maxgui_xc'])
         if 'evtfile' in xivoconf_general:
                 evt_filename = xivoconf_general['evtfile']
         if 'guifile' in xivoconf_general:
@@ -1350,7 +900,7 @@ while True: # loops over the reloads
         queued_threads_pipe = os.pipe()
         AMI_array_user_commands = {}
         cclass = xivo_commandsets.CommandClasses[commandset]
-        commandclass = cclass(ulist, AMI_array_user_commands, OperatSock, port_sv, operatini, queued_threads_pipe)
+        commandclass = cclass(ulist, AMI_array_user_commands, OperatSock, ports_cti, operatini, queued_threads_pipe)
 
         save_for_next_packet_events = {}
         ip_reverse_webi = {}
@@ -1406,22 +956,12 @@ while True: # loops over the reloads
                                 if contexts != '':
                                         for c in contexts.split(','):
                                                 contextlist.append(c)
-                        if 'capabilities' in xivoconf_general and xivoconf_general['capabilities']:
-                                capas_s = xivoconf_general['capabilities'].split(',')
-                        if 'capabilities' in xivoconf_local and xivoconf_local['capabilities']:
-                                capas_s = xivoconf_local['capabilities'].split(',')
-                        for capa in capas_s:
-                                if capa in map_capas: capas_i |= map_capas[capa]
                         if 'userfeatures_db_uri' in xivoconf_local:
                                 userfeatures_db_uri = xivoconf_local['userfeatures_db_uri']
                         if 'cdr_db_uri' in xivoconf_local:
                                 cdr_db_uri = xivoconf_local['cdr_db_uri']
                         if 'realm' in xivoconf_local:
                                 realm = xivoconf_local['realm']
-                        for capauser, capadefs in xivoconf_local.iteritems():
-                                if capauser.find('capas_') == 0:
-                                        cuser = capauser[6:].split('/')
-                                        cdefs = capadefs.split(',')
 
                         capafeatures = []
                         unallowed = []
@@ -1462,7 +1002,7 @@ while True: # loops over the reloads
                                                                     parkingnumber,
                                                                     faxcallerid,
                                                                     linkestablished)
-                        ulist[astid] = AsteriskUsers(astid)
+                        ulist.set_ast_list(astid)
                         commandclass.set_cdr_uri(cdr_db_uri, xivo_db)
 
                         if ipaddress not in ip_reverse_sht:
@@ -1502,34 +1042,33 @@ while True: # loops over the reloads
 
         tcpopens_sb = []
         tcpopens_webi = []
-        tcpopens_fc = []
+        tcpopens_agi = []
 
+        ulist.update_user_glist()
         for astid in configs:
                 try:
-                        plist[astid] = PhoneList(astid, commandclass)
+                        # plist[astid] = PhoneList(astid, commandclass)
                         update_userlist[astid] = False
                         lastrequest_time[astid] = time.time()
 
                         update_amisocks(astid)
-                        update_phonelist(astid)
+                        # update_phonelist(astid)
+                        update_user_list(astid)
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, '--- exception --- %s : failed while setting lists and sockets : %s'
                                   %(astid, str(exc)))
 
         log_debug(SYSLOG_INFO, "# STARTING XIVO Daemon # (2/2) listening UI sockets")
         # opens the listening socket for UI connections
-        UIsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        UIsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        UIsock.bind(("", port_ui_srv))
-        UIsock.listen(10)
-        fdlist_full.append(UIsock)
+        fdlist_listen_cti = []
+        for port_cti in ports_cti:
+                UIsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                UIsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                UIsock.bind(("", int(port_cti)))
+                UIsock.listen(10)
+                fdlist_listen_cti.append(UIsock)
+                fdlist_full.append(UIsock)
         
-        UIsock2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        UIsock2.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        UIsock2.bind(("", port_sv))
-        UIsock2.listen(10)
-        fdlist_full.append(UIsock2)
-
         # opens the listening socket for WEBI/CLI connections
         WEBIsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         WEBIsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -1558,7 +1097,7 @@ while True: # loops over the reloads
                                         print
                                         print 'current open TCP connections : (SB)  ', tcpopens_sb
                                         print 'current open TCP connections : (WEBI)', tcpopens_webi
-                                        print 'current open TCP connections : (FC)  ', tcpopens_fc
+                                        print 'current open TCP connections : (FC)  ', tcpopens_agi
                                         print 'current open TCP connections : (AMI) ', AMI_array_events_fd
                                         print 'current open TCP connections : (OP)  ', OperatSock
                                         print
@@ -1601,7 +1140,7 @@ while True: # loops over the reloads
                                 except Exception, exc:
                                         log_debug(SYSLOG_ERR, "--- exception --- AMI <%s> : %s" % (astid, str(exc)))
                         # the new UI (SB) connections are catched here
-                        elif sel_i in [UIsock, UIsock2]:
+                        elif sel_i in fdlist_listen_cti:
                                 [conn, UIsockparams] = sel_i.accept()
                                 log_debug(SYSLOG_INFO, "TCP (SB)  socket opened on   %s:%d" % (UIsockparams[0], UIsockparams[1]))
                                 commandclass.connected_srv2clt(conn, '%s:%d' % (UIsockparams[0], UIsockparams[1]))
@@ -1611,40 +1150,49 @@ while True: # loops over the reloads
                                 tcpopens_sb.append(conn)
                         # the new UI (WEBI) connections are catched here
                         elif WEBIsock == sel_i:
-                                [conn, WEBIsockparams] = WEBIsock.accept()
+                                [conn, WEBIsockparams] = sel_i.accept()
                                 log_debug(SYSLOG_INFO, "TCP (WEBI) socket opened on   %s:%d" % (WEBIsockparams[0], WEBIsockparams[1]))
                                 # appending the opened socket to the ones watched
                                 conn.setblocking(0)
                                 fdlist_full.append(conn)
                                 tcpopens_webi.append(conn)
+                        # the new AGI connections are catched here
                         elif Fsock == sel_i:
                                 [conn, Fsockparams] = Fsock.accept()
                                 log_debug(SYSLOG_INFO, "TCP (F) socket opened on   %s:%d on %s" % (Fsockparams[0], Fsockparams[1], time.time()))
                                 # appending the opened socket to the ones watched
                                 fdlist_full.append(conn)
                                 conn.setblocking(0)
-                                tcpopens_fc.append(conn)
+                                tcpopens_agi.append(conn)
 
                         # open UI (SB) connections
                         elif sel_i in tcpopens_sb:
                                 try:
-                                        manage_webi_cti_connections_tcp(sel_i, True)
+                                        manage_webi_cti_connections_tcp(sel_i, True, '/')
                                 except Exception, exc:
                                         log_debug(SYSLOG_ERR, '--- exception --- XC/SB tcp connection : %s' % str(exc))
                         # open UI (WEBI) connections
                         elif sel_i in tcpopens_webi:
                                 try:
-                                        manage_webi_cti_connections_tcp(sel_i, False)
+                                        manage_webi_cti_connections_tcp(sel_i, False, '\n')
                                 except Exception, exc:
                                         log_debug(SYSLOG_ERR, '--- exception --- WEBI tcp connection : %s' % str(exc))
                         # AGI connections
-                        elif sel_i in tcpopens_fc:
+                        elif sel_i in tcpopens_agi:
+                                requester = '%s:%d' % (sel_i.getpeername()[0], sel_i.getpeername()[1])
                                 try:
-                                        manage_agi_connections_tcp(sel_i)
+                                        msg = sel_i.recv(BUFSIZE_LARGE)
                                 except Exception, exc:
-                                        log_debug(SYSLOG_ERR, '--- exception --- F tcp connection : %s' % str(exc))
-
-
+                                        msg = ''
+                                        log_debug(SYSLOG_ERR, '--- exception --- F connection : an Exception occured when recv from %s : %s (class %s)'
+                                                  %(requester, str(exc), exc.__class__))
+                                if len(msg) > 0:
+                                        manage_agi_connections_tcp(sel_i, msg)
+                                sel_i.close()
+                                fdlist_full.remove(sel_i)
+                                tcpopens_agi.remove(sel_i)
+                                log_debug(SYSLOG_INFO, 'TCP (F) socket closed from %s' % requester)
+                        # Operat connection
                         elif OperatSock == sel_i:
                                 try:
                                         msg = OperatSock.recv(BUFSIZE_LARGE)
@@ -1663,12 +1211,12 @@ while True: # loops over the reloads
                                 try:
                                         for userinfo in disconnlist:
                                                 print 'checkqueue return :', userinfo
-                                                if 'connection' in userinfo:
-                                                        userinfo['connection'].close()
-                                                        fdlist_full.remove(userinfo['connection'])
+                                                if 'connection' in userinfo.get('login'):
+                                                        userinfo.get('login')['connection'].close()
+                                                        fdlist_full.remove(userinfo.get('login')['connection'])
                                                 else:
                                                         log_debug(SYSLOG_WARNING, 'WARNING - no connection field present in userinfo')
-                                                ulist[userinfo['astid']].disconnect_user(userinfo['user'])
+                                                ulist.disconnect_user(userinfo)
                                 except Exception, exc:
                                         log_debug(SYSLOG_ERR, '--- exception --- %s' % str(exc))
 
@@ -1680,6 +1228,7 @@ while True: # loops over the reloads
                                         try:
                                                 update_amisocks(astid)
                                                 # update_phonelist(astid)
+                                                update_user_list(astid)
                                                 update_userlist[astid] = False
                                         except Exception, exc:
                                                 log_debug(SYSLOG_ERR, '--- exception --- %s : failed while updating lists and sockets (computed timeout) : %s'
@@ -1693,6 +1242,7 @@ while True: # loops over the reloads
                                 try:
                                         update_amisocks(astid)
                                         # update_phonelist(astid)
+                                        update_user_list(astid)
                                 except Exception, exc:
                                         log_debug(SYSLOG_ERR, '--- exception --- %s : failed while updating lists and sockets (select s timeout) : %s'
                                                   %(astid, str(exc)))

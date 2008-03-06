@@ -104,12 +104,12 @@ class CallBoosterCommand(BaseCommand):
         alerts_uniqueids = {}
         commands = ['Init',
                     'AppelOpe', 'TransfertOpe', 'RaccrocheOpe',
-                    'Appel', 'Aboute', 'AppelAboute', 'Raccroche',
+                    'Appel', 'Aboute', 'AppelAboute', 'PutConf', 'ListConf', 'Raccroche',
                     'Enregistre', 'Alerte',
                     'Ping',
                     'Attente', 'Reprise',
                     'Sonn',
-                    'Prêt', 'ForceACD',
+                    'Prêt', 'ForceACD', 'ListeACD',
                     'Pause',
                     'Sortie',
                     'Change',
@@ -122,7 +122,7 @@ class CallBoosterCommand(BaseCommand):
         normal_calls = []
         originated_calls = {}
 
-        def __init__(self, ulist, amis, operatsocket, operatport, operatini, queued_threads_pipe):
+        def __init__(self, ulist, amis, operatsocket, ctiports, operatini, queued_threads_pipe):
                 """
                 Defines the basic arguments.
                 """
@@ -130,7 +130,7 @@ class CallBoosterCommand(BaseCommand):
                 self.ulist = ulist
                 self.amis  = amis
                 self.soperat_socket = operatsocket
-                self.soperat_port   = operatport
+                self.soperat_port   = int(ctiports[1])
                 opconf = ConfigParser.ConfigParser()
                 opconf.readfp(open(operatini))
                 opconf_so = dict(opconf.items('SO'))
@@ -145,30 +145,30 @@ class CallBoosterCommand(BaseCommand):
                 self.queued_threads_pipe = queued_threads_pipe
 
 
-        def loginko(self, cfg, errorstring):
+        def loginko(self, loginparams, connid, errorstring):
                 """
                 Actions to perform when login was KO.
                 """
-                print 'loginko', cfg, errorstring
-                return '%s,0,,Init/' % cfg.get('srvnum')
+                print 'loginko', loginparams, errorstring
+                connid.send('%s,0,,Init/' % loginparams.get('srvnum'))
 
 
-        def loginok(self, userinfo, capa_user, versions, configs, cfg):
+        def loginok(self, loginparams, userinfo):
                 """
                 Actions to perform when login was OK.
                 Replies Init/
                 """
-                return '%s,1,,Init/' % cfg.get('srvnum')
+                userinfo['login']['connection'].send('%s,1,,Init/' % loginparams.get('srvnum'))
 
 
         def __send_msg__(self, uinfo, msg):
                 """
                 Sends a message 'msg' to destination 'uinfo', after having proceeded a few checks.
                 """
-                if uinfo is not None and 'connection' in uinfo:
+                if uinfo is not None and 'login' in uinfo and 'connection' in uinfo['login']:
                         try:
-                                uinfo['connection'].send(msg)
-                                # print '(CallBooster) send <%s> successfully' % msg
+                                uinfo['login']['connection'].send(msg)
+                                log_debug(SYSLOG_INFO, '__send_msg__ <%s> sent' % msg)
                         except Exception, exc:
                                 print '--- exception --- (CallBooster) could not send <%s> to user : %s' % (msg, str(exc))
                 else:
@@ -208,6 +208,77 @@ class CallBoosterCommand(BaseCommand):
                 else:
                         nsoc = '0'
                 return nsoc
+
+
+        def getuserlist_ng(self, astid):
+                """
+                Returns the Agents' list, as defined in Operat DataBase.
+                Sets XIVO's musiconhold class according to the 'silent or not' option.
+                """
+                localulist_ng = {}
+                try:
+                        columns = ('CODE', 'NOM', 'PASS', 'AGPI')
+                        self.cursor_operat.query('USE agents')
+                        self.cursor_operat.query('SELECT ${columns} FROM agents',
+                                                 columns)
+                        agents_agents = self.cursor_operat.fetchall()
+                        for r in agents_agents:
+                                nope = r[0]
+                                agnum = str(STARTAGENTNUM + nope)
+                                opername = r[1]
+                                passname = r[2]
+                                oname = opername
+                                pname = passname
+
+                                columns = ('NOPE', 'AdrNet', 'NoDecroche', 'NoMusique')
+                                self.cursor_operat.query("SELECT ${columns} FROM acd WHERE NOPE = %s",
+                                                         columns,
+                                                         str(nope))
+                                agents_acd = self.cursor_operat.fetchall()
+                                [nodecr, nomusic] = [agents_acd[0][2], agents_acd[0][3]]
+
+                                columns = ('agentid', 'number')
+                                self.cursor_xivo.query("SELECT ${columns} FROM agentfeatures WHERE number = %s",
+                                                       columns,
+                                                       agnum)
+                                a = self.cursor_xivo.fetchall()
+                                columns = ('id', 'var_metric')
+                                self.cursor_xivo.query("SELECT ${columns} FROM agent WHERE id = %s",
+                                                       columns,
+                                                       a[0][0])
+                                b = self.cursor_xivo.fetchall()
+                                columns = ('var_metric', 'var_name', 'var_val')
+                                self.cursor_xivo.query("SELECT ${columns} FROM agent WHERE var_metric = %s AND var_name = 'musiconhold'",
+                                                       columns,
+                                                       str(b[0][1] - 1))
+                                c = self.cursor_xivo.fetchall()
+                                if nomusic == '0':
+                                        if c[0][2] == 'silence':
+                                                self.cursor_xivo.query("UPDATE agent SET var_val = '%s' "
+                                                                       "WHERE var_metric = '%s' AND var_name = 'musiconhold'"
+                                                                       % ('ope', str(b[0][1] - 1)))
+                                else:
+                                        if c[0][2] == 'ope':
+                                                self.cursor_xivo.query("UPDATE agent SET var_val = '%s' "
+                                                                       "WHERE var_metric = '%s' AND var_name = 'musiconhold'"
+                                                                       % ('silence', str(b[0][1] - 1)))
+
+                                agconf = { 'astid' : astid,
+                                           'context' : 'default',
+                                           'agentnum' : agnum,
+                                           'options' : ':'.join([str(r[3]), agents_acd[0][2], agents_acd[0][3]])
+                                           }
+
+                                localulist_ng[oname] = { 'username' : oname,
+                                                         'modeagent' : True,
+                                                         'agent' : agconf,
+                                                         'login' : {} }
+                                # capas
+                                # phone : + tech
+                                # login : 'calls', queuelist,
+                except Exception, exc:
+                        print '--- exception --- in getuserlist_ng()', exc
+                return localulist_ng
 
 
         def getuserlist(self):
@@ -262,19 +333,10 @@ class CallBoosterCommand(BaseCommand):
                                                 self.cursor_xivo.query("UPDATE agent SET var_val = '%s' "
                                                                        "WHERE var_metric = '%s' AND var_name = 'musiconhold'"
                                                                        % ('silence', str(b[0][1] - 1)))
-                                
-                                phlist = ['sip',
-                                          oname,
-                                          'nopasswd', #pname,
-                                          'default',
-                                          None,
-                                          agnum,
-                                          True,
-                                          '1',
-                                          ':'.join([str(r[3]), agents_acd[0][2], agents_acd[0][3]])]
-                                localulist['SIP/%s' % oname] = phlist
-
-
+                                localulist[oname] = [oname,
+                                                     None,
+                                                     agnum,
+                                                     ':'.join([str(r[3]), agents_acd[0][2], agents_acd[0][3]])]
                 except Exception, exc:
                         print '--- exception --- in getuserlist()', exc
                 return localulist
@@ -303,7 +365,6 @@ class CallBoosterCommand(BaseCommand):
                 Sets the Command kind and args according to this class' syntax.
                 """
                 params = linein.split(',')
-                print 'CallBooster : command', params
                 cmd = xivo_commandsets.Command(params[-1], params[:-1])
                 if cmd.name == 'Init':
                         cmd.type = xivo_commandsets.CMD_LOGIN
@@ -320,18 +381,11 @@ class CallBoosterCommand(BaseCommand):
                 if len(sagent) == 5:
                         # Init from local connection
                         [computername, tagent, phonenum, computeripref, srvnum] = sagent
-                        cfg = {'astid' : astid,
-                               'proto' : 'sip',
-                               'passwd' : 'nopasswd',
-                               'state' : 'available',
-                               'ident' : 'OP@WIN',
-                               'computername' : computername,
-                               'phonenum' : phonenum,
-                               'computeripref' : computeripref,
-                               'srvnum' : srvnum,
-                               'userid' : tagent,
-                               'version' : 99999
-                               }
+                        cfg = { 'computername' : computername,
+                                'phonenum' : phonenum,
+                                'computeripref' : computeripref,
+                                'srvnum' : srvnum,
+                                'userid' : tagent }
                         return cfg
                 elif len(sagent) == 6:
                         # Init from remote connection
@@ -349,42 +403,54 @@ class CallBoosterCommand(BaseCommand):
                                 del self.pending_sv_fiches[callref]
 
                                 # adds the user at once
-                                phlist = ['sip',
-                                          tagent,
-                                          'nopasswd',
-                                          'default',
+                                phlist = [tagent,
                                           None,
                                           '%d' % (STARTAGENTNUM + int(nope)),
-                                          True,
-                                          '1',
                                           '0:0:0']
-                                self.ulist[astid].adduser(phlist)
-                                userinfo = self.ulist[astid].finduser(tagent)
+                                self.ulist.adduser(astid, phlist)
+                                userinfo = self.ulist.byast[astid].finduser(tagent)
                                 userinfo['sendfiche'] = ['qcb_%05d' % (int(callref) - 100000), 'Agent/%s' % agentnum]
 
-                                cfg = {'astid' : astid,
-                                       'proto' : 'sip',
-                                       'passwd' : 'nopasswd',
-                                       'state' : 'available',
-                                       'ident' : 'OP@WIN',
-                                       'computername' : nope,
-                                       'phonenum' : phonenum,
-                                       'computeripref' : nadherent,
-                                       'srvnum' : nperm,
-                                       'userid' : tagent,
-                                       'version' : 99999
-                                       }
+                                cfg = { 'computername' : nope,
+                                        'phonenum' : phonenum,
+                                        'computeripref' : nadherent,
+                                        'srvnum' : nperm,
+                                        'userid' : tagent }
                                 return cfg
                         else:
                                 pass
 
 
+        def manage_login(self, loginparams):
+                """
+                Manages login arguments.
+                Checks misc credentials if needed.
+                Fills initialization arguments.
+                """
+                for argum in self.required_login_params():
+                        if argum not in loginparams:
+                                return 'missing:%s' % argum
+                username = loginparams.get('userid')
+                phonenum = loginparams.get('phonenum')
+
+                userinfo = None
+                for astid, ulist in self.ulist.byast.iteritems():
+                        userinfo = ulist.finduser(username)
+                ## userinfo = self.ulist.list.get(username)
+                if userinfo == None:
+                        return 'user_not_found'
+
+                # check_user_connection(userinfo, whoami)
+                userinfo['phonenum'] = phonenum
+                ## userinfo['agent']['phonenum'] = phonenum
+                # connect_user() fills userinfo with new arguments
+                return userinfo
+
         def required_login_params(self):
                 """
                 Returns the list of required login parameters
                 """
-                return ['astid', 'proto', 'ident', 'userid', 'version', 'computername', 'phonenum', 'computeripref', 'srvnum']
-
+                return ['userid', 'computername', 'phonenum', 'computeripref', 'srvnum']
 
         def connected_srv2clt(self, conn, id):
                 """
@@ -401,7 +467,7 @@ class CallBoosterCommand(BaseCommand):
                 Sets the userinfo according to the agent's phonenumber
                 """
                 userinfo = None
-                for opername, uinfo in self.ulist[astid].list.iteritems():
+                for opername, uinfo in self.ulist.byast[astid].list.iteritems():
                         if 'agentnum' in uinfo and uinfo['agentnum'] == agentnum:
                                 userinfo = uinfo
                                 break
@@ -549,7 +615,7 @@ class CallBoosterCommand(BaseCommand):
                                 ic1 = self.__incallref_from_channel__(event.get('Channel1'))
                                 ic2 = self.__incallref_from_channel__(event.get('Channel2'))
                                 if ic1 is not None:
-                                        print 'LINK without Agent (1)', ic1.sdanum, ic1.commid, ic1.appelaboute, ic1.aboute
+                                        print 'LINK after AppelAboute', ic1.sdanum, ic1.commid, ic1.appelaboute, ic1.aboute
                                         if ic1.appelaboute is not None:
                                                 self.__send_msg__(ic1.uinfo, '%s|%s,1,%s,AppelAboute/'
                                                                   % (ic1.appelaboute, ic1.commid, ic1.appelaboute))
@@ -1359,17 +1425,15 @@ class CallBoosterCommand(BaseCommand):
                 """
                 The call comes here when the AGI has directly found a peer.
                 """
-                userinfo = self.ulist[astid].finduser(dest)
+                userinfo = self.ulist.byast[astid].finduser(dest)
                 log_debug(SYSLOG_INFO, '__sendfiche__ : userinfo = %s' % str(userinfo))
                 if userinfo is not None:
                         agentnum = userinfo['agentnum']
                         if 'agentchannel' in userinfo:
                                 print 'sendfiche, the agent is online :', userinfo['agentchannel']
                         else:
-                                phonenum = userinfo['phonenum']
-                                opername = userinfo['user']
-                                log_debug(SYSLOG_INFO, 'sendfiche, the agent is not online ... we re going to call him : %s (%s)' % (phonenum, str(userinfo)))
-                                self.__schedule_agentlogin__(astid, userinfo, phonenum, agentnum, opername)
+                                log_debug(SYSLOG_INFO, 'sendfiche, the agent is not online ... we re going to call him : (%s)' % str(userinfo))
+                                self.__schedule_agentlogin__(userinfo)
                         incall.statacd2_tt = 'TT_SOP'
                         self.__sendfiche_a__(userinfo, incall)
                         print '__sendfiche__', incall.queuename, agentnum
@@ -1383,7 +1447,7 @@ class CallBoosterCommand(BaseCommand):
                 Removes the 'incall' call references from all the operator queues, and
                 sends the relevant information to the agents.
                 """
-                for opername, userinfo in self.ulist[astid].list.iteritems():
+                for opername, userinfo in self.ulist.byast[astid].list.iteritems():
                         if incall.queuename in userinfo['queuelist']:
                                 del userinfo['queuelist'][incall.queuename]
                                 agentnum = userinfo['agentnum']
@@ -1404,7 +1468,7 @@ class CallBoosterCommand(BaseCommand):
                 print '__addtoqueue__', dest, incall.commid, incall.sdanum
                 self.amis[astid].queueadd(incall.queuename, GHOST_AGENT)
                 self.amis[astid].queuepause(incall.queuename, GHOST_AGENT, 'false')
-                userinfo = self.ulist[astid].finduser(dest)
+                userinfo = self.ulist.byast[astid].finduser(dest)
                 if userinfo is not None:
                         if incall.queuename not in userinfo['queuelist']:
                                 agentnum = userinfo['agentnum']
@@ -1475,16 +1539,22 @@ class CallBoosterCommand(BaseCommand):
                 return
 
 
-        def __schedule_agentlogin__(self, astid, userinfo, phonenum, agentnum, opername):
+        def __schedule_agentlogin__(self, userinfo):
                 """
                 Initiates the timer for log in an Agent, then requests the Originate action.
                 """
                 userinfo['timer-agentlogin'] = threading.Timer(10, self.__callback_agentlogin__)
                 userinfo['timer-agentlogin'].start()
                 userinfo['timer-agentlogin-iter'] = 0
+
+                astid = userinfo.get('astid')
+                phonenum = userinfo.get('phonenum')
+                agentnum = userinfo.get('agentnum')
+                username = userinfo.get('user')
+                
                 self.amis[astid].aoriginate_var('sip', phonenum, 'Log %s' % phonenum,
-                                                agentnum, opername, 'ctx-callbooster-agentlogin',
-                                                {'CB_MES_LOGAGENT' : opername,
+                                                agentnum, username, 'ctx-callbooster-agentlogin',
+                                                {'CB_MES_LOGAGENT' : username,
                                                  'CB_AGENT_NUMBER' : agentnum}, 100)
 
 
@@ -1518,10 +1588,16 @@ class CallBoosterCommand(BaseCommand):
 
                 - ForceACD     : forces one given incoming/pending call to be chosen by the agent
 
+                - ListConf     : lists the current call references inside a given room
+
+                - ListeACD     : sends the list of ongoing incoming calls
+
                 - Pause        : sets the Pause state
 
                 - Ping         : received every 60 seconds, one replies 'Pong' and set a timer in order for
                 broken connections to be tracked
+
+                - PutConf      : sends the agent into a conference room
 
                 - Prêt         : according to its argument (0 / 1), sets the availability of the client.
                 '0' when the client can receive a call and fiche.
@@ -1552,14 +1628,19 @@ class CallBoosterCommand(BaseCommand):
                 opername = userinfo.get('user')
                 phonenum = userinfo.get('phonenum')
                 agentnum = userinfo.get('agentnum')
+                requester_ip = connid_socket.getpeername()[0]
+                requester_port = connid_socket.getpeername()[1]
 
-                if userinfo.get('connection') != connid_socket:
+                if userinfo.get('login').get('connection') != connid_socket:
                         log_debug(SYSLOG_WARNING, 'manage_cticommand (%s) : sockets mismatch for %s' % (cname.encode('latin1'),
                                                                                                         opername.encode('latin1')))
                         return
-                log_debug(SYSLOG_INFO, 'manage_cticommand (%s) : operator %s, phonenum %s, agentnum %s' % (cname.decode('latin1').encode('utf8'),
-                                                                                                           opername.decode('latin1').encode('utf8'),
-                                                                                                           phonenum, agentnum))
+                log_debug(SYSLOG_INFO, 'manage_cticommand (operator %s, phonenum %s, agentnum %s @ %s:%d) : (%s, %s)'
+                          % (opername.decode('latin1').encode('utf8'),
+                             phonenum, agentnum,
+                             requester_ip, requester_port,
+                             cname.decode('latin1').encode('utf8'),
+                             str(parsedcommand.args)))
                 if 'agentnum' is not None:
                         agentid = 'Agent/%s' % agentnum
                 else:
@@ -1571,8 +1652,7 @@ class CallBoosterCommand(BaseCommand):
                                 # to be fetched from the 'postes' table
                                 if 'agentchannel' in userinfo:
                                         log_debug(SYSLOG_WARNING, 'AppelOpe : %s phone is already logged in as agent number %s' % (phonenum, agentnum))
-                                log_debug(SYSLOG_INFO, 'AppelOpe : aoriginate_var for phonenum = %s' % phonenum)
-                                self.__schedule_agentlogin__(astid, userinfo, phonenum, agentnum, opername)
+                                self.__schedule_agentlogin__(userinfo)
                         else:
                                 reply = ',%d,,AppelOpe/' % (-3)
                                 connid_socket.send(reply)
@@ -1605,6 +1685,13 @@ class CallBoosterCommand(BaseCommand):
                                 if len(results) > 0:
                                         print 'TransfertOpe', cchan, addposte, results[0][0]
                                         r = self.amis[astid].transfer(cchan, results[0][0], 'default')
+
+                elif cname == 'ListeACD':
+                        lst = []
+                        for anycommid, anycall in userinfo['calls'].iteritems():
+                                if anycall.dir == 'i':
+                                        lst.append(ref)
+                        connid_socket.send(',%s,,ListeACD/' % (';'.join(lst)))
 
                 elif cname == 'ForceACD':
                         """
@@ -1659,7 +1746,8 @@ class CallBoosterCommand(BaseCommand):
                                 else:
                                         userinfo['calls'][comm_id_outgoing] = outCall
                                         userinfo['calls'][comm_id_outgoing].tocall = True
-                                        self.__schedule_agentlogin__(astid, userinfo, phonenum, agentnum, opername)
+                                        self.__schedule_agentlogin__(userinfo)
+
                 elif cname == 'Raccroche':
                         reference = parsedcommand.args[1]
                         try:
@@ -1687,6 +1775,23 @@ class CallBoosterCommand(BaseCommand):
                         except Exception, exc:
                                 print '--- exception --- in Raccroche treatment ...', exc
 
+                elif cname == 'PutConf':
+                        confnum = parsedcommand.args[1]
+                        refcomm = parsedcommand.args[2]
+                        # warning : we might need to park one peer before
+
+                        if refcomm in userinfo['calls']:
+                                anycall = userinfo['calls'][refcomm]
+                                self.amis[astid].setvar(anycall.peerchannel, 'CB_CONFNUM', confnum)
+                                self.amis[astid].transfer(anycall.peerchannel, 's', 'ctx-callbooster-conf')
+                                reply = '%s,1,,PutConf/' % refcomm
+                                connid_socket.send(reply)
+
+                elif cname == 'ListConf':
+                        confnum = parsedcommand.args[1]
+                        listconf = []
+                        reply = '%s,%s,,ListConf/' % (refcomm, ';'.join(listconf))
+                        connid_socket.send(reply)
 
                 elif cname == 'Aboute':
                         reference = parsedcommand.args[1]
@@ -1701,7 +1806,6 @@ class CallBoosterCommand(BaseCommand):
                                 incall.aboute = refcomm_out
                         if callbackexten is not None:
                                 self.amis[astid].transfer(chan, callbackexten, 'default')
-
 
                 elif cname == 'AppelAboute': # transfer
                         mreference = parsedcommand.args[1]
@@ -1768,12 +1872,10 @@ class CallBoosterCommand(BaseCommand):
                                 isalive = userinfo['timer-ping'].isAlive()
                                 userinfo['timer-ping'].cancel()
                                 del userinfo['timer-ping']
-                                if isalive:
-                                        print 'timer-ping : was running, renew the timer'
-                                else:
-                                        print 'timer-ping : received a Ping but the timer was out ... should have been removed when out'
+                                if not isalive:
+                                        log_debug(SYSLOG_WARNING, 'timer-ping : received a Ping but the timer was out ... should have been removed when out')
                         else:
-                                print 'timer-ping : first setup for this connection'
+                                log_debug(SYSLOG_INFO, 'timer-ping : first setup for this connection')
 
                         timer = threading.Timer(TIMEOUTPING, self.__callback_ping_noreply__)
                         timer.start()
@@ -1826,10 +1928,8 @@ class CallBoosterCommand(BaseCommand):
 ##                        if 'agentchannel' in userinfo:
 ##                                print 'sendfiche, the agent is online :', userinfo['agentchannel']
 ##                        else:
-##                                phonenum = userinfo['phonenum']
-##                                opername = userinfo['user']
 ##                                log_debug(SYSLOG_INFO, 'sendfiche, the agent is not online ... we re going to call him : %s (%s)' % (phonenum, str(userinfo)))
-##                                self.__schedule_agentlogin__(astid, userinfo, phonenum, agentnum, opername)
+##                                self.__schedule_agentlogin__(userinfo)
 
                         self.amis[astid].aoriginate_var('Agent', agentnum, opername,
                                                         'record_exten', 'Enregistre', 'ctx-callbooster-record',
@@ -1987,7 +2087,7 @@ class CallBoosterCommand(BaseCommand):
                                                 self.__addtoqueue__(astid, opername_iter, td[1])
                                         elif td[0] == 'dequeue':
                                                 print 'manage : dequeue %s (pret)' % opername_iter
-                                                userinfo = self.ulist[astid].finduser(opername_iter)
+                                                userinfo = self.ulist.byast[astid].finduser(opername_iter)
                                                 td[1].agentlist.remove(opername_iter)
                                                 self.amis[astid].queueremove(td[1].queuename, 'Agent/%s' % userinfo['agentnum'])
                                                 nagents = len(td[1].agentlist)
@@ -2144,8 +2244,8 @@ class CallBoosterCommand(BaseCommand):
                         tname = thisthread.getName()
                         if tname.startswith('Ping'):
                                 print 'checkqueue (Ping)', tname
-                                for astid in self.ulist:
-                                        for opername, userinfo in self.ulist[astid].list.iteritems():
+                                for astid in self.ulist.byast:
+                                        for opername, userinfo in self.ulist.byast[astid].list.iteritems():
                                                 if 'timer-ping' in userinfo and userinfo['timer-ping'] == thisthread:
                                                         agentnum = userinfo['agentnum']
                                                         self.cursor_operat.query('USE agents')
@@ -2176,8 +2276,8 @@ class CallBoosterCommand(BaseCommand):
                                                                         ic.svirt['timer'] = None
                         elif tname.startswith('AgentLogin'):
                                 print 'checkqueue (AgentLogin)', tname
-                                for astid in self.ulist:
-                                        for opername, userinfo in self.ulist[astid].list.iteritems():
+                                for astid in self.ulist.byast:
+                                        for opername, userinfo in self.ulist.byast[astid].list.iteritems():
                                                 if 'timer-agentlogin' in userinfo and userinfo['timer-agentlogin'] == thisthread:
                                                         if userinfo['timer-agentlogin-iter'] < 2:
                                                                 self.__send_msg__(userinfo, ',-2,,AppelOpe/')
@@ -2642,10 +2742,10 @@ class CallBoosterCommand(BaseCommand):
                                                         todo_by_oper[opername] = []
                                                 opstatus = incall.check_operator_status(opername)
                                                 print '__choose__ : (SDA prio = %d) <%s> (%s)' % (sdaprio, opername.encode('latin1'), opstatus)
-                                                userinfo = self.ulist[astid].finduser(opername)
+                                                userinfo = self.ulist.byast[astid].finduser(opername)
                                                 userqueuesize = len(userinfo['queuelist'])
                                                 if opstatus is not None:
-                                                        if 'connection' in userinfo:
+                                                        if 'connection' in userinfo.get('login'):
                                                                 print '__choose__ :', opername.encode('latin1'), userinfo, opstatus, userqueuesize
                                                                 [status, dummy, level, prio, busyness] = opstatus
                                                                 # print '__choose__ : incall : %s / opername : %s %s' % (incall.cidnum, opername, status)
