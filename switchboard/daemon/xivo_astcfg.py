@@ -1,3 +1,8 @@
+__version__   = '$Revision$'
+__date__      = '$Date$'
+__copyright__ = 'Copyright (C) 2007, 2008, Proformatique'
+__author__    = 'Corentin Le Gall'
+
 import anysql
 import csv
 import md5

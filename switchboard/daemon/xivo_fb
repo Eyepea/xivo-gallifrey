@@ -134,13 +134,14 @@ from BackSQL import backsqlite
 
 # XIVO modules
 import xivo_ami
+import xivo_phones
+import xivo_users
 import xivo_commandsets
 import xivo_astcfg
 from xivo_log import *
 from CommandSets import *
 
 configs = {}
-plist = {}
 
 # global : userlist
 # liste des champs :
@@ -155,7 +156,6 @@ BUFSIZE_ANY = 512
 
 socket.setdefaulttimeout(2)
 XIVO_CLI_WEBI_HEADER = 'XIVO-CLI-WEBI'
-REQUIRED_CLIENT_VERSION = 2025
 XIVOVERSION = '0.3'
 
 
@@ -187,14 +187,6 @@ def manage_webi_cti_connections_tcp(connid, allow_events, sep):
 
         try:
                 msg = connid.recv(BUFSIZE_LARGE)
-        except socket.timeout, exc:
-                msg = ''
-                log_debug(SYSLOG_ERR, '--- exception --- UI connection : a socket timeout occured when recv from %s : %s'
-                          %(requester, str(exc)))
-        except socket.error, exc:
-                msg = ''
-                log_debug(SYSLOG_ERR, '--- exception --- UI connection : a socket error occured when recv from %s : %s'
-                          %(requester, str(exc)))
         except Exception, exc:
                 msg = ''
                 log_debug(SYSLOG_ERR, '--- exception --- UI connection : an Exception occured when recv from %s : %s - %s'
@@ -229,11 +221,10 @@ def manage_webi_cti_connections_tcp(connid, allow_events, sep):
                                 reply = 'infos=' \
                                         'xivo_version=%s;' \
                                         'server_version=%s;' \
-                                        'clients_required_version=%d;' \
                                         'uptime=%d s' \
                                         %(XIVOVERSION,
                                           __revision__,
-                                          REQUIRED_CLIENT_VERSION, time_uptime)
+                                          time_uptime)
                                 connid.send(reply + "\n")
                                 # connid.send("server capabilities = %s\n" %(",".join()))
                                 connid.send("%s:OK\n" %(XIVO_CLI_WEBI_HEADER))
@@ -629,6 +620,10 @@ def handle_ami_event(astid, idata):
 # \param astid Asterisk id to (re)connect
 # \return none
 def update_amisocks(astid):
+        """
+        Connects to the AMI if not yet done.
+        
+        """
         try:
                 if astid not in AMI_array_events_fd or AMI_array_events_fd[astid] is False:
                         log_debug(SYSLOG_INFO, '%s : AMI : attempting to connect' % astid)
@@ -671,19 +666,15 @@ def update_amisocks(astid):
                 log_debug(SYSLOG_ERR, '--- exception --- %s (update_amisocks command) : %s' % (astid, str(exc)))
 
 
-def update_user_list(astid):
-        userl = commandclass.getuserlist()
-        print userl
-        for ul, vv in userl.iteritems():
-                ulist.adduser(astid, vv)
-
-
 ## \brief Connects to the AMI through AMIClass.
 # \param address IP address
 # \param loginname loginname
 # \param password password
 # \return the socket
 def connect_to_AMI(address, loginname, password, events_on):
+        """
+        Connects to the AMI.
+        """
         lAMIsock = xivo_ami.AMIClass(address, loginname, password, events_on)
         try:
                 lAMIsock.connect()
@@ -694,86 +685,6 @@ def connect_to_AMI(address, loginname, password, events_on):
                 del lAMIsock
                 lAMIsock = False
         return lAMIsock
-
-
-## file xivo_astusers : BEGIN
-
-class XivoUsers:
-        def __init__(self):
-                self.list = {}
-                self.byast = {}
-                return
-
-        def set_ast_list(self, astid):
-                self.byast[astid] = XivoUsers_byast(astid)
-                return
-
-        def adduser(self, astid, userparams):
-                self.byast[astid].adduser(userparams)
-                return
-
-        def disconnect_user(self, userinfo):
-                astid = userinfo.get('astid')
-                username = userinfo.get('user')
-                self.byast[astid].disconnect_user(username)
-                return
-
-        def update_user_glist(self):
-                nlist = commandclass.getuserlist_ng(asterisklist[0])
-                self.list = nlist
-                return
-
-## \class XivoUsers
-# \brief Properties of Asterisk Users
-class XivoUsers_byast:
-        def __init__(self, iastid):
-                self.astid = iastid
-                self.list = {}
-                return
-
-        def adduser(self, inparams):
-                [user, phonenum, agentnum, options] = inparams
-                if self.list.has_key(user):
-                        # updates
-                        self.list[user]['phonenum'] = phonenum
-                        self.list[user]['agentnum'] = agentnum
-                else:
-                        self.list[user] = {'astid'    : self.astid,
-                                           'user'     : user,
-                                           'phonenum' : phonenum,
-                                           'agentnum' : agentnum,
-                                           'cbstatus' : 'undefined',
-                                           'login'    : {},
-                                           'calls'    : {},
-                                           'queuelist': {},
-                                           'options'  : options}
-
-        def deluser(self, user):
-                if self.list.has_key(user):
-                        self.list.pop(user)
-
-        def finduser(self, user):
-                return self.list.get(user)
-
-        def disconnect_user(self, user):
-                userinfo = self.list[user]
-                if 'connection' in userinfo.get('login'):
-                        del userinfo.get('login')['connection']
-
-        def listusers(self):
-                lst = {}
-                for user,info in self.list.iteritems():
-                        lst[user] = info
-                return lst
-
-        def listconnected(self):
-                lst = {}
-                for user,info in self.list.iteritems():
-                        if 'logintimestamp' in info:
-                                lst[user] = info
-                return lst
-
-## file xivo_astusers : END
 
 
 
@@ -821,7 +732,8 @@ signal.signal(signal.SIGTERM, sighandler)
 signal.signal(signal.SIGHUP, sighandler_reload)
 
 nreload = 0
-ulist = XivoUsers()
+ulist = xivo_users.Users()
+plist = xivo_phones.Phones()
 
 while True: # loops over the reloads
         askedtoquit = False
@@ -837,19 +749,17 @@ while True: # loops over the reloads
         
         # global default definitions
         commandset = 'xivosimple'
-        ports_cti = [4949, 4946]
+        ports_cti = ['4949', '4946']
+        extraconn = ''
         port_webi = 5004
-        port_operat = 4950
         port_comm_agi_daemon = 4970
         xivo_db = 'mysql://asterisk:proformatique@127.0.0.1:3306/asterisk?charset=utf8'
-        xivoclient_session_timeout = 60
-        phonelist_update_period = 60
+        updates_period = 60
         asterisklist = []
         contextlist = []
         evt_filename = '/var/log/pf-xivo-cti-server/ami_events.log'
         gui_filename = '/var/log/pf-xivo-cti-server/gui.log'
         with_advert = False
-        address_operat = ''
 
         userinfo_by_requester = {}
 
@@ -862,22 +772,18 @@ while True: # loops over the reloads
                 commandset = xivoconf_general['commandset']
         if 'ports_cti' in xivoconf_general:
                 ports_cti = xivoconf_general['ports_cti'].split(',')
-        if 'port_webi' in xivoconf_general:
-                port_webi = int(xivoconf_general['port_webi'])
-        if 'port_operat' in xivoconf_general:
-                port_operat = int(xivoconf_general['port_operat'])
         if 'port_comm_agi_daemon' in xivoconf_general:
                 port_comm_agi_daemon = int(xivoconf_general['port_comm_agi_daemon'])
-        if 'address_operat' in xivoconf_general:
-                address_operat = xivoconf_general['address_operat']
+        if 'port_webi' in xivoconf_general:
+                port_webi = int(xivoconf_general['port_webi'])
+        if 'extraconn' in xivoconf_general:
+                extraconn = xivoconf_general['extraconn']
         if 'operatini' in xivoconf_general:
                 operatini = xivoconf_general['operatini']
         if 'xivo_db' in xivoconf_general:
                 xivo_db = xivoconf_general['xivo_db']
-        if 'xivoclient_session_timeout' in xivoconf_general:
-                xivoclient_session_timeout = int(xivoconf_general['xivoclient_session_timeout'])
-        if 'phonelist_update_period' in xivoconf_general:
-                phonelist_update_period = int(xivoconf_general['phonelist_update_period'])
+        if 'updates_period' in xivoconf_general:
+                updates_period = int(xivoconf_general['updates_period'])
         if 'asterisklist' in xivoconf_general:
                 asterisklist = xivoconf_general['asterisklist'].split(',')
         if 'evtfile' in xivoconf_general:
@@ -888,19 +794,14 @@ while True: # loops over the reloads
         if 'advert' in xivoconf_general: with_advert = True
 
 
-        OperatSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        try:
-                OperatSock.connect((address_operat, port_operat))
-        except Exception, exc:
-                log_debug(SYSLOG_WARNING, 'WARNING - Could not connect to Operat Serveur (%s, %d) : %s'
-                          % (address_operat, port_operat, str(exc)))
-                OperatSock = None
-
-
         queued_threads_pipe = os.pipe()
         AMI_array_user_commands = {}
         cclass = xivo_commandsets.CommandClasses[commandset]
-        commandclass = cclass(ulist, AMI_array_user_commands, OperatSock, ports_cti, operatini, queued_threads_pipe)
+        commandclass = cclass(ulist, AMI_array_user_commands, ports_cti, operatini, queued_threads_pipe)
+        ulist.setcommandclass(commandclass)
+        plist.setcommandclass(commandclass)
+
+        outsock = commandclass.extrasock(extraconn)
 
         save_for_next_packet_events = {}
         ip_reverse_webi = {}
@@ -1044,16 +945,13 @@ while True: # loops over the reloads
         tcpopens_webi = []
         tcpopens_agi = []
 
-        ulist.update_user_glist()
         for astid in configs:
                 try:
-                        # plist[astid] = PhoneList(astid, commandclass)
                         update_userlist[astid] = False
                         lastrequest_time[astid] = time.time()
-
                         update_amisocks(astid)
-                        # update_phonelist(astid)
-                        update_user_list(astid)
+                        plist.update(astid)
+                        ulist.update(astid)
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, '--- exception --- %s : failed while setting lists and sockets : %s'
                                   %(astid, str(exc)))
@@ -1083,14 +981,14 @@ while True: # loops over the reloads
         Fsock.listen(10)
         fdlist_full.append(Fsock)
 
-        if OperatSock is not None:
-                fdlist_full.append(OperatSock)
+        if outsock is not None:
+                fdlist_full.append(outsock)
         fdlist_full.append(queued_threads_pipe[0])
 
         # Receive messages
         while not askedtoquit:
                 try:
-                        [sels_i, sels_o, sels_e] = select.select(fdlist_full, [], [], phonelist_update_period)
+                        [sels_i, sels_o, sels_e] = select.select(fdlist_full, [], [], updates_period)
                 except Exception, exc:
                         if askedtoquit:
                                 try:
@@ -1099,7 +997,7 @@ while True: # loops over the reloads
                                         print 'current open TCP connections : (WEBI)', tcpopens_webi
                                         print 'current open TCP connections : (FC)  ', tcpopens_agi
                                         print 'current open TCP connections : (AMI) ', AMI_array_events_fd
-                                        print 'current open TCP connections : (OP)  ', OperatSock
+                                        print 'current open TCP connections : (OP)  ', outsock
                                         print
                                         os.unlink(PIDFILE)
                                 except Exception, exc:
@@ -1192,17 +1090,18 @@ while True: # loops over the reloads
                                 fdlist_full.remove(sel_i)
                                 tcpopens_agi.remove(sel_i)
                                 log_debug(SYSLOG_INFO, 'TCP (F) socket closed from %s' % requester)
-                        # Operat connection
-                        elif OperatSock == sel_i:
+                        # Extra connections
+                        elif sel_i == outsock:
                                 try:
-                                        msg = OperatSock.recv(BUFSIZE_LARGE)
+                                        msg = sel_i.recv(BUFSIZE_LARGE)
                                 except Exception, exc:
-                                        log_debug(SYSLOG_ERR, '--- exception --- OperatSock : %s' % str(exc))
+                                        log_debug(SYSLOG_ERR, '--- exception --- outsock : %s' % str(exc))
                                         msg = ''
                                 if len(msg) == 0:
-                                        OperatSock.close()
-                                        fdlist_full.remove(OperatSock)
-                                        log_debug(SYSLOG_WARNING, 'WARNING - Operat Serveur has closed the connection')
+                                        sel_i.close()
+                                        fdlist_full.remove(sel_i)
+                                        outsock = None
+                                        log_debug(SYSLOG_WARNING, 'WARNING - outsock has closed the connection')
                                 else:
                                         commandclass.svreply(asterisklist[0], msg)
 
@@ -1221,28 +1120,36 @@ while True: # loops over the reloads
                                         log_debug(SYSLOG_ERR, '--- exception --- %s' % str(exc))
 
                         for astid in configs:
-                                if (time.time() - lastrequest_time[astid]) > phonelist_update_period or update_userlist[astid]:
+                                if (time.time() - lastrequest_time[astid]) > updates_period or update_userlist[astid]:
                                         lastrequest_time[astid] = time.time()
-                                        log_debug(SYSLOG_INFO, '%s : update_phonelist (computed timeout) %s'
+                                        log_debug(SYSLOG_INFO, '%s : updates (computed timeout) %s'
                                                   % (astid, time.strftime("%H:%M:%S", time.localtime())))
                                         try:
+                                                if outsock is None:
+                                                        outsock = commandclass.extrasock(extraconn)
+                                                        if outsock is not None:
+                                                                fdlist_full.append(outsock)
                                                 update_amisocks(astid)
-                                                # update_phonelist(astid)
-                                                update_user_list(astid)
+                                                plist.update(astid)
+                                                ulist.update(astid)
                                                 update_userlist[astid] = False
                                         except Exception, exc:
                                                 log_debug(SYSLOG_ERR, '--- exception --- %s : failed while updating lists and sockets (computed timeout) : %s'
                                                           %(astid, str(exc)))
 
                 else: # when nothing happens on the sockets, we fall here sooner or later
-##                        log_debug(SYSLOG_INFO, 'update_phonelist (select s timeout) %s'
+##                        log_debug(SYSLOG_INFO, 'updates (select s timeout) %s'
 ##                                  % time.strftime("%H:%M:%S", time.localtime()))
                         for astid in configs:
                                 lastrequest_time[astid] = time.time()
                                 try:
+                                        if outsock is None:
+                                                outsock = commandclass.extrasock(extraconn)
+                                                if outsock is not None:
+                                                        fdlist_full.append(outsock)
                                         update_amisocks(astid)
-                                        # update_phonelist(astid)
-                                        update_user_list(astid)
+                                        plist.update(astid)
+                                        ulist.update(astid)
                                 except Exception, exc:
                                         log_debug(SYSLOG_ERR, '--- exception --- %s : failed while updating lists and sockets (select s timeout) : %s'
                                                   %(astid, str(exc)))

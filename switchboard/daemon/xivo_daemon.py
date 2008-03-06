@@ -1819,23 +1819,6 @@ def connect_to_AMI(address, loginname, password, events_on):
         return lAMIsock
 
 
-## \class LocalChannel
-# \brief Properties of a temporary "Local" channel.
-class LocalChannel:
-        # \brief Class initialization.
-        def __init__(self, istate, icallerid):
-                self.state = istate
-                self.callerid = icallerid
-                self.peer = ""
-        # \brief Sets the state and the peer channel name.
-        def set_chan(self, istate, ipeer):
-                self.state = istate
-                if ipeer != "":
-                        self.peer = ipeer
-        def set_callerid(self, icallerid):
-                self.callerid = icallerid
-
-
 ## \class PhoneList
 # \brief Properties of the lines of a given Asterisk
 class PhoneList:

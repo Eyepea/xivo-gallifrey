@@ -95,6 +95,7 @@ class CallBoosterCommand(BaseCommand):
         """
 
         commidcurr = 200000
+        soperat_socket = None
         pending_sv_fiches = {}
         tqueue = Queue.Queue()
         alerts = {}
@@ -122,14 +123,13 @@ class CallBoosterCommand(BaseCommand):
         normal_calls = []
         originated_calls = {}
 
-        def __init__(self, ulist, amis, operatsocket, ctiports, operatini, queued_threads_pipe):
+        def __init__(self, ulist, amis, ctiports, operatini, queued_threads_pipe):
                 """
                 Defines the basic arguments.
                 """
 		BaseCommand.__init__(self)
                 self.ulist = ulist
                 self.amis  = amis
-                self.soperat_socket = operatsocket
                 self.soperat_port   = int(ctiports[1])
                 opconf = ConfigParser.ConfigParser()
                 opconf.readfp(open(operatini))
@@ -151,6 +151,7 @@ class CallBoosterCommand(BaseCommand):
                 """
                 print 'loginko', loginparams, errorstring
                 connid.send('%s,0,,Init/' % loginparams.get('srvnum'))
+                return
 
 
         def loginok(self, loginparams, userinfo):
@@ -159,6 +160,20 @@ class CallBoosterCommand(BaseCommand):
                 Replies Init/
                 """
                 userinfo['login']['connection'].send('%s,1,,Init/' % loginparams.get('srvnum'))
+                return
+
+
+        def extrasock(self, extraconn):
+                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                try:
+                        sock.connect((extraconn.split(':')[0], int(extraconn.split(':')[1])))
+                        print 'Operat %s connected' % extraconn
+                except Exception, exc:
+                        log_debug(SYSLOG_WARNING, 'WARNING - Could not connect to Operat Serveur %s : %s'
+                                  % (extraconn, str(exc)))
+                        sock = None
+                self.soperat_socket = sock
+                return sock
 
 
         def __send_msg__(self, uinfo, msg):
