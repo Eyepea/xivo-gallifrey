@@ -64,7 +64,7 @@ def ConfiguredPathHelper(config_file, config_section):
 	"""Calls SortedValuesFromConfigSection() then InsertPathListSys() in
 	a try except block that output a simple explicit error message on
 	stderr in case of failure. Used in almost all python program code in
-	Xivo.
+	XIVO.
 	
 	"""
 	try:

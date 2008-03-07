@@ -1,4 +1,4 @@
-"""Common routines and objects for autoprovisioning services in Xivo
+"""Common routines and objects for autoprovisioning services in XIVO
 
 Copyright (C) 2007, 2008  Proformatique
 

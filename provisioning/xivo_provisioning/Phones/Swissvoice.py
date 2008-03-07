@@ -1,4 +1,4 @@
-"""Support for Swissvoice phones for Xivo Autoprovisioning
+"""Support for Swissvoice phones for XIVO Autoprovisioning
 
 Swissvoice IP10S is supported.
 

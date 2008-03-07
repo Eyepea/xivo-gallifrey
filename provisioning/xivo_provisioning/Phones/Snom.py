@@ -1,4 +1,4 @@
-"""Support for Snom phones for Xivo Autoprovisioning
+"""Support for Snom phones for XIVO Autoprovisioning
 
 Snom 300 320 and 360 are supported.
 

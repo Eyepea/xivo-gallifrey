@@ -6,7 +6,7 @@ from distutils.core import setup
 
 setup(name='xivo_provisioning',
       version='1.0',
-      description='Xivo Provisioning daemon, AGI and modules',
+      description='XIVO Provisioning daemon, AGI and modules',
       author='Proformatique',
       author_email='technique@proformatique.com',
       url='http://xivo.fr/',
