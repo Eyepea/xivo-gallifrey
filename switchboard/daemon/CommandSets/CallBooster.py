@@ -130,7 +130,7 @@ class CallBoosterCommand(BaseCommand):
 		BaseCommand.__init__(self)
                 self.ulist = ulist
                 self.amis  = amis
-                self.soperat_port   = int(ctiports[1])
+                self.soperat_port = int(ctiports[1].split(':')[0])
                 opconf = ConfigParser.ConfigParser()
                 opconf.readfp(open(operatini))
                 opconf_so = dict(opconf.items('SO'))
@@ -349,7 +349,6 @@ class CallBoosterCommand(BaseCommand):
                                                                        "WHERE var_metric = '%s' AND var_name = 'musiconhold'"
                                                                        % ('silence', str(b[0][1] - 1)))
                                 localulist[oname] = [oname,
-                                                     None,
                                                      agnum,
                                                      ':'.join([str(r[3]), agents_acd[0][2], agents_acd[0][3]])]
                 except Exception, exc:
@@ -467,11 +466,11 @@ class CallBoosterCommand(BaseCommand):
                 """
                 return ['userid', 'computername', 'phonenum', 'computeripref', 'srvnum']
 
-        def connected_srv2clt(self, conn, id):
+        def connected(self, conn):
                 """
                 Sends a 'connected' status to the client once the TCP link has been setup.
                 """
-                msg = 'Connect%s/' % id
+                msg = 'Connect%s:%d/' % (conn.getpeername()[0], conn.getpeername()[1])
                 print 'CallBooster', 'sending %s' % msg
                 conn.send(msg)
                 return
@@ -1246,6 +1245,24 @@ class CallBoosterCommand(BaseCommand):
                 return
 
 
+        def ami_meetmejoin(self, astid, event):
+                """
+                Function called when an AMI MeetMeJoin Event is read.
+                """
+                print event
+                return
+
+
+        def ami_meetmeleave(self, astid, event):
+                """
+                Function called when an AMI MeetMeLeave Event is read.
+                """
+                print event
+                return
+
+
+        # END of AMI events
+        #
         # XIVO synchronization methods
 
         def __callback_walkdir__(self, args, dirname, filenames):
@@ -1566,7 +1583,6 @@ class CallBoosterCommand(BaseCommand):
                 phonenum = userinfo.get('phonenum')
                 agentnum = userinfo.get('agentnum')
                 username = userinfo.get('user')
-                
                 self.amis[astid].aoriginate_var('sip', phonenum, 'Log %s' % phonenum,
                                                 agentnum, username, 'ctx-callbooster-agentlogin',
                                                 {'CB_MES_LOGAGENT' : username,

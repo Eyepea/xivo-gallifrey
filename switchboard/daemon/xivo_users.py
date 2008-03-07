@@ -47,15 +47,13 @@ class Users_byast:
                 return
 
         def adduser(self, inparams):
-                [user, phonenum, agentnum, options] = inparams
+                [user, agentnum, options] = inparams
                 if self.list.has_key(user):
                         # updates
-                        self.list[user]['phonenum'] = phonenum
                         self.list[user]['agentnum'] = agentnum
                 else:
                         self.list[user] = {'astid'    : self.astid,
                                            'user'     : user,
-                                           'phonenum' : phonenum,
                                            'agentnum' : agentnum,
                                            'cbstatus' : 'undefined',
                                            'login'    : {},
