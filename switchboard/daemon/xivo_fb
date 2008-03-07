@@ -355,116 +355,137 @@ def handle_ami_event(astid, idata):
                 evfunction = this_event.get('Event')
                 verboselog("/%s/ %s" %(astid, str(this_event)), True, False)
                 # print '////////', evfunction, '   ------  ', this_event
-                if evfunction == 'Dial':
+                if evfunction is not None:
+                        handle_ami_function(astid, evfunction, this_event)
+                else:
+                        response = this_event.get('Response')
+                        if response is not None:
+                                if response == 'Follows' and this_event.get('Privilege') == 'Command':
+                                        log_debug(SYSLOG_INFO, 'AMI %s Response=Follows : %s' % (astid, str(this_event)))
+                                elif response == 'Success':
+                                        # log_debug(SYSLOG_INFO, 'AMI %s Response=Success : %s' % (astid, str(this_event)))
+                                        pass
+                                else:
+                                        log_debug(SYSLOG_WARNING, 'AMI %s Response=%s (untracked) : %s' % (astid, response, str(this_event)))
+                        elif len(this_event) > 0:
+                                log_debug(SYSLOG_WARNING, 'AMI:XXX: <%s> : %s' % (astid, str(this_event)))
+                        else:
+                                log_debug(SYSLOG_WARNING, 'AMI %s Other : %s' % (astid, str(this_event)))
+
+
+def handle_ami_function(astid, evfunction, this_event):
+        global prev_registry_event
+        if evfunction == 'Dial':
                         try:
                                 commandclass.ami_dial(astid, this_event)
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-                elif evfunction == 'Link':
+        elif evfunction == 'Link':
                         try:
                                 commandclass.ami_link(astid, this_event)
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-                elif evfunction == 'Unlink':
+        elif evfunction == 'Unlink':
                         try:
                                 commandclass.ami_unlink(astid, this_event)
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-                elif evfunction == 'Hangup':
+        elif evfunction == 'Hangup':
                         try:
                                 commandclass.ami_hangup(astid, this_event)
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-                elif evfunction == 'Reload':
+        elif evfunction == 'Reload':
                         message = this_event.get('Message')
                         log_debug(SYSLOG_WARNING, "AMI:Reload: %s : %s" %(astid, str(this_event)))
-                elif evfunction == 'Shutdown':
+        elif evfunction == 'Shutdown':
                         shutdown = this_event.get('Shutdown')
                         restart  = this_event.get('Restart')
                         log_debug(SYSLOG_WARNING, "AMI:Shutdown: %s (how=%s restart=%s)" %(astid, shutdown, restart))
-                elif evfunction == 'Join':
+        elif evfunction == 'Join':
                         try:
                                 commandclass.ami_join(astid, this_event)
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-                elif evfunction == 'Leave':
+        elif evfunction == 'Leave':
                         try:
                                 commandclass.ami_leave(astid, this_event)
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-                elif evfunction == 'PeerStatus':
+        elif evfunction == 'PeerStatus':
                         # <-> register's ? notify's ?
                         pass
-                elif evfunction == 'Agentlogin':
+        elif evfunction == 'Agentlogin':
                         try:
                                 commandclass.ami_agentlogin(astid, this_event)
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-                elif evfunction == 'Agentlogoff':
+        elif evfunction == 'Agentlogoff':
                         try:
                                 commandclass.ami_agentlogoff(astid, this_event)
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-                elif evfunction == 'Agentcallbacklogoff':
+        elif evfunction == 'Agentcallbacklogoff':
                         try:
                                 commandclass.ami_agentcallbacklogoff(astid, this_event)
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
 
-                elif evfunction == 'Agentcallbacklogin':
+        elif evfunction == 'Agentcallbacklogin':
                         log_debug(SYSLOG_INFO, '//AMI:Agentcallbacklogin// %s : %s' %(astid, str(this_event)))
-                elif evfunction == 'AgentCalled':
+        elif evfunction == 'AgentCalled':
                         log_debug(SYSLOG_INFO, '//AMI:AgentCalled// %s : %s' %(astid, str(this_event)))
-                elif evfunction == 'ParkedCall':
+        elif evfunction == 'ParkedCall':
                         # when a requested parking is established
                         try:
                                 commandclass.ami_parkedcall(astid, this_event)
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-                elif evfunction == 'UnParkedCall':
+        elif evfunction == 'UnParkedCall':
                         # when somebody (From) took the call
                         try:
                                 commandclass.ami_unparkedcall(astid, this_event)
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-                elif evfunction == 'ParkedCallTimeOut':
+        elif evfunction == 'ParkedCallTimeOut':
                         # when the timeout has occured
                         try:
                                 commandclass.ami_parkedcalltimeout(astid, this_event)
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-                elif evfunction == 'ParkedCallGiveUp':
-                        # when the peer is tired
+        elif evfunction == 'ParkedCallGiveUp':
+                        # when the peer is tired and hangs up
                         try:
                                 commandclass.ami_parkedcallgiveup(astid, this_event)
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-                elif evfunction == 'ParkedCallsComplete':
+        elif evfunction == 'ParkedCallsComplete':
                         log_debug(SYSLOG_INFO, '//AMI:ParkedCallsComplete// %s : %s' %(astid, str(this_event)))
-                elif evfunction == 'Cdr':
+        elif evfunction == 'Cdr':
                         log_debug(SYSLOG_INFO, '//AMI:Cdr// %s : %s' %(astid, str(this_event)))
-                elif evfunction == 'Alarm':
+        elif evfunction == 'Alarm':
                         log_debug(SYSLOG_INFO, '//AMI:Alarm// %s : %s' %(astid, str(this_event)))
-                elif evfunction == 'AlarmClear':
+        elif evfunction == 'AlarmClear':
                         log_debug(SYSLOG_INFO, '//AMI:AlarmClear// %s : %s' %(astid, str(this_event)))
-                elif evfunction == 'FaxReceived':
+        elif evfunction == 'FaxReceived':
                         log_debug(SYSLOG_INFO, '//AMI:FaxReceived// %s : %s' %(astid, str(this_event)))
-                elif evfunction == 'Registry':
+        elif evfunction == 'Registry':
                         log_debug(SYSLOG_INFO, 'AMI:Registry: %s : username=%s channel=%s domain=%s status=%s'
                                   %(astid, this_event.get('Username'), this_event.get('Channel'), this_event.get('Domain'), this_event.get('Status')))
-                elif evfunction == 'MeetmeJoin':
+                        prev_registry_event = this_event
+        elif evfunction == 'MeetmeJoin':
                         # when a member joins a conference
                         try:
                                 commandclass.ami_meetmejoin(astid, this_event)
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-                elif evfunction == 'MeetmeLeave':
+        elif evfunction == 'MeetmeLeave':
                         # when a member leaves a conference
                         try:
                                 commandclass.ami_meetmeleave(astid, this_event)
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-                elif evfunction == 'ExtensionStatus':
+        elif evfunction == 'ExtensionStatus':
                         pass
 
                         # QueueMemberStatus ExtensionStatus
@@ -475,23 +496,23 @@ def handle_ami_event(astid, idata):
                         #                                 4  AST_EXTENSION_UNAVAILABLE ?
                         #                 5                  AST_DEVICE_UNAVAILABLE
                         #                 6 AST_EXTENSION_RINGING = 8  appele
-                elif evfunction == 'OriginateSuccess':
+        elif evfunction == 'OriginateSuccess':
                         try:
                                 commandclass.ami_originatesuccess(astid, this_event)
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-                elif evfunction == 'AOriginateSuccess':
+        elif evfunction == 'AOriginateSuccess':
                         try:
                                 commandclass.ami_aoriginatesuccess(astid, this_event)
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-                elif evfunction == 'OriginateFailure':
+        elif evfunction == 'OriginateFailure':
                         try:
                                 commandclass.ami_originatefailure(astid, this_event)
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
                         # log_debug(SYSLOG_INFO, 'AMI:OriginateFailure: %s - reason = %s' % (astid, this_event.get('Reason')))
-                elif evfunction == 'AOriginateFailure':
+        elif evfunction == 'AOriginateFailure':
                         try:
                                 commandclass.ami_aoriginatefailure(astid, this_event)
                         except Exception, exc:
@@ -507,88 +528,66 @@ def handle_ami_event(astid, idata):
                         #define AST_CONTROL_CONGESTION          8
                         #define AST_CONTROL_FLASH               9
                         #define AST_CONTROL_WINK                10
-                elif evfunction == 'Rename':
+        elif evfunction == 'Rename':
                         # appears when there is a transfer
                         try:
                                 commandclass.ami_rename(astid, this_event)
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-                elif evfunction == 'Newstate':
+        elif evfunction == 'Newstate':
                         pass
-                elif evfunction == 'Newcallerid':
+        elif evfunction == 'Newcallerid':
                         # for tricky managements
                         try:
                                 commandclass.ami_newcallerid(astid, this_event)
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-                elif evfunction == 'Newchannel':
+        elif evfunction == 'Newchannel':
                         pass
-                elif evfunction == 'UserEventFeature': # UserEvent(Feature,AppData: <context>|<num>|<unc>|<enable/disable>|<redir>)
-                        try:
-                                appdata = this_event.get('AppData').split('|')
-                                log_debug(SYSLOG_INFO, 'AMI:UserEventFeature: %s : %s' % (astid, str(appdata)))
-                                ctx = appdata[0]
-                                userid = appdata[1]
-                                feature = appdata[2]
-                                enable = ''
-                                value = ''
-                                if len(appdata) >= 4:
-                                        enable = appdata[3]
-                                if len(appdata) >= 5:
-                                        value = appdata[4]
-                                strupdate = commandclass.features_srv2clt('update', ';'.join([astid, ctx, userid, feature, ':'.join([enable, value])]))
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- (UserEventFeature) <%s> : %s' %(str(this_event), str(exc)))
-                elif evfunction is not None and evfunction.startswith('UserEvent'):
+        elif evfunction.startswith('UserEvent'):
                         try:
                                 commandclass.ami_userevent(astid, this_event)
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-                elif evfunction == 'Newexten': # in order to handle outgoing calls ?
+        elif evfunction == 'Newexten': # in order to handle outgoing calls ?
                         pass
-                elif evfunction == 'MessageWaiting':
+        elif evfunction == 'MessageWaiting':
                         try:
                                 commandclass.ami_messagewaiting(astid, this_event)
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-                elif evfunction == 'QueueParams':
+        elif evfunction == 'QueueParams':
                         pass
-                elif evfunction == 'QueueMemberAdded':
+        elif evfunction == 'QueueMemberAdded':
                         pass
-                elif evfunction == 'QueueMemberPaused':
+        elif evfunction == 'QueueMemberPaused':
                         pass
-                elif evfunction == 'QueueMemberRemoved':
+        elif evfunction == 'QueueMemberRemoved':
                         pass
-                elif evfunction == 'QueueMember':
+        elif evfunction == 'QueueMember':
                         log_debug(SYSLOG_INFO, '//AMI:QueueMember// %s : %s' %(astid, str(this_event)))
-                elif evfunction == 'QueueMemberStatus':
+        elif evfunction == 'QueueMemberStatus':
                         try:
                                 commandclass.ami_queuememberstatus(astid, this_event)
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-                elif evfunction == 'Agents':
+        elif evfunction == 'Agents':
                         try:
                                 commandclass.ami_agents(astid, this_event)
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-                elif evfunction == 'Status':
+        elif evfunction == 'Status':
                         try:
                                 commandclass.ami_status(astid, this_event)
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-                elif evfunction == 'StatusComplete':
+        elif evfunction == 'StatusComplete':
                         log_debug(SYSLOG_INFO, 'AMI %s StatusComplete' % astid)
-                elif evfunction == 'AgentsComplete':
+        elif evfunction == 'AgentsComplete':
                         log_debug(SYSLOG_INFO, 'AMI %s AgentsComplete' % astid)
-                elif this_event.get('Response') == 'Follows' and this_event.get('Privilege') == 'Command':
-                        log_debug(SYSLOG_INFO, 'AMI %s Response=Follows : %s' % (astid, str(this_event)))
-                elif this_event.get('Response') == 'Success':
-                        # log_debug(SYSLOG_INFO, 'AMI %s Response=Success : %s' % (astid, str(this_event)))
-                        pass
-                elif len(this_event) > 0:
-                        log_debug(SYSLOG_INFO, 'AMI:XXX: <%s> : %s' % (astid, str(this_event)))
-                else:
-                        log_debug(SYSLOG_INFO, 'AMI %s Other : %s' % (astid, str(this_event)))
+        else:
+                        log_debug(SYSLOG_WARNING, 'AMI %s ... not tracked event %s' % (astid, evfunction))
+
 
 
 ## \brief Connects to the AMI if not yet.
@@ -1077,7 +1076,7 @@ while True: # loops over the reloads
                                                           %(astid, str(exc)))
 
                 else: # when nothing happens on the sockets, we fall here sooner or later
-                        log_debug(SYSLOG_INFO, 'updates (select s timeout) %s'
+                        log_debug(SYSLOG_INFO, 'updates (select timeout) %s'
                                   % time.strftime("%H:%M:%S", time.localtime()))
                         for astid in configs:
                                 lastrequest_time[astid] = time.time()

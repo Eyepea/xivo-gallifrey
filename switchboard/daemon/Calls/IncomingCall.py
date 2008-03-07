@@ -50,7 +50,9 @@ class IncomingCall:
         svirt = None
         forceacd = None
         agentlist = []
-        
+
+        elect_prio = None
+
         stimes = {time.time() : 'init'}
         ttimes = {time.time() : 'init'}
         uinfo = None
@@ -156,13 +158,14 @@ class IncomingCall:
                         self.colname = results[0][1]
 
 
-        def get_sda_profiles(self, nsda):
+        def get_sda_profiles(self, sda_busyness):
                 """
                 Reads the available scenarios according to the SDA, the date and time, and
                 the current occupation of the SDA.
                 """
                 self.elect_competence = None
-
+                if sda_busyness is None: sda_busyness = 0 # happens at first call for this SDA
+                
                 columns = ('N', 'NCLI', 'NCOL', 'NSDA', 'Script', 'Flag', 'Priorite', 'CompLocale', 'VoiesSim')
                 self.cursor_operat.query('USE %s_clients' % self.socname)
                 self.cursor_operat.query('SELECT ${columns} FROM sda WHERE NSDA = %s',
@@ -182,7 +185,7 @@ class IncomingCall:
                         self.elect_prio       = int(clients_sda[6])
                         self.elect_competence = int(clients_sda[7])
                         simult = int(clients_sda[8])
-                        if simult > -1 and nsda >= simult:
+                        if simult > -1 and sda_busyness >= simult:
                                 self.statacd2_tt = 'TT_ASD'
                                 return False
                 else:
@@ -464,7 +467,7 @@ class IncomingCall:
                         if len(agents_acd) > 0:
                                 dispo = agents_acd[0]
                                 bness = dispo[5] * 8 + dispo[6] * 4 + dispo[7] * 2 + dispo[8]
-                                print 'busy-ness :', dispo[5], dispo[6], dispo[7], dispo[8], bness
+                                print 'busy-ness : %d/%d/%d/%d weight = %d' % (dispo[5], dispo[6], dispo[7], dispo[8], bness)
                                 if dispo[3] == 'Prêt'.decode('latin1'):
                                         status = 'Pret%d' % dispo[4]
                                 else:

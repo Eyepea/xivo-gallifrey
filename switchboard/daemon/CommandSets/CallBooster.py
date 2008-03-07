@@ -103,9 +103,22 @@ class CallBoosterCommand(BaseCommand):
         nalerts_simult = 1
         waitingmessages = {}
         alerts_uniqueids = {}
+        confrooms = {}
+
+        # list of incoming calls, indexed by the channel number (as given by asterisk, so should be unique at a given time)
+        incoming_calls = {}
+        incoming_calls_byprio = [[], [], [], [], [], []]
+        # number of incoming calls, indexed by SDA number
+        n_incoming_calls = {}
+
+        outgoing_calls = {}
+        outgoing_calls_ng = {}
+        normal_calls = []
+        originated_calls = {}
+
         commands = ['Init',
                     'AppelOpe', 'TransfertOpe', 'RaccrocheOpe',
-                    'Appel', 'Aboute', 'AppelAboute', 'PutConf', 'ListConf', 'Raccroche',
+                    'Appel', 'Aboute', 'AppelAboute', 'Conf', 'PutConf', 'ListConf', 'Raccroche',
                     'Enregistre', 'Alerte',
                     'Ping',
                     'Attente', 'Reprise',
@@ -117,11 +130,6 @@ class CallBoosterCommand(BaseCommand):
                     'SynchroXivoAgents',
                     'SynchroXivoSDA',
                     'SynchroXivoMOH']
-        incoming_calls = {}
-        outgoing_calls = {}
-        outgoing_calls_ng = {}
-        normal_calls = []
-        originated_calls = {}
 
         def __init__(self, ulist, amis, ctiports, operatini, queued_threads_pipe):
                 """
@@ -422,7 +430,7 @@ class CallBoosterCommand(BaseCommand):
                                           '%d' % (STARTAGENTNUM + int(nope)),
                                           '0:0:0']
                                 self.ulist.adduser(astid, phlist)
-                                userinfo = self.ulist.byast[astid].finduser(tagent)
+                                userinfo = self.ulist.finduser(tagent)
                                 userinfo['sendfiche'] = ['qcb_%05d' % (int(callref) - 100000), 'Agent/%s' % agentnum]
 
                                 cfg = { 'computername' : nope,
@@ -531,7 +539,7 @@ class CallBoosterCommand(BaseCommand):
                         # either Incoming+Tel, Outgoing, (Alert)
                         print 'LINK originated call', channel1, channel2, self.originated_calls[uniqueid1]
                         if self.originated_calls[uniqueid1] == 'dialcb':
-                                ic1 = self.__incallref_from_channel__(event.get('Channel1'))
+                                ic1 = self.incoming_calls.get(event.get('Channel1'))
                                 if ic1 is not None:
                                         print 'LINK Incoming+Tel', event, ic1
                                 return
@@ -626,8 +634,8 @@ class CallBoosterCommand(BaseCommand):
                         else:
                                 # Actually, while an Alert event is an Originated one, it might come here since the Dial event
                                 # comes before the OriginateSuccess or OriginateFailure
-                                ic1 = self.__incallref_from_channel__(event.get('Channel1'))
-                                ic2 = self.__incallref_from_channel__(event.get('Channel2'))
+                                ic1 = self.incoming_calls.get(event.get('Channel1'))
+                                ic2 = self.incoming_calls.get(event.get('Channel2'))
                                 if ic1 is not None:
                                         print 'LINK after AppelAboute', ic1.sdanum, ic1.commid, ic1.appelaboute, ic1.aboute
                                         if ic1.appelaboute is not None:
@@ -664,7 +672,7 @@ class CallBoosterCommand(BaseCommand):
                         # either Incoming+Tel, Outgoing, (Alert)
                         print 'UNLINK originated call', channel1, channel2
                         if self.originated_calls[uniqueid1] == 'dialcb':
-                                ic1 = self.__incallref_from_channel__(event.get('Channel1'))
+                                ic1 = self.incoming_calls.get(event.get('Channel1'))
                                 if ic1 is not None:
                                         print 'UNLINK Incoming+Tel', event, ic1
                                         self.originated_calls[uniqueid1] = 'unlink'
@@ -735,8 +743,8 @@ class CallBoosterCommand(BaseCommand):
                                                 self.__update_taxes__(mycall, 'Termine')
                                                 userinfo['calls'].pop(mycall.commid)
                         else:
-                                ic1 = self.__incallref_from_channel__(event.get('Channel1'))
-                                ic2 = self.__incallref_from_channel__(event.get('Channel2'))
+                                ic1 = self.incoming_calls.get(event.get('Channel1'))
+                                ic2 = self.incoming_calls.get(event.get('Channel2'))
                                 if ic1 is not None:
                                         log_debug(SYSLOG_INFO, 'UNLINK without Agent (1) sda=%s commid=%s' % (ic1.sdanum, ic1.commid))
                                         ic1.set_timestamp_stat('unlink')
@@ -770,7 +778,7 @@ class CallBoosterCommand(BaseCommand):
                 chan = event.get('Channel')
                 uniqueid = event.get('Uniqueid')
                 
-                thiscall = self.__incallref_from_channel__(chan)
+                thiscall = self.incoming_calls.get(chan)
                 if thiscall is not None:
                         print 'HANGUP => __update_stat_acd2__', uniqueid, chan, thiscall.queuename, thiscall.uinfo
                         if thiscall.uinfo is not None:
@@ -780,8 +788,10 @@ class CallBoosterCommand(BaseCommand):
                         self.__update_taxes__(thiscall, 'Termine')
                         self.__update_stat_acd2__(thiscall)
                         self.__clear_call_fromqueues__(astid, thiscall)
-                        # removes the call from incoming call list
-                        self.incoming_calls[thiscall.sdanum].pop(chan)
+                        # removes the call from the incoming calls' list
+                        self.__incall_remove__(thiscall, chan)
+                        del thiscall
+
 
                 if uniqueid in self.alerts_uniqueids:
                         # should not come here after success since it is deleted in uservent treatment
@@ -1029,7 +1039,7 @@ class CallBoosterCommand(BaseCommand):
                 exten = event.get('Exten')
 
                 # find the channel among the incoming calls, otherwise among outgoing ones
-                thiscall = self.__incallref_from_channel__(chan)
+                thiscall = self.incoming_calls.get(chan)
                 if thiscall is None and chan in self.outgoing_calls:
                         thiscall = self.outgoing_calls[chan]
 
@@ -1080,7 +1090,7 @@ class CallBoosterCommand(BaseCommand):
                 chan = event.get('Channel')
 
                 # find the channel among the incoming calls, otherwise among outgoing ones
-                thiscall = self.__incallref_from_channel__(chan)
+                thiscall = self.incoming_calls.get(chan)
                 if thiscall is None and chan in self.outgoing_calls:
                         thiscall = self.outgoing_calls[chan]
 
@@ -1102,7 +1112,7 @@ class CallBoosterCommand(BaseCommand):
                 chan = event.get('Channel')
 
                 # find the channel among the incoming calls, otherwise among outgoing ones
-                thiscall = self.__incallref_from_channel__(chan)
+                thiscall = self.incoming_calls.get(chan)
                 if thiscall is None and chan in self.outgoing_calls:
                         thiscall = self.outgoing_calls[chan]
 
@@ -1112,7 +1122,7 @@ class CallBoosterCommand(BaseCommand):
                         thiscall.set_timestamp_stat('parkgiveup')
                         thiscall.parkexten = None
                         self.__send_msg__(thiscall.uinfo, '%s,1,,Annule/' % thiscall.commid)
-                        print 'ParkedCall Annule', thiscall.uinfo['calls']
+                        print 'ParkedCall Annule', thiscall.parking, thiscall.peerchannel, thiscall.uinfo['calls']
                         # remove the call from userinfo + list
                         # XXX update taxes & stats !
                 return
@@ -1162,10 +1172,12 @@ class CallBoosterCommand(BaseCommand):
                 userinfo = self.__uinfo_by_agentnum__(astid, agentnum)
                 if userinfo is not None:
                         print userinfo['agentnum'], 'has left', userinfo['calls']
-                        for callnum, anycall in userinfo['calls'].iteritems():
-                                self.__send_msg__(anycall.uinfo, '%s,1,,Annule/' % anycall.commid)
-                                # if an outgoing call was there, send an (Annule ?)
                         del userinfo['agentchannel']
+                        if 'conf' in userinfo:
+                                print 'actually, %s goes into the conf room %s' % (agentnum, userinfo.get('conf'))
+                        else:
+                                for callnum, anycall in userinfo['calls'].iteritems():
+                                        self.amis[astid].hangup(anycall.peerchannel, '')
                 else:
                         log_debug(SYSLOG_WARNING, '(agentlogoff) no user found for agent %s' % agentnum)
                 return
@@ -1249,7 +1261,13 @@ class CallBoosterCommand(BaseCommand):
                 """
                 Function called when an AMI MeetMeJoin Event is read.
                 """
-                print event
+                meetme = event.get('Meetme')
+                channel = event.get('Channel')
+                usernum = event.get('Usernum')
+                if meetme not in self.confrooms:
+                        self.confrooms[meetme] = 0
+                self.confrooms[meetme] += 1
+                print 'CONF JOIN', meetme, channel, usernum, self.confrooms[meetme]
                 return
 
 
@@ -1257,7 +1275,12 @@ class CallBoosterCommand(BaseCommand):
                 """
                 Function called when an AMI MeetMeLeave Event is read.
                 """
-                print event
+                meetme = event.get('Meetme')
+                channel = event.get('Channel')
+                usernum = event.get('Usernum')
+                if meetme in self.confrooms:
+                        self.confrooms[meetme] -= 1
+                print 'CONF LEAVE', meetme, channel, usernum, self.confrooms[meetme]
                 return
 
 
@@ -1437,6 +1460,39 @@ class CallBoosterCommand(BaseCommand):
 
         # INCOMING calls management
 
+        def __incall_list__(self):
+                """
+                """
+                print 'number by SDA = ', self.n_incoming_calls
+                print 'calls         = ', self.incoming_calls
+                print 'calls         = ', self.incoming_calls_byprio
+
+
+        def __incall_remove__(self, call, chan):
+                """
+                """
+                print 'removing incoming call from the list ...'
+                self.incoming_calls.pop(chan)
+                if call in self.incoming_calls_byprio[call.elect_prio]:
+                        self.incoming_calls_byprio[call.elect_prio].remove(call)
+                if call.sdanum in self.n_incoming_calls:
+                        self.n_incoming_calls[call.sdanum] -= 1
+                self.__incall_list__()
+
+
+        def __incall_add__(self, call, chan):
+                """
+                """
+                print 'adding incoming call into the list ...'
+                self.incoming_calls[chan] = call
+                if call.sdanum not in self.n_incoming_calls:
+                        self.n_incoming_calls[call.sdanum] = 0
+                self.n_incoming_calls[call.sdanum] += 1
+                # if call.waiting:
+                self.incoming_calls_byprio[call.elect_prio].append(call)
+                self.__incall_list__()
+
+
         def __sendfiche_a__(self, userinfo, incall):
                 """
                 Sends the Fiche informations (incall) to the appropriate user (userinfo)
@@ -1457,7 +1513,7 @@ class CallBoosterCommand(BaseCommand):
                 """
                 The call comes here when the AGI has directly found a peer.
                 """
-                userinfo = self.ulist.byast[astid].finduser(dest)
+                userinfo = self.ulist.finduser(dest)
                 log_debug(SYSLOG_INFO, '__sendfiche__ : userinfo = %s' % str(userinfo))
                 if userinfo is not None:
                         agentnum = userinfo['agentnum']
@@ -1483,13 +1539,16 @@ class CallBoosterCommand(BaseCommand):
                         if incall.queuename in userinfo['queuelist']:
                                 del userinfo['queuelist'][incall.queuename]
                                 agentnum = userinfo['agentnum']
-                                print '__clear_call_fromqueues__ : removing %s (queue %s) for agent %s' %(incall.sdanum, incall.queuename, agentnum)
+                                print '__clear_call_fromqueues__ : removing %s (queue %s) for agent %s (%s)' %(incall.sdanum, incall.queuename, agentnum, incall.waiting)
                                 if opername in incall.agentlist:
                                         incall.agentlist.remove(opername)
                                 else:
-                                        print opername, 'not in agentlist', incall.agentlist
+                                        print opername.encode('latin1'), 'not in agentlist', incall.agentlist, '=> probably %s = False' % incall.waiting
+                                if incall.waiting:
+                                        self.__send_msg__(userinfo, '%s,%s,,CLR-ACD/' % (incall.commid, incall.sdanum))
+                                else:
+                                        self.__send_msg__(userinfo, '%s,,,Annule/' % incall.commid)
                                 self.amis[astid].queueremove(incall.queuename, 'Agent/%s' % agentnum)
-                                self.__send_msg__(userinfo, '%s,%s,,CLR-ACD/' % (incall.commid, incall.sdanum))
                 return
 
 
@@ -1500,7 +1559,7 @@ class CallBoosterCommand(BaseCommand):
                 print '__addtoqueue__', dest, incall.commid, incall.sdanum
                 self.amis[astid].queueadd(incall.queuename, GHOST_AGENT)
                 self.amis[astid].queuepause(incall.queuename, GHOST_AGENT, 'false')
-                userinfo = self.ulist.byast[astid].finduser(dest)
+                userinfo = self.ulist.finduser(dest)
                 if userinfo is not None:
                         if incall.queuename not in userinfo['queuelist']:
                                 agentnum = userinfo['agentnum']
@@ -1615,6 +1674,8 @@ class CallBoosterCommand(BaseCommand):
 
                 - Change       : updates the queues and agents' statuses
 
+                - Conf         : initiates a 3-party conference (caller, client and agent)
+
                 - Enregistre   : records a voice message
 
                 - ForceACD     : forces one given incoming/pending call to be chosen by the agent
@@ -1628,7 +1689,7 @@ class CallBoosterCommand(BaseCommand):
                 - Ping         : received every 60 seconds, one replies 'Pong' and set a timer in order for
                 broken connections to be tracked
 
-                - PutConf      : sends the agent into a conference room
+                - PutConf      : sends the agent into a given conference room
 
                 - Prêt         : according to its argument (0 / 1), sets the availability of the client.
                 '0' when the client can receive a call and fiche.
@@ -1676,7 +1737,7 @@ class CallBoosterCommand(BaseCommand):
                         agentid = 'Agent/%s' % agentnum
                 else:
                         print '--- no agentnum defined in userinfo'
-                
+
                 if cname == 'AppelOpe':
                         if len(parsedcommand.args) == 2:
                                 # the phonenum comes from the first Init/ command, therefore doesn't need
@@ -1685,12 +1746,14 @@ class CallBoosterCommand(BaseCommand):
                                         log_debug(SYSLOG_WARNING, 'AppelOpe : %s phone is already logged in as agent number %s' % (phonenum, agentnum))
                                 self.__schedule_agentlogin__(userinfo)
                         else:
-                                reply = ',%d,,AppelOpe/' % (-3)
+                                reply = ',-3,,AppelOpe/'
                                 connid_socket.send(reply)
+
 
                 elif cname == 'RaccrocheOpe':
                         os.popen('asterisk -rx "agent logoff %s"' % agentid)
                         # stat_acd2
+
 
                 elif cname == 'TransfertOpe':
                         mreference = parsedcommand.args[1]
@@ -1717,12 +1780,14 @@ class CallBoosterCommand(BaseCommand):
                                         print 'TransfertOpe', cchan, addposte, results[0][0]
                                         r = self.amis[astid].transfer(cchan, results[0][0], 'default')
 
+
                 elif cname == 'ListeACD':
                         lst = []
                         for anycommid, anycall in userinfo['calls'].iteritems():
                                 if anycall.dir == 'i':
-                                        lst.append(ref)
+                                        lst.append(anycall.commid)
                         connid_socket.send(',%s,,ListeACD/' % (';'.join(lst)))
+
 
                 elif cname == 'ForceACD':
                         """
@@ -1745,6 +1810,7 @@ class CallBoosterCommand(BaseCommand):
                                         userinfo['calls'][calltoforce.commid] = calltoforce
                         else:
                                 print 'ForceACD - unknown ref =', reference
+
 
                 elif cname == 'Appel':
                         mreference = parsedcommand.args[1]
@@ -1779,6 +1845,7 @@ class CallBoosterCommand(BaseCommand):
                                         userinfo['calls'][comm_id_outgoing].tocall = True
                                         self.__schedule_agentlogin__(userinfo)
 
+
                 elif cname == 'Raccroche':
                         reference = parsedcommand.args[1]
                         try:
@@ -1806,6 +1873,7 @@ class CallBoosterCommand(BaseCommand):
                         except Exception, exc:
                                 print '--- exception --- in Raccroche treatment ...', exc
 
+
                 elif cname == 'PutConf':
                         confnum = parsedcommand.args[1]
                         refcomm = parsedcommand.args[2]
@@ -1818,11 +1886,35 @@ class CallBoosterCommand(BaseCommand):
                                 reply = '%s,1,,PutConf/' % refcomm
                                 connid_socket.send(reply)
 
+
                 elif cname == 'ListConf':
                         confnum = parsedcommand.args[1]
                         listconf = []
                         reply = '%s,%s,,ListConf/' % (refcomm, ';'.join(listconf))
                         connid_socket.send(reply)
+
+
+                elif cname == 'Conf':
+                        reference = parsedcommand.args[1]
+                        [refcomm_out, refcomm_in] = reference.split('|')
+                        print 'Conf', opername, refcomm_out, refcomm_in
+                        # warning : we might need to park one peer before
+
+                        confnum = refcomm_in
+                        if refcomm_in in userinfo['calls']:
+                                anycall = userinfo['calls'][refcomm_in]
+                                self.amis[astid].setvar(anycall.peerchannel, 'CB_CONFNUM', confnum)
+                                self.amis[astid].transfer(anycall.peerchannel, 's', 'ctx-callbooster-conf')
+                        if refcomm_out in userinfo['calls']:
+                                anycall = userinfo['calls'][refcomm_out]
+                                self.amis[astid].setvar(anycall.peerchannel, 'CB_CONFNUM', confnum)
+                                self.amis[astid].transfer(anycall.peerchannel, 's', 'ctx-callbooster-conf')
+
+                        userinfo['conf'] = confnum
+                        self.amis[astid].setvar(userinfo['agentchannel'], 'CB_CONFNUM', confnum)
+                        self.amis[astid].transfer(userinfo['agentchannel'], 's', 'ctx-callbooster-conf')
+                        connid_socket.send(',,,Conf/')
+
 
                 elif cname == 'Aboute':
                         reference = parsedcommand.args[1]
@@ -1837,6 +1929,7 @@ class CallBoosterCommand(BaseCommand):
                                 incall.aboute = refcomm_out
                         if callbackexten is not None:
                                 self.amis[astid].transfer(chan, callbackexten, 'default')
+
 
                 elif cname == 'AppelAboute': # transfer
                         mreference = parsedcommand.args[1]
@@ -2099,32 +2192,35 @@ class CallBoosterCommand(BaseCommand):
 
         def __choose_and_queuepush__(self, astid, info_whocalled):
                 """
-                To be called any time one would like to update the queues's status.
+                To be called any time one would like to update the queues' status.
+                The choice is done in 2 steps.
+                * call to __choose__ in order to know which action is associated to which operator
+                * application of these actions
+                This is done in 2 steps in order to avoid that some actions decided in the first one would
+                change future analysis during its own processing.
                 """
                 try:
-                        print '__choose_and_queuepush__ : MANAGE (after %s)' % info_whocalled
                         todo = self.__choose__(astid)
                         print '__choose_and_queuepush__ : CHOOSE (after %s)' % info_whocalled, todo
-                        for opername_iter, mtd in todo.iteritems():
-                                if len(mtd) > 0:
-                                        td = mtd[0]
-                                        # print 'pretx', td
-                                        if td[0] == 'push':
-                                                self.__clear_call_fromqueues__(astid, td[1])
-                                                self.__sendfiche__(astid, opername_iter, td[1])
-                                                print 'manage : fiche sent to %s' % opername_iter
-                                        elif td[0] == 'enqueue':
-                                                print 'manage : enqueue %s (pret)' % opername_iter
-                                                self.__addtoqueue__(astid, opername_iter, td[1])
-                                        elif td[0] == 'dequeue':
-                                                print 'manage : dequeue %s (pret)' % opername_iter
-                                                userinfo = self.ulist.byast[astid].finduser(opername_iter)
-                                                td[1].agentlist.remove(opername_iter)
-                                                self.amis[astid].queueremove(td[1].queuename, 'Agent/%s' % userinfo['agentnum'])
-                                                nagents = len(td[1].agentlist)
+                        for opername_iter, couplelist in todo.iteritems():
+                                for td in couplelist:
+                                        [queueaction, queuecall] = td
+                                        if queueaction == 'push':
+                                                print 'manage : sending fiche to %s (%s)' % (opername_iter, info_whocalled)
+                                                self.__clear_call_fromqueues__(astid, queuecall)
+                                                self.__sendfiche__(astid, opername_iter, queuecall)
+                                        elif queueaction == 'enqueue':
+                                                print 'manage : enqueue %s (%s)' % (opername_iter, info_whocalled)
+                                                self.__addtoqueue__(astid, opername_iter, queuecall)
+                                        elif queueaction == 'dequeue':
+                                                print 'manage : dequeue %s (%s)' % (opername_iter, info_whocalled)
+                                                userinfo = self.ulist.finduser(opername_iter)
+                                                queuecall.agentlist.remove(opername_iter)
+                                                self.amis[astid].queueremove(queuecall.queuename, 'Agent/%s' % userinfo['agentnum'])
+                                                nagents = len(queuecall.agentlist)
                                                 print 'nagents = %d' % nagents
                                                 if nagents == 0:
-                                                        self.amis[astid].queueremove(td[1].queuename, GHOST_AGENT)
+                                                        self.amis[astid].queueremove(queuecall.queuename, GHOST_AGENT)
                 except Exception, exc:
                         print '--- exception --- __choose_and_queuepush__ (%s) : %s' % (info_whocalled, str(exc))
 
@@ -2206,11 +2302,10 @@ class CallBoosterCommand(BaseCommand):
                         print '(received) ACDReponse', msg
                         sdanum = params[5]
                         commid = params[6]
-                        if sdanum in self.incoming_calls:
-                                for chan, ic in self.incoming_calls[sdanum].iteritems():
-                                        if ic.commid == commid :
-                                                status = None
-                                                if val == 'Absent':
+                        for chan, ic in self.incoming_calls.iteritems():
+                                if ic.commid == commid and ic.sdanum == sdanum:
+                                        status = None
+                                        if val == 'Absent':
                                                         toremove = None
                                                         for j, k in ic.list_svirt.iteritems():
                                                                 if k['request'][:6] == params[2:]:
@@ -2223,7 +2318,7 @@ class CallBoosterCommand(BaseCommand):
                                                                         print ic.list_svirt
                                                         else:
                                                                 print 'found nobody to remove ...'
-                                                elif val == 'Trouvé':
+                                        elif val == 'Trouvé':
                                                         # FicheD
                                                         if ic.dialplan['callerid'] == 1:
                                                                 cnum = ic.cidnum
@@ -2233,22 +2328,22 @@ class CallBoosterCommand(BaseCommand):
                                                                                                ic.sdanum, params[2], params[3], params[4],
                                                                                                cnum)
                                                         self.pending_sv_fiches[ic.commid] = reply
-                                                elif val == 'Attente':
+                                        elif val == 'Attente':
                                                         timer = threading.Timer(5, self.__callback_svcheck__)
                                                         timer.start()
                                                         ic.svirt = {'params' : params,
                                                                     'timer' : timer,
                                                                     'val' : '1'}
                                                         print '(Attente) : starting a Timer :', timer
-                                                print 'OperatSock : received reply for :', sdanum, commid, ic, ic.commid, val
+                                        print 'OperatSock : received reply for :', sdanum, commid, ic, ic.commid, val
                 elif cmd == 'ACDCheckRequest':
                         print '(received) ACDCheckRequest', msg
                         commid = params[2]
                         iic = None
-                        for sdanum, lic in self.incoming_calls.iteritems():
-                                for chan, ic in lic.iteritems():
-                                        if ic.commid == commid :
-                                                iic = ic
+                        for chan, ic in self.incoming_calls.iteritems():
+                                if ic.commid == commid :
+                                        iic = ic
+                                        break
                         if iic is not None:
                                 timer = threading.Timer(5, self.__callback_svcheck__)
                                 timer.start()
@@ -2288,23 +2383,22 @@ class CallBoosterCommand(BaseCommand):
                                                         disconnlist.append(userinfo)
                         elif tname.startswith('SV'):
                                 print 'checkqueue (SV)', tname
-                                for sdanum, lic in self.incoming_calls.iteritems():
-                                        for chan, ic in lic.iteritems():
-                                                if ic.svirt is not None and ic.svirt['timer'] == thisthread:
-                                                        v = ic.svirt['params']
-                                                        val = int(ic.svirt['val'])
-                                                        if val != 0:
+                                for chan, ic in self.incoming_calls.iteritems():
+                                        if ic.svirt is not None and ic.svirt['timer'] == thisthread:
+                                                v = ic.svirt['params']
+                                                val = int(ic.svirt['val'])
+                                                if val != 0:
+                                                        req = 'ACDCheckRequest' + chr(2) + chr(2).join(v[2:8]) + chr(3)
+                                                        print 'req =', v, req
+                                                        if self.soperat_socket is not None:
+                                                                self.soperat_socket.send(req)
+                                                        ic.svirt['timer'] = None
+                                                else:
+                                                        if ic.commid in self.pending_sv_fiches:
                                                                 req = 'ACDCheckRequest' + chr(2) + chr(2).join(v[2:8]) + chr(3)
-                                                                print 'req =', v, req
                                                                 if self.soperat_socket is not None:
                                                                         self.soperat_socket.send(req)
                                                                 ic.svirt['timer'] = None
-                                                        else:
-                                                                if ic.commid in self.pending_sv_fiches:
-                                                                        req = 'ACDCheckRequest' + chr(2) + chr(2).join(v[2:8]) + chr(3)
-                                                                        if self.soperat_socket is not None:
-                                                                                self.soperat_socket.send(req)
-                                                                        ic.svirt['timer'] = None
                         elif tname.startswith('AgentLogin'):
                                 print 'checkqueue (AgentLogin)', tname
                                 for astid in self.ulist.byast:
@@ -2711,9 +2805,8 @@ class CallBoosterCommand(BaseCommand):
                 Returns the unsorted list of currently used queues.
                 """
                 l = []
-                for sdanum, inc in self.incoming_calls.iteritems():
-                        for chan, icall in inc.iteritems():
-                                l.append(icall.queuename)
+                for chan, icall in self.incoming_calls.iteritems():
+                        l.append(icall.queuename)
                 return l
 
 
@@ -2729,51 +2822,37 @@ class CallBoosterCommand(BaseCommand):
                 return None
 
 
-        def __incallref_from_channel__(self, chan):
-                """
-                Returns the IncomingCall reference that is associated with Asterisk channel reference 'chan'.
-                """
-                thiscall = None
-                for sdanum, inc in self.incoming_calls.iteritems():
-                        if chan in inc:
-                                thiscall = inc[chan]
-                                break
-                return thiscall
-
-
         def __choose__(self, astid):
                 """
                 This is the main entry to choose among availabilities.
                 It has to be called after most events, like Login, Change, Pret's, Logoff, new incoming/outgoing calls.
+
+                The choice is done, according to current (unaffected yet) incoming calls and logged in/out agents,
+                whether one has to wait or push.
+
+                We need a '2-dimensional' main loop here :
+                * the first 'dimension' is over the SDA's, in order for their properties to be correctly handled
+                * the second 'dimension' is over the operators and rooms
                 """
-                # choose, according to other incoming calls & logged in/out, if one has to wait or push
-                byprio = []
-                for u in xrange(6):
-                        byprio.append([])
-                for sdanum, inc in self.incoming_calls.iteritems():
-                        for chan in inc:
-                                tc = inc[chan]
-                                if tc.waiting:
-                                        # beware : when is tc.elect_prio set ?
-                                        # maybe it would be useful to have everything sorted as soon as the call comes first
-                                        byprio[tc.elect_prio].append(tc)
                 myidx = None
                 mycall = None
                 todo_by_oper = {}
                 todo_by_call = {}
-                time.sleep(0.1) # wait in order for the database values to be compliant ...
+                time.sleep(0.1) # wait in order for the database values to be compliant with the state change
+                dt1 = time.time()
                 for sdaprio in xrange(6):
-                        if len(byprio[sdaprio]) > 0:
-                                for incall in byprio[sdaprio]:
+                        for incall in self.incoming_calls_byprio[sdaprio]:
+                                if incall.waiting:
                                         # choose the operator or the list of queues for this incoming call
                                         topush = {}
                                         to_enqueue = []
+
                                         for opername in incall.list_operators:
                                                 if opername not in todo_by_oper:
                                                         todo_by_oper[opername] = []
                                                 opstatus = incall.check_operator_status(opername)
                                                 print '__choose__ : (SDA prio = %d) <%s> (%s)' % (sdaprio, opername.encode('latin1'), opstatus)
-                                                userinfo = self.ulist.byast[astid].finduser(opername)
+                                                userinfo = self.ulist.finduser(opername)
                                                 userqueuesize = len(userinfo['queuelist'])
                                                 if opstatus is not None:
                                                         if 'connection' in userinfo.get('login'):
@@ -2791,6 +2870,9 @@ class CallBoosterCommand(BaseCommand):
                                                         if userqueuesize > 0:
                                                                 if incall.queuename in userinfo['queuelist']:
                                                                         todo_by_oper[opername].append(['dequeue', incall])
+
+                                        # for nid, svirtparams in thiscall.list_svirt.iteritems():
+
 
 
                                         print '__choose__ : callid = %s :' % incall.commid, topush, to_enqueue
@@ -2812,6 +2894,7 @@ class CallBoosterCommand(BaseCommand):
                                                                         minb = b
                                                 if opername_push is not None:
                                                         todo_by_oper[opername_push].append(['push', incall])
+                dt2 = time.time()
                 return todo_by_oper
 
 
@@ -2841,13 +2924,10 @@ class CallBoosterCommand(BaseCommand):
 
                         if thiscall.statacd2_state == 'V':
                                 print ' NCOMING CALL ## calling get_sda_profiles ##'
-                                if sdanum not in self.incoming_calls:
-                                        self.incoming_calls[sdanum] = {}
                                 self.__clear_call_fromqueues__(astid, thiscall)
-                                ret = thiscall.get_sda_profiles(len(self.incoming_calls[sdanum]))
+                                ret = thiscall.get_sda_profiles(self.n_incoming_calls.get(sdanum))
                                 if ret == True:
-                                        self.incoming_calls[sdanum][inchannel] = thiscall
-                                        print ' NCOMING CALL : list of used SDA :', self.incoming_calls
+                                        self.__incall_add__(thiscall, inchannel)
                                 else:
                                         self.__update_taxes__(thiscall, 'Termine')
                                         self.__update_stat_acd2__(thiscall)
@@ -2857,8 +2937,8 @@ class CallBoosterCommand(BaseCommand):
                                 self.__update_stat_acd2__(thiscall)
                                 thiscall = None
                 else:
-                        if sdanum in self.incoming_calls and inchannel in self.incoming_calls[sdanum]:
-                                thiscall = self.incoming_calls[sdanum][inchannel]
+                        if inchannel in self.incoming_calls:
+                                thiscall = self.incoming_calls[inchannel]
 
                 #  retstatus = welcome if needed
                 argument = None
@@ -2897,7 +2977,7 @@ class CallBoosterCommand(BaseCommand):
                                 print 'CHOOSE (after Incall)', todo
 
                                 """
-                                We set the Ghost Agent into the queue, in order not leave right now.
+                                We set the Ghost Agent into the queue, in order not to leave right now.
                                 """
                                 self.amis[astid].queueadd(thiscall.queuename, GHOST_AGENT)
                                 self.amis[astid].queuepause(thiscall.queuename, GHOST_AGENT, 'false')
@@ -2906,20 +2986,22 @@ class CallBoosterCommand(BaseCommand):
                                 nevt = 0
                                 for opername_iter, couplelist in todo.iteritems():
                                         for td in couplelist:
-                                                log_debug(SYSLOG_INFO, 'elect : secretariat / %s / %s / %s' % (opername_iter, td[0], td[1].sdanum))
-                                                if td[0] == 'push':
-                                                        if thiscall == td[1]:
+                                                print 'td', td
+                                                [queueaction, queuecall] = td
+                                                log_debug(SYSLOG_INFO, 'elect : secretariat / %s / %s / %s' % (opername_iter, queueaction, queuecall.sdanum))
+                                                if queueaction == 'push':
+                                                        if thiscall == queuecall:
                                                                 nevt += 1
-                                                                self.__clear_call_fromqueues__(astid, td[1])
-                                                                self.__sendfiche__(astid, opername_iter, td[1])
+                                                                self.__clear_call_fromqueues__(astid, queuecall)
+                                                                self.__sendfiche__(astid, opername_iter, queuecall)
                                                                 delay = 100
                                                                 argument = None
                                                         else:
                                                                 pass
-                                                elif td[0] == 'enqueue':
+                                                elif queueaction == 'enqueue':
                                                         nevt += 1
-                                                        self.__addtoqueue__(astid, opername_iter, td[1])
-                                                elif td[0] == 'dequeue':
+                                                        self.__addtoqueue__(astid, opername_iter, queuecall)
+                                                elif queueaction == 'dequeue':
                                                         print 'dequeue after Incall ???', opername_iter, td
                                                         pass
                                 if nevt == 0:

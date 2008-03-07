@@ -14,7 +14,7 @@ class Users:
         def setcommandclass(self, commandclass):
                 self.commandclass = commandclass
                 return
-                
+
         def set_ast_list(self, astid):
                 self.byast[astid] = Users_byast(astid)
                 return
@@ -22,6 +22,14 @@ class Users:
         def adduser(self, astid, userparams):
                 self.byast[astid].adduser(userparams)
                 return
+
+        def finduser(self, username):
+                uinfo = None
+                for astid, user_byast in self.byast.iteritems():
+                        uinfo = user_byast.finduser(username)
+                        if uinfo is not None:
+                                break
+                return uinfo
 
         def disconnect_user(self, userinfo):
                 astid = userinfo.get('astid')
