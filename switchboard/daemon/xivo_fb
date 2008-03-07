@@ -1,15 +1,6 @@
 #!/usr/bin/python
 # $Revision$
 # $Date$
-#
-# Authors : Thomas Bernard, Corentin Le Gall, Benoit Thinot, Guillaume Knispel
-#           Proformatique
-#           67, rue Voltaire
-#           92800 PUTEAUX
-#           (+33/0)1.41.38.99.60
-#           mailto:technique@proformatique.com
-#           (C) 2007 Proformatique
-#
 
 ## \mainpage
 # \section section_1 General description of XIVO Daemon

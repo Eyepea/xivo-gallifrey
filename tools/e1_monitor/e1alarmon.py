@@ -1,12 +1,4 @@
 #!/usr/bin/python
-# Authors : Thomas Bernard, Corentin Le Gall, Benoit Thinot, Guillaume Knispel
-#           Proformatique
-#           67, rue Voltaire
-#           92800 PUTEAUX
-#           (+33/0)1.41.38.99.60
-#           mailto:technique@proformatique.com
-#           (C) 2007 Proformatique
-#
 
 __version__ = "$Revision$ $Date: 2007-06-15 18:42:49 +0200 (ven, 15 jun 2007) $"
 
