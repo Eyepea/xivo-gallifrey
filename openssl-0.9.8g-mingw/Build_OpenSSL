@@ -20,28 +20,27 @@ pourra effectivement redistribuer le truc).
 étaient linkés avec msvcr71.dll, et ce dernier n'est pas redistribuable (sauf
 peut-être si on avait eu une licence valide de Visual C++)
 
-3) pas sûr à 100% de ce point, mais on est potentiellement tenu légalement 
-d'être capable d'appliquer certains des critères de la GNU GPLv2 même sur
-OpenSSL en cas de redistribution des sources (il faudrait faire une étude
-détaillée des exceptions que Trolltech nous autorise pour trancher
-definitivement, mais dans le doute autant être safe), et n'importe quel client
-pourrait alors nous demander de lui fournir les sources et tout script /
-programme necessaire au build, ce qui inclue potentiellement même Cygwin, 
-MinGW et toute procédure permettant de réussir le build car il ne s'agit pas
-d'une chaine installée par défaut sous Windows ou largement standard comme
-on pourrait considerer que Visual C l'est, et qu'il faut une liste
-de précondition pour que le build réussisse)
+3) on est tenu d'être capable d'appliquer certains des critères de la GNU
+GPLv2 même sur OpenSSL ; on doit distribuer les sources d'OpenSSL si on
+distribue les binaires d'OpenSSL liés à un application sous GPL + exception
+autorisant OpenSSL, cette distribution devant se faire selon les mêmes
+critères que la distribution des codes sources sous GPL.
 
-Tout cela implique que, par défaut, concernant les logiciels qui ne sont pas
-installés sur le type de LdB cible après une installation par défaut de base
-du LdB en question (vraiment de base, sans logiciel supplémentaire ni outil
-de dev particulier), il faut être capable de builder le soft nous même 
-(en plus de bien sûr étudier les compatibilité des licences).
+4) on est tenu d'offrir de distribuer la chaîne de compilation MinGW+Cygwin
+dont on se sert pour produire nos binaires aux gens à qui l'on distribue ces
+mêmes binaires, et aux tiers qui les auraient obtenus indirectement si
+l'offre de distribuer les sources c'est elle aussi vue propagée.
+Il faut bien entendu respecter les licences respective des logiciels faisant
+partie de cette chaîne, donc il nous faut aussi leur sources.
+On est aussi tenu de fournir tous les scripts et autres dispositifs de
+contrôle et d'une manière générale toute information permettant de réussir le
+build.
 
 ---
 
 L'host est constitué d'un Windows XP Pro SP2.
-Il est lui même le guest d'un KVM.
+Il est lui même le guest d'un VirtualBox, hébergé sur la machine cervin du
+bureau, dans le compte xilun.
 
 ---
 
@@ -162,18 +161,14 @@ Donc les paquets OpenSSL listé ci-dessus ne sont pas réutilisable
 pour ce qu'on distribuera nous.
 
 NOTE3: On dispose de tous les paquets binaires sur notre serveur de build
-Windows. Il faudrait récup les sources correspondant pour être sûr à 200%
-d'être capable dans tous les cas de se conformer avec la GNU GPLv2 (et autres
-licences copyleft), car il y a ambiguïté sur le fait que Cygwin est un "major
-components (compiler, kernel, and so on) of the operating system on which the
-executable runs" (GNU GPLv2 Section 3) ou pas, vu qu'il n'est pas distribué de
-base avec Windows. Donc si on est ammené à redistribuer cette chaîne binaire
-pour cette raison, les critères des licences copylefts respectives des
-différents soft la composant s'appliqueront... Contournement possible; laisser
-systématiquement aux clients la responsabilité des installations des binaires
-Windows en leur spécifiant contractuellement en petites lignes que la seule
-cible supportée formellement est un Win XP SP2 doté de Cygwin et de tous les
-paquets énoncés ci-dessus.
+Windows. On dispose également des paquets sources correspondant, ce qui est
+indispensable au respect des licences des logiciels servant au build dans le
+cadre d'une redistribution de ces derniers, ce qui peut être requis pour
+respecter la licence GPL de QT et donc pouvoir distribuer nos clients XIVO,
+qui dérivent de QT.
+Les paquets binaires et sources sont sous :
+
+	C:\Documents and Settings\winbuild\Bureau\Packages
 
 ---
 
@@ -187,6 +182,10 @@ Il s'agit de
 	ftp://ftp.trolltech.com/misc/MinGW-3.4.2.exe
 
 On a une copie locale de ces deux fichiers sur notre serveur de build Windows.
+
+Les paquets binaires et sources sont sous :
+
+        C:\Documents and Settings\winbuild\Bureau\Packages
 
 ---
 
@@ -232,7 +231,7 @@ build_under_broken_cygwin.patch
 ---
 build_cygwin_gnu_make_3_81_cross_mingw.patch
 
-À cause d'un arret de support d'un patch dans les cygwins recents, make 3.81,
+À cause d'un arret de support d'un patch dans les cygwin recents, make 3.81,
 les paths dos/windows like (avec slash (ou backslash?)) ne sont plus supportés
 dans les Makefile donc le patch build_cygwin_gnu_make_3_81_cross_mingw.patch 
 transforme les filenames Windows hybride en filename Cygwin.
