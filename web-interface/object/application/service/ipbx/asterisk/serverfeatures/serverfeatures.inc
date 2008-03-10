@@ -55,12 +55,12 @@ class xivo_application_service_asterisk_serverfeatures extends xivo_application_
 		return($this->_info);
 	}
 
-	function get_server_list()
+	function get_server_list($disable=null,$order=null,$limit=null)
 	{
 		if($this->_param['type'] === 'xivo')
-			return($this->_server->get_all(null,true,null,null,true));
+			return($this->_server->get_all($disable,true,$order,$limit,true));
 		else if($this->_param['type'] === 'ldap')
-			return($this->_server->get_ldapfilters_list(null,null,null,true));
+			return($this->_server->get_ldapfilters_list($disable,$order,$limit,true));
 
 		return(false);
 	}

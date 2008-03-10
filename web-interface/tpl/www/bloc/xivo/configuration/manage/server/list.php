@@ -29,16 +29,14 @@
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
 <?php
-	$list = $this->get_var('list');
-
-	if($list === false || ($nb = count($list)) === 0):
+	if(($list = $this->get_var('list')) === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
 		<td colspan="8" class="td-single"><?=$this->bbf('no_server');?></td>
 	</tr>
 <?php
 	else:
-		for($i = $pager['beg'],$j = 0;$i < $pager['end'] && $i < $pager['total'];$i++,$j++):
+		for($i = 0;$i < $nb;$i++):
 
 			$ref = &$list[$i];
 
@@ -50,7 +48,7 @@
 
 			$ref['ssl'] = intval((bool) $ref['ssl']);
 
-			$mod = $j % 2 === 0 ? 1 : 2;
+			$mod = $i % 2 === 0 ? 1 : 2;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
 		<td class="td-left"><?=$form->checkbox(array('name' => 'server[]','value' => $ref['id'],'label' => false,'id' => 'it-server-'.$i,'checked' => false,'field' => false));?></td>

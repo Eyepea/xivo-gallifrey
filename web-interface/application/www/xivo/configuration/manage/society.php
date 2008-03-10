@@ -93,17 +93,25 @@ switch($act)
 		break;
 	default:
 		$act = 'list';
-		$total = 0;
+		$nbbypage = 20;
 
-		if(($list = $_SCT->get_all()) !== false)
+		$order = array();
+		$order['name'] = SORT_ASC;
+
+		$limit = array();
+		$limit[0] = ($page - 1) * $nbbypage;
+		$limit[1] = $nbbypage;
+
+		$list = $_SCT->get_all(null,true,$order,$limit);
+		$total = $_SCT->get_cnt();
+
+		if($list === false && $total > 0)
 		{
-			$total = count($list);
-			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('key' => 'name'));
-			usort($list,array(&$sort,'str_usort'));
+			$param['page'] = $page - 1;
+			$_QRY->go($_HTML->url('xivo/configuration/manage/society'),$param);
 		}
 
-		$_HTML->set_var('pager',xivo_calc_page($page,20,$total));
+		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
 		$_HTML->set_var('list',$list);
 }
 
