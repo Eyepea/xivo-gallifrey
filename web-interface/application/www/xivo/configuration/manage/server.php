@@ -19,7 +19,7 @@ switch($act)
 			if(($result = $_SVR->chk_values($_QR)) === false)
 				$result = $_SVR->get_filter_result();
 			else if($_SVR->add($result) !== false)
-				$_QRY->go($_HTML->url('xivo/configuration/manage/servers'),$param);
+				$_QRY->go($_HTML->url('xivo/configuration/manage/server'),$param);
 		}
 
 		$_HTML->set_var('info',$result);
@@ -28,7 +28,7 @@ switch($act)
 	case 'edit':
 		if(isset($_QR['id']) === false
 		|| ($info = $_SVR->get($_QR['id'])) === false)
-			$_QRY->go($_HTML->url('xivo/configuration/manage/servers'),$param);
+			$_QRY->go($_HTML->url('xivo/configuration/manage/server'),$param);
 
 		$return = &$info;
 
@@ -42,7 +42,7 @@ switch($act)
 			if(($result = $_SVR->chk_values($_QR)) === false)
 				$result = $_SVR->get_filter_result();
 			else if($_SVR->edit($info['id'],$result) !== false)
-				$_QRY->go($_HTML->url('xivo/configuration/manage/servers'),$param);
+				$_QRY->go($_HTML->url('xivo/configuration/manage/server'),$param);
 		}
 
 		$_HTML->set_var('id',$info['id']);
@@ -64,13 +64,13 @@ switch($act)
 			$serverfeatures->delete_where($where_serverfeatures);
 		}
 
-		$_QRY->go($_HTML->url('xivo/configuration/manage/servers'),$param);
+		$_QRY->go($_HTML->url('xivo/configuration/manage/server'),$param);
 		break;
 	case 'deletes':
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('server',$_QR)) === false)
-			$_QRY->go($_HTML->url('xivo/configuration/manage/servers'),$param);
+			$_QRY->go($_HTML->url('xivo/configuration/manage/server'),$param);
 
 		$ipbx = &$_SRE->get('ipbx');
 		$serverfeatures = &$ipbx->get_module('serverfeatures');
@@ -89,7 +89,7 @@ switch($act)
 			}
 		}
 
-		$_QRY->go($_HTML->url('xivo/configuration/manage/servers'),$param);
+		$_QRY->go($_HTML->url('xivo/configuration/manage/server'),$param);
 		break;
 	case 'enables':
 	case 'disables':
@@ -97,14 +97,14 @@ switch($act)
 		$disable = $act === 'disables';
 
 		if(($values = xivo_issa_val('server',$_QR)) === false)
-			$_QRY->go($_HTML->url('xivo/configuration/manage/servers'),$param);
+			$_QRY->go($_HTML->url('xivo/configuration/manage/server'),$param);
 
 		$nb = count($values);
 
 		for($i = 0;$i < $nb;$i++)
 			$_SVR->disable(intval($values[$i]),$disable);
 
-		$_QRY->go($_HTML->url('xivo/configuration/manage/servers'),$param);
+		$_QRY->go($_HTML->url('xivo/configuration/manage/server'),$param);
 		break;
 	default:
 		$act = 'list';
@@ -127,9 +127,9 @@ $_HTML->set_var('act',$act);
 $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/xivo/configuration');
-$menu->set_toolbar('toolbar/xivo/configuration/manage/servers');
+$menu->set_toolbar('toolbar/xivo/configuration/manage/server');
 
-$_HTML->set_bloc('main','xivo/configuration/manage/servers/'.$act);
+$_HTML->set_bloc('main','xivo/configuration/manage/server/'.$act);
 $_HTML->set_struct('xivo/configuration');
 $_HTML->display('index');
 

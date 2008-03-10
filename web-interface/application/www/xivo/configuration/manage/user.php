@@ -9,7 +9,7 @@ switch($act)
 {
 	case 'edit':
 		if(isset($_QR['id']) === false || ($info = $_USR->get($_QR['id'])) === false)
-			$_QRY->go($_HTML->url('xivo/configuration/manage/users'),$param);
+			$_QRY->go($_HTML->url('xivo/configuration/manage/user'),$param);
 
 		if(isset($_QR['fm_send']) === true
 		&& $_USR->edit($info['meta'],$_QR) === true)
@@ -17,7 +17,7 @@ switch($act)
 			if(xivo_ulongint($_USR->get_info('id')) === xivo_ulongint($_QR['id']))
 				$_USR->load_by_id($_QR['id']);
 
-			$_QRY->go($_HTML->url('xivo/configuration/manage/users'),$param);
+			$_QRY->go($_HTML->url('xivo/configuration/manage/user'),$param);
 		}
 
 		$_HTML->set_var('info',$info);
@@ -25,19 +25,19 @@ switch($act)
 	case 'acl':
 		if(isset($_QR['id']) === false || ($info = $_USR->get($_QR['id'])) === false
 		|| xivo_user::chk_authorize('admin',$info['meta']) === false)
-			$_QRY->go($_HTML->url('xivo/configuration/manage/users'),$param);
+			$_QRY->go($_HTML->url('xivo/configuration/manage/user'),$param);
 
 		if(isset($_QR['fm_send']) === true)
 		{
 			$_USR->call_acl('edit',array($_QR));
-			$_QRY->go($_HTML->url('xivo/configuration/manage/users'),$param);
+			$_QRY->go($_HTML->url('xivo/configuration/manage/user'),$param);
 		}
 		else if(($user_tree = $_USR->call_acl('get_user',array($info['id']))) !== false)
 		{
 			$_HTML->set_var('info',$info);
 			$_HTML->set_var('tree',$user_tree);
 		}
-		else $_QRY->go($_HTML->url('xivo/configuration/manage/users'),$param);
+		else $_QRY->go($_HTML->url('xivo/configuration/manage/user'),$param);
 		break;
 	default:
 		$act = 'list';
@@ -51,7 +51,7 @@ $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/xivo/configuration');
 
-$_HTML->set_bloc('main','xivo/configuration/manage/users/'.$act);
+$_HTML->set_bloc('main','xivo/configuration/manage/user/'.$act);
 $_HTML->set_struct('xivo/configuration');
 $_HTML->display('index');
 

@@ -79,7 +79,7 @@
 		<div class="clearboth"></div>
 <?php
 	else:
-		echo '<div class="txt-center">',$url->href_html($this->bbf('create_xivoserver'),'xivo/configuration/manage/servers','act=add'),'</div>';
+		echo '<div class="txt-center">',$url->href_html($this->bbf('create_xivoserver'),'xivo/configuration/manage/server','act=add'),'</div>';
 	endif;
 ?>
 

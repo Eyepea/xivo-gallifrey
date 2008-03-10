@@ -21,7 +21,7 @@
 			echo '<tr><th>',$form->checkbox(array('desc' => array('%s%s',$this->bbf('acl_'.$v['id']),1),'name' => 'tree[]','label' => 'lb-'.$v['id'],'id' => $v['id'],'field' => false,'value' => $v['path'],'checked' => $v['access']),'onclick="xivo_fm_mk_acl(this);"'),'</th></tr>';
 
 			if(isset($v['child']) === true):
-				$this->file_include('bloc/xivo/configuration/manage/users/acltree',array('tree' => $v['child']));
+				$this->file_include('bloc/xivo/configuration/manage/user/acltree',array('tree' => $v['child']));
 			endif;
 		endforeach;
 	endif;

@@ -19,7 +19,7 @@ switch($act)
 			if(($result = $_LDAPSVR->chk_values($_QR)) === false)
 				$result = $_LDAPSVR->get_filter_result();
 			else if($_LDAPSVR->add($result) !== false)
-				$_QRY->go($_HTML->url('xivo/configuration/manage/ldapservers'),$param);
+				$_QRY->go($_HTML->url('xivo/configuration/manage/ldapserver'),$param);
 		}
 
 		$_HTML->set_var('info',$result);
@@ -28,7 +28,7 @@ switch($act)
 	case 'edit':
 		if(isset($_QR['id']) === false
 		|| ($info = $_LDAPSVR->get($_QR['id'])) === false)
-			$_QRY->go($_HTML->url('xivo/configuration/manage/ldapservers'),$param);
+			$_QRY->go($_HTML->url('xivo/configuration/manage/ldapserver'),$param);
 
 		$return = &$info;
 
@@ -42,7 +42,7 @@ switch($act)
 			if(($result = $_LDAPSVR->chk_values($_QR)) === false)
 				$result = $_LDAPSVR->get_filter_result();
 			else if($_LDAPSVR->edit($info['id'],$result) !== false)
-				$_QRY->go($_HTML->url('xivo/configuration/manage/ldapservers'),$param);
+				$_QRY->go($_HTML->url('xivo/configuration/manage/ldapserver'),$param);
 		}
 
 		$_HTML->set_var('id',$info['id']);
@@ -56,13 +56,13 @@ switch($act)
 		&& ($id = intval($_QR['id'])) > 0)
 			$_LDAPSVR->delete($id);
 
-		$_QRY->go($_HTML->url('xivo/configuration/manage/ldapservers'),$param);
+		$_QRY->go($_HTML->url('xivo/configuration/manage/ldapserver'),$param);
 		break;
 	case 'deletes':
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('ldapserver',$_QR)) === false)
-			$_QRY->go($_HTML->url('xivo/configuration/manage/ldapservers'),$param);
+			$_QRY->go($_HTML->url('xivo/configuration/manage/ldapserver'),$param);
 
 		$nb = count($values);
 
@@ -72,7 +72,7 @@ switch($act)
 				$_LDAPSVR->delete($id);
 		}
 
-		$_QRY->go($_HTML->url('xivo/configuration/manage/ldapservers'),$param);
+		$_QRY->go($_HTML->url('xivo/configuration/manage/ldapserver'),$param);
 		break;
 	case 'enables':
 	case 'disables':
@@ -80,14 +80,14 @@ switch($act)
 		$disable = $act === 'disables';
 
 		if(($values = xivo_issa_val('ldapserver',$_QR)) === false)
-			$_QRY->go($_HTML->url('xivo/configuration/manage/ldapservers'),$param);
+			$_QRY->go($_HTML->url('xivo/configuration/manage/ldapserver'),$param);
 
 		$nb = count($values);
 
 		for($i = 0;$i < $nb;$i++)
 			$_LDAPSVR->disable(intval($values[$i]),$disable);
 
-		$_QRY->go($_HTML->url('xivo/configuration/manage/ldapservers'),$param);
+		$_QRY->go($_HTML->url('xivo/configuration/manage/ldapserver'),$param);
 		break;
 	default:
 		$act = 'list';
@@ -110,9 +110,9 @@ $_HTML->set_var('act',$act);
 $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/xivo/configuration');
-$menu->set_toolbar('toolbar/xivo/configuration/manage/ldapservers');
+$menu->set_toolbar('toolbar/xivo/configuration/manage/ldapserver');
 
-$_HTML->set_bloc('main','xivo/configuration/manage/ldapservers/'.$act);
+$_HTML->set_bloc('main','xivo/configuration/manage/ldapserver/'.$act);
 $_HTML->set_struct('xivo/configuration');
 $_HTML->display('index');
 

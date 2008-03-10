@@ -62,7 +62,7 @@
 					$parent = null;
 				endif;
 
-				$this->file_include('bloc/xivo/configuration/manage/users/acltree',array('tree' => $v['child'],'parent' => $parent));
+				$this->file_include('bloc/xivo/configuration/manage/user/acltree',array('tree' => $v['child'],'parent' => $parent));
 			endif;
 			if($v['level'] === 3):
 				echo '</div>';

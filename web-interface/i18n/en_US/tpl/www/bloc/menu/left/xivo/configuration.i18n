@@ -4,13 +4,13 @@ Configuration
 ; mn_left_ti_manage
 Management
 
-; mn_left_manage-users
+; mn_left_manage-user
 Users
 
-; mn_left_manage-servers
+; mn_left_manage-server
 Servers
 
-; mn_left_manage-ldapservers
+; mn_left_manage-ldapserver
 LDAP Servers
 
 ; mn_left_manage-society

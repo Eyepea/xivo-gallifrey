@@ -13,7 +13,7 @@
 <?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
 <?=$form->hidden(array('name' => 'id','value' => $this->get_var('id')));?>
 
-<?=$this->file_include('bloc/xivo/configuration/manage/ldapservers/form');?>
+<?=$this->file_include('bloc/xivo/configuration/manage/server/form');?>
 
 <?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>
 

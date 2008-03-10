@@ -5,9 +5,9 @@ $array['index'] = 'index.php';
 
 $array['xivo'] = 'xivo/index.php';
 $array['xivo/configuration'] = 'xivo/configuration/index.php';
-$array['xivo/configuration/manage/users'] = 'xivo/configuration/index.php/manage/users/';
-$array['xivo/configuration/manage/servers'] = 'xivo/configuration/index.php/manage/servers/';
-$array['xivo/configuration/manage/ldapservers'] = 'xivo/configuration/index.php/manage/ldapservers/';
+$array['xivo/configuration/manage/user'] = 'xivo/configuration/index.php/manage/user/';
+$array['xivo/configuration/manage/server'] = 'xivo/configuration/index.php/manage/server/';
+$array['xivo/configuration/manage/ldapserver'] = 'xivo/configuration/index.php/manage/ldapserver/';
 $array['xivo/configuration/manage/society'] = 'xivo/configuration/index.php/manage/society/';
 $array['xivo/preferences'] = 'xivo/preferences.php';
 $array['xivo/help'] = 'xivo/help.php';

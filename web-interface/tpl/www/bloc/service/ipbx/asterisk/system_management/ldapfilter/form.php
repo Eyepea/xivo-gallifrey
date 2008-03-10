@@ -15,7 +15,7 @@
 	if(($ldapservers = $this->get_var('ldapservers')) !== false):
 		echo $form->select(array('desc' => $this->bbf('fm_ldapfilter_ldapserverid'),'name' => 'ldapfilter[ldapserverid]','labelid' => 'ldapfilter-ldapserverid','invalid' => ($this->get_var('act') === 'edit'),'key' => 'identity','altkey' => 'id','default' => $element['ldapfilter']['ldapserverid']['default'],'value' => $info['ldapfilter']['ldapserverid']),$ldapservers);
 	else:
-		echo '<div class="txt-center">',$url->href_html($this->bbf('create_ldapserver'),'xivo/configuration/manage/ldapservers','act=add'),'</div>';
+		echo '<div class="txt-center">',$url->href_html($this->bbf('create_ldapserver'),'xivo/configuration/manage/ldapserver','act=add'),'</div>';
 	endif;
 ?>
 

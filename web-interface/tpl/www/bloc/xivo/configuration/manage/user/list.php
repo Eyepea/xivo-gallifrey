@@ -37,11 +37,11 @@
 		<td><?=strftime($this->bbf('date_format_yymmdd'),$value['dcreate']);?></td>
 		<td><?=$this->bbf('valid_'.$value['valid']);?></td>
 		<td class="td-right" colspan="3">
-		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'xivo/configuration/manage/users',array('act' => 'edit','id' => $value['id']),null,$this->bbf('opt_modify'));?>
+		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'xivo/configuration/manage/user',array('act' => 'edit','id' => $value['id']),null,$this->bbf('opt_modify'));?>
 
 <?php
 		if(xivo_user::chk_authorize('admin',$value['meta']) === true):
-			echo $url->href_html($url->img_html('img/site/button/key.gif',$this->bbf('opt_acl'),'border="0"'),'xivo/configuration/manage/users',array('act' => 'acl','id' => $value['id']),null,$this->bbf('opt_acl'));
+			echo $url->href_html($url->img_html('img/site/button/key.gif',$this->bbf('opt_acl'),'border="0"'),'xivo/configuration/manage/user',array('act' => 'acl','id' => $value['id']),null,$this->bbf('opt_acl'));
 		endif;
 ?>
 		</td>
