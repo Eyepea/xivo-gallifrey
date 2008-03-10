@@ -380,154 +380,213 @@ class xivo_file
 		return((is_readable($file) === true && is_writeable($file) === true && is_executable($file) === true));
 	}
 
-	function is_f($file)
+	function abspath($str)
 	{
+		$str = (string) $str;
+
+		if(isset($str{0}) === false)
+			return(false);
+		else if(strpos($str,XIVO_SEP_DIR) !== 0)
+			$str = getcwd().XIVO_SEP_DIR.$str;
+
+		$lstr = preg_split('@'.preg_quote(XIVO_SEP_DIR).'+@',$str,-1,PREG_SPLIT_NO_EMPTY);
+
+		if(($nb = count($lstr)) === 0)
+			return($str);
+
+		$r = array();
+
+		$nb = count($lstr);
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			if(($c = $lstr[$i]) === '.')
+				continue;
+			else if($c !== '..')
+				$r[] = $c;
+			else if(isset($r[0]) === true)
+				array_pop($r);
+		}
+
+		return(XIVO_SEP_DIR.implode(XIVO_SEP_DIR,$r));
+	}
+
+	function is_f($file,$mode=1)
+	{
+		static $pathcache = array();
+
 		if(is_file($file) === true)
-			return(realpath($file));
+		{
+			if(($mode = intval($mode)) === 0)
+				return($file);
+			else if(isset($pathcache[$file]) === false)
+			{
+				if($mode !== 2)
+					$pathcache[$file] = xivo_file::abspath($file);
+				else
+					$pathcache[$file] = realpath($file);
+			}
+
+			return($pathcache[$file]);
+		}
 
 		return(false);
 	}
 
-	function is_f_r($file)
+	function is_f_r($file,$mode=1)
 	{
 		if(is_readable($file) === true)
-			return(xivo_file::is_f($file));
+			return(xivo_file::is_f($file,$mode));
 
 		return(false);
 	}
 
-	function is_f_w($file)
+	function is_f_w($file,$mode=1)
 	{
 		if(is_writeable($file) === true)
-			return(xivo_file::is_f($file));
+			return(xivo_file::is_f($file,$mode));
 
 		return(false);
 	}
 
-	function is_f_x($file)
+	function is_f_x($file,$mode=1)
 	{
 		if(is_executable($file) === true)
-			return(xivo_file::is_f($file));
+			return(xivo_file::is_f($file,$mode));
 
 		return(false);
 	}
 
-	function is_f_rw($file)
+	function is_f_rw($file,$mode=1)
 	{
 		if(xivo_file::is_rw($file) === true)
-			return(xivo_file::is_f($file));
+			return(xivo_file::is_f($file,$mode));
 
 		return(false);
 	}
 
-	function is_f_rx($file)
+	function is_f_rx($file,$mode=1)
 	{
 		if(xivo_file::is_rx($file) === true)
-			return(xivo_file::is_f($file));
+			return(xivo_file::is_f($file,$mode));
 
 		return(false);
 	}
 
-	function is_f_wx($file)
+	function is_f_wx($file,$mode=1)
 	{
 		if(xivo_file::is_wx($file) === true)
-			return(xivo_file::is_f($file));
+			return(xivo_file::is_f($file,$mode));
 
 		return(false);	
 	}
 
-	function is_f_rwx($file)
+	function is_f_rwx($file,$mode=1)
 	{
 		if(xivo_file::is_rwx($file) === true)
-			return(xivo_file::is_f($file));
+			return(xivo_file::is_f($file,$mode));
 
 		return(false);	
 	}
 
-	function is_d($dir,$t=false)
+	function is_d($dir,$dirname=false,$mode=1)
 	{
-		if((bool) $t === true)
+		static $pathcache = array();
+
+		if((bool) $dirname === true)
 			$dir = dirname($dir);
 
 		if(is_dir($dir) === true)
-			return(realpath($dir));
+		{
+			if(($mode = intval($mode)) === 0)
+				return($dir);
+			else if(isset($pathcache[$dir]) === false)
+			{
+				if($mode !== 2)
+					$pathcache[$dir] = xivo_file::abspath($dir);
+				else
+					$pathcache[$dir] = realpath($dir);
+			}
+
+			return($pathcache[$dir]);
+		}
 
 		return(false);
 	}
 
-	function is_d_r($dir,$t=false)
+	function is_d_r($dir,$dirname=false,$mode=1)
 	{
-		if((bool) $t === true)
+		if((bool) $dirname === true)
 			$dir = dirname($dir);
 
 		if(is_readable($dir) === true)
-			return(xivo_file::is_d($dir));
+			return(xivo_file::is_d($dir,false,$mode));
 
 		return(false);
 	}
 
-	function is_d_w($dir,$t=false)
+	function is_d_w($dir,$dirname=false,$mode=1)
 	{
-		if((bool) $t === true)
+		if((bool) $dirname === true)
 			$dir = dirname($dir);
 
 		if(is_writeable($dir) === true)
-			return(xivo_file::is_d($dir));
+			return(xivo_file::is_d($dir,false,$mode));
 
 		return(false);
 	}
 
-	function is_d_x($dir,$t=false)
+	function is_d_x($dir,$dirname=false,$mode=1)
 	{
-		if((bool) $t === true)
+		if((bool) $dirname === true)
 			$dir = dirname($dir);
 
 		if(is_executable($dir) === true)
-			return(xivo_file::is_d($dir));
+			return(xivo_file::is_d($dir,false,$mode));
 
 		return(false);
 	}
 
-	function is_d_rw($dir,$t=false)
+	function is_d_rw($dir,$dirname=false,$mode=1)
 	{
-		if((bool) $t === true)
+		if((bool) $dirname === true)
 			$dir = dirname($dir);
 
 		if(xivo_file::is_rw($dir) === true)
-			return(xivo_file::is_d($dir));
+			return(xivo_file::is_d($dir,false,$mode));
 
 		return(false);
 	}
 
-	function is_d_rx($dir,$t=false)
+	function is_d_rx($dir,$dirname=false,$mode=1)
 	{
-		if((bool) $t === true)
+		if((bool) $dirname === true)
 			$dir = dirname($dir);
 
 		if(xivo_file::is_rx($dir) === true)
-			return(xivo_file::is_d($dir));
+			return(xivo_file::is_d($dir,false,$mode));
 
 		return(false);
 	}
 
-	function is_d_wx($dir,$t=false)
+	function is_d_wx($dir,$dirname=false,$mode=1)
 	{
-		if((bool) $t === true)
+		if((bool) $dirname === true)
 			$dir = dirname($dir);
 
 		if(xivo_file::is_wx($dir) === true)
-			return(xivo_file::is_d($dir));
+			return(xivo_file::is_d($dir,false,$mode));
 
 		return(false);
 	}
 
-	function is_d_rwx($dir,$t=false)
+	function is_d_rwx($dir,$dirname=false,$mode=1)
 	{
-		if((bool) $t === true)
+		if((bool) $dirname === true)
 			$dir = dirname($dir);
 
 		if(xivo_file::is_rwx($dir) === true)
-			return(xivo_file::is_d($dir));
+			return(xivo_file::is_d($dir,false,$mode));
 
 		return(false);
 	}

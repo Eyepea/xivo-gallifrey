@@ -4,7 +4,7 @@ LDAP filters > Add
 ; smenu_general
 General
 
-; smenu_attributs
+; smenu_attributes
 Attributes
 
 ; fm_ldapfilter_name

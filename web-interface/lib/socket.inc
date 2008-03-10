@@ -285,9 +285,9 @@ class xivo_socket
 	{
 		$length = xivo_uint($length,4096);
 
-		if($length === 0 || is_resource($this->_link) === false)
+		if(is_resource($this->_link) === false)
 			return(false);
-		
+
 		$r = '';
 
 		while(($read = socket_read($this->_link,$length,$type)) !== false

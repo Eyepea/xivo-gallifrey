@@ -1,6 +1,5 @@
 <?php
 
-$autoprov = &$ipbx->get_module('autoprov');
 $zonemessages = &$ipbx->get_module('zonemessages');
 
 $result = $error = null;
@@ -165,7 +164,7 @@ $_HTML->set_var('zonemessages',$zonemessages->get_all_name());
 $_HTML->set_var('element',$element);
 $_HTML->set_var('destination_list',$appuser->get_destination_list());
 $_HTML->set_var('moh_list',$appuser->get_musiconhold());
-$_HTML->set_var('autoprov_list',$autoprov->get_autoprov_list());
+$_HTML->set_var('autoprov_list',$appuser->get_autoprov_list());
 $_HTML->set_var('fktype_list',$appuser->get_phonefunckey_type());
 
 $dhtml = &$_HTML->get_module('dhtml');

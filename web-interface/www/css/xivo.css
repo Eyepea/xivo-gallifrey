@@ -263,7 +263,7 @@ pre {text-align: left;}
 #b-content .sb-smenu li .span-center {padding: 1px 8px 0px 16px;width: auto;}
 #b-content .sb-smenu li .span-right {height: 17px;}
 #b-content .sb-smenu .moo .tab, #b-content .sb-smenu .moo-last .tab, #b-content .sb-smenu .moo-before .tab {background-image: url(../img/content/menu/bt-bg-2.gif); color: #999;}
-#b-content .sb-smenu .moo .tab a, #b-content .sb-smenu .moo-last .tab a, #b-content .sb-smenu .moo-before .tab a, #b-content .sb-smenu .moc-before .tab a {color: #999;}
+#b-content .sb-smenu .moo .tab a, #b-content .sb-smenu .moo-last .tab a, #b-content .sb-smenu .moo-before .tab a, #b-content .sb-smenu .moc-before .tab a {color: #666;}
 #b-content .sb-smenu .moo .span-right {background-image: url(../img/content/menu/bt-r-2.gif);}
 #b-content .sb-smenu .moo-last .span-right {background-image: url(../img/content/menu/bt-r-2-last.gif);}
 

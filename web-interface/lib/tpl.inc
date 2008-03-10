@@ -343,8 +343,6 @@ class xivo_tpl
 
 	function mk_bloc($name)
 	{
-		$name = (string) $name;
-
 		if(($file = $this->get_file('bloc_'.$name)) !== null)
 			$this->file_include($file,null,null);
 	}
@@ -537,9 +535,7 @@ class xivo_tpl
 
 		$dir = XIVO_SEP_DIR.trim($section.XIVO_SEP_DIR.$path,XIVO_SEP_DIR).'.'.$ext;
 
-		$r = xivo_file::is_f_r($this->get_option('application_path').$dir);
-
-		return($r);
+		return(xivo_file::is_f_r($this->get_option('application_path').$dir));
 	}
 }
 

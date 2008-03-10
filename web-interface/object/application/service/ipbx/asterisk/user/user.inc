@@ -343,6 +343,14 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return($r);
 	}
 
+	function get_autoprov_list()
+	{
+		if($this->_autoprov === false)
+			return(false);
+
+		return($this->_autoprov->get_autoprov_list());
+	}
+
 	function get_elements()
 	{
 		$r = array();
@@ -869,8 +877,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	{
 		if(($action !== 'add' && $action !== 'edit') === true
 		|| is_array($arr) === false
-		|| $this->_autoprov === false
-		|| ($list = $this->_autoprov->get_autoprov_list()) === false)
+		|| $this->get_autoprov_list() === false)
 			return(false);
 
 		if($action === 'edit' && xivo_issa('autoprov',$this->_info) === true)

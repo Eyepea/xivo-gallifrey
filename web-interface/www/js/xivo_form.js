@@ -132,16 +132,17 @@ function xivo_fm_move_selected(from,to)
 	for(var i = 0;i < len;i++)
 		to.options[i].selected = false;
 
-	len = from.options.length - 1;
-	
-	for(i = len; i >= 0; i--)
+	len = from.options.length;
+
+	for(i = 0;i < len;i++)
 	{
 		if(from.options[i].selected != true)
 			continue;
 
 		to.options[to.options.length] = new Option(from.options[i].text,from.options[i].value);
 		to.options[to.options.length-1].selected = true;
-		from.options[i] = null;	
+		from.options[i--] = null;	
+		len--;
 	}
 
 	return(true);
@@ -234,22 +235,21 @@ function xivo_fm_select(from,select)
 
 function xivo_fm_order_selected(from,order)
 {
-	var r = false;
 	order = Number(order);
 
 	if ((from = xivo_eid(from)) == false || from.type != 'select-multiple')
-		return(r);
+		return(false);
 
 	var len = from.length;
 	var selected = from.selectedIndex;
 
 	if(len < 2 || selected == -1 || xivo_is_undef(from.options[selected]) == true)
-		return(r);
+		return(false);
 
 	if(order == -1)
 	{
 		if(selected == len-1 || xivo_is_undef(from.options[selected+1]) == true)
-			return(r);
+			return(false);
 
 		var noption = from.options[selected+1];
 		var soption = from.options[selected];
@@ -264,7 +264,7 @@ function xivo_fm_order_selected(from,order)
 	else
 	{
 		if(selected == 0 || xivo_is_undef(from.options[selected-1]) == true)
-			return(r);
+			return(false);
 
 		var noption = from.options[selected-1];
 		var soption = from.options[selected];

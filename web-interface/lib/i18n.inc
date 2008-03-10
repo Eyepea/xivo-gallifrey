@@ -157,9 +157,7 @@ class xivo_i18n
 
 	function mediator($func,$name='',$value='')
 	{
-		static $mediator = null;
-		static $territory = null;
-		static $language = null;
+		static $mediator, $territory, $language = null;
 
 		if($mediator === null)
 		{
@@ -512,17 +510,14 @@ class xivo_i18n
 			$this->_file['language'] = XIVO_I18N_BABELFISH_LANGUAGE;
 		}
 
-		$this->_file['filei18n'] = realpath(XIVO_PATH_I18N.XIVO_SEP_DIR.$this->_file['locale'].XIVO_SEP_DIR.$this->_file['path']);
+		$filei18n = XIVO_PATH_I18N.XIVO_SEP_DIR.$this->_file['locale'].XIVO_SEP_DIR.$this->_file['path'];
 
-		if($this->_file['filei18n'] !== false && xivo_file::is_f_r($this->_file['filei18n']) !== false)
-		{
-			$r = true;
-			$this->_file['filemtime'] = xivo_uint(filemtime($this->_file['filei18n']));
-		}
-		else
-			$r = $this->_file = false;
+		if(($this->_file['filei18n'] = xivo_file::is_f_r($filei18n)) === false)
+			return(($this->_file = false));
 
-		return($r);
+		$this->_file['filemtime'] = xivo_uint(filemtime($this->_file['filei18n']));
+
+		return(true);
 	}
 
 	function _mk_cache_file()
@@ -589,7 +584,7 @@ class xivo_i18n
 		$ref = &$cached[$namespace][$this->_file['locale']][$this->_file['path']];
 
 		if(xivo_issa('finfo',$ref) === false
-		|| $ref['finfo']['filemtime'] !== $this->_file['filemtime'])
+		|| (int) $ref['finfo']['filemtime'] !== (int) $this->_file['filemtime'])
 			return(false);
 
 		if($ref['copy'] !== false)
@@ -636,6 +631,7 @@ class xivo_i18n
 		$priority = 0;
 		$txt = $copy = $load = $data = false;
 		$quote_sep_dir = preg_quote(XIVO_SEP_DIR);
+		$key = '';
 
 		$r = array();
 

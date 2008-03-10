@@ -30,7 +30,7 @@
 		<th class="th-center"><?=$this->bbf('col_phonefunckey-type');?></th>
 		<th class="th-center"><?=$this->bbf('col_phonefunckey-typeval');?></th>
 		<th class="th-center"><?=$this->bbf('col_phonefunckey-supervision');?></th>
-		<th class="th-right"><?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',$this->bbf('col_phonefunckey-add'),'border="0"'),'#',null,'onclick="xivo_table_list(\'phonefunckey\',this,0,true); xivo_chgphonefunckey(xivo_eid(\'it-phonefunckey-type-\'+xivo_tlist[\'phonefunckey\'][\'cnt\'])); return(false);"',$this->bbf('col_phonefunckey-add'));?></th>
+		<th class="th-right"><?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',$this->bbf('col_phonefunckey-add'),'border="0"'),'#',null,'onclick="xivo_table_list(\'phonefunckey\',this,0,true); xivo_chgphonefunckey(xivo_eid(\'it-phonefunckey-type-\'+xivo_tlist[\'phonefunckey\'][\'idcnt\'])); return(false);"',$this->bbf('col_phonefunckey-add'));?></th>
 	</tr>
 	</thead>
 	<tbody id="phonefunckey">

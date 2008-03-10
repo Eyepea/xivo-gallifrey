@@ -12,3 +12,6 @@ Servers
 
 ; mn_left_manage-ldapservers
 LDAP Servers
+
+; mn_left_manage-society
+Societies

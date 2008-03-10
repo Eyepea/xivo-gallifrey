@@ -53,16 +53,8 @@ switch($act)
 		$param['page'] = $page;
 
 		if(isset($_QR['id']) === true
-		&& ($id = intval($_QR['id'])) > 0
-		&& $_LDAPSVR->delete($id) !== false)
-		{
-			$ipbx = &$_SRE->get('ipbx');
-			$serverfeatures = &$ipbx->get_module('serverfeatures');
-
-			$where_serverfeatures = array();
-			$where_serverfeatures['ldapserverid'] = $id;
-			$serverfeatures->delete_where($where_serverfeatures);
-		}
+		&& ($id = intval($_QR['id'])) > 0)
+			$_LDAPSVR->delete($id);
 
 		$_QRY->go($_HTML->url('xivo/configuration/manage/ldapservers'),$param);
 		break;
@@ -72,21 +64,12 @@ switch($act)
 		if(($values = xivo_issa_val('ldapserver',$_QR)) === false)
 			$_QRY->go($_HTML->url('xivo/configuration/manage/ldapservers'),$param);
 
-		$ipbx = &$_SRE->get('ipbx');
-		$serverfeatures = &$ipbx->get_module('serverfeatures');
-
-		$where_serverfeatures = array();
-
 		$nb = count($values);
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(($id = intval($values[$i])) > 0
-			&& $_LDAPSVR->delete($id) !== false)
-			{
-				$where_serverfeatures['ldapserverid'] = $id;
-				$serverfeatures->delete_where($where_serverfeatures);
-			}
+			if(($id = intval($values[$i])) > 0)
+				$_LDAPSVR->delete($id);
 		}
 
 		$_QRY->go($_HTML->url('xivo/configuration/manage/ldapservers'),$param);
