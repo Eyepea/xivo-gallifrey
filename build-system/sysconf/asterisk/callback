@@ -1,9 +1,0 @@
-#!/bin/sh
-
-QUEUE="/var/spool/asterisk/queue-outgoing"
-PRE="/var/spool/asterisk/pre-outgoing"
-OUTGOING="/var/spool/asterisk/outgoing"
-
-# Two stage queuing so that callbacks are delayed.
-mv $PRE/* $OUTGOING
-mv $QUEUE/* $PRE

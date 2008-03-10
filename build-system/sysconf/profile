@@ -1,2 +1,0 @@
-# Read include/sysconf for an explanation of this order.
-export PATH=/sbin:/bin:/usr/sbin:/usr/bin
