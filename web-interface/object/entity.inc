@@ -2,7 +2,7 @@
 
 require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'abstract'.XIVO_SEP_DIR.'libdatastorage.inc');
 
-class xivo_society extends xivo_libdatastorage_abstract
+class xivo_entity extends xivo_libdatastorage_abstract
 {
 	var $_conf		= array();
 	var $_dso		= null;
@@ -10,9 +10,9 @@ class xivo_society extends xivo_libdatastorage_abstract
 	var $_origin		= false;
 	var $_origin_list	= false;
 
-	function xivo_society()
+	function xivo_entity()
 	{
-		$this->_load_config(dirname(__FILE__).XIVO_SEP_DIR.'society');
+		$this->_load_config(dirname(__FILE__).XIVO_SEP_DIR.'entity');
 		$this->_load_dso();
 	}
 
@@ -48,13 +48,13 @@ class xivo_society extends xivo_libdatastorage_abstract
 	{
 		$dso = &xivo_gct::get('XIVO_DSO');
 		$type = $dso->get_type();
-		$class = 'xivo_society_'.$type;
+		$class = 'xivo_entity_'.$type;
 
-		$dir = XIVO_PATH_OBJECT.XIVO_SEP_DIR.'society'.XIVO_SEP_DIR.'datastorage';
+		$dir = XIVO_PATH_OBJECT.XIVO_SEP_DIR.'entity'.XIVO_SEP_DIR.'datastorage';
 
 		if(xivo::load_class($class,$dir,$type,false) === false)
 		{
-			trigger_error('Failed to load datastorage '.$type.' for society',E_USER_ERROR);
+			trigger_error('Failed to load datastorage '.$type.' for entity',E_USER_ERROR);
 			return(false);
 		}
 

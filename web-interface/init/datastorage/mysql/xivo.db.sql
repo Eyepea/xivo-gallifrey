@@ -2,6 +2,31 @@ GRANT ALL PRIVILEGES ON `xivo`.* TO `xivo`@`localhost` IDENTIFIED BY PASSWORD '*
 CREATE DATABASE IF NOT EXISTS `xivo` DEFAULT CHARACTER SET utf8;
 USE `xivo`;
 
+DROP TABLE IF EXISTS `entity`;
+CREATE TABLE `entity` (
+ `id` int(10) unsigned auto_increment,
+ `name` varchar(64) NOT NULL DEFAULT '',
+ `displayname` varchar(64) NOT NULL DEFAULT '',
+ `phonenumber` varchar(40) NOT NULL DEFAULT '',
+ `faxnumber` varchar(40) NOT NULL DEFAULT '',
+ `email` varchar(255) NOT NULL DEFAULT '',
+ `url` varchar(255) NOT NULL DEFAULT '',
+ `address1` varchar(30) NOT NULL DEFAULT '',
+ `address2` varchar(30) NOT NULL DEFAULT '',
+ `city` varchar(128) NOT NULL DEFAULT '',
+ `state` varchar(128) NOT NULL DEFAULT '',
+ `zipcode` varchar(16) NOT NULL DEFAULT '',
+ `country` varchar(3) NOT NULL DEFAULT '',
+ `disable` tinyint(1) NOT NULL DEFAULT 0,
+ `dcreate` int(10) unsigned NOT NULL DEFAULT 0,
+ `description` text NOT NULL,
+ PRIMARY KEY(`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE INDEX `entity__idx__disable` ON `entity`(`disable`);
+CREATE UNIQUE INDEX `entity__uidx__name` ON `entity`(`name`);
+
+
 DROP TABLE IF EXISTS `i18ncache`;
 CREATE TABLE `i18ncache` (
  `locale` varchar(7) NOT NULL DEFAULT '',

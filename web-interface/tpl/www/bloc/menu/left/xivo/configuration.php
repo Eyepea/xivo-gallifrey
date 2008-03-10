@@ -7,6 +7,6 @@
 	<dd id="mn-manage--user"><?=$url->href_html($this->bbf('mn_left_manage-user'),'xivo/configuration/manage/user','act=list');?></dd>
 	<dd id="mn-manage--server"><?=$url->href_html($this->bbf('mn_left_manage-server'),'xivo/configuration/manage/server','act=list');?></dd>
 	<dd id="mn-manage--ldapserver"><?=$url->href_html($this->bbf('mn_left_manage-ldapserver'),'xivo/configuration/manage/ldapserver','act=list');?></dd>
-	<dd id="mn-manage--society"><?=$url->href_html($this->bbf('mn_left_manage-society'),'xivo/configuration/manage/society','act=list');?></dd>
+	<dd id="mn-manage--entity"><?=$url->href_html($this->bbf('mn_left_manage-entity'),'xivo/configuration/manage/entity','act=list');?></dd>
 
 	</dl></dd><dd class="b-nosize"><span class="span-left">&nbsp;</span><span class="span-center">&nbsp;</span><span class="span-right">&nbsp;</span></dd></dl>

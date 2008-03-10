@@ -3,8 +3,8 @@
 $act = isset($_QR['act']) === true ? $_QR['act']  : '';
 $page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
 
-xivo::load_class('xivo_society',XIVO_PATH_OBJECT,null,false);
-$_SCT = new xivo_society();
+xivo::load_class('xivo_entity',XIVO_PATH_OBJECT,null,false);
+$_SCT = new xivo_entity();
 
 $param = array();
 $param['act'] = 'list';
@@ -19,7 +19,7 @@ switch($act)
 			if(($result = $_SCT->chk_values($_QR)) === false)
 				$result = $_SCT->get_filter_result();
 			else if($_SCT->add($result) !== false)
-				$_QRY->go($_HTML->url('xivo/configuration/manage/society'),$param);
+				$_QRY->go($_HTML->url('xivo/configuration/manage/entity'),$param);
 		}
 
 		$_HTML->set_var('info',$result);
@@ -29,7 +29,7 @@ switch($act)
 	case 'edit':
 		if(isset($_QR['id']) === false
 		|| ($info = $_SCT->get($_QR['id'])) === false)
-			$_QRY->go($_HTML->url('xivo/configuration/manage/society'),$param);
+			$_QRY->go($_HTML->url('xivo/configuration/manage/entity'),$param);
 
 		$return = &$info;
 
@@ -43,7 +43,7 @@ switch($act)
 			if(($result = $_SCT->chk_values($_QR)) === false)
 				$result = $_SCT->get_filter_result();
 			else if($_SCT->edit($info['id'],$result) !== false)
-				$_QRY->go($_HTML->url('xivo/configuration/manage/society'),$param);
+				$_QRY->go($_HTML->url('xivo/configuration/manage/entity'),$param);
 		}
 
 		$_HTML->set_var('id',$info['id']);
@@ -58,13 +58,13 @@ switch($act)
 		&& ($id = intval($_QR['id'])) > 0)
 			$_SCT->delete($id);
 
-		$_QRY->go($_HTML->url('xivo/configuration/manage/society'),$param);
+		$_QRY->go($_HTML->url('xivo/configuration/manage/entity'),$param);
 		break;
 	case 'deletes':
 		$param['page'] = $page;
 
-		if(($values = xivo_issa_val('society',$_QR)) === false)
-			$_QRY->go($_HTML->url('xivo/configuration/manage/society'),$param);
+		if(($values = xivo_issa_val('entity',$_QR)) === false)
+			$_QRY->go($_HTML->url('xivo/configuration/manage/entity'),$param);
 
 		$nb = count($values);
 
@@ -74,22 +74,22 @@ switch($act)
 				$_SCT->delete($id);
 		}
 
-		$_QRY->go($_HTML->url('xivo/configuration/manage/society'),$param);
+		$_QRY->go($_HTML->url('xivo/configuration/manage/entity'),$param);
 		break;
 	case 'enables':
 	case 'disables':
 		$param['page'] = $page;
 		$disable = $act === 'disables';
 
-		if(($values = xivo_issa_val('society',$_QR)) === false)
-			$_QRY->go($_HTML->url('xivo/configuration/manage/society'),$param);
+		if(($values = xivo_issa_val('entity',$_QR)) === false)
+			$_QRY->go($_HTML->url('xivo/configuration/manage/entity'),$param);
 
 		$nb = count($values);
 
 		for($i = 0;$i < $nb;$i++)
 			$_SCT->disable(intval($values[$i]),$disable);
 
-		$_QRY->go($_HTML->url('xivo/configuration/manage/society'),$param);
+		$_QRY->go($_HTML->url('xivo/configuration/manage/entity'),$param);
 		break;
 	default:
 		$act = 'list';
@@ -108,7 +108,7 @@ switch($act)
 		if($list === false && $total > 0)
 		{
 			$param['page'] = $page - 1;
-			$_QRY->go($_HTML->url('xivo/configuration/manage/society'),$param);
+			$_QRY->go($_HTML->url('xivo/configuration/manage/entity'),$param);
 		}
 
 		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
@@ -120,9 +120,9 @@ $_HTML->set_var('act',$act);
 $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/xivo/configuration');
-$menu->set_toolbar('toolbar/xivo/configuration/manage/society');
+$menu->set_toolbar('toolbar/xivo/configuration/manage/entity');
 
-$_HTML->set_bloc('main','xivo/configuration/manage/society/'.$act);
+$_HTML->set_bloc('main','xivo/configuration/manage/entity/'.$act);
 $_HTML->set_struct('xivo/configuration');
 $_HTML->display('index');
 
