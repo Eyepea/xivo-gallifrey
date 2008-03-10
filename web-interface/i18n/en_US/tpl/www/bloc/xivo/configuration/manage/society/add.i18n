@@ -1,0 +1,41 @@
+; title_content_name
+Societies > Add
+
+; fm_name
+Name:
+
+; fm_displayname
+Display name:
+
+; fm_phonenumber
+Phone:
+
+; fm_faxnumber
+Fax:
+
+; fm_email
+E-mail:
+
+; fm_url
+Website URL:
+
+; fm_address1
+Address:
+
+; fm_address2
+Address (next):
+
+; fm_city
+City:
+
+; fm_state
+State:
+
+; fm_zipcode
+Zip code:
+
+; fm_country
+Country:
+
+; fm_description
+Description:

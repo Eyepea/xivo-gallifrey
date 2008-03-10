@@ -1,0 +1,41 @@
+; title_content_name
+Sociétés > Ajouter
+
+; fm_name
+Nom :
+
+; fm_displayname
+Nom affiché :
+
+; fm_phonenumber
+Téléphone :
+
+; fm_faxnumber
+Fax :
+
+; fm_email
+E-mail :
+
+; fm_url
+Adresse URL :
+
+; fm_address1
+Adresse :
+
+; fm_address2
+Adresse (suite) :
+
+; fm_city
+Ville :
+
+; fm_state
+Région :
+
+; fm_zipcode
+Code postal :
+
+; fm_country
+Pays :
+
+; fm_description
+Description :
