@@ -582,8 +582,8 @@ CREATE INDEX incall__idx__commented ON incall(commented);
 CREATE UNIQUE INDEX incall__uidx__exten_context ON incall(exten,context);
 
 
-DROP TABLE ldapserver;
-CREATE TABLE ldapserver (
+DROP TABLE ldapfilter;
+CREATE TABLE ldapfilter (
  id integer unsigned,
  ldapserverid integer unsigned NOT NULL,
  name varchar(128) NOT NULL DEFAULT '',
@@ -600,9 +600,9 @@ CREATE TABLE ldapserver (
  PRIMARY KEY(id)
 );
 
-CREATE INDEX ldapserver__idx__ldapserverid ON ldapserver(ldapserverid);
-CREATE INDEX ldapserver__idx__commented ON ldapserver(commented);
-CREATE UNIQUE INDEX ldapserver__uidx__name ON ldapserver(name);
+CREATE INDEX ldapfilter__idx__ldapserverid ON ldapfilter(ldapserverid);
+CREATE INDEX ldapfilter__idx__commented ON ldapfilter(commented);
+CREATE UNIQUE INDEX ldapfilter__uidx__name ON ldapfilter(name);
 
 
 DROP TABLE meetme;
