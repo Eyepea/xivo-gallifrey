@@ -1,6 +1,10 @@
 # XIVO Daemon
-# Copyright (C) 2007, 2008  Proformatique
-#
+
+__version__   = '$Revision$'
+__date__      = '$Date$'
+__copyright__ = 'Copyright (C) 2007, 2008, Proformatique'
+__author__    = 'Corentin Le Gall'
+
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
@@ -20,7 +24,9 @@
 # with this program; if not, you will find one at
 # <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>.
 
-__version__ = '$Revision$ $Date$'
+"""
+Base class for miscellaneous Command Sets
+"""
 
 CMD_OTHER = 1 << 0
 CMD_LOGIN = 1 << 1
@@ -32,7 +38,215 @@ class Command:
                 self.type = None
 
 class BaseCommand:
+        
+        separator = '\n'
+        xdname = 'XIVO Base'
+        
         def __init__(self):
                 pass
+        def handle_outsock(self, astid, msg):
+                return
+        def checkqueue(self):
+                return
+
+        # inits / updates
+        def extrasock(self, extraconn):
+                return
+        def set_options(self, xivoconf):
+                return
+
+        userfields = []
+        def getuserlist(self):
+                return
+
+        def set_configs(self, configs):
+                return
+        def set_phonelist(self, plist):
+                return
+        def set_userlist(self, ulist):
+                return
+        def set_contextlist(self, ctxlist):
+                return
+
+        # connection
+        def connected(self, connid):
+                return
+
+        # login
+        def required_login_params(self):
+                return
+        def get_login_params(self, astid, command, connid):
+                return
+        def manage_login(self, loginparams):
+                return
+        def loginko(self, loginparams, connid, errorstring):
+                return
+        def loginok(self, loginparams, userinfo):
+                return
+
+        # command events (~ CTI)
+        def get_list_commands(self):
+                return []
+        def parsecommand(self, linein):
+                return
+        def manage_cticommand(self, userinfo, connid_socket, parsedcommand, cfg):
+                return
+
+        # AGI events
+        def handle_agi(self, astid, msg):
+                return
+
+        def phones_update(self, function, args):
+                return
+
+##        def update_srv2clt(self, phoneinfo):
+##                return None
+##        def message_srv2clt(self, sender, message):
+##                return None
+        def dmessage_srv2clt(self, message):
+                return None
+
+        # Methods to handle Asterisk AMI events
+        def ami_reload(self, astid, event):
+                return
+        def ami_shutdown(self, astid, event):
+                return
+        def ami_registry(self, astid, event):
+                return
+        def ami_alarm(self, astid, event):
+                return
+        def ami_alarmclear(self, astid, event):
+                return
+        def ami_cdr(self, astid, event):
+                return
+        def ami_faxreceived(self, astid, event):
+                return
+        def ami_dial(self, astid, event):
+                return
+        def ami_link(self, astid, event):
+                return
+        def ami_unlink(self, astid, event):
+                return
+        def ami_hangup(self, astid, event):
+                return
+        def ami_aoriginatesuccess(self, astid, event):
+                return
+        def ami_originatesuccess(self, astid, event):
+                return
+        def ami_aoriginatefailure(self, astid, event):
+                return
+        def ami_originatefailure(self, astid, event):
+                return
+        def ami_messagewaiting(self, astid, event):
+                return
+        def ami_newcallerid(self, astid, event):
+                return
+        def ami_parkedcall(self, astid, event):
+                return
+        def ami_unparkedcall(self, astid, event):
+                return
+        def ami_parkedcallgiveup(self, astid, event):
+                return
+        def ami_parkedcalltimeout(self, astid, event):
+                return
+        def ami_parkedcallscomplete(self, astid, event):
+                return
+
+        # Agents' AMI Events
+        def ami_agentlogin(self, astid, event):
+                return
+        def ami_agentlogoff(self, astid, event):
+                return
+        def ami_agentcallbacklogin(self, astid, event):
+                return
+        def ami_agentcallbacklogoff(self, astid, event):
+                return
+        def ami_agentcalled(self, astid, event):
+                return
+        def ami_agentcomplete(self, astid, event):
+                return
+        def ami_agentdump(self, astid, event):
+                return
+        def ami_agentconnect(self, astid, event):
+                return
+        def ami_agents(self, astid, event):
+                return
+
+        def ami_userevent(self, astid, event):
+                return
+        def ami_meetmejoin(self, astid, event):
+                return
+        def ami_meetmeleave(self, astid, event):
+                return
+        def ami_status(self, astid, event):
+                return
+
+        def ami_queuemember(self, astid, event):
+                return
+        def ami_queuememberadded(self, astid, event):
+                return
+        def ami_queuememberremoved(self, astid, event):
+                return
+        def ami_queuememberstatus(self, astid, event):
+                return
+        def ami_queuememberpaused(self, astid, event):
+                return
+        def ami_queueparams(self, astid, event):
+                return
+
+        def ami_join(self, astid, event):
+                return
+        def ami_leave(self, astid, event):
+                return
+
+        def ami_rename(self, astid, event):
+                return
+        def ami_peerstatus(self, astid, event):
+                return
+        def ami_newexten(self, astid, event):
+                return
+        def ami_extensionstatus(self, astid, event):
+                return
+        def ami_newstate(self, astid, event):
+                return
+        def ami_newchannel(self, astid, event):
+                return
+        def ami_statuscomplete(self, astid, event):
+                print 'AMI %s StatusComplete' % astid
+                return
+
+        def ami_agentscomplete(self, astid, event):
+                print 'AMI %s AgentsComplete' % astid
+                return
+
+
+        # QueueMemberStatus ExtensionStatus
+        #                 0                  AST_DEVICE_UNKNOWN
+        #                 1               0  AST_DEVICE_NOT_INUSE  /  libre
+        #                 2               1  AST_DEVICE IN USE     / en ligne
+        #                 3                  AST_DEVICE_BUSY
+        #                                 4  AST_EXTENSION_UNAVAILABLE ?
+        #                 5                  AST_DEVICE_UNAVAILABLE
+        #                 6 AST_EXTENSION_RINGING = 8  appele
+
+        # failure reasons (?)
+        #define AST_CONTROL_HANGUP              1
+        #define AST_CONTROL_RING                2
+        #define AST_CONTROL_RINGING             3
+        #define AST_CONTROL_ANSWER              4
+        #define AST_CONTROL_BUSY                5
+        #define AST_CONTROL_TAKEOFFHOOK         6
+        #define AST_CONTROL_OFFHOOK             7
+        #define AST_CONTROL_CONGESTION          8
+        #define AST_CONTROL_FLASH               9
+        #define AST_CONTROL_WINK                10
+        
+        # END of AMI events
+
+        # XIVO synchronization methods
+        def pre_reload(self):
+                return
+        def pre_moh_reload(self):
+                return
 
 CommandClasses = {}

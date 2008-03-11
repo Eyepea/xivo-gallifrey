@@ -1,12 +1,10 @@
-# $Revision$
-# $Date$
-"""
-LDAP class.
-Copyright (C) 2007, Proformatique
-"""
-
 # XIVO Daemon
-#
+
+__version__   = '$Revision$'
+__date__      = '$Date$'
+__copyright__ = 'Copyright (C) 2007, 2008, Proformatique'
+__author__    = 'Corentin Le Gall'
+
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
@@ -26,13 +24,15 @@ Copyright (C) 2007, Proformatique
 # with this program; if not, you will find one at
 # <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>.
 
+"""
+LDAP class.
+"""
+
 import csv
 import ldap
 import syslog
 import sys
 import urllib
-
-__version__ = "$Revision$ $Date$"
 
 def varlog(syslogprio, string):
         if syslogprio <= syslog.LOG_NOTICE:

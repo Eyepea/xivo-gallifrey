@@ -31,17 +31,16 @@ class Users:
                 self.commandclass = None
                 return
 
+
         def setcommandclass(self, commandclass):
                 self.commandclass = commandclass
                 return
 
-        def set_ast_list(self, astid):
-                self.byast[astid] = Users_byast(astid)
-                return
 
         def adduser(self, astid, userparams):
                 self.byast[astid].adduser(userparams)
                 return
+
 
         def finduser(self, username):
                 uinfo = None
@@ -51,44 +50,46 @@ class Users:
                                 break
                 return uinfo
 
-        def disconnect_user(self, userinfo):
-                astid = userinfo.get('astid')
-                username = userinfo.get('user')
-                self.byast[astid].disconnect_user(username)
-                return
 
         def update(self, astid):
-##                nlist = self.commandclass.getuserlist_ng(asterisklist[0])
-##                self.list = nlist
+                if astid not in self.byast:
+                        self.byast[astid] = Users_byast(astid, self.commandclass.userfields)
                 userl = self.commandclass.getuserlist()
                 for ul, vv in userl.iteritems():
                         self.adduser(astid, vv)
                 return
 
 
+        # to be called sometimes (update period ?)
+        def check_connected_accounts(self):
+                for user,userinfo in userlist[self.astid].iteritems():
+                        if 'sessiontimestamp' in userinfo:
+                                if time.time() - userinfo.get('sessiontimestamp') > xivoclient_session_timeout:
+                                        log_debug(SYSLOG_INFO, '%s : timeout reached for %s' %(self.astid, user))
+                                        disconnect_user(userinfo)
+                                        self.send_availstate_update(user, 'unknown')
+
+
 ## \class Users_byast
 # \brief Properties of Users, sorted by Asterisk id
 class Users_byast:
-        def __init__(self, iastid):
+        def __init__(self, iastid, ifields):
                 self.astid = iastid
                 self.list = {}
+                self.fields = ifields
                 return
 
         def adduser(self, inparams):
-                [user, agentnum, options] = inparams
+                user = inparams['user']
                 if self.list.has_key(user):
                         # updates
-                        self.list[user]['agentnum'] = agentnum
+                        # self.list[user]['agentnum'] = agentnum
+                        pass
                 else:
-                        self.list[user] = {'astid'    : self.astid,
-                                           'user'     : user,
-                                           'agentnum' : agentnum,
-                                           'cbstatus' : 'undefined',
-                                           'login'    : {},
-                                           'calls'    : {},
-                                           'queuelist': {},
-                                           'options'  : options}
-
+                        self.list[user] = {}
+                        self.list[user]['astid'] = self.astid
+                        for f in self.fields:
+                                self.list[user][f] = inparams[f]
         def deluser(self, user):
                 if self.list.has_key(user):
                         self.list.pop(user)
@@ -96,21 +97,12 @@ class Users_byast:
         def finduser(self, user):
                 return self.list.get(user)
 
-        def disconnect_user(self, user):
-                userinfo = self.list[user]
-                if 'connection' in userinfo.get('login'):
-                        del userinfo.get('login')['connection']
-
         def listusers(self):
-                lst = {}
-                for user,info in self.list.iteritems():
-                        lst[user] = info
-                return lst
+                return self.list
 
         def listconnected(self):
                 lst = {}
-                for user,info in self.list.iteritems():
-                        if 'logintimestamp' in info:
+                for user, info in self.list.iteritems():
+                        if 'login' in info:
                                 lst[user] = info
                 return lst
-

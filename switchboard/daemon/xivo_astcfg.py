@@ -73,11 +73,9 @@ class AsteriskConfig:
                      ami_port = 5038,
                      ami_login = 'xivouser',
                      ami_pass = 'xivouser',
-                     userfeatures_db_uri = '',
-                     capas_s = [],
-                     capas_i = 0,
+                     userfeatures_db_uri = None,
                      capafeatures = [],
-                     cdr_db_uri = '',
+                     cdr_db_uri = None,
                      realm = 'asterisk',
                      parkingnumber = '700',
                      faxcallerid = 'faxcallerid',
@@ -94,18 +92,22 @@ class AsteriskConfig:
                 self.ami_port = ami_port
                 self.ami_login = ami_login
                 self.ami_pass = ami_pass
-                self.userfeatures_db_uri = userfeatures_db_uri
-                self.capas_s = capas_s
-                self.capas_i = capas_i
                 self.capafeatures = capafeatures
-                self.cdr_db_uri  = cdr_db_uri
-                # self.cdr_db_conn = anysql.connect_by_uri(cdr_db_uri)
-                # charset = 'utf8' : add ?charset=utf8 to the URI
-
                 self.realm = realm
                 self.parkingnumber = parkingnumber
                 self.faxcallerid = faxcallerid
                 self.linkestablished = linkestablished
+
+                if userfeatures_db_uri is not None:
+                        self.userfeatures_db_conn = anysql.connect_by_uri(userfeatures_db_uri)
+                else:
+                        self.userfeatures_db_conn = None
+
+                if cdr_db_uri == userfeatures_db_uri:
+                        self.cdr_db_conn = self.userfeatures_db_conn
+                else:
+                        self.cdr_db_conn = anysql.connect_by_uri(cdr_db_uri)
+
 
         ## \brief Function to load user file.
         # SIP, Zap, mISDN and IAX2 are taken into account there.

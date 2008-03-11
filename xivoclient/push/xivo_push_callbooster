@@ -1,11 +1,23 @@
 #! /usr/bin/python
 # vim: set fileencoding=utf-8 :
 #
-# $Revision$
-# $Date$
+# This is an extension to XIVO Daemon, authorized by Pro-formatique SARL
+# for sub-licensing under a separated contract.
 #
-# AGI de push de fiche
+# Licensing of this code is NOT bounded by the terms of the
+# GNU General Public License.
 #
+# See the LICENSE file at top of the source tree or delivered in the
+# installable package in which XIVO Daemon is distributed for more details.
+
+"""
+This is the AGI called when a call is incoming on XIVO-FB2.
+"""
+
+__version__   = '$Revision$'
+__date__      = '$Date$'
+__copyright__ = 'Copyright (C) 2007, 2008, Proformatique'
+__author__    = 'Corentin Le Gall'
 
 import xivo.to_path
 import anysql
@@ -66,7 +78,7 @@ def findpath_and_set(acc, argum, kind, varname):
                 print_verbose('%s (%s) : %s does not exist on filesystem' % (varname, str(acc), argum))
 
 def moh_check(path):
-        conn_ast = anysql.connect_by_uri(xivo_db)
+        conn_ast = anysql.connect_by_uri(xivo_db_uri)
         cursor_ast = conn_ast.cursor()
         columns = ('category', 'var_name', 'var_val')
         cursor_ast.query("SELECT ${columns} FROM musiconhold WHERE var_name = %s AND category = %s",
@@ -91,7 +103,7 @@ path_sounds_asterisk = '/var/lib/asterisk/sounds'
 path_sounds_byadh = 'callbooster'
 path_sounds_global = {'Sons' : 'web-interface/callbooster-sons',
                       'Repondeurs' : 'web-interface/callbooster-repondeurs'}
-xivo_db = 'mysql://asterisk:proformatique@127.0.0.1:3306/asterisk?charset=utf8'
+xivo_db_uri = 'mysql://asterisk:proformatique@127.0.0.1:3306/asterisk?charset=utf8'
 
 xivocfg = ConfigParser.ConfigParser()
 try:
@@ -103,8 +115,9 @@ try:
                 path_sounds_asterisk = xivocfg_general.get('path_sounds_asterisk')
         if 'path_sounds_byadh' in xivocfg_general:
                 path_sounds_byadh = xivocfg_general.get('path_sounds_byadh')
-        if 'xivo_db' in xivocfg_general:
-                xivo_db = xivocfg_general.get('xivo_db')
+        xivocfg_callbooster = dict(xivocfg.items('callbooster'))
+        if 'xivo_db_uri' in xivocfg_callbooster:
+                xivo_db_uri = xivocfg_callbooster.get('xivo_db_uri')
 ##        if 'path_sounds_global' in xivocfg_general:
 ##                path_sounds_global = xivocfg_general.get('path_sounds_global')
 except Exception, exc:

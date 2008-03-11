@@ -1,16 +1,28 @@
 #!/usr/bin/python
 
-# This is an extension to XIVO Daemon, authorized by Pro-formatique SARL
-# for sub-licensing under a separated contract.
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
 #
-# Licensing of this code is NOT bounded by the terms of the
-# GNU General Public License.
+# Alternatively, XIVO Daemon is available under other licenses directly
+# contracted with Pro-formatique SARL. See the LICENSE file at top of the
+# source tree or delivered in the installable package in which XIVO Daemon
+# is distributed for more details.
 #
-# See the LICENSE file at top of the source tree or delivered in the
-# installable package in which XIVO Daemon is distributed for more details.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, you will find one at
+# <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>.
 
-# $Revision$
-# $Date$
+__version__   = '$Revision$'
+__date__      = '$Date$'
+__copyright__ = 'Copyright (C) 2007, 2008, Proformatique'
+__author__    = 'Corentin Le Gall'
 
 ## \mainpage
 # \section section_1 General description of XIVO Daemon
@@ -82,30 +94,18 @@
 # \brief XIVO CTI server
 #
 
-__version__ = "$Revision$ $Date$"
 __revision__ = __version__.split()[1]
 
 # debian.org modules
-import csv
-import string
 import ConfigParser
-import commands
 import getopt
-import md5
 import os
-import pickle
-import random
-import re
 import select
 import signal
 import socket
-import SocketServer
 import sys
-import syslog
 import threading
 import time
-import urllib
-import _sre
 
 # XIVO lib-python modules initialization
 import xivo.to_path
@@ -137,6 +137,7 @@ from BackSQL import backsqlite
 import xivo_ami
 import xivo_phones
 import xivo_users
+import xivo_contexts
 import xivo_commandsets
 import xivo_astcfg
 from xivo_log import *
@@ -149,7 +150,7 @@ configs = {}
 #  user :             user name
 #  passwd :           password
 
-PIDFILE = '/var/run/xivo_fb.pid'
+PIDFILE = 'xivo_fb.pid'
 # TODO: command line parameter
 
 BUFSIZE_LARGE = 8192
@@ -160,32 +161,14 @@ XIVO_CLI_WEBI_HEADER = 'XIVO-CLI-WEBI'
 XIVOVERSION = '0.3'
 
 
-# AGI connection
-def manage_agi_connections(connid, msg):
-        """
-        Handles AGI connections
-        """
-        re_push = re.match('PUSH <(\S+)> <(\S+)> <(\S+)> <(\S+)>', msg.strip())
-        if re_push != None:
-                inchannel = re_push.group(1)
-                cidnum    = re_push.group(2)
-                sdanum    = re_push.group(3)
-                prevupto  = re_push.group(4)
-                print 'INCOMING CALL ## PUSH received #', inchannel, cidnum, sdanum, prevupto
-                whattodo = commandclass.elect(asterisklist[0], inchannel, cidnum, sdanum, prevupto)
-                msgforagi = 'PULL_START %s PULL_STOP' % pickle.dumps(whattodo)
-                print 'INCOMING CALL ## sending pickled reply to AGI'
-                connid.send(msgforagi)
-
-
 ## \brief Deals with requests from the UI clients.
 # \param connid connection identifier
-# \param allow_events tells if this connection belongs to events-allowed ones
-# (for switchboard) or to events-disallowed ones (for WEBI CLI commands)
+# \param msg message to process
+# \param sep separator to split the message
 # \return none
-def manage_webi_cti_connections_tcp(connid, msg, allow_events, sep):
+def manage_cti_connections(connid, msg, sep):
         """
-        Handles WEBI and CTI connections
+        Handles CTI connections
         """
         requester_ip = connid.getpeername()[0]
         requester_port = connid.getpeername()[1]
@@ -194,9 +177,100 @@ def manage_webi_cti_connections_tcp(connid, msg, allow_events, sep):
         multimsg = msg.split(sep)
         for usefulmsgpart in multimsg:
                 usefulmsg = usefulmsgpart.split('\r')[0]
-                # debug/setup functions
-                if usefulmsg == "show_infos":
+                if len(usefulmsg) == 0:
+                        break
+                command = commandclass.parsecommand(usefulmsg)
+                if command.name in commandclass.get_list_commands():
                         try:
+                                if command.type == xivo_commandsets.CMD_LOGIN:
+                                        loginparams = commandclass.get_login_params(asterisklist[0], command, connid)
+                                        uinfo = commandclass.manage_login(loginparams)
+                                        if uinfo.__class__.__name__ == 'str':
+                                                commandclass.loginko(loginparams, uinfo, connid)
+                                        else:
+                                                uinfo['login']['connection'] = connid
+                                                commandclass.loginok(loginparams, uinfo)
+                                                userinfo_by_requester[connid] = uinfo
+                                else:
+                                        if connid in userinfo_by_requester:
+                                                commandclass.manage_cticommand(userinfo_by_requester[connid],
+                                                                               connid,
+                                                                               command)
+                                        else:
+                                                log_debug(SYSLOG_WARNING, "unlogged %s is attempting a %s (TCP) : %s" %(requester, command.name, str(command.args)))
+                        except Exception, exc:
+                                log_debug(SYSLOG_ERR, '--- exception --- CTI connection when managing [%s] for %s : %s'
+                                          %(command.name, requester, str(exc)))
+                else:
+                        connid.send('Unknown Command <%s>\n' % command.name)
+
+
+## \brief Deals with requests from the UI clients.
+# \param connid connection identifier
+# \return none
+def manage_webi_connections(connid, msg, sep):
+        """
+        Handles WEBI connections
+        """
+        requester_ip = connid.getpeername()[0]
+        requester_port = connid.getpeername()[1]
+        requester = '%s:%d' % (requester_ip, requester_port)
+
+        multimsg = msg.split(sep)
+        for usefulmsgpart in multimsg:
+                usefulmsg = usefulmsgpart.split('\r')[0]
+                if len(usefulmsg) == 0:
+                        break
+                if requester_ip in ip_reverse_webi:
+                        try:
+                                astid = ip_reverse_webi[requester_ip]
+                                connid.send('%s:ID <%s>\n' %(XIVO_CLI_WEBI_HEADER, astid))
+                                if usefulmsg == 'xivo[userlist,update]':
+                                        update_userlist[astid] = True
+                                        connid.send('%s:OK\n' %(XIVO_CLI_WEBI_HEADER))
+                                        log_debug(SYSLOG_INFO, '%s : userlist update request received' % astid)
+                                elif astid in AMI_array_user_commands and AMI_array_user_commands[astid]:
+                                        stripped_usefulmsg = usefulmsg.strip()
+                                        try:
+                                                if stripped_usefulmsg == 'moh reload':
+                                                        commandclass.pre_moh_reload()
+                                                elif stripped_usefulmsg == 'reload':
+                                                        commandclass.pre_reload()
+                                        except Exception, exc:
+                                                log_debug(SYSLOG_ERR, '--- exception --- (pre reloads) : %s' % str(exc))
+                                        try:
+                                                s = AMI_array_user_commands[astid].execclicommand(stripped_usefulmsg)
+                                        except Exception, exc:
+                                                log_debug(SYSLOG_ERR, '--- exception --- (%s) WEBI command exec <%s> : (client %s) : %s'
+                                                          %(astid, str(stripped_usefulmsg), requester, str(exc)))
+                                        try:
+                                                for x in s: connid.send(x)
+                                                connid.send('%s:OK\n' %(XIVO_CLI_WEBI_HEADER))
+                                        except Exception, exc:
+                                                log_debug(SYSLOG_ERR, '--- exception --- (%s) WEBI command reply <%s> : (client %s) : %s'
+                                                          %(astid, str(stripped_usefulmsg), requester, str(exc)))
+                        except Exception, exc:
+                                log_debug(SYSLOG_ERR, '--- exception --- (%s) WEBI <%s> : (client %s) : %s'
+                                          %(astid, str(usefulmsg.strip()), requester, str(exc)))
+                                connid.send('%s:KO <Exception : %s>\n' %(XIVO_CLI_WEBI_HEADER, str(exc)))
+                else:
+                        connid.send('%s:KO <NOT ALLOWED>\n' %(XIVO_CLI_WEBI_HEADER))
+
+
+## \brief Deals with requests from the UI clients.
+# \param connid connection identifier
+# \return none
+def manage_info_connections(connid, msg, sep):
+        """
+        Handles INFO connections
+        """
+        requester = '%s:%d' % (connid.getpeername()[0], connid.getpeername()[1])
+        multimsg = msg.replace('\r', '').split(sep)
+        for usefulmsg in multimsg:
+                if len(usefulmsg) == 0:
+                        break
+                try:
+                        if usefulmsg == "show_infos":
                                 time_uptime = int(time.time() - time_start)
                                 reply = 'infos=' \
                                         'xivo_version=%s;' \
@@ -207,132 +281,46 @@ def manage_webi_cti_connections_tcp(connid, msg, allow_events, sep):
                                           time_uptime)
                                 connid.send(reply + "\n")
                                 # connid.send("server capabilities = %s\n" %(",".join()))
-                                connid.send("%s:OK\n" %(XIVO_CLI_WEBI_HEADER))
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : KO when sending to %s : %s'
-                                          %(usefulmsg, requester, str(exc)))
-                elif usefulmsg == 'show_users':
-                        try:
+                        elif usefulmsg == 'show_users':
                                 for astid in configs:
                                         connid.send("on <%s> :\n" % astid)
                                         for user,info in ulist.byast[astid].listusers().iteritems():
                                                 connid.send('%s %s\n' %(user.encode('latin1'), info))
-                                if connid in userinfo_by_requester:
-                                        connid.send('%s\n' % str(userinfo_by_requester[connid]))
-                                connid.send("%s:OK\n" %(XIVO_CLI_WEBI_HEADER))
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : KO when sending to %s : %s'
-                                          %(usefulmsg, requester, str(exc)))
-                elif usefulmsg == 'show_logged':
-                        try:
+                        elif usefulmsg == 'show_logged':
                                 for astid in configs:
                                         connid.send("on <%s> :\n" % astid)
                                         for user,info in ulist.byast[astid].listconnected().iteritems():
                                                 connid.send('%s %s\n' %(user.encode('latin1'), info))
-                                if connid in userinfo_by_requester:
-                                        connid.send('%s\n' % str(userinfo_by_requester[connid]))
-                                connid.send("%s:OK\n" %(XIVO_CLI_WEBI_HEADER))
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : KO when sending to %s : %s'
-                                          %(usefulmsg, requester, str(exc)))
-                elif usefulmsg == "show_ami":
-                        try:
+                        elif usefulmsg == "show_ami":
                                 for amis in AMI_array_events_fd:
                                         connid.send("events   : %s : %s\n" %(amis, str(AMI_array_events_fd[amis])))
                                 for amis in AMI_array_user_commands:
                                         connid.send("commands : %s : %s\n" %(amis, str(AMI_array_user_commands[amis])))
-                                connid.send("%s:OK\n" %(XIVO_CLI_WEBI_HEADER))
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : KO when sending to %s : %s'
-                                          %(usefulmsg, requester, str(exc)))
-                elif usefulmsg != "":
-                    if allow_events: # i.e. if CTI-style connection
-                        command = commandclass.parsecommand(usefulmsg)
-                        if command.name in commandclass.get_list_commands():
-                                if command.type == xivo_commandsets.CMD_LOGIN:
-                                        try:
-                                                loginparams = commandclass.get_login_params(asterisklist[0], command, connid)
-                                                uinfo = commandclass.manage_login(loginparams)
-                                                print uinfo
-                                                if uinfo.__class__ == 'str':
-                                                        commandclass.loginko(loginparams, uinfo, connid)
-                                                else:
-                                                        uinfo['login']['connection'] = connid
-                                                        commandclass.loginok(loginparams, uinfo)
-                                                        userinfo_by_requester[connid] = uinfo
-                                        except Exception, exc:
-                                                log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : a problem occured when sending to %s : %s'
-                                                          %(command.name, requester, str(exc)))
-                                else:
-                                        try:
-                                                if connid in userinfo_by_requester:
-                                                        resp = commandclass.manage_cticommand(userinfo_by_requester[connid],
-                                                                                              connid,
-                                                                                              command,
-                                                                                              configs)
-                                                        if resp is not None:
-                                                                try:
-                                                                        connid.send(resp + '\n')
-                                                                except Exception, exc:
-                                                                        log_debug(SYSLOG_ERR, '--- exception --- (sending TCP) %s' % str(exc))
-                                                else:
-                                                        log_debug(SYSLOG_WARNING, "%s is attempting a %s (TCP) : %s" %(requester, command.name, str(command.args)))
-                                        except Exception, exc:
-                                                log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : a problem occured when sending to %s : %s'
-                                                          %(command.name, requester, str(exc)))
                         else:
-                                connid.send('Unknown Command %s\n' % command.name)
+                                pass
+                        connid.send("XIVO-INFO:OK\n")
+                except Exception, exc:
+                        log_debug(SYSLOG_ERR, '--- exception --- INFO connection [%s] : KO when sending to %s : %s'
+                                  %(usefulmsg, requester, str(exc)))
 
-
-                    else: # i.e. if WEBI-style connection
-                                if requester_ip in ip_reverse_webi:
-                                        try:
-                                                astid = ip_reverse_webi[requester_ip]
-                                                connid.send('%s:ID <%s>\n' %(XIVO_CLI_WEBI_HEADER, astid))
-                                                if usefulmsg == 'xivo[userlist,update]':
-                                                        update_userlist[astid] = True
-                                                        connid.send('%s:OK\n' %(XIVO_CLI_WEBI_HEADER))
-                                                        log_debug(SYSLOG_INFO, '%s : userlist update request received' % astid)
-                                                elif astid in AMI_array_user_commands and AMI_array_user_commands[astid]:
-                                                        stripped_usefulmsg = usefulmsg.strip()
-                                                        try:
-                                                                if stripped_usefulmsg == 'moh reload':
-                                                                        commandclass.pre_moh_reload()
-                                                                elif stripped_usefulmsg == 'reload':
-                                                                        commandclass.pre_reload()
-                                                        except Exception, exc:
-                                                                log_debug(SYSLOG_ERR, '--- exception --- (pre reloads) : %s' % str(exc))
-                                                        try:
-                                                                s = AMI_array_user_commands[astid].execclicommand(stripped_usefulmsg)
-                                                        except Exception, exc:
-                                                                log_debug(SYSLOG_ERR, '--- exception --- (%s) WEBI command exec <%s> : (client %s) : %s'
-                                                                          %(astid, str(stripped_usefulmsg), requester, str(exc)))
-                                                        try:
-                                                                for x in s: connid.send(x)
-                                                                connid.send('%s:OK\n' %(XIVO_CLI_WEBI_HEADER))
-                                                        except Exception, exc:
-                                                                log_debug(SYSLOG_ERR, '--- exception --- (%s) WEBI command reply <%s> : (client %s) : %s'
-                                                                          %(astid, str(stripped_usefulmsg), requester, str(exc)))
-                                        except Exception, exc:
-                                                log_debug(SYSLOG_ERR, '--- exception --- (%s) WEBI <%s> : (client %s) : %s'
-                                                          %(astid, str(usefulmsg.strip()), requester, str(exc)))
-                                                connid.send('%s:KO <Exception : %s>\n' %(XIVO_CLI_WEBI_HEADER, str(exc)))
-                                else:
-                                        connid.send('%s:KO <NOT ALLOWED>\n' %(XIVO_CLI_WEBI_HEADER))
 
 
 def manage_tcp_connections(sel_i, msg, kind):
         """
-        Dispatches the message's handling according to the connection
+        Dispatches the message's handling according to the connection's kind
         """
         if kind == 'CTI':
-                manage_webi_cti_connections_tcp(sel_i, msg, True, '/')
+                manage_cti_connections(sel_i, msg, commandclass.separator)
         elif kind == 'WEBI':
-                manage_webi_cti_connections_tcp(sel_i, msg, False, '\n')
+                manage_webi_connections(sel_i, msg, '\n')
+        elif kind == 'INFO':
+                manage_info_connections(sel_i, msg, '\n')
         elif kind == 'AGI':
-                manage_agi_connections(sel_i, msg)
+                agireply = commandclass.handle_agi(asterisklist[0], msg)
+                if agireply is not None:
+                        sel_i.send(agireply)
         else:
-                print 'unknown kind %s' % kind
+                log_debug(SYSLOG_WARNING, 'unknown connection kind %s' % kind)
 
 
 """
@@ -345,7 +333,7 @@ Management of events that are spied on the AMI
 def handle_ami_event(astid, idata):
         """
         Handles the AMI events occuring on Asterisk.
-        This function roughly only dispatches them to the relevant commandset's method.
+        If the Event field is there, calls the handle_ami_function() function.
         """
         global save_for_next_packet_events
         if astid not in configs:
@@ -384,220 +372,122 @@ def handle_ami_event(astid, idata):
 
 
 def handle_ami_function(astid, evfunction, this_event):
-        global prev_registry_event
-        if evfunction == 'Dial':
-                        try:
-                                commandclass.ami_dial(astid, this_event)
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-        elif evfunction == 'Link':
-                        try:
-                                commandclass.ami_link(astid, this_event)
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-        elif evfunction == 'Unlink':
-                        try:
-                                commandclass.ami_unlink(astid, this_event)
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-        elif evfunction == 'Hangup':
-                        try:
-                                commandclass.ami_hangup(astid, this_event)
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-        elif evfunction == 'Reload':
+        """
+        Handles the AMI events related to a given function (i.e. containing the Event field).
+        It roughly only dispatches them to the relevant commandset's methods.
+        """
+        try:
+                if evfunction == 'Reload':
                         message = this_event.get('Message')
                         log_debug(SYSLOG_WARNING, "AMI:Reload: %s : %s" %(astid, str(this_event)))
-        elif evfunction == 'Shutdown':
+                        commandclass.ami_reload(astid, this_event)
+                elif evfunction == 'Shutdown':
                         shutdown = this_event.get('Shutdown')
                         restart  = this_event.get('Restart')
                         log_debug(SYSLOG_WARNING, "AMI:Shutdown: %s (how=%s restart=%s)" %(astid, shutdown, restart))
-        elif evfunction == 'Join':
-                        try:
-                                commandclass.ami_join(astid, this_event)
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-        elif evfunction == 'Leave':
-                        try:
-                                commandclass.ami_leave(astid, this_event)
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-        elif evfunction == 'PeerStatus':
-                        # <-> register's ? notify's ?
-                        pass
-        elif evfunction == 'Agentlogin':
-                        try:
-                                commandclass.ami_agentlogin(astid, this_event)
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-        elif evfunction == 'Agentlogoff':
-                        try:
-                                commandclass.ami_agentlogoff(astid, this_event)
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-        elif evfunction == 'Agentcallbacklogoff':
-                        try:
-                                commandclass.ami_agentcallbacklogoff(astid, this_event)
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-
-        elif evfunction == 'Agentcallbacklogin':
-                        log_debug(SYSLOG_INFO, '//AMI:Agentcallbacklogin// %s : %s' %(astid, str(this_event)))
-        elif evfunction == 'AgentCalled':
-                        log_debug(SYSLOG_INFO, '//AMI:AgentCalled// %s : %s' %(astid, str(this_event)))
-        elif evfunction == 'ParkedCall':
-                        # when a requested parking is established
-                        try:
-                                commandclass.ami_parkedcall(astid, this_event)
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-        elif evfunction == 'UnParkedCall':
-                        # when somebody (From) took the call
-                        try:
-                                commandclass.ami_unparkedcall(astid, this_event)
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-        elif evfunction == 'ParkedCallTimeOut':
-                        # when the timeout has occured
-                        try:
-                                commandclass.ami_parkedcalltimeout(astid, this_event)
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-        elif evfunction == 'ParkedCallGiveUp':
-                        # when the peer is tired and hangs up
-                        try:
-                                commandclass.ami_parkedcallgiveup(astid, this_event)
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-        elif evfunction == 'ParkedCallsComplete':
-                        log_debug(SYSLOG_INFO, '//AMI:ParkedCallsComplete// %s : %s' %(astid, str(this_event)))
-        elif evfunction == 'Cdr':
-                        log_debug(SYSLOG_INFO, '//AMI:Cdr// %s : %s' %(astid, str(this_event)))
-        elif evfunction == 'Alarm':
-                        log_debug(SYSLOG_INFO, '//AMI:Alarm// %s : %s' %(astid, str(this_event)))
-        elif evfunction == 'AlarmClear':
-                        log_debug(SYSLOG_INFO, '//AMI:AlarmClear// %s : %s' %(astid, str(this_event)))
-        elif evfunction == 'FaxReceived':
-                        log_debug(SYSLOG_INFO, '//AMI:FaxReceived// %s : %s' %(astid, str(this_event)))
-        elif evfunction == 'Registry':
-                        log_debug(SYSLOG_INFO, 'AMI:Registry: %s : username=%s channel=%s domain=%s status=%s'
-                                  %(astid, this_event.get('Username'), this_event.get('Channel'), this_event.get('Domain'), this_event.get('Status')))
-                        prev_registry_event = this_event
-        elif evfunction == 'MeetmeJoin':
-                        # when a member joins a conference
-                        try:
-                                commandclass.ami_meetmejoin(astid, this_event)
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-        elif evfunction == 'MeetmeLeave':
-                        # when a member leaves a conference
-                        try:
-                                commandclass.ami_meetmeleave(astid, this_event)
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-        elif evfunction == 'ExtensionStatus':
-                        pass
-
-                        # QueueMemberStatus ExtensionStatus
-                        #                 0                  AST_DEVICE_UNKNOWN
-                        #                 1               0  AST_DEVICE_NOT_INUSE  /  libre
-                        #                 2               1  AST_DEVICE IN USE     / en ligne
-                        #                 3                  AST_DEVICE_BUSY
-                        #                                 4  AST_EXTENSION_UNAVAILABLE ?
-                        #                 5                  AST_DEVICE_UNAVAILABLE
-                        #                 6 AST_EXTENSION_RINGING = 8  appele
-        elif evfunction == 'OriginateSuccess':
-                        try:
-                                commandclass.ami_originatesuccess(astid, this_event)
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-        elif evfunction == 'AOriginateSuccess':
-                        try:
-                                commandclass.ami_aoriginatesuccess(astid, this_event)
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-        elif evfunction == 'OriginateFailure':
-                        try:
-                                commandclass.ami_originatefailure(astid, this_event)
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-                        # log_debug(SYSLOG_INFO, 'AMI:OriginateFailure: %s - reason = %s' % (astid, this_event.get('Reason')))
-        elif evfunction == 'AOriginateFailure':
-                        try:
-                                commandclass.ami_aoriginatefailure(astid, this_event)
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-                        # log_debug(SYSLOG_INFO, 'AMI:AOriginateFailure: %s - reason = %s' % (astid, this_event.get('Reason')))
-                        #define AST_CONTROL_HANGUP              1
-                        #define AST_CONTROL_RING                2
-                        #define AST_CONTROL_RINGING             3
-                        #define AST_CONTROL_ANSWER              4
-                        #define AST_CONTROL_BUSY                5
-                        #define AST_CONTROL_TAKEOFFHOOK         6
-                        #define AST_CONTROL_OFFHOOK             7
-                        #define AST_CONTROL_CONGESTION          8
-                        #define AST_CONTROL_FLASH               9
-                        #define AST_CONTROL_WINK                10
-        elif evfunction == 'Rename':
-                        # appears when there is a transfer
-                        try:
-                                commandclass.ami_rename(astid, this_event)
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-        elif evfunction == 'Newstate':
-                        pass
-        elif evfunction == 'Newcallerid':
-                        # for tricky managements
-                        try:
-                                commandclass.ami_newcallerid(astid, this_event)
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-        elif evfunction == 'Newchannel':
-                        pass
-        elif evfunction.startswith('UserEvent'):
-                        try:
-                                commandclass.ami_userevent(astid, this_event)
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-        elif evfunction == 'Newexten': # in order to handle outgoing calls ?
-                        pass
-        elif evfunction == 'MessageWaiting':
-                        try:
-                                commandclass.ami_messagewaiting(astid, this_event)
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-        elif evfunction == 'QueueParams':
-                        pass
-        elif evfunction == 'QueueMemberAdded':
-                        pass
-        elif evfunction == 'QueueMemberPaused':
-                        pass
-        elif evfunction == 'QueueMemberRemoved':
-                        pass
-        elif evfunction == 'QueueMember':
-                        log_debug(SYSLOG_INFO, '//AMI:QueueMember// %s : %s' %(astid, str(this_event)))
-        elif evfunction == 'QueueMemberStatus':
-                        try:
-                                commandclass.ami_queuememberstatus(astid, this_event)
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-        elif evfunction == 'Agents':
-                        try:
-                                commandclass.ami_agents(astid, this_event)
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-        elif evfunction == 'Status':
-                        try:
-                                commandclass.ami_status(astid, this_event)
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
-        elif evfunction == 'StatusComplete':
-                        log_debug(SYSLOG_INFO, 'AMI %s StatusComplete' % astid)
-        elif evfunction == 'AgentsComplete':
-                        log_debug(SYSLOG_INFO, 'AMI %s AgentsComplete' % astid)
-        else:
-                        log_debug(SYSLOG_WARNING, 'AMI %s ... not tracked event %s' % (astid, evfunction))
-
+                        commandclass.ami_shutdown(astid, this_event)
+                elif evfunction == 'Registry':
+                        commandclass.ami_registry(astid, this_event)
+                elif evfunction == 'Dial':
+                        commandclass.ami_dial(astid, this_event)
+                elif evfunction == 'Link':
+                        commandclass.ami_link(astid, this_event)
+                elif evfunction == 'Unlink':
+                        commandclass.ami_unlink(astid, this_event)
+                elif evfunction == 'Hangup':
+                        commandclass.ami_hangup(astid, this_event)
+                elif evfunction == 'Join':
+                        commandclass.ami_join(astid, this_event)
+                elif evfunction == 'Leave':
+                        commandclass.ami_leave(astid, this_event)
+                elif evfunction == 'PeerStatus':
+                        commandclass.ami_peerstatus(astid, this_event)
+                elif evfunction == 'Agentlogin':
+                        commandclass.ami_agentlogin(astid, this_event)
+                elif evfunction == 'Agentlogoff':
+                        commandclass.ami_agentlogoff(astid, this_event)
+                elif evfunction == 'Agentcallbacklogin':
+                        commandclass.ami_agentcallbacklogin(astid, this_event)
+                elif evfunction == 'Agentcallbacklogoff':
+                        commandclass.ami_agentcallbacklogoff(astid, this_event)
+                elif evfunction == 'AgentCalled':
+                        commandclass.ami_agentcalled(astid, this_event)
+                elif evfunction == 'AgentComplete':
+                        commandclass.ami_agentcomplete(astid, this_event)
+                elif evfunction == 'AgentConnect':
+                        commandclass.ami_agentconnect(astid, this_event)
+                elif evfunction == 'AgentDump':
+                        commandclass.ami_agentdump(astid, this_event)
+                elif evfunction == 'Agents':
+                        commandclass.ami_agents(astid, this_event)
+                elif evfunction == 'ParkedCall': # when the requested parking is acked
+                        commandclass.ami_parkedcall(astid, this_event)
+                elif evfunction == 'UnParkedCall':
+                        commandclass.ami_unparkedcall(astid, this_event)
+                elif evfunction == 'ParkedCallTimeOut':
+                        commandclass.ami_parkedcalltimeout(astid, this_event)
+                elif evfunction == 'ParkedCallGiveUp':
+                        commandclass.ami_parkedcallgiveup(astid, this_event)
+                elif evfunction == 'ParkedCallsComplete':
+                        commandclass.ami_parkedcallscomplete(astid, this_event)
+                elif evfunction == 'Cdr':
+                        commandclass.ami_cdr(astid, this_event)
+                elif evfunction == 'Alarm':
+                        commandclass.ami_alarm(astid, this_event)
+                elif evfunction == 'AlarmClear':
+                        commandclass.ami_alarmclear(astid, this_event)
+                elif evfunction == 'FaxReceived':
+                        commandclass.ami_faxreceived(astid, this_event)
+                elif evfunction == 'MeetmeJoin': # when a member joins a conference
+                        commandclass.ami_meetmejoin(astid, this_event)
+                elif evfunction == 'MeetmeLeave': # when a member leaves a conference
+                        commandclass.ami_meetmeleave(astid, this_event)
+                elif evfunction == 'ExtensionStatus':
+                        commandclass.ami_extensionstatus(astid, this_event)
+                elif evfunction == 'OriginateSuccess':
+                        commandclass.ami_originatesuccess(astid, this_event)
+                elif evfunction == 'AOriginateSuccess':
+                        commandclass.ami_aoriginatesuccess(astid, this_event)
+                elif evfunction == 'OriginateFailure':
+                        commandclass.ami_originatefailure(astid, this_event)
+                elif evfunction == 'AOriginateFailure':
+                        commandclass.ami_aoriginatefailure(astid, this_event)
+                elif evfunction == 'Rename': # appears when there is a transfer
+                        commandclass.ami_rename(astid, this_event)
+                elif evfunction == 'Newstate':
+                        commandclass.ami_newstate(astid, this_event)
+                elif evfunction == 'Newcallerid': # useful for tricky managements
+                        commandclass.ami_newcallerid(astid, this_event)
+                elif evfunction == 'Newchannel':
+                        commandclass.ami_newchannel(astid, this_event)
+                elif evfunction.startswith('UserEvent'):
+                        commandclass.ami_userevent(astid, this_event)
+                elif evfunction == 'Newexten': # in order to handle outgoing calls ?
+                        commandclass.ami_newexten(astid, this_event)
+                elif evfunction == 'MessageWaiting':
+                        commandclass.ami_messagewaiting(astid, this_event)
+                elif evfunction == 'QueueParams':
+                        commandclass.ami_queueparams(astid, this_event)
+                elif evfunction == 'QueueMemberAdded':
+                        commandclass.ami_queuememberadded(astid, this_event)
+                elif evfunction == 'QueueMemberPaused':
+                        commandclass.ami_queuememberpaused(astid, this_event)
+                elif evfunction == 'QueueMemberRemoved':
+                        commandclass.ami_queuememberremoved(astid, this_event)
+                elif evfunction == 'QueueMember':
+                        commandclass.ami_queuemember(astid, this_event)
+                elif evfunction == 'QueueMemberStatus':
+                        commandclass.ami_queuememberstatus(astid, this_event)
+                elif evfunction == 'Status':
+                        commandclass.ami_status(astid, this_event)
+                elif evfunction == 'StatusComplete':
+                        commandclass.ami_statuscomplete(astid, this_event)
+                elif evfunction == 'AgentsComplete':
+                        commandclass.ami_agentscomplete(astid, this_event)
+                else:
+                        log_debug(SYSLOG_WARNING, 'AMI %s ... this event (%s) is not tracked' % (astid, evfunction))
+        except Exception, exc:
+                log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
 
 
 ## \brief Connects to the AMI if not yet.
@@ -678,7 +568,7 @@ def connect_to_AMI(address, loginname, password, events_on):
 # \return none
 def sighandler(signum, frame):
         global askedtoquit
-        print "--- signal", signum, "received : quits"
+        print '--- signal %s (atq = %s) received : quits' % (signum, askedtoquit)
         for t in filter(lambda x: x.getName()<>"MainThread", threading.enumerate()):
                 print "--- living thread <%s>" %(t.getName())
                 t._Thread__stop()
@@ -691,7 +581,7 @@ def sighandler(signum, frame):
 # \return none
 def sighandler_reload(signum, frame):
         global askedtoquit
-        print "--- signal", signum, "received : reloads"
+        print '--- signal %s (atq = %s) received : reloads' % (signum, askedtoquit)
         askedtoquit = False
 
 # ==============================================================================
@@ -718,6 +608,8 @@ signal.signal(signal.SIGHUP, sighandler_reload)
 nreload = 0
 ulist = xivo_users.Users()
 plist = xivo_phones.Phones()
+ctxlist = xivo_contexts.Contexts()
+xdname = None
 
 while True: # loops over the reloads
         askedtoquit = False
@@ -735,12 +627,9 @@ while True: # loops over the reloads
         commandset = 'xivosimple'
         incoming_tcp_ports = []
         extraconn = ''
-        xivo_db = 'mysql://asterisk:proformatique@127.0.0.1:3306/asterisk?charset=utf8'
         updates_period = 60
         asterisklist = []
         contextlist = []
-        evt_filename = '/var/log/pf-xivo-cti-server/ami_events.log'
-        gui_filename = '/var/log/pf-xivo-cti-server/gui.log'
 
         userinfo_by_requester = {}
 
@@ -755,32 +644,32 @@ while True: # loops over the reloads
                 incoming_tcp_ports = xivoconf_general['incoming_tcp_ports'].split(',')
         if 'extraconn' in xivoconf_general:
                 extraconn = xivoconf_general['extraconn']
-        if 'operatini' in xivoconf_general:
-                operatini = xivoconf_general['operatini']
-        if 'xivo_db' in xivoconf_general:
-                xivo_db = xivoconf_general['xivo_db']
         if 'updates_period' in xivoconf_general:
                 updates_period = int(xivoconf_general['updates_period'])
         if 'asterisklist' in xivoconf_general:
                 asterisklist = xivoconf_general['asterisklist'].split(',')
-        if 'evtfile' in xivoconf_general:
-                evt_filename = xivoconf_general['evtfile']
-        if 'guifile' in xivoconf_general:
-                gui_filename = xivoconf_general['guifile']
-
 
         queued_threads_pipe = os.pipe()
         AMI_array_user_commands = {}
-        # for cset in ['xivonew', commandset]:
-        commandclass = xivo_commandsets.CommandClasses[commandset](ulist, AMI_array_user_commands, incoming_tcp_ports, operatini, queued_threads_pipe)
+        commandclass = xivo_commandsets.CommandClasses[commandset](AMI_array_user_commands, incoming_tcp_ports, queued_threads_pipe)
+
+        xdname = commandclass.xdname
+        log_debug(SYSLOG_NOTICE, '# STARTING %s / %d' % (xdname, nreload))
+
+        commandclass.set_userlist(ulist)
+        commandclass.set_phonelist(plist)
+        commandclass.set_contextlist(ctxlist)
         ulist.setcommandclass(commandclass)
         plist.setcommandclass(commandclass)
-
-        outsock = commandclass.extrasock(extraconn)
 
         save_for_next_packet_events = {}
         ip_reverse_webi = {}
         ip_reverse_sht = {}
+
+        # sets options specific to the commandset
+        if commandset in xivoconf.sections():
+                xivoconf_cs = dict(xivoconf.items(commandset))
+                commandclass.set_options(xivoconf_cs)
 
         # loads the configuration for each asterisk
         for astid in xivoconf.sections():
@@ -796,14 +685,11 @@ while True: # loops over the reloads
                         ami_login = 'xivouser'
                         ami_pass = 'xivouser'
                         contexts = ''
-                        userfeatures_db_uri = ''
-                        cdr_db_uri = ''
+                        cdr_db_uri = userfeatures_db_uri = None
                         realm = 'asterisk'
                         parkingnumber = '700'
                         faxcallerid = 'faxcallerid'
                         linkestablished = ''
-                        capas_s = []
-                        capas_i = 0
 
                         if 'localaddr' in xivoconf_local:
                                 localaddr = xivoconf_local['localaddr']
@@ -841,24 +727,6 @@ while True: # loops over the reloads
 
                         capafeatures = []
                         unallowed = []
-                        if userfeatures_db_uri is not '':
-                                conn = anysql.connect_by_uri(userfeatures_db_uri)
-                                cursor = conn.cursor()
-                                params = ['features']
-                                columns = ('commented', 'context', 'name')
-                                query = 'SELECT ${columns} FROM extensions WHERE context = %s'
-                                cursor.query(query,
-                                             columns,
-                                             params)
-                                results = cursor.fetchall()
-                                conn.close()
-                                for res in results:
-                                        if res[0] == 0:
-                                                capafeatures.append(res[2])
-                                        else:
-                                                unallowed.append(res[2])
-                        #print "%s : allowed     : %s" %(i, str(capafeatures))
-                        #print "%s : not allowed : %s" %(i, str(unallowed))
 
                         configs[astid] = xivo_astcfg.AsteriskConfig(astid,
                                                                     userlist_url,
@@ -870,16 +738,12 @@ while True: # loops over the reloads
                                                                     ami_login,
                                                                     ami_pass,
                                                                     userfeatures_db_uri,
-                                                                    capas_s,
-                                                                    capas_i,
                                                                     capafeatures,
                                                                     cdr_db_uri,
                                                                     realm,
                                                                     parkingnumber,
                                                                     faxcallerid,
                                                                     linkestablished)
-                        ulist.set_ast_list(astid)
-                        commandclass.set_cdr_uri(cdr_db_uri, xivo_db)
 
                         if ipaddress not in ip_reverse_sht:
                                 ip_reverse_sht[ipaddress] = astid
@@ -893,58 +757,65 @@ while True: # loops over the reloads
                                           % (ip_reverse_webi[ipaddress_webi], astid))
                         save_for_next_packet_events[astid] = ''
 
+
+        for ctx in xivoconf.sections():
+                if ctx != 'general' and ctx in contextlist:
+                        ctxlist.update(ctx, dict(xivoconf.items(ctx)))
+
+
+        outsock = commandclass.extrasock(extraconn)
+        commandclass.set_configs(configs)
+
         fdlist_full = []
         fdlist_established = {}
         fdlist_listen_cti = {}
-
-        if debug_mode:
-                # opens the evtfile for output in append mode
-                try:
-                        evtfile = open(evt_filename, 'a')
-                except Exception, exc:
-                        print "Could not open %s in append mode : %s" %(evt_filename,exc)
-                        evtfile = False
-                # opens the guifile for output in append mode
-                try:
-                        guifile = open(gui_filename, 'a')
-                except Exception, exc:
-                        print "Could not open %s in append mode : %s" %(gui_filename,exc)
-                        guifile = False
-        
         AMI_array_events_fd = {}
         update_userlist = {}
         lastrequest_time = {}
-
+        
         log_debug(SYSLOG_INFO, "the monitored asterisk's is/are : %s" % str(asterisklist))
-        log_debug(SYSLOG_INFO, "# STARTING XIVO Daemon # (1/2) AMI socket connections + fetch Web Services")
+        log_debug(SYSLOG_INFO, "# STARTING %s # (1/2) AMI socket connections + fetch Web Services" % xdname)
 
         for astid in configs:
                 try:
                         update_userlist[astid] = False
                         lastrequest_time[astid] = time.time()
                         update_amisocks(astid)
-                        plist.update(astid)
+                        plist.update(astid, configs[astid])
                         ulist.update(astid)
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, '--- exception --- %s : failed while setting lists and sockets : %s'
                                   %(astid, str(exc)))
 
-        log_debug(SYSLOG_INFO, "# STARTING XIVO Daemon # (2/2) listening UI sockets")
-        # opens the listening socket for incoming (CTI, WEBI, AGI) connections
+        log_debug(SYSLOG_INFO, "# STARTING %s # (2/2) listening sockets (CTI, WEBI, AGI, INFO)" % xdname)
+        # opens the listening socket for incoming (CTI, WEBI, AGI, INFO) connections
         for portkind in incoming_tcp_ports:
-                [port, kind] = portkind.split(':')
+                pk = portkind.split(':')
+                port = pk[0]
+                kind = 'INFO'
+                bind = '127.0.0.1'
+                nmax = '1'
+                if len(pk) > 1:
+                        kind = pk[1].strip()
+                        if len(pk) > 2:
+                                bind = pk[2].strip()
+                                if len(pk) > 3:
+                                        nmax = pk[3].strip()
                 UIsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 UIsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                UIsock.bind(("", int(port)))
+                UIsock.bind((bind, int(port)))
                 UIsock.listen(10)
-                fdlist_listen_cti[UIsock] = kind.strip()
+                fdlist_listen_cti[UIsock] = '%s:%s' %(kind, nmax)
                 fdlist_full.append(UIsock)
 
         if outsock is not None:
                 fdlist_full.append(outsock)
         fdlist_full.append(queued_threads_pipe[0])
 
-        # Receive messages
+
+
+
+        # Main select() loop - Receive messages
         while not askedtoquit:
                 try:
                         [sels_i, sels_o, sels_e] = select.select(fdlist_full, [], [], updates_period)
@@ -952,17 +823,13 @@ while True: # loops over the reloads
                         if askedtoquit:
                                 try:
                                         print
-                                        print 'current open TCP connections : (CTI, WEBI, AGI) ', fdlist_established
+                                        print 'current open TCP connections : (CTI, WEBI, AGI, INFO) ', fdlist_established
                                         print 'current open TCP connections : (AMI) ', AMI_array_events_fd
-                                        print 'current open TCP connections : (OP)  ', outsock
+                                        print 'current open TCP connections : (OUT) ', outsock
                                         print
                                         os.unlink(PIDFILE)
                                 except Exception, exc:
                                         print exc
-                                if debug_mode:
-                                        # Close files and sockets
-                                        evtfile.close()
-                                        guifile.close()
                                 for t in filter(lambda x: x.getName()<>"MainThread", threading.enumerate()):
                                         print "--- (stop) killing thread <%s>" %(t.getName())
                                         t._Thread__stop()
@@ -986,7 +853,7 @@ while True: # loops over the reloads
                                         a = AMI_array_events_fd[astid].readline() # (BUFSIZE_ANY)
                                         if len(a) == 0: # end of connection from server side : closing socket
                                                 log_debug(SYSLOG_WARNING, "%s : AMI : CLOSING" % astid)
-                                                strmessage = commandclass.dmessage_srv2clt('AMI OFF for <%s>' % astid)
+                                                commandclass.dmessage_srv2clt('AMI OFF for <%s>' % astid)
                                                 AMI_array_events_fd[astid].close()
                                                 fdlist_full.remove(AMI_array_events_fd[astid])
                                                 del AMI_array_events_fd[astid]
@@ -1000,19 +867,19 @@ while True: # loops over the reloads
                                 try:
                                         msg = sel_i.recv(BUFSIZE_LARGE)
                                 except Exception, exc:
-                                        log_debug(SYSLOG_ERR, '--- exception --- outsock : %s' % str(exc))
                                         msg = ''
+                                        log_debug(SYSLOG_ERR, '--- exception --- outsock : %s' % str(exc))
                                 if len(msg) == 0:
                                         sel_i.close()
                                         fdlist_full.remove(sel_i)
                                         outsock = None
                                         log_debug(SYSLOG_WARNING, 'WARNING - outsock has closed the connection')
                                 else:
-                                        commandclass.svreply(asterisklist[0], msg)
+                                        commandclass.handle_outsock(asterisklist[0], msg)
 
-                        # the new TCP connections (CTI, WEBI, AGI) are catched here
+                        # the new TCP connections (CTI, WEBI, AGI, INFO) are catched here
                         elif sel_i in fdlist_listen_cti:
-                                kind = fdlist_listen_cti[sel_i]
+                                [kind, nmax] = fdlist_listen_cti[sel_i].split(':')
                                 [conn, sockparams] = sel_i.accept()
                                 log_debug(SYSLOG_INFO, "TCP socket opened on %s:%d (%s)" % (sockparams[0], sockparams[1], kind))
                                 if kind == 'CTI':
@@ -1022,7 +889,7 @@ while True: # loops over the reloads
                                 fdlist_full.append(conn)
                                 fdlist_established[conn] = kind
 
-                        # incoming TCP connections (CTI, WEBI, AGI)
+                        # incoming TCP connections (CTI, WEBI, AGI, INFO)
                         elif sel_i in fdlist_established:
                                 requester = '%s:%d' % (sel_i.getpeername()[0], sel_i.getpeername()[1])
                                 kind = fdlist_established[sel_i]
@@ -1041,13 +908,14 @@ while True: # loops over the reloads
                                         if kind == 'CTI':
                                                 if sel_i in userinfo_by_requester:
                                                         userinfo = userinfo_by_requester.get(sel_i)
-                                                        ulist.disconnect_user(userinfo)
+                                                        commandclass.manage_logoff(userinfo)
                                                         del userinfo_by_requester[sel_i]
-                                if kind in ['WEBI', 'AGI'] or kind == 'CTI' and lmsg == 0:
-                                        sel_i.close()
-                                        fdlist_full.remove(sel_i)
-                                        del fdlist_established[sel_i]
-                                        log_debug(SYSLOG_INFO, 'TCP socket closed on %s (%s)' % (requester, kind))
+                                if kind in ['CTI', 'INFO'] and lmsg > 0:
+                                        continue
+                                sel_i.close()
+                                fdlist_full.remove(sel_i)
+                                del fdlist_established[sel_i]
+                                log_debug(SYSLOG_INFO, 'TCP socket closed on %s (%s)' % (requester, kind))
 
                         # local pipe fd
                         elif queued_threads_pipe[0] == sel_i:
@@ -1060,7 +928,7 @@ while True: # loops over the reloads
                                                         fdlist_full.remove(userinfo.get('login')['connection'])
                                                 else:
                                                         log_debug(SYSLOG_WARNING, 'WARNING - no connection field present in userinfo')
-                                                ulist.disconnect_user(userinfo)
+                                                commandclass.manage_logoff(userinfo)
                                 except Exception, exc:
                                         log_debug(SYSLOG_ERR, '--- exception --- %s' % str(exc))
 
@@ -1070,15 +938,15 @@ while True: # loops over the reloads
                         for astid in configs:
                                 if (time.time() - lastrequest_time[astid]) > updates_period or update_userlist[astid]:
                                         lastrequest_time[astid] = time.time()
-                                        log_debug(SYSLOG_INFO, '%s : updates (computed timeout) %s'
-                                                  % (astid, time.strftime("%H:%M:%S", time.localtime())))
+                                        log_debug(SYSLOG_INFO, '[%s] %s : updates (computed timeout) %s'
+                                                  % (xdname, astid, time.asctime()))
                                         try:
                                                 if outsock is None:
                                                         outsock = commandclass.extrasock(extraconn)
                                                         if outsock is not None:
                                                                 fdlist_full.append(outsock)
                                                 update_amisocks(astid)
-                                                plist.update(astid)
+                                                plist.update(astid, configs[astid])
                                                 ulist.update(astid)
                                                 update_userlist[astid] = False
                                         except Exception, exc:
@@ -1086,8 +954,8 @@ while True: # loops over the reloads
                                                           %(astid, str(exc)))
 
                 else: # when nothing happens on the sockets, we fall here sooner or later
-                        log_debug(SYSLOG_INFO, 'updates (select timeout) %s'
-                                  % time.strftime("%H:%M:%S", time.localtime()))
+                        log_debug(SYSLOG_INFO, '[%s] updates (select timeout) %s'
+                                  % (xdname, time.asctime()))
                         for astid in configs:
                                 lastrequest_time[astid] = time.time()
                                 try:
@@ -1096,10 +964,10 @@ while True: # loops over the reloads
                                                 if outsock is not None:
                                                         fdlist_full.append(outsock)
                                         update_amisocks(astid)
-                                        plist.update(astid)
+                                        plist.update(astid, configs[astid])
                                         ulist.update(astid)
                                 except Exception, exc:
                                         log_debug(SYSLOG_ERR, '--- exception --- %s : failed while updating lists and sockets (select s timeout) : %s'
                                                   %(astid, str(exc)))
 
-        log_debug(SYSLOG_NOTICE, 'after askedtoquit loop')
+        log_debug(SYSLOG_NOTICE, 'after askedtoquit loop (%s)' % askedtoquit)
