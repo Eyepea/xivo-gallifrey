@@ -99,6 +99,9 @@ class BaseCommand:
         def phones_update(self, function, args):
                 return
 
+        def cliaction(self, connid, command):
+                return
+
 ##        def update_srv2clt(self, phoneinfo):
 ##                return None
 ##        def message_srv2clt(self, sender, message):

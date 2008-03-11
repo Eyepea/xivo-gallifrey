@@ -122,9 +122,6 @@ import _sre
 
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 
-# fiche
-import sendfiche
-
 # XIVO lib-python modules initialization
 import xivo.to_path
 xivoconffile            = "/etc/asterisk/xivo_daemon.conf"
@@ -152,6 +149,8 @@ from BackSQL import backmysql
 from BackSQL import backsqlite
 
 # XIVO modules
+import xivo_ctiservers.to_path
+import sendfiche
 import xivo_ami
 import xivo_ldap
 import xivo_commandsets

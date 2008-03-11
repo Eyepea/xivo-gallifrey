@@ -565,7 +565,7 @@ class XivoCTICommand(BaseCommand):
                                         repstr = "faxsend=%d" % port_fax
                         elif icommand.name == 'message':
                                 if (capalist & CAPA_MESSAGE):
-                                        self.__send_msg_to_cti_clients__(commandclass.message_srv2clt('%s/%s' %(astid, username),
+                                        self.__send_msg_to_cti_clients__(self.message_srv2clt('%s/%s' %(astid, username),
                                                                                              '<%s>' % icommand.args[0]))
                         elif icommand.name in ['originate', 'transfer', 'atxfer']:
                                 if (capalist & CAPA_DIAL):
@@ -622,7 +622,7 @@ class XivoCTICommand(BaseCommand):
                                 log_debug(SYSLOG_ERR, '--- exception --- (%s) error : history : (client %s) : %s'
                                           %(astid_src, requester_id, str(exc)))
                 else:
-                        return commandclass.dmessage_srv2clt('history KO : no such asterisk id <%s>' % astid_src)
+                        return self.dmessage_srv2clt('history KO : no such asterisk id <%s>' % astid_src)
                 return
 
 
@@ -863,7 +863,7 @@ class XivoCTICommand(BaseCommand):
                                                                 ret_message = 'atxfer KO (%s) %s %s' %(astid_src, l[1], l[2])
          else:
                 ret_message = 'originate or transfer KO : asterisk id mismatch (%s %s)' %(astid_src, astid_dst)
-         return commandclass.dmessage_srv2clt(ret_message)
+         return self.dmessage_srv2clt(ret_message)
 
 
 
@@ -893,7 +893,7 @@ class XivoCTICommand(BaseCommand):
                         ret_message = 'hangup KO : no such phone <%s>' % phone
          else:
                 ret_message = 'hangup KO : no such asterisk id <%s>' % astid_src
-         return commandclass.dmessage_srv2clt(ret_message)
+         return self.dmessage_srv2clt(ret_message)
 
 
 

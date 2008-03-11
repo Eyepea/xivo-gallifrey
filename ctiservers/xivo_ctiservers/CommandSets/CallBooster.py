@@ -2762,6 +2762,16 @@ class CallBoosterCommand(BaseCommand):
                         imp = None
                 return imp
 
+        # miscellaneous infos
+
+        def __outputline__(self, connid, line):
+                connid.send('%s: %s\n' % (self.xdname, line))
+
+        def cliaction(self, connid, command):
+                if command == 'callbooster: whatsup':
+                        self.__outputline__(connid, 'incoming calls')
+                        self.__outputline__(connid, self.incoming_calls)
+
         # Taxes and statistics - END
         
 

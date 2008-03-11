@@ -134,6 +134,7 @@ from BackSQL import backmysql
 from BackSQL import backsqlite
 
 # XIVO modules
+import xivo_ctiservers.to_path
 import xivo_ami
 import xivo_phones
 import xivo_users
@@ -291,11 +292,13 @@ def manage_info_connections(connid, msg, sep):
                                         connid.send("on <%s> :\n" % astid)
                                         for user,info in ulist.byast[astid].listconnected().iteritems():
                                                 connid.send('%s %s\n' %(user.encode('latin1'), info))
-                        elif usefulmsg == "show_ami":
+                        elif usefulmsg == 'show_ami':
                                 for amis in AMI_array_events_fd:
                                         connid.send("events   : %s : %s\n" %(amis, str(AMI_array_events_fd[amis])))
                                 for amis in AMI_array_user_commands:
                                         connid.send("commands : %s : %s\n" %(amis, str(AMI_array_user_commands[amis])))
+                        elif usefulmsg.startswith('%s:' % commandset):
+                                commandclass.cliaction(connid, usefulmsg)
                         else:
                                 pass
                         connid.send("XIVO-INFO:OK\n")
