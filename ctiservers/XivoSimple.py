@@ -1,1 +1,0 @@
-CommandSets/XivoSimple.py

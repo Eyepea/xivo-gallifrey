@@ -4,21 +4,11 @@
 # $Revision$
 # $Date$
 
-include $(WRK_DIR)/../autobuild.mk
-include $(WRK_DIR)/../autobuild-classic.mk
+include ../autobuild.mk
+include ../autobuild-classic.mk
 
 DEB_PKG="pf-xivo-cti-server"
-DEB_TB_DEPS="python python2.4-dev upx-ucl"
-DEB_TAR_EXTRA_OPTIONS="--exclude=*.py"
-
-FREEZEPATH?=$(WRK_DIR)/../tools/python-freeze/
+DEB_TB_DEPS=""
+DEB_TAR_EXTRA_OPTIONS="--exclude=*.pyc" "--exclude=Calls" "--exclude=CallBooster.py"
 
 default:
-
-prepare-tarball::
-	@${FREEZEPATH}/local_freeze.py ${FREEZEPATH}/freeze.py sendfiche.py,generefiche.py,XivoSimple.py,xivo_commandsets.py,xivo_ldap.py,xivo_ami.py,xivo_daemon.py
-
-clean-tarball::
-	@find . ${FREEZEPATH} $(WRK_DIR)/../lib-python/xivo/ -name "*.pyc" -exec rm -f {} \;
-	@rm -f xivo_daemon
-
