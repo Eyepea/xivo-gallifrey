@@ -1,4 +1,14 @@
 #!/usr/bin/python
+
+# This is an extension to XIVO Daemon, authorized by Pro-formatique SARL
+# for sub-licensing under a separated contract.
+#
+# Licensing of this code is NOT bounded by the terms of the
+# GNU General Public License.
+#
+# See the LICENSE file at top of the source tree or delivered in the
+# installable package in which XIVO Daemon is distributed for more details.
+
 # $Revision$
 # $Date$
 

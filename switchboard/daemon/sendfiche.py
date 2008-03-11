@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 # XIVO Daemon
 # Copyright (C) 2007, 2008  Proformatique
 #
