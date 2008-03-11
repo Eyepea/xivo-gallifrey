@@ -1,0 +1,48 @@
+﻿XIVO Daemon - Advanced call control for Asterisk, used in the XIVO project.
+Copyright (C) 2007, 2008  Proformatique
+
+
+XIVO Daemon is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+XIVO Daemon is also available under alternative licenses negotiated
+directly with Pro-formatique SARL. If you obtained XIVO Daemon under the
+GPL, then the GPL applies to all work based on XIVO Daemon. If you
+obtained XIVO Daemon under another license, which is proprietary, then
+you only have the right to use XIVO Daemon under the conditions
+specified in this proprietary license, and you are not allowed to modify it.
+Entities licensed directly by Pro-formatique SARL under a proprietary
+license are allowed to modify their own extensions to XIVO Daemon and to
+sublicense them under a license of their choice; such extensions must be
+clearly identified as such.
+
+A copy of the GNU General Public License must accompany any distribution
+of XIVO Daemon made under this license. If you did not received a copy of
+the GNU General Public License along with XIVO Daemon, you will find one
+at <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>.
+
+
+XIVO Daemon est un logiciel libre ; vous pouvez redistribuer et/ou le modifier
+selon les termes de la GNU General Public License telle que publiée par
+la Free Software Foundation ; soit la version 2 de la GNU General Public
+License, soit (selon votre choix) toute autre version ultérieure.
+
+XIVO Daemon est aussi disponible sous d'autres licences négociées
+directement auprès de Pro-formatique SARL. Si vous avez obtenu XIVO Daemon
+sous licence GPL, alors la licence GPL s'applique à tous les travaux basés
+sur XIVO Daemon. Si vous avez obtenu XIVO Daemon sous une autre licence,
+qui est une licence propriétaire, alors vous avez uniquement le droit
+d'utiliser XIVO Daemon selon les conditions spécifiées par cette licence
+propriétaire, et vous n'êtes pas autorisé à le modifier. Les entités
+licenciées directement par Pro-formatique SARL selon une licence
+propriétaire sont autorisées à modifier leurs propres extensions à
+XIVO Daemon et à les publier sous une licence de leur choix ; de telles
+extensions doivent être clairement identifiées en tant que telles.
+
+Une copie de la GNU General Public License doit accompagner toute
+distribution de XIVO Daemon effectuée selon cette licence. Si vous n'avez pas
+reçu de copie de la GNU General Public License conjointement à XIVO Daemon,
+vous en trouverez une à l'adresse :
+<http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>.

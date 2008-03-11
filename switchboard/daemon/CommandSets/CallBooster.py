@@ -34,6 +34,15 @@ __date__      = '$Date$'
 __copyright__ = 'Copyright (C) 2007, 2008, Proformatique'
 __author__    = 'Corentin Le Gall'
 
+# This is an extension to XIVO Daemon, authorized by Pro-formatique SARL
+# for sub-licensing under a separated contract.
+#
+# Licensing of this code is NOT bounded by the terms of the
+# GNU General Public License.
+#
+# See the LICENSE file at top of the source tree or delivered in the
+# installable package in which XIVO Daemon is distributed for more details.
+
 import xivo.to_path
 import anysql
 import ConfigParser
