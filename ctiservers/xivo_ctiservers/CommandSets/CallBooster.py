@@ -104,28 +104,6 @@ class CallBoosterCommand(BaseCommand):
         """
         xdname = 'XIVO-FB2'
         separator = '/'
-        commidcurr = 200000
-        soperat_socket = None
-        pending_sv_fiches = {}
-        tqueue = Queue.Queue()
-        alerts = {}
-        nalerts_called = 0
-        nalerts_simult = 1
-        waitingmessages = {}
-        alerts_uniqueids = {}
-        confrooms = {}
-
-        # list of incoming calls, indexed by the channel number (as given by asterisk, so should be unique at a given time)
-        incoming_calls = {}
-        incoming_calls_byprio = [[], [], [], [], [], []]
-        # number of incoming calls, indexed by SDA number
-        n_incoming_calls = {}
-
-        outgoing_calls = {}
-        outgoing_calls_ng = {}
-        normal_calls = []
-        originated_calls = {}
-
         commands = ['Init',
                     'AppelOpe', 'TransfertOpe', 'RaccrocheOpe',
                     'Appel', 'Aboute', 'AppelAboute', 'Conf', 'PutConf', 'ListConf', 'Raccroche',
@@ -152,7 +130,28 @@ class CallBoosterCommand(BaseCommand):
                 self.opend = '20:00'
                 self.queued_threads_pipe = queued_threads_pipe
 
-
+                self.commidcurr = 200000
+                self.soperat_socket = None
+                self.pending_sv_fiches = {}
+                self.tqueue = Queue.Queue()
+                self.alerts = {}
+                self.nalerts_called = 0
+                self.nalerts_simult = 1
+                self.waitingmessages = {}
+                self.alerts_uniqueids = {}
+                self.confrooms = {}
+                
+                # list of incoming calls, indexed by the channel number (as given by asterisk, so should be unique at a given time)
+                self.incoming_calls = {}
+                self.incoming_calls_byprio = [[], [], [], [], [], []]
+                # number of incoming calls, indexed by SDA number
+                self.n_incoming_calls = {}
+                
+                self.outgoing_calls = {}
+                self.outgoing_calls_ng = {}
+                self.normal_calls = []
+                self.originated_calls = {}
+                
         def set_operatini(self, operatini):
                 """
                 Reads the Operat.ini file (in the way to be deprecated)

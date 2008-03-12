@@ -24,75 +24,32 @@ __date__      = '$Date$'
 __copyright__ = 'Copyright (C) 2007, 2008, Proformatique'
 __author__    = 'Corentin Le Gall'
 
-## \mainpage
-# \section section_1 General description of XIVO Daemon
-# The XIVO Daemon aims to monitor all the actions taking place into one or
-# more Asterisk servers, in order to provide 2 basic customer facilities :
-# - a monitoring switchboard;
-# - a customer information popup.
+"""
+# 1) General description of XIVO CTI Daemon
+# The XIVO CTI Daemon is a general-purpose daemon, whose basic features are :
+#  - the monitoring of one or more Asterisk, through AMI
+#  - taking care of Asteriks AGI requests
+#  - the ability to receive incoming "CTI clients" connections
+#  - the ability to relay commands (between a Web interface and Asterisk)
+#  - the connection to one or more databases (cdr, directory, ...)
+#  - the connection to a given server
+# 
+# 2) Primary data structures
+# 
+#  - users list
+#  - contexts/companies list
+# 
+#  - asterisk / configurations
+#  - phonelist
 #
-# This is achieved thanks to 2 mechanisms :
-# - one or more connections to the Asterisk Manager Interface (AMI), where
-# all the events can be watched;
-# - Asterisk AGI's that send informations when a call is issued.
-#
-# This daemon is able to manage any number of Asterisk's one might wish.
-#
-# \section section_2 Initializations
-#
-# - Fetch the phone number lists from the WEB Interface.
-#
-# \section section_3 Main loop
+# 3) Main loop
 # The main loop is triggered by a select() on the file descriptors for :
-# - the AMI Event sockets (AMIsocks);
-# - the UI sockets (UIsock, WEBIsock);
-# - the Caller Information Popup sockets (authentication, keepalive and identrequest).
+# - the AMI Event sockets (AMIsocks)
+# - the incoming TCP sockets (CTI, WEBI, INFO, AGI)
 #
-# On reception of AMI Events, handle_ami_event() parses the messages to update
-# the detailed status of the channels.
+# 4) Custom-defined Plugins
 #
-# For each UI connection, a list of the open UI connections is updated
-# (tcpopens_sb or tcpopens_webi according to the kind of connection).
-# This list is the one used to broadcast the miscellaneous updates
-# (it is up to the UI clients to fetch the initial status with the "hints"
-# command).
-#
-# \section section_6 Monitoring with AMI
-#
-# The AMI events are the basis for a channel-by-channel status of the phones.
-#
-# Many AMI events are watched for, but not all of them are handled yet.
-# The most useful ones are now : Dial, Link, Hangup, Rename.
-# The following ones : Newexten, Newchannel, Newcallerid, Newstate are useful when dealing
-# complex situations (when there are Local/ channels and Queues for instance).
-#
-# \section section_8 Caller Information Popup management
-#
-# The daemon has 3 other listening sockets :
-# - Login - TCP - (the clients connect to it to login)
-# - KeepAlive - UDP - (the clients send datagram to it to inform
-#                      of their current state)
-# - IdentRequest - TCP - offer a service to ask for localization and
-#                        state of the clients.
-# we use the SocketServer "framework" to implement the "services"
-# see http://docs.python.org/lib/module-SocketServer.html
-#
-# \section section_9 Data Structures
-#
-# The statuses of all the lines/channels are stored in the multidimensional array/dict "plist",
-# which is an array of PhoneList.
-#
-# plist[astn].normal[phonenum].chann[channel] are objects of the class ChannelStatus.
-# - astn is the Asterisk id
-# - phonenum is the phone id (SIP/<xx>, IAX2/<yy>, ...)
-# - channel is the full channel name as known by Asterisk
-#
-## \file xivo_daemon.py
-# \brief XIVO CTI server
-#
-## \namespace xivo_daemon
-# \brief XIVO CTI server
-#
+"""
 
 __revision__ = __version__.split()[1]
 
@@ -144,13 +101,6 @@ import xivo_astcfg
 from xivo_log import *
 from CommandSets import *
 
-configs = {}
-
-# global : userlist
-# liste des champs :
-#  user :             user name
-#  passwd :           password
-
 PIDFILE = 'xivo_fb.pid'
 # TODO: command line parameter
 
@@ -169,7 +119,7 @@ XIVOVERSION = '0.3'
 # \return none
 def manage_cti_connections(connid, msg, sep):
         """
-        Handles CTI connections
+        Handles CTI connections.
         """
         requester_ip = connid.getpeername()[0]
         requester_port = connid.getpeername()[1]
@@ -211,7 +161,7 @@ def manage_cti_connections(connid, msg, sep):
 # \return none
 def manage_webi_connections(connid, msg, sep):
         """
-        Handles WEBI connections
+        Handles WEBI connections.
         """
         requester_ip = connid.getpeername()[0]
         requester_port = connid.getpeername()[1]
@@ -263,7 +213,8 @@ def manage_webi_connections(connid, msg, sep):
 # \return none
 def manage_info_connections(connid, msg, sep):
         """
-        Handles INFO connections
+        Handles INFO connections (basic administration console,
+        primarily aimed at displaying informations first).
         """
         requester = '%s:%d' % (connid.getpeername()[0], connid.getpeername()[1])
         multimsg = msg.replace('\r', '').split(sep)
@@ -310,7 +261,7 @@ def manage_info_connections(connid, msg, sep):
 
 def manage_tcp_connections(sel_i, msg, kind):
         """
-        Dispatches the message's handling according to the connection's kind
+        Dispatches the message's handling according to the connection's kind.
         """
         if kind == 'CTI':
                 manage_cti_connections(sel_i, msg, commandclass.separator)
@@ -493,13 +444,11 @@ def handle_ami_function(astid, evfunction, this_event):
                 log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
 
 
-## \brief Connects to the AMI if not yet.
-# \param astid Asterisk id to (re)connect
-# \return none
+
 def update_amisocks(astid):
         """
-        Connects to the AMI if not yet done.
-        
+        Connects to the Asterisk's AMI (defined by astid) if not yet done.
+        Requests a Status when it (re)connects.
         """
         try:
                 if astid not in AMI_array_events_fd or AMI_array_events_fd[astid] is False:
@@ -513,8 +462,6 @@ def update_amisocks(astid):
                                 AMI_array_events_fd[astid] = als0.fd
                                 fdlist_full.append(als0.fd)
                                 log_debug(SYSLOG_INFO, '%s : AMI : connected' % astid)
-##                                for x in plist[astid].normal.itervalues():
-##                                        x.clear_channels()
                                 ret = als0.sendstatus()
                                 if not ret:
                                         log_debug(SYSLOG_INFO, '%s : could not send status command' % astid)
@@ -543,14 +490,9 @@ def update_amisocks(astid):
                 log_debug(SYSLOG_ERR, '--- exception --- %s (update_amisocks command) : %s' % (astid, str(exc)))
 
 
-## \brief Connects to the AMI through AMIClass.
-# \param address IP address
-# \param loginname loginname
-# \param password password
-# \return the socket
 def connect_to_AMI(address, loginname, password, events_on):
         """
-        Connects to the AMI.
+        Connects to the AMI through AMIClass.
         """
         lAMIsock = xivo_ami.AMIClass(address, loginname, password, events_on)
         try:
@@ -562,7 +504,6 @@ def connect_to_AMI(address, loginname, password, events_on):
                 del lAMIsock
                 lAMIsock = False
         return lAMIsock
-
 
 
 ## \brief Handler for catching signals (in the main thread)
@@ -612,6 +553,7 @@ nreload = 0
 ulist = xivo_users.Users()
 plist = xivo_phones.Phones()
 ctxlist = xivo_contexts.Contexts()
+configs = {}
 xdname = None
 
 while True: # loops over the reloads

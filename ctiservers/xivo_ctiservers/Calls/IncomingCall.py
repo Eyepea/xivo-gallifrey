@@ -33,56 +33,17 @@ class IncomingCall:
         """
         Class for incoming calls management.
         """
-        
         dir = 'i'
-        ctime = time.localtime()
-        nsoc = 0 # None
-        ncli = 0 # None
-        ncol = 0 # None
-        whereph = 'INTRO'
-        wherephS = None
-        wherephF = None
-        cliname = ''
-        colname = ''
-        socname = ''
-        statacd2_state = 'NC'
-        statacd2_tt = 'TT_RAF'
-        
-        waiting = True
-        parking = False
-        parkexten = None
-        peerchannel = None
-        aboute = None
-        appelaboute = None
-        tocall = False
-        toretrieve = None
-        svirt = None
-        forceacd = None
-        agentlist = []
 
-        elect_prio = None
-
-        stimes = {time.time() : 'init'}
-        ttimes = {time.time() : 'init'}
-        uinfo = None
-        statdone = False
-        secours_allowed = False
-        
-        dialplan = {'welcome' : 0,
-                    'callerid' : 1,
-                    'record' : None,
-                    'rescue' : 1,
-                    'rescue_details' : None,
-                    'hassun' : False,
-                    'sun' : False,
-                    'sounds' : []}
-        
         def __init__(self, cursor_operat, cidnum, sdanum, queuenum, opejd, opend):
                 """
                 Sets the queue properties and does the first requests in order to know whether
                 the SDA can be handled.
                 This constructor is called only once (of course) for each incoming call.
                 """
+
+                self.ctime = time.localtime()
+
                 self.cidnum    = cidnum
                 self.sdanum    = sdanum
                 self.queuename = 'qcb_%05d' % queuenum
@@ -90,6 +51,47 @@ class IncomingCall:
                 self.cursor_operat = cursor_operat
                 self.opejd = opejd.split(':')
                 self.opend = opend.split(':')
+
+                self.nsoc = 0 # None
+                self.ncli = 0 # None
+                self.ncol = 0 # None
+                self.whereph = 'INTRO'
+                self.wherephS = None
+                self.wherephF = None
+                self.cliname = ''
+                self.colname = ''
+                self.socname = ''
+                self.statacd2_state = 'NC'
+                self.statacd2_tt = 'TT_RAF'
+        
+                self.waiting = True
+                self.parking = False
+                self.parkexten = None
+                self.peerchannel = None
+                self.aboute = None
+                self.appelaboute = None
+                self.tocall = False
+                self.toretrieve = None
+                self.svirt = None
+                self.forceacd = None
+                self.agentlist = []
+
+                self.elect_prio = None
+
+                self.stimes = {time.time() : 'init'}
+                self.ttimes = {time.time() : 'init'}
+                self.uinfo = None
+                self.statdone = False
+                self.secours_allowed = False
+
+                self.dialplan = {'welcome' : 0,
+                                 'callerid' : 1,
+                                 'record' : None,
+                                 'rescue' : 1,
+                                 'rescue_details' : None,
+                                 'hassun' : False,
+                                 'sun' : False,
+                                 'sounds' : []}
 
                 columns = ('NSDA', 'NSOC', 'NCLI', 'NCOL', 'NOM', 'DateD', 'DateF', 'Valide')
                 self.cursor_operat.query('USE system')
@@ -252,7 +254,7 @@ class IncomingCall:
                         self.languages[str(t[2])] = t[3]
                         self.languages_sv.append('%d-%s' %(t[2], t[3]))
 
-                print 'INCOMING CALL ... comp =', self.competences, 'lang =', self.languages
+                print 'INCOMING CALL ... company =', self.socname, '/ call time =', self.ctime, '/ competences =', self.competences, '/ lang =', self.languages
 
                 # Description des profils
                 # Mode Secours ? no_rescue
