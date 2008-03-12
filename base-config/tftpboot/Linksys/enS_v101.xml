@@ -1,0 +1,511 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<phrases>
+<trkLocaleName>English_United_States</trkLocaleName>
+<trkBaseClearcaseVersion></trkBaseClearcaseVersion>
+<trkTranslationVersion></trkTranslationVersion>
+<phrase i="3000" t="&#131;Missed Calls"/>
+<phrase i="3001" t="&#131;Redial List"/>
+<phrase i="3002" t="Ringer Volume"/>
+<phrase i="3003" t="Speaker Volume"/>
+<phrase i="3004" t="Headset Volume"/>
+<phrase i="3005" t="Handset Volume"/>
+<phrase i="3006" t="LCD Contrast"/>
+<phrase i="3007" t="status"/>
+<phrase i="3008" t="Status"/>
+<phrase i="3009" t="Line Key 4"/>
+<phrase i="3010" t="Line Key 3"/>
+<phrase i="3011" t="Line Key 2"/>
+<phrase i="3012" t="Line Key 1"/>
+<phrase i="3013" t="Ext 4"/>
+<phrase i="3014" t="Ext 3"/>
+<phrase i="3015" t="Ext 2"/>
+<phrase i="3016" t="Ext 1"/>
+<phrase i="3017" t="Phone"/>
+<phrase i="3018" t="DND"/>
+<phrase i="3019" t="Local Services"/>
+<phrase i="3020" t="NewCall"/>
+<phrase i="3021" t="Ring-In"/>
+<phrase i="3022" t="Intercom"/>
+<phrase i="3023" t="Redial"/>
+<phrase i="3024" t="LCD   "/>
+<phrase i="3025" t="Technology"/>
+<phrase i="3026" t="Sipura"/>
+<phrase i="3027" t="System restarting&#10;Please wait"/>
+<phrase i="3028" t="System rebooting&#10;Please wait"/>
+<phrase i="3029" t="Resetting to factory default&#10;Please wait"/>
+<phrase i="3030" t="Confirm System Restart?"/>
+<phrase i="3031" t="Confirm System Reboot?"/>
+<phrase i="3032" t="All parameters will be reset&#10;to factory default values.&#10;Continue?"/>
+<phrase i="3033" t="Password Error. Retry?"/>
+<phrase i="3034" t="New Password:"/>
+<phrase i="3035" t="Voice Mail Number:"/>
+<phrase i="3036" t="Offset(&#130;H:m:s):"/>
+<phrase i="3037" t="Time(H:m:s):"/>
+<phrase i="3038" t="Date(m/d/y):"/>
+<phrase i="3039" t="Logout"/>
+<phrase i="3040" t="Login"/>
+<phrase i="3041" t="&#131;Setup x"/>
+<phrase i="3042" t="&#131;Setup"/>
+<phrase i="3043" t="Network"/>
+<phrase i="3044" t="Enter Admin Password:"/>
+<phrase i="3045" t="No"/>
+<phrase i="3046" t="CFWD No Ans Delay"/>
+<phrase i="3047" t="CFWD No Ans Number"/>
+<phrase i="3048" t="CFWD Busy Number"/>
+<phrase i="3049" t="CFWD All Number"/>
+<phrase i="3050" t="Multicast Address"/>
+<phrase i="3051" t="Non-DHCP NTP Server 2"/>
+<phrase i="3052" t="Non-DHCP NTP Server 1"/>
+<phrase i="3053" t="Non-DHCP DNS 2"/>
+<phrase i="3054" t="Non-DHCP DNS 1"/>
+<phrase i="3055" t="Non-DHCP Default Route"/>
+<phrase i="3056" t="Non-DHCP Subnet Mask"/>
+<phrase i="3057" t="Non-DHCP IP Address"/>
+<phrase i="3058" t="Enable Web Server"/>
+<phrase i="3059" t="Current Gateway"/>
+<phrase i="3060" t="Current Netmask"/>
+<phrase i="3061" t="Domain"/>
+<phrase i="3062" t="Host Name"/>
+<phrase i="3063" t="Current IP"/>
+<phrase i="3064" t="DHCP Enable"/>
+<phrase i="3065" t="WAN Connection Type"/>
+<phrase i="3066" t="Date Format"/>
+<phrase i="3067" t="Time Format"/>
+<phrase i="3068" t="Send Audio To Speaker"/>
+<phrase i="3069" t="Auto Answer Page"/>
+<phrase i="3070" t="Preferred Audio Device"/>
+<phrase i="3071" t="Dial Assistance"/>
+<phrase i="3072" t="Secure Call"/>
+<phrase i="3073" t="Do Not Disturb"/>
+<phrase i="3074" t="Block Anonymous Call"/>
+<phrase i="3075" t="Block Caller ID"/>
+<phrase i="3076" t="Client Cert"/>
+<phrase i="3077" t="MAC Address"/>
+<phrase i="3078" t="Hardware Version"/>
+<phrase i="3079" t="Software Version"/>
+<phrase i="3080" t="Serial Number"/>
+<phrase i="3081" t="Product Name"/>
+<phrase i="3082" t="Preferred Device"/>
+<phrase i="3083" t="Station Name"/>
+<phrase i="3085" t="Call Park Status"/>
+<phrase i="3087" t="Set Password"/>
+<phrase i="3088" t="Factory Reset"/>
+<phrase i="3089" t="Restart"/>
+<phrase i="3090" t="Reboot"/>
+<phrase i="3092" t="Product Info"/>
+<phrase i="3094" t="Voice Mail"/>
+<phrase i="3095" t="Time/Date"/>
+<phrase i="3096" t="Call Forward"/>
+<phrase i="3097" t="Preferences"/>
+<phrase i="3099" t="Call History"/>
+<phrase i="3100" t="Speed Dial"/>
+<phrase i="3101" t="&#131;Directory"/>
+<phrase i="3102" t="Enter Speed Dial x"/>
+<phrase i="3104" t="Ring 10"/>
+<phrase i="3105" t="Ring 9"/>
+<phrase i="3106" t="Ring 8"/>
+<phrase i="3107" t="Ring 7"/>
+<phrase i="3108" t="Ring 6"/>
+<phrase i="3109" t="Ring 5"/>
+<phrase i="3110" t="Ring 4"/>
+<phrase i="3111" t="Ring 3"/>
+<phrase i="3112" t="Ring 2"/>
+<phrase i="3113" t="Ring 1"/>
+<phrase i="3114" t="Ex Ring"/>
+<phrase i="3115" t="Ext 1: "/>
+<phrase i="3116" t="Ring Tone"/>
+<phrase i="3117" t="Delete: "/>
+<phrase i="3118" t="List is Empty"/>
+<phrase i="3119" t="Wrong Password. Retry?"/>
+<phrase i="3120" t="Enter Password:"/>
+<phrase i="3121" t="Call Park"/>
+<phrase i="3123" t="Request Call Park&#10;Status failed"/>
+<phrase i="3124" t="Call Park Empty"/>
+<phrase i="3125" t="Requesting Call Park&#10;Status..."/>
+<phrase i="3126" t="Invalid Park Number&#10;Please Try Again"/>
+<phrase i="3127" t="Ringing Station"/>
+<phrase i="3128" t="Call Pick Up"/>
+<phrase i="3129" t="Select a Holding Line&#10;to transfer"/>
+<phrase i="3130" t="Select a Holding Line&#10;to conference"/>
+<phrase i="3131" t="Dial *Code"/>
+<phrase i="3132" t="Force G729A"/>
+<phrase i="3133" t="Prefer G729A"/>
+<phrase i="3134" t="Force G726r40"/>
+<phrase i="3135" t="Prefer G726r40"/>
+<phrase i="3136" t="Force G726r32"/>
+<phrase i="3137" t="Prefer G726r32"/>
+<phrase i="3138" t="Force G726r24"/>
+<phrase i="3139" t="Prefer G726r24"/>
+<phrase i="3140" t="Force G726r16"/>
+<phrase i="3141" t="Prefer G726r16"/>
+<phrase i="3142" t="Force G723"/>
+<phrase i="3143" t="Prefer G723"/>
+<phrase i="3144" t="Force G711A"/>
+<phrase i="3145" t="Prefer G711A"/>
+<phrase i="3146" t="Force G711U"/>
+<phrase i="3147" t="Prefer G711U"/>
+<phrase i="3148" t="Paging"/>
+<phrase i="3149" t="Cancel Secure Next"/>
+<phrase i="3150" t="Secure Next"/>
+<phrase i="3151" t="Cancel Secure All Calls"/>
+<phrase i="3152" t="Secure All Calls"/>
+<phrase i="3153" t="Cancel Do Not Disturb"/>
+<phrase i="3155" t="Unblock Anonymous Calls"/>
+<phrase i="3157" t="Unblock CID Next"/>
+<phrase i="3158" t="Block CID Next"/>
+<phrase i="3159" t="Cancel Block CID"/>
+<phrase i="3160" t="Block CID"/>
+<phrase i="3161" t="Cancel Call Back"/>
+<phrase i="3162" t="Call Back"/>
+<phrase i="3163" t="Cancel Call Foward No Answer"/>
+<phrase i="3164" t="Call Forward No Answer"/>
+<phrase i="3165" t="Cancel Call Forward Busy"/>
+<phrase i="3166" t="Call Forward Busy"/>
+<phrase i="3167" t="Cancel Call Foward All"/>
+<phrase i="3168" t="Call Forward All"/>
+<phrase i="3169" t="Call Return"/>
+<phrase i="3185" t="(P)"/>
+<phrase i="3186" t="(F)"/>
+<phrase i="3188" t="Final   "/>
+<phrase i="3189" t="Flash   "/>
+<phrase i="3190" t="Headset   "/>
+<phrase i="3191" t="Handset   "/>
+<phrase i="3192" t="Speaker   "/>
+<phrase i="3193" t="LED   "/>
+<phrase i="3194" t="LCD   "/>
+<phrase i="3195" t="Keypad   "/>
+<phrase i="3196" t="LED Test"/>
+<phrase i="3201" t="Pass"/>
+<phrase i="3202" t="Failed"/>
+<phrase i="3203" t="LCD Test"/>
+<phrase i="3206" t="Keypad Test"/>
+<phrase i="3207" t="x"/>
+<phrase i="3216" t="Ring:"/>
+<phrase i="3217" t="Number:"/>
+<phrase i="3218" t="Name:"/>
+<phrase i="3219" t="Delete:"/>
+<phrase i="3220" t="Ring Picker"/>
+<phrase i="3221" t="Directory"/>
+<phrase i="3222" t="Enter Number:"/>
+<phrase i="3223" t="Enter Page Target:"/>
+<phrase i="3224" t="Enter Pick Up Group:"/>
+<phrase i="3225" t="Enter Special Service Target:"/>
+<phrase i="3226" t="Enter Referral Service Target:"/>
+<phrase i="3227" t="Enter Number to UnPark:"/>
+<phrase i="3228" t="Enter Number to Park:"/>
+<phrase i="3229" t="Enter Blind Transfer Target:"/>
+<phrase i="3230" t="Enter CFWD No Answer Number:"/>
+<phrase i="3231" t="Enter CFWD Busy Number:"/>
+<phrase i="3232" t="Enter CFWD All Number:"/>
+<phrase i="3234" t="Enter More Digits:"/>
+<phrase i="3235" t="List is Empty"/>
+<phrase i="3237" t="Missed Calls"/>
+<phrase i="3238" t="Ans'd Calls"/>
+<phrase i="3239" t="Answered Calls"/>
+<phrase i="3240" t="Redial List"/>
+<phrase i="3241" t="Initializing Network"/>
+<phrase i="3242" t="Checking DNS"/>
+<phrase i="3243" t="dir"/>
+<phrase i="3244" t="cfwd"/>
+<phrase i="3245" t="Language"/>
+<phrase i="3246" t="Language Selection"/>
+<phrase i="3248" t="Calls Forwarded"/>
+<phrase i="3249" t="New Missed Call"/>
+<phrase i="3250" t="New Missed Calls"/>
+<phrase i="3251" t="more"/>
+<phrase i="3252" t="retry"/>
+<phrase i="3253" t="abort"/>
+<phrase i="3254" t="unavail"/>
+<phrase i="3255" t="avail"/>
+<phrase i="3258" t="grPick"/>
+<phrase i="3259" t="pickup"/>
+<phrase i="3260" t="unpark"/>
+<phrase i="3261" t="park"/>
+<phrase i="3262" t="bxfer"/>
+<phrase i="3263" t="n"/>
+<phrase i="3264" t="xferLx"/>
+<phrase i="3265" t="xfer"/>
+<phrase i="3266" t="*code"/>
+<phrase i="3267" t="select"/>
+<phrase i="3268" t="save"/>
+<phrase i="3269" t="&#62;&#62;"/>
+<phrase i="3270" t="resume"/>
+<phrase i="3272" t="prev"/>
+<phrase i="3273" t="play"/>
+<phrase i="3274" t="paste"/>
+<phrase i="3275" t="option"/>
+<phrase i="3276" t="ok"/>
+<phrase i="3277" t="num"/>
+<phrase i="3278" t="next"/>
+<phrase i="3279" t="miss"/>
+<phrase i="3280" t="&#60;&#60;"/>
+<phrase i="3281" t="lcr"/>
+<phrase i="3282" t="join"/>
+<phrase i="3283" t="IP"/>
+<phrase i="3284" t="exit"/>
+<phrase i="3285" t="edit"/>
+<phrase i="3286" t="dnd"/>
+<phrase i="3288" t="dial"/>
+<phrase i="3289" t="delete"/>
+<phrase i="3290" t="copy"/>
+<phrase i="3291" t="confLx"/>
+<phrase i="3292" t="conf"/>
+<phrase i="3293" t="clear"/>
+<phrase i="3294" t="-cfwd"/>
+<phrase i="3295" t="-dnd"/>
+<phrase i="3296" t="change"/>
+<phrase i="3298" t="cancel"/>
+<phrase i="3299" t="bridge"/>
+<phrase i="3300" t="delChr"/>
+<phrase i="3301" t="alpha"/>
+<phrase i="3302" t="add"/>
+<phrase i="3303" t="Setup x"/>
+<phrase i="3304" t="Setup"/>
+<phrase i="3305" t="Shared"/>
+<phrase i="3306" t="Trying to Resume"/>
+<phrase i="3307" t="Trying to Hold"/>
+<phrase i="3308" t="Holding"/>
+<phrase i="3309" t="Connected"/>
+<phrase i="3310" t="Answering"/>
+<phrase i="3311" t="Call Ended"/>
+<phrase i="3312" t="Ringing"/>
+<phrase i="3313" t="Called Party Ringing"/>
+<phrase i="3314" t="Calling"/>
+<phrase i="3315" t="Contacting STUN Server"/>
+<phrase i="3316" t="Dialing"/>
+<phrase i="3317" t="Selecting Station"/>
+<phrase i="3318" t="Selecting Call"/>
+<phrase i="3319" t="Gathering Call Info"/>
+<phrase i="3320" t="Trying Line Seizure"/>
+<phrase i="3321" t="Ready"/>
+<phrase i="3322" t="Yes"/>
+<phrase i="3323" t="Not Registered"/>
+<phrase i="3324" t="Registered"/>
+<phrase i="3325" t="Inbound"/>
+<phrase i="3326" t="Outbound"/>
+<phrase i="3327" t="Callback"/>
+<phrase i="3328" t="Forwarded"/>
+<phrase i="3329" t="Transferred"/>
+<phrase i="3330" t="Invalid"/>
+<phrase i="3331" t="Idle"/>
+<phrase i="3332" t="CWT"/>
+<phrase i="3333" t="Ring - Callback"/>
+<phrase i="3334" t="Ring - Hold"/>
+<phrase i="3335" t="Ring"/>
+<phrase i="3336" t="Secure Call Indication"/>
+<phrase i="3337" t="Conference"/>
+<phrase i="3338" t="Hold"/>
+<phrase i="3339" t="Error"/>
+<phrase i="3340" t="Confirm"/>
+<phrase i="3341" t="Prompt"/>
+<phrase i="3342" t="SIT 4"/>
+<phrase i="3343" t="SIT 3"/>
+<phrase i="3344" t="SIT 2"/>
+<phrase i="3345" t="SIT 1"/>
+<phrase i="3346" t="Off Hook Warning"/>
+<phrase i="3347" t="Ring Back"/>
+<phrase i="3348" t="Reorder"/>
+<phrase i="3349" t="Busy"/>
+<phrase i="3350" t="MWI"/>
+<phrase i="3351" t="Outside Dial"/>
+<phrase i="3352" t="2nd Dial"/>
+<phrase i="3353" t="Dial"/>
+<phrase i="3354" t="none"/>
+<phrase i="3355" t="Xfr"/>
+<phrase i="3356" t="Fwd"/>
+<phrase i="3357" t="Cb"/>
+<phrase i="3358" t="To"/>
+<phrase i="3359" t="From"/>
+<phrase i="3360" t="New Entry"/>
+<phrase i="3361" t="(FULL)"/>
+<phrase i="3362" t="Corporate Directory"/>
+<phrase i="3363" t="Enter Pick Up Number:"/>
+<phrase i="3364" t="PU"/>
+<phrase i="3365" t="&#131;Speed Dial"/>
+<phrase i="3366" t="&#60;Not Assigned&#62;"/>
+<phrase i="3367" t="Enter Speed Dial 2"/>
+<phrase i="3368" t="Enter Speed Dial 3"/>
+<phrase i="3369" t="Enter Speed Dial 4"/>
+<phrase i="3370" t="Enter Speed Dial 5"/>
+<phrase i="3371" t="Enter Speed Dial 6"/>
+<phrase i="3372" t="Enter Speed Dial 7"/>
+<phrase i="3373" t="Enter Speed Dial 8"/>
+<phrase i="3374" t="Enter Speed Dial 9"/>
+<phrase i="3375" t="Enter Speed Dial"/>
+<phrase i="3376" t="&#131;Call History"/>
+<phrase i="3377" t="&#131;Answered Calls"/>
+<phrase i="3378" t="&#131;Ring Tone"/>
+<phrase i="3379" t="&#131;E1 Ring"/>
+<phrase i="3380" t="&#131;E2 Ring"/>
+<phrase i="3381" t="&#131;E3 Ring"/>
+<phrase i="3382" t="&#131;E4 Ring"/>
+<phrase i="3383" t="&#131;Corporate Directory"/>
+<phrase i="3384" t="&#131;Preferences"/>
+<phrase i="3385" t="y/n"/>
+<phrase i="3386" t="Block Caller ID&#10;"/>
+<phrase i="3387" t="Block Anonymous Call&#10;"/>
+<phrase i="3388" t="Do Not Disturb&#10;"/>
+<phrase i="3389" t="Secure Call&#10;"/>
+<phrase i="3390" t="Dial Assistance&#10;"/>
+<phrase i="3391" t="Preferred Audio Device&#10;"/>
+<phrase i="3394" t="Auto Answer Page&#10;"/>
+<phrase i="3395" t="Send Audio To Speaker&#10;"/>
+<phrase i="3396" t="Time Format&#10;"/>
+<phrase i="3397" t="Date Format&#10;"/>
+<phrase i="3398" t="day/month"/>
+<phrase i="3399" t="month/day"/>
+<phrase i="3400" t="&#131;Language"/>
+<phrase i="3401" t="&#131;Call Park Status"/>
+<phrase i="3402" t="&#131;Status"/>
+<phrase i="3403" t="&#131;Phone Status"/>
+<phrase i="3404" t="&#131;Status"/>
+<phrase i="3405" t="&#131;Ext 2 Status"/>
+<phrase i="3406" t="&#131;L1 Status"/>
+<phrase i="3407" t="&#131;L2 Status"/>
+<phrase i="3408" t="&#131;L3 Status"/>
+<phrase i="3409" t="&#131;L4 Status"/>
+<phrase i="3410" t="Call1:"/>
+<phrase i="3412" t="Date: "/>
+<phrase i="3413" t="Up Time: "/>
+<phrase i="3414" t="Registered"/>
+<phrase i="3415" t="Last Reg at %02d:%02d %d/%d&#10;"/>
+<phrase i="3416" t="Next Reg in %us&#10;"/>
+<phrase i="3417" t="Failed"/>
+<phrase i="3418" t="Call 1: "/>
+<phrase i="3419" t="Ready"/>
+<phrase i="3420" t="Tone: "/>
+<phrase i="3421" t="None"/>
+<phrase i="3422" t="Not Installed"/>
+<phrase i="3423" t="Default"/>
+<phrase i="3425" t="Station"/>
+<phrase i="3426" t="Page Group"/>
+<phrase i="3427" t="Auto Attendant"/>
+<phrase i="3428" t="Internal Music"/>
+<phrase i="3429" t="Please wait"/>
+<phrase i="3430" t="Trying to Login"/>
+<phrase i="3432" t="Contacting ACD Server&#10;For Available"/>
+<phrase i="3433" t="Contacting ACD Server&#10;For Unavailable"/>
+<phrase i="3434" t="Login Failed.&#10;"/>
+<phrase i="3435" t="Please check your user ID&#10;and Password."/>
+<phrase i="3437" t="Notify Avail Failed&#10;"/>
+<phrase i="3438" t="Notify Unavail Failed&#10;"/>
+<phrase i="3439" t="User ID:"/>
+<phrase i="3440" t="Password:"/>
+<phrase i="3441" t="ACD Login"/>
+<phrase i="3445" t="Upgrading Firmware&#10;Please fo not unplug power&#10;Phone will reboot automatically"/>
+<phrase i="3446" t="&#10;&#10;PU: "/>
+<phrase i="3450" t="System Booting Up"/>
+<phrase i="3451" t="Requesting corporate&#10;directory from server..."/>
+<phrase i="3452" t="Request corporate&#10;directory failed"/>
+<phrase i="3453" t="cdir"/>
+<phrase i="3461" t="Unknown Entry"/>
+<phrase i="3468" t="Unknown User"/>
+<phrase i="3469" t="By: %s"/>
+<phrase i="3470" t="gateway"/>
+<phrase i="3471" t="PG."/>
+<phrase i="3472" t="Share Call %s"/>
+<phrase i="3473" t="By: %s&#10;"/>
+<phrase i="3476" t="recipient"/>
+<phrase i="3477" t="state"/>
+<phrase i="3478" t="terminated"/>
+<phrase i="3479" t="trying"/>
+<phrase i="3480" t="early"/>
+<phrase i="3481" t="proceeding"/>
+<phrase i="3482" t="confirmed"/>
+<phrase i="3503" t="User %d"/>
+<phrase i="3504" t="No Ring"/>
+<phrase i="3505" t="Ex Ring"/>
+<phrase i="3509" t="User %d (Not Installed)"/>
+<phrase i="3510" t="12hr"/>
+<phrase i="3511" t="24hr"/>
+<phrase i="3512" t="DHCP"/>
+<phrase i="3513" t="Static IP"/>
+<phrase i="3515" t="PPPOE"/>
+<phrase i="3516" t="pwd"/>
+<phrase i="3517" t="cfg"/>
+<phrase i="3518" t="Language(Unavailable)"/>
+<phrase i="3519" t="Unavailable"/>
+<phrase i="3520" t="confirm"/>
+<phrase i="3521" t="contrast"/>
+<phrase i="3522" t="spd_dial"/>
+<phrase i="3523" t="%d days"/>
+<phrase i="3524" t="1 day"/>
+<phrase i="3525" t="Disabled&#10;"/>
+<phrase i="3526" t="Call %d Type: %s&#10;"/>
+<phrase i="3527" t="Peer Name: %s&#10;"/>
+<phrase i="3528" t="Peer Ph: %s&#10;"/>
+<phrase i="3529" t="Dur: %02d:%02d:%02d"/>
+<phrase i="3530" t="Call %d: %s&#10;"/>
+<phrase i="3531" t="Tone: %s&#10;"/>
+<phrase i="3532" t="Enc: %s&#10;"/>
+<phrase i="3533" t="Dec: %s&#10;"/>
+<phrase i="3534" t="L%d: No Service&#10;"/>
+<phrase i="3535" t="Phone Status"/>
+<phrase i="3536" t="Ext %d Status"/>
+<phrase i="3537" t="L%d Status"/>
+<phrase i="3538" t="TimeDate"/>
+<phrase i="3539" t="Save volume changes&#10;"/>
+<phrase i="3540" t="Save contrast changes&#10;"/>
+<phrase i="3541" t="redial"/>
+<phrase i="3542" t="login"/>
+<phrase i="3543" t="logout"/>
+<phrase i="3544" t="vol"/>
+<phrase i="3545" t="setup"/>
+<phrase i="3546" t="Missed Call"/>
+<phrase i="3548" t="Failed&#10;"/>
+<phrase i="3549" t="unpark?"/>
+<phrase i="3550" t="English"/>
+<phrase i="3551" t="Spanish"/>
+<phrase i="3552" t="Portuguese"/>
+<phrase i="3553" t="Italian"/>
+<phrase i="3554" t="German"/>
+<phrase i="3555" t="Danish"/>
+<phrase i="3556" t="Finnish"/>
+<phrase i="3557" t="Dutch"/>
+<phrase i="3558" t="Norwegian"/>
+<phrase i="3559" t="French"/>
+<phrase i="3560" t="Back Light Timer"/>
+<phrase i="3561" t="Always On"/>
+<phrase i="3562" t="Off"/>
+<phrase i="3563" t="Miss Call Shortcut"/>
+<phrase i="3564" t="Call Waiting"/>
+<phrase i="3565" t="Enable VLAN"/>
+<phrase i="3566" t="VLAN ID"/>
+<phrase i="3567" t="Office"/>
+<phrase i="3568" t="Classic-1"/>
+<phrase i="3569" t="Classic-2"/>
+<phrase i="3570" t="Classic-3"/>
+<phrase i="3571" t="Classic-4"/>
+<phrase i="3572" t="Simple-1"/>
+<phrase i="3573" t="Simple-2"/>
+<phrase i="3574" t="Simple-3"/>
+<phrase i="3575" t="Simple-4"/>
+<phrase i="3576" t="Simple-5"/>
+<phrase i="3577" t="Installed"/>
+<phrase i="3578" t="delChar"/>
+<phrase i="3579" t="Forward"/>
+<phrase i="3580" t="Clr DND"/>
+<phrase i="3581" t="Do Not Disturb&#130;"/>
+<phrase i="3582" t="Clr Fwd"/>
+<phrase i="3583" t="Conf Line"/>
+<phrase i="3584" t="Call Rtn"/>
+<phrase i="3585" t="Previous"/>
+<phrase i="3586" t="Transfer"/>
+<phrase i="3587" t="Xfer Line"/>
+<phrase i="3588" t="BlindXfer"/>
+<phrase i="3589" t="GrPickup"/>
+<phrase i="3590" t="Preview"/>
+<phrase i="3591" t="GUI Property"/>
+<phrase i="3592" t="&#131;GUI Property"/>
+<phrase i="3593" t="Preferred Background Picture"/>
+<phrase i="3594" t="Downloaded"/>
+<phrase i="3596" t="Preferred Menu Color Scheme"/>
+<phrase i="3597" t="Light Blue"/>
+<phrase i="3598" t="Light Green"/>
+<phrase i="3599" t="Pink"/>
+<phrase i="3600" t="Silver"/>
+<phrase i="3601" t="Calls Forwarded&#130;"/>
+<phrase i="3602" t="Line Key 5"/>
+<phrase i="3603" t="Line Key 6"/>
+<trkAuthentication>SU9Z-R9TW-NLST-FM7Q-F8ZL-YCCF-FXFD-3QL8</trkAuthentication>
+</phrases>
