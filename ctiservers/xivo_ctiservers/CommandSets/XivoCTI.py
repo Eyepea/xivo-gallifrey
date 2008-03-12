@@ -28,6 +28,7 @@ __author__    = 'Corentin Le Gall'
 This is the XivoCTI class.
 """
 
+import os
 import random
 import string
 import time
@@ -167,7 +168,7 @@ class XivoCTICommand(BaseCommand):
         # fields set at login time by a user, some are a id-dimension, others are auth-related
         # TBD : fields set once logged in ...
         def required_login_params(self):
-                return ['astid', 'proto', 'userid', # identification
+                return ['loginkind', 'astid', 'proto', 'userid', # identification
                         'state', 'passwd', 'ident', 'version'] # authentication & information
 
 
@@ -217,10 +218,21 @@ class XivoCTICommand(BaseCommand):
                 state = loginparams.get('state')
                 self.__connect_user__(userinfo, whoami, whatsmyos, version, state, False)
 
+                loginkind = loginparams.get('loginkind')
+                if loginkind == 'agent':
+                        agentnum = loginparams.get('agentid')
+                        phonenum = loginparams.get('agentphone')
+                        self.amis[astid].agentcallbacklogin(agentnum, phonenum)
+                        userinfo['agentnum'] = agentnum
                 return userinfo
 
 
         def manage_logoff(self, userinfo):
+                if 'agentnum' in userinfo:
+                        agentnum = userinfo['agentnum']
+                        astid = userinfo['astid']
+                        self.amis[astid].agentlogoff(agentnum)
+                        del userinfo['agentnum']
                 self.__disconnect_user__(userinfo)
                 return
 

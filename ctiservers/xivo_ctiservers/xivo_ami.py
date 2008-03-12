@@ -287,6 +287,29 @@ class AMIClass:
                 except Exception, exc:
                         return False
 
+        # \brief Logs in an Agent
+        def agentcallbacklogin(self, agentnum, extension):
+                try:
+                        ret = self.sendcommand('AgentCallbackLogin', [('Agent', agentnum),
+                                                                      ('Exten', extension)])
+                        reply = self.readresponse('')
+                        return ret
+                except self.AMIError, exc:
+                        return False
+                except Exception, exc:
+                        return False
+
+        # \brief Logs off an Agent
+        def agentlogoff(self, agentnum):
+                try:
+                        ret = self.sendcommand('AgentLogoff', [('Agent', agentnum)])
+                        reply = self.readresponse('')
+                        return ret
+                except self.AMIError, exc:
+                        return False
+                except Exception, exc:
+                        return False
+
         # \brief Adds a Queue
         def queueadd(self, queuename, interface):
                 try:
