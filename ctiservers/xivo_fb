@@ -101,7 +101,7 @@ import xivo_astcfg
 from xivo_log import *
 from CommandSets import *
 
-PIDFILE = 'xivo_fb.pid'
+PIDFILE = '/var/run/xivo_fb.pid'
 # TODO: command line parameter
 
 BUFSIZE_LARGE = 8192

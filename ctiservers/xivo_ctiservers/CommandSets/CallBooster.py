@@ -1158,13 +1158,16 @@ class CallBoosterCommand(BaseCommand):
                 agentnum = event.get('Agent')
                 userinfo = self.__uinfo_by_agentnum__(astid, agentnum)
                 if userinfo is not None:
-                        print userinfo['agentnum'], 'has left', userinfo['login']['calls']
-                        del userinfo['agentchannel']
-                        if 'conf' in userinfo:
-                                print 'actually, %s goes into the conf room %s' % (agentnum, userinfo.get('conf'))
+                        if 'login' in userinfo:
+                                print userinfo['agentnum'], 'has left', userinfo['login']['calls']
+                                del userinfo['agentchannel']
+                                if 'conf' in userinfo:
+                                        print 'actually, %s goes into the conf room %s' % (agentnum, userinfo.get('conf'))
+                                else:
+                                        for callnum, anycall in userinfo['login']['calls'].iteritems():
+                                                self.amis[astid].hangup(anycall.peerchannel, '')
                         else:
-                                for callnum, anycall in userinfo['login']['calls'].iteritems():
-                                        self.amis[astid].hangup(anycall.peerchannel, '')
+                                log_debug(SYSLOG_WARNING, '(agentlogoff) found agent %s, but was not logged in' % userinfo['agentnum'])
                 else:
                         log_debug(SYSLOG_WARNING, '(agentlogoff) no user found for agent %s' % agentnum)
                 return
@@ -1899,7 +1902,7 @@ class CallBoosterCommand(BaseCommand):
                         userinfo['conf'] = confnum
                         self.amis[astid].setvar(userinfo['agentchannel'], 'CB_CONFNUM', confnum)
                         self.amis[astid].transfer(userinfo['agentchannel'], 's', 'ctx-callbooster-conf')
-                        connid_socket.send(',,,Conf/')
+                        connid_socket.send('%s|%s,1,,Conf/' % (refcomm_out, refcomm_in))
 
 
                 elif cname == 'Aboute':
