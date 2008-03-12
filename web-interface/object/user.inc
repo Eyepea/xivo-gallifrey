@@ -47,35 +47,28 @@ class xivo_user
 	{
 		static $ini = null;
 
-		if($ini === null)
-		{
-			if(($ini = xivo::load_init(XIVO_PATH_CONF.XIVO_SEP_DIR.'user.ini')) === false)
-				trigger_error('User ini file not found or unreadable',E_USER_ERROR);
-		}
+		if($ini === null && ($ini = xivo::load_init(XIVO_PATH_CONF.XIVO_SEP_DIR.'user.ini')) === false)
+			trigger_error('User ini file not found or unreadable',E_USER_ERROR);
 		
 		return(($ref = &$ini));
 	}
 
 	function get_info($name)
 	{
-		$r = null;
-
 		$name = (string) $name;
 
 		if(isset($_SESSION['_USR'],$_SESSION['_USR']->{$name}) === true && $name{0} !== '_')
-			$r = $_SESSION['_USR']->{$name};
+			return($_SESSION['_USR']->{$name});
 
-		return($r);
+		return(null);
 	}
 
 	function is_valid()
 	{
-		$r = false;
-
 		if(isset($_SESSION['_USR'],$_SESSION['_USR']->_valid) === true && $_SESSION['_USR']->_valid === true)
-			$r = true;
+			return(true);
 
-		return($r);
+		return(false);
 	}
 
 	function chk_active()
@@ -84,23 +77,18 @@ class xivo_user
 
 		if(xivo_user::is_valid() === false)
 			return(false);
-
-		if($cfg['option']['time_cache'] <= 0
+		else if($cfg['option']['time_cache'] <= 0
 		|| ($cfg['option']['time_cache'] + $_SESSION['_USR']->_time) < gmmktime())
-			$r = true;
-		else
-			$r = null;
+			return(true);
 
-		return($r);
+		return(null);
 	}
 
 	function chk_type($type,$real=false)
 	{
 		$cfg = xivo_gat::get('user');
 
-		$r = isset($cfg['type'][$type]);
-
-		if($r === true && (bool) $real === true)
+		if(($r = isset($cfg['type'][$type])) === true && (bool) $real === true)
 			return(($type > 0));
 
 		return($r);
@@ -108,36 +96,31 @@ class xivo_user
 
 	function chk_meta($meta,$real=false)
 	{
-		$r = false;
+		if(($type = xivo_user::meta_to_type($meta)) !== false
+		&& ($meta = xivo_user::type_to_meta($type,$real)) !== false)
+			return($meta);
 
-		if(($type = xivo_user::meta_to_type($meta)) !== false && ($meta = xivo_user::type_to_meta($type,$real)) !== false)
-			$r = $meta;
-
-		return($r);
+		return(false);
 	}
 
 	function type_to_meta($type,$real=false)
 	{
-		$r = false;
-
 		$cfg = xivo_gat::get('user');
 
 		if(xivo_user::chk_type($type,$real) === true && isset($cfg['type'][$type]['meta']) === true)
-			$r = $cfg['type'][$type]['meta'];
+			return($cfg['type'][$type]['meta']);
 
-		return($r);
+		return(false);
 	}
 
 	function meta_to_type($meta)
 	{
-		$r = false;
-
 		$meta = strtoupper($meta);
 
 		if(defined('XIVO_USER__'.$meta) === true)
-			$r = constant('XIVO_USER__'.$meta);
+			return(constant('XIVO_USER__'.$meta));
 
-		return($r);
+		return(false);
 	}
 
 	function chk_authorize($users,$meta='',$real=false)
@@ -240,8 +223,8 @@ class xivo_user
 				$tree = &$tree[$k]['child'];
 		}
 
-		if($r === false && xivo_ak($k,$grp,true) !== false)
-			$r = true;
+		if($r === false)
+			$r = xivo_ak($k,$grp,true) !== false;
 
 		return($r);
 	}

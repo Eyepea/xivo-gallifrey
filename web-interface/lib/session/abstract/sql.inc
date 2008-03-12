@@ -83,7 +83,7 @@ class xivo_session_abstract_sql
 	function write($key,$val)
 	{
 		/*
-		$_USR = &xivo_gct::get('xivo_user');
+		$_USR = &xivo_gct::get('_USR');
 
 		if(isset($_USR->id) === true && $_USR->id > 0)
 			$this->u = $_USR->id;

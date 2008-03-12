@@ -1,11 +1,73 @@
 <?php
 
-class xivo_user_abstract
+require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'abstract'.XIVO_SEP_DIR.'libdatastorage.inc');
+
+class xivo_user_abstract extends xivo_libdatastorage_abstract
 {
+	var $_conf	= array();
 	var $_dso	= null;
 	var $_ini	= array();
 	var $_info	= array();
 	var $_acl	= null;
+
+	function get_info($name)
+	{
+		$name = (string) $name;
+
+		if(isset($this->_info[$name]) === true && $name{0} !== '_')
+			return($this->_info[$name]);
+
+		return(null);
+	}
+
+	function set_info($name,$value)
+	{
+		$name = (string) $name;
+
+		if($name{0} !== '_')
+			$this->_info[$name] = $value;
+	}
+
+	function _prepare($data)
+	{
+		$data['valid'] = (bool) $data['valid'];
+
+		if(is_array($data['obj']) === false)
+			$data['obj'] = xivo_unserialize($data['obj']);
+
+		return($data);
+	}
+
+	function add($arr)
+	{
+		if(is_array($arr) === false)
+			return(false);
+		else if(isset($arr['login']) === true)
+			$arr['login'] = strtolower($arr['login']);
+
+		if(isset($arr['meta']) === true)
+			$arr['meta'] = strtolower($arr['meta']);
+
+		$arr['dcreate'] = gmmktime();
+		$arr['dupdate'] = gmmktime();
+
+		return(parent::add($arr));
+	}
+
+	function edit($id,$arr,$disable=null)
+	{
+		if(is_array($arr) === false)
+			return(false);
+		else if(isset($arr['login']) === true)
+			$arr['login'] = strtolower($arr['login']);
+
+		if(isset($arr['meta']) === true)
+			$arr['meta'] = strtolower($arr['meta']);
+
+		$arr['dupdate'] = gmmktime();
+
+		return(parent::edit($id,$arr,$disable));
+	}
 
 	function mk_active()
 	{
@@ -31,39 +93,6 @@ class xivo_user_abstract
 			$this->load_by_id($_SESSION['_USR']->id);
 	}
 
-	function get($id)
-	{
-		if(($id = xivo_ulongint($id)) === 0)
-			return(false);
-
-		return($this->_dso->get($id));
-	}
-
-	function get_nb($disable=null)
-	{
-		return($this->_dso->get_nb($disable));
-	}
-
-	function get_info($name)
-	{
-		$r = null;
-
-		$name = (string) $name;
-
-		if(isset($this->_info[$name]) === true && $name{0} !== '_')
-			$r = $this->_info[$name];
-
-		return($r);
-	}
-
-	function set_info($name,$value)
-	{
-		$name = (string) $name;
-
-		if($name{0} !== '_')
-			$this->_info[$name] = $value;
-	}
-
 	function load_by_session()
 	{
 		if(($r = $this->mk_active()) === true)
@@ -76,7 +105,7 @@ class xivo_user_abstract
 
 	function load_by_id($id)
 	{
-		if(($data = $this->get_by_id($id)) === false)
+		if(($data = $this->get($id)) === false)
 			return(false);
 		else if(isset($data['valid']) === true)
 			$valid = $data['valid'];
@@ -195,31 +224,16 @@ class xivo_user_abstract
 		$arr['time'] = gmmktime();
 		$arr['valid'] = (bool) $valid;
 
-		return($this->_dso->add($arr));
+		return($this->add($arr));
 	}
 
 	function get_by_login_pass($login,$pass)
 	{
-		$r = $this->_dso->get_by_login_pass($login,$pass);
+		$arr = array();
+		$arr['login'] = strval($login);
+		$arr['passwd'] = strval($pass);
 
-		if(is_object($r) === true)
-			$r = (array) $r;
-		else if(is_array($r) === false)
-			$r = false;
-
-		return($r);
-	}
-
-	function get_by_id($id)
-	{
-		$r = $this->_dso->get($id);
-
-		if(is_object($r) === true)
-			$r = (array) $r;
-		else if(is_array($r) === false)
-			$r = false;
-
-		return($r);
+		return($this->get_where($arr));
 	}
 
 	function _load_dso()
@@ -283,19 +297,23 @@ class xivo_user_abstract
 		$func = (string) $func;
 		$acl_func = 'acl_'.$func;
 
-		if(is_object($this->_acl) === false)
+		if(is_object($this->_acl) === false
+		&& ($this->_acl = $this->_load_acl($this->_dso,$this->_param['factory'])) === false)
 		{
-			if(($this->_acl = $this->_load_acl($this->_dso,$this->_param['factory'])) === false)
-				trigger_error('Failed to load user acl in '.__CLASS__,E_USER_ERROR);
+			trigger_error('Failed to load user acl in '.__CLASS__,E_USER_ERROR);
+			return(false);
 		}
-
-		if(is_object($this->_acl) === false)
+		else if(is_object($this->_acl) === false)
+		{
 			trigger_error('Invalid user acl object',E_USER_ERROR);
-
-		if(is_callable(array(&$this->_acl,$func)) === false)
+			return(false);
+		}
+		else if(is_callable(array(&$this->_acl,$func)) === false)
+		{
 			trigger_error('Invalid user acl method',E_USER_ERROR);
-
-		if(method_exists($this,$acl_func) === false)
+			return(false);
+		}
+		else if(method_exists($this,$acl_func) === false)
 			$acl = &$this->_acl;
 		else
 		{
@@ -304,14 +322,9 @@ class xivo_user_abstract
 		}
 
 		if($args === null)
-			$r = call_user_func(array($acl,$func));
-		else
-		{
-			$args = (array) $args;
-			$r = call_user_func_array(array($acl,$func),$args);
-		}
+			return(call_user_func(array($acl,$func)));
 
-		return($r);
+		return(call_user_func_array(array($acl,$func),(array) $args));
 	}
 
 	function load_authent()
@@ -324,7 +337,10 @@ class xivo_user_abstract
 		$authent = &$ini['authent'];
 
 		if(isset($authent['type']) === false)
+		{
 			trigger_error('Missing type user authentification in user ini file',E_USER_ERROR);
+			return(false);
+		}
 
 		$type = $authent['type'];
 
@@ -337,7 +353,10 @@ class xivo_user_abstract
 		$dir = XIVO_PATH_OBJECT.XIVO_SEP_DIR.'user'.XIVO_SEP_DIR.'authent';
 
 		if(xivo::load_class($name,$dir,$type,false) === false)
+		{
 			trigger_error('Failed to load user authentification',E_USER_ERROR);
+			return(false);
+		}
 
 		return(new $name($dso,$authent));
 	}
@@ -348,21 +367,27 @@ class xivo_user_abstract
 		$auth_func = 'auth_'.$func;
 
 		if($this->_param['factory'] === true)
-			trigger_error('Unable to call authentification with factory',E_USER_ERROR);
-
-		if(is_object($this->_authent) === false)
 		{
-			if(($this->_authent = $this->load_authent()) === false)
-				trigger_error('Failed to load user authentification in '.__CLASS__,E_USER_ERROR);
+			trigger_error('Unable to call authentification with factory',E_USER_ERROR);
+			return(false);
 		}
-
-		if(is_object($this->_authent) === false)
+		else if(is_object($this->_authent) === false
+		&& ($this->_authent = $this->load_authent()) === false)
+		{
+			trigger_error('Failed to load user authentification in '.__CLASS__,E_USER_ERROR);
+			return(false);
+		}
+		else if(is_object($this->_authent) === false)
+		{
 			trigger_error('Invalid user authentification object',E_USER_ERROR);
-
-		if(is_callable(array(&$this->_authent,$func)) === false)
+			return(false);
+		}
+		else if(is_callable(array(&$this->_authent,$func)) === false)
+		{
 			trigger_error('Invalid user authentification method',E_USER_ERROR);
-
-		if(method_exists($this,$auth_func) === false)
+			return(false);
+		}
+		else if(method_exists($this,$auth_func) === false)
 			$auth = &$this->_authent;
 		else
 		{
@@ -371,24 +396,17 @@ class xivo_user_abstract
 		}
 
 		if($args === null)
-			$r = call_user_func(array($auth,$func));
-		else
-		{
-			$args = (array) $args;
-			$r = call_user_func_array(array($auth,$func),$args);
-		}
+			return(call_user_func(array($auth,$func)));
 
-		return($r);
+		return(call_user_func_array(array($auth,$func),(array) $args));
 	}
 
 	function auth_chk($login,$pass)
 	{
-		$r = false;
-
 		if(($type = xivo_user::meta_to_type($this->_authent->chk($login,$pass,true))) > 0)
-			$r = $type;
+			return($type);
 
-		return($r);
+		return(false);
 	}
 }
 

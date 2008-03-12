@@ -1,103 +1,25 @@
 <?php
 
-class xivo_user_abstract_sql
+require_once(XIVO_PATH_LIB.XIVO_SEP_DIR.'datastorage'.XIVO_SEP_DIR.'helper'.XIVO_SEP_DIR.'table.inc');
+
+class xivo_user_abstract_sql extends xivo_datastorage_helper_table
 {
-	var $_param		= array('table'	=> 'user');
-	var $_dso		= null;
+	var $_table	= 'user';
+	var $_primary	= array('id' => 0);
+	var $_disable	= 'valid';
+	var $_unique	= array(array('login','meta'));
 
-	function _init(&$dso,$param=array())
+	function xivo_user_abstract_sql(&$dso,$param=array())
 	{
-		if(is_object($dso) === false)
-			trigger_error('Invalid Datastorage object',E_USER_ERROR);
-
-		$this->_dso = &$dso;
-
-		$param = (array) $param;
-
-		if(isset($param['table']) === true)
-			$this->_param['table'] = (string) $param['table'];
+		parent::_init(&$dso,$param);
 	}
 
-	function add($arr)
+	function get($id,$disable=null)
 	{
-		$r = false;
-
-		$arr['dcreate'] = time();
-		$arr['dupdate'] = time();
-
-		if($this->_dso->insert($this->_param['table'],$arr) === true)
-			$r = $this->_dso->insert_id();
-
-		return($r);
-	}
-
-	function edit($id,$arr)
-	{
-		if(($id = xivo_ulongint($id)) === 0)
+		if(($r = parent::get($id,$disable)) === false)
 			return(false);
 
-		$arr['dupdate'] = time();
-
-		$r = $this->_dso->update($this->_param['table'],$arr,array('id' => $id));
-
-		return($r);
-	}
-
-	function get($id)
-	{
-		if(($id = xivo_ulongint($id)) === 0)
-			return(false);
-
-		$this->_dso->new_select($this->_param['table']);
-		$this->_dso->where(array('id' => $id));
-
-		if(($r = $this->_dso->select_single()) === false)
-			return(false);
-
-		$r['valid'] = (bool) $r['valid'];
 		$r['obj'] = xivo_unserialize($r['obj']);
-
-		return($r);
-	}
-
-	function get_nb($valid=null)
-	{
-		$this->_dso->new_select($this->_param['table']);
-
-		if($valid !== null)
-			$this->_dso->where(array('valid' => intval((bool) $valid)));
-
-		return(xivo_ulongint($this->_dso->select_count()));
-	}
-
-	function get_by_login_pass($login,$pass)
-	{
-		$this->_dso->new_select($this->_param['table']);
-		$this->_dso->where(array('login' => $login,
-					 'passwd' => $pass));
-
-		if(($r = $this->_dso->select_single()) === false)
-			return(false);
-
-		$r['valid'] = (bool) $r['valid'];
-		$r['obj'] = xivo_unserialize($r['obj']);
-
-		return($r);
-	}
-
-	function get_list($arr=array())
-	{
-		$arr = (array) $arr;
-
-		$this->_dso->new_select($this->_param['table']);
-
-		if(empty($arr) === false)
-			$this->_dso->wherein('meta',$arr);
-
-		$r = $this->_dso->select_all();
-
-		if(isset($r[0]) === false)
-			$r = false;
 
 		return($r);
 	}
@@ -107,7 +29,7 @@ class xivo_user_abstract_sql
 		if(($id = xivo_ulongint($id)) === 0 || ($dupdate = xivo_uint($dupdate)) === 0)
 			return(false);
 
-		$this->_dso->new_select($this->_param['table'],'id');
+		$this->_dso->new_select($this->_table,'id');
 		$this->_dso->where(array('id' => $id));
 		$this->_dso->andwherenot(array('dupdate' => $dupdate));
 
@@ -132,7 +54,7 @@ class xivo_user_abstract_sql
 		if(($id = xivo_ulongint($id)) === 0 || is_array($obj) === false)
 			return(false);
 
-		$r = $this->_dso->update($this->_param['table'],
+		$r = $this->_dso->update($this->_table,
 					 array('obj' => serialize($obj)),
 					 array('id' => $id));
 
@@ -144,7 +66,7 @@ class xivo_user_abstract_sql
 		if(($id = xivo_ulongint($id)) === 0)
 			return(false);
 
-		$this->_dso->new_select($this->_param['table'],'obj');
+		$this->_dso->new_select($this->_table,'obj');
 		$this->_dso->where(array('id' => $id));
 
 		if(($r = $this->_dso->select_one()) === false)

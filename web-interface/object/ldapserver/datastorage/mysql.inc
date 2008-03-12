@@ -1,6 +1,6 @@
 <?php
 
-require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'ldapserver'.XIVO_SEP_DIR.'datastorage'.XIVO_SEP_DIR.'abstract'.XIVO_SEP_DIR.'sql.inc');
+xivo_file::required(array(XIVO_PATH_OBJECT,'ldapserver','datastorage','abstract','sql.inc'),true);
 
 class xivo_ldapserver_mysql extends xivo_ldapserver_abstract_sql
 {

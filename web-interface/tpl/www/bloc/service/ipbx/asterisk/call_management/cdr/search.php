@@ -173,7 +173,7 @@
 	else:
 		for($i = 0;$i < $nb;$i++):
 			$ref = &$result[$i];
-			$mod = $i % 2 === 0 ? 1 : 2;
+			$mod = ($i % 2) + 1;
 
 			if(xivo_haslen($ref['src']) === false):
 				$src = '-';

@@ -32,6 +32,9 @@ class xivo_ldapserver extends xivo_libdatastorage_abstract
 		else if(empty($id) === true || isset($arr['dcreate']) === false)
 			$arr['dcreate'] = gmmktime();
 
+		if(isset($arr['name']) === true)
+			$arr['name'] = strtolower($arr['name']);
+
 		return(parent::add($arr,$id));
 	}
 

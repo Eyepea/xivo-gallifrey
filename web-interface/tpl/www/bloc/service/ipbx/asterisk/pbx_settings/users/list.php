@@ -4,7 +4,6 @@
 	$dhtml = &$this->get_module('dhtml');
 
 	$pager = $this->get_var('pager');
-	$list = $this->get_var('list');
 	$act = $this->get_var('act');
 
 	$param = array();
@@ -47,7 +46,7 @@
 	</tr>
 <?php
 
-	if($list === false || ($nb = count($list)) === 0):
+	if(($list = $this->get_var('list')) === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
 		<td colspan="9" class="td-single"><?=$this->bbf('no_user');?></td>
@@ -65,10 +64,8 @@
 			else:
 				$icon = 'enable';
 			endif;
-
-			$mod = $i % 2 === 0 ? 1 : 2;
 ?>
-	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
+	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
 		<td class="td-left"><?=$form->checkbox(array('name' => 'users[]','value' => $ref['id'],'label' => false,'id' => 'it-users-'.$i,'checked' => false,'field' => false));?></td>
 		<td class="txt-left"><label for="it-users-<?=$i?>" id="lb-users-<?=$i?>"><?=$url->img_html('img/site/phone/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['fullname']?></label></td>
 		<td><?=$this->bbf('user_protocol-'.$ref['protocol']);?></td>

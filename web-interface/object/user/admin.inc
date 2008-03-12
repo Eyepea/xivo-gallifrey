@@ -11,6 +11,7 @@ class xivo_user_admin extends xivo_user_abstract
 	{
 		$this->_ini = xivo_user::load_get_init();
 
+		$this->_load_config(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'user');
 		$this->_load_dso();
 
 		if(is_object($this->_dso) === false)
@@ -22,16 +23,6 @@ class xivo_user_admin extends xivo_user_abstract
 			$this->load_by_session();
 
 		$this->_load_acl();
-	}
-
-	function get_list($arr=array())
-	{
-		$r = $this->_dso->get_list($arr);
-
-		if(empty($r) === true)
-			$r = false;
-
-		return($r);
 	}
 
 	function edit($meta,$arr)

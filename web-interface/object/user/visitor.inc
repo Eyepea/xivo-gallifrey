@@ -15,6 +15,7 @@ class xivo_user_visitor extends xivo_user_abstract
 
 		$this->_ini = xivo_user::load_get_init();
 
+		$this->_load_config(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'user');
 		$this->_load_dso();
 
 		if(is_object($this->_dso) === false)

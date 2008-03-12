@@ -11,6 +11,7 @@ class xivo_user_root extends xivo_user_abstract
 	{
 		$this->_ini = xivo_user::load_get_init();
 
+		$this->_load_config(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'user');
 		$this->_load_dso();
 
 		if(is_object($this->_dso) === false)
@@ -38,15 +39,6 @@ class xivo_user_root extends xivo_user_abstract
 			return($r);
 	}
 */
-	function get_list($arr=array())
-	{
-		$r = $this->_dso->get_list($arr);
-
-		if(empty($r) === true)
-			$r = false;
-
-		return($r);
-	}
 
 	function edit($meta,$arr)
 	{
@@ -60,7 +52,7 @@ class xivo_user_root extends xivo_user_abstract
 		if($filter->chk($arr) === false)
 			return(false);
 
-		return($this->_dso->edit($arr['id'],$filter->get_result()));
+		return(parent::edit($arr['id'],$filter->get_result()));
 	}
 }
 

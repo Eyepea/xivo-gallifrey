@@ -22,6 +22,9 @@ Server
 ; stats_type-ldapserver
 LDAP Server
 
+; stats_type-entity
+Entity
+
 ; info_soft_label
 Software:
 

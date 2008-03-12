@@ -1,6 +1,6 @@
 <?php
 
-require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'server'.XIVO_SEP_DIR.'datastorage'.XIVO_SEP_DIR.'abstract'.XIVO_SEP_DIR.'sql.inc');
+xivo_file::required(array(XIVO_PATH_OBJECT,'server','datastorage','abstract','sql.inc'),true);
 
 class xivo_server_sqlite extends xivo_server_abstract_sql
 {

@@ -45,17 +45,13 @@
 			else:
 				$icon = 'enable';
 			endif;
-
-			$ref['ssl'] = intval((bool) $ref['ssl']);
-
-			$mod = $i % 2 === 0 ? 1 : 2;
 ?>
-	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
+	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
 		<td class="td-left"><?=$form->checkbox(array('name' => 'server[]','value' => $ref['id'],'label' => false,'id' => 'it-server-'.$i,'checked' => false,'field' => false));?></td>
 		<td class="txt-left"><label for="it-server-<?=$i?>" id="lb-server-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['name']?></label></td>
 		<td><?=$ref['host']?></td>
 		<td><?=$ref['port']?></td>
-		<td><?=$this->bbf('ssl_'.$ref['ssl']);?></td>
+		<td><?=$this->bbf('ssl_'.intval((bool) $ref['ssl']));?></td>
 		<td class="td-right" colspan="3">
 		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'xivo/configuration/manage/server',array('act' => 'edit','id' => $ref['id']),null,$this->bbf('opt_modify'));?>
 

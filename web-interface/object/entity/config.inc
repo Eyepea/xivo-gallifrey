@@ -50,7 +50,7 @@ $array['element']['description']['default'] = '';
 
 
 $array['filter'] = array();
-$array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 64);
+$array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 39);
 $array['filter']['displayname'] = array('cast' => 'sgraph','minlen' => 3,'maxlen' => 64);
 $array['filter']['phonenumber'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
 $array['filter']['faxnumber'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');

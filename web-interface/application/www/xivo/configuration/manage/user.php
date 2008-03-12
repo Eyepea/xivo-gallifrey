@@ -1,6 +1,7 @@
 <?php
 
 $act = isset($_QR['act']) === true ? $_QR['act']  : '';
+$page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
 
 $param = array();
 $param['act'] = 'list';
@@ -41,7 +42,26 @@ switch($act)
 		break;
 	default:
 		$act = 'list';
-		$_HTML->set_var('list',$_USR->get_list());
+		$nbbypage = 20;
+
+		$order = array();
+		$order['login'] = SORT_ASC;
+
+		$limit = array();
+		$limit[0] = ($page - 1) * $nbbypage;
+		$limit[1] = $nbbypage;
+
+		$list = $_USR->get_all(null,true,$order,$limit);
+		$total = $_USR->get_cnt();
+
+		if($list === false && $total > 0)
+		{
+			$param['page'] = $page - 1;
+			$_QRY->go($_HTML->url('xivo/configuration/manage/user'),$param);
+		}
+
+		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_HTML->set_var('list',$list);
 		break;
 }
 

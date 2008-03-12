@@ -45,10 +45,8 @@
 			else:
 				$icon = 'enable';
 			endif;
-
-			$mod = $i % 2 === 0 ? 1 : 2;
 ?>
-	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
+	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
 		<td class="td-left"><?=$form->checkbox(array('name' => 'entity[]','value' => $ref['id'],'label' => false,'id' => 'it-entity-'.$i,'checked' => false,'field' => false));?></td>
 		<td class="txt-left"><label for="it-entity-<?=$i?>" id="lb-entity-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['name']?></label></td>
 		<td><?=$ref['displayname']?></td>

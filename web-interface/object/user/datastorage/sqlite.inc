@@ -4,10 +4,7 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'user','datastorage','abstract','sql.
 
 class xivo_user_sqlite extends xivo_user_abstract_sql
 {
-	function xivo_user_sqlite(&$dso,$param=array())
-	{
-		$this->_init(&$dso,$param);
-	}
+
 }
 
 ?>

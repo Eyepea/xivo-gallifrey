@@ -1,6 +1,6 @@
 <?php
 
-require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'entity'.XIVO_SEP_DIR.'datastorage'.XIVO_SEP_DIR.'abstract'.XIVO_SEP_DIR.'sql.inc');
+xivo_file::required(array(XIVO_PATH_OBJECT,'entity','datastorage','abstract','sql.inc'),true);
 
 class xivo_entity_mysql extends xivo_entity_abstract_sql
 {

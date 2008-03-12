@@ -4,7 +4,7 @@ $act = isset($_QR['act']) === true ? $_QR['act']  : '';
 $page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
 
 xivo::load_class('xivo_entity',XIVO_PATH_OBJECT,null,false);
-$_SCT = new xivo_entity();
+$_ETT = new xivo_entity();
 
 $param = array();
 $param['act'] = 'list';
@@ -16,19 +16,19 @@ switch($act)
 
 		if(isset($_QR['fm_send']) === true)
 		{
-			if(($result = $_SCT->chk_values($_QR)) === false)
-				$result = $_SCT->get_filter_result();
-			else if($_SCT->add($result) !== false)
+			if(($result = $_ETT->chk_values($_QR)) === false)
+				$result = $_ETT->get_filter_result();
+			else if($_ETT->add($result) !== false)
 				$_QRY->go($_HTML->url('xivo/configuration/manage/entity'),$param);
 		}
 
 		$_HTML->set_var('info',$result);
-		$_HTML->set_var('element',$_SCT->get_element());
+		$_HTML->set_var('element',$_ETT->get_element());
 		$_HTML->set_var('territory',xivo_i18n::get_territory_translated_list());
 		break;
 	case 'edit':
 		if(isset($_QR['id']) === false
-		|| ($info = $_SCT->get($_QR['id'])) === false)
+		|| ($info = $_ETT->get($_QR['id'])) === false)
 			$_QRY->go($_HTML->url('xivo/configuration/manage/entity'),$param);
 
 		$return = &$info;
@@ -40,15 +40,15 @@ switch($act)
 
 			$_QR['disable'] = $info['disable'];
 
-			if(($result = $_SCT->chk_values($_QR)) === false)
-				$result = $_SCT->get_filter_result();
-			else if($_SCT->edit($info['id'],$result) !== false)
+			if(($result = $_ETT->chk_values($_QR)) === false)
+				$result = $_ETT->get_filter_result();
+			else if($_ETT->edit($info['id'],$result) !== false)
 				$_QRY->go($_HTML->url('xivo/configuration/manage/entity'),$param);
 		}
 
 		$_HTML->set_var('id',$info['id']);
 		$_HTML->set_var('info',$return);
-		$_HTML->set_var('element',$_SCT->get_element());
+		$_HTML->set_var('element',$_ETT->get_element());
 		$_HTML->set_var('territory',xivo_i18n::get_territory_translated_list());
 		break;
 	case 'delete':
@@ -56,7 +56,7 @@ switch($act)
 
 		if(isset($_QR['id']) === true
 		&& ($id = intval($_QR['id'])) > 0)
-			$_SCT->delete($id);
+			$_ETT->delete($id);
 
 		$_QRY->go($_HTML->url('xivo/configuration/manage/entity'),$param);
 		break;
@@ -71,7 +71,7 @@ switch($act)
 		for($i = 0;$i < $nb;$i++)
 		{
 			if(($id = intval($values[$i])) > 0)
-				$_SCT->delete($id);
+				$_ETT->delete($id);
 		}
 
 		$_QRY->go($_HTML->url('xivo/configuration/manage/entity'),$param);
@@ -87,7 +87,7 @@ switch($act)
 		$nb = count($values);
 
 		for($i = 0;$i < $nb;$i++)
-			$_SCT->disable(intval($values[$i]),$disable);
+			$_ETT->disable(intval($values[$i]),$disable);
 
 		$_QRY->go($_HTML->url('xivo/configuration/manage/entity'),$param);
 		break;
@@ -102,8 +102,8 @@ switch($act)
 		$limit[0] = ($page - 1) * $nbbypage;
 		$limit[1] = $nbbypage;
 
-		$list = $_SCT->get_all(null,true,$order,$limit);
-		$total = $_SCT->get_cnt();
+		$list = $_ETT->get_all(null,true,$order,$limit);
+		$total = $_ETT->get_cnt();
 
 		if($list === false && $total > 0)
 		{
