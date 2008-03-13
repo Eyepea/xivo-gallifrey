@@ -36,7 +36,7 @@ agi = AGI()
 agitb.enable(agi)
 db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
 
-def forgetimefield(start, end, includesep = False):
+def forgetimefield(start, end):
 	if start == '*':
 		timestr = '*'
 	else:
@@ -44,18 +44,15 @@ def forgetimefield(start, end, includesep = False):
 			timestr = '%s' % start
 		else:
 			timestr = '%s-%s' % (start, end)
-
-	if includesep:
-		return ',%s' % timestr
-	else:
-		return timestr
+	return timestr
 
 def forgetime(res):
-	timestr = forgetimefield(res['timebeg'], res['timeend'])
-	timestr += forgetimefield(res['daynamebeg'], res['daynameend'], True)
-	timestr += forgetimefield(res['daynumbeg'], res['daynumend'], True)
-	timestr += forgetimefield(res['monthbeg'], res['monthend'], True)
-	return timestr
+	return ','.join((
+		forgetimefield(res['timebeg'], res['timeend']),
+		forgetimefield(res['daynamebeg'], res['daynameend']),
+		forgetimefield(res['daynumbeg'], res['daynumend']),
+		forgetimefield(res['monthbeg'], res['monthend']),
+	))
 
 # Cursors have a weak reference on their connection, so make a strong one.
 conn = agi_helpers.db_connect(agi, db_uri)
