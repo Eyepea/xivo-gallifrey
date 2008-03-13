@@ -30,7 +30,6 @@
 
 import sys
 import socket
-import encodings.utf_8
 
 # 1) instancier
 # 2) ajouter des infos

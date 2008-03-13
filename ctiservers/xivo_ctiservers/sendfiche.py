@@ -34,7 +34,6 @@ import sys
 import syslog
 import threading
 import urllib
-import encodings.utf_8
 
 # XIVO lib-python modules initialization
 import xivo.to_path
