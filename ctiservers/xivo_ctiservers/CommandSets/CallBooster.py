@@ -767,8 +767,10 @@ class CallBoosterCommand(BaseCommand):
                 
                 thiscall = self.incoming_calls.get(chan)
                 if thiscall is not None:
-                        print 'HANGUP => __update_stat_acd2__', uniqueid, chan, thiscall.queuename, thiscall.uinfo
+                        print 'HANGUP => __update_stat_acd2__', uniqueid, chan, thiscall.queuename, thiscall.aboute, thiscall.uinfo
                         if thiscall.uinfo is not None:
+                                if 'login' in thiscall.uinfo and thiscall.aboute is not None:
+                                        del thiscall.uinfo['login']['calls'][thiscall.aboute]
                                 if 'agent-wouldbe-channel' in thiscall.uinfo and 'agentchannel' not in thiscall.uinfo:
                                         self.__send_msg__(thiscall.uinfo, ',-1,,AppelOpe/')
                                         self.amis[astid].hangup(thiscall.uinfo['agent-wouldbe-channel'], '')
@@ -812,6 +814,8 @@ class CallBoosterCommand(BaseCommand):
                 elif uniqueid in self.normal_calls:
                         print '(NORMAL HANGUP)', uniqueid, event
                         self.normal_calls.remove(uniqueid)
+                else:
+                        print 'OTHER HANGUP', event
                         # self.__update_taxes__
                 return
 
@@ -1038,13 +1042,10 @@ class CallBoosterCommand(BaseCommand):
                 thiscall.parkexten = exten
                 self.__send_msg__(thiscall.uinfo, '%s,1,,Attente/' % thiscall.commid)
 
-
                 usercalls = thiscall.uinfo['login']['calls']
                 for commid, usercall in usercalls.iteritems():
-                        print 'PARKEDCALL', commid, usercall.parkexten
-
-                for commid, usercall in usercalls.iteritems():
                         if commid != thiscall.commid:
+                                print 'PARKEDCALL commid=%s parkexten=%s tocall=%s forceacd=%s toretrieve=%s' % (commid, usercall.parkexten, usercall.tocall, usercall.forceacd, usercall.toretrieve)
                                 if usercall.tocall:
                                         print 'ParkedCall Attente', commid, usercall.parking, usercall.parkexten, usercall.appelaboute, usercall.tocall
                                         usercall.tocall = False
@@ -1126,6 +1127,7 @@ class CallBoosterCommand(BaseCommand):
                 userinfo = self.__uinfo_by_agentnum__(astid, agentnum)
                 if userinfo is not None:
                         userinfo['agentchannel'] = agentchannel
+                        userinfo['agentchannel-conf'] = agentchannel
                         if 'agent-wouldbe-channel' in userinfo:
                                 if userinfo['agent-wouldbe-channel'] != agentchannel:
                                         print userinfo['agent-wouldbe-channel'], agentchannel
@@ -1255,9 +1257,9 @@ class CallBoosterCommand(BaseCommand):
                 channel = event.get('Channel')
                 usernum = event.get('Usernum')
                 if meetme not in self.confrooms:
-                        self.confrooms[meetme] = 0
-                self.confrooms[meetme] += 1
-                print 'CONF JOIN', meetme, channel, usernum, self.confrooms[meetme]
+                        self.confrooms[meetme] = []
+                self.confrooms[meetme].append(channel)
+                print 'CONF JOIN', meetme, channel, usernum, len(self.confrooms[meetme])
                 return
 
 
@@ -1268,9 +1270,14 @@ class CallBoosterCommand(BaseCommand):
                 meetme = event.get('Meetme')
                 channel = event.get('Channel')
                 usernum = event.get('Usernum')
-                if meetme in self.confrooms:
-                        self.confrooms[meetme] -= 1
-                print 'CONF LEAVE', meetme, channel, usernum, self.confrooms[meetme]
+                if meetme in self.confrooms and channel in self.confrooms[meetme]:
+                        self.confrooms[meetme].remove(channel)
+                print 'CONF LEAVE', meetme, channel, usernum, len(self.confrooms[meetme])
+                if usernum == '1':
+                        chantomatch = self.confrooms[meetme][0]
+                        for opername, userinfo in self.ulist.byast[astid].list.iteritems():
+                                if 'agentchannel-conf' in userinfo and userinfo['agentchannel-conf'] == chantomatch:
+                                        self.amis[astid].transfer(chantomatch, 's', 'ctx-callbooster-agentlogin')
                 return
 
         # END of AMI events
@@ -1815,7 +1822,7 @@ class CallBoosterCommand(BaseCommand):
                                                             self.__local_nsoc__(idsoc), idcli, idcol)
 
                         if len(userinfo['login']['calls']) > 0:
-                                print 'Appel : there are already ongoing calls', userinfo['login']['calls']
+                                print 'Appel (call number will be %s) : there are already ongoing calls' % comm_id_outgoing, userinfo['login']['calls']
                                 ntowait = 0
                                 for callnum, anycall in userinfo['login']['calls'].iteritems():
                                         ntowait += self.__park__(astid, anycall)
@@ -1825,7 +1832,7 @@ class CallBoosterCommand(BaseCommand):
                                 else:
                                         self.__outcall__(outCall)
                         else:
-                                print 'Appel', userinfo
+                                print 'Appel (call number will be %s)' % comm_id_outgoing, userinfo
                                 if 'agentchannel' in userinfo:
                                         userinfo['login']['calls'][comm_id_outgoing] = outCall
                                         self.__outcall__(outCall)
@@ -1900,9 +1907,12 @@ class CallBoosterCommand(BaseCommand):
                                 self.amis[astid].transfer(anycall.peerchannel, 's', 'ctx-callbooster-conf')
 
                         userinfo['conf'] = confnum
-                        self.amis[astid].setvar(userinfo['agentchannel'], 'CB_CONFNUM', confnum)
-                        self.amis[astid].transfer(userinfo['agentchannel'], 's', 'ctx-callbooster-conf')
-                        connid_socket.send('%s|%s,1,,Conf/' % (refcomm_out, refcomm_in))
+                        if 'agentchannel' in userinfo:
+                                self.amis[astid].setvar(userinfo['agentchannel'], 'CB_CONFNUM', confnum)
+                                self.amis[astid].transfer(userinfo['agentchannel'], 's', 'ctx-callbooster-conf')
+                                connid_socket.send('%s|%s,1,,Conf/' % (refcomm_out, refcomm_in))
+                        else:
+                                log_debug(SYSLOG_WARNING, 'WARNING : agentchannel field not in the current userinfo : %s' % str(userinfo))
 
 
                 elif cname == 'Aboute':
@@ -1956,15 +1966,18 @@ class CallBoosterCommand(BaseCommand):
                 elif cname == 'Reprise':
                         reference = parsedcommand.args[1]
                         if reference in userinfo['login']['calls']:
-                                anycall = userinfo['login']['calls'][reference]
-                                if anycall.parking:
-                                        callbackexten = anycall.parkexten
+                                thiscall = userinfo['login']['calls'][reference]
+                                if thiscall.parking:
+                                        callbackexten = thiscall.parkexten
                                         if callbackexten is not None:
                                                 ntowait = 0
                                                 for callnum, anycall in userinfo['login']['calls'].iteritems():
-                                                        ntowait += self.__park__(astid, anycall)
+                                                        if anycall != thiscall:
+                                                                print 'Reprise', anycall
+                                                                ntowait += self.__park__(astid, anycall)
                                                 if ntowait > 0:
-                                                        anycall.toretrieve = callbackexten
+                                                        log_debug(SYSLOG_INFO, 'Reprise : we have to park %d calls before' % ntowait)
+                                                        thiscall.toretrieve = callbackexten
                                                 else:
                                                         self.amis[astid].aoriginate('Agent', agentnum, opername,
                                                                                     callbackexten, 'cid b', 'default')
@@ -2640,6 +2653,8 @@ class CallBoosterCommand(BaseCommand):
                 if incall.uinfo is not None:
                         if 'login' in incall.uinfo:
                                 print '__update_stat_acd2__ : uinfo calls', incall.uinfo['login']['calls']
+                                if incall.commid in incall.uinfo['login']['calls']:
+                                        del incall.uinfo['login']['calls'][incall.commid]
                         opername = incall.uinfo['user']
                 else:
                         opername = ''

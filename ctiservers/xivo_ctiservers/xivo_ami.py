@@ -287,6 +287,18 @@ class AMIClass:
                 except Exception, exc:
                         return False
 
+        # \brief Requests the Extension Statuses
+        def extensionstate(self, extension, context):
+                try:
+                        ret = self.sendcommand('ExtensionState', [('Exten', extension),
+                                                                  ('Context', context)])
+                        reply = self.readresponse('')
+                        return ret
+                except self.AMIError, exc:
+                        return False
+                except Exception, exc:
+                        return False
+
         # \brief Logs in an Agent
         def agentcallbacklogin(self, agentnum, extension):
                 try:

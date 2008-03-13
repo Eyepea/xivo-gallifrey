@@ -170,17 +170,16 @@ class XivoCTICommand(BaseCommand):
         def required_login_params(self):
                 return ['loginkind', 'astid', 'proto', 'userid', # identification
                         'state', 'passwd', 'ident', 'version'] # authentication & information
-
+        # 'loginkind', 'astid', 'proto', 'userid', 'state', 'passwd', 'ident', 'version'
+        # 'loginkind', 'astid', 'proto', 'userid', 'state', 'passwd', 'ident', 'version'
 
         def manage_login(self, loginparams):
                 missings = []
-                print loginparams
                 for argum in self.required_login_params():
                         if argum not in loginparams:
                                 missings.append(argum)
                 if len(missings) > 0:
                         return 'missing:%s' % ','.join(missings)
-
 
                 # trivial checks (version, client kind) dealing with the software used
                 version = loginparams.get('version')
@@ -222,8 +221,9 @@ class XivoCTICommand(BaseCommand):
                 if loginkind == 'agent':
                         agentnum = loginparams.get('agentid')
                         phonenum = loginparams.get('agentphone')
-                        self.amis[astid].agentcallbacklogin(agentnum, phonenum)
+                        # self.amis[astid].agentcallbacklogin(agentnum, phonenum)
                         userinfo['agentnum'] = agentnum
+                        userinfo['phonenum'] = phonenum
                 return userinfo
 
 
@@ -231,7 +231,7 @@ class XivoCTICommand(BaseCommand):
                 if 'agentnum' in userinfo:
                         agentnum = userinfo['agentnum']
                         astid = userinfo['astid']
-                        self.amis[astid].agentlogoff(agentnum)
+                        # self.amis[astid].agentlogoff(agentnum)
                         del userinfo['agentnum']
                 self.__disconnect_user__(userinfo)
                 return
@@ -373,6 +373,17 @@ class XivoCTICommand(BaseCommand):
                 return lulist
 
 
+        def askstatus(self, astid, amisfd, npl):
+                for a, b in npl.iteritems():
+                        if astid in amisfd:
+                                amisfd[astid].write('Action: ExtensionState\r\n'
+                                                    'Exten: %s\r\n'
+                                                    'Context: %s\r\n'
+                                                    '\r\n'
+                                                    %(b[3], b[4]))
+                return
+
+
         def __send_msg_to_cti_client__(self, userinfo, strupdate):
                 if 'login' in userinfo and 'connection' in userinfo.get('login'):
                         mysock = userinfo.get('login')['connection']
@@ -402,11 +413,14 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def ami_link(self, astid, event):
-                src     = event.get("Channel1")
-                dst     = event.get("Channel2")
-                clid1   = event.get("CallerID1")
-                clid2   = event.get("CallerID2")
-                self.plist[astid].handle_ami_event_link(src, dst, clid1, clid2)
+                chan1 = event.get("Channel1")
+                chan2 = event.get("Channel2")
+                clid1 = event.get("CallerID1")
+                clid2 = event.get("CallerID2")
+                if chan2.startswith('Agent/'):
+                        print 'Fiche / Linked', event
+                self.plist[astid].handle_ami_event_link(chan1, chan2, clid1, clid2)
+
                 return
 
         def ami_unlink(self, astid, event):
@@ -422,6 +436,56 @@ class XivoCTICommand(BaseCommand):
                 cause = event.get("Cause-txt")
                 self.plist[astid].handle_ami_event_hangup(chan, cause)
                 return
+
+        def ami_response_extensionstatus(self, astid, event):
+                # 90 seconds are needed to retrieve ~ 9000 phone statuses from an asterisk (on daemon startup)
+                status  = event.get('Status')
+                hint    = event.get('Hint')
+                context = event.get('Context')
+                exten   = event.get('Exten')
+                plist_thisast = self.plist[astid]
+                if hint in plist_thisast.normal:
+                        normv = plist_thisast.normal[hint]
+                        normv.set_lasttime(time.time())
+                        sippresence = 'Timeout'
+                        if status == '-1':
+                                sippresence = 'Fail'
+                        elif status == '0':
+                                sippresence = 'Ready'
+                        elif status == '1':
+                                sippresence = 'On the phone'
+                        elif status == '4':
+                                sippresence = 'Unavailable'
+                        elif status == '8':
+                                sippresence = 'Ringing'
+                        normv.set_hintstatus(sippresence)
+                        plist_thisast.update_gui_clients(hint, "SIP-NTFY")
+                return
+
+
+        def ami_extensionstatus(self, astid, event):
+                exten   = event.get('Exten')
+                status  = event.get('Status')
+                sipphone = 'SIP/%s' % exten
+                plist_thisast = self.plist[astid]
+                if sipphone in plist_thisast.normal:
+                        normv = plist_thisast.normal[sipphone]
+                        normv.set_lasttime(time.time())
+                        sippresence = 'Timeout'
+                        if status == '-1':
+                                sippresence = 'Fail'
+                        elif status == '0':
+                                sippresence = 'Ready'
+                        elif status == '1':
+                                sippresence = 'On the phone'
+                        elif status == '4':
+                                sippresence = 'Unavailable'
+                        elif status == '8':
+                                sippresence = 'Ringing'
+                        normv.set_hintstatus(sippresence)
+                        plist_thisast.update_gui_clients(sipphone, "SIP-NTFY")
+                return
+
 
         def ami_aoriginatesuccess(self, astid, event):
                 return
@@ -468,14 +532,76 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def ami_agentlogin(self, astid, event):
+                print 'AMI Agent', event
                 return
         def ami_agentlogoff(self, astid, event):
+                print 'AMI Agent', event
+                return
+
+        def ami_agentcallbacklogin(self, astid, event):
+                agent = event.get('Agent')
+                loginchan = event.get('Loginchan')
+                self.__send_msg_to_cti_clients__('agentupdate=login,%s,%s' % (agent, loginchan))
                 return
         def ami_agentcallbacklogoff(self, astid, event):
+                agent = event.get('Agent')
+                loginchan = event.get('Loginchan')
+                self.__send_msg_to_cti_clients__('agentupdate=logout,%s,%s' % (agent, loginchan))
                 return
-        def ami_userevent(self, astid, event):
+
+        def ami_agentcalled(self, astid, event):
+                print 'AMI Agent', event
+                return
+        def ami_agentcomplete(self, astid, event):
+                print 'AMI Agent', event
+                return
+        def ami_agentdump(self, astid, event):
+                print 'AMI Agent', event
+                return
+        def ami_agentconnect(self, astid, event):
+                print 'AMI Agent', event
                 return
         def ami_agents(self, astid, event):
+                print 'AMI Agent', event
+                return
+
+        def ami_queuemember(self, astid, event):
+                print 'AMI Queue', event
+                return
+        def ami_queuememberadded(self, astid, event):
+                print 'AMI Queue', event
+                return
+        def ami_queuememberremoved(self, astid, event):
+                print 'AMI Queue', event
+                return
+        def ami_queuememberstatus(self, astid, event):
+                status = event.get('Status')
+                location = event.get('Location')
+                print 'AMI Queue', '---', event.get('Event'), location, status, event.get('Paused')
+                if status == '3':
+                        print 'Fiche / Calling', location
+                # status = 3 => ringing
+                # status = 1 => do not ring anymore => the one who has not gone to '1' among the '3's is the one who answered ...
+                # 5 is received when unavailable members of a queue are attempted to be joined ... use agentcallbacklogoff to detect exit instead
+                # + Link
+                return
+
+        def ami_queuememberpaused(self, astid, event):
+                paused = event.get('Paused')
+                queue = event.get('Queue')
+                location = event.get('Location')
+                if location.startswith('Agent/'):
+                        if paused == '0':
+                                self.__send_msg_to_cti_clients__('agentupdate=joinqueue,%s,%s' % (location[6:], queue))
+                        else:
+                                self.__send_msg_to_cti_clients__('agentupdate=leavequeue,%s,%s' % (location[6:], queue))
+                return
+
+        def ami_queueparams(self, astid, event):
+                print 'AMI Queue', event
+                return
+
+        def ami_userevent(self, astid, event):
                 return
         def ami_meetmejoin(self, astid, event):
                 return
@@ -484,13 +610,9 @@ class XivoCTICommand(BaseCommand):
         def ami_status(self, astid, event):
                 return
 
-        def ami_queuememberstatus(self, astid, event):
-                qname    = event.get('Queue')
-                location = event.get('Location')
-                status   = int(event.get('Status'))
-                return
 
         def ami_join(self, astid, event):
+                print 'AMI Queue', event
                 chan  = event.get('Channel')
                 clid  = event.get('CallerID')
                 qname = event.get('Queue')
@@ -499,6 +621,7 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def ami_leave(self, astid, event):
+                print 'AMI Queue', event
                 chan  = event.get('Channel')
                 qname = event.get('Queue')
                 count = int(event.get('Count'))
@@ -639,31 +762,23 @@ class XivoCTICommand(BaseCommand):
 
 
         def __agent__(self, userinfo, commandargs):
-##                subcommand = commandargs[0]
-##                if subcommand == 'queueenter':
-####                self.amis[astid].queueadd(incall.queuename, GHOST_AGENT)
-####                self.amis[astid].queuepause(incall.queuename, GHOST_AGENT, 'false')
-##                        queuename = commandargs[1]
-##                        print queuename
-##                elif subcommand == 'queueleave':
-####                self.amis[astid].queueremove(incall.queuename, GHOST_AGENT)
-####                self.amis[astid].queuepause(incall.queuename, GHOST_AGENT, 'false')
-##                        queuename = commandargs[1]
-##                        print queuename
-##                elif subcommand == 'login':
-####                                        self.amis[astid].aoriginate_var('sip', phonenum, 'Log %s' % phonenum,
-####                                                agentnum, username, 'ctx-callbooster-agentlogin',
-####                                                {'CB_MES_LOGAGENT' : username,
-####                                                 'CB_AGENT_NUMBER' : agentnum}, 100)
+                subcommand = commandargs[0]
+                astid = userinfo['astid']
+                agentnum = userinfo['agentnum']
+                queuename = 'qcb_00000'
 
-##                        print subcommand
-##                elif subcommand == 'logoff':
-##                        # os.popen('asterisk -rx "agent logoff %s"' % agentid)
-##                        print subcommand
-##                elif subcommand == 'list':
-##                        # show the list of available queues ?
-##                        pass
-##                print userinfo
+                if subcommand == 'leave':
+                        self.amis[astid].queuepause(queuename, 'Agent/%s' % agentnum, 'true')
+                        self.amis[astid].queueremove(queuename, 'Agent/%s' % agentnum)
+                elif subcommand == 'join':
+                        self.amis[astid].queueadd(queuename, 'Agent/%s' % agentnum)
+                        self.amis[astid].queuepause(queuename, 'Agent/%s' % agentnum, 'false')
+                elif subcommand == 'login':
+                        self.amis[astid].agentcallbacklogin(agentnum, userinfo['phonenum'])
+                elif subcommand == 'logout':
+                        self.amis[astid].agentlogoff(agentnum)
+                elif subcommand == 'lists':
+                        pass
                 return
 
 

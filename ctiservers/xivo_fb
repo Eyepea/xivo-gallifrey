@@ -315,8 +315,9 @@ def handle_ami_event(astid, idata):
                                 if response == 'Follows' and this_event.get('Privilege') == 'Command':
                                         log_debug(SYSLOG_INFO, 'AMI %s Response=Follows : %s' % (astid, str(this_event)))
                                 elif response == 'Success':
-                                        # log_debug(SYSLOG_INFO, 'AMI %s Response=Success : %s' % (astid, str(this_event)))
-                                        pass
+                                        msg = this_event.get('Message')
+                                        if msg == 'Extension Status':
+                                                commandclass.ami_response_extensionstatus(astid, this_event)
                                 else:
                                         log_debug(SYSLOG_WARNING, 'AMI %s Response=%s (untracked) : %s' % (astid, response, str(this_event)))
                         elif len(this_event) > 0:
@@ -726,8 +727,9 @@ while True: # loops over the reloads
                         update_userlist[astid] = False
                         lastrequest_time[astid] = time.time()
                         update_amisocks(astid)
-                        plist.update(astid, configs[astid])
+                        npl = plist.update(astid, configs[astid])
                         ulist.update(astid)
+                        commandclass.askstatus(astid, AMI_array_events_fd, npl)
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, '--- exception --- %s : failed while setting lists and sockets : %s'
                                   %(astid, str(exc)))

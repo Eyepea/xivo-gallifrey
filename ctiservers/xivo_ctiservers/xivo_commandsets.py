@@ -102,6 +102,9 @@ class BaseCommand:
         def cliaction(self, connid, command):
                 return
 
+        def askstatus(self, astid, amisfd, npl):
+                return
+
 ##        def update_srv2clt(self, phoneinfo):
 ##                return None
 ##        def message_srv2clt(self, sender, message):

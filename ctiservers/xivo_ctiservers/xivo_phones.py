@@ -83,10 +83,11 @@ class Phones:
                 self.list[astid] = PhoneList(astid, self.commandclass)
                 self.configs[astid] = cfg
                 try:
-                        self.__update_phonelist__(astid)
+                        nsl = self.__update_phonelist__(astid)
                 except Exception, exc:
                         print '--- exception update ---', exc
-                return
+                        nsl = []
+                return nsl
 
 
         def roughlist(self, astid):
@@ -100,11 +101,12 @@ class Phones:
 # \return none
 # \sa get_phonelist_fromurl
         def __update_phonelist__(self, astid):
+         newsipnums = {}
          try:
                 dt1 = time.time()
                 self.rough_phonelist[astid] = self.configs[astid].get_phonelist_fromurl()
                 if self.rough_phonelist[astid] is None:
-                        return
+                        return newsipnums
                 dt2 = time.time()
                 for x in self.configs[astid].extrachannels.split(','):
                         if x != '': self.rough_phonelist[astid][x] = [x, '', '', x.split('/')[1], '', False]
@@ -130,6 +132,7 @@ class Phones:
          dt4 = time.time()
          for snl in sipnumlistnew:
                 if snl not in sipnumlistold:
+                        newsipnums[snl] = self.rough_phonelist[astid][snl]
 ##                        if astid in AMI_array_events_fd:
 ##                                AMI_array_events_fd[astid].write('Action: ExtensionState\r\n'
 ##                                                                 'Exten: %s\r\n'
@@ -183,6 +186,7 @@ class Phones:
                                                   len(self.list[astid].normal)])
          dt6 = time.time()
          # print 'update_phonelist', dt2-dt1, dt3-dt2, dt4-dt3, dt5-dt4, dt6-dt5
+         return newsipnums
 
 
 
