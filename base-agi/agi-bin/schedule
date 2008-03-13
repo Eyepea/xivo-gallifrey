@@ -38,13 +38,12 @@ db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
 
 def forgetimefield(start, end):
 	if start == '*':
-		timestr = '*'
+		return '*'
 	else:
 		if end in (None, ''):
-			timestr = '%s' % start
+			return '%s' % start
 		else:
-			timestr = '%s-%s' % (start, end)
-	return timestr
+			return '%s-%s' % (start, end)
 
 def forgetime(res):
 	return ','.join((
