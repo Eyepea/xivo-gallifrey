@@ -40,7 +40,7 @@ def forgetimefield(start, end, includesep = False):
 	if start == '*':
 		timestr = '*'
 	else:
-		if end == '':
+		if end in (None, ''):
 			timestr = '%s' % start
 		else:
 			timestr = '%s-%s' % (start, end)
