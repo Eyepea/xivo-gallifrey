@@ -624,14 +624,21 @@ class CallBoosterCommand(BaseCommand):
                                 ic1 = self.incoming_calls.get(event.get('Channel1'))
                                 ic2 = self.incoming_calls.get(event.get('Channel2'))
                                 if ic1 is not None:
-                                        print 'LINK after AppelAboute', ic1.sdanum, ic1.commid, ic1.appelaboute, ic1.aboute
+                                        print 'LINK after Aboute or AppelAboute', ic1.sdanum, ic1.commid, ic1.appelaboute, ic1.aboute
                                         if ic1.appelaboute is not None:
                                                 self.__send_msg__(ic1.uinfo, '%s|%s,1,%s,AppelAboute/'
                                                                   % (ic1.appelaboute, ic1.commid, ic1.appelaboute))
+                                        elif ic1.aboute is not None:
+                                                """When the called party was waiting"""
+                                                self.__send_msg__(ic1.uinfo, '%s|%s,1,,Aboute/'
+                                                                  % (ic1.aboute, ic1.commid))
+                                        else:
+                                                log_debug(SYSLOG_WARNING, 'No match for this Link')
                                         ic1.set_timestamp_stat('link')
                                 elif ic2 is not None:
                                         print 'LINK after Aboute', ic2.sdanum, ic2.commid, ic2.appelaboute, ic2.aboute
                                         if ic2.aboute is not None:
+                                                """When the calling party was waiting"""
                                                 self.__send_msg__(ic2.uinfo, '%s|%s,1,,Aboute/'
                                                                   % (ic2.aboute, ic2.commid))
                                         ic2.set_timestamp_stat('link')
@@ -1272,12 +1279,30 @@ class CallBoosterCommand(BaseCommand):
                 usernum = event.get('Usernum')
                 if meetme in self.confrooms and channel in self.confrooms[meetme]:
                         self.confrooms[meetme].remove(channel)
-                print 'CONF LEAVE', meetme, channel, usernum, len(self.confrooms[meetme])
-                if usernum == '1':
-                        chantomatch = self.confrooms[meetme][0]
+                confroomsize = len(self.confrooms[meetme])
+                print 'CONF LEAVE', meetme, channel, usernum, confroomsize
+                if confroomsize == 2:
+                        chantomatch1 = self.confrooms[meetme][0]
+                        chantomatch2 = self.confrooms[meetme][1]
                         for opername, userinfo in self.ulist.byast[astid].list.iteritems():
-                                if 'agentchannel-conf' in userinfo and userinfo['agentchannel-conf'] == chantomatch:
-                                        self.amis[astid].transfer(chantomatch, 's', 'ctx-callbooster-agentlogin')
+                                if 'agentchannel-conf' in userinfo:
+                                        ctm1 = ctm2 = None
+                                        if userinfo['agentchannel-conf'] == chantomatch1:
+                                                ctm1 = chantomatch1
+                                                ctm2 = chantomatch2
+                                        elif userinfo['agentchannel-conf'] == chantomatch2:
+                                                ctm1 = chantomatch2
+                                                ctm2 = chantomatch1
+                                        if ctm1 is not None and ctm2 is not None:
+                                                self.amis[astid].transfer(ctm1, 's', 'ctx-callbooster-agentlogin')
+                                                if channel in self.outgoing_calls:
+                                                        self.__send_msg__(userinfo, '%s,,,Annule/' % self.outgoing_calls[channel].commid)
+                                                        if ctm2 in self.incoming_calls:
+                                                                self.__park__(astid, self.incoming_calls[ctm2])
+                                                elif channel in self.incoming_calls:
+                                                        self.__send_msg__(userinfo, '%s,,,Annule/' % self.incoming_calls[channel].commid)
+                                                        if ctm2 in self.outgoing_calls:
+                                                                self.__park__(astid, self.outgoing_calls[ctm2])
                 return
 
         # END of AMI events
@@ -1845,27 +1870,27 @@ class CallBoosterCommand(BaseCommand):
                 elif cname == 'Raccroche':
                         reference = parsedcommand.args[1]
                         try:
-                            if reference in userinfo['login']['calls']:
-                                # END OF INCOMING OR OUTGOING CALL
-                                anycall = userinfo['login']['calls'][reference]
-                                print 'Raccroche', anycall, anycall.appelaboute, anycall.parking, anycall.parkexten, anycall.peerchannel
-                                if anycall.peerchannel is None:
-                                        self.amis[astid].hangup(agentid, '')
+                                if reference in userinfo['login']['calls']:
+                                        # END OF INCOMING OR OUTGOING CALL
+                                        anycall = userinfo['login']['calls'].pop(reference)
+                                        print 'Raccroche', anycall, anycall.appelaboute, anycall.parking, anycall.parkexten, anycall.peerchannel
+                                        if anycall.peerchannel is None:
+                                                self.amis[astid].hangup(agentid, '')
+                                        else:
+                                                self.amis[astid].hangup(anycall.peerchannel, '')
+                                        try:
+                                                if anycall.dir == 'i':
+                                                        self.__update_stat_acd2__(anycall)
+                                                self.__update_taxes__(anycall, 'Termine')
+                                        except Exception, exc:
+                                                print '--- exception --- (Raccroche) :', exc
+
+                                        retval = 1
+                                        reply = '%s,%d,,Raccroche/' % (reference, retval)
+                                        connid_socket.send(reply)
                                 else:
-                                        self.amis[astid].hangup(anycall.peerchannel, '')
-                                try:
-                                        if anycall.dir == 'i':
-                                                self.__update_stat_acd2__(anycall)
-                                        self.__update_taxes__(anycall, 'Termine')
-                                except Exception, exc:
-                                        print '--- exception --- (Raccroche) :', exc
-
-                                # XXX remove calls
-                                userinfo['login']['calls'].pop(reference)
-
-                                retval = 1
-                                reply = '%s,%d,,Raccroche/' % (reference, retval)
-                                connid_socket.send(reply)
+                                        # log_debug(SYSLOG_WARNING, '')
+                                        pass
                         except Exception, exc:
                                 print '--- exception --- in Raccroche treatment ...', exc
 
@@ -1901,10 +1926,12 @@ class CallBoosterCommand(BaseCommand):
                                 anycall = userinfo['login']['calls'][refcomm_in]
                                 self.amis[astid].setvar(anycall.peerchannel, 'CB_CONFNUM', confnum)
                                 self.amis[astid].transfer(anycall.peerchannel, 's', 'ctx-callbooster-conf')
+                                anycall.parking = False # in order to enable its repark
                         if refcomm_out in userinfo['login']['calls']:
                                 anycall = userinfo['login']['calls'][refcomm_out]
                                 self.amis[astid].setvar(anycall.peerchannel, 'CB_CONFNUM', confnum)
                                 self.amis[astid].transfer(anycall.peerchannel, 's', 'ctx-callbooster-conf')
+                                anycall.parking = False # in order to enable its repark
 
                         userinfo['conf'] = confnum
                         if 'agentchannel' in userinfo:
@@ -1920,14 +1947,24 @@ class CallBoosterCommand(BaseCommand):
                         [refcomm_out, refcomm_in] = reference.split('|')
                         print 'Aboute', opername, refcomm_out, refcomm_in
 
+                        in_callbackexten = None
+                        out_callbackexten = None
                         if refcomm_in in userinfo['login']['calls']:
                                 incall = userinfo['login']['calls'][refcomm_in]
-                                callbackexten = incall.parkexten
+                                in_callbackexten = incall.parkexten
+                                in_chan = incall.peerchannel
                         if refcomm_out in userinfo['login']['calls']:
-                                chan = userinfo['login']['calls'][refcomm_out].peerchannel
+                                outcall = userinfo['login']['calls'][refcomm_out]
+                                out_callbackexten = outcall.parkexten
+                                out_chan = outcall.peerchannel
                                 incall.aboute = refcomm_out
-                        if callbackexten is not None:
-                                self.amis[astid].transfer(chan, callbackexten, 'default')
+
+                        if in_callbackexten is not None:
+                                self.amis[astid].transfer(out_chan, in_callbackexten, 'default')
+                        elif out_callbackexten is not None:
+                                self.amis[astid].transfer(in_chan, out_callbackexten, 'default')
+                        else:
+                                log_debug(SYSLOG_WARNING, 'WARNING : could not Aboute %s and %s' % (refcomm_in, refcomm_out))
 
 
                 elif cname == 'AppelAboute': # transfer
