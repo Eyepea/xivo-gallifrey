@@ -433,6 +433,8 @@ def handle_ami_function(astid, evfunction, this_event):
                         commandclass.ami_queuemember(astid, this_event)
                 elif evfunction == 'QueueMemberStatus':
                         commandclass.ami_queuememberstatus(astid, this_event)
+                elif evfunction == 'QueueStatusComplete':
+                        commandclass.ami_queuestatuscomplete(astid, this_event)
                 elif evfunction == 'Status':
                         commandclass.ami_status(astid, this_event)
                 elif evfunction == 'StatusComplete':
@@ -469,6 +471,9 @@ def update_amisocks(astid):
                                 ret = als0.sendagents()
                                 if not ret:
                                         log_debug(SYSLOG_INFO, '%s : could not send agents command' % astid)
+                                ret = als0.sendqueuestatus()
+                                if not ret:
+                                        log_debug(SYSLOG_INFO, '%s : could not send queuestatus command' % astid)
                         else:
                                 log_debug(SYSLOG_INFO, '%s : AMI : could NOT connect' % astid)
         except Exception, exc:

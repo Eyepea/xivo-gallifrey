@@ -199,6 +199,9 @@ class BaseCommand:
                 return
         def ami_queueparams(self, astid, event):
                 return
+        def ami_queuestatuscomplete(self, astid, event):
+                print 'AMI %s QueueStatusComplete' % astid
+                return
 
         def ami_join(self, astid, event):
                 return

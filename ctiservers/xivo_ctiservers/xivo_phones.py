@@ -104,9 +104,9 @@ class Phones:
          newsipnums = {}
          try:
                 dt1 = time.time()
-                self.rough_phonelist[astid] = self.configs[astid].get_phonelist_fromurl()
-                if self.rough_phonelist[astid] is None:
-                        return newsipnums
+                newphlist = self.configs[astid].get_phonelist_fromurl()
+                if newphlist is not None:
+                        self.rough_phonelist[astid] = newphlist
                 dt2 = time.time()
                 for x in self.configs[astid].extrachannels.split(','):
                         if x != '': self.rough_phonelist[astid][x] = [x, '', '', x.split('/')[1], '', False]

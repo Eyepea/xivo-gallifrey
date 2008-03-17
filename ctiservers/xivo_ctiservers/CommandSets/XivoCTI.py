@@ -118,8 +118,8 @@ class XivoCTICommand(BaseCommand):
 
 
         fullstat_heavies = {}
-
-
+        queueslist = {}
+        agentslist = {}
 
 
         def __init__(self, amis, ctiports, queued_threads_pipe):
@@ -131,12 +131,12 @@ class XivoCTICommand(BaseCommand):
                         'history', 'directory-search',
                         'featuresget', 'featuresput',
                         'phones-list', 'phones-add', 'phones-del',
+                        'agents-status', 'agent', 'queues-list',
                         'faxsend',
                         'database',
                         'message',
                         'availstate',
-                        'originate', 'transfer', 'atxfer', 'hangup',
-                        'agent']
+                        'originate', 'transfer', 'atxfer', 'hangup']
 
         def parsecommand(self, linein):
                 params = linein.split()
@@ -170,8 +170,6 @@ class XivoCTICommand(BaseCommand):
         def required_login_params(self):
                 return ['loginkind', 'astid', 'proto', 'userid', # identification
                         'state', 'passwd', 'ident', 'version'] # authentication & information
-        # 'loginkind', 'astid', 'proto', 'userid', 'state', 'passwd', 'ident', 'version'
-        # 'loginkind', 'astid', 'proto', 'userid', 'state', 'passwd', 'ident', 'version'
 
         def manage_login(self, loginparams):
                 missings = []
@@ -211,19 +209,19 @@ class XivoCTICommand(BaseCommand):
                 if iserr is not None:
                         return iserr
 
-
                 # settings (in agent mode for instance)
                 ## userinfo['agent']['phonenum'] = phonenum
                 state = loginparams.get('state')
                 self.__connect_user__(userinfo, whoami, whatsmyos, version, state, False)
 
+                phonenum = loginparams.get('phonenumber')
+                userinfo['phonenumber'] = phonenum
+
                 loginkind = loginparams.get('loginkind')
                 if loginkind == 'agent':
                         agentnum = loginparams.get('agentid')
-                        phonenum = loginparams.get('agentphone')
-                        # self.amis[astid].agentcallbacklogin(agentnum, phonenum)
                         userinfo['agentnum'] = agentnum
-                        userinfo['phonenum'] = phonenum
+                        # self.amis[astid].agentcallbacklogin(agentnum, phonenum)
                 return userinfo
 
 
@@ -418,17 +416,20 @@ class XivoCTICommand(BaseCommand):
                 clid1 = event.get("CallerID1")
                 clid2 = event.get("CallerID2")
                 if chan2.startswith('Agent/'):
-                        print 'Fiche / Linked', event
+                        print 'LINK', event
+                        self.__send_msg_to_cti_clients__('agentupdate=queuememberstatus;%s;11;0;%s;%s' % (chan2[6:], clid1, chan1))
                 self.plist[astid].handle_ami_event_link(chan1, chan2, clid1, clid2)
 
                 return
 
         def ami_unlink(self, astid, event):
-                src   = event.get("Channel1")
-                dst   = event.get("Channel2")
+                chan1 = event.get("Channel1")
+                chan2 = event.get("Channel2")
                 clid1 = event.get("CallerID1")
                 clid2 = event.get("CallerID2")
-                self.plist[astid].handle_ami_event_unlink(src, dst, clid1, clid2)
+                if chan2.startswith('Agent/'):
+                        self.__send_msg_to_cti_clients__('agentupdate=queuememberstatus;%s;12;0' % (chan2[6:]))
+                self.plist[astid].handle_ami_event_unlink(chan1, chan2, clid1, clid2)
                 return
 
         def ami_hangup(self, astid, event):
@@ -532,54 +533,79 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def ami_agentlogin(self, astid, event):
-                print 'AMI Agent', event
+                print 'AMI Agent', astid, event
                 return
         def ami_agentlogoff(self, astid, event):
-                print 'AMI Agent', event
+                print 'AMI Agent', astid, event
                 return
 
         def ami_agentcallbacklogin(self, astid, event):
                 agent = event.get('Agent')
                 loginchan = event.get('Loginchan')
-                self.__send_msg_to_cti_clients__('agentupdate=login,%s,%s' % (agent, loginchan))
+                if astid in self.agentslist and agent in self.agentslist[astid]:
+                        self.agentslist[astid][agent] = ['AGENT_IDLE', event.get('Loginchan')]
+                self.__send_msg_to_cti_clients__('agentupdate=login;%s;%s' % (agent, loginchan))
                 return
         def ami_agentcallbacklogoff(self, astid, event):
                 agent = event.get('Agent')
                 loginchan = event.get('Loginchan')
-                self.__send_msg_to_cti_clients__('agentupdate=logout,%s,%s' % (agent, loginchan))
+                if astid in self.agentslist and agent in self.agentslist[astid]:
+                        self.agentslist[astid][agent] = ['AGENT_LOGGEDOFF', event.get('Loginchan')]
+                self.__send_msg_to_cti_clients__('agentupdate=logout;%s;' % agent)
                 return
 
         def ami_agentcalled(self, astid, event):
-                print 'AMI Agent', event
+                print 'AMI Agent', astid, event
                 return
         def ami_agentcomplete(self, astid, event):
-                print 'AMI Agent', event
+                print 'AMI Agent', astid, event
                 return
         def ami_agentdump(self, astid, event):
-                print 'AMI Agent', event
+                print 'AMI Agent', astid, event
                 return
         def ami_agentconnect(self, astid, event):
-                print 'AMI Agent', event
-                return
-        def ami_agents(self, astid, event):
-                print 'AMI Agent', event
+                print 'AMI Agent', astid, event
                 return
 
-        def ami_queuemember(self, astid, event):
-                print 'AMI Queue', event
+        def ami_agents(self, astid, event):
+                agent = event.get('Agent')
+                if astid not in self.agentslist:
+                        self.agentslist[astid] = {}
+                if agent not in self.agentslist[astid]:
+                        self.agentslist[astid][agent] = [event.get('Status'), event.get('LoggedInChan')]
                 return
+        def ami_agentscomplete(self, astid, event):
+                print self.agentslist[astid]
+                return
+
         def ami_queuememberadded(self, astid, event):
-                print 'AMI Queue', event
+                queue = event.get('Queue')
+                location = event.get('Location')
+                if astid not in self.queueslist:
+                        self.queueslist[astid] = {}
+                if queue not in self.queueslist[astid]:
+                        self.queueslist[astid][queue] = {}
+                if location not in self.queueslist[astid][queue]:
+                        self.queueslist[astid][queue][location] = [event.get('Paused'), event.get('Status'), event.get('Membership')]
                 return
+
         def ami_queuememberremoved(self, astid, event):
-                print 'AMI Queue', event
+                queue = event.get('Queue')
+                location = event.get('Location')
+                if astid in self.queueslist and queue in self.queueslist[astid] and location in self.queueslist[astid][queue]:
+                        del self.queueslist[astid][queue][location]
                 return
+
         def ami_queuememberstatus(self, astid, event):
                 status = event.get('Status')
+                queue = event.get('Queue')
                 location = event.get('Location')
-                print 'AMI Queue', '---', event.get('Event'), location, status, event.get('Paused')
-                if status == '3':
-                        print 'Fiche / Calling', location
+                paused = event.get('Paused')
+
+                if astid in self.queueslist and queue in self.queueslist[astid] and location in self.queueslist[astid][queue]:
+                        self.queueslist[astid][queue][location] = [paused, status, event.get('Membership')]
+                self.__send_msg_to_cti_clients__('agentupdate=queuememberstatus;%s;%s;%s' % (location[6:], status, paused))
+
                 # status = 3 => ringing
                 # status = 1 => do not ring anymore => the one who has not gone to '1' among the '3's is the one who answered ...
                 # 5 is received when unavailable members of a queue are attempted to be joined ... use agentcallbacklogoff to detect exit instead
@@ -591,14 +617,33 @@ class XivoCTICommand(BaseCommand):
                 queue = event.get('Queue')
                 location = event.get('Location')
                 if location.startswith('Agent/'):
+                        if astid in self.queueslist and queue in self.queueslist[astid] and location in self.queueslist[astid][queue]:
+                                self.queueslist[astid][queue][location][0] = event.get('Paused')
                         if paused == '0':
-                                self.__send_msg_to_cti_clients__('agentupdate=joinqueue,%s,%s' % (location[6:], queue))
+                                self.__send_msg_to_cti_clients__('agentupdate=joinqueue;%s;%s' % (location[6:], queue))
                         else:
-                                self.__send_msg_to_cti_clients__('agentupdate=leavequeue,%s,%s' % (location[6:], queue))
+                                self.__send_msg_to_cti_clients__('agentupdate=leavequeue;%s;%s' % (location[6:], queue))
                 return
 
         def ami_queueparams(self, astid, event):
-                print 'AMI Queue', event
+                queue = event.get('Queue')
+                if astid not in self.queueslist:
+                        self.queueslist[astid] = {}
+                if queue not in self.queueslist[astid]:
+                        self.queueslist[astid][queue] = {}
+                return
+        def ami_queuemember(self, astid, event):
+                queue = event.get('Queue')
+                location = event.get('Location')
+                if astid not in self.queueslist:
+                        self.queueslist[astid] = {}
+                if queue not in self.queueslist[astid]:
+                        self.queueslist[astid][queue] = {}
+                if location not in self.queueslist[astid][queue]:
+                        self.queueslist[astid][queue][location] = [event.get('Paused'), event.get('Status'), event.get('Membership')]
+                return
+        def ami_queuestatuscomplete(self, astid, event):
+                print 'QueueStatusComplete', astid, self.queueslist[astid]
                 return
 
         def ami_userevent(self, astid, event):
@@ -617,7 +662,6 @@ class XivoCTICommand(BaseCommand):
                 clid  = event.get('CallerID')
                 qname = event.get('Queue')
                 count = int(event.get('Count'))
-                # {'Count': '1', 'CallerID': '103', 'Queue': 'qcb_00000', 'CallerIDName': 'User3', 'Privilege': 'call,all', 'Position': '1', 'Event': 'Join', 'Channel': 'SIP/103-081e4060'}
                 return
 
         def ami_leave(self, astid, event):
@@ -707,12 +751,43 @@ class XivoCTICommand(BaseCommand):
                                         repstr = self.__originate_or_transfer__("%s/%s" %(astid, username),
                                                                                 [icommand.name, icommand.args[0], icommand.args[1]])
                         elif icommand.name == 'hangup':
+                                print icommand.name, icommand.args
                                 if (capalist & CAPA_DIAL):
                                         repstr = self.__hangup__("%s/%s" %(astid, username),
                                                                  icommand.args[0])
+                        elif icommand.name == 'agents-status':
+                                if (capalist & CAPA_AGENTS):
+                                        astid = icommand.args[0]
+                                        agname = icommand.args[1]
+                                        agid = 'Agent/%s' % agname
+                                        # lookup the logged in/out status of agent agname and sends it back to the requester
+                                        if astid in self.agentslist and agname in self.agentslist[astid]:
+                                                agprop = self.agentslist[astid][agname]
+                                                if agprop[0] == 'AGENT_LOGGEDOFF':
+                                                        self.__send_msg_to_cti_client__(userinfo, 'agentupdate=logout;%s;' % agname)
+                                                else:
+                                                        self.__send_msg_to_cti_client__(userinfo, 'agentupdate=login;%s;%s' % (agname, agprop[1]))
+                                        qref_joined = []
+                                        qref_unjoined = []
+                                        for qref, ql in self.queueslist[astid].iteritems():
+                                                if agid in ql:
+                                                        qref_joined.append(qref)
+                                                else:
+                                                        qref_unjoined.append(qref)
+                                        for qref in qref_unjoined:
+                                                self.__send_msg_to_cti_client__(userinfo, 'agentupdate=leavequeue;%s;%s' % (agname, qref))
+                                        for qref in qref_joined:
+                                                self.__send_msg_to_cti_client__(userinfo, 'agentupdate=joinqueue;%s;%s' % (agname, qref))
+
+                        elif icommand.name == 'queues-list':
+                                if (capalist & CAPA_AGENTS):
+                                        astid = icommand.args[0]
+                                        self.__send_msg_to_cti_client__(userinfo, 'queues-list=%s;%s' %(astid, ','.join(self.queueslist[astid].keys())))
+
                         elif icommand.name == 'agent':
                                 if (capalist & CAPA_AGENTS):
                                         repstr = self.__agent__(userinfo, icommand.args)
+
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, '--- exception --- (manage_cticommand) %s %s %s %s'
                                   %(icommand.name, str(icommand.args), str(myconn), str(exc)))
@@ -762,23 +837,33 @@ class XivoCTICommand(BaseCommand):
 
 
         def __agent__(self, userinfo, commandargs):
-                subcommand = commandargs[0]
-                astid = userinfo['astid']
-                agentnum = userinfo['agentnum']
-                queuename = 'qcb_00000'
+                if 'agentnum' in userinfo:
+                        astid = userinfo['astid']
+                        agentnum = userinfo['agentnum']
 
-                if subcommand == 'leave':
-                        self.amis[astid].queuepause(queuename, 'Agent/%s' % agentnum, 'true')
-                        self.amis[astid].queueremove(queuename, 'Agent/%s' % agentnum)
-                elif subcommand == 'join':
-                        self.amis[astid].queueadd(queuename, 'Agent/%s' % agentnum)
-                        self.amis[astid].queuepause(queuename, 'Agent/%s' % agentnum, 'false')
-                elif subcommand == 'login':
-                        self.amis[astid].agentcallbacklogin(agentnum, userinfo['phonenum'])
-                elif subcommand == 'logout':
-                        self.amis[astid].agentlogoff(agentnum)
-                elif subcommand == 'lists':
-                        pass
+                        subcommand = commandargs[0]
+                        if subcommand == 'leave':
+                                if len(commandargs) > 1:
+                                        queuenames = commandargs[1].split(',')
+                                        for queuename in queuenames:
+                                                self.amis[astid].queuepause(queuename, 'Agent/%s' % agentnum, 'true')
+                                                self.amis[astid].queueremove(queuename, 'Agent/%s' % agentnum)
+                        elif subcommand == 'join':
+                                if len(commandargs) > 1:
+                                        queuenames = commandargs[1].split(',')
+                                        for queuename in queuenames:
+                                                self.amis[astid].queueadd(queuename, 'Agent/%s' % agentnum)
+                                                self.amis[astid].queuepause(queuename, 'Agent/%s' % agentnum, 'false')
+                        elif subcommand == 'login':
+                                self.amis[astid].agentcallbacklogin(agentnum, userinfo['phonenum'])
+                        elif subcommand == 'logout':
+                                self.amis[astid].agentlogoff(agentnum)
+                        elif subcommand == 'lists':
+                                pass
+                        else:
+                                pass
+                else:
+                        log_debug(SYSLOG_WARNING, 'agentnum undefined for this userinfo')
                 return
 
 
@@ -807,10 +892,10 @@ class XivoCTICommand(BaseCommand):
                                         self.fullstat_heavies[reqid].append(':'.join(phoneinfo))
                 elif kind == 'phones-add':
                         for astid in self.configs:
-                                self.fullstat_heavies[reqid].extend(lstadd[astid])
+                                self.fullstat_heavies[reqid].extend(self.plist.lstadd[astid])
                 elif kind == 'phones-del':
                         for astid in self.configs:
-                                self.fullstat_heavies[reqid].extend(lstdel[astid])
+                                self.fullstat_heavies[reqid].extend(self.plist.lstdel[astid])
             else:
                 reqid = icommand.args[0]
 
@@ -1160,3 +1245,20 @@ class XivoCTICommand(BaseCommand):
 
 
 xivo_commandsets.CommandClasses['xivocti'] = XivoCTICommand
+
+
+def channel_splitter(channel):
+        sp = channel.split("-")
+        if len(sp) > 1:
+                sp.pop()
+        return "-".join(sp)
+
+
+def split_from_ui(fullname):
+        phone = ""
+        channel = ""
+        s1 = fullname.split("/")
+        if len(s1) == 5:
+                phone = s1[3] + "/" + channel_splitter(s1[4])
+                channel = s1[3] + "/" + s1[4]
+        return [phone, channel]
