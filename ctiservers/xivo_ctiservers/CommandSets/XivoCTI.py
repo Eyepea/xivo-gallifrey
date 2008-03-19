@@ -32,6 +32,7 @@ import os
 import random
 import string
 import time
+import urllib
 import xivo_commandsets
 import xivo_ldap
 from xivo_commandsets import BaseCommand
@@ -71,6 +72,18 @@ map_capas = {
         'database'         : CAPA_DATABASE
         }
 
+SHEET_EVENT_INCOMING    = 1 << 0
+SHEET_EVENT_OUTGOING    = 1 << 1
+SHEET_EVENT_AGENTLINK   = 1 << 2
+SHEET_EVENT_AGI         = 1 << 3
+SHEET_EVENT_PHONELINK   = 1 << 4
+SHEET_EVENT_AGENTCALLED = 1 << 5
+
+SHEET_ACTION_XCFULL  = 1 << 0
+SHEET_ACTION_XCPOPUP = 1 << 1
+SHEET_ACTION_BOT     = 1 << 2
+SHEET_ACTION_URL     = 1 << 3
+
 XIVOVERSION = '0.3.6'
 REQUIRED_CLIENT_VERSION = 2025
 __revision__ = __version__.split()[1]
@@ -103,11 +116,8 @@ class XivoCTICommand(BaseCommand):
                              'dial',
                              'features',
                              'peers',
-                             'instantmessaging',
                              'switchboard',
-                             'agents',
-                             'fax',
-                             'database'] # XXX replace with config result
+                             'agents'] # XXX replace with config result
         for capa in capabilities_list:
                 if capa in map_capas: capalist_server |= map_capas[capa]
         conngui_sb = 0
@@ -118,7 +128,8 @@ class XivoCTICommand(BaseCommand):
 
 
         fullstat_heavies = {}
-        queueslist = {}
+        queues_list = {}
+        queues_channels_list = {}
         agentslist = {}
 
 
@@ -229,7 +240,7 @@ class XivoCTICommand(BaseCommand):
                 if 'agentnum' in userinfo:
                         agentnum = userinfo['agentnum']
                         astid = userinfo['astid']
-                        # self.amis[astid].agentlogoff(agentnum)
+                        self.amis[astid].agentlogoff(agentnum)
                         del userinfo['agentnum']
                 self.__disconnect_user__(userinfo)
                 return
@@ -337,6 +348,10 @@ class XivoCTICommand(BaseCommand):
                 return
 
 
+        def set_options(self, xivoconf):
+                self.xivoconf = xivoconf
+                return
+
         def set_configs(self, configs):
                 self.configs = configs
                 return
@@ -389,6 +404,17 @@ class XivoCTICommand(BaseCommand):
                 return
 
 
+        def __send_msg_to_cti_client_byagentid__(self, agentnum, strupdate):
+                try:
+                        for astid in self.ulist.byast:
+                                for user, userinfo in self.ulist.byast[astid].listusers().iteritems():
+                                        if 'agentnum' in userinfo and userinfo.get('agentnum') == agentnum:
+                                                self.__send_msg_to_cti_client__(userinfo, strupdate)
+                except Exception, exc:
+                        print '--- exception --- (__send_msg_to_cti_client_byagentid__)', exc
+                return
+
+
         def __send_msg_to_cti_clients__(self, strupdate):
                 try:
                         for astid in self.ulist.byast:
@@ -396,6 +422,81 @@ class XivoCTICommand(BaseCommand):
                                         self.__send_msg_to_cti_client__(userinfo, strupdate)
                 except Exception, exc:
                         print '--- exception --- (__send_msg_to_cti_clients__)', exc
+                return
+
+
+        actions = { SHEET_EVENT_AGI         : SHEET_ACTION_XCFULL,
+                    SHEET_EVENT_INCOMING    : SHEET_ACTION_BOT | SHEET_ACTION_XCPOPUP,
+                    SHEET_EVENT_OUTGOING    : SHEET_ACTION_BOT,
+                    SHEET_EVENT_AGENTLINK   : SHEET_ACTION_URL,
+                    SHEET_EVENT_AGENTCALLED : SHEET_ACTION_XCPOPUP
+                    }
+        # SHEET_ACTION_WHOCALLED
+
+        def __sheet_alert__(self, where, event):
+            if where in self.actions:
+                if where == SHEET_EVENT_OUTGOING:
+                        exten = event.get('Extension')
+                        application = event.get('Application')
+                        if application == 'Dial' and exten.isdigit():
+                                print self.actions
+                                print event
+
+                elif where == SHEET_EVENT_AGENTLINK:
+                        dst = event.get('Channel2')[6:]
+                        src = event.get('CallerID1')
+                        chan = event.get('Channel1')
+                        queuename = event.get('xivo_queuename')
+                        linestosend = ['<?xml version="1.0" encoding="utf-8"?>',
+                                       '<profile sessionid="47"><user>',
+                                       '<info name="File d Attente" type="text"><![CDATA[<h1><b>%s</b></h1>]]></info>' % queuename,
+                                       '<info name="Numero Appelant" type="phone"><![CDATA[%s]]></info>' % src,
+                                       '<info name="channel" type="internal"><![CDATA[%s]]></info>' % chan,
+                                       '<info name="nopopup" type="internal"></info>',
+                                       '<message>help</message>',
+                                       '</user></profile>']
+                        self.__send_msg_to_cti_client_byagentid__(dst, ''.join(linestosend))
+
+                        try:
+                                # params = urllib.urlencode(event)
+                                if 'sheeturl' in self.xivoconf:
+                                        f = urllib.urlopen('%s%s' % (self.xivoconf['sheeturl'], src))
+                        except Exception, exc:
+                                print '--- exception ---', exc, exc.__class__
+
+                elif where == SHEET_EVENT_AGI:
+                        pass
+
+                elif where == SHEET_EVENT_PHONELINK:
+                        pass
+
+                elif where == SHEET_EVENT_AGENTCALLED:
+                        pass
+
+                elif where == SHEET_EVENT_INCOMING:
+                        pass
+##                ts = None
+##                if not (clid == '' or (clid == '<unknown>' and is_normal_channel(chan))):
+##                        if len(clid) > 7 and clid != '<unknown>':
+##                                r1 = self.__build_customers__('default', clid)
+##                                r = r1.split(';')
+##                                if len(r) > 7:
+##                                        ts = 'E;%s;%s;%s;%s' % (clid, r[6], r[7], chan)
+##                                else:
+##                                        ts = 'E;%s;;;%s' % (clid, chan)
+##                        else:
+##                                ts = 'I;%s;%s' % (clid, chan)
+##                else:
+##                        if clid == '<unknown>':
+##                                ts = 'E;Numero Cache;;;%s' % chan
+##                if ts is not None and astid == 'xivo':
+##                        try:
+##                                nsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+##                                nsock.connect(('127.0.0.1', 5151))
+##                                nsock.send('%s\n' % ts)
+##                                nsock.close()
+##                        except Exception, exc:
+##                                print '--- exception --- in nsock :', exc
                 return
 
 
@@ -416,8 +517,16 @@ class XivoCTICommand(BaseCommand):
                 clid1 = event.get("CallerID1")
                 clid2 = event.get("CallerID2")
                 if chan2.startswith('Agent/'):
-                        print 'LINK', event
-                        self.__send_msg_to_cti_clients__('agentupdate=queuememberstatus;%s;11;0;%s;%s' % (chan2[6:], clid1, chan1))
+                        # To identify which queue a call comes from, we match a previous AMI Leave event, not too far away
+                        # in the past (1 second here), that involved the same channel as the one catched here.
+                        # Any less-tricky-method is welcome, though.
+                        if chan1 in self.queues_channels_list[astid]:
+                                t1 = time.time()
+                                [qname, t0] = self.queues_channels_list[astid][chan1]
+                                del self.queues_channels_list[astid][chan1]
+                                if (t1 - t0) < 1:
+                                        event['xivo_queuename'] = qname
+                                        self.__sheet_alert__(SHEET_EVENT_AGENTLINK, event)
                 self.plist[astid].handle_ami_event_link(chan1, chan2, clid1, clid2)
 
                 return
@@ -427,8 +536,6 @@ class XivoCTICommand(BaseCommand):
                 chan2 = event.get("Channel2")
                 clid1 = event.get("CallerID1")
                 clid2 = event.get("CallerID2")
-                if chan2.startswith('Agent/'):
-                        self.__send_msg_to_cti_clients__('agentupdate=queuememberstatus;%s;12;0' % (chan2[6:]))
                 self.plist[astid].handle_ami_event_unlink(chan1, chan2, clid1, clid2)
                 return
 
@@ -501,6 +608,14 @@ class XivoCTICommand(BaseCommand):
         def ami_newcallerid(self, astid, event):
                 return
 
+        def ami_newexten(self, astid, event):
+                self.__sheet_alert__(SHEET_EVENT_OUTGOING, event)
+                return
+
+        def ami_newchannel(self, astid, event):
+                self.__sheet_alert__(SHEET_EVENT_INCOMING, event)
+                return
+
         def ami_parkedcall(self, astid, event):
                 channel = event.get('Channel')
                 cfrom   = event.get('From')
@@ -550,8 +665,8 @@ class XivoCTICommand(BaseCommand):
                 agent = event.get('Agent')
                 loginchan = event.get('Loginchan')
                 if astid in self.agentslist and agent in self.agentslist[astid]:
-                        self.agentslist[astid][agent] = ['AGENT_LOGGEDOFF', event.get('Loginchan')]
-                self.__send_msg_to_cti_clients__('agentupdate=logout;%s;' % agent)
+                        self.agentslist[astid][agent] = ['AGENT_LOGGEDOFF', loginchan]
+                self.__send_msg_to_cti_clients__('agentupdate=logout;%s;%s' % (agent, loginchan))
                 return
 
         def ami_agentcalled(self, astid, event):
@@ -575,25 +690,28 @@ class XivoCTICommand(BaseCommand):
                         self.agentslist[astid][agent] = [event.get('Status'), event.get('LoggedInChan')]
                 return
         def ami_agentscomplete(self, astid, event):
-                print self.agentslist[astid]
+                print 'AMI AgentsComplete', astid
+                if astid in self.agentslist:
+                        for aname, aargs in self.agentslist[astid].iteritems():
+                                print ' (a) ', aname, aargs
                 return
 
         def ami_queuememberadded(self, astid, event):
                 queue = event.get('Queue')
                 location = event.get('Location')
-                if astid not in self.queueslist:
-                        self.queueslist[astid] = {}
-                if queue not in self.queueslist[astid]:
-                        self.queueslist[astid][queue] = {}
-                if location not in self.queueslist[astid][queue]:
-                        self.queueslist[astid][queue][location] = [event.get('Paused'), event.get('Status'), event.get('Membership')]
+                if astid not in self.queues_list:
+                        self.queues_list[astid] = {}
+                if queue not in self.queues_list[astid]:
+                        self.queues_list[astid][queue] = {'agents' : {}, 'channels' : []}
+                if location not in self.queues_list[astid][queue]['agents']:
+                        self.queues_list[astid][queue]['agents'][location] = [event.get('Paused'), event.get('Status'), event.get('Membership')]
                 return
 
         def ami_queuememberremoved(self, astid, event):
                 queue = event.get('Queue')
                 location = event.get('Location')
-                if astid in self.queueslist and queue in self.queueslist[astid] and location in self.queueslist[astid][queue]:
-                        del self.queueslist[astid][queue][location]
+                if astid in self.queues_list and queue in self.queues_list[astid] and location in self.queues_list[astid][queue]['agents']:
+                        del self.queues_list[astid][queue]['agents'][location]
                 return
 
         def ami_queuememberstatus(self, astid, event):
@@ -602,8 +720,8 @@ class XivoCTICommand(BaseCommand):
                 location = event.get('Location')
                 paused = event.get('Paused')
 
-                if astid in self.queueslist and queue in self.queueslist[astid] and location in self.queueslist[astid][queue]:
-                        self.queueslist[astid][queue][location] = [paused, status, event.get('Membership')]
+                if astid in self.queues_list and queue in self.queues_list[astid] and location in self.queues_list[astid][queue]['agents']:
+                        self.queues_list[astid][queue]['agents'][location] = [paused, status, event.get('Membership')]
                 self.__send_msg_to_cti_clients__('agentupdate=queuememberstatus;%s;%s;%s' % (location[6:], status, paused))
 
                 # status = 3 => ringing
@@ -617,8 +735,8 @@ class XivoCTICommand(BaseCommand):
                 queue = event.get('Queue')
                 location = event.get('Location')
                 if location.startswith('Agent/'):
-                        if astid in self.queueslist and queue in self.queueslist[astid] and location in self.queueslist[astid][queue]:
-                                self.queueslist[astid][queue][location][0] = event.get('Paused')
+                        if astid in self.queues_list and queue in self.queues_list[astid] and location in self.queues_list[astid][queue]['agents']:
+                                self.queues_list[astid][queue]['agents'][location][0] = event.get('Paused')
                         if paused == '0':
                                 self.__send_msg_to_cti_clients__('agentupdate=joinqueue;%s;%s' % (location[6:], queue))
                         else:
@@ -627,23 +745,28 @@ class XivoCTICommand(BaseCommand):
 
         def ami_queueparams(self, astid, event):
                 queue = event.get('Queue')
-                if astid not in self.queueslist:
-                        self.queueslist[astid] = {}
-                if queue not in self.queueslist[astid]:
-                        self.queueslist[astid][queue] = {}
+                if astid not in self.queues_list:
+                        self.queues_list[astid] = {}
+                if queue not in self.queues_list[astid]:
+                        self.queues_list[astid][queue] = {'agents' : {}, 'channels' : []}
                 return
+
         def ami_queuemember(self, astid, event):
                 queue = event.get('Queue')
                 location = event.get('Location')
-                if astid not in self.queueslist:
-                        self.queueslist[astid] = {}
-                if queue not in self.queueslist[astid]:
-                        self.queueslist[astid][queue] = {}
-                if location not in self.queueslist[astid][queue]:
-                        self.queueslist[astid][queue][location] = [event.get('Paused'), event.get('Status'), event.get('Membership')]
+                if astid not in self.queues_list:
+                        self.queues_list[astid] = {}
+                if queue not in self.queues_list[astid]:
+                        self.queues_list[astid][queue] = {'agents' : {}, 'channels' : []}
+                if location not in self.queues_list[astid][queue]['agents']:
+                        self.queues_list[astid][queue]['agents'][location] = [event.get('Paused'), event.get('Status'), event.get('Membership')]
                 return
+
         def ami_queuestatuscomplete(self, astid, event):
-                print 'QueueStatusComplete', astid, self.queueslist[astid]
+                print 'AMI QueueStatusComplete', astid
+                if astid in self.queues_list:
+                        for qname, qarg in self.queues_list[astid].iteritems():
+                                print ' (q) ', qname, qarg
                 return
 
         def ami_userevent(self, astid, event):
@@ -657,18 +780,40 @@ class XivoCTICommand(BaseCommand):
 
 
         def ami_join(self, astid, event):
-                print 'AMI Queue', event
+                # print 'AMI Queue', event
                 chan  = event.get('Channel')
                 clid  = event.get('CallerID')
-                qname = event.get('Queue')
+                queue = event.get('Queue')
                 count = int(event.get('Count'))
+                
+                if astid not in self.queues_list:
+                        self.queues_list[astid] = {}
+                if queue not in self.queues_list[astid]:
+                        self.queues_list[astid][queue] = {'agents' : {}, 'channels' : []}
+                if chan not in self.queues_list[astid][queue]['channels']:
+                        self.queues_list[astid][queue]['channels'].append(chan)
+                self.__send_msg_to_cti_clients__('agentupdate=queuechannels;%s;%s;%s' % (astid, queue, count))
+
+                print 'AMI Queue JOIN ', queue, chan, count
                 return
 
         def ami_leave(self, astid, event):
-                print 'AMI Queue', event
+                # print 'AMI Queue', event
                 chan  = event.get('Channel')
-                qname = event.get('Queue')
+                queue = event.get('Queue')
                 count = int(event.get('Count'))
+
+                if astid in self.queues_list and queue in self.queues_list[astid] and chan in self.queues_list[astid][queue]['channels']:
+                        self.queues_list[astid][queue]['channels'].remove(chan)
+                        print 'AMI Queue LEAVE', len(self.queues_list[astid][queue]['channels']), count
+                self.__send_msg_to_cti_clients__('agentupdate=queuechannels;%s;%s;%s' % (astid, queue, count))
+
+                if astid not in self.queues_channels_list:
+                        self.queues_channels_list[astid] = {}
+                if chan not in self.queues_channels_list[astid]:
+                        self.queues_channels_list[astid][chan] = [queue, time.time()]
+
+                print 'AMI Queue LEAVE', queue, chan, count
                 return
         
         def ami_rename(self, astid, event):
@@ -764,16 +909,17 @@ class XivoCTICommand(BaseCommand):
                                         if astid in self.agentslist and agname in self.agentslist[astid]:
                                                 agprop = self.agentslist[astid][agname]
                                                 if agprop[0] == 'AGENT_LOGGEDOFF':
-                                                        self.__send_msg_to_cti_client__(userinfo, 'agentupdate=logout;%s;' % agname)
+                                                        self.__send_msg_to_cti_client__(userinfo, 'agentupdate=logout;%s;%s' % (agname, agprop[1]))
                                                 else:
                                                         self.__send_msg_to_cti_client__(userinfo, 'agentupdate=login;%s;%s' % (agname, agprop[1]))
                                         qref_joined = []
                                         qref_unjoined = []
-                                        for qref, ql in self.queueslist[astid].iteritems():
-                                                if agid in ql:
-                                                        qref_joined.append(qref)
-                                                else:
-                                                        qref_unjoined.append(qref)
+                                        if astid in self.queues_list:
+                                                for qref, ql in self.queues_list[astid].iteritems():
+                                                        if agid in ql['agents']:
+                                                                qref_joined.append(qref)
+                                                        else:
+                                                                qref_unjoined.append(qref)
                                         for qref in qref_unjoined:
                                                 self.__send_msg_to_cti_client__(userinfo, 'agentupdate=leavequeue;%s;%s' % (agname, qref))
                                         for qref in qref_joined:
@@ -782,7 +928,10 @@ class XivoCTICommand(BaseCommand):
                         elif icommand.name == 'queues-list':
                                 if (capalist & CAPA_AGENTS):
                                         astid = icommand.args[0]
-                                        self.__send_msg_to_cti_client__(userinfo, 'queues-list=%s;%s' %(astid, ','.join(self.queueslist[astid].keys())))
+                                        if astid in self.queues_list:
+                                                self.__send_msg_to_cti_client__(userinfo, 'queues-list=%s;%s' %(astid, ','.join(self.queues_list[astid].keys())))
+                                        else:
+                                                self.__send_msg_to_cti_client__(userinfo, 'queues-list=%s;' % astid)
 
                         elif icommand.name == 'agent':
                                 if (capalist & CAPA_AGENTS):

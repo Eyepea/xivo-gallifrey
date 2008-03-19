@@ -843,31 +843,34 @@ while True: # loops over the reloads
 
                         # incoming TCP connections (CTI, WEBI, AGI, INFO)
                         elif sel_i in fdlist_established:
-                                requester = '%s:%d' % (sel_i.getpeername()[0], sel_i.getpeername()[1])
-                                kind = fdlist_established[sel_i]
                                 try:
-                                        msg = sel_i.recv(BUFSIZE_LARGE)
-                                        lmsg = len(msg)
-                                except Exception, exc:
-                                        lmsg = 0
-                                        log_debug(SYSLOG_ERR, '--- exception --- connection to %s (%s) : %s' % (requester, kind, str(exc)))
-                                if lmsg > 0:
+                                        requester = '%s:%d' % (sel_i.getpeername()[0], sel_i.getpeername()[1])
+                                        kind = fdlist_established[sel_i]
                                         try:
-                                                manage_tcp_connections(sel_i, msg, kind)
+                                                msg = sel_i.recv(BUFSIZE_LARGE)
+                                                lmsg = len(msg)
                                         except Exception, exc:
-                                                log_debug(SYSLOG_ERR, '--- exception --- handling %s (%s) : %s' % (requester, kind, str(exc)))
-                                else:
-                                        if kind == 'CTI':
-                                                if sel_i in userinfo_by_requester:
-                                                        userinfo = userinfo_by_requester.get(sel_i)
-                                                        commandclass.manage_logoff(userinfo)
-                                                        del userinfo_by_requester[sel_i]
-                                if kind in ['CTI', 'INFO'] and lmsg > 0:
-                                        continue
-                                sel_i.close()
-                                fdlist_full.remove(sel_i)
-                                del fdlist_established[sel_i]
-                                log_debug(SYSLOG_INFO, 'TCP socket closed on %s (%s)' % (requester, kind))
+                                                lmsg = 0
+                                                log_debug(SYSLOG_ERR, '--- exception --- connection to %s (%s) : %s' % (requester, kind, str(exc)))
+                                        if lmsg > 0:
+                                                try:
+                                                        manage_tcp_connections(sel_i, msg, kind)
+                                                except Exception, exc:
+                                                        log_debug(SYSLOG_ERR, '--- exception --- handling %s (%s) : %s' % (requester, kind, str(exc)))
+                                        else:
+                                                if kind == 'CTI':
+                                                        if sel_i in userinfo_by_requester:
+                                                                userinfo = userinfo_by_requester.get(sel_i)
+                                                                commandclass.manage_logoff(userinfo)
+                                                                del userinfo_by_requester[sel_i]
+                                        if kind in ['CTI', 'INFO'] and lmsg > 0:
+                                                continue
+                                        sel_i.close()
+                                        fdlist_full.remove(sel_i)
+                                        del fdlist_established[sel_i]
+                                        log_debug(SYSLOG_INFO, 'TCP socket closed on %s (%s)' % (requester, kind))
+                                except Exception, exc:
+                                        log_debug(SYSLOG_ERR, '--- exception [CTI, WEBI, AGI, INFO] --- %s' % str(exc))
 
                         # local pipe fd
                         elif queued_threads_pipe[0] == sel_i:
@@ -882,10 +885,7 @@ while True: # loops over the reloads
                                                         log_debug(SYSLOG_WARNING, 'WARNING - no connection field present in userinfo')
                                                 commandclass.manage_logoff(userinfo)
                                 except Exception, exc:
-                                        log_debug(SYSLOG_ERR, '--- exception --- %s' % str(exc))
-
-
-
+                                        log_debug(SYSLOG_ERR, '--- exception [queued threads] --- %s' % str(exc))
 
                         for astid in configs:
                                 if (time.time() - lastrequest_time[astid]) > updates_period or update_userlist[astid]:
