@@ -35,6 +35,9 @@ POLYCOM_COMMON_DIR = pgc['tftproot'] + "Polycom/"
 POLYCOM_COMMON_HTTP_USER = "Polycom"
 POLYCOM_COMMON_HTTP_PASS = "456"
 SIP_PORT = 5060
+AMI_PORT = 5038
+AMI_USER = 'xivouser'
+AMI_PASS = 'xivouser'
 
 class PolycomProv(BaseProv):
 	label = "Polycom"
@@ -47,13 +50,59 @@ class PolycomProv(BaseProv):
 		   self.phone["model"] != "spip_650":
 			raise ValueError, "Unknown Polycom model '%s'" % self.phone["model"]
 
+        def __iptopeer(self):
+                phoneip = self.phone['ipv4']
+                
+                amisock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                amisock.connect(('127.0.0.1', AMI_PORT))
+                actioncommand = ['Action: login',
+                                 'Username: %s' % AMI_USER,
+                                 'Secret: %s' % AMI_PASS,
+                                 'Events: off',
+                                 '\r\n',
+                                 'Action: SIPpeers',
+                                 '\r\n']
+                amisock.send('\r\n'.join(actioncommand))
+
+                fullmsg = ''
+                iquit = False
+                self.peerinfo = None
+                ipaddressmatch = 'IPaddress: %s' % phoneip
+
+                # finds the IP address matching phoneip among the peers
+                while True:
+                        msg = amisock.recv(8192)
+                        if len(msg) > 0:
+                                fullmsg += msg
+                                events = fullmsg.split('\r\n\r\n')
+                                fullmsg = events.pop()
+                                for ev in events:
+                                        lines = ev.split('\r\n')
+                                        if ipaddressmatch in lines:
+                                                for myline in lines:
+                                                        if myline.startswith('ObjectName: '):
+                                                                self.peerinfo = myline.split(': ')
+                                                                iquit = True
+                                        if 'Event: PeerlistComplete' in lines:
+                                                iquit = True
+                                        if iquit:
+                                                break
+                                if iquit:
+                                        break
+                        else:
+                                break
+                amisock.close()
+
         def __sendsipnotify(self):
                 phoneip = self.phone['ipv4']
                 myip = pgc['asterisk_ipv4']
-                if 'number' in self.provinfo_prev:
-                        sip_number = self.provinfo_prev['number']
+
+                self.__iptopeer()
+                if self.peerinfo is not None and len(self.peerinfo) > 1:
+                        sip_number = self.peerinfo[1]
                 else:
                         sip_number = 'guest'
+
                 sip_message = [ 'NOTIFY sip:%s@%s:%d SIP/2.0' %(sip_number, phoneip, SIP_PORT),
                                 'Via: SIP/2.0/UDP %s' %(myip),
                                 'From: <sip:%s@%s>' %(sip_number, myip),
