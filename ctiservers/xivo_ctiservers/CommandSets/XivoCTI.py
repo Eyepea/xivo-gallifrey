@@ -450,19 +450,20 @@ class XivoCTICommand(BaseCommand):
                         linestosend = ['<?xml version="1.0" encoding="utf-8"?>',
                                        '<profile sessionid="47"><user>',
                                        '<info name="File d Attente" type="text"><![CDATA[<h1><b>%s</b></h1>]]></info>' % queuename,
-                                       '<info name="Numero Appelant" type="phone"><![CDATA[%s]]></info>' % src,
-                                       '<info name="channel" type="internal"><![CDATA[%s]]></info>' % chan,
-                                       '<info name="nopopup" type="internal"></info>',
-                                       '<message>help</message>',
-                                       '</user></profile>']
+                                       '<info name="Numero Appelant" type="phone"><![CDATA[%s]]></info>' % src]
+                        if 'sheeturl' in self.xivoconf:
+                                linestosend.append('<info name="Site" type="urlauto"><![CDATA[%s%s]]></info>' % (self.xivoconf['sheeturl'], src))
+                        linestosend.extend(['<info name="channel" type="internal"><![CDATA[%s]]></info>' % chan,
+                                            '<info name="nopopup" type="internal"></info>',
+                                            '<message>help</message>',
+                                            '</user></profile>'])
                         self.__send_msg_to_cti_client_byagentid__(dst, ''.join(linestosend))
 
-                        try:
-                                # params = urllib.urlencode(event)
-                                if 'sheeturl' in self.xivoconf:
-                                        f = urllib.urlopen('%s%s' % (self.xivoconf['sheeturl'], src))
-                        except Exception, exc:
-                                print '--- exception ---', exc, exc.__class__
+##                        try:
+##                                if 'sheeturl' in self.xivoconf:
+##                                        f = urllib.urlopen('%s%s' % (self.xivoconf['sheeturl'], src))
+##                        except Exception, exc:
+##                                print '--- exception ---', exc, exc.__class__
 
                 elif where == SHEET_EVENT_AGI:
                         pass
@@ -508,6 +509,8 @@ class XivoCTICommand(BaseCommand):
                 clid    = event.get("CallerID")
                 clidn   = event.get("CallerIDName")
                 context = event.get("Context")
+##                if clidn in self.queues_list[astid]:
+##                        print event
                 self.plist[astid].handle_ami_event_dial(src, dst, clid, clidn)
                 return
 
@@ -524,9 +527,9 @@ class XivoCTICommand(BaseCommand):
                                 t1 = time.time()
                                 [qname, t0] = self.queues_channels_list[astid][chan1]
                                 del self.queues_channels_list[astid][chan1]
-                                if (t1 - t0) < 1:
-                                        event['xivo_queuename'] = qname
-                                        self.__sheet_alert__(SHEET_EVENT_AGENTLINK, event)
+                                # if (t1 - t0) < 1:
+                                event['xivo_queuename'] = qname
+                                self.__sheet_alert__(SHEET_EVENT_AGENTLINK, event)
                 self.plist[astid].handle_ami_event_link(chan1, chan2, clid1, clid2)
 
                 return
