@@ -54,6 +54,7 @@ class OutgoingCall:
                 self.tocall = False
                 self.toretrieve = None
                 self.forceacd = None
+                self.annuleraccroche = False
 
                 self.stimes = {time.time() : 'init'}
                 self.ttimes = {time.time() : 'init'}

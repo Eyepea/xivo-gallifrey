@@ -75,6 +75,7 @@ class IncomingCall:
                 self.svirt = None
                 self.forceacd = None
                 self.agentlist = []
+                self.annuleraccroche = False
 
                 self.elect_prio = None
 

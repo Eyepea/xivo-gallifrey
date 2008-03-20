@@ -704,6 +704,7 @@ class CallBoosterCommand(BaseCommand):
                                 if mycall is not None:
                                         print 'I am about to break the OUTGOING call <%s>' % mycall.commid, mycall.parking
                                         self.__send_msg__(userinfo, '%s,1,,Annule/' % mycall.commid)
+                                        mycall.annuleraccroche = True
                                         self.__update_taxes__(mycall, 'Termine')
                                         userinfo['login']['calls'].pop(mycall.commid)
 
@@ -733,6 +734,7 @@ class CallBoosterCommand(BaseCommand):
                                                 print 'UNLINK : HOWEVER it seems this is not worth since it had been set as an appelaboute one ...', mycall.appelaboute
                                         else:
                                                 self.__send_msg__(userinfo, '%s,1,,Annule/' % mycall.commid)
+                                                mycall.annuleraccroche = True
                                                 self.__update_stat_acd2__(mycall)
                                                 self.__update_taxes__(mycall, 'Termine')
                                                 userinfo['login']['calls'].pop(mycall.commid)
@@ -1117,6 +1119,7 @@ class CallBoosterCommand(BaseCommand):
                         thiscall.set_timestamp_stat('parkgiveup')
                         thiscall.parkexten = None
                         self.__send_msg__(thiscall.uinfo, '%s,1,,Annule/' % thiscall.commid)
+                        thiscall.annuleraccroche = True
                         print 'ParkedCall Annule', thiscall.parking, thiscall.peerchannel, thiscall.uinfo['login']['calls']
                         # remove the call from userinfo + list
                         # XXX update taxes & stats !
@@ -1147,13 +1150,16 @@ class CallBoosterCommand(BaseCommand):
                                 del userinfo['timer-agentlogin']
                                 del userinfo['timer-agentlogin-iter']
 
-                        self.__send_msg__(userinfo, ',1,,AppelOpe/')
-                        for callnum, anycall in userinfo['login']['calls'].iteritems():
-                                if anycall.tocall:
-                                        log_debug(SYSLOG_INFO, 'an outgoing call is waiting to be sent ...')
-                                        time.sleep(1) # otherwise the Agent's channel is not found
-                                        anycall.tocall = False
-                                        self.__outcall__(anycall)
+                        if 'agentlogin-fromconf' in userinfo:
+                                del userinfo['agentlogin-fromconf']
+                        else:
+                                self.__send_msg__(userinfo, ',1,,AppelOpe/')
+                                for callnum, anycall in userinfo['login']['calls'].iteritems():
+                                        if anycall.tocall:
+                                                log_debug(SYSLOG_INFO, 'an outgoing call is waiting to be sent ...')
+                                                time.sleep(1) # otherwise the Agent's channel is not found
+                                                anycall.tocall = False
+                                                self.__outcall__(anycall)
                 else:
                         log_debug(SYSLOG_WARNING, '(agentlogin) no user found for agent %s' % agentnum)
                 return
@@ -1294,13 +1300,20 @@ class CallBoosterCommand(BaseCommand):
                                                 ctm1 = chantomatch2
                                                 ctm2 = chantomatch1
                                         if ctm1 is not None and ctm2 is not None:
+                                                userinfo['agentlogin-fromconf'] = None
                                                 self.amis[astid].transfer(ctm1, 's', 'ctx-callbooster-agentlogin')
                                                 if channel in self.outgoing_calls:
-                                                        self.__send_msg__(userinfo, '%s,,,Annule/' % self.outgoing_calls[channel].commid)
+                                                        commid = self.outgoing_calls[channel].commid
+                                                        if commid in userinfo['login']['calls']:
+                                                                del userinfo['login']['calls'][commid]
+                                                        self.__send_msg__(userinfo, '%s,,,Annule/' % commid)
                                                         if ctm2 in self.incoming_calls:
                                                                 self.__park__(astid, self.incoming_calls[ctm2])
                                                 elif channel in self.incoming_calls:
-                                                        self.__send_msg__(userinfo, '%s,,,Annule/' % self.incoming_calls[channel].commid)
+                                                        commid = self.incoming_calls[channel].commid
+                                                        if commid in userinfo['login']['calls']:
+                                                                del userinfo['login']['calls'][commid]
+                                                        self.__send_msg__(userinfo, '%s,,,Annule/' % commid)
                                                         if ctm2 in self.outgoing_calls:
                                                                 self.__park__(astid, self.outgoing_calls[ctm2])
                 return
@@ -1568,7 +1581,8 @@ class CallBoosterCommand(BaseCommand):
                                 if incall.waiting:
                                         self.__send_msg__(userinfo, '%s,%s,,CLR-ACD/' % (incall.commid, incall.sdanum))
                                 else:
-                                        self.__send_msg__(userinfo, '%s,,,Annule/' % incall.commid)
+                                        if not incall.annuleraccroche:
+                                                self.__send_msg__(userinfo, '%s,,,Annule/' % incall.commid)
                                 self.amis[astid].queueremove(incall.queuename, 'Agent/%s' % agentnum)
                 return
 
@@ -1887,6 +1901,7 @@ class CallBoosterCommand(BaseCommand):
 
                                         retval = 1
                                         reply = '%s,%d,,Raccroche/' % (reference, retval)
+                                        anycall.annuleraccroche = True
                                         connid_socket.send(reply)
                                 else:
                                         # log_debug(SYSLOG_WARNING, '')
