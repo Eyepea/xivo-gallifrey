@@ -821,7 +821,7 @@ def main(log_level, foreground):
 		# autoprov demon runs as root and creates file as root.root
 		# atftpd server runs as nobody and allows write access in
 		# /tftpboot/ for everybody, so we use umask 022 here to avoid
-		# success of atftpd we it tries to write files.
+		# success of atftpd when it tries to write files.
 		os.umask(022)
 		if log_level == SYSLOG_DEBUG:
 			syslog.setlogmask(syslog.LOG_UPTO(SYSLOG_DEBUG))
