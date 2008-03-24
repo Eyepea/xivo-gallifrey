@@ -5,8 +5,8 @@ USE `xivo`;
 DROP TABLE IF EXISTS `entity`;
 CREATE TABLE `entity` (
  `id` int(10) unsigned auto_increment,
- `name` varchar(39) NOT NULL DEFAULT '',
- `displayname` varchar(64) NOT NULL DEFAULT '',
+ `name` varchar(64) NOT NULL DEFAULT '',
+ `displayname` varchar(128) NOT NULL DEFAULT '',
  `phonenumber` varchar(40) NOT NULL DEFAULT '',
  `faxnumber` varchar(40) NOT NULL DEFAULT '',
  `email` varchar(255) NOT NULL DEFAULT '',
