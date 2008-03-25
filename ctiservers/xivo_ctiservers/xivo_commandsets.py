@@ -187,6 +187,8 @@ class BaseCommand:
         def ami_status(self, astid, event):
                 return
 
+        def ami_queueentry(self, astid, event):
+                return
         def ami_queuemember(self, astid, event):
                 return
         def ami_queuememberadded(self, astid, event):

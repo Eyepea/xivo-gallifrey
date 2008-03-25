@@ -699,6 +699,10 @@ class XivoCTICommand(BaseCommand):
                                 print ' (a) ', aname, aargs
                 return
 
+        def ami_queueentry(self, astid, event):
+                print 'AMI QueueEntry', event
+                return
+                
         def ami_queuememberadded(self, astid, event):
                 queue = event.get('Queue')
                 location = event.get('Location')
@@ -931,10 +935,15 @@ class XivoCTICommand(BaseCommand):
                         elif icommand.name == 'queues-list':
                                 if (capalist & CAPA_AGENTS):
                                         astid = icommand.args[0]
-                                        if astid in self.queues_list:
-                                                self.__send_msg_to_cti_client__(userinfo, 'queues-list=%s;%s' %(astid, ','.join(self.queues_list[astid].keys())))
-                                        else:
-                                                self.__send_msg_to_cti_client__(userinfo, 'queues-list=%s;' % astid)
+                                        if 'agentnum' in userinfo:
+                                                agnum = userinfo['agentnum']
+                                                unallowed = []
+                                                if 'agents_unallowed' in self.xivoconf:
+                                                        unallowed = self.xivoconf['agents_unallowed'].split(',')
+                                                if astid in self.queues_list and agnum not in unallowed:
+                                                        self.__send_msg_to_cti_client__(userinfo, 'queues-list=%s;%s' %(astid, ','.join(self.queues_list[astid].keys())))
+                                                else:
+                                                        self.__send_msg_to_cti_client__(userinfo, 'queues-list=%s;' % astid)
 
                         elif icommand.name == 'agent':
                                 if (capalist & CAPA_AGENTS):

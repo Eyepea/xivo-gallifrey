@@ -435,6 +435,8 @@ def handle_ami_function(astid, evfunction, this_event):
                         commandclass.ami_queuememberstatus(astid, this_event)
                 elif evfunction == 'QueueStatusComplete':
                         commandclass.ami_queuestatuscomplete(astid, this_event)
+                elif evfunction == 'QueueEntry':
+                        commandclass.ami_queueentry(astid, this_event)
                 elif evfunction == 'Status':
                         commandclass.ami_status(astid, this_event)
                 elif evfunction == 'StatusComplete':

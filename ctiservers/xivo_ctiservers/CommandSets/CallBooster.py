@@ -1180,7 +1180,8 @@ class CallBoosterCommand(BaseCommand):
                                         print 'actually, %s goes into the conf room %s' % (agentnum, userinfo.get('conf'))
                                 else:
                                         for callnum, anycall in userinfo['login']['calls'].iteritems():
-                                                self.amis[astid].hangup(anycall.peerchannel, '')
+                                                if anycall.peerchannel is not None:
+                                                        self.amis[astid].hangup(anycall.peerchannel, '')
                         else:
                                 log_debug(SYSLOG_WARNING, '(agentlogoff) found agent %s, but was not logged in' % userinfo['agentnum'])
                 else:
