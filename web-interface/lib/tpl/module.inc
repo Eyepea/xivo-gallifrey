@@ -2,6 +2,11 @@
 
 class xivo_tpl_module
 {
+	function load_init($param=null)
+	{
+		return(null);
+	}
+
 	function bbf($name,$arr=array(),$namespace='')
 	{
 		return($this->_tpl->bbf($name,$arr,$namespace));

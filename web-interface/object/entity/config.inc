@@ -50,10 +50,10 @@ $array['element']['description']['default'] = '';
 
 
 $array['filter'] = array();
-$array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 39);
-$array['filter']['displayname'] = array('cast' => 'sgraph','minlen' => 3,'maxlen' => 64);
-$array['filter']['phonenumber'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
-$array['filter']['faxnumber'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
+$array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 64);
+$array['filter']['displayname'] = array('cast' => 'sgraph','minlen' => 3,'maxlen' => 128);
+$array['filter']['phonenumber'] = array('set' => false,'chk' => 2,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
+$array['filter']['faxnumber'] = array('set' => false,'chk' => 2,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
 $array['filter']['email'] = array('set' => false,'chk' => 2,'maxlen' => 255,'callback' => 'xivo_filter::chk_email');
 $array['filter']['url'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 255);
 $array['filter']['address1'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 30);

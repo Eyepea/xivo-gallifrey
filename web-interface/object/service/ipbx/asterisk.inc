@@ -88,7 +88,12 @@ class xivo_service_asterisk extends xivo_service_abstract
 		$ref = &$this->_conf['realstatic'][$name];
 
 		if(isset($this->_realstatic[$name]) === true)
+		{
+			if(is_array($param) === true)
+				$this->_realstatic[$name]->load_init($param);
+
 			return(true);
+		}
 		else if($this->chk_realstatic_enable($name) === false)
 			return(false);
 		else if(($class = $this->_load_realstatic_class($name)) === false)
@@ -97,10 +102,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 			return(false);
 		}
 		else if(isset($ref['datastorage']) === false || (bool) $ref['datastorage'] === false)
-		{
 			$this->_realstatic[$name] = new $class($this,$param);
-			return(true);
-		}
 		else if(is_string($ref['datastorage']) === true && $this->chk_realstatic_enable($ref['datastorage']) === true)
 			$this->_realstatic[$name] = new $class($this,$this->_load_dso($ref['datastorage']),$param);
 		else

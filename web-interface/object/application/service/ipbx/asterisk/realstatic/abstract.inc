@@ -29,7 +29,7 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 		if(isset($this->_var_name) === true)
 			$param['var_name'] = $this->_var_name;
 
-		$this->_realstatic = &$this->_service->get_realstatic($this->_modulename,$param);
+		$this->_realstatic = $this->_service->get_realstatic($this->_modulename,$param);
 
 		if($this->_realstatic === false)
 			return(false);
@@ -67,9 +67,7 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 	{
 		$this->_info = $this->_origin = array();
 
-		$r = $this->_realstatic->get_all_by_category(null,$disable);
-
-		return($r);
+		return($this->_realstatic->get_all_by_category(null,$disable));
 	}
 
 	function enable($id)

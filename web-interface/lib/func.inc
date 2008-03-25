@@ -878,4 +878,28 @@ function xivo_replacef($search,$replace,$subject)
 	return($r);
 }
 
+function xivo_is_max_digit($min,$max,$equal=false)
+{
+	if(ctype_digit($min) === false || ctype_digit($max) === false)
+		return(null);
+	else if(($len1 = strlen($min)) === ($len2 = strlen($max)))
+		return((bool) $equal === false ? ($max > $min) : ($max >= $min));
+	else if($len1 < $len2)
+		return(true);
+
+	return(false);
+}
+
+function xivo_get_max_digit($digit1,$digit2)
+{
+	if(ctype_digit($digit1) === false || ctype_digit($digit2) === false)
+		return(false);
+	else if(($len1 = strlen($digit1)) === ($len2 = strlen($digit2)))
+		return($digit1 > $digit2 ? $digit1 : $digit2);
+	else if($len1 < $len2)
+		return($digit2);
+
+	return($digit1);
+}
+
 ?>

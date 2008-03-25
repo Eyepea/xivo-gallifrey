@@ -106,6 +106,9 @@ Configuration IPBX
 ; acl_service-ipbx-system_management-configfiles
 Fichiers de configuration
 
+; acl_service-ipbx-system_management-context
+Contextes
+
 ; acl_service-ipbx-system_management-ldapfilter
 Filtres LDAP
 

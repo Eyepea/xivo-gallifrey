@@ -10,5 +10,6 @@ $array['ldapfilter'] = array();
 $array['vendor'] = array();
 $array['vendor']['thomson'] = 'thomson';
 $array['vendor']['snom'] = 'snom';
+$array['vendor']['aastra'] = 'aastra';
 
 ?>

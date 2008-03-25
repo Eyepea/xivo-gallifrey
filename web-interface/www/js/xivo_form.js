@@ -652,3 +652,66 @@ function xivo_fm_get_value_from_key(form,name,key)
 
 	return(xivo_fm[form][name][key].value);
 }
+
+function xivo_fm_enable_disable_field(form,name,disable,exform,exformtag)
+{
+	if(xivo_is_undef(form) == true
+	|| xivo_is_undef(name) == true
+	|| xivo_is_object(form) == false
+	|| xivo_is_string(name) == false
+	|| xivo_is_undef(form[name]) == true)
+		return(false);
+
+	if(xivo_is_string(exform) == true && xivo_is_string(exformtag) == true)
+		var disableparent = false;
+	else
+		var disableparent = true;
+
+	if((disable = Boolean(disable) != false))
+		var classname = xivo_fm_disabled_class;
+	else
+		var classname = xivo_fm_enabled_class;
+
+	var ref = form[name];
+
+	if(xivo_is_undef(ref.tagName) == true)
+	{
+		if(xivo_is_undef(ref.item) == true
+		|| xivo_is_undef(ref.length) == true)
+			return(false);
+		
+		var nb = ref.length;
+
+		for(var i = 0;i < nb;i++)
+		{
+			if(xivo_is_undef(ref[i]) == false)
+			{
+				if(disableparent == false
+				&& xivo_get_parent_by_tagname(ref[i],exformtag).id == exform)
+					continue;
+
+				ref[i].disabled = disable;
+				ref[i].className = classname;
+			}
+		}
+
+		return(true);
+	}
+
+	switch(ref.tagName.toLowerCase())
+	{
+		case 'input':
+		case 'select':
+		case 'textarea':
+			if(disableparent == false
+			&& xivo_get_parent_by_tagname(ref,exformtag).id == exform)
+				return(false);
+
+			ref.disabled = disable;
+			ref.className = classname;
+		default:
+			return(false);
+	}
+
+	return(true);
+}

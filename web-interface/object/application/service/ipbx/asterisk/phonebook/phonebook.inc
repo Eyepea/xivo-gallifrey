@@ -251,8 +251,7 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 		if(($type !== 'address' && $type !== 'number') === true
 		|| is_array($list) === false)
 			return(false);
-
-		if($type === 'address')
+		else if($type === 'address')
 		{
 			$typename = 'phonebookaddress';
 			$module = &$this->_phonebookaddress;
@@ -266,7 +265,7 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 		if(empty($list) === true)
 			return(null);
 
-		$info = array();
+		$info = $infotmp = array();
 		$info['phonebookid'] = 0;
 
 		$reslist = array();
@@ -284,15 +283,18 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 				continue;
 			}
 
-			$info['type'] = $key;
-
 			if($type === 'address')
-				$info = array_merge($info,$val);
+				$infotmp = array_merge($info,$val);
 			else
-				$info['number'] = $val;
+			{
+				$infotmp = $info;
+				$infotmp['number'] = $val;
+			}
 
-			if(($rs = $module->chk_values($info)) !== false
-			&& isset($tmp[$rs['type']]) === false)
+			$infotmp['type'] = $key;
+
+			if(($rs = $module->chk_values($infotmp)) !== false
+			&& isset($reslist[$rs['type']]) === false)
 				$reslist[$rs['type']] = $rs;
 		}
 
@@ -508,7 +510,7 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 
 		foreach($rs as $val)
 		{
-			if($list !== false && isset($list[$i]) === true)
+			if(isset($list[$i]) === true)
 				$pid = $this->_info[$typename][$list[$i++]]['id'];
 			else
 				$pid = 0;
@@ -560,10 +562,10 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 						$module = &$this->_phonebooknumber;
 					}
 
+					$this->_delete_phonebook_type($type);
+
 					if(isset($this->_origin[$key]) === false)
 						continue;
-						
-					$this->_delete_phonebook_type($type);
 
 					$module->add_origin_list($this->_origin[$key]);
 					break;

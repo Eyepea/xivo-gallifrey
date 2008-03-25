@@ -30,11 +30,7 @@ if($count !== 0):
 		endif;
 ?>
 	<tr class="fm-field<?=$errdisplay?>">
-		<td class="td-left txt-center">
-<?php
-		echo $form->select(array('field' => false,'name' => $type.'[trunkfeaturesid][]','id' => false,'label' => false,'browse' => 'trunk','key' => 'name','altkey' => 'trunkfeaturesid','invalid' => true,'optgroup' => array('key' => true,'bbf' => array('concat','fm_'.$type.'-trunk-opt-')),'value' => $ref['trunkfeaturesid'],'default' => $element['handynumbers']['trunkfeaturesid']['default']),$trunkslist);
-?>
-		</td>
+		<td class="td-left txt-center"><?=$form->select(array('field' => false,'name' => $type.'[trunkfeaturesid][]','id' => false,'label' => false,'browse' => 'trunk','key' => 'name','altkey' => 'trunkfeaturesid','invalid' => true,'optgroup' => array('key' => true,'bbf' => array('concat','fm_'.$type.'-trunk-opt-')),'value' => $ref['trunkfeaturesid'],'default' => $element['handynumbers']['trunkfeaturesid']['default']),$trunkslist);?></td>
 		<td><?=$form->text(array('field' => false,'name' => $type.'[exten][]','id' => false,'label' => false,'size' => 15,'value' => $ref['exten'],'default' => $element['handynumbers']['exten']['default']));?></td>
 		<td class="td-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_'.$type.'-delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\''.$type.'\',this,1); return(false);"',$this->bbf('opt_'.$type.'-delete'));?></td>
 	</tr>

@@ -1,15 +1,13 @@
 <?php
 
-header('Content-Type: text/xml; charset=utf-8');
-
 $url = &$this->get_module('url');
+$xmlphone = &$this->get_module('xmlphone',array('vendor' => $this->get_var('vendor')));
 
 $list = $this->get_var('list');
 $pos = (int) $this->get_var('pos');
 $prevpos = $this->get_var('prevpos');
 
-$tagmenu = $this->get_var('tagmenu');
-$tagdirectory = $this->get_var('tagdirectory');
+$tagdirectory = $xmlphone->get_tag('directory');
 
 echo '<',$tagdirectory,'>',"\n";
 /*
@@ -23,18 +21,21 @@ if($prevpos > 0):
 	$prevparam['pos'] = floor($pos / $prevpos) * $prevpos;
 	$prevparam['name'] = $this->get_var('name');
 
+	$tagmenu = $xmlphone->get_tag('menu');
+
 	echo	'<',$tagmenu,'>',"\n",
 		'<MenuItem>',"\n",
-		'<Name>[',xivo_htmlsc($this->bbf('phone_back'),ENT_NOQUOTES),']</Name>',"\n",
-		'<URL>',$url->href('service/ipbx/web_services/phonebook/search',$prevparam,true,$this->get_var('argseparator'),false),'</URL>',"\n",
+		'<Name>[',$xmlphone->escape($this->bbf('phone_back')),']</Name>',"\n",
+		'<URL>',$url->href('service/ipbx/web_services/phonebook/search',$prevparam,true,$xmlphone->get_argseparator(),false),'</URL>',"\n",
 		'</MenuItem>',"\n",
 		'</',$tagmenu,'>',"\n";
+
 endif;
 
 */
 if(is_array($list) === false || ($nb = count($list)) === 0):
 	echo	'<DirectoryEntry>',"\n",
-		'<Name>',$this->bbf('phone_noentry'),'</Name>',"\n",
+		'<Name>',$xmlphone->escape($this->bbf('phone_noentries')),'</Name>',"\n",
 		'<Telephone></Telephone>',"\n",
 		'</DirectoryEntry>',"\n";
 else:
@@ -52,8 +53,8 @@ else:
 		endif;
 
 		echo	'<DirectoryEntry>',"\n",
-			'<Name>',xivo_htmlsc($name,ENT_NOQUOTES),'</Name>',"\n",
-			'<Telephone>',xivo_htmlsc($ref['phone'],ENT_NOQUOTES),'</Telephone>',"\n",
+			'<Name>',$xmlphone->escape($name),'</Name>',"\n",
+			'<Telephone>',$xmlphone->escape($ref['phone']),'</Telephone>',"\n",
 			'</DirectoryEntry>',"\n";
 	endfor;
 endif;

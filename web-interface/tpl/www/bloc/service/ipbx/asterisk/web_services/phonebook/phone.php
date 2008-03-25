@@ -1,29 +1,22 @@
 <?php
 
-$vendor = $this->get_var('vendor');
+$xmlphone = &$this->get_module('xmlphone',array('vendor' => $this->get_var('vendor')));
+
+if(($vendor = $directory = $xmlphone->get_vendor()) === false)
+	xivo_die('Error/Invalid Vendor and User-Agent');
+
+header($xmlphone->get_header_contenttype());
 
 $param = array();
 
 switch($vendor)
 {
 	case 'thomson':
-		$vendor = 'genericxml';
-		$param['tagmenu'] = 'ThomsonPhoneMenu';
-		$param['tagdirectory'] = 'ThomsonPhoneBook';
-		$param['argseparator'] = '&amp;';
-		$param['taginput'] = '';
-		break;
 	case 'snom':
-		$vendor = 'genericxml';
-		$param['tagmenu'] = 'SnomIPPhoneMenu';
-		$param['tagdirectory'] = 'SnomIPPhoneDirectory';
-		$param['taginput'] = 'SnomIPPhoneInput';
-		$param['argseparator'] = '&';
+		$directory = 'genericxml';
 		break;
-	default:
-		xivo_die('Error/Invalid Vendor and User-Agent');
 }
 
-$this->file_include($this->get_var('path').'/'.$vendor.'/'.$this->get_var('act'),$param);
+$this->file_include($this->get_var('path').'/'.$directory.'/'.$this->get_var('act'),$param);
 
 ?>

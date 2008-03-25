@@ -42,21 +42,22 @@ switch($act)
 		break;
 	default:
 		$act = 'list';
+		$prevpage = $page - 1;
 		$nbbypage = 20;
 
 		$order = array();
 		$order['login'] = SORT_ASC;
 
 		$limit = array();
-		$limit[0] = ($page - 1) * $nbbypage;
+		$limit[0] = $prevpage * $nbbypage;
 		$limit[1] = $nbbypage;
 
 		$list = $_USR->get_all(null,true,$order,$limit);
 		$total = $_USR->get_cnt();
 
-		if($list === false && $total > 0)
+		if($list === false && $total > 0 && $prevpage > 0)
 		{
-			$param['page'] = $page - 1;
+			$param['page'] = $prevpage;
 			$_QRY->go($_HTML->url('xivo/configuration/manage/user'),$param);
 		}
 

@@ -40,10 +40,7 @@ $array['element']['weight']['default'] = 0;
 $array['element']['weight']['setdef'] = true;
 
 $array['element']['wrapuptime'] = array();
-$array['element']['wrapuptime']['value'] = array(0 => 0,5000 => 5,10000 => 10,15000 => 15,
-						 20000 => 20,25000 => 25,30000 => 30,
-						 35000 => 35,40000 => 40,45000 => 45,
-						 50000 => 50,55000 => 55,60000 => 60);
+$array['element']['wrapuptime']['value'] = array(0,5,10,15,20,25,30,35,40,45,50,55,60);
 $array['element']['wrapuptime']['default'] = 0;
 $array['element']['wrapuptime']['setdef'] = true;
 
@@ -180,9 +177,7 @@ $array['filter']['servicelevel'] = array('set' => false,'chk' => 2,'cast' => 'in
 $array['filter']['context'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context');
 $array['filter']['retry'] = array('set' => false,'chk' => 2,'key' => array(1,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['weight'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,10));
-$array['filter']['wrapuptime'] = array('set' => false,'chk' => 2,'key' => array(0,5000,10000,15000,20000,
-										   25000,30000,35000,40000,
-										   45000,50000,55000,60000));
+$array['filter']['wrapuptime'] = array('set' => false,'chk' => 2,'key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['maxlen'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,65535));
 $array['filter']['announce-frequency'] = array('set' => false,'chk' => 2,'key' => array(0,15,30,45,60,75,90,105,120,135,
 											   150,165,180,210,225,240,255,270,

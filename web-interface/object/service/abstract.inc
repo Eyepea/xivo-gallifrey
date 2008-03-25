@@ -130,61 +130,6 @@ class xivo_service_abstract
 		return(false);
 	}
 
-	function &call_module($name,$func,$args=null)
-	{
-		$name = (string) $name;
-		$func = (string) $func;
-
-		if($this->_load_module($name) === false)
-			$r = false;
-		else if($args === null)
-			$r = call_user_func(array(&$this->_module[$name],$func));
-		else
-		{
-			$args = (array) $args;
-			$r = call_user_func_array(array(&$this->_module[$name],$func),$args);
-		}
-
-		return(($ref = &$r));
-	}
-
-	function &call_application($name,$func,$args=null)
-	{
-		$name = (string) $name;
-		$func = (string) $func;
-
-		if($this->_load_application($name) === false)
-			$r = false;
-		else if($args === null)
-			$r = call_user_func(array(&$this->_application[$name],$func));
-		else
-		{
-			$args = (array) $args;
-			$r = call_user_func_array(array(&$this->_application[$name],$func),$args);
-		}
-
-		return(($ref = &$r));
-	}
-
-	function &call_appcustom($type,$name,$func,$args=null)
-	{
-		$type = (string) $type;
-		$name = (string) $name;
-		$func = (string) $func;
-
-		if($this->_load_appcustom($type,$name) === false)
-			$r = false;
-		else if($args === null)
-			$r = call_user_func(array(&$this->_appcustom[$type][$name],$func));
-		else
-		{
-			$args = (array) $args;
-			$r = call_user_func_array(array(&$this->_appcustom[$type][$name],$func),$args);
-		}
-
-		return(($ref = &$r));
-	}
-
 	function &get_module($name,$param=null)
 	{
 		$r = false;

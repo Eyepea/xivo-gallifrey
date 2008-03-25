@@ -19,7 +19,7 @@ class xivo_entity extends xivo_libdatastorage_abstract
 	function _prepare($data)
 	{
 		$data['disable'] = (bool) $data['disable'];
-		$data['identity'] = $data['name'];
+		$data['identity'] = $data['displayname'].' ('.$data['name'].')';
 
 		return($data);
 	}

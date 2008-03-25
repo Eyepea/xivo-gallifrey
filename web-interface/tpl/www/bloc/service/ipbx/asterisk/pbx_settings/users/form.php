@@ -69,11 +69,11 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_protocol_name'),'name' => 'protocol[name]','labelid' => 'protocol-name','value' => $info['protocol']['name'],'size' => 15));?>
 
+<?=$form->text(array('desc' => $this->bbf('fm_protocol_secret'),'name' => 'protocol[secret]','labelid' => 'protocol-secret','value' => $this->get_varra('info',array('protocol','secret')),'size' => 15));?>
+
 <?=$form->text(array('desc' => $this->bbf('fm_protocol_interface'),'name' => 'protocol[interface]','labelid' => 'protocol-interface','default' => $element['protocol']['custom']['interface']['default'],'value' => $this->get_varra('info',array('protocol','interface')),'size' => 15));?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_ufeatures_number'),'name' => 'ufeatures[number]','labelid' => 'ufeatures-number','value' => $info['ufeatures']['number'],'size' => 15),'onchange="xivo_chgname();" onfocus="xivo_cpyname(); xivo_fm_set_onfocus(this);"');?>
-
-<?=$form->text(array('desc' => $this->bbf('fm_protocol_secret'),'name' => 'protocol[secret]','labelid' => 'protocol-secret','value' => $this->get_varra('info',array('protocol','secret')),'size' => 15));?>
 
 <?=$form->select(array('desc' => $this->bbf('fm_userfeatures_ringseconds'),'name' => 'ufeatures[ringseconds]','labelid' => 'ufeatures-ringseconds','bbf' => array('mixkey','fm_userfeatures_ringseconds-opt'),'key' => false,'default' => $element['ufeatures']['ringseconds']['default'],'value' => (isset($info['ufeatures']['ringseconds']) === true ? (int) $info['ufeatures']['ringseconds'] : null)),$element['ufeatures']['ringseconds']['value']);?>
 

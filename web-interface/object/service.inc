@@ -80,18 +80,6 @@ class xivo_service
 		$this->_set($name,new $cname($init));
 	}
 
-	function &call_module($service,$module,$func,$args=null)
-	{
-		$service = (string) $service;
-		$module = (string) $module;
-		$func = (string) $func;
-	
-		if(($class = &$this->get($service)) === false)
-			trigger_error('Service not found, not loaded or installed',E_USER_ERROR);
-
-		return(($ref = &$class->call($module,$func,$args)));
-	}
-
 	function &get_module($service,$module)
 	{
 		$service = (string) $service;
@@ -115,10 +103,8 @@ class xivo_service
 
 	function _set($name,&$obj)
 	{
-		$r = false;
-
 		if($name === '' || is_object($obj) === false)
-			return($r);
+			return(false);
 
 		return(xivo_gct::set($obj,XIVO_SRE_CLASS_PRE.$name));
 	}

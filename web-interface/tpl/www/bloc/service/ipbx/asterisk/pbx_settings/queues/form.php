@@ -202,7 +202,7 @@ endif;
 
 <?=$form->select(array('desc' => $this->bbf('fm_queue_weight'),'name' => 'queue[weight]','labelid' => 'queue-weight','key' => false,'default' => $element['queue']['weight']['default'],'value' => $info['queue']['weight']),$element['queue']['weight']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_queue_wrapuptime'),'name' => 'queue[wrapuptime]','labelid' => 'queue-wrapuptime','default' => $element['queue']['wrapuptime']['default'],'value' => $info['queue']['wrapuptime'],'bbf' => array('mixvalue','fm_queue_wrapuptime-opt')),$element['queue']['wrapuptime']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_queue_wrapuptime'),'name' => 'queue[wrapuptime]','labelid' => 'queue-wrapuptime','key' => false,'default' => $element['queue']['wrapuptime']['default'],'value' => $info['queue']['wrapuptime'],'bbf' => array('mixvalue','fm_queue_wrapuptime-opt')),$element['queue']['wrapuptime']['value']);?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_queue_maxlen'),'name' => 'queue[maxlen]','labelid' => 'queue-maxlen','size' => 15,'default' => $element['queue']['maxlen']['default'],'value' => $info['queue']['maxlen']));?>
 

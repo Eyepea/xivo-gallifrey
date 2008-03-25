@@ -1,5 +1,11 @@
-; phone_noentry
-No entry
+; phone_search-title
+XIVO Search
+
+; phone_search-prompt
+Name or number:
+
+; phone_noentries
+No entries
 
 ; phone_back
 Back

@@ -7,7 +7,7 @@
 <meta name="publisher" content="<?=XIVO_CORP_LABEL?>">
 <meta name="distribution" content="iu">
 <meta name="copyright" content="Copyright <?=strftime('%Y'),' ',XIVO_CORP_LABEL?>">
-<meta name="title" content="<?=$this->bbf('html_title');?>">
+<meta name="title" content="<?=xivo_htmlsc($this->bbf('page_title',php_uname('n')));?>">
 
 <link rel="icon" href="<?=$this->file_time($this->url('favicon.ico'));?>">
 <link rel="shortcut icon" href="<?=$this->file_time($this->url('favicon.ico'));?>">

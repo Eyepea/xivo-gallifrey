@@ -43,6 +43,7 @@ $array['tree']['service']['ipbx']['pbx_services']['phonebook'] = true;
 
 $array['tree']['service']['ipbx']['system_management'] = array();
 $array['tree']['service']['ipbx']['system_management']['configfiles'] = true;
+$array['tree']['service']['ipbx']['system_management']['context'] = true;
 $array['tree']['service']['ipbx']['system_management']['ldapfilter'] = true;
 #$array['tree']['service']['ipbx']['system_management']['isdncard'] = true;
 #$array['tree']['service']['ipbx']['system_management']['modules'] = true;

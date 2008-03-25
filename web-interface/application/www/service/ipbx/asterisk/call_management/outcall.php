@@ -183,6 +183,7 @@ switch($act)
 		break;
 	default:
 		$act = 'list';
+		$prevpage = $page - 1;
 		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
 
 		$appoutcall = &$ipbx->get_application('outcall',null,false);
@@ -191,15 +192,15 @@ switch($act)
 		$order['name'] = SORT_ASC;
 
 		$limit = array();
-		$limit[0] = ($page - 1) * $nbbypage;
+		$limit[0] = $prevpage * $nbbypage;
 		$limit[1] = $nbbypage;
 
 		$list = $appoutcall->get_outcalls_list(null,$order,$limit);
 		$total = $appoutcall->get_cnt();
 
-		if($list === false && $total > 0)
+		if($list === false && $total > 0 && $prevpage > 0)
 		{
-			$param['page'] = $page - 1;
+			$param['page'] = $prevpage;
 			$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
 		}
 

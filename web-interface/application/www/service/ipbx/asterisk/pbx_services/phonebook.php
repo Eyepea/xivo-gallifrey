@@ -119,6 +119,7 @@ switch($act)
 	case 'list':
 	default:
 		$act = 'list';
+		$prevpage = $page - 1;
 		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
 
 		$order = array();
@@ -127,7 +128,7 @@ switch($act)
 		$order['lastname'] = SORT_ASC;
 
 		$limit = array();
-		$limit[0] = ($page - 1) * $nbbypage;
+		$limit[0] = $prevpage * $nbbypage;
 		$limit[1] = $nbbypage;
 
 		if($search !== '')
@@ -137,9 +138,9 @@ switch($act)
 
 		$total = $appphonebook->get_cnt();
 
-		if($list === false && $total > 0)
+		if($list === false && $total > 0 && $prevpage > 0)
 		{
-			$param['page'] = $page - 1;
+			$param['page'] = $prevpage;
 			$_QRY->go($_HTML->url('service/ipbx/pbx_services/phonebook'),$param);
 		}
 

@@ -23,13 +23,17 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 		if(is_object($dso) === false)
 			trigger_error('Invalid datastorage in '.__CLASS__,E_USER_ERROR);
 
-		if(is_array($param) === false)
-			trigger_error('Invalid parameter in '.__CLASS__,E_USER_ERROR);
-
 		$this->_sre = &$sre;
 		$this->_dso = &$dso;
 
 		$this->_load_config();
+		$this->load_init($param);
+	}
+
+	function load_init($param=array())
+	{
+		if(is_array($param) === false)
+			trigger_error('Invalid parameter in '.__CLASS__,E_USER_ERROR);
 
 		if(isset($param['filename']) === true)
 			$this->_filename = $param['filename'];

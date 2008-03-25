@@ -45,6 +45,14 @@
 			else:
 				$icon = 'enable';
 			endif;
+
+			if(xivo_haslen($ref['phonenumber']) === false):
+				$ref['phonenumber'] = '-';
+			endif;
+
+			if(xivo_haslen($ref['email']) === false):
+				$ref['email'] = '-';
+			endif;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
 		<td class="td-left"><?=$form->checkbox(array('name' => 'entity[]','value' => $ref['id'],'label' => false,'id' => 'it-entity-'.$i,'checked' => false,'field' => false));?></td>

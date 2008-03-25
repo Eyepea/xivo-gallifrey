@@ -33,18 +33,37 @@ switch($act)
 
 		$return = &$info;
 
-		if(isset($_QR['fm_send']) === true)
+		do
 		{
+			if(isset($_QR['fm_send']) === false)
+				break;
+
 			$result = array();
 			$return = &$result;
 
 			$_QR['disable'] = $info['disable'];
 
 			if(($result = $_ETT->chk_values($_QR)) === false)
+			{
 				$result = $_ETT->get_filter_result();
-			else if($_ETT->edit($info['id'],$result) !== false)
-				$_QRY->go($_HTML->url('xivo/configuration/manage/entity'),$param);
+				break;
+			}
+			else if($_ETT->edit($info['id'],$result) === false)
+				break;
+
+			$ipbx = &$_SRE->get('ipbx');
+			$context = &$ipbx->get_module('context');
+
+			if($context->edit_where(array('entity' => $info['name']),
+						array('entity' => $result['name'])) === false)
+			{
+				$_ETT->edit_origin();
+				break;
+			}
+
+			$_QRY->go($_HTML->url('xivo/configuration/manage/entity'),$param);
 		}
+		while(false);
 
 		$_HTML->set_var('id',$info['id']);
 		$_HTML->set_var('info',$return);
@@ -54,9 +73,13 @@ switch($act)
 	case 'delete':
 		$param['page'] = $page;
 
+		$ipbx = &$_SRE->get('ipbx');
+		$context = &$ipbx->get_module('context');
+
 		if(isset($_QR['id']) === true
-		&& ($id = intval($_QR['id'])) > 0)
-			$_ETT->delete($id);
+		&& ($info = $_ETT->get($_QR['id'])) !== false
+		&& $context->get_where(array('entity' => $info['name'])) === false)
+			$_ETT->delete($info['id']);
 
 		$_QRY->go($_HTML->url('xivo/configuration/manage/entity'),$param);
 		break;
@@ -66,12 +89,16 @@ switch($act)
 		if(($values = xivo_issa_val('entity',$_QR)) === false)
 			$_QRY->go($_HTML->url('xivo/configuration/manage/entity'),$param);
 
+		$ipbx = &$_SRE->get('ipbx');
+		$context = &$ipbx->get_module('context');
+
 		$nb = count($values);
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(($id = intval($values[$i])) > 0)
-				$_ETT->delete($id);
+			if(($info = $_ETT->get($values[$i])) !== false
+			&& $context->get_where(array('entity' => $info['name'])) === false)
+				$_ETT->delete($info['id']);
 		}
 
 		$_QRY->go($_HTML->url('xivo/configuration/manage/entity'),$param);
@@ -93,21 +120,22 @@ switch($act)
 		break;
 	default:
 		$act = 'list';
+		$prevpage = $page - 1;
 		$nbbypage = 20;
 
 		$order = array();
 		$order['name'] = SORT_ASC;
 
 		$limit = array();
-		$limit[0] = ($page - 1) * $nbbypage;
+		$limit[0] = $prevpage * $nbbypage;
 		$limit[1] = $nbbypage;
 
 		$list = $_ETT->get_all(null,true,$order,$limit);
 		$total = $_ETT->get_cnt();
 
-		if($list === false && $total > 0)
+		if($list === false && $total > 0 && $prevpage > 0)
 		{
-			$param['page'] = $page - 1;
+			$param['page'] = $prevpage;
 			$_QRY->go($_HTML->url('xivo/configuration/manage/entity'),$param);
 		}
 

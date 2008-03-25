@@ -1,0 +1,107 @@
+; title_content_name
+Contexts > Add
+
+; smenu_general
+General
+
+; smenu_users
+Users
+
+; smenu_groups
+Groups
+
+; smenu_queues
+Queues
+
+; smenu_meetme
+Conference rooms
+
+; smenu_incall
+Incoming calls
+
+; fm_context_name
+Name:
+
+; fm_context_entity
+Entity:
+
+; fm_context_description
+Description:
+
+; col_contextentity_user-typevalbeg
+Number range start
+
+; col_contextentity_user-typevalend
+Number range end
+
+; col_contextentity_user-add
+Add a number range
+
+; opt_contextentity_user-delete
+Delete this number range
+
+; no_contextentity-user
+No number range
+
+; col_contextentity_group-typevalbeg
+Number range start
+
+; col_contextentity_group-typevalend
+Number range end
+
+; col_contextentity_group-add
+Add a number range
+
+; opt_contextentity_group-delete
+Delete this number range
+
+; no_contextentity-group
+No number range
+
+; col_contextentity_queue-typevalbeg
+Number range start
+
+; col_contextentity_queue-typevalend
+Number range end
+
+; col_contextentity_queue-add
+Add a number range
+
+; opt_contextentity_queue-delete
+Delete this number range
+
+; no_contextentity-queue
+No number range
+
+; col_contextentity_meetme-typevalbeg
+Number range start
+
+; col_contextentity_meetme-typevalend
+Number range end
+
+; col_contextentity_meetme-add
+Add a number range
+
+; opt_contextentity_meetme-delete
+Delete this number range
+
+; no_contextentity-meetme
+No number range
+
+; col_contextentity_incall-typevalbeg
+Number range start
+
+; col_contextentity_incall-typevalend
+Number range end
+
+; col_contextentity_incall-didlength
+DID length
+
+; col_contextentity_incall-add
+Add a number range
+
+; opt_contextentity_incall-delete
+Delete this number range
+
+; no_contextentity-incall
+No number range

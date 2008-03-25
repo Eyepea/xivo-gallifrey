@@ -21,7 +21,7 @@ $_HTML->set_var('vendor',$vendor);
 
 if(isset($_QR['name']) === false || xivo_haslen($_QR['name']) === false)
 {
-	if($vendor === 'snom')
+	if($vendor === 'snom' || $vendor === 'aastra')
 		$_HTML->set_var('act','input');
 	else
 		$_HTML->set_var('act','directory');

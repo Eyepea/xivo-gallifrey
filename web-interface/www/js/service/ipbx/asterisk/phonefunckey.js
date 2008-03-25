@@ -34,7 +34,7 @@ function xivo_build_phonefunckey_array(id)
 
 		key = 'it-phonefunckey-supervision-'+id;
 		xivo_elt_phonefunckey[id][key] = new Array();
-		xivo_elt_phonefunckey[id][key]['property'] = 'className|it-disabled';
+		xivo_elt_phonefunckey[id][key]['property'] = 'disabled|true:boolean;className|it-disabled';
 		xivo_elt_phonefunckey[id]['links']['link'][i++] = new Array(key,0,1);
 
 		key = 'it-phonefunckey-'+property+'-typeval-'+id;
@@ -57,7 +57,7 @@ function xivo_build_phonefunckey_array(id)
 		|| property == 'bosssecretary')
 		{
 			keyit = 'it-phonefunckey-supervision-'+id;
-			xivo_fm_phonefunckey[id][property][keyit]['property'] = 'className|it-enabled';
+			xivo_fm_phonefunckey[id][property][keyit]['property'] = 'disabled|false:boolean;className|it-enabled';
 		}
 
 		xivo_attrib_register('fm_phonefunckey-'+id+'-'+property,xivo_fm_phonefunckey[id][property]);

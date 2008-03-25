@@ -664,6 +664,9 @@ function xivo_debug(obj)
 
   	for(var property in obj)
 	{
+		if(property == 'selectionStart' || property == 'selectionEnd')
+			continue;
+
     		if(typeof(obj[property]) != 'object')
 		{
 			if(typeof(obj[property]) != 'function')
@@ -673,7 +676,7 @@ function xivo_debug(obj)
 		}
 	}
 
-	alert(r);
+	//alert(r);
 	
 	return(r);
 }
@@ -691,7 +694,7 @@ function xivo_smenu_click(obj,cname,part,last)
 	if(xivo_is_undef(obj.id) == true || obj.id == '')
 		return(false);
 
-	last = Boolean(last) != false ? true : false;
+	last = Boolean(last) != false;
 
 	var disobj = click = before = '';
 	var num = 0;
@@ -770,7 +773,7 @@ function xivo_smenu_out(obj,cname,last)
 	var num = 0;
 	var id = obj.id;
 
-	last = Boolean(last) != false ? true : false;
+	last = Boolean(last) != false;
 
 	if(last == true)
 	{
@@ -812,7 +815,7 @@ function xivo_smenu_over(obj,cname,last)
 	if(xivo_is_undef(xivo_smenu['bak'][id]) == true)
 		xivo_smenu['bak'][id] = obj.className;
 
-	last = Boolean(last) != false ? true : false;
+	last = Boolean(last) != false;
 
 	if(last == true)
 	{
@@ -935,4 +938,27 @@ function xivo_form_success(str)
 	}
 
 	xivo_chg_property_attrib(xivo_eid('tooltips'),property);
+}
+
+function xivo_get_parent_by_tagname(obj,tag)
+{
+	if(xivo_is_object(obj) == false
+	|| xivo_is_string(tag) == false)
+		return(false);
+
+	tag = tag.toLowerCase();
+
+	for(var i = 0;i < 10;i++)
+	{
+		if(xivo_is_undef(obj.parentNode) == true
+		|| xivo_is_undef(obj.tagName) == true)
+			return(false);
+
+		obj = obj.parentNode;
+
+		if(obj.tagName.toLowerCase() == tag)
+			return(obj);
+	}
+
+	return(false);
 }

@@ -38,6 +38,18 @@ $array['cdr'] = array();
 $array['cdr']['table'] = 'cdr';
 $array['cdr']['primary'] = array('id' => '');
 
+$array['context'] = array();
+$array['context']['table'] = 'context';
+$array['context']['primary'] = array('name' => '');
+
+$array['contextentity'] = array();
+$array['contextentity']['table'] = 'contextentity';
+$array['contextentity']['primary'] = array('context' => '','type' => '','typeval' => '');
+
+$array['contextfeatures'] = array();
+$array['contextfeatures']['table'] = 'contextfeatures';
+$array['contextfeatures']['primary'] = array('context' => '','type' => '','typeval' => '');
+
 $array['dialstatus'] = array();
 $array['dialstatus']['table'] = 'dialstatus';
 $array['dialstatus']['primary'] = array('id' => '');

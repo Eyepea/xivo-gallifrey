@@ -4,10 +4,10 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="<?=XIVO_I18N_BABELFISH_LANGUAGE?>">
 	<head>
-		<title><?=$this->bbf('html_title');?></title>
+		<title><?=xivo_htmlsc($this->bbf('page_title',php_uname('n')));?></title>
 
 		<script type="text/javascript">
-			document.title = '<?=$dhtml->escape($this->bbf('html_title'));?>';
+			document.title = '<?=$dhtml->escape($this->bbf('page_title',php_uname('n')));?>';
 			var xivo_i18n_lang = '<?=XIVO_I18N_BABELFISH_LANGUAGE?>';
 			var xivo_sess_name = '<?=XIVO_SESS_NAME?>';
 			var xivo_sess_id = '<?=XIVO_SESS_ID?>';

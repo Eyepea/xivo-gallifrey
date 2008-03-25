@@ -175,6 +175,7 @@ switch($act)
 		break;
 	default:
 		$act = 'list';
+		$prevpage = $page - 1;
 		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
 
 		$appcallfilter = &$ipbx->get_application('callfilter',array('type' => 'bosssecretary'),false);
@@ -183,15 +184,15 @@ switch($act)
 		$order['name'] = SORT_ASC;
 
 		$limit = array();
-		$limit[0] = ($page - 1) * $nbbypage;
+		$limit[0] = $prevpage * $nbbypage;
 		$limit[1] = $nbbypage;
 
 		$list = $appcallfilter->get_callfilters_list(null,$order,$limit);
 		$total = $appcallfilter->get_cnt();
 
-		if($list === false && $total > 0)
+		if($list === false && $total > 0 && $prevpage > 0)
 		{
-			$param['page'] = $page - 1;
+			$param['page'] = $prevpage;
 			$_QRY->go($_HTML->url('service/ipbx/call_management/callfilter'),$param);
 		}
 

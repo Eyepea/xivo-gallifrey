@@ -1,4 +1,10 @@
-; phone_noentry
+; phone_search-title
+Recherche XIVO
+
+; phone_search-prompt
+Nom ou numéro :
+
+; phone_noentries
 Aucune entrée
 
 ; phone_back

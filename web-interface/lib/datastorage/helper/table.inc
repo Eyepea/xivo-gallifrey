@@ -256,7 +256,7 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 
 				while(list($key2) = each($val))
 				{
-					if(isset($arr[$key2]) ===true)
+					if(isset($arr[$key2]) === true)
 					{
 						$where[$key2] = $arr[$key2];
 						$i++;

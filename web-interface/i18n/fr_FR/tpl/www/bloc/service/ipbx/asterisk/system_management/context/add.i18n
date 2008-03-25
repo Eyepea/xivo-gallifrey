@@ -1,0 +1,107 @@
+; title_content_name
+Contextes > Ajouter
+
+; smenu_general
+Général
+
+; smenu_users
+Utilisateurs
+
+; smenu_groups
+Groupes
+
+; smenu_queues
+Files d'attente
+
+; smenu_meetme
+Chambres de conférence
+
+; smenu_incall
+Appels entrants
+
+; fm_context_name
+Nom :
+
+; fm_context_entity
+Entité :
+
+; fm_context_description
+Description :
+
+; col_contextentity_user-typevalbeg
+Début de l'intervalle de numéro
+
+; col_contextentity_user-typevalend
+Fin de l'intervalle de numéro
+
+; col_contextentity_user-add
+Ajouter un intervalle de numéro
+
+; opt_contextentity_user-delete
+Supprimer un intervalle de numéro
+
+; no_contextentity-user
+Aucun intervalle de numéro
+
+; col_contextentity_group-typevalbeg
+Début de l'intervalle de numéro
+
+; col_contextentity_group-typevalend
+Fin de l'intervalle de numéro
+
+; col_contextentity_group-add
+Ajouter un intervalle de numéro
+
+; opt_contextentity_group-delete
+Supprimer un intervalle de numéro
+
+; no_contextentity-group
+Aucun intervalle de numéro
+
+; col_contextentity_queue-typevalbeg
+Début de l'intervalle de numéro
+
+; col_contextentity_queue-typevalend
+Fin de l'intervalle de numéro
+
+; col_contextentity_queue-add
+Ajouter un intervalle de numéro
+
+; opt_contextentity_queue-delete
+Supprimer un intervalle de numéro
+
+; no_contextentity-queue
+Aucun intervalle de numéro
+
+; col_contextentity_meetme-typevalbeg
+Début de l'intervalle de numéro
+
+; col_contextentity_meetme-typevalend
+Fin de l'intervalle de numéro
+
+; col_contextentity_meetme-add
+Ajouter un intervalle de numéro
+
+; opt_contextentity_meetme-delete
+Supprimer un intervalle de numéro
+
+; no_contextentity-meetme
+Aucun intervalle de numéro
+
+; col_contextentity_incall-typevalbeg
+Début de l'intervalle de numéro
+
+; col_contextentity_incall-typevalend
+Fin de l'intervalle de numéro
+
+; col_contextentity_incall-didlength
+Taille de la SDA
+
+; col_contextentity_incall-add
+Ajouter un intervalle de numéro
+
+; opt_contextentity_incall-delete
+Supprimer un intervalle de numéro
+
+; no_contextentity-incall
+Aucun intervalle de numéro

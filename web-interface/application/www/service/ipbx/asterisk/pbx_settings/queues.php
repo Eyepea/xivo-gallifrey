@@ -245,6 +245,7 @@ switch($act)
 		break;
 	default:
 		$act = 'list';
+		$prevpage = $page - 1;
 		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
 
 		$appqueue = &$ipbx->get_application('queue',null,false);
@@ -253,19 +254,19 @@ switch($act)
 		$order['name'] = SORT_ASC;
 
 		$limit = array();
-		$limit[0] = ($page - 1) * $nbbypage;
+		$limit[0] = $prevpage * $nbbypage;
 		$limit[1] = $nbbypage;
 
 		$list = $appqueue->get_queues_list(null,$order,$limit);
 		$total = $appqueue->get_cnt();
 
-		if($list === false && $total > 0)
+		if($list === false && $total > 0 && $prevpage > 0)
 		{
-			$param['page'] = $page - 1;
+			$param['page'] = $prevpage;
 			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
 		}
 
-		$_HTML->set_var('pager',xivo_calc_page($page,20,$total));
+		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
 		$_HTML->set_var('list',$list);
 }
 

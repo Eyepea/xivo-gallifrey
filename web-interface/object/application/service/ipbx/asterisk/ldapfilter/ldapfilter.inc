@@ -40,7 +40,7 @@ class xivo_application_service_asterisk_ldapfilter extends xivo_application_aste
 		return($this->_ldapfilter->get_primary($arr,$disable));
 	}
 
-	function _get_ldapserver($disable)
+	function _get_ldapserver($disable=null)
 	{
 		$this->_origin['ldapserver'] = false;
 

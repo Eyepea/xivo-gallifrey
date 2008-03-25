@@ -554,6 +554,12 @@ switch($act)
 		$beep_list = $sounds->get_list('beep',true);
 		$goodbye_list = $sounds->get_list('goodbye',true);
 
+		if(is_array($beep_list) === true)
+			asort($beep_list);
+
+		if(is_array($goodbye_list) === true)
+			asort($goodbye_list);
+
 		if(($moh_list = $musiconhold->get_all_category(null,false)) !== false)
 			ksort($moh_list);
 
@@ -627,7 +633,6 @@ switch($act)
 			{
 				$add = false;
 				$result['agent'] = $agent->get_filter_result();
-				xivo_var_dump($agent->get_filter_error());
 			}
 
 			$aqueue_where = array(
@@ -734,6 +739,12 @@ switch($act)
 
 		$beep_list = $sounds->get_list('beep',true);
 		$goodbye_list = $sounds->get_list('goodbye',true);
+
+		if(is_array($beep_list) === true)
+			asort($beep_list);
+
+		if(is_array($goodbye_list) === true)
+			asort($goodbye_list);
 
 		if(($moh_list = $musiconhold->get_all_category(null,false)) !== false)
 			ksort($moh_list);

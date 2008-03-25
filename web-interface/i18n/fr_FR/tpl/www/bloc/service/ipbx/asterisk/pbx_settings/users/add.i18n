@@ -37,11 +37,11 @@ Nom :
 ; fm_protocol_name
 Identifiant :
 
-; fm_protocol_interface
-Interface :
-
 ; fm_protocol_secret
 Mot de passe :
+
+; fm_protocol_interface
+Interface :
 
 ; fm_protocol_host
 Type d'adressage IP :

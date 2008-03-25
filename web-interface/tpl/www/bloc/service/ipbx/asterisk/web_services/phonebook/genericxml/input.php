@@ -1,13 +1,15 @@
 <?php
-	header('Content-Type: text/xml; charset=utf-8');
-	$taginput = $this->get_var('taginput');
+
+$xmlphone = &$this->get_module('xmlphone',array('vendor' => $this->get_var('vendor')));
+$taginput = $xmlphone->get_tag('input');
+
 ?>
 <<?=$taginput?>>
-	<Title><?=$this->bbf('phone_menu');?></Title>
-	<Prompt><?=$this->bbf('phone_prompt');?></Prompt>
+	<Title><?=$xmlphone->escape($this->bbf('phone_search-title'));?></Title>
+	<Prompt><?=$xmlphone->escape($this->bbf('phone_search-prompt'));?></Prompt>
 	<URL><?=$this->url('service/ipbx/web_services/phonebook/search',true);?></URL>
 	<InputItem>
-		<DisplayName><?=$this->bbf('phone_search');?></DisplayName>
+		<DisplayName><?=$xmlphone->escape($this->bbf('phone_search-prompt'));?></DisplayName>
 		<QueryStringParam>name</QueryStringParam>
 		<DefaultValue />
 		<InputFlags>a</InputFlags>

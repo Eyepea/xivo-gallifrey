@@ -97,6 +97,9 @@ Configuration IPBX
 ; mn_left_systemmanagement-configfiles
 Fichiers de configuration
 
+; mn_left_systemmanagement-context
+Contextes
+
 ; mn_left_systemmanagement-ldapfilter
 Filtres LDAP
 

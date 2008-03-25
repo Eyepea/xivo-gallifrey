@@ -96,14 +96,12 @@ class xivo_tpl
 
 	function get_option($name)
 	{
-		$r = null;
-
 		$name = (string) $name;
 
 		if(isset($this->_option[$name]) === true)
-			$r = $this->_option[$name];
+			return($this->_option[$name]);
 
-		return($r);
+		return(null);
 	}
 
 	function set_module($value,$name='')
@@ -120,47 +118,16 @@ class xivo_tpl
 		return(true);
 	}
 
-	function &get_module($name)
+	function &get_module($name,$param=null)
 	{
 		$r = false;
 
 		$name = (string) $name;
 
-		if($name !== '')
-		{
-			if(isset($this->_module[$name]) === false)
-				$this->_load_module($name);
-
-			if(isset($this->_module[$name]) === true)
-				$r = &$this->_module[$name];
-		}
+		if($this->_load_module($name,$param) === true)
+			$r = &$this->_module[$name];
 
 		return(($ref = &$r));
-	}
-
-	function call_module($name,$func,$args=null)
-	{
-		$func = (string) $func;
-		$name = (string) $name;
-
-		if($name === '' || $this->_load_module($name) === false)
-			return(false);
-		else if($args === null)
-			$r = call_user_func(array(&$this->_module[$name],$func));
-		else
-		{
-			$args = (array) $args;
-			$r = call_user_func_array(array(&$this->_module[$name],$func),$args);
-		}
-
-		return($r);
-	}
-
-	function valid_module($name)
-	{
-		$name = (string) $name;
-
-		return(isset($this->_module[$name]));
 	}
 
 	function _load_class($module)
@@ -172,29 +139,29 @@ class xivo_tpl
 		$dir = XIVO_PATH_LIB.XIVO_SEP_DIR.'tpl'.XIVO_SEP_DIR.'module';
 		$class = 'xivo_tpl_'.$module;
 
-		if(xivo_file::load_file($file,$dir,true) === false)
+		if(xivo_file::load_file($file,$dir,true) === false || class_exists($class) === false)
 			return(false);
-		else if(class_exists($class) === true)
-			$r = $class;
-		else
-			$r = false;
 
-		return($r);
+		return($class);
 	}
 
-	function _load_module($name)
+	function _load_module($name,$param=null)
 	{
 		$name = (string) $name;
 
-		if($this->valid_module($name) === true)
+		if(isset($this->_module[$name]) === true)
+		{
+			if(is_array($param) === true)
+				$this->_module[$name]->load_init($param);
 			return(true);
+		}
 		else if(($class = $this->_load_class($name)) === false)
 		{
 			trigger_error('Module does not exist in tpl',E_USER_ERROR);
 			return(false);
 		}
 
-		$this->set_module(new $class($this),$name);
+		$this->set_module(new $class($this,$param),$name);
 
 		return(true);
 	}
@@ -293,11 +260,9 @@ class xivo_tpl
 		if(isset($this->_file[$name]) === false)
 			return(null);
 		else if(is_array($this->_file[$name]) === true)
-			$r = end($this->_file[$name]);
-		else
-			$r = $this->_file[$name];
+			return(end($this->_file[$name]));
 
-		return($r);
+		return($this->_file[$name]);
 	}
 
 	function get_prepend($ext='')

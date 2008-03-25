@@ -143,6 +143,15 @@ $array['module']['cdr'] = array();
 $array['module']['cdr']['datastorage'] = array();
 $array['module']['cdr']['datastorage']['custom'] = true;
 
+$array['module']['context'] = array();
+$array['module']['context']['datastorage'] = true;
+
+$array['module']['contextentity'] = array();
+$array['module']['contextentity']['datastorage'] = true;
+
+$array['module']['contextfeatures'] = array();
+$array['module']['contextfeatures']['datastorage'] = true;
+
 $array['module']['dialstatus'] = array();
 $array['module']['dialstatus']['datastorage'] = true;
 

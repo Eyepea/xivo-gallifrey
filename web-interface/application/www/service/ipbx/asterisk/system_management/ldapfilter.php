@@ -43,7 +43,7 @@ switch($act)
 
 		$_HTML->set_var('info',$result);
 		$_HTML->set_var('element',$appldapfilter->get_elements());
-		$_HTML->set_var('ldapservers',$appldapfilter->get_ldapservers_list());
+		$_HTML->set_var('ldapservers',$appldapfilter->get_ldapservers_list(null,array('name' => SORT_ASC)));
 
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
@@ -89,7 +89,7 @@ switch($act)
 		$_HTML->set_var('id',$info['ldapfilter']['id']);
 		$_HTML->set_var('info',$return);
 		$_HTML->set_var('element',$appldapfilter->get_elements());
-		$_HTML->set_var('ldapservers',$appldapfilter->get_ldapservers_list());
+		$_HTML->set_var('ldapservers',$appldapfilter->get_ldapservers_list(null,array('name' => SORT_ASC)));
 
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
@@ -150,6 +150,7 @@ switch($act)
 		break;
 	default:
 		$act = 'list';
+		$prevpage = $page - 1;
 		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
 
 		$appldapfilter = &$ipbx->get_application('ldapfilter');
@@ -158,19 +159,19 @@ switch($act)
 		$order['name'] = SORT_ASC;
 
 		$limit = array();
-		$limit[0] = ($page - 1) * $nbbypage;
+		$limit[0] = $prevpage * $nbbypage;
 		$limit[1] = $nbbypage;
 
 		$list = $appldapfilter->get_ldapfilters_list(null,$order,$limit);
 		$total = $appldapfilter->get_cnt();
 
-		if($list === false && $total > 0)
+		if($list === false && $total > 0 && $prevpage > 0)
 		{
-			$param['page'] = $page - 1;
+			$param['page'] = $prevpage;
 			$_QRY->go($_HTML->url('service/ipbx/system_management/ldapfilter'),$param);
 		}
 
-		$_HTML->set_var('pager',xivo_calc_page($page,20,$total));
+		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
 		$_HTML->set_var('list',$list);
 }
 

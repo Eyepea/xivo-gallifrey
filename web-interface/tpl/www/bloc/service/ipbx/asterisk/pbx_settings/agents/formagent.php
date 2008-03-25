@@ -5,11 +5,6 @@
 	$element = $this->get_var('element');
 	$info = $this->get_var('info');
 
-	$moh_list = $this->get_var('moh_list');
-	$beep_list = $this->get_var('beep_list');
-	$list_grps = $this->get_var('list_grps');
-
-	$queues = $this->get_var('queues');
 	$qmember_slt = $this->get_var('qmember_slt');
 	$qmember_unslt = $this->get_var('qmember_unslt');
 ?>
@@ -26,21 +21,21 @@
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_agentfeatures_silent'),'name' => 'afeatures[silent]','labelid' => 'afeatures-silent','default' => $element['afeatures']['silent']['default'],'checked' => $info['afeatures']['silent']));?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_agentfeatures_numgroup'),'name' => 'afeatures[numgroup]','labelid' => 'afeatures-numgroup','browse' => 'agroup','key' => 'name','altkey' => 'id','default' => $this->get_var('group'),'value' => $info['afeatures']['numgroup']),$list_grps);?>
+<?=$form->select(array('desc' => $this->bbf('fm_agentfeatures_numgroup'),'name' => 'afeatures[numgroup]','labelid' => 'afeatures-numgroup','browse' => 'agroup','key' => 'name','altkey' => 'id','default' => $this->get_var('group'),'value' => $info['afeatures']['numgroup']),$this->get_var('list_grps'));?>
 
 </div>
 
 <div id="sb-part-queue" class="b-nodisplay">
 
 <?php
-	if($queues !== false && ($nb = count($queues)) !== 0):
+	if(($queues = $this->get_var('queues')) !== false && ($nb = count($queues)) !== 0):
 ?>
 	<div id="queuelist" class="fm-field fm-multilist">
 		<div class="slt-outlist">
 
 		<?=$form->select(array('name' => 'queuelist','label' => false,'id' => 'it-queuelist','multiple' => true,'size' => 5,'field' => false,'key' => false),$qmember_unslt);?>
 
-		</div>
+beep>
 		<div class="inout-list">
 
 			<a href="#" onclick="xivo_inqueue(); return(false);" title="<?=$this->bbf('bt_inqueue');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inqueue'),'class="bt-inlist" id="bt-inqueue" border="0"');?></a><br />
@@ -105,10 +100,10 @@
 
 <?=$form->select(array('desc' => $this->bbf('fm_agent_maxlogintries'),'name' => 'agent[maxlogintries]','labelid' => 'agent-maxlogintries','key' => false,'default' => $element['agent']['maxlogintries']['default'],'value' => $info['agent']['maxlogintries'],'bbf' => array('mixkey','fm_agent_maxlogintries-opt')),$element['agent']['maxlogintries']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_agent_goodbye'),'name' => 'agent[goodbye]','labelid' => 'agent-goodbye','empty' => $this->bbf('fm_agent_goodbye-opt-default'),'default' => $element['agent']['goodbye']['default'],'value' => $info['agent']['goodbye']),$beep_list);?>
+<?=$form->select(array('desc' => $this->bbf('fm_agent_goodbye'),'name' => 'agent[goodbye]','labelid' => 'agent-goodbye','empty' => $this->bbf('fm_agent_goodbye-opt-default'),'default' => $element['agent']['goodbye']['default'],'value' => $info['agent']['goodbye']),$this->get_var('goodbye_list'));?>
 
 <?php
-	if($moh_list !== false):
+	if(($moh_list = $this->get_var('moh_list')) !== false):
 		echo $form->select(array('desc' => $this->bbf('fm_agent_musiconhold'),'name' => 'agent[musiconhold]','labelid' => 'agent-musiconhold','key' => 'category','empty' => true,'default' => $element['agent']['musiconhold']['default'],'value' => $info['agent']['musiconhold']),$moh_list);
 	endif;
 ?>
@@ -123,6 +118,6 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_agent_urlprefix'),'name' => 'agent[urlprefix]','labelid' => 'agent-urlprefix','value' => $info['agent']['urlprefix'],'default' => $element['agent']['urlprefix']['default'],'size' => 15));?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_agent_custom_beep'),'name' => 'agent[custom_beep]','labelid' => 'agent-custom-beep','empty' => $this->bbf('fm_agent_custom-beep-opt-default'),'default' => $element['agent']['custom_beep']['default'],'value' => $info['agent']['custom_beep']),$beep_list);?>
+<?=$form->select(array('desc' => $this->bbf('fm_agent_custom_beep'),'name' => 'agent[custom_beep]','labelid' => 'agent-custom-beep','empty' => $this->bbf('fm_agent_custom-beep-opt-default'),'default' => $element['agent']['custom_beep']['default'],'value' => $info['agent']['custom_beep']),$this->get_var('beep_list'));?>
 
 </div>

@@ -70,7 +70,7 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 		else if(empty($list) === true)
 			return(null);
 
-		$info = array();
+		$info = $infotmp = array();
 		$info['category'] = $type;
 		$info['categoryval'] = 0;
 		$info['applicationval'] = '';
@@ -83,11 +83,11 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 			if(is_array($val) === false)
 				continue;
 
-			$info['status'] = $key;
-			$info = array_merge($info,$val);
+			$infotmp = array_merge($info,$val);
+			$infotmp['status'] = $key;
 
-			if(($rs = $this->_dialstatus->chk_values($info)) !== false
-			&& isset($tmp[$rs['status']]) === false)
+			if(($rs = $this->_dialstatus->chk_values($infotmp)) !== false
+			&& isset($reslist[$rs['status']]) === false)
 				$reslist[$rs['status']] = $rs;
 		}
 

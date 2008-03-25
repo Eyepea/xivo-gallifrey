@@ -640,8 +640,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$this->_set_error('protocol','invalid module');
 			return(false);
 		}
-
-		if(($rs = $protocol->chk_values($arr)) === false)
+		else if(($rs = $protocol->chk_values($arr)) === false)
 		{
 			$this->_set_result('protocol',$protocol->get_filter_result());
 			$this->_set_error('protocol',$protocol->get_filter_error());
