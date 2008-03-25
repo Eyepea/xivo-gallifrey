@@ -84,6 +84,8 @@ DECSTRING = 'Déclenché en automatique'
 REPFILES = '/usr/share/asterisk/sounds/callbooster'
 MOHFILES = '/usr/share/asterisk/moh/callbooster'
 
+ENDCALLSTATUS_TAXES = 'Fini'
+
 STATACD2_STATUSES = {'TT_RAF' : 0, 'TT_ASD' : 0, 'TT_SND' : 0, 'TT_SFA' : 0, 'TT_SOP' : 0,
                      'TT_TEL' : 0, 'TT_FIC' : 0, 'TT_BAS' : 0, 'TT_MES' : 0, 'TT_REP' : 0}
 
@@ -705,7 +707,7 @@ class CallBoosterCommand(BaseCommand):
                                         print 'I am about to break the OUTGOING call <%s>' % mycall.commid, mycall.parking
                                         self.__send_msg__(userinfo, '%s,1,,Annule/' % mycall.commid)
                                         mycall.annuleraccroche = True
-                                        self.__update_taxes__(mycall, 'Termine')
+                                        self.__update_taxes__(mycall, ENDCALLSTATUS_TAXES)
                                         userinfo['login']['calls'].pop(mycall.commid)
 
                 else:
@@ -736,7 +738,7 @@ class CallBoosterCommand(BaseCommand):
                                                 self.__send_msg__(userinfo, '%s,1,,Annule/' % mycall.commid)
                                                 mycall.annuleraccroche = True
                                                 self.__update_stat_acd2__(mycall)
-                                                self.__update_taxes__(mycall, 'Termine')
+                                                self.__update_taxes__(mycall, ENDCALLSTATUS_TAXES)
                                                 userinfo['login']['calls'].pop(mycall.commid)
                         else:
                                 ic1 = self.incoming_calls.get(event.get('Channel1'))
@@ -783,7 +785,7 @@ class CallBoosterCommand(BaseCommand):
                                 if 'agent-wouldbe-channel' in thiscall.uinfo and 'agentchannel' not in thiscall.uinfo:
                                         self.__send_msg__(thiscall.uinfo, ',-1,,AppelOpe/')
                                         self.amis[astid].hangup(thiscall.uinfo['agent-wouldbe-channel'], '')
-                        self.__update_taxes__(thiscall, 'Termine')
+                        self.__update_taxes__(thiscall, ENDCALLSTATUS_TAXES)
                         self.__update_stat_acd2__(thiscall)
                         self.__clear_call_fromqueues__(astid, thiscall)
                         # removes the call from the incoming calls' list
@@ -1068,7 +1070,7 @@ class CallBoosterCommand(BaseCommand):
                                                 cnum = usercall.cidnum
                                         else:
                                                 cnum = ''
-                                        self.__send_msg__(uinfo, '%s,%s,%s,Fiche/' % (usercall.commid, usercall.sdanum, usercall.cidnum))
+                                        self.__send_msg__(uinfo, '%s,%s,%s,Fiche/' % (usercall.commid, usercall.sdanum, cnum))
                                         self.__send_msg__(uinfo, '%s,%s,,CLR-ACD/' % (usercall.commid, usercall.sdanum))
                                         usercall.forceacd = None
                                 elif usercall.toretrieve is not None:
@@ -1841,9 +1843,19 @@ class CallBoosterCommand(BaseCommand):
                                         # remove the call from the queuelist and set it into the call list
 
                                         # park the current calls
+                                        ntowait = 0
                                         for callnum, anycall in userinfo['login']['calls'].iteritems():
-                                                self.__park__(astid, anycall)
+                                                ntowait += self.__park__(astid, anycall)
+
                                         userinfo['login']['calls'][calltoforce.commid] = calltoforce
+                                        if ntowait == 0:
+                                                userinfo['sendfiche'] = [qlidx, 'Agent/%s' % agentnum]
+                                                if calltoforce.dialplan['callerid'] == 1:
+                                                        cnum = calltoforce.cidnum
+                                                else:
+                                                        cnum = ''
+                                                self.__send_msg__(userinfo, '%s,%s,%s,Fiche/' % (calltoforce.commid, calltoforce.sdanum, cnum))
+                                                self.__send_msg__(userinfo, '%s,%s,,CLR-ACD/' % (calltoforce.commid, calltoforce.sdanum))
                         else:
                                 print 'ForceACD - unknown ref =', reference
 
@@ -1896,7 +1908,7 @@ class CallBoosterCommand(BaseCommand):
                                         try:
                                                 if anycall.dir == 'i':
                                                         self.__update_stat_acd2__(anycall)
-                                                self.__update_taxes__(anycall, 'Termine')
+                                                self.__update_taxes__(anycall, ENDCALLSTATUS_TAXES)
                                         except Exception, exc:
                                                 print '--- exception --- (Raccroche) :', exc
 
@@ -2095,6 +2107,7 @@ class CallBoosterCommand(BaseCommand):
                                         self.amis[astid].queueadd(qname, agname)
                                         self.amis[astid].queuepause(qname, agname, 'false')
                                         print 'fiche has been sent :', time.time()
+                                        del userinfo['sendfiche']
                                 return
 
                         self.__choose_and_queuepush__(astid, 'Pret')
@@ -2102,7 +2115,6 @@ class CallBoosterCommand(BaseCommand):
 
                 elif cname == 'Enregistre':
                         reference = parsedcommand.args[1]
-                        connid_socket.send(',,,Enregistre/')
 
 ##                        if 'agentchannel' in userinfo:
 ##                                print 'sendfiche, the agent is online :', userinfo['agentchannel']
@@ -2113,6 +2125,7 @@ class CallBoosterCommand(BaseCommand):
                         self.amis[astid].aoriginate_var('Agent', agentnum, opername,
                                                         'record_exten', 'Enregistre', 'ctx-callbooster-record',
                                                         {'CB_RECORD_FILENAME' : reference[0]}, 100)
+                        connid_socket.send(',,,Enregistre/')
 
 
                 elif cname == 'Alerte':
@@ -2561,12 +2574,14 @@ class CallBoosterCommand(BaseCommand):
                                 dureesonnerie = t3 - t1
 
                         print '__update_taxes__ : commid = %s, arg = %s, state = %s, ' \
-                              'durees = %f, %d, %d, taxes = %d' \
-                              %(anycall.commid, str(anycall.taxes), state, duree, duree_int, dureesonnerie, ntaxes)
+                              'durees = (%d, sonn = %d), taxes = %d' \
+                              %(anycall.commid, str(anycall.taxes), state,
+                                duree_int, dureesonnerie, ntaxes)
 
                         self.cursor_operat.query('USE system')
-                        self.cursor_operat.query('UPDATE taxes SET Duree = %d, DureeSonnerie = %d, Etat = %s, nbTaxes = %d WHERE RefFB = %s'
-                                                 % (duree, dureesonnerie, '"%s"' % state, ntaxes, anycall.commid))
+                        self.cursor_operat.query('UPDATE taxes SET Duree = %d, DureeSonnerie = %d, Etat = %s, nbTaxes = %d '
+                                                 'WHERE N = %d'
+                                                 % (duree_int, dureesonnerie, '"%s"' % state, ntaxes, anycall.insert_taxes_id))
                         self.conn_operat.commit()
                 except Exception, exc:
                         print '--- exception --- (__update_taxes__) :', exc, anycall, state
@@ -2955,16 +2970,16 @@ class CallBoosterCommand(BaseCommand):
                 if re_push != None:
                         inchannel = re_push.group(1)
                         cidnum    = re_push.group(2)
-                        sdanum    = re_push.group(3)
+                        callednum = re_push.group(3)
                         prevupto  = re_push.group(4)
-                        print 'INCOMING CALL ## PUSH received #', inchannel, cidnum, sdanum, prevupto
-                        whattodo = self.__elect__(astid, inchannel, cidnum, sdanum, prevupto)
+                        print 'INCOMING CALL ## PUSH received #', inchannel, cidnum, callednum, prevupto
+                        whattodo = self.__elect__(astid, inchannel, cidnum, callednum, prevupto)
                         print 'INCOMING CALL ## sending pickled reply to AGI'
                         msgforagi = 'PULL_START %s PULL_STOP' % pickle.dumps(whattodo)
                 return msgforagi
 
 
-        def __elect__(self, astid, inchannel, cidnum, sdanum, upto):
+        def __elect__(self, astid, inchannel, cidnum, callednum, upto):
                 """
                 Called by an Incoming Call in order to find the proper agent.
                 It is actually called once the AGI has given some basic informations.
@@ -2974,6 +2989,7 @@ class CallBoosterCommand(BaseCommand):
                 action = 'exit'
                 delay = 0
                 value = ''
+                sdanum = callednum[-4:]
                 newupto = upto
                 thiscall = None
                 if upto == '0':
@@ -2986,7 +3002,7 @@ class CallBoosterCommand(BaseCommand):
                         if thiscall.statacd2_state != 'NC':
                                 thiscall.setclicolnames()
 
-                        self.__init_taxes__(thiscall, cidnum, cidnum, sdanum, TAXES_TRUNKNAME, TAXES_CTI, 0)
+                        self.__init_taxes__(thiscall, cidnum, cidnum, callednum, TAXES_TRUNKNAME, TAXES_CTI, 0)
 
                         if thiscall.statacd2_state == 'V':
                                 print ' NCOMING CALL ## calling get_sda_profiles ##'
@@ -2995,11 +3011,11 @@ class CallBoosterCommand(BaseCommand):
                                 if ret == True:
                                         self.__incall_add__(thiscall, inchannel)
                                 else:
-                                        self.__update_taxes__(thiscall, 'Termine')
+                                        self.__update_taxes__(thiscall, ENDCALLSTATUS_TAXES)
                                         self.__update_stat_acd2__(thiscall)
                                         thiscall = None
                         else:
-                                self.__update_taxes__(thiscall, 'Termine')
+                                self.__update_taxes__(thiscall, ENDCALLSTATUS_TAXES)
                                 self.__update_stat_acd2__(thiscall)
                                 thiscall = None
                 else:
@@ -3056,14 +3072,12 @@ class CallBoosterCommand(BaseCommand):
                                                 [queueaction, queuecall] = td
                                                 log_debug(SYSLOG_INFO, 'elect : secretariat / %s / %s / %s' % (opername_iter, queueaction, queuecall.sdanum))
                                                 if queueaction == 'push':
-                                                        if thiscall == queuecall:
-                                                                nevt += 1
-                                                                self.__clear_call_fromqueues__(astid, queuecall)
-                                                                self.__sendfiche__(opername_iter, queuecall)
-                                                                delay = 100
-                                                                argument = None
-                                                        else:
-                                                                pass
+                                                        # if thiscall == queuecall # commented since it can occur that an other call can be chosen (after ACD level > 1)
+                                                        nevt += 1
+                                                        self.__clear_call_fromqueues__(astid, queuecall)
+                                                        self.__sendfiche__(opername_iter, queuecall)
+                                                        delay = 100
+                                                        argument = None
                                                 elif queueaction == 'enqueue':
                                                         nevt += 1
                                                         self.__addtoqueue__(astid, opername_iter, queuecall)
@@ -3074,11 +3088,11 @@ class CallBoosterCommand(BaseCommand):
                                         if len(thiscall.list_svirt) == 0:
                                                 action = 'noqueue'
                         elif action == 'exit':
-                                self.__update_taxes__(thiscall, 'Termine')
+                                self.__update_taxes__(thiscall, ENDCALLSTATUS_TAXES)
                                 self.__update_stat_acd2__(thiscall)
                         else:
                                 print '### action is <%s> which I don t know, exiting anyway' % action
-                                self.__update_taxes__(thiscall, 'Termine')
+                                self.__update_taxes__(thiscall, ENDCALLSTATUS_TAXES)
                                 self.__update_stat_acd2__(thiscall)
 
                         # here we go back to the AGI : we must tell the dialplan what to do ...

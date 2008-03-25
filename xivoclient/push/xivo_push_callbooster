@@ -125,8 +125,9 @@ except Exception, exc:
 
 
 action = 'exit'
-mysda = sys.argv[1]
-print_verbose('in callbooster AGI <%s>' % mysda)
+callednum = sys.argv[1]
+mysda = callednum[-4:]
+print_verbose('in callbooster AGI <%s> <%s>' % (callednum, mysda))
 
 cidnum    = agi.env['agi_callerid']
 prevwhere = agi.get_variable('CB_AGI_WHERE')
@@ -139,7 +140,7 @@ else:
 try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect(('127.0.0.1', port_comm_agi_daemon))
-        s.send('PUSH <%s> <%s> <%s> <%s>\r\n' % (inchannel, cidnum, mysda, upto))
+        s.send('PUSH <%s> <%s> <%s> <%s>\r\n' % (inchannel, cidnum, callednum, upto))
         pushreply = s.recv(8192)
         # print_verbose('before pickle loads : <%s>' % str(pushreply))
         # format PULL_START (struct) PULL_STOP
