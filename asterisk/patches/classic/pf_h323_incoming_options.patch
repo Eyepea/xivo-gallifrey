@@ -14,10 +14,10 @@
 	With this patch Asterisk will correctly refuse to do FastStart and/or
 	H245Tunneling for incoming calls to users configured in such a way.
 
-Index: asterisk-classic/channels/chan_h323.c
+Index: asterisk-1.2.27/channels/chan_h323.c
 ===================================================================
---- asterisk-classic.orig/channels/chan_h323.c	2007-10-21 01:35:48.000000000 +0200
-+++ asterisk-classic/channels/chan_h323.c	2007-10-21 01:35:49.000000000 +0200
+--- asterisk-1.2.27.orig/channels/chan_h323.c	2008-03-19 11:34:20.000000000 +0100
++++ asterisk-1.2.27/channels/chan_h323.c	2008-03-19 11:34:24.000000000 +0100
 @@ -94,6 +94,7 @@
  rfc2833_cb on_set_rfc2833_payload;
  hangup_cb on_hangup;
@@ -61,10 +61,10 @@ Index: asterisk-classic/channels/chan_h323.c
  		/* start the h.323 listener */
  		if (h323_start_listener(h323_signalling_port, bindaddr)) {
  			ast_log(LOG_ERROR, "Unable to create H323 listener.\n");
-Index: asterisk-classic/channels/h323/ast_h323.cpp
+Index: asterisk-1.2.27/channels/h323/ast_h323.cpp
 ===================================================================
---- asterisk-classic.orig/channels/h323/ast_h323.cpp	2007-10-21 01:35:45.000000000 +0200
-+++ asterisk-classic/channels/h323/ast_h323.cpp	2007-10-21 01:35:49.000000000 +0200
+--- asterisk-1.2.27.orig/channels/h323/ast_h323.cpp	2008-03-19 11:34:17.000000000 +0100
++++ asterisk-1.2.27/channels/h323/ast_h323.cpp	2008-03-19 11:34:24.000000000 +0100
 @@ -549,9 +549,30 @@
  H323Connection * MyH323EndPoint::CreateConnection(unsigned callReference, void *o, H323Transport *transport, H323SignalPDU *setupPDU)
  {
@@ -114,10 +114,10 @@ Index: asterisk-classic/channels/h323/ast_h323.cpp
  }
  
  /**
-Index: asterisk-classic/channels/h323/chan_h323.h
+Index: asterisk-1.2.27/channels/h323/chan_h323.h
 ===================================================================
---- asterisk-classic.orig/channels/h323/chan_h323.h	2007-10-21 01:35:45.000000000 +0200
-+++ asterisk-classic/channels/h323/chan_h323.h	2007-10-21 01:35:49.000000000 +0200
+--- asterisk-1.2.27.orig/channels/h323/chan_h323.h	2008-03-19 11:34:17.000000000 +0100
++++ asterisk-1.2.27/channels/h323/chan_h323.h	2008-03-19 11:34:24.000000000 +0100
 @@ -171,6 +171,9 @@
  typedef void (*setcapabilities_cb)(unsigned, const char *);
  extern setcapabilities_cb on_setcapabilities;

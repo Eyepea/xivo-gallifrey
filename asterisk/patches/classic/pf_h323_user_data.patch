@@ -22,10 +22,10 @@
 	underscore charater to their name; for example call
 	Set(_USER_DATA=${USER_DATA}) before a Dial() to an other H.323 peer.
 
-Index: asterisk-classic/channels/chan_h323.c
+Index: asterisk-1.2.27/channels/chan_h323.c
 ===================================================================
---- asterisk-classic.orig/channels/chan_h323.c	2007-10-21 01:35:22.000000000 +0200
-+++ asterisk-classic/channels/chan_h323.c	2007-10-21 01:35:45.000000000 +0200
+--- asterisk-1.2.27.orig/channels/chan_h323.c	2008-03-19 11:32:19.000000000 +0100
++++ asterisk-1.2.27/channels/chan_h323.c	2008-03-19 11:34:17.000000000 +0100
 @@ -294,6 +294,10 @@
                  free(cd->sourceIp);
                  cd->sourceIp = NULL;
@@ -116,10 +116,10 @@ Index: asterisk-classic/channels/chan_h323.c
  	global_options.dtmfcodec = 101;
  	global_options.dtmfmode = H323_DTMF_RFC2833;
  	global_options.capability = AST_FORMAT_G723_1 | AST_FORMAT_GSM | AST_FORMAT_ULAW | AST_FORMAT_ALAW | AST_FORMAT_G729A | AST_FORMAT_H261;
-Index: asterisk-classic/channels/h323/ast_h323.cpp
+Index: asterisk-1.2.27/channels/h323/ast_h323.cpp
 ===================================================================
---- asterisk-classic.orig/channels/h323/ast_h323.cpp	2007-10-21 01:35:22.000000000 +0200
-+++ asterisk-classic/channels/h323/ast_h323.cpp	2007-10-21 01:35:45.000000000 +0200
+--- asterisk-1.2.27.orig/channels/h323/ast_h323.cpp	2008-03-19 11:34:14.000000000 +0100
++++ asterisk-1.2.27/channels/h323/ast_h323.cpp	2008-03-19 11:34:17.000000000 +0100
 @@ -588,6 +588,7 @@
  	bridging = FALSE;
  	progressSetup = progressAlert = 0;
@@ -227,10 +227,10 @@ Index: asterisk-classic/channels/h323/ast_h323.cpp
  
  	int res = on_outgoing_call(&cd);
  	if (!res) {
-Index: asterisk-classic/channels/h323/ast_h323.h
+Index: asterisk-1.2.27/channels/h323/ast_h323.h
 ===================================================================
---- asterisk-classic.orig/channels/h323/ast_h323.h	2007-10-21 01:35:22.000000000 +0200
-+++ asterisk-classic/channels/h323/ast_h323.h	2007-10-21 01:35:45.000000000 +0200
+--- asterisk-1.2.27.orig/channels/h323/ast_h323.h	2008-03-19 11:34:14.000000000 +0100
++++ asterisk-1.2.27/channels/h323/ast_h323.h	2008-03-19 11:34:17.000000000 +0100
 @@ -179,18 +179,22 @@
  				     H245_TerminalCapabilitySetReject &);
  	void SetCause(int _cause) { cause = _cause; };
@@ -255,10 +255,10 @@ Index: asterisk-classic/channels/h323/ast_h323.h
  
  	RTP_DataFrame::PayloadTypes dtmfCodec;
  
-Index: asterisk-classic/channels/h323/chan_h323.h
+Index: asterisk-1.2.27/channels/h323/chan_h323.h
 ===================================================================
---- asterisk-classic.orig/channels/h323/chan_h323.h	2007-10-21 01:35:22.000000000 +0200
-+++ asterisk-classic/channels/h323/chan_h323.h	2007-10-21 01:35:45.000000000 +0200
+--- asterisk-1.2.27.orig/channels/h323/chan_h323.h	2008-03-19 11:32:19.000000000 +0100
++++ asterisk-1.2.27/channels/h323/chan_h323.h	2008-03-19 11:34:17.000000000 +0100
 @@ -33,6 +33,8 @@
  typedef struct call_options {
  	char			cid_num[80];

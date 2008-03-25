@@ -9,10 +9,10 @@
 ## DP:   removal of some BRI unrelated mess
 
 @DPATCH@
-Index: asterisk-bristuff/apps/app_chanisavail.c
+Index: asterisk-1.2.27/apps/app_chanisavail.c
 ===================================================================
---- asterisk-bristuff.orig/apps/app_chanisavail.c	2005-11-29 19:24:39.000000000 +0100
-+++ asterisk-bristuff/apps/app_chanisavail.c	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/apps/app_chanisavail.c	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/apps/app_chanisavail.c	2008-03-19 11:37:10.000000000 +0100
 @@ -118,7 +118,7 @@
  				snprintf(trychan, sizeof(trychan), "%s/%s",cur,number);
  				status = inuse = ast_device_state(trychan);
@@ -22,10 +22,10 @@ Index: asterisk-bristuff/apps/app_chanisavail.c
  					pbx_builtin_setvar_helper(chan, "AVAILCHAN", tempchan->name);
  					/* Store the originally used channel too */
  					snprintf(tmp, sizeof(tmp), "%s/%s", tech, number);
-Index: asterisk-bristuff/apps/app_chanspy.c
+Index: asterisk-1.2.27/apps/app_chanspy.c
 ===================================================================
---- asterisk-bristuff.orig/apps/app_chanspy.c	2007-07-13 22:10:39.000000000 +0200
-+++ asterisk-bristuff/apps/app_chanspy.c	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/apps/app_chanspy.c	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/apps/app_chanspy.c	2008-03-19 11:37:10.000000000 +0100
 @@ -55,6 +55,7 @@
  
  static const char *synopsis = "Listen to the audio of an active channel";
@@ -153,10 +153,10 @@ Index: asterisk-bristuff/apps/app_chanspy.c
  }
  
  char *description(void)
-Index: asterisk-bristuff/apps/app_devstate.c
+Index: asterisk-1.2.27/apps/app_devstate.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-bristuff/apps/app_devstate.c	2007-11-02 17:08:10.000000000 +0100
++++ asterisk-1.2.27/apps/app_devstate.c	2008-03-19 11:37:10.000000000 +0100
 @@ -0,0 +1,225 @@
 +/*
 + * Devstate application
@@ -383,10 +383,10 @@ Index: asterisk-bristuff/apps/app_devstate.c
 +{
 +    return ASTERISK_GPL_KEY;
 +}
-Index: asterisk-bristuff/apps/app_dial.c
+Index: asterisk-1.2.27/apps/app_dial.c
 ===================================================================
---- asterisk-bristuff.orig/apps/app_dial.c	2007-11-02 17:05:24.000000000 +0100
-+++ asterisk-bristuff/apps/app_dial.c	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/apps/app_dial.c	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/apps/app_dial.c	2008-03-19 11:37:10.000000000 +0100
 @@ -11,6 +11,10 @@
   * the project provides a web site, mailing lists and IRC
   * channels for your use.
@@ -706,10 +706,10 @@ Index: asterisk-bristuff/apps/app_dial.c
  		if (res != AST_PBX_NO_HANGUP_PEER) {
  			if (!chan->_softhangup)
  				chan->hangupcause = peer->hangupcause;
-Index: asterisk-bristuff/apps/app_directed_pickup.c
+Index: asterisk-1.2.27/apps/app_directed_pickup.c
 ===================================================================
---- asterisk-bristuff.orig/apps/app_directed_pickup.c	2006-04-06 19:00:10.000000000 +0200
-+++ asterisk-bristuff/apps/app_directed_pickup.c	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/apps/app_directed_pickup.c	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/apps/app_directed_pickup.c	2008-03-19 11:37:10.000000000 +0100
 @@ -41,7 +41,7 @@
  #include "asterisk/app.h"
  
@@ -719,10 +719,10 @@ Index: asterisk-bristuff/apps/app_directed_pickup.c
  static const char *synopsis = "Directed Call Pickup";
  static const char *descrip =
  "  Pickup(extension[@context]): This application can pickup any ringing channel\n"
-Index: asterisk-bristuff/apps/app_meetme.c
+Index: asterisk-1.2.27/apps/app_meetme.c
 ===================================================================
---- asterisk-bristuff.orig/apps/app_meetme.c	2007-06-19 15:54:03.000000000 +0200
-+++ asterisk-bristuff/apps/app_meetme.c	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/apps/app_meetme.c	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/apps/app_meetme.c	2008-03-19 11:37:10.000000000 +0100
 @@ -460,7 +460,7 @@
  			ast_copy_string(cnf->pin, pin, sizeof(cnf->pin));
  			ast_copy_string(cnf->pinadmin, pinadmin, sizeof(cnf->pinadmin));
@@ -776,10 +776,10 @@ Index: asterisk-bristuff/apps/app_meetme.c
  				if (res > 0) {
  					memset(&fr, 0, sizeof(fr));
  					fr.frametype = AST_FRAME_VOICE;
-Index: asterisk-bristuff/apps/app_milliwatt.c
+Index: asterisk-1.2.27/apps/app_milliwatt.c
 ===================================================================
---- asterisk-bristuff.orig/apps/app_milliwatt.c	2006-01-19 05:17:45.000000000 +0100
-+++ asterisk-bristuff/apps/app_milliwatt.c	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/apps/app_milliwatt.c	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/apps/app_milliwatt.c	2008-03-19 11:37:10.000000000 +0100
 @@ -74,20 +74,28 @@
  {
  	struct ast_frame wf;
@@ -815,10 +815,10 @@ Index: asterisk-bristuff/apps/app_milliwatt.c
  	wf.src = "app_milliwatt";
  	wf.delivery.tv_sec = 0;
  	wf.delivery.tv_usec = 0;
-Index: asterisk-bristuff/apps/app_page.c
+Index: asterisk-1.2.27/apps/app_page.c
 ===================================================================
---- asterisk-bristuff.orig/apps/app_page.c	2007-02-20 20:49:50.000000000 +0100
-+++ asterisk-bristuff/apps/app_page.c	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/apps/app_page.c	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/apps/app_page.c	2008-03-19 11:37:10.000000000 +0100
 @@ -85,7 +85,7 @@
  {
  	struct calloutdata *cd = data;
@@ -828,10 +828,10 @@ Index: asterisk-bristuff/apps/app_page.c
  	free(cd);
  	return NULL;
  }
-Index: asterisk-bristuff/apps/app_parkandannounce.c
+Index: asterisk-1.2.27/apps/app_parkandannounce.c
 ===================================================================
---- asterisk-bristuff.orig/apps/app_parkandannounce.c	2005-11-29 19:24:39.000000000 +0100
-+++ asterisk-bristuff/apps/app_parkandannounce.c	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/apps/app_parkandannounce.c	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/apps/app_parkandannounce.c	2008-03-19 11:37:10.000000000 +0100
 @@ -183,7 +183,7 @@
  
  	memset(&oh, 0, sizeof(oh));
@@ -841,10 +841,10 @@ Index: asterisk-bristuff/apps/app_parkandannounce.c
  
  	if(dchan) {
  		if(dchan->_state == AST_STATE_UP) {
-Index: asterisk-bristuff/apps/app_pickup.c
+Index: asterisk-1.2.27/apps/app_pickup.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-bristuff/apps/app_pickup.c	2007-11-02 17:08:10.000000000 +0100
++++ asterisk-1.2.27/apps/app_pickup.c	2008-03-19 11:37:10.000000000 +0100
 @@ -0,0 +1,319 @@
 +/*
 + * Asterisk -- A telephony toolkit for Linux.
@@ -1165,11 +1165,11 @@ Index: asterisk-bristuff/apps/app_pickup.c
 +{
 +	return ASTERISK_GPL_KEY;
 +}
-Index: asterisk-bristuff/apps/app_queue.c
+Index: asterisk-1.2.27/apps/app_queue.c
 ===================================================================
---- asterisk-bristuff.orig/apps/app_queue.c	2007-11-02 17:05:25.000000000 +0100
-+++ asterisk-bristuff/apps/app_queue.c	2007-11-02 17:08:10.000000000 +0100
-@@ -554,7 +554,7 @@
+--- asterisk-1.2.27.orig/apps/app_queue.c	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/apps/app_queue.c	2008-03-19 11:37:10.000000000 +0100
+@@ -545,7 +545,7 @@
  	return NULL;
  }
  
@@ -1178,7 +1178,7 @@ Index: asterisk-bristuff/apps/app_queue.c
  {
  	/* Avoid potential for deadlocks by spawning a new thread to handle
  	   the event */
-@@ -1546,7 +1546,7 @@
+@@ -1525,7 +1525,7 @@
  		location = "";
  
  	/* Request the peer */
@@ -1187,7 +1187,7 @@ Index: asterisk-bristuff/apps/app_queue.c
  	if (!tmp->chan) {			/* If we can't, just go on to the next call */
  #if 0
  		ast_log(LOG_NOTICE, "Unable to create channel of type '%s' for Queue\n", cur->tech);
-@@ -1858,7 +1858,7 @@
+@@ -1837,7 +1837,7 @@
  					if (option_verbose > 2)
  						ast_verbose(VERBOSE_PREFIX_3 "Now forwarding %s to '%s/%s' (thanks to %s)\n", in->name, tech, stuff, o->chan->name);
  					/* Setup parameters */
@@ -1196,7 +1196,7 @@ Index: asterisk-bristuff/apps/app_queue.c
  					if (status != o->oldstatus) 
  						update_dial_status(qe->parent, o->member, status);						
  					if (!o->chan) {
-@@ -2418,14 +2418,14 @@
+@@ -2390,14 +2390,14 @@
  			else
  				which = peer;
  			if (monitorfilename)
@@ -1214,10 +1214,10 @@ Index: asterisk-bristuff/apps/app_queue.c
  			}
  			if (qe->parent->monjoin)
  				ast_monitor_setjoinfiles(which, 1);
-Index: asterisk-bristuff/apps/app_readfile.c
+Index: asterisk-1.2.27/apps/app_readfile.c
 ===================================================================
---- asterisk-bristuff.orig/apps/app_readfile.c	2006-03-23 21:13:48.000000000 +0100
-+++ asterisk-bristuff/apps/app_readfile.c	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/apps/app_readfile.c	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/apps/app_readfile.c	2008-03-19 11:37:10.000000000 +0100
 @@ -40,7 +40,7 @@
  #include "asterisk/app.h"
  #include "asterisk/module.h"
@@ -1227,10 +1227,10 @@ Index: asterisk-bristuff/apps/app_readfile.c
  
  static char *app_readfile = "ReadFile";
  
-Index: asterisk-bristuff/apps/app_segfault.c
+Index: asterisk-1.2.27/apps/app_segfault.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-bristuff/apps/app_segfault.c	2007-11-02 17:08:10.000000000 +0100
++++ asterisk-1.2.27/apps/app_segfault.c	2008-03-19 11:37:10.000000000 +0100
 @@ -0,0 +1,75 @@
 +/*
 + * Segfault application
@@ -1307,10 +1307,10 @@ Index: asterisk-bristuff/apps/app_segfault.c
 +{
 +    return ASTERISK_GPL_KEY;
 +}
-Index: asterisk-bristuff/apps/app_sendtext.c
+Index: asterisk-1.2.27/apps/app_sendtext.c
 ===================================================================
---- asterisk-bristuff.orig/apps/app_sendtext.c	2005-11-29 19:24:39.000000000 +0100
-+++ asterisk-bristuff/apps/app_sendtext.c	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/apps/app_sendtext.c	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/apps/app_sendtext.c	2008-03-19 11:37:10.000000000 +0100
 @@ -112,7 +112,7 @@
  	}
  	status = "FAILURE";
@@ -1320,10 +1320,10 @@ Index: asterisk-bristuff/apps/app_sendtext.c
  	if (!res)
  		status = "SUCCESS";
  	pbx_builtin_setvar_helper(chan, "SENDTEXTSTATUS", status);
-Index: asterisk-bristuff/apps/app_zapras.c
+Index: asterisk-1.2.27/apps/app_zapras.c
 ===================================================================
---- asterisk-bristuff.orig/apps/app_zapras.c	2006-12-11 01:33:59.000000000 +0100
-+++ asterisk-bristuff/apps/app_zapras.c	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/apps/app_zapras.c	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/apps/app_zapras.c	2008-03-19 11:37:10.000000000 +0100
 @@ -188,7 +188,7 @@
  				}
  			}
@@ -1333,10 +1333,10 @@ Index: asterisk-bristuff/apps/app_zapras.c
  			ioctl(chan->fds[0], ZT_AUDIOMODE, &x);
  
  			/* Restore saved values */
-Index: asterisk-bristuff/apps/Makefile
+Index: asterisk-1.2.27/apps/Makefile
 ===================================================================
---- asterisk-bristuff.orig/apps/Makefile	2006-04-30 15:38:22.000000000 +0200
-+++ asterisk-bristuff/apps/Makefile	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/apps/Makefile	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/apps/Makefile	2008-03-19 11:37:10.000000000 +0100
 @@ -28,8 +28,12 @@
       app_test.so app_forkcdr.so app_math.so app_realtime.so \
       app_dumpchan.so app_waitforsilence.so app_while.so app_setrdnis.so \
@@ -1351,10 +1351,10 @@ Index: asterisk-bristuff/apps/Makefile
  
  #
  # Obsolete things...
-Index: asterisk-bristuff/asterisk.c
+Index: asterisk-1.2.27/asterisk.c
 ===================================================================
---- asterisk-bristuff.orig/asterisk.c	2007-11-02 17:05:25.000000000 +0100
-+++ asterisk-bristuff/asterisk.c	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/asterisk.c	2008-03-19 11:36:54.000000000 +0100
++++ asterisk-1.2.27/asterisk.c	2008-03-19 11:37:10.000000000 +0100
 @@ -170,7 +170,7 @@
  int option_maxcalls = 0;			/*!< */
  double option_maxload = 0.0;			/*!< Max load avg on system */
@@ -1389,10 +1389,10 @@ Index: asterisk-bristuff/asterisk.c
  		}
  		v = v->next;
  	}
-Index: asterisk-bristuff/build_tools/make_defaults_h
+Index: asterisk-1.2.27/build_tools/make_defaults_h
 ===================================================================
---- asterisk-bristuff.orig/build_tools/make_defaults_h	2007-11-02 17:05:24.000000000 +0100
-+++ asterisk-bristuff/build_tools/make_defaults_h	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/build_tools/make_defaults_h	2008-03-19 11:36:52.000000000 +0100
++++ asterisk-1.2.27/build_tools/make_defaults_h	2008-03-19 11:37:10.000000000 +0100
 @@ -17,6 +17,7 @@
  #define AST_KEY_DIR    "${INSTALL_PATH}${ASTVARLIBDIR}/keys"
  #define AST_DB         "${INSTALL_PATH}${ASTVARLIBDIR}/astdb"
@@ -1401,10 +1401,10 @@ Index: asterisk-bristuff/build_tools/make_defaults_h
  
  #define AST_CONFIG_FILE "${INSTALL_PATH}${ASTCONFPATH}"
  
-Index: asterisk-bristuff/channel.c
+Index: asterisk-1.2.27/channel.c
 ===================================================================
---- asterisk-bristuff.orig/channel.c	2007-07-05 16:19:14.000000000 +0200
-+++ asterisk-bristuff/channel.c	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/channel.c	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/channel.c	2008-03-19 11:37:10.000000000 +0100
 @@ -94,8 +94,8 @@
   */
  static int shutting_down = 0;
@@ -1740,10 +1740,10 @@ Index: asterisk-bristuff/channel.c
 +
 +	return res;
 +}
-Index: asterisk-bristuff/channels/chan_agent.c
+Index: asterisk-1.2.27/channels/chan_agent.c
 ===================================================================
---- asterisk-bristuff.orig/channels/chan_agent.c	2007-07-23 20:28:13.000000000 +0200
-+++ asterisk-bristuff/channels/chan_agent.c	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/channels/chan_agent.c	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/channels/chan_agent.c	2008-03-19 11:37:10.000000000 +0100
 @@ -248,7 +248,7 @@
  static struct ast_frame *agent_read(struct ast_channel *ast);
  static int agent_write(struct ast_channel *ast, struct ast_frame *f);
@@ -1787,10 +1787,10 @@ Index: asterisk-bristuff/channels/chan_agent.c
  						if (p->chan)
  							chan = agent_new(p, AST_STATE_DOWN);
  					}
-Index: asterisk-bristuff/channels/chan_alsa.c
+Index: asterisk-1.2.27/channels/chan_alsa.c
 ===================================================================
---- asterisk-bristuff.orig/channels/chan_alsa.c	2005-12-21 21:01:16.000000000 +0100
-+++ asterisk-bristuff/channels/chan_alsa.c	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/channels/chan_alsa.c	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/channels/chan_alsa.c	2008-03-19 11:37:10.000000000 +0100
 @@ -172,7 +172,7 @@
  /* ZZ */
  static struct ast_channel *alsa_request(const char *type, int format, void *data, int *cause);
@@ -1809,10 +1809,10 @@ Index: asterisk-bristuff/channels/chan_alsa.c
  {
  	ast_mutex_lock(&alsalock);
  	ast_verbose( " << Console Received text %s >> \n", text);
-Index: asterisk-bristuff/channels/chan_features.c
+Index: asterisk-1.2.27/channels/chan_features.c
 ===================================================================
---- asterisk-bristuff.orig/channels/chan_features.c	2006-08-30 20:59:44.000000000 +0200
-+++ asterisk-bristuff/channels/chan_features.c	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/channels/chan_features.c	2008-03-19 11:36:54.000000000 +0100
++++ asterisk-1.2.27/channels/chan_features.c	2008-03-19 11:37:10.000000000 +0100
 @@ -427,7 +427,7 @@
  	}
  	ast_mutex_unlock(&featurelock);
@@ -1822,10 +1822,10 @@ Index: asterisk-bristuff/channels/chan_features.c
  		if (!chan) {
  			ast_log(LOG_NOTICE, "Unable to allocate subchannel '%s/%s'\n", tech, dest);
  			return NULL;
-Index: asterisk-bristuff/channels/chan_iax2.c
+Index: asterisk-1.2.27/channels/chan_iax2.c
 ===================================================================
---- asterisk-bristuff.orig/channels/chan_iax2.c	2007-11-02 17:05:24.000000000 +0100
-+++ asterisk-bristuff/channels/chan_iax2.c	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/channels/chan_iax2.c	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/channels/chan_iax2.c	2008-03-19 11:37:10.000000000 +0100
 @@ -11,6 +11,9 @@
   * the project provides a web site, mailing lists and IRC
   * channels for your use.
@@ -1854,7 +1854,7 @@ Index: asterisk-bristuff/channels/chan_iax2.c
  {
  	
  	return send_command_locked(PTR_TO_CALLNO(c->tech_pvt), AST_FRAME_TEXT,
-@@ -3121,7 +3124,7 @@
+@@ -3179,7 +3182,7 @@
   	memset(&ied, 0, sizeof(ied));
  	ast_mutex_lock(&iaxsl[callno]);
  	if (callno && iaxs[callno]) {
@@ -1863,10 +1863,10 @@ Index: asterisk-bristuff/channels/chan_iax2.c
  		alreadygone = ast_test_flag(iaxs[callno], IAX_ALREADYGONE);
  		/* Send the hangup unless we have had a transmission error or are already gone */
   		iax_ie_append_byte(&ied, IAX_IE_CAUSECODE, (unsigned char)c->hangupcause);
-Index: asterisk-bristuff/channels/chan_oss.c
+Index: asterisk-1.2.27/channels/chan_oss.c
 ===================================================================
---- asterisk-bristuff.orig/channels/chan_oss.c	2006-07-05 17:31:01.000000000 +0200
-+++ asterisk-bristuff/channels/chan_oss.c	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/channels/chan_oss.c	2008-03-19 11:36:54.000000000 +0100
++++ asterisk-1.2.27/channels/chan_oss.c	2008-03-19 11:37:10.000000000 +0100
 @@ -318,7 +318,7 @@
  static struct ast_channel *oss_request(const char *type, int format, void *data
  , int *cause);
@@ -1885,10 +1885,10 @@ Index: asterisk-bristuff/channels/chan_oss.c
  {
  	/* print received messages */
  	ast_verbose( " << Console Received text %s >> \n", text);
-Index: asterisk-bristuff/channels/chan_oss_old.c
+Index: asterisk-1.2.27/channels/chan_oss_old.c
 ===================================================================
---- asterisk-bristuff.orig/channels/chan_oss_old.c	2005-11-29 19:24:39.000000000 +0100
-+++ asterisk-bristuff/channels/chan_oss_old.c	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/channels/chan_oss_old.c	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/channels/chan_oss_old.c	2008-03-19 11:37:10.000000000 +0100
 @@ -136,7 +136,7 @@
  
  static struct ast_channel *oss_request(const char *type, int format, void *data, int *cause);
@@ -1907,10 +1907,10 @@ Index: asterisk-bristuff/channels/chan_oss_old.c
  {
  	ast_verbose( " << Console Received text %s >> \n", text);
  	return 0;
-Index: asterisk-bristuff/channels/chan_phone.c
+Index: asterisk-1.2.27/channels/chan_phone.c
 ===================================================================
---- asterisk-bristuff.orig/channels/chan_phone.c	2007-07-11 19:15:11.000000000 +0200
-+++ asterisk-bristuff/channels/chan_phone.c	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/channels/chan_phone.c	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/channels/chan_phone.c	2008-03-19 11:37:10.000000000 +0100
 @@ -156,7 +156,7 @@
  static struct ast_frame *phone_read(struct ast_channel *ast);
  static int phone_write(struct ast_channel *ast, struct ast_frame *frame);
@@ -1929,11 +1929,11 @@ Index: asterisk-bristuff/channels/chan_phone.c
  {
      int length = strlen(text);
      return phone_write_buf(ast->tech_pvt, text, length, length, 0) == 
-Index: asterisk-bristuff/channels/chan_sip.c
+Index: asterisk-1.2.27/channels/chan_sip.c
 ===================================================================
---- asterisk-bristuff.orig/channels/chan_sip.c	2007-11-02 17:05:25.000000000 +0100
-+++ asterisk-bristuff/channels/chan_sip.c	2007-11-02 17:08:10.000000000 +0100
-@@ -604,6 +604,7 @@
+--- asterisk-1.2.27.orig/channels/chan_sip.c	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/channels/chan_sip.c	2008-03-19 11:37:10.000000000 +0100
+@@ -605,6 +605,7 @@
  	unsigned int flags;			/*!< SIP_ flags */	
  	int timer_t1;				/*!< SIP timer T1, ms rtt */
  	unsigned int sipoptions;		/*!< Supported SIP sipoptions on the other end */
@@ -1941,7 +1941,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  	int capability;				/*!< Special capability (codec) */
  	int jointcapability;			/*!< Supported capability at both ends (codecs ) */
  	int peercapability;			/*!< Supported peer capability */
-@@ -623,11 +624,13 @@
+@@ -624,11 +625,13 @@
  	int redircodecs;			/*!< Redirect codecs */
  	struct sockaddr_in recv;		/*!< Received as */
  	struct in_addr ourip;			/*!< Our IP */
@@ -1955,7 +1955,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  	struct sip_pvt *refer_call;		/*!< Call we are referring */
  	struct sip_route *route;		/*!< Head of linked list of routing steps (fm Record-Route) */
  	int route_persistant;			/*!< Is this the "real" route? */
-@@ -647,6 +650,7 @@
+@@ -648,6 +651,7 @@
  	char peername[256];			/*!< [peer] name, not set if [user] */
  	char authname[256];			/*!< Who we use for authentication */
  	char uri[256];				/*!< Original requested URI */
@@ -1963,7 +1963,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  	char okcontacturi[SIP_LEN_CONTACT];	/*!< URI from the 200 OK on INVITE */
  	char peersecret[256];			/*!< Password */
  	char peermd5secret[256];
-@@ -748,6 +752,9 @@
+@@ -749,6 +753,9 @@
  	struct ast_variable *chanvars;	/*!< Variables to set for channel created by user */
  };
  
@@ -1973,7 +1973,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  /* Structure for SIP peer data, we place calls to peers if registered  or fixed IP address (host) */
  struct sip_peer {
  	ASTOBJ_COMPONENTS(struct sip_peer);	/*!< name, refcount, objflags,  object pointers */
-@@ -770,6 +777,9 @@
+@@ -771,6 +778,9 @@
  	int callingpres;		/*!< Calling id presentation */
  	int inUse;			/*!< Number of calls in use */
  	int call_limit;			/*!< Limit of concurrent calls */
@@ -1983,7 +1983,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  	char vmexten[AST_MAX_EXTENSION]; /*!< Dialplan extension for MWI notify message*/
  	char mailbox[AST_MAX_EXTENSION]; /*!< Mailbox setting for MWI checks */
  	char language[MAX_LANGUAGE];	/*!<  Default language for prompts */
-@@ -791,6 +801,16 @@
+@@ -792,6 +802,16 @@
  	struct ast_dnsmgr_entry *dnsmgr;/*!<  DNS refresh manager for peer */
  	struct sockaddr_in addr;	/*!<  IP address of peer */
  
@@ -2000,7 +2000,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  	/* Qualification */
  	struct sip_pvt *call;		/*!<  Call pointer */
  	int pokeexpire;			/*!<  When to expire poke (qualify= checking) */
-@@ -912,7 +932,7 @@
+@@ -913,7 +933,7 @@
  
  static struct ast_channel *sip_request_call(const char *type, int format, void *data, int *cause);
  static int sip_devicestate(void *data);
@@ -2009,7 +2009,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  static int sip_call(struct ast_channel *ast, char *dest, int timeout);
  static int sip_hangup(struct ast_channel *ast);
  static int sip_answer(struct ast_channel *ast);
-@@ -930,7 +950,7 @@
+@@ -931,7 +951,7 @@
  static int determine_firstline_parts(struct sip_request *req);
  static void sip_dump_history(struct sip_pvt *dialog);	/* Dump history to LOG_DEBUG at end of dialog, before destroying data */
  static const struct cfsubscription_types *find_subscription_type(enum subscriptiontype subtype);
@@ -2018,7 +2018,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  static char *gettag(struct sip_request *req, char *header, char *tagbuf, int tagbufsize);
  
  /*! \brief Definition of this channel for PBX channel registration */
-@@ -1324,7 +1344,7 @@
+@@ -1325,7 +1345,7 @@
  
  	/* If this is a subscription, tell the phone that we got a timeout */
  	if (p->subscribed) {
@@ -2027,7 +2027,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  		p->subscribed = NONE;
  		append_history(p, "Subscribestatus", "timeout");
  		return 10000;	/* Reschedule this destruction so that we know that it's gone */
-@@ -1590,24 +1610,6 @@
+@@ -1591,24 +1611,6 @@
  	}
  }
  
@@ -2052,7 +2052,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  
  /*! \brief  realtime_update_peer: Update peer object in realtime storage ---*/
  static void realtime_update_peer(const char *peername, struct sockaddr_in *sin, const char *username, const char *fullcontact, int expirey)
-@@ -3206,16 +3208,30 @@
+@@ -3232,16 +3234,30 @@
  
  /*! \brief  find_call: Connect incoming SIP message to current dialog or create new dialog structure */
  /*               Called by handle_request, sipsock_read */
@@ -2084,7 +2084,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  	if (pedanticsipchecking) {
  		/* In principle Call-ID's uniquely identify a call, but with a forking SIP proxy
  		   we need more to identify a branch - so we have to check branch, from
-@@ -4233,6 +4249,7 @@
+@@ -4259,6 +4275,7 @@
  	if (sipmethod == SIP_CANCEL) {
  		c = p->initreq.rlPart2;	/* Use original URI */
  	} else if (sipmethod == SIP_ACK) {
@@ -2092,7 +2092,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  		/* Use URI from Contact: in 200 OK (if INVITE) 
  		(we only have the contacturi on INVITEs) */
  		if (!ast_strlen_zero(p->okcontacturi))
-@@ -4584,6 +4601,10 @@
+@@ -4610,6 +4627,10 @@
  		dest.sin_addr = p->redirip.sin_addr;
  		if (p->redircodecs)
  			capability = p->redircodecs;
@@ -2103,7 +2103,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  	} else {
  		dest.sin_addr = p->ourip;
  		dest.sin_port = sin.sin_port;
-@@ -5046,13 +5067,15 @@
+@@ -5072,13 +5093,15 @@
  		ast_build_string(&invite, &invite_max, ";%s", p->options->uri_options);
  
  	ast_copy_string(p->uri, invite_buf, sizeof(p->uri));
@@ -2120,7 +2120,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  	} else {
  		snprintf(to, sizeof(to), "<%s>", p->uri);
  	}
-@@ -5084,6 +5107,45 @@
+@@ -5110,6 +5133,45 @@
  		add_header(req, "Remote-Party-ID", p->rpid);
  }
  
@@ -2166,7 +2166,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  /*! \brief  transmit_invite: Build REFER/INVITE/OPTIONS message and transmit it ---*/
  static int transmit_invite(struct sip_pvt *p, int sipmethod, int sdp, int init)
  {
-@@ -5110,6 +5172,11 @@
+@@ -5136,6 +5198,11 @@
  		if (!ast_strlen_zero(p->referred_by))
  			add_header(&req, "Referred-By", p->referred_by);
  	}
@@ -2178,7 +2178,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  #ifdef OSP_SUPPORT
  	if ((req.method != SIP_OPTIONS) && p->options && !ast_strlen_zero(p->options->osptoken)) {
  		ast_log(LOG_DEBUG,"Adding OSP Token: %s\n", p->options->osptoken);
-@@ -5184,7 +5251,7 @@
+@@ -5210,7 +5277,7 @@
  }
  
  /*! \brief  transmit_state_notify: Used in the SUBSCRIBE notification subsystem ----*/
@@ -2187,7 +2187,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  {
  	char tmp[4000], from[256], to[256];
  	char *t = tmp, *c, *a, *mfrom, *mto;
-@@ -6214,8 +6281,10 @@
+@@ -6240,8 +6307,10 @@
  		p->expire = -1;
  	pvt->expiry = expiry;
  	snprintf(data, sizeof(data), "%s:%d:%d:%s:%s", ast_inet_ntoa(iabuf, sizeof(iabuf), p->addr.sin_addr), ntohs(p->addr.sin_port), expiry, p->username, p->fullcontact);
@@ -2199,7 +2199,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  	manager_event(EVENT_FLAG_SYSTEM, "PeerStatus", "Peer: SIP/%s\r\nPeerStatus: Registered\r\n", p->name);
  	if (inaddrcmp(&p->addr, &oldsin)) {
  		sip_poke_peer(p);
-@@ -6606,7 +6675,7 @@
+@@ -6632,7 +6701,7 @@
  /*! \brief  cb_extensionstate: Callback for the devicestate notification (SUBSCRIBE) support subsystem ---*/
  /*    If you add an "hint" priority to the extension in the dial plan,
        you will get notifications on device state changes */
@@ -2208,7 +2208,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  {
  	struct sip_pvt *p = data;
  
-@@ -6627,7 +6696,7 @@
+@@ -6653,7 +6722,7 @@
  		p->laststate = state;
  		break;
  	}
@@ -2217,7 +2217,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  
  	if (option_verbose > 1)
  		ast_verbose(VERBOSE_PREFIX_1 "Extension Changed %s new state %s for Notify User %s\n", exten, ast_extension_state2str(state), p->username);
-@@ -6656,7 +6725,13 @@
+@@ -6682,7 +6751,13 @@
  	char *name, *c;
  	char *t;
  	char *domain;
@@ -2232,7 +2232,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  	/* Terminate URI */
  	t = uri;
  	while(*t && (*t > 32) && (*t != ';'))
-@@ -6709,9 +6784,68 @@
+@@ -6735,9 +6810,68 @@
  			ast_log(LOG_ERROR, "Peer '%s' is trying to register, but not configured as host=dynamic\n", peer->name);
  			res = -5;
  		} else {
@@ -2302,7 +2302,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  				sip_cancel_destroy(p);
  
  				switch (parse_register_contact(p, peer, req)) {
-@@ -6732,6 +6866,7 @@
+@@ -6758,6 +6892,7 @@
  					transmit_response_with_date(p, "200 OK", req);
  					peer->lastmsgssent = -1;
  					res = 0;
@@ -2310,7 +2310,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  					break;
  				}
  			} 
-@@ -7099,6 +7234,11 @@
+@@ -7125,6 +7260,11 @@
  			/* XXX The refer_to could contain a call on an entirely different machine, requiring an 
  	    		  INVITE with a replaces header -anthm XXX */
  			/* The only way to find out is to use the dialplan - oej */
@@ -2322,7 +2322,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  		}
  	} else if (ast_exists_extension(NULL, *transfercontext, refer_to, 1, NULL) || !strcmp(refer_to, ast_parking_ext())) {
  		/* This is an unsupervised transfer (blind transfer) */
-@@ -7829,6 +7969,8 @@
+@@ -7853,6 +7993,8 @@
  	int peers_offline = 0;
  	char *id;
  	char idtext[256] = "";
@@ -2331,7 +2331,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  
  	if (s) {	/* Manager - get ActionID */
  		id = astman_get_header(m,"ActionID");
-@@ -7871,6 +8013,7 @@
+@@ -7895,6 +8037,7 @@
  		else
  			ast_copy_string(name, iterator->name, sizeof(name));
  
@@ -2339,7 +2339,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  		pstatus = peer_status(iterator, status, sizeof(status));
  		if (pstatus) 	
  			peers_online++;
-@@ -7887,14 +8030,24 @@
+@@ -7911,14 +8054,24 @@
  			}
  		}			
  		
@@ -2365,7 +2365,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  			ast_cli(fd, FORMAT, name, 
  			iterator->addr.sin_addr.s_addr ? ast_inet_ntoa(iabuf, sizeof(iabuf), iterator->addr.sin_addr) : "(Unspecified)",
  			ast_test_flag(&iterator->flags_page2, SIP_PAGE2_DYNAMIC) ? " D " : "   ",  /* Dynamic or not? */
-@@ -7902,6 +8055,7 @@
+@@ -7926,6 +8079,7 @@
  			iterator->ha ? " A " : "   ",       /* permit/deny */
  			
  			ntohs(iterator->addr.sin_port), status);
@@ -2373,7 +2373,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  		} else {	/* Manager format */
  			/* The names here need to be the same as other channels */
  			ast_cli(fd, 
-@@ -7927,7 +8081,9 @@
+@@ -7951,7 +8105,9 @@
  
  		ASTOBJ_UNLOCK(iterator);
  
@@ -2384,7 +2384,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  	} while(0) );
  
  	if (!s) {
-@@ -8963,7 +9119,8 @@
+@@ -8987,7 +9143,8 @@
  	char buf[1024];
  	unsigned int event;
  	char * c = NULL;
@@ -2394,7 +2394,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  	if (sip_debug_test_pvt(p))
  		ast_log(LOG_NOTICE, "Receiving INFO from %s\n", p->callid);
  
-@@ -9029,6 +9186,19 @@
+@@ -9053,6 +9210,19 @@
  			ast_queue_control(p->owner, AST_CONTROL_VIDUPDATE);
  		transmit_response(p, "200 OK", req);
  		return;
@@ -2414,7 +2414,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  	} else if ((c = get_header(req, "X-ClientCode"))) {
  		/* Client code (from SNOM phone) */
  		if (ast_test_flag(p, SIP_USECLIENTCODE)) {
-@@ -9128,12 +9298,63 @@
+@@ -9152,12 +9322,63 @@
  	return RESULT_SUCCESS;
  }
  
@@ -2479,7 +2479,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  	if (argc < 4)
  		return RESULT_SHOWUSAGE;
  
-@@ -9150,41 +9371,13 @@
+@@ -9174,41 +9395,13 @@
  	}
  
  	for (i = 3; i < argc; i++) {
@@ -2526,7 +2526,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  /*! \brief  sip_do_history: Enable SIP History logging (CLI) ---*/
  static int sip_do_history(int fd, int argc, char *argv[])
  {
-@@ -9852,7 +10045,7 @@
+@@ -9876,7 +10069,7 @@
  		if (!ignore && p->owner) {
  			ast_queue_control(p->owner, AST_CONTROL_RINGING);
  			if (p->owner->_state != AST_STATE_UP)
@@ -2535,7 +2535,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  		}
  		if (find_sdp(req)) {
  			process_sdp(p, req);
-@@ -10562,6 +10755,8 @@
+@@ -10586,6 +10779,8 @@
  static int attempt_transfer(struct sip_pvt *p1, struct sip_pvt *p2)
  {
  	int res = 0;
@@ -2544,7 +2544,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  	struct ast_channel 
  		*chana = NULL,
  		*chanb = NULL,
-@@ -10571,6 +10766,9 @@
+@@ -10595,6 +10790,9 @@
  		*peerb = NULL,
  		*peerc = NULL,
  		*peerd = NULL;
@@ -2554,7 +2554,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  
  	if (!p1->owner || !p2->owner) {
  		ast_log(LOG_WARNING, "Transfer attempted without dual ownership?\n");
-@@ -10599,6 +10797,12 @@
+@@ -10623,6 +10821,12 @@
  		ast_quiet_chan(peerc);
  		ast_quiet_chan(peerd);
  
@@ -2567,7 +2567,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  		if (peera->cdr && peerb->cdr) {
  			peerb->cdr = ast_cdr_append(peerb->cdr, peera->cdr);
  		} else if (peera->cdr) {
-@@ -10617,6 +10821,13 @@
+@@ -10641,6 +10845,13 @@
  			ast_log(LOG_WARNING, "Failed to masquerade %s into %s\n", peerb->name, peerc->name);
  			res = -1;
  		}
@@ -2581,7 +2581,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  		return res;
  	} else {
  		ast_log(LOG_NOTICE, "Transfer attempted with no appropriate bridged calls to transfer\n");
-@@ -10628,7 +10839,6 @@
+@@ -10652,7 +10863,6 @@
  	}
  	return 0;
  }
@@ -2589,7 +2589,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  /*! \brief  gettag: Get tag from packet */
  static char *gettag(struct sip_request *req, char *header, char *tagbuf, int tagbufsize) 
  {
-@@ -10981,6 +11191,7 @@
+@@ -11005,6 +11215,7 @@
  	int res;
  	struct ast_channel *transfer_to;
  	char *transfercontext = NULL;
@@ -2597,7 +2597,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  
  	if (option_debug > 2)
  		ast_log(LOG_DEBUG, "SIP call transfer received for call %s (REFER)!\n", p->callid);
-@@ -10991,9 +11202,73 @@
+@@ -11015,9 +11226,73 @@
  		transfercontext = p->context;
  	if (res < 0)
  		transmit_response(p, "603 Declined", req);
@@ -2673,7 +2673,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  		int nobye = 0;
  		if (!ignore) {
  			if (p->refer_call) {
-@@ -11356,7 +11631,7 @@
+@@ -11380,7 +11655,7 @@
  			struct sip_pvt *p_old;
  
  			transmit_response(p, "200 OK", req);
@@ -2682,7 +2682,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  			append_history(p, "Subscribestatus", ast_extension_state2str(firststate));
  
  			/* remove any old subscription from this peer for the same exten/context,
-@@ -11571,6 +11846,8 @@
+@@ -11595,6 +11870,8 @@
  		res = handle_request_options(p, req, debug);
  		break;
  	case SIP_INVITE:
@@ -2691,7 +2691,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  		res = handle_request_invite(p, req, debug, ignore, seqno, sin, recount, e);
  		break;
  	case SIP_REFER:
-@@ -11696,7 +11973,7 @@
+@@ -11720,7 +11997,7 @@
  	/* Process request, with netlock held */
  retrylock:
  	ast_mutex_lock(&netlock);
@@ -2700,7 +2700,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  	if (p) {
  		/* Go ahead and lock the owner if it has one -- we may need it */
  		if (p->owner && ast_mutex_trylock(&p->owner->lock)) {
-@@ -12048,6 +12325,52 @@
+@@ -12072,6 +12349,52 @@
  	return 0;
  }
  
@@ -2753,7 +2753,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  /*! \brief  sip_devicestate: Part of PBX channel interface ---*/
  
  /* Return values:---
-@@ -12119,9 +12442,13 @@
+@@ -12143,9 +12466,13 @@
  {
  	int oldformat;
  	struct sip_pvt *p;
@@ -2767,7 +2767,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  	char *dest = data;
  
  	oldformat = format;
-@@ -12184,6 +12511,54 @@
+@@ -12208,6 +12535,54 @@
  	if (ext) {
  		ast_copy_string(p->username, ext, sizeof(p->username));
  		p->fullcontact[0] = 0;	
@@ -2822,7 +2822,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  	}
  #if 0
  	printf("Setting up to call extension '%s' at '%s'\n", ext ? ext : "<none>", host);
-@@ -12582,6 +12957,7 @@
+@@ -12606,6 +12981,7 @@
  
  	peer->expire = -1;
  	peer->pokeexpire = -1;
@@ -2830,7 +2830,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  	ast_copy_string(peer->name, name, sizeof(peer->name));
  	ast_copy_flags(peer, &global_flags, SIP_FLAGS_TO_COPY);
  	strcpy(peer->context, default_context);
-@@ -12610,6 +12986,8 @@
+@@ -12634,6 +13010,8 @@
  	int obproxyfound=0;
  	int found=0;
  	int format=0;		/* Ama flags */
@@ -2839,7 +2839,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  	time_t regseconds;
  	char *varname = NULL, *varval = NULL;
  	struct ast_variable *tmpvar = NULL;
-@@ -12627,7 +13005,9 @@
+@@ -12651,7 +13029,9 @@
  
  	if (peer) {
  		/* Already in the list, remove it and it will be added back (or FREE'd)  */
@@ -2850,7 +2850,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
   	} else {
  		peer = malloc(sizeof(*peer));
  		if (peer) {
-@@ -12639,6 +13019,7 @@
+@@ -12663,6 +13043,7 @@
  			ASTOBJ_INIT(peer);
  			peer->expire = -1;
  			peer->pokeexpire = -1;
@@ -2858,7 +2858,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  		} else {
  			ast_log(LOG_WARNING, "Can't allocate SIP peer memory\n");
  		}
-@@ -12787,6 +13168,10 @@
+@@ -12811,6 +13192,10 @@
  			peer->call_limit = atoi(v->value);
  			if (peer->call_limit < 0)
  				peer->call_limit = 0;
@@ -2869,7 +2869,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  		} else if (!strcasecmp(v->name, "amaflags")) {
  			format = ast_cdr_amaflags2int(v->value);
  			if (format < 0) {
-@@ -12845,6 +13230,26 @@
+@@ -12869,6 +13254,26 @@
  				ast_log(LOG_WARNING, "Qualification of peer '%s' should be 'yes', 'no', or a number of milliseconds at line %d of sip.conf\n", peer->name, v->lineno);
  				peer->maxms = 0;
  			}
@@ -2896,7 +2896,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  		}
  		v = v->next;
  	}
-@@ -13177,9 +13582,25 @@
+@@ -13201,9 +13606,25 @@
  				if (!strcasecmp(utype, "peer") || !strcasecmp(utype, "friend")) {
  					peer = build_peer(cat, ast_variable_browse(cfg, cat), 0);
  					if (peer) {
@@ -2925,7 +2925,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  					}
  				} else if (strcasecmp(utype, "user")) {
  					ast_log(LOG_WARNING, "Unknown type '%s' for '%s' in %s\n", utype, cat, "sip.conf");
-@@ -13781,6 +14202,8 @@
+@@ -13805,6 +14226,8 @@
  			"List SIP peers (text format)", mandescr_show_peers);
  	ast_manager_register2("SIPshowpeer", EVENT_FLAG_SYSTEM, manager_sip_show_peer,
  			"Show SIP peer (text format)", mandescr_show_peer);
@@ -2934,7 +2934,7 @@ Index: asterisk-bristuff/channels/chan_sip.c
  
  	sip_poke_all_peers();	
  	sip_send_all_registers();
-@@ -13811,6 +14234,7 @@
+@@ -13835,6 +14258,7 @@
  
  	ast_rtp_proto_unregister(&sip_rtp);
  
@@ -2942,10 +2942,10 @@ Index: asterisk-bristuff/channels/chan_sip.c
  	ast_manager_unregister("SIPpeers");
  	ast_manager_unregister("SIPshowpeer");
  
-Index: asterisk-bristuff/channels/chan_zap.c
+Index: asterisk-1.2.27/channels/chan_zap.c
 ===================================================================
---- asterisk-bristuff.orig/channels/chan_zap.c	2007-11-02 17:05:25.000000000 +0100
-+++ asterisk-bristuff/channels/chan_zap.c	2007-11-02 17:19:37.000000000 +0100
+--- asterisk-1.2.27.orig/channels/chan_zap.c	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/channels/chan_zap.c	2008-03-19 11:37:10.000000000 +0100
 @@ -11,6 +11,10 @@
   * the project provides a web site, mailing lists and IRC
   * channels for your use.
@@ -6584,10 +6584,10 @@ Index: asterisk-bristuff/channels/chan_zap.c
  	index = zt_get_index(c, p, 0);
  	if (index < 0) {
  		ast_log(LOG_WARNING, "Huh?  I don't exist?\n");
-Index: asterisk-bristuff/channels/Makefile
+Index: asterisk-1.2.27/channels/Makefile
 ===================================================================
---- asterisk-bristuff.orig/channels/Makefile	2007-11-02 17:05:25.000000000 +0100
-+++ asterisk-bristuff/channels/Makefile	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/channels/Makefile	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/channels/Makefile	2008-03-19 11:37:10.000000000 +0100
 @@ -107,6 +107,11 @@
    ZAPPRI=-lpri
  endif
@@ -6619,10 +6619,10 @@ Index: asterisk-bristuff/channels/Makefile
  chan_vpb.o: chan_vpb.c
  	$(CXX) -c $(CFLAGS) -o $@ chan_vpb.c
  
-Index: asterisk-bristuff/configs/esel.conf.sample
+Index: asterisk-1.2.27/configs/esel.conf.sample
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-bristuff/configs/esel.conf.sample	2007-11-02 17:08:10.000000000 +0100
++++ asterisk-1.2.27/configs/esel.conf.sample	2008-03-19 11:37:10.000000000 +0100
 @@ -0,0 +1,12 @@
 +;
 +; Configuration file for res_esel
@@ -6636,10 +6636,10 @@ Index: asterisk-bristuff/configs/esel.conf.sample
 +
 +; export the extension snom in context phones to DS/100 on asterisk-2
 +;export => snom@phones,100
-Index: asterisk-bristuff/configs/modules.conf.sample
+Index: asterisk-1.2.27/configs/modules.conf.sample
 ===================================================================
---- asterisk-bristuff.orig/configs/modules.conf.sample	2005-11-29 19:24:39.000000000 +0100
-+++ asterisk-bristuff/configs/modules.conf.sample	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/configs/modules.conf.sample	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/configs/modules.conf.sample	2008-03-19 11:37:10.000000000 +0100
 @@ -46,8 +46,12 @@
  ;
  noload => chan_alsa.so
@@ -6653,10 +6653,10 @@ Index: asterisk-bristuff/configs/modules.conf.sample
  ;
  [global]
 +chan_capi.so=yes
-Index: asterisk-bristuff/configs/sip.conf.sample
+Index: asterisk-1.2.27/configs/sip.conf.sample
 ===================================================================
---- asterisk-bristuff.orig/configs/sip.conf.sample	2006-11-30 18:55:23.000000000 +0100
-+++ asterisk-bristuff/configs/sip.conf.sample	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/configs/sip.conf.sample	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/configs/sip.conf.sample	2008-03-19 11:37:10.000000000 +0100
 @@ -329,7 +329,16 @@
  ;call-limit=5				; permit only 5 simultaneous outgoing calls to this peer
  ;outboundproxy=proxy.provider.domain	; send outbound signaling to this proxy, not directly to the peer
@@ -6675,10 +6675,10 @@ Index: asterisk-bristuff/configs/sip.conf.sample
  ;------------------------------------------------------------------------------
  ; Definitions of locally connected SIP phones
  ;
-Index: asterisk-bristuff/configs/zapata.conf.sample
+Index: asterisk-1.2.27/configs/zapata.conf.sample
 ===================================================================
---- asterisk-bristuff.orig/configs/zapata.conf.sample	2006-09-18 17:05:56.000000000 +0200
-+++ asterisk-bristuff/configs/zapata.conf.sample	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/configs/zapata.conf.sample	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/configs/zapata.conf.sample	2008-03-19 11:37:10.000000000 +0100
 @@ -123,9 +123,20 @@
  ; 
  ; outofband:      Signal Busy/Congestion out of band with RELEASE/DISCONNECT
@@ -6700,10 +6700,10 @@ Index: asterisk-bristuff/configs/zapata.conf.sample
  ; If you need to override the existing channels selection routine and force all
  ; PRI channels to be marked as exclusively selected, set this to yes.
  ; priexclusive = yes
-Index: asterisk-bristuff/db.c
+Index: asterisk-1.2.27/db.c
 ===================================================================
---- asterisk-bristuff.orig/db.c	2007-06-24 19:32:21.000000000 +0200
-+++ asterisk-bristuff/db.c	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/db.c	2008-03-19 11:36:52.000000000 +0100
++++ asterisk-1.2.27/db.c	2008-03-19 11:37:10.000000000 +0100
 @@ -516,11 +516,18 @@
  struct ast_cli_entry cli_database_deltree =
  { { "database", "deltree", NULL }, database_deltree, "Removes database keytree/values", database_deltree_usage };
@@ -6797,10 +6797,10 @@ Index: asterisk-bristuff/db.c
 +	ast_manager_register("DBdel", EVENT_FLAG_SYSTEM, manager_dbdel, mandescr_dbdel);
  	return 0;
  }
-Index: asterisk-bristuff/devicestate.c
+Index: asterisk-1.2.27/devicestate.c
 ===================================================================
---- asterisk-bristuff.orig/devicestate.c	2007-06-06 14:18:36.000000000 +0200
-+++ asterisk-bristuff/devicestate.c	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/devicestate.c	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/devicestate.c	2008-03-19 11:37:10.000000000 +0100
 @@ -62,6 +62,8 @@
  
  struct state_change {
@@ -6892,10 +6892,10 @@ Index: asterisk-bristuff/devicestate.c
  			free(cur);
  			AST_LIST_LOCK(&state_changes);
  		} else {
-Index: asterisk-bristuff/doc/README.asterisk.conf
+Index: asterisk-1.2.27/doc/README.asterisk.conf
 ===================================================================
---- asterisk-bristuff.orig/doc/README.asterisk.conf	2005-11-29 19:24:39.000000000 +0100
-+++ asterisk-bristuff/doc/README.asterisk.conf	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/doc/README.asterisk.conf	2008-03-19 11:36:54.000000000 +0100
++++ asterisk-1.2.27/doc/README.asterisk.conf	2008-03-19 11:37:10.000000000 +0100
 @@ -62,6 +62,7 @@
  maxcalls = 255					; The maximum number of concurrent calls you want to allow 
  execincludes = yes | no 			; Allow #exec entries in configuration files
@@ -6904,10 +6904,10 @@ Index: asterisk-bristuff/doc/README.asterisk.conf
  
  [files]
  ; Changing the following lines may compromise your security
-Index: asterisk-bristuff/HARDWARE
+Index: asterisk-1.2.27/HARDWARE
 ===================================================================
---- asterisk-bristuff.orig/HARDWARE	2005-11-29 19:24:39.000000000 +0100
-+++ asterisk-bristuff/HARDWARE	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/HARDWARE	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/HARDWARE	2008-03-19 11:37:10.000000000 +0100
 @@ -37,6 +37,19 @@
     * Wildcard TE410P - Quad T1/E1 switchable interface.  Supports PRI and 
       RBS signalling, as well as PPP, FR, and HDLC data modes.
@@ -6928,10 +6928,10 @@ Index: asterisk-bristuff/HARDWARE
  Non-zaptel compatible hardware
  ==============================
  
-Index: asterisk-bristuff/include/asterisk/agi.h
+Index: asterisk-1.2.27/include/asterisk/agi.h
 ===================================================================
---- asterisk-bristuff.orig/include/asterisk/agi.h	2005-11-29 19:24:39.000000000 +0100
-+++ asterisk-bristuff/include/asterisk/agi.h	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/include/asterisk/agi.h	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/include/asterisk/agi.h	2008-03-19 11:37:10.000000000 +0100
 @@ -29,7 +29,8 @@
  
  typedef struct agi_state {
@@ -6942,10 +6942,10 @@ Index: asterisk-bristuff/include/asterisk/agi.h
  	int ctrl;	/* FD for input control */
  } AGI;
  
-Index: asterisk-bristuff/include/asterisk/channel.h
+Index: asterisk-1.2.27/include/asterisk/channel.h
 ===================================================================
---- asterisk-bristuff.orig/include/asterisk/channel.h	2006-11-07 19:22:01.000000000 +0100
-+++ asterisk-bristuff/include/asterisk/channel.h	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/include/asterisk/channel.h	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/include/asterisk/channel.h	2008-03-19 11:37:10.000000000 +0100
 @@ -86,6 +86,9 @@
  #ifndef _ASTERISK_CHANNEL_H
  #define _ASTERISK_CHANNEL_H
@@ -7066,10 +7066,10 @@ Index: asterisk-bristuff/include/asterisk/channel.h
  
  /*! Gives the string form of a given cause code */
  /*! 
-Index: asterisk-bristuff/include/asterisk/devicestate.h
+Index: asterisk-1.2.27/include/asterisk/devicestate.h
 ===================================================================
---- asterisk-bristuff.orig/include/asterisk/devicestate.h	2005-11-29 19:24:39.000000000 +0100
-+++ asterisk-bristuff/include/asterisk/devicestate.h	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/include/asterisk/devicestate.h	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/include/asterisk/devicestate.h	2008-03-19 11:37:10.000000000 +0100
 @@ -42,7 +42,7 @@
  /*! Device is ringing */
  #define AST_DEVICE_RINGING	6
@@ -7088,10 +7088,10 @@ Index: asterisk-bristuff/include/asterisk/devicestate.h
  
  /*! \brief Registers a device state change callback 
   * \param callback Callback
-Index: asterisk-bristuff/include/asterisk/features.h
+Index: asterisk-1.2.27/include/asterisk/features.h
 ===================================================================
---- asterisk-bristuff.orig/include/asterisk/features.h	2005-11-29 19:24:39.000000000 +0100
-+++ asterisk-bristuff/include/asterisk/features.h	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/include/asterisk/features.h	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/include/asterisk/features.h	2008-03-19 11:37:10.000000000 +0100
 @@ -45,6 +45,8 @@
  };
  
@@ -7134,10 +7134,10 @@ Index: asterisk-bristuff/include/asterisk/features.h
 +extern struct ast_call_feature *ast_find_builtin_feature(char *name);
 +
  #endif /* _AST_FEATURES_H */
-Index: asterisk-bristuff/include/asterisk/manager.h
+Index: asterisk-1.2.27/include/asterisk/manager.h
 ===================================================================
---- asterisk-bristuff.orig/include/asterisk/manager.h	2006-02-11 19:15:00.000000000 +0100
-+++ asterisk-bristuff/include/asterisk/manager.h	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/include/asterisk/manager.h	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/include/asterisk/manager.h	2008-03-19 11:37:10.000000000 +0100
 @@ -54,6 +54,7 @@
  #define EVENT_FLAG_COMMAND		(1 << 4) /* Ability to read/set commands */
  #define EVENT_FLAG_AGENT		(1 << 5) /* Ability to read/set agent info */
@@ -7146,10 +7146,10 @@ Index: asterisk-bristuff/include/asterisk/manager.h
  
  /* Export manager structures */
  #define AST_MAX_MANHEADERS 80
-Index: asterisk-bristuff/include/asterisk/monitor.h
+Index: asterisk-1.2.27/include/asterisk/monitor.h
 ===================================================================
---- asterisk-bristuff.orig/include/asterisk/monitor.h	2005-11-29 19:24:39.000000000 +0100
-+++ asterisk-bristuff/include/asterisk/monitor.h	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/include/asterisk/monitor.h	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/include/asterisk/monitor.h	2008-03-19 11:37:10.000000000 +0100
 @@ -35,6 +35,8 @@
  	char write_filename[FILENAME_MAX];
  	char filename_base[FILENAME_MAX];
@@ -7168,10 +7168,10 @@ Index: asterisk-bristuff/include/asterisk/monitor.h
  
  /* Stop monitoring a channel */
  int ast_monitor_stop(struct ast_channel *chan, int need_lock);
-Index: asterisk-bristuff/include/asterisk/pbx.h
+Index: asterisk-1.2.27/include/asterisk/pbx.h
 ===================================================================
---- asterisk-bristuff.orig/include/asterisk/pbx.h	2006-03-29 21:11:18.000000000 +0200
-+++ asterisk-bristuff/include/asterisk/pbx.h	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/include/asterisk/pbx.h	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/include/asterisk/pbx.h	2008-03-19 11:37:10.000000000 +0100
 @@ -57,7 +57,7 @@
  	AST_EXTENSION_BUSY = 1 << 1,
  	/*! All devices UNAVAILABLE/UNREGISTERED */
@@ -7222,10 +7222,10 @@ Index: asterisk-bristuff/include/asterisk/pbx.h
  
  #if defined(__cplusplus) || defined(c_plusplus)
  }
-Index: asterisk-bristuff/include/asterisk.h
+Index: asterisk-1.2.27/include/asterisk.h
 ===================================================================
---- asterisk-bristuff.orig/include/asterisk.h	2007-11-02 17:05:24.000000000 +0100
-+++ asterisk-bristuff/include/asterisk.h	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/include/asterisk.h	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/include/asterisk.h	2008-03-19 11:37:10.000000000 +0100
 @@ -39,6 +39,7 @@
  extern char ast_config_AST_PID[AST_CONFIG_MAX_PATH];
  extern char ast_config_AST_SOCKET[AST_CONFIG_MAX_PATH];
@@ -7234,10 +7234,10 @@ Index: asterisk-bristuff/include/asterisk.h
  extern char ast_config_AST_CTL_PERMISSIONS[AST_CONFIG_MAX_PATH];
  extern char ast_config_AST_CTL_OWNER[AST_CONFIG_MAX_PATH];
  extern char ast_config_AST_CTL_GROUP[AST_CONFIG_MAX_PATH];
-Index: asterisk-bristuff/LICENSE
+Index: asterisk-1.2.27/LICENSE
 ===================================================================
---- asterisk-bristuff.orig/LICENSE	2006-10-17 19:22:01.000000000 +0200
-+++ asterisk-bristuff/LICENSE	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/LICENSE	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/LICENSE	2008-03-19 11:37:10.000000000 +0100
 @@ -1,7 +1,7 @@
 -Asterisk is distributed under the GNU General Public License version 2
 -and is also available under alternative licenses negotiated directly
@@ -7250,10 +7250,10 @@ Index: asterisk-bristuff/LICENSE
  except as defined below. The GPL (version 2) is included in this
  source tree in the file COPYING.
  
-Index: asterisk-bristuff/Makefile
+Index: asterisk-1.2.27/Makefile
 ===================================================================
---- asterisk-bristuff.orig/Makefile	2007-11-02 17:05:25.000000000 +0100
-+++ asterisk-bristuff/Makefile	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/Makefile	2008-03-19 11:36:54.000000000 +0100
++++ asterisk-1.2.27/Makefile	2008-03-19 11:37:10.000000000 +0100
 @@ -780,6 +780,9 @@
  		echo ";astctlowner = root" ; \
  		echo ";astctlgroup = apache" ; \
@@ -7264,10 +7264,10 @@ Index: asterisk-bristuff/Makefile
  		) > $(DESTDIR)$(ASTCONFPATH) ; \
  	else \
  		echo "Skipping asterisk.conf creation"; \
-Index: asterisk-bristuff/manager.c
+Index: asterisk-1.2.27/manager.c
 ===================================================================
---- asterisk-bristuff.orig/manager.c	2007-06-24 19:32:21.000000000 +0200
-+++ asterisk-bristuff/manager.c	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/manager.c	2008-03-19 11:36:52.000000000 +0100
++++ asterisk-1.2.27/manager.c	2008-03-19 11:37:10.000000000 +0100
 @@ -11,6 +11,9 @@
   * the project provides a web site, mailing lists and IRC
   * channels for your use.
@@ -7604,10 +7604,10 @@ Index: asterisk-bristuff/manager.c
  		ast_manager_register("Status", EVENT_FLAG_CALL, action_status, "Lists channel status" );
  		ast_manager_register2("Setvar", EVENT_FLAG_CALL, action_setvar, "Set Channel Variable", mandescr_setvar );
  		ast_manager_register2("Getvar", EVENT_FLAG_CALL, action_getvar, "Gets a Channel Variable", mandescr_getvar );
-Index: asterisk-bristuff/pbx/pbx_spool.c
+Index: asterisk-1.2.27/pbx/pbx_spool.c
 ===================================================================
---- asterisk-bristuff.orig/pbx/pbx_spool.c	2007-07-02 01:51:34.000000000 +0200
-+++ asterisk-bristuff/pbx/pbx_spool.c	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/pbx/pbx_spool.c	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/pbx/pbx_spool.c	2008-03-19 11:37:10.000000000 +0100
 @@ -77,6 +77,10 @@
  	char app[256];
  	char data[256];
@@ -7679,10 +7679,10 @@ Index: asterisk-bristuff/pbx/pbx_spool.c
  	}
  	free_outgoing(o);
  	return NULL;
-Index: asterisk-bristuff/pbx.c
+Index: asterisk-1.2.27/pbx.c
 ===================================================================
---- asterisk-bristuff.orig/pbx.c	2007-05-02 22:10:32.000000000 +0200
-+++ asterisk-bristuff/pbx.c	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/pbx.c	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/pbx.c	2008-03-19 11:37:10.000000000 +0100
 @@ -374,7 +374,8 @@
  	
  	{ "Hangup", pbx_builtin_hangup,
@@ -7860,10 +7860,10 @@ Index: asterisk-bristuff/pbx.c
  	return res;
  }
  	
-Index: asterisk-bristuff/README
+Index: asterisk-1.2.27/README
 ===================================================================
---- asterisk-bristuff.orig/README	2006-03-03 09:12:33.000000000 +0100
-+++ asterisk-bristuff/README	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/README	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/README	2008-03-19 11:37:10.000000000 +0100
 @@ -4,6 +4,8 @@
  
  Copyright (C) 2001-2005 Digium, Inc.
@@ -7873,10 +7873,10 @@ Index: asterisk-bristuff/README
  ================================================================
  
  * SECURITY
-Index: asterisk-bristuff/res/Makefile
+Index: asterisk-1.2.27/res/Makefile
 ===================================================================
---- asterisk-bristuff.orig/res/Makefile	2005-11-29 19:24:39.000000000 +0100
-+++ asterisk-bristuff/res/Makefile	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/res/Makefile	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/res/Makefile	2008-03-19 11:37:10.000000000 +0100
 @@ -11,7 +11,7 @@
  # the GNU General Public License
  #
@@ -7886,10 +7886,10 @@ Index: asterisk-bristuff/res/Makefile
  
  ifneq ($(wildcard $(CROSS_COMPILE_TARGET)/usr/include/odbcinst.h)$(wildcard $(CROSS_COMPILE_TARGET)/usr/local/include/odbcinst.h),)
    ifneq (${OSARCH},FreeBSD)
-Index: asterisk-bristuff/res/res_agi.c
+Index: asterisk-1.2.27/res/res_agi.c
 ===================================================================
---- asterisk-bristuff.orig/res/res_agi.c	2007-07-30 20:40:54.000000000 +0200
-+++ asterisk-bristuff/res/res_agi.c	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/res/res_agi.c	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/res/res_agi.c	2008-03-19 11:37:10.000000000 +0100
 @@ -11,6 +11,9 @@
   * the project provides a web site, mailing lists and IRC
   * channels for your use.
@@ -8276,10 +8276,10 @@ Index: asterisk-bristuff/res/res_agi.c
  	return ast_register_application(app, agi_exec, synopsis, descrip);
  }
  
-Index: asterisk-bristuff/res/res_esel.c
+Index: asterisk-1.2.27/res/res_esel.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-bristuff/res/res_esel.c	2007-11-02 17:08:10.000000000 +0100
++++ asterisk-1.2.27/res/res_esel.c	2008-03-19 11:37:10.000000000 +0100
 @@ -0,0 +1,399 @@
 +/*
 + * Asterisk -- A telephony toolkit for Linux.
@@ -8680,10 +8680,10 @@ Index: asterisk-bristuff/res/res_esel.c
 +{
 +	return ASTERISK_GPL_KEY;
 +}
-Index: asterisk-bristuff/res/res_features.c
+Index: asterisk-1.2.27/res/res_features.c
 ===================================================================
---- asterisk-bristuff.orig/res/res_features.c	2007-11-02 17:05:25.000000000 +0100
-+++ asterisk-bristuff/res/res_features.c	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/res/res_features.c	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/res/res_features.c	2008-03-19 11:37:10.000000000 +0100
 @@ -11,6 +11,10 @@
   * the project provides a web site, mailing lists and IRC
   * channels for your use.
@@ -8797,7 +8797,7 @@ Index: asterisk-bristuff/res/res_features.c
  char *ast_pickup_ext(void)
  {
  	return pickup_ext;
-@@ -371,10 +436,11 @@
+@@ -372,10 +437,11 @@
  		"Timeout: %ld\r\n"
  		"CallerID: %s\r\n"
  		"CallerIDName: %s\r\n"
@@ -8810,7 +8810,7 @@ Index: asterisk-bristuff/res/res_features.c
  		);
  
  	if (peer) {
-@@ -427,7 +493,8 @@
+@@ -428,7 +494,8 @@
  		ast_copy_string(chan->context, rchan->context, sizeof(chan->context));
  		ast_copy_string(chan->exten, rchan->exten, sizeof(chan->exten));
  		chan->priority = rchan->priority;
@@ -8820,7 +8820,7 @@ Index: asterisk-bristuff/res/res_features.c
  		/* Make the masq execute */
  		f = ast_read(chan);
  		if (f)
-@@ -919,7 +986,7 @@
+@@ -920,7 +987,7 @@
  }
  
  /* find a feature by name */
@@ -8829,7 +8829,7 @@ Index: asterisk-bristuff/res/res_features.c
  {
  	struct ast_call_feature *tmp;
  
-@@ -929,10 +996,21 @@
+@@ -930,10 +997,21 @@
  			break;
  	}
  	AST_LIST_UNLOCK(&feature_list);
@@ -8852,7 +8852,7 @@ Index: asterisk-bristuff/res/res_features.c
  /* exec an app by feature */
  static int feature_exec_app(struct ast_channel *chan, struct ast_channel *peer, struct ast_bridge_config *config, char *code, int sense)
  {
-@@ -1031,7 +1109,7 @@
+@@ -1032,7 +1110,7 @@
  			return res;
  		
  		while ((tok = strsep(&tmp, "#")) != NULL) {
@@ -8861,7 +8861,7 @@ Index: asterisk-bristuff/res/res_features.c
  			
  			if (feature) {
  				/* Feature is up for consideration */
-@@ -1084,7 +1162,7 @@
+@@ -1085,7 +1163,7 @@
  
  			/* while we have a feature */
  			while (NULL != (tok = strsep(&tmp, "#"))) {
@@ -8870,7 +8870,7 @@ Index: asterisk-bristuff/res/res_features.c
  					if (ast_test_flag(feature, AST_FEATURE_FLAG_NEEDSDTMF)) {
  						if (ast_test_flag(feature, AST_FEATURE_FLAG_CALLER))
  							ast_set_flag(config, AST_BRIDGE_DTMF_CHANNEL_0);
-@@ -1109,7 +1187,7 @@
+@@ -1110,7 +1188,7 @@
  	struct ast_frame *f = NULL;
  	int res = 0, ready = 0;
  	
@@ -8879,7 +8879,7 @@ Index: asterisk-bristuff/res/res_features.c
  		ast_set_callerid(chan, cid_num, cid_name, cid_num);
  		ast_channel_inherit_variables(caller, chan);	
  		if (!ast_call(chan, data, timeout)) {
-@@ -1564,9 +1642,10 @@
+@@ -1565,9 +1643,10 @@
  					"Channel: %s\r\n"
  					"CallerID: %s\r\n"
  					"CallerIDName: %s\r\n"
@@ -8891,7 +8891,7 @@ Index: asterisk-bristuff/res/res_features.c
  					);
  
  				if (option_verbose > 1) 
-@@ -1609,9 +1688,10 @@
+@@ -1610,9 +1689,10 @@
  								"Channel: %s\r\n"
  								"CallerID: %s\r\n"
  								"CallerIDName: %s\r\n"
@@ -8903,7 +8903,7 @@ Index: asterisk-bristuff/res/res_features.c
  								);
  
  							/* There's a problem, hang them up*/
-@@ -1698,6 +1778,282 @@
+@@ -1699,6 +1779,282 @@
  	return res;
  }
  
@@ -9186,7 +9186,7 @@ Index: asterisk-bristuff/res/res_features.c
  static int park_exec(struct ast_channel *chan, void *data)
  {
  	int res=0;
-@@ -1746,9 +2102,10 @@
+@@ -1747,9 +2103,10 @@
  			"From: %s\r\n"
  			"CallerID: %s\r\n"
  			"CallerIDName: %s\r\n"
@@ -9198,7 +9198,7 @@ Index: asterisk-bristuff/res/res_features.c
  			);
  
  		free(pu);
-@@ -1912,12 +2269,13 @@
+@@ -1913,12 +2270,13 @@
  			"Timeout: %ld\r\n"
  			"CallerID: %s\r\n"
  			"CallerIDName: %s\r\n"
@@ -9213,7 +9213,7 @@ Index: asterisk-bristuff/res/res_features.c
  			,idText);
  
              cur = cur->next;
-@@ -1933,6 +2291,416 @@
+@@ -1934,6 +2292,416 @@
          return RESULT_SUCCESS;
  }
  
@@ -9630,7 +9630,7 @@ Index: asterisk-bristuff/res/res_features.c
  
  int ast_pickup_call(struct ast_channel *chan)
  {
-@@ -2088,7 +2856,7 @@
+@@ -2089,7 +2857,7 @@
  			}
  
  			{
@@ -9639,7 +9639,7 @@ Index: asterisk-bristuff/res/res_features.c
  				int mallocd=0;
  				
  				if (!feature) {
-@@ -2151,6 +2919,7 @@
+@@ -2152,6 +2920,7 @@
  }
  
  int reload(void) {
@@ -9647,7 +9647,7 @@ Index: asterisk-bristuff/res/res_features.c
  	return load_config();
  }
  
-@@ -2164,14 +2933,22 @@
+@@ -2165,14 +2934,22 @@
  	if ((res = load_config()))
  		return res;
  	ast_cli_register(&showparked);
@@ -9670,7 +9670,7 @@ Index: asterisk-bristuff/res/res_features.c
  	return res;
  }
  
-@@ -2182,7 +2959,11 @@
+@@ -2183,7 +2960,11 @@
  
  	ast_manager_unregister("ParkedCalls");
  	ast_cli_unregister(&showfeatures);
@@ -9682,10 +9682,10 @@ Index: asterisk-bristuff/res/res_features.c
  	ast_unregister_application(parkcall);
  	return ast_unregister_application(parkedcall);
  }
-Index: asterisk-bristuff/res/res_monitor.c
+Index: asterisk-1.2.27/res/res_monitor.c
 ===================================================================
---- asterisk-bristuff.orig/res/res_monitor.c	2007-03-21 19:03:20.000000000 +0100
-+++ asterisk-bristuff/res/res_monitor.c	2007-11-02 17:08:10.000000000 +0100
+--- asterisk-1.2.27.orig/res/res_monitor.c	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/res/res_monitor.c	2008-03-19 11:37:10.000000000 +0100
 @@ -90,7 +90,7 @@
  
  /* Start monitoring a channel */
@@ -9822,10 +9822,10 @@ Index: asterisk-bristuff/res/res_monitor.c
  	res = ast_monitor_stop(c, 1);
  	ast_mutex_unlock(&c->lock);
  	if (res) {
-Index: asterisk-bristuff/rtp.c
+Index: asterisk-1.2.27/rtp.c
 ===================================================================
---- asterisk-bristuff.orig/rtp.c	2007-06-19 19:00:58.000000000 +0200
-+++ asterisk-bristuff/rtp.c	2007-11-02 17:08:11.000000000 +0100
+--- asterisk-1.2.27.orig/rtp.c	2008-03-19 11:36:53.000000000 +0100
++++ asterisk-1.2.27/rtp.c	2008-03-19 11:37:10.000000000 +0100
 @@ -448,6 +448,11 @@
  	struct rtpPayloadType rtpPT;
  	

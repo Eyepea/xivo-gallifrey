@@ -5,10 +5,10 @@
 ## DP: patch: svn diff -r 10646:13356 http://svn.digium.com/svn/asterisk/team/oej/test-this-branch/apps/app_senddtmf.c
 ## DP: From: http://www.lusyn.com/asterisk/patches.html
 
-Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_senddtmf.c
+Index: asterisk-1.2.27/apps/app_senddtmf.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_senddtmf.c	2007-08-08 14:42:40.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_senddtmf.c	2007-08-08 14:43:11.000000000 +0200
+--- asterisk-1.2.27.orig/apps/app_senddtmf.c	2008-03-19 11:32:21.000000000 +0100
++++ asterisk-1.2.27/apps/app_senddtmf.c	2008-03-19 11:33:29.000000000 +0100
 @@ -41,6 +41,7 @@
  #include "asterisk/options.h"
  #include "asterisk/utils.h"

@@ -24,10 +24,10 @@
 	message sent by the peer, and this behavior is handled correctly by
 	OpenH323 1.18.0.
 
-Index: asterisk-classic/channels/chan_h323.c
+Index: asterisk-1.2.27/channels/chan_h323.c
 ===================================================================
---- asterisk-classic.orig/channels/chan_h323.c	2007-10-21 01:35:49.000000000 +0200
-+++ asterisk-classic/channels/chan_h323.c	2007-10-21 01:35:50.000000000 +0200
+--- asterisk-1.2.27.orig/channels/chan_h323.c	2008-03-19 11:34:24.000000000 +0100
++++ asterisk-1.2.27/channels/chan_h323.c	2008-03-19 11:34:28.000000000 +0100
 @@ -682,7 +682,7 @@
  		return -1;
  	case AST_CONTROL_PROGRESS:
@@ -82,10 +82,10 @@ Index: asterisk-classic/channels/chan_h323.c
  	} else if (!strcasecmp(v->name, "noSilenceSuppression")) {
  		options->noSilenceSuppression = ast_true(v->value);
  	} else if (!strcasecmp(v->name, "progress_setup")) {
-Index: asterisk-classic/channels/h323/ast_h323.cpp
+Index: asterisk-1.2.27/channels/h323/ast_h323.cpp
 ===================================================================
---- asterisk-classic.orig/channels/h323/ast_h323.cpp	2007-10-21 01:35:49.000000000 +0200
-+++ asterisk-classic/channels/h323/ast_h323.cpp	2007-10-21 01:35:50.000000000 +0200
+--- asterisk-1.2.27.orig/channels/h323/ast_h323.cpp	2008-03-19 11:34:24.000000000 +0100
++++ asterisk-1.2.27/channels/h323/ast_h323.cpp	2008-03-19 11:34:28.000000000 +0100
 @@ -594,7 +594,8 @@
  	conn = new MyH323Connection(*this, callReference, options);
  	if (conn) {
@@ -172,10 +172,10 @@ Index: asterisk-classic/channels/h323/ast_h323.cpp
          connection->Unlock();
          return 0;  
  }
-Index: asterisk-classic/channels/h323/ast_h323.h
+Index: asterisk-1.2.27/channels/h323/ast_h323.h
 ===================================================================
---- asterisk-classic.orig/channels/h323/ast_h323.h	2007-10-21 01:35:45.000000000 +0200
-+++ asterisk-classic/channels/h323/ast_h323.h	2007-10-21 01:35:50.000000000 +0200
+--- asterisk-1.2.27.orig/channels/h323/ast_h323.h	2008-03-19 11:34:17.000000000 +0100
++++ asterisk-1.2.27/channels/h323/ast_h323.h	2008-03-19 11:34:28.000000000 +0100
 @@ -178,7 +178,7 @@
  	BOOL OnReceivedCapabilitySet(const H323Capabilities &, const H245_MultiplexCapability *,
  				     H245_TerminalCapabilitySetReject &);
@@ -185,10 +185,10 @@ Index: asterisk-classic/channels/h323/ast_h323.h
  	BOOL SetUserDataInSetup(H323SignalPDU & setupPDU) const;
  	void GetUserDataFromSetup(const H323SignalPDU & setupPDU);
  
-Index: asterisk-classic/channels/h323/chan_h323.h
+Index: asterisk-1.2.27/channels/h323/chan_h323.h
 ===================================================================
---- asterisk-classic.orig/channels/h323/chan_h323.h	2007-10-21 01:35:49.000000000 +0200
-+++ asterisk-classic/channels/h323/chan_h323.h	2007-10-21 01:35:50.000000000 +0200
+--- asterisk-1.2.27.orig/channels/h323/chan_h323.h	2008-03-19 11:34:24.000000000 +0100
++++ asterisk-1.2.27/channels/h323/chan_h323.h	2008-03-19 11:34:28.000000000 +0100
 @@ -37,6 +37,7 @@
  	int				user_data_discriminator;
  	int				noFastStart;

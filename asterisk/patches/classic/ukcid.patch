@@ -5,10 +5,10 @@
 ## DP: From: http://www.lusyn.com/asterisk/patches.html
 ## DP: Updated for Asterisk 1.2.15: the chan_conf struct.
 
-Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_zap.c
+Index: asterisk-1.2.27/channels/chan_zap.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/chan_zap.c	2007-08-07 19:44:04.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_zap.c	2007-08-08 14:30:18.000000000 +0200
+--- asterisk-1.2.27.orig/channels/chan_zap.c	2008-03-19 11:32:23.000000000 +0100
++++ asterisk-1.2.27/channels/chan_zap.c	2008-03-19 11:32:58.000000000 +0100
 @@ -1103,6 +1103,14 @@
  	return 0;
  }
@@ -154,10 +154,10 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_zap.c
  			else if (ast_true(v->value))
  				chan_conf.cid_start = CID_START_RING;
  		} else if (!strcasecmp(v->name, "threewaycalling")) {
-Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/callerid.h
+Index: asterisk-1.2.27/include/asterisk/callerid.h
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/include/asterisk/callerid.h	2005-11-29 19:24:39.000000000 +0100
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/callerid.h	2007-08-08 14:30:18.000000000 +0200
+--- asterisk-1.2.27.orig/include/asterisk/callerid.h	2008-03-19 11:32:23.000000000 +0100
++++ asterisk-1.2.27/include/asterisk/callerid.h	2008-03-19 11:32:58.000000000 +0100
 @@ -44,6 +44,7 @@
  
  #define CID_START_RING	1

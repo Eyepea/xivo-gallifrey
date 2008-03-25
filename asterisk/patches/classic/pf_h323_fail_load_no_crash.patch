@@ -12,10 +12,10 @@
 
 	This patch fixes that.
 
-Index: asterisk-classic/channels/chan_h323.c
+Index: asterisk-1.2.27/channels/chan_h323.c
 ===================================================================
---- asterisk-classic.orig/channels/chan_h323.c	2007-10-21 01:35:45.000000000 +0200
-+++ asterisk-classic/channels/chan_h323.c	2007-10-21 01:35:48.000000000 +0200
+--- asterisk-1.2.27.orig/channels/chan_h323.c	2008-03-19 11:34:17.000000000 +0100
++++ asterisk-1.2.27/channels/chan_h323.c	2008-03-19 11:34:20.000000000 +0100
 @@ -2460,8 +2460,8 @@
  		return -1;
  	}

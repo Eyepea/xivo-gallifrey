@@ -4,10 +4,10 @@
 ## DP: disable the nunfunctional support for R2 in chan_zap
 ## -- applied upstream for trunk (1.4.x)
 
-Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/Makefile
+Index: asterisk-1.2.27/channels/Makefile
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/Makefile	2007-08-08 14:42:42.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/Makefile	2007-08-08 14:43:04.000000000 +0200
+--- asterisk-1.2.27.orig/channels/Makefile	2008-03-19 11:32:21.000000000 +0100
++++ asterisk-1.2.27/channels/Makefile	2008-03-19 11:33:22.000000000 +0100
 @@ -107,11 +107,6 @@
    ZAPPRI=-lpri
  endif

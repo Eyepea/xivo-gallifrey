@@ -11,10 +11,10 @@
 	MyH323Connection, that is used by other patches for other options
 	propagations.
 
-Index: asterisk-classic/channels/h323/ast_h323.cpp
+Index: asterisk-1.2.27/channels/h323/ast_h323.cpp
 ===================================================================
---- asterisk-classic.orig/channels/h323/ast_h323.cpp	2007-10-21 01:12:56.000000000 +0200
-+++ asterisk-classic/channels/h323/ast_h323.cpp	2007-10-21 01:35:22.000000000 +0200
+--- asterisk-1.2.27.orig/channels/h323/ast_h323.cpp	2008-03-19 11:32:19.000000000 +0100
++++ asterisk-1.2.27/channels/h323/ast_h323.cpp	2008-03-19 11:34:14.000000000 +0100
 @@ -337,8 +337,6 @@
  		connection->SetLocalPartyName(connection->ast_cid_name);
  	}
@@ -78,10 +78,10 @@ Index: asterisk-classic/channels/h323/ast_h323.cpp
  BOOL MyH323Connection::OnReceivedSignalSetup(const H323SignalPDU & setupPDU)
  {
  	call_details_t cd;
-Index: asterisk-classic/channels/h323/ast_h323.h
+Index: asterisk-1.2.27/channels/h323/ast_h323.h
 ===================================================================
---- asterisk-classic.orig/channels/h323/ast_h323.h	2007-10-21 01:12:56.000000000 +0200
-+++ asterisk-classic/channels/h323/ast_h323.h	2007-10-21 01:35:22.000000000 +0200
+--- asterisk-1.2.27.orig/channels/h323/ast_h323.h	2008-03-19 11:32:19.000000000 +0100
++++ asterisk-1.2.27/channels/h323/ast_h323.h	2008-03-19 11:34:14.000000000 +0100
 @@ -136,7 +136,7 @@
  	void OnClosedLogicalChannel(H323Connection &, const H323Channel &);
  	void OnConnectionEstablished(H323Connection &, const PString &);

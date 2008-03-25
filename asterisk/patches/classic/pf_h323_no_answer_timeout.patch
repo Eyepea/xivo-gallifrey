@@ -9,10 +9,10 @@
 	uses by default when an outgoing call is placed to abort it if nobody
 	answer after 1 minute.
 
-Index: asterisk-classic/channels/h323/ast_h323.cpp
+Index: asterisk-1.2.27/channels/h323/ast_h323.cpp
 ===================================================================
---- asterisk-classic.orig/channels/h323/ast_h323.cpp	2007-10-21 01:35:50.000000000 +0200
-+++ asterisk-classic/channels/h323/ast_h323.cpp	2007-10-21 01:35:51.000000000 +0200
+--- asterisk-1.2.27.orig/channels/h323/ast_h323.cpp	2008-03-19 11:34:28.000000000 +0100
++++ asterisk-1.2.27/channels/h323/ast_h323.cpp	2008-03-19 11:34:31.000000000 +0100
 @@ -295,6 +295,7 @@
  {
  	// Capabilities will be negotiated on per-connection basis

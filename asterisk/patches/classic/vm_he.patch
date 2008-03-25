@@ -3,10 +3,10 @@
 ## vm_he.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
 ## DP: Add Hebrew support to the voicemail app.
 
-Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_voicemail.c
+Index: asterisk-1.2.27/apps/app_voicemail.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_voicemail.c	2007-08-08 14:42:53.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_voicemail.c	2007-08-08 14:42:56.000000000 +0200
+--- asterisk-1.2.27.orig/apps/app_voicemail.c	2008-03-19 11:33:14.000000000 +0100
++++ asterisk-1.2.27/apps/app_voicemail.c	2008-03-19 11:33:16.000000000 +0100
 @@ -156,6 +156,7 @@
  	\arg \b gr - Greek
  	\arg \b no - Norwegian

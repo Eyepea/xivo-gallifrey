@@ -3,10 +3,10 @@
 ## codecs_Makefile.dpatch by Mark Purcell <msp@debian.org>
 ## DP: Use installed libgsm if availble
 
-Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/codecs/codec_gsm.c
+Index: asterisk-1.2.27/codecs/codec_gsm.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/codecs/codec_gsm.c	2005-11-29 19:24:39.000000000 +0100
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/codecs/codec_gsm.c	2007-08-08 14:30:28.000000000 +0200
+--- asterisk-1.2.27.orig/codecs/codec_gsm.c	2008-03-19 11:32:22.000000000 +0100
++++ asterisk-1.2.27/codecs/codec_gsm.c	2008-03-19 11:33:07.000000000 +0100
 @@ -45,7 +45,7 @@
  #include "asterisk/logger.h"
  #include "asterisk/channel.h"
@@ -16,10 +16,10 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/codecs/codec_gsm.c
  #include "../formats/msgsm.h"
  
  /* Sample frame data */
-Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/codecs/Makefile
+Index: asterisk-1.2.27/codecs/Makefile
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/codecs/Makefile	2007-01-31 18:28:15.000000000 +0100
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/codecs/Makefile	2007-08-08 14:30:28.000000000 +0200
+--- asterisk-1.2.27.orig/codecs/Makefile	2008-03-19 11:32:22.000000000 +0100
++++ asterisk-1.2.27/codecs/Makefile	2008-03-19 11:33:07.000000000 +0100
 @@ -73,8 +73,9 @@
  endif
  
@@ -32,10 +32,10 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/codecs/Makefile
  LIBLPC10=lpc10/liblpc10.a
  
  ifeq ($(findstring BSD,${OSARCH}),BSD)
-Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/formats/Makefile
+Index: asterisk-1.2.27/formats/Makefile
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/formats/Makefile	2005-11-29 19:24:39.000000000 +0100
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/formats/Makefile	2007-08-08 14:30:28.000000000 +0200
+--- asterisk-1.2.27.orig/formats/Makefile	2008-03-19 11:32:22.000000000 +0100
++++ asterisk-1.2.27/formats/Makefile	2008-03-19 11:33:07.000000000 +0100
 @@ -33,8 +33,6 @@
    CFLAGS+=-I$(CROSS_COMPILE_TARGET)/usr/local/include -L$(CROSS_COMPILE_TARGET)/usr/local/lib
  endif

@@ -2,10 +2,10 @@
 ## Feature
 ## DP: CDR in SQLite3
 
-Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/cdr/Makefile
+Index: asterisk-1.2.27/cdr/Makefile
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/cdr/Makefile	2007-08-08 14:42:39.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/cdr/Makefile	2007-08-08 14:43:13.000000000 +0200
+--- asterisk-1.2.27.orig/cdr/Makefile	2008-03-19 11:32:21.000000000 +0100
++++ asterisk-1.2.27/cdr/Makefile	2008-03-19 11:33:31.000000000 +0100
 @@ -110,6 +110,9 @@
  ifneq ($(wildcard $(CROSS_COMPILE_TARGET)/usr/include/sqlite.h),)
    MODS+=cdr_sqlite.so
@@ -26,10 +26,10 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/cdr/Makefile
  depend: .depend
  
  .depend:
-Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/cdr/cdr_sqlite3_custom.c
+Index: asterisk-1.2.27/cdr/cdr_sqlite3_custom.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/cdr/cdr_sqlite3_custom.c	2007-08-08 14:43:13.000000000 +0200
++++ asterisk-1.2.27/cdr/cdr_sqlite3_custom.c	2008-03-19 11:33:31.000000000 +0100
 @@ -0,0 +1,251 @@
 +/*
 + * Asterisk -- An open source telephony toolkit.

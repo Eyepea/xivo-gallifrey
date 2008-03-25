@@ -8,10 +8,10 @@
 ## DP:   there still is a clean target and rules are made .PHONY when needed.
 ## DP:   Maybe related to issue: http://bugs.digium.com/view.php?id=9501
 
-Index: asterisk-1.2.24/channels/h323/Makefile
+Index: asterisk-1.2.27/channels/h323/Makefile
 ===================================================================
---- asterisk-1.2.24.orig/channels/h323/Makefile	2007-03-06 16:17:16.000000000 +0100
-+++ asterisk-1.2.24/channels/h323/Makefile	2007-10-18 15:19:43.000000000 +0200
+--- asterisk-1.2.27.orig/channels/h323/Makefile	2008-03-19 11:32:20.000000000 +0100
++++ asterisk-1.2.27/channels/h323/Makefile	2008-03-19 11:33:47.000000000 +0100
 @@ -21,8 +21,7 @@
  OPENH323DIR=$(HOME)/openh323
  endif

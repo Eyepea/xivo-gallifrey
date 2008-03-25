@@ -5,10 +5,10 @@
 ## -- applied upstream as -F option to *force* forking
 ## -- in trunk (will be 1.4.x)
 
-Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/asterisk.c
+Index: asterisk-1.2.27/asterisk.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/asterisk.c	2007-06-28 01:22:13.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/asterisk.c	2007-08-08 14:30:20.000000000 +0200
+--- asterisk-1.2.27.orig/asterisk.c	2008-03-19 11:32:22.000000000 +0100
++++ asterisk-1.2.27/asterisk.c	2008-03-19 11:33:00.000000000 +0100
 @@ -155,6 +155,7 @@
  int option_nofork=0;			/*!< Do not fork */
  int option_quiet=0;			/*!< Keep quiet */

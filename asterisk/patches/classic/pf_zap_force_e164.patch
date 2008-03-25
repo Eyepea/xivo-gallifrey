@@ -18,10 +18,10 @@
 
 	Patch status: known as OK, tested on 2007-10-31
 
-Index: asterisk-classic/channels/chan_zap.c
+Index: asterisk-1.2.27/channels/chan_zap.c
 ===================================================================
---- asterisk-classic.orig/channels/chan_zap.c	2007-11-01 03:05:09.000000000 +0100
-+++ asterisk-classic/channels/chan_zap.c	2007-11-01 03:09:30.000000000 +0100
+--- asterisk-1.2.27.orig/channels/chan_zap.c	2008-03-19 11:33:26.000000000 +0100
++++ asterisk-1.2.27/channels/chan_zap.c	2008-03-19 11:33:58.000000000 +0100
 @@ -314,6 +314,7 @@
  	char localprefix[20];						/*!< area access code + area code ('0'+area code for european dialplans) */
  	char privateprefix[20];						/*!< for private dialplans */

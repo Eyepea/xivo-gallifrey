@@ -4,10 +4,10 @@
 ## DP: Disable the build of the chan_misdn that is shipped with the official
 ## DP: Asterisk tarball from Digium
 
-Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/Makefile
+Index: asterisk-1.2.27/channels/Makefile
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/Makefile	2007-08-08 14:43:04.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/Makefile	2007-08-08 14:43:27.000000000 +0200
+--- asterisk-1.2.27.orig/channels/Makefile	2008-03-19 11:33:22.000000000 +0100
++++ asterisk-1.2.27/channels/Makefile	2008-03-19 11:33:49.000000000 +0100
 @@ -16,7 +16,7 @@
  
  CHANNEL_LIBS=chan_sip.so chan_agent.so chan_mgcp.so chan_iax2.so chan_local.so chan_skinny.so chan_features.so

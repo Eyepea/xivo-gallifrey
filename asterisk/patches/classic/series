@@ -32,7 +32,6 @@ no_misdn_build.patch
 
 pf_zap_force_e164.patch
 pf_intercept_monitored.patch
-pf_queue_call_limit.patch
 pf_voicemail_date_language.patch
 pf_parking_callback_after_timeout.patch
 
@@ -42,6 +41,8 @@ pf_h323_fail_load_no_crash.patch
 pf_h323_incoming_options.patch 
 pf_h323_noearlystart.patch 
 pf_h323_no_answer_timeout.patch 
+
+pf_parking_parkdigimute_variable.patch
 
 # pf_queue_agents_language.patch
 # pf_escape_0x23.patch

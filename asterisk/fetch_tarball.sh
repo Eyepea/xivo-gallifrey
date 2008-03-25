@@ -24,7 +24,7 @@ if [ -e "${DEST_PATH}/${FILENAME}" ]; then
 fi
 
 UPFILENAME="asterisk_${UPVERSION}.orig.tar.gz"
-URL="ftp://ftp2.digium.com/pub/asterisk/releases/asterisk-${UPVERSION}.tar.gz"
+URL="http://downloads.digium.com/pub/asterisk/releases/asterisk-${UPVERSION}.tar.gz"
 
 echo "Downloading ${UPFILENAME} from ${URL}"
 wget -N -nv -T10 -t3 -O ${DEST_PATH}/${UPFILENAME} ${URL}

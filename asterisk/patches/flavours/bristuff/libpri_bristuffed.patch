@@ -7,10 +7,10 @@
 ## DP: with the bristuff patch.
 
 @DPATCH@
-Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/Makefile
+Index: asterisk-1.2.27/channels/Makefile
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/Makefile	2007-09-27 18:25:52.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/Makefile	2007-09-27 18:26:01.000000000 +0200
+--- asterisk-1.2.27.orig/channels/Makefile	2008-03-19 11:37:10.000000000 +0100
++++ asterisk-1.2.27/channels/Makefile	2008-03-19 11:37:14.000000000 +0100
 @@ -102,10 +102,15 @@
    CHANNEL_LIBS+=chan_alsa.so
  endif
