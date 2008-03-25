@@ -154,6 +154,44 @@ CREATE INDEX cdr__idx__accountcode ON cdr(accountcode);
 CREATE INDEX cdr__idx__userfield ON cdr(userfield);
 
 
+DROP TABLE context;
+CREATE TABLE context (
+ name varchar(39) NOT NULL,
+ entity varchar(64),
+ commented tinyint(1) NOT NULL DEFAULT 0,
+ description text NOT NULL,
+ PRIMARY KEY(name)
+);
+
+CREATE INDEX context__idx__entity ON context(entity);
+CREATE INDEX context__idx__commented ON context(commented);
+
+
+DROP TABLE contextentity;
+CREATE TABLE contextentity (
+ context varchar(39) NOT NULL,
+ type varchar(6) NOT NULL,
+ typevalbeg varchar(16) NOT NULL DEFAULT '',
+ typevalend varchar(16) NOT NULL DEFAULT '',
+ didlength tinyint unsigned NOT NULL DEFAULT 0,
+ PRIMARY KEY(context,type,typevalbeg,typevalend)
+);
+
+CREATE INDEX contextentity__idx__context_type ON contextentity(context,type);
+
+
+DROP TABLE contextfeatures;
+CREATE TABLE contextfeatures (
+ context varchar(39) NOT NULL,
+ type varchar(64) NOT NULL,
+ typeval varchar(255) NOT NULL DEFAULT '',
+ PRIMARY KEY(context,type,typeval)
+);
+
+CREATE INDEX contextfeatures__idx__context ON contextfeatures(context);
+CREATE INDEX contextfeatures__idx__context_type ON contextfeatures(context,type);
+
+
 DROP TABLE dialstatus;
 CREATE TABLE dialstatus (
  id integer unsigned,
@@ -825,7 +863,7 @@ CREATE TABLE queue (
  'announce-round-seconds' tinyint unsigned,
  'announce-holdtime' varchar(4),
  retry tinyint unsigned,
- wrapuptime integer unsigned,
+ wrapuptime tinyint unsigned,
  maxlen integer unsigned,
  servicelevel int(11),
  strategy varchar(11),

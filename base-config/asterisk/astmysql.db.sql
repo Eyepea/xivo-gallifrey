@@ -157,6 +157,44 @@ CREATE INDEX `cdr__idx__accountcode` ON `cdr`(`accountcode`);
 CREATE INDEX `cdr__idx__userfield` ON `cdr`(`userfield`);
 
 
+DROP TABLE IF EXISTS `context`;
+CREATE TABLE `context` (
+ `name` varchar(39) NOT NULL,
+ `entity` varchar(64),
+ `commented` tinyint(1) NOT NULL DEFAULT 0,
+ `description` text NOT NULL,
+ PRIMARY KEY(`name`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE INDEX `context__idx__entity` ON `context`(`entity`);
+CREATE INDEX `context__idx__commented` ON `context`(`commented`);
+
+
+DROP TABLE IF EXISTS `contextentity`;
+CREATE TABLE `contextentity` (
+ `context` varchar(39) NOT NULL,
+ `type` enum('user','group','queue','meetme','incall') NOT NULL,
+ `typevalbeg` varchar(16) NOT NULL DEFAULT '',
+ `typevalend` varchar(16) NOT NULL DEFAULT '',
+ `didlength` tinyint(2) unsigned NOT NULL DEFAULT 0,
+ PRIMARY KEY(`context`,`type`,`typevalbeg`,`typevalend`)
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;
+
+CREATE INDEX `contextentity__idx__context_type` ON `contextentity`(`context`,`type`);
+
+
+DROP TABLE IF EXISTS `contextfeatures`;
+CREATE TABLE `contextfeatures` (
+ `context` varchar(39) NOT NULL,
+ `type` enum('extenfeatures','featuremap','generalfeatures','generaliax','generalsip','generalvoicemail','group','handynumbers','incall','meetme','outcall','queue','user','uservoicemail') NOT NULL,
+ `typeval` varchar(255) NOT NULL DEFAULT '',
+ PRIMARY KEY(`context`,`type`,`typeval`)
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;
+
+CREATE INDEX `contextfeatures__idx__context` ON `contextfeatures`(`context`);
+CREATE INDEX `contextfeatures__idx__context_type` ON `contextfeatures`(`context`,`type`);
+
+
 DROP TABLE IF EXISTS `dialstatus`;
 CREATE TABLE `dialstatus` (
  `id` int(10) unsigned auto_increment,
@@ -828,7 +866,7 @@ CREATE TABLE `queue` (
  `announce-round-seconds` tinyint(2) unsigned,
  `announce-holdtime` varchar(4),
  `retry` tinyint(2) unsigned,
- `wrapuptime` int(10) unsigned,
+ `wrapuptime` tinyint(2) unsigned,
  `maxlen` int(10) unsigned,
  `servicelevel` int(11),
  `strategy` varchar(11),
