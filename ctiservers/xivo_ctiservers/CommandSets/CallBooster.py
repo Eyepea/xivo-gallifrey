@@ -1156,12 +1156,22 @@ class CallBoosterCommand(BaseCommand):
                                 del userinfo['agentlogin-fromconf']
                         else:
                                 self.__send_msg__(userinfo, ',1,,AppelOpe/')
-                                for callnum, anycall in userinfo['login']['calls'].iteritems():
-                                        if anycall.tocall:
-                                                log_debug(SYSLOG_INFO, 'an outgoing call is waiting to be sent ...')
-                                                time.sleep(1) # otherwise the Agent's channel is not found
-                                                anycall.tocall = False
-                                                self.__outcall__(anycall)
+                                if 'post_agentlogin_outcall' in userinfo['login']:
+                                        callnum = userinfo['login'].get('post_agentlogin_outcall')
+                                        anycall = userinfo['login']['calls'][callnum]
+                                        log_debug(SYSLOG_INFO, 'an outgoing call was waiting to be sent ...')
+                                        time.sleep(1) # otherwise the Agent's channel is not found
+                                        self.__outcall__(anycall)
+                                        del userinfo['login']['post_agentlogin_outcall']
+                                elif 'post_agentlogin_record' in userinfo['login']:
+                                        reference = userinfo['login'].get('post_agentlogin_record')
+                                        log_debug(SYSLOG_INFO, 'a record was waiting to be sent ...')
+                                        time.sleep(1) # otherwise the Agent's channel is not found
+                                        self.amis[astid].aoriginate_var('Agent', agentnum, userinfo.get('user'),
+                                                                        'record_exten', 'Enregistre', 'ctx-callbooster-record',
+                                                                        {'CB_RECORD_FILENAME' : reference[0]}, 100)
+                                        self.__send_msg__(userinfo, ',,,Enregistre/')
+                                        del userinfo['login']['post_agentlogin_record']
                 else:
                         log_debug(SYSLOG_WARNING, '(agentlogin) no user found for agent %s' % agentnum)
                 return
@@ -1849,6 +1859,8 @@ class CallBoosterCommand(BaseCommand):
 
                                         userinfo['login']['calls'][calltoforce.commid] = calltoforce
                                         if ntowait == 0:
+                                                if 'agentchannel' not in userinfo:
+                                                        self.__schedule_agentlogin__(userinfo)
                                                 userinfo['sendfiche'] = [qlidx, 'Agent/%s' % agentnum]
                                                 if calltoforce.dialplan['callerid'] == 1:
                                                         cnum = calltoforce.cidnum
@@ -1890,7 +1902,7 @@ class CallBoosterCommand(BaseCommand):
                                         self.__outcall__(outCall)
                                 else:
                                         userinfo['login']['calls'][comm_id_outgoing] = outCall
-                                        userinfo['login']['calls'][comm_id_outgoing].tocall = True
+                                        userinfo['login']['post_agentlogin_outcall'] = comm_id_outgoing
                                         self.__schedule_agentlogin__(userinfo)
 
 
@@ -2116,16 +2128,16 @@ class CallBoosterCommand(BaseCommand):
                 elif cname == 'Enregistre':
                         reference = parsedcommand.args[1]
 
-##                        if 'agentchannel' in userinfo:
-##                                print 'sendfiche, the agent is online :', userinfo['agentchannel']
-##                        else:
-##                                log_debug(SYSLOG_INFO, 'sendfiche, the agent is not online ... we re going to call him : %s (%s)' % (phonenum, str(userinfo)))
-##                                self.__schedule_agentlogin__(userinfo)
-
-                        self.amis[astid].aoriginate_var('Agent', agentnum, opername,
-                                                        'record_exten', 'Enregistre', 'ctx-callbooster-record',
-                                                        {'CB_RECORD_FILENAME' : reference[0]}, 100)
-                        connid_socket.send(',,,Enregistre/')
+                        if 'agentchannel' in userinfo:
+                                print 'sendfiche, the agent is online :', userinfo['agentchannel']
+                                self.amis[astid].aoriginate_var('Agent', agentnum, opername,
+                                                                'record_exten', 'Enregistre', 'ctx-callbooster-record',
+                                                                {'CB_RECORD_FILENAME' : reference[0]}, 100)
+                                connid_socket.send(',,,Enregistre/')
+                        else:
+                                log_debug(SYSLOG_INFO, 'sendfiche, the agent is not online ... we re going to call him : %s (%s)' % (phonenum, str(userinfo)))
+                                userinfo['login']['post_agentlogin_record'] = reference
+                                self.__schedule_agentlogin__(userinfo)
 
 
                 elif cname == 'Alerte':
@@ -2511,8 +2523,12 @@ class CallBoosterCommand(BaseCommand):
                 Fills the 'taxes' table at the start of a call.
                 """
                 try:
-                        [juridict, impulsion] = self.__gettaxes__(numbertobill)
-                        call.settaxes(impulsion)
+                        if call.dir == 'o':
+                                [juridict, impulsion] = self.__gettaxes__(numbertobill)
+                                call.settaxes(impulsion)
+                        else:
+                                juridict = 0
+                                impulsion = [0, 0, 0]
                         datetime = time.strftime(DATETIMEFMT)
                         self.cursor_operat.query('USE system')
                         self.cursor_operat.query('INSERT INTO taxes VALUES (0, %s, 0, %s, %d, %d, %s, %s, %s, %s, %s, %d, %s, %s, %s, %s, %s, %s, %s)'
@@ -2555,6 +2571,8 @@ class CallBoosterCommand(BaseCommand):
                                 ntaxes = tpc + 1 + (duree_int - dpc) / dlt
                         else:
                                 ntaxes = tpc
+                        if anycall.dir == 'i':
+                                ntaxes = 0
 
                         anycall.set_timestamp_tax('END')
                         dureesonnerie = 0
