@@ -452,7 +452,7 @@ class XivoCTICommand(BaseCommand):
                                        '<info name="File d Attente" type="text"><![CDATA[<h1><b>%s</b></h1>]]></info>' % queuename,
                                        '<info name="Numero Appelant" type="phone"><![CDATA[%s]]></info>' % src]
                         if 'sheeturl' in self.xivoconf:
-                                linestosend.append('<info name="Site" type="urlauto"><![CDATA[%s%s]]></info>' % (self.xivoconf['sheeturl'], src))
+                                linestosend.append('<info name="Site" type="urlauto"><![CDATA[%s%s]]></info>' % (self.xivoconf['sheeturl'], ''.join(random.sample('12345', 4))))
                         linestosend.extend(['<info name="channel" type="internal"><![CDATA[%s]]></info>' % chan,
                                             '<info name="nopopup" type="internal"></info>',
                                             '<message>help</message>',
@@ -937,13 +937,13 @@ class XivoCTICommand(BaseCommand):
                                         astid = icommand.args[0]
                                         if 'agentnum' in userinfo:
                                                 agnum = userinfo['agentnum']
-                                                unallowed = []
+                                                allowed = 1
                                                 if 'agents_unallowed' in self.xivoconf:
                                                         unallowed = self.xivoconf['agents_unallowed'].split(',')
-                                                if astid in self.queues_list and agnum not in unallowed:
-                                                        self.__send_msg_to_cti_client__(userinfo, 'queues-list=%s;%s' %(astid, ','.join(self.queues_list[astid].keys())))
-                                                else:
-                                                        self.__send_msg_to_cti_client__(userinfo, 'queues-list=%s;' % astid)
+                                                        if agnum in unallowed:
+                                                                allowed = 0
+                                                if astid in self.queues_list:
+                                                        self.__send_msg_to_cti_client__(userinfo, 'queues-list=%s;%d;%s' %(astid, allowed, ','.join(self.queues_list[astid].keys())))
 
                         elif icommand.name == 'agent':
                                 if (capalist & CAPA_AGENTS):
