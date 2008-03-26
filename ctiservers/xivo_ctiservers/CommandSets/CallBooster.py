@@ -1301,34 +1301,52 @@ class CallBoosterCommand(BaseCommand):
                 confroomsize = len(self.confrooms[meetme])
                 print 'CONF LEAVE', meetme, channel, usernum, confroomsize
                 if confroomsize == 2:
+                        # when one of the 2 peers leave the conference, we put the 2 other ones in a regular commuication configuration
                         chantomatch1 = self.confrooms[meetme][0]
                         chantomatch2 = self.confrooms[meetme][1]
                         for opername, userinfo in self.ulist.byast[astid].list.iteritems():
                                 if 'agentchannel-conf' in userinfo:
-                                        ctm1 = ctm2 = None
+                                        chann_agent = chann_inout = None
                                         if userinfo['agentchannel-conf'] == chantomatch1:
-                                                ctm1 = chantomatch1
-                                                ctm2 = chantomatch2
+                                                chann_agent = chantomatch1
+                                                chann_inout = chantomatch2
                                         elif userinfo['agentchannel-conf'] == chantomatch2:
-                                                ctm1 = chantomatch2
-                                                ctm2 = chantomatch1
-                                        if ctm1 is not None and ctm2 is not None:
+                                                chann_agent = chantomatch2
+                                                chann_inout = chantomatch1
+                                        if chann_agent is not None and chann_inout is not None:
+                                                if channel in self.outgoing_calls:
+                                                        userinfo['agentlogin-fromconf'] = None # set it in order not to send an AppelOpe/ reply when it will be logged back
+                                                        self.amis[astid].transfer(chann_agent, 's', 'ctx-callbooster-agentlogin')
+                                                        commid = self.outgoing_calls[channel].commid
+                                                        if commid in userinfo['login']['calls']:
+                                                                del userinfo['login']['calls'][commid]
+                                                        self.__send_msg__(userinfo, '%s,,,Annule/' % commid)
+                                                        if chann_inout in self.incoming_calls:
+                                                                self.__park__(astid, self.incoming_calls[chann_inout])
+                                                elif channel in self.incoming_calls:
+                                                        thiscall = self.incoming_calls[channel]
+                                                        if not thiscall.parking: # if the agent has requested a parking, keep quiet
+                                                                # set it in order not to send an AppelOpe/ reply when it will be logged back
+                                                                userinfo['agentlogin-fromconf'] = None
+                                                                self.amis[astid].transfer(chann_agent, 's', 'ctx-callbooster-agentlogin')
+                                                                commid = thiscall.commid
+                                                                if commid in userinfo['login']['calls']:
+                                                                        del userinfo['login']['calls'][commid]
+                                                                self.__send_msg__(userinfo, '%s,,,Annule/' % commid)
+                                                                if chann_inout in self.outgoing_calls:
+                                                                        self.__park__(astid, self.outgoing_calls[chann_inout])
+                elif confroomsize == 1:
+                        chantomatch = self.confrooms[meetme][0]
+                        for opername, userinfo in self.ulist.byast[astid].list.iteritems():
+                                if 'agentchannel-conf' in userinfo:
+                                        if userinfo['agentchannel-conf'] == chantomatch:
                                                 userinfo['agentlogin-fromconf'] = None
-                                                self.amis[astid].transfer(ctm1, 's', 'ctx-callbooster-agentlogin')
+                                                self.amis[astid].transfer(chantomatch, 's', 'ctx-callbooster-agentlogin')
                                                 if channel in self.outgoing_calls:
                                                         commid = self.outgoing_calls[channel].commid
                                                         if commid in userinfo['login']['calls']:
                                                                 del userinfo['login']['calls'][commid]
                                                         self.__send_msg__(userinfo, '%s,,,Annule/' % commid)
-                                                        if ctm2 in self.incoming_calls:
-                                                                self.__park__(astid, self.incoming_calls[ctm2])
-                                                elif channel in self.incoming_calls:
-                                                        commid = self.incoming_calls[channel].commid
-                                                        if commid in userinfo['login']['calls']:
-                                                                del userinfo['login']['calls'][commid]
-                                                        self.__send_msg__(userinfo, '%s,,,Annule/' % commid)
-                                                        if ctm2 in self.outgoing_calls:
-                                                                self.__park__(astid, self.outgoing_calls[ctm2])
                 return
 
         # END of AMI events
@@ -2566,12 +2584,13 @@ class CallBoosterCommand(BaseCommand):
                         now_t_time = time.localtime()
                         duree = time.mktime(now_t_time) - time.mktime(anycall.ctime)
                         duree_int = int(duree)
-                        [tpc, dpc, dlt] = anycall.taxes
-                        if duree_int >= dpc and dlt > 0:
-                                ntaxes = tpc + 1 + (duree_int - dpc) / dlt
-                        else:
-                                ntaxes = tpc
-                        if anycall.dir == 'i':
+                        if anycall.dir == 'o':
+                                [tpc, dpc, dlt] = anycall.taxes
+                                if duree_int >= dpc and dlt > 0:
+                                        ntaxes = tpc + 1 + (duree_int - dpc) / dlt
+                                else:
+                                        ntaxes = tpc
+                        elif anycall.dir == 'i':
                                 ntaxes = 0
 
                         anycall.set_timestamp_tax('END')
@@ -2591,9 +2610,9 @@ class CallBoosterCommand(BaseCommand):
                         else:
                                 dureesonnerie = t3 - t1
 
-                        print '__update_taxes__ : commid = %s, arg = %s, state = %s, ' \
+                        print '__update_taxes__ : commid = %s, state = %s, ' \
                               'durees = (%d, sonn = %d), taxes = %d' \
-                              %(anycall.commid, str(anycall.taxes), state,
+                              %(anycall.commid, state,
                                 duree_int, dureesonnerie, ntaxes)
 
                         self.cursor_operat.query('USE system')
