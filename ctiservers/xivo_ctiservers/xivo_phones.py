@@ -416,12 +416,12 @@ class LineProp:
                               self.hintstatus,
                               self.voicemail,
                               self.queueavail)
-                return ":".join(basestatus)
+                return ':'.join(basestatus)
         def build_cidstatus(self):
                 cidstatus = (self.calleridfull,
                              self.calleridfirst,
                              self.calleridlast)
-                return ":".join(cidstatus)
+                return ':'.join(cidstatus)
         ## \brief Builds the channel-by-channel part for the hints/update replies.
         # \param phoneid the "pointer" to the Asterisk phone statuses
         # \return the string containing the statuses for each channel of the given phone

@@ -873,6 +873,12 @@ while True: # loops over the reloads
                                         log_debug(SYSLOG_INFO, 'TCP socket closed on %s (%s)' % (requester, kind))
                                 except Exception, exc:
                                         log_debug(SYSLOG_ERR, '--- exception [CTI, WEBI, AGI, INFO] --- %s' % str(exc))
+                                        try:
+                                                fdlist_full.remove(sel_i)
+                                                del fdlist_established[sel_i]
+                                                sel_i.close()
+                                        except Exception, exc2:
+                                                log_debug(SYSLOG_ERR, '--- exception (2) [CTI, WEBI, AGI, INFO] --- %s' % str(exc2))
 
                         # local pipe fd
                         elif queued_threads_pipe[0] == sel_i:

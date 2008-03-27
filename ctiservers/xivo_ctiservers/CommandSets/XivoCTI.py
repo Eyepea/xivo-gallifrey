@@ -226,7 +226,7 @@ class XivoCTICommand(BaseCommand):
                 self.__connect_user__(userinfo, whoami, whatsmyos, version, state, False)
 
                 phonenum = loginparams.get('phonenumber')
-                userinfo['phonenumber'] = phonenum
+                userinfo['phonenum'] = phonenum
 
                 loginkind = loginparams.get('loginkind')
                 if loginkind == 'agent':
@@ -663,6 +663,7 @@ class XivoCTICommand(BaseCommand):
                 if astid in self.agentslist and agent in self.agentslist[astid]:
                         self.agentslist[astid][agent] = ['AGENT_IDLE', event.get('Loginchan')]
                 self.__send_msg_to_cti_clients__('agentupdate=login;%s;%s' % (agent, loginchan))
+                self.__update_agent__(agent, '1', '')
                 return
         def ami_agentcallbacklogoff(self, astid, event):
                 agent = event.get('Agent')
@@ -670,6 +671,7 @@ class XivoCTICommand(BaseCommand):
                 if astid in self.agentslist and agent in self.agentslist[astid]:
                         self.agentslist[astid][agent] = ['AGENT_LOGGEDOFF', loginchan]
                 self.__send_msg_to_cti_clients__('agentupdate=logout;%s;%s' % (agent, loginchan))
+                self.__update_agent__(agent, '', '')
                 return
 
         def ami_agentcalled(self, astid, event):
@@ -721,15 +723,32 @@ class XivoCTICommand(BaseCommand):
                         del self.queues_list[astid][queue]['agents'][location]
                 return
 
+        def __update_agent__(self, agentnum, status, paused):
+                for astid in self.ulist.byast:
+                        for user, userinfo in self.ulist.byast[astid].listusers().iteritems():
+                                if 'agentnum' in userinfo and userinfo.get('agentnum') == agentnum:
+                                        arg = ':'.join(['agu',
+                                                        userinfo.get('astid'),
+                                                        'sip',
+                                                        userinfo.get('user'),
+                                                        userinfo.get('phonenum'),
+                                                        userinfo.get('context'),
+                                                        '/'.join([agentnum, status, paused])])
+                                        self.__send_msg_to_cti_clients__('agentupdate_all=%s' % arg)
+
+
         def ami_queuememberstatus(self, astid, event):
                 status = event.get('Status')
                 queue = event.get('Queue')
                 location = event.get('Location')
                 paused = event.get('Paused')
 
+                agentnum = location[6:]
+
                 if astid in self.queues_list and queue in self.queues_list[astid] and location in self.queues_list[astid][queue]['agents']:
                         self.queues_list[astid][queue]['agents'][location] = [paused, status, event.get('Membership')]
-                self.__send_msg_to_cti_clients__('agentupdate=queuememberstatus;%s;%s;%s' % (location[6:], status, paused))
+                self.__send_msg_to_cti_clients__('agentupdate=queuememberstatus;%s;%s;%s' % (agentnum, status, paused))
+                self.__update_agent__(agentnum, status, paused)
 
                 # status = 3 => ringing
                 # status = 1 => do not ring anymore => the one who has not gone to '1' among the '3's is the one who answered ...
@@ -917,8 +936,10 @@ class XivoCTICommand(BaseCommand):
                                                 agprop = self.agentslist[astid][agname]
                                                 if agprop[0] == 'AGENT_LOGGEDOFF':
                                                         self.__send_msg_to_cti_client__(userinfo, 'agentupdate=logout;%s;%s' % (agname, agprop[1]))
+                                                        # self.__update_agent__(agname, '', '')
                                                 else:
                                                         self.__send_msg_to_cti_client__(userinfo, 'agentupdate=login;%s;%s' % (agname, agprop[1]))
+                                                        # self.__update_agent__(agname, '1', '')
                                         qref_joined = []
                                         qref_unjoined = []
                                         if astid in self.queues_list:
@@ -1035,30 +1056,56 @@ class XivoCTICommand(BaseCommand):
         def __build_callerids_hints__(self, icommand):
             kind = icommand.name
             if len(icommand.args) == 0:
-                reqid = kind + '-' + ''.join(random.sample(__alphanums__, 10)) + "-" + hex(int(time.time()))
-                log_debug(SYSLOG_INFO, 'transaction ID for %s is %s' % (kind, reqid))
-                self.fullstat_heavies[reqid] = []
-                if kind == 'phones-list':
-                        for astid in self.configs:
-                                plist_n = self.plist[astid]
-                                plist_normal_keys = filter(lambda j: plist_n.normal[j].towatch, plist_n.normal.iterkeys())
-                                plist_normal_keys.sort()
-                                for phonenum in plist_normal_keys:
-                                        phoneinfo = ("ful",
-                                                     plist_n.astid,
-                                                     plist_n.normal[phonenum].build_basestatus(),
-                                                     plist_n.normal[phonenum].build_cidstatus(),
-                                                     plist_n.normal[phonenum].build_fullstatlist() + ";")
-                                        #    + "groupinfos/technique"
-                                        self.fullstat_heavies[reqid].append(':'.join(phoneinfo))
-                elif kind == 'phones-add':
-                        for astid in self.configs:
-                                self.fullstat_heavies[reqid].extend(self.plist.lstadd[astid])
-                elif kind == 'phones-del':
-                        for astid in self.configs:
-                                self.fullstat_heavies[reqid].extend(self.plist.lstdel[astid])
+                    reqid = kind + '-' + ''.join(random.sample(__alphanums__, 10)) + "-" + hex(int(time.time()))
+                    log_debug(SYSLOG_INFO, 'transaction ID for %s is %s' % (kind, reqid))
+                    self.fullstat_heavies[reqid] = []
+                    if kind == 'phones-list':
+                            for astid in self.ulist.byast:
+                                    for user, userinfo in self.ulist.byast[astid].listusers().iteritems():
+                                            if 'agentnum' in userinfo:
+                                                    ag = userinfo.get('agentnum') + '//'
+                                            else:
+                                                    ag = ''
+                                            phonenum = 'SIP/' + userinfo['user']
+                                            if phonenum in self.plist[astid].normal:
+                                                    phone = self.plist[astid].normal[phonenum]
+                                                    bstatus = ':'.join(['sip',
+                                                                        userinfo['user'],
+                                                                        userinfo['phonenum'],
+                                                                        userinfo['context'],
+                                                                        phone.imstat,
+                                                                        phone.hintstatus,
+                                                                        '',
+                                                                        ag])
+                                                    if phone.towatch:
+                                                            phoneinfo = ("ful",
+                                                                         astid,
+                                                                         bstatus,
+                                                                         phone.build_cidstatus(),
+                                                                         phone.build_fullstatlist() + ";")
+                                                            self.fullstat_heavies[reqid].append(':'.join(phoneinfo))
+
+##                            for astid in self.configs:
+##                                    plist_n = self.plist[astid]
+##                                    plist_normal_keys = filter(lambda j: plist_n.normal[j].towatch, plist_n.normal.iterkeys())
+##                                    plist_normal_keys.sort()
+##                                    for phonenum in plist_normal_keys:
+##                                            bstatus = plist_n.normal[phonenum].build_basestatus()
+##                                            phoneinfo = ("ful",
+##                                                         plist_n.astid,
+##                                                         bstatus,
+##                                                         plist_n.normal[phonenum].build_cidstatus(),
+##                                                         plist_n.normal[phonenum].build_fullstatlist() + ";")
+##                                            #    + "groupinfos/technique"
+##                                            self.fullstat_heavies[reqid].append(':'.join(phoneinfo))
+                    elif kind == 'phones-add':
+                            for astid in self.configs:
+                                    self.fullstat_heavies[reqid].extend(self.plist.lstadd[astid])
+                    elif kind == 'phones-del':
+                            for astid in self.configs:
+                                    self.fullstat_heavies[reqid].extend(self.plist.lstdel[astid])
             else:
-                reqid = icommand.args[0]
+                        reqid = icommand.args[0]
 
             if reqid in self.fullstat_heavies:
                 fullstat = []
@@ -1161,7 +1208,8 @@ class XivoCTICommand(BaseCommand):
                 [dummyp, astid_src, context_src, proto_src, userid_src, dummy_exten_src] = src_split
 
          if len(dst_split) == 6:
-                [dummyp, astid_dst, context_dst, proto_dst, userid_dst, exten_dst] = dst_split
+                [p_or_a, astid_dst, context_dst, proto_dst, userid_dst, exten_dst] = dst_split
+##                if p_or_a == 'a': find userid_dst => agentnum => phone num
          else:
                 [dummyp, astid_dst, context_dst, proto_dst, userid_dst, exten_dst] = src_split
                 exten_dst = l[2]
@@ -1183,11 +1231,11 @@ class XivoCTICommand(BaseCommand):
                                                 cidname_dst = '%s %s' %(self.plist[astid_dst].normal[sipcid_dst].calleridfirst,
                                                                         self.plist[astid_dst].normal[sipcid_dst].calleridlast)
                                         ret = self.amis[astid_src].originate(proto_src,
-                                                                                           userid_src,
-                                                                                           cidname_src,
-                                                                                           exten_dst,
-                                                                                           cidname_dst,
-                                                                                           context_dst)
+                                                                             userid_src,
+                                                                             cidname_src,
+                                                                             exten_dst,
+                                                                             cidname_dst,
+                                                                             context_dst)
                                 else:
                                         ret = False
                                 if ret:
@@ -1208,8 +1256,8 @@ class XivoCTICommand(BaseCommand):
                                                 else:
                                                         tchan = channellist[phonesrcchan].getChannelPeer()
                                                         ret = self.amis[astid_src].transfer(tchan,
-                                                                                                          exten_dst,
-                                                                                                          context_dst)
+                                                                                            exten_dst,
+                                                                                            context_dst)
                                                         if ret:
                                                                 ret_message = 'transfer OK (%s) %s %s' %(astid_src, l[1], l[2])
                                                         else:
@@ -1310,7 +1358,7 @@ class XivoCTICommand(BaseCommand):
          return results
 
 
-        def __update_availstate__(self,userinfo, state):
+        def __update_availstate__(self, userinfo, state):
                 astid    = userinfo['astid']
                 username = userinfo['user']
                 if 'sessiontimestamp' in userinfo:

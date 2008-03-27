@@ -1315,14 +1315,17 @@ class CallBoosterCommand(BaseCommand):
                                                 chann_inout = chantomatch1
                                         if chann_agent is not None and chann_inout is not None:
                                                 if channel in self.outgoing_calls:
-                                                        userinfo['agentlogin-fromconf'] = None # set it in order not to send an AppelOpe/ reply when it will be logged back
-                                                        self.amis[astid].transfer(chann_agent, 's', 'ctx-callbooster-agentlogin')
-                                                        commid = self.outgoing_calls[channel].commid
-                                                        if commid in userinfo['login']['calls']:
-                                                                del userinfo['login']['calls'][commid]
-                                                        self.__send_msg__(userinfo, '%s,,,Annule/' % commid)
-                                                        if chann_inout in self.incoming_calls:
-                                                                self.__park__(astid, self.incoming_calls[chann_inout])
+                                                        thiscall = self.outgoing_calls[channel]
+                                                        if not thiscall.parking: # if the agent has requested a parking, keep quiet
+                                                                # set it in order not to send an AppelOpe/ reply when it will be logged back
+                                                                userinfo['agentlogin-fromconf'] = None
+                                                                self.amis[astid].transfer(chann_agent, 's', 'ctx-callbooster-agentlogin')
+                                                                commid = thiscall.commid
+                                                                if commid in userinfo['login']['calls']:
+                                                                        del userinfo['login']['calls'][commid]
+                                                                self.__send_msg__(userinfo, '%s,,,Annule/' % commid)
+                                                                if chann_inout in self.incoming_calls:
+                                                                        self.__park__(astid, self.incoming_calls[chann_inout])
                                                 elif channel in self.incoming_calls:
                                                         thiscall = self.incoming_calls[channel]
                                                         if not thiscall.parking: # if the agent has requested a parking, keep quiet
