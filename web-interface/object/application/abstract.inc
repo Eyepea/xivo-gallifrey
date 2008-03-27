@@ -17,9 +17,9 @@ class xivo_application_abstract extends xivo_libconfig_abstract
 
 		$file = $abstract.'.inc';
 
-		$dir = array(XIVO_PATH_OBJECT,'application','service',$this->_service_type,$this->_service_name,'abstract');
+		$dir = array(XIVO_PATH_OBJECT,'application',$this->_application_name,'abstract');
 
-		$class = 'xivo_application_service_'.$this->_service_name.'_'.$abstract.'_abstract';
+		$class = 'xivo_application_'.$this->_application_name.'_'.$abstract.'_abstract';
 
 		if(xivo_file::load_file($file,$dir,true) !== false && class_exists($class) === true)
 			return($class);
@@ -35,11 +35,11 @@ class xivo_application_abstract extends xivo_libconfig_abstract
 			return(true);
 		else if(($class = $this->_load_abstract_class($name)) === false)
 		{
-			trigger_error('Abstract Application '.$name.' does not exist in '.$this->_service_name,E_USER_ERROR);
+			trigger_error('Abstract Application '.$name.' does not exist in '.$this->_application_name,E_USER_ERROR);
 			return(false);
 		}
 
-		$this->_abstract[$name] = new $class($this->_service);
+		$this->_abstract[$name] = new $class();
 
 		return(true);
 	}
@@ -167,8 +167,7 @@ class xivo_application_abstract extends xivo_libconfig_abstract
 
 		if($name === '')
 			return($this->_error);
-
-		if(isset($this->_error[$name]) === true)
+		else if(isset($this->_error[$name]) === true)
 			return($this->_error[$name]);
 
 		return(null);

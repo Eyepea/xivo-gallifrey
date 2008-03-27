@@ -5,17 +5,18 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 class xivo_application_service_asterisk_webservices_phonebook extends xivo_application_service_asterisk_webservices_abstract
 {
 	var $_dso		= null;
-	var $_accessfeatures	= null;
-	var $_appxivoserver	= false;
-	var $_appldapfilter	= false;
-	var $_curl		= false;
-	var $_phonebook		= false;
-	var $_phonebooknumber	= false;
+	var $_accessfeatures	= false;
+	var $_appxivoserver	= null;
+	var $_appldapfilter	= null;
+	var $_curl		= null;
 
 	function xivo_application_service_asterisk_webservices_phonebook(&$service,&$dso)
 	{
 		if(is_object($dso) === false)
+		{
 			trigger_error('Invalid Datastorage object',E_USER_ERROR);
+			return(false);
+		}
 
 		$this->_dso = &$dso;
 

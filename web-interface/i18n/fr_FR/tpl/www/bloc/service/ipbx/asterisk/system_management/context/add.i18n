@@ -28,6 +28,9 @@ Entité :
 ; fm_context_description
 Description :
 
+; create_entity
+Créer une entité
+
 ; col_contextentity_user-typevalbeg
 Début de l'intervalle de numéro
 

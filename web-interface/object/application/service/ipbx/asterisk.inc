@@ -1,8 +1,8 @@
 <?php
 
-require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'application'.XIVO_SEP_DIR.'abstract.inc');
+require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'application'.XIVO_SEP_DIR.'service'.XIVO_SEP_DIR.'abstract.inc');
 
-class xivo_application_asterisk_abstract extends xivo_application_abstract
+class xivo_application_asterisk_abstract extends xivo_application_service_abstract
 {
 	var $_service		= null;
 	var $_abstract		= array();
@@ -88,7 +88,7 @@ class xivo_application_asterisk_abstract extends xivo_application_abstract
 	{
 		if(isset($this->_musiconhold) === false)
 			return(false);
-		else if($this->_musiconhold !== false)
+		else if(empty($this->_musiconhold) === false)
 			return($this->_musiconhold);
 		else if(($musiconhold = &$this->_service->get_module('musiconhold')) === false)
 			return(false);

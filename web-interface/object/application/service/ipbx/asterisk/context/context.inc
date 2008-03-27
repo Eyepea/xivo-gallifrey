@@ -6,9 +6,9 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 {
 	var $_origin		= array();
 	var $_status		= '';
-	var $_context		= null;
-	var $_contextentity	= null;
-	var $_entity		= false;
+	var $_context		= false;
+	var $_contextentity	= false;
+	var $_entity		= null;
 
 	function xivo_application_service_asterisk_context(&$service)
 	{
@@ -90,9 +90,9 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		}
 
 		if(empty($r) === true)
-			$r = false;
+			return(false);
 		else if((bool) $assoc === false)
-			$r = array_values($r);
+			return(array_values($r));
 
 		return($r);
 	}
@@ -488,16 +488,18 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 			switch($key)
 			{
 				case 'context':
-					if(isset($this->_origin['context']) === false)
-						continue;
-					else if($this->_origin['context'] === false)
+					if(isset($this->_origin['context']) === false
+					|| $this->_origin['context'] === false)
 						$this->_context->delete($val);
 					else
 						$this->_context->edit_origin($this->_origin['context']);
 					break;
 				case 'contextentity':
-					foreach($val as $contextentityval)
-						$this->_contextentity->delete_where($contextentityval);
+					if(is_array($val) === true)
+					{
+						foreach($val as $contextentityval)
+							$this->_contextentity->delete_where($contextentityval);
+					}
 
 					if(isset($this->_origin['contextentity']) === true)
 						$this->_contextentity->add_origin_list($this->_origin['contextentity']);
@@ -571,17 +573,11 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 			switch($key)
 			{
 				case 'context':
-					if(isset($this->_origin['context']) === false)
-						continue;
-					else if($this->_origin['context'] === false)
-						$this->_context->delete($val);
-					else
+					if(isset($this->_origin['context']) === true
+					&& $this->_origin['context'] !== false)
 						$this->_context->add_origin($this->_origin['context']);
 					break;
 				case 'contextentity':
-					foreach($val as $contextentityval)
-						$this->_contextentity->delete_where($contextentityval);
-
 					if(isset($this->_origin['contextentity']) === true)
 						$this->_contextentity->add_origin_list($this->_origin['contextentity']);
 					break;

@@ -6,13 +6,13 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 {
 	var $_origin		= array();
 	var $_status		= '';
-	var $_queuefeatures	= null;
-	var $_queue		= null;
-	var $_extensions	= null;
-	var $_extenumbers	= null;
-	var $_queuemember	= false;
-	var $_musiconhold	= false;
-	var $_announce		= false;
+	var $_queuefeatures	= false;
+	var $_queue		= false;
+	var $_extensions	= false;
+	var $_extenumbers	= false;
+	var $_queuemember	= null;
+	var $_musiconhold	= array();
+	var $_announce		= array();
 
 	function xivo_application_service_asterisk_queue(&$service,$param=null,$components=true)
 	{
@@ -133,7 +133,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 		$where['queue_name'] = $this->_info['qfeatures']['name'];
 
-		if($this->_queuemember === false
+		if(is_object($this->_queuemember) === false
 		|| ($this->_info[$type] = $this->_queuemember->get_all_where($where)) === false
 		|| isset($this->_info[$type][0]) === false)
 			return(false);
@@ -172,26 +172,24 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		{
 			$info['qfeatures'] = $rs[$i];
 
-			if(($info['queue'] = $this->_queue->get($info['qfeatures']['name'],$disable)) === false
-			|| ($info['nb_qmember'] = $this->_queuemember->get_nb(
+			if(($info['queue'] = $this->_queue->get($info['qfeatures']['name'],$disable)) !== false
+			&& ($info['nb_qmember'] = $this->_queuemember->get_nb(
 							array('queue_name' => $info['queue']['name']),
-							$disable)) === false)
-				continue;
-
-			$r[$info['qfeatures']['id']] = $info;
+							$disable)) !== false)
+				$r[$info['qfeatures']['id']] = $info;
 		}
 
 		if(empty($r) === true)
-			$r = false;
+			return(false);
 		else if((bool) $assoc === false)
-			$r = array_values($r);
+			return(array_values($r));
 
 		return($r);
 	}
 
 	function get_announce()
 	{
-		if($this->_announce !== false)
+		if(empty($this->_announce) === false)
 			return($this->_announce);
 		else if(($sounds = &$this->_service->get_module('sounds')) === false)
 			return(false);
@@ -382,7 +380,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		|| ($action !== 'add' && $action !== 'edit') === true
 		|| is_array($list) === false
 		|| is_scalar($name) === false
-		|| $this->_queuemember === false)
+		|| is_object($this->_queuemember) === false)
 			return(false);
 
 		$where = array();
@@ -594,24 +592,30 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 			switch($key)
 			{
+				case 'queuefeatures':
+					$this->_queuefeatures->delete($val);
+					break;
+				case 'queue':
+					$this->_queue->delete($val);
+					break;
 				case 'exten':
 					$this->_extensions->delete_exten($val);
+					break;
+				case 'extenumbers':
+					$this->_extenumbers->delete($this->_status,$val);
 					break;
 				case 'user':
 				case 'agentgroup':
 				case 'agent':
-					if(is_array($val) === false || ($nb = count($val)) === 0)
+					if(is_array($val) === false)
 						continue;
 
-					for($i = 0;$i < $nb;$i++)
+					foreach($val as $value)
 					{
-						if($val[$i] !== false)
-							$this->_queuemember->delete($val[$i]);
+						if($value !== false)
+							$this->_queuemember->delete($value);
 					}
 					break;
-				default:
-					if(($module = &$this->_service->get_module($key)) !== false)
-						$module->delete($val);
 			}
 		}
 
@@ -796,13 +800,32 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 			switch($key)
 			{
 				case 'queuefeatures':
-					$this->_queuefeatures->edit_origin($this->_origin['qfeatures']);
+					if(isset($this->_origin['qfeatures']) === false
+					|| $this->_origin['qfeatures'] === false)
+						$this->delete_queuefeatures();
+					else
+						$this->_queuefeatures->edit_origin($this->_origin['qfeatures']);
+					break;
+				case 'queue':
+					if(isset($this->_origin['queue']) === false
+					|| $this->_origin['queue'] === false)
+						$this->_queue->delete($val);
+					else
+						$this->_queue->edit_origin($this->_origin['queue']);
 					break;
 				case 'exten':
-					if($this->_origin['exten'] === false)
-						$this->_extensions->delete_exten($val);
+					if(isset($this->_origin['exten']) === false
+					|| $this->_origin['exten'] === false)
+						$this->delete_macro('exten');
 					else
 						$this->_extensions->edit_origin($this->_origin['exten']);
+					break;
+				case 'extenumbers':
+					if(isset($this->_origin['extenumbers']) === false
+					|| $this->_origin['extenumbers'] === false)
+						$this->_extenumbers->delete($this->_status,$val);
+					else
+						$this->_extenumbers->edit_origin($this->_origin['extenumbers']);
 					break;
 				case 'user':
 				case 'agentgroup':
@@ -812,15 +835,10 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 					$this->delete_user($this->_info['qfeatures']['name']);
 
-					$this->_queuemember->add_origin_list($this->_origin[$key]);
+					if(isset($this->_origin[$key]) === true
+					&& $this->_origin[$key] !== false)
+						$this->_queuemember->add_origin_list($this->_origin[$key]);
 					break;
-				default:
-					if(($module = &$this->_service->get_module($key)) === false)
-						continue;
-					else if($this->_origin[$key] === false)
-						$module->delete($val);
-					else
-						$module->edit_origin($this->_origin[$key]);
 			}
 		}
 
@@ -846,7 +864,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		}
 
 		if(isset($this->_return['exten']) === true
-		|| isset($this->_return['extensions']) === true)
+		|| isset($this->_return['extenumbers']) === true)
 			$this->unlinks();
 
 		$this->_status = '';
@@ -903,7 +921,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 		if(xivo_issa('qfeatures',$this->_info) === false
 		|| is_scalar($name) === false
-		|| $this->_queuemember === false)
+		|| is_object($this->_queuemember) === false)
 			return(false);
 
 		$queuemember_where = array();
@@ -945,21 +963,32 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 			switch($key)
 			{
 				case 'queuefeatures':
-					$this->_queuefeatures->recover($this->_info['qfeatures']['id']);
+					if(isset($this->_origin['qfeatures']) === true
+					&& $this->_origin['qfeatures'] !== false)
+						$this->_queuefeatures->add_origin($this->_origin['qfeatures']);
+					break;
+				case 'queue':
+					if(isset($this->_origin['queue']) === true
+					&& $this->_origin['queue'] !== false)
+						$this->_queue->add_origin($this->_origin['queue']);
 					break;
 				case 'exten':
-					if($this->_origin['exten'] !== false)
+					if(isset($this->_origin['exten']) === true
+					&& $this->_origin['exten'] !== false)
 						$this->_extensions->add_origin($this->_origin['exten']);
+					break;
+				case 'extenumbers':
+					if(isset($this->_origin['extenumbers']) === true
+					&& $this->_origin['extenumbers'] !== false)
+						$this->_extenumbers->add_origin($this->_origin['extenumbers']);
 					break;
 				case 'user':
 				case 'agentgroup':
 				case 'agent':
-					$this->_queuemember->add_origin_list($this->_origin[$key]);
-					break;
-				default:
-					if(($module = &$this->_service->get_module($key)) !== false
+					if(isset($this->_origin[$key]) === true
 					&& $this->_origin[$key] !== false)
-						$module->add_origin($this->_origin[$key]);
+						$this->_queuemember->add_origin_list($this->_origin[$key]);
+					break;
 			}
 		}
 

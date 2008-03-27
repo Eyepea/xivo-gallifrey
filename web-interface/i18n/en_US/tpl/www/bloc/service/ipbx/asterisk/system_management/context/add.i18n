@@ -28,6 +28,9 @@ Entity:
 ; fm_context_description
 Description:
 
+; create_entity
+Create an entity
+
 ; col_contextentity_user-typevalbeg
 Number range start
 

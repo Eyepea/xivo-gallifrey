@@ -7,9 +7,9 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 	var $_dso		= null;
 	var $_origin		= array();
 	var $_status		= '';
-	var $_callfilter	= null;
+	var $_callfilter	= false;
+	var $_userfeatures	= false;
 	var $_callfiltermember	= null;
-	var $_userfeatures	= null;
 	var $_dialstatus	= null;
 	var $_param		= array('type'	=> '');
 
@@ -273,9 +273,9 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 		}
 
 		if(empty($r) === true)
-			$r = false;
+			return(false);
 		else if((bool) $assoc === false)
-			$r = array_values($r);
+			return(array_values($r));
 
 		return($r);
 	}
@@ -592,13 +592,13 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 					$this->_callfilter->delete($val);
 					break;
 				case 'callfiltermember':
-					if(is_array($val) === false || ($nb = count($val)) === 0)
+					if(is_array($val) === false)
 						continue;
 
-					for($i = 0;$i < $nb;$i++)
+					foreach($val as $callfiltermemberval)
 					{
-						if($val[$i] !== false)
-							$this->_callfiltermember->delete($val[$i]);
+						if($callfiltermemberval !== false)
+							$this->_callfiltermember->delete($callfiltermemberval);
 					}
 					break;
 				case 'dialstatus':
@@ -764,16 +764,22 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 			switch($key)
 			{
 				case 'callfilter':
-					$this->_callfilter->edit_origin($this->_origin['callfilter']);
+					if(isset($this->_origin['callfilter']) === false
+					|| $this->_origin['callfilter'] === false)
+						$this->delete_callfilter();
+					else
+						$this->_callfilter->edit_origin($this->_origin['callfilter']);
 					break;
 				case 'callfiltermember':
 					$this->delete_callfiltermember();
 
-					$this->_callfiltermember->add_origin_list($this->_origin[$key]);
+					if(isset($this->_origin['callfiltermember']) === true)
+						$this->_callfiltermember->add_origin_list($this->_origin['callfiltermember']);
 					break;
 				case 'dialstatus':
 					if(xivo_issa('callfilter',$this->_info) === true)
-						$this->_dialstatus->reverse_edit($this->_status,'callfilter',
+						$this->_dialstatus->reverse_edit($this->_status,
+										 'callfilter',
 										 $this->_info['callfilter']['id']);
 					break;
 			}
@@ -878,10 +884,13 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 			switch($key)
 			{
 				case 'callfilter':
-					$this->_callfilter->add_origin($this->_origin['callfilter']);
+					if(isset($this->_origin['callfilter']) === true
+					&& $this->_origin['callfilter'] !== false)
+						$this->_callfilter->add_origin($this->_origin['callfilter']);
 					break;
 				case 'callfiltermember':
-					$this->_callfiltermember->add_origin_list($this->_origin[$key]);
+					if(isset($this->_origin['callfiltermember']) === true)
+						$this->_callfiltermember->add_origin_list($this->_origin['callfiltermember']);
 					break;
 				case 'dialstatus':
 					$this->_dialstatus->add_origin_list();

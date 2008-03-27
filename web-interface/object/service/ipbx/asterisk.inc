@@ -322,9 +322,9 @@ class xivo_service_asterisk extends xivo_service_abstract
 		}
 
 		if(empty($r) === true)
-			$r = false;
+			return(false);
 		else if((bool) $assoc === false)
-			$r = array_values($r);
+			return(array_values($r));
 
 		return($r);
 	}
@@ -364,9 +364,9 @@ class xivo_service_asterisk extends xivo_service_abstract
 		}
 
 		if(empty($r) === true)
-			$r = false;
+			return(false);
 		else if((bool) $assoc === false)
-			$r = array_values($r);
+			return(array_values($r));
 
 		return($r);
 	}
@@ -394,9 +394,9 @@ class xivo_service_asterisk extends xivo_service_abstract
 		}
 
 		if(empty($r) === true)
-			$r = false;
+			return(false);
 		else if((bool) $assoc === false)
-			$r = array_values($r);
+			return(array_values($r));
 
 		return($r);
 	}
@@ -459,9 +459,9 @@ class xivo_service_asterisk extends xivo_service_abstract
 		}
 
 		if(empty($r) === true)
-			$r = false;
+			return(false);
 		else if((bool) $assoc === false)
-			$r = array_values($r);
+			return(array_values($r));
 
 		return($r);
 	}
@@ -600,9 +600,9 @@ class xivo_service_asterisk extends xivo_service_abstract
 		}
 
 		if(empty($r) === true)
-			$r = false;
+			return(false);
 		else if((bool) $assoc === false)
-			$r = array_values($r);
+			return(array_values($r));
 
 		return($r);
 	}

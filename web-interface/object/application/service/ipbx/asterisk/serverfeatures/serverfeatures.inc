@@ -4,8 +4,8 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_serverfeatures extends xivo_application_asterisk_abstract
 {
-	var $_serverfeatures	= null;
-	var $_server		= null;
+	var $_serverfeatures	= false;
+	var $_server		= false;
 	var $_param		= array('feature'	=> '',
 					'type'		=> '');
 
@@ -87,9 +87,9 @@ class xivo_application_service_asterisk_serverfeatures extends xivo_application_
 		}
 
 		if(empty($r) === true)
-			$r = false;
+			return(false);
 		else if((bool) $assoc === false)
-			$r = array_values($r);
+			return(array_values($r));
 
 		return($r);
 	}

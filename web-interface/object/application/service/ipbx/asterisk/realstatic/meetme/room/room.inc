@@ -105,6 +105,9 @@ class xivo_application_service_asterisk_realstatic_meetme_room extends xivo_appl
 
 		$this->_return[$this->_name] = $this->_realstatic->edit($id,$arr);
 
+		if($this->_return[$this->_name] !== false)
+			$this->_return[$this->_name] = $id;
+
 		return($this->_return[$this->_name]);
 	}
 

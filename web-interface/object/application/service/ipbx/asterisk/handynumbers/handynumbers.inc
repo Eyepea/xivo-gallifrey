@@ -5,10 +5,10 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 class xivo_application_service_asterisk_handynumbers extends xivo_application_asterisk_abstract
 {
 	var $_status		= '';
-	var $_handynumbers	= null;
-	var $_extenumbers	= null;
-	var $_extensions	= null;
-	var $_trunkfeatures	= null;
+	var $_handynumbers	= false;
+	var $_extenumbers	= false;
+	var $_extensions	= false;
+	var $_trunkfeatures	= false;
 	var $_param		= array('type'	=> '');
 
 	function xivo_application_service_asterisk_handynumbers(&$service,$param=array())
@@ -339,13 +339,13 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 			switch($key)
 			{
 				case 'handynumbers':
-					$this->_handynumbers->delete($key);
+					$this->_handynumbers->delete($val);
 					break;
 				case 'exten':
-					$this->_extensions->delete($key);
+					$this->_extensions->delete($val);
 					break;
 				case 'extenumbers':
-					$this->_extenumbers->delete($key);
+					$this->_extenumbers->delete($val);
 					break;
 			}
 		}

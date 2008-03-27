@@ -4,7 +4,7 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_dialstatus_abstract extends xivo_application_service_asterisk_abstract
 {
-	var $_dialstatus	= null;
+	var $_dialstatus	= false;
 
 	function xivo_application_service_asterisk_dialstatus_abstract(&$service)
 	{

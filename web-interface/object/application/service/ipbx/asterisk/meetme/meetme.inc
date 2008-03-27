@@ -6,12 +6,12 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 {
 	var $_origin		= array();
 	var $_status		= '';
-	var $_appmeetme		= null;
-	var $_meetmefeatures	= null;
-	var $_meetmeroom	= null;
-	var $_extensions	= null;
-	var $_extenumbers	= null;
-	var $_musiconhold	= false;
+	var $_appmeetme		= false;
+	var $_meetmefeatures	= false;
+	var $_meetmeroom	= false;
+	var $_extensions	= false;
+	var $_extenumbers	= false;
+	var $_musiconhold	= array();
 
 	function xivo_application_service_asterisk_meetme(&$service,$param=null,$components=true)
 	{
@@ -195,8 +195,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 			$this->_set_error('meetmeroom','invalid data');
 			return(false);
 		}
-
-		if(($r = $this->_meetmeroom->set_meetmeroom($arr)) === false)
+		else if(($r = $this->_meetmeroom->set_meetmeroom($arr)) === false)
 			$this->_set_error('meetmeroom',$this->_meetmeroom->get_error('meetmeroom'));
 
 		$this->_set_result('meetmeroom',$this->_meetmeroom->get_result('meetmeroom'));
@@ -279,11 +278,11 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 				case 'mfeatures':
 					$this->_meetmefeatures->delete($val);
 					break;
-				case 'extenumbers':
-					$this->_extenumbers->delete($this->_status,$val);
-					break;
 				case 'exten':
 					$this->_extensions->delete_exten($val);
+					break;
+				case 'extenumbers':
+					$this->_extenumbers->delete($this->_status,$val);
 					break;
 			}
 		}
@@ -363,36 +362,32 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 			switch($key)
 			{
 				case 'meetmeroom':
-					if(isset($this->_origin['meetmeroom']) === false)
-						continue;
-					else if($this->_origin['meetmeroom'] === false)
-						$this->_meetmeroom->delete_meetmeroom($this->_status,$val);
+					if(isset($this->_origin['meetmeroom']) === false
+					|| $this->_origin['meetmeroom'] === false)
+						$this->delete_meetmeroom();
 					else
 						$this->_meetmeroom->edit_origin($this->_origin['meetmeroom']);
 					break;
 				case 'mfeatures':
-					if(isset($this->_origin['mfeatures']) === false)
-						continue;
-					else if($this->_origin['mfeatures'] === false)
-						$this->_meetmefeatures->delete($val);
+					if(isset($this->_origin['mfeatures']) === false
+					|| $this->_origin['mfeatures'] === false)
+						$this->delete_meetmefeatures();
 					else
 						$this->_meetmefeatures->edit_origin($this->_origin['mfeatures']);
 					break;
-				case 'extenumbers':
-					if(isset($this->_origin['extenumbers']) === false)
-						continue;
-					else if($this->_origin['extenumbers'] === false)
-						$this->_extenumbers->delete($this->_status,$val);
-					else
-						$this->_extenumbers->edit_origin($this->_origin['extenumbers']);
-					break;
 				case 'exten':
-					if(isset($this->_origin['exten']) === false)
-						continue;
-					else if($this->_origin['exten'] === false)
-						$this->_extensions->delete_exten($val);
+					if(isset($this->_origin['exten']) === false
+					|| $this->_origin['exten'] === false)
+						$this->delete_macro('exten');
 					else
 						$this->_extensions->edit_origin($this->_origin['exten']);
+					break;
+				case 'extenumbers':
+					if(isset($this->_origin['extenumbers']) === false
+					|| $this->_origin['extenumbers'] === false)
+						$this->delete_extenumbers();
+					else
+						$this->_extenumbers->edit_origin($this->_origin['extenumbers']);
 					break;
 			}
 		}
@@ -472,21 +467,24 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 			switch($key)
 			{
 				case 'meetmeroom':
-					if(isset($this->_origin['meetmeroom']) === true)
+					if(isset($this->_origin['meetmeroom']) === true
+					&& $this->_origin['meetmeroom'] !== false)
 						$this->_meetmeroom->add_origin($this->_origin['meetmeroom']);
 					break;
 				case 'mfeatures':
-					if(isset($this->_origin['mfeatures']) === true)
+					if(isset($this->_origin['mfeatures']) === true
+					&& $this->_origin['mfeatures'] !== false)
 						$this->_meetmefeatures->add_origin($this->_origin['mfeatures']);
-					break;
-				case 'extenumbers':
-					if(isset($this->_origin['extenumbers']) === true)
-						$this->_extenumbers->add_origin($this->_origin['extenumbers']);
 					break;
 				case 'exten':
 					if(isset($this->_origin['exten']) === true
 					&& $this->_origin['exten'] !== false)
 						$this->_extensions->add_origin($this->_origin['exten']);
+					break;
+				case 'extenumbers':
+					if(isset($this->_origin['extenumbers']) === true
+					&& $this->_origin['extenumbers'] !== false)
+						$this->_extenumbers->add_origin($this->_origin['extenumbers']);
 					break;
 			}
 		}

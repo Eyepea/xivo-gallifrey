@@ -64,6 +64,35 @@ class xivo_entity extends xivo_libdatastorage_abstract
 		$this->_dso = new $class($dso);
 		return(true);
 	}
+
+	function get_entities_list($disable=null,$order=null,$limit=null,$assoc=false)
+	{
+		if(($rs = $this->get_all($disable,true,$order,$limit,$assoc)) === false
+		|| empty($rs) === true)
+			return(false);
+
+		$_SRE = &xivo_gct::get('xivo_service');
+		$ipbx = &$_SRE->get('ipbx');
+
+		$context = &$ipbx->get_module('context');
+
+		$r = array();
+
+		foreach($rs as $key => $val)
+		{
+			if(($nb_context = $context->get_nb(array('entity' => $val['name']))) !== false)
+			{
+				$r[$key] = array();
+				$r[$key]['entity'] = $val;
+				$r[$key]['nb_context'] = $nb_context;
+			}
+		}
+
+		if(empty($r) === true)
+			return(false);
+
+		return($r);
+	}
 }
 
 ?>

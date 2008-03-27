@@ -4,8 +4,8 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_rightcall_abstract extends xivo_application_service_asterisk_abstract
 {
-	var $_rightcall		= null;
-	var $_rightcallmember	= null;
+	var $_rightcall		= false;
+	var $_rightcallmember	= false;
 
 	function xivo_application_service_asterisk_rightcall_abstract(&$service)
 	{

@@ -6,11 +6,11 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 {
 	var $_origin		= array();
 	var $_status		= '';
-	var $_outcall		= null;
-	var $_extenumbers	= null;
-	var $_outcalltrunk	= null;
-	var $_extensions	= null;
-	var $_rightcall		= null;
+	var $_outcall		= false;
+	var $_extenumbers	= false;
+	var $_outcalltrunk	= false;
+	var $_extensions	= false;
+	var $_rightcall		= false;
 
 	function xivo_application_service_asterisk_outcall(&$service,$param=null,$components=true)
 	{
@@ -247,8 +247,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 				continue;
 
 			$tmp[$rs['trunkfeaturesid']] = 1;
-			$reslist[] = $rs;
-			$j++;
+			$reslist[$j++] = $rs;
 		}
 
 		if(isset($reslist[0]) === false)
@@ -381,9 +380,6 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 				case 'rightcall':
 					$this->_rightcall->reverse_add();
 					break;
-				default:
-					if(($module = &$this->_service->get_module($key)) !== false)
-						$module->delete($val);
 			}
 		}
 
@@ -473,25 +469,11 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 			switch($key)
 			{
 				case 'outcall':
-					if(isset($this->_origin['outcall']) === true
-					&& $this->_origin['outcall'] !== false)
-						$this->_outcall->edit_origin($this->_origin['outcall']);
-					else
+					if(isset($this->_origin['outcall']) === false
+					|| $this->_origin['outcall'] === false)
 						$this->delete_outcall();
-					break;
-				case 'exten':
-					if(isset($this->_origin['exten']) === true
-					&& $this->_origin['exten'] !== false)
-						$this->_extensions->edit_origin($this->_origin['exten']);
 					else
-						$this->_extensions->delete_exten($val);
-					break;
-				case 'extenumbers':
-					if(isset($this->_origin['extenumbers']) === true
-					&& $this->_origin['extenumbers'] !== false)
-						$this->_extenumbers->edit_origin($this->_origin['extenumbers']);
-					else
-						$this->delete_extenumbers();
+						$this->_outcall->edit_origin($this->_origin['outcall']);
 					break;
 				case 'outcalltrunk':
 					$this->delete_outcalltrunk();
@@ -503,6 +485,20 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 				case 'rightcall':
 					if(xivo_issa('outcall',$this->_info) === true)
 						$this->_rightcall->reverse_edit($this->_status,'outcall',$this->_info['outcall']['id']);
+					break;
+				case 'exten':
+					if(isset($this->_origin['exten']) === false
+					|| $this->_origin['exten'] === false)
+						$this->delete_macro('exten');
+					else
+						$this->_extensions->edit_origin($this->_origin['exten']);
+					break;
+				case 'extenumbers':
+					if(isset($this->_origin['extenumbers']) === false
+					|| $this->_origin['extenumbers'] === false)
+						$this->_extenumbers->delete($this->_status,$val);
+					else
+						$this->_extenumbers->edit_origin($this->_origin['extenumbers']);
 					break;
 			}
 		}

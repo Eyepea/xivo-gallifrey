@@ -7,9 +7,9 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 	var $_dso		= null;
 	var $_origin		= array();
 	var $_status		= '';
-	var $_phonebook		= null;
-	var $_phonebookaddress	= null;
-	var $_phonebooknumber	= null;
+	var $_phonebook		= false;
+	var $_phonebookaddress	= false;
+	var $_phonebooknumber	= false;
 	var $_conf		= array();
 
 	function xivo_application_service_asterisk_phonebook(&$service,&$dso)
@@ -148,11 +148,11 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 			$info['phonebooknumber'] = $this->_phonebooknumber->get_all_type_by_phonebook($info['phonebook']['id']); 
 			$r[$info['phonebook']['id']] = $info;
 		}
-		
+
 		if(empty($r) === true)
-			$r = false;
+			return(false);
 		else if((bool) $assoc === false)
-			$r = array_values($r);
+			return(array_values($r));
 
 		return($r);
 	}
@@ -545,10 +545,9 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 			switch($key)
 			{
 				case 'phonebook':
-					if(isset($this->_origin['phonebook']) === false)
-						continue;
-					else if($this->_origin['phonebook'] === false)
-						$this->_phonebook->delete($val);
+					if(isset($this->_origin['phonebook']) === false
+					|| $this->_origin['phonebook'] === false)
+						$this->delete_phonebook();
 					else
 						$this->_phonebook->edit_origin($this->_origin['phonebook']);
 					break;
@@ -564,10 +563,9 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 
 					$this->_delete_phonebook_type($type);
 
-					if(isset($this->_origin[$key]) === false)
-						continue;
-
-					$module->add_origin_list($this->_origin[$key]);
+					if(isset($this->_origin[$key]) === true
+					&& $this->_origin[$key] !== false)
+						$module->add_origin_list($this->_origin[$key]);
 					break;
 			}
 		}
@@ -665,7 +663,8 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 			switch($key)
 			{
 				case 'phonebook':
-					if(isset($this->_origin['phonebook']) === true)
+					if(isset($this->_origin['phonebook']) === true
+					&& $this->_origin['phonebook'] !== false)
 						$this->_phonebook->add_origin($this->_origin['phonebook']);
 					break;
 				case 'phonebookaddress':
@@ -678,7 +677,8 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 						$module = &$this->_phonebooknumber;
 					}
 
-					if(isset($this->_origin[$key]) === true)
+					if(isset($this->_origin[$key]) === true
+					&& $this->_origin[$key] !== false)
 						$module->add_origin_list($this->_origin[$key]);
 					break;
 			}

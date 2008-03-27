@@ -6,8 +6,8 @@ class xivo_application_service_asterisk_ldapfilter extends xivo_application_aste
 {
 	var $_origin		= array();
 	var $_status		= '';
-	var $_ldapfilter	= null;
-	var $_ldapserver	= null;
+	var $_ldapfilter	= false;
+	var $_ldapserver	= false;
 
 	function xivo_application_service_asterisk_ldapfilter(&$service)
 	{
@@ -45,7 +45,7 @@ class xivo_application_service_asterisk_ldapfilter extends xivo_application_aste
 		$this->_origin['ldapserver'] = false;
 
 		if(($this->_info['ldapserver'] = $this->_ldapserver->get($this->_info['ldapfilter']['ldapserverid'],
-									   $disable)) === false)
+									 $disable)) === false)
 			return(false);
 
 		$this->_origin['ldapserver'] = $this->_ldapserver->get_origin();
@@ -87,9 +87,9 @@ class xivo_application_service_asterisk_ldapfilter extends xivo_application_aste
 		}
 
 		if(empty($r) === true)
-			$r = false;
+			return(false);
 		else if((bool) $assoc === false)
-			$r = array_values($r);
+			return(array_values($r));
 
 		return($r);
 	}

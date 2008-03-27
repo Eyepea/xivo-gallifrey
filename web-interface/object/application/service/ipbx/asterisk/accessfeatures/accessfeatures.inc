@@ -4,7 +4,7 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_accessfeatures extends xivo_application_asterisk_abstract
 {
-	var $_accessfeatures	= null;
+	var $_accessfeatures	= false;
 	var $_param		= array('feature'	=> '');
 
 	function xivo_application_service_asterisk_accessfeatures(&$service,$param=array())

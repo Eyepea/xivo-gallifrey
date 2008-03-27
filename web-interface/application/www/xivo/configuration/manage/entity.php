@@ -130,7 +130,7 @@ switch($act)
 		$limit[0] = $prevpage * $nbbypage;
 		$limit[1] = $nbbypage;
 
-		$list = $_ETT->get_all(null,true,$order,$limit);
+		$list = $_ETT->get_entities_list(null,$order,$limit);
 		$total = $_ETT->get_cnt();
 
 		if($list === false && $total > 0 && $prevpage > 0)

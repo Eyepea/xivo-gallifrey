@@ -4,7 +4,7 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_extenumbers_abstract extends xivo_application_service_asterisk_abstract
 {
-	var $_extenumbers	= null;
+	var $_extenumbers	= false;
 
 	function xivo_application_service_asterisk_extenumbers_abstract(&$service)
 	{
@@ -102,8 +102,8 @@ class xivo_application_service_asterisk_extenumbers_abstract extends xivo_applic
 
 		if(($rs = $this->get_result()) === null || $rs === false)
 			return($rs);
-
-		$this->_return = $this->_extenumbers->edit($id,$rs);
+		else if(($this->_return = $this->_extenumbers->edit($id,$rs)) !== false)
+			$this->_return = $id;
 
 		return($this->_return);
 	}
@@ -114,16 +114,19 @@ class xivo_application_service_asterisk_extenumbers_abstract extends xivo_applic
 			return(false);
 		else if(empty($this->_info) === true)
 			return($this->add($typeval));
-		else
-			return($this->edit($typeval));
+
+		return($this->edit($typeval));
 	}
 
 	function delete($status,$id=0)
 	{
-		if(empty($this->_info) === false)
-			$id = $this->_info['id'];
-		else if(($id = xivo_ulongint($id)) === 0)
-			return(null);
+		if(($id = xivo_ulongint($id)) === 0)
+		{
+			if(empty($this->_info) === true)
+				return(null);
+			else
+				$id = $this->_info['id'];
+		}
 
 		$r = $this->_extenumbers->delete($id);
 

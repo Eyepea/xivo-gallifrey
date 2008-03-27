@@ -6,8 +6,8 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 {
 	var $_origin		= array();
 	var $_status		= '';
-	var $_extensions	= null;
-	var $_extenumbers	= null;
+	var $_extensions	= false;
+	var $_extenumbers	= false;
 	var $_conf		= array();
 	var $_filter		= false;
 	var $_context		= 'features';
@@ -292,10 +292,10 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 
 	function save_extenumbers($name)
 	{
-		if(($r = parent::save_extenumbers($name)) === null)
-			$r = false;
+		if(($r = parent::save_extenumbers($name)) !== null)
+			return($r);
 
-		return($r);
+		return(false);
 	}
 
 	function _add_extenfeatures()
@@ -330,15 +330,13 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 				case 'extenfeatures':
 					$this->delete_extenfeatures($val);
 
-					if(isset($this->_origin['extenfeatures']) === false)
-						continue;
-
-					$this->_extensions->add_origin_list($this->_origin['extenfeatures']);
+					if(isset($this->_origin['extenfeatures']) === true
+					&& $this->_origin['extenfeatures'] !== false)
+						$this->_extensions->add_origin_list($this->_origin['extenfeatures']);
 					break;
 				case 'extenumbers':
-					if(isset($this->_origin['extenumbers']) === false)
-						continue;
-					else if($this->_origin['extenumbers'] === false)
+					if(isset($this->_origin['extenumbers']) === false
+					|| $this->_origin['extenumbers'] === false)
 						$this->_extenumbers->delete($this->_status,$val);
 					else
 						$this->_extenumbers->edit_origin($this->_origin['extenumbers']);
@@ -349,16 +347,12 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 
 	function extenfeatures_chk_value($key,$value)
 	{
-		$value = $this->_service->clean_extension($value);
-
-		return(parent::chk_value($key,$value));
+		return(parent::chk_value($key,$this->_service->clean_extension($value)));
 	}
 
 	function extenfeatures_set_chk_value($key,$value)
 	{
-		$value = $this->_service->clean_extension($value);
-
-		return(parent::set_chk_value($key,$value));
+		return(parent::set_chk_value($key,$this->_service->clean_extension($value)));
 	}
 
 	function delete_extenfeatures($name='')

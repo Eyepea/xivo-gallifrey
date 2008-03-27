@@ -38,7 +38,7 @@
 	else:
 		for($i = 0;$i < $nb;$i++):
 
-			$ref = &$list[$i];
+			$ref = &$list[$i]['entity'];
 
 			if($ref['disable'] === true):
 				$icon = 'disable';
@@ -63,7 +63,11 @@
 		<td class="td-right" colspan="3">
 		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'xivo/configuration/manage/entity',array('act' => 'edit','id' => $ref['id']),null,$this->bbf('opt_modify'));?>
 
-		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'xivo/configuration/manage/entity',array('act' => 'delete','id' => $ref['id'],'page' => $pager['page']),'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',$this->bbf('opt_delete'));?>
+<?php
+		if($list[$i]['nb_context'] < 1):
+			echo $url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'xivo/configuration/manage/entity',array('act' => 'delete','id' => $ref['id'],'page' => $pager['page']),'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',$this->bbf('opt_delete'));
+		endif;
+?>
 		</td>
 	</tr>
 <?php

@@ -6,10 +6,10 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 {
 	var $_origin		= array();
 	var $_status		= '';
-	var $_incall		= null;
-	var $_extenumbers	= null;
-	var $_extensions	= null;
-	var $_rightcall		= null;
+	var $_incall		= false;
+	var $_extenumbers	= false;
+	var $_extensions	= false;
+	var $_rightcall		= false;
 
 	function xivo_application_service_asterisk_incall(&$service,$param=null,$components=true)
 	{
@@ -147,9 +147,9 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		}
 
 		if(empty($r) === true)
-			$r = false;
+			return(false);
 		else if((bool) $assoc === false)
-			$r = array_values($r);
+			return(array_values($r));
 
 		return($r);
 	}
@@ -323,15 +323,18 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 			switch($key)
 			{
+				case 'incall':
+					$this->_incall->delete($val);
+					break;
 				case 'exten':
 					$this->_extensions->delete_exten($val);
+					break;
+				case 'extenumbers':
+					$this->_extenumbers->delete($this->_status,$val);
 					break;
 				case 'rightcall':
 					$this->_rightcall->reverse_add();
 					break;
-				default:
-					if(($module = &$this->_service->get_module($key)) !== false)
-						$module->delete($val);
 			}
 		}
 
@@ -414,20 +417,31 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 			switch($key)
 			{
+				case 'incall':
+					if(isset($this->_origin['incall']) === false
+					|| $this->_origin['incall'] === false)
+						$this->delete_incall();
+					else
+						$this->_incall->edit_origin($this->_origin['incall']);
+					break;
 				case 'exten':
-					$this->_extensions->edit_origin($this->_origin['exten']);
+					if(isset($this->_origin['exten']) === false
+					|| $this->_origin['exten'] === false)
+						$this->delete_macro('exten');
+					else
+						$this->_extensions->edit_origin($this->_origin['exten']);
+					break;
+				case 'extenumbers':
+					if(isset($this->_origin['extenumbers']) === false
+					|| $this->_origin['extenumbers'] === false)
+						$this->delete_extenumbers();
+					else
+						$this->_extenumbers->edit_origin($this->_origin['extenumbers']);
 					break;
 				case 'rightcall':
 					if(xivo_issa('incall',$this->_info) === true)
 						$this->_rightcall->reverse_edit($this->_status,'incall',$this->_info['incall']['id']);
 					break;
-				default:
-					if(($module = &$this->_service->get_module($key)) === false)
-						continue;
-					else if($this->_origin[$key] === false)
-						$module->delete($val);
-					else
-						$module->edit_origin($this->_origin[$key]);
 			}
 		}
 		return(true);
@@ -504,16 +518,24 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 			switch($key)
 			{
+				case 'incall':
+					if(isset($this->_origin['incall']) === true
+					&& $this->_origin['incall'] !== false)
+						$this->_incall->add_origin($this->_origin['incall']);
+					break;
 				case 'exten':
-					$this->_extensions->add_origin($this->_origin['exten']);
+					if(isset($this->_origin['exten']) === true
+					&& $this->_origin['exten'] !== false)
+						$this->_extensions->add_origin($this->_origin['exten']);
 					break;
 				case 'rightcall':
 					$this->_rightcall->add_origin_list();
 					break;
-				default:
-					if(($module = &$this->_service->get_module($key)) !== false
-					&& $this->_origin[$key] !== false)
-						$module->add_origin($this->_origin[$key]);
+				case 'extenumbers':
+					if(isset($this->_origin['extenumbers']) === true
+					&& $this->_origin['extenumbers'] !== false)
+						$this->_extenumbers->add_origin($this->_origin['extenumbers']);
+					break;
 			}
 		}
 

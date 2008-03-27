@@ -6,14 +6,14 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 {
 	var $_origin		= array();
 	var $_status		= '';
-	var $_groupfeatures	= null;
-	var $_queue		= null;
-	var $_extensions	= null;
-	var $_extenumbers	= null;
-	var $_rightcall		= null;
-	var $_dialstatus	= null;
-	var $_queuemember	= false;
-	var $_musiconhold	= false;
+	var $_groupfeatures	= false;
+	var $_queue		= false;
+	var $_extensions	= false;
+	var $_extenumbers	= false;
+	var $_rightcall		= false;
+	var $_dialstatus	= false;
+	var $_queuemember	= null;
+	var $_musiconhold	= array();
 
 	function xivo_application_service_asterisk_group(&$service,$param=null,$components=true)
 	{
@@ -171,9 +171,9 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		}
 
 		if(empty($r) === true)
-			$r = false;
+			return(false);
 		else if((bool) $assoc === false)
-			$r = array_values($r);
+			return(array_values($r));
 
 		return($r);
 	}
@@ -558,17 +558,26 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 
 			switch($key)
 			{
+				case 'groupfeatures':
+					$this->_groupfeatures->delete($val);
+					break;
+				case 'queue':
+					$this->_queue->delete($val);
+					break;
 				case 'exten':
 					$this->_extensions->delete_exten($val);
 					break;
+				case 'extenumbers':
+					$this->_extenumbers->delete($this->_status,$val);
+					break;
 				case 'user':
-					if(is_array($val) === false || ($nb = count($val)) === 0)
+					if(is_array($val) === false)
 						continue;
 
-					for($i = 0;$i < $nb;$i++)
+					foreach($val as $queuememberval)
 					{
-						if($val[$i] !== false)
-							$this->_queuemember->delete($val[$i]);
+						if($queuememberval !== false)
+							$this->_queuemember->delete($queuememberval);
 					}
 					break;
 				case 'rightcall':
@@ -577,11 +586,6 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 				case 'dialstatus':
 					$this->_dialstatus->reverse_add();
 					break;
-				default:
-					if(($module = &$this->_service->get_module($key)) === false)
-						continue;
-
-					$module->delete($val);
 			}
 		}
 
@@ -821,41 +825,51 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 			switch($key)
 			{
 				case 'groupfeatures':
-					$this->_groupfeatures->edit_origin($this->_origin['gfeatures']);
+					if(isset($this->_origin['gfeatures']) === false
+					|| $this->_origin['gfeatures'] === false)
+						$this->delete_groupfeatures();
+					else
+						$this->_groupfeatures->edit_origin($this->_origin['gfeatures']);
+					break;
+				case 'queue':
+					if(isset($this->_origin['queue']) === false
+					|| $this->_origin['queue'] === false)
+						$this->_queue->delete($val);
+					else
+						$this->_queue->edit_origin($this->_origin['queue']);
 					break;
 				case 'exten':
-					if($this->_origin['exten'] === false)
-						$this->_extensions->delete_exten($val);
+					if(isset($this->_origin['exten']) === false
+					|| $this->_origin['exten'] === false)
+						$this->delete_macro('exten');
 					else
 						$this->_extensions->edit_origin($this->_origin['exten']);
 					break;
+				case 'extenumbers':
+					if(isset($this->_origin['extenumbers']) === false
+					|| $this->_origin['extenumbers'] === false)
+						$this->_extenumbers->delete($this->_status,$val);
+					else
+						$this->_extenumbers->edit_origin($this->_origin['extenumbers']);
+					break;
 				case 'user':
 					if(xivo_issa('gfeatures',$this->_info) === false)
-						break;
+						continue;
 
 					$this->delete_user($this->_info['gfeatures']['name']);
 
-					$this->_queuemember->add_origin_list($this->_origin['user']);
+					if(isset($this->_origin['user']) === true
+					&& $this->_origin['user'] !== false)
+						$this->_queuemember->add_origin_list($this->_origin['user']);
 					break;
 				case 'rightcall':
-					if(xivo_issa('gfeatures',$this->_info) === false)
-						break;
-
-					$this->_rightcall->reverse_edit($this->_status,'group',$this->_info['gfeatures']['id']);
+					if(xivo_issa('gfeatures',$this->_info) === true)
+						$this->_rightcall->reverse_edit($this->_status,'group',$this->_info['gfeatures']['id']);
 					break;
 				case 'dialstatus':
-					if(xivo_issa('gfeatures',$this->_info) === false)
-						break;
-
-					$this->_dialstatus->reverse_edit($this->_status,'group',$this->_info['gfeatures']['id']);
+					if(xivo_issa('gfeatures',$this->_info) === true)
+						$this->_dialstatus->reverse_edit($this->_status,'group',$this->_info['gfeatures']['id']);
 					break;
-				default:
-					if(($module = &$this->_service->get_module($key)) === false)
-						continue;
-					else if($this->_origin[$key] === false)
-						$module->delete($val);
-					else
-						$module->edit_origin($this->_origin[$key]);
 			}
 		}
 
@@ -881,7 +895,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		}
 
 		if(isset($this->_return['exten']) === true
-		|| isset($this->_return['extensions']) === true)
+		|| isset($this->_return['extenumbers']) === true)
 			$this->unlinks();
 
 		$this->delete_user_callgroup($this->_info['gfeatures']['id']);
@@ -992,14 +1006,28 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 			switch($key)
 			{
 				case 'groupfeatures':
-					$this->_groupfeatures->recover($this->_info['gfeatures']['id']);
+					if(xivo_issa('gfeatures',$this->_info) === true)
+						$this->_groupfeatures->recover($this->_info['gfeatures']['id']);
+					break;
+				case 'queue':
+					if(isset($this->_origin['queue']) === true
+					&& $this->_origin['queue'] !== false)
+						$this->_queue->add_origin($this->_origin['queue']);
 					break;
 				case 'exten':
-					if($this->_origin['exten'] !== false)
+					if(isset($this->_origin['exten']) === true
+					&& $this->_origin['exten'] !== false)
 						$this->_extensions->add_origin($this->_origin['exten']);
 					break;
+				case 'extenumbers':
+					if(isset($this->_origin['extenumbers']) === true
+					&& $this->_origin['extenumbers'] !== false)
+						$this->_extenumbers->add_origin($this->_origin['extenumbers']);
+					break;
 				case 'user':
-					$this->_queuemember->add_origin_list($this->_origin['user']);
+					if(isset($this->_origin['user']) === true
+					&& $this->_origin['user'] !== false)
+						$this->_queuemember->add_origin_list($this->_origin['user']);
 					break;
 				case 'rightcall':
 					$this->_rightcall->add_origin_list();
@@ -1007,10 +1035,6 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 				case 'dialstatus':
 					$this->_dialstatus->add_origin_list();
 					break;
-				default:
-					if(($module = &$this->_service->get_module($key)) !== false
-					&& $this->_origin[$key] !== false)
-						$module->add_origin($this->_origin[$key]);
 			}
 		}
 
