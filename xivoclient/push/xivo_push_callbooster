@@ -96,7 +96,7 @@ def moh_check(path):
 # Main Code starts here
 # ==============================================================================
 
-CONFIG_XIVO_DAEMON = '/etc/asterisk/xivo_fb.conf'
+CONFIG_XIVO_DAEMON = '/etc/asterisk/xivo_daemon_ns.conf'
 
 port_comm_agi_daemon = 4970
 path_sounds_asterisk = '/var/lib/asterisk/sounds'

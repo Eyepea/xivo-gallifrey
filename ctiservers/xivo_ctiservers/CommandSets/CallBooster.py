@@ -91,7 +91,7 @@ STATACD2_STATUSES = {'TT_RAF' : 0, 'TT_ASD' : 0, 'TT_SND' : 0, 'TT_SFA' : 0, 'TT
 
 def varlog(syslogprio, string):
         if syslogprio <= SYSLOG_NOTICE:
-                syslogf(syslogprio, 'xivo_fb : ' + string)
+                syslogf(syslogprio, 'callbooster : ' + string)
         return 0
 
 def log_debug(syslogprio, string):
