@@ -345,6 +345,7 @@ class XivoCTICommand(BaseCommand):
 ##                if 'features' in capa_user:
 ##                        repstr += ';capas_features:%s' %(','.join(configs[astid].capafeatures))
                 userinfo['login']['connection'].send(repstr + '\n')
+                self.__update_availstate__(userinfo, userinfo.get('state'))
                 return
 
 

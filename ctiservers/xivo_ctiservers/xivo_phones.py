@@ -229,13 +229,7 @@ class PhoneList:
 
         def send_availstate_update(self, username, state):
                 try:
-                        if username.find("sip") == 0:
-                                phoneid = "SIP/" + username.split("sip")[1]
-                        elif username.find("iax") == 0:
-                                phoneid = "IAX/" + username.split("iax")[1]
-                        else:
-                                phoneid = None
-
+                        phoneid = "SIP/%s" % username
                         if phoneid in self.normal:
                                 if state == "unknown" or self.normal[phoneid].imstat != state:
                                         self.normal[phoneid].set_imstat(state)
