@@ -51,7 +51,7 @@ def channel_splitter(channel):
 
 def varlog(syslogprio, string):
         if syslogprio <= SYSLOG_NOTICE:
-                syslogf(syslogprio, 'xivo_fb : ' + string)
+                syslogf(syslogprio, 'xivo_phones : ' + string)
         return 0
 
 

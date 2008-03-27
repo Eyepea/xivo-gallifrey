@@ -66,7 +66,7 @@ import time
 
 # XIVO lib-python modules initialization
 import xivo.to_path
-xivoconffile            = "/etc/asterisk/xivo_fb.conf"
+xivoconffile            = '/etc/asterisk/xivo_daemon_ns.conf'
 GETOPT_SHORTOPTS        = 'dc:'
 GETOPT_LONGOPTS         = ["debug", "config="]
 debug_mode = False
@@ -101,7 +101,7 @@ import xivo_astcfg
 from xivo_log import *
 from CommandSets import *
 
-PIDFILE = '/var/run/xivo_fb.pid'
+PIDFILE = '/var/run/xivo_daemon_ns.pid'
 # TODO: command line parameter
 
 BUFSIZE_LARGE = 8192

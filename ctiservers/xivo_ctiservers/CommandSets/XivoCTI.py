@@ -96,7 +96,7 @@ HISTSEPAR = ';'
 
 def varlog(syslogprio, string):
         if syslogprio <= SYSLOG_NOTICE:
-                syslogf(syslogprio, 'xivo_fb : ' + string)
+                syslogf(syslogprio, 'xivocti : ' + string)
         return 0
 
 def log_debug(syslogprio, string):
