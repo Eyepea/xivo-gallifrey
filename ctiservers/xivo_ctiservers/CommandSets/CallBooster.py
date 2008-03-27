@@ -1703,7 +1703,7 @@ class CallBoosterCommand(BaseCommand):
                 """
                 Initiates the timer for log in an Agent, then requests the Originate action.
                 """
-                userinfo['timer-agentlogin'] = threading.Timer(10, self.__callback_timer__, 'AgentLogin')
+                userinfo['timer-agentlogin'] = threading.Timer(10, self.__callback_timer__, ('AgentLogin',))
                 userinfo['timer-agentlogin'].start()
                 userinfo['timer-agentlogin-iter'] = 0
 
@@ -2101,7 +2101,7 @@ class CallBoosterCommand(BaseCommand):
                         else:
                                 log_debug(SYSLOG_INFO, 'timer-ping : first setup for this connection')
 
-                        timer = threading.Timer(TIMEOUTPING, self.__callback_timer__, 'Ping')
+                        timer = threading.Timer(TIMEOUTPING, self.__callback_timer__, ('Ping',))
                         timer.start()
                         userinfo['timer-ping'] = timer
 
@@ -2430,12 +2430,12 @@ class CallBoosterCommand(BaseCommand):
                                                                                                cnum)
                                                         self.pending_sv_fiches[ic.commid] = reply
                                         elif val == 'Attente':
-                                                        timer = threading.Timer(5, self.__callback_timer__, 'SV')
-                                                        timer.start()
-                                                        ic.svirt = {'params' : params,
-                                                                    'timer' : timer,
-                                                                    'val' : '1'}
-                                                        print '(Attente) : starting a Timer :', timer
+                                                timer = threading.Timer(5, self.__callback_timer__, ('SV',))
+                                                timer.start()
+                                                ic.svirt = {'params' : params,
+                                                            'timer' : timer,
+                                                            'val' : '1'}
+                                                print '(Attente) : starting a Timer :', timer
                                         print 'OperatSock : received reply for :', sdanum, commid, ic, ic.commid, val
                 elif cmd == 'ACDCheckRequest':
                         print '(received) ACDCheckRequest', msg
@@ -2446,7 +2446,7 @@ class CallBoosterCommand(BaseCommand):
                                         iic = ic
                                         break
                         if iic is not None:
-                                timer = threading.Timer(5, self.__callback_timer__, 'SV')
+                                timer = threading.Timer(5, self.__callback_timer__, ('SV',))
                                 timer.start()
                                 iic.svirt['timer'] = timer
                                 iic.svirt['val'] = val
@@ -2507,7 +2507,7 @@ class CallBoosterCommand(BaseCommand):
                                                 if 'timer-agentlogin' in userinfo and userinfo['timer-agentlogin'] == thisthread:
                                                         if userinfo['timer-agentlogin-iter'] < 2:
                                                                 self.__send_msg__(userinfo, ',-2,,AppelOpe/')
-                                                                userinfo['timer-agentlogin'] = threading.Timer(10, self.__callback_timer__, 'AgentLogin')
+                                                                userinfo['timer-agentlogin'] = threading.Timer(10, self.__callback_timer__, ('AgentLogin',))
                                                                 userinfo['timer-agentlogin'].start()
                                                                 userinfo['timer-agentlogin-iter'] += 1
                                                         else:
