@@ -29,12 +29,9 @@ $appqueue = &$ipbx->get_application('queue',null,false);
 if(($queues = $appqueue->get_queues_list(null,array('name' => SORT_ASC),null,true)) !== false)
 	$qmember['list'] = $queues;
 
-xivo::load_class('xivo_sort');
+$apprightcall = &$ipbx->get_application('rightcall',null,false);
 
-$rightcallsort = new xivo_sort(array('browse' => 'rightcall','key' => 'name'));
-
-if(($rightcall['list'] = $ipbx->get_rightcall_list(null,true)) !== false)
-	uasort($rightcall['list'],array(&$rightcallsort,'str_usort'));
+$rightcall['list'] = $apprightcall->get_rightcalls_list(null,array('name' => SORT_ASC),null,true);
 
 if(isset($_QR['fm_send']) === true && xivo_issa('protocol',$_QR) === true && xivo_issa('ufeatures',$_QR) === true)
 {
@@ -83,6 +80,8 @@ if(isset($_QR['fm_send']) === true && xivo_issa('protocol',$_QR) === true && xiv
 	}
 }
 
+xivo::load_class('xivo_sort');
+
 if($gmember['list'] !== false && xivo_ak('groupmember',$return) === true)
 {
 	$gmember['slt'] = xivo_array_intersect_key($return['groupmember'],$gmember['list'],'gfeaturesid');
@@ -118,6 +117,8 @@ if($rightcall['list'] !== false && xivo_ak('rightcall',$return) === true)
 	if($rightcall['slt'] !== false)
 	{
 		$rightcall['list'] = xivo_array_diff_key($rightcall['list'],$rightcall['slt']);
+
+		$rightcallsort = new xivo_sort(array('browse' => 'rightcall','key' => 'name'));
 		uasort($rightcall['slt'],array(&$rightcallsort,'str_usort'));
 	}
 }

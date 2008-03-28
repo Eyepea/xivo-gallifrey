@@ -10,12 +10,22 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 	var $_rightcallmember	= false;
 	var $_rightcallexten	= false;
 
-	function xivo_application_service_asterisk_rightcall(&$service)
+	function xivo_application_service_asterisk_rightcall(&$service,$param=null,$components=true)
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
 
 		if(($this->_rightcall = &$this->_service->get_module('rightcall')) === false
-		|| ($this->_rightcallmember = &$this->_service->get_module('rightcallmember')) === false
+		|| ((bool) $components === true && $this->load_components() === false) === true)
+			return(false);
+
+		return(true);
+	}
+
+	function load_components()
+	{
+		$this->_components = true;
+
+		if(($this->_rightcallmember = &$this->_service->get_module('rightcallmember')) === false
 		|| ($this->_rightcallexten = &$this->_service->get_module('rightcallexten')) === false)
 			return(false);
 
@@ -105,6 +115,33 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 		$r['rightcall'] = $this->_rightcall->get_element();
 		$r['rightcallmember'] = $this->_rightcallmember->get_element();
 		$r['rightcallexten'] = $this->_rightcallexten->get_element();
+
+		return($r);
+	}
+
+	function get_rightcalls_list($disable=null,$order=null,$limit=null,$assoc=false)
+	{
+		if(($rs = $this->_rightcall->get_all($disable,true,$order,$limit)) === false
+		|| ($nb = count($rs)) === 0)
+		{
+			$this->_cnt = $this->_rightcall->get_cnt();
+			return(false);
+		}
+
+		$this->_cnt = $this->_rightcall->get_cnt();
+
+		$r = array();
+
+		if((bool) $assoc === false)
+			$r = &$rs;
+		else
+		{
+			for($i = 0;$i < $nb;$i++)
+				$r[$rs[$i]['id']] = $rs[$i];
+		}
+
+		if(empty($r) === true)
+			return(false);
 
 		return($r);
 	}

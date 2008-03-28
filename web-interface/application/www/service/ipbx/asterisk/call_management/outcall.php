@@ -20,11 +20,8 @@ switch($act)
 
 		$outcalltrunk['list'] = $ipbx->get_trunks_list(null,false);
 
-		xivo::load_class('xivo_sort');
-		$rightcallsort = new xivo_sort(array('browse' => 'rightcall','key' => 'name'));
-
-		if(($rightcall['list'] = $ipbx->get_rightcall_list(null,true,false)) !== false)
-			uasort($rightcall['list'],array(&$rightcallsort,'str_usort'));
+		$apprightcall = &$ipbx->get_application('rightcall',null,false);
+		$rightcall['list'] = $apprightcall->get_rightcalls_list(null,array('name' => SORT_ASC),null,true);
 
 		if(isset($_QR['fm_send']) === true && xivo_issa('outcall',$_QR) === true)
 		{
@@ -34,6 +31,8 @@ switch($act)
 			else
 				$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
 		}
+
+		xivo::load_class('xivo_sort');
 
 		if($outcalltrunk['list'] !== false && xivo_issa('outcalltrunk',$result) === true)
 		{
@@ -53,6 +52,8 @@ switch($act)
 			if($rightcall['slt'] !== false)
 			{
 				$rightcall['list'] = xivo_array_diff_key($rightcall['list'],$rightcall['slt']);
+
+				$rightcallsort = new xivo_sort(array('browse' => 'rightcall','key' => 'name'));
 				uasort($rightcall['slt'],array(&$rightcallsort,'str_usort'));
 			}
 		}
@@ -79,11 +80,8 @@ switch($act)
 
 		$outcalltrunk['list'] = $ipbx->get_trunks_list(null,false);
 
-		xivo::load_class('xivo_sort');
-		$rightcallsort = new xivo_sort(array('browse' => 'rightcall','key' => 'name'));
-
-		if(($rightcall['list'] = $ipbx->get_rightcall_list(null,true)) !== false)
-			uasort($rightcall['list'],array(&$rightcallsort,'str_usort'));
+		$apprightcall = &$ipbx->get_application('rightcall',null,false);
+		$rightcall['list'] = $apprightcall->get_rightcalls_list(null,array('name' => SORT_ASC),null,true);
 
 		if(isset($_QR['fm_send']) === true && xivo_issa('outcall',$_QR) === true)
 		{
@@ -95,6 +93,8 @@ switch($act)
 			else
 				$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
 		}
+
+		xivo::load_class('xivo_sort');
 
 		if($outcalltrunk['list'] !== false && xivo_issa('outcalltrunk',$return) === true)
 		{
@@ -114,6 +114,8 @@ switch($act)
 			if($rightcall['slt'] !== false)
 			{
 				$rightcall['list'] = xivo_array_diff_key($rightcall['list'],$rightcall['slt']);
+
+				$rightcallsort = new xivo_sort(array('browse' => 'rightcall','key' => 'name'));
 				uasort($rightcall['slt'],array(&$rightcallsort,'str_usort'));
 			}
 		}

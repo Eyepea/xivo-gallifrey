@@ -280,19 +280,29 @@ switch($act)
 		$_QRY->go($_HTML->url('service/ipbx/call_management/rightcall'),$param);
 		break;
 	default:
-		$total = 0;
 		$act = 'list';
+		$prevpage = $page - 1;
+		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
 
-		if(($list = $ipbx->get_rightcall_list()) !== false)
+		$apprightcall = &$ipbx->get_application('rightcall',null,false);
+
+		$order = array();
+		$order['name'] = SORT_ASC;
+
+		$limit = array();
+		$limit[0] = $prevpage * $nbbypage;
+		$limit[1] = $nbbypage;
+
+		$list = $apprightcall->get_rightcalls_list(null,$order,$limit);
+		$total = $apprightcall->get_cnt();
+
+		if($list === false && $total > 0 && $prevpage > 0)
 		{
-			$total = count($list);
-			
-			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('browse' => 'rightcall','key' => 'name'));
-			usort($list,array(&$sort,'str_usort'));
+			$param['page'] = $prevpage;
+			$_QRY->go($_HTML->url('service/ipbx/call_management/rightcall'),$param);
 		}
 
-		$_HTML->set_var('pager',xivo_calc_page($page,20,$total));
+		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
 		$_HTML->set_var('list',$list);
 }
 
