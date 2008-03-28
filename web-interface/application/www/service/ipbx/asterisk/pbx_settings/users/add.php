@@ -23,7 +23,7 @@ if(($queues = $appqueue->get_queues_list(null,array('name' => SORT_ASC),null,tru
 
 $apprightcall = &$ipbx->get_application('rightcall',null,false);
 
-$rightcall['list'] = apprightcall->get_rightcalls_list(null,array('name' => SORT_ASC),null,true);
+$rightcall['list'] = $apprightcall->get_rightcalls_list(null,array('name' => SORT_ASC),null,true);
 
 if(isset($_QR['fm_send']) === true
 && xivo_issa('protocol',$_QR) === true
