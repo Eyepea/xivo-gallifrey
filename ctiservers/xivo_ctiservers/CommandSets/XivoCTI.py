@@ -30,6 +30,7 @@ This is the XivoCTI class.
 
 import os
 import random
+import re
 import string
 import time
 import urllib
@@ -147,7 +148,7 @@ class XivoCTICommand(BaseCommand):
                         'database',
                         'message',
                         'availstate',
-                        'originate', 'transfer', 'atxfer', 'hangup']
+                        'originate', 'transfer', 'atxfer', 'hangup', 'pickup']
 
         def parsecommand(self, linein):
                 params = linein.split()
@@ -426,8 +427,8 @@ class XivoCTICommand(BaseCommand):
                 return
 
 
-        actions = { SHEET_EVENT_AGI         : SHEET_ACTION_XCFULL,
-                    SHEET_EVENT_INCOMING    : SHEET_ACTION_BOT | SHEET_ACTION_XCPOPUP,
+        # actions = { SHEET_EVENT_AGI         : SHEET_ACTION_XCFULL,
+        actions = { SHEET_EVENT_INCOMING    : SHEET_ACTION_BOT | SHEET_ACTION_XCPOPUP,
                     SHEET_EVENT_OUTGOING    : SHEET_ACTION_BOT,
                     SHEET_EVENT_AGENTLINK   : SHEET_ACTION_URL,
                     SHEET_EVENT_AGENTCALLED : SHEET_ACTION_XCPOPUP
@@ -847,6 +848,25 @@ class XivoCTICommand(BaseCommand):
                 return
         # END of AMI events
 
+        def handle_agi(self, astid, message):
+                m = re.match('PUSH (\S+) (\S+) <(\S*)> ?(.*)', message.strip())
+                if m != None and SHEET_EVENT_AGI in self.actions:
+                        called = m.group(1)[3:]
+                        callerid = m.group(2)
+                        callerctx = m.group(3)
+                        msg = m.group(4)
+                        print called, callerid, callerctx, msg
+                        linestosend = ['<?xml version="1.0" encoding="utf-8"?>',
+                                       '<profile sessionid="47"><user>',
+                                       '<info name="Numero Appelant" type="phone"><![CDATA[%s]]></info>' % callerid,
+                                       '<info name="Numero Appele" type="text"><![CDATA[<b>%s</b>]]></info>' % called,
+                                       '<info name="called" type="internal"><![CDATA[%s]]></info>' % called,
+                                       '<message>help %s</message>' % called,
+                                       '</user></profile>']
+                        userinfo = self.ulist.byast[astid].finduser(called)
+                        self.__send_msg_to_cti_client__(userinfo, ''.join(linestosend))
+                        
+                return 'USER %s STATE available CIDNAME %s' % (called, 'tobedefined')
 
 
         def directory_srv2clt(self, context, results):
@@ -927,6 +947,11 @@ class XivoCTICommand(BaseCommand):
                                 if (capalist & CAPA_DIAL):
                                         repstr = self.__hangup__("%s/%s" %(astid, username),
                                                                  icommand.args[0])
+                        elif icommand.name == 'pickup':
+                                print icommand.name, icommand.args
+                                if (capalist & CAPA_DIAL):
+                                        z = icommand.args[0].split('/')
+                                        self.amis[z[1]].sendcommand('Command', [('Command', 'sip notify event-talk %s' % z[3])])
                         elif icommand.name == 'agents-status':
                                 if (capalist & CAPA_AGENTS):
                                         astid = icommand.args[0]
@@ -937,10 +962,10 @@ class XivoCTICommand(BaseCommand):
                                                 agprop = self.agentslist[astid][agname]
                                                 if agprop[0] == 'AGENT_LOGGEDOFF':
                                                         self.__send_msg_to_cti_client__(userinfo, 'agentupdate=logout;%s;%s' % (agname, agprop[1]))
-                                                        # self.__update_agent__(agname, '', '')
+                                                        self.__update_agent__(agname, '', '')
                                                 else:
                                                         self.__send_msg_to_cti_client__(userinfo, 'agentupdate=login;%s;%s' % (agname, agprop[1]))
-                                                        # self.__update_agent__(agname, '1', '')
+                                                        self.__update_agent__(agname, '1', '')
                                         qref_joined = []
                                         qref_unjoined = []
                                         if astid in self.queues_list:
@@ -1291,31 +1316,31 @@ class XivoCTICommand(BaseCommand):
 
         # \brief Hangs up.
         def __hangup__(self, requester, chan):
-         astid_src = chan.split("/")[1]
-         ret_message = 'hangup KO from %s' % requester
-         if astid_src in self.configs:
-                log_debug(SYSLOG_INFO, "%s is attempting a HANGUP : %s" %(requester, chan))
-                phone, channel = split_from_ui(chan)
-                if phone in self.plist[astid_src].normal:
-                        if channel in self.plist[astid_src].normal[phone].chann:
-                                channel_peer = self.plist[astid_src].normal[phone].chann[channel].getChannelPeer()
-                                log_debug(SYSLOG_INFO, "UI action : %s : hanging up <%s> and <%s>"
-                                          %(self.configs[astid_src].astid , channel, channel_peer))
-                                if astid_src in self.amis and self.amis[astid_src]:
-                                        ret = self.amis[astid_src].hangup(channel, channel_peer)
-                                        if ret > 0:
-                                                ret_message = 'hangup OK (%d) <%s>' %(ret, chan)
+                astid_src = chan.split("/")[1]
+                ret_message = 'hangup KO from %s' % requester
+                if astid_src in self.configs:
+                        log_debug(SYSLOG_INFO, "%s is attempting a HANGUP : %s" %(requester, chan))
+                        phone, channel = split_from_ui(chan)
+                        if phone in self.plist[astid_src].normal:
+                                if channel in self.plist[astid_src].normal[phone].chann:
+                                        channel_peer = self.plist[astid_src].normal[phone].chann[channel].getChannelPeer()
+                                        log_debug(SYSLOG_INFO, "UI action : %s : hanging up <%s> and <%s>"
+                                                  %(self.configs[astid_src].astid , channel, channel_peer))
+                                        if astid_src in self.amis and self.amis[astid_src]:
+                                                ret = self.amis[astid_src].hangup(channel, channel_peer)
+                                                if ret > 0:
+                                                        ret_message = 'hangup OK (%d) <%s>' %(ret, chan)
+                                                else:
+                                                        ret_message = 'hangup KO : socket request failed'
                                         else:
-                                                ret_message = 'hangup KO : socket request failed'
+                                                ret_message = 'hangup KO : no socket available'
                                 else:
-                                        ret_message = 'hangup KO : no socket available'
+                                        ret_message = 'hangup KO : no such channel <%s>' % channel
                         else:
-                                ret_message = 'hangup KO : no such channel <%s>' % channel
+                                ret_message = 'hangup KO : no such phone <%s>' % phone
                 else:
-                        ret_message = 'hangup KO : no such phone <%s>' % phone
-         else:
-                ret_message = 'hangup KO : no such asterisk id <%s>' % astid_src
-         return self.dmessage_srv2clt(ret_message)
+                        ret_message = 'hangup KO : no such asterisk id <%s>' % astid_src
+                return self.dmessage_srv2clt(ret_message)
 
 
 

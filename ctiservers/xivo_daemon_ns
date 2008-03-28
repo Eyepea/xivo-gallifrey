@@ -846,8 +846,8 @@ while True: # loops over the reloads
                         # incoming TCP connections (CTI, WEBI, AGI, INFO)
                         elif sel_i in fdlist_established:
                                 try:
-                                        requester = '%s:%d' % (sel_i.getpeername()[0], sel_i.getpeername()[1])
                                         kind = fdlist_established[sel_i]
+                                        requester = '%s:%d' % (sel_i.getpeername()[0], sel_i.getpeername()[1])
                                         try:
                                                 msg = sel_i.recv(BUFSIZE_LARGE)
                                                 lmsg = len(msg)
@@ -872,7 +872,7 @@ while True: # loops over the reloads
                                         del fdlist_established[sel_i]
                                         log_debug(SYSLOG_INFO, 'TCP socket closed on %s (%s)' % (requester, kind))
                                 except Exception, exc:
-                                        log_debug(SYSLOG_ERR, '--- exception [CTI, WEBI, AGI, INFO] --- %s' % str(exc))
+                                        log_debug(SYSLOG_ERR, '--- exception [%s] --- %s' % (kind, str(exc)))
                                         try:
                                                 fdlist_full.remove(sel_i)
                                                 del fdlist_established[sel_i]
