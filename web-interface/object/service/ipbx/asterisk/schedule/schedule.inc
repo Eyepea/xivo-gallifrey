@@ -285,6 +285,9 @@ class xivo_service_asterisk_schedule extends xivo_service_asterisk_abstract
 
 	function get_all_except($id,$disable=null,$prepare=true,$order=null,$limit=null,$assoc=false)
 	{
+		if(($id = xivo_ulongint($id)) === 0)
+			return($this->get_all($disable,$prepare,$order,$limit,$assoc));
+
 		$prepare = (bool) $prepare;
 		$assoc = (bool) $assoc;
 

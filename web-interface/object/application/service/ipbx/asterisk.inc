@@ -225,12 +225,14 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		$sortidentity = new xivo_sort(array('key' => 'identity'));
 		$sortname = new xivo_sort(array('key' => 'name'));
 
-		$userid = $groupid = 0;
+		$userid = $groupid = $scheduleid = 0;
 
 		if($type === 'user')
 			$userid = xivo_ulongint($id);
 		else if($type === 'group')
 			$groupid = xivo_ulongint($id);
+		else if($type === 'schedule')
+			$scheduleid = xivo_ulongint($id);
 
 		if(($ufeatures = &$this->_service->get_module('userfeatures')) !== false
 		&& ($r['users'] = $ufeatures->get_all_number($userid)) !== false)
@@ -257,7 +259,7 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 			$r['meetme'] = false;
 
 		if(($schedule = &$this->_service->get_module('schedule')) !== false
-		&& ($r['schedule'] = $schedule->get_all()) !== false)
+		&& ($r['schedule'] = $schedule->get_all_except($scheduleid)) !== false)
 			usort($r['schedule'],array(&$sortname,'str_usort'));
 		else
 			$r['schedule'] = false;

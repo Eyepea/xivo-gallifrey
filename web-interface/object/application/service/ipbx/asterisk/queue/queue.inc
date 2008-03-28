@@ -194,9 +194,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		else if(($sounds = &$this->_service->get_module('sounds')) === false)
 			return(false);
 
-		$this->_announce = $sounds->get_list('acd',true);
-
-		return($this->_announce);
+		return(($this->_announce = $sounds->get_list('acd',true)));
 	}
 
 	function set_add($arr)
