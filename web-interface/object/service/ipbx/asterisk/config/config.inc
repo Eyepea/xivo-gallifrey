@@ -104,6 +104,9 @@ $array['realstatic']['agents']['datastorage'] = true;
 $array['realstatic']['features'] = array();
 $array['realstatic']['features']['datastorage'] = true;
 
+$array['realstatic']['generaliax'] = array();
+$array['realstatic']['generaliax']['datastorage'] = true;
+
 $array['realstatic']['generalqueue'] = array();
 $array['realstatic']['generalqueue']['datastorage'] = true;
 

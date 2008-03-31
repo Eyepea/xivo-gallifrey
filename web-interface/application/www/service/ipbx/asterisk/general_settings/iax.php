@@ -1,45 +1,36 @@
 <?php
 
-$generaliax = &$ipbx->get_module('generaliax');
+$appgeneraliax = &$ipbx->get_apprealstatic('generaliax');
+
+$fm_save = null;
+
+$info = $appgeneraliax->get_all_by_category();
 
 if(isset($_QR['fm_send']) === true)
 {
-	$edit = true;
+	$fm_save = false;
 
-	if(($result = $generaliax->chk_values($_QR)) === false)
+	if(($rs = $appgeneraliax->set_save_all($_QR)) !== false)
 	{
-		$edit = false;
-		$result = $generaliax->get_filter_result();
-	}
+		$info = $rs['result'];
+		$error = $rs['error'];
 
-	if($edit === true)
-	{
-		if($result['minregexpire'] > $result['maxregexpire'])
-			$result['minregexpire'] = $result['maxregexpire'];
-
-		if($result['minexcessbuffer'] > $result['maxexcessbuffer'])
-			$result['minexcessbuffer'] = $result['maxexcessbuffer'];
-
-		if(is_array($result['allow']) === true)
-			$result['allow'] = implode(',',$result['allow']);
-		
-		if($generaliax->replace_val_list($result) === true)
-			$_HTML->set_var('fm_save',true);
+		$fm_save = isset($rs['error'][0]) === false;
 	}
 }
 
-$info = $generaliax->get_name_val(null,false);
-$element = $generaliax->get_element();
+$element = $appgeneraliax->get_element();
 
 if(xivo_issa('allow',$element) === true
 && xivo_issa('value',$element['allow']) === true
-&& xivo_ak('allow',$info) === true
-&& empty($info['allow']) === false)
+&& isset($info['allow']) === true
+&& xivo_haslen($info['allow'],'var_val') === true)
 {
-	$info['allow'] = explode(',',$info['allow']);
-	$element['allow']['value'] = array_diff($element['allow']['value'],$info['allow']);
+	$info['allow']['var_val'] = explode(',',$info['allow']['var_val']);
+	$element['allow']['value'] = array_diff($element['allow']['value'],$info['allow']['var_val']);
 }
 
+$_HTML->set_var('fm_save',$fm_save);
 $_HTML->set_var('info',$info);
 $_HTML->set_var('element',$element);
 
