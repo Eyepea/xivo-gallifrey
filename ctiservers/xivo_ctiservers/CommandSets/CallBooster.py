@@ -311,7 +311,8 @@ class CallBoosterCommand(BaseCommand):
                                                                                "WHERE var_metric = '%s' AND var_name = 'musiconhold'"
                                                                                % ('silence', str(b[0][1] - 1)))
 
-                                localulist[oname] =  {'user'     : oname,
+                                localulist[oname] =  {'astid'    : 'xivo',
+                                                      'user'     : oname,
                                                       'agentnum' : agnum,
                                                       'record'   : r[3]}
 ##                                agconf = { 'astid' : astid,
@@ -417,7 +418,7 @@ class CallBoosterCommand(BaseCommand):
                         else:
                                 pass
 
-        userfields = ['user', 'agentnum', 'record']
+        userfields = ['astid', 'user', 'agentnum', 'record']
         def required_login_params(self):
                 """
                 Returns the list of required login parameters
@@ -444,8 +445,7 @@ class CallBoosterCommand(BaseCommand):
                 phonenum = loginparams.get('phonenum')
 
                 userinfo = None
-                for astid, ulist in self.ulist.byast.iteritems():
-                        userinfo = ulist.finduser(username)
+                userinfo = self.ulist.finduser(username)
                 ## userinfo = self.ulist.list.get(username)
                 if userinfo == None:
                         return 'user_not_found'
@@ -482,7 +482,7 @@ class CallBoosterCommand(BaseCommand):
                 Sets the userinfo according to the agent's phonenumber
                 """
                 userinfo = None
-                for opername, uinfo in self.ulist.byast[astid].list.iteritems():
+                for opername, uinfo in self.ulist.list.iteritems():
                         if 'agentnum' in uinfo and uinfo['agentnum'] == agentnum:
                                 userinfo = uinfo
                                 break
@@ -1331,7 +1331,7 @@ class CallBoosterCommand(BaseCommand):
                         # when one of the 2 peers leave the conference, we put the 2 other ones in a regular commuication configuration
                         chantomatch1 = self.confrooms3[meetme][0]
                         chantomatch2 = self.confrooms3[meetme][1]
-                        for opername, userinfo in self.ulist.byast[astid].list.iteritems():
+                        for opername, userinfo in self.ulist.list.iteritems():
                                 if 'agentchannel-conf' in userinfo:
                                         chann_agent = chann_inout = None
                                         if userinfo['agentchannel-conf'] == chantomatch1:
@@ -1367,7 +1367,7 @@ class CallBoosterCommand(BaseCommand):
                                                                         self.__park__(astid, self.outgoing_calls[chann_inout])
                 elif confroomsize == 1:
                         chantomatch = self.confrooms3[meetme][0]
-                        for opername, userinfo in self.ulist.byast[astid].list.iteritems():
+                        for opername, userinfo in self.ulist.list.iteritems():
                                 if 'agentchannel-conf' in userinfo:
                                         if userinfo['agentchannel-conf'] == chantomatch:
                                                 userinfo['agentlogin-fromconf'] = None
@@ -1554,19 +1554,25 @@ class CallBoosterCommand(BaseCommand):
 
 
         def __synchro_addqueue__(self, queuename):
-                self.cursor_xivo.query("INSERT INTO queue VALUES "
-                                       "('%s', '', '', '', 15, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, "
-                                       "NULL, NULL, NULL, NULL, 0, 0, 0, 'no', 1, 0, 0, 0, "
-                                       "'roundrobin', 'yes', 'yes', 0, 0, 0, 0, 0, 0, 0, 'queue')"
-                                       % queuename)
-                self.cursor_xivo.query("INSERT INTO queuefeatures VALUES "
-                                       "(0, '%s', '', 'default', 0, 0, 0, 0, 0, 0, 0, 0, 0, '', '', 0)"
-                                       % queuename)
+                try:
+                        self.cursor_xivo.query("INSERT INTO queue VALUES "
+                                               "('%s', '', '', '', 15, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, "
+                                               "NULL, NULL, NULL, NULL, 0, 0, 0, 'no', 1, 0, 0, 0, "
+                                               "'roundrobin', 'yes', 'yes', 0, 0, 0, 0, 0, 0, 0, 'queue')"
+                                               % queuename)
+                        self.cursor_xivo.query("INSERT INTO queuefeatures VALUES "
+                                               "(0, '%s', '', 'default', 0, 0, 0, 0, 0, 0, 0, 0, 0, '', '', 0)"
+                                               % queuename)
+                except Exception, exc:
+                        log_debug(SYSLOG_ERR, 'could not add queue <%s> : %s' % (queuename, str(exc)))
 
 
         def __synchro_delqueue__(self, queuename):
-                self.cursor_xivo.query("DELETE FROM queue WHERE name='%s'" % queuename)
-                self.cursor_xivo.query("DELETE FROM queuefeatures WHERE name='%s'" % queuename)
+                try:
+                        self.cursor_xivo.query("DELETE FROM queue WHERE name='%s'" % queuename)
+                        self.cursor_xivo.query("DELETE FROM queuefeatures WHERE name='%s'" % queuename)
+                except Exception, exc:
+                        log_debug(SYSLOG_ERR, 'could not delete queue <%s> : %s' % (queuename, str(exc)))
 
 
         # INCOMING calls management
@@ -1646,7 +1652,7 @@ class CallBoosterCommand(BaseCommand):
                 Removes the 'incall' call references from all the operator queues, and
                 sends the relevant information to the agents.
                 """
-                for opername, userinfo in self.ulist.byast[astid].list.iteritems():
+                for opername, userinfo in self.ulist.list.iteritems():
                         if 'login' in userinfo and incall.queuename in userinfo['login']['queuelist']:
                                 del userinfo['login']['queuelist'][incall.queuename]
                                 agentnum = userinfo['agentnum']
@@ -1791,6 +1797,8 @@ class CallBoosterCommand(BaseCommand):
                 - Enregistre   : records a voice message
 
                 - ForceACD     : forces one given incoming/pending call to be chosen by the agent
+
+                - InitConf     : inits a conference
 
                 - ListConf     : lists the current call references inside a given room
 
@@ -2032,11 +2040,10 @@ class CallBoosterCommand(BaseCommand):
                                 if confname in self.confroomsNames:
                                         confnum = self.confroomsNames[confname]
                                         listconf = []
+                                        # call.insert_taxes_id
                                         nconfs = len(self.confroomsAny[confnum])
-                                        # reply = '%s,%s,,ListConf/' % (confname, ';'.join(listconf))
-                                        reply = '%s,%s,,ListConf/' % (confname, nconfs)
+                                        reply = '%s,%s,,ListConf/' % (confname, ';'.join(listconf))
                                         connid_socket.send(reply)
-
 
                 elif cname == 'Conf':
                         reference = parsedcommand.args[1]
@@ -2535,17 +2542,15 @@ class CallBoosterCommand(BaseCommand):
                         tname = thisthread.getName()
                         if tname.startswith('Ping'):
                                 print 'checkqueue (Ping)', tname
-                                for astid in self.ulist.byast:
-                                        for opername, userinfo in self.ulist.byast[astid].list.iteritems():
-                                                if 'timer-ping' in userinfo and userinfo['timer-ping'] == thisthread:
-                                                        agentnum = userinfo['agentnum']
-                                                        self.cursor_operat.query('USE agents')
-                                                        self.cursor_operat.query("UPDATE acd SET Etat = 'Sortie' WHERE NOPE = %d"
-                                                                                 % (int(agentnum) - STARTAGENTNUM))
-                                                        self.conn_operat.commit()
-                                                        self.__choose_and_queuepush__(astid, 'Unping')
-                                                        del userinfo['timer-ping']
-                                                        disconnlist.append(userinfo)
+                                for opername, userinfo in self.ulist.list.iteritems():
+                                        if 'timer-ping' in userinfo and userinfo['timer-ping'] == thisthread:
+                                                agentnum = userinfo['agentnum']
+                                                self.cursor_operat.query('USE agents')
+                                                self.cursor_operat.query("UPDATE acd SET Etat = 'Sortie' WHERE NOPE = %d"
+                                                                         % (int(agentnum) - STARTAGENTNUM))
+                                                self.conn_operat.commit()
+                                                self.__choose_and_queuepush__(userinfo['astid'], 'Unping')
+                                                del userinfo['timer-ping']
                         elif tname.startswith('SV'):
                                 print 'checkqueue (SV)', tname
                                 for chan, ic in self.incoming_calls.iteritems():
@@ -2566,20 +2571,19 @@ class CallBoosterCommand(BaseCommand):
                                                                 ic.svirt['timer'] = None
                         elif tname.startswith('AgentLogin'):
                                 print 'checkqueue (AgentLogin)', tname
-                                for astid in self.ulist.byast:
-                                        for opername, userinfo in self.ulist.byast[astid].list.iteritems():
-                                                if 'timer-agentlogin' in userinfo and userinfo['timer-agentlogin'] == thisthread:
-                                                        if userinfo['timer-agentlogin-iter'] < 2:
-                                                                self.__send_msg__(userinfo, ',-2,,AppelOpe/')
-                                                                userinfo['timer-agentlogin'] = threading.Timer(10, self.__callback_timer__, ('AgentLogin',))
-                                                                userinfo['timer-agentlogin'].start()
-                                                                userinfo['timer-agentlogin-iter'] += 1
-                                                        else:
-                                                                self.__send_msg__(userinfo, ',-3,,AppelOpe/')
-                                                                userinfo['timer-agentlogin-iter'] += 1
-                                                                if 'agent-wouldbe-channel' in userinfo:
-                                                                        self.amis[astid].hangup(userinfo['agent-wouldbe-channel'], '')
-                                                                        del userinfo['agent-wouldbe-channel']
+                                for opername, userinfo in self.ulist.list.iteritems():
+                                        if 'timer-agentlogin' in userinfo and userinfo['timer-agentlogin'] == thisthread:
+                                                if userinfo['timer-agentlogin-iter'] < 2:
+                                                        self.__send_msg__(userinfo, ',-2,,AppelOpe/')
+                                                        userinfo['timer-agentlogin'] = threading.Timer(10, self.__callback_timer__, ('AgentLogin',))
+                                                        userinfo['timer-agentlogin'].start()
+                                                        userinfo['timer-agentlogin-iter'] += 1
+                                                else:
+                                                        self.__send_msg__(userinfo, ',-3,,AppelOpe/')
+                                                        userinfo['timer-agentlogin-iter'] += 1
+                                                        if 'agent-wouldbe-channel' in userinfo:
+                                                                self.amis[userinfo['astid']].hangup(userinfo['agent-wouldbe-channel'], '')
+                                                                del userinfo['agent-wouldbe-channel']
                         else:
                                 print 'checkqueue (unknown event kind)', tname
                 return disconnlist

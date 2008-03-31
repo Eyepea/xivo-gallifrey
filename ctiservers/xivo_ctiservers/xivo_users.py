@@ -27,56 +27,11 @@ __author__    = 'Corentin Le Gall'
 class Users:
         def __init__(self):
                 self.list = {}
-                self.byast = {}
                 self.commandclass = None
                 return
 
-
         def setcommandclass(self, commandclass):
                 self.commandclass = commandclass
-                return
-
-
-        def adduser(self, astid, userparams):
-                self.byast[astid].adduser(userparams)
-                return
-
-
-        def finduser(self, username):
-                uinfo = None
-                for astid, user_byast in self.byast.iteritems():
-                        uinfo = user_byast.finduser(username)
-                        if uinfo is not None:
-                                break
-                return uinfo
-
-
-        def update(self, astid):
-                if astid not in self.byast:
-                        self.byast[astid] = Users_byast(astid, self.commandclass.userfields)
-                userl = self.commandclass.getuserlist()
-                for ul, vv in userl.iteritems():
-                        self.adduser(astid, vv)
-                return
-
-
-        # to be called sometimes (update period ?)
-        def check_connected_accounts(self):
-                for user,userinfo in userlist[self.astid].iteritems():
-                        if 'sessiontimestamp' in userinfo:
-                                if time.time() - userinfo.get('sessiontimestamp') > xivoclient_session_timeout:
-                                        log_debug(SYSLOG_INFO, '%s : timeout reached for %s' %(self.astid, user))
-                                        disconnect_user(userinfo)
-                                        self.send_availstate_update(user, 'unknown')
-
-
-## \class Users_byast
-# \brief Properties of Users, sorted by Asterisk id
-class Users_byast:
-        def __init__(self, iastid, ifields):
-                self.astid = iastid
-                self.list = {}
-                self.fields = ifields
                 return
 
         def adduser(self, inparams):
@@ -87,18 +42,16 @@ class Users_byast:
                         pass
                 else:
                         self.list[user] = {}
-                        self.list[user]['astid'] = self.astid
                         for f in self.fields:
                                 self.list[user][f] = inparams[f]
-        def deluser(self, user):
-                if self.list.has_key(user):
-                        self.list.pop(user)
+                return
 
-        def finduser(self, user):
-                return self.list.get(user)
+        def deluser(self, username):
+                if self.list.has_key(username):
+                        self.list.pop(username)
 
-        def listusers(self):
-                return self.list
+        def finduser(self, username):
+                return self.list.get(username)
 
         def listconnected(self):
                 lst = {}
@@ -106,3 +59,19 @@ class Users_byast:
                         if 'login' in info:
                                 lst[user] = info
                 return lst
+
+        def update(self):
+                self.fields = self.commandclass.userfields
+                userl = self.commandclass.getuserlist()
+                for ul, vv in userl.iteritems():
+                        self.adduser(vv)
+                return
+
+        # to be called sometimes (update period ?)
+        def check_connected_accounts(self):
+                for user, userinfo in userlist[self.astid].iteritems():
+                        if 'sessiontimestamp' in userinfo:
+                                if time.time() - userinfo.get('sessiontimestamp') > xivoclient_session_timeout:
+                                        log_debug(SYSLOG_INFO, '%s : timeout reached for %s' %(self.astid, user))
+                                        disconnect_user(userinfo)
+                                        self.send_availstate_update(user, 'unknown')

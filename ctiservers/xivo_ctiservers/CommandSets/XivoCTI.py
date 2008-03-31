@@ -178,7 +178,7 @@ class XivoCTICommand(BaseCommand):
 
 
         # fields set at startup by reading informations
-        userfields = ['user', 'phonenum', 'passwd', 'init', 'fullname', 'capas', 'context']
+        userfields = ['astid', 'user', 'phonenum', 'passwd', 'init', 'fullname', 'capas', 'context']
 
         # fields set at login time by a user, some are a id-dimension, others are auth-related
         # TBD : fields set once logged in ...
@@ -212,8 +212,7 @@ class XivoCTICommand(BaseCommand):
                 # user match and authentication
                 username = loginparams.get('userid')
                 userinfo = None
-                for astid, ulist in self.ulist.byast.iteritems():
-                        userinfo = ulist.finduser(username)
+                userinfo = self.ulist.finduser(username)
                 if userinfo == None:
                         return 'user_not_found'
                 password = loginparams.get('passwd') 
@@ -396,7 +395,8 @@ class XivoCTICommand(BaseCommand):
                                 for t, y in a.iteritems():
                                         phonenum = y[3]
                                         fname = (y[1] + ' ' + y[2]).strip()
-                                        lulist[phonenum] =  {'user'     : phonenum,
+                                        lulist[phonenum] =  {'astid'    : astid,
+                                                             'user'     : phonenum,
                                                              'passwd'   : phonenum,
                                                              'phonenum' : phonenum,
                                                              'init'     : True,
@@ -426,10 +426,9 @@ class XivoCTICommand(BaseCommand):
 
         def __send_msg_to_cti_client_byagentid__(self, agentnum, strupdate):
                 try:
-                        for astid in self.ulist.byast:
-                                for user, userinfo in self.ulist.byast[astid].listusers().iteritems():
-                                        if 'agentnum' in userinfo and userinfo.get('agentnum') == agentnum:
-                                                self.__send_msg_to_cti_client__(userinfo, strupdate)
+                        for userinfo in self.ulist.list.itervalues():
+                                if 'agentnum' in userinfo and userinfo.get('agentnum') == agentnum:
+                                        self.__send_msg_to_cti_client__(userinfo, strupdate)
                 except Exception, exc:
                         print '--- exception --- (__send_msg_to_cti_client_byagentid__)', exc
                 return
@@ -437,9 +436,8 @@ class XivoCTICommand(BaseCommand):
 
         def __send_msg_to_cti_clients__(self, strupdate):
                 try:
-                        for astid in self.ulist.byast:
-                                for user, userinfo in self.ulist.byast[astid].listusers().iteritems():
-                                        self.__send_msg_to_cti_client__(userinfo, strupdate)
+                        for userinfo in self.ulist.list.itervalues():
+                                self.__send_msg_to_cti_client__(userinfo, strupdate)
                 except Exception, exc:
                         print '--- exception --- (__send_msg_to_cti_clients__)', exc
                 return
@@ -744,17 +742,16 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def __update_agent__(self, agentnum, status, paused):
-                for astid in self.ulist.byast:
-                        for user, userinfo in self.ulist.byast[astid].listusers().iteritems():
-                                if 'agentnum' in userinfo and userinfo.get('agentnum') == agentnum:
-                                        arg = ':'.join(['agu',
-                                                        userinfo.get('astid'),
-                                                        'sip',
-                                                        userinfo.get('user'),
-                                                        userinfo.get('phonenum'),
-                                                        userinfo.get('context'),
-                                                        '/'.join([agentnum, status, paused])])
-                                        self.__send_msg_to_cti_clients__('agentupdate_all=%s' % arg)
+                for userinfo in self.ulist.list.itervalues():
+                        if 'agentnum' in userinfo and userinfo.get('agentnum') == agentnum:
+                                arg = ':'.join(['agu',
+                                                userinfo.get('astid'),
+                                                'sip',
+                                                userinfo.get('user'),
+                                                userinfo.get('phonenum'),
+                                                userinfo.get('context'),
+                                                '/'.join([agentnum, status, paused])])
+                                self.__send_msg_to_cti_clients__('agentupdate_all=%s' % arg)
 
 
         def ami_queuememberstatus(self, astid, event):
@@ -881,7 +878,7 @@ class XivoCTICommand(BaseCommand):
                                        '<info name="called" type="internal"><![CDATA[%s]]></info>' % called,
                                        '<message>help %s</message>' % called,
                                        '</user></profile>']
-                        userinfo = self.ulist.byast[astid].finduser(called)
+                        userinfo = self.ulist.finduser(called)
                         self.__send_msg_to_cti_client__(userinfo, ''.join(linestosend))
                         
                 return 'USER %s STATE available CIDNAME %s' % (called, 'tobedefined')
@@ -1104,30 +1101,30 @@ class XivoCTICommand(BaseCommand):
                     log_debug(SYSLOG_INFO, 'transaction ID for %s is %s' % (kind, reqid))
                     self.fullstat_heavies[reqid] = []
                     if kind == 'phones-list':
-                            for astid in self.ulist.byast:
-                                    for user, userinfo in self.ulist.byast[astid].listusers().iteritems():
-                                            if 'agentnum' in userinfo:
-                                                    ag = userinfo.get('agentnum') + '//'
-                                            else:
-                                                    ag = ''
-                                            phonenum = 'SIP/' + userinfo['user']
-                                            if phonenum in self.plist[astid].normal:
-                                                    phone = self.plist[astid].normal[phonenum]
-                                                    bstatus = ':'.join(['sip',
-                                                                        userinfo['user'],
-                                                                        userinfo['phonenum'],
-                                                                        userinfo['context'],
-                                                                        phone.imstat,
-                                                                        phone.hintstatus,
-                                                                        '',
-                                                                        ag])
-                                                    if phone.towatch:
-                                                            phoneinfo = ("ful",
-                                                                         astid,
-                                                                         bstatus,
-                                                                         phone.build_cidstatus(),
-                                                                         phone.build_fullstatlist() + ";")
-                                                            self.fullstat_heavies[reqid].append(':'.join(phoneinfo))
+                            for userinfo in self.ulist.list.itervalues():
+                                    if 'agentnum' in userinfo:
+                                            ag = userinfo.get('agentnum') + '//'
+                                    else:
+                                            ag = ''
+                                    phonenum = 'SIP/' + userinfo['user']
+                                    astid = userinfo.get('astid')
+                                    if phonenum in self.plist[astid].normal:
+                                            phone = self.plist[astid].normal[phonenum]
+                                            bstatus = ':'.join(['sip',
+                                                                userinfo['user'],
+                                                                userinfo['phonenum'],
+                                                                userinfo['context'],
+                                                                phone.imstat,
+                                                                phone.hintstatus,
+                                                                '',
+                                                                ag])
+                                            if phone.towatch:
+                                                    phoneinfo = ("ful",
+                                                                 astid,
+                                                                 bstatus,
+                                                                 phone.build_cidstatus(),
+                                                                 phone.build_fullstatlist() + ";")
+                                                    self.fullstat_heavies[reqid].append(':'.join(phoneinfo))
 
 ##                            for astid in self.configs:
 ##                                    plist_n = self.plist[astid]

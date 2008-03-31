@@ -99,7 +99,6 @@ class Phones:
 # If the AMI sockets are dead, a reconnection is also attempted here.
 # \param astid the asterisk Id
 # \return none
-# \sa get_phonelist_fromurl
         def __update_phonelist__(self, astid):
          newsipnums = {}
          try:
