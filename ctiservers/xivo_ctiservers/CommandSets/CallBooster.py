@@ -1553,6 +1553,22 @@ class CallBoosterCommand(BaseCommand):
                 return
 
 
+        def __synchro_addqueue__(self, queuename):
+                self.cursor_xivo.query("INSERT INTO queue VALUES "
+                                       "('%s', '', '', '', 15, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, "
+                                       "NULL, NULL, NULL, NULL, 0, 0, 0, 'no', 1, 0, 0, 0, "
+                                       "'roundrobin', 'yes', 'yes', 0, 0, 0, 0, 0, 0, 0, 'queue')"
+                                       % queuename)
+                self.cursor_xivo.query("INSERT INTO queuefeatures VALUES "
+                                       "(0, '%s', '', 'default', 0, 0, 0, 0, 0, 0, 0, 0, 0, '', '', 0)"
+                                       % queuename)
+
+
+        def __synchro_delqueue__(self, queuename):
+                self.cursor_xivo.query("DELETE FROM queue WHERE name='%s'" % queuename)
+                self.cursor_xivo.query("DELETE FROM queuefeatures WHERE name='%s'" % queuename)
+
+
         # INCOMING calls management
 
         def __incall_list__(self):
@@ -2947,6 +2963,20 @@ class CallBoosterCommand(BaseCommand):
                 if command == 'callbooster: whatsup':
                         self.__outputline__(connid, 'incoming calls')
                         self.__outputline__(connid, self.incoming_calls)
+                elif command.startswith('callbooster: addqueue'):
+                        qname = command[len('callbooster: addqueue'):].strip()
+                        if len(qname) > 0:
+                                self.__synchro_addqueue__(qname)
+                                self.__outputline__(connid, 'queue <%s> added' % qname)
+                        else:
+                                self.__outputline__(connid, 'no queue added')
+                elif command.startswith('callbooster: delqueue'):
+                        qname = command[len('callbooster: delqueue'):].strip()
+                        if len(qname) > 0:
+                                self.__synchro_delqueue__(qname)
+                                self.__outputline__(connid, 'queue <%s> deleted' % qname)
+                        else:
+                                self.__outputline__(connid, 'no queue deleted')
 
         # Taxes and statistics - END
         
