@@ -38,6 +38,9 @@ import xivo_commandsets
 import xivo_ldap
 from xivo_commandsets import BaseCommand
 from easyslog import *
+import anysql
+from BackSQL import backmysql
+from BackSQL import backsqlite
 
 # capabilities
 CAPA_CUSTINFO    = 1 <<  0
@@ -352,6 +355,21 @@ class XivoCTICommand(BaseCommand):
 
         def set_options(self, xivoconf):
                 self.xivoconf = xivoconf
+                if 'xivo_db_uri' in self.xivoconf:
+                        xivo_db_uri = self.xivoconf['xivo_db_uri']
+                        self.xivo_conn = anysql.connect_by_uri(xivo_db_uri)
+                        self.xivo_cursor = self.xivo_conn.cursor()
+                        columns = ('name',)
+                        self.xivo_cursor.query("SELECT ${columns} FROM queue",
+                                               columns)
+                        results = self.xivo_cursor.fetchall()
+
+                        astid = 'xivo'
+                        if astid not in self.queues_list:
+                                self.queues_list[astid] = {}
+                        for queue in results:
+                                if queue[0] not in self.queues_list[astid]:
+                                        self.queues_list[astid][queue[0]] = {'agents' : {}, 'channels' : []}
                 return
 
         def set_configs(self, configs):
