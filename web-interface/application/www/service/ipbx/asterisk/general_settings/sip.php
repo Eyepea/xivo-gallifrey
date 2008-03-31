@@ -1,67 +1,39 @@
 <?php
 
-$generalsip = &$ipbx->get_module('generalsip');
-$musiconhold = &$ipbx->get_module('musiconhold');
+$appgeneralsip = &$ipbx->get_apprealstatic('generalsip');
 
-if(($moh_list = $musiconhold->get_all_category(null,false)) !== false)
-	ksort($moh_list);
+$fm_save = null;
+
+$info = $appgeneralsip->get_all_by_category();
 
 if(isset($_QR['fm_send']) === true)
 {
-	$edit = true;
+	$fm_save = false;
 
-	if($moh_list === false || isset($_QR['musiconhold'],$moh_list[$_QR['musiconhold']]) === false)
-		$_QR['musiconhold'] = '';
-
-	if(($result = $generalsip->chk_values($_QR)) === false)
+	if(($rs = $appgeneralsip->set_save_all($_QR)) !== false)
 	{
-		$edit = false;
-		$result = $generalsip->get_filter_result();
-	}
+		$info = $rs['result'];
+		$error = $rs['error'];
 
-	if($edit === true)
-	{
-		if(xivo_haslen($result['externip']) === false)
-			$result['localnet'] = null;
-
-		if(is_array($result['allow']) === true)
-			$result['allow'] = implode(',',$result['allow']);
-
-		$rsvoicemsg = null;
-
-		if(isset($result['vmexten']) === true)
-		{
-			$appextenfeatures = &$ipbx->get_application('extenfeatures');
-
-			$voicemsg = array();
-			$voicemsg['name'] = 'voicemsg';
-			$voicemsg['exten'] = $result['vmexten'];
-
-			if($appextenfeatures->set($voicemsg) === false
-			|| $appextenfeatures->save() === false)
-				$rsvoicemsg = false;
-		}
-
-		if($rsvoicemsg !== false && $generalsip->replace_val_list($result) === true)
-			$_HTML->set_var('fm_save',true);
+		$fm_save = isset($rs['error'][0]) === false;
 	}
 }
 
-$info = $generalsip->get_name_val(null,false);
-$element = $generalsip->get_element();
+$element = $appgeneralsip->get_element();
 
 if(xivo_issa('allow',$element) === true
 && xivo_issa('value',$element['allow']) === true
-&& xivo_ak('allow',$info) === true
-&& empty($info['allow']) === false)
+&& isset($info['allow']) === true
+&& xivo_haslen($info['allow'],'var_val') === true)
 {
-	$info['allow'] = explode(',',$info['allow']);
-	$element['allow']['value'] = array_diff($element['allow']['value'],$info['allow']);
+	$info['allow']['var_val'] = explode(',',$info['allow']['var_val']);
+	$element['allow']['value'] = array_diff($element['allow']['value'],$info['allow']['var_val']);
 }
 
+$_HTML->set_var('fm_save',$fm_save);
 $_HTML->set_var('info',$info);
 $_HTML->set_var('element',$element);
-$_HTML->set_var('moh_list',$moh_list);
+$_HTML->set_var('moh_list',$appgeneralsip->get_musiconhold());
 
 $dhtml = &$_HTML->get_module('dhtml');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');

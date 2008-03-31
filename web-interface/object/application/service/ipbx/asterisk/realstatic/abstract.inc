@@ -43,7 +43,7 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 	{
 		$this->_info = $this->_origin = array();
 
-		$this->_get_realstatic($name);
+		$this->_get_realstatic($name,$disable);
 
 		return($this->_info);
 	}
@@ -165,6 +165,11 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 		return($r);
 	}
 
+	function _chk_pre_save()
+	{
+		return(null);
+	}
+
 	function set_save_all($arr,$disable=null)
 	{
 		if(is_array($arr) === false
@@ -196,6 +201,7 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 				$rs['var_val'] = '';
 
 			if($this->set($rs) === false
+			|| $this->_chk_pre_save($rs) === false
 			|| $this->save() === false)
 				$r['error'][] = $key;
 

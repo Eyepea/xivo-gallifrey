@@ -107,6 +107,9 @@ $array['realstatic']['features']['datastorage'] = true;
 $array['realstatic']['generalqueue'] = array();
 $array['realstatic']['generalqueue']['datastorage'] = true;
 
+$array['realstatic']['generalsip'] = array();
+$array['realstatic']['generalsip']['datastorage'] = true;
+
 $array['realstatic']['meetme'] = array();
 $array['realstatic']['meetme']['datastorage'] = true;
 
