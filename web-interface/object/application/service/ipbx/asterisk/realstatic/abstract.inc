@@ -285,6 +285,16 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 		return(true);
 	}
 
+	function delete_by_category()
+	{
+		$r = $this->_realstatic->delete_by_category($this->_category);
+
+		if($this->_status === 'delete')
+			$this->_return = $r;
+
+		return($r);
+	}
+
 	function add_origin($origin=null)
 	{
 		if(empty($this->_origin[$this->_name]) === false

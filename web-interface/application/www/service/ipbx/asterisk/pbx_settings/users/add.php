@@ -1,7 +1,5 @@
 <?php
 
-$zonemessages = &$ipbx->get_module('zonemessages');
-
 $result = $error = null;
 
 $allow = array();
@@ -161,10 +159,10 @@ $_HTML->set_var('gmember',$gmember);
 $_HTML->set_var('queues',$queues);
 $_HTML->set_var('qmember',$qmember);
 $_HTML->set_var('rightcall',$rightcall);
-$_HTML->set_var('zonemessages',$zonemessages->get_all_name());
 $_HTML->set_var('element',$element);
 $_HTML->set_var('destination_list',$appuser->get_destination_list());
 $_HTML->set_var('moh_list',$appuser->get_musiconhold());
+$_HTML->set_var('tz_list',$appuser->get_timezones());
 $_HTML->set_var('autoprov_list',$appuser->get_autoprov_list());
 $_HTML->set_var('fktype_list',$appuser->get_phonefunckey_type());
 

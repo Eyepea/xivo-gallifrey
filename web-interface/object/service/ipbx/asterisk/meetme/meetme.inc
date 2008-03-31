@@ -18,9 +18,7 @@ class xivo_service_asterisk_realstatic_meetme extends xivo_service_asterisk_real
 			$data['admin-pin'] = xivo_haslen($val,2) === true ? $val[2] : '';
 		}
 
-		$data = parent::_prepare($data);
-
-		return($data);
+		return(parent::_prepare($data));
 	}
 }
 

@@ -346,23 +346,19 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 			$arr['var_name'] = $name;
 
 		if(($rs = $this->get_where(array('var_name' => $name))) === false)
-			$r = $this->add($arr);
-		else
-			$r = $this->edit($rs['id'],$arr);
+			return($this->add($arr));
 
-		return($r);
+		return($this->edit($rs['id'],$arr));
 	}
 
 	function replace_val_by_name($name,$val)
 	{
-		$arr = array('var_val' => $val);
-	
-		return($this->replace_by_name($name,$arr));
+		return($this->replace_by_name($name,array('var_val' => $val)));
 	}
 
 	function delete_by_category($category)
 	{
-		return($this->_dso->delete_where(array('category' => $category)));
+		return(parent::delete_where(array('category' => $category)));
 	}
 
 	function get_name_val($arr=array(),$disable=null)

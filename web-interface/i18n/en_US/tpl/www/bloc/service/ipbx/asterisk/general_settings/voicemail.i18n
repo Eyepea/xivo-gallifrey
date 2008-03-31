@@ -95,7 +95,7 @@ Disabled
 6 min.
 
 ; fm_voicemail-minmessage-opt
-%s sec. %s min.
+%s min. %s sec.
 
 ; fm_voicemail-maxmessage
 Maximum length of a message:
@@ -164,7 +164,7 @@ Disabled
 6 min.
 
 ; fm_voicemail-maxmessage-opt
-%s sec. %s min.
+%s min. %s sec.
 
 ; fm_voicemail-maxsilence
 Maximum length of a silence:
@@ -287,7 +287,7 @@ Disabled
 6 min.
 
 ; fm_voicemail-maxgreet-opt
-%s sec. %s min.
+%s min. %s sec.
 
 ; fm_voicemail-skipms
 Fast forward and fast rewind skip time:

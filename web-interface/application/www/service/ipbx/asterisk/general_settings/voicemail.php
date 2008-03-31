@@ -1,124 +1,69 @@
 <?php
 
-$generalvoicemail = &$ipbx->get_module('generalvoicemail');
-$zonemessages = &$ipbx->get_module('zonemessages');
+$appvoicemail = &$ipbx->get_apprealstatic('voicemail');
+$appgeneralvoicemail = &$appvoicemail->get_module('general');
+$appzonemessages = &$appvoicemail->get_module('zonemessages');
 
-$info = array();
+$fm_save = null;
+
+$info = $error = array();
 
 $return = &$info;
 
-$info['voicemail'] = $generalvoicemail->get_name_val(null,false);
-$info['zonemessages'] = $zonemessages->get_all_name();
-
-if(($timezone_list = xivo_i18n::get_timezone_list()) === false)
-	$timezone_list = array();
+$info['voicemail'] = $appgeneralvoicemail->get_all_by_category();
+$info['zonemessages'] = $appzonemessages->get_all_name();
 
 if(isset($_QR['fm_send']) === true && xivo_issa('voicemail',$_QR) === true)
 {
-	$edit = true;
+	$fm_save = false;
+
 	$return = &$result;
 
-	if(($result['voicemail'] = $generalvoicemail->chk_values($_QR['voicemail'])) === false)
+	if(($rs = $appgeneralvoicemail->set_save_all($_QR['voicemail'])) !== false)
 	{
-		$edit = false;
-		$result['voicemail'] = $generalvoicemail->get_filter_result();
+		$result['voicemail'] = $rs['result'];
+		$error['voicemail'] = $rs['error'];
+
+		$fm_save = isset($rs['error'][0]) === false;
 	}
-
-	if($result['voicemail']['minmessage'] > $result['voicemail']['maxmessage'])
-		$result['voicemail']['minmessage'] = $result['voicemail']['maxmessage'];
-
-	$edit_zone = false;
-	$zone_edit = $zone_del = $zone_tmp = array();
-
-	$result['zonemessages'] = array();
 
 	if(xivo_issa('zonemessages',$_QR) === true
-	&& ($arr_zmsg = xivo_group_array('name',$_QR['zonemessages'])) !== false)
+	&& ($zmsg = xivo_group_array('name',$_QR['zonemessages'])) !== false)
 	{
-		$nb = count($arr_zmsg);
+		if($appzonemessages->set($zmsg) !== false)
+			$appzonemessages->save();
 
-		for($i = 0;$i < $nb;$i++)
-		{
-			$ref = &$arr_zmsg[$i];
+		$result['zonemessages'] = $appzonemessages->get_result();
+		$error['zonemessages'] = $appzonemessages->get_error();
 
-			if(isset($zone_tmp[$ref['name']]) === true
-			|| ($zinfo = $zonemessages->chk_values($ref)) === false
-			|| $zonemessages->chk_msg_format($zinfo['msg_format']) === false)
-				continue;
-
-			$edit_zone = true;
-			$zone_tmp[$ref['name']] = 1;
-			$zone_edit[$ref['name']] = $zinfo['timezone'].'|'.$zinfo['msg_format'];
-			$result['zonemessages'][$ref['name']] = $zinfo;
-		}
-	}
-
-	if($edit_zone === false)
-		$result['zonemessages'] = false;
-
-	if(is_array($info['zonemessages']) === true)
-	{
-		foreach($info['zonemessages'] as $name => $value)
-		{
-			if(isset($zone_tmp[$name]) === true)
-				continue;
-
-			$edit_zone = true;
-			$zone_del[] = $value['id'];
-		}
-	}
-
-	if(is_array($result['voicemail']['format']) === true)
-	{
-		if(isset($_QR['voicemail']['attachformat']) === true
-		&& ($format = (int) array_search($_QR['voicemail']['attachformat'],
-						 $result['voicemail']['format'],true)) !== 0)
-		{
-			unset($result['voicemail']['format'][$format]);
-			array_unshift($result['voicemail']['format'],$_QR['voicemail']['attachformat']);
-		}
-
-		$result['voicemail']['format'] = implode('|',$result['voicemail']['format']);
-	}
-
-	if($edit === true)
-	{
-		if($generalvoicemail->replace_val_list($result['voicemail']) === true)
-			$_HTML->set_var('fm_save',true);
-
-		if($edit_zone === true)
-		{
-			if(($nb = count($zone_del)) !== 0)
-			{
-				for($i = 0;$i < $nb;$i++)
-					$zonemessages->delete($zone_del[$i]);
-			}
-			$zonemessages->replace_val_list($zone_edit);
-		}
+		if($appzonemessages->get_errnb() > 0)
+			$fm_save = false;
 	}
 }
 
 $element = array();
-$element['voicemail'] = $generalvoicemail->get_element();
-$element['zonemessages'] = $zonemessages->get_element();
+$element['voicemail'] = $appgeneralvoicemail->get_elements();
+$element['zonemessages'] = $appzonemessages->get_elements();
 
 if(isset($return['voicemail']) === false || empty($return['voicemail']) === true)
 	$return['voicemail'] = null;
 
 if(xivo_issa('format',$element['voicemail']) === true
 && xivo_issa('value',$element['voicemail']['format']) === true
-&& xivo_ak('format',$return['voicemail']) === true
-&& empty($return['voicemail']['format']) === false)
+&& isset($return['voicemail']['format']) === true
+&& xivo_haslen($return['voicemail']['format'],'var_val') === true)
 {
-	$return['voicemail']['format'] = explode('|',$return['voicemail']['format']);
+	$return['voicemail']['format']['var_val'] = explode('|',$return['voicemail']['format']['var_val']);
 	$element['voicemail']['format']['value'] = array_diff($element['voicemail']['format']['value'],
-							      $return['voicemail']['format']);
+							      $return['voicemail']['format']['var_val']);
 }
 
+$_HTML->set_var('fm_save',$fm_save);
 $_HTML->set_var('element',$element);
+$_HTML->set_var('error',$error);
 $_HTML->set_var('voicemail',$return['voicemail']);
 $_HTML->set_var('zonemessages',$return['zonemessages']);
-$_HTML->set_var('timezone_list',$timezone_list);
+$_HTML->set_var('timezone_list',$appzonemessages->get_timezones());
 
 $dhtml = &$_HTML->get_module('dhtml');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/general.js');

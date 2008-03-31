@@ -202,6 +202,10 @@ $array['uservoicemail'] = array();
 $array['uservoicemail']['table'] = 'uservoicemail';
 $array['uservoicemail']['primary'] = array('uniqueid' => '');
 
+$array['voicemail'] = array();
+$array['voicemail']['table'] = 'generalvoicemail';
+$array['voicemail']['primary'] = array('id' => '');
+
 $array['zonemessages'] = array();
 $array['zonemessages']['table'] = 'generalvoicemail';
 $array['zonemessages']['primary'] = array('id' => '');

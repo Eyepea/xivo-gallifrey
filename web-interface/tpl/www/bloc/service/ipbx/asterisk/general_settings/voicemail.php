@@ -4,12 +4,13 @@
 	$dhtml = &$this->get_module('dhtml');
 
 	$element = $this->get_var('element');
+	$err = $this->get_var('error');
 
 	if($this->get_var('fm_save') === true):
 		$dhtml->write_js('xivo_form_success(\''.$dhtml->escape($this->bbf('fm_success-save')).'\');');
 	endif;
 
-	$format = $this->get_varra('voicemail','format');
+	$format = $this->get_varra('voicemail',array('format','var_val'));
 
 	if(is_array($format) === true && empty($format) === false):
 		$attachformat = true;
@@ -19,9 +20,7 @@
 
 	$zonemessages = $this->get_var('zonemessages');
 
-	if(is_array($zonemessages) === true && empty($zonemessages) === false):
-		$zmsg_keys = array_keys($zonemessages);
-		$zmsg_nb = count($zmsg_keys);
+	if(is_array($zonemessages) === true && ($zmsg_nb = count($zonemessages)) > 0):
 		$zmsg_js = array();
 		$zmsg_js[0] = 'xivo_tlist[\'timezone\'] = new Array();';
 		$zmsg_js[1] = 'xivo_tlist[\'timezone\'][\'cnt\'] = '.$zmsg_nb.';';
@@ -68,19 +67,19 @@
 
 <div id="sb-part-first">
 
-<?=$form->select(array('desc' => $this->bbf('fm_voicemail-maxmsg'),'name' => 'voicemail[maxmsg]','labelid' => 'voicemail-maxmsg','key' => false,'value' => $this->get_varra('voicemail','maxmsg'),'default' => $element['voicemail']['maxmsg']['default']),$element['voicemail']['maxmsg']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_voicemail-maxmsg'),'name' => 'voicemail[maxmsg]','labelid' => 'voicemail-maxmsg','key' => false,'value' => $this->get_varra('voicemail',array('maxmsg','var_val')),'default' => $element['voicemail']['maxmsg']['default']),$element['voicemail']['maxmsg']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_voicemail-silencethreshold'),'name' => 'voicemail[silencethreshold]','labelid' => 'voicemail-silencethreshold','key' => false,'value' => $this->get_varra('voicemail','silencethreshold'),'default' => $element['voicemail']['silencethreshold']['default']),$element['voicemail']['silencethreshold']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_voicemail-silencethreshold'),'name' => 'voicemail[silencethreshold]','labelid' => 'voicemail-silencethreshold','key' => false,'value' => $this->get_varra('voicemail',array('silencethreshold','var_val')),'default' => $element['voicemail']['silencethreshold']['default']),$element['voicemail']['silencethreshold']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_voicemail-minmessage'),'name' => 'voicemail[minmessage]','labelid' => 'voicemail-minmessage','bbf' => array('mixkey','fm_voicemail-minmessage-opt','paramarray'),'value' => $this->get_varra('voicemail','minmessage'),'default' => $element['voicemail']['minmessage']['default']),$element['voicemail']['minmessage']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_voicemail-minmessage'),'name' => 'voicemail[minmessage]','labelid' => 'voicemail-minmessage','bbf' => array('mixkey','fm_voicemail-minmessage-opt','paramarray'),'value' => $this->get_varra('voicemail',array('minmessage','var_val')),'default' => $element['voicemail']['minmessage']['default']),$element['voicemail']['minmessage']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_voicemail-maxmessage'),'name' => 'voicemail[maxmessage]','labelid' => 'voicemail-maxmessage','bbf' => array('mixkey','fm_voicemail-maxmessage-opt','paramarray'),'value' => $this->get_varra('voicemail','maxmessage'),'default' => $element['voicemail']['maxmessage']['default']),$element['voicemail']['maxmessage']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_voicemail-maxmessage'),'name' => 'voicemail[maxmessage]','labelid' => 'voicemail-maxmessage','bbf' => array('mixkey','fm_voicemail-maxmessage-opt','paramarray'),'value' => $this->get_varra('voicemail',array('maxmessage','var_val')),'default' => $element['voicemail']['maxmessage']['default']),$element['voicemail']['maxmessage']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_voicemail-maxsilence'),'name' => 'voicemail[maxsilence]','labelid' => 'voicemail-maxsilence','key' => false,'bbf' => array('mixkey','fm_voicemail-maxsilence-opt'),'value' => $this->get_varra('voicemail','maxsilence'),'default' => $element['voicemail']['maxsilence']['default']),$element['voicemail']['maxsilence']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_voicemail-maxsilence'),'name' => 'voicemail[maxsilence]','labelid' => 'voicemail-maxsilence','key' => false,'bbf' => array('mixkey','fm_voicemail-maxsilence-opt'),'value' => $this->get_varra('voicemail',array('maxsilence','var_val')),'default' => $element['voicemail']['maxsilence']['default']),$element['voicemail']['maxsilence']['value']);?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-review'),'name' => 'voicemail[review]','labelid' => 'voicemail-review','checked' => $this->get_varra('voicemail','review'),'default' => $element['voicemail']['review']['default']));?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-review'),'name' => 'voicemail[review]','labelid' => 'voicemail-review','checked' => $this->get_varra('voicemail',array('review','var_val')),'default' => $element['voicemail']['review']['default']));?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-operator'),'name' => 'voicemail[operator]','labelid' => 'voicemail-operator','checked' => $this->get_varra('voicemail','operator'),'default' => $element['voicemail']['operator']['default']));?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-operator'),'name' => 'voicemail[operator]','labelid' => 'voicemail-operator','checked' => $this->get_varra('voicemail',array('operator','var_val')),'default' => $element['voicemail']['operator']['default']));?>
 
 <div id="formatlist" class="fm-field fm-multilist"><p><label id="lb-formatlist" for="it-formatlist"><?=$this->bbf('fm_voicemail-format');?></label></p>
 	<div class="slt-outlist">
@@ -104,74 +103,74 @@
 
 <div id="sb-part-voicemenu" class="b-nodisplay">
 
-<?=$form->select(array('desc' => $this->bbf('fm_voicemail-maxlogins'),'name' => 'voicemail[maxlogins]','labelid' => 'voicemail-maxlogins','key' => false,'value' => $this->get_varra('voicemail','maxlogins'),'default' => $element['voicemail']['maxlogins']['default']),$element['voicemail']['maxlogins']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_voicemail-maxlogins'),'name' => 'voicemail[maxlogins]','labelid' => 'voicemail-maxlogins','key' => false,'value' => $this->get_varra('voicemail',array('maxlogins','var_val')),'default' => $element['voicemail']['maxlogins']['default']),$element['voicemail']['maxlogins']['value']);?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-envelope'),'name' => 'voicemail[envelope]','labelid' => 'voicemail-envelope','checked' => $this->get_varra('voicemail','envelope'),'default' => $element['voicemail']['envelope']['default']));?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-envelope'),'name' => 'voicemail[envelope]','labelid' => 'voicemail-envelope','checked' => $this->get_varra('voicemail',array('envelope','var_val')),'default' => $element['voicemail']['envelope']['default']));?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-saycid'),'name' => 'voicemail[saycid]','labelid' => 'voicemail-saycid','checked' => $this->get_varra('voicemail','saycid'),'default' => $element['voicemail']['saycid']['default']));?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-saycid'),'name' => 'voicemail[saycid]','labelid' => 'voicemail-saycid','checked' => $this->get_varra('voicemail',array('saycid','var_val')),'default' => $element['voicemail']['saycid']['default']));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_voicemail-cidinternalcontexts'),'name' => 'voicemail[cidinternalcontexts]','labelid' => 'voicemail-cidinternalcontexts','size' => 15,'value' => $this->get_varra('voicemail','cidinternalcontexts'),'default' => $element['voicemail']['cidinternalcontexts']['default']),'class="it-readonly" readonly="readonly"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-cidinternalcontexts'),'name' => 'voicemail[cidinternalcontexts]','labelid' => 'voicemail-cidinternalcontexts','size' => 15,'value' => $this->get_varra('voicemail',array('cidinternalcontexts','var_val')),'default' => $element['voicemail']['cidinternalcontexts']['default']),'class="it-readonly" readonly="readonly"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-sayduration'),'name' => 'voicemail[sayduration]','labelid' => 'voicemail-sayduration','checked' => $this->get_varra('voicemail','sayduration'),'default' => $element['voicemail']['sayduration']['default']));?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-sayduration'),'name' => 'voicemail[sayduration]','labelid' => 'voicemail-sayduration','checked' => $this->get_varra('voicemail',array('sayduration','var_val')),'default' => $element['voicemail']['sayduration']['default']));?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_voicemail-saydurationm'),'name' => 'voicemail[saydurationm]','labelid' => 'voicemail-saydurationm','key' => false,'bbf' => array('mixkey','fm_voicemail-saydurationm-opt'),'value' => $this->get_varra('voicemail','saydurationm'),'default' => $element['voicemail']['saydurationm']['default']),$element['voicemail']['saydurationm']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_voicemail-saydurationm'),'name' => 'voicemail[saydurationm]','labelid' => 'voicemail-saydurationm','key' => false,'bbf' => array('mixkey','fm_voicemail-saydurationm-opt'),'value' => $this->get_varra('voicemail',array('saydurationm','var_val')),'default' => $element['voicemail']['saydurationm']['default']),$element['voicemail']['saydurationm']['value']);?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-forcename'),'name' => 'voicemail[forcename]','labelid' => 'voicemail-forcename','checked' => $this->get_varra('voicemail','forcename'),'default' => $element['voicemail']['forcename']['default']));?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-forcename'),'name' => 'voicemail[forcename]','labelid' => 'voicemail-forcename','checked' => $this->get_varra('voicemail',array('forcename','var_val')),'default' => $element['voicemail']['forcename']['default']));?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-forcegreetings'),'name' => 'voicemail[forcegreetings]','labelid' => 'voicemail-forcegreetings','checked' => $this->get_varra('voicemail','forcegreetings'),'default' => $element['voicemail']['forcegreetings']['default']));?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-forcegreetings'),'name' => 'voicemail[forcegreetings]','labelid' => 'voicemail-forcegreetings','checked' => $this->get_varra('voicemail',array('forcegreetings','var_val')),'default' => $element['voicemail']['forcegreetings']['default']));?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_voicemail-maxgreet'),'name' => 'voicemail[maxgreet]','labelid' => 'voicemail-maxgreet','bbf' => array('mixkey','fm_voicemail-maxgreet-opt','paramarray'),'value' => $this->get_varra('voicemail','maxgreet'),'default' => $element['voicemail']['maxgreet']['default']),$element['voicemail']['maxgreet']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_voicemail-maxgreet'),'name' => 'voicemail[maxgreet]','labelid' => 'voicemail-maxgreet','bbf' => array('mixkey','fm_voicemail-maxgreet-opt','paramarray'),'value' => $this->get_varra('voicemail',array('maxgreet','var_val')),'default' => $element['voicemail']['maxgreet']['default']),$element['voicemail']['maxgreet']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_voicemail-skipms'),'name' => 'voicemail[skipms]','labelid' => 'voicemail-skipms','bbf' => array('mixvalue','fm_voicemail-skipms-opt'),'value' => $this->get_varra('voicemail','skipms'),'default' => $element['voicemail']['skipms']['default']),$element['voicemail']['skipms']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_voicemail-skipms'),'name' => 'voicemail[skipms]','labelid' => 'voicemail-skipms','bbf' => array('mixvalue','fm_voicemail-skipms-opt'),'value' => $this->get_varra('voicemail',array('skipms','var_val')),'default' => $element['voicemail']['skipms']['default']),$element['voicemail']['skipms']['value']);?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-sendvoicemail'),'name' => 'voicemail[sendvoicemail]','labelid' => 'voicemail-sendvoicemail','checked' => $this->get_varra('voicemail','sendvoicemail'),'default' => $element['voicemail']['sendvoicemail']['default']));?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-sendvoicemail'),'name' => 'voicemail[sendvoicemail]','labelid' => 'voicemail-sendvoicemail','checked' => $this->get_varra('voicemail',array('sendvoicemail','var_val')),'default' => $element['voicemail']['sendvoicemail']['default']));?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-usedirectory'),'name' => 'voicemail[usedirectory]','labelid' => 'voicemail-usedirectory','checked' => $this->get_varra('voicemail','usedirectory'),'default' => $element['voicemail']['usedirectory']['default']));?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-usedirectory'),'name' => 'voicemail[usedirectory]','labelid' => 'voicemail-usedirectory','checked' => $this->get_varra('voicemail',array('usedirectory','var_val')),'default' => $element['voicemail']['usedirectory']['default']));?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-nextaftercmd'),'name' => 'voicemail[nextaftercmd]','labelid' => 'voicemail-nextaftercmd','checked' => $this->get_varra('voicemail','nextaftercmd'),'default' => $element['voicemail']['nextaftercmd']['default']));?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-nextaftercmd'),'name' => 'voicemail[nextaftercmd]','labelid' => 'voicemail-nextaftercmd','checked' => $this->get_varra('voicemail',array('nextaftercmd','var_val')),'default' => $element['voicemail']['nextaftercmd']['default']));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_voicemail-dialout'),'name' => 'voicemail[dialout]','labelid' => 'voicemail-dialout','size' => 15,'value' => $this->get_varra('voicemail','dialout'),'default' => $element['voicemail']['dialout']['default']));?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-dialout'),'name' => 'voicemail[dialout]','labelid' => 'voicemail-dialout','size' => 15,'value' => $this->get_varra('voicemail',array('dialout','var_val')),'default' => $element['voicemail']['dialout']['default']));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_voicemail-callback'),'name' => 'voicemail[callback]','labelid' => 'voicemail-callback','size' => 15,'value' => $this->get_varra('voicemail','callback'),'default' => $element['voicemail']['callback']['default']));?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-callback'),'name' => 'voicemail[callback]','labelid' => 'voicemail-callback','size' => 15,'value' => $this->get_varra('voicemail',array('callback','var_val')),'default' => $element['voicemail']['callback']['default']));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_voicemail-exitcontext'),'name' => 'voicemail[exitcontext]','labelid' => 'voicemail-exitcontext','size' => 15,'value' => $this->get_varra('voicemail','exitcontext'),'default' => $element['voicemail']['exitcontext']['default']));?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-exitcontext'),'name' => 'voicemail[exitcontext]','labelid' => 'voicemail-exitcontext','size' => 15,'value' => $this->get_varra('voicemail',array('exitcontext','var_val')),'default' => $element['voicemail']['exitcontext']['default']));?>
 
 </div>
 
 <div id="sb-part-email" class="b-nodisplay">
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-attach'),'name' => 'voicemail[attach]','labelid' => 'voicemail-attach','checked' => $this->get_varra('voicemail','attach'),'default' => $element['voicemail']['attach']['default']));?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-attach'),'name' => 'voicemail[attach]','labelid' => 'voicemail-attach','checked' => $this->get_varra('voicemail',array('attach','var_val')),'default' => $element['voicemail']['attach']['default']));?>
 
 <?=$form->select(array('desc' => $this->bbf('fm_voicemail-attachformat'),'name' => 'voicemail[attachformat]','labelid' => 'voicemail-attachformat','key' => false,'bbf' => 'ast_format_name_info-'),$format,($attachformat === false ? 'class="it-disabled" disabled="disabled"' : ''));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_voicemail-mailcmd'),'name' => 'voicemail[mailcmd]','labelid' => 'voicemail-mailcmd','size' => 15,'value' => $this->get_varra('voicemail','mailcmd'),'default' => $element['voicemail']['mailcmd']['default']),'class="it-readonly" readonly="readonly"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-mailcmd'),'name' => 'voicemail[mailcmd]','labelid' => 'voicemail-mailcmd','size' => 15,'value' => $this->get_varra('voicemail',array('mailcmd','var_val')),'default' => $element['voicemail']['mailcmd']['default']),'class="it-readonly" readonly="readonly"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_voicemail-charset'),'name' => 'voicemail[charset]','labelid' => 'voicemail-charset','size' => 15,'value' => $this->get_varra('voicemail','charset'),'default' => $element['voicemail']['charset']['default']),'class="it-readonly" readonly="readonly"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-charset'),'name' => 'voicemail[charset]','labelid' => 'voicemail-charset','size' => 15,'value' => $this->get_varra('voicemail',array('charset','var_val')),'default' => $element['voicemail']['charset']['default']),'class="it-readonly" readonly="readonly"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_voicemail-serveremail'),'name' => 'voicemail[serveremail]','labelid' => 'voicemail-serveremail','size' => 15,'value' => $this->get_varra('voicemail','serveremail'),'default' => $element['voicemail']['serveremail']['default']));?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-serveremail'),'name' => 'voicemail[serveremail]','labelid' => 'voicemail-serveremail','size' => 15,'value' => $this->get_varra('voicemail',array('serveremail','var_val')),'default' => $element['voicemail']['serveremail']['default']));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_voicemail-fromstring'),'name' => 'voicemail[fromstring]','labelid' => 'voicemail-fromstring','size' => 15,'value' => $this->get_varra('voicemail','fromstring'),'default' => $element['voicemail']['fromstring']['default']));?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-fromstring'),'name' => 'voicemail[fromstring]','labelid' => 'voicemail-fromstring','size' => 15,'value' => $this->get_varra('voicemail',array('fromstring','var_val')),'default' => $element['voicemail']['fromstring']['default']));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_voicemail-emaildateformat'),'name' => 'voicemail[emaildateformat]','labelid' => 'voicemail-emaildateformat','size' => 15,'value' => $this->get_varra('voicemail','emaildateformat'),'default' => $element['voicemail']['emaildateformat']['default']));?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-emaildateformat'),'name' => 'voicemail[emaildateformat]','labelid' => 'voicemail-emaildateformat','size' => 15,'value' => $this->get_varra('voicemail',array('emaildateformat','var_val')),'default' => $element['voicemail']['emaildateformat']['default']));?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-pbxskip'),'name' => 'voicemail[pbxskip]','labelid' => 'voicemail-pbxskip','checked' => $this->get_varra('voicemail','pbxskip'),'default' => $element['voicemail']['pbxskip']['default']));?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-pbxskip'),'name' => 'voicemail[pbxskip]','labelid' => 'voicemail-pbxskip','checked' => $this->get_varra('voicemail',array('pbxskip','var_val')),'default' => $element['voicemail']['pbxskip']['default']));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_voicemail-emailsubject'),'name' => 'voicemail[emailsubject]','labelid' => 'voicemail-emailsubject','size' => 15,'value' => $this->get_varra('voicemail','emailsubject'),'default' => $element['voicemail']['emailsubject']['default']));?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-emailsubject'),'name' => 'voicemail[emailsubject]','labelid' => 'voicemail-emailsubject','size' => 15,'value' => $this->get_varra('voicemail',array('emailsubject','var_val')),'default' => $element['voicemail']['emailsubject']['default']));?>
 
 <div class="fm-field fm-description"><p><label id="lb-emailbody" for="it-emailbody"><?=$this->bbf('fm_voicemail-emailbody');?></label></p>
-<?=$form->textarea(array('field' => false,'name' => 'voicemail[emailbody]','label' => false,'id' => 'it-voicemail-emailbody','cols' => 60,'rows' => 10),$this->get_varra('voicemail','emailbody'));?>
+<?=$form->textarea(array('field' => false,'name' => 'voicemail[emailbody]','label' => false,'id' => 'it-voicemail-emailbody','cols' => 60,'rows' => 10),$this->get_varra('voicemail',array('emailbody','var_val')));?>
 </div>
 
 </div>
 
 <div id="sb-part-pager" class="b-nodisplay">
 
-<?=$form->text(array('desc' => $this->bbf('fm_voicemail-pagerfromstring'),'name' => 'voicemail[pagerfromstring]','labelid' => 'voicemail-pagerfromstring','size' => 15,'value' => $this->get_varra('voicemail','pagerfromstring'),'default' => $element['voicemail']['pagerfromstring']['default']));?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-pagerfromstring'),'name' => 'voicemail[pagerfromstring]','labelid' => 'voicemail-pagerfromstring','size' => 15,'value' => $this->get_varra('voicemail',array('pagerfromstring','var_val')),'default' => $element['voicemail']['pagerfromstring']['default']));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_voicemail-pagersubject'),'name' => 'voicemail[pagersubject]','labelid' => 'voicemail-pagersubject','size' => 15,'value' => $this->get_varra('voicemail','pagersubject'),'default' => $element['voicemail']['pagersubject']['default']));?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-pagersubject'),'name' => 'voicemail[pagersubject]','labelid' => 'voicemail-pagersubject','size' => 15,'value' => $this->get_varra('voicemail',array('pagersubject','var_val')),'default' => $element['voicemail']['pagersubject']['default']));?>
 
 <div class="fm-field fm-description"><p><label id="lb-pagerbody" for="it-pagerbody"><?=$this->bbf('fm_voicemail-pagerbody');?></label></p>
-<?=$form->textarea(array('field' => false,'name' => 'voicemail[pagerbody]','label' => false,'id' => 'it-voicemail-pagerbody','cols' => 60,'rows' => 4),$this->get_varra('voicemail','pagerbody'));?>
+<?=$form->textarea(array('field' => false,'name' => 'voicemail[pagerbody]','label' => false,'id' => 'it-voicemail-pagerbody','cols' => 60,'rows' => 4),$this->get_varra('voicemail',array('pagerbody','var_val')));?>
 </div>
 
 </div>
@@ -190,23 +189,30 @@
 		</thead>
 		<tbody id="timezone">
 <?php
-	if($zmsg_nb !== 0):
-		for($i = 0;$i < $zmsg_nb;$i++):
-			$val = &$zonemessages[$zmsg_keys[$i]];
+	if($zmsg_nb > 0):
+		reset($zonemessages);
+
+		foreach($zonemessages as $key => $val):
+
+			if(isset($err['zonemessages'][$key]) === true):
+				$errdisplay = ' l-infos-error';
+			else:
+				$errdisplay = '';
+			endif;
 ?>
-		<tr class="fm-field">
+		<tr class="fm-field<?=$errdisplay?>">
 			<td class="td-left"><?=$form->text(array('field' => false,'name' => 'zonemessages[name][]','id' => false,'label' => false,'value' => $val['name'],'default' => $element['zonemessages']['name']['default']));?></td>
 			<td><?=$form->select(array('field' => false,'name' => 'zonemessages[timezone][]','key' => true,'id' => false,'label' => false,'value' => $val['timezone'],'default' => $element['zonemessages']['timezone']['default']),$this->get_var('timezone_list'));?></td>
 			<td><?=$form->text(array('field' => false,'name' => 'zonemessages[msg_format][]','id' => false,'label' => false,'size' => 25,'value' => $val['msg_format'],'default' => $element['zonemessages']['msg_format']['default']));?></td>
 			<td class="td-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'timezone\',this,1); return(false);"',$this->bbf('opt_delete'));?></td>
 		</tr>
 <?php
-		endfor;
+		endforeach;
 	endif;
 ?>
 		</tbody>
 		<tfoot>
-		<tr id="no-timezone"<?=($zmsg_nb !== 0 ? ' class="b-nodisplay"' : '')?>>
+		<tr id="no-timezone"<?=($zmsg_nb > 0 ? ' class="b-nodisplay"' : '')?>>
 			<td colspan="4" class="td-single"><?=$this->bbf('no_timezone');?></td>
 		</tr>
 		</tfoot>
@@ -227,25 +233,25 @@
 
 <div id="sb-part-adsi" class="b-nodisplay">
 
-<?=$form->text(array('desc' => $this->bbf('fm_voicemail-adsifdn'),'name' => 'voicemail[adsifdn]','labelid' => 'voicemail-adsifdn','value' => $this->get_varra('voicemail','adsifdn'),'default' => $element['voicemail']['adsifdn']['default']));?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-adsifdn'),'name' => 'voicemail[adsifdn]','labelid' => 'voicemail-adsifdn','value' => $this->get_varra('voicemail',array('adsifdn','var_val')),'default' => $element['voicemail']['adsifdn']['default']));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_voicemail-adsisec'),'name' => 'voicemail[adsisec]','labelid' => 'voicemail-adsisec','value' => $this->get_varra('voicemail','adsisec'),'default' => $element['voicemail']['adsisec']['default']));?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-adsisec'),'name' => 'voicemail[adsisec]','labelid' => 'voicemail-adsisec','value' => $this->get_varra('voicemail',array('adsisec','var_val')),'default' => $element['voicemail']['adsisec']['default']));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_voicemail-adsiver'),'name' => 'voicemail[adsiver]','labelid' => 'voicemail-adsiver','size' => 5,'value' => $this->get_varra('voicemail','adsiver'),'default' => $element['voicemail']['adsiver']['default']));?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-adsiver'),'name' => 'voicemail[adsiver]','labelid' => 'voicemail-adsiver','size' => 5,'value' => $this->get_varra('voicemail',array('adsiver','var_val')),'default' => $element['voicemail']['adsiver']['default']));?>
 
 </div>
 
 <div id="sb-part-last" class="b-nodisplay">
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-searchcontexts'),'name' => 'voicemail[searchcontexts]','labelid' => 'voicemail-searchcontexts','checked' => $this->get_varra('voicemail','searchcontexts'),'default' => $element['voicemail']['searchcontexts']['default']));?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-searchcontexts'),'name' => 'voicemail[searchcontexts]','labelid' => 'voicemail-searchcontexts','checked' => $this->get_varra('voicemail',array('searchcontexts','var_val')),'default' => $element['voicemail']['searchcontexts']['default']));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_voicemail-externpass'),'name' => 'voicemail[externpass]','labelid' => 'voicemail-externpass','size' => 15,'value' => $this->get_varra('voicemail','externpass'),'default' => $element['voicemail']['externpass']['default']),'class="it-readonly" readonly="readonly"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-externpass'),'name' => 'voicemail[externpass]','labelid' => 'voicemail-externpass','size' => 15,'value' => $this->get_varra('voicemail',array('externpass','var_val')),'default' => $element['voicemail']['externpass']['default']),'class="it-readonly" readonly="readonly"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_voicemail-externnotify'),'name' => 'voicemail[externnotify]','labelid' => 'voicemail-externnotify','size' => 15,'value' => $this->get_varra('voicemail','externnotify'),'default' => $element['voicemail']['externnotify']['default']));?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-externnotify'),'name' => 'voicemail[externnotify]','labelid' => 'voicemail-externnotify','size' => 15,'value' => $this->get_varra('voicemail',array('externnotify','var_val')),'default' => $element['voicemail']['externnotify']['default']));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_voicemail-odbcstorage'),'name' => 'voicemail[odbcstorage]','labelid' => 'voicemail-odbcstorage','size' => 15,'value' => $this->get_varra('voicemail','odbcstorage'),'default' => $element['voicemail']['odbcstorage']['default']));?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-odbcstorage'),'name' => 'voicemail[odbcstorage]','labelid' => 'voicemail-odbcstorage','size' => 15,'value' => $this->get_varra('voicemail',array('odbcstorage','var_val')),'default' => $element['voicemail']['odbcstorage']['default']));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_voicemail-odbctable'),'name' => 'voicemail[odbctable]','labelid' => 'voicemail-odbctable','size' => 15,'value' => $this->get_varra('voicemail','odbctable'),'default' => $element['voicemail']['odbctable']['default']));?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-odbctable'),'name' => 'voicemail[odbctable]','labelid' => 'voicemail-odbctable','size' => 15,'value' => $this->get_varra('voicemail',array('odbctable','var_val')),'default' => $element['voicemail']['odbctable']['default']));?>
 
 </div>
 

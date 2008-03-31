@@ -60,8 +60,6 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		$this->_get_user();
 		$this->_get_agentgroup();
 		$this->_get_agent();
-		$this->get_musiconhold();
-		$this->get_announce();
 
 		return($this->_info);
 	}
@@ -353,23 +351,17 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 	function set_user($action,$list,$name)
 	{
-		$r = $this->_set_user_type('user',$action,$list,$name);
-
-		return($r);
+		return($this->_set_user_type('user',$action,$list,$name));
 	}
 
 	function set_agentgroup($action,$list,$name)
 	{
-		$r = $this->_set_user_type('agentgroup',$action,$list,$name);
-
-		return($r);
+		return($this->_set_user_type('agentgroup',$action,$list,$name));
 	}
 
 	function set_agent($action,$list,$name)
 	{
-		$r = $this->_set_user_type('agent',$action,$list,$name);
-
-		return($r);
+		return($this->_set_user_type('agent',$action,$list,$name));
 	}
 
 	function _set_user_type($type,$action,$list,$name)

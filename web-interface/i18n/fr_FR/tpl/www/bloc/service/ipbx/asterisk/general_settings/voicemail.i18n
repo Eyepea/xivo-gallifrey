@@ -95,7 +95,7 @@ Désactivée
 6 min.
 
 ; fm_voicemail-minmessage-opt
-%s sec. %s min.
+%s min. %s sec.
 
 ; fm_voicemail-maxmessage
 Durée maximum d'un message :
@@ -164,7 +164,7 @@ Désactivée
 6 min.
 
 ; fm_voicemail-maxmessage-opt
-%s sec. %s min.
+%s min. %s sec.
 
 ; fm_voicemail-maxsilence
 Durée maximum d'un silence :
@@ -287,7 +287,7 @@ Désactivée
 6 min.
 
 ; fm_voicemail-maxgreet-opt
-%s sec. %s min.
+%s min. %s sec.
 
 ; fm_voicemail-skipms
 Saut de l'avance rapide et retour rapide :

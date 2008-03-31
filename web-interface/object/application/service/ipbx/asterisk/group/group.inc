@@ -63,7 +63,6 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		$this->_get_user();
 		$this->_get_rightcall();
 		$this->_get_dialstatus();
-		$this->get_musiconhold();
 
 		return($this->_info);
 	}

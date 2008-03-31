@@ -141,9 +141,9 @@
 	<?=$form->text(array('desc' => $this->bbf('fm_voicemail_email'),'name' => 'voicemail[email]','labelid' => 'voicemail-email','value' => $info['voicemail']['email'],'size' => 15));?>
 
 <?php
-	if(($zmsg = $this->get_var('zonemessages')) !== false):
+	if(($tz_list = $this->get_var('tz_list')) !== false):
 
-		echo $form->select(array('desc' => $this->bbf('fm_voicemail_tz'),'name' => 'voicemail[tz]','labelid' => 'voicemail-tz','key' => 'name','default' => $element['voicemail']['tz']['default'],'value' => $info['voicemail']['tz']),$zmsg);
+		echo $form->select(array('desc' => $this->bbf('fm_voicemail_tz'),'name' => 'voicemail[tz]','labelid' => 'voicemail-tz','key' => 'name','default' => $element['voicemail']['tz']['default'],'value' => $info['voicemail']['tz']),$tz_list);
 
 	endif;
 ?>

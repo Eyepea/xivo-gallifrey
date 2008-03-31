@@ -18,7 +18,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	var $_uservoicemail	= null;
 	var $_phonefunckey	= null;
 	var $_autoprov		= null;
+	var $_zonemessages	= null;
 	var $_musiconhold	= array();
+	var $_timezones		= array();
 	var $_conf		= array();
 	var $_param		= array();
 
@@ -68,6 +70,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$this->_uservoicemail = &$this->_service->get_module('uservoicemail');
 		$this->_phonefunckey = &$this->_service->get_module('phonefunckey');
 		$this->_autoprov = &$this->_service->get_module('autoprov');
+		
+		if(($appvoicemail = &$this->_service->get_apprealstatic('voicemail')) !== false)
+			$this->_zonemessages = &$appvoicemail->get_module('zonemessages');
 
 		return(true);
 	}
@@ -116,7 +121,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$this->_get_voicemail();
 		$this->_get_phonefunckey();
 		$this->_get_autoprov();
-		$this->get_musiconhold();
 
 		return($this->_info);
 	}
@@ -282,6 +286,17 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$this->_origin['autoprov'] = $this->_autoprov->get_origin();
 
 		return($this->_info['autoprov']);
+	}
+
+	function get_timezones()
+	{
+		if(is_object($this->_zonemessages) === false)
+			return(false);
+		else if(is_array($this->_timezones) === true
+		&& empty($this->_timezones) === false)
+			return($this->_timezones);
+
+		return(($this->_timezones = $this->_zonemessages->get_all_name()));
 	}
 
 	function get_phonefunckey_type()
@@ -648,7 +663,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$this->_set_error('ufeatures','invalid data');
 			return(false);
 		}
-		else if(isset($arr['musiconhold'],$this->_musiconhold[$arr['musiconhold']]) === false)
+
+		$this->get_musiconhold();
+
+		if(isset($arr['musiconhold'],$this->_musiconhold[$arr['musiconhold']]) === false)
 			$arr['musiconhold'] = '';
 
 		if(($rs = $this->_userfeatures->chk_values($arr)) === false)
@@ -800,10 +818,21 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if(($rs = $this->_uservoicemail->chk_values($arr)) === false)
 		{
-			$rs = array_merge($this->_uservoicemail->get_filter_result(),array('commented' => 0));
+			$rs = $this->_uservoicemail->get_filter_result();
+			$rs['commented'] = 0;
 
 			$this->_set_result('voicemail',$rs);
 			$this->_set_error('voicemail',$this->_uservoicemail->get_filter_error());
+			return(false);
+		}
+		else if(xivo_haslen($rs,'tz') === true
+		&& ($this->get_timezones() === false
+		   || isset($this->_timezones[$rs['tz']]) === false) === true)
+		{
+			$rs['commented'] = 0;
+
+			$this->_set_result('voicemail',$rs);
+			$this->_set_error('voicemail','invalid tz');
 			return(false);
 		}
 

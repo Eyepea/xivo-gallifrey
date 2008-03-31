@@ -116,6 +116,9 @@ $array['realstatic']['generalsip']['datastorage'] = true;
 $array['realstatic']['meetme'] = array();
 $array['realstatic']['meetme']['datastorage'] = true;
 
+$array['realstatic']['voicemail'] = array();
+$array['realstatic']['voicemail']['datastorage'] = true;
+
 $array['module'] = array();
 
 $array['module']['accessfeatures'] = array();
@@ -178,9 +181,6 @@ $array['module']['generalqueue']['datastorage'] = true;
 
 $array['module']['generalsip'] = array();
 $array['module']['generalsip']['datastorage'] = true;
-
-$array['module']['generalvoicemail'] = array();
-$array['module']['generalvoicemail']['datastorage'] = true;
 
 $array['module']['groupfeatures'] = array();
 $array['module']['groupfeatures']['datastorage'] = true;
@@ -268,9 +268,6 @@ $array['module']['usersip']['datastorage'] = true;
 
 $array['module']['uservoicemail'] = array();
 $array['module']['uservoicemail']['datastorage'] = true;
-
-$array['module']['zonemessages'] = array();
-$array['module']['zonemessages']['datastorage'] = true;
 
 $array['protocol'] = array();
 $array['protocol'][XIVO_SRE_IPBX_AST_PROTO_SIP] = array('module' => 'usersip'); 
