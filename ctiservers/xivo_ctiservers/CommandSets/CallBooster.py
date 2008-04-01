@@ -867,6 +867,15 @@ class CallBoosterCommand(BaseCommand):
                                         del uinfo['sendfiche']
                         else:
                                 log_debug(SYSLOG_WARNING, '__originatesuccess__ (agentlogin) : No user found for exten %s' % exten)
+                elif context == 'ctx-callbooster-conf':
+                        print '__originatesuccess__ (conf - %s) :' % kind, astid, event
+                        self.originated_calls[uniqueid] = 'origsuccess'
+                elif context == 'ctx-callbooster-record':
+                        print '__originatesuccess__ (record - %s) :' % kind, astid, event
+                        self.originated_calls[uniqueid] = 'origsuccess'
+                elif context == 'ctx-callbooster-outcall':
+                        print '__originatesuccess__ (outcall - %s) :' % kind, astid, event
+                        self.originated_calls[uniqueid] = 'origsuccess'
                 else:
                         print '__originatesuccess__ (%s) :' % kind, astid, event
                         self.originated_calls[uniqueid] = 'origsuccess'
@@ -880,6 +889,7 @@ class CallBoosterCommand(BaseCommand):
                 (mainly if the number is unreachable or did not answer).
                 """
                 context = event.get('Context')
+                uniqueid = event.get('Uniqueid')
                 if context == 'ctx-callbooster-alert':
                         print '__originatefailure__ (alert) (%s) :' % kind, astid, event
                         channel = event.get('Channel')
@@ -936,9 +946,17 @@ class CallBoosterCommand(BaseCommand):
                                         self.__send_msg__(uinfo, ',0,,AppelOpe/')
                         else:
                                 log_debug(SYSLOG_WARNING, '__originatefailure__ (agentlogin) : No user found for exten %s' % exten)
+                elif context == 'ctx-callbooster-conf':
+                        print '__originatefailure__ (conf - %s) :' % kind, astid, event
+                        self.originated_calls[uniqueid] = 'origfailure'
+                elif context == 'ctx-callbooster-record':
+                        print '__originatefailure__ (record - %s) :' % kind, astid, event
+                        self.originated_calls[uniqueid] = 'origfailure'
+                elif context == 'ctx-callbooster-outcall':
+                        print '__originatefailure__ (outcall - %s) :' % kind, astid, event
+                        self.originated_calls[uniqueid] = 'origfailure'
                 else:
                         print '__originatefailure__ (%s) :' % kind, astid, event
-                        uniqueid = event.get('Uniqueid')
                         self.originated_calls[uniqueid] = 'origfailure'
                 return
 
@@ -1301,11 +1319,12 @@ class CallBoosterCommand(BaseCommand):
                         if meetme not in self.confroomsAny:
                                 self.confroomsAny[meetme] = []
                         self.confroomsAny[meetme].append(channel)
+                        print 'CONF JOIN (any number)', meetme, channel, usernum, len(self.confrooms3[meetme])
                 else:
                         if meetme not in self.confrooms3:
                                 self.confrooms3[meetme] = []
                         self.confrooms3[meetme].append(channel)
-                        print 'CONF JOIN', meetme, channel, usernum, len(self.confrooms3[meetme])
+                        print 'CONF JOIN (3-party conf)', meetme, channel, usernum, len(self.confrooms3[meetme])
                 return
 
 
@@ -1915,17 +1934,18 @@ class CallBoosterCommand(BaseCommand):
                         """
                         reference = parsedcommand.args[1]
                         calltoforce = None
-                        if reference in userinfo['login']['calls']:
-                                print 'ForceACD with ref =', reference
-                                calltoforce = userinfo['login']['calls'][reference]
-                        elif reference == '0' or reference == '':
-                                qlist = userinfo['login']['queuelist']
-                                print 'ForceACD', qlist
+                        qlist = userinfo['login']['queuelist']
+                        if reference == '0' or reference == '':
+                                print 'ForceACD (no ref)', qlist
                                 if len(qlist) > 0:
                                         qlidx = qlist.keys()[0]
                                         calltoforce = qlist[qlidx]
                         else:
-                                print 'ForceACD - unknown ref =', reference
+                                print 'ForceACD (ref = %s)' % reference, qlist
+                                for qname, anycall in qlist.iteritems():
+                                        if anycall.commid == reference:
+                                                calltoforce = anycall
+                                                break
 
                         if calltoforce is not None:
                                 calltoforce.forceacd = [userinfo, 'Agent/%s' % agentnum]
@@ -1948,7 +1968,8 @@ class CallBoosterCommand(BaseCommand):
                                                 cnum = ''
                                         self.__send_msg__(userinfo, '%s,%s,%s,Fiche/' % (calltoforce.commid, calltoforce.sdanum, cnum))
                                         self.__send_msg__(userinfo, '%s,%s,,CLR-ACD/' % (calltoforce.commid, calltoforce.sdanum))
-
+                        else:
+                                print 'ForceACD : no call found'
 
                 elif cname == 'Appel':
                         mreference = parsedcommand.args[1]
@@ -2039,9 +2060,12 @@ class CallBoosterCommand(BaseCommand):
                                 confname = parsedcommand.args[1]
                                 if confname in self.confroomsNames:
                                         confnum = self.confroomsNames[confname]
+                                        listchannels = self.confroomsAny[confnum]
                                         listconf = []
-                                        # call.insert_taxes_id
-                                        nconfs = len(self.confroomsAny[confnum])
+                                        for channel in listchannels:
+                                                if channel in self.outgoing_calls:
+                                                        thiscall = self.outgoing_calls[channel]
+                                                        listconf.append(thiscall.insert_taxes_id)
                                         reply = '%s,%s,,ListConf/' % (confname, ';'.join(listconf))
                                         connid_socket.send(reply)
 
@@ -2551,6 +2575,8 @@ class CallBoosterCommand(BaseCommand):
                                                 self.conn_operat.commit()
                                                 self.__choose_and_queuepush__(userinfo['astid'], 'Unping')
                                                 del userinfo['timer-ping']
+                                                # will disconnect the CTI connection ('connection') without logging off
+                                                disconnlist.append(userinfo)
                         elif tname.startswith('SV'):
                                 print 'checkqueue (SV)', tname
                                 for chan, ic in self.incoming_calls.iteritems():

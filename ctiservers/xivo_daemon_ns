@@ -887,7 +887,7 @@ while True: # loops over the reloads
                                                         fdlist_full.remove(userinfo.get('login')['connection'])
                                                 else:
                                                         log_debug(SYSLOG_WARNING, 'WARNING - no connection field present in userinfo')
-                                                commandclass.manage_logoff(userinfo)
+                                                # commandclass.manage_logoff(userinfo)
                                 except Exception, exc:
                                         log_debug(SYSLOG_ERR, '--- exception [queued threads] --- %s' % str(exc))
 
@@ -903,11 +903,11 @@ while True: # loops over the reloads
                                                                 fdlist_full.append(outsock)
                                                 update_amisocks(astid)
                                                 plist.update(astid, configs[astid])
-                                                ulist.update(astid)
                                                 update_userlist[astid] = False
                                         except Exception, exc:
                                                 log_debug(SYSLOG_ERR, '--- exception --- %s : failed while updating lists and sockets (computed timeout) : %s'
                                                           %(astid, str(exc)))
+                                        ulist.update()
 
                 else: # when nothing happens on the sockets, we fall here sooner or later
                         log_debug(SYSLOG_INFO, '[%s] updates (select timeout) %s'
@@ -921,9 +921,9 @@ while True: # loops over the reloads
                                                         fdlist_full.append(outsock)
                                         update_amisocks(astid)
                                         plist.update(astid, configs[astid])
-                                        ulist.update(astid)
                                 except Exception, exc:
                                         log_debug(SYSLOG_ERR, '--- exception --- %s : failed while updating lists and sockets (select s timeout) : %s'
                                                   %(astid, str(exc)))
+                                ulist.update()
 
         log_debug(SYSLOG_NOTICE, 'after askedtoquit loop (%s)' % askedtoquit)
