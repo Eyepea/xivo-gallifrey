@@ -2,11 +2,28 @@
 
 Aastra 51i, 53i, 55i and 57i are supported.
 
-Copyright (C) 2007, Proformatique
+Copyright (C) 2007, 2008  Proformatique
 
 """
 
 __version__ = "$Revision$ $Date$"
+__license__ = """
+    Copyright (C) 2007, 2008  Proformatique
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
+"""
 
 import os, sys, syslog
 import provsup
@@ -128,4 +145,4 @@ class AastraProv(BaseProv):
 		return ("aastra", model, fw)
 	get_vendor_model_fw = classmethod(get_vendor_model_fw)
 
-provsup.PhoneClasses["aastra"] = AastraProv
+provsup.PhoneClasses['aastra'] = AastraProv
