@@ -2834,7 +2834,7 @@ class CallBoosterCommand(BaseCommand):
                 nks = len(sortedtimes)
                 bil = {}
                 is_appelaboute = False
-                print '__update_stat_acd2__ : history =',
+                print '__update_stat_acd2__ : history by time   =',
                 for t in xrange(nks - 1):
                         act = incall.stimes[sortedtimes[t]]
                         if act == 'appelaboute':
@@ -2842,17 +2842,17 @@ class CallBoosterCommand(BaseCommand):
                         if act == 'link' and is_appelaboute:
                                 act = 'linkaboute'
                         dt = sortedtimes[t+1] - sortedtimes[t]
-                        print '(', dt, act, ')',
+                        print '( %.2f s : %s )' % (dt, act),
                         if act not in bil:
                                 bil[act] = 0
                         bil[act] += dt
                 print
                 print '__update_stat_acd2__ : history by action =',
                 for act in bil:
-                        print '(', act, bil[act], ')',
+                        print '( %s : %.2f s )' % (act, bil[act]),
                 print
                 dtime = sortedtimes[nks - 1] - sortedtimes[0]
-                print '__update_stat_acd2__ : history - total time =', dtime
+                print '__update_stat_acd2__ : history - total time = %.2f s' % dtime
                 if incall.uinfo is not None:
                         if 'login' in incall.uinfo:
                                 print '__update_stat_acd2__ : uinfo calls', incall.uinfo['login']['calls']

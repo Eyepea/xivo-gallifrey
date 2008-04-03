@@ -153,7 +153,7 @@ class IncomingCall:
                 Sets the name of CLIent and COLlaborator
                 """
                 columns = ('N', 'NLIST')
-                self.cursor_operat.query('USE %s_clients' % self.socname)
+                self.cursor_operat.query('USE %s_clients' % self.socname.lower())
                 self.cursor_operat.query('SELECT ${columns} FROM clients WHERE N = %s',
                                          columns,
                                          self.ncli)
@@ -179,7 +179,7 @@ class IncomingCall:
                 if sda_busyness is None: sda_busyness = 0 # happens at first call for this SDA
                 
                 columns = ('N', 'NCLI', 'NCOL', 'NSDA', 'Script', 'Flag', 'Priorite', 'CompLocale', 'VoiesSim')
-                self.cursor_operat.query('USE %s_clients' % self.socname)
+                self.cursor_operat.query('USE %s_clients' % self.socname.lower())
                 self.cursor_operat.query('SELECT ${columns} FROM sda WHERE NSDA = %s',
                                          columns,
                                          self.sdanum)
@@ -228,7 +228,7 @@ class IncomingCall:
 
                 # fichiers sons
                 columns = ('NCLI', 'NCOL', 'Nom')
-                self.cursor_operat.query('USE %s_clients' % self.socname)
+                self.cursor_operat.query('USE %s_clients' % self.socname.lower())
                 self.cursor_operat.query('SELECT ${columns} FROM son WHERE NCLI = %s AND NCOL = %s',
                                      columns,
                                      (self.ncli, self.ncol))
@@ -388,7 +388,7 @@ class IncomingCall:
                 Returns the groups' composition according to 'nprof' and 'ngroup'.
                 """
                 columns = ('NPERM', 'NGROUP', 'NOM', 'NPROF')
-                self.cursor_operat.query('USE %s_clients' % self.socname)
+                self.cursor_operat.query('USE %s_clients' % self.socname.lower())
                 self.cursor_operat.query('SELECT ${columns} FROM groupes WHERE NGROUP = %s AND NPROF = %s',
                                          columns,
                                          (ngroup, nprof))
@@ -591,7 +591,7 @@ class IncomingCall:
                 Reads the 'fichier' entries for 'F' and 'T' actions.
                 """
                 columns = ('NCLI', 'NCOL', 'NOM', 'NTEL', 'TypeN', 'ModeA', 'NbC', 'NbP', 'DSonn', 'SDA', 'Ordre')
-                self.cursor_operat.query('USE %s_clients' % self.socname)
+                self.cursor_operat.query('USE %s_clients' % self.socname.lower())
                 if self.whereph == 'SEC':
                         self.cursor_operat.query('SELECT ${columns} FROM fichier WHERE NCLI = 0 AND NCOL = 0 AND NOM = %s ORDER BY Ordre',
                                                  columns,
@@ -663,7 +663,7 @@ class IncomingCall:
                 """
                 whattodo = None
                 columns = ('NCLI', 'NCOL', 'Nom', 'DateJ', 'Plages', 'Plage1', 'Plage2', 'Plage3', 'Plage4')
-                self.cursor_operat.query('USE %s_clients' % self.socname)
+                self.cursor_operat.query('USE %s_clients' % self.socname.lower())
                 self.cursor_operat.query('SELECT ${columns} FROM gardes WHERE NCLI = %s AND NCOL = 0 AND Nom = %s',
                                          columns,
                                          (self.ncli, detail)) # (self.ncli, self.ncol, detail))
@@ -823,7 +823,7 @@ class IncomingCall:
                 Handles a 'MES' scenario.
                 """
                 columns = ('N', 'NCLI', 'NCOL', 'NPROF', 'NomMess', 'Duree', 'Envoie', 'Mail', 'Conserve')
-                self.cursor_operat.query('USE %s_clients' % self.socname)
+                self.cursor_operat.query('USE %s_clients' % self.socname.lower())
                 self.cursor_operat.query('SELECT ${columns} FROM messagerie WHERE NCLI = %s AND NCOL = %s AND NPROF = %s',
                                          columns,
                                          (self.ncli, self.ncol, clients_profil[0]))
