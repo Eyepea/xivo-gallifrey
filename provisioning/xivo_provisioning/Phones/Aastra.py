@@ -2,7 +2,7 @@
 
 Aastra 51i, 53i, 55i and 57i are supported.
 
-Copyright (C) 2007, 2008  Proformatique
+Copyright (C) 2008  Proformatique
 
 """
 
@@ -56,9 +56,19 @@ class AastraProv(BaseProv):
                 # we make a second attempt, which does not fail
 		os.system(pgc['curl_cmd'] + ' --retry 0 --connect-timeout %s -s -o /dev/null -u %s:%s http://%s'
                           % (str(pgc['curl_to_s']), user, passwd, self.phone['ipv4']))
-                # once we have been authenticated, we can POST the reset command
-		os.system(pgc['curl_cmd'] + ' --retry 0 --connect-timeout %s -s -o /dev/null -u %s:%s http://%s/reset.html -d resetOption'
+
+                # once we have been authenticated, we can POST the appropriate commands
+
+                # first : upgrade
+                # this seems to be compulsory when taking the phones out of their box, since the tftpboot parameters
+                # can not handle the Aastra/ subdirectory with the out-of-the-box version
+                os.system(pgc['curl_cmd'] + ' --retry 0 --connect-timeout %s -s -o /dev/null -u %s:%s http://%s/upgrade.html -d "tftp=%s&file=Aastra/%s.st"'
+                          % (str(pgc['curl_to_s']), user, passwd, self.phone['ipv4'], pgc['asterisk_ipv4'], self.phone['model']))
+
+                # then reset
+                os.system(pgc['curl_cmd'] + ' --retry 0 --connect-timeout %s -s -o /dev/null -u %s:%s http://%s/reset.html -d "resetOption=0"'
                           % (str(pgc['curl_to_s']), user, passwd, self.phone['ipv4']))
+
                 
 	def do_reinit(self):
 		"""Entry point to send the (possibly post) reinit command to
@@ -70,7 +80,6 @@ class AastraProv(BaseProv):
 	def do_reboot(self):
 		"Entry point to send the reboot command to the phone."
 		self.__action('reboot', AASTRA_COMMON_HTTP_USER, AASTRA_COMMON_HTTP_PASS)
-
 
 	def __generate(self, myprovinfo):
 		"""Entry point to generate the provisioned configuration for
