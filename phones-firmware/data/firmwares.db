@@ -1,0 +1,422 @@
+# Aastra 51i 2.2.0
+[aa51i_220]
+brand: Aastra
+model: 51i
+version: 2.2.0
+files: 5xi_LangPacks_PA-001006-00-05-LP_2.2.0.zip 51i_FC-001126-00-06_sr_2.2.0_0312.zip
+
+[51i_FC-001126-00-06_sr_2.2.0_0312.zip]
+url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-C8DD6974/04/51i_FC-001126-00-06_sr_2.2.0_0312.zip
+size: 1851078
+md5sum: 831698d328591bf4644971f8f43f85a1
+sha1sum: c1dabf5650ba9a55966701338daeef4a0e716dd5
+
+# Aastra 53i 2.2.0
+[aa53i_220]
+brand: Aastra
+model: 53i
+version: 2.2.0
+files: 5xi_LangPacks_PA-001006-00-05-LP_2.2.0.zip 53i_FC-001086-00-09_sr_2.2.0_0312.zip
+
+[53i_FC-001086-00-09_sr_2.2.0_0312.zip]
+url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-C8DD6974/04/53i_FC-001086-00-09_sr_2.2.0_0312.zip
+size: 2736049
+md5sum: 4b261bff66f96ab50c79217079d6888f
+sha1sum: f8dacfd6320e3b8d8b331a928bd0eab9d9ceb3ef
+
+# Aastra 55i 2.2.0
+[aa55i_220]
+brand: Aastra
+model: 55i
+version: 2.2.0
+files: 5xi_LangPacks_PA-001006-00-05-LP_2.2.0.zip 55i_FC-001087-00-09_sr_2.2.0_0312.zip
+
+[55i_FC-001087-00-09_sr_2.2.0_0312.zip]
+url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-C8DD6974/04/55i_FC-001087-00-09_sr_2.2.0_0312.zip
+size: 2769994
+md5sum: 7a94c4482ac04effae2fcdd877aeaa12
+sha1sum: cc33f7bdc4aecd4f9c2a3645c89f440854efda07
+
+# Aastra 57i 2.2.0
+[aa57i_220]
+brand: Aastra
+model: 57i
+version: 2.2.0
+files: 5xi_LangPacks_PA-001006-00-05-LP_2.2.0.zip 57i_FC-001088-00-09_sr_2.2.0_0312.zip
+
+[57i_FC-001088-00-09_sr_2.2.0_0312.zip]
+url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-C8DD6974/04/57i_FC-001088-00-09_sr_2.2.0_0312.zip
+size: 2769896
+md5sum: 6c7f55a581caf802d7d95366cb93344a
+sha1sum: a667300a6167e99a967eec222a51543e7cf26505
+
+# Common files for Aastra phones
+[5xi_LangPacks_PA-001006-00-05-LP_2.2.0.zip]
+url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-C8DD6974/04/5xi_LangPacks_PA-001006-00-05-LP_2.2.0.zip
+size: 79014
+md5sum: 53228e232282dae2d587e556783c30ef
+sha1sum: 8a58debc057b771bce8d769983bd968e53e14c90
+
+# Linksys PAP2T 5.1.6
+[lspap2t_516]
+brand: Linksys
+model: PAP2T
+version: 5.1.6
+files: pap2t-5-1-6.zip
+
+[pap2t-5-1-6.zip]
+url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%%2Fzip&blobheadervalue2=inline%%3B+filename%%3DPAP2T_v5.1.6_fw.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193765607333&ssbinary=true&lid=6115325776B08
+size: 1504430
+md5sum: c35ffdd7c60372305e59bf376362b022
+sha1sum: c8a2c48e06e3bd89de6f444824a41ebc7e1d57f5
+
+# Linksys SPA901 5.1.5
+[lsspa901_515]
+brand: Linksys
+model: SPA901
+version: 5.1.5
+files: spa901-5-1-5.zip
+
+[spa901-5-1-5.zip]
+url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%%2Fzip&blobheadervalue2=inline%%3B+filename%%3Dspa901-5.1.5.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193769501566&ssbinary=true&lid=6160326362B04
+size: 1607399
+md5sum: 598c35cbcf851a17f58da4d0a9c62bbb
+sha1sum: 2cc6bfeb64812ca80a69cbe51296e3db2b68a491
+
+# Linksys SPA941 5.1.8
+[lsspa941_518]
+brand: Linksys
+model: SPA941
+version: 5.1.8
+files: spa941-5-1-8.zip
+
+[spa941-5-1-8.zip]
+url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%%2Fzip&blobheadervalue2=inline%%3B+filename%%3Dspa941-5.1.8.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193770292308&ssbinary=true&lid=4571655272B10
+size: 1548720
+md5sum: b6c99b91bbb1625d088b4f3a90794522
+sha1sum: fe3616d709599763fd27fc5afebd1c8f71a95b9c
+
+# Linksys SPA942 5.1.15a
+[lsspa942_5115a]
+brand: Linksys
+model: SPA942
+version: 5.1.15a
+files: spa942-5-1-15a.zip
+
+[spa942-5-1-15a.zip]
+url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%%2Fzip&blobheadervalue2=inline%%3B+filename%%3Dspa942-5.1.15a.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193773807062&ssbinary=true&lid=4602227625B14
+size: 1736301
+md5sum: 822ca4365dbb0ef639469fe1505a32a7
+sha1sum: 22e27cc469ed0687a491167f7417ad8f9c9fb55c
+
+# Linksys SPA942 5.1.18
+[lsspa942_5118]
+brand: Linksys
+model: SPA942
+version: 5.1.18
+files: spa942-5-1-18.zip
+
+[spa942-5-1-18.zip]
+url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%%2Fzip&blobheadervalue2=inline%%3B+filename%%3DSPA942_fw-v5.1.18.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193773807108&ssbinary=true&lid=2669427625B12
+size: 1746585
+md5sum: 7ae6a75e0fcd0c5845c073d81c66a11d
+sha1sum: b7e78d76bfb8c3e284ea54cc53ef9146c6aab430
+
+# Linksys SPA942 5.2.5
+[lsspa942_525]
+brand: Linksys
+model: SPA942
+version: 5.2.5
+files: spa942-5-2-5.zip
+
+[spa942-5-2-5.zip]
+url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%%2Fzip&blobheadervalue2=inline%%3B+filename%%3Dspa942-5.2.5.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193774016542&ssbinary=true&lid=0860927625B10
+size: 1781834
+md5sum: 66e49205ae82f4f63549d041346c5f0b
+sha1sum: 56a298586301c0a80dc32750a146b1cad6f03d37
+
+# Linksys SPA962 5.1.18(SC)
+[lsspa962_5118sc]
+brand: Linksys
+model: SPA962
+version: 5.1.18(SC)
+files: spa962-5-1-18sc.zip
+
+[spa962-5-1-18sc.zip]
+url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%%2Fzip&blobheadervalue2=inline%%3B+filename%%3DSPA962-5.1.18_fw.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193770222498&ssbinary=true&lid=6407828244B12
+size: 2110861
+md5sum: 41475e98d79987b026ab19d771a6770d
+sha1sum: e851fd7cde46f786b586e7c69130cde047c7c9e0
+
+# Linksys SPA962 5.2.8(SC)
+[lsspa962_528sc]
+brand: Linksys
+model: SPA962
+version: 5.2.8(SC)
+files: spa962-5-2-8sc.bin
+
+[spa962-5-2-8sc.bin]
+url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%%2Fzip&blobheadervalue2=inline%%3B+filename%%3DSPA962_V5.2.8SC_fw.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193783376348&ssbinary=true&lid=7299228244B10
+size: 3254976
+md5sum: f2d221ea1dd5f1a3fdcd7e3853b1e333
+sha1sum: 657c0ad44396edae0ec10d4b8e743fa0cc641cc1
+
+# Polycom SoundPoint IP 300 4.0.0
+[pcspip300_400]
+brand: Polycom
+model: SoundPoint IP 300
+version: 4.0.0
+files: BootRom_4_0_0_release_sig.zip spip_ssip_2_2_2_release_sig.zip
+
+# Polycom SoundPoint IP 301 4.0.0
+[pcspip301_400]
+brand: Polycom
+model: SoundPoint IP 301
+version: 4.0.0
+files: BootRom_4_0_0_release_sig.zip spip_ssip_2_2_2_release_sig.zip
+
+# Polycom SoundPoint IP 320 4.0.0
+[pcspip320_400]
+brand: Polycom
+model: SoundPoint IP 320
+version: 4.0.0
+files: BootRom_4_0_0_release_sig.zip spip_ssip_2_2_2_release_sig.zip
+
+# Polycom SoundPoint IP 330 4.0.0
+[pcspip330_400]
+brand: Polycom
+model: SoundPoint IP 330
+version: 4.0.0
+files: BootRom_4_0_0_release_sig.zip spip_ssip_2_2_2_release_sig.zip
+
+# Polycom SoundPoint IP 430 4.0.0
+[pcspip430_400]
+brand: Polycom
+model: SoundPoint IP 430
+version: 4.0.0
+files: BootRom_4_0_0_release_sig.zip spip_ssip_2_2_2_release_sig.zip
+
+# Polycom SoundPoint IP 500 4.0.0
+[pcspip500_400]
+brand: Polycom
+model: SoundPoint IP 500
+version: 4.0.0
+files: BootRom_4_0_0_release_sig.zip spip_ssip_2_2_2_release_sig.zip
+
+# Polycom SoundPoint IP 501 4.0.0
+[pcspip501_400]
+brand: Polycom
+model: SoundPoint IP 501
+version: 4.0.0
+files: BootRom_4_0_0_release_sig.zip spip_ssip_2_2_2_release_sig.zip
+
+# Polycom SoundPoint IP 550 4.0.0
+[pcspip550_400]
+brand: Polycom
+model: SoundPoint IP 550
+version: 4.0.0
+files: BootRom_4_0_0_release_sig.zip spip_ssip_2_2_2_release_sig.zip
+
+# Polycom SoundPoint IP 600 4.0.0
+[pcspip600_400]
+brand: Polycom
+model: SoundPoint IP 600
+version: 4.0.0
+files: BootRom_4_0_0_release_sig.zip spip_ssip_2_2_2_release_sig.zip
+
+# Polycom SoundPoint IP 601 4.0.0
+[pcspip601_400]
+brand: Polycom
+model: SoundPoint IP 601
+version: 4.0.0
+files: BootRom_4_0_0_release_sig.zip spip_ssip_2_2_2_release_sig.zip
+
+# Polycom SoundPoint IP 650 4.0.0
+[pcspip650_400]
+brand: Polycom
+model: SoundPoint IP 650
+version: 4.0.0
+files: BootRom_4_0_0_release_sig.zip spip_ssip_2_2_2_release_sig.zip
+
+# Polycom SoundStation IP 4000 SIP
+[pcssip4000sip_400]
+brand: Polycom
+model: SoundStation IP 4000 SIP
+version: 4.0.0
+files: BootRom_4_0_0_release_sig.zip spip_ssip_2_2_2_release_sig.zip
+
+# Common files for Polycom phones
+
+[BootRom_4_0_0_release_sig.zip]
+url: http://downloads.polycom.com/voice/voip/sp_ss_bootrom/BootRom_4_0_0_release_sig.zip
+size: 12734818
+md5sum: 83dd438a374094186a79b756c6860a96
+sha1sum: 29d1a387901c84e44a0751799e0f3b0f4d074580
+
+[spip_ssip_2_2_2_release_sig.zip]
+url: http://downloads.polycom.com/voice/voip/sp_ss_sip/spip_ssip_2_2_2_release_sig.zip
+size: 44091381
+md5sum: d53f1ae15b33d3f8d69753f78b50000d
+sha1sum: eae5ef7fa0879815e2296fb92c9d9270a49bbb58
+
+# Snom 300 6.5.17
+[sn300_6517]
+brand: Snom
+model: 300
+version: 6.5.17
+files: snom300-6.5.17-SIP-j.bin
+
+[snom300-6.5.17-SIP-j.bin]
+url: http://provisioning.snom.com/download/fw/snom300-6.5.17-SIP-j.bin
+size: 1453032
+md5sum: 457f4c938c8d75648552a91c7c3c2691
+sha1sum: 048ebc0c1d3373410e05e35c148f432d5d6200f1
+
+# Snom 300 7.1.30
+[sn300_7130]
+brand: Snom
+model: 300
+version: 7.1.30
+files: snom300-7.1.30-SIP-f.bin
+
+[snom300-7.1.30-SIP-f.bin]
+url: http://provisioning.snom.com/download/fw/snom300-7.1.30-SIP-f.bin
+size: 3183348
+md5sum: 6b23a48e3c3fde0e63fe8cd9bd83f973
+sha1sum: a54af30981d563e4712de7082078e3ab5eb88364
+
+# Snom 320 6.5.17
+[sn320_6517]
+brand: Snom
+model: 320
+version: 6.5.17
+files: snom320-6.5.17-SIP-j.bin
+
+[snom320-6.5.17-SIP-j.bin]
+url: http://provisioning.snom.com/download/fw/snom320-6.5.17-SIP-j.bin
+size: 1463304
+md5sum: 618758b73bda8d6b43fe5879d0b06e03
+sha1sum: 772e229efe99002d16b375bc3c128aaba5c2e6d4
+
+# Snom 320 7.1.30
+[sn320_7130]
+brand: Snom
+model: 320
+version: 7.1.30
+files: snom320-7.1.30-SIP-f.bin
+
+[snom320-7.1.30-SIP-f.bin]
+url: http://provisioning.snom.com/download/fw/snom320-7.1.30-SIP-f.bin
+size: 3200944
+md5sum: 313e011e44999b768dc1982829e52954
+sha1sum: cafbaca6d7e1fbdb150ec254343cd39e8b2df83c
+
+# Snom 360 6.5.17
+[sn360_6517]
+brand: Snom
+model: 360
+version: 6.5.17
+files: snom360-6.5.17-SIP-j.bin
+
+[snom360-6.5.17-SIP-j.bin]
+url: http://provisioning.snom.com/download/fw/snom360-6.5.17-SIP-j.bin
+size: 1525908
+md5sum: 22e2a6515ad5ae5d3723cf106087cd4f
+sha1sum: 4b033035c11e192fc9ea5378da89a288792bc78e
+
+# Snom 360 7.1.30
+[sn360_7130]
+brand: Snom
+model: 360
+version: 7.1.30
+files: snom360-7.1.30-SIP-f.bin
+
+[snom360-7.1.30-SIP-f.bin]
+url: http://provisioning.snom.com/download/fw/snom360-7.1.30-SIP-f.bin
+size: 3265132
+md5sum: 0a719a8e865019cd582ead384104b529
+sha1sum: e4c8dd14a8ab9065b398ff85241d39c2dfa7ea5c
+
+# Snom 370 7.1.30
+[sn370_7130]
+brand: Snom
+model: 370
+version: 7.1.30
+files: snom370-7.1.30-SIP-f.bin
+
+[snom370-7.1.30-SIP-f.bin]
+url: http://provisioning.snom.com/download/fw/snom370-7.1.30-SIP-f.bin
+size: 3972692
+md5sum: db1d1468c974ad6795e207e949d1a42a
+sha1sum: dcc596e6008a33a1e1521f35637331c721db913b
+
+# Snom m3 1.0.7
+[snm3_107]
+brand: Snom
+model: m3
+version: 1.0.7
+files: SnakeGw_fr01_v0107.fwu SnakePp_fr01_v0107.fwu
+
+[SnakeGw_fr01_v0107.fwu]
+url: http://provisioning.snom.com/m3/firmware/Fileformat3/SnakeGw_fr01_v0107.fwu
+size: 985260
+md5sum: 9b3cceb6ba98a0bf6ab8068f4a8e5118
+sha1sum: f4398ae092deade4744f61dde09607e51ac87a50
+
+[SnakePp_fr01_v0107.fwu]
+url: http://provisioning.snom.com/m3/firmware/Fileformat3/SnakePp_fr01_v0107.fwu
+size: 950248
+md5sum: 6718cf10c657b04024b4e432ecac36fa
+sha1sum: 17579a78954dbf3016174bd1fbb9cd45e659dfb0
+
+# Thomson ST2022 1.58
+[thst2022_158]
+brand: Thomson
+model: ST2022
+version: 1.58
+files: ST2022_SG_v3.58-update.zip
+
+[ST2022_SG_v3.58-update.zip]
+url: http://www.thomsontelecompartner.com/getfile.php?id=4806
+size: 4211741
+md5sum: 5f3477e1f9e6188b55ffd1671d4be971
+sha1sum: bc86611bd76a8cfc29923ac8e00e3b032de88f4c
+
+# Thomson ST2022 1.59
+[thst2022_159]
+brand: Thomson
+model: ST2022
+version: 1.59
+files: ST2022_SG_v3.59_Release_Package.zip
+
+[ST2022_SG_v3.59_Release_Package.zip]
+url: http://www.thomsontelecompartner.com/getfile.php?id=4961
+size: 4087939
+md5sum: 8485ce14554ebef42063f14643455da1
+sha1sum: 4e459ab3fd12874a48e10be95537b6f92a885e59
+
+# Thomson ST2030 1.58
+[thst2030_158]
+brand: Thomson
+model: ST2030
+version: 1.58
+files: ST2030_SG_v1.58_Release_Package.zip
+
+[ST2030_SG_v1.58_Release_Package.zip]
+url: http://www.thomsontelecompartner.com/getfile.php?id=4718
+size: 4217835
+md5sum: aa776ad4683ceca0b0a2af1bfe01b125
+sha1sum: 239a0ac49ec3f72bb4dafc6d1d22110cf8b805e6
+
+# Thomson ST2030 1.59
+[thst2030_159]
+brand: Thomson
+model: ST2030
+version: 1.59
+files: ST2030_SG_v1.59_Release_Package-updated.zip
+
+[ST2030_SG_v1.59_Release_Package-updated.zip]
+url: http://www.thomsontelecompartner.com/getfile.php?id=5020
+size: 4018854
+md5sum: 6fb1a09b5eee85c4ade26a47053be5d5
+sha1sum: ad71ff6b71ac07871fac9ae05b748b32f2aa8aa3

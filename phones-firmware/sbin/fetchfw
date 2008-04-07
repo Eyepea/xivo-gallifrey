@@ -1,0 +1,95 @@
+#!/usr/bin/python
+
+__version__ = "$Revision$ $Date$"
+__license__ = """
+    Copyright (C) 2008  Proformatique
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
+"""
+
+import sys
+import optparse
+
+import fetchfw.fetchfw
+
+def list_brands():
+	for brand in sorted(fetchfw.brands):
+		print brand
+
+def list_models(brand):
+	if brand not in fetchfw.brands:
+		fetchfw.die("brand %s not found" % brand)
+
+	for model in sorted(fetchfw.brands[brand]):
+		print model
+
+def list_versions(brand, model):
+	if model not in fetchfw.brands[brand]:
+		fetchfw.die("model %s not found in brand %s" % (model, brand))
+
+	for version in sorted(fetchfw.brands[brand][model]):
+		firmware = fetchfw.brands[brand][model][version]
+		print "%-20s %s" % (firmware.name, firmware.description)
+
+def install_firmware(fw_name):
+	if fw_name not in fetchfw.firmwares:
+		fetchfw.die("firmware %s not found" % fw_name)
+
+	firmware = fetchfw.firmwares[fw_name]
+	firmware.install()
+
+parser = optparse.OptionParser()
+parser.add_option("-s", action = "store_true", dest = "search",
+                  help = "Search the firmware database (search mode)")
+parser.add_option("-a", action = "store_true", dest = "list_all",
+                  help = "List all known firmwares (search mode)")
+parser.add_option("-b", dest = "brand",
+                  help = "Specify the brand (search mode)")
+parser.add_option("-m", dest = "model",
+                  help = "Specify the model (search mode)")
+parser.add_option("-i", dest = "install", metavar="FIRMWARE/all",
+                  help = "Install a firmware (install mode)")
+(options, args) = parser.parse_args()
+
+if options.search:
+	if options.install:
+		fetchfw.die("conflicting options -s and -i provided")
+
+	if options.list_all:
+		for brand in sorted(fetchfw.brands):
+			for model in sorted(fetchfw.brands[brand]):
+				list_versions(brand, model)
+	else:
+		if options.brand:
+			if options.model:
+				list_versions(options.brand, options.model)
+			else:
+				list_models(options.brand)
+		else:
+			list_brands()
+elif options.install:
+	fw_name = options.install
+
+	if fw_name == "all":
+		fw_names = sorted(fetchfw.firmwares.keys())
+
+	else:
+		fw_names = [fw_name]
+
+	for fw_name in fw_names:
+		install_firmware(fw_name)
+
+else:
+	fetchfw.die("error: one of -s or -i must be provided (use -h for help)")

@@ -1,0 +1,60 @@
+__version__ = "$Revision$ $Date$"
+__license__ = """
+    Copyright (C) 2008  Proformatique
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
+"""
+
+import os
+import os.path
+import shutil
+import fetchfw
+
+def aastra_install_langs(firmware, file):
+	label = "%s_%s" % ("aastra", "langs")
+	zip_path = fetchfw.zip_extract_all(label, file.path)
+	fw_dst_dir = os.path.join(fetchfw.tftp_path, "Aastra")
+
+	try:
+		os.makedirs(fw_dst_dir)
+	except OSError:
+		pass
+
+	for fw_file in os.listdir(zip_path):
+		fw_src_path = os.path.join(zip_path, fw_file)
+		fw_dst_path = os.path.join(fw_dst_dir, fw_file)
+		shutil.copy2(fw_src_path, fw_dst_path)
+
+def aastra_install_fw(firmware, file):
+	zip_path = fetchfw.zip_extract_all(firmware.name, file.path)
+	fw_src_path = os.path.join(zip_path, "%s.st" % firmware.model)
+	fw_dst_dir = os.path.join(fetchfw.tftp_path, "Aastra")
+
+	try:
+		os.makedirs(fw_dst_dir)
+	except OSError:
+		pass
+
+	shutil.copy2(fw_src_path, fw_dst_dir)
+
+
+def aastra_install(firmware):
+	for file in firmware.remote_files:
+		if file.filename.find("5xi_LangPacks") != -1:
+			aastra_install_langs(firmware, file)
+		else:
+			aastra_install_fw(firmware, file)
+
+fetchfw.register_install_fn("Aastra", None, aastra_install)
