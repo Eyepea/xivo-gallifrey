@@ -84,7 +84,6 @@ elif options.install:
 
 	if fw_name == "all":
 		fw_names = sorted(fetchfw.firmwares.keys())
-
 	else:
 		fw_names = [fw_name]
 

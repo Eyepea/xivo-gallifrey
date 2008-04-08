@@ -48,7 +48,7 @@ class remote_file:
 	"""This class is used to gather some properties about a remote file
 	accessible through a protocol supported by the urllib2 module and
 	download it. The properties are given when a remote_file object is
-	instanciated. The user can then call the fetch() method to actually
+	instantiated. The user can then call the fetch() method to actually
 	download the remote file into the tftp_path directory. The file can
 	be cached, in which case there is of course no download. The
 	fetch() method always performs size/hash checking, even if the file
