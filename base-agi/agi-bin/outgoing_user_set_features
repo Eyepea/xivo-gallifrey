@@ -143,7 +143,7 @@ for row in res:
 		intfsuffix = res['intfsuffix']
 
 		if intfsuffix not in (None, ""):
-			interface = "%s/%s" % (interface, intfsuffix)
+			agi.set_variable('XIVO_TRUNKSUFFIX%d' % trunkindex, "/" + intfsuffix)
 
 	else:
 		agi_helpers.dp_break(agi, "Unknown protocol '%s'" % protocol)
