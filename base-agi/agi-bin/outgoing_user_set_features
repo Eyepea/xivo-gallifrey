@@ -114,7 +114,7 @@ for row in res:
 			agi_helpers.dp_break(agi, "Unable to find SIP peer (ID = '%s')" % protocolid)
 
 		peer = res['name']
-		interface = protocol + "/" + peer
+		interface = "%s/%s" % (protocol, peer)
 
 	elif protocol == "iax":
 		protocol = "IAX2"
@@ -127,20 +127,24 @@ for row in res:
 			agi_helpers.dp_break(agi, "Unable to find IAX peer (ID = '%s')" % protocolid)
 
 		peer = res['name']
-		interface = protocol + "/" + peer
+		interface = "%s/%s" % (protocol, peer)
 
 	elif protocol == "custom":
 		protocol = "CUSTOM"
 		cursor.query("SELECT ${columns} FROM usercustom WHERE id = %s AND commented = 0",
-                             ('name', 'interface',),
+                             ('interface', 'intfsuffix'),
                              (protocolid,))
 		res = cursor.fetchone()
 
 		if not res:
 			agi_helpers.dp_break(agi, "Unable to find custom peer (ID = '%s')" % protocolid)
 
-		peer = res['name']
 		interface = res['interface']
+		intfsuffix = res['intfsuffix']
+
+		if intfsuffix:
+			interface = "%s/%s" % (interface, intfsuffix)
+
 	else:
 		agi_helpers.dp_break(agi, "Unknown protocol '%s'" % protocol)
 
