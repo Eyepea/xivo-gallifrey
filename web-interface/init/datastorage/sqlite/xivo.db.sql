@@ -21,6 +21,7 @@ CREATE TABLE entity (
  PRIMARY KEY(id)
 );
 
+CREATE INDEX entity__idx__displayname ON entity(displayname);
 CREATE INDEX entity__idx__disable ON entity(disable);
 CREATE UNIQUE INDEX entity__uidx__name ON entity(name);
 
