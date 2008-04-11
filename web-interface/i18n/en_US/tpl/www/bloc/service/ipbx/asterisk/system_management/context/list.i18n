@@ -1,6 +1,9 @@
 ; col_name
 Name
 
+; col_displayname
+Displayname
+
 ; col_entity
 Entity
 

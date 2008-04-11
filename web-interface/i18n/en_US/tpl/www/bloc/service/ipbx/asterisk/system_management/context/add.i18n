@@ -22,6 +22,9 @@ Incoming calls
 ; fm_context_name
 Name:
 
+; fm_context_displayname
+Displayname:
+
 ; fm_context_entity
 Entity:
 

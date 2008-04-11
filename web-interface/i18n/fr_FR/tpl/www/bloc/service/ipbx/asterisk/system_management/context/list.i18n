@@ -1,6 +1,9 @@
 ; col_name
 Nom
 
+; col_displayname
+Nom affiché
+
 ; col_entity
 Entité
 

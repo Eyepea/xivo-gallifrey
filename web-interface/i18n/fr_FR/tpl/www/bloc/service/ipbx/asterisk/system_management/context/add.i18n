@@ -22,6 +22,9 @@ Appels entrants
 ; fm_context_name
 Nom :
 
+; fm_context_displayname
+Nom affiché :
+
 ; fm_context_entity
 Entité :
 

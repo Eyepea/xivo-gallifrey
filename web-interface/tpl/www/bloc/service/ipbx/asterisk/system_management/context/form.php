@@ -68,6 +68,13 @@
 			       'default'	=> $element['context']['name']['default'],
 			       'value'		=> $info['context']['name']));
 
+	echo $form->text(array('desc'		=> $this->bbf('fm_context_displayname'),
+			       'name'		=> 'context[displayname]',
+			       'labelid'	=> 'context-displayname',
+			       'size'		=> 15,
+			       'default'	=> $element['context']['displayname']['default'],
+			       'value'		=> $info['context']['displayname']));
+
 	if(($entities = $this->get_var('entities')) !== false):
 		echo $form->select(array('desc'		=> $this->bbf('fm_context_entity'),
 					 'name'		=> 'context[entity]',

@@ -27,6 +27,7 @@
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
 		<th class="th-center"><?=$this->bbf('col_name');?></th>
+		<th class="th-center"><?=$this->bbf('col_displayname');?></th>
 		<th class="th-center"><?=$this->bbf('col_entity');?></th>
 		<th class="th-center" id="col-action" colspan="2"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
@@ -36,7 +37,7 @@
 	if(($list = $this->get_var('list')) === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
-		<td colspan="6" class="td-single"><?=$this->bbf('no_context');?></td>
+		<td colspan="7" class="td-single"><?=$this->bbf('no_context');?></td>
 	</tr>
 <?php
 	else:
@@ -59,7 +60,8 @@
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
 		<td class="td-left"><?=$form->checkbox(array('name' => 'contexts[]','value' => $ref['context']['name'],'label' => false,'id' => 'it-contexts-'.$i,'checked' => false,'field' => false));?></td>
 		<td class="txt-left"><label for="it-contexts-<?=$i?>" id="lb-contexts-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['context']['name']?></label></td>
-		<td><?=$entity;?></td>
+		<td><?=$ref['context']['displayname']?></td>
+		<td><?=$entity?></td>
 		<td class="td-right" colspan="3">
 		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/system_management/context',array('act' => 'edit','id' => $ref['context']['name']),null,$this->bbf('opt_modify'));?>
 		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/system_management/context',array('act' => 'delete','id' => $ref['context']['name'],'page' => $pager['page']),'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',$this->bbf('opt_delete'));?>
@@ -71,7 +73,7 @@
 ?>
 	<tr class="sb-foot">
 		<td class="td-left xspan b-nosize"><span class="span-left b-nosize">&nbsp;</span></td>
-		<td class="td-center" colspan="4"><span class="b-nosize">&nbsp;</span></td>
+		<td class="td-center" colspan="5"><span class="b-nosize">&nbsp;</span></td>
 		<td class="td-right xspan b-nosize"><span class="span-right b-nosize">&nbsp;</span></td>
 	</tr>
 </table>
