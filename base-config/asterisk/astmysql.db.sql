@@ -160,12 +160,14 @@ CREATE INDEX `cdr__idx__userfield` ON `cdr`(`userfield`);
 DROP TABLE IF EXISTS `context`;
 CREATE TABLE `context` (
  `name` varchar(39) NOT NULL,
+ `displayname` varchar(128) NOT NULL DEFAULT '',
  `entity` varchar(64),
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  `description` text NOT NULL,
  PRIMARY KEY(`name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+CREATE INDEX `context__idx__displayname` ON `context`(`displayname`);
 CREATE INDEX `context__idx__entity` ON `context`(`entity`);
 CREATE INDEX `context__idx__commented` ON `context`(`commented`);
 
@@ -220,7 +222,7 @@ CREATE TABLE `extensions` (
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  `context` varchar(39) NOT NULL DEFAULT '',
  `exten` varchar(40) NOT NULL DEFAULT '',
- `priority` tinyint(3) unsigned NOT NULL DEFAULT 0,
+ `priority` tinyint unsigned NOT NULL DEFAULT 0,
  `app` varchar(128) NOT NULL DEFAULT '',
  `appdata` varchar(128) NOT NULL DEFAULT '',
  `name` varchar(128) NOT NULL DEFAULT '',
@@ -1022,14 +1024,14 @@ CREATE INDEX `serverfeatures__idx__serverid` ON `serverfeatures`(`serverid`);
 CREATE INDEX `serverfeatures__idx__feature` ON `serverfeatures`(`feature`);
 CREATE INDEX `serverfeatures__idx__type` ON `serverfeatures`(`type`);
 CREATE INDEX `serverfeatures__idx__commented` ON `serverfeatures`(`commented`);
-CREATE UNIQUE INDEX `serverfeatures__uidx__serverid_feature` ON `serverfeatures`(`serverid`,`feature`);
+CREATE UNIQUE INDEX `serverfeatures__uidx__serverid_feature_type` ON `serverfeatures`(`serverid`,`feature`,`type`);
 
 
 DROP TABLE IF EXISTS `trunkfeatures`;
 CREATE TABLE `trunkfeatures` (
  `id` int(10) unsigned auto_increment,
- `trunk` varchar(50) NOT NULL,
- `trunkid` int(10) unsigned NOT NULL,
+ `protocol` varchar(50) NOT NULL,
+ `protocolid` int(10) unsigned NOT NULL,
  `registerid` int(10) unsigned NOT NULL DEFAULT 0,
  `registercommented` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
@@ -1037,7 +1039,7 @@ CREATE TABLE `trunkfeatures` (
 
 CREATE INDEX `trunkfeatures__idx__registerid` ON `trunkfeatures`(`registerid`);
 CREATE INDEX `trunkfeatures__idx__registercommented` ON `trunkfeatures`(`registercommented`);
-CREATE UNIQUE INDEX `trunkfeatures__uidx__trunk_trunkid` ON `trunkfeatures`(`trunk`,`trunkid`);
+CREATE UNIQUE INDEX `trunkfeatures__uidx__protocol_protocolid` ON `trunkfeatures`(`protocol`,`protocolid`);
 
 
 DROP TABLE IF EXISTS `usercustom`;
@@ -1046,6 +1048,7 @@ CREATE TABLE `usercustom` (
  `name` varchar(40),
  `context` varchar(39),
  `interface` varchar(128) NOT NULL,
+ `intfsuffix` varchar(32) NOT NULL DEFAULT '',
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  `protocol` enum('custom') NOT NULL DEFAULT 'custom',
  `category` enum('user','trunk') NOT NULL,
@@ -1057,7 +1060,7 @@ CREATE INDEX `usercustom__idx__context` ON `usercustom`(`context`);
 CREATE INDEX `usercustom__idx__commented` ON `usercustom`(`commented`);
 CREATE INDEX `usercustom__idx__protocol` ON `usercustom`(`protocol`);
 CREATE INDEX `usercustom__idx__category` ON `usercustom`(`category`);
-CREATE UNIQUE INDEX `usercustom__uidx__interface_category` ON `usercustom`(`interface`,`category`);
+CREATE UNIQUE INDEX `usercustom__uidx__interface_intfsuffix_category` ON `usercustom`(`interface`,`intfsuffix`,`category`);
 
 
 DROP TABLE IF EXISTS `userfeatures`;

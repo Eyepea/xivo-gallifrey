@@ -157,12 +157,14 @@ CREATE INDEX cdr__idx__userfield ON cdr(userfield);
 DROP TABLE context;
 CREATE TABLE context (
  name varchar(39) NOT NULL,
+ displayname varchar(128) NOT NULL DEFAULT '',
  entity varchar(64),
  commented tinyint(1) NOT NULL DEFAULT 0,
  description text NOT NULL,
  PRIMARY KEY(name)
 );
 
+CREATE INDEX context__idx__displayname ON context(displayname);
 CREATE INDEX context__idx__entity ON context(entity);
 CREATE INDEX context__idx__commented ON context(commented);
 
@@ -1019,14 +1021,14 @@ CREATE INDEX serverfeatures__idx__serverid ON serverfeatures(serverid);
 CREATE INDEX serverfeatures__idx__feature ON serverfeatures(feature);
 CREATE INDEX serverfeatures__idx__type ON serverfeatures(type);
 CREATE INDEX serverfeatures__idx__commented ON serverfeatures(commented);
-CREATE UNIQUE INDEX serverfeatures__uidx__serverid_feature ON serverfeatures(serverid,feature);
+CREATE UNIQUE INDEX serverfeatures__uidx__serverid_feature_type ON serverfeatures(serverid,feature,type);
 
 
 DROP TABLE trunkfeatures;
 CREATE TABLE trunkfeatures (
  id integer unsigned,
- trunk varchar(50) NOT NULL,
- trunkid integer unsigned NOT NULL,
+ protocol varchar(50) NOT NULL,
+ protocolid integer unsigned NOT NULL,
  registerid integer unsigned NOT NULL DEFAULT 0,
  registercommented tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(id)
@@ -1034,7 +1036,7 @@ CREATE TABLE trunkfeatures (
 
 CREATE INDEX trunkfeatures__idx__registerid ON trunkfeatures(registerid);
 CREATE INDEX trunkfeatures__idx__registercommented ON trunkfeatures(registercommented);
-CREATE UNIQUE INDEX trunkfeatures__uidx__trunk_trunkid ON trunkfeatures(trunk,trunkid);
+CREATE UNIQUE INDEX trunkfeatures__uidx__protocol_protocolid ON trunkfeatures(protocol,protocolid);
 
 
 DROP TABLE usercustom;
@@ -1043,6 +1045,7 @@ CREATE TABLE usercustom (
  name varchar(40),
  context varchar(39),
  interface varchar(128) NOT NULL,
+ intfsuffix varchar(32) NOT NULL DEFAULT '',
  commented tinyint(1) NOT NULL DEFAULT 0,
  protocol char(5) NOT NULL DEFAULT 'custom',
  category varchar(5) NOT NULL,
@@ -1054,7 +1057,7 @@ CREATE INDEX usercustom__idx__context ON usercustom(context);
 CREATE INDEX usercustom__idx__commented ON usercustom(commented);
 CREATE INDEX usercustom__idx__protocol ON usercustom(protocol);
 CREATE INDEX usercustom__idx__category ON usercustom(category);
-CREATE UNIQUE INDEX usercustom__uidx__interface_category ON usercustom(interface,category);
+CREATE UNIQUE INDEX usercustom__uidx__interface_intfsuffix_category ON usercustom(interface,intfsuffix,category);
 
 
 DROP TABLE userfeatures;
