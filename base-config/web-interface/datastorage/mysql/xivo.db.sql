@@ -23,6 +23,7 @@ CREATE TABLE `entity` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+CREATE INDEX `entity__idx__displayname` ON `entity`(`displayname`);
 CREATE INDEX `entity__idx__disable` ON `entity`(`disable`);
 CREATE UNIQUE INDEX `entity__uidx__name` ON `entity`(`name`);
 
