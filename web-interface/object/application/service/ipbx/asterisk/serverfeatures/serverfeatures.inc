@@ -13,6 +13,9 @@ class xivo_application_service_asterisk_serverfeatures extends xivo_application_
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
 
+		if(($this->_serverfeatures = &$this->_service->get_module('serverfeatures')) === false)
+			return(false);
+
 		return($this->load_init($param));
 	}
 
@@ -20,7 +23,6 @@ class xivo_application_service_asterisk_serverfeatures extends xivo_application_
 	{
 		if($this->set_params($param) === true
 		&& isset($param['feature'],$param['type']) === true
-		&& ($this->_serverfeatures = &$this->_service->get_module('serverfeatures')) !== false
 		&& $this->_serverfeatures->chk_element_value('feature',$param['feature']) !== false
 		&& $this->_serverfeatures->chk_element_value('type',$param['type']) !== false)
 		{
@@ -29,7 +31,7 @@ class xivo_application_service_asterisk_serverfeatures extends xivo_application_
 			&& ($this->_server = new xivo_server()) !== false)
 				return(true);
 			else if($this->_param['type'] === 'ldap'
-			&& ($this->_server = &$this->_service->get_application('ldapfilter')) !== false)
+			&& ($this->_server = $this->_service->get_application('ldapfilter')) !== false)
 				return(true);
 		}
 

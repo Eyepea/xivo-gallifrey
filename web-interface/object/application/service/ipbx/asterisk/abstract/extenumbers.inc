@@ -144,7 +144,7 @@ class xivo_application_service_asterisk_extenumbers_abstract extends xivo_applic
 		else if(is_array($origin) === false)
 			return(false);
 			
-		return($this->add_origin($origin));
+		return($this->_extenumbers->add_origin($origin));
 	}
 
 	function edit_origin($origin=null)
@@ -155,7 +155,7 @@ class xivo_application_service_asterisk_extenumbers_abstract extends xivo_applic
 		else if(is_array($origin) === false)
 			return(false);
 			
-		return($this->edit_origin($origin));
+		return($this->_extenumbers->edit_origin($origin));
 	}
 }
 

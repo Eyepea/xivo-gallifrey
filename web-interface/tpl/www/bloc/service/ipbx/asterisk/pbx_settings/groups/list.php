@@ -4,9 +4,15 @@
 	$dhtml = &$this->get_module('dhtml');
 
 	$pager = $this->get_var('pager');
+	$list = $this->get_var('list');
 	$act = $this->get_var('act');
 
-	$page = $url->pager($pager['pages'],$pager['page'],$pager['prev'],$pager['next'],'service/ipbx/pbx_settings/groups',array('act' => $act));
+	$page = $url->pager($pager['pages'],
+			    $pager['page'],
+			    $pager['prev'],
+			    $pager['next'],
+			    'service/ipbx/pbx_settings/groups',
+			    array('act' => $act));
 ?>
 <div class="b-list">
 <?php
@@ -28,8 +34,6 @@
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
 <?php
-	$list = $this->get_var('list');
-
 	if($list === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
@@ -37,7 +41,7 @@
 	</tr>
 <?php
 	else:
-		for($i = $pager['beg'],$j = 0;$i < $pager['end'] && $i < $pager['total'];$i++,$j++):
+		for($i = 0;$i < $nb;$i++):
 
 			$ref = &$list[$i];
 
@@ -46,10 +50,8 @@
 			else:
 				$icon = 'enable';
 			endif;
-
-			$mod = $j % 2 === 0 ? 1 : 2;
 ?>
-	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
+	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
 		<td class="td-left"><?=$form->checkbox(array('name' => 'groups[]','value' => $ref['gfeatures']['id'],'label' => false,'id' => 'it-groups-'.$i,'checked' => false,'field' => false));?></td>
 		<td class="txt-left"><label for="it-groups-<?=$i?>" id="lb-groups-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['gfeatures']['name']?></label></td>
 		<td><?=(xivo_haslen($ref['gfeatures']['number']) === true ? $ref['gfeatures']['number'] : '-')?></td>

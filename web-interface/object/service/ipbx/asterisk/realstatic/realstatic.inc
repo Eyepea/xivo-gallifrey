@@ -263,7 +263,7 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 		return($this->_dso->edit($id,$r));
 	}
 
-	function edit_where($id,$arr,$disable=null)
+	function edit_where($where,$arr,$disable=null,$id=null)
 	{
 		if(is_array($arr) === false)
 			return(false);
@@ -274,7 +274,7 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 		else
 			unset($arr['commented']);
 
-		return(parent::edit_where($id,$arr,$disable));
+		return(parent::edit_where($where,$arr,$disable,$id));
 	}
 
 	function edit_name($id,$name,$arr)

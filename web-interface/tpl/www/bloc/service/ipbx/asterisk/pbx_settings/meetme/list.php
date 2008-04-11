@@ -3,6 +3,7 @@
 	$form = &$this->get_module('form');
 	$dhtml = &$this->get_module('dhtml');
 
+	$list = $this->get_var('list');
 	$pager = $this->get_var('pager');
 	$act = $this->get_var('act');
 
@@ -29,8 +30,6 @@
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
 <?php
-	$list = $this->get_var('list');
-
 	if($list === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
@@ -38,7 +37,7 @@
 	</tr>
 <?php
 	else:
-		for($i = $pager['beg'],$j = 0;$i < $pager['end'] && $i < $pager['total'];$i++,$j++):
+		for($i = 0;$i < $nb;$i++):
 
 			$ref = &$list[$i];
 
@@ -53,10 +52,8 @@
 
 			if($ref['meetmeroom']['admin-pin'] === '')
 				$ref['meetmeroom']['admin-pin'] = '-';
-
-			$mod = $j % 2 === 0 ? 1 : 2;
 ?>
-	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
+	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
 		<td class="td-left"><?=$form->checkbox(array('name' => 'meetme[]','value' => $ref['meetmeroom']['id'],'label' => false,'id' => 'it-meetme-'.$i,'checked' => false,'field' => false));?></td>
 		<td class="txt-left"><label for="it-meetme-<?=$i?>" id="lb-meetme-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['mfeatures']['name']?></label></td>
 		<td><?=$ref['meetmeroom']['number']?></td>

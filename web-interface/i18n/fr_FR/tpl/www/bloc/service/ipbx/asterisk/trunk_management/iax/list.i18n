@@ -4,28 +4,25 @@ Nom
 ; col_host
 Hôte
 
-; col_connection-type
+; col_type
 Type de connexion
 
 ; col_call-limit
 Nombre d'appels
 
-; col_provisioning
-Approvisionnement
-
-; trunk_host-unknown
+; protocol_host-unknown
 Hôte inconnu
 
-; trunk_connect-inbound
+; protocol_type-user
 Entrant
 
-; trunk_connect-outbound
+; protocol_type-peer
 Sortant
 
-; trunk_connect-inoutbound
+; protocol_type-friend
 Entrant/Sortant
 
-; trunk_call-unlimited
+; protocol_call-unlimited
 Appels illimités
 
 ; no_trunk

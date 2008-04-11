@@ -1,8 +1,11 @@
 ; title_content_name
 Interconnexion personnalisée > Ajouter
 
-; fm_trunk_name
+; fm_protocol_name
 Nom :
 
-; fm_trunk_interface
+; fm_protocol_interface
 Interface :
+
+; fm_protocol_intfsuffix
+Suffixe de l'interface :

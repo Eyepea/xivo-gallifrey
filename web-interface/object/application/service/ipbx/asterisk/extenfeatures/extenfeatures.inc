@@ -8,6 +8,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 	var $_status		= '';
 	var $_extensions	= false;
 	var $_extenumbers	= false;
+	var $_appgeneralsip	= null;
 	var $_conf		= array();
 	var $_filter		= false;
 	var $_context		= 'features';
@@ -90,8 +91,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 		if(xivo_issa('exten',$this->_conf) === false
 		|| xivo_issa($name,$this->_conf['exten']) === false)
 			return(false);
-
-		if($cmd !== '' && isset($this->_conf['exten'][$name][$cmd]) === false)
+		else if($cmd !== '' && isset($this->_conf['exten'][$name][$cmd]) === false)
 			return(false);
 
 		return(true);
@@ -133,9 +133,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 			else if(isset($arr['appdata']) === true)
 				$arr['appdata'] = $this->_mk_extenfeatures_appdata_vars($arr['appdata'],$val);
 
-			$r = $this->_extensions->new_exten($arr['app'],$arr,$val,$this->_context);
-	
-			return($r);
+			return($this->_extensions->new_exten($arr['app'],$arr,$val,$this->_context));
 		}
 
 		unset($arr['_line']);
@@ -153,9 +151,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 		else if(isset($line['appdata']) === true)
 			$line['appdata'] = $this->_mk_extenfeatures_appdata_vars($line['appdata'],$val);
 
-		$id = $this->_extensions->new_exten($line['app'],$line,$val,$this->_context);
-
-		if($id === false)
+		if(($id = $this->_extensions->new_exten($line['app'],$line,$val,$this->_context)) === false)
 			return(false);
 
 		for($i = 1;$i < $nb;$i++)
@@ -195,6 +191,9 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 
 		$this->set_extenumbers('save','extenfeatures',$number,$context);
 
+		if($arr['name'] === 'voicemsg')
+			$this->set_sip_vmexten($number);
+
 		return(($this->get_errnb() < 1));
 	}
 
@@ -228,6 +227,30 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 		return(true);
 	}
 
+	function set_sip_vmexten($exten)
+	{
+		if(is_object($this->_appgeneralsip) === false
+		&& (($appsip = &$this->_service->get_apprealstatic('sip')) === false
+		   || ($this->_appgeneralsip = &$appsip->get_module('general')) === false) === true)
+		{
+			$this->_set_error('extenfeatures','invalid application');
+			return(false);
+		}
+
+		$rs = array();
+		$rs['var_name'] = 'vmexten';
+		$rs['var_val'] = $this->_service->clean_extension($exten);
+
+		if($this->_appgeneralsip->set($rs) === false)
+		{
+			$this->_set_error('extenfeatures',
+					  $this->_appgeneralsip->get_error($this->_appgeneralsip->get_name()));
+			return(false);
+		}
+
+		return(true);
+	}
+
 	function save()
 	{
 		$r = true;
@@ -239,7 +262,8 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 		|| empty($this->_info) === true
 		|| $this->get_errnb() > 0
 		|| ($name = $this->save_extenfeatures()) === false
-		|| $this->save_extenumbers($name) === false)
+		|| $this->save_extenumbers($name) === false
+		|| ($name === 'voicemsg' && $this->save_sip_vmexten() === false) === true)
 		{
 			$r = false;
 			$this->_reverse_save();
@@ -256,18 +280,16 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 			return(false);
 		else if($this->_info['extenfeatures'] === false)
 			return($this->_add_extenfeatures());
-
-		$this->_return['extenfeatures'] = $this->delete_extenfeatures();
-
-		if(($rs = $this->get_result('extenfeatures')) === null
-		|| $rs === false
+		else if(($rs = $this->get_result('extenfeatures')) === null
+		|| is_array($rs) === false
 		|| ($id = $this->_mk_extenfeatures_dialplan($rs['name'],$rs['exten'],$rs['commented'])) === false
-		|| ($list = $this->_extensions->get_loaded_exten($id)) === false)
+		|| ($list = $this->_extensions->get_loaded_exten($id)) === false
+		|| ($nb = count($list)) === 0)
 			return(false);
 
-		$this->_return = array();
+		$this->delete_extenfeatures();
 
-		$nb = count($list);
+		$this->_return['extenfeatures'] = $rs['name'];
 
 		for($i = 0;$i < $nb;$i++)
 		{
@@ -277,14 +299,8 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 			else
 				$eid = 0;
 
-			if(($this->_return[] = $this->_extensions->add($list[$i],$eid)) === false)
+			if($this->_extensions->add($list[$i],$eid) === false)
 				return(false);
-		}
-
-		if(isset($this->_return[0]) === false)
-		{
-			$this->_return = false;
-			return(false);
 		}
 
 		return($rs['name']);
@@ -296,6 +312,19 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 			return($r);
 
 		return(false);
+	}
+
+	function save_sip_vmexten()
+	{
+		if(is_object($this->_appgeneralsip) === false
+		|| ($rs = $this->_appgeneralsip->get_result($this->_appgeneralsip->get_name())) === null
+		|| is_array($rs) === false
+		|| isset($rs['var_name']) === false
+		|| $rs['var_name'] !== 'vmexten'
+		|| $this->_appgeneralsip->save_realstatic() === false)
+			return(false);
+	
+		return(true);
 	}
 
 	function _add_extenfeatures()

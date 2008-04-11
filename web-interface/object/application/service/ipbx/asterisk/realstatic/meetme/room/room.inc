@@ -25,7 +25,11 @@ class xivo_application_service_asterisk_realstatic_meetme_room extends xivo_appl
 	{
 		$this->_info = $this->_origin = false;
 
-		$this->_info[$this->_name] = $info = $this->_realstatic->get($id);
+		if(($info = $this->_realstatic->get($id,$disable)) === false)
+			return(false);
+
+		$this->_info = $this->_origin = array();
+		$this->_info[$this->_name] = $info;
 		$this->_origin[$this->_name] = $this->_realstatic->get_origin();
 
 		return($this->_info[$this->_name]);
@@ -73,9 +77,7 @@ class xivo_application_service_asterisk_realstatic_meetme_room extends xivo_appl
 
 		$arr['var_val'] = rtrim($arr['var_val'],',');
 
-		$this->_return[$this->_name] = $this->_realstatic->add($arr);
-
-		return($this->_return[$this->_name]);
+		return(($this->_return[$this->_name] = $this->_realstatic->add($arr)));
 	}
 
 	function edit_meetmeroom($id=0)
@@ -103,12 +105,7 @@ class xivo_application_service_asterisk_realstatic_meetme_room extends xivo_appl
 
 		$arr['var_val'] = rtrim($arr['var_val'],',');
 
-		$this->_return[$this->_name] = $this->_realstatic->edit($id,$arr);
-
-		if($this->_return[$this->_name] !== false)
-			$this->_return[$this->_name] = $id;
-
-		return($this->_return[$this->_name]);
+		return(($this->_return[$this->_name] = $this->_realstatic->edit($id,$arr)));
 	}
 
 	function delete_meetmeroom($status,$id=0)

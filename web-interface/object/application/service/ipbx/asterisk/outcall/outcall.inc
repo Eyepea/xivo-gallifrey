@@ -111,29 +111,13 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 	function get_outcalls_list($disable=null,$order=null,$limit=null,$assoc=false)
 	{
-		if(($rs = $this->_outcall->get_all($disable,true,$order,$limit)) === false
-		|| ($nb = count($rs)) === 0)
-		{
-			$this->_cnt = $this->_outcall->get_cnt();
-			return(false);
-		}
+		if(($rs = $this->_outcall->get_all($disable,true,$order,$limit,$assoc)) !== false
+		&& empty($rs) === true)
+			$rs = false;
 
 		$this->_cnt = $this->_outcall->get_cnt();
 
-		$r = array();
-
-		if((bool) $assoc === false)
-			$r = &$rs;
-		else
-		{
-			for($i = 0;$i < $nb;$i++)
-				$r[$rs[$i]['id']] = $rs[$i];
-		}
-
-		if(empty($r) === true)
-			$r = false;
-
-		return($r);
+		return($rs);
 	}
 
 	function _mk_exten_appdata($exten)

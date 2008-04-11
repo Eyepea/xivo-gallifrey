@@ -42,7 +42,7 @@
 	</tr>
 <?php
 	else:
-		for($i = $pager['beg'],$j = 0;$i < $pager['end'] && $i < $pager['total'];$i++,$j++):
+		for($i = 0;$i < $nb;$i++):
 
 			$ref = &$list[$i];
 
@@ -59,10 +59,8 @@
 			endif;
 
 			$ref['authorization'] = intval((bool) $ref['authorization']);
-
-			$mod = $j % 2 === 0 ? 1 : 2;
 ?>
-	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
+	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
 		<td class="td-left"><?=$form->checkbox(array('name' => 'rightcalls[]','value' => $ref['id'],'label' => false,'id' => 'it-rightcalls-'.$i,'checked' => false,'field' => false));?></td>
 		<td class="txt-left"><label for="it-rightcalls-<?=$i?>" id="lb-rightcalls-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['name']?></label></td>
 		<td><?=$passwd?></td>

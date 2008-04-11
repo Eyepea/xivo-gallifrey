@@ -140,12 +140,19 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 		return($this->_dso->edit($id,$arr,$disable,$delete));
 	}
 
-	function edit_where($id,$arr,$disable=null,$delete=false)
+	function edit_where($where,$arr,$disable=null,$delete=false,$id=null)
 	{
-		if(is_array($id) === false
-		|| ($where = $this->get_element_where($id)) === false
+		if(is_array($where) === false
+		|| ($where = $this->get_element_where($where)) === false
 		|| ($arr = $this->chk_values($arr,true,false,false)) === false)
 			return(false);
+		else if($id !== null)
+		{
+			if(($id = $this->_chk_primary_key($id)) === false)
+				return(false);
+
+			$where = array_merge($where,$id);
+		}
 
 		return($this->_dso->edit($where,$arr,$disable,$delete));
 	}
@@ -155,9 +162,9 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 		return($this->edit($id,array('deleted' => true),$disable));
 	}
 
-	function delete_where($id,$disable=null)
+	function delete_where($where,$disable=null)
 	{
-		return($this->edit_where($id,array('deleted' => true),$disable));
+		return($this->edit_where($where,array('deleted' => true),$disable));
 	}
 
 	function recover($id,$disable=null)
@@ -165,9 +172,9 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 		return($this->edit($id,array('deleted' => false),$disable,true));
 	}
 
-	function recover_where($id,$disable=null)
+	function recover_where($where,$disable=null)
 	{
-		return($this->edit_where($id,array('deleted' => true),$disable,true));
+		return($this->edit_where($where,array('deleted' => true),$disable,true));
 	}
 
 	function get_list($disable=null,$delete=false,$order=null,$limit=null)

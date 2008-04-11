@@ -1,6 +1,7 @@
 <?php
 
-$appgeneralsip = &$ipbx->get_apprealstatic('generalsip');
+$appsip = &$ipbx->get_apprealstatic('sip');
+$appgeneralsip = &$appsip->get_module('general');
 
 $fm_save = null;
 

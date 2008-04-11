@@ -7,6 +7,12 @@ $array['element'] = array();
 $array['element']['name'] = array();
 $array['element']['name']['default'] = '';
 
+$array['element']['username'] = array();
+$array['element']['username']['default'] = '';
+
+$array['element']['secret'] = array();
+$array['element']['secret']['default'] = '';
+
 $array['element']['callerid'] = array();
 $array['element']['callerid']['default'] = '';
 $array['element']['callerid']['null'] = true;
@@ -17,7 +23,7 @@ $array['element']['host']['default'] = 'dynamic';
 $array['element']['host']['setdef'] = true;
 
 $array['element']['type'] = array();
-$array['element']['type']['value'] = array('peer','user','friend');
+$array['element']['type']['value'] = array('user','peer','friend');
 $array['element']['type']['default'] = 'peer';
 $array['element']['type']['setdef'] = true;
 
@@ -104,7 +110,7 @@ $array['filter']['context'] = array('set' => false,
 				    'callbackparam' => array(array(XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['call-limit'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,30));
 $array['filter']['host'] = array('set' => false,'chk' => 2,'key' => array('dynamic','static'),'strict' => false,'callback' => 'xivo_filter::chk_host_ipv4_strict');
-$array['filter']['type'] = array('set' => false,'chk' => 2,'key' => array('peer','user','friend'));
+$array['filter']['type'] = array('set' => false,'chk' => 2,'key' => array('user','peer','friend'));
 $array['filter']['notransfer'] = array('bool' => true);
 $array['filter']['trunk'] = array('bool' => true);
 $array['filter']['qualify'] = array('bool' => true);

@@ -65,15 +65,11 @@ if(isset($_QR['fm_send']) === true)
 					$info['extenfeatures'][$key]['exten'] = '';
 					$error['extenfeatures'][] = $key;
 				}
-				else if($key === 'voicemsg')
-				{
-					$vmexten = $ipbx->clean_extension($rs['exten']);
-					$generalsip = &$ipbx->get_module('generalsip');
-					$generalsip->edit_where(array('var_name' => 'vmexten'),array('var_val' => $vmexten));
-				}
 			}
 
-			if(isset($error['extenfeatures'][0]) === false)
+			if(isset($error['extenfeatures'][0]) === true)
+				$fm_save = false;
+			else if($fm_save !== false)
 				$fm_save = true;
 		}
 	}

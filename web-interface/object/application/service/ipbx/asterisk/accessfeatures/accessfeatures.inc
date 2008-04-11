@@ -11,9 +11,16 @@ class xivo_application_service_asterisk_accessfeatures extends xivo_application_
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
 
+		if(($this->_accessfeatures = &$this->_service->get_module('accessfeatures')) === false)
+			return(false);
+
+		return($this->load_init($param));
+	}
+
+	function load_init($param=array())
+	{
 		if($this->set_params($param) === false
 		|| isset($param['feature']) === false
-		|| ($this->_accessfeatures = &$this->_service->get_module('accessfeatures')) === false
 		|| $this->_accessfeatures->chk_element_value('feature',$param['feature']) === false)
 			return(false);
 
@@ -75,33 +82,39 @@ class xivo_application_service_asterisk_accessfeatures extends xivo_application_
 			$this->_set_result($k++,$rs);
 		}
 
-		if($this->get_errnb() > 0)
-			return(false);
-
-		return(true);
+		return(($this->get_errnb() < 1));
 	}
 
 	function add()
 	{
-		$this->_status = 'add';
+		$r = true;
 
+		$this->_status = 'add';
+		$this->_return = array();
+
+		if($this->get_errnb() > 0
+		|| $this->add_accessfeatures() === false)
+		{
+			$r = false;
+			$this->_reverse_add();
+		}
+
+		$this->_status = '';
+
+		return($r);
+	}
+
+	function add_accessfeatures()
+	{
 		if(($rs = $this->get_result()) === null || $rs === false)
 			return($rs);
-
-		$this->_return = array();
 
 		$nb = count($rs);
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(($this->_return[] = $this->_accessfeatures->add($rs[$i])) !== false)
-				continue;
-			else if($this->_status === 'add')
-				$this->_reverse_add();
-			else if($this->_status === 'edit' || $this->_status === 'save')
-				$this->_reverse_edit();
-
-			return(false);
+			if(($this->_return[] = $this->_accessfeatures->add($rs[$i])) === false)
+				return(false);
 		}
 
 		if(isset($this->_return[0]) === false)
@@ -112,24 +125,46 @@ class xivo_application_service_asterisk_accessfeatures extends xivo_application_
 
 	function edit()
 	{
-		$this->_status = 'edit';
+		$r = true;
 
-		return($this->_edit_save());
+		$this->_status = 'edit';
+		$this->_return = array();
+
+		if($this->_edit_save() === false)
+		{
+			$r = false;
+			$this->_reverse_edit();
+		}
+
+		$this->_status = '';
+
+		return($r);
 	}
 
 	function save()
 	{
-		$this->_status = 'save';
+		$r = true;
 
-		return($this->_edit_save());
+		$this->_status = 'save';
+		$this->_return = array();
+
+		if($this->_edit_save() === false)
+		{
+			$r = false;
+			$this->_reverse_edit();
+		}
+
+		$this->_status = '';
+
+		return($r);
 	}
 
 	function _edit_save()
 	{
 		if(empty($this->_info) === true)
-			return($this->add());
+			return($this->add_accessfeatures());
 
-		$this->_return = $this->delete();
+		$this->_return = $this->delete_accessfeatures();
 
 		if(($rs = $this->get_result()) === null)
 			return($this->_return);
@@ -159,16 +194,31 @@ class xivo_application_service_asterisk_accessfeatures extends xivo_application_
 
 	function delete()
 	{
-		$this->_status = 'delete';
+		$r = true;
 
+		$this->_status = 'delete';
+		$this->_return = array();
+
+		if($this->delete_accessfeatures() === false)
+		{
+			$r = false;
+			$this->_reverse_delete();
+		}
+
+		$this->_status = '';
+
+		return($r);
+	}
+
+	function delete_accessfeatures()
+	{
 		if(empty($this->_info) === true)
 			return(null);
 
 		$where = array();
 		$where['feature'] = $this->_param['feature'];
 
-		if(($r = $this->_accessfeatures->delete_where($where)) === false)
-			$this->_reverse_delete();
+		$r = $this->_accessfeatures->delete_where($where);
 
 		if($this->_status === 'delete')
 			$this->_return = $r;
@@ -178,8 +228,10 @@ class xivo_application_service_asterisk_accessfeatures extends xivo_application_
 
 	function _reverse_add()
 	{
-		if(is_array($this->_return) === false || ($nb = count($this->_return)) === 0)
-			return(null);
+		if($this->_status !== 'add'
+		|| is_array($this->_return) === false
+		|| ($nb = count($this->_return)) === 0)
+			return(false);
 
 		for($i = 0;$i < $nb;$i++)
 		{
@@ -192,14 +244,25 @@ class xivo_application_service_asterisk_accessfeatures extends xivo_application_
 
 	function _reverse_edit()
 	{
-		$this->delete();
+		if($this->_status !== 'edit' && $this->_status !== 'save')
+			return(false);
 
-		return($this->_accessfeatures->add_origin_list());
+		$this->delete_accessfeatures();
+
+		if(empty($this->_origin) === false)
+			return($this->_accessfeatures->add_origin_list($this->_origin));
+
+		return(true);
 	}
 
 	function _reverse_delete()
 	{
-		return($this->_accessfeatures->add_origin_list());
+		if($this->_status !== 'delete')
+			return(false);
+		else if(empty($this->_origin) === false)
+			return($this->_accessfeatures->add_origin_list($this->_origin));
+
+		return(true);
 	}
 }
 

@@ -39,6 +39,11 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 		return(true);
 	}
 
+	function get_name()
+	{
+		return($this->_name);
+	}
+
 	function get($name,$disable=null)
 	{
 		$this->_info = $this->_origin = array();

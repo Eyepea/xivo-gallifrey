@@ -44,7 +44,7 @@ if($outcalltrunk['list'] !== false):
 
 <div id="outcalltrunklist" class="fm-field fm-multilist"><p><label id="lb-outcalltrunklist" for="it-outcalltrunklist"><?=$this->bbf('fm_outcalltrunk');?></label></p>
 	<div class="slt-outlist">
-		<?=$form->select(array('name' => 'outcalltrunklist','label' => false,'id' => 'it-outcalltrunklist','multiple' => true,'size' => 5,'field' => false,'browse' => 'trunk','key' => 'identity','altkey' => 'trunkfeaturesid'),$outcalltrunk['list']);?>
+		<?=$form->select(array('name' => 'outcalltrunklist','label' => false,'id' => 'it-outcalltrunklist','multiple' => true,'size' => 5,'field' => false,'key' => 'identity','altkey' => 'trunkfeaturesid'),$outcalltrunk['list']);?>
 	</div>
 	<div class="inout-list">
 
@@ -54,7 +54,7 @@ if($outcalltrunk['list'] !== false):
 	</div>
 	<div class="slt-inlist">
 
-		<?=$form->select(array('name' => 'outcalltrunk[]','label' => false,'id' => 'it-outcalltrunk','multiple' => true,'size' => 5,'field' => false,'browse' => 'trunk','key' => 'identity','altkey' => 'trunkfeaturesid'),$outcalltrunk['slt']);?>
+		<?=$form->select(array('name' => 'outcalltrunk[]','label' => false,'id' => 'it-outcalltrunk','multiple' => true,'size' => 5,'field' => false,'key' => 'identity','altkey' => 'trunkfeaturesid'),$outcalltrunk['slt']);?>
 
 		<div class="bt-updown">
 

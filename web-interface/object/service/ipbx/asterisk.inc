@@ -266,69 +266,6 @@ class xivo_service_asterisk extends xivo_service_abstract
 		return($r);
 	}
 
-	function get_trunks_list($disable=null,$trunk=true,$assoc=true)
-	{
-		$trunk = (bool) $trunk;
-
-		$tfeatures = &$this->get_module('trunkfeatures');
-
-		if(($rs = $tfeatures->get_all(null,true,array('trunk' => SORT_ASC))) === false
-		|| ($nb = count($rs)) === 0)
-			return(false);
-
-		$r = $info = $trunks = array();
-
-		xivo::load_class('xivo_sort');
-		$sort = new xivo_sort(array('browse' => 'trunk','key' => 'identity'));
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$info['tfeatures'] = $rs[$i];
-
-			if(isset($trunks[$info['tfeatures']['trunk']]) === false)
-				$trunks[$info['tfeatures']['trunk']] = &$this->get_module('trunk'.$info['tfeatures']['trunk']);
-
-			$trunkmodule = &$trunks[$info['tfeatures']['trunk']];
-
-			if($trunkmodule === false)
-				continue;
-			else if($trunk === true)
-			{
-				if(isset($r[$info['tfeatures']['trunk']]) === false)
-					$r[$info['tfeatures']['trunk']] = array();
-
-				$ret = &$r[$info['tfeatures']['trunk']];
-			}
-
-			if(($info['trunk'] = $trunkmodule->get($info['tfeatures']['trunkid'],$disable)) === false)
-			{
-				if($trunk === true && empty($ret) === true)
-					unset($r[$info['tfeatures']['trunk']]);
-				continue;
-			}
-
-			$info['trunk']['trunkfeaturesid'] = $info['tfeatures']['id'];
-
-			if($trunk === true)
-			{
-				$ret[$info['tfeatures']['id']] = $info;
-				usort($ret,array(&$sort,'str_usort'));
-			}
-			else
-			{
-				$r[$info['tfeatures']['id']] = $info;
-				uasort($r,array(&$sort,'str_usort'));
-			}
-		}
-
-		if(empty($r) === true)
-			return(false);
-		else if((bool) $assoc === false)
-			return(array_values($r));
-
-		return($r);
-	}
-
 	function get_agents_list($group=0,$disable=null,$assoc=false)
 	{
 		$group = xivo_ulongint($group);
@@ -645,14 +582,12 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 	function get_channel_by_protocol($protocol)
 	{
-		$r = false;
-
 		$protocol = strtolower(strval($protocol));
 
 		if($this->chk_channel_by_protocol($protocol) === true)
-			$r = $this->_conf['channel'][$protocol];
+			return($this->_conf['channel'][$protocol]);
 
-		return($r);
+		return(false);
 	}
 
 	function chk_channel_by_interface($interface)

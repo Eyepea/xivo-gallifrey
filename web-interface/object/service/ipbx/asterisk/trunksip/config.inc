@@ -7,6 +7,12 @@ $array['element'] = array();
 $array['element']['name'] = array();
 $array['element']['name']['default'] = '';
 
+$array['element']['username'] = array();
+$array['element']['username']['default'] = '';
+
+$array['element']['secret'] = array();
+$array['element']['secret']['default'] = '';
+
 $array['element']['callerid'] = array();
 $array['element']['callerid']['default'] = '';
 $array['element']['callerid']['null'] = true;
@@ -22,7 +28,7 @@ $array['element']['dtmfmode']['default'] = 'info';
 $array['element']['dtmfmode']['setdef'] = true;
 
 $array['element']['type'] = array();
-$array['element']['type']['value'] = array('peer','user','friend');
+$array['element']['type']['value'] = array('user','peer','friend');
 $array['element']['type']['default'] = 'peer';
 $array['element']['type']['setdef'] = true;
 
@@ -132,7 +138,7 @@ $array['filter']['host'] = array('set' => false,'chk' => 2,
 				 'strict' => false,
 				 'callback' => 'xivo_filter::chk_host_ipv4_strict');
 $array['filter']['dtmfmode'] = array('set' => false,'chk' => 2,'key' => array('rfc2833','inband','info','auto'));
-$array['filter']['type'] = array('set' => false,'chk' => 2,'key' => array('peer','user','friend'));
+$array['filter']['type'] = array('set' => false,'chk' => 2,'key' => array('user','peer','friend'));
 $array['filter']['nat'] = array('bool' => true);
 $array['filter']['qualify'] = array('bool' => true);
 $array['filter']['canreinvite'] = array('bool' => true);

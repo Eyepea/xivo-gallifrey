@@ -319,9 +319,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		|| $rs === false)
 			return(false);
 
-		$this->_return['meetmeroom'] = $this->_meetmeroom->get_return_var('meetmeroom');
-
-		return($this->_return['meetmeroom']);
+		return(($this->_return['meetmeroom'] = $this->_meetmeroom->get_return_var('meetmeroom')));
 	}
 
 	function edit_meetmefeatures()
@@ -333,9 +331,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 		$rs['meetmeid'] = $this->_info['mfeatures']['meetmeid'];
 
-		$this->_return['mfeatures'] = $this->_meetmefeatures->edit($this->_info['mfeatures']['id'],$rs);
-
-		return($this->_return['mfeatures']);
+		return(($this->_return['mfeatures'] = $this->_meetmefeatures->edit($this->_info['mfeatures']['id'],$rs)));
 	}
 
 	function edit_extenumbers()
@@ -418,17 +414,17 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 	function delete_meetmeroom()
 	{
-		$rs = false;
+		$r = false;
 
 		if(xivo_issa('meetmeroom',$this->_info) === false
-		|| ($rs = $this->_meetmeroom->delete_meetmeroom($this->_status,$this->_info['meetmeroom']['id'])) === null
-		|| $rs === false)
-			return($rs);
+		|| ($r = $this->_meetmeroom->delete_meetmeroom($this->_status,$this->_info['meetmeroom']['id'])) === null
+		|| $r === false)
+			return($r);
 
 		if($this->_status === 'delete')
-			$this->_return['meetmeroom'] = $rs;
+			$this->_return['meetmeroom'] = $r;
 
-		return($this->_return['meetmeroom']);
+		return($r);
 	}
 
 	function delete_meetmefeatures()

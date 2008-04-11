@@ -72,13 +72,21 @@ if(xivo_issa('special',$return) === true
 else
 	$return['special'] = false;
 
+$apptrunk = &$ipbx->get_application('trunk',null,false);
+if(($trunkslist = $apptrunk->get_all_trunks(null,null,null,true)) !== false)
+{
+	xivo::load_class('xivo_sort');
+	$trunksort = new xivo_sort(array('key' => 'identity'));
+	uasort($trunkslist,array(&$trunksort,'str_usort'));
+}
+
 $_HTML->set_var('fm_save',$fm_save);
 $_HTML->set_var('fm_smenu_tab',$fm_smenu_tab);
 $_HTML->set_var('fm_smenu_part',$fm_smenu_part);
 $_HTML->set_var('element',$apphnumbersemergency->get_elements());
 $_HTML->set_var('info',$return);
 $_HTML->set_var('error',$error);
-$_HTML->set_var('trunkslist',$ipbx->get_trunks_list());
+$_HTML->set_var('trunkslist',$trunkslist);
 
 $dhtml = &$_HTML->get_module('dhtml');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/general.js');

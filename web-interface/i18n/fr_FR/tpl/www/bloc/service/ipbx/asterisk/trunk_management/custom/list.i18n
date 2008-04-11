@@ -4,6 +4,9 @@ Nom
 ; col_interface
 Interface
 
+; col_intfsuffix
+Suffixe de l'interface
+
 ; no_trunk
 Aucune interconnexion personnalisée trouvée
 

@@ -26,7 +26,11 @@ class xivo_service_asterisk_trunkcustom extends xivo_service_asterisk_abstract
 	function _prepare($data)
 	{
 		$data['commented'] = (bool) $data['commented'];
-		$data['identity'] = $data['name'].' ('.$data['interface'].')';
+
+		if(xivo_haslen($data['intfsuffix']) === true)
+			$data['identity'] = $data['name'].' ('.$data['interface'].'|'.$data['intfsuffix'].')';
+		else
+			$data['identity'] = $data['name'].' ('.$data['interface'].')';
 
 		return($data);
 	}
@@ -45,6 +49,9 @@ class xivo_service_asterisk_trunkcustom extends xivo_service_asterisk_abstract
 		if(isset($arr['interface']) === true)
 			$arr['interface'] = strtolower($arr['interface']);
 
+		if(isset($arr['intfsuffix']) === true)
+			$arr['intfsuffix'] = strtolower($arr['intfsuffix']);
+
 		return(parent::add($arr,$id));
 	}
 
@@ -61,6 +68,9 @@ class xivo_service_asterisk_trunkcustom extends xivo_service_asterisk_abstract
 
 		if(isset($arr['interface']) === true)
 			$arr['interface'] = strtolower($arr['interface']);
+
+		if(isset($arr['intfsuffix']) === true)
+			$arr['intfsuffix'] = strtolower($arr['intfsuffix']);
 
 		return(parent::edit($id,$arr,$disable));
 	}

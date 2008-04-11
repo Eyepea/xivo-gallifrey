@@ -13,79 +13,88 @@ Codecs
 ; smenu_advanced
 Advanced
 
-; fm_trunk_name
+; fm_protocol_name
 Name:
 
-; fm_trunk_username
+; fm_protocol_username
 Username:
 
-; fm_trunk_secret
+; fm_protocol_secret
 Password:
 
-; fm_trunk_callerid
+; fm_protocol_callerid
 Caller ID:
 
-; fm_trunk_context
+; fm_protocol_context
 Context:
 
-; fm_trunk_fromuser
+; fm_protocol_fromuser
 from-user field:
 
-; fm_trunk_fromdomain
+; fm_protocol_fromdomain
 from-domain field:
 
-; fm_trunk_calllimit
+; fm_protocol_calllimit
 Call limit:
 
-; fm_trunk_host
+; fm_protocol_host
 IP Addressing type:
 
-; fm_trunk_host-dynamic
+; fm_protocol_host-dynamic
 Dynamic
 
-; fm_trunk_host-static
+; fm_protocol_host-static
 Static
 
-; fm_trunk_port
+; fm_protocol_port
 Port:
 
-; fm_trunk_dtmfmode
+; fm_protocol_dtmfmode
 DTMF:
 
-; fm_trunk_type
-Type:
+; fm_protocol_type
+Connection type:
 
-; fm_trunk_nat
+; fm_protocol_type-user
+Incoming
+
+; fm_protocol_type-peer
+Outgoing
+
+; fm_protocol_type-friend
+Incoming/Outgoing
+
+; fm_protocol_nat
 NAT:
 
-; fm_trunk_qualify
+; fm_protocol_qualify
 Monitoring:
 
-; fm_trunk_canreinvite
+; fm_protocol_canreinvite
 Invite:
 
-; fm_trunk_insecure
+; fm_protocol_insecure
 Insecure:
 
-; fm_trunk_insecure-opt-port
+; fm_protocol_insecure-opt-port
 Port
 
-; fm_trunk_insecure-opt-invite
+; fm_protocol_insecure-opt-invite
 Invite
 
-; fm_trunk_insecure-opt-all
+; fm_protocol_insecure-opt-all
 All
 
 ; fm_codec-custom
 Customize:
 
-; fm_trunk_codec-disallow
+; fm_protocol_codec-disallow
 Disable:
 
-; fm_trunk_codec-disallow-opt-all
+; fm_protocol_codec-disallow-opt-all
 All
 
-; fm_trunk_codec-allow
+; fm_protocol_codec-allow
 Enable:
 
 ; bt_upcodec

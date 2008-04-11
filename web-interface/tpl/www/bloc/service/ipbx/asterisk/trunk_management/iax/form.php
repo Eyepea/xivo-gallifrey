@@ -5,11 +5,11 @@
 	$info = $this->get_var('info');
 	$element = $this->get_var('element');
 
-	$allow = $info['trunk']['allow'];
+	$allow = $info['protocol']['allow'];
 
 	$codec_active = empty($allow) === false;
 
-	$trunk_active = (bool) $this->get_varra('info',array('trunk','commented'));
+	$protocol_disable = (bool) $this->get_varra('info',array('protocol','commented'));
 
 	$reg_active = $this->get_varra('info',array('register','commented'));
 
@@ -17,8 +17,8 @@
 		$reg_active = xivo_bool($reg_active) === false;
 	endif;
 
-	if(($host = (string) $info['trunk']['host']) === ''
-	|| in_array($host,$element['trunk']['host']['value'],true) === true):
+	if(($host = (string) $info['protocol']['host']) === ''
+	|| in_array($host,$element['protocol']['host']['value'],true) === true):
 		$host_static = false;
 	else:
 		$host_static = true;
@@ -27,47 +27,47 @@
 
 <div id="sb-part-first">
 
-<?=$form->text(array('desc' => $this->bbf('fm_trunk_name'),'name' => 'trunk[name]','labelid' => 'trunk-name','size' => 15,'value' => $info['trunk']['name']),'onchange="xivo_eid(\'it-trunk-username\').value = xivo_trunk == \'friend\' ? this.value : xivo_eid(\'it-trunk-username\').value;" onfocus="xivo_eid(\'it-trunk-username\').value = xivo_trunk == \'friend\' ? this.value : xivo_eid(\'it-trunk-username\').value; xivo_fm_set_onfocus(this);"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_protocol_name'),'name' => 'protocol[name]','labelid' => 'protocol-name','size' => 15,'default' => $element['protocol']['name']['default'],'value' => $info['protocol']['name']),'onchange="xivo_eid(\'it-protocol-username\').value = xivo_trunk_type == \'friend\' ? this.value : xivo_eid(\'it-protocol-username\').value;" onfocus="xivo_eid(\'it-protocol-username\').value = xivo_trunk_type == \'friend\' ? this.value : xivo_eid(\'it-protocol-username\').value; xivo_fm_set_onfocus(this);"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_trunk_username'),'name' => 'trunk[username]','labelid' => 'trunk-username','size' => 15,'value' => $info['trunk']['username']));?>
+<?=$form->text(array('desc' => $this->bbf('fm_protocol_username'),'name' => 'protocol[username]','labelid' => 'protocol-username','size' => 15,'default' => $element['protocol']['username']['default'],'value' => $info['protocol']['username']));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_trunk_secret'),'name' => 'trunk[secret]','labelid' => 'trunk-secret','size' => 15,'value' => $info['trunk']['secret']));?>
+<?=$form->text(array('desc' => $this->bbf('fm_protocol_secret'),'name' => 'protocol[secret]','labelid' => 'protocol-secret','size' => 15,'default' => $element['protocol']['secret']['default'],'value' => $info['protocol']['secret']));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_trunk_callerid'),'name' => 'trunk[callerid]','labelid' => 'trunk-callerid','size' => 15,'value' => $info['trunk']['callerid']));?>
+<?=$form->text(array('desc' => $this->bbf('fm_protocol_callerid'),'name' => 'protocol[callerid]','labelid' => 'protocol-callerid','size' => 15,'default' => $element['protocol']['callerid']['default'],'value' => $info['protocol']['callerid']));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_trunk_calllimit'),'name' => 'trunk[call-limit]','labelid' => 'trunk-calllimit','size' => 10,'value' => $info['trunk']['call-limit']));?>
+<?=$form->text(array('desc' => $this->bbf('fm_protocol_calllimit'),'name' => 'protocol[call-limit]','labelid' => 'protocol-calllimit','size' => 10,'value' => $info['protocol']['call-limit']));?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_trunk_host'),'name' => 'trunk[host-dynamic]','labelid' => 'trunk-host-dynamic','bbf' => 'fm_trunk_host-','key' => false,'value' => ($host_static === true ? 'static' : $host)),$element['trunk']['host-dynamic']['value'],'onchange="xivo_chg_attrib(\'fm_host\',\'fd-trunk-host-static\',(this.value != \'static\' ? 0 : 1))"');?>
+<?=$form->select(array('desc' => $this->bbf('fm_protocol_host'),'name' => 'protocol[host-dynamic]','labelid' => 'protocol-host-dynamic','bbf' => 'fm_protocol_host-','key' => false,'default' => $element['protocol']['host']['default'],'value' => ($host_static === true ? 'static' : $host)),$element['protocol']['host-dynamic']['value'],'onchange="xivo_chg_attrib(\'fm_host\',\'fd-protocol-host-static\',(this.value != \'static\' ? 0 : 1))"');?>
 
-<?=$form->text(array('desc' => '&nbsp;','name' => 'trunk[host-static]','labelid' => 'trunk-host-static','size' => 15,'value' => ($host_static === true ? $host : '')));?>
+<?=$form->text(array('desc' => '&nbsp;','name' => 'protocol[host-static]','labelid' => 'protocol-host-static','size' => 15,'default' => $element['protocol']['host-static']['default'],'value' => ($host_static === true ? $host : '')));?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_trunk_type'),'name' => 'trunk[type]','labelid' => 'trunk-type','key' => false,'default' => $element['trunk']['type']['default'],'value' => $info['trunk']['type']),$element['trunk']['type']['value'],'onchange="xivo_chgtrunk(this);"');?>
+<?=$form->select(array('desc' => $this->bbf('fm_protocol_type'),'name' => 'protocol[type]','labelid' => 'protocol-type','bbf' => 'fm_protocol_type-','key' => false,'default' => $element['protocol']['type']['default'],'value' => $info['protocol']['type']),$element['protocol']['type']['value'],'onchange="xivo_ast_chg_trunk_type(this);"');?>
 
 </div>
 
 <div id="sb-part-register" class="b-nodisplay">
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_register'),'name' => 'register-active','labelid' => 'register-active','checked' => $reg_active),($trunk_active === true ? ' disabled="disabled"' : '').' onclick="xivo_chg_attrib(\'fm_register\',\'it-register-username\',(this.checked == true ? 0 : 1))"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_register'),'name' => 'register-active','labelid' => 'register-active','checked' => $reg_active),($protocol_disable === true ? ' disabled="disabled"' : '').' onclick="xivo_chg_attrib(\'fm_register\',\'it-register-username\',(this.checked == true ? 0 : 1))"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_register_username'),'name' => 'register[username]','labelid' => 'register-username','size' => 15,'value' => $this->get_varra('info',array('register','username'))));?>
+<?=$form->text(array('desc' => $this->bbf('fm_register_username'),'name' => 'register[username]','labelid' => 'register-username','size' => 15,'default' => $element['register']['username']['default'],'value' => $this->get_varra('info',array('register','username'))));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_register_password'),'name' => 'register[password]','labelid' => 'register-password','size' => 15,'value' => $this->get_varra('info',array('register','password'))));?>
+<?=$form->text(array('desc' => $this->bbf('fm_register_password'),'name' => 'register[password]','labelid' => 'register-password','size' => 15,'default' => $element['register']['password']['default'],'value' => $this->get_varra('info',array('register','password'))));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_register_host'),'name' => 'register[host]','labelid' => 'register-host','size' => 15,'value' => $this->get_varra('info',array('register','host'))));?>
+<?=$form->text(array('desc' => $this->bbf('fm_register_host'),'name' => 'register[host]','labelid' => 'register-host','size' => 15,'default' => $element['register']['host']['default'],'value' => $this->get_varra('info',array('register','host'))));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_register_port'),'name' => 'register[port]','labelid' => 'register-port','size' => 15,'value' => $this->get_varra('info',array('register','port'))));?>
+<?=$form->text(array('desc' => $this->bbf('fm_register_port'),'name' => 'register[port]','labelid' => 'register-port','size' => 15,'default' => $element['register']['port']['default'],'value' => $this->get_varra('info',array('register','port'))));?>
 
 </div>
 
 <div id="sb-part-codec" class="b-nodisplay">
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_codec-custom'),'name' => 'codec-active','labelid' => 'codec-active','checked' => $codec_active),'onclick="xivo_chg_attrib(\'fm_codec\',\'it-trunk-disallow\',(this.checked == true ? 0 : 1))"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_codec-custom'),'name' => 'codec-active','labelid' => 'codec-active','checked' => $codec_active),'onclick="xivo_chg_attrib(\'fm_codec\',\'it-protocol-disallow\',(this.checked == true ? 0 : 1))"');?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_trunk_codec-disallow'),'name' => 'trunk[disallow]','labelid' => 'trunk-disallow','key' => false,'bbf' => array('concatvalue','fm_trunk_codec-disallow-opt-')),$element['trunk']['disallow']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_protocol_codec-disallow'),'name' => 'protocol[disallow]','labelid' => 'protocol-disallow','bbf' => array('concatvalue','fm_protocol_codec-disallow-opt-'),'key' => false,'default' => $element['protocol']['disallow']['default']),$element['protocol']['disallow']['value']);?>
 
-<div id="codeclist" class="fm-field fm-multilist"><p><label id="lb-codeclist" for="it-codeclist"><?=$this->bbf('fm_trunk_codec-allow');?></label></p>
+<div id="codeclist" class="fm-field fm-multilist"><p><label id="lb-codeclist" for="it-codeclist"><?=$this->bbf('fm_protocol_codec-allow');?></label></p>
 	<div class="slt-outlist">
-		<?=$form->select(array('name' => 'codeclist','label' => false,'id' => 'it-codeclist','multiple' => true,'size' => 5,'field' => false,'key' => false,'bbf' => 'ast_codec_name_type-'),$element['trunk']['allow']['value']);?>
+		<?=$form->select(array('name' => 'codeclist','label' => false,'id' => 'it-codeclist','multiple' => true,'size' => 5,'field' => false,'key' => false,'bbf' => 'ast_codec_name_type-'),$element['protocol']['allow']['value']);?>
 	</div>
 	<div class="inout-list">
 
@@ -77,7 +77,7 @@
 	</div>
 	<div class="slt-inlist">
 
-		<?=$form->select(array('name' => 'trunk[allow][]','label' => false,'id' => 'it-codec','multiple' => true,'size' => 5,'field' => false,'key' => false,'bbf' => 'ast_codec_name_type-'),$allow);?>
+		<?=$form->select(array('name' => 'protocol[allow][]','label' => false,'id' => 'it-codec','multiple' => true,'size' => 5,'field' => false,'key' => false,'bbf' => 'ast_codec_name_type-'),$allow);?>
 
 		<div class="bt-updown">
 
@@ -95,14 +95,14 @@
 
 <div id="sb-part-last" class="b-nodisplay">
 
-<?=$form->text(array('desc' => $this->bbf('fm_trunk_context'),'name' => 'trunk[context]','labelid' => 'trunk-context','size' => 15,'value' => $info['trunk']['context']));?>
+<?=$form->text(array('desc' => $this->bbf('fm_protocol_context'),'name' => 'protocol[context]','labelid' => 'protocol-context','size' => 15,'default' => $element['protocol']['context']['default'],'value' => $info['protocol']['context']));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_trunk_port'),'name' => 'trunk[port]','labelid' => 'trunk-port','size' => 15,'default' => $element['trunk']['port']['default'],'value' => $info['trunk']['port']));?>
+<?=$form->text(array('desc' => $this->bbf('fm_protocol_port'),'name' => 'protocol[port]','labelid' => 'protocol-port','size' => 15,'default' => $element['protocol']['port']['default'],'value' => $info['protocol']['port']));?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_trunk_notransfer'),'name' => 'trunk[notransfer]','labelid' => 'trunk-notransfer','default' => $element['trunk']['notransfer']['default'],'checked' => $info['trunk']['notransfer']));?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_protocol_notransfer'),'name' => 'protocol[notransfer]','labelid' => 'protocol-notransfer','default' => $element['protocol']['notransfer']['default'],'checked' => $info['protocol']['notransfer']));?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_trunk_trunk'),'name' => 'trunk[trunk]','labelid' => 'trunk-trunk','default' => $element['trunk']['trunk']['default'],'checked' => $info['trunk']['trunk']));?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_protocol_trunk'),'name' => 'protocol[trunk]','labelid' => 'protocol-trunk','default' => $element['protocol']['protocol']['default'],'checked' => $info['protocol']['protocol']));?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_trunk_qualify'),'name' => 'trunk[qualify]','labelid' => 'trunk-qualify','default' => $element['trunk']['qualify']['default'],'checked' => $info['trunk']['qualify']));?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_protocol_qualify'),'name' => 'protocol[qualify]','labelid' => 'protocol-qualify','default' => $element['protocol']['qualify']['default'],'checked' => $info['protocol']['qualify']));?>
 
 </div>

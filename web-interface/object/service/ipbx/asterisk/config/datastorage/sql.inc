@@ -66,17 +66,9 @@ $array['features'] = array();
 $array['features']['table'] = 'features';
 $array['features']['primary'] = array('id' => '');
 
-$array['generaliax'] = array();
-$array['generaliax']['table'] = 'generaliax';
-$array['generaliax']['primary'] = array('id' => '');
-
 $array['generalqueue'] = array();
 $array['generalqueue']['table'] = 'generalqueue';
 $array['generalqueue']['primary'] = array('id' => '');
-
-$array['generalsip'] = array();
-$array['generalsip']['table'] = 'generalsip';
-$array['generalsip']['primary'] = array('id' => '');
 
 $array['generalvoicemail'] = array();
 $array['generalvoicemail']['table'] = 'generalvoicemail';
@@ -89,6 +81,10 @@ $array['groupfeatures']['primary'] = array('id' => '');
 $array['handynumbers'] = array();
 $array['handynumbers']['table'] = 'handynumbers';
 $array['handynumbers']['primary'] = array('id' => '');
+
+$array['iax'] = array();
+$array['iax']['table'] = 'generaliax';
+$array['iax']['primary'] = array('id' => '');
 
 $array['incall'] = array();
 $array['incall']['table'] = 'incall';
@@ -165,6 +161,10 @@ $array['schedule']['primary'] = array('id' => '');
 $array['serverfeatures'] = array();
 $array['serverfeatures']['table'] = 'serverfeatures';
 $array['serverfeatures']['primary'] = array('id' => '');
+
+$array['sip'] = array();
+$array['sip']['table'] = 'generalsip';
+$array['sip']['primary'] = array('id' => '');
 
 $array['trunkcustom'] = array();
 $array['trunkcustom']['table'] = 'usercustom';

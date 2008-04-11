@@ -267,9 +267,7 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 		$dialstatus_where['type'] = $type;
 		$dialstatus_where['typeval'] = $id;
 
-		$r = $this->_dialstatus->unlinked_where($dialstatus_where);
-
-		return($r);
+		return($this->_dialstatus->unlinked_where($dialstatus_where));
 	}
 }
 

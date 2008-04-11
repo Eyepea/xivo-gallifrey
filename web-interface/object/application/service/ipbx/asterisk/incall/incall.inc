@@ -138,7 +138,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 			&& ($info['type'] = $this->_incall->is_valid($info['incall']['type'],
 								     $info['incall']['typeval'],
 								     $info['incall']['applicationval'])) === false)
-				continue;
+				$info['incall']['linked'] = false;
 
 			if($info['type'] === true)
 				$info['type'] = false;

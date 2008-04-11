@@ -38,7 +38,6 @@
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
 <?php
-
 	if($list === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
@@ -46,7 +45,7 @@
 	</tr>
 <?php
 	else:
-		for($i = $pager['beg'],$j = 0;$i < $pager['end'] && $i < $pager['total'];$i++,$j++):
+		for($i = 0;$i < $nb;$i++):
 
 			$ref = &$list[$i]['schedule'];
 
@@ -110,10 +109,8 @@
 			endif;
 
 			$ref['publicholiday'] = intval((bool) $ref['publicholiday']);
-
-			$mod = $j % 2 === 0 ? 1 : 2;
 ?>
-	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
+	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
 		<td class="td-left"><?=$form->checkbox(array('name' => 'schedules[]','value' => $ref['id'],'label' => false,'id' => 'it-schedules-'.$i,'checked' => false,'field' => false));?></td>
 		<td class="txt-left"><label for="it-schedules-<?=$i?>" id="lb-schedules-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['name']?></label></td>
 		<td><?=$ref['time']?></td>

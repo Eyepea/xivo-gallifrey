@@ -104,17 +104,17 @@ $array['realstatic']['agents']['datastorage'] = true;
 $array['realstatic']['features'] = array();
 $array['realstatic']['features']['datastorage'] = true;
 
-$array['realstatic']['generaliax'] = array();
-$array['realstatic']['generaliax']['datastorage'] = true;
-
 $array['realstatic']['generalqueue'] = array();
 $array['realstatic']['generalqueue']['datastorage'] = true;
 
-$array['realstatic']['generalsip'] = array();
-$array['realstatic']['generalsip']['datastorage'] = true;
+$array['realstatic']['iax'] = array();
+$array['realstatic']['iax']['datastorage'] = true;
 
 $array['realstatic']['meetme'] = array();
 $array['realstatic']['meetme']['datastorage'] = true;
+
+$array['realstatic']['sip'] = array();
+$array['realstatic']['sip']['datastorage'] = true;
 
 $array['realstatic']['voicemail'] = array();
 $array['realstatic']['voicemail']['datastorage'] = true;
@@ -170,17 +170,11 @@ $array['module']['extensions']['datastorage'] = true;
 $array['module']['extenumbers'] = array();
 $array['module']['extenumbers']['datastorage'] = true;
 
-$array['module']['generaliax'] = array();
-$array['module']['generaliax']['datastorage'] = true;
-
 $array['module']['handynumbers'] = array();
 $array['module']['handynumbers']['datastorage'] = true;
 
 $array['module']['generalqueue'] = array();
 $array['module']['generalqueue']['datastorage'] = true;
-
-$array['module']['generalsip'] = array();
-$array['module']['generalsip']['datastorage'] = true;
 
 $array['module']['groupfeatures'] = array();
 $array['module']['groupfeatures']['datastorage'] = true;

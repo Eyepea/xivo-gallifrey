@@ -214,8 +214,8 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_servic
 					      $this->_table['userfeatures'].'.protocolid = '.$this->_table['usersip'].'.id',
 					      null,
 					      array('fullcontact',
-					      	    'sipsecret' => 'secret',
-						    'sipcallerid' => 'callerid'));
+					      	    'sipsecret'		=> 'secret',
+						    'sipcallerid'	=> 'callerid'));
 
 			$this->_dso->joinwhere($this->_table['usersip'],$sip);
 
@@ -238,8 +238,8 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_servic
 			$this->_dso->leftjoin($this->_table['useriax'],
 					      $this->_table['userfeatures'].'.protocolid = '.$this->_table['useriax'].'.id',
 					      null,
-					      array('iaxsecret' => 'secret',
-					      	    'iaxcallerid' => 'callerid'));
+					      array('iaxsecret'		=> 'secret',
+					      	    'iaxcallerid'	=> 'callerid'));
 
 			$this->_dso->joinwhere($this->_table['useriax'],$iax);
 

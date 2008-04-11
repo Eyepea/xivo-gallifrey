@@ -6,7 +6,7 @@ class xivo_service_asterisk_trunkcustom_sql extends xivo_service_asterisk_abstra
 {
 	var $_forcecolumn	= array('protocol'	=> XIVO_SRE_IPBX_AST_PROTO_CUSTOM,
 					'category'	=> 'trunk');
-	var $_unique		= array('name',array('interface','category'));
+	var $_unique		= array('name',array('interface','intfsuffix','category'));
 }
 
 ?>

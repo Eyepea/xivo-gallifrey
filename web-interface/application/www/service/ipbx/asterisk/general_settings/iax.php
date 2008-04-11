@@ -1,6 +1,7 @@
 <?php
 
-$appgeneraliax = &$ipbx->get_apprealstatic('generaliax');
+$appiax = &$ipbx->get_apprealstatic('iax');
+$appgeneraliax = &$appiax->get_module('general');
 
 $fm_save = null;
 

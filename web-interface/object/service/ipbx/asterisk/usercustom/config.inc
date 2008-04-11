@@ -7,13 +7,18 @@ $array['element'] = array();
 $array['element']['name'] = array();
 $array['element']['name']['default'] = '';
 $array['element']['name']['null'] = true;
-
-$array['element']['interface'] = array();
-$array['element']['interface']['default'] = '';
+$array['element']['name']['forcedef'] = true;
 
 $array['element']['context'] = array();
 $array['element']['context']['default'] = 'default';
 $array['element']['context']['setdef'] = true;
+
+$array['element']['interface'] = array();
+$array['element']['interface']['default'] = '';
+
+$array['element']['intfsuffix'] = array();
+$array['element']['intfsuffix']['default'] = '';
+$array['element']['intfsuffix']['forcedef'] = true;
 
 $array['element']['commented'] = array();
 $array['element']['commented']['value'] = array(0,1);
@@ -30,7 +35,7 @@ $array['element']['category']['forcedef'] = true;
 
 
 $array['filter'] = array();
-$array['filter']['name'] = array('set' => false,'chk' => 0);
+$array['filter']['name'] = array('set' => false);
 $array['filter']['context'] = array('set' => false,
 				    'chk' => 2,
 				    'callback' => 'xivo_service_asterisk::chk_context',
@@ -38,6 +43,7 @@ $array['filter']['context'] = array('set' => false,
 				    			XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTIFICATION,
 							XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['interface'] = array('regexp' => '/^[a-z0-9#\*\.\/_@:-]+$/i','minlen' => 1,'maxlen' => 128);
+$array['filter']['intfsuffix'] = array('set' => false);
 $array['filter']['commented'] = array('bool' => true);
 $array['filter']['protocol'] = array('set' => false);
 $array['filter']['category'] = array('set' => false);

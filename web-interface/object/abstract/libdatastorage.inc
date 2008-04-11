@@ -408,12 +408,19 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 		return($this->_dso->edit($id,$arr,$disable));
 	}
 
-	function edit_where($where,$arr,$disable=null)
+	function edit_where($where,$arr,$disable=null,$id=null)
 	{
 		if(is_array($where) === false
 		|| ($where = $this->get_element_where($where)) === false
 		|| ($arr = $this->chk_values($arr,true,false,false)) === false)
 			return(false);
+		else if($id !== null)
+		{
+			if(($id = $this->_chk_primary_key($id)) === false)
+				return(false);
+
+			$where = array_merge($where,$id);
+		}
 
 		return($this->_dso->edit($where,$arr,$disable));
 	}
@@ -426,11 +433,18 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 		return($this->_dso->delete($id,$disable));
 	}
 
-	function delete_where($id,$disable=null)
+	function delete_where($where,$disable=null,$id=null)
 	{
-		if(is_array($id) === false
-		|| ($where = $this->get_element_where($id)) === false)
+		if(is_array($where) === false
+		|| ($where = $this->get_element_where($where)) === false)
 			return(false);
+		else if($id !== null)
+		{
+			if(($id = $this->_chk_primary_key($id)) === false)
+				return(false);
+
+			$where = array_merge($where,$id);
+		}
 
 		return($this->_dso->delete($where,$disable));
 	}

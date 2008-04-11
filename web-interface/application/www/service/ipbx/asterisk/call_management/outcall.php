@@ -18,7 +18,14 @@ switch($act)
 		$outcalltrunk = $rightcall = array();
 		$outcalltrunk['slt'] = $rightcall['slt'] = array();
 
-		$outcalltrunk['list'] = $ipbx->get_trunks_list(null,false);
+		xivo::load_class('xivo_sort');
+
+		$apptrunk = &$ipbx->get_application('trunk',null,false);
+		if(($outcalltrunk['list'] = $apptrunk->get_all_trunks(null,null,null,true)) !== false)
+		{
+			$trunksort = new xivo_sort(array('key' => 'identity'));
+			uasort($outcalltrunk['list'],array(&$trunksort,'str_usort'));
+		}
 
 		$apprightcall = &$ipbx->get_application('rightcall',null,false);
 		$rightcall['list'] = $apprightcall->get_rightcalls_list(null,array('name' => SORT_ASC),null,true);
@@ -31,8 +38,6 @@ switch($act)
 			else
 				$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
 		}
-
-		xivo::load_class('xivo_sort');
 
 		if($outcalltrunk['list'] !== false && xivo_issa('outcalltrunk',$result) === true)
 		{
@@ -78,7 +83,14 @@ switch($act)
 		$outcalltrunk = $rightcall = array();
 		$outcalltrunk['slt'] = $rightcall['slt'] = array();
 
-		$outcalltrunk['list'] = $ipbx->get_trunks_list(null,false);
+		xivo::load_class('xivo_sort');
+
+		$apptrunk = &$ipbx->get_application('trunk',null,false);
+		if(($outcalltrunk['list'] = $apptrunk->get_all_trunks(null,null,null,true)) !== false)
+		{
+			$trunksort = new xivo_sort(array('key' => 'identity'));
+			uasort($outcalltrunk['list'],array(&$trunksort,'str_usort'));
+		}
 
 		$apprightcall = &$ipbx->get_application('rightcall',null,false);
 		$rightcall['list'] = $apprightcall->get_rightcalls_list(null,array('name' => SORT_ASC),null,true);
@@ -93,8 +105,6 @@ switch($act)
 			else
 				$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
 		}
-
-		xivo::load_class('xivo_sort');
 
 		if($outcalltrunk['list'] !== false && xivo_issa('outcalltrunk',$return) === true)
 		{

@@ -4,6 +4,9 @@ Name
 ; col_interface
 Interface
 
+; col_intfsuffix
+Interface suffix
+
 ; no_trunk
 Could not find any custom trunk
 

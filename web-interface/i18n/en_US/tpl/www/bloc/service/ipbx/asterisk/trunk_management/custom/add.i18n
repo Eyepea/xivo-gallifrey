@@ -1,8 +1,11 @@
 ; title_content_name
 Custom trunk > Add
 
-; fm_trunk_name
+; fm_protocol_name
 Name:
 
-; fm_trunk_interface
+; fm_protocol_interface
 Interface:
+
+; fm_protocol_interface
+Interface suffix:
