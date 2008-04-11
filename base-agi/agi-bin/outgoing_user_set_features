@@ -142,7 +142,7 @@ for row in res:
 		interface = res['interface']
 		intfsuffix = res['intfsuffix']
 
-		if intfsuffix:
+		if intfsuffix not in (None, ""):
 			interface = "%s/%s" % (interface, intfsuffix)
 
 	else:
