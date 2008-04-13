@@ -322,6 +322,60 @@ def handle_ami_event(astid, idata):
                                 log_debug(SYSLOG_WARNING, 'AMI %s Other : %s' % (astid, str(this_event)))
 
 
+evfunction_to_method_name = {
+        'Registry':             'ami_registry',
+        'Dial':                 'ami_dial',
+        'Link':                 'ami_link',
+        'Unlink':               'ami_unlink',
+        'Hangup':               'ami_hangup',
+        'Join':                 'ami_join',
+        'Leave':                'ami_leave',
+        'PeerStatus':           'ami_peerstatus',
+        'Agentlogin':           'ami_agentlogin',
+        'Agentlogoff':          'ami_agentlogoff',
+        'Agentcallbacklogin':   'ami_agentcallbacklogin',
+        'Agentcallbacklogoff':  'ami_agentcallbacklogoff',
+        'AgentCalled':          'ami_agentcalled',
+        'AgentComplete':        'ami_agentcomplete',
+        'AgentConnect':         'ami_agentconnect',
+        'AgentDump':            'ami_agentdump',
+        'Agents':               'ami_agents',
+        'ParkedCall':           'ami_parkedcall',               # when the requested parking is acked
+        'UnParkedCall':         'ami_unparkedcall',
+        'ParkedCallTimeOut':    'ami_parkedcalltimeout',
+        'ParkedCallGiveUp':     'ami_parkedcallgiveup',
+        'ParkedCallsComplete':  'ami_parkedcallscomplete',
+        'Cdr':                  'ami_cdr',
+        'Alarm':                'ami_alarm',
+        'AlarmClear':           'ami_alarmclear',
+        'FaxReceived':          'ami_faxreceived',
+        'MeetmeJoin':           'ami_meetmejoin',               # when a member joins a conference
+        'MeetmeLeave':          'ami_meetmeleave',              # when a member leaves a conference
+        'ExtensionStatus':      'ami_extensionstatus',
+        'OriginateSuccess':     'ami_originatesuccess',
+        'AOriginateSuccess':    'ami_aoriginatesuccess',
+        'OriginateFailure':     'ami_originatefailure',
+        'AOriginateFailure':    'ami_aoriginatefailure',
+        'Rename':               'ami_rename',                   # appears when there is a transfer
+        'Newstate':             'ami_newstate',
+        'Newcallerid':          'ami_newcallerid',              # useful for tricky managements
+        'Newchannel':           'ami_newchannel',
+        'Newexten':             'ami_newexten',                 # in order to handle outgoing calls ?
+        'MessageWaiting':       'ami_messagewaiting',
+        'QueueParams':          'ami_queueparams',
+        'QueueMemberAdded':     'ami_queuememberadded',
+        'QueueMemberPaused':    'ami_queuememberpaused',
+        'QueueMemberRemoved':   'ami_queuememberremoved',
+        'QueueMember':          'ami_queuemember',
+        'QueueMemberStatus':    'ami_queuememberstatus',
+        'QueueStatusComplete':  'ami_queuestatuscomplete',
+        'QueueEntry':           'ami_queueentry',
+        'Status':               'ami_status',
+        'StatusComplete':       'ami_statuscomplete',
+        'AgentsComplete':       'ami_agentscomplete',
+}
+
+
 def handle_ami_function(astid, evfunction, this_event):
         """
         Handles the AMI events related to a given function (i.e. containing the Event field).
@@ -337,108 +391,10 @@ def handle_ami_function(astid, evfunction, this_event):
                         restart  = this_event.get('Restart')
                         log_debug(SYSLOG_WARNING, "AMI:Shutdown: %s (how=%s restart=%s)" %(astid, shutdown, restart))
                         commandclass.ami_shutdown(astid, this_event)
-                elif evfunction == 'Registry':
-                        commandclass.ami_registry(astid, this_event)
-                elif evfunction == 'Dial':
-                        commandclass.ami_dial(astid, this_event)
-                elif evfunction == 'Link':
-                        commandclass.ami_link(astid, this_event)
-                elif evfunction == 'Unlink':
-                        commandclass.ami_unlink(astid, this_event)
-                elif evfunction == 'Hangup':
-                        commandclass.ami_hangup(astid, this_event)
-                elif evfunction == 'Join':
-                        commandclass.ami_join(astid, this_event)
-                elif evfunction == 'Leave':
-                        commandclass.ami_leave(astid, this_event)
-                elif evfunction == 'PeerStatus':
-                        commandclass.ami_peerstatus(astid, this_event)
-                elif evfunction == 'Agentlogin':
-                        commandclass.ami_agentlogin(astid, this_event)
-                elif evfunction == 'Agentlogoff':
-                        commandclass.ami_agentlogoff(astid, this_event)
-                elif evfunction == 'Agentcallbacklogin':
-                        commandclass.ami_agentcallbacklogin(astid, this_event)
-                elif evfunction == 'Agentcallbacklogoff':
-                        commandclass.ami_agentcallbacklogoff(astid, this_event)
-                elif evfunction == 'AgentCalled':
-                        commandclass.ami_agentcalled(astid, this_event)
-                elif evfunction == 'AgentComplete':
-                        commandclass.ami_agentcomplete(astid, this_event)
-                elif evfunction == 'AgentConnect':
-                        commandclass.ami_agentconnect(astid, this_event)
-                elif evfunction == 'AgentDump':
-                        commandclass.ami_agentdump(astid, this_event)
-                elif evfunction == 'Agents':
-                        commandclass.ami_agents(astid, this_event)
-                elif evfunction == 'ParkedCall': # when the requested parking is acked
-                        commandclass.ami_parkedcall(astid, this_event)
-                elif evfunction == 'UnParkedCall':
-                        commandclass.ami_unparkedcall(astid, this_event)
-                elif evfunction == 'ParkedCallTimeOut':
-                        commandclass.ami_parkedcalltimeout(astid, this_event)
-                elif evfunction == 'ParkedCallGiveUp':
-                        commandclass.ami_parkedcallgiveup(astid, this_event)
-                elif evfunction == 'ParkedCallsComplete':
-                        commandclass.ami_parkedcallscomplete(astid, this_event)
-                elif evfunction == 'Cdr':
-                        commandclass.ami_cdr(astid, this_event)
-                elif evfunction == 'Alarm':
-                        commandclass.ami_alarm(astid, this_event)
-                elif evfunction == 'AlarmClear':
-                        commandclass.ami_alarmclear(astid, this_event)
-                elif evfunction == 'FaxReceived':
-                        commandclass.ami_faxreceived(astid, this_event)
-                elif evfunction == 'MeetmeJoin': # when a member joins a conference
-                        commandclass.ami_meetmejoin(astid, this_event)
-                elif evfunction == 'MeetmeLeave': # when a member leaves a conference
-                        commandclass.ami_meetmeleave(astid, this_event)
-                elif evfunction == 'ExtensionStatus':
-                        commandclass.ami_extensionstatus(astid, this_event)
-                elif evfunction == 'OriginateSuccess':
-                        commandclass.ami_originatesuccess(astid, this_event)
-                elif evfunction == 'AOriginateSuccess':
-                        commandclass.ami_aoriginatesuccess(astid, this_event)
-                elif evfunction == 'OriginateFailure':
-                        commandclass.ami_originatefailure(astid, this_event)
-                elif evfunction == 'AOriginateFailure':
-                        commandclass.ami_aoriginatefailure(astid, this_event)
-                elif evfunction == 'Rename': # appears when there is a transfer
-                        commandclass.ami_rename(astid, this_event)
-                elif evfunction == 'Newstate':
-                        commandclass.ami_newstate(astid, this_event)
-                elif evfunction == 'Newcallerid': # useful for tricky managements
-                        commandclass.ami_newcallerid(astid, this_event)
-                elif evfunction == 'Newchannel':
-                        commandclass.ami_newchannel(astid, this_event)
                 elif evfunction.startswith('UserEvent'):
                         commandclass.ami_userevent(astid, this_event)
-                elif evfunction == 'Newexten': # in order to handle outgoing calls ?
-                        commandclass.ami_newexten(astid, this_event)
-                elif evfunction == 'MessageWaiting':
-                        commandclass.ami_messagewaiting(astid, this_event)
-                elif evfunction == 'QueueParams':
-                        commandclass.ami_queueparams(astid, this_event)
-                elif evfunction == 'QueueMemberAdded':
-                        commandclass.ami_queuememberadded(astid, this_event)
-                elif evfunction == 'QueueMemberPaused':
-                        commandclass.ami_queuememberpaused(astid, this_event)
-                elif evfunction == 'QueueMemberRemoved':
-                        commandclass.ami_queuememberremoved(astid, this_event)
-                elif evfunction == 'QueueMember':
-                        commandclass.ami_queuemember(astid, this_event)
-                elif evfunction == 'QueueMemberStatus':
-                        commandclass.ami_queuememberstatus(astid, this_event)
-                elif evfunction == 'QueueStatusComplete':
-                        commandclass.ami_queuestatuscomplete(astid, this_event)
-                elif evfunction == 'QueueEntry':
-                        commandclass.ami_queueentry(astid, this_event)
-                elif evfunction == 'Status':
-                        commandclass.ami_status(astid, this_event)
-                elif evfunction == 'StatusComplete':
-                        commandclass.ami_statuscomplete(astid, this_event)
-                elif evfunction == 'AgentsComplete':
-                        commandclass.ami_agentscomplete(astid, this_event)
+                elif (evfunction in evfunction_to_method_name):
+                        getattr(commandclass, evfunction_to_method_name[evfunction])(astid, this_event)
                 else:
                         log_debug(SYSLOG_WARNING, 'AMI %s ... this event (%s) is not tracked' % (astid, evfunction))
         except Exception, exc:
