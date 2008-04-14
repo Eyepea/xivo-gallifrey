@@ -126,16 +126,14 @@ class XivoCTICommand(BaseCommand):
                 if capa in map_capas: capalist_server |= map_capas[capa]
         conngui_sb = 0
         conngui_xc = 0
-        maxgui_sb  = 3
-        maxgui_xc  = 3
+        maxgui_sb  = 10
+        maxgui_xc  = 2
         xivoclient_session_timeout = 60 # XXX
-
 
         fullstat_heavies = {}
         queues_list = {}
         queues_channels_list = {}
         agentslist = {}
-
 
         def __init__(self, amis, ctiports, queued_threads_pipe):
 		BaseCommand.__init__(self)
@@ -369,6 +367,10 @@ class XivoCTICommand(BaseCommand):
                         for queue in results:
                                 if queue[0] not in self.queues_list[astid]:
                                         self.queues_list[astid][queue[0]] = {'agents' : {}, 'channels' : []}
+                if 'maxgui_sb' in self.xivoconf:
+                        self.maxgui_sb = self.xivoconf['maxgui_sb']
+                if 'maxgui_xc' in self.xivoconf:
+                        self.maxgui_xc = self.xivoconf['maxgui_xc']
                 return
 
         def set_configs(self, configs):
@@ -442,6 +444,9 @@ class XivoCTICommand(BaseCommand):
                         print '--- exception --- (__send_msg_to_cti_clients__)', exc
                 return
 
+
+##        # actions = { SHEET_EVENT_INCOMING    : SHEET_ACTION_BOT | SHEET_ACTION_XCPOPUP,
+##        actions = { SHEET_EVENT_AGI         : SHEET_ACTION_XCFULL,
 
         # actions = { SHEET_EVENT_AGI         : SHEET_ACTION_XCFULL,
         actions = { SHEET_EVENT_INCOMING    : SHEET_ACTION_BOT | SHEET_ACTION_XCPOPUP,
@@ -880,8 +885,7 @@ class XivoCTICommand(BaseCommand):
                                        '</user></profile>']
                         userinfo = self.ulist.finduser(called)
                         self.__send_msg_to_cti_client__(userinfo, ''.join(linestosend))
-                        
-                return 'USER %s STATE available CIDNAME %s' % (called, 'tobedefined')
+                        return 'USER %s STATE available CIDNAME %s' % (called, 'tobedefined')
 
 
         def directory_srv2clt(self, context, results):
