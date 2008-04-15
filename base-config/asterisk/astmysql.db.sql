@@ -185,16 +185,16 @@ CREATE TABLE `contextentity` (
 CREATE INDEX `contextentity__idx__context_type` ON `contextentity`(`context`,`type`);
 
 
-DROP TABLE IF EXISTS `contextfeatures`;
-CREATE TABLE `contextfeatures` (
+DROP TABLE IF EXISTS `contextmember`;
+CREATE TABLE `contextmember` (
  `context` varchar(39) NOT NULL,
  `type` enum('extenfeatures','featuremap','generalfeatures','generaliax','generalsip','generalvoicemail','group','handynumbers','incall','meetme','outcall','queue','user','uservoicemail') NOT NULL,
  `typeval` varchar(255) NOT NULL DEFAULT '',
  PRIMARY KEY(`context`,`type`,`typeval`)
 ) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
-CREATE INDEX `contextfeatures__idx__context` ON `contextfeatures`(`context`);
-CREATE INDEX `contextfeatures__idx__context_type` ON `contextfeatures`(`context`,`type`);
+CREATE INDEX `contextmember__idx__context` ON `contextmember`(`context`);
+CREATE INDEX `contextmember__idx__context_type` ON `contextmember`(`context`,`type`);
 
 
 DROP TABLE IF EXISTS `dialstatus`;
