@@ -15,14 +15,29 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
 
-		if($this->set_params($param) === false
-		|| isset($param['type']) === false
-		|| ($this->_handynumbers = &$this->_service->get_module('handynumbers')) === false
-		|| $this->_handynumbers->chk_element_value('type',$param['type']) === false
+		if(($this->_handynumbers = &$this->_service->get_module('handynumbers')) === false
+		|| $this->load_init($param) === false
 		|| ($this->_extenumbers = &$this->_service->get_module('extenumbers')) === false
 		|| ($this->_extensions = &$this->_service->get_module('extensions')) === false
 		|| ($this->_trunkfeatures = &$this->_service->get_module('trunkfeatures')) === false)
 			return(false);
+
+		return(true);
+	}
+
+	function load_init($param=array())
+	{
+		$this->_reset_info();
+		$this->_reset_params();
+		$this->_reset();
+
+		if($this->set_params($param) === false
+		|| isset($param['type']) === false
+		|| $this->_handynumbers->chk_element_value('type',$param['type']) === false)
+		{
+			$this->_param['type'] = '';
+			return(false);
+		}
 
 		$this->_param['type'] = $param['type'];
 
@@ -255,9 +270,7 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 
 		unset($rs['id']);
 
-		$this->_return['handynumbers'] = $this->_handynumbers->add($rs,$gid);
-
-		return($this->_return['handynumbers']);
+		return(($this->_return['handynumbers'] = $this->_handynumbers->add($rs,$gid)));
 	}
 
 	function add_extenumbers($handynumbersid)
@@ -278,9 +291,7 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 
 		$rs['typeval'] = $handynumbersid;
 
-		$this->_return['extenumbers'] = $this->_extenumbers->add($rs,$eid);
-
-		return($this->_return['extenumbers']);
+		return(($this->_return['extenumbers'] = $this->_extenumbers->add($rs,$eid)));
 	}
 
 	function add_exten()

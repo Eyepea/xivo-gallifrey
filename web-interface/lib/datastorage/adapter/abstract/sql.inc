@@ -468,11 +468,12 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		return(true);
 	}
 
-	function _mk_sep(&$data,$set=false,$table='')
+	function _mk_sep(&$data,$set=false,$table='',$where=false)
 	{
 		$data = (array) $data;
 		$set = (bool) $set;
 		$table = trim($table);
+		$where = (bool) $where;
 
 		if(empty($data) === true)
 			return(false);
@@ -494,7 +495,12 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 			if(xivo_haslen($key) === false)
 				continue;
 			else if($set === true)
-				$r['str'][] = $tabledot.$this->quote_identifier($key).' = '.$this->escape($val);
+			{
+				if($where === true && $val === null && $this->escape($val) === 'NULL')
+					$r['str'][] = $tabledot.$this->quote_identifier($key).' IS NULL';
+				else
+					$r['str'][] = $tabledot.$this->quote_identifier($key).' = '.$this->escape($val);
+			}
 			else
 			{
 				$r['keys'][] = $tabledot.$this->quote_identifier($key);
@@ -541,7 +547,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 			if($join !== false)
 				$val = $join;
 
-			if(($condsep = $this->_mk_sep($cond,true,$val)) === false)
+			if(($condsep = $this->_mk_sep($cond,true,$val,true)) === false)
 				return(false);
 
 			$r = implode(((bool) $condand === true ? ' AND ' : ' OR '),$condsep['str']);

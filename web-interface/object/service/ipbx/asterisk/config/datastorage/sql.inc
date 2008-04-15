@@ -46,9 +46,9 @@ $array['contextentity'] = array();
 $array['contextentity']['table'] = 'contextentity';
 $array['contextentity']['primary'] = array('context' => '','type' => '','typeval' => '');
 
-$array['contextfeatures'] = array();
-$array['contextfeatures']['table'] = 'contextfeatures';
-$array['contextfeatures']['primary'] = array('context' => '','type' => '','typeval' => '');
+$array['contextmember'] = array();
+$array['contextmember']['table'] = 'contextmember';
+$array['contextmember']['primary'] = array('context' => '','type' => '','typeval' => '');
 
 $array['dialstatus'] = array();
 $array['dialstatus']['table'] = 'dialstatus';

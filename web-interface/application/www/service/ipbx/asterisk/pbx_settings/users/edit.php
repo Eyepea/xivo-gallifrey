@@ -172,6 +172,7 @@ $_HTML->set_var('element',$element);
 $_HTML->set_var('destination_list',$appuser->get_destination_list());
 $_HTML->set_var('moh_list',$appuser->get_musiconhold());
 $_HTML->set_var('tz_list',$appuser->get_timezones());
+$_HTML->set_var('context_list',$appuser->get_context_list());
 $_HTML->set_var('autoprov_list',$appuser->get_autoprov_list());
 $_HTML->set_var('bsfilter_list',$appuser->get_bsfilter_list());
 $_HTML->set_var('fktype_list',$appuser->get_phonefunckey_type());

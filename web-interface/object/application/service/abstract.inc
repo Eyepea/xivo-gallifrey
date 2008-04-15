@@ -20,19 +20,23 @@ class xivo_application_service_abstract extends xivo_application_abstract
 		return(false);
 	}
 
-	function _load_abstract($name)
+	function _load_abstract($name,$param)
 	{
 		$name = (string) $name;
 
 		if(isset($this->_abstract[$name]) === true)
+		{
+			if(is_array($param) === true)
+				$this->_abstract[$name]->load_init($param);
 			return(true);
+		}
 		else if(($class = $this->_load_abstract_class($name)) === false)
 		{
 			trigger_error('Abstract Application '.$name.' does not exist in '.$this->_service_name,E_USER_ERROR);
 			return(false);
 		}
 
-		$this->_abstract[$name] = new $class($this->_service);
+		$this->_abstract[$name] = new $class($this->_service,$param);
 
 		return(true);
 	}

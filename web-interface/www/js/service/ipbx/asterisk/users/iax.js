@@ -37,7 +37,6 @@ xivo_elt_protocol['iax']['ufeatures-outcallerid-custom']['it'] = true;
 xivo_elt_protocol['iax']['ufeatures-musiconhold'] = new Array();
 xivo_elt_protocol['iax']['ufeatures-musiconhold']['it'] = true;
 
-
 xivo_elt_protocol['iax']['protocol-name'] = new Array();
 xivo_elt_protocol['iax']['protocol-name']['it'] = true;
 xivo_elt_protocol['iax']['protocol-secret'] = new Array();

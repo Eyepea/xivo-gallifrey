@@ -220,7 +220,9 @@ class xivo_application_service_asterisk_serverfeatures extends xivo_application_
 		if(empty($this->_info) === true)
 			return(null);
 
-		$where = $this->_param;
+		$where = array();
+		$where['feature'] = $this->_param['feature'];
+		$where['type'] = $this->_param['type'];
 
 		if(($r = $this->_serverfeatures->delete_where($where)) === false)
 			$this->_reverse_delete();

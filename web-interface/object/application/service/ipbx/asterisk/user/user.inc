@@ -14,6 +14,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	var $_extenumbers	= false;
 	var $_rightcall		= false;
 	var $_dialstatus	= false;
+	var $_context		= false;
 	var $_queuemember	= null;
 	var $_uservoicemail	= null;
 	var $_phonefunckey	= null;
@@ -21,8 +22,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	var $_zonemessages	= null;
 	var $_musiconhold	= array();
 	var $_timezones		= array();
+	var $_contextlist	= array();
 	var $_conf		= array();
-	var $_param		= array();
+	var $_param		= array('internal'	=> false);
 
 	function xivo_application_service_asterisk_user(&$service,&$dso,$param=array(),$components=true)
 	{
@@ -33,20 +35,13 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		$this->_dso = &$dso;
 
-		if(($this->_userfeatures = &$this->_service->get_module('userfeatures')) === false)
+		if(($this->_userfeatures = &$this->_service->get_module('userfeatures')) === false
+		|| $this->load_init($param) === false)
 			return(false);
 		else if((bool) $components === true)
 			$this->load_components();
 
 		$this->_load_config(dirname(__FILE__));
-
-		$this->_param['internal'] = false;
-
-		if(is_array($param) === true)
-		{
-			if(isset($param['internal']) === true)
-				$this->_param['internal'] = $param['internal'];
-		}
 
 		if(($size = $this->_chk_upload_file()) === false)
 			die();
@@ -56,14 +51,28 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return(true);
 	}
 
+	function load_init($param=array())
+	{
+		$this->_reset_info();
+		$this->_reset_params();
+		$this->_reset();
+
+		if(is_array($param) === true
+		&& isset($param['internal']) === true)
+			$this->_param['internal'] = (bool) $param['internal'];
+
+		return(true);
+	}
+
 	function load_components()
 	{
 		$this->_components = true;
 
 		if(($this->_extensions = &$this->_service->get_module('extensions')) === false
-		|| ($this->_extenumbers = &$this->get_abstract('extenumbers')) === false
-		|| ($this->_rightcall = &$this->get_abstract('rightcall')) === false
-		|| ($this->_dialstatus = &$this->get_abstract('dialstatus')) === false)
+		|| ($this->_extenumbers = $this->get_abstract('extenumbers',array('type' => 'user'))) === false
+		|| ($this->_rightcall = $this->get_abstract('rightcall',array('type' => 'user'))) === false
+		|| ($this->_dialstatus = $this->get_abstract('dialstatus',array('category' => 'user'))) === false
+		|| ($this->_context = $this->get_abstract('context',array('type' => 'user'))) === false)
 			return(false);
 
 		$this->_queuemember = &$this->_service->get_module('queuemember');
@@ -113,11 +122,12 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		$this->_get_exten();
 		$this->_get_hints();
-		$this->_get_extenumbers();
+		$this->_get_extenumbers($this->_info['ufeatures']['id']);
 		$this->_get_groupmember();
 		$this->_get_queuemember();
-		$this->_get_rightcall();
-		$this->_get_dialstatus();
+		$this->_get_rightcall($this->_info['ufeatures']['id']);
+		$this->_get_dialstatus($this->_info['ufeatures']['id']);
+		$this->_get_context($this->_info['ufeatures']['id']);
 		$this->_get_voicemail();
 		$this->_get_phonefunckey();
 		$this->_get_autoprov();
@@ -169,11 +179,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return($this->_info['hints']);
 	}
 
-	function _get_extenumbers()
-	{
-		return(parent::_get_extenumbers('user',$this->_info['ufeatures']['id']));
-	}
-
 	function _get_groupmember()
 	{
 		return($this->_get_member_type('group'));
@@ -220,20 +225,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$this->_origin[$membertype] = $this->_queuemember->get_origin_list();
 
 		return($this->_info[$membertype]);
-	}
-
-	function _get_rightcall()
-	{
-		$this->_info['rightcall'] = $this->_rightcall->get('user',$this->_info['ufeatures']['id']);
-
-		return($this->_info['rightcall']);
-	}
-
-	function _get_dialstatus()
-	{
-		$this->_info['dialstatus'] = $this->_dialstatus->get('user',$this->_info['ufeatures']['id']);
-
-		return($this->_info['dialstatus']);
 	}
 
 	function _get_voicemail()
@@ -574,6 +565,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if(xivo_issa('dialstatus',$arr) === true)
 			$this->set_dialstatus($arr['dialstatus']);
 
+		$this->set_context($context,$number);
+
 		$numhaslen = xivo_haslen($number);
 
 		if($this->_errnb === 0 && $numhaslen === true)
@@ -582,7 +575,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			if(($rsexten = $this->set_macro($action,'exten',$number,$appdata,$context)) !== false)
 				$this->_set_result('exten',$rsexten);
 
-			$this->set_extenumbers($action,'user',$number,$context);
+			$this->set_extenumbers($action,$number,$context);
 		}
 
 		if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
@@ -784,26 +777,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return(true);
 	}
 
-	function set_rightcall($list)
-	{
-		if(($r = $this->_rightcall->set($list,'user')) === false)
-			$this->_set_error('rightcall',$this->_rightcall->get_error());
-
-		$this->_set_result('rightcall',$this->_rightcall->get_result());
-
-		return($r);
-	}
-
-	function set_dialstatus($list)
-	{
-		if(($r = $this->_dialstatus->set($list,'user')) === false)
-			$this->_set_error('dialstatus',$this->_dialstatus->get_error());
-
-		$this->_set_result('dialstatus',$this->_dialstatus->get_result());
-
-		return($r);
-	}
-
 	function set_voicemail($arr,$context,$number='')
 	{
 		if(is_array($arr) === false
@@ -963,6 +936,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| $this->add_queuemember($ufeaturesid) === false
 		|| $this->add_rightcall($ufeaturesid) === false
 		|| $this->add_dialstatus($ufeaturesid) === false
+		|| $this->add_context($ufeaturesid) === false
 		|| $this->add_voicemail() === false
 		|| $this->add_phonefunckey($ufeaturesid) === false
 		|| $this->add_phone($ufeaturesid) === false)
@@ -1057,24 +1031,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$this->_return[$key] = false;
 
 		return(true);
-	}
-
-	function add_rightcall($ufeaturesid)
-	{
-		$r = $this->_rightcall->add($ufeaturesid);
-
-		$this->_return['rightcall'] = $this->_rightcall->get_return();
-
-		return($r);
-	}
-
-	function add_dialstatus($ufeaturesid)
-	{
-		$r = $this->_dialstatus->add($ufeaturesid);
-
-		$this->_return['dialstatus'] = $this->_dialstatus->get_return();
-
-		return($r);
 	}
 
 	function add_voicemail()
@@ -1208,6 +1164,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				case 'dialstatus':
 					$this->_dialstatus->reverse_add();
 					break;
+				case 'context':
+					$this->_context->reverse_add();
+					break;
 				case 'phonefunckey':
 					if(is_array($val) === false)
 						continue;
@@ -1225,7 +1184,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 					$this->_autoprov->userdeleted($val);
 					break;
 				case 'extenumbers':
-					$this->_extenumbers->delete($this->_status,$val);
+					$this->_extenumbers->reverse_add($this->_status);
 					break;
 			}
 		}
@@ -1304,6 +1263,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| $this->edit_queuemember() === false
 		|| $this->edit_rightcall() === false
 		|| $this->edit_dialstatus() === false
+		|| $this->edit_context() === false
 		|| $this->edit_voicemail() === false
 		|| $this->edit_phonefunckey() === false)
 		{
@@ -1477,11 +1437,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if(xivo_issa('ufeatures',$this->_info) === false)
 			return(false);
 
-		$r = $this->_rightcall->edit($this->_status,'user',$this->_info['ufeatures']['id']);
-
-		$this->_return['rightcall'] = $this->_rightcall->get_return();
-
-		return($r);
+		return(parent::edit_rightcall($this->_info['ufeatures']['id']));
 	}
 
 	function edit_dialstatus()
@@ -1489,11 +1445,15 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if(xivo_issa('ufeatures',$this->_info) === false)
 			return(false);
 
-		$r = $this->_dialstatus->edit($this->_status,'user',$this->_info['ufeatures']['id']);
+		return(parent::edit_dialstatus($this->_info['ufeatures']['id']));
+	}
 
-		$this->_return['dialstatus'] = $this->_dialstatus->get_return();
+	function edit_context()
+	{
+		if(xivo_issa('ufeatures',$this->_info) === false)
+			return(false);
 
-		return($r);
+		return(parent::edit_context($this->_info['ufeatures']['id']));
 	}
 
 	function edit_voicemail()
@@ -1574,9 +1534,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function edit_phone()
 	{
-		$rs = false;
-
-		if(xivo_issa('ufeatures',$this->_info) === false
+		if(($rs = xivo_issa('ufeatures',$this->_info)) === false
 		|| ($rs = $this->get_result('autoprov')) === null
 		|| $rs === false)
 			return($rs);
@@ -1601,6 +1559,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| is_array($this->_return) === false
 		|| empty($this->_return) === true)
 			return(false);
+
+		xivo_var_dump($this->_return);
+		xivo_var_dump($this->_error);
 
 		foreach($this->_return as $key => $val)
 		{
@@ -1652,12 +1613,13 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 						$this->_queuemember->add_origin_list($this->_origin[$key]);
 					break;
 				case 'rightcall':
-					if(xivo_issa('ufeatures',$this->_info) === true)
-						$this->_rightcall->reverse_edit($this->_status,'user',$this->_info['ufeatures']['id']);
+					$this->_rightcall->reverse_edit($this->_status);
 					break;
 				case 'dialstatus':
-					if(xivo_issa('ufeatures',$this->_info) === true)
-						$this->_dialstatus->reverse_edit($this->_status,'user',$this->_info['ufeatures']['id']);
+					$this->_dialstatus->reverse_edit($this->_status);
+					break;
+				case 'context':
+					$this->_context->reverse_edit($this->_status);
 					break;
 				case 'phonefunckey':
 					$this->delete_phonefunckey();
@@ -1669,11 +1631,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				case 'autoprov':
 					break;
 				case 'extenumbers':
-					if(isset($this->_origin['extenumbers']) === false
-					|| $this->_origin['extenumbers'] === false)
-						$this->_extenumbers->delete($this->_status,$val);
-					else
-						$this->_extenumbers->edit_origin($this->_origin['extenumbers']);
+					$this->_extenumbers->reverse_edit($this->_status);
 					break;
 			}
 		}
@@ -1694,6 +1652,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| $this->delete_queuemember() === false
 		|| $this->delete_rightcall() === false
 		|| $this->delete_dialstatus() === false
+		|| $this->delete_context() === false
 		|| $this->delete_voicemail() === false
 		|| $this->delete_phonefunckey() === false
 		|| $this->delete_phone() === false
@@ -1780,36 +1739,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if($this->_status === 'delete')
 			$this->_return[$key] = $r;
-
-		return($r);
-	}
-
-	function delete_rightcall()
-	{
-		if(xivo_issa('ufeatures',$this->_info) === false)
-			$id = 0;
-		else
-			$id = $this->_info['ufeatures']['id'];
-
-		$r = $this->_rightcall->delete($this->_status,'user',$id);
-
-		if($this->_status === 'delete')
-			$this->_return['rightcall'] = $r;
-
-		return($r);
-	}
-
-	function delete_dialstatus()
-	{
-		if(xivo_issa('ufeatures',$this->_info) === false)
-			$id = 0;
-		else
-			$id = $this->_info['ufeatures']['id'];
-
-		$r = $this->_dialstatus->delete($this->_status,'user',$id);
-
-		if($this->_status === 'delete')
-			$this->_return['dialstatus'] = $r;
 
 		return($r);
 	}
@@ -1930,6 +1859,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 					break;
 				case 'dialstatus':
 					$this->_dialstatus->add_origin_list();
+					break;
+				case 'context':
+					$this->_context->add_origin();
 					break;
 				case 'phonefunckey':
 					if(isset($this->_origin['phonefunckey']) === true

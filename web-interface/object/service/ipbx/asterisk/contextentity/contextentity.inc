@@ -63,6 +63,8 @@ class xivo_service_asterisk_contextentity extends xivo_service_asterisk_abstract
 		else if(isset($this->_origin_list) === true)
 			$this->_origin_list = $list;
 
+		$r = array();
+
 		if(is_array($list) === false || ($nb = count($list)) === 0)
 			return(false);
 		else if($prepare === true)
@@ -87,6 +89,34 @@ class xivo_service_asterisk_contextentity extends xivo_service_asterisk_abstract
 		}
 
 		return($r);
+	}
+
+	function interval_number_exists($context,$type,$number)
+	{
+		$where = array();
+		$where['context'] = $context;
+		$where['type'] = $type;
+
+		if(($list = $this->get_all_where($where,null,false)) === false
+		|| ($nb = count($list)) === 0
+		|| xivo_digit($number) === false)
+			return(false);
+
+		$number = strval($number);
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$ref = $list[$i];
+
+			$ref['typevalbeg'] = strval($ref['typevalbeg']);
+			$ref['typevalend'] = strval($ref['typevalend']);
+
+			if((isset($ref['typevalend'][0]) === false && $ref['typevalbeg'] === $number) === true
+			|| $this->chk_number_in_interval($ref['typevalbeg'],$number,$ref['typevalend']) === true)
+				return(true);
+		}
+
+		return(false);
 	}
 
 	function chk_number_in_interval($min,$number,$max)

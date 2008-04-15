@@ -15,7 +15,7 @@ class xivo_application_service_asterisk_realstatic_features_general extends xivo
 	function xivo_application_service_asterisk_realstatic_features_general(&$service)
 	{
 		if($this->_init(&$service) === false
-		|| ($this->_extenumbers = &$this->get_abstract('extenumbers')) === false)
+		|| ($this->_extenumbers = $this->get_abstract('extenumbers',array('type' => $this->_name))) === false)
 			return(false);
 
 		return(true);
@@ -33,7 +33,7 @@ class xivo_application_service_asterisk_realstatic_features_general extends xivo
 		$this->_get_realstatic($name);
 
 		if($this->_chk_exists_cfg('exten',$name) === true)
-			$this->_get_extenumbers();
+			$this->_get_extenumbers($name);
 
 		return($this->_info);
 	}
@@ -83,19 +83,6 @@ class xivo_application_service_asterisk_realstatic_features_general extends xivo
 		return($value);
 	}
 
-	function _get_extenumbers()
-	{
-		$this->_info['extenumbers'] = false;
-		$this->_origin['extenumbers'] = false;
-
-		if(isset($this->_info[$this->_name]['var_name']) === false)
-			return(false);
-
-		$r = parent::_get_extenumbers('generalfeatures',$this->_info[$this->_name]['var_name']);
-
-		return($r);
-	}
-
 	function set($arr)
 	{
 		parent::set($arr); 
@@ -107,7 +94,7 @@ class xivo_application_service_asterisk_realstatic_features_general extends xivo
 			$number = (string) $this->get_result_var($this->_name,'var_val');
 			$context = '';
 
-			$this->set_extenumbers('save','generalfeatures',$number,$context);
+			$this->set_extenumbers('save',$number,$context);
 		}
 
 		return(($this->get_errnb() < 1));
@@ -181,12 +168,7 @@ class xivo_application_service_asterisk_realstatic_features_general extends xivo
 					$this->_reverse_realstatic($val);
 					break;
 				case 'extenumbers':
-					if(isset($this->_origin['extenumbers']) === false)
-						continue;
-					else if($this->_origin['extenumbers'] === false)
-						$this->_extenumbers->delete($this->_status,$val);
-					else
-						$this->_extenumbers->edit_origin($this->_origin['extenumbers']);
+					$this->_extenumbers->reverse_edit($this->_status);
 					break;
 			}
 		}

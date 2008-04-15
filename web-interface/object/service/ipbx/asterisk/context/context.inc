@@ -27,6 +27,7 @@ class xivo_service_asterisk_context extends xivo_service_asterisk_abstract
 	function _prepare($data)
 	{
 		$data['commented'] = (bool) $data['commented'];
+		$data['identity'] = $data['displayname'].' ('.$data['name'].')';
 
 		return($data);
 	}

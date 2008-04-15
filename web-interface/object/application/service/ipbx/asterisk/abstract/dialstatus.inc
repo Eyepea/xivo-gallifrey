@@ -5,28 +5,48 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 class xivo_application_service_asterisk_dialstatus_abstract extends xivo_application_service_asterisk_abstract
 {
 	var $_dialstatus	= false;
+	var $_param		= array('category'	=> '');
 
-	function xivo_application_service_asterisk_dialstatus_abstract(&$service)
+	function xivo_application_service_asterisk_dialstatus_abstract(&$service,$param=array())
 	{
 		$this->xivo_application_service_asterisk_abstract(&$service);
 		
 		if(($this->_dialstatus = &$this->_service->get_module('dialstatus')) === false)
 			return(false);
 
+		return($this->load_init($param));
+	}
+
+	function load_init($param=array())
+	{
+		$this->_reset_info();
+		$this->_reset_params();
+		$this->_reset();
+
+		if($this->set_params($param) === false
+		|| isset($param['category']) === false
+		|| $this->_dialstatus->chk_element_value('category',$param['category']) === false)
+		{
+			$this->_param['category'] = '';
+			return(false);
+		}
+
+		$this->_param['category'] = $param['category'];
+
 		return(true);
 	}
 
-	function get($type,$id)
+	function get($categoryval)
 	{
 		$this->_info = false;
 		$this->_origin = false;
 
-		if(is_string($type) === false || ($id = xivo_ulongint($id)) === 0)
+		if(($categoryval = xivo_ulongint($categoryval)) === 0)
 			return(false);
 
 		$where = array();
-		$where['category'] = $type;
-		$where['categoryval'] = $id;
+		$where['category'] = $this->_param['category'];
+		$where['categoryval'] = $categoryval;
 
 		if(($info = $this->_dialstatus->get_all_where($where)) === false
 		|| ($nb = count($info)) === 0)
@@ -60,18 +80,17 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 		return($this->_dialstatus->get_element());
 	}
 
-	function set($list,$type)
+	function set($list)
 	{
 		$this->_reset();
 
-		if(is_array($list) === false
-		|| is_string($type) === false)
+		if(is_array($list) === false)
 			return(false);
 		else if(empty($list) === true)
 			return(null);
 
 		$info = $infotmp = array();
-		$info['category'] = $type;
+		$info['category'] = $this->_param['category'];
 		$info['categoryval'] = 0;
 		$info['applicationval'] = '';
 		$info['linked'] = true;
@@ -136,9 +155,9 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 		return($r);
 	}
 
-	function add($id)
+	function add($categoryval)
 	{
-		if(($id = xivo_ulongint($id)) === 0)
+		if(($categoryval = xivo_ulongint($categoryval)) === 0)
 			return(false);
 		else if(($rs = $this->get_result()) === null)
 			return($rs);
@@ -149,7 +168,7 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 
 		foreach($rs as $val)
 		{
-			$val['categoryval'] = $id;
+			$val['categoryval'] = $categoryval;
 
 			if($this->_dialstatus->is_valid($val['category'],
 							$val['categoryval'],
@@ -171,14 +190,14 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 		return($this->_dialstatus->add_origin_list($this->_origin));
 	}
 
-	function edit($status,$type,$id)
+	function edit($status,$categoryval)
 	{
-		if(($id = xivo_ulongint($id)) === 0)
+		if(($categoryval = xivo_ulongint($categoryval)) === 0)
 			return(false);
-		else if(empty($this->_info) === true)
-			return($this->add($id));
+		else if(xivo_issa(0,$this->_origin) === false)
+			return($this->add($categoryval));
 
-		$this->_return = $this->delete($status,$type,$id);
+		$this->_return = $this->delete($status);
 
 		if(($rs = $this->get_result()) === null)
 			return($this->_return);
@@ -187,18 +206,20 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 
 		$this->_return = array();
 
-		$list = is_array($this->_info) === true ? array_keys($this->_info) : false;
+		$list = is_array($this->_origin) === true ? $this->_origin : false;
 
 		$i = 0;
+
+		$categoryval = $this->_origin[0]['categoryval'];
 
 		foreach($rs as $val)
 		{
 			if($list !== false && isset($list[$i]) === true)
-				$did = $this->_info[$list[$i++]]['id'];
+				$did = $list[$i++]['id'];
 			else
 				$did = 0;
 
-			$val['categoryval'] = $id;
+			$val['categoryval'] = $categoryval;
 
 			if($this->_dialstatus->is_valid($val['category'],
 							$val['categoryval'],
@@ -215,17 +236,14 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 		return(true);
 	}
 
-	function delete($status,$type,$id)
+	function delete($status)
 	{
-		if(empty($this->_info) === true)
+		if(xivo_issa(0,$this->_origin) === false)
 			return(null);
-		else if(is_string($type) === false
-		|| ($id = xivo_ulongint($id)) === 0)
-			return(false);
 
 		$dialstatus_where = array();
-		$dialstatus_where['category'] = $type;
-		$dialstatus_where['categoryval'] = $id;
+		$dialstatus_where['category'] = $this->_origin[0]['category'];
+		$dialstatus_where['categoryval'] = $this->_origin[0]['categoryval'];
 
 		$r = $this->_dialstatus->delete_where($dialstatus_where);
 
@@ -250,22 +268,22 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 		return(true);
 	}
 
-	function reverse_edit($status,$type,$id)
+	function reverse_edit($status)
 	{
-		$this->delete($status,$type,$id);
+		$this->delete($status);
 
 		return($this->add_origin_list());
 	}
 
-	function unlinked($type,$id)
+	function unlinked($type,$typeval)
 	{
-		if(is_string($type) === false
-		|| ($id = xivo_ulongint($id)) === 0)
+		if($this->_dialstatus->chk_element_value('type',$type) === false
+		|| ($typeval = xivo_ulongint($typeval)) === 0)
 			return(false);
 
 		$dialstatus_where = array();
 		$dialstatus_where['type'] = $type;
-		$dialstatus_where['typeval'] = $id;
+		$dialstatus_where['typeval'] = $typeval;
 
 		return($this->_dialstatus->unlinked_where($dialstatus_where));
 	}

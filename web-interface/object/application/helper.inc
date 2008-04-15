@@ -9,6 +9,36 @@ class xivo_application_helper
 	var $_result	= array();
 	var $_return	= array();
 
+	function load_init($param=null)
+	{
+		$this->_reset_info();
+		$this->_reset_params();
+
+		if(is_array($param) === true)
+			$this->set_params($param);
+
+		return(null);
+	}
+
+	function _reset_params()
+	{
+		if(isset($this->_param) === false)
+			return(false);
+
+		$vars = get_class_vars(get_class($this));
+
+		if(isset($vars['param']) === true)
+			$this->_param = $vars['param'];
+
+		return(true);
+	}
+
+	function _reset_info()
+	{
+		$this->_info = array();
+		$this->_origin = array();
+	}
+
 	function _reset()
 	{
 		$this->_errnb = 0;
@@ -110,6 +140,53 @@ class xivo_application_helper
 	function get_errnb()
 	{
 		return($this->_errnb);
+	}
+
+	function set_params($params)
+	{
+		if(is_array($params) === false
+		|| empty($params) === true
+		|| isset($this->_param) === false
+		|| is_array($this->_param) === false)
+			return(false);
+
+		foreach($params as $key => $value)
+		{
+			if(isset($this->_param[$key]) === true)
+				$this->_param[$key] = $value;
+		}
+
+		return(true);
+	}
+
+	function get_params()
+	{
+		if(isset($this->_param) === false)
+			return(false);
+
+		return($this->_param);
+	}
+
+	function set_param($name,$value)
+	{
+		if(isset($this->_param) === false
+		|| is_array($this->_param) === false
+		|| isset($this->_param[$name]) === false)
+			return(false);
+
+		$this->_param[$name] = $value;
+
+		return(true);
+	}
+
+	function get_param($name)
+	{
+		if(isset($this->_param) === false
+		|| is_array($this->_param) === false
+		|| isset($this->_param[$name]) === false)
+			return(false);
+
+		return($this->_param[$name]);
 	}
 }
 

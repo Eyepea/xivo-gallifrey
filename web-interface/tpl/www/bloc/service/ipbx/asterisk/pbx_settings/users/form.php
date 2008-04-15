@@ -6,6 +6,7 @@
 	$element = $this->get_var('element');
 
 	$moh_list = $this->get_var('moh_list');
+	$context_list = $this->get_var('context_list');
 	$autoprov_list = $this->get_var('autoprov_list');
 	$rightcall = $this->get_var('rightcall');
 
@@ -81,6 +82,17 @@
 
 <?=$form->select(array('desc' => $this->bbf('fm_protocol_protocol'),'name' => 'protocol[protocol]','labelid' => 'protocol-protocol','bbf' => array('concatkey','fm_protocol_protocol-opt-'),'key' => false,'default' => $element['ufeatures']['protocol']['default'],'value' => $info['ufeatures']['protocol']),$element['ufeatures']['protocol']['value'],'onchange="xivo_chg_protocol(this.value);"');?>
 
+<?php
+	if(empty($context_list) === false):
+		echo $form->select(array('desc' => $this->bbf('fm_protocol_context'),'name' => 'protocol[context]','labelid' => 'sip-protocol-context','key' => 'identity','altkey' => 'name','default' => $element['protocol']['sip']['context']['default'],'value' => $context),$context_list);
+
+		echo $form->select(array('desc' => $this->bbf('fm_protocol_context'),'name' => 'protocol[context]','labelid' => 'iax-protocol-context','key' => 'identity','altkey' => 'name','default' => $element['protocol']['iax']['context']['default'],'value' => $context),$context_list);
+
+		echo $form->select(array('desc' => $this->bbf('fm_protocol_context'),'name' => 'protocol[context]','labelid' => 'custom-protocol-context','key' => 'identity','altkey' => 'name','default' => $element['protocol']['custom']['context']['default'],'value' => $context),$context_list);
+	else:
+		echo '<div id="fd-protocol-context" class="txt-center">',$url->href_html($this->bbf('create_context'),'service/ipbx/system_management/context','act=add'),'</div>';
+	endif;
+?>
 </div>
 
 <div id="sb-part-group" class="b-nodisplay">
@@ -308,12 +320,6 @@
 	<?=$form->select(array('desc' => $this->bbf('fm_protocol_dtmfmode'),'name' => 'protocol[dtmfmode]','labelid' => 'protocol-dtmfmode','key' => false,'default' => $element['protocol']['sip']['dtmfmode']['default'],'value' => $this->get_varra('info',array('protocol','dtmfmode'))),$element['protocol']['sip']['dtmfmode']['value']);?>
 
 	<?=$form->checkbox(array('desc' => $this->bbf('fm_protocol_canreinvite'),'name' => 'protocol[canreinvite]','labelid' => 'protocol-canreinvite','default' => $element['protocol']['sip']['canreinvite']['default'],'checked' => $this->get_varra('info',array('protocol','canreinvite'))));?>
-
-	<?=$form->text(array('desc' => $this->bbf('fm_protocol_context'),'name' => 'protocol[context]','labelid' => 'sip-protocol-context','default' => $element['protocol']['sip']['context']['default'],'value' => $context,'size' => 15));?>
-
-	<?=$form->text(array('desc' => $this->bbf('fm_protocol_context'),'name' => 'protocol[context]','labelid' => 'iax-protocol-context','default' => $element['protocol']['iax']['context']['default'],'value' => $context,'size' => 15));?>
-
-	<?=$form->text(array('desc' => $this->bbf('fm_protocol_context'),'name' => 'protocol[context]','labelid' => 'custom-protocol-context','default' => $element['protocol']['custom']['context']['default'],'value' => $context,'size' => 15));?>
 
 	<?=$form->select(array('desc' => $this->bbf('fm_protocol_amaflags'),'name' => 'protocol[amaflags]','labelid' => 'sip-protocol-amaflags','bbf' => 'fm_protocol_amaflags-opt-','key' => false,'default' => $element['protocol']['sip']['amaflags']['default'],'value' => $amaflags),$element['protocol']['sip']['amaflags']['value']);?>
 

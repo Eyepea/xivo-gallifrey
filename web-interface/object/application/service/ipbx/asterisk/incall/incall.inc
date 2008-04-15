@@ -16,7 +16,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		$this->xivo_application_asterisk_abstract(&$service);
 
 		if(($this->_incall = &$this->_service->get_module('incall')) === false
-		|| ($this->_extenumbers = &$this->get_abstract('extenumbers')) === false
+		|| ($this->_extenumbers = $this->get_abstract('extenumbers',array('type' => 'incall'))) === false
 		|| ($this->_extensions = &$this->_service->get_module('extensions')) === false)
 			return(false);
 		else if((bool) $components === true)
@@ -29,7 +29,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 	{
 		$this->_components = true;
 
-		if(($this->_rightcall = &$this->get_abstract('rightcall')) === false)
+		if(($this->_rightcall = $this->get_abstract('rightcall',array('type' => 'incall'))) === false)
 			return(false);
 
 		return(true);
@@ -40,7 +40,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		$this->_info = $this->_origin = array();
 
 		if(($this->_info['incall'] = $this->_incall->get($id,$disable)) === false
-		|| ($this->_info['extenumbers'] = $this->_get_extenumbers()) === false
+		|| ($this->_info['extenumbers'] = $this->_get_extenumbers($this->_info['incall']['id'])) === false
 		|| $this->_get_exten() === false)
 			return(false);
 
@@ -50,14 +50,9 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		if($this->_components === false)
 			return($this->_info);
 
-		$this->_get_rightcall();
+		$this->_get_rightcall($this->_info['incall']['id']);
 
 		return($this->_info);
-	}
-
-	function _get_extenumbers()
-	{
-		return(parent::_get_extenumbers('incall',$this->_info['incall']['id']));
 	}
 
 	function _get_exten()
@@ -72,13 +67,6 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		$this->_origin['exten'] = $this->_extensions->get_origin();
 
 		return($this->_info['exten']);
-	}
-
-	function _get_rightcall()
-	{
-		$this->_info['rightcall'] = $this->_rightcall->get('incall',$this->_info['incall']['id']);
-
-		return($this->_info['rightcall']);
 	}
 
 	function get_sound()
@@ -244,21 +232,6 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		return(true);
 	}
 
-	function set_extenumbers($action,$number,$context)
-	{
-		return(parent::set_extenumbers($action,'incall',$number,$context));
-	}
-
-	function set_rightcall($list)
-	{
-		if(($r = $this->_rightcall->set($list,'incall')) === false)
-			$this->_set_error('rightcall',$this->_rightcall->get_error());
-
-		$this->_set_result('rightcall',$this->_rightcall->get_result());
-
-		return($r);
-	}
-
 	function add()
 	{
 		$r = true;
@@ -299,15 +272,6 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		return($this->_return['incall']);
 	}
 
-	function add_rightcall($incallid)
-	{
-		$r = $this->_rightcall->add($incallid);
-
-		$this->_return['rightcall'] = $this->_rightcall->get_return();
-
-		return($r);
-	}
-
 	function _reverse_add()
 	{
 		if($this->get_errnb() > 0
@@ -330,7 +294,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 					$this->_extensions->delete_exten($val);
 					break;
 				case 'extenumbers':
-					$this->_extenumbers->delete($this->_status,$val);
+					$this->_extenumbers->reverse_add($this->_status);
 					break;
 				case 'rightcall':
 					$this->_rightcall->reverse_add();
@@ -377,17 +341,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 		$rs['commented'] = $this->_info['incall']['commented'];
 
-		$this->_return['incall'] = $this->_incall->edit($this->_info['incall']['id'],$rs);
-
-		return($this->_return['incall']);
-	}
-
-	function edit_extenumbers()
-	{
-		if(xivo_issa('extenumbers',$this->_info) === false)
-			return(false);
-
-		return(parent::edit_extenumbers($this->_info['extenumbers']['id']));
+		return(($this->_return['incall'] = $this->_incall->edit($this->_info['incall']['id'],$rs)));
 	}
 
 	function edit_rightcall()
@@ -395,11 +349,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		if(xivo_issa('incall',$this->_info) === false)
 			return(false);
 
-		$r = $this->_rightcall->edit($this->_status,'incall',$this->_info['incall']['id']);
-
-		$this->_return['rightcall'] = $this->_rightcall->get_return();
-
-		return($r);
+		return(parent::edit_rightcall($this->_info['incall']['id']));
 	}
 
 	function _reverse_edit()
@@ -432,15 +382,10 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 						$this->_extensions->edit_origin($this->_origin['exten']);
 					break;
 				case 'extenumbers':
-					if(isset($this->_origin['extenumbers']) === false
-					|| $this->_origin['extenumbers'] === false)
-						$this->delete_extenumbers();
-					else
-						$this->_extenumbers->edit_origin($this->_origin['extenumbers']);
+					$this->_extenumbers->reverse_edit($this->_status);
 					break;
 				case 'rightcall':
-					if(xivo_issa('incall',$this->_info) === true)
-						$this->_rightcall->reverse_edit($this->_status,'incall',$this->_info['incall']['id']);
+					$this->_rightcall->reverse_edit($this->_status);
 					break;
 			}
 		}
@@ -477,29 +422,6 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 		if($this->_status === 'delete')
 			$this->_return['incall'] = $r;
-
-		return($r);
-	}
-
-	function delete_extenumbers()
-	{
-		if(xivo_issa('extenumbers',$this->_info) === false)
-			return(false);
-
-		return(parent::delete_extenumbers($this->_info['extenumbers']['id']));
-	}
-
-	function delete_rightcall()
-	{
-		if(xivo_issa('incall',$this->_info) === false)
-			$id = 0;
-		else
-			$id = $this->_info['incall']['id'];
-
-		$r = $this->_rightcall->delete($this->_status,'incall',$id);
-
-		if($this->_status === 'delete')
-			$this->_return['rightcall'] = $r;
 
 		return($r);
 	}

@@ -6,8 +6,9 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 {
 	var $_rightcall		= false;
 	var $_rightcallmember	= false;
+	var $_param		= array('type'	=> '');
 
-	function xivo_application_service_asterisk_rightcall_abstract(&$service)
+	function xivo_application_service_asterisk_rightcall_abstract(&$service,$param=array())
 	{
 		$this->xivo_application_service_asterisk_abstract(&$service);
 		
@@ -15,20 +16,39 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 		|| ($this->_rightcallmember = &$this->_service->get_module('rightcallmember')) === false)
 			return(false);
 
+		return($this->load_init($param));
+	}
+
+	function load_init($param=array())
+	{
+		$this->_reset_info();
+		$this->_reset_params();
+		$this->_reset();
+
+		if($this->set_params($param) === false
+		|| isset($param['type']) === false
+		|| $this->_rightcallmember->chk_element_value('type',$param['type']) === false)
+		{
+			$this->_param['type'] = '';
+			return(false);
+		}
+
+		$this->_param['type'] = $param['type'];
+
 		return(true);
 	}
 
-	function get($type,$id)
+	function get($typeval)
 	{
 		$this->_info = false;
 		$this->_origin = false;
 
-		if(is_string($type) === false || ($id = xivo_ulongint($id)) === 0)
+		if(($typeval = xivo_ulongint($typeval)) === 0)
 			return(false);
 
 		$where = array();
-		$where['type'] = $type;
-		$where['typeval'] = $id;
+		$where['type'] = $this->_param['type'];
+		$where['typeval'] = $typeval;
 
 		if(($this->_info = $this->_rightcallmember->get_all_where($where)) === false
 		|| isset($this->_info[0]) === false)
@@ -39,11 +59,11 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 		return($this->_info);
 	}
 
-	function set($list,$type)
+	function set($list)
 	{
 		$this->_reset();
 
-		if(is_array($list) === false || is_string($type) === false)
+		if(is_array($list) === false)
 			return(false);
 
 		$list = array_values($list);
@@ -53,7 +73,7 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 
 		$info = array();
 		$info['rightcallid'] = 0;
-		$info['type'] = $type;
+		$info['type'] = $this->_param['type'];
 		$info['typeval'] = 0;
 		
 		$tmp = $reslist = array();
@@ -87,9 +107,9 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 		return(true);
 	}
 
-	function add($id)
+	function add($typeval)
 	{
-		if(($id = xivo_ulongint($id)) === 0)
+		if(($typeval = xivo_ulongint($typeval)) === 0)
 			return(false);
 		else if(($rs = $this->get_result()) === null || $rs === false)
 			return($rs);
@@ -100,7 +120,7 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			$rs[$i]['typeval'] = $id;
+			$rs[$i]['typeval'] = $typeval;
 
 			if(($this->_return[] = $this->_rightcallmember->add($rs[$i])) === false)
 				return(false);
@@ -117,14 +137,14 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 		return($this->_rightcallmember->add_origin_list($this->_origin));
 	}
 
-	function edit($status,$type,$id)
+	function edit($status,$typeval)
 	{
-		if(($id = xivo_ulongint($id)) === 0)
+		if(($typeval = xivo_ulongint($typeval)) === 0)
 			return(false);
-		else if(empty($this->_info) === true)
-			return($this->add($id));
+		else if(xivo_issa(0,$this->_origin) === false)
+			return($this->add($typeval));
 
-		$this->_return = $this->delete($status,$type,$id);
+		$this->_return = $this->delete($status);
 
 		if(($rs = $this->get_result()) === null)
 			return($this->_return);
@@ -135,6 +155,8 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 
 		$nb = count($rs);
 
+		$typeval = $this->_origin[0]['typeval'];
+
 		for($i = 0;$i < $nb;$i++)
 		{
 			if(isset($this->_info[$i]) === true)
@@ -142,7 +164,7 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 			else
 				$rid = 0;
 
-			$rs[$i]['typeval'] = $id;
+			$rs[$i]['typeval'] = $typeval;
 
 			if(($this->_return[] = $this->_rightcallmember->add($rs[$i],$rid)) === false)
 				return(false);
@@ -154,17 +176,14 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 		return(true);
 	}
 
-	function delete($status,$type,$id)
+	function delete($status)
 	{
-		if(empty($this->_info) === true)
+		if(xivo_issa(0,$this->_origin) === false)
 			return(null);
-		else if(is_string($type) === false
-		|| ($id = xivo_ulongint($id)) === 0)
-			return(false);
 
 		$rightcallmember_where = array();
-		$rightcallmember_where['type'] = $type;
-		$rightcallmember_where['typeval'] = $id;
+		$rightcallmember_where['type'] = $this->_origin[0]['type'];
+		$rightcallmember_where['typeval'] = $this->_origin[0]['typeval'];
 
 		$r = $this->_rightcallmember->delete_where($rightcallmember_where);
 
@@ -188,9 +207,9 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 		return(true);
 	}
 
-	function reverse_edit($status,$type,$id)
+	function reverse_edit($status)
 	{
-		$this->delete($status,$type,$id);
+		$this->delete($status);
 
 		return($this->add_origin_list());
 	}

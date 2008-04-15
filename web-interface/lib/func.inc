@@ -880,7 +880,7 @@ function xivo_replacef($search,$replace,$subject)
 
 function xivo_is_max_digit($min,$max,$equal=false)
 {
-	if(ctype_digit($min) === false || ctype_digit($max) === false)
+	if(xivo_digit($min) === false || xivo_digit($max) === false)
 		return(null);
 	else if(strlen($min) === strlen($max))
 		return((bool) $equal === false ? ($max > $min) : ($max >= $min));
@@ -890,7 +890,7 @@ function xivo_is_max_digit($min,$max,$equal=false)
 
 function xivo_get_max_digit($digit1,$digit2)
 {
-	if(ctype_digit($digit1) === false || ctype_digit($digit2) === false)
+	if(xivo_digit($digit1) === false || xivo_digit($digit2) === false)
 		return(false);
 	else if(strlen($digit1) === strlen($digit2))
 		return($digit1 > $digit2 ? $digit1 : $digit2);

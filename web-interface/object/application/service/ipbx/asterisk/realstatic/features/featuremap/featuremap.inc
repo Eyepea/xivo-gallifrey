@@ -14,7 +14,7 @@ class xivo_application_service_asterisk_realstatic_features_featuremap extends x
 	function xivo_application_service_asterisk_realstatic_features_featuremap(&$service)
 	{
 		if($this->_init(&$service) === false
-		|| ($this->_extenumbers = &$this->get_abstract('extenumbers')) === false)
+		|| ($this->_extenumbers = $this->get_abstract('extenumbers',array('type' => $this->_name))) === false)
 			return(false);
 
 		return(true);
@@ -30,20 +30,9 @@ class xivo_application_service_asterisk_realstatic_features_featuremap extends x
 		$this->_info = $this->_origin = array();
 
 		$this->_get_realstatic($name,$disable);
-		$this->_get_extenumbers();
+		$this->_get_extenumbers($name);
 
 		return($this->_info);
-	}
-
-	function _get_extenumbers()
-	{
-		$this->_info['extenumbers'] = false;
-		$this->_origin['extenumbers'] = false;
-
-		if(isset($this->_info[$this->_name]['var_name']) === false)
-			return(false);
-
-		return(parent::_get_extenumbers('featuremap',$this->_info[$this->_name]['var_name']));
 	}
 
 	function set($arr)
@@ -56,13 +45,15 @@ class xivo_application_service_asterisk_realstatic_features_featuremap extends x
 		$number = (string) $this->get_result_var($this->_name,'var_val');
 		$context = '';
 
-		$this->set_extenumbers('save','featuremap',$number,$context);
+		$this->set_extenumbers('save',$number,$context);
 
 		return(($this->get_errnb() < 1));
 	}
 
 	function save()
 	{
+		$r = true;
+
 		$this->_status = 'save';
 		$this->_return = array();
 
@@ -72,14 +63,13 @@ class xivo_application_service_asterisk_realstatic_features_featuremap extends x
 		|| ($name = $this->save_realstatic()) === false
 		|| $this->save_extenumbers($name) === false)
 		{
+			$r = false;
 			$this->_reverse_save();
-			$this->_status = '';
-			return(false);
 		}
 
 		$this->_status = '';
 
-		return(true);
+		return($r);
 	}
 
 	function save_extenumbers($name)
@@ -109,11 +99,7 @@ class xivo_application_service_asterisk_realstatic_features_featuremap extends x
 					$this->_reverse_realstatic($val);
 					break;
 				case 'extenumbers':
-					if(isset($this->_origin['extenumbers']) === false
-					|| $this->_origin['extenumbers'] === false)
-						$this->_extenumbers->delete($this->_status,$val);
-					else
-						$this->_extenumbers->edit_origin($this->_origin['extenumbers']);
+					$this->_extenumbers->reverse_edit($this->_status);
 					break;
 			}
 		}

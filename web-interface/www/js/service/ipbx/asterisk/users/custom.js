@@ -16,4 +16,3 @@ xivo_elt_protocol['custom']['sip-codec']['it']['property'] = 'disabled|true:bool
 xivo_elt_protocol['custom']['custom-protocol-context'] = new Array();
 xivo_elt_protocol['custom']['custom-protocol-context']['it'] = true;
 xivo_elt_protocol['custom']['custom-protocol-context']['fd'] = true;
-

@@ -27,25 +27,45 @@ class xivo_application_abstract extends xivo_libconfig_abstract
 		return(false);
 	}
 
-	function _load_abstract($name)
+	function _load_abstract($name,$param=null)
 	{
 		$name = (string) $name;
 
 		if(isset($this->_abstract[$name]) === true)
+		{
+			if(is_array($param) === true)
+				$this->_abstract[$name]->load_init($param);
+
 			return(true);
+		}
 		else if(($class = $this->_load_abstract_class($name)) === false)
 		{
 			trigger_error('Abstract Application '.$name.' does not exist in '.$this->_application_name,E_USER_ERROR);
 			return(false);
 		}
 
-		$this->_abstract[$name] = new $class();
+		$this->_abstract[$name] = new $class($param);
 
 		return(true);
 	}
 
+	function &get_abstract($name,$param=null)
+	{
+		$r = false;
+
+		$name = (string) $name;
+
+		if($this->_load_abstract($name,$param) === true)
+			$r = &$this->_abstract[$name];
+
+		return(($ref = &$r));
+	}
+
 	function load_init($param=null)
 	{
+		$this->_reset_info();
+		$this->_reset_params();
+
 		if(is_array($param) === true)
 			$this->set_params($param);
 
@@ -57,16 +77,23 @@ class xivo_application_abstract extends xivo_libconfig_abstract
 		return(null);
 	}
 
-	function &get_abstract($name)
+	function _reset_params()
 	{
-		$r = false;
+		if(isset($this->_param) === false)
+			return(false);
 
-		$name = (string) $name;
+		$vars = get_class_vars(get_class($this));
 
-		if($this->_load_abstract($name) === true)
-			$r = &$this->_abstract[$name];
+		if(isset($vars['param']) === true)
+			$this->_param = $vars['param'];
 
-		return(($ref = &$r));
+		return(true);
+	}
+
+	function _reset_info()
+	{
+		$this->_info = array();
+		$this->_origin = array();
 	}
 
 	function _reset()

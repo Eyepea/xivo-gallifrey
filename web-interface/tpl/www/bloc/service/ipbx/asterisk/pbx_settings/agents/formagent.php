@@ -35,7 +35,6 @@
 
 		<?=$form->select(array('name' => 'queuelist','label' => false,'id' => 'it-queuelist','multiple' => true,'size' => 5,'field' => false,'key' => false),$qmember_unslt);?>
 
-beep>
 		<div class="inout-list">
 
 			<a href="#" onclick="xivo_inqueue(); return(false);" title="<?=$this->bbf('bt_inqueue');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inqueue'),'class="bt-inlist" id="bt-inqueue" border="0"');?></a><br />

@@ -158,8 +158,8 @@ $array['module']['context']['datastorage'] = true;
 $array['module']['contextentity'] = array();
 $array['module']['contextentity']['datastorage'] = true;
 
-$array['module']['contextfeatures'] = array();
-$array['module']['contextfeatures']['datastorage'] = true;
+$array['module']['contextmember'] = array();
+$array['module']['contextmember']['datastorage'] = true;
 
 $array['module']['dialstatus'] = array();
 $array['module']['dialstatus']['datastorage'] = true;

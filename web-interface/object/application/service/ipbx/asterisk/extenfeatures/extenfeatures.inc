@@ -18,7 +18,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 		$this->xivo_application_asterisk_abstract(&$service);
 
 		if(($this->_extensions = &$this->_service->get_module('extensions')) === false
-		|| ($this->_extenumbers = &$this->get_abstract('extenumbers')) === false)
+		|| ($this->_extenumbers = $this->get_abstract('extenumbers',array('type' => 'extenfeatures'))) === false)
 			return(false);
 
 		$this->_load_config(dirname(__FILE__));
@@ -30,8 +30,8 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 	{
 		$this->_info = $this->_origin = array();
 
-		$this->_get_extenfeatures($name);
-		$this->_get_extenumbers();
+		$this->_get_extenfeatures($name); 
+		$this->_get_extenumbers($name);
 
 		return($this->_info);
 	}
@@ -53,21 +53,10 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 		$arr['name'] = $name;
 		$arr['context'] = $this->_context;
 
-		$this->_info['extenfeatures'] = $this->_extensions->get_all_by_name_context($arr,$disable);
-		$this->_origin['extenfeatures'] = $this->_extensions->get_origin_list();
+		if(($this->_info['extenfeatures'] = $this->_extensions->get_all_by_name_context($arr,$disable)) !== false)
+			$this->_origin['extenfeatures'] = $this->_extensions->get_origin_list();
 
 		return($this->_info['extenfeatures']);
-	}
-
-	function _get_extenumbers()
-	{
-		$this->_info['extenumbers'] = false;
-		$this->_origin['extenumbers'] = false;
-
-		if(isset($this->_info['extenfeatures']['name']) === false)
-			return(false);
-
-		return(parent::_get_extenumbers('extenfeatures',$this->_info['extenfeatures']['name']));
 	}
 
 	function get_config_exten()
@@ -189,7 +178,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 		$number = (string) $this->get_result_var('extenfeatures','exten');
 		$context = '';
 
-		$this->set_extenumbers('save','extenfeatures',$number,$context);
+		$this->set_extenumbers('save',$number,$context);
 
 		if($arr['name'] === 'voicemsg')
 			$this->set_sip_vmexten($number);
@@ -364,11 +353,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 						$this->_extensions->add_origin_list($this->_origin['extenfeatures']);
 					break;
 				case 'extenumbers':
-					if(isset($this->_origin['extenumbers']) === false
-					|| $this->_origin['extenumbers'] === false)
-						$this->_extenumbers->delete($this->_status,$val);
-					else
-						$this->_extenumbers->edit_origin($this->_origin['extenumbers']);
+					$this->_extenumbers->reverse_edit($this->_status);
 					break;
 			}
 		}

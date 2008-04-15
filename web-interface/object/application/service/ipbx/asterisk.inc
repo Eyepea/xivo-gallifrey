@@ -84,6 +84,18 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		return($r);
 	}
 
+	function get_context_list($disable=null,$order=null,$limit=null,$assoc=false)
+	{
+		if(isset($this->_contextlist) === false)
+			return(false);
+		else if(empty($this->_contextlist) === false)
+			return($this->_contextlist);
+		else if(($context = &$this->_service->get_module('context')) === false)
+			return(false);
+
+		return(($this->_contextlist = $context->get_all($disable,true,$order,$limit,$assoc)));
+	}
+
 	function get_musiconhold()
 	{
 		if(isset($this->_musiconhold) === false)
@@ -98,17 +110,53 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		return($this->_musiconhold);
 	}
 
-	function _get_extenumbers($type,$typeval)
+	function _get_extenumbers($typeval)
 	{
-		$this->_info['extenumbers'] = $this->_extenumbers->get($type,$typeval);
-		$this->_origin['extenumbers'] = $this->_extenumbers->get_origin();
+		$this->_info['extenumbers'] = false;
+		$this->_origin['extenumbers'] = false;
+
+		if(($this->_info['extenumbers'] = $this->_extenumbers->get($typeval)) !== false)
+			$this->_origin['extenumbers'] = $this->_extenumbers->get_origin();
 
 		return($this->_info['extenumbers']);
 	}
 
-	function set_extenumbers($action,$type,$number,$context='',$typeval='')
+	function _get_rightcall($typeval)
 	{
-		if(($r = $this->_extenumbers->set($action,$type,$number,$context,$typeval)) === false)
+		$this->_info['rightcall'] = false;
+		$this->_origin['rightcall'] = false;
+
+		if(($this->_info['rightcall'] = $this->_rightcall->get($typeval)) !== false)
+			$this->_origin['rightcall'] = $this->_rightcall->get_origin();
+
+		return($this->_info['rightcall']);
+	}
+
+	function _get_dialstatus($categoryval)
+	{
+		$this->_info['dialstatus'] = false;
+		$this->_origin['dialstatus'] = false;
+
+		if(($this->_info['dialstatus'] = $this->_dialstatus->get($categoryval)) !== false)
+			$this->_origin['dialstatus'] = $this->_dialstatus->get_origin();
+
+		return($this->_info['dialstatus']);
+	}
+
+	function _get_context($typeval)
+	{
+		$this->_info['context'] = false;
+		$this->_origin['context'] = false;
+
+		if(($this->_info['context'] = $this->_context->get($typeval)) !== false)
+			$this->_origin['context'] = $this->_context->get_origin();
+
+		return($this->_info['context']);
+	}
+
+	function set_extenumbers($action,$number,$context='',$typeval='')
+	{
+		if(($r = $this->_extenumbers->set($action,$number,$context,$typeval)) === false)
 			$this->_set_error('extenumbers',$this->_extenumbers->get_error());
 
 		$this->_set_result('extenumbers',$this->_extenumbers->get_result());
@@ -127,25 +175,52 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		else
 			$r = $this->_extensions->new_exten('macro',$arr,$exten,$context);
 
-		if($r === false)
-		{
-			if($this->_extensions->get_filter_errnb() > 0)
-				$this->_set_error($name,$this->_extensions->get_filter_error());
-			else
-				$this->_set_error($name,'invalid macro');
-		}
+		if($r !== false)
+			return($r);
+		else if($this->_extensions->get_filter_errnb() > 0)
+			$this->_set_error($name,$this->_extensions->get_filter_error());
+		else
+			$this->_set_error($name,'invalid macro');
 
 		return($r);
 	}
 
-	function add_extenumbers($typeval='',$id=0)
+	function set_rightcall($list)
 	{
-		if(($rs = $this->_extenumbers->add($typeval,$id)) === null || $rs === false)
+		if(($r = $this->_rightcall->set($list)) === false)
+			$this->_set_error('rightcall',$this->_rightcall->get_error());
+
+		$this->_set_result('rightcall',$this->_rightcall->get_result());
+
+		return($r);
+	}
+
+	function set_dialstatus($list)
+	{
+		if(($r = $this->_dialstatus->set($list)) === false)
+			$this->_set_error('dialstatus',$this->_dialstatus->get_error());
+
+		$this->_set_result('dialstatus',$this->_dialstatus->get_result());
+
+		return($r);
+	}
+
+	function set_context($context,$number='')
+	{
+		if(($r = $this->_context->set($context,$number)) === false)
+			$this->_set_error('context',$this->_context->get_error());
+
+		$this->_set_result('context',$this->_context->get_result());
+
+		return($r);
+	}
+
+	function add_extenumbers($typeval)
+	{
+		if(($rs = $this->_extenumbers->add($typeval)) === null || $rs === false)
 			return($rs);
 
-		$this->_return['extenumbers'] = $this->_extenumbers->get_return();
-
-		return($this->_return['extenumbers']);
+		return(($this->_return['extenumbers'] = $this->_extenumbers->get_return()));
 	}
 
 	function add_macro($name)
@@ -153,19 +228,42 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		if(($rs = $this->get_result($name)) === null || $rs === false)
 			return($rs);
 
-		$this->_return[$name] = $this->_extensions->add_exten($rs);
-
-		return($this->_return[$name]);
+		return(($this->_return[$name] = $this->_extensions->add_exten($rs)));
 	}
 
-	function edit_extenumbers($id=0)
+	function add_rightcall($typeval)
 	{
-		if(($rs = $this->_extenumbers->edit($id)) === null || $rs === false)
+		$r = $this->_rightcall->add($typeval);
+
+		$this->_return['rightcall'] = $this->_rightcall->get_return();
+
+		return($r);
+	}
+
+	function add_dialstatus($categoryval)
+	{
+		$r = $this->_dialstatus->add($categoryval);
+
+		$this->_return['dialstatus'] = $this->_dialstatus->get_return();
+
+		return($r);
+	}
+
+	function add_context($typeval)
+	{
+		$r = $this->_context->add($typeval);
+
+		$this->_return['context'] = $this->_context->get_return();
+
+		return($r);
+	}
+
+	function edit_extenumbers()
+	{
+		if(($rs = $this->_extenumbers->edit()) === null || $rs === false)
 			return($rs);
 
-		$this->_return['extenumbers'] = $this->_extenumbers->get_return();
-
-		return($this->_return['extenumbers']);
+		return(($this->_return['extenumbers'] = $this->_extenumbers->get_return()));
 	}
 
 	function edit_macro($name)
@@ -182,19 +280,44 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		return($this->_return[$name]);
 	}
 
-	function save_extenumbers($typeval=null)
+	function edit_rightcall($typeval)
+	{
+		$r = $this->_rightcall->edit($this->_status,$typeval);
+
+		$this->_return['rightcall'] = $this->_rightcall->get_return();
+
+		return($r);
+	}
+
+	function edit_dialstatus($categoryval)
+	{
+		$r = $this->_dialstatus->edit($this->_status,$categoryval);
+
+		$this->_return['dialstatus'] = $this->_dialstatus->get_return();
+
+		return($r);
+	}
+
+	function edit_context($typeval)
+	{
+		$r = $this->_context->edit($this->_status,$typeval);
+
+		$this->_return['context'] = $this->_context->get_return();
+
+		return($r);
+	}
+
+	function save_extenumbers($typeval)
 	{
 		if(($rs = $this->_extenumbers->save($this->_status,$typeval)) === null || $rs === false)
 			return($rs);
 
-		$this->_return['extenumbers'] = $this->_extenumbers->get_return();
-
-		return($this->_return['extenumbers']);
+		return(($this->_return['extenumbers'] = $this->_extenumbers->get_return()));
 	}
 
-	function delete_extenumbers($id=0)
+	function delete_extenumbers()
 	{
-		if(($rs = $this->_extenumbers->delete($this->_status,$id)) === null
+		if(($rs = $this->_extenumbers->delete($this->_status)) === null
 		|| $rs === false)
 			return($rs);
 
@@ -213,6 +336,36 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 
 		if($this->_status === 'delete')
 			$this->_return[$name] = $r;
+
+		return($r);
+	}
+
+	function delete_rightcall()
+	{
+		$r = $this->_rightcall->delete($this->_status);
+
+		if($this->_status === 'delete')
+			$this->_return['rightcall'] = $r;
+
+		return($r);
+	}
+
+	function delete_dialstatus()
+	{
+		$r = $this->_dialstatus->delete($this->_status);
+
+		if($this->_status === 'delete')
+			$this->_return['dialstatus'] = $r;
+
+		return($r);
+	}
+
+	function delete_context()
+	{
+		$r = $this->_context->delete($this->_status);
+
+		if($this->_status === 'delete')
+			$this->_return['context'] = $r;
 
 		return($r);
 	}

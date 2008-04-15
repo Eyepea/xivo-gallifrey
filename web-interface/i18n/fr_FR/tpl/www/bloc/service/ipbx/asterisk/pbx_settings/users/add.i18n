@@ -62,7 +62,10 @@ Personnalisé
 NAT :
 
 ; fm_protocol_context
-Contexte :
+Entreprise :
+
+; create_context
+Créer un contexte
 
 ; fm_protocol_amaflags
 Drapeau de facturation :
