@@ -176,7 +176,7 @@ class Phones:
                                                             self.list[astid].normal[snl].build_cidstatus(),
                                                             self.list[astid].normal[snl].build_fullstatlist() + ';']))
          dt5 = time.time()
-         log_debug(SYSLOG_INFO, '%s : sent ExtensionState request for new phones (%f seconds)' %(astid, (dt5-dt4)))
+         # log_debug(SYSLOG_INFO, '%s : sent ExtensionState request for new phones (%f seconds)' %(astid, (dt5-dt4)))
          if len(self.lstdel[astid]) > 0 or len(self.lstadd[astid]) > 0:
                  self.commandclass.phones_update('signal-deloradd',
                                                  [astid,

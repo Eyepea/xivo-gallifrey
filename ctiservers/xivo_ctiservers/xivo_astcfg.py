@@ -150,13 +150,13 @@ class AsteriskConfig:
                                         if line[0] == 'XIVO-WEBI: no-data':
                                                 log_debug(SYSLOG_INFO, "%s : received no-data from WEBI" % self.astid)
                                         elif line[0] == 'XIVO-WEBI: no-update':
-                                                log_debug(SYSLOG_INFO, "%s : received no-update from WEBI" % self.astid)
+                                                # log_debug(SYSLOG_INFO, "%s : received no-update from WEBI" % self.astid)
                                                 phonelist = None
                                                 self.userlist_md5 = savemd5
                                 else:
                                         pass
                         t2 = time.time()
-                        log_debug(SYSLOG_INFO, "%s : URL %s has read %d bytes in %f seconds" %(self.astid, self.userlist_url, len(fulltable), (t2-t1)))
+                        # log_debug(SYSLOG_INFO, "%s : URL %s has read %d bytes in %f seconds" %(self.astid, self.userlist_url, len(fulltable), (t2-t1)))
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, "--- exception --- %s : a problem occured when building phone list : %s" %(self.astid, str(exc)))
                         return phonelist
