@@ -12,10 +12,10 @@
 
         Patch status: a few tests (OK) have been done, need more statistics
 
-Index: asterisk-1.2.24/channel.c
+Index: asterisk-1.2.27/channel.c
 ===================================================================
---- asterisk-1.2.24.orig/channel.c	2007-10-22 15:21:55.000000000 +0200
-+++ asterisk-1.2.24/channel.c	2007-10-22 15:21:57.000000000 +0200
+--- asterisk-1.2.27.orig/channel.c	2007-07-05 16:19:14.000000000 +0200
++++ asterisk-1.2.27/channel.c	2008-04-16 15:13:22.000000000 +0200
 @@ -689,6 +689,17 @@
  	return ast_queue_frame(chan, &f);
  }
@@ -34,10 +34,10 @@ Index: asterisk-1.2.24/channel.c
  /*--- ast_channel_defer_dtmf: Set defer DTMF flag on channel */
  int ast_channel_defer_dtmf(struct ast_channel *chan)
  {
-Index: asterisk-1.2.24/manager.c
+Index: asterisk-1.2.27/manager.c
 ===================================================================
---- asterisk-1.2.24.orig/manager.c	2007-10-22 15:21:55.000000000 +0200
-+++ asterisk-1.2.24/manager.c	2007-10-22 15:21:57.000000000 +0200
+--- asterisk-1.2.27.orig/manager.c	2007-06-24 19:32:21.000000000 +0200
++++ asterisk-1.2.27/manager.c	2008-04-16 15:13:22.000000000 +0200
 @@ -916,6 +916,50 @@
  	return 0;
  }
@@ -97,10 +97,10 @@ Index: asterisk-1.2.24/manager.c
  		ast_manager_register2("Originate", EVENT_FLAG_CALL, action_originate, "Originate Call", mandescr_originate);
  		ast_manager_register2("Command", EVENT_FLAG_COMMAND, action_command, "Execute Asterisk CLI Command", mandescr_command );
  		ast_manager_register2("ExtensionState", EVENT_FLAG_CALL, action_extensionstate, "Check Extension Status", mandescr_extensionstate );
-Index: asterisk-1.2.24/include/asterisk/channel.h
+Index: asterisk-1.2.27/include/asterisk/channel.h
 ===================================================================
---- asterisk-1.2.24.orig/include/asterisk/channel.h	2007-10-22 15:21:55.000000000 +0200
-+++ asterisk-1.2.24/include/asterisk/channel.h	2007-10-22 15:21:57.000000000 +0200
+--- asterisk-1.2.27.orig/include/asterisk/channel.h	2006-11-07 19:22:01.000000000 +0100
++++ asterisk-1.2.27/include/asterisk/channel.h	2008-04-16 15:13:22.000000000 +0200
 @@ -555,6 +555,9 @@
  /*! \brief Queue a control frame */
  int ast_queue_control(struct ast_channel *chan, int control);
@@ -111,10 +111,10 @@ Index: asterisk-1.2.24/include/asterisk/channel.h
  
  /*! \brief Change channel name */
  void ast_change_name(struct ast_channel *chan, char *newname);
-Index: asterisk-1.2.24/include/asterisk/frame.h
+Index: asterisk-1.2.27/include/asterisk/frame.h
 ===================================================================
---- asterisk-1.2.24.orig/include/asterisk/frame.h	2007-10-22 15:21:55.000000000 +0200
-+++ asterisk-1.2.24/include/asterisk/frame.h	2007-10-22 15:21:57.000000000 +0200
+--- asterisk-1.2.27.orig/include/asterisk/frame.h	2005-11-29 19:24:39.000000000 +0100
++++ asterisk-1.2.27/include/asterisk/frame.h	2008-04-16 15:13:22.000000000 +0200
 @@ -243,6 +243,8 @@
  #define AST_CONTROL_UNHOLD			17
  /*! Indicate video frame update */
@@ -124,10 +124,10 @@ Index: asterisk-1.2.24/include/asterisk/frame.h
  
  #define AST_SMOOTHER_FLAG_G729		(1 << 0)
  
-Index: asterisk-1.2.24/include/asterisk/strings.h
+Index: asterisk-1.2.27/include/asterisk/strings.h
 ===================================================================
---- asterisk-1.2.24.orig/include/asterisk/strings.h	2007-10-22 15:21:55.000000000 +0200
-+++ asterisk-1.2.24/include/asterisk/strings.h	2007-10-22 15:21:57.000000000 +0200
+--- asterisk-1.2.27.orig/include/asterisk/strings.h	2006-01-06 00:53:07.000000000 +0100
++++ asterisk-1.2.27/include/asterisk/strings.h	2008-04-16 15:13:22.000000000 +0200
 @@ -35,6 +35,8 @@
  	return (!s || (*s == '\0'));
  }
@@ -137,10 +137,10 @@ Index: asterisk-1.2.24/include/asterisk/strings.h
  /*!
    \brief Gets a pointer to the first non-whitespace character in a string.
    \param ast_skip_blanks function being used
-Index: asterisk-1.2.24/CREDITS
+Index: asterisk-1.2.27/CREDITS
 ===================================================================
---- asterisk-1.2.24.orig/CREDITS	2007-10-22 15:21:55.000000000 +0200
-+++ asterisk-1.2.24/CREDITS	2007-10-22 15:21:57.000000000 +0200
+--- asterisk-1.2.27.orig/CREDITS	2006-08-21 00:09:57.000000000 +0200
++++ asterisk-1.2.27/CREDITS	2008-04-16 15:13:22.000000000 +0200
 @@ -87,6 +87,7 @@
  Steve Murphy - privacy support
  Claude Patry - bug fixes, feature enhancements, and bug marshalling
@@ -149,11 +149,11 @@ Index: asterisk-1.2.24/CREDITS
  
  === OTHER CONTRIBUTIONS ===
  John Todd - Monkey sounds and associated teletorture prompt
-Index: asterisk-1.2.24/res/res_features.c
+Index: asterisk-1.2.27/res/res_features.c
 ===================================================================
---- asterisk-1.2.24.orig/res/res_features.c	2007-10-22 15:21:55.000000000 +0200
-+++ asterisk-1.2.24/res/res_features.c	2007-10-22 15:21:57.000000000 +0200
-@@ -663,15 +663,18 @@
+--- asterisk-1.2.27.orig/res/res_features.c	2008-04-16 15:12:21.000000000 +0200
++++ asterisk-1.2.27/res/res_features.c	2008-04-16 15:13:22.000000000 +0200
+@@ -673,15 +673,18 @@
  	return FEATURE_RETURN_SUCCESS;
  }
  
@@ -175,7 +175,7 @@ Index: asterisk-1.2.24/res/res_features.c
  	char *cid_num;
  	char *cid_name;
  	int res;
-@@ -686,171 +689,182 @@
+@@ -696,171 +699,182 @@
  		transferer = chan;
  		transferee = peer;
  	}
@@ -508,7 +508,7 @@ Index: asterisk-1.2.24/res/res_features.c
  	ast_moh_stop(transferee);
  	ast_autoservice_stop(transferee);
  	ast_indicate(transferee, AST_CONTROL_UNHOLD);
-@@ -858,6 +872,19 @@
+@@ -868,6 +882,19 @@
  	return FEATURE_RETURN_SUCCESS;
  }
  
@@ -528,7 +528,7 @@ Index: asterisk-1.2.24/res/res_features.c
  
  /* add atxfer and automon as undefined so you can only use em if you configure them */
  #define FEATURES_COUNT (sizeof(builtin_features) / sizeof(builtin_features[0]))
-@@ -1410,6 +1437,9 @@
+@@ -1420,6 +1447,9 @@
  			else
  				ast_indicate(chan, AST_CONTROL_FLASH);
  		}
