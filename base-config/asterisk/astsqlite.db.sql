@@ -169,19 +169,6 @@ CREATE INDEX context__idx__entity ON context(entity);
 CREATE INDEX context__idx__commented ON context(commented);
 
 
-DROP TABLE contextentity;
-CREATE TABLE contextentity (
- context varchar(39) NOT NULL,
- type varchar(6) NOT NULL,
- typevalbeg varchar(16) NOT NULL DEFAULT '',
- typevalend varchar(16) NOT NULL DEFAULT '',
- didlength tinyint unsigned NOT NULL DEFAULT 0,
- PRIMARY KEY(context,type,typevalbeg,typevalend)
-);
-
-CREATE INDEX contextentity__idx__context_type ON contextentity(context,type);
-
-
 DROP TABLE contextmember;
 CREATE TABLE contextmember (
  context varchar(39) NOT NULL,
@@ -192,6 +179,19 @@ CREATE TABLE contextmember (
 
 CREATE INDEX contextmember__idx__context ON contextmember(context);
 CREATE INDEX contextmember__idx__context_type ON contextmember(context,type);
+
+
+DROP TABLE contextnumbers;
+CREATE TABLE contextnumbers (
+ context varchar(39) NOT NULL,
+ type varchar(6) NOT NULL,
+ numberbeg varchar(16) NOT NULL DEFAULT '',
+ numberend varchar(16) NOT NULL DEFAULT '',
+ didlength tinyint unsigned NOT NULL DEFAULT 0,
+ PRIMARY KEY(context,type,numberbeg,numberend)
+);
+
+CREATE INDEX contextnumbers__idx__context_type ON contextnumbers(context,type);
 
 
 DROP TABLE dialstatus;
