@@ -2,15 +2,15 @@
 
 xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
-class xivo_service_asterisk_contextentity extends xivo_service_asterisk_abstract
+class xivo_service_asterisk_contextnumbers extends xivo_service_asterisk_abstract
 {
 	var $_dso		= null;
-	var $_name		= 'contextentity';
+	var $_name		= 'contextnumbers';
 	var $_filter		= false;
 	var $_origin		= false;
 	var $_origin_list	= false;
 
-	function xivo_service_asterisk_contextentity(&$sre,&$dso)
+	function xivo_service_asterisk_contextnumbers(&$sre,&$dso)
 	{
 		if(is_object($sre) === false)
 			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
@@ -99,20 +99,38 @@ class xivo_service_asterisk_contextentity extends xivo_service_asterisk_abstract
 
 		if(($list = $this->get_all_where($where,null,false)) === false
 		|| ($nb = count($list)) === 0
-		|| xivo_digit($number) === false)
+		|| ($type !== 'incall' && xivo_digit($number) === false) === true)
 			return(false);
 
 		$number = strval($number);
 
+		if($type === 'incall')
+		{
+			$pattern = '/^'.$this->_sre->_regexten_pattern($number).'$/';
+			$isdigit = xivo_digit($number);
+		}
+
 		for($i = 0;$i < $nb;$i++)
 		{
-			$ref = $list[$i];
+			$numberbeg = strval($list[$i]['numberbeg']);
+			$numberend = strval($list[$i]['numberend']);
 
-			$ref['typevalbeg'] = strval($ref['typevalbeg']);
-			$ref['typevalend'] = strval($ref['typevalend']);
+			if($type === 'incall')
+			{
+				$didlength = $list[$i]['didlength'];
+				$numberbeg = substr($numberbeg,-($didlength));
+				$numberend = substr($numberend,-($didlength));
 
-			if((isset($ref['typevalend'][0]) === false && $ref['typevalbeg'] === $number) === true
-			|| $this->chk_number_in_interval($ref['typevalbeg'],$number,$ref['typevalend']) === true)
+				if(preg_match($pattern,$numberbeg) === 1)
+					$number = $numberbeg;
+				else if(preg_match($pattern,$numberend) === 1)
+					$number = $numberend;
+				else if($isdigit === false)
+					continue;
+			}
+
+			if((isset($numberend{0}) === false && $numberbeg === $number) === true
+			|| $this->chk_number_in_interval($numberbeg,$number,$numberend) === true)
 				return(true);
 		}
 

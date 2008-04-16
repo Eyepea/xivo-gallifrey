@@ -19,11 +19,17 @@
 <?=$form->select(array('desc' => $this->bbf('fm_meetmefeatures_mode'),'name' => 'mfeatures[mode]','labelid' => 'mfeatures-mode','bbf' => 'fm_meetmefeatures_mode-','key' => false,'default' => $element['mfeatures']['mode']['default'],'value' => $info['mfeatures']['mode']),$element['mfeatures']['mode']['value']);?>
 
 <?php
-	if($moh_list !== false):
-	
-		echo $form->select(array('desc' => $this->bbf('fm_meetmefeatures_musiconhold'),'name' => 'mfeatures[musiconhold]','labelid' => 'mfeatures-musiconhold','key' => 'category','empty' => true,'default' => $element['mfeatures']['musiconhold']['default'],'value' => $info['mfeatures']['musiconhold']),$moh_list);
 
-	endif;
+if(($context_list = $this->get_var('context_list')) !== false):
+	echo $form->select(array('desc' => $this->bbf('fm_meetmefeatures_context'),'name' => 'mfeatures[context]','labelid' => 'mfeatures-context','key' => 'identity','altkey' => 'name','default' => $element['mfeatures']['context']['default'],'value' => $info['mfeatures']['context']),$context_list);
+else:
+	echo '<div id="fd-meetmefeatures-context" class="txt-center">',$url->href_html($this->bbf('create_context'),'service/ipbx/system_management/context','act=add'),'</div>';
+endif;
+
+if($moh_list !== false):
+	echo $form->select(array('desc' => $this->bbf('fm_meetmefeatures_musiconhold'),'name' => 'mfeatures[musiconhold]','labelid' => 'mfeatures-musiconhold','key' => 'category','empty' => true,'default' => $element['mfeatures']['musiconhold']['default'],'value' => $info['mfeatures']['musiconhold']),$moh_list);
+endif;
+
 ?>
 
 </div>

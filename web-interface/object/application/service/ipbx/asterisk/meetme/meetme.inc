@@ -11,7 +11,9 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 	var $_meetmeroom	= false;
 	var $_extensions	= false;
 	var $_extenumbers	= false;
+	var $_context		= false;
 	var $_musiconhold	= array();
+	var $_contextlist	= array();
 
 	function xivo_application_service_asterisk_meetme(&$service,$param=null,$components=true)
 	{
@@ -32,7 +34,8 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		$this->_components = true;
 
 		if(($this->_extensions = &$this->_service->get_module('extensions')) === false
-		|| ($this->_extenumbers = $this->get_abstract('extenumbers',array('type' => 'meetme'))) === false)
+		|| ($this->_extenumbers = $this->get_abstract('extenumbers',array('type' => 'meetme'))) === false
+		|| ($this->_context = $this->get_abstract('context',array('type' => 'meetme'))) === false)
 			return(false);
 
 		return(true);
@@ -55,7 +58,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 		$this->_get_exten();
 		$this->_get_extenumbers($this->_info['mfeatures']['id']);
-		$this->get_musiconhold();
+		$this->_get_context($this->_info['mfeatures']['id']);
 
 		return($this->_info);
 	}
@@ -159,6 +162,8 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 		$this->set_extenumbers($action,$number,$context);
 
+		$this->set_context($context,$number);
+
 		return(($this->get_errnb() < 1));
 	}
 
@@ -167,10 +172,16 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		if(is_array($arr) === false)
 		{
 			$this->_set_result('mfeatures',null);
-			$this->_set_error('mfeatures','invalid module');
+			$this->_set_error('mfeatures','invalid data');
 			return(false);
 		}
-		else if(($rs = $this->_meetmefeatures->chk_values($arr)) === false)
+
+		$this->get_musiconhold();
+
+		if(isset($arr['musiconhold'],$this->_musiconhold[$arr['musiconhold']]) === false)
+			$arr['musiconhold'] = '';
+
+		if(($rs = $this->_meetmefeatures->chk_values($arr)) === false)
 		{
 			$this->_set_result('mfeatures',$this->_meetmefeatures->get_filter_result());
 			$this->_set_error('mfeatures',$this->_meetmefeatures->get_filter_error());
@@ -210,7 +221,8 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		|| ($meetmeroomid = $this->add_meetmeroom()) === false
 		|| ($meetmefeaturesid = $this->add_meetmefeatures($meetmeroomid)) === false
 		|| $this->add_extenumbers($meetmefeaturesid) === false
-		|| $this->add_macro('exten') === false)
+		|| $this->add_macro('exten') === false
+		|| $this->add_context($meetmefeaturesid) === false)
 		{
 			$r = false;
 			if($meetmeroomid !== null)
@@ -228,9 +240,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		|| $rs === false)
 			return(false);
 
-		$this->_return['meetmeroom'] = $this->_meetmeroom->get_return_var('meetmeroom');
-
-		return($this->_return['meetmeroom']);
+		return(($this->_return['meetmeroom'] = $this->_meetmeroom->get_return_var('meetmeroom')));
 	}
 
 	function add_meetmefeatures($meetmeid)
@@ -242,9 +252,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 		$rs['meetmeid'] = $meetmeid;
 
-		$this->_return['mfeatures'] = $this->_meetmefeatures->add($rs);
-
-		return($this->_return['mfeatures']);
+		return(($this->_return['mfeatures'] = $this->_meetmefeatures->add($rs)));
 	}
 
 	function _reverse_add()
@@ -274,6 +282,9 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 				case 'extenumbers':
 					$this->_extenumbers->reverse_add($this->_status);
 					break;
+				case 'context':
+					$this->_context->reverse_add();
+					break;
 			}
 		}
 
@@ -291,7 +302,8 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		|| $this->edit_meetmeroom() === false
 		|| $this->edit_meetmefeatures() === false
 		|| $this->edit_extenumbers() === false
-		|| $this->edit_macro('exten') === false)
+		|| $this->edit_macro('exten') === false
+		|| $this->edit_context() === false)
 		{
 			$r = false;
 			$this->_reverse_edit();
@@ -322,6 +334,14 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		$rs['meetmeid'] = $this->_info['mfeatures']['meetmeid'];
 
 		return(($this->_return['mfeatures'] = $this->_meetmefeatures->edit($this->_info['mfeatures']['id'],$rs)));
+	}
+
+	function edit_context()
+	{
+		if(xivo_issa('mfeatures',$this->_info) === false)
+			return(false);
+
+		return(parent::edit_context($this->_info['mfeatures']['id']));
 	}
 
 	function _reverse_edit()
@@ -363,6 +383,9 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 				case 'extenumbers':
 					$this->_extenumbers->reverse_edit($this->_status);
 					break;
+				case 'context':
+					$this->_context->reverse_edit($this->_status);
+					break;
 			}
 		}
 
@@ -377,7 +400,8 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		if($this->delete_meetmeroom() === false
 		|| $this->delete_meetmefeatures() === false
 		|| $this->delete_extenumbers() === false
-		|| $this->delete_macro('exten') === false)
+		|| $this->delete_macro('exten') === false
+		|| $this->delete_context() === false)
 		{
 			$this->_reverse_delete();
 			$this->_status = '';
@@ -451,6 +475,9 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 					if(isset($this->_origin['extenumbers']) === true
 					&& $this->_origin['extenumbers'] !== false)
 						$this->_extenumbers->add_origin($this->_origin['extenumbers']);
+					break;
+				case 'context':
+					$this->_context->add_origin();
 					break;
 			}
 		}

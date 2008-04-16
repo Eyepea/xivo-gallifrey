@@ -21,8 +21,7 @@ $array['element']['musiconhold'] = array();
 $array['element']['musiconhold']['default'] = '';
 
 $array['element']['context'] = array();
-$array['element']['context']['default'] = 'default';
-$array['element']['context']['setdef'] = true;
+$array['element']['context']['default'] = '';
 
 $array['element']['poundexit'] = array();
 $array['element']['poundexit']['value'] = array(0,1);
@@ -79,7 +78,7 @@ $array['filter']['number'] = array('regexp' => '/^[0-9\*#]+$/','minlen' => 1,'ma
 $array['filter']['meetmeid'] = array('cast' => 'ulongint');
 $array['filter']['mode'] = array('key' => array('talk','listen','all'));
 $array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 20);
-$array['filter']['context'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context');
+$array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context');
 $array['filter']['poundexit'] = array('bool' => true);
 $array['filter']['quiet'] = array('bool' => true);
 $array['filter']['record'] = array('bool' => true);

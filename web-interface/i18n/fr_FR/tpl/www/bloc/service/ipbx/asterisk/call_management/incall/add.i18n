@@ -10,6 +10,12 @@ Droits d'appels
 ; fm_incall_exten
 SDA :
 
+; fm_incall_context
+Entreprise :
+
+; create_context
+Créer un contexte
+
 ; fm_incall_type
 Destination :
 

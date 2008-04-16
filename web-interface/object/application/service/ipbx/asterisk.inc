@@ -378,12 +378,14 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		$sortidentity = new xivo_sort(array('key' => 'identity'));
 		$sortname = new xivo_sort(array('key' => 'name'));
 
-		$userid = $groupid = $scheduleid = 0;
+		$userid = $groupid = $queueid = $scheduleid = 0;
 
 		if($type === 'user')
 			$userid = xivo_ulongint($id);
 		else if($type === 'group')
 			$groupid = xivo_ulongint($id);
+		else if($type === 'queue')
+			$queueid = xivo_ulongint($id);
 		else if($type === 'schedule')
 			$scheduleid = xivo_ulongint($id);
 
@@ -400,7 +402,7 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 			$r['groups'] = false;
 
 		if(($qfeatures = &$this->_service->get_module('queuefeatures')) !== false
-		&& ($r['queues'] = $qfeatures->get_all_number()) !== false)
+		&& ($r['queues'] = $qfeatures->get_all_number($queueid)) !== false)
 			usort($r['queues'],array(&$sortidentity,'str_usort'));
 		else
 			$r['queues'] = false;

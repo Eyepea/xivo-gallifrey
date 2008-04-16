@@ -6,7 +6,6 @@
 	$info = $this->get_var('info');
 	$user = $this->get_var('user');
 	$rightcall = $this->get_var('rightcall');
-	$moh_list = $this->get_var('moh_list');
 ?>
 
 <div id="sb-part-first" class="b-nodisplay">
@@ -17,7 +16,15 @@
 
 <?=$form->select(array('desc' => $this->bbf('fm_queue_strategy'),'name' => 'queue[strategy]','labelid' => 'queue-strategy','key' => false,'default' => $element['queue']['strategy']['default'],'value' => $info['queue']['strategy']),$element['queue']['strategy']['value']);?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_gfeatures_context'),'name' => 'gfeatures[context]','labelid' => 'gfeatures-context','size' => 15,'default' => $element['gfeatures']['context']['default'],'value' => $info['gfeatures']['context']));?>
+<?php
+
+if(($context_list = $this->get_var('context_list')) !== false):
+	echo $form->select(array('desc' => $this->bbf('fm_gfeatures_context'),'name' => 'gfeatures[context]','labelid' => 'gfeatures-context','key' => 'identity','altkey' => 'name','default' => $element['gfeatures']['context']['default'],'value' => $info['gfeatures']['context']),$context_list);
+else:
+	echo '<div id="fd-gfeatures-context" class="txt-center">',$url->href_html($this->bbf('create_context'),'service/ipbx/system_management/context','act=add'),'</div>';
+endif;
+
+?>
 
 <?=$form->select(array('desc' => $this->bbf('fm_gfeatures_timeout'),'name' => 'gfeatures[timeout]','labelid' => 'gfeatures-timeout','bbf' => array('mixkey','fm_gfeatures_timeout-opt'),'key' => false,'default' => $element['gfeatures']['timeout']['default'],'value' => $info['gfeatures']['timeout']),$element['gfeatures']['timeout']['value']);?>
 
@@ -25,7 +32,7 @@
 
 <?php
 
-if($moh_list !== false):
+if(($moh_list = $this->get_var('moh_list')) !== false):
 
 	echo $form->select(array('desc' => $this->bbf('fm_queue_musiconhold'),'name' => 'queue[musiconhold]','labelid' => 'queue-musiconhold','key' => 'category','empty' => true,'default' => $element['queue']['musiconhold']['default'],'value' => $info['queue']['musiconhold']),$moh_list);
 	

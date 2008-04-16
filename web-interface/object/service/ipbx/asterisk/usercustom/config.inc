@@ -10,8 +10,7 @@ $array['element']['name']['null'] = true;
 $array['element']['name']['forcedef'] = true;
 
 $array['element']['context'] = array();
-$array['element']['context']['default'] = 'default';
-$array['element']['context']['setdef'] = true;
+$array['element']['context']['default'] = '';
 
 $array['element']['interface'] = array();
 $array['element']['interface']['default'] = '';
@@ -36,9 +35,7 @@ $array['element']['category']['forcedef'] = true;
 
 $array['filter'] = array();
 $array['filter']['name'] = array('set' => false);
-$array['filter']['context'] = array('set' => false,
-				    'chk' => 2,
-				    'callback' => 'xivo_service_asterisk::chk_context',
+$array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context',
 				    'callbackparam' => array(array(
 				    			XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTIFICATION,
 							XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));

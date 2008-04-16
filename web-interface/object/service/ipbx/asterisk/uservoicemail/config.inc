@@ -5,8 +5,7 @@ $array = array();
 $array['element'] = array();
 
 $array['element']['context'] = array();
-$array['element']['context']['default'] = 'default';
-$array['element']['context']['setdef'] = true;
+$array['element']['context']['default'] = '';
 
 $array['element']['mailbox'] = array();
 $array['element']['mailbox']['default'] = '';
@@ -104,9 +103,7 @@ $array['element']['maxmsg']['default'] = '';
 $array['element']['maxmsg']['null'] = true;
 
 $array['filter'] = array();
-$array['filter']['context'] = array('set' => false,
-				    'chk' => 2,
-				    'callback' => 'xivo_service_asterisk::chk_context',
+$array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context',
 				    'callbackparam' => array(array(XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['mailbox'] = array('minlen' => 1,'maxlen' => 40,'cast' => '/^[0-9#\*]+$/');
 $array['filter']['password'] = array('regexp' => '/^[0-9#\*]+$/','maxlen' => 80);

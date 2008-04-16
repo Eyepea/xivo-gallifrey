@@ -69,7 +69,6 @@ define('XIVO_SRE_IPBX_AST_GROUP_MACRO','incoming_group');
 define('XIVO_SRE_IPBX_AST_QUEUE_MACRO','incoming_queue');
 define('XIVO_SRE_IPBX_AST_MEETME_MACRO','incoming_meetme');
 define('XIVO_SRE_IPBX_AST_INCALL_MACRO','incoming_did');
-define('XIVO_SRE_IPBX_AST_INCALL_CONTEXT','incall-extensions');
 define('XIVO_SRE_IPBX_AST_OUTCALL_MACRO','outgoing_user');
 define('XIVO_SRE_IPBX_AST_HANDYNUMBERS_MACRO','handynumbers');
 define('XIVO_SRE_IPBX_AST_HANDYNUMBERS_CONTEXT','handynumbers');
@@ -155,11 +154,11 @@ $array['module']['cdr']['datastorage']['custom'] = true;
 $array['module']['context'] = array();
 $array['module']['context']['datastorage'] = true;
 
-$array['module']['contextentity'] = array();
-$array['module']['contextentity']['datastorage'] = true;
-
 $array['module']['contextmember'] = array();
 $array['module']['contextmember']['datastorage'] = true;
+
+$array['module']['contextnumbers'] = array();
+$array['module']['contextnumbers']['datastorage'] = true;
 
 $array['module']['dialstatus'] = array();
 $array['module']['dialstatus']['datastorage'] = true;

@@ -52,14 +52,15 @@ switch($act)
 			}
 		}
 
+		$_HTML->set_var('rightcall',$rightcall);
+		$_HTML->set_var('incall',$result['incall']);
+		$_HTML->set_var('element',$appincall->get_elements());
+		$_HTML->set_var('list',$appincall->get_destination_list());
+		$_HTML->set_var('context_list',$appincall->get_context_list());
+
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/incall.js');
-
-		$_HTML->set_var('rightcall',$rightcall);
-		$_HTML->set_var('incall',$result['incall']);
-		$_HTML->set_var('list',$appincall->get_destination_list());
-		$_HTML->set_var('element',$appincall->get_elements());
 		break;
 	case 'edit':
 		$appincall = &$ipbx->get_application('incall');
@@ -105,15 +106,16 @@ switch($act)
 			}
 		}
 
-		$dhtml = &$_HTML->get_module('dhtml');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/incall.js');
-
 		$_HTML->set_var('id',$info['incall']['id']);
 		$_HTML->set_var('rightcall',$rightcall);
 		$_HTML->set_var('incall',$return['incall']);
-		$_HTML->set_var('list',$appincall->get_destination_list());
 		$_HTML->set_var('element',$appincall->get_elements());
+		$_HTML->set_var('list',$appincall->get_destination_list());
+		$_HTML->set_var('context_list',$appincall->get_context_list());
+
+		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/incall.js');
 		break;
 	case 'delete':
 		$param['page'] = $page;

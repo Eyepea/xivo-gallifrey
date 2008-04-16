@@ -116,8 +116,7 @@ $array['element']['destunc'] = array();
 $array['element']['destunc']['default'] = '';
 
 $array['element']['context'] = array();
-$array['element']['context']['default'] = 'default';
-$array['element']['context']['setdef'] = true;
+$array['element']['context']['default'] = '';
 
 $array['element']['musiconhold'] = array();
 $array['element']['musiconhold']['default'] = '';
@@ -158,9 +157,7 @@ $array['filter']['firstname'] = array('set' => false,'chk' => 2,'cast' => 'sgrap
 $array['filter']['lastname'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
 $array['filter']['name'] = array('regexp' => '/^[a-z0-9#\*\.\/_@:-]+$/i','minlen' => 1,'maxlen' => 128);
 $array['filter']['number'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9\*#]+$/','maxlen' => 40);
-$array['filter']['context'] = array('set' => false,
-				    'chk' => 2,
-				    'callback' => 'xivo_service_asterisk::chk_context',
+$array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context',
 				    'callbackparam' => array(array(
 				    			XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTIFICATION,
 							XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));

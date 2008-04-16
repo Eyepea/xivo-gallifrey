@@ -84,6 +84,7 @@ switch($act)
 		$_HTML->set_var('rightcall',$rightcall);
 		$_HTML->set_var('dialstatus_list',$appgroup->get_dialstatus_destination_list());
 		$_HTML->set_var('moh_list',$appgroup->get_musiconhold());
+		$_HTML->set_var('context_list',$appgroup->get_context_list());
 
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialstatus.js');
@@ -170,6 +171,7 @@ switch($act)
 		$_HTML->set_var('element',$appgroup->get_elements());
 		$_HTML->set_var('dialstatus_list',$appgroup->get_dialstatus_destination_list());
 		$_HTML->set_var('moh_list',$appgroup->get_musiconhold());
+		$_HTML->set_var('context_list',$appgroup->get_context_list());
 
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialstatus.js');

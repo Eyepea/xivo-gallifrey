@@ -10,6 +10,12 @@ Call permissions
 ; fm_incall_exten
 DID:
 
+; fm_incall_context
+Company:
+
+; create_context
+Create a context
+
 ; fm_incall_type
 Destination:
 

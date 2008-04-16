@@ -5,7 +5,7 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 class xivo_application_service_asterisk_context_abstract extends xivo_application_service_asterisk_abstract
 {
 	var $_context		= false;
-	var $_contextentity	= false;
+	var $_contextnumbers	= false;
 	var $_contextmember	= false;
 	var $_param		= array('type'	=> '');
 
@@ -14,7 +14,7 @@ class xivo_application_service_asterisk_context_abstract extends xivo_applicatio
 		$this->xivo_application_service_asterisk_abstract(&$service);
 		
 		if(($this->_context = &$this->_service->get_module('context')) === false
-		|| ($this->_contextentity = &$this->_service->get_module('contextentity')) === false
+		|| ($this->_contextnumbers = &$this->_service->get_module('contextnumbers')) === false
 		|| ($this->_contextmember = &$this->_service->get_module('contextmember')) === false)
 			return(false);
 
@@ -83,7 +83,7 @@ class xivo_application_service_asterisk_context_abstract extends xivo_applicatio
 		{
 			$chkerror = 'out of interval';
 
-			$chk = $this->_contextentity->interval_number_exists($context,
+			$chk = $this->_contextnumbers->interval_number_exists($context,
 									     $this->_param['type'],
 									     $number);
 		}

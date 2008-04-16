@@ -17,6 +17,12 @@
 
 echo $form->text(array('desc' => $this->bbf('fm_incall_exten'),'name' => 'incall[exten]','labelid' => 'incall-exten','size' => 15,'default' => $element['incall']['exten']['default'],'value' => $this->get_varra('incall','exten')));
 
+if(($context_list = $this->get_var('context_list')) !== false):
+	echo $form->select(array('desc' => $this->bbf('fm_incall_context'),'name' => 'incall[context]','labelid' => 'incall-context','key' => 'identity','altkey' => 'name','default' => $element['incall']['context']['default'],'value' => $this->get_varra('incall','context')),$context_list);
+else:
+	echo '<div id="fd-incall-context" class="txt-center">',$url->href_html($this->bbf('create_context'),'service/ipbx/system_management/context','act=add'),'</div>';
+endif;
+
 echo $form->select(array('desc' => $this->bbf('fm_incall_type'),'name' => 'incall[type]','labelid' => 'incall-type','bbf' => 'fm_incall_type-opt-','key' => false,'default' => $element['incall']['type']['default'],'value' => $type),$element['incall']['type']['value'],'onchange="xivo_chgtype(this);"');
 
 echo $form->select(array('desc' => $this->bbf('fm_incall_endcall-typeval'),'name' => 'incall[typeval]','labelid' => 'incall-endcall-typeval','bbf' => 'fm_incall_endcall-typeval-opt-','key' => false,'default' => $element['incall']['typeval']['default'],'value' => $incall['endcall']),$element['incall']['endcall']['value']);

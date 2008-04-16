@@ -34,80 +34,80 @@ Description:
 ; create_entity
 Create an entity
 
-; col_contextentity_user-typevalbeg
+; col_contextnumbers_user-numberbeg
 Number range start
 
-; col_contextentity_user-typevalend
+; col_contextnumbers_user-numberend
 Number range end
 
-; col_contextentity_user-add
+; col_contextnumbers_user-add
 Add a number range
 
-; opt_contextentity_user-delete
+; opt_contextnumbers_user-delete
 Delete this number range
 
-; no_contextentity-user
+; no_contextnumbers-user
 No number range
 
-; col_contextentity_group-typevalbeg
+; col_contextnumbers_group-numberbeg
 Number range start
 
-; col_contextentity_group-typevalend
+; col_contextnumbers_group-numberend
 Number range end
 
-; col_contextentity_group-add
+; col_contextnumbers_group-add
 Add a number range
 
-; opt_contextentity_group-delete
+; opt_contextnumbers_group-delete
 Delete this number range
 
-; no_contextentity-group
+; no_contextnumbers-group
 No number range
 
-; col_contextentity_queue-typevalbeg
+; col_contextnumbers_queue-numberbeg
 Number range start
 
-; col_contextentity_queue-typevalend
+; col_contextnumbers_queue-numberend
 Number range end
 
-; col_contextentity_queue-add
+; col_contextnumbers_queue-add
 Add a number range
 
-; opt_contextentity_queue-delete
+; opt_contextnumbers_queue-delete
 Delete this number range
 
-; no_contextentity-queue
+; no_contextnumbers-queue
 No number range
 
-; col_contextentity_meetme-typevalbeg
+; col_contextnumbers_meetme-numberbeg
 Number range start
 
-; col_contextentity_meetme-typevalend
+; col_contextnumbers_meetme-numberend
 Number range end
 
-; col_contextentity_meetme-add
+; col_contextnumbers_meetme-add
 Add a number range
 
-; opt_contextentity_meetme-delete
+; opt_contextnumbers_meetme-delete
 Delete this number range
 
-; no_contextentity-meetme
+; no_contextnumbers-meetme
 No number range
 
-; col_contextentity_incall-typevalbeg
+; col_contextnumbers_incall-numberbeg
 Number range start
 
-; col_contextentity_incall-typevalend
+; col_contextnumbers_incall-numberend
 Number range end
 
-; col_contextentity_incall-didlength
+; col_contextnumbers_incall-didlength
 DID length
 
-; col_contextentity_incall-add
+; col_contextnumbers_incall-add
 Add a number range
 
-; opt_contextentity_incall-delete
+; opt_contextnumbers_incall-delete
 Delete this number range
 
-; no_contextentity-incall
+; no_contextnumbers-incall
 No number range

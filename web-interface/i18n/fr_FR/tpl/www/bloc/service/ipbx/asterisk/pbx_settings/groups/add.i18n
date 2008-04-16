@@ -19,14 +19,14 @@ Nom :
 ; fm_gfeatures_number
 Numéro :
 
-; fm_gfeatures_context
-Contexte :
-
 ; fm_queue_strategy
 Stratégie :
 
-; fm_queue_musiconhold
-Musique d'attente :
+; fm_gfeatures_context
+Entreprise :
+
+; create_context
+Créer un contexte
 
 ; fm_gfeatures_timeout
 Temps de sonnerie :
@@ -45,6 +45,9 @@ Désactivé
 
 ; fm_queue_timeout-opt
 %s secondes
+
+; fm_queue_musiconhold
+Musique d'attente :
 
 ; bt_inuser
 Ajouter un ou plusieurs utilisateurs ->

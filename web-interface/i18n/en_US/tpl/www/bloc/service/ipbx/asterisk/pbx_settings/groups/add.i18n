@@ -19,14 +19,14 @@ Name:
 ; fm_gfeatures_number
 Number:
 
-; fm_gfeatures_context
-Context:
-
 ; fm_queue_strategy
 Strategy:
 
-; fm_queue_musiconhold
-On-Hold Music:
+; fm_gfeatures_context
+Company:
+
+; create_context
+Create a context
 
 ; fm_gfeatures_timeout
 Ring time:
@@ -45,6 +45,9 @@ Disabled
 
 ; fm_queue_timeout-opt
 %s seconds
+
+; fm_queue_musiconhold
+On-Hold Music:
 
 ; bt_inuser
 Add one or more users ->

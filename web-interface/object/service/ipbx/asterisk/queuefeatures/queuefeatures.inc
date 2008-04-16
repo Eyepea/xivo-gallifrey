@@ -61,9 +61,11 @@ class xivo_service_asterisk_queuefeatures extends xivo_service_asterisk_abstract
 		return(parent::edit($id,$arr));
 	}
 
-	function get_all_number()
+	function get_all_number($id=0,$disable=null)
 	{
-		if(($list = $this->get_all()) === false)
+		$id = xivo_ulongint($id);
+
+		if(($list = $this->get_all($disable)) === false)
 			return(false);
 
 		$nb = count($list);
@@ -74,7 +76,7 @@ class xivo_service_asterisk_queuefeatures extends xivo_service_asterisk_abstract
 		{
 			$info = $list[$i];
 
-			if(xivo_haslen($info['number']) === false)
+			if($id === $info['id'] || xivo_haslen($info['number']) === false)
 				continue;
 
 			$r[] = $info;

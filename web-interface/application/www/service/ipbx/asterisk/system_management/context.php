@@ -17,37 +17,37 @@ switch($act)
 
 		if(isset($_QR['fm_send']) === true && xivo_issa('context',$_QR) === true)
 		{
-			if(xivo_issa('contextentity',$_QR) === true
+			if(xivo_issa('contextnumbers',$_QR) === true
 			&& isset($_QR['context']['entity']) === true
 			&& xivo_haslen($_QR['context']['entity']) === true)
 			{
-				if(xivo_issa('user',$_QR['contextentity']) === true
-				&& ($_QR['contextentity']['user'] = xivo_group_array('typevalbeg',
-										       $_QR['contextentity']['user'])) === false)
-					unset($_QR['contextentity']['user']);
+				if(xivo_issa('user',$_QR['contextnumbers']) === true
+				&& ($_QR['contextnumbers']['user'] = xivo_group_array('numberbeg',
+										       $_QR['contextnumbers']['user'])) === false)
+					unset($_QR['contextnumbers']['user']);
 
-				if(xivo_issa('group',$_QR['contextentity']) === true
-				&& ($_QR['contextentity']['group'] = xivo_group_array('typevalbeg',
-										       $_QR['contextentity']['group'])) === false)
-					unset($_QR['contextentity']['group']);
+				if(xivo_issa('group',$_QR['contextnumbers']) === true
+				&& ($_QR['contextnumbers']['group'] = xivo_group_array('numberbeg',
+										       $_QR['contextnumbers']['group'])) === false)
+					unset($_QR['contextnumbers']['group']);
 
-				if(xivo_issa('queue',$_QR['contextentity']) === true
-				&& ($_QR['contextentity']['queue'] = xivo_group_array('typevalbeg',
-										       $_QR['contextentity']['queue'])) === false)
-					unset($_QR['contextentity']['queue']);
+				if(xivo_issa('queue',$_QR['contextnumbers']) === true
+				&& ($_QR['contextnumbers']['queue'] = xivo_group_array('numberbeg',
+										       $_QR['contextnumbers']['queue'])) === false)
+					unset($_QR['contextnumbers']['queue']);
 
-				if(xivo_issa('meetme',$_QR['contextentity']) === true
-				&& ($_QR['contextentity']['meetme'] = xivo_group_array('typevalbeg',
-										       $_QR['contextentity']['meetme'])) === false)
-					unset($_QR['contextentity']['meetme']);
+				if(xivo_issa('meetme',$_QR['contextnumbers']) === true
+				&& ($_QR['contextnumbers']['meetme'] = xivo_group_array('numberbeg',
+										       $_QR['contextnumbers']['meetme'])) === false)
+					unset($_QR['contextnumbers']['meetme']);
 
-				if(xivo_issa('incall',$_QR['contextentity']) === true
-				&& ($_QR['contextentity']['incall'] = xivo_group_array('typevalbeg',
-										       $_QR['contextentity']['incall'])) === false)
-					unset($_QR['contextentity']['incall']);
+				if(xivo_issa('incall',$_QR['contextnumbers']) === true
+				&& ($_QR['contextnumbers']['incall'] = xivo_group_array('numberbeg',
+										       $_QR['contextnumbers']['incall'])) === false)
+					unset($_QR['contextnumbers']['incall']);
 			}
 			else
-				unset($_QR['contextentity']);
+				unset($_QR['contextnumbers']);
 				
 			if(($toto = $appcontext->set_add($_QR)) === false
 			|| ($tutu = $appcontext->add()) === false)
@@ -81,37 +81,37 @@ switch($act)
 		{
 			$return = &$result;
 
-			if(xivo_issa('contextentity',$_QR) === true
+			if(xivo_issa('contextnumbers',$_QR) === true
 			&& isset($_QR['context']['entity']) === true
 			&& xivo_haslen($_QR['context']['entity']) === true)
 			{
-				if(xivo_issa('user',$_QR['contextentity']) === true
-				&& ($_QR['contextentity']['user'] = xivo_group_array('typevalbeg',
-										       $_QR['contextentity']['user'])) === false)
-					unset($_QR['contextentity']['user']);
+				if(xivo_issa('user',$_QR['contextnumbers']) === true
+				&& ($_QR['contextnumbers']['user'] = xivo_group_array('numberbeg',
+										       $_QR['contextnumbers']['user'])) === false)
+					unset($_QR['contextnumbers']['user']);
 
-				if(xivo_issa('group',$_QR['contextentity']) === true
-				&& ($_QR['contextentity']['group'] = xivo_group_array('typevalbeg',
-										       $_QR['contextentity']['group'])) === false)
-					unset($_QR['contextentity']['group']);
+				if(xivo_issa('group',$_QR['contextnumbers']) === true
+				&& ($_QR['contextnumbers']['group'] = xivo_group_array('numberbeg',
+										       $_QR['contextnumbers']['group'])) === false)
+					unset($_QR['contextnumbers']['group']);
 
-				if(xivo_issa('queue',$_QR['contextentity']) === true
-				&& ($_QR['contextentity']['queue'] = xivo_group_array('typevalbeg',
-										       $_QR['contextentity']['queue'])) === false)
-					unset($_QR['contextentity']['queue']);
+				if(xivo_issa('queue',$_QR['contextnumbers']) === true
+				&& ($_QR['contextnumbers']['queue'] = xivo_group_array('numberbeg',
+										       $_QR['contextnumbers']['queue'])) === false)
+					unset($_QR['contextnumbers']['queue']);
 
-				if(xivo_issa('meetme',$_QR['contextentity']) === true
-				&& ($_QR['contextentity']['meetme'] = xivo_group_array('typevalbeg',
-										       $_QR['contextentity']['meetme'])) === false)
-					unset($_QR['contextentity']['meetme']);
+				if(xivo_issa('meetme',$_QR['contextnumbers']) === true
+				&& ($_QR['contextnumbers']['meetme'] = xivo_group_array('numberbeg',
+										       $_QR['contextnumbers']['meetme'])) === false)
+					unset($_QR['contextnumbers']['meetme']);
 
-				if(xivo_issa('incall',$_QR['contextentity']) === true
-				&& ($_QR['contextentity']['incall'] = xivo_group_array('typevalbeg',
-										       $_QR['contextentity']['incall'])) === false)
-					unset($_QR['contextentity']['incall']);
+				if(xivo_issa('incall',$_QR['contextnumbers']) === true
+				&& ($_QR['contextnumbers']['incall'] = xivo_group_array('numberbeg',
+										       $_QR['contextnumbers']['incall'])) === false)
+					unset($_QR['contextnumbers']['incall']);
 			}
 			else
-				unset($_QR['contextentity']);
+				unset($_QR['contextnumbers']);
 
 			if($appcontext->set_edit($_QR) === false
 			|| $appcontext->edit() === false)

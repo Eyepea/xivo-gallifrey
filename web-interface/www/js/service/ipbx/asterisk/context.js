@@ -6,17 +6,17 @@ function xivo_context_entity_enable_add(type,table)
 	|| entity.value === '')
 		return(false);
 
-	return(xivo_table_list('contextentity-'+type,table));
+	return(xivo_table_list('contextnumbers-'+type,table));
 }
 
 function xivo_context_entity_status(form,disable) 
 {
 	var arr = new Array();
-	arr['user'] = new Array('typevalbeg','typevalend');
-	arr['group'] = new Array('typevalbeg','typevalend');
-	arr['queue'] = new Array('typevalbeg','typevalend');
-	arr['meetme'] = new Array('typevalbeg','typevalend');
-	arr['incall'] = new Array('typevalbeg','typevalend','didlength');
+	arr['user'] = new Array('numberbeg','numberend');
+	arr['group'] = new Array('numberbeg','numberend');
+	arr['queue'] = new Array('numberbeg','numberend');
+	arr['meetme'] = new Array('numberbeg','numberend');
+	arr['incall'] = new Array('numberbeg','numberend','didlength');
 
 	for(var key in arr)
 	{
@@ -26,9 +26,9 @@ function xivo_context_entity_status(form,disable)
 		for(i = 0;i < nb;i++)
 		{
 			xivo_fm_enable_disable_field(form,
-						     'contextentity['+key+']['+ref[i]+'][]',
+						     'contextnumbers['+key+']['+ref[i]+'][]',
 						     disable,
-						     'ex-contextentity-'+key,
+						     'ex-contextnumbers-'+key,
 						     'tbody');
 		}
 	}

@@ -829,7 +829,6 @@ class xivo_service_asterisk extends xivo_service_abstract
 		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_INITCONFIG;
 		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_PARKEDCALLS;
 
-		$r[] = XIVO_SRE_IPBX_AST_INCALL_CONTEXT;
 		$r[] = XIVO_SRE_IPBX_AST_HANDYNUMBERS_CONTEXT;
 
 		if(is_array($arr) === true)

@@ -5,8 +5,6 @@
 	$info = $this->get_var('info');
 	$element = $this->get_var('element');
 
-	$moh_list = $this->get_var('moh_list');
-	$context_list = $this->get_var('context_list');
 	$autoprov_list = $this->get_var('autoprov_list');
 	$rightcall = $this->get_var('rightcall');
 
@@ -83,7 +81,7 @@
 <?=$form->select(array('desc' => $this->bbf('fm_protocol_protocol'),'name' => 'protocol[protocol]','labelid' => 'protocol-protocol','bbf' => array('concatkey','fm_protocol_protocol-opt-'),'key' => false,'default' => $element['ufeatures']['protocol']['default'],'value' => $info['ufeatures']['protocol']),$element['ufeatures']['protocol']['value'],'onchange="xivo_chg_protocol(this.value);"');?>
 
 <?php
-	if(empty($context_list) === false):
+	if(($context_list = $this->get_var('context_list')) !== false):
 		echo $form->select(array('desc' => $this->bbf('fm_protocol_context'),'name' => 'protocol[context]','labelid' => 'sip-protocol-context','key' => 'identity','altkey' => 'name','default' => $element['protocol']['sip']['context']['default'],'value' => $context),$context_list);
 
 		echo $form->select(array('desc' => $this->bbf('fm_protocol_context'),'name' => 'protocol[context]','labelid' => 'iax-protocol-context','key' => 'identity','altkey' => 'name','default' => $element['protocol']['iax']['context']['default'],'value' => $context),$context_list);
@@ -304,7 +302,7 @@
 	<?=$form->text(array('desc' => '&nbsp;','name' => 'ufeatures[outcallerid-custom]','labelid' => 'ufeatures-outcallerid-custom','value' => ($outcallerid_custom === true ? $outcallerid : ''),'size' => 15));?>
 
 <?php
-	if($moh_list !== false):
+	if(($moh_list = $this->get_var('moh_list')) !== false):
 		echo $form->select(array('desc' => $this->bbf('fm_userfeatures_musiconhold'),'name' => 'ufeatures[musiconhold]','labelid' => 'ufeatures-musiconhold','key' => 'category','default' => $element['ufeatures']['musiconhold']['default'],'value' => $info['ufeatures']['musiconhold']),$moh_list);
 	endif;
 ?>

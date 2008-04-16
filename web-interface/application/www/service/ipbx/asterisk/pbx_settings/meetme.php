@@ -27,8 +27,9 @@ switch($act)
 		}
 
 		$_HTML->set_var('info',$result);
-		$_HTML->set_var('moh_list',$appmeetme->get_musiconhold());
 		$_HTML->set_var('element',$appmeetme->get_elements());
+		$_HTML->set_var('moh_list',$appmeetme->get_musiconhold());
+		$_HTML->set_var('context_list',$appmeetme->get_context_list());
 
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
@@ -57,8 +58,9 @@ switch($act)
 
 		$_HTML->set_var('id',$info['meetmeroom']['id']);
 		$_HTML->set_var('info',$return);
-		$_HTML->set_var('moh_list',$appmeetme->get_musiconhold());
 		$_HTML->set_var('element',$appmeetme->get_elements());
+		$_HTML->set_var('moh_list',$appmeetme->get_musiconhold());
+		$_HTML->set_var('context_list',$appmeetme->get_context_list());
 
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');

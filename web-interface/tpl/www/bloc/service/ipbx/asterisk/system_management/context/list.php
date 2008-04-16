@@ -51,7 +51,7 @@
 				$icon = 'enable';
 			endif;
 
-			if($ref['entity'] === false || $ref['contextentity'] === false):
+			if($ref['entity'] === false || $ref['contextnumbers'] === false):
 				$entity = '-';
 			else:
 				$entity = $ref['entity']['identity'];

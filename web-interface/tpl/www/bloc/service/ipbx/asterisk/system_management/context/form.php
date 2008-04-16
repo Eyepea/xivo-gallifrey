@@ -8,43 +8,43 @@
 	$user_nb = $group_nb = $queue_nb = $meetme_nb = $incall_nb = 0;
 	$user_list = $group_list = $queue_list = $meetme_list = $incall_list = false;
 
-	if(xivo_issa('contextentity',$info) === true):
+	if(xivo_issa('contextnumbers',$info) === true):
 
 		$context_js = array();
 
-		if(xivo_issa('user',$info['contextentity']) === true
-		&& ($user_nb = count($info['contextentity']['user'])) > 0):
-			$user_list = $info['contextentity']['user'];
-			$context_js[] = 'xivo_tlist[\'contextentity-user\'] = new Array();';
-			$context_js[] = 'xivo_tlist[\'contextentity-user\'][\'cnt\'] = '.$user_nb.';';
+		if(xivo_issa('user',$info['contextnumbers']) === true
+		&& ($user_nb = count($info['contextnumbers']['user'])) > 0):
+			$user_list = $info['contextnumbers']['user'];
+			$context_js[] = 'xivo_tlist[\'contextnumbers-user\'] = new Array();';
+			$context_js[] = 'xivo_tlist[\'contextnumbers-user\'][\'cnt\'] = '.$user_nb.';';
 		endif;
 
-		if(xivo_issa('group',$info['contextentity']) === true
-		&& ($group_nb = count($info['contextentity']['group'])) > 0):
-			$group_list = $info['contextentity']['group'];
-			$context_js[] = 'xivo_tlist[\'contextentity-group\'] = new Array();';
-			$context_js[] = 'xivo_tlist[\'contextentity-group\'][\'cnt\'] = '.$group_nb.';';
+		if(xivo_issa('group',$info['contextnumbers']) === true
+		&& ($group_nb = count($info['contextnumbers']['group'])) > 0):
+			$group_list = $info['contextnumbers']['group'];
+			$context_js[] = 'xivo_tlist[\'contextnumbers-group\'] = new Array();';
+			$context_js[] = 'xivo_tlist[\'contextnumbers-group\'][\'cnt\'] = '.$group_nb.';';
 		endif;
 
-		if(xivo_issa('queue',$info['contextentity']) === true
-		&& ($queue_nb = count($info['contextentity']['queue'])) > 0):
-			$queue_list = $info['contextentity']['queue'];
-			$context_js[] = 'xivo_tlist[\'contextentity-queue\'] = new Array();';
-			$context_js[] = 'xivo_tlist[\'contextentity-queue\'][\'cnt\'] = '.$queue_nb.';';
+		if(xivo_issa('queue',$info['contextnumbers']) === true
+		&& ($queue_nb = count($info['contextnumbers']['queue'])) > 0):
+			$queue_list = $info['contextnumbers']['queue'];
+			$context_js[] = 'xivo_tlist[\'contextnumbers-queue\'] = new Array();';
+			$context_js[] = 'xivo_tlist[\'contextnumbers-queue\'][\'cnt\'] = '.$queue_nb.';';
 		endif;
 
-		if(xivo_issa('meetme',$info['contextentity']) === true
-		&& ($meetme_nb = count($info['contextentity']['meetme'])) > 0):
-			$meetme_list = $info['contextentity']['meetme'];
-			$context_js[] = 'xivo_tlist[\'contextentity-meetme\'] = new Array();';
-			$context_js[] = 'xivo_tlist[\'contextentity-meetme\'][\'cnt\'] = '.$meetme_nb.';';
+		if(xivo_issa('meetme',$info['contextnumbers']) === true
+		&& ($meetme_nb = count($info['contextnumbers']['meetme'])) > 0):
+			$meetme_list = $info['contextnumbers']['meetme'];
+			$context_js[] = 'xivo_tlist[\'contextnumbers-meetme\'] = new Array();';
+			$context_js[] = 'xivo_tlist[\'contextnumbers-meetme\'][\'cnt\'] = '.$meetme_nb.';';
 		endif;
 
-		if(xivo_issa('incall',$info['contextentity']) === true
-		&& ($incall_nb = count($info['contextentity']['incall'])) > 0):
-			$incall_list = $info['contextentity']['incall'];
-			$context_js[] = 'xivo_tlist[\'contextentity-incall\'] = new Array();';
-			$context_js[] = 'xivo_tlist[\'contextentity-incall\'][\'cnt\'] = '.$incall_nb.';';
+		if(xivo_issa('incall',$info['contextnumbers']) === true
+		&& ($incall_nb = count($info['contextnumbers']['incall'])) > 0):
+			$incall_list = $info['contextnumbers']['incall'];
+			$context_js[] = 'xivo_tlist[\'contextnumbers-incall\'] = new Array();';
+			$context_js[] = 'xivo_tlist[\'contextnumbers-incall\'][\'cnt\'] = '.$incall_nb.';';
 		endif;
 
 		if(isset($context_js[0]) === true):
@@ -54,7 +54,7 @@
 
 	endif;
 
-	$incall_err = $this->get_varra('error',array('contextentity','incall'));
+	$incall_err = $this->get_varra('error',array('contextnumbers','incall'));
 ?>
 
 <div id="sb-part-first">
@@ -145,13 +145,13 @@
 	<table cellspacing="0" cellpadding="0" border="0">
 		<thead>
 		<tr class="sb-top">
-			<th class="th-left"><?=$this->bbf('col_contextentity_incall-typevalbeg');?></th>
-			<th class="th-center"><?=$this->bbf('col_contextentity_incall-typevalend');?></th>
-			<th class="th-center"><?=$this->bbf('col_contextentity_incall-didlength');?></th>
-			<th class="th-right"><?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',$this->bbf('col_contextentity_incall-add'),'border="0"'),'#',null,'onclick="xivo_context_entity_enable_add(\'incall\',this); return(false);"',$this->bbf('col_contextentity_incall-add'));?></th>
+			<th class="th-left"><?=$this->bbf('col_contextnumbers_incall-numberbeg');?></th>
+			<th class="th-center"><?=$this->bbf('col_contextnumbers_incall-numberend');?></th>
+			<th class="th-center"><?=$this->bbf('col_contextnumbers_incall-didlength');?></th>
+			<th class="th-right"><?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',$this->bbf('col_contextnumbers_incall-add'),'border="0"'),'#',null,'onclick="xivo_context_entity_enable_add(\'incall\',this); return(false);"',$this->bbf('col_contextnumbers_incall-add'));?></th>
 		</tr>
 		</thead>
-		<tbody id="contextentity-incall">
+		<tbody id="contextnumbers-incall">
 <?php
 if($incall_list !== false):
 	for($i = 0;$i < $incall_nb;$i++):
@@ -166,33 +166,33 @@ if($incall_list !== false):
 		<tr class="fm-field<?=$errdisplay?>">
 			<td class="td-left txt-center">
 				<?=$form->text(array('field'	=> false,
-						     'name'	=> 'contextentity[incall][typevalbeg][]',
+						     'name'	=> 'contextnumbers[incall][numberbeg][]',
 						     'id'	=> false,
 						     'label'	=> false,
 						     'size'	=> 15,
-						     'value'	=> $ref['typevalbeg'],
-						     'default'	=> $element['contextentity']['typevalbeg']['default']));?>
+						     'value'	=> $ref['numberbeg'],
+						     'default'	=> $element['contextnumbers']['numberbeg']['default']));?>
 			</td>
 			<td>
 				<?=$form->text(array('field'	=> false,
-						     'name'	=> 'contextentity[incall][typevalend][]',
+						     'name'	=> 'contextnumbers[incall][numberend][]',
 						     'id'	=> false,
 						     'label'	=> false,
 						     'size'	=> 15,
-						     'value'	=> $ref['typevalend'],
-						     'default'	=> $element['contextentity']['typevalend']['default']));?>
+						     'value'	=> $ref['numberend'],
+						     'default'	=> $element['contextnumbers']['numberend']['default']));?>
 			</td>
 			<td>
 				<?=$form->select(array('field'		=> false,
-						       'name'		=> 'contextentity[incall][didlength][]',
+						       'name'		=> 'contextnumbers[incall][didlength][]',
 						       'id'		=> false,
 						       'label'		=> false,
 						       'key'		=> false,
 						       'value'		=> $ref['didlength'],
-						       'default'	=> $element['contextentity']['didlength']['default']),
-					         $element['contextentity']['didlength']['value']);?>
+						       'default'	=> $element['contextnumbers']['didlength']['default']),
+					         $element['contextnumbers']['didlength']['value']);?>
 			</td>
-			<td class="td-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_contextentity_incall-delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'contextentity-incall\',this,1); return(false);"',$this->bbf('opt_contextentity_incall-delete'));?></td>
+			<td class="td-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_contextnumbers_incall-delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'contextnumbers-incall\',this,1); return(false);"',$this->bbf('opt_contextnumbers_incall-delete'));?></td>
 		</tr>
 
 <?php
@@ -201,42 +201,42 @@ endif;
 ?>
 		</tbody>
 		<tfoot>
-		<tr id="no-contextentity-incall"<?=($incall_list !== false ? ' class="b-nodisplay"' : '')?>>
-			<td colspan="4" class="td-single"><?=$this->bbf('no_contextentity-incall');?></td>
+		<tr id="no-contextnumbers-incall"<?=($incall_list !== false ? ' class="b-nodisplay"' : '')?>>
+			<td colspan="4" class="td-single"><?=$this->bbf('no_contextnumbers-incall');?></td>
 		</tr>
 		</tfoot>
 	</table>
 	<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
-		<tbody id="ex-contextentity-incall">
+		<tbody id="ex-contextnumbers-incall">
 		<tr class="fm-field">
 			<td class="td-left txt-center">
 				<?=$form->text(array('field'	=> false,
-						     'name'	=> 'contextentity[incall][typevalbeg][]',
+						     'name'	=> 'contextnumbers[incall][numberbeg][]',
 						     'id'	=> false,
 						     'label'	=> false,
 						     'size'	=> 15,
-						     'default'	=> $element['contextentity']['typevalend']['default']),
+						     'default'	=> $element['contextnumbers']['numberend']['default']),
 					       'disabled="disabled" onfocus="xivo_fm_set_onfocus(this);" onblur="xivo_fm_set_onblur(this);"');?>
 			</td>
 			<td>
 				<?=$form->text(array('field'	=> false,
-						     'name'	=> 'contextentity[incall][typevalend][]',
+						     'name'	=> 'contextnumbers[incall][numberend][]',
 						     'id'	=> false,
 						     'label'	=> false,
 						     'size'	=> 15,
-						     'default'	=> $element['contextentity']['typevalend']['default']),
+						     'default'	=> $element['contextnumbers']['numberend']['default']),
 					       'disabled="disabled" onfocus="xivo_fm_set_onfocus(this);" onblur="xivo_fm_set_onblur(this);"');?>
 			</td>
 			<td>
 				<?=$form->select(array('field'		=> false,
-						       'name'		=> 'contextentity[incall][didlength][]',
+						       'name'		=> 'contextnumbers[incall][didlength][]',
 						       'id'		=> false,
 						       'label'		=> false,
 						       'key'		=> false,
-						       'default'	=> $element['contextentity']['didlength']['default']),
-						 $element['contextentity']['didlength']['value'],
+						       'default'	=> $element['contextnumbers']['didlength']['default']),
+						 $element['contextnumbers']['didlength']['value'],
 						 'disabled="disabled" onfocus="xivo_fm_set_onfocus(this);" onblur="xivo_fm_set_onblur(this);"');?></td>
-			<td class="td-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_contextentity_incall-delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'contextentity-incall\',this,1); return(false);"',$this->bbf('opt_contextentity_incall-delete'));?></td>
+			<td class="td-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_contextnumbers_incall-delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'contextnumbers-incall\',this,1); return(false);"',$this->bbf('opt_contextnumbers_incall-delete'));?></td>
 		</tr>
 		</tbody>
 	</table>

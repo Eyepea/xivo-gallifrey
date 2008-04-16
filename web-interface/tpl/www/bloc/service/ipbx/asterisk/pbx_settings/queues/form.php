@@ -7,8 +7,6 @@
 	$user = $this->get_var('user');
 	$agentgroup = $this->get_var('agentgroup');
 	$agent = $this->get_var('agent');
-	$moh_list = $this->get_var('moh_list');
-	$announce_list = $this->get_var('announce_list');
 ?>
 
 <div id="sb-part-first">
@@ -21,13 +19,19 @@
 
 <?php
 
-if($moh_list !== false):
+if(($context_list = $this->get_var('context_list')) !== false):
+	echo $form->select(array('desc' => $this->bbf('fm_qfeatures_context'),'name' => 'qfeatures[context]','labelid' => 'qfeatures-context','key' => 'identity','altkey' => 'name','default' => $element['qfeatures']['context']['default'],'value' => $info['qfeatures']['context']),$context_list);
+else:
+	echo '<div id="fd-qfeatures-context" class="txt-center">',$url->href_html($this->bbf('create_context'),'service/ipbx/system_management/context','act=add'),'</div>';
+endif;
+
+if(($moh_list = $this->get_var('moh_list')) !== false):
 
 	echo $form->select(array('desc' => $this->bbf('fm_queue_musiconhold'),'name' => 'queue[musiconhold]','labelid' => 'queue-musiconhold','key' => 'category','empty' => true,'default' => $element['queue']['musiconhold']['default'],'value' => $info['queue']['musiconhold']),$moh_list);
 	
 endif;
 
-if($announce_list !== false):
+if(($announce_list = $this->get_var('announce_list')) !== false):
 	echo $form->select(array('desc' => $this->bbf('fm_queue_announce'),'name' => 'queue[announce]','labelid' => 'queue-announce','empty' => true,'default' => $element['queue']['announce']['default'],'value' => $info['queue']['announce']),$announce_list);
 else:
 	echo '<div class="txt-center">',$url->href_html($this->bbf('add_announce'),'service/ipbx/pbx_services/sounds',array('act' => 'list','dir' => 'acd')),'</div>';
@@ -188,9 +192,31 @@ endif;
 
 </div>
 
-<div id="sb-part-last" class="b-nodisplay">
+<div id="sb-part-dialstatus" class="b-nodisplay">
 
-<?=$form->text(array('desc' => $this->bbf('fm_qfeatures_context'),'name' => 'qfeatures[context]','labelid' => 'qfeatures-context','size' => 15,'default' => $element['qfeatures']['context']['default'],'value' => $info['qfeatures']['context']));?>
+	<fieldset id="fld-dialstatus-noanswer">
+		<legend><?=$this->bbf('fld-dialstatus-noanswer');?></legend>
+		<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/queues/dialstatus',array('status' => 'noanswer'));?>
+	</fieldset>
+
+	<fieldset id="fld-dialstatus-busy">
+		<legend><?=$this->bbf('fld-dialstatus-busy');?></legend>
+		<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/queues/dialstatus',array('status' => 'busy'));?>
+	</fieldset>
+
+	<fieldset id="fld-dialstatus-congestion">
+		<legend><?=$this->bbf('fld-dialstatus-congestion');?></legend>
+		<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/queues/dialstatus',array('status' => 'congestion'));?>
+	</fieldset>
+
+	<fieldset id="fld-dialstatus-chanunavail">
+		<legend><?=$this->bbf('fld-dialstatus-chanunavail');?></legend>
+		<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/queues/dialstatus',array('status' => 'chanunavail'));?>
+	</fieldset>
+
+</div>
+
+<div id="sb-part-last" class="b-nodisplay">
 
 <?=$form->text(array('desc' => $this->bbf('fm_queue_context'),'name' => 'queue[context]','labelid' => 'queue-context','size' => 15,'default' => $element['queue']['context']['default'],'value' => $info['queue']['context']));?>
 

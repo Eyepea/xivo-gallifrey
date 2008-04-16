@@ -70,8 +70,7 @@ $array['element']['callgroup'] = array();
 $array['element']['callgroup']['default'] = '';
 
 $array['element']['context'] = array();
-$array['element']['context']['default'] = 'default';
-$array['element']['context']['setdef'] = true;
+$array['element']['context']['default'] = '';
 
 $array['element']['username'] = array();
 $array['element']['username']['default'] = '';
@@ -115,9 +114,7 @@ $array['filter']['amaflags'] = array('set' => false,'chk' => 2,'key' => array(
 						XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_DOCUMENTATION));
 $array['filter']['accountcode'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 20);
 $array['filter']['callgroup'] = array('set' => false,'chk' => 2,'regexp' => '/^([0-9]+[,]?)*$/','maxlen' => 180);
-$array['filter']['context'] = array('set' => false,
-				    'chk' => 2,
-				    'callback' => 'xivo_service_asterisk::chk_context',
+$array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context',
 				    'callbackparam' => array(array(XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['qualify'] = array('bool' => true);
 $array['filter']['disallow'] = array('set' => false,'chk' => 2,'key' => array('all'));

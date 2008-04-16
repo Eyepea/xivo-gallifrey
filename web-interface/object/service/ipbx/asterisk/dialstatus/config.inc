@@ -17,7 +17,7 @@ $array['element']['status']['value'] = array('noanswer','busy','congestion','cha
 $array['element']['status']['default'] = '';
 
 $array['element']['category'] = array();
-$array['element']['category']['value'] = array('user','group','callfilter');
+$array['element']['category']['value'] = array('user','group','queue','callfilter');
 $array['element']['category']['default'] = '';
 
 $array['element']['categoryval'] = array();
@@ -54,7 +54,7 @@ $array['element']['commented']['set'] = true;
 
 $array['filter'] = array();
 $array['filter']['status'] = array('key' => array('noanswer','busy','congestion','chanunavail'));
-$array['filter']['category'] = array('key' => array('user','group','callfilter'));
+$array['filter']['category'] = array('key' => array('user','group','queue','callfilter'));
 $array['filter']['categoryval'] = array('maxlen' => 128,'cast' => 'sgraph');
 $array['filter']['type'] = array('key' => array('endcall','user','group','queue','meetme','schedule','application','sound','custom'));
 $array['filter']['typeval'] = array('maxlen' => 255,'cast' => 'sgraph');

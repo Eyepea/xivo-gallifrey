@@ -91,10 +91,13 @@ switch($act)
 		$_HTML->set_var('user',$user);
 		$_HTML->set_var('agentgroup',$agentgroup);
 		$_HTML->set_var('agent',$agent);
+		$_HTML->set_var('dialstatus_list',$appqueue->get_dialstatus_destination_list());
 		$_HTML->set_var('moh_list',$appqueue->get_musiconhold());
 		$_HTML->set_var('announce_list',$appqueue->get_announce());
+		$_HTML->set_var('context_list',$appqueue->get_context_list());
 
 		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialstatus.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		break;
 	case 'edit':
@@ -185,10 +188,13 @@ switch($act)
 		$_HTML->set_var('agentgroup',$agentgroup);
 		$_HTML->set_var('agent',$agent);
 		$_HTML->set_var('element',$appqueue->get_elements());
+		$_HTML->set_var('dialstatus_list',$appqueue->get_dialstatus_destination_list());
 		$_HTML->set_var('moh_list',$appqueue->get_musiconhold());
 		$_HTML->set_var('announce_list',$appqueue->get_announce());
+		$_HTML->set_var('context_list',$appqueue->get_context_list());
 
 		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialstatus.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		break;
 	case 'delete':

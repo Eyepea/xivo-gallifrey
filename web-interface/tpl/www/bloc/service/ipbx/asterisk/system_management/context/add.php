@@ -7,7 +7,7 @@
 	<?=$this->file_include('bloc/service/ipbx/asterisk/system_management/context/submenu');?>
 
 	<div class="sb-content">
-<form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-contextentity-user'); xivo_fm_select('it-contextentity-group'); xivo_fm_select('it-contextentity-queue'); xivo_fm_select('it-contextentity-meetme');">
+<form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-contextnumbers-user'); xivo_fm_select('it-contextnumbers-group'); xivo_fm_select('it-contextnumbers-queue'); xivo_fm_select('it-contextnumbers-meetme');">
 
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'fm_send','value' => 1));?>

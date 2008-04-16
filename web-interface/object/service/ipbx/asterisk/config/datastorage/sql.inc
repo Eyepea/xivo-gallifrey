@@ -42,13 +42,13 @@ $array['context'] = array();
 $array['context']['table'] = 'context';
 $array['context']['primary'] = array('name' => '');
 
-$array['contextentity'] = array();
-$array['contextentity']['table'] = 'contextentity';
-$array['contextentity']['primary'] = array('context' => '','type' => '','typeval' => '');
-
 $array['contextmember'] = array();
 $array['contextmember']['table'] = 'contextmember';
 $array['contextmember']['primary'] = array('context' => '','type' => '','typeval' => '');
+
+$array['contextnumbers'] = array();
+$array['contextnumbers']['table'] = 'contextnumbers';
+$array['contextnumbers']['primary'] = array('context' => '','type' => '','numberbeg' => '','numberend' => '');
 
 $array['dialstatus'] = array();
 $array['dialstatus']['table'] = 'dialstatus';

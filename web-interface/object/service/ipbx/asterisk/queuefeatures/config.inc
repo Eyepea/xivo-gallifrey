@@ -9,8 +9,7 @@ $array['element']['name'] = array();
 $array['element']['name']['default'] = '';
 
 $array['element']['context'] = array();
-$array['element']['context']['default'] = 'default';
-$array['element']['context']['setdef'] = true;
+$array['element']['context']['default'] = '';
 
 $array['element']['data_quality'] = array();
 $array['element']['data_quality']['value'] = array(0,1);
@@ -64,7 +63,7 @@ $array['element']['timeout']['default'] = 0;
 $array['filter'] = array();
 $array['filter']['number'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9\*#]+$/','maxlen' => 40);
 $array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/i','minlen' => 1,'maxlen' => 128);
-$array['filter']['context'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context');
+$array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context');
 $array['filter']['data_quality'] = array('bool' => true);
 $array['filter']['hitting_callee'] = array('bool' => true);
 $array['filter']['hitting_caller'] = array('bool' => true);
