@@ -815,6 +815,7 @@ class XivoCTICommand(BaseCommand):
                 if astid in self.queues_list:
                         for qname, qarg in self.queues_list[astid].iteritems():
                                 print ' (q) ', qname, qarg
+                                self.amis[astid].sendcommand('Command', [('Command', 'show queue %s' % qname)])
                 return
 
         def ami_userevent(self, astid, event):
