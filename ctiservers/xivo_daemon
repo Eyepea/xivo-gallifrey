@@ -19,8 +19,8 @@
 # with this program; if not, you will find one at
 # <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>.
 
-__version__   = '$Revision$'
-__date__      = '$Date$'
+__version__   = '$Revision: 2778 $'
+__date__      = '$Date: 2008-04-13 23:29:16 +0200 (dim, 13 avr 2008) $'
 __copyright__ = 'Copyright (C) 2007, 2008, Proformatique'
 __author__    = 'Corentin Le Gall'
 
@@ -829,6 +829,10 @@ while True: # loops over the reloads
                                                 fdlist_full.remove(sel_i)
                                                 del fdlist_established[sel_i]
                                                 sel_i.close()
+                                                if sel_i in userinfo_by_requester:
+                                                        userinfo = userinfo_by_requester.get(sel_i)
+                                                        commandclass.manage_logoff(userinfo)
+                                                        del userinfo_by_requester[sel_i]
                                         except Exception, exc2:
                                                 log_debug(SYSLOG_ERR, '--- exception (2) [CTI, WEBI, AGI, INFO] --- %s' % str(exc2))
 

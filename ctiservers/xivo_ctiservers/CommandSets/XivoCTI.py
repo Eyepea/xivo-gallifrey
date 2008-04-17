@@ -420,9 +420,12 @@ class XivoCTICommand(BaseCommand):
 
 
         def __send_msg_to_cti_client__(self, userinfo, strupdate):
-                if 'login' in userinfo and 'connection' in userinfo.get('login'):
-                        mysock = userinfo.get('login')['connection']
-                        mysock.send(strupdate + '\n')
+                try:
+                        if 'login' in userinfo and 'connection' in userinfo.get('login'):
+                                mysock = userinfo.get('login')['connection']
+                                mysock.send(strupdate + '\n')
+                except Exception, exc:
+                        log_debug(SYSLOG_WARNING, '--- exception --- (__send_msg_to_cti_client__) : %s (%s)' % (str(exc), str(userinfo)))
                 return
 
 
@@ -432,7 +435,7 @@ class XivoCTICommand(BaseCommand):
                                 if 'agentnum' in userinfo and userinfo.get('agentnum') == agentnum:
                                         self.__send_msg_to_cti_client__(userinfo, strupdate)
                 except Exception, exc:
-                        print '--- exception --- (__send_msg_to_cti_client_byagentid__)', exc
+                        log_debug(SYSLOG_WARNING, '--- exception --- (__send_msg_to_cti_client_byagentid__) : %s' % str(exc))
                 return
 
 
@@ -441,7 +444,7 @@ class XivoCTICommand(BaseCommand):
                         for userinfo in self.ulist.list.itervalues():
                                 self.__send_msg_to_cti_client__(userinfo, strupdate)
                 except Exception, exc:
-                        print '--- exception --- (__send_msg_to_cti_clients__)', exc
+                        log_debug(SYSLOG_WARNING, '--- exception --- (__send_msg_to_cti_clients__) : %s' % str(exc))
                 return
 
 
@@ -1095,6 +1098,15 @@ class XivoCTICommand(BaseCommand):
                 return
 
 
+        def logoff_all_agents(self):
+                for userinfo in self.ulist.list.itervalues():
+                        astid = userinfo.get('astid')
+                        if 'agentnum' in userinfo and astid is not None:
+                                agentnum = userinfo['agentnum']
+                                self.amis[astid].agentlogoff(agentnum)
+                return
+
+
         # \brief Builds the full list of callerIDNames/hints in order to send them to the requesting client.
         # This should be done after a command called "callerid".
         # \return a string containing the full callerIDs/hints list
@@ -1322,12 +1334,14 @@ class XivoCTICommand(BaseCommand):
                                                 else:
                                                         tchan = channellist[phonesrcchan].getChannelPeer()
                                                         ret = self.amis[astid_src].atxfer(tchan,
-                                                                                                      exten_dst,
-                                                                                                      context_dst)
+                                                                                          exten_dst,
+                                                                                          context_dst)
                                                         if ret:
                                                                 ret_message = 'atxfer OK (%s) %s %s' %(astid_src, l[1], l[2])
                                                         else:
                                                                 ret_message = 'atxfer KO (%s) %s %s' %(astid_src, l[1], l[2])
+                                        else:
+                                                log_debug(SYSLOG_WARNING, "%s not in my phone list" % phonesrc)
          else:
                 ret_message = 'originate or transfer KO : asterisk id mismatch (%s %s)' %(astid_src, astid_dst)
          return self.dmessage_srv2clt(ret_message)
