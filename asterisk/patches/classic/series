@@ -3,7 +3,8 @@
 
 patch.CVE-2006-2898.patch
 # ukcid probably conflicts with bristuff
-ukcid.patch
+# Duck: deactivated (related patch in zaptel removed, needs full review before reapplying)
+#ukcid.patch
 option_detach.patch
 30_ast-data-dir.patch
 40_initgroups.patch
