@@ -236,6 +236,12 @@ def manage_info_connections(connid, msg, sep):
                         elif usefulmsg == 'show_users':
                                 for user, info in ulist.list.iteritems():
                                         connid.send('%s %s\n' %(user.encode('latin1'), info))
+                        elif usefulmsg == 'show_logged_ip':
+                                for user, info in ulist.listconnected().iteritems():
+                                        if 'connection' in info['login']:
+                                                connid.send('user %s : ip/port = %s/%s\n' %(user.encode('latin1'),
+                                                                           info['login']['connection'].getpeername()[0],
+                                                                           info['login']['connection'].getpeername()[1]))
                         elif usefulmsg == 'show_logged':
                                 for user, info in ulist.listconnected().iteritems():
                                         connid.send('%s %s\n' %(user.encode('latin1'), info))
@@ -862,6 +868,7 @@ while True: # loops over the reloads
                                                         if outsock is not None:
                                                                 fdlist_full.append(outsock)
                                                 update_amisocks(astid)
+                                                commandclass.regular_update()
                                                 plist.update(astid, configs[astid])
                                                 update_userlist[astid] = False
                                         except Exception, exc:
@@ -880,6 +887,7 @@ while True: # loops over the reloads
                                                 if outsock is not None:
                                                         fdlist_full.append(outsock)
                                         update_amisocks(astid)
+                                        commandclass.regular_update()
                                         plist.update(astid, configs[astid])
                                 except Exception, exc:
                                         log_debug(SYSLOG_ERR, '--- exception --- %s : failed while updating lists and sockets (select s timeout) : %s'

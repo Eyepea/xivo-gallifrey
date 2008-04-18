@@ -92,6 +92,9 @@ class BaseCommand:
         def manage_cticommand(self, userinfo, connid_socket, parsedcommand, cfg):
                 return
 
+        def regular_update(self):
+                return
+
         # AGI events
         def handle_agi(self, astid, msg):
                 return

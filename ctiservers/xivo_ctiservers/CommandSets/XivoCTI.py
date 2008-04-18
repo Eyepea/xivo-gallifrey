@@ -1107,6 +1107,22 @@ class XivoCTICommand(BaseCommand):
                 return
 
 
+        def regular_update(self):
+                try:
+                        ntime = time.localtime()
+                        thour = ntime[3]
+                        tmin = ntime[4]
+                        if 'regupdate' in self.xivoconf:
+                                regactions = self.xivoconf['regupdate'].split(';')
+                                if len(regactions) == 3 and thour == int(regactions[0]) and tmin < int(regactions[1]):
+                                        log_debug(SYSLOG_INFO, '(%2d h %2d min) => %s' % (thour, tmin, regactions[2]))
+                                        if regactions[2] == 'logoffagents':
+                                                self.logoff_all_agents()
+                                else:
+                                        log_debug(SYSLOG_INFO, '(%2d h %2d min) => no action' % (thour, tmin))
+                except Exception, exc:
+                        log_debug(SYSLOG_ERR, '--- exception --- (regular update) : %s' % str(exc))
+
         # \brief Builds the full list of callerIDNames/hints in order to send them to the requesting client.
         # This should be done after a command called "callerid".
         # \return a string containing the full callerIDs/hints list
