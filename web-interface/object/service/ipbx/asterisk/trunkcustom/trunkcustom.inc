@@ -46,9 +46,6 @@ class xivo_service_asterisk_trunkcustom extends xivo_service_asterisk_abstract
 		if(isset($arr['name']) === true)
 			$arr['name'] = strtolower($arr['name']);
 
-		if(isset($arr['interface']) === true)
-			$arr['interface'] = strtolower($arr['interface']);
-
 		if(isset($arr['intfsuffix']) === true)
 			$arr['intfsuffix'] = strtolower($arr['intfsuffix']);
 
@@ -65,9 +62,6 @@ class xivo_service_asterisk_trunkcustom extends xivo_service_asterisk_abstract
 
 		if(isset($arr['name']) === true)
 			$arr['name'] = strtolower($arr['name']);
-
-		if(isset($arr['interface']) === true)
-			$arr['interface'] = strtolower($arr['interface']);
 
 		if(isset($arr['intfsuffix']) === true)
 			$arr['intfsuffix'] = strtolower($arr['intfsuffix']);

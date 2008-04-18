@@ -12,7 +12,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 	var $_extenumbers	= false;
 	var $_rightcall		= false;
 	var $_dialstatus	= false;
-	var $_context		= false;
+	var $_contextnummember	= false;
 	var $_queuemember	= null;
 	var $_musiconhold	= array();
 	var $_contextlist	= array();
@@ -39,7 +39,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		|| ($this->_extenumbers = $this->get_abstract('extenumbers',array('type' => 'group'))) === false
 		|| ($this->_rightcall = $this->get_abstract('rightcall',array('type' => 'group'))) === false
 		|| ($this->_dialstatus = $this->get_abstract('dialstatus',array('category' => 'group'))) === false
-		|| ($this->_context = $this->get_abstract('context',array('type' => 'group'))) === false)
+		|| ($this->_contextnummember = $this->get_abstract('contextnummember',array('type' => 'group'))) === false)
 			return(false);
 
 		$this->_queuemember = &$this->_service->get_module('queuemember');
@@ -66,7 +66,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		$this->_get_user();
 		$this->_get_rightcall($this->_info['gfeatures']['id']);
 		$this->_get_dialstatus($this->_info['gfeatures']['id']);
-		$this->_get_context($this->_info['gfeatures']['id']);
+		$this->_get_contextnummember($this->_info['gfeatures']['id']);
 
 		return($this->_info);
 	}
@@ -230,7 +230,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		if(xivo_issa('dialstatus',$arr) === true)
 			$this->set_dialstatus($arr['dialstatus']);
 
-		$this->set_context($context,$number);
+		$this->set_contextnummember($context,$number);
 
 		return(($this->get_errnb() < 1));
 	}
@@ -392,7 +392,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		|| $this->add_user() === false
 		|| $this->add_rightcall($gfeaturesid) === false
 		|| $this->add_dialstatus($gfeaturesid) === false
-		|| $this->add_context($gfeaturesid) === false)
+		|| $this->add_contextnummember($gfeaturesid) === false)
 		{
 			if($gfeaturesid !== null)
 				$this->_reverse_add();
@@ -535,8 +535,8 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 				case 'dialstatus':
 					$this->_dialstatus->reverse_add();
 					break;
-				case 'context':
-					$this->_context->reverse_add();
+				case 'contextnummember':
+					$this->_contextnummember->reverse_add();
 					break;
 			}
 		}
@@ -594,7 +594,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		if($this->edit_user($this->_info['gfeatures']['name']) === false
 		|| $this->edit_rightcall() === false
 		|| $this->edit_dialstatus() === false
-		|| $this->edit_context() === false)
+		|| $this->edit_contextnummember() === false)
 		{
 			$this->_reverse_edit();
 			$this->_status = '';
@@ -687,12 +687,12 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		return(parent::edit_dialstatus($this->_info['gfeatures']['id']));
 	}
 
-	function edit_context()
+	function edit_contextnummember()
 	{
 		if(xivo_issa('gfeatures',$this->_info) === false)
 			return(false);
 
-		return(parent::edit_context($this->_info['gfeatures']['id']));
+		return(parent::edit_contextnummember($this->_info['gfeatures']['id']));
 	}
 
 	function edit_user_callgroup($gfeaturesid)
@@ -817,8 +817,8 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 				case 'dialstatus':
 					$this->_dialstatus->reverse_edit($this->_status);
 					break;
-				case 'context':
-					$this->_context->reverse_edit($this->_status);
+				case 'contextnummember':
+					$this->_contextnummember->reverse_edit($this->_status);
 					break;
 			}
 		}
@@ -838,7 +838,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		|| $this->delete_user($this->_info['gfeatures']['name']) === false
 		|| $this->delete_rightcall() === false
 		|| $this->delete_dialstatus() === false
-		|| $this->delete_context() === false)
+		|| $this->delete_contextnummember() === false)
 		{
 			$this->_reverse_delete();
 			$this->_status = '';
@@ -956,8 +956,8 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 				case 'dialstatus':
 					$this->_dialstatus->add_origin_list();
 					break;
-				case 'context':
-					$this->_context->add_origin();
+				case 'contextnummember':
+					$this->_contextnummember->add_origin();
 					break;
 			}
 		}

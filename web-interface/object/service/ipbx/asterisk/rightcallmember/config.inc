@@ -16,6 +16,6 @@ $array['element']['typeval']['default'] = '';
 $array['filter'] = array();
 $array['filter']['rightcallid'] = array('cast' => 'ulongint');
 $array['filter']['type'] = array('key' => array('user','group','incall','outcall'));
-$array['filter']['typeval'] = array('maxlen' => 128,'rexgep' => '/^[a-z0-9_-]+$/');
+$array['filter']['typeval'] = array('maxlen' => 128,'regexp' => '/^[a-z0-9_-]+$/');
 
 ?>

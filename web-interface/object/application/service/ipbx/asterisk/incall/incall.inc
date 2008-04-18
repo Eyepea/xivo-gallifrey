@@ -10,7 +10,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 	var $_extenumbers	= false;
 	var $_extensions	= false;
 	var $_rightcall		= false;
-	var $_context		= false;
+	var $_contextnummember	= false;
 	var $_contextlist	= array();
 
 	function xivo_application_service_asterisk_incall(&$service,$param=null,$components=true)
@@ -32,7 +32,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		$this->_components = true;
 
 		if(($this->_rightcall = $this->get_abstract('rightcall',array('type' => 'incall'))) === false
-		|| ($this->_context = $this->get_abstract('context',array('type' => 'incall'))) === false)
+		|| ($this->_contextnummember = $this->get_abstract('contextnummember',array('type' => 'incall'))) === false)
 			return(false);
 
 		return(true);
@@ -54,7 +54,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 			return($this->_info);
 
 		$this->_get_rightcall($this->_info['incall']['id']);
-		$this->_get_context($this->_info['incall']['id']);
+		$this->_get_contextnummember($this->_info['incall']['id']);
 
 		return($this->_info);
 	}
@@ -208,7 +208,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 			$this->set_rightcall($arr['rightcall']);
 
 		if($this->get_errnb() < 1)
-			$this->set_context($context,$number);
+			$this->set_contextnummember($context,$number);
 
 		return(($this->get_errnb() < 1));
 	}
@@ -250,7 +250,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		|| $this->add_extenumbers($incallid) === false
 		|| $this->add_macro('exten') === false
 		|| $this->add_rightcall($incallid) === false
-		|| $this->add_context($incallid) === false)
+		|| $this->add_contextnummember($incallid) === false)
 		{
 			$r = false;
 			if($incallid !== null)
@@ -305,8 +305,8 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 				case 'rightcall':
 					$this->_rightcall->reverse_add();
 					break;
-				case 'context':
-					$this->_context->reverse_add();
+				case 'contextnummember':
+					$this->_contextnummember->reverse_add();
 					break;
 			}
 		}
@@ -326,7 +326,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		|| $this->edit_extenumbers() === false
 		|| $this->edit_macro('exten') === false
 		|| $this->edit_rightcall() === false
-		|| $this->edit_context() === false)
+		|| $this->edit_contextnummember() === false)
 		{
 			$r = false;
 			$this->_reverse_edit();
@@ -362,12 +362,12 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		return(parent::edit_rightcall($this->_info['incall']['id']));
 	}
 
-	function edit_context()
+	function edit_contextnummember()
 	{
 		if(xivo_issa('incall',$this->_info) === false)
 			return(false);
 
-		return(parent::edit_context($this->_info['incall']['id']));
+		return(parent::edit_contextnummember($this->_info['incall']['id']));
 	}
 
 	function _reverse_edit()
@@ -405,8 +405,8 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 				case 'rightcall':
 					$this->_rightcall->reverse_edit($this->_status);
 					break;
-				case 'context':
-					$this->_context->reverse_edit($this->_status);
+				case 'contextnummember':
+					$this->_contextnummember->reverse_edit($this->_status);
 					break;
 			}
 		}
@@ -424,7 +424,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		|| $this->delete_extenumbers() === false
 		|| $this->delete_macro('exten') === false
 		|| $this->delete_rightcall() === false
-		|| $this->delete_context() === false)
+		|| $this->delete_contextnummember() === false)
 		{
 			$r = false;
 			$this->_reverse_delete();
@@ -480,8 +480,8 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 					&& $this->_origin['extenumbers'] !== false)
 						$this->_extenumbers->add_origin($this->_origin['extenumbers']);
 					break;
-				case 'context':
-					$this->_context->add_origin();
+				case 'contextnummember':
+					$this->_contextnummember->add_origin();
 					break;
 			}
 		}

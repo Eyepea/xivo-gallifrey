@@ -70,6 +70,7 @@ $array['element']['enableexitcontext']['set'] = true;
 
 $array['element']['exitcontext'] = array();
 $array['element']['exitcontext']['default'] = '';
+$array['element']['exitcontext']['setdef'] = true;
 
 
 $array['filter'] = array();

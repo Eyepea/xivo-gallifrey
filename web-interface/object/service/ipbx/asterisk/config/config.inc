@@ -154,11 +154,11 @@ $array['module']['cdr']['datastorage']['custom'] = true;
 $array['module']['context'] = array();
 $array['module']['context']['datastorage'] = true;
 
-$array['module']['contextmember'] = array();
-$array['module']['contextmember']['datastorage'] = true;
-
 $array['module']['contextnumbers'] = array();
 $array['module']['contextnumbers']['datastorage'] = true;
+
+$array['module']['contextnummember'] = array();
+$array['module']['contextnummember']['datastorage'] = true;
 
 $array['module']['dialstatus'] = array();
 $array['module']['dialstatus']['datastorage'] = true;

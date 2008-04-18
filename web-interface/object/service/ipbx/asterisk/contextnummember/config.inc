@@ -8,20 +8,11 @@ $array['element']['context'] = array();
 $array['element']['context']['default'] = '';
 
 $array['element']['type'] = array();
-$array['element']['type']['value'] = array('extenfeatures',
-					   'featuremap',
-					   'generalfeatures',
-					   'generaliax',
-					   'generalsip',
-					   'generalvoicemail',
+$array['element']['type']['value'] = array('user',
 					   'group',
-					   'handynumbers',
-					   'incall',
-					   'meetme',
-					   'outcall',
 					   'queue',
-					   'user',
-					   'uservoicemail');
+					   'meetme',
+					   'incall');
 $array['element']['type']['default'] = '';
 
 $array['element']['typeval'] = array();
@@ -33,20 +24,11 @@ $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_co
 				    'callbackparam' => array(array(
 				    			XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTIFICATION,
 							XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
-$array['filter']['type'] = array('extenfeatures',
-				 'featuremap',
-				 'generalfeatures',
-				 'generaliax',
-				 'generalsip',
-				 'generalvoicemail',
+$array['filter']['type'] = array('user',
 				 'group',
-				 'handynumbers',
-				 'incall',
-				 'meetme',
-				 'outcall',
 				 'queue',
-				 'user',
-				 'uservoicemail');
-$array['filter']['typeval'] = array('maxlen' => 255,'cast' => 'sgraph');
+				 'meetme',
+				 'incall');
+$array['filter']['typeval'] = array('maxlen' => 128,'regexp' => '/^[a-z0-9_-]+$/');
 
 ?>

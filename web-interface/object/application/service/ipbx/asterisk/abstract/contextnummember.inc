@@ -2,20 +2,20 @@
 
 xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','abstract.inc'),true);
 
-class xivo_application_service_asterisk_context_abstract extends xivo_application_service_asterisk_abstract
+class xivo_application_service_asterisk_contextnummember_abstract extends xivo_application_service_asterisk_abstract
 {
 	var $_context		= false;
 	var $_contextnumbers	= false;
-	var $_contextmember	= false;
+	var $_contextnummember	= false;
 	var $_param		= array('type'	=> '');
 
-	function xivo_application_service_asterisk_context_abstract(&$service,$param=array())
+	function xivo_application_service_asterisk_contextnummember_abstract(&$service,$param=array())
 	{
 		$this->xivo_application_service_asterisk_abstract(&$service);
 		
 		if(($this->_context = &$this->_service->get_module('context')) === false
 		|| ($this->_contextnumbers = &$this->_service->get_module('contextnumbers')) === false
-		|| ($this->_contextmember = &$this->_service->get_module('contextmember')) === false)
+		|| ($this->_contextnummember = &$this->_service->get_module('contextnummember')) === false)
 			return(false);
 
 		return($this->load_init($param));
@@ -29,7 +29,7 @@ class xivo_application_service_asterisk_context_abstract extends xivo_applicatio
 
 		if($this->set_params($param) === false
 		|| isset($param['type']) === false
-		|| $this->_contextmember->chk_element_value('type',$param['type']) === false)
+		|| $this->_contextnummember->chk_element_value('type',$param['type']) === false)
 		{
 			$this->_param['type'] = '';
 			return(false);
@@ -45,17 +45,17 @@ class xivo_application_service_asterisk_context_abstract extends xivo_applicatio
 		$this->_info = false;
 		$this->_origin = false;
 
-		if(xivo_haslen($typeval) === false)
+		if(($typeval = xivo_ulongint($typeval)) === 0)
 			return(false);
 
 		$where = array();
 		$where['type'] = $this->_param['type'];
 		$where['typeval'] = $typeval;
 
-		if(($this->_info = $this->_contextmember->get_where($where)) === false)
+		if(($this->_info = $this->_contextnummember->get_where($where)) === false)
 			return(false);
 
-		$this->_origin = $this->_contextmember->get_origin();
+		$this->_origin = $this->_contextnummember->get_origin();
 
 		return($this->_info);
 	}
@@ -94,10 +94,10 @@ class xivo_application_service_asterisk_context_abstract extends xivo_applicatio
 			$this->_set_error($chkerror);
 			return(false);
 		}
-		else if(($rs = $this->_contextmember->chk_values($info)) === false)
+		else if(($rs = $this->_contextnummember->chk_values($info)) === false)
 		{
-			$this->_set_result($this->_contextmember->get_filter_result());
-			$this->_set_error($this->_contextmember->get_filter_error());
+			$this->_set_result($this->_contextnummember->get_filter_result());
+			$this->_set_error($this->_contextnummember->get_filter_error());
 			return(false);
 		}
 
@@ -108,14 +108,14 @@ class xivo_application_service_asterisk_context_abstract extends xivo_applicatio
 
 	function add($typeval)
 	{
-		if(xivo_haslen($typeval) === false)
+		if(($typeval = xivo_ulongint($typeval)) === 0)
 			return(false);
 		else if(($rs = $this->get_result()) === null || $rs === false)
 			return($rs);
 
 		$rs['typeval'] = $typeval;
 
-		if($this->_contextmember->add($rs) === false)
+		if($this->_contextnummember->add($rs) === false)
 			return(($this->_return = false));
 
 		$this->_return = array('type' => $rs['type'],'typeval' => $rs['typeval']);
@@ -125,7 +125,7 @@ class xivo_application_service_asterisk_context_abstract extends xivo_applicatio
 
 	function edit($status,$typeval)
 	{
-		if(xivo_haslen($typeval) === false)
+		if(($typeval = xivo_ulongint($typeval)) === 0)
 			return(false);
 		else if(empty($this->_origin) === true)
 			return($this->add($typeval));
@@ -139,7 +139,7 @@ class xivo_application_service_asterisk_context_abstract extends xivo_applicatio
 
 		$rs['typeval'] = $this->_origin['typeval'];
 
-		if($this->_contextmember->add($rs) === false)
+		if($this->_contextnummember->add($rs) === false)
 			return(($this->_return = false));
 
 		$this->_return = array('type' => $rs['type'],'typeval' => $rs['typeval']);
@@ -152,11 +152,11 @@ class xivo_application_service_asterisk_context_abstract extends xivo_applicatio
 		if(empty($this->_origin) === true)
 			return(null);
 
-		$contextmember_where = array();
-		$contextmember_where['type'] = $this->_origin['type'];
-		$contextmember_where['typeval'] = $this->_origin['typeval'];
+		$contextnummember_where = array();
+		$contextnummember_where['type'] = $this->_origin['type'];
+		$contextnummember_where['typeval'] = $this->_origin['typeval'];
 
-		$r = $this->_contextmember->delete_where($contextmember_where);
+		$r = $this->_contextnummember->delete_where($contextnummember_where);
 
 		if($status === 'delete')
 			$this->_return = $r;
@@ -170,11 +170,11 @@ class xivo_application_service_asterisk_context_abstract extends xivo_applicatio
 		|| isset($this->_return['type'],$this->_return['typeval']) === false)
 			return(null);
 
-		$contextmember_where = array();
-		$contextmember_where['type'] = $this->_return['type'];
-		$contextmember_where['typeval'] = $this->_return['typeval'];
+		$contextnummember_where = array();
+		$contextnummember_where['type'] = $this->_return['type'];
+		$contextnummember_where['typeval'] = $this->_return['typeval'];
 
-		$this->_contextmember->delete_where($contextmember_where);
+		$this->_contextnummember->delete_where($contextnummember_where);
 
 		return(true);
 	}
@@ -183,7 +183,7 @@ class xivo_application_service_asterisk_context_abstract extends xivo_applicatio
 	{
 		$this->delete($status);
 
-		return($this->_contextmember->add_origin($this->_origin));
+		return($this->_contextnummember->add_origin($this->_origin));
 	}
 }
 

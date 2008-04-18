@@ -11,7 +11,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 	var $_meetmeroom	= false;
 	var $_extensions	= false;
 	var $_extenumbers	= false;
-	var $_context		= false;
+	var $_contextnummember	= false;
 	var $_musiconhold	= array();
 	var $_contextlist	= array();
 
@@ -35,7 +35,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 		if(($this->_extensions = &$this->_service->get_module('extensions')) === false
 		|| ($this->_extenumbers = $this->get_abstract('extenumbers',array('type' => 'meetme'))) === false
-		|| ($this->_context = $this->get_abstract('context',array('type' => 'meetme'))) === false)
+		|| ($this->_contextnummember = $this->get_abstract('contextnummember',array('type' => 'meetme'))) === false)
 			return(false);
 
 		return(true);
@@ -58,7 +58,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 		$this->_get_exten();
 		$this->_get_extenumbers($this->_info['mfeatures']['id']);
-		$this->_get_context($this->_info['mfeatures']['id']);
+		$this->_get_contextnummember($this->_info['mfeatures']['id']);
 
 		return($this->_info);
 	}
@@ -162,7 +162,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 		$this->set_extenumbers($action,$number,$context);
 
-		$this->set_context($context,$number);
+		$this->set_contextnummember($context,$number);
 
 		return(($this->get_errnb() < 1));
 	}
@@ -222,7 +222,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		|| ($meetmefeaturesid = $this->add_meetmefeatures($meetmeroomid)) === false
 		|| $this->add_extenumbers($meetmefeaturesid) === false
 		|| $this->add_macro('exten') === false
-		|| $this->add_context($meetmefeaturesid) === false)
+		|| $this->add_contextnummember($meetmefeaturesid) === false)
 		{
 			$r = false;
 			if($meetmeroomid !== null)
@@ -282,8 +282,8 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 				case 'extenumbers':
 					$this->_extenumbers->reverse_add($this->_status);
 					break;
-				case 'context':
-					$this->_context->reverse_add();
+				case 'contextnummember':
+					$this->_contextnummember->reverse_add();
 					break;
 			}
 		}
@@ -303,7 +303,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		|| $this->edit_meetmefeatures() === false
 		|| $this->edit_extenumbers() === false
 		|| $this->edit_macro('exten') === false
-		|| $this->edit_context() === false)
+		|| $this->edit_contextnummember() === false)
 		{
 			$r = false;
 			$this->_reverse_edit();
@@ -336,12 +336,12 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		return(($this->_return['mfeatures'] = $this->_meetmefeatures->edit($this->_info['mfeatures']['id'],$rs)));
 	}
 
-	function edit_context()
+	function edit_contextnummember()
 	{
 		if(xivo_issa('mfeatures',$this->_info) === false)
 			return(false);
 
-		return(parent::edit_context($this->_info['mfeatures']['id']));
+		return(parent::edit_contextnummember($this->_info['mfeatures']['id']));
 	}
 
 	function _reverse_edit()
@@ -383,8 +383,8 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 				case 'extenumbers':
 					$this->_extenumbers->reverse_edit($this->_status);
 					break;
-				case 'context':
-					$this->_context->reverse_edit($this->_status);
+				case 'contextnummember':
+					$this->_contextnummember->reverse_edit($this->_status);
 					break;
 			}
 		}
@@ -401,7 +401,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		|| $this->delete_meetmefeatures() === false
 		|| $this->delete_extenumbers() === false
 		|| $this->delete_macro('exten') === false
-		|| $this->delete_context() === false)
+		|| $this->delete_contextnummember() === false)
 		{
 			$this->_reverse_delete();
 			$this->_status = '';
@@ -476,8 +476,8 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 					&& $this->_origin['extenumbers'] !== false)
 						$this->_extenumbers->add_origin($this->_origin['extenumbers']);
 					break;
-				case 'context':
-					$this->_context->add_origin();
+				case 'contextnummember':
+					$this->_contextnummember->add_origin();
 					break;
 			}
 		}

@@ -143,15 +143,15 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		return($this->_info['dialstatus']);
 	}
 
-	function _get_context($typeval)
+	function _get_contextnummember($typeval)
 	{
-		$this->_info['context'] = false;
-		$this->_origin['context'] = false;
+		$this->_info['contextnummember'] = false;
+		$this->_origin['contextnummember'] = false;
 
-		if(($this->_info['context'] = $this->_context->get($typeval)) !== false)
-			$this->_origin['context'] = $this->_context->get_origin();
+		if(($this->_info['contextnummember'] = $this->_contextnummember->get($typeval)) !== false)
+			$this->_origin['contextnummember'] = $this->_contextnummember->get_origin();
 
-		return($this->_info['context']);
+		return($this->_info['contextnummember']);
 	}
 
 	function set_extenumbers($action,$number,$context='',$typeval='')
@@ -205,12 +205,12 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		return($r);
 	}
 
-	function set_context($context,$number='')
+	function set_contextnummember($context,$number='')
 	{
-		if(($r = $this->_context->set($context,$number)) === false)
-			$this->_set_error('context',$this->_context->get_error());
+		if(($r = $this->_contextnummember->set($context,$number)) === false)
+			$this->_set_error('contextnummember',$this->_contextnummember->get_error());
 
-		$this->_set_result('context',$this->_context->get_result());
+		$this->_set_result('contextnummember',$this->_contextnummember->get_result());
 
 		return($r);
 	}
@@ -249,11 +249,11 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		return($r);
 	}
 
-	function add_context($typeval)
+	function add_contextnummember($typeval)
 	{
-		$r = $this->_context->add($typeval);
+		$r = $this->_contextnummember->add($typeval);
 
-		$this->_return['context'] = $this->_context->get_return();
+		$this->_return['contextnummember'] = $this->_contextnummember->get_return();
 
 		return($r);
 	}
@@ -298,11 +298,11 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		return($r);
 	}
 
-	function edit_context($typeval)
+	function edit_contextnummember($typeval)
 	{
-		$r = $this->_context->edit($this->_status,$typeval);
+		$r = $this->_contextnummember->edit($this->_status,$typeval);
 
-		$this->_return['context'] = $this->_context->get_return();
+		$this->_return['contextnummember'] = $this->_contextnummember->get_return();
 
 		return($r);
 	}
@@ -360,12 +360,12 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		return($r);
 	}
 
-	function delete_context()
+	function delete_contextnummember()
 	{
-		$r = $this->_context->delete($this->_status);
+		$r = $this->_contextnummember->delete($this->_status);
 
 		if($this->_status === 'delete')
-			$this->_return['context'] = $r;
+			$this->_return['contextnummember'] = $r;
 
 		return($r);
 	}
