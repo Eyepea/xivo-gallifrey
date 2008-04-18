@@ -169,16 +169,16 @@ CREATE INDEX context__idx__entity ON context(entity);
 CREATE INDEX context__idx__commented ON context(commented);
 
 
-DROP TABLE contextmember;
-CREATE TABLE contextmember (
+DROP TABLE contextnummember;
+CREATE TABLE contextnummember (
  context varchar(39) NOT NULL,
- type varchar(64) NOT NULL,
- typeval varchar(255) NOT NULL DEFAULT '',
+ type varchar(6) NOT NULL,
+ typeval varchar(128) NOT NULL DEFAULT 0,
  PRIMARY KEY(context,type,typeval)
 );
 
-CREATE INDEX contextmember__idx__context ON contextmember(context);
-CREATE INDEX contextmember__idx__context_type ON contextmember(context,type);
+CREATE INDEX contextnummember__idx__context ON contextnummember(context);
+CREATE INDEX contextnummember__idx__context_type ON contextnummember(context,type);
 
 
 DROP TABLE contextnumbers;

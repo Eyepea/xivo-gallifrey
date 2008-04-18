@@ -172,18 +172,6 @@ CREATE INDEX `context__idx__entity` ON `context`(`entity`);
 CREATE INDEX `context__idx__commented` ON `context`(`commented`);
 
 
-DROP TABLE IF EXISTS `contextmember`;
-CREATE TABLE `contextmember` (
- `context` varchar(39) NOT NULL,
- `type` enum('extenfeatures','featuremap','generalfeatures','generaliax','generalsip','generalvoicemail','group','handynumbers','incall','meetme','outcall','queue','user','uservoicemail') NOT NULL,
- `typeval` varchar(255) NOT NULL DEFAULT '',
- PRIMARY KEY(`context`,`type`,`typeval`)
-) ENGINE=MyISAM DEFAULT CHARSET=ascii;
-
-CREATE INDEX `contextmember__idx__context` ON `contextmember`(`context`);
-CREATE INDEX `contextmember__idx__context_type` ON `contextmember`(`context`,`type`);
-
-
 DROP TABLE IF EXISTS `contextnumbers`;
 CREATE TABLE `contextnumbers` (
  `context` varchar(39) NOT NULL,
@@ -195,6 +183,18 @@ CREATE TABLE `contextnumbers` (
 ) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
 CREATE INDEX `contextnumbers__idx__context_type` ON `contextnumbers`(`context`,`type`);
+
+
+DROP TABLE IF EXISTS `contextnummember`;
+CREATE TABLE `contextnummember` (
+ `context` varchar(39) NOT NULL,
+ `type` enum('user','group','queue','meetme','incall') NOT NULL,
+ `typeval` varchar(128) NOT NULL DEFAULT 0,
+ PRIMARY KEY(`context`,`type`,`typeval`)
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;
+
+CREATE INDEX `contextnummember__idx__context` ON `contextnummember`(`context`);
+CREATE INDEX `contextnummember__idx__context_type` ON `contextnummember`(`context`,`type`);
 
 
 DROP TABLE IF EXISTS `dialstatus`;
