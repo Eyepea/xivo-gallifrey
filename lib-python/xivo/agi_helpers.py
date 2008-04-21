@@ -233,7 +233,7 @@ class bsfilter:
 		self.active = False
 		self.context = None
 		self.mode = None
-		self.zone = None
+		self.callfrom = None
 		self.callerdisplay = None
 		self.ringseconds = None
 		self.boss = None
@@ -254,7 +254,7 @@ class bsfilter:
                              "AND userfeatures.bsfilter = 'boss' "
                              "AND userfeatures.commented = 0",
                              ('callfilter.id', 'callfilter.bosssecretary',
-                              'callfilter.zone', 'callfilter.callerdisplay',
+                              'callfilter.callfrom', 'callfilter.callerdisplay',
                               'callfilter.ringseconds', 'callfiltermember.ringseconds',
                               'userfeatures.id', 'userfeatures.protocol',
                               'userfeatures.protocolid', 'userfeatures.name'),
@@ -271,7 +271,7 @@ class bsfilter:
 		self.id = res['callfilter.id']
 		self.context = boss_context
 		self.mode = res['callfilter.bosssecretary']
-		self.zone = res['callfilter.zone']
+		self.callfrom = res['callfilter.callfrom']
 		self.callerdisplay = res['callfilter.callerdisplay']
 		self.ringseconds = res['callfilter.ringseconds']
 		self.boss = bsf_member(True, 'boss', res['userfeatures.id'], boss_number, res['callfiltermember.ringseconds'])
@@ -355,12 +355,12 @@ class bsfilter:
 		return ("Call filter object :\n"
                        "Context:       %s\n"
                        "Mode:          %s\n"
-                       "Zone:          %s\n"
+                       "Callfrom:      %s\n"
                        "CallerDisplay: %s\n"
                        "RingSeconds:   %s\n"
                        "Boss:\n%s\n"
                        "Secretaries:\n%s"
-                       % (self.context, self.mode, self.zone, self.callerdisplay,
+                       % (self.context, self.mode, self.callfrom, self.callerdisplay,
                           self.ringseconds, self.boss, '\n'.join((str(secretary) for secretary in self.secretaries))))
 
 	def agi_str(self, agi):
@@ -370,11 +370,11 @@ class bsfilter:
 			agi.verbose(line)
 
 	def check_zone(self, zone):
-		if self.zone == "all":
+		if self.callfrom == "all":
 			return True
-		elif self.zone == "internal" and zone == "intern":
+		elif self.callfrom == "internal" and zone == "intern":
 			return True
-		elif self.zone == "external" and zone == "extern":
+		elif self.callfrom == "external" and zone == "extern":
 			return True
 		else:
 			return False
