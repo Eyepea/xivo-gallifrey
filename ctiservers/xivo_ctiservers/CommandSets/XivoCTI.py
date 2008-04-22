@@ -149,7 +149,7 @@ class XivoCTICommand(BaseCommand):
                         'database',
                         'message',
                         'availstate',
-                        'originate', 'transfer', 'atxfer', 'hangup', 'pickup']
+                        'originate', 'transfer', 'atxfer', 'hangup', 'simplehangup', 'pickup']
 
         def parsecommand(self, linein):
                 params = linein.split()
@@ -966,10 +966,13 @@ class XivoCTICommand(BaseCommand):
                                         repstr = self.__originate_or_transfer__("%s/%s" %(astid, username),
                                                                                 [icommand.name, icommand.args[0], icommand.args[1]])
                         elif icommand.name == 'hangup':
-                                print icommand.name, icommand.args
                                 if (capalist & CAPA_DIAL):
                                         repstr = self.__hangup__("%s/%s" %(astid, username),
-                                                                 icommand.args[0])
+                                                                 icommand.args[0], True)
+                        elif icommand.name == 'simplehangup':
+                                if (capalist & CAPA_DIAL):
+                                        repstr = self.__hangup__("%s/%s" %(astid, username),
+                                                                 icommand.args[0], False)
                         elif icommand.name == 'pickup':
                                 print icommand.name, icommand.args
                                 if (capalist & CAPA_DIAL):
@@ -1365,7 +1368,7 @@ class XivoCTICommand(BaseCommand):
 
 
         # \brief Hangs up.
-        def __hangup__(self, requester, chan):
+        def __hangup__(self, requester, chan, peer_hangup):
                 astid_src = chan.split("/")[1]
                 ret_message = 'hangup KO from %s' % requester
                 if astid_src in self.configs:
@@ -1373,9 +1376,14 @@ class XivoCTICommand(BaseCommand):
                         phone, channel = split_from_ui(chan)
                         if phone in self.plist[astid_src].normal:
                                 if channel in self.plist[astid_src].normal[phone].chann:
-                                        channel_peer = self.plist[astid_src].normal[phone].chann[channel].getChannelPeer()
-                                        log_debug(SYSLOG_INFO, "UI action : %s : hanging up <%s> and <%s>"
-                                                  %(self.configs[astid_src].astid , channel, channel_peer))
+                                        if peer_hangup:
+                                                channel_peer = self.plist[astid_src].normal[phone].chann[channel].getChannelPeer()
+                                                log_debug(SYSLOG_INFO, "UI action : %s : hanging up <%s> and <%s>"
+                                                          %(self.configs[astid_src].astid , channel, channel_peer))
+                                        else:
+                                                channel_peer = ''
+                                                log_debug(SYSLOG_INFO, "UI action : %s : hanging up <%s>"
+                                                          %(self.configs[astid_src].astid , channel))
                                         if astid_src in self.amis and self.amis[astid_src]:
                                                 ret = self.amis[astid_src].hangup(channel, channel_peer)
                                                 if ret > 0:
@@ -1391,8 +1399,6 @@ class XivoCTICommand(BaseCommand):
                 else:
                         ret_message = 'hangup KO : no such asterisk id <%s>' % astid_src
                 return self.dmessage_srv2clt(ret_message)
-
-
 
 
         # \brief Function that fetches the call history from a database
