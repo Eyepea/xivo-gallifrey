@@ -245,7 +245,11 @@ class PhoneList:
                                  chan_dst, num_dst, comment):
                 phoneid_src = channel_splitter(chan_src)
                 phoneid_dst = channel_splitter(chan_dst)
-
+                
+                # when remote atxfered arrives ...
+                # chan_src, num_src, action, timeup, direction, chan_dst, num_dst, comment
+                #  Local/101@default-66c2,1  On the phone 0 < SIP/103-081bd818 103 ami-el2
+                
                 if phoneid_src not in self.normal:
                         self.normal[phoneid_src] = LineProp(phoneid_src.split("/")[0],
                                                             phoneid_src.split("/")[1],

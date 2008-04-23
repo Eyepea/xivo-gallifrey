@@ -56,7 +56,7 @@ class AMIClass:
                 str = self.fd.readline()
                 #print str,
         # \brief Sending any AMI command.
-        def sendcommand(self, action, args):
+        def sendcommand(self, action, args, loopnum = 0):
                 ret = False
                 try:
                         self.fd.write('Action: ' + action + '\r\n')
@@ -68,16 +68,19 @@ class AMIClass:
                 except:
                         ret = False
                 if ret == False:
-                        # tries to reconnect
-                        try:
-                                self.connect()
-                                self.login()
-                                if self:
-                                        # "retrying AMI command=<%s> args=<%s>" % (action, str(args)))
-                                        self.sendcommand(action, args)
-                        except Exception, exc:
-                                # log_debug("--- exception --- AMI not connected (action=%s args=%s) : %s" %(action, str(args), str(exc)))
-                                pass
+                        if loopnum == 0:
+                                # tries to reconnect
+                                try:
+                                        self.connect()
+                                        self.login()
+                                        if self:
+                                                # "retrying AMI command=<%s> args=<%s>" % (action, str(args)))
+                                                self.sendcommand(action, args, 1)
+                                except Exception, exc:
+                                        # log_debug("--- exception --- AMI not connected (action=%s args=%s) : %s" %(action, str(args), str(exc)))
+                                        pass
+                        else:
+                                print 'warning : 2 attempts have failed for AMI command : %s' % action
                 return ret
         # \brief Requesting a Status.
         def sendstatus(self):

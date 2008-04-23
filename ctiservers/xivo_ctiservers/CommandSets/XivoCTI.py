@@ -529,7 +529,6 @@ class XivoCTICommand(BaseCommand):
 
         # Methods to handle Asterisk AMI events
         def ami_dial(self, astid, event):
-                print astid, event
                 src     = event.get("Source")
                 dst     = event.get("Destination")
                 clid    = event.get("CallerID")
