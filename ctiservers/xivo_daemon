@@ -109,7 +109,7 @@ BUFSIZE_ANY = 512
 
 socket.setdefaulttimeout(2)
 XIVO_CLI_WEBI_HEADER = 'XIVO-CLI-WEBI'
-XIVOVERSION = '0.3'
+XIVOVERSION = '0.4'
 
 
 ## \brief Deals with requests from the UI clients.
@@ -844,8 +844,8 @@ while True: # loops over the reloads
 
                         # local pipe fd
                         elif queued_threads_pipe[0] == sel_i:
-                                disconnlist = commandclass.checkqueue()
                                 try:
+                                        disconnlist = commandclass.checkqueue()
                                         for userinfo in disconnlist:
                                                 print 'checkqueue return :', userinfo
                                                 if 'connection' in userinfo.get('login'):
