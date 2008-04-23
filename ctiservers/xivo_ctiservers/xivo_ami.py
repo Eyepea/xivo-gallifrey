@@ -212,11 +212,15 @@ class AMIClass:
                 return ret
 
 
-        def setvar(self, chan, var, val):
+        def setvar(self, var, val, chan = None):
                 try:
-                        ret = self.sendcommand('SetVar', [('Channel', chan),
-                                                          ('Variable', var),
-                                                          ('Value', val)])
+                        if chan is None:
+                                ret = self.sendcommand('SetVar', [('Variable', var),
+                                                                  ('Value', val)])
+                        else:
+                                ret = self.sendcommand('SetVar', [('Channel', chan),
+                                                                  ('Variable', var),
+                                                                  ('Value', val)])
                         reply = self.readresponse('')
                         return ret
                 except self.AMIError, exc:

@@ -1088,8 +1088,10 @@ class XivoCTICommand(BaseCommand):
                                                 self.amis[astid].queueadd(queuename, 'Agent/%s' % agentnum)
                                                 self.amis[astid].queuepause(queuename, 'Agent/%s' % agentnum, 'false')
                         elif subcommand == 'login':
+                                self.amis[astid].setvar('AGENTBYCALLERID_%s' % userinfo['phonenum'], agentnum)
                                 self.amis[astid].agentcallbacklogin(agentnum, userinfo['phonenum'])
                         elif subcommand == 'logout':
+                                self.amis[astid].setvar('AGENTBYCALLERID_%s' % userinfo['phonenum'], '')
                                 self.amis[astid].agentlogoff(agentnum)
                         elif subcommand == 'lists':
                                 pass
