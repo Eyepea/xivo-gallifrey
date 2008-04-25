@@ -43,37 +43,49 @@ from BackSQL import backmysql
 from BackSQL import backsqlite
 
 # capabilities
-CAPA_CUSTINFO    = 1 <<  0
-CAPA_PRESENCE    = 1 <<  1
-CAPA_HISTORY     = 1 <<  2
-CAPA_DIRECTORY   = 1 <<  3
-CAPA_DIAL        = 1 <<  4
-CAPA_FEATURES    = 1 <<  5
-CAPA_PEERS       = 1 <<  6
-CAPA_MESSAGE     = 1 <<  7
-CAPA_SWITCHBOARD = 1 <<  8
-CAPA_AGENTS      = 1 <<  9
-CAPA_FAX         = 1 << 10
-CAPA_DATABASE    = 1 << 11
+CAPA_XLET_CALLS  = 1 << 0
+CAPA_XLET_CUSTINFO = 1 << 1
+CAPA_XLET_DIAL = 1 << 2
+CAPA_XLET_DIRECTORY = 1 << 3
+CAPA_XLET_FAX = 1 << 4
+CAPA_XLET_FEATURES = 1 << 5
+CAPA_XLET_HISTORY = 1 << 6
+CAPA_XLET_IDENTITY = 1 << 7
+CAPA_XLET_MESSAGES = 1 << 8
+CAPA_XLET_OPERATOR = 1 << 9
+CAPA_XLET_PARKING = 1 << 10
+CAPA_XLET_QUEUES = 1 << 11
+CAPA_XLET_SEARCH = 1 << 12
+CAPA_XLET_SWITCHBOARD = 1 << 13
+CAPA_XLET_VIDEO = 1 << 14
+CAPA_FUNC_AGENTS = 1 << 15
+CAPA_FUNC_DATABASE = 1 << 16
+CAPA_FUNC_PRESENCE = 1 << 17
+CAPA_FUNC_SWITCHBOARD = 1 << 18
 
 # this list shall be defined through more options in WEB Interface
-CAPA_ALMOST_ALL = CAPA_CUSTINFO | CAPA_PRESENCE | CAPA_HISTORY  | CAPA_DIRECTORY | \
-                  CAPA_DIAL | CAPA_FEATURES | CAPA_PEERS | \
-                  CAPA_SWITCHBOARD | CAPA_AGENTS | CAPA_FAX | CAPA_DATABASE
+CAPA_ALMOST_ALL = 2**32 - 1
 
 map_capas = {
-        'customerinfo'     : CAPA_CUSTINFO,
-        'presence'         : CAPA_PRESENCE,
-        'history'          : CAPA_HISTORY,
-        'directory'        : CAPA_DIRECTORY,
-        'dial'             : CAPA_DIAL,
-        'features'         : CAPA_FEATURES,
-        'peers'            : CAPA_PEERS,
-        'instantmessaging' : CAPA_MESSAGE,
-        'switchboard'      : CAPA_SWITCHBOARD,
-        'agents'           : CAPA_AGENTS,
-        'fax'              : CAPA_FAX,
-        'database'         : CAPA_DATABASE
+        'xlet-calls'        : CAPA_XLET_CALLS,
+        'xlet-customerinfo' : CAPA_XLET_CUSTINFO,
+        'xlet-dial'         : CAPA_XLET_DIAL,
+        'xlet-directory'    : CAPA_XLET_DIRECTORY,
+        'xlet-fax'          : CAPA_XLET_FAX,
+        'xlet-features'     : CAPA_XLET_FEATURES,
+        'xlet-history'      : CAPA_XLET_HISTORY,
+        'xlet-identity'     : CAPA_XLET_IDENTITY,
+        'xlet-messages'     : CAPA_XLET_MESSAGES,
+        'xlet-operator'     : CAPA_XLET_OPERATOR,
+        'xlet-parking'      : CAPA_XLET_PARKING,
+        'xlet-queues'       : CAPA_XLET_QUEUES,
+        'xlet-search'       : CAPA_XLET_SEARCH,
+        'xlet-switchboard'  : CAPA_XLET_SWITCHBOARD,
+        'xlet-video'        : CAPA_XLET_VIDEO,
+        'func-agents'       : CAPA_FUNC_AGENTS,
+        'func-database'     : CAPA_FUNC_DATABASE,
+        'func-presence'     : CAPA_FUNC_PRESENCE,
+        'func-switchboard'  : CAPA_FUNC_SWITCHBOARD,
         }
 
 SHEET_EVENT_INCOMING    = 1 << 0
@@ -88,7 +100,7 @@ SHEET_ACTION_XCPOPUP = 1 << 1
 SHEET_ACTION_BOT     = 1 << 2
 SHEET_ACTION_URL     = 1 << 3
 
-XIVOVERSION = '0.3.6'
+XIVOVERSION = '0.4'
 REQUIRED_CLIENT_VERSION = 2025
 __revision__ = __version__.split()[1]
 __alphanums__ = string.uppercase + string.lowercase + string.digits
@@ -112,23 +124,12 @@ def log_debug(syslogprio, string):
 class XivoCTICommand(BaseCommand):
 
         xdname = 'XIVO Daemon'
-        capalist_server = 0
-        capabilities_list = ['customerinfo',
-                             'presence',
-                             'history',
-                             'directory',
-                             'dial',
-                             'features',
-                             'peers',
-                             'switchboard',
-                             'agents'] # XXX replace with config result
-        for capa in capabilities_list:
-                if capa in map_capas: capalist_server |= map_capas[capa]
         conngui_sb = 0
         conngui_xc = 0
         maxgui_sb  = 10
         maxgui_xc  = 2
         xivoclient_session_timeout = 60 # XXX
+        capalist_server = 0
 
         fullstat_heavies = {}
         queues_list = {}
@@ -367,6 +368,19 @@ class XivoCTICommand(BaseCommand):
                         for queue in results:
                                 if queue[0] not in self.queues_list[astid]:
                                         self.queues_list[astid][queue[0]] = {'agents' : {}, 'channels' : []}
+                self.capabilities_list = []
+                if 'capabilities-xlets' in self.xivoconf:
+                        for capa in self.xivoconf['capabilities-xlets'].split(','):
+                                tcapa = 'xlet-%s' % capa
+                                self.capabilities_list.append(tcapa)
+                                if tcapa in map_capas:
+                                        self.capalist_server |= map_capas[tcapa]
+                if 'capabilities-funcs' in self.xivoconf:
+                        for capa in self.xivoconf['capabilities-funcs'].split(','):
+                                tcapa = 'func-%s' % capa
+                                self.capabilities_list.append(tcapa)
+                                if tcapa in map_capas:
+                                        self.capalist_server |= map_capas[tcapa]
                 if 'maxgui_sb' in self.xivoconf:
                         self.maxgui_sb = self.xivoconf['maxgui_sb']
                 if 'maxgui_xc' in self.xivoconf:
@@ -441,8 +455,9 @@ class XivoCTICommand(BaseCommand):
 
         def __send_msg_to_cti_clients__(self, strupdate):
                 try:
-                        for userinfo in self.ulist.list.itervalues():
-                                self.__send_msg_to_cti_client__(userinfo, strupdate)
+                        if strupdate is not None:
+                                for userinfo in self.ulist.list.itervalues():
+                                        self.__send_msg_to_cti_client__(userinfo, strupdate)
                 except Exception, exc:
                         log_debug(SYSLOG_WARNING, '--- exception --- (__send_msg_to_cti_clients__) : %s' % str(exc))
                 return
@@ -687,16 +702,20 @@ class XivoCTICommand(BaseCommand):
                 loginchan = event.get('Loginchan')
                 if astid in self.agentslist and agent in self.agentslist[astid]:
                         self.agentslist[astid][agent] = ['AGENT_IDLE', event.get('Loginchan')]
-                self.__send_msg_to_cti_clients__('agentupdate=login;%s;%s' % (agent, loginchan))
-                self.__update_agent__(agent, '1', '')
+                msg = self.__build_agupdate__(agent, ['agentlogin', astid, agent, loginchan])
+                print msg
+                self.__send_msg_to_cti_clients__(msg)
                 return
         def ami_agentcallbacklogoff(self, astid, event):
                 agent = event.get('Agent')
                 loginchan = event.get('Loginchan')
+                if loginchan == 'n/a':
+                        loginchan = ''
                 if astid in self.agentslist and agent in self.agentslist[astid]:
                         self.agentslist[astid][agent] = ['AGENT_LOGGEDOFF', loginchan]
-                self.__send_msg_to_cti_clients__('agentupdate=logout;%s;%s' % (agent, loginchan))
-                self.__update_agent__(agent, '', '')
+                msg = self.__build_agupdate__(agent, ['agentlogout', astid, agent, loginchan])
+                print msg
+                self.__send_msg_to_cti_clients__(msg)
                 return
 
         def ami_agentcalled(self, astid, event):
@@ -717,7 +736,10 @@ class XivoCTICommand(BaseCommand):
                 if astid not in self.agentslist:
                         self.agentslist[astid] = {}
                 if agent not in self.agentslist[astid]:
-                        self.agentslist[astid][agent] = [event.get('Status'), event.get('LoggedInChan')]
+                        linchan = event.get('LoggedInChan')
+                        if linchan == 'n/a':
+                                linchan = ''
+                        self.agentslist[astid][agent] = [event.get('Status'), linchan]
                 return
         def ami_agentscomplete(self, astid, event):
                 print 'AMI AgentsComplete', astid
@@ -748,7 +770,9 @@ class XivoCTICommand(BaseCommand):
                         del self.queues_list[astid][queue]['agents'][location]
                 return
 
-        def __update_agent__(self, agentnum, status, paused):
+
+        def __build_agupdate__(self, agentnum, arrgs):
+                arg = None
                 for userinfo in self.ulist.list.itervalues():
                         if 'agentnum' in userinfo and userinfo.get('agentnum') == agentnum:
                                 arg = ':'.join(['agu',
@@ -757,8 +781,12 @@ class XivoCTICommand(BaseCommand):
                                                 userinfo.get('user'),
                                                 userinfo.get('phonenum'),
                                                 userinfo.get('context'),
-                                                '/'.join([agentnum, status, paused])])
-                                self.__send_msg_to_cti_clients__('agentupdate_all=%s' % arg)
+                                                '/'.join(arrgs)])
+                                break
+                if arg is not None:
+                        return 'update-agents=%s' % arg
+                else:
+                        return arg
 
 
         def ami_queuememberstatus(self, astid, event):
@@ -771,8 +799,10 @@ class XivoCTICommand(BaseCommand):
 
                 if astid in self.queues_list and queue in self.queues_list[astid] and location in self.queues_list[astid][queue]['agents']:
                         self.queues_list[astid][queue]['agents'][location] = [paused, status, event.get('Membership')]
-                self.__send_msg_to_cti_clients__('agentupdate=queuememberstatus;%s;%s;%s' % (agentnum, status, paused))
-                self.__update_agent__(agentnum, status, paused)
+
+                msg = self.__build_agupdate__(agentnum, ['queuememberstatus', astid, agentnum, queue, status, paused])
+                self.__send_msg_to_cti_clients__(msg)
+
 
                 # status = 3 => ringing
                 # status = 1 => do not ring anymore => the one who has not gone to '1' among the '3's is the one who answered ...
@@ -787,10 +817,13 @@ class XivoCTICommand(BaseCommand):
                 if location.startswith('Agent/'):
                         if astid in self.queues_list and queue in self.queues_list[astid] and location in self.queues_list[astid][queue]['agents']:
                                 self.queues_list[astid][queue]['agents'][location][0] = event.get('Paused')
+                        agname = location[6:]
                         if paused == '0':
-                                self.__send_msg_to_cti_clients__('agentupdate=joinqueue;%s;%s' % (location[6:], queue))
+                                msg = self.__build_agupdate__(agname, ['joinqueue', astid, agname, queue])
+                                self.__send_msg_to_cti_clients__(msg)
                         else:
-                                self.__send_msg_to_cti_clients__('agentupdate=leavequeue;%s;%s' % (location[6:], queue))
+                                msg = self.__build_agupdate__(agname, ['leavequeue', astid, agname, queue])
+                                self.__send_msg_to_cti_clients__(msg)
                 return
 
         def ami_queueparams(self, astid, event):
@@ -843,7 +876,7 @@ class XivoCTICommand(BaseCommand):
                         self.queues_list[astid][queue] = {'agents' : {}, 'channels' : []}
                 if chan not in self.queues_list[astid][queue]['channels']:
                         self.queues_list[astid][queue]['channels'].append(chan)
-                self.__send_msg_to_cti_clients__('agentupdate=queuechannels;%s;%s;%s' % (astid, queue, count))
+                self.__send_msg_to_cti_clients__('update-queues=queuechannels/%s/%s/%s' % (astid, queue, count))
 
                 print 'AMI Queue JOIN ', queue, chan, count
                 return
@@ -857,7 +890,7 @@ class XivoCTICommand(BaseCommand):
                 if astid in self.queues_list and queue in self.queues_list[astid] and chan in self.queues_list[astid][queue]['channels']:
                         self.queues_list[astid][queue]['channels'].remove(chan)
                         print 'AMI Queue LEAVE', len(self.queues_list[astid][queue]['channels']), count
-                self.__send_msg_to_cti_clients__('agentupdate=queuechannels;%s;%s;%s' % (astid, queue, count))
+                self.__send_msg_to_cti_clients__('update-queues=queuechannels/%s/%s/%s' % (astid, queue, count))
 
                 if astid not in self.queues_channels_list:
                         self.queues_channels_list[astid] = {}
@@ -926,59 +959,59 @@ class XivoCTICommand(BaseCommand):
                 try:
                         capalist = (ucapa & self.capalist_server)
                         if icommand.name == 'history':
-                                if (capalist & CAPA_HISTORY):
+                                if (capalist & CAPA_XLET_HISTORY):
                                         print icommand.args
                                         repstr = self.__build_history_string__(icommand.args[0],
                                                                                icommand.args[1],
                                                                                icommand.args[2])
                         elif icommand.name == 'directory-search':
-                                if (capalist & CAPA_DIRECTORY):
+                                if (capalist & CAPA_XLET_DIRECTORY):
                                         repstr = self.__build_customers__(context, icommand.args)
                         elif icommand.name in ['phones-list', 'phones-add', 'phones-del']:
-                                if (capalist & (CAPA_PEERS | CAPA_HISTORY)):
+                                if (capalist & (CAPA_XLET_CALLS | CAPA_XLET_SWITCHBOARD | CAPA_XLET_SEARCH | CAPA_XLET_HISTORY)):
                                         repstr = self.__build_callerids_hints__(icommand)
                         elif icommand.name == 'availstate':
-                                if (capalist & CAPA_PRESENCE):
+                                if (capalist & CAPA_FUNC_PRESENCE):
                                         repstr = self.__update_availstate__(userinfo, icommand.args[0])
                         elif icommand.name == 'database':
-                                if (capalist & CAPA_DATABASE):
+                                if (capalist & CAPA_FUNC_DATABASE):
                                         repstr = database_update(me, icommand.args)
                         elif icommand.name == 'featuresget':
-                                if (capalist & CAPA_FEATURES):
+                                if (capalist & CAPA_XLET_FEATURES):
 ##                                        if username in userlist[astid]:
 ##                                                userlist[astid][username]['monit'] = icommand.args
                                         repstr = self.__build_features_get__(icommand.args)
                         elif icommand.name == 'featuresput':
-                                if (capalist & CAPA_FEATURES):
+                                if (capalist & CAPA_XLET_FEATURES):
                                         repstr = self.__build_features_put__(icommand.args)
                         elif icommand.name == 'faxsend':
-                                if (capalist & CAPA_FAX):
+                                if (capalist & CAPA_XLET_FAX):
                                         if astid in faxbuffer:
                                                 faxbuffer[astid].append([me, myconn])
                                         repstr = "faxsend=%d" % port_fax
                         elif icommand.name == 'message':
-                                if (capalist & CAPA_MESSAGE):
+                                if (capalist & CAPA_XLET_MESSAGES):
                                         self.__send_msg_to_cti_clients__(self.message_srv2clt('%s/%s' %(astid, username),
                                                                                              '<%s>' % icommand.args[0]))
                         elif icommand.name in ['originate', 'transfer', 'atxfer']:
-                                if (capalist & CAPA_DIAL):
+                                if (capalist & CAPA_XLET_DIAL):
                                         repstr = self.__originate_or_transfer__("%s/%s" %(astid, username),
                                                                                 [icommand.name, icommand.args[0], icommand.args[1]])
                         elif icommand.name == 'hangup':
-                                if (capalist & CAPA_DIAL):
+                                if (capalist & CAPA_XLET_DIAL):
                                         repstr = self.__hangup__("%s/%s" %(astid, username),
                                                                  icommand.args[0], True)
                         elif icommand.name == 'simplehangup':
-                                if (capalist & CAPA_DIAL):
+                                if (capalist & CAPA_XLET_DIAL):
                                         repstr = self.__hangup__("%s/%s" %(astid, username),
                                                                  icommand.args[0], False)
                         elif icommand.name == 'pickup':
                                 print icommand.name, icommand.args
-                                if (capalist & CAPA_DIAL):
+                                if (capalist & CAPA_XLET_DIAL):
                                         z = icommand.args[0].split('/')
                                         self.amis[z[1]].sendcommand('Command', [('Command', 'sip notify event-talk %s' % z[3])])
                         elif icommand.name == 'agents-status':
-                                if (capalist & CAPA_AGENTS):
+                                if (capalist & CAPA_FUNC_AGENTS):
                                         astid = icommand.args[0]
                                         agname = icommand.args[1]
                                         agid = 'Agent/%s' % agname
@@ -986,11 +1019,11 @@ class XivoCTICommand(BaseCommand):
                                         if astid in self.agentslist and agname in self.agentslist[astid]:
                                                 agprop = self.agentslist[astid][agname]
                                                 if agprop[0] == 'AGENT_LOGGEDOFF':
-                                                        self.__send_msg_to_cti_client__(userinfo, 'agentupdate=logout;%s;%s' % (agname, agprop[1]))
-                                                        self.__update_agent__(agname, '', '')
+                                                        msg = self.__build_agupdate__(agname, ['agentlogout', astid, agname, agprop[1]])
+                                                        self.__send_msg_to_cti_clients__(msg)
                                                 else:
-                                                        self.__send_msg_to_cti_client__(userinfo, 'agentupdate=login;%s;%s' % (agname, agprop[1]))
-                                                        self.__update_agent__(agname, '1', '')
+                                                        msg = self.__build_agupdate__(agname, ['agentlogin', astid, agname, agprop[1]])
+                                                        self.__send_msg_to_cti_clients__(msg)
                                         qref_joined = []
                                         qref_unjoined = []
                                         if astid in self.queues_list:
@@ -1000,12 +1033,14 @@ class XivoCTICommand(BaseCommand):
                                                         else:
                                                                 qref_unjoined.append(qref)
                                         for qref in qref_unjoined:
-                                                self.__send_msg_to_cti_client__(userinfo, 'agentupdate=leavequeue;%s;%s' % (agname, qref))
+                                                msg = self.__build_agupdate__(agname, ['leavequeue', astid, agname, qref])
+                                                self.__send_msg_to_cti_clients__(msg)
                                         for qref in qref_joined:
-                                                self.__send_msg_to_cti_client__(userinfo, 'agentupdate=joinqueue;%s;%s' % (agname, qref))
+                                                msg = self.__build_agupdate__(agname, ['joinqueue', astid, agname, qref])
+                                                self.__send_msg_to_cti_clients__(msg)
 
                         elif icommand.name == 'queues-list':
-                                if (capalist & CAPA_AGENTS):
+                                if (capalist & CAPA_FUNC_AGENTS):
                                         astid = icommand.args[0]
                                         if 'agentnum' in userinfo:
                                                 agnum = userinfo['agentnum']
@@ -1015,10 +1050,12 @@ class XivoCTICommand(BaseCommand):
                                                         if agnum in unallowed:
                                                                 allowed = 0
                                                 if astid in self.queues_list:
-                                                        self.__send_msg_to_cti_client__(userinfo, 'queues-list=%s;%d;%s' %(astid, allowed, ','.join(self.queues_list[astid].keys())))
+                                                        self.__send_msg_to_cti_client__(userinfo,
+                                                                                        'queues-list=%s;%d;%s' %(astid, allowed,
+                                                                                                                 ','.join(self.queues_list[astid].keys())))
 
                         elif icommand.name == 'agent':
-                                if (capalist & CAPA_AGENTS):
+                                if (capalist & CAPA_FUNC_AGENTS):
                                         repstr = self.__agent__(userinfo, icommand.args)
 
                 except Exception, exc:
@@ -1140,7 +1177,20 @@ class XivoCTICommand(BaseCommand):
                     if kind == 'phones-list':
                             for userinfo in self.ulist.list.itervalues():
                                     if 'agentnum' in userinfo:
-                                            ag = userinfo.get('agentnum') + '//'
+                                            for ast, qlist in self.agentslist.iteritems():
+                                                    if userinfo.get('agentnum') in qlist:
+                                                            if qlist[userinfo.get('agentnum')][0] != 'AGENT_LOGGEDOFF':
+                                                                    status = '1'
+                                                            else:
+                                                                    status = '0'
+                                                            break
+                                            astqueues = []
+                                            for ast, qlist in self.queues_list.iteritems():
+                                                    for q, qq in qlist.iteritems():
+                                                            if len(qq['agents']) > 0 and ('Agent/%s' % userinfo.get('agentnum')) in qq['agents']:
+                                                                    print ast, q, qq
+                                                                    astqueues.append(q)
+                                            ag = '/'.join(['agentstatus', userinfo.get('astid'), userinfo.get('agentnum'), status, ','.join(astqueues)])
                                     else:
                                             ag = ''
                                     phonenum = 'SIP/' + userinfo['user']
@@ -1162,7 +1212,7 @@ class XivoCTICommand(BaseCommand):
                                                                  phone.build_cidstatus(),
                                                                  phone.build_fullstatlist() + ";")
                                                     self.fullstat_heavies[reqid].append(':'.join(phoneinfo))
-
+                            print self.fullstat_heavies[reqid]
 ##                            for astid in self.configs:
 ##                                    plist_n = self.plist[astid]
 ##                                    plist_normal_keys = filter(lambda j: plist_n.normal[j].towatch, plist_n.normal.iterkeys())
