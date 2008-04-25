@@ -43,30 +43,32 @@ from BackSQL import backmysql
 from BackSQL import backsqlite
 
 # capabilities
-CAPA_XLET_CALLS  = 1 << 0
-CAPA_XLET_CUSTINFO = 1 << 1
-CAPA_XLET_DIAL = 1 << 2
-CAPA_XLET_DIRECTORY = 1 << 3
-CAPA_XLET_FAX = 1 << 4
-CAPA_XLET_FEATURES = 1 << 5
-CAPA_XLET_HISTORY = 1 << 6
-CAPA_XLET_IDENTITY = 1 << 7
-CAPA_XLET_MESSAGES = 1 << 8
-CAPA_XLET_OPERATOR = 1 << 9
-CAPA_XLET_PARKING = 1 << 10
-CAPA_XLET_QUEUES = 1 << 11
-CAPA_XLET_SEARCH = 1 << 12
-CAPA_XLET_SWITCHBOARD = 1 << 13
-CAPA_XLET_VIDEO = 1 << 14
-CAPA_FUNC_AGENTS = 1 << 15
-CAPA_FUNC_DATABASE = 1 << 16
-CAPA_FUNC_PRESENCE = 1 << 17
-CAPA_FUNC_SWITCHBOARD = 1 << 18
+CAPA_XLET_AGENTS = 1 << 0
+CAPA_XLET_CALLS  = 1 << 1
+CAPA_XLET_CUSTINFO = 1 << 2
+CAPA_XLET_DIAL = 1 << 3
+CAPA_XLET_DIRECTORY = 1 << 4
+CAPA_XLET_FAX = 1 << 5
+CAPA_XLET_FEATURES = 1 << 6
+CAPA_XLET_HISTORY = 1 << 7
+CAPA_XLET_IDENTITY = 1 << 8
+CAPA_XLET_MESSAGES = 1 << 9
+CAPA_XLET_OPERATOR = 1 << 10
+CAPA_XLET_PARKING = 1 << 11
+CAPA_XLET_QUEUES = 1 << 12
+CAPA_XLET_SEARCH = 1 << 13
+CAPA_XLET_SWITCHBOARD = 1 << 14
+CAPA_XLET_VIDEO = 1 << 15
+CAPA_FUNC_AGENTS = 1 << 16
+CAPA_FUNC_DATABASE = 1 << 17
+CAPA_FUNC_PRESENCE = 1 << 18
+CAPA_FUNC_SWITCHBOARD = 1 << 19
 
 # this list shall be defined through more options in WEB Interface
 CAPA_ALMOST_ALL = 2**32 - 1
 
 map_capas = {
+        'xlet-agents'       : CAPA_XLET_AGENTS,
         'xlet-calls'        : CAPA_XLET_CALLS,
         'xlet-customerinfo' : CAPA_XLET_CUSTINFO,
         'xlet-dial'         : CAPA_XLET_DIAL,
@@ -134,7 +136,7 @@ class XivoCTICommand(BaseCommand):
         fullstat_heavies = {}
         queues_list = {}
         queues_channels_list = {}
-        agentslist = {}
+        agents_list = {}
 
         def __init__(self, amis, ctiports, queued_threads_pipe):
 		BaseCommand.__init__(self)
@@ -145,7 +147,7 @@ class XivoCTICommand(BaseCommand):
                         'history', 'directory-search',
                         'featuresget', 'featuresput',
                         'phones-list', 'phones-add', 'phones-del',
-                        'agents-status', 'agent', 'queues-list',
+                        'agents-status', 'agent', 'queues-list', 'agents-list',
                         'faxsend',
                         'database',
                         'message',
@@ -700,8 +702,8 @@ class XivoCTICommand(BaseCommand):
         def ami_agentcallbacklogin(self, astid, event):
                 agent = event.get('Agent')
                 loginchan = event.get('Loginchan')
-                if astid in self.agentslist and agent in self.agentslist[astid]:
-                        self.agentslist[astid][agent] = ['AGENT_IDLE', event.get('Loginchan')]
+                if astid in self.agents_list and agent in self.agents_list[astid]:
+                        self.agents_list[astid][agent] = ['AGENT_IDLE', event.get('Loginchan')]
                 msg = self.__build_agupdate__(agent, ['agentlogin', astid, agent, loginchan])
                 print msg
                 self.__send_msg_to_cti_clients__(msg)
@@ -711,8 +713,8 @@ class XivoCTICommand(BaseCommand):
                 loginchan = event.get('Loginchan')
                 if loginchan == 'n/a':
                         loginchan = ''
-                if astid in self.agentslist and agent in self.agentslist[astid]:
-                        self.agentslist[astid][agent] = ['AGENT_LOGGEDOFF', loginchan]
+                if astid in self.agents_list and agent in self.agents_list[astid]:
+                        self.agents_list[astid][agent] = ['AGENT_LOGGEDOFF', loginchan]
                 msg = self.__build_agupdate__(agent, ['agentlogout', astid, agent, loginchan])
                 print msg
                 self.__send_msg_to_cti_clients__(msg)
@@ -733,18 +735,18 @@ class XivoCTICommand(BaseCommand):
 
         def ami_agents(self, astid, event):
                 agent = event.get('Agent')
-                if astid not in self.agentslist:
-                        self.agentslist[astid] = {}
-                if agent not in self.agentslist[astid]:
+                if astid not in self.agents_list:
+                        self.agents_list[astid] = {}
+                if agent not in self.agents_list[astid]:
                         linchan = event.get('LoggedInChan')
                         if linchan == 'n/a':
                                 linchan = ''
-                        self.agentslist[astid][agent] = [event.get('Status'), linchan]
+                        self.agents_list[astid][agent] = [event.get('Status'), linchan]
                 return
         def ami_agentscomplete(self, astid, event):
                 print 'AMI AgentsComplete', astid
-                if astid in self.agentslist:
-                        for aname, aargs in self.agentslist[astid].iteritems():
+                if astid in self.agents_list:
+                        for aname, aargs in self.agents_list[astid].iteritems():
                                 print ' (a) ', aname, aargs
                 return
 
@@ -1016,8 +1018,8 @@ class XivoCTICommand(BaseCommand):
                                         agname = icommand.args[1]
                                         agid = 'Agent/%s' % agname
                                         # lookup the logged in/out status of agent agname and sends it back to the requester
-                                        if astid in self.agentslist and agname in self.agentslist[astid]:
-                                                agprop = self.agentslist[astid][agname]
+                                        if astid in self.agents_list and agname in self.agents_list[astid]:
+                                                agprop = self.agents_list[astid][agname]
                                                 if agprop[0] == 'AGENT_LOGGEDOFF':
                                                         msg = self.__build_agupdate__(agname, ['agentlogout', astid, agname, agprop[1]])
                                                         self.__send_msg_to_cti_clients__(msg)
@@ -1053,7 +1055,13 @@ class XivoCTICommand(BaseCommand):
                                                         self.__send_msg_to_cti_client__(userinfo,
                                                                                         'queues-list=%s;%d;%s' %(astid, allowed,
                                                                                                                  ','.join(self.queues_list[astid].keys())))
-
+                        elif icommand.name == 'agents-list':
+                                if (capalist & CAPA_FUNC_AGENTS):
+                                        astid = icommand.args[0]
+                                        if astid in self.agents_list:
+                                                self.__send_msg_to_cti_client__(userinfo,
+                                                                                'agents-list=%s;%s' %(astid,
+                                                                                                      ','.join(self.agents_list[astid].keys())))
                         elif icommand.name == 'agent':
                                 if (capalist & CAPA_FUNC_AGENTS):
                                         repstr = self.__agent__(userinfo, icommand.args)
@@ -1177,7 +1185,7 @@ class XivoCTICommand(BaseCommand):
                     if kind == 'phones-list':
                             for userinfo in self.ulist.list.itervalues():
                                     if 'agentnum' in userinfo:
-                                            for ast, qlist in self.agentslist.iteritems():
+                                            for ast, qlist in self.agents_list.iteritems():
                                                     if userinfo.get('agentnum') in qlist:
                                                             if qlist[userinfo.get('agentnum')][0] != 'AGENT_LOGGEDOFF':
                                                                     status = '1'
