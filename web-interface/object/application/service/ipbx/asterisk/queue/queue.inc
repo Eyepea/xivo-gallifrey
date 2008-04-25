@@ -12,6 +12,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 	var $_extenumbers	= false;
 	var $_dialstatus	= false;
 	var $_contextnummember	= false;
+	var $_contextmember	= false;
 	var $_queuemember	= null;
 	var $_musiconhold	= array();
 	var $_announce		= array();
@@ -38,7 +39,8 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		if(($this->_extensions = &$this->_service->get_module('extensions')) === false
 		|| ($this->_extenumbers = $this->get_abstract('extenumbers',array('type' => 'queue'))) === false
 		|| ($this->_dialstatus = $this->get_abstract('dialstatus',array('category' => 'queue'))) === false
-		|| ($this->_contextnummember = $this->get_abstract('contextnummember',array('type' => 'queue'))) === false)
+		|| ($this->_contextnummember = $this->get_abstract('contextnummember',array('type' => 'queue'))) === false
+		|| ($this->_contextmember = $this->get_abstract('contextmember',array('type' => 'queue'))) === false)
 			return(false);
 
 		$this->_queuemember = &$this->_service->get_module('queuemember');
@@ -67,6 +69,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		$this->_get_agent();
 		$this->_get_dialstatus($this->_info['qfeatures']['id']);
 		$this->_get_contextnummember($this->_info['qfeatures']['id']);
+		$this->_get_contextmember($this->_info['queue']['name']);
 
 		return($this->_info);
 	}
@@ -269,6 +272,8 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 			$this->set_dialstatus($arr['dialstatus']);
 
 		$this->set_contextnummember($context,$number);
+
+		$this->set_contextmember();
 
 		return(($this->get_errnb() < 1));
 	}
@@ -497,6 +502,16 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		return(true);
 	}
 
+	function set_contextmember()
+	{
+		$rs = array();
+		$rs['queue-context']['context'] = (string) $this->get_result_var('queue','context');
+		$rs['queue-context']['typeval'] = (string) $this->get_result_var('queue','name');
+		$rs['queue-context']['varname'] = 'context';
+
+		return(parent::set_contextmember($rs));
+	}
+
 	function add()
 	{
 		$r = true;
@@ -507,14 +522,15 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 		if($this->get_errnb() > 0
 		|| ($qfeaturesid = $this->add_queuefeatures()) === false
-		|| $this->add_queue() === false
+		|| ($queuename = $this->add_queue()) === false
 		|| $this->add_macro('exten') === false
 		|| $this->add_extenumbers($qfeaturesid) === false
 		|| $this->add_user() === false
 		|| $this->add_agentgroup() === false
 		|| $this->add_agent() === false
 		|| $this->add_dialstatus($qfeaturesid) === false
-		|| $this->add_contextnummember($qfeaturesid) === false)
+		|| $this->add_contextnummember($qfeaturesid) === false
+		|| $this->add_contextmember($queuename) === false)
 		{
 			$r = false;
 			if($qfeaturesid !== null)
@@ -639,6 +655,9 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 				case 'contextnummember':
 					$this->_contextnummember->reverse_add();
 					break;
+				case 'contextmember':
+					$this->_contextmember->reverse_add();
+					break;
 			}
 		}
 
@@ -658,7 +677,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 			$this->_status = '';
 			return(false);
 		}
-		else if($this->edit_queue() === false)
+		else if(($queuename = $this->edit_queue()) === false)
 		{
 			$this->_reverse_edit();
 			$this->_status = '';
@@ -696,7 +715,8 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		|| $this->edit_agentgroup($this->_info['qfeatures']['name']) === false
 		|| $this->edit_agent($this->_info['qfeatures']['name']) === false
 		|| $this->edit_dialstatus() === false
-		|| $this->edit_contextnummember() === false)
+		|| $this->edit_contextnummember() === false
+		|| $this->edit_contextmember($queuename) === false)
 		{
 			$this->_reverse_edit();
 			$this->_status = '';
@@ -882,6 +902,9 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 				case 'contextnummember':
 					$this->_contextnummember->reverse_edit($this->_status);
 					break;
+				case 'contextmember':
+					$this->_contextmember->reverse_edit($this->_status);
+					break;
 			}
 		}
 
@@ -901,7 +924,8 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		|| $this->delete_agentgroup($this->_info['qfeatures']['name']) === false
 		|| $this->delete_agent($this->_info['qfeatures']['name']) === false
 		|| $this->delete_dialstatus() === false
-		|| $this->delete_contextnummember() === false)
+		|| $this->delete_contextnummember() === false
+		|| $this->delete_contextmember($this->_info['qfeatures']['name']) === false)
 		{
 			$this->_reverse_delete();
 			$this->_status = '';
@@ -1039,6 +1063,9 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 					break;
 				case 'contextnummember':
 					$this->_contextnummember->add_origin();
+					break;
+				case 'contextmember':
+					$this->_contextmember->add_origin_list();
 					break;
 			}
 		}

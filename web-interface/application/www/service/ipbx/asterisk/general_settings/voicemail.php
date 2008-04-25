@@ -51,16 +51,17 @@ if(xivo_issa('format',$element['voicemail']) === true
 							      $info['voicemail']['format']['var_val']);
 }
 
+$dhtml = &$_HTML->get_module('dhtml');
+$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/general.js');
+$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+
 $_HTML->set_var('fm_save',$fm_save);
 $_HTML->set_var('element',$element);
 $_HTML->set_var('error',$error);
 $_HTML->set_var('voicemail',$info['voicemail']);
 $_HTML->set_var('zonemessages',$info['zonemessages']);
 $_HTML->set_var('timezone_list',$appzonemessages->get_timezones());
-
-$dhtml = &$_HTML->get_module('dhtml');
-$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/general.js');
-$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+$_HTML->set_var('context_list',$appgeneralvoicemail->get_context_list());
 
 $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

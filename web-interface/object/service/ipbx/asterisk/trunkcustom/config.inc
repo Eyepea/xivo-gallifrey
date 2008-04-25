@@ -9,6 +9,7 @@ $array['element']['name']['default'] = '';
 
 $array['element']['context'] = array();
 $array['element']['context']['default'] = '';
+$array['element']['context']['null'] = true;
 
 $array['element']['interface'] = array();
 $array['element']['interface']['default'] = '';

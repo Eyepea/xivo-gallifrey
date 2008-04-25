@@ -7,7 +7,9 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 	var $_protocol		= false;
 	var $_trunkfeatures	= false;
 	var $_register		= false;
+	var $_contextmember	= false;
 	var $_param		= array('protocol'	=> '');
+	var $_contextlist	= array();
 
 	function xivo_application_service_asterisk_trunk(&$service,&$dso,$param=array(),$components=true)
 	{
@@ -62,13 +64,16 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 
 		if($this->_param['protocol'] === XIVO_SRE_IPBX_AST_PROTO_SIP
 		&& ($this->_appsip = &$this->_service->get_apprealstatic('sip')) !== false
-		&& ($this->_register = $this->_appsip->get_module('register')) !== false)
+		&& ($this->_register = $this->_appsip->get_module('register')) !== false
+		&& ($this->_contextmember = $this->get_abstract('contextmember',array('type' => 'trunksip'))) !== false)
 			return(true);
 		else if($this->_param['protocol'] === XIVO_SRE_IPBX_AST_PROTO_IAX
 		&& ($this->_appiax = &$this->_service->get_apprealstatic('iax')) !== false
-		&& ($this->_register = $this->_appiax->get_module('register')) !== false)
+		&& ($this->_register = $this->_appiax->get_module('register')) !== false
+		&& ($this->_contextmember = $this->get_abstract('contextmember',array('type' => 'trunkiax'))) !== false)
 			return(true);
-		else if($this->_param['protocol'] === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
+		else if($this->_param['protocol'] === XIVO_SRE_IPBX_AST_PROTO_CUSTOM
+		&& ($this->_contextmember = $this->get_abstract('contextmember',array('type' => 'trunkcustom'))) !== false)
 		{
 			$this->_register = false;
 			return(true);
@@ -97,6 +102,7 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 
 		$this->_origin['trunkfeatures'] = $this->_trunkfeatures->get_origin();
 		$this->_origin['protocol'] = $this->_protocol->get_origin();
+		$this->_get_contextmember($this->_info['protocol']['id']);
 
 		return($this->_info);
 	}
@@ -287,6 +293,8 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 		if(xivo_issa('register',$arr) === true)
 			$this->set_register($arr['register']);
 
+		$this->set_contextmember();
+
 		return(($this->get_errnb() < 1));
 	}
 
@@ -358,6 +366,16 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 		return($r);
 	}
 
+	function set_contextmember()
+	{
+		$rs = array();
+		$rs['trunk-context']['context'] = (string) $this->get_result_var('protocol','context');
+		$rs['trunk-context']['typeval'] = 0;
+		$rs['trunk-context']['varname'] = 'context';
+
+		return(parent::set_contextmember($rs));
+	}
+
 	function add()
 	{
 		$r = true;
@@ -369,7 +387,8 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 		if($this->get_errnb() > 0
 		|| ($protocolid = $this->add_protocol()) === false
 		|| ($registerid = $this->add_register()) === false
-		|| $this->add_trunkfeatures($protocolid,$registerid) === false)
+		|| $this->add_trunkfeatures($protocolid,$registerid) === false
+		|| $this->add_contextmember($protocolid) === false)
 		{
 			$r = false;
 			if($protocolid !== null)
@@ -452,6 +471,9 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 					if(is_object($this->_register) === true)
 						$this->_register->delete_register($this->_status,$val);
 					break;
+				case 'contextmember':
+					$this->_contextmember->reverse_add();
+					break;
 			}
 		}
 
@@ -468,7 +490,8 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 		if($this->get_errnb() > 0
 		|| $this->edit_protocol() === false
 		|| ($registerid = $this->edit_register()) === false
-		|| $this->edit_trunkfeatures($registerid) === false)
+		|| $this->edit_trunkfeatures($registerid) === false
+		|| $this->edit_contextmember() === false)
 		{
 			$r = false;
 			$this->_reverse_edit();
@@ -534,6 +557,14 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 		return(($this->_return['register'] = $this->_register->get_return_var('register')));
 	}
 
+	function edit_contextmember()
+	{
+		if(xivo_issa('protocol',$this->_info) === false)
+			return(false);
+
+		return(parent::edit_contextmember($this->_info['protocol']['id']));
+	}
+
 	function _reverse_edit()
 	{
 		if($this->get_errnb() > 0
@@ -576,6 +607,9 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 					else
 						$this->_register->edit_origin($this->_origin['register']);
 					break;
+				case 'contextmember':
+					$this->_contextmember->reverse_edit($this->_status);
+					break;
 			}
 		}
 
@@ -591,7 +625,8 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 
 		if($this->delete_protocol() === false
 		|| $this->delete_register() === false
-		|| $this->delete_trunkfeatures() === false)
+		|| $this->delete_trunkfeatures() === false
+		|| $this->delete_contextmember() === false)
 		{
 			$r = false;
 			$this->_reverse_delete();
@@ -680,6 +715,9 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 					if(isset($this->_origin['register']) === false
 					&& $this->_origin['register'] !== false)
 						$this->_register->add_origin($this->_origin['register']);
+					break;
+				case 'contextmember':
+					$this->_contextmember->add_origin_list();
 					break;
 			}
 		}

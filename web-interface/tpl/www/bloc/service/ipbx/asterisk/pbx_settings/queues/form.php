@@ -7,6 +7,9 @@
 	$user = $this->get_var('user');
 	$agentgroup = $this->get_var('agentgroup');
 	$agent = $this->get_var('agent');
+	$moh_list = $this->get_var('moh_list');
+	$announce_list = $this->get_var('announce_list');
+	$context_list = $this->get_var('context_list');
 ?>
 
 <div id="sb-part-first">
@@ -15,23 +18,23 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_qfeatures_number'),'name' => 'qfeatures[number]','labelid' => 'qfeatures-number','size' => 15,'default' => $element['qfeatures']['number']['default'],'value' => $info['qfeatures']['number']));?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_queue_strategy'),'name' => 'queue[strategy]','labelid' => 'queue-strategy','key' => false,'default' => $element['queue']['strategy']['default'],'value' => $info['queue']['strategy']),$element['queue']['strategy']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_queue_strategy'),'name' => 'queue[strategy]','labelid' => 'queue-strategy','key' => false,'bbf' => 'fm_queue_strategy-opt-','default' => $element['queue']['strategy']['default'],'value' => $info['queue']['strategy']),$element['queue']['strategy']['value']);?>
 
 <?php
 
-if(($context_list = $this->get_var('context_list')) !== false):
+if($context_list !== false):
 	echo $form->select(array('desc' => $this->bbf('fm_qfeatures_context'),'name' => 'qfeatures[context]','labelid' => 'qfeatures-context','key' => 'identity','altkey' => 'name','default' => $element['qfeatures']['context']['default'],'value' => $info['qfeatures']['context']),$context_list);
 else:
 	echo '<div id="fd-qfeatures-context" class="txt-center">',$url->href_html($this->bbf('create_context'),'service/ipbx/system_management/context','act=add'),'</div>';
 endif;
 
-if(($moh_list = $this->get_var('moh_list')) !== false):
+if($moh_list !== false):
 
 	echo $form->select(array('desc' => $this->bbf('fm_queue_musiconhold'),'name' => 'queue[musiconhold]','labelid' => 'queue-musiconhold','key' => 'category','empty' => true,'default' => $element['queue']['musiconhold']['default'],'value' => $info['queue']['musiconhold']),$moh_list);
 	
 endif;
 
-if(($announce_list = $this->get_var('announce_list')) !== false):
+if($announce_list !== false):
 	echo $form->select(array('desc' => $this->bbf('fm_queue_announce'),'name' => 'queue[announce]','labelid' => 'queue-announce','empty' => true,'default' => $element['queue']['announce']['default'],'value' => $info['queue']['announce']),$announce_list);
 else:
 	echo '<div class="txt-center">',$url->href_html($this->bbf('add_announce'),'service/ipbx/pbx_services/sounds',array('act' => 'list','dir' => 'acd')),'</div>';
@@ -218,7 +221,13 @@ endif;
 
 <div id="sb-part-last" class="b-nodisplay">
 
-<?=$form->text(array('desc' => $this->bbf('fm_queue_context'),'name' => 'queue[context]','labelid' => 'queue-context','size' => 15,'default' => $element['queue']['context']['default'],'value' => $info['queue']['context']));?>
+<?php
+
+if($context_list !== false):
+	echo $form->select(array('desc' => $this->bbf('fm_queue_context'),'name' => 'queue[context]','labelid' => 'queue-context','key' => 'identity','altkey' => 'name','empty' => true,'default' => $element['queue']['context']['default'],'value' => $info['queue']['context']),$context_list);
+endif;
+
+?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_queue_servicelevel'),'name' => 'queue[servicelevel]','labelid' => 'queue-servicelevel','size' => 15,'default' => $element['queue']['servicelevel']['default'],'value' => $info['queue']['servicelevel']));?>
 

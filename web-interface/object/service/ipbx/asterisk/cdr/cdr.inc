@@ -59,6 +59,9 @@ class xivo_service_asterisk_cdr extends xivo_service_asterisk_abstract
 		if(xivo_haslen($arr,'amaflags') === true)
 			$search['amaflags'] = $arr['amaflags'];
 
+		if(xivo_haslen($arr,'dcontext') === true)
+			$search['dcontext'] = $arr['dcontext'];
+
 		if(xivo_haslen($arr,'src') === true && isset($arr['srcformat']) === true)
 			$search['src'] = array('pattern' => $arr['src'],'type' => $arr['srcformat']);
 

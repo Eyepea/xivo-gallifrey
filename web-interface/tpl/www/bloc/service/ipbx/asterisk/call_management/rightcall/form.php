@@ -5,6 +5,7 @@
 
 	$info = $this->get_var('info');
 	$element = $this->get_var('element');
+	$context_list = $this->get_var('context_list');
 
 	$rcalluser = $this->get_var('rcalluser');
 	$rcallgroup = $this->get_var('rcallgroup');
@@ -16,6 +17,16 @@
 <div id="sb-part-first">
 
 <?=$form->text(array('desc' => $this->bbf('fm_rightcall_name'),'name' => 'rightcall[name]','labelid' => 'rightcall-name','size' => 15,'default' => $element['rightcall']['name']['default'],'value' => $info['rightcall']['name']));?>
+
+<?php
+
+if($context_list !== false):
+	echo $form->select(array('desc' => $this->bbf('fm_rightcall_context'),'name' => 'rightcall[context]','labelid' => 'rightcall-context','key' => 'identity','altkey' => 'name','default' => $element['rightcall']['context']['default'],'value' => $info['rightcall']['context']),$context_list);
+else:
+	echo '<div id="fd-rightcall-context" class="txt-center">',$url->href_html($this->bbf('create_context'),'service/ipbx/system_management/context','act=add'),'</div>';
+endif;
+
+?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_rightcall_passwd'),'name' => 'rightcall[passwd]','labelid' => 'rightcall-passwd','size' => 15,'default' => $element['rightcall']['passwd']['default'],'value' => $info['rightcall']['passwd']));?>
 

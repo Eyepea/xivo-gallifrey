@@ -5,6 +5,7 @@
 	$info = $this->get_var('info');
 	$element = $this->get_var('element');
 	$list = $this->get_var('list');
+	$context_list = $this->get_var('context_list');
 
 	$linked = $info['schedule']['linked'];
 	$typetrue = $info['schedule']['typetrue'];
@@ -12,6 +13,16 @@
 ?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_schedule_name'),'name' => 'schedule[name]','labelid' => 'schedule-name','size' => 15,'default' => $element['schedule']['name']['default'],'value' => $info['schedule']['name']));?>
+
+<?php
+
+if($context_list !== false):
+	echo $form->select(array('desc' => $this->bbf('fm_schedule_context'),'name' => 'schedule[context]','labelid' => 'schedule-context','key' => 'identity','altkey' => 'name','default' => $element['schedule']['context']['default'],'value' => $info['schedule']['context']),$context_list);
+else:
+	echo '<div id="fd-schedule-context" class="txt-center">',$url->href_html($this->bbf('create_context'),'service/ipbx/system_management/context','act=add'),'</div>';
+endif;
+
+?>
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_schedule_publicholiday'),'name' => 'schedule[publicholiday]','labelid' => 'publicholiday','checked' => $info['schedule']['publicholiday'],'default' => $element['schedule']['publicholiday']['default']));?>
 

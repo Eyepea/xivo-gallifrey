@@ -93,6 +93,13 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		else if(($context = &$this->_service->get_module('context')) === false)
 			return(false);
 
+		if($order === null)
+		{
+			$order = array();
+			$order['displayname'] = SORT_ASC;
+			$order['name'] = SORT_ASC;
+		}
+
 		return(($this->_contextlist = $context->get_all($disable,true,$order,$limit,$assoc)));
 	}
 
@@ -152,6 +159,17 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 			$this->_origin['contextnummember'] = $this->_contextnummember->get_origin();
 
 		return($this->_info['contextnummember']);
+	}
+
+	function _get_contextmember($typeval='',$varname='')
+	{
+		$this->_info['contextmember'] = false;
+		$this->_origin['contextmember'] = false;
+
+		if(($this->_info['contextmember'] = $this->_contextmember->get($typeval,$varname)) !== false)
+			$this->_origin['contextmember'] = $this->_contextmember->get_origin();
+
+		return($this->_info['contextmember']);
 	}
 
 	function set_extenumbers($action,$number,$context='',$typeval='')
@@ -215,6 +233,16 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		return($r);
 	}
 
+	function set_contextmember($list)
+	{
+		if(($r = $this->_contextmember->set($list)) === false)
+			$this->_set_error('contextmember',$this->_contextmember->get_error());
+
+		$this->_set_result('contextmember',$this->_contextmember->get_result());
+
+		return($r);
+	}
+
 	function add_extenumbers($typeval)
 	{
 		if(($rs = $this->_extenumbers->add($typeval)) === null || $rs === false)
@@ -254,6 +282,15 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		$r = $this->_contextnummember->add($typeval);
 
 		$this->_return['contextnummember'] = $this->_contextnummember->get_return();
+
+		return($r);
+	}
+
+	function add_contextmember($typeval='')
+	{
+		$r = $this->_contextmember->add($typeval);
+
+		$this->_return['contextmember'] = $this->_contextmember->get_return();
 
 		return($r);
 	}
@@ -303,6 +340,15 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		$r = $this->_contextnummember->edit($this->_status,$typeval);
 
 		$this->_return['contextnummember'] = $this->_contextnummember->get_return();
+
+		return($r);
+	}
+
+	function edit_contextmember($typeval='')
+	{
+		$r = $this->_contextmember->edit($this->_status,$typeval);
+
+		$this->_return['contextmember'] = $this->_contextmember->get_return();
 
 		return($r);
 	}
@@ -366,6 +412,16 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 
 		if($this->_status === 'delete')
 			$this->_return['contextnummember'] = $r;
+
+		return($r);
+	}
+
+	function delete_contextmember()
+	{
+		$r = $this->_contextmember->delete($this->_status);
+
+		if($this->_status === 'delete')
+			$this->_return['contextmember'] = $r;
 
 		return($r);
 	}

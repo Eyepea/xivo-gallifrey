@@ -15,6 +15,9 @@ $array['element'] = array();
 $array['element']['name'] = array();
 $array['element']['name']['default'] = '';
 
+$array['element']['context'] = array();
+$array['element']['context']['default'] = '';
+
 $array['element']['timebeg'] = array();
 $array['element']['timebeg']['default'] = '*';
 $array['element']['timebeg']['setdef'] = true;
@@ -132,6 +135,7 @@ $array['element']['commented']['set'] = true;
 
 $array['filter'] = array();
 $array['filter']['name'] = array('maxlen' => 128,'regexp' => '/^[a-z0-9_-]+$/i');
+$array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context');
 $array['filter']['timebeg'] = array('set' => false,'chk' => 2,'regexp' => '/^(?:(?:[0-1]?[0-9]|2[0-3])\:(?:0?[0-9]|[1-5][0-9])|\*)$/');
 $array['filter']['timeend'] = array('set' => false,'chk' => 2,'regexp' => '/^(?:[0-1]?[0-9]|2[0-3])\:(?:0?[0-9]|[1-5][0-9])$/');
 $array['filter']['daynamebeg'] = array('set' => false,'chk' => 2,'key' => array('mon','tue','wed','thu','fri','sat','sun'));

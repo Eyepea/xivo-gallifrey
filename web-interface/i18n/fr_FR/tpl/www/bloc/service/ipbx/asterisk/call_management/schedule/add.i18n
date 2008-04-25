@@ -4,6 +4,12 @@ Horaires > Ajouter
 ; fm_schedule_name
 Nom :
 
+; fm_schedule_context
+Contexte :
+
+; create_context
+Créer un contexte
+
 ; fm_schedule_publicholiday
 Férié :
 

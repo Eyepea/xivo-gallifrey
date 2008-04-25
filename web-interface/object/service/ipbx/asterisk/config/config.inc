@@ -154,6 +154,9 @@ $array['module']['cdr']['datastorage']['custom'] = true;
 $array['module']['context'] = array();
 $array['module']['context']['datastorage'] = true;
 
+$array['module']['contextmember'] = array();
+$array['module']['contextmember']['datastorage'] = true;
+
 $array['module']['contextnumbers'] = array();
 $array['module']['contextnumbers']['datastorage'] = true;
 

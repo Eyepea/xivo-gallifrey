@@ -11,7 +11,7 @@ Call permissions
 DID:
 
 ; fm_incall_context
-Company:
+Context:
 
 ; create_context
 Create a context

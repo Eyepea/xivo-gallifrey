@@ -4,6 +4,7 @@
 
 	$info = $this->get_var('info');
 	$element = $this->get_var('element');
+	$context_list = $this->get_var('context_list');
 
 	$allow = $info['protocol']['allow'];
 
@@ -42,6 +43,14 @@
 <?=$form->text(array('desc' => '&nbsp;','name' => 'protocol[host-static]','labelid' => 'protocol-host-static','size' => 15,'default' => $element['protocol']['host-static']['default'],'value' => ($host_static === true ? $host : '')));?>
 
 <?=$form->select(array('desc' => $this->bbf('fm_protocol_type'),'name' => 'protocol[type]','labelid' => 'protocol-type','bbf' => 'fm_protocol_type-','key' => false,'default' => $element['protocol']['type']['default'],'value' => $info['protocol']['type']),$element['protocol']['type']['value'],'onchange="xivo_ast_chg_trunk_type(this);"');?>
+
+<?php
+
+if($context_list !== false):
+	echo $form->select(array('desc' => $this->bbf('fm_protocol_context'),'name' => 'protocol[context]','labelid' => 'protocol-context','key' => 'identity','altkey' => 'name','empty' => true,'default' => $element['protocol']['context']['default'],'value' => $info['protocol']['context']),$context_list);
+endif;
+
+?>
 
 </div>
 
@@ -99,8 +108,6 @@
 </div>
 
 <div id="sb-part-last" class="b-nodisplay">
-
-<?=$form->text(array('desc' => $this->bbf('fm_protocol_context'),'name' => 'protocol[context]','labelid' => 'protocol-context','size' => 15,'default' => $element['protocol']['context']['default'],'value' => $info['protocol']['context']));?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_protocol_fromuser'),'name' => 'protocol[fromuser]','labelid' => 'protocol-fromuser','size' => 15,'default' => $element['protocol']['fromuser']['default'],'value' => $info['protocol']['fromuser']));?>
 

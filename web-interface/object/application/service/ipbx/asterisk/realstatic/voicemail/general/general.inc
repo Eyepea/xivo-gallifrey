@@ -9,6 +9,8 @@ class xivo_application_service_asterisk_realstatic_voicemail_general extends xiv
 	var $_category		= 'general';
 	var $_cat_metric	= 0;
 	var $_filename		= 'voicemail.conf';
+	var $_contextmember	= false;
+	var $_contextlist	= array();
 
 	function xivo_application_service_asterisk_realstatic_voicemail_general(&$service)
 	{
@@ -17,17 +19,69 @@ class xivo_application_service_asterisk_realstatic_voicemail_general extends xiv
 
 	function _load_config()
 	{
+		if(($this->_contextmember = $this->get_abstract('contextmember',array('type' => 'generalvoicemail'))) === false)
+			return(false);
+
 		return(parent::_load_config(dirname(__FILE__)));
 	}
 
 	function _chk_pre_save($rs)
 	{
 		if(is_array($rs) === false
-		|| isset($rs['var_name'],$rs['var_val']) === false)
+		|| isset($rs['var_name']) === false
+		|| array_key_exists('var_val',$rs) === false)
 			return(null);
 
 		switch($rs['var_name'])
 		{
+			case 'cidinternalcontexts':
+				$this->_get_contextmember(null,'cidinternalcontexts');
+
+				$res = array();
+				$res['generalvoicemail-cidinternalcontexts'] = array();
+				$res['generalvoicemail-cidinternalcontexts']['context'] = $rs['var_val'];
+				$res['generalvoicemail-cidinternalcontexts']['varname'] = 'cidinternalcontexts';
+
+				if($this->set_contextmember($res) === false
+				|| $this->edit_contextmember() === false)
+					return(false);
+				break;
+			case 'callback':
+				$this->_get_contextmember(null,'callback');
+
+				$res = array();
+				$res['generalvoicemail-callback'] = array();
+				$res['generalvoicemail-callback']['context'] = $rs['var_val'];
+				$res['generalvoicemail-callback']['varname'] = 'callback';
+
+				if($this->set_contextmember($res) === false
+				|| $this->edit_contextmember() === false)
+					return(false);
+				break;
+			case 'dialout':
+				$this->_get_contextmember(null,'dialout');
+
+				$res = array();
+				$res['generalvoicemail-dialout'] = array();
+				$res['generalvoicemail-dialout']['context'] = $rs['var_val'];
+				$res['generalvoicemail-dialout']['varname'] = 'dialout';
+
+				if($this->set_contextmember($res) === false
+				|| $this->edit_contextmember() === false)
+					return(false);
+				break;
+			case 'exitcontext':
+				$this->_get_contextmember(null,'exitcontext');
+
+				$res = array();
+				$res['generalvoicemail-exitcontext'] = array();
+				$res['generalvoicemail-exitcontext']['context'] = $rs['var_val'];
+				$res['generalvoicemail-exitcontext']['varname'] = 'exitcontext';
+
+				if($this->set_contextmember($res) === false
+				|| $this->edit_contextmember() === false)
+					return(false);
+				break;
 			case 'format':
 				if(is_array($rs['var_val']) === true)
 				{

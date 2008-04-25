@@ -19,6 +19,12 @@ Appels sortants
 ; fm_rightcall_name
 Nom :
 
+; fm_rightcall_context
+Contexte :
+
+; create_context
+Créer un contexte
+
 ; fm_rightcall_passwd
 Mot de passe :
 

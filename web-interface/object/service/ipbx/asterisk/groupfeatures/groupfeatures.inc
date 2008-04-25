@@ -110,9 +110,9 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 		return($this->_dso->edit($id,$arr,$delete));
 	}
 
-	function edit_where($id,$arr,$delete=false)
+	function edit_where($where,$arr,$delete=false,$id=null,$chkunique=true)
 	{
-		return(parent::edit_where($id,$arr,$delete));
+		return(parent::edit_where($where,$arr,$delete,$id,$chkunique));
 	}
 
 	function delete($id)
@@ -120,9 +120,9 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 		return($this->edit($id,array('deleted' => true)));
 	}
 
-	function delete_where($id)
+	function delete_where($where)
 	{
-		return(parent::edit_where($id,array('deleted' => true)));
+		return(parent::edit_where($where,array('deleted' => true),null,null,false));
 	}
 
 	function recover($id)
@@ -130,9 +130,9 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 		return($this->edit($id,array('deleted' => false),true));
 	}
 
-	function recover_where($id)
+	function recover_where($where)
 	{
-		return(parent::edit_where($id,array('deleted' => true),true));
+		return(parent::edit_where($where,array('deleted' => true),true,null,false));
 	}
 
 	function get_nb($arr=null,$delete=false)

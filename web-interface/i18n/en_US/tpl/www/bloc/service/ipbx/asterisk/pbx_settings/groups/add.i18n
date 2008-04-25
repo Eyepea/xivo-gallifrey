@@ -20,10 +20,28 @@ Name:
 Number:
 
 ; fm_queue_strategy
-Strategy:
+Ring strategy:
+
+; fm_queue_strategy-opt-leastrecent
+Least recent
+
+; fm_queue_strategy-opt-fewestcalls
+Fewest calls
+
+; fm_queue_strategy-opt-roundrobin
+Round robin
+
+; fm_queue_strategy-opt-rrmemory
+Round robin memory
+
+; fm_queue_strategy-opt-random
+Random
+
+; fm_queue_strategy-opt-ringall
+Ring all
 
 ; fm_gfeatures_context
-Company:
+Context:
 
 ; create_context
 Create a context

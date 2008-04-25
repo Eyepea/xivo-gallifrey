@@ -6,6 +6,8 @@
 	$info = $this->get_var('info');
 	$user = $this->get_var('user');
 	$rightcall = $this->get_var('rightcall');
+	$moh_list = $this->get_var('moh_list');
+	$context_list = $this->get_var('context_list');
 ?>
 
 <div id="sb-part-first" class="b-nodisplay">
@@ -14,11 +16,11 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_gfeatures_number'),'name' => 'gfeatures[number]','labelid' => 'gfeatures-number','size' => 15,'default' => $element['gfeatures']['number']['default'],'value' => $info['gfeatures']['number']));?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_queue_strategy'),'name' => 'queue[strategy]','labelid' => 'queue-strategy','key' => false,'default' => $element['queue']['strategy']['default'],'value' => $info['queue']['strategy']),$element['queue']['strategy']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_queue_strategy'),'name' => 'queue[strategy]','labelid' => 'queue-strategy','key' => false,'bbf' => 'fm_queue_strategy-opt-','default' => $element['queue']['strategy']['default'],'value' => $info['queue']['strategy']),$element['queue']['strategy']['value']);?>
 
 <?php
 
-if(($context_list = $this->get_var('context_list')) !== false):
+if($context_list !== false):
 	echo $form->select(array('desc' => $this->bbf('fm_gfeatures_context'),'name' => 'gfeatures[context]','labelid' => 'gfeatures-context','key' => 'identity','altkey' => 'name','default' => $element['gfeatures']['context']['default'],'value' => $info['gfeatures']['context']),$context_list);
 else:
 	echo '<div id="fd-gfeatures-context" class="txt-center">',$url->href_html($this->bbf('create_context'),'service/ipbx/system_management/context','act=add'),'</div>';
@@ -32,7 +34,7 @@ endif;
 
 <?php
 
-if(($moh_list = $this->get_var('moh_list')) !== false):
+if($moh_list !== false):
 
 	echo $form->select(array('desc' => $this->bbf('fm_queue_musiconhold'),'name' => 'queue[musiconhold]','labelid' => 'queue-musiconhold','key' => 'category','empty' => true,'default' => $element['queue']['musiconhold']['default'],'value' => $info['queue']['musiconhold']),$moh_list);
 	

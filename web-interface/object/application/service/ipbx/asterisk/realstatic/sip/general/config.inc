@@ -233,8 +233,8 @@ $array['element']['notifyringing']['default'] = 'yes';
 $array['element']['notifyringing']['set'] = true;
 
 $array['element']['context'] = array();
-$array['element']['context']['default'] = 'default';
-$array['element']['context']['setdef'] = true;
+$array['element']['context']['default'] = '';
+$array['element']['context']['null'] = true;
 
 $array['element']['nat'] = array();
 $array['element']['nat']['value'] = array('no','yes','never','route');

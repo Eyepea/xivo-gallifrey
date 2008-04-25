@@ -7,13 +7,27 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 	var $_origin		= array();
 	var $_status		= '';
 	var $_schedule		= false;
+	var $_contextmember	= false;
 	var $_sound		= array();
+	var $_contextlist	= array();
 
-	function xivo_application_service_asterisk_schedule(&$service)
+	function xivo_application_service_asterisk_schedule(&$service,$param=null,$components=true)
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
 
 		if(($this->_schedule = &$this->_service->get_module('schedule')) === false)
+			return(false);
+		else if((bool) $components === true)
+			$this->load_components();
+
+		return(true);
+	}
+
+	function load_components()
+	{
+		$this->_components = true;
+
+		if(($this->_contextmember = $this->get_abstract('contextmember',array('type' => 'schedule'))) === false)
 			return(false);
 
 		return(true);
@@ -27,6 +41,11 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 			return(false);
 
 		$this->_origin['schedule'] = $this->_schedule->get_origin();
+
+		if($this->_components === false)
+			return($this->_info);
+
+		$this->_get_contextmember($this->_info['schedule']['id']);
 
 		return($this->_info);
 	}
@@ -203,7 +222,9 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 			return(false);
 
 		$this->set_schedule($action,$arr['schedule']);
-	
+
+		$this->set_contextmember();
+
 		return(($this->get_errnb() < 1));
 	}
 
@@ -277,16 +298,33 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 		return($r);
 	}
 
+	function set_contextmember()
+	{
+		$rs = array();
+		$rs['schedule-context']['context'] = (string) $this->get_result_var('schedule','context');
+		$rs['schedule-context']['typeval'] = 0;
+		$rs['schedule-context']['varname'] = 'context';
+
+		return(parent::set_contextmember($rs));
+	}
+
 	function add()
 	{
 		$r = true;
 
 		$this->_status = 'add';
 		$this->_return = array();
+		$scheduleid = null;
 
 		if($this->get_errnb() > 0
-		|| $this->add_schedule() === false)
+		|| ($scheduleid = $this->add_schedule()) === false
+		|| $this->add_contextmember($scheduleid) === false)
+		{
 			$r = false;
+
+			if($scheduleid !== null)
+				$this->_reverse_add($scheduleid);
+		}
 
 		$this->_status = '';
 
@@ -299,9 +337,35 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 		|| $rs === false)
 			return(false);
 
-		$this->_return['schedule'] = $this->_schedule->add($rs);
+		return(($this->_return['schedule'] = $this->_schedule->add($rs)));
+	}
 
-		return($this->_return['schedule']);
+	function _reverse_add($scheduleid)
+	{
+		if($this->get_errnb() > 0
+		|| $this->_status !== 'add'
+		|| ($scheduleid = xivo_ulongint($scheduleid)) === 0
+		|| is_array($this->_return) === false
+		|| empty($this->_return) === true)
+			return(false);
+
+		foreach($this->_return as $key => $val)
+		{
+			if($val === false)
+				continue;
+
+			switch($key)
+			{
+				case 'schedule':
+					$this->_schedule->delete($scheduleid);
+					break;
+				case 'contextmember':
+					$this->_contextmember->reverse_add();
+					break;
+			}
+		}
+
+		return(true);
 	}
 
 	function edit()
@@ -312,8 +376,12 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 		$this->_return = array();
 
 		if($this->get_errnb() > 0
-		|| $this->edit_schedule() === false)
+		|| $this->edit_schedule() === false
+		|| $this->edit_contextmember() === false)
+		{
 			$r = false;
+			$this->_reverse_edit();
+		}
 
 		$this->_status = '';
 
@@ -329,9 +397,46 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 
 		$rs['commented'] = $this->_info['schedule']['commented'];
 
-		$this->_return['schedule'] = $this->_schedule->edit($this->_info['schedule']['id'],$rs);
+		return(($this->_return['schedule'] = $this->_schedule->edit($this->_info['schedule']['id'],$rs)));
+	}
 
-		return($this->_return['schedule']);
+	function edit_contextmember()
+	{
+		if(xivo_issa('schedule',$this->_info) === false)
+			return(false);
+
+		return(parent::edit_contextmember($this->_info['schedule']['id']));
+	}
+
+	function _reverse_edit()
+	{
+		if($this->get_errnb() > 0
+		|| $this->_status !== 'edit'
+		|| is_array($this->_return) === false
+		|| empty($this->_return) === true)
+			return(false);
+
+		foreach($this->_return as $key => $val)
+		{
+			if($val === false)
+				continue;
+
+			switch($key)
+			{
+				case 'schedule':
+					if(isset($this->_origin['schedule']) === false
+					|| $this->_origin['schedule'] === false)
+						$this->delete_schedule();
+					else
+						$this->_schedule->edit_origin($this->_origin['schedule']);
+					break;
+				case 'contextmember':
+					$this->_contextmember->reverse_edit($this->_status);
+					break;
+			}
+		}
+
+		return(true);
 	}
 
 	function delete()
@@ -341,8 +446,12 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 		$this->_status = 'delete';
 		$this->_return = array();
 
-		if($this->delete_schedule() === false)
+		if($this->delete_schedule() === false
+		|| $this->delete_contextmember() === false)
+		{
 			$r = false;
+			$this->_reverse_delete();
+		}
 		else
 			$this->unlinks();
 
@@ -362,6 +471,34 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 			$this->_return['schedule'] = $r;
 
 		return($r);
+	}
+
+	function _reverse_delete()
+	{
+		if($this->_status !== 'delete'
+		|| is_array($this->_return) === false
+		|| empty($this->_return) === true)
+			return(false);
+
+		foreach($this->_return as $key => $val)
+		{
+			if($val === false)
+				continue;
+
+			switch($key)
+			{
+				case 'schedule':
+					if(isset($this->_origin['schedule']) === true
+					&& $this->_origin['schedule'] !== false)
+						$this->_schedule->add_origin($this->_origin['schedule']);
+					break;
+				case 'contextmember':
+					$this->_contextmember->add_origin_list();
+					break;
+			}
+		}
+
+		return(true);
 	}
 
 	function unlinks()

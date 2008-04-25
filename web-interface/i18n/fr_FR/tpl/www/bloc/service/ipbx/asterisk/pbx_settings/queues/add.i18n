@@ -65,10 +65,28 @@ Nom :
 Numéro :
 
 ; fm_queue_strategy
-Stratégie :
+Stratégie de sonnerie :
+
+; fm_queue_strategy-opt-leastrecent
+Le moins récent
+
+; fm_queue_strategy-opt-fewestcalls
+Le moins d'appels
+
+; fm_queue_strategy-opt-roundrobin
+Répartition cyclique
+
+; fm_queue_strategy-opt-rrmemory
+Répartition cyclique (mémorisée)
+
+; fm_queue_strategy-opt-random
+Aléatoire
+
+; fm_queue_strategy-opt-ringall
+Tous
 
 ; fm_qfeatures_context
-Entreprise :
+Contexte :
 
 ; create_context
 Créer un contexte

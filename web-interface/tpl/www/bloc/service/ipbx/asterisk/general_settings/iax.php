@@ -3,6 +3,7 @@
 	$form = &$this->get_module('form');
 
 	$element = $this->get_var('element');
+	$context_list = $this->get_var('context_list');
 
 	if($this->get_var('fm_save') === true):
 		$dhtml = &$this->get_module('dhtml');
@@ -54,7 +55,13 @@
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_trunktimestamps'),'name' => 'trunktimestamps','labelid' => 'trunktimestamps','checked' => $this->get_varra('info',array('trunktimestamps','var_val')),'default' => $element['trunktimestamps']['default']));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_regcontext'),'name' => 'regcontext','labelid' => 'regcontext','size' => 15,'value' => $this->get_varra('info',array('regcontext','var_val')),'default' => $element['regcontext']['default']));?>
+<?php
+
+if($context_list !== false):
+	echo $form->select(array('desc' => $this->bbf('fm_regcontext'),'name' => 'regcontext','labelid' => 'regcontext','key' => 'identity','altkey' => 'name','empty' => true,'default' => $element['regcontext']['default'],'value' => $this->get_varra('info',array('regcontext','var_val'))),$context_list);
+endif;
+
+?>
 
 <?=$form->select(array('desc' => $this->bbf('fm_minregexpire'),'name' => 'minregexpire','labelid' => 'minregexpire','bbf' => array('mixkey','fm_minregexpire-opt','paramarray'),'value' => $this->get_varra('info',array('minregexpire','var_val')),'default' => $element['minregexpire']['default']),$element['minregexpire']['value']);?>
 

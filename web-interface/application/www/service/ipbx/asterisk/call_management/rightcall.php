@@ -111,6 +111,7 @@ switch($act)
 		$_HTML->set_var('rcallincall',$rcallincall);
 		$_HTML->set_var('rcalloutcall',$rcalloutcall);
 		$_HTML->set_var('rcallexten',$rcallexten);
+		$_HTML->set_var('context_list',$apprightcall->get_context_list());
 		$_HTML->set_var('element',$apprightcall->get_elements());
 		$_HTML->set_var('info',$result);
 		break;
@@ -229,6 +230,7 @@ switch($act)
 		$_HTML->set_var('rcallincall',$rcallincall);
 		$_HTML->set_var('rcalloutcall',$rcalloutcall);
 		$_HTML->set_var('rcallexten',$rcallexten);
+		$_HTML->set_var('context_list',$apprightcall->get_context_list());
 		$_HTML->set_var('element',$apprightcall->get_elements());
 		$_HTML->set_var('info',$return);
 		break;

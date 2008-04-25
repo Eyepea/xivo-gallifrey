@@ -44,6 +44,7 @@ $array['element']['qualify']['set'] = true;
 
 $array['element']['context'] = array();
 $array['element']['context']['default'] = '';
+$array['element']['context']['null'] = true;
 
 $array['element']['disallow'] = array();
 $array['element']['disallow']['value'] = array('all');

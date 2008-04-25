@@ -19,6 +19,12 @@ Outgoing calls
 ; fm_rightcall_name
 Name:
 
+; fm_rightcall_context
+Context:
+
+; create_context
+Create a context
+
 ; fm_rightcall_passwd
 Password:
 

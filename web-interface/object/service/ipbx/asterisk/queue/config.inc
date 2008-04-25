@@ -19,7 +19,7 @@ $array['element']['announce'] = array();
 $array['element']['announce']['default'] = '';
 
 $array['element']['strategy'] = array();
-$array['element']['strategy']['value'] = array('ringall','roundrobin','leastrecent','fewestcalls','random','rrmemory');
+$array['element']['strategy']['value'] = array('leastrecent','fewestcalls','roundrobin','rrmemory','random','ringall');
 $array['element']['strategy']['default'] = 'ringall';
 $array['element']['strategy']['setdef'] = true;
 
@@ -173,7 +173,7 @@ $array['filter']['timeout'] = array('set' => false,'chk' => 2,'key' => array(0,5
 $array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'maxlen' => 20);
 $array['filter']['announce'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
 $array['filter']['strategy'] = array('set' => false,'chk' => 2,
-				     'key' => array('ringall','roundrobin','leastrecent','fewestcalls','random','rrmemory'));
+				     'key' => array('leastrecent','fewestcalls','roundrobin','rrmemory','random','ringall'));
 $array['filter']['servicelevel'] = array('set' => false,'chk' => 2,'cast' => 'int');
 $array['filter']['context'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context');
 $array['filter']['retry'] = array('set' => false,'chk' => 2,'key' => array(1,5,10,15,20,25,30,35,40,45,50,55,60));

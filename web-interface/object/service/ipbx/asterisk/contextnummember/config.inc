@@ -18,6 +18,9 @@ $array['element']['type']['default'] = '';
 $array['element']['typeval'] = array();
 $array['element']['typeval']['default'] = '';
 
+$array['element']['number'] = array();
+$array['element']['number']['default'] = '';
+
 
 $array['filter'] = array();
 $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context',
@@ -30,5 +33,6 @@ $array['filter']['type'] = array('user',
 				 'meetme',
 				 'incall');
 $array['filter']['typeval'] = array('maxlen' => 128,'regexp' => '/^[a-z0-9_-]+$/');
+$array['filter']['number'] = array('set' => false,'chk' => 2,'maxlen' => 40,'regexp' => '/^[0-9NXZ\-\[\]]+[\.\!]?$/');
 
 ?>

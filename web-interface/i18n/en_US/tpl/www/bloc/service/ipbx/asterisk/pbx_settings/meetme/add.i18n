@@ -32,7 +32,7 @@ Listen
 All
 
 ; fm_meetmefeatures_context
-Company:
+Context:
 
 ; create_context
 Create a context 

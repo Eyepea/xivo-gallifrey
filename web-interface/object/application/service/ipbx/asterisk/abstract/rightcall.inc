@@ -88,15 +88,19 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 
 			$info['rightcallid'] = $rightcallid;
 
-			if(($rs = $this->_rightcallmember->chk_values($info)) === false
-			|| isset($tmp[$rightcallid]) === true)
+			if(($rs = $this->_rightcallmember->chk_values($info)) === false)
+			{
+				$this->_set_error('wrong rightcall');
+				continue;
+			}
+			else if(isset($tmp[$rightcallid]) === true)
 				continue;
 
 			$tmp[$rightcallid] = 1;
 			$reslist[] = $rs;
 		}
 
-		if(isset($reslist[0]) === false)
+		if($this->get_errnb() > 0 || isset($reslist[0]) === false)
 		{
 			$this->_set_result(false);
 			return(false);
@@ -159,8 +163,8 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(isset($this->_info[$i]) === true)
-				$rid = $this->_info[$i]['id'];
+			if(isset($this->_origin[$i]) === true)
+				$rid = $this->_origin[$i]['id'];
 			else
 				$rid = 0;
 

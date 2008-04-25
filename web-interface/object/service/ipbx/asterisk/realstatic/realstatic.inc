@@ -32,23 +32,23 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 
 	function load_init($param=array())
 	{
-		if(is_array($param) === false)
-			trigger_error('Invalid parameter in '.__CLASS__,E_USER_ERROR);
+		if(is_array($param) === true && empty($param) === false)
+		{
+			if(isset($param['filename']) === true)
+				$this->_filename = $param['filename'];
 
-		if(isset($param['filename']) === true)
-			$this->_filename = $param['filename'];
+			if(isset($param['cat_metric']) === true)
+				$this->_cat_metric = (int) $param['cat_metric'];
 
-		if(isset($param['cat_metric']) === true)
-			$this->_cat_metric = (int) $param['cat_metric'];
+			if(isset($param['var_metric']) === true)
+				$this->_var_metric = (int) $param['var_metric'];
 
-		if(isset($param['var_metric']) === true)
-			$this->_var_metric = (int) $param['var_metric'];
+			if(isset($param['category']) === true)
+				$this->_category = strval($param['category']);
 
-		if(isset($param['category']) === true)
-			$this->_category = strval($param['category']);
-
-		if(isset($param['var_name']) === true)
-			$this->_var_name = strval($param['var_name']);
+			if(isset($param['var_name']) === true)
+				$this->_var_name = strval($param['var_name']);
+		}
 
 		if($this->chk_value('filename',$this->_filename) === false)
 			trigger_error('Invalid filename parameter in '.__CLASS__,E_USER_ERROR);
@@ -263,7 +263,7 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 		return($this->_dso->edit($id,$r));
 	}
 
-	function edit_where($where,$arr,$disable=null,$id=null)
+	function edit_where($where,$arr,$disable=null,$id=null,$chkunique=true)
 	{
 		if(is_array($arr) === false)
 			return(false);
@@ -274,7 +274,7 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 		else
 			unset($arr['commented']);
 
-		return(parent::edit_where($where,$arr,$disable,$id));
+		return(parent::edit_where($where,$arr,$disable,$id,$chkunique));
 	}
 
 	function edit_name($id,$name,$arr)

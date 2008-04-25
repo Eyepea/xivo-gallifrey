@@ -77,9 +77,7 @@ class xivo_tpl
 		if($namespace === '')
 			$namespace = $this->get_option('i18n_namespace');
 
-		$r = xivo_i18n::babelfish($name,$arr,$namespace);
-
-		return($r);
+		return(xivo_i18n::babelfish($name,$arr,$namespace));
 	}
 
 	function set_option($name,$value)

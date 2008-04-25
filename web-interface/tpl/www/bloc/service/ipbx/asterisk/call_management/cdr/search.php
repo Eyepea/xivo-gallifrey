@@ -7,6 +7,13 @@
 
 	$result = $this->get_var('result');
 	$info = $this->get_var('info');
+	$context_list = $this->get_var('context_list');
+
+	if(($dcontext_custom = (string) $this->get_var('dcontext-custom')) !== ''):
+		$dcontext = 'custom';
+	else:
+		$dcontext = (string) $info['dcontext'];
+	endif;
 
 	if(xivo_haslen($info['amaflags']) === false):
 		$amaflags = null;
@@ -101,6 +108,20 @@
 <?=$form->select(array('desc' => $this->bbf('fm_disposition'),'name' => 'disposition','labelid' => 'disposition','empty' => true,'key' => false,'bbf' => array('concatkey','fm_disposition-opt-'),'default' => $element['disposition']['default'],'value' => $info['disposition']),$element['disposition']['value']);?>
 
 <?=$form->select(array('desc' => $this->bbf('fm_amaflags'),'name' => 'amaflags','labelid' => 'amaflags','empty' => true,'bbf' => array('mixvalue','fm_amaflags-opt-'),'default' => $element['amaflags']['default'],'value' => $amaflags),$element['amaflags']['value']);?>
+
+<?php
+
+if($context_list !== false):
+	echo $form->select(array('desc' => $this->bbf('fm_dcontext'),'name' => 'dcontext','labelid' => 'dcontext','empty' => true,'bbf' => array('mixvalue','fm_dcontext-opt'),'key' => 'identity','altkey' => 'name','value' => $dcontext),$context_list,'onchange="xivo_chg_attrib(\'fm_dcontext\',\'fd-dcontext-custom\',(this.value != \'custom\' ? 0 : 1))"');
+
+	echo $form->text(array('desc' => '&nbsp;','name' => 'dcontext-custom','labelid' => 'dcontext-custom','value' => $dcontext_custom,'size' => 15));
+
+else:
+	echo $form->text(array('desc' => $this->bbf('fm_dcontext'),'name' => 'dcontext','labelid' => 'dcontext','default' => $element['dcontext']['default'],'value' => $info['dcontext']));
+endif;
+
+?>
+
 
 <div class="fm-field fm-multifield">
 <?=$form->text(array('desc' => $this->bbf('fm_src'),'field' => false,'name' => 'src','labelid' => 'src','size' => 15,'default' => $element['src']['default'],'value' => $info['src']));?>

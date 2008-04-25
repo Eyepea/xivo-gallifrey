@@ -6,6 +6,7 @@
 	$element = $this->get_var('element');
 	$rightcall = $this->get_var('rightcall');
 	$list = $this->get_var('list');
+	$context_list = $this->get_var('context_list');
 
 	$linked = $incall['linked'];
 	$type = $incall['type'];
@@ -17,7 +18,7 @@
 
 echo $form->text(array('desc' => $this->bbf('fm_incall_exten'),'name' => 'incall[exten]','labelid' => 'incall-exten','size' => 15,'default' => $element['incall']['exten']['default'],'value' => $this->get_varra('incall','exten')));
 
-if(($context_list = $this->get_var('context_list')) !== false):
+if($context_list !== false):
 	echo $form->select(array('desc' => $this->bbf('fm_incall_context'),'name' => 'incall[context]','labelid' => 'incall-context','key' => 'identity','altkey' => 'name','default' => $element['incall']['context']['default'],'value' => $this->get_varra('incall','context')),$context_list);
 else:
 	echo '<div id="fd-incall-context" class="txt-center">',$url->href_html($this->bbf('create_context'),'service/ipbx/system_management/context','act=add'),'</div>';
@@ -49,7 +50,7 @@ if(empty($list['groups']) === false):
 		$invalid = false;
 	endif;
 
-echo $form->select(array('desc' => $this->bbf('fm_incall_group-typeval'),'name' => 'incall[typeval]','labelid' => 'incall-group-typeval','key' => 'identity','altkey' => 'id','invalid' => $invalid,'default' => $element['incall']['typeval']['default'],'value' => $incall['group']),$list['groups']);
+	echo $form->select(array('desc' => $this->bbf('fm_incall_group-typeval'),'name' => 'incall[typeval]','labelid' => 'incall-group-typeval','key' => 'identity','altkey' => 'id','invalid' => $invalid,'default' => $element['incall']['typeval']['default'],'value' => $incall['group']),$list['groups']);
 
 else:
 	echo '<div id="fd-incall-group-typeval" class="txt-center">',$url->href_html($this->bbf('create_group'),'service/ipbx/pbx_settings/groups','act=add'),'</div>';

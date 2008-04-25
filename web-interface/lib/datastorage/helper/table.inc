@@ -146,6 +146,15 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 		return(true);
 	}
 
+	function has_autoincrement()
+	{
+		if(isset($this->_autoincrement) === false
+		|| (bool) $this->_autoincrement === false)
+			return(false);
+
+		return(true);
+	}
+
 	function _mk_forcecolumn($column)
 	{
 		if(is_array($column) === false || empty($column) === true)

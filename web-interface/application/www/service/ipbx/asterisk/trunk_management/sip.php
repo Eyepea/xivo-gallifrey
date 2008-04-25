@@ -47,12 +47,13 @@ switch($act)
 		if(empty($result) === false)
 			$result['protocol']['allow'] = $allow;
 
-		$_HTML->set_var('info',$result);
-		$_HTML->set_var('element',$element);
-
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/trunksip.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+
+		$_HTML->set_var('info',$result);
+		$_HTML->set_var('element',$element);
+		$_HTML->set_var('context_list',$apptrunk->get_context_list());
 		break;
 	case 'edit':
 		$apptrunk = &$ipbx->get_application('trunk',
@@ -101,13 +102,14 @@ switch($act)
 		if(empty($return) === false)
 			$return['protocol']['allow'] = $allow;
 
-		$_HTML->set_var('id',$info['trunkfeatures']['id']);
-		$_HTML->set_var('info',$return);
-		$_HTML->set_var('element',$element);
-
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/trunksip.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+
+		$_HTML->set_var('id',$info['trunkfeatures']['id']);
+		$_HTML->set_var('info',$return);
+		$_HTML->set_var('element',$element);
+		$_HTML->set_var('context_list',$apptrunk->get_context_list());
 		break;
 	case 'delete':
 		$param['page'] = $page;

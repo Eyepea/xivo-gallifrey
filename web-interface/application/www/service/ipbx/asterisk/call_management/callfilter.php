@@ -50,17 +50,18 @@ switch($act)
 		&& (xivo_issa('dialstatus',$result) === false || empty($result['dialstatus']) === true) === true)
 			$result['dialstatus'] = null;
 
-		$_HTML->set_var('info',$result);
-		$_HTML->set_var('dialstatus',$result['dialstatus']);
-		$_HTML->set_var('element',$appcallfilter->get_elements());
-		$_HTML->set_var('dialstatus_list',$appcallfilter->get_dialstatus_destination_list());
-		$_HTML->set_var('bosslist',$appcallfilter->get_free_boss_users());
-		$_HTML->set_var('secretary',$secretary);
-
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callfilter.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialstatus.js');
+
+		$_HTML->set_var('info',$result);
+		$_HTML->set_var('dialstatus',$result['dialstatus']);
+		$_HTML->set_var('element',$appcallfilter->get_elements());
+		$_HTML->set_var('dialstatus_list',$appcallfilter->get_dialstatus_destination_list());
+		$_HTML->set_var('context_list',$appcallfilter->get_context_list());
+		$_HTML->set_var('bosslist',$appcallfilter->get_free_boss_users());
+		$_HTML->set_var('secretary',$secretary);
 		break;
 	case 'edit':
 		$appcallfilter = &$ipbx->get_application('callfilter',array('type' => 'bosssecretary'));
@@ -107,18 +108,19 @@ switch($act)
 		&& (xivo_issa('dialstatus',$return) === false || empty($return['dialstatus']) === true) === true)
 			$return['dialstatus'] = null;
 
+		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callfilter.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialstatus.js');
+
 		$_HTML->set_var('id',$info['callfilter']['id']);
 		$_HTML->set_var('info',$return);
 		$_HTML->set_var('dialstatus',$return['dialstatus']);
 		$_HTML->set_var('element',$appcallfilter->get_elements());
 		$_HTML->set_var('dialstatus_list',$appcallfilter->get_dialstatus_destination_list());
+		$_HTML->set_var('context_list',$appcallfilter->get_context_list());
 		$_HTML->set_var('bosslist',$appcallfilter->get_boss_users());
 		$_HTML->set_var('secretary',$secretary);
-
-		$dhtml = &$_HTML->get_module('dhtml');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callfilter.js');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialstatus.js');
 		break;
 	case 'delete':
 		$param['page'] = $page;

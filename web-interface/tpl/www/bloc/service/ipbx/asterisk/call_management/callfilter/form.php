@@ -6,6 +6,7 @@
 	$element = $this->get_var('element');
 	$bosslist = $this->get_var('bosslist');
 	$secretary = $this->get_var('secretary');
+	$context_list = $this->get_var('context_list');
 
 	if($this->get_var('act') === 'add'):
 		$invalid_boss = false;
@@ -21,7 +22,17 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_callfilter_name'),'name' => 'callfilter[name]','labelid' => 'callfilter-name','size' => 15,'default' => $element['callfilter']['name']['default'],'value' => $info['callfilter']['name']));?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_callfilter_zone'),'name' => 'callfilter[zone]','labelid' => 'callfilter-zone','bbf' => array('concatkey','fm_callfilter_zone-opt-'),'key' => false,'default' => $element['callfilter']['zone']['default'],'value' => $info['callfilter']['zone']),$element['callfilter']['zone']['value']);?>
+<?php
+
+if($context_list !== false):
+	echo $form->select(array('desc' => $this->bbf('fm_callfilter_context'),'name' => 'callfilter[context]','labelid' => 'callfilter-context','key' => 'identity','altkey' => 'name','default' => $element['callfilter']['context']['default'],'value' => $info['callfilter']['context']),$context_list);
+else:
+	echo '<div id="fd-callfilter-context" class="txt-center">',$url->href_html($this->bbf('create_context'),'service/ipbx/system_management/context','act=add'),'</div>';
+endif;
+
+?>
+
+<?=$form->select(array('desc' => $this->bbf('fm_callfilter_callfrom'),'name' => 'callfilter[callfrom]','labelid' => 'callfilter-callfrom','bbf' => array('concatkey','fm_callfilter_callfrom-opt-'),'key' => false,'default' => $element['callfilter']['callfrom']['default'],'value' => $info['callfilter']['callfrom']),$element['callfilter']['callfrom']['value']);?>
 
 <?=$form->select(array('desc' => $this->bbf('fm_callfilter_bosssecretary'),'name' => 'callfilter[bosssecretary]','labelid' => 'callfilter-bosssecretary','bbf' => array('concatkey','fm_callfilter_bosssecretary-opt-'),'key' => false,'default' => $element['callfilter']['bosssecretary']['default'],'value' => $info['callfilter']['bosssecretary']),$element['callfilter']['bosssecretary']['value'],'onchange="xivo_chgmode(\'bosssecretary\',this);"');?>
 

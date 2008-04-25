@@ -1560,9 +1560,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| empty($this->_return) === true)
 			return(false);
 
-		xivo_var_dump($this->_return);
-		xivo_var_dump($this->_error);
-
 		foreach($this->_return as $key => $val)
 		{
 			if($val === false)

@@ -1,9 +1,10 @@
 <?php
 	$form = &$this->get_module('form');
 
-	$moh_list = $this->get_var('moh_list');
 	$info = $this->get_var('info');
 	$element = $this->get_var('element');
+	$moh_list = $this->get_var('moh_list');
+	$context_list = $this->get_var('context_list');
 ?>
 
 <div id="sb-part-first">
@@ -20,7 +21,7 @@
 
 <?php
 
-if(($context_list = $this->get_var('context_list')) !== false):
+if($context_list !== false):
 	echo $form->select(array('desc' => $this->bbf('fm_meetmefeatures_context'),'name' => 'mfeatures[context]','labelid' => 'mfeatures-context','key' => 'identity','altkey' => 'name','default' => $element['mfeatures']['context']['default'],'value' => $info['mfeatures']['context']),$context_list);
 else:
 	echo '<div id="fd-meetmefeatures-context" class="txt-center">',$url->href_html($this->bbf('create_context'),'service/ipbx/system_management/context','act=add'),'</div>';
@@ -52,8 +53,14 @@ endif;
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_meetmefeatures_starmenu'),'name' => 'mfeatures[starmenu]','labelid' => 'mfeatures-starmenu','default' => $element['mfeatures']['starmenu']['default'],'checked' => $info['mfeatures']['starmenu']));?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_meetmefeatures_enableexitcontext'),'name' => 'mfeatures[enableexitcontext]','labelid' => 'mfeatures-enableexitcontext','default' => $element['mfeatures']['enableexitcontext']['default'],'checked' => $info['mfeatures']['enableexitcontext']));?>
+<?php
 
-<?=$form->text(array('desc' => $this->bbf('fm_meetmefeatures_exitcontext'),'name' => 'mfeatures[exitcontext]','labelid' => 'mfeatures-exitcontext','size' => 15,'default' => $element['mfeatures']['exitcontext']['default'],'value' => $info['mfeatures']['exitcontext']));?>
+if($context_list !== false):
+	echo $form->checkbox(array('desc' => $this->bbf('fm_meetmefeatures_enableexitcontext'),'name' => 'mfeatures[enableexitcontext]','labelid' => 'mfeatures-enableexitcontext','default' => $element['mfeatures']['enableexitcontext']['default'],'checked' => $info['mfeatures']['enableexitcontext']));
+
+	echo $form->select(array('desc' => $this->bbf('fm_meetmefeatures_exitcontext'),'name' => 'mfeatures[exitcontext]','labelid' => 'mfeatures-exitcontext','key' => 'identity','altkey' => 'name','empty' => true,'default' => $element['mfeatures']['exitcontext']['default'],'value' => $info['mfeatures']['exitcontext']),$context_list);
+endif;
+
+?>
 
 </div>

@@ -24,12 +24,13 @@ switch($act)
 				$_QRY->go($_HTML->url('service/ipbx/call_management/schedule'),$param);
 		}
 
-		$_HTML->set_var('info',$result);
-		$_HTML->set_var('element',$appschedule->get_elements());
-		$_HTML->set_var('list',$appschedule->get_destination_list());
-
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/schedule.js');
+
+		$_HTML->set_var('info',$result);
+		$_HTML->set_var('element',$appschedule->get_elements());
+		$_HTML->set_var('context_list',$appschedule->get_context_list());
+		$_HTML->set_var('list',$appschedule->get_destination_list());
 		break;
 	case 'edit':
 		$appschedule = &$ipbx->get_application('schedule');
@@ -52,13 +53,14 @@ switch($act)
 				$_QRY->go($_HTML->url('service/ipbx/call_management/schedule'),$param);
 		}
 
-		$_HTML->set_var('id',$info['schedule']['id']);
-		$_HTML->set_var('info',$return);
-		$_HTML->set_var('element',$appschedule->get_elements());
-		$_HTML->set_var('list',$appschedule->get_destination_list());
-
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/schedule.js');
+
+		$_HTML->set_var('id',$info['schedule']['id']);
+		$_HTML->set_var('info',$return);
+		$_HTML->set_var('context_list',$appschedule->get_context_list());
+		$_HTML->set_var('element',$appschedule->get_elements());
+		$_HTML->set_var('list',$appschedule->get_destination_list());
 		break;
 	case 'delete':
 		$param['page'] = $page;

@@ -4,6 +4,12 @@ Schedule > Add
 ; fm_schedule_name
 Name:
 
+; fm_schedule_context
+Context:
+
+; create_context
+Create a context
+
 ; fm_schedule_publicholiday
 Public holiday:
 

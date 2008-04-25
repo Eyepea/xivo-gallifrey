@@ -86,8 +86,8 @@ $array['element']['saycid']['default'] = 'no';
 $array['element']['saycid']['set'] = true;
 
 $array['element']['cidinternalcontexts'] = array();
-$array['element']['cidinternalcontexts']['default'] = 'default';
-$array['element']['cidinternalcontexts']['forcedef'] = true;
+$array['element']['cidinternalcontexts']['default'] = '';
+$array['element']['cidinternalcontexts']['null'] = true;
 
 $array['element']['sayduration'] = array();
 $array['element']['sayduration']['value'] = array('no','yes');
@@ -273,7 +273,7 @@ $array['filter']['format'] = array('set' => false,'chk' => 2,'value' => array(
 $array['filter']['maxlogins'] = array('key' => array(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20));
 $array['filter']['envelope'] = array('bool' => true);
 $array['filter']['saycid'] = array('bool' => true);
-$array['filter']['cidinternalcontexts'] = array('set' => false,'chk' => 2,'key' => array('default'));
+$array['filter']['cidinternalcontexts'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context');
 $array['filter']['sayduration'] = array('bool' => true);
 $array['filter']['saydurationm'] = array('key' => array(1,2,3,4,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['forcename'] = array('bool' => true);

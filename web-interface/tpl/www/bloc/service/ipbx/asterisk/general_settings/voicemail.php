@@ -4,6 +4,7 @@
 	$dhtml = &$this->get_module('dhtml');
 
 	$element = $this->get_var('element');
+	$context_list = $this->get_var('context_list');
 	$err = $this->get_var('error');
 
 	if($this->get_var('fm_save') === true):
@@ -109,7 +110,13 @@
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-saycid'),'name' => 'voicemail[saycid]','labelid' => 'voicemail-saycid','checked' => $this->get_varra('voicemail',array('saycid','var_val')),'default' => $element['voicemail']['saycid']['default']));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_voicemail-cidinternalcontexts'),'name' => 'voicemail[cidinternalcontexts]','labelid' => 'voicemail-cidinternalcontexts','size' => 15,'value' => $this->get_varra('voicemail',array('cidinternalcontexts','var_val')),'default' => $element['voicemail']['cidinternalcontexts']['default']),'class="it-readonly" readonly="readonly"');?>
+<?php
+
+if($context_list !== false):
+	echo $form->select(array('desc' => $this->bbf('fm_voicemail-cidinternalcontexts'),'name' => 'voicemail[cidinternalcontexts]','labelid' => 'voicemail-cidinternalcontexts','key' => 'identity','altkey' => 'name','empty' => true,'default' => $element['voicemail']['cidinternalcontexts']['default'],'value' => $this->get_varra('voicemail',array('cidinternalcontexts','var_val'))),$context_list);
+endif;
+
+?>
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-sayduration'),'name' => 'voicemail[sayduration]','labelid' => 'voicemail-sayduration','checked' => $this->get_varra('voicemail',array('sayduration','var_val')),'default' => $element['voicemail']['sayduration']['default']));?>
 
@@ -129,11 +136,17 @@
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-nextaftercmd'),'name' => 'voicemail[nextaftercmd]','labelid' => 'voicemail-nextaftercmd','checked' => $this->get_varra('voicemail',array('nextaftercmd','var_val')),'default' => $element['voicemail']['nextaftercmd']['default']));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_voicemail-dialout'),'name' => 'voicemail[dialout]','labelid' => 'voicemail-dialout','size' => 15,'value' => $this->get_varra('voicemail',array('dialout','var_val')),'default' => $element['voicemail']['dialout']['default']));?>
+<?php
 
-<?=$form->text(array('desc' => $this->bbf('fm_voicemail-callback'),'name' => 'voicemail[callback]','labelid' => 'voicemail-callback','size' => 15,'value' => $this->get_varra('voicemail',array('callback','var_val')),'default' => $element['voicemail']['callback']['default']));?>
+if($context_list !== false):
+	echo $form->select(array('desc' => $this->bbf('fm_voicemail-dialout'),'name' => 'voicemail[dialout]','labelid' => 'voicemail-dialout','key' => 'identity','altkey' => 'name','empty' => true,'default' => $element['voicemail']['dialout']['default'],'value' => $this->get_varra('voicemail',array('dialout','var_val'))),$context_list);
 
-<?=$form->text(array('desc' => $this->bbf('fm_voicemail-exitcontext'),'name' => 'voicemail[exitcontext]','labelid' => 'voicemail-exitcontext','size' => 15,'value' => $this->get_varra('voicemail',array('exitcontext','var_val')),'default' => $element['voicemail']['exitcontext']['default']));?>
+	echo $form->select(array('desc' => $this->bbf('fm_voicemail-callback'),'name' => 'voicemail[callback]','labelid' => 'voicemail-callback','key' => 'identity','altkey' => 'name','empty' => true,'default' => $element['voicemail']['callback']['default'],'value' => $this->get_varra('voicemail',array('callback','var_val'))),$context_list);
+
+	echo $form->select(array('desc' => $this->bbf('fm_voicemail-exitcontext'),'name' => 'voicemail[exitcontext]','labelid' => 'voicemail-exitcontext','key' => 'identity','altkey' => 'name','empty' => true,'default' => $element['voicemail']['exitcontext']['default'],'value' => $this->get_varra('voicemail',array('exitcontext','var_val'))),$context_list);
+endif;
+
+?>
 
 </div>
 

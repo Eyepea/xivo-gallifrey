@@ -29,10 +29,10 @@ Nom d'appel :
 Contexte :
 
 ; fm_protocol_fromuser
-Champ from-user :
+Champ From-User :
 
 ; fm_protocol_fromdomain
-Champ from-domain :
+Champ From-Domain :
 
 ; fm_protocol_calllimit
 Nombre d'appels :

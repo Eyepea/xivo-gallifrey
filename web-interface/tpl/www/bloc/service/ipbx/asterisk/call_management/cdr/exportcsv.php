@@ -46,6 +46,12 @@ if($info['amaflags'] !== '')
 		'"',str_replace('"','""',$this->bbf('fm_amaflags-opt-'.$info['amaflagsmeta'])),'"',"\n";
 }
 
+if($info['dcontext'] !== '')
+{
+	echo	'"',str_replace('"','""',$this->bbf('fm_dcontext')),'";',
+		'"',str_replace('"','""',$info['dcontext']),'"',"\n";
+}
+
 if($info['src'] !== '')
 {
 	echo	'"',str_replace('"','""',$this->bbf('fm_src')),'";',

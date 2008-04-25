@@ -27,6 +27,7 @@ switch($act)
 
 		$_HTML->set_var('info',$result);
 		$_HTML->set_var('element',$apptrunk->get_elements());
+		$_HTML->set_var('context_list',$apptrunk->get_context_list());
 		break;
 	case 'edit':
 		$apptrunk = &$ipbx->get_application('trunk',
@@ -53,6 +54,7 @@ switch($act)
 		$_HTML->set_var('id',$info['trunkfeatures']['id']);
 		$_HTML->set_var('info',$return);
 		$_HTML->set_var('element',$apptrunk->get_elements());
+		$_HTML->set_var('context_list',$apptrunk->get_context_list());
 		break;
 	case 'delete':
 		$param['page'] = $page;

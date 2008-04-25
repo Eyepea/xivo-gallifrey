@@ -9,7 +9,9 @@ class xivo_application_service_asterisk_realstatic_sip_general extends xivo_appl
 	var $_category		= 'general';
 	var $_cat_metric	= 0;
 	var $_filename		= 'sip.conf';
+	var $_contextmember	= false;
 	var $_musiconhold	= array();
+	var $_contextlist	= array();
 
 	function xivo_application_service_asterisk_realstatic_sip_general(&$service)
 	{
@@ -18,6 +20,9 @@ class xivo_application_service_asterisk_realstatic_sip_general extends xivo_appl
 
 	function _load_config()
 	{
+		if(($this->_contextmember = $this->get_abstract('contextmember',array('type' => 'generalsip'))) === false)
+			return(false);
+
 		return(parent::_load_config(dirname(__FILE__)));
 	}
 
@@ -29,6 +34,30 @@ class xivo_application_service_asterisk_realstatic_sip_general extends xivo_appl
 
 		switch($rs['var_name'])
 		{
+			case 'context':
+				$this->_get_contextmember(null,'context');
+
+				$res = array();
+				$res['generalsip-context'] = array();
+				$res['generalsip-context']['context'] = $rs['var_val'];
+				$res['generalsip-context']['varname'] = 'context';
+
+				if($this->set_contextmember($res) === false
+				|| $this->edit_contextmember() === false)
+					return(false);
+				break;
+			case 'regcontext':
+				$this->_get_contextmember(null,'regcontext');
+
+				$res = array();
+				$res['generalsip-regcontext'] = array();
+				$res['generalsip-regcontext']['context'] = $rs['var_val'];
+				$res['generalsip-regcontext']['varname'] = 'regcontext';
+
+				if($this->set_contextmember($res) === false
+				|| $this->edit_contextmember() === false)
+					return(false);
+				break;
 			case 'vmexten':
 				if(($appextenfeatures = &$this->_service->get_application('extenfeatures')) === false)
 					return(false);

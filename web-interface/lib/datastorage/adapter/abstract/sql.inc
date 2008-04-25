@@ -384,10 +384,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 
 		$query = sprintf('DELETE FROM %s WHERE %s%s',$this->quote_identifier($table),$where,$other);
 
-		if(($r = $this->query($query)) !== false)
-			$r = (bool) $this->affected_rows();
-
-		return($r);
+		return(($this->query($query) !== false ? $this->affected_rows() : false));
 	}
 
 	function _insertupdate($proc,$table,&$data,$set=false,$condwhere='',$valwhere='',$usewhere=false,$useorder=false,$uselimit=false)
@@ -462,10 +459,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		if($other !== '')
 			$query .= $other;
 
-		if($this->query($query) === false)
-			return(false);
-
-		return(true);
+		return(($this->query($query) !== false ? $this->affected_rows() : false));
 	}
 
 	function _mk_sep(&$data,$set=false,$table='',$where=false)

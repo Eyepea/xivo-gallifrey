@@ -49,8 +49,8 @@ switch($act)
 			else
 				unset($_QR['contextnumbers']);
 				
-			if(($toto = $appcontext->set_add($_QR)) === false
-			|| ($tutu = $appcontext->add()) === false)
+			if($appcontext->set_add($_QR) === false
+			|| $appcontext->add() === false)
 			{
 				$result = $appcontext->get_result();
 				$error = $appcontext->get_error();

@@ -12,6 +12,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 	var $_extensions	= false;
 	var $_extenumbers	= false;
 	var $_contextnummember	= false;
+	var $_contextmember	= false;
 	var $_musiconhold	= array();
 	var $_contextlist	= array();
 
@@ -35,7 +36,8 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 		if(($this->_extensions = &$this->_service->get_module('extensions')) === false
 		|| ($this->_extenumbers = $this->get_abstract('extenumbers',array('type' => 'meetme'))) === false
-		|| ($this->_contextnummember = $this->get_abstract('contextnummember',array('type' => 'meetme'))) === false)
+		|| ($this->_contextnummember = $this->get_abstract('contextnummember',array('type' => 'meetme'))) === false
+		|| ($this->_contextmember = $this->get_abstract('contextmember',array('type' => 'meetme'))) === false)
 			return(false);
 
 		return(true);
@@ -59,6 +61,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		$this->_get_exten();
 		$this->_get_extenumbers($this->_info['mfeatures']['id']);
 		$this->_get_contextnummember($this->_info['mfeatures']['id']);
+		$this->_get_contextmember($this->_info['mfeatures']['id']);
 
 		return($this->_info);
 	}
@@ -164,6 +167,8 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 		$this->set_contextnummember($context,$number);
 
+		$this->set_contextmember();
+
 		return(($this->get_errnb() < 1));
 	}
 
@@ -209,6 +214,16 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		return($r);
 	}
 
+	function set_contextmember()
+	{
+		$rs = array();
+		$rs['mfeatures-exitcontext']['context'] = (string) $this->get_result_var('mfeatures','exitcontext');
+		$rs['mfeatures-exitcontext']['typeval'] = 0;
+		$rs['mfeatures-exitcontext']['varname'] = 'exitcontext';
+
+		return(parent::set_contextmember($rs));
+	}
+
 	function add()
 	{
 		$r = true;
@@ -222,7 +237,8 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		|| ($meetmefeaturesid = $this->add_meetmefeatures($meetmeroomid)) === false
 		|| $this->add_extenumbers($meetmefeaturesid) === false
 		|| $this->add_macro('exten') === false
-		|| $this->add_contextnummember($meetmefeaturesid) === false)
+		|| $this->add_contextnummember($meetmefeaturesid) === false
+		|| $this->add_contextmember($meetmefeaturesid) === false)
 		{
 			$r = false;
 			if($meetmeroomid !== null)
@@ -285,6 +301,9 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 				case 'contextnummember':
 					$this->_contextnummember->reverse_add();
 					break;
+				case 'contextmember':
+					$this->_contextmember->reverse_add();
+					break;
 			}
 		}
 
@@ -303,7 +322,8 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		|| $this->edit_meetmefeatures() === false
 		|| $this->edit_extenumbers() === false
 		|| $this->edit_macro('exten') === false
-		|| $this->edit_contextnummember() === false)
+		|| $this->edit_contextnummember() === false
+		|| $this->edit_contextmember() === false)
 		{
 			$r = false;
 			$this->_reverse_edit();
@@ -342,6 +362,14 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 			return(false);
 
 		return(parent::edit_contextnummember($this->_info['mfeatures']['id']));
+	}
+
+	function edit_contextmember()
+	{
+		if(xivo_issa('mfeatures',$this->_info) === false)
+			return(false);
+
+		return(parent::edit_contextmember($this->_info['mfeatures']['id']));
 	}
 
 	function _reverse_edit()
@@ -386,6 +414,9 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 				case 'contextnummember':
 					$this->_contextnummember->reverse_edit($this->_status);
 					break;
+				case 'contextmember':
+					$this->_contextmember->reverse_edit($this->_status);
+					break;
 			}
 		}
 
@@ -401,7 +432,8 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		|| $this->delete_meetmefeatures() === false
 		|| $this->delete_extenumbers() === false
 		|| $this->delete_macro('exten') === false
-		|| $this->delete_contextnummember() === false)
+		|| $this->delete_contextnummember() === false
+		|| $this->delete_contextmember() === false)
 		{
 			$this->_reverse_delete();
 			$this->_status = '';
@@ -478,6 +510,9 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 					break;
 				case 'contextnummember':
 					$this->_contextnummember->add_origin();
+					break;
+				case 'contextmember':
+					$this->_contextmember->add_origin_list();
 					break;
 			}
 		}

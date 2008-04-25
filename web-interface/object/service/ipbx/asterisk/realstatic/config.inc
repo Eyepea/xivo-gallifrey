@@ -25,6 +25,7 @@ $array['element']['var_name']['default'] = '';
 
 $array['element']['var_val'] = array();
 $array['element']['var_val']['default'] = '';
+$array['element']['var_val']['null'] = true;
 
 
 $array['filter'] = array();

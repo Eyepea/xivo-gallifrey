@@ -28,7 +28,7 @@ Nom d'appel
 Numéro d'acompte
 
 ; fm_userfield
-Champs utilisateur
+Champ utilisateur
 
 ; fm_dubeg
 Début de la durée
@@ -64,7 +64,7 @@ Nom d'appel
 Numéro d'acompte
 
 ; col_userfield
-Champs utilisateur
+Champ utilisateur
 
 ; col_dcontext
 Contexte

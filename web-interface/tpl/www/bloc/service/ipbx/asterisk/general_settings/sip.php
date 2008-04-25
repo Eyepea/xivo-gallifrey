@@ -4,6 +4,7 @@
 
 	$element = $this->get_var('element');
 	$moh_list = $this->get_var('moh_list');
+	$context_list = $this->get_var('context_list');
 
 	if($this->get_var('fm_save') === true):
 		$dhtml = &$this->get_module('dhtml');
@@ -69,7 +70,13 @@
 
 <?=$form->select(array('desc' => $this->bbf('fm_checkmwi'),'name' => 'checkmwi','labelid' => 'checkmwi','key' => false,'bbf' => array('mixkey','fm_checkmwi-opt'),'value' => $this->get_varra('info',array('checkmwi','var_val')),'default' => $element['checkmwi']['default']),$element['checkmwi']['value']);?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_regcontext'),'name' => 'regcontext','labelid' => 'regcontext','size' => 15,'value' => $this->get_varra('info',array('regcontext','var_val')),'default' => $element['regcontext']['default']));?>
+<?php
+
+if($context_list !== false):
+	echo $form->select(array('desc' => $this->bbf('fm_regcontext'),'name' => 'regcontext','labelid' => 'regcontext','key' => 'identity','altkey' => 'name','empty' => true,'default' => $element['regcontext']['default'],'value' => $this->get_varra('info',array('regcontext','var_val'))),$context_list);
+endif;
+
+?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_callerid'),'name' => 'callerid','labelid' => 'callerid','size' => 15,'value' => $this->get_varra('info',array('callerid','var_val')),'default' => $element['callerid']['default']));?>
 
@@ -165,7 +172,13 @@
 
 <div id="sb-part-default" class="b-nodisplay">
 
-<?=$form->text(array('desc' => $this->bbf('fm_context'),'name' => 'context','labelid' => 'context','size' => 15,'value' => $this->get_varra('info',array('context','var_val')),'default' => $element['context']['default']));?>
+<?php
+
+if($context_list !== false):
+	echo $form->select(array('desc' => $this->bbf('fm_context'),'name' => 'context','labelid' => 'context','key' => 'identity','altkey' => 'name','empty' => true,'default' => $element['context']['default'],'value' => $this->get_varra('info',array('context','var_val'))),$context_list);
+endif;
+
+?>
 
 <?=$form->select(array('desc' => $this->bbf('fm_nat'),'name' => 'nat','labelid' => 'nat','key' => false,'bbf' => array('concatvalue','fm_nat-opt-'),'value' => $this->get_varra('info',array('nat','var_val')),'default' => $element['nat']['default']),$element['nat']['value']);?>
 
@@ -180,9 +193,11 @@
 <?=$form->select(array('desc' => $this->bbf('fm_language'),'name' => 'language','labelid' => 'language','key' => false,'value' => $this->get_varra('info',array('language','var_val')),'default' => $element['language']['default']),$element['language']['value']);?>
 
 <?php
-	if($moh_list !== false):
-		echo $form->select(array('desc' => $this->bbf('fm_musiconhold'),'name' => 'musiconhold','labelid' => 'musiconhold','key' => 'category','value' => $this->get_varra('info',array('musiconhold','var_val')),'default' => $element['musiconhold']['default']),$moh_list);
-	endif;
+
+if($moh_list !== false):
+	echo $form->select(array('desc' => $this->bbf('fm_musiconhold'),'name' => 'musiconhold','labelid' => 'musiconhold','key' => 'category','value' => $this->get_varra('info',array('musiconhold','var_val')),'default' => $element['musiconhold']['default']),$moh_list);
+endif;
+
 ?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_vmexten'),'name' => 'vmexten','labelid' => 'vmexten','value' => $this->get_varra('info',array('vmexten','var_val')),'default' => $element['vmexten']['default']));?>

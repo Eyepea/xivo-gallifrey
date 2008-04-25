@@ -419,7 +419,7 @@ Yes
 Client code:
 
 ; fm_progressinband
-inband RING event:
+Inband RING event:
 
 ; fm_progressinband-opt-no
 No

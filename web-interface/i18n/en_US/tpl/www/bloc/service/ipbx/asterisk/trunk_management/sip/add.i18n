@@ -1,5 +1,5 @@
 ; title_content_name
-SIP Trunk > Add
+SIP trunk > Add
 
 ; smenu_general
 General
@@ -29,10 +29,10 @@ Caller ID:
 Context:
 
 ; fm_protocol_fromuser
-from-user field:
+From-User field:
 
 ; fm_protocol_fromdomain
-from-domain field:
+From-Domain field:
 
 ; fm_protocol_calllimit
 Call limit:

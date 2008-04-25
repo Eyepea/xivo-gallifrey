@@ -698,7 +698,11 @@ class xivo_filter
 		$v = (array) $v;
 	
 		if((bool) $set === false && isset($v[$key]) === false)
+		{
+			if(array_key_exists($key,$v) === true)
+				$this->_set_result($key,null);
 			return(true);
+		}
 	
 		$set = isset($arr['set']) === false ? true : (bool) $arr['set'];
 	

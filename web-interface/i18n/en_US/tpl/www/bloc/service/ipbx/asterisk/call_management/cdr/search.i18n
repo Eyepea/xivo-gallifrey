@@ -128,7 +128,7 @@ Contains
 Ends with
 
 ; fm_userfield
-User fields:
+User field:
 
 ; fm_userfieldformat-opt-exact
 Exact
@@ -226,6 +226,15 @@ Omit
 ; entry_amaflagsmeta-documentation
 Documentation
 
+; fm_dcontext
+Context:
+
+; fm_dcontext-optcustom
+Custom
+
+; fm_dcontext-opt
+%s
+
 ; entry_clid
 Caller ID:
 
@@ -233,7 +242,7 @@ Caller ID:
 Account number:
 
 ; entry_userfield
-User fields:
+User field:
 
 ; entry_dcontext
 Context:

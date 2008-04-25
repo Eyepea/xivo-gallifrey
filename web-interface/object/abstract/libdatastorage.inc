@@ -99,7 +99,9 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 
 	function _origin_get_primary_key($type,$orig)
 	{
-		if($this->_dso->is_single_primary() === true)
+		if($type !== 'add' && $this->_dso->has_autoincrement() === false)
+			return(false);
+		else if($this->_dso->is_single_primary() === true)
 		{
 			if(($primary = $this->_dso->get_primary_key()) === false)
 				return(false);
@@ -111,15 +113,8 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 			
 			return(false);
 		}
-		else if($this->_dso->is_multi_primary() === true && $type !== 'add')
-		{
-			if(($primary = $this->_dso->get_primary_key()) !== false
-			&& ($origid = xivo_array_intersect_key($primary,$orig)) !== false
-			&& count($primary) === count($origid))
-				return($origid);
-
+		else if($type !== 'add' && $this->_dso->is_multi_primary() === true)
 			return(false);
-		}
 
 		return(null);
 	}
@@ -408,7 +403,7 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 		return($this->_dso->edit($id,$arr,$disable));
 	}
 
-	function edit_where($where,$arr,$disable=null,$id=null)
+	function edit_where($where,$arr,$disable=null,$id=null,$chkunique=true)
 	{
 		if(is_array($where) === false
 		|| ($where = $this->get_element_where($where)) === false
@@ -422,7 +417,7 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 			$where = array_merge($where,$id);
 		}
 
-		return($this->_dso->edit($where,$arr,$disable));
+		return($this->_dso->edit($where,$arr,$disable,$chkunique));
 	}
 
 	function delete($id,$disable=null)

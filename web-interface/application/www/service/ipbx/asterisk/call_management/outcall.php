@@ -69,6 +69,7 @@ switch($act)
 
 		$_HTML->set_var('outcalltrunk',$outcalltrunk);
 		$_HTML->set_var('rightcall',$rightcall);
+		$_HTML->set_var('context_list',$appoutcall->get_context_list());
 		$_HTML->set_var('element',$appoutcall->get_elements());
 		$_HTML->set_var('info',$result);
 		break;
@@ -137,6 +138,7 @@ switch($act)
 		$_HTML->set_var('id',$info['outcall']['id']);
 		$_HTML->set_var('outcalltrunk',$outcalltrunk);
 		$_HTML->set_var('rightcall',$rightcall);
+		$_HTML->set_var('context_list',$appoutcall->get_context_list());
 		$_HTML->set_var('element',$appoutcall->get_elements());
 		$_HTML->set_var('info',$return);
 		break;

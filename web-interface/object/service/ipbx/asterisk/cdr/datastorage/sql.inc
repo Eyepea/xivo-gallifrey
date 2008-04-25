@@ -68,6 +68,9 @@ class xivo_service_asterisk_cdr_sql extends xivo_service_asterisk_abstract_sql
 		if(isset($arr['amaflags']) === true)
 			$this->_dso->andwhereexact('amaflags',$arr['amaflags']);
 
+		if(isset($arr['dcontext']) === true)
+			$this->_dso->andwhereexact('dcontext',$arr['dcontext']);
+
 		if(xivo_issa('src',$arr) === true)
 			$this->_dso->andwherelike('src',$arr['src']['pattern'],$arr['src']['type']);
 

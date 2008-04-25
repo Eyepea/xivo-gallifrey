@@ -118,14 +118,14 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 		return($this->_dso->edit($id,$r,$disable));
 	}
 
-	function edit_where($id,$arr,$disable=null)
+	function edit_where($where,$arr,$disable=null,$id=null,$chkunique=true)
 	{
 		if(is_array($arr) === false)
 			return(false);
 		else if(isset($arr['exten']) === true)
 			$arr['exten'] = $this->_sre->clean_extension($arr['exten']);
 
-		return(parent::edit_where($id,$arr,$disable));
+		return(parent::edit_where($where,$arr,$disable,$id,$chkunique));
 	}
 
 	function new_exten($app,$arr=null,$exten='',$context='')

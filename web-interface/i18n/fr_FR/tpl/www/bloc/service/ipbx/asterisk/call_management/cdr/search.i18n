@@ -67,6 +67,15 @@ Omission
 ; fm_amaflags-opt-documentation
 Documentation
 
+; fm_dcontext
+Contexte :
+
+; fm_dcontext-optcustom
+Personnalisé
+
+; fm_dcontext-opt
+%s
+
 ; fm_src
 Appelant :
 
@@ -128,7 +137,7 @@ Contient
 Fini par
 
 ; fm_userfield
-Champs utilisateur :
+Champ utilisateur :
 
 ; fm_userfieldformat-opt-exact
 Exact
@@ -233,7 +242,7 @@ Nom d'appel :
 Numéro d'acompte :
 
 ; entry_userfield
-Champs utilisateur :
+Champ utilisateur :
 
 ; entry_dcontext
 Contexte :

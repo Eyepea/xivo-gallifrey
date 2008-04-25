@@ -9,7 +9,9 @@ class xivo_application_service_asterisk_realstatic_iax_general extends xivo_appl
 	var $_category		= 'general';
 	var $_cat_metric	= 0;
 	var $_filename		= 'iax.conf';
+	var $_contextmember	= false;
 	var $_musiconhold	= array();
+	var $_contextlist	= array();
 
 	function xivo_application_service_asterisk_realstatic_iax_general(&$service)
 	{
@@ -18,6 +20,9 @@ class xivo_application_service_asterisk_realstatic_iax_general extends xivo_appl
 
 	function _load_config()
 	{
+		if(($this->_contextmember = $this->get_abstract('contextmember',array('type' => 'generaliax'))) === false)
+			return(false);
+
 		return(parent::_load_config(dirname(__FILE__)));
 	}
 
@@ -29,6 +34,18 @@ class xivo_application_service_asterisk_realstatic_iax_general extends xivo_appl
 
 		switch($rs['var_name'])
 		{
+			case 'regcontext':
+				$this->_get_contextmember(null,'regcontext');
+
+				$res = array();
+				$res['generaliax-regcontext'] = array();
+				$res['generaliax-regcontext']['context'] = $rs['var_val'];
+				$res['generaliax-regcontext']['varname'] = 'regcontext';
+
+				if($this->set_contextmember($res) === false
+				|| $this->edit_contextmember() === false)
+					return(false);
+				break;
 			case 'allow':
 				if(is_array($rs['var_val']) === true)
 				{

@@ -54,6 +54,13 @@ $array['element']['srcformat']['unset'] = true;
 $array['element']['dst'] = array();
 $array['element']['dst']['default'] = '';
 
+$array['element']['dcontext'] = array();
+$array['element']['dcontext']['default'] = '';
+
+$array['element']['dcontext-custom'] = array();
+$array['element']['dcontext-custom']['default'] = '';
+$array['element']['dcontext-custom']['unset'] = true;
+
 $array['element']['dstformat'] = array();
 $array['element']['dstformat']['value'] = array('exact','begin','contain','end');
 $array['element']['dstformat']['default'] = 'exact';
@@ -131,6 +138,10 @@ $array['filter']['disposition'] = array('set' => false,'chk' => 2,'key' => array
 					XIVO_SRE_IPBX_AST_CDR_DISPOSITION_BUSY,
 					XIVO_SRE_IPBX_AST_CDR_DISPOSITION_FAILED,
 					XIVO_SRE_IPBX_AST_CDR_DISPOSITION_UNKNOWN));
+$array['filter']['dcontext'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context',
+				     'callbackparam' => array(array(
+					XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTIFICATION,
+					XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['amaflags'] = array('set' => false,'chk' => 2,'key' => array(
 				XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_DEFAULT,
 				XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_OMIT,

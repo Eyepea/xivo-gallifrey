@@ -65,13 +65,31 @@ Name:
 Number:
 
 ; fm_qfeatures_context
-Company:
+Context:
 
 ; create_context
 Create a context
 
 ; fm_queue_strategy
-Strategy:
+Ring strategy:
+
+; fm_queue_strategy-opt-leastrecent
+Least recent
+
+; fm_queue_strategy-opt-fewestcalls
+Fewest calls
+
+; fm_queue_strategy-opt-roundrobin
+Round robin
+
+; fm_queue_strategy-opt-rrmemory
+Round robin memory
+
+; fm_queue_strategy-opt-random
+Random
+
+; fm_queue_strategy-opt-ringall
+Ring all
 
 ; fm_qfeatures_timeout
 Ringing time:
@@ -380,7 +398,7 @@ Round up the hold time:
 Disabled
 
 ; fm_queue_announce-round-seconds-opt
-to %s seconds
+%s seconds
 
 ; fm_queue_monitor-format
 Recording format:

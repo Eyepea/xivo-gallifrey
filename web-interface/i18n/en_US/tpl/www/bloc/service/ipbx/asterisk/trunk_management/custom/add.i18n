@@ -7,5 +7,8 @@ Name:
 ; fm_protocol_interface
 Interface:
 
-; fm_protocol_interface
+; fm_protocol_intfsuffix
 Interface suffix:
+
+; fm_protocol_context
+Context:

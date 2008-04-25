@@ -4,6 +4,8 @@
 
 	$info = $this->get_var('info');
 	$element = $this->get_var('element');
+	$context_list = $this->get_var('context_list');
+
 	$outcalltrunk = $this->get_var('outcalltrunk');
 	$rightcall = $this->get_var('rightcall');
 ?>
@@ -12,7 +14,15 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_outcall_name'),'name' => 'outcall[name]','labelid' => 'outcall-name','size' => 15,'default' => $element['outcall']['name']['default'],'value' => $info['outcall']['name']));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_outcall_context'),'name' => 'outcall[context]','labelid' => 'outcall-context','size' => 15,'default' => $element['outcall']['context']['default'],'value' => $info['outcall']['context']));?>
+<?php
+
+if($context_list !== false):
+	echo $form->select(array('desc' => $this->bbf('fm_outcall_context'),'name' => 'outcall[context]','labelid' => 'outcall-context','key' => 'identity','altkey' => 'name','default' => $element['outcall']['context']['default'],'value' => $info['outcall']['context']),$context_list);
+else:
+	echo '<div id="fd-outcall-context" class="txt-center">',$url->href_html($this->bbf('create_context'),'service/ipbx/system_management/context','act=add'),'</div>';
+endif;
+
+?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_outcall_externprefix'),'name' => 'outcall[externprefix]','labelid' => 'outcall-externprefix','size' => 15,'default' => $element['outcall']['externprefix']['default'],'value' => $info['outcall']['externprefix']));?>
 

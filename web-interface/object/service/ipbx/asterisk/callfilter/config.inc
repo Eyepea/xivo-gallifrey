@@ -6,6 +6,9 @@ $array['element'] = array();
 $array['element']['name'] = array();
 $array['element']['name']['default'] = '';
 
+$array['element']['context'] = array();
+$array['element']['context']['default'] = '';
+
 $array['element']['type'] = array();
 $array['element']['type']['value'] = array('bosssecretary');
 $array['element']['type']['default'] = 'bosssecretary';
@@ -16,9 +19,9 @@ $array['element']['bosssecretary']['value'] = array('bossfirst-serial','bossfirs
 $array['element']['bosssecretary']['default'] = 'secretary-simult';
 $array['element']['bosssecretary']['null'] = true;
 
-$array['element']['zone'] = array();
-$array['element']['zone']['value'] = array('internal','external','all');
-$array['element']['zone']['default'] = 'all';
+$array['element']['callfrom'] = array();
+$array['element']['callfrom']['value'] = array('internal','external','all');
+$array['element']['callfrom']['default'] = 'all';
 
 $array['element']['callerdisplay'] = array();
 $array['element']['callerdisplay']['default'] = '';
@@ -38,9 +41,10 @@ $array['element']['description']['default'] = '';
 
 $array['filter'] = array();
 $array['filter']['name'] = array('maxlen' => 128,'regexp' => '/^[a-z0-9_-]+$/i');
+$array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context');
 $array['filter']['type'] = array('set' => false);
 $array['filter']['bosssecretary'] = array('set' => false,'key' => array('bossfirst-serial','bossfirst-simult','secretary-serial','secretary-simult','all'));
-$array['filter']['zone'] = array('key' => array('internal','external','all'));
+$array['filter']['callfrom'] = array('key' => array('internal','external','all'));
 $array['filter']['callerdisplay'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 80);
 $array['filter']['ringseconds'] = array('set' => false,'chk' => 2,'key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['commented'] = array('bool' => true);

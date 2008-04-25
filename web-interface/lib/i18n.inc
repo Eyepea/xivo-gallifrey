@@ -346,7 +346,7 @@ class xivo_i18n
 
 		$this->_loop[$this->_file['filei18n']] = 1;
 
-		if($this->_mk_cache_file() === true)
+		if($this->_mk_cache_file() !== false)
 			return($this->_get_cache_file());
 
 		return(false);
@@ -465,9 +465,7 @@ class xivo_i18n
 		}
 		// TODO: trigger_error();
 
-		$this->_file['filename'] = $file;
-
-		$dir = ltrim(dirname($file),'.');
+		$dir = trim(dirname($file),'.'.XIVO_SEP_DIR);
 		$file = basename($file);
 
 		if(($pos = strrpos($file,'.')) !== false)
@@ -486,6 +484,7 @@ class xivo_i18n
 		$this->_file['dirname'] = $dir;
 		$this->_file['basename'] = $file;
 		$this->_file['path'] = $path;
+		$this->_file['filename'] = $dir.XIVO_SEP_DIR.$file;
 
 		if(defined('XIVO_I18N_BABELFISH_PATH') === false && $this->set_babelfish_path() === false)
 		{
@@ -687,7 +686,7 @@ class xivo_i18n
 							$filename = $this->_file['dirname'].XIVO_SEP_DIR.$matchload[1].$filename;
 
 						if($this->_load_file($filename,$this->_file['namespace']) !== false)
-							$_load[$filename] = 1;
+							$_load[$this->_file['filename']] = 1;
 
 						$this->_copy = $_copy;
 						$this->_load = $_load; 

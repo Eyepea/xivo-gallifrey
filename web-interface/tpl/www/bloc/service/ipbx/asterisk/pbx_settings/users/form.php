@@ -6,6 +6,7 @@
 	$element = $this->get_var('element');
 
 	$autoprov_list = $this->get_var('autoprov_list');
+	$context_list = $this->get_var('context_list');
 	$rightcall = $this->get_var('rightcall');
 
 	if(($vm_active = $info['voicemail']['commented']) !== null):
@@ -81,15 +82,17 @@
 <?=$form->select(array('desc' => $this->bbf('fm_protocol_protocol'),'name' => 'protocol[protocol]','labelid' => 'protocol-protocol','bbf' => array('concatkey','fm_protocol_protocol-opt-'),'key' => false,'default' => $element['ufeatures']['protocol']['default'],'value' => $info['ufeatures']['protocol']),$element['ufeatures']['protocol']['value'],'onchange="xivo_chg_protocol(this.value);"');?>
 
 <?php
-	if(($context_list = $this->get_var('context_list')) !== false):
-		echo $form->select(array('desc' => $this->bbf('fm_protocol_context'),'name' => 'protocol[context]','labelid' => 'sip-protocol-context','key' => 'identity','altkey' => 'name','default' => $element['protocol']['sip']['context']['default'],'value' => $context),$context_list);
 
-		echo $form->select(array('desc' => $this->bbf('fm_protocol_context'),'name' => 'protocol[context]','labelid' => 'iax-protocol-context','key' => 'identity','altkey' => 'name','default' => $element['protocol']['iax']['context']['default'],'value' => $context),$context_list);
+if($context_list !== false):
+	echo $form->select(array('desc' => $this->bbf('fm_protocol_context'),'name' => 'protocol[context]','labelid' => 'sip-protocol-context','key' => 'identity','altkey' => 'name','default' => $element['protocol']['sip']['context']['default'],'value' => $context),$context_list);
 
-		echo $form->select(array('desc' => $this->bbf('fm_protocol_context'),'name' => 'protocol[context]','labelid' => 'custom-protocol-context','key' => 'identity','altkey' => 'name','default' => $element['protocol']['custom']['context']['default'],'value' => $context),$context_list);
-	else:
-		echo '<div id="fd-protocol-context" class="txt-center">',$url->href_html($this->bbf('create_context'),'service/ipbx/system_management/context','act=add'),'</div>';
-	endif;
+	echo $form->select(array('desc' => $this->bbf('fm_protocol_context'),'name' => 'protocol[context]','labelid' => 'iax-protocol-context','key' => 'identity','altkey' => 'name','default' => $element['protocol']['iax']['context']['default'],'value' => $context),$context_list);
+
+	echo $form->select(array('desc' => $this->bbf('fm_protocol_context'),'name' => 'protocol[context]','labelid' => 'custom-protocol-context','key' => 'identity','altkey' => 'name','default' => $element['protocol']['custom']['context']['default'],'value' => $context),$context_list);
+else:
+	echo '<div id="fd-protocol-context" class="txt-center">',$url->href_html($this->bbf('create_context'),'service/ipbx/system_management/context','act=add'),'</div>';
+endif;
+
 ?>
 </div>
 

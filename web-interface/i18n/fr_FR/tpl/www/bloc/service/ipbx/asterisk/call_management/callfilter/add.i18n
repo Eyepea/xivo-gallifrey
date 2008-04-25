@@ -10,16 +10,22 @@ Non réponse
 ; fm_callfilter_name
 Nom :
 
-; fm_callfilter_zone
-Zone :
+; fm_callfilter_context
+Contexte :
 
-; fm_callfilter_zone-opt-internal
+; create_context
+Créer un contexte
+
+; fm_callfilter_callfrom
+Provenance de l'appel :
+
+; fm_callfilter_callfrom-opt-internal
 Interne
 
-; fm_callfilter_zone-opt-external
+; fm_callfilter_callfrom-opt-external
 Externe
 
-; fm_callfilter_zone-opt-all
+; fm_callfilter_callfrom-opt-all
 Tout
 
 ; fm_callfilter_bosssecretary

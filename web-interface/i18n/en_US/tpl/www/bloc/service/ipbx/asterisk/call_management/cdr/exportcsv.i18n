@@ -28,7 +28,7 @@ Caller ID
 Account number
 
 ; fm_userfield
-User fields
+User field
 
 ; fm_dubeg
 Beginning
@@ -64,7 +64,7 @@ Caller ID
 Account number
 
 ; col_userfield
-User fields
+User field
 
 ; col_dcontext
 Context

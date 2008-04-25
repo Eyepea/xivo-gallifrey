@@ -6,6 +6,20 @@ $act = isset($_QR['act']) === false || $_QR['act'] !== 'exportcsv' ? 'search' : 
 $cdr = &$ipbx->get_module('cdr');
 $element = $cdr->get_element();
 
+if($act !== 'exportcsv')
+{
+	$context = &$ipbx->get_module('context');
+
+	$order = array();
+	$order['displayname'] = SORT_ASC;
+	$order['name'] = SORT_ASC;
+
+	if(($context_list = $context->get_all(null,true,$order)) !== false)
+		$context_list[] = array('name' => 'custom','identity' => 'custom');
+
+	$_HTML->set_var('context_list',$context_list);
+}
+
 $total = 0;
 $nbbypage = XIVO_SRE_IPBX_AST_CDR_NBBYPAGE;
 
@@ -14,6 +28,14 @@ $result = false;
 
 if(isset($_QR['fm_send']) === true || isset($_QR['search']) === true)
 {
+	if(isset($_QR['dcontext'],$_QR['dcontext-custom']) === true && $_QR['dcontext'] === 'custom')
+	{
+		$_QR['dcontext'] = $_QR['dcontext-custom'];
+		$_HTML->set_var('dcontext-custom',$_QR['dcontext-custom']);
+	}
+
+	unset($_QR['dcontext-custom']);
+
 	if(($info = $cdr->chk_values($_QR,false)) === false)
 		$info = $cdr->get_filter_result();
 	else
@@ -62,6 +84,7 @@ $menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/call_management/c
 
 $dhtml = &$_HTML->get_module('dhtml');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/cdr.js');
 $dhtml->set_js('js/xivo_calendar.js');
 $dhtml->add_js('/struct/js/date.js.php');
 
