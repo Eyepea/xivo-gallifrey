@@ -19,8 +19,8 @@
 # with this program; if not, you will find one at
 # <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>.
 
-__version__   = '$Revision: 2778 $'
-__date__      = '$Date: 2008-04-13 23:29:16 +0200 (dim, 13 avr 2008) $'
+__version__   = '$Revision$'
+__date__      = '$Date$'
 __copyright__ = 'Copyright (C) 2007, 2008, Proformatique'
 __author__    = 'Corentin Le Gall'
 
@@ -848,11 +848,11 @@ while True: # loops over the reloads
                                         disconnlist = commandclass.checkqueue()
                                         for userinfo in disconnlist:
                                                 print 'checkqueue return :', userinfo
-                                                if 'connection' in userinfo.get('login'):
+                                                if 'login' in userinfo and 'connection' in userinfo.get('login'):
                                                         userinfo.get('login')['connection'].close()
                                                         fdlist_full.remove(userinfo.get('login')['connection'])
                                                 else:
-                                                        log_debug(SYSLOG_WARNING, 'WARNING - no connection field present in userinfo')
+                                                        log_debug(SYSLOG_WARNING, 'WARNING - no login/connection field present in userinfo')
                                                 # commandclass.manage_logoff(userinfo)
                                 except Exception, exc:
                                         log_debug(SYSLOG_ERR, '--- exception [queued threads] --- %s' % str(exc))
