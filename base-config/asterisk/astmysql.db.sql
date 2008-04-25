@@ -85,9 +85,10 @@ DROP TABLE IF EXISTS `callfilter`;
 CREATE TABLE `callfilter` (
  `id` int(10) unsigned auto_increment,
  `name` varchar(128) NOT NULL DEFAULT '',
+ `context` varchar(39) NOT NULL,
  `type` enum('bosssecretary') NOT NULL,
  `bosssecretary` enum('bossfirst-serial','bossfirst-simult','secretary-serial','secretary-simult','all'),
- `zone` enum('internal','external','all') NOT NULL,
+ `callfrom` enum('internal','external','all') NOT NULL,
  `callerdisplay` varchar(80) NOT NULL DEFAULT '',
  `ringseconds` tinyint(2) unsigned NOT NULL DEFAULT 0,
  `commented` tinyint(1) NOT NULL DEFAULT 0,
@@ -95,9 +96,10 @@ CREATE TABLE `callfilter` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+CREATE INDEX `callfilter__idx__context` ON `callfilter`(`context`);
 CREATE INDEX `callfilter__idx__type` ON `callfilter`(`type`);
 CREATE INDEX `callfilter__idx__bosssecretary` ON `callfilter`(`bosssecretary`);
-CREATE INDEX `callfilter__idx__zone` ON `callfilter`(`zone`);
+CREATE INDEX `callfilter__idx__callfrom` ON `callfilter`(`callfrom`);
 CREATE INDEX `callfilter__idx__commented` ON `callfilter`(`commented`);
 CREATE UNIQUE INDEX `callfilter__uidx__name` ON `callfilter`(`name`);
 
@@ -172,6 +174,19 @@ CREATE INDEX `context__idx__entity` ON `context`(`entity`);
 CREATE INDEX `context__idx__commented` ON `context`(`commented`);
 
 
+DROP TABLE IF EXISTS `contextmember`;
+CREATE TABLE `contextmember` (
+ `context` varchar(39) NOT NULL,
+ `type` varchar(64) NOT NULL,
+ `typeval` varchar(128) NOT NULL DEFAULT '',
+ `varname` varchar(128) NOT NULL DEFAULT '',
+ PRIMARY KEY(`context`,`type`,`typeval`,`varname`)
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;
+
+CREATE INDEX `contextmember__idx__context` ON `contextmember`(`context`);
+CREATE INDEX `contextmember__idx__context_type` ON `contextmember`(`context`,`type`);
+
+
 DROP TABLE IF EXISTS `contextnumbers`;
 CREATE TABLE `contextnumbers` (
  `context` varchar(39) NOT NULL,
@@ -190,11 +205,13 @@ CREATE TABLE `contextnummember` (
  `context` varchar(39) NOT NULL,
  `type` enum('user','group','queue','meetme','incall') NOT NULL,
  `typeval` varchar(128) NOT NULL DEFAULT 0,
+ `number` varchar(40) NOT NULL DEFAULT '',
  PRIMARY KEY(`context`,`type`,`typeval`)
 ) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
 CREATE INDEX `contextnummember__idx__context` ON `contextnummember`(`context`);
 CREATE INDEX `contextnummember__idx__context_type` ON `contextnummember`(`context`,`type`);
+CREATE INDEX `contextnummember__idx__number` ON `contextnummember`(`number`);
 
 
 DROP TABLE IF EXISTS `dialstatus`;
@@ -482,7 +499,7 @@ INSERT INTO `generalsip` VALUES (NULL,0,0,0,'sip.conf','general','defaultexpiry'
 INSERT INTO `generalsip` VALUES (NULL,0,0,0,'sip.conf','general','registertimeout',20);
 INSERT INTO `generalsip` VALUES (NULL,0,0,0,'sip.conf','general','registerattempts',0);
 INSERT INTO `generalsip` VALUES (NULL,0,0,0,'sip.conf','general','notifyringing','yes');
-INSERT INTO `generalsip` VALUES (NULL,0,0,0,'sip.conf','general','context','default');
+INSERT INTO `generalsip` VALUES (NULL,0,0,1,'sip.conf','general','context',NULL);
 INSERT INTO `generalsip` VALUES (NULL,0,0,0,'sip.conf','general','nat','no');
 INSERT INTO `generalsip` VALUES (NULL,0,0,0,'sip.conf','general','dtmfmode','info');
 INSERT INTO `generalsip` VALUES (NULL,0,0,0,'sip.conf','general','qualify','no');
@@ -530,7 +547,7 @@ INSERT INTO `generalvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','fo
 INSERT INTO `generalvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','maxlogins','3');
 INSERT INTO `generalvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','envelope','yes');
 INSERT INTO `generalvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','saycid','no');
-INSERT INTO `generalvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','cidinternalcontexts','default');
+INSERT INTO `generalvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','cidinternalcontexts',NULL);
 INSERT INTO `generalvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','sayduration','yes');
 INSERT INTO `generalvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','saydurationm','2');
 INSERT INTO `generalvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','forcename','no');
@@ -939,6 +956,7 @@ DROP TABLE IF EXISTS `rightcall`;
 CREATE TABLE `rightcall` (
  `id` int(10) unsigned auto_increment,
  `name` varchar(128) NOT NULL DEFAULT '',
+ `context` varchar(39) NOT NULL,
  `passwd` varchar(40) NOT NULL DEFAULT '',
  `authorization` tinyint(1) NOT NULL DEFAULT 0,
  `commented` tinyint(1) NOT NULL DEFAULT 0,
@@ -946,6 +964,7 @@ CREATE TABLE `rightcall` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
+CREATE INDEX `rightcall__idx__context` ON `rightcall`(`context`);
 CREATE INDEX `rightcall__idx__passwd` ON `rightcall`(`passwd`);
 CREATE INDEX `rightcall__idx__authorization` ON `rightcall`(`authorization`);
 CREATE INDEX `rightcall__idx__commented` ON `rightcall`(`commented`);
@@ -980,6 +999,7 @@ DROP TABLE IF EXISTS `schedule`;
 CREATE TABLE `schedule` (
  `id` int(10) unsigned auto_increment,
  `name` varchar(128) NOT NULL DEFAULT '',
+ `context` varchar(39) NOT NULL,
  `timebeg` varchar(5) NOT NULL DEFAULT '*',
  `timeend` varchar(5),
  `daynamebeg` varchar(3) NOT NULL DEFAULT '*',
@@ -1000,6 +1020,7 @@ CREATE TABLE `schedule` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+CREATE INDEX `schedule__idx__context` ON `schedule`(`context`);
 CREATE INDEX `schedule__idx__typetrue_typevaltrue` ON `schedule`(`typetrue`,`typevaltrue`);
 CREATE INDEX `schedule__idx__applicationvaltrue` ON `schedule`(`applicationvaltrue`);
 CREATE INDEX `schedule__idx__typefalse_typevalfalse` ON `schedule`(`typefalse`,`typevalfalse`);
