@@ -6,14 +6,14 @@ from distutils.core import setup
 
 setup(name='xivo_fetchfw',
       version='1.0',
-      description='XIVO Fetch Firmwares engine',
+      description='XIVO tool to fetch and install phone firmwares',
       author='Proformatique',
       author_email='technique@proformatique.com',
       url='http://xivo.fr/',
-      packages=['fetchfw'],
+      packages=['xivo_fetchfw'],
       data_files=[
 		  ('/etc/pf-xivo', ['etc/fetchfw.conf']),
-		  ('/usr/sbin', ['sbin/fetchfw']),
+		  ('/usr/sbin', ['sbin/xivo_fetchfw']),
 		  ('/usr/share/pf-xivo-phones-firmware', ['data/firmwares.db']),
 		 ],
      )
