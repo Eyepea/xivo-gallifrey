@@ -147,7 +147,8 @@ class XivoCTICommand(BaseCommand):
                         'history', 'directory-search',
                         'featuresget', 'featuresput',
                         'phones-list', 'phones-add', 'phones-del',
-                        'agents-status', 'agent', 'queues-list', 'agents-list',
+                        'agents-list', 'agents-status', 'agent-status', 'agent',
+                        'queues-list', 'queue-status',
                         'faxsend',
                         'database',
                         'message',
@@ -202,11 +203,11 @@ class XivoCTICommand(BaseCommand):
                         [whoami, whatsmyos] = ident.split("@")
                         if whoami not in ['XC', 'SB']:
                                 return 'wrong_client_identifier:%s' % whoami
-                        if whatsmyos not in ['X11', 'WIN', 'MAC']:
+                        if whatsmyos[:3] not in ['X11', 'WIN', 'MAC']:
                                 return 'wrong_os_identifier:%s' % whatsmyos
                 else:
                         return 'wrong_client_os_identifier:%s' % ident
-                if int(version) < REQUIRED_CLIENT_VERSION:
+                if (not version.isdigit()) or int(version) < REQUIRED_CLIENT_VERSION:
                         return 'version_client:%s;%d' % (version, REQUIRED_CLIENT_VERSION)
 
 
@@ -1062,6 +1063,45 @@ class XivoCTICommand(BaseCommand):
                                                 self.__send_msg_to_cti_client__(userinfo,
                                                                                 'agents-list=%s;%s' %(astid,
                                                                                                       ','.join(self.agents_list[astid].keys())))
+                        elif icommand.name == 'queue-status':
+                                if (capalist & CAPA_FUNC_AGENTS):
+                                        astid = icommand.args[0]
+                                        qname = icommand.args[1]
+                                        lst = []
+                                        if astid in self.queues_list and qname in self.queues_list[astid]:
+                                                for agid, agprop in self.queues_list[astid][qname]['agents'].iteritems():
+                                                        lst.append('%s,%s,%s' % (agid[6:], agprop[0], agprop[1]))
+                                        self.__send_msg_to_cti_client__(userinfo,
+                                                                        'queue-status=%s;%s;%s' %(astid, qname, ';'.join(lst)))
+
+
+                        elif icommand.name == 'agent-status':
+                                if (capalist & CAPA_FUNC_AGENTS):
+                                        astid = icommand.args[0]
+                                        agname = icommand.args[1]
+
+                                        agid = 'Agent/%s' % agname
+                                        qref_joined = []
+                                        qref_unjoined = []
+                                        if astid in self.queues_list:
+                                                for qref, ql in self.queues_list[astid].iteritems():
+                                                        if agid in ql['agents']:
+                                                                qref_joined.append(qref)
+                                                        else:
+                                                                qref_unjoined.append(qref)
+
+                                        if astid in self.agents_list and agname in self.agents_list[astid]:
+                                                agprop = self.agents_list[astid][agname]
+                                                if agprop[0] == 'AGENT_LOGGEDOFF':
+                                                        self.__send_msg_to_cti_client__(userinfo,
+                                                                                        'agent-status=%s;%s;0;%s;%s' %(astid, agname,
+                                                                                                                       ','.join(qref_joined),
+                                                                                                                       ','.join(qref_unjoined)))
+                                                else:
+                                                        self.__send_msg_to_cti_client__(userinfo,
+                                                                                        'agent-status=%s;%s;1;%s;%s' %(astid, agname,
+                                                                                                                       ','.join(qref_joined),
+                                                                                                                       ','.join(qref_unjoined)))
                         elif icommand.name == 'agent':
                                 if (capalist & CAPA_FUNC_AGENTS):
                                         repstr = self.__agent__(userinfo, icommand.args)
@@ -1185,6 +1225,7 @@ class XivoCTICommand(BaseCommand):
                     if kind == 'phones-list':
                             for userinfo in self.ulist.list.itervalues():
                                     if 'agentnum' in userinfo:
+				    	    status = '0'
                                             for ast, qlist in self.agents_list.iteritems():
                                                     if userinfo.get('agentnum') in qlist:
                                                             if qlist[userinfo.get('agentnum')][0] != 'AGENT_LOGGEDOFF':
@@ -1554,8 +1595,13 @@ class XivoCTICommand(BaseCommand):
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, '--- exception --- ldaprequest : %s' % str(exc))
 
-         elif dbkind == 'file' or dbkind == 'http':
-                log_debug(SYSLOG_WARNING, 'the URI <%s> is not supported yet for directory search queries' %(dbkind))
+         elif dbkind == 'file':
+                 log_debug(SYSLOG_WARNING, 'the URI <%s> is not supported yet for directory search queries' %(dbkind))
+         elif dbkind == 'http':
+                 f = urllib.urlopen('%s%s' % (z.uri, searchpattern))
+                 for line in f:
+                         t = line.strip().split(':')
+                         # fullstatlist.append(';'.join([t[1], '', t[], t[]]))
 
          elif dbkind != '':
                 if searchpattern == '*':
