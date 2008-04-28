@@ -28,7 +28,7 @@ import subprocess
 import ConfigParser
 from stat import *
 
-CONFIG_FILE = "fetchfw.conf"
+CONFIG_FILE = "/etc/pf-xivo/fetchfw.conf"
 CONFIG_SECTION_GENERAL = "general"
 
 # Installation functions by brand and optionnally model. install_fns is
