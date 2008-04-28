@@ -53,9 +53,9 @@ sha1sum: a667300a6167e99a967eec222a51543e7cf26505
 # Common files for Aastra phones
 [5xi_LangPacks_PA-001006-00-05-LP_2.2.0.zip]
 url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-C8DD6974/04/5xi_LangPacks_PA-001006-00-05-LP_2.2.0.zip
-size: 79014
-md5sum: 53228e232282dae2d587e556783c30ef
-sha1sum: 8a58debc057b771bce8d769983bd968e53e14c90
+size: 79301
+md5sum: 8c9753ec4758fbf2a19e54dd902783e8
+sha1sum: 9794a88f73ec3f23d55f5adc576f15d52ec8785a
 
 # Linksys PAP2T 5.1.6
 [lspap2t_516]
