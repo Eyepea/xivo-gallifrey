@@ -2,7 +2,7 @@
 
 xivo_service_asterisk::required(array('realstatic','realstatic.inc'),true);
 
-class xivo_service_asterisk_realstatic_iax extends xivo_service_asterisk_realstatic
+class xivo_service_asterisk_realstatic_staticiax extends xivo_service_asterisk_realstatic
 {
 	var $_filename	= 'iax.conf';
 

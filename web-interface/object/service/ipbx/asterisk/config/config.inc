@@ -106,17 +106,17 @@ $array['realstatic']['features']['datastorage'] = true;
 $array['realstatic']['generalqueue'] = array();
 $array['realstatic']['generalqueue']['datastorage'] = true;
 
-$array['realstatic']['iax'] = array();
-$array['realstatic']['iax']['datastorage'] = true;
-
 $array['realstatic']['meetme'] = array();
 $array['realstatic']['meetme']['datastorage'] = true;
 
-$array['realstatic']['sip'] = array();
-$array['realstatic']['sip']['datastorage'] = true;
+$array['realstatic']['staticiax'] = array();
+$array['realstatic']['staticiax']['datastorage'] = true;
 
-$array['realstatic']['voicemail'] = array();
-$array['realstatic']['voicemail']['datastorage'] = true;
+$array['realstatic']['staticsip'] = array();
+$array['realstatic']['staticsip']['datastorage'] = true;
+
+$array['realstatic']['staticvoicemail'] = array();
+$array['realstatic']['staticvoicemail']['datastorage'] = true;
 
 $array['module'] = array();
 

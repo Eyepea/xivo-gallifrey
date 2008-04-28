@@ -2,7 +2,7 @@
 
 xivo_service_asterisk::required(array('realstatic','realstatic.inc'),true);
 
-class xivo_service_asterisk_realstatic_voicemail extends xivo_service_asterisk_realstatic
+class xivo_service_asterisk_realstatic_staticvoicemail extends xivo_service_asterisk_realstatic
 {
 	var $_filename	= 'voicemail.conf';
 

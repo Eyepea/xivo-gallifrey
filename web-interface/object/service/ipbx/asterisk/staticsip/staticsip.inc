@@ -2,7 +2,7 @@
 
 xivo_service_asterisk::required(array('realstatic','realstatic.inc'),true);
 
-class xivo_service_asterisk_realstatic_sip extends xivo_service_asterisk_realstatic
+class xivo_service_asterisk_realstatic_staticsip extends xivo_service_asterisk_realstatic
 {
 	var $_filename	= 'sip.conf';
 

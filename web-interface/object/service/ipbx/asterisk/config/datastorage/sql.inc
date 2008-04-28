@@ -86,10 +86,6 @@ $array['handynumbers'] = array();
 $array['handynumbers']['table'] = 'handynumbers';
 $array['handynumbers']['primary'] = array('id' => '');
 
-$array['iax'] = array();
-$array['iax']['table'] = 'generaliax';
-$array['iax']['primary'] = array('id' => '');
-
 $array['incall'] = array();
 $array['incall']['table'] = 'incall';
 $array['incall']['primary'] = array('id' => '');
@@ -166,9 +162,17 @@ $array['serverfeatures'] = array();
 $array['serverfeatures']['table'] = 'serverfeatures';
 $array['serverfeatures']['primary'] = array('id' => '');
 
-$array['sip'] = array();
-$array['sip']['table'] = 'generalsip';
-$array['sip']['primary'] = array('id' => '');
+$array['staticiax'] = array();
+$array['staticiax']['table'] = 'generaliax';
+$array['staticiax']['primary'] = array('id' => '');
+
+$array['staticsip'] = array();
+$array['staticsip']['table'] = 'generalsip';
+$array['staticsip']['primary'] = array('id' => '');
+
+$array['staticvoicemail'] = array();
+$array['staticvoicemail']['table'] = 'generalvoicemail';
+$array['staticvoicemail']['primary'] = array('id' => '');
 
 $array['trunkcustom'] = array();
 $array['trunkcustom']['table'] = 'usercustom';
@@ -202,16 +206,8 @@ $array['usersip'] = array();
 $array['usersip']['table'] = 'usersip';
 $array['usersip']['primary'] = array('id' => '');
 
-$array['uservoicemail'] = array();
-$array['uservoicemail']['table'] = 'uservoicemail';
-$array['uservoicemail']['primary'] = array('uniqueid' => '');
-
 $array['voicemail'] = array();
-$array['voicemail']['table'] = 'generalvoicemail';
-$array['voicemail']['primary'] = array('id' => '');
-
-$array['zonemessages'] = array();
-$array['zonemessages']['table'] = 'generalvoicemail';
-$array['zonemessages']['primary'] = array('id' => '');
+$array['voicemail']['table'] = 'uservoicemail';
+$array['voicemail']['primary'] = array('uniqueid' => '');
 
 ?>
