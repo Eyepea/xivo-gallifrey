@@ -706,7 +706,7 @@ class XivoCTICommand(BaseCommand):
                 if astid in self.agents_list and agent in self.agents_list[astid]:
                         self.agents_list[astid][agent] = ['AGENT_IDLE', event.get('Loginchan')]
                 msg = self.__build_agupdate__(agent, ['agentlogin', astid, agent, loginchan])
-                print msg
+                # print 'ami_agentcallbacklogin', msg
                 self.__send_msg_to_cti_clients__(msg)
                 return
         def ami_agentcallbacklogoff(self, astid, event):
@@ -717,7 +717,7 @@ class XivoCTICommand(BaseCommand):
                 if astid in self.agents_list and agent in self.agents_list[astid]:
                         self.agents_list[astid][agent] = ['AGENT_LOGGEDOFF', loginchan]
                 msg = self.__build_agupdate__(agent, ['agentlogout', astid, agent, loginchan])
-                print msg
+                # print 'ami_agentcallbacklogoff', msg
                 self.__send_msg_to_cti_clients__(msg)
                 return
 
@@ -786,10 +786,12 @@ class XivoCTICommand(BaseCommand):
                                                 userinfo.get('context'),
                                                 '/'.join(arrgs)])
                                 break
-                if arg is not None:
-                        return 'update-agents=%s' % arg
-                else:
-                        return arg
+                if arg is None:
+                        arg = ':'.join(['agu',
+                                        '',
+                                        '', '', '', '',
+                                        '/'.join(arrgs)])
+                return 'update-agents=%s' % arg
 
 
         def ami_queuememberstatus(self, astid, event):
@@ -1060,9 +1062,27 @@ class XivoCTICommand(BaseCommand):
                                 if (capalist & CAPA_FUNC_AGENTS):
                                         astid = icommand.args[0]
                                         if astid in self.agents_list:
+                                                lst = []
+                                                for agname, agprop in self.agents_list[astid].iteritems():
+                                                        agid = 'Agent/%s' % agname
+                                                        qjoined = []
+                                                        qunpaused = []
+                                                        if astid in self.queues_list:
+                                                                for qref, ql in self.queues_list[astid].iteritems():
+                                                                        if agid in ql['agents']:
+                                                                                qjoined.append(qref)
+                                                                                agpropq = ql['agents'][agid]
+                                                                                if agpropq[0] == '0':
+                                                                                        qunpaused.append(qref)
+                                                                        else:
+                                                                                pass
+                                                        if agprop[0] == 'AGENT_LOGGEDOFF':
+                                                                lst.append('%s:0:%s:%s' % (agname, ','.join(qjoined), ','.join(qunpaused)))
+                                                        else:
+                                                                lst.append('%s:1:%s:%s' % (agname, ','.join(qjoined), ','.join(qunpaused)))
                                                 self.__send_msg_to_cti_client__(userinfo,
                                                                                 'agents-list=%s;%s' %(astid,
-                                                                                                      ','.join(self.agents_list[astid].keys())))
+                                                                                                      ';'.join(lst)))
                         elif icommand.name == 'queue-status':
                                 if (capalist & CAPA_FUNC_AGENTS):
                                         astid = icommand.args[0]
@@ -1086,7 +1106,8 @@ class XivoCTICommand(BaseCommand):
                                         if astid in self.queues_list:
                                                 for qref, ql in self.queues_list[astid].iteritems():
                                                         if agid in ql['agents']:
-                                                                qref_joined.append(qref)
+                                                                agprop = ql['agents'][agid]
+                                                                qref_joined.append(':'.join([qref, agprop[0], agprop[1]]))
                                                         else:
                                                                 qref_unjoined.append(qref)
 
@@ -1099,9 +1120,9 @@ class XivoCTICommand(BaseCommand):
                                                                                                                        ','.join(qref_unjoined)))
                                                 else:
                                                         self.__send_msg_to_cti_client__(userinfo,
-                                                                                        'agent-status=%s;%s;1;%s;%s' %(astid, agname,
-                                                                                                                       ','.join(qref_joined),
-                                                                                                                       ','.join(qref_unjoined)))
+                                                                                        'agent-status=%s;%s;%s;%s;%s' %(astid, agname, agprop[1],
+                                                                                                                        ','.join(qref_joined),
+                                                                                                                        ','.join(qref_unjoined)))
                         elif icommand.name == 'agent':
                                 if (capalist & CAPA_FUNC_AGENTS):
                                         repstr = self.__agent__(userinfo, icommand.args)
@@ -1173,11 +1194,24 @@ class XivoCTICommand(BaseCommand):
                                                 self.amis[astid].queueadd(queuename, 'Agent/%s' % agentnum)
                                                 self.amis[astid].queuepause(queuename, 'Agent/%s' % agentnum, 'false')
                         elif subcommand == 'login':
-                                self.amis[astid].setvar('AGENTBYCALLERID_%s' % userinfo['phonenum'], agentnum)
-                                self.amis[astid].agentcallbacklogin(agentnum, userinfo['phonenum'])
+                                if len(commandargs) > 1:
+                                        anum = commandargs[1]
+                                        ## XXXX temporary
+                                        phonenum = anum
+                                else:
+                                        anum = agentnum
+                                        phonenum = userinfo['phonenum']
+                                self.amis[astid].setvar('AGENTBYCALLERID_%s' % phonenum, anum)
+                                self.amis[astid].agentcallbacklogin(anum, phonenum)
                         elif subcommand == 'logout':
-                                self.amis[astid].setvar('AGENTBYCALLERID_%s' % userinfo['phonenum'], '')
-                                self.amis[astid].agentlogoff(agentnum)
+                                if len(commandargs) > 1:
+                                        anum = commandargs[1]
+                                        phonenum = str(int(anum) - 6000)
+                                else:
+                                        anum = agentnum
+                                        phonenum = userinfo['phonenum']
+                                self.amis[astid].setvar('AGENTBYCALLERID_%s' % phonenum, '')
+                                self.amis[astid].agentlogoff(anum)
                         elif subcommand == 'lists':
                                 pass
                         else:
@@ -1246,6 +1280,7 @@ class XivoCTICommand(BaseCommand):
                                     astid = userinfo.get('astid')
                                     if phonenum in self.plist[astid].normal:
                                             phone = self.plist[astid].normal[phonenum]
+                                            userinfo['phonenum'] = userinfo['user']
                                             bstatus = ':'.join(['sip',
                                                                 userinfo['user'],
                                                                 userinfo['phonenum'],
@@ -1261,7 +1296,6 @@ class XivoCTICommand(BaseCommand):
                                                                  phone.build_cidstatus(),
                                                                  phone.build_fullstatlist() + ";")
                                                     self.fullstat_heavies[reqid].append(':'.join(phoneinfo))
-                            print self.fullstat_heavies[reqid]
 ##                            for astid in self.configs:
 ##                                    plist_n = self.plist[astid]
 ##                                    plist_normal_keys = filter(lambda j: plist_n.normal[j].towatch, plist_n.normal.iterkeys())
@@ -1285,21 +1319,21 @@ class XivoCTICommand(BaseCommand):
                         reqid = icommand.args[0]
 
             if reqid in self.fullstat_heavies:
-                fullstat = []
-                nstat = len(self.fullstat_heavies[reqid])/ITEMS_PER_PACKET
-                for j in xrange(ITEMS_PER_PACKET):
+                    fullstat = []
+                    nstat = len(self.fullstat_heavies[reqid])/ITEMS_PER_PACKET
+                    for j in xrange(ITEMS_PER_PACKET):
                         if len(self.fullstat_heavies[reqid]) > 0:
                                 fullstat.append(self.fullstat_heavies[reqid].pop())
-                if nstat > 0:
-                        rtab = '%s=%s;%s' %(kind, reqid, ''.join(fullstat))
-                else:
-                        del self.fullstat_heavies[reqid]
-                        rtab = '%s=0;%s'  %(kind, ''.join(fullstat))
-                        log_debug(SYSLOG_INFO, 'building last packet reply for <%s ...>' %(rtab[0:40]))
-                return rtab
+                    if nstat > 0:
+                            rtab = '%s=%s;%s' %(kind, reqid, ''.join(fullstat))
+                    else:
+                            del self.fullstat_heavies[reqid]
+                            rtab = '%s=0;%s'  %(kind, ''.join(fullstat))
+                            log_debug(SYSLOG_INFO, 'building last packet reply for <%s ...>' %(rtab[0:40]))
+                    return rtab
             else:
-                log_debug(SYSLOG_INFO, 'reqid <%s> not defined for %s reply' %(reqid, kind))
-                return ''
+                    log_debug(SYSLOG_INFO, 'reqid <%s> not defined for %s reply' %(reqid, kind))
+                    return ''
 
 
         # \brief Builds the features_get reply.
