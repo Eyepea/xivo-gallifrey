@@ -51,7 +51,7 @@ file.write("Channel: %s/%s\n"
            "WaitTime: 30\n"
            "CallerID: %s\n"
            "Set: XIVO_DISAPARAMS=%s\n"
-           "Context: callbackdisa\n"
+           "Context: xivo-callbackdisa\n"
            "Extension: s" % (chantech, srcnum, srcnum, disa_params))
 file.close()
 
