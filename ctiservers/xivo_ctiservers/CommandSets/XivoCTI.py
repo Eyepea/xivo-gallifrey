@@ -1184,15 +1184,23 @@ class XivoCTICommand(BaseCommand):
                         if subcommand == 'leave':
                                 if len(commandargs) > 1:
                                         queuenames = commandargs[1].split(',')
+                                        if len(commandargs) > 2:
+                                                anum = commandargs[2]
+                                        else:
+                                                anum = agentnum
                                         for queuename in queuenames:
-                                                self.amis[astid].queuepause(queuename, 'Agent/%s' % agentnum, 'true')
-                                                self.amis[astid].queueremove(queuename, 'Agent/%s' % agentnum)
+                                                self.amis[astid].queuepause(queuename, 'Agent/%s' % anum, 'true')
+                                                self.amis[astid].queueremove(queuename, 'Agent/%s' % anum)
                         elif subcommand == 'join':
                                 if len(commandargs) > 1:
                                         queuenames = commandargs[1].split(',')
+                                        if len(commandargs) > 2:
+                                                anum = commandargs[2]
+                                        else:
+                                                anum = agentnum
                                         for queuename in queuenames:
-                                                self.amis[astid].queueadd(queuename, 'Agent/%s' % agentnum)
-                                                self.amis[astid].queuepause(queuename, 'Agent/%s' % agentnum, 'false')
+                                                self.amis[astid].queueadd(queuename, 'Agent/%s' % anum)
+                                                self.amis[astid].queuepause(queuename, 'Agent/%s' % anum, 'false')
                         elif subcommand == 'login':
                                 if len(commandargs) > 1:
                                         anum = commandargs[1]
