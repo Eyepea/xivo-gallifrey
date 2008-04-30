@@ -323,6 +323,8 @@ class XivoCTICommand(BaseCommand):
                         elif whoami == 'SB':
                                 self.conngui_sb -= 1
                         del userinfo['login']
+                        userinfo['state'] = 'unknown'
+                        self.__update_availstate__(userinfo, userinfo.get('state'))
 
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, "--- exception --- disconnect_user %s : %s" %(str(userinfo), str(exc)))
@@ -752,7 +754,12 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def ami_queueentry(self, astid, event):
-                print 'AMI QueueEntry', event
+                queue = event.get('Queue')
+                if astid not in self.queues_list:
+                        self.queues_list[astid] = {}
+                if queue not in self.queues_list[astid]:
+                        self.queues_list[astid][queue] = {'agents' : {}, 'channels' : [], 'ncalls' : 0}
+                # {'CallerID': '102', 'CallerIDName': 'qcb_00000', 'Position': '1', 'Channel': 'SIP/102-081e5f00', 'Wait': '8'}
                 return
                 
         def ami_queuememberadded(self, astid, event):
@@ -761,7 +768,7 @@ class XivoCTICommand(BaseCommand):
                 if astid not in self.queues_list:
                         self.queues_list[astid] = {}
                 if queue not in self.queues_list[astid]:
-                        self.queues_list[astid][queue] = {'agents' : {}, 'channels' : []}
+                        self.queues_list[astid][queue] = {'agents' : {}, 'channels' : [], 'ncalls' : 0}
                 if location not in self.queues_list[astid][queue]['agents']:
                         self.queues_list[astid][queue]['agents'][location] = [event.get('Paused'), event.get('Status'), event.get('Membership')]
                 return
@@ -808,7 +815,6 @@ class XivoCTICommand(BaseCommand):
                 msg = self.__build_agupdate__(agentnum, ['queuememberstatus', astid, agentnum, queue, status, paused])
                 self.__send_msg_to_cti_clients__(msg)
 
-
                 # status = 3 => ringing
                 # status = 1 => do not ring anymore => the one who has not gone to '1' among the '3's is the one who answered ...
                 # 5 is received when unavailable members of a queue are attempted to be joined ... use agentcallbacklogoff to detect exit instead
@@ -833,10 +839,12 @@ class XivoCTICommand(BaseCommand):
 
         def ami_queueparams(self, astid, event):
                 queue = event.get('Queue')
+                ncalls = event.get('Calls')
+                # ServicelevelPerf': '0.0', 'Abandoned': '0', 'Max': '0', 'Completed': '0', 'ServiceLevel': '0', 'Weight': '0', 'Holdtime': '0'
                 if astid not in self.queues_list:
                         self.queues_list[astid] = {}
                 if queue not in self.queues_list[astid]:
-                        self.queues_list[astid][queue] = {'agents' : {}, 'channels' : []}
+                        self.queues_list[astid][queue] = {'agents' : {}, 'channels' : [], 'ncalls' : int(ncalls)}
                 return
 
         def ami_queuemember(self, astid, event):
@@ -845,7 +853,7 @@ class XivoCTICommand(BaseCommand):
                 if astid not in self.queues_list:
                         self.queues_list[astid] = {}
                 if queue not in self.queues_list[astid]:
-                        self.queues_list[astid][queue] = {'agents' : {}, 'channels' : []}
+                        self.queues_list[astid][queue] = {'agents' : {}, 'channels' : [], 'ncalls' : 0}
                 if location not in self.queues_list[astid][queue]['agents']:
                         self.queues_list[astid][queue]['agents'][location] = [event.get('Paused'), event.get('Status'), event.get('Membership')]
                 return
@@ -878,9 +886,10 @@ class XivoCTICommand(BaseCommand):
                 if astid not in self.queues_list:
                         self.queues_list[astid] = {}
                 if queue not in self.queues_list[astid]:
-                        self.queues_list[astid][queue] = {'agents' : {}, 'channels' : []}
+                        self.queues_list[astid][queue] = {'agents' : {}, 'channels' : [], 'ncalls' : 0}
                 if chan not in self.queues_list[astid][queue]['channels']:
                         self.queues_list[astid][queue]['channels'].append(chan)
+                self.queues_list[astid][queue]['ncalls'] = int(count)
                 self.__send_msg_to_cti_clients__('update-queues=queuechannels/%s/%s/%s' % (astid, queue, count))
 
                 print 'AMI Queue JOIN ', queue, chan, count
@@ -895,6 +904,7 @@ class XivoCTICommand(BaseCommand):
                 if astid in self.queues_list and queue in self.queues_list[astid] and chan in self.queues_list[astid][queue]['channels']:
                         self.queues_list[astid][queue]['channels'].remove(chan)
                         print 'AMI Queue LEAVE', len(self.queues_list[astid][queue]['channels']), count
+                self.queues_list[astid][queue]['ncalls'] = int(count)
                 self.__send_msg_to_cti_clients__('update-queues=queuechannels/%s/%s/%s' % (astid, queue, count))
 
                 if astid not in self.queues_channels_list:
@@ -1055,9 +1065,12 @@ class XivoCTICommand(BaseCommand):
                                                         if agnum in unallowed:
                                                                 allowed = 0
                                                 if astid in self.queues_list:
+                                                        lst = []
+                                                        for qname, qprop in self.queues_list[astid].iteritems():
+                                                                lst.append('%s:%d' % (qname, qprop['ncalls']))
                                                         self.__send_msg_to_cti_client__(userinfo,
                                                                                         'queues-list=%s;%d;%s' %(astid, allowed,
-                                                                                                                 ','.join(self.queues_list[astid].keys())))
+                                                                                                                 ','.join(lst)))
                         elif icommand.name == 'agents-list':
                                 if (capalist & CAPA_FUNC_AGENTS):
                                         astid = icommand.args[0]
