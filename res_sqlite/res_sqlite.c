@@ -909,7 +909,7 @@ cdr_handler(struct ast_cdr *cdr)
   if (error)
     {
       ast_log(LOG_ERROR, "%s\n", errormsg);
-      free(errormsg);
+      sqlite_freemem(errormsg);
       return 1;
     }
 
@@ -1026,7 +1026,7 @@ config_handler(const char *database, const char *table, const char *file,
   if (error)
     {
       ast_log(LOG_ERROR, "%s\n", errormsg);
-      free(errormsg);
+      sqlite_freemem(errormsg);
       return NULL;
     }
 
@@ -1213,7 +1213,7 @@ realtime_handler(const char *database, const char *table, va_list ap)
   if (error)
     {
       ast_log(LOG_WARNING, "%s\n", errormsg);
-      free(errormsg);
+      sqlite_freemem(errormsg);
       ast_variables_destroy(args.var);
       return NULL;
     }
@@ -1408,7 +1408,7 @@ realtime_multi_handler(const char *database, const char *table, va_list ap)
   if (error)
     {
       ast_log(LOG_WARNING, "%s\n", errormsg);
-      free(errormsg);
+      sqlite_freemem(errormsg);
       ast_config_destroy(cfg);
       return NULL;
     }
@@ -1508,7 +1508,7 @@ realtime_update_handler(const char *database, const char *table,
   if (error)
     {
       ast_log(LOG_WARNING, "%s\n", errormsg);
-      free(errormsg);
+      sqlite_freemem(errormsg);
     }
 
   return rows_num;
@@ -2042,7 +2042,7 @@ load_module(void)
   if (db == NULL)
     {
       ast_log(LOG_ERROR, "%s\n", errormsg);
-      free(errormsg);
+      sqlite_freemem(errormsg);
       unload_module();
       return 1;
     }
@@ -2064,7 +2064,7 @@ load_module(void)
           if (error != SQLITE_ERROR)
             {
               ast_log(LOG_ERROR, "%s\n", errormsg);
-              free(errormsg);
+              sqlite_freemem(errormsg);
               unload_module();
               return 1;
             }
@@ -2077,7 +2077,7 @@ load_module(void)
           if (error)
             {
               ast_log(LOG_ERROR, "%s\n", errormsg);
-              free(errormsg);
+              sqlite_freemem(errormsg);
               unload_module();
               return 1;
             }
