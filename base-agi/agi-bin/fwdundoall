@@ -19,33 +19,31 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
-
 import xivo.to_path
 
 import sys
 import anysql
-from BackSQL import backsqlite
-from BackSQL import backmysql
 import agi_helpers
-import ConfigDict
-from agi import *
-import agitb
+import xivo_helpers
 
-agi = AGI()
-agitb.enable(agi)
-db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
-
-# Cursors have a weak reference on their connection, so make a strong one.
-conn = agi_helpers.db_connect(agi, db_uri)
-cursor = conn.cursor()
+agi = agi_helpers.agi_get_session()
+cursor = xivo_helpers.db_connect().cursor()
 srcnum = agi.get_variable('REAL_SRCNUM')
 context = agi.get_variable('REAL_CONTEXT')
 
-cursor.query("UPDATE userfeatures SET enableunc = 0, destunc = '', enablerna = 0, destrna = '', enablebusy = 0, destbusy = '' WHERE number = %s and CONTEXT = %s", parameters = (srcnum, context))
+cursor.query("UPDATE userfeatures "
+             "  SET enableunc = 0, "
+             "      destunc = '', "
+             "      enablerna = 0, "
+             "      destrna = '', "
+             "      enablebusy = 0, "
+             "      destbusy = '' "
+             "  WHERE number = %s "
+             "    AND context = %s",
+             parameters = (srcnum, context))
 
 if cursor.rowcount != 1:
 	agi_helpers.dp_break("Unable to perform the requested update")
 
-conn.commit()
+xivo_helpers.db_close()
 agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])

@@ -19,24 +19,12 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
-
 import xivo.to_path
 
 import sys
 import time
-import anysql
 import agi_helpers
-from BackSQL import backsqlite
-from BackSQL import backmysql
-import ConfigDict
-from agi import *
-import agitb
-
-agi = AGI()
-# agi.DEBUG_PASSTHROUGH = 1
-agitb.enable(agi)
-db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
+import xivo_helpers
 
 def ds_set_fwd_vars(id, lookuptype, status, type_varname, typeval1_varname, typeval2_varname):
 	"""Front-end to agi_helpers.set_fwd_vars() that fetches some data from
@@ -65,11 +53,10 @@ def ds_set_fwd_vars(id, lookuptype, status, type_varname, typeval1_varname, type
 		applicationval = res['applicationval']
 
 	agi.set_variable(type_varname + "_FROMDS", 1)
-	agi_helpers.set_fwd_vars(agi, cursor, type, typeval, applicationval, type_varname, typeval1_varname, typeval2_varname)
+	agi_helpers.set_fwd_vars(cursor, type, typeval, applicationval, type_varname, typeval1_varname, typeval2_varname)
 
-# Cursors have a weak reference on their connection, so make a strong one.
-conn = agi_helpers.db_connect(agi, db_uri)
-cursor = conn.cursor()
+agi = agi_helpers.agi_get_session()
+cursor = xivo_helpers.db_connect().cursor()
 srcnum = agi.get_variable('REAL_SRCNUM')
 dstnum = agi.get_variable('REAL_DSTNUM')
 context = agi.get_variable('REAL_CONTEXT')
@@ -89,7 +76,7 @@ cursor.query("SELECT ${columns} FROM userfeatures "
 res = cursor.fetchone()
 
 if not res:
-	agi_helpers.dp_break(agi, "Unknown number '%s'" % dstnum)
+	agi_helpers.dp_break("Unknown number '%s'" % dstnum)
 
 # Populate locals()
 # works if columns contains vars of the form [a-zA-Z_][a-zA-Z0-9_]*
@@ -102,7 +89,7 @@ if not bypass and bsfilter == 'boss':
 	apply_filter = False
 
 	try:
-		filter = agi_helpers.bsfilter(agi, cursor, dstnum, context)
+		filter = agi_helpers.bsfilter(cursor, dstnum, context)
 
 		if not filter.active:
 			raise LookupError
@@ -162,11 +149,11 @@ elif protocol == "custom":
 	res = cursor.fetchone()
 
 	if not res:
-		agi_helpers.dp_break(agi, "Database inconsistency: unable to find custom user (name = '%s', context = '%s')" % (name, context))
+		agi_helpers.dp_break("Database inconsistency: unable to find custom user (name = '%s', context = '%s')" % (name, context))
 
 	interface = res['interface']
 else:
-	agi_helpers.dp_break(agi, "Unknown protocol '%s'" % protocol)
+	agi_helpers.dp_break("Unknown protocol '%s'" % protocol)
 
 # The extension table contains some rows which are used to activate some
 # services like redirections or voicemail.

@@ -21,8 +21,6 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
-
 RIGHTCALL_AUTHORIZATION_COLNAME = "rightcall.authorization"
 RIGHTCALL_PASSWD_COLNAME = "rightcall.passwd"
 
@@ -30,17 +28,8 @@ import xivo.to_path
 
 import re
 import sys
-import anysql
 import agi_helpers
-from BackSQL import backsqlite
-from BackSQL import backmysql
-import ConfigDict
-from agi import *
-import agitb
-
-agi = AGI()
-agitb.enable(agi)
-db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
+import xivo_helpers
 
 rep = (('_', ''),
        ('*', '\*'),
@@ -81,9 +70,8 @@ def deny(password):
 	agi.set_variable('XIVO_AUTHORIZATION', "DENY")
 	exit()
 
-# Cursors have a weak reference on their connection, so make a strong one.
-conn = agi_helpers.db_connect(agi, db_uri)
-cursor = conn.cursor()
+agi = agi_helpers.agi_get_session()
+cursor = xivo_helpers.db_connect().cursor()
 srcnum = agi.get_variable('REAL_SRCNUM')
 dstnum = agi.get_variable('REAL_DSTNUM')
 context = agi.get_variable('REAL_CONTEXT')

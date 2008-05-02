@@ -19,19 +19,13 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
-
 import xivo.to_path
 
-import os
 import sys
-import time
-from agi import *
-import agitb
+import agi_helpers
+import xivo_helpers
 
-agi = AGI()
-agitb.enable(agi)
-
+agi = agi_helpers.agi_get_session()
 srcnum = agi.get_variable('CALLERID(num)')
 dstnum = agi.get_variable('REAL_DSTNUM')
 channel = agi.get_variable('CHANNEL')

@@ -24,6 +24,14 @@ __license__ = """
 """
 
 import re
+import sys
+import anysql
+import except_tb
+import ConfigDict
+from BackSQL import backsqlite
+from BackSQL import backmysql
+
+AGI_CONFFILE = "/etc/asterisk/xivo_agi.conf"
 
 find_asterisk_pattern_char = re.compile('[[NXZ!.]').search
 
@@ -144,5 +152,64 @@ def speed_dial_key_extension(xleft, xright, fkext,
 	                              xleft, xright, fkext,
 				      monitoringext, isbsfilter)
 	                     if c)
+
+def stderr_write_nl(message):
+	sys.stderr.write("%s\n" % message)
+
+output_fn = stderr_write_nl
+
+db_conn = None
+
+def set_output_fn(out_fn):
+	output_fn = out_fn
+
+def abort(message, show_tb = False):
+	"""Generic abort function
+	
+	Display a message using the global output_fn function, optionally
+	dumping the exception trace, and stop execution.
+	
+	If show_tb is True, this function must be called from an except block.
+	"""
+
+	output_fn(message)
+
+	if show_tb:
+		except_tb.log_exception(output_fn)
+
+	sys.exit(1)
+
+def db_connect():
+	"""DataBase CONNECT
+	
+	This function is a simple wrapper to connect to the database with error
+	handling. If successful, it returns the connection object. Otherwise
+	execution is aborted.
+	
+	This module keeps a reference to the connection created, so the users
+	are permitted to call this function like :
+	
+	cursor = xivo_helpers.db_connect().cursor()
+	
+	If a previous connection was open when this function is called, its
+	changes are committed and the connection is closed before creating a
+	new one.
+	"""
+
+	db_close()
+	db_uri = ConfigDict.ReadSingleKey(AGI_CONFFILE, 'db', 'db_uri')
+
+	try:
+		db_conn = anysql.connect_by_uri(db_uri)
+	except:
+		abort("Unable to connect to %s" % db_uri, True)
+
+	return db_conn
+
+def db_close():
+	if db_conn:
+		db_conn.commit()
+		db_conn.close()
+		db_conn = None
 
 __all__ = ('speed_dial_key_extension', 'speed_dial_key_components')

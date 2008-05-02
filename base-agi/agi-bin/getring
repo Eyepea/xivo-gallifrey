@@ -22,19 +22,16 @@ __license__ = """
 import xivo.to_path
 
 import sys
+import agi_helpers
+import xivo_helpers
 import ConfigParser
-from ConfigDict import *
-from agi import *
-import agitb
 
-ring = "/etc/asterisk/xivo_ring.conf"
+CONFIG_FILE = "/etc/asterisk/xivo_ring.conf"
 
 parser = ConfigParser.RawConfigParser()
-parser.readfp(open(ring))
+parser.readfp(open(CONFIG_FILE))
 
-agi = AGI()
-agitb.enable(agi)
-
+agi = agi_helpers.agi_get_session()
 srcnum = agi.get_variable('REAL_SRCNUM')
 dstnum = agi.get_variable('REAL_DSTNUM')
 context = agi.get_variable('REAL_CONTEXT')

@@ -19,22 +19,11 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
-
 import xivo.to_path
 
 import sys
-import anysql
 import agi_helpers
-from BackSQL import backsqlite
-from BackSQL import backmysql
-import ConfigDict
-from agi import *
-import agitb
-
-agi = AGI()
-agitb.enable(agi)
-db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
+import xivo_helpers
 
 def ds_set_fwd_vars(id, status, type_varname, typeval1_varname, typeval2_varname):
 	cursor.query("SELECT ${columns} FROM dialstatus WHERE status = %s AND category = %s AND categoryval = %s AND linked = 1",
@@ -51,11 +40,10 @@ def ds_set_fwd_vars(id, status, type_varname, typeval1_varname, typeval2_varname
 		typeval = res['typeval']
 		applicationval = res['applicationval']
 
-	agi_helpers.set_fwd_vars(agi, cursor, type, typeval, applicationval, type_varname, typeval1_varname, typeval2_varname)
+	agi_helpers.set_fwd_vars(cursor, type, typeval, applicationval, type_varname, typeval1_varname, typeval2_varname)
 
-# Cursors have a weak reference on their connection, so make a strong one.
-conn = agi_helpers.db_connect(agi, db_uri)
-cursor = conn.cursor()
+agi = agi_helpers.agi_get_session()
+cursor = xivo_helpers.db_connect().cursor()
 dstnum = agi.get_variable('REAL_DSTNUM')
 context = agi.get_variable('REAL_CONTEXT')
 
@@ -71,7 +59,7 @@ cursor.query("SELECT ${columns} FROM groupfeatures INNER JOIN queue "
 res = cursor.fetchone()
 
 if not res:
-	agi_helpers.dp_break(agi, "Unknown group number '%s'" % dstnum)
+	agi_helpers.dp_break("Unknown group number '%s'" % dstnum)
 
 id = res['groupfeatures.id']
 name = res['groupfeatures.name']

@@ -19,26 +19,14 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
-
 import xivo.to_path
 
 import sys
-import anysql
-from BackSQL import backsqlite
-from BackSQL import backmysql
 import agi_helpers
-import ConfigDict
-from agi import *
-import agitb
+import xivo_helpers
 
-agi = AGI()
-agitb.enable(agi)
-db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
-
-# Cursors have a weak reference on their connection, so make a strong one.
-conn = agi_helpers.db_connect(agi, db_uri)
-cursor = conn.cursor()
+agi = agi_helpers.agi_get_session()
+cursor = xivo_helpers.db_connect().cursor()
 srcnum = agi.get_variable('REAL_SRCNUM')
 dstnum = agi.get_variable('REAL_DSTNUM')
 context = agi.get_variable('REAL_CONTEXT')
@@ -54,7 +42,7 @@ cursor.query("SELECT ${columns} FROM userfeatures "
 res = cursor.fetchone()
 
 if not res:
-	agi_helpers.dp_break(agi, "Unknown number '%s'" % srcnum)
+	agi_helpers.dp_break("Unknown number '%s'" % srcnum)
 
 callerid = res['outcallerid']
 
@@ -67,7 +55,7 @@ cursor.query("SELECT ${columns} FROM trunkfeatures INNER JOIN handynumbers "
 res = cursor.fetchone()
 
 if not res:
-	agi_helpers.dp_break(agi, "Unable to find trunk features (handy number pattern = '%s')" % exten_pattern)
+	agi_helpers.dp_break("Unable to find trunk features (handy number pattern = '%s')" % exten_pattern)
 
 protocol = res['protocol']
 protocolid = res['protocolid']
@@ -80,7 +68,7 @@ if protocol == "sip":
 	res = cursor.fetchone()
 
 	if not res:
-		agi_helpers.dp_break(agi, "Unable to find SIP peer (ID = '%s')" % protocolid)
+		agi_helpers.dp_break("Unable to find SIP peer (ID = '%s')" % protocolid)
 
 	peer = res['name']
 	interface = protocol + "/" + peer
@@ -93,7 +81,7 @@ elif protocol == "iax":
 	res = cursor.fetchone()
 
 	if not res:
-		agi_helpers.dp_break(agi, "Unable to find IAX peer (ID = '%s')" % protocolid)
+		agi_helpers.dp_break("Unable to find IAX peer (ID = '%s')" % protocolid)
 
 	peer = res['name']
 	interface = protocol + "/" + peer
@@ -106,12 +94,12 @@ elif protocol == "custom":
 	res = cursor.fetchone()
 
 	if not res:
-		agi_helpers.dp_break(agi, "Unable to find custom peer (ID = '%s')" % protocolid)
+		agi_helpers.dp_break("Unable to find custom peer (ID = '%s')" % protocolid)
 
 	peer = res['name']
 	interface = res['interface']
 else:
-	agi_helpers.dp_break(agi, "Unknown protocol '%s'" % protocol)
+	agi_helpers.dp_break("Unknown protocol '%s'" % protocol)
 
 agi.set_variable('XIVO_INTERFACE', interface)
 agi.set_variable('XIVO_TRUNKEXTEN', dstnum)

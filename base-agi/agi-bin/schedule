@@ -19,22 +19,11 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
-
 import xivo.to_path
 
 import sys
-import anysql
 import agi_helpers
-from BackSQL import backsqlite
-from BackSQL import backmysql
-import ConfigDict
-from agi import *
-import agitb
-
-agi = AGI()
-agitb.enable(agi)
-db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
+import xivo_helpers
 
 def forgetimefield(start, end):
 	if start == '*':
@@ -53,9 +42,8 @@ def forgetime(res):
 		forgetimefield(res['monthbeg'], res['monthend']),
 	))
 
-# Cursors have a weak reference on their connection, so make a strong one.
-conn = agi_helpers.db_connect(agi, db_uri)
-cursor = conn.cursor()
+agi = agi_helpers.agi_get_session()
+cursor = xivo_helpers.db_connect().cursor()
 id = sys.argv[1]
 
 cursor.query("SELECT ${columns} FROM schedule "
@@ -70,7 +58,7 @@ if not res:
 	dp_break("Invalid schedule ID '%s'" % id)
 
 agi.set_variable("XIVO_SCHEDULE_TIMERANGE", forgetime(res))
-agi_helpers.set_fwd_vars(agi, cursor, res['typetrue'], res['typevaltrue'], res['applicationvaltrue'], 'XIVO_SCHEDULE_TYPETRUE', 'XIVO_SCHEDULE_TYPEVAL1TRUE', 'XIVO_SCHEDULE_TYPEVAL2TRUE')
-agi_helpers.set_fwd_vars(agi, cursor, res['typefalse'], res['typevalfalse'], res['applicationvalfalse'], 'XIVO_SCHEDULE_TYPEFALSE', 'XIVO_SCHEDULE_TYPEVAL1FALSE', 'XIVO_SCHEDULE_TYPEVAL2FALSE')
+agi_helpers.set_fwd_vars(cursor, res['typetrue'], res['typevaltrue'], res['applicationvaltrue'], 'XIVO_SCHEDULE_TYPETRUE', 'XIVO_SCHEDULE_TYPEVAL1TRUE', 'XIVO_SCHEDULE_TYPEVAL2TRUE')
+agi_helpers.set_fwd_vars(cursor, res['typefalse'], res['typevalfalse'], res['applicationvalfalse'], 'XIVO_SCHEDULE_TYPEFALSE', 'XIVO_SCHEDULE_TYPEVAL1FALSE', 'XIVO_SCHEDULE_TYPEVAL2FALSE')
 
 agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])

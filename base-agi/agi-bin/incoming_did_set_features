@@ -19,26 +19,14 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
-
 import xivo.to_path
 
 import sys
-import anysql
 import agi_helpers
-from BackSQL import backsqlite
-from BackSQL import backmysql
-import ConfigDict
-from agi import *
-import agitb
+import xivo_helpers
 
-agi = AGI()
-agitb.enable(agi)
-db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
-
-# Cursors have a weak reference on their connection, so make a strong one.
-conn = agi_helpers.db_connect(agi, db_uri)
-cursor = conn.cursor()
+agi = agi_helpers.agi_get_session()
+cursor = xivo_helpers.db_connect().cursor()
 exten_pattern = agi.get_variable('REAL_EXTENPATTERN')
 
 cursor.query("SELECT ${columns} FROM incall "
@@ -50,7 +38,7 @@ cursor.query("SELECT ${columns} FROM incall "
 res = cursor.fetchone()
 
 if not res:
-	agi_helpers.dp_break(agi, "Unknown extension '%s'" % exten_pattern)
+	agi_helpers.dp_break("Unknown extension '%s'" % exten_pattern)
 
-agi_helpers.set_fwd_vars(agi, cursor, res['type'], res['typeval'], res['applicationval'], "XIVO_DIDTYPE", "XIVO_DIDTYPEVAL1", "XIVO_DIDTYPEVAL2")
+agi_helpers.set_fwd_vars(cursor, res['type'], res['typeval'], res['applicationval'], "XIVO_DIDTYPE", "XIVO_DIDTYPEVAL1", "XIVO_DIDTYPEVAL2")
 agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])

@@ -19,26 +19,14 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
-
 import xivo.to_path
 
 import sys
-import anysql
 import agi_helpers
-from BackSQL import backsqlite
-from BackSQL import backmysql
-import ConfigDict
-from agi import *
-import agitb
+import xivo_helpers
 
-agi = AGI()
-agitb.enable(agi)
-db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
-
-# Cursors have a weak reference on their connection, so make a strong one.
-conn = agi_helpers.db_connect(agi, db_uri)
-cursor = conn.cursor()
+agi = agi_helpers.agi_get_session()
+cursor = xivo_helpers.db_connect().cursor()
 srcnum = agi.get_variable('REAL_SRCNUM')
 context = agi.get_variable('REAL_CONTEXT')
 
@@ -95,7 +83,7 @@ elif type == "vm":
 	res = cursor.fetchone()
 
 	if not res:
-		agi_helpers.dp_break(agi, "Unknown number '%s'" % srcnum)
+		agi_helpers.dp_break("Unknown number '%s'" % srcnum)
 
 	if res['enablevoicemail']:
 		enablevoicemail = 0
@@ -116,7 +104,7 @@ elif type == "dnd":
 	res = cursor.fetchone()
 
 	if not res:
-		agi_helpers.dp_break(agi, "Unknown number '%s'" % srcnum)
+		agi_helpers.dp_break("Unknown number '%s'" % srcnum)
 
 	if res['enablednd']:
 		enablednd = 0
@@ -137,7 +125,7 @@ elif type == "callrecord":
 	res = cursor.fetchone()
 
 	if not res:
-		agi_helpers.dp_break(agi, "Unknown number '%s'" % srcnum)
+		agi_helpers.dp_break("Unknown number '%s'" % srcnum)
 
 	if res['callrecord']:
 		callrecord = 0
@@ -158,7 +146,7 @@ elif type == "callfilter":
 	res = cursor.fetchone()
 
 	if not res:
-		agi_helpers.dp_break(agi, "Unknown number '%s'" % srcnum)
+		agi_helpers.dp_break("Unknown number '%s'" % srcnum)
 
 	if res['callfilter']:
 		callfilter = 0
@@ -174,7 +162,7 @@ elif type == "bsfilter":
 	try:
         	num1, num2 = sys.argv[2].split('*')
 	except ValueError:
-		agi_helpers.dp_break(agi, "Invalid number")
+		agi_helpers.dp_break("Invalid number")
 
 	secretary = None
 
@@ -185,20 +173,20 @@ elif type == "bsfilter":
 	elif srcnum == num2:
 		number = num1
 	else:
-		agi_helpers.dp_break(agi, "Invalid number")
+		agi_helpers.dp_break("Invalid number")
 
 	try:
 		# First, suppose the caller is a secretary and the number is
 		# one of its bosses number.
 		try:
-			filter = agi_helpers.bsfilter(agi, cursor, number, context)
+			filter = agi_helpers.bsfilter(cursor, number, context)
 			caller_type = "secretary"
 			secretary_number = srcnum
 
 		# If it fails, suppose the caller is the boss and the number is
 		# one of its secretaries number.
 		except LookupError:
-			filter = agi_helpers.bsfilter(agi, cursor, srcnum, context)
+			filter = agi_helpers.bsfilter(cursor, srcnum, context)
 			caller_type = "boss"
 			secretary_number = number
 
@@ -220,7 +208,7 @@ elif type == "bsfilter":
 		res = cursor.fetchone()
 
 		if not res:
-			agi_helpers.dp_break(agi, "Unable to find secretary, userid = %d" % secretary.userid)
+			agi_helpers.dp_break("Unable to find secretary, userid = %d" % secretary.userid)
 
 		new_state = int(not res['active'])
 		cursor.query("UPDATE callfiltermember SET active = %s "
@@ -231,13 +219,13 @@ elif type == "bsfilter":
                              parameters = (new_state, filter.id, "user", secretary.userid, "secretary"))
 
 		if cursor.rowcount != 1:
-			agi_helpers.dp_break(agi, "Unable to perform the requested update")
+			agi_helpers.dp_break("Unable to perform the requested update")
 
 		agi.set_variable('XIVO_BSFILTERENABLED', new_state)
 	else:
-		agi_helpers.dp_break(agi, "Unable to find boss-secretary filter")
+		agi_helpers.dp_break("Unable to find boss-secretary filter")
 else:
-	agi_helpers.dp_break(agi, "Unknown forwarding type '%s'" % type)
+	agi_helpers.dp_break("Unknown forwarding type '%s'" % type)
 
 if not custom_query:
 	query += " WHERE number = %s AND context = %s"
@@ -246,7 +234,7 @@ if not custom_query:
 	cursor.query(query, parameters = params)
 
 	if cursor.rowcount != 1:
-		agi_helpers.dp_break(agi, "Unable to perform the requested update")
+		agi_helpers.dp_break("Unable to perform the requested update")
 
 conn.commit()
 agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])

@@ -26,54 +26,26 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-import sys
-import anysql
-import except_tb
+import agi
+import agitb
+import xivo_helpers
 
-def dp_break(agi, message, show_tb = False):
-	"""DialPlan BREAK
+agi_session = None
 
-	Display a message in the Asterisk CLI, optionally dumping the
-	exception trace, hangup the current channel and stop execution.
+def agi_get_session():
+	global agi_session
 
-	If show_tb is True, this function must be called from an except block.
+	if not agi_session:
+		agi_session = agi.AGI()
+		agitb.enable(agi_session)
+		xivo_helpers.set_output_fn(agi_session.verbose)
 
-	"""
+	return agi_session
 
-	agi.verbose(message)
+def dp_break(message, show_tb = False):
+	xivo_helpers.abort(message, show_tb)
 
-	if show_tb:
-		except_tb.log_exception(agi.verbose)
-
-	agi.hangup()
-	sys.exit(1)
-
-def agi_verbose_except(agi, message):
-	"""Display a message followed by an exception trace. This function
-	must be called from an except block.
-
-	"""
-
-	agi.verbose(message)
-	except_tb.log_exception(agi.verbose)
-
-def db_connect(agi, db_uri):
-	"""DataBase CONNECT
-
-	This function is a simple wrapper to connect to the database with error
-	handling. If successful, it returns the connection object; otherwise it
-	calls dp_break().
-
-	"""
-
-	try:
-		conn = anysql.connect_by_uri(db_uri)
-	except:
-		dp_break(agi, "Unable to connect to %s" % db_uri, True)
-
-	return conn
-
-def set_fwd_vars(agi, cursor, type, typeval, appval, type_varname, typeval1_varname, typeval2_varname):
+def set_fwd_vars(cursor, type, typeval, appval, type_varname, typeval1_varname, typeval2_varname):
 	"""The purpose of this function is to set some variables in the
 	Asterisk channel related to redirection. It can set up to 3 variables:
 	 - the redirection type (e.g. to a user, a group, a queue)
@@ -109,19 +81,19 @@ def set_fwd_vars(agi, cursor, type, typeval, appval, type_varname, typeval1_varn
 
 	"""
 
-	agi.set_variable(type_varname, type)
+	agi_session.set_variable(type_varname, type)
 
 	if type in ('endcall', 'schedule', 'sound'):
-		agi.set_variable(typeval1_varname, typeval)
+		agi_session.set_variable(typeval1_varname, typeval)
 	elif type == 'application':
-		agi.set_variable(typeval1_varname, typeval)
+		agi_session.set_variable(typeval1_varname, typeval)
 
 		if typeval in ('disa', 'callback'):
-			agi.set_variable(typeval2_varname, appval.replace(",", ";").replace("|", ";"))
+			agi_session.set_variable(typeval2_varname, appval.replace(",", ";").replace("|", ";"))
 		else:
-			agi.set_variable(typeval2_varname, appval)
+			agi_session.set_variable(typeval2_varname, appval)
 	elif type == 'custom':
-		agi.set_variable(typeval1_varname, typeval.replace(",", ";").replace("|", ";"))
+		agi_session.set_variable(typeval1_varname, typeval.replace(",", ";").replace("|", ";"))
 	elif type == 'user':
 		cursor.query("SELECT ${columns} FROM userfeatures "
                              "WHERE id = %s "
@@ -133,10 +105,10 @@ def set_fwd_vars(agi, cursor, type, typeval, appval, type_varname, typeval1_varn
 		res = cursor.fetchone()
 
 		if not res:
-			dp_break(agi, "Database inconsistency: unable to find linked destination user '%s'" % typeval)
+			dp_break("Database inconsistency: unable to find linked destination user '%s'" % typeval)
 
-		agi.set_variable(typeval1_varname, res['number'])
-		agi.set_variable(typeval2_varname, res['context'])
+		agi_session.set_variable(typeval1_varname, res['number'])
+		agi_session.set_variable(typeval2_varname, res['context'])
 	elif type == 'group':
 		cursor.query("SELECT ${columns} FROM groupfeatures INNER JOIN queue "
                              "ON groupfeatures.name = queue.name "
@@ -149,10 +121,10 @@ def set_fwd_vars(agi, cursor, type, typeval, appval, type_varname, typeval1_varn
 		res = cursor.fetchone()
 
 		if not res:
-			dp_break(agi, "Database inconsistency: unable to find linked destination group '%s'" % typeval)
+			dp_break("Database inconsistency: unable to find linked destination group '%s'" % typeval)
 
-		agi.set_variable(typeval1_varname, res['groupfeatures.number'])
-		agi.set_variable(typeval2_varname, res['groupfeatures.context'])
+		agi_session.set_variable(typeval1_varname, res['groupfeatures.number'])
+		agi_session.set_variable(typeval2_varname, res['groupfeatures.context'])
 	elif type == 'queue':
 		cursor.query("SELECT ${columns} FROM queuefeatures INNER JOIN queue "
                              "ON queuefeatures.name = queue.name "
@@ -164,10 +136,10 @@ def set_fwd_vars(agi, cursor, type, typeval, appval, type_varname, typeval1_varn
 		res = cursor.fetchone()
 
 		if not res:
-			dp_break(agi, "Database inconsistency: unable to find linked destination queue '%s'" % typeval)
+			dp_break("Database inconsistency: unable to find linked destination queue '%s'" % typeval)
 
-		agi.set_variable(typeval1_varname, res['queuefeatures.number'])
-		agi.set_variable(typeval2_varname, res['queuefeatures.context'])
+		agi_session.set_variable(typeval1_varname, res['queuefeatures.number'])
+		agi_session.set_variable(typeval2_varname, res['queuefeatures.context'])
 	elif type == 'meetme':
 		cursor.query("SELECT ${columns} FROM meetmefeatures INNER JOIN meetme "
                              "ON meetmefeatures.meetmeid = meetme.id "
@@ -178,12 +150,12 @@ def set_fwd_vars(agi, cursor, type, typeval, appval, type_varname, typeval1_varn
 		res = cursor.fetchone()
 
 		if not res:
-			dp_break(agi, "Database inconsistency: unable to find linked destination conference room '%s'" % typeval)
+			dp_break("Database inconsistency: unable to find linked destination conference room '%s'" % typeval)
 
-		agi.set_variable(typeval1_varname, res['meetmefeatures.number'])
-		agi.set_variable(typeval2_varname, res['meetmefeatures.context'])
+		agi_session.set_variable(typeval1_varname, res['meetmefeatures.number'])
+		agi_session.set_variable(typeval2_varname, res['meetmefeatures.context'])
 	else:
-		dp_break(agi, "Unknown destination type '%s'" % type)
+		dp_break("Unknown destination type '%s'" % type)
 
 class bsf_member:
 	"""This class represents a boss-secretary filter member (e.g. a boss
@@ -217,7 +189,7 @@ class bsf_member:
 		s = str(self)
 
 		for line in s.splitlines():
-			agi.verbose(line)
+			agi_session.verbose(line)
 
 class bsfilter:
 	"""Boss-secretary filter class. Creating a boss-secretary filter
@@ -228,7 +200,7 @@ class bsfilter:
 
 	"""
 
-	def __init__(self, agi, cursor, boss_number, boss_context):
+	def __init__(self, cursor, boss_number, boss_context):
 		self.id = None
 		self.active = False
 		self.context = None
@@ -292,11 +264,11 @@ class bsfilter:
 			res = cursor.fetchone()
 
 			if not res:
-				agi_helpers.dp_break(agi, "Database inconsistency: unable to find custom user (name = '%s', context = '%s')" % (name, context))
+				dp_break("Database inconsistency: unable to find custom user (name = '%s', context = '%s')" % (name, context))
 
 			interface = res['interface']
 		else:
-			agi_helpers.dp_break(agi, "Unknown protocol '%s'" % protocol)
+			dp_break(agi, "Unknown protocol '%s'" % protocol)
 
 		self.boss.interface = interface
 
@@ -342,11 +314,11 @@ class bsfilter:
 				res2 = cursor.fetchone()
 
 				if not res2:
-					agi_helpers.dp_break(agi, "Database inconsistency: unable to find custom user (name = '%s', context = '%s')" % (name, context))
+					dp_break("Database inconsistency: unable to find custom user (name = '%s', context = '%s')" % (name, context))
 
 				interface = res2['interface']
 			else:
-				agi_helpers.dp_break(agi, "Unknown protocol '%s'" % protocol)
+				dp_break("Unknown protocol '%s'" % protocol)
 
 			secretary.interface = interface
 			self.secretaries.append(secretary)
@@ -363,11 +335,11 @@ class bsfilter:
                        % (self.context, self.mode, self.callfrom, self.callerdisplay,
                           self.ringseconds, self.boss, '\n'.join((str(secretary) for secretary in self.secretaries))))
 
-	def agi_str(self, agi):
+	def agi_str(self):
 		s = str(self)
 
 		for line in s.splitlines():
-			agi.verbose(line)
+			agi_session.verbose(line)
 
 	def check_zone(self, zone):
 		if self.callfrom == "all":
