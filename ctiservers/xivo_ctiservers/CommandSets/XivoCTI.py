@@ -250,6 +250,9 @@ class XivoCTICommand(BaseCommand):
                 if 'agentnum' in userinfo:
                         agentnum = userinfo['agentnum']
                         astid = userinfo['astid']
+                        if 'phonenum' in userinfo:
+                                phonenum = userinfo['phonenum']
+                                self.amis[astid].setvar('AGENTBYCALLERID_%s' % phonenum, '')
                         self.amis[astid].agentlogoff(agentnum)
                         del userinfo['agentnum']
                 self.__disconnect_user__(userinfo)
@@ -1262,8 +1265,8 @@ class XivoCTICommand(BaseCommand):
                                 anum = myagentnum
                                 phonenum = userinfo['phonenum']
                         if astid is not None and anum is not None:
-                                self.amis[astid].setvar('AGENTBYCALLERID_%s' % phonenum, anum)
                                 self.amis[astid].agentcallbacklogin(anum, phonenum)
+                                self.amis[astid].setvar('AGENTBYCALLERID_%s' % phonenum, anum)
                 elif subcommand == 'logout':
                         if len(commandargs) > 2:
                                 astid = commandargs[1]
@@ -1288,6 +1291,9 @@ class XivoCTICommand(BaseCommand):
                         astid = userinfo.get('astid')
                         if 'agentnum' in userinfo and astid is not None:
                                 agentnum = userinfo['agentnum']
+                                if 'phonenum' in userinfo:
+                                        phonenum = userinfo['phonenum']
+                                        self.amis[astid].setvar('AGENTBYCALLERID_%s' % phonenum, '')
                                 self.amis[astid].agentlogoff(agentnum)
                 return
 
