@@ -8,8 +8,8 @@
 # export PATH=/path/to/toolchain/powerpc-linux-gnu/bin:$PATH
 # export CC=gcc
 
-include ../autobuild.mk
-include ../autobuild-classic.mk
+include $(NONO_MK)/autobuild.mk
+include $(NONO_MK)/autobuild-classic.mk
 
 DEB_PKG="pf-asterisk-app-devstate"
 DEB_TB_DEPS=""

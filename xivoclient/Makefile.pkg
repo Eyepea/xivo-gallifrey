@@ -6,7 +6,8 @@
 
 export
 
-WRK_DIR ?= $(shell pwd)
+include $(NONO_MK)/autobuild-vars.mk
+
 # no unscrambled packaged yet
 DEB_TB_SCRAMBLED = "0"
 
@@ -14,16 +15,16 @@ default:
 
 tarball-pkg:
 	# return concatenated source package list
-	@$(MAKE) -C push -f Makefile.pkg tarball-pkg
+	@$(MAKE) -C $(MODULE_PATH)/push -f Makefile.pkg tarball-pkg
 
 tarball-dep:
 	# return concatenated tarball deps for each module
-	@$(MAKE) -C push -f Makefile.pkg tarball-dep
+	@$(MAKE) -C $(MODULE_PATH)/push -f Makefile.pkg tarball-dep
 
 tarball-scrambled:
 	@echo "$(DEB_TB_SCRAMBLED)"
 
 tarball:
 	# run each submodule tarball build
-	@$(MAKE) -C push -f Makefile.pkg tarball
+	@$(MAKE) -C $(MODULE_PATH)/push -f Makefile.pkg tarball
 
