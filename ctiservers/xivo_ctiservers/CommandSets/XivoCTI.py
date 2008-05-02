@@ -1244,14 +1244,14 @@ class XivoCTICommand(BaseCommand):
                                         anum = myagentnum
                                 if astid is not None and anum is not None:
                                         for queuename in queuenames:
-                                                # self.amis[astid].queuepause(queuename, 'Agent/%s' % anum, 'true')
+                                                self.amis[astid].queuepause(queuename, 'Agent/%s' % anum, 'true')
                                                 self.amis[astid].queueremove(queuename, 'Agent/%s' % anum)
                 elif subcommand == 'join':
                         if len(commandargs) > 1:
                                 queuenames = commandargs[1].split(',')
-                                if len(commandargs) > 2:
+                                if len(commandargs) > 3:
                                         astid = commandargs[2]
-                                        anum = commandargs[2]
+                                        anum = commandargs[3]
                                 else:
                                         astid = myastid
                                         anum = myagentnum
@@ -1626,7 +1626,7 @@ class XivoCTICommand(BaseCommand):
                                            'accountcode', 'uniqueid', 'userfield')
                                 likestring = '%s/%s-%%' %(techno, phoneid)
                                 orderbycalldate = "ORDER BY calldate DESC LIMIT %s" % nlines
-                               
+                                
                                 if kind == "0": # outgoing calls (all)
                                         cursor.query("SELECT ${columns} FROM cdr WHERE channel LIKE %s " + orderbycalldate,
                                                      columns,
