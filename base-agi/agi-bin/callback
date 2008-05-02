@@ -26,28 +26,27 @@ import agi_helpers
 import xivo_helpers
 
 agi = agi_helpers.agi_get_session()
-srcnum = agi.get_variable('CALLERID(num)')
+srcnum = agi.get_variable('REAL_SRCNUM')
 dstnum = agi.get_variable('REAL_DSTNUM')
-channel = agi.get_variable('CHANNEL')
 disa_params = '|'.join(sys.argv[1:])
-chantech = channel.split('/')[0]
 
-mtime = time.time()
+mtime = time.time() + 5
 filename = "%s-%s.call" % (srcnum, int(mtime))
 
 tmpfile = "/var/spool/asterisk/tmp/" + filename
 realfile = "/var/spool/asterisk/outgoing/" + filename
 
 file = open(tmpfile, 'w')
-file.write("Channel: %s/%s\n"
+file.write("Channel: Local/%s\n"
            "MaxRetries: 0\n"
            "RetryTime: 30\n"
            "WaitTime: 30\n"
            "CallerID: %s\n"
            "Set: XIVO_DISAPARAMS=%s\n"
            "Context: xivo-callbackdisa\n"
-           "Extension: s" % (chantech, srcnum, srcnum, disa_params))
+           "Extension: s" % (srcnum, srcnum, disa_params))
 file.close()
 
+os.utime(tmpfile, (mtime, mtime))
 os.rename(tmpfile, realfile)
 agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])
