@@ -1615,35 +1615,35 @@ class XivoCTICommand(BaseCommand):
         # \param nlines the number of lines to fetch for the given phone
         # \param kind kind of list (ingoing, outgoing, missed calls)
         def __update_history_call__(self, cfg, techno, phoneid, phonenum, nlines, kind):
-         results = []
-         if cfg.cdr_db_conn is None:
-                log_debug(SYSLOG_WARNING, '%s : no CDR uri defined for this asterisk - see cdr_db_uri parameter' % cfg.astid)
-         else:
-                try:
-                        cursor = cfg.cdr_db_conn.cursor()
-                        columns = ('calldate', 'clid', 'src', 'dst', 'dcontext', 'channel', 'dstchannel',
-                                   'lastapp', 'lastdata', 'duration', 'billsec', 'disposition', 'amaflags',
-                                   'accountcode', 'uniqueid', 'userfield')
-                        likestring = '%s/%s-%%' %(techno, phoneid)
-                        orderbycalldate = "ORDER BY calldate DESC LIMIT %s" % nlines
-                        
-                        if kind == "0": # outgoing calls (all)
-                                cursor.query("SELECT ${columns} FROM cdr WHERE channel LIKE %s " + orderbycalldate,
-                                             columns,
-                                             (likestring,))
-                        elif kind == "1": # incoming calls (answered)
-                                cursor.query("SELECT ${columns} FROM cdr WHERE disposition='ANSWERED' AND dstchannel LIKE %s " + orderbycalldate,
-                                             columns,
-                                             (likestring,))
-                        else: # missed calls (received but not answered)
-                                cursor.query("SELECT ${columns} FROM cdr WHERE disposition!='ANSWERED' AND dstchannel LIKE %s " + orderbycalldate,
-                                             columns,
-                                             (likestring,))
-                        results = cursor.fetchall()
-                except Exception, exc:
-                        log_debug(SYSLOG_ERR, '--- exception --- %s : Connection to DataBase failed in History request : %s'
-                                  %(cfg.astid, str(exc)))
-         return results
+                results = []
+                if cfg.cdr_db_conn is None:
+                        log_debug(SYSLOG_WARNING, '%s : no CDR uri defined for this asterisk - see cdr_db_uri parameter' % cfg.astid)
+                else:
+                        try:
+                                cursor = cfg.cdr_db_conn.cursor()
+                                columns = ('calldate', 'clid', 'src', 'dst', 'dcontext', 'channel', 'dstchannel',
+                                           'lastapp', 'lastdata', 'duration', 'billsec', 'disposition', 'amaflags',
+                                           'accountcode', 'uniqueid', 'userfield')
+                                likestring = '%s/%s-%%' %(techno, phoneid)
+                                orderbycalldate = "ORDER BY calldate DESC LIMIT %s" % nlines
+                               
+                                if kind == "0": # outgoing calls (all)
+                                        cursor.query("SELECT ${columns} FROM cdr WHERE channel LIKE %s " + orderbycalldate,
+                                                     columns,
+                                                     (likestring,))
+                                elif kind == "1": # incoming calls (answered)
+                                        cursor.query("SELECT ${columns} FROM cdr WHERE disposition='ANSWERED' AND dstchannel LIKE %s " + orderbycalldate,
+                                                     columns,
+                                                     (likestring,))
+                                else: # missed calls (received but not answered)
+                                        cursor.query("SELECT ${columns} FROM cdr WHERE disposition!='ANSWERED' AND dstchannel LIKE %s " + orderbycalldate,
+                                                     columns,
+                                                     (likestring,))
+                                results = cursor.fetchall()
+                        except Exception, exc:
+                                log_debug(SYSLOG_ERR, '--- exception --- %s : Connection to DataBase failed in History request : %s'
+                                          %(cfg.astid, str(exc)))
+                return results
 
 
         def __update_availstate__(self, userinfo, state):
@@ -1667,83 +1667,94 @@ class XivoCTICommand(BaseCommand):
         # \return a string containing the full customers list
         # \sa manage_tcp_connection
         def __build_customers__(self, ctx, searchpatterns):
-         searchpattern = ' '.join(searchpatterns)
-         if ctx in self.ctxlist.ctxlist:
-                 z = self.ctxlist.ctxlist[ctx]
-         else:
-                 log_debug(SYSLOG_WARNING, 'there has been no section defined for context %s : can not proceed directory search' % ctx)
-                 z = Context()
-
-         fullstatlist = []
-
-         if searchpattern == "":
-                return self.directory_srv2clt(z, [])
-
-         dbkind = z.uri.split(":")[0]
-         if dbkind == 'ldap':
-                selectline = []
-                for fname in z.search_matching_fields:
-                        if searchpattern == "*":
-                                selectline.append("(%s=*)" % fname)
-                        else:
-                                selectline.append("(%s=*%s*)" %(fname, searchpattern))
-
-                try:
-                        ldapid = xivo_ldap.xivo_ldap(z.uri)
-                        results = ldapid.getldap("(|%s)" % ''.join(selectline),
-                                        z.search_matching_fields)
-                        for result in results:
-                                result_v = {}
-                                for f in z.search_matching_fields:
-                                        if f in result[1]:
-                                                result_v[f] = result[1][f][0]
-                                fullstatlist.append(';'.join(z.result_by_valid_field(result_v)))
-                except Exception, exc:
-                        log_debug(SYSLOG_ERR, '--- exception --- ldaprequest : %s' % str(exc))
-
-         elif dbkind == 'file':
-                 log_debug(SYSLOG_WARNING, 'the URI <%s> is not supported yet for directory search queries' %(dbkind))
-         elif dbkind == 'http':
-                 f = urllib.urlopen('%s%s' % (z.uri, searchpattern))
-                 for line in f:
-                         t = line.strip().split(':')
-                         # fullstatlist.append(';'.join([t[1], '', t[], t[]]))
-
-         elif dbkind != '':
-                if searchpattern == '*':
-                        whereline = ''
+                searchpattern = ' '.join(searchpatterns)
+                if ctx in self.ctxlist.ctxlist:
+                        z = self.ctxlist.ctxlist[ctx]
                 else:
-                        wl = []
+                        log_debug(SYSLOG_WARNING, 'there has been no section defined for context %s : can not proceed directory search' % ctx)
+                        z = Context()
+
+                fullstatlist = []
+
+                if searchpattern == "":
+                        return self.directory_srv2clt(z, [])
+
+                dbkind = z.uri.split(":")[0]
+                if dbkind == 'ldap':
+                        selectline = []
                         for fname in z.search_matching_fields:
-                                wl.append("%s REGEXP '%s'" %(fname, searchpattern))
-                        whereline = 'WHERE ' + ' OR '.join(wl)
+                                if searchpattern == "*":
+                                        selectline.append("(%s=*)" % fname)
+                                else:
+                                        selectline.append("(%s=*%s*)" %(fname, searchpattern))
 
-                try:
-                        conn = anysql.connect_by_uri(z.uri)
-                        cursor = conn.cursor()
-                        cursor.query("SELECT ${columns} FROM " + z.sqltable + " " + whereline,
-                                     tuple(z.search_matching_fields),
-                                     None)
-                        results = cursor.fetchall()
-                        conn.close()
-                        for result in results:
-                                result_v = {}
-                                n = 0
-                                for f in z.search_matching_fields:
-                                        result_v[f] = result[n]
-                                        n += 1
-                                fullstatlist.append(';'.join(z.result_by_valid_field(result_v)))
-                except Exception, exc:
-                        log_debug(SYSLOG_ERR, '--- exception --- sqlrequest : %s' % str(exc))
-         else:
-                log_debug(SYSLOG_WARNING, "no database method defined - please fill the dir_db_uri field of the <%s> context" % ctx)
+                        try:
+                                ldapid = xivo_ldap.xivo_ldap(z.uri)
+                                results = ldapid.getldap("(|%s)" % ''.join(selectline),
+                                                         z.search_matching_fields)
+                                for result in results:
+                                        result_v = {}
+                                        for f in z.search_matching_fields:
+                                                if f in result[1]:
+                                                        result_v[f] = result[1][f][0]
+                                        fullstatlist.append(';'.join(z.result_by_valid_field(result_v)))
+                        except Exception, exc:
+                                log_debug(SYSLOG_ERR, '--- exception --- ldaprequest : %s' % str(exc))
 
-         uniq = {}
-         fullstatlist.sort()
-         fullstat_body = []
-         for fsl in [uniq.setdefault(e,e) for e in fullstatlist if e not in uniq]:
-                fullstat_body.append(fsl)
-         return self.directory_srv2clt(z, fullstat_body)
+                elif dbkind == 'file':
+                        f = urllib.urlopen(z.uri)
+                        for line in f:
+                                ll = line.strip()
+                                if ll.lower().find(searchpattern.lower()) >= 0:
+                                        t = ll.split(':')
+                                        fullstatlist.append(';'.join([t[1].replace('.','').replace('\t',''),
+                                                                      t[0].decode('latin1').encode('utf8'),
+                                                                      t[4]]))
+
+                elif dbkind == 'http':
+                        f = urllib.urlopen('%s%s' % (z.uri, searchpattern))
+                        for line in f:
+                                ll = line.strip()
+                                t = ll.split(':')
+                                fullstatlist.append(';'.join([t[1].replace('.','').replace('\t',''),
+                                                              t[0].decode('latin1').encode('utf8'),
+                                                              t[4]]))
+
+                elif dbkind != '':
+                        if searchpattern == '*':
+                                whereline = ''
+                        else:
+                                wl = []
+                                for fname in z.search_matching_fields:
+                                        wl.append("%s REGEXP '%s'" %(fname, searchpattern))
+                                whereline = 'WHERE ' + ' OR '.join(wl)
+
+                        try:
+                                conn = anysql.connect_by_uri(z.uri)
+                                cursor = conn.cursor()
+                                cursor.query("SELECT ${columns} FROM " + z.sqltable + " " + whereline,
+                                             tuple(z.search_matching_fields),
+                                             None)
+                                results = cursor.fetchall()
+                                conn.close()
+                                for result in results:
+                                        result_v = {}
+                                        n = 0
+                                        for f in z.search_matching_fields:
+                                                result_v[f] = result[n]
+                                                n += 1
+                                        fullstatlist.append(';'.join(z.result_by_valid_field(result_v)))
+                        except Exception, exc:
+                                log_debug(SYSLOG_ERR, '--- exception --- sqlrequest : %s' % str(exc))
+                else:
+                        log_debug(SYSLOG_WARNING, "no database method defined - please fill the dir_db_uri field of the <%s> context" % ctx)
+
+                uniq = {}
+                fullstatlist.sort()
+                fullstat_body = []
+                for fsl in [uniq.setdefault(e,e) for e in fullstatlist if e not in uniq]:
+                        fullstat_body.append(fsl)
+                return self.directory_srv2clt(z, fullstat_body)
 
 
 xivo_commandsets.CommandClasses['xivocti'] = XivoCTICommand
