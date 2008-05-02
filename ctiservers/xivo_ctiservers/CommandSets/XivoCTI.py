@@ -574,6 +574,8 @@ class XivoCTICommand(BaseCommand):
                 clid1 = event.get("CallerID1")
                 clid2 = event.get("CallerID2")
                 if chan2.startswith('Agent/'):
+                        msg = self.__build_agupdate__(chan2[6:], ['agentlink', astid, chan2[6:]])
+                        self.__send_msg_to_cti_clients__(msg)
                         # To identify which queue a call comes from, we match a previous AMI Leave event, not too far away
                         # in the past (1 second here), that involved the same channel as the one catched here.
                         # Any less-tricky-method is welcome, though.
@@ -593,6 +595,9 @@ class XivoCTICommand(BaseCommand):
                 chan2 = event.get("Channel2")
                 clid1 = event.get("CallerID1")
                 clid2 = event.get("CallerID2")
+                if chan2.startswith('Agent/'):
+                        msg = self.__build_agupdate__(chan2[6:], ['agentunlink', astid, chan2[6:]])
+                        self.__send_msg_to_cti_clients__(msg)
                 self.plist[astid].handle_ami_event_unlink(chan1, chan2, clid1, clid2)
                 return
 
@@ -1239,7 +1244,7 @@ class XivoCTICommand(BaseCommand):
                                         anum = myagentnum
                                 if astid is not None and anum is not None:
                                         for queuename in queuenames:
-                                                self.amis[astid].queuepause(queuename, 'Agent/%s' % anum, 'true')
+                                                # self.amis[astid].queuepause(queuename, 'Agent/%s' % anum, 'true')
                                                 self.amis[astid].queueremove(queuename, 'Agent/%s' % anum)
                 elif subcommand == 'join':
                         if len(commandargs) > 1:
