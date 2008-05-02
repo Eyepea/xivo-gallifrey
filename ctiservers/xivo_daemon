@@ -849,8 +849,10 @@ while True: # loops over the reloads
                                         for userinfo in disconnlist:
                                                 print 'checkqueue return :', userinfo
                                                 if 'login' in userinfo and 'connection' in userinfo.get('login'):
-                                                        userinfo.get('login')['connection'].close()
-                                                        fdlist_full.remove(userinfo.get('login')['connection'])
+                                                        connid = userinfo.get('login')['connection']
+                                                        fdlist_full.remove(connid)
+                                                        del fdlist_established[connid]
+                                                        connid.close()
                                                 else:
                                                         log_debug(SYSLOG_WARNING, 'WARNING - no login/connection field present in userinfo')
                                                 # commandclass.manage_logoff(userinfo)
