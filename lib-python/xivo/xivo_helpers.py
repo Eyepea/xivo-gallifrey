@@ -161,6 +161,7 @@ output_fn = stderr_write_nl
 db_conn = None
 
 def set_output_fn(out_fn):
+	global output_fn
 	output_fn = out_fn
 
 def abort(message, show_tb = False):
@@ -195,7 +196,7 @@ def db_connect():
 	changes are committed and the connection is closed before creating a
 	new one.
 	"""
-
+	global db_conn
 	db_close()
 	db_uri = ConfigDict.ReadSingleKey(AGI_CONFFILE, 'db', 'db_uri')
 
@@ -207,6 +208,7 @@ def db_connect():
 	return db_conn
 
 def db_close():
+	global db_conn
 	if db_conn:
 		db_conn.commit()
 		db_conn.close()
