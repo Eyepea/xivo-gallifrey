@@ -19,22 +19,15 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-CONFIG_FILE = "/etc/asterisk/xivo_agi.conf"
 CONFIG_CONTEXT_TEMPLATE = "/etc/asterisk/xivo_context.conf"
 
 import xivo.to_path
 
 import sys
-import ConfigDict
 import OrderedConf
-import anysql
 import xivo_helpers
-from BackSQL import backsqlite
-from BackSQL import backmysql
 
-db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
-conn = anysql.connect_by_uri(db_uri)
-cursor = conn.cursor()
+cursor = xivo_helpers.db_connect().cursor()
 
 # In extenumbers, there are some lines where context is
 #   '': this is a global entity, whereas this script only computes local things

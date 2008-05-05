@@ -19,26 +19,18 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
-
 import xivo.to_path
 
 import sys
-import anysql
-from BackSQL import backsqlite
-from BackSQL import backmysql
-import ConfigDict
+import xivo_helpers
 
 if len(sys.argv) != 4:
-        raise ValueError, "Missing args!"
-
-db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
-conn = anysql.connect_by_uri(db_uri)
+	raise ValueError, "Missing args!"
 
 context = sys.argv[1]
 mailbox = sys.argv[2]
 password = sys.argv[3]
 
-cursor = conn.cursor()
+cursor = xivo_helpers.db_connect().cursor()
 cursor.query("UPDATE uservoicemail SET password='%s' WHERE context='%s' AND mailbox='%s'" % (password, context, mailbox))
-conn.commit()
+xivo_helpers.db_close()
