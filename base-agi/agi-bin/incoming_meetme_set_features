@@ -31,11 +31,11 @@ cursor = xivo_helpers.db_connect().cursor()
 dstnum = agi.get_variable('REAL_DSTNUM')
 context = agi.get_variable('REAL_CONTEXT')
 
-cursor.query("SELECT ${columns} FROM meetmefeatures INNER JOIN meetme "
-             "ON meetmefeatures.meetmeid = meetme.id "
+cursor.query("SELECT ${columns} FROM meetmefeatures INNER JOIN staticmeetme "
+             "ON meetmefeatures.meetmeid = staticmeetme.id "
              "WHERE meetmefeatures.number = %s "
              "AND meetmefeatures.context = %s "
-             "AND meetme.commented = 0",
+             "AND staticmeetme.commented = 0",
              [('meetmefeatures.' + x) for x in ('mode', 'musiconhold', 'poundexit', 'quiet', 'record', 'adminmode', 'announceusercount', 'announcejoinleave', 'alwayspromptpin', 'starmenu', 'enableexitcontext', 'exitcontext')],
              (dstnum, context))
 res = cursor.fetchone()

@@ -141,10 +141,10 @@ def set_fwd_vars(cursor, type, typeval, appval, type_varname, typeval1_varname, 
 		agi_session.set_variable(typeval1_varname, res['queuefeatures.number'])
 		agi_session.set_variable(typeval2_varname, res['queuefeatures.context'])
 	elif type == 'meetme':
-		cursor.query("SELECT ${columns} FROM meetmefeatures INNER JOIN meetme "
-                             "ON meetmefeatures.meetmeid = meetme.id "
+		cursor.query("SELECT ${columns} FROM meetmefeatures INNER JOIN staticmeetme "
+                             "ON meetmefeatures.meetmeid = staticmeetme.id "
                              "WHERE meetmefeatures.id = %s "
-                             "AND meetme.commented = 0",
+                             "AND staticmeetme.commented = 0",
                              [('meetmefeatures.' + x) for x in ('number', 'context')],
                              (typeval,))
 		res = cursor.fetchone()

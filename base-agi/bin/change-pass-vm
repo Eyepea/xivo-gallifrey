@@ -32,5 +32,5 @@ mailbox = sys.argv[2]
 password = sys.argv[3]
 
 cursor = xivo_helpers.db_connect().cursor()
-cursor.query("UPDATE uservoicemail SET password='%s' WHERE context='%s' AND mailbox='%s'" % (password, context, mailbox))
+cursor.query("UPDATE voicemail SET password='%s' WHERE context='%s' AND mailbox='%s'" % (password, context, mailbox))
 xivo_helpers.db_close()

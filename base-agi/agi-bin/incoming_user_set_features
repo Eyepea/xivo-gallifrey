@@ -65,7 +65,7 @@ bypass = agi.get_variable('XIVO_BSFILTER_BYPASS')
 
 # Modify below if columns is modified and contains any vars not of the form
 # [a-zA-Z_][a-zA-Z0-9_]*
-columns = ('id', 'protocol' , 'protocolid', 'name', 'ringseconds', 'simultcalls', 'enablevoicemail', 'enablexfer', 'enableautomon', 'callrecord', 'callfilter', 'enablednd', 'enableunc', 'destunc', 'enablerna', 'destrna', 'enablebusy', 'destbusy', 'musiconhold', 'bsfilter')
+columns = ('id', 'protocol' , 'protocolid', 'name', 'ringseconds', 'simultcalls', 'enablevoicemail', 'voicemailid', 'enablexfer', 'enableautomon', 'callrecord', 'callfilter', 'enablednd', 'enableunc', 'destunc', 'enablerna', 'destrna', 'enablebusy', 'destbusy', 'musiconhold', 'bsfilter')
 cursor.query("SELECT ${columns} FROM userfeatures "
              "WHERE number = %s "
              "AND context = %s "
@@ -191,12 +191,12 @@ if 'enablevm' in features_list:
 	agi.set_variable('XIVO_ENABLEVOICEMAIL', enablevoicemail)
 
 	if enablevoicemail:
-		cursor.query("SELECT ${columns} FROM uservoicemail "
-                             "WHERE mailbox = %s "
+		cursor.query("SELECT ${columns} FROM voicemail "
+                             "WHERE uniqueid = %s "
                              "AND context = %s "
                              "AND commented = 0",
                              ('email',),
-                             (dstnum, context))
+                             (voicemailid, context))
 		res = cursor.fetchone()
 
 		if res and res['email']:
