@@ -54,7 +54,7 @@ cursor.query("SELECT ${columns} FROM groupfeatures INNER JOIN queue "
              "AND groupfeatures.deleted = 0 "
              "AND queue.commented = 0 "
              "AND queue.category = 'group'",
-             ('groupfeatures.id', 'groupfeatures.name', 'groupfeatures.timeout', 'queue.musiconhold'),
+             ('groupfeatures.id', 'groupfeatures.name', 'groupfeatures.timeout', 'groupfeatures.transfer_user', 'groupfeatures.transfer_call', 'groupfeatures.write_caller', 'groupfeatures.write_calling', 'queue.musiconhold'),
              (dstnum, context))
 res = cursor.fetchone()
 
@@ -65,6 +65,18 @@ id = res['groupfeatures.id']
 name = res['groupfeatures.name']
 timeout = res['groupfeatures.timeout']
 options = ""
+
+if res['groupfeatures.transfer_user']:
+	options += "t"
+
+if res['groupfeatures.transfer_call']:
+	options += "T"
+
+if res['groupfeatures.write_caller']:
+	options += "w"
+
+if res['groupfeatures.write_calling']:
+	options += "W"
 
 if not res['queue.musiconhold']:
 	options += "r"
