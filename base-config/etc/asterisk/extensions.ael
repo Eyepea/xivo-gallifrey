@@ -36,12 +36,15 @@ context initconfig {
 		AGI(initconfig|${IP}|init|${UA});
 		Hangup();
 	};
-	_XXX. => {
+	_X. => {
 		Noop(Initialisation ...);
 		&infotel();
 		AGI(initconfig|${IP}|${EXTEN}|${UA});
+		Answer();
+		Wait(1);
+		PlayBack(fr/auth-thankyou)
 		Hangup();
-	};
+		};
 };
 
 macro infotel {
