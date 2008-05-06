@@ -14,7 +14,7 @@ E-mail
 Pager
 
 ; smenu_timezones
-Timezones
+Time zones
 
 ; smenu_adsi
 ADSI
@@ -299,7 +299,7 @@ Fast forward and fast rewind skip time:
 %s seconds
 
 ; fm_voicemail-sendvoicemail
-Leave a message:
+Forward a message:
 
 ; fm_voicemail-usedirectory
 Use the directory to transfer or to leave a message:
@@ -308,13 +308,13 @@ Use the directory to transfer or to leave a message:
 Automatic playback of the next message:
 
 ; fm_voicemail-dialout
-Incoming call context:
+Call context:
 
 ; fm_voicemail-callback
 Callback context:
 
 ; fm_voicemail-exitcontext
-Outgoing call context:
+Exit context:
 
 ; fm_voicemail-attach
 Attach the audio file:
@@ -368,7 +368,7 @@ Options
 Add
 
 ; no_timezone
-No timezone
+No time zone
 
 ; fm_voicemail-adsifdn
 Descriptor number:

@@ -24,7 +24,16 @@ $array['element']['categoryval'] = array();
 $array['element']['categoryval']['default'] = '';
 
 $array['element']['type'] = array();
-$array['element']['type']['value'] = array('endcall','user','group','queue','meetme','schedule','application','sound','custom');
+$array['element']['type']['value'] = array('endcall',
+					   'user',
+					   'group',
+					   'queue',
+					   'meetme',
+					   'voicemail',
+					   'schedule',
+					   'application',
+					   'sound',
+					   'custom');
 $array['element']['type']['default'] = 'endcall';
 
 $array['element']['typeval'] = array();
@@ -56,7 +65,16 @@ $array['filter'] = array();
 $array['filter']['status'] = array('key' => array('noanswer','busy','congestion','chanunavail'));
 $array['filter']['category'] = array('key' => array('user','group','queue','callfilter'));
 $array['filter']['categoryval'] = array('maxlen' => 128,'cast' => 'sgraph');
-$array['filter']['type'] = array('key' => array('endcall','user','group','queue','meetme','schedule','application','sound','custom'));
+$array['filter']['type'] = array('key' => array('endcall',
+						'user',
+						'group',
+						'queue',
+						'meetme',
+						'voicemail',
+						'schedule',
+						'application',
+						'sound',
+						'custom'));
 $array['filter']['typeval'] = array('maxlen' => 255,'cast' => 'sgraph');
 $array['filter']['applicationval'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\-\.\|@]+$/i','maxlen' => 80);
 $array['filter']['linked'] = array('bool' => true);

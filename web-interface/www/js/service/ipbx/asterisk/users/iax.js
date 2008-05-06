@@ -6,8 +6,6 @@ xivo_elt_protocol['iax']['ufeatures-enablehint'] = new Array();
 xivo_elt_protocol['iax']['ufeatures-enablehint']['it'] = true;
 xivo_elt_protocol['iax']['ufeatures-enablevoicemail'] = new Array();
 xivo_elt_protocol['iax']['ufeatures-enablevoicemail']['it'] = true;
-xivo_elt_protocol['iax']['ufeatures-skipvoicemailpass'] = new Array();
-xivo_elt_protocol['iax']['ufeatures-skipvoicemailpass']['it'] = false;
 xivo_elt_protocol['iax']['ufeatures-enablexfer'] = new Array();
 xivo_elt_protocol['iax']['ufeatures-enablexfer']['it'] = true;
 xivo_elt_protocol['iax']['ufeatures-enableautomon'] = new Array();
@@ -75,8 +73,8 @@ xivo_elt_protocol['iax']['iax-codec']['it'] = new Array();
 xivo_elt_protocol['iax']['iax-codec']['it']['style'] = 'display:inline';
 xivo_elt_protocol['iax']['iax-codec']['it']['property'] = 'disabled|false:boolean;className|it-enabled';
 
-xivo_elt_protocol['iax']['voicemail-active'] = new Array();
-xivo_elt_protocol['iax']['voicemail-active']['it'] = true;
+xivo_elt_protocol['iax']['ufeatures-voicemailid'] = new Array();
+xivo_elt_protocol['iax']['ufeatures-voicemailid']['it'] = true;
 
 xivo_elt_protocol['iax']['rightcalllist'] = new Array();
 xivo_elt_protocol['iax']['rightcalllist']['it'] = true;

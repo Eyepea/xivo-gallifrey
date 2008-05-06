@@ -13,7 +13,7 @@ switch($act)
 			$_QRY->go($_HTML->url('xivo/configuration/manage/user'),$param);
 
 		if(isset($_QR['fm_send']) === true
-		&& $_USR->edit($info['meta'],$_QR) === true)
+		&& $_USR->edit($info['meta'],$_QR) !== false)
 		{
 			if(xivo_ulongint($_USR->get_info('id')) === xivo_ulongint($_QR['id']))
 				$_USR->load_by_id($_QR['id']);

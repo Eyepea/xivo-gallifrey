@@ -70,7 +70,7 @@ class xivo extends blop
 	function _set_service()
 	{
 		xivo::load_class('xivo_service',XIVO_PATH_OBJECT,null,false);
-		$_SRE = &xivo_gct::set_get(new xivo_service($this->_conf['xivo']['sys']['service']));
+		xivo_gct::set_get(new xivo_service($this->_conf['xivo']['sys']['service']));
 	}
 
 	function _set_user()

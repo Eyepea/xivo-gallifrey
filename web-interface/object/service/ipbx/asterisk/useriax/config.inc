@@ -77,6 +77,7 @@ $array['element']['username']['default'] = '';
 
 $array['element']['mailbox'] = array();
 $array['element']['mailbox']['default'] = '';
+$array['element']['mailbox']['null'] = true;
 
 $array['element']['host-static'] = array();
 $array['element']['host-static']['default'] = '';

@@ -43,7 +43,7 @@
 
 			<a href="#" onclick="xivo_fm_select_add_host_ipv4_subnet('it-access',prompt('<?=$dhtml->escape($this->bbf('accessfeatures_add'));?>')); return(false);" title="<?=$this->bbf('bt_addaccess');?>"><?=$url->img_html('img/site/button/mini/blue/add.gif',$this->bbf('bt_addaccess'),'class="bt-addlist" id="bt-addaccess" border="0"');?></a><br />
 
-			<a href="#" onclick="xivo_fm_select_delete_entry('it-access'); return(false);" title="<?=$this->bbf('bt_deleteaccess');?>"><?=$url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('bt_deleteaccess'),'class="bt-deletelist" id="bt-deleteaccess" border="0"');?></a>
+			<a href="#" onclick="xivo_fm_select_delete_entry('it-access'); return(false);" title="<?=$this->bbf('bt_deleteaccess');?>"><?=$url->img_html('img/site/button/mini/orange/delete.gif',$this->bbf('bt_deleteaccess'),'class="bt-deletelist" id="bt-deleteaccess" border="0"');?></a>
 
 		</div>
 	</div>

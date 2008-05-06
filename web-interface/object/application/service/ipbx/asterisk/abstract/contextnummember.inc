@@ -74,16 +74,11 @@ class xivo_application_service_asterisk_contextnummember_abstract extends xivo_a
 			$info['number'] = '';
 			$chkerror = 'invalid context';
 
-			$where = array();
-			$where['name'] = $context;
-			$where['entity'] = null;
-
-			$chk = $this->_context->get_where($where);
+			$chk = $this->_context->get_where(array('name' => $context));
 		}
 		else
 		{
 			$chkerror = 'out of interval';
-
 			$info['number'] = $this->_service->display_extension($this->_service->clean_extension($number));
 
 			$chk = $this->_contextnumbers->interval_number_exists($context,

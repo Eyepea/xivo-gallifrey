@@ -58,6 +58,9 @@ File d'attente
 ; fm_schedule_type-opt-meetme
 Chambre de conférence
 
+; fm_schedule_type-opt-voicemail
+Messagerie vocale
+
 ; fm_schedule_type-opt-schedule
 Horaire
 
@@ -83,6 +86,9 @@ Renvoyer vers :
 Renvoyer vers :
 
 ; fm_schedule_meetme-typeval
+Renvoyer vers :
+
+; fm_schedule_voicemail-typeval
 Renvoyer vers :
 
 ; fm_schedule_schedule-typeval
@@ -135,6 +141,9 @@ Créer une file d'attente
 
 ; create_meetme
 Créer une chambre de conférence
+
+; create_voicemail
+Créer une messagerie vocale
 
 ; no_schedule
 Aucun horaire trouvé

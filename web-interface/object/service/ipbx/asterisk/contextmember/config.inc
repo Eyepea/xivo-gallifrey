@@ -19,7 +19,8 @@ $array['element']['type']['value'] = array('callfilter',
 					   'schedule',
 					   'trunksip',
 					   'trunkiax',
-					   'trunkcustom');
+					   'trunkcustom',
+					   'voicemail');
 $array['element']['type']['default'] = '';
 
 $array['element']['typeval'] = array();
@@ -45,7 +46,8 @@ $array['filter']['type'] = array('callfilter',
 				 'schedule',
 				 'trunksip',
 				 'trunkiax',
-				 'trunkcustom');
+				 'trunkcustom',
+				 'voicemail');
 $array['filter']['typeval'] = array('set' => false,'chk' => 2,'maxlen' => 128,'regexp' => '/^[a-z0-9_-]+$/');
 $array['filter']['varname'] = array('set' => false,'chk' => 2,'maxlen' => 128,'regexp' => '/^[a-z0-9_-]+$/');
 

@@ -1,0 +1,14 @@
+; col_fullname
+Full name
+
+; col_mailbox
+Voicemail number
+
+; col_email
+E-mail
+
+; no_voicemail
+No voicemail found
+
+; opt_delete_confirm
+Are you sure you want to delete this voicemail?

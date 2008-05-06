@@ -16,11 +16,6 @@ xivo_smenu['class'] = 'moc';
 xivo_smenu['part'] = 'sb-part-first';
 xivo_smenu['last'] = false;
 
-var xivo_dprog = new Array();
-xivo_dprog['current'] = new Array();
-xivo_dprog['bak'] = new Array();
-xivo_dprog['display'] = new Array();
-
 var xivo_tlist = new Array();
 var xivo_winload = new Array();
 
@@ -91,17 +86,14 @@ function xivo_str_repeat(str,len)
 	return(r);
 }
 
-function xivo_eid(id)
+function xivo_eid(id,forcereload)
 {
-	if(xivo_is_undef(xivo_conf['eid'][id]) == false)
+	if(Boolean(forcereload) === false && xivo_is_undef(xivo_conf['eid'][id]) == false)
 		return(xivo_conf['eid'][id]);
 	else if(xivo_bw.dom && (get = document.getElementById(id)))
-	{
-		xivo_conf['eid'][id] = get;
-		return(get);
-	}
-	else
-		return(false);
+		return((xivo_conf['eid'][id] = get));
+
+	return(false);
 }
 
 function xivo_etag(tag,obj,nb)
@@ -396,14 +388,41 @@ function xivo_chg_attrib(name,id,type,link)
 	}
 }
 
+function xivo_bool(bool)
+{
+	if(bool === null)
+		return(false);
+
+	switch(typeof(bool))
+	{
+		case 'object':
+			return(true);
+		case 'undefined':
+			return(false);
+	}
+
+	switch(bool.toString().toLowerCase())
+	{
+		case 'y':
+		case '1':
+		case 'on':
+		case 'yes':
+		case 'true':
+			return(true);
+		case 'n':
+		case '0':
+		case 'off':
+		case 'no':
+		case 'false':
+			return(false);
+	}
+
+	return(Boolean(bool));
+}
+
 function xivo_is_string(s)
 {
-	var r = false;
-
-	if(typeof(s) == 'string')
-		r = true;
-
-	return(r);
+	return((typeof(s) === 'string'));
 }
 
 function xivo_is_array(a)
@@ -413,140 +432,32 @@ function xivo_is_array(a)
 
 function xivo_is_object(o)
 {
-	var r = false;
-
-	if(typeof(o) == 'object' && xivo_is_array(o) == false)
-		r = true;
-
-	return(r);
+	return((typeof(o) === 'object' && xivo_is_array(o) === false));
 }
 
 function xivo_is_undef(v)
 {
-	var r = false;
-
-	if(typeof(v) == 'undefined')
-		r = true;
-
-	return(r);
+	return((typeof(v) === 'undefined'));
 }
 
 function xivo_is_number(n)
 {
-	var r = false;
-
-	if(xivo_is_undef(Number(n)) == false)
-		r = true;
-
-	return(r);
+	return((xivo_is_undef(Number(n))));
 }
 
 function xivo_is_int(i)
 {
-	var r = false;
 	var y = parseInt(i);
 
-	if(isNaN(y) == true)
-		return(r);
+	if(isNaN(y) === true)
+		return(false);
 
-	if(i == y && i.toString() == y.toString())
-		r = true;
-
-	return(r);
+	return((i == y && i.toString() == y.toString()));
 }
 
 function xivo_is_uint(i)
 {
-	var r = false;
-
-	if(xivo_is_int(i) == false)
-		return(r);
-
-	if(i >= 0)
-		r = true;
-
-	return(r);
-}
-
-function xivo_set_dprog(id,h,t,pid)
-{
-	h = Number(h);
-	t = Number(t);
-
-	if((get = xivo_eid(id)) == false
-	|| xivo_is_undef(xivo_dprog['current'][id]) == true
-	|| xivo_display_dprog(id) != 1)
-		return(false);
-
-	var mt = Number(t)*1000;
-	var oh = Number(get.offsetHeight);
-	var cmt = Math.round((mt * h) / oh);
-
-	get.style.height = '0px';
-	get.style.overflow = 'hidden';
-	get.style.visibility = 'visible';
-	get.style.position = 'static';
-
-	if(pid != '')
-		xivo_set_dprog_height(pid,h,t,oh,id);
-
-	xivo_dprog['current'][id] = new Array();
-	xivo_dprog['current'][id]['timer'] = window.setInterval('xivo_mk_dprog(\''+id+'\','+h+')',cmt);
-	xivo_dprog['current'][id]['mheight'] = oh;
-	xivo_dprog['current'][id]['cheight'] = 0;
-}
-
-function xivo_display_dprog(id)
-{
-	if(xivo_is_undef(xivo_dprog['display'][id]) == true || xivo_dprog['display'][id] == 2)
-		xivo_dprog['display'][id] = 1;
-	else
-		xivo_dprog['display'][id] = 2;
-
-	return(xivo_dprog['display'][id]);
-}
-
-function xivo_set_dprog_height(id,h,t,oh,cid)
-{
-	if((get = xivo_eid(id)) == false || xivo_is_undef(xivo_dprog['current'][id]) == true)
-		return(false);
-
-	var mt = Number(t)*1000;
-	var oh = Number(get.offsetHeight + oh);
-	var cmt = Math.round((mt * h) / oh);
-
-	if(xivo_is_undef(xivo_dprog['bak'][id]) == true)
-		xivo_dprog['bak'][id] = new Array();
-
-	xivo_dprog['bak'][id][cid] = new Array();
-	xivo_dprog['bak'][id][cid]['oh'] = get.offsetHeight;
-
-	get.style.height = '0px';
-	get.style.overflow = 'hidden';
-	get.style.visibility = 'visible';
-	get.style.position = 'static';
-
-	xivo_dprog['current'][id] = new Array();
-
-	xivo_dprog['current'][id]['timer'] = window.setInterval('xivo_mk_dprog(\''+id+'\','+h+')',cmt);
-	xivo_dprog['current'][id]['mheight'] = oh;
-	xivo_dprog['current'][id]['cheight'] = 0;
-}
-
-function xivo_mk_dprog(id,h)
-{
-	if((get = xivo_eid(id)) == false || xivo_is_undef(xivo_dprog['current'][id]) == true)
-		return(false);
-
-	if(xivo_dprog['current'][id]['cheight'] >= xivo_dprog['current'][id]['mheight'])
-	{
-		window.clearInterval(xivo_dprog['current'][id]['timer']);
-		delete(xivo_dprog['current'][id]);
-		return(null);
-	}
-		
-	xivo_dprog['current'][id]['cheight'] += Number(h);
-	get.style.height = xivo_dprog['current'][id]['cheight']+'px';
+	return(((xivo_is_int(i) === true && i >= 0)));
 }
 
 function xivo_chk_ipv4_strict(value)
@@ -629,12 +540,10 @@ function xivo_substr(str,beg,end)
 				return(r);
 		}
 
-		r = str.substring(beg,end);
+		return(str.substring(beg,end));
 	}
-	else
-		r = str.substr(beg,end);
 
-	return(r);
+	return(str.substr(beg,end));
 }
 
 function xivo_clone(obj)
@@ -676,8 +585,6 @@ function xivo_debug(obj)
 		}
 	}
 
-	//alert(r);
-	
 	return(r);
 }
 

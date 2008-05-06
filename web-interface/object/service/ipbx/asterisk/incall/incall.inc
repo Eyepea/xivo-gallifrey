@@ -30,6 +30,7 @@ class xivo_service_asterisk_incall extends xivo_service_asterisk_abstract
 		$data['group'] = '';
 		$data['queue'] = '';
 		$data['meetme'] = '';
+		$data['voicemail'] = '';
 		$data['schedule'] = '';
 		$data['application'] = '';
 		$data['sound'] = '';
@@ -91,12 +92,6 @@ class xivo_service_asterisk_incall extends xivo_service_asterisk_abstract
 		{
 			case 'endcall':
 				return($this->_chk_dest_value($type,$typeval));
-			case 'application':
-				return($this->chk_dest_application($typeval,$appval));
-			case 'custom':
-				return($this->chk_dest_custom($typeval));
-			case 'schedule':
-				return($this->chk_dest_schedule($typeval,null,$disable));
 			case 'user':
 				return($this->chk_dest_user($typeval,null,$disable));
 			case 'group':
@@ -105,8 +100,16 @@ class xivo_service_asterisk_incall extends xivo_service_asterisk_abstract
 				return($this->chk_dest_queue($typeval,null,$disable));
 			case 'meetme':
 				return($this->chk_dest_meetme($typeval,null,$disable));
+			case 'voicemail':
+				return($this->chk_dest_voicemail($typeval,null,$disable));
+			case 'schedule':
+				return($this->chk_dest_schedule($typeval,null,$disable));
+			case 'application':
+				return($this->chk_dest_application($typeval,$appval));
 			case 'sound':
 				return($this->chk_dest_sound('playback',$typeval));
+			case 'custom':
+				return($this->chk_dest_custom($typeval));
 		}
 
 		return(false);

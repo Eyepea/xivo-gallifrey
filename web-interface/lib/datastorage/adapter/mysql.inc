@@ -80,10 +80,18 @@ class xivo_datastorage_adapter_mysql extends xivo_datastorage_adapter_abstract_s
 
 	function quote_identifier($name)
 	{
-		if(($r = $this->_chk_quote($name)) !== '')
+		if(($r = $this->_get_scalar($name,true)) !== '')
 			$r = '`'.str_replace('`','``',$name).'`';
 
 		return($r);
+	}
+
+	function concat($list)
+	{
+		if(is_array($list) === false)
+			return(false);
+
+		return('CONCAT('.implode(',',array_map(array(&$this,'escape'),$list)).')');
 	}
 
 	function _set_flag()

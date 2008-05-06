@@ -841,7 +841,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 	{
 		if(is_scalar($context) === false
 		|| in_array($context,xivo_service_asterisk::get_contexts_list($arr)) === true
-		|| preg_match('/^(?!macro-)[a-z0-9_-]{1,39}$/',$context) !== 1)
+		|| preg_match('/^(?!(?:macro|xivo)-)[a-z0-9_-]{1,39}$/',$context) !== 1)
 			return(false);
 
 		return($context);
@@ -850,7 +850,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 	function chk_passwd_context($args,$arr=null)
 	{
 		if(is_scalar($args) === false
-		|| preg_match('/^([0-9]{4,6}|no-password)\|((?!macro-)[a-z0-9_-]{1,39})$/',$args,$match) !== 1
+		|| preg_match('/^([0-9]{4,6}|no-password)\|((?!(?:macro|xivo)-)[a-z0-9_-]{1,39})$/',$args,$match) !== 1
 		|| in_array($match[2],xivo_service_asterisk::get_contexts_list($arr)) === true)
 			return(false);
 

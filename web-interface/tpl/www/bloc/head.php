@@ -3,7 +3,7 @@
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="<?=XIVO_I18N_BABELFISH_LANGUAGE?>">
-	<head>
+	<head id="t-head">
 		<title><?=xivo_htmlsc($this->bbf('page_title',php_uname('n')));?></title>
 
 		<script type="text/javascript">
@@ -12,6 +12,7 @@
 			var xivo_sess_name = '<?=XIVO_SESS_NAME?>';
 			var xivo_sess_id = '<?=XIVO_SESS_ID?>';
 			var xivo_sess_str = '<?=XIVO_SESS_STR?>';
+			var xivo_script_root = '<?=$dhtml->escape($this->get_option('script_root'));?>';
 			var xivo_api_path_info = '<?=$this->get_option('api_path_info');?>';
 			var xivo_tooltips = '&nbsp;';
 			var xivo_fm_onfocus_class = 'it-mfocus';

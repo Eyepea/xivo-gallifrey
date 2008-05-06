@@ -84,11 +84,6 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 		return(false);
 	}
 
-	function chk_dest_schedule($val,$id=null,$disable=null)
-	{
-		return($this->_chk_dest('schedule',$val,$id,$disable,false,false,null));
-	}
-
 	function chk_dest_user($val,$id=null,$disable=null,$chknumber=true,$chkcontext=false,$context=null)
 	{
 		return($this->_chk_dest('userfeatures',$val,$id,$disable,$chknumber,$chkcontext,$context));	
@@ -135,15 +130,31 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 		return($this->_chk_dest('meetmefeatures',$val,$id,$disable,$chknumber,$chkcontext,$context));
 	}
 
+	function chk_dest_voicemail($val,$id=null,$disable=null)
+	{
+		if($id !== null)
+			$id = xivo_ulongint($id);
+
+		if(($module = $this->_sre->get_module('voicemail')) === false
+		|| ($info = $module->get(intval($val),$disable)) === false
+		|| ($id !== null && $id === $info['uniqueid']) === true)
+			return(false);
+
+		return($info);
+	}
+
+	function chk_dest_schedule($val,$id=null,$disable=null)
+	{
+		return($this->_chk_dest('schedule',$val,$id,$disable,false,false,null));
+	}
+
 	function _chk_dest($type,$val,$id=null,$disable=null,$chknumber=true,$chkcontext=false,$context=null)
 	{
-		$val = intval($val);
-
 		if($id !== null)
 			$id = xivo_ulongint($id);
 
 		if(($module = $this->_sre->get_module($type)) === false
-		|| ($info = $module->get($val,$disable)) === false
+		|| ($info = $module->get(intval($val),$disable)) === false
 		|| ($id !== null && $id === $info['id']) === true
 		|| ((bool) $chknumber === true && xivo_haslen($info['number']) === false) === true
 		|| ((bool) $chkcontext === true && $info['context'] !== $context) === true)

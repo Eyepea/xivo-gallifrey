@@ -110,13 +110,10 @@ class xivo_filter
 		if(($dbeg = xivo_filter::chk_date($dbeg)) === false
 		|| ($dend = xivo_filter::chk_date($dend)) === false)
 			return(false);
-
-		if($dbeg['format'] !== $dend['format'] || $dbeg['dateint'] > $dend['dateint'])
+		else if($dbeg['format'] !== $dend['format'] || $dbeg['dateint'] > $dend['dateint'])
 			return(false);
 
-		$r = array('dbeg' => $dbeg,'dend' => $dend);
-
-		return($r);
+		return(array('dbeg' => $dbeg,'dend' => $dend));
 	}
 
 	function chk_email($email,$strict=false)
@@ -126,7 +123,7 @@ class xivo_filter
 		$len = strlen($email);
 
 		if($len < 6 || $len > 255
-		|| preg_match('/^[a-z0-9_-]+(?:\.[a-z0-9_-]+)*@[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,4}$/',$email) !== 1)
+		|| preg_match('/^[a-z0-9_-]+(?:\.[a-z0-9_\-\+]+)*@[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,4}$/',$email) !== 1)
 			return(false);
 		else if((bool) $strict === false || function_exists('getmxrr') === false)
 			return($email);
@@ -298,7 +295,7 @@ class xivo_filter
 
 	function chk_bool($value)
 	{
-		return((xivo_bool($value) === true ? 1 : 0));
+		return((int) xivo_bool($value));
 	}
 
 	function chk_cast($type,$value)
@@ -522,7 +519,12 @@ class xivo_filter
 		$strict = isset($arr['strict']) === false;
 
 		if(isset($arr['bool']) === true)
+		{
+			if($set === false && $chk === 2 && xivo_haslen($value) === false)
+				return('');
+
 			return($this->chk_bool($value));
+		}
 
 		if(isset($arr['value']) === true)
 		{
@@ -729,12 +731,9 @@ class xivo_filter
 				return(false);
 			}
 		}
-		else
-		{
-			if(($val = $this->chk_value($key,$val)) === false)
+		else if(($val = $this->chk_value($key,$val)) === false)
 				return(false);
-		}
-	
+
 		$this->_set_result($key,$val);
 	
 		return(true);

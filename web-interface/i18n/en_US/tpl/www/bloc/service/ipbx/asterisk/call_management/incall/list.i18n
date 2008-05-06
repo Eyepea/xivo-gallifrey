@@ -17,19 +17,22 @@ User
 Group
 
 ; incall_type-queue
-Queues
+Queue
 
 ; incall_type-meetme
-Conference rooms
+Conference room
+
+; incall_type-voicemail
+Voicemail
 
 ; incall_type-schedule
-Schedule
+Scheduler
 
 ; incall_type-application
 Application
 
 ; incall_type-sound
-Audio files
+Audio file
 
 ; incall_type-custom
 Customized

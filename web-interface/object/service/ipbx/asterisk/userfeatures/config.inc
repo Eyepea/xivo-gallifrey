@@ -36,6 +36,16 @@ $array['element']['firstname']['default'] = '';
 $array['element']['lastname'] = array();
 $array['element']['lastname']['default'] = '';
 
+$array['element']['context'] = array();
+$array['element']['context']['default'] = '';
+
+$array['element']['number'] = array();
+$array['element']['number']['default'] = '';
+
+$array['element']['voicemailid'] = array();
+$array['element']['voicemailid']['default'] = 0;
+$array['element']['voicemailid']['null'] = true;
+
 $array['element']['ringseconds'] = array();
 $array['element']['ringseconds']['value'] = array(0,5,10,15,20,25,30,35,40,45,50,55,60);
 $array['element']['ringseconds']['default'] = 30;
@@ -60,11 +70,6 @@ $array['element']['enablevoicemail'] = array();
 $array['element']['enablevoicemail']['value'] = array(0,1);
 $array['element']['enablevoicemail']['default'] = 0;
 $array['element']['enablevoicemail']['set'] = true;
-
-$array['element']['skipvoicemailpass'] = array();
-$array['element']['skipvoicemailpass']['value'] = array(0,1);
-$array['element']['skipvoicemailpass']['default'] = 1;
-$array['element']['skipvoicemailpass']['set'] = true;
 
 $array['element']['enablexfer'] = array();
 $array['element']['enablexfer']['value'] = array(0,1);
@@ -149,24 +154,24 @@ $array['element']['description'] = array();
 $array['element']['description']['default'] = '';
 
 $array['filter'] = array();
+$array['filter']['name'] = array('regexp' => '/^[a-z0-9#\*\.\/_@:-]+$/i','minlen' => 1,'maxlen' => 128);
 $array['filter']['protocol'] = array('key' => array(XIVO_SRE_IPBX_AST_PROTO_SIP,
 						    XIVO_SRE_IPBX_AST_PROTO_IAX,
 						    XIVO_SRE_IPBX_AST_PROTO_CUSTOM));
 $array['filter']['protocolid'] = array('cast' => 'ulongint');
 $array['filter']['firstname'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
 $array['filter']['lastname'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
-$array['filter']['name'] = array('regexp' => '/^[a-z0-9#\*\.\/_@:-]+$/i','minlen' => 1,'maxlen' => 128);
 $array['filter']['number'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9\*#]+$/','maxlen' => 40);
 $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context',
 				    'callbackparam' => array(array(
 				    			XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTIFICATION,
 							XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
+$array['filter']['voicemailid'] = array('set' => false,'chk' => 2,'cast' => 'ulongint');
 $array['filter']['ringseconds'] = array('set' => false,'chk' => 2,'key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['simultcalls'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,20));
 $array['filter']['enableclient'] = array('bool' => true);
 $array['filter']['enablehint'] = array('bool' => true);
 $array['filter']['enablevoicemail'] = array('bool' => true);
-$array['filter']['skipvoicemailpass'] = array('bool' => true);
 $array['filter']['enablexfer'] = array('bool' => true);
 $array['filter']['enableautomon'] = array('bool' => true);
 $array['filter']['callrecord'] = array('bool' => true);

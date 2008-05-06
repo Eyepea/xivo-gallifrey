@@ -9,3 +9,45 @@ Previous page
 
 ; page_number
 Page %s
+
+; toolbar_adv_menu_enable
+Enable
+
+; toolbar_adv_menu_disable
+Disable
+
+; toolbar_adv_menu_delete
+Delete
+
+; toolbar_adv_menu_select-all
+Select all
+
+; toolbar_fm_search
+Search
+
+; toolbar_opt_add
+Add
+
+; toolbar_opt_delete
+Delete
+
+; toolbar_opt_advanced
+Advanced mode
+
+; col_action
+Action
+
+; opt_modify
+Edit
+
+; opt_delete
+Delete
+
+; fm_bool-opt-1
+Yes
+
+; fm_bool-opt-0
+No
+
+; fm_bt-save
+Save

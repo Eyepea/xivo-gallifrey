@@ -25,8 +25,6 @@ class xivo_tpl_url extends xivo_tpl_module
 
 	function _mk_param($param='',$sep=null,$sid=true,$pre='',$key='')
 	{
-		$r = '';
-
 		$sid = (bool) $sid;
 		$sep = $sep === null ? '&amp;' : (string) $sep;
 
@@ -36,11 +34,11 @@ class xivo_tpl_url extends xivo_tpl_module
 			$param = (string) $param;
 
 		if(isset($param{0}) === true)
-			$r = '?'.$param.($sid === true ? $sep.XIVO_SESS_STR : '');
+			return('?'.$param.($sid === true ? $sep.XIVO_SESS_STR : ''));
 		else if($sid === true)
-			$r = '?'.XIVO_SESS_STR;
+			return('?'.XIVO_SESS_STR);
 
-		return($r);
+		return('');
 	}
 
 	function href_html($content,$url='',$param='',$opt='',$title=null,$absolute=false,$sep='&amp;',$sid=true,$pre='',$key='')
@@ -62,45 +60,31 @@ class xivo_tpl_url extends xivo_tpl_module
 
 		$title = isset($title{0}) === true ? ' title="'.xivo_alttitle($title).'"' : '';
 
-		$r = '<a href="'.$url.'"'.(isset($opt{0}) === true ? ' '.$opt : '').$title.'>'.$content.'</a>';
-
-		return($r);
+		return('<a href="'.$url.'"'.(isset($opt{0}) === true ? ' '.$opt : '').$title.'>'.$content.'</a>');
 	}
 
 	function img($url,$i18n=false)
 	{
-		$r = '';
-
 		$url = (string) $url;
 
 		if(isset($url{0}) === false)
-			return($r);
+			return('');
+		else if($url{0} === '/')
+			return($url);
+		else if((bool) $i18n === false)
+			return($this->get_option('script_root').'/'.$url);
 
-		if($url{0} !== '/')
-		{
-			if((bool) $i18n === false)
-				$r = $this->get_option('script_root').'/'.$url;
-			else
-			{
-				$usr = &$this->_get_module('user');
-				$r = $this->get_option('script_root').'/img/i18n/'.$usr->get_info('language').'/'.$url;
-			}
-		}
-		else $r = $url;
-
-		return($r);
+		$usr = &$this->_get_module('user');
+		return($this->get_option('script_root').'/img/i18n/'.$usr->get_info('language').'/'.$url);
 	}
 
 	function img_html($url,$alt='',$opt='',$i18n=false)
 	{
-		$alt = (string) $alt;
 		$opt = (string) $opt;
 
 		$url = $this->img($url,$i18n);
 
-		$r = '<img src="'.$url.'"'.(isset($opt{0}) === true ? ' '.$opt : '').' alt="'.xivo_alttitle($alt).'" />';
-
-		return($r);
+		return('<img src="'.$url.'"'.(isset($opt{0}) === true ? ' '.$opt : '').' alt="'.xivo_alttitle($alt).'" />');
 	}
 
 	function pager($nb,$page,$prev=false,$next=false,$url='',$param='',$opt='',$absolute=false,$sep=null,$sid=true,$pre='',$key='')

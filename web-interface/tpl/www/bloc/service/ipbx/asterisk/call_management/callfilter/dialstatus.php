@@ -77,6 +77,22 @@ else:
 
 endif;
 
+if(empty($list['voicemail']) === false):
+
+	if($linked === false && $type === 'voicemail'):
+		$invalid = true;
+	else:
+		$invalid = false;
+	endif;
+
+	echo $form->select(array('desc' => $this->bbf('fm_dialstatus_voicemail-typeval'),'name' => 'dialstatus['.$status.'][typeval]','labelid' => 'dialstatus-'.$status.'-voicemail-typeval','key' => 'identity','altkey' => 'uniqueid','invalid' => $invalid,'default' => $element['dialstatus']['typeval']['default'],'value' => $this->get_varra('dialstatus',array($status,'voicemail'))),$list['voicemail']);
+
+else:
+
+	echo '<div id="fd-dialstatus-'.$status.'-voicemail-typeval" class="txt-center">',$url->href_html($this->bbf('create_voicemail'),'service/ipbx/pbx_settings/voicemail','act=add'),'</div>';
+
+endif;
+
 if(empty($list['schedule']) === false):
 
 	if($linked === false && $type === 'schedule'):
@@ -114,7 +130,7 @@ else:
 
 endif;
 
-	echo $form->text(array('desc' => $this->bbf('fm_dialstatus_custom-typeval'),'name' => 'dialstatus['.$status.'][typeval]','labelid' => 'dialstatus-'.$status.'-custom-typeval','size' => 15,'value' => $this->get_varra('dialstatus',array($status,'custom'))));
+echo $form->text(array('desc' => $this->bbf('fm_dialstatus_custom-typeval'),'name' => 'dialstatus['.$status.'][typeval]','labelid' => 'dialstatus-'.$status.'-custom-typeval','size' => 15,'value' => $this->get_varra('dialstatus',array($status,'custom'))));
 
 ?>
 

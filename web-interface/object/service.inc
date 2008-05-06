@@ -17,11 +17,12 @@ class xivo_service
 
 		if(xivo_issa('_SRE',$_SESSION) === false)
 			$_SESSION['_SRE'] = array();
-
+/*
 		reset($ini);
 
 		while(list($key) = each($ini))
 			$this->_load_service($key);
+*/
 	}
 
 	function _load_service($name)
@@ -77,7 +78,7 @@ class xivo_service
 				trigger_error('Invalid datastorage in '.$name.' ini file',E_USER_ERROR);
 		}
 
-		$this->_set($name,new $cname($init));
+		return($this->_set($name,new $cname($init)));
 	}
 
 	function &get_module($service,$module)
@@ -86,15 +87,13 @@ class xivo_service
 		$module = (string) $module;
 	
 		if(($class = &$this->get($service)) === false)
-			trigger_error('Service not found, not loaded or installed',E_USER_ERROR);	
+			trigger_error('Service not found or installed',E_USER_ERROR);	
 
 		return(($ref = &$class->get_module($module)));
 	}
 
 	function _load_init_file($name)
 	{
-		$name = (string) $name;
-
 		if(preg_match('/^[a-z0-9\-_]+$/i',$name) !== 1)
 			return(false);
 
@@ -103,7 +102,7 @@ class xivo_service
 
 	function _set($name,&$obj)
 	{
-		if($name === '' || is_object($obj) === false)
+		if(xivo_haslen($name) === false || is_object($obj) === false)
 			return(false);
 
 		return(xivo_gct::set($obj,XIVO_SRE_CLASS_PRE.$name));
@@ -111,6 +110,9 @@ class xivo_service
 
 	function &get($name)
 	{
+		if($this->_load_service($name) === false)
+			return(false);
+
 		return(($ref = &xivo_gct::get(XIVO_SRE_CLASS_PRE.$name)));
 	}
 
@@ -118,7 +120,7 @@ class xivo_service
 	{
 		$r = false;
 
-		if($name !== '')
+		if(xivo_haslen($name) === true)
 			$r = &xivo_gct::set_get($obj,XIVO_SRE_CLASS_PRE.$name);
 
 		return(($ref = &$r));

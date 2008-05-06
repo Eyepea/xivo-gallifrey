@@ -84,6 +84,20 @@ else:
 	echo '<div id="fd-incall-meetme-typeval" class="txt-center">',$url->href_html($this->bbf('create_meetme'),'service/ipbx/pbx_settings/meetme','act=add'),'</div>';
 endif;
 
+if(empty($list['voicemail']) === false):
+	
+	if($linked === false && $type === 'voicemail'):
+		$invalid = true;
+	else:
+		$invalid = false;
+	endif;
+
+	echo $form->select(array('desc' => $this->bbf('fm_incall_voicemail-typeval'),'name' => 'incall[typeval]','labelid' => 'incall-voicemail-typeval','key' => 'identity','altkey' => 'uniqueid','invalid' => $invalid,'default' => $element['incall']['typeval']['default'],'value' => $incall['voicemail']),$list['voicemail']);
+
+else:
+	echo '<div id="fd-incall-voicemail-typeval" class="txt-center">',$url->href_html($this->bbf('create_voicemail'),'service/ipbx/call_management/voicemail','act=add'),'</div>';
+endif;
+
 if(empty($list['schedule']) === false):
 	
 	if($linked === false && $type === 'schedule'):

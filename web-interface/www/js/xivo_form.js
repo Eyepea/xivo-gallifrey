@@ -628,10 +628,8 @@ function xivo_fm_get_checked(form,name)
 
 	for(var i = 0;i < len;i++)
 	{
-		if(ref[i].type != 'checkbox' && ref[i].type != 'radio')
-			continue;
-
-		if(ref[i].checked == true)
+		if((ref[i].type == 'checkbox' || ref[i].type == 'radio') == true
+		&& ref[i].checked == true)
 			return(i);
 	}
 
@@ -711,6 +709,35 @@ function xivo_fm_enable_disable_field(form,name,disable,exform,exformtag)
 			ref.className = classname;
 		default:
 			return(false);
+	}
+
+	return(true);
+}
+
+function xivo_fm_empty_field(obj)
+{
+	if(xivo_is_undef(obj.tagName) == true
+	|| xivo_is_undef(obj.type) == true)
+		return(false);
+
+	switch(obj.tagName.toLowerCase())
+	{
+		case 'input':
+			if(obj.type == 'checkbox'
+			|| obj.type == 'radio')
+				obj.checked = false;
+			else
+				obj.value = '';
+			break;
+		case 'textearea':
+				obj.value = '';
+			break;
+		case 'select':
+			if(obj.type != 'select-multiple' && obj.type != 'select-one')
+				return(false);
+
+			obj.selectedIndex = 0;
+			break;
 	}
 
 	return(true);

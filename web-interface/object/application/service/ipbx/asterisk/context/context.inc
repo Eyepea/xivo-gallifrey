@@ -4,6 +4,7 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_context extends xivo_application_asterisk_abstract
 {
+	var $_dso		= null;
 	var $_origin		= array();
 	var $_status		= '';
 	var $_context		= false;
@@ -13,9 +14,14 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 	var $_entity		= null;
 	var $_modules		= array();
 
-	function xivo_application_service_asterisk_context(&$service,$param=null)
+	function xivo_application_service_asterisk_context(&$service,&$dso,$param=null)
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
+
+		if(is_object($dso) === false)
+			trigger_error('Invalid Datastorage object',E_USER_ERROR);
+
+		$this->_dso = &$dso;
 
 		if(($this->_context = &$this->_service->get_module('context')) === false
 		|| ($this->_contextnumbers = &$this->_service->get_module('contextnumbers')) === false
@@ -36,8 +42,11 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		$this->_origin['context'] = $this->_context->get_origin();
 
 		$this->_get_contextnumbers();
-		$this->_get_contextnummember();
-		$this->_get_contextmember();
+
+		$this->_info['deletable'] = $this->_get_contextnummember() === false;
+
+		if($this->_get_contextmember() !== false && $this->_info['deletable'] === true)
+			$this->_info['deletable'] = false;
 
 		return($this->_info);
 	}
@@ -178,7 +187,10 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 		$this->set_context($arr['context']);
 
-		if((string) $this->get_result_var('context','entity') === '')
+		if((string) $this->get_result_var('context','entity') === ''
+		&& ($action === 'add'
+		   || (isset($this->_info['deletable']) === true 
+		      && $this->_info['deletable'] === true)) === true)
 			return(($this->get_errnb() < 1));
 
 		$name = (string) $this->get_result_var('context','name');
@@ -713,15 +725,18 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		|| (isset($refinfo['trunkiax']) === true
 		   && $this->_update_trunkiax_contextmember($context,$newcontext) === false) === true
 		|| (isset($refinfo['trunkcustom']) === true
-		   && $this->_update_trunkcustom_contextmember($context,$newcontext) === false) === true)
+		   && $this->_update_trunkcustom_contextmember($context,$newcontext) === false) === true
+		|| (isset($refinfo['voicemail']) === true
+		   && $this->_update_voicemail_contextmember($context,$newcontext,$refinfo['voicemail']) === false) === true)
 			return(false);
 
 		return($this->_return['contextmember']);
 	}
 
-	function _update_extensions_contextnummember($context,$newcontext)
+	function _update_context_contextnummember($name,$context,$newcontext)
 	{
-		if(xivo_issa('contextnummember',$this->_return) === false)
+		if(xivo_issa('contextnummember',$this->_return) === false
+		|| xivo_haslen($name) === false)
 			return(false);
 
 		$ref = &$this->_return['contextnummember'];
@@ -729,34 +744,24 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		$where = array('context' => $context);
 		$value = array('context' => $newcontext);
 
-		if(((isset($this->_modules['extensions']) === false
-		    || is_object($this->_modules['extensions']) === false) === true
-		   && ($this->_modules['extensions'] = $this->_service->get_module('extensions')) === false) === true
-		|| ($ref['extensions'] = $this->_modules['extensions']->edit_where($where,$value,
-										   null,null,false)) === false)
+		if(((isset($this->_modules[$name]) === false
+		    || is_object($this->_modules[$name]) === false) === true
+		   && ($this->_modules[$name] = $this->_service->get_module($name)) === false) === true
+		|| ($ref[$name] = $this->_modules[$name]->edit_where($where,$value,
+								     null,null,false)) === false)
 			return(false);
 
 		return(true);
 	}
 
+	function _update_extensions_contextnummember($context,$newcontext)
+	{
+		return($this->_update_context_contextnummember('extensions',$context,$newcontext));
+	}
+
 	function _update_extenumbers_contextnummember($context,$newcontext)
 	{
-		if(xivo_issa('contextnummember',$this->_return) === false)
-			return(false);
-
-		$ref = &$this->_return['contextnummember'];
-
-		$where = array('context' => $context);
-		$value = array('context' => $newcontext);
-
-		if(((isset($this->_modules['extenumbers']) === false
-		    || is_object($this->_modules['extenumbers']) === false) === true
-		   && ($this->_modules['extenumbers'] = $this->_service->get_module('extenumbers')) === false) === true
-		|| ($ref['extenumbers'] = $this->_modules['extenumbers']->edit_where($where,$value,
-										     null,null,false)) === false)
-			return(false);
-
-		return(true);
+		return($this->_update_context_contextnummember('extenumbers',$context,$newcontext));
 	}
 
 	function _update_user_contextnummember($context,$newcontext)
@@ -816,67 +821,23 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 	function _update_queue_contextnummember($context,$newcontext)
 	{
-		if(xivo_issa('contextnummember',$this->_return) === false)
-			return(false);
-
-		$ref = &$this->_return['contextnummember'];
-
-		$where = array('context' => $context);
-		$value = array('context' => $newcontext);
-
-		if(((isset($this->_modules['queuefeatures']) === false
-		    || is_object($this->_modules['queuefeatures']) === false) === true
-		   && ($this->_modules['queuefeatures'] = $this->_service->get_module('queuefeatures')) === false) === true
-		|| ($ref['queuefeatures'] = $this->_modules['queuefeatures']->edit_where($where,$value,
-											 null,null,false)) === false)
-			return(false);
-
-		return(true);
+		return($this->_update_context_contextnummember('queuefeatures',$context,$newcontext));
 	}
 
 	function _update_meetme_contextnummember($context,$newcontext)
 	{
-		if(xivo_issa('contextnummember',$this->_return) === false)
-			return(false);
-
-		$ref = &$this->_return['contextnummember'];
-
-		$where = array('context' => $context);
-		$value = array('context' => $newcontext);
-
-		if(((isset($this->_modules['meetmefeatures']) === false
-		    || is_object($this->_modules['meetmefeatures']) === false) === true
-		   && ($this->_modules['meetmefeatures'] = $this->_service->get_module('meetmefeatures')) === false) === true
-		|| ($ref['meetmefeatures'] = $this->_modules['meetmefeatures']->edit_where($where,$value,
-											   null,null,false)) === false)
-			return(false);
-
-		return(true);
+		return($this->_update_context_contextnummember('meetmefeatures',$context,$newcontext));
 	}
 
 	function _update_incall_contextnummember($context,$newcontext)
 	{
-		if(xivo_issa('contextnummember',$this->_return) === false)
-			return(false);
-
-		$ref = &$this->_return['contextnummember'];
-
-		$where = array('context' => $context);
-		$value = array('context' => $newcontext);
-
-		if(((isset($this->_modules['incall']) === false
-		    || is_object($this->_modules['incall']) === false) === true
-		   && ($this->_modules['incall'] = $this->_service->get_module('incall')) === false) === true
-		|| ($ref['incall'] = $this->_modules['incall']->edit_where($where,$value,
-									   null,null,false)) === false)
-			return(false);
-
-		return(true);
+		return($this->_update_context_contextnummember('incall',$context,$newcontext));
 	}
 
-	function _update_callfilter_contextmember($context,$newcontext)
+	function _update_context_contextmember($name,$context,$newcontext)
 	{
-		if(xivo_issa('contextmember',$this->_return) === false)
+		if(xivo_issa('contextmember',$this->_return) === false
+		|| xivo_haslen($name) === false)
 			return(false);
 
 		$ref = &$this->_return['contextmember'];
@@ -884,14 +845,19 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		$where = array('context' => $context);
 		$value = array('context' => $newcontext);
 
-		if(((isset($this->_modules['callfilter']) === false
-		    || is_object($this->_modules['callfilter']) === false) === true
-		   && ($this->_modules['callfilter'] = $this->_service->get_module('callfilter')) === false) === true
-		|| ($ref['callfilter'] = $this->_modules['callfilter']->edit_where($where,$value,
-										   null,null,false)) === false)
+		if(((isset($this->_modules[$name]) === false
+		    || is_object($this->_modules[$name]) === false) === true
+		   && ($this->_modules[$name] = $this->_service->get_module($name)) === false) === true
+		|| ($ref[$name] = $this->_modules[$name]->edit_where($where,$value,
+								     null,null,false)) === false)
 			return(false);
 
 		return(true);
+	}
+
+	function _update_callfilter_contextmember($context,$newcontext)
+	{
+		return($this->_update_context_contextmember('callfilter',$context,$newcontext));
 	}
 
 	function _update_generalsip_contextmember($context,$newcontext,$data)
@@ -902,19 +868,19 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 		$ref = &$this->_return['contextmember'];
 
-		if(((isset($this->_modules['sip']) === false
-		    || is_object($this->_modules['sip']) === false) === true
-		   && ($this->_modules['sip'] = $this->_service->get_realstatic('sip')) === false) === true)
+		if(((isset($this->_modules['staticsip']) === false
+		    || is_object($this->_modules['staticsip']) === false) === true
+		   && ($this->_modules['staticsip'] = $this->_service->get_realstatic('sip')) === false) === true)
 			return(false);
 		else if(isset($data['context']) === true
-		&& ($ref['generalsip']['context'] = $this->_modules['sip']->edit_where(
+		&& ($ref['generalsip']['context'] = $this->_modules['staticsip']->edit_where(
 							array('var_name'	=> 'context',
 							      'var_val'		=> $context),
 							array('var_val'		=> $newcontext),
 							null,null,false)) === false)
 			return(false);
 		else if(isset($data['regcontext']) === true
-		&& ($ref['generalsip']['regcontext'] = $this->_modules['sip']->edit_where(
+		&& ($ref['generalsip']['regcontext'] = $this->_modules['staticsip']->edit_where(
 							array('var_name'	=> 'regcontext',
 							      'var_val'		=> $context),
 							array('var_val'		=> $newcontext),
@@ -932,12 +898,12 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 		$ref = &$this->_return['contextmember'];
 
-		if(((isset($this->_modules['iax']) === false
-		    || is_object($this->_modules['iax']) === false) === true
-		   && ($this->_modules['iax'] = $this->_service->get_realstatic('iax')) === false) === true)
+		if(((isset($this->_modules['staticiax']) === false
+		    || is_object($this->_modules['staticiax']) === false) === true
+		   && ($this->_modules['staticiax'] = $this->_service->get_realstatic('iax')) === false) === true)
 			return(false);
 		else if(isset($data['regcontext']) === true
-		&& ($ref['generaliax']['regcontext'] = $this->_modules['iax']->edit_where(
+		&& ($ref['generaliax']['regcontext'] = $this->_modules['staticiax']->edit_where(
 							array('var_name'	=> 'regcontext',
 							      'var_val'		=> $context),
 							array('var_val'		=> $newcontext),
@@ -957,33 +923,33 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 		$value = array('var_val' => $newcontext);
 
-		if(((isset($this->_modules['voicemail']) === false
-		    || is_object($this->_modules['voicemail']) === false) === true
-		   && ($this->_modules['voicemail'] = $this->_service->get_realstatic('voicemail')) === false) === true)
+		if(((isset($this->_modules['staticvoicemail']) === false
+		    || is_object($this->_modules['staticvoicemail']) === false) === true
+		   && ($this->_modules['staticvoicemail'] = $this->_service->get_realstatic('voicemail')) === false) === true)
 			return(false);
 		else if(isset($data['cidinternalcontexts']) === true
-		&& ($ref['generalvoicemail']['cidinternalcontexts'] = $this->_modules['voicemail']->edit_where(
+		&& ($ref['generalvoicemail']['cidinternalcontexts'] = $this->_modules['staticvoicemail']->edit_where(
 							array('var_name'	=> 'cidinternalcontexts',
 							      'var_val'		=> $context),
 							$value,
 							null,null,false)) === false)
 			return(false);
 		else if(isset($data['dialout']) === true
-		&& ($ref['generalvoicemail']['dialout'] = $this->_modules['voicemail']->edit_where(
+		&& ($ref['generalvoicemail']['dialout'] = $this->_modules['staticvoicemail']->edit_where(
 							array('var_name'	=> 'dialout',
 							      'var_val'		=> $context),
 							$value,
 							null,null,false)) === false)
 			return(false);
 		else if(isset($data['callback']) === true
-		&& ($ref['generalvoicemail']['callback'] = $this->_modules['voicemail']->edit_where(
+		&& ($ref['generalvoicemail']['callback'] = $this->_modules['staticvoicemail']->edit_where(
 							array('var_name'	=> 'callback',
 							      'var_val'		=> $context),
 							$value,
 							null,null,false)) === false)
 			return(false);
 		else if(isset($data['exitcontext']) === true
-		&& ($ref['generalvoicemail']['exitcontext'] = $this->_modules['voicemail']->edit_where(
+		&& ($ref['generalvoicemail']['exitcontext'] = $this->_modules['staticvoicemail']->edit_where(
 							array('var_name'	=> 'exitcontext',
 							      'var_val'		=> $context),
 							$value,
@@ -1045,119 +1011,75 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 	function _update_queue_contextmember($context,$newcontext)
 	{
-		if(xivo_issa('contextmember',$this->_return) === false)
-			return(false);
-
-		$ref = &$this->_return['contextmember'];
-
-		$where = array('context' => $context);
-		$value = array('context' => $newcontext);
-
-		if(((isset($this->_modules['queue']) === false
-		    || is_object($this->_modules['queue']) === false) === true
-		   && ($this->_modules['queue'] = $this->_service->get_module('queue')) === false) === true
-		|| ($ref['queue'] = $this->_modules['queue']->edit_where($where,$value,
-									 null,null,false)) === false)
-			return(false);
-
-		return(true);
+		return($this->_update_context_contextmember('queue',$context,$newcontext));
 	}
 
 	function _update_rightcall_contextmember($context,$newcontext)
 	{
-		if(xivo_issa('contextmember',$this->_return) === false)
-			return(false);
-
-		$ref = &$this->_return['contextmember'];
-
-		$where = array('context' => $context);
-		$value = array('context' => $newcontext);
-
-		if(((isset($this->_modules['rightcall']) === false
-		    || is_object($this->_modules['rightcall']) === false) === true
-		   && ($this->_modules['rightcall'] = $this->_service->get_module('rightcall')) === false) === true
-		|| ($ref['rightcall'] = $this->_modules['rightcall']->edit_where($where,$value,
-										 null,null,false)) === false)
-			return(false);
-
-		return(true);
+		return($this->_update_context_contextmember('rightcall',$context,$newcontext));
 	}
 
 	function _update_schedule_contextmember($context,$newcontext)
 	{
-		if(xivo_issa('contextmember',$this->_return) === false)
-			return(false);
-
-		$ref = &$this->_return['contextmember'];
-
-		$where = array('context' => $context);
-		$value = array('context' => $newcontext);
-
-		if(((isset($this->_modules['schedule']) === false
-		    || is_object($this->_modules['schedule']) === false) === true
-		   && ($this->_modules['schedule'] = $this->_service->get_module('schedule')) === false) === true
-		|| ($ref['schedule'] = $this->_modules['schedule']->edit_where($where,$value,
-									       null,null,false)) === false)
-			return(false);
-
-		return(true);
+		return($this->_update_context_contextmember('schedule',$context,$newcontext));
 	}
 
 	function _update_trunksip_contextmember($context,$newcontext)
 	{
-		if(xivo_issa('contextmember',$this->_return) === false)
-			return(false);
-
-		$ref = &$this->_return['contextmember'];
-
-		$where = array('context' => $context);
-		$value = array('context' => $newcontext);
-
-		if(((isset($this->_modules['trunksip']) === false
-		    || is_object($this->_modules['trunksip']) === false) === true
-		   && ($this->_modules['trunksip'] = $this->_service->get_module('trunksip')) === false) === true
-		|| ($ref['trunksip'] = $this->_modules['trunksip']->edit_where($where,$value,
-									       null,null,false)) === false)
-			return(false);
-
-		return(true);
+		return($this->_update_context_contextmember('trunksip',$context,$newcontext));
 	}
 
 	function _update_trunkiax_contextmember($context,$newcontext)
 	{
-		if(xivo_issa('contextmember',$this->_return) === false)
-			return(false);
-
-		$ref = &$this->_return['contextmember'];
-
-		$where = array('context' => $context);
-		$value = array('context' => $newcontext);
-
-		if(((isset($this->_modules['trunkiax']) === false
-		    || is_object($this->_modules['trunkiax']) === false) === true
-		   && ($this->_modules['trunkiax'] = $this->_service->get_module('trunkiax')) === false) === true
-		|| ($ref['trunkiax'] = $this->_modules['trunkiax']->edit_where($where,$value,
-									       null,null,false)) === false)
-			return(false);
-
-		return(true);
+		return($this->_update_context_contextmember('trunkiax',$context,$newcontext));
 	}
 
 	function _update_trunkcustom_contextmember($context,$newcontext)
 	{
-		if(xivo_issa('contextmember',$this->_return) === false)
+		return($this->_update_context_contextmember('trunkcustom',$context,$newcontext));
+	}
+
+	function _update_voicemail_contextmember($context,$newcontext,$data)
+	{
+		if(xivo_issa('contextmember',$this->_return) === false
+		|| is_array($data) === false)
 			return(false);
 
 		$ref = &$this->_return['contextmember'];
 
-		$where = array('context' => $context);
-		$value = array('context' => $newcontext);
-
-		if(((isset($this->_modules['trunkcustom']) === false
-		    || is_object($this->_modules['trunkcustom']) === false) === true
-		   && ($this->_modules['trunkcustom'] = $this->_service->get_module('trunkcustom')) === false) === true
-		|| ($ref['trunkcustom'] = $this->_modules['trunkcustom']->edit_where($where,$value,
-										     null,null,false)) === false)
+		if(((isset($this->_modules['voicemail']) === false
+		    || is_object($this->_modules['voicemail']) === false) === true
+		   && ($this->_modules['voicemail'] = $this->_service->get_module('voicemail')) === false) === true)
+			return(false);
+		else if(isset($data['context']) === true
+		&& (($ref['voicemail']['context'] = $this->_modules['voicemail']->edit_where(
+							array('context'		=> $context),
+							array('context'		=> $newcontext),
+							null,null,false)) === false
+		    || ($ref['voicemail']['usersip'] = $this->_dso->update_usersip_mailbox(
+		    					$newcontext,
+							$newcontext)) === false
+		    || ($ref['voicemail']['useriax'] = $this->_dso->update_useriax_mailbox(
+		    					$newcontext,
+							$newcontext)) === false) === true)
+			return(false);
+		else if(isset($data['dialout']) === true
+		&& ($ref['voicemail']['dialout'] = $this->_modules['voicemail']->edit_where(
+							array('dialout'		=> $context),
+							array('dialout'		=> $newcontext),
+							null,null,false)) === false)
+			return(false);
+		else if(isset($data['callback']) === true
+		&& ($ref['voicemail']['callback'] = $this->_modules['voicemail']->edit_where(
+							array('callback'	=> $context),
+							array('callback'	=> $newcontext),
+							null,null,false)) === false)
+			return(false);
+		else if(isset($data['exitcontext']) === true
+		&& ($ref['voicemail']['exitcontext'] = $this->_modules['voicemail']->edit_where(
+							array('exitcontext'	=> $context),
+							array('exitcontext'	=> $newcontext),
+							null,null,false)) === false)
 			return(false);
 
 		return(true);
@@ -1290,6 +1212,9 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 					if(isset($val['trunkcustom']) === true)
 						$this->_update_trunkcustom_contextmember($context,$newcontext);
+
+					if(isset($val['voicemail']) === true)
+						$this->_update_voicemail_contextmember($context,$newcontext,$val['voicemail']);
 					break;					   
 			}
 		}
@@ -1299,10 +1224,9 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 	function delete()
 	{
-		if(isset($this->_info['contextnummember'],$this->_info['contextmember']) === false)
+		if(isset($this->_info['deletable']) === false)
 			return(false);
-		else if(is_array($this->_info['contextnummember']) === true
-		|| is_array($this->_info['contextmember']) === true)
+		else if($this->_info['deletable'] === false)
 			return(null);
 
 		$r = true;

@@ -469,6 +469,16 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		else
 			$r['meetme'] = false;
 
+		$vmorder = array();
+		$vmorder['fullname'] = SORT_ASC;
+		$vmorder['mailbox'] = SORT_ASC;
+		$vmorder['context'] = SORT_ASC;
+
+		if(($voicemail = &$this->_service->get_module('voicemail')) !== false)
+			$r['voicemail'] = $voicemail->get_all(null,true,$vmorder);
+		else
+			$r['voicemail'] = false;
+
 		if(($schedule = &$this->_service->get_module('schedule')) !== false
 		&& ($r['schedule'] = $schedule->get_all_except($scheduleid)) !== false)
 			usort($r['schedule'],array(&$sortname,'str_usort'));
@@ -486,6 +496,7 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		$r['group'] = '';
 		$r['queue'] = '';
 		$r['meetme'] = '';
+		$r['voicemail'] = '';
 		$r['schedule'] = '';
 		$r['application'] = '';
 		$r['sound'] = '';

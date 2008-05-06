@@ -5,7 +5,7 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 class xivo_application_service_asterisk_realstatic_voicemail_general extends xivo_application_service_asterisk_realstatic_abstract
 {
 	var $_name		= 'generalvoicemail';
-	var $_modulename	= 'voicemail';
+	var $_modulename	= 'staticvoicemail';
 	var $_category		= 'general';
 	var $_cat_metric	= 0;
 	var $_filename		= 'voicemail.conf';

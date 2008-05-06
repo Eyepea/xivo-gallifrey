@@ -176,7 +176,7 @@ Durée maximum d'un silence :
 %s secondes
 
 ; fm_voicemail-review
-Réécouter ou réenregistrer un message :
+Réécouter / réenregistrer un message :
 
 ; fm_voicemail-operator
 Mise en relation avec un opérateur :
@@ -194,16 +194,16 @@ Ajouter un ou plusieurs formats ->
 Nombre maximum de tentatives pour s'authentifier :
 
 ; fm_voicemail-envelope
-Enoncer la date et l'heure :
+Annoncer la date et l'heure :
 
 ; fm_voicemail-saycid
-Enoncer le nom :
+Annoncer le nom d'appel :
 
 ; fm_voicemail-cidinternalcontexts
 Contexte interne :
 
 ; fm_voicemail-sayduration
-Enoncer la durée :
+Annoncer la durée :
 
 ; fm_voicemail-saydurationm
 Temps minimum pour énoncer la durée :
@@ -299,7 +299,7 @@ Saut de l'avance rapide et retour rapide :
 %s secondes
 
 ; fm_voicemail-sendvoicemail
-Laisser un message :
+Transférer un message :
 
 ; fm_voicemail-usedirectory
 Utiliser l'annuaire pour transférer ou laisser un message :
@@ -308,7 +308,7 @@ Utiliser l'annuaire pour transférer ou laisser un message :
 Lecture automatique du message suivant :
 
 ; fm_voicemail-dialout
-Contexte d'appel externe :
+Contexte d'appel :
 
 ; fm_voicemail-callback
 Contexte de rappel :

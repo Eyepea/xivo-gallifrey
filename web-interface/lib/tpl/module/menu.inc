@@ -13,34 +13,26 @@ class xivo_tpl_menu extends xivo_tpl_module
 
 	function set_top($file,$ext='')
 	{
-		$file = (string) $file;
-
 		$this->_set_menu($file,'top',$ext);
 	}
 
 	function set_left($file,$ext='')
 	{
-		$file = (string) $file;
-
 		$this->_set_menu($file,'left',$ext);
 	}
 
 	function set_bottom($file,$ext='')
 	{
-		$file = (string) $file;
-
 		$this->_set_menu($file,'bottom',$ext);
 	}
 
 	function set_right($file,$ext='')
 	{
-		$file = (string) $file;
 		$this->_set_menu($file,'right',$ext);
 	}
 
 	function set_toolbar($file,$ext='')
 	{
-		$file = (string) $file;
 		$this->_set_menu($file,'toolbar',$ext);
 	}
 
@@ -85,9 +77,7 @@ class xivo_tpl_menu extends xivo_tpl_module
 
 	function _mk_menu($where)
 	{
-		$where = (string) $where;
-
-		if(($file = $this->get_file('menu_'.$where)) !== null)
+		if(($file = $this->get_file('menu_'.(string) $where)) !== null)
 			$this->file_include($file,null,null);
 	}
 }

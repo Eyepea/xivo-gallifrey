@@ -5,13 +5,10 @@
 	$info = $this->get_var('info');
 	$element = $this->get_var('element');
 
+	$voicemail_list = $this->get_var('voicemail_list');
 	$autoprov_list = $this->get_var('autoprov_list');
 	$context_list = $this->get_var('context_list');
 	$rightcall = $this->get_var('rightcall');
-
-	if(($vm_active = $info['voicemail']['commented']) !== null):
-		$vm_active = xivo_bool($vm_active) === false;
-	endif;
 
 	if(isset($info['protocol']['allow']) === true):
 		$allow = $info['protocol']['allow'];
@@ -145,27 +142,31 @@ endif;
 
 <div id="sb-part-voicemail" class="b-nodisplay">
 
-	<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-active'),'name' => 'voicemail-active','labelid' => 'voicemail-active','checked' => $vm_active),'onclick="xivo_enable_voicemail();"');?>
+	<?=$form->select(array('desc' => $this->bbf('fm_userfeatures_voicemailid'),'name' => 'ufeatures[voicemailid]','labelid' => 'ufeatures-voicemailid','empty' => true,'key' => 'identity','altkey' => 'uniqueid','value' => $info['ufeatures']['voicemailid']),$voicemail_list,'onchange="xivo_voicemail_selection(this.value);"',array('add' => $this->bbf('fm_voicemail-opt-add')));?>
 
-	<?=$form->text(array('desc' => $this->bbf('fm_voicemail_fullname'),'name' => 'voicemail[fullname]','labelid' => 'voicemail-fullname','value' => $info['voicemail']['fullname'],'size' => 15));?>
+	<?=$form->text(array('desc' => $this->bbf('fm_voicemail_fullname'),'name' => 'voicemail[fullname]','labelid' => 'voicemail-fullname','value' => $this->get_varra('voicemail','fullname'),'size' => 15));?>
 
-	<?=$form->text(array('desc' => $this->bbf('fm_voicemail_password'),'name' => 'voicemail[password]','labelid' => 'voicemail-password','value' => $info['voicemail']['password'],'size' => 15));?>
+	<?=$form->text(array('desc' => $this->bbf('fm_voicemail_mailbox'),'name' => 'voicemail[mailbox]','labelid' => 'voicemail-mailbox','value' => $this->get_varra('voicemail','mailbox'),'size' => 10));?>
 
-	<?=$form->text(array('desc' => $this->bbf('fm_voicemail_email'),'name' => 'voicemail[email]','labelid' => 'voicemail-email','value' => $info['voicemail']['email'],'size' => 15));?>
+	<?=$form->text(array('desc' => $this->bbf('fm_voicemail_password'),'name' => 'voicemail[password]','labelid' => 'voicemail-password','value' => $this->get_varra('voicemail','password'),'size' => 10));?>
+
+	<?=$form->text(array('desc' => $this->bbf('fm_voicemail_email'),'name' => 'voicemail[email]','labelid' => 'voicemail-email','value' => $this->get_varra('voicemail','email'),'size' => 15));?>
 
 <?php
-	if(($tz_list = $this->get_var('tz_list')) !== false):
 
-		echo $form->select(array('desc' => $this->bbf('fm_voicemail_tz'),'name' => 'voicemail[tz]','labelid' => 'voicemail-tz','key' => 'name','default' => $element['voicemail']['tz']['default'],'value' => $info['voicemail']['tz']),$tz_list);
+if(($tz_list = $this->get_var('tz_list')) !== false):
 
-	endif;
+	echo $form->select(array('desc' => $this->bbf('fm_voicemail_tz'),'name' => 'voicemail[tz]','labelid' => 'voicemail-tz','key' => 'name','default' => $element['voicemail']['tz']['default'],'value' => $this->get_varra('voicemail','tz')),$tz_list);
+
+endif;
+
 ?>
 
-	<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_skipvoicemailpass'),'name' => 'ufeatures[skipvoicemailpass]','labelid' => 'ufeatures-skipvoicemailpass','default' => $element['ufeatures']['skipvoicemailpass']['default'],'checked' => $info['ufeatures']['skipvoicemailpass']));?>
+	<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemailfeatures_skipcheckpass'),'name' => 'vmfeatures[skipcheckpass]','labelid' => 'vmfeatures-skipcheckpass','default' => $element['vmfeatures']['skipcheckpass']['default'],'checked' => $this->get_varra('info',array('vmfeatures','skipcheckpass'))));?>
 
-	<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail_attach'),'name' => 'voicemail[attach]','labelid' => 'voicemail-attach','checked' => $info['voicemail']['attach']));?>
+	<?=$form->select(array('desc' => $this->bbf('fm_voicemail_attach'),'name' => 'voicemail[attach]','labelid' => 'voicemail-attach','bbf' => 'fm_bool-opt-','empty' => true,'key' => false,'value' => $this->get_varra('voicemail','attach'),'default' => $element['voicemail']['attach']['default']),$element['voicemail']['attach']['value']);?>
 
-	<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail_deletevoicemail'),'name' => 'voicemail[deletevoicemail]','labelid' => 'voicemail-deletevoicemail','checked' => $info['voicemail']['deletevoicemail']));?>
+	<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail_deletevoicemail'),'name' => 'voicemail[deletevoicemail]','labelid' => 'voicemail-deletevoicemail','checked' => $this->get_varra('voicemail','deletevoicemail')));?>
 
 </div>
 

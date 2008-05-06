@@ -34,6 +34,9 @@ File d'attente
 ; fm_incall_type-opt-meetme
 Chambre de conférence
 
+; fm_incall_type-opt-voicemail
+Messagerie vocale
+
 ; fm_incall_type-opt-schedule
 Horaire
 
@@ -59,6 +62,9 @@ Renvoyer vers :
 Renvoyer vers :
 
 ; fm_incall_meetme-typeval
+Renvoyer vers :
+
+; fm_incall_voicemail-typeval
 Renvoyer vers :
 
 ; fm_incall_schedule-typeval
@@ -111,6 +117,9 @@ Créer une file d'attente
 
 ; create_meetme
 Créer une chambre de conférence
+
+; create_voicemail
+Créer une messagerie vocale
 
 ; create_schedule
 Créer un horaire

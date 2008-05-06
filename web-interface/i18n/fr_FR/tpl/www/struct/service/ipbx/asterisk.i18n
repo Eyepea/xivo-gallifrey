@@ -1,3 +1,5 @@
+; load ./dialstatus
+
 ; service_type
 IPBX
 
@@ -79,15 +81,6 @@ Dialogic VOX (ADPCM)
 ; ast_format_name_info-slin
 Signed Linear (SLN)
 
-; toolbar_opt_add
-Ajouter
-
-; toolbar_opt_delete
-Supprimer
-
-; toolbar_opt_advanced
-Mode avancé
-
 ; toolbar_add_menu_add-directory
 Ajouter un répertoire
 
@@ -99,18 +92,6 @@ Ajouter
 
 ; toolbar_add_menu_import-file
 Importer un fichier
-
-; toolbar_adv_menu_select-all
-Tout sélectionner
-
-; toolbar_adv_menu_enable
-Activer
-
-; toolbar_adv_menu_disable
-Désactiver
-
-; toolbar_adv_menu_delete
-Supprimer
 
 ; toolbar_adv_menu_add-category
 Ajouter une catégorie
@@ -127,9 +108,6 @@ Ajouter un groupe
 ; toolbar_adv_menu_add-agent
 Ajouter un agent
 
-; toolbar_fm_search
-Chercher
-
 ; toolbar_fm_directory
 -- Répertoire --
 
@@ -141,15 +119,3 @@ Chercher
 
 ; toolbar_fm_group
 -- Groupe --
-
-; col_action
-Action
-
-; opt_modify
-Modifier
-
-; opt_delete
-Supprimer
-
-; fm_bt-save
-Sauvegarder

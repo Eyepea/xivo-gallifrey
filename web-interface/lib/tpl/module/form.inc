@@ -527,7 +527,7 @@ class xivo_tpl_form extends xivo_tpl_module
 	function _mk_label($str=false)
 	{
 		if($this->_param['label'] === false)
-			return(($str !== false ? (string) $str : false));
+			return((string) $str);
 
 		$for = $this->_param['id'] !== false ? $this->_param['id'] : $this->_param['name'];
 		$id = $this->_param['label'] === true ? 'lb-'.$this->_param['name'] : $this->_param['label'];
@@ -545,8 +545,11 @@ class xivo_tpl_form extends xivo_tpl_module
 		if($this->_param['field'] === false)
 			return(false);
 
-		$this->_render = '<p'.($this->_param['fieldid'] !== false ? ' id="'.$this->_param['fieldid'].'"' : '').' class="fm-field">'.
-		"\n".$this->_render."\n".'</p>';
+		$this->_render = '<p'.
+				 ($this->_param['fieldid'] !== false ? ' id="'.$this->_param['fieldid'].'"' : '').
+				 ' class="fm-field">'."\n".
+				 $this->_render."\n".
+				 '</p>';
 	}
 
 	function _mk_desc()
@@ -555,19 +558,20 @@ class xivo_tpl_form extends xivo_tpl_module
 			return(false);
 		else if(is_scalar($this->_param['desc']) === true)
 		{
-			$this->_render = '<span class="fm-desc">'.(string) $this->_param['desc'].'</span>'.$this->_render;	
+			$this->_render = '<span class="fm-desc">'.$this->_mk_label((string) $this->_param['desc']).'</span>'.$this->_render;	
+			$this->_param['label'] = false;
 			return(null);
 		}
 		else if(is_array($this->_param['desc']) === true && isset($this->_param['desc'][0],$this->_param['desc'][1]) === true)
 		{
 			$this->_mk_field();
 
-			$this->_param['desc'][1] = '<span class="fm-desc">'.(string) $this->_param['desc'][1].'</span>';
+			$this->_param['desc'][1] = '<span class="fm-desc">'.$this->_mk_label((string) $this->_param['desc'][1]).'</span>';
 
 			if(isset($this->_param['desc'][2]) === false)
-				$this->_render = sprintf($this->_param['desc'][0],$this->_mk_label($this->_param['desc'][1]),$this->_render);
+				$this->_render = sprintf($this->_param['desc'][0],$this->_param['desc'][1],$this->_render);
 			else
-				$this->_render = sprintf($this->_param['desc'][0],$this->_render,$this->_mk_label($this->_param['desc'][1]));
+				$this->_render = sprintf($this->_param['desc'][0],$this->_render,$this->_param['desc'][1]);
 
 			$this->_param['label'] = $this->_param['field'] = false;
 		}
@@ -633,9 +637,7 @@ class xivo_tpl_form extends xivo_tpl_module
 
 		$selected = $this->_param['value'] === '' ? ' selected="selected"' : '';
 
-		$r = '<option label="" value=""'.$selected.'>'.$empty.'</option>'."\n";
-
-		return($r);
+		return('<option label="" value=""'.$selected.'>'.$empty.'</option>'."\n");
 	}
 
 	function _mk_slt_option_render($render,$param=null)
@@ -698,7 +700,7 @@ class xivo_tpl_form extends xivo_tpl_module
 				}
 			}
 
-			$this->_render .= vsprintf('<option label="%s" value="%s"%s>%s</option>',$render);
+			$this->_render .= vsprintf('<option label="%s" value="%s"%s>%s</option>'."\n",$render);
 		}
 		else
 		{
@@ -756,7 +758,7 @@ class xivo_tpl_form extends xivo_tpl_module
 				}
 			}
 
-			$this->_render .= vsprintf('<option value="%s"%s>%s</option>',$render);
+			$this->_render .= vsprintf('<option value="%s"%s>%s</option>'."\n",$render);
 		}
 	}
 
@@ -947,7 +949,7 @@ class xivo_tpl_form extends xivo_tpl_module
 					$this->_param['optgroup'] = $param;
 
 					if($render !== false)
-						$this->_render .= '</optgroup>';
+						$this->_render .= '</optgroup>'."\n";
 				}
 				else if(($render = $this->_mk_slt_option_param_array($k,$ref)) !== false)
 					$this->_mk_slt_option_render($render);

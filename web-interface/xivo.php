@@ -17,10 +17,32 @@ $_QRY = &xivo_gct::get('xivo_query');
 $_SRE = &xivo_gct::get('xivo_service');
 $_USR = &xivo_gct::get('_USR');
 
-xivo::load_class('xivo_tpl');
-$_HTML = &new xivo_tpl($_CF['tpl']['www'],array('menu','url','dhtml'),$_URL);
+if(defined('XIVO_TPL_SPACE') === false)
+	$tpl_space = 'www';
+else
+	$tpl_space = XIVO_TPL_SPACE;
 
-if(($prepend = $_HTML->get_prepend()) !== false)
-	include($prepend);
+if(isset($_CF['tpl'][$tpl_space]) === false)
+	$tpl_space = false;
+
+switch($tpl_space)
+{
+	case 'www':
+		xivo::load_class('xivo_tpl');
+		$_HTML = &new xivo_tpl($_CF['tpl']['www'],array('menu','url','dhtml'),$_URL);
+
+		if(($prepend = $_HTML->get_prepend()) !== false)
+			include($prepend);
+		break;
+	case 'json':
+		xivo::load_class('xivo_tpl');
+		$_HTML = &new xivo_tpl($_CF['tpl']['json'],array('url','dhtml'),$_URL);
+
+		if(($prepend = $_HTML->get_prepend()) !== false)
+			include($prepend);
+		break;	
+	default:
+		xivo_die('Invalid TPL SPACE');
+}
 
 ?>

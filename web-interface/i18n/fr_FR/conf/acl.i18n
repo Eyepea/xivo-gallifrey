@@ -46,6 +46,9 @@ Files d'attente
 ; acl_service-ipbx-pbx_settings-meetme
 Chambres de conférence
 
+; acl_service-ipbx-pbx_settings-voicemail
+Messageries vocales
+
 ; acl_service-ipbx-call_management
 Gestion des appels
 
@@ -64,7 +67,7 @@ Filtrages d'appels
 ; acl_service-ipbx-call_management-schedule
 Horaires
 
-; acl_service-ipbx-call_management-ivr
+; acl_service-ipbx-call_management-voicemenu
 Menus vocaux
 
 ; acl_service-ipbx-call_management-cdr

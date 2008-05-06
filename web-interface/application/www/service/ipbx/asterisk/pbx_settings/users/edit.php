@@ -162,6 +162,7 @@ else
 $_HTML->set_var('id',$info['ufeatures']['id']);
 $_HTML->set_var('info',$return);
 $_HTML->set_var('error',$error);
+$_HTML->set_var('voicemail',$return['voicemail']);
 $_HTML->set_var('dialstatus',$return['dialstatus']);
 $_HTML->set_var('groups',$groups);
 $_HTML->set_var('gmember',$gmember);
@@ -169,6 +170,7 @@ $_HTML->set_var('queues',$queues);
 $_HTML->set_var('qmember',$qmember);
 $_HTML->set_var('rightcall',$rightcall);
 $_HTML->set_var('element',$element);
+$_HTML->set_var('voicemail_list',$appuser->get_voicemail_list());
 $_HTML->set_var('destination_list',$appuser->get_destination_list());
 $_HTML->set_var('moh_list',$appuser->get_musiconhold());
 $_HTML->set_var('tz_list',$appuser->get_timezones());
@@ -178,6 +180,7 @@ $_HTML->set_var('bsfilter_list',$appuser->get_bsfilter_list());
 $_HTML->set_var('fktype_list',$appuser->get_phonefunckey_type());
 
 $dhtml = &$_HTML->get_module('dhtml');
+$dhtml->set_js('js/xivo_ajs.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialstatus.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/phonefunckey.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users/sip.js');

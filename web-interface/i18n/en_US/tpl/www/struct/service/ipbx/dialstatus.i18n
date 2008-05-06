@@ -1,0 +1,125 @@
+; fld-dialstatus-noanswer
+No answer
+
+; fld-dialstatus-busy
+Busy
+
+; fld-dialstatus-congestion
+Congested
+
+; fld-dialstatus-chanunavail
+Unavailable
+
+; fm_dialstatus_type
+Destination:
+
+; fm_dialstatus_type-opt-endcall
+End call
+
+; fm_dialstatus_type-opt-user
+User
+
+; fm_dialstatus_type-opt-group
+Group
+
+; fm_dialstatus_type-opt-queue
+Queue
+
+; fm_dialstatus_type-opt-meetme
+Conference room
+
+; fm_dialstatus_type-opt-voicemail
+Voicemail
+
+; fm_dialstatus_type-opt-schedule
+Scheduler
+
+; fm_dialstatus_type-opt-application
+Application
+
+; fm_dialstatus_type-opt-sound
+Audio file
+
+; fm_dialstatus_type-opt-custom
+Customized
+
+; fm_dialstatus_endcall-typeval
+Action:
+
+; fm_dialstatus_user-typeval
+Forward to:
+
+; fm_dialstatus_group-typeval
+Forward to:
+
+; fm_dialstatus_queue-typeval
+Forward to:
+
+; fm_dialstatus_meetme-typeval
+Forward to:
+
+; fm_dialstatus_voicemail-typeval
+Forward to:
+
+; fm_dialstatus_schedule-typeval
+Forward to:
+
+; fm_dialstatus_application-typeval
+Forward to:
+
+; fm_dialstatus_sound-typeval
+Play:
+
+; fm_dialstatus_custom-typeval
+Command:
+
+; fm_dialstatus_endcall-typeval-opt-none
+None
+
+; fm_dialstatus_endcall-typeval-opt-hangup
+Hang up
+
+; fm_dialstatus_endcall-typeval-opt-busy
+Busy
+
+; fm_dialstatus_endcall-typeval-opt-congestion
+Congested
+
+; fm_dialstatus_application-typeval-opt-faxtomail
+FaxToMail
+
+; fm_dialstatus_application-typeval-opt-disa
+DISA
+
+; fm_dialstatus_application-typeval-opt-directory
+Directory
+
+; fm_dialstatus_application-typeval-opt-voicemail
+Voicemail
+
+; fm_dialstatus_application-typeval-opt-callback
+Callback
+
+; create_user
+Create an user
+
+; create_group
+Create a group
+
+; create_queue
+Create a queue
+
+; create_meetme
+Create a conference room
+
+; create_voicemail
+Create a voicemail
+
+; create_schedule
+Create a scheduler
+
+; add_playback-sound
+Add an audio file
+
+; create_callfilter
+Create a call filter

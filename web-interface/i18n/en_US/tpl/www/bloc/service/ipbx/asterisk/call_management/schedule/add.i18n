@@ -1,5 +1,5 @@
 ; title_content_name
-Schedule > Add
+Scheduler > Add
 
 ; fm_schedule_name
 Name:
@@ -58,8 +58,11 @@ Queue
 ; fm_schedule_type-opt-meetme
 Conference room
 
+; fm_schedule_type-opt-voicemail
+Voicemail
+
 ; fm_schedule_type-opt-schedule
-Schedule
+Scheduler
 
 ; fm_schedule_type-opt-application
 Application
@@ -83,6 +86,9 @@ Forward to:
 Forward to:
 
 ; fm_schedule_meetme-typeval
+Forward to:
+
+; fm_schedule_voicemail-typeval
 Forward to:
 
 ; fm_schedule_schedule-typeval
@@ -136,8 +142,11 @@ Create a queue
 ; create_meetme
 Create a conference room
 
+; create_voicemail
+Create a voicemail
+
 ; no_schedule
-No schedule has been found
+No schedulers found
 
 ; add_playback-sound
 Add an audio file

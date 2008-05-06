@@ -140,6 +140,7 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 		$r['schedule']['group'] = null;
 		$r['schedule']['queue'] = null;
 		$r['schedule']['meetme'] = null;
+		$r['schedule']['voicemail'] = null;
 		$r['schedule']['schedule'] = null;
 		$r['schedule']['application'] = null;
 		$r['schedule']['sound'] = null;

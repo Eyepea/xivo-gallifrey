@@ -22,6 +22,10 @@ xivo_elt_type['fd-incall-meetme-typeval'] = new Array();
 xivo_elt_type['fd-incall-meetme-typeval']['style'] = 'display:none';
 xivo_elt_type['it-incall-meetme-typeval'] = new Array();
 xivo_elt_type['it-incall-meetme-typeval']['property'] = 'disabled|true:boolean';
+xivo_elt_type['fd-incall-voicemail-typeval'] = new Array();
+xivo_elt_type['fd-incall-voicemail-typeval']['style'] = 'display:none';
+xivo_elt_type['it-incall-voicemail-typeval'] = new Array();
+xivo_elt_type['it-incall-voicemail-typeval']['property'] = 'disabled|true:boolean';
 xivo_elt_type['fd-incall-schedule-typeval'] = new Array();
 xivo_elt_type['fd-incall-schedule-typeval']['style'] = 'display:none';
 xivo_elt_type['it-incall-schedule-typeval'] = new Array();
@@ -51,6 +55,8 @@ xivo_elt_type['links']['link'][xivo_itype++] = new Array('fd-incall-queue-typeva
 xivo_elt_type['links']['link'][xivo_itype++] = new Array('it-incall-queue-typeval',0,1);
 xivo_elt_type['links']['link'][xivo_itype++] = new Array('fd-incall-meetme-typeval',0,1);
 xivo_elt_type['links']['link'][xivo_itype++] = new Array('it-incall-meetme-typeval',0,1);
+xivo_elt_type['links']['link'][xivo_itype++] = new Array('fd-incall-voicemail-typeval',0,1);
+xivo_elt_type['links']['link'][xivo_itype++] = new Array('it-incall-voicemail-typeval',0,1);
 xivo_elt_type['links']['link'][xivo_itype++] = new Array('fd-incall-schedule-typeval',0,1);
 xivo_elt_type['links']['link'][xivo_itype++] = new Array('it-incall-schedule-typeval',0,1);
 xivo_elt_type['links']['link'][xivo_itype++] = new Array('fd-incall-application-typeval',0,1);
@@ -91,6 +97,12 @@ xivo_fm_type['meetme']['fd-incall-meetme-typeval']['style'] = 'display:block';
 xivo_fm_type['meetme']['it-incall-meetme-typeval']['property'] = 'disabled|false:boolean';
 
 xivo_attrib_register('fm_type-meetme',xivo_fm_type['meetme']);
+
+xivo_fm_type['voicemail'] = xivo_clone(xivo_elt_type);
+xivo_fm_type['voicemail']['fd-incall-voicemail-typeval']['style'] = 'display:block';
+xivo_fm_type['voicemail']['it-incall-voicemail-typeval']['property'] = 'disabled|false:boolean';
+
+xivo_attrib_register('fm_type-voicemail',xivo_fm_type['voicemail']);
 
 xivo_fm_type['schedule'] = xivo_clone(xivo_elt_type);
 xivo_fm_type['schedule']['fd-incall-schedule-typeval']['style'] = 'display:block';

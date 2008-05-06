@@ -1,0 +1,89 @@
+; title_content_name
+Messageries vocales > Ajouter
+
+; smenu_general
+Général
+
+; smenu_advanced
+Avancé
+
+; fm_voicemail_fullname
+Nom complet :
+
+; fm_voicemail_mailbox
+Numéro de boîte vocale :
+
+; fm_voicemail_password
+Mot de passe :
+
+; fm_voicemail_email
+E-mail :
+
+; fm_voicemail_context
+Contexte :
+
+; create_context
+Créer un contexte
+
+; fm_voicemail_tz
+Fuseau horaire :
+
+; fm_voicemailfeatures_skipcheckpass
+Désactiver la vérification du mot de passe :
+
+; fm_voicemail_maxmsg
+Nombre maximum de messages :
+
+; fm_voicemail_attach
+Joindre le fichier audio :
+
+; fm_voicemail_deletevoicemail
+Supprimer message après notification :
+
+; fm_voicemail_pager
+Bipeur :
+
+; fm_voicemail_saycid
+Annoncer le nom d'appel :
+
+; fm_voicemail_review
+Réécouter / réenregistrer un message :
+
+; fm_voicemail_operator
+Mise en relation avec un opérateur :
+
+; fm_voicemail_envelope
+Annoncer la date et l'heure :
+
+; fm_voicemail_sayduration
+Annoncer la durée :
+
+; fm_voicemail_saydurationm
+Temps minimum pour énoncer la durée :
+
+; fm_voicemail_saydurationm-opt1
+1 minute
+
+; fm_voicemail_saydurationm-opt
+%s minutes
+
+; fm_voicemail_sendvoicemail
+Transférer un message :
+
+; fm_voicemail_forcename
+Forcer l'enregistrement du nom :
+
+; fm_voicemail_forcegreetings
+Forcer l'enregistrement du message d'accueil :
+
+; fm_voicemail_hidefromdir
+Inaccessible depuis l'annuaire :
+
+; fm_voicemail_dialout
+Contexte d'appel :
+
+; fm_voicemail_callback
+Contexte de rappel :
+
+; fm_voicemail_exitcontext
+Contexte de sortie :

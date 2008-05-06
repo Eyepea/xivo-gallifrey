@@ -44,7 +44,7 @@ class xivo_datastorage_adapter_sqlite extends xivo_datastorage_adapter_abstract_
 
 	function quote_identifier($name)
 	{
-		if(($r = $this->_chk_quote($name)) !== '')
+		if(($r = $this->_get_scalar($name,true)) !== '')
 			$r = '"'.str_replace('"','""',$r).'"';
 
 		return($r);

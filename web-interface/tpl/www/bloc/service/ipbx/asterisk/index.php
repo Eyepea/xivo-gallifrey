@@ -5,6 +5,7 @@
 	$groupstat = $this->get_var('groupstat');
 	$queuestat = $this->get_var('queuestat');
 	$meetmestat = $this->get_var('meetmestat');
+	$voicemailstat = $this->get_var('voicemailstat');
 ?>
 <div id="index" class="b-infos">
 	<h3 class="sb-top xspan"><span class="span-left">&nbsp;</span><span class="span-center"><?=$this->bbf('title_content_name');?></span><span class="span-right">&nbsp;</span></h3>
@@ -72,6 +73,20 @@
 					<td class="td-center"><?=$meetmestat['enable']?></td>
 					<td class="td-center"><?=$meetmestat['disable']?></td>
 					<td class="td-right"><?=$meetmestat['total']?></td>
+				</tr>
+				<tr class="l-infos-1on2">
+					<td class="td-left txt-left">
+<?php
+	if(xivo_user::chk_acl('pbx_settings','voicemail') === true):
+		echo $url->href_html($this->bbf('stats_type-voicemail'),'service/ipbx/pbx_settings/voicemail','act=add');
+	else:
+		echo $this->bbf('stats_type-voicemail');
+	endif;
+?>
+					</td>
+					<td class="td-center"><?=$voicemailstat['enable']?></td>
+					<td class="td-center"><?=$voicemailstat['disable']?></td>
+					<td class="td-right"><?=$voicemailstat['total']?></td>
 				</tr>
 			</table>
 

@@ -16,6 +16,7 @@ xivo_dialstatus_type['user'] = 1;
 xivo_dialstatus_type['group'] = 1;
 xivo_dialstatus_type['queue'] = 1;
 xivo_dialstatus_type['meetme'] = 1;
+xivo_dialstatus_type['voicemail'] = 1;
 xivo_dialstatus_type['schedule'] = 1;
 xivo_dialstatus_type['application'] = 1;
 xivo_dialstatus_type['custom'] = 1;

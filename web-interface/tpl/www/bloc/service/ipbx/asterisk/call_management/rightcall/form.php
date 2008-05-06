@@ -42,7 +42,7 @@ endif;
 
 			<a href="#" onclick="xivo_fm_select_add_exten('it-exten',prompt('<?=$dhtml->escape($this->bbf('rightcallexten_add-extension'));?>')); return(false);" title="<?=$this->bbf('bt_addexten');?>"><?=$url->img_html('img/site/button/mini/blue/add.gif',$this->bbf('bt_addexten'),'class="bt-addlist" id="bt-addexten" border="0"');?></a><br />
 
-			<a href="#" onclick="xivo_fm_select_delete_entry('it-exten'); return(false);" title="<?=$this->bbf('bt_deleteexten');?>"><?=$url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('bt_deleteexten'),'class="bt-deletelist" id="bt-deleteexten" border="0"');?></a>
+			<a href="#" onclick="xivo_fm_select_delete_entry('it-exten'); return(false);" title="<?=$this->bbf('bt_deleteexten');?>"><?=$url->img_html('img/site/button/mini/orange/delete.gif',$this->bbf('bt_deleteexten'),'class="bt-deletelist" id="bt-deleteexten" border="0"');?></a>
 
 		</div>
 	</div>

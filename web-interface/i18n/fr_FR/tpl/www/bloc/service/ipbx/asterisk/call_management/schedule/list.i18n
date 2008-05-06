@@ -19,9 +19,6 @@ Destination
 ; col_publicholiday
 Férié
 
-; no_schedule
-Aucun horaire trouvé
-
 ; schedule_time
 %sh%s
 
@@ -52,6 +49,9 @@ File d'attente
 ; schedule_typetrue-meetme
 Chambre de conférence
 
+; schedule_typetrue-voicemail
+Messagerie vocale
+
 ; schedule_typetrue-schedule
 Horaire
 
@@ -69,6 +69,9 @@ Non
 
 ; schedule_publicholiday-1
 Oui
+
+; no_schedule
+Aucun horaire trouvé
 
 ; opt_delete_confirm
 Etes-vous certain de vouloir supprimer cet horaire ?

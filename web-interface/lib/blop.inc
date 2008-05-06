@@ -336,22 +336,47 @@ class blop
 		if(is_array($a) === false || empty($a) === true)
 			die('ERR: Invalid template configuration in XIVO ini file');
 
+		$def_script_path = $def_application_path = $def_tpl_path = false;
+
+		if(isset($a['script_path']) === true
+		&& ($def_script_path = xivo_file::is_d_r($a['script_path'])) === false)
+			die('ERR: Missing or invalid script_path for template configuration in XIVO ini file');
+
+		if(isset($a['application_path']) === true
+		&& ($def_application_path = xivo_file::is_d_r($a['application_path'])) === false)
+			die('ERR: Missing or invalid application_path for template configuration in XIVO ini file');
+
+		if(isset($a['tpl_path']) === true
+		&& ($def_tpl_path = xivo_file::is_d_r($a['tpl_path'])) === false)
+			die('ERR: Missing or invalid tpl_path for template configuration in XIVO ini file');
+
+		unset($a['script_path'],$a['application_path'],$a['tpl_path']);	
+
+		if(empty($a) === true)
+			die('ERR: Invalid template configuration in XIVO ini file');
+
 		foreach($a as $k => $v)
 		{
 			if(is_array($v) === false)
 				die('ERR: Missing information in '.$k.' for template configuration in XIVO ini file');
 			else if(isset($v['script_path']) === true && ($script_path = xivo_file::is_d_r($v['script_path'])) !== false)
 				$this->_conf['tpl'][$k]['script_path'] = $script_path;
+			else if($def_script_path !== false)
+				$this->_conf['tpl'][$k]['script_path'] = $def_script_path;
 			else
 				die('ERR: Missing or invalid script_path in '.$k.' for template configuration in XIVO ini file');
 
 			if(isset($v['application_path']) === true && ($application_path = xivo_file::is_d_r($v['application_path'])) !== false)
 				$this->_conf['tpl'][$k]['application_path'] = $application_path;
+			else if($def_application_path !== false)
+				$this->_conf['tpl'][$k]['application_path'] = $def_application_path;
 			else
 				die('ERR: Missing or invalid application_path in '.$k.' for template configuration in XIVO ini file');
 
 			if(isset($v['tpl_path']) === true && ($tpl_path = xivo_file::is_d_r($v['tpl_path'])) !== false)
 				$this->_conf['tpl'][$k]['tpl_path'] = $tpl_path;
+			else if($def_tpl_path !== false)
+				$this->_conf['tpl'][$k]['tpl_path'] = $def_tpl_path;
 			else
 				die('ERR: Missing or invalid tpl_path in '.$k.' for template configuration in XIVO ini file');
 

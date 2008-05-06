@@ -58,8 +58,8 @@ switch($act)
 
 		$_HTML->set_var('id',$info['schedule']['id']);
 		$_HTML->set_var('info',$return);
-		$_HTML->set_var('context_list',$appschedule->get_context_list());
 		$_HTML->set_var('element',$appschedule->get_elements());
+		$_HTML->set_var('context_list',$appschedule->get_context_list());
 		$_HTML->set_var('list',$appschedule->get_destination_list());
 		break;
 	case 'delete':

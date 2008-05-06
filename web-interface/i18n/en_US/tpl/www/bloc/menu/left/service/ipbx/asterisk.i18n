@@ -37,6 +37,9 @@ Queues
 ; mn_left_pbxsettings-meetme
 Conference rooms
 
+; mn_left_pbxsettings-voicemail
+Voicemail
+
 ; mn_left_ti_callmanagement
 Call management
 
@@ -55,8 +58,8 @@ Call filters
 ; mn_left_callmanagement-schedule
 Scheduler
 
-; mn_left_callmanagement-ivr
-IVR Menus
+; mn_left_callmanagement-voicemenu
+Voice menus
 
 ; mn_left_callmanagement-cdr
 Call logs

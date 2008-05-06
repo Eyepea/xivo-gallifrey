@@ -41,6 +41,9 @@
 		if(xivo_user::chk_acl('pbx_settings','meetme') === true):
 			echo '<dd id="mn-pbx-settings--meetme">',$url->href_html($this->bbf('mn_left_pbxsettings-meetme'),'service/ipbx/pbx_settings/meetme','act=list'),'</dd>';
 		endif;
+		if(xivo_user::chk_acl('pbx_settings','voicemail') === true):
+			echo '<dd id="mn-pbx-settings--voicemail">',$url->href_html($this->bbf('mn_left_pbxsettings-voicemail'),'service/ipbx/pbx_settings/voicemail','act=list'),'</dd>';
+		endif;
 		echo '</dl>';
 	endif;
 	
@@ -61,8 +64,8 @@
 		if(xivo_user::chk_acl('call_management','schedule') === true):
 			echo '<dd id="mn-call-management--schedule">',$url->href_html($this->bbf('mn_left_callmanagement-schedule'),'service/ipbx/call_management/schedule','act=list'),'</dd>';
 		endif;
-		if(xivo_user::chk_acl('call_management','ivr') === true):
-			echo '<dd id="mn-call-management--ivr"><a href="#">',$this->bbf('mn_left_callmanagement-ivr'),'</a></dd>';
+		if(xivo_user::chk_acl('call_management','voicemenu') === true):
+			echo '<dd id="mn-call-management--voicemenu">',$url->href_html($this->bbf('mn_left_callmanagement-voicemenu'),'service/ipbx/call_management/voicemenu','act=list'),'</dd>';
 		endif;
 		if(xivo_user::chk_acl('call_management','cdr') === true):
 			echo '<dd id="mn-call-management--cdr">',$url->href_html($this->bbf('mn_left_callmanagement-cdr'),'service/ipbx/call_management/cdr'),'</dd>';

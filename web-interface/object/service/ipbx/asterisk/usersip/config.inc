@@ -110,6 +110,7 @@ $array['element']['username']['default'] = '';
 
 $array['element']['mailbox'] = array();
 $array['element']['mailbox']['default'] = '';
+$array['element']['mailbox']['null'] = true;
 
 $array['element']['call-limit'] = array();
 $array['element']['call-limit']['default'] = 0;

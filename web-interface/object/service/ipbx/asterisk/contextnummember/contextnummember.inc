@@ -44,7 +44,7 @@ class xivo_service_asterisk_contextnummember extends xivo_service_asterisk_abstr
 		return(parent::edit($id,$arr));
 	}
 
-	function get_all_by_type($arr,$disable=null,$prepare=true,$order=null,$limit=null)
+	function get_all_by_type($arr=null,$disable=null,$prepare=true,$order=null,$limit=null)
 	{
 		$prepare = (bool) $prepare;
 
@@ -71,20 +71,24 @@ class xivo_service_asterisk_contextnummember extends xivo_service_asterisk_abstr
 		{
 			for($i = 0;$i < $nb;$i++)
 			{
-				if(isset($r[$list[$i]['type']]) === false)
-					$r[$list[$i]['type']] = array();
+				$ref = &$list[$i];
 
-				$r[$list[$i]['type']][] = $this->_prepare($list[$i]);
+				if(isset($r[$ref['type']]) === false)
+					$r[$ref['type']] = array();
+
+				$r[$ref['type']][] = $this->_prepare($list[$i]);
 			}
 		}
 		else
 		{
 			for($i = 0;$i < $nb;$i++)
 			{
-				if(isset($r[$list[$i]['type']]) === false)
-					$r[$list[$i]['type']] = array();
+				$ref = &$list[$i];
 
-				$r[$list[$i]['type']][] = $list[$i];
+				if(isset($r[$ref['type']]) === false)
+					$r[$ref['type']] = array();
+
+				$r[$ref['type']][] = $list[$i];
 			}
 		}
 

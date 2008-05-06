@@ -9,7 +9,7 @@
 
 <div id="sb-part-first">
 
-<?=$form->text(array('desc' => $this->bbf('fm_meetmefeatures_name'),'name' => 'mfeatures[name]','labelid' => 'mfeatures-pin','size' => 15,'default' => $element['mfeatures']['name']['default'],'value' => $info['mfeatures']['name']));?>
+<?=$form->text(array('desc' => $this->bbf('fm_meetmefeatures_name'),'name' => 'mfeatures[name]','labelid' => 'mfeatures-name','size' => 15,'default' => $element['mfeatures']['name']['default'],'value' => $info['mfeatures']['name']));?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_meetmeroom_number'),'name' => 'meetmeroom[number]','labelid' => 'meetmeroom-number','label' => 'lb-meetmeroom-number','size' => 15,'default' => $element['meetmeroom']['number']['default'],'value' => $info['meetmeroom']['number']));?>
 

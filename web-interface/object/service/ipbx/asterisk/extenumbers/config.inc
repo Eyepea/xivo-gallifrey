@@ -32,7 +32,7 @@ $array['element']['typeval']['default'] = '';
 $array['filter'] = array();
 $array['filter']['exten'] = array('set' => false,'chk' => 2,'maxlen' => 40,'regexp' => '/^[_]?[0-9NXZ\*#\-\[\]]+[\.\!]?$/');
 $array['filter']['extenhash'] = array('set' => false,'chk' => 2,'maxlen' => 40,'cast' => 'xdigit');
-$array['filter']['context'] = array('set' => false,'chk' => 2,'maxlen' => 39,'regexp' => '/^(?!macro-)[a-z0-9_-]+$/');
+$array['filter']['context'] = array('set' => false,'chk' => 2,'maxlen' => 39,'regexp' => '/^(?!(?:macro|xivo)-)[a-z0-9_-]+$/');
 $array['filter']['type'] = array('key' => array('extenfeatures',
 						'featuremap',
 						'generalfeatures',

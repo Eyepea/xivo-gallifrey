@@ -29,10 +29,13 @@ User
 Group
 
 ; fm_incall_type-opt-queue
-Queues
+Queue
 
 ; fm_incall_type-opt-meetme
-Conference rooms
+Conference room
+
+; fm_incall_type-opt-voicemail
+Voicemail
 
 ; fm_incall_type-opt-schedule
 Scheduler
@@ -41,7 +44,7 @@ Scheduler
 Application
 
 ; fm_incall_type-opt-sound
-Audio files
+Audio file
 
 ; fm_incall_type-opt-custom
 Customized
@@ -59,6 +62,9 @@ Forward to:
 Forward to:
 
 ; fm_incall_meetme-typeval
+Forward to:
+
+; fm_incall_voicemail-typeval
 Forward to:
 
 ; fm_incall_schedule-typeval
@@ -112,8 +118,11 @@ Create a queue
 ; create_meetme
 Create a conference room
 
+; create_voicemail
+Create a voicemail
+
 ; create_schedule
-Create a schedule
+Create a scheduler
 
 ; add_playback-sound
 Add an audio file

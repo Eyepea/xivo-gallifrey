@@ -63,6 +63,7 @@
 		<td><?=$entity?></td>
 		<td class="td-right" colspan="3">
 		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/system_management/context',array('act' => 'edit','id' => $ref['context']['name']),null,$this->bbf('opt_modify'));?>
+
 <?php
 	if($ref['deletable'] === true):
 		echo $url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/system_management/context',array('act' => 'delete','id' => $ref['context']['name'],'page' => $pager['page']),'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',$this->bbf('opt_delete'));

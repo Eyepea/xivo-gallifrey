@@ -31,6 +31,9 @@ Queue
 ; stats_type-meetme
 Conference room
 
+; stats_type-voicemail
+Voicemail
+
 ; stats_status-initialized
 Initialized
 

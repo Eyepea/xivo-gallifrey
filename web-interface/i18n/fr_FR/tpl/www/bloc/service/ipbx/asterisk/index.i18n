@@ -31,6 +31,9 @@ File d'attente
 ; stats_type-meetme
 Chambre de conférence
 
+; stats_type-voicemail
+Messagerie vocale
+
 ; stats_status-initialized
 Initialisé
 

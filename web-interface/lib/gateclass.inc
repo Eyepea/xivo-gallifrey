@@ -38,7 +38,7 @@ class xivo_gateclass
 		$name = (string) $name;
 
 		if(isset($this->_class[$name]) === true)
-			$r = $this->_class[$name];
+			$r = &$this->_class[$name];
 
 		return(($ref = &$r));
 	}

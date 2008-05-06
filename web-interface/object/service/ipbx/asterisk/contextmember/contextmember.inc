@@ -44,7 +44,7 @@ class xivo_service_asterisk_contextmember extends xivo_service_asterisk_abstract
 		return(parent::edit($id,$arr));
 	}
 
-	function get_all_by_type($arr,$disable=null,$prepare=true,$order=null,$limit=null)
+	function get_all_by_type($arr=null,$disable=null,$prepare=true,$order=null,$limit=null)
 	{
 		$prepare = (bool) $prepare;
 
@@ -71,18 +71,26 @@ class xivo_service_asterisk_contextmember extends xivo_service_asterisk_abstract
 		{
 			for($i = 0;$i < $nb;$i++)
 			{
-				if(isset($r[$list[$i]['type']]) === false)
-					$r[$list[$i]['type']] = array();
+				$ref = &$list[$i];
+
+				if(isset($r[$ref['type']]) === false)
+					$r[$ref['type']] = array();
 
 				switch($list[$i]['type'])
 				{
 					case 'generalsip':
 					case 'generaliax':
 					case 'generalvoicemail':
-						$r[$list[$i]['type']][$list[$i]['varname']] = $this->_prepare($list[$i]);
+						$r[$ref['type']][$ref['varname']] = $this->_prepare($list[$i]);
+						break;
+					case 'voicemail':
+						if(isset($r[$ref['type']][$ref['varname']]) === false)
+							$r[$ref['type']][$ref['varname']] = array();
+
+						$r[$ref['type']][$ref['varname']][] = $this->_prepare($list[$i]);
 						break;
 					default:
-						$r[$list[$i]['type']][] = $this->_prepare($list[$i]);
+						$r[$ref['type']][] = $this->_prepare($list[$i]);
 				}
 			}
 		}
@@ -98,10 +106,16 @@ class xivo_service_asterisk_contextmember extends xivo_service_asterisk_abstract
 					case 'generalsip':
 					case 'generaliax':
 					case 'generalvoicemail':
-						$r[$list[$i]['type']][$list[$i]['varname']] = $list[$i];
+						$r[$ref['type']][$list[$i]['varname']] = $list[$i];
+						break;
+					case 'voicemail':
+						if(isset($r[$ref['type']][$ref['varname']]) === false)
+							$r[$ref['type']][$ref['varname']] = array();
+
+						$r[$ref['type']][$ref['varname']][] = $list[$i];
 						break;
 					default:
-						$r[$list[$i]['type']][] = $list[$i];
+						$r[$ref['type']][] = $list[$i];
 				}
 			}
 		}

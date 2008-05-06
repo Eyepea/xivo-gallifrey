@@ -11,22 +11,47 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 	var $_aggjoinwhere	= array();
 	var $_group		= array();
 
-	function _chk_quote($name)
+	function _get_scalar($val,$trim=false)
 	{
 		$r = '';
 
-		if(is_object($name) === true)
+		if(is_object($val) === true)
 		{
-			if(isset($name->scalar) === false)
+			if(isset($val->scalar) === false)
 				return($r);
 
-			$name = $name->scalar;
+			$val = $val->scalar;
 		}
 
-		if(xivo_haslen($name) === true)
-			$r = $name;
+		if(is_scalar($val) === false)
+			return($r);
+		else if((bool) $trim === true)
+			$val = trim($val);
+
+		if(xivo_haslen($val) === true)
+			$r = $val;
 
 		return($r);
+	}
+
+	function quote($val)
+	{
+		switch(gettype($val))
+		{
+			case 'boolean':
+				$val = intval($val);
+			case 'integer':
+			case 'float':
+				return('QUOTE('.$val.')');
+			case 'object':
+				if(isset($val->scalar) === false)
+					return(false);
+				return('QUOTE('.$val->scalar.')');
+			case 'NULL':
+				return('NULL');
+		}
+
+		return('QUOTE(\''.$this->escape_string(strval($val)).'\')');
 	}
 
 	function escape($val)
@@ -47,6 +72,14 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		}
 
 		return('\''.$this->escape_string(strval($val)).'\'');
+	}
+
+	function concat($list)
+	{
+		if(is_array($list) === false)
+			return(false);
+
+		return(implode('||',array_map(array(&$this,'escape'),$list)));
 	}
 
 	function reset_all()
@@ -254,14 +287,10 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 
 	function _mk_column($table,$column)
 	{
-		if(is_scalar($column) === true)
+		if(($strcolumn = $this->_get_scalar($column,true)) !== '')
 		{
-			$column = trim($column);
-
-			if(xivo_haslen($column) === false)
-				return(null);
-			else if($column !== '*')
-				$column = (array) $column;
+			if($strcolumn !== '*')
+				$column = (array) $strcolumn;
 			else
 			{
 				$this->_colall[] = $table;

@@ -262,8 +262,11 @@ $array['module']['useriax']['datastorage'] = true;
 $array['module']['usersip'] = array();
 $array['module']['usersip']['datastorage'] = true;
 
-$array['module']['uservoicemail'] = array();
-$array['module']['uservoicemail']['datastorage'] = true;
+$array['module']['voicemail'] = array();
+$array['module']['voicemail']['datastorage'] = true;
+
+$array['module']['voicemailfeatures'] = array();
+$array['module']['voicemailfeatures']['datastorage'] = true;
 
 $array['protocol'] = array();
 $array['protocol'][XIVO_SRE_IPBX_AST_PROTO_SIP] = array('module' => 'usersip'); 

@@ -18,9 +18,28 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 	function escape($str)
 	{
 		$r = xivo_htmlsc(preg_replace('/\s+/',' ',strval($str)),ENT_NOQUOTES);
-		$r = str_replace(array('\'','"'),array('\\\'','&quot;'),$r);
 
-		return($r);
+		return(str_replace(array('\'','"'),array('\\\'','&quot;'),$r));
+	}
+
+	function chk_function_name($str)
+	{
+		$str = strval($str);
+
+		if(preg_match('/^[a-zA-Z0-9_]+$/',$str) === 1)
+			return($str);
+
+		return(false);
+	}
+
+	function ajs_die($err='')
+	{
+		if(xivo_haslen($err) === true)
+			$err = 'xivo_ajs_set_error(\''.$this->escape($err).'\');';
+		else
+			$err = '';
+
+		die($err);
 	}
 
 	function add_css($css)

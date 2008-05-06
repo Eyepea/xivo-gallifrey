@@ -141,6 +141,7 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 		$r['group'] = '';
 		$r['queue'] = '';
 		$r['meetme'] = '';
+		$r['voicemail'] = '';
 		$r['schedule'] = '';
 		$r['application'] = '';
 		$r['sound'] = '';

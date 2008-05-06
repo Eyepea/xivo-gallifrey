@@ -46,6 +46,9 @@ Queues
 ; acl_service-ipbx-pbx_settings-meetme
 Conference rooms
 
+; acl_service-ipbx-pbx_settings-voicemail
+Voicemail
+
 ; acl_service-ipbx-call_management
 Call management
 
@@ -64,8 +67,8 @@ Call filters
 ; acl_service-ipbx-call_management-schedule
 Scheduler
 
-; acl_service-ipbx-call_management-ivr
-IVR menus
+; acl_service-ipbx-call_management-voicemenu
+Voice menus
 
 ; acl_service-ipbx-call_management-cdr
 Call logs

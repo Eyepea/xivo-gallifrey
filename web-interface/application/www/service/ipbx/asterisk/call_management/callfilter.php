@@ -212,3 +212,4 @@ $_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/call_management/call
 $_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
 $_HTML->display('index');
 
+?>

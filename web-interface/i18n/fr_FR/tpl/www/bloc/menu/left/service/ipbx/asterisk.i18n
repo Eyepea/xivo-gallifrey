@@ -37,6 +37,9 @@ Files d'attente
 ; mn_left_pbxsettings-meetme
 Chambres de conférence
 
+; mn_left_pbxsettings-voicemail
+Messageries vocales
+
 ; mn_left_ti_callmanagement
 Gestion des appels
 
@@ -55,7 +58,7 @@ Filtrages d'appels
 ; mn_left_callmanagement-schedule
 Horaires
 
-; mn_left_callmanagement-ivr
+; mn_left_callmanagement-voicemenu
 Menus vocaux 
 
 ; mn_left_callmanagement-cdr

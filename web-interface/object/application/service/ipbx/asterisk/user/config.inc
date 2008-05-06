@@ -14,17 +14,19 @@ $array['import']['field']['interface'] = array('protocol','interface');
 $array['import']['field']['phonenumber'] = array('ufeatures','number');
 $array['import']['field']['password'] = array('protocol','secret');
 $array['import']['field']['protocol'] = array('protocol','protocol');
+$array['import']['field']['context'] = array('protocol','context');
 $array['import']['field']['voicemailname'] = array('voicemail','fullname');
+$array['import']['field']['voicemailmailbox'] = array('voicemail','mailbox');
 $array['import']['field']['voicemailpassword'] = array('voicemail','password');
 $array['import']['field']['voicemailemail'] = array('voicemail','email');
-$array['import']['field']['voicemailskippass'] = array('ufeatures','skipvoicemailpass');
+$array['import']['field']['voicemailskippass'] = array('voicemail','skipcheckpass');
 $array['import']['field']['voicemailattach'] = array('voicemail','attach');
 $array['import']['field']['voicemaildelete'] = array('voicemail','deletevoicemail');
-$array['import']['field']['context'] = array('protocol','context');
 $array['import']['field']['callerid'] = array('protocol','callerid');
 $array['import']['field']['outcallerid'] = array('ufeatures','outcallerid');
 $array['import']['field']['enableclient'] = array('ufeatures','enableclient');
 $array['import']['field']['enablehint'] = array('ufeatures','enablehint');
-$array['import']['field']['incall'] = '';
+$array['import']['field']['incallexten'] = array('incall','exten');
+$array['import']['field']['incallcontext'] = array('incall','context');
 
 ?>

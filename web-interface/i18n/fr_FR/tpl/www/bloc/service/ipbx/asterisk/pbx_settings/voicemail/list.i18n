@@ -1,0 +1,14 @@
+; col_fullname
+Nom complet
+
+; col_mailbox
+N° Boîte vocale
+
+; col_email
+E-mail
+
+; no_voicemail
+Aucune messagerie vocale trouvée
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer cette messagerie vocale ?

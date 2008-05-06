@@ -20,16 +20,18 @@ $array['service/ipbx/general_settings/iax'] = 'service/ipbx/index.php/general_se
 $array['service/ipbx/general_settings/voicemail'] = 'service/ipbx/index.php/general_settings/voicemail/';
 $array['service/ipbx/general_settings/phonebook'] = 'service/ipbx/index.php/general_settings/phonebook/';
 $array['service/ipbx/general_settings/advanced'] = 'service/ipbx/index.php/general_settings/advanced/';
+$array['service/ipbx/pbx_settings/agents'] = 'service/ipbx/index.php/pbx_settings/agents/';
 $array['service/ipbx/pbx_settings/users'] = 'service/ipbx/index.php/pbx_settings/users/';
 $array['service/ipbx/pbx_settings/groups'] = 'service/ipbx/index.php/pbx_settings/groups/';
-$array['service/ipbx/pbx_settings/meetme'] = 'service/ipbx/index.php/pbx_settings/meetme/';
 $array['service/ipbx/pbx_settings/queues'] = 'service/ipbx/index.php/pbx_settings/queues/';
-$array['service/ipbx/pbx_settings/agents'] = 'service/ipbx/index.php/pbx_settings/agents/';
+$array['service/ipbx/pbx_settings/meetme'] = 'service/ipbx/index.php/pbx_settings/meetme/';
+$array['service/ipbx/pbx_settings/voicemail'] = 'service/ipbx/index.php/pbx_settings/voicemail/';
 $array['service/ipbx/call_management/incall'] = 'service/ipbx/index.php/call_management/incall/';
 $array['service/ipbx/call_management/outcall'] = 'service/ipbx/index.php/call_management/outcall/';
 $array['service/ipbx/call_management/rightcall'] = 'service/ipbx/index.php/call_management/rightcall/';
 $array['service/ipbx/call_management/callfilter'] = 'service/ipbx/index.php/call_management/callfilter/';
 $array['service/ipbx/call_management/schedule'] = 'service/ipbx/index.php/call_management/schedule/';
+$array['service/ipbx/call_management/voicemenu'] = 'service/ipbx/index.php/call_management/voicemenu/';
 $array['service/ipbx/call_management/cdr'] = 'service/ipbx/index.php/call_management/cdr/';
 $array['service/ipbx/trunk_management/sip'] = 'service/ipbx/index.php/trunk_management/sip/';
 $array['service/ipbx/trunk_management/iax'] = 'service/ipbx/index.php/trunk_management/iax/';
@@ -47,5 +49,6 @@ $array['service/ipbx/control_system/restart'] = 'service/ipbx/index.php/control_
 $array['service/ipbx/web_services/users'] = 'service/ipbx/web_services.php/users/';
 $array['service/ipbx/web_services/phonebook/search'] = 'service/ipbx/web_services.php/phonebook/search/';
 $array['service/ipbx/web_services/phonebook/local'] = 'service/ipbx/web_services.php/phonebook/local/';
+$array['service/ipbx/ajs/voicemail'] = 'service/ipbx/ajs.php/voicemail/';
 
 ?>

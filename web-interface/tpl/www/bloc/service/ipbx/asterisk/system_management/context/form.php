@@ -82,7 +82,7 @@
 					 'invalid'	=> ($this->get_var('act') === 'edit'),
 					 'key'		=> 'displayname',
 					 'altkey'	=> 'name',
-					 'empty'	=> true,
+					 'empty'	=> isset($info['deletable']) === true ? $info['deletable'] : true,
 					 'default'	=> $element['context']['entity']['default'],
 					 'value'	=> $info['context']['entity']),$entities,'onchange="xivo_context_entity_status(this.form,this.value.length === 0);"');
 	else:

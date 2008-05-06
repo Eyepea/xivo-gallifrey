@@ -71,27 +71,58 @@ $array['element']['daynameend']['default'] = '';
 $array['element']['daynameend']['null'] = true;
 
 $array['element']['daynumbeg'] = array();
-$array['element']['daynumbeg']['value'] = array(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31);
+$array['element']['daynumbeg']['value'] = range(1,31);
 $array['element']['daynumbeg']['default'] = '*';
 $array['element']['daynumbeg']['setdef'] = true;
 
 $array['element']['daynumend'] = array();
-$array['element']['daynumend']['value'] = array(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31);
+$array['element']['daynumend']['value'] = range(1,31);
 $array['element']['daynumend']['default'] = '';
 $array['element']['daynumend']['null'] = true;
 
 $array['element']['monthbeg'] = array();
-$array['element']['monthbeg']['value'] = array('jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec');
+$array['element']['monthbeg']['value'] = array('jan',
+					       'feb',
+					       'mar',
+					       'apr',
+					       'may',
+					       'jun',
+					       'jul',
+					       'aug',
+					       'sep',
+					       'oct',
+					       'nov',
+					       'dec');
 $array['element']['monthbeg']['default'] = '*';
 $array['element']['monthbeg']['setdef'] = true;
 
 $array['element']['monthend'] = array();
-$array['element']['monthend']['value'] = array('jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec');
+$array['element']['monthend']['value'] = array('jan',
+					       'feb',
+					       'mar',
+					       'apr',
+					       'may',
+					       'jun',
+					       'jul',
+					       'aug',
+					       'sep',
+					       'oct',
+					       'nov',
+					       'dec');
 $array['element']['monthend']['default'] = '';
 $array['element']['monthend']['null'] = true;
 
 $array['element']['typetrue'] = array();
-$array['element']['typetrue']['value'] = array('endcall','user','group','queue','meetme','schedule','application','sound','custom');
+$array['element']['typetrue']['value'] = array('endcall',
+					       'user',
+					       'group',
+					       'queue',
+					       'meetme',
+					       'voicemail',
+					       'schedule',
+					       'application',
+					       'sound',
+					       'custom');
 $array['element']['typetrue']['default'] = 'endcall';
 
 $array['element']['typevaltrue'] = array();
@@ -101,7 +132,16 @@ $array['element']['applicationvaltrue'] = array();
 $array['element']['applicationvaltrue']['default'] = '';
 
 $array['element']['typefalse'] = array();
-$array['element']['typefalse']['value'] = array('endcall','user','group','queue','meetme','schedule','application','sound','custom');
+$array['element']['typefalse']['value'] = array('endcall',
+						'user',
+						'group',
+						'queue',
+						'meetme',
+						'voicemail',
+						'schedule',
+						'application',
+						'sound',
+						'custom');
 $array['element']['typefalse']['default'] = '';
 
 $array['element']['typevalfalse'] = array();
@@ -142,11 +182,51 @@ $array['filter']['daynamebeg'] = array('set' => false,'chk' => 2,'key' => array(
 $array['filter']['daynameend'] = array('set' => false,'chk' => 2,'key' => array('mon','tue','wed','thu','fri','sat','sun'));
 $array['filter']['daynumbeg'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,31));
 $array['filter']['daynumend'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,31));
-$array['filter']['monthbeg'] = array('set' => false,'chk' => 2,'key' => array('jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'));
-$array['filter']['monthend'] = array('set' => false,'chk' => 2,'key' => array('jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'));
-$array['filter']['typetrue'] = array('key' => array('endcall','user','group','queue','meetme','schedule','application','sound','custom'));
+$array['filter']['monthbeg'] = array('set' => false,'chk' => 2,'key' => array('jan',
+									      'feb',
+									      'mar',
+									      'apr',
+									      'may',
+									      'jun',
+									      'jul',
+									      'aug',
+									      'sep',
+									      'oct',
+									      'nov',
+									      'dec'));
+$array['filter']['monthend'] = array('set' => false,'chk' => 2,'key' => array('jan',
+									      'feb',
+									      'mar',
+									      'apr',
+									      'may',
+									      'jun',
+									      'jul',
+									      'aug',
+									      'sep',
+									      'oct',
+									      'nov',
+									      'dec'));
+$array['filter']['typetrue'] = array('key' => array('endcall',
+						    'user',
+						    'group',
+						    'queue',
+						    'meetme',
+						    'voicemail',
+						    'schedule',
+						    'application',
+						    'sound',
+						    'custom'));
 $array['filter']['typevaltrue'] = array('maxlen' => 255,'cast' => 'sgraph');
-$array['filter']['typefalse'] = array('key' => array('endcall','user','group','queue','meetme','schedule','application','sound','custom'));
+$array['filter']['typefalse'] = array('key' => array('endcall',
+						     'user',
+						     'group',
+						     'queue',
+						     'meetme',
+						     'voicemail',
+						     'schedule',
+						     'application',
+						     'sound',
+						     'custom'));
 $array['filter']['applicationvaltrue'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\-\.\|@]+$/i','maxlen' => 80);
 $array['filter']['typevalfalse'] = array('maxlen' => 255,'cast' => 'sgraph');
 $array['filter']['applicationvalfalse'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\-\.\|@]+$/i','maxlen' => 80);

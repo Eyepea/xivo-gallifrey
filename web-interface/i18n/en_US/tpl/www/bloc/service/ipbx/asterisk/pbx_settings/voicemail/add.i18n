@@ -1,0 +1,89 @@
+; title_content_name
+Voicemail > Add
+
+; smenu_general
+General
+
+; smenu_advanced
+Advanced
+
+; fm_voicemail_fullname
+Full name:
+
+; fm_voicemail_mailbox
+Voicemail number:
+
+; fm_voicemail_password
+Password:
+
+; fm_voicemail_email
+E-mail:
+
+; fm_voicemail_context
+Context:
+
+; create_context
+Create a context
+
+; fm_voicemail_tz
+Time zone:
+
+; fm_voicemailfeatures_skipcheckpass
+Disable password checking:
+
+; fm_voicemail_maxmsg
+Maximum number of messages:
+
+; fm_voicemail_attach
+Attach the audio file:
+
+; fm_voicemail_deletevoicemail
+Delete message after notification:
+
+; fm_voicemail_pager
+Pager:
+
+; fm_voicemail_saycid
+Announce caller ID:
+
+; fm_voicemail_review
+Review / record again a message:
+
+; fm_voicemail_operator
+Get transfered to an operator:
+
+; fm_voicemail_envelope
+Announce date and time:
+
+; fm_voicemail_sayduration
+Announce duration:
+
+; fm_voicemail_saydurationm
+Minimum time to announce duration:
+
+; fm_voicemail_saydurationm-opt1
+1 minute
+
+; fm_voicemail_saydurationm-opt
+%s minutes
+
+; fm_voicemail_sendvoicemail
+Forward a message:
+
+; fm_voicemail_forcename
+Force the recording of name:
+
+; fm_voicemail_forcegreetings
+Force the recording of greeting message:
+
+; fm_voicemail_hidefromdir
+Hide from the directory:
+
+; fm_voicemail_dialout
+Call context:
+
+; fm_voicemail_callback
+Callback context:
+
+; fm_voicemail_exitcontext
+Exit context:

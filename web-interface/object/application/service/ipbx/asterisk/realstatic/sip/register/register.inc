@@ -5,7 +5,7 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 class xivo_application_service_asterisk_realstatic_sip_register extends xivo_application_service_asterisk_realstatic_abstract
 {
 	var $_name		= 'register';
-	var $_modulename	= 'sip';
+	var $_modulename	= 'staticsip';
 	var $_category		= 'general';
 	var $_cat_metric	= 0;
 	var $_filename		= 'sip.conf';

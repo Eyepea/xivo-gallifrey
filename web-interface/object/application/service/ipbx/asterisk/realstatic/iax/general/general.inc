@@ -5,7 +5,7 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 class xivo_application_service_asterisk_realstatic_iax_general extends xivo_application_service_asterisk_realstatic_abstract
 {
 	var $_name		= 'general';
-	var $_modulename	= 'iax';
+	var $_modulename	= 'staticiax';
 	var $_category		= 'general';
 	var $_cat_metric	= 0;
 	var $_filename		= 'iax.conf';

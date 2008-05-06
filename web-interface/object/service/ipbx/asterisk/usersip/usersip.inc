@@ -30,6 +30,12 @@ class xivo_service_asterisk_usersip extends xivo_service_asterisk_abstract
 		$data['callgroup'] = empty($data['callgroup']) === false ? explode(',',$data['callgroup']) : '';
 		$data['pickupgroup'] = empty($data['pickupgroup']) === false ? explode(',',$data['pickupgroup']) : '';
 
+		if(($pos = strrpos($data['mailbox'],'@')) !== false)
+		{
+			$data['voicemailmailbox'] = substr($data['mailbox'],0,$pos);
+			$data['voicemailcontext'] = substr($data['mailbox'],$pos+1);
+		}
+
 		return($data);
 	}
 

@@ -22,6 +22,10 @@ xivo_elt_typetrue['fd-schedule-meetme-typevaltrue'] = new Array();
 xivo_elt_typetrue['fd-schedule-meetme-typevaltrue']['style'] = 'display:none';
 xivo_elt_typetrue['it-schedule-meetme-typevaltrue'] = new Array();
 xivo_elt_typetrue['it-schedule-meetme-typevaltrue']['property'] = 'disabled|true:boolean';
+xivo_elt_typetrue['fd-schedule-voicemail-typevaltrue'] = new Array();
+xivo_elt_typetrue['fd-schedule-voicemail-typevaltrue']['style'] = 'display:none';
+xivo_elt_typetrue['it-schedule-voicemail-typevaltrue'] = new Array();
+xivo_elt_typetrue['it-schedule-voicemail-typevaltrue']['property'] = 'disabled|true:boolean';
 xivo_elt_typetrue['fd-schedule-schedule-typevaltrue'] = new Array();
 xivo_elt_typetrue['fd-schedule-schedule-typevaltrue']['style'] = 'display:none';
 xivo_elt_typetrue['it-schedule-schedule-typevaltrue'] = new Array();
@@ -51,6 +55,8 @@ xivo_elt_typetrue['links']['link'][xivo_itypetrue++] = new Array('fd-schedule-qu
 xivo_elt_typetrue['links']['link'][xivo_itypetrue++] = new Array('it-schedule-queue-typevaltrue',0,1);
 xivo_elt_typetrue['links']['link'][xivo_itypetrue++] = new Array('fd-schedule-meetme-typevaltrue',0,1);
 xivo_elt_typetrue['links']['link'][xivo_itypetrue++] = new Array('it-schedule-meetme-typevaltrue',0,1);
+xivo_elt_typetrue['links']['link'][xivo_itypetrue++] = new Array('fd-schedule-voicemail-typevaltrue',0,1);
+xivo_elt_typetrue['links']['link'][xivo_itypetrue++] = new Array('it-schedule-voicemail-typevaltrue',0,1);
 xivo_elt_typetrue['links']['link'][xivo_itypetrue++] = new Array('fd-schedule-schedule-typevaltrue',0,1);
 xivo_elt_typetrue['links']['link'][xivo_itypetrue++] = new Array('it-schedule-schedule-typevaltrue',0,1);
 xivo_elt_typetrue['links']['link'][xivo_itypetrue++] = new Array('fd-schedule-application-typevaltrue',0,1);
@@ -84,6 +90,10 @@ xivo_elt_typefalse['fd-schedule-meetme-typevalfalse'] = new Array();
 xivo_elt_typefalse['fd-schedule-meetme-typevalfalse']['style'] = 'display:none';
 xivo_elt_typefalse['it-schedule-meetme-typevalfalse'] = new Array();
 xivo_elt_typefalse['it-schedule-meetme-typevalfalse']['property'] = 'disabled|true:boolean';
+xivo_elt_typefalse['fd-schedule-voicemail-typevalfalse'] = new Array();
+xivo_elt_typefalse['fd-schedule-voicemail-typevalfalse']['style'] = 'display:none';
+xivo_elt_typefalse['it-schedule-voicemail-typevalfalse'] = new Array();
+xivo_elt_typefalse['it-schedule-voicemail-typevalfalse']['property'] = 'disabled|true:boolean';
 xivo_elt_typefalse['fd-schedule-schedule-typevalfalse'] = new Array();
 xivo_elt_typefalse['fd-schedule-schedule-typevalfalse']['style'] = 'display:none';
 xivo_elt_typefalse['it-schedule-schedule-typevalfalse'] = new Array();
@@ -113,6 +123,8 @@ xivo_elt_typefalse['links']['link'][xivo_itypefalse++] = new Array('fd-schedule-
 xivo_elt_typefalse['links']['link'][xivo_itypefalse++] = new Array('it-schedule-queue-typevalfalse',0,1);
 xivo_elt_typefalse['links']['link'][xivo_itypefalse++] = new Array('fd-schedule-meetme-typevalfalse',0,1);
 xivo_elt_typefalse['links']['link'][xivo_itypefalse++] = new Array('it-schedule-meetme-typevalfalse',0,1);
+xivo_elt_typefalse['links']['link'][xivo_itypefalse++] = new Array('fd-schedule-voicemail-typevalfalse',0,1);
+xivo_elt_typefalse['links']['link'][xivo_itypefalse++] = new Array('it-schedule-voicemail-typevalfalse',0,1);
 xivo_elt_typefalse['links']['link'][xivo_itypefalse++] = new Array('fd-schedule-schedule-typevalfalse',0,1);
 xivo_elt_typefalse['links']['link'][xivo_itypefalse++] = new Array('it-schedule-schedule-typevalfalse',0,1);
 xivo_elt_typefalse['links']['link'][xivo_itypefalse++] = new Array('fd-schedule-application-typevalfalse',0,1);
@@ -153,6 +165,12 @@ xivo_fm_typetrue['meetme']['fd-schedule-meetme-typevaltrue']['style'] = 'display
 xivo_fm_typetrue['meetme']['it-schedule-meetme-typevaltrue']['property'] = 'disabled|false:boolean';
 
 xivo_attrib_register('fm_typetrue-meetme',xivo_fm_typetrue['meetme']);
+
+xivo_fm_typetrue['voicemail'] = xivo_clone(xivo_elt_typetrue);
+xivo_fm_typetrue['voicemail']['fd-schedule-voicemail-typevaltrue']['style'] = 'display:block';
+xivo_fm_typetrue['voicemail']['it-schedule-voicemail-typevaltrue']['property'] = 'disabled|false:boolean';
+
+xivo_attrib_register('fm_typetrue-voicemail',xivo_fm_typetrue['voicemail']);
 
 xivo_fm_typetrue['schedule'] = xivo_clone(xivo_elt_typetrue);
 xivo_fm_typetrue['schedule']['fd-schedule-schedule-typevaltrue']['style'] = 'display:block';
@@ -209,6 +227,12 @@ xivo_fm_typefalse['meetme']['fd-schedule-meetme-typevalfalse']['style'] = 'displ
 xivo_fm_typefalse['meetme']['it-schedule-meetme-typevalfalse']['property'] = 'disabled|false:boolean';
 
 xivo_attrib_register('fm_typefalse-meetme',xivo_fm_typefalse['meetme']);
+
+xivo_fm_typefalse['voicemail'] = xivo_clone(xivo_elt_typefalse);
+xivo_fm_typefalse['voicemail']['fd-schedule-voicemail-typevalfalse']['style'] = 'display:block';
+xivo_fm_typefalse['voicemail']['it-schedule-voicemail-typevalfalse']['property'] = 'disabled|false:boolean';
+
+xivo_attrib_register('fm_typefalse-voicemail',xivo_fm_typefalse['voicemail']);
 
 xivo_fm_typefalse['schedule'] = xivo_clone(xivo_elt_typefalse);
 xivo_fm_typefalse['schedule']['fd-schedule-schedule-typevalfalse']['style'] = 'display:block';

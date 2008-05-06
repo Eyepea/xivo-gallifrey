@@ -394,13 +394,13 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 		return($this->_dso->add($arr));
 	}
 
-	function edit($id,$arr,$disable=null)
+	function edit($id,$arr,$disable=null,$chkunique=true)
 	{
 		if(is_array($arr) === false
 		|| ($id = $this->_chk_primary_key($id)) === false)
 			return(false);
 
-		return($this->_dso->edit($id,$arr,$disable));
+		return($this->_dso->edit($id,$arr,$disable,$chkunique));
 	}
 
 	function edit_where($where,$arr,$disable=null,$id=null,$chkunique=true)

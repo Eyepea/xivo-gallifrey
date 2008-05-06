@@ -19,9 +19,6 @@ Destination
 ; col_publicholiday
 Public holiday
 
-; no_schedule
-No schedule has been found
-
 ; schedule_time
 %sh%s
 
@@ -52,8 +49,11 @@ Queue
 ; schedule_typetrue-meetme
 Conference room
 
+; schedule_typetrue-voicemail
+Voicemail
+
 ; schedule_typetrue-schedule
-Schedule
+Scheduler
 
 ; schedule_typetrue-application
 Application
@@ -70,5 +70,8 @@ No
 ; schedule_publicholiday-1
 Yes
 
+; no_schedule
+No schedulers found
+
 ; opt_delete_confirm
-Are you sure you want to remove this schedule?
+Are you sure you want to remove this scheduler?

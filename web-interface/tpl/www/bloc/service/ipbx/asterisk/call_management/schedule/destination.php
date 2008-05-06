@@ -91,6 +91,22 @@ else:
 
 endif;
 
+if(empty($list['voicemail']) === false):
+
+	if($linked === false && $type === 'voicemail'):
+		$invalid = true;
+	else:
+		$invalid = false;
+	endif;
+
+	echo $form->select(array('desc' => $this->bbf('fm_schedule_voicemail-typeval'),'name' => 'schedule['.$typevalname.']','labelid' => 'schedule-voicemail-'.$typevalname,'key' => 'identity','altkey' => 'uniqueid','invalid' => $invalid,'default' => $element['schedule'][$typevalname]['default'],'value' => $info['schedule']['voicemail'][$typename]),$list['voicemail']);
+
+else:
+
+	echo '<div id="fd-schedule-voicemail-'.$typevalname.'" class="txt-center">',$url->href_html($this->bbf('create_voicemail'),'service/ipbx/pbx_settings/voicemail','act=add'),'</div>';
+
+endif;
+
 if(empty($list['schedule']) === false):
 
 	if($linked === false && $type === 'schedule'):
@@ -107,6 +123,11 @@ else:
 
 endif;
 
+echo	'<div id="fd-schedule-application-',$typevalname,'" class="fm-field">',
+	$form->select(array('desc' => $this->bbf('fm_schedule_application-typeval'),'name' => 'schedule['.$typevalname.']','field' => false,'labelid' => 'schedule-application-'.$typevalname,'bbf' => 'fm_schedule_application-typeval-opt-','key' => false,'default' => $element['schedule'][$typevalname]['default'],'value' => $info['schedule']['application'][$typename]),$element['schedule']['application']['value']),
+	$form->text(array('field' => false,'name' => 'schedule['.$applicationvalname.']','labelid' => 'schedule-application-'.$applicationvalname,'size' => 15,'value' => $info['schedule'][$applicationvalname])),
+	'</div>';
+
 if($list['sounds'] !== false):
 
 	if($this->get_var('act') === 'edit' && $type === 'sound'):
@@ -122,11 +143,6 @@ else:
 	echo '<div id="fd-schedule-sound-'.$typevalname.'" class="txt-center">',$url->href_html($this->bbf('add_playback-sound'),'service/ipbx/pbx_services/sounds',array('act' => 'list','dir' => 'playback')),'</div>';
 
 endif;
-
-echo	'<div id="fd-schedule-application-',$typevalname,'" class="fm-field">',
-	$form->select(array('desc' => $this->bbf('fm_schedule_application-typeval'),'name' => 'schedule['.$typevalname.']','field' => false,'labelid' => 'schedule-application-'.$typevalname,'bbf' => 'fm_schedule_application-typeval-opt-','key' => false,'default' => $element['schedule'][$typevalname]['default'],'value' => $info['schedule']['application'][$typename]),$element['schedule']['application']['value']),
-	$form->text(array('field' => false,'name' => 'schedule['.$applicationvalname.']','labelid' => 'schedule-application-'.$applicationvalname,'size' => 15,'value' => $info['schedule'][$applicationvalname])),
-	'</div>';
 
 echo $form->text(array('desc' => $this->bbf('fm_schedule_custom-typeval'),'name' => 'schedule['.$typevalname.']','labelid' => 'schedule-custom-'.$typevalname,'size' => 15,'value' => $info['schedule']['custom'][$typename]));
 

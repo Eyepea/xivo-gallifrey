@@ -41,32 +41,32 @@ $array['element']['language'] = array();
 $array['element']['language']['default'] = '';
 
 $array['element']['attach'] = array();
-$array['element']['attach']['value'] = array(0,1);
-$array['element']['attach']['default'] = 1;
-$array['element']['attach']['set'] = true;
+$array['element']['attach']['value'] = array(1,0);
+$array['element']['attach']['default'] = '';
+$array['element']['attach']['null'] = true;
 
 $array['element']['saycid'] = array();
-$array['element']['saycid']['value'] = array(0,1);
+$array['element']['saycid']['value'] = array(1,0);
 $array['element']['saycid']['default'] = '';
 $array['element']['saycid']['null'] = true;
 
 $array['element']['review'] = array();
-$array['element']['review']['value'] = array(0,1);
+$array['element']['review']['value'] = array(1,0);
 $array['element']['review']['default'] = '';
 $array['element']['review']['null'] = true;
 
 $array['element']['operator'] = array();
-$array['element']['operator']['value'] = array(0,1);
+$array['element']['operator']['value'] = array(1,0);
 $array['element']['operator']['default'] = '';
 $array['element']['operator']['null'] = true;
 
 $array['element']['envelope'] = array();
-$array['element']['envelope']['value'] = array(0,1);
+$array['element']['envelope']['value'] = array(1,0);
 $array['element']['envelope']['default'] = '';
 $array['element']['envelope']['null'] = true;
 
 $array['element']['sayduration'] = array();
-$array['element']['sayduration']['value'] = array(0,1);
+$array['element']['sayduration']['value'] = array(1,0);
 $array['element']['sayduration']['default'] = '';
 $array['element']['sayduration']['null'] = true;
 
@@ -75,24 +75,29 @@ $array['element']['saydurationm']['value'] = array(1,2,3,4,5,10,15,20,25,30,35,4
 $array['element']['saydurationm']['default'] = '';
 $array['element']['saydurationm']['null'] = true;
 
+$array['element']['sendvoicemail'] = array();
+$array['element']['sendvoicemail']['value'] = array(1,0);
+$array['element']['sendvoicemail']['default'] = '';
+$array['element']['sendvoicemail']['null'] = true;
+
 $array['element']['deletevoicemail'] = array();
 $array['element']['deletevoicemail']['value'] = array(0,1);
-$array['element']['deletevoicemail']['default'] = 'no';
+$array['element']['deletevoicemail']['default'] = 0;
 $array['element']['deletevoicemail']['set'] = true;
 
 $array['element']['forcename'] = array();
-$array['element']['forcename']['value'] = array(0,1);
+$array['element']['forcename']['value'] = array(1,0);
 $array['element']['forcename']['default'] = '';
 $array['element']['forcename']['null'] = true;
 
 $array['element']['forcegreetings'] = array();
-$array['element']['forcegreetings']['value'] = array(0,1);
+$array['element']['forcegreetings']['value'] = array(1,0);
 $array['element']['forcegreetings']['default'] = '';
 $array['element']['forcegreetings']['null'] = true;
 
 $array['element']['hidefromdir'] = array();
 $array['element']['hidefromdir']['value'] = array('no','yes');
-$array['element']['hidefromdir']['default'] = 'yes';
+$array['element']['hidefromdir']['default'] = 'no';
 $array['element']['hidefromdir']['set'] = true;
 
 $array['element']['maxmsg'] = array();
@@ -102,10 +107,16 @@ $array['element']['maxmsg']['value'] = array(1,10,15,20,25,50,75,100,
 $array['element']['maxmsg']['default'] = '';
 $array['element']['maxmsg']['null'] = true;
 
+$array['element']['commented'] = array();
+$array['element']['commented']['value'] = array(0,1);
+$array['element']['commented']['default'] = 0;
+$array['element']['commented']['set'] = true;
+
+
 $array['filter'] = array();
 $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context',
 				    'callbackparam' => array(array(XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
-$array['filter']['mailbox'] = array('minlen' => 1,'maxlen' => 40,'cast' => '/^[0-9#\*]+$/');
+$array['filter']['mailbox'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9#\*]+$/');
 $array['filter']['password'] = array('regexp' => '/^[0-9#\*]+$/','maxlen' => 80);
 $array['filter']['fullname'] = array('cast' => 'sgraph','maxlen' => 80);
 $array['filter']['email'] = array('set' => false,'chk' => 2,'callback' => 'xivo_filter::chk_email','maxlen' => 80);
@@ -124,21 +135,22 @@ $array['filter']['exitcontext'] = array('set' => false,
 				     'callbackparam' => array(array(XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['tz'] = array('set' => false,'chk' => 2,'minlen' => 1,'maxlen' => 80,'regexp' => '/^[a-z0-9_-]+$/i');
 $array['filter']['language'] = array('set' => false,'chk' => 2,'minlen' => 2,'maxlen' => 2,'regexp' => '/^[a-z]{2}$/');
-$array['filter']['attach'] = array('bool' => true);
-$array['filter']['saycid'] = array('set' => false,'chk' => 2,'key' => array(0,1));
-$array['filter']['review'] = array('set' => false,'chk' => 2,'key' => array(0,1));
-$array['filter']['operator'] = array('set' => false,'chk' => 2,'key' => array(0,1));
-$array['filter']['envelope'] = array('set' => false,'chk' => 2,'key' => array(0,1));
-$array['filter']['sayduration'] = array('set' => false,'chk' => 2,'key' => array(0,1));
+$array['filter']['attach'] = array('set' => false,'chk' => 2,'bool' => true);
+$array['filter']['saycid'] = array('set' => false,'chk' => 2,'bool' => true);
+$array['filter']['review'] = array('set' => false,'chk' => 2,'bool' => true);
+$array['filter']['operator'] = array('set' => false,'chk' => 2,'bool' => true);
+$array['filter']['envelope'] = array('set' => false,'chk' => 2,'bool' => true);
+$array['filter']['sayduration'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['saydurationm'] = array('set' => false,'chk' => 2,'key' => array(1,2,3,4,5,10,15,20,25,30,35,40,45,50,55,60));
-$array['filter']['sendvoicemail'] = array('set' => false,'chk' => 2,'key' => array(0,1));
+$array['filter']['sendvoicemail'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['deletevoicemail'] = array('bool' => true);
-$array['filter']['forcename'] = array('set' => false,'chk' => 2,'key' => array(0,1));
-$array['filter']['forcegreetings'] = array('set' => false,'chk' => 2,'key' => array(0,1));
+$array['filter']['forcename'] = array('set' => false,'chk' => 2,'bool' => true);
+$array['filter']['forcegreetings'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['hidefromdir'] = array('bool' => true);
 $array['filter']['maxmsg'] = array('set' => false,'chk' => 2,
 				   'key' => array(1,10,15,20,25,50,75,100,
 						  125,150,175,200,300,400,500,600,700,800,900,
 						  1000,2000,3000,4000,5000,6000,7000,8000,9000,9999));
+$array['filter']['commented'] = array('bool' => true);
 
 ?>
