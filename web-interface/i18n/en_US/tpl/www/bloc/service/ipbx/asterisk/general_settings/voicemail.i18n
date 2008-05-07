@@ -1,5 +1,5 @@
 ; title_content_name
-Voicemail properties
+Voicemails properties
 
 ; smenu_general
 General
@@ -395,4 +395,4 @@ ODBC system:
 ODBC table:
 
 ; fm_success-save
-Voicemail properties successfully saved
+Voicemails properties successfully saved

@@ -11,7 +11,7 @@ SIP Protocol
 IAX Protocol
 
 ; mn_left_generalsettings-voicemail
-Voicemail
+Voicemails
 
 ; mn_left_generalsettings-phonebook
 Phonebook
@@ -38,7 +38,7 @@ Queues
 Conference rooms
 
 ; mn_left_pbxsettings-voicemail
-Voicemail
+Voicemails
 
 ; mn_left_ti_callmanagement
 Call management
@@ -56,7 +56,7 @@ Call permissions
 Call filters
 
 ; mn_left_callmanagement-schedule
-Scheduler
+Schedules
 
 ; mn_left_callmanagement-voicemenu
 Voice menus

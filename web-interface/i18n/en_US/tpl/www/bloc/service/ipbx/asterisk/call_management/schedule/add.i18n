@@ -1,5 +1,5 @@
 ; title_content_name
-Scheduler > Add
+Schedules > Add
 
 ; fm_schedule_name
 Name:
@@ -62,7 +62,7 @@ Conference room
 Voicemail
 
 ; fm_schedule_type-opt-schedule
-Scheduler
+Schedule
 
 ; fm_schedule_type-opt-application
 Application
@@ -146,7 +146,7 @@ Create a conference room
 Create a voicemail
 
 ; no_schedule
-No schedulers found
+No schedules found
 
 ; add_playback-sound
 Add an audio file

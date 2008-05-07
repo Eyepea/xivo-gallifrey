@@ -38,7 +38,7 @@ Conference room
 Voicemail
 
 ; fm_incall_type-opt-schedule
-Scheduler
+Schedule
 
 ; fm_incall_type-opt-application
 Application
@@ -122,7 +122,7 @@ Create a conference room
 Create a voicemail
 
 ; create_schedule
-Create a scheduler
+Create a schedule
 
 ; add_playback-sound
 Add an audio file

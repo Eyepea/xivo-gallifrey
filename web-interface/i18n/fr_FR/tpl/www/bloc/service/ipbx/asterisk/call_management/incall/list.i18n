@@ -22,6 +22,9 @@ File d'attente
 ; incall_type-meetme
 Chambre de conférence
 
+; incall_type-voicemail
+Messagerie vocale
+
 ; incall_type-schedule
 Horaire
 

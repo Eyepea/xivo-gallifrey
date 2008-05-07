@@ -20,7 +20,7 @@ SIP Protocol
 IAX Protocol
 
 ; acl_service-ipbx-general_settings-voicemail
-Voicemail
+Voicemails
 
 ; acl_service-ipbx-general_settings-phonebook
 Phonebook
@@ -47,7 +47,7 @@ Queues
 Conference rooms
 
 ; acl_service-ipbx-pbx_settings-voicemail
-Voicemail
+Voicemails
 
 ; acl_service-ipbx-call_management
 Call management
@@ -65,7 +65,7 @@ Call permissions
 Call filters
 
 ; acl_service-ipbx-call_management-schedule
-Scheduler
+Schedules
 
 ; acl_service-ipbx-call_management-voicemenu
 Voice menus
