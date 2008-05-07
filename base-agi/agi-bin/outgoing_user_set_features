@@ -58,13 +58,15 @@ if externprefix:
 	dstnum = externprefix + dstnum
 
 callerid = ""
+calloptions = ""
+callrecord = False
 
 if not internal:
 	if setcallerid:
 		callerid = trunk_callerid
 	else:
 		cursor.query("SELECT ${columns} FROM userfeatures WHERE number = %s AND context = %s AND internal = 0 AND commented = 0",
-                             ('outcallerid',),
+                             ('outcallerid', 'enableautomon', 'callrecord'),
                              (srcnum, context))
 		res = cursor.fetchone()
 
@@ -73,6 +75,12 @@ if not internal:
 
 			if callerid == "default":
 				callerid = ""
+
+			if res['enableautomon'] == 1:
+				calloptions += "W"
+
+			if res['callrecord'] == 1:
+				callrecord = True
 
 cursor.query("SELECT ${columns} FROM trunkfeatures INNER JOIN outcalltrunk "
              "ON trunkfeatures.id = outcalltrunk.trunkfeaturesid "
@@ -143,7 +151,18 @@ for row in res:
 if callerid:
 	agi.set_variable('CALLERID(num)', callerid)
 
+if callrecord:
+	cursor.query("SELECT ${columns} FROM extensions "
+                     "WHERE name = 'incallrec' "
+                     "AND commented = 0",
+                     ('name',))
+	res = cursor.fetchone()
+
+	if res:
+		agi.set_variable('XIVO_CALLRECORDFILE', "/usr/share/asterisk/sounds/web-interface/monitor/user-%s-%s-%s.wav" % (srcnum, dstnum, int(time.time())))
+
 if hangupringtime:
 	agi.set_variable('XIVO_HANGUPRINGTIME', hangupringtime)
 
+agi.set_variable('XIVO_CALLOPTIONS', calloptions)
 agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])
