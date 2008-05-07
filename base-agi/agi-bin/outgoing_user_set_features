@@ -22,6 +22,7 @@ __license__ = """
 import xivo.to_path
 
 import sys
+import time
 import agi_helpers
 import xivo_helpers
 
@@ -62,25 +63,25 @@ calloptions = ""
 callrecord = False
 
 if not internal:
-	if setcallerid:
-		callerid = trunk_callerid
-	else:
-		cursor.query("SELECT ${columns} FROM userfeatures WHERE number = %s AND context = %s AND internal = 0 AND commented = 0",
-                             ('outcallerid', 'enableautomon', 'callrecord'),
-                             (srcnum, context))
-		res = cursor.fetchone()
+	cursor.query("SELECT ${columns} FROM userfeatures WHERE number = %s AND context = %s AND internal = 0 AND commented = 0",
+                     ('outcallerid', 'enableautomon', 'callrecord'),
+                     (srcnum, context))
+	res = cursor.fetchone()
 
-		if res:
+	if res:
+		if setcallerid:
+			callerid = trunk_callerid
+		else:
 			callerid = res['outcallerid']
 
-			if callerid == "default":
-				callerid = ""
+		if callerid == "default":
+			callerid = ""
 
-			if res['enableautomon'] == 1:
-				calloptions += "W"
+		if res['enableautomon'] == 1:
+			calloptions += "W"
 
-			if res['callrecord'] == 1:
-				callrecord = True
+		if res['callrecord'] == 1:
+			callrecord = True
 
 cursor.query("SELECT ${columns} FROM trunkfeatures INNER JOIN outcalltrunk "
              "ON trunkfeatures.id = outcalltrunk.trunkfeaturesid "
