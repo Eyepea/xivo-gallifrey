@@ -336,7 +336,6 @@ class AMIClass:
         # \brief Adds a Queue
         def queueadd(self, queuename, interface):
                 try:
-                        print 'AMI-QueueAdd %s %s' % (queuename, interface)
                         ret = self.sendcommand('QueueAdd', [('Queue', queuename),
                                                             ('Interface', interface),
                                                             ('Penalty', '1'),
@@ -351,7 +350,6 @@ class AMIClass:
         # \brief Removes a Queue
         def queueremove(self, queuename, interface):
                 try:
-                        print 'AMI-QueueRemove %s %s' % (queuename, interface)
                         ret = self.sendcommand('QueueRemove', [('Queue', queuename),
                                                                ('Interface', interface)])
                         reply = self.readresponse('')
@@ -364,7 +362,6 @@ class AMIClass:
         # \brief (Un)Pauses a Queue
         def queuepause(self, queuename, interface, paused):
                 try:
-                        print 'AMI-QueuePause %s %s %s' % (queuename, interface, paused)
                         ret = self.sendcommand('QueuePause', [('Queue', queuename),
                                                               ('Interface', interface),
                                                               ('Paused', paused)])
