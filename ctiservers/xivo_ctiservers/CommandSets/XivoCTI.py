@@ -574,7 +574,7 @@ class XivoCTICommand(BaseCommand):
                 clid1 = event.get("CallerID1")
                 clid2 = event.get("CallerID2")
                 if chan2.startswith('Agent/'):
-                        msg = self.__build_agupdate__(chan2[6:], ['agentlink', astid, chan2[6:]])
+                        msg = self.__build_agupdate__(['agentlink', astid, chan2[6:]])
                         self.__send_msg_to_cti_clients__(msg)
                         # To identify which queue a call comes from, we match a previous AMI Leave event, not too far away
                         # in the past (1 second here), that involved the same channel as the one catched here.
@@ -586,6 +586,9 @@ class XivoCTICommand(BaseCommand):
                                 # if (t1 - t0) < 1:
                                 event['xivo_queuename'] = qname
                                 self.__sheet_alert__(SHEET_EVENT_AGENTLINK, event)
+                else:
+                        msg = self.__build_agupdate__(['phonelink', astid, event.get('CallerID1')])
+                        msg = self.__build_agupdate__(['phonelink', astid, event.get('CallerID2')])
                 self.plist[astid].handle_ami_event_link(chan1, chan2, clid1, clid2)
 
                 return
@@ -596,8 +599,11 @@ class XivoCTICommand(BaseCommand):
                 clid1 = event.get("CallerID1")
                 clid2 = event.get("CallerID2")
                 if chan2.startswith('Agent/'):
-                        msg = self.__build_agupdate__(chan2[6:], ['agentunlink', astid, chan2[6:]])
+                        msg = self.__build_agupdate__(['agentunlink', astid, chan2[6:]])
                         self.__send_msg_to_cti_clients__(msg)
+                else:
+                        msg = self.__build_agupdate__(['phoneunlink', astid, event.get('CallerID1')])
+                        msg = self.__build_agupdate__(['phoneunlink', astid, event.get('CallerID2')])
                 self.plist[astid].handle_ami_event_unlink(chan1, chan2, clid1, clid2)
                 return
 
@@ -722,7 +728,7 @@ class XivoCTICommand(BaseCommand):
                 if astid in self.agents_list and agent in self.agents_list[astid]:
                         self.agents_list[astid][agent]['status'] = 'AGENT_IDLE'
                         self.agents_list[astid][agent]['phonenum'] = event.get('Loginchan')
-                msg = self.__build_agupdate__(agent, ['agentlogin', astid, agent, loginchan])
+                msg = self.__build_agupdate__(['agentlogin', astid, agent, loginchan])
                 # print 'ami_agentcallbacklogin', msg
                 self.__send_msg_to_cti_clients__(msg)
                 return
@@ -735,7 +741,7 @@ class XivoCTICommand(BaseCommand):
                 if astid in self.agents_list and agent in self.agents_list[astid]:
                         self.agents_list[astid][agent]['status'] = 'AGENT_LOGGEDOFF'
                         self.agents_list[astid][agent]['phonenum'] = loginchan
-                msg = self.__build_agupdate__(agent, ['agentlogout', astid, agent, loginchan])
+                msg = self.__build_agupdate__(['agentlogout', astid, agent, loginchan])
                 # print 'ami_agentcallbacklogoff', msg
                 self.__send_msg_to_cti_clients__(msg)
                 return
@@ -803,7 +809,7 @@ class XivoCTICommand(BaseCommand):
                 return
 
 
-        def __build_agupdate__(self, agentnum, arrgs):
+        def __build_agupdate__(self, arrgs):
                 arg = ':'.join(['agu',
                                 '/'.join(arrgs)])
                 return 'update-agents=%s' % arg
@@ -820,7 +826,7 @@ class XivoCTICommand(BaseCommand):
                 if astid in self.queues_list and queue in self.queues_list[astid] and location in self.queues_list[astid][queue]['agents']:
                         self.queues_list[astid][queue]['agents'][location] = [paused, status, event.get('Membership')]
 
-                msg = self.__build_agupdate__(agentnum, ['queuememberstatus', astid, agentnum, queue, status, paused])
+                msg = self.__build_agupdate__(['queuememberstatus', astid, agentnum, queue, status, paused])
                 self.__send_msg_to_cti_clients__(msg)
 
                 # status = 3 => ringing
@@ -838,10 +844,10 @@ class XivoCTICommand(BaseCommand):
                                 self.queues_list[astid][queue]['agents'][location][0] = event.get('Paused')
                         agname = location[6:]
                         if paused == '0':
-                                msg = self.__build_agupdate__(agname, ['joinqueue', astid, agname, queue])
+                                msg = self.__build_agupdate__(['joinqueue', astid, agname, queue])
                                 self.__send_msg_to_cti_clients__(msg)
                         else:
-                                msg = self.__build_agupdate__(agname, ['leavequeue', astid, agname, queue])
+                                msg = self.__build_agupdate__(['leavequeue', astid, agname, queue])
                                 self.__send_msg_to_cti_clients__(msg)
                 return
 
@@ -973,11 +979,11 @@ class XivoCTICommand(BaseCommand):
 
 
         def manage_cticommand(self, userinfo, myconn, icommand):
-                repstr = ""
-                astid    = userinfo['astid']
-                username = userinfo['user']
-                context  = userinfo['context']
-                ucapa    = userinfo['capas']
+                repstr = ''
+                astid    = userinfo.get('astid')
+                username = userinfo.get('user')
+                context  = userinfo.get('context')
+                ucapa    = userinfo.get('capas')
 
                 try:
                         capalist = (ucapa & self.capalist_server)
@@ -1125,20 +1131,19 @@ class XivoCTICommand(BaseCommand):
                                                         else:
                                                                 qref_unjoined.append(qref)
                                         for qref in qref_unjoined:
-                                                msg = self.__build_agupdate__(agname, ['leavequeue', astid, agname, qref])
+                                                msg = self.__build_agupdate__(['leavequeue', astid, agname, qref])
                                                 self.__send_msg_to_cti_client__(userinfo, msg)
                                         for qref in qref_joined:
-                                                msg = self.__build_agupdate__(agname, ['joinqueue', astid, agname, qref])
+                                                msg = self.__build_agupdate__(['joinqueue', astid, agname, qref])
                                                 self.__send_msg_to_cti_client__(userinfo, msg)
 
                                         # lookup the logged in/out status of agent agname and sends it back to the requester
                                         if astid in self.agents_list and agname in self.agents_list[astid]:
                                                 agprop = self.agents_list[astid][agname]
                                                 if agprop['status'] == 'AGENT_LOGGEDOFF':
-                                                        msg = self.__build_agupdate__(agname,
-                                                                                      ['agentlogout', astid, agname, agprop['phonenum']])
+                                                        msg = self.__build_agupdate__(['agentlogout', astid, agname, agprop['phonenum']])
                                                 else:
-                                                        msg = self.__build_agupdate__(agname, ['agentlogin', astid, agname, agprop['phonenum']])
+                                                        msg = self.__build_agupdate__(['agentlogin', astid, agname, agprop['phonenum']])
                                                 self.__send_msg_to_cti_client__(userinfo, msg)
 
                         elif icommand.name == 'agent-status':
@@ -1181,7 +1186,11 @@ class XivoCTICommand(BaseCommand):
                                   %(icommand.name, str(icommand.args), str(myconn), str(exc)))
 
                 if repstr is not None: # might be useful to reply sth different if there is a capa problem for instance, a bad syntaxed command
-                        myconn.send(repstr + '\n')
+                        try:
+                                myconn.send(repstr + '\n')
+                        except Exception, exc:
+                                log_debug(SYSLOG_ERR, '--- exception --- (myconn) attempt to send <%s> failed : %s'
+                                          % (repstr, str(exc)))
                 return
 
 

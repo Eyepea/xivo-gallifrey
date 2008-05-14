@@ -85,6 +85,7 @@ config_path()
 
 # XIVO lib-python modules imports
 import daemonize
+import except_tb
 from easyslog import *
 import anysql
 from BackSQL import backmysql
@@ -815,8 +816,9 @@ while True: # loops over the reloads
                                         if lmsg > 0:
                                                 try:
                                                         manage_tcp_connections(sel_i, msg, kind)
-                                                except Exception, exc:
-                                                        log_debug(SYSLOG_ERR, '--- exception --- handling %s (%s) : %s' % (requester, kind, str(exc)))
+                                                except Exception:
+                                                        log_debug(SYSLOG_ERR, '--- exception --- handling %s (%s) : %s'
+                                                                  % (requester, kind, str(except_tb.exception_traceback())))
                                         else:
                                                 if kind == 'CTI':
                                                         if sel_i in userinfo_by_requester:
