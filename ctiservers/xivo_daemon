@@ -857,7 +857,7 @@ while True: # loops over the reloads
                                                         log_debug(SYSLOG_WARNING, 'WARNING - no login/connection field present in userinfo')
                                                 # commandclass.manage_logoff(userinfo)
                                 except Exception, exc:
-                                        log_debug(SYSLOG_ERR, '--- exception [queued threads] --- %s' % str(exc))
+                                        log_debug(SYSLOG_ERR, '--- exception --- [queued threads] %s' % str(exc))
 
                         for astid in configs:
                                 if (time.time() - lastrequest_time[astid]) > updates_period or update_userlist[astid]:
