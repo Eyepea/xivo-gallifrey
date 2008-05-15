@@ -286,8 +286,9 @@ class AMIClass:
                                            # ('CallerID', "%s" %(phonesrc)),
                                            ('CallerID', "%s <%s>" %(cidnamedst, phonedst)),
                                            ('Variable', 'XIVO_ORIGSRCNAME=%s' % cidnamesrc),
-                                           ('Variable', 'XIVO_ORIGSRCNUM=%s'  % phonesrc),
                                            ('Async', 'true')]
+                        if 'XIVO_ORIGSRCNUM' not in extravars:
+                                extravars['XIVO_ORIGSRCNUM'] = phonesrc
                         for var, val in extravars.iteritems():
                                 command_details.append(('Variable', '%s=%s'  % (var, val)))
                         ret = self.sendcommand('AOriginate', command_details)
