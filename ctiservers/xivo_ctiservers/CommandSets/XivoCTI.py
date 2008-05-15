@@ -588,7 +588,9 @@ class XivoCTICommand(BaseCommand):
                                 self.__sheet_alert__(SHEET_EVENT_AGENTLINK, event)
                 else:
                         msg = self.__build_agupdate__(['phonelink', astid, event.get('CallerID1')])
+                        self.__send_msg_to_cti_clients__(msg)
                         msg = self.__build_agupdate__(['phonelink', astid, event.get('CallerID2')])
+                        self.__send_msg_to_cti_clients__(msg)
                 self.plist[astid].handle_ami_event_link(chan1, chan2, clid1, clid2)
 
                 return
@@ -603,7 +605,9 @@ class XivoCTICommand(BaseCommand):
                         self.__send_msg_to_cti_clients__(msg)
                 else:
                         msg = self.__build_agupdate__(['phoneunlink', astid, event.get('CallerID1')])
+                        self.__send_msg_to_cti_clients__(msg)
                         msg = self.__build_agupdate__(['phoneunlink', astid, event.get('CallerID2')])
+                        self.__send_msg_to_cti_clients__(msg)
                 self.plist[astid].handle_ami_event_unlink(chan1, chan2, clid1, clid2)
                 return
 
@@ -1189,8 +1193,8 @@ class XivoCTICommand(BaseCommand):
                         try:
                                 myconn.send(repstr + '\n')
                         except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- (myconn) attempt to send <%s> failed : %s'
-                                          % (repstr, str(exc)))
+                                log_debug(SYSLOG_ERR, '--- exception --- (myconn) attempt to send <%s ...> (%d chars) failed : %s'
+                                          % (repstr[:40], len(repstr), str(exc)))
                 return
 
 
