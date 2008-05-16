@@ -1,12 +1,12 @@
 """Backend support for MySQL for anysql
 
-Copyright (C) 2007, Proformatique
+Copyright (C) 2007, 2008  Proformatique
 
 """
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2007, Proformatique
+    Copyright (C) 2007, 2008  Proformatique
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -45,7 +45,7 @@ __typemap = {
 	"conv": None,
 	"quote_conv": None,
 	"cursorclass": None,
-	"charset": str
+	"charset": str,
 }
 
 def __apply_types(params, typemap):
