@@ -19,10 +19,8 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-import xivo.to_path
-
 import sys
-import xivo_helpers
+from xivo import xivo_helpers
 
 if len(sys.argv) != 4:
 	raise ValueError, "Missing args!"

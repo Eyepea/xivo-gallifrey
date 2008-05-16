@@ -21,8 +21,14 @@ __license__ = """
 
 PIDFILE = '/var/run/xivo_daemon_bazile.pid'
 
-import xivo.to_path
-import sys, time, ami, Queue, urllib, daemonize, syslog
+import sys
+import time
+import Queue
+import urllib
+import syslog
+
+from xivo import ami
+from xivo import daemonize
 
 # Dictionnaire des status Callerid, Channel et status du channel
 # identifiant unique UniqID Asterisk

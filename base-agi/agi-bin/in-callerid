@@ -25,10 +25,9 @@ import os
 import sys
 import re
 
-import xivo.to_path
-import OrderedConf
-from agi import *
-import agitb
+from xivo import OrderedConf
+from xivo.agi import *
+from xivo import agitb
 
 agi = AGI()
 agitb.enable(agi)

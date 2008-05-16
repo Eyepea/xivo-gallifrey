@@ -19,11 +19,9 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-import xivo.to_path
-
 import sys
-import agi_helpers
-import xivo_helpers
+from xivo import agi_helpers
+from xivo import xivo_helpers
 
 def forgetimefield(start, end):
 	if start == '*':

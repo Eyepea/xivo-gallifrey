@@ -21,11 +21,9 @@ __license__ = """
 
 CONFIG_CONTEXT_TEMPLATE = "/etc/asterisk/xivo_context.conf"
 
-import xivo.to_path
-
 import sys
-import OrderedConf
-import xivo_helpers
+from xivo import OrderedConf
+from xivo import xivo_helpers
 
 cursor = xivo_helpers.db_connect().cursor()
 

@@ -19,13 +19,11 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-import xivo.to_path
-
 import os
 import sys
 import time
-import agi_helpers
-import xivo_helpers
+from xivo import agi_helpers
+from xivo import xivo_helpers
 import ConfigParser
 
 CONFIG_FILE = '/etc/asterisk/xivo_callback_on_congestion.conf'

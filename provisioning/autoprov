@@ -54,15 +54,14 @@ def help_screen():
 
 # Magical Path modification:
 
-import xivo.to_path
 import xivo_provisioning.to_path
 
 # Loading Xivo modules is possible from this point
 
 from getopt import getopt, GetoptError
 
-import timeoutsocket
-from timeoutsocket import Timeout
+from xivo import timeoutsocket
+from xivo.timeoutsocket import Timeout
 
 import os
 import cgi
@@ -70,27 +69,27 @@ import thread
 import threading
 
 import syslog
-from easyslog import *
+from xivo.easyslog import *
 
-import anysql
-from BackSQL import backsqlite
-from BackSQL import backmysql
+from xivo import anysql
+from xivo.BackSQL import backsqlite
+from xivo.BackSQL import backmysql
 
-from pyfunc import replace_keys
+from xivo.pyfunc import replace_keys
 
 from BaseHTTPServer import BaseHTTPRequestHandler
 
-from ThreadingHTTPServer import *
+from xivo.ThreadingHTTPServer import *
 
 import provsup
 from provsup import ProvGeneralConf as pgc
 
-from moresynchro import RWLock
-from moresynchro import ListLock
-import daemonize
+from xivo.moresynchro import RWLock
+from xivo.moresynchro import ListLock
+from xivo import daemonize
 
-import except_tb
-from xivo_helpers import speed_dial_key_extension
+from xivo import except_tb
+from xivo.xivo_helpers import speed_dial_key_extension
 
 def name_from_first_last(first, last):
 	"Construct full name from first and last."

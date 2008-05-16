@@ -2,7 +2,7 @@
 
 __version__ = "$Revision: 1136 $ $Date: 2007-07-13 19:49:46 +0200 (Fri, 13 Jul 2007) $"
 __license__ = """
-    Copyright (C) 2007  Proformatique
+    Copyright (C) 2007, 2008  Proformatique
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,12 +19,11 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 """
 
-import xivo.to_path
-
 import sys
-from agi import *
+from xivo.agi import *
 
-import string, urllib
+import string
+import urllib
 
 agi = AGI()
 

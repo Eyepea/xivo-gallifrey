@@ -19,12 +19,10 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-import xivo.to_path
-
 import sys
-import anysql
-import agi_helpers
-import xivo_helpers
+from xivo import anysql
+from xivo import agi_helpers
+from xivo import xivo_helpers
 
 agi = agi_helpers.agi_get_session()
 cursor = xivo_helpers.db_connect().cursor()

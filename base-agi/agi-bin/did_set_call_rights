@@ -25,12 +25,10 @@ __license__ = """
 RIGHTCALL_AUTHORIZATION_COLNAME = "rightcall.authorization"
 RIGHTCALL_PASSWD_COLNAME = "rightcall.passwd"
 
-import xivo.to_path
-
 import re
 import sys
-import agi_helpers
-import xivo_helpers
+from xivo import agi_helpers
+from xivo import xivo_helpers
 
 rep = (('_', ''),
        ('*', '\*'),
