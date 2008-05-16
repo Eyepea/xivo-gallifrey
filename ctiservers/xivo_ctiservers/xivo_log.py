@@ -21,7 +21,7 @@
 # <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>.
 
 import time
-from easyslog import *
+from xivo.easyslog import *
 
 ## \brief Logs actions to a log file, prepending them with a timestamp.
 # \param string the string to log

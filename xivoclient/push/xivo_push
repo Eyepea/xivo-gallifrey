@@ -19,13 +19,11 @@
 
 CONFIG_XIVO_DAEMON = '/etc/asterisk/xivo_daemon.conf'
 
-# XIVO modules
-import xivo.to_path
-
 import sys
 import socket
 import ConfigParser
-from agi import *
+# XIVO modules
+from xivo.agi import *
 
 agi = AGI()
 
