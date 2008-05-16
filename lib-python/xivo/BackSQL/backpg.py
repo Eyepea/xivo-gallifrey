@@ -23,10 +23,11 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-import anysql
 from pyPgSQL import PgSQL
-import urisup
-from urisup import SCHEME, AUTHORITY, PATH, QUERY, FRAGMENT, uri_help_split
+
+from xivo import anysql
+from xivo import urisup
+from xivo.urisup import SCHEME, AUTHORITY, PATH, QUERY, FRAGMENT, uri_help_split
 
 __typemap = {
 	"host": str,

@@ -23,12 +23,12 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-import anysql
 import MySQLdb
-import urisup
-from urisup import SCHEME, AUTHORITY, PATH, QUERY, FRAGMENT, uri_help_split
-
 from MySQLdb.converters import conversions as CST_CONVERSIONS
+
+from xivo import anysql
+from xivo import urisup
+from xivo.urisup import SCHEME, AUTHORITY, PATH, QUERY, FRAGMENT, uri_help_split
 
 __typemap = {
 	"host": str,

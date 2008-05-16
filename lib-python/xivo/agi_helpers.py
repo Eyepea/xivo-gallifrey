@@ -26,9 +26,9 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-import agi
-import agitb
-import xivo_helpers
+from xivo import agi
+from xivo import agitb
+from xivo import xivo_helpers
 
 agi_session = None
 

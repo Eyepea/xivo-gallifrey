@@ -24,7 +24,7 @@ __license__ = """
 """
 
 import operator
-from FuseProperties import *
+from xivo.FuseProperties import *
 
 # Python does not have a class hierarchy for its builtin objects so new style
 # classes derivating from 'object' are not compatible with classes derivating

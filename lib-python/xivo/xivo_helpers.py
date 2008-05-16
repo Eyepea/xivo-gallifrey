@@ -25,11 +25,13 @@ __license__ = """
 
 import re
 import sys
-import anysql
-import except_tb
-import ConfigDict
-from BackSQL import backsqlite
-from BackSQL import backmysql
+
+from xivo import except_tb
+from xivo import ConfigDict
+
+from xivo import anysql
+from xivo.BackSQL import backsqlite
+from xivo.BackSQL import backmysql
 
 AGI_CONFFILE = "/etc/asterisk/xivo_agi.conf"
 

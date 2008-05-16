@@ -23,11 +23,12 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-import anysql
 import sqlite
-import urisup
-from urisup import SCHEME, AUTHORITY, PATH, QUERY, FRAGMENT, uri_help_split, uri_help_unsplit
 import os.path
+
+from xivo import anysql
+from xivo import urisup
+from xivo.urisup import SCHEME, AUTHORITY, PATH, QUERY, FRAGMENT, uri_help_split, uri_help_unsplit
 
 def __dict_from_query(query):
 	if not query:

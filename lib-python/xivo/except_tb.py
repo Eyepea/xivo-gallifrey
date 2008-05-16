@@ -25,7 +25,7 @@ __license__ = """
 
 import sys, traceback
 
-from easyslog import *
+from xivo.easyslog import *
 
 def LOGLINE_STDERR(x):
 	print >> sys.stderr, x

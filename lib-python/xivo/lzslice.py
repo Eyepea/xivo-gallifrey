@@ -184,7 +184,7 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-from pyfunc import *
+from xivo.pyfunc import *
 from itertools import imap, izip, islice, ifilter
 
 def xor(a, b):

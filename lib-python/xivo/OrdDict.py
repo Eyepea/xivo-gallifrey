@@ -25,8 +25,8 @@ __license__ = """
 
 import operator
 
-from ROListProxy import *
-from pyfunc import *
+from xivo.ROListProxy import *
+from xivo.pyfunc import *
 
 def repr_dict_seqseq(dct, key_seq):
 	first = True

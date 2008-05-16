@@ -27,7 +27,7 @@ __license__ = """
 
 import os, re, sys, errno, os.path, traceback
 
-from except_tb import *
+from xivo.except_tb import *
 
 SLASH_PROC = os.sep + 'proc'
 PROG_SLINK = 'exe'
