@@ -538,7 +538,7 @@ class FilteredView:
 ###    their unsliced variant
 ### XXX TODO add something to move the start
 
-__all__ = ["lazy_", "lzslice", "slice_compose", "lazislice", "FilteredView"]
+__all__ = ("lazy_", "lzslice", "slice_compose", "lazislice", "FilteredView")
 
 if __name__ == '__main__':
   if __debug__:

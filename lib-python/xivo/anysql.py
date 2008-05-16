@@ -376,6 +376,6 @@ def c14n_uri(sqluri):
 		return sqluri
 	return uri_c14n_method(sqluri)
 
-__all__ = ["register_uri_backend", "connect_by_uri", "c14n_uri",
+__all__ = ("register_uri_backend", "connect_by_uri", "c14n_uri",
            "cursor", "connection",
-           "any_paramstyle", "any_threadsafety", "any_apilevel"]
+           "any_paramstyle", "any_threadsafety", "any_apilevel")

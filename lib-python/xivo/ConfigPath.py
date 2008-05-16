@@ -1,12 +1,12 @@
 """Support routines for ordered injections in sys.path from an .ini file
 
-Copyright (C) 2007, Proformatique
+Copyright (C) 2007, 2008  Proformatique
 
 """
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2007, Proformatique
+    Copyright (C) 2007, 2008  Proformatique
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -79,6 +79,6 @@ def MandatoryModulesLoad(config_file, config_section):
 	except NoSectionError, s:
 	    print >> sys.stderr, "WARNING: Section [%s] apparently missing from configuration file %s" % (config_section, config_file)
 	
-__all__ = ["NoSectionError", "SortedValuesFromConfigSection",
+__all__ = ("NoSectionError", "SortedValuesFromConfigSection",
            "InsertPathListSys", "ConfiguredPathHelper",
-	   "MandatoryModulesLoad"]
+	   "MandatoryModulesLoad")

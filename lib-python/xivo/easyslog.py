@@ -1,6 +1,6 @@
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2007, Proformatique
+    Copyright (C) 2007, 2008  Proformatique
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -44,8 +44,8 @@ def sysloglevel_from_str(v):
 		raise ValueError, "Unknown log filter '%s'" % v
 	return syslogmap[v.lower()]
 
-__all__ = [
+__all__ = (
 	'syslogf', 'SYSLOG_EMERG', 'SYSLOG_ALERT', 'SYSLOG_CRIT',
 	'SYSLOG_ERR', 'SYSLOG_WARNING', 'SYSLOG_NOTICE', 'SYSLOG_INFO',
 	'SYSLOG_DEBUG', 'syslogmap', 'sysloglevel_from_str'
-]
+)

@@ -1,12 +1,12 @@
 """Graph theory routines
 
-Copyright (C) 2007, Proformatique
+Copyright (C) 2007, 2008  Proformatique
 
 """
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2007, Proformatique
+    Copyright (C) 2007, 2008  Proformatique
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -296,8 +296,8 @@ def partial_order_sink(graph):
 	rev_graph = reverse_ord(graph)
 	return partial_order_from_reversed_ord_pot(rev_graph, potential_by_card(rev_graph))
 
-__all__ = ['loop', 'partial_order_from_reversed_ord_pot',
-           'partial_order_sink', 'reverse_ord']
+__all__ = ('loop', 'partial_order_from_reversed_ord_pot',
+           'partial_order_sink', 'reverse_ord')
 
 # XXX unit tests for everything and stats with big graphs for
 # partial_order_from_reversed_ord_pot()

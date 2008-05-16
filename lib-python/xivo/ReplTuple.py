@@ -1,12 +1,12 @@
 """Factory for tuples with named fields and methods for introspection and partial content substitution
 
-Copyright (C) 2007, Proformatique
+Copyright (C) 2007, 2008  Proformatique
 
 """
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2007, Proformatique
+    Copyright (C) 2007, 2008  Proformatique
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -95,4 +95,4 @@ def ReplTuple(typename, s):
 		nt.__module__ = _sys._getframe(1).f_globals['__name__']
 	return nt
 
-__all__ = ['ReplTuple']
+__all__ = ('ReplTuple',)

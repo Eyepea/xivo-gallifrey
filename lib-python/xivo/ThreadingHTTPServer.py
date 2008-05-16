@@ -1,13 +1,13 @@
 """Threaded HTTP Server
 
-Copyright (C) 2007, Proformatique
+Copyright (C) 2007, 2008  Proformatique
 
 """
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (c) 2001, 2002, 2003, 2004 Python Software Foundation;
-    Copyright (C) 2007, Proformatique
+    Copyright (C) 2007, 2008  Proformatique
                                         All Rights Reserved
 
     Under PSF LICENSE AGREEMENT FOR PYTHON
@@ -32,4 +32,4 @@ class ThreadingHTTPServer(SocketServer.ThreadingTCPServer):
 		self.server_name = socket.getfqdn(host)
 		self.server_port = port
 
-__all__ = ['ThreadingHTTPServer']
+__all__ = ('ThreadingHTTPServer',)

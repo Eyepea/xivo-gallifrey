@@ -1,6 +1,6 @@
 """HTTP Related Parsing using pyparsing
 
-Copyright (C) 2007, Proformatique
+Copyright (C) 2007, 2008  Proformatique
 
 WARNING: This parser is _extremely_ slow, you can expect it to consume up to about
          1 million CPU cycles per output field. Use with care or optimize it!
@@ -9,7 +9,7 @@ WARNING: This parser is _extremely_ slow, you can expect it to consume up to abo
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2007, Proformatique
+    Copyright (C) 2007, 2008  Proformatique
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -61,10 +61,10 @@ HTTP_ACCEPT_HEADER_LINE = HTTP_ACCEPT_HEADER + LineEnd()
 HTTP_CONTENT_TYPE_LINE = HTTP_MEDIA + LineEnd()
 
 
-__all__ = [ 'HTTP_CHAR', 'HTTP_SEPARATORS', 'HTTP_CTLS', 'HTTP_TOKCHAR',
+__all__ = ( 'HTTP_CHAR', 'HTTP_SEPARATORS', 'HTTP_CTLS', 'HTTP_TOKCHAR',
             'HTTP_TOKEN', 'HTTP_QUOTED', 'HTTP_VALUE', 'HTTP_PARAMETER',
 	    'HTTP_TRANSFER_EXTENSION', 'HTTP_TRANSFER_CODING',
 	    'HTTP_TRANSFER_CODING_LINE', 'HTTP_CHUNK_EXTENSION',
 	    'HTTP_CHUNK_HEADER', 'HTTP_CHUNK_HEADER_LINE', 'HTTP_MEDIA',
 	    'HTTP_ACCEPT_HEADER', 'HTTP_ACCEPT_HEADER_LINE',
-	    'HTTP_CONTENT_TYPE_LINE' ]
+	    'HTTP_CONTENT_TYPE_LINE' )

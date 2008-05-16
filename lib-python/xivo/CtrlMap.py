@@ -283,4 +283,4 @@ class CtrlMap(object):
 	fuse_ALL = prop_fuse_multiple('_CtrlMap__fuse_ALL',
 	                              ('fuse_underl', 'fuse_allow'))
 
-__all__ = ['CtrlMap']
+__all__ = ('CtrlMap',)

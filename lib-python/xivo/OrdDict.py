@@ -115,4 +115,4 @@ class ordDict(dict):
 		self.__seq.sort()
 	_seq = property(operator.attrgetter('_ordDict__seq_ro'))
 
-__all__ = ['ordDict']
+__all__ = ('ordDict',)
