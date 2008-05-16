@@ -65,7 +65,6 @@ import threading
 import time
 
 # XIVO lib-python modules initialization
-import xivo.to_path
 xivoconffile            = '/etc/asterisk/xivo_daemon.conf'
 GETOPT_SHORTOPTS        = 'dc:'
 GETOPT_LONGOPTS         = ["debug", "config="]
@@ -84,23 +83,22 @@ def config_path():
 config_path()
 
 # XIVO lib-python modules imports
-import daemonize
-import except_tb
-from easyslog import *
-import anysql
-from BackSQL import backmysql
-from BackSQL import backsqlite
+from xivo import daemonize
+from xivo import except_tb
+from xivo.easyslog import *
+from xivo import anysql
+from xivo.BackSQL import backmysql
+from xivo.BackSQL import backsqlite
 
-# XIVO modules
-import xivo_ctiservers.to_path
-import xivo_ami
-import xivo_phones
-import xivo_users
-import xivo_contexts
-import xivo_commandsets
-import xivo_astcfg
-from xivo_log import *
-from CommandSets import *
+# XIVO CTI modules
+from xivo_ctiservers import xivo_ami
+from xivo_ctiservers import xivo_phones
+from xivo_ctiservers import xivo_users
+from xivo_ctiservers import xivo_contexts
+from xivo_ctiservers import xivo_commandsets
+from xivo_ctiservers import xivo_astcfg
+from xivo_ctiservers.xivo_log import *
+from xivo_ctiservers.CommandSets import *
 
 PIDFILE = '/var/run/xivo_daemon.pid'
 # TODO: command line parameter

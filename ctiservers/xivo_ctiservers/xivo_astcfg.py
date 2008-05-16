@@ -24,11 +24,11 @@ __author__    = 'Corentin Le Gall'
 # with this program; if not, you will find one at
 # <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>.
 
-import anysql
+from xivo import anysql
 import csv
 import md5
 import urllib
-from xivo_log import *
+from xivo_ctiservers.xivo_log import *
 
 USERLIST_LENGTH = 12
 

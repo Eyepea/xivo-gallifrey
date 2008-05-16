@@ -35,16 +35,12 @@ import syslog
 import threading
 import urllib
 
-# XIVO lib-python modules initialization
-import xivo.to_path
-import generefiche
-
 # XIVO lib-python modules imports
-import anysql
-from BackSQL import backmysql
-from BackSQL import backsqlite
+from xivo import anysql
+from xivo.BackSQL import backmysql
+from xivo.BackSQL import backsqlite
 
-import xivo_ldap
+from xivo_ctiservers import xivo_ldap
 
 
 

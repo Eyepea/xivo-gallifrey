@@ -34,13 +34,13 @@ import re
 import string
 import time
 import urllib
-import xivo_commandsets
-import xivo_ldap
-from xivo_commandsets import BaseCommand
-from easyslog import *
-import anysql
-from BackSQL import backmysql
-from BackSQL import backsqlite
+from xivo_ctiservers import xivo_commandsets
+from xivo_ctiservers import xivo_ldap
+from xivo_ctiservers.xivo_commandsets import BaseCommand
+from xivo.easyslog import *
+from xivo import anysql
+from xivo.BackSQL import backmysql
+from xivo.BackSQL import backsqlite
 
 # capabilities
 CAPA_XLET_AGENTS = 1 << 0

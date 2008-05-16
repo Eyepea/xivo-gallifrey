@@ -29,7 +29,7 @@ Phones lists.
 """
 
 import time
-from easyslog import *
+from xivo.easyslog import *
 
 DIR_TO_STRING = '>'
 DIR_FROM_STRING = '<'
