@@ -20,7 +20,7 @@ from keyword import iskeyword as _iskeyword
 import sys as _sys
 import collections as _collections
 try:
-    _collections.NamedTuple
+    _collections.namedtuple
 except AttributeError:
 
     try:
