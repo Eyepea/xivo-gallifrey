@@ -1,4 +1,4 @@
-# This module magically adds NamedTuple (that will be standard Python 2.6) to
+# This module magically adds namedtuple (that will be standard Python 2.6) to
 # the collections module when it's imported.
 #
 # Code comes from http://svn.python.org/view/*checkout*/python/trunk/Lib/collections.py?rev=59898
