@@ -199,7 +199,7 @@ class TraceToFile:
 			funcname = frame.f_code.co_name
 			if 'DBGFOO' in funcname: # XXX parametrize
 				return
-			print >> self.fp, "%.03f %24s %05d : %s%s%s" % (
+			print >> self.fp, "%.03f %36s %05d : %s%s%s" % (
 				time.time(),
 				modname,
 				lineno,
@@ -219,7 +219,7 @@ class TraceToFile:
 				if 'DBGFOO' in funcname: # XXX parametrize
 					self.call_level += 1
 					return
-				print >> self.fp, "%.03f %24s %05d : %s... %s() returns %s" % (
+				print >> self.fp, "%.03f %36s %05d : %s... %s() returns %s" % (
 					time.time(),
 					modname,
 					lineno,
@@ -262,7 +262,7 @@ class TraceToFile:
 		lineno = frame.f_lineno
 		
 		# emit trace
-		print >> self.fp, "%.03f %24s %05d : %siii %s" % (
+		print >> self.fp, "%.03f %36s %05d : %siii %s" % (
 			time.time(),
 			modname,
 			lineno,
