@@ -185,8 +185,8 @@ class TraceToFile:
 		
 		modname = frame.f_globals["__name__"]
 		
-		# never trace ourself
-		if modname == 'tracer':
+		# never trace ourself XXX parametrize list of untracable modules
+		if modname in ('tracer','copy','inspect','copy_reg'):
 			return
 		
 		lineno = frame.f_lineno
@@ -203,12 +203,11 @@ class TraceToFile:
 				time.time(),
 				modname,
 				lineno,
-				'\t' * self.call_level,
+				'    ' * self.call_level, # XXX_1
 				funcname,
 				formatargvalues(
 					args, varargs, varkw, lcals,
-					formatvalue = lambda x: safe_repr(
-					                          x, funcname)),
+					formatvalue = lambda x: safe_repr(x, funcname)),
 			)
 			self.call_level += 1
 		
@@ -219,11 +218,11 @@ class TraceToFile:
 				if 'DBGFOO' in funcname: # XXX parametrize
 					self.call_level += 1
 					return
-				print >> self.fp, "%.03f %36s %05d : %s... %s() returns %s" % (
+				print >> self.fp, "%.03f %36s %05d : %s..%s() returns %s" % (
 					time.time(),
 					modname,
 					lineno,
-					'\t' * self.call_level,
+					'    ' * self.call_level, # XXX_1
 					funcname,
 					repr(arg)
 				)
@@ -266,7 +265,7 @@ class TraceToFile:
 			time.time(),
 			modname,
 			lineno,
-			'\t' * self.call_level,
+			'    ' * self.call_level, # XXX_1
 			msg
 		)
 
