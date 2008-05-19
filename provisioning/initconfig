@@ -57,18 +57,14 @@ def config_path():
 			CONFIG_FILE = v
 config_path()
 
-import xivo_provisioning.to_path
-
-# Loading Xivo modules is possible from this point
-
 from xivo import timeoutsocket
 from xivo.timeoutsocket import Timeout
 
 import httplib
 
-import provsup
-from provsup import ProvGeneralConf as pgc
-from Phones import *
+from xivo_provisioning import provsup
+from xivo_provisioning.provsup import ProvGeneralConf as pgc
+from xivo_provisioning.Phones import *
 
 from xivo.agi import *
 agi = AGI()

@@ -25,11 +25,14 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-import os, sys, syslog
+import os
+import sys
+import syslog
 import socket
-import provsup
-from provsup import BaseProv
-from provsup import ProvGeneralConf as pgc
+
+from xivo_provisioning import provsup
+from xivo_provisioning.provsup import BaseProv
+from xivo_provisioning.provsup import ProvGeneralConf as pgc
 
 POLYCOM_COMMON_DIR = pgc['tftproot'] + "Polycom/"
 POLYCOM_COMMON_HTTP_USER = "Polycom"
@@ -40,19 +43,22 @@ AMI_USER = 'xivouser'
 AMI_PASS = 'xivouser'
 
 class PolycomProv(BaseProv):
-	label = "Polycom"
-	def __init__(self, phone):
-		BaseProv.__init__(self, phone)
+        label = "Polycom"
+        def __init__(self, phone):
+                BaseProv.__init__(self, phone)
                 self.provinfo = {}
-		# TODO: handle this with a lookup table stored in the DB?
-		if self.phone["model"] != "spip_430" and \
-		   self.phone["model"] != "spip_650":
-			raise ValueError, "Unknown Polycom model '%s'" % self.phone["model"]
+                # TODO: handle this with a lookup table stored in the DB?
+                if self.phone["model"] != "spip_430" and \
+                   self.phone["model"] != "spip_650":
+                        raise ValueError, "Unknown Polycom model '%s'" % self.phone["model"]
 
         def __iptopeer(self):
                 phoneip = self.phone['ipv4']
                 
+                # TODO: get ride of this AMI communication if possible
+                
                 amisock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                amisock.set_timeout(pgc['telnet_to_s'])
                 amisock.connect(('127.0.0.1', AMI_PORT))
                 actioncommand = ['Action: login',
                                  'Username: %s' % AMI_USER,
@@ -98,7 +104,7 @@ class PolycomProv(BaseProv):
                 self.peerinfo = None
                 try:
                         self.__iptopeer()
-                except:
+                except: # XXX: don't catch ALL exceptions
                         pass
                 
                 if self.peerinfo is not None and len(self.peerinfo) > 1:
@@ -118,36 +124,36 @@ class PolycomProv(BaseProv):
                 sipsocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                 sipsocket.sendto('\r\n'.join(sip_message), (phoneip, SIP_PORT))
 
-	def do_reboot(self):
-		"Entry point to send the reboot command to the phone."
+        def do_reboot(self):
+                "Entry point to send the reboot command to the phone."
                 self.__sendsipnotify()
 
-	def do_reinit(self):
-		"""Entry point to send the (possibly post) reinit command to
-		the phone.
-		
-		"""
+        def do_reinit(self):
+                """Entry point to send the (possibly post) reinit command to
+                the phone.
+                
+                """
                 self.__sendsipnotify()
 
 
-	def __generate(self, myprovinfo):
+        def __generate(self, myprovinfo):
                 template_main_file = open(pgc['templates_dir'] + "polycom-%s.cfg" % self.phone["model"])
-		template_main_lines = template_main_file.readlines()
-		template_main_file.close()
+                template_main_lines = template_main_file.readlines()
+                template_main_file.close()
                 template_phone_file = open(pgc['templates_dir'] + "polycom-phone.cfg")
-		template_phone_lines = template_phone_file.readlines()
-		template_phone_file.close()
+                template_phone_lines = template_phone_file.readlines()
+                template_phone_file.close()
 
                 __macaddr = self.phone["macaddr"].replace(':','').lower()
-		tmp_main_filename = POLYCOM_COMMON_DIR + __macaddr + ".cfg.tmp"
-		cfg_main_filename = tmp_main_filename[:-4]
-		tmp_phone_filename = POLYCOM_COMMON_DIR + __macaddr + "-phone.cfg.tmp"
-		cfg_phone_filename = tmp_phone_filename[:-4]
+                tmp_main_filename = POLYCOM_COMMON_DIR + __macaddr + ".cfg.tmp"
+                cfg_main_filename = tmp_main_filename[:-4]
+                tmp_phone_filename = POLYCOM_COMMON_DIR + __macaddr + "-phone.cfg.tmp"
+                cfg_phone_filename = tmp_phone_filename[:-4]
 
                 txt_main = provsup.txtsubst(template_main_lines,
                                             { "phone.cfg": __macaddr + "-phone.cfg" },
                                             cfg_main_filename)
-		txt_phone = provsup.txtsubst(template_phone_lines,
+                txt_phone = provsup.txtsubst(template_phone_lines,
                                             { "user_display_name": myprovinfo["name"],
                                               "user_phone_ident":  myprovinfo["ident"],
                                               "user_phone_number": myprovinfo["number"],
@@ -156,22 +162,22 @@ class PolycomProv(BaseProv):
                                               },
                                             cfg_phone_filename)
 
-		tmp_main_file = open(tmp_main_filename, 'w')
-		tmp_main_file.writelines(txt_main)
-		tmp_main_file.close()
-		tmp_phone_file = open(tmp_phone_filename, 'w')
-		tmp_phone_file.writelines(txt_phone)
-		tmp_phone_file.close()
+                tmp_main_file = open(tmp_main_filename, 'w')
+                tmp_main_file.writelines(txt_main)
+                tmp_main_file.close()
+                tmp_phone_file = open(tmp_phone_filename, 'w')
+                tmp_phone_file.writelines(txt_phone)
+                tmp_phone_file.close()
 
-		os.rename(tmp_main_filename, cfg_main_filename)
-		os.rename(tmp_phone_filename, cfg_phone_filename)
+                os.rename(tmp_main_filename, cfg_main_filename)
+                os.rename(tmp_phone_filename, cfg_phone_filename)
 
 
-	def do_reinitprov(self):
-		"""Entry point to generate the reinitialized (GUEST)
-		configuration for this phone.
-		
-		"""
+        def do_reinitprov(self):
+                """Entry point to generate the reinitialized (GUEST)
+                configuration for this phone.
+                
+                """
                 self.provinfo = { "name":   "guest",
                                   "ident":  "guest",
                                   "number": "guest",
@@ -180,30 +186,30 @@ class PolycomProv(BaseProv):
                 self.__generate(self.provinfo)
 
 
-	def do_autoprov(self, provinfo):
-		"""Entry point to generate the provisioned configuration for
-		this phone.
-		
-		"""
+        def do_autoprov(self, provinfo):
+                """Entry point to generate the provisioned configuration for
+                this phone.
+                
+                """
                 self.provinfo = provinfo
-		self.__generate(self.provinfo)
+                self.__generate(self.provinfo)
 
 
 	# Introspection entry points
 
-	@classmethod
-	def get_phones(cls):
-		"Report supported phone models for this vendor."
-		return (("spip_430", "SPIP430"), ("spip_650", "SPIP650"))
+        @classmethod
+        def get_phones(cls):
+                "Report supported phone models for this vendor."
+                return (("spip_430", "SPIP430"), ("spip_650", "SPIP650"))
 
-	# Entry points for the AGI
+        # Entry points for the AGI
 
-	@classmethod
-	def get_vendor_model_fw(cls, ua):
-		"""Extract Vendor / Model / FirmwareRevision from SIP User-Agent
-		or return None if we don't deal with this kind of Agent.
-		
-		"""
+        @classmethod
+        def get_vendor_model_fw(cls, ua):
+                """Extract Vendor / Model / FirmwareRevision from SIP User-Agent
+                or return None if we don't deal with this kind of Agent.
+                
+                """
                 # PolycomSoundPointIP-SPIP_430-UA/2.2.0.0047
                 # PolycomSoundPointIP-SPIP_650-UA/2.2.0.0047
 
@@ -215,6 +221,6 @@ class PolycomProv(BaseProv):
                 if len(ua_splitted) == 2:
                         fw = ua_splitted[1]
                         model = ua_splitted[0].split('-')[1].lower()
-		return ("polycom", model, fw)
+                return ("polycom", model, fw)
 
 provsup.PhoneClasses["polycom"] = PolycomProv

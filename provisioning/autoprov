@@ -49,14 +49,8 @@ def help_screen():
 -c <conffile>	Use <conffile> instead of %s
 -p <pidfile>	Use <pidfile> instead of %s
 -h		Display this help screen and exit
-""" % (sys.argv[0], repr(CONFIG_FILE), repr(PIDFILE))
+""" % (sys.argv[0], `CONFIG_FILE`, `PIDFILE`)
 	sys.exit(1)
-
-# Magical Path modification:
-
-import xivo_provisioning.to_path
-
-# Loading Xivo modules is possible from this point
 
 from getopt import getopt, GetoptError
 
@@ -81,8 +75,8 @@ from BaseHTTPServer import BaseHTTPRequestHandler
 
 from xivo.ThreadingHTTPServer import *
 
-import provsup
-from provsup import ProvGeneralConf as pgc
+from xivo_provisioning import provsup
+from xivo_provisioning.provsup import ProvGeneralConf as pgc
 
 from xivo.moresynchro import RWLock
 from xivo.moresynchro import ListLock
@@ -893,7 +887,7 @@ if dburi_override is not None:
 # database uri that could depends upon current envt.
 pgc['database_uri'] = anysql.c14n_uri(pgc['database_uri'])
 
-# provsup.LoadConfig must be called before
-from Phones import * # package containing one module per vendor
+# WARNING: provsup.LoadConfig must be called before
+from xivo_provisioning.Phones import *
 if __name__ == '__main__' and not dontlauchmain:
 	main(log_level, foreground)

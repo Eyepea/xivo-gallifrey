@@ -25,10 +25,15 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-import os, sys, syslog, time, telnetlib
-import provsup
-from provsup import BaseProv
-from provsup import ProvGeneralConf as pgc
+import os
+import sys
+import syslog
+import time
+import telnetlib
+
+from xivo_provisioning import provsup
+from xivo_provisioning.provsup import BaseProv
+from xivo_provisioning.provsup import ProvGeneralConf as pgc
 
 import time # for TimeoutingTelnet
 
@@ -57,9 +62,9 @@ class TelnetExpectationFailed(RuntimeError):
 	pass
 
 class TimeoutingTelnet(telnetlib.Telnet):
-	"""This class extends Telnet so that a global timeout can trigger
-	during the newly introduced read_until_to(), and this will result
-	in the raising of an exception.
+	"""This class extends Telnet so that a global timeout can occur
+	during the newly introduced read_until_to().  An exception will
+	be raised when that happens.
 	
 	"""
 	def __init__(self, cnx, global_TO = pgc['telnet_to_s']):

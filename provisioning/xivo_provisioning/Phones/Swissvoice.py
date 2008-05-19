@@ -25,10 +25,13 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-import os, sys, syslog
-import provsup
-from provsup import BaseProv
-from provsup import ProvGeneralConf as pgc
+import os
+import sys
+import syslog
+
+from xivo_provisioning import provsup
+from xivo_provisioning.provsup import BaseProv
+from xivo_provisioning.provsup import ProvGeneralConf as pgc
 
 # SWISSVOICE BUGBUG
 # It would be possible to make tftp upload a /tftpboot/Swissvoice/swupdate_ip10.inf
