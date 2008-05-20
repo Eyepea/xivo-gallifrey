@@ -204,7 +204,7 @@ def zip_extract_all(label, zipfile_path):
 
 	return zip_path
 
-config = ConfigParser.SafeConfigParser()
+config = ConfigParser.RawConfigParser()
 fp = open(CONFIG_FILE)
 config.readfp(fp)
 tftp_path = config.get(CONFIG_SECTION_GENERAL, "tftp_path")

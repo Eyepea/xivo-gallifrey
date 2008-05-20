@@ -65,7 +65,7 @@ version: 5.1.6
 files: pap2t-5-1-6.zip
 
 [pap2t-5-1-6.zip]
-url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%%2Fzip&blobheadervalue2=inline%%3B+filename%%3DPAP2T_v5.1.6_fw.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193765607333&ssbinary=true&lid=6115325776B08
+url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%2Fzip&blobheadervalue2=inline%3B+filename%3DPAP2T_v5.1.6_fw.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193765607333&ssbinary=true&lid=6115325776B08
 size: 1504430
 md5sum: c35ffdd7c60372305e59bf376362b022
 sha1sum: c8a2c48e06e3bd89de6f444824a41ebc7e1d57f5
@@ -78,7 +78,7 @@ version: 5.1.5
 files: spa901-5-1-5.zip
 
 [spa901-5-1-5.zip]
-url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%%2Fzip&blobheadervalue2=inline%%3B+filename%%3Dspa901-5.1.5.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193769501566&ssbinary=true&lid=6160326362B04
+url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%2Fzip&blobheadervalue2=inline%3B+filename%3Dspa901-5.1.5.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193769501566&ssbinary=true&lid=6160326362B04
 size: 1607399
 md5sum: 598c35cbcf851a17f58da4d0a9c62bbb
 sha1sum: 2cc6bfeb64812ca80a69cbe51296e3db2b68a491
@@ -91,7 +91,7 @@ version: 5.1.8
 files: spa941-5-1-8.zip
 
 [spa941-5-1-8.zip]
-url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%%2Fzip&blobheadervalue2=inline%%3B+filename%%3Dspa941-5.1.8.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193770292308&ssbinary=true&lid=4571655272B10
+url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%2Fzip&blobheadervalue2=inline%3B+filename%3Dspa941-5.1.8.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193770292308&ssbinary=true&lid=4571655272B10
 size: 1548720
 md5sum: b6c99b91bbb1625d088b4f3a90794522
 sha1sum: fe3616d709599763fd27fc5afebd1c8f71a95b9c
@@ -104,7 +104,7 @@ version: 5.1.15a
 files: spa942-5-1-15a.zip
 
 [spa942-5-1-15a.zip]
-url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%%2Fzip&blobheadervalue2=inline%%3B+filename%%3Dspa942-5.1.15a.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193773807062&ssbinary=true&lid=4602227625B14
+url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%2Fzip&blobheadervalue2=inline%3B+filename%3Dspa942-5.1.15a.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193773807062&ssbinary=true&lid=4602227625B14
 size: 1736301
 md5sum: 822ca4365dbb0ef639469fe1505a32a7
 sha1sum: 22e27cc469ed0687a491167f7417ad8f9c9fb55c
@@ -117,7 +117,7 @@ version: 5.1.18
 files: spa942-5-1-18.zip
 
 [spa942-5-1-18.zip]
-url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%%2Fzip&blobheadervalue2=inline%%3B+filename%%3DSPA942_fw-v5.1.18.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193773807108&ssbinary=true&lid=2669427625B12
+url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%2Fzip&blobheadervalue2=inline%3B+filename%3DSPA942_fw-v5.1.18.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193773807108&ssbinary=true&lid=2669427625B12
 size: 1746585
 md5sum: 7ae6a75e0fcd0c5845c073d81c66a11d
 sha1sum: b7e78d76bfb8c3e284ea54cc53ef9146c6aab430
@@ -130,7 +130,7 @@ version: 5.2.5
 files: spa942-5-2-5.zip
 
 [spa942-5-2-5.zip]
-url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%%2Fzip&blobheadervalue2=inline%%3B+filename%%3Dspa942-5.2.5.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193774016542&ssbinary=true&lid=0860927625B10
+url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%2Fzip&blobheadervalue2=inline%3B+filename%3Dspa942-5.2.5.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193774016542&ssbinary=true&lid=0860927625B10
 size: 1781834
 md5sum: 66e49205ae82f4f63549d041346c5f0b
 sha1sum: 56a298586301c0a80dc32750a146b1cad6f03d37
@@ -143,7 +143,7 @@ version: 5.1.18(SC)
 files: spa962-5-1-18sc.zip
 
 [spa962-5-1-18sc.zip]
-url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%%2Fzip&blobheadervalue2=inline%%3B+filename%%3DSPA962-5.1.18_fw.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193770222498&ssbinary=true&lid=6407828244B12
+url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%2Fzip&blobheadervalue2=inline%3B+filename%3DSPA962-5.1.18_fw.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193770222498&ssbinary=true&lid=6407828244B12
 size: 2110861
 md5sum: 41475e98d79987b026ab19d771a6770d
 sha1sum: e851fd7cde46f786b586e7c69130cde047c7c9e0
@@ -156,7 +156,7 @@ version: 5.2.8(SC)
 files: spa962-5-2-8sc.bin
 
 [spa962-5-2-8sc.bin]
-url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%%2Fzip&blobheadervalue2=inline%%3B+filename%%3DSPA962_V5.2.8SC_fw.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193783376348&ssbinary=true&lid=7299228244B10
+url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%2Fzip&blobheadervalue2=inline%3B+filename%3DSPA962_V5.2.8SC_fw.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193783376348&ssbinary=true&lid=7299228244B10
 size: 3254976
 md5sum: f2d221ea1dd5f1a3fdcd7e3853b1e333
 sha1sum: 657c0ad44396edae0ec10d4b8e743fa0cc641cc1
