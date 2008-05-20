@@ -27,11 +27,11 @@ __license__ = """
 import os, sys, traceback
 
 import syslog
-from easyslog import *
-from ConfigDict import *
+from xivo.easyslog import *
+from xivo.ConfigDict import *
 from ConfigParser import ConfigParser
 
-from except_tb import *
+from xivo.except_tb import *
 
 ProvGeneralConf = {
 	'database_uri':			"sqlite:/var/lib/asterisk/astsqlite?timeout_ms=150",
