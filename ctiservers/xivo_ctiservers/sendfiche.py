@@ -40,9 +40,11 @@ from xivo import anysql
 from xivo.BackSQL import backmysql
 from xivo.BackSQL import backsqlite
 
-from xivo_ctiservers import xivo_ldap
+import xivo_ldap
+from xivo_log import *
 
-
+def log_debug(a, b):
+        log_debug_file(a, b, 'sendfiche')
 
 #
 ## \class Info
@@ -61,16 +63,6 @@ class Info:
                 return self.type
         def getValue(self):
                 return self.value
-
-
-def varlog(string):
-        syslog.syslog(syslog.LOG_NOTICE, "sendfiche : " + string)
-        return 0
-
-
-def log_debug(string):
-        print "#debug# (sendfiche) " + string
-        return varlog(string)
 
 
 def callerid_match(dbfield, cid):
@@ -93,7 +85,7 @@ def get_ldap_infos(cid, ctxinfos):
                 result = ldapid.getldap("(|%s)" % (''.join(str_cidm)),
                                         ctxinfos.sheet_matching_fields)
         except Exception, exc:
-                log_debug('Connection to LDAP <%s> failed : %s' % (ctxinfos.uri, str(exc)))
+                log_debug(SYSLOG_ERR, 'Connection to LDAP <%s> failed : %s' % (ctxinfos.uri, str(exc)))
                 return reply_by_field
 
         if len(result) > 0:
@@ -105,9 +97,9 @@ def get_ldap_infos(cid, ctxinfos):
                                                 field_value = result[0][1][dbname][0]
                                         reply_by_field[dispname] = field_value
                 except Exception, exc:
-                        log_debug('--- exception --- in LDAP : %s' %(str(exc)))
+                        log_debug(SYSLOG_ERR, '--- exception --- in LDAP : %s' %(str(exc)))
         else:
-                log_debug('No callerid in LDAP <%s> for <%s>' %(ctxinfos.uri, cid))
+                log_debug(SYSLOG_WARNING, 'No callerid in LDAP <%s> for <%s>' %(ctxinfos.uri, cid))
 	return reply_by_field
 
 
@@ -122,7 +114,7 @@ def get_sql_infos(cid, ctxinfos):
         reply_by_field = {}
 
         if ctxinfos.sqltable == '':
-                log_debug('No SQL table info given')
+                log_debug(SYSLOG_WARNING, 'No SQL table info given')
                 return reply_by_field
 
 
@@ -136,7 +128,7 @@ def get_sql_infos(cid, ctxinfos):
                 results = [cursor.fetchone()] # vs. fetchall() if needed
                 conn.close()
 	except Exception, exc:
-                log_debug('Connection to SQL <%s> failed : %s' % (ctxinfos.uri, str(exc)))
+                log_debug(SYSLOG_ERR, '--- exception --- Connection to SQL <%s> failed : %s' % (ctxinfos.uri, str(exc)))
                 return reply_by_field
 
         if results[0] is not None:
@@ -153,7 +145,7 @@ def get_sql_infos(cid, ctxinfos):
                                                 field_value = xx[dbname]
                                         reply_by_field[dispname] = field_value
                 except Exception, exc:
-                        log_debug('--- exception --- in anysql : %s' %(str(exc)))
+                        log_debug(SYSLOG_ERR, '--- exception --- in anysql : %s' %(str(exc)))
 
 	return reply_by_field
 
@@ -177,7 +169,7 @@ def get_csv_infos(cid, ctxinfos):
                                         if callerid_match(items[idx], cid):
                                                 results.append(items)
 	except Exception, exc:
-                log_debug('Connection to URL <%s> failed : %s' % (ctxinfos.uri, str(exc)))
+                log_debug(SYSLOG_ERR, 'Connection to URL <%s> failed : %s' % (ctxinfos.uri, str(exc)))
                 return reply_by_field
 
         if len(results) > 0:
@@ -189,7 +181,7 @@ def get_csv_infos(cid, ctxinfos):
                                                 field_value = results[0][csv.index(dbname)]
                                         reply_by_field[dispname] = field_value.strip('"')
                 except Exception, exc:
-                        log_debug('--- exception --- in anysql : %s' %(str(exc)))
+                        log_debug(SYSLOG_ERR, '--- exception --- in anysql : %s' %(str(exc)))
 
 	return reply_by_field
 
@@ -230,7 +222,7 @@ def make_fields(items, formats, flds, localdir):
                                                 value = prestr + flds[kindoffield] + poststr
                                 fields_list.append(Info(argum, fieldtype, value))
                         else:
-                                log_debug('not the right number of fields (2+3) : %s' % (str(field_to_display)))
+                                log_debug(SYSLOG_WARNING, 'not the right number of fields (2+3) : %s' % (str(field_to_display)))
 	return fields_list
 
 
@@ -244,33 +236,33 @@ def retrieve_callerid_data(callerid, ctxinfos, xdconfig, localdir):
         # database-specific calls
         if ctxinfos.uri != "":
                 databasekind = ctxinfos.uri.split(':')[0]
-                log_debug('callerid=<%s> databasekind=<%s>' % (callerid, databasekind))
+                log_debug(SYSLOG_INFO, 'callerid=<%s> databasekind=<%s>' % (callerid, databasekind))
                 if databasekind == 'ldap':
                         try:
                                 nfields = get_ldap_infos(callerid, ctxinfos)
                                 for n, v in nfields.iteritems():
                                         fields[n] = v
-                                log_debug('fields = %s' % str(fields))
+                                log_debug(SYSLOG_INFO, 'fields = %s' % str(fields))
                         except Exception, exc:
-                                log_debug('--- exception --- (in %s) %s' % (databasekind, str(exc)))
+                                log_debug(SYSLOG_ERR, '--- exception --- (in %s) %s' % (databasekind, str(exc)))
                 elif databasekind == 'file' or databasekind == 'http':
                         try:
                                 nfields = get_csv_infos(callerid, ctxinfos)
                                 for n, v in nfields.iteritems():
                                         fields[n] = v
-                                log_debug('fields = %s' % str(fields))
+                                log_debug(SYSLOG_INFO, 'fields = %s' % str(fields))
                         except Exception, exc:
-                                log_debug('--- exception --- (in %s) %s' % (databasekind, str(exc)))
+                                log_debug(SYSLOG_ERR, '--- exception --- (in %s) %s' % (databasekind, str(exc)))
                 else:
                         try:
                                 nfields = get_sql_infos(callerid, ctxinfos)
                                 for n, v in nfields.iteritems():
                                         fields[n] = v
-                                log_debug('fields = %s' % str(fields))
+                                log_debug(SYSLOG_INFO, 'fields = %s' % str(fields))
                         except Exception, exc:
-                                log_debug('--- exception --- (in %s) %s' % (databasekind, str(exc)))
+                                log_debug(SYSLOG_ERR, '--- exception --- (in %s) %s' % (databasekind, str(exc)))
         else:
-                log_debug("WARNING - The db_uri of the context has not been defined")
+                log_debug(SYSLOG_WARNING, 'WARNING - The db_uri of the context has not been defined')
 
         # reads the sheet informations from xivo_daemon config file
         fitems = {}
@@ -293,9 +285,9 @@ def retrieve_callerid_data(callerid, ctxinfos, xdconfig, localdir):
         # formats output according to filled-in values
         try:
                 fields_formatted = make_fields(fitems, fformats, fields, localdir)
-                log_debug('fields_formatted = %s' % str(fields_formatted))
+                log_debug(SYSLOG_INFO, 'fields_formatted = %s' % str(fields_formatted))
         except Exception, exc:
-                log_debug('--- exception --- when calling make_fields : %s' % str(exc))
+                log_debug(SYSLOG_ERR, '--- exception --- when calling make_fields : %s' % str(exc))
 
         return [fields, fields_formatted]
 
@@ -307,7 +299,7 @@ class FicheSender:
 
                 # sessionid, address, state, msg, tcpmode, socket
                 if state == 'available' or state == 'nopresence':
-                        log_debug('address = %s' % str(address))
+                        log_debug(SYSLOG_INFO, 'address = %s' % str(address))
                         fiche = generefiche.Fiche(sessionid)
                         fiche.setmessage(msg)
                         for x in todisplay:
@@ -326,16 +318,16 @@ class FicheSender:
                                 socket.flush()
                         else:
                                 fiche.sendtouser(address, sheetui)
-                        log_debug('the customer info has been sent')
+                        log_debug(SYSLOG_INFO, 'the customer info has been sent')
                 else:
-                        log_debug('the customer info has not been sent because unavailable state <%s>' % state)
+                        log_debug(SYSLOG_INFO, 'the customer info has not been sent because unavailable state <%s>' % state)
 
 
 def sendficheasync(userinfo, ctxinfos, callerid, msg, xdconfig, localdir):
         params = {}
         if userinfo is not None:
                 sender = FicheSender()
-                log_debug('sendficheasync : %s callerid=<%s> msg=<%s>' % (userinfo, callerid, msg))
+                log_debug(SYSLOG_INFO, 'sendficheasync : %s callerid=<%s> msg=<%s>' % (userinfo, callerid, msg))
                 params = {'sessionid': userinfo.get('sessionid'),
                           'address':   (userinfo.get('ip'), int(userinfo.get('port'))),
                           'state':     userinfo.get('state'),
@@ -360,7 +352,7 @@ def sendficheasync(userinfo, ctxinfos, callerid, msg, xdconfig, localdir):
 
 def senduiasync(userinfo, ctxinfos, callerid, xdconfig):
         if len(ctxinfos.sheetui) == 0:
-                log_debug('senduiasync : sheetui not defined for this context')
+                log_debug(SYSLOG_INFO, 'senduiasync : sheetui not defined for this context')
                 return ''
                 
         f = urllib.urlopen(ctxinfos.sheetui)
@@ -378,7 +370,7 @@ def senduiasync(userinfo, ctxinfos, callerid, xdconfig):
         params = {}
         if userinfo is not None:
                 sender = FicheSender()
-                log_debug('senduiasync : %s callerid=<%s> msg=<%s>' % (userinfo, callerid, msg))
+                log_debug(SYSLOG_INFO, 'senduiasync : %s callerid=<%s> msg=<%s>' % (userinfo, callerid, msg))
                 params = {'sessionid': userinfo.get('sessionid'),
                           'address':   (userinfo.get('ip'), int(userinfo.get('port'))),
                           'state':     userinfo.get('state'),

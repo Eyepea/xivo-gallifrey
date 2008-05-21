@@ -27,9 +27,16 @@ from xivo.easyslog import *
 # \param string the string to log
 # \return zero
 # \sa log_debug
+
+MAXLOG = SYSLOG_NOTICE
+# MAXLOG = SYSLOG_INFO
+
 def varlog(syslogprio, string):
-        if syslogprio <= SYSLOG_NOTICE:
-                syslogf(syslogprio, 'xivo_daemon : ' + string)
+        if syslogprio <= MAXLOG:
+                try:
+                        syslogf(syslogprio, 'xd_log : ' + string)
+                except Exception, exc:
+                        syslogf(syslogprio, '--- exception --- in varlog : xd_log : %s' % str(exc))
         return 0
 
 # reminder :
@@ -67,4 +74,7 @@ def log_debug(syslogprio, string):
                 print '#debug# ' + string
         return varlog(syslogprio, string)
 
-
+def log_debug_file(syslogprio, string, file):
+        if syslogprio <= SYSLOG_INFO:
+                print '#debug# (%s) ' % file + string
+        return varlog(syslogprio, '(%s) ' % file + string)

@@ -33,23 +33,16 @@ import ldap
 import syslog
 import sys
 import urllib
+from xivo_log import *
 
-def varlog(syslogprio, string):
-        if syslogprio <= syslog.LOG_NOTICE:
-                syslog.syslog(syslogprio, "xivo_ldap : requested URI=<%s>" % string)
-        return 0
-
-def log_debug(syslogprio, string):
-        #        if debug_mode:
-        if syslogprio <= syslog.LOG_INFO:
-                print "#debug# (xivo_ldap) " + string
-        return varlog(syslogprio, string)
+def log_debug(a, b):
+        log_debug_file(a, b, 'ldap')
 
 ## \class xivo_ldap
 class xivo_ldap:
         def __init__(self, iuri):
                 try:
-                        log_debug(syslog.LOG_DEBUG, iuri)
+                        log_debug(SYSLOG_INFO, 'requested uri = %s' % iuri)
                         addport = iuri.split("@")[1].split("/")[0]
                         userpass = iuri.split("@")[0].split("://")[1]
                         self.dbname = iuri.split("@")[1].split("/")[1]
@@ -62,7 +55,7 @@ class xivo_ldap:
                         self.l.simple_bind_s(self.user, self.passwd)
                         
                 except ldap.LDAPError, exc:
-			log_debug(syslog.LOG_ERR, '__init__ : exception ldap.LDAPError : %s' % str(exc))
+			log_debug(SYSLOG_ERR, '__init__ : exception ldap.LDAPError : %s' % str(exc))
                         # sys.exit()
 
         def getldap(self, filter, attrib):
@@ -73,7 +66,7 @@ class xivo_ldap:
                                                    attrib)
                         return resultat
                 except ldap.LDAPError, exc:
-                        log_debug(syslog.LOG_ERR, 'getldap : exception ldap.LDAPError : %s' % str(exc))
+                        log_debug(SYSLOG_ERR, 'getldap : exception ldap.LDAPError : %s' % str(exc))
 
 
 class xivo_csv:
