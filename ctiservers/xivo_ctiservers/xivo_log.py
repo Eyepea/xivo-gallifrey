@@ -34,9 +34,9 @@ MAXLOG = SYSLOG_NOTICE
 def varlog(syslogprio, string):
         if syslogprio <= MAXLOG:
                 try:
-                        syslogf(syslogprio, 'xd_log : ' + string)
+                        syslogf(syslogprio, 'xivo_daemon : ' + string)
                 except Exception, exc:
-                        syslogf(syslogprio, '--- exception --- in varlog : xd_log : %s' % str(exc))
+                        syslogf(syslogprio, '--- exception --- in varlog : xivo_daemon : %s' % str(exc))
         return 0
 
 # reminder :

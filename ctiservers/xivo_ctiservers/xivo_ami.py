@@ -29,6 +29,10 @@ Asterisk AMI utilities.
 """
 
 import socket
+from xivo_log import *
+
+def log_debug(level, text):
+        log_debug_file(level, text, 'xivo_ami')
 
 ## \class AMIClass
 # AMI definition in order to interact with the Asterisk AMI.
@@ -59,13 +63,14 @@ class AMIClass:
         def sendcommand(self, action, args, loopnum = 0):
                 ret = False
                 try:
-                        self.fd.write('Action: ' + action + '\r\n')
+                        self.fd.write('Action: %s\r\n' % action)
                         for (name, value) in args:
-                                self.fd.write(name + ': ' + value + '\r\n')
+                                self.fd.write('%s: %s\r\n' % (name, value))
                         self.fd.write('\r\n')
                         self.fd.flush()
                         ret = True
-                except:
+                except Exception, exc:
+                        log_debug(SYSLOG_ERR, '--- exception --- (action %s) %s' % (action, str(exc)))
                         ret = False
                 if ret == False:
                         if loopnum == 0:
