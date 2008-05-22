@@ -24,7 +24,9 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-import os, sys, traceback
+import os
+import sys
+import traceback
 
 import syslog
 from xivo.easyslog import *
@@ -59,7 +61,8 @@ pgc = ProvGeneralConf
 authorized_prefix = ["eth"]
 
 def LoadConfig(filename):
-	global ProvGeneralConf, authorized_prefix
+	global ProvGeneralConf
+	global authorized_prefix
 	cp = ConfigParser()
 	cp.readfp(open(filename))
 	FillDictFromConfigSection(ProvGeneralConf, cp, "general")
@@ -70,11 +73,11 @@ def LoadConfig(filename):
 	]
 
 def linesubst(line, variables):
-	"""In a string, substitute '{{varname}}' occurrences with the 
+	"""
+	In a string, substitute '{{varname}}' occurrences with the 
 	value of variables['varname'], '\\' being an escaping char...
 	If at first you don't understand this function, draw its finite
 	state machine and everything will become crystal clear :)
-	
 	"""
 	NORM=0
 	ONE=1
@@ -121,14 +124,9 @@ def linesubst(line, variables):
 		elif st == TERM:
 			if c == '}':
 				if curvar not in variables:
-					syslogf(SYSLOG_WARNING, 
-					    ("Unknown variable '%s' detected, "
-					    "will just be replaced by an "
-					    "empty string") % (curvar,))
+					syslogf(SYSLOG_WARNING, "Unknown variable '%s' detected, will just be replaced by an empty string" % curvar)
 				else:
-					syslogf(SYSLOG_DEBUG,
-					    ("Substitution of {{%s}} by %s"%\
-						(curvar, `variables[curvar]`)))
+					syslogf(SYSLOG_DEBUG, "Substitution of {{%s}} by %s" % (curvar, `variables[curvar]`))
 					out += variables[curvar]
 				curvar = ''
 				st = NORM
@@ -144,13 +142,13 @@ def linesubst(line, variables):
 	return out
 
 def txtsubst(lines, variables, target_file = None):
-	"""Log that target_file is going to be generated, and calculate its
+	"""
+	Log that target_file is going to be generated, and calculate its
 	content by applying the linesubst() transformation with the given
 	variables to each given lines.
-	
 	"""
 	if target_file:
-		syslogf("In process of generating file \"%s\"" % (target_file,))
+		syslogf("In process of generating file %s" % `target_file`)
 	return [linesubst(line, variables) for line in lines]
 
 def get_netdev_list():
@@ -159,14 +157,14 @@ def get_netdev_list():
 	pnd = open(pgc['proc_dev_net'])
 	pnd.readline()
 	pnd.readline()
-	return tuple([line.split(':',1)[0].strip()
+	return tuple([line.split(':', 1)[0].strip()
 		      for line in pnd.readlines()
 		      if ':' in line])
 
 def get_ethdev_list():
-	"""Get and filter the list of network interfaces, returning only those
+	"""
+	Get and filter the list of network interfaces, returning only those
 	whose names begin with an element of global variable authorized_prefix
-	
 	"""
 	global authorized_prefix
 	return [dev for dev in get_netdev_list()
@@ -174,9 +172,9 @@ def get_ethdev_list():
 			    for x in authorized_prefix]]
 
 def normalize_mac_address(macaddr):
-	"""input: mac address, with bytes in hexa, ':' separated
+	"""
+	input: mac address, with bytes in hexa, ':' separated
 	ouput: mac address with format %02X:%02X:%02X:%02X:%02X:%02X
-	
 	"""
 	macaddr_split = macaddr.upper().split(':', 6)
 	if len(macaddr_split) != 6:
@@ -184,11 +182,11 @@ def normalize_mac_address(macaddr):
 	return ':'.join([('%02X' % int(s, 16)) for s in macaddr_split])
 
 def ipv4_from_macaddr(macaddr, logexceptfunc = None):
-	"""Given a mac address, get an IPv4 address for an host living on the
+	"""
+	Given a mac address, get an IPv4 address for an host living on the
 	LAN. This makes use of the tool "arping". Of course the remote peer
 	must respond to ping broadcasts. Out of the box, some stupid phones
 	from well known stupid and expensive brands don't.
-
 	"""
 	# -r : will only display the IP address on stdout, or nothing
 	# -c 1 : ping once
@@ -198,9 +196,7 @@ def ipv4_from_macaddr(macaddr, logexceptfunc = None):
 	#    with alias interfaces too
 	for iface in get_ethdev_list():
 		try:
-		    ipfd = os.popen(pgc['arping_cmd'] +
-			    (" -r -c 1 -w %s -I %s " % (pgc['arping_sleep_us'], iface)) +
-			    macaddr)
+		    ipfd = os.popen("%s -r -c 1 -w %s -I %s %s" % (pgc['arping_cmd'], pgc['arping_sleep_us'], iface, macaddr))
 		except:
 		    if logexceptfunc:
 			for line in exception_traceback():
@@ -221,17 +217,20 @@ def ipv4_from_macaddr(macaddr, logexceptfunc = None):
 	return None
 
 def macaddr_from_ipv4(ipv4, logexceptfunc = None):
-	"""ipv4_from_macaddr() is indeed a symetrical fonction that can be
+	"""
+	ipv4_from_macaddr() is indeed a symetrical fonction that can be
 	used to retrieve an ipv4 address from a given mac address. This
 	function just call the former.
-
+	
 	WARNING: this is of course ipv4_from_macaddr() implementation dependent
 	"""
 	return ipv4_from_macaddr(ipv4, logexceptfunc)
 
 def well_formed_provcode(provcode):
-	"""Check whether provcode really is a well formed Xivo provisioning
-	code."""
+	"""
+	Check whether provcode really is a well formed Xivo provisioning
+	code.
+	"""
 	if provcode == '0':
 		return True
 	for d in provcode:
@@ -245,7 +244,8 @@ class BaseProv:
 	
 	"""
 	def __init__(self, phone):
-		"""Constructor.
+		"""
+		Constructor.
 		
 		phone must be a dictionary containing everything needed for
 		the one phone provisioning process to take place. That is the
@@ -253,15 +253,14 @@ class BaseProv:
 		
 		'model', 'vendor', 'macaddr', 'actions', 'ipv4' if the value
 		for 'actions' is not 'no'
-		
 		"""
 		self.phone = phone
-		syslogf("Instantiation of %s" % (str(self.phone),))
+		syslogf("Instantiation of %s" % str(self.phone))
 	def action_reinit(self):
-		"""This function can be called under some conditions after the 
+		"""
+		This function can be called under some conditions after the 
 		configuration for this phone has been generated by the 
 		generate_reinitprov() method.
-		
 		"""
 		if self.phone["actions"] == "no": # possible cause: "distant" provisioning
 			syslogf("Skipping REINIT action for phone %s" % self.phone['macaddr'])
@@ -270,10 +269,10 @@ class BaseProv:
 		self.do_reinit()
 		syslogf(SYSLOG_DEBUG, "Sent REINIT command to phone %s" % self.phone['macaddr'])
 	def action_reboot(self):
-		"""This function can be called under some conditions after the 
+		"""
+		This function can be called under some conditions after the 
 		configuration for this phone has been generated by the 
 		generate_autoprov() method.
-		
 		"""
 		if self.phone["actions"] == "no": # distant provisioning with actions disabled
 			syslogf("Skipping REBOOT action for phone %s" % self.phone['macaddr'])
@@ -282,22 +281,22 @@ class BaseProv:
 		self.do_reboot()
 		syslogf(SYSLOG_DEBUG, "Sent REBOOT command to phone %s" % self.phone['macaddr'])
 	def generate_reinitprov(self):
-		"""This function put the configuration for the phone back in
+		"""
+		This function put the configuration for the phone back in
 		guest state.
-		
 		"""
 		syslogf("About to GUEST'ify the phone %s" % self.phone['macaddr'])
 		self.do_reinitprov()
 		syslogf(SYSLOG_DEBUG, "Phone GUEST'ified %s" % self.phone['macaddr'])
 	def generate_autoprov(self, provinfo):
-		"""This function generate the configuration for the phone with
+		"""
+		This function generate the configuration for the phone with
 		provisioning informations provided in the provinfo dictionary,
 		which must contain the following keys:
 		
 		'name', 'ident', 'number', 'passwd'
-		
 		"""
-		syslogf("About to AUTOPROV the phone %s with infos %s" % (self.phone['macaddr'],str(provinfo)))
+		syslogf("About to AUTOPROV the phone %s with infos %s" % (self.phone['macaddr'], str(provinfo)))
 		self.do_autoprov(provinfo)
 		syslogf(SYSLOG_DEBUG, "Phone AUTOPROV'ed %s" % self.phone['macaddr'])
 
