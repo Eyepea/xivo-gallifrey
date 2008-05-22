@@ -10,9 +10,10 @@ setup(name='xivo_provisioning',
       author='Proformatique',
       author_email='technique@proformatique.com',
       url='http://xivo.fr/',
-      packages=['xivo_provisioning', 'xivo_provisioning.Phones'],
-      # distutils unable to send two scripts at two different places :/
+      
+      ## distutils unable to send two scripts at two different places :/
       # scripts=['autoprov', 'initconfig'],
+      
       data_files=[('/usr/share/pf-xivo-provisioning/files',
 			['files/linksys-pap2t.cfg',
 			 'files/linksys-spa901.cfg',
