@@ -82,7 +82,7 @@ for (context,) in res:
 
 		print "exten = " + str(number) + ",hint," + str(interface)
 
-	# Ewww. The following query is a closure of one in provisioning/xivo_provisioning/autoprov.py.
+	# Ewww. The following query is a closure of one in provisioning/autoprov
 	query = ("SELECT ${columns} FROM userfeatures INNER JOIN phonefunckey "
                  "ON userfeatures.context = %s "
                  "AND userfeatures.id = phonefunckey.iduserfeatures "
