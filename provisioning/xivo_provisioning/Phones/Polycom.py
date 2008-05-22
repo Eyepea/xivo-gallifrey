@@ -30,9 +30,9 @@ import sys
 import syslog
 import socket
 
-from xivo_provisioning import provsup
-from xivo_provisioning.provsup import BaseProv
-from xivo_provisioning.provsup import ProvGeneralConf as pgc
+from xivo import provisioning
+from xivo.provisioning import BaseProv
+from xivo.provisioning import ProvGeneralConf as pgc
 
 POLYCOM_COMMON_DIR = pgc['tftproot'] + "Polycom/"
 POLYCOM_COMMON_HTTP_USER = "Polycom"
@@ -150,10 +150,10 @@ class PolycomProv(BaseProv):
                 tmp_phone_filename = POLYCOM_COMMON_DIR + __macaddr + "-phone.cfg.tmp"
                 cfg_phone_filename = tmp_phone_filename[:-4]
 
-                txt_main = provsup.txtsubst(template_main_lines,
+                txt_main = provisioning.txtsubst(template_main_lines,
                                             { "phone.cfg": __macaddr + "-phone.cfg" },
                                             cfg_main_filename)
-                txt_phone = provsup.txtsubst(template_phone_lines,
+                txt_phone = provisioning.txtsubst(template_phone_lines,
                                             { "user_display_name": myprovinfo["name"],
                                               "user_phone_ident":  myprovinfo["ident"],
                                               "user_phone_number": myprovinfo["number"],
@@ -223,4 +223,4 @@ class PolycomProv(BaseProv):
                         model = ua_splitted[0].split('-')[1].lower()
                 return ("polycom", model, fw)
 
-provsup.PhoneClasses["polycom"] = PolycomProv
+provisioning.PhoneClasses["polycom"] = PolycomProv

@@ -29,9 +29,9 @@ import os
 import sys
 import syslog
 
-from xivo_provisioning import provsup
-from xivo_provisioning.provsup import BaseProv
-from xivo_provisioning.provsup import ProvGeneralConf as pgc
+from xivo import provisioning
+from xivo.provisioning import BaseProv
+from xivo.provisioning import ProvGeneralConf as pgc
 
 AASTRA_COMMON_DIR = pgc['tftproot'] + 'Aastra/'
 AASTRA_COMMON_HTTP_USER = 'admin'
@@ -96,7 +96,7 @@ class AastraProv(BaseProv):
 		template_file.close()
 		tmp_filename = AASTRA_COMMON_DIR + __macaddr + '.cfg.tmp'
 		cfg_filename = tmp_filename[:-4]
-		txt = provsup.txtsubst(template_lines,
+		txt = provisioning.txtsubst(template_lines,
                                        { 'user_display_name': myprovinfo['name'],
                                          'user_phone_ident':  myprovinfo['ident'],
                                          'user_phone_number': myprovinfo['number'],
@@ -157,4 +157,4 @@ class AastraProv(BaseProv):
 		return ("aastra", model, fw)
 	get_vendor_model_fw = classmethod(get_vendor_model_fw)
 
-provsup.PhoneClasses['aastra'] = AastraProv
+provisioning.PhoneClasses['aastra'] = AastraProv

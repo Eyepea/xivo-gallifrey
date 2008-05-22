@@ -239,9 +239,9 @@ def well_formed_provcode(provcode):
 	return True
 
 class BaseProv:
-	"""Basic provisioning logic, including syslogs and conditionnal actions
+	"""
+	Basic provisioning logic, including syslogs and conditionnal actions
 	execution.
-	
 	"""
 	def __init__(self, phone):
 		"""

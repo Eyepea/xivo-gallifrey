@@ -29,9 +29,9 @@ import os
 import sys
 import syslog
 
-from xivo_provisioning import provsup
-from xivo_provisioning.provsup import BaseProv
-from xivo_provisioning.provsup import ProvGeneralConf as pgc
+from xivo import provisioning
+from xivo.provisioning import BaseProv
+from xivo.provisioning import ProvGeneralConf as pgc
 
 # SWISSVOICE BUGBUG
 # It would be possible to make tftp upload a /tftpboot/Swissvoice/swupdate_ip10.inf
@@ -130,7 +130,7 @@ class SwissvoiceProv(BaseProv):
 		elif dtmf_config == "info":
 			dtmf_swissvoice = "on oob"
 
-		txt = provsup.txtsubst(cfg_template_lines, {
+		txt = provisioning.txtsubst(cfg_template_lines, {
 			"user_display_name": provinfo["name"],
 			"user_phone_ident":  provinfo["ident"],
 			"user_phone_number": provinfo["number"],
@@ -146,7 +146,7 @@ class SwissvoiceProv(BaseProv):
 		tmp_file.close()
 		os.rename(cfg_tmp_filename, cfg_filename)
 
-		txt = provsup.txtsubst(inf_template_lines, {
+		txt = provisioning.txtsubst(inf_template_lines, {
 			"macaddr": self.phone["macaddr"].lower().replace(':','')
 		}, inf_filename)
 		tmp_file = open(inf_tmp_filename, 'w')
@@ -176,4 +176,4 @@ class SwissvoiceProv(BaseProv):
 		fw = ua_splitted[3]
 		return ("swissvoice", model, fw)
 
-provsup.PhoneClasses["swissvoice"] = SwissvoiceProv
+provisioning.PhoneClasses["swissvoice"] = SwissvoiceProv

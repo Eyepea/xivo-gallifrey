@@ -31,9 +31,9 @@ import syslog
 import time
 import telnetlib
 
-from xivo_provisioning import provsup
-from xivo_provisioning.provsup import BaseProv
-from xivo_provisioning.provsup import ProvGeneralConf as pgc
+from xivo import provisioning
+from xivo.provisioning import BaseProv
+from xivo.provisioning import ProvGeneralConf as pgc
 
 import time # for TimeoutingTelnet
 
@@ -162,7 +162,7 @@ class ThomsonProv(BaseProv):
 		function_keys_config_lines = \
 			self.__format_function_keys(myprovinfo['funckey'])
 
-		txt = provsup.txtsubst(txt_template_lines, {
+		txt = provisioning.txtsubst(txt_template_lines, {
 			"user_display_name": myprovinfo["name"],
 # THOMSON BUGBUG #1
 # myprovinfo["number"] is volontarily not set in "TEL1Number" because Thomson
@@ -255,4 +255,4 @@ class ThomsonProv(BaseProv):
 			fw = splitted_ua[3]
 		return ("thomson", model, fw)
 
-provsup.PhoneClasses["thomson"] = ThomsonProv
+provisioning.PhoneClasses["thomson"] = ThomsonProv

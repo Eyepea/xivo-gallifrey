@@ -29,9 +29,9 @@ import os
 import sys
 import syslog
 
-from xivo_provisioning import provsup
-from xivo_provisioning.provsup import BaseProv
-from xivo_provisioning.provsup import ProvGeneralConf as pgc
+from xivo import provisioning
+from xivo.provisioning import BaseProv
+from xivo.provisioning import ProvGeneralConf as pgc
 
 # SNOM BUGBUG #1
 # Snom doesn't support something else than files at root of tftproot when using
@@ -94,7 +94,7 @@ class SnomProv(BaseProv):
 		template_file.close()
 		tmp_filename = SNOM_SPEC_DIR + "snom" + self.phone["model"] + '-' + self.phone["macaddr"].replace(':','') + '.htm.tmp'
 		htm_filename = tmp_filename[:-4]
-		txt = provsup.txtsubst(template_lines,
+		txt = provisioning.txtsubst(template_lines,
                                        { "user_display_name": provinfo["name"],
                                          "user_phone_ident":  provinfo["ident"],
                                          "user_phone_number": provinfo["number"],
@@ -131,4 +131,4 @@ class SnomProv(BaseProv):
 			fw = ua_splitted[1]
 		return ("snom", model, fw)
 
-provsup.PhoneClasses["snom"] = SnomProv
+provisioning.PhoneClasses["snom"] = SnomProv
