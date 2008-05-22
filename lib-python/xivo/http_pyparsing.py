@@ -27,8 +27,7 @@ __license__ = """
 """
 
 from string import hexdigits
-from pyparsing import Word, Suppress, ZeroOrMore, QuotedString, \
-                      Group, LineEnd, Optional
+from pyparsing import Word, Suppress, ZeroOrMore, QuotedString, Group, LineEnd, Optional
 
 __BYTES_VAL = ''.join(map(chr,xrange(0,256)))
 

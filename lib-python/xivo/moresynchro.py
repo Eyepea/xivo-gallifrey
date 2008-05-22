@@ -40,7 +40,9 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-import time, thread, threading
+import time
+import thread
+import threading
 
 class RWLock:
 	"""Simple RWLock with timeouts, without promotion.

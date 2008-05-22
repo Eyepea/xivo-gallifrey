@@ -52,7 +52,8 @@ Not all manager actions are implmented as of yet, feel free to add them
 and submit patches.
 """
 
-import sys,os
+import os
+import sys
 import socket
 import threading
 import Queue

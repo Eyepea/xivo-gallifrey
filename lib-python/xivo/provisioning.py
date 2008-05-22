@@ -26,13 +26,12 @@ __license__ = """
 
 import os
 import sys
-import traceback
-
 import syslog
-from xivo.easyslog import *
-from xivo.ConfigDict import *
+import traceback
 from ConfigParser import ConfigParser
 
+from xivo.easyslog import *
+from xivo.ConfigDict import *
 from xivo.except_tb import *
 
 ProvGeneralConf = {

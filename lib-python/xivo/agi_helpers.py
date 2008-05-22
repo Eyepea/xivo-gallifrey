@@ -172,7 +172,6 @@ class bsf_member:
 
 		if ringseconds == 0:
 			self.ringseconds = ""
-
 		else:
 			self.ringseconds = ringseconds
 

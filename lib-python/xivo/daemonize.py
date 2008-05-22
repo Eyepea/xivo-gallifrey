@@ -25,7 +25,12 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-import os, re, sys, errno, os.path, traceback
+import os
+import re
+import sys
+import errno
+import os.path
+import traceback
 
 from xivo.except_tb import *
 

@@ -80,7 +80,7 @@ __author__  = \
 Proformatique <technique@proformatique.com>"""
 __copyright__ = \
 """Copyright 2000,2001 by Timothy O'Malley <timo@alum.mit.edu>
-Copyright (C) 2007, Proformatique <technique@proformatique.com>
+Copyright (C) 2007, 2008  Proformatique <technique@proformatique.com>
 					All Rights Reserved"""
 __license__ = \
 """Permission to use, copy, modify, and distribute this software
@@ -105,7 +105,8 @@ PERFORMANCE OF THIS SOFTWARE.
 #
 # Imports
 #
-import select, string
+import select
+import string
 import socket
 if not hasattr(socket, "_no_timeoutsocket"):
     _socket = socket.socket

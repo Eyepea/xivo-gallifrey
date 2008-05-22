@@ -184,8 +184,8 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-from xivo.pyfunc import *
 from itertools import imap, izip, islice, ifilter
+from xivo.pyfunc import *
 
 def xor(a, b):
 	return (not(a)) != (not(b))
