@@ -43,7 +43,9 @@ AMI_USER = 'xivouser'
 AMI_PASS = 'xivouser'
 
 class PolycomProv(BaseProv):
+        
         label = "Polycom"
+        
         def __init__(self, phone):
                 BaseProv.__init__(self, phone)
                 self.provinfo = {}
@@ -51,7 +53,7 @@ class PolycomProv(BaseProv):
                 if self.phone["model"] != "spip_430" and \
                    self.phone["model"] != "spip_650":
                         raise ValueError, "Unknown Polycom model '%s'" % self.phone["model"]
-
+        
         def __iptopeer(self):
                 phoneip = self.phone['ipv4']
                 
@@ -68,11 +70,11 @@ class PolycomProv(BaseProv):
                                  'Action: SIPpeers',
                                  '\r\n']
                 amisock.send('\r\n'.join(actioncommand))
-
+                
                 fullmsg = ''
                 iquit = False
                 ipaddressmatch = 'IPaddress: %s' % phoneip
-
+                
                 # finds the IP address matching phoneip among the peers
                 while True:
                         msg = amisock.recv(8192)
@@ -96,11 +98,11 @@ class PolycomProv(BaseProv):
                         else:
                                 break
                 amisock.close()
-
+        
         def __sendsipnotify(self):
                 phoneip = self.phone['ipv4']
                 myip = pgc['asterisk_ipv4']
-
+                
                 self.peerinfo = None
                 try:
                         self.__iptopeer()
@@ -111,7 +113,7 @@ class PolycomProv(BaseProv):
                         sip_number = self.peerinfo[1]
                 else:
                         sip_number = 'guest'
-
+                
                 sip_message = [ 'NOTIFY sip:%s@%s:%d SIP/2.0' %(sip_number, phoneip, SIP_PORT),
                                 'Via: SIP/2.0/UDP %s' %(myip),
                                 'From: <sip:%s@%s>' %(sip_number, myip),
@@ -123,19 +125,18 @@ class PolycomProv(BaseProv):
                                 'Content-Length: 0']
                 sipsocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                 sipsocket.sendto('\r\n'.join(sip_message), (phoneip, SIP_PORT))
-
+        
         def do_reboot(self):
                 "Entry point to send the reboot command to the phone."
                 self.__sendsipnotify()
-
+        
         def do_reinit(self):
-                """Entry point to send the (possibly post) reinit command to
+                """
+                Entry point to send the (possibly post) reinit command to
                 the phone.
-                
                 """
                 self.__sendsipnotify()
-
-
+        
         def __generate(self, myprovinfo):
                 template_main_file = open(pgc['templates_dir'] + "polycom-%s.cfg" % self.phone["model"])
                 template_main_lines = template_main_file.readlines()
@@ -171,12 +172,11 @@ class PolycomProv(BaseProv):
 
                 os.rename(tmp_main_filename, cfg_main_filename)
                 os.rename(tmp_phone_filename, cfg_phone_filename)
-
-
+        
         def do_reinitprov(self):
-                """Entry point to generate the reinitialized (GUEST)
+                """
+                Entry point to generate the reinitialized (GUEST)
                 configuration for this phone.
-                
                 """
                 self.provinfo = { "name":   "guest",
                                   "ident":  "guest",
@@ -184,35 +184,33 @@ class PolycomProv(BaseProv):
                                   "passwd": "guest"
                                   }
                 self.__generate(self.provinfo)
-
-
+        
         def do_autoprov(self, provinfo):
-                """Entry point to generate the provisioned configuration for
+                """
+                Entry point to generate the provisioned configuration for
                 this phone.
-                
                 """
                 self.provinfo = provinfo
                 self.__generate(self.provinfo)
-
-
-	# Introspection entry points
-
+        
+        # Introspection entry points
+        
         @classmethod
         def get_phones(cls):
                 "Report supported phone models for this vendor."
                 return (("spip_430", "SPIP430"), ("spip_650", "SPIP650"))
-
+        
         # Entry points for the AGI
-
+        
         @classmethod
         def get_vendor_model_fw(cls, ua):
-                """Extract Vendor / Model / FirmwareRevision from SIP User-Agent
+                """
+                Extract Vendor / Model / FirmwareRevision from SIP User-Agent
                 or return None if we don't deal with this kind of Agent.
-                
                 """
                 # PolycomSoundPointIP-SPIP_430-UA/2.2.0.0047
                 # PolycomSoundPointIP-SPIP_650-UA/2.2.0.0047
-
+                
                 if ua[:7] != 'Polycom':
                         return None
                 model = 'unknown'
