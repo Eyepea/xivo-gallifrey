@@ -122,8 +122,8 @@ def linesubst(line, variables):
 			if c == '}':
 				if curvar not in variables:
 					syslogf(SYSLOG_WARNING, 
-					    ("Unknown variable '%s' detected, "+
-					    "will just be replaced by an "+
+					    ("Unknown variable '%s' detected, "
+					    "will just be replaced by an "
 					    "empty string") % (curvar,))
 				else:
 					syslogf(SYSLOG_DEBUG,
