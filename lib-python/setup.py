@@ -10,5 +10,5 @@ setup(name='xivo',
       author='Proformatique',
       author_email='technique@proformatique.com',
       url='http://xivo.fr/',
-      packages=['xivo', 'xivo.BackSQL'],
+      packages=['xivo', 'xivo.BackSQL', 'xivo.Phones'],
      )
