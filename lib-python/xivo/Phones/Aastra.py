@@ -30,9 +30,9 @@ import sys
 import syslog
 import subprocess
 
-from xivo import provisioning
-from xivo.provisioning import BaseProv
-from xivo.provisioning import ProvGeneralConf as pgc
+from xivo import xivo_config
+from xivo.xivo_config import BaseProv
+from xivo.xivo_config import ProvGeneralConf as pgc
 from xivo import except_tb
 
 AASTRA_COMMON_DIR = pgc['tftproot'] + 'Aastra/'
@@ -123,13 +123,13 @@ class AastraProv(BaseProv):
                 template_file.close()
                 tmp_filename = AASTRA_COMMON_DIR + __macaddr + '.cfg.tmp'
                 cfg_filename = tmp_filename[:-4]
-                txt = provisioning.txtsubst(template_lines,
-                                       { 'user_display_name': myprovinfo['name'],
-                                         'user_phone_ident':  myprovinfo['ident'],
-                                         'user_phone_number': myprovinfo['number'],
-                                         'user_phone_passwd': myprovinfo['passwd']
-                                         },
-                                       cfg_filename)
+                txt = xivo_config.txtsubst(template_lines,
+                        { 'user_display_name': myprovinfo['name'],
+                          'user_phone_ident':  myprovinfo['ident'],
+                          'user_phone_number': myprovinfo['number'],
+                          'user_phone_passwd': myprovinfo['passwd'],
+                        },
+                        cfg_filename)
                 tmp_file = open(tmp_filename, 'w')
                 tmp_file.writelines(txt)
                 tmp_file.close()
@@ -183,4 +183,4 @@ class AastraProv(BaseProv):
                 return ("aastra", model, fw)
         get_vendor_model_fw = classmethod(get_vendor_model_fw)
 
-provisioning.PhoneClasses['aastra'] = AastraProv
+xivo_config.PhoneClasses['aastra'] = AastraProv

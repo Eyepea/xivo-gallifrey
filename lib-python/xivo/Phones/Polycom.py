@@ -30,9 +30,9 @@ import sys
 import syslog
 import socket
 
-from xivo import provisioning
-from xivo.provisioning import BaseProv
-from xivo.provisioning import ProvGeneralConf as pgc
+from xivo import xivo_config
+from xivo.xivo_config import BaseProv
+from xivo.xivo_config import ProvGeneralConf as pgc
 
 POLYCOM_COMMON_DIR = pgc['tftproot'] + "Polycom/"
 POLYCOM_COMMON_HTTP_USER = "Polycom"
@@ -144,32 +144,32 @@ class PolycomProv(BaseProv):
                 template_phone_file = open(pgc['templates_dir'] + "polycom-phone.cfg")
                 template_phone_lines = template_phone_file.readlines()
                 template_phone_file.close()
-
+                
                 __macaddr = self.phone["macaddr"].replace(':','').lower()
                 tmp_main_filename = POLYCOM_COMMON_DIR + __macaddr + ".cfg.tmp"
                 cfg_main_filename = tmp_main_filename[:-4]
                 tmp_phone_filename = POLYCOM_COMMON_DIR + __macaddr + "-phone.cfg.tmp"
                 cfg_phone_filename = tmp_phone_filename[:-4]
-
-                txt_main = provisioning.txtsubst(template_main_lines,
-                                            { "phone.cfg": __macaddr + "-phone.cfg" },
-                                            cfg_main_filename)
-                txt_phone = provisioning.txtsubst(template_phone_lines,
-                                            { "user_display_name": myprovinfo["name"],
-                                              "user_phone_ident":  myprovinfo["ident"],
-                                              "user_phone_number": myprovinfo["number"],
-                                              "user_phone_passwd": myprovinfo["passwd"],
-                                              "asterisk_ipv4" : pgc['asterisk_ipv4']
-                                              },
-                                            cfg_phone_filename)
-
+                
+                txt_main = xivo_config.txtsubst(template_main_lines,
+                        { "phone.cfg": __macaddr + "-phone.cfg" },
+                        cfg_main_filename)
+                txt_phone = xivo_config.txtsubst(template_phone_lines,
+                        { "user_display_name": myprovinfo["name"],
+                          "user_phone_ident":  myprovinfo["ident"],
+                          "user_phone_number": myprovinfo["number"],
+                          "user_phone_passwd": myprovinfo["passwd"],
+                          "asterisk_ipv4" : pgc['asterisk_ipv4']
+                        },
+                        cfg_phone_filename)
+                
                 tmp_main_file = open(tmp_main_filename, 'w')
                 tmp_main_file.writelines(txt_main)
                 tmp_main_file.close()
                 tmp_phone_file = open(tmp_phone_filename, 'w')
                 tmp_phone_file.writelines(txt_phone)
                 tmp_phone_file.close()
-
+                
                 os.rename(tmp_main_filename, cfg_main_filename)
                 os.rename(tmp_phone_filename, cfg_phone_filename)
         
@@ -221,4 +221,4 @@ class PolycomProv(BaseProv):
                         model = ua_splitted[0].split('-')[1].lower()
                 return ("polycom", model, fw)
 
-provisioning.PhoneClasses["polycom"] = PolycomProv
+xivo_config.PhoneClasses["polycom"] = PolycomProv

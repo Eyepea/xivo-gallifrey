@@ -75,8 +75,8 @@ from BaseHTTPServer import BaseHTTPRequestHandler
 
 from xivo.ThreadingHTTPServer import *
 
-from xivo import provisioning
-from xivo.provisioning import ProvGeneralConf as pgc
+from xivo import xivo_config
+from xivo.xivo_config import ProvGeneralConf as pgc
 
 from xivo.moresynchro import RWLock
 from xivo.moresynchro import ListLock
@@ -459,14 +459,14 @@ def __provisioning(mode, ctx, phone):
 		raise BadRequest, "Empty model or vendor or isinalan in phone %s" % str(phone)
 
 	if "provcode" in phone and phone["provcode"] != "0" and \
-	   not provisioning.well_formed_provcode(phone["provcode"]):
+	   not xivo_config.well_formed_provcode(phone["provcode"]):
 		syslogf(SYSLOG_ERR, "__provisioning(): Invalid provcode %s" % phone["provcode"])
 		raise NotFoundError, "Invalid provcode %s" % phone["provcode"]
 
 	if phone["actions"] != "no":
 		if "ipv4" not in phone:
 			syslogf(SYSLOG_DEBUG, "__provisioning(): trying to get IPv4 address from Mac Address %s" % phone["macaddr"])
-			phone["ipv4"] = provisioning.ipv4_from_macaddr(phone["macaddr"], lambda x: syslogf(SYSLOG_ERR, x))
+			phone["ipv4"] = xivo_config.ipv4_from_macaddr(phone["macaddr"], lambda x: syslogf(SYSLOG_ERR, x))
 			if phone["ipv4"] is None:
 				phone["actions"] = "no"
 		if phone["actions"] != "no" and phone["ipv4"] is None:
@@ -479,7 +479,7 @@ def __provisioning(mode, ctx, phone):
 	    raise ConflictError, "Operation already in progress for phone %s" % phone["macaddr"]
 	try:
 	    syslogf(SYSLOG_DEBUG, "__provisioning(): phone class from vendor")
-	    prov_class = provisioning.PhoneClasses[phone["vendor"]] # TODO also use model
+	    prov_class = xivo_config.PhoneClasses[phone["vendor"]] # TODO also use model
 	    syslogf(SYSLOG_DEBUG, "__provisioning(): phone instance from class")
 	    prov_inst = prov_class(phone)
 
@@ -681,7 +681,7 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 		"""
 		if "macaddr" not in self.posted:
 			raise MissingParam, "Mac Address not given"
-		phone["macaddr"] = provisioning.normalize_mac_address(self.posted["macaddr"])
+		phone["macaddr"] = xivo_config.normalize_mac_address(self.posted["macaddr"])
 		if "ipv4" in self.posted:
 			phone["ipv4"] = self.posted["ipv4"]
 	def save_iduserfeatures_or_provcode(self, phone):
@@ -762,7 +762,7 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 				errcode = rcode
 				break
 		except_tb.log_full_exception(self.full_xcept_sender(errcode),
-					     provisioning.SYSLOG_EXCEPT(SYSLOG_ERR))
+					     xivo_config.SYSLOG_EXCEPT(SYSLOG_ERR))
 		return
 	    syslogf(SYSLOG_NOTICE, "handle_prov(): provisioning OK for phone %s" % str(phone))
 	    self.send_response_lines(('Ok',))
@@ -771,7 +771,7 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 		"Respond with the list of supported Vendors / Models"
 		syslogf(SYSLOG_NOTICE, "handle_list(): handling /list GET request for peer %s" % str(self.client_address))
 		self.send_response_headers_200()
-		for phonekey,phoneclass in provisioning.PhoneClasses.iteritems():
+		for phonekey,phoneclass in xivo_config.PhoneClasses.iteritems():
 			phonelabel = phoneclass.label
 			phones = phoneclass.get_phones()
 			self.wfile.write(phonekey + '="' + phonelabel.replace('"','\\"') + '"\r\n')
@@ -874,7 +874,7 @@ for k,v in opts:
 	elif '-c' == k:
 		CONFIG_FILE = v
 
-provisioning.LoadConfig(CONFIG_FILE)
+xivo_config.LoadConfig(CONFIG_FILE)
 
 if log_level_override is not None:
 	pgc['log_level'] = log_level_override
@@ -887,7 +887,7 @@ if dburi_override is not None:
 # database uri that could depends upon current envt.
 pgc['database_uri'] = anysql.c14n_uri(pgc['database_uri'])
 
-# WARNING: provisioning.LoadConfig must be called before
+# WARNING: xivo_config.LoadConfig must be called before
 from xivo.Phones import *
 if __name__ == '__main__' and not dontlauchmain:
 	main(log_level, foreground)

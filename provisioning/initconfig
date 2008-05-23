@@ -62,8 +62,8 @@ from xivo.timeoutsocket import Timeout
 
 import httplib
 
-from xivo import provisioning
-from xivo.provisioning import ProvGeneralConf as pgc
+from xivo import xivo_config
+from xivo.xivo_config import ProvGeneralConf as pgc
 from xivo.Phones import *
 
 from xivo.agi import *
@@ -89,12 +89,12 @@ def user_ipv4_from_sip_uri(sip_addr):
 	return (sip_user, ip)
 
 def phone_desc_by_ua(ua):
-	for phone_class in provisioning.PhoneClasses.itervalues():
+	for phone_class in xivo_config.PhoneClasses.itervalues():
 		try:
 			r = phone_class.get_vendor_model_fw(ua)
 		except:
 			r = None
-			for line in provisioning.exception_traceback():
+			for line in xivo_config.exception_traceback():
 				agi.verbose(line)
 			sys.exc_clear()
 		if r:
@@ -102,7 +102,7 @@ def phone_desc_by_ua(ua):
 	return None
 
 def main():
-	provisioning.LoadConfig(CONFIG_FILE)
+	xivo_config.LoadConfig(CONFIG_FILE)
 	if len(sys.argv) < 4:
 		return_exit("Too few arguments")
 
@@ -116,7 +116,7 @@ def main():
 	if not user_ipv4:
 		return_exit("Could not parse Sip URI \"%s\"" % sip_uri)
 	sip_user, ipv4 = user_ipv4
-	macaddr = provisioning.macaddr_from_ipv4(ipv4, agi.verbose)
+	macaddr = xivo_config.macaddr_from_ipv4(ipv4, agi.verbose)
 	if not macaddr:
 		return_exit("Could not find Mac Address from IPv4 \"%s\"" % ipv4)
 
@@ -129,7 +129,7 @@ def main():
 
 	if code == 'init':
 		code = '0'
-	if not provisioning.well_formed_provcode(code):
+	if not xivo_config.well_formed_provcode(code):
 		return_exit("Badly formed provisioning code", "privacy-incorrect")
 
 	command = ( "mode=authoritative\r\nvendor=%s\r\nmodel=%s\r\n" + 
@@ -149,7 +149,7 @@ def main():
 	except Exception, xcept:
 		reason = str(xcept)
 		status = 500
-		for line in provisioning.exception_traceback():
+		for line in xivo_config.exception_traceback():
 			agi.verbose(line)
 		sys.exc_clear()
 

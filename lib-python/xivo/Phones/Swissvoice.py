@@ -30,9 +30,9 @@ import sys
 import syslog
 import subprocess
 
-from xivo import provisioning
-from xivo.provisioning import BaseProv
-from xivo.provisioning import ProvGeneralConf as pgc
+from xivo import xivo_config
+from xivo.xivo_config import BaseProv
+from xivo.xivo_config import ProvGeneralConf as pgc
 from xivo import except_tb
 
 # SWISSVOICE BUGBUG
@@ -143,25 +143,27 @@ class SwissvoiceProv(BaseProv):
                 elif dtmf_config == "info":
                         dtmf_swissvoice = "on oob"
                 
-                txt = provisioning.txtsubst(cfg_template_lines, {
-                        "user_display_name": provinfo["name"],
-                        "user_phone_ident":  provinfo["ident"],
-                        "user_phone_number": provinfo["number"],
-                        "user_phone_passwd": provinfo["passwd"],
-                        "http_user": SWISSVOICE_COMMON_HTTP_USER,
-                        "http_pass": SWISSVOICE_COMMON_HTTP_PASS,
-                        "dtmfmode": dtmf_swissvoice,
-                        "asterisk_ipv4" : pgc['asterisk_ipv4'],
-                        "ntp_server_ipv4" : pgc['ntp_server_ipv4']
-                }, cfg_filename)
+                txt = xivo_config.txtsubst(cfg_template_lines,
+                        { "user_display_name": provinfo["name"],
+                          "user_phone_ident":  provinfo["ident"],
+                          "user_phone_number": provinfo["number"],
+                          "user_phone_passwd": provinfo["passwd"],
+                          "http_user": SWISSVOICE_COMMON_HTTP_USER,
+                          "http_pass": SWISSVOICE_COMMON_HTTP_PASS,
+                          "dtmfmode": dtmf_swissvoice,
+                          "asterisk_ipv4" : pgc['asterisk_ipv4'],
+                          "ntp_server_ipv4" : pgc['ntp_server_ipv4'],
+                        },
+                        cfg_filename)
                 tmp_file = open(cfg_tmp_filename, 'w')
                 tmp_file.writelines(txt)
                 tmp_file.close()
                 os.rename(cfg_tmp_filename, cfg_filename)
                 
-                txt = provisioning.txtsubst(inf_template_lines, {
-                        "macaddr": self.phone["macaddr"].lower().replace(':','')
-                }, inf_filename)
+                txt = xivo_config.txtsubst(inf_template_lines,
+                        { "macaddr": self.phone["macaddr"].lower().replace(':',''),
+                        },
+                        inf_filename)
                 tmp_file = open(inf_tmp_filename, 'w')
                 tmp_file.writelines(txt)
                 tmp_file.close()
@@ -189,4 +191,4 @@ class SwissvoiceProv(BaseProv):
                 fw = ua_splitted[3]
                 return ("swissvoice", model, fw)
 
-provisioning.PhoneClasses["swissvoice"] = SwissvoiceProv
+xivo_config.PhoneClasses["swissvoice"] = SwissvoiceProv

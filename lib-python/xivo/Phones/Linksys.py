@@ -30,9 +30,9 @@ import sys
 import syslog
 import subprocess
 
-from xivo import provisioning
-from xivo.provisioning import BaseProv
-from xivo.provisioning import ProvGeneralConf as pgc
+from xivo import xivo_config
+from xivo.xivo_config import BaseProv
+from xivo.xivo_config import ProvGeneralConf as pgc
 from xivo import except_tb
 
 LINKSYS_COMMON_DIR = pgc['tftproot'] + "Linksys/"
@@ -98,15 +98,15 @@ class LinksysProv(BaseProv):
                 template_file.close()
                 tmp_filename = LINKSYS_COMMON_DIR + __model + '-' + __macaddr + ".cfg.tmp"
                 cfg_filename = tmp_filename[:-4]
-                txt = provisioning.txtsubst(template_lines,
-                                       { "user_display_name": myprovinfo["name"],
-                                         "user_phone_ident":  myprovinfo["ident"],
-                                         "user_phone_number": myprovinfo["number"],
-                                         "user_phone_passwd": myprovinfo["passwd"],
-                                         "asterisk_ipv4" : pgc['asterisk_ipv4'],
-                                         "ntp_server_ipv4" : pgc['ntp_server_ipv4']
-                                         },
-                                       cfg_filename)
+                txt = xivo_config.txtsubst(template_lines,
+                        { "user_display_name": myprovinfo["name"],
+                          "user_phone_ident":  myprovinfo["ident"],
+                          "user_phone_number": myprovinfo["number"],
+                          "user_phone_passwd": myprovinfo["passwd"],
+                          "asterisk_ipv4" : pgc['asterisk_ipv4'],
+                          "ntp_server_ipv4" : pgc['ntp_server_ipv4'],
+                        },
+                        cfg_filename)
                 tmp_file = open(tmp_filename, 'w')
                 tmp_file.writelines(txt)
                 tmp_file.close()
@@ -168,4 +168,4 @@ class LinksysProv(BaseProv):
                                 fw = modelfw[1]
                 return ("linksys", model, fw)
 
-provisioning.PhoneClasses["linksys"] = LinksysProv
+xivo_config.PhoneClasses["linksys"] = LinksysProv

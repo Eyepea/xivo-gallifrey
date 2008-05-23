@@ -30,9 +30,9 @@ import sys
 import syslog
 import subprocess
 
-from xivo import provisioning
-from xivo.provisioning import BaseProv
-from xivo.provisioning import ProvGeneralConf as pgc
+from xivo import xivo_config
+from xivo.xivo_config import BaseProv
+from xivo.xivo_config import ProvGeneralConf as pgc
 from xivo import except_tb
 
 # SNOM BUGBUG #1
@@ -42,7 +42,7 @@ from xivo import except_tb
 # SNOM BUGBUG #2
 # Because it seems much technically impossible to detect the phone model by
 # dhcp request (model not in the request.... :///), we'll need to also support
-# HTTP based provisioning
+# HTTP based xivo_config
 
 SNOM_SPEC_DIR = pgc['tftproot'] + "Snom/"
 SNOM_SPEC_TEMPLATE = pgc['templates_dir'] + "snom-template.htm"
@@ -112,14 +112,15 @@ class SnomProv(BaseProv):
                 template_file.close()
                 tmp_filename = SNOM_SPEC_DIR + "snom" + self.phone["model"] + '-' + self.phone["macaddr"].replace(':','') + '.htm.tmp'
                 htm_filename = tmp_filename[:-4]
-                txt = provisioning.txtsubst(template_lines,
-                                       { "user_display_name": provinfo["name"],
-                                         "user_phone_ident":  provinfo["ident"],
-                                         "user_phone_number": provinfo["number"],
-                                         "user_phone_passwd": provinfo["passwd"],
-                                         "http_user": SNOM_COMMON_HTTP_USER,
-                                         "http_pass": SNOM_COMMON_HTTP_PASS },
-                                       htm_filename)
+                txt = xivo_config.txtsubst(template_lines,
+                        { "user_display_name": provinfo["name"],
+                          "user_phone_ident":  provinfo["ident"],
+                          "user_phone_number": provinfo["number"],
+                          "user_phone_passwd": provinfo["passwd"],
+                          "http_user": SNOM_COMMON_HTTP_USER,
+                          "http_pass": SNOM_COMMON_HTTP_PASS,
+                        },
+                        htm_filename)
                 tmp_file = open(tmp_filename, 'w')
                 tmp_file.writelines(txt)
                 tmp_file.close()
@@ -149,4 +150,4 @@ class SnomProv(BaseProv):
                         fw = ua_splitted[1]
                 return ("snom", model, fw)
 
-provisioning.PhoneClasses["snom"] = SnomProv
+xivo_config.PhoneClasses["snom"] = SnomProv

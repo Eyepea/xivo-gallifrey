@@ -31,9 +31,9 @@ import time
 import syslog
 import telnetlib
 
-from xivo import provisioning
-from xivo.provisioning import BaseProv
-from xivo.provisioning import ProvGeneralConf as pgc
+from xivo import xivo_config
+from xivo.xivo_config import BaseProv
+from xivo.xivo_config import ProvGeneralConf as pgc
 
 # NOTES:
 # ~/etc/dhcpd3/dhcpd.conf -> /tftpboot/Thomson/ST2030S_v1.53.inf
@@ -168,20 +168,21 @@ class ThomsonProv(BaseProv):
                 function_keys_config_lines = \
                         self.__format_function_keys(myprovinfo['funckey'])
                 
-                txt = provisioning.txtsubst(txt_template_lines, {
-                        "user_display_name": myprovinfo["name"],
+                txt = xivo_config.txtsubst(txt_template_lines,
+                        { "user_display_name": myprovinfo["name"],
 # THOMSON BUGBUG #1
 # myprovinfo["number"] is volontarily not set in "TEL1Number" because Thomson
 # phones authentify with their telnumber.. :/
-                        "user_phone_ident":  myprovinfo["ident"],
-                        "user_phone_number": myprovinfo["number"],
-                        "user_phone_passwd": myprovinfo["passwd"],
-                        "simultcalls": multilines,
-                        # <WARNING: THIS FIELD MUST STAY IN LOWER CASE IN THE TEMPLATE AND MAC SPECIFIC FILE>
-                        "config_sn": self.__generate_timestamp(),
-                        # </WARNING>
-                        "function_keys": function_keys_config_lines,
-                }, txt_filename)
+                          "user_phone_ident":  myprovinfo["ident"],
+                          "user_phone_number": myprovinfo["number"],
+                          "user_phone_passwd": myprovinfo["passwd"],
+                          "simultcalls": multilines,
+                          # <WARNING: THIS FIELD MUST STAY IN LOWER CASE IN THE TEMPLATE AND MAC SPECIFIC FILE>
+                          "config_sn": self.__generate_timestamp(),
+                          # </WARNING>
+                          "function_keys": function_keys_config_lines,
+                        },
+                        txt_filename)
                 tmp_file = open(tmp_filename, 'w')
                 tmp_file.writelines(txt)
                 tmp_file.close()
@@ -264,4 +265,4 @@ class ThomsonProv(BaseProv):
                         fw = splitted_ua[3]
                 return ("thomson", model, fw)
 
-provisioning.PhoneClasses["thomson"] = ThomsonProv
+xivo_config.PhoneClasses["thomson"] = ThomsonProv
