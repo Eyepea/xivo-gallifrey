@@ -31,7 +31,7 @@ import syslog
 import socket
 
 from xivo import xivo_config
-from xivo.xivo_config import BaseProv
+from xivo.xivo_config import PhoneVendor
 from xivo.xivo_config import ProvGeneralConf as pgc
 
 POLYCOM_COMMON_DIR = pgc['tftproot'] + "Polycom/"
@@ -42,12 +42,12 @@ AMI_PORT = 5038
 AMI_USER = 'xivouser'
 AMI_PASS = 'xivouser'
 
-class PolycomProv(BaseProv):
+class PolycomProv(PhoneVendor):
         
         label = "Polycom"
         
         def __init__(self, phone):
-                BaseProv.__init__(self, phone)
+                PhoneVendor.__init__(self, phone)
                 self.provinfo = {}
                 # TODO: handle this with a lookup table stored in the DB?
                 if self.phone["model"] != "spip_430" and \

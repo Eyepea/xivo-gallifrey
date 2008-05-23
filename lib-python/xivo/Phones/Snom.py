@@ -31,7 +31,7 @@ import syslog
 import subprocess
 
 from xivo import xivo_config
-from xivo.xivo_config import BaseProv
+from xivo.xivo_config import PhoneVendor
 from xivo.xivo_config import ProvGeneralConf as pgc
 from xivo import except_tb
 
@@ -49,12 +49,12 @@ SNOM_SPEC_TEMPLATE = pgc['templates_dir'] + "snom-template.htm"
 SNOM_COMMON_HTTP_USER = "guest"
 SNOM_COMMON_HTTP_PASS = "guest"
 
-class SnomProv(BaseProv):
+class SnomProv(PhoneVendor):
         
         label = "Snom"
         
         def __init__(self, phone):
-                BaseProv.__init__(self, phone)
+                PhoneVendor.__init__(self, phone)
                 # TODO: handle this with a lookup table stored in the DB?
                 if self.phone["model"] != "300" and \
                    self.phone["model"] != "320" and \

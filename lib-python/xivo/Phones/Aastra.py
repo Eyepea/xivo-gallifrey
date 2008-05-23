@@ -31,7 +31,7 @@ import syslog
 import subprocess
 
 from xivo import xivo_config
-from xivo.xivo_config import BaseProv
+from xivo.xivo_config import PhoneVendor
 from xivo.xivo_config import ProvGeneralConf as pgc
 from xivo import except_tb
 
@@ -39,12 +39,12 @@ AASTRA_COMMON_DIR = pgc['tftproot'] + 'Aastra/'
 AASTRA_COMMON_HTTP_USER = 'admin'
 AASTRA_COMMON_HTTP_PASS = '22222'
 
-class AastraProv(BaseProv):
+class AastraProv(PhoneVendor):
         
         label = "Aastra"
         
         def __init__(self, phone):
-                BaseProv.__init__(self, phone)
+                PhoneVendor.__init__(self, phone)
                 # TODO: handle this with a lookup table stored in the DB?
                 if self.phone['model'] not in ('51i', '53i', '55i', '57i'):
                         raise ValueError, "Unknown Aastra model '%s'" % self.phone['model']

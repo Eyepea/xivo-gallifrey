@@ -234,10 +234,9 @@ def well_formed_provcode(provcode):
 			return False
 	return True
 
-class BaseProv:
+class PhoneVendor:
 	"""
-	Basic provisioning logic, including syslogs and conditionnal actions
-	execution.
+	Phone vendor base class
 	"""
 	def __init__(self, phone):
 		"""

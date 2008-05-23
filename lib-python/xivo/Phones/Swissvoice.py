@@ -31,7 +31,7 @@ import syslog
 import subprocess
 
 from xivo import xivo_config
-from xivo.xivo_config import BaseProv
+from xivo.xivo_config import PhoneVendor
 from xivo.xivo_config import ProvGeneralConf as pgc
 from xivo import except_tb
 
@@ -51,12 +51,12 @@ SWISSVOICE_SPEC_CFG_TEMPLATE = pgc['templates_dir'] + "template_ip10.cfg"
 SWISSVOICE_COMMON_HTTP_USER = "admin"
 SWISSVOICE_COMMON_HTTP_PASS = "admin"
 
-class SwissvoiceProv(BaseProv):
+class SwissvoiceProv(PhoneVendor):
         
         label = "Swissvoice"
         
         def __init__(self, phone):
-                BaseProv.__init__(self, phone)
+                PhoneVendor.__init__(self, phone)
                 # TODO: handle this with a lookup table stored in the DB?
                 if self.phone["model"] != "ip10s":
                         raise ValueError, "Unknown Swissvoice model '%s'" % self.phone["model"]

@@ -31,7 +31,7 @@ import syslog
 import subprocess
 
 from xivo import xivo_config
-from xivo.xivo_config import BaseProv
+from xivo.xivo_config import PhoneVendor
 from xivo.xivo_config import ProvGeneralConf as pgc
 from xivo import except_tb
 
@@ -39,12 +39,12 @@ LINKSYS_COMMON_DIR = pgc['tftproot'] + "Linksys/"
 LINKSYS_COMMON_HTTP_USER = "admin"
 LINKSYS_COMMON_HTTP_PASS = "adminpass"
 
-class LinksysProv(BaseProv):
+class LinksysProv(PhoneVendor):
         
         label = "Linksys"
         
         def __init__(self, phone):
-                BaseProv.__init__(self, phone)
+                PhoneVendor.__init__(self, phone)
                 # TODO: handle this with a lookup table stored in the DB?
                 if self.phone["model"] != "spa901" and \
                    self.phone["model"] != "spa921" and \
