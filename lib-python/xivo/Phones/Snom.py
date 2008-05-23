@@ -37,7 +37,7 @@ from xivo import except_tb
 
 # SNOM BUGBUG #1
 # Snom doesn't support something else than files at root of tftproot when using
-# tftp... :/ (It just internaly replace the first '/' with a '\0' :/// )
+# tftp... :/ (It just internaly replaces the first '/' with a '\0' :/// )
 
 # SNOM BUGBUG #2
 # Because it seems much technically impossible to detect the phone model by

@@ -161,7 +161,7 @@ class ThomsonProv(BaseProv):
                 txt_template_file = open(THOMSON_SPEC_TXT_TEMPLATE + self.phone["model"].upper() + "_template.txt")
                 txt_template_lines = txt_template_file.readlines()
                 txt_template_file.close()
-                tmp_filename = THOMSON_SPEC_TXT_BASENAME + self.phone["model"].upper() + "_" + self.phone["macaddr"].replace(':','') + '.txt.tmp'
+                tmp_filename = THOMSON_SPEC_TXT_BASENAME + self.phone["model"].upper() + "_" + self.phone["macaddr"].replace(':', '') + '.txt.tmp'
                 txt_filename = tmp_filename[:-4]
                 
                 multilines = str(myprovinfo["simultcalls"])

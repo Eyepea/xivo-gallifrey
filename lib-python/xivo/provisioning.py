@@ -57,7 +57,7 @@ ProvGeneralConf = {
 	'telnet_to_s':			30,
 	'templates_dir':		"/usr/share/pf-xivo-provisioning/files/",
 	'asterisk_ipv4':		"192.168.0.254",
-	'ntp_server_ipv4':		"192.168.0.254"
+	'ntp_server_ipv4':		"192.168.0.254",
 }
 pgc = ProvGeneralConf
 authorized_prefix = ["eth"]
@@ -252,6 +252,7 @@ class BaseProv:
 		"""
 		self.phone = phone
 		syslogf("Instantiation of %s" % str(self.phone))
+	
 	def action_reinit(self):
 		"""
 		This function can be called under some conditions after the 
@@ -264,6 +265,7 @@ class BaseProv:
 		syslogf("Sending REINIT command to phone %s" % self.phone['macaddr'])
 		self.do_reinit()
 		syslogf(SYSLOG_DEBUG, "Sent REINIT command to phone %s" % self.phone['macaddr'])
+	
 	def action_reboot(self):
 		"""
 		This function can be called under some conditions after the 
@@ -276,6 +278,7 @@ class BaseProv:
 		syslogf("Sending REBOOT command to phone %s" % self.phone['macaddr'])
 		self.do_reboot()
 		syslogf(SYSLOG_DEBUG, "Sent REBOOT command to phone %s" % self.phone['macaddr'])
+	
 	def generate_reinitprov(self):
 		"""
 		This function put the configuration for the phone back in
@@ -284,6 +287,7 @@ class BaseProv:
 		syslogf("About to GUEST'ify the phone %s" % self.phone['macaddr'])
 		self.do_reinitprov()
 		syslogf(SYSLOG_DEBUG, "Phone GUEST'ified %s" % self.phone['macaddr'])
+	
 	def generate_autoprov(self, provinfo):
 		"""
 		This function generate the configuration for the phone with
