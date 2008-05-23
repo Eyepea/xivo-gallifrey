@@ -28,7 +28,10 @@ import os
 import sys
 import syslog
 import traceback
+import subprocess
 from ConfigParser import ConfigParser
+
+from xivo import StreamedLines
 
 from xivo.easyslog import *
 from xivo.ConfigDict import *
@@ -152,7 +155,6 @@ def txtsubst(lines, variables, target_file = None):
 
 def get_netdev_list():
 	"Get a view of network interfaces as seen by Linux"
-	l=[]
 	pnd = open(pgc['proc_dev_net'])
 	pnd.readline()
 	pnd.readline()
@@ -167,7 +169,7 @@ def get_ethdev_list():
 	"""
 	global authorized_prefix
 	return [dev for dev in get_netdev_list()
-		if True in [(dev.find(x) == 0)
+		if True in [dev.startswith(x)
 			    for x in authorized_prefix]]
 
 def normalize_mac_address(macaddr):
@@ -183,7 +185,7 @@ def normalize_mac_address(macaddr):
 def ipv4_from_macaddr(macaddr, logexceptfunc = None):
 	"""
 	Given a mac address, get an IPv4 address for an host living on the
-	LAN. This makes use of the tool "arping". Of course the remote peer
+	LAN.  This makes use of the tool "arping".  Of course the remote peer
 	must respond to ping broadcasts. Out of the box, some stupid phones
 	from well known stupid and expensive brands don't.
 	"""
@@ -194,23 +196,18 @@ def ipv4_from_macaddr(macaddr, logexceptfunc = None):
 	#    -I is an undocumented option like -i but it works
 	#    with alias interfaces too
 	for iface in get_ethdev_list():
+		result = None
 		try:
-		    ipfd = os.popen("%s -r -c 1 -w %s -I %s %s" % (pgc['arping_cmd'], pgc['arping_sleep_us'], iface, macaddr))
+			child = subprocess.Popen(pgc['arping_cmd'].split() + ["-r", "-c", "1", "-w", str(pgc['arping_sleep_us']), '-I', iface, macaddr],
+			                         bufsize = 0, stdout = subprocess.PIPE, close_fds = True)
+			StreamedLines.makeNonBlocking(child.stdout)
+			for (result,) in StreamedLines.rxStreamedLines(fobjs = (child.stdout,), timeout = pgc['arping_sleep_us'] * 10. / 1000000.):
+				break
 		except:
-		    if logexceptfunc:
-			for line in exception_traceback():
-			    logexceptfunc(line)
-		    continue
-		try:
-		    try:
-			result = ipfd.readline()
-		    finally:
-			ipfd.close()
-		except:
-		    if logexceptfunc:
-			for line in exception_traceback():
-			    logexceptfunc(line)
-		    result = None
+			result = None
+			if logexceptfunc:
+				for line in exception_traceback():
+					logexceptfunc(line)
 		if result:
 			return result.strip()
 	return None
@@ -218,7 +215,7 @@ def ipv4_from_macaddr(macaddr, logexceptfunc = None):
 def macaddr_from_ipv4(ipv4, logexceptfunc = None):
 	"""
 	ipv4_from_macaddr() is indeed a symetrical fonction that can be
-	used to retrieve an ipv4 address from a given mac address. This
+	used to retrieve an ipv4 address from a given mac address.  This
 	function just call the former.
 	
 	WARNING: this is of course ipv4_from_macaddr() implementation dependent
@@ -247,7 +244,7 @@ class BaseProv:
 		Constructor.
 		
 		phone must be a dictionary containing everything needed for
-		the one phone provisioning process to take place. That is the
+		the one phone provisioning process to take place.  That is the
 		following keys:
 		
 		'model', 'vendor', 'macaddr', 'actions', 'ipv4' if the value

@@ -70,7 +70,8 @@ class LinksysProv(BaseProv):
                                          "-o", "/dev/null",
                                          "--digest",
                                          "-u", "%s:%s" % (user, passwd),
-                                         "http://%s/admin/%s" % (self.phone['ipv4'], command)])
+                                         "http://%s/admin/%s" % (self.phone['ipv4'], command)],
+                                        close_fds = True)
                 except OSError:
                         except_tb.syslog_exception()
         

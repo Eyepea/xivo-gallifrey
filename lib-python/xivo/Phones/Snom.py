@@ -75,7 +75,8 @@ class SnomProv(BaseProv):
                                          "-s",
                                          "-o", "/dev/null",
                                          "-u", "%s:%s" % (user, passwd),
-                                         "http://%s/confirm.html?%s=yes" % (self.phone['ipv4'], command)])
+                                         "http://%s/confirm.html?%s=yes" % (self.phone['ipv4'], command)],
+                                        close_fds = True)
                 except OSError:
                         except_tb.syslog_exception()
         

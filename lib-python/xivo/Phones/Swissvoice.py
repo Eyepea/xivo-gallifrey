@@ -79,7 +79,8 @@ class SwissvoiceProv(BaseProv):
                                          "-s",
                                          "-o", "/dev/null",
                                          "-u", "%s:%s" % (user, passwd),
-                                         "http://%s/%s/%s%s" % (self.phone['ipv4'], url_rep1, url_rep2, url_rep3)])
+                                         "http://%s/%s/%s%s" % (self.phone['ipv4'], url_rep1, url_rep2, url_rep3)],
+                                        close_fds = True)
                 except OSError:
                         except_tb.syslog_exception()
         

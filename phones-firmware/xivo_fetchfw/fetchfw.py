@@ -194,7 +194,7 @@ def zip_extract_all(label, zipfile_path):
 	os.mkdir(zip_path)
 
 	try:
-		result = subprocess.call(['unzip', '-q', zipfile_path], cwd = zip_path)
+		result = subprocess.call(['unzip', '-q', zipfile_path], cwd = zip_path, close_fds = True)
 		fix_permissions(zip_path)
 
 		if result:

@@ -69,7 +69,8 @@ class AastraProv(BaseProv):
                                                  "-s",
                                                  "-o", "/dev/null",
                                                  "-u", "%s:%s" % (user, passwd),
-                                                 "http://%s" % self.phone['ipv4']])
+                                                 "http://%s" % self.phone['ipv4']],
+                                                close_fds = True)
                         
                         # once we have been authenticated, we can POST the appropriate commands
                         
@@ -83,7 +84,8 @@ class AastraProv(BaseProv):
                                          "-o", "/dev/null",
                                          "-u", "%s:%s" % (user, passwd),
                                          "http://%s/upgrade.html" % self.phone['ipv4'],
-                                         "-d", "tftp=%s&file=Aastra/%s.st" % (pgc['asterisk_ipv4'], self.phone['model'])])
+                                         "-d", "tftp=%s&file=Aastra/%s.st" % (pgc['asterisk_ipv4'], self.phone['model'])],
+                                        close_fds = True)
                         
                         # then reset
                         subprocess.call([pgc['curl_cmd'],
@@ -93,7 +95,8 @@ class AastraProv(BaseProv):
                                          "-o", "/dev/null",
                                          "-u", "%s:%s" % (user, passwd),
                                          "http://%s/reset.html" % self.phone['ipv4'],
-                                         "-d", "resetOption=0"])
+                                         "-d", "resetOption=0"],
+                                        close_fds = True)
                 except OSError:
                         except_tb.syslog_exception()
         

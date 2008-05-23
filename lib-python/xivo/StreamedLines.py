@@ -24,22 +24,22 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
+import os
+import fcntl
 import select
 
 try:
 	any
 except NameError:
 	def any(l):
-		"""Returns True if any element of l evaluates to true, else
-		returns False.
-		"""
 		for el in l:
 			if el:
 				return True
 		return False
 
 def find(seq, f):
-	"""Returns the first element el of seq for which f(el) is true, or
+	"""
+	Returns the first element el of seq for which f(el) is true, or
 	None if f(el) is not true for each elements of seq.
 	"""
 	for el in seq:
@@ -47,8 +47,10 @@ def find(seq, f):
 			return el
 
 def only_in(r, seq):
-	"""Returns False if seq contains at least one element that 
-	True if seq only contains elements that are not """
+	"""
+	Returns False if 'seq' contains at least one element that is not equal
+	to 'r', else True.
+	"""
 	for el in seq:
 		if r != el:
 			return False
@@ -59,13 +61,10 @@ class Error(Exception):
 	"Base class of exceptions raised by this module."
 	def __init__(self, msg, *opt):
 		if not opt:
-			self.__reprmsg = "<%s %s>" % \
-			        (self.__class__.__name__, `msg`)
+			self.__reprmsg = "<%s %s>" % (self.__class__.__name__, `msg`)
 			self.__strmsg = str(msg)
 		else:
-			self.__reprmsg = "<%s %s: %s>" % \
-			        (self.__class__.__name__, `msg`,
-			         ', '.join(map(repr, opt)))
+			self.__reprmsg = "<%s %s: %s>" % (self.__class__.__name__, `msg`, ', '.join(map(repr, opt)))
 			self.__strmsg = "%s: %s" % (msg, repr(opt))
 		Exception.__init__(self, msg)
 	def __repr__(self):
@@ -78,8 +77,9 @@ class InvalidParam(Error):
 	pass
 
 class RestartableException(Error):
-	"""Base class of exceptions raised by rxStreamedLines when it is
-	possible to restart it later (see also the doc of rxStreamedLines).
+	"""
+	Base class of exceptions raised by rxStreamedLines when it is possible
+	to restart it later (see also the doc of rxStreamedLines).
 	"""
 	def __init__(self, msg, *ctx):
 		self.__ctx = ctx
@@ -88,30 +88,40 @@ class RestartableException(Error):
 		return self.__ctx
 
 class Timeout(RestartableException):
-	"""Restartable Exception raised by rxStreamedLines when the timeout
+	"""
+	Restartable Exception raised by rxStreamedLines when the timeout
 	initially passed in the timeout arg of rxStreamedLines expires (no
 	data has been received during this period of time while in
 	rxStreamedLines).
 	"""
 	pass
 
+def makeNonBlocking(fobj):
+	"Set the file descriptor behind fobj as non-blocking"
+	fl = fcntl.fcntl(fobj, fcntl.F_GETFL)
+	fcntl.fcntl(fobj, fcntl.F_SETFL, fl | os.O_NONBLOCK)
+
 # warning: the rxStreamedLines() generator is not extremely 
 # scalable, do not use it for hundred of streams.
 def rxStreamedLines(fobjs=None, timeout=None, ctx=None):
-	"""rxStreamedLines() is a generator function that iterates over lines
-	received on multiple Python unbuffured non-blocking selectable file
-	objects. A Python selectable file object has a .fileno() method that
+	"""
+	rxStreamedLines() is a generator function that iterates over lines
+	received on multiple Python unbuffered non-blocking selectable file
+	objects.  A Python selectable file object has a .fileno() method that
 	returns a file descriptor integer suitable for a call to the underlying
-	select() POSIX function, through the standard Python select module. For
-	proper operation, file objects passed to this generator function must
-	also be unbuffured (Python property defined during a call to open() or 
-	os.fdopen() for example, and eventually passed to an underlying stdio
-	FILE* via a setbuffer(3) call) and non-blocking -- a file object / FD
-	is typically blocking by default, and can be set non-blocking by:
+	select() POSIX function, through the standard Python select module.
+	For proper operation, file objects passed to this generator function
+	must also be unbuffured (Python property defined during a call to
+	open() or os.fdopen() for example, and eventually passed to an
+	underlying stdio FILE* via a setbuffer(3) call) and non-blocking -- a
+	file object / FD is typically blocking by default, and can be set
+	non-blocking by:
 	
 	import fcntl, os
 	fl = fcntl.fcntl(fobj, fcntl.F_GETFL)
 	fcntl.fcntl(fobj, fcntl.F_SETFL, fl | os.O_NONBLOCK)
+	
+	(the function makeNonBlocking(fobj) in this module does just that)
 	
 	NOTICE: under Unix, Python file objects wrapping pipes, sockets, ttys,
 	and some char devices are acceptable once properly configured as
@@ -125,7 +135,7 @@ def rxStreamedLines(fobjs=None, timeout=None, ctx=None):
 	    print lines
 	
 	 - fobjs is a sequence of Python unbuffured non-blocking selectable
-	  file objects. You can pass None instead of a file object, in which
+	  file objects.  You can pass None instead of a file object, in which
 	  case None will always be yielded in the corresponding iteration
 	  output.
 	 - timeout is an optional timeout in seconds; it is reset at each
@@ -145,18 +155,18 @@ def rxStreamedLines(fobjs=None, timeout=None, ctx=None):
 	
 	 In this second form, a RestartableException (which x is the instance
 	 of) has previously been raised by a previous iteration over an
-	 iterator generated by rxStreamedLines(). For now, the only
-	 RestartableException class is Timeout. It is advised to drop every
+	 iterator generated by rxStreamedLines().  For now, the only
+	 RestartableException class is Timeout.  It is advised to drop every
 	 references to the exception instance as soon as possible to allow the
 	 Python context of the function which raised the exception (body of
 	 rxStreamedLines() ) to be freed.
 	
 	During iterations, tuples are yielded in which the nth element
-	correspond to the nth element in fobjs. Each element of yielded tuples
-	is a string or None. When it is a string, this is the next line
+	correspond to the nth element in fobjs.  Each element of yielded tuples
+	is a string or None.  When it is a string, this is the next line
 	available on the corresponding file object, and it usually contains a
-	unique '\\n' which ends it. Lines are yielded as soon as they are
-	available, one at a time for a given file object. There are two cases
+	unique '\\n' which ends it.  Lines are yielded as soon as they are
+	available, one at a time for a given file object.  There are two cases
 	where a yielded string element does not contain a unique '\\n' that
 	ends it:
 	 - if a stream is not terminated by a '\\n' as its last character
@@ -197,16 +207,14 @@ def rxStreamedLines(fobjs=None, timeout=None, ctx=None):
 			fobjs, timeout, resume = None, None, None
 	"""
 	if ((fobjs is None) and (ctx is None)) or \
-	   ((ctx is not None) and ((fobjs is not None)
-	                           or (timeout is not None))):
+	   ((ctx is not None) and ((fobjs is not None) or (timeout is not None))):
 		raise InvalidParam("bad arguments", fobjs, timeout, ctx)
 	
 	if ctx is None:
 		initial_fobjs = list(fobjs)
 		current_fobjs = initial_fobjs[:]
-		buffers = [[] for fobj in initial_fobjs]
-		eof_status = [(False, None)[fobj is None]
-		              for fobj in initial_fobjs]
+		buffers = [ [] for fobj in initial_fobjs ]
+		eof_status = [ (False, None)[fobj is None] for fobj in initial_fobjs ]
 	else:
 		# -~= Xref 1 (a) =~-
 		# The target list of the following assignment must match the
@@ -216,15 +224,14 @@ def rxStreamedLines(fobjs=None, timeout=None, ctx=None):
 	
 	while not only_in(None, eof_status):
 		
-		select_fobjs = [fobj for fobj in current_fobjs if fobj]
+		select_fobjs = [ fobj for fobj in current_fobjs if fobj ]
 		
 		if not select_fobjs:
 			rlist = []
 		elif timeout is None:
 			rlist = select.select(select_fobjs, (), ())[0]
 		else:
-			rlist = select.select(
-				select_fobjs, (), (), timeout)[0]
+			rlist = select.select(select_fobjs, (), (), timeout)[0]
 		
 		if select_fobjs and not rlist:
 			# -~= Xref 1 (b) =~-
@@ -232,10 +239,8 @@ def rxStreamedLines(fobjs=None, timeout=None, ctx=None):
 			# must match the target list of the assignment
 			# in Xref 1 (a)
 			raise Timeout(
-				"Timed out while waiting for data from %d fds"
-				% len(select_fobjs), timeout,
-				initial_fobjs, current_fobjs,
-	                        buffers, eof_status)
+				"Timed out while waiting for data from %d fds" % len(select_fobjs),
+				timeout, initial_fobjs, current_fobjs, buffers, eof_status)
 		
 		for p, fobj in enumerate(current_fobjs):
 			if fobj not in rlist:
@@ -252,17 +257,16 @@ def rxStreamedLines(fobjs=None, timeout=None, ctx=None):
 			send = False
 			ylines = [None] * len(buffers)
 			for p, blocks in enumerate(buffers):
-			
-				nl = find(((bp, block, block.find('\n'))
-				           for (bp,block) in enumerate(blocks)),
+				
+				nl = find(((bp, block, block.find('\n')) for (bp, block) in enumerate(blocks)),
 					  lambda (bp, block, nlp): nlp > -1)
 				if nl is None:
 					if current_fobjs[p]:
 						continue
 					elif blocks:
-						bp = len(blocks)-1
+						bp = len(blocks) - 1
 						block = blocks[bp]
-						nlp = len(block)-1
+						nlp = len(block) - 1
 					elif eof_status[p]:
 						ylines[p] = ''
 						eof_status[p] = None
@@ -271,16 +275,16 @@ def rxStreamedLines(fobjs=None, timeout=None, ctx=None):
 					else:
 						continue
 				else:
-					bp,block,nlp = nl
+					bp, block, nlp = nl
 				
 				yblk = blocks[:bp]
-				yblk.append(block[:nlp+1])
+				yblk.append(block[:nlp + 1])
 				ystr = ''.join(yblk)
 				
-				remblk = [block[nlp+1:]]
+				remblk = [block[nlp + 1:]]
 				if remblk == ['']:
 					remblk = []
-				remblk.extend(blocks[bp+1:])
+				remblk.extend(blocks[bp + 1:])
 				
 				ylines[p] = ystr
 				buffers[p] = remblk
@@ -429,6 +433,6 @@ if __name__ == '__main__':
 		time.sleep(1/256.)
 
 __all__ = (
-	'rxStreamedLines',
+	'rxStreamedLines', 'makeNonBlocking'
 	'Error', 'InvalidParam', 'RestartableException', 'Timeout'
 )
