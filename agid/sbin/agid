@@ -19,7 +19,27 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
+import sys
+
 from xivo_agid import agid
 from xivo_agid.modules import *
+from xivo import daemonize
+
+PIDFILE="/var/run/agid.pid"
+
+def log_stderr_and_syslog(x):
+	"""
+	This function logs the string x to both stderr and the system log.
+	The trailing '\\n' of the string to be logged must have been stripped
+	"""
+
+	print >> sys.stderr, x
+	syslogf(SYSLOG_ERR, x)
+
+if '-d' not in sys.argv:
+	agid.debug_enabled = True
+
+if '-f' not in sys.argv:
+	daemonize.daemonize(log_stderr_and_syslog, PIDFILE, pidfile_lock = True)
 
 agid.run()
