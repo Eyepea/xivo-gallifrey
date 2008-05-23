@@ -109,7 +109,7 @@ def _user_set_call_rights(handler, agi, cursor, args):
 def user_set_call_rights(handler, agi, cursor, args):
 	try:
 		_user_set_call_rights(handler, agi, cursor, args)
-	except RuleAppliedException:
+	except call_rights.RuleAppliedException:
 		return
 
 agid.register(user_set_call_rights)
