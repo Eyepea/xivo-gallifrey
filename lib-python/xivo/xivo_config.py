@@ -35,7 +35,7 @@ from xivo import StreamedLines
 
 from xivo.easyslog import *
 from xivo.ConfigDict import *
-from xivo.except_tb import *
+from xivo import except_tb
 
 ProvGeneralConf = {
 	'database_uri':			"sqlite:/var/lib/asterisk/astsqlite?timeout_ms=150",
@@ -206,8 +206,7 @@ def ipv4_from_macaddr(macaddr, logexceptfunc = None):
 		except:
 			result = None
 			if logexceptfunc:
-				for line in exception_traceback():
-					logexceptfunc(line)
+				except_tb.log_exception(logexceptfunc)
 		if result:
 			return result.strip()
 	return None

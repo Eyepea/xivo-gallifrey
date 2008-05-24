@@ -87,6 +87,4 @@ def syslog_exception(loglevel=SYSLOG_ERR, noclear=False):
 	"""
 	log_exception(SYSLOG_EXCEPT(loglevel), noclear)
 
-__all__ = ( 'exception_raw_traceback', 'exception_traceback', 'log_exception',
-            'syslog_exception', 'log_full_exception', 'LOGLINE_STDERR',
-	    'SYSLOG_EXCEPT' )
+__all__ = ( 'exception_traceback', 'log_exception', 'syslog_exception', 'log_full_exception', 'LOGLINE_STDERR', 'SYSLOG_EXCEPT' )

@@ -37,14 +37,14 @@ def help_screen():
 
 -c <conffile>	Use <conffile> instead of %s
 -h		Display this help screen and exit
-""" % (sys.argv[0], repr(CONFIG_FILE))
+""" % (sys.argv[0], `CONFIG_FILE`)
 	sys.exit(1)
 
 from getopt import getopt, GetoptError
 def config_path():
 	global CONFIG_FILE
 	try:
-		opts,args = getopt(sys.argv[1:], GETOPT_SHORTOPTS)
+		opts, args = getopt(sys.argv[1:], GETOPT_SHORTOPTS)
 	except GetoptError, x:
 		print >> sys.stderr, x
 		help_screen()
@@ -66,8 +66,10 @@ from xivo import xivo_config
 from xivo.xivo_config import ProvGeneralConf as pgc
 from xivo.Phones import *
 
-from xivo.agi import *
-agi = AGI()
+from xivo import agi_helpers
+from xivo import agitb
+
+agi = agi_helpers.agi_get_session()
 
 def return_exit(error, playback=None):
 	agi.verbose("%s" % error)
@@ -94,8 +96,7 @@ def phone_desc_by_ua(ua):
 			r = phone_class.get_vendor_model_fw(ua)
 		except:
 			r = None
-			for line in xivo_config.exception_traceback():
-				agi.verbose(line)
+			agitb.handler()
 			sys.exc_clear()
 		if r:
 			return r
@@ -149,8 +150,7 @@ def main():
 	except Exception, xcept:
 		reason = str(xcept)
 		status = 500
-		for line in xivo_config.exception_traceback():
-			agi.verbose(line)
+		agitb.handler()
 		sys.exc_clear()
 
 	if status != 200:

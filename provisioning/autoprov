@@ -762,7 +762,7 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 				errcode = rcode
 				break
 		except_tb.log_full_exception(self.full_xcept_sender(errcode),
-					     xivo_config.SYSLOG_EXCEPT(SYSLOG_ERR))
+					     except_tb.SYSLOG_EXCEPT(SYSLOG_ERR))
 		return
 	    syslogf(SYSLOG_NOTICE, "handle_prov(): provisioning OK for phone %s" % str(phone))
 	    self.send_response_lines(('Ok',))
