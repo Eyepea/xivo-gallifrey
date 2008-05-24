@@ -220,14 +220,14 @@ class ThomsonProv(PhoneVendor):
                 Entry point to generate the reinitialized (GUEST)
                 configuration for this phone.
                 """
-                self.__generate({
-                        "name": "guest",
-                        "ident": "guest",
-                        "number": "guest",
-                        "passwd": "guest",
-                        "simultcalls": "10",
-                        "funckey": {},
-                })
+                self.__generate(
+                        { "name": "guest",
+                          "ident": "guest",
+                          "number": "guest",
+                          "passwd": "guest",
+                          "simultcalls": "10",
+                          "funckey": {},
+                        })
         
         def do_autoprov(self, provinfo):
                 """

@@ -177,11 +177,12 @@ class PolycomProv(PhoneVendor):
                 Entry point to generate the reinitialized (GUEST)
                 configuration for this phone.
                 """
-                self.__generate({ "name":   "guest",
-                                  "ident":  "guest",
-                                  "number": "guest",
-                                  "passwd": "guest",
-                                })
+                self.__generate(
+                        { "name":   "guest",
+                          "ident":  "guest",
+                          "number": "guest",
+                          "passwd": "guest",
+                        })
         
         def do_autoprov(self, provinfo):
                 """

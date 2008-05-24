@@ -161,8 +161,7 @@ class SwissvoiceProv(PhoneVendor):
                 os.rename(cfg_tmp_filename, cfg_filename)
                 
                 txt = xivo_config.txtsubst(inf_template_lines,
-                        { "macaddr": self.phone["macaddr"].lower().replace(':',''),
-                        },
+                        { "macaddr": self.phone["macaddr"].lower().replace(':','') },
                         inf_filename)
                 tmp_file = open(inf_tmp_filename, 'w')
                 tmp_file.writelines(txt)
