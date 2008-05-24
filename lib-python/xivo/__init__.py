@@ -1,1 +1,1 @@
-__all__ = ("ConfigPath",)
+__all__ = ()
