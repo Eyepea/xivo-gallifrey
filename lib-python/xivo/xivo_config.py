@@ -32,10 +32,9 @@ import subprocess
 from ConfigParser import ConfigParser
 
 from xivo import StreamedLines
-
-from xivo.easyslog import *
-from xivo.ConfigDict import *
+from xivo import ConfigDict
 from xivo import except_tb
+from xivo.easyslog import *
 
 ProvGeneralConf = {
 	'database_uri':			"sqlite:/var/lib/asterisk/astsqlite?timeout_ms=150",
@@ -67,7 +66,7 @@ def LoadConfig(filename):
 	global authorized_prefix
 	cp = ConfigParser()
 	cp.readfp(open(filename))
-	FillDictFromConfigSection(ProvGeneralConf, cp, "general")
+	ConfigDict.FillDictFromConfigSection(ProvGeneralConf, cp, "general")
 	authorized_prefix = [
 		p.strip()
 		for p in pgc['scan_ifaces_prefix'].split(',')
