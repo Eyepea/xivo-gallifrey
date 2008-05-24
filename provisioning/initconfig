@@ -123,7 +123,7 @@ def main():
 	# Get Phone description (if we are able to handle this vendor...)
 	phone_desc = phone_desc_by_ua(ua)
 	if not phone_desc:
-		return_exit("Unknown UA %s" % ua)
+		return_exit("Unknown UA %s" % `ua`)
 	phone_vendor = phone_desc[0]
 	phone_model = phone_desc[1]
 
