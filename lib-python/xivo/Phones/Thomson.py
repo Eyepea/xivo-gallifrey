@@ -157,25 +157,25 @@ class ThomsonProv(PhoneVendor):
                                 (int(key), 'LS'[supervise], exten))
                 return '\n'.join(fk_config_lines)
         
-        def __generate(self, myprovinfo):
+        def __generate(self, provinfo):
                 txt_template_file = open(THOMSON_SPEC_TXT_TEMPLATE + self.phone["model"].upper() + "_template.txt")
                 txt_template_lines = txt_template_file.readlines()
                 txt_template_file.close()
                 tmp_filename = THOMSON_SPEC_TXT_BASENAME + self.phone["model"].upper() + "_" + self.phone["macaddr"].replace(':', '') + '.txt.tmp'
                 txt_filename = tmp_filename[:-4]
                 
-                multilines = str(myprovinfo["simultcalls"])
+                multilines = str(provinfo["simultcalls"])
                 function_keys_config_lines = \
-                        self.__format_function_keys(myprovinfo['funckey'])
+                        self.__format_function_keys(provinfo['funckey'])
                 
                 txt = xivo_config.txtsubst(txt_template_lines,
-                        { "user_display_name": myprovinfo["name"],
+                        { "user_display_name": provinfo["name"],
 # THOMSON BUGBUG #1
-# myprovinfo["number"] is volontarily not set in "TEL1Number" because Thomson
+# provinfo["number"] is volontarily not set in "TEL1Number" because Thomson
 # phones authentify with their telnumber.. :/
-                          "user_phone_ident":  myprovinfo["ident"],
-                          "user_phone_number": myprovinfo["number"],
-                          "user_phone_passwd": myprovinfo["passwd"],
+                          "user_phone_ident":  provinfo["ident"],
+                          "user_phone_number": provinfo["number"],
+                          "user_phone_passwd": provinfo["passwd"],
                           "simultcalls": multilines,
                           # <WARNING: THIS FIELD MUST STAY IN LOWER CASE IN THE TEMPLATE AND MAC SPECIFIC FILE>
                           "config_sn": self.__generate_timestamp(),

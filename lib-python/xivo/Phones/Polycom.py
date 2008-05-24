@@ -48,7 +48,6 @@ class PolycomProv(PhoneVendor):
         
         def __init__(self, phone):
                 PhoneVendor.__init__(self, phone)
-                self.provinfo = {}
                 # TODO: handle this with a lookup table stored in the DB?
                 if self.phone["model"] != "spip_430" and \
                    self.phone["model"] != "spip_650":
@@ -137,7 +136,7 @@ class PolycomProv(PhoneVendor):
                 """
                 self.__sendsipnotify()
         
-        def __generate(self, myprovinfo):
+        def __generate(self, provinfo):
                 template_main_file = open(pgc['templates_dir'] + "polycom-%s.cfg" % self.phone["model"])
                 template_main_lines = template_main_file.readlines()
                 template_main_file.close()
@@ -155,10 +154,10 @@ class PolycomProv(PhoneVendor):
                         { "phone.cfg": __macaddr + "-phone.cfg" },
                         cfg_main_filename)
                 txt_phone = xivo_config.txtsubst(template_phone_lines,
-                        { "user_display_name": myprovinfo["name"],
-                          "user_phone_ident":  myprovinfo["ident"],
-                          "user_phone_number": myprovinfo["number"],
-                          "user_phone_passwd": myprovinfo["passwd"],
+                        { "user_display_name": provinfo["name"],
+                          "user_phone_ident":  provinfo["ident"],
+                          "user_phone_number": provinfo["number"],
+                          "user_phone_passwd": provinfo["passwd"],
                           "asterisk_ipv4" : pgc['asterisk_ipv4']
                         },
                         cfg_phone_filename)
@@ -178,20 +177,18 @@ class PolycomProv(PhoneVendor):
                 Entry point to generate the reinitialized (GUEST)
                 configuration for this phone.
                 """
-                self.provinfo = { "name":   "guest",
+                self.__generate({ "name":   "guest",
                                   "ident":  "guest",
                                   "number": "guest",
-                                  "passwd": "guest"
-                                  }
-                self.__generate(self.provinfo)
+                                  "passwd": "guest",
+                                })
         
         def do_autoprov(self, provinfo):
                 """
                 Entry point to generate the provisioned configuration for
                 this phone.
                 """
-                self.provinfo = provinfo
-                self.__generate(self.provinfo)
+                self.__generate(provinfo)
         
         # Introspection entry points
         

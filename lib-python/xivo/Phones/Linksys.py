@@ -86,7 +86,7 @@ class LinksysProv(PhoneVendor):
                 "Entry point to send the reboot command to the phone."
                 self.__action("reboot", LINKSYS_COMMON_HTTP_USER, LINKSYS_COMMON_HTTP_PASS)
         
-        def __generate(self, myprovinfo):
+        def __generate(self, provinfo):
                 """
                 Entry point to generate the provisioned configuration for
                 this phone.
@@ -99,10 +99,10 @@ class LinksysProv(PhoneVendor):
                 tmp_filename = LINKSYS_COMMON_DIR + __model + '-' + __macaddr + ".cfg.tmp"
                 cfg_filename = tmp_filename[:-4]
                 txt = xivo_config.txtsubst(template_lines,
-                        { "user_display_name": myprovinfo["name"],
-                          "user_phone_ident":  myprovinfo["ident"],
-                          "user_phone_number": myprovinfo["number"],
-                          "user_phone_passwd": myprovinfo["passwd"],
+                        { "user_display_name": provinfo["name"],
+                          "user_phone_ident":  provinfo["ident"],
+                          "user_phone_number": provinfo["number"],
+                          "user_phone_passwd": provinfo["passwd"],
                           "asterisk_ipv4" : pgc['asterisk_ipv4'],
                           "ntp_server_ipv4" : pgc['ntp_server_ipv4'],
                         },

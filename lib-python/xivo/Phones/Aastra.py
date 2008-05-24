@@ -111,7 +111,7 @@ class AastraProv(PhoneVendor):
                 "Entry point to send the reboot command to the phone."
                 self.__action(AASTRA_COMMON_HTTP_USER, AASTRA_COMMON_HTTP_PASS)
         
-        def __generate(self, myprovinfo):
+        def __generate(self, provinfo):
                 """
                 Entry point to generate the provisioned configuration for
                 this phone.
@@ -124,10 +124,10 @@ class AastraProv(PhoneVendor):
                 tmp_filename = AASTRA_COMMON_DIR + __macaddr + '.cfg.tmp'
                 cfg_filename = tmp_filename[:-4]
                 txt = xivo_config.txtsubst(template_lines,
-                        { 'user_display_name': myprovinfo['name'],
-                          'user_phone_ident':  myprovinfo['ident'],
-                          'user_phone_number': myprovinfo['number'],
-                          'user_phone_passwd': myprovinfo['passwd'],
+                        { 'user_display_name': provinfo['name'],
+                          'user_phone_ident':  provinfo['ident'],
+                          'user_phone_number': provinfo['number'],
+                          'user_phone_passwd': provinfo['passwd'],
                         },
                         cfg_filename)
                 tmp_file = open(tmp_filename, 'w')
