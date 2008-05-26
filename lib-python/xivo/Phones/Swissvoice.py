@@ -1,4 +1,4 @@
-"""Support for Swissvoice phones for XIVO Autoprovisioning
+"""Support for Swissvoice phones for XIVO Configuration
 
 Swissvoice IP10S is supported.
 
@@ -187,12 +187,17 @@ class Swissvoice(PhoneVendor):
                 model = ua_splitted[1].lower() + "s"
                 fw = ua_splitted[3]
                 return ("swissvoice", model, fw)
-
+        
         # Entry points for system configuration
         
         @classmethod
         def get_dhcp_classes_and_sub(cls, addresses):
-                XXX
+                yield 'subclass "phone-mac-address-prefix" 1:00:05:90 {\n'
+                yield '    log("class Swissvoice prefix 1:00:05:90");\n'
+                yield '    option tftp-server-name "%s";\n' % addresses['bootServer']
+                yield '    option bootfile-name "swupdate_ip10.inf";\n'
+                yield '}\n'
+                yield '\n'
 
         @classmethod
         def get_dhcp_pool_lines(cls):

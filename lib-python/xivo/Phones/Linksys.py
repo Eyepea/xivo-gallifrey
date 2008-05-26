@@ -1,4 +1,4 @@
-"""Support for Linksys phones for XIVO Autoprovisioning
+"""Support for Linksys phones for XIVO Configuration
 
 Linksys SPA901, SPA921, SPA922, SPA941, SPA942, SPA962 and PAP2T are supported.
 
@@ -41,16 +41,12 @@ LINKSYS_COMMON_HTTP_PASS = "adminpass"
 
 class Linksys(PhoneVendor):
         
+        LINKSYS_SPA_MODELS = ('901', '921', '922', '941', '942', '962')
+        
         def __init__(self, phone):
                 PhoneVendor.__init__(self, phone)
                 # TODO: handle this with a lookup table stored in the DB?
-                if self.phone["model"] != "spa901" and \
-                   self.phone["model"] != "spa921" and \
-                   self.phone["model"] != "spa922" and \
-                   self.phone["model"] != "spa941" and \
-                   self.phone["model"] != "spa942" and \
-                   self.phone["model"] != "spa962" and \
-                   self.phone["model"] != "pap2t":
+                if (self.phone["model"] not in map(lambda x: "spa" + x, self.LINKSYS_SPA_MODELS)) and (self.phone["model"] != "pap2t"):
                         raise ValueError, "Unknown Linksys model '%s'" % self.phone["model"]
         
         def __action(self, command, user, passwd):
@@ -134,13 +130,7 @@ class Linksys(PhoneVendor):
         @classmethod
         def get_phones(cls):
                 "Report supported phone models for this vendor."
-                return (("spa901", "SPA901"),
-                        ("spa921", "SPA921"),
-                        ("spa922", "SPA922"),
-                        ("spa941", "SPA941"),
-                        ("spa942", "SPA942"),
-                        ("spa962", "SPA962"),
-                        ("pap2t", "PAP2T"))
+                return tuple(map(lambda x: ("spa" + x, "SPA" + x), cls.LINKSYS_SPA_MODELS)) + (("pap2t", "PAP2T"),)
         
         # Entry points for the AGI
         
@@ -166,13 +156,29 @@ class Linksys(PhoneVendor):
                         if len(modelfw) == 2:
                                 fw = modelfw[1]
                 return ("linksys", model, fw)
-
+        
+        # Entry points for system configuration
+        
         @classmethod
         def get_dhcp_classes_and_sub(cls, addresses):
-                XXX
-
+                for model_number in cls.LINKSYS_SPA_MODELS:
+                        yield 'class "LinksysSPA%s" {\n' % model_number
+                        yield '    match if option vendor-class-identifier = "LINKSYS SPA-%s";\n' % model_number
+                        yield '    log("boot Linksys SPA-%s");\n' % model_number
+                        yield '    option tftp-server-name "%s";\n' % addresses['bootServer']
+                        yield '    option bootfile-name "Linksys/spa%s.cfg;\n' % model_number
+                        yield '    next-server %s;\n' % addresses['bootServer']
+                        yield '}\n'
+                        yield '\n'
+                yield 'subclass "phone-mac-address-prefix" 1:00:1c:10 {\n'
+                yield '    log("class Linksys PAP prefix 1:00:1c:10");\n'
+                yield '    option tftp-server-name "%s";\n' % addresses['bootServer']
+                yield '}\n'
+                yield '\n'
+        
         @classmethod
         def get_dhcp_pool_lines(cls):
-                return ()
+                for model_number in cls.LINKSYS_SPA_MODELS:
+                        yield '        allow members of "LinksysSPA%s";\n' % model_number
 
 xivo_config.register_phone_vendor_class(Linksys)

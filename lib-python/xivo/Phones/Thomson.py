@@ -1,4 +1,4 @@
-"""Support for Thomson phones for XIVO Autoprovisioning
+"""Support for Thomson phones for XIVO Configuration
 
 Thomson 2022S and 2030S are supported.
 
@@ -262,27 +262,29 @@ class Thomson(PhoneVendor):
                 if len(splitted_ua) >= 4:
                         fw = splitted_ua[3]
                 return ("thomson", model, fw)
-
+        
         # Entry points for system configuration
         
         @classmethod
         def get_dhcp_classes_and_sub(cls, addresses):
-                yield "class \"ThomsonST2022S\" {\n"
-                yield "    match if option user-class = \"Thomson ST2022S\";\n"
-                yield "    next-server %s;\n" % addresses['bootServer']
-                yield "    option bootfile-name \"Thomson/ST2022S\";\n"
-                yield "}\n"
-                yield "\n"
-                yield "class \"ThomsonST2030S\" {\n"
-                yield "    match if option user-class = \"Thomson ST2030S\";\n"
-                yield "    next-server %s;\n" % addresses['bootServer']
-                yield "    option bootfile-name \"Thomson/ST2030S\";\n"
-                yield "}\n"
-                yield "\n"
+                yield 'class "ThomsonST2022S" {\n'
+                yield '    match if option user-class = "Thomson ST2022S";\n'
+                yield '    log("class ThomsonST2022S");\n'
+                yield '    next-server %s;\n' % addresses['bootServer']
+                yield '    option bootfile-name "Thomson/ST2022S";\n'
+                yield '}\n'
+                yield '\n'
+                yield 'class "ThomsonST2030S" {\n"
+                yield '    match if option user-class = "Thomson ST2030S";\n"
+                yield '    log("class ThomsonST2030S");\n'
+                yield '    next-server %s;\n' % addresses['bootServer']
+                yield '    option bootfile-name "Thomson/ST2030S";\n"
+                yield '}\n'
+                yield '\n'
         
         @classmethod
         def get_dhcp_pool_lines(cls):
-                yield "        allow members of \"ThomsonST2022S\";\n"
-                yield "        allow members of \"ThomsonST2030S\";\n"
+                yield '        allow members of "ThomsonST2022S";\n'
+                yield '        allow members of "ThomsonST2030S";\n'
 
 xivo_config.register_phone_vendor_class(Thomson)

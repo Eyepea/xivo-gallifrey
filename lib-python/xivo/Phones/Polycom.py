@@ -1,4 +1,4 @@
-"""Support for Polycom phones for XIVO Autoprovisioning
+"""Support for Polycom phones for XIVO Configuration
 
 Polycom SoundPoint IP 430 SIP and SoundPoint IP 650 SIP are supported.
 
@@ -216,11 +216,17 @@ class Polycom(PhoneVendor):
                         fw = ua_splitted[1]
                         model = ua_splitted[0].split('-')[1].lower()
                 return ("polycom", model, fw)
-
+        
+        # Entry points for system configuration
+        
         @classmethod
         def get_dhcp_classes_and_sub(cls, addresses):
-                XXX
-
+                yield 'subclass "phone-mac-address-prefix" 1:00:04:f2 {\n'
+                yield '    log("class Polycom prefix 1:00:04:f2");\n'
+                yield '    option tftp-server-name "tftp://%s/Polycom";\n' % addresses['bootServer']
+                yield '}\n'
+                yield '\n'
+        
         @classmethod
         def get_dhcp_pool_lines(cls):
                 return ()

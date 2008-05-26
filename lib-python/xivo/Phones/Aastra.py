@@ -1,4 +1,4 @@
-"""Support for Aastra phones for XIVO Autoprovisioning
+"""Support for Aastra phones for XIVO Configuration
 
 Aastra 51i, 53i, 55i and 57i are supported.
 
@@ -41,10 +41,12 @@ AASTRA_COMMON_HTTP_PASS = '22222'
 
 class Aastra(PhoneVendor):
         
+        AASTRA_MODELS = ('51i', '53i', '55i', '57i')
+        
         def __init__(self, phone):
                 PhoneVendor.__init__(self, phone)
                 # TODO: handle this with a lookup table stored in the DB?
-                if self.phone['model'] not in ('51i', '53i', '55i', '57i'):
+                if self.phone['model'] not in self.AASTRA_MODELS:
                         raise ValueError, "Unknown Aastra model '%s'" % self.phone['model']
         
         def __action(self, user, passwd):
@@ -157,7 +159,7 @@ class Aastra(PhoneVendor):
         @classmethod
         def get_phones(cls):
                 "Report supported phone models for this vendor."
-                return (('51i', '51i'), ('53i', '53i'), ('55i', '55i'), ('57i', '57i'))
+                return tuple(map(lambda x: (x, x), cls.AASTRA_MODELS))
         
         # Entry points for the AGI
         
@@ -181,13 +183,24 @@ class Aastra(PhoneVendor):
                         if len(modelfw) == 2:
                                 fw = modelfw[1]
                 return ("aastra", model, fw)
-
+        
+        # Entry points for system configuration
+        
         @classmethod
         def get_dhcp_classes_and_sub(cls, addresses):
-                XXX
-
+                for model in cls.AASTRA_MODELS:
+                        yield 'class "Aastra%s" {\n' % model
+                        yield '    match if option vendor-class-identifier = "AastraIPPhone%s";\n' % model
+                        yield '    log("boot Aastra %s");\n' % model
+                        yield '    option tftp-server-name "%s";\n' % addresses['bootServer']
+                        yield '    option bootfile-name "aastra.cfg";\n'
+                        yield '    next-server %s;\n' % addresses['bootServer']
+                        yield '}\n'
+                        yield '\n'
+        
         @classmethod
         def get_dhcp_pool_lines(cls):
-                return ()
+                for model in cls.AASTRA_MODELS:
+                        yield '        allow members of "Aastra%s";\n' % model
 
 xivo_config.register_phone_vendor_class(Aastra)

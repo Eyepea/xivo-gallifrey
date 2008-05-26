@@ -1,4 +1,4 @@
-"""Support for Snom phones for XIVO Autoprovisioning
+"""Support for Snom phones for XIVO Configuration
 
 Snom 300 320 and 360 are supported.
 
@@ -147,11 +147,19 @@ class Snom(PhoneVendor):
                 if len(ua_splitted) > 1:
                         fw = ua_splitted[1]
                 return ("snom", model, fw)
-
+        
+        # Entry points for system configuration
+        
         @classmethod
         def get_dhcp_classes_and_sub(cls, addresses):
-                XXX
-
+                yield 'subclass "phone-mac-address-prefix" 1:00:04:13 {\n'
+                yield '    log("class Snom prefix 1:00:04:13");\n'
+                yield '    option tftp-server-name "http://%s:8667/";\n' % addresses['bootServer']
+                yield '    option bootfile-name "snom.php?mac={mac}";\n'
+                yield '    next-server %s;\n' % addresses['bootServer']
+                yield '}\n'
+                yield '\n'
+        
         @classmethod
         def get_dhcp_pool_lines(cls):
                 return ()
