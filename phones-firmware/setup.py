@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-__version__ = "$Revision: 2564 $ $Date: 2008-03-07 19:09:56 +0100 (Fri, 07 Mar 2008) $"
+__version__ = "$Revision$ $Date$"
 
 from distutils.core import setup
 
