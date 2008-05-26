@@ -154,13 +154,14 @@ class Aastra(PhoneVendor):
         
         # Introspection entry points
         
+        @classmethod
         def get_phones(cls):
                 "Report supported phone models for this vendor."
                 return (('51i', '51i'), ('53i', '53i'), ('55i', '55i'), ('57i', '57i'))
-        get_phones = classmethod(get_phones)
         
         # Entry points for the AGI
         
+        @classmethod
         def get_vendor_model_fw(cls, ua):
                 """
                 Extract Vendor / Model / FirmwareRevision from SIP User-Agent
@@ -180,6 +181,5 @@ class Aastra(PhoneVendor):
                         if len(modelfw) == 2:
                                 fw = modelfw[1]
                 return ("aastra", model, fw)
-        get_vendor_model_fw = classmethod(get_vendor_model_fw)
 
 xivo_config.register_phone_vendor_class(Aastra)
