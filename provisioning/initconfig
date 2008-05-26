@@ -90,18 +90,6 @@ def user_ipv4_from_sip_uri(sip_addr):
 	ip = splitted_sip[1].split('>')[0]
 	return (sip_user, ip)
 
-def phone_desc_by_ua(ua):
-	for phone_class in xivo_config.PhoneClasses.itervalues():
-		try:
-			r = phone_class.get_vendor_model_fw(ua)
-		except:
-			r = None
-			agitb.handler()
-			sys.exc_clear()
-		if r:
-			return r
-	return None
-
 def main():
 	xivo_config.LoadConfig(CONFIG_FILE)
 	if len(sys.argv) < 4:
@@ -122,7 +110,7 @@ def main():
 		return_exit("Could not find Mac Address from IPv4 \"%s\"" % ipv4)
 
 	# Get Phone description (if we are able to handle this vendor...)
-	phone_desc = phone_desc_by_ua(ua)
+	phone_desc = xivo_config.phone_desc_by_ua(ua, agitb.handler)
 	if not phone_desc:
 		return_exit("Unknown UA %s" % `ua`)
 	phone_vendor = phone_desc[0]

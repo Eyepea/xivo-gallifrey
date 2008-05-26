@@ -297,19 +297,44 @@ class PhoneVendor:
 		self.do_autoprov(provinfo)
 		syslogf(SYSLOG_DEBUG, "Phone AUTOPROV'ed %s" % self.phone['macaddr'])
 
-# Populated by Phone implementation modules
 PhoneClasses = {}
 
 def register_phone_vendor_class(cls):
+	global PhoneClasses
 	key = cls.__name__.lower()
 	if key not in PhoneClasses:
 		PhoneClasses[key] = cls
 	else:
 		raise ValueError, "A registration as already occured for %s" % `key`
 
+def phone_vendor_iter_key_class():
+	global PhoneClasses
+	return PhoneClasses.iteritems()
+
+def phone_factory(phone):
+	global PhoneClasses
+	phone_class = PhoneClasses[phone["vendor"]]
+	return phone_class(phone)
+
+def default_handler():
+	except_tb.log_exception(lambda x: syslogf(SYSLOG_ERR, x))
+
+def phone_desc_by_ua(ua, exception_handler = default_handler):
+	global PhoneClasses
+	for phone_class in PhoneClasses.itervalues():
+		try:
+			r = phone_class.get_vendor_model_fw(ua)
+		except:
+			r = None
+			exception_handler()
+			sys.exc_clear()
+		if r:
+			return r
+	return None
+
 __all__ = (
 	'ProvGeneralConf', 'LoadConfig', 'txtsubst',
 	'normalize_mac_address', 'ipv4_from_macaddr', 'macaddr_from_ipv4',
 	'well_formed_provcode',
-	'PhoneVendor', 'register_phone_vendor_class'
+	'PhoneVendor', 'register_phone_vendor_class', 'phone_vendor_iter_key_class', 'phone_factory', 'phone_desc_by_ua'
 )

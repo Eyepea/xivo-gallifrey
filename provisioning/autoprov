@@ -478,14 +478,12 @@ def __provisioning(mode, ctx, phone):
 	    syslogf(SYSLOG_WARNING, "__provisioning(): Operation already in progress for %s" % phone["macaddr"])
 	    raise ConflictError, "Operation already in progress for phone %s" % phone["macaddr"]
 	try:
-	    syslogf(SYSLOG_DEBUG, "__provisioning(): phone class from vendor")
-	    prov_class = xivo_config.PhoneClasses[phone["vendor"]] # TODO also use model
-	    syslogf(SYSLOG_DEBUG, "__provisioning(): phone instance from class")
-	    prov_inst = prov_class(phone)
-
+	    syslogf(SYSLOG_DEBUG, "__provisioning(): phone instance from description")
+	    prov_inst = xivo_config.phone_factory(phone)
+	    
 	    if "provcode" in phone and phone["provcode"] == "0":
 		    phone["iduserfeatures"] = "0"
-
+	    
 	    if "iduserfeatures" in phone and phone["iduserfeatures"] == "0":
 		    syslogf("__provisioning(): reinitializing provisioning to GUEST for phone %s" % str(phone))
 		    prov_inst.generate_reinitprov()
@@ -771,14 +769,10 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 		"Respond with the list of supported Vendors / Models"
 		syslogf(SYSLOG_NOTICE, "handle_list(): handling /list GET request for peer %s" % str(self.client_address))
 		self.send_response_headers_200()
-		for phonekey,phoneclass in xivo_config.PhoneClasses.iteritems():
-			phonelabel = phoneclass.label
+		for phonekey, phoneclass in xivo_config.phone_vendor_iter_key_class():
 			phones = phoneclass.get_phones()
-			self.wfile.write(phonekey + '="' + phonelabel.replace('"','\\"') + '"\r\n')
-			self.wfile.writelines([
-				(phonekey + '.' + x[0] + '="' +
-					x[1].replace('"','\\"') + '"\r\n')
-				for x in phones])
+			self.wfile.write(phonekey + '="' + phoneclass.__name__.replace('"','\\"') + '"\r\n')
+			self.wfile.writelines([(phonekey + '.' + x[0] + '="' + x[1].replace('"','\\"') + '"\r\n') for x in phones])
 
 	# === ENTRY POINTS (called FROM BaseHTTPRequestHandler) ===
 
@@ -787,6 +781,7 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 		if self.path == '/prov':
 			self.handle_prov()
 		else: self.answer_404()
+	
 	def do_GET(self):
 		syslogf("do_GET(): handling GET request to path %s for peer %s" % (self.path, str(self.client_address)))
 		if self.path == '/list':
