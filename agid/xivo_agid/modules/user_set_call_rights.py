@@ -35,7 +35,7 @@ def _user_set_call_rights(handler, agi, cursor, args):
 	if not res:
 		call_rights.allow(agi)
 
-	rightcallidset = set((row['rightcallid'] for row in res if extension_matches(dstnum, row['exten'])))
+	rightcallidset = set((row['rightcallid'] for row in res if call_rights.extension_matches(dstnum, row['exten'])))
 
 	if not rightcallidset:
 		call_rights.allow(agi)
