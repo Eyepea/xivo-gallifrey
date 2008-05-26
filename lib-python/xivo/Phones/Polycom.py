@@ -217,4 +217,12 @@ class Polycom(PhoneVendor):
                         model = ua_splitted[0].split('-')[1].lower()
                 return ("polycom", model, fw)
 
+        @classmethod
+        def get_dhcp_classes_and_sub(cls, addresses):
+                XXX
+
+        @classmethod
+        def get_dhcp_pool_lines(cls):
+                return ()
+
 xivo_config.register_phone_vendor_class(Polycom)

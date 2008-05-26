@@ -182,4 +182,12 @@ class Aastra(PhoneVendor):
                                 fw = modelfw[1]
                 return ("aastra", model, fw)
 
+        @classmethod
+        def get_dhcp_classes_and_sub(cls, addresses):
+                XXX
+
+        @classmethod
+        def get_dhcp_pool_lines(cls):
+                return ()
+
 xivo_config.register_phone_vendor_class(Aastra)

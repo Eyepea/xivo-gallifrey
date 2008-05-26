@@ -148,4 +148,12 @@ class Snom(PhoneVendor):
                         fw = ua_splitted[1]
                 return ("snom", model, fw)
 
+        @classmethod
+        def get_dhcp_classes_and_sub(cls, addresses):
+                XXX
+
+        @classmethod
+        def get_dhcp_pool_lines(cls):
+                return ()
+
 xivo_config.register_phone_vendor_class(Snom)

@@ -188,4 +188,14 @@ class Swissvoice(PhoneVendor):
                 fw = ua_splitted[3]
                 return ("swissvoice", model, fw)
 
+        # Entry points for system configuration
+        
+        @classmethod
+        def get_dhcp_classes_and_sub(cls, addresses):
+                XXX
+
+        @classmethod
+        def get_dhcp_pool_lines(cls):
+                return ()
+
 xivo_config.register_phone_vendor_class(Swissvoice)
