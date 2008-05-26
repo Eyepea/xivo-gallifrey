@@ -40,45 +40,113 @@ LISTEN_ADDR_DEFAULT = "127.0.0.1"
 LISTEN_PORT_DEFAULT = 4573
 CONN_POOL_SIZE_DEFAULT = 10
 
-debug_enabled = False
+server = None
 modules = {}
-conns = []
-conns_lock = Lock()
-db_uri = None
-conn_pool_size = None
+debug_enabled = False
+
+class DBConnectionPool:
+	def __init__(self):
+		self.conns = []
+		self.size = 0
+		self.db_uri = None
+		self.lock = Lock()
+
+	def reload(self, size, db_uri):
+		try:
+			self.lock.acquire()
+
+			for conn in self.conns:
+				conn.close()
+
+			del self.conns[:]
+
+			while len(self.conns) < size:
+				self.conns.append(anysql.connect_by_uri(db_uri))
+
+			self.size = size
+			self.db_uri = db_uri
+			debug("reloaded db conn pool")
+			debug(self)
+		finally:
+			self.lock.release()
+
+	def acquire(self):
+		try:
+			self.lock.acquire()
+
+			try:
+				conn = self.conns.pop()
+				debug("acquiring connection: got connection from pool")
+			except IndexError:
+				conn = anysql.connect_by_uri(self.db_uri)
+				debug("acquiring connection: pool empty, created new connection")
+		finally:
+			debug(self)
+			self.lock.release()
+
+		return conn
+
+	def release(self, conn):
+		try:
+			self.lock.acquire()
+
+			if len(self.conns) < self.size:
+				self.conns.append(conn)
+				debug("releasing connection: pool not full, refilled with connection")
+			else:
+				conn.close()
+				debug("releasing connection: pool full, connection closed")
+
+		finally:
+			debug(self)
+			self.lock.release()
+
+	# The connection pool lock must be hold.
+	def __str__(self):
+		return ("connection pool: size = %d\n"
+                       "connection pool: available connections = %d\n"
+                       "connection pool: db_uri = %s") % (self.size, len(self.conns), self.db_uri)
 
 class FastAGIRequestHandler(SocketServer.StreamRequestHandler):
 	def handle(self):
 		try:
+			debug("handling request")
+
 			self.fastagi = fastagi.FastAGI(self.rfile, self.wfile)
 			self.except_hook = agitb.Hook(agi = self.fastagi)
 
-			conn = acquire_conn()
+			conn = server.db_conn_pool.acquire()
 			self.cursor = conn.cursor()
 
 			module_name = self.fastagi.env['agi_network_script']
+			debug("delegating request handling to module %s" % module_name)
 			modules[module_name].handle(self, self.fastagi, self.cursor, self.fastagi.args)
 
 			conn.commit()
 
 			self.fastagi.verbose('AGI module "%s" successfully executed' % module_name)
+			debug("request successfully handled")
 
 		# Attempt to relay errors to Asterisk, but if it fails, we
 		# just give up.
 		# XXX It may be here that dropping database connection
 		# exceptions could be catched.
 		except fastagi.FastAGIDialPlanBreak, message:
+			debug("invalid request, dial plan broken")
+
 			try:
 				self.fastagi.verbose(message)
 			except:
 				pass
 		except:
+			debug("an unexpected error occurred")
+
 			try:
 				self.except_hook.handle()
 			except:
 				pass
 
-		release_conn(conn)
+		server.db_conn_pool.release(conn)
 
 	def set_fwd_vars(self, type, typeval, appval, type_varname, typeval1_varname, typeval2_varname):
 		"""The purpose of this function is to set some variables in the
@@ -229,33 +297,40 @@ class FastAGIRequestHandler(SocketServer.StreamRequestHandler):
 
 class AGID(SocketServer.ThreadingTCPServer):
 	allow_reuse_address = True
+	initialized = False
 
 	def __init__(self):
-		global debug_enabled
-		global conn_pool_size
-		global db_uri
-
 		log('%s %s.%s starting...' % (NAME, VERSION_MAJOR, VERSION_MINOR))
 
 		signal.signal(signal.SIGHUP, sighup_handle)
 
+		self.db_conn_pool = DBConnectionPool()
+		self.setup()
+
+		SocketServer.ThreadingTCPServer.__init__(self,
+                    (self.listen_addr, self.listen_port),
+                    FastAGIRequestHandler)
+
+		self.initialized = True
+
+	def setup(self):
 		config = ConfigParser.RawConfigParser()
 		config.readfp(open(AGI_CONFFILE))
 
-		try:
-			debug_enabled = config.getboolean("general", "debug")
-		except ConfigParser.NoOptionError:
-			debug_enabled = False
+		if not self.initialized:
+			try:
+				self.listen_addr = config.get("general", "listen_addr")
+			except ConfigParser.NoOptionError:
+				self.listen_addr = LISTEN_ADDR_DEFAULT
 
-		try:
-			listen_addr = config.get("general", "listen_addr")
-		except ConfigParser.NoOptionError:
-			listen_addr = LISTEN_ADDR_DEFAULT
+			debug("listen_addr: %s" % self.listen_addr)
 
-		try:
-			listen_port = config.getint("general", "listen_port")
-		except ConfigParser.NoOptionError:
-			listen_port = LISTEN_PORT_DEFAULT
+			try:
+				self.listen_port = config.getint("general", "listen_port")
+			except ConfigParser.NoOptionError:
+				self.listen_port = LISTEN_PORT_DEFAULT
+
+			debug("listen_port: %d" % self.listen_port)
 
 		try:
 			conn_pool_size = config.getint("general", "conn_pool_size")
@@ -263,16 +338,7 @@ class AGID(SocketServer.ThreadingTCPServer):
 			conn_pool_size = CONN_POOL_SIZE_DEFAULT
 
 		db_uri = config.get("db", "db_uri")
-
-		debug("debug: %s" % debug_enabled)
-		debug("listen_addr: %s" % listen_addr)
-		debug("listen_port: %d" % listen_port)
-		debug("conn_pool_size: %d" % conn_pool_size)
-		debug("db_uri: %s" % db_uri)
-
-		SocketServer.ThreadingTCPServer.__init__(self,
-                    (listen_addr, listen_port),
-                    FastAGIRequestHandler)
+		self.db_conn_pool.reload(conn_pool_size, db_uri)
 
 class Module:
 	def __init__(self, module_name, setup_fn, handle_fn):
@@ -302,19 +368,20 @@ class Module:
 		self.handle_fn(request_handler, agi, cursor, args)
 		self.lock.release()
 
-def log(s):
-	print "%s: %s" % (NAME, s)
+def log(s, prefix = None):
+	for line in str(s).splitlines():
+		print "%s: %s%s" % (NAME, prefix or "", line)
 
 def warning(s):
-	log("WARNING: %s" % s)
+	log(s, "WARNING: ")
 
 def error(s):
-	log("ERROR: %s" % s)
+	log(s, "ERROR: ")
 	sys.exit(1)
 
 def debug(s):
 	if debug_enabled:
-		log("DEBUG: %s" % s)
+		log(s, "DEBUG: ")
 
 def register(handle_fn, setup_fn = None):
 	module_name = handle_fn.__name__
@@ -324,60 +391,43 @@ def register(handle_fn, setup_fn = None):
 
 	modules[module_name] = Module(module_name, setup_fn, handle_fn)
 
-def display_conns():
-	debug("connection pool: size = %d, available connections = %d" % (conn_pool_size, len(conns)))
-
-def acquire_conn():
-	try:
-		conn = conns.pop()
-		debug("got connection from pool")
-	except IndexError:
-		conn = anysql.connect_by_uri(db_uri)
-		debug("pool empty, created new connection")
-
-	display_conns()
-	return conn
-
-def release_conn(conn):
-	if not conn:
-		return
-
-	conns_lock.acquire()
-
-	if len(conns) < conn_pool_size:
-		conns.append(conn)
-		debug("pool not full, refilled with connection")
-	else:
-		conn.close()
-		debug("pool full, connection closed")
-
-	display_conns()
-
-	conns_lock.release()
-
 def sighup_handle(signum, frame):
 	try:
-		conn = acquire_conn()
+		debug("reloading core engine")
+
+		server.setup()
+
+		debug("reloading modules")
+
+		conn = server.db_conn_pool.acquire()
 		cursor = conn.cursor()
 
 		for module in modules.itervalues():
 			module.reload(cursor)
 
 		conn.commit()
+
+		debug("finished reload")
 	finally:
-		release_conn(conn)
+		server.db_conn_pool.release(conn)
 
 def run():
-	while len(conns) < conn_pool_size:
-		conns.append(anysql.connect_by_uri(db_uri))
-
-	cursor = conns[0].cursor()
+	conn = server.db_conn_pool.acquire()
+	cursor = conn.cursor()
 
 	debug("list of modules: %s" % ', '.join(sorted(modules.keys())))
 
 	for module in modules.itervalues():
 		module.setup(cursor)
 
+	conn.commit()
+	server.db_conn_pool.release(conn)
+
 	server.serve_forever()
 
-server = AGID()
+def init(debugging_on = False):
+	global debug_enabled
+	global server
+
+	debug_enabled = debugging_on
+	server = AGID()

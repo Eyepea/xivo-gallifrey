@@ -37,9 +37,12 @@ def log_stderr_and_syslog(x):
 	syslogf(SYSLOG_ERR, x)
 
 if '-d' not in sys.argv:
-	agid.debug_enabled = True
+	debug_enabled = True
+else:
+	debug_enabled = False
 
 if '-f' not in sys.argv:
 	daemonize.daemonize(log_stderr_and_syslog, PIDFILE, pidfile_lock = True)
 
+agid.init(debug_enabled)
 agid.run()
