@@ -39,9 +39,7 @@ AASTRA_COMMON_DIR = pgc['tftproot'] + 'Aastra/'
 AASTRA_COMMON_HTTP_USER = 'admin'
 AASTRA_COMMON_HTTP_PASS = '22222'
 
-class AastraProv(PhoneVendor):
-        
-        label = "Aastra"
+class Aastra(PhoneVendor):
         
         def __init__(self, phone):
                 PhoneVendor.__init__(self, phone)
@@ -184,4 +182,4 @@ class AastraProv(PhoneVendor):
                 return ("aastra", model, fw)
         get_vendor_model_fw = classmethod(get_vendor_model_fw)
 
-xivo_config.PhoneClasses['aastra'] = AastraProv
+xivo_config.register_phone_vendor_class(Aastra)

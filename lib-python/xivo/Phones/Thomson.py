@@ -104,9 +104,7 @@ class TimeoutingTelnet(telnetlib.Telnet):
                                 return gotstr
                         raise TelnetExpectationFailed, "Expected string '%s' has not been received before termination of the telnet session with peer %s" % (expected, str(self.__my_cnx))
 
-class ThomsonProv(PhoneVendor):
-        
-        label = "Thomson"
+class Thomson(PhoneVendor):
         
         def __init__(self, phone):
                 PhoneVendor.__init__(self, phone)
@@ -265,4 +263,4 @@ class ThomsonProv(PhoneVendor):
                         fw = splitted_ua[3]
                 return ("thomson", model, fw)
 
-xivo_config.PhoneClasses["thomson"] = ThomsonProv
+xivo_config.register_phone_vendor_class(Thomson)

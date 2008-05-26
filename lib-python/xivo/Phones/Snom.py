@@ -49,9 +49,7 @@ SNOM_SPEC_TEMPLATE = pgc['templates_dir'] + "snom-template.htm"
 SNOM_COMMON_HTTP_USER = "guest"
 SNOM_COMMON_HTTP_PASS = "guest"
 
-class SnomProv(PhoneVendor):
-        
-        label = "Snom"
+class Snom(PhoneVendor):
         
         def __init__(self, phone):
                 PhoneVendor.__init__(self, phone)
@@ -150,4 +148,4 @@ class SnomProv(PhoneVendor):
                         fw = ua_splitted[1]
                 return ("snom", model, fw)
 
-xivo_config.PhoneClasses["snom"] = SnomProv
+xivo_config.register_phone_vendor_class(Snom)

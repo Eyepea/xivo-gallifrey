@@ -42,9 +42,7 @@ AMI_PORT = 5038
 AMI_USER = 'xivouser'
 AMI_PASS = 'xivouser'
 
-class PolycomProv(PhoneVendor):
-        
-        label = "Polycom"
+class Polycom(PhoneVendor):
         
         def __init__(self, phone):
                 PhoneVendor.__init__(self, phone)
@@ -219,4 +217,4 @@ class PolycomProv(PhoneVendor):
                         model = ua_splitted[0].split('-')[1].lower()
                 return ("polycom", model, fw)
 
-xivo_config.PhoneClasses["polycom"] = PolycomProv
+xivo_config.register_phone_vendor_class(Polycom)

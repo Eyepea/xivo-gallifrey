@@ -299,3 +299,17 @@ class PhoneVendor:
 
 # Populated by Phone implementation modules
 PhoneClasses = {}
+
+def register_phone_vendor_class(cls):
+	key = cls.__name__.lower()
+	if key not in PhoneClasses:
+		PhoneClasses[key] = cls
+	else:
+		raise ValueError, "A registration as already occured for %s" % `key`
+
+__all__ = (
+	'ProvGeneralConf', 'LoadConfig', 'txtsubst',
+	'normalize_mac_address', 'ipv4_from_macaddr', 'macaddr_from_ipv4',
+	'well_formed_provcode',
+	'PhoneVendor', 'register_phone_vendor_class'
+)

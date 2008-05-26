@@ -51,9 +51,7 @@ SWISSVOICE_SPEC_CFG_TEMPLATE = pgc['templates_dir'] + "template_ip10.cfg"
 SWISSVOICE_COMMON_HTTP_USER = "admin"
 SWISSVOICE_COMMON_HTTP_PASS = "admin"
 
-class SwissvoiceProv(PhoneVendor):
-        
-        label = "Swissvoice"
+class Swissvoice(PhoneVendor):
         
         def __init__(self, phone):
                 PhoneVendor.__init__(self, phone)
@@ -190,4 +188,4 @@ class SwissvoiceProv(PhoneVendor):
                 fw = ua_splitted[3]
                 return ("swissvoice", model, fw)
 
-xivo_config.PhoneClasses["swissvoice"] = SwissvoiceProv
+xivo_config.register_phone_vendor_class(Swissvoice)

@@ -39,9 +39,7 @@ LINKSYS_COMMON_DIR = pgc['tftproot'] + "Linksys/"
 LINKSYS_COMMON_HTTP_USER = "admin"
 LINKSYS_COMMON_HTTP_PASS = "adminpass"
 
-class LinksysProv(PhoneVendor):
-        
-        label = "Linksys"
+class Linksys(PhoneVendor):
         
         def __init__(self, phone):
                 PhoneVendor.__init__(self, phone)
@@ -169,4 +167,4 @@ class LinksysProv(PhoneVendor):
                                 fw = modelfw[1]
                 return ("linksys", model, fw)
 
-xivo_config.PhoneClasses["linksys"] = LinksysProv
+xivo_config.register_phone_vendor_class(Linksys)
