@@ -1,0 +1,16 @@
+#!/usr/bin/make -f
+# -*- mode: makefile; coding: utf-8 -*-
+#
+# $Revision: 1303 $
+# $Date: 2007-08-06 12:37:33 +0200 (Mon, 06 Aug 2007) $
+
+include $(NONO_MK)/autobuild.mk
+include $(NONO_MK)/autobuild-classic.mk
+
+DEB_PKG := python-yaml
+TARBALL_DIR := $(realpath $(MODULE_PATH)/pyyaml)
+MAINREV := $(shell cat $(realpath $(MODULE_PATH))/VERSION)
+SVNREV := $(shell svn info $(TARBALL_DIR) | grep "Last Changed Rev" | sed "s/.*: //")
+XIVO_REV := $(MAINREV)~svn$(SVNREV)
+
+default:
