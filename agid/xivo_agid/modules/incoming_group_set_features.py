@@ -24,15 +24,15 @@ def incoming_group_set_features(handler, agi, cursor, args):
 	context = agi.get_variable('REAL_CONTEXT')
 
 	cursor.query("SELECT ${columns} FROM groupfeatures "
-                     "INNER JOIN queue "
-                     "ON groupfeatures.name = queue.name "
-                     "WHERE groupfeatures.number = %s "
-                     "AND groupfeatures.context = %s "
-                     "AND groupfeatures.deleted = 0 "
-                     "AND queue.commented = 0 "
-                     "AND queue.category = 'group'",
-                     ('groupfeatures.id', 'groupfeatures.name', 'groupfeatures.timeout', 'groupfeatures.transfer_user', 'groupfeatures.transfer_call', 'groupfeatures.write_caller', 'groupfeatures.write_calling', 'queue.musiconhold'),
-                     (dstnum, context))
+		     "INNER JOIN queue "
+		     "ON groupfeatures.name = queue.name "
+		     "WHERE groupfeatures.number = %s "
+		     "AND groupfeatures.context = %s "
+		     "AND groupfeatures.deleted = 0 "
+		     "AND queue.commented = 0 "
+		     "AND queue.category = 'group'",
+		     ('groupfeatures.id', 'groupfeatures.name', 'groupfeatures.timeout', 'groupfeatures.transfer_user', 'groupfeatures.transfer_call', 'groupfeatures.write_caller', 'groupfeatures.write_calling', 'queue.musiconhold'),
+		     (dstnum, context))
 	res = cursor.fetchone()
 
 	if not res:

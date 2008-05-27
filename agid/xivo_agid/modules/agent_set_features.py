@@ -23,10 +23,10 @@ def agent_set_features(handler, agi, cursor, args):
 	number = args[0]
 
 	cursor.query("SELECT ${columns} FROM agentfeatures "
-                     "WHERE number = %s "
-                     "AND commented = 0",
-                     ('silent',),
-                     (number,))
+		     "WHERE number = %s "
+		     "AND commented = 0",
+		     ('silent',),
+		     (number,))
 	res = cursor.fetchone()
 
 	if not res:

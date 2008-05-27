@@ -24,14 +24,14 @@ def incoming_queue_set_features(handler, agi, cursor, args):
 	context = agi.get_variable('REAL_CONTEXT')
 
 	cursor.query("SELECT ${columns} FROM queuefeatures "
-                     "INNER JOIN queue "
-                     "ON queuefeatures.name = queue.name "
-                     "WHERE queuefeatures.number = %s "
-                     "AND queuefeatures.context = %s "
-                     "AND queue.commented = 0 "
-                     "AND queue.category = 'queue'",
-                     [('queuefeatures.' + x) for x in ('name', 'data_quality', 'hitting_callee', 'hitting_caller', 'retries', 'ring', 'transfer_user', 'transfer_call', 'write_caller', 'write_calling', 'url', 'announceoverride', 'timeout')],
-                     (dstnum, context))
+		     "INNER JOIN queue "
+		     "ON queuefeatures.name = queue.name "
+		     "WHERE queuefeatures.number = %s "
+		     "AND queuefeatures.context = %s "
+		     "AND queue.commented = 0 "
+		     "AND queue.category = 'queue'",
+		     [('queuefeatures.' + x) for x in ('name', 'data_quality', 'hitting_callee', 'hitting_caller', 'retries', 'ring', 'transfer_user', 'transfer_call', 'write_caller', 'write_calling', 'url', 'announceoverride', 'timeout')],
+		     (dstnum, context))
 	res = cursor.fetchone()
 
 	if not res:

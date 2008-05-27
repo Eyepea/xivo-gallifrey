@@ -40,11 +40,11 @@ def schedule(handler, agi, cursor, args):
 	id = args[0]
 
 	cursor.query("SELECT ${columns} FROM schedule "
-                     "WHERE id = %s "
-                     "AND linked = 1 "
-                     "AND commented = 0",
-                     ('timebeg', 'timeend', 'daynamebeg', 'daynameend', 'daynumbeg', 'daynumend', 'monthbeg', 'monthend', 'typetrue', 'typevaltrue', 'applicationvaltrue', 'typefalse', 'typevalfalse', 'applicationvalfalse'),
-                     (id,))
+		     "WHERE id = %s "
+		     "AND linked = 1 "
+		     "AND commented = 0",
+		     ('timebeg', 'timeend', 'daynamebeg', 'daynameend', 'daynumbeg', 'daynumend', 'monthbeg', 'monthend', 'typetrue', 'typevaltrue', 'applicationvaltrue', 'typefalse', 'typevalfalse', 'applicationvalfalse'),
+		     (id,))
 	res = cursor.fetchone()
 
 	if not res:

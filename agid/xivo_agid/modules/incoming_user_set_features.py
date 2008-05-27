@@ -33,12 +33,12 @@ def incoming_user_set_features(handler, agi, cursor, args):
 	# [a-zA-Z_][a-zA-Z0-9_]*
 	columns = ('id', 'protocol' , 'protocolid', 'name', 'ringseconds', 'simultcalls', 'enablevoicemail', 'voicemailid', 'enablexfer', 'enableautomon', 'callrecord', 'callfilter', 'enablednd', 'enableunc', 'destunc', 'enablerna', 'destrna', 'enablebusy', 'destbusy', 'musiconhold', 'bsfilter')
 	cursor.query("SELECT ${columns} FROM userfeatures "
-                     "WHERE number = %s "
-                     "AND context = %s "
-                     "AND internal = 0 "
-                     "AND commented = 0",
-                     columns,
-                     (dstnum, context))
+		     "WHERE number = %s "
+		     "AND context = %s "
+		     "AND internal = 0 "
+		     "AND commented = 0",
+		     columns,
+		     (dstnum, context))
 	res = cursor.fetchone()
 
 	if not res:
@@ -106,11 +106,11 @@ def incoming_user_set_features(handler, agi, cursor, args):
 		interface = "SIP/" + name
 	elif protocol == "custom":
 		cursor.query("SELECT ${columns} FROM usercustom "
-                             "WHERE id = %s "
-                             "AND commented = 0 "
-                             "AND category = 'user'",
-                             ('interface',),
-                             (protocolid,))
+			     "WHERE id = %s "
+			     "AND commented = 0 "
+			     "AND category = 'user'",
+			     ('interface',),
+			     (protocolid,))
 		res = cursor.fetchone()
 
 		if not res:
@@ -123,9 +123,9 @@ def incoming_user_set_features(handler, agi, cursor, args):
 	# The extension table contains some rows which are used to activate some
 	# services like redirections or voicemail.
 	cursor.query("SELECT ${columns} FROM extensions "
-                     "WHERE name IN ('fwdunc', 'fwdrna', 'fwdbusy', 'enablevm', 'incallfilter', 'incallrec', 'enablednd') "
-                     "AND commented = 0",
-                     ('name',))
+		     "WHERE name IN ('fwdunc', 'fwdrna', 'fwdbusy', 'enablevm', 'incallfilter', 'incallrec', 'enablednd') "
+		     "AND commented = 0",
+		     ('name',))
 	res = cursor.fetchall()
 
 	features_list = [row['name'] for row in res]
@@ -157,11 +157,11 @@ def incoming_user_set_features(handler, agi, cursor, args):
 
 		if enablevoicemail:
 			cursor.query("SELECT ${columns} FROM voicemail "
-                                     "WHERE uniqueid = %s "
-                                     "AND context = %s "
-                                     "AND commented = 0",
-                                     ('email',),
-                                     (voicemailid, context))
+				     "WHERE uniqueid = %s "
+				     "AND context = %s "
+				     "AND commented = 0",
+				     ('email',),
+				     (voicemailid, context))
 			res = cursor.fetchone()
 
 			if res and res['email']:

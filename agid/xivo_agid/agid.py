@@ -104,8 +104,8 @@ class DBConnectionPool:
 	# The connection pool lock must be hold.
 	def __str__(self):
 		return ("connection pool: size = %d\n"
-                       "connection pool: available connections = %d\n"
-                       "connection pool: db_uri = %s") % (self.size, len(self.conns), self.db_uri)
+			"connection pool: available connections = %d\n"
+			"connection pool: db_uri = %s") % (self.size, len(self.conns), self.db_uri)
 
 class FastAGIRequestHandler(SocketServer.StreamRequestHandler):
 	def handle(self):
@@ -202,12 +202,12 @@ class FastAGIRequestHandler(SocketServer.StreamRequestHandler):
 			agi.set_variable(typeval1_varname, typeval.replace(",", ";").replace("|", ";"))
 		elif type == 'user':
 			cursor.query("SELECT ${columns} FROM userfeatures "
-                                     "WHERE id = %s "
-                                     "AND IFNULL(userfeatures.number,'') != '' "
-                                     "AND internal = 0 "
-                                     "AND commented = 0",
-                                     ('number', 'context'),
-                                     (typeval,))
+				     "WHERE id = %s "
+				     "AND IFNULL(userfeatures.number,'') != '' "
+				     "AND internal = 0 "
+				     "AND commented = 0",
+				     ('number', 'context'),
+				     (typeval,))
 			res = cursor.fetchone()
 
 			if not res:
@@ -217,13 +217,13 @@ class FastAGIRequestHandler(SocketServer.StreamRequestHandler):
 			agi.set_variable(typeval2_varname, res['context'])
 		elif type == 'group':
 			cursor.query("SELECT ${columns} FROM groupfeatures INNER JOIN queue "
-                                     "ON groupfeatures.name = queue.name "
-                                     "WHERE groupfeatures.id = %s "
-                                     "AND groupfeatures.deleted = 0 "
-                                     "AND queue.category = 'group' "
-                                     "AND queue.commented = 0",
-                                     [('groupfeatures.' + x) for x in ('number', 'context')],
-                                     (typeval,))
+				     "ON groupfeatures.name = queue.name "
+				     "WHERE groupfeatures.id = %s "
+				     "AND groupfeatures.deleted = 0 "
+				     "AND queue.category = 'group' "
+				     "AND queue.commented = 0",
+				     [('groupfeatures.' + x) for x in ('number', 'context')],
+				     (typeval,))
 			res = cursor.fetchone()
 
 			if not res:
@@ -233,12 +233,12 @@ class FastAGIRequestHandler(SocketServer.StreamRequestHandler):
 			agi.set_variable(typeval2_varname, res['groupfeatures.context'])
 		elif type == 'queue':
 			cursor.query("SELECT ${columns} FROM queuefeatures INNER JOIN queue "
-                                     "ON queuefeatures.name = queue.name "
-                                     "WHERE queuefeatures.id = %s "
-                                     "AND queue.category = 'queue' "
-                                     "AND queue.commented = 0",
-                                     [('queuefeatures.' + x) for x in ('number', 'context')],
-                                     (typeval,))
+				     "ON queuefeatures.name = queue.name "
+				     "WHERE queuefeatures.id = %s "
+				     "AND queue.category = 'queue' "
+				     "AND queue.commented = 0",
+				     [('queuefeatures.' + x) for x in ('number', 'context')],
+				     (typeval,))
 			res = cursor.fetchone()
 
 			if not res:
@@ -248,11 +248,11 @@ class FastAGIRequestHandler(SocketServer.StreamRequestHandler):
 			agi.set_variable(typeval2_varname, res['queuefeatures.context'])
 		elif type == 'meetme':
 			cursor.query("SELECT ${columns} FROM meetmefeatures INNER JOIN staticmeetme "
-                                     "ON meetmefeatures.meetmeid = staticmeetme.id "
-                                     "WHERE meetmefeatures.id = %s "
-                                     "AND staticmeetme.commented = 0",
-                                     [('meetmefeatures.' + x) for x in ('number', 'context')],
-                                     (typeval,))
+				     "ON meetmefeatures.meetmeid = staticmeetme.id "
+				     "WHERE meetmefeatures.id = %s "
+				     "AND staticmeetme.commented = 0",
+				     [('meetmefeatures.' + x) for x in ('number', 'context')],
+				     (typeval,))
 			res = cursor.fetchone()
 
 			if not res:
@@ -275,12 +275,12 @@ class FastAGIRequestHandler(SocketServer.StreamRequestHandler):
 		cursor = self.cursor
 
 		cursor.query("SELECT ${columns} FROM dialstatus "
-                             "WHERE status = %s "
-                             "AND category = %s "
-                             "AND categoryval = %s "
-                             "AND linked = 1",
-                             ('type', 'typeval', 'applicationval'),
-                             (status, category, id))
+			     "WHERE status = %s "
+			     "AND category = %s "
+			     "AND categoryval = %s "
+			     "AND linked = 1",
+			     ('type', 'typeval', 'applicationval'),
+			     (status, category, id))
 		res = cursor.fetchone()
 
 		if not res:
@@ -308,8 +308,8 @@ class AGID(SocketServer.ThreadingTCPServer):
 		self.setup()
 
 		SocketServer.ThreadingTCPServer.__init__(self,
-                    (self.listen_addr, self.listen_port),
-                    FastAGIRequestHandler)
+			(self.listen_addr, self.listen_port),
+			FastAGIRequestHandler)
 
 		self.initialized = True
 

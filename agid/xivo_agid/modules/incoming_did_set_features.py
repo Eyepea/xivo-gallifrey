@@ -23,17 +23,17 @@ def incoming_did_set_features(handler, agi, cursor, args):
 	exten_pattern = agi.get_variable('REAL_EXTENPATTERN')
 
 	cursor.query("SELECT ${columns} FROM incall "
-                     "WHERE exten = %s "
-                     "AND linked = 1 "
-                     "AND commented = 0",
-                     ('type', 'typeval', 'applicationval'),
-                     (exten_pattern,))
+		     "WHERE exten = %s "
+		     "AND linked = 1 "
+		     "AND commented = 0",
+		     ('type', 'typeval', 'applicationval'),
+		     (exten_pattern,))
 	res = cursor.fetchone()
 
 	if not res:
 		agi.dp_break("Unknown extension '%s'" % exten_pattern)
 
 	handler.set_fwd_vars(res['type'], res['typeval'], res['applicationval'],
-                             "XIVO_DIDTYPE", "XIVO_DIDTYPEVAL1", "XIVO_DIDTYPEVAL2")
+			     "XIVO_DIDTYPE", "XIVO_DIDTYPEVAL1", "XIVO_DIDTYPEVAL2")
 
 agid.register(incoming_did_set_features)

@@ -36,13 +36,13 @@ def callback(handler, agi, cursor, args):
 
 	file = open(tmpfile, 'w')
 	file.write("Channel: Local/%s\n"
-                   "MaxRetries: 0\n"
-                   "RetryTime: 30\n"
-                   "WaitTime: 30\n"
-                   "CallerID: %s\n"
-                   "Set: XIVO_DISAPARAMS=%s\n"
-                   "Context: xivo-callbackdisa\n"
-                   "Extension: s" % (srcnum, srcnum, disa_params))
+		   "MaxRetries: 0\n"
+		   "RetryTime: 30\n"
+		   "WaitTime: 30\n"
+		   "CallerID: %s\n"
+		   "Set: XIVO_DISAPARAMS=%s\n"
+		   "Context: xivo-callbackdisa\n"
+		   "Extension: s" % (srcnum, srcnum, disa_params))
 	file.close()
 
 	os.utime(tmpfile, (mtime, mtime))

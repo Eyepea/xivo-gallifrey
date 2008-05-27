@@ -24,17 +24,17 @@ def voicemsg(handler, agi, cursor, args):
 	context = agi.get_variable('REAL_CONTEXT')
 
 	cursor.query("SELECT ${columns} FROM userfeatures "
-                     "INNER JOIN voicemail "
-                     "ON userfeatures.voicemailid = voicemail.uniqueid "
-                     "INNER JOIN voicemailfeatures "
-                     "ON userfeatures.voicemailid = voicemailfeatures.id "
-                     "WHERE userfeatures.number = %s "
-                     "AND userfeatures.context = %s "
-                     "AND userfeatures.internal = 0 "
-                     "AND userfeatures.commented = 0 "
-                     "AND voicemail.commented = 0",
-                     ('voicemailfeatures.skipcheckpass',),
-                     (srcnum, context))
+		     "INNER JOIN voicemail "
+		     "ON userfeatures.voicemailid = voicemail.uniqueid "
+		     "INNER JOIN voicemailfeatures "
+		     "ON userfeatures.voicemailid = voicemailfeatures.id "
+		     "WHERE userfeatures.number = %s "
+		     "AND userfeatures.context = %s "
+		     "AND userfeatures.internal = 0 "
+		     "AND userfeatures.commented = 0 "
+		     "AND voicemail.commented = 0",
+		     ('voicemailfeatures.skipcheckpass',),
+		     (srcnum, context))
 	res = cursor.fetchone()
 
 	if not res:

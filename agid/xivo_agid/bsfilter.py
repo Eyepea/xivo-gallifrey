@@ -47,12 +47,12 @@ class bsf_member:
 
 	def __str__(self):
 		return ("Call filter member object :\n"
-                       "Type:        %s\n"
-                       "User ID:     %s\n"
-                       "Number:      %s\n"
-                       "Interface:   %s\n"
-                       "RingSeconds: %s"
-                       % (self.type, self.userid, self.number, self.interface, self.ringseconds))
+			"Type:        %s\n"
+			"User ID:     %s\n"
+			"Number:      %s\n"
+			"Interface:   %s\n"
+			"RingSeconds: %s"
+			% (self.type, self.userid, self.number, self.interface, self.ringseconds))
 
 	def agi_str(self):
 		s = str(self)
@@ -82,25 +82,25 @@ class bsfilter:
 		self.secretaries = None
 
 		cursor.query("SELECT ${columns} FROM callfilter "
-                             "INNER JOIN callfiltermember "
-                             "ON callfilter.id = callfiltermember.callfilterid "
-                             "INNER JOIN userfeatures "
-                             "ON callfiltermember.typeval = userfeatures.id "
-                             "WHERE callfilter.type = 'bosssecretary' "
-                             "AND callfilter.commented = 0 "
-                             "AND callfiltermember.type = 'user' "
-                             "AND callfiltermember.bstype = 'boss' "
-                             "AND userfeatures.number = %s "
-                             "AND userfeatures.context = %s "
-                             "AND userfeatures.internal = 0 "
-                             "AND userfeatures.bsfilter = 'boss' "
-                             "AND userfeatures.commented = 0",
-                             ('callfilter.id', 'callfilter.bosssecretary',
-                              'callfilter.callfrom', 'callfilter.callerdisplay',
-                              'callfilter.ringseconds', 'callfiltermember.ringseconds',
-                              'userfeatures.id', 'userfeatures.protocol',
-                              'userfeatures.protocolid', 'userfeatures.name'),
-                             (boss_number, boss_context))
+			     "INNER JOIN callfiltermember "
+			     "ON callfilter.id = callfiltermember.callfilterid "
+			     "INNER JOIN userfeatures "
+			     "ON callfiltermember.typeval = userfeatures.id "
+			     "WHERE callfilter.type = 'bosssecretary' "
+			     "AND callfilter.commented = 0 "
+			     "AND callfiltermember.type = 'user' "
+			     "AND callfiltermember.bstype = 'boss' "
+			     "AND userfeatures.number = %s "
+			     "AND userfeatures.context = %s "
+			     "AND userfeatures.internal = 0 "
+			     "AND userfeatures.bsfilter = 'boss' "
+			     "AND userfeatures.commented = 0",
+			     ('callfilter.id', 'callfilter.bosssecretary',
+			      'callfilter.callfrom', 'callfilter.callerdisplay',
+			      'callfilter.ringseconds', 'callfiltermember.ringseconds',
+			      'userfeatures.id', 'userfeatures.protocol',
+			      'userfeatures.protocolid', 'userfeatures.name'),
+			     (boss_number, boss_context))
 		res = cursor.fetchone()
 
 		if not res:
@@ -126,11 +126,11 @@ class bsfilter:
 			interface = protocol.upper() + "/" + name
 		elif protocol == "custom":
 			cursor.query("SELECT ${columns} FROM usercustom "
-                                     "WHERE id = %s "
-                                     "AND commented = 0 "
-                                     "AND category = 'user'",
-                                     ('interface',),
-                                     (protocolid,))
+				     "WHERE id = %s "
+				     "AND commented = 0 "
+				     "AND category = 'user'",
+				     ('interface',),
+				     (protocolid,))
 			res = cursor.fetchone()
 
 			if not res:
@@ -143,20 +143,20 @@ class bsfilter:
 		self.boss.interface = interface
 
 		cursor.query("SELECT ${columns} FROM callfiltermember INNER JOIN userfeatures "
-                             "ON callfiltermember.typeval = userfeatures.id "
-                             "WHERE callfiltermember.callfilterid = %s "
-                             "AND callfiltermember.type = 'user' "
-                             "AND callfiltermember.bstype = 'secretary' "
-                             "AND IFNULL(userfeatures.number,'') != '' "
-                             "AND userfeatures.context = %s "
-                             "AND userfeatures.internal = 0 "
-                             "AND userfeatures.bsfilter = 'secretary' "
-                             "AND userfeatures.commented = 0 "
-                             "ORDER BY priority ASC",
-                             ('callfiltermember.active', 'userfeatures.id', 'userfeatures.protocol',
-                              'userfeatures.protocolid', 'userfeatures.name', 'userfeatures.number',
-                              'userfeatures.ringseconds'),
-                             (self.id, boss_context))
+			     "ON callfiltermember.typeval = userfeatures.id "
+			     "WHERE callfiltermember.callfilterid = %s "
+			     "AND callfiltermember.type = 'user' "
+			     "AND callfiltermember.bstype = 'secretary' "
+			     "AND IFNULL(userfeatures.number,'') != '' "
+			     "AND userfeatures.context = %s "
+			     "AND userfeatures.internal = 0 "
+			     "AND userfeatures.bsfilter = 'secretary' "
+			     "AND userfeatures.commented = 0 "
+			     "ORDER BY priority ASC",
+			     ('callfiltermember.active', 'userfeatures.id', 'userfeatures.protocol',
+			      'userfeatures.protocolid', 'userfeatures.name', 'userfeatures.number',
+			      'userfeatures.ringseconds'),
+			     (self.id, boss_context))
 		res = cursor.fetchall()
 
 		if not res:
@@ -167,7 +167,7 @@ class bsfilter:
 			protocolid = row['userfeatures.protocolid']
 			name = row['userfeatures.name']
 			secretary = bsf_member(row['callfiltermember.active'], 'secretary', row['userfeatures.id'],
-                                               row['userfeatures.number'], row['userfeatures.ringseconds'])
+					       row['userfeatures.number'], row['userfeatures.ringseconds'])
 
 			if secretary.active:
 				self.active = True
@@ -176,11 +176,11 @@ class bsfilter:
 				interface = protocol.upper() + "/" + name
 			elif protocol == "custom":
 				cursor.query("SELECT ${columns} FROM usercustom "
-                                             "WHERE id = %s "
-                                             "AND commented = 0 "
-                                             "AND category = 'user'",
-                                             ('interface',),
-                                             (protocolid,))
+					     "WHERE id = %s "
+					     "AND commented = 0 "
+					     "AND category = 'user'",
+					     ('interface',),
+					     (protocolid,))
 				res2 = cursor.fetchone()
 
 				if not res2:
@@ -195,15 +195,15 @@ class bsfilter:
 
 	def __str__(self):
 		return ("Call filter object :\n"
-                       "Context:       %s\n"
-                       "Mode:          %s\n"
-                       "Callfrom:      %s\n"
-                       "CallerDisplay: %s\n"
-                       "RingSeconds:   %s\n"
-                       "Boss:\n%s\n"
-                       "Secretaries:\n%s"
-                       % (self.context, self.mode, self.callfrom, self.callerdisplay,
-                          self.ringseconds, self.boss, '\n'.join((str(secretary) for secretary in self.secretaries))))
+			"Context:       %s\n"
+			"Mode:          %s\n"
+			"Callfrom:      %s\n"
+			"CallerDisplay: %s\n"
+			"RingSeconds:   %s\n"
+			"Boss:\n%s\n"
+			"Secretaries:\n%s"
+			% (self.context, self.mode, self.callfrom, self.callerdisplay,
+			   self.ringseconds, self.boss, '\n'.join((str(secretary) for secretary in self.secretaries))))
 
 	def agi_str(self):
 		s = str(self)

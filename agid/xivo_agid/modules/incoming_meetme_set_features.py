@@ -26,13 +26,13 @@ def incoming_meetme_set_features(handler, agi, cursor, args):
 	context = agi.get_variable('REAL_CONTEXT')
 
 	cursor.query("SELECT ${columns} FROM meetmefeatures "
-                     "INNER JOIN staticmeetme "
-                     "ON meetmefeatures.meetmeid = staticmeetme.id "
-                     "WHERE meetmefeatures.number = %s "
-                     "AND meetmefeatures.context = %s "
-                     "AND staticmeetme.commented = 0",
-                     [('meetmefeatures.' + x) for x in ('mode', 'musiconhold', 'poundexit', 'quiet', 'record', 'adminmode', 'announceusercount', 'announcejoinleave', 'alwayspromptpin', 'starmenu', 'enableexitcontext', 'exitcontext')],
-                     (dstnum, context))
+		     "INNER JOIN staticmeetme "
+		     "ON meetmefeatures.meetmeid = staticmeetme.id "
+		     "WHERE meetmefeatures.number = %s "
+		     "AND meetmefeatures.context = %s "
+		     "AND staticmeetme.commented = 0",
+		     [('meetmefeatures.' + x) for x in ('mode', 'musiconhold', 'poundexit', 'quiet', 'record', 'adminmode', 'announceusercount', 'announcejoinleave', 'alwayspromptpin', 'starmenu', 'enableexitcontext', 'exitcontext')],
+		     (dstnum, context))
 	res = cursor.fetchone()
 
 	if not res:

@@ -43,13 +43,13 @@ def callback_on_congestion(handler, agi, cursor, args):
 
 	file = open(tmpfile, 'w')
 	file.write("Channel: Local/%s\n"
-                   "MaxRetries: %d\n"
-                   "RetryTime: %d\n"
-                   "WaitTime: %d\n"
-                   "CallerID: %s\n"
-                   "Context: %s\n"
-                   "Extension: %s\n"
-                   "Priority: 1\n" % (srcnum, max_retries, retry_time, wait_time, srcnum, context, dstnum))
+		   "MaxRetries: %d\n"
+		   "RetryTime: %d\n"
+		   "WaitTime: %d\n"
+		   "CallerID: %s\n"
+		   "Context: %s\n"
+		   "Extension: %s\n"
+		   "Priority: 1\n" % (srcnum, max_retries, retry_time, wait_time, srcnum, context, dstnum))
 	file.close()
 
 	os.utime(tmpfile, (mtime, mtime))

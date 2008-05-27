@@ -24,12 +24,12 @@ def phonestatus(handler, agi, cursor, args):
 	context = agi.get_variable('REAL_CONTEXT')
 
 	cursor.query("SELECT ${columns} FROM userfeatures "
-                     "WHERE number = %s "
-                     "AND context = %s "
-                     "AND internal = 0 "
-                     "AND commented = 0",
-                     ('enableunc', 'destunc', 'enablebusy', 'destbusy', 'enablerna', 'destrna', 'enablevoicemail', 'callfilter', 'callrecord', 'enablednd'),
-                     (srcnum, context))
+		     "WHERE number = %s "
+		     "AND context = %s "
+		     "AND internal = 0 "
+		     "AND commented = 0",
+		     ('enableunc', 'destunc', 'enablebusy', 'destbusy', 'enablerna', 'destrna', 'enablevoicemail', 'callfilter', 'callrecord', 'enablednd'),
+		     (srcnum, context))
 	res = cursor.fetchone()
 
 	if not res:
@@ -47,9 +47,9 @@ def phonestatus(handler, agi, cursor, args):
 	enablednd = res['enablednd']
 
 	cursor.query("SELECT ${columns} FROM extensions "
-                     "WHERE name IN ('fwdunc', 'fwdrna', 'fwdbusy', 'enablevm', 'incallfilter', 'incallrec', 'enablednd') "
-                     "AND commented = 0",
-                     ('name',))
+		     "WHERE name IN ('fwdunc', 'fwdrna', 'fwdbusy', 'enablevm', 'incallfilter', 'incallrec', 'enablednd') "
+		     "AND commented = 0",
+		     ('name',))
 	res = cursor.fetchall()
 
 	if not res:

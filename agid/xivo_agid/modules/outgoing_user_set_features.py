@@ -28,11 +28,11 @@ def outgoing_user_set_features(handler, agi, cursor, args):
 	exten_pattern = agi.get_variable('REAL_EXTENPATTERN')
 
 	cursor.query("SELECT ${columns} FROM outcall "
-                     "WHERE exten = %s "
-                     "AND context = %s "
-                     "AND commented = 0",
-                     ('id', 'externprefix', 'stripnum', 'setcallerid', 'callerid', 'useenum', 'internal', 'hangupringtime'),
-                     (exten_pattern, context))
+		     "WHERE exten = %s "
+		     "AND context = %s "
+		     "AND commented = 0",
+		     ('id', 'externprefix', 'stripnum', 'setcallerid', 'callerid', 'useenum', 'internal', 'hangupringtime'),
+		     (exten_pattern, context))
 	res = cursor.fetchone()
 
 	if not res:
@@ -58,12 +58,12 @@ def outgoing_user_set_features(handler, agi, cursor, args):
 
 	if not internal:
 		cursor.query("SELECT ${columns} FROM userfeatures "
-                             "WHERE number = %s "
-                             "AND context = %s "
-                             "AND internal = 0 "
-                             "AND commented = 0",
-                             ('outcallerid', 'enableautomon', 'callrecord'),
-                             (srcnum, context))
+			     "WHERE number = %s "
+			     "AND context = %s "
+			     "AND internal = 0 "
+			     "AND commented = 0",
+			     ('outcallerid', 'enableautomon', 'callrecord'),
+			     (srcnum, context))
 		res = cursor.fetchone()
 
 		if res:
@@ -82,12 +82,12 @@ def outgoing_user_set_features(handler, agi, cursor, args):
 				callrecord = True
 
 	cursor.query("SELECT ${columns} FROM trunkfeatures "
-                     "INNER JOIN outcalltrunk "
-                     "ON trunkfeatures.id = outcalltrunk.trunkfeaturesid "
-                     "WHERE outcalltrunk.outcallid = %s "
-                     "ORDER BY outcalltrunk.priority ASC",
-                     ('trunkfeatures.protocol', 'trunkfeatures.protocolid'),
-                     (outcallid,))
+		     "INNER JOIN outcalltrunk "
+		     "ON trunkfeatures.id = outcalltrunk.trunkfeaturesid "
+		     "WHERE outcalltrunk.outcallid = %s "
+		     "ORDER BY outcalltrunk.priority ASC",
+		     ('trunkfeatures.protocol', 'trunkfeatures.protocolid'),
+		     (outcallid,))
 	res = cursor.fetchall()
 
 	if not res:
@@ -101,9 +101,11 @@ def outgoing_user_set_features(handler, agi, cursor, args):
 
 		if protocol == "sip":
 			protocol = "SIP"
-			cursor.query("SELECT ${columns} FROM usersip WHERE id = %s AND commented = 0",
-                                     ('name',),
-                                     (protocolid,))
+			cursor.query("SELECT ${columns} FROM usersip "
+				     "WHERE id = %s "
+				     "AND commented = 0",
+				     ('name',),
+				     (protocolid,))
 			res = cursor.fetchone()
 
 			if not res:
@@ -113,9 +115,11 @@ def outgoing_user_set_features(handler, agi, cursor, args):
 			interface = "%s/%s" % (protocol, peer)
 		elif protocol == "iax":
 			protocol = "IAX2"
-			cursor.query("SELECT ${columns} FROM useriax WHERE id = %s AND commented = 0",
-                                     ('name',),
-                                     (protocolid,))
+			cursor.query("SELECT ${columns} FROM useriax "
+				     "WHERE id = %s "
+				     "AND commented = 0",
+				     ('name',),
+				     (protocolid,))
 			res = cursor.fetchone()
 
 			if not res:
@@ -125,9 +129,11 @@ def outgoing_user_set_features(handler, agi, cursor, args):
 			interface = "%s/%s" % (protocol, peer)
 		elif protocol == "custom":
 			protocol = "CUSTOM"
-			cursor.query("SELECT ${columns} FROM usercustom WHERE id = %s AND commented = 0",
-                                     ('interface', 'intfsuffix'),
-                                     (protocolid,))
+			cursor.query("SELECT ${columns} FROM usercustom "
+				     "WHERE id = %s "
+				     "AND commented = 0",
+				     ('interface', 'intfsuffix'),
+				     (protocolid,))
 			res = cursor.fetchone()
 
 			if not res:
@@ -150,9 +156,9 @@ def outgoing_user_set_features(handler, agi, cursor, args):
 
 	if callrecord:
 		cursor.query("SELECT ${columns} FROM extensions "
-                             "WHERE name = 'incallrec' "
-                             "AND commented = 0",
-                             ('name',))
+			     "WHERE name = 'incallrec' "
+			     "AND commented = 0",
+			     ('name',))
 		res = cursor.fetchone()
 
 		if res:

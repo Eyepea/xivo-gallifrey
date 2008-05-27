@@ -24,15 +24,15 @@ def fwdundoall(handler, agi, cursor, args):
 	context = agi.get_variable('REAL_CONTEXT')
 
 	cursor.query("UPDATE userfeatures "
-                     "  SET enableunc = 0, "
-                     "      destunc = '', "
-                     "      enablerna = 0, "
-                     "      destrna = '', "
-                     "      enablebusy = 0, "
-                     "      destbusy = '' "
-                     "  WHERE number = %s "
-                     "    AND context = %s",
-                     parameters = (srcnum, context))
+		     "SET enableunc = 0, "
+		     "    destunc = '', "
+		     "    enablerna = 0, "
+		     "    destrna = '', "
+		     "    enablebusy = 0, "
+		     "    destbusy = '' "
+		     "WHERE number = %s "
+		     "AND context = %s",
+		     parameters = (srcnum, context))
 
 	if cursor.rowcount != 1:
 		agi.dp_break("Unable to perform the requested update")

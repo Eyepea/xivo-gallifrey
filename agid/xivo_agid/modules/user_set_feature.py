@@ -68,12 +68,12 @@ def user_set_feature(handler, agi, cursor, args):
 		params.append(destbusy)
 	elif type == "vm":
 		cursor.query("SELECT ${columns} FROM userfeatures "
-                             "WHERE number = %s "
-                             "AND context = %s "
-                             "AND internal = 0 "
-                             "AND commented = 0",
-                             ('enablevoicemail',),
-                             (srcnum, context))
+			     "WHERE number = %s "
+			     "AND context = %s "
+			     "AND internal = 0 "
+			     "AND commented = 0",
+			     ('enablevoicemail',),
+			     (srcnum, context))
 		res = cursor.fetchone()
 
 		if not res:
@@ -89,12 +89,12 @@ def user_set_feature(handler, agi, cursor, args):
 		agi.set_variable('XIVO_VMENABLED', enablevoicemail)
 	elif type == "dnd":
 		cursor.query("SELECT ${columns} FROM userfeatures "
-                             "WHERE number = %s "
-                             "AND context = %s "
-                             "AND internal = 0 "
-                             "AND commented = 0",
-                             ('enablednd',),
-                             (srcnum, context))
+			     "WHERE number = %s "
+			     "AND context = %s "
+			     "AND internal = 0 "
+			     "AND commented = 0",
+			     ('enablednd',),
+			     (srcnum, context))
 		res = cursor.fetchone()
 
 		if not res:
@@ -110,12 +110,12 @@ def user_set_feature(handler, agi, cursor, args):
 		agi.set_variable('XIVO_DNDENABLED', enablednd)
 	elif type == "callrecord":
 		cursor.query("SELECT ${columns} FROM userfeatures "
-                             "WHERE number = %s "
-                             "AND context = %s "
-                             "AND internal = 0 "
-                             "AND commented = 0",
-                             ('callrecord',),
-                             (srcnum, context))
+			     "WHERE number = %s "
+			     "AND context = %s "
+			     "AND internal = 0 "
+			     "AND commented = 0",
+			     ('callrecord',),
+			     (srcnum, context))
 		res = cursor.fetchone()
 
 		if not res:
@@ -131,12 +131,12 @@ def user_set_feature(handler, agi, cursor, args):
 		agi.set_variable('XIVO_CALLRECORDENABLED', callrecord)
 	elif type == "callfilter":
 		cursor.query("SELECT ${columns} FROM userfeatures "
-                             "WHERE number = %s "
-                             "AND context = %s "
-                             "AND internal = 0 "
-                             "AND commented = 0",
-                             ('callfilter',),
-                             (srcnum, context))
+			     "WHERE number = %s "
+			     "AND context = %s "
+			     "AND internal = 0 "
+			     "AND commented = 0",
+			     ('callfilter',),
+			     (srcnum, context))
 		res = cursor.fetchone()
 
 		if not res:
@@ -193,12 +193,12 @@ def user_set_feature(handler, agi, cursor, args):
 		if secretary:
 			agi.verbose("Filter exists ! Caller is %s, secretary number is %s" % (caller_type, secretary_number))
 			cursor.query("SELECT ${columns} FROM callfiltermember "
-                                     "WHERE callfilterid = %s "
-                                     "AND type = %s "
-                                     "AND typeval = %s "
-                                     "AND bstype = %s",
-                                     ('active',),
-                                     (filter.id, "user", secretary.userid, "secretary"))
+				     "WHERE callfilterid = %s "
+				     "AND type = %s "
+				     "AND typeval = %s "
+				     "AND bstype = %s",
+				     ('active',),
+				     (filter.id, "user", secretary.userid, "secretary"))
 			res = cursor.fetchone()
 
 			if not res:
@@ -206,12 +206,12 @@ def user_set_feature(handler, agi, cursor, args):
 
 			new_state = int(not res['active'])
 			cursor.query("UPDATE callfiltermember "
-                                     "SET active = %s "
-                                     "WHERE callfilterid = %s "
-                                     "AND type = %s "
-                                     "AND typeval = %s "
-                                     "AND bstype = %s",
-                                     parameters = (new_state, filter.id, "user", secretary.userid, "secretary"))
+				     "SET active = %s "
+				     "WHERE callfilterid = %s "
+				     "AND type = %s "
+				     "AND typeval = %s "
+				     "AND bstype = %s",
+				     parameters = (new_state, filter.id, "user", secretary.userid, "secretary"))
 
 			if cursor.rowcount != 1:
 				agi.dp_break("Unable to perform the requested update")

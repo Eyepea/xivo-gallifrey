@@ -26,12 +26,12 @@ def handynumbers(handler, agi, cursor, args):
 	exten_pattern = agi.get_variable('REAL_EXTENPATTERN')
 
 	cursor.query("SELECT ${columns} FROM userfeatures "
-                     "WHERE number = %s "
-                     "AND context = %s "
-                     "AND internal = 0 "
-                     "AND commented = 0",
-                     ('outcallerid',),
-                     (srcnum, context))
+		     "WHERE number = %s "
+		     "AND context = %s "
+		     "AND internal = 0 "
+		     "AND commented = 0",
+		     ('outcallerid',),
+		     (srcnum, context))
 	res = cursor.fetchone()
 
 	if not res:
@@ -39,12 +39,13 @@ def handynumbers(handler, agi, cursor, args):
 
 	callerid = res['outcallerid']
 
-	cursor.query("SELECT ${columns} FROM trunkfeatures INNER JOIN handynumbers "
-                     "ON trunkfeatures.id = handynumbers.trunkfeaturesid "
-                     "WHERE handynumbers.exten = %s "
-                     "AND handynumbers.commented = 0",
-                     ('protocol', 'protocolid'),
-                     (exten_pattern,))
+	cursor.query("SELECT ${columns} FROM trunkfeatures "
+		     "INNER JOIN handynumbers "
+		     "ON trunkfeatures.id = handynumbers.trunkfeaturesid "
+		     "WHERE handynumbers.exten = %s "
+		     "AND handynumbers.commented = 0",
+		     ('protocol', 'protocolid'),
+		     (exten_pattern,))
 	res = cursor.fetchone()
 
 	if not res:
@@ -55,9 +56,11 @@ def handynumbers(handler, agi, cursor, args):
 
 	if protocol == "sip":
 		protocol = "SIP"
-		cursor.query("SELECT ${columns} FROM usersip WHERE id = %s AND commented = 0",
-                             ('name',),
-                             (protocolid,))
+		cursor.query("SELECT ${columns} FROM usersip "
+			     "WHERE id = %s "
+			     "AND commented = 0",
+			     ('name',),
+			     (protocolid,))
 		res = cursor.fetchone()
 
 		if not res:
@@ -68,9 +71,11 @@ def handynumbers(handler, agi, cursor, args):
 
 	elif protocol == "iax":
 		protocol = "IAX2"
-		cursor.query("SELECT ${columns} FROM useriax WHERE id = %s AND commented = 0",
-                             ('name',),
-                             (protocolid,))
+		cursor.query("SELECT ${columns} FROM useriax "
+			     "WHERE id = %s "
+			     "AND commented = 0",
+			     ('name',),
+			     (protocolid,))
 		res = cursor.fetchone()
 
 		if not res:
@@ -81,9 +86,11 @@ def handynumbers(handler, agi, cursor, args):
 
 	elif protocol == "custom":
 		protocol = "CUSTOM"
-		cursor.query("SELECT ${columns} FROM usercustom WHERE id = %s AND commented = 0",
-                             ('name', 'interface',),
-                             (protocolid,))
+		cursor.query("SELECT ${columns} FROM usercustom "
+			     "WHERE id = %s "
+			     "AND commented = 0",
+			     ('name', 'interface',),
+			     (protocolid,))
 		res = cursor.fetchone()
 
 		if not res:
