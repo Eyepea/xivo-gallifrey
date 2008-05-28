@@ -760,11 +760,11 @@ def generate_interfaces(old_interfaces_lines, conf, trace=trace_null):
 	#
 	for block in eni[:]:
 		if isinstance(block, interfaces.EniBlockSpace):
-			trace.info("keeping block of comments / blank lines")
+			trace.debug("keeping block of comments / blank lines")
 			continue
 		elif isinstance(block, interfaces.EniBlockWithIfName):
 			if unhandled_or_reserved(block.ifname):
-				trace.info("keeping unhandled or reserved %s block %s" % (block.__class__.__name__, `block.ifname`))
+				trace.debug("keeping unhandled or reserved %s block %s" % (block.__class__.__name__, `block.ifname`))
 			else:
 				trace.info("removing handled and not reserved %s block %s" % (block.__class__.__name__, `block.ifname`))
 				eni.remove(block)
@@ -773,7 +773,7 @@ def generate_interfaces(old_interfaces_lines, conf, trace=trace_null):
 			line_recipe = interfaces.EniCookLineRecipe(block.raw_lines)
 			for ifname in block.allow_list[:]:
 				if unhandled_or_reserved(ifname):
-					trace.info("keeping unhandled or reserved %s in %s stanza" % (`ifname`, `block.allow_kw`))
+					trace.debug("keeping unhandled or reserved %s in %s stanza" % (`ifname`, `block.allow_kw`))
 					continue
 				trace.info("removing handled and not reserved %s in %s stanza" % (`ifname`, `block.allow_kw`))
 				mo = re.search(re.escape(ifname) + r'(\s)*', line_recipe.cooked_line)
