@@ -485,7 +485,7 @@ def __provisioning(mode, ctx, phone):
 		    phone["iduserfeatures"] = "0"
 	    
 	    if "iduserfeatures" in phone and phone["iduserfeatures"] == "0":
-		    syslogf("__provisioning(): reinitializing provisioning to GUEST for phone %s" % str(phone))
+		    syslogf(SYSLOG_NOTICE, "__provisioning(): reinitializing provisioning to GUEST for phone %s" % str(phone))
 		    prov_inst.generate_reinitprov()
 		    __save_phone(mode, ctx, phone, None)
 		    prov_inst.action_reinit()

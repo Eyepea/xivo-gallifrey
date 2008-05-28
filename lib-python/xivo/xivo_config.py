@@ -29,6 +29,7 @@ import re
 import sys
 import yaml
 import syslog
+import os.path
 import traceback
 import subprocess
 from ConfigParser import ConfigParser
@@ -66,6 +67,21 @@ ProvGeneralConf = {
 }
 pgc = ProvGeneralConf
 AUTHORIZED_PREFIXES = ["eth"]
+
+SYSCONF_DIR = "/etc/pf-xivo/sysconf"
+SYSCONF_STORE = os.path.join(SYSCONF_DIR, "store")
+SYSCONF_GENERATED = os.path.join(SYSCONF_DIR, "generated")
+
+STORE_DEFAULT = "default"
+STORE_CURRENT = "current"
+STORE_PREVIOUS = "previous"
+STORE_TMP = "tmp"
+STORE_NEW = "new"
+
+GENERATED_CURRENT = "current"
+GENERATED_PREVIOUS = "previous"
+GENERATED_TMP = "tmp"
+GENERATED_NEW = "new"
 
 def LoadConfig(filename):
 	global ProvGeneralConf
