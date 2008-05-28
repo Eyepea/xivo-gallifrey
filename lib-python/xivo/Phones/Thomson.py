@@ -274,11 +274,11 @@ class Thomson(PhoneVendor):
                 yield '    option bootfile-name "Thomson/ST2022S";\n'
                 yield '}\n'
                 yield '\n'
-                yield 'class "ThomsonST2030S" {\n"
-                yield '    match if option user-class = "Thomson ST2030S";\n"
+                yield 'class "ThomsonST2030S" {\n'
+                yield '    match if option user-class = "Thomson ST2030S";\n'
                 yield '    log("class ThomsonST2030S");\n'
                 yield '    next-server %s;\n' % addresses['bootServer']
-                yield '    option bootfile-name "Thomson/ST2030S";\n"
+                yield '    option bootfile-name "Thomson/ST2030S";\n'
                 yield '}\n'
                 yield '\n'
         
