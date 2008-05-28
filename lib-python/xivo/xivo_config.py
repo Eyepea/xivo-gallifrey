@@ -865,10 +865,10 @@ def generate_dhcpd_conf(conf, tracefunc=trace, warnfunc=warn):
 				first_line = False
 			yield line
 	yield '    }\n'	
-	if 'alienPrefix' in addresses:
+	if 'alienRange' in addresses:
 		yield '\n'
 		yield '    pool {\n'
-		yield '        range dynamic-bootp %s %s;\n' % tuple(addresses['voipRange'])
+		yield '        range dynamic-bootp %s %s;\n' % tuple(addresses['alienRange'])
 		yield '        default-lease-time 7200;\n'
 		yield '        max-lease-time 14400;\n'
 		yield '\n'
