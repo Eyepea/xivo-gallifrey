@@ -196,10 +196,10 @@ def add_validator(validator, base_tag, tag=None):
 	If tag is None, it is automatically constructed as
 	u'!~' + validator.__name__
 	Validator is a function that accepts a document node (in the form of a
-	Python object) and a schema node (also a Python object) and returns
-	True if the document node is valid according to the schema node.  Note
-	that the validator function does not have to recurse in sub-nodes,
-	because XYS already does it.
+	Python object), a schema node (also a Python object) and a tracing
+	object, and returns True if the document node is valid according to the
+	schema node.  Note that the validator function does not have to recurse
+	in sub-nodes, because XYS already does it.
 	"""
 	if not tag:
 		tag = u'!~' + validator.__name__
@@ -225,19 +225,19 @@ def add_parameterized_validator(param_validator, base_tag, tag_prefix=None):
 	if not tag_prefix:
 		tag_prefix = u'!~%s(' % param_validator.__name__
 	def multi_constructor(loader, tag_suffix, node):
-		def temp_validator(node, schema):
-			return param_validator(node, schema, *split_int_params(tag_prefix, tag_suffix))
+		def temp_validator(node, schema, trace):
+			return param_validator(node, schema, trace, *split_int_params(tag_prefix, tag_suffix))
 		temp_validator.__name__ = str(tag_prefix + tag_suffix)
 		return ValidatorNode(construct_node(loader, node, base_tag), temp_validator)
 	yaml.add_multi_constructor(tag_prefix, multi_constructor)
 
 def _add_validator_internal(validator, base_tag):
-	add_validator(validator, base_tag, tag=u'!~~'+validator.__name__)
+	add_validator(validator, base_tag, tag = u'!~~' + validator.__name__)
 
 def _add_parameterized_validator_internal(param_validator, base_tag):
 	add_parameterized_validator(param_validator, base_tag, tag_prefix=u'!~~%s(' % param_validator.__name__)
 
-def seqlen(lst, schema, min_len, max_len):
+def seqlen(lst, schema, trace, min_len, max_len):
 	"""
 	!~~seqlen(min,max)
 	    corresponding sequences in documents must have a length between min
@@ -245,7 +245,7 @@ def seqlen(lst, schema, min_len, max_len):
 	"""
 	return min_len <= len(lst) <= max_len
 
-def between(val, schema, min_val, max_val):
+def between(val, schema, trace, min_val, max_val):
 	"""
 	!~~between(min,max)
 	    corresponding integers in documents must be between min and max,
@@ -253,7 +253,7 @@ def between(val, schema, min_val, max_val):
 	"""
 	return min_val <= val <= max_val
 
-def startswith(docstr, schema):
+def startswith(docstr, schema, trace):
 	"""
 	!~~startswith
 	    corresponding strings in documents must begin with the associated
@@ -261,7 +261,7 @@ def startswith(docstr, schema):
 	"""
 	return docstr.startswith(schema)
 
-def prefixedDec(docstr, schema):
+def prefixedDec(docstr, schema, trace):
 	"""
 	!~~prefixedDec
 	    corresponding strings in documents must begin with the associated
@@ -329,7 +329,7 @@ def validate(document, schema, trace=trace_null):
 	if isinstance(schema, ValidatorNode):
 		if not validate(document, schema.content, trace):
 			return False
-		if not schema.validator(document, schema.content):
+		if not schema.validator(document, schema.content, trace):
 			trace.err("%s failed to validate with qualifier %s" % (`document`, schema.validator.__name__))
 			return False
 		return True
