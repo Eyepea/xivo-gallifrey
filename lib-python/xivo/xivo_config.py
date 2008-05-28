@@ -859,7 +859,7 @@ def generate_dhcpd_conf(conf, tracefunc=trace, warnfunc=warn):
 	yield '        allow members of "phone-mac-address-prefix";\n'
 	for phone_class in PhoneClasses.itervalues():
 		first_line = True
-		for line in phone_class.get_dhcp_pool_lines()
+		for line in phone_class.get_dhcp_pool_lines():
 			if first_line:
 				yield '        # %s\n' % phone_class.__name__
 				first_line = False
