@@ -35,6 +35,7 @@ import subprocess
 from ConfigParser import ConfigParser
 from itertools import chain
 
+from xivo import trace_null
 from xivo import StreamedLines
 from xivo import ConfigDict
 from xivo import interfaces
@@ -355,16 +356,6 @@ def phone_desc_by_ua(ua, exception_handler = default_handler):
 
 
 ### GENERAL CONF
-
-# XXX: define a real modular IO interface for all Python code in XIVO, and use it everywhere (here instead of the 3 following functions)
-def trace(msg):
-	print >> sys.stderr, "TRACE:", msg
-
-def warn(msg):
-	print >> sys.stderr, "WARNING:", msg
-
-def error(msg):
-	print >> sys.stderr, "ERROR:", msg
 
 def specific(docstr):
 	return docstr not in ('reserved', 'none', 'void')
@@ -741,11 +732,13 @@ def natural_vlan_name(if_phy_name, vlan_id):
 	else:
 		return "%s.%d" % (if_phy_name, vlan_id)
 
-def generate_interfaces(old_interfaces_lines, conf, tracefunc=trace, warnfunc=warn):
+def generate_interfaces(old_interfaces_lines, conf, trace=trace_null):
 	"""
 	Yield the new lines of interfaces(5) according to the old ones and the
 	current configuration
 	"""
+	trace.notice("entering generate_interfaces()")
+	
 	eni = interfaces.parse(old_interfaces_lines)
 	
 	rsvd_base = reserved_netIfaces(conf)
@@ -767,34 +760,34 @@ def generate_interfaces(old_interfaces_lines, conf, tracefunc=trace, warnfunc=wa
 	#
 	for block in eni[:]:
 		if isinstance(block, interfaces.EniBlockSpace):
-			tracefunc("keeping block of comments / blank lines")
+			trace.info("keeping block of comments / blank lines")
 			continue
 		elif isinstance(block, interfaces.EniBlockWithIfName):
 			if unhandled_or_reserved(block.ifname):
-				tracefunc("keeping unhandled or reserved %s block %s" % (block.__class__.__name__, `block.ifname`))
+				trace.info("keeping unhandled or reserved %s block %s" % (block.__class__.__name__, `block.ifname`))
 			else:
-				tracefunc("removing handled and not reserved %s block %s" % (block.__class__.__name__, `block.ifname`))
+				trace.info("removing handled and not reserved %s block %s" % (block.__class__.__name__, `block.ifname`))
 				eni.remove(block)
 		elif isinstance(block, interfaces.EniBlockAllow):
 			assert len(block.cooked_lines) == 1, "a EniBlockAllow contains more than one cooked line"
 			line_recipe = interfaces.EniCookLineRecipe(block.raw_lines)
 			for ifname in block.allow_list[:]:
 				if unhandled_or_reserved(ifname):
-					tracefunc("keeping unhandled or reserved %s in %s stanza" % (`ifname`, `block.allow_kw`))
+					trace.info("keeping unhandled or reserved %s in %s stanza" % (`ifname`, `block.allow_kw`))
 					continue
-				tracefunc("removing handled and not reserved %s in %s stanza" % (`ifname`, `block.allow_kw`))
+				trace.info("removing handled and not reserved %s in %s stanza" % (`ifname`, `block.allow_kw`))
 				mo = re.search(re.escape(ifname) + r'(\s)*', line_recipe.cooked_line)
 				if mo:
 					line_recipe.remove_part(mo.start(), mo.end())
 				else:
-					warnfunc("%s has not been found in %s" % (`ifname`, `line_recipe.cooked_line`))
+					trace.warning("%s has not been found in %s" % (`ifname`, `line_recipe.cooked_line`))
 				block.allow_list.remove(ifname)
 			line_recipe.update_block(block)
 			if not block.allow_list:
-				tracefunc("removing empty %s stanza" % `block.allow_kw`)
+				trace.info("removing empty %s stanza" % `block.allow_kw`)
 				eni.remove(block)
 		else: # interfaces.EniBlockUnknown
-			tracefunc("removing invalid block")
+			trace.info("removing invalid block")
 			eni.remove(block)
 	
 	# yield initial comments
@@ -819,7 +812,7 @@ def generate_interfaces(old_interfaces_lines, conf, tracefunc=trace, warnfunc=wa
 			if not specific(ipConfs_tag):
 				continue
 			ifname = natural_vlan_name(if_phy_name, vlan_id)
-			tracefunc("generating configuration for %s" % `ifname`)
+			trace.info("generating configuration for %s" % `ifname`)
 			static = conf['ipConfs'][ipConfs_tag]
 			yield "iface %s inet static\n" % ifname
 			yield "\taddress %s\n" % static['address']
@@ -831,7 +824,8 @@ def generate_interfaces(old_interfaces_lines, conf, tracefunc=trace, warnfunc=wa
 				yield "\tmtu %d\n" % static['mtu']
 			yield "\n"
 
-def generate_dhcpd_conf(conf, tracefunc=trace, warnfunc=warn):
+# XXX traces
+def generate_dhcpd_conf(conf, trace=trace_null):
 	"""
 	Yield each line of the generated dhcpd.conf
 	"""
