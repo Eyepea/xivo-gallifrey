@@ -153,16 +153,12 @@ __license__ = """
 
 from xivo import UpCollections
 
+from xivo import trace_null
+
 from collections import namedtuple
 import copy
 import yaml
 import sys
-
-def warn(msg):
-	print >> sys.stderr, "WARNING:", msg
-
-def error(msg):
-	print >> sys.stderr, "ERROR:", msg
 
 # NOTE: content must stay first
 ValidatorNode = namedtuple('ValidatorNode', 'content validator')
@@ -321,26 +317,25 @@ Nothing = object()
 # TODO: display the document path to errors, and other error message enhancements
 # TODO: allow error messages from validators
 
-def validate(document, schema, errorfunc=error):
+def validate(document, schema, trace=trace_null):
 	"""
 	If the document is valid according to the schema, this function returns
 	True.
 	If the document is not valid according to the schema, one or more calls
-	to error() are performed with a single string parameter which contains
-	a description of some of the detected defaults, then False is returned.
-	The default error function writes this string, prefixed with "ERROR:",
-	on sys.stderr
+	to trace.err() are performed with a single string parameter which
+	contains a description of some of the detected defaults, then False is
+	returned.
 	"""
 	if isinstance(schema, ValidatorNode):
-		if not validate(document, schema.content, errorfunc):
+		if not validate(document, schema.content, trace):
 			return False
 		if not schema.validator(document, schema.content):
-			errorfunc("%s failed to validate with qualifier %s" % (`document`, schema.validator.__name__))
+			trace.err("%s failed to validate with qualifier %s" % (`document`, schema.validator.__name__))
 			return False
 		return True
 	elif isinstance(schema, dict):
 		if not isinstance(document, dict):
-			errorfunc("wanted a dictionary, got a %s" %  document.__class__.__name__)
+			trace.err("wanted a dictionary, got a %s" %  document.__class__.__name__)
 			return False
 		generic = []
 		optional = {}
@@ -357,26 +352,26 @@ def validate(document, schema, errorfunc=error):
 		for key, schema_val in mandatory:
 			doc_val = doc_copy.get(key, Nothing)
 			if doc_val is Nothing:
-				errorfunc("missing key %s in document" % `key`)
+				trace.err("missing key %s in document" % `key`)
 				return False
-			if not validate(doc_val, schema_val, errorfunc):
+			if not validate(doc_val, schema_val, trace):
 				return False
 			del doc_copy[key]
 		for key, doc_val in doc_copy.iteritems():
 			schema_val = optional.get(key, Nothing)
 			if schema_val is Nothing:
 				for gen_key, schema_val in generic:
-					if validate(key, gen_key, errorfunc=lambda *x:None):
+					if validate(key, gen_key, trace=trace_null):
 						break
 				else:
-					errorfunc("forbidden key %s in document" % `key`)
+					trace.err("forbidden key %s in document" % `key`)
 					return False
-			if not validate(doc_val, schema_val, errorfunc):
+			if not validate(doc_val, schema_val, trace):
 				return False
 		return True
 	elif isinstance(schema, list):
 		if not isinstance(document, list):
-			errorfunc("wanted a list, got a %s" % document.__class__.__name__)
+			trace.err("wanted a list, got a %s" % document.__class__.__name__)
 		for elt in document:
 			# XXX: give a meaning when there are multiple element in a sequence of a schema?
 			if not validate(elt, schema[0]):
@@ -388,7 +383,7 @@ def validate(document, schema, errorfunc=error):
 		if isinstance(document, str):
 			document = unicode(document)
 		if schema.__class__ != document.__class__:
-			errorfunc("wanted a %s, got a %s" % (schema.__class__.__name__, document.__class__.__name__))
+			trace.err("wanted a %s, got a %s" % (schema.__class__.__name__, document.__class__.__name__))
 			return False
 		return True
 
