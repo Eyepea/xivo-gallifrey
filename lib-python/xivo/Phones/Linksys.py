@@ -166,7 +166,7 @@ class Linksys(PhoneVendor):
                         yield '    match if option vendor-class-identifier = "LINKSYS SPA-%s";\n' % model_number
                         yield '    log("boot Linksys SPA-%s");\n' % model_number
                         yield '    option tftp-server-name "%s";\n' % addresses['bootServer']
-                        yield '    option bootfile-name "Linksys/spa%s.cfg;\n' % model_number
+                        yield '    option bootfile-name "Linksys/spa%s.cfg";\n' % model_number
                         yield '    next-server %s;\n' % addresses['bootServer']
                         yield '}\n'
                         yield '\n'
