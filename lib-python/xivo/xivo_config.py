@@ -28,6 +28,7 @@ import os
 import re
 import sys
 import yaml
+import shutil
 import syslog
 import os.path
 import traceback
@@ -68,21 +69,6 @@ ProvGeneralConf = {
 }
 pgc = ProvGeneralConf
 AUTHORIZED_PREFIXES = ["eth"]
-
-SYSCONF_DIR = "/etc/pf-xivo/sysconf"
-SYSCONF_STORE = os.path.join(SYSCONF_DIR, "store")
-SYSCONF_GENERATED = os.path.join(SYSCONF_DIR, "generated")
-
-STORE_DEFAULT = "default"
-STORE_CURRENT = "current"
-STORE_PREVIOUS = "previous"
-STORE_TMP = "tmp"
-STORE_NEW = "new"
-
-GENERATED_CURRENT = "current"
-GENERATED_PREVIOUS = "previous"
-GENERATED_TMP = "tmp"
-GENERATED_NEW = "new"
 
 def LoadConfig(filename):
 	global ProvGeneralConf
@@ -443,7 +429,7 @@ def search_domain(docstr, schema, trace):
 	# NOTE: 251 comes from FQDN 255 maxi including label length bytes, we
 	# do not want to validate search domain beginning or ending with '.',
 	# 255 seems to include the final '\0' length byte, so a FQDN is 253
-	# char max. We remove 2 char so that a one letter label requested and
+	# char max.  We remove 2 char so that a one letter label requested and
 	# prepended to the search domain results in a FQDN that is not too long
 	return docstr and len(docstr) <= 251 and \
 	       all((((len(label) <= 63)
@@ -886,10 +872,96 @@ def generate_dhcpd_conf(conf, trace=trace_null):
 		yield '    }\n'
 	yield '}\n'
 
+SYSCONF_DIR = "/etc/pf-xivo/sysconf"
+SYSCONF_STORE = os.path.join(SYSCONF_DIR, "store")
+SYSCONF_GENERATED = os.path.join(SYSCONF_DIR, "generated")
+
+STORE_DEFAULT = "default"
+STORE_CURRENT = "current"
+STORE_PREVIOUS = "previous"
+STORE_TMP = "tmp"
+STORE_NEW = "new"
+
+GENERATED_CURRENT = "current"
+GENERATED_PREVIOUS = "previous"
+GENERATED_TMP = "tmp"
+GENERATED_NEW = "new"
+
+def sync():
+	# is there a wrapper for the sync syscall in Python?
+	subprocess.call("/bin/sync", close_fds = True)
+
+def transactional_generation((store_previous, store_current, store_new),
+                             (gen_previous, gen_current, gen_new, gen_tmp),
+                             generation_func):
+	"""
+	This function completes a three staged transaction if it has been
+	started, or does nothing otherwise.  The purpose of the transaction is
+	to generate some configuration files from others, where the source
+	files are all stored along in a common subdirectory, and the
+	destination files are in an other subdirectory, while guarantying as
+	much as possible that in the stable state, the source and the
+	destination directories are in sync.
+	The transaction must be externally initiated by the creation of the
+	directory 'store_new'.
+	The three stages of the transaction are as follow:
+	* if 'store_new' exists and 'gen_new' does not exists:
+	  + 'gen_tmp' is recursively removed (is it exists)
+	  + 'generation_func(gen_tmp, store_new)' is called, it must generate
+	    the directory 'gen_tmp'
+	  + a barrier ensure that any previously written data is flushed before
+	    any future modification of metadata (directory names)
+	  + 'gen_tmp' is moved to 'gen_new'
+	* if 'store_new' exists and 'gen_new' exists:
+	  + if 'store_current' exists:
+	    - 'store_previous' is recursively removed (is it exists)
+	    - 'store_current' is renamed to 'store_previous'
+	  + 'store_new' is renamed to 'store_current'
+	* if 'gen_new' exists and 'store_new' does not exists:
+	  + if 'gen_current' exists:
+	    - 'gen_previous' is recursively removed (is it exists)
+	    - 'gen_current' is renamed to 'gen_previous'
+	  + 'gen_new' is renamed to 'gen_current'
+	NOTE: other barriers are use to guarantee (this is indeed formally best
+	effort, but we can't really do very much better) on disk serialization
+	of operations where the resulting ordering is important.
+	NOTE2: this is absolutely evil but because of our requirements some
+	state that is only stored in the generated files must be preserved.
+	That is why generation_func takes 'gen_current' as its second argument.
+	"""
+	if os.path.isdir(store_new) and not os.path.isdir(gen_new):
+		shutil.rmtree(gen_tmp, ignore_errors = True)
+		if os.path.isdir(gen_current):
+			previously_generated = gen_current
+		else:
+			previously_generated = None
+		generation_func(gen_tmp, previously_generated, store_new)
+		sync()
+		os.rename(gen_tmp, gen_new)
+		sync()
+	if os.path.isdir(store_new) and os.path.isdir(gen_new):
+		if os.path.isdir(store_current):
+			shutil.rmtree(store_previous, ignore_errors = True)
+			os.rename(store_current, store_previous)
+			sync()
+		os.rename(store_new, store_current)
+		sync()
+	if (not os.path.isdir(store_new)) and os.path.isdir(gen_new):
+		if os.path.isdir(gen_current):
+			shutil.rmtree(gen_previous, ignore_errors = True)
+			os.rename(gen_current, gen_previous)
+			sync()
+		os.rename(gen_new, gen_current)
+		sync()
+
+def generate_system_configuration(to_gen, prev_gen, current_xivo_conf):
+	pass
+
 __all__ = (
 	'ProvGeneralConf', 'LoadConfig', 'txtsubst',
 	'normalize_mac_address', 'ipv4_from_macaddr', 'macaddr_from_ipv4',
 	'well_formed_provcode',
 	'PhoneVendor', 'register_phone_vendor_class', 'phone_vendor_iter_key_class', 'phone_factory', 'phone_desc_by_ua',
-	'load_configuration', 'generate_interfaces', 'generate_dhcpd_conf', 'SCHEMA_CONFIG'
+	'load_configuration', 'generate_interfaces', 'generate_dhcpd_conf', 'SCHEMA_CONFIG',
+	'transactional_generation'
 )
