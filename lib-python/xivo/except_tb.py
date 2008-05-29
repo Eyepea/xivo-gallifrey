@@ -78,7 +78,7 @@ def log_exception(logline_func = LOGLINE_STDERR, noclear = False):
 	if not noclear:
 		sys.exc_clear()
 
-def syslog_exception(loglevel=SYSLOG_ERR, noclear=False):
+def syslog_exception(loglevel=SYSLOG_ERR, noclear = False):
 	"""
 	Log a backtrace of the current exception in the system logs, with
 	the desired log level.
