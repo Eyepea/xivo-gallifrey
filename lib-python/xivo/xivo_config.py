@@ -626,7 +626,7 @@ xys.add_validator(plausible_configuration, u'!!map')
 xys.add_validator(reserved_none_void_prefixDec('vlanIpConf', 'static_'), u'!!str')
 xys.add_validator(reserved_none_void_prefixDec('netIfaceVlans', 'vs_'), u'!!str')
 
-SCHEMA_CONFIG = xys.load("""!~plausible_configuration
+SCHEMA_NETWORK_CONFIG = xys.load("""!~plausible_configuration
 resolvConf:
   search?: !~search_domain bla.tld
   nameservers?: !~~seqlen(1,3) [ !~ipv4_address 192.168.0.200 ]
@@ -723,7 +723,7 @@ def generate_interfaces(old_interfaces_lines, conf, trace=trace_null):
 	Yield the new lines of interfaces(5) according to the old ones and the
 	current configuration
 	"""
-	trace.notice("entering generate_interfaces()")
+	trace.notice("ENTERING generate_interfaces()")
 	
 	eni = interfaces.parse(old_interfaces_lines)
 	
@@ -809,12 +809,16 @@ def generate_interfaces(old_interfaces_lines, conf, trace=trace_null):
 			if 'mtu' in static:
 				yield "\tmtu %d\n" % static['mtu']
 			yield "\n"
+	
+	trace.notice("LEAVING generate_interfaces.")
 
 # XXX traces
 def generate_dhcpd_conf(conf, trace=trace_null):
 	"""
 	Yield each line of the generated dhcpd.conf
 	"""
+	trace.notice("ENTERING generate_dhcpd_conf()")
+	
 	addresses = conf['services']['voip']['addresses']
 	ipConfVoip_key = conf['services']['voip']['ipConf']
 	ipConfVoip = conf['ipConfs'][ipConfVoip_key]
@@ -871,29 +875,40 @@ def generate_dhcpd_conf(conf, trace=trace_null):
 		yield '        log("non VoIP pool");\n'
 		yield '    }\n'
 	yield '}\n'
+	
+	trace.notice("LEAVING generate_dhcpd_conf.")
 
-SYSCONF_DIR = "/etc/pf-xivo/sysconf"
-SYSCONF_STORE = os.path.join(SYSCONF_DIR, "store")
-SYSCONF_GENERATED = os.path.join(SYSCONF_DIR, "generated")
+
+# SYSCONF_DIR = "/etc/pf-xivo/sysconf"
+SYSCONF_DIR = "/home/xilun/xivo/people/xilun"
+
+STORE_BASE = os.path.join(SYSCONF_DIR, "store")
 
 STORE_DEFAULT = "default"
 STORE_CURRENT = "current"
 STORE_PREVIOUS = "previous"
 STORE_TMP = "tmp"
 STORE_NEW = "new"
+STORE_FAILED = "failed"
+STORE_RESERVED = (STORE_DEFAULT, STORE_CURRENT, STORE_PREVIOUS, STORE_TMP, STORE_NEW, STORE_FAILED)
+
+GENERATED_BASE = os.path.join(SYSCONF_DIR, "generated")
 
 GENERATED_CURRENT = "current"
 GENERATED_PREVIOUS = "previous"
 GENERATED_TMP = "tmp"
 GENERATED_NEW = "new"
 
+NETWORK_CONFIG_FILE = "network.yaml"
+
+INTERFACES_FILE = "interfaces"
+DHCPD_CONF_FILE = "dhcpd.conf"
+
 def sync():
 	# is there a wrapper for the sync syscall in Python?
 	subprocess.call("/bin/sync", close_fds = True)
 
-def transactional_generation((store_previous, store_current, store_new),
-                             (gen_previous, gen_current, gen_new, gen_tmp),
-                             generation_func):
+def transactional_generation(store_base, store_subs, gen_base, gen_subs, generation_func, trace=trace_null):
 	"""
 	This function completes a three staged transaction if it has been
 	started, or does nothing otherwise.  The purpose of the transaction is
@@ -901,67 +916,149 @@ def transactional_generation((store_previous, store_current, store_new),
 	files are all stored along in a common subdirectory, and the
 	destination files are in an other subdirectory, while guarantying as
 	much as possible that in the stable state, the source and the
-	destination directories are in sync.
-	The transaction must be externally initiated by the creation of the
-	directory 'store_new'.
-	The three stages of the transaction are as follow:
-	* if 'store_new' exists and 'gen_new' does not exists:
-	  + 'gen_tmp' is recursively removed (is it exists)
-	  + 'generation_func(gen_tmp, store_new)' is called, it must generate
-	    the directory 'gen_tmp'
-	  + a barrier ensure that any previously written data is flushed before
-	    any future modification of metadata (directory names)
-	  + 'gen_tmp' is moved to 'gen_new'
-	* if 'store_new' exists and 'gen_new' exists:
-	  + if 'store_current' exists:
-	    - 'store_previous' is recursively removed (is it exists)
-	    - 'store_current' is renamed to 'store_previous'
-	  + 'store_new' is renamed to 'store_current'
-	* if 'gen_new' exists and 'store_new' does not exists:
-	  + if 'gen_current' exists:
-	    - 'gen_previous' is recursively removed (is it exists)
-	    - 'gen_current' is renamed to 'gen_previous'
-	  + 'gen_new' is renamed to 'gen_current'
-	NOTE: other barriers are use to guarantee (this is indeed formally best
-	effort, but we can't really do very much better) on disk serialization
-	of operations where the resulting ordering is important.
-	NOTE2: this is absolutely evil but because of our requirements some
-	state that is only stored in the generated files must be preserved.
-	That is why generation_func takes 'gen_current' as its second argument.
+	destination directories are in sync.  The transaction must be
+	externally initiated by the creation of the directory 'store_new'.
+	
+	This function returns True if a transaction has been processed
+	successfully, False if it has been cancelled, None if no transaction
+	was in progress.  A transaction fails and is cancelled iff
+	generation_func() raises an exception.  Uncatched exceptions raised by
+	transactional_generation() must be considered as fatal errors requiring
+	human intervention or at least restoration of a known stable state.
+	
+	NOTE: Because of our requirements some state that is only stored in the
+	generated files must be preserved (configuration of reserved interfaces
+	and of unhandled interfaces).  That is why generation_func takes its
+	second parameter.
 	"""
+	success = None
+	trace.notice("ENTERING transactional_generation()")
+	trace.debug("store_base = %r" % store_base)
+	trace.debug("store_subs = %r" % (store_subs,))
+	trace.debug("gen_base = %r" % gen_base)
+	trace.debug("gen_subs = %r" % (gen_subs,))
+	store_previous, store_current, store_new, store_failed = [os.path.join(store_base, x) for x in store_subs]
+	gen_previous, gen_current, gen_new, gen_tmp = [os.path.join(gen_base, x) for x in gen_subs]
 	if os.path.isdir(store_new) and not os.path.isdir(gen_new):
+		success = True
+		trace.notice("BEGIN PHASE 1")
+		trace.debug("about to recursively remove %r" % gen_tmp)
 		shutil.rmtree(gen_tmp, ignore_errors = True)
 		if os.path.isdir(gen_current):
+			trace.info("%r exists" % gen_current)
 			previously_generated = gen_current
 		else:
+			trace.info("%r does not exist" % gen_current)
 			previously_generated = None
-		generation_func(gen_tmp, previously_generated, store_new)
+		trace.debug("about to call %r" % generation_func)
+		trace.debug("  gen_tmp = %r" % gen_tmp)
+		trace.debug("  previously_generated = %r" % previously_generated)
+		trace.debug("  store_new = %r" % store_new)
+		try:
+			generation_func(gen_tmp, previously_generated, store_new, trace)
+		except:
+			except_tb.log_exception(trace.err)
+			success = False
 		sync()
-		os.rename(gen_tmp, gen_new)
-		sync()
-	if os.path.isdir(store_new) and os.path.isdir(gen_new):
-		if os.path.isdir(store_current):
-			shutil.rmtree(store_previous, ignore_errors = True)
-			os.rename(store_current, store_previous)
+		if success:
+			trace.info("Successful generation")
+			trace.debug("about to rename %r to %r" % (gen_tmp, gen_new))
+			os.rename(gen_tmp, gen_new)
 			sync()
+			trace.notice("END PHASE 1 - generation performed")
+		else:
+			trace.info("Error during generation - cancelling transaction")
+			shutil.rmtree(store_failed, ignore_errors = True)
+			try:
+				os.rename(store_new, store_failed)
+				trace.notice("%r renamed to %r" % (store_new, store_failed))
+			except:
+				trace.warning("transactional_generation: failed to rename %r to %r - destroying %r"
+				              % (store_new, store_failed, store_new))
+				except_tb.log_exception(trace.warning)
+				shutil.rmtree(store_new, ignore_errors = True)
+			sync()
+			trace.notice("about to remove incomplete generated directory %r" % gen_tmp)
+			shutil.rmtree(gen_tmp, ignore_errors = True)
+			sync()
+			trace.notice("END PHASE 1 - transaction cancelled")
+	if os.path.isdir(store_new) and os.path.isdir(gen_new):
+		success = True
+		trace.notice("BEGIN PHASE 2")
+		if os.path.isdir(store_current):
+			trace.info("%r to %r" % (store_current, store_previous))
+			trace.debug("about to recursively remove %r" % store_previous)
+			shutil.rmtree(store_previous, ignore_errors = True)
+			trace.debug("about to rename %r to %r" % (store_current, store_previous))
+			try:
+				os.rename(store_current, store_previous)
+			except:
+				trace.warning("transactional_generation: failed to rename %r to %r" % (store_current, store_previous))
+				except_tb.log_exception(trace.warning)
+				shutil.rmtree(store_current)
+			sync()
+		trace.debug("about to rename %r to %r" % (store_new, store_current))
 		os.rename(store_new, store_current)
 		sync()
+		trace.notice("END PHASE 2")
 	if (not os.path.isdir(store_new)) and os.path.isdir(gen_new):
+		success = True
+		trace.notice("BEGIN PHASE 3")
 		if os.path.isdir(gen_current):
+			trace.info("%r to %r" % (gen_current, gen_previous))
+			trace.debug("about to recursively remove %r" % gen_previous)
 			shutil.rmtree(gen_previous, ignore_errors = True)
-			os.rename(gen_current, gen_previous)
+			trace.debug("about to rename %r to %r" % (gen_current, gen_previous))
+			try:
+				os.rename(gen_current, gen_previous)
+			except:
+				trace.warning("transactional_generation: failed to rename %r to %r" % (gen_current, gen_previous))
+				except_tb.log_exception(trace.warning)
+				shutil.rmtree(gen_current)
 			sync()
+		trace.debug("about to rename %r to %r" % (gen_new, gen_current))
 		os.rename(gen_new, gen_current)
 		sync()
+		trace.notice("END PHASE 3")
+	trace.notice("LEAVING transactional_generation.")
+	return success
 
-def generate_system_configuration(to_gen, prev_gen, current_xivo_conf):
-	pass
+def file_writelines_flush_sync(path, lines):
+	fp = file(path, "w")
+	fp.writelines(lines)
+	fp.flush()
+	os.fsync(fp.fileno())
+	fp.close()
+
+def generate_system_configuration(to_gen, prev_gen, current_xivo_conf, trace=trace_null):
+	os.mkdir(to_gen)
+	
+	config = load_configuration(file(os.path.join(current_xivo_conf, NETWORK_CONFIG_FILE)))
+	if not xys.validate(config, SCHEMA_NETWORK_CONFIG, trace):
+		raise ValueError, "Bad stored configuration"
+	
+	if prev_gen:
+		old_interfaces_lines = file(os.path.join(prev_gen, INTERFACES_FILE))
+	else:
+		old_interfaces_lines = ()
+	file_writelines_flush_sync(os.path.join(to_gen, INTERFACES_FILE),
+	                           generate_interfaces(old_interfaces_lines, config, trace))
+	if old_interfaces_lines:
+		old_interfaces_lines.close()
+		old_interfaces_lines = None
+	
+	file_writelines_flush_sync(os.path.join(to_gen, DHCPD_CONF_FILE),
+	                           generate_dhcpd_conf(config, trace))
+
+def transaction_system_configuration(trace=trace_null):
+	transactional_generation(STORE_BASE, (STORE_PREVIOUS, STORE_CURRENT, STORE_NEW, STORE_FAILED),
+	                         GENERATED_BASE, (GENERATED_PREVIOUS, GENERATED_CURRENT, GENERATED_NEW, GENERATED_TMP),
+				 generate_system_configuration, trace)
 
 __all__ = (
 	'ProvGeneralConf', 'LoadConfig', 'txtsubst',
 	'normalize_mac_address', 'ipv4_from_macaddr', 'macaddr_from_ipv4',
 	'well_formed_provcode',
 	'PhoneVendor', 'register_phone_vendor_class', 'phone_vendor_iter_key_class', 'phone_factory', 'phone_desc_by_ua',
-	'load_configuration', 'generate_interfaces', 'generate_dhcpd_conf', 'SCHEMA_CONFIG',
-	'transactional_generation'
+	'transaction_system_configuration'
 )
