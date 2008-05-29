@@ -99,19 +99,19 @@ def field_empty(f):
 	return (f is None) or (f == "")
 
 class SQLBackEnd:
-	"""An information backend for this provisioning daemon,
+	"""
+	An information backend for this provisioning daemon,
 	using the Xivo SQL database.
-	
 	"""
 	def __init__(self, db):
 		self.__db = db
-
+	
 	# === INTERNAL FUNCTIONS ===
 	
 	def generic_sql_request(self, foobar, *remain):
-		"""Generic function to generate a safe context to issue any
+		"""
+		Generic function to generate a safe context to issue any
 		SQL request.
-		
 		"""
 		conn = anysql.connect_by_uri(self.__db)
 		try:
@@ -121,17 +121,17 @@ class SQLBackEnd:
 			a = None
 		conn.close()
 		return a
-
+	
 	def sql_select_one(self, request, columns, parameters):
-		"""Does a SELECT SQL query and returns only one row.
+		"""
+		Does a SELECT SQL query and returns only one row.
 		If the query returns no result, this method returns None
-		
 		"""
 		return self.generic_sql_request(self.method_select_one, request, columns, parameters)
 	def method_select_one(self, conn, request, columns, parameters):
-		"""Internally called in a safe context to execute SELECT
+		"""
+		Internally called in a safe context to execute SELECT
 		SQL queries and return their result (only one row).
-		
 		"""
 		cursor = conn.cursor()
 		cursor.query(request, columns, parameters)
@@ -139,14 +139,14 @@ class SQLBackEnd:
 		if not r:
 			return r
 		return dict(r.iteritems())
-
+	
 	def sql_select_all(self, request, columns, parameters):
 		"Does a SELECT SQL query and returns all rows."
 		return self.generic_sql_request(self.method_select_all, request, columns, parameters)
 	def method_select_all(self, conn, request, columns, parameters):
-		"""Internally called in a safe context to execute SELECT
+		"""
+		Internally called in a safe context to execute SELECT
 		SQL queries and return their result (all rows).
-		
 		"""
 		cursor = conn.cursor()
 		cursor.query(request, columns, parameters)
@@ -154,36 +154,37 @@ class SQLBackEnd:
 		if not rows:
 			return rows
 		return [ dict(r.iteritems()) for r in rows ]
-
+	
 	def sql_modify(self, request, columns, parameters):
 		"Does a SQL query that is going to modify the database."
 		return self.generic_sql_request(self.method_commit, request, columns, parameters)
 	def method_commit(self, conn, request, columns, parameters):
-		"""Internally called in a safe context to commit the result of
+		"""
+		Internally called in a safe context to commit the result of
 		SQL queries that modify the database content.
-		
 		"""
 		cursor = conn.cursor()
 		cursor.query(request, columns, parameters)
 		conn.commit()
 
 	# === ENTRY POINTS ===
-
+	
 	def phone_by_macaddr(self, macaddr):
-		"""Lookup a phone description by Mac Address in the database.
+		"""
+		Lookup a phone description by Mac Address in the database.
 		
 		Returns a dictionary with the following keys:
 			'macaddr', 'vendor', 'model', 'proto', 'iduserfeatures', 'isinalan'
 		or None
-		
 		"""
 		return self.sql_select_one(
 			"SELECT ${columns} FROM %s WHERE macaddr=%s" % (TABLE, '%s'),
 			('macaddr', 'vendor', 'model', 'proto', 'iduserfeatures', 'isinalan'),
 			(macaddr,))
-
+	
 	def config_by_something_proto(self, something_column, something_content, proto):
-		"""Query the database to return a phone configuration.
+		"""
+		Query the database to return a phone configuration.
 		
 		something_column - name of the column of the table 'userfeatures'
 				   used to select the right phone
@@ -209,7 +210,6 @@ class SQLBackEnd:
 				 activated on this function key
 		
 		Right now proto must evaluate to 'sip'
-		
 		"""
 		if proto != TECH:
 			raise ValueError, "proto must be 'sip' for now"
@@ -280,33 +280,33 @@ class SQLBackEnd:
 			)
 		confdico['funckey'] = funckey
 		return confdico
-
+	
 	def config_by_iduserfeatures_proto(self, iduserfeatures, proto):
-		"""Lookup the configuration information of the phone in the
+		"""
+		Lookup the configuration information of the phone in the
 		database, by ID of the 'userfeatures' table, and protocol.
 		
 		Right now proto must evaluate to 'sip'
-		
 		"""
 		return self.config_by_something_proto(
 				'id', iduserfeatures, proto)
-
+	
 	def config_by_provcode_proto(self, provcode, proto):
-		"""Lookup the configuration information of the phone in the
+		"""
+		Lookup the configuration information of the phone in the
 		database, by provisioning code and protocol.
 		
 		Right now proto must evaluate to 'sip'
-		
 		"""
 		return self.config_by_something_proto(
 				'provisioningid', provcode, proto)
-
+	
 	def save_phone(self, phone):
-		"""Save phone informations in the database.
+		"""
+		Save phone informations in the database.
 		phone must be a dictionary and contain the following keys:
 		
 		'macaddr', 'vendor', 'model', 'proto', 'iduserfeatures', 'isinalan'
-		
 		"""
 		columns = ('macaddr', 'vendor', 'model', 'proto', 'iduserfeatures', 'isinalan')
 		self.sql_modify(
@@ -315,15 +315,15 @@ class SQLBackEnd:
 			 % (TABLE, '%s', '%s', '%s', '%s', '%s', '%s'),
 			columns,
 			[ phone[x] for x in columns ])
-
+	
 	def phone_by_iduserfeatures(self, iduserfeatures):
-		"""Lookup phone information by user information (iduserfeatures)
+		"""
+		Lookup phone information by user information (iduserfeatures)
 		Right now this is limited to the 'sip' protocol, so the result
 		is a single phone description in the form of a dictionary
 		containing the classic keys.
 		
 		'macaddr', 'vendor', 'model', 'proto', 'iduserfeatures', 'isinalan'
-		
 		"""
 		return self.sql_select_one(
 			("SELECT ${columns} FROM %s "
@@ -331,19 +331,20 @@ class SQLBackEnd:
 			 % ( TABLE, '%s', '%s' ),
 			('macaddr', 'vendor', 'model', 'proto', 'iduserfeatures', 'isinalan'),
 			(iduserfeatures, TECH))
-
+	
 	def delete_phone_by_iduserfeatures(self, iduserfeatures):
-		"""Delete any phone in the database having the given
+		"""
+		Delete any phone in the database having the given
 		iduserfeatures.
-		
 		"""
 		self.sql_modify(
 			"DELETE FROM %s WHERE iduserfeatures=%s" % ( TABLE, '%s'),
 			None,
 			(iduserfeatures,))
-
+	
 	def find_orphan_phones(self):
-		"""Find every phones that do not have a corresponding user
+		"""
+		Find every phones that do not have a corresponding user
 		anymore, but that are neither provisioned in state GUEST. Used
 		at startup to maintain the coherency of the whole provisioning
 		subsystem.
@@ -353,7 +354,6 @@ class SQLBackEnd:
 		keys :
 		
 		'macaddr', 'vendor', 'model', 'proto', 'iduserfeatures', 'isinalan'
-		
 		"""
 		mapping = dict([(TABLE+'.'+x,x)
 				for x in ('macaddr', 'vendor', 'model',
@@ -392,9 +392,9 @@ ExceptToHTTP = {
 }
 
 def __mode_dependant_provlogic_locked(mode, ctx, phone, config, prev_iduserfeatures):
-	"""This function resolves conflicts or abort by raising an exception
+	"""
+	This function resolves conflicts or abort by raising an exception
 	for the current provisioning in progress.
-	
 	"""
 	if mode == 'authoritative':
 		syslogf(SYSLOG_DEBUG, "__mode_dependant_provlogic_locked() in authoritative mode for phone %s and user %s" % (phone['macaddr'], config['iduserfeatures']))
@@ -544,9 +544,9 @@ def __userdeleted(ctx, iduserfeatures):
 # Safe locking API for provisioning and related stuffs
 
 def lock_and_provision(mode, ctx, phone):
-	"""Will attempt to provision with a global lock
+	"""
+	Will attempt to provision with a global lock
 	hold in shared mode
-
 	"""
 	syslogf(SYSLOG_DEBUG, "Entering lock_and_provision(phone=%s)" % str(phone))
 	if not ctx.rwlock.acquire_read(pgc['excl_del_lock_to_s']):
@@ -558,10 +558,10 @@ def lock_and_provision(mode, ctx, phone):
 		syslogf(SYSLOG_DEBUG, "Leaving lock_and_provision for Mac Address %s" % phone["macaddr"])
 
 def lock_and_userdel(ctx, iduserfeatures):
-	"""Will attempt to delete informations related to the user identified by
+	"""
+	Will attempt to delete informations related to the user identified by
 	iduserfeatures from areas we are handling in the information backend,
 	with a global lock hold for exclusive access.
-
 	"""
 	syslogf(SYSLOG_DEBUG, "Entering lock_and_userdel %s" % iduserfeatures)
 	if not ctx.rwlock.acquire_write(pgc['excl_del_lock_to_s']):
@@ -580,14 +580,14 @@ def clean_at_startup(ctx):
 		lock_and_userdel(ctx, phone['iduserfeatures'])
 
 class ProvHttpHandler(BaseHTTPRequestHandler):
-	"""ThreadingHTTPServer will create one instance of this class for the
+	"""
+	ThreadingHTTPServer will create one instance of this class for the
 	handling of each incoming connection received by this daemon, and each
 	instance will run in a separated thread.
 	Base methods of BaseHTTPRequestHandler are used to do the basic HTTP
 	parsing of the HTTP request that is to be handled, and new methods are
 	added that implement the high level behavior of autoprovisioning and
 	related operations.
-	
 	"""
 	def __init__(self, request, client_address, server):
 		self.my_server = server
@@ -631,7 +631,8 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 
 	# Get POSTED informations in self.posted
 	def get_posted(self):
-		"""Extract a payload of a POST HTTP method that has the
+		"""
+		Extract a payload of a POST HTTP method that has the
 		following format:
 		
 		name1=value1
@@ -663,19 +664,19 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 
 	# Extract interesting stuff from self.posted
 	def save_posted_vars(self, d, variables):
-		"""Store in the dictionary d each variable of the variables
+		"""
+		Store in the dictionary d each variable of the variables
 		list present in self.posted, raising an exception if some
 		are missing.
-		
 		"""
 		for v in variables:
 			if v not in self.posted:
 				raise MissingParam, v + " missing in posted command"
 			d[v] = self.posted[v]
 	def save_macaddr_ipv4(self, phone):
-		"""Save 'macaddr' in phone from self.posted or raise a
+		"""
+		Save 'macaddr' in phone from self.posted or raise a
 		MissingParam exception, and optionally save 'ipv4'.
-		
 		"""
 		if "macaddr" not in self.posted:
 			raise MissingParam, "Mac Address not given"
@@ -683,9 +684,9 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 		if "ipv4" in self.posted:
 			phone["ipv4"] = self.posted["ipv4"]
 	def save_iduserfeatures_or_provcode(self, phone):
-		"""Save 'iduserfeatures' in phone from self.posted in priority,
+		"""
+		Save 'iduserfeatures' in phone from self.posted in priority,
 		or save 'provcode' if 'iduserfeatures' was not present.
-		
 		"""
 		try:
 			self.save_posted_vars(phone, ("iduserfeatures",))
@@ -693,9 +694,9 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 			self.save_posted_vars(phone, ("provcode",))
 
 	def posted_infos(self, *thetuple):
-		"""Generic function to retrieve every needed provisioning info
+		"""
+		Generic function to retrieve every needed provisioning info
 		from the request.
-		
 		"""
 		phone = {}
 		self.save_posted_vars(phone, thetuple)
@@ -789,20 +790,20 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 		else: self.answer_404()
 
 def log_stderr_and_syslog(x):
-	"""This function logs the string x to both stderr and the system log.
-	The trailing '\\n' of the string to be logged must have been stripped
-	
+	"""
+	This function logs the string x to both stderr and the system log
+	The string to be logged must not have a trailing '\\n'
 	"""
 	print >> sys.stderr, x
 	syslogf(SYSLOG_ERR, x)
 
 def main(log_level, foreground):
-	"""log_level - one of SYSLOG_EMERG to SYSLOG_DEBUG
+	"""
+	log_level - one of SYSLOG_EMERG to SYSLOG_DEBUG
 		    nothing will be logged below this limit
 		    (this is automatically upgraded to SYSLOG_INFO
 		     during startup)
 	foreground - don't daemonize if true
-	
 	"""
 	syslog.openlog('autoprovisioning', syslog.LOG_PID, syslog.LOG_DAEMON)
 	try:

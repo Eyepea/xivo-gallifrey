@@ -30,7 +30,7 @@ PIDFILE="/var/run/agid.pid"
 def log_stderr_and_syslog(x):
 	"""
 	This function logs the string x to both stderr and the system log.
-	The trailing '\\n' of the string to be logged must have been stripped
+	The string to be logged must not have a trailing '\\n'
 	"""
 
 	print >> sys.stderr, x
