@@ -29,7 +29,11 @@ Phones lists.
 """
 
 import time
-from xivo.easyslog import *
+from xivo_log import *
+import cti_urllist
+
+def log_debug(a, b):
+        log_debug_file(a, b, 'xivo_phones')
 
 DIR_TO_STRING = '>'
 DIR_FROM_STRING = '<'
@@ -48,145 +52,39 @@ def channel_splitter(channel):
                 sp.pop()
         return "-".join(sp)
 
-
-def varlog(syslogprio, string):
-        if syslogprio <= SYSLOG_NOTICE:
-                syslogf(syslogprio, 'xivo_phones : ' + string)
-        return 0
-
-
-def log_debug(syslogprio, string):
-        if syslogprio <= SYSLOG_INFO:
-                print '#debug# %s' % string
-        return varlog(syslogprio, string)
-
-
-class Phones:
-        lstadd = {}
-        lstdel = {}
-        list = {}
-        configs = {}
-        rough_phonelist = {}
-        
-        def __init__(self):
-                return
-
-        def __getitem__(self, astid):
-                return self.list[astid]
-
-        def setcommandclass(self, commandclass):
-                self.commandclass = commandclass
-                return
-
-        def update(self, astid, cfg):
-                # self.list = self.commandclass.get_phonelist()
-                self.list[astid] = PhoneList(astid, self.commandclass)
-                self.configs[astid] = cfg
+def p2p(phone_list):
+        phonelist = {}
+        for l, v in phone_list.iteritems():
                 try:
-                        nsl = self.__update_phonelist__(astid)
+                        # line is protocol | username | password | rightflag |
+                        #         phone number | initialized | disabled(=1) | callerid |
+                        #         firstname | lastname | context | enable_hint
+                        [sso_tech, sso_phoneid, sso_passwd, sso_cti_allowed,
+                         sso_phonenum, isinitialized, sso_l6,
+                         fullname, firstname, lastname, sso_context, enable_hint] = v
+
+                        if sso_phonenum != '':
+                                if sso_tech == 'sip':
+                                        argg = 'SIP/%s' % sso_phoneid
+                                elif sso_tech == 'iax':
+                                        argg = 'IAX2/%s' % sso_phoneid
+                                elif sso_tech == 'misdn':
+                                        argg = 'mISDN/%s' % sso_phoneid
+                                elif sso_tech == 'zap':
+                                        argg = 'Zap/%s' % sso_phoneid
+                                else:
+                                        argg = ''
+                                if argg != '':
+                                        if bool(int(isinitialized)):
+                                                phonelist[argg] = [sso_phonenum, sso_context, bool(int(enable_hint))]
                 except Exception, exc:
-                        print '--- exception update ---', exc
-                        nsl = []
-                return nsl
+                        log_debug(SYSLOG_ERR, '--- exception --- a problem occured when building phone list : %s' % str(exc))
+                        # return phonelist
+        if len(phonelist) > 0:
+                log_debug(SYSLOG_INFO, 'found %d ids in phone list, among which %d ids are registered as users'
+                          %(len(phone_list), len(phonelist)))
 
-
-        def roughlist(self, astid):
-                return self.rough_phonelist[astid]
-
-
-## \brief Updates the list of sip numbers according to the SSO then sends old and new peers to the UIs.
-# The reconnection to the AMI is also done here when it has been broken.
-# If the AMI sockets are dead, a reconnection is also attempted here.
-# \param astid the asterisk Id
-# \return none
-        def __update_phonelist__(self, astid):
-         newsipnums = {}
-         try:
-                dt1 = time.time()
-                newphlist = self.configs[astid].get_phonelist_fromurl()
-                if newphlist is not None:
-                        self.rough_phonelist[astid] = newphlist
-                dt2 = time.time()
-                for x in self.configs[astid].extrachannels.split(','):
-                        if x != '': self.rough_phonelist[astid][x] = [x, '', '', x.split('/')[1], '', False]
-                sipnumlistnew = dict.fromkeys(self.rough_phonelist[astid].keys())
-         except Exception, exc:
-                 log_debug(SYSLOG_ERR, '--- exception --- %s : get_phonelist_fromurl failed : %s' %(astid, str(exc)))
-                 self.rough_phonelist[astid] = {}
-
-         sipnumlistold = dict.fromkeys(filter(lambda j: self.list[astid].normal[j].towatch, self.list[astid].normal))
-         dt3 = time.time()
-         self.lstadd[astid] = []
-         self.lstdel[astid] = []
-         for snl in sipnumlistold:
-                pln = self.list[astid].normal[snl]
-                if snl not in sipnumlistnew:
-                        self.lstdel[astid].append(":".join(["del",
-                                                       astid,
-                                                       pln.build_basestatus() + ';']))
-                        deluser(astid, pln.tech.lower() + pln.phoneid)
-                        del self.list[astid].normal[snl] # or = "Absent"/0 ?
-                else:
-                        pln.updateIfNeeded(self.rough_phonelist[astid][snl])
-         dt4 = time.time()
-         for snl in sipnumlistnew:
-                if snl not in sipnumlistold:
-                        newsipnums[snl] = self.rough_phonelist[astid][snl]
-##                        if astid in AMI_array_events_fd:
-##                                AMI_array_events_fd[astid].write('Action: ExtensionState\r\n'
-##                                                                 'Exten: %s\r\n'
-##                                                                 'Context: %s\r\n'
-##                                                                 '\r\n'
-##                                                                 %(sipnuml[snl][3], sipnuml[snl][4]))
-                        if snl.find("SIP") == 0:
-                                self.list[astid].normal[snl] = LineProp("SIP",
-                                                                    snl.split("/")[1],
-                                                                    self.rough_phonelist[astid][snl][3],
-                                                                    self.rough_phonelist[astid][snl][4],
-                                                                    "Timeout", True)
-                                # replaced previous 'BefSubs' initial status here : avoids flooding of Timeout's
-                                # when many phones are added at once
-                        elif snl.find("IAX2") == 0:
-                                self.list[astid].normal[snl] = LineProp("IAX2",
-                                                                    snl.split("/")[1],
-                                                                    self.rough_phonelist[astid][snl][3],
-                                                                    self.rough_phonelist[astid][snl][4],
-                                                                    "Ready", True)
-                        elif snl.find("mISDN") == 0:
-                                self.list[astid].normal[snl] = LineProp("mISDN",
-                                                                    snl.split("/")[1],
-                                                                    self.rough_phonelist[astid][snl][3],
-                                                                    self.rough_phonelist[astid][snl][4],
-                                                                    "Ready", True)
-                        elif snl.find("Zap") == 0:
-                                self.list[astid].normal[snl] = LineProp("Zap",
-                                                                    snl.split("/")[1],
-                                                                    self.rough_phonelist[astid][snl][3],
-                                                                    self.rough_phonelist[astid][snl][4],
-                                                                    "Ready", True)
-                        else:
-                                log_debug(SYSLOG_WARNING, 'format <%s> not supported' % snl)
-                                
-                        if snl in self.list[astid].normal:
-                                self.list[astid].normal[snl].set_callerid(self.rough_phonelist[astid][snl])
-
-                        self.lstadd[astid].append(":".join(["add",
-                                                            astid,
-                                                            self.list[astid].normal[snl].build_basestatus(),
-                                                            self.list[astid].normal[snl].build_cidstatus(),
-                                                            self.list[astid].normal[snl].build_fullstatlist() + ';']))
-         dt5 = time.time()
-         # log_debug(SYSLOG_INFO, '%s : sent ExtensionState request for new phones (%f seconds)' %(astid, (dt5-dt4)))
-         if len(self.lstdel[astid]) > 0 or len(self.lstadd[astid]) > 0:
-                 self.commandclass.phones_update('signal-deloradd',
-                                                 [astid,
-                                                  len(self.lstdel[astid]),
-                                                  len(self.lstadd[astid]),
-                                                  len(self.list[astid].normal)])
-         dt6 = time.time()
-         # print 'update_phonelist', dt2-dt1, dt3-dt2, dt4-dt3, dt5-dt4, dt6-dt5
-         return newsipnums
-
+        return phonelist
 
 
 ## \class PhoneList
@@ -205,39 +103,28 @@ class PhoneList:
         # \brief To store closed queues channels
 
         ##  \brief Class initialization.
-        def __init__(self, iastid, cclass):
+        def __init__(self, iastid, cclass, url):
                 self.astid = iastid
                 self.normal = {}
                 self.queues = {}
                 self.oldqueues = {}
                 self.star10 = []
                 self.commandclass = cclass
+                self.rough_phonelist = {}
+                self.lstadd = []
+                self.lstdel = []
+                self.phlist = cti_urllist.UrlList(url)
 
 
         def update_gui_clients(self, phonenum, fromwhom):
                 phoneinfo = (fromwhom,
                              self.astid,
                              self.normal[phonenum].build_basestatus(),
-                             self.normal[phonenum].build_cidstatus(),
                              self.normal[phonenum].build_fullstatlist())
                 if self.normal[phonenum].towatch:
                         self.commandclass.phones_update('update', phoneinfo)
                 else:
                         self.commandclass.phones_update('noupdate', phoneinfo)
-
-
-        def send_availstate_update(self, username, state):
-                try:
-                        phoneid = "SIP/%s" % username
-                        if phoneid in self.normal:
-                                if state == "unknown" or self.normal[phoneid].imstat != state:
-                                        self.normal[phoneid].set_imstat(state)
-                                        self.normal[phoneid].update_time()
-                                        self.update_gui_clients(phoneid, "kfc-sau")
-                        elif phoneid is not None:
-                                log_debug(SYSLOG_WARNING, "<%s> is not in my phone list" % phoneid)
-                except Exception, exc:
-                        log_debug(SYSLOG_ERR, '--- exception --- send_availstate_update : %s' % str(exc))
 
 
         def normal_channel_fills(self, chan_src, num_src,
@@ -333,6 +220,80 @@ class PhoneList:
                 self.normal_channel_hangup(chan, "ami-eh0")
 
 
+        def update_phonelist(self):
+         newsipnums = {}
+         try:
+                 u = self.phlist.getlist(1, 12)
+                 print u, self.phlist.url, self.phlist
+                 newphlist = p2p(self.phlist.list)
+                 if newphlist is not None:
+                         self.rough_phonelist = newphlist
+                 sipnumlistnew = dict.fromkeys(self.rough_phonelist.keys())
+         except Exception, exc:
+                 log_debug(SYSLOG_ERR, '--- exception --- : get_phonelist_fromurl failed : %s' % str(exc))
+                 self.rough_phonelist = {}
+
+         sipnumlistold = dict.fromkeys(filter(lambda j: self.normal[j].towatch, self.normal))
+         self.lstadd = []
+         self.lstdel = []
+         for snl in sipnumlistold:
+                pln = self.normal[snl]
+                if snl not in sipnumlistnew:
+                        self.lstdel.append(":".join(["del",
+                                                       self.astid,
+                                                       pln.build_basestatus() + ';']))
+                        del self.normal[snl] # or = "Absent"/0 ?
+         for snl in sipnumlistnew:
+                if snl not in sipnumlistold:
+                        newsipnums[snl] = self.rough_phonelist[snl]
+##                        if self.astid in AMI_array_events_fd:
+##                                AMI_array_events_fd[self.astid].write('Action: ExtensionState\r\n'
+##                                                                 'Exten: %s\r\n'
+##                                                                 'Context: %s\r\n'
+##                                                                 '\r\n'
+##                                                                 %(sipnuml[snl][3], sipnuml[snl][4]))
+                        if snl.find("SIP") == 0:
+                                self.normal[snl] = LineProp("SIP",
+                                                                    snl.split("/")[1],
+                                                                    self.rough_phonelist[snl][0],
+                                                                    self.rough_phonelist[snl][1],
+                                                                    "Timeout", True)
+                                # replaced previous 'BefSubs' initial status here : avoids flooding of Timeout's
+                                # when many phones are added at once
+                        elif snl.find("IAX2") == 0:
+                                self.normal[snl] = LineProp("IAX2",
+                                                                    snl.split("/")[1],
+                                                                    self.rough_phonelist[snl][0],
+                                                                    self.rough_phonelist[snl][1],
+                                                                    "Ready", True)
+                        elif snl.find("mISDN") == 0:
+                                self.normal[snl] = LineProp("mISDN",
+                                                                    snl.split("/")[1],
+                                                                    self.rough_phonelist[snl][0],
+                                                                    self.rough_phonelist[snl][1],
+                                                                    "Ready", True)
+                        elif snl.find("Zap") == 0:
+                                self.normal[snl] = LineProp("Zap",
+                                                                    snl.split("/")[1],
+                                                                    self.rough_phonelist[snl][0],
+                                                                    self.rough_phonelist[snl][1],
+                                                                    "Ready", True)
+                        else:
+                                log_debug(SYSLOG_WARNING, 'format <%s> not supported' % snl)
+
+                        self.lstadd.append(":".join(["add",
+                                                            self.astid,
+                                                            self.normal[snl].build_basestatus(),
+                                                            'rm:rm:rm',
+                                                            self.normal[snl].build_fullstatlist() + ';']))
+         if len(self.lstdel) > 0 or len(self.lstadd) > 0:
+                 self.commandclass.phones_update('signal-deloradd',
+                                                 [self.astid,
+                                                  len(self.lstdel),
+                                                  len(self.lstadd),
+                                                  len(self.normal)])
+         return newsipnums
+
 
 
 ## \class LineProp
@@ -365,9 +326,6 @@ class LineProp:
         ## \var voicemail
         # \brief Voicemail status
         
-        ## \var queueavail
-        # \brief Queue availability
-        
         ## \var callerid
         # \brief Caller ID
         
@@ -380,15 +338,11 @@ class LineProp:
                 self.phoneid  = iphoneid
                 self.phonenum = iphonenum
                 self.context = icontext
+                
                 self.lasttime = 0
                 self.chann = {}
                 self.hintstatus = ihintstatus # Asterisk "hints" status
-                self.imstat = "unknown"  # XMPP / Instant Messaging status
                 self.voicemail = ""  # Voicemail status
-                self.queueavail = "" # Availability as a queue member
-                self.calleridfull = "nobody"
-                self.calleridfirst = "nobody"
-                self.calleridlast = "nobody"
                 self.groups = ""
                 self.towatch = itowatch
         def set_tech(self, itech):
@@ -399,26 +353,16 @@ class LineProp:
                 self.phonenum = iphonenum
         def set_hintstatus(self, ihintstatus):
                 self.hintstatus = ihintstatus
-        def set_imstat(self, istatus):
-                self.imstat = istatus
         def set_lasttime(self, ilasttime):
                 self.lasttime = ilasttime
 
         def build_basestatus(self):
-                basestatus = (self.tech.lower(),
+                basestatus = (self.context,
+                              self.tech,
                               self.phoneid,
-                              self.phonenum,
-                              self.context,
-                              self.imstat,
                               self.hintstatus,
-                              self.voicemail,
-                              self.queueavail)
+                              self.voicemail)
                 return ':'.join(basestatus)
-        def build_cidstatus(self):
-                cidstatus = (self.calleridfull,
-                             self.calleridfirst,
-                             self.calleridlast)
-                return ':'.join(cidstatus)
         ## \brief Builds the channel-by-channel part for the hints/update replies.
         # \param phoneid the "pointer" to the Asterisk phone statuses
         # \return the string containing the statuses for each channel of the given phone
@@ -434,19 +378,6 @@ class LineProp:
                                       phone_chan.getChannelNum()))
                 return ''.join(fstat)
 
-        def set_callerid(self, icallerid):
-                self.calleridfull  = icallerid[0]
-                self.calleridfirst = icallerid[1]
-                self.calleridlast  = icallerid[2]
-        def updateIfNeeded(self, icallerid):
-                if icallerid[0:3] != (self.calleridfull, self.calleridfirst, self.calleridlast):
-                        log_debug(SYSLOG_INFO, 'updated parameters for user <%s/%s> : %s => %s'
-                                  % (self.tech, self.phoneid,
-                                     (self.calleridfull, self.calleridfirst, self.calleridlast),
-                                     icallerid[0:3]))
-                        self.calleridfull  = icallerid[0]
-                        self.calleridfirst = icallerid[1]
-                        self.calleridlast  = icallerid[2]
         ##  \brief Updates the time elapsed on a channel according to current time.
         def update_time(self):
                 nowtime = time.time()

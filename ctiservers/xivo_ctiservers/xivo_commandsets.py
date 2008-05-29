@@ -56,16 +56,26 @@ class BaseCommand:
                 return
 
         userfields = []
-        def getuserlist(self):
+        def getuserslist(self):
                 return
+        def users(self):
+                return {}
+        def connected_users(self):
+                return {}
 
         def set_configs(self, configs):
                 return
         def set_phonelist(self, plist):
                 return
+        def set_userlist_urls(self, urls):
+                return
         def set_userlist(self, ulist):
                 return
+        def set_userlist_ng(self, ulist):
+                return
         def set_contextlist(self, ctxlist):
+                return
+        def updates(self):
                 return
 
         # connection
@@ -97,6 +107,8 @@ class BaseCommand:
 
         # AGI events
         def handle_agi(self, astid, msg):
+                return
+        def handle_fagi(self, msg):
                 return
 
         def phones_update(self, function, args):

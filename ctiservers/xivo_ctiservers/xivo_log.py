@@ -1,6 +1,10 @@
 # XIVO Daemon
-# Copyright (C) 2007, 2008  Proformatique
-#
+
+__version__   = '$Revision$'
+__date__      = '$Date$'
+__copyright__ = 'Copyright (C) 2007, 2008, Proformatique'
+__author__    = 'Corentin Le Gall'
+
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
@@ -19,6 +23,10 @@
 # You should have received a copy of the GNU General Public License along
 # with this program; if not, you will find one at
 # <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>.
+
+"""
+Simple wrapper for syslogs
+"""
 
 import time
 from xivo.easyslog import *

@@ -35,15 +35,15 @@ class Users:
                 return
 
         def adduser(self, inparams):
-                user = inparams['user']
-                if self.list.has_key(user):
+                username = inparams.get('user')
+                if self.list.has_key(username):
                         # updates
-                        # self.list[user]['agentnum'] = agentnum
+                        # self.list[username]['agentnum'] = agentnum
                         pass
                 else:
-                        self.list[user] = {}
+                        self.list[username] = {}
                         for f in self.fields:
-                                self.list[user][f] = inparams[f]
+                                self.list[username][f] = inparams[f]
                 return
 
         def deluser(self, username):
@@ -66,12 +66,3 @@ class Users:
                 for ul, vv in userl.iteritems():
                         self.adduser(vv)
                 return
-
-        # to be called sometimes (update period ?)
-        def check_connected_accounts(self):
-                for user, userinfo in userlist[self.astid].iteritems():
-                        if 'sessiontimestamp' in userinfo:
-                                if time.time() - userinfo.get('sessiontimestamp') > xivoclient_session_timeout:
-                                        log_debug(SYSLOG_INFO, '%s : timeout reached for %s' %(self.astid, user))
-                                        disconnect_user(userinfo)
-                                        self.send_availstate_update(user, 'unknown')
