@@ -218,14 +218,14 @@ def partial_order_from_reversed_ord_pot(rev_graph, v_pot):
 	of edges from the original graph.  Edges that are in a loop are
 	preferred for removal when they have the smallest possible "tension",
 	where tension is defined by the potential difference between the
-	destination and the source of the edge. When multiple possibilities
+	destination and the source of the edge.  When multiple possibilities
 	exist because the same tension is present multiple times, the choice
 	of an edge for removal shall be considered as an arbitrary one.
 	NOTE: in the code, opposite of the "tension" is used so
 	v_pot[s] - v_pot[d] is calculated and edges where this value is bigger
 	are preferred for removal.
 	The algorithm saves known reachables vertices from each vertex in
-	conso_reach, as well as not yet traversed neighbours. The decision
+	conso_reach, as well as not yet traversed neighbours.  The decision
 	to keep or remove a given edge is taken by just checking if it would
 	introduce a loop in the graph, and this is done as follow:
 	  - if nothing reaches the source vertex or the destination vertex
