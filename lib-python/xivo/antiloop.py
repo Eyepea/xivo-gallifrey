@@ -136,7 +136,7 @@ def loop(graph, start):
 def reverse_ord(graph):
 	"""
 	This functions works on an ordered graph and returns a new one.
-	It can be viewed as doing multiple things, depending on the context:
+	It can be viewed as doing different things, depending on the context:
 	  - returns a new graph with any edge direction reversed
 	  - returns a new representation of graph, but with the destination of
 	    edges in keys of the Python mapping, and sources for a given
@@ -157,7 +157,7 @@ def potential_by_card(graph):
 	with each vertex of the graph.  The potential is the number of node
 	that are adjacent to the considered one.
 	"""
-	return dict(((v1,len(lst_v2)) for v1,lst_v2 in graph.iteritems()))
+	return dict(((v1, len(lst_v2)) for v1, lst_v2 in graph.iteritems()))
 
 # In consolidate_childs(), consolidate_conso_reach() and
 # partial_order_from_reversed_ord_pot(), conso_reach is a Python mapping which
