@@ -29,6 +29,7 @@ import os
 import sys
 import time
 import syslog
+import os.path
 import telnetlib
 
 from xivo import xivo_config
@@ -37,17 +38,17 @@ from xivo.xivo_config import ProvGeneralConf as pgc
 
 # NOTES:
 # ~/etc/dhcpd3/dhcpd.conf -> /tftpboot/Thomson/ST2030S_v1.53.inf
-#				-> /tftpboot/Thomson/ST2030S_common_v1.53.txt
-#				-> /tftpboot/Thomson/binary/v2030SG.070309.1.53.zz
-#				-> ...also firmware and other global
-#					config files like ringing tones...
+#                               -> /tftpboot/Thomson/ST2030S_common_v1.53.txt
+#                               -> /tftpboot/Thomson/binary/v2030SG.070309.1.53.zz
+#                               -> ...also firmware and other global
+#                                       config files like ringing tones...
 
-THOMSON_COMMON_DIR = pgc['tftproot'] + "Thomson/"
-THOMSON_COMMON_INF = THOMSON_COMMON_DIR + "ST" # + "2030S_common"
+THOMSON_COMMON_DIR = os.path.join(pgc['tftproot'], "Thomson/")
+THOMSON_COMMON_INF = os.path.join(THOMSON_COMMON_DIR, "ST") # + "2030S_common"
 
-THOMSON_USER = "admin"		# XXX
-THOMSON_PASSWD = "superpass"	# XXX
-THOMSON_SPEC_TXT_TEMPLATE = pgc['templates_dir'] + "ST" # + "2030S_template.txt"
+THOMSON_USER = "admin"          # XXX
+THOMSON_PASSWD = "superpass"    # XXX
+THOMSON_SPEC_TXT_TEMPLATE = os.path.join(pgc['templates_dir'], "ST") # + "2030S_template.txt"
 
 # for some tests: THOMSON_SPEC_TXT_BASENAME = pgc['templates_dir'] + "ST2030S_"
 THOMSON_SPEC_TXT_BASENAME = "/tftpboot/ST" # + "2030S_"
@@ -67,7 +68,7 @@ class TimeoutingTelnet(telnetlib.Telnet):
         """
         def __init__(self, cnx, global_TO = pgc['telnet_to_s']):
                 if type(cnx) != tuple or len(cnx) < 1:
-                        raise ValueError, "The cnx argument must be (peer,) or (peer,port) ; %s was given" % str(cnx)
+                        raise ValueError, "The cnx argument must be (peer,) or (peer, port) ; %s was given" % str(cnx)
                 elif len(cnx) < 2:
                         telnetlib.Telnet.__init__(self, cnx[0])
                 else:
@@ -109,9 +110,9 @@ class Thomson(PhoneVendor):
         def __init__(self, phone):
                 PhoneVendor.__init__(self, phone)
                 # TODO: handle this with a lookup table stored in the DB?
-                if self.phone["model"] != "2022s" and \
-                   self.phone["model"] != "2030s":
-                        raise ValueError, "Unknown Thomson model '%s'" % self.phone["model"]
+                if self.phone['model'] != "2022s" and \
+                   self.phone['model'] != "2030s":
+                        raise ValueError, "Unknown Thomson model %r" % self.phone['model']
         
         def __generate_timestamp(self):
                 tuple_time = time.localtime()
@@ -123,7 +124,7 @@ class Thomson(PhoneVendor):
                 self.passwd = passwd
         
         def __action(self, commands):
-                ip = self.phone["ipv4"]
+                ip = self.phone['ipv4']
                 tn = TimeoutingTelnet((ip,))
                 tn.restart_global_to()
                 try:
@@ -133,10 +134,8 @@ class Thomson(PhoneVendor):
                                 tn.read_until_to("Password: ")
                                 tn.write(self.passwd + "\r\n")
                         for cmd in commands:
-                                tn.read_until_to("["+self.user+"]#")
-                                syslog.syslog(syslog.LOG_DEBUG,
-                                        "sending telnet command (%s): %s" \
-                                        % (self.phone["macaddr"],cmd))
+                                tn.read_until_to("[" + self.user + "]#")
+                                syslog.syslog(syslog.LOG_DEBUG, "sending telnet command (%s): %s" % (self.phone['macaddr'], cmd))
                                 tn.write("%s\n" % cmd)
                                 if cmd == 'reboot':
                                         break
@@ -150,48 +149,48 @@ class Thomson(PhoneVendor):
                 fk_config_lines = []
                 for key in sorted_keys:
                         exten, supervise = funckey[key]
-                        fk_config_lines.append(
-                                "FeatureKeyExt%02d=%s/<sip:%s>" %
-                                (int(key), 'LS'[supervise], exten))
-                return '\n'.join(fk_config_lines)
+                        fk_config_lines.append("FeatureKeyExt%02d=%s/<sip:%s>" % (int(key), 'LS'[supervise], exten))
+                return "\n".join(fk_config_lines)
         
         def __generate(self, provinfo):
-                txt_template_file = open(THOMSON_SPEC_TXT_TEMPLATE + self.phone["model"].upper() + "_template.txt")
+                txt_template_file = open(THOMSON_SPEC_TXT_TEMPLATE + self.phone['model'].upper() + "_template.txt")
                 txt_template_lines = txt_template_file.readlines()
                 txt_template_file.close()
-                tmp_filename = THOMSON_SPEC_TXT_BASENAME + self.phone["model"].upper() + "_" + self.phone["macaddr"].replace(':', '') + '.txt.tmp'
+		macaddr = self.phone['macaddr'].replace(":", "")
+		model = self.phone['model'].upper()
+                tmp_filename = THOMSON_SPEC_TXT_BASENAME + model + "_" + macaddr + ".txt.tmp"
                 txt_filename = tmp_filename[:-4]
                 
-                multilines = str(provinfo["simultcalls"])
+                multilines = str(provinfo['simultcalls'])
                 function_keys_config_lines = \
                         self.__format_function_keys(provinfo['funckey'])
                 
                 txt = xivo_config.txtsubst(txt_template_lines,
-                        { "user_display_name": provinfo["name"],
+                        { 'user_display_name': provinfo['name'],
 # THOMSON BUGBUG #1
-# provinfo["number"] is volontarily not set in "TEL1Number" because Thomson
+# provinfo['number'] is volontarily not set in "TEL1Number" because Thomson
 # phones authentify with their telnumber.. :/
-                          "user_phone_ident":  provinfo["ident"],
-                          "user_phone_number": provinfo["number"],
-                          "user_phone_passwd": provinfo["passwd"],
-                          "simultcalls": multilines,
+                          'user_phone_ident':  provinfo['ident'],
+                          'user_phone_number': provinfo['number'],
+                          'user_phone_passwd': provinfo['passwd'],
+                          'simultcalls': multilines,
                           # <WARNING: THIS FIELD MUST STAY IN LOWER CASE IN THE TEMPLATE AND MAC SPECIFIC FILE>
-                          "config_sn": self.__generate_timestamp(),
+                          'config_sn': self.__generate_timestamp(),
                           # </WARNING>
-                          "function_keys": function_keys_config_lines,
+                          'function_keys': function_keys_config_lines,
                         },
                         txt_filename)
                 tmp_file = open(tmp_filename, 'w')
                 tmp_file.writelines(txt)
                 tmp_file.close()
                 os.rename(tmp_filename, txt_filename) # atomically update the file
-                inf_filename = THOMSON_SPEC_TXT_BASENAME + self.phone["model"].upper() + "_" + self.phone["macaddr"].replace(':','') + '.inf'
+                inf_filename = THOMSON_SPEC_TXT_BASENAME + model + "_" + macaddr + ".inf"
                 try:
                         os.lstat(inf_filename)
                         os.unlink(inf_filename)
                 except:
                         pass
-                os.symlink(THOMSON_COMMON_INF + self.phone["model"].upper() + "_common", inf_filename)
+                os.symlink(THOMSON_COMMON_INF + model + "_common", inf_filename)
         
         # Daemon entry points for configuration generation and issuing commands
         
@@ -210,7 +209,7 @@ class Thomson(PhoneVendor):
 # reinit; until then we don't really reinit the phone but just put it in the
 # guest state, by its mac specific configuration
                 self.__configurate_telnet(THOMSON_USER, THOMSON_PASSWD)
-#		self.__action(('sys set rel 0', 'ffs format', 'ffs commit', 'ffs commit', 'reboot', 'quit'))
+#               self.__action(('sys set rel 0', 'ffs format', 'ffs commit', 'ffs commit', 'reboot', 'quit'))
                 self.__action(('reboot',))
         
         def do_reinitprov(self):
@@ -219,12 +218,12 @@ class Thomson(PhoneVendor):
                 configuration for this phone.
                 """
                 self.__generate(
-                        { "name": "guest",
-                          "ident": "guest",
-                          "number": "guest",
-                          "passwd": "guest",
-                          "simultcalls": "10",
-                          "funckey": {},
+                        { 'name': "guest",
+                          'ident': "guest",
+                          'number': "guest",
+                          'passwd': "guest",
+                          'simultcalls': "10",
+                          'funckey': {},
                         })
         
         def do_autoprov(self, provinfo):
@@ -255,10 +254,10 @@ class Thomson(PhoneVendor):
                 fw = "unknown"
                 if len(splitted_ua) < 2:
                         return None
-                if splitted_ua[1][:2] == 'ST':
-                        model = splitted_ua[1][2:].lower() + 's'
+                if splitted_ua[1][:2] == "ST":
+                        model = splitted_ua[1][2:].lower() + "s"
                 else:
-                        model = splitted_ua[1].lower() + 's'
+                        model = splitted_ua[1].lower() + "s"
                 if len(splitted_ua) >= 4:
                         fw = splitted_ua[3]
                 return ("thomson", model, fw)

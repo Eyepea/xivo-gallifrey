@@ -28,6 +28,7 @@ __license__ = """
 import os
 import sys
 import syslog
+import os.path
 import subprocess
 
 from xivo import xivo_config
@@ -44,29 +45,29 @@ from xivo import except_tb
 # dhcp request (model not in the request.... :///), we'll need to also support
 # HTTP based xivo_config
 
-SNOM_SPEC_DIR = pgc['tftproot'] + "Snom/"
-SNOM_SPEC_TEMPLATE = pgc['templates_dir'] + "snom-template.htm"
+SNOM_SPEC_DIR = os.path.join(pgc['tftproot'], "Snom/")
+SNOM_SPEC_TEMPLATE = os.path.join(pgc['templates_dir'], "snom-template.htm")
 SNOM_COMMON_HTTP_USER = "guest"
 SNOM_COMMON_HTTP_PASS = "guest"
 
 class Snom(PhoneVendor):
         
+        SNOM_MODELS = ('300', '320', '360')
+        
         def __init__(self, phone):
                 PhoneVendor.__init__(self, phone)
                 # TODO: handle this with a lookup table stored in the DB?
-                if self.phone["model"] != "300" and \
-                   self.phone["model"] != "320" and \
-                   self.phone["model"] != "360":
-                        raise ValueError, "Unknown Snom model '%s'" % self.phone["model"]
+                if self.phone['model'] not in self.SNOM_MODELS:
+                        raise ValueError, "Unknown Snom model %r" % self.phone['model']
         
         def __action(self, command, user, passwd):
                 try: # XXX: also check return values?
                         
                         ## curl options
-                        # -s			-- silent
-                        # -o /dev/null		-- dump result
+                        # -s                    -- silent
+                        # -o /dev/null          -- dump result
                         # --connect-timeout 30  -- timeout after 30s
-                        # -retry 0		-- don't retry
+                        # -retry 0              -- don't retry
                         subprocess.call([pgc['curl_cmd'],
                                          "--retry", "0",
                                          "--connect-timeout", str(pgc['curl_to_s']),
@@ -94,7 +95,7 @@ class Snom(PhoneVendor):
                 Entry point to generate the reinitialized (GUEST)
                 configuration for this phone.
                 """
-                htm_filename = SNOM_SPEC_DIR + "snom" + self.phone["model"] + '-' + self.phone["macaddr"].replace(':','') + '.htm'
+                htm_filename = os.path.join(SNOM_SPEC_DIR, "snom" + self.phone['model'] + "-" + self.phone['macaddr'].replace(":", "") + ".htm")
                 try:
                         os.unlink(htm_filename)
                 except OSError:
@@ -108,15 +109,15 @@ class Snom(PhoneVendor):
                 template_file = open(SNOM_SPEC_TEMPLATE)
                 template_lines = template_file.readlines()
                 template_file.close()
-                tmp_filename = SNOM_SPEC_DIR + "snom" + self.phone["model"] + '-' + self.phone["macaddr"].replace(':','') + '.htm.tmp'
+                tmp_filename = os.path.join(SNOM_SPEC_DIR, "snom" + self.phone['model'] + "-" + self.phone['macaddr'].replace(":", "") + ".htm.tmp")
                 htm_filename = tmp_filename[:-4]
                 txt = xivo_config.txtsubst(template_lines,
-                        { "user_display_name": provinfo["name"],
-                          "user_phone_ident":  provinfo["ident"],
-                          "user_phone_number": provinfo["number"],
-                          "user_phone_passwd": provinfo["passwd"],
-                          "http_user": SNOM_COMMON_HTTP_USER,
-                          "http_pass": SNOM_COMMON_HTTP_PASS,
+                        { 'user_display_name': provinfo['name'],
+                          'user_phone_ident':  provinfo['ident'],
+                          'user_phone_number': provinfo['number'],
+                          'user_phone_passwd': provinfo['passwd'],
+                          'http_user': SNOM_COMMON_HTTP_USER,
+                          'http_pass': SNOM_COMMON_HTTP_PASS,
                         },
                         htm_filename)
                 tmp_file = open(tmp_filename, 'w')
@@ -129,7 +130,7 @@ class Snom(PhoneVendor):
         @classmethod
         def get_phones(cls):
                 "Report supported phone models for this vendor."
-                return (("300", "300"), ("320", "320"), ("360","360"))
+                return tuple(map(lambda x: (x, x), cls.SNOM_MODELS))
         
         # Entry points for the AGI
         

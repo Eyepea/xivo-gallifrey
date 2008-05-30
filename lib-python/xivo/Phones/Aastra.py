@@ -28,6 +28,7 @@ __license__ = """
 import os
 import sys
 import syslog
+import os.path
 import subprocess
 
 from xivo import xivo_config
@@ -35,7 +36,7 @@ from xivo.xivo_config import PhoneVendor
 from xivo.xivo_config import ProvGeneralConf as pgc
 from xivo import except_tb
 
-AASTRA_COMMON_DIR = pgc['tftproot'] + 'Aastra/'
+AASTRA_COMMON_DIR = os.path.join(pgc['tftproot'], 'Aastra/')
 AASTRA_COMMON_HTTP_USER = 'admin'
 AASTRA_COMMON_HTTP_PASS = '22222'
 
@@ -47,16 +48,16 @@ class Aastra(PhoneVendor):
                 PhoneVendor.__init__(self, phone)
                 # TODO: handle this with a lookup table stored in the DB?
                 if self.phone['model'] not in self.AASTRA_MODELS:
-                        raise ValueError, "Unknown Aastra model '%s'" % self.phone['model']
+                        raise ValueError, "Unknown Aastra model %r" % self.phone['model']
         
         def __action(self, user, passwd):
                 try: # XXX: also check return values?
                         
                         ## curl options
-                        # -s			-- silent
-                        # -o /dev/null		-- dump result
+                        # -s                    -- silent
+                        # -o /dev/null          -- dump result
                         # --connect-timeout 30  -- timeout after 30s
-                        # -retry 0		-- don't retry
+                        # -retry 0              -- don't retry
                         # -d DATA               -- post DATA
                         
                         # We first make two attempts
@@ -116,12 +117,12 @@ class Aastra(PhoneVendor):
                 Entry point to generate the provisioned configuration for
                 this phone.
                 """
-                __model = self.phone['model']
-                __macaddr = self.phone['macaddr'].upper().replace(':','')
-                template_file = open(pgc['templates_dir'] + "aastra-" + __model + ".cfg")
+                model = self.phone['model']
+                macaddr = self.phone['macaddr'].upper().replace(":", "")
+                template_file = open(os.path.join(pgc['templates_dir'], "aastra-" + model + ".cfg"))
                 template_lines = template_file.readlines()
                 template_file.close()
-                tmp_filename = AASTRA_COMMON_DIR + __macaddr + '.cfg.tmp'
+                tmp_filename = os.path.join(AASTRA_COMMON_DIR, macaddr + '.cfg.tmp')
                 cfg_filename = tmp_filename[:-4]
                 txt = xivo_config.txtsubst(template_lines,
                         { 'user_display_name': provinfo['name'],
@@ -148,10 +149,10 @@ class Aastra(PhoneVendor):
                 configuration for this phone.
                 """
                 self.__generate(
-                        { 'name':   'guest',
-                          'ident':  'guest',
-                          'number': 'guest',
-                          'passwd': 'guest',
+                        { 'name':   "guest",
+                          'ident':  "guest",
+                          'number': "guest",
+                          'passwd': "guest",
                         })
         
         # Introspection entry points

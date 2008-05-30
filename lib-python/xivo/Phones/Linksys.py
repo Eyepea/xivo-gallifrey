@@ -28,6 +28,7 @@ __license__ = """
 import os
 import sys
 import syslog
+import os.path
 import subprocess
 
 from xivo import xivo_config
@@ -35,7 +36,7 @@ from xivo.xivo_config import PhoneVendor
 from xivo.xivo_config import ProvGeneralConf as pgc
 from xivo import except_tb
 
-LINKSYS_COMMON_DIR = pgc['tftproot'] + "Linksys/"
+LINKSYS_COMMON_DIR = os.path.join(pgc['tftproot'], "Linksys/")
 LINKSYS_COMMON_HTTP_USER = "admin"
 LINKSYS_COMMON_HTTP_PASS = "adminpass"
 
@@ -46,17 +47,17 @@ class Linksys(PhoneVendor):
         def __init__(self, phone):
                 PhoneVendor.__init__(self, phone)
                 # TODO: handle this with a lookup table stored in the DB?
-                if (self.phone["model"] not in map(lambda x: "spa" + x, self.LINKSYS_SPA_MODELS)) and (self.phone["model"] != "pap2t"):
-                        raise ValueError, "Unknown Linksys model '%s'" % self.phone["model"]
+                if (self.phone['model'] not in map(lambda x: "spa" + x, self.LINKSYS_SPA_MODELS)) and (self.phone['model'] != "pap2t"):
+                        raise ValueError, "Unknown Linksys model %r" % self.phone['model']
         
         def __action(self, command, user, passwd):
                 try: # XXX: also check return values?
                         
                         ## curl options
-                        # -s			-- silent
-                        # -o /dev/null		-- dump result
+                        # -s                    -- silent
+                        # -o /dev/null          -- dump result
                         # --connect-timeout 30  -- timeout after 30s
-                        # -retry 0		-- don't retry
+                        # -retry 0              -- don't retry
                         subprocess.call([pgc['curl_cmd'],
                                          "--retry", "0",
                                          "--connect-timeout", str(pgc['curl_to_s']),
@@ -85,20 +86,20 @@ class Linksys(PhoneVendor):
                 Entry point to generate the provisioned configuration for
                 this phone.
                 """
-                __model = self.phone["model"]
-                __macaddr = self.phone["macaddr"].lower().replace(':','')
-                template_file = open(pgc['templates_dir'] + "linksys-" + __model + ".cfg")
+                model = self.phone['model']
+                macaddr = self.phone['macaddr'].lower().replace(":", "")
+                template_file = open(os.path.join(pgc['templates_dir'], "linksys-" + model + ".cfg"))
                 template_lines = template_file.readlines()
                 template_file.close()
-                tmp_filename = LINKSYS_COMMON_DIR + __model + '-' + __macaddr + ".cfg.tmp"
+                tmp_filename = os.path.join(LINKSYS_COMMON_DIR, model + "-" + macaddr + ".cfg.tmp")
                 cfg_filename = tmp_filename[:-4]
                 txt = xivo_config.txtsubst(template_lines,
-                        { "user_display_name": provinfo["name"],
-                          "user_phone_ident":  provinfo["ident"],
-                          "user_phone_number": provinfo["number"],
-                          "user_phone_passwd": provinfo["passwd"],
-                          "asterisk_ipv4" : pgc['asterisk_ipv4'],
-                          "ntp_server_ipv4" : pgc['ntp_server_ipv4'],
+                        { 'user_display_name': provinfo['name'],
+                          'user_phone_ident':  provinfo['ident'],
+                          'user_phone_number': provinfo['number'],
+                          'user_phone_passwd': provinfo['passwd'],
+                          'asterisk_ipv4' : pgc['asterisk_ipv4'],
+                          'ntp_server_ipv4' : pgc['ntp_server_ipv4'],
                         },
                         cfg_filename)
                 tmp_file = open(tmp_filename, 'w')
@@ -119,10 +120,10 @@ class Linksys(PhoneVendor):
                 configuration for this phone.
                 """
                 self.__generate(
-                        { "name":   "guest",
-                          "ident":  "guest",
-                          "number": "guest",
-                          "passwd": "guest"
+                        { 'name':   "guest",
+                          'ident':  "guest",
+                          'number': "guest",
+                          'passwd': "guest",
                         })
         
         # Introspection entry points
@@ -145,13 +146,13 @@ class Linksys(PhoneVendor):
                 # Linksys/SPA962-5.1.7
                 # Linksys/PAP2T-5.1.5(LS)
                 
-                ua_splitted = ua.split('/', 1)
+                ua_splitted = ua.split("/", 1)
                 if ua_splitted[0] != 'Linksys':
                         return None
                 model = 'unknown'
                 fw = 'unknown'
                 if len(ua_splitted) == 2:
-                        modelfw = ua_splitted[1].split('-', 1)
+                        modelfw = ua_splitted[1].split("-", 1)
                         model = modelfw[0].lower()
                         if len(modelfw) == 2:
                                 fw = modelfw[1]

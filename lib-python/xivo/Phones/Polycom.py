@@ -29,12 +29,13 @@ import os
 import sys
 import syslog
 import socket
+import os.path
 
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendor
 from xivo.xivo_config import ProvGeneralConf as pgc
 
-POLYCOM_COMMON_DIR = pgc['tftproot'] + "Polycom/"
+POLYCOM_COMMON_DIR = os.path.join(pgc['tftproot'], "Polycom/")
 POLYCOM_COMMON_HTTP_USER = "Polycom"
 POLYCOM_COMMON_HTTP_PASS = "456"
 SIP_PORT = 5060
@@ -47,9 +48,9 @@ class Polycom(PhoneVendor):
         def __init__(self, phone):
                 PhoneVendor.__init__(self, phone)
                 # TODO: handle this with a lookup table stored in the DB?
-                if self.phone["model"] != "spip_430" and \
-                   self.phone["model"] != "spip_650":
-                        raise ValueError, "Unknown Polycom model '%s'" % self.phone["model"]
+                if self.phone['model'] != 'spip_430' and \
+                   self.phone['model'] != 'spip_650':
+                        raise ValueError, "Unknown Polycom model %r" % self.phone['model']
         
         def __iptopeer(self):
                 phoneip = self.phone['ipv4']
@@ -58,15 +59,16 @@ class Polycom(PhoneVendor):
                 
                 amisock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 amisock.set_timeout(pgc['telnet_to_s'])
-                amisock.connect(('127.0.0.1', AMI_PORT))
-                actioncommand = ['Action: login',
-                                 'Username: %s' % AMI_USER,
-                                 'Secret: %s' % AMI_PASS,
-                                 'Events: off',
-                                 '\r\n',
-                                 'Action: SIPpeers',
-                                 '\r\n']
-                amisock.send('\r\n'.join(actioncommand))
+                amisock.connect(("127.0.0.1", AMI_PORT))
+                actioncommand = ( "Action: login\r\n"
+                                  "Username: %s\r\n"
+                                  "Secret: %s\r\n"
+                                  "Events: off\r\n"
+                                  "\r\n"
+                                  "Action: SIPpeers\r\n"
+                                  "\r\n" ) \
+                                % (AMI_USER, AMI_PASS)
+                amisock.send(actioncommand)
                 
                 fullmsg = ''
                 iquit = False
@@ -77,16 +79,16 @@ class Polycom(PhoneVendor):
                         msg = amisock.recv(8192)
                         if len(msg) > 0:
                                 fullmsg += msg
-                                events = fullmsg.split('\r\n\r\n')
+                                events = fullmsg.split("\r\n\r\n")
                                 fullmsg = events.pop()
                                 for ev in events:
-                                        lines = ev.split('\r\n')
+                                        lines = ev.split("\r\n")
                                         if ipaddressmatch in lines:
                                                 for myline in lines:
-                                                        if myline.startswith('ObjectName: '):
-                                                                self.peerinfo = myline.split(': ')
+                                                        if myline.startswith("ObjectName: "):
+                                                                self.peerinfo = myline.split(": ")
                                                                 iquit = True
-                                        if 'Event: PeerlistComplete' in lines:
+                                        if "Event: PeerlistComplete" in lines:
                                                 iquit = True
                                         if iquit:
                                                 break
@@ -111,17 +113,23 @@ class Polycom(PhoneVendor):
                 else:
                         sip_number = 'guest'
                 
-                sip_message = [ 'NOTIFY sip:%s@%s:%d SIP/2.0' %(sip_number, phoneip, SIP_PORT),
-                                'Via: SIP/2.0/UDP %s' %(myip),
-                                'From: <sip:%s@%s>' %(sip_number, myip),
-                                'To: <sip:%s@%s>' %(sip_number, phoneip),
-                                'Event: check-sync',
-                                'Call-ID: callid-reboot@%s' %(myip),
-                                'CSeq: 1300 NOTIFY',
-                                'Contact: <sip:%s@%s>' %(sip_number, myip),
-                                'Content-Length: 0']
+                sip_message = ( "NOTIFY sip:%s@%s:%d SIP/2.0\r\n"
+                                "Via: SIP/2.0/UDP %s\r\n"
+                                "From: <sip:%s@%s>\r\n"
+                                "To: <sip:%s@%s>\r\n"
+                                "Event: check-sync\r\n"
+                                "Call-ID: callid-reboot@%s\r\n"
+                                "CSeq: 1300 NOTIFY\r\n"
+                                "Contact: <sip:%s@%s>\r\n"
+                                "Content-Length: 0\r\n" ) \
+                              % (sip_number, phoneip, SIP_PORT,
+                                 myip,
+                                 sip_number, myip,
+                                 sip_number, phoneip,
+                                 myip,
+                                 sip_number, myip)
                 sipsocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                sipsocket.sendto('\r\n'.join(sip_message), (phoneip, SIP_PORT))
+                sipsocket.sendto(sip_message, (phoneip, SIP_PORT))
         
         def do_reboot(self):
                 "Entry point to send the reboot command to the phone."
@@ -135,35 +143,35 @@ class Polycom(PhoneVendor):
                 self.__sendsipnotify()
         
         def __generate(self, provinfo):
-                template_main_file = open(pgc['templates_dir'] + "polycom-%s.cfg" % self.phone["model"])
+                template_main_file = open(os.path.join(pgc['templates_dir'], "polycom-%s.cfg" % self.phone['model']))
                 template_main_lines = template_main_file.readlines()
                 template_main_file.close()
-                template_phone_file = open(pgc['templates_dir'] + "polycom-phone.cfg")
+                template_phone_file = open(os.path.join(pgc['templates_dir'], "polycom-phone.cfg"))
                 template_phone_lines = template_phone_file.readlines()
                 template_phone_file.close()
                 
-                __macaddr = self.phone["macaddr"].replace(':','').lower()
-                tmp_main_filename = POLYCOM_COMMON_DIR + __macaddr + ".cfg.tmp"
+                macaddr = self.phone['macaddr'].replace(":", "").lower()
+                tmp_main_filename = os.path.join(POLYCOM_COMMON_DIR, macaddr + ".cfg.tmp")
                 cfg_main_filename = tmp_main_filename[:-4]
-                tmp_phone_filename = POLYCOM_COMMON_DIR + __macaddr + "-phone.cfg.tmp"
+                tmp_phone_filename = os.path.join(POLYCOM_COMMON_DIR, macaddr + "-phone.cfg.tmp")
                 cfg_phone_filename = tmp_phone_filename[:-4]
                 
                 txt_main = xivo_config.txtsubst(template_main_lines,
-                        { "phone.cfg": __macaddr + "-phone.cfg" },
+                        { 'phone.cfg': macaddr + "-phone.cfg" },
                         cfg_main_filename)
                 txt_phone = xivo_config.txtsubst(template_phone_lines,
-                        { "user_display_name": provinfo["name"],
-                          "user_phone_ident":  provinfo["ident"],
-                          "user_phone_number": provinfo["number"],
-                          "user_phone_passwd": provinfo["passwd"],
-                          "asterisk_ipv4" : pgc['asterisk_ipv4']
+                        { 'user_display_name': provinfo['name'],
+                          'user_phone_ident':  provinfo['ident'],
+                          'user_phone_number': provinfo['number'],
+                          'user_phone_passwd': provinfo['passwd'],
+                          'asterisk_ipv4' : pgc['asterisk_ipv4']
                         },
                         cfg_phone_filename)
                 
-                tmp_main_file = open(tmp_main_filename, 'w')
+                tmp_main_file = open(tmp_main_filename, "w")
                 tmp_main_file.writelines(txt_main)
                 tmp_main_file.close()
-                tmp_phone_file = open(tmp_phone_filename, 'w')
+                tmp_phone_file = open(tmp_phone_filename, "w")
                 tmp_phone_file.writelines(txt_phone)
                 tmp_phone_file.close()
                 
@@ -176,10 +184,10 @@ class Polycom(PhoneVendor):
                 configuration for this phone.
                 """
                 self.__generate(
-                        { "name":   "guest",
-                          "ident":  "guest",
-                          "number": "guest",
-                          "passwd": "guest",
+                        { 'name':   "guest",
+                          'ident':  "guest",
+                          'number': "guest",
+                          'passwd': "guest",
                         })
         
         def do_autoprov(self, provinfo):
@@ -194,7 +202,7 @@ class Polycom(PhoneVendor):
         @classmethod
         def get_phones(cls):
                 "Report supported phone models for this vendor."
-                return (("spip_430", "SPIP430"), ("spip_650", "SPIP650"))
+                return (('spip_430', 'SPIP430'), ('spip_650', 'SPIP650'))
         
         # Entry points for the AGI
         
