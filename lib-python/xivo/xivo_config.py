@@ -343,6 +343,14 @@ def phone_desc_by_ua(ua, exception_handler = default_handler):
 
 ### GENERAL CONF
 
+def split_iface_name(ifname):
+	"""
+	This function splits the string and the numeric parts of ifname
+	exemples:
+	  'wazza42sub10' -> ('wazza', 42, 'sub', 10)
+	  ''
+	"""
+
 def specific(docstr):
 	return docstr not in ('reserved', 'none', 'void')
 
@@ -576,7 +584,7 @@ def plausible_configuration(conf, schema, trace):
 	for field in voip_fixed:
 		if field in addresses:
 			if parse_ipv4(addresses[field]) == broadcast: # TODO: other sanity checks...
-				trace.err("invalid voip service related IP %s: %s" (`field`, `addresses[field]`))
+				trace.err("invalid voip service related IP %r: %r" (field, addresses[field]))
 				return False
 	# router, if present, must be in the network
 	if 'router' in addresses:
@@ -614,7 +622,7 @@ def plausible_configuration(conf, schema, trace):
 	for rang in all_ranges:
 		for addr in fixed_addresses:
 			if rang[0] <= addr <= rang[1]:
-				trace.err("fixed address %s detected in DHCP range %s" % (`unparse_ipv4(addr)`, `tuple(rang)`))
+				trace.err("fixed address %r detected in DHCP range %r" % (unparse_ipv4(addr), tuple(rang)))
 				return False
 	
 	return True
