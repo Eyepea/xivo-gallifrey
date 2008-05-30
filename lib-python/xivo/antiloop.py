@@ -166,7 +166,7 @@ def potential_by_card(graph):
 #                         list_of_adjacents_but_not_yet_traversed_vertices]
 
 def consolidate_childs(conso_reach, s, seq):
-	l1,l2 = len(conso_reach[s][1]),len(conso_reach[s][2])
+	l1, l2 = len(conso_reach[s][1]), len(conso_reach[s][2])
 	for r in conso_reach[s][1]:
 		if conso_reach[r][0] < 0:
 			consolidate_childs(conso_reach, r, seq)
@@ -178,7 +178,7 @@ def consolidate_childs(conso_reach, s, seq):
 		conso_reach[s][1].add(r)
 		conso_reach[s][1].update(conso_reach[r][1])
 	conso_reach[s][2] = set()
-	if (l1,l2) != (len(conso_reach[s][1]),len(conso_reach[s][2])) \
+	if (l1, l2) != (len(conso_reach[s][1]), len(conso_reach[s][2])) \
 	   or conso_reach[s][0] == -1:
 		conso_reach[s][0] = seq
 		return True
@@ -269,23 +269,23 @@ def partial_order_from_reversed_ord_pot(rev_graph, v_pot):
 	stable_prios = {}
 	sorted_prios = []
 	deletion_list = []
-	for d,srcs in rev_graph.iteritems():
+	for d, srcs in rev_graph.iteritems():
 		for s in srcs:
 			w = v_pot[s] - v_pot[d]
 			sorted_prios.append(w)
 			lst = stable_prios.setdefault(w, [])
-			lst.append((s,d))
+			lst.append((s, d))
 	sorted_prios.sort()
 	seq = 0
 	while sorted_prios:
 		seq += 1
 		prio = sorted_prios.pop(0)
-		(s,d) = stable_prios[prio].pop(0)
+		(s, d) = stable_prios[prio].pop(0)
 		if rev_graph[s] and conso_reach[d][0] \
 		   and ((s in conso_reach[d][1]) or (s in conso_reach[d][2]) \
 			or (consolidate_conso_reach(conso_reach, d, seq)
 			    and s in conso_reach[d][1])):
-			deletion_list.append((s,d))
+			deletion_list.append((s, d))
 			continue
 		graph_po[s].append(d)
 		conso_reach[s][2].add(d)
