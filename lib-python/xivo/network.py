@@ -113,6 +113,12 @@ def is_interface_plugged(ifname):
 	"""
 	return int(file(os.path.join(SYS_CLASS_NET, ifname, CARRIER)).read().strip())
 
+def normalize_ipv4_address(addr):
+	"""
+	Returns a canonical string repr of addr (which is a valid IPv4)
+	"""
+	return '.'.join([str(int(elt)) for elt in addr.split('.', 3)])
+
 def normalize_mac_address(macaddr):
 	"""
 	input: mac address, with bytes in hexa, ':' separated

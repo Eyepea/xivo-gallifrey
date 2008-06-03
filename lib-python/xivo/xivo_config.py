@@ -428,8 +428,6 @@ def plausible_static(static, schema, trace):
 		return False
 	return True
 
-# XXX: error from generic schema code
-
 def plausible_configuration(conf, schema, trace):
 	"""
 	!~plausible_configuration
@@ -601,19 +599,13 @@ def reserved_vlans(conf):
 		                           if ipConfs_tag == 'reserved'])
 	return set(reserved_vlan_list)
 
-def normalize_ipv4_address(addr):
-	"""
-	Returns a canonical string repr of addr (which is a valid IPv4)
-	"""
-	return '.'.join([str(int(elt)) for elt in addr.split('.', 3)])
-
 def normalize_static(static):
 	"""
 	Normalize IPv4 addresses in static
 	"""
 	for key in ('address', 'netmask', 'broadcast', 'gateway'):
 		if key in static:
-			static[key] = normalize_ipv4_address(static[key])
+			static[key] = network.normalize_ipv4_address(static[key])
 
 def load_configuration(conf_source):
 	"""
@@ -624,15 +616,15 @@ def load_configuration(conf_source):
 	# TODO: do that thanks to schema based mapping (mapping in functional programming meaning)
 	nameservers = conf['resolvConf'].get('nameservers')
 	if nameservers:
-		conf['resolvConf']['nameservers'] = map(normalize_ipv4_address, nameservers)
+		conf['resolvConf']['nameservers'] = map(network.normalize_ipv4_address, nameservers)
 	for static in conf['ipConfs'].itervalues():
 		normalize_static(static)
 	voip_addresses = conf['services']['voip']['addresses']
 	for field in 'voipServer', 'bootServer', 'directory', 'ntp', 'router':
 		if field in voip_addresses:
-			voip_addresses[field] = normalize_ipv4_address(voip_addresses[field])
+			voip_addresses[field] = network.normalize_ipv4_address(voip_addresses[field])
 	for range_name in 'voipRange', 'alienRange':
-		voip_addresses[range_name][:] = map(normalize_ipv4_address, voip_addresses[range_name])
+		voip_addresses[range_name][:] = map(network.normalize_ipv4_address, voip_addresses[range_name])
 	return conf
 
 def natural_vlan_name(if_phy_name, vlan_id):
@@ -1015,6 +1007,15 @@ def transaction_system_configuration(trace=trace_null):
 	transactional_generation(STORE_BASE, (STORE_PREVIOUS, STORE_CURRENT, STORE_NEW, STORE_FAILED),
 	                         GENERATED_BASE, (GENERATED_PREVIOUS, GENERATED_CURRENT, GENERATED_NEW, GENERATED_TMP),
 				 generate_system_configuration, trace)
+
+def iterautoattrib_notplug_phy():
+	"""
+	Yield plugged physical interfaces in natural order first, then unplugged ones.
+	"""
+	phys = network.get_filtered_phys(any_prefixes)
+	plug_phys = [(not network.is_interface_plugged(ifname), network.split_ifname(ifname)) for ifname in phys]
+	plug_phys.sort()
+	return iter([(notplug, network.unsplit_ifname(ifname)) for (notplug, ifname) in plug_phys])
 
 __all__ = (
 	'ProvGeneralConf', 'LoadConfig', 'txtsubst', 'well_formed_provcode',
