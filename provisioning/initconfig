@@ -49,10 +49,10 @@ def config_path():
 		print >> sys.stderr, x
 		help_screen()
 	sys.argv[1:] = args # strip options for legacy code behind
-	for k,v in opts: # DO NOT MERGE THE TWO LOOPS
+	for k, v in opts: # DO NOT MERGE THE TWO LOOPS
 		if k == '-h':
 			help_screen()
-	for k,v in opts:
+	for k, v in opts:
 		if k == '-c':
 			CONFIG_FILE = v
 config_path()
@@ -64,7 +64,6 @@ import httplib
 
 from xivo import xivo_config
 from xivo.xivo_config import ProvGeneralConf as pgc
-from xivo.Phones import *
 
 from xivo import agi_helpers
 from xivo import agitb
@@ -92,6 +91,10 @@ def user_ipv4_from_sip_uri(sip_addr):
 
 def main():
 	xivo_config.LoadConfig(CONFIG_FILE)
+
+	# WARNING: xivo_config.LoadConfig must be called before
+	from xivo.Phones import *
+
 	if len(sys.argv) < 4:
 		return_exit("Too few arguments")
 

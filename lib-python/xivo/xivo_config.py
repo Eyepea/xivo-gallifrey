@@ -36,8 +36,8 @@ import subprocess
 from ConfigParser import ConfigParser
 from itertools import chain
 
+from xivo import network
 from xivo import trace_null
-from xivo import StreamedLines
 from xivo import ConfigDict
 from xivo import interfaces
 from xivo import except_tb
@@ -55,7 +55,6 @@ ProvGeneralConf = {
 	'connect_ipv4':			"127.0.0.1",
 	'connect_port':			8666,
 	'tftproot':			"/tftpboot/",
-	'proc_dev_net':			"/proc/net/dev",
 	'scan_ifaces_prefix':		"eth",
 	'arping_cmd':			"sudo /usr/sbin/arping",
 	'arping_sleep_us':		150000,
@@ -68,7 +67,7 @@ ProvGeneralConf = {
 	'ntp_server_ipv4':		"192.168.0.254",
 }
 pgc = ProvGeneralConf
-AUTHORIZED_PREFIXES = ["eth"]
+AUTHORIZED_PREFIXES = ("eth",)
 
 def LoadConfig(filename):
 	global ProvGeneralConf
@@ -76,11 +75,39 @@ def LoadConfig(filename):
 	cp = ConfigParser()
 	cp.readfp(open(filename))
 	ConfigDict.FillDictFromConfigSection(ProvGeneralConf, cp, "general")
-	AUTHORIZED_PREFIXES = [
+	AUTHORIZED_PREFIXES = tuple([
 		p.strip()
 		for p in pgc['scan_ifaces_prefix'].split(',')
 		if p.strip()
-	]
+	])
+
+def any_prefixes(ifname):
+	"ifname starts with one of the (few) prefixes in AUTHORIZED_PREFIXES?"
+	return True in [ifname.startswith(x) for x in AUTHORIZED_PREFIXES]
+
+def ipv4_from_macaddr(macaddr, logexceptfunc = None):
+	"""
+	Wrapper for network.ipv4_from_macaddr() that sets
+	* ifname_filter to any_prefixes
+	* arping_cmd_list to pgc['arping_cmd'].strip().split()
+	* arping_sleep_us to pgc['arping_sleep_us']
+	"""
+	return network.ipv4_from_macaddr(macaddr, logexceptfunc = logexceptfunc,
+	                                 ifname_filter = any_prefixes,
+					 arping_cmd_list = pgc['arping_cmd'].strip().split(),
+					 arping_sleep_us = pgc['arping_sleep_us'])
+
+def macaddr_from_ipv4(macaddr, logexceptfunc = None):
+	"""
+	Wrapper for network.macaddr_from_ipv4() that sets
+	* ifname_filter to any_prefixes
+	* arping_cmd_list to pgc['arping_cmd'].strip().split()
+	* arping_sleep_us to pgc['arping_sleep_us']
+	"""
+	return network.macaddr_from_ipv4(macaddr, logexceptfunc = logexceptfunc,
+	                                 ifname_filter = any_prefixes,
+					 arping_cmd_list = pgc['arping_cmd'].strip().split(),
+					 arping_sleep_us = pgc['arping_sleep_us'])
 
 def linesubst(line, variables):
 	"""
@@ -160,73 +187,6 @@ def txtsubst(lines, variables, target_file = None):
 	if target_file:
 		syslogf("In process of generating file %s" % `target_file`)
 	return [linesubst(line, variables) for line in lines]
-
-def get_netdev_list():
-	"Get a view of network interfaces as seen by Linux"
-	pnd = open(pgc['proc_dev_net'])
-	pnd.readline()
-	pnd.readline()
-	return tuple([line.split(':', 1)[0].strip()
-		      for line in pnd.readlines()
-		      if ':' in line])
-
-def get_ethdev_list():
-	"""
-	Get and filter the list of network interfaces, returning only those
-	whose names begin with an element of global variable AUTHORIZED_PREFIXES
-	"""
-	return [dev for dev in get_netdev_list()
-		if True in [dev.startswith(x)
-			    for x in AUTHORIZED_PREFIXES]]
-
-def normalize_mac_address(macaddr):
-	"""
-	input: mac address, with bytes in hexa, ':' separated
-	ouput: mac address with format %02X:%02X:%02X:%02X:%02X:%02X
-	"""
-	macaddr_split = macaddr.upper().split(':', 6)
-	if len(macaddr_split) != 6:
-		raise ValueError, "Bad format for mac address " + macaddr
-	return ':'.join([('%02X' % int(s, 16)) for s in macaddr_split])
-
-def ipv4_from_macaddr(macaddr, logexceptfunc = None):
-	"""
-	Given a mac address, get an IPv4 address for an host living on the
-	LAN.  This makes use of the tool "arping".  Of course the remote peer
-	must respond to ping broadcasts. Out of the box, some stupid phones
-	from well known stupid and expensive brands don't.
-	"""
-	# -r : will only display the IP address on stdout, or nothing
-	# -c 1 : ping once
-	# -w <xxx> : wait for the answer during <xxx> microsec after the ping
-	# -I <netiface> : the network interface to use is <netiface>
-	#    -I is an undocumented option like -i but it works
-	#    with alias interfaces too
-	for iface in get_ethdev_list():
-		result = None
-		try:
-			child = subprocess.Popen(pgc['arping_cmd'].split() + ["-r", "-c", "1", "-w", str(pgc['arping_sleep_us']), '-I', iface, macaddr],
-			                         bufsize = 0, stdout = subprocess.PIPE, close_fds = True)
-			StreamedLines.makeNonBlocking(child.stdout)
-			for (result,) in StreamedLines.rxStreamedLines(fobjs = (child.stdout,), timeout = pgc['arping_sleep_us'] * 10. / 1000000.):
-				break
-		except:
-			result = None
-			if logexceptfunc:
-				except_tb.log_exception(logexceptfunc)
-		if result:
-			return result.strip()
-	return None
-
-def macaddr_from_ipv4(ipv4, logexceptfunc = None):
-	"""
-	ipv4_from_macaddr() is indeed a symetrical fonction that can be
-	used to retrieve an ipv4 address from a given mac address.  This
-	function just call the former.
-	
-	WARNING: this is of course ipv4_from_macaddr() implementation dependent
-	"""
-	return ipv4_from_macaddr(ipv4, logexceptfunc)
 
 def well_formed_provcode(provcode):
 	"""
@@ -343,71 +303,30 @@ def phone_desc_by_ua(ua, exception_handler = default_handler):
 
 ### GENERAL CONF
 
-def split_iface_name(ifname):
-	"""
-	This function splits the string and the numeric parts of ifname
-	exemples:
-	  'wazza42sub10' -> ('wazza', 42, 'sub', 10)
-	  ''
-	"""
-
 def specific(docstr):
 	return docstr not in ('reserved', 'none', 'void')
-
-def handled_interface_name(ifname):
-	for network_prefix in AUTHORIZED_PREFIXES:
-		if ifname.startswith(network_prefix):
-			return True
-	return False
-
-def parse_ipv4(straddr):
-	"""
-	Return an IPv4 address as a 4uple of ints
-	* addr is an IPv4 address stored as a string
-	"""
-	return tuple(map(int, straddr.split('.', 3)))
-
-def unparse_ipv4(tupaddr):
-	"""
-	Return a string repr of an IPv4 internal repr
-	"""
-	return '.'.join(map(str, tupaddr))
-
-def mask_ipv4(mask, addr):
-	"""
-	Binary AND of IPv4 mask and IPv4 addr
-	(mask and addr are 4uple of ints)
-	"""
-	return tuple((m & a for m, a in zip(mask, addr)))
-
-def or_ipv4(mask, addr):
-	"""
-	Binary OR of IPv4 mask and IPv4 addr
-	(mask and addr are 4uple of ints)
-	"""
-	return tuple((m | a for m, a in zip(mask, addr)))
 
 def network_from_static(static):
 	"""
 	Return the network (4uple of ints) specified in static
 	"""
-	return mask_ipv4(parse_ipv4(static['netmask']), parse_ipv4(static['address']))
+	return network.mask_ipv4(network.parse_ipv4(static['netmask']), network.parse_ipv4(static['address']))
 
 def broadcast_from_static(static):
 	"""
 	Returns the broadcast address (4uple of ints) specified in static
 	"""
 	if 'broadcast' in static:
-		return parse_ipv4(static['broadcast'])
+		return network.parse_ipv4(static['broadcast'])
 	else:
-		return or_ipv4(netmask_invert(parse_ipv4(static['netmask'])), network_from_static(static))
+		return network.or_ipv4(network.netmask_invert(network.parse_ipv4(static['netmask'])), network_from_static(static))
 
 def netmask_from_static(static):
-	return parse_ipv4(static['netmask'])
+	return network.parse_ipv4(static['netmask'])
 
 def ip_in_network(ipv4, network, netmask):
-	other_network = mask_ipv4(netmask, ipv4)
-	return network == other_network, other_network
+	other_network = network.mask_ipv4(netmask, ipv4)
+	return (network == other_network), other_network
 
 def plausible_netmask(addr):
 	"""
@@ -490,18 +409,18 @@ def plausible_static(static, schema, trace):
 	    Check that the netmask is plausible, that every address is in the
 	    same network, and that there are no duplicated addresses.
 	"""
-	address = parse_ipv4(static['address'])
-	netmask = parse_ipv4(static['netmask'])
+	address = network.parse_ipv4(static['address'])
+	netmask = network.parse_ipv4(static['netmask'])
 	if not plausible_netmask(netmask):
 		return False
 	addr_list = [address]
-	network = mask_ipv4(netmask, address)
+	network = network.mask_ipv4(netmask, address)
 	for other in ('broadcast', 'gateway'):
 		other_ip = static.get(other)
 		if other_ip:
-			parsed_ip = parse_ipv4(other_ip)
+			parsed_ip = network.parse_ipv4(other_ip)
 			addr_list.append(parsed_ip)
-			if mask_ipv4(netmask, parsed_ip) != network:
+			if network.mask_ipv4(netmask, parsed_ip) != network:
 				return False
 	if 'broadcast' not in static:
 		addr_list.append(broadcast_from_static(static))
@@ -583,46 +502,46 @@ def plausible_configuration(conf, schema, trace):
 	voip_fixed = ('voipServer', 'bootServer', 'directory', 'ntp', 'router')
 	for field in voip_fixed:
 		if field in addresses:
-			if parse_ipv4(addresses[field]) == broadcast: # TODO: other sanity checks...
+			if network.parse_ipv4(addresses[field]) == broadcast: # TODO: other sanity checks...
 				trace.err("invalid voip service related IP %r: %r" (field, addresses[field]))
 				return False
 	# router, if present, must be in the network
 	if 'router' in addresses:
-		ok, other = ip_in_network(parse_ipv4(addresses['router']), network, netmask)
+		ok, other = ip_in_network(network.parse_ipv4(addresses['router']), network, netmask)
 		if not ok:
 			trace.err("router must be in network %s/%s but seems to be in %s/%s" % 
-			          (unparse_ipv4(network), unparse_ipv4(netmask), unparse_ipv4(other), unparse_ipv4(netmask)))
+			          (network.unparse_ipv4(network), network.unparse_ipv4(netmask), network.unparse_ipv4(other), network.unparse_ipv4(netmask)))
 			return False
 	# check that any range is in the network and with min <= max
 	for range_field in 'voipRange', 'alienRange':
 		if range_field not in addresses:
 			continue
-		ip_range = map(parse_ipv4, addresses[range_field])
+		ip_range = map(network.parse_ipv4, addresses[range_field])
 		for ip in ip_range:
 			ok, other = ip_in_network(ip, network, netmask)
 			if not ok:
-				trace.err("IP %s is not in network %s/%s" % (unparse_ipv4(ip), unparse_ipv4(network), unparse_ipv4(netmask)))
+				trace.err("IP %s is not in network %s/%s" % (network.unparse_ipv4(ip), network.unparse_ipv4(network), network.unparse_ipv4(netmask)))
 				return False
 		if not (ip_range[0] <= ip_range[1]):
 			trace.err("Invalid IP range: " + `tuple(addresses[range_field])`)
 			return False
 	# check that there is no overlapping ranges
-	parsed_voipRange = map(parse_ipv4, addresses['voipRange'])
+	parsed_voipRange = map(network.parse_ipv4, addresses['voipRange'])
 	all_ranges = [ parsed_voipRange ]
 	if 'alienRange' in addresses:
 		one = parsed_voipRange
-		two = map(parse_ipv4, addresses['alienRange'])
+		two = map(network.parse_ipv4, addresses['alienRange'])
 		all_ranges.append(two)
 		if (one[0] <= two[0] <= one[1]) or (one[0] <= two[1] <= one[1]):
 			trace.err("overlapping DHCP ranges detected")
 			return False
 	# check that there is no fixed IP in any DHCP range
-	fixed_addresses = [ parse_ipv4(ipConfVoip_static[field]) for field in ('address', 'broadcast', 'gateway') if field in ipConfVoip_static ]
-	fixed_addresses.extend([ parse_ipv4(addresses[field]) for field in voip_fixed if field in addresses ])
+	fixed_addresses = [ network.parse_ipv4(ipConfVoip_static[field]) for field in ('address', 'broadcast', 'gateway') if field in ipConfVoip_static ]
+	fixed_addresses.extend([ network.parse_ipv4(addresses[field]) for field in voip_fixed if field in addresses ])
 	for rang in all_ranges:
 		for addr in fixed_addresses:
 			if rang[0] <= addr <= rang[1]:
-				trace.err("fixed address %r detected in DHCP range %r" % (unparse_ipv4(addr), tuple(rang)))
+				trace.err("fixed address %r detected in DHCP range %r" % (network.unparse_ipv4(addr), tuple(rang)))
 				return False
 	
 	return True
@@ -740,7 +659,7 @@ def generate_interfaces(old_interfaces_lines, conf, trace=trace_null):
 	rsvd_mapping_dest = interfaces.get_mapping_dests(eni, rsvd_base, rsvd_full)
 	
 	def unhandled_or_reserved(ifname):
-		return (not handled_interface_name(ifname)) or \
+		return (not any_prefixes(ifname)) or \
 		       interfaces.ifname_in_base_full_mapsymbs(ifname, rsvd_base, rsvd_full, rsvd_mapping_dest)
 	
 	KEPT = object()
@@ -877,12 +796,12 @@ def generate_dhcpd_conf(conf, trace=trace_null):
 		for line in phone_class.get_dhcp_classes_and_sub(addresses):
 			yield line
 	yield '\n'
-	yield 'subnet %s netmask %s {\n' % (unparse_ipv4(network_from_static(ipConfVoip)), ipConfVoip['netmask'])
+	yield 'subnet %s netmask %s {\n' % (network.unparse_ipv4(network_from_static(ipConfVoip)), ipConfVoip['netmask'])
 	yield '\n'
 	yield '    one-lease-per-client on;\n'
 	yield '\n'
 	yield '    option subnet-mask %s;\n' % ipConfVoip['netmask']
-	yield '    option broadcast-address %s;\n' % unparse_ipv4(broadcast_from_static(ipConfVoip))
+	yield '    option broadcast-address %s;\n' % network.unparse_ipv4(broadcast_from_static(ipConfVoip))
 	yield '    option ip-forwarding off;\n'
 	if 'router' in addresses:
 		yield '    option routers %s;\n' % addresses['router']
@@ -1098,9 +1017,9 @@ def transaction_system_configuration(trace=trace_null):
 				 generate_system_configuration, trace)
 
 __all__ = (
-	'ProvGeneralConf', 'LoadConfig', 'txtsubst',
-	'normalize_mac_address', 'ipv4_from_macaddr', 'macaddr_from_ipv4',
-	'well_formed_provcode',
-	'PhoneVendor', 'register_phone_vendor_class', 'phone_vendor_iter_key_class', 'phone_factory', 'phone_desc_by_ua',
-	'transaction_system_configuration'
+	'ProvGeneralConf', 'LoadConfig', 'txtsubst', 'well_formed_provcode',
+	'ipv4_from_macaddr', 'macaddr_from_ipv4',
+	'PhoneVendor', 'register_phone_vendor_class', 'phone_factory',
+	'phone_vendor_iter_key_class', 'phone_desc_by_ua',
+	'transaction_system_configuration',
 )

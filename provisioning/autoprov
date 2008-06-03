@@ -59,8 +59,6 @@ from xivo.timeoutsocket import Timeout
 
 import os
 import cgi
-import thread
-import threading
 
 import syslog
 from xivo.easyslog import *
@@ -73,10 +71,11 @@ from xivo.pyfunc import replace_keys
 
 from BaseHTTPServer import BaseHTTPRequestHandler
 
-from xivo.ThreadingHTTPServer import *
+from xivo.ThreadingHTTPServer import ThreadingHTTPServer
 
 from xivo import xivo_config
 from xivo.xivo_config import ProvGeneralConf as pgc
+from xivo import network
 
 from xivo.moresynchro import RWLock
 from xivo.moresynchro import ListLock
@@ -122,28 +121,28 @@ class SQLBackEnd:
 		conn.close()
 		return a
 	
-	def sql_select_one(self, request, columns, parameters):
-		"""
-		Does a SELECT SQL query and returns only one row.
-		If the query returns no result, this method returns None
-		"""
-		return self.generic_sql_request(self.method_select_one, request, columns, parameters)
-	def method_select_one(self, conn, request, columns, parameters):
+	@staticmethod
+	def method_select_one(conn, request, columns, parameters):
 		"""
 		Internally called in a safe context to execute SELECT
 		SQL queries and return their result (only one row).
 		"""
 		cursor = conn.cursor()
 		cursor.query(request, columns, parameters)
-		r = cursor.fetchone()
-		if not r:
-			return r
-		return dict(r.iteritems())
+		row = cursor.fetchone()
+		if not row:
+			return row
+		return dict(row.iteritems())
 	
-	def sql_select_all(self, request, columns, parameters):
-		"Does a SELECT SQL query and returns all rows."
-		return self.generic_sql_request(self.method_select_all, request, columns, parameters)
-	def method_select_all(self, conn, request, columns, parameters):
+	def sql_select_one(self, request, columns, parameters):
+		"""
+		Does a SELECT SQL query and returns only one row.
+		If the query returns no result, this method returns None
+		"""
+		return self.generic_sql_request(self.method_select_one, request, columns, parameters)
+	
+	@staticmethod
+	def method_select_all(conn, request, columns, parameters):
 		"""
 		Internally called in a safe context to execute SELECT
 		SQL queries and return their result (all rows).
@@ -153,12 +152,14 @@ class SQLBackEnd:
 		rows = cursor.fetchall()
 		if not rows:
 			return rows
-		return [ dict(r.iteritems()) for r in rows ]
+		return [ dict(row.iteritems()) for row in rows ]
 	
-	def sql_modify(self, request, columns, parameters):
-		"Does a SQL query that is going to modify the database."
-		return self.generic_sql_request(self.method_commit, request, columns, parameters)
-	def method_commit(self, conn, request, columns, parameters):
+	def sql_select_all(self, request, columns, parameters):
+		"Does a SELECT SQL query and returns all rows."
+		return self.generic_sql_request(self.method_select_all, request, columns, parameters)
+	
+	@staticmethod
+	def method_commit(conn, request, columns, parameters):
 		"""
 		Internally called in a safe context to commit the result of
 		SQL queries that modify the database content.
@@ -167,6 +168,10 @@ class SQLBackEnd:
 		cursor.query(request, columns, parameters)
 		conn.commit()
 
+	def sql_modify(self, request, columns, parameters):
+		"Does a SQL query that is going to modify the database."
+		return self.generic_sql_request(self.method_commit, request, columns, parameters)
+	
 	# === ENTRY POINTS ===
 	
 	def phone_by_macaddr(self, macaddr):
@@ -355,7 +360,7 @@ class SQLBackEnd:
 		
 		'macaddr', 'vendor', 'model', 'proto', 'iduserfeatures', 'isinalan'
 		"""
-		mapping = dict([(TABLE+'.'+x,x)
+		mapping = dict([(TABLE + '.' + x, x)
 				for x in ('macaddr', 'vendor', 'model',
 					  'proto', 'iduserfeatures', 'isinalan')])
 		orphans = self.sql_select_all(
@@ -421,7 +426,7 @@ def __mode_dependant_provlogic_locked(mode, ctx, phone, config, prev_iduserfeatu
 		# nothing more to do: no exception has been raised so the caller
 		# will continue the correct execution of its own code flow
 
-def __save_phone(mode, ctx, phone, config):
+def __save_phone(ctx, phone, config):
 	"Save new configuration of the local phone in the database."
 	if "iduserfeatures" not in phone and config is not None \
 	   and "iduserfeatures" in config:
@@ -466,7 +471,7 @@ def __provisioning(mode, ctx, phone):
 	if phone["actions"] != "no":
 		if "ipv4" not in phone:
 			syslogf(SYSLOG_DEBUG, "__provisioning(): trying to get IPv4 address from Mac Address %s" % phone["macaddr"])
-			phone["ipv4"] = xivo_config.ipv4_from_macaddr(phone["macaddr"], lambda x: syslogf(SYSLOG_ERR, x))
+			phone["ipv4"] = xivo_config.ipv4_from_macaddr(phone["macaddr"], logexceptfunc = lambda x: syslogf(SYSLOG_ERR, x))
 			if phone["ipv4"] is None:
 				phone["actions"] = "no"
 		if phone["actions"] != "no" and phone["ipv4"] is None:
@@ -487,7 +492,7 @@ def __provisioning(mode, ctx, phone):
 	    if "iduserfeatures" in phone and phone["iduserfeatures"] == "0":
 		    syslogf(SYSLOG_NOTICE, "__provisioning(): reinitializing provisioning to GUEST for phone %s" % str(phone))
 		    prov_inst.generate_reinitprov()
-		    __save_phone(mode, ctx, phone, None)
+		    __save_phone(ctx, phone, None)
 		    prov_inst.action_reinit()
 	    else:
 		if "iduserfeatures" in phone:
@@ -504,10 +509,10 @@ def __provisioning(mode, ctx, phone):
 			syslogf(SYSLOG_WARNING, "__provisioning(): Operation already in progress for user %s" % config['iduserfeatures'])
 			raise ConflictError, "Operation already in progress for user %s" % config['iduserfeatures']
 		    try:
-			syslogf(SYSLOG_NOTICE, "__provisioning(): AUTOPROV'isioning phone %s with config %s" % (str(phone),str(config)))
+			syslogf(SYSLOG_NOTICE, "__provisioning(): AUTOPROV'isioning phone %s with config %s" % (str(phone), str(config)))
 			__mode_dependant_provlogic_locked(mode, ctx, phone, config, prev_iduserfeatures)
 			prov_inst.generate_autoprov(config)
-			__save_phone(mode, ctx, phone, config)
+			__save_phone(ctx, phone, config)
 			prov_inst.action_reboot()
 		    finally:
 			syslogf(SYSLOG_DEBUG, "__provisioning(): unlocking user %s" % config['iduserfeatures'])
@@ -680,7 +685,7 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 		"""
 		if "macaddr" not in self.posted:
 			raise MissingParam, "Mac Address not given"
-		phone["macaddr"] = xivo_config.normalize_mac_address(self.posted["macaddr"])
+		phone["macaddr"] = network.normalize_mac_address(self.posted["macaddr"])
 		if "ipv4" in self.posted:
 			phone["ipv4"] = self.posted["ipv4"]
 	def save_iduserfeatures_or_provcode(self, phone):
@@ -756,7 +761,7 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 	    except Exception, x:
 		syslogf(SYSLOG_NOTICE, "handle_prov(): action FAILED - phone %s - userinfo %s" % (str(phone), str(userinfo)))
 		errcode = 500
-		for t,rcode in ExceptToHTTP.iteritems():
+		for t, rcode in ExceptToHTTP.iteritems():
 			if isinstance(x, t):
 				errcode = rcode
 				break
@@ -842,46 +847,58 @@ def main(log_level, foreground):
 		except_tb.log_exception(log_stderr_and_syslog)
 	syslog.closelog()
 
-dontlauchmain = False
-foreground = False
-log_level = SYSLOG_NOTICE
+def init():
+	"""
+	Global namespace pollution avoidance
+	"""
+	global pgc
+	global PIDFILE
+	global CONFIG_FILE
 
-dburi_override = None
-log_level_override = None
-try:
-	opts,args = getopt(sys.argv[1:], GETOPT_SHORTOPTS)
-except GetoptError, x:
-	print >> sys.stderr, x
-	help_screen()
-for k,v in opts: # DO NOT MERGE THE TWO LOOPS
-	if k == '-h':
+	dontlauchmain = False
+	foreground = False
+	log_level = SYSLOG_NOTICE
+
+	dburi_override = None
+	log_level_override = None
+	try:
+		opts, args = getopt(sys.argv[1:], GETOPT_SHORTOPTS)
+	except GetoptError, x:
+		print >> sys.stderr, x
 		help_screen()
-for k,v in opts:
-	if '-l' == k:
-		log_level_override = v
-	elif '-d' == k:
-		dontlauchmain = True
-	elif '-f' == k:
-		foreground = True
-	elif '-b' == k:
-		dburi_override = v
-	elif '-p' == k:
-		PIDFILE = v
-	elif '-c' == k:
-		CONFIG_FILE = v
+	for k, v in opts: # DO NOT MERGE THE TWO LOOPS
+		if k == '-h':
+			help_screen()
+	for k, v in opts:
+		if '-l' == k:
+			log_level_override = v
+		elif '-d' == k:
+			dontlauchmain = True
+		elif '-f' == k:
+			foreground = True
+		elif '-b' == k:
+			dburi_override = v
+		elif '-p' == k:
+			PIDFILE = v
+		elif '-c' == k:
+			CONFIG_FILE = v
 
-xivo_config.LoadConfig(CONFIG_FILE)
+	xivo_config.LoadConfig(CONFIG_FILE)
 
-if log_level_override is not None:
-	pgc['log_level'] = log_level_override
-log_level = sysloglevel_from_str(pgc['log_level'])
-if dburi_override is not None:
-	pgc['database_uri'] = dburi_override
+	if log_level_override is not None:
+		pgc['log_level'] = log_level_override
+	log_level = sysloglevel_from_str(pgc['log_level'])
+	if dburi_override is not None:
+		pgc['database_uri'] = dburi_override
 
-# We could daemonize and if we do we will chdir to '/',
-# so get absolute pathname or anything else relative to
-# database uri that could depends upon current envt.
-pgc['database_uri'] = anysql.c14n_uri(pgc['database_uri'])
+	# We could daemonize and if we do we will chdir to '/',
+	# so get absolute pathname or anything else relative to
+	# database uri that could depends upon current envt.
+	pgc['database_uri'] = anysql.c14n_uri(pgc['database_uri'])
+
+	return dontlauchmain, foreground, log_level
+
+dontlauchmain, foreground, log_level = init()
 
 # WARNING: xivo_config.LoadConfig must be called before
 from xivo.Phones import *
