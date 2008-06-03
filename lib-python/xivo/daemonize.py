@@ -2,7 +2,7 @@
 
 Copyright (C) 2007, 2008  Proformatique
 
-WARNING: Linux only module, needs /proc/
+WARNING: Linux specific module, needs /proc/
 
 """
 

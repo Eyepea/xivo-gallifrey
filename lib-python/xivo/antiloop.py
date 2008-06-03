@@ -23,8 +23,6 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-from itertools import *
-
 def list_loop(prev_dict, start, v):
 	a = [v, start]
 	while prev_dict[v]:
@@ -144,7 +142,7 @@ def reverse_ord(graph):
 	    mapping
 	"""
 	rev = {}
-	for s,dsts in graph.iteritems():
+	for s, dsts in graph.iteritems():
 		rev.setdefault(s, [])
 		for d in dsts:
 			srcs = rev.setdefault(d, [])
@@ -264,7 +262,7 @@ def partial_order_from_reversed_ord_pot(rev_graph, v_pot):
 	remains to be calculated, but would only occur on quite dense graphs,
 	so something a little above O(E^2) won't be a real problem :)
 	"""
-	graph_po = dict(((k,[]) for k in rev_graph.iterkeys()))
+	graph_po = dict(((k, []) for k in rev_graph.iterkeys()))
 	conso_reach = dict(((k, [0, set(), set()]) for k in rev_graph.iterkeys()))
 	stable_prios = {}
 	sorted_prios = []
@@ -305,8 +303,7 @@ def partial_order_sink(graph):
 	rev_graph = reverse_ord(graph)
 	return partial_order_from_reversed_ord_pot(rev_graph, potential_by_card(rev_graph))
 
-__all__ = ('loop', 'partial_order_from_reversed_ord_pot',
-           'partial_order_sink', 'reverse_ord')
+__all__ = ('loop', 'partial_order_sink')
 
 # XXX unit tests for everything and stats with big graphs for
 # partial_order_from_reversed_ord_pot()
