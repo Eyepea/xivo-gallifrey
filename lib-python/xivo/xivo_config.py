@@ -29,9 +29,7 @@ import re
 import sys
 import yaml
 import shutil
-import syslog
 import os.path
-import traceback
 import subprocess
 from ConfigParser import ConfigParser
 from itertools import chain
@@ -1016,6 +1014,15 @@ def iterautoattrib_notplug_phy():
 	plug_phys = [(not network.is_interface_plugged(ifname), network.split_ifname(ifname)) for ifname in phys]
 	plug_phys.sort()
 	return iter([(notplug, network.unsplit_ifname(ifname)) for (notplug, ifname) in plug_phys])
+
+def iterautoattrib_vsName(conf):
+	"""
+	Yield vlan set names that are not related to anything.
+	"""
+	owned = frozenset(filter(specific, conf['netIfaces'].itervalues()))
+	vsname_list = [vsname for vsname in conf['vlans'].iterkeys() if vsname not in owned]
+	vsname_list.sort()
+	return iter(vsname_list)
 
 __all__ = (
 	'ProvGeneralConf', 'LoadConfig', 'txtsubst', 'well_formed_provcode',
