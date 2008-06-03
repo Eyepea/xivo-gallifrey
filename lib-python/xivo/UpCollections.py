@@ -1,7 +1,7 @@
 # This module magically adds namedtuple (that will be standard Python 2.6) to
 # the collections module when it's imported.
 #
-# Code comes from http://svn.python.org/view/*checkout*/python/trunk/Lib/collections.py?rev=59898
+# Code comes from http://svn.python.org/view/*checkout*/python/trunk/Lib/collections.py?rev=63807
 
 # Proformatique version control:
 __version__ = "$Revision$ $Date$"
@@ -12,7 +12,7 @@ __license__ = """
 
     Under PSF LICENSE AGREEMENT FOR PYTHON
     See the following URI for the full license:
-	http://svn.python.org/view/python/trunk/LICENSE?rev=59898
+	http://svn.python.org/view/python/trunk/LICENSE?rev=63807
 """
 
 from operator import itemgetter as _itemgetter
@@ -110,10 +110,9 @@ except AttributeError:
         if verbose:
             print template
 
-        # Execute the template string in a temporary namespace
-        # Some tracers access frame.f_globals["__name__"] to get the module name
-        # Putting something in __name__ will avoid a crash in tracer code
-        namespace = dict(itemgetter=_itemgetter, __name__='__generated_%s__' % typename)
+        # Execute the template string in a temporary namespace and
+        # support tracing utilities by setting a value for frame.f_globals['__name__']
+        namespace = dict(itemgetter=_itemgetter, __name__='namedtuple_%s' % typename)
         try:
             exec template in namespace
         except SyntaxError, e:
@@ -121,13 +120,10 @@ except AttributeError:
         result = namespace[typename]
 
         # For pickling to work, the __module__ variable needs to be set to the frame
-        # where the named tuple is created.  namespace['__name__'] will be even more
-        # useful for tracing purposes if it also contains the module name.  Bypass
-        # this step in enviroments where sys._getframe is not defined (Jython for
-        # example).
+        # where the named tuple is created.  Bypass this step in enviroments where
+        # sys._getframe is not defined (Jython for example).
         if hasattr(_sys, '_getframe'):
             result.__module__ = _sys._getframe(1).f_globals['__name__']
-            namespace['__name__'] = '__generated_%s__%s__' % (typename, result.__module__)
 
         return result
 
