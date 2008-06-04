@@ -277,7 +277,7 @@ class BSFilter:
 			res = cursor.fetchone()
 
 			if not res:
-				dp_break("Database inconsistency: unable to find custom user (name = '%s', context = '%s')" % (name, context))
+				dp_break("Database inconsistency: unable to find custom user (name = '%s', context = '%s')" % (name, self.context))
 
 			interface = res['interface']
 		else:
@@ -327,7 +327,7 @@ class BSFilter:
 				res2 = cursor.fetchone()
 
 				if not res2:
-					dp_break("Database inconsistency: unable to find custom user (name = '%s', context = '%s')" % (name, context))
+					dp_break("Database inconsistency: unable to find custom user (name = '%s', context = '%s')" % (name, self.context))
 
 				interface = res2['interface']
 			else:

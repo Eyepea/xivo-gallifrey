@@ -40,7 +40,7 @@ from xivo import ConfigDict
 from xivo import interfaces
 from xivo import except_tb
 from xivo import xys
-from xivo.pyfunc import *
+# from xivo.pyfunc import *
 from xivo.easyslog import *
 
 ProvGeneralConf = {
@@ -64,10 +64,13 @@ ProvGeneralConf = {
 	'asterisk_ipv4':		"192.168.0.254",
 	'ntp_server_ipv4':		"192.168.0.254",
 }
-pgc = ProvGeneralConf
+Pgc = ProvGeneralConf
 AUTHORIZED_PREFIXES = ("eth",)
 
 def LoadConfig(filename):
+	"""
+	Load provisioning configuration	
+	"""
 	global ProvGeneralConf
 	global AUTHORIZED_PREFIXES
 	cp = ConfigParser()
@@ -75,7 +78,7 @@ def LoadConfig(filename):
 	ConfigDict.FillDictFromConfigSection(ProvGeneralConf, cp, "general")
 	AUTHORIZED_PREFIXES = tuple([
 		p.strip()
-		for p in pgc['scan_ifaces_prefix'].split(',')
+		for p in Pgc['scan_ifaces_prefix'].split(',')
 		if p.strip()
 	])
 
@@ -87,25 +90,33 @@ def ipv4_from_macaddr(macaddr, logexceptfunc = None):
 	"""
 	Wrapper for network.ipv4_from_macaddr() that sets
 	* ifname_filter to any_prefixes
-	* arping_cmd_list to pgc['arping_cmd'].strip().split()
-	* arping_sleep_us to pgc['arping_sleep_us']
+	* arping_cmd_list to Pgc['arping_cmd'].strip().split()
+	* arping_sleep_us to Pgc['arping_sleep_us']
 	"""
 	return network.ipv4_from_macaddr(macaddr, logexceptfunc = logexceptfunc,
 	                                 ifname_filter = any_prefixes,
-					 arping_cmd_list = pgc['arping_cmd'].strip().split(),
-					 arping_sleep_us = pgc['arping_sleep_us'])
+					 arping_cmd_list = Pgc['arping_cmd'].strip().split(),
+					 arping_sleep_us = Pgc['arping_sleep_us'])
 
 def macaddr_from_ipv4(macaddr, logexceptfunc = None):
 	"""
 	Wrapper for network.macaddr_from_ipv4() that sets
 	* ifname_filter to any_prefixes
-	* arping_cmd_list to pgc['arping_cmd'].strip().split()
-	* arping_sleep_us to pgc['arping_sleep_us']
+	* arping_cmd_list to Pgc['arping_cmd'].strip().split()
+	* arping_sleep_us to Pgc['arping_sleep_us']
 	"""
 	return network.macaddr_from_ipv4(macaddr, logexceptfunc = logexceptfunc,
 	                                 ifname_filter = any_prefixes,
-					 arping_cmd_list = pgc['arping_cmd'].strip().split(),
-					 arping_sleep_us = pgc['arping_sleep_us'])
+					 arping_cmd_list = Pgc['arping_cmd'].strip().split(),
+					 arping_sleep_us = Pgc['arping_sleep_us'])
+
+# States for linesubst()
+NORM = object()
+ONE = object()
+TWO = object()
+LIT = object()
+TLIT = object()
+TERM = object()
 
 def linesubst(line, variables):
 	"""
@@ -114,12 +125,6 @@ def linesubst(line, variables):
 	If at first you don't understand this function, draw its finite
 	state machine and everything will become crystal clear :)
 	"""
-	NORM=0
-	ONE=1
-	TWO=2
-	LIT=3
-	TLIT=4
-	TERM=5
 	# trivial no substitution early detection:
 	if '{{' not in line and '\\' not in line:
 		return line
@@ -127,17 +132,17 @@ def linesubst(line, variables):
 	out = ""
 	curvar = ""
 	for c in line:
-		if st == NORM:
+		if st is NORM:
 			if c == '{':
 				st = ONE
 			elif c == '\\':
 				st = LIT
 			else:
 				out += c
-		elif st == LIT:
+		elif st is LIT:
 			out += c
 			st = NORM
-		elif st == ONE:
+		elif st is ONE:
 			if c == '{':
 				st = TWO
 			elif c == '\\':
@@ -146,17 +151,17 @@ def linesubst(line, variables):
 			else:
 				out += '{' + c
 				st = NORM
-		elif st == TWO:
+		elif st is TWO:
 			if c == '\\':
 				st = TLIT
 			elif c == '}':
 				st = TERM
 			else:
 				curvar += c
-		elif st == TLIT:
+		elif st is TLIT:
 			curvar += c
 			st = TWO
-		elif st == TERM:
+		elif st is TERM:
 			if c == '}':
 				if curvar not in variables:
 					syslogf(SYSLOG_WARNING, "Unknown variable '%s' detected, will just be replaced by an empty string" % curvar)
@@ -171,8 +176,8 @@ def linesubst(line, variables):
 			else:
 				curvar += '}' + c
 				st = TWO
-	if st != NORM:
-		syslogf(SYSLOG_WARNING, "st != NORM at end of line: " + line)
+	if st is not NORM:
+		syslogf(SYSLOG_WARNING, "st is not NORM at end of line: " + line)
 		syslogf(SYSLOG_WARNING, "returned substitution: " + out)
 	return out
 
@@ -266,6 +271,10 @@ class PhoneVendor:
 PhoneClasses = {}
 
 def register_phone_vendor_class(cls):
+	"""
+	Register a new class, derived from PhoneVendor, that implements
+	provisioning methods for some phones of a given vendor.
+	"""
 	global PhoneClasses
 	key = cls.__name__.lower()
 	if key not in PhoneClasses:
@@ -274,18 +283,33 @@ def register_phone_vendor_class(cls):
 		raise ValueError, "A registration as already occured for %s" % `key`
 
 def phone_vendor_iter_key_class():
+	"""
+	Iterate over phone classes.
+	"""
 	global PhoneClasses
 	return PhoneClasses.iteritems()
 
 def phone_factory(phone):
+	"""
+	Instantiate a PhoneVendor derived class according to the phone
+	description.
+	"""
 	global PhoneClasses
 	phone_class = PhoneClasses[phone["vendor"]]
 	return phone_class(phone)
 
 def default_handler():
+	"""
+	Default exception handler for phone_desc_by_ua()
+	"""
 	except_tb.log_exception(lambda x: syslogf(SYSLOG_ERR, x))
 
 def phone_desc_by_ua(ua, exception_handler = default_handler):
+	"""
+	Return a tuple (vendor_key, model, firmware), or None if no PhoneVendor
+	derived class has recognized the user agent string.
+	vendor_key, model, and firmware are strings.
+	"""
 	global PhoneClasses
 	for phone_class in PhoneClasses.itervalues():
 		try:
@@ -322,28 +346,13 @@ def broadcast_from_static(static):
 def netmask_from_static(static):
 	return network.parse_ipv4(static['netmask'])
 
-def ip_in_network(ipv4, network, netmask):
-	other_network = network.mask_ipv4(netmask, ipv4)
-	return (network == other_network), other_network
-
-def plausible_netmask(addr):
+def ip_in_network(ipv4, net, netmask):
 	"""
-	Check that addr (4uple of ints) makes a plausible netmask
-	(set bits first, reset bits last)
+	Return a tuple (innet, other_net) where innet is a boolean that is True
+	iff ipv4/netmask is the same as net and other_net is ipv4/netmask.
 	"""
-	state = 1
-	for addr_part in addr:
-		for bitval in (128, 64, 32, 16, 8, 4, 2, 1):
-			if state:
-				if not (addr_part & bitval):
-					state = 0
-			else:
-				if (addr_part & bitval):
-					return False
-	return True
-
-# WARNING: the following function does not test the length which must be <= 63
-domain_label_ok = re.compile(r'[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$').match
+	other_net = network.mask_ipv4(netmask, ipv4)
+	return (net == other_net), other_net
 
 def search_domain(docstr, schema, trace):
 	"""
@@ -351,15 +360,7 @@ def search_domain(docstr, schema, trace):
 	    Returns True if the string in docstr is suitable for use in the
 	    search line of /etc/resolv.conf, else False
 	"""
-	# NOTE: 251 comes from FQDN 255 maxi including label length bytes, we
-	# do not want to validate search domain beginning or ending with '.',
-	# 255 seems to include the final '\0' length byte, so a FQDN is 253
-	# char max.  We remove 2 char so that a one letter label requested and
-	# prepended to the search domain results in a FQDN that is not too long
-	return docstr and len(docstr) <= 251 and \
-	       all((((len(label) <= 63)
-	             and domain_label_ok(label))
-	            for label in docstr.split('.')))
+	return network.plausible_search_domain(docstr)
 
 def ipv4_address(docstr, schema, trace):
 	"""
@@ -409,16 +410,16 @@ def plausible_static(static, schema, trace):
 	"""
 	address = network.parse_ipv4(static['address'])
 	netmask = network.parse_ipv4(static['netmask'])
-	if not plausible_netmask(netmask):
+	if not network.plausible_netmask(netmask):
 		return False
 	addr_list = [address]
-	network = network.mask_ipv4(netmask, address)
+	net = network.mask_ipv4(netmask, address)
 	for other in ('broadcast', 'gateway'):
 		other_ip = static.get(other)
 		if other_ip:
 			parsed_ip = network.parse_ipv4(other_ip)
 			addr_list.append(parsed_ip)
-			if network.mask_ipv4(netmask, parsed_ip) != network:
+			if network.mask_ipv4(netmask, parsed_ip) != net:
 				return False
 	if 'broadcast' not in static:
 		addr_list.append(broadcast_from_static(static))
@@ -426,35 +427,56 @@ def plausible_static(static, schema, trace):
 		return False
 	return True
 
+def get_referenced_ipConfTags(conf):
+	"""
+	Get tags of the static IP configurations that are owned by vlans (in
+	our relational model vlans include untaggued vlan and physical
+	interfaces are never directly related to IP configurations).
+	
+	Returns a list
+	"""
+	return filter(specific, chain(*[elt.itervalues() for elt in conf['vlans'].itervalues()]))
+
+def get_referenced_vsTags(conf):
+	"""
+	Get tags of the VLan sets that are owned by a physical interface.
+	
+	Returns a list
+	"""
+	return filter(specific, conf['netIfaces'].itervalues())
+
 def plausible_configuration(conf, schema, trace):
 	"""
 	!~plausible_configuration
 	    Validate the general system configuration
 	"""
-	referenced_static = filter(specific, chain(*[elt.itervalues() for elt in conf['vlans'].itervalues()]))
-	set_referenced_static = frozenset(referenced_static)
-	if len(referenced_static) != len(set_referenced_static):
-		for ref in set_referenced_static:
-			referenced_static.remove(ref)
-		trace.err("duplicated static IP conf references in vlans description: " + `tuple(set(referenced_static))`)
+	
+	# TODO: merge next two blocks
+	
+	referenced_ipConfTags = get_referenced_ipConfTags(conf)
+	set_referenced_ipConfTags = frozenset(referenced_ipConfTags)
+	if len(referenced_ipConfTags) != len(set_referenced_ipConfTags):
+		for ref in set_referenced_ipConfTags:
+			referenced_ipConfTags.remove(ref)
+		trace.err("duplicated static IP conf references in vlans description: " + `tuple(set(referenced_ipConfTags))`)
 		return False
-	set_defined_static = frozenset(conf['ipConfs'].keys())
-	set_undefined_static = set_referenced_static - set_defined_static
-	if set_undefined_static:
-		trace.err("undefined referenced static IP configurations: " + `tuple(set_undefined_static)`)
+	set_defined_ipConfTags = frozenset(conf['ipConfs'].keys())
+	set_undefined_ipConfTags = set_referenced_ipConfTags - set_defined_ipConfTags
+	if set_undefined_ipConfTags:
+		trace.err("undefined referenced static IP configurations: " + `tuple(set_undefined_ipConfTags)`)
 		return False
 	
-	referenced_vlans = filter(specific, conf['netIfaces'].itervalues())
-	set_referenced_vlans = frozenset(referenced_vlans)
-	if len(referenced_vlans) != len(set_referenced_vlans):
-		for ref in set_referenced_vlans:
-			referenced_vlans.remove(ref)
-		trace.err("duplicated vlan references in network interfaces description: " + `tuple(set(referenced_vlans))`)
+	referenced_vsTags = get_referenced_vsTags(conf)
+	set_referenced_vsTags = frozenset(referenced_vsTags)
+	if len(referenced_vsTags) != len(set_referenced_vsTags):
+		for ref in set_referenced_vsTags:
+			referenced_vsTags.remove(ref)
+		trace.err("duplicated vlan references in network interfaces description: " + `tuple(set(referenced_vsTags))`)
 		return False
-	set_defined_vlans = frozenset(conf['vlans'].keys())
-	set_undefined_vlans = set_referenced_vlans - set_defined_vlans
-	if set_undefined_vlans:
-		trace.err("undefined vlan configurations: " + `tuple(set_undefined_vlans)`)
+	set_defined_vsTags = frozenset(conf['vlans'].keys())
+	set_undefined_vsTags = set_referenced_vsTags - set_defined_vsTags
+	if set_undefined_vsTags:
+		trace.err("undefined vlan configurations: " + `tuple(set_undefined_vsTags)`)
 		return False
 	
 	# TODO: uniqueness concept in schema, default types in schema
@@ -468,21 +490,21 @@ def plausible_configuration(conf, schema, trace):
 	# Check that active networks are distinct
 	active_networks = {}
 	duplicated_networks = False
-	for vlanset_name in referenced_vlans:
+	for vlanset_name in referenced_vsTags:
 		for static_name in conf['vlans'][vlanset_name].itervalues():
 			if not specific(static_name):
 				continue
-			network = network_from_static(conf['ipConfs'][static_name])
-			if network in active_networks:
+			net = network_from_static(conf['ipConfs'][static_name])
+			if net in active_networks:
 				duplicated_networks = True
-				active_networks[network].append(static_name)
+				active_networks[net].append(static_name)
 			else:
-				active_networks[network] = [static_name]
+				active_networks[net] = [static_name]
 	if duplicated_networks:
-		non_duplicated_networks = [network for network, names in active_networks.iteritems() if len(names) <= 1]
-		for network in non_duplicated_networks:
-			del active_networks[network]
-		trace.err("duplicated active networks: " + `dict((('.'.join(map(str, network)), tuple(names)) for network, names in active_networks.iteritems()))`)
+		non_duplicated_networks = [net for net, names in active_networks.iteritems() if len(names) <= 1]
+		for net in non_duplicated_networks:
+			del active_networks[net]
+		trace.err("duplicated active networks: " + `dict((('.'.join(map(str, net)), tuple(names)) for net, names in active_networks.iteritems()))`)
 		return False
 	
 	# VOIP service
@@ -492,21 +514,21 @@ def plausible_configuration(conf, schema, trace):
 		return False
 	ipConfVoip_static = conf['ipConfs'][ipConfVoip]
 	netmask = netmask_from_static(ipConfVoip_static)
-	network = network_from_static(ipConfVoip_static)
+	net = network_from_static(ipConfVoip_static)
 	broadcast = broadcast_from_static(ipConfVoip_static)
 	addresses = conf['services']['voip']['addresses']
 	voip_fixed = ('voipServer', 'bootServer', 'directory', 'ntp', 'router')
 	for field in voip_fixed:
 		if field in addresses:
 			if network.parse_ipv4(addresses[field]) == broadcast: # TODO: other sanity checks...
-				trace.err("invalid voip service related IP %r: %r" (field, addresses[field]))
+				trace.err("invalid voip service related IP %r: %r" % (field, addresses[field]))
 				return False
 	# router, if present, must be in the network
 	if 'router' in addresses:
-		ok, other = ip_in_network(network.parse_ipv4(addresses['router']), network, netmask)
+		ok, other = ip_in_network(network.parse_ipv4(addresses['router']), net, netmask)
 		if not ok:
 			trace.err("router must be in network %s/%s but seems to be in %s/%s" % 
-			          (network.unparse_ipv4(network), network.unparse_ipv4(netmask), network.unparse_ipv4(other), network.unparse_ipv4(netmask)))
+			          (network.unparse_ipv4(net), network.unparse_ipv4(netmask), network.unparse_ipv4(other), network.unparse_ipv4(netmask)))
 			return False
 	# check that any range is in the network and with min <= max
 	for range_field in 'voipRange', 'alienRange':
@@ -514,9 +536,9 @@ def plausible_configuration(conf, schema, trace):
 			continue
 		ip_range = map(network.parse_ipv4, addresses[range_field])
 		for ip in ip_range:
-			ok, other = ip_in_network(ip, network, netmask)
+			ok, other = ip_in_network(ip, net, netmask)
 			if not ok:
-				trace.err("IP %s is not in network %s/%s" % (network.unparse_ipv4(ip), network.unparse_ipv4(network), network.unparse_ipv4(netmask)))
+				trace.err("IP %s is not in network %s/%s" % (network.unparse_ipv4(ip), network.unparse_ipv4(net), network.unparse_ipv4(netmask)))
 				return False
 		if not (ip_range[0] <= ip_range[1]):
 			trace.err("Invalid IP range: " + `tuple(addresses[range_field])`)
@@ -582,20 +604,20 @@ def reserved_netIfaces(conf):
 	"""
 	Return the set of reserved physical network interfaces
 	"""
-	return set([ifname for ifname, ifacevlan in conf['netIfaces'].iteritems() if ifacevlan == 'reserved'])
+	return frozenset([ifname for ifname, ifacevlan in conf['netIfaces'].iteritems() if ifacevlan == 'reserved'])
 
 def reserved_vlans(conf):
 	"""
 	Return the set of reserved vlan interfaces
 	"""
 	reserved_vlan_list = []
-	for if_phy_name, vs_tag in conf['netIfaces'].iteritems():
-		if not specific(vs_tag):
+	for phy, vsTag in conf['netIfaces'].iteritems():
+		if not specific(vsTag):
 			continue
-		reserved_vlan_list.extend(["%s.%d" % (if_phy_name, vlan_id)
-		                           for vlan_id, ipConfs_tag in conf['vlans'][vs_tag].iteritems()
+		reserved_vlan_list.extend(["%s.%d" % (phy, vlanId)
+		                           for vlanId, ipConfs_tag in conf['vlans'][vsTag].iteritems()
 		                           if ipConfs_tag == 'reserved'])
-	return set(reserved_vlan_list)
+	return frozenset(reserved_vlan_list)
 
 def normalize_static(static):
 	"""
@@ -611,7 +633,7 @@ def load_configuration(conf_source):
 	normalized internal representation of the configuration
 	"""
 	conf = yaml.load(conf_source)
-	# TODO: do that thanks to schema based mapping (mapping in functional programming meaning)
+	# TODO: do that thanks to schema based mapping ("mapping" in functional programming meaning)
 	nameservers = conf['resolvConf'].get('nameservers')
 	if nameservers:
 		conf['resolvConf']['nameservers'] = map(network.normalize_ipv4_address, nameservers)
@@ -625,15 +647,15 @@ def load_configuration(conf_source):
 		voip_addresses[range_name][:] = map(network.normalize_ipv4_address, voip_addresses[range_name])
 	return conf
 
-def natural_vlan_name(if_phy_name, vlan_id):
+def natural_vlan_name(phy, vlanId):
 	"""
-	* if_phy_name: string
-	* vlan_id: integer
+	* phy: string
+	* vlanId: integer
 	"""
-	if not vlan_id:
-		return if_phy_name
+	if not vlanId:
+		return phy
 	else:
-		return "%s.%d" % (if_phy_name, vlan_id)
+		return "%s.%d" % (phy, vlanId)
 
 def generate_interfaces(old_interfaces_lines, conf, trace=trace_null):
 	"""
@@ -649,6 +671,10 @@ def generate_interfaces(old_interfaces_lines, conf, trace=trace_null):
 	rsvd_mapping_dest = interfaces.get_mapping_dests(eni, rsvd_base, rsvd_full)
 	
 	def unhandled_or_reserved(ifname):
+		"""
+		Is ifname not handled either because it does not start with a
+		known prefix, or because it is explicitely reserved
+		"""
 		return (not any_prefixes(ifname)) or \
 		       interfaces.ifname_in_base_full_mapsymbs(ifname, rsvd_base, rsvd_full, rsvd_mapping_dest)
 	
@@ -662,6 +688,13 @@ def generate_interfaces(old_interfaces_lines, conf, trace=trace_null):
 	down = REMOVED
 	
 	def flush_space_blocks():
+		"""
+		Some space blocks are only preserved if they are not
+		surrounded by other non preserved blocks.
+		This function flush or dismiss the space blocks according to
+		this rule, and must be called as soon as the KEPT / REMOVED of
+		the lower non space block is known.
+		"""
 		if down is KEPT:
 			new_eni.extend(space_blocks)
 		elif up is KEPT:
@@ -742,13 +775,13 @@ def generate_interfaces(old_interfaces_lines, conf, trace=trace_null):
 	
 	# generate new config for handled interfaces
 	# 
-	for if_phy_name, vs_tag in conf['netIfaces'].iteritems():
-		if not specific(vs_tag):
+	for phy, vsTag in conf['netIfaces'].iteritems():
+		if not specific(vsTag):
 			continue	
-		for vlan_id, ipConfs_tag in conf['vlans'][vs_tag].iteritems():
+		for vlanId, ipConfs_tag in conf['vlans'][vsTag].iteritems():
 			if not specific(ipConfs_tag):
 				continue
-			ifname = natural_vlan_name(if_phy_name, vlan_id)
+			ifname = natural_vlan_name(phy, vlanId)
 			trace.info("generating configuration for %s" % `ifname`)
 			static = conf['ipConfs'][ipConfs_tag]
 			yield "iface %s inet static\n" % ifname
@@ -856,6 +889,9 @@ INTERFACES_FILE = "interfaces"
 DHCPD_CONF_FILE = "dhcpd.conf"
 
 def sync():
+	"""
+	Call /bin/sync
+	"""
 	# is there a wrapper for the sync syscall in Python?
 	subprocess.call("/bin/sync", close_fds = True)
 
@@ -975,6 +1011,10 @@ def transactional_generation(store_base, store_subs, gen_base, gen_subs, generat
 	return success
 
 def file_writelines_flush_sync(path, lines):
+	"""
+	Fill file at @path with @lines then flush all buffers
+	(Python and system buffers)
+	"""
 	fp = file(path, "w")
 	fp.writelines(lines)
 	fp.flush()
@@ -982,6 +1022,9 @@ def file_writelines_flush_sync(path, lines):
 	fp.close()
 
 def generate_system_configuration(to_gen, prev_gen, current_xivo_conf, trace=trace_null):
+	"""
+	Generate system configuration from our own configuration model.
+	"""
 	os.mkdir(to_gen)
 	
 	config = load_configuration(file(os.path.join(current_xivo_conf, NETWORK_CONFIG_FILE)))
@@ -1002,27 +1045,128 @@ def generate_system_configuration(to_gen, prev_gen, current_xivo_conf, trace=tra
 	                           generate_dhcpd_conf(config, trace))
 
 def transaction_system_configuration(trace=trace_null):
+	"""
+	Transactionally generate system configuration from our own
+	configuration model.
+	"""
 	transactional_generation(STORE_BASE, (STORE_PREVIOUS, STORE_CURRENT, STORE_NEW, STORE_FAILED),
 	                         GENERATED_BASE, (GENERATED_PREVIOUS, GENERATED_CURRENT, GENERATED_NEW, GENERATED_TMP),
 				 generate_system_configuration, trace)
 
-def iterautoattrib_notplug_phy():
+def gen_plugged_by_phy(phys):
 	"""
-	Yield plugged physical interfaces in natural order first, then unplugged ones.
+	Construct a cache of carrier status of interfaces in the sequence phys.
+	The cache is a mapping where keys are interfaces and values a boolean
+	representing the carrier status (False => disconnected,
+	True => connected)
 	"""
-	phys = network.get_filtered_phys(any_prefixes)
-	plug_phys = [(not network.is_interface_plugged(ifname), network.split_ifname(ifname)) for ifname in phys]
-	plug_phys.sort()
-	return iter([(notplug, network.unsplit_ifname(ifname)) for (notplug, ifname) in plug_phys])
+	return dict(((phy, network.is_interface_plugged(phy)) for phy in phys))
 
-def iterautoattrib_vsName(conf):
+def cmp_bool_lexdec(x, y):
 	"""
-	Yield vlan set names that are not related to anything.
+	Let X = (x[0], x[1]) and Y = (y[0], y[1]) where
+	  x[0] and y[0] are boolean and
+	  x[1] and y[1] are lexico-decimal strings
+	    where a lexico-decimal string is a string representing a
+	    lexico-decimal tuple by concatenating alternating strings and
+	    decimal represenations of integers in the same order as they appear
+	    in the tuple.  Lexico-decimal strings are totally ordered by the
+	    network.cmp_lexdec function.
+	
+	This function defines a total order on the set of
+	boolean x lexico-decimal strings, which X and Y belong to.
 	"""
-	owned = frozenset(filter(specific, conf['netIfaces'].itervalues()))
-	vsname_list = [vsname for vsname in conf['vlans'].iterkeys() if vsname not in owned]
-	vsname_list.sort()
-	return iter(vsname_list)
+	return cmp((x[0], network.split_lexdec(x[1])), (y[0], network.split_lexdec(y[1])))
+
+def aaLst_npst_phy(conf, plugged_by_phy):
+	"""
+	Return a list of (npst, phy) in cmp_bool_lexdec order.
+	* npst: not plugged status
+	* phy: physical interfaces name
+	
+	Only phys that are in the "void" will be enumerated.
+	"""
+	# TODO: detect the default path of get() and: trace it?
+	def phy_handled_relate_void(phy):
+		"""
+		Is phy both handled (its name prefix is known) and in the "void"
+		"""
+		return any_prefixes(phy) and conf['netIfaces'].get(phy, 'void') == 'void'
+	
+	phys = network.get_filtered_phys(phy_handled_relate_void)
+	return sorted(((not plugged_by_phy.get(phy, False), phy) for phy in phys), cmp = cmp_bool_lexdec)
+
+def aaLst_npst_fifn_vsTag_vlanId(conf, plugged_by_phy):
+	"""
+	Return a list of (npst, fifn, vsTag, vlanId) in cmp_bool_lexdec order
+	for (npst, fifn) where:
+	* npst: True if the supporting interface is not connected (boolean)
+	* fifn: "full" interface name - that is the linux vlan interface name
+	  or ethXX.0 for untagged vlans (string)
+	* vsTag: vlan set tag (string)
+	* vlanId: vlan Id (integer)
+	
+	Only interfaces that are in the "void" will be enumerated.
+	"""
+	res = []
+	for phy, vsTag in conf['netIfaces'].iteritems():
+		if specific(vsTag):
+			for vlanId, ipConfs_tag in conf['vlans'][vsTag].iteritems():
+				if ipConfs_tag == 'void':
+					fifn = "%s.%d" % (phy, vlanId)
+					res.append((not plugged_by_phy.get(phy, False), fifn, vsTag, vlanId))
+	res.sort(cmp = cmp_bool_lexdec)
+	return res
+
+def aaLst_vsTag(conf):
+	"""
+	Return a list of vlan set names that are not owned by a physical
+	interface, in network.cmp_lexdec order.
+	"""
+	owned = frozenset(get_referenced_vsTags(conf))
+	return network.sorted_lst_lexdec((vsTag for vsTag in conf['vlans'].iterkeys() if vsTag not in owned))
+
+def aaLst_ipConfTag(conf):
+	"""
+	Return a list of ipconf tags that are not owned by a vlan (in our
+	terminology vlans include untaggued vlan) in network.cmp_lexdec order.
+	"""
+	owned = frozenset(get_referenced_ipConfTags(conf))
+	return network.sorted_lst_lexdec((ipConfTag for ipConfTag in conf['ipConfs'].iterkeys() if ipConfTag not in owned))
+
+def autoattrib_conf(conf):
+	"""
+	Auto attribute orphan vlan set to 'void' physical interfaces, in
+	priority to plugged interfaces then to unplugged interfaces.
+	Once done auto attribute vlan interfaces (including untagged vlans)
+	to orphan ip configurations.
+	"""
+	plugged_by_phy = gen_plugged_by_phy(network.get_filtered_phys(any_prefixes))
+	
+	vsTag_iter = iter(aaLst_vsTag(conf))
+	for npst, phy in aaLst_npst_phy(conf, plugged_by_phy):
+		try:
+			vsTag = vsTag_iter.next()
+		except StopIteration:
+			break
+		conf['netIfaces'][phy] = vsTag
+	
+	ipConfTag_iter = iter(aaLst_ipConfTag(conf))
+	for npst, fifn, vsTag, vlanId in aaLst_npst_fifn_vsTag_vlanId(conf, plugged_by_phy):
+		try:
+			ipConfTag = ipConfTag_iter.next()
+		except StopIteration:
+			break
+		conf['vlans'][vsTag][vlanId] = ipConfTag
+	
+	return conf
+
+def autoattrib():
+	"""
+	Auto VLAN Set and IP Configuration attributions at server startup
+	"""
+	config = load_configuration(file(os.path.join(STORE_BASE, STORE_CURRENT, NETWORK_CONFIG_FILE)))
+	return autoattrib_conf(config)
 
 __all__ = (
 	'ProvGeneralConf', 'LoadConfig', 'txtsubst', 'well_formed_provcode',
@@ -1031,3 +1175,7 @@ __all__ = (
 	'phone_vendor_iter_key_class', 'phone_desc_by_ua',
 	'transaction_system_configuration',
 )
+
+# TODO: les attributions automatiques de démarrage ne checkent pas toute la sémantique:
+# en particulier si rien n'empeche qu'une attr au demarrage entraine une network collision
+# BUGFIXer ça...

@@ -31,6 +31,7 @@ import subprocess
 
 from xivo import except_tb
 from xivo import StreamedLines
+from xivo.pyfunc import *
 
 
 # CONFIG
@@ -51,9 +52,9 @@ def to_int_if_possible(s):
 	except ValueError:
 		return s
 
-def split_ifname(ifname):
+def split_lexdec(lexdec_str):
 	"""
-	This function splits the non decimal and the decimal parts of ifname
+	This function splits the non decimal and the decimal parts of lexdec_str
 	
 	Exemples:
 	
@@ -66,26 +67,37 @@ def split_ifname(ifname):
 	>>> split_iface_name('')
 	('',)
 	"""
-	ifname_resplitted = DECIMAL_SPLIT(ifname)
-	if len(ifname_resplitted) > 1 and ifname_resplitted[-1] == '':
-		strs = ifname_resplitted[:-1]
+	lexdec_resplitted = DECIMAL_SPLIT(lexdec_str)
+	if len(lexdec_resplitted) > 1 and lexdec_resplitted[-1] == '':
+		strs = lexdec_resplitted[:-1]
 	else:
-		strs = ifname_resplitted
+		strs = lexdec_resplitted
 	return tuple(map(to_int_if_possible, strs))
 
-def unsplit_ifname(ifseq):
+def unsplit_lexdec(lexdec_seq):
 	"""
-	Invert of split_ifname()
+	Invert of split_lexdec()
+	
+	WARNING: unsplit_lexdec(split_lexdec("a0001")) == "a1"
 	"""
-	return ''.join(map(str, ifseq))
+	return ''.join(map(str, lexdec_seq))
 
-def sort_ifnames(ifnames):
+def cmp_lexdec(x_str, y_str):
 	"""
-	Sort ifnames according to their split_ifname() representations
+	Compare the splitted versions of x_str and y_str
 	"""
-	splitted_ifnames = map(split_ifname, ifnames)
-	splitted_ifnames.sort()
-	return map(unsplit_ifname, splitted_ifnames)
+	return cmp(split_lexdec(x_str), split_lexdec(y_str))
+
+def sorted_lst_lexdec(seqof_lexdec_str):
+	"""
+	Sort ifnames according to their split_lexdec() representations
+	Returns a list.
+	NOTES:
+	* The sorting is NOT done in place.
+	* This function do not strip leading zeros in decimal parts; elements
+	  are preserved as they are.
+	"""
+	return sorted(seqof_lexdec_str, cmp = cmp_lexdec)
 
 def get_linux_netdev_list():
 	"""
@@ -142,7 +154,7 @@ def ipv4_from_macaddr(macaddr, logexceptfunc = None, ifname_filter = lambda x: T
 	# -I <netiface> : the network interface to use is <netiface>
 	#    -I is an undocumented option like -i but it works
 	#    with alias interfaces too
-	for iface in sort_ifnames(get_filtered_ifnames(ifname_filter)):
+	for iface in sorted_lst_lexdec(get_filtered_ifnames(ifname_filter)):
 		result = None
 		try:
 			child = subprocess.Popen(arping_cmd_list + ["-r", "-c", "1", "-w", str(arping_sleep_us), '-I', iface, macaddr],
@@ -207,9 +219,43 @@ def netmask_invert(mask):
 	"""
 	return tuple([m ^ 0xFF for m in mask])
 
+def plausible_netmask(addr):
+	"""
+	Check that addr (4uple of ints) makes a plausible netmask
+	(set bits first, reset bits last)
+	"""
+	state = 1
+	for addr_part in addr:
+		for bitval in (128, 64, 32, 16, 8, 4, 2, 1):
+			if state:
+				if not (addr_part & bitval):
+					state = 0
+			else:
+				if (addr_part & bitval):
+					return False
+	return True
+
+# WARNING: the following function does not test the length which must be <= 63
+domain_label_ok = re.compile(r'[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$').match
+
+def plausible_search_domain(search_domain):
+	"""
+	Returns True if the search_domain is suitable for use in the search
+	line of /etc/resolv.conf, else False.
+	"""
+	# NOTE: 251 comes from FQDN 255 maxi including label length bytes, we
+	# do not want to validate search domain beginning or ending with '.',
+	# 255 seems to include the final '\0' length byte, so a FQDN is 253
+	# char max.  We remove 2 char so that a one letter label requested and
+	# prepended to the search domain results in a FQDN that is not too long
+	return search_domain and len(search_domain) <= 251 and \
+	       all((((len(label) <= 63) and domain_label_ok(label))
+	            for label in search_domain.split('.')))
+
 __all__ = (
-	'split_ifname', 'unsplit_ifname', 'sort_ifnames',
+	'split_lexdec', 'unsplit_lexdec', 'sorted_lst_lexdec', 'cmp_lexdec',
 	'get_filtered_ifnames', 'get_filtered_phys', 'is_interface_plugged',
 	'normalize_mac_address', 'ipv4_from_macaddr', 'macaddr_from_ipv4',
 	'parse_ipv4', 'unparse_ipv4', 'mask_ipv4', 'or_ipv4', 'netmask_invert',
+	'plausible_netmask', 'plausible_search_domain',
 )
