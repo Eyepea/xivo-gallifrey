@@ -29,8 +29,7 @@ def incoming_user_set_features(handler, agi, cursor, args):
 	zone = agi.get_variable('REAL_CALLTYPE')
 	bypass = agi.get_variable('XIVO_BSFILTER_BYPASS')
 
-	# Modify below if columns is modified and contains any vars not of the form
-	# [a-zA-Z_][a-zA-Z0-9_]*
+	# NOTE: keep in sync with below
 	columns = ('id', 'protocol' , 'protocolid', 'name', 'ringseconds', 'simultcalls', 'enablevoicemail', 'voicemailid', 'enablexfer', 'enableautomon', 'callrecord', 'callfilter', 'enablednd', 'enableunc', 'destunc', 'enablerna', 'destrna', 'enablebusy', 'destbusy', 'musiconhold', 'bsfilter')
 	cursor.query("SELECT ${columns} FROM userfeatures "
 		     "WHERE number = %s "
@@ -44,24 +43,42 @@ def incoming_user_set_features(handler, agi, cursor, args):
 	if not res:
 		agi.dp_break("Unknown number '%s'" % dstnum)
 
-	# Populate locals()
-	# works if columns contains vars of the form [a-zA-Z_][a-zA-Z0-9_]*
-	for var in columns:
-		exec("%s = res['%s']" % (var, var))
+	# don't use exec to allow statical analysis
+	userfeaturesid = res['id']
+	protocol = res['protocol']
+	protocolid = res['protocolid']
+	name = res['name']
+	ringseconds = res['ringseconds']
+	simultcalls = res['simultcalls']
+	enablevoicemail = res['enablevoicemail']
+	voicemailid = res['voicemailid']
+	enablexfer = res['enablexfer']
+	enableautomon = res['enableautomon']
+	callrecord = res['callrecord']
+	callfilter = res['callfilter']
+	enablednd = res['enablednd']
+	enableunc = res['enableunc']
+	destunc = res['destunc']
+	enablerna = res['enablerna']
+	destrna = res['destrna']
+	enablebusy = res['enablebusy']
+	destbusy = res['destbusy']
+	musiconhold = res['musiconhold']
+	bsfilter_field = res['bsfilter']
 
 	# Special case. If a boss-secretary filter is set, the code will prematurely
 	# exit because the other normally set variables become useless.
-	if not bypass and bsfilter == 'boss':
+	if not bypass and bsfilter_field == 'boss':
 		apply_filter = False
 
 		try:
-			filter = bsfilter.bsfilter(agi, cursor, dstnum, context)
+			bsf = bsfilter.BSFilter(agi, cursor, dstnum, context)
 
-			if not filter.active:
+			if not bsf.active:
 				raise LookupError
 
-			zone_applies = filter.check_zone(zone)
-			secretary = filter.get_secretary(srcnum)
+			zone_applies = bsf.check_zone(zone)
+			secretary = bsf.get_secretary(srcnum)
 
 			if zone_applies and not secretary:
 				apply_filter = True
@@ -69,34 +86,34 @@ def incoming_user_set_features(handler, agi, cursor, args):
 			pass
 
 		if apply_filter:
-			if filter.mode in ("bossfirst-simult", "secretary-simult", "all"):
-				if filter.mode in ("bossfirst-simult", "all"):
-					agi.set_variable('XIVO_BSFILTER_BOSS_INTERFACE', filter.boss.interface)
-					agi.set_variable('XIVO_BSFILTER_BOSS_TIMEOUT', filter.boss.ringseconds)
+			if bsf.mode in ("bossfirst-simult", "secretary-simult", "all"):
+				if bsf.mode in ("bossfirst-simult", "all"):
+					agi.set_variable('XIVO_BSFILTER_BOSS_INTERFACE', bsf.boss.interface)
+					agi.set_variable('XIVO_BSFILTER_BOSS_TIMEOUT', bsf.boss.ringseconds)
 
-				interface = '&'.join(secretary.interface for secretary in filter.secretaries if secretary.active)
+				interface = '&'.join(secretary.interface for secretary in bsf.secretaries if secretary.active)
 				agi.set_variable('XIVO_BSFILTER_INTERFACE', interface)
-				agi.set_variable('XIVO_BSFILTER_TIMEOUT', filter.ringseconds)
+				agi.set_variable('XIVO_BSFILTER_TIMEOUT', bsf.ringseconds)
 
-			elif filter.mode in ("bossfirst-serial", "secretary-serial"):
-				if filter.mode == "bossfirst-serial":
-					agi.set_variable('XIVO_BSFILTER_BOSS_INTERFACE', filter.boss.interface)
-					agi.set_variable('XIVO_BSFILTER_BOSS_TIMEOUT', filter.boss.ringseconds)
+			elif bsf.mode in ("bossfirst-serial", "secretary-serial"):
+				if bsf.mode == "bossfirst-serial":
+					agi.set_variable('XIVO_BSFILTER_BOSS_INTERFACE', bsf.boss.interface)
+					agi.set_variable('XIVO_BSFILTER_BOSS_TIMEOUT', bsf.boss.ringseconds)
 
 				index = 0
 
-				for secretary in filter.secretaries:
+				for secretary in bsf.secretaries:
 					if secretary.active:
 						agi.set_variable('XIVO_BSFILTER_SECRETARY%d_INTERFACE' % index, secretary.interface)
 						agi.set_variable('XIVO_BSFILTER_SECRETARY%d_TIMEOUT' % index, secretary.ringseconds)
 						index += 1
 
-			handler.ds_set_fwd_vars(filter.id, 'noanswer', 'callfilter', 'XIVO_BSFILTER_FWD_TYPERNA', 'XIVO_BSFILTER_FWD_TYPEVAL1RNA', 'XIVO_BSFILTER_FWD_TYPEVAL2RNA')
+			handler.ds_set_fwd_vars(bsf.id, 'noanswer', 'callfilter', 'XIVO_BSFILTER_FWD_TYPERNA', 'XIVO_BSFILTER_FWD_TYPEVAL1RNA', 'XIVO_BSFILTER_FWD_TYPEVAL2RNA')
 
-			if filter.callerdisplay:
-				agi.set_variable('CALLERID(name)', "%s - %s" % (filter.callerdisplay, agi.get_variable("CALLERID(name)")))
+			if bsf.callerdisplay:
+				agi.set_variable('CALLERID(name)', "%s - %s" % (bsf.callerdisplay, agi.get_variable("CALLERID(name)")))
 
-			agi.set_variable('XIVO_BSFILTER_MODE', filter.mode)
+			agi.set_variable('XIVO_BSFILTER_MODE', bsf.mode)
 			agi.set_variable('XIVO_BSFILTER', '1')
 			return
 
@@ -193,7 +210,7 @@ def incoming_user_set_features(handler, agi, cursor, args):
 			agi.set_variable('XIVO_FWD_TYPEVAL1BUSY', destbusy)
 			agi.set_variable('XIVO_FWD_TYPEVAL2BUSY', context)
 		else:
-			handler.ds_set_fwd_vars(id, 'busy', 'user', 'XIVO_FWD_TYPEBUSY', 'XIVO_FWD_TYPEVAL1BUSY', 'XIVO_FWD_TYPEVAL2BUSY')
+			handler.ds_set_fwd_vars(userfeaturesid, 'busy', 'user', 'XIVO_FWD_TYPEBUSY', 'XIVO_FWD_TYPEVAL1BUSY', 'XIVO_FWD_TYPEVAL2BUSY')
 	else:
 		agi.set_variable('XIVO_FWD_TYPEBUSY', 'endcall')
 		agi.set_variable('XIVO_FWD_TYPEVAL1BUSY', 'none')
@@ -205,13 +222,13 @@ def incoming_user_set_features(handler, agi, cursor, args):
 			agi.set_variable('XIVO_FWD_TYPEVAL1RNA', destrna)
 			agi.set_variable('XIVO_FWD_TYPEVAL2RNA', context)
 		else:
-			handler.ds_set_fwd_vars(id, 'noanswer', 'user', 'XIVO_FWD_TYPERNA', 'XIVO_FWD_TYPEVAL1RNA', 'XIVO_FWD_TYPEVAL2RNA')
+			handler.ds_set_fwd_vars(userfeaturesid, 'noanswer', 'user', 'XIVO_FWD_TYPERNA', 'XIVO_FWD_TYPEVAL1RNA', 'XIVO_FWD_TYPEVAL2RNA')
 	else:
 		agi.set_variable('XIVO_FWD_TYPERNA', 'endcall')
 		agi.set_variable('XIVO_FWD_TYPEVAL1RNA', 'none')
 
-	handler.ds_set_fwd_vars(id, 'congestion', 'user', 'XIVO_FWD_TYPECONGESTION', 'XIVO_FWD_TYPEVAL1CONGESTION', 'XIVO_FWD_TYPEVAL2CONGESTION')
-	handler.ds_set_fwd_vars(id, 'chanunavail', 'user', 'XIVO_FWD_TYPEUNAVAIL', 'XIVO_FWD_TYPEVAL1UNAVAIL', 'XIVO_FWD_TYPEVAL2UNAVAIL')
+	handler.ds_set_fwd_vars(userfeaturesid, 'congestion', 'user', 'XIVO_FWD_TYPECONGESTION', 'XIVO_FWD_TYPEVAL1CONGESTION', 'XIVO_FWD_TYPEVAL2CONGESTION')
+	handler.ds_set_fwd_vars(userfeaturesid, 'chanunavail', 'user', 'XIVO_FWD_TYPEUNAVAIL', 'XIVO_FWD_TYPEVAL1UNAVAIL', 'XIVO_FWD_TYPEVAL2UNAVAIL')
 
 	if 'incallrec' in features_list and callrecord:
 		agi.set_variable('XIVO_CALLRECORDFILE', "/usr/share/asterisk/sounds/web-interface/monitor/user-%s-%s-%s.wav" % (srcnum, dstnum, int(time.time())))

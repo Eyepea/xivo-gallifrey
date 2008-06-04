@@ -26,7 +26,7 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-class bsf_member:
+class BsfMember:
 	"""This class represents a boss-secretary filter member (e.g. a boss
 	or a secretary).
 
@@ -60,7 +60,7 @@ class bsf_member:
 		for line in s.splitlines():
 			self.agi.verbose(line)
 
-class bsfilter:
+class BSFilter:
 	"""Boss-secretary filter class. Creating a boss-secretary filter
 	automatically load everything related to the filter (its properties,
 	those of its boss, its secretaries). Creating a filter is also a way
@@ -116,7 +116,7 @@ class bsfilter:
 		self.callfrom = res['callfilter.callfrom']
 		self.callerdisplay = res['callfilter.callerdisplay']
 		self.ringseconds = res['callfilter.ringseconds']
-		self.boss = bsf_member(True, 'boss', res['userfeatures.id'], boss_number, res['callfiltermember.ringseconds'])
+		self.boss = BsfMember(True, 'boss', res['userfeatures.id'], boss_number, res['callfiltermember.ringseconds'])
 		self.secretaries = []
 
 		if self.ringseconds == 0:
@@ -166,8 +166,8 @@ class bsfilter:
 			protocol = row['userfeatures.protocol']
 			protocolid = row['userfeatures.protocolid']
 			name = row['userfeatures.name']
-			secretary = bsf_member(row['callfiltermember.active'], 'secretary', row['userfeatures.id'],
-					       row['userfeatures.number'], row['userfeatures.ringseconds'])
+			secretary = BsfMember(row['callfiltermember.active'], 'secretary', row['userfeatures.id'],
+					      row['userfeatures.number'], row['userfeatures.ringseconds'])
 
 			if secretary.active:
 				self.active = True

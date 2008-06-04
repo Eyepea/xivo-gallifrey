@@ -33,6 +33,10 @@ from xivo import xivo_helpers
 agi_session = None
 
 def agi_get_session():
+	"""
+	Create a new agi (normal, not FastAGI) session object if not yet
+	created, and return it or the previously created one to the caller.
+	"""
 	global agi_session
 
 	if not agi_session:
@@ -43,58 +47,68 @@ def agi_get_session():
 	return agi_session
 
 def dp_break(message, show_tb = False):
+	"""
+	DialPlan Break
+	
+	Display a message using xivo_helpers.output_fn, optionally dumping the
+	exception trace, and stop execution.
+	
+	If show_tb is True, this function must be called from an except block.
+	"""
 	xivo_helpers.abort(message, show_tb)
 
-def set_fwd_vars(cursor, type, typeval, appval, type_varname, typeval1_varname, typeval2_varname):
+def set_fwd_vars(cursor, redir_type, typeval, appval, type_varname, typeval1_varname, typeval2_varname):
 	"""The purpose of this function is to set some variables in the
 	Asterisk channel related to redirection. It can set up to 3 variables:
 	 - the redirection type (e.g. to a user, a group, a queue)
 	 - 2 parameters (typeval1 and typeval2)
 
-	type is the redirection type and is used to determine the corresponding
-	behaviour (e.g. how many variables to set, where to fetch their value
-	from).
+	redir_type is the redirection type and is used to determine the
+	corresponding behaviour (e.g. how many variables to set, where to fetch
+	their value from).
 
-	typeval is a value related to the redirection type. For example, if the
-	type is 'user', and the type value is '101', this function will look up
-	user ID 101 in the user features table and set 2 variables (a number
-	and a context) so that the dial plan is able to forward the call to
-	that user. In this example, the number and context are the 2 parameters
-	(typeval1 and typeval2) that this function sets before returning.
+	typeval is a value related to the redirection type. For example, if
+	redir_type is 'user', and the type value is '101', this function will
+	look up user ID 101 in the user features table and set 2 variables (a
+	number and a context) so that the dial plan is able to forward the call
+	to that user. In this example, the number and context are the 2
+	parameters (typeval1 and typeval2) that this function sets before
+	returning.
 
 	Forwarding a call to an application sometimes require an extra
-	parameter (since type is 'application' and typeval1 is the application
-	name). This extra parameter is given in the appval argument.
+	parameter (since redir_type is 'application' and typeval1 is the
+	application name). This extra parameter is given in the appval
+	argument.
 
-	Depending on the redirection type and the application (in case the type
-	is 'application'), some parameters can be processed so that commas are
-	translated to semicolumns. This is an ugly hack imagined because
-	Asterisk evaluates variables early, and commas are used as an argument
-	separator. In such cases, the dialplan translates semicolumns back
-	to commas/pipes before using the variale.
+	Depending on the redirection type and the application (in case
+	redir_type is 'application'), some parameters can be processed so that
+	commas are translated to semicolumns. This is an ugly hack imagined
+	because Asterisk evaluates variables early, and commas are used as an
+	argument separator. In such cases, the dialplan translates semicolumns
+	back to commas/pipes before using the variale.
 
 	This function calls dp_break() upon detection of parameter/database
-	inconsistency or when the type parameter is invalid.
+	inconsistency or when redir_type is invalid.
 
 	XXX This function and its users should be able to handle more
 	variables (if possible, there should be no limit).
 
 	"""
 
-	agi_session.set_variable(type_varname, type)
+	agi_session.set_variable(type_varname, redir_type)
 
-	if type in ('endcall', 'schedule', 'sound'):
+	if redir_type in ('endcall', 'schedule', 'sound'):
 		agi_session.set_variable(typeval1_varname, typeval)
-	elif type == 'application':
+	elif redir_type == 'application':
 		agi_session.set_variable(typeval1_varname, typeval)
 
 		if typeval in ('disa', 'callback'):
 			agi_session.set_variable(typeval2_varname, appval.replace(",", ";").replace("|", ";"))
 		else:
 			agi_session.set_variable(typeval2_varname, appval)
-	elif type == 'custom':
+	elif redir_type == 'custom':
 		agi_session.set_variable(typeval1_varname, typeval.replace(",", ";").replace("|", ";"))
-	elif type == 'user':
+	elif redir_type == 'user':
 		cursor.query("SELECT ${columns} FROM userfeatures "
                              "WHERE id = %s "
                              "AND IFNULL(userfeatures.number,'') != '' "
@@ -109,7 +123,7 @@ def set_fwd_vars(cursor, type, typeval, appval, type_varname, typeval1_varname, 
 
 		agi_session.set_variable(typeval1_varname, res['number'])
 		agi_session.set_variable(typeval2_varname, res['context'])
-	elif type == 'group':
+	elif redir_type == 'group':
 		cursor.query("SELECT ${columns} FROM groupfeatures INNER JOIN queue "
                              "ON groupfeatures.name = queue.name "
                              "WHERE groupfeatures.id = %s "
@@ -125,7 +139,7 @@ def set_fwd_vars(cursor, type, typeval, appval, type_varname, typeval1_varname, 
 
 		agi_session.set_variable(typeval1_varname, res['groupfeatures.number'])
 		agi_session.set_variable(typeval2_varname, res['groupfeatures.context'])
-	elif type == 'queue':
+	elif redir_type == 'queue':
 		cursor.query("SELECT ${columns} FROM queuefeatures INNER JOIN queue "
                              "ON queuefeatures.name = queue.name "
                              "WHERE queuefeatures.id = %s "
@@ -140,7 +154,7 @@ def set_fwd_vars(cursor, type, typeval, appval, type_varname, typeval1_varname, 
 
 		agi_session.set_variable(typeval1_varname, res['queuefeatures.number'])
 		agi_session.set_variable(typeval2_varname, res['queuefeatures.context'])
-	elif type == 'meetme':
+	elif redir_type == 'meetme':
 		cursor.query("SELECT ${columns} FROM meetmefeatures INNER JOIN staticmeetme "
                              "ON meetmefeatures.meetmeid = staticmeetme.id "
                              "WHERE meetmefeatures.id = %s "
@@ -155,17 +169,17 @@ def set_fwd_vars(cursor, type, typeval, appval, type_varname, typeval1_varname, 
 		agi_session.set_variable(typeval1_varname, res['meetmefeatures.number'])
 		agi_session.set_variable(typeval2_varname, res['meetmefeatures.context'])
 	else:
-		dp_break("Unknown destination type '%s'" % type)
+		dp_break("Unknown destination type '%s'" % redir_type)
 
-class bsf_member:
+class BsfMember:
 	"""This class represents a boss-secretary filter member (e.g. a boss
 	or a secretary).
 
 	"""
 
-	def __init__(self, active, type, userid, number, ringseconds):
+	def __init__(self, active, xtype, userid, number, ringseconds):
 		self.active = bool(active)
-		self.type = type
+		self.type = xtype
 		self.userid = userid
 		self.number = number
 		self.interface = None
@@ -184,13 +198,13 @@ class bsf_member:
                        "RingSeconds: %s"
                        % (self.type, self.userid, self.number, self.interface, self.ringseconds))
 
-	def agi_str(self, agi):
+	def agi_str(self):
 		s = str(self)
 
 		for line in s.splitlines():
 			agi_session.verbose(line)
 
-class bsfilter:
+class BSFilter:
 	"""Boss-secretary filter class. Creating a boss-secretary filter
 	automatically load everything related to the filter (its properties,
 	those of its boss, its secretaries). Creating a filter is also a way
@@ -245,7 +259,7 @@ class bsfilter:
 		self.callfrom = res['callfilter.callfrom']
 		self.callerdisplay = res['callfilter.callerdisplay']
 		self.ringseconds = res['callfilter.ringseconds']
-		self.boss = bsf_member(True, 'boss', res['userfeatures.id'], boss_number, res['callfiltermember.ringseconds'])
+		self.boss = BsfMember(True, 'boss', res['userfeatures.id'], boss_number, res['callfiltermember.ringseconds'])
 		self.secretaries = []
 
 		if self.ringseconds == 0:
@@ -295,8 +309,8 @@ class bsfilter:
 			protocol = row['userfeatures.protocol']
 			protocolid = row['userfeatures.protocolid']
 			name = row['userfeatures.name']
-			secretary = bsf_member(row['callfiltermember.active'], 'secretary', row['userfeatures.id'],
-                                               row['userfeatures.number'], row['userfeatures.ringseconds'])
+			secretary = BsfMember(row['callfiltermember.active'], 'secretary', row['userfeatures.id'],
+                                              row['userfeatures.number'], row['userfeatures.ringseconds'])
 
 			if secretary.active:
 				self.active = True

@@ -28,9 +28,9 @@ def user_set_feature(handler, agi, cursor, args):
 	query = "UPDATE userfeatures SET"
 	params = []
 
-	type = args[0]
+	feature_type = args[0]
 
-	if type == "unc":
+	if feature_type == "unc":
 		enableunc = int(args[1])
 		query += " enableunc = %s"
 		params.append(enableunc)
@@ -42,7 +42,7 @@ def user_set_feature(handler, agi, cursor, args):
 
 		query += ", destunc = %s"
 		params.append(destunc)
-	elif type == "rna":
+	elif feature_type == "rna":
 		enablerna = int(args[1])
 		query += " enablerna = %s"
 		params.append(enablerna)
@@ -54,7 +54,7 @@ def user_set_feature(handler, agi, cursor, args):
 
 		query += ", destrna = %s"
 		params.append(destrna)
-	elif type == "busy":
+	elif feature_type == "busy":
 		enablebusy = int(args[1])
 		query += " enablebusy = %s"
 		params.append(enablebusy)
@@ -66,7 +66,7 @@ def user_set_feature(handler, agi, cursor, args):
 
 		query += ", destbusy = %s"
 		params.append(destbusy)
-	elif type == "vm":
+	elif feature_type == "vm":
 		cursor.query("SELECT ${columns} FROM userfeatures "
 			     "WHERE number = %s "
 			     "AND context = %s "
@@ -87,7 +87,7 @@ def user_set_feature(handler, agi, cursor, args):
 		query += " enablevoicemail = %s"
 		params.append(enablevoicemail)
 		agi.set_variable('XIVO_VMENABLED', enablevoicemail)
-	elif type == "dnd":
+	elif feature_type == "dnd":
 		cursor.query("SELECT ${columns} FROM userfeatures "
 			     "WHERE number = %s "
 			     "AND context = %s "
@@ -108,7 +108,7 @@ def user_set_feature(handler, agi, cursor, args):
 		query += " enablednd = %s"
 		params.append(enablednd)
 		agi.set_variable('XIVO_DNDENABLED', enablednd)
-	elif type == "callrecord":
+	elif feature_type == "callrecord":
 		cursor.query("SELECT ${columns} FROM userfeatures "
 			     "WHERE number = %s "
 			     "AND context = %s "
@@ -129,7 +129,7 @@ def user_set_feature(handler, agi, cursor, args):
 		query += " callrecord = %s"
 		params.append(callrecord)
 		agi.set_variable('XIVO_CALLRECORDENABLED', callrecord)
-	elif type == "callfilter":
+	elif feature_type == "callfilter":
 		cursor.query("SELECT ${columns} FROM userfeatures "
 			     "WHERE number = %s "
 			     "AND context = %s "
@@ -150,7 +150,7 @@ def user_set_feature(handler, agi, cursor, args):
 		query += " callfilter = %s"
 		params.append(callfilter)
 		agi.set_variable('XIVO_CALLFILTERENABLED', callfilter)
-	elif type == "bsfilter":
+	elif feature_type == "bsfilter":
 		custom_query = True
 
 		try:
@@ -173,18 +173,18 @@ def user_set_feature(handler, agi, cursor, args):
 			# First, suppose the caller is a secretary and the number is
 			# one of its bosses number.
 			try:
-				filter = bsfilter.bsfilter(agi, cursor, number, context)
+				bsf = bsfilter.BSFilter(agi, cursor, number, context)
 				caller_type = "secretary"
 				secretary_number = srcnum
 
 			# If it fails, suppose the caller is the boss and the number is
 			# one of its secretaries number.
 			except LookupError:
-				filter = bsfilter.bsfilter(agi, cursor, srcnum, context)
+				bsf = bsfilter.BSFilter(agi, cursor, srcnum, context)
 				caller_type = "boss"
 				secretary_number = number
 
-			secretary = filter.get_secretary(secretary_number)
+			secretary = bsf.get_secretary(secretary_number)
 
 		# If all tries fail, give up.
 		except LookupError:
