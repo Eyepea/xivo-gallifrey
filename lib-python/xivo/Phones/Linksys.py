@@ -33,10 +33,10 @@ import subprocess
 
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendor
-from xivo.xivo_config import ProvGeneralConf as pgc
+from xivo.xivo_config import ProvGeneralConf as Pgc
 from xivo import except_tb
 
-LINKSYS_COMMON_DIR = os.path.join(pgc['tftproot'], "Linksys/")
+LINKSYS_COMMON_DIR = os.path.join(Pgc['tftproot'], "Linksys/")
 LINKSYS_COMMON_HTTP_USER = "admin"
 LINKSYS_COMMON_HTTP_PASS = "adminpass"
 
@@ -58,9 +58,9 @@ class Linksys(PhoneVendor):
                         # -o /dev/null          -- dump result
                         # --connect-timeout 30  -- timeout after 30s
                         # -retry 0              -- don't retry
-                        subprocess.call([pgc['curl_cmd'],
+                        subprocess.call([Pgc['curl_cmd'],
                                          "--retry", "0",
-                                         "--connect-timeout", str(pgc['curl_to_s']),
+                                         "--connect-timeout", str(Pgc['curl_to_s']),
                                          "-s",
                                          "-o", "/dev/null",
                                          "--digest",
@@ -88,7 +88,7 @@ class Linksys(PhoneVendor):
                 """
                 model = self.phone['model']
                 macaddr = self.phone['macaddr'].lower().replace(":", "")
-                template_file = open(os.path.join(pgc['templates_dir'], "linksys-" + model + ".cfg"))
+                template_file = open(os.path.join(Pgc['templates_dir'], "linksys-" + model + ".cfg"))
                 template_lines = template_file.readlines()
                 template_file.close()
                 tmp_filename = os.path.join(LINKSYS_COMMON_DIR, model + "-" + macaddr + ".cfg.tmp")
@@ -98,8 +98,8 @@ class Linksys(PhoneVendor):
                           'user_phone_ident':  provinfo['ident'],
                           'user_phone_number': provinfo['number'],
                           'user_phone_passwd': provinfo['passwd'],
-                          'asterisk_ipv4' : pgc['asterisk_ipv4'],
-                          'ntp_server_ipv4' : pgc['ntp_server_ipv4'],
+                          'asterisk_ipv4' : Pgc['asterisk_ipv4'],
+                          'ntp_server_ipv4' : Pgc['ntp_server_ipv4'],
                         },
                         cfg_filename)
                 tmp_file = open(tmp_filename, 'w')

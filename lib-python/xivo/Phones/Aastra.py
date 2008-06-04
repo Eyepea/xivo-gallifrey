@@ -33,10 +33,10 @@ import subprocess
 
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendor
-from xivo.xivo_config import ProvGeneralConf as pgc
+from xivo.xivo_config import ProvGeneralConf as Pgc
 from xivo import except_tb
 
-AASTRA_COMMON_DIR = os.path.join(pgc['tftproot'], 'Aastra/')
+AASTRA_COMMON_DIR = os.path.join(Pgc['tftproot'], 'Aastra/')
 AASTRA_COMMON_HTTP_USER = 'admin'
 AASTRA_COMMON_HTTP_PASS = '22222'
 
@@ -64,9 +64,9 @@ class Aastra(PhoneVendor):
                         # The first one replies: 401 Unauthorized (Authorization failed)
                         # The second one does not fail
                         for attempts in 1, 2:
-                                subprocess.call([pgc['curl_cmd'],
+                                subprocess.call([Pgc['curl_cmd'],
                                                  "--retry", "0",
-                                                 "--connect-timeout", str(pgc['curl_to_s']),
+                                                 "--connect-timeout", str(Pgc['curl_to_s']),
                                                  "-s",
                                                  "-o", "/dev/null",
                                                  "-u", "%s:%s" % (user, passwd),
@@ -78,20 +78,20 @@ class Aastra(PhoneVendor):
                         # first : upgrade
                         # this seems to be compulsory when taking the phones out of their box, since the tftpboot parameters
                         # can not handle the Aastra/ subdirectory with the out-of-the-box version
-                        subprocess.call([pgc['curl_cmd'],
+                        subprocess.call([Pgc['curl_cmd'],
                                          "--retry", "0",
-                                         "--connect-timeout", str(pgc['curl_to_s']),
+                                         "--connect-timeout", str(Pgc['curl_to_s']),
                                          "-s",
                                          "-o", "/dev/null",
                                          "-u", "%s:%s" % (user, passwd),
                                          "http://%s/upgrade.html" % self.phone['ipv4'],
-                                         "-d", "tftp=%s&file=Aastra/%s.st" % (pgc['asterisk_ipv4'], self.phone['model'])],
+                                         "-d", "tftp=%s&file=Aastra/%s.st" % (Pgc['asterisk_ipv4'], self.phone['model'])],
                                         close_fds = True)
                         
                         # then reset
-                        subprocess.call([pgc['curl_cmd'],
+                        subprocess.call([Pgc['curl_cmd'],
                                          "--retry", "0",
-                                         "--connect-timeout", str(pgc['curl_to_s']),
+                                         "--connect-timeout", str(Pgc['curl_to_s']),
                                          "-s",
                                          "-o", "/dev/null",
                                          "-u", "%s:%s" % (user, passwd),
@@ -119,7 +119,7 @@ class Aastra(PhoneVendor):
                 """
                 model = self.phone['model']
                 macaddr = self.phone['macaddr'].upper().replace(":", "")
-                template_file = open(os.path.join(pgc['templates_dir'], "aastra-" + model + ".cfg"))
+                template_file = open(os.path.join(Pgc['templates_dir'], "aastra-" + model + ".cfg"))
                 template_lines = template_file.readlines()
                 template_file.close()
                 tmp_filename = os.path.join(AASTRA_COMMON_DIR, macaddr + '.cfg.tmp')

@@ -63,7 +63,7 @@ from xivo.timeoutsocket import Timeout
 import httplib
 
 from xivo import xivo_config
-from xivo.xivo_config import ProvGeneralConf as pgc
+from xivo.xivo_config import ProvGeneralConf as Pgc
 
 from xivo import agi_helpers
 from xivo import agitb
@@ -130,8 +130,8 @@ def main():
 							macaddr, ipv4, code, isinalan)
 
 	try:
-		timeoutsocket.setDefaultSocketTimeout(pgc['http_request_to_s'])
-		conn = httplib.HTTPConnection(pgc['connect_ipv4'] + ':' + str(pgc['connect_port']))
+		timeoutsocket.setDefaultSocketTimeout(Pgc['http_request_to_s'])
+		conn = httplib.HTTPConnection(Pgc['connect_ipv4'] + ':' + str(Pgc['connect_port']))
 		conn.request("POST", "/prov", command, {"Content-Type": "text/plain; charset=ISO-8859-1"})
 		response = conn.getresponse()
 		response.read()	# eat every data sent by the provisioning server

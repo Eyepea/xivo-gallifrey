@@ -33,9 +33,9 @@ import os.path
 
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendor
-from xivo.xivo_config import ProvGeneralConf as pgc
+from xivo.xivo_config import ProvGeneralConf as Pgc
 
-POLYCOM_COMMON_DIR = os.path.join(pgc['tftproot'], "Polycom/")
+POLYCOM_COMMON_DIR = os.path.join(Pgc['tftproot'], "Polycom/")
 POLYCOM_COMMON_HTTP_USER = "Polycom"
 POLYCOM_COMMON_HTTP_PASS = "456"
 SIP_PORT = 5060
@@ -58,7 +58,7 @@ class Polycom(PhoneVendor):
                 # TODO: get ride of this AMI communication if possible
                 
                 amisock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                amisock.set_timeout(pgc['telnet_to_s'])
+                amisock.set_timeout(Pgc['telnet_to_s'])
                 amisock.connect(("127.0.0.1", AMI_PORT))
                 actioncommand = ( "Action: login\r\n"
                                   "Username: %s\r\n"
@@ -100,7 +100,7 @@ class Polycom(PhoneVendor):
         
         def __sendsipnotify(self):
                 phoneip = self.phone['ipv4']
-                myip = pgc['asterisk_ipv4']
+                myip = Pgc['asterisk_ipv4']
                 
                 self.peerinfo = None
                 try:
@@ -143,10 +143,10 @@ class Polycom(PhoneVendor):
                 self.__sendsipnotify()
         
         def __generate(self, provinfo):
-                template_main_file = open(os.path.join(pgc['templates_dir'], "polycom-%s.cfg" % self.phone['model']))
+                template_main_file = open(os.path.join(Pgc['templates_dir'], "polycom-%s.cfg" % self.phone['model']))
                 template_main_lines = template_main_file.readlines()
                 template_main_file.close()
-                template_phone_file = open(os.path.join(pgc['templates_dir'], "polycom-phone.cfg"))
+                template_phone_file = open(os.path.join(Pgc['templates_dir'], "polycom-phone.cfg"))
                 template_phone_lines = template_phone_file.readlines()
                 template_phone_file.close()
                 
@@ -164,7 +164,7 @@ class Polycom(PhoneVendor):
                           'user_phone_ident':  provinfo['ident'],
                           'user_phone_number': provinfo['number'],
                           'user_phone_passwd': provinfo['passwd'],
-                          'asterisk_ipv4' : pgc['asterisk_ipv4']
+                          'asterisk_ipv4' : Pgc['asterisk_ipv4']
                         },
                         cfg_phone_filename)
                 

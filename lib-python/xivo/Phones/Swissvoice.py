@@ -33,7 +33,7 @@ import subprocess
 
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendor
-from xivo.xivo_config import ProvGeneralConf as pgc
+from xivo.xivo_config import ProvGeneralConf as Pgc
 from xivo import except_tb
 
 # SWISSVOICE BUGBUG
@@ -46,9 +46,9 @@ from xivo import except_tb
 # Swissvoice User-Agent format :
 # User-Agent: Swissvoice IP10 SP v1.0.1 (Build 4) 3.0.5.1
 
-SWISSVOICE_SPEC_DIR = os.path.join(pgc['tftproot'], "Swissvoice/")
-SWISSVOICE_SPEC_INF_TEMPLATE = os.path.join(pgc['templates_dir'], "template_ip10.inf")
-SWISSVOICE_SPEC_CFG_TEMPLATE = os.path.join(pgc['templates_dir'], "template_ip10.cfg")
+SWISSVOICE_SPEC_DIR = os.path.join(Pgc['tftproot'], "Swissvoice/")
+SWISSVOICE_SPEC_INF_TEMPLATE = os.path.join(Pgc['templates_dir'], "template_ip10.inf")
+SWISSVOICE_SPEC_CFG_TEMPLATE = os.path.join(Pgc['templates_dir'], "template_ip10.cfg")
 SWISSVOICE_COMMON_HTTP_USER = "admin"
 SWISSVOICE_COMMON_HTTP_PASS = "admin"
 
@@ -72,9 +72,9 @@ class Swissvoice(PhoneVendor):
                         url_rep2 = "reboot_choice_B.html?WINDWEB_URL=/Administrator_Settings/reboot_choice_B.html"
                         url_rep3 = "&EraseFlash=0&Reboot=+Reboot"
                         
-                        subprocess.call([pgc['curl_cmd'],
+                        subprocess.call([Pgc['curl_cmd'],
                                          "--retry", "0",
-                                         "--connect-timeout", str(pgc['curl_to_s']),
+                                         "--connect-timeout", str(Pgc['curl_to_s']),
                                          "-s",
                                          "-o", "/dev/null",
                                          "-u", "%s:%s" % (user, passwd),
@@ -147,8 +147,8 @@ class Swissvoice(PhoneVendor):
                           'http_user': SWISSVOICE_COMMON_HTTP_USER,
                           'http_pass': SWISSVOICE_COMMON_HTTP_PASS,
                           'dtmfmode': dtmf_swissvoice,
-                          'asterisk_ipv4' : pgc['asterisk_ipv4'],
-                          'ntp_server_ipv4' : pgc['ntp_server_ipv4'],
+                          'asterisk_ipv4' : Pgc['asterisk_ipv4'],
+                          'ntp_server_ipv4' : Pgc['ntp_server_ipv4'],
                         },
                         cfg_filename)
                 tmp_file = open(cfg_tmp_filename, 'w')

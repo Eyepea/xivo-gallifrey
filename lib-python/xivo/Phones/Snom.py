@@ -33,7 +33,7 @@ import subprocess
 
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendor
-from xivo.xivo_config import ProvGeneralConf as pgc
+from xivo.xivo_config import ProvGeneralConf as Pgc
 from xivo import except_tb
 
 # SNOM BUGBUG #1
@@ -45,8 +45,8 @@ from xivo import except_tb
 # dhcp request (model not in the request.... :///), we'll need to also support
 # HTTP based xivo_config
 
-SNOM_SPEC_DIR = os.path.join(pgc['tftproot'], "Snom/")
-SNOM_SPEC_TEMPLATE = os.path.join(pgc['templates_dir'], "snom-template.htm")
+SNOM_SPEC_DIR = os.path.join(Pgc['tftproot'], "Snom/")
+SNOM_SPEC_TEMPLATE = os.path.join(Pgc['templates_dir'], "snom-template.htm")
 SNOM_COMMON_HTTP_USER = "guest"
 SNOM_COMMON_HTTP_PASS = "guest"
 
@@ -68,9 +68,9 @@ class Snom(PhoneVendor):
                         # -o /dev/null          -- dump result
                         # --connect-timeout 30  -- timeout after 30s
                         # -retry 0              -- don't retry
-                        subprocess.call([pgc['curl_cmd'],
+                        subprocess.call([Pgc['curl_cmd'],
                                          "--retry", "0",
-                                         "--connect-timeout", str(pgc['curl_to_s']),
+                                         "--connect-timeout", str(Pgc['curl_to_s']),
                                          "-s",
                                          "-o", "/dev/null",
                                          "-u", "%s:%s" % (user, passwd),

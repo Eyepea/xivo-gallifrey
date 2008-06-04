@@ -34,7 +34,7 @@ import telnetlib
 
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendor
-from xivo.xivo_config import ProvGeneralConf as pgc
+from xivo.xivo_config import ProvGeneralConf as Pgc
 
 # NOTES:
 # ~/etc/dhcpd3/dhcpd.conf -> /tftpboot/Thomson/ST2030S_v1.53.inf
@@ -43,14 +43,14 @@ from xivo.xivo_config import ProvGeneralConf as pgc
 #                               -> ...also firmware and other global
 #                                       config files like ringing tones...
 
-THOMSON_COMMON_DIR = os.path.join(pgc['tftproot'], "Thomson/")
+THOMSON_COMMON_DIR = os.path.join(Pgc['tftproot'], "Thomson/")
 THOMSON_COMMON_INF = os.path.join(THOMSON_COMMON_DIR, "ST") # + "2030S_common"
 
 THOMSON_USER = "admin"          # XXX
 THOMSON_PASSWD = "superpass"    # XXX
-THOMSON_SPEC_TXT_TEMPLATE = os.path.join(pgc['templates_dir'], "ST") # + "2030S_template.txt"
+THOMSON_SPEC_TXT_TEMPLATE = os.path.join(Pgc['templates_dir'], "ST") # + "2030S_template.txt"
 
-# for some tests: THOMSON_SPEC_TXT_BASENAME = pgc['templates_dir'] + "ST2030S_"
+# for some tests: THOMSON_SPEC_TXT_BASENAME = Pgc['templates_dir'] + "ST2030S_"
 THOMSON_SPEC_TXT_BASENAME = "/tftpboot/ST" # + "2030S_"
 
 class TelnetExpectationFailed(RuntimeError):
@@ -66,7 +66,7 @@ class TimeoutingTelnet(telnetlib.Telnet):
         during the newly introduced read_until_to().  An exception will
         be raised when that happens.
         """
-        def __init__(self, cnx, global_TO = pgc['telnet_to_s']):
+        def __init__(self, cnx, global_TO = Pgc['telnet_to_s']):
                 if type(cnx) != tuple or len(cnx) < 1:
                         raise ValueError, "The cnx argument must be (peer,) or (peer, port) ; %s was given" % str(cnx)
                 elif len(cnx) < 2:
