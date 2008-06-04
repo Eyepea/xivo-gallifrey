@@ -34,6 +34,7 @@ import re
 import string
 import time
 import urllib
+from xivo_ctiservers import cti_capas
 from xivo_ctiservers import cti_userlist
 from xivo_ctiservers import cti_agentlist
 from xivo_ctiservers import cti_queuelist
@@ -48,58 +49,6 @@ from xivo.BackSQL import backsqlite
 def log_debug(a, b):
         log_debug_file(a, b, 'xivocti')
 
-# capabilities
-CAPA_XLET_AGENTS = 1 << 0
-CAPA_XLET_AGENTDETAILS = 1 << 20
-CAPA_XLET_CALLS  = 1 << 1
-CAPA_XLET_CUSTINFO = 1 << 2
-CAPA_XLET_DIAL = 1 << 3
-CAPA_XLET_DIRECTORY = 1 << 4
-CAPA_XLET_FAX = 1 << 5
-CAPA_XLET_FEATURES = 1 << 6
-CAPA_XLET_HISTORY = 1 << 7
-CAPA_XLET_IDENTITY = 1 << 8
-CAPA_XLET_MESSAGES = 1 << 9
-CAPA_XLET_OPERATOR = 1 << 10
-CAPA_XLET_PARKING = 1 << 11
-CAPA_XLET_QUEUES = 1 << 12
-CAPA_XLET_QUEUEDETAILS = 1 << 21
-CAPA_XLET_SEARCH = 1 << 13
-CAPA_XLET_SWITCHBOARD = 1 << 14
-CAPA_XLET_VIDEO = 1 << 15
-CAPA_FUNC_AGENTS = 1 << 16
-CAPA_FUNC_DATABASE = 1 << 17
-CAPA_FUNC_PRESENCE = 1 << 18
-CAPA_FUNC_SWITCHBOARD = 1 << 19
-
-# this list shall be defined through more options in WEB Interface
-CAPA_ALMOST_ALL = 2**32 - 1
-
-map_capas = {
-        'xlet-agents'       : CAPA_XLET_AGENTS,
-        'xlet-agentdetails' : CAPA_XLET_AGENTDETAILS,
-        'xlet-calls'        : CAPA_XLET_CALLS,
-        'xlet-customerinfo' : CAPA_XLET_CUSTINFO,
-        'xlet-dial'         : CAPA_XLET_DIAL,
-        'xlet-directory'    : CAPA_XLET_DIRECTORY,
-        'xlet-fax'          : CAPA_XLET_FAX,
-        'xlet-features'     : CAPA_XLET_FEATURES,
-        'xlet-history'      : CAPA_XLET_HISTORY,
-        'xlet-identity'     : CAPA_XLET_IDENTITY,
-        'xlet-messages'     : CAPA_XLET_MESSAGES,
-        'xlet-operator'     : CAPA_XLET_OPERATOR,
-        'xlet-parking'      : CAPA_XLET_PARKING,
-        'xlet-queues'       : CAPA_XLET_QUEUES,
-        'xlet-queuedetails' : CAPA_XLET_QUEUEDETAILS,
-        'xlet-search'       : CAPA_XLET_SEARCH,
-        'xlet-switchboard'  : CAPA_XLET_SWITCHBOARD,
-        'xlet-video'        : CAPA_XLET_VIDEO,
-        'func-agents'       : CAPA_FUNC_AGENTS,
-        'func-database'     : CAPA_FUNC_DATABASE,
-        'func-presence'     : CAPA_FUNC_PRESENCE,
-        'func-switchboard'  : CAPA_FUNC_SWITCHBOARD,
-        }
-
 SHEET_EVENT_INCOMING    = 1 << 0
 SHEET_EVENT_OUTGOING    = 1 << 1
 SHEET_EVENT_AGENTLINK   = 1 << 2
@@ -113,7 +62,7 @@ SHEET_ACTION_BOT     = 1 << 2
 SHEET_ACTION_URL     = 1 << 3
 
 XIVOVERSION = '0.4'
-REQUIRED_CLIENT_VERSION = 2025
+REQUIRED_CLIENT_VERSION = 3150
 __revision__ = __version__.split()[1]
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 allowed_states = ['available', 'away', 'outtolunch', 'donotdisturb', 'berightback']
@@ -124,12 +73,7 @@ HISTSEPAR = ';'
 class XivoCTICommand(BaseCommand):
 
         xdname = 'XIVO Daemon'
-        conngui_sb = 0
-        conngui_xc = 0
-        maxgui_sb  = 10
-        maxgui_xc  = 2
         xivoclient_session_timeout = 60 # XXX
-        capalist_server = 0
 
         fullstat_heavies = {}
         queues_list = {}
@@ -139,7 +83,7 @@ class XivoCTICommand(BaseCommand):
         def __init__(self, amis, ctiports, queued_threads_pipe):
 		BaseCommand.__init__(self)
                 self.amis  = amis
-
+                self.capas = {}
                 self.ulist_ng = cti_userlist.UserList()
                 self.ulist_ng.setcommandclass(self)
                 self.qlist_ng = cti_queuelist.QueueList()
@@ -186,7 +130,7 @@ class XivoCTICommand(BaseCommand):
 
 
         # fields set at startup by reading informations
-        userfields = ['astid', 'user', 'phonenum', 'passwd', 'init', 'fullname', 'company', 'capas', 'context']
+        userfields = ['astid', 'user', 'phonenum', 'passwd', 'init', 'fullname', 'company', 'capaid', 'context']
 
         # fields set at login time by a user, some are a id-dimension, others are auth-related
         # TBD : fields set once logged in ...
@@ -195,7 +139,7 @@ class XivoCTICommand(BaseCommand):
                         'state', 'passwd', 'ident', 'xivoversion', 'version'] # authentication & information
 
         def manage_login(self, loginparams):
-                print loginparams
+                print 'loginparams', loginparams
                 missings = []
                 for argum in self.required_login_params():
                         if argum not in loginparams:
@@ -206,12 +150,13 @@ class XivoCTICommand(BaseCommand):
 
                 # trivial checks (version, client kind) dealing with the software used
                 xivoversion = loginparams.get('xivoversion')
+                if xivoversion != XIVOVERSION:
+                        return 'xivoversion_client:%s;%d' % (xivoversion, XIVOVERSION)
                 svnversion = loginparams.get('version')
                 ident = loginparams.get('ident')
                 if len(ident.split("@")) == 2:
                         [whoami, whatsmyos] = ident.split("@")
-                        if whoami not in ['XC', 'SB']:
-                                return 'wrong_client_identifier:%s' % whoami
+                        # return 'wrong_client_identifier:%s' % whoami
                         if whatsmyos[:3] not in ['X11', 'WIN', 'MAC']:
                                 return 'wrong_os_identifier:%s' % whatsmyos
                 else:
@@ -223,7 +168,7 @@ class XivoCTICommand(BaseCommand):
                 # user match and authentication
                 username = '%s@%s' % (loginparams.get('userid'), loginparams.get('company'))
                 userinfo = self.ulist_ng.finduser(username)
-                print userinfo
+                print 'userinfo', userinfo
                 if userinfo == None:
                         return 'user_not_found'
                 password = loginparams.get('passwd') 
@@ -275,12 +220,10 @@ class XivoCTICommand(BaseCommand):
                                 else:
                                         return 'already_connected'
 
-                if whoami == 'XC':
-                        if self.conngui_xc >= self.maxgui_xc:
-                                return 'xcusers:%d' % self.maxgui_xc
-                elif whoami == 'SB':
-                        if self.conngui_sb >= self.maxgui_sb:
-                                return 'sbusers:%d' % self.maxgui_sb
+                capaid = userinfo.get('capaid')
+                if self.capas[capaid].toomuchusers():
+                        return 'toomuchusers:%s' % self.capas[capaid].maxgui()
+
                 return None
 
 
@@ -315,10 +258,8 @@ class XivoCTICommand(BaseCommand):
                                           % (userinfo.get('user'), state))
                                 userinfo['state'] = 'undefinedstate-connect'
 
-                        if whoami == 'XC':
-                                self.conngui_xc += 1
-                        elif whoami == 'SB':
-                                self.conngui_sb += 1
+                        capaid = userinfo('capaid')
+                        self.capas[capaid].conn_inc()
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, "--- exception --- connect_user %s : %s" %(str(userinfo), str(exc)))
 
@@ -326,11 +267,8 @@ class XivoCTICommand(BaseCommand):
         def __disconnect_user__(self, userinfo):
                 try:
                         # state is unchanged
-                        whoami = userinfo.get('login').get('cticlienttype')
-                        if whoami == 'XC':
-                                self.conngui_xc -= 1
-                        elif whoami == 'SB':
-                                self.conngui_sb -= 1
+                        capaid = userinfo.get('capaid')
+                        self.capas[capaid].conn_dec()
                         del userinfo['login']
                         userinfo['state'] = 'unknown'
                         self.__update_availstate__(userinfo, userinfo.get('state'))
@@ -340,27 +278,28 @@ class XivoCTICommand(BaseCommand):
 
 
         def loginko(self, loginparams, errorstring, connid):
-                connid.send('loginko=%s\n' % errorstring)
+                connid.sendall('loginko=%s\n' % errorstring)
                 return
 
 
         def loginok(self, loginparams, userinfo):
-                capa_user = []
-                for capa in self.capabilities_list:
-                        if capa in map_capas and (map_capas[capa] & userinfo.get('capas')):
-                                capa_user.append(capa)
+                capaid = userinfo.get('capaid')
                 repstr = "loginok=" \
-                         "context:%s;phonenum:%s;capas:%s;" \
+                         "context:%s;phonenum:%s;" \
+                         "capas:%s;capadisp:%s;capaappli:%s;" \
                          "xivoversion:%s;version:%s;state:%s" \
                          %(userinfo.get('context'),
                            userinfo.get('phonenum'),
-                           ",".join(capa_user),
+                           self.capas[capaid].tostring(self.capas[capaid].all()),
+                           self.capas[capaid].capadisp,
+                           self.capas[capaid].appliname,
                            XIVOVERSION,
                            __revision__,
                            userinfo.get('state'))
 ##                if 'features' in capa_user:
 ##                        repstr += ';capas_features:%s' %(','.join(configs[astid].capafeatures))
-                userinfo['login']['connection'].send(repstr + '\n')
+                print repstr
+                userinfo['login']['connection'].sendall(repstr + '\n')
                 self.__update_availstate__(userinfo, userinfo.get('state'))
                 return
 
@@ -382,23 +321,21 @@ class XivoCTICommand(BaseCommand):
                         for queue in results:
                                 if queue[0] not in self.queues_list[astid]:
                                         self.queues_list[astid][queue[0]] = {'agents' : {}, 'channels' : [], 'ncalls' : 0}
-                self.capabilities_list = []
-                if 'capabilities-xlets' in self.xivoconf:
-                        for capa in self.xivoconf['capabilities-xlets'].split(','):
-                                tcapa = 'xlet-%s' % capa
-                                self.capabilities_list.append(tcapa)
-                                if tcapa in map_capas:
-                                        self.capalist_server |= map_capas[tcapa]
-                if 'capabilities-funcs' in self.xivoconf:
-                        for capa in self.xivoconf['capabilities-funcs'].split(','):
-                                tcapa = 'func-%s' % capa
-                                self.capabilities_list.append(tcapa)
-                                if tcapa in map_capas:
-                                        self.capalist_server |= map_capas[tcapa]
-                if 'maxgui_sb' in self.xivoconf:
-                        self.maxgui_sb = self.xivoconf['maxgui_sb']
-                if 'maxgui_xc' in self.xivoconf:
-                        self.maxgui_xc = self.xivoconf['maxgui_xc']
+                for var, val in self.xivoconf.iteritems():
+                        if var.find('-') > 0:
+                                [name, prop] = var.split('-', 1)
+                                if name not in self.capas:
+                                        self.capas[name] = cti_capas.Capabilities()
+                                if prop == 'display':
+                                        self.capas[name].setdisplay(val)
+                                elif prop == 'xlets':
+                                        self.capas[name].setxlets(val)
+                                elif prop == 'funcs':
+                                        self.capas[name].setfuncs(val)
+                                elif prop == 'maxgui':
+                                        self.capas[name].setmaxgui(val)
+                                elif prop == 'appliname':
+                                        self.capas[name].setappliname(val)
                 return
 
         def set_configs(self, configs):
@@ -433,17 +370,18 @@ class XivoCTICommand(BaseCommand):
         def getuserslist(self, dlist):
                 lulist = {}
                 for c, d in dlist.iteritems():
-                        lulist[c] = {'user'     : d[0].split('@')[0],
-                                     'company'  : d[0].split('@')[1],
-                                     'passwd'   : d[1],
-                                     'capas'    : CAPA_ALMOST_ALL, # d[2]
-                                     'fullname' : d[3] + ' ' + d[4],
-                                     'astid'    : d[5],
-                                     'phonenum' : d[6],
-                                     'init'     : True,
-                                     'agentnum' : d[9],
-                                     'techlist' : d[7],
-                                     'context'  : d[8]}
+                        if len(d) > 9:
+                                lulist[c] = {'user'     : d[0].split('@')[0],
+                                             'company'  : d[0].split('@')[1],
+                                             'passwd'   : d[1],
+                                             'capaid'   : d[2],
+                                             'fullname' : d[3] + ' ' + d[4],
+                                             'astid'    : d[5],
+                                             'phonenum' : d[6],
+                                             'init'     : True,
+                                             'agentnum' : d[9],
+                                             'techlist' : d[7],
+                                             'context'  : d[8]}
                 return lulist
 
         def users(self):
@@ -467,7 +405,7 @@ class XivoCTICommand(BaseCommand):
                 try:
                         if 'login' in userinfo and 'connection' in userinfo.get('login'):
                                 mysock = userinfo.get('login')['connection']
-                                mysock.send(strupdate + '\n')
+                                mysock.sendall(strupdate + '\n')
                 except Exception, exc:
                         log_debug(SYSLOG_WARNING, '--- exception --- (__send_msg_to_cti_client__) : %s (%s)' % (str(exc), str(userinfo)))
                 return
@@ -565,7 +503,7 @@ class XivoCTICommand(BaseCommand):
 ##                        try:
 ##                                nsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 ##                                nsock.connect(('127.0.0.1', 5151))
-##                                nsock.send('%s\n' % ts)
+##                                nsock.sendall('%s\n' % ts)
 ##                                nsock.close()
 ##                        except Exception, exc:
 ##                                print '--- exception --- in nsock :', exc
@@ -749,7 +687,7 @@ class XivoCTICommand(BaseCommand):
                         self.agents_list[astid][agent]['status'] = 'AGENT_IDLE'
                         self.agents_list[astid][agent]['phonenum'] = event.get('Loginchan')
                 msg = self.__build_agupdate__(['agentlogin', astid, agent, loginchan])
-                # print 'ami_agentcallbacklogin', msg
+                print 'ami_agentcallbacklogin', msg
                 self.__send_msg_to_cti_clients__(msg)
                 return
 
@@ -762,7 +700,7 @@ class XivoCTICommand(BaseCommand):
                         self.agents_list[astid][agent]['status'] = 'AGENT_LOGGEDOFF'
                         self.agents_list[astid][agent]['phonenum'] = loginchan
                 msg = self.__build_agupdate__(['agentlogout', astid, agent, loginchan])
-                # print 'ami_agentcallbacklogoff', msg
+                print 'ami_agentcallbacklogoff', msg
                 self.__send_msg_to_cti_clients__(msg)
                 return
 
@@ -899,6 +837,10 @@ class XivoCTICommand(BaseCommand):
                         for qname, qarg in self.queues_list[astid].iteritems():
                                 print ' (q) ', qname, qarg
                                 self.amis[astid].sendcommand('Command', [('Command', 'show queue %s' % qname)])
+                                try:
+                                        self.amis[astid].readresponse('')
+                                except:
+                                        pass
                 return
 
         def ami_userevent(self, astid, event):
@@ -974,12 +916,6 @@ class XivoCTICommand(BaseCommand):
                         return 'USER %s STATE available CIDNAME %s' % (called, 'tobedefined')
 
 
-        def directory_srv2clt(self, context, results):
-                header = 'directory-response=%d;%s' %(len(context.search_valid_fields), ';'.join(context.search_titles))
-                if len(results) == 0:
-                        return header
-                else:
-                        return header + ';' + ';'.join(results)
         def message_srv2clt(self, sender, message):
                 return 'message=%s::%s' %(sender, message)
         def dmessage_srv2clt(self, message):
@@ -1004,64 +940,67 @@ class XivoCTICommand(BaseCommand):
                 astid    = userinfo.get('astid')
                 username = userinfo.get('user')
                 context  = userinfo.get('context')
-                ucapa    = userinfo.get('capas')
+                capaid   = userinfo.get('capaid')
+                ucapa    = self.capas[capaid].all() # userinfo.get('capas')
 
                 try:
-                        capalist = (ucapa & self.capalist_server)
                         if icommand.name == 'history':
-                                if (capalist & CAPA_XLET_HISTORY):
+                                if self.capas[capaid].match_funcs(ucapa, 'history'):
                                         print icommand.args
                                         repstr = self.__build_history_string__(icommand.args[0],
                                                                                icommand.args[1],
                                                                                icommand.args[2])
                         elif icommand.name == 'directory-search':
-                                if (capalist & CAPA_XLET_DIRECTORY):
+                                if self.capas[capaid].match_funcs(ucapa, 'directory'):
                                         repstr = self.__build_customers__(context, icommand.args)
 
                         elif icommand.name == 'availstate':
-                                if (capalist & CAPA_FUNC_PRESENCE):
+                                if self.capas[capaid].match_funcs(ucapa, 'presence'):
                                         repstr = self.__update_availstate__(userinfo, icommand.args[0])
                         elif icommand.name == 'database':
-                                if (capalist & CAPA_FUNC_DATABASE):
+                                if self.capas[capaid].match_funcs(ucapa, 'database'):
                                         repstr = database_update(me, icommand.args)
                         elif icommand.name == 'featuresget':
-                                if (capalist & CAPA_XLET_FEATURES):
+                                if self.capas[capaid].match_funcs(ucapa, 'features'):
 ##                                        if username in userlist[astid]:
 ##                                                userlist[astid][username]['monit'] = icommand.args
                                         repstr = self.__build_features_get__(icommand.args)
                         elif icommand.name == 'featuresput':
-                                if (capalist & CAPA_XLET_FEATURES):
+                                if self.capas[capaid].match_funcs(ucapa, 'features'):
                                         repstr = self.__build_features_put__(icommand.args)
                         elif icommand.name == 'faxsend':
-                                if (capalist & CAPA_XLET_FAX):
+                                if self.capas[capaid].match_funcs(ucapa, 'fax'):
                                         if astid in faxbuffer:
                                                 faxbuffer[astid].append([me, myconn])
                                         repstr = "faxsend=%d" % port_fax
                         elif icommand.name == 'message':
-                                if (capalist & CAPA_XLET_MESSAGES):
+                                if self.capas[capaid].match_funcs(ucapa, 'messages'):
                                         self.__send_msg_to_cti_clients__(self.message_srv2clt('%s/%s' %(astid, username),
                                                                                              '<%s>' % icommand.args[0]))
                         elif icommand.name in ['originate', 'transfer', 'atxfer']:
-                                if (capalist & CAPA_XLET_DIAL):
+                                if self.capas[capaid].match_funcs(ucapa, 'dial'):
                                         repstr = self.__originate_or_transfer__(userinfo,
                                                                                 # "%s/%s" %(astid, username),
                                                                                 [icommand.name, icommand.args[0], icommand.args[1]])
                         elif icommand.name == 'hangup':
-                                if (capalist & CAPA_XLET_DIAL):
+                                if self.capas[capaid].match_funcs(ucapa, 'dial'):
                                         repstr = self.__hangup__("%s/%s" %(astid, username),
                                                                  icommand.args[0], True)
                         elif icommand.name == 'simplehangup':
-                                if (capalist & CAPA_XLET_DIAL):
+                                if self.capas[capaid].match_funcs(ucapa, 'dial'):
                                         repstr = self.__hangup__("%s/%s" %(astid, username),
                                                                  icommand.args[0], False)
                         elif icommand.name == 'pickup':
-                                print icommand.name, icommand.args
-                                if (capalist & CAPA_XLET_DIAL):
+                                if self.capas[capaid].match_funcs(ucapa, 'dial'):
                                         z = icommand.args[0].split('/')
                                         self.amis[z[1]].sendcommand('Command', [('Command', 'sip notify event-talk %s' % z[3])])
+                                        try:
+                                                self.amis[z[1]].readresponse('')
+                                        except:
+                                                pass
 
                         elif icommand.name in ['phones-list', 'phones-add', 'phones-del']:
-                                if (capalist & (CAPA_XLET_CALLS | CAPA_XLET_SWITCHBOARD | CAPA_XLET_SEARCH | CAPA_XLET_HISTORY)):
+                                if self.capas[capaid].match_funcs(ucapa, 'calls,switchboard,search,history'):
                                         # repstr = self.__build_callerids_hints__(icommand)
                                         if icommand.name == 'phones-list':
                                                 repstr = self.__phlist__()
@@ -1091,7 +1030,7 @@ class XivoCTICommand(BaseCommand):
                                 repstr = None
 
                         elif icommand.name == 'queues-list':
-                                if (capalist & CAPA_FUNC_AGENTS):
+                                if self.capas[capaid].match_funcs(ucapa, 'agents'):
                                         allowed = 1
                                         if 'agentnum' in userinfo:
                                                 agnum = userinfo['agentnum']
@@ -1109,7 +1048,7 @@ class XivoCTICommand(BaseCommand):
                                 repstr = None
 
                         elif icommand.name == 'agents-list':
-                                if (capalist & CAPA_FUNC_AGENTS):
+                                if self.capas[capaid].match_funcs(ucapa, 'agents'):
                                         for astid, aglist in self.agents_list.iteritems():
                                                 lst = []
                                                 for agname, agprop in aglist.iteritems():
@@ -1135,7 +1074,7 @@ class XivoCTICommand(BaseCommand):
                                 repstr = None
 
                         elif icommand.name == 'queue-status':
-                                if (capalist & CAPA_FUNC_AGENTS):
+                                if self.capas[capaid].match_funcs(ucapa, 'agents'):
                                         astid = icommand.args[0]
                                         qname = icommand.args[1]
                                         lst = []
@@ -1147,21 +1086,22 @@ class XivoCTICommand(BaseCommand):
 
                                 repstr = None
 
+
                         elif icommand.name == 'agents-status':
                                 # issued by one user when he logs in
-                                if (capalist & CAPA_FUNC_AGENTS) and len(userinfo.get('agentnum')) > 0:
-                                        astid = icommand.args[0]
+                                if self.capas[capaid].match_funcs(ucapa, 'agents') and len(userinfo.get('agentnum')) > 0:
+                                    for astid in self.queues_list:
                                         agname = userinfo.get('agentnum')
                                         agid = 'Agent/%s' % agname
                                         qref_joined = []
                                         qref_unjoined = []
 
-                                        if astid in self.queues_list:
-                                                for qref, ql in self.queues_list[astid].iteritems():
-                                                        if agid in ql['agents']:
-                                                                qref_joined.append(qref)
-                                                        else:
-                                                                qref_unjoined.append(qref)
+                                        for qref, ql in self.queues_list[astid].iteritems():
+                                                if agid in ql['agents']:
+                                                        qref_joined.append(qref)
+                                                else:
+                                                        qref_unjoined.append(qref)
+
                                         for qref in qref_unjoined:
                                                 msg = self.__build_agupdate__(['leavequeue', astid, agname, qref])
                                                 self.__send_msg_to_cti_client__(userinfo, msg)
@@ -1179,9 +1119,10 @@ class XivoCTICommand(BaseCommand):
                                                 self.__send_msg_to_cti_client__(userinfo, msg)
                                 repstr = None
 
+
                         elif icommand.name == 'agent-status':
                                 # issued by one user when he requests the status for one given agent
-                                if (capalist & CAPA_FUNC_AGENTS):
+                                if self.capas[capaid].match_funcs(ucapa, 'agents'):
                                         astid = icommand.args[0]
                                         agname = icommand.args[1]
                                         agid = 'Agent/%s' % agname
@@ -1212,7 +1153,7 @@ class XivoCTICommand(BaseCommand):
                                 repstr = None
 
                         elif icommand.name == 'agent':
-                                if (capalist & CAPA_FUNC_AGENTS):
+                                if self.capas[capaid].match_funcs(ucapa, 'agents'):
                                         repstr = self.__agent__(userinfo, icommand.args)
 
                 except Exception, exc:
@@ -1221,7 +1162,7 @@ class XivoCTICommand(BaseCommand):
 
                 if repstr is not None: # might be useful to reply sth different if there is a capa problem for instance, a bad syntaxed command
                         try:
-                                myconn.send(repstr + '\n')
+                                myconn.sendall(repstr + '\n')
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- (myconn) attempt to send <%s ...> (%d chars) failed : %s'
                                           % (repstr[:40], len(repstr), str(exc)))
@@ -1601,12 +1542,13 @@ class XivoCTICommand(BaseCommand):
 
                         ret = False
                         try:
-                                ret = self.amis[astid_src].originate(proto_src,
-                                                                     phonenum_src,
-                                                                     cidname_src,
-                                                                     exten_dst,
-                                                                     cidname_dst,
-                                                                     context_dst)
+                                if len(exten_dst) > 0:
+                                        ret = self.amis[astid_src].originate(proto_src,
+                                                                             phonenum_src,
+                                                                             cidname_src,
+                                                                             exten_dst,
+                                                                             cidname_dst,
+                                                                             context_dst)
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- unable to originate ...')
                         if ret:
@@ -1806,17 +1748,27 @@ class XivoCTICommand(BaseCommand):
         # \return a string containing the full customers list
         # \sa manage_tcp_connection
         def __build_customers__(self, ctx, searchpatterns):
-                searchpattern = ' '.join(searchpatterns)
+                fulllist = []
+                header = ''
                 if ctx in self.ctxlist.ctxlist:
-                        z = self.ctxlist.ctxlist[ctx]
+                        for dirsec, dirdef in self.ctxlist.ctxlist[ctx].iteritems():
+                                y = self.__build_customers_bydirdef__(dirsec, searchpatterns, dirdef)
+                                header = 'directory-response=%d;%s' %(len(dirdef.search_valid_fields), ';'.join(dirdef.search_titles))
+                                fulllist.extend(y)
                 else:
                         log_debug(SYSLOG_WARNING, 'there has been no section defined for context %s : can not proceed directory search' % ctx)
-                        z = Context()
+                if len(fulllist) == 0:
+                        return header
+                else:
+                        return header + ';' + ';'.join(fulllist)
 
+
+        def __build_customers_bydirdef__(self, dirname, searchpatterns, z):
+                searchpattern = ' '.join(searchpatterns)
                 fullstatlist = []
 
                 if searchpattern == "":
-                        return self.directory_srv2clt(z, [])
+                        return []
 
                 dbkind = z.uri.split(":")[0]
                 if dbkind == 'ldap':
@@ -1842,22 +1794,32 @@ class XivoCTICommand(BaseCommand):
 
                 elif dbkind == 'file':
                         f = urllib.urlopen(z.uri)
+                        delimit = ':'
+                        header = f.next()
+                        headerfields = header.strip().split(delimit)
                         for line in f:
                                 ll = line.strip()
                                 if ll.lower().find(searchpattern.lower()) >= 0:
-                                        t = ll.split(':')
-                                        fullstatlist.append(';'.join([t[1].replace('.','').replace('\t',''),
-                                                                      t[0].decode('latin1').encode('utf8'),
-                                                                      t[4]]))
+                                        t = ll.split(delimit)
+                                        futureline = []
+                                        for mf in z.search_matching_fields:
+                                                idx = headerfields.index(mf)
+                                                futureline.append(t[idx])
+                                        fullstatlist.append(';'.join(futureline))
 
                 elif dbkind == 'http':
                         f = urllib.urlopen('%s%s' % (z.uri, searchpattern))
+                        delimit = ':'
+                        header = f.next()
+                        headerfields = header.strip().split(delimit)
                         for line in f:
                                 ll = line.strip()
-                                t = ll.split(':')
-                                fullstatlist.append(';'.join([t[1].replace('.','').replace('\t',''),
-                                                              t[0].decode('latin1').encode('utf8'),
-                                                              t[4]]))
+                                t = ll.split(delimit)
+                                futureline = []
+                                for mf in z.search_matching_fields:
+                                        idx = headerfields.index(mf)
+                                        futureline.append(t[idx])
+                                fullstatlist.append(';'.join(futureline))
 
                 elif dbkind != '':
                         if searchpattern == '*':
@@ -1886,21 +1848,20 @@ class XivoCTICommand(BaseCommand):
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- sqlrequest : %s' % str(exc))
                 else:
-                        log_debug(SYSLOG_WARNING, "no database method defined - please fill the dir_db_uri field of the <%s> context" % ctx)
+                        log_debug(SYSLOG_WARNING, "no database method defined - please fill the dir_db_uri field of the <%s> context" % dirname)
 
                 uniq = {}
                 fullstatlist.sort()
                 fullstat_body = []
                 for fsl in [uniq.setdefault(e,e) for e in fullstatlist if e not in uniq]:
                         fullstat_body.append(fsl)
-                return self.directory_srv2clt(z, fullstat_body)
+                return fullstat_body
 
 
         def handle_fagi(self, fastagi):
                 """
                 Previously known as 'xivo_push'
                 """
-                print 'Fast AGI'
                 # check capas !
                 proto   = fastagi.get_variable('XIVO_INTERFACE').split('/')[0].lower()
                 exten   = fastagi.get_variable('REAL_DSTNUM')
@@ -1951,10 +1912,10 @@ xivo_commandsets.CommandClasses['xivocti'] = XivoCTICommand
 
 
 def channel_splitter(channel):
-        sp = channel.split("-")
+        sp = channel.split('-')
         if len(sp) > 1:
                 sp.pop()
-        return "-".join(sp)
+        return '-'.join(sp)
 
 
 def split_from_ui(fullname):

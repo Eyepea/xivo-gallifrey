@@ -161,7 +161,7 @@ def manage_cti_connections(connid, msg, sep):
                                 log_debug(SYSLOG_ERR, '--- exception --- CTI connection when managing [%s] for %s : %s'
                                           %(command.name, requester, str(exc)))
                 else:
-                        connid.send('Unknown Command <%s>\n' % command.name)
+                        connid.sendall('Unknown Command <%s>\n' % command.name)
 
 
 ## \brief Deals with requests from the UI clients.
@@ -184,14 +184,14 @@ def manage_webi_connections(connid, msg, sep):
                 if requester_ip in ip_reverse_webi:
                         try:
                                 astid = ip_reverse_webi[requester_ip]
-                                connid.send('%s:ID <%s>\n' %(XIVO_CLI_WEBI_HEADER, astid))
+                                connid.sendall('%s:ID <%s>\n' %(XIVO_CLI_WEBI_HEADER, astid))
                                 if usefulmsg == 'xivo[userlist,update]':
                                         update_userlist[astid] = True
-                                        connid.send('%s:OK\n' %(XIVO_CLI_WEBI_HEADER))
+                                        connid.sendall('%s:OK\n' %(XIVO_CLI_WEBI_HEADER))
                                         log_debug(SYSLOG_INFO, '%s : userlist update request received' % astid)
                                 elif usefulmsg == 'xivo[daemon,reload]':
                                         askedtoquit = True
-                                        connid.send('%s:OK\n' %(XIVO_CLI_WEBI_HEADER))
+                                        connid.sendall('%s:OK\n' %(XIVO_CLI_WEBI_HEADER))
                                         log_debug(SYSLOG_INFO, '%s : daemon reload request received' % astid)
                                 elif astid in AMI_array_user_commands and AMI_array_user_commands[astid]:
                                         stripped_usefulmsg = usefulmsg.strip()
@@ -210,17 +210,17 @@ def manage_webi_connections(connid, msg, sep):
                                                           %(astid, str(stripped_usefulmsg), requester, str(exc)))
                                         try:
                                                 for x in s:
-                                                        connid.send(x)
-                                                connid.send('%s:OK\n' %(XIVO_CLI_WEBI_HEADER))
+                                                        connid.sendall(x)
+                                                connid.sendall('%s:OK\n' %(XIVO_CLI_WEBI_HEADER))
                                         except Exception, exc:
                                                 log_debug(SYSLOG_ERR, '--- exception --- (%s) WEBI command reply <%s> : (client %s) : %s'
                                                           %(astid, str(stripped_usefulmsg), requester, str(exc)))
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- (%s) WEBI <%s> : (client %s) : %s'
                                           %(astid, str(usefulmsg.strip()), requester, str(exc)))
-                                connid.send('%s:KO <Exception : %s>\n' %(XIVO_CLI_WEBI_HEADER, str(exc)))
+                                connid.sendall('%s:KO <Exception : %s>\n' %(XIVO_CLI_WEBI_HEADER, str(exc)))
                 else:
-                        connid.send('%s:KO <NOT ALLOWED>\n' %(XIVO_CLI_WEBI_HEADER))
+                        connid.sendall('%s:KO <NOT ALLOWED>\n' %(XIVO_CLI_WEBI_HEADER))
 
 
 ## \brief Deals with requests from the UI clients.
@@ -246,30 +246,30 @@ def manage_info_connections(connid, msg, sep):
                                         %(XIVOVERSION,
                                           __revision__,
                                           time_uptime)
-                                connid.send(reply + "\n")
-                                # connid.send("server capabilities = %s\n" %(",".join()))
+                                connid.sendall(reply + "\n")
+                                # connid.sendall("server capabilities = %s\n" %(",".join()))
                         elif usefulmsg == 'show_users':
                                 for user, info in commandclass.users().iteritems():
-                                        connid.send('%s %s\n' %(user.encode('latin1'), info))
+                                        connid.sendall('%s %s\n' %(user.encode('latin1'), info))
                         elif usefulmsg == 'show_logged_ip':
                                 for user, info in commandclass.connected_users().iteritems():
                                         if 'connection' in info['login']:
-                                                connid.send('user %s : ip/port = %s/%s\n' %(user.encode('latin1'),
+                                                connid.sendall('user %s : ip/port = %s/%s\n' %(user.encode('latin1'),
                                                                                             info['login']['connection'].getpeername()[0],
                                                                                             info['login']['connection'].getpeername()[1]))
                         elif usefulmsg == 'show_logged':
                                 for user, info in commandclass.connected_users().iteritems():
-                                        connid.send('%s %s\n' %(user.encode('latin1'), info))
+                                        connid.sendall('%s %s\n' %(user.encode('latin1'), info))
                         elif usefulmsg == 'show_ami':
                                 for amis in AMI_array_events_fd:
-                                        connid.send("events   : %s : %s\n" %(amis, str(AMI_array_events_fd[amis])))
+                                        connid.sendall("events   : %s : %s\n" %(amis, str(AMI_array_events_fd[amis])))
                                 for amis in AMI_array_user_commands:
-                                        connid.send("commands : %s : %s\n" %(amis, str(AMI_array_user_commands[amis])))
+                                        connid.sendall("commands : %s : %s\n" %(amis, str(AMI_array_user_commands[amis])))
                         elif usefulmsg.startswith('%s:' % commandset):
                                 commandclass.cliaction(connid, usefulmsg)
                         else:
                                 pass
-                        connid.send("XIVO-INFO:OK\n")
+                        connid.sendall("XIVO-INFO:OK\n")
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, '--- exception --- INFO connection [%s] : KO when sending to %s : %s'
                                   %(usefulmsg, requester, str(exc)))
@@ -287,7 +287,7 @@ def manage_tcp_connections(sel_i, msg, kind):
         elif kind == 'AGI':
                 agireply = commandclass.handle_agi(asterisklist[0], msg)
                 if agireply is not None:
-                        sel_i.send(agireply)
+                        sel_i.sendall(agireply)
         else:
                 log_debug(SYSLOG_WARNING, 'unknown connection kind %s' % kind)
 
@@ -530,7 +530,7 @@ signal.signal(signal.SIGHUP, sighandler_reload)
 
 nreload = 0
 plist = {}
-ctxlist = xivo_contexts.Contexts()
+directorylist = xivo_contexts.Contexts()
 configs = {}
 xdname = None
 
@@ -592,9 +592,20 @@ while True: # loops over the reloads
 
         commandclass.set_userlist_urls(userlists)
         commandclass.set_phonelist(plist)
-        commandclass.set_contextlist(ctxlist)
+        commandclass.set_contextlist(directorylist)
         commandclass.set_configs(configs)
         commandclass.set_options(xivoconf_commandset)
+
+        for ctx in contextlist:
+                xivoconf_context = cconf.read_section(ctx)
+                if len(xivoconf_context) > 0:
+                        if 'contextname' in xivoconf_context:
+                                contextname = xivoconf_context['contextname']
+                        if 'directories' in xivoconf_context:
+                                directories = xivoconf_context['directories'].split(',')
+                                for dr in directories:
+                                        xivoconf_dir = cconf.read_section(dr)
+                                        directorylist.update(contextname, dr, xivoconf_dir)
 
         save_for_next_packet_events = {}
         ip_reverse_webi = {}
@@ -605,7 +616,7 @@ while True: # loops over the reloads
                 xivoconf_asterisk = cconf.read_section(astid)
                 if len(xivoconf_asterisk) > 0:
                         localaddr = '127.0.0.1'
-                        userlist_url = 'sso.php'
+                        phonelisturl = 'sso.php'
                         ipaddress = '127.0.0.1'
                         ipaddress_webi = '127.0.0.1'
                         ami_port = 5038
@@ -619,8 +630,8 @@ while True: # loops over the reloads
 
                         if 'localaddr' in xivoconf_asterisk:
                                 localaddr = xivoconf_asterisk['localaddr']
-                        if 'userlisturl' in xivoconf_asterisk:
-                                userlist_url = xivoconf_asterisk['userlisturl']
+                        if 'phonelisturl' in xivoconf_asterisk:
+                                phonelisturl = xivoconf_asterisk['phonelisturl']
                         if 'ipaddress' in xivoconf_asterisk:
                                 ipaddress = xivoconf_asterisk['ipaddress']
                         if 'ipaddress_webi' in xivoconf_asterisk:
@@ -647,7 +658,6 @@ while True: # loops over the reloads
                         capafeatures = []
 
                         configs[astid] = xivo_astcfg.AsteriskConfig(astid,
-                                                                    userlist_url,
                                                                     localaddr,
                                                                     ipaddress,
                                                                     ipaddress_webi,
@@ -662,7 +672,7 @@ while True: # loops over the reloads
                                                                     faxcallerid,
                                                                     linkestablished)
 
-                        plist[astid] = xivo_phones.PhoneList(astid, commandclass, userlist_url)
+                        plist[astid] = xivo_phones.PhoneList(astid, commandclass, phonelisturl)
 
                         if ipaddress not in ip_reverse_sht:
                                 ip_reverse_sht[ipaddress] = astid
@@ -675,12 +685,6 @@ while True: # loops over the reloads
                                 log_debug(SYSLOG_WARNING, 'WARNING - IP address (WEBI) already exists for asterisk <%s> - can not set it for <%s>'
                                           % (ip_reverse_webi[ipaddress_webi], astid))
                         save_for_next_packet_events[astid] = ''
-
-
-        for ctx in contextlist:
-                xivoconf_context = cconf.read_section(ctx)
-                if len(xivoconf_context) > 0:
-                        ctxlist.update(ctx, xivoconf_context)
 
 
         outsock = commandclass.extrasock(extraconn)
@@ -786,7 +790,7 @@ while True: # loops over the reloads
                         # other 'outgoing' connections
                         elif sel_i == outsock:
                                 try:
-                                        msg = sel_i.recv(BUFSIZE_LARGE)
+                                        msg = sel_i.recv(BUFSIZE_LARGE, socket.MSG_DONTWAIT)
                                 except Exception, exc:
                                         msg = ''
                                         log_debug(SYSLOG_ERR, '--- exception --- outsock : %s' % str(exc))
@@ -818,7 +822,8 @@ while True: # loops over the reloads
                                         if kind == 'CTI':
                                                 commandclass.connected(conn)
                                         # appending the opened socket to the ones watched
-                                        conn.setblocking(0)
+                                        # conn.setblocking(0)
+                                        conn.settimeout(2)
                                         fdlist_full.append(conn)
                                         fdlist_established[conn] = kind
 
@@ -829,7 +834,7 @@ while True: # loops over the reloads
                                         kind = fdlist_established[sel_i]
                                         requester = '%s:%d' % (sel_i.getpeername()[0], sel_i.getpeername()[1])
                                         try:
-                                                msg = sel_i.recv(BUFSIZE_LARGE)
+                                                msg = sel_i.recv(BUFSIZE_LARGE, socket.MSG_DONTWAIT)
                                                 lmsg = len(msg)
                                         except Exception, exc:
                                                 lmsg = 0

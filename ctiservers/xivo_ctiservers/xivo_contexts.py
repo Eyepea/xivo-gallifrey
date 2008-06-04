@@ -43,12 +43,11 @@ def getboolean(fname, string):
 
 
 class Contexts:
-        ctxlist = {}
-
         def __init__(self):
+                self.ctxlist = {}
                 return
 
-        def update(self, ctxname, xivoconf_local):
+        def update(self, ctxname, dirname, xivoconf_local):
                 dir_db_uri = ''
                 dir_db_sqltable = ''
                 dir_db_sheetui = ''
@@ -113,22 +112,23 @@ class Contexts:
                 z.setSheetValidFields(sheet_vfields)
                 z.setSheetMatchingFields(sheet_mfields)
 
-                self.ctxlist[ctxname] = z
+                if ctxname not in self.ctxlist:
+                        self.ctxlist[ctxname] = {}
+                self.ctxlist[ctxname][dirname] = z
                 return
 
 
 class Context:
-        uri = ''
-        sqltable = ''
-        sheetui = ''
-        search_titles = []
-        search_valid_fields = []
-        search_matching_fields = []
-        sheet_valid_fields = []
-        sheet_matching_fields = []
-        sheet_callidmatch = []
-
         def __init__(self):
+                self.uri = ''
+                self.sqltable = ''
+                self.sheetui = ''
+                self.search_titles = []
+                self.search_valid_fields = []
+                self.search_matching_fields = []
+                self.sheet_valid_fields = []
+                self.sheet_matching_fields = []
+                self.sheet_callidmatch = []
                 return
         
         def setUri(self, uri):
@@ -164,4 +164,3 @@ class Context:
                         else:
                                 reply_by_field.append(field_value.replace(' ', ''))
                 return reply_by_field
-

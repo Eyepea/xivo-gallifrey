@@ -33,9 +33,6 @@ class AsteriskConfig:
         ## \var astid
         # \brief Asterisk String ID
         
-        ## \var phonelist_url
-        # \brief Asterisk's URL
-        
         ## \var localaddr
         # \brief Local IP address
 
@@ -57,7 +54,6 @@ class AsteriskConfig:
         ##  \brief Class initialization.
         def __init__(self,
                      astid,
-                     phonelist_url,
                      localaddr = '127.0.0.1',
                      remoteaddr = '127.0.0.1',
                      ipaddress_webi = '127.0.0.1',
@@ -73,7 +69,6 @@ class AsteriskConfig:
                      linkestablished = ''):
 
                 self.astid = astid
-                self.phonelist_url  = phonelist_url
                 self.localaddr = localaddr
                 self.remoteaddr = remoteaddr
                 self.ipaddress_webi = ipaddress_webi
