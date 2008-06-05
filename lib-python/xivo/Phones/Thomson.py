@@ -26,7 +26,6 @@ __license__ = """
 """
 
 import os
-import sys
 import time
 import syslog
 import os.path
@@ -114,7 +113,8 @@ class Thomson(PhoneVendor):
                    self.phone['model'] != "2030s":
                         raise ValueError, "Unknown Thomson model %r" % self.phone['model']
         
-        def __generate_timestamp(self):
+        @staticmethod
+        def __generate_timestamp():
                 tuple_time = time.localtime()
                 seximin = tuple_time[3] * 360 + tuple_time[4] * 6 + int(tuple_time[5] / 10)
                 return "%04d%02d%02d%04d" % (tuple_time[0], tuple_time[1], tuple_time[2], seximin)
@@ -156,8 +156,8 @@ class Thomson(PhoneVendor):
                 txt_template_file = open(THOMSON_SPEC_TXT_TEMPLATE + self.phone['model'].upper() + "_template.txt")
                 txt_template_lines = txt_template_file.readlines()
                 txt_template_file.close()
-		macaddr = self.phone['macaddr'].replace(":", "")
-		model = self.phone['model'].upper()
+                macaddr = self.phone['macaddr'].replace(":", "")
+                model = self.phone['model'].upper()
                 tmp_filename = THOMSON_SPEC_TXT_BASENAME + model + "_" + macaddr + ".txt.tmp"
                 txt_filename = tmp_filename[:-4]
                 

@@ -26,8 +26,6 @@ __license__ = """
 """
 
 import os
-import sys
-import syslog
 import os.path
 import subprocess
 
@@ -99,7 +97,7 @@ class Swissvoice(PhoneVendor):
                 Entry point to generate the reinitialized (GUEST)
                 configuration for this phone.
                 """
-		macaddr = self.phone['macaddr'].lower().replace(":", "")
+                macaddr = self.phone['macaddr'].lower().replace(":", "")
                 cfg_filename = os.path.join(SWISSVOICE_SPEC_DIR, macaddr + "_ip10.cfg")
                 inf_filename = os.path.join(SWISSVOICE_SPEC_DIR, "..", macaddr + "_ip10.inf")
                 try:
@@ -125,8 +123,8 @@ class Swissvoice(PhoneVendor):
                 
                 macaddr = self.phone['macaddr'].lower().replace(":", "")
                 
-                cfg_tmp_filename = os.path.join(SWISSVOICE_SPEC_DIR, self.phone['macaddr'].lower().replace(":", "") + "_ip10.cfg.tmp")
-                inf_tmp_filename = os.path.join(SWISSVOICE_SPEC_DIR, "..", self.phone['macaddr'].lower().replace(":", "") + "_ip10.inf.tmp")
+                cfg_tmp_filename = os.path.join(SWISSVOICE_SPEC_DIR, macaddr + "_ip10.cfg.tmp")
+                inf_tmp_filename = os.path.join(SWISSVOICE_SPEC_DIR, "..", macaddr + "_ip10.inf.tmp")
                 cfg_filename = cfg_tmp_filename[:-4]
                 inf_filename = inf_tmp_filename[:-4]
                 
@@ -157,7 +155,7 @@ class Swissvoice(PhoneVendor):
                 os.rename(cfg_tmp_filename, cfg_filename)
                 
                 txt = xivo_config.txtsubst(inf_template_lines,
-                        { 'macaddr': self.phone['macaddr'].lower().replace(":", "") },
+                        { 'macaddr': macaddr },
                         inf_filename)
                 tmp_file = open(inf_tmp_filename, 'w')
                 tmp_file.writelines(txt)

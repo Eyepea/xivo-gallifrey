@@ -26,8 +26,6 @@ __license__ = """
 """
 
 import os
-import sys
-import syslog
 import socket
 import os.path
 
@@ -52,7 +50,8 @@ class Polycom(PhoneVendor):
                    self.phone['model'] != 'spip_650':
                         raise ValueError, "Unknown Polycom model %r" % self.phone['model']
         
-        def __iptopeer(self):
+        def __retrieve_peerinfo(self):
+                peerinfo = None
                 phoneip = self.phone['ipv4']
                 
                 # TODO: get ride of this AMI communication if possible
@@ -86,7 +85,7 @@ class Polycom(PhoneVendor):
                                         if ipaddressmatch in lines:
                                                 for myline in lines:
                                                         if myline.startswith("ObjectName: "):
-                                                                self.peerinfo = myline.split(": ")
+                                                                peerinfo = myline.split(": ")
                                                                 iquit = True
                                         if "Event: PeerlistComplete" in lines:
                                                 iquit = True
@@ -97,19 +96,20 @@ class Polycom(PhoneVendor):
                         else:
                                 break
                 amisock.close()
+                return peerinfo
         
         def __sendsipnotify(self):
                 phoneip = self.phone['ipv4']
                 myip = Pgc['asterisk_ipv4']
                 
-                self.peerinfo = None
+                peerinfo = None
                 try:
-                        self.__iptopeer()
+                        peerinfo = self.__retrieve_peerinfo()
                 except: # XXX: don't catch ALL exceptions
                         pass
                 
-                if self.peerinfo is not None and len(self.peerinfo) > 1:
-                        sip_number = self.peerinfo[1]
+                if peerinfo is not None and len(peerinfo) > 1:
+                        sip_number = peerinfo[1]
                 else:
                         sip_number = 'guest'
                 

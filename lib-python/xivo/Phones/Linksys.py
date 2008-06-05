@@ -26,8 +26,6 @@ __license__ = """
 """
 
 import os
-import sys
-import syslog
 import os.path
 import subprocess
 
@@ -47,7 +45,7 @@ class Linksys(PhoneVendor):
         def __init__(self, phone):
                 PhoneVendor.__init__(self, phone)
                 # TODO: handle this with a lookup table stored in the DB?
-                if (self.phone['model'] not in map(lambda x: "spa" + x, self.LINKSYS_SPA_MODELS)) and (self.phone['model'] != "pap2t"):
+                if (self.phone['model'] not in ["spa" + x for x in self.LINKSYS_SPA_MODELS]) and (self.phone['model'] != "pap2t"):
                         raise ValueError, "Unknown Linksys model %r" % self.phone['model']
         
         def __action(self, command, user, passwd):
@@ -131,7 +129,7 @@ class Linksys(PhoneVendor):
         @classmethod
         def get_phones(cls):
                 "Report supported phone models for this vendor."
-                return tuple(map(lambda x: ("spa" + x, "SPA" + x), cls.LINKSYS_SPA_MODELS)) + (("pap2t", "PAP2T"),)
+                return tuple([("spa" + x, "SPA" + x) for x in cls.LINKSYS_SPA_MODELS]) + (("pap2t", "PAP2T"),)
         
         # Entry points for the AGI
         

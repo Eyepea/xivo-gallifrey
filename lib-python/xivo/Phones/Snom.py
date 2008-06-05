@@ -26,8 +26,6 @@ __license__ = """
 """
 
 import os
-import sys
-import syslog
 import os.path
 import subprocess
 
@@ -130,7 +128,7 @@ class Snom(PhoneVendor):
         @classmethod
         def get_phones(cls):
                 "Report supported phone models for this vendor."
-                return tuple(map(lambda x: (x, x), cls.SNOM_MODELS))
+                return tuple([(x, x) for x in cls.SNOM_MODELS])
         
         # Entry points for the AGI
         

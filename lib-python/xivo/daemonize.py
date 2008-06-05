@@ -268,12 +268,11 @@ def daemonize(logline_func = except_tb.LOGLINE_STDERR, pidfile = None, pidfile_l
 	
 	return pid
 
-if __debug__:
-	if __name__ == '__main__':
-		def stupidtest():
-			import time
-			out = open('/home/xilun/daemon_out', 'w')
-			err = open('/home/xilun/daemon_err', 'w')
-			daemonize(pidfile = '/home/xilun/pidfile', pidfile_lock = True, logout=out, logerr=err)
-			time.sleep(42)
-		stupidtest()
+if __name__ == '__main__':
+	def stupidtest():
+		import time
+		out = open('/home/xilun/daemon_out', 'w')
+		err = open('/home/xilun/daemon_err', 'w')
+		daemonize(pidfile = '/home/xilun/pidfile', pidfile_lock = True, logout=out, logerr=err)
+		time.sleep(42)
+	stupidtest()
