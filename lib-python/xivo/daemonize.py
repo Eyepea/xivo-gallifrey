@@ -116,7 +116,7 @@ def remove_if_stale_pidfile(pidfile, logline_func = except_tb.LOGLINE_STDERR):
 		os.unlink(pidfile)
 		return
 	except:
-	    except_tb.log_exception(logline_func)
+		except_tb.log_exception(logline_func)
 
 def take_file_lock_or_die(own_file, lock_file, own_content):
 	"""
@@ -218,7 +218,7 @@ def daemonize(logline_func = except_tb.LOGLINE_STDERR, pidfile = None, pidfile_l
 	try:
 		pid = os.fork()
 		if pid > 0:
-			os._exit(0)
+			os._exit(0) # XXX check that
 	except SystemExit:
 		raise
 	except:
@@ -233,7 +233,7 @@ def daemonize(logline_func = except_tb.LOGLINE_STDERR, pidfile = None, pidfile_l
 			os._exit(0)
 	except SystemExit:
 		raise
-        except:
+	except:
 		except_tb.log_exception(logline_func)
 		sys.exit(1)
 	
@@ -270,8 +270,10 @@ def daemonize(logline_func = except_tb.LOGLINE_STDERR, pidfile = None, pidfile_l
 
 if __debug__:
 	if __name__ == '__main__':
-		import time
-		out = open('/home/xilun/daemon_out', 'w')
-		err = open('/home/xilun/daemon_err', 'w')
-		daemonize(pidfile = '/home/xilun/pidfile', pidfile_lock = True, logout=out, logerr=err)
-		time.sleep(42)
+		def stupidtest():
+			import time
+			out = open('/home/xilun/daemon_out', 'w')
+			err = open('/home/xilun/daemon_err', 'w')
+			daemonize(pidfile = '/home/xilun/pidfile', pidfile_lock = True, logout=out, logerr=err)
+			time.sleep(42)
+		stupidtest()
