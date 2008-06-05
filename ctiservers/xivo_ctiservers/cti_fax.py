@@ -1,7 +1,7 @@
 # XIVO Daemon
 
-__version__   = '$Revision: 3176 $'
-__date__      = '$Date: 2008-06-04 15:58:14 +0200 (mer, 04 jun 2008) $'
+__version__   = '$Revision$'
+__date__      = '$Date$'
 __copyright__ = 'Copyright (C) 2007, 2008, Proformatique'
 __author__    = 'Corentin Le Gall'
 
@@ -28,7 +28,6 @@ import SocketServer
 
 class MyTCPServer(SocketServer.ThreadingTCPServer):
         allow_reuse_address = True
-        print 'aaa'
 
 class FaxRequestHandler(SocketServer.StreamRequestHandler):
         def handle(self):

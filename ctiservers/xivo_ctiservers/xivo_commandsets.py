@@ -99,7 +99,7 @@ class BaseCommand:
                 return []
         def parsecommand(self, linein):
                 return
-        def manage_cticommand(self, userinfo, connid_socket, parsedcommand, cfg):
+        def manage_cticommand(self, userinfo, parsedcommand):
                 return
 
         def regular_update(self):
