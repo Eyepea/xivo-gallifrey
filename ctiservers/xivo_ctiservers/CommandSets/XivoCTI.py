@@ -354,6 +354,7 @@ class XivoCTICommand(BaseCommand):
                 self.alist_ng.update()
                 self.qlist_ng.update()
                 self.ulist_ng.update()
+                # check : agentnumber should be unique
                 return
 
         def set_userlist_urls(self, urls):
@@ -1080,7 +1081,10 @@ class XivoCTICommand(BaseCommand):
                                         lst = []
                                         if astid in self.queues_list and qname in self.queues_list[astid]:
                                                 for agid, agprop in self.queues_list[astid][qname]['agents'].iteritems():
-                                                        lst.append('%s,%s,%s' % (agid[6:], agprop[0], agprop[1]))
+                                                        if agid.startswith('Agent/'):
+                                                                lst.append('%s,%s,%s' % (agid[6:], agprop[0], agprop[1]))
+                                                        else:
+                                                                lst.append('%s,%s,%s' % (agid, agprop[0], agprop[1]))
                                         self.__send_msg_to_cti_client__(userinfo,
                                                                         'queue-status=%s;%s;%s' %(astid, qname, ';'.join(lst)))
 
@@ -1250,7 +1254,7 @@ class XivoCTICommand(BaseCommand):
                         else:
                                 astid = myastid
                                 anum = myagentnum
-                                phonenum = userinfo['phonenum']
+                                phonenum = userinfo['agentphonenum']
                         if astid is not None and anum is not None:
                                 self.amis[astid].agentcallbacklogin(anum, phonenum)
                                 self.amis[astid].setvar('AGENTBYCALLERID_%s' % phonenum, anum)

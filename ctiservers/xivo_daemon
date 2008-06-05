@@ -96,7 +96,7 @@ from xivo.BackSQL import backmysql
 from xivo.BackSQL import backsqlite
 
 # XIVO CTI modules
-from xivo_ctiservers import fastagi
+from xivo_agid import fastagi
 from xivo_ctiservers import xivo_ami
 from xivo_ctiservers import xivo_phones
 from xivo_ctiservers import xivo_contexts
