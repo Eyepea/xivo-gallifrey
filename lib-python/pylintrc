@@ -165,16 +165,16 @@ class-rgx=[A-Z_][a-zA-Z0-9]+$
 function-rgx=(([a-z_][a-z0-9_]{2,45})|(([a-z_][a-z0-9_]*)?([A-Z][a-z0-9_]*)+))$
 
 # Regular expression which should only match correct method names
-method-rgx=[a-z_][a-z0-9_]{2,30}$
+method-rgx=(([a-z_][a-z0-9_]{2,45})|(([a-z_][a-z0-9_]*)?([A-Z][a-z0-9_]*)+))$
 
 # Regular expression which should only match correct instance attribute names
-attr-rgx=[a-z_][a-z0-9_]{2,30}$
+attr-rgx=[a-z_][a-z0-9_]{2,45}$
 
 # Regular expression which should only match correct argument names
-argument-rgx=(([a-z_][a-z0-9_]{0,30})|(([a-z_][a-z0-9_]*)?([A-Z][a-z0-9_]*)+))$
+argument-rgx=(([a-z_][a-z0-9_]{0,45})|(([a-z_][a-z0-9_]*)?([A-Z][a-z0-9_]*)+))$
 
 # Regular expression which should only match correct variable names
-variable-rgx=(([a-z_][a-z0-9_]{0,30})|(([a-z_][a-z0-9_]*)?([A-Z][a-z0-9_]*)+))$
+variable-rgx=(([a-z_][a-z0-9_]{0,45})|(([a-z_][a-z0-9_]*)?([A-Z][a-z0-9_]*)+))$
 
 # Regular expression which should only match correct list comprehension /
 # generator expression variable names
