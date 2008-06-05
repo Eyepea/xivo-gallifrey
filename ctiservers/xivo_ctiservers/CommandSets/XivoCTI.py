@@ -139,7 +139,6 @@ class XivoCTICommand(BaseCommand):
                         'state', 'passwd', 'ident', 'xivoversion', 'version'] # authentication & information
 
         def manage_login(self, loginparams):
-                print 'loginparams', loginparams
                 missings = []
                 for argum in self.required_login_params():
                         if argum not in loginparams:
@@ -258,7 +257,7 @@ class XivoCTICommand(BaseCommand):
                                           % (userinfo.get('user'), state))
                                 userinfo['state'] = 'undefinedstate-connect'
 
-                        capaid = userinfo('capaid')
+                        capaid = userinfo.get('capaid')
                         self.capas[capaid].conn_inc()
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, "--- exception --- connect_user %s : %s" %(str(userinfo), str(exc)))
@@ -298,7 +297,6 @@ class XivoCTICommand(BaseCommand):
                            userinfo.get('state'))
 ##                if 'features' in capa_user:
 ##                        repstr += ';capas_features:%s' %(','.join(configs[astid].capafeatures))
-                print repstr
                 userinfo['login']['connection'].sendall(repstr + '\n')
                 self.__update_availstate__(userinfo, userinfo.get('state'))
                 return
@@ -1426,11 +1424,14 @@ class XivoCTICommand(BaseCommand):
 
         # \brief Builds the features_get reply.
         def __build_features_get__(self, reqlist):
-                context = reqlist[1]
-                srcnum = reqlist[2]
+                [company, user] = reqlist[0].split('/')
+                userinfo = self.ulist_ng.finduser(user + '@' + company)
+                astid = userinfo.get('astid')
+                context = userinfo.get('context')
+                srcnum = userinfo.get('phonenum')
                 repstr = ''
 
-                cursor = self.configs[reqlist[0]].userfeatures_db_conn.cursor()
+                cursor = self.configs[astid].userfeatures_db_conn.cursor()
                 params = [srcnum, context]
                 query = 'SELECT ${columns} FROM userfeatures WHERE number = %s AND context = %s'
 
@@ -1444,7 +1445,7 @@ class XivoCTICommand(BaseCommand):
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- features_get(bool) id=%s key=%s : %s'
                                           %(str(reqlist), key, str(exc)))
-                                return 'featuresget=KO'
+                                return 'featuresget=%s;KO' % reqlist[0]
 
                 for key in ['unc', 'busy', 'rna']:
                         try:
@@ -1462,36 +1463,39 @@ class XivoCTICommand(BaseCommand):
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- features_get(str) id=%s key=%s : %s'
                                           %(str(reqlist), key, str(exc)))
-                                return 'featuresget=KO'
+                                return 'featuresget=%s;KO' % reqlist[0]
 
                 if len(repstr) == 0:
                         repstr = 'KO'
-                return 'featuresget=%s' % repstr
+                return 'featuresget=%s;%s' % (reqlist[0], repstr)
 
 
         # \brief Builds the features_put reply.
         def __build_features_put__(self, reqlist):
-                context = reqlist[1]
-                srcnum = reqlist[2]
+                [company, user] = reqlist[0].split('/')
+                userinfo = self.ulist_ng.finduser(user + '@' + company)
+                astid = userinfo.get('astid')
+                context = userinfo.get('context')
+                srcnum = userinfo.get('phonenum')
                 try:
                         len_reqlist = len(reqlist)
-                        if len_reqlist >= 4:
-                                key = reqlist[3]
+                        if len_reqlist >= 2:
+                                key = reqlist[1]
                                 value = ''
-                                if len_reqlist >= 5:
-                                        value = reqlist[4]
+                                if len_reqlist >= 3:
+                                        value = reqlist[2]
                                 query = 'UPDATE userfeatures SET ' + key + ' = %s WHERE number = %s AND context = %s'
                                 params = [value, srcnum, context]
-                                cursor = self.configs[reqlist[0]].userfeatures_db_conn.cursor()
+                                cursor = self.configs[astid].userfeatures_db_conn.cursor()
                                 cursor.query(query, parameters = params)
-                                self.configs[reqlist[0]].userfeatures_db_conn.commit()
-                                response = 'featuresput=OK;%s;%s;' %(key, value)
+                                self.configs[astid].userfeatures_db_conn.commit()
+                                response = 'featuresput=%s;OK;%s;%s;' %(reqlist[0], key, value)
                         else:
-                                response = 'featuresput=KO'
+                                response = 'featuresput=%s;KO' % reqlist[0]
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, '--- exception --- features_put id=%s : %s'
                                   %(str(reqlist), str(exc)))
-                        response = 'featuresput=KO'
+                        response = 'featuresput=%s;KO' % reqlist[0]
                 return response
 
 
