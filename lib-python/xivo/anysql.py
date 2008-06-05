@@ -29,9 +29,9 @@ from xivo import urisup
 
 __uri_create_methods = {}
 
-any_paramstyle='format'
-any_threadsafety=1
-any_apilevel='2.0'
+any_paramstyle = 'format'
+any_threadsafety = 1
+any_apilevel = '2.0'
 
 METHOD_CONNECT = 0
 METHOD_MODULE = 1
@@ -41,9 +41,9 @@ METHOD_ESCAPE = 3
 class cursor(object):
 	"""This class is a Anysql wrapper for DBAPI2.0 Cursor Objects.
 
-	.executeXXX() methods are replaced by .queryXXX(), which are kind of
+	.executeXYZ() methods are replaced by .queryXYZ(), which are kind of
 	slightly enhanced versions of the former.
-	.fetchXXX() returns augmented DBAPI2.0 rows.
+	.fetchXYZ() returns augmented DBAPI2.0 rows.
 	
 	.close()
 	.setinputsizes()
@@ -65,7 +65,7 @@ class cursor(object):
 	                their column names.
 	"""
 	class row(list):
-		"XXX"
+		# XXX
 		def __init__(self, col2idx_map, dbapi2_result):
 			list.__init__(self, dbapi2_result)
 			self.__col2idx_map = col2idx_map
@@ -76,8 +76,8 @@ class cursor(object):
 				return list.__getitem__(self, self.__col2idx_map[k])
 		def iteritems(self):
 			"For use by (at least...) replace_keys() (pyfunc)"
-			return ((k,list.__getitem__(self, pos))
-				for (k,pos) in self.__col2idx_map.iteritems())
+			return ((k, list.__getitem__(self, pos))
+				for (k, pos) in self.__col2idx_map.iteritems())
 			
 
 	def __init__(self, dbapi2_cursor, methods):
@@ -109,7 +109,7 @@ class cursor(object):
 			self.__col2idx_map = {}
 			col_list = []
 
-			for idx,col in enumerate(columns):
+			for idx, col in enumerate(columns):
 				self.__col2idx_map[col] = idx
 				col_list.append(escape(col))
 
@@ -304,7 +304,7 @@ def __compare_api_level(als1, als2):
 	else:
 		return 0
 
-def register_uri_backend(uri_scheme, create_method, module, c14n_uri, escape):
+def register_uri_backend(uri_scheme, create_method, module, c14n_uri_method, escape):
 	"""This method is intended to be used by backends only.
 	
 	It lets them register their services, identified by the URI scheme,
@@ -314,12 +314,12 @@ def register_uri_backend(uri_scheme, create_method, module, c14n_uri, escape):
 	The associated module must be compliant with DBAPI v2.0 but will not
 	be directly used for other purposes than compatibility testing.
 	
-	c14n_uri must be a function that takes one string argument (the same
-	form that the one that would be passed to connect_by_uri) and returns
-	its canonicalized form in an implementation dependant way. This
+	c14n_uri_method must be a function that takes one string argument (the
+	same form that the one that would be passed to connect_by_uri) and
+	returns its canonicalized form in an implementation dependant way. This
 	includes transforming any local pathname into an absolute form.
-	c14n_uri can also be None, in which case the behavior will be the same
-	as the one of the identity function.
+	c14n_uri_method can also be None, in which case the behavior will be
+	the same as the one of the identity function.
 	
 	escape must be a function that takes one string argument (an unescaped
 	column name) and returns an escaped version for use as an escaped
@@ -336,12 +336,12 @@ def register_uri_backend(uri_scheme, create_method, module, c14n_uri, escape):
 	if delta_api < 0 or delta_api > 1:
 		raise NotImplementedError, "This module does not support registration of DBAPI services with a specified apilevel of %s" % module.apilevel
 	if mod_paramstyle != 'pyformat' and mod_paramstyle != 'format':
-		raise NotImplementedError, "This module only supports registration of DBAPI services with a 'format' or 'pyformat' paramstyle, not '%s'" % mod_paramstyle
+		raise NotImplementedError, "This module only supports registration of DBAPI services with a 'format' or 'pyformat' paramstyle, not %r" % mod_paramstyle
 	if mod_threadsafety < any_threadsafety:
 		raise NotImplementedError, "This module does not support registration of DBAPI services of threadsafety %d (more generally under %d)" % (mod_threadsafety, any_threadsafety)
 	if not urisup.valid_scheme(uri_scheme):
-		raise urisup.InvalidSchemeError, "Can't register an invalid URI scheme \"%s\"" % uri_scheme
-	__uri_create_methods[uri_scheme] = (create_method, module, c14n_uri, escape)
+		raise urisup.InvalidSchemeError, "Can't register an invalid URI scheme %r" % uri_scheme
+	__uri_create_methods[uri_scheme] = (create_method, module, c14n_uri_method, escape)
 
 def _get_methods_by_uri(sqluri):
 	uri_scheme = urisup.uri_help_split(sqluri)[0]
