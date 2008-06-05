@@ -4,11 +4,11 @@ To use this library please see the example :
     agi = AGI()
 
     try:
-        agi.appexec('backgrounder','demo-congrats')
+        agi.appexec('backgrounder', 'demo-congrats')
     except AGIAppError:
         agi.verbose("Handled exception for missing application backgrounder")
 
-    agi.set_variable('foo','bar')
+    agi.set_variable('foo', 'bar')
     agi.get_variable('foo')
 
     try:
@@ -110,7 +110,7 @@ class AGI:
         signal.signal(signal.SIGHUP, self._handle_sighup)  # handle SIGHUP
         self.env = {}
         self._get_agi_env()
-	self.DEBUG_PASSTHROUGH = 0
+        self.DEBUG_PASSTHROUGH = 0
 
     def _get_agi_env(self):
         while 1:
@@ -118,14 +118,15 @@ class AGI:
             if line == '':
                 #blank line signals end
                 break
-            key,data = line.split(':')[0], ':'.join(line.split(':')[1:])
+            key, data = line.split(':')[0], ':'.join(line.split(':')[1:])
             key = key.strip()
             data = data.strip()
-            if key <> '':
+            if key != '':
                 self.env[key] = data
 
-    def _quote(self, string):
-        return '"%s"' %(str(string).replace('\\', '\\\\').replace('"', '\\"').replace('\n', ' '),)
+    @staticmethod
+    def _quote(string):
+        return '"%s"' % (str(string).replace('\\', '\\\\').replace('"', '\\"').replace('\n', ' '),)
 
     def _handle_sighup(self, signum, frame):
         """Handle the SIGHUP signal"""
@@ -134,23 +135,24 @@ class AGI:
     def test_hangup(self):
         """This function throws AGIHangup if we have recieved a SIGHUP"""
         if self._got_sighup:
-           raise AGISIGHUPHangup("Received SIGHUP from Asterisk")
+            raise AGISIGHUPHangup("Received SIGHUP from Asterisk")
         
     def execute(self, command, *args):
         self.test_hangup()
         try:
             self.send_command(command, *args)
             return self.get_result()
-        except IOError,e:
+        except IOError, e:
             if e.errno == 32:
                 # Broken Pipe * let us go
                 raise AGISIGPIPEHangup("Received SIGPIPE")
             else:
                 raise
 
-    def send_command(self, command, *args):
+    @staticmethod
+    def send_command(command, *args):
         """Send a command to Asterisk"""
-	command = (' '.join(chain((command.strip(),),imap(str,args)))).strip()
+        command = (' '.join(chain((command.strip(),), imap(str, args)))).strip()
         if command[-1] != '\n':
             command += '\n'
         sys.stdout.write(command)
@@ -159,21 +161,21 @@ class AGI:
     def get_result(self, stdin=sys.stdin):
         """Read the result of a command from Asterisk"""
         code = 0
-        result = {'result':('','')}
+        result = {'result': ('', '')}
         line = stdin.readline().strip()
         m = re_code.search(line)
         if m:
             code, response = m.groups()
             if self.DEBUG_PASSTHROUGH:
-	        try:
+                try:
                     code = int(code)
                 except:
                     code = 200
-	    else:
-	        code = int(code)
+            else:
+                code = int(code)
 
         if code == 200:
-            for key,value,data in re_kv.findall(response):
+            for key, value, data in re_kv.findall(response):
                 result[key] = (value, data)
 
                 # If user hangs up... we get 'hangup' in the data
@@ -306,7 +308,7 @@ class AGI:
         """
         res = self.execute('SEND IMAGE', filename)['result'][0]
         if res != '0':
-            raise AGIAppError('Channel falure on channel %s' % self.env.get('agi_channel','UNKNOWN'))
+            raise AGIAppError('Channel falure on channel %s' % self.env.get('agi_channel', 'UNKNOWN'))
 
     def say_digits(self, digits, escape_digits=''):
         """agi.say_digits(digits, escape_digits='') --> digit
@@ -508,7 +510,7 @@ class AGI:
         future.  Of course it can be hungup before then as well.   Setting to
         0 will cause the autohangup feature to be disabled on this channel.
         """
-        self.execute('SET AUTOHANGUP', time)
+        self.execute('SET AUTOHANGUP', secs)
 
     def hangup(self, channel=''):
         """agi.hangup(channel='')
@@ -551,11 +553,11 @@ class AGI:
         7 Line is busy
         """
         try:
-           result = self.execute('CHANNEL STATUS', channel)
+            result = self.execute('CHANNEL STATUS', channel)
         except AGIHangup:
-           raise
+            raise
         except AGIAppError:
-           result = {'result': ('-1','')}
+            result = {'result': ('-1', '')}
 
         return int(result['result'][0])
 
@@ -571,9 +573,9 @@ class AGI:
         the variable is not set, an empty string is returned.
         """
         try:
-           result = self.execute('GET VARIABLE', self._quote(name))
+            result = self.execute('GET VARIABLE', self._quote(name))
         except AGIResultHangup:
-           result = {'result': ('1', 'hangup')}
+            result = {'result': ('1', 'hangup')}
 
         res, value = result['result']
         return value
@@ -585,13 +587,13 @@ class AGI:
         the variable is not set, an empty string is returned.
         """
         try:
-           if channel:
-              result = self.execute('GET FULL VARIABLE', self._quote(name), self._quote(channel))
-           else:
-              result = self.execute('GET FULL VARIABLE', self._quote(name))
+            if channel:
+                result = self.execute('GET FULL VARIABLE', self._quote(name), self._quote(channel))
+            else:
+                result = self.execute('GET FULL VARIABLE', self._quote(name))
 
         except AGIResultHangup:
-           result = {'result': ('1', 'hangup')}
+            result = {'result': ('1', 'hangup')}
 
         res, value = result['result']
         return value
