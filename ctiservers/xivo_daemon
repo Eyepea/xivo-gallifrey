@@ -156,7 +156,6 @@ def manage_cti_connections(connid, msg, sep):
                                 else:
                                         if connid in userinfo_by_requester:
                                                 commandclass.manage_cticommand(userinfo_by_requester[connid],
-                                                                               connid,
                                                                                command)
                                         else:
                                                 log_debug(SYSLOG_WARNING,
@@ -772,142 +771,142 @@ while True: # loops over the reloads
                                         # t._Thread__stop() # does not work in reload case (vs. stop case)
                                 continue
                 if sels_i:
-                    for sel_i in sels_i:
-                        # these AMI connections are used in order to manage AMI commands with incoming events
-                        if sel_i in AMI_array_events_fd.values():
-                                for astid, val in AMI_array_events_fd.iteritems():
-                                        if val is sel_i: break
-                                try:
-                                        a = AMI_array_events_fd[astid].readline() # (BUFSIZE_ANY)
-                                        if len(a) == 0: # end of connection from server side : closing socket
-                                                log_debug(SYSLOG_WARNING, "%s : AMI : CLOSING" % astid)
-                                                commandclass.dmessage_srv2clt('AMI OFF for <%s>' % astid)
-                                                AMI_array_events_fd[astid].close()
-                                                fdlist_full.remove(AMI_array_events_fd[astid])
-                                                del AMI_array_events_fd[astid]
+                        for sel_i in sels_i:
+                                # these AMI connections are used in order to manage AMI commands with incoming events
+                                if sel_i in AMI_array_events_fd.values():
+                                        for astid, val in AMI_array_events_fd.iteritems():
+                                                if val is sel_i: break
+                                        try:
+                                                a = AMI_array_events_fd[astid].readline() # (BUFSIZE_ANY)
+                                                if len(a) == 0: # end of connection from server side : closing socket
+                                                        log_debug(SYSLOG_WARNING, "%s : AMI : CLOSING" % astid)
+                                                        commandclass.dmessage_srv2clt('AMI OFF for <%s>' % astid)
+                                                        AMI_array_events_fd[astid].close()
+                                                        fdlist_full.remove(AMI_array_events_fd[astid])
+                                                        del AMI_array_events_fd[astid]
+                                                else:
+                                                        handle_ami_event(astid, a)
+                                        except Exception, exc:
+                                                log_debug(SYSLOG_ERR, "--- exception --- AMI <%s> : %s" % (astid, str(exc)))
+
+                                # other 'outgoing' connections
+                                elif sel_i == outsock:
+                                        try:
+                                                msg = sel_i.recv(BUFSIZE_LARGE, socket.MSG_DONTWAIT)
+                                        except Exception, exc:
+                                                msg = ''
+                                                log_debug(SYSLOG_ERR, '--- exception --- outsock : %s' % str(exc))
+                                        if len(msg) == 0:
+                                                sel_i.close()
+                                                fdlist_full.remove(sel_i)
+                                                outsock = None
+                                                log_debug(SYSLOG_WARNING, 'WARNING - outsock has closed the connection')
                                         else:
-                                                handle_ami_event(astid, a)
-                                except Exception, exc:
-                                        log_debug(SYSLOG_ERR, "--- exception --- AMI <%s> : %s" % (astid, str(exc)))
+                                                commandclass.handle_outsock(asterisklist[0], msg)
 
-                        # other 'outgoing' connections
-                        elif sel_i == outsock:
-                                try:
-                                        msg = sel_i.recv(BUFSIZE_LARGE, socket.MSG_DONTWAIT)
-                                except Exception, exc:
-                                        msg = ''
-                                        log_debug(SYSLOG_ERR, '--- exception --- outsock : %s' % str(exc))
-                                if len(msg) == 0:
-                                        sel_i.close()
-                                        fdlist_full.remove(sel_i)
-                                        outsock = None
-                                        log_debug(SYSLOG_WARNING, 'WARNING - outsock has closed the connection')
-                                else:
-                                        commandclass.handle_outsock(asterisklist[0], msg)
-
-                        # the new TCP connections (CTI, WEBI, (F)AGI, INFO) are catched here
-                        elif sel_i in fdlist_listen_cti:
-                                [kind, nmax] = fdlist_listen_cti[sel_i].split(':')
-                                [conn, sockparams] = sel_i.accept()
-                                if kind == 'FAGI':
-                                        mfr = conn.makefile('rb', -1)
-                                        mfw = conn.makefile('wb', 0)
+                                # the new TCP connections (CTI, WEBI, (F)AGI, INFO) are catched here
+                                elif sel_i in fdlist_listen_cti:
+                                        [kind, nmax] = fdlist_listen_cti[sel_i].split(':')
+                                        [conn, sockparams] = sel_i.accept()
+                                        if kind == 'FAGI':
+                                                mfr = conn.makefile('rb', -1)
+                                                mfw = conn.makefile('wb', 0)
 ##                                        try:
 ##                                                fagi = fastagi.FastAGI(mfr, mfw)
 ##                                                commandclass.handle_fagi(fagi)
 ##                                        except Exception, exc:
 ##                                                log_debug(SYSLOG_ERR, '--- exception --- fastagi : %s' % str(exc))
-                                        mfr.close()
-                                        mfw.close()
-                                        conn.close()
-                                else:
-                                        log_debug(SYSLOG_INFO, "TCP socket opened on %s:%d (%s)" % (sockparams[0], sockparams[1], kind))
-                                        if kind == 'CTI':
-                                                commandclass.connected(conn)
-                                        # appending the opened socket to the ones watched
-                                        # conn.setblocking(0)
-                                        conn.settimeout(2)
-                                        fdlist_full.append(conn)
-                                        fdlist_established[conn] = kind
-
-                        # incoming TCP connections (CTI, WEBI, AGI, INFO)
-                        elif sel_i in fdlist_established:
-                                try:
-                                        ret = False
-                                        kind = fdlist_established[sel_i]
-                                        requester = '%s:%d' % (sel_i.getpeername()[0], sel_i.getpeername()[1])
-                                        try:
-                                                msg = sel_i.recv(BUFSIZE_LARGE, socket.MSG_DONTWAIT)
-                                                lmsg = len(msg)
-                                        except Exception, exc:
-                                                lmsg = 0
-                                                log_debug(SYSLOG_ERR, '--- exception --- connection to %s (%s) : %s' % (requester, kind, str(exc)))
-                                        if lmsg > 0:
-                                                try:
-                                                        manage_tcp_connections(sel_i, msg, kind)
-                                                except Exception:
-                                                        log_debug(SYSLOG_ERR, '--- exception --- handling %s (%s) : %s'
-                                                                  % (requester, kind, str(except_tb.exception_traceback())))
+                                                mfr.close()
+                                                mfw.close()
+                                                conn.close()
                                         else:
+                                                log_debug(SYSLOG_INFO, "TCP socket opened on %s:%d (%s)" % (sockparams[0], sockparams[1], kind))
                                                 if kind == 'CTI':
+                                                        commandclass.connected(conn)
+                                                # appending the opened socket to the ones watched
+                                                # conn.setblocking(0)
+                                                conn.settimeout(2)
+                                                fdlist_full.append(conn)
+                                                fdlist_established[conn] = kind
+
+                                # incoming TCP connections (CTI, WEBI, AGI, INFO)
+                                elif sel_i in fdlist_established:
+                                        try:
+                                                ret = False
+                                                kind = fdlist_established[sel_i]
+                                                requester = '%s:%d' % (sel_i.getpeername()[0], sel_i.getpeername()[1])
+                                                try:
+                                                        msg = sel_i.recv(BUFSIZE_LARGE, socket.MSG_DONTWAIT)
+                                                        lmsg = len(msg)
+                                                except Exception, exc:
+                                                        lmsg = 0
+                                                        log_debug(SYSLOG_ERR, '--- exception --- connection to %s (%s) : %s' % (requester, kind, str(exc)))
+                                                if lmsg > 0:
+                                                        try:
+                                                                manage_tcp_connections(sel_i, msg, kind)
+                                                        except Exception:
+                                                                log_debug(SYSLOG_ERR, '--- exception --- handling %s (%s) : %s'
+                                                                          % (requester, kind, str(except_tb.exception_traceback())))
+                                                else:
+                                                        if kind == 'CTI':
+                                                                if sel_i in userinfo_by_requester:
+                                                                        userinfo = userinfo_by_requester.get(sel_i)
+                                                                        commandclass.manage_logoff(userinfo)
+                                                                        del userinfo_by_requester[sel_i]
+                                                if kind in ['CTI', 'INFO'] and lmsg > 0:
+                                                        continue
+                                                sel_i.close()
+                                                fdlist_full.remove(sel_i)
+                                                del fdlist_established[sel_i]
+                                                log_debug(SYSLOG_INFO, 'TCP socket closed on %s (%s)' % (requester, kind))
+                                        except Exception, exc:
+                                                log_debug(SYSLOG_ERR, '--- exception [%s] --- %s' % (kind, str(exc)))
+                                                try:
+                                                        fdlist_full.remove(sel_i)
+                                                        del fdlist_established[sel_i]
+                                                        sel_i.close()
                                                         if sel_i in userinfo_by_requester:
                                                                 userinfo = userinfo_by_requester.get(sel_i)
                                                                 commandclass.manage_logoff(userinfo)
                                                                 del userinfo_by_requester[sel_i]
-                                        if kind in ['CTI', 'INFO'] and lmsg > 0:
-                                                continue
-                                        sel_i.close()
-                                        fdlist_full.remove(sel_i)
-                                        del fdlist_established[sel_i]
-                                        log_debug(SYSLOG_INFO, 'TCP socket closed on %s (%s)' % (requester, kind))
-                                except Exception, exc:
-                                        log_debug(SYSLOG_ERR, '--- exception [%s] --- %s' % (kind, str(exc)))
-                                        try:
-                                                fdlist_full.remove(sel_i)
-                                                del fdlist_established[sel_i]
-                                                sel_i.close()
-                                                if sel_i in userinfo_by_requester:
-                                                        userinfo = userinfo_by_requester.get(sel_i)
-                                                        commandclass.manage_logoff(userinfo)
-                                                        del userinfo_by_requester[sel_i]
-                                        except Exception, exc2:
-                                                log_debug(SYSLOG_ERR, '--- exception (2) [CTI, WEBI, AGI, INFO] --- %s' % str(exc2))
+                                                except Exception, exc2:
+                                                        log_debug(SYSLOG_ERR, '--- exception (2) [CTI, WEBI, AGI, INFO] --- %s' % str(exc2))
 
-                        # local pipe fd
-                        elif queued_threads_pipe[0] == sel_i:
-                                try:
-                                        disconnlist = commandclass.checkqueue()
-                                        for userinfo in disconnlist:
-                                                print 'checkqueue return :', userinfo
-                                                if 'login' in userinfo and 'connection' in userinfo.get('login'):
-                                                        connid = userinfo.get('login')['connection']
-                                                        fdlist_full.remove(connid)
-                                                        del fdlist_established[connid]
-                                                        connid.close()
-                                                else:
-                                                        log_debug(SYSLOG_WARNING, 'WARNING - no login/connection field present in userinfo')
-                                                # commandclass.manage_logoff(userinfo)
-                                except Exception, exc:
-                                        log_debug(SYSLOG_ERR, '--- exception --- [queued threads] %s' % str(exc))
-
-                        for astid in configs:
-                                if (time.time() - lastrequest_time[astid]) > updates_period or update_userlist[astid]:
-                                        lastrequest_time[astid] = time.time()
-                                        log_debug(SYSLOG_INFO, '[%s] %s : updates (computed timeout) %s'
-                                                  % (xdname, astid, time.asctime()))
+                                # local pipe fd
+                                elif queued_threads_pipe[0] == sel_i:
                                         try:
-                                                if outsock is None:
-                                                        outsock = commandclass.extrasock(extraconn)
-                                                        if outsock is not None:
-                                                                fdlist_full.append(outsock)
-                                                update_amisocks(astid)
-                                                commandclass.regular_update()
-                                                plist[astid].update_phonelist()
-                                                update_userlist[astid] = False
+                                                disconnlist = commandclass.checkqueue()
+                                                for userinfo in disconnlist:
+                                                        print 'checkqueue return :', userinfo
+                                                        if 'login' in userinfo and 'connection' in userinfo.get('login'):
+                                                                connid = userinfo.get('login')['connection']
+                                                                fdlist_full.remove(connid)
+                                                                del fdlist_established[connid]
+                                                                connid.close()
+                                                        else:
+                                                                log_debug(SYSLOG_WARNING, 'WARNING - no login/connection field present in userinfo')
+                                                        # commandclass.manage_logoff(userinfo)
                                         except Exception, exc:
-                                                log_debug(SYSLOG_ERR, '--- exception --- %s : failed while updating lists and sockets (computed timeout) : %s'
-                                                          % (astid, str(exc)))
-                                        commandclass.updates() # users' update, ...
+                                                log_debug(SYSLOG_ERR, '--- exception --- [queued threads] %s' % str(exc))
+
+                                for astid in configs:
+                                        if (time.time() - lastrequest_time[astid]) > updates_period or update_userlist[astid]:
+                                                lastrequest_time[astid] = time.time()
+                                                log_debug(SYSLOG_INFO, '[%s] %s : updates (computed timeout) %s'
+                                                          % (xdname, astid, time.asctime()))
+                                                try:
+                                                        if outsock is None:
+                                                                outsock = commandclass.extrasock(extraconn)
+                                                                if outsock is not None:
+                                                                        fdlist_full.append(outsock)
+                                                        update_amisocks(astid)
+                                                        commandclass.regular_update()
+                                                        plist[astid].update_phonelist()
+                                                        update_userlist[astid] = False
+                                                except Exception, exc:
+                                                        log_debug(SYSLOG_ERR, '--- exception --- %s : failed while updating lists and sockets (computed timeout) : %s'
+                                                                  % (astid, str(exc)))
+                                                commandclass.updates() # users' update, ...
 
                 else: # when nothing happens on the sockets, we fall here sooner or later
                         log_debug(SYSLOG_INFO, '[%s] updates (select timeout) %s'

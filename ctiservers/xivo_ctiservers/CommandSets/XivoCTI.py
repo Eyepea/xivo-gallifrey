@@ -35,6 +35,7 @@ import string
 import time
 import urllib
 from xivo_ctiservers import cti_capas
+from xivo_ctiservers import cti_fax
 from xivo_ctiservers import cti_userlist
 from xivo_ctiservers import cti_agentlist
 from xivo_ctiservers import cti_queuelist
@@ -68,7 +69,6 @@ __alphanums__ = string.uppercase + string.lowercase + string.digits
 allowed_states = ['available', 'away', 'outtolunch', 'donotdisturb', 'berightback']
 ITEMS_PER_PACKET = 500
 HISTSEPAR = ';'
-
 
 class XivoCTICommand(BaseCommand):
 
@@ -934,7 +934,8 @@ class XivoCTICommand(BaseCommand):
                 return
 
 
-        def manage_cticommand(self, userinfo, myconn, icommand):
+        def manage_cticommand(self, userinfo, icommand):
+                global faxserver
                 repstr = ''
                 astid    = userinfo.get('astid')
                 username = userinfo.get('user')
@@ -968,9 +969,8 @@ class XivoCTICommand(BaseCommand):
                                         repstr = self.__build_features_put__(icommand.args)
                         elif icommand.name == 'faxsend':
                                 if self.capas[capaid].match_funcs(ucapa, 'fax'):
-                                        if astid in faxbuffer:
-                                                faxbuffer[astid].append([me, myconn])
-                                        repstr = "faxsend=%d" % port_fax
+                                        faxserver = cti_fax.MyTCPServer(('', 0), cti_fax.FaxRequestHandler)
+                                        repstr = "faxsend=%d" % faxserver.socket.getsockname()[1]
                         elif icommand.name == 'message':
                                 if self.capas[capaid].match_funcs(ucapa, 'messages'):
                                         self.__send_msg_to_cti_clients__(self.message_srv2clt('%s/%s' %(astid, username),
@@ -1159,13 +1159,13 @@ class XivoCTICommand(BaseCommand):
 
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, '--- exception --- (manage_cticommand) %s %s %s %s'
-                                  %(icommand.name, str(icommand.args), str(myconn), str(exc)))
+                                  %(icommand.name, str(icommand.args), str(userinfo.get('login').get('connection')), str(exc)))
 
                 if repstr is not None: # might be useful to reply sth different if there is a capa problem for instance, a bad syntaxed command
                         try:
-                                myconn.sendall(repstr + '\n')
+                                userinfo.get('login').get('connection').sendall(repstr + '\n')
                         except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- (myconn) attempt to send <%s ...> (%d chars) failed : %s'
+                                log_debug(SYSLOG_ERR, '--- exception --- (sendall) attempt to send <%s ...> (%d chars) failed : %s'
                                           % (repstr[:40], len(repstr), str(exc)))
                 return
 
