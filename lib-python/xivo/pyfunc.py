@@ -62,11 +62,11 @@ def all_and_count(seq):
 	False
 	
 	"""
-	c = -1
-	for c, item in enumerate(seq):
+	cnt = -1
+	for cnt, item in enumerate(seq):
 		if not item:
 			return False
-	return c+1
+	return cnt + 1
 
 def nth_raw(seq, pos):
 	try:
@@ -90,7 +90,8 @@ def nth(seq, pos):
 		except StopIteration:
 			return None
 
-first = lambda seq: nth(seq, 0)
+def first(seq):
+	return nth(seq, 0)
 
 def last(seq):
 	try:
@@ -131,13 +132,13 @@ def at_least(num, check_func, seq):
 	value such as 'check_func(item)' evaluates to False - returns False."""
 	if num < 1:
 		return True
-	count = -1
-	for count, item in enumerate(seq):
+	cnt = -1
+	for cnt, item in enumerate(seq):
 		if not check_func(item):
 			return False
-		if count + 1 >= num:
+		if cnt + 1 >= num:
 			return True
-	return count + 1 >= num
+	return cnt + 1 >= num
 
 def split_pad(s, maxsplit, sep=None, pad=None):
 	"""Split 's' at most 'maxsplit' times (that is in at most maxsplit+1
@@ -155,4 +156,4 @@ def unsplit_none(strseq, sep=''):
 
 def replace_keys(dico, repl_dico):
 	"return dict(((repl_dico[k],v) for (k,v) in dico.iteritems()))"
-	return dict(((repl_dico[k],v) for (k,v) in dico.iteritems()))
+	return dict(((repl_dico[k], v) for (k, v) in dico.iteritems()))
