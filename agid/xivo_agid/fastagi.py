@@ -92,10 +92,10 @@ class FastAGI:
             if line == '':
                 #blank line signals end
                 break
-            key,data = line.split(':')[0], ':'.join(line.split(':')[1:])
+            key, data = line.split(':')[0], ':'.join(line.split(':')[1:])
             key = key.strip()
             data = data.strip()
-            if key <> '':
+            if key != '':
                 self.env[key] = data
 
     def _get_agi_args(self):
@@ -106,17 +106,19 @@ class FastAGI:
             self.args.append(self.env["agi_arg_%d" % i])
             i += 1
 
-    def _quote(self, string):
-        return '"%s"' %(str(string).replace('\\', '\\\\').replace('"', '\\"').replace('\n', ' '),)
+    @staticmethod
+    def _quote(string):
+        return '"%s"' % (str(string).replace('\\', '\\\\').replace('"', '\\"').replace('\n', ' '),)
 
-    def dp_break(self, message):
+    @staticmethod
+    def dp_break(message):
         raise FastAGIDialPlanBreak(message)
 
     def execute(self, command, *args):
         try:
             self.send_command(command, *args)
             return self.get_result()
-        except IOError,e:
+        except IOError, e:
             if e.errno == 32:
                 # Broken Pipe * let us go
                 raise FastAGISIGPIPEHangup("Received SIGPIPE")
@@ -125,7 +127,7 @@ class FastAGI:
 
     def send_command(self, command, *args):
         """Send a command to Asterisk"""
-        command = (' '.join(chain((command.strip(),),imap(str,args)))).strip()
+        command = (' '.join(chain((command.strip(),), imap(str, args)))).strip()
         if command[-1] != '\n':
             command += '\n'
         self.outf.write(command)
@@ -134,7 +136,7 @@ class FastAGI:
     def get_result(self):
         """Read the result of a command from Asterisk"""
         code = 0
-        result = {'result':('','')}
+        result = {'result': ('', '')}
         line = self.inf.readline().strip()
         m = re_code.search(line)
         if m:
@@ -148,7 +150,7 @@ class FastAGI:
                 code = int(code)
 
         if code == 200:
-            for key,value,data in re_kv.findall(response):
+            for key, value, data in re_kv.findall(response):
                 result[key] = (value, data)
 
                 # If user hangs up... we get 'hangup' in the data
@@ -281,7 +283,7 @@ class FastAGI:
         """
         res = self.execute('SEND IMAGE', filename)['result'][0]
         if res != '0':
-            raise FastAGIAppError('Channel falure on channel %s' % self.env.get('agi_channel','UNKNOWN'))
+            raise FastAGIAppError('Channel falure on channel %s' % self.env.get('agi_channel', 'UNKNOWN'))
 
     def say_digits(self, digits, escape_digits=''):
         """agi.say_digits(digits, escape_digits='') --> digit
@@ -483,7 +485,7 @@ class FastAGI:
         future.  Of course it can be hungup before then as well.   Setting to
         0 will cause the autohangup feature to be disabled on this channel.
         """
-        self.execute('SET AUTOHANGUP', time)
+        self.execute('SET AUTOHANGUP', secs)
 
     def hangup(self, channel=''):
         """agi.hangup(channel='')
@@ -526,11 +528,11 @@ class FastAGI:
         7 Line is busy
         """
         try:
-           result = self.execute('CHANNEL STATUS', channel)
+            result = self.execute('CHANNEL STATUS', channel)
         except FastAGIHangup:
-           raise
+            raise
         except FastAGIAppError:
-           result = {'result': ('-1','')}
+            result = {'result': ('-1','')}
 
         return int(result['result'][0])
 
@@ -546,9 +548,9 @@ class FastAGI:
         the variable is not set, an empty string is returned.
         """
         try:
-           result = self.execute('GET VARIABLE', self._quote(name))
+            result = self.execute('GET VARIABLE', self._quote(name))
         except FastAGIResultHangup:
-           result = {'result': ('1', 'hangup')}
+            result = {'result': ('1', 'hangup')}
 
         res, value = result['result']
         return value
@@ -560,13 +562,13 @@ class FastAGI:
         the variable is not set, an empty string is returned.
         """
         try:
-           if channel:
-              result = self.execute('GET FULL VARIABLE', self._quote(name), self._quote(channel))
-           else:
-              result = self.execute('GET FULL VARIABLE', self._quote(name))
+            if channel:
+                result = self.execute('GET FULL VARIABLE', self._quote(name), self._quote(channel))
+            else:
+                result = self.execute('GET FULL VARIABLE', self._quote(name))
 
         except FastAGIResultHangup:
-           result = {'result': ('1', 'hangup')}
+            result = {'result': ('1', 'hangup')}
 
         res, value = result['result']
         return value
