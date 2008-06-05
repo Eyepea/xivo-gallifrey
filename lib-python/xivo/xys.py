@@ -158,7 +158,6 @@ from xivo import trace_null
 from collections import namedtuple
 import copy
 import yaml
-import sys
 
 # NOTE: content must stay first
 ValidatorNode = namedtuple('ValidatorNode', 'content validator')
@@ -288,8 +287,8 @@ def qualify_map(key, content):
 			return key[:-1], Optional(content)
 		else:
 			return key, Mandatory(content)
- 	else:
- 		return key, content
+	else:
+		return key, content
 
 def transschema(x):
 	"""
