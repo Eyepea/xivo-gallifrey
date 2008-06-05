@@ -96,7 +96,7 @@ from xivo.BackSQL import backmysql
 from xivo.BackSQL import backsqlite
 
 # XIVO CTI modules
-from xivo_agid import fastagi
+## from xivo_agid import fastagi
 from xivo_ctiservers import xivo_ami
 from xivo_ctiservers import xivo_phones
 from xivo_ctiservers import xivo_contexts
@@ -809,11 +809,11 @@ while True: # loops over the reloads
                                 if kind == 'FAGI':
                                         mfr = conn.makefile('rb', -1)
                                         mfw = conn.makefile('wb', 0)
-                                        try:
-                                                fagi = fastagi.FastAGI(mfr, mfw)
-                                                commandclass.handle_fagi(fagi)
-                                        except Exception, exc:
-                                                log_debug(SYSLOG_ERR, '--- exception --- fastagi : %s' % str(exc))
+##                                        try:
+##                                                fagi = fastagi.FastAGI(mfr, mfw)
+##                                                commandclass.handle_fagi(fagi)
+##                                        except Exception, exc:
+##                                                log_debug(SYSLOG_ERR, '--- exception --- fastagi : %s' % str(exc))
                                         mfr.close()
                                         mfw.close()
                                         conn.close()
