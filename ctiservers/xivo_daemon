@@ -64,26 +64,26 @@ import threading
 import time
 
 try:
-        daemonname = os.path.basename(sys.argv[0])
+        DAEMONNAME = os.path.basename(sys.argv[0])
 except:
-        daemonname = 'xivo_daemon'
+        DAEMONNAME = 'xivo_daemon'
 
 # XIVO lib-python modules initialization
-xivoconffile            = '/etc/asterisk/%s.conf' % daemonname
+XIVOCONFFILE            = '/etc/asterisk/%s.conf' % DAEMONNAME
 GETOPT_SHORTOPTS        = 'dc:'
 GETOPT_LONGOPTS         = ["debug", "config="]
 debug_mode = False
 def config_path():
-        global xivoconffile, debug_mode
+        global XIVOCONFFILE, debug_mode
         for opt, arg in getopt.getopt(
                 sys.argv[1:],
                 GETOPT_SHORTOPTS,
                 GETOPT_LONGOPTS
                 )[0]:
                 if opt == "-c":
-                        xivoconffile = arg
-		elif opt == "-d":
-			debug_mode = True
+                        XIVOCONFFILE = arg
+                elif opt == "-d":
+                        debug_mode = True
 config_path()
 
 # XIVO lib-python modules imports
@@ -107,7 +107,7 @@ from xivo_ctiservers import cti_userlist
 from xivo_ctiservers.xivo_log import *
 from xivo_ctiservers.CommandSets import *
 
-PIDFILE = '/var/run/%s.pid' % daemonname
+PIDFILE = '/var/run/%s.pid' % DAEMONNAME
 # TODO: command line parameter
 
 BUFSIZE_LARGE = 8192
@@ -117,8 +117,8 @@ socket.setdefaulttimeout(2)
 XIVO_CLI_WEBI_HEADER = 'XIVO-CLI-WEBI'
 XIVOVERSION = '0.4'
 
-def log_debug(a, b):
-        log_debug_file(a, b, 'main')
+def log_debug(level, text):
+        log_debug_file(level, text, 'main')
 
 ## \brief Deals with requests from the UI clients.
 # \param connid connection identifier
@@ -142,8 +142,11 @@ def manage_cti_connections(connid, msg, sep):
                 if command.name in commandclass.get_list_commands():
                         try:
                                 if command.type == xivo_commandsets.CMD_LOGIN:
-                                        loginparams = commandclass.get_login_params(asterisklist[0], command, connid)
+                                        loginparams = commandclass.get_login_params(asterisklist[0],
+                                                                                    command, connid)
+                                        log_debug(SYSLOG_INFO, 'LOGIN : loginparams = %s' % loginparams)
                                         uinfo = commandclass.manage_login(loginparams)
+                                        log_debug(SYSLOG_INFO, 'LOGIN : uinfo = %s' % uinfo)
                                         if uinfo.__class__.__name__ == 'str':
                                                 commandclass.loginko(loginparams, uinfo, connid)
                                         else:
@@ -156,10 +159,12 @@ def manage_cti_connections(connid, msg, sep):
                                                                                connid,
                                                                                command)
                                         else:
-                                                log_debug(SYSLOG_WARNING, "unlogged %s is attempting a %s (TCP) : %s" %(requester, command.name, str(command.args)))
+                                                log_debug(SYSLOG_WARNING,
+                                                          "unlogged %s is attempting a %s (TCP) : %s"
+                                                          % (requester, command.name, str(command.args)))
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- CTI connection when managing [%s] for %s : %s'
-                                          %(command.name, requester, str(exc)))
+                                          % (command.name, requester, str(exc)))
                 else:
                         connid.sendall('Unknown Command <%s>\n' % command.name)
 
@@ -184,14 +189,14 @@ def manage_webi_connections(connid, msg, sep):
                 if requester_ip in ip_reverse_webi:
                         try:
                                 astid = ip_reverse_webi[requester_ip]
-                                connid.sendall('%s:ID <%s>\n' %(XIVO_CLI_WEBI_HEADER, astid))
+                                connid.sendall('%s:ID <%s>\n' % (XIVO_CLI_WEBI_HEADER, astid))
                                 if usefulmsg == 'xivo[userlist,update]':
                                         update_userlist[astid] = True
-                                        connid.sendall('%s:OK\n' %(XIVO_CLI_WEBI_HEADER))
+                                        connid.sendall('%s:OK\n' % XIVO_CLI_WEBI_HEADER)
                                         log_debug(SYSLOG_INFO, '%s : userlist update request received' % astid)
                                 elif usefulmsg == 'xivo[daemon,reload]':
                                         askedtoquit = True
-                                        connid.sendall('%s:OK\n' %(XIVO_CLI_WEBI_HEADER))
+                                        connid.sendall('%s:OK\n' % XIVO_CLI_WEBI_HEADER)
                                         log_debug(SYSLOG_INFO, '%s : daemon reload request received' % astid)
                                 elif astid in AMI_array_user_commands and AMI_array_user_commands[astid]:
                                         stripped_usefulmsg = usefulmsg.strip()
@@ -207,20 +212,20 @@ def manage_webi_connections(connid, msg, sep):
                                                 s = AMI_array_user_commands[astid].execclicommand(stripped_usefulmsg)
                                         except Exception, exc:
                                                 log_debug(SYSLOG_ERR, '--- exception --- (%s) WEBI command exec <%s> : (client %s) : %s'
-                                                          %(astid, str(stripped_usefulmsg), requester, str(exc)))
+                                                          % (astid, str(stripped_usefulmsg), requester, str(exc)))
                                         try:
                                                 for x in s:
                                                         connid.sendall(x)
-                                                connid.sendall('%s:OK\n' %(XIVO_CLI_WEBI_HEADER))
+                                                connid.sendall('%s:OK\n' % XIVO_CLI_WEBI_HEADER)
                                         except Exception, exc:
                                                 log_debug(SYSLOG_ERR, '--- exception --- (%s) WEBI command reply <%s> : (client %s) : %s'
-                                                          %(astid, str(stripped_usefulmsg), requester, str(exc)))
+                                                          % (astid, str(stripped_usefulmsg), requester, str(exc)))
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- (%s) WEBI <%s> : (client %s) : %s'
-                                          %(astid, str(usefulmsg.strip()), requester, str(exc)))
-                                connid.sendall('%s:KO <Exception : %s>\n' %(XIVO_CLI_WEBI_HEADER, str(exc)))
+                                          % (astid, str(usefulmsg.strip()), requester, str(exc)))
+                                connid.sendall('%s:KO <Exception : %s>\n' % (XIVO_CLI_WEBI_HEADER, str(exc)))
                 else:
-                        connid.sendall('%s:KO <NOT ALLOWED>\n' %(XIVO_CLI_WEBI_HEADER))
+                        connid.sendall('%s:KO <NOT ALLOWED>\n' % XIVO_CLI_WEBI_HEADER)
 
 
 ## \brief Deals with requests from the UI clients.
@@ -243,28 +248,26 @@ def manage_info_connections(connid, msg, sep):
                                         'xivo_version=%s;' \
                                         'server_version=%s;' \
                                         'uptime=%d s' \
-                                        %(XIVOVERSION,
-                                          __revision__,
-                                          time_uptime)
+                                        % (XIVOVERSION, __revision__, time_uptime)
                                 connid.sendall(reply + "\n")
-                                # connid.sendall("server capabilities = %s\n" %(",".join()))
+                                # connid.sendall("server capabilities = %s\n" % (",".join()))
                         elif usefulmsg == 'show_users':
                                 for user, info in commandclass.users().iteritems():
-                                        connid.sendall('%s %s\n' %(user.encode('latin1'), info))
+                                        connid.sendall('%s %s\n' % (user.encode('latin1'), info))
                         elif usefulmsg == 'show_logged_ip':
                                 for user, info in commandclass.connected_users().iteritems():
                                         if 'connection' in info['login']:
-                                                connid.sendall('user %s : ip/port = %s/%s\n' %(user.encode('latin1'),
-                                                                                            info['login']['connection'].getpeername()[0],
-                                                                                            info['login']['connection'].getpeername()[1]))
+                                                connid.sendall('user %s : ip/port = %s/%s\n' % (user.encode('latin1'),
+                                                                                                info['login']['connection'].getpeername()[0],
+                                                                                                info['login']['connection'].getpeername()[1]))
                         elif usefulmsg == 'show_logged':
                                 for user, info in commandclass.connected_users().iteritems():
-                                        connid.sendall('%s %s\n' %(user.encode('latin1'), info))
+                                        connid.sendall('%s %s\n' % (user.encode('latin1'), info))
                         elif usefulmsg == 'show_ami':
                                 for amis in AMI_array_events_fd:
-                                        connid.sendall("events   : %s : %s\n" %(amis, str(AMI_array_events_fd[amis])))
+                                        connid.sendall("events   : %s : %s\n" % (amis, str(AMI_array_events_fd[amis])))
                                 for amis in AMI_array_user_commands:
-                                        connid.sendall("commands : %s : %s\n" %(amis, str(AMI_array_user_commands[amis])))
+                                        connid.sendall("commands : %s : %s\n" % (amis, str(AMI_array_user_commands[amis])))
                         elif usefulmsg.startswith('%s:' % commandset):
                                 commandclass.cliaction(connid, usefulmsg)
                         else:
@@ -272,7 +275,7 @@ def manage_info_connections(connid, msg, sep):
                         connid.sendall("XIVO-INFO:OK\n")
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, '--- exception --- INFO connection [%s] : KO when sending to %s : %s'
-                                  %(usefulmsg, requester, str(exc)))
+                                  % (usefulmsg, requester, str(exc)))
 
 def manage_tcp_connections(sel_i, msg, kind):
         """
@@ -320,7 +323,7 @@ def handle_ami_event(astid, idata):
                         if len(myfieldvalue) == 2:
                                 this_event[myfieldvalue[0]] = myfieldvalue[1]
                 evfunction = this_event.get('Event')
-                verboselog("/%s/ %s" %(astid, str(this_event)), True, False)
+                verboselog("/%s/ %s" % (astid, str(this_event)), True, False)
                 # print '////////', evfunction, '   ------  ', this_event
                 if evfunction is not None:
                         handle_ami_function(astid, evfunction, this_event)
@@ -403,12 +406,12 @@ def handle_ami_function(astid, evfunction, this_event):
         try:
                 if evfunction == 'Reload':
                         message = this_event.get('Message')
-                        log_debug(SYSLOG_WARNING, "AMI:Reload: %s : %s" %(astid, str(this_event)))
+                        log_debug(SYSLOG_WARNING, "AMI:Reload: %s : %s" % (astid, str(this_event)))
                         commandclass.ami_reload(astid, this_event)
                 elif evfunction == 'Shutdown':
                         shutdown = this_event.get('Shutdown')
                         restart  = this_event.get('Restart')
-                        log_debug(SYSLOG_WARNING, "AMI:Shutdown: %s (how=%s restart=%s)" %(astid, shutdown, restart))
+                        log_debug(SYSLOG_WARNING, "AMI:Shutdown: %s (how=%s restart=%s)" % (astid, shutdown, restart))
                         commandclass.ami_shutdown(astid, this_event)
                 elif evfunction.startswith('UserEvent'):
                         commandclass.ami_userevent(astid, this_event)
@@ -492,8 +495,8 @@ def connect_to_AMI(address, loginname, password, events_on):
 def sighandler(signum, frame):
         global askedtoquit
         print '--- signal %s (atq = %s) received : quits' % (signum, askedtoquit)
-        for t in filter(lambda x: x.getName()<>"MainThread", threading.enumerate()):
-                print "--- living thread <%s>" %(t.getName())
+        for t in filter(lambda x: x.getName() != 'MainThread', threading.enumerate()):
+                print "--- living thread <%s>" % (t.getName())
                 t._Thread__stop()
         askedtoquit = True
 
@@ -540,10 +543,10 @@ while True: # loops over the reloads
         time_start = time.time()
         if nreload == 0:
                 log_debug(SYSLOG_NOTICE, '# STARTING XIVO Daemon %s (pid %d) / svn %s # (0/3) Starting'
-                          %(XIVOVERSION, os.getpid(), __revision__))
+                          % (XIVOVERSION, os.getpid(), __revision__))
         else:
                 log_debug(SYSLOG_NOTICE, '# STARTING XIVO Daemon %s (pid %d) / svn %s # (0/3) Reloading (%d)'
-                          %(XIVOVERSION, os.getpid(), __revision__, nreload))
+                          % (XIVOVERSION, os.getpid(), __revision__, nreload))
         nreload += 1
         
         # global default definitions
@@ -557,7 +560,7 @@ while True: # loops over the reloads
 
         userinfo_by_requester = {}
 
-        cconf = cti_config.Config(xivoconffile)
+        cconf = cti_config.Config(XIVOCONFFILE)
         xivoconf_general = cconf.read_section('general')
 
         # loads the general configuration
@@ -616,7 +619,7 @@ while True: # loops over the reloads
                 xivoconf_asterisk = cconf.read_section(astid)
                 if len(xivoconf_asterisk) > 0:
                         localaddr = '127.0.0.1'
-                        phonelisturl = 'sso.php'
+                        phonelisturl = None
                         ipaddress = '127.0.0.1'
                         ipaddress_webi = '127.0.0.1'
                         ami_port = 5038
@@ -709,7 +712,7 @@ while True: # loops over the reloads
                         commandclass.askstatus(astid, AMI_array_events_fd, npl)
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, '--- exception --- %s : failed while setting lists and sockets : %s'
-                                  %(astid, str(exc)))
+                                  % (astid, str(exc)))
         commandclass.updates() # users' update, ...
 
         log_debug(SYSLOG_INFO, "# STARTING %s # (2/2) listening sockets (CTI, WEBI, (F)AGI, INFO)" % xdname)
@@ -730,7 +733,7 @@ while True: # loops over the reloads
                 UIsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 UIsock.bind((bind, int(port)))
                 UIsock.listen(10)
-                fdlist_listen_cti[UIsock] = '%s:%s' %(kind, nmax)
+                fdlist_listen_cti[UIsock] = '%s:%s' % (kind, nmax)
                 fdlist_full.append(UIsock)
 
         if outsock is not None:
@@ -755,8 +758,8 @@ while True: # loops over the reloads
                                         os.unlink(PIDFILE)
                                 except Exception, exc:
                                         print exc
-                                for t in filter(lambda x: x.getName()<>"MainThread", threading.enumerate()):
-                                        print "--- (stop) killing thread <%s>" %(t.getName())
+                                for t in filter(lambda x: x.getName() != 'MainThread', threading.enumerate()):
+                                        print "--- (stop) killing thread <%s>" % t.getName()
                                         t._Thread__stop()
                                 sys.exit(5)
                         else:
@@ -764,8 +767,8 @@ while True: # loops over the reloads
                                 askedtoquit = True
                                 for s in fdlist_full:
                                         s.close()
-                                for t in filter(lambda x: x.getName()<>"MainThread", threading.enumerate()):
-                                        print "--- (reload) the thread <%s> remains" %(t.getName())
+                                for t in filter(lambda x: x.getName() != 'MainThread', threading.enumerate()):
+                                        print "--- (reload) the thread <%s> remains" % t.getName()
                                         # t._Thread__stop() # does not work in reload case (vs. stop case)
                                 continue
                 if sels_i:
@@ -903,7 +906,7 @@ while True: # loops over the reloads
                                                 update_userlist[astid] = False
                                         except Exception, exc:
                                                 log_debug(SYSLOG_ERR, '--- exception --- %s : failed while updating lists and sockets (computed timeout) : %s'
-                                                          %(astid, str(exc)))
+                                                          % (astid, str(exc)))
                                         commandclass.updates() # users' update, ...
 
                 else: # when nothing happens on the sockets, we fall here sooner or later
@@ -922,6 +925,6 @@ while True: # loops over the reloads
                                         plist[astid].update_phonelist()
                                 except Exception, exc:
                                         log_debug(SYSLOG_ERR, '--- exception --- %s : failed while updating lists and sockets (select s timeout) : %s'
-                                                  %(astid, str(exc)))
+                                                  % (astid, str(exc)))
 
         log_debug(SYSLOG_NOTICE, 'after askedtoquit loop (%s)' % askedtoquit)

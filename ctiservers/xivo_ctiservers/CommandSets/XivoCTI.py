@@ -46,8 +46,8 @@ from xivo import anysql
 from xivo.BackSQL import backmysql
 from xivo.BackSQL import backsqlite
 
-def log_debug(a, b):
-        log_debug_file(a, b, 'xivocti')
+def log_debug(level, text):
+        log_debug_file(level, text, 'xivocti')
 
 SHEET_EVENT_INCOMING    = 1 << 0
 SHEET_EVENT_OUTGOING    = 1 << 1
@@ -947,7 +947,6 @@ class XivoCTICommand(BaseCommand):
                 try:
                         if icommand.name == 'history':
                                 if self.capas[capaid].match_funcs(ucapa, 'history'):
-                                        print icommand.args
                                         repstr = self.__build_history_string__(icommand.args[0],
                                                                                icommand.args[1],
                                                                                icommand.args[2])
@@ -1175,41 +1174,50 @@ class XivoCTICommand(BaseCommand):
 
         def __build_history_string__(self, requester_id, nlines, kind):
                 # p/xivo/x/sip/103/103
-                [dummyp, astid_src, dummyx, techno, phoneid, phonenum] = requester_id.split('/')
-                if astid_src in self.configs:
+                [company, userid] = requester_id.split('/')
+                userinfo = self.ulist_ng.finduser(userid + '@' + company)
+                astid = userinfo.get('astid')
+                termlist = userinfo.get('techlist').split(',')
+                reply = []
+                for termin in termlist:
+                        [techno, phoneid] = termin.split('/')
                         try:
-                                reply = []
-                                hist = self.__update_history_call__(self.configs[astid_src], techno, phoneid, phonenum, nlines, kind)
+                                hist = self.__update_history_call__(self.configs[astid], techno, phoneid, nlines, kind)
                                 for x in hist:
                                         try:
-                                                ry1 = x[0].isoformat() + HISTSEPAR + x[1].replace('"', '') \
-                                                      + HISTSEPAR + str(x[10]) + HISTSEPAR + x[11]
+                                                ry1 = HISTSEPAR.join([x[0].isoformat(),
+                                                                      x[1].replace('"', ''),
+                                                                      str(x[10]),
+                                                                      x[11]])
                                         except:
-                                                ry1 = x[0] + HISTSEPAR + x[1].replace('"', '') \
-                                                      + HISTSEPAR + str(x[10]) + HISTSEPAR + x[11]
-
+                                                ry1 = HISTSEPAR.join([x[0],
+                                                                      x[1].replace('"', ''),
+                                                                      str(x[10]),
+                                                                      x[11]])
                                         if kind == '0':
                                                 num = x[3].replace('"', '')
                                                 sipcid = "SIP/%s" % num
                                                 cidname = num
-                                                if sipcid in self.plist[astid_src].normal:
-                                                        cidname = '%s %s <%s>' %(self.plist[astid_src].normal[sipcid].calleridfirst,
-                                                                                 self.plist[astid_src].normal[sipcid].calleridlast,
+                                                if sipcid in self.plist[astid].normal:
+                                                        cidname = '%s %s <%s>' %(self.plist[astid].normal[sipcid].calleridfirst,
+                                                                                 self.plist[astid].normal[sipcid].calleridlast,
                                                                                  num)
-                                                ry2 = HISTSEPAR + cidname + HISTSEPAR + 'OUT'
+                                                ry2 = HISTSEPAR.join([cidname, 'OUT', termin])
                                         else:   # display callerid for incoming calls
-                                                ry2 = HISTSEPAR + x[1].replace('"', '') + HISTSEPAR + 'IN'
-
+                                                ry2 = HISTSEPAR.join([x[1].replace('"', ''), 'IN', termin])
+                                                
                                         reply.append(ry1)
+                                        reply.append(HISTSEPAR)
                                         reply.append(ry2)
-                                        reply.append(';')
-                                return 'history=%s' % ''.join(reply)
+                                        reply.append(HISTSEPAR)
                         except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- (%s) error : history : (client %s) : %s'
-                                          %(astid_src, requester_id, str(exc)))
+                                log_debug(SYSLOG_ERR, '--- exception --- error : history : (client %s, termin %s) : %s'
+                                          % (requester_id, termin, str(exc)))
+
+                if len(reply) > 0:
+                        return 'history=%s' % ''.join(reply)
                 else:
-                        return self.dmessage_srv2clt('history KO : no such asterisk id <%s>' % astid_src)
-                return
+                        return
 
 
         def __agent__(self, userinfo, commandargs):
@@ -1695,10 +1703,9 @@ class XivoCTICommand(BaseCommand):
         # \param cfg the asterisk's config
         # \param techno technology (SIP/IAX/ZAP/etc...)
         # \param phoneid phone id
-        # \param phonenum the phone number
         # \param nlines the number of lines to fetch for the given phone
         # \param kind kind of list (ingoing, outgoing, missed calls)
-        def __update_history_call__(self, cfg, techno, phoneid, phonenum, nlines, kind):
+        def __update_history_call__(self, cfg, techno, phoneid, nlines, kind):
                 results = []
                 if cfg.cdr_db_conn is None:
                         log_debug(SYSLOG_WARNING, '%s : no CDR uri defined for this asterisk - see cdr_db_uri parameter' % cfg.astid)

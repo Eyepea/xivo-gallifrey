@@ -29,6 +29,9 @@ import md5
 import urllib
 from xivo_log import *
 
+def log_debug(level, text):
+        log_debug_file(level, text, 'urllist')
+
 class UrlList:
         def __init__(self, url):
                 self.list = {}
@@ -38,17 +41,22 @@ class UrlList:
 
         def getlist(self, index, length):
                 try:
-                        kind = self.url.split(':')[0]
-                        if kind == 'file':
-                                f = urllib.urlopen(self.url)
-                        elif kind in ['mysql', 'sqlite', 'ldap']:
-                                log_debug(SYSLOG_WARNING, 'URI kind %s not supported yet' % kind)
-                        elif kind in ['http', 'https']:
-                                f = urllib.urlopen(self.url + "?sum=%s" % self.urlmd5)
+                        if self.url is not None:
+                                kind = self.url.split(':')[0]
+                                if kind == 'file' or kind == self.url:
+                                        f = urllib.urlopen(self.url)
+                                elif kind in ['mysql', 'sqlite', 'ldap']:
+                                        log_debug(SYSLOG_WARNING, 'URL kind %s not supported yet' % kind)
+                                elif kind in ['http', 'https']:
+                                        f = urllib.urlopen(self.url + "?sum=%s" % self.urlmd5)
+                                else:
+                                        log_debug(SYSLOG_WARNING, 'URL kind %s not supported' % kind)
+                                        return -1
                         else:
-                                log_debug(SYSLOG_WARNING, 'URI kind %s not supported' % kind)
+                                log_debug(SYSLOG_WARNING, 'No URL has been defined')
+                                return -1
                 except Exception, exc:
-                        log_debug(SYSLOG_ERR, "--- exception --- (UserList) unable to open URL %s : %s" %(self.url, str(exc)))
+                        log_debug(SYSLOG_ERR, "--- exception --- (UrlList) unable to open URL %s : %s" %(self.url, str(exc)))
                         return -1
 
                 try:
@@ -75,7 +83,7 @@ class UrlList:
                                         pass
                         f.close()
                 except Exception, exc:
-                        log_debug(SYSLOG_ERR, "--- exception --- (Url) problem occured when retrieving list : %s" % str(exc))
+                        log_debug(SYSLOG_ERR, "--- exception --- (UrlList) problem occured when retrieving list : %s" % str(exc))
                         return -1
 
                 return 0

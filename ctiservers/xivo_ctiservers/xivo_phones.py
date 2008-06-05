@@ -32,8 +32,8 @@ import time
 from xivo_log import *
 import cti_urllist
 
-def log_debug(a, b):
-        log_debug_file(a, b, 'xivo_phones')
+def log_debug(level, text):
+        log_debug_file(level, text, 'phones')
 
 DIR_TO_STRING = '>'
 DIR_FROM_STRING = '<'
@@ -114,7 +114,6 @@ class PhoneList:
                 self.lstadd = []
                 self.lstdel = []
                 self.phlist = cti_urllist.UrlList(url)
-
 
         def update_gui_clients(self, phonenum, fromwhom):
                 phoneinfo = (fromwhom,
@@ -224,7 +223,6 @@ class PhoneList:
          newsipnums = {}
          try:
                  u = self.phlist.getlist(1, 12)
-                 print u, self.phlist.url, self.phlist
                  newphlist = p2p(self.phlist.list)
                  if newphlist is not None:
                          self.rough_phonelist = newphlist

@@ -30,6 +30,9 @@ import urllib
 from xivo_log import *
 import cti_urllist
 
+def log_debug(level, text):
+        log_debug_file(level, text, 'userlist')
+
 class UserList:
         def __init__(self, newurls = []):
                 self.list = {}
