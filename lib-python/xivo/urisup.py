@@ -48,11 +48,11 @@ IPV_FUTURE_RE = 'v[\da-fA-F]+\.[' \
                 + re.escape(UNRESERVED + SUB_DELIMS + ':') \
                 + ']+'
 
-BYTES_VAL = ''.join(map(chr,range(0,256)))
+BYTES_VAL = ''.join(map(chr, range(0, 256)))
 
 def __allow_to_encdct(charset):
 	enc_charset = set(iter(charset.replace('%','')))
-	return dict(((k in enc_charset) and (k,k) or (k,'%%%02X'%ord(k)) for k in BYTES_VAL))
+	return dict(((k in enc_charset) and (k, k) or (k, '%%%02X' % ord(k)) for k in BYTES_VAL))
 
 USER_ENCDCT = __allow_to_encdct(USER_CHAR)
 PASSWD_ENCDCT = __allow_to_encdct(PASSWD_CHAR)
@@ -85,7 +85,7 @@ def __all_in(s, charset):
 	return not s.translate(BYTES_VAL, charset)
 
 def __split_sz(s, n):
-	return [s[b:b+n] for b in range(0,len(s),n)]
+	return [s[b:b+n] for b in range(0, len(s), n)]
 
 def __valid_IPv4address(potential_ipv4):
 	if potential_ipv4[0] in "0123456789xX" and __all_in(potential_ipv4[1:], "0123456789.xX"):
@@ -167,7 +167,7 @@ def __valid_IPLiteral(potential_ipliteral):
 	       or __valid_IPvFuture(potential_ipliteral[1:-1])
 
 def __valid_query(pquery_tuple):
-	for k,v in pquery_tuple:
+	for k, v in pquery_tuple:
 		if (k and (not __all_in(k, QUEFRAG_CHAR))) \
 		   or (v and (not __all_in(v, QUEFRAG_CHAR))):
 			return False
@@ -228,7 +228,7 @@ def pct_decode(s):
 	"""
 	if s is None:
 		return None
-	return PERCENT_CODE_SUB(lambda mo: chr(int(mo.group(0)[1:],16)), s)
+	return PERCENT_CODE_SUB(lambda mo: chr(int(mo.group(0)[1:], 16)), s)
 
 def pct_encode(s, encdct):
 	"""Returns a translated version of s where each character is mapped to a
@@ -243,7 +243,7 @@ def pct_encode(s, encdct):
 	"""
 	if s is None:
 		return None
-	return ''.join(map(encdct.__getitem__,s))
+	return ''.join(map(encdct.__getitem__, s))
 
 def query_elt_decode(s):
 	"""Returns the percent-decoded version of string s, after a
@@ -382,7 +382,7 @@ def unsplit_query(query):
 	returned by split_query()
 	
 	"""
-	def unsplit_assignment((x,y)):
+	def unsplit_assignment((x, y)):
 		if (x is not None) and (y is not None):
 			return x + '=' + y
 		elif x is not None:
@@ -456,7 +456,7 @@ def uri_tree_normalize(uri_tree):
 	if authority and (filter(bool, authority) == ()):
 		authority = None
 	if query:
-		query = filter(lambda (x,y): bool(x) or bool(y), query)
+		query = filter(lambda (x, y): bool(x) or bool(y), query)
 	return (scheme and scheme or None, authority and authority or None,
 	        path and path or None, query and query or None,
 	        fragment and fragment or None)
@@ -555,7 +555,7 @@ def uri_tree_decode(uri_tree):
 		authority = (user, passwd, host, port)
 	path, fragment = pct_decode(path), pct_decode(fragment)
 	if query:
-		query = tuple(map(lambda (x,y): (query_elt_decode(x), query_elt_decode(y)), query))
+		query = tuple([(query_elt_decode(x), query_elt_decode(y)) for (x, y) in query])
 	return (scheme, authority, path, query, fragment)
 
 def uri_split_norm_valid_decode(uri):
@@ -615,10 +615,8 @@ def uri_tree_encode(uri_tree, type_host = HOST_REG_NAME):
 				                       re.compile('[\\:]'))
 				path = '/'.join(sppath)
 	if query:
-		query = tuple(map(lambda (x,y):
-		                           (query_elt_encode(x, QUERY_KEY_ENCDCT),
-		                            query_elt_encode(y, QUERY_VAL_ENCDCT)),
-		                  query))
+		query = tuple([(query_elt_encode(x, QUERY_KEY_ENCDCT),
+		                query_elt_encode(y, QUERY_VAL_ENCDCT)) for (x, y) in query])
 	if fragment:
 		fragment = pct_encode(fragment, FRAG_ENCDCT)
 	return (scheme, authority, path, query, fragment)
