@@ -259,7 +259,7 @@ def rxStreamedLines(fobjs=None, timeout=None, ctx=None):
 			for p, blocks in enumerate(buffers):
 				
 				nl = find(((bp, block, block.find('\n')) for (bp, block) in enumerate(blocks)),
-					  lambda (bp, block, nlp): nlp > -1)
+					  lambda (bp, block, nlpos): nlpos > -1)
 				if nl is None:
 					if current_fobjs[p]:
 						continue
@@ -294,143 +294,142 @@ def rxStreamedLines(fobjs=None, timeout=None, ctx=None):
 				yield tuple(ylines)
 
 if __name__ == '__main__':
-	import subprocess, fcntl, time, sys, os
-	LEN_LAW = [(127,1),(120,16),(0,0),(32,64),(31,137),(2039,0)]
-	def gen_lines(len_law):
-		sz, b = 0, 0
-		for nb,step in len_law:
-			if step == 0:
-				if nb == 0:
-					yield ''
-				else:
-					yield chr(b%95+32) * nb
-					return
-			for i in xrange(nb):
-				yield chr(b%95+32) * sz + '\n'
-				b += sz + 1
-				sz += step
-	TEST_LINES = list(gen_lines(LEN_LAW))
-	def makeNonBlocking(fobj):
-		fl = fcntl.fcntl(fobj, fcntl.F_GETFL)
-		fcntl.fcntl(fobj, fcntl.F_SETFL, fl | os.O_NONBLOCK)
-	if len(sys.argv) == 1:
-		child = subprocess.Popen(
-			(sys.argv[0], '--child'),
-			bufsize = 0,
-			stdout=subprocess.PIPE,
-			stderr=subprocess.PIPE,
-			close_fds=True)
-		makeNonBlocking(child.stdout)
-		makeNonBlocking(child.stderr)
-		fobjs = (child.stdout, child.stderr)
-		nbf = 2 # len(fobjs), state machine in test loop bellow does not
-		        # support more than 2
-		rcvd_eof = [False, False]
-		timeout = 1
-		resume = None
-		def print_one(s):
-			if s is None:
-				print '<None>',
-			elif not s:
-				print '<EOF>',
-			elif len(s) <= 10:
-				print s.strip(),
-			else:
-				print s[:10]+"...%d"%len(s),
-		nb = 0
-		start = 0
-		expect = iter(TEST_LINES)
-		eofs = 0
-		line_iter = None
-		try:
-		    line_iter = rxStreamedLines(fobjs, timeout, resume)
-		    while fobjs or resume:
-			try:
-				for lines in line_iter:
-					nstart = start
-					ST = 0
-					for x in range(start, nbf) \
-					       + range(0, start):
-						nstart = x
-						if ST == 0:
-							assert lines[x] is not None, `lines`
-							ST = 1
-						elif ST == 1:
-							if lines[x] is None:
-								break
-						if eofs:
-							assert not lines[x], `lines[x]`
-						if lines[x] == '':
-							assert rcvd_eof[x] == False
-							eofs = 1
-							rcvd_eof[x] = True
-						try:
-							l = expect.next()
-							nb += 1
-						except StopIteration:
-							assert eofs
-						else:
-							assert not eofs
-							assert l == lines[x], `(l, lines[x])`
+	def testfunc():
+		import subprocess, time, sys
+		LEN_LAW = [(127, 1), (120, 16), (0, 0), (32, 64), (31, 137), (2039, 0)]
+		def gen_lines(len_law):
+			sz, b = 0, 0
+			for nb, step in len_law:
+				if step == 0:
+					if nb == 0:
+						yield ''
 					else:
-						nstart = start
-					start = nstart
-					print_one(lines[0])
-					print_one(lines[1])
-					print
-					if nb == 59 or nb == 126:
-						time.sleep(1.-1/128.)
-			except RestartableException, x:
-				l = expect.next()
-				assert l == '', `l`
-				assert isinstance(x, Timeout)
-				print "############ RestartableException #############"
-				fobjs, timeout, resume = None, None, x.context()
-				del x
+						yield chr(b % 95 + 32) * nb
+						return
+				for i in xrange(nb):
+					yield chr(b % 95 + 32) * sz + '\n'
+					b += sz + 1
+					sz += step
+		TEST_LINES = list(gen_lines(LEN_LAW))
+		if len(sys.argv) == 1:
+			child = subprocess.Popen(
+				(sys.argv[0], '--child'),
+				bufsize = 0,
+				stdout=subprocess.PIPE,
+				stderr=subprocess.PIPE,
+				close_fds=True)
+			makeNonBlocking(child.stdout)
+			makeNonBlocking(child.stderr)
+			fobjs = (child.stdout, child.stderr)
+			nbf = 2 # len(fobjs), state machine in test loop bellow does not
+		        	# support more than 2
+			rcvd_eof = [False, False]
+			timeout = 1
+			resume = None
+			def print_one(s):
+				if s is None:
+					print '<None>',
+				elif not s:
+					print '<EOF>',
+				elif len(s) <= 10:
+					print s.strip(),
+				else:
+					print s[:10] + "...%d" % len(s),
+			nb = 0
+			start = 0
+			expect = iter(TEST_LINES)
+			eofs = 0
+			line_iter = None
+			try:
 				line_iter = rxStreamedLines(fobjs, timeout, resume)
+				while fobjs or resume:
+					try:
+						for lines in line_iter:
+							nstart = start
+							ST = 0
+							for x in range(start, nbf) \
+							       + range(0, start):
+								nstart = x
+								if ST == 0:
+									assert lines[x] is not None, `lines`
+									ST = 1
+								elif ST == 1:
+									if lines[x] is None:
+										break
+								if eofs:
+									assert not lines[x], `lines[x]`
+								if lines[x] == '':
+									assert rcvd_eof[x] == False
+									eofs = 1
+									rcvd_eof[x] = True
+								try:
+									l = expect.next()
+									nb += 1
+								except StopIteration:
+									assert eofs
+								else:
+									assert not eofs
+									assert l == lines[x], `(l, lines[x])`
+							else:
+								nstart = start
+							start = nstart
+							print_one(lines[0])
+							print_one(lines[1])
+							print
+							if nb == 59 or nb == 126:
+								time.sleep(1.-1/128.)
+					except RestartableException, x:
+						l = expect.next()
+						assert l == '', `l`
+						assert isinstance(x, Timeout)
+						print "############ RestartableException #############"
+						fobjs, timeout, resume = None, None, x.context()
+						del x
+						line_iter = rxStreamedLines(fobjs, timeout, resume)
+					else:
+						fobjs, timeout, resume = None, None, None
+			except AssertionError:
+				for lines in line_iter:
+					print "***", lines
+				raise
 			else:
-				fobjs, timeout, resume = None, None, None
-		except AssertionError:
-			for lines in line_iter:
-				print "***", lines
-			raise
-		else:
-		    assert rcvd_eof == [True, True], `rcvd_eof`
-		    rv = child.wait()
-		    assert rv == 0
-		    print "EVERYTHING OK"
-	elif len(sys.argv) > 1 and sys.argv[1] == '--child':
-		from itertools import izip, islice
-		def cut(l, sz):
-			r = []
-			while l:
-				r.append(l[:sz])
-				l = l[sz:]
-			return r
-		p = False
-		std = (sys.stdout, sys.stderr)
-		chunks = [cut(l, int(pow(len(l), 0.70710678118654757)))
-		          for l in TEST_LINES]
-		for cur,nxt in izip(chunks, islice(chunks, 1, None)):
-			if not cur:
-				time.sleep(1.5)
-				continue
-			while cur:
-				l = cur.pop(0)
+				assert rcvd_eof == [True, True], `rcvd_eof`
+				rv = child.wait()
+				assert rv == 0
+				print "EVERYTHING OK"
+		elif len(sys.argv) > 1 and sys.argv[1] == '--child':
+			from itertools import izip, islice
+			def cut(l, sz):
+				r = []
+				while l:
+					r.append(l[:sz])
+					l = l[sz:]
+				return r
+			p = False
+			std = (sys.stdout, sys.stderr)
+			chunks = [cut(l, int(pow(len(l), 0.70710678118654757)))
+		        	  for l in TEST_LINES]
+			for cur, nxt in izip(chunks, islice(chunks, 1, None)):
+				if not cur:
+					time.sleep(1.5)
+					continue
+				while cur:
+					l = cur.pop(0)
+					std[p].write(l)
+					std[p].flush()
+					time.sleep(1/512.)
+					if cur and len(nxt) > 1:
+						l = nxt.pop(0)
+						std[not p].write(l)
+						std[not p].flush()
+						time.sleep(1/256.)
+				p = not p
+			while nxt:
+				l = nxt.pop(0)
 				std[p].write(l)
 				std[p].flush()
-				time.sleep(1/512.)
-				if cur and len(nxt) > 1:
-					l = nxt.pop(0)
-					std[not p].write(l)
-					std[not p].flush()
-					time.sleep(1/256.)
-			p = not p
-		while nxt:
-			l = nxt.pop(0)
-			std[p].write(l)
-			std[p].flush()
-		time.sleep(1/256.)
+			time.sleep(1/256.)
+	testfunc()
 
 __all__ = (
 	'rxStreamedLines', 'makeNonBlocking'
