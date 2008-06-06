@@ -40,8 +40,8 @@ from xivo import ConfigDict
 from xivo import interfaces
 from xivo import except_tb
 from xivo import xys
-# from xivo.pyfunc import *
 from xivo.easyslog import *
+
 
 ProvGeneralConf = {
 	'database_uri':			"sqlite:/var/lib/asterisk/astsqlite?timeout_ms=150",
@@ -67,6 +67,7 @@ ProvGeneralConf = {
 Pgc = ProvGeneralConf
 AUTHORIZED_PREFIXES = ("eth",)
 
+
 def LoadConfig(filename):
 	"""
 	Load provisioning configuration	
@@ -82,9 +83,11 @@ def LoadConfig(filename):
 		if p.strip()
 	])
 
+
 def any_prefixes(ifname):
 	"ifname starts with one of the (few) prefixes in AUTHORIZED_PREFIXES?"
 	return True in [ifname.startswith(x) for x in AUTHORIZED_PREFIXES]
+
 
 def ipv4_from_macaddr(macaddr, logexceptfunc = None):
 	"""
@@ -98,6 +101,7 @@ def ipv4_from_macaddr(macaddr, logexceptfunc = None):
 					 arping_cmd_list = Pgc['arping_cmd'].strip().split(),
 					 arping_sleep_us = Pgc['arping_sleep_us'])
 
+
 def macaddr_from_ipv4(macaddr, logexceptfunc = None):
 	"""
 	Wrapper for network.macaddr_from_ipv4() that sets
@@ -109,6 +113,7 @@ def macaddr_from_ipv4(macaddr, logexceptfunc = None):
 	                                 ifname_filter = any_prefixes,
 					 arping_cmd_list = Pgc['arping_cmd'].strip().split(),
 					 arping_sleep_us = Pgc['arping_sleep_us'])
+
 
 # States for linesubst()
 NORM = object()
@@ -181,6 +186,7 @@ def linesubst(line, variables):
 		syslogf(SYSLOG_WARNING, "returned substitution: " + out)
 	return out
 
+
 def txtsubst(lines, variables, target_file = None):
 	"""
 	Log that target_file is going to be generated, and calculate its
@@ -190,6 +196,7 @@ def txtsubst(lines, variables, target_file = None):
 	if target_file:
 		syslogf("In process of generating file %r" % target_file)
 	return [linesubst(line, variables) for line in lines]
+
 
 def well_formed_provcode(provcode):
 	"""
@@ -202,6 +209,7 @@ def well_formed_provcode(provcode):
 		if d not in '0123456789':
 			return False
 	return True
+
 
 class PhoneVendor:
 	"""
@@ -268,7 +276,9 @@ class PhoneVendor:
 		self.do_autoprov(provinfo)
 		syslogf(SYSLOG_DEBUG, "Phone AUTOPROV'ed %s" % self.phone['macaddr'])
 
+
 PhoneClasses = {}
+
 
 def register_phone_vendor_class(cls):
 	"""
@@ -282,12 +292,14 @@ def register_phone_vendor_class(cls):
 	else:
 		raise ValueError, "A registration as already occured for %r" % key
 
+
 def phone_vendor_iter_key_class():
 	"""
 	Iterate over phone classes.
 	"""
 	global PhoneClasses
 	return PhoneClasses.iteritems()
+
 
 def phone_factory(phone):
 	"""
@@ -298,11 +310,13 @@ def phone_factory(phone):
 	phone_class = PhoneClasses[phone["vendor"]]
 	return phone_class(phone)
 
+
 def default_handler():
 	"""
 	Default exception handler for phone_desc_by_ua()
 	"""
 	except_tb.log_exception(lambda x: syslogf(SYSLOG_ERR, x))
+
 
 def phone_desc_by_ua(ua, exception_handler = default_handler):
 	"""
@@ -323,10 +337,13 @@ def phone_desc_by_ua(ua, exception_handler = default_handler):
 	return None
 
 
+
 ### GENERAL CONF
+
 
 def specific(docstr):
 	return docstr not in ('reserved', 'none', 'void')
+
 
 def network_from_static(static):
 	"""
@@ -334,17 +351,20 @@ def network_from_static(static):
 	"""
 	return network.mask_ipv4(network.parse_ipv4(static['netmask']), network.parse_ipv4(static['address']))
 
+
 def broadcast_from_static(static):
 	"""
-	Returns the broadcast address (4uple of ints) specified in static
+	Return the broadcast address (4uple of ints) specified in static
 	"""
 	if 'broadcast' in static:
 		return network.parse_ipv4(static['broadcast'])
 	else:
 		return network.or_ipv4(network.netmask_invert(network.parse_ipv4(static['netmask'])), network_from_static(static))
 
+
 def netmask_from_static(static):
 	return network.parse_ipv4(static['netmask'])
+
 
 def ip_in_network(ipv4, net, netmask):
 	"""
@@ -354,13 +374,15 @@ def ip_in_network(ipv4, net, netmask):
 	other_net = network.mask_ipv4(netmask, ipv4)
 	return (net == other_net), other_net
 
+
 def search_domain(docstr, schema, trace):
 	"""
 	!~search_domain
-	    Returns True if the string in docstr is suitable for use in the
+	    Return True if the string in docstr is suitable for use in the
 	    search line of /etc/resolv.conf, else False
 	"""
 	return network.plausible_search_domain(docstr)
+
 
 def ipv4_address(docstr, schema, trace):
 	"""
@@ -379,9 +401,10 @@ def ipv4_address(docstr, schema, trace):
 			return False
 	return True
 
+
 def reserved_none_void_prefixDec(fname, prefix):
 	"""
-	Returns a XYS validator that checks that corresponding document strings
+	Return a XYS validator that checks that corresponding document strings
 	are 'reserved', 'none', 'void', or valid per !~~prefixDec prefix.
 	"""
 	def validator(docstr, schema, trace):
@@ -401,6 +424,7 @@ def reserved_none_void_prefixDec(fname, prefix):
 		return True
 	validator.__name__ = fname
 	return validator
+
 
 def plausible_static(static, schema, trace):
 	"""
@@ -427,23 +451,61 @@ def plausible_static(static, schema, trace):
 		return False
 	return True
 
+
 def get_referenced_ipConfTags(conf):
 	"""
 	Get tags of the static IP configurations that are owned by vlans (in
 	our relational model vlans include untaggued vlan and physical
 	interfaces are never directly related to IP configurations).
 	
-	Returns a list
+	Return a list
 	"""
 	return filter(specific, chain(*[elt.itervalues() for elt in conf['vlans'].itervalues()]))
+
 
 def get_referenced_vsTags(conf):
 	"""
 	Get tags of the VLan sets that are owned by a physical interface.
 	
-	Returns a list
+	Return a list
 	"""
 	return filter(specific, conf['netIfaces'].itervalues())
+
+
+def references_relation(set_defined_symbols, lst_references, minref, maxref):
+	"""
+	Pure function.
+	
+	For each element of set_defined_symbols, there must be between minref
+	and maxref, included, identical elements in references.
+	
+	This function returns (dict_ok, dict_out_of_bounds, dict_undefined)
+	where dictionaries contain entries of symbol: count.
+	
+	Any symbol of set_defined_symbols appears either in dict_ok or in
+	dict_out_of_bounds, even if it is unreferenced: in this case count == 0
+	"""
+	dict_ok = {}
+	dict_out_of_bounds = {}
+	dict_undefined = {}
+	
+	dict_count = {}
+	
+	for symbol in lst_references:
+		if symbol in set_defined_symbols:
+			dict_count[symbol] = dict_count.get(symbol, 0) + 1
+		else:
+			dict_undefined[symbol] = dict_undefined.get(symbol, 0) + 1
+	
+	for symbol in set_defined_symbols:
+		count = dict_count.get(symbol, 0)
+		if minref <= count <= maxref:
+			dict_ok[symbol] = count
+		else:
+			dict_out_of_bounds[symbol] = count
+	
+	return dict_ok, dict_out_of_bounds, dict_undefined
+
 
 def plausible_configuration(conf, schema, trace):
 	"""
@@ -451,32 +513,20 @@ def plausible_configuration(conf, schema, trace):
 	    Validate the general system configuration
 	"""
 	
-	# TODO: merge next two blocks
-	
-	referenced_ipConfTags = get_referenced_ipConfTags(conf)
-	set_referenced_ipConfTags = frozenset(referenced_ipConfTags)
-	if len(referenced_ipConfTags) != len(set_referenced_ipConfTags):
-		for ref in set_referenced_ipConfTags:
-			referenced_ipConfTags.remove(ref)
-		trace.err("duplicated static IP conf references in vlans description: " + `tuple(set(referenced_ipConfTags))`)
+	dict_ok, dict_out_of_bounds, dict_undefined = references_relation(conf['ipConfs'], get_referenced_ipConfTags(conf), minref=0, maxref=1)
+	if dict_out_of_bounds:
+		trace.err("duplicated static IP conf references in vlans description: %r" % dict_out_of_bounds)
 		return False
-	set_defined_ipConfTags = frozenset(conf['ipConfs'].keys())
-	set_undefined_ipConfTags = set_referenced_ipConfTags - set_defined_ipConfTags
-	if set_undefined_ipConfTags:
-		trace.err("undefined referenced static IP configurations: " + `tuple(set_undefined_ipConfTags)`)
+	if dict_undefined:
+		trace.err("undefined referenced static IP configurations: %r" % dict_undefined)
 		return False
 	
-	referenced_vsTags = get_referenced_vsTags(conf)
-	set_referenced_vsTags = frozenset(referenced_vsTags)
-	if len(referenced_vsTags) != len(set_referenced_vsTags):
-		for ref in set_referenced_vsTags:
-			referenced_vsTags.remove(ref)
-		trace.err("duplicated vlan references in network interfaces description: " + `tuple(set(referenced_vsTags))`)
+	dict_ok, dict_out_of_bounds, dict_undefined = references_relation(conf['vlans'], get_referenced_vsTags(conf), minref=0, maxref=1)
+	if dict_out_of_bounds:
+		trace.err("duplicated vlan references in network interfaces description: %r" % dict_out_of_bounds)
 		return False
-	set_defined_vsTags = frozenset(conf['vlans'].keys())
-	set_undefined_vsTags = set_referenced_vsTags - set_defined_vsTags
-	if set_undefined_vsTags:
-		trace.err("undefined vlan configurations: " + `tuple(set_undefined_vsTags)`)
+	if dict_undefined:
+		trace.err("undefined vlan configurations: %r" % dict_undefined)
 		return False
 	
 	# TODO: uniqueness concept in schema, default types in schema
@@ -564,12 +614,14 @@ def plausible_configuration(conf, schema, trace):
 	
 	return True
 
+
 xys.add_validator(search_domain, u'!!str')
 xys.add_validator(ipv4_address, u'!!str')
 xys.add_validator(plausible_static, u'!!map')
 xys.add_validator(plausible_configuration, u'!!map')
 xys.add_validator(reserved_none_void_prefixDec('vlanIpConf', 'static_'), u'!!str')
 xys.add_validator(reserved_none_void_prefixDec('netIfaceVlans', 'vs_'), u'!!str')
+
 
 SCHEMA_NETWORK_CONFIG = xys.load("""!~plausible_configuration
 resolvConf:
@@ -600,11 +652,13 @@ services:
       router?: !~ipv4_address 192.168.1.254
 """)
 
+
 def reserved_netIfaces(conf):
 	"""
 	Return the set of reserved physical network interfaces
 	"""
 	return frozenset([ifname for ifname, ifacevlan in conf['netIfaces'].iteritems() if ifacevlan == 'reserved'])
+
 
 def reserved_vlans(conf):
 	"""
@@ -619,6 +673,7 @@ def reserved_vlans(conf):
 		                           if ipConfs_tag == 'reserved'])
 	return frozenset(reserved_vlan_list)
 
+
 def normalize_static(static):
 	"""
 	Normalize IPv4 addresses in static
@@ -626,6 +681,7 @@ def normalize_static(static):
 	for key in ('address', 'netmask', 'broadcast', 'gateway'):
 		if key in static:
 			static[key] = network.normalize_ipv4_address(static[key])
+
 
 def load_configuration(conf_source):
 	"""
@@ -647,6 +703,7 @@ def load_configuration(conf_source):
 		voip_addresses[range_name][:] = map(network.normalize_ipv4_address, voip_addresses[range_name])
 	return conf
 
+
 def natural_vlan_name(phy, vlanId):
 	"""
 	* phy: string
@@ -656,6 +713,7 @@ def natural_vlan_name(phy, vlanId):
 		return phy
 	else:
 		return "%s.%d" % (phy, vlanId)
+
 
 def generate_interfaces(old_interfaces_lines, conf, trace=trace_null):
 	"""
@@ -796,6 +854,7 @@ def generate_interfaces(old_interfaces_lines, conf, trace=trace_null):
 	
 	trace.notice("LEAVING generate_interfaces.")
 
+
 # XXX traces
 def generate_dhcpd_conf(conf, trace=trace_null):
 	"""
@@ -888,12 +947,14 @@ NETWORK_CONFIG_FILE = "network.yaml"
 INTERFACES_FILE = "interfaces"
 DHCPD_CONF_FILE = "dhcpd.conf"
 
+
 def sync():
 	"""
 	Call /bin/sync
 	"""
 	# is there a wrapper for the sync syscall in Python?
 	subprocess.call("/bin/sync", close_fds = True)
+
 
 def transactional_generation(store_base, store_subs, gen_base, gen_subs, generation_func, trace=trace_null):
 	"""
@@ -1010,6 +1071,7 @@ def transactional_generation(store_base, store_subs, gen_base, gen_subs, generat
 	trace.notice("LEAVING transactional_generation.")
 	return success
 
+
 def file_writelines_flush_sync(path, lines):
 	"""
 	Fill file at @path with @lines then flush all buffers
@@ -1020,6 +1082,7 @@ def file_writelines_flush_sync(path, lines):
 	fp.flush()
 	os.fsync(fp.fileno())
 	fp.close()
+
 
 def generate_system_configuration(to_gen, prev_gen, current_xivo_conf, trace=trace_null):
 	"""
@@ -1044,6 +1107,7 @@ def generate_system_configuration(to_gen, prev_gen, current_xivo_conf, trace=tra
 	file_writelines_flush_sync(os.path.join(to_gen, DHCPD_CONF_FILE),
 	                           generate_dhcpd_conf(config, trace))
 
+
 def transaction_system_configuration(trace=trace_null):
 	"""
 	Transactionally generate system configuration from our own
@@ -1053,6 +1117,7 @@ def transaction_system_configuration(trace=trace_null):
 	                         GENERATED_BASE, (GENERATED_PREVIOUS, GENERATED_CURRENT, GENERATED_NEW, GENERATED_TMP),
 				 generate_system_configuration, trace)
 
+
 def gen_plugged_by_phy(phys):
 	"""
 	Construct a cache of carrier status of interfaces in the sequence phys.
@@ -1061,6 +1126,7 @@ def gen_plugged_by_phy(phys):
 	True => connected)
 	"""
 	return dict(((phy, network.is_interface_plugged(phy)) for phy in phys))
+
 
 def cmp_bool_lexdec(x, y):
 	"""
@@ -1077,6 +1143,7 @@ def cmp_bool_lexdec(x, y):
 	boolean x lexico-decimal strings, which X and Y belong to.
 	"""
 	return cmp((x[0], network.split_lexdec(x[1])), (y[0], network.split_lexdec(y[1])))
+
 
 def aaLst_npst_phy(conf, plugged_by_phy):
 	"""
@@ -1095,6 +1162,7 @@ def aaLst_npst_phy(conf, plugged_by_phy):
 	
 	phys = network.get_filtered_phys(phy_handled_relate_void)
 	return sorted(((not plugged_by_phy.get(phy, False), phy) for phy in phys), cmp = cmp_bool_lexdec)
+
 
 def aaLst_npst_fifn_vsTag_vlanId(conf, plugged_by_phy):
 	"""
@@ -1118,6 +1186,7 @@ def aaLst_npst_fifn_vsTag_vlanId(conf, plugged_by_phy):
 	res.sort(cmp = cmp_bool_lexdec)
 	return res
 
+
 def aaLst_vsTag(conf):
 	"""
 	Return a list of vlan set names that are not owned by a physical
@@ -1126,6 +1195,7 @@ def aaLst_vsTag(conf):
 	owned = frozenset(get_referenced_vsTags(conf))
 	return network.sorted_lst_lexdec((vsTag for vsTag in conf['vlans'].iterkeys() if vsTag not in owned))
 
+
 def aaLst_ipConfTag(conf):
 	"""
 	Return a list of ipconf tags that are not owned by a vlan (in our
@@ -1133,6 +1203,7 @@ def aaLst_ipConfTag(conf):
 	"""
 	owned = frozenset(get_referenced_ipConfTags(conf))
 	return network.sorted_lst_lexdec((ipConfTag for ipConfTag in conf['ipConfs'].iterkeys() if ipConfTag not in owned))
+
 
 def autoattrib_conf(conf):
 	"""
@@ -1161,12 +1232,14 @@ def autoattrib_conf(conf):
 	
 	return conf
 
+
 def autoattrib():
 	"""
 	Auto VLAN Set and IP Configuration attributions at server startup
 	"""
 	config = load_configuration(file(os.path.join(STORE_BASE, STORE_CURRENT, NETWORK_CONFIG_FILE)))
 	return autoattrib_conf(config)
+
 
 __all__ = (
 	'ProvGeneralConf', 'LoadConfig', 'txtsubst', 'well_formed_provcode',
