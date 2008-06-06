@@ -1249,6 +1249,6 @@ __all__ = (
 	'transaction_system_configuration',
 )
 
-# TODO: les attributions automatiques de démarrage ne checkent pas toute la sémantique:
+# TODO: les attributions automatiques de demarrage ne checkent pas toute la semantique:
 # en particulier si rien n'empeche qu'une attr au demarrage entraine une network collision
-# BUGFIXer ça...
+# BUGFIXer ca...
