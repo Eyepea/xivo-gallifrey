@@ -166,7 +166,7 @@ def linesubst(line, variables):
 				if curvar not in variables:
 					syslogf(SYSLOG_WARNING, "Unknown variable '%s' detected, will just be replaced by an empty string" % curvar)
 				else:
-					syslogf(SYSLOG_DEBUG, "Substitution of {{%s}} by %s" % (curvar, `variables[curvar]`))
+					syslogf(SYSLOG_DEBUG, "Substitution of {{%s}} by %r" % (curvar, variables[curvar]))
 					out += variables[curvar]
 				curvar = ''
 				st = NORM
@@ -188,7 +188,7 @@ def txtsubst(lines, variables, target_file = None):
 	variables to each given lines.
 	"""
 	if target_file:
-		syslogf("In process of generating file %s" % `target_file`)
+		syslogf("In process of generating file %r" % target_file)
 	return [linesubst(line, variables) for line in lines]
 
 def well_formed_provcode(provcode):
@@ -280,7 +280,7 @@ def register_phone_vendor_class(cls):
 	if key not in PhoneClasses:
 		PhoneClasses[key] = cls
 	else:
-		raise ValueError, "A registration as already occured for %s" % `key`
+		raise ValueError, "A registration as already occured for %r" % key
 
 def phone_vendor_iter_key_class():
 	"""
@@ -504,13 +504,13 @@ def plausible_configuration(conf, schema, trace):
 		non_duplicated_networks = [net for net, names in active_networks.iteritems() if len(names) <= 1]
 		for net in non_duplicated_networks:
 			del active_networks[net]
-		trace.err("duplicated active networks: " + `dict((('.'.join(map(str, net)), tuple(names)) for net, names in active_networks.iteritems()))`)
+		trace.err("duplicated active networks: %r" % dict((('.'.join(map(str, net)), tuple(names)) for net, names in active_networks.iteritems())))
 		return False
 	
 	# VOIP service
 	ipConfVoip = conf['services']['voip']['ipConf']
 	if ipConfVoip not in conf['ipConfs']:
-		trace.err("the voip service references a static ip configuration that does not exists: " + `ipConfVoip`)
+		trace.err("the voip service references a static ip configuration that does not exists: %r" % ipConfVoip)
 		return False
 	ipConfVoip_static = conf['ipConfs'][ipConfVoip]
 	netmask = netmask_from_static(ipConfVoip_static)
@@ -782,7 +782,7 @@ def generate_interfaces(old_interfaces_lines, conf, trace=trace_null):
 			if not specific(ipConfs_tag):
 				continue
 			ifname = natural_vlan_name(phy, vlanId)
-			trace.info("generating configuration for %s" % `ifname`)
+			trace.info("generating configuration for %r" % ifname)
 			static = conf['ipConfs'][ipConfs_tag]
 			yield "iface %s inet static\n" % ifname
 			yield "\taddress %s\n" % static['address']
