@@ -25,24 +25,7 @@ __license__ = """
 
 from itertools import *
 
-# any() and all() are available in Python 2.5, we target Python 2.4
-try:
-	all
-except NameError:
-	def all(iterable):
-		for element in iterable:
-			if not element:
-				return False
-		return True
-
-try:
-	any
-except NameError:
-	def any(iterable):
-		for element in iterable:
-			if element:
-				return True
-		return False
+from xivo.UpAllAny import all, any
 
 def all_and_count(seq):
 	"""Simultaneously check that all items of the given sequence evaluates
