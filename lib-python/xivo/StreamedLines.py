@@ -61,11 +61,11 @@ class Error(Exception):
 	"Base class of exceptions raised by this module."
 	def __init__(self, msg, *opt):
 		if not opt:
-			self.__reprmsg = "<%s %s>" % (self.__class__.__name__, `msg`)
+			self.__reprmsg = "<%s %r>" % (self.__class__.__name__, msg)
 			self.__strmsg = str(msg)
 		else:
-			self.__reprmsg = "<%s %s: %s>" % (self.__class__.__name__, `msg`, ', '.join(map(repr, opt)))
-			self.__strmsg = "%s: %s" % (msg, repr(opt))
+			self.__reprmsg = "<%s %r: %s>" % (self.__class__.__name__, msg, ', '.join(map(repr, opt)))
+			self.__strmsg = "%s: %r" % (msg, opt)
 		Exception.__init__(self, msg)
 	def __repr__(self):
 		return self.__reprmsg
