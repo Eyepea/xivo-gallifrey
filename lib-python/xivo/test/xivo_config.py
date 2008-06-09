@@ -1,0 +1,167 @@
+#!/usr/bin/python
+
+"""Tests for xivo_config
+
+Copyright (C) 2008  Proformatique
+
+"""
+# Dependencies/highly recommended? : arping curl
+
+__version__ = "$Revision$ $Date$"
+__license__ = """
+    Copyright (C) 2008  Proformatique
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
+"""
+
+import unittest
+
+from xivo import xivo_config
+from xivo import xys
+
+VALID_CONFIGS = [
+('base', """
+resolvConf: {}
+ipConfs:
+  static_001:
+    address:     192.168.0.200
+    netmask:     255.255.255.0
+    broadcast:   192.168.0.255
+    gateway:     192.168.0.254
+    mtu:         1500
+vlans: {}
+netIfaces: {}
+services:
+  voip:
+    ipConf: static_001
+    addresses:
+      voipServer: 192.168.0.200
+      bootServer: 192.168.0.200
+      voipRange:
+        - 192.168.0.100
+        - 192.168.0.199
+"""),
+#"""
+#
+#""",
+]
+
+INVALID_CONFIGS = [
+
+('i_miss_you', """
+"""),
+
+('hollywood', """
+resolvConf: {}
+ipConfs:
+  static_001:
+    address:     192.168.0.256
+    netmask:     255.255.255.0
+    broadcast:   192.168.0.255
+    gateway:     192.168.0.254
+    mtu:         1500
+vlans: {}
+netIfaces: {}
+services:
+  voip:
+    ipConf: static_001
+    addresses:
+      voipServer: 192.168.0.200
+      bootServer: 192.168.0.200
+      voipRange:
+        - 192.168.0.199
+        - 192.168.0.100
+"""),
+
+('outer_space', """
+resolvConf: {}
+ipConfs:
+  static_001:
+    address:     192.168.0.200
+    netmask:     255.255.255.0
+    broadcast:   192.168.0.255
+    gateway:     192.168.0.254
+    mtu:         1500
+vlans: {}
+netIfaces: {}
+services:
+  voip:
+    ipConf: static_001
+    addresses:
+      voipServer: 192.168.0.200
+      bootServer: 192.168.0.200
+      voipRange:
+        - 192.168.0.100
+        - 192.168.0.199
+outerSpace:
+"""),
+
+]
+
+
+# REM: schema follow...
+"""!~plausible_configuration
+resolvConf:
+  search?: !~search_domain bla.tld
+  nameservers?: !~~seqlen(1,3) [ !~ipv4_address 192.168.0.200 ]
+ipConfs:
+  !~~prefixedDec static_: !~plausible_static
+    address:     !~ipv4_address 192.168.0.100
+    netmask:     !~ipv4_address 255.255.255.0
+    broadcast?:  !~ipv4_address 192.168.0.255
+    gateway?:    !~ipv4_address 192.168.0.254
+    mtu?:        !~~between(68,1500) 1500
+vlans:
+  !~~prefixedDec vs_:
+    !~~between(0,4094) 0: !~vlanIpConf static_0001
+netIfaces:
+  !~~prefixedDec eth: !~netIfaceVlans vs_0001
+services:
+  voip:
+    ipConf: !~~prefixedDec static_
+    addresses:
+      voipServer: !~ipv4_address 192.168.1.200
+      bootServer: !~ipv4_address 192.168.1.200
+      voipRange: !~~seqlen(2,2) [ !~ipv4_address 192.168.1.200 ]
+      alienRange?: !~~seqlen(2,2) [ !~ipv4_address 192.168.1.200 ]
+      directory?: !~ipv4_address 192.168.1.200
+      ntp?: !~ipv4_address 192.168.1.200
+      router?: !~ipv4_address 192.168.1.254
+"""
+
+# DEBUG
+# from xivo import trace_stderr
+# TRACE = trace_stderr
+
+# NORMAL
+from xivo import trace_null
+TRACE = trace_null
+
+
+class TestXysXivoConfigValidation(unittest.TestCase):
+
+    for p, (test_title, src_conf) in enumerate(VALID_CONFIGS):
+        exec \
+         """def test_valid_%s(self):
+                conf = xivo_config.load_configuration(VALID_CONFIGS[%d][1], TRACE)
+                self.assertEqual(isinstance(conf, dict), True)""" % (test_title, p)
+
+    for p, (test_title, src_conf) in enumerate(INVALID_CONFIGS):
+        exec \
+         """def test_invalid_%s(self):
+                self.assertRaises(xivo_config.InvalidConfigurationError, xivo_config.load_configuration, INVALID_CONFIGS[%d][1], TRACE)""" % (test_title, p)
+
+
+unittest.main()
