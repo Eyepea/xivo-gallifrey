@@ -1155,7 +1155,7 @@ def cmp_bool_lexdec(x, y):
     return cmp((x[0], network.split_lexdec(x[1])), (y[0], network.split_lexdec(y[1])))
 
 
-def aaLst_npst_phy(conf, plugged_by_phy):
+def aa_lst_npst_phy(conf, plugged_by_phy):
     """
     Return a list of (npst, phy) in cmp_bool_lexdec order.
     * npst: not plugged status
@@ -1174,7 +1174,7 @@ def aaLst_npst_phy(conf, plugged_by_phy):
     return sorted(((not plugged_by_phy.get(phy, False), phy) for phy in phys), cmp = cmp_bool_lexdec)
 
 
-def aaLst_npst_fifn_vsTag_vlanId(conf, plugged_by_phy):
+def aa_lst_npst_fifn_vsTag_vlanId(conf, plugged_by_phy):
     """
     Return a list of (npst, fifn, vsTag, vlanId) in cmp_bool_lexdec order
     for (npst, fifn) where:
@@ -1197,7 +1197,7 @@ def aaLst_npst_fifn_vsTag_vlanId(conf, plugged_by_phy):
     return res
 
 
-def aaLst_vsTag(conf):
+def aa_lst_vsTag(conf):
     """
     Return a list of vlan set names that are not owned by a physical interface
     and for which related IP configurations will not be in conflict with IP
@@ -1224,7 +1224,7 @@ def aaLst_vsTag(conf):
     return network.sorted_lst_lexdec(unsorted_eligible_vsTag)
 
 
-def aaLst_ipConfTag(conf):
+def aa_lst_ipConfTag(conf):
     """
     Return a list of ipconf tags that are not owned by a vlan (in our
     terminology vlans include untaggued vlan) for which corresponding IP
@@ -1257,30 +1257,45 @@ def autoattrib_conf(conf):
     """
     Auto attribute orphan vlan set to 'void' physical interfaces, in
     priority to plugged interfaces then to unplugged interfaces.
-    Once done auto attribute vlan interfaces (including untagged vlans)
-    to orphan ip configurations.
+    Once done auto attribute vlan interfaces (including untagged vlans) to
+    orphan ip configurations.  Finally auto attribute remaining IP
+    configuration directly to remaining interfaces, creating trivial vlan sets
+    so that the end to end relationship is made possible.
     WARNING: modify conf in-place.
     """
     plugged_by_phy = gen_plugged_by_phy(network.get_filtered_phys(any_prefixes))
     
-    vsTag_iter = iter(aaLst_vsTag(conf))
-    new_vsTag_iter = iter_new_vsTag(conf)
+    iter_vsTag = iter(aa_lst_vsTag(conf))
     
-    for npst, phy in aaLst_npst_phy(conf, plugged_by_phy):
+    # auto assign vlan set to physical interface
+    for npst, phy in aa_lst_npst_phy(conf, plugged_by_phy):
         try:
-            vsTag = vsTag_iter.next()
+            vsTag = iter_vsTag.next()
         except StopIteration:
-            vsTag = new_vsTag_iter.next()
-            conf['vlans'][vsTag] = { 0: 'void' }
+            break
         conf['netIfaces'][phy] = vsTag
     
-    ipConfTag_iter = iter(aaLst_ipConfTag(conf))
-    for npst, fifn, vsTag, vlanId in aaLst_npst_fifn_vsTag_vlanId(conf, plugged_by_phy):
+    # auto assign IP configuration to VLAN
+    ipConfTag_iter = iter(aa_lst_ipConfTag(conf))
+    for npst, fifn, vsTag, vlanId in aa_lst_npst_fifn_vsTag_vlanId(conf, plugged_by_phy):
         try:
             ipConfTag = ipConfTag_iter.next()
         except StopIteration:
             break
         conf['vlans'][vsTag][vlanId] = ipConfTag
+    
+    # Auto assign IP configuration to physical interface, generating trivial
+    # vlan set as needed.
+    iter_npst_phy = iter(aa_lst_npst_phy(conf, plugged_by_phy))
+    iter_vsTag = iter_new_vsTag(conf)
+    for ipConfTag in ipConfTag_iter:
+        try:
+            npst, phy = iter_npst_phy.next()
+        except StopIteration:
+            break
+        vsTag = iter_vsTag.next()
+        conf['vlans'][vsTag] = { 0: ipConfTag }
+        conf['netIfaces'][phy] = vsTag
     
     return conf
 
