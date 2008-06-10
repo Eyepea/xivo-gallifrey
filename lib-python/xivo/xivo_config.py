@@ -523,6 +523,7 @@ def plausible_configuration(conf, schema, trace):
     # TODO: uniqueness concept in schema, default types in schema
     nameservers = conf['resolvConf'].get('nameservers')
     if nameservers:
+        nameservers = map(network.normalize_ipv4_address, nameservers)
         unique_nameservers = frozenset(nameservers)
         if len(unique_nameservers) != len(nameservers):
             trace.err("duplicated nameservers in " + `tuple(nameservers)`)
@@ -595,7 +596,8 @@ def plausible_configuration(conf, schema, trace):
             trace.err("overlapping DHCP ranges detected")
             return False
     # check that there is no fixed IP in any DHCP range
-    fixed_addresses = [ network.parse_ipv4(ipConfVoip_static[field]) for field in ('address', 'broadcast', 'gateway') if field in ipConfVoip_static ]
+    fixed_addresses = [ network.parse_ipv4(ipConfVoip_static[field]) for field in ('address', 'gateway') if field in ipConfVoip_static ]
+    fixed_addresses.append(broadcast_from_static(ipConfVoip_static))
     fixed_addresses.extend([ network.parse_ipv4(addresses[field]) for field in voip_fixed if field in addresses ])
     for rang in all_ranges:
         for addr in fixed_addresses:

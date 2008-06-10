@@ -35,23 +35,50 @@ VALID_CONFIGS = [
 ('base', """
 resolvConf: {}
 ipConfs:
-  static_001:
-    address:     192.168.0.200
-    netmask:     255.255.255.0
-    broadcast:   192.168.0.255
-    gateway:     192.168.0.254
-    mtu:         1500
+    static_001:
+        address:     192.168.0.200
+        netmask:     255.255.255.0
+        broadcast:   192.168.0.255
+        gateway:     192.168.0.254
+        mtu:         1500
 vlans: {}
 netIfaces: {}
 services:
-  voip:
-    ipConf: static_001
-    addresses:
-      voipServer: 192.168.0.200
-      bootServer: 192.168.0.200
-      voipRange:
-        - 192.168.0.100
-        - 192.168.0.199
+    voip:
+        ipConf: static_001
+        addresses:
+            voipServer: 192.168.0.200
+            bootServer: 192.168.0.200
+            voipRange:
+                - 192.168.0.100
+                - 192.168.0.199
+"""),
+
+('one_unused_vs', """
+resolvConf: {}
+ipConfs:
+    static_001:
+        address:     192.168.0.200
+        netmask:     255.255.255.0
+    static_002:
+        address:     192.168.0.20
+        netmask:     255.255.255.0
+vlans:
+    vs_001:
+        0: static_001
+    vs_002:
+        0: static_002
+netIfaces:
+    eth0: vs_001
+services:
+    voip:
+        ipConf: static_001
+        addresses:
+            voipServer: 192.168.0.200
+            bootServer: 192.168.0.200
+            voipRange:
+                - 192.168.0.100
+                - 192.168.0.199
 """),
 #"""
 #
@@ -66,23 +93,20 @@ INVALID_CONFIGS = [
 ('hollywood', """
 resolvConf: {}
 ipConfs:
-  static_001:
-    address:     192.168.0.256
-    netmask:     255.255.255.0
-    broadcast:   192.168.0.255
-    gateway:     192.168.0.254
-    mtu:         1500
+    static_001:
+        address:     192.168.0.256
+        netmask:     255.255.255.0
 vlans: {}
 netIfaces: {}
 services:
-  voip:
-    ipConf: static_001
-    addresses:
-      voipServer: 192.168.0.200
-      bootServer: 192.168.0.200
-      voipRange:
-        - 192.168.0.199
-        - 192.168.0.100
+    voip:
+        ipConf: static_001
+        addresses:
+            voipServer: 192.168.0.200
+            bootServer: 192.168.0.200
+            voipRange:
+                - 192.168.0.199
+                - 192.168.0.100
 """),
 
 ('outer_space', """
@@ -91,21 +115,467 @@ ipConfs:
   static_001:
     address:     192.168.0.200
     netmask:     255.255.255.0
-    broadcast:   192.168.0.255
-    gateway:     192.168.0.254
-    mtu:         1500
 vlans: {}
 netIfaces: {}
 services:
-  voip:
-    ipConf: static_001
-    addresses:
-      voipServer: 192.168.0.200
-      bootServer: 192.168.0.200
-      voipRange:
-        - 192.168.0.100
-        - 192.168.0.199
+    voip:
+        ipConf: static_001
+        addresses:
+            voipServer: 192.168.0.200
+            bootServer: 192.168.0.200
+            voipRange:
+                - 192.168.0.100
+                - 192.168.0.199
 outerSpace:
+"""),
+
+('duplicated_nameserver', """
+resolvConf:
+    nameservers:
+        - 192.168.0.50
+        - 192.168.0.050
+ipConfs:
+    static_001:
+        address:     192.168.0.200
+        netmask:     255.255.255.0
+        broadcast:   192.168.0.255
+        gateway:     192.168.0.254
+        mtu:         1500
+vlans: {}
+netIfaces: {}
+services:
+    voip:
+        ipConf: static_001
+        addresses:
+            voipServer: 192.168.0.200
+            bootServer: 192.168.0.200
+            voipRange:
+                - 192.168.0.100
+                - 192.168.0.199
+"""),
+
+('duplicated_referenced_network', """
+resolvConf: {}
+ipConfs:
+    static_001:
+        address:     192.168.0.200
+        netmask:     255.255.255.0
+        broadcast:   192.168.0.255
+        gateway:     192.168.0.254
+    static_002:
+        address:     192.168.0.12
+        netmask:     255.255.255.0
+vlans:
+    vs_0001:
+        0: static_001
+        1: static_002
+netIfaces:
+    eth0: vs_0001
+services:
+    voip:
+        ipConf: static_001
+        addresses:
+            voipServer: 192.168.0.200
+            bootServer: 192.168.0.200
+            voipRange:
+                - 192.168.0.100
+                - 192.168.0.199
+"""),
+
+('services_referenced_net_does_not_exist', """
+resolvConf: {}
+ipConfs:
+    static_001:
+        address:     192.168.0.200
+        netmask:     255.255.255.0
+vlans:
+    vs_0001:
+        0: static_001
+netIfaces:
+    eth0: vs_0001
+services:
+    voip:
+        ipConf: static_002
+        addresses:
+            voipServer: 192.168.0.200
+            bootServer: 192.168.0.200
+            voipRange:
+                - 192.168.0.100
+                - 192.168.0.199
+"""),
+
+('vlans_referenced_net_does_not_exist', """
+resolvConf: {}
+ipConfs:
+    static_001:
+        address:     192.168.0.200
+        netmask:     255.255.255.0
+vlans:
+    vs_0001:
+        0: static_002
+netIfaces:
+    eth0: vs_0001
+services:
+    voip:
+        ipConf: static_001
+        addresses:
+            voipServer: 192.168.0.200
+            bootServer: 192.168.0.200
+            voipRange:
+                - 192.168.0.100
+                - 192.168.0.199
+"""),
+
+('netIfaces_referenced_vs_does_not_exist', """
+resolvConf: {}
+ipConfs:
+    static_001:
+        address:     192.168.0.200
+        netmask:     255.255.255.0
+vlans:
+    vs_0001:
+        0: static_001
+netIfaces:
+    eth0: vs_0002
+services:
+    voip:
+        ipConf: static_001
+        addresses:
+            voipServer: 192.168.0.200
+            bootServer: 192.168.0.200
+            voipRange:
+                - 192.168.0.100
+                - 192.168.0.199
+"""),
+
+('service_voipServer_is_bcast', """
+resolvConf: {}
+ipConfs:
+    static_001:
+        address:     192.168.0.200
+        netmask:     255.255.255.0
+vlans:
+    vs_0001:
+        0: static_001
+netIfaces:
+    eth0: vs_0001
+services:
+    voip:
+        ipConf: static_001
+        addresses:
+            voipServer: 192.168.0.255
+            bootServer: 192.168.0.200
+            voipRange:
+                - 192.168.0.100
+                - 192.168.0.199
+"""),
+
+('service_router_is_bcast', """
+resolvConf: {}
+ipConfs:
+    static_001:
+        address:     192.168.0.200
+        netmask:     255.255.255.0
+vlans:
+    vs_0001:
+        0: static_001
+netIfaces:
+    eth0: vs_0001
+services:
+    voip:
+        ipConf: static_001
+        addresses:
+            voipServer: 192.168.0.200
+            bootServer: 192.168.0.200
+            voipRange:
+                - 192.168.0.100
+                - 192.168.0.199
+            router: 192.168.0.255
+"""),
+
+('service_router_out_of_network', """
+resolvConf: {}
+ipConfs:
+    static_001:
+        address:     192.168.0.200
+        netmask:     255.255.255.0
+vlans:
+    vs_0001:
+        0: static_001
+netIfaces:
+    eth0: vs_0001
+services:
+    voip:
+        ipConf: static_001
+        addresses:
+            voipServer: 192.168.0.200
+            bootServer: 192.168.0.200
+            voipRange:
+                - 192.168.0.100
+                - 192.168.0.199
+            router: 192.168.1.12
+"""),
+
+('service_voip_inverted_range', """
+resolvConf: {}
+ipConfs:
+    static_001:
+        address:     192.168.0.200
+        netmask:     255.255.255.0
+vlans:
+    vs_0001:
+        0: static_001
+netIfaces:
+    eth0: vs_0001
+services:
+    voip:
+        ipConf: static_001
+        addresses:
+            voipServer: 192.168.0.200
+            bootServer: 192.168.0.200
+            voipRange:
+                - 192.168.0.199
+                - 192.168.0.100
+"""),
+
+('service_overlapping_ranges_1', """
+resolvConf: {}
+ipConfs:
+    static_001:
+        address:     192.168.0.200
+        netmask:     255.255.255.0
+vlans:
+    vs_0001:
+        0: static_001
+netIfaces:
+    eth0: vs_0001
+services:
+    voip:
+        ipConf: static_001
+        addresses:
+            voipServer: 192.168.0.200
+            bootServer: 192.168.0.200
+            voipRange:
+                - 192.168.0.100
+                - 192.168.0.199
+            alienRange:
+                - 192.168.0.199
+                - 192.168.0.210
+"""),
+
+('service_overlapping_ranges_2', """
+resolvConf: {}
+ipConfs:
+    static_001:
+        address:     192.168.0.200
+        netmask:     255.255.255.0
+vlans:
+    vs_0001:
+        0: static_001
+netIfaces:
+    eth0: vs_0001
+services:
+    voip:
+        ipConf: static_001
+        addresses:
+            voipServer: 192.168.0.200
+            bootServer: 192.168.0.200
+            voipRange:
+                - 192.168.0.100
+                - 192.168.0.199
+            alienRange:
+                - 192.168.0.50
+                - 192.168.0.100
+"""),
+
+('service_overlapping_ranges_3', """
+resolvConf: {}
+ipConfs:
+    static_001:
+        address:     192.168.0.200
+        netmask:     255.255.255.0
+vlans:
+    vs_0001:
+        0: static_001
+netIfaces:
+    eth0: vs_0001
+services:
+    voip:
+        ipConf: static_001
+        addresses:
+            voipServer: 192.168.0.200
+            bootServer: 192.168.0.200
+            voipRange:
+                - 192.168.0.100
+                - 192.168.0.199
+            alienRange:
+                - 192.168.0.100
+                - 192.168.0.199
+"""),
+
+('service_overlapping_ranges_4', """
+resolvConf: {}
+ipConfs:
+    static_001:
+        address:     192.168.0.200
+        netmask:     255.255.255.0
+vlans:
+    vs_0001:
+        0: static_001
+netIfaces:
+    eth0: vs_0001
+services:
+    voip:
+        ipConf: static_001
+        addresses:
+            voipServer: 192.168.0.200
+            bootServer: 192.168.0.200
+            voipRange:
+                - 192.168.0.100
+                - 192.168.0.199
+            alienRange:
+                - 192.168.0.90
+                - 192.168.0.210
+"""),
+
+('implicit_bcast_in_voip_range', """
+resolvConf: {}
+ipConfs:
+    static_001:
+        address:     192.168.0.200
+        netmask:     255.255.255.0
+vlans:
+    vs_0001:
+        0: static_001
+netIfaces:
+    eth0: vs_0001
+services:
+    voip:
+        ipConf: static_001
+        addresses:
+            voipServer: 192.168.0.200
+            bootServer: 192.168.0.200
+            voipRange:
+                - 192.168.0.250
+                - 192.168.0.255
+"""),
+
+('explicit_bcast_in_voip_range', """
+resolvConf: {}
+ipConfs:
+    static_001:
+        address:     192.168.0.200
+        netmask:     255.255.255.0
+        broadcast:   192.168.0.12
+vlans:
+    vs_0001:
+        0: static_001
+netIfaces:
+    eth0: vs_0001
+services:
+    voip:
+        ipConf: static_001
+        addresses:
+            voipServer: 192.168.0.200
+            bootServer: 192.168.0.200
+            voipRange:
+                - 192.168.0.12
+                - 192.168.0.20
+"""),
+
+('implicit_bcast_in_alien_range', """
+resolvConf: {}
+ipConfs:
+    static_001:
+        address:     192.168.0.200
+        netmask:     255.255.255.0
+vlans:
+    vs_0001:
+        0: static_001
+netIfaces:
+    eth0: vs_0001
+services:
+    voip:
+        ipConf: static_001
+        addresses:
+            voipServer: 192.168.0.200
+            bootServer: 192.168.0.200
+            voipRange:
+                - 192.168.0.100
+                - 192.168.0.199
+            alienRange:
+                - 192.168.0.250
+                - 192.168.0.255
+"""),
+
+('explicit_bcast_in_alien_range', """
+resolvConf: {}
+ipConfs:
+    static_001:
+        address:     192.168.0.200
+        netmask:     255.255.255.0
+        broadcast:   192.168.0.12
+vlans:
+    vs_0001:
+        0: static_001
+netIfaces:
+    eth0: vs_0001
+services:
+    voip:
+        ipConf: static_001
+        addresses:
+            voipServer: 192.168.0.200
+            bootServer: 192.168.0.200
+            voipRange:
+                - 192.168.0.100
+                - 192.168.0.199
+            alienRange:
+                - 192.168.0.12
+                - 192.168.0.20
+"""),
+
+('voipServer_in_voip_range', """
+resolvConf: {}
+ipConfs:
+    static_001:
+        address:     192.168.0.210
+        netmask:     255.255.255.0
+vlans:
+    vs_0001:
+        0: static_001
+netIfaces:
+    eth0: vs_0001
+services:
+    voip:
+        ipConf: static_001
+        addresses:
+            voipServer: 192.168.0.200
+            bootServer: 192.168.0.210
+            voipRange:
+                - 192.168.0.100
+                - 192.168.0.200
+"""),
+
+('address_in_voip_range', """
+resolvConf: {}
+ipConfs:
+    static_001:
+        address:     192.168.0.200
+        netmask:     255.255.255.0
+vlans:
+    vs_0001:
+        0: static_001
+netIfaces:
+    eth0: vs_0001
+services:
+    voip:
+        ipConf: static_001
+        addresses:
+            voipServer: 192.168.0.210
+            bootServer: 192.168.0.210
+            voipRange:
+                - 192.168.0.100
+                - 192.168.0.200
 """),
 
 ]
