@@ -80,9 +80,29 @@ services:
                 - 192.168.0.100
                 - 192.168.0.199
 """),
-#"""
-#
-#""",
+
+('vlan_high', """
+resolvConf: {}
+ipConfs:
+    static_001:
+        address:     192.168.0.200
+        netmask:     255.255.255.0
+vlans:
+    vs_0001:
+        4094: static_001
+netIfaces:
+    eth0: vs_0001
+services:
+    voip:
+        ipConf: static_001
+        addresses:
+            voipServer: 192.168.0.200
+            bootServer: 192.168.0.200
+            voipRange:
+                - 192.168.0.100
+                - 192.168.0.199
+"""),
+
 ]
 
 INVALID_CONFIGS = [
@@ -582,7 +602,7 @@ services:
 resolvConf: {}
 ipConfs:
     static_001:
-        address:     192.168.0.210
+        address:     192.168.0.200
         netmask:     255.255.255.0
 vlans:
     vs_0001:
@@ -594,10 +614,10 @@ services:
         ipConf: static_001
         addresses:
             voipServer: 192.168.0.200
-            bootServer: 192.168.0.210
+            bootServer: 192.168.0.200
             voipRange:
                 - 192.168.0.100
-                - 192.168.0.200
+                - 192.168.0.199
 """),
 
 ]
