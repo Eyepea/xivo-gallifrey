@@ -1183,7 +1183,7 @@ def aaLst_npst_fifn_vsTag_vlanId(conf, plugged_by_phy):
       or ethXX.0 for untagged vlans (string)
     * vsTag: vlan set tag (string)
     * vlanId: vlan Id (integer)
-
+    
     Only interfaces that are in the "void" will be enumerated.
     """
     res = []
@@ -1199,11 +1199,28 @@ def aaLst_npst_fifn_vsTag_vlanId(conf, plugged_by_phy):
 
 def aaLst_vsTag(conf):
     """
-    Return a list of vlan set names that are not owned by a physical
-    interface, in network.cmp_lexdec order.
+    Return a list of vlan set names that are not owned by a physical interface
+    and for which related IP configurations will not be in conflict with IP
+    configurations already used or other IP configurations 
     """
+    referenced_networks = frozenset(network_from_static(conf['ipConfs'][ipConfTag]) for ipConfTag in get_referenced_ipConfTags(conf))
     owned = frozenset(get_referenced_vsTags(conf))
-    return network.sorted_lst_lexdec((vsTag for vsTag in conf['vlans'].iterkeys() if vsTag not in owned))
+    eligible_networks = set()
+    unsorted_eligible_vsTag = []
+    for vsTag in conf['vlans'].iterkeys():
+        if vsTag in owned:
+            continue
+        new_nets = [network_from_static(conf['ipConfs'][ipConfTag]) for ipConfTag in conf['vlans'][vsTag].itervalues() if specific(ipConfTag)]
+        set_new_nets = set(new_nets)
+        # conflict within the very references of this vset?
+        if len(new_nets) != len(set_new_nets):
+            continue
+        # conflict with networks already referenced or 
+        if referenced_networks.intersection(set_new_nets) or eligible_networks.intersection(set_new_nets):
+            continue
+        eligible_networks.update(set_new_nets)
+        unsorted_eligible_vsTag.append(vsTag)
+    return network.sorted_lst_lexdec(unsorted_eligible_vsTag)
 
 
 def aaLst_ipConfTag(conf):
