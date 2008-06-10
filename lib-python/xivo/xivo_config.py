@@ -697,7 +697,7 @@ def load_configuration(conf_source, trace=trace_null):
     Raise a xivo_config.InvalidConfigurationError if the configuration is
     invalid.
     """
-    conf = yaml.load(conf_source)
+    conf = yaml.safe_load(conf_source)
     if not xys.validate(conf, SCHEMA_NETWORK_CONFIG, trace):
         raise InvalidConfigurationError("Invalid configuration")
     # TODO: do that thanks to schema based mapping ("mapping" in functional programming meaning)
