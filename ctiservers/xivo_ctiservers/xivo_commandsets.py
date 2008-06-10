@@ -30,6 +30,7 @@ Base class for miscellaneous Command Sets
 
 CMD_OTHER = 1 << 0
 CMD_LOGIN = 1 << 1
+CMD_TRANSFER = 1 << 2
 
 class Command:
         def __init__(self, commandname, commandargs):
@@ -43,12 +44,21 @@ class BaseCommand:
         xdname = 'XIVO Base'
         
         def __init__(self):
-                pass
+                self.transfers_ref = {}
+                return
+        
         def handle_outsock(self, astid, msg):
                 return
         def checkqueue(self):
                 return
-
+        
+        def transfer_addbuf(self, req, buf):
+                return
+        def transfer_addref(self, req, ref):
+                return
+        def transfer_endbuf(self, req):
+                return
+        
         # inits / updates
         def extrasock(self, extraconn):
                 return

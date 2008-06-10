@@ -340,12 +340,12 @@ class AMIClass:
                         return False
 
         # \brief Adds a Queue
-        def queueadd(self, queuename, interface):
+        def queueadd(self, queuename, interface, paused):
                 try:
                         ret = self.sendcommand('QueueAdd', [('Queue', queuename),
                                                             ('Interface', interface),
                                                             ('Penalty', '1'),
-                                                            ('Paused', 'true')])
+                                                            ('Paused', paused)])
                         reply = self.readresponse('')
                         return ret
                 except self.AMIError, exc:

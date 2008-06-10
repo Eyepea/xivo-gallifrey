@@ -90,6 +90,10 @@ class XivoCTICommand(BaseCommand):
                 self.qlist_ng.setcommandclass(self)
                 self.alist_ng = cti_agentlist.AgentList()
                 self.alist_ng.setcommandclass(self)
+                self.transfers_buf = {}
+                self.transfers_ref = {}
+                self.faxes = {}
+                return
 
         def get_list_commands(self):
                 return ['login',
@@ -100,6 +104,7 @@ class XivoCTICommand(BaseCommand):
                         'queues-list', 'queue-status',
                         'users-list',
                         'faxsend',
+                        'faxdata',
                         'database',
                         'message',
                         'availstate',
@@ -110,9 +115,34 @@ class XivoCTICommand(BaseCommand):
                 cmd = xivo_commandsets.Command(params[0], params[1:])
                 if cmd.name == 'login':
                         cmd.type = xivo_commandsets.CMD_LOGIN
+                elif cmd.name == 'faxdata':
+                        cmd.type = xivo_commandsets.CMD_TRANSFER
                 else:
                         cmd.type = xivo_commandsets.CMD_OTHER
                 return cmd
+
+        def transfer_addbuf(self, req, buf):
+                self.transfers_buf[req].append(buf)
+                return
+
+        def transfer_addref(self, req, ref):
+                self.transfers_ref[req] = ref
+                self.transfers_buf[req] = []
+                return
+
+        def transfer_endbuf(self, req):
+                log_debug(SYSLOG_INFO, 'full buffer received for %s : len=%d %s'
+                          % (req, len(''.join(self.transfers_buf[req])), self.transfers_ref))
+                if req in self.transfers_ref:
+                        ref = self.transfers_ref[req]
+                        if ref in self.faxes:
+                                uinfo = self.faxes[ref].uinfo
+                                astid = uinfo.get('astid')
+                                self.faxes[ref].send(''.join(self.transfers_buf[req]), self.configs[astid].faxcallerid, self.amis[astid])
+                                del self.transfers_ref[req]
+                                del self.transfers_buf[req]
+                                del self.faxes[ref]
+                return
 
         def get_login_params(self, astid, command, connid):
                 """
@@ -750,6 +780,9 @@ class XivoCTICommand(BaseCommand):
         def ami_queuememberadded(self, astid, event):
                 queue = event.get('Queue')
                 location = event.get('Location')
+                paused = event.get('Paused')
+                msg = self.__build_agupdate__(['joinqueue', astid, location[6:], queue, paused])
+                self.__send_msg_to_cti_clients__(msg)
                 if astid not in self.queues_list:
                         self.queues_list[astid] = {}
                 if queue not in self.queues_list[astid]:
@@ -761,6 +794,8 @@ class XivoCTICommand(BaseCommand):
         def ami_queuememberremoved(self, astid, event):
                 queue = event.get('Queue')
                 location = event.get('Location')
+                msg = self.__build_agupdate__(['leavequeue', astid, location[6:], queue])
+                self.__send_msg_to_cti_clients__(msg)
                 if astid in self.queues_list and queue in self.queues_list[astid] and location in self.queues_list[astid][queue]['agents']:
                         del self.queues_list[astid][queue]['agents'][location]
                 return
@@ -801,10 +836,10 @@ class XivoCTICommand(BaseCommand):
                                 self.queues_list[astid][queue]['agents'][location][0] = event.get('Paused')
                         agname = location[6:]
                         if paused == '0':
-                                msg = self.__build_agupdate__(['joinqueue', astid, agname, queue])
+                                msg = self.__build_agupdate__(['unpaused', astid, agname, queue])
                                 self.__send_msg_to_cti_clients__(msg)
                         else:
-                                msg = self.__build_agupdate__(['leavequeue', astid, agname, queue])
+                                msg = self.__build_agupdate__(['paused', astid, agname, queue])
                                 self.__send_msg_to_cti_clients__(msg)
                 return
 
@@ -935,7 +970,7 @@ class XivoCTICommand(BaseCommand):
 
 
         def manage_cticommand(self, userinfo, icommand):
-                global faxserver
+                ret = None
                 repstr = ''
                 astid    = userinfo.get('astid')
                 username = userinfo.get('user')
@@ -969,8 +1004,9 @@ class XivoCTICommand(BaseCommand):
                                         repstr = self.__build_features_put__(icommand.args)
                         elif icommand.name == 'faxsend':
                                 if self.capas[capaid].match_funcs(ucapa, 'fax'):
-                                        faxserver = cti_fax.MyTCPServer(('', 0), cti_fax.FaxRequestHandler)
-                                        repstr = "faxsend=%d" % faxserver.socket.getsockname()[1]
+                                        newfax = cti_fax.Fax(userinfo, icommand.args)
+                                        self.faxes[newfax.reference] = newfax
+                                        repstr = 'faxsend=%s' % newfax.reference
                         elif icommand.name == 'message':
                                 if self.capas[capaid].match_funcs(ucapa, 'messages'):
                                         self.__send_msg_to_cti_clients__(self.message_srv2clt('%s/%s' %(astid, username),
@@ -1167,7 +1203,7 @@ class XivoCTICommand(BaseCommand):
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- (sendall) attempt to send <%s ...> (%d chars) failed : %s'
                                           % (repstr[:40], len(repstr), str(exc)))
-                return
+                return ret
 
 
         def __build_history_string__(self, requester_id, nlines, kind):
@@ -1236,9 +1272,25 @@ class XivoCTICommand(BaseCommand):
                                         anum = myagentnum
                                 if astid is not None and anum is not None:
                                         for queuename in queuenames:
-                                                self.amis[astid].queuepause(queuename, 'Agent/%s' % anum, 'true')
                                                 self.amis[astid].queueremove(queuename, 'Agent/%s' % anum)
                 elif subcommand == 'join':
+                        if len(commandargs) > 1:
+                                queuenames = commandargs[1].split(',')
+                                if len(commandargs) > 4:
+                                        astid = commandargs[2]
+                                        anum = commandargs[3]
+                                        if commandargs[4] == 'pause':
+                                                spause = 'true'
+                                        else:
+                                                spause = 'false'
+                                else:
+                                        astid = myastid
+                                        anum = myagentnum
+                                        spause = 'false' # unpauses by default for user-requests
+                                if astid is not None and anum is not None:
+                                        for queuename in queuenames:
+                                                self.amis[astid].queueadd(queuename, 'Agent/%s' % anum, spause)
+                elif subcommand == 'pause':
                         if len(commandargs) > 1:
                                 queuenames = commandargs[1].split(',')
                                 if len(commandargs) > 3:
@@ -1249,7 +1301,18 @@ class XivoCTICommand(BaseCommand):
                                         anum = myagentnum
                                 if astid is not None and anum is not None:
                                         for queuename in queuenames:
-                                                self.amis[astid].queueadd(queuename, 'Agent/%s' % anum)
+                                                self.amis[astid].queuepause(queuename, 'Agent/%s' % anum, 'true')
+                elif subcommand == 'unpause':
+                        if len(commandargs) > 1:
+                                queuenames = commandargs[1].split(',')
+                                if len(commandargs) > 3:
+                                        astid = commandargs[2]
+                                        anum = commandargs[3]
+                                else:
+                                        astid = myastid
+                                        anum = myagentnum
+                                if astid is not None and anum is not None:
+                                        for queuename in queuenames:
                                                 self.amis[astid].queuepause(queuename, 'Agent/%s' % anum, 'false')
                 elif subcommand == 'login':
                         if len(commandargs) > 2:
@@ -1286,7 +1349,7 @@ class XivoCTICommand(BaseCommand):
         def logoff_all_agents(self):
                 for userinfo in self.ulist_ng.userlist.itervalues():
                         astid = userinfo.get('astid')
-                        if 'agentnum' in userinfo and astid is not None:
+                        if 'agentnum' in userinfo and astid is not None and astid in self.amis:
                                 agentnum = userinfo['agentnum']
                                 if 'phonenum' in userinfo:
                                         phonenum = userinfo['phonenum']

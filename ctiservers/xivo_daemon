@@ -133,6 +133,10 @@ def manage_cti_connections(connid, msg, sep):
         requester_port = connid.getpeername()[1]
         requester = '%s:%d' % (requester_ip, requester_port)
 
+        if requester in commandclass.transfers_ref:
+                commandclass.transfer_addbuf(requester, msg)
+                return
+
         multimsg = msg.split(sep)
         for usefulmsgpart in multimsg:
                 usefulmsg = usefulmsgpart.split('\r')[0]
@@ -153,6 +157,10 @@ def manage_cti_connections(connid, msg, sep):
                                                 uinfo['login']['connection'] = connid
                                                 commandclass.loginok(loginparams, uinfo)
                                                 userinfo_by_requester[connid] = uinfo
+                                elif command.type == xivo_commandsets.CMD_TRANSFER:
+                                        log_debug(SYSLOG_INFO, 'TRANSFER on %s (ref %s)' % (requester, command.args))
+                                        commandclass.transfer_addref(requester, command.args[0])
+                                        connid.sendall('fileref=%s\n' % command.args[0])
                                 else:
                                         if connid in userinfo_by_requester:
                                                 commandclass.manage_cticommand(userinfo_by_requester[connid],
@@ -832,7 +840,6 @@ while True: # loops over the reloads
                                 # incoming TCP connections (CTI, WEBI, AGI, INFO)
                                 elif sel_i in fdlist_established:
                                         try:
-                                                ret = False
                                                 kind = fdlist_established[sel_i]
                                                 requester = '%s:%d' % (sel_i.getpeername()[0], sel_i.getpeername()[1])
                                                 try:
@@ -858,6 +865,8 @@ while True: # loops over the reloads
                                                 sel_i.close()
                                                 fdlist_full.remove(sel_i)
                                                 del fdlist_established[sel_i]
+                                                if requester in commandclass.transfers_ref:
+                                                        commandclass.transfer_endbuf(requester)
                                                 log_debug(SYSLOG_INFO, 'TCP socket closed on %s (%s)' % (requester, kind))
                                         except Exception, exc:
                                                 log_debug(SYSLOG_ERR, '--- exception [%s] --- %s' % (kind, str(exc)))
@@ -888,6 +897,7 @@ while True: # loops over the reloads
                                                         # commandclass.manage_logoff(userinfo)
                                         except Exception, exc:
                                                 log_debug(SYSLOG_ERR, '--- exception --- [queued threads] %s' % str(exc))
+
 
                                 for astid in configs:
                                         if (time.time() - lastrequest_time[astid]) > updates_period or update_userlist[astid]:
