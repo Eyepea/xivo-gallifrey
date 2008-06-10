@@ -1290,7 +1290,3 @@ __all__ = (
     'phone_vendor_iter_key_class', 'phone_desc_by_ua',
     'transaction_system_configuration',
 )
-
-# TODO: les attributions automatiques de demarrage ne checkent pas toute la semantique:
-# en particulier si rien n'empeche qu'une attr au demarrage entraine une network collision
-# BUGFIXer ca...
