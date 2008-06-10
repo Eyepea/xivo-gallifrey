@@ -876,8 +876,11 @@ while True: # loops over the reloads
                                                         sel_i.close()
                                                         if sel_i in userinfo_by_requester:
                                                                 userinfo = userinfo_by_requester.get(sel_i)
+                                                                log_debug(SYSLOG_WARNING, 'logging off %s following unexpected socket breakup' % userinfo)
                                                                 commandclass.manage_logoff(userinfo)
                                                                 del userinfo_by_requester[sel_i]
+                                                        else:
+                                                                log_debug(SYSLOG_WARNING, 'could not find a match for socket %s' % sel_i)
                                                 except Exception, exc2:
                                                         log_debug(SYSLOG_ERR, '--- exception (2) [CTI, WEBI, AGI, INFO] --- %s' % str(exc2))
 

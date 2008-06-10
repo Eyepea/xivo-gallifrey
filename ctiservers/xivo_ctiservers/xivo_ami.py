@@ -74,6 +74,7 @@ class AMIClass:
                         ret = False
                 if ret == False:
                         if loopnum == 0:
+                                log_debug(SYSLOG_WARNING, 'second attempt for AMI command (%s)' % action)
                                 # tries to reconnect
                                 try:
                                         self.connect()
@@ -85,7 +86,7 @@ class AMIClass:
                                         # log_debug("--- exception --- AMI not connected (action=%s args=%s) : %s" %(action, str(args), str(exc)))
                                         pass
                         else:
-                                print 'warning : 2 attempts have failed for AMI command : %s' % action
+                                log_debug(SYSLOG_WARNING, 'warning : 2 attempts have failed for AMI command (%s)' % action)
                 return ret
         # \brief Requesting a Status.
         def sendstatus(self):
