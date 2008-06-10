@@ -578,6 +578,28 @@ services:
                 - 192.168.0.200
 """),
 
+('vlan_too_high', """
+resolvConf: {}
+ipConfs:
+    static_001:
+        address:     192.168.0.210
+        netmask:     255.255.255.0
+vlans:
+    vs_0001:
+        4095: static_001
+netIfaces:
+    eth0: vs_0001
+services:
+    voip:
+        ipConf: static_001
+        addresses:
+            voipServer: 192.168.0.200
+            bootServer: 192.168.0.210
+            voipRange:
+                - 192.168.0.100
+                - 192.168.0.200
+"""),
+
 ]
 
 
