@@ -32,7 +32,7 @@ import shutil
 import os.path
 import subprocess
 from ConfigParser import ConfigParser
-from itertools import chain
+from itertools import chain, count
 
 from xivo import network
 from xivo import trace_null
@@ -488,11 +488,11 @@ def references_relation(set_defined_symbols, lst_references, minref, maxref):
             dict_undefined[symbol] = dict_undefined.get(symbol, 0) + 1
     
     for symbol in set_defined_symbols:
-        count = dict_count.get(symbol, 0)
-        if minref <= count <= maxref:
-            dict_ok[symbol] = count
+        cnt = dict_count.get(symbol, 0)
+        if minref <= cnt <= maxref:
+            dict_ok[symbol] = cnt
         else:
-            dict_out_of_bounds[symbol] = count
+            dict_out_of_bounds[symbol] = cnt
     
     return dict_ok, dict_out_of_bounds, dict_undefined
 
@@ -1247,21 +1247,31 @@ def aaLst_ipConfTag(conf):
     return network.sorted_lst_lexdec(unsorted_eligible_ipConfTag)
 
 
+def iter_new_vsTag(conf):
+    """
+    Yield vsTags that are not yet used.
+    """
+    return ("vs_%04d" % cnt for cnt in count(max(network.split_lexdec(vsTag)[1] for vsTag in conf['vlans']) + 1))
+
 def autoattrib_conf(conf):
     """
     Auto attribute orphan vlan set to 'void' physical interfaces, in
     priority to plugged interfaces then to unplugged interfaces.
     Once done auto attribute vlan interfaces (including untagged vlans)
     to orphan ip configurations.
+    WARNING: modify conf in-place.
     """
     plugged_by_phy = gen_plugged_by_phy(network.get_filtered_phys(any_prefixes))
     
     vsTag_iter = iter(aaLst_vsTag(conf))
+    new_vsTag_iter = iter_new_vsTag(conf)
+    
     for npst, phy in aaLst_npst_phy(conf, plugged_by_phy):
         try:
             vsTag = vsTag_iter.next()
         except StopIteration:
-            break
+            vsTag = new_vsTag_iter.next()
+            conf['vlans'][vsTag] = { 0: 'void' }
         conf['netIfaces'][phy] = vsTag
     
     ipConfTag_iter = iter(aaLst_ipConfTag(conf))

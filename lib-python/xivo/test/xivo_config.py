@@ -648,31 +648,31 @@ services:
 # REM: schema follow...
 """!~plausible_configuration
 resolvConf:
-  search?: !~search_domain bla.tld
-  nameservers?: !~~seqlen(1,3) [ !~ipv4_address 192.168.0.200 ]
+    search?: !~search_domain bla.tld
+    nameservers?: !~~seqlen(1,3) [ !~ipv4_address 192.168.0.200 ]
 ipConfs:
-  !~~prefixedDec static_: !~plausible_static
-    address:     !~ipv4_address 192.168.0.100
-    netmask:     !~ipv4_address 255.255.255.0
+    !~~prefixedDec static_: !~plausible_static
+        address:     !~ipv4_address 192.168.0.100
+        netmask:     !~ipv4_address 255.255.255.0
     broadcast?:  !~ipv4_address 192.168.0.255
     gateway?:    !~ipv4_address 192.168.0.254
     mtu?:        !~~between(68,1500) 1500
 vlans:
-  !~~prefixedDec vs_:
-    !~~between(0,4094) 0: !~vlanIpConf static_0001
+    !~~prefixedDec vs_:
+        !~~between(0,4094) 0: !~vlanIpConf static_0001
 netIfaces:
-  !~~prefixedDec eth: !~netIfaceVlans vs_0001
+    !~~prefixedDec eth: !~netIfaceVlans vs_0001
 services:
-  voip:
-    ipConf: !~~prefixedDec static_
-    addresses:
-      voipServer: !~ipv4_address 192.168.1.200
-      bootServer: !~ipv4_address 192.168.1.200
-      voipRange: !~~seqlen(2,2) [ !~ipv4_address 192.168.1.200 ]
-      alienRange?: !~~seqlen(2,2) [ !~ipv4_address 192.168.1.200 ]
-      directory?: !~ipv4_address 192.168.1.200
-      ntp?: !~ipv4_address 192.168.1.200
-      router?: !~ipv4_address 192.168.1.254
+    voip:
+        ipConf: !~~prefixedDec static_
+        addresses:
+            voipServer: !~ipv4_address 192.168.1.200
+            bootServer: !~ipv4_address 192.168.1.200
+            voipRange: !~~seqlen(2,2) [ !~ipv4_address 192.168.1.200 ]
+            alienRange?: !~~seqlen(2,2) [ !~ipv4_address 192.168.1.200 ]
+            directory?: !~ipv4_address 192.168.1.200
+            ntp?: !~ipv4_address 192.168.1.200
+            router?: !~ipv4_address 192.168.1.254
 """
 
 # DEBUG
