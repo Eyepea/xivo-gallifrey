@@ -1201,7 +1201,8 @@ def aaLst_vsTag(conf):
     """
     Return a list of vlan set names that are not owned by a physical interface
     and for which related IP configurations will not be in conflict with IP
-    configurations already used or other IP configurations 
+    configurations already used or previously selected IP configurations.
+    The list is sorted by network.sorted_lst_lexdec().
     """
     referenced_networks = frozenset(network_from_static(conf['ipConfs'][ipConfTag]) for ipConfTag in get_referenced_ipConfTags(conf))
     owned = frozenset(get_referenced_vsTags(conf))
@@ -1226,10 +1227,24 @@ def aaLst_vsTag(conf):
 def aaLst_ipConfTag(conf):
     """
     Return a list of ipconf tags that are not owned by a vlan (in our
-    terminology vlans include untaggued vlan) in network.cmp_lexdec order.
+    terminology vlans include untaggued vlan) for which corresponding IP
+    configurations will not be in conflict with IP configurations already used
+    or previously selected IP configurations.
+    The list is sorted by network.sorted_lst_lexdec().
     """
     owned = frozenset(get_referenced_ipConfTags(conf))
-    return network.sorted_lst_lexdec((ipConfTag for ipConfTag in conf['ipConfs'].iterkeys() if ipConfTag not in owned))
+    referenced_networks = frozenset(network_from_static(conf['ipConfs'][ipConfTag]) for ipConfTag in owned)
+    eligible_networks = set()
+    unsorted_eligible_ipConfTag = []
+    for ipConfTag in conf['ipConfs'].iterkeys():
+        if ipConfTag in owned:
+            continue
+        new_net = network_from_static(conf['ipConfs'][ipConfTag])
+        if new_net in referenced_networks or new_net in eligible_networks:
+            continue
+        eligible_networks.add(new_net)
+        unsorted_eligible_ipConfTag.append(ipConfTag)
+    return network.sorted_lst_lexdec(unsorted_eligible_ipConfTag)
 
 
 def autoattrib_conf(conf):
