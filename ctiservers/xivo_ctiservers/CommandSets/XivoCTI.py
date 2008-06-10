@@ -570,10 +570,20 @@ class XivoCTICommand(BaseCommand):
                                 event['xivo_queuename'] = qname
                                 self.__sheet_alert__(SHEET_EVENT_AGENTLINK, event)
                 else:
-                        msg = self.__build_agupdate__(['phonelink', astid, event.get('CallerID1')])
-                        self.__send_msg_to_cti_clients__(msg)
-                        msg = self.__build_agupdate__(['phonelink', astid, event.get('CallerID2')])
-                        self.__send_msg_to_cti_clients__(msg)
+                        ag1 = None
+                        ag2 = None
+                        for uinfo in self.ulist_ng.userlist.itervalues():
+                                if uinfo.get('astid') == astid:
+                                        if uinfo.get('phonenum') == event.get('CallerID1'):
+                                                ag1 = uinfo.get('agentnum')
+                                        if uinfo.get('phonenum') == event.get('CallerID2'):
+                                                ag2 = uinfo.get('agentnum')
+                        if ag1 is not None:
+                                msg = self.__build_agupdate__(['phonelink', astid, ag1])
+                                self.__send_msg_to_cti_clients__(msg)
+                        if ag2 is not None:
+                                msg = self.__build_agupdate__(['phonelink', astid, ag2])
+                                self.__send_msg_to_cti_clients__(msg)
                 self.plist[astid].handle_ami_event_link(chan1, chan2, clid1, clid2)
 
                 return
@@ -587,10 +597,20 @@ class XivoCTICommand(BaseCommand):
                         msg = self.__build_agupdate__(['agentunlink', astid, chan2[6:]])
                         self.__send_msg_to_cti_clients__(msg)
                 else:
-                        msg = self.__build_agupdate__(['phoneunlink', astid, event.get('CallerID1')])
-                        self.__send_msg_to_cti_clients__(msg)
-                        msg = self.__build_agupdate__(['phoneunlink', astid, event.get('CallerID2')])
-                        self.__send_msg_to_cti_clients__(msg)
+                        ag1 = None
+                        ag2 = None
+                        for uinfo in self.ulist_ng.userlist.itervalues():
+                                if uinfo.get('astid') == astid:
+                                        if uinfo.get('phonenum') == event.get('CallerID1'):
+                                                ag1 = uinfo.get('agentnum')
+                                        if uinfo.get('phonenum') == event.get('CallerID2'):
+                                                ag2 = uinfo.get('agentnum')
+                        if ag1 is not None:
+                                msg = self.__build_agupdate__(['phoneunlink', astid, ag1])
+                                self.__send_msg_to_cti_clients__(msg)
+                        if ag2 is not None:
+                                msg = self.__build_agupdate__(['phoneunlink', astid, ag2])
+                                self.__send_msg_to_cti_clients__(msg)
                 self.plist[astid].handle_ami_event_unlink(chan1, chan2, clid1, clid2)
                 return
 
@@ -1318,15 +1338,23 @@ class XivoCTICommand(BaseCommand):
                         if len(commandargs) > 2:
                                 astid = commandargs[1]
                                 anum = commandargs[2]
-                                ## XXXX temporary
-                                phonenum = anum
+                                phonenum = None
+                                for userinfo in self.ulist_ng.userlist.itervalues():
+                                        if 'agentnum' in userinfo and userinfo.get('agentnum') == anum and userinfo.get('astid') == astid:
+                                                phonenum = userinfo.get('agentphonenum')
+                                                if phonenum is None:
+                                                        phonenum = userinfo.get('phonenum')
+                                                break
                         else:
                                 astid = myastid
                                 anum = myagentnum
-                                phonenum = userinfo['agentphonenum']
-                        if astid is not None and anum is not None:
+                                phonenum = userinfo.get('agentphonenum')
+                        if astid is not None and anum is not None and phonenum is not None:
                                 self.amis[astid].agentcallbacklogin(anum, phonenum)
                                 self.amis[astid].setvar('AGENTBYCALLERID_%s' % phonenum, anum)
+                        else:
+                                log_debug(SYSLOG_WARNING, 'cannot login agent since astid,anum,phonenum = %s,%s,%s (%s)'
+                                          % (astid, anum, phonenum, commandargs))
                 elif subcommand == 'logout':
                         if len(commandargs) > 2:
                                 astid = commandargs[1]

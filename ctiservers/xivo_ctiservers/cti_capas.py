@@ -139,7 +139,7 @@ class Capabilities:
                 capas = capa_str.split(',')
                 for cap in capas:
                         if cap in self.capafuncs:
-                                n = 2 ** self.allowed_funcs.index(capa_str)
+                                n = 2 ** self.allowed_funcs.index(cap)
                                 if (n & ucapas):
                                         return True
                 return False
