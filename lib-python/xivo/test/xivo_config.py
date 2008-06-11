@@ -38,9 +38,6 @@ ipConfs:
     static_001:
         address:     192.168.0.200
         netmask:     255.255.255.0
-        broadcast:   192.168.0.255
-        gateway:     192.168.0.254
-        mtu:         1500
 vlans: {}
 netIfaces: {}
 services:
@@ -50,8 +47,8 @@ services:
             voipServer: 192.168.0.200
             bootServer: 192.168.0.200
             voipRange:
-                - 192.168.0.100
-                - 192.168.0.199
+            - 192.168.0.100
+            - 192.168.0.199
 """),
 
 ('one_unused_vs', """
@@ -77,8 +74,8 @@ services:
             voipServer: 192.168.0.200
             bootServer: 192.168.0.200
             voipRange:
-                - 192.168.0.100
-                - 192.168.0.199
+            - 192.168.0.100
+            - 192.168.0.199
 """),
 
 ('vlan_high', """
@@ -99,8 +96,8 @@ services:
             voipServer: 192.168.0.200
             bootServer: 192.168.0.200
             voipRange:
-                - 192.168.0.100
-                - 192.168.0.199
+            - 192.168.0.100
+            - 192.168.0.199
 """),
 
 ]
@@ -125,8 +122,8 @@ services:
             voipServer: 192.168.0.200
             bootServer: 192.168.0.200
             voipRange:
-                - 192.168.0.199
-                - 192.168.0.100
+            - 192.168.0.199
+            - 192.168.0.100
 """),
 
 ('outer_space', """
@@ -144,16 +141,16 @@ services:
             voipServer: 192.168.0.200
             bootServer: 192.168.0.200
             voipRange:
-                - 192.168.0.100
-                - 192.168.0.199
+            - 192.168.0.100
+            - 192.168.0.199
 outerSpace:
 """),
 
 ('duplicated_nameserver', """
 resolvConf:
     nameservers:
-        - 192.168.0.50
-        - 192.168.0.050
+    - 192.168.0.50
+    - 192.168.0.050
 ipConfs:
     static_001:
         address:     192.168.0.200
@@ -170,8 +167,8 @@ services:
             voipServer: 192.168.0.200
             bootServer: 192.168.0.200
             voipRange:
-                - 192.168.0.100
-                - 192.168.0.199
+            - 192.168.0.100
+            - 192.168.0.199
 """),
 
 ('duplicated_referenced_network', """
@@ -198,8 +195,8 @@ services:
             voipServer: 192.168.0.200
             bootServer: 192.168.0.200
             voipRange:
-                - 192.168.0.100
-                - 192.168.0.199
+            - 192.168.0.100
+            - 192.168.0.199
 """),
 
 ('services_referenced_net_does_not_exist', """
@@ -220,8 +217,8 @@ services:
             voipServer: 192.168.0.200
             bootServer: 192.168.0.200
             voipRange:
-                - 192.168.0.100
-                - 192.168.0.199
+            - 192.168.0.100
+            - 192.168.0.199
 """),
 
 ('vlans_referenced_net_does_not_exist', """
@@ -242,8 +239,8 @@ services:
             voipServer: 192.168.0.200
             bootServer: 192.168.0.200
             voipRange:
-                - 192.168.0.100
-                - 192.168.0.199
+            - 192.168.0.100
+            - 192.168.0.199
 """),
 
 ('netIfaces_referenced_vs_does_not_exist', """
@@ -264,8 +261,8 @@ services:
             voipServer: 192.168.0.200
             bootServer: 192.168.0.200
             voipRange:
-                - 192.168.0.100
-                - 192.168.0.199
+            - 192.168.0.100
+            - 192.168.0.199
 """),
 
 ('service_voipServer_is_bcast', """
@@ -286,8 +283,8 @@ services:
             voipServer: 192.168.0.255
             bootServer: 192.168.0.200
             voipRange:
-                - 192.168.0.100
-                - 192.168.0.199
+            - 192.168.0.100
+            - 192.168.0.199
 """),
 
 ('service_router_is_bcast', """
@@ -308,8 +305,8 @@ services:
             voipServer: 192.168.0.200
             bootServer: 192.168.0.200
             voipRange:
-                - 192.168.0.100
-                - 192.168.0.199
+            - 192.168.0.100
+            - 192.168.0.199
             router: 192.168.0.255
 """),
 
@@ -331,8 +328,8 @@ services:
             voipServer: 192.168.0.200
             bootServer: 192.168.0.200
             voipRange:
-                - 192.168.0.100
-                - 192.168.0.199
+            - 192.168.0.100
+            - 192.168.0.199
             router: 192.168.1.12
 """),
 
@@ -354,8 +351,8 @@ services:
             voipServer: 192.168.0.200
             bootServer: 192.168.0.200
             voipRange:
-                - 192.168.0.199
-                - 192.168.0.100
+            - 192.168.0.199
+            - 192.168.0.100
 """),
 
 ('service_overlapping_ranges_1', """
@@ -376,11 +373,11 @@ services:
             voipServer: 192.168.0.200
             bootServer: 192.168.0.200
             voipRange:
-                - 192.168.0.100
-                - 192.168.0.199
+            - 192.168.0.100
+            - 192.168.0.199
             alienRange:
-                - 192.168.0.199
-                - 192.168.0.210
+            - 192.168.0.199
+            - 192.168.0.210
 """),
 
 ('service_overlapping_ranges_2', """
@@ -401,11 +398,11 @@ services:
             voipServer: 192.168.0.200
             bootServer: 192.168.0.200
             voipRange:
-                - 192.168.0.100
-                - 192.168.0.199
+            - 192.168.0.100
+            - 192.168.0.199
             alienRange:
-                - 192.168.0.50
-                - 192.168.0.100
+            - 192.168.0.50
+            - 192.168.0.100
 """),
 
 ('service_overlapping_ranges_3', """
@@ -426,11 +423,11 @@ services:
             voipServer: 192.168.0.200
             bootServer: 192.168.0.200
             voipRange:
-                - 192.168.0.100
-                - 192.168.0.199
+            - 192.168.0.100
+            - 192.168.0.199
             alienRange:
-                - 192.168.0.100
-                - 192.168.0.199
+            - 192.168.0.100
+            - 192.168.0.199
 """),
 
 ('service_overlapping_ranges_4', """
@@ -451,11 +448,11 @@ services:
             voipServer: 192.168.0.200
             bootServer: 192.168.0.200
             voipRange:
-                - 192.168.0.100
-                - 192.168.0.199
+            - 192.168.0.100
+            - 192.168.0.199
             alienRange:
-                - 192.168.0.90
-                - 192.168.0.210
+            - 192.168.0.90
+            - 192.168.0.210
 """),
 
 ('implicit_bcast_in_voip_range', """
@@ -476,8 +473,8 @@ services:
             voipServer: 192.168.0.200
             bootServer: 192.168.0.200
             voipRange:
-                - 192.168.0.250
-                - 192.168.0.255
+            - 192.168.0.250
+            - 192.168.0.255
 """),
 
 ('explicit_bcast_in_voip_range', """
@@ -499,8 +496,8 @@ services:
             voipServer: 192.168.0.200
             bootServer: 192.168.0.200
             voipRange:
-                - 192.168.0.12
-                - 192.168.0.20
+            - 192.168.0.12
+            - 192.168.0.20
 """),
 
 ('implicit_bcast_in_alien_range', """
@@ -521,11 +518,11 @@ services:
             voipServer: 192.168.0.200
             bootServer: 192.168.0.200
             voipRange:
-                - 192.168.0.100
-                - 192.168.0.199
+            - 192.168.0.100
+            - 192.168.0.199
             alienRange:
-                - 192.168.0.250
-                - 192.168.0.255
+            - 192.168.0.250
+            - 192.168.0.255
 """),
 
 ('explicit_bcast_in_alien_range', """
@@ -547,11 +544,11 @@ services:
             voipServer: 192.168.0.200
             bootServer: 192.168.0.200
             voipRange:
-                - 192.168.0.100
-                - 192.168.0.199
+            - 192.168.0.100
+            - 192.168.0.199
             alienRange:
-                - 192.168.0.12
-                - 192.168.0.20
+            - 192.168.0.12
+            - 192.168.0.20
 """),
 
 ('voipServer_in_voip_range', """
@@ -572,8 +569,8 @@ services:
             voipServer: 192.168.0.200
             bootServer: 192.168.0.210
             voipRange:
-                - 192.168.0.100
-                - 192.168.0.200
+            - 192.168.0.100
+            - 192.168.0.200
 """),
 
 ('address_in_voip_range', """
@@ -594,8 +591,8 @@ services:
             voipServer: 192.168.0.210
             bootServer: 192.168.0.210
             voipRange:
-                - 192.168.0.100
-                - 192.168.0.200
+            - 192.168.0.100
+            - 192.168.0.200
 """),
 
 ('vlan_too_high', """
@@ -616,8 +613,8 @@ services:
             voipServer: 192.168.0.200
             bootServer: 192.168.0.200
             voipRange:
-                - 192.168.0.100
-                - 192.168.0.199
+            - 192.168.0.100
+            - 192.168.0.199
 """),
 
 ('vlan_too_low', """
@@ -638,8 +635,8 @@ services:
             voipServer: 192.168.0.200
             bootServer: 192.168.0.200
             voipRange:
-                - 192.168.0.100
-                - 192.168.0.199
+            - 192.168.0.100
+            - 192.168.0.199
 """),
 
 ]
