@@ -27,6 +27,7 @@ __license__ = """
 import os
 import re
 import sys
+import copy
 import yaml
 import shutil
 import os.path
@@ -89,30 +90,30 @@ def any_prefixes(ifname):
     return True in [ifname.startswith(x) for x in AUTHORIZED_PREFIXES]
 
 
-def ipv4_from_macaddr(macaddr, logexceptfunc = None):
+def ipv4_from_macaddr(macaddr, logexceptfunc=None):
     """
     Wrapper for network.ipv4_from_macaddr() that sets
     * ifname_filter to any_prefixes
     * arping_cmd_list to Pgc['arping_cmd'].strip().split()
     * arping_sleep_us to Pgc['arping_sleep_us']
     """
-    return network.ipv4_from_macaddr(macaddr, logexceptfunc = logexceptfunc,
-                                     ifname_filter = any_prefixes,
-                                     arping_cmd_list = Pgc['arping_cmd'].strip().split(),
-                                     arping_sleep_us = Pgc['arping_sleep_us'])
+    return network.ipv4_from_macaddr(macaddr, logexceptfunc=logexceptfunc,
+                                     ifname_filter=any_prefixes,
+                                     arping_cmd_list=Pgc['arping_cmd'].strip().split(),
+                                     arping_sleep_us=Pgc['arping_sleep_us'])
 
 
-def macaddr_from_ipv4(macaddr, logexceptfunc = None):
+def macaddr_from_ipv4(macaddr, logexceptfunc=None):
     """
     Wrapper for network.macaddr_from_ipv4() that sets
     * ifname_filter to any_prefixes
     * arping_cmd_list to Pgc['arping_cmd'].strip().split()
     * arping_sleep_us to Pgc['arping_sleep_us']
     """
-    return network.macaddr_from_ipv4(macaddr, logexceptfunc = logexceptfunc,
-                                     ifname_filter = any_prefixes,
-                                     arping_cmd_list = Pgc['arping_cmd'].strip().split(),
-                                     arping_sleep_us = Pgc['arping_sleep_us'])
+    return network.macaddr_from_ipv4(macaddr, logexceptfunc=logexceptfunc,
+                                     ifname_filter=any_prefixes,
+                                     arping_cmd_list=Pgc['arping_cmd'].strip().split(),
+                                     arping_sleep_us=Pgc['arping_sleep_us'])
 
 
 # States for linesubst()
@@ -125,10 +126,10 @@ TERM = object()
 
 def linesubst(line, variables):
     """
-    In a string, substitute '{{varname}}' occurrences with the
-    value of variables['varname'], '\\' being an escaping char...
-    If at first you don't understand this function, draw its finite
-    state machine and everything will become crystal clear :)
+    In a string, substitute '{{varname}}' occurrences with the value of
+    variables['varname'], '\\' being an escaping char...
+    If at first you don't understand this function, draw its finite state
+    machine and everything will become crystal clear :)
     """
     # trivial no substitution early detection:
     if '{{' not in line and '\\' not in line:
@@ -187,11 +188,11 @@ def linesubst(line, variables):
     return out
 
 
-def txtsubst(lines, variables, target_file = None):
+def txtsubst(lines, variables, target_file=None):
     """
-    Log that target_file is going to be generated, and calculate its
-    content by applying the linesubst() transformation with the given
-    variables to each given lines.
+    Log that target_file is going to be generated, and calculate its content by
+    applying the linesubst() transformation with the given variables to each
+    given lines.
     """
     if target_file:
         syslogf("In process of generating file %r" % target_file)
@@ -218,11 +219,10 @@ class PhoneVendor:
     def __init__(self, phone):
         """
         Constructor.
-
-        phone must be a dictionary containing everything needed for
-        the one phone provisioning process to take place.  That is the
-        following keys:
-
+        
+        phone must be a dictionary containing everything needed for the one
+        phone provisioning process to take place.  That is the following keys:
+        
         'model', 'vendor', 'macaddr', 'actions', 'ipv4' if the value
         for 'actions' is not 'no'
         """
@@ -257,8 +257,7 @@ class PhoneVendor:
     
     def generate_reinitprov(self):
         """
-        This function put the configuration for the phone back in
-        guest state.
+        This function put the configuration for the phone back in guest state.
         """
         syslogf("About to GUEST'ify the phone %s" % self.phone['macaddr'])
         self.do_reinitprov()
@@ -267,8 +266,8 @@ class PhoneVendor:
     def generate_autoprov(self, provinfo):
         """
         This function generate the configuration for the phone with
-        provisioning informations provided in the provinfo dictionary,
-        which must contain the following keys:
+        provisioning informations provided in the provinfo dictionary, which
+        must contain the following keys:
 
         'name', 'ident', 'number', 'passwd'
         """
@@ -318,7 +317,7 @@ def default_handler():
     except_tb.log_exception(lambda x: syslogf(SYSLOG_ERR, x))
 
 
-def phone_desc_by_ua(ua, exception_handler = default_handler):
+def phone_desc_by_ua(ua, exception_handler=default_handler):
     """
     Return a tuple (vendor_key, model, firmware), or None if no PhoneVendor
     derived class has recognized the user agent string.
@@ -328,7 +327,7 @@ def phone_desc_by_ua(ua, exception_handler = default_handler):
     for phone_class in PhoneClasses.itervalues():
         try:
             r = phone_class.get_vendor_model_fw(ua)
-        except:
+        except Exception:
             r = None
             exception_handler()
             sys.exc_clear()
@@ -368,8 +367,8 @@ def netmask_from_static(static):
 
 def ip_in_network(ipv4, net, netmask):
     """
-    Return a tuple (innet, other_net) where innet is a boolean that is True
-    iff ipv4/netmask is the same as net and other_net is ipv4/netmask.
+    Return a tuple (innet, other_net) where innet is a boolean that is True iff
+    ipv4/netmask is the same as net and other_net is ipv4/netmask.
     """
     other_net = network.mask_ipv4(netmask, ipv4)
     return (net == other_net), other_net
@@ -394,8 +393,8 @@ def ipv4_address(docstr, schema, trace):
 
 def reserved_none_void_prefixDec(fname, prefix):
     """
-    Return a XYS validator that checks that corresponding document strings
-    are 'reserved', 'none', 'void', or valid per !~~prefixDec prefix.
+    Return a XYS validator that checks that corresponding document strings are
+    'reserved', 'none', 'void', or valid per !~~prefixDec prefix.
     """
     def validator(docstr, schema, trace):
         """
@@ -444,9 +443,9 @@ def plausible_static(static, schema, trace):
 
 def get_referenced_ipConfTags(conf):
     """
-    Get tags of the static IP configurations that are owned by vlans (in
-    our relational model vlans include untaggued vlan and physical
-    interfaces are never directly related to IP configurations).
+    Get tags of the static IP configurations that are owned by vlans (in our
+    relational model vlans include untaggued vlan and physical interfaces are
+    never directly related to IP configurations).
     
     Return a list
     """
@@ -466,11 +465,11 @@ def references_relation(set_defined_symbols, lst_references, minref, maxref):
     """
     Pure function.
     
-    For each element of set_defined_symbols, there must be between minref
-    and maxref, included, identical elements in references.
+    For each element of set_defined_symbols, there must be between minref and
+    maxref, included, identical elements in references.
     
-    This function returns (dict_ok, dict_out_of_bounds, dict_undefined)
-    where dictionaries contain entries of symbol: count.
+    This function returns (dict_ok, dict_out_of_bounds, dict_undefined) where
+    dictionaries contain entries of symbol: count.
     
     Any symbol of set_defined_symbols appears either in dict_ok or in
     dict_out_of_bounds, even if it is unreferenced: in this case count == 0
@@ -714,6 +713,19 @@ def load_configuration(conf_source, trace=trace_null):
         if range_name in voip_addresses:
             voip_addresses[range_name][:] = map(network.normalize_ipv4_address, voip_addresses[range_name])
     return conf
+
+
+def save_configuration(conf, stream, trace=trace_null):
+    """
+    Serialize the internal representation of the configuration to the stream in
+    YAML.
+    
+    This can only be done if the configuration is valid.
+    InvalidConfigurationError will be raised if the configuration is not valid.
+    """
+    if not xys.validate(conf, SCHEMA_NETWORK_CONFIG, trace):
+        raise InvalidConfigurationError("Invalid configuration")
+    return yaml.safe_dump(conf, stream=stream, default_flow_style=False, indent=4)
 
 
 def natural_vlan_name(phy, vlanId):
@@ -960,128 +972,214 @@ INTERFACES_FILE = "interfaces"
 DHCPD_CONF_FILE = "dhcpd.conf"
 
 
-def sync():
-    """
-    Call /bin/sync
-    """
-    # is there a wrapper for the sync syscall in Python?
-    subprocess.call("/bin/sync", close_fds = True)
+class TransactionError(Exception):
+    "Error raised on transaction cancellation."
+    def __init__(self, msg, original_exception):
+        self.__reprmsg = "<%s %r>" % (self.__class__.__name__, msg)
+        self.__strmsg = str(msg)
+        self.original_exception = original_exception
+        Exception.__init__(self, msg)
+    def __repr__(self):
+        return self.__reprmsg
+    def __str__(self):
+        return self.__strmsg
 
+
+def sync_no_oserror(trace=trace_null):
+    """
+    Call /bin/sync.
+    Catch and trace OSError exceptions.
+    """
+    try:
+        subprocess.call("/bin/sync", close_fds=True)
+    except OSError:
+        trace.warning("sync_no_oserror: call of /bin/sync failed")
+        except_tb.log_exception(trace.warning)
+
+
+def rm_rf(path):
+    """
+    Recursively (if needed) delete path.
+    """
+    if os.path.isdir(path) and not os.path.islink(path):
+        shutil.rmtree(path)
+    elif os.path.lexists(path):
+        os.remove(path)
+
+
+def rotate_entries(previous, current, new, trace):
+    """
+    If current exists:
+      1) Delete previous.
+      2) Move current to previous.
+    3) Finally, move new to current.
+    
+    OSError exceptions raised during 1) are ignored (but traced).
+    OSError exceptions during 2) are handled by trying to delete current
+    instead.
+    Other exceptions are not catched.
+    """
+    trace.info("Entering rotate_entries(previous=%r, current=%r, new=%r)" % (previous, current, new))
+    
+    if os.path.exists(current):
+        trace.info("%r to %r" % (current, previous))
+        
+        trace.debug("about to remove %r" % previous)
+        try:
+            rm_rf(previous)
+        except OSError:
+            trace.warning("rotate_entries: failed to delete %r" % previous)
+            except_tb.log_exception(trace.warning)
+        
+        trace.debug("about to rename %r to %r" % (current, previous))
+        try:
+            os.rename(current, previous)
+        except OSError:
+            trace.warning("rotate_entries: failed to rename %r to %r" % (current, previous))
+            except_tb.log_exception(trace.warning)
+            
+            rm_rf(current)
+        
+        sync_no_oserror(trace)
+    
+    trace.debug("about to rename %r to %r" % (new, current))
+    os.rename(new, current)
+    
+    sync_no_oserror(trace)
+    
+    trace.info("Leaving rotate_entries.")
 
 def transactional_generation(store_base, store_subs, gen_base, gen_subs, generation_func, trace=trace_null):
     """
-    This function completes a three staged transaction if it has been
-    started, or does nothing otherwise.  The purpose of the transaction is
-    to generate some configuration files from others, where the source
-    files are all stored along in a common subdirectory, and the
-    destination files are in an other subdirectory, while guarantying as
-    much as possible that in the stable state, the source and the
-    destination directories are in sync.  The transaction must be
-    externally initiated by the creation of the directory 'store_new'.
+    This function first removes some temporary directories. Then it completes a
+    three staged transaction if it has been started, or does nothing otherwise.
+    The purpose of the transaction is to generate some configuration files from
+    others.  The source files are all stored along in a common subdirectory,
+    and the destination files are in an other subdirectory.  The transaction
+    guaranty as much as possible (we depends on the filesystem) that in the
+    stable state the source and the destination configurations are in sync.
+    The transaction must be externally initiated by the creation of the new
+    store entry in the filesystem.
     
     This function returns True if a transaction has been processed
-    successfully, False if it has been cancelled, None if no transaction
-    was in progress.  A transaction fails and is cancelled iff
-    generation_func() raises an exception.  Uncatched exceptions raised by
+    successfully or None if no transaction was in progress.  A transaction
+    fails and is cancelled iff generation_func() raises an exception; in this
+    case a TransactionError is raised.  Uncatched exceptions raised by
     transactional_generation() must be considered as fatal errors requiring
     human intervention or at least restoration of a known stable state.
     
+    If this function returns with no exception, the resulting state is stable
+    and clean; there are no remaining temporary directories.
+    
+    * store_base: base directory of source configurations.
+    * store_subs: sub-paths from store_base to previous, current, new, tmp, and
+                  failed.
+    * gen_base: base directory of all generated configurations.
+    * gen_subs: sub-paths from gen_base to previous, current, new, and tmp.
+    * generation_func(to_gen, prev_gen, current_src, trace):
+        where:
+        * to_gen contains the path where the configuration must be generated.
+        * prev_gen contains the path where the previously generated
+          configuration stands.  If no configuration has been previously
+          generated, prev_gen contains None instead.
+        * current_src contains the path where the source configuration stands.
+    * trace: A trace support object.  See the module xivo.trace_stderr for an
+      implementation example.
+    
     NOTE: Because of our requirements some state that is only stored in the
-    generated files must be preserved (configuration of reserved interfaces
-    and of unhandled interfaces).  That is why generation_func takes its
-    second parameter.
+    generated files must be preserved (configuration of reserved interfaces and
+    of unhandled interfaces).  That is why generation_func takes its second
+    parameter.
     """
-    success = None
     trace.notice("ENTERING transactional_generation()")
-    trace.debug("store_base = %r" % store_base)
-    trace.debug("store_subs = %r" % (store_subs,))
-    trace.debug("gen_base = %r" % gen_base)
-    trace.debug("gen_subs = %r" % (gen_subs,))
-    store_previous, store_current, store_new, store_failed = [os.path.join(store_base, x) for x in store_subs]
+    trace.debug("  store_base = %r" % store_base)
+    trace.debug("  store_subs = %s" % `store_subs`)
+    trace.debug("  gen_base = %r" % gen_base)
+    trace.debug("  gen_subs = %s" % `gen_subs`)
+    
+    store_previous, store_current, store_new, store_tmp, store_failed = [os.path.join(store_base, x) for x in store_subs]
     gen_previous, gen_current, gen_new, gen_tmp = [os.path.join(gen_base, x) for x in gen_subs]
-    if os.path.isdir(store_new) and not os.path.isdir(gen_new):
-        success = True
+    
+    for entry in (store_tmp, gen_tmp):
+        if os.path.exists(entry):
+            trace.warning("transactional_generation: removing stalled entry %r" % entry)
+            rm_rf(entry)
+    
+    if os.path.exists(store_new) and not os.path.exists(gen_new):
         trace.notice("BEGIN PHASE 1")
-        trace.debug("about to recursively remove %r" % gen_tmp)
-        shutil.rmtree(gen_tmp, ignore_errors = True)
-        if os.path.isdir(gen_current):
+        
+        trace.debug("about to remove %r" % gen_tmp)
+        rm_rf(gen_tmp)
+        
+        if os.path.exists(gen_current):
             trace.info("%r exists" % gen_current)
             previously_generated = gen_current
         else:
             trace.info("%r does not exist" % gen_current)
             previously_generated = None
+        
         trace.debug("about to call %r" % generation_func)
         trace.debug("  gen_tmp = %r" % gen_tmp)
         trace.debug("  previously_generated = %r" % previously_generated)
         trace.debug("  store_new = %r" % store_new)
+        
         try:
             generation_func(gen_tmp, previously_generated, store_new, trace)
-        except:
+            
+        except Exception, ex:
             except_tb.log_exception(trace.err)
-            success = False
-        sync()
-        if success:
-            trace.info("Successful generation")
-            trace.debug("about to rename %r to %r" % (gen_tmp, gen_new))
-            os.rename(gen_tmp, gen_new)
-            sync()
-            trace.notice("END PHASE 1 - generation performed")
-        else:
             trace.info("Error during generation - cancelling transaction")
-            shutil.rmtree(store_failed, ignore_errors = True)
+            
+            rm_rf(store_failed)
+            
+            trace.debug("about to %r rename to %r" % (store_new, store_failed))
             try:
                 os.rename(store_new, store_failed)
-                trace.notice("%r renamed to %r" % (store_new, store_failed))
-            except:
+            except OSError:
                 trace.warning("transactional_generation: failed to rename %r to %r - destroying %r"
                               % (store_new, store_failed, store_new))
                 except_tb.log_exception(trace.warning)
-                shutil.rmtree(store_new, ignore_errors = True)
-            sync()
-            trace.notice("about to remove incomplete generated directory %r" % gen_tmp)
-            shutil.rmtree(gen_tmp, ignore_errors = True)
-            sync()
-            trace.notice("END PHASE 1 - transaction cancelled")
-    if os.path.isdir(store_new) and os.path.isdir(gen_new):
-        success = True
+                rm_rf(store_new)
+            
+            trace.notice("about to remove incompletely generated directory %r" % gen_tmp)
+            rm_rf(gen_tmp)
+            
+            sync_no_oserror(trace)
+            
+            trace.notice("END PHASE 1 - transaction cancelled - raising TransactionError")
+
+            raise TransactionError("generation failure", ex)
+            
+        else:
+            trace.info("Successful generation")
+            
+            sync_no_oserror(trace)
+            
+            trace.debug("about to rename %r to %r" % (gen_tmp, gen_new))
+            os.rename(gen_tmp, gen_new)
+            
+            sync_no_oserror(trace)
+            
+            trace.notice("END PHASE 1 - generation performed")
+    
+    if os.path.exists(store_new) and os.path.exists(gen_new):
         trace.notice("BEGIN PHASE 2")
-        if os.path.isdir(store_current):
-            trace.info("%r to %r" % (store_current, store_previous))
-            trace.debug("about to recursively remove %r" % store_previous)
-            shutil.rmtree(store_previous, ignore_errors = True)
-            trace.debug("about to rename %r to %r" % (store_current, store_previous))
-            try:
-                os.rename(store_current, store_previous)
-            except:
-                trace.warning("transactional_generation: failed to rename %r to %r" % (store_current, store_previous))
-                except_tb.log_exception(trace.warning)
-                shutil.rmtree(store_current)
-            sync()
-        trace.debug("about to rename %r to %r" % (store_new, store_current))
-        os.rename(store_new, store_current)
-        sync()
+        
+        rotate_entries(store_previous, store_current, store_new, trace)
+        
         trace.notice("END PHASE 2")
-    if (not os.path.isdir(store_new)) and os.path.isdir(gen_new):
-        success = True
+    
+    if (not os.path.exists(store_new)) and os.path.exists(gen_new):
         trace.notice("BEGIN PHASE 3")
-        if os.path.isdir(gen_current):
-            trace.info("%r to %r" % (gen_current, gen_previous))
-            trace.debug("about to recursively remove %r" % gen_previous)
-            shutil.rmtree(gen_previous, ignore_errors = True)
-            trace.debug("about to rename %r to %r" % (gen_current, gen_previous))
-            try:
-                os.rename(gen_current, gen_previous)
-            except:
-                trace.warning("transactional_generation: failed to rename %r to %r" % (gen_current, gen_previous))
-                except_tb.log_exception(trace.warning)
-                shutil.rmtree(gen_current)
-            sync()
-        trace.debug("about to rename %r to %r" % (gen_new, gen_current))
-        os.rename(gen_new, gen_current)
-        sync()
+        
+        rotate_entries(gen_previous, gen_current, gen_new, trace)
+        
         trace.notice("END PHASE 3")
-    trace.notice("LEAVING transactional_generation.")
-    return success
+        
+        trace.notice("LEAVING transactional_generation - success no error")
+        return True
+    
+    trace.notice("LEAVING transactional_generation - no transaction completion")
 
 
 def file_writelines_flush_sync(path, lines):
@@ -1123,7 +1221,7 @@ def transaction_system_configuration(trace=trace_null):
     Transactionally generate system configuration from our own
     configuration model.
     """
-    transactional_generation(STORE_BASE, (STORE_PREVIOUS, STORE_CURRENT, STORE_NEW, STORE_FAILED),
+    transactional_generation(STORE_BASE, (STORE_PREVIOUS, STORE_CURRENT, STORE_NEW, STORE_TMP, STORE_FAILED),
                              GENERATED_BASE, (GENERATED_PREVIOUS, GENERATED_CURRENT, GENERATED_NEW, GENERATED_TMP),
                              generate_system_configuration, trace)
 
@@ -1171,7 +1269,7 @@ def aa_lst_npst_phy(conf, plugged_by_phy):
         return any_prefixes(phy) and conf['netIfaces'].get(phy, 'void') == 'void'
     
     phys = network.get_filtered_phys(phy_handled_relate_void)
-    return sorted(((not plugged_by_phy.get(phy, False), phy) for phy in phys), cmp = cmp_bool_lexdec)
+    return sorted(((not plugged_by_phy.get(phy, False), phy) for phy in phys), cmp=cmp_bool_lexdec)
 
 
 def aa_lst_npst_fifn_vsTag_vlanId(conf, plugged_by_phy):
@@ -1193,7 +1291,7 @@ def aa_lst_npst_fifn_vsTag_vlanId(conf, plugged_by_phy):
                 if ipConfs_tag == 'void':
                     fifn = "%s.%d" % (phy, vlanId)
                     res.append((not plugged_by_phy.get(phy, False), fifn, vsTag, vlanId))
-    res.sort(cmp = cmp_bool_lexdec)
+    res.sort(cmp=cmp_bool_lexdec)
     return res
 
 
@@ -1261,13 +1359,13 @@ def autoattrib_conf(conf):
     orphan ip configurations.  Finally auto attribute remaining IP
     configuration directly to remaining interfaces, creating trivial vlan sets
     so that the end to end relationship is made possible.
-    WARNING: modify conf in-place.
     """
+    conf = copy.deepcopy(conf)
+    
     plugged_by_phy = gen_plugged_by_phy(network.get_filtered_phys(any_prefixes))
     
-    iter_vsTag = iter(aa_lst_vsTag(conf))
-    
     # auto assign vlan set to physical interface
+    iter_vsTag = iter(aa_lst_vsTag(conf))
     for npst, phy in aa_lst_npst_phy(conf, plugged_by_phy):
         try:
             vsTag = iter_vsTag.next()
@@ -1300,12 +1398,38 @@ def autoattrib_conf(conf):
     return conf
 
 
+def start_transaction(trace=trace_null):
+    """
+    XXX
+    """
+    sync_no_oserror(trace)
+    os.rename(os.path.join(STORE_BASE, STORE_TMP), os.path.join(STORE_BASE, STORE_NEW))
+    transaction_system_configuration(trace)
+
+
+def file_w_create_directories(filename):
+    """
+    Open a file in "w" mode but before that recursively create the directories
+    where this file should stand.
+    """
+    dirname = os.path.dirname(filename)
+    if dirname and not os.path.isdir(dirname):
+        os.makedirs(dirname)
+    return file(filename, "w")
+
+
 def autoattrib(trace=trace_null):
     """
-    Auto VLAN Set and IP Configuration attributions at server startup
+    Auto VLAN Set and IP Configuration attributions.
+    Should be called at server startup, after any potential transaction is
+    completed by transactional_generation()
     """
     config = load_configuration(file(os.path.join(STORE_BASE, STORE_CURRENT, NETWORK_CONFIG_FILE)), trace)
-    return autoattrib_conf(config)
+    aaconf = autoattrib_conf(config)
+    if aaconf == config:
+        return
+    save_configuration(aaconf, file_w_create_directories(os.path.join(STORE_BASE, STORE_TMP, NETWORK_CONFIG_FILE)), trace)
+    start_transaction(trace)
 
 
 __all__ = (
