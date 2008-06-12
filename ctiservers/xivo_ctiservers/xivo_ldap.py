@@ -43,19 +43,25 @@ class xivo_ldap:
         def __init__(self, iuri):
                 try:
                         log_debug(SYSLOG_INFO, 'requested uri = %s' % iuri)
-                        addport = iuri.split("@")[1].split("/")[0]
-                        userpass = iuri.split("@")[0].split("://")[1]
-                        self.dbname = iuri.split("@")[1].split("/")[1]
-                        
-                        self.user = userpass.split(":", 1)[0]
-                        self.passwd = userpass.split(":", 1)[1]
-                        self.uri  = "ldap://" + addport
+                        postldap = iuri.split('ldap://')[1]
+                        if postldap.find('@') > 0:
+                                userpass = postldap.split('@')[0]
+                                [addport, self.dbname] = postldap.split('@')[1].split('/')
+                        else:
+                                userpass = None
+                                [addport, self.dbname] = postldap.split('/')
+                        self.uri  = 'ldap://%s' % addport
                         self.l = ldap.initialize(self.uri)
                         self.l.protocol_version = ldap.VERSION3
-                        self.l.simple_bind_s(self.user, self.passwd)
-                        
+                        if userpass is not None:
+                                self.user = userpass.split(':', 1)[0]
+                                self.passwd = userpass.split(':', 1)[1]
+                                self.l.simple_bind_s(self.user, self.passwd)
+                        else:
+                                self.l.simple_bind_s()
+
                 except ldap.LDAPError, exc:
-			log_debug(SYSLOG_ERR, '__init__ : exception ldap.LDAPError : %s' % str(exc))
+			log_debug(SYSLOG_ERR, '__init__ : exception ldap.LDAPError : %s' % exc)
                         # sys.exit()
 
         def getldap(self, filter, attrib):
@@ -66,7 +72,8 @@ class xivo_ldap:
                                                    attrib)
                         return resultat
                 except ldap.LDAPError, exc:
-                        log_debug(SYSLOG_ERR, 'getldap : exception ldap.LDAPError : %s' % str(exc))
+                        log_debug(SYSLOG_ERR, 'getldap : exception ldap.LDAPError : %s'
+                                  % exc)
 
 
 class xivo_csv:

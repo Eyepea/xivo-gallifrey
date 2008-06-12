@@ -31,6 +31,7 @@ This is the XivoCTI class.
 import os
 import random
 import re
+import socket
 import string
 import time
 import urllib
@@ -93,6 +94,8 @@ class XivoCTICommand(BaseCommand):
                 self.transfers_buf = {}
                 self.transfers_ref = {}
                 self.faxes = {}
+                self.queued_threads_pipe = queued_threads_pipe
+                self.disconnlist = []
                 return
 
         def get_list_commands(self):
@@ -215,13 +218,14 @@ class XivoCTICommand(BaseCommand):
 
                 loginkind = loginparams.get('loginkind')
                 if loginkind == 'agent':
-                        agentphonenum = loginparams.get('phonenumber')
-                        userinfo['agentphonenum'] = agentphonenum
+                        userinfo['agentphonenum'] = loginparams.get('phonenumber')
                         # self.amis[astid].agentcallbacklogin(agentnum, phonenum)
                 return userinfo
 
 
-        def manage_logoff(self, userinfo):
+        def manage_logoff(self, userinfo, when):
+                log_debug(SYSLOG_INFO, 'logoff (%s) %s'
+                          % (when, userinfo))
                 if 'agentnum' in userinfo:
                         agentnum = userinfo['agentnum']
                         astid = userinfo['astid']
@@ -230,6 +234,8 @@ class XivoCTICommand(BaseCommand):
                                 self.amis[astid].setvar('AGENTBYCALLERID_%s' % phonenum, '')
                         if agentnum is not None:
                                 self.amis[astid].agentlogoff(agentnum)
+                if 'agentphonenum' in userinfo:
+                        del userinfo['agentphonenum']
                 self.__disconnect_user__(userinfo)
                 return
 
@@ -296,17 +302,20 @@ class XivoCTICommand(BaseCommand):
         def __disconnect_user__(self, userinfo):
                 try:
                         # state is unchanged
-                        capaid = userinfo.get('capaid')
-                        self.capas[capaid].conn_dec()
-                        del userinfo['login']
-                        userinfo['state'] = 'unknown'
-                        self.__update_availstate__(userinfo, userinfo.get('state'))
-
+                        if 'login' in userinfo:
+                                capaid = userinfo.get('capaid')
+                                self.capas[capaid].conn_dec()
+                                del userinfo['login']
+                                userinfo['state'] = 'unknown'
+                                self.__update_availstate__(userinfo, userinfo.get('state'))
+                        else:
+                                log_debug(SYSLOG_WARNING, 'userinfo does not contain login field : %s' % userinfo)
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, "--- exception --- disconnect_user %s : %s" %(str(userinfo), str(exc)))
 
 
         def loginko(self, loginparams, errorstring, connid):
+                log_debug(SYSLOG_WARNING, 'user can not connect (%s) : sending %s' % (loginparams, errorstring))
                 connid.sendall('loginko=%s\n' % errorstring)
                 return
 
@@ -430,13 +439,28 @@ class XivoCTICommand(BaseCommand):
                 return
 
 
+        def checkqueue(self):
+                buf = os.read(self.queued_threads_pipe[0], 1024)
+                log_debug(SYSLOG_WARNING, 'checkqueue : read buf = %s' % buf)
+                return self.disconnlist
+
+
+        def clear_disconnlist(self):
+                self.disconnlist = []
+                return
+
+
         def __send_msg_to_cti_client__(self, userinfo, strupdate):
                 try:
                         if 'login' in userinfo and 'connection' in userinfo.get('login'):
                                 mysock = userinfo.get('login')['connection']
-                                mysock.sendall(strupdate + '\n')
+                                mysock.sendall(strupdate + '\n', socket.MSG_WAITALL)
                 except Exception, exc:
-                        log_debug(SYSLOG_WARNING, '--- exception --- (__send_msg_to_cti_client__) : %s (%s)' % (str(exc), str(userinfo)))
+                        log_debug(SYSLOG_ERR, '--- exception --- (__send_msg_to_cti_client__) : %s (%s) userinfo = %s'
+                                  % (exc, exc.__class__, userinfo))
+                        if userinfo not in self.disconnlist:
+                                self.disconnlist.append(userinfo)
+                                os.write(self.queued_threads_pipe[1], 'uinfo\n')
                 return
 
 
@@ -490,7 +514,8 @@ class XivoCTICommand(BaseCommand):
                                        '<info name="File d Attente" type="text"><![CDATA[<h1><b>%s</b></h1>]]></info>' % queuename,
                                        '<info name="Numero Appelant" type="phone"><![CDATA[%s]]></info>' % src]
                         if 'sheeturl' in self.xivoconf:
-                                linestosend.append('<info name="Site" type="urlauto"><![CDATA[%s%s]]></info>' % (self.xivoconf['sheeturl'], ''.join(random.sample('12345', 4))))
+                                linestosend.append('<info name="Site" type="urlauto"><![CDATA[%s%s]]></info>'
+                                                   % (self.xivoconf['sheeturl'], ''.join(random.sample('12345', 4))))
                         linestosend.extend(['<info name="channel" type="internal"><![CDATA[%s]]></info>' % chan,
                                             '<info name="nopopup" type="internal"></info>',
                                             '<message>help</message>',
@@ -1275,6 +1300,7 @@ class XivoCTICommand(BaseCommand):
 
 
         def __agent__(self, userinfo, commandargs):
+                myastid = None
                 myagentnum = None
                 if 'agentnum' in userinfo:
                         myastid = userinfo['astid']
@@ -1889,12 +1915,13 @@ class XivoCTICommand(BaseCommand):
                                 ldapid = xivo_ldap.xivo_ldap(z.uri)
                                 results = ldapid.getldap("(|%s)" % ''.join(selectline),
                                                          z.search_matching_fields)
-                                for result in results:
-                                        result_v = {}
-                                        for f in z.search_matching_fields:
-                                                if f in result[1]:
-                                                        result_v[f] = result[1][f][0]
-                                        fullstatlist.append(';'.join(z.result_by_valid_field(result_v)))
+                                if results is not None:
+                                        for result in results:
+                                                result_v = {}
+                                                for f in z.search_matching_fields:
+                                                        if f in result[1]:
+                                                                result_v[f] = result[1][f][0]
+                                                fullstatlist.append(';'.join(z.result_by_valid_field(result_v)))
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- ldaprequest : %s' % str(exc))
 

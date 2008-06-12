@@ -51,7 +51,9 @@ class BaseCommand:
                 return
         def checkqueue(self):
                 return
-        
+        def clear_disconnlist(self):
+                return
+
         def transfer_addbuf(self, req, buf):
                 return
         def transfer_addref(self, req, ref):
