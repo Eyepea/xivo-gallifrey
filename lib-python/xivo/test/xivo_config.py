@@ -5,7 +5,6 @@
 Copyright (C) 2008  Proformatique
 
 """
-# Dependencies/highly recommended? : arping curl
 
 __version__ = "$Revision$ $Date$"
 __license__ = """

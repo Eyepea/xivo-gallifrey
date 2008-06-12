@@ -66,3 +66,25 @@ def unlock_rules_file(rules_file):
     """
     lpath = lockpath(rules_file)
     os.rmdir(lpath)
+
+def iter_multilines(lines):
+    """
+    Iterate over @lines and yield the multilines they form.  A multiline stops
+    only on a "\\n" (newline) that is not preceded with a "\\\\" (backslash) or at
+    end of file.  "\\\\\\n" of continued lines are stripped, as well as regular
+    "\\n" at end of multilines and spaces at beginning of multilines.  Comment
+    lines are not stripped.
+    """
+    current = []
+    for line in lines:
+        if line[-2:] == "\\\n":
+            current.append(line[:-2])
+        else:
+            if line[-1:] == "\n":
+                current.append(line[:-1])
+            else:
+                current.append(line)
+            yield ''.join(current).lstrip()
+            current = []
+    if current:
+        yield ''.join(current).lstrip()
