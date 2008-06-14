@@ -152,7 +152,7 @@ KEY = {
 }
 
 
-def parse_udev_rule(mline, trace=trace_null):
+def parse_rule(mline, trace=trace_null):
     """
     Parse @mline quite like add_to_rules() does in udev.
     
@@ -193,7 +193,7 @@ def parse_udev_rule(mline, trace=trace_null):
             open_pos += 1
             close_pos = key.find("}", open_pos)
             if close_pos <= 0:
-                trace.err("parse_udev_rule: unclosed attribute in %r" % key)
+                trace.err("parse_rule: unclosed attribute in %r" % key)
                 return None
             
             attr = key[open_pos:close_pos]
@@ -201,7 +201,7 @@ def parse_udev_rule(mline, trace=trace_null):
             if lkey in KEY_ATTR:
                 rule_key, rule_allowed_ops = KEY_ATTR[lkey]
                 if op not in rule_allowed_ops:
-                    trace.err("parse_udev_rule: invalid rule multiline %r (invalid operation %r for key %r)" % (mline, op, key))
+                    trace.err("parse_rule: invalid rule multiline %r (invalid operation %r for key %r)" % (mline, op, key))
                     return None
                 rule.setdefault(rule_key, {})
                 rule[rule_key][attr] = [op, val]
@@ -211,22 +211,36 @@ def parse_udev_rule(mline, trace=trace_null):
                 # behave as if there was no attribute;
                 # don't skip simple key handling
             else:
-                trace.warning("parse_udev_rule: unknown key %r" % key)
+                trace.warning("parse_rule: unknown key %r" % key)
                 continue
         
         # Simple key 
         if key in KEY:
             rule_key, rule_allowed_ops = KEY[key]
             if op not in rule_allowed_ops:
-                trace.err("parse_udev_rule: invalid rule multiline %r (invalid operation %r for key %r)" % (mline, op, key))
+                trace.err("parse_rule: invalid rule multiline %r (invalid operation %r for key %r)" % (mline, op, key))
                 return None
             rule[rule_key] = [op, val]
         else:
-            trace.warning("parse_udev_rule: unknown key %r" % key)
+            trace.warning("parse_rule: unknown key %r" % key)
     
     valid = len(rule) >= 2 or (len(rule) == 1 and "NAME" not in rule)
     if not valid:
-        trace.err("parse_udev_rule: invalid rule multiline %r" % mline)
+        trace.err("parse_rule: invalid rule multiline %r" % mline)
         return None
     
     return rule
+
+
+def parse_file(rules_file, trace=trace_null):
+    """
+    XXX
+    """
+    rules = []
+    
+    lock_rules_file(rules_file) # RW lock, anybody? :)
+    try:
+        
+    finally:
+        unlock_rules_file(rules_file)
+    

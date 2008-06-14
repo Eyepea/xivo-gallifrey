@@ -96,7 +96,7 @@ class TestRulesParser(unittest.TestCase):
             'ATTRS': { 'address': ['==', "00:04:55:e3:91:77"] },
             'NAME': ['=', "eth0"]
         }
-        result = udev.parse_udev_rule(mline)
+        result = udev.parse_rule(mline)
         self.assertEqual(parsed, result)
 
 

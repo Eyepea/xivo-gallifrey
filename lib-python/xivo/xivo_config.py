@@ -1407,15 +1407,16 @@ def start_transaction(trace=trace_null):
     transaction_system_configuration(trace)
 
 
-def file_w_create_directories(filename):
+def file_w_create_directories(filepath):
     """
-    Open a file in "w" mode but before that recursively create the directories
-    where this file should stand.
+    Recursively create some directories if needed so that the directory where
+    @filepath must be written exists, then open it in "w" mode and return the
+    file object.
     """
-    dirname = os.path.dirname(filename)
+    dirname = os.path.dirname(filepath)
     if dirname and not os.path.isdir(dirname):
         os.makedirs(dirname)
-    return file(filename, "w")
+    return file(filepath, "w")
 
 
 def autoattrib(trace=trace_null):
