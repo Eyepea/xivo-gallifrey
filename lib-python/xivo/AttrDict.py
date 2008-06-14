@@ -50,7 +50,8 @@ __license__ = """
 
 import operator
 
-missing = object()
+MISSING = object()
+
 class AttrDict(object):
 	"""WARNING: no call to super(AttrDict, self).__init__ in
 	AttrDict.__init__ """
@@ -75,16 +76,16 @@ class AttrDict(object):
 		return cmp(self.__attr_dict, y)
 	def __hash__(self):
 		return hash(self.__attr_dict)
-	def __getattr__(self, attr, default=missing):
+	def __getattr__(self, attr, default=MISSING):
 		if '_' != attr[0]:
-			if default is missing:
+			if default is MISSING:
 				return self.__attr_dict[attr]
 			else:
 				return self.__attr_dict.get(attr, default)
 		elif '_attr' == attr[0:5]:
-			raise AttributeError, "%s instance has no attribute %s" %(type(self).__name__, repr(attr))
+			raise AttributeError, "%s instance has no attribute %r" % (type(self).__name__, attr)
 		else:
-			if default is missing:
+			if default is MISSING:
 				return getattr(self.__attr_dict, attr[1:])
 			else:
 				return getattr(self.__attr_dict, attr[1:], default)
@@ -92,14 +93,14 @@ class AttrDict(object):
 		if '_' != attr[0]:
 			self.__attr_dict[attr] = value
 		elif '_attr' == attr[0:5]:
-			object.__setattr__(self, '_AttrDict_'+attr, value)
+			object.__setattr__(self, '_AttrDict_' + attr, value)
 		else:
 			setattr(self.__attr_dict, attr[1:], value)
 	def __delattr__(self, attr):
 		if '_' != attr[0]:
 			del self.__attr_dict[attr]
 		elif '_attr' == attr[0:5]:
-			raise AttributeError, "no attribute %s or can't delete it in an %s instance" %(repr(attr), type(self).__name__)
+			raise AttributeError, "no attribute %r or can't delete it in an %s instance" % (attr, type(self).__name__)
 		else:
 			delattr(self.__attr_dict, attr[1:])
 	def __len__(self):
