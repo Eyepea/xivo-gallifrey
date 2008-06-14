@@ -204,7 +204,7 @@ def parse_udev_rule(mline, trace=trace_null):
                     trace.err("parse_udev_rule: invalid rule multiline %r (invalid operation %r for key %r)" % (mline, op, key))
                     return None
                 rule.setdefault(rule_key, {})
-                rule[rule_key][attr] = [op, val] # XXX check for correct op?
+                rule[rule_key][attr] = [op, val]
                 continue
             elif lkey in KEY_OPT_ATTR:
                 key = lkey
