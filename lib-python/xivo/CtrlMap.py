@@ -23,7 +23,6 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-import operator
 from xivo.FuseProperties import *
 
 # Python does not have a class hierarchy for its builtin objects so new style
@@ -60,13 +59,13 @@ from xivo.FuseProperties import *
 # - Disadvantage: probably also more memory consumption and reference counting
 #   pressure.
 
-missing = object()
+MISSING = object()
 
 class CtrlMap(object):
 	
 	__slots__ = ('__allow_insert', '__allow_modify', '__allow_delete',
 	             '__underlying', '__fuse_underl', '__fuse_allow',
-		     '__fuse_ALL')
+		     '__fuse_all')
 	
 	def __init__(self, underlying,
 	             allow_insert = True, allow_modify = True, allow_delete = True,
@@ -77,13 +76,13 @@ class CtrlMap(object):
 		self.__allow_delete = bool(allow_delete)
 		self.__fuse_underl = bool(fuse_underl)
 		self.__fuse_allow = bool(fuse_allow)
-		self.__fuse_ALL = False
+		self.__fuse_all = False
 	
 	############## LOCAL IMPLEMENTATION ##############
 	
 	def __repr__(self):
 		"x.__repr__() <==> repr(x)"
-		return ''.join(('<CtrlMap of ', repr(self.__underlying),'>'))
+		return "<CtrlMap of %s>" % `self.__underlying`
 	
 	################ FILTERED METHODS ################
 	
@@ -95,12 +94,12 @@ class CtrlMap(object):
 			if self.__allow_modify:
 				self.__underlying[k] = v
 			else:
-				raise ValueError, "modification not allowed (key %s)" %repr(k)
+				raise ValueError, "modification not allowed (key %s)" % `k`
 		else:
 			if self.__allow_insert:
 				self.__underlying[k] = v
 			else:
-				raise ValueError, "insertion not allowed (key %s)" %repr(k)
+				raise ValueError, "insertion not allowed (key %s)" % `k`
 	
 	def __delitem__(self, k):
 		"""x.__delitem__(y) <==> del x[y]
@@ -109,7 +108,7 @@ class CtrlMap(object):
 		if self.__allow_delete:
 			del self.__underlying[k]
 		else:
-			raise ValueError, "deletion not allowed (key %s)" %repr(k)
+			raise ValueError, "deletion not allowed (key %s)" % `k`
 	
 	def clear(self):
 		"""D.clear() -> None.  Remove all items from D.
@@ -130,18 +129,18 @@ class CtrlMap(object):
 		"""
 		return type(self)(self.__underlying.copy())
 	
-	def pop(self, k, d=missing):
+	def pop(self, k, d=MISSING):
 		"""D.pop(k[,d]) -> v, remove specified key and return the corresponding value
 		If key is not found, d is returned if given, otherwise KeyError is raised
 		Perm.: D.allow_delete
 		"""
 		if self.__allow_delete:
-			if d is missing:
+			if d is MISSING:
 				return self.__underlying.pop(k)
 			else:
 				return self.__underlying.pop(k, d)
 		else:
-			raise ValueError, "deletion not allowed (key %s)" %repr(k)
+			raise ValueError, "deletion not allowed (key %s)" % `k`
 	
 	def popitem(self):
 		"""D.popitem() -> (k, v), remove and return some (key, value) pair as a
@@ -160,7 +159,7 @@ class CtrlMap(object):
 		if self.__allow_insert:
 			return self.__underlying.setdefault(k, d)
 		else:
-			raise ValueError, "insertion not allowed (key %s)" %repr(k)
+			raise ValueError, "insertion not allowed (key %s)" % `k`
 	
 	def update(self, *E, **F):
 		"""This function force canonical behavior, only using
@@ -182,12 +181,12 @@ class CtrlMap(object):
 			raise TypeError, 'update expected at most 1 arguments, got %d' % len(E)
 		if E:
 			if hasattr(E[0], 'iteritems'):
-				for k,v in E[0].iteritems():
+				for k, v in E[0].iteritems():
 					self[k] = v
 			else:
-				for k,v in E[0]:
+				for k, v in E[0]:
 					self[k] = v
-		for k,v in F.iteritems():
+		for k, v in F.iteritems():
 			self[k] = v
 	
 	############### SIMPLE PASSTHROUGH ###############
@@ -242,7 +241,7 @@ class CtrlMap(object):
 	
 	def get(self, k, d=None):
 		"D.get(k[,d]) -> D[k] if k in D, else d.  d defaults to None."
-		return self.__underlying.get(k,d)
+		return self.__underlying.get(k, d)
 	
 	def has_key(self, k):
 		"D.has_key(k) -> True if D has a key k, else False"
@@ -280,7 +279,7 @@ class CtrlMap(object):
 	allow_delete = prop_fused_bool('_CtrlMap__allow_delete', '_CtrlMap__fuse_allow')
 	fuse_underl = prop_fuse('_CtrlMap__fuse_underl')
 	fuse_allow = prop_fuse('_CtrlMap__fuse_allow')
-	fuse_ALL = prop_fuse_multiple('_CtrlMap__fuse_ALL',
+	fuse_all = prop_fuse_multiple('_CtrlMap__fuse_all',
 	                              ('fuse_underl', 'fuse_allow'))
 
 __all__ = ('CtrlMap',)
