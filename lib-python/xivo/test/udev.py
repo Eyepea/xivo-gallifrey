@@ -26,65 +26,78 @@ __license__ = """
 """
 
 import unittest
-
 from xivo import udev
 
-LINES = [
-    "# a comment\n",
-    "  # a comment too, some blank lines follow\n",
-    "\n",
-    " \n",
-    "\t\n",
-    " \t \n",
-    "a line\n",
-    "\n",
-    "a multiline\\\n",
-    " and it continues here\n",
-    "\n",
-    "a multiline made \\\n",
-    "of more than two \\\n",
-    "lines\n",
-    "\n",
-    " \t a multiline that starts  \\\n",
-    "with some spaces\n",
-    "\n",
-    "# a multiline comment\\\n",
-    " that continues here \n",
-    "\n",
-    "This multiline is \\\n",
-    "# not a comment\n",
-    "\n",
-    "can we parse this at end of file? \\\n"
-]
 
-MULTILINES = [
-    "# a comment",
-    "# a comment too, some blank lines follow",
-    "",
-    "",
-    "",
-    "",
-    "a line",
-    "",
-    "a multiline and it continues here",
-    "",
-    "a multiline made of more than two lines",
-    "",
-    "a multiline that starts  with some spaces",
-    "",
-    "# a multiline comment that continues here ",
-    "",
-    "This multiline is # not a comment",
-    "",
-    "can we parse this at end of file? "
-]
-
-class TestIterMultilines(unittest.TestCase):
+class TestRulesParser(unittest.TestCase):
+    
     def test_iter_multilines(self):
-        calc_mlines = list(udev.iter_multilines(LINES))
+        lines = [
+            "# a comment\n",
+            "  # a comment too, some blank lines follow\n",
+            "\n",
+            " \n",
+            "\t\n",
+            " \t \n",
+            "a line\n",
+            "\n",
+            "a multiline\\\n",
+            " and it continues here\n",
+            "\n",
+            "a multiline made \\\n",
+            "of more than two \\\n",
+            "lines\n",
+            "\n",
+            " \t a multiline that starts  \\\n",
+            "with some spaces\n",
+            "\n",
+            "# a multiline comment\\\n",
+            " that continues here \n",
+            "\n",
+            "This multiline is \\\n",
+            "# not a comment\n",
+            "\n",
+            "can we parse this at end of file? \\\n"
+        ]
+        multilines = [
+            "# a comment",
+            "# a comment too, some blank lines follow",
+            "",
+            "",
+            "",
+            "",
+            "a line",
+            "",
+            "a multiline and it continues here",
+            "",
+            "a multiline made of more than two lines",
+            "",
+            "a multiline that starts  with some spaces",
+            "",
+            "# a multiline comment that continues here ",
+            "",
+            "This multiline is # not a comment",
+            "",
+            "can we parse this at end of file? "
+        ]
+        
+        calc_mlines = list(udev.iter_multilines(lines))
+        
         for p, mline in enumerate(calc_mlines):
-            self.assertEqual((p, mline), (p, MULTILINES[p]))
-        self.assertEqual(len(calc_mlines), len(MULTILINES))
-        self.assertEqual(calc_mlines, MULTILINES)
+            self.assertEqual((p, mline), (p, multilines[p]))
+        self.assertEqual(len(calc_mlines), len(multilines))
+        self.assertEqual(calc_mlines, multilines)
+    
+    def test_parse_udev_rule(self):
+        mline = 'SUBSYSTEM=="net", DRIVERS=="?*", ATTRS{address}=="00:04:55:e3:91:77", NAME="eth0"'
+        parsed = {
+            'SUBSYSTEM': ['==', "net"],
+            'DRIVERS': ['==', "?*"],
+            'ATTRS': { 'address': ['==', "00:04:55:e3:91:77"] },
+            'NAME': ['=', "eth0"]
+        }
+        result = udev.parse_udev_rule(mline)
+        self.assertEqual(parsed, result)
+
 
 unittest.main()
