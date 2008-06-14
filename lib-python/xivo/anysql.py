@@ -75,7 +75,6 @@ class cursor(object):
 			else:
 				return list.__getitem__(self, self.__col2idx_map[k])
 		def iteritems(self):
-			"For use by (at least...) replace_keys() (pyfunc)"
 			return ((k, list.__getitem__(self, pos))
 				for (k, pos) in self.__col2idx_map.iteritems())
 			

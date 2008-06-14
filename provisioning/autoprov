@@ -67,8 +67,6 @@ from xivo import anysql
 from xivo.BackSQL import backsqlite
 from xivo.BackSQL import backmysql
 
-from xivo.pyfunc import replace_keys
-
 from BaseHTTPServer import BaseHTTPRequestHandler
 
 from xivo.ThreadingHTTPServer import ThreadingHTTPServer
@@ -83,6 +81,10 @@ from xivo import daemonize
 
 from xivo import except_tb
 from xivo.xivo_helpers import speed_dial_key_extension
+
+def replace_keys(dico, repl_dico):
+	"return dict(((repl_dico[k],v) for (k,v) in dico.iteritems()))"
+	return dict(((repl_dico[k], v) for (k, v) in dico.iteritems()))
 
 def name_from_first_last(first, last):
 	"Construct full name from first and last."
