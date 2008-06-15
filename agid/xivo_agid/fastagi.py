@@ -108,7 +108,7 @@ class FastAGI:
 
     @staticmethod
     def _quote(string):
-        return '"%s"' % (str(string).replace('\\', '\\\\').replace('"', '\\"').replace('\n', ' '),)
+        return '"%s"' % str(string).replace('\\', '\\\\').replace('"', '\\"').replace('\n', ' ')
 
     @staticmethod
     def dp_break(message):

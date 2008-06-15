@@ -217,7 +217,7 @@ class ListLock:
 		self.lock.acquire()
 		try:
 			if elt not in self.locked:
-				raise thread.error, "release unlocked lock for \"%s\"" % (str(elt),)
+				raise thread.error, "release unlocked lock for %s" % `elt`
 			self.locked[elt][1] -= 1
 			if not self.locked[elt][1]:
 				del self.locked[elt]

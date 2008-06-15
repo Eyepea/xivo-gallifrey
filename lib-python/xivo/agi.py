@@ -126,7 +126,7 @@ class AGI:
 
     @staticmethod
     def _quote(string):
-        return '"%s"' % (str(string).replace('\\', '\\\\').replace('"', '\\"').replace('\n', ' '),)
+        return '"%s"' % str(string).replace('\\', '\\\\').replace('"', '\\"').replace('\n', ' ')
 
     def _handle_sighup(self, signum, frame):
         """Handle the SIGHUP signal"""

@@ -82,7 +82,7 @@ def remove_if_stale_pidfile(pidfile, logline_func = except_tb.LOGLINE_STDERR):
 			raise
 		# Check the whole command line of the other process
 		if i_am in map(c14n_prog_name, other_cmdline):
-			logline_func("A pidfile '%s' already exists (contains pid %d) and the correponding process command line contains our own name '%s'"
+			logline_func("A pidfile %r already exists (contains pid %d) and the correponding process command line contains our own name %r"
 			             % (pidfile, pid_maydaemon, i_am))
 			return
 		# It may not be us, but we must be quite sure about that so also try
@@ -103,11 +103,11 @@ def remove_if_stale_pidfile(pidfile, logline_func = except_tb.LOGLINE_STDERR):
 			else:
 				raise
 		if i_am == lock_pgm:
-			logline_func("A pidfile '%s' already exists (contains pid %d) and an executable with our name '%s' is runnning with that pid."
+			logline_func("A pidfile %r already exists (contains pid %d) and an executable with our name %r is runnning with that pid."
 			             % (pidfile, pid_maydaemon, i_am))
 			return
 		# Ok to remove the previously existing pidfile now.
-		logline_func("A pidfile '%s' already exists (contains pid %d) but the corresponding process does not seem to match with our own name '%s'.  "
+		logline_func("A pidfile %r already exists (contains pid %d) but the corresponding process does not seem to match with our own name %r.  "
 		             "Will remove the pidfile."
 		             % (pidfile, pid_maydaemon, i_am))
 		logline_func("Splitted command line of the other process: %s" % str(other_cmdline))
@@ -189,11 +189,11 @@ def create_pidfile_or_die(logline_func = except_tb.LOGLINE_STDERR, pidfile = Non
 				pid_write_file = pidfile
 			fpid = open(pid_write_file, 'w')
 			try:
-				fpid.write("%s\n" % (pid,))
+				fpid.write("%s\n" % pid)
 			finally:
 				fpid.close()
 			if pidfile_lock:
-				take_file_lock_or_die(pid_write_file, pidfile, "%s\n" % (pid,))
+				take_file_lock_or_die(pid_write_file, pidfile, "%s\n" % pid)
 	except:
 		except_tb.log_exception(logline_func)
 		sys.exit(1)
