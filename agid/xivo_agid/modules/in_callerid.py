@@ -25,6 +25,8 @@ from xivo import OrderedConf
 
 from xivo_agid import agid
 
+import ConfigParser
+
 config = None
 re_objs = {}
 
