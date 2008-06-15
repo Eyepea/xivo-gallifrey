@@ -38,7 +38,7 @@ def incoming_group_set_features(handler, agi, cursor, args):
 	if not res:
 		agi.dp_break("Unknown group number '%s'" % dstnum)
 
-	id = res['groupfeatures.id']
+	groupfeaturesid = res['groupfeatures.id']
 	name = res['groupfeatures.name']
 	timeout = res['groupfeatures.timeout']
 	options = ""
@@ -64,9 +64,9 @@ def incoming_group_set_features(handler, agi, cursor, args):
 	if timeout:
 		agi.set_variable('XIVO_GROUPTIMEOUT', timeout)
 
-	handler.ds_set_fwd_vars(id, 'busy', 'group', 'XIVO_FWD_TYPEBUSY', 'XIVO_FWD_TYPEVAL1BUSY', 'XIVO_FWD_TYPEVAL2BUSY')
-	handler.ds_set_fwd_vars(id, 'noanswer', 'group' 'XIVO_FWD_TYPERNA', 'XIVO_FWD_TYPEVAL1RNA', 'XIVO_FWD_TYPEVAL2RNA')
-	handler.ds_set_fwd_vars(id, 'congestion', 'group', 'XIVO_FWD_TYPECONGESTION', 'XIVO_FWD_TYPEVAL1CONGESTION', 'XIVO_FWD_TYPEVAL2CONGESTION')
-	handler.ds_set_fwd_vars(id, 'chanunavail', 'group', 'XIVO_FWD_TYPEUNAVAIL', 'XIVO_FWD_TYPEVAL1UNAVAIL', 'XIVO_FWD_TYPEVAL2UNAVAIL')
+	handler.ds_set_fwd_vars(groupfeaturesid, 'busy', 'group', 'XIVO_FWD_TYPEBUSY', 'XIVO_FWD_TYPEVAL1BUSY', 'XIVO_FWD_TYPEVAL2BUSY')
+	handler.ds_set_fwd_vars(groupfeaturesid, 'noanswer', 'group' 'XIVO_FWD_TYPERNA', 'XIVO_FWD_TYPEVAL1RNA', 'XIVO_FWD_TYPEVAL2RNA')
+	handler.ds_set_fwd_vars(groupfeaturesid, 'congestion', 'group', 'XIVO_FWD_TYPECONGESTION', 'XIVO_FWD_TYPEVAL1CONGESTION', 'XIVO_FWD_TYPEVAL2CONGESTION')
+	handler.ds_set_fwd_vars(groupfeaturesid, 'chanunavail', 'group', 'XIVO_FWD_TYPEUNAVAIL', 'XIVO_FWD_TYPEVAL1UNAVAIL', 'XIVO_FWD_TYPEVAL2UNAVAIL')
 
 agid.register(incoming_group_set_features)
