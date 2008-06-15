@@ -52,9 +52,8 @@ class DBConnectionPool:
 		self.lock = Lock()
 
 	def reload(self, size, db_uri):
+		self.lock.acquire()
 		try:
-			self.lock.acquire()
-
 			for conn in self.conns:
 				conn.close()
 
@@ -71,9 +70,8 @@ class DBConnectionPool:
 			self.lock.release()
 
 	def acquire(self):
+		self.lock.acquire()
 		try:
-			self.lock.acquire()
-
 			try:
 				conn = self.conns.pop()
 				debug("acquiring connection: got connection from pool")
@@ -87,9 +85,8 @@ class DBConnectionPool:
 		return conn
 
 	def release(self, conn):
+		self.lock.acquire()
 		try:
-			self.lock.acquire()
-
 			if len(self.conns) < self.size:
 				self.conns.append(conn)
 				debug("releasing connection: pool not full, refilled with connection")
