@@ -37,18 +37,18 @@ def forgetime(res):
 	))
 
 def schedule(handler, agi, cursor, args):
-	id = args[0]
+	scheduleid = args[0]
 
 	cursor.query("SELECT ${columns} FROM schedule "
 		     "WHERE id = %s "
 		     "AND linked = 1 "
 		     "AND commented = 0",
 		     ('timebeg', 'timeend', 'daynamebeg', 'daynameend', 'daynumbeg', 'daynumend', 'monthbeg', 'monthend', 'typetrue', 'typevaltrue', 'applicationvaltrue', 'typefalse', 'typevalfalse', 'applicationvalfalse'),
-		     (id,))
+		     (scheduleid,))
 	res = cursor.fetchone()
 
 	if not res:
-		agi.dp_break("Invalid schedule ID '%s'" % id)
+		agi.dp_break("Invalid schedule ID %r" % scheduleid)
 
 	agi.set_variable("XIVO_SCHEDULE_TIMERANGE", forgetime(res))
 	handler.set_fwd_vars(res['typetrue'], res['typevaltrue'], res['applicationvaltrue'], 'XIVO_SCHEDULE_TYPETRUE', 'XIVO_SCHEDULE_TYPEVAL1TRUE', 'XIVO_SCHEDULE_TYPEVAL2TRUE')
