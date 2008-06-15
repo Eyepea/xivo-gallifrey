@@ -34,16 +34,16 @@ def callback(handler, agi, cursor, args):
 	tmpfile = "/var/spool/asterisk/tmp/" + filename
 	realfile = "/var/spool/asterisk/outgoing/" + filename
 
-	file = open(tmpfile, 'w')
-	file.write("Channel: Local/%s\n"
-		   "MaxRetries: 0\n"
-		   "RetryTime: 30\n"
-		   "WaitTime: 30\n"
-		   "CallerID: %s\n"
-		   "Set: XIVO_DISAPARAMS=%s\n"
-		   "Context: xivo-callbackdisa\n"
-		   "Extension: s" % (srcnum, srcnum, disa_params))
-	file.close()
+	f = open(tmpfile, 'w')
+	f.write("Channel: Local/%s\n"
+		"MaxRetries: 0\n"
+		"RetryTime: 30\n"
+		"WaitTime: 30\n"
+		"CallerID: %s\n"
+		"Set: XIVO_DISAPARAMS=%s\n"
+		"Context: xivo-callbackdisa\n"
+		"Extension: s" % (srcnum, srcnum, disa_params))
+	f.close()
 
 	os.utime(tmpfile, (mtime, mtime))
 	os.rename(tmpfile, realfile)
