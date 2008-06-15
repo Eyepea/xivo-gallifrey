@@ -46,7 +46,7 @@ def deny(agi, password):
 	raise RuleAppliedException()
 
 def extension_matches(number, pattern):
-	for (key,val) in rep:
+	for (key, val) in rep:
 		pattern = pattern.replace(key, val)
 
 	return bool(re.match(pattern, number))
