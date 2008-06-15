@@ -22,6 +22,9 @@ import re
 from xivo_agid import agid
 from xivo_agid import call_rights
 
+RIGHTCALL_AUTHORIZATION_COLNAME = "rightcall.authorization"
+RIGHTCALL_PASSWD_COLNAME = "rightcall.passwd"
+
 def _did_set_call_rights(handler, agi, cursor, args):
 	srcnum = agi.get_variable('REAL_SRCNUM')
 	dstnum = agi.get_variable('REAL_DSTNUM')
