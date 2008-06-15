@@ -32,10 +32,10 @@ class BsfMember:
 
 	"""
 
-	def __init__(self, agi, active, type, userid, number, ringseconds):
+	def __init__(self, agi, active, xtype, userid, number, ringseconds):
 		self.agi = agi
 		self.active = bool(active)
-		self.type = type
+		self.type = xtype
 		self.userid = userid
 		self.number = number
 		self.interface = None
