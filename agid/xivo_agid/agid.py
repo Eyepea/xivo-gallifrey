@@ -30,7 +30,7 @@ from xivo import moresynchro
 from xivo.BackSQL import backmysql
 from xivo.BackSQL import backsqlite
 
-import fastagi
+from xivo_agid import fastagi
 
 NAME = "agid"
 VERSION_MAJOR = 0
@@ -145,15 +145,15 @@ class FastAGIRequestHandler(SocketServer.StreamRequestHandler):
 
 		server.db_conn_pool.release(conn)
 
-	def set_fwd_vars(self, type, typeval, appval, type_varname, typeval1_varname, typeval2_varname):
+	def set_fwd_vars(self, redir_type, typeval, appval, type_varname, typeval1_varname, typeval2_varname):
 		"""The purpose of this function is to set some variables in the
 		Asterisk channel related to redirection. It can set up to 3 variables:
 		 - the redirection type (e.g. to a user, a group, a queue)
 		 - 2 parameters (typeval1 and typeval2)
 
-		type is the redirection type and is used to determine the corresponding
-		behaviour (e.g. how many variables to set, where to fetch their value
-		from).
+		redir_type is the redirection type and is used to determine the
+		corresponding behaviour (e.g. how many variables to set, where to fetch
+		their value from).
 
 		typeval is a value related to the redirection type. For example, if the
 		type is 'user', and the type value is '101', this function will look up
@@ -163,18 +163,19 @@ class FastAGIRequestHandler(SocketServer.StreamRequestHandler):
 		(typeval1 and typeval2) that this function sets before returning.
 
 		Forwarding a call to an application sometimes require an extra
-		parameter (since type is 'application' and typeval1 is the application
-		name). This extra parameter is given in the appval argument.
+		parameter (since redir_type is 'application' and typeval1 is the
+		application name). This extra parameter is given in the appval
+		argument.
 
-		Depending on the redirection type and the application (in case the type
-		is 'application'), some parameters can be processed so that commas are
-		translated to semicolumns. This is an ugly hack imagined because
-		Asterisk evaluates variables early, and commas are used as an argument
-		separator. In such cases, the dialplan translates semicolumns back
-		to commas/pipes before using the variale.
+		Depending on the redirection type and the application (in case the
+		redir_type is 'application'), some parameters can be processed so that
+		commas are translated to semicolumns. This is an ugly hack imagined
+		because Asterisk evaluates variables early, and commas are used as an
+		argument separator. In such cases, the dialplan translates semicolumns
+		back to commas/pipes before using the variale.
 
 		This function calls agi.dp_break() upon detection of parameter/database
-		inconsistency or when the type parameter is invalid.
+		inconsistency or when the redir_type parameter is invalid.
 
 		XXX This function and its users should be able to handle more
 		variables (if possible, there should be no limit).
@@ -184,20 +185,20 @@ class FastAGIRequestHandler(SocketServer.StreamRequestHandler):
 		agi = self.fastagi
 		cursor = self.cursor
 
-		agi.set_variable(type_varname, type)
+		agi.set_variable(type_varname, redir_type)
 
-		if type in ('endcall', 'schedule', 'sound'):
+		if redir_type in ('endcall', 'schedule', 'sound'):
 			agi.set_variable(typeval1_varname, typeval)
-		elif type == 'application':
+		elif redir_type == 'application':
 			agi.set_variable(typeval1_varname, typeval)
 
 			if typeval in ('disa', 'callback'):
 				agi.set_variable(typeval2_varname, appval.replace(",", ";").replace("|", ";"))
 			else:
 				agi.set_variable(typeval2_varname, appval)
-		elif type == 'custom':
+		elif redir_type == 'custom':
 			agi.set_variable(typeval1_varname, typeval.replace(",", ";").replace("|", ";"))
-		elif type == 'user':
+		elif redir_type == 'user':
 			cursor.query("SELECT ${columns} FROM userfeatures "
 				     "WHERE id = %s "
 				     "AND IFNULL(userfeatures.number,'') != '' "
@@ -212,7 +213,7 @@ class FastAGIRequestHandler(SocketServer.StreamRequestHandler):
 
 			agi.set_variable(typeval1_varname, res['number'])
 			agi.set_variable(typeval2_varname, res['context'])
-		elif type == 'group':
+		elif redir_type == 'group':
 			cursor.query("SELECT ${columns} FROM groupfeatures INNER JOIN queue "
 				     "ON groupfeatures.name = queue.name "
 				     "WHERE groupfeatures.id = %s "
@@ -228,7 +229,7 @@ class FastAGIRequestHandler(SocketServer.StreamRequestHandler):
 
 			agi.set_variable(typeval1_varname, res['groupfeatures.number'])
 			agi.set_variable(typeval2_varname, res['groupfeatures.context'])
-		elif type == 'queue':
+		elif redir_type == 'queue':
 			cursor.query("SELECT ${columns} FROM queuefeatures INNER JOIN queue "
 				     "ON queuefeatures.name = queue.name "
 				     "WHERE queuefeatures.id = %s "
@@ -243,7 +244,7 @@ class FastAGIRequestHandler(SocketServer.StreamRequestHandler):
 
 			agi.set_variable(typeval1_varname, res['queuefeatures.number'])
 			agi.set_variable(typeval2_varname, res['queuefeatures.context'])
-		elif type == 'meetme':
+		elif redir_type == 'meetme':
 			cursor.query("SELECT ${columns} FROM meetmefeatures INNER JOIN staticmeetme "
 				     "ON meetmefeatures.meetmeid = staticmeetme.id "
 				     "WHERE meetmefeatures.id = %s "
@@ -258,9 +259,9 @@ class FastAGIRequestHandler(SocketServer.StreamRequestHandler):
 			agi.set_variable(typeval1_varname, res['meetmefeatures.number'])
 			agi.set_variable(typeval2_varname, res['meetmefeatures.context'])
 		else:
-			agi.dp_break("Unknown destination type '%s'" % type)
+			agi.dp_break("Unknown destination type '%s'" % redir_type)
 
-	def ds_set_fwd_vars(self, id, status, category, type_varname, typeval1_varname, typeval2_varname):
+	def ds_set_fwd_vars(self, categoryval, status, category, type_varname, typeval1_varname, typeval2_varname):
 		"""Front-end to set_fwd_vars() that fetches some data from
 		the dialstatus table.
 
@@ -277,20 +278,20 @@ class FastAGIRequestHandler(SocketServer.StreamRequestHandler):
 			     "AND categoryval = %s "
 			     "AND linked = 1",
 			     ('type', 'typeval', 'applicationval'),
-			     (status, category, id))
+			     (status, category, categoryval))
 		res = cursor.fetchone()
 
 		if not res:
-			type = "endcall"
+			redir_type = "endcall"
 			typeval = "none"
 			applicationval = None
 		else:
-			type = res['type']
+			redir_type = res['type']
 			typeval = res['typeval']
 			applicationval = res['applicationval']
 
 		self.fastagi.set_variable(type_varname + "_FROMDS", 1)
-		self.set_fwd_vars(type, typeval, applicationval, type_varname, typeval1_varname, typeval2_varname)
+		self.set_fwd_vars(redir_type, typeval, applicationval, type_varname, typeval1_varname, typeval2_varname)
 
 class AGID(SocketServer.ThreadingTCPServer):
 	allow_reuse_address = True
