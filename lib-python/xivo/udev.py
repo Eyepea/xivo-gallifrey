@@ -33,6 +33,7 @@ from itertools import count
 
 from xivo import trace_null
 
+
 PERSISTENT_NET_RULES_FILE = "/etc/udev/rules.d/z25_persistent-net.rules"
 
 LOCKPATH_PREFIX = "/dev/.udev/.lock-"
@@ -165,8 +166,7 @@ def parse_rule(mline, trace=trace_null):
                     ... },
       ...,
       key_3: [op_3, val_3],
-      ...
-    }
+      ... }
     
     where key_attr_{n} is an element of the "key in dict" column of KEY_ATTR,
     attr_{p} can be any string, op_{q} is an udev rule operator in
@@ -232,15 +232,30 @@ def parse_rule(mline, trace=trace_null):
     return rule
 
 
-def parse_file(rules_file, trace=trace_null):
+def parse_lines(lines, trace=trace_null):
     """
-    XXX
+    @lines is a sequence of lines that comes from a udev rules file.
+    This function parses the rules, taking into account continued lines, blank
+    lines and comment lines.  It returns a list a rules, in which each rule is
+    a dictionary formatted as described in the documentation of parse_rule().
     """
     rules = []
-    
+    for mline in iter_multilines(lines):
+        if (not mline) or is_comment(mline):
+            continue
+        rule = parse_rule(mline, trace)
+        if not rule:
+            continue
+        rules.append(rule)
+    return rules    
+
+
+def parse_file(rules_file, trace=trace_null):
+    """
+    Lock @rules_file, parse it with parse_lines(), and unlock it.
+    """
     lock_rules_file(rules_file) # RW lock, anybody? :)
     try:
-        
+        return parse_lines(file(rules_file), trace)
     finally:
         unlock_rules_file(rules_file)
-    
