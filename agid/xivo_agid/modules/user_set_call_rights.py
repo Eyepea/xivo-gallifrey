@@ -17,8 +17,6 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-import re
-
 from xivo_agid import agid
 from xivo_agid import call_rights
 
