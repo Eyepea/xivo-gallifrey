@@ -417,6 +417,7 @@ class XivoCTICommand(BaseCommand):
                                              'astid'    : d[5],
                                              'phonenum' : d[6],
                                              'init'     : True,
+                                             'state'    : 'unknown',
                                              'agentnum' : d[9],
                                              'techlist' : d[7],
                                              'context'  : d[8]}
@@ -694,7 +695,11 @@ class XivoCTICommand(BaseCommand):
                         plist_thisast.update_gui_clients(sipphone, "SIP-NTFY")
                 return
 
-
+        def ami_channelreload(self, astid, event):
+                print astid, event
+                # {'User_Count': '12', 'Peer_Count': '12', 'Registry_Count': '0', 'Privilege': 'system,all', 'Event': 'ChannelReload', 'Channel': 'SIP', 'ReloadReason': 'RELOAD (Channel module reload)'}
+                return
+        
         def ami_aoriginatesuccess(self, astid, event):
                 return
         def ami_originatesuccess(self, astid, event):
@@ -1016,7 +1021,7 @@ class XivoCTICommand(BaseCommand):
 
         def manage_cticommand(self, userinfo, icommand):
                 ret = None
-                repstr = ''
+                repstr = None
                 astid    = userinfo.get('astid')
                 username = userinfo.get('user')
                 context  = userinfo.get('context')
@@ -1089,6 +1094,7 @@ class XivoCTICommand(BaseCommand):
                                 f = [uinfo.get('user'),
                                      uinfo.get('company'),
                                      uinfo.get('fullname'),
+                                     uinfo.get('state'),
                                      str(1),
                                      uinfo.get('astid'),
                                      uinfo.get('context'),
@@ -1099,6 +1105,7 @@ class XivoCTICommand(BaseCommand):
                                         f.extend([uinfo.get('user'),
                                                   uinfo.get('company'),
                                                   uinfo.get('fullname'),
+                                                  uinfo.get('state'),
                                                   str(1), # add/del/update (new fullname)/other ...
                                                   uinfo.get('astid'),
                                                   uinfo.get('context'),
@@ -1859,20 +1866,21 @@ class XivoCTICommand(BaseCommand):
 
 
         def __update_availstate__(self, userinfo, state):
-                astid    = userinfo['astid']
+                company = userinfo['company']
                 username = userinfo['user']
+
                 if 'sessiontimestamp' in userinfo:
                         userinfo['sessiontimestamp'] = time.time()
                 if state in allowed_states:
                         userinfo['state'] = state
                 else:
-                        log_debug(SYSLOG_WARNING, '%s : (user %s) : state <%s> is not an allowed one => undefinedstate-updated'
-                                  % (astid, username, state))
+                        log_debug(SYSLOG_WARNING, '(user %s) : state <%s> is not an allowed one => undefinedstate-updated'
+                                  % (username, state))
                         userinfo['state'] = 'undefinedstate-updated'
 
-                # XXX do not send to username, but to the phones of userinfo instead
-                ## self.plist[astid].send_availstate_update(username, state)
-                return ""
+                self.__send_msg_to_cti_clients__('presence=%s;%s;%s' % (company, username, userinfo['state']))
+
+                return None
 
 
         # \brief Builds the full list of customers in order to send them to the requesting client.

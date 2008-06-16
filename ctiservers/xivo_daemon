@@ -369,6 +369,7 @@ evfunction_to_method_name = {
         'AgentConnect':         'ami_agentconnect',
         'AgentDump':            'ami_agentdump',
         'Agents':               'ami_agents',
+        'ChannelReload':        'ami_channelreload',
         'ParkedCall':           'ami_parkedcall',               # when the requested parking is acked
         'UnParkedCall':         'ami_unparkedcall',
         'ParkedCallTimeOut':    'ami_parkedcalltimeout',

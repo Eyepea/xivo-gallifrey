@@ -140,6 +140,8 @@ class BaseCommand:
                 return None
 
         # Methods to handle Asterisk AMI events
+        def ami_channelreload(self, astid, event):
+                return
         def ami_reload(self, astid, event):
                 return
         def ami_shutdown(self, astid, event):
