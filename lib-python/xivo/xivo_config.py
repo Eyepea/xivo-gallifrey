@@ -29,9 +29,7 @@ import re
 import sys
 import copy
 import yaml
-import shutil
 import os.path
-import subprocess
 from ConfigParser import ConfigParser
 from itertools import chain, count
 
@@ -40,6 +38,7 @@ from xivo import trace_null
 from xivo import ConfigDict
 from xivo import interfaces
 from xivo import except_tb
+from xivo import system
 from xivo import xys
 from xivo.easyslog import *
 
@@ -985,28 +984,6 @@ class TransactionError(Exception):
         return self.__strmsg
 
 
-def sync_no_oserror(trace=trace_null):
-    """
-    Call /bin/sync.
-    Catch and trace OSError exceptions.
-    """
-    try:
-        subprocess.call("/bin/sync", close_fds=True)
-    except OSError:
-        trace.warning("sync_no_oserror: call of /bin/sync failed")
-        except_tb.log_exception(trace.warning)
-
-
-def rm_rf(path):
-    """
-    Recursively (if needed) delete path.
-    """
-    if os.path.isdir(path) and not os.path.islink(path):
-        shutil.rmtree(path)
-    elif os.path.lexists(path):
-        os.remove(path)
-
-
 def rotate_entries(previous, current, new, trace):
     """
     If current exists:
@@ -1026,7 +1003,7 @@ def rotate_entries(previous, current, new, trace):
         
         trace.debug("about to remove %r" % previous)
         try:
-            rm_rf(previous)
+            system.rm_rf(previous)
         except OSError:
             trace.warning("rotate_entries: failed to delete %r" % previous)
             except_tb.log_exception(trace.warning)
@@ -1038,16 +1015,17 @@ def rotate_entries(previous, current, new, trace):
             trace.warning("rotate_entries: failed to rename %r to %r" % (current, previous))
             except_tb.log_exception(trace.warning)
             
-            rm_rf(current)
+            system.rm_rf(current)
         
-        sync_no_oserror(trace)
+        system.sync_no_oserror(trace)
     
     trace.debug("about to rename %r to %r" % (new, current))
     os.rename(new, current)
     
-    sync_no_oserror(trace)
+    system.sync_no_oserror(trace)
     
     trace.info("Leaving rotate_entries.")
+
 
 def transactional_generation(store_base, store_subs, gen_base, gen_subs, generation_func, trace=trace_null):
     """
@@ -1103,13 +1081,13 @@ def transactional_generation(store_base, store_subs, gen_base, gen_subs, generat
     for entry in (store_tmp, gen_tmp):
         if os.path.exists(entry):
             trace.warning("transactional_generation: removing stalled entry %r" % entry)
-            rm_rf(entry)
+            system.rm_rf(entry)
     
     if os.path.exists(store_new) and not os.path.exists(gen_new):
         trace.notice("BEGIN PHASE 1")
         
         trace.debug("about to remove %r" % gen_tmp)
-        rm_rf(gen_tmp)
+        system.rm_rf(gen_tmp)
         
         if os.path.exists(gen_current):
             trace.info("%r exists" % gen_current)
@@ -1130,7 +1108,7 @@ def transactional_generation(store_base, store_subs, gen_base, gen_subs, generat
             except_tb.log_exception(trace.err)
             trace.info("Error during generation - cancelling transaction")
             
-            rm_rf(store_failed)
+            system.rm_rf(store_failed)
             
             trace.debug("about to %r rename to %r" % (store_new, store_failed))
             try:
@@ -1139,26 +1117,26 @@ def transactional_generation(store_base, store_subs, gen_base, gen_subs, generat
                 trace.warning("transactional_generation: failed to rename %r to %r - destroying %r"
                               % (store_new, store_failed, store_new))
                 except_tb.log_exception(trace.warning)
-                rm_rf(store_new)
+                system.rm_rf(store_new)
             
             trace.notice("about to remove incompletely generated directory %r" % gen_tmp)
-            rm_rf(gen_tmp)
+            system.rm_rf(gen_tmp)
             
-            sync_no_oserror(trace)
+            system.sync_no_oserror(trace)
             
             trace.notice("END PHASE 1 - transaction cancelled - raising TransactionError")
-
+            
             raise TransactionError("generation failure", ex)
             
         else:
             trace.info("Successful generation")
             
-            sync_no_oserror(trace)
+            system.sync_no_oserror(trace)
             
             trace.debug("about to rename %r to %r" % (gen_tmp, gen_new))
             os.rename(gen_tmp, gen_new)
             
-            sync_no_oserror(trace)
+            system.sync_no_oserror(trace)
             
             trace.notice("END PHASE 1 - generation performed")
     
@@ -1182,38 +1160,26 @@ def transactional_generation(store_base, store_subs, gen_base, gen_subs, generat
     trace.notice("LEAVING transactional_generation - no transaction completion")
 
 
-def file_writelines_flush_sync(path, lines):
-    """
-    Fill file at @path with @lines then flush all buffers
-    (Python and system buffers)
-    """
-    fp = file(path, "w")
-    fp.writelines(lines)
-    fp.flush()
-    os.fsync(fp.fileno())
-    fp.close()
-
-
 def generate_system_configuration(to_gen, prev_gen, current_xivo_conf, trace=trace_null):
     """
     Generate system configuration from our own configuration model.
     """
     os.mkdir(to_gen)
-
+    
     config = load_configuration(file(os.path.join(current_xivo_conf, NETWORK_CONFIG_FILE)), trace)
-
+    
     if prev_gen:
         old_interfaces_lines = file(os.path.join(prev_gen, INTERFACES_FILE))
     else:
         old_interfaces_lines = ()
-    file_writelines_flush_sync(os.path.join(to_gen, INTERFACES_FILE),
-                               generate_interfaces(old_interfaces_lines, config, trace))
+    system.file_writelines_flush_sync(os.path.join(to_gen, INTERFACES_FILE),
+                                      generate_interfaces(old_interfaces_lines, config, trace))
     if old_interfaces_lines:
         old_interfaces_lines.close()
         old_interfaces_lines = None
-
-    file_writelines_flush_sync(os.path.join(to_gen, DHCPD_CONF_FILE),
-                               generate_dhcpd_conf(config, trace))
+    
+    system.file_writelines_flush_sync(os.path.join(to_gen, DHCPD_CONF_FILE),
+                                     generate_dhcpd_conf(config, trace))
 
 
 def transaction_system_configuration(trace=trace_null):
@@ -1351,6 +1317,7 @@ def iter_new_vsTag(conf):
     """
     return ("vs_%04d" % cnt for cnt in count(max(network.split_lexdec(vsTag)[1] for vsTag in conf['vlans']) + 1))
 
+
 def autoattrib_conf(conf):
     """
     Auto attribute orphan vlan set to 'void' physical interfaces, in
@@ -1402,21 +1369,9 @@ def start_transaction(trace=trace_null):
     """
     XXX
     """
-    sync_no_oserror(trace)
+    system.sync_no_oserror(trace)
     os.rename(os.path.join(STORE_BASE, STORE_TMP), os.path.join(STORE_BASE, STORE_NEW))
     transaction_system_configuration(trace)
-
-
-def file_w_create_directories(filepath):
-    """
-    Recursively create some directories if needed so that the directory where
-    @filepath must be written exists, then open it in "w" mode and return the
-    file object.
-    """
-    dirname = os.path.dirname(filepath)
-    if dirname and not os.path.isdir(dirname):
-        os.makedirs(dirname)
-    return file(filepath, "w")
 
 
 def autoattrib(trace=trace_null):
@@ -1429,7 +1384,7 @@ def autoattrib(trace=trace_null):
     aaconf = autoattrib_conf(config)
     if aaconf == config:
         return
-    save_configuration(aaconf, file_w_create_directories(os.path.join(STORE_BASE, STORE_TMP, NETWORK_CONFIG_FILE)), trace)
+    save_configuration(aaconf, system.file_w_create_directories(os.path.join(STORE_BASE, STORE_TMP, NETWORK_CONFIG_FILE)), trace)
     start_transaction(trace)
 
 
