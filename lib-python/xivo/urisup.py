@@ -1,6 +1,6 @@
 """Supplementary functions useful to play with URI - very very close to RFC 3986
 
-Copyright (C) 2007, Proformatique
+Copyright (C) 2007, 2008  Proformatique
 
 """
 
