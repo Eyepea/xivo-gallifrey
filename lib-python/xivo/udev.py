@@ -32,6 +32,7 @@ import os.path
 from copy import deepcopy
 from itertools import count
 
+from xivo import system
 from xivo import trace_null
 
 
@@ -362,7 +363,7 @@ def replace_simple_op_values(recons, repl):
             continue
         if base in repl:
             repl_op, repl_val = repl[base]
-            rule_key, rule_allowed_ops = KEY[base]
+            rule_allowed_ops = KEY[base][1]
             if repl_op not in rule_allowed_ops:
                 raise ValueError, "invalid replacement operation %r for key %r in rule %r" % (repl_op, key, reconstruct_rule(recons))
             if '"' in repl_val:
@@ -410,3 +411,14 @@ def replace_simple(lines, match_repl_lst, trace=trace_null):
         
         repl = match_repl[1]
         yield replace_simple_op_values(rule_recons[1], repl) + "\n"
+
+
+def replace_simple_in_file(rules_file, match_repl_lst, trace=trace_null):
+    """
+    Lock @rules_file, change its lines using replace_simple(), and unlock it.
+    """
+    lock_rules_file(rules_file)
+    try:
+        system.file_writelines_flush_sync(rules_file + ".tmp", replace_simple(file(rules_file), match_repl_lst, trace))
+    finally:
+        unlock_rules_file(rules_file)
