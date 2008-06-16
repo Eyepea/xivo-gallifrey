@@ -20,12 +20,10 @@ __license__ = """
 import re
 
 from xivo_agid import agid
+from xivo_agid import objects
 from xivo_agid import call_rights
 
-RIGHTCALL_AUTHORIZATION_COLNAME = "rightcall.authorization"
-RIGHTCALL_PASSWD_COLNAME = "rightcall.passwd"
-
-def _did_set_call_rights(handler, agi, cursor, args):
+def _did_set_call_rights(agi, cursor, args):
 	srcnum = agi.get_variable('REAL_SRCNUM')
 	dstnum = agi.get_variable('REAL_DSTNUM')
 	context = agi.get_variable('REAL_CONTEXT')
@@ -55,15 +53,15 @@ def _did_set_call_rights(handler, agi, cursor, args):
 		     "AND extenumbers.context = %s "
 		     "AND extenumbers.type = 'incall' "
 		     "AND rightcall.commented = 0",
-		     (RIGHTCALL_AUTHORIZATION_COLNAME, RIGHTCALL_PASSWD_COLNAME),
+		     (call_rights.RIGHTCALL_AUTHORIZATION_COLNAME, call_rights.RIGHTCALL_PASSWD_COLNAME),
 		     (exten_pattern, context))
 	res = cursor.fetchall()
 	call_rights.apply_rules(agi, res)
 	call_rights.allow(agi)
 
-def did_set_call_rights(handler, agi, cursor, args):
+def did_set_call_rights(agi, cursor, args):
 	try:
-		_did_set_call_rights(handler, agi, cursor, args)
+		_did_set_call_rights(agi, cursor, args)
 	except call_rights.RuleAppliedException:
 		return
 
