@@ -101,7 +101,7 @@ def iter_multilines(lines):
     only on a "\\n" (newline) that is not preceded with a "\\\\" (backslash) or at
     end of file.  "\\\\\\n" of continued lines are stripped, as well as regular
     "\\n" at end of multilines and spaces at their beginning.  Comment lines and
-    blank lines are not stripped.
+    blank lines are not skipped.
     """
     current = []
     for line in lines:
@@ -339,7 +339,7 @@ def reconstruct_rule_elem(elem):
 
 def reconstruct_rule(recons):
     """
-    Return a string which when parsed by parse_rule() result in @recons.
+    Return a string which when parsed by parse_rule() results in @recons.
     """
     return "".join((reconstruct_rule_elem(elem) for elem in recons))
 
