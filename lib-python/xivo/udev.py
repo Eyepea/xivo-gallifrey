@@ -424,5 +424,6 @@ def replace_simple_in_file(rules_file, match_repl_lst, trace=trace_null):
     lock_rules_file(rules_file)
     try:
         system.file_writelines_flush_sync(rules_file + ".tmp", replace_simple(file(rules_file), match_repl_lst, trace))
+        os.rename(rules_file + ".tmp", rules_file)
     finally:
         unlock_rules_file(rules_file)
