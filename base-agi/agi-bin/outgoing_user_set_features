@@ -158,7 +158,7 @@ if callrecord:
 	res = cursor.fetchone()
 
 	if res:
-		agi.set_variable('XIVO_CALLRECORDFILE', "/usr/share/asterisk/sounds/web-interface/monitor/user-%s-%s-%s.wav" % (srcnum, dstnum, int(time.time())))
+		agi.set_variable('XIVO_CALLRECORDFILE', "/var/lib/pf-xivo/sounds/monitor/user-%s-%s-%s.wav" % (srcnum, dstnum, int(time.time())))
 
 if hangupringtime:
 	agi.set_variable('XIVO_HANGUPRINGTIME', hangupringtime)

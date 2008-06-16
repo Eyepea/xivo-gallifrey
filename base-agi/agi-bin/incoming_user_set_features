@@ -264,7 +264,7 @@ ds_set_fwd_vars(userfeaturesid, 'user', 'congestion', 'XIVO_FWD_TYPECONGESTION',
 ds_set_fwd_vars(userfeaturesid, 'user', 'chanunavail', 'XIVO_FWD_TYPEUNAVAIL', 'XIVO_FWD_TYPEVAL1UNAVAIL', 'XIVO_FWD_TYPEVAL2UNAVAIL')
 
 if 'incallrec' in features_list and callrecord:
-	agi.set_variable('XIVO_CALLRECORDFILE', "/usr/share/asterisk/sounds/web-interface/monitor/user-%s-%s-%s.wav" % (srcnum, dstnum, int(time.time())))
+	agi.set_variable('XIVO_CALLRECORDFILE', "/var/lib/pf-xivo/sounds/monitor/user-%s-%s-%s.wav" % (srcnum, dstnum, int(time.time())))
 
 if musiconhold:
 	agi.set_variable('MUSICCLASS()', musiconhold)
