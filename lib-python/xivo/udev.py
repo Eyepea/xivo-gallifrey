@@ -43,7 +43,7 @@ LOCKPATH_PREFIX = "/dev/.udev/.lock-"
 
 def find(seq, f):
     """
-    Returns the first element el of seq for which f(el) is true, or
+    Return the first element el of seq for which f(el) is true, or
     None if f(el) is not true for each elements of seq.
     """
     for el in seq:
@@ -193,7 +193,10 @@ def base_attr_key(key):
 def base_attr_strip_opt(key):
     """
     Behave as base_attr_key(), except when the @base result is a key in
-    @KEY_OPT_ATTR: in this case returns base, None
+    @KEY_OPT_ATTR: in this case return base, None
+    
+    REM: base_attr_key() can raise a ValueError, so base_attr_strip_opt()
+    can raise a ValueError too.
     """
     base, attr = base_attr_key(key)
     if base in KEY_OPT_ATTR:
@@ -305,6 +308,7 @@ def parse_lines(lines, trace=trace_null):
 def parse_file(rules_file, trace=trace_null):
     """
     Lock @rules_file, parse it with parse_lines(), and unlock it.
+    Return the result of parse_lines().
     """
     lock_rules_file(rules_file) # RW lock, anybody? :)
     try:

@@ -39,7 +39,7 @@ except NameError:
 
 def find(seq, f):
 	"""
-	Returns the first element el of seq for which f(el) is true, or
+	Return the first element el of seq for which f(el) is true, or
 	None if f(el) is not true for each elements of seq.
 	"""
 	for el in seq:
@@ -48,7 +48,7 @@ def find(seq, f):
 
 def only_in(r, seq):
 	"""
-	Returns False if 'seq' contains at least one element that is not equal
+	Return False if 'seq' contains at least one element that is not equal
 	to 'r', else True.
 	"""
 	for el in seq:

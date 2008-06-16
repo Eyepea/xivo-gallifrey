@@ -23,6 +23,7 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
+
 def list_loop(prev_dict, start, v):
 	a = [v, start]
 	while prev_dict[v]:
@@ -30,10 +31,11 @@ def list_loop(prev_dict, start, v):
 		a.insert(0, v)
 	return a
 
+
 def loop(graph, start):
 	"""
-	Finds and returns a loop containing the vertex identified by the 
-	parameter start in the graph described by parameter graph, or returns
+	Find and return a loop containing the vertex identified by the
+	parameter start in the graph described by parameter graph, or return
 	None if no such loop exists.
 	
 	Parameter graph must be a mapping object (in the Python meaning) and
@@ -71,49 +73,33 @@ def loop(graph, start):
 	>>> for x in 'abcdekjlmnopq':
 	...     print x, '----------------------------'
 	...     print loop(graph, x)
-	...     print  
 	... 
 	a ----------------------------
 	None
-
 	b ----------------------------
 	None
-
 	c ----------------------------
 	None
-
 	d ----------------------------
 	None
-
 	e ----------------------------
 	None
-
 	k ----------------------------
 	None
-
 	j ----------------------------
 	None
-
 	l ----------------------------
 	None
-
 	m ----------------------------
 	['m', 'n', 'q', 'p', 'm']
-
 	n ----------------------------
 	['n', 'q', 'p', 'm', 'n']
-
 	o ----------------------------
 	None
-
 	p ----------------------------
 	['p', 'm', 'n', 'q', 'p']
-
 	q ----------------------------
 	['q', 'p', 'm', 'n', 'q']
-
-	>>> 
-
 	"""
 	vertices_done = set()
 	vertices_todo_lst = [start]
@@ -131,10 +117,11 @@ def loop(graph, start):
 				vertices_todo_lst.append(d)
 				vertices_todo_set.add(d)
 
+
 def reverse_ord(graph):
 	"""
 	This functions works on an ordered graph and returns a new one.
-	It can be viewed as doing different things, depending on the context:
+	It can be viewed as doing diverse things, depending on the context:
 	  - returns a new graph with any edge direction reversed
 	  - returns a new representation of graph, but with the destination of
 	    edges in keys of the Python mapping, and sources for a given
@@ -149,6 +136,7 @@ def reverse_ord(graph):
 			srcs.append(s)
 	return rev
 
+
 def potential_by_card(graph):
 	"""
 	This function returns a dictionary where a potential is associated
@@ -156,6 +144,7 @@ def potential_by_card(graph):
 	that are adjacent to the considered one.
 	"""
 	return dict(((v1, len(lst_v2)) for v1, lst_v2 in graph.iteritems()))
+
 
 # In consolidate_childs(), consolidate_conso_reach() and
 # partial_order_from_reversed_ord_pot(), conso_reach is a Python mapping which
@@ -183,6 +172,7 @@ def consolidate_childs(conso_reach, s, seq):
 	else:
 		return False
 
+
 def consolidate_conso_reach(conso_reach, start, seq):
 	"""
 	This function returns True if there were changes other than nodes
@@ -201,6 +191,7 @@ def consolidate_conso_reach(conso_reach, start, seq):
 	if optim_neigh_to_reach:
 		conso_reach[start][0] = seq
 	return r
+
 
 def partial_order_from_reversed_ord_pot(rev_graph, v_pot):
 	"""
@@ -290,10 +281,11 @@ def partial_order_from_reversed_ord_pot(rev_graph, v_pot):
 		conso_reach[s][0] = -1
 	return (graph_po, deletion_list)
 
+
 def partial_order_sink(graph):
 	"""
 	Given an ordered graph (see loop() for a description of its
-	representation) returns a partial order, that is remove the necessary
+	representation) return a partial order, that is remove the necessary
 	number of edges from graph (this is not done in-place, a copy is
 	created).
 	This function indeed returns a tuple with the partial order in its
@@ -302,6 +294,16 @@ def partial_order_sink(graph):
 	"""
 	rev_graph = reverse_ord(graph)
 	return partial_order_from_reversed_ord_pot(rev_graph, potential_by_card(rev_graph))
+
+
+def _test():
+	import doctest
+	doctest.testmod()
+
+
+if __name__ == "__main__":
+	_test()
+
 
 __all__ = ('loop', 'partial_order_sink')
 

@@ -36,14 +36,14 @@ def SYSLOG_EXCEPT(loglevel):
 
 def exception_raw_traceback():
 	"""
-	Returns a backtrace of the current exception in a list of strings,
+	Return a backtrace of the current exception in a list of strings,
 	terminated by newlines.
 	"""
 	return traceback.format_exception(*sys.exc_info())
 
 def exception_traceback():
 	"""
-	Returns a backtrace of the current exception in a list of strings,
+	Return a backtrace of the current exception in a list of strings,
 	not terminated by newlines.
 	"""
 	return [ x.rstrip() for x in exception_raw_traceback() ]

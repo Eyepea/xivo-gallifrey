@@ -10,8 +10,8 @@ and followed by "name: value" entries, with continuations and such in
 the style of RFC 822.
 
 Unlike the ConfigParser module, this one can't contain format strings refering
-to other values. Also you can't load multiple files, modify the parsed parsed
-configuration, or write it back in a config file. Multiple sections with the
+to other values.  Also you can't load multiple files, modify the parsed parsed
+configuration, or write it back in a config file.  Multiple sections with the
 same name are handled differently, and so are multiple options in a given
 section.
 
@@ -30,8 +30,8 @@ iterators described in the classes PyDoc):
 
 * defaults() is not available.
 
-* sections() doesn't consider that DEFAULT has a special meaning. Every
-  elements of the returned list are in the output set of 'sect_trans'. The
+* sections() doesn't consider that DEFAULT has a special meaning.  Every
+  elements of the returned list are in the output set of 'sect_trans'.  The
   same element can't be seen two times in the returned list.
 
 * add_section(section) is not available.
@@ -40,9 +40,9 @@ iterators described in the classes PyDoc):
   on the section parameter before any lookup.
 
 * options(section): the 'sect_trans' function used at instantiation is used
-  on the section parameter before any lookup. Every elements of the returned
-  list are in the output set of 'opt_trans'. The same element can't be seen
-  multiple times in the returned list. If the parsed configuration file
+  on the section parameter before any lookup.  Every elements of the returned
+  list are in the output set of 'opt_trans'.  The same element can't be seen
+  multiple times in the returned list.  If the parsed configuration file
   contained multiple sections for which the result of the 'sect_trans' function
   is the same, the first one in the file order is selected.
 
@@ -60,12 +60,12 @@ iterators described in the classes PyDoc):
 * getboolean(section, option):
   'sect_trans' is applied on 'section' and 'opt_trans' on 'option' before lookup
 
-* items(section): 'sect_trans' is applied on 'section' before lookup. Names of
+* items(section): 'sect_trans' is applied on 'section' before lookup.  Names of
   the returned list of '(name, value)' pairs are in the output set of
-  'opt_trans' and the same name can't be seen multiple times. If the parsed
+  'opt_trans' and the same name can't be seen multiple times.  If the parsed
   configuration file contained multiple sections for which the result of the
   'sect_trans' function is the same, the first one seen in the file order is
-  selected. If the selected section contains multiple option names for which
+  selected.  If the selected section contains multiple option names for which
   the result of 'opt_trans' is the same, only the first one seen in the file
   order is returned.
 
@@ -144,9 +144,9 @@ OPTCRE = re.compile(
     )
 
 class AlreadyLoadedError(Error):
-    """Raised when trying to load multiple files in an instance that
+    """
+    Raised when trying to load multiple files in an instance that
     doesn't support that.
-
     """
     def __init__(self, done_filename, second_filename):
         Error.__init__(
@@ -159,12 +159,13 @@ class AlreadyLoadedError(Error):
         self.second_filename = second_filename
 
 class SectionDesc:
-    """NEW API
+    """
+    NEW API
 
     Instances of this class are what is iterated over when one wants to
     scan through sections and are made available thanks to the __iter__
-    method of an OrderedRawConf instance. That means that you can simply
-    do, for example:
+    method of an OrderedRawConf instance.  That means that you can
+    simply do, for example:
 
 	conf = OrderedRawConf(None, "/etc/somecoolconfig.conf")
 	for section in c:
@@ -175,11 +176,11 @@ class SectionDesc:
     Methods callable on this object are automatically derivated from
     methods of the OrderedRawConf having a conventional name of
     _<method_name>_by_section_token() in the latter, where <method_name>
-    is to be replaced by what you can use on the former. This happens
+    is to be replaced by what you can use on the former.  This happens
     thanks to the __getattr__() special method of this object.
 
-    In the example given above, section.get_name() will eventually result
-    in conf._get_name_by_section_token() being called, while
+    In the example given above, section.get_name() will eventually
+    result in conf._get_name_by_section_token() being called, while
     section.ordered_items() will reach
     conf._ordered_items_by_section_token().
     The first parameter of _<method_name>_by_section_token() methods is
@@ -193,53 +194,54 @@ class SectionDesc:
     get_name(self)
         NEW API
 
-        Returns the name of the section.
+        Return the name of the section.
 
     has_conflicting_option_names(self)
         TEST THAT BEFORE USING OLD/TRANSITIONARY API
 
-        Test if multiple options exists with the same canonical name
-        in this section
+        Test if multiple options exist with the same canonical name in
+        this section
 
     get_conflicting_option_names(self)
         NEW API
 
-        Returns the list of non canonicalized option names sets for
-        which corresponding canonicalized names (as per 'opt_trans' of
-        the corresponding OrderedRawConf object) conflicts.
+        Return the list of non canonicalized option names sets for which
+        corresponding canonicalized names (as per 'opt_trans' of the
+        corresponding OrderedRawConf object) conflicts.
 
     items(self)
         TRANSITIONARY API
 
-        Returns the unordered list of (name, value) option pairs of this
-        section. If multiple options with the same canonical name (as per
-        'opt_trans' of the corresponding OrderedRawConf object) exists,
-        only the first one of each different set will be returned.
+        Return the unordered list of (name, value) option pairs of this
+        section.  If multiple options with the same canonical name (as
+	per 'opt_trans' of the corresponding OrderedRawConf object)
+	exist, only the first one of each different set will be
+        returned.
 
     ordered_items(self)
         NEW API
 
-        Returns the ordered list of (name, value) option pairs of this
+        Return the ordered list of (name, value) option pairs of this
         section.
 
     options(self)
         TRANSITIONARY API
 
-        Returns the unordered list of option names of this section. If
-        multiple options with the same canonical name (as per 'opt_trans'
-        of the corresponding OrderedRawConf object) exists, only the first
-        one of each different set will be returned.
+        Return the unordered list of option names of this section.  If
+        multiple options with the same canonical name (as per
+        'opt_trans' of the corresponding OrderedRawConf object) exists,
+        only the first one of each different set will be returned.
 
     ordered_options(self)
         NEW API
 
-        Returns the ordered list of option names of this section.
+        Return the ordered list of option names of this section.
 
     get(self, option)
         TRANSITIONARY API
 
         Get the value of the first option of this section with canonical
-        name opt_trans(option). If such an option is not found,
+        name opt_trans(option).  If such an option is not found,
         NoOptionError is raised.
 
     getint(self, option)
@@ -247,7 +249,7 @@ class SectionDesc:
     getboolean(self, option)
         TRANSITIONARY API
 
-        Same as get() but cast the results. See OrderedRawConf PyDoc
+        Same as get() but cast the results.  See OrderedRawConf PyDoc
         for details.
 
     has_option(self, option)
@@ -259,7 +261,7 @@ class SectionDesc:
     iter_options(self)
         NEW API
 
-        Returns an option iterator for this section. If you've an
+        Return an option iterator for this section.  If you have an
         instance of this class called 'section' explicitely calling
         section.iter_options() has exactly the same effect.
 
@@ -275,7 +277,6 @@ class SectionDesc:
         with a name of the form _(.*)_by_option_token() of class
         OrderedRawConf with the correct iterable option token abstract
         descriptor.
-
     """
     def __init__(self, conf_instance, sect_id_token):
         self.conf_instance = conf_instance
@@ -289,9 +290,10 @@ class SectionDesc:
         except AttributeError:
             raise AttributeError, name
     def __iter__(self):
-        """NEW API
+        """
+        NEW API
 
-        Returns an option iterator for this section. If you've an
+        Return an option iterator for this section.  If you have an
         instance of this class called 'section' explicitely calling
         section.iter_options() has exactly the same effect.
 
@@ -307,54 +309,53 @@ class SectionDesc:
         with a name of the form _(.*)_by_option_token() of class
         OrderedRawConf with the correct iterable option token abstract
         descriptor.
-
         """
         return self.conf_instance._iter_options_by_section_token(self.sect_id_token)
 
 class OptionDesc:
-    """NEW API
+    """
+    NEW API
 
     Instances of this class are what is iterated over when one wants to
-    scan through options and are made available thanks to the __iter__ or
-    iter_options() methods of a SectionDesc instance or thanks to the
-    iter_options() method of an OrderedRawConf instance. That means that
-    you can do for example:
+    scan through options and are made available thanks to the __iter__
+    or iter_options() methods of a SectionDesc instance or thanks to the
+    iter_options() method of an OrderedRawConf instance.  That means
+    that you can do for example:
 
-	conf = OrderedRawConf(None, "/etc/somecoolconfig.conf")
-	for opt in conf.iter_options("great-section"):
+        conf = OrderedRawConf(None, "/etc/somecoolconfig.conf")
+        for opt in conf.iter_options("great-section"):
             print opt.get_name() + ': ' + opt.get_value()
-	for sec in conf:
+        for sec in conf:
             for opt in sec:
                 if "great" in opt.get_name():
                     print '['+sec.get_name()+'] ' \\
                           + opt.get_name() + ': ' \\
                           + opt.get_value()
 
-    Methods callable on this object are automatically derivated from
-    methods of the OrderedRawConf having a conventional name of
+    Methods callable on this object come from methods of the
+    OrderedRawConf having a conventional name of
     _<method_name>_by_option_token() in the latter, where <method_name>
-    is to be replaced by what you can use on the former. This happens
+    is to be replaced by what you can use on the former.  This happens
     thanks to the __getattr__() special method of this object.
 
     In the example given above, opt.get_value() will eventually result
-    in conf._get_value_by_option_token() in being called. The mecanism
+    in conf._get_value_by_option_token() in being called.  The mecanism
     is similar to the one used by SectionDesc objects.
 
     The following methods usable via this object are presently available
     thanks to the automatic mapping described above:
 
     get_name(self)
-        Returns the name of this option.
+        Return the name of this option.
 
     get_value(self)
-        Returns the value of this option.
+        Return the value of this option.
 
     getint(self)
     getfloat(self)
     getboolean(self)
-        Same as get_value() but cast the results. See OrderedRawConf
+        Same as get_value() but cast the results.  See OrderedRawConf
         PyDoc for details.
-
     """
     def __init__(self, conf_instance, opt_id_token):
         self.conf_instance = conf_instance
@@ -376,23 +377,24 @@ def _str_to_boolean(v):
     return _boolean_states[v.lower()]
 
 class OrderedRawConf:
-    """OrderedRawConf instances work a little like RawConfigParser with the
-    main purpose to preserve order of both sections in configuration file
-    and options in sections. While exposing a backward compability API
-    consisting of a subset of the one of RawConfigParser (see module
-    documentation for main variations and other details), it also provides
-    a new API specialy designed to retrieve ordered entities in various
-    pythonic ways :)
-
+    """
+    OrderedRawConf instances work a little like RawConfigParser with the
+    main purpose to preserve order of both sections in configuration
+    file and options in sections.  While exposing a backward compability
+    API consisting of a subset of the one of RawConfigParser (see module
+    documentation for main variations and other details), it also
+    provides a new API specialy designed to retrieve ordered entities in
+    various pythonic ways :)
     """
     def __init__(self, fp = None, filename = None, sect_trans = lambda x: x, opt_trans = lambda x: x):
-        """The constructor can optionally parse an open file or open
-        and parse a file using its filename. You can also provide it
+        """
+        The constructor can optionally parse an open file or open and
+        parse a file using its filename.  You can also provide it
         canonicalization functions for section names and/or option
         names.
 
         - If 'fp' does not evaluate to False, the configuration will be
-          loaded from this opened file at instantiation time. If 'fp'
+          loaded from this opened file at instantiation time.  If 'fp'
           does evaluate to False but filename does not, the file linked
           by 'filename' will be opened while the constructor is running
           and the configuration will also be loaded from the opened
@@ -400,27 +402,26 @@ class OrderedRawConf:
 
         - Whether or not 'fp' evaluate to False, 'filename' has
           precedence over 'fp.name' if not None, the latter being used
-          if it exists. The file name is used in exceptions.
+          if it exists.  The file name is used in exceptions.
 
         - 'sect_trans' is a function that must take a string as its
-          arguments and must return a string. It should behave as a
-          mathematical function, with no side effect. Section names
-          are stored as dictionary keys for latter use by a subset of
-          the RawConfigParser API after having been transformed by
+          arguments and must return a string.  It should behave as a
+          mathematical function, with no side effect.  Section names are
+          stored as dictionary keys for latter use by a subset of the
+          RawConfigParser  API after having been transformed by
           'sect_trans', so if for section names 'x' and 'y',
           'sect_trans(x) == sect_trans(y)', only the first one in
           configuration file order will be retrievable with this
-          compatibility API. Also for a given section name 't' any
+          compatibility API.  Also for a given section name 't' any
           lookup is of course done using 'sect_trans(t)' and not
-          directly 't'. Besides the default identity function, useful
+          directly 't'.  Besides the default identity function, useful
           ones could be 'tolower', or maybe even one stripping some
           special character, performing multiple charset detection and
           translation or performing other forms of canonicalization.
 
-        - 'opt_trans' does the same thing as 'sect_trans' is for
-          similar use, but is the function to be applied to option
-          names instead of section names.
-
+        - 'opt_trans' does the same thing as 'sect_trans' is for similar
+          use, but is the function to be applied to option names instead
+          of section names.
         """
         self._sections = ([], {})
         self.loaded_filename = None
@@ -436,43 +437,43 @@ class OrderedRawConf:
             fp.close()
 
     def sections(self):
-        """OLD API FOR RawConfigParser COMPATIBILITY
+        """
+        OLD API FOR RawConfigParser COMPATIBILITY
 
-        Returns a list of section canonical names (as per
-        'sect_trans') with at max one occurence of a given canonical
-        name in the returned list in case multiple sections with the
-        same canonical name exists.
-
+        Return a list of section canonical names (as per 'sect_trans')
+        with at max one occurence of a given canonical name in the
+        returned list in case multiple sections with the same canonical
+        name exists.
         """
         return self._sections[1].keys()
 
     def ordered_sections(self):
-        """NEW API
+        """
+        NEW API
 
-        Returns an ordered list of section names.
-
+        Return an ordered list of section names.
         """
         return [n for n, v in self._sections[0]]
 
     def has_section(self, section):
-        """OLD API FOR RawConfigParser COMPATIBILITY -  but rather
-        quite safe.
+        """
+        OLD API FOR RawConfigParser COMPATIBILITY -  but rather quite
+        safe.
 
         Test if a section with canonical name sect_trans(section) exists
-
         """
         sec = self.sect_trans(section)
         return sec in self._sections[1]
 
     def readfp(self, fp, filename=None):
-        """Loads and parse opened file described by fp.
-        fp.readline() will be used, and if filename is None fp.name
-        will also be tried but is not mandatory.
-        The file name is used in exceptions.
+        """
+        Load and parse opened file described by fp.
+        fp.readline() will be used, and if filename is None fp.name will
+        also be tried but is not mandatory.  The file name is used in
+        exceptions.
 
         Note that this function can only be called once and can be
         automatically called at instantiation time by __init__.
-
         """
         if filename is None:
             try:
@@ -491,14 +492,14 @@ class OrderedRawConf:
         return self._sections[1][sec]
 
     def get(self, section, option):
-        """OLD API FOR RawConfigParser COMPATIBILITY
+        """
+        OLD API FOR RawConfigParser COMPATIBILITY
 
         Get the value of the first option with canonical name
         opt_trans(option) from the first section with canonical name
-        sect_trans(section). If such a section is not found,
-        NoOptionError is raised. Else if such an option is not found
+        sect_trans(section).  If such a section is not found,
+        NoOptionError is raised.  Else if such an option is not found
         in the selected section, NoOptionError is raised.
-
         """
         s = self._sectup_by_name(section)
         opt = self.opt_trans(option)
@@ -507,92 +508,92 @@ class OrderedRawConf:
         return s[1][opt]
 
     def items(self, section):
-        """OLD API FOR RawConfigParser COMPATIBILITY
+        """
+        OLD API FOR RawConfigParser COMPATIBILITY
 
-        Returns the unordered list of (name, value) option pairs of
-        the first section with canonical name sect_trans(section).
-        If such a section is not found, NoOptionError is raised.
-        If multiple options with the same canonical name (as per
-        'opt_trans') exists in the selected section, only the first
-        one of each different set will be returned.
-
+        Return the unordered list of (name, value) option pairs of the
+        first section with canonical name sect_trans(section).  If such
+        a section is not found, NoOptionError is raised.  If multiple
+        options with the same canonical name (as per 'opt_trans') exists
+        in the selected section, only the first one of each different
+        set will be returned.
         """
         return self._sectup_by_name(section)[1].items()
 
     def ordered_items(self, section):
-        """NEW API - but could still be unsafe if
+        """
+        NEW API - but could still be unsafe if
         has_conflicting_section_names() returns True.
 
-        Returns the ordered list of (name, value) option pairs of
-        the first section with canonical name sect_trans(section).
-        If such a section is not found, NoOptionError is raised.
-        It is possible to retrieve multiple options with the same
-        canonical name, and their respective order are also preserved.
-
+        Return the ordered list of (name, value) option pairs of the
+        first section with canonical name sect_trans(section).  If such
+        a section is not found, NoOptionError is raised.  It is possible
+        to retrieve multiple options with the same canonical name, an
+        their respective order are also preserved.
         """
         return self._sectup_by_name(section)[0][:]
 
     def getint(self, section, option):
-        """OLD API FOR RawConfigParser COMPATIBILITY
+        """
+        OLD API FOR RawConfigParser COMPATIBILITY
 
         Same as get() but also cast the to be returned value as an int
-
         """
         return int(self.get(section, option))
 
     def getfloat(self, section, option):
-        """OLD API FOR RawConfigParser COMPATIBILITY
+        """
+        OLD API FOR RawConfigParser COMPATIBILITY
 
         Same as get() but also cast the to be returned value as a float
-
         """
         return float(self.get(section, option))
 
     def getboolean(self, section, option):
-        """OLD API FOR RawConfigParser COMPATIBILITY
+        """
+        OLD API FOR RawConfigParser COMPATIBILITY
 
         Same as get() but also cast the to be returned value as a
-        boolean. Case insensitive 'yes', 'true', 'on' and '1' evaluates
-        to True. Case insensitive 'no', 'false', 'off' and '0' evaluates
-        to False. Other values are forbidden and result in a ValueError
-        exception to be raised.
-
+        boolean.  Case insensitive 'yes', 'true', 'on' and '1' evaluates
+        to True.  Case insensitive 'no', 'false', 'off' and '0'
+        evaluates to False.  Other values are forbidden and result in a
+        ValueError exception to be raised.
         """
         return _str_to_boolean(self.get(section, option))
 
     def options(self, section):
-        """OLD API FOR RawConfigParser COMPATIBILITY
+        """
+        OLD API FOR RawConfigParser COMPATIBILITY
 
-        Returns the unordered list of canonical option names of
-        the first section with canonical name sect_trans(section).
-        If such a section is not found, NoSectionError is raised.
-        If multiple options with the same canonical name exists in the
-        selected section, only the first one of each different set will
-        be returned.
-
+        Return the unordered list of canonical option names of the first
+        section with canonical name sect_trans(section).  If such a
+        section is not found, NoSectionError is raised.  If multiple
+        options with the same canonical name exists in the selected
+        section, only the first one of each different set will be
+        returned.
         """
         return self._sectup_by_name(section)[1].keys()
 
     def ordered_options(self, section):
-        """NEW API - but could still be unsafe if
+        """
+        NEW API - but could still be unsafe if
         has_conflicting_section_names() returns True.
 
-        Returns the ordered list of option names of the first section
-        with canonical name sect_trans(section).
-        If such a section is not found, NoSectionError is raised.
-
+        Return the ordered list of option names of the first section
+        with canonical name sect_trans(section).  If such a section is
+        not found, NoSectionError is raised.
         """
         return [k for (k, v) in self._sectup_by_name(section)[0]]
 
     def has_option(self, section, option):
-        """OLD API - unsafe unless has_conflicting_section_names()
+        """
+        OLD API - unsafe unless has_conflicting_section_names()
         returns False.
 
         Test if at least a section with canonical name
         sect_trans(section) exists and if the first matching one
         contains at least an option with canonical name
         opt_trans(option).
-
         """
         sec = self.sect_trans(section)
         if sec not in self._sections[1]:
@@ -600,7 +601,8 @@ class OrderedRawConf:
         return self.opt_trans(option) in self._sections[1][sec][1]
 
     def has_conflicting_section_names(self):
-        """TEST THAT BEFORE USING OLD API
+        """
+        TEST THAT BEFORE USING OLD API
 
         Test if multiple sections exists with the same canonical name.
         If this is the case it is probably unsafe to use the old API,
@@ -609,17 +611,16 @@ class OrderedRawConf:
         situation and we do not.
         The user can decide by itself if such a situation is an error
         and if it is not he can still safely use the new ordered API.
-
         """
         return len(self._sections[0]) != len(self._sections[1])
 
     def get_conflicting_section_names(self):
-        """NEW API - probably useful for diagnostic purposes in both
+        """
+        NEW API - probably useful for diagnostic purposes in both
         NEW and OLD API oriented code.
 
-        Returns the list of non canonicalized section names sets for
+        Return the list of non canonicalized section names sets for
         which corresponding canonicalized names conflicts.
-
         """
         cf = []
         cd = {}
@@ -649,7 +650,8 @@ class OrderedRawConf:
         return [tuple(c) for c in cf if len(c) > 1]
 
     def has_conflicting_option_names(self, section):
-        """TEST THAT BEFORE USING OLD API
+        """
+        TEST THAT BEFORE USING OLD API
         This function makes most sense when
         has_conflicting_section_names() returns False.
 
@@ -662,32 +664,31 @@ class OrderedRawConf:
         situation.
         The user can decide by itself if such a situation is an error
         and if it is not he can still safely use the new ordered API.
-
         """
         return self._has_conflicting_option_names_int(
                 self._sectup_by_name(section))
 
     def get_conflicting_option_names(self, section):
-        """NEW API - probably useful for diagnostic purposes in both
+        """
+        NEW API - probably useful for diagnostic purposes in both
         NEW and OLD API oriented code.
         This function makes most sense when
         has_conflicting_section_names() returns False.
 
-        Returns the list of non canonicalized option names sets for
+        Return the list of non canonicalized option names sets for
         which corresponding canonicalized names conflicts, in the
         first found section with a canonical name of sect_trans(section)
         If such a section is not found, NoOptionError is raised.
-
         """
         return self._get_conflicting_option_names_int(
                 self._sectup_by_name(section))
 
     def has_any_conflicting_option_name(self):
-        """TEST THAT BEFORE USING OLD API
+        """
+        TEST THAT BEFORE USING OLD API
 
         Test if any section contains options with conflicting canonical
         names.
-
         """
         for sec, opts in self._sections[0]:
             if self._has_conflicting_option_names_int(opts):
@@ -695,13 +696,13 @@ class OrderedRawConf:
         return False
 
     def get_all_conflicting_option_names(self):
-        """NEW API - probably useful for diagnostic purposes in both
+        """
+        NEW API - probably useful for diagnostic purposes in both
         NEW and OLD API oriented code.
 
-        Returns a list of tuples containing section name in the first
+        Return a list of tuples containing section name in the first
         element, and the list of conflicting canonical option name in
         the second.
-
         """
         lst = []
         for sec, opts in self._sections[0]:
@@ -709,7 +710,8 @@ class OrderedRawConf:
         return lst
 
     def has_no_duplication(self):
-        """TEST THAT BEFORE USING OLD API
+        """
+        TEST THAT BEFORE USING OLD API
 
         Check that there is neither any conflicting section names, nor
         any conflicting option name in each sections.
@@ -723,16 +725,16 @@ class OrderedRawConf:
         returns False if you plan to use the NEW API, in some
         situations where it does not make sense to have duplicated
         section or option names.
-
         """
         return (not self.has_conflicting_section_names()) \
                 and (not self.has_any_conflicting_option_name())
     is_probably_safe_with_old_api = has_no_duplication
 
     def iter_sections(self):
-        """NEW API
+        """
+        NEW API
 
-        Returns a section iterator for this parsed configuration object.
+        Return a section iterator for this parsed configuration object.
         __iter__ is also defined and does exactly the same thing, so
         you can either do (on an instance called 'conf'):
                 for sec in conf.iter_sections():
@@ -745,7 +747,6 @@ class OrderedRawConf:
         SectionDesc and can be used to transparently access methods
         with a name of the form _(.*)_by_section_token() of this class
         with the correct iterable section token abstract descriptor.
-
         """
         for i in xrange(len(self._sections[0])):
             yield SectionDesc(self, i)
@@ -804,17 +805,17 @@ class OrderedRawConf:
         return self._iter_options_by_sectup(self._sectup_by_tok(i))
 
     def iter_options(self, section):
-        """NEW API - but could still be unsafe if
+        """
+        NEW API - but could still be unsafe if
         has_conflicting_section_names() returns True.
 
-        Returns an option iterator for the first section having a
+        Return an option iterator for the first section having a
         canonical name of sect_trans(section).
 
         The object returned at each iteration is an instance of
         OptionDesc and can be used to transparently access methods
         with a name of the form _(.*)_by_option_token() of this class
         with the correct iterable option token abstract descriptor.
-
         """
         return self._iter_options_by_sectup(self._sectup_by_name(section))
 

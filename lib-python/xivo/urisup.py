@@ -174,9 +174,9 @@ def __valid_query(pquery_tuple):
 	return True
 
 def valid_scheme(potential_scheme):
-	"""Check whether or not the content of potential_scheme is a valid
+	"""
+	Check whether or not the content of potential_scheme is a valid
 	URI scheme
-	
 	"""
 	return (potential_scheme[0] in ALPHA) \
 	       and __all_in(potential_scheme[1:], SCHEME_CHAR)
@@ -211,73 +211,74 @@ class InvalidFragmentError(InvalidURIError):
 PERCENT_CODE_SUB = re.compile('\%[\da-fA-F][\da-fA-F]').sub
 
 def pct_decode(s):
-	"""Returns the percent-decoded version of string s
+	"""
+	Return the percent-decoded version of string s.
 	
 	>>> def __split_sz(s, n):
 	...     return [s[b:b+n] for b in range(0,len(s),n)]
 	... 
 	>>> s = ''.join(map(lambda x: '%'+x,
 	...                 __split_sz(
-	...                     binascii.hexlify("Coucou, je suis un satan"),2))
+	...                   binascii.hexlify("Coucou, je suis un satan"), 2))
 	...             ).upper()
 	>>> print s
 	%43%6F%75%63%6F%75%2C%20%6A%65%20%73%75%69%73%20%75%6E%20%73%61%74%61%6E
 	>>> pct_decode(s)
 	'Coucou, je suis un satan'
-	
 	"""
 	if s is None:
 		return None
 	return PERCENT_CODE_SUB(lambda mo: chr(int(mo.group(0)[1:], 16)), s)
 
 def pct_encode(s, encdct):
-	"""Returns a translated version of s where each character is mapped to a
+	"""
+	Return a translated version of s where each character is mapped to a
 	string thanks to the encdct dictionary.
 	
-	Uses the encdct parameter to construct a string from parameter s where
+	Use the encdct parameter to construct a string from parameter s where
 	each character k from s is replaced by the value corresponding to key k
-	in encdct. It happens that callers use dictionaries smartly constructed
-	so that this function will perform percent-encoding quickly when called
-	whith such a dictionary.
-	
+	in encdct.  It happens that callers use dictionaries smartly
+	constructed so that this function will perform percent-encoding quickly
+	when called whith such a dictionary.
 	"""
 	if s is None:
 		return None
 	return ''.join(map(encdct.__getitem__, s))
 
 def query_elt_decode(s):
-	"""Returns the percent-decoded version of string s, after a
-	plus-to-space substitution has been done.
+	"""
+	Return the percent-decoded version of string s, after a plus-to-space
+	substitution has been done.
 
 	>>> query_elt_decode('query+++%2b')
 	'query   +'
-
 	"""
 	if s is None:
 		return None
 	return pct_decode(s.replace('+', ' '))
 
 def query_elt_encode(s, encdct):
-	"""Query encode a string, using the encdct parameter to do character
-	conversions. '+' must be converted (percent encoded) by pct_encode()
+	"""
+	Query encode a string, using the encdct parameter to do character
+	conversions.  '+' must be converted (percent encoded) by pct_encode()
 	with the same s and encdct parameters, while ' ' must not be converted.
-	
 	"""
 	if s is None:
 		return None
 	return pct_encode(s, encdct).replace(' ', '+')
 
 def host_type(host):
-	"""Correctly classifies correct RFC 3986 compliant hostnames, but
-	don't try hard to validate compliance anyway...
+	"""
+	Correctly classify correct RFC 3986 compliant hostnames, but do not try
+	hard to validate compliance anyway...
 	NOTE: indeed we allow a small deviation from the RFC 3986: IPv4
 	addresses are allowed to contain bytes represented in hexadecimal or
 	octal notation when begining respectively with '0x'/'0X' and '0'
-	numbers prepended with one or more zero won't be rejected. Anyway
+	numbers prepended with one or more zero won't be rejected.  Anyway
 	representation of multiple bytes by a single decimal/octal/hexadecimal
 	integer is not allowed.
 	
-	Returns HOST_IP_LITERAL, HOST_IPV4_ADDRESS or HOST_REG_NAME
+	Return HOST_IP_LITERAL, HOST_IPV4_ADDRESS or HOST_REG_NAME
 
 	>>> host_type('[blablabla]')
 	HOST_IP_LITERAL
@@ -291,7 +292,6 @@ def host_type(host):
 	HOST_REG_NAME
 	>>> host_type('foobar.42')
 	HOST_REG_NAME
-
 	"""
 	if not host:
 		return HOST_REG_NAME
@@ -303,7 +303,8 @@ def host_type(host):
 		return HOST_REG_NAME
 
 def split_authority(authority):
-	"""Splits authority into component parts. This function supports
+	"""
+	Split authority into component parts.  This function supports
 	IP-literal as defined in RFC 3986.
 	
 	>>> split_authority("user:passwd@host:port")
@@ -328,11 +329,10 @@ def split_authority(authority):
 	
 	Very basic validation is done if the host part of the authority starts
 	with an '[' as when this is the case, the splitting is done in a quite
-	different manner than the one used by most URI parsers. As a result an
+	different manner than the one used by most URI parsers.  As a result an
 	InvalidIPLiteralError exception is raised if IP-literal is patently
 	wrong, so the risk of major clashes between two deviant implementations
 	is highly reduced.
-	
 	"""
 	if '@' in authority:
         	userinfo, hostport = authority.split('@', 1)
@@ -361,15 +361,15 @@ def split_authority(authority):
 		host and host or None, port and port or None)
 
 def split_query(query):
-	"""Handles the query as a WWW HTTP 1630 query, as this is how people
-	usually thinks of URI queries in general. We do not decode anything
+	"""
+	Handle the query as a WWW HTTP 1630 query, as this is how people
+	usually thinks of URI queries in general.  We do not decode anything
 	in split operations, neither percent nor the terrible plus-to-space
-	conversion. Returns:
+	conversion.  Return:
 	
 	>>> split_query("k1=v1&k2=v+2%12&k3=&k4&&&k5==&=k&==")
 	(('k1', 'v1'), ('k2', 'v+2%12'), ('k3', ''), ('k4', None),
 		('k5', '='), ('', 'k'), ('', '='))
-	
 	"""
 	def split_assignment(a):
 		sa = a.split('=', 1)
@@ -378,9 +378,9 @@ def split_query(query):
 	return tuple([split_assignment(a) for a in assignments if a])
 
 def unsplit_query(query):
-	"""Create a query string using the tuple query with a format as the one
+	"""
+	Create a query string using the tuple query with a format as the one
 	returned by split_query()
-	
 	"""
 	def unsplit_assignment((x, y)):
 		if (x is not None) and (y is not None):
@@ -394,18 +394,19 @@ def unsplit_query(query):
 	return '&'.join(map(unsplit_assignment, query))
 
 def basic_urisplit(uri):
-	""" Basic URI Parser according to RFC 3986
+	"""
+	Basic URI Parser according to RFC 3986
 	
 	>>> urisplit("scheme://authority/path?query#fragment")
 	('scheme', 'authority', 'path', 'query', 'fragment') 
-	
 	"""
 	p = RFC3986_MATCHER(uri).groups()
 	return (p[1], p[3], p[4], p[6], p[8]) 
 
 def uri_split_tree(uri):
-	"""Returns (scheme, (user, passwd, host, port), path,
-	            ((k1, v1), (k2, v2), ...), fragment) using
+	"""
+	Return (scheme, (user, passwd, host, port), path,
+	           ((k1, v1), (k2, v2), ...), fragment) using
 	basic_urisplit(), then split_authority() and split_query() on the
 	result.
 	
@@ -419,7 +420,6 @@ def uri_split_tree(uri):
 	 (('query', '+++%2b'), ('', ''), ('', '=='),
 	 	('a', 'b'), ('+++aaa%3D', '+%2B%2D')),
 	 'frag+++%42')
-	
 	"""
 	scheme, authority, path, query, fragment = basic_urisplit(uri)
 	if authority:
@@ -431,8 +431,9 @@ def uri_split_tree(uri):
 	        fragment and fragment or None)
 
 def uri_tree_normalize(uri_tree):
-	"""Transforms an URI tree so that adjacent all-empty fields are
-	coalesced into a single None at parent level.
+	"""
+	Transform an URI tree so that adjacent all-empty fields are coalesced
+	into a single None at parent level.
 	The return value can be used for validation by uri_tree_validate()
 	As a result, no distinction is made between empty and absent fields.
 	It is believed that this limitation is harmless because this is the
@@ -446,11 +447,10 @@ def uri_tree_normalize(uri_tree):
 	probably need to completely rewrite (or at least review and modify)
 	this module, and special care would be taken to distinguish between '',
 	(), None and others everywhere implicit boolean conversion is now
-	performed. The behavior should then be checked in regards to its
+	performed.  The behavior should then be checked in regards to its
 	conformance with RFC 3986, especially (but this would probably not be
 	sufficient) the classification switches of some URI parts according to
 	the content of others.
-	
 	"""
 	scheme, authority, path, query, fragment = uri_tree
 	if authority and (filter(bool, authority) == ()):
@@ -462,7 +462,8 @@ def uri_tree_normalize(uri_tree):
 	        fragment and fragment or None)
 
 def uri_tree_validate(uri_tree):
-	"""Validate a tree splitted URI in format returned by
+	"""
+	Validate a tree splitted URI in format returned by
 	uri_tree_normalize(), raising an exception in case something invalid
 	is detected - that is RFC 3986 is not respected - and returning the
 	unmodified uri_tree otherwise, so this function can be used in an
@@ -474,15 +475,15 @@ def uri_tree_validate(uri_tree):
 	uri_split_tree() - to have a meaningful action.
 	
 	The following deviations from RFC 3986 - and also design choice - are
-	allowed and no exception will be raised in these cases:
+	allowed and no exception will be raised in the following cases.
 	
 	- IPv4address can contain decimal / octal / hexadecimal representation
 	  of individual bytes.
-	- in a similar way h16 in IPv6address can be zero-prepended
-	- no percent encoding validation is performed, so that non pct-encoded
+	- In a similar way h16 in IPv6address can be zero-prepended.
+	- No percent encoding validation is performed, so that non pct-encoded
 	  sequences begining with an '%' will be leaved untouched later by the
-	  percent decoding algorithm
-	- this function will not attempt to classify path as path-absolute
+	  percent decoding algorithm.
+	- This function will not attempt to classify path as path-absolute
 	  according to the presence of a non-empty authority; paths will always
 	  be allowed to begin with '//' because the implicit assertion that
 	  this URI has just been splitted by the Appendix B Regular Expression
@@ -490,7 +491,6 @@ def uri_tree_validate(uri_tree):
 	  the intent of the caller is to join the URI it will take appropriate
 	  measures to guaranty RFC 3986 compliance, by unconditionally or if
 	  necessary adding an empty authority.
-	
 	"""
 	scheme, authority, path, query, fragment = uri_tree
 	if scheme:
@@ -527,7 +527,8 @@ def uri_tree_validate(uri_tree):
 	return uri_tree
 
 def uri_tree_decode(uri_tree):
-	"""Decode a tree splitted URI in format returned by uri_split_tree() or
+	"""
+	Decode a tree splitted URI in format returned by uri_split_tree() or
 	uri_tree_normalize(), the returned value keeping the same layout.
 	
 	user, passwd, path, fragment are percent decoded, and so is host if of
@@ -544,7 +545,6 @@ def uri_tree_decode(uri_tree):
 	 (('query', '   +'), ('', ''), ('', '=='),
 		('a', 'b'), ('   aaa=', ' +-')),
 	 'frag+++B')
-	
 	"""
 	scheme, authority, path, query, fragment = uri_tree
 	if authority:
@@ -559,7 +559,8 @@ def uri_tree_decode(uri_tree):
 	return (scheme, authority, path, query, fragment)
 
 def uri_split_norm_valid_decode(uri):
-	"""Returns uri_tree_decode(
+	"""
+	Return uri_tree_decode(
 	                uri_tree_validate(
 	                        uri_tree_normalize(
 	                                uri_split_tree(uri))))
@@ -571,9 +572,9 @@ def uri_split_norm_valid_decode(uri):
 uri_help_split = uri_split_norm_valid_decode
 
 def uri_tree_precode_check(uri_tree, type_host = HOST_REG_NAME):
-	"""Call this function to validate a raw URI tree before trying to
+	"""
+	Call this function to validate a raw URI tree before trying to
 	encode it.
-	
 	"""
 	scheme, authority, path, query, fragment = uri_tree
 	if scheme:
@@ -592,8 +593,8 @@ def uri_tree_precode_check(uri_tree, type_host = HOST_REG_NAME):
 	return uri_tree
 
 def uri_tree_encode(uri_tree, type_host = HOST_REG_NAME):
-	"""Percent/Query encode a raw URI tree.
-	
+	"""
+	Percent/Query encode a raw URI tree.
 	"""
 	scheme, authority, path, query, fragment = uri_tree
 	if authority:
@@ -622,9 +623,9 @@ def uri_tree_encode(uri_tree, type_host = HOST_REG_NAME):
 	return (scheme, authority, path, query, fragment)
 
 def uri_unsplit_tree(uri_tree):
-	"""Unsplit a coded URI tree, which must also be coalesced by
+	"""
+	Unsplit a coded URI tree, which must also be coalesced by
 	uri_tree_normalize().
-	
 	"""
 	scheme, authority, path, query, fragment = uri_tree
 	if authority:
@@ -671,7 +672,8 @@ def uri_unsplit_tree(uri_tree):
 	return uri
 
 def uri_tree_prechk_code_norm_unsplit(uri_tree):
-	"""Returns uri_unsplit_tree(
+	"""
+	Return uri_unsplit_tree(
 	               uri_tree_normalize(
 	                       uri_tree_encode(
 	                               uri_tree_precode_check(uri_tree))))
