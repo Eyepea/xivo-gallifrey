@@ -55,6 +55,14 @@ def rm_rf(path):
         os.remove(path)
 
 
+def flush_sync_file_object(fo):
+    """
+    Flush internal buffers of @fo, then ask the OS to flush its own buffers.
+    """
+    fo.flush()
+    os.fsync(fo.fileno())
+
+
 def file_writelines_flush_sync(path, lines):
     """
     Fill file at @path with @lines then flush all buffers
@@ -63,8 +71,7 @@ def file_writelines_flush_sync(path, lines):
     fp = file(path, "w")
     try:
         fp.writelines(lines)
-        fp.flush()
-        os.fsync(fp.fileno())
+        flush_sync_file_object(fp)
     finally:
         fp.close()
 
