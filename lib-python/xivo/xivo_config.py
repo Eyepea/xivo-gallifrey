@@ -40,6 +40,7 @@ from xivo import interfaces
 from xivo import except_tb
 from xivo import system
 from xivo import xys
+from xivo import udev
 from xivo.easyslog import *
 
 
@@ -84,20 +85,23 @@ def LoadConfig(filename):
     ])
 
 
-def any_prefixes(ifname):
-    "ifname starts with one of the (few) prefixes in AUTHORIZED_PREFIXES?"
+def netif_managed(ifname):
+    """
+    Return True iff ifname seems to be a name of a network interface that must
+    be managed by this module.
+    """
     return True in [ifname.startswith(x) for x in AUTHORIZED_PREFIXES]
 
 
 def ipv4_from_macaddr(macaddr, logexceptfunc=None):
     """
     Wrapper for network.ipv4_from_macaddr() that sets
-    * ifname_filter to any_prefixes
+    * ifname_filter to netif_managed
     * arping_cmd_list to Pgc['arping_cmd'].strip().split()
     * arping_sleep_us to Pgc['arping_sleep_us']
     """
     return network.ipv4_from_macaddr(macaddr, logexceptfunc=logexceptfunc,
-                                     ifname_filter=any_prefixes,
+                                     ifname_filter=netif_managed,
                                      arping_cmd_list=Pgc['arping_cmd'].strip().split(),
                                      arping_sleep_us=Pgc['arping_sleep_us'])
 
@@ -105,12 +109,12 @@ def ipv4_from_macaddr(macaddr, logexceptfunc=None):
 def macaddr_from_ipv4(macaddr, logexceptfunc=None):
     """
     Wrapper for network.macaddr_from_ipv4() that sets
-    * ifname_filter to any_prefixes
+    * ifname_filter to netif_managed
     * arping_cmd_list to Pgc['arping_cmd'].strip().split()
     * arping_sleep_us to Pgc['arping_sleep_us']
     """
     return network.macaddr_from_ipv4(macaddr, logexceptfunc=logexceptfunc,
-                                     ifname_filter=any_prefixes,
+                                     ifname_filter=netif_managed,
                                      arping_cmd_list=Pgc['arping_cmd'].strip().split(),
                                      arping_sleep_us=Pgc['arping_sleep_us'])
 
@@ -568,7 +572,7 @@ def plausible_configuration(conf, schema, trace):
         ok, other = ip_in_network(network.parse_ipv4(addresses['router']), net, netmask)
         if not ok:
             trace.err("router must be in network %s/%s but seems to be in %s/%s" %
-                      (network.unparse_ipv4(net), network.unparse_ipv4(netmask), network.unparse_ipv4(other), network.unparse_ipv4(netmask)))
+                      (network.format_ipv4(net), network.format_ipv4(netmask), network.format_ipv4(other), network.format_ipv4(netmask)))
             return False
     # check that any range is in the network and with min <= max
     for range_field in 'voipRange', 'alienRange':
@@ -578,7 +582,7 @@ def plausible_configuration(conf, schema, trace):
         for ip in ip_range:
             ok, other = ip_in_network(ip, net, netmask)
             if not ok:
-                trace.err("IP %s is not in network %s/%s" % (network.unparse_ipv4(ip), network.unparse_ipv4(net), network.unparse_ipv4(netmask)))
+                trace.err("IP %s is not in network %s/%s" % (network.format_ipv4(ip), network.format_ipv4(net), network.format_ipv4(netmask)))
                 return False
         if not (ip_range[0] <= ip_range[1]):
             trace.err("Invalid IP range: " + `tuple(addresses[range_field])`)
@@ -600,7 +604,7 @@ def plausible_configuration(conf, schema, trace):
     for rang in all_ranges:
         for addr in fixed_addresses:
             if rang[0] <= addr <= rang[1]:
-                trace.err("fixed address %r detected in DHCP range %r" % (network.unparse_ipv4(addr), tuple(rang)))
+                trace.err("fixed address %r detected in DHCP range %r" % (network.format_ipv4(addr), tuple(rang)))
                 return False
     
     return True
@@ -756,7 +760,7 @@ def generate_interfaces(old_interfaces_lines, conf, trace=trace_null):
         Is ifname not handled either because it does not start with a
         known prefix, or because it is explicitely reserved
         """
-        return (not any_prefixes(ifname)) or \
+        return (not netif_managed(ifname)) or \
                interfaces.ifname_in_base_full_mapsymbs(ifname, rsvd_base, rsvd_full, rsvd_mapping_dest)
     
     KEPT = object()
@@ -901,12 +905,12 @@ def generate_dhcpd_conf(conf, trace=trace_null):
         for line in phone_class.get_dhcp_classes_and_sub(addresses):
             yield line
     yield '\n'
-    yield 'subnet %s netmask %s {\n' % (network.unparse_ipv4(network_from_static(ipConfVoip)), ipConfVoip['netmask'])
+    yield 'subnet %s netmask %s {\n' % (network.format_ipv4(network_from_static(ipConfVoip)), ipConfVoip['netmask'])
     yield '\n'
     yield '    one-lease-per-client on;\n'
     yield '\n'
     yield '    option subnet-mask %s;\n' % ipConfVoip['netmask']
-    yield '    option broadcast-address %s;\n' % network.unparse_ipv4(broadcast_from_static(ipConfVoip))
+    yield '    option broadcast-address %s;\n' % network.format_ipv4(broadcast_from_static(ipConfVoip))
     yield '    option ip-forwarding off;\n'
     if 'router' in addresses:
         yield '    option routers %s;\n' % addresses['router']
@@ -1179,7 +1183,7 @@ def generate_system_configuration(to_gen, prev_gen, current_xivo_conf, trace=tra
         old_interfaces_lines = None
     
     system.file_writelines_flush_sync(os.path.join(to_gen, DHCPD_CONF_FILE),
-                                     generate_dhcpd_conf(config, trace))
+                                      generate_dhcpd_conf(config, trace))
 
 
 def transaction_system_configuration(trace=trace_null):
@@ -1232,7 +1236,7 @@ def aa_lst_npst_phy(conf, plugged_by_phy):
         """
         Is phy both handled (its name prefix is known) and in the "void"
         """
-        return any_prefixes(phy) and conf['netIfaces'].get(phy, 'void') == 'void'
+        return netif_managed(phy) and conf['netIfaces'].get(phy, 'void') == 'void'
     
     phys = network.get_filtered_phys(phy_handled_relate_void)
     return sorted(((not plugged_by_phy.get(phy, False), phy) for phy in phys), cmp=cmp_bool_lexdec)
@@ -1329,7 +1333,7 @@ def autoattrib_conf(conf):
     """
     conf = copy.deepcopy(conf)
     
-    plugged_by_phy = gen_plugged_by_phy(network.get_filtered_phys(any_prefixes))
+    plugged_by_phy = gen_plugged_by_phy(network.get_filtered_phys(netif_managed))
     
     # auto assign vlan set to physical interface
     iter_vsTag = iter(aa_lst_vsTag(conf))
@@ -1365,9 +1369,11 @@ def autoattrib_conf(conf):
     return conf
 
 
-def start_transaction(trace=trace_null):
+def start_do_transaction(trace=trace_null):
     """
-    XXX
+    The simplified configuration is ready in the temporary store directory.
+    This function starts the transaction by moving the temporary directory to
+    the new directory, and the calls transaction_system_configuration().
     """
     system.sync_no_oserror(trace)
     os.rename(os.path.join(STORE_BASE, STORE_TMP), os.path.join(STORE_BASE, STORE_NEW))
@@ -1385,7 +1391,31 @@ def autoattrib(trace=trace_null):
     if aaconf == config:
         return
     save_configuration(aaconf, system.file_w_create_directories(os.path.join(STORE_BASE, STORE_TMP, NETWORK_CONFIG_FILE)), trace)
-    start_transaction(trace)
+    start_do_transaction(trace)
+
+
+def netif_target_name(ifname):
+    """
+    Return True iff ifname can be a target name for a network interface.
+    """
+    if not (netif_managed(ifname) and network.is_phy_if(ifname)):
+        return False
+    parts = network.split_alpha_num(ifname)
+    if len(parts) != 2:
+        return False
+    if str(int(parts[1])) != parts[1]:
+        return False
+    return True
+
+
+def rename_ethernet_interface(old_name, new_name):
+    """
+    XXX
+    """
+    if not netif_target_name(new_name):
+        raise ValueError, "Invalid target interface name %r" % new_name
+    udev_repl = [({'NAME': ['=', old_name]}, {'NAME': ['=', new_name]})]
+    udev.replace_simple_in_file(udev.PERSISTENT_NET_RULES_FILE, udev_repl, trace)
 
 
 __all__ = (

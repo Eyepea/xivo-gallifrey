@@ -76,6 +76,6 @@ def file_w_create_directories(filepath):
     file object.
     """
     dirname = os.path.dirname(filepath)
-    if dirname and not os.path.isdir(dirname):
+    if dirname and dirname != os.path.curdir and not os.path.isdir(dirname):
         os.makedirs(dirname)
     return file(filepath, "w")

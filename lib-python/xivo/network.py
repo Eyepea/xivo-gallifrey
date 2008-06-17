@@ -53,27 +53,47 @@ def to_int_if_possible(s):
     except ValueError:
         return s
 
+
+def split_alpha_num(s):
+    """
+    Split the non decimal and the decimal parts of s.
+    Don't interpret decimal parts as integers, keep them as string.
+
+    Exemples:
+    
+    >>> split_alpha_num('wazza42sub10')
+    ('wazza', '42', 'sub', '10')
+    >>> split_alpha_num('42sub010')
+    ('', '42', 'sub', '010')
+    >>> split_alpha_num('a42sub')
+    ('a', '42', 'sub')
+    >>> split_alpha_num('')
+    ('',)
+    """
+    a_n_splitted = DECIMAL_SPLIT(s)
+    if len(a_n_splitted) > 1 and a_n_splitted[-1] == '':
+        strs = a_n_splitted[:-1]
+    else:
+        strs = a_n_splitted
+    return tuple(strs)
+
+
 def split_lexdec(lexdec_str):
     """
     Split the non decimal and the decimal parts of lexdec_str
     
     Exemples:
     
-    >>> split_iface_name('wazza42sub10')
+    >>> split_lexdec('wazza42sub10')
     ('wazza', 42, 'sub', 10)
-    >>> split_iface_name('42sub10')
+    >>> split_lexdec('42sub010')
     ('', 42, 'sub', 10)
-    >>> split_iface_name('a42sub')
+    >>> split_lexdec('a42sub')
     ('a', 42, 'sub')
-    >>> split_iface_name('')
+    >>> split_lexdec('')
     ('',)
     """
-    lexdec_resplitted = DECIMAL_SPLIT(lexdec_str)
-    if len(lexdec_resplitted) > 1 and lexdec_resplitted[-1] == '':
-        strs = lexdec_resplitted[:-1]
-    else:
-        strs = lexdec_resplitted
-    return tuple(map(to_int_if_possible, strs))
+    return tuple(map(to_int_if_possible, split_alpha_num(lexdec_str)))
 
 
 def unsplit_lexdec(lexdec_seq):
@@ -119,12 +139,20 @@ def get_filtered_ifnames(f=lambda x: True):
     return filter(f, get_linux_netdev_list())
 
 
+def is_phy_if(ifname):
+    """
+    Return True iff ifname seems to be the name of a physical interface
+    (not a tagged VLAN).
+    """
+    return '.' not in ifname
+
+
 def get_filtered_phys(f=lambda x: True):
     """
     Return the filtered list of network interfaces which are not VLANs
     (the interface name does not contain a '.')
     """
-    return [dev for dev in get_filtered_ifnames(f) if not '.' in dev]
+    return [dev for dev in get_filtered_ifnames(f) if is_phy_if(dev)]
 
 
 def is_interface_plugged(ifname):
@@ -226,7 +254,7 @@ def parse_ipv4(straddr):
     return tuple(map(int, straddr.split('.', 3)))
 
 
-def unparse_ipv4(tupaddr):
+def format_ipv4(tupaddr):
     """
     Return a string repr of an IPv4 internal repr
     * tupaddr is an IPv4 address stored as a tuple of 4 ints
@@ -294,11 +322,10 @@ def plausible_search_domain(search_domain):
                 for label in search_domain.split('.')))
 
 
-__all__ = (
-    'split_lexdec', 'unsplit_lexdec', 'cmp_lexdec', 'sorted_lst_lexdec',
-    'get_filtered_ifnames', 'get_filtered_phys', 'is_interface_plugged',
-    'normalize_ipv4_address', 'is_ipv4_address_valid',
-    'normalize_mac_address', 'ipv4_from_macaddr', 'macaddr_from_ipv4',
-    'parse_ipv4', 'unparse_ipv4', 'mask_ipv4', 'or_ipv4', 'netmask_invert',
-    'plausible_netmask', 'plausible_search_domain',
-)
+def _test():
+	import doctest
+	doctest.testmod()
+
+
+if __name__ == "__main__":
+	_test()
