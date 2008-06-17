@@ -305,14 +305,21 @@ def parse_lines(lines, trace=trace_null):
     return rules    
 
 
+def parse_file_nolock(rules_file, trace=trace_null):
+    """
+    Parse the @rules_file with parse_lines()
+    """
+    return parse_lines(file(rules_file), trace)
+
+
 def parse_file(rules_file, trace=trace_null):
     """
-    Lock @rules_file, parse it with parse_lines(), and unlock it.
-    Return the result of parse_lines().
+    Lock @rules_file, parse it with parse_file_nolock(), and unlock it.
+    Return the result of parse_file_nolock().
     """
     lock_rules_file(rules_file) # RW lock, anybody? :)
     try:
-        return parse_lines(file(rules_file), trace)
+        return parse_file_nolock(rules_file, trace)
     finally:
         unlock_rules_file(rules_file)
 
@@ -417,13 +424,21 @@ def replace_simple(lines, match_repl_lst, trace=trace_null):
         yield replace_simple_op_values(rule_recons[1], repl) + "\n"
 
 
+def replace_simple_in_file_nolock(rules_file, match_repl_lst, trace=trace_null):
+    """
+    Change the lines of @rules_file using replace_simple()
+    """
+    system.file_writelines_flush_sync(rules_file + ".tmp", replace_simple(file(rules_file), match_repl_lst, trace))
+    os.rename(rules_file + ".tmp", rules_file)
+
+
 def replace_simple_in_file(rules_file, match_repl_lst, trace=trace_null):
     """
-    Lock @rules_file, change its lines using replace_simple(), and unlock it.
+    Lock @rules_file, modify it using replace_simple_in_file_nolock(),
+    and unlock it.
     """
     lock_rules_file(rules_file)
     try:
-        system.file_writelines_flush_sync(rules_file + ".tmp", replace_simple(file(rules_file), match_repl_lst, trace))
-        os.rename(rules_file + ".tmp", rules_file)
+        replace_simple_in_file_nolock(rules_file, match_repl_lst, trace)
     finally:
         unlock_rules_file(rules_file)
