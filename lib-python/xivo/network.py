@@ -2,7 +2,7 @@
 
 Copyright (C) 2007, 2008  Proformatique
 
-WARNING: Linux specific module, needs /sys/
+WARNING: Linux specific module, needs /sys/ - also Debian Etch specific module
 """
 
 __version__ = "$Revision$ $Date$"
@@ -29,9 +29,11 @@ import os
 import os.path
 import subprocess
 
+from xivo.UpAllAny import all
+
 from xivo import except_tb
 from xivo import StreamedLines
-from xivo import UpAllAny
+from xivo import trace_null
 
 
 # CONFIG
@@ -40,6 +42,11 @@ SYS_CLASS_NET = "/sys/class/net"
 
 # /sys/class/net/<ifname>/carrier tells us if the interface if plugged
 CARRIER = "carrier"
+
+IFPLUGD = "/usr/sbin/ifplugd"
+IFPLUGD_INIT = "/etc/init.d/ifplugd"
+
+IFDOWN = "/sbin/ifdown"
 
 
 # CODE
@@ -240,10 +247,10 @@ def macaddr_from_ipv4(ipv4, logexceptfunc=None, ifname_filter=lambda x: True, ar
     WARNING: this is of course ipv4_from_macaddr() implementation dependent
     """
     return ipv4_from_macaddr(ipv4,
-                             logexceptfunc = logexceptfunc,
-                             ifname_filter = ifname_filter,
-                             arping_cmd_list = arping_cmd_list,
-                             arping_sleep_us = arping_sleep_us)
+                             logexceptfunc=logexceptfunc,
+                             ifname_filter=ifname_filter,
+                             arping_cmd_list=arping_cmd_list,
+                             arping_sleep_us=arping_sleep_us)
 
 
 def parse_ipv4(straddr):
@@ -260,7 +267,6 @@ def format_ipv4(tupaddr):
     * tupaddr is an IPv4 address stored as a tuple of 4 ints
     """
     return '.'.join(map(str, tupaddr))
-
 
 
 def mask_ipv4(mask, addr):
@@ -305,7 +311,7 @@ def plausible_netmask(addr):
 
 
 # WARNING: the following function does not test the length which must be <= 63
-domain_label_ok = re.compile(r'[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$').match
+DomainLabelOk = re.compile(r'[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$').match
 
 def plausible_search_domain(search_domain):
     """
@@ -318,14 +324,58 @@ def plausible_search_domain(search_domain):
     # char max.  We remove 2 char so that a one letter label requested and
     # prepended to the search domain results in a FQDN that is not too long
     return search_domain and len(search_domain) <= 251 and \
-           all((((len(label) <= 63) and domain_label_ok(label))
+           all((((len(label) <= 63) and DomainLabelOk(label))
                 for label in search_domain.split('.')))
 
 
+class NetworkOpError(Exception):
+    "Error raised on network related operation failures."
+    pass
+
+
+def force_shutdown(iface, trace=trace_null):
+    """
+    Shutdown a network interface and removes all VLAN 
+    
+    Unlike /etc/init.d/networking stop, it won't test for mounted network
+    filesystems or other resources.  It just shutdown the given interface,
+    right when called.
+    
+    WARNING: This function won't work properly if "ifplugd" is not being used
+    on the system.
+    
+    BUGBUG: will not interact cleanly with VLAN interfaces
+    """
+    # NOTE: The order in which ifplugd and ifdown are called is very important.
+    # If you invert the order, the interface will probably not be completely
+    # down when the function returns.
+    
+    try:
+        status = subprocess.call([IFPLUGD, "-i", iface, "-k"], close_fds=True)
+    except OSError:
+        except_tb.log_exception(trace.err)
+        raise NetworkOpError("could not invocate ifplugd to kill its %r instance" % iface)
+    
+    if status:
+        if status == 6:
+            trace.warning("%r ifplugd instance seems to have already been stopped" % iface)
+        else:
+            raise NetworkOpError("ifplugd miserably failed while trying to kill instance %r" % iface)
+    
+    try:
+        status = subprocess.call([IFDOWN, iface], close_fds=True)
+    except OSError:
+        except_tb.log_exception(trace.err)
+        raise NetworkOpError("could not invocate ifdown to shutdown interface %r" % iface)
+    
+    if status:
+        raise NetworkOpError("ifdown miserably failed to shutdown the %r network interface" % iface)
+
+
 def _test():
-	import doctest
-	doctest.testmod()
+    import doctest
+    doctest.testmod()
 
 
 if __name__ == "__main__":
-	_test()
+    _test()
