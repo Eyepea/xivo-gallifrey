@@ -126,13 +126,13 @@ def raw_2_contd_coockedPart(rawl):
 	else:
 		return contd, rawl[:-has_newline-contd]
 
-match_leading_spaces = re.compile(r'(\s)*').match
+MatchLeadingSpaces = re.compile(r'(\s)*').match
 def leading_spaces(s):
-	return match_leading_spaces(s).group()
+	return MatchLeadingSpaces(s).group()
 
-search_trailing_spaces = re.compile(r'(\s)*$').search
+SearchTrailingSpaces = re.compile(r'(\s)*$').search
 def trailing_spaces(s):
-	return search_trailing_spaces(s).group()
+	return SearchTrailingSpaces(s).group()
 
 class EniCookLineRecipe(object):
 
@@ -259,7 +259,7 @@ def parse(lines, warnfunc=warn):
 			try:
 				line = itl.next()
 			except StopIteration:
-				warnfunc("continued line at end of file - \"%s\"" % line.strip())
+				warnfunc("continued line at end of file - %r" % line.strip())
 				break
 		
 		cooked_line = ''.join(cooked_line_split).strip()
@@ -289,7 +289,7 @@ def parse(lines, warnfunc=warn):
 		if firstword == "mapping":
 			ifname = None
 			if len(words) < 2:
-				warnfunc("mapping stanza with no interface name - \"%s\"" % cooked_line)
+				warnfunc("mapping stanza with no interface name - %r" % cooked_line)
 			else:
 				ifname = words[1]
 			new_block = EniBlockMapping(ifname)
@@ -297,14 +297,14 @@ def parse(lines, warnfunc=warn):
 		elif firstword == "iface":
 			ifname = None
 			if len(words) < 2:
-				warnfunc("iface stanza with no interface name - \"%s\"" % cooked_line)
+				warnfunc("iface stanza with no interface name - %r" % cooked_line)
 			else:
 				ifname = words[1]
 			new_block = EniBlockIface(ifname)
 			current_semantic_block = new_block
 		elif firstword.startswith("allow-") or firstword == "auto":
 			if len(words) < 2:
-				warnfunc("auto/allow stanza but no interface names - \"%s\"" % cooked_line)
+				warnfunc("auto/allow stanza but no interface names - %r" % cooked_line)
 			new_block = EniBlockAllow(firstword, words[1:])
 			current_semantic_block = None
 		elif not current_semantic_block:
