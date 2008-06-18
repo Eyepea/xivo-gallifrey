@@ -223,10 +223,10 @@ def parse(lines, warnfunc=warn):
 	EniBlockIface, EniBlockAllow, EniBlockAllow.
 	"""
 	block_list = []
-
+	
 	current_block = None
 	current_semantic_block = None
-
+	
 	current_raw = []
 	current_raw_iscomment = []
 	start_of_last_comment = 0
@@ -247,7 +247,7 @@ def parse(lines, warnfunc=warn):
 		cooked_line_split = []	
 		while True:
 			contd, coocked_part = raw_2_contd_coockedPart(line)
-
+			
 			cooked_line_split.append(coocked_part)
 			
 			current_raw.append(line)
