@@ -18,8 +18,12 @@ __license__ = """
 """
 
 import os
+import subprocess
 
 from xivo_agid import agid
+
+TIFF2PDF = "/usr/bin/tiff2pdf"
+MUTT = "/usr/bin/mutt"
 
 class FaxToMailException(Exception): pass
 
@@ -42,13 +46,23 @@ def faxtomail(handler, agi, cursor, args):
 			raise FaxToMailException("No email address")
 
 		# TODO fetch tiff2pdf path from configuration file.
-		status = os.system("/usr/bin/tiff2pdf -o '%s' '%s'" % (filepdf, filename))
+		try:
+			status = subprocess.call([TIFF2PDF, "-o", filepdf, filename], close_fds=True)
+		except OSError:
+			status = 1
 
 		if status:
 			raise FaxToMailException("Unable to convert fax to PDF")
 
 		# TODO fetch Mutt path from configuration file.
-		status = os.system("echo \"Un nouveau fax est arrive. Il est joint dans ce mail.\n\nCordialement,\nService IPBX\" | /usr/bin/mutt -s \"Reception de FAX vers %s\" -a %s %s" % (dstnum, filepdf, email))
+		try:
+			mutt = subprocess.Popen([ MUTT, "-s", "Reception de FAX vers %s" % dstnum, "-a", filepdf, email ],
+			                        stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+			                        close_fds=True)
+			mutt.communicate("Un nouveau fax est arrive. Il est joint dans ce mail.\n\nCordialement,\nService IPBX\n")
+			status = mutt.wait()
+		except OSError:
+			status = 1
 
 		if status:
 			raise FaxToMailException("Unable to send fax as an email")
