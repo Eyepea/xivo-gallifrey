@@ -308,7 +308,7 @@ def parse(lines, warnfunc=warn):
 			new_block = EniBlockAllow(firstword, words[1:])
 			current_semantic_block = None
 		elif not current_semantic_block:
-			warnfunc("spurious option line - \"%s\"" % cooked_line)
+			warnfunc("spurious option line - %r" % cooked_line)
 			new_block = EniBlockUnknown()
 			current_semantic_block = None
 		
@@ -408,7 +408,7 @@ def ifname_in_base_full_mapsymbs(ifname, base, full, mapsymbs):
 def allowed(block_list, warnfunc=warn):
 	"""
 	This function calculates and returns a dictionary in which each key is
-	the "allow keyword" (without the 'allow-' part that is stored in
+	the "allow" keyword (without the 'allow-' part that is stored in
 	interfaces(5) ) and the corresponding value is a set of allowed
 	interfaces for this keyword.
 	As a side effect, this function calls warnfunc() (the default of which
@@ -427,9 +427,9 @@ def allowed(block_list, warnfunc=warn):
 			else:
 				allow[block.allowup].add(ifallowed)
 	for if_allowup in multiple:
-		warnfunc("\"%s\" is allowed multiple times for \"%s\"" % if_allowup)
+		warnfunc("%r is allowed multiple times for %r" % if_allowup)
 	for key, val in allow.items():
 		if not val:
-			warnfunc("\"%s\" authorization is empty" % key)
+			warnfunc("%r authorization is empty" % key)
 			del allow[key]
 	return allow
