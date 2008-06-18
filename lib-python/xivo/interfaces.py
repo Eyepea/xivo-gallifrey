@@ -135,9 +135,9 @@ def trailing_spaces(s):
 	return SearchTrailingSpaces(s).group()
 
 class EniCookLineRecipe(object):
-
+	
 	# NOTE: only on 'allow-' / 'auto' stanzas
-
+	
 	__slots__ = (
 		'first_raw_line',
 		'nb_raw_lines',
@@ -146,7 +146,7 @@ class EniCookLineRecipe(object):
 		'list_cooked_splitter',
 		'cooked_line',
 	)
-
+	
 	def __init__(self, raw_lines, warnfunc=warn):
 		self.first_raw_line = None
 		self.nb_raw_lines = 0
