@@ -18,40 +18,12 @@ __license__ = """
 """
 
 from xivo_agid import agid
+from xivo_agid import objects
 
-def forgetimefield(start, end):
-	if start == '*':
-		return '*'
-	else:
-		if end in (None, ''):
-			return '%s' % start
-		else:
-			return '%s-%s' % (start, end)
+def schedule(agi, cursor, args):
+	schedule = objects.Schedule(int(args[0]))
 
-def forgetime(res):
-	return ','.join((
-		forgetimefield(res['timebeg'], res['timeend']),
-		forgetimefield(res['daynamebeg'], res['daynameend']),
-		forgetimefield(res['daynumbeg'], res['daynumend']),
-		forgetimefield(res['monthbeg'], res['monthend']),
-	))
-
-def schedule(handler, agi, cursor, args):
-	scheduleid = args[0]
-
-	cursor.query("SELECT ${columns} FROM schedule "
-		     "WHERE id = %s "
-		     "AND linked = 1 "
-		     "AND commented = 0",
-		     ('timebeg', 'timeend', 'daynamebeg', 'daynameend', 'daynumbeg', 'daynumend', 'monthbeg', 'monthend', 'typetrue', 'typevaltrue', 'applicationvaltrue', 'typefalse', 'typevalfalse', 'applicationvalfalse'),
-		     (scheduleid,))
-	res = cursor.fetchone()
-
-	if not res:
-		agi.dp_break("Invalid schedule ID %r" % scheduleid)
-
-	agi.set_variable("XIVO_SCHEDULE_TIMERANGE", forgetime(res))
-	handler.set_fwd_vars(res['typetrue'], res['typevaltrue'], res['applicationvaltrue'], 'XIVO_SCHEDULE_TYPETRUE', 'XIVO_SCHEDULE_TYPEVAL1TRUE', 'XIVO_SCHEDULE_TYPEVAL2TRUE')
-	handler.set_fwd_vars(res['typefalse'], res['typevalfalse'], res['applicationvalfalse'], 'XIVO_SCHEDULE_TYPEFALSE', 'XIVO_SCHEDULE_TYPEVAL1FALSE', 'XIVO_SCHEDULE_TYPEVAL2FALSE')
+	agi.set_variable("XIVO_SCHEDULE_TIMERANGE", schedule.timerange)
+	schedule.set_dial_actions()
 
 agid.register(schedule)

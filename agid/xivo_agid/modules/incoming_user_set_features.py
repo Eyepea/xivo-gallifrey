@@ -20,220 +20,122 @@ __license__ = """
 import time
 
 from xivo_agid import agid
-from xivo_agid import bsfilter
+from xivo_agid import objects
 
-def incoming_user_set_features(handler, agi, cursor, args):
+def incoming_user_set_features(agi, cursor, args):
 	srcnum = agi.get_variable('REAL_SRCNUM')
 	dstnum = agi.get_variable('REAL_DSTNUM')
 	context = agi.get_variable('REAL_CONTEXT')
 	zone = agi.get_variable('REAL_CALLTYPE')
-	bypass = agi.get_variable('XIVO_BSFILTER_BYPASS')
+	bypass_filter = agi.get_variable('XIVO_BSFILTER_BYPASS')
 
-	# NOTE: keep in sync with below
-	columns = ('id', 'protocol' , 'protocolid', 'name', 'ringseconds', 'simultcalls', 'enablevoicemail', 'voicemailid', 'enablexfer', 'enableautomon', 'callrecord', 'callfilter', 'enablednd', 'enableunc', 'destunc', 'enablerna', 'destrna', 'enablebusy', 'destbusy', 'musiconhold', 'bsfilter')
-	cursor.query("SELECT ${columns} FROM userfeatures "
-		     "WHERE number = %s "
-		     "AND context = %s "
-		     "AND internal = 0 "
-		     "AND commented = 0",
-		     columns,
-		     (dstnum, context))
-	res = cursor.fetchone()
-
-	if not res:
-		agi.dp_break("Unknown number '%s'" % dstnum)
-
-	# don't use exec to allow statical analysis
-	userfeaturesid = res['id']
-	protocol = res['protocol']
-	protocolid = res['protocolid']
-	name = res['name']
-	ringseconds = res['ringseconds']
-	simultcalls = res['simultcalls']
-	enablevoicemail = res['enablevoicemail']
-	voicemailid = res['voicemailid']
-	enablexfer = res['enablexfer']
-	enableautomon = res['enableautomon']
-	callrecord = res['callrecord']
-	callfilter = res['callfilter']
-	enablednd = res['enablednd']
-	enableunc = res['enableunc']
-	destunc = res['destunc']
-	enablerna = res['enablerna']
-	destrna = res['destrna']
-	enablebusy = res['enablebusy']
-	destbusy = res['destbusy']
-	musiconhold = res['musiconhold']
-	bsfilter_field = res['bsfilter']
+	feature_list = objects.FeatureList(agi, cursor)
+	user = objects.User(agi, cursor, feature_list, number = dstnum, context = context)
+	filter = user.filter
 
 	# Special case. If a boss-secretary filter is set, the code will prematurely
-	# exit because the other normally set variables become useless.
-	if not bypass and bsfilter_field == 'boss':
-		apply_filter = False
+	# exit because the other normally set variables are skipped.
+	# TODO: filters (well, there are only boss secretary filters for now) must
+	# be redesigned from the ground.
+	if not bypass and filter and filter.active:
+		zone_applies = filter.check_zone(zone)
+		secretary = filter.get_secretary(srcnum)
 
-		try:
-			bsf = bsfilter.BSFilter(agi, cursor, dstnum, context)
+		if zone_applies and not secretary:
+			if filter.mode in ("bossfirst-simult", "bossfirst-serial", "all"):
+				agi.set_variable('XIVO_CALLFILTER_BOSS_INTERFACE', filter.boss.interface)
+				agi.set_variable('XIVO_CALLFILTER_BOSS_TIMEOUT', filter.boss.ringseconds)
 
-			if not bsf.active:
-				raise LookupError
-
-			zone_applies = bsf.check_zone(zone)
-			secretary = bsf.get_secretary(srcnum)
-
-			if zone_applies and not secretary:
-				apply_filter = True
-		except LookupError:
-			pass
-
-		if apply_filter:
-			if bsf.mode in ("bossfirst-simult", "secretary-simult", "all"):
-				if bsf.mode in ("bossfirst-simult", "all"):
-					agi.set_variable('XIVO_BSFILTER_BOSS_INTERFACE', bsf.boss.interface)
-					agi.set_variable('XIVO_BSFILTER_BOSS_TIMEOUT', bsf.boss.ringseconds)
-
-				interface = '&'.join(secretary.interface for secretary in bsf.secretaries if secretary.active)
-				agi.set_variable('XIVO_BSFILTER_INTERFACE', interface)
-				agi.set_variable('XIVO_BSFILTER_TIMEOUT', bsf.ringseconds)
-
-			elif bsf.mode in ("bossfirst-serial", "secretary-serial"):
-				if bsf.mode == "bossfirst-serial":
-					agi.set_variable('XIVO_BSFILTER_BOSS_INTERFACE', bsf.boss.interface)
-					agi.set_variable('XIVO_BSFILTER_BOSS_TIMEOUT', bsf.boss.ringseconds)
-
+			if filter.mode in ("bossfirst-simult", "secretary-simult", "all"):
+				interface = '&'.join(secretary.interface for secretary in filter.secretaries if secretary.active)
+				agi.set_variable('XIVO_CALLFILTER_INTERFACE', interface)
+				agi.set_variable('XIVO_CALLFILTER_TIMEOUT', filter.ringseconds)
+			elif filter.mode in ("bossfirst-serial", "secretary-serial"):
 				index = 0
 
-				for secretary in bsf.secretaries:
+				for secretary in filter.secretaries:
 					if secretary.active:
-						agi.set_variable('XIVO_BSFILTER_SECRETARY%d_INTERFACE' % index, secretary.interface)
-						agi.set_variable('XIVO_BSFILTER_SECRETARY%d_TIMEOUT' % index, secretary.ringseconds)
+						agi.set_variable('XIVO_CALLFILTER_SECRETARY%d_INTERFACE' % index, secretary.interface)
+						agi.set_variable('XIVO_CALLFILTER_SECRETARY%d_TIMEOUT' % index, secretary.ringseconds)
 						index += 1
 
-			handler.ds_set_fwd_vars(bsf.id, 'noanswer', 'callfilter', 'XIVO_BSFILTER_FWD_TYPERNA', 'XIVO_BSFILTER_FWD_TYPEVAL1RNA', 'XIVO_BSFILTER_FWD_TYPEVAL2RNA')
+			objects.DialAction(agi, cursor, 'noanswer', 'callfilter', filter.id).set_variables()
 
-			if bsf.callerdisplay:
-				agi.set_variable('CALLERID(name)', "%s - %s" % (bsf.callerdisplay, agi.get_variable("CALLERID(name)")))
+			if filter.callerdisplay:
+				agi.set_variable('CALLERID(name)', "%s - %s" % (filter.callerdisplay, agi.get_variable("CALLERID(name)")))
 
-			agi.set_variable('XIVO_BSFILTER_MODE', bsf.mode)
-			agi.set_variable('XIVO_BSFILTER', '1')
+			agi.set_variable('XIVO_CALLFILTER_MODE', filter.mode)
+			agi.set_variable('XIVO_CALLFILTER', '1')
 			return
 
-	if protocol == "iax":
-		interface = "IAX2/" + name
-	elif protocol == "sip":
-		interface = "SIP/" + name
-	elif protocol == "custom":
-		cursor.query("SELECT ${columns} FROM usercustom "
-			     "WHERE id = %s "
-			     "AND commented = 0 "
-			     "AND category = 'user'",
-			     ('interface',),
-			     (protocolid,))
-		res = cursor.fetchone()
+	options = ""
 
-		if not res:
-			agi.dp_break("Database inconsistency: unable to find custom user (name = '%s', context = '%s')" % (name, context))
+	if user.enablexfer:
+		options += "t"
 
-		interface = res['interface']
-	else:
-		agi.dp_break("Unknown protocol '%s'" % protocol)
+	if user.enableautomon:
+		options += "w"
 
-	# The extension table contains some rows which are used to activate some
-	# services like redirections or voicemail.
-	cursor.query("SELECT ${columns} FROM extensions "
-		     "WHERE name IN ('fwdunc', 'fwdrna', 'fwdbusy', 'enablevm', 'incallfilter', 'incallrec', 'enablednd') "
-		     "AND commented = 0",
-		     ('name',))
-	res = cursor.fetchall()
+	if feature_list.incallfilter and user.callfilter:
+		options += "p"
 
-	features_list = [row['name'] for row in res]
+	agi.set_variable('XIVO_CALLOPTIONS', options)
+	agi.set_variable('XIVO_INTERFACE', user.interface)
+	agi.set_variable('XIVO_SIMULTCALLS', user.simultcalls)
 
-	calloptions = ''
+	if user.ringseconds > 0:
+		agi.set_variable('XIVO_RINGSECONDS', user.ringseconds)
 
-	if enablexfer == 1:
-		calloptions += "t"
-
-	if enableautomon == 1:
-		calloptions += "w"
-
-	if 'incallfilter' in features_list and callfilter == 1:
-		calloptions += "p"
-
-	agi.set_variable('XIVO_INTERFACE', interface)
-	agi.set_variable('XIVO_SIMULTCALLS', simultcalls)
-
-	if ringseconds > 0:
-		agi.set_variable('XIVO_RINGSECONDS', ringseconds)
-
-	if 'enablednd' in features_list:
-		agi.set_variable('XIVO_ENABLEDND', enablednd)
+	if feature_list.enablednd:
+		agi.set_variable('XIVO_ENABLEDND', user.enablednd)
 	else:
 		agi.set_variable('XIVO_ENABLEDND', 0)
 
-	if 'enablevm' in features_list:
-		agi.set_variable('XIVO_ENABLEVOICEMAIL', enablevoicemail)
+	if feature_list.enablevm:
+		agi.set_variable('XIVO_ENABLEVOICEMAIL', user.enablevoicemail)
 
-		if enablevoicemail:
-			cursor.query("SELECT ${columns} FROM voicemail "
-				     "WHERE uniqueid = %s "
-				     "AND context = %s "
-				     "AND commented = 0",
-				     ('email',),
-				     (voicemailid, context))
-			res = cursor.fetchone()
-
-			if res and res['email']:
-				agi.set_variable('XIVO_USEREMAIL', res['email'])
+		if user.vmbox and user.vmbox.email:
+			agi.set_variable('XIVO_USEREMAIL', user.vmbox.email)
 	else:
 		agi.set_variable('XIVO_ENABLEVOICEMAIL', 0)
 
-	agi.set_variable('XIVO_CALLOPTIONS', calloptions)
+	if feature_list.fwdunc and user.enableunc:
+		agi.set_variable('XIVO_ENABLEUNC', 1)
+		agi.set_variable('XIVO_FWD_USER_UNC_ACTION', 'extension')
+		agi.set_variable('XIVO_FWD_USER_UNC_ACTIONARG1', user.destunc)
+		agi.set_variable('XIVO_FWD_USER_UNC_ACTIONARG2', context)
 
-	if 'fwdunc' in features_list:
-		agi.set_variable('XIVO_ENABLEUNC', enableunc)
+	if feature_list.fwdbusy:
+		agi.set_variable('XIVO_ENABLEBUSY', user.enablebusy)
 
-		if enableunc == 1:
-			# The redirection isn't actually meant to target a user, but
-			# the current implementation allows the use of this type for
-			# any kind of number.
-			agi.set_variable('XIVO_FWD_TYPEUNC', 'user')
-			agi.set_variable('XIVO_FWD_TYPEVAL1UNC', destunc)
-			agi.set_variable('XIVO_FWD_TYPEVAL2UNC', context)
-	else:
-		agi.set_variable('XIVO_ENABLEUNC', 0)
-
-	if 'fwdbusy' in features_list:
-		agi.set_variable('XIVO_ENABLEBUSY', enablebusy)
-
-		if enablebusy == 1:
-			# See the comment concerning the fwdunc feature.
-			agi.set_variable('XIVO_FWD_TYPEBUSY', 'user')
-			agi.set_variable('XIVO_FWD_TYPEVAL1BUSY', destbusy)
-			agi.set_variable('XIVO_FWD_TYPEVAL2BUSY', context)
+		if user.enablebusy:
+			agi.set_variable('XIVO_FWD_USER_BUSY_ACTION', 'extension')
+			agi.set_variable('XIVO_FWD_USER_BUSY_ACTIONARG1', user.destbusy)
+			agi.set_variable('XIVO_FWD_USER_BUSY_ACTIONARG2', context)
 		else:
-			handler.ds_set_fwd_vars(userfeaturesid, 'busy', 'user', 'XIVO_FWD_TYPEBUSY', 'XIVO_FWD_TYPEVAL1BUSY', 'XIVO_FWD_TYPEVAL2BUSY')
+			objects.DialAction(agi, cursor, 'busy', 'user', user.id).set_variables()
 	else:
-		agi.set_variable('XIVO_FWD_TYPEBUSY', 'endcall')
-		agi.set_variable('XIVO_FWD_TYPEVAL1BUSY', 'none')
+		agi.set_variable('XIVO_FWD_USER_BUSY_ACTION', 'none')
 
-	if 'fwdrna' in features_list:
-		if enablerna:
-			# See the comment concerning the fwdunc feature.
-			agi.set_variable('XIVO_FWD_TYPERNA', 'user')
-			agi.set_variable('XIVO_FWD_TYPEVAL1RNA', destrna)
-			agi.set_variable('XIVO_FWD_TYPEVAL2RNA', context)
+	if feature_list.fwdrna:
+		agi.set_variable('XIVO_ENABLERNA', user.enablerna)
+
+		if user.enablerna:
+			agi.set_variable('XIVO_FWD_USER_RNA_ACTION', 'extension')
+			agi.set_variable('XIVO_FWD_USER_RNA_ACTIONARG1', user.destrna)
+			agi.set_variable('XIVO_FWD_USER_RNA_ACTIONARG2', context)
 		else:
-			handler.ds_set_fwd_vars(userfeaturesid, 'noanswer', 'user', 'XIVO_FWD_TYPERNA', 'XIVO_FWD_TYPEVAL1RNA', 'XIVO_FWD_TYPEVAL2RNA')
+			objects.DialAction(agi, cursor, 'noanswer', 'user', user.id).set_variables()
 	else:
-		agi.set_variable('XIVO_FWD_TYPERNA', 'endcall')
-		agi.set_variable('XIVO_FWD_TYPEVAL1RNA', 'none')
+		agi.set_variable('XIVO_FWD_USER_RNA_ACTION', 'none')
 
-	handler.ds_set_fwd_vars(userfeaturesid, 'congestion', 'user', 'XIVO_FWD_TYPECONGESTION', 'XIVO_FWD_TYPEVAL1CONGESTION', 'XIVO_FWD_TYPEVAL2CONGESTION')
-	handler.ds_set_fwd_vars(userfeaturesid, 'chanunavail', 'user', 'XIVO_FWD_TYPEUNAVAIL', 'XIVO_FWD_TYPEVAL1UNAVAIL', 'XIVO_FWD_TYPEVAL2UNAVAIL')
+	objects.DialAction(agi, cursor, 'congestion', 'user', user.id).set_variables()
+	objects.DialAction(agi, cursor, 'chanunavail', 'user', user.id).set_variables()
 
-	if 'incallrec' in features_list and callrecord:
+	if feature_list.incallrec and user.callrecord:
 		agi.set_variable('XIVO_CALLRECORDFILE', "/usr/share/asterisk/sounds/web-interface/monitor/user-%s-%s-%s.wav" % (srcnum, dstnum, int(time.time())))
 
-	if musiconhold:
-		agi.set_variable('MUSICCLASS()', musiconhold)
+	if user.musiconhold:
+		agi.set_variable('MUSICCLASS()', user.musiconhold)
 
 agid.register(incoming_user_set_features)

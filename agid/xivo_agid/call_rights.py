@@ -1,4 +1,5 @@
 # TODO: handle rules priority.
+# TODO: merge into objects and adapt modules.
 
 __version__ = "$Revision$ $Date$"
 __license__ = """

@@ -29,7 +29,7 @@ max_retries = None
 retry_time = None
 wait_time = None
 
-def callback_on_congestion(handler, agi, cursor, args):
+def callback_on_congestion(agi, cursor, args):
 	srcnum = agi.get_variable('REAL_SRCNUM')
 	dstnum = agi.get_variable('REAL_DSTNUM')
 	context = agi.get_variable('REAL_CONTEXT')

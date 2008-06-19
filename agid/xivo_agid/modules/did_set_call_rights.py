@@ -1,3 +1,5 @@
+# TODO: see the call_rights module.
+
 __version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2006, 2007, 2008  Proformatique
@@ -17,10 +19,7 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-import re
-
 from xivo_agid import agid
-from xivo_agid import objects
 from xivo_agid import call_rights
 
 def _did_set_call_rights(agi, cursor, args):

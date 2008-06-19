@@ -18,139 +18,36 @@ __license__ = """
 """
 
 from xivo_agid import agid
-from xivo_agid import bsfilter
+from xivo_agid import objects
 
-def user_set_feature(handler, agi, cursor, args):
+def user_set_feature(agi, cursor, args):
 	srcnum = agi.get_variable('REAL_SRCNUM')
 	context = agi.get_variable('REAL_CONTEXT')
 
-	custom_query = False
-	query = "UPDATE userfeatures SET"
-	params = []
+	user = objects.User(agi, cursor, number = srcnum, context = context)
+	feature = args[0]
 
-	feature_type = args[0]
+	if feature in ("unc", "rna", "busy"):
+		enabled = int(args[1])
 
-	if feature_type == "unc":
-		enableunc = int(args[1])
-		query += " enableunc = %s"
-		params.append(enableunc)
+		try:
+			arg = args[2]
+		except IndexError:
+			arg = None
 
-		if enableunc:
-			destunc = args[2]
-		else:
-			destunc = ""
+		user.set_feature(feature, enabled, arg)
+	elif feature in ("vm", "dnd", "callrecord", "callfilter"):
+		enabled = user.toggle_feature(feature)
 
-		query += ", destunc = %s"
-		params.append(destunc)
-	elif feature_type == "rna":
-		enablerna = int(args[1])
-		query += " enablerna = %s"
-		params.append(enablerna)
-
-		if enablerna:
-			destrna = args[2]
-		else:
-			destrna = ""
-
-		query += ", destrna = %s"
-		params.append(destrna)
-	elif feature_type == "busy":
-		enablebusy = int(args[1])
-		query += " enablebusy = %s"
-		params.append(enablebusy)
-
-		if enablebusy:
-			destbusy = args[2]
-		else:
-			destbusy = ""
-
-		query += ", destbusy = %s"
-		params.append(destbusy)
-	elif feature_type == "vm":
-		cursor.query("SELECT ${columns} FROM userfeatures "
-			     "WHERE number = %s "
-			     "AND context = %s "
-			     "AND internal = 0 "
-			     "AND commented = 0",
-			     ('enablevoicemail',),
-			     (srcnum, context))
-		res = cursor.fetchone()
-
-		if not res:
-			agi.dp_break("Unknown number '%s'" % srcnum)
-
-		if res['enablevoicemail']:
-			enablevoicemail = 0
-		else:
-			enablevoicemail = 1
-
-		query += " enablevoicemail = %s"
-		params.append(enablevoicemail)
-		agi.set_variable('XIVO_VMENABLED', enablevoicemail)
-	elif feature_type == "dnd":
-		cursor.query("SELECT ${columns} FROM userfeatures "
-			     "WHERE number = %s "
-			     "AND context = %s "
-			     "AND internal = 0 "
-			     "AND commented = 0",
-			     ('enablednd',),
-			     (srcnum, context))
-		res = cursor.fetchone()
-
-		if not res:
-			agi.dp_break("Unknown number '%s'" % srcnum)
-
-		if res['enablednd']:
-			enablednd = 0
-		else:
-			enablednd = 1
-
-		query += " enablednd = %s"
-		params.append(enablednd)
-		agi.set_variable('XIVO_DNDENABLED', enablednd)
-	elif feature_type == "callrecord":
-		cursor.query("SELECT ${columns} FROM userfeatures "
-			     "WHERE number = %s "
-			     "AND context = %s "
-			     "AND internal = 0 "
-			     "AND commented = 0",
-			     ('callrecord',),
-			     (srcnum, context))
-		res = cursor.fetchone()
-
-		if not res:
-			agi.dp_break("Unknown number '%s'" % srcnum)
-
-		if res['callrecord']:
-			callrecord = 0
-		else:
-			callrecord = 1
-
-		query += " callrecord = %s"
-		params.append(callrecord)
-		agi.set_variable('XIVO_CALLRECORDENABLED', callrecord)
-	elif feature_type == "callfilter":
-		cursor.query("SELECT ${columns} FROM userfeatures "
-			     "WHERE number = %s "
-			     "AND context = %s "
-			     "AND internal = 0 "
-			     "AND commented = 0",
-			     ('callfilter',),
-			     (srcnum, context))
-		res = cursor.fetchone()
-
-		if not res:
-			agi.dp_break("Unknown number '%s'" % srcnum)
-
-		if res['callfilter']:
-			callfilter = 0
-		else:
-			callfilter = 1
-
-		query += " callfilter = %s"
-		params.append(callfilter)
-		agi.set_variable('XIVO_CALLFILTERENABLED', callfilter)
-	elif feature_type == "bsfilter":
+		if feature == "vm":
+			agi.set_variable('XIVO_VMENABLED', user.enablevoicemail)
+		elif feature == "dnd":
+			agi.set_variable('XIVO_DNDENABLED', user.enablednd)
+		elif feature == "callrecord":
+			agi.set_variable('XIVO_CALLRECORDENABLED', user.callrecord)
+		elif feature == "callfilter":
+			agi.set_variable('XIVO_CALLFILTERENABLED', user.callfilter)
+	elif feature == "bsfilter":
 		custom_query = True
 
 		try:
@@ -173,14 +70,14 @@ def user_set_feature(handler, agi, cursor, args):
 			# First, suppose the caller is a secretary and the number is
 			# one of its bosses number.
 			try:
-				bsf = bsfilter.BSFilter(agi, cursor, number, context)
+				bsf = objects.BossSecretaryFilter(agi, cursor, number, context)
 				caller_type = "secretary"
 				secretary_number = srcnum
 
 			# If it fails, suppose the caller is the boss and the number is
 			# one of its secretaries number.
 			except LookupError:
-				bsf = bsfilter.BSFilter(agi, cursor, srcnum, context)
+				bsf = objects.BossSecretaryFilter(agi, cursor, srcnum, context)
 				caller_type = "boss"
 				secretary_number = number
 
@@ -198,11 +95,11 @@ def user_set_feature(handler, agi, cursor, args):
 				     "AND typeval = %s "
 				     "AND bstype = %s",
 				     ('active',),
-				     (filter.id, "user", secretary.userid, "secretary"))
+				     (bsf.id, "user", secretary.id, "secretary"))
 			res = cursor.fetchone()
 
 			if not res:
-				agi.dp_break("Unable to find secretary, userid = %d" % secretary.userid)
+				agi.dp_break("Unable to find secretary, userid = %d" % secretary.id)
 
 			new_state = int(not res['active'])
 			cursor.query("UPDATE callfiltermember "
@@ -211,7 +108,7 @@ def user_set_feature(handler, agi, cursor, args):
 				     "AND type = %s "
 				     "AND typeval = %s "
 				     "AND bstype = %s",
-				     parameters = (new_state, filter.id, "user", secretary.userid, "secretary"))
+				     parameters = (new_state, bsf.id, "user", secretary.id, "secretary"))
 
 			if cursor.rowcount != 1:
 				agi.dp_break("Unable to perform the requested update")
@@ -220,15 +117,6 @@ def user_set_feature(handler, agi, cursor, args):
 		else:
 			agi.dp_break("Unable to find boss-secretary filter")
 	else:
-		agi.dp_break("Unknown forwarding type '%s'" % type)
-
-	if not custom_query:
-		query += " WHERE number = %s AND context = %s"
-		params.append(srcnum)
-		params.append(context)
-		cursor.query(query, parameters = params)
-
-		if cursor.rowcount != 1:
-			agi.dp_break("Unable to perform the requested update")
+		agi.dp_break("Unknown feature '%s'" % feature)
 
 agid.register(user_set_feature)

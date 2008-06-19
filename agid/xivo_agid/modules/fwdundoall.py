@@ -18,23 +18,13 @@ __license__ = """
 """
 
 from xivo_agid import agid
+from xivo_agid import objects
 
-def fwdundoall(handler, agi, cursor, args):
+def fwdundoall(agi, cursor, args):
 	srcnum = agi.get_variable('REAL_SRCNUM')
 	context = agi.get_variable('REAL_CONTEXT')
 
-	cursor.query("UPDATE userfeatures "
-		     "SET enableunc = 0, "
-		     "    destunc = '', "
-		     "    enablerna = 0, "
-		     "    destrna = '', "
-		     "    enablebusy = 0, "
-		     "    destbusy = '' "
-		     "WHERE number = %s "
-		     "AND context = %s",
-		     parameters = (srcnum, context))
-
-	if cursor.rowcount != 1:
-		agi.dp_break("Unable to perform the requested update")
+	user = objects.user(agi, cursor, number = srcnum, context = context)
+	user.reset()
 
 agid.register(fwdundoall)

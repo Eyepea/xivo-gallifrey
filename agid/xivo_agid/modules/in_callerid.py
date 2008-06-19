@@ -20,17 +20,16 @@ __license__ = """
 RULES_FILE = '/etc/asterisk/xivo_in_callerid.conf'
 
 import re
+import ConfigParser
 
 from xivo import OrderedConf
 
 from xivo_agid import agid
 
-import ConfigParser
-
 config = None
 re_objs = {}
 
-def in_callerid(handler, agi, cursor, args):
+def in_callerid(agi, cursor, args):
 	callerid_num = agi.env['agi_callerid']
 
 	for section in config:

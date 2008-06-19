@@ -18,29 +18,15 @@ __license__ = """
 """
 
 from xivo_agid import agid
+from xivo_agid import objects
 
-def voicemsg(handler, agi, cursor, args):
+def voicemsg(agi, cursor, args):
 	srcnum = agi.get_variable('REAL_SRCNUM')
 	context = agi.get_variable('REAL_CONTEXT')
 
-	cursor.query("SELECT ${columns} FROM userfeatures "
-		     "INNER JOIN voicemail "
-		     "ON userfeatures.voicemailid = voicemail.uniqueid "
-		     "INNER JOIN voicemailfeatures "
-		     "ON userfeatures.voicemailid = voicemailfeatures.id "
-		     "WHERE userfeatures.number = %s "
-		     "AND userfeatures.context = %s "
-		     "AND userfeatures.internal = 0 "
-		     "AND userfeatures.commented = 0 "
-		     "AND voicemail.commented = 0",
-		     ('voicemailfeatures.skipcheckpass',),
-		     (srcnum, context))
-	res = cursor.fetchone()
+	user = objects.User(agi, cursor, number = srcnum, context = context)
 
-	if not res:
-		agi.dp_break("Unknown number '%s'" % srcnum)
-
-	if res['voicemailfeatures.skipcheckpass']:
+	if user.vmbox and user.vmbox.skipcheckpass:
 		agi.set_variable('XIVO_VMOPTIONS', "s")
 
 agid.register(voicemsg)

@@ -22,7 +22,7 @@ import time
 
 from xivo_agid import agid
 
-def callback(handler, agi, cursor, args):
+def callback(agi, cursor, args):
 	srcnum = agi.get_variable('REAL_SRCNUM')
 	dstnum = agi.get_variable('REAL_DSTNUM')
 	disa_params = '|'.join(args)

@@ -117,7 +117,7 @@ class FastAGIRequestHandler(SocketServer.StreamRequestHandler):
 
 			module_name = self.fastagi.env['agi_network_script']
 			debug("delegating request handling to module %s" % module_name)
-			modules[module_name].handle(self, self.fastagi, self.cursor, self.fastagi.args)
+			modules[module_name].handle(self.fastagi, self.cursor, self.fastagi.args)
 
 			conn.commit()
 
@@ -144,154 +144,6 @@ class FastAGIRequestHandler(SocketServer.StreamRequestHandler):
 				pass
 
 		server.db_conn_pool.release(conn)
-
-	def set_fwd_vars(self, redir_type, typeval, appval, type_varname, typeval1_varname, typeval2_varname):
-		"""The purpose of this function is to set some variables in the
-		Asterisk channel related to redirection. It can set up to 3 variables:
-		 - the redirection type (e.g. to a user, a group, a queue)
-		 - 2 parameters (typeval1 and typeval2)
-
-		redir_type is the redirection type and is used to determine the
-		corresponding behaviour (e.g. how many variables to set, where to fetch
-		their value from).
-
-		typeval is a value related to the redirection type. For example, if the
-		type is 'user', and the type value is '101', this function will look up
-		user ID 101 in the user features table and set 2 variables (a number
-		and a context) so that the dial plan is able to forward the call to
-		that user. In this example, the number and context are the 2 parameters
-		(typeval1 and typeval2) that this function sets before returning.
-
-		Forwarding a call to an application sometimes require an extra
-		parameter (since redir_type is 'application' and typeval1 is the
-		application name). This extra parameter is given in the appval
-		argument.
-
-		Depending on the redirection type and the application (in case the
-		redir_type is 'application'), some parameters can be processed so that
-		commas are translated to semicolumns. This is an ugly hack imagined
-		because Asterisk evaluates variables early, and commas are used as an
-		argument separator. In such cases, the dialplan translates semicolumns
-		back to commas/pipes before using the variale.
-
-		This function calls agi.dp_break() upon detection of parameter/database
-		inconsistency or when the redir_type parameter is invalid.
-
-		XXX This function and its users should be able to handle more
-		variables (if possible, there should be no limit).
-
-		"""
-
-		agi = self.fastagi
-		cursor = self.cursor
-
-		agi.set_variable(type_varname, redir_type)
-
-		if redir_type in ('endcall', 'schedule', 'sound'):
-			agi.set_variable(typeval1_varname, typeval)
-		elif redir_type == 'application':
-			agi.set_variable(typeval1_varname, typeval)
-
-			if typeval in ('disa', 'callback'):
-				agi.set_variable(typeval2_varname, appval.replace(",", ";").replace("|", ";"))
-			else:
-				agi.set_variable(typeval2_varname, appval)
-		elif redir_type == 'custom':
-			agi.set_variable(typeval1_varname, typeval.replace(",", ";").replace("|", ";"))
-		elif redir_type == 'user':
-			cursor.query("SELECT ${columns} FROM userfeatures "
-				     "WHERE id = %s "
-				     "AND IFNULL(userfeatures.number,'') != '' "
-				     "AND internal = 0 "
-				     "AND commented = 0",
-				     ('number', 'context'),
-				     (typeval,))
-			res = cursor.fetchone()
-
-			if not res:
-				agi.dp_break("Database inconsistency: unable to find linked destination user '%s'" % typeval)
-
-			agi.set_variable(typeval1_varname, res['number'])
-			agi.set_variable(typeval2_varname, res['context'])
-		elif redir_type == 'group':
-			cursor.query("SELECT ${columns} FROM groupfeatures INNER JOIN queue "
-				     "ON groupfeatures.name = queue.name "
-				     "WHERE groupfeatures.id = %s "
-				     "AND groupfeatures.deleted = 0 "
-				     "AND queue.category = 'group' "
-				     "AND queue.commented = 0",
-				     [('groupfeatures.' + x) for x in ('number', 'context')],
-				     (typeval,))
-			res = cursor.fetchone()
-
-			if not res:
-				agi.dp_break("Database inconsistency: unable to find linked destination group '%s'" % typeval)
-
-			agi.set_variable(typeval1_varname, res['groupfeatures.number'])
-			agi.set_variable(typeval2_varname, res['groupfeatures.context'])
-		elif redir_type == 'queue':
-			cursor.query("SELECT ${columns} FROM queuefeatures INNER JOIN queue "
-				     "ON queuefeatures.name = queue.name "
-				     "WHERE queuefeatures.id = %s "
-				     "AND queue.category = 'queue' "
-				     "AND queue.commented = 0",
-				     [('queuefeatures.' + x) for x in ('number', 'context')],
-				     (typeval,))
-			res = cursor.fetchone()
-
-			if not res:
-				agi.dp_break("Database inconsistency: unable to find linked destination queue '%s'" % typeval)
-
-			agi.set_variable(typeval1_varname, res['queuefeatures.number'])
-			agi.set_variable(typeval2_varname, res['queuefeatures.context'])
-		elif redir_type == 'meetme':
-			cursor.query("SELECT ${columns} FROM meetmefeatures INNER JOIN staticmeetme "
-				     "ON meetmefeatures.meetmeid = staticmeetme.id "
-				     "WHERE meetmefeatures.id = %s "
-				     "AND staticmeetme.commented = 0",
-				     [('meetmefeatures.' + x) for x in ('number', 'context')],
-				     (typeval,))
-			res = cursor.fetchone()
-
-			if not res:
-				agi.dp_break("Database inconsistency: unable to find linked destination conference room '%s'" % typeval)
-
-			agi.set_variable(typeval1_varname, res['meetmefeatures.number'])
-			agi.set_variable(typeval2_varname, res['meetmefeatures.context'])
-		else:
-			agi.dp_break("Unknown destination type '%s'" % redir_type)
-
-	def ds_set_fwd_vars(self, categoryval, status, category, type_varname, typeval1_varname, typeval2_varname):
-		"""Front-end to set_fwd_vars() that fetches some data from
-		the dialstatus table.
-
-		To make the dial plan aware that redirection values came from the
-		dialstatus table, a variable named type_varname + "_FROMDS" is created.
-
-		"""
-
-		cursor = self.cursor
-
-		cursor.query("SELECT ${columns} FROM dialstatus "
-			     "WHERE status = %s "
-			     "AND category = %s "
-			     "AND categoryval = %s "
-			     "AND linked = 1",
-			     ('type', 'typeval', 'applicationval'),
-			     (status, category, categoryval))
-		res = cursor.fetchone()
-
-		if not res:
-			redir_type = "endcall"
-			typeval = "none"
-			applicationval = None
-		else:
-			redir_type = res['type']
-			typeval = res['typeval']
-			applicationval = res['applicationval']
-
-		self.fastagi.set_variable(type_varname + "_FROMDS", 1)
-		self.set_fwd_vars(redir_type, typeval, applicationval, type_varname, typeval1_varname, typeval2_varname)
 
 class AGID(SocketServer.ThreadingTCPServer):
 	allow_reuse_address = True
@@ -361,9 +213,9 @@ class Module:
 		debug('module "%s" reloaded' % self.module_name)
 		self.lock.release()
 
-	def handle(self, request_handler, agi, cursor, args):
+	def handle(self, agi, cursor, args):
 		self.lock.acquire_read()
-		self.handle_fn(request_handler, agi, cursor, args)
+		self.handle_fn(agi, cursor, args)
 		self.lock.release()
 
 def log(s, prefix = None):

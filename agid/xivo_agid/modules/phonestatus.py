@@ -18,74 +18,43 @@ __license__ = """
 """
 
 from xivo_agid import agid
+from xivo_agid import objects
 
-def phonestatus(handler, agi, cursor, args):
+def phonestatus(agi, cursor, args):
 	srcnum = agi.get_variable('REAL_SRCNUM')
 	context = agi.get_variable('REAL_CONTEXT')
 
-	cursor.query("SELECT ${columns} FROM userfeatures "
-		     "WHERE number = %s "
-		     "AND context = %s "
-		     "AND internal = 0 "
-		     "AND commented = 0",
-		     ('enableunc', 'destunc', 'enablebusy', 'destbusy', 'enablerna', 'destrna', 'enablevoicemail', 'callfilter', 'callrecord', 'enablednd'),
-		     (srcnum, context))
-	res = cursor.fetchone()
+	feature_list = objects.FeatureList(agi, cursor)
+	user = objects.User(agi, cursor, feature_list, number = srcnum, context = context)
 
-	if not res:
-		agi.dp_break("Unknown number '%s'" % srcnum)
+	if feature_list.fwdunc:
+		agi.set_variable('XIVO_ENABLEUNC', user.enableunc)
 
-	enableunc = res['enableunc']
-	destunc = res['destunc']
-	enablebusy = res['enablebusy']
-	destbusy = res['destbusy']
-	enablerna = res['enablerna']
-	destrna = res['destrna']
-	enablevoicemail = res['enablevoicemail']
-	callfilter = res['callfilter']
-	callrecord = res['callrecord']
-	enablednd = res['enablednd']
+		if user.enableunc:
+			agi.set_variable('XIVO_DESTUNC', user.destunc)
 
-	cursor.query("SELECT ${columns} FROM extensions "
-		     "WHERE name IN ('fwdunc', 'fwdrna', 'fwdbusy', 'enablevm', 'incallfilter', 'incallrec', 'enablednd') "
-		     "AND commented = 0",
-		     ('name',))
-	res = cursor.fetchall()
+	if feature_list.fwdbusy:
+		agi.set_variable('XIVO_ENABLEBUSY', user.enablebusy)
 
-	if not res:
-		agi.verbose("All features disabled")
-		return
+		if user.enablebusy:
+			agi.set_variable('XIVO_DESTBUSY', user.destbusy)
 
-	features_list = [row['name'] for row in res]
+	if feature_list.fwdrna:
+		agi.set_variable('XIVO_ENABLERNA', user.enablerna)
 
-	if 'fwdunc' in features_list:
-		agi.set_variable('XIVO_ENABLEUNC', enableunc)
+		if user.enablerna:
+			agi.set_variable('XIVO_DESTRNA', user.destrna)
 
-		if enableunc:
-			agi.set_variable('XIVO_DESTUNC', destunc)
+	if feature_list.enablevm:
+		agi.set_variable('XIVO_ENABLEVOICEMAIL', user.enablevoicemail)
 
-	if 'fwdbusy' in features_list:
-		agi.set_variable('XIVO_ENABLEBUSY', enablebusy)
+	if feature_list.incallfilter:
+		agi.set_variable('XIVO_CALLFILTER', user.callfilter)
 
-		if enablebusy:
-			agi.set_variable('XIVO_DESTBUSY', destbusy)
+	if feature_list.incallrec:
+		agi.set_variable('XIVO_CALLRECORD', user.callrecord)
 
-	if 'fwdrna' in features_list:
-		agi.set_variable('XIVO_ENABLERNA', enablerna)
-
-		if enablerna:
-			agi.set_variable('XIVO_DESTRNA', destrna)
-
-	if 'enablevm' in features_list:
-		agi.set_variable('XIVO_ENABLEVOICEMAIL', enablevoicemail)
-
-	if 'incallfilter' in features_list:
-		agi.set_variable('XIVO_CALLFILTER', callfilter)
-
-	if 'incallrec' in features_list:
-		agi.set_variable('XIVO_CALLRECORD', callrecord)
-
-	if 'enablednd' in features_list:
-		agi.set_variable('XIVO_ENABLEDND', enablednd)
+	if feature_list.enablednd:
+		agi.set_variable('XIVO_ENABLEDND', user.enablednd)
 
 agid.register(phonestatus)

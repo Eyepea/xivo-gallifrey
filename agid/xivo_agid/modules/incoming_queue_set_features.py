@@ -18,65 +18,50 @@ __license__ = """
 """
 
 from xivo_agid import agid
+from xivo_agid import objects
 
-def incoming_queue_set_features(handler, agi, cursor, args):
+def incoming_queue_set_features(agi, cursor, args):
 	dstnum = agi.get_variable('REAL_DSTNUM')
 	context = agi.get_variable('REAL_CONTEXT')
 
-	cursor.query("SELECT ${columns} FROM queuefeatures "
-		     "INNER JOIN queue "
-		     "ON queuefeatures.name = queue.name "
-		     "WHERE queuefeatures.number = %s "
-		     "AND queuefeatures.context = %s "
-		     "AND queue.commented = 0 "
-		     "AND queue.category = 'queue'",
-		     [('queuefeatures.' + x) for x in ('name', 'data_quality', 'hitting_callee', 'hitting_caller', 'retries', 'ring', 'transfer_user', 'transfer_call', 'write_caller', 'write_calling', 'url', 'announceoverride', 'timeout')],
-		     (dstnum, context))
-	res = cursor.fetchone()
+	queue = objects.Queue(agi, cursor, number = dstnum, context = context)
+	options = ""
 
-	if not res:
-		agi.dp_break("Unknown queue number '%s'" % dstnum)
-
-	options = ''
-
-	if res['queuefeatures.data_quality']:
+	if queue.data_quality:
 		options += "d"
 
-	if res['queuefeatures.hitting_callee']:
+	if queue.hitting_callee:
 		options += "h"
 
-	if res['queuefeatures.hitting_caller']:
+	if queue.hitting_caller:
 		options += "H"
 
-	if res['queuefeatures.retries']:
+	if queue.retries:
 		options += "n"
 
-	if res['queuefeatures.ring']:
+	if queue.ring:
 		options += "r"
 
-	if res['queuefeatures.transfer_user']:
+	if queue.transfer_user:
 		options += "t"
 
-	if res['queuefeatures.transfer_call']:
+	if queue.transfer_call:
 		options += "T"
 
-	if res['queuefeatures.write_caller']:
+	if queue.write_caller:
 		options += "w"
 
-	if res['queuefeatures.write_calling']:
+	if queue.write_calling:
 		options += "W"
 
-	agi.set_variable('XIVO_QUEUENAME', res['queuefeatures.name'])
+	agi.set_variable('XIVO_QUEUENAME', queue.name)
 	agi.set_variable('XIVO_QUEUEOPTIONS', options)
-	agi.set_variable('XIVO_QUEUEURL', res['queuefeatures.url'])
-	agi.set_variable('XIVO_QUEUEANNOUNCEOVERRIDE', res['queuefeatures.announceoverride'])
+	agi.set_variable('XIVO_QUEUEURL', queue.url)
+	agi.set_variable('XIVO_QUEUEANNOUNCEOVERRIDE', queue.announceoverride)
 
-	if res['queuefeatures.timeout']:
-		agi.set_variable('XIVO_QUEUETIMEOUT', res['queuefeatures.timeout'])
+	if queue.timeout:
+		agi.set_variable('XIVO_QUEUETIMEOUT', queue.timeout)
 
-	handler.ds_set_fwd_vars(id, 'busy', 'queue', 'XIVO_FWD_TYPEBUSY', 'XIVO_FWD_TYPEVAL1BUSY', 'XIVO_FWD_TYPEVAL2BUSY')
-	handler.ds_set_fwd_vars(id, 'noanswer', 'queue', 'XIVO_FWD_TYPERNA', 'XIVO_FWD_TYPEVAL1RNA', 'XIVO_FWD_TYPEVAL2RNA')
-	handler.ds_set_fwd_vars(id, 'congestion', 'queue', 'XIVO_FWD_TYPECONGESTION', 'XIVO_FWD_TYPEVAL1CONGESTION', 'XIVO_FWD_TYPEVAL2CONGESTION')
-	handler.ds_set_fwd_vars(id, 'chanunavail', 'queue', 'XIVO_FWD_TYPEUNAVAIL', 'XIVO_FWD_TYPEVAL1UNAVAIL', 'XIVO_FWD_TYPEVAL2UNAVAIL')
+	queue.set_dial_actions()
 
 agid.register(incoming_queue_set_features)

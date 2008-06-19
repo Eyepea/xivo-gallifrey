@@ -25,7 +25,7 @@ CONFIG_FILE = "/etc/asterisk/xivo_ring.conf"
 
 config = None
 
-def getring(handler, agi, cursor, args):
+def getring(agi, cursor, args):
 	dstnum = agi.get_variable('REAL_DSTNUM')
 	context = agi.get_variable('REAL_CONTEXT')
 	calltype = agi.get_variable('REAL_CALLTYPE')

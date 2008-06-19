@@ -18,55 +18,36 @@ __license__ = """
 """
 
 from xivo_agid import agid
+from xivo_agid import objects
 
-def incoming_group_set_features(handler, agi, cursor, args):
+def incoming_group_set_features(agi, cursor, args):
 	dstnum = agi.get_variable('REAL_DSTNUM')
 	context = agi.get_variable('REAL_CONTEXT')
 
-	cursor.query("SELECT ${columns} FROM groupfeatures "
-		     "INNER JOIN queue "
-		     "ON groupfeatures.name = queue.name "
-		     "WHERE groupfeatures.number = %s "
-		     "AND groupfeatures.context = %s "
-		     "AND groupfeatures.deleted = 0 "
-		     "AND queue.commented = 0 "
-		     "AND queue.category = 'group'",
-		     ('groupfeatures.id', 'groupfeatures.name', 'groupfeatures.timeout', 'groupfeatures.transfer_user', 'groupfeatures.transfer_call', 'groupfeatures.write_caller', 'groupfeatures.write_calling', 'queue.musiconhold'),
-		     (dstnum, context))
-	res = cursor.fetchone()
-
-	if not res:
-		agi.dp_break("Unknown group number '%s'" % dstnum)
-
-	groupfeaturesid = res['groupfeatures.id']
-	name = res['groupfeatures.name']
-	timeout = res['groupfeatures.timeout']
+	group = objects.Group(agi, cursor, number = dstnum, context = context)
 	options = ""
 
-	if res['groupfeatures.transfer_user']:
+	if group.transfer_user:
 		options += "t"
 
-	if res['groupfeatures.transfer_call']:
+	if group.transfer_call:
 		options += "T"
 
-	if res['groupfeatures.write_caller']:
+	if group.write_caller:
 		options += "w"
 
-	if res['groupfeatures.write_calling']:
+	if group.write_calling:
 		options += "W"
 
-	if not res['queue.musiconhold']:
+	if not group.musiconhold:
 		options += "r"
 
-	agi.set_variable('XIVO_GROUPNAME', name)
+	agi.set_variable('XIVO_GROUPNAME', group.name)
 	agi.set_variable('XIVO_GROUPOPTIONS', options)
 
-	if timeout:
-		agi.set_variable('XIVO_GROUPTIMEOUT', timeout)
+	if group.timeout:
+		agi.set_variable('XIVO_GROUPTIMEOUT', group.timeout)
 
-	handler.ds_set_fwd_vars(groupfeaturesid, 'busy', 'group', 'XIVO_FWD_TYPEBUSY', 'XIVO_FWD_TYPEVAL1BUSY', 'XIVO_FWD_TYPEVAL2BUSY')
-	handler.ds_set_fwd_vars(groupfeaturesid, 'noanswer', 'group' 'XIVO_FWD_TYPERNA', 'XIVO_FWD_TYPEVAL1RNA', 'XIVO_FWD_TYPEVAL2RNA')
-	handler.ds_set_fwd_vars(groupfeaturesid, 'congestion', 'group', 'XIVO_FWD_TYPECONGESTION', 'XIVO_FWD_TYPEVAL1CONGESTION', 'XIVO_FWD_TYPEVAL2CONGESTION')
-	handler.ds_set_fwd_vars(groupfeaturesid, 'chanunavail', 'group', 'XIVO_FWD_TYPEUNAVAIL', 'XIVO_FWD_TYPEVAL1UNAVAIL', 'XIVO_FWD_TYPEVAL2UNAVAIL')
+	group.set_dial_actions()
 
 agid.register(incoming_group_set_features)

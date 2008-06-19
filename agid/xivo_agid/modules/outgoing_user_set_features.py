@@ -20,153 +20,68 @@ __license__ = """
 import time
 
 from xivo_agid import agid
+from xivo_agid import objects
 
-def outgoing_user_set_features(handler, agi, cursor, args):
+def outgoing_user_set_features(agi, cursor, args):
 	srcnum = agi.get_variable('REAL_SRCNUM')
 	dstnum = agi.get_variable('REAL_DSTNUM')
 	context = agi.get_variable('REAL_CONTEXT')
 	exten_pattern = agi.get_variable('REAL_EXTENPATTERN')
 
-	cursor.query("SELECT ${columns} FROM outcall "
-		     "WHERE exten = %s "
-		     "AND context = %s "
-		     "AND commented = 0",
-		     ('id', 'externprefix', 'stripnum', 'setcallerid', 'callerid', 'useenum', 'internal', 'hangupringtime'),
-		     (exten_pattern, context))
-	res = cursor.fetchone()
+	feature_list = objects.FeatureList(agi, cursor)
+	outcall = objects.Outcall(agi, cursor, feature_list, exten = exten_pattern, context = context)
 
-	if not res:
-		agi.dp_break("Unable to find outgoing call features (extension pattern = '%s', context = '%s')" % (exten_pattern, context))
-
-	outcallid = res['id']
-	externprefix = res['externprefix']
-	stripnum = int(res['stripnum'])
-	setcallerid = res['setcallerid']
-	trunk_callerid = res['callerid']
-	internal = res['internal']
-	hangupringtime = res['hangupringtime']
-
-	if stripnum > 0:
-		dstnum = dstnum[stripnum:]
-
-	if externprefix:
-		dstnum = externprefix + dstnum
-
+	orig_dstnum = dstnum
 	callerid = ""
-	calloptions = ""
 	callrecord = False
+	options = ""
 
-	if not internal:
-		cursor.query("SELECT ${columns} FROM userfeatures "
-			     "WHERE number = %s "
-			     "AND context = %s "
-			     "AND internal = 0 "
-			     "AND commented = 0",
-			     ('outcallerid', 'enableautomon', 'callrecord'),
-			     (srcnum, context))
-		res = cursor.fetchone()
+	if outcall.stripnum > 0:
+		dstnum = dstnum[outcall.stripnum:]
 
-		if res:
-			if setcallerid:
-				callerid = trunk_callerid
+	if outcall.externprefix:
+		dstnum = outcall.externprefix + dstnum
+
+	if not outcall.internal:
+		try:
+			user = objects.User(agi, cursor, feature_list,
+					    number = srcnum, context = context)
+
+			# TODO: Rethink all the caller id stuff.
+			if outcall.setcallerid:
+				callerid = outcall.callerid
 			else:
-				callerid = res['outcallerid']
+				callerid = user.callerid
 
 			if callerid == "default":
 				callerid = ""
 
-			if res['enableautomon'] == 1:
-				calloptions += "W"
+			if user.enableautomon:
+				options += "W"
 
-			if res['callrecord'] == 1:
+			if user.callrecord:
 				callrecord = True
 
-	cursor.query("SELECT ${columns} FROM trunkfeatures "
-		     "INNER JOIN outcalltrunk "
-		     "ON trunkfeatures.id = outcalltrunk.trunkfeaturesid "
-		     "WHERE outcalltrunk.outcallid = %s "
-		     "ORDER BY outcalltrunk.priority ASC",
-		     ('trunkfeatures.protocol', 'trunkfeatures.protocolid'),
-		     (outcallid,))
-	res = cursor.fetchall()
+	for i, trunk in enumerate(outcall.trunks):
+		agi.set_variable('XIVO_INTERFACE%d' % (i,), trunk.interface)
 
-	if not res:
-		agi.dp_break("The outgoing call is associated with no trunk")
+		# XXX numbers of stripped digits and prefix should be set on
+		# per-trunk basis instead of per-outcall.
+		agi.set_variable('XIVO_TRUNKEXTEN%d' % (i,), dstnum)
 
-	trunkindex = 0
-
-	for row in res:
-		protocol = row['trunkfeatures.protocol']
-		protocolid = row['trunkfeatures.protocolid']
-
-		if protocol == "sip":
-			protocol = "SIP"
-			cursor.query("SELECT ${columns} FROM usersip "
-				     "WHERE id = %s "
-				     "AND commented = 0",
-				     ('name',),
-				     (protocolid,))
-			res = cursor.fetchone()
-
-			if not res:
-				agi.dp_break("Unable to find SIP peer (ID = '%s')" % protocolid)
-
-			peer = res['name']
-			interface = "%s/%s" % (protocol, peer)
-		elif protocol == "iax":
-			protocol = "IAX2"
-			cursor.query("SELECT ${columns} FROM useriax "
-				     "WHERE id = %s "
-				     "AND commented = 0",
-				     ('name',),
-				     (protocolid,))
-			res = cursor.fetchone()
-
-			if not res:
-				agi.dp_break("Unable to find IAX peer (ID = '%s')" % protocolid)
-
-			peer = res['name']
-			interface = "%s/%s" % (protocol, peer)
-		elif protocol == "custom":
-			protocol = "CUSTOM"
-			cursor.query("SELECT ${columns} FROM usercustom "
-				     "WHERE id = %s "
-				     "AND commented = 0",
-				     ('interface', 'intfsuffix'),
-				     (protocolid,))
-			res = cursor.fetchone()
-
-			if not res:
-				agi.dp_break("Unable to find custom peer (ID = '%s')" % protocolid)
-
-			interface = res['interface']
-			intfsuffix = res['intfsuffix']
-
-			if intfsuffix not in (None, ""):
-				agi.set_variable('XIVO_TRUNKSUFFIX%d' % trunkindex, "/" + intfsuffix)
-		else:
-			agi.dp_break("Unknown protocol '%s'" % protocol)
-
-		agi.set_variable('XIVO_INTERFACE%d' % trunkindex, interface)
-		agi.set_variable('XIVO_TRUNKEXTEN%d' % trunkindex, dstnum)
-		trunkindex += 1
+		if trunk.intfsuffix:
+			agi.set_variable('XIVO_TRUNKSUFFIX%d' % (i,), "/" + trunk.intfsuffix)
 
 	if callerid:
 		agi.set_variable('CALLERID(num)', callerid)
 
 	if callrecord:
-		cursor.query("SELECT ${columns} FROM extensions "
-			     "WHERE name = 'incallrec' "
-			     "AND commented = 0",
-			     ('name',))
-		res = cursor.fetchone()
+		if feature_list.incallrec:
+			agi.set_variable('XIVO_CALLRECORDFILE', "/usr/share/asterisk/sounds/web-interface/monitor/user-%s-%s-%s.wav" % (srcnum, orig_dstnum, int(time.time())))
 
-		if res:
-			agi.set_variable('XIVO_CALLRECORDFILE', "/usr/share/asterisk/sounds/web-interface/monitor/user-%s-%s-%s.wav" % (srcnum, dstnum, int(time.time())))
+	if outcall.hangupringtime:
+		agi.set_variable('XIVO_HANGUPRINGTIME', outcall.hangupringtime)
 
-	if hangupringtime:
-		agi.set_variable('XIVO_HANGUPRINGTIME', hangupringtime)
-
-	agi.set_variable('XIVO_CALLOPTIONS', calloptions)
+	agi.set_variable('XIVO_CALLOPTIONS', options)
 
 agid.register(outgoing_user_set_features)

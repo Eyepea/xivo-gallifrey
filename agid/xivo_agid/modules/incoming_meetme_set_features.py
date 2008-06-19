@@ -20,66 +20,53 @@ __license__ = """
 import time
 
 from xivo_agid import agid
+from xivo_agid import objects
 
-def incoming_meetme_set_features(handler, agi, cursor, args):
+def incoming_meetme_set_features(agi, cursor, args):
 	dstnum = agi.get_variable('REAL_DSTNUM')
 	context = agi.get_variable('REAL_CONTEXT')
 
-	cursor.query("SELECT ${columns} FROM meetmefeatures "
-		     "INNER JOIN staticmeetme "
-		     "ON meetmefeatures.meetmeid = staticmeetme.id "
-		     "WHERE meetmefeatures.number = %s "
-		     "AND meetmefeatures.context = %s "
-		     "AND staticmeetme.commented = 0",
-		     [('meetmefeatures.' + x) for x in ('mode', 'musiconhold', 'poundexit', 'quiet', 'record', 'adminmode', 'announceusercount', 'announcejoinleave', 'alwayspromptpin', 'starmenu', 'enableexitcontext', 'exitcontext')],
-		     (dstnum, context))
-	res = cursor.fetchone()
+	meetme = objects.MeetMe(agi, cursor, number = dstnum, context = context)
+	options = ""
 
-	if not res:
-		agi.dp_break("Unknown conference room number '%s'" % dstnum)
-
-	options = ''
-
-	if res['meetmefeatures.mode'] == 'talk':
+	if meetme.mode == "talk":
 		options += "t"
-	elif res['meetmefeatures.mode'] == 'listen':
+	elif meetme.mode == "listen":
 		options += "m"
-	elif res['meetmefeatures.mode'] != 'all':
-		agi.dp_break("Bogus value for conference mode '%s'" % res['meetmefeatures.mode'])
 
-	if res['meetmefeatures.musiconhold']:
-		agi.set_variable('MUSICCLASS()', res['meetmefeatures.musiconhold'])
+	if meetme.musiconhold:
+		agi.set_variable('MUSICCLASS()', meetme.musiconhold)
 		options += "M"
 
-	if res['meetmefeatures.poundexit']:
+	if meetme.poundexit:
 		options += "p"
 
-	if res['meetmefeatures.quiet']:
+	if meetme.quiet:
 		options += "q"
 
-	if res['meetmefeatures.record']:
+	if meetme.record:
 		options += "r"
 
-	if res['meetmefeatures.adminmode']:
+	if meetme.adminmode:
 		options += "a"
 
-	if res['meetmefeatures.announceusercount']:
+	if meetme.announceusercount:
 		options += "c"
 
-	if res['meetmefeatures.announcejoinleave']:
+	if meetme.announcejoinleave:
 		options += "i"
 
-	if res['meetmefeatures.alwayspromptpin']:
+	if meetme.announcejoinleave:
 		options += "P"
 
-	if res['meetmefeatures.starmenu']:
+	if meetme.starmenu:
 		options += "s"
 
-	if res['meetmefeatures.enableexitcontext'] and res['meetmefeatures.exitcontext']:
+	if meetme.enableexitcontext and meetme.exitcontext:
 		options += "X"
-		agi.set_variable('MEETME_EXIT_CONTEXT', res['meetmefeatures.exitcontext'])
+		agi.set_variable('MEETME_EXIT_CONTEXT', meetme.exitcontext)
 
-	agi.set_variable('MEETME_RECORDINGFILE', "/usr/share/asterisk/sounds/web-interface/monitor/meetme-%s-%s" % (dstnum, int(time.time())))
+	agi.set_variable('MEETME_RECORDINGFILE', "/usr/share/asterisk/sounds/web-interface/monitor/meetme-%s-%s" % (meetme.id, int(time.time())))
 	agi.set_variable('XIVO_MEETMEOPTIONS', options)
 
 agid.register(incoming_meetme_set_features)

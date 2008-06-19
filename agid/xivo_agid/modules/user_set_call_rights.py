@@ -1,3 +1,5 @@
+# TODO: see the call_rights module.
+
 __version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2006, 2007, 2008  Proformatique
@@ -18,9 +20,10 @@ __license__ = """
 """
 
 from xivo_agid import agid
+from xivo_agid import objects
 from xivo_agid import call_rights
 
-def _user_set_call_rights(handler, agi, cursor, args):
+def _user_set_call_rights(agi, cursor, args):
 	srcnum = agi.get_variable('REAL_SRCNUM')
 	dstnum = agi.get_variable('REAL_DSTNUM')
 	context = agi.get_variable('REAL_CONTEXT')
@@ -39,19 +42,12 @@ def _user_set_call_rights(handler, agi, cursor, args):
 		call_rights.allow(agi)
 
 	rightcallids = '(' + ','.join((str(el) for el in rightcallidset)) + ')'
-	cursor.query("SELECT ${columns} FROM userfeatures "
-		     "WHERE number = %s "
-		     "AND context = %s "
-		     "AND internal = 0 "
-		     "AND commented = 0",
-		     ('id',),
-		     (srcnum, context))
-	res = cursor.fetchone()
 
-	if not res:
+	try:
+		user = objects.User(agi, cursor, number = srcnum, context = context)
+	except LookupError:
 		call_rights.allow(agi)
 
-	userid = res['id']
 	cursor.query("SELECT ${columns} FROM rightcall "
 		     "INNER JOIN rightcallmember "
 		     "ON rightcall.id = rightcallmember.rightcallid "
@@ -60,7 +56,7 @@ def _user_set_call_rights(handler, agi, cursor, args):
 		     "AND rightcallmember.typeval = %s "
 		     "AND rightcall.commented = 0",
 		     (call_rights.RIGHTCALL_AUTHORIZATION_COLNAME, call_rights.RIGHTCALL_PASSWD_COLNAME),
-		     (userid,))
+		     (user.id,))
 	res = cursor.fetchall()
 	call_rights.apply_rules(agi, res)
 
@@ -70,14 +66,14 @@ def _user_set_call_rights(handler, agi, cursor, args):
 		     "INNER JOIN queue "
 		     "ON queue.name = queuemember.queue_name "
 		     "WHERE groupfeatures.deleted = 0 "
-		     "AND queuemember.userid = %s "
+		     "AND queuemember.userid = %d "
 		     "AND queuemember.usertype = 'user' "
 		     "AND queuemember.category = 'group' "
 		     "AND queuemember.commented = 0 "
 		     "AND queue.category = 'group' "
 		     "AND queue.commented = 0",
 		     ('groupfeatures.id',),
-		     (userid,))
+		     (user.id,))
 	res = cursor.fetchall()
 
 	if res:
@@ -113,9 +109,9 @@ def _user_set_call_rights(handler, agi, cursor, args):
 
 	call_rights.allow(agi)
 
-def user_set_call_rights(handler, agi, cursor, args):
+def user_set_call_rights(agi, cursor, args):
 	try:
-		_user_set_call_rights(handler, agi, cursor, args)
+		_user_set_call_rights(agi, cursor, args)
 	except call_rights.RuleAppliedException:
 		return
 

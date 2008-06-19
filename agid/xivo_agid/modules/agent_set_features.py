@@ -18,24 +18,15 @@ __license__ = """
 """
 
 from xivo_agid import agid
+from xivo_agid import objects
 
-def agent_set_features(handler, agi, cursor, args):
-	number = args[0]
+def agent_set_features(agi, cursor, args):
+	agent = objects.Agent(agi, cursor, number = args[0])
 
-	cursor.query("SELECT ${columns} FROM agentfeatures "
-		     "WHERE number = %s "
-		     "AND commented = 0",
-		     ('silent',),
-		     (number,))
-	res = cursor.fetchone()
+	options = ""
 
-	if not res:
-		agi.dp_break("Unknown agent number '%s'" % number)
-
-	options = ''
-
-	if res['silent']:
-		options += 's'
+	if agent.silent:
+		options += "s"
 
 	agi.set_variable('XIVO_AGENTOPTIONS', options)
 
