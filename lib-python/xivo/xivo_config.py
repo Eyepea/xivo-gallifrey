@@ -29,6 +29,7 @@ import re
 import sys
 import copy
 import yaml
+import shutil
 import os.path
 from ConfigParser import ConfigParser
 from itertools import chain, count
@@ -718,9 +719,9 @@ def load_configuration(conf_source, trace=trace_null):
     return conf
 
 
-def save_configuration(conf, stream, trace=trace_null):
+def save_configuration(conf, file_obj, trace=trace_null):
     """
-    Serialize the internal representation of the configuration to the stream in
+    Serialize the internal representation of the configuration to @file_obj in
     YAML.
     
     This can only be done if the configuration is valid.
@@ -728,7 +729,24 @@ def save_configuration(conf, stream, trace=trace_null):
     """
     if not xys.validate(conf, SCHEMA_NETWORK_CONFIG, trace):
         raise InvalidConfigurationError("Invalid configuration")
-    return yaml.safe_dump(conf, stream=stream, default_flow_style=False, indent=4)
+    result = yaml.safe_dump(conf, stream=file_obj, default_flow_style=False, indent=4)
+    system.flush_sync_file_object(file_obj)
+    return result
+
+
+def load_current_configuration(trace=trace_null):
+    """
+    Load the configuration from the standard current path.
+    """
+    return load_configuration(file(os.path.join(STORE_BASE, STORE_CURRENT, NETWORK_CONFIG_FILE)), trace)
+
+
+def save_configuration_for_transaction(conf, trace=trace_null):
+    """
+    Serialize the internal representation of the XIVO configuration in a file
+    that will be used during the system configuration generation transaction.
+    """
+    return save_configuration(conf, system.file_w_create_directories(os.path.join(STORE_BASE, STORE_TMP, NETWORK_CONFIG_FILE)), trace)
 
 
 def natural_vlan_name(phy, vlanId):
@@ -977,7 +995,7 @@ DHCPD_CONF_FILE = "dhcpd.conf"
 
 class TransactionError(Exception):
     "Error raised on transaction cancellation."
-    def __init__(self, msg, original_exception):
+    def __init__(self, msg, original_exception=None):
         self.__reprmsg = "<%s %r>" % (self.__class__.__name__, msg)
         self.__strmsg = str(msg)
         self.original_exception = original_exception
@@ -1369,14 +1387,26 @@ def autoattrib_conf(conf):
     return conf
 
 
-def start_do_transaction(trace=trace_null):
+def save_configuration_initiate_transaction(conf, trace=trace_null):
     """
-    The simplified configuration is ready in the temporary store directory.
-    This function starts the transaction by moving the temporary directory to
-    the new directory, and the calls transaction_system_configuration().
+    Save XIVO configuration in a place suitable for the system configuration
+    generation transaction, then initiate the transaction but do *not* run it.
+    
+    The transaction will be completed during the next call of
+    transaction_system_configuration() - note that there is such a call at
+    system startup.
     """
+    save_configuration_for_transaction(conf, trace)
     system.sync_no_oserror(trace)
     os.rename(os.path.join(STORE_BASE, STORE_TMP), os.path.join(STORE_BASE, STORE_NEW))
+
+
+def save_configuration_perform_generation_transaction(conf, trace=trace_null):
+    """
+    Save XIVO configuration in a place suitable for the system configuration
+    generation transaction, then initiate and perform the transaction.
+    """
+    save_configuration_initiate_transaction(conf, trace)
     transaction_system_configuration(trace)
 
 
@@ -1386,19 +1416,25 @@ def autoattrib(trace=trace_null):
     Should be called at server startup, after any potential transaction is
     completed by transactional_generation()
     """
-    config = load_configuration(file(os.path.join(STORE_BASE, STORE_CURRENT, NETWORK_CONFIG_FILE)), trace)
+    config = load_current_configuration(trace)
     aaconf = autoattrib_conf(config)
     if aaconf == config:
         return
-    save_configuration(aaconf, system.file_w_create_directories(os.path.join(STORE_BASE, STORE_TMP, NETWORK_CONFIG_FILE)), trace)
-    start_do_transaction(trace)
+    save_configuration_perform_generation_transaction(aaconf)
+
+
+def netif_source_name(ifname):
+    """
+    Return True iff ifname can be a source name for a network interface.
+    """
+    return netif_managed(ifname) and network.is_phy_if(ifname)
 
 
 def netif_target_name(ifname):
     """
     Return True iff ifname can be a target name for a network interface.
     """
-    if not (netif_managed(ifname) and network.is_phy_if(ifname)):
+    if not netif_source_name(ifname):
         return False
     parts = network.split_alpha_num(ifname)
     if len(parts) != 2:
@@ -1408,20 +1444,84 @@ def netif_target_name(ifname):
     return True
 
 
-def rename_ethernet_interface(old_name, new_name):
+def phy_free_in_conf(conf, ifname):
     """
-    XXX
+    Test if @ifname is either absent from @conf, or in the "void".
     """
+    return conf['netIfaces'].get(ifname, 'void') == 'void'
+
+
+def rename_ethernet_interface(old_name, new_name, trace=trace_null):
+    """
+    <XXX>
+    0) check old_name and new_name
+
+    1) lock rules
+    2) load rules && get interfaces known by the system
+    3) if collision refuse to modify (raise exception)
+    3 bis) if old unknown in rules file refuse to modify (raise exception)
+    3 ter) if old unknown by system refuse to modify (raise exception)
+    
+    4) modify rules
+    5) modify other configs if needed
+    6) start the config generation transaction
+    except) rollback this transaction
+    finally) unlock rules
+    7) if no exception:
+       down the interface and udevtrigger and up the interface
+    </XXX>
+    """
+    if not netif_source_name(old_name):
+        raise ValueError, "Invalid source interface name %r" % old_name
     if not netif_target_name(new_name):
         raise ValueError, "Invalid target interface name %r" % new_name
-    udev_repl = [({'NAME': ['=', old_name]}, {'NAME': ['=', new_name]})]
-    udev.replace_simple_in_file(udev.PERSISTENT_NET_RULES_FILE, udev_repl, trace)
-
-
-__all__ = (
-    'ProvGeneralConf', 'LoadConfig', 'txtsubst', 'well_formed_provcode',
-    'ipv4_from_macaddr', 'macaddr_from_ipv4',
-    'PhoneVendor', 'register_phone_vendor_class', 'phone_factory',
-    'phone_vendor_iter_key_class', 'phone_desc_by_ua',
-    'transaction_system_configuration',
-)
+    if old_name == new_name:
+        raise ValueError, "Same source and target name %s" % old_name
+    
+    # TODO: detect if a previous renaming operation has been interrupted the
+    # hard way (kill -9, power failure) and rollback if possible.
+    # This will be better placed in an other function.
+    
+    udev.lock_rules_file(udev.PERSISTENT_NET_RULES_FILE)
+    try:
+        try:
+            net_rules = udev.parse_file_nolock(udev.PERSISTENT_NET_RULES_FILE, trace)
+            rule_iface_set = set((rule['NAME'][1] for rule in net_rules if 'NAME' in rule))
+            system_iface_set = set(network.get_filtered_phys())
+            known_iface_set = rule_iface_set.union(system_iface_set)
+            
+            config = load_current_configuration(trace)
+            
+            if new_name in known_iface_set:
+                raise TransactionError("Target interface name is already taken: %r" % new_name)
+            
+            if old_name not in rule_iface_set:
+                raise TransactionError("Source interface name is not in z25_persistent-net.rules: %r" % old_name)
+            if old_name not in rule_iface_set:
+                raise TransactionError("Source interface name is not known by the system: %r" % old_name)
+            
+            if not phy_free_in_conf(config, new_name):
+                raise TransactionError("Target interface name busy in XIVO configuration: %r" % new_name)
+            
+            if old_name not in config['netIfaces']:
+                raise TransactionError("Source interface name does not exist in XIVO configuration: %r" % old_name)
+            
+            shutil.copy2(udev.PERSISTENT_NET_RULES_FILE, udev.PERSISTENT_NET_RULES_FILE + ".orig")
+            
+            match_repl_lst = [({'NAME': ['=', old_name]}, {'NAME': ['=', new_name]})]
+            udev.replace_simple_in_file_nolock(udev.PERSISTENT_NET_RULES_FILE, match_repl_lst, trace)
+            
+            config['netIfaces'][new_name] = config['netIfaces'][old_name]
+            del config['netIfaces'][old_name]
+            save_configuration_initiate_transaction(config, trace)
+            
+        except:
+            except_tb.log_exception(trace.err) # XXX keep that or let the caller log exceptions?
+            if os.path.exists(udev.PERSISTENT_NET_RULES_FILE + ".orig"):
+                os.rename(udev.PERSISTENT_NET_RULES_FILE + ".orig", udev.PERSISTENT_NET_RULES_FILE)
+            raise
+	
+	
+	
+    finally:
+        udev.unlock_rules_file(udev.PERSISTENT_NET_RULES_FILE)
