@@ -230,6 +230,8 @@ class BaseCommand:
                 return
         def ami_queueparams(self, astid, event):
                 return
+        def ami_queuecallerabandon(self, astid, event):
+                return
         def ami_queuestatuscomplete(self, astid, event):
                 print 'AMI %s QueueStatusComplete' % astid
                 return

@@ -50,6 +50,11 @@ class AMIClass:
                 self.password  = password
                 self.events    = events
                 self.i = 1
+                self.aorgcmd = 'AOriginate'
+
+        def set_aoriginate(self, aoriginatecmd):
+                self.aorgcmd = aoriginatecmd
+
         # \brief Connection to a socket.
         def connect(self):
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -261,8 +266,8 @@ class AMIClass:
                 # originate a call btw src and dst
                 # src will ring first, and dst will ring when src responds
                 try:
-                        #print 'AOriginate', phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext
-                        ret = self.sendcommand('AOriginate', [('Channel', phoneproto + '/' + phonesrc),
+                        #print self.aorgcmd, phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext
+                        ret = self.sendcommand(self.aorgcmd, [('Channel', phoneproto + '/' + phonesrc),
                                                               ('Exten', phonedst),
                                                               ('Context', locext),
                                                               ('Priority', '1'),
@@ -283,7 +288,7 @@ class AMIClass:
                 # originate a call btw src and dst
                 # src will ring first, and dst will ring when src responds
                 try:
-                        #print 'AOriginate_var', phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext
+                        #print self.aorgcmd, phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext
                         command_details = [('Channel', phoneproto + '/' + phonesrc),
                                            ('Exten', phonedst),
                                            ('Context', locext),
@@ -297,7 +302,7 @@ class AMIClass:
                                 extravars['XIVO_ORIGSRCNUM'] = phonesrc
                         for var, val in extravars.iteritems():
                                 command_details.append(('Variable', '%s=%s'  % (var, val)))
-                        ret = self.sendcommand('AOriginate', command_details)
+                        ret = self.sendcommand(self.aorgcmd, command_details)
                         reply = self.readresponse('')
                         return ret
                 except self.AMIError, exc:

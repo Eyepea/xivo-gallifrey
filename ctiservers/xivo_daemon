@@ -400,6 +400,7 @@ evfunction_to_method_name = {
         'QueueMemberStatus':    'ami_queuememberstatus',
         'QueueStatusComplete':  'ami_queuestatuscomplete',
         'QueueEntry':           'ami_queueentry',
+        'QueueCallerAbandon':   'ami_queuecallerabandon',
         'Status':               'ami_status',
         'StatusComplete':       'ami_statuscomplete',
         'AgentsComplete':       'ami_agentscomplete',
@@ -485,6 +486,8 @@ def connect_to_AMI(address, loginname, password, events_on):
         Connects to the AMI through AMIClass.
         """
         lAMIsock = xivo_ami.AMIClass(address, loginname, password, events_on)
+        if len(opt_aoriginate) > 0:
+                lAMIsock.set_aoriginate(opt_aoriginate)
         try:
                 lAMIsock.connect()
                 lAMIsock.login()
@@ -565,7 +568,8 @@ while True: # loops over the reloads
         asterisklist = []
         contextlist = []
         userlists = []
-
+        opt_aoriginate = ''
+        
         userinfo_by_requester = {}
 
         cconf = cti_config.Config(XIVOCONFFILE)
@@ -586,6 +590,8 @@ while True: # loops over the reloads
                 contextlist = xivoconf_general['contextlist'].split(',')
         if 'userlists' in xivoconf_general:
                 userlists = xivoconf_general['userlists'].split(',')
+        if 'aoriginate' in xivoconf_general:
+               opt_aoriginate = xivoconf_general['aoriginate']
 
         xivoconf_commandset = cconf.read_section(commandset)
 

@@ -357,7 +357,11 @@ class XivoCTICommand(BaseCommand):
                                 self.queues_list[astid] = {}
                         for queue in results:
                                 if queue[0] not in self.queues_list[astid]:
-                                        self.queues_list[astid][queue[0]] = {'agents' : {}, 'channels' : [], 'ncalls' : 0}
+                                        self.queues_list[astid][queue[0]] = {'agents' : {},
+                                                                             'channels' : []}
+                                        for field in self.QueueStats:
+                                                self.queues_list[astid][queue[0]][field] = ''
+
                 for var, val in self.xivoconf.iteritems():
                         if var.find('-') > 0:
                                 [name, prop] = var.split('-', 1)
@@ -696,6 +700,7 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def ami_channelreload(self, astid, event):
+                # Asterisk 1.4 event
                 print astid, event
                 # {'User_Count': '12', 'Peer_Count': '12', 'Registry_Count': '0', 'Privilege': 'system,all', 'Event': 'ChannelReload', 'Channel': 'SIP', 'ReloadReason': 'RELOAD (Channel module reload)'}
                 return
@@ -818,12 +823,20 @@ class XivoCTICommand(BaseCommand):
                                 print ' (a) ', aname, aargs
                 return
 
+        def ami_queuecallerabandon(self, astid, event):
+                # Asterisk 1.4 event
+                print event
+                return
+        
         def ami_queueentry(self, astid, event):
                 queue = event.get('Queue')
                 if astid not in self.queues_list:
                         self.queues_list[astid] = {}
                 if queue not in self.queues_list[astid]:
-                        self.queues_list[astid][queue] = {'agents' : {}, 'channels' : [], 'ncalls' : 0}
+                        self.queues_list[astid][queue] = {'agents' : {},
+                                                          'channels' : []}
+                        for field in self.QueueStats:
+                                self.queues_list[astid][queue][field] = ''
                 # {'CallerID': '102', 'CallerIDName': 'qcb_00000', 'Position': '1', 'Channel': 'SIP/102-081e5f00', 'Wait': '8'}
                 return
                 
@@ -836,7 +849,10 @@ class XivoCTICommand(BaseCommand):
                 if astid not in self.queues_list:
                         self.queues_list[astid] = {}
                 if queue not in self.queues_list[astid]:
-                        self.queues_list[astid][queue] = {'agents' : {}, 'channels' : [], 'ncalls' : 0}
+                        self.queues_list[astid][queue] = {'agents' : {},
+                                                          'channels' : []}
+                        for field in self.QueueStats:
+                                self.queues_list[astid][queue][field] = ''
                 if location not in self.queues_list[astid][queue]['agents']:
                         self.queues_list[astid][queue]['agents'][location] = [event.get('Paused'), event.get('Status'), event.get('Membership')]
                 return
@@ -893,15 +909,19 @@ class XivoCTICommand(BaseCommand):
                                 self.__send_msg_to_cti_clients__(msg)
                 return
 
+        QueueStats = ['ServicelevelPerf', 'Abandoned', 'Max', 'Completed', 'ServiceLevel', 'Weight', 'Holdtime', 'Calls']
+
         def ami_queueparams(self, astid, event):
                 queue = event.get('Queue')
-                ncalls = event.get('Calls')
                 # 'ServicelevelPerf': '0.0', 'Abandoned': '0', 'Max': '0', 'Completed': '0', 'ServiceLevel': '0', 'Weight': '0', 'Holdtime': '0'
                 # qcb_00001    has 0 calls (max unlimited) in 'roundrobin' strategy (1s holdtime), W:0, C:1, A:1, SL:0.0% within 0s
                 if astid not in self.queues_list:
                         self.queues_list[astid] = {}
                 if queue not in self.queues_list[astid]:
-                        self.queues_list[astid][queue] = {'agents' : {}, 'channels' : [], 'ncalls' : int(ncalls)}
+                        self.queues_list[astid][queue] = {'agents' : {},
+                                                          'channels' : []}
+                        for field in self.QueueStats:
+                                self.queues_list[astid][queue][field] = event.get(field)
                 return
 
         def ami_queuemember(self, astid, event):
@@ -910,7 +930,10 @@ class XivoCTICommand(BaseCommand):
                 if astid not in self.queues_list:
                         self.queues_list[astid] = {}
                 if queue not in self.queues_list[astid]:
-                        self.queues_list[astid][queue] = {'agents' : {}, 'channels' : [], 'ncalls' : 0}
+                        self.queues_list[astid][queue] = {'agents' : {},
+                                                          'channels' : []}
+                        for field in self.QueueStats:
+                                self.queues_list[astid][queue][field] = ''
                 if location not in self.queues_list[astid][queue]['agents']:
                         self.queues_list[astid][queue]['agents'][location] = [event.get('Paused'), event.get('Status'), event.get('Membership')]
                 return
@@ -938,19 +961,22 @@ class XivoCTICommand(BaseCommand):
 
 
         def ami_join(self, astid, event):
-                # print 'AMI Queue', event
+                print 'AMI Queue', event
                 chan  = event.get('Channel')
                 clid  = event.get('CallerID')
                 queue = event.get('Queue')
-                count = int(event.get('Count'))
+                count = event.get('Count')
                 
                 if astid not in self.queues_list:
                         self.queues_list[astid] = {}
                 if queue not in self.queues_list[astid]:
-                        self.queues_list[astid][queue] = {'agents' : {}, 'channels' : [], 'ncalls' : 0}
+                        self.queues_list[astid][queue] = {'agents' : {},
+                                                          'channels' : []}
+                        for field in self.QueueStats:
+                                self.queues_list[astid][queue][field] = ''
                 if chan not in self.queues_list[astid][queue]['channels']:
                         self.queues_list[astid][queue]['channels'].append(chan)
-                self.queues_list[astid][queue]['ncalls'] = int(count)
+                self.queues_list[astid][queue]['Calls'] = count
                 self.__send_msg_to_cti_clients__('update-queues=queuechannels/%s/%s/%s' % (astid, queue, count))
 
                 print 'AMI Queue JOIN ', queue, chan, count
@@ -960,12 +986,12 @@ class XivoCTICommand(BaseCommand):
                 # print 'AMI Queue', event
                 chan  = event.get('Channel')
                 queue = event.get('Queue')
-                count = int(event.get('Count'))
+                count = event.get('Count')
 
                 if astid in self.queues_list and queue in self.queues_list[astid] and chan in self.queues_list[astid][queue]['channels']:
                         self.queues_list[astid][queue]['channels'].remove(chan)
                         print 'AMI Queue LEAVE', len(self.queues_list[astid][queue]['channels']), count
-                self.queues_list[astid][queue]['ncalls'] = int(count)
+                self.queues_list[astid][queue]['Calls'] = count
                 self.__send_msg_to_cti_clients__('update-queues=queuechannels/%s/%s/%s' % (astid, queue, count))
 
                 if astid not in self.queues_channels_list:
@@ -1127,7 +1153,10 @@ class XivoCTICommand(BaseCommand):
                                         for astid, qlist in self.queues_list.iteritems():
                                                 lst = []
                                                 for qname, qprop in qlist.iteritems():
-                                                        lst.append('%s:%d' % (qname, qprop['ncalls']))
+                                                        lstt = []
+                                                        for prop in self.QueueStats:
+                                                                lstt.append('%s:%s' % (prop, qprop.get(prop)))
+                                                        lst.append('%s:%s' % (qname, ':'.join(lstt)))
                                                 self.__send_msg_to_cti_client__(userinfo,
                                                                                 'queues-list=%s;%d;%s' %(astid, allowed,
                                                                                                          ','.join(lst)))
@@ -1869,8 +1898,8 @@ class XivoCTICommand(BaseCommand):
                 company = userinfo['company']
                 username = userinfo['user']
 
-                if 'sessiontimestamp' in userinfo:
-                        userinfo['sessiontimestamp'] = time.time()
+                if 'login' in userinfo and 'sessiontimestamp' in userinfo.get('login'):
+                        userinfo['login']['sessiontimestamp'] = time.time()
                 if state in allowed_states:
                         userinfo['state'] = state
                 else:
