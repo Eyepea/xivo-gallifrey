@@ -28,10 +28,26 @@
 #include <ctype.h>
 
 
+/* CONSTANTS */
+
+#define DEFAULT_INTERFACES_FILEPATH "/etc/network/interfaces"
+
+/* for tests : */
+/* #define INITIAL_LINE_BUFFER_SIZE	4 */
+/* #define MINIMAL_READ_BUFFER_SIZE	2 */
+
+/* for production : */
+#define INITIAL_LINE_BUFFER_SIZE	4096
+#define MINIMAL_READ_BUFFER_SIZE	16
+
+
 /* PROTOTYPES */
 
 static void fatal(const char* fmt, ...)
 __attribute__ ((noreturn, format(printf, 1, 2)));
+
+#define FATAL_MEM()							\
+	fatal("%s(): memory allocation failed\n", __FUNCTION__)
 
 
 /* GLOBALS */
@@ -84,14 +100,6 @@ static void fatal(const char* fmt, ...)
 	abort();
 }
 
-/* for tests : */
-#define INITIAL_LINE_BUFFER_SIZE	4
-#define MINIMAL_READ_BUFFER_SIZE	2
-
-/* for production : */
-/* #define INITIAL_LINE_BUFFER_SIZE	4096 */
-/* #define MINIMAL_READ_BUFFER_SIZE	16 */
-
 struct line {
 	char *buf;
 	size_t len;	/* excluding the trailing \0 */
@@ -109,12 +117,32 @@ static struct line line_new(size_t bufsz)
 	line.bufsz = bufsz;
 
 	if (line.buf == NULL)
-		fatal("line_new(): memory allocation failed\n");
+		FATAL_MEM();
+
+	return line;
+}
+
+static struct line line_new_filled(const char *str, size_t len)
+{
+	struct line line;
+
+	assert(((ssize_t)len) >= 0);
+
+	line.buf = malloc(len + 1);
+	line.len = len;
+	line.bufsz = len + 1;
+
+	if (line.buf == NULL)
+		FATAL_MEM();
+
+	memcpy(line.buf, str, len);
+	line.buf[len] = '\0';
 
 	return line;
 }
 
 #define STANDARD_LINE_ASSERTIONS					\
+	assert(line != NULL);						\
 	assert(line->buf != NULL);					\
 	assert(((ssize_t)line->bufsz) > 0);				\
 	assert(line->len < line->bufsz);
@@ -129,7 +157,7 @@ static void line_realloc(struct line *line, size_t bufsz)
 	line->bufsz = bufsz;
 
 	if (line->buf == NULL)
-		fatal("line_realloc(): memory allocation failed\n");
+		FATAL_MEM();
 }
 
 static int line_is_empty(const struct line *line)
@@ -240,6 +268,45 @@ static void line_remove_trailing_newline(struct line *line)
 		line_trunc(line, line->len - 1);
 }
 
+/* Copy the first word of line starting after potential spaces at position 
+   *pos to out_buf which is a buffer of size out_bufsz.  Update *pos so that
+   it points to the first space in line after this word or to the end of the
+   line if the word is not followed by spaces.  out_buf is always zero
+   terminated and this function returns its length not including the
+   terminating '\0'.
+   Note that if the line contains only spaces or is empty, *pos is updated to
+   point to the terminating '\0' of line, out_buf[0] is set to '\0' and 0 is
+   returned. */
+static size_t line_extract_word(const struct line *line, size_t *pos,
+                                char *out_buf, size_t out_bufsz)
+{
+	size_t out_pos = 0;
+
+	STANDARD_LINE_ASSERTIONS
+	assert(pos != NULL);
+	assert(*pos <= line->len);
+	assert(out_buf != NULL);
+	assert(((ssize_t)out_bufsz) > 0);
+
+	/* skip leading spaces */
+	while (line->buf[*pos] && isspace(line->buf[*pos]))
+		(*pos)++;
+
+	/* copy the first word to out_buf and make *pos
+	   point on the first space after it in line */
+	while (line->buf[*pos] && !isspace(line->buf[*pos])) {
+		if (out_pos < out_bufsz - 1) {
+			out_buf[out_pos] = line->buf[*pos];
+			out_pos++;
+		}
+		(*pos)++;
+	}
+
+	out_buf[out_pos] = '\0';
+
+	return out_pos;
+}
+
 static void line_free(struct line *line)
 {
 	STANDARD_LINE_ASSERTIONS
@@ -270,8 +337,8 @@ static int line_fgets_append(struct line *line, FILE* f)
 		s = fgets(line->buf + line->len, remaining_bufsz, f);
 		if (s == NULL && ferror(f)) {
 			perror(program_name);
-			fatal("read_interfaces_line(): aborting due to "
-			      "previous error\n");
+			fatal("%s(): aborting due to "
+			      "previous error\n", __FUNCTION__);
 		}
 
 		/* the standard libc should really be dumped in a trash... */
@@ -308,9 +375,9 @@ retry:
 		line_trunc(line, line->len - 1);
 		if (!f_run) {
 			fprintf(stderr,
-				"%s: read_interfaces_line(): WARNING "
+				"%s: %s(): WARNING "
 				"continued line at end of file\n",
-				program_name);
+				program_name, __FUNCTION__);
 			break;
 		}
 		f_run = line_fgets_append(line, f);
@@ -325,11 +392,65 @@ retry:
 	return 1;
 }
 
+struct linked_str {
+	struct line line;
+	struct linked_str *next;
+};
+
+static struct linked_str *add_linked_str(struct linked_str *next,
+                                         const char *str,
+					 size_t len)
+{
+	struct linked_str *new_link;
+
+	new_link = malloc(sizeof(*new_link));
+
+	if (new_link == NULL)
+		FATAL_MEM();
+
+	new_link->line = line_new_filled(str, len);
+	new_link->next = next;
+
+	return new_link;
+}
+
+static int is_in_linked_str(struct linked_str *first, const char *str)
+{
+	for (struct linked_str *current = first;
+	     current != NULL;
+	     current = current->next) {
+		if (0 == strcmp(current->line.buf, str))
+			return 1;
+	}
+
+	return 0;
+}
+
+static void linked_str_free(struct linked_str *first)
+{
+	struct linked_str *current = first;
+	struct linked_str *next;
+
+	while (current != NULL) {
+		next = current->next;
+		line_free(&current->line);
+		free(current);
+		current = next;
+	}
+}
+
 int main(int argc, char *argv[])
 {
 	struct line line;
-	static const char* allow = "";
-	static const char* interfaces = "/etc/network/interfaces";
+	static const char *allow = NULL;
+	static const char *interfaces = DEFAULT_INTERFACES_FILEPATH;
+
+	#define WORD_BUFFER_SIZE 80
+	static char firstword[WORD_BUFFER_SIZE];
+	static char iface_name[WORD_BUFFER_SIZE];
+
+	struct linked_str *allowed_ifaces = NULL;
+
 	FILE *f;
 
 	if (argv[0])
@@ -384,20 +505,65 @@ bad_cmd_line:
 		exit(42);
 	}
 
+	line = line_new(INITIAL_LINE_BUFFER_SIZE);
+
 	f = fopen(interfaces, "r");
 	if (f == NULL)
 		fatal("couldn't read interfaces file \"%s\"\n", interfaces);
 
-	for (line = line_new(INITIAL_LINE_BUFFER_SIZE);
-	     read_interfaces_line(f, &line); ) {
-		/* TODO */
-		/* <TEST> */
-		puts(line.buf);
-		/* </TEST> */
-	}
-	line_free(&line);
+	if (allow != NULL) {
+		/* load allowed interfaces if the --allow opt has been given */
+		while (read_interfaces_line(f, &line)) {
+			const char *allowed;
+			size_t pos = 0;
+			size_t wordlen;
 
+			line_extract_word(&line, &pos, firstword,
+					  WORD_BUFFER_SIZE);
+
+			if (strcmp(firstword, "auto") == 0)
+				allowed = firstword;
+			else if (strncmp(firstword, "allow-", 6) == 0)
+				allowed = firstword + 6;
+			else
+				continue;
+
+			if (strcmp(allow, allowed) != 0)
+				continue;
+
+			while ((wordlen = line_extract_word(&line, &pos, 
+							    iface_name,
+							    WORD_BUFFER_SIZE)))
+				allowed_ifaces = add_linked_str(allowed_ifaces,
+								iface_name,
+								wordlen);
+		}
+		rewind(f);
+	}
+
+	/* last read pass and emit output */
+	while (read_interfaces_line(f, &line)) {
+		size_t pos = 0;
+		size_t wordlen;
+
+		line_extract_word(&line, &pos, firstword, WORD_BUFFER_SIZE);
+
+		if (strcmp(firstword, "iface") == 0) {
+			wordlen = line_extract_word(&line, &pos, iface_name,
+						    WORD_BUFFER_SIZE);
+			if (wordlen > 0) {
+				if (allow == NULL
+				    || is_in_linked_str(allowed_ifaces,
+							iface_name))
+					puts(iface_name);
+			}
+		}
+	}
+
+	/* cleanup */
+	linked_str_free(allowed_ifaces);
 	fclose(f);
+	line_free(&line);
 
 	return 0;
 }
