@@ -28,7 +28,9 @@ MY_CFLAGS =	-std=gnu99			\
 		-pedantic			\
 		-Wshadow
 
-CFLAGS?=-O2 -fomit-frame-pointer
+CFLAGS?=-O2
+
+CFLAGS+=-fomit-frame-pointer
 
 ADD_CFLAGS?=
 
