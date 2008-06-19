@@ -53,4 +53,5 @@ clean:
 
 .PHONY: install
 install: $(binary)
+	install -d -m 755 $(DESTDIR)$(PREFIX)/bin
 	install -m 755 $(binary) $(DESTDIR)$(PREFIX)/bin/$(binary)
