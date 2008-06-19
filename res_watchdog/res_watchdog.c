@@ -54,6 +54,13 @@ typedef struct watchdog_pvt {
     struct watchdog_pvt *next;
 } watchdog_pvt;
 
+/* Function Prototypes */
+int load_module(void);
+int unload_module(void);
+char *description(void);
+int usecount(void);
+char *key(void);
+
 static void *do_watchdog_thread(void *data)
 {
     struct watchdog_pvt *woof = (struct watchdog_pvt *)data;
@@ -251,7 +258,7 @@ int load_module(void)
 	if (cfg) {
 	
 	    cat = ast_category_browse(cfg, NULL);
-	
+
 	    while(cat) {
 
 		utype = ast_variable_retrieve(cfg, cat, "type");
@@ -342,7 +349,12 @@ int usecount(void)
 	return 1;
 }
 
-char *key()
+char *key(void)
 {
 	return ASTERISK_GPL_KEY;
 }
+
+AST_MODULE_INFO(ASTERISK_GPL_KEY, AST_MODFLAG_GLOBAL_SYMBOLS, "Watchdog API",
+		.load = load_module,
+		.unload = unload_module,
+		);

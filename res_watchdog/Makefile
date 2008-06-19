@@ -8,7 +8,7 @@
 
 # you can override default options by calling make OPTIONS=...
 CFLAGS ?= -O2
-Z_CFLAGS = $(CFLAGS) -D _GNU_SOURCE -Wall -Wmissing-prototypes -Wstrict-prototypes $(OPTIONS)
+Z_CFLAGS = $(CFLAGS) -D _GNU_SOURCE -DAST_MODULE=\"res_watchdog\" -Wall -Wmissing-prototypes -Wstrict-prototypes $(OPTIONS)
 LIBS ?=
 Z_LIBS = $(LIBS) -lpthread
 
