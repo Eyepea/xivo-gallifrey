@@ -1,1 +1,1 @@
-__all__ = ("agid", "bsfilter", "call_rights", "fastagi")
+__all__ = ("agid", "objects", "call_rights", "fastagi")
