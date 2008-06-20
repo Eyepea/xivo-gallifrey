@@ -1185,6 +1185,8 @@ def transactional_generation(store_base, store_subs, gen_base, gen_subs, generat
 def generate_system_configuration(to_gen, prev_gen, current_xivo_conf, trace=trace_null):
     """
     Generate system configuration from our own configuration model.
+    
+    TODO: generate /etc/default/ifplugd
     """
     os.mkdir(to_gen)
     
@@ -1401,6 +1403,26 @@ def save_configuration_initiate_transaction(conf, trace=trace_null):
     os.rename(os.path.join(STORE_BASE, STORE_TMP), os.path.join(STORE_BASE, STORE_NEW))
 
 
+def transaction_just_initiatiated():
+    """
+    Return True if the new store directory exists, or False.
+    """
+    return os.path.exists(os.path.join(STORE_BASE, STORE_NEW))
+
+
+def undo_transaction_initiation():
+    """
+    Cancel a transaction that has just been initiated but for which absolutely
+    no work of transactional_generation() has been performed yet.
+    
+    WARNING: the temporary store directory must not exists - and when this
+    function completes it still won't exist.
+    """
+    # make the new store directory disappear atomically
+    os.rename(os.path.join(STORE_BASE, STORE_NEW), os.path.join(STORE_BASE, STORE_TMP))
+    system.rm_rf(os.path.join(STORE_BASE, STORE_TMP))
+
+
 def save_configuration_perform_generation_transaction(conf, trace=trace_null):
     """
     Save XIVO configuration in a place suitable for the system configuration
@@ -1453,23 +1475,11 @@ def phy_free_in_conf(conf, ifname):
 
 def rename_ethernet_interface(old_name, new_name, trace=trace_null):
     """
-    <XXX>
-    0) check old_name and new_name
-
-    1) lock rules
-    2) load rules && get interfaces known by the system
-    3) if collision refuse to modify (raise exception)
-    3 bis) if old unknown in rules file refuse to modify (raise exception)
-    3 ter) if old unknown by system refuse to modify (raise exception)
+    Rename the @old_name physical interface to @new_name.
+    On internal failure, the operation is undone.
     
-    4) modify rules
-    5) modify other configs if needed
-    6) start the config generation transaction
-    except) rollback this transaction
-    finally) unlock rules
-    7) if no exception:
-       down the interface and udevtrigger and up the interface
-    </XXX>
+    XXX: On external failure (kill -9, power outage), a small time window
+    remains where the configuration could be leaved in an inconsistent state.
     """
     if not netif_source_name(old_name):
         raise ValueError, "Invalid source interface name %r" % old_name
@@ -1481,6 +1491,16 @@ def rename_ethernet_interface(old_name, new_name, trace=trace_null):
     # TODO: detect if a previous renaming operation has been interrupted the
     # hard way (kill -9, power failure) and rollback if possible.
     # This will be better placed in an other function.
+    
+    can_generate_and_start = False
+    can_udevtrigger = False
+    
+    def cancel_rename_transaction():
+        "Cancel modifications of the configuration performed by rename_ethernet_interface()"
+        if transaction_just_initiatiated():
+            undo_transaction_initiation()
+        if os.path.exists(udev.PERSISTENT_NET_RULES_FILE + ".orig"):
+            os.rename(udev.PERSISTENT_NET_RULES_FILE + ".orig", udev.PERSISTENT_NET_RULES_FILE)
     
     udev.lock_rules_file(udev.PERSISTENT_NET_RULES_FILE)
     try:
@@ -1515,13 +1535,29 @@ def rename_ethernet_interface(old_name, new_name, trace=trace_null):
             del config['netIfaces'][old_name]
             save_configuration_initiate_transaction(config, trace)
             
+            can_generate_and_start = True
+            network.force_shutdown(old_name, trace)
         except:
             except_tb.log_exception(trace.err) # XXX keep that or let the caller log exceptions?
-            if os.path.exists(udev.PERSISTENT_NET_RULES_FILE + ".orig"):
-                os.rename(udev.PERSISTENT_NET_RULES_FILE + ".orig", udev.PERSISTENT_NET_RULES_FILE)
+            cancel_rename_transaction()
             raise
-	
-	
-	
+        
+        can_udevtrigger = True
+        
     finally:
         udev.unlock_rules_file(udev.PERSISTENT_NET_RULES_FILE)
+    
+    if can_udevtrigger:
+        try:
+            # NOTE: udev.trigger() must probably not be called with a rules file locked
+            udev.trigger(trace)
+        except udev.TriggerError:
+            udev.lock_rules_file(udev.PERSISTENT_NET_RULES_FILE)
+            try:
+                cancel_rename_transaction()
+            finally:
+                udev.unlock_rules_file(udev.PERSISTENT_NET_RULES_FILE)
+    
+    if can_generate_and_start:
+        transaction_system_configuration(trace)
+        network.ifplugd_start(trace)
