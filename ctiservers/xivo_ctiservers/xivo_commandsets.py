@@ -129,7 +129,7 @@ class BaseCommand:
         def cliaction(self, connid, command):
                 return
 
-        def askstatus(self, astid, amisfd, npl):
+        def askstatus(self, astid, npl):
                 return
 
 ##        def update_srv2clt(self, phoneinfo):
@@ -171,6 +171,8 @@ class BaseCommand:
         def ami_aoriginatefailure(self, astid, event):
                 return
         def ami_originatefailure(self, astid, event):
+                return
+        def ami_originateresponse(self, astid, event):
                 return
         def ami_messagewaiting(self, astid, event):
                 return

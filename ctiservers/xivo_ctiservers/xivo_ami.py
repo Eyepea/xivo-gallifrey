@@ -176,7 +176,6 @@ class AMIClass:
                                                        [('Username', self.loginname),
                                                         ('Secret', self.password),
                                                         ('Events', 'off')])
-                        reply = self.readresponse('')
                         return ret
                 except self.AMIError, exc:
                         return False
@@ -206,7 +205,6 @@ class AMIClass:
                 try:
                         self.sendcommand('Hangup',
                                          [('Channel', channel)])
-                        self.readresponse('')
                         ret += 1
                 except self.AMIError, exc:
                         pass
@@ -217,7 +215,6 @@ class AMIClass:
                         try:
                                 self.sendcommand('Hangup',
                                                  [('Channel', channel_peer)])
-                                self.readresponse('')
                                 ret += 2
                         except self.AMIError, exc:
                                 pass
@@ -236,7 +233,6 @@ class AMIClass:
                                 ret = self.sendcommand('SetVar', [('Channel', chan),
                                                                   ('Variable', var),
                                                                   ('Value', val)])
-                        reply = self.readresponse('')
                         return ret
                 except self.AMIError, exc:
                         return False
@@ -258,7 +254,6 @@ class AMIClass:
                                                              ('Variable', 'XIVO_ORIGSRCNAME=%s' % cidnamesrc),
                                                              ('Variable', 'XIVO_ORIGSRCNUM=%s'  % phonesrc),
                                                              ('Async', 'true')])
-                        reply = self.readresponse('')
                         return ret
                 except self.AMIError, exc:
                         return False
@@ -280,7 +275,6 @@ class AMIClass:
                                                               ('Variable', 'XIVO_ORIGSRCNAME=%s' % cidnamesrc),
                                                               ('Variable', 'XIVO_ORIGSRCNUM=%s'  % phonesrc),
                                                               ('Async', 'true')])
-                        reply = self.readresponse('')
                         return ret
                 except self.AMIError, exc:
                         return False
@@ -307,7 +301,6 @@ class AMIClass:
                         for var, val in extravars.iteritems():
                                 command_details.append(('Variable', '%s=%s'  % (var, val)))
                         ret = self.sendcommand(self.aorgcmd, command_details)
-                        reply = self.readresponse('')
                         return ret
                 except self.AMIError, exc:
                         return False
@@ -319,7 +312,6 @@ class AMIClass:
                 try:
                         ret = self.sendcommand('ExtensionState', [('Exten', extension),
                                                                   ('Context', context)])
-                        reply = self.readresponse('')
                         return ret
                 except self.AMIError, exc:
                         return False
@@ -331,7 +323,6 @@ class AMIClass:
                 try:
                         ret = self.sendcommand('AgentCallbackLogin', [('Agent', agentnum),
                                                                       ('Exten', extension)])
-                        reply = self.readresponse('')
                         return ret
                 except self.AMIError, exc:
                         return False
@@ -342,7 +333,6 @@ class AMIClass:
         def agentlogoff(self, agentnum):
                 try:
                         ret = self.sendcommand('AgentLogoff', [('Agent', agentnum)])
-                        reply = self.readresponse('')
                         return ret
                 except self.AMIError, exc:
                         return False
@@ -356,7 +346,6 @@ class AMIClass:
                                                             ('Interface', interface),
                                                             ('Penalty', '1'),
                                                             ('Paused', paused)])
-                        reply = self.readresponse('')
                         return ret
                 except self.AMIError, exc:
                         return False
@@ -368,7 +357,6 @@ class AMIClass:
                 try:
                         ret = self.sendcommand('QueueRemove', [('Queue', queuename),
                                                                ('Interface', interface)])
-                        reply = self.readresponse('')
                         return ret
                 except self.AMIError, exc:
                         return False
@@ -381,7 +369,6 @@ class AMIClass:
                         ret = self.sendcommand('QueuePause', [('Queue', queuename),
                                                               ('Interface', interface),
                                                               ('Paused', paused)])
-                        reply = self.readresponse('')
                         return ret
                 except self.AMIError, exc:
                         return False
@@ -411,7 +398,6 @@ class AMIClass:
                                            ('Context', context),
                                            ('Priority', '1')]
                         ret = self.sendcommand('Redirect', command_details)
-                        reply = self.readresponse('')
                         return ret
                 except self.AMIError, exc:
                         return False
@@ -425,7 +411,6 @@ class AMIClass:
                                                           ('Exten', extension),
                                                           ('Context', context),
                                                           ('Priority', '1')])
-                        reply = self.readresponse('')
                         return ret
                 except self.AMIError, exc:
                         return False
@@ -443,7 +428,6 @@ class AMIClass:
                                                              ('Context', 'macro-txfax'),
                                                              ('Extension', 's'),
                                                              ('Priority', '1')])
-                        reply = self.readresponse('')
                         return ret
                 except self.AMIError, exc:
                         return False
@@ -453,3 +437,56 @@ class AMIClass:
                         return False
                 except Exception, exc:
                         return False
+
+class AMIList:
+        def __init__(self):
+                self.config = {}
+                self.ami = {}
+                self.rami = {}
+                return
+
+        def setconfig(self, astid, address, loginname, password):
+                self.config[astid] = [address, loginname, password]
+                return
+        
+        def connect(self, astid):
+                [address, loginname, password] = self.config[astid]
+                if astid not in self.ami:
+                        self.ami[astid] = None
+                if self.ami[astid] is None:
+                        log_debug(SYSLOG_INFO, '%s AMI : attempting to connect' % astid)
+                        amicl = AMIClass(address, loginname, password, True)
+                        amicl.connect()
+                        amicl.login()
+                        
+                        amicl.sendstatus()
+                        amicl.sendagents()
+                        amicl.sendqueuestatus()
+                        
+                        self.ami[astid] = amicl
+                        self.rami[amicl.fd] = astid
+                else:
+                        log_debug(SYSLOG_INFO, '%s AMI : already connected %s'
+                                  % (astid, self.ami[astid]))
+                return
+
+        def set_aoriginate(self, astid, aoriginatecmd):
+                self.ami[astid].set_aoriginate(aoriginatecmd)
+
+        def fdlist(self):
+                return self.rami.iterkeys()
+
+        def remove(self, astid):
+                fd = self.ami[astid].fd
+                del self.ami[astid]
+                del self.rami[fd]
+
+        def astid(self, sock):
+                return self.rami.get(sock)
+
+        def execute(self, astid, command, *args):
+                if astid in self.ami:
+                        getattr(self.ami[astid], command)(*args)
+                else:
+                        print 'ami : %s no more in list - wait for the next update ...' % astid
+                return

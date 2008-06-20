@@ -66,7 +66,8 @@ class AsteriskConfig:
                      realm = 'asterisk',
                      parkingnumber = '700',
                      faxcallerid = 'faxcallerid',
-                     linkestablished = ''):
+                     linkestablished = '',
+                     aoriginate = 'AOriginate'):
 
                 self.astid = astid
                 self.localaddr = localaddr
@@ -80,6 +81,7 @@ class AsteriskConfig:
                 self.parkingnumber = parkingnumber
                 self.faxcallerid = faxcallerid
                 self.linkestablished = linkestablished
+                self.aoriginate = aoriginate
 
                 if userfeatures_db_uri is not None:
                         self.userfeatures_db_conn = anysql.connect_by_uri(userfeatures_db_uri)

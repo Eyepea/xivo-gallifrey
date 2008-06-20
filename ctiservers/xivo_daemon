@@ -205,7 +205,7 @@ def manage_webi_connections(connid, msg, sep):
                                         askedtoquit = True
                                         connid.sendall('%s:OK\n' % XIVO_CLI_WEBI_HEADER)
                                         log_debug(SYSLOG_INFO, '%s : daemon reload request received' % astid)
-                                elif astid in AMI_array_user_commands and AMI_array_user_commands[astid]:
+                                elif astid in amilist.ami and amilist.ami[astid]:
                                         stripped_usefulmsg = usefulmsg.strip()
                                         try:
                                                 if stripped_usefulmsg == 'moh reload':
@@ -216,7 +216,7 @@ def manage_webi_connections(connid, msg, sep):
                                                 log_debug(SYSLOG_ERR, '--- exception --- (pre reloads) : %s' % str(exc))
 
                                         try:
-                                                s = AMI_array_user_commands[astid].execclicommand(stripped_usefulmsg)
+                                                s = amilist.ami[astid].execclicommand(stripped_usefulmsg)
                                         except Exception, exc:
                                                 log_debug(SYSLOG_ERR, '--- exception --- (%s) WEBI command exec <%s> : (client %s) : %s'
                                                           % (astid, str(stripped_usefulmsg), requester, str(exc)))
@@ -271,10 +271,8 @@ def manage_info_connections(connid, msg, sep):
                                 for user, info in commandclass.connected_users().iteritems():
                                         connid.sendall('%s %s\n' % (user.encode('latin1'), info))
                         elif usefulmsg == 'show_ami':
-                                for amis in AMI_array_events_fd:
-                                        connid.sendall("events   : %s : %s\n" % (amis, str(AMI_array_events_fd[amis])))
-                                for amis in AMI_array_user_commands:
-                                        connid.sendall("commands : %s : %s\n" % (amis, str(AMI_array_user_commands[amis])))
+                                for astid, ami in amilist.ami.iteritems():
+                                        connid.sendall('commands : %s : %s\n' % (astid, ami))
                         elif usefulmsg.startswith('%s:' % commandset):
                                 commandclass.cliaction(connid, usefulmsg)
                         else:
@@ -338,13 +336,15 @@ def handle_ami_event(astid, idata):
                         response = this_event.get('Response')
                         if response is not None:
                                 if response == 'Follows' and this_event.get('Privilege') == 'Command':
-                                        log_debug(SYSLOG_INFO, 'AMI %s Response=Follows : %s' % (astid, str(this_event)))
+                                        log_debug(SYSLOG_INFO, 'AMI %s Response=Follows : %s' % (astid, this_event))
                                 elif response == 'Success':
                                         msg = this_event.get('Message')
                                         if msg == 'Extension Status':
                                                 commandclass.ami_response_extensionstatus(astid, this_event)
+                                elif response == 'Error':
+                                        log_debug(SYSLOG_WARNING, 'AMI %s Response=Error : %s' % (astid, this_event))
                                 else:
-                                        log_debug(SYSLOG_WARNING, 'AMI %s Response=%s (untracked) : %s' % (astid, response, str(this_event)))
+                                        log_debug(SYSLOG_WARNING, 'AMI %s Response=%s (untracked) : %s' % (astid, response, this_event))
                         elif len(this_event) > 0:
                                 log_debug(SYSLOG_WARNING, 'AMI:XXX: <%s> : %s' % (astid, str(this_event)))
                         else:
@@ -386,6 +386,7 @@ evfunction_to_method_name = {
         'AOriginateSuccess':    'ami_aoriginatesuccess',
         'OriginateFailure':     'ami_originatefailure',
         'AOriginateFailure':    'ami_aoriginatefailure',
+        'OriginateResponse':    'ami_originateresponse',
         'Rename':               'ami_rename',                   # appears when there is a transfer
         'Newstate':             'ami_newstate',
         'Newcallerid':          'ami_newcallerid',              # useful for tricky managements
@@ -439,65 +440,18 @@ def update_amisocks(astid):
         Requests a Status when it (re)connects.
         """
         try:
-                # amilist.connect(astid)
-                if astid not in AMI_array_events_fd or AMI_array_events_fd[astid] is False:
-                        log_debug(SYSLOG_INFO, '%s : AMI : attempting to connect' % astid)
-                        als0 = connect_to_AMI((configs[astid].remoteaddr,
-                                               configs[astid].ami_port),
-                                              configs[astid].ami_login,
-                                              configs[astid].ami_pass,
-                                              True)
-                        if als0:
-                                AMI_array_events_fd[astid] = als0.fd
-                                fdlist_full.append(als0.fd)
-                                log_debug(SYSLOG_INFO, '%s : AMI : connected' % astid)
-                                ret = als0.sendstatus()
-                                if not ret:
-                                        log_debug(SYSLOG_INFO, '%s : could not send status command' % astid)
-                                ret = als0.sendagents()
-                                if not ret:
-                                        log_debug(SYSLOG_INFO, '%s : could not send agents command' % astid)
-                                ret = als0.sendqueuestatus()
-                                if not ret:
-                                        log_debug(SYSLOG_INFO, '%s : could not send queuestatus command' % astid)
-                        else:
-                                log_debug(SYSLOG_INFO, '%s : AMI : could NOT connect' % astid)
+                amilist.setconfig(astid,
+                                  (configs[astid].remoteaddr,
+                                   configs[astid].ami_port),
+                                  configs[astid].ami_login,
+                                  configs[astid].ami_pass)
+                amilist.connect(astid)
+                amilist.set_aoriginate(astid, configs[astid].aoriginate)
+                for fd in amilist.fdlist():
+                        if fd not in fdlist_full:
+                                fdlist_full.append(fd)
         except Exception, exc:
                 log_debug(SYSLOG_ERR, '--- exception --- %s (update_amisocks) : %s' % (astid, str(exc)))
-
-        try:
-                if astid not in AMI_array_user_commands or AMI_array_user_commands[astid] is False:
-                        log_debug(SYSLOG_INFO, '%s : AMI (commands)  : attempting to connect' % astid)
-                        als1 = connect_to_AMI((configs[astid].remoteaddr,
-                                               configs[astid].ami_port),
-                                              configs[astid].ami_login,
-                                              configs[astid].ami_pass,
-                                              False)
-                        if als1:
-                                AMI_array_user_commands[astid] = als1
-                                log_debug(SYSLOG_INFO, '%s : AMI (commands)  : connected' % astid)
-                        else:
-                                log_debug(SYSLOG_INFO, '%s : AMI (commands)  : could NOT connect' % astid)
-        except Exception, exc:
-                log_debug(SYSLOG_ERR, '--- exception --- %s (update_amisocks command) : %s' % (astid, str(exc)))
-
-
-def connect_to_AMI(address, loginname, password, events_on):
-        """
-        Connects to the AMI through AMIClass.
-        """
-        lAMIsock = xivo_ami.AMIClass(address, loginname, password, events_on)
-        if len(opt_aoriginate) > 0:
-                lAMIsock.set_aoriginate(opt_aoriginate)
-        try:
-                lAMIsock.connect()
-                lAMIsock.login()
-        except socket.timeout: pass
-        except socket:         pass
-        except:
-                del lAMIsock
-                lAMIsock = False
-        return lAMIsock
 
 
 ## \brief Handler for catching signals (in the main thread)
@@ -569,7 +523,6 @@ while True: # loops over the reloads
         asterisklist = []
         contextlist = []
         userlists = []
-        opt_aoriginate = ''
         
         userinfo_by_requester = {}
 
@@ -591,18 +544,13 @@ while True: # loops over the reloads
                 contextlist = xivoconf_general['contextlist'].split(',')
         if 'userlists' in xivoconf_general:
                 userlists = xivoconf_general['userlists'].split(',')
-        if 'aoriginate' in xivoconf_general:
-               opt_aoriginate = xivoconf_general['aoriginate']
 
         xivoconf_commandset = cconf.read_section(commandset)
 
         queued_threads_pipe = os.pipe()
-        AMI_array_user_commands = {}
-        AMI_array_events_fd = {}
-        # amilist = AMIList()
+        amilist = xivo_ami.AMIList()
         if commandset in xivo_commandsets.CommandClasses:
-                commandclass = xivo_commandsets.CommandClasses[commandset](AMI_array_user_commands,
-                                                                           AMI_array_events_fd,
+                commandclass = xivo_commandsets.CommandClasses[commandset](amilist,
                                                                            incoming_tcp_ports,
                                                                            queued_threads_pipe)
                 xdname = commandclass.xdname
@@ -650,6 +598,7 @@ while True: # loops over the reloads
                         parkingnumber = '700'
                         faxcallerid = 'faxcallerid'
                         linkestablished = ''
+                        aoriginate = 'AOriginate'
 
                         if 'localaddr' in xivoconf_asterisk:
                                 localaddr = xivoconf_asterisk['localaddr']
@@ -677,6 +626,8 @@ while True: # loops over the reloads
                                 cdr_db_uri = xivoconf_asterisk['cdr_db_uri']
                         if 'realm' in xivoconf_asterisk:
                                 realm = xivoconf_asterisk['realm']
+                        if 'aoriginate' in xivoconf_asterisk:
+                                aoriginate = xivoconf_asterisk['aoriginate']
 
                         capafeatures = []
 
@@ -693,7 +644,8 @@ while True: # loops over the reloads
                                                                     realm,
                                                                     parkingnumber,
                                                                     faxcallerid,
-                                                                    linkestablished)
+                                                                    linkestablished,
+                                                                    aoriginate)
 
                         plist[astid] = xivo_phones.PhoneList(astid, commandclass, phonelisturl)
 
@@ -728,7 +680,7 @@ while True: # loops over the reloads
                         lastrequest_time[astid] = time.time()
                         update_amisocks(astid)
                         npl = plist[astid].update_phonelist()
-                        commandclass.askstatus(astid, AMI_array_events_fd, npl)
+                        commandclass.askstatus(astid, npl)
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, '--- exception --- %s : failed while setting lists and sockets : %s'
                                   % (astid, str(exc)))
@@ -771,7 +723,7 @@ while True: # loops over the reloads
                                 try:
                                         print
                                         print 'current open TCP connections : (CTI, WEBI, (F)AGI, INFO) ', fdlist_established
-                                        print 'current open TCP connections : (AMI) ', AMI_array_events_fd
+                                        print 'current open TCP connections : (AMI) ', amilist.fdlist()
                                         print 'current open TCP connections : (OUT) ', outsock
                                         print
                                         os.unlink(PIDFILE)
@@ -792,22 +744,21 @@ while True: # loops over the reloads
                                 continue
                 if sels_i:
                         for sel_i in sels_i:
-                                # these AMI connections are used in order to manage AMI commands with incoming events
-                                if sel_i in AMI_array_events_fd.values():
-                                        for astid, val in AMI_array_events_fd.iteritems():
-                                                if val is sel_i: break
+                                # these AMI connections are used in order to manage AMI commands and events
+                                if sel_i in amilist.fdlist():
                                         try:
-                                                a = AMI_array_events_fd[astid].readline() # (BUFSIZE_ANY)
-                                                if len(a) == 0: # end of connection from server side : closing socket
+                                                buf = sel_i.readline()
+                                                astid = amilist.astid(sel_i)
+                                                if len(buf) == 0:
                                                         log_debug(SYSLOG_WARNING, "%s : AMI : CLOSING" % astid)
-                                                        commandclass.dmessage_srv2clt('AMI OFF for <%s>' % astid)
-                                                        AMI_array_events_fd[astid].close()
-                                                        fdlist_full.remove(AMI_array_events_fd[astid])
-                                                        del AMI_array_events_fd[astid]
+                                                        amilist.remove(astid)
+                                                        sel_i.close()
+                                                        fdlist_full.remove(sel_i)
                                                 else:
-                                                        handle_ami_event(astid, a)
+                                                        if astid is not None:
+                                                                handle_ami_event(astid, buf)
                                         except Exception, exc:
-                                                log_debug(SYSLOG_ERR, "--- exception --- AMI <%s> : %s" % (astid, str(exc)))
+                                                log_debug(SYSLOG_ERR, '--- exception --- (amilist) %s' % exc)
 
                                 # other 'outgoing' connections
                                 elif sel_i == outsock:

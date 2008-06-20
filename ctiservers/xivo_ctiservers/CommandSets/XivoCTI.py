@@ -81,10 +81,10 @@ class XivoCTICommand(BaseCommand):
         queues_channels_list = {}
         agents_list = {}
 
-        def __init__(self, amis_cmd, amis_fd, ctiports, queued_threads_pipe):
+        def __init__(self, amilist, ctiports, queued_threads_pipe):
 		BaseCommand.__init__(self)
-                self.amis   = amis_cmd
-                self.amisfd = amis_fd
+                self.amis = amilist.ami
+                self.amilist = amilist
                 self.capas = {}
                 self.ulist_ng = cti_userlist.UserList()
                 self.ulist_ng.setcommandclass(self)
@@ -232,9 +232,9 @@ class XivoCTICommand(BaseCommand):
                         astid = userinfo['astid']
                         if 'phonenum' in userinfo:
                                 phonenum = userinfo['phonenum']
-                                self.amis[astid].setvar('AGENTBYCALLERID_%s' % phonenum, '')
+                                self.amilist.execute(astid, 'setvar', 'AGENTBYCALLERID_%s' % phonenum, '')
                         if agentnum is not None:
-                                self.amis[astid].agentlogoff(agentnum)
+                                self.amilist.execute(astid, 'agentlogoff', agentnum)
                 if 'agentphonenum' in userinfo:
                         del userinfo['agentphonenum']
                 self.__disconnect_user__(userinfo)
@@ -434,14 +434,9 @@ class XivoCTICommand(BaseCommand):
                 return self.ulist_ng.connected_users()
 
 
-        def askstatus(self, astid, amisfd, npl):
+        def askstatus(self, astid, npl):
                 for a, b in npl.iteritems():
-                        if astid in amisfd:
-                                amisfd[astid].write('Action: ExtensionState\r\n'
-                                                    'Exten: %s\r\n'
-                                                    'Context: %s\r\n'
-                                                    '\r\n'
-                                                    %(b[0], b[1]))
+                        self.amilist.execute(astid, 'sendextensionstate', b[0], b[1])
                 return
 
 
@@ -714,6 +709,9 @@ class XivoCTICommand(BaseCommand):
                 return
         def ami_originatefailure(self, astid, event):
                 return
+        # seem to be superseded by OriginateResponse in asterisk 1.4 :
+        # {'Uniqueid': '1213955764.88', 'CallerID': '6101', 'Exten': '6101', 'CallerIDNum': '6101', 'Response': 'Success', 'Reason': '4', 'Context': 'ctx-callbooster-agentlogin', 'CallerIDName': 'operateur', 'Privilege': 'call,all', 'Event': 'OriginateResponse', 'Channel': 'SIP/102-081f6730'}
+
         def ami_messagewaiting(self, astid, event):
                 return
         def ami_newcallerid(self, astid, event):
@@ -944,11 +942,7 @@ class XivoCTICommand(BaseCommand):
                 if astid in self.queues_list:
                         for qname, qarg in self.queues_list[astid].iteritems():
                                 print ' (q) ', qname, qarg
-                                self.amis[astid].sendcommand('Command', [('Command', 'show queue %s' % qname)])
-                                try:
-                                        self.amis[astid].readresponse('')
-                                except:
-                                        pass
+                                self.amilist.execute(astid, 'sendcommand', 'Command', [('Command', 'show queue %s' % qname)])
                 return
 
         def ami_userevent(self, astid, event):
@@ -1105,11 +1099,7 @@ class XivoCTICommand(BaseCommand):
                         elif icommand.name == 'pickup':
                                 if self.capas[capaid].match_funcs(ucapa, 'dial'):
                                         z = icommand.args[0].split('/')
-                                        self.amis[z[1]].sendcommand('Command', [('Command', 'sip notify event-talk %s' % z[3])])
-                                        try:
-                                                self.amis[z[1]].readresponse('')
-                                        except:
-                                                pass
+                                        self.amilist(z[1], 'sendcommand', 'Command', [('Command', 'sip notify event-talk %s' % z[3])])
 
                         elif icommand.name in ['phones-list', 'phones-add', 'phones-del']:
                                 if self.capas[capaid].match_funcs(ucapa, 'calls,switchboard,search,history'):
@@ -1356,7 +1346,7 @@ class XivoCTICommand(BaseCommand):
                                         anum = myagentnum
                                 if astid is not None and anum is not None:
                                         for queuename in queuenames:
-                                                self.amis[astid].queueremove(queuename, 'Agent/%s' % anum)
+                                                self.amilist.execute(astid, 'queueremove', queuename, 'Agent/%s' % anum)
                 elif subcommand == 'join':
                         if len(commandargs) > 1:
                                 queuenames = commandargs[1].split(',')
@@ -1373,7 +1363,7 @@ class XivoCTICommand(BaseCommand):
                                         spause = 'false' # unpauses by default for user-requests
                                 if astid is not None and anum is not None:
                                         for queuename in queuenames:
-                                                self.amis[astid].queueadd(queuename, 'Agent/%s' % anum, spause)
+                                                self.amilist.execute(astid, 'queueadd', queuename, 'Agent/%s' % anum, spause)
                 elif subcommand == 'pause':
                         if len(commandargs) > 1:
                                 queuenames = commandargs[1].split(',')
@@ -1385,7 +1375,7 @@ class XivoCTICommand(BaseCommand):
                                         anum = myagentnum
                                 if astid is not None and anum is not None:
                                         for queuename in queuenames:
-                                                self.amis[astid].queuepause(queuename, 'Agent/%s' % anum, 'true')
+                                                self.amilist.execute(astid, 'queuepause', queuename, 'Agent/%s' % anum, 'true')
                 elif subcommand == 'unpause':
                         if len(commandargs) > 1:
                                 queuenames = commandargs[1].split(',')
@@ -1397,7 +1387,7 @@ class XivoCTICommand(BaseCommand):
                                         anum = myagentnum
                                 if astid is not None and anum is not None:
                                         for queuename in queuenames:
-                                                self.amis[astid].queuepause(queuename, 'Agent/%s' % anum, 'false')
+                                                self.amilist.execute(astid, 'queuepause', queuename, 'Agent/%s' % anum, 'false')
                 elif subcommand == 'login':
                         if len(commandargs) > 2:
                                 astid = commandargs[1]
@@ -1414,8 +1404,11 @@ class XivoCTICommand(BaseCommand):
                                 anum = myagentnum
                                 phonenum = userinfo.get('agentphonenum')
                         if astid is not None and anum is not None and phonenum is not None:
-                                self.amis[astid].agentcallbacklogin(anum, phonenum)
-                                self.amis[astid].setvar('AGENTBYCALLERID_%s' % phonenum, anum)
+                                self.amilist.execute(astid, 'agentcallbacklogin', anum, phonenum)
+                                # chan_agent.c:2318 callback_deprecated: AgentCallbackLogin is deprecated and will be removed in a future release.
+                                # chan_agent.c:2319 callback_deprecated: See doc/queues-with-callback-members.txt for an example of how to achieve
+                                # chan_agent.c:2320 callback_deprecated: the same functionality using only dialplan logic.
+                                self.amilist.execute(astid, 'setvar', 'AGENTBYCALLERID_%s' % phonenum, anum)
                         else:
                                 log_debug(SYSLOG_WARNING, 'cannot login agent since astid,anum,phonenum = %s,%s,%s (%s)'
                                           % (astid, anum, phonenum, commandargs))
@@ -1429,8 +1422,8 @@ class XivoCTICommand(BaseCommand):
                                 anum = myagentnum
                                 phonenum = userinfo['phonenum']
                         if astid is not None and anum is not None:
-                                self.amis[astid].setvar('AGENTBYCALLERID_%s' % phonenum, '')
-                                self.amis[astid].agentlogoff(anum)
+                                self.amilist.execute(astid, 'setvar', 'AGENTBYCALLERID_%s' % phonenum, '')
+                                self.amilist.execute(astid, 'agentlogoff', anum)
                 elif subcommand == 'lists':
                         pass
                 else:
@@ -1441,13 +1434,13 @@ class XivoCTICommand(BaseCommand):
         def logoff_all_agents(self):
                 for userinfo in self.ulist_ng.userlist.itervalues():
                         astid = userinfo.get('astid')
-                        if 'agentnum' in userinfo and astid is not None and astid in self.amis:
+                        if 'agentnum' in userinfo and astid is not None:
                                 agentnum = userinfo['agentnum']
                                 if 'phonenum' in userinfo:
                                         phonenum = userinfo['phonenum']
-                                        self.amis[astid].setvar('AGENTBYCALLERID_%s' % phonenum, '')
+                                        self.amilist.execute(astid, 'setvar', 'AGENTBYCALLERID_%s' % phonenum, '')
                                 if agentnum is not None:
-                                        self.amis[astid].agentlogoff(agentnum)
+                                        self.amilist.execute(astid, 'agentlogoff', agentnum)
                 return
 
 
@@ -1714,12 +1707,9 @@ class XivoCTICommand(BaseCommand):
                         ret = False
                         try:
                                 if len(exten_dst) > 0:
-                                        ret = self.amis[astid_src].originate(proto_src,
-                                                                             phonenum_src,
-                                                                             cidname_src,
-                                                                             exten_dst,
-                                                                             cidname_dst,
-                                                                             context_dst)
+                                        ret = self.amilist.execute(astid_src, 'originate',
+                                                                   proto_src, phonenum_src, cidname_src,
+                                                                   exten_dst, cidname_dst,  context_dst)
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- unable to originate ...')
                         if ret:
