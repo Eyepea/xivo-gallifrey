@@ -21,7 +21,7 @@ from xivo_agid import agid
 from xivo_agid import objects
 
 def schedule(agi, cursor, args):
-	schedule = objects.Schedule(int(args[0]))
+	schedule = objects.Schedule(agi, cursor, int(args[0]))
 
 	agi.set_variable("XIVO_SCHEDULE_TIMERANGE", schedule.timerange)
 	schedule.set_dial_actions()
