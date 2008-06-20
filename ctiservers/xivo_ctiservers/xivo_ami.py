@@ -102,8 +102,12 @@ class AMIClass:
                 ret = self.sendcommand('Agents', [])
                 return ret
         # \brief Requesting the Queues' Status.
-        def sendqueuestatus(self):
-                ret = self.sendcommand('QueueStatus', [])
+        def sendqueuestatus(self, queue = None):
+                if queue is None:
+                        ret = self.sendcommand('QueueStatus', [])
+                else:
+                        ret = self.sendcommand('QueueStatus',
+                                               [('Queue', queue)])
                 return ret
         # \brief Requesting an ExtensionState.
         def sendextensionstate(self, exten, context):

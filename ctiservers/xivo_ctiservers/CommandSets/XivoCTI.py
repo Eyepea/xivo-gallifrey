@@ -81,9 +81,10 @@ class XivoCTICommand(BaseCommand):
         queues_channels_list = {}
         agents_list = {}
 
-        def __init__(self, amis, ctiports, queued_threads_pipe):
+        def __init__(self, amis_cmd, amis_fd, ctiports, queued_threads_pipe):
 		BaseCommand.__init__(self)
-                self.amis  = amis
+                self.amis   = amis_cmd
+                self.amisfd = amis_fd
                 self.capas = {}
                 self.ulist_ng = cti_userlist.UserList()
                 self.ulist_ng.setcommandclass(self)
@@ -825,7 +826,7 @@ class XivoCTICommand(BaseCommand):
 
         def ami_queuecallerabandon(self, astid, event):
                 # Asterisk 1.4 event
-                print event
+                # {'Queue': 'qcb_00000', 'OriginalPosition': '1', 'Uniqueid': '1213891256.41', 'Privilege': 'agent,all', 'Position': '1', 'HoldTime': '2', 'Event': 'QueueCallerAbandon'}
                 return
         
         def ami_queueentry(self, astid, event):
@@ -1000,6 +1001,7 @@ class XivoCTICommand(BaseCommand):
                         self.queues_channels_list[astid][chan] = [queue, time.time()]
 
                 print 'AMI Queue LEAVE', queue, chan, count
+                # print self.amisfd / sendqueuestatus(queue)
                 return
         
         def ami_rename(self, astid, event):

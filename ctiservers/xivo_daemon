@@ -439,6 +439,7 @@ def update_amisocks(astid):
         Requests a Status when it (re)connects.
         """
         try:
+                # amilist.connect(astid)
                 if astid not in AMI_array_events_fd or AMI_array_events_fd[astid] is False:
                         log_debug(SYSLOG_INFO, '%s : AMI : attempting to connect' % astid)
                         als0 = connect_to_AMI((configs[astid].remoteaddr,
@@ -597,8 +598,13 @@ while True: # loops over the reloads
 
         queued_threads_pipe = os.pipe()
         AMI_array_user_commands = {}
+        AMI_array_events_fd = {}
+        # amilist = AMIList()
         if commandset in xivo_commandsets.CommandClasses:
-                commandclass = xivo_commandsets.CommandClasses[commandset](AMI_array_user_commands, incoming_tcp_ports, queued_threads_pipe)
+                commandclass = xivo_commandsets.CommandClasses[commandset](AMI_array_user_commands,
+                                                                           AMI_array_events_fd,
+                                                                           incoming_tcp_ports,
+                                                                           queued_threads_pipe)
                 xdname = commandclass.xdname
         else:
                 commandclass = xivo_commandsets.BaseCommand()
@@ -709,7 +715,6 @@ while True: # loops over the reloads
         fdlist_full = []
         fdlist_established = {}
         fdlist_listen_cti = {}
-        AMI_array_events_fd = {}
         update_userlist = {}
         lastrequest_time = {}
         xivodaemonreload = False
