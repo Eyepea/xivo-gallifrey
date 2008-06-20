@@ -44,7 +44,7 @@ SYS_CLASS_NET = "/sys/class/net"
 CARRIER = "carrier"
 
 IFPLUGD = "/usr/sbin/ifplugd"
-IFPLUGD_INIT = "/etc/init.d/ifplugd"
+IFPLUGD_START = ["/usr/sbin/invoke-rc.d", "ifplugd", "start"]
 
 IFDOWN = "/sbin/ifdown"
 
@@ -333,43 +333,58 @@ class NetworkOpError(Exception):
     pass
 
 
-def force_shutdown(iface, trace=trace_null):
+def force_shutdown(phy, trace=trace_null):
     """
-    Shutdown a network interface and removes all VLAN 
+    Remove all VLAN on the network interface @phy, then shutdown it.
+    First "ifplugd" is stopped for this interface, then both VLAN removal and
+    interface shutdown are done by calling "ifdown".
     
     Unlike /etc/init.d/networking stop, it won't test for mounted network
     filesystems or other resources.  It just shutdown the given interface,
     right when called.
     
-    WARNING: This function won't work properly if "ifplugd" is not being used
-    on the system.
-    
-    BUGBUG: will not interact cleanly with VLAN interfaces
+    WARNING: This function won't work properly if "ifplugd" or "ifdown" (and
+    "ifup") are not used on the system.
     """
     # NOTE: The order in which ifplugd and ifdown are called is very important.
     # If you invert the order, the interface will probably not be completely
-    # down when the function returns.
+    # down (from the p.o.v. of Linux) when the function returns.
     
     try:
-        status = subprocess.call([IFPLUGD, "-i", iface, "-k"], close_fds=True)
+        status = subprocess.call([IFPLUGD, "-i", phy, "-k"], close_fds=True)
     except OSError:
         except_tb.log_exception(trace.err)
-        raise NetworkOpError("could not invocate ifplugd to kill its %r instance" % iface)
-    
+        raise NetworkOpError("could not invoke ifplugd to kill its %r instance" % phy)
     if status:
         if status == 6:
-            trace.warning("%r ifplugd instance seems to have already been stopped" % iface)
+            trace.warning("%r ifplugd instance seems to have already been stopped" % phy)
         else:
-            raise NetworkOpError("ifplugd miserably failed while trying to kill instance %r" % iface)
+            raise NetworkOpError("ifplugd miserably failed while trying to kill instance %r" % phy)
     
+    vlans_phy = [vlan for vlan in get_linux_netdev_list() if vlan.startswith(phy + ".")]
+    vlans_phy.append(phy)
+    
+    for vlan in vlans_phy:
+        try:
+            status = subprocess.call([IFDOWN, vlan], close_fds=True)
+        except OSError:
+            except_tb.log_exception(trace.err)
+            raise NetworkOpError("could not invoke ifdown to shutdown interface %r" % vlan)
+        if status:
+            raise NetworkOpError("ifdown miserably failed to shutdown the %r network interface" % vlan)
+
+
+def ifplugd_start(trace=trace_null):
+    """
+    /etc/init.d/ifplugd start
+    """
     try:
-        status = subprocess.call([IFDOWN, iface], close_fds=True)
+        status = subprocess.call(IFPLUGD_START, close_fds=True)
     except OSError:
         except_tb.log_exception(trace.err)
-        raise NetworkOpError("could not invocate ifdown to shutdown interface %r" % iface)
-    
+        raise NetworkOpError("could not invoke %s" % ' '.join(IFPLUGD_START))
     if status:
-        raise NetworkOpError("ifdown miserably failed to shutdown the %r network interface" % iface)
+        raise NetworkOpError("failure of: %s" % ' '.join(IFPLUGD_START))
 
 
 def _test():
