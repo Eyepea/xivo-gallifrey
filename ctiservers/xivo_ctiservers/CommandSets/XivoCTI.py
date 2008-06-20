@@ -83,7 +83,6 @@ class XivoCTICommand(BaseCommand):
 
         def __init__(self, amilist, ctiports, queued_threads_pipe):
 		BaseCommand.__init__(self)
-                self.amis = amilist.ami
                 self.amilist = amilist
                 self.capas = {}
                 self.ulist_ng = cti_userlist.UserList()
@@ -142,7 +141,7 @@ class XivoCTICommand(BaseCommand):
                         if ref in self.faxes:
                                 uinfo = self.faxes[ref].uinfo
                                 astid = uinfo.get('astid')
-                                self.faxes[ref].send(''.join(self.transfers_buf[req]), self.configs[astid].faxcallerid, self.amis[astid])
+                                self.faxes[ref].send(''.join(self.transfers_buf[req]), self.configs[astid].faxcallerid, self.amilist.ami[astid])
                                 del self.transfers_ref[req]
                                 del self.transfers_buf[req]
                                 del self.faxes[ref]
@@ -220,7 +219,7 @@ class XivoCTICommand(BaseCommand):
                 loginkind = loginparams.get('loginkind')
                 if loginkind == 'agent':
                         userinfo['agentphonenum'] = loginparams.get('phonenumber')
-                        # self.amis[astid].agentcallbacklogin(agentnum, phonenum)
+                        # self.amilist.execute(astid, 'agentcallbacklogin', agentnum, phonenum)
                 return userinfo
 
 
@@ -995,7 +994,7 @@ class XivoCTICommand(BaseCommand):
                         self.queues_channels_list[astid][chan] = [queue, time.time()]
 
                 print 'AMI Queue LEAVE', queue, chan, count
-                # print self.amisfd / sendqueuestatus(queue)
+                self.amilist.execute(astid, 'sendqueuestatus', queue)
                 return
         
         def ami_rename(self, astid, event):
@@ -1099,7 +1098,7 @@ class XivoCTICommand(BaseCommand):
                         elif icommand.name == 'pickup':
                                 if self.capas[capaid].match_funcs(ucapa, 'dial'):
                                         z = icommand.args[0].split('/')
-                                        self.amilist(z[1], 'sendcommand', 'Command', [('Command', 'sip notify event-talk %s' % z[3])])
+                                        self.amilist.execute(z[1], 'sendcommand', 'Command', [('Command', 'sip notify event-talk %s' % z[3])])
 
                         elif icommand.name in ['phones-list', 'phones-add', 'phones-del']:
                                 if self.capas[capaid].match_funcs(ucapa, 'calls,switchboard,search,history'):
@@ -1740,7 +1739,7 @@ class XivoCTICommand(BaseCommand):
          if astid_src in self.configs and astid_src == astid_dst:
                 if exten_dst == 'special:parkthecall':
                         exten_dst = self.configs[astid_dst].parkingnumber
-                if astid_src in self.amis and self.amis[astid_src]:
+                if astid_src in self.plist:
                         if l[0] == 'originate':
                                 log_debug(SYSLOG_INFO, "%s is attempting an ORIGINATE : %s" %(requester, str(l)))
                                 if astid_dst != '':
@@ -1754,12 +1753,9 @@ class XivoCTICommand(BaseCommand):
                                         if sipcid_dst in self.plist[astid_dst].normal:
                                                 cidname_dst = '%s %s' %(self.plist[astid_dst].normal[sipcid_dst].calleridfirst,
                                                                         self.plist[astid_dst].normal[sipcid_dst].calleridlast)
-                                        ret = self.amis[astid_src].originate(proto_src,
-                                                                             userid_src,
-                                                                             cidname_src,
-                                                                             exten_dst,
-                                                                             cidname_dst,
-                                                                             context_dst)
+                                        ret = self.amilist.execute(astid_src, 'originate',
+                                                                   proto_src, userid_src, cidname_src,
+                                                                   exten_dst, cidname_dst, context_dst)
                                 else:
                                         ret = False
                                 if ret:
@@ -1779,9 +1775,8 @@ class XivoCTICommand(BaseCommand):
                                                         ret_message = 'transfer KO : no channel opened on %s' % phonesrc
                                                 else:
                                                         tchan = channellist[phonesrcchan].getChannelPeer()
-                                                        ret = self.amis[astid_src].transfer(tchan,
-                                                                                            exten_dst,
-                                                                                            context_dst)
+                                                        ret = self.amilist.execute(astid_src, 'transfer',
+                                                                                   tchan, exten_dst, context_dst)
                                                         if ret:
                                                                 ret_message = 'transfer OK (%s) %s %s' %(astid_src, l[1], l[2])
                                                         else:
@@ -1799,9 +1794,8 @@ class XivoCTICommand(BaseCommand):
                                                         ret_message = 'atxfer KO : no channel opened on %s' % phonesrc
                                                 else:
                                                         tchan = channellist[phonesrcchan].getChannelPeer()
-                                                        ret = self.amis[astid_src].atxfer(tchan,
-                                                                                          exten_dst,
-                                                                                          context_dst)
+                                                        ret = self.amilist.execute(astid_src, 'atxfer',
+                                                                                   tchan, exten_dst, context_dst)
                                                         if ret:
                                                                 ret_message = 'atxfer OK (%s) %s %s' %(astid_src, l[1], l[2])
                                                         else:
@@ -1831,14 +1825,11 @@ class XivoCTICommand(BaseCommand):
                                                 channel_peer = ''
                                                 log_debug(SYSLOG_INFO, "UI action : %s : hanging up <%s>"
                                                           %(self.configs[astid_src].astid , channel))
-                                        if astid_src in self.amis and self.amis[astid_src]:
-                                                ret = self.amis[astid_src].hangup(channel, channel_peer)
-                                                if ret > 0:
-                                                        ret_message = 'hangup OK (%d) <%s>' %(ret, chan)
-                                                else:
-                                                        ret_message = 'hangup KO : socket request failed'
+                                        ret = self.amilist.execute(astid_src, 'hangup', channel, channel_peer)
+                                        if ret > 0:
+                                                ret_message = 'hangup OK (%d) <%s>' %(ret, chan)
                                         else:
-                                                ret_message = 'hangup KO : no socket available'
+                                                ret_message = 'hangup KO : socket request failed'
                                 else:
                                         ret_message = 'hangup KO : no such channel <%s>' % channel
                         else:

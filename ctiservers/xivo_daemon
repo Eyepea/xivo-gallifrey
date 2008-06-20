@@ -342,7 +342,8 @@ def handle_ami_event(astid, idata):
                                         if msg == 'Extension Status':
                                                 commandclass.ami_response_extensionstatus(astid, this_event)
                                 elif response == 'Error':
-                                        log_debug(SYSLOG_WARNING, 'AMI %s Response=Error : %s' % (astid, this_event))
+                                        # log_debug(SYSLOG_WARNING, 'AMI %s Response=Error : %s' % (astid, this_event))
+                                        pass
                                 else:
                                         log_debug(SYSLOG_WARNING, 'AMI %s Response=%s (untracked) : %s' % (astid, response, this_event))
                         elif len(this_event) > 0:

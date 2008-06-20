@@ -486,7 +486,10 @@ class AMIList:
 
         def execute(self, astid, command, *args):
                 if astid in self.ami:
-                        getattr(self.ami[astid], command)(*args)
+                        try:
+                                getattr(self.ami[astid], command)(*args)
+                        except Exception, exc:
+                                log_debug(SYSLOG_WARNING, 'AMI command %s on %s : %s' % (command, astid, exc))
                 else:
                         print 'ami : %s no more in list - wait for the next update ...' % astid
                 return
