@@ -139,11 +139,11 @@ def get_linux_netdev_list():
             if os.path.isdir(os.path.join(SYS_CLASS_NET, entry))]
 
 
-def get_filtered_ifnames(f=lambda x: True):
+def get_filtered_ifnames(ifname_match_func):
     """
     Return the filtered list of network interfaces
     """
-    return filter(f, get_linux_netdev_list())
+    return filter(ifname_match_func, get_linux_netdev_list())
 
 
 def is_phy_if(ifname):
@@ -154,12 +154,12 @@ def is_phy_if(ifname):
     return '.' not in ifname
 
 
-def get_filtered_phys(f=lambda x: True):
+def get_filtered_phys(ifname_match_func):
     """
     Return the filtered list of network interfaces which are not VLANs
     (the interface name does not contain a '.')
     """
-    return [dev for dev in get_filtered_ifnames(f) if is_phy_if(dev)]
+    return [dev for dev in get_filtered_ifnames(ifname_match_func) if is_phy_if(dev)]
 
 
 def is_interface_plugged(ifname):
@@ -205,7 +205,7 @@ def normalize_mac_address(macaddr):
     return ':'.join([('%02X' % int(s, 16)) for s in macaddr_split])
 
 
-def ipv4_from_macaddr(macaddr, logexceptfunc=None, ifname_filter=lambda x: True, arping_cmd_list=None, arping_sleep_us=150000):
+def ipv4_from_macaddr(macaddr, logexceptfunc=None, ifname_match_func=lambda x: True, arping_cmd_list=None, arping_sleep_us=150000):
     """
     Given a mac address, get an IPv4 address for an host living on the
     LAN.  This makes use of the tool "arping".  Of course the remote peer
@@ -221,7 +221,7 @@ def ipv4_from_macaddr(macaddr, logexceptfunc=None, ifname_filter=lambda x: True,
     # -I <netiface> : the network interface to use is <netiface>
     #    -I is an undocumented option like -i but it works
     #    with alias interfaces too
-    for iface in sorted_lst_lexdec(get_filtered_ifnames(ifname_filter)):
+    for iface in sorted_lst_lexdec(get_filtered_ifnames(ifname_match_func)):
         result = None
         try:
             child = subprocess.Popen(arping_cmd_list + ["-r", "-c", "1", "-w", str(arping_sleep_us), '-I', iface, macaddr],
@@ -238,7 +238,7 @@ def ipv4_from_macaddr(macaddr, logexceptfunc=None, ifname_filter=lambda x: True,
     return None
 
 
-def macaddr_from_ipv4(ipv4, logexceptfunc=None, ifname_filter=lambda x: True, arping_cmd_list=None, arping_sleep_us=150000):
+def macaddr_from_ipv4(ipv4, logexceptfunc=None, ifname_match_func=lambda x: True, arping_cmd_list=None, arping_sleep_us=150000):
     """
     ipv4_from_macaddr() is indeed a symetrical fonction that can be
     used to retrieve an ipv4 address from a given mac address.  This
@@ -248,7 +248,7 @@ def macaddr_from_ipv4(ipv4, logexceptfunc=None, ifname_filter=lambda x: True, ar
     """
     return ipv4_from_macaddr(ipv4,
                              logexceptfunc=logexceptfunc,
-                             ifname_filter=ifname_filter,
+                             ifname_match_func=ifname_match_func,
                              arping_cmd_list=arping_cmd_list,
                              arping_sleep_us=arping_sleep_us)
 
