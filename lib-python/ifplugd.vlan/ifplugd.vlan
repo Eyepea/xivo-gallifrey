@@ -1,0 +1,28 @@
+#!/bin/sh
+#
+# ifplugd.vlan
+#
+# Action script called by ifplugd when an event is detected on a physical
+# interface.  It uses the "ifacenames" tool to get the list of configured VLAN
+# on this interface, and up them.
+#
+# Destination: /etc/ifplugd/action.d/
+#
+# $Date$
+# $Revision$
+set -e
+
+VLAN_LIST="`/usr/bin/ifacenames | grep "^$1\."`"
+
+case "$2" in
+up)
+	for vlan in $VLAN_LIST ; do
+		/sbin/ifup $vlan
+	done
+	;;
+down)
+	for vlan in $VLAN_LIST ; do
+		/sbin/ifdown $vlan
+	done
+	;;
+esac
