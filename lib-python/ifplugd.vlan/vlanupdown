@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# ifplugd.vlan
+# vlanupdown
 #
 # Action script called by ifplugd when an event is detected on a physical
 # interface.  It uses the "ifacenames" tool to get the list of configured VLAN
