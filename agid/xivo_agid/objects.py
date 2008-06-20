@@ -946,3 +946,24 @@ class Schedule:
 	def set_dial_actions(self):
 		DialAction(self.agi, self.cursor, "inschedule", "schedule", self.id).set_variables()
 		DialAction(self.agi, self.cursor, "outschedule", "schedule", self.id).set_variables()
+
+class VoiceMenu:
+	def __init__(self, agi, cursor, xid):
+		self.agi = agi
+		self.cursor = cursor
+
+		columns = ('name', 'context')
+
+		cursor.query("SELECT ${columns} FROM voicemenu "
+			     "WHERE id = %d "
+			     "AND commented = 0",
+			     columns,
+			     (xid,))
+		res = cursor.fetchone()
+
+		if not res:
+			raise LookupError("Unable to find voicemenu entry (id: %d)" % (xid,))
+
+		self.id = xid
+		self.name = res['name']
+		self.context = res['context']
