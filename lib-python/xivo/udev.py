@@ -29,16 +29,20 @@ import os
 import re
 import time
 import os.path
+import subprocess
 from copy import deepcopy
 from itertools import count
 
 from xivo import system
+from xivo import except_tb
 from xivo import trace_null
 
 
 PERSISTENT_NET_RULES_FILE = "/etc/udev/rules.d/z25_persistent-net.rules"
 
 LOCKPATH_PREFIX = "/dev/.udev/.lock-"
+
+UDEVTRIGGER = "/sbin/udevtrigger"
 
 
 def find(seq, f):
@@ -442,3 +446,19 @@ def replace_simple_in_file(rules_file, match_repl_lst, trace=trace_null):
         replace_simple_in_file_nolock(rules_file, match_repl_lst, trace)
     finally:
         unlock_rules_file(rules_file)
+
+
+class TriggerError(Exception): pass
+
+
+def trigger(trace=trace_null):
+    """
+    Call udevtrigger
+    """
+    try:
+        status = subprocess.call([UDEVTRIGGER], close_fds=True)
+    except OSError:
+        except_tb.log_exception(trace.err)
+        raise TriggerError("could not invoke udevtrigger")
+    if status != 0:
+        raise TriggerError("udevtrigger failed")
