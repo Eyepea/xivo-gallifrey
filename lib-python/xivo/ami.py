@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# vim: set expandtab shiftwidth=4:
-
 """
 Python Interface for Asterisk Manager
 
