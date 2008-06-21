@@ -34,6 +34,7 @@ from copy import deepcopy
 from itertools import count
 
 from xivo import system
+from xivo import network
 from xivo import except_tb
 from xivo import trace_null
 
@@ -462,3 +463,164 @@ def trigger(trace=trace_null):
         raise TriggerError("could not invoke udevtrigger")
     if status != 0:
         raise TriggerError("udevtrigger failed")
+
+
+def list_duplicates(seq):
+    """
+    List items that are present more than once in seq.
+    """
+    dct = {}
+    for elt in seq:
+        dct[elt] = dct.get(elt, 0) + 1
+    return [elt for elt, nb in dct.iteritems() if nb > 1]
+
+
+def assert_frozenset(lst):
+    """
+    Return frozenset(lst) if there are no duplicates in lst,
+    else raise ValueError.
+    """
+    fset = frozenset(lst)
+    if len(fset) != len(lst):
+        raise ValueError, "Duplicates found: " + `tuple(list_duplicates(lst))`
+    return fset
+
+
+def rule_to_restore_name(rule):
+    """
+    Return a match and replace tuple suitable as an element of the list
+    match_repl_lst of replace_simple().
+    @rule is a dictionary which contains at least a 'NAME' key.
+    """
+    match = dict(rule)
+    name = {'NAME': match.pop('NAME')}
+    return (match, name)
+
+
+def consider_rule_for_rollback(rule, src_set):
+    """
+    Test if rule is suitable for transformation to a match and replace tuple
+    (by rule_to_restore_name() that can itself be used in a rollback operation.
+    """
+    name_field = rule.get('NAME')
+    return name_field and (len(rule) > 2) and (name_field[0] == "=") and (name_field[1] in src_set)
+
+
+def rename_persistent_net_rules(src_dst_lst, (procedure_init, procedure_edit, procedure_preup, procedure_rollback), trace=trace_null):
+    """
+    @src_dst_lst: [(src, dst), ...]
+        where @src is a network interface name that appears in
+        "z25_persistent-net.rules" and must be renamed to @dst
+    
+    @procedure_init(src_dst_lst, pure_dst_set, trace) -> context:
+        function called just after initial checks that can do its own
+        additional checks (and raise an exception on failure) and setup a
+        @context, which it returns - note that the context is opaque to
+        rename_persistent_net_rules()
+        
+        @src_dst_lst:
+            directly passed from the same argument of
+            rename_persistent_net_rules() - must not be modified
+        
+        @pure_dst_set:
+            set of target names that are not also source names
+    
+    @procedure_edit(context, trace):
+        function called after "z25_persistent-net.rules" has been modified
+        
+        @context:
+            initially returned by procedure_init() then passed between various
+            other @procedure functions - never modified by
+            rename_persistent_net_rules()
+    
+    @procedure_preup(context, trace):
+        function called just before the attempt to re-up the interfaces
+        
+        @context:
+            initially returned by procedure_init() then passed between various
+            other @procedure functions - never modified by
+            rename_persistent_net_rules()
+    
+    @procedure_rollback(context, trace):
+        function called if an Exception is raised between the beginning of the
+        call to procedure_edit() and the beginning of the call to
+        procedure_preup()
+        
+        @context:
+            initially returned by procedure_init() then passed between various
+            other @procedure functions - never modified by
+            rename_persistent_net_rules()
+    """
+    # WARNING: code not 100% safe in case asynchronous exceptions can occur
+    
+    src_set = assert_frozenset([src for src, dst in src_dst_lst])
+    dst_set = assert_frozenset([dst for src, dst in src_dst_lst])
+    pure_dst_set = dst_set.difference(src_set)
+    
+    for src, dst in src_dst_lst:
+        if src == dst:
+            raise ValueError, "Same source and target name %s" % src
+    
+    start_needed = False
+    runtime_renamed_possible = False
+    
+    context = procedure_init(trace)
+    
+    lock_rules_file(PERSISTENT_NET_RULES_FILE)
+    locked = True
+    try:
+        net_rules = parse_file_nolock(PERSISTENT_NET_RULES_FILE, trace)
+        rule_iface_set = frozenset([rule['NAME'][1] for rule in net_rules if 'NAME' in rule])
+        system_iface_set = frozenset(network.get_filtered_phys())
+        known_iface_set = rule_iface_set.union(system_iface_set)
+        
+        for pure_dst in pure_dst_set:
+            if pure_dst in known_iface_set:
+                raise ValueError, "Target interface name is already taken: %r" % pure_dst
+        
+        for src in src_set:
+            if src not in rule_iface_set:
+                raise ValueError, "Source interface name is not in z25_persistent-net.rules: %r" % src
+            if src not in system_iface_set:
+                raise ValueError, "Source interface name is not known by the system: %r" % src
+        
+        replacement = [({'NAME': ['=', src]}, {'NAME': ['=', dst]}) for src, dst in src_dst_lst]
+        rollback = [rule_to_restore_name(rule) for rule in net_rules if consider_rule_for_rollback(rule)]
+        
+        try:
+            replace_simple_in_file_nolock(PERSISTENT_NET_RULES_FILE, replacement, trace)
+            
+            procedure_edit(context, trace)
+            
+            unlock_rules_file(PERSISTENT_NET_RULES_FILE)
+            locked = False
+            
+            start_needed = True
+            for dst in dst_set:
+                network.force_shutdown(dst, trace)
+            
+            runtime_renamed_possible = True
+            trigger(trace)
+            
+            procedure_preup(context, trace)
+        except:
+            except_tb.log_exception(trace.err) # XXX maybe let the caller log exceptions?
+            
+            if not locked:
+                lock_rules_file(PERSISTENT_NET_RULES_FILE)
+                locked = True
+            
+            procedure_rollback(context, trace)
+            
+            replace_simple_in_file_nolock(PERSISTENT_NET_RULES_FILE, rollback, trace)
+            
+            if runtime_renamed_possible:
+                trigger(trace)
+            
+            raise
+    
+    finally:
+        if locked:
+            unlock_rules_file(PERSISTENT_NET_RULES_FILE)
+        if start_needed:
+            network.ifplugd_start(trace)
