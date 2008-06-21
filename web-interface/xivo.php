@@ -30,19 +30,16 @@ switch($tpl_space)
 	case 'www':
 		xivo::load_class('xivo_tpl');
 		$_HTML = &new xivo_tpl($_CF['tpl']['www'],array('menu','url','dhtml'),$_URL);
-
-		if(($prepend = $_HTML->get_prepend()) !== false)
-			include($prepend);
 		break;
 	case 'json':
 		xivo::load_class('xivo_tpl');
-		$_HTML = &new xivo_tpl($_CF['tpl']['json'],array('url','dhtml'),$_URL);
-
-		if(($prepend = $_HTML->get_prepend()) !== false)
-			include($prepend);
+		$_HTML = &new xivo_tpl($_CF['tpl']['json'],array('json','url','dhtml'),$_URL);
 		break;	
 	default:
 		xivo_die('Invalid TPL SPACE');
 }
+
+if(($prepend = $_HTML->get_prepend()) !== false)
+	include($prepend);
 
 ?>
