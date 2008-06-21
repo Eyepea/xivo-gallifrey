@@ -139,7 +139,7 @@ def get_linux_netdev_list():
             if os.path.isdir(os.path.join(SYS_CLASS_NET, entry))]
 
 
-def get_filtered_ifnames(ifname_match_func):
+def get_filtered_ifnames(ifname_match_func=lambda x:True):
     """
     Return the filtered list of network interfaces
     """
@@ -154,7 +154,7 @@ def is_phy_if(ifname):
     return '.' not in ifname
 
 
-def get_filtered_phys(ifname_match_func):
+def get_filtered_phys(ifname_match_func=lambda x:True):
     """
     Return the filtered list of network interfaces which are not VLANs
     (the interface name does not contain a '.')
