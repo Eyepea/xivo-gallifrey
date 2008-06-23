@@ -27,7 +27,7 @@ def incoming_user_set_features(agi, cursor, args):
 	dstnum = agi.get_variable('REAL_DSTNUM')
 	context = agi.get_variable('REAL_CONTEXT')
 	zone = agi.get_variable('REAL_CALLTYPE')
-	bypass_filter = agi.get_variable('XIVO_BSFILTER_BYPASS')
+	bypass_filter = agi.get_variable('XIVO_CALLFILTER_BYPASS')
 
 	feature_list = objects.FeatureList(agi, cursor)
 	user = objects.User(agi, cursor, feature_list, number = dstnum, context = context)
@@ -94,8 +94,12 @@ def incoming_user_set_features(agi, cursor, args):
 	if feature_list.enablevm:
 		agi.set_variable('XIVO_ENABLEVOICEMAIL', user.enablevoicemail)
 
-		if user.vmbox and user.vmbox.email:
-			agi.set_variable('XIVO_USEREMAIL', user.vmbox.email)
+		if user.vmbox:
+			agi.set_variable('XIVO_MAILBOX' user.vmbox.mailbox)
+			agi.set_variable('XIVO_MAILBOX_CONTEXT' user.vmbox.context)
+
+			if user.vmbox.email:
+				agi.set_variable('XIVO_USEREMAIL', user.vmbox.email)
 	else:
 		agi.set_variable('XIVO_ENABLEVOICEMAIL', 0)
 
