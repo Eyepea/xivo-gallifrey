@@ -39,23 +39,23 @@
 const char module_date_revision[] = "ami_aoriginate $Date$ $Revision$";
 
 struct aoriginate_data {
-	char tech[AST_MAX_MANHEADER_LEN];
-	char data[AST_MAX_MANHEADER_LEN];
+	char tech[AST_MAX_EXTENSION];
+	char data[AST_MAX_EXTENSION];
 	int timeout;
 	char app[AST_MAX_APP];
-	char appdata[AST_MAX_MANHEADER_LEN];
-	char cid_name[AST_MAX_MANHEADER_LEN];
-	char cid_num[AST_MAX_MANHEADER_LEN];
+	char appdata[AST_MAX_EXTENSION];
+	char cid_name[AST_MAX_EXTENSION];
+	char cid_num[AST_MAX_EXTENSION];
 	char context[AST_MAX_CONTEXT];
 	char exten[AST_MAX_EXTENSION];
-	char idtext[AST_MAX_MANHEADER_LEN];
+	char idtext[AST_MAX_EXTENSION];
 	char account[AST_MAX_ACCOUNT_CODE];
 	int priority;
 	struct ast_variable *vars;
 };
 
-STANDARD_LOCAL_USER;
-LOCAL_USER_DECL;
+char *description(void);
+char *key(void);
 
 #define AO_LOCAL_USER_ADD(u)
 
@@ -68,7 +68,7 @@ int ast_pbx_outgoing_cdr_failed(void);
 
 static void *action_aoriginate_run(void *data)
 {
-	struct localuser *u;
+	struct ast_module_user *u;
 	struct ast_channel *chan;
 	struct aoriginate_data *aodata = data;
 	struct outgoing_helper oh;
@@ -97,19 +97,9 @@ static void *action_aoriginate_run(void *data)
 	if (chan == NULL)
 		goto error_request_and_dial;
 
-	/* modified LOCAL_USER_ADD(u) */ {
-		if (!(u=calloc(1,sizeof(*u)))) {
-			ast_log(LOG_WARNING, "Out of memory\n");
-			goto error_local_user_add;
-		}
-		ast_mutex_lock(&localuser_lock);
-		u->chan = chan;
-		u->next = localusers;
-		localusers = u;
-		localusecnt++;
-		ast_mutex_unlock(&localuser_lock);
-		ast_update_use_count();
-	}
+        u = ast_module_user_add(chan);
+        if(u == NULL)
+                goto error_local_user_add;
 
 	ast_mutex_lock(&chan->lock);
 	if (chan->cdr) {
@@ -164,8 +154,8 @@ static void *action_aoriginate_run(void *data)
 
 		MANAGER_EVENT_AORIGINATE_SUCCESS();
 
-		pbx_exec(chan, app, aodata->appdata, 1);
-		LOCAL_USER_REMOVE(u);
+		pbx_exec(chan, app, aodata->appdata);
+                ast_module_user_remove(u);
 		ast_hangup(chan);
 	} else {
 		ast_mutex_unlock(&chan->lock);
@@ -176,7 +166,7 @@ static void *action_aoriginate_run(void *data)
 			ast_log(LOG_ERROR, "Unable to run PBX on %s\n", chan->name);
 			ast_hangup(chan);
 		}
-		LOCAL_USER_REMOVE(u);
+                ast_module_user_remove(u);
 	}
 	goto out;
 
@@ -189,7 +179,7 @@ error_chan_state_not_up:
 	}
 error_no_application:
 error_cdr_alloc:
-	LOCAL_USER_REMOVE(u);
+        ast_module_user_remove(u);
 error_local_user_add:
 	ast_copy_string(chan_uniqueid, chan->uniqueid, sizeof(chan_uniqueid));
 	ast_hangup(chan);
@@ -248,7 +238,8 @@ static const char mandescr_aoriginate[] =
 "	Account: Account code\n";
 static int action_aoriginate(struct mansession *s, struct message *m)
 {
-	STANDARD_INCREMENT_USECOUNT;
+        /* STANDARD_INCREMENT_USECOUNT; */
+        ast_module_ref(ast_module_info->self);
 
 	char *name = astman_get_header(m, "Channel");
 	char *exten = astman_get_header(m, "Exten");
@@ -336,12 +327,15 @@ static int action_aoriginate(struct mansession *s, struct message *m)
 		astman_send_ack(s, m, "AOriginate successfully queued");
 	pthread_attr_destroy(&attr);
 out:
-	STANDARD_DECREMENT_USECOUNT;
+        /* STANDARD_DECREMENT_USECOUNT; */
+        ast_module_unref(ast_module_info->self);
+        
 	return 0;
 }
 
+
 static int loaded = 0;
-int load_module(void)
+static int load_module(void)
 {
 	if (ast_manager_register2(name_aoriginate,
 	                          EVENT_FLAG_CALL,
@@ -353,7 +347,7 @@ int load_module(void)
 	return 0;
 }
 
-int unload_module(void)
+static int unload_module(void)
 {
 	if (!loaded)
 		return 0;
@@ -366,15 +360,12 @@ char *description(void)
 	return MODULE_DESCRIPTION;
 }
 
-/* uses Asterisk's unreliable module reference counting */
-int usecount(void)
-{
-	int res;
-	STANDARD_USECOUNT(res);
-	return res;
-}
-
 char *key(void)
 {
 	return ASTERISK_GPL_KEY;
 }
+
+AST_MODULE_INFO(ASTERISK_GPL_KEY, AST_MODFLAG_GLOBAL_SYMBOLS, "Asynchronous Originate",
+		.load = load_module,
+		.unload = unload_module,
+		);
