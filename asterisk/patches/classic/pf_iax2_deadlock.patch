@@ -1,8 +1,8 @@
-Index: channels/chan_iax2.c
+Index: asterisk-1.4.21/channels/chan_iax2.c
 ===================================================================
---- channels/chan_iax2.c	(revision 123390)
-+++ channels/chan_iax2.c	(revision 123392)
-@@ -8658,9 +8658,10 @@
+--- asterisk-1.4.21.orig/channels/chan_iax2.c	2008-06-23 19:08:26.000000000 +0200
++++ asterisk-1.4.21/channels/chan_iax2.c	2008-06-23 19:08:32.000000000 +0200
+@@ -8640,9 +8640,10 @@
  	 * call has the pointer to IP and must be updated to the new one
  	 */
  	if (reg->dnsmgr && ast_dnsmgr_changed(reg->dnsmgr) && (reg->callno > 0)) {
@@ -16,7 +16,7 @@ Index: channels/chan_iax2.c
  		reg->callno = 0;
  	}
  	if (!reg->addr.sin_addr.s_addr) {
-@@ -9265,13 +9266,14 @@
+@@ -9247,13 +9248,14 @@
  static void peer_destructor(void *obj)
  {
  	struct iax2_peer *peer = obj;
@@ -35,7 +35,7 @@ Index: channels/chan_iax2.c
  	}
  
  	register_peer_exten(peer, 0);
-@@ -9769,12 +9771,13 @@
+@@ -9747,12 +9749,13 @@
  	while ((reg = AST_LIST_REMOVE_HEAD(&registrations, entry))) {
  		ast_sched_del(sched, reg->expire);
  		if (reg->callno) {
