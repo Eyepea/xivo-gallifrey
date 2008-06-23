@@ -550,9 +550,16 @@ def rename_persistent_net_rules(src_dst_lst, (procedure_init, procedure_edit, pr
             initially returned by procedure_init() then passed between various
             other @procedure functions - never modified by
             rename_persistent_net_rules()
+    
+    XXX: On external failure (kill -9, power outage), a small time window
+    remains where the configuration could be leaved in an inconsistent state.
     """
     # WARNING: code not 100% safe in case asynchronous exceptions can occur
     
+    # TODO: detect if a previous renaming operation has been interrupted the
+    # hard way (kill -9, power failure) and rollback if possible.
+    # This will be better placed in an other function.
+
     src_set = assert_frozenset([src for src, dst in src_dst_lst])
     dst_set = assert_frozenset([dst for src, dst in src_dst_lst])
     pure_dst_set = dst_set.difference(src_set)
@@ -564,7 +571,7 @@ def rename_persistent_net_rules(src_dst_lst, (procedure_init, procedure_edit, pr
     start_needed = False
     runtime_renamed_possible = False
     
-    context = procedure_init(trace)
+    context = procedure_init(src_dst_lst, pure_dst_set, trace)
     
     lock_rules_file(PERSISTENT_NET_RULES_FILE)
     locked = True
@@ -590,7 +597,7 @@ def rename_persistent_net_rules(src_dst_lst, (procedure_init, procedure_edit, pr
         try:
             replace_simple_in_file_nolock(PERSISTENT_NET_RULES_FILE, replacement, trace)
             
-            procedure_edit(context, trace)
+            procedure_edit(context, src_dst_lst, pure_dst_set, trace)
             
             unlock_rules_file(PERSISTENT_NET_RULES_FILE)
             locked = False

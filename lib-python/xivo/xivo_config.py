@@ -45,6 +45,35 @@ from xivo import udev
 from xivo.easyslog import *
 
 
+# SYSCONF_DIR = "/etc/pf-xivo/sysconf"
+SYSCONF_DIR = "/home/xilun/xivo/people/xilun"
+
+STORE_BASE = os.path.join(SYSCONF_DIR, "store")
+
+STORE_DEFAULT = "default"
+STORE_CURRENT = "current"
+STORE_PREVIOUS = "previous"
+STORE_TMP = "tmp"
+STORE_NEW = "new"
+STORE_FAILED = "failed"
+STORE_RESERVED = (STORE_DEFAULT, STORE_CURRENT, STORE_PREVIOUS, STORE_TMP, STORE_NEW, STORE_FAILED)
+
+GENERATED_BASE = os.path.join(SYSCONF_DIR, "generated")
+
+GENERATED_CURRENT = "current"
+GENERATED_PREVIOUS = "previous"
+GENERATED_TMP = "tmp"
+GENERATED_NEW = "new"
+
+NETWORK_CONFIG_FILE = "network.yaml"
+
+#                                   path used by system:
+INTERFACES_FILE = "interfaces"      # /etc/network/
+DHCPD_CONF_FILE = "dhcpd.conf"      # /etc/dhcp3/
+DHCP3_SERVER_FILE = "dhcp3-server"  # /etc/default/
+IFPLUGD_FILE = "ifplugd"            # /etc/default/
+
+
 ProvGeneralConf = {
     'database_uri':             "sqlite:/var/lib/asterisk/astsqlite?timeout_ms=150",
     'excl_del_lock_to_s':       45,
@@ -96,26 +125,26 @@ def netif_managed(ifname):
 
 def ipv4_from_macaddr(macaddr, logexceptfunc=None):
     """
-    Wrapper for network.ipv4_from_macaddr() that sets
-    * ifname_filter to netif_managed
+    Wrapper for network.ipv4_from_macaddr() that sets:
+    * ifname_match_func to netif_managed
     * arping_cmd_list to Pgc['arping_cmd'].strip().split()
     * arping_sleep_us to Pgc['arping_sleep_us']
     """
     return network.ipv4_from_macaddr(macaddr, logexceptfunc=logexceptfunc,
-                                     ifname_filter=netif_managed,
+                                     ifname_match_func=netif_managed,
                                      arping_cmd_list=Pgc['arping_cmd'].strip().split(),
                                      arping_sleep_us=Pgc['arping_sleep_us'])
 
 
 def macaddr_from_ipv4(macaddr, logexceptfunc=None):
     """
-    Wrapper for network.macaddr_from_ipv4() that sets
-    * ifname_filter to netif_managed
+    Wrapper for network.macaddr_from_ipv4() that sets:
+    * ifname_match_func to netif_managed
     * arping_cmd_list to Pgc['arping_cmd'].strip().split()
     * arping_sleep_us to Pgc['arping_sleep_us']
     """
     return network.macaddr_from_ipv4(macaddr, logexceptfunc=logexceptfunc,
-                                     ifname_filter=netif_managed,
+                                     ifname_match_func=netif_managed,
                                      arping_cmd_list=Pgc['arping_cmd'].strip().split(),
                                      arping_sleep_us=Pgc['arping_sleep_us'])
 
@@ -967,32 +996,6 @@ def generate_dhcpd_conf(conf, trace=trace_null):
     trace.notice("LEAVING generate_dhcpd_conf.")
 
 
-# SYSCONF_DIR = "/etc/pf-xivo/sysconf"
-SYSCONF_DIR = "/home/xilun/xivo/people/xilun"
-
-STORE_BASE = os.path.join(SYSCONF_DIR, "store")
-
-STORE_DEFAULT = "default"
-STORE_CURRENT = "current"
-STORE_PREVIOUS = "previous"
-STORE_TMP = "tmp"
-STORE_NEW = "new"
-STORE_FAILED = "failed"
-STORE_RESERVED = (STORE_DEFAULT, STORE_CURRENT, STORE_PREVIOUS, STORE_TMP, STORE_NEW, STORE_FAILED)
-
-GENERATED_BASE = os.path.join(SYSCONF_DIR, "generated")
-
-GENERATED_CURRENT = "current"
-GENERATED_PREVIOUS = "previous"
-GENERATED_TMP = "tmp"
-GENERATED_NEW = "new"
-
-NETWORK_CONFIG_FILE = "network.yaml"
-
-INTERFACES_FILE = "interfaces"
-DHCPD_CONF_FILE = "dhcpd.conf"
-
-
 class TransactionError(Exception):
     "Error raised on transaction cancellation."
     def __init__(self, msg, original_exception=None):
@@ -1292,7 +1295,7 @@ def aa_lst_vsTag(conf):
     configurations already used or previously selected IP configurations.
     The list is sorted by network.sorted_lst_lexdec().
     """
-    referenced_networks = frozenset(network_from_static(conf['ipConfs'][ipConfTag]) for ipConfTag in get_referenced_ipConfTags(conf))
+    referenced_networks = frozenset([network_from_static(conf['ipConfs'][ipConfTag]) for ipConfTag in get_referenced_ipConfTags(conf)])
     owned = frozenset(get_referenced_vsTags(conf))
     eligible_networks = set()
     unsorted_eligible_vsTag = []
@@ -1321,7 +1324,7 @@ def aa_lst_ipConfTag(conf):
     The list is sorted by network.sorted_lst_lexdec().
     """
     owned = frozenset(get_referenced_ipConfTags(conf))
-    referenced_networks = frozenset(network_from_static(conf['ipConfs'][ipConfTag]) for ipConfTag in owned)
+    referenced_networks = frozenset([network_from_static(conf['ipConfs'][ipConfTag]) for ipConfTag in owned])
     eligible_networks = set()
     unsorted_eligible_ipConfTag = []
     for ipConfTag in conf['ipConfs'].iterkeys():
@@ -1473,6 +1476,50 @@ def phy_free_in_conf(conf, ifname):
     return conf['netIfaces'].get(ifname, 'void') == 'void'
 
 
+def proc_reneth_init(src_dst_lst, pure_dst_set, trace):
+    """
+    Initialization procedure for ethernet interface renaming/swapping
+    """
+    config = load_current_configuration(trace)
+    for pure_dst in pure_dst_set:
+        if not phy_free_in_conf(config, pure_dst):
+            raise ValueError, "Target interface name busy in XIVO configuration: %r" % pure_dst
+    for src, dst in src_dst_list:
+        if src not in config['netIfaces']:
+            raise ValueError, "Source interface name does not exist in XIVO configuration: %r" % src
+        if not netif_source_name(src):
+            raise ValueError, "Invalid source interface name %r" % src
+        if not netif_target_name(dst):
+            raise ValueError, "Invalid target interface name %r" % dst
+    return config
+
+
+def proc_reneth_edit(config, src_dst_lst, pure_dst_set, trace):
+    """
+    Edition procedure for ethernet interface renaming
+    """
+    orig_netIfaces = dict(config['netIfaces'])
+    for src, dst in src_dst_lst:
+        config['netIfaces'][dst] = orig_netIfaces[src]
+        del config['netIfaces'][src]
+    save_configuration_initiate_transaction(config, trace)
+
+
+def proc_reneth_preup(config, trace):
+    """
+    Commit procedure for ethernet interface renaming
+    """
+    transaction_system_configuration(trace)
+
+
+def proc_reneth_rollback(config, trace):
+    """
+    Rollback procedure for ethernet interface renaming
+    """
+    if transaction_just_initiatiated():
+        undo_transaction_initiation()
+
+
 def rename_ethernet_interface(old_name, new_name, trace=trace_null):
     """
     Rename the @old_name physical interface to @new_name.
@@ -1481,83 +1528,17 @@ def rename_ethernet_interface(old_name, new_name, trace=trace_null):
     XXX: On external failure (kill -9, power outage), a small time window
     remains where the configuration could be leaved in an inconsistent state.
     """
-    if not netif_source_name(old_name):
-        raise ValueError, "Invalid source interface name %r" % old_name
-    if not netif_target_name(new_name):
-        raise ValueError, "Invalid target interface name %r" % new_name
-    if old_name == new_name:
-        raise ValueError, "Same source and target name %s" % old_name
-    
     # TODO: detect if a previous renaming operation has been interrupted the
     # hard way (kill -9, power failure) and rollback if possible.
     # This will be better placed in an other function.
-    
-    can_generate_and_start = False
-    can_udevtrigger = False
-    
-    def cancel_rename_transaction():
-        "Cancel modifications of the configuration performed by rename_ethernet_interface()"
-        if transaction_just_initiatiated():
-            undo_transaction_initiation()
-        if os.path.exists(udev.PERSISTENT_NET_RULES_FILE + ".orig"):
-            os.rename(udev.PERSISTENT_NET_RULES_FILE + ".orig", udev.PERSISTENT_NET_RULES_FILE)
-    
-    udev.lock_rules_file(udev.PERSISTENT_NET_RULES_FILE)
-    try:
-        try:
-            net_rules = udev.parse_file_nolock(udev.PERSISTENT_NET_RULES_FILE, trace)
-            rule_iface_set = set((rule['NAME'][1] for rule in net_rules if 'NAME' in rule))
-            system_iface_set = set(network.get_filtered_phys())
-            known_iface_set = rule_iface_set.union(system_iface_set)
-            
-            config = load_current_configuration(trace)
-            
-            if new_name in known_iface_set:
-                raise TransactionError("Target interface name is already taken: %r" % new_name)
-            
-            if old_name not in rule_iface_set:
-                raise TransactionError("Source interface name is not in z25_persistent-net.rules: %r" % old_name)
-            if old_name not in rule_iface_set:
-                raise TransactionError("Source interface name is not known by the system: %r" % old_name)
-            
-            if not phy_free_in_conf(config, new_name):
-                raise TransactionError("Target interface name busy in XIVO configuration: %r" % new_name)
-            
-            if old_name not in config['netIfaces']:
-                raise TransactionError("Source interface name does not exist in XIVO configuration: %r" % old_name)
-            
-            shutil.copy2(udev.PERSISTENT_NET_RULES_FILE, udev.PERSISTENT_NET_RULES_FILE + ".orig")
-            
-            match_repl_lst = [({'NAME': ['=', old_name]}, {'NAME': ['=', new_name]})]
-            udev.replace_simple_in_file_nolock(udev.PERSISTENT_NET_RULES_FILE, match_repl_lst, trace)
-            
-            config['netIfaces'][new_name] = config['netIfaces'][old_name]
-            del config['netIfaces'][old_name]
-            save_configuration_initiate_transaction(config, trace)
-            
-            can_generate_and_start = True
-            network.force_shutdown(old_name, trace)
-        except:
-            except_tb.log_exception(trace.err) # XXX keep that or let the caller log exceptions?
-            cancel_rename_transaction()
-            raise
-        
-        can_udevtrigger = True
-        
-    finally:
-        udev.unlock_rules_file(udev.PERSISTENT_NET_RULES_FILE)
-    
-    if can_udevtrigger:
-        try:
-            # NOTE: udev.trigger() must probably not be called with a rules file locked
-            udev.trigger(trace)
-        except udev.TriggerError:
-            udev.lock_rules_file(udev.PERSISTENT_NET_RULES_FILE)
-            try:
-                cancel_rename_transaction()
-            finally:
-                udev.unlock_rules_file(udev.PERSISTENT_NET_RULES_FILE)
-    
-    if can_generate_and_start:
-        transaction_system_configuration(trace)
-        network.ifplugd_start(trace)
+
+    udev.rename_persistent_net_rules([(old_name, new_name)], (proc_reneth_init, proc_reneth_edit, proc_reneth_preup, proc_reneth_rollback), trace)
+
+
+def swap_ethernet_interfaces(name1, name2, trace=trace_null):
+    """
+    Swap ethernet interfaces @name1 and @name2.
+    """
+    # NOTE: see also rename_ethernet_interface() for various generic comments
+
+    udev.rename_persistent_net_rules([(name1, name2), (name2, name1)], (proc_reneth_init,  proc_reneth_edit, proc_reneth_preup, proc_reneth_rollback), trace)
