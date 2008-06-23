@@ -1,0 +1,38 @@
+Set cards=0 to the default configuration so that autoload can load it without
+stopping the startup process of Asterisk.
+Of course, a fix for the code was needed to bail-out on cards=0 :-)
+
+ -- Faidon Liambotis <paravoid@debian.org>
+
+Index: asterisk-1.4.20.1/channels/chan_vpb.cc
+===================================================================
+--- asterisk-1.4.20.1.orig/channels/chan_vpb.cc	2008-04-16 21:59:37.000000000 +0200
++++ asterisk-1.4.20.1/channels/chan_vpb.cc	2008-06-06 16:14:28.000000000 +0200
+@@ -2739,7 +2739,13 @@
+ 	v = ast_variable_browse(cfg, "general");
+ 	while (v){
+ 		if (strcasecmp(v->name, "cards") == 0) {
+-			ast_log(LOG_NOTICE, "VPB Driver configured to use [%d] cards\n", atoi(v->value));
++				if (atoi(v->value) == 0) {
++					ast_log(LOG_ERROR,"VPB Driver not configured\n");
++					error = AST_MODULE_LOAD_DECLINE;
++					goto done;
++				} else {
++					ast_log(LOG_NOTICE,"VPB Driver configured to use [%d] cards\n",atoi(v->value));
++				}
+ 		} else if (strcasecmp(v->name, "indication") == 0) {
+ 			use_ast_ind = 1;
+ 			ast_log(LOG_NOTICE, "VPB driver using Asterisk Indication functions!\n");
+Index: asterisk-1.4.20.1/configs/vpb.conf.sample
+===================================================================
+--- asterisk-1.4.20.1.orig/configs/vpb.conf.sample	2006-09-11 18:41:49.000000000 +0200
++++ asterisk-1.4.20.1/configs/vpb.conf.sample	2008-06-06 16:13:36.000000000 +0200
+@@ -57,7 +57,7 @@
+ type = v12pci
+ ;type = v6pci
+ ;type = v4pci
+-cards = 1
++cards = 0
+ 
+ [interfaces]
+ 

@@ -27,7 +27,7 @@ UPFILENAME="asterisk_${UPVERSION}.orig.tar.gz"
 URL="http://downloads.digium.com/pub/asterisk/releases/asterisk-${UPVERSION}.tar.gz"
 
 echo "Downloading ${UPFILENAME} from ${URL}"
-wget -N -nv -T10 -t3 -O ${DEST_PATH}/${UPFILENAME} ${URL}
+wget -nv -T10 -t3 -O ${DEST_PATH}/${UPFILENAME} ${URL}
 if [ $? != 0 ]; then
 	rm -f ${DEST_PATH}/${UPFILENAME}
 	echo "Could not find tarball."
@@ -39,8 +39,14 @@ mkdir -p ${DEST_PATH}/asterisk-${UPVERSION}.tmp/
 cd ${DEST_PATH}/asterisk-${UPVERSION}.tmp
 tar xfz ../${UPFILENAME}
 if [ -e "asterisk-${UPVERSION}" ]; then
-	find . -depth -type f -name 'fpm-*.mp3' -exec rm -rf {} \;
-	rm -rf asterisk-${UPVERSION}/codecs/ilbc asterisk-${UPVERSION}/contrib/firmware/
+	(
+	cd asterisk-${UPVERSION}
+	find  -depth -type f -name 'fpm-*.mp3' -exec rm -rf {} \;
+	rm -f sounds/asterisk-moh-freeplay-wav.tar.gz
+	rm -rf asterisk-${UPVERSION}/contrib/firmware/
+	rm -rf codecs/ilbc/* codecs/codec_ilbc.c
+	printf "all:\nclean:\n.PHONY: all clean\n" >codecs/ilbc/Makefile
+	)
 	tar cfz ../${FILENAME} asterisk-${UPVERSION}
 else
 	echo "Source tarball layout changed. Check by yourself in '${DEST_PATH}/asterisk-${UPVERSION}.tmp/'."

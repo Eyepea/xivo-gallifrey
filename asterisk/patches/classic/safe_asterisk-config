@@ -1,0 +1,45 @@
+Use ASTSAFE_TTY and ASTSAFE_CONSOLE from /etc/default/asterisk to configure
+safe_asterisk.
+
+Closes: #381786
+
+ -- Faidon Liambotis <paravoid@debian.org>
+
+Index: asterisk-1.4.20.1/contrib/scripts/safe_asterisk
+===================================================================
+--- asterisk-1.4.20.1.orig/contrib/scripts/safe_asterisk	2008-06-06 15:57:55.000000000 +0200
++++ asterisk-1.4.20.1/contrib/scripts/safe_asterisk	2008-06-06 15:58:16.000000000 +0200
+@@ -1,9 +1,13 @@
+ #!/bin/bash
+ # vim:textwidth=80:tabstop=4:shiftwidth=4:smartindent:autoindent
+ 
++if [ -f /etc/default/asterisk ]; then
++	. /etc/default/asterisk;
++fi
++
+ CLIARGS="$*"				# Grab any args passed to safe_asterisk
+-TTY=9						# TTY (if you want one) for Asterisk to run on
+-CONSOLE=yes					# Whether or not you want a console
++TTY=${ASTSAFE_TTY:-9}                   	# TTY (if you want one) for Asterisk to run on
++CONSOLE=${ASTSAFE_CONSOLE:-yes}         	# Whether or not you want a console
+ #NOTIFY=ben@alkaloid.net	# Who to notify about crashes
+ #EXEC=/path/to/somescript	# Run this command if Asterisk crashes
+ MACHINE=`hostname`			# To specify which machine has crashed when getting the mail
+@@ -85,7 +89,7 @@
+ # Don't fork when running "safely"
+ #
+ ASTARGS=""
+-if [ "$TTY" != "" ]; then
++if [ "$TTY" != "no" ]; then
+ 	if [ -c /dev/tty${TTY} ]; then
+ 		TTY=tty${TTY}
+ 	elif [ -c /dev/vc/${TTY} ]; then
+@@ -125,7 +129,7 @@
+ {
+ 	while :; do 
+ 
+-		if [ "$TTY" != "" ]; then
++		if [ "$TTY" != "no" ]; then
+ 			cd /tmp
+ 			stty sane < /dev/${TTY}
+ 			nice -n $PRIORITY ${ASTSBINDIR}/asterisk -f ${CLIARGS} ${ASTARGS} >& /dev/${TTY} < /dev/${TTY}
