@@ -93,13 +93,13 @@ static void *action_aoriginate_run(void *data)
 
 	chan = __ast_request_and_dial(aodata->tech, AST_FORMAT_SLINEAR,
 	                              aodata->data, aodata->timeout, &reason,
-				      cid_num, cid_name, &oh);
+	                              cid_num, cid_name, &oh);
 	if (chan == NULL)
 		goto error_request_and_dial;
 
-        u = ast_module_user_add(chan);
-        if(u == NULL)
-                goto error_local_user_add;
+	u = ast_module_user_add(chan);
+	if(u == NULL)
+		goto error_local_user_add;
 
 	ast_mutex_lock(&chan->lock);
 	if (chan->cdr) {
@@ -155,7 +155,7 @@ static void *action_aoriginate_run(void *data)
 		MANAGER_EVENT_AORIGINATE_SUCCESS();
 
 		pbx_exec(chan, app, aodata->appdata);
-                ast_module_user_remove(u);
+		ast_module_user_remove(u);
 		ast_hangup(chan);
 	} else {
 		ast_mutex_unlock(&chan->lock);
@@ -166,7 +166,7 @@ static void *action_aoriginate_run(void *data)
 			ast_log(LOG_ERROR, "Unable to run PBX on %s\n", chan->name);
 			ast_hangup(chan);
 		}
-                ast_module_user_remove(u);
+		ast_module_user_remove(u);
 	}
 	goto out;
 
@@ -179,7 +179,7 @@ error_chan_state_not_up:
 	}
 error_no_application:
 error_cdr_alloc:
-        ast_module_user_remove(u);
+	ast_module_user_remove(u);
 error_local_user_add:
 	ast_copy_string(chan_uniqueid, chan->uniqueid, sizeof(chan_uniqueid));
 	ast_hangup(chan);
@@ -238,8 +238,8 @@ static const char mandescr_aoriginate[] =
 "	Account: Account code\n";
 static int action_aoriginate(struct mansession *s, struct message *m)
 {
-        /* STANDARD_INCREMENT_USECOUNT; */
-        ast_module_ref(ast_module_info->self);
+	/* STANDARD_INCREMENT_USECOUNT; */
+	ast_module_ref(ast_module_info->self);
 
 	char *name = astman_get_header(m, "Channel");
 	char *exten = astman_get_header(m, "Exten");
@@ -327,9 +327,9 @@ static int action_aoriginate(struct mansession *s, struct message *m)
 		astman_send_ack(s, m, "AOriginate successfully queued");
 	pthread_attr_destroy(&attr);
 out:
-        /* STANDARD_DECREMENT_USECOUNT; */
-        ast_module_unref(ast_module_info->self);
-        
+	/* STANDARD_DECREMENT_USECOUNT; */
+	ast_module_unref(ast_module_info->self);
+
 	return 0;
 }
 
