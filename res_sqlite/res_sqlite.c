@@ -261,6 +261,16 @@ struct vm_entry
 };
 
 /**
+ * Prototypes required for the asterisk-1.4 compilation.
+ *
+ */
+int load_module(void);
+int unload_module(void);
+char * description(void);
+int usecount(void);
+char * key(void);
+
+/**
  * Allocate a variable.
  *
  * @param var   the address of the variable to set (it will be allocated)
@@ -340,7 +350,8 @@ static int add_cfg_entry(void *arg, int argc, char **argv, char **columnNames);
  */
 static struct ast_config * config_handler(const char *database,
                                           const char *table, const char *file,
-                                          struct ast_config *cfg);
+                                          struct ast_config *cfg,
+                                          int withcomments);
 
 /**
  * Helper function to parse a va_list object into 2 dynamic arrays of
@@ -936,7 +947,7 @@ add_cfg_entry(void *arg, int argc, char **argv, char **columnNames)
       char *val;
 
       val = argv[RES_SQLITE_CONFIG_VAR_VAL];
-      cfg = ast_config_internal_load(val, args->cfg);
+      cfg = ast_config_internal_load(val, args->cfg, 0);
 
       if (cfg == NULL)
         {
@@ -990,7 +1001,7 @@ add_cfg_entry(void *arg, int argc, char **argv, char **columnNames)
 
 static struct ast_config *
 config_handler(const char *database, const char *table, const char *file,
-               struct ast_config *cfg)
+               struct ast_config *cfg, int withcomments)
 {
   struct cfg_entry_args args;
   char *errormsg;
