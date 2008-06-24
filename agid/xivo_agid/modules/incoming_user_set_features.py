@@ -24,6 +24,7 @@ from xivo_agid import objects
 
 def incoming_user_set_features(agi, cursor, args):
 	srcnum = agi.get_variable('XIVO_SRCNUM')
+	srcid = int(agi.get_variable('XIVO_USERID'))
 	dstnum = agi.get_variable('XIVO_DSTNUM')
 	dstid = agi.get_variable('XIVO_DSTID')
 	context = agi.get_variable('XIVO_CONTEXT')
@@ -31,6 +32,9 @@ def incoming_user_set_features(agi, cursor, args):
 	bypass_filter = agi.get_variable('XIVO_CALLFILTER_BYPASS')
 
 	feature_list = objects.FeatureList(agi, cursor)
+
+	# TODO: look up source number/user id for some features, e.g. call
+	# recording.
 
 	if dstnum and context:
 		user = objects.User(agi, cursor, feature_list, number = dstnum, context = context)

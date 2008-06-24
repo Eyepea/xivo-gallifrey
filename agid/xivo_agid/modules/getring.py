@@ -26,24 +26,17 @@ CONFIG_FILE = "/etc/asterisk/xivo_ring.conf"
 config = None
 
 def getring(agi, cursor, args):
-	dstnum = agi.get_variable('REAL_DSTNUM')
-	context = agi.get_variable('REAL_CONTEXT')
-	calltype = agi.get_variable('REAL_CALLTYPE')
+	dstnum = agi.get_variable('XIVO_DSTNUM')
+	context = agi.get_variable('XIVO_CONTEXT')
+	callorigin = agi.get_variable('XIVO_CALLORIGIN')
 
 	try:
 		phonetype = config.get('number', "%s@%s" % (dstnum, context))
-		ringtype = config.get(phonetype, calltype)
+		ringtype = config.get(phonetype, callorigin)
 		agi.set_variable('XIVO_RINGTYPE', ringtype)
 		agi.verbose("Using ring tone %s" % ringtype)
-
-		# XXX Should special cases such as this one be handled here ?
-		# XXX Looks like the dial plan is broken and commented out
-		# with regard to the use of this variable, consider this
-		# useless, it will probably be removed soon.
-		if phonetype == 'thomson':
-			agi.set_variable("XIVO_ISTHOMSON", "1")
 	except ConfigParser.NoOptionError:
-		agi.verbose("Using the phone ring tone")
+		agi.verbose("Using the native phone ring tone")
 
 def setup(cursor):
 	global config
