@@ -45,7 +45,7 @@ def phonestatus(agi, cursor, args):
 		if user.enablerna:
 			agi.set_variable('XIVO_DESTRNA', user.destrna)
 
-	if feature_list.enablevm:
+	if user.vmbox:
 		agi.set_variable('XIVO_ENABLEVOICEMAIL', user.enablevoicemail)
 
 	if feature_list.incallfilter:
