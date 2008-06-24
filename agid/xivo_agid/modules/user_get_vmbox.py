@@ -21,14 +21,9 @@ from xivo_agid import agid
 from xivo_agid import objects
 
 def user_get_vmbox(agi, cursor, args):
-	srcnum = agi.get_variable('XIVO_SRCNUM')
-	srcid = agi.get_variable('XIVO_SRCID')
-	context = agi.get_variable('XIVO_CONTEXT')
+	userid = int(agi.get_variable('XIVO_USERID'))
 
-	feature_list = objects.FeatureList(agi, cursor)
-
-	user = objects.User(agi, cursor, feature_list, xid = srcid, number = srcnum, context = context)
-	agi.set_variable('XIVO_SRCID', user.id)
+	user = objects.User(agi, cursor, xid = userid)
 
 	if not user.vmbox:
 		agi.dp_break("User has no voicemail box (id: %d)" % (user.id,))

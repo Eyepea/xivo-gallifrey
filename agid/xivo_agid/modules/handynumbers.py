@@ -21,12 +21,10 @@ from xivo_agid import agid
 from xivo_agid import objects
 
 def handynumbers(agi, cursor, args):
-	srcnum = agi.get_variable('REAL_SRCNUM')
-	dstnum = agi.get_variable('REAL_DSTNUM')
-	context = agi.get_variable('REAL_CONTEXT')
-	exten_pattern = agi.get_variable('REAL_EXTENPATTERN')
+	userid = int(agi.get_variable('XIVO_USERID'))
+	exten_pattern = agi.get_variable('XIVO_EXTENPATTERN')
 
-	user = objects.User(agi, cursor, number = srcnum, context = context)
+	user = objects.User(agi, cursor, xid = userid)
 	handy_number = objects.HandyNumber(agi, cursor, exten = exten_pattern)
 	trunk = handy_number.trunk
 
