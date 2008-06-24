@@ -20,13 +20,23 @@ __license__ = """
 from xivo_agid import agid
 from xivo_agid import objects
 
-def voicemsg(agi, cursor, args):
-	srcnum = agi.get_variable('REAL_SRCNUM')
-	context = agi.get_variable('REAL_CONTEXT')
+def user_get_vmbox(agi, cursor, args):
+	srcnum = agi.get_variable('XIVO_SRCNUM')
+	srcid = agi.get_variable('XIVO_SRCID')
+	context = agi.get_variable('XIVO_CONTEXT')
 
-	user = objects.User(agi, cursor, number = srcnum, context = context)
+	feature_list = objects.FeatureList(agi, cursor)
 
-	if user.vmbox and user.vmbox.skipcheckpass:
+	user = objects.User(agi, cursor, feature_list, xid = srcid, number = srcnum, context = context)
+	agi.set_variable('XIVO_SRCID', user.id)
+
+	if not user.vmbox:
+		agi.dp_break("User has no voicemail box (id: %d)" % (user.id,))
+
+	if user.vmbox.skipcheckpass:
 		agi.set_variable('XIVO_VMOPTIONS', "s")
 
-agid.register(voicemsg)
+	agi.set_variable('XIVO_MAILBOX' user.vmbox.mailbox)
+	agi.set_variable('XIVO_MAILBOX_CONTEXT' user.vmbox.context)
+
+agid.register(user_get_vmbox)

@@ -21,8 +21,8 @@ from xivo_agid import agid
 from xivo_agid import objects
 
 def phonestatus(agi, cursor, args):
-	srcnum = agi.get_variable('REAL_SRCNUM')
-	context = agi.get_variable('REAL_CONTEXT')
+	srcnum = agi.get_variable('XIVO_SRCNUM')
+	context = agi.get_variable('XIVO_CONTEXT')
 
 	feature_list = objects.FeatureList(agi, cursor)
 	user = objects.User(agi, cursor, feature_list, number = srcnum, context = context)

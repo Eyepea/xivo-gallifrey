@@ -20,8 +20,8 @@ __license__ = """
 from xivo_agid import agid
 from xivo_agid import objects
 
-def agent_set_features(agi, cursor, args):
-	agent = objects.Agent(agi, cursor, number = args[0])
+def agent_get_options(agi, cursor, args):
+	agent = objects.Agent(agi, cursor, number = int(args[0]))
 
 	options = ""
 
@@ -30,4 +30,4 @@ def agent_set_features(agi, cursor, args):
 
 	agi.set_variable('XIVO_AGENTOPTIONS', options)
 
-agid.register(agent_set_features)
+agid.register(agent_get_options)
