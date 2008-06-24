@@ -23,10 +23,10 @@ from xivo_agid import agid
 from xivo_agid import call_rights
 
 def _did_set_call_rights(agi, cursor, args):
-	srcnum = agi.get_variable('REAL_SRCNUM')
-	dstnum = agi.get_variable('REAL_DSTNUM')
-	context = agi.get_variable('REAL_CONTEXT')
-	exten_pattern = agi.get_variable('REAL_EXTENPATTERN')
+	srcnum = agi.get_variable('XIVO_SRCNUM')
+	dstnum = agi.get_variable('XIVO_DSTNUM')
+	context = agi.get_variable('XIVO_CONTEXT')
+	exten_pattern = agi.get_variable('XIVO_EXTENPATTERN')
 
 	cursor.query("SELECT ${columns} FROM rightcallexten",
 		     ('rightcallid', 'exten'))
