@@ -23,28 +23,28 @@
  */
 
 /**
- * \mainpage res_sqlite
+ * \mainpage res_config_sqlite
  *
  * \section intro_sec Presentation
  *
- * res_sqlite is a module for the Asterisk Open Source PBX to support SQLite 2
+ * res_config_sqlite is a module for the Asterisk Open Source PBX to support SQLite 2
  * databases. It can be used to fetch configuration from a database (static
  * configuration files and/or using the Asterisk RealTime Architecture - ARA).
  * It can also be used to log CDR entries. Finally, it can be used for simple
  * queries in the Dialplan. Note that Asterisk already comes with a module
- * named cdr_sqlite. There are two reasons for including it in res_sqlite:
+ * named cdr_sqlite. There are two reasons for including it in res_config_sqlite:
  * the first is that rewriting it was a training to learn how to write a
  * simple module for Asterisk, the other is to have the same database open for
  * all kinds of operations, which improves reliability and performance.
  *
  * There is already a module for SQLite 3 (named res_sqlite3) in the Asterisk
- * addons. res_sqlite was developed because we, at Proformatique, are using
+ * addons. res_config_sqlite was developed because we, at Proformatique, are using
  * PHP 4 in our embedded systems, and PHP 4 has no stable support for SQLite 3
  * at this time. We also needed RealTime support.
  *
  * \section build_install_sec Building and installing
  *
- * To build res_sqlite, simply enter <code>make</code>. To install it,
+ * To build res_config_sqlite, simply enter <code>make</code>. To install it,
  * enter make install. The Makefile has been slightly designed for
  * cross compilation and installation in non standard locations, to ease
  * the work of packagers. Read it for more details.
@@ -52,14 +52,14 @@
  * \section conf_sec Configuration
  *
  * The main configuration file is res_sqlite.conf. It must be readable or
- * res_sqlite will fail to start. It is suggested to use the sample file
+ * res_config_sqlite will fail to start. It is suggested to use the sample file
  * in this package as a starting point. The file has only one section
  * named <code>general</code>. Here are the supported parameters :
  *
  * <dl>
  *  <dt><code>dbfile</code></dt>
  *  <dd>The absolute path to the SQLite database (the file can be non existent,
- *      res_sqlite will create it if is has the appropriate rights)</dd>
+ *      res_config_sqlite will create it if is has the appropriate rights)</dd>
  *  <dt><code>config_table</code></dt>
  *  <dd>The table used for static configuration</dd>
  *  <dt><code>cdr_table</code></dt>
@@ -70,7 +70,7 @@
  *      the Dialplan</dd>
  * </dl>
  *
- * To use res_sqlite for static and/or RealTime configuration, refer to the
+ * To use res_config_sqlite for static and/or RealTime configuration, refer to the
  * Asterisk documentation. The file tables.sql can be used to create the
  * needed tables.
  *
@@ -91,17 +91,17 @@
  * commands can be running when requesting the module status) and increases
  * over time, this probably means that you're badly using the application
  * and you're creating resource leaks. You should check your Dialplan and
- * reload res_sqlite (by unloading and then loading again - reloading isn't
+ * reload res_config_sqlite (by unloading and then loading again - reloading isn't
  * supported)
  *
  * \section credits_sec Credits
  *
- * res_sqlite was developed by Richard Braun at the Proformatique company.
+ * res_config_sqlite was developed by Richard Braun at the Proformatique company.
  */
 
 /**
- * \file res_sqlite.c
- * \brief res_sqlite module.
+ * \file res_config_sqlite.c
+ * \brief res_config_sqlite module.
  */
 
 #include <stdio.h>
@@ -119,29 +119,29 @@
 #include <asterisk/options.h>
 #include <asterisk/linkedlists.h>
 
-#define RES_SQLITE_NAME "res_sqlite"
-#define RES_SQLITE_DRIVER "sqlite"
-#define RES_SQLITE_APP_DRIVER "SQLITE"
-#define RES_SQLITE_DESCRIPTION "Resource Module for SQLite 2"
-#define RES_SQLITE_CONF_FILE "res_sqlite.conf"
-#define RES_SQLITE_APP_SYNOPSIS "Dialplan access to SQLite 2"
-#define RES_SQLITE_APP_DESCRIPTION \
-"SQLITE(): " RES_SQLITE_APP_SYNOPSIS "\n"
-#define RES_SQLITE_STATUS_SUMMARY \
+#define RES_CONFIG_SQLITE_NAME "res_config_sqlite"
+#define RES_CONFIG_SQLITE_DRIVER "sqlite"
+#define RES_CONFIG_SQLITE_APP_DRIVER "SQLITE"
+#define RES_CONFIG_SQLITE_DESCRIPTION "Resource Module for SQLite 2"
+#define RES_CONFIG_SQLITE_CONF_FILE "res_sqlite.conf"
+#define RES_CONFIG_SQLITE_APP_SYNOPSIS "Dialplan access to SQLite 2"
+#define RES_CONFIG_SQLITE_APP_DESCRIPTION \
+"SQLITE(): " RES_CONFIG_SQLITE_APP_SYNOPSIS "\n"
+#define RES_CONFIG_SQLITE_STATUS_SUMMARY \
 "Show status information about the SQLite 2 driver"
-#define RES_SQLITE_STATUS_USAGE \
+#define RES_CONFIG_SQLITE_STATUS_USAGE \
 "Usage: show sqlite status\n" \
-"	" RES_SQLITE_STATUS_SUMMARY "\n"
+"	" RES_CONFIG_SQLITE_STATUS_SUMMARY "\n"
 
-#define RES_SQLITE_CONFIG_COLUMNS 8
-#define RES_SQLITE_CONFIG_ID 0
-#define RES_SQLITE_CONFIG_CAT_METRIC 1
-#define RES_SQLITE_CONFIG_VAR_METRIC 2
-#define RES_SQLITE_CONFIG_COMMENTED 3
-#define RES_SQLITE_CONFIG_FILENAME 4
-#define RES_SQLITE_CONFIG_CATEGORY 5
-#define RES_SQLITE_CONFIG_VAR_NAME 6
-#define RES_SQLITE_CONFIG_VAR_VAL 7
+#define RES_CONFIG_SQLITE_CONFIG_COLUMNS 8
+#define RES_CONFIG_SQLITE_CONFIG_ID 0
+#define RES_CONFIG_SQLITE_CONFIG_CAT_METRIC 1
+#define RES_CONFIG_SQLITE_CONFIG_VAR_METRIC 2
+#define RES_CONFIG_SQLITE_CONFIG_COMMENTED 3
+#define RES_CONFIG_SQLITE_CONFIG_FILENAME 4
+#define RES_CONFIG_SQLITE_CONFIG_CATEGORY 5
+#define RES_CONFIG_SQLITE_CONFIG_VAR_NAME 6
+#define RES_CONFIG_SQLITE_CONFIG_VAR_VAL 7
 
 #define MACRO_BEGIN	do {
 #define MACRO_END	} while (0)
@@ -150,7 +150,7 @@
  * Limit the number of maximum simultaneous registered SQLite VMs to avoid
  * a denial of service attack.
  */
-#define RES_SQLITE_VM_MAX 1024
+#define RES_CONFIG_SQLITE_VM_MAX 1024
 
 #define SET_VAR(config, to, from)		\
 MACRO_BEGIN					\
@@ -169,39 +169,39 @@ MACRO_END
 /**
  * Maximum number of loops before giving up executing a query. Calls to
  * sqlite_xxx() functions which can return SQLITE_BUSY or SQLITE_LOCKED
- * are enclosed by RES_SQLITE_BEGIN and RES_SQLITE_END, e.g.
+ * are enclosed by RES_CONFIG_SQLITE_BEGIN and RES_CONFIG_SQLITE_END, e.g.
  * <pre>
  * char *errormsg;
  * int error;
  *
- * RES_SQLITE_BEGIN
+ * RES_CONFIG_SQLITE_BEGIN
  *   error = sqlite_exec(db, query, NULL, NULL, &errormsg);
- * RES_SQLITE_END(error)
+ * RES_CONFIG_SQLITE_END(error)
  *
  * if (error)
  *   ...;
  * </pre>
  */
-#define RES_SQLITE_MAX_LOOPS 10
+#define RES_CONFIG_SQLITE_MAX_LOOPS 10
 
 /**
  * Macro used before executing a query.
  *
- * @see RES_SQLITE_MAX_LOOPS.
+ * @see RES_CONFIG_SQLITE_MAX_LOOPS.
  */
-#define RES_SQLITE_BEGIN					\
+#define RES_CONFIG_SQLITE_BEGIN					\
 MACRO_BEGIN							\
   int __i;							\
 								\
-  for (__i = 0; __i < RES_SQLITE_MAX_LOOPS; __i++)		\
+  for (__i = 0; __i < RES_CONFIG_SQLITE_MAX_LOOPS; __i++)		\
     {
 
 /**
  * Macro used after executing a query.
  *
- * @see RES_SQLITE_MAX_LOOPS.
+ * @see RES_CONFIG_SQLITE_MAX_LOOPS.
  */
-#define RES_SQLITE_END(error)					\
+#define RES_CONFIG_SQLITE_END(error)					\
       if ((error != SQLITE_BUSY) && (error != SQLITE_LOCKED))	\
         break;							\
       usleep(1000);						\
@@ -678,7 +678,7 @@ static int vm_count;
  */
 static struct ast_config_engine sqlite_engine =
 {
-  .name = RES_SQLITE_DRIVER,
+  .name = RES_CONFIG_SQLITE_DRIVER,
   .load_func = config_handler,
   .realtime_func = realtime_handler,
   .realtime_multi_func = realtime_multi_handler,
@@ -713,8 +713,8 @@ static struct ast_cli_entry cli_status_cmd =
 {
   .cmda = {"show", "sqlite", "status", NULL},
   .handler = cli_status,
-  .summary = RES_SQLITE_STATUS_SUMMARY,
-  .usage = RES_SQLITE_STATUS_USAGE
+  .summary = RES_CONFIG_SQLITE_STATUS_SUMMARY,
+  .usage = RES_CONFIG_SQLITE_STATUS_USAGE
 };
 
 /*
@@ -828,11 +828,11 @@ load_config(void)
   struct ast_variable *var;
   int error;
 
-  config = ast_config_load(RES_SQLITE_CONF_FILE);
+  config = ast_config_load(RES_CONFIG_SQLITE_CONF_FILE);
 
   if (config == NULL)
     {
-      ast_log(LOG_ERROR, "Unable to load " RES_SQLITE_CONF_FILE "\n");
+      ast_log(LOG_ERROR, "Unable to load " RES_CONFIG_SQLITE_CONF_FILE "\n");
       return 1;
     }
 
@@ -903,7 +903,7 @@ cdr_handler(struct ast_cdr *cdr)
 
   ast_mutex_lock(&mutex);
 
-  RES_SQLITE_BEGIN
+  RES_CONFIG_SQLITE_BEGIN
     error = sqlite_exec_printf(db, sql_add_cdr_entry, NULL, NULL, &errormsg,
                                cdr_table, cdr->start.tv_sec, cdr->clid,
 			       cdr->src, cdr->dst, cdr->dcontext,
@@ -913,7 +913,7 @@ cdr_handler(struct ast_cdr *cdr)
 			       ast_cdr_disp2str(cdr->disposition),
 			       cdr->amaflags, cdr->accountcode, cdr->uniqueid,
 			       cdr->userfield);
-  RES_SQLITE_END(error)
+  RES_CONFIG_SQLITE_END(error)
 
   ast_mutex_unlock(&mutex);
 
@@ -933,7 +933,7 @@ add_cfg_entry(void *arg, int argc, char **argv, char **columnNames)
   struct cfg_entry_args *args;
   struct ast_variable *var;
 
-  if (argc != RES_SQLITE_CONFIG_COLUMNS)
+  if (argc != RES_CONFIG_SQLITE_CONFIG_COLUMNS)
     {
       ast_log(LOG_WARNING, "Corrupt table\n");
       return 1;
@@ -941,12 +941,12 @@ add_cfg_entry(void *arg, int argc, char **argv, char **columnNames)
 
   args = arg;
 
-  if (strcmp(argv[RES_SQLITE_CONFIG_VAR_NAME], "#include") == 0)
+  if (strcmp(argv[RES_CONFIG_SQLITE_CONFIG_VAR_NAME], "#include") == 0)
     {
       struct ast_config *cfg;
       char *val;
 
-      val = argv[RES_SQLITE_CONFIG_VAR_VAL];
+      val = argv[RES_CONFIG_SQLITE_CONFIG_VAR_VAL];
       cfg = ast_config_internal_load(val, args->cfg, 0);
 
       if (cfg == NULL)
@@ -963,9 +963,9 @@ add_cfg_entry(void *arg, int argc, char **argv, char **columnNames)
     }
 
   if (args->cat_name == NULL
-      || (strcmp(args->cat_name, argv[RES_SQLITE_CONFIG_CATEGORY]) != 0))
+      || (strcmp(args->cat_name, argv[RES_CONFIG_SQLITE_CONFIG_CATEGORY]) != 0))
     {
-      args->cat = ast_category_new(argv[RES_SQLITE_CONFIG_CATEGORY]);
+      args->cat = ast_category_new(argv[RES_CONFIG_SQLITE_CONFIG_CATEGORY]);
 
       if (args->cat == NULL)
         {
@@ -974,7 +974,7 @@ add_cfg_entry(void *arg, int argc, char **argv, char **columnNames)
         }
 
       free(args->cat_name);
-      args->cat_name = strdup(argv[RES_SQLITE_CONFIG_CATEGORY]);
+      args->cat_name = strdup(argv[RES_CONFIG_SQLITE_CONFIG_CATEGORY]);
 
       if (args->cat_name == NULL)
         {
@@ -986,8 +986,8 @@ add_cfg_entry(void *arg, int argc, char **argv, char **columnNames)
       ast_category_append(args->cfg, args->cat);
     }
 
-  var = ast_variable_new(argv[RES_SQLITE_CONFIG_VAR_NAME],
-                         argv[RES_SQLITE_CONFIG_VAR_VAL]);
+  var = ast_variable_new(argv[RES_CONFIG_SQLITE_CONFIG_VAR_NAME],
+                         argv[RES_CONFIG_SQLITE_CONFIG_VAR_VAL]);
 
   if (var == NULL)
     {
@@ -1025,10 +1025,10 @@ config_handler(const char *database, const char *table, const char *file,
 
   ast_mutex_lock(&mutex);
 
-  RES_SQLITE_BEGIN
+  RES_CONFIG_SQLITE_BEGIN
     error = sqlite_exec_printf(db, sql_get_config_table, add_cfg_entry,
                                &args, &errormsg, table, file);
-  RES_SQLITE_END(error)
+  RES_CONFIG_SQLITE_END(error)
 
   ast_mutex_unlock(&mutex);
 
@@ -1213,9 +1213,9 @@ realtime_handler(const char *database, const char *table, va_list ap)
 
   ast_mutex_lock(&mutex);
 
-  RES_SQLITE_BEGIN
+  RES_CONFIG_SQLITE_BEGIN
     error = sqlite_exec(db, query, add_rt_cfg_entry, &args, &errormsg);
-  RES_SQLITE_END(error)
+  RES_CONFIG_SQLITE_END(error)
 
   ast_mutex_unlock(&mutex);
 
@@ -1407,9 +1407,9 @@ realtime_multi_handler(const char *database, const char *table, va_list ap)
 
   ast_mutex_lock(&mutex);
 
-  RES_SQLITE_BEGIN
+  RES_CONFIG_SQLITE_BEGIN
     error = sqlite_exec(db, query, add_rt_multi_cfg_entry, &args, &errormsg);
-  RES_SQLITE_END(error)
+  RES_CONFIG_SQLITE_END(error)
 
   ast_mutex_unlock(&mutex);
 
@@ -1502,9 +1502,9 @@ realtime_update_handler(const char *database, const char *table,
 
   ast_mutex_lock(&mutex);
 
-  RES_SQLITE_BEGIN
+  RES_CONFIG_SQLITE_BEGIN
     error = sqlite_exec(db, query, NULL, NULL, &errormsg);
-  RES_SQLITE_END(error)
+  RES_CONFIG_SQLITE_END(error)
 
   if (!error)
     rows_num = sqlite_changes(db);
@@ -1537,9 +1537,9 @@ app_alloc_vm(const char *query)
   /*
    * XXX Can sqlite_compile() fail because of locking ?
    */
-  RES_SQLITE_BEGIN
+  RES_CONFIG_SQLITE_BEGIN
     error = sqlite_compile(db, query, NULL, &vm, &errormsg);
-  RES_SQLITE_END(error)
+  RES_CONFIG_SQLITE_END(error)
 
   ast_mutex_unlock(&mutex);
 
@@ -1589,7 +1589,7 @@ app_register_vm(sqlite_vm *vm)
 
   vm_count++;
 
-  if (vm_count >= RES_SQLITE_VM_MAX)
+  if (vm_count >= RES_CONFIG_SQLITE_VM_MAX)
     {
       vm_count--;
       AST_LIST_UNLOCK(vm_list);
@@ -1845,9 +1845,9 @@ app_fetch(struct ast_channel *chan, char *data)
 
   ast_mutex_lock(&mutex);
 
-  RES_SQLITE_BEGIN
+  RES_CONFIG_SQLITE_BEGIN
     error = sqlite_step(vm, &cols_count, &values, &cols);
-  RES_SQLITE_END(error)
+  RES_CONFIG_SQLITE_END(error)
 
   ast_mutex_unlock(&mutex);
 
@@ -1949,7 +1949,7 @@ app_exec(struct ast_channel *chan, void *data_ptr)
 
   if (data_ptr == NULL)
     {
-      ast_log(LOG_WARNING, RES_SQLITE_APP_DRIVER "() requires an argument\n");
+      ast_log(LOG_WARNING, RES_CONFIG_SQLITE_APP_DRIVER "() requires an argument\n");
       return -1;
     }
 
@@ -2062,10 +2062,10 @@ load_module(void)
 
   if (use_cdr)
     {
-      RES_SQLITE_BEGIN
+      RES_CONFIG_SQLITE_BEGIN
         error = sqlite_exec_printf(db, "SELECT COUNT(id) FROM %Q;", NULL, NULL,
                                    &errormsg, cdr_table);
-      RES_SQLITE_END(error)
+      RES_CONFIG_SQLITE_END(error)
 
       if (error)
         {
@@ -2080,10 +2080,10 @@ load_module(void)
               return 1;
             }
 
-          RES_SQLITE_BEGIN
+          RES_CONFIG_SQLITE_BEGIN
             error = sqlite_exec_printf(db, sql_create_cdr_table, NULL, NULL,
                     &errormsg, cdr_table);
-          RES_SQLITE_END(error)
+          RES_CONFIG_SQLITE_END(error)
 
           if (error)
             {
@@ -2094,7 +2094,7 @@ load_module(void)
             }
         }
 
-      error = ast_cdr_register(RES_SQLITE_NAME, RES_SQLITE_DESCRIPTION,
+      error = ast_cdr_register(RES_CONFIG_SQLITE_NAME, RES_CONFIG_SQLITE_DESCRIPTION,
                                cdr_handler);
 
       if (error)
@@ -2108,9 +2108,9 @@ load_module(void)
 
   if (use_app)
     {
-      error = ast_register_application(RES_SQLITE_APP_DRIVER, app_exec,
-                                       RES_SQLITE_APP_SYNOPSIS,
-                                       RES_SQLITE_APP_DESCRIPTION);
+      error = ast_register_application(RES_CONFIG_SQLITE_APP_DRIVER, app_exec,
+                                       RES_CONFIG_SQLITE_APP_SYNOPSIS,
+                                       RES_CONFIG_SQLITE_APP_DESCRIPTION);
 
       if (error)
         {
@@ -2140,10 +2140,10 @@ unload_module(void)
     ast_cli_unregister(&cli_status_cmd);
 
   if (app_registered)
-    ast_unregister_application(RES_SQLITE_APP_DRIVER);
+    ast_unregister_application(RES_CONFIG_SQLITE_APP_DRIVER);
 
   if (cdr_registered)
-    ast_cdr_unregister(RES_SQLITE_NAME);
+    ast_cdr_unregister(RES_CONFIG_SQLITE_NAME);
 
   ast_config_engine_deregister(&sqlite_engine);
 
@@ -2157,7 +2157,7 @@ unload_module(void)
 char *
 description(void)
 {
-  return RES_SQLITE_DESCRIPTION;
+  return RES_CONFIG_SQLITE_DESCRIPTION;
 }
 
 int

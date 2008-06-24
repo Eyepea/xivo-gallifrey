@@ -11,8 +11,8 @@ Z_CFLAGS := $(CFLAGS) -D _GNU_SOURCE -Wall -Wmissing-prototypes -Wstrict-prototy
 LIBS ?=
 Z_LIBS := $(LIBS) -lpthread -lsqlite
 
-BINARY = res_sqlite.so
-OBJECTS = res_sqlite.o
+BINARY = res_config_sqlite.so
+OBJECTS = res_config_sqlite.o
 
 DOXYGEN = doxygen
 DOXYGEN_CONF = Doxyfile
