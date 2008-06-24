@@ -1,6 +1,0 @@
-res_sqlite - SQLite 2 support for Asterisk
-
-This module can be used as a static/RealTime configuration module, a CDR
-handler, and provides a SQLITE() application to use in the Dialplan. See
-the doc/index.html file for a detailed description of the module, and the
-conf/ directory for sample configuration files.
