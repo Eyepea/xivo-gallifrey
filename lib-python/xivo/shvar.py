@@ -32,7 +32,7 @@ import re
 import string
 
 
-FORBIDDEN_VARNAMES = ('IFS',)
+FORBIDDEN_VARNAMES = ('IFS', '_')
 
 VariableAssignmentMatch = re.compile('([A-Za-z_][A-Za-z0-9_]*)=(.*)$').match
 
