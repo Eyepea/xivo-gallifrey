@@ -370,7 +370,7 @@ evfunction_to_method_name = {
         'AgentConnect':         'ami_agentconnect',
         'AgentDump':            'ami_agentdump',
         'Agents':               'ami_agents',
-        'ChannelReload':        'ami_channelreload',
+        'ChannelReload':        'ami_channelreload',            # (1.4)
         'ParkedCall':           'ami_parkedcall',               # when the requested parking is acked
         'UnParkedCall':         'ami_unparkedcall',
         'ParkedCallTimeOut':    'ami_parkedcalltimeout',
@@ -402,7 +402,7 @@ evfunction_to_method_name = {
         'QueueMemberStatus':    'ami_queuememberstatus',
         'QueueStatusComplete':  'ami_queuestatuscomplete',
         'QueueEntry':           'ami_queueentry',
-        'QueueCallerAbandon':   'ami_queuecallerabandon',
+        'QueueCallerAbandon':   'ami_queuecallerabandon',       # (1.4)
         'Status':               'ami_status',
         'StatusComplete':       'ami_statuscomplete',
         'AgentsComplete':       'ami_agentscomplete',

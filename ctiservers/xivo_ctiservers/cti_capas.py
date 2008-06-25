@@ -40,6 +40,7 @@ class Capabilities:
                          'parking',
                          'queues',
                          'queuedetails',
+                         'queueentrydetails',
                          'search',
                          'switchboard',
                          'video']
@@ -59,6 +60,7 @@ class Capabilities:
                          'parking',
                          'queues',
                          'queuedetails',
+                         'queueentrydetails',
                          'search',
                          'switchboard',
                          'video']
