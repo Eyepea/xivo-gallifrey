@@ -323,10 +323,13 @@ def handle_ami_event(astid, idata):
 
         for evt in evlist:
                 this_event = {}
+                nocolon = []
                 for myline in evt.split('\r\n'):
                         myfieldvalue = myline.split(': ', 1)
                         if len(myfieldvalue) == 2:
                                 this_event[myfieldvalue[0]] = myfieldvalue[1]
+                        else:
+                                nocolon.append(myline)
                 evfunction = this_event.get('Event')
                 verboselog("/%s/ %s" % (astid, str(this_event)), True, False)
                 # print '////////', evfunction, '   ------  ', this_event
@@ -336,7 +339,13 @@ def handle_ami_event(astid, idata):
                         response = this_event.get('Response')
                         if response is not None:
                                 if response == 'Follows' and this_event.get('Privilege') == 'Command':
-                                        log_debug(SYSLOG_INFO, 'AMI %s Response=Follows : %s' % (astid, this_event))
+                                        if 'ActionID' in this_event:
+                                                actionid = this_event.get('ActionID')
+                                                for noc in nocolon:
+                                                        arggs = noc.split('\n')
+                                                        for argg in arggs:
+                                                                if len(argg) > 0 and argg != '--END COMMAND--':
+                                                                        log_debug(SYSLOG_NOTICE, 'AMI %s : %s : %s' % (astid, actionid, argg))
                                 elif response == 'Success':
                                         msg = this_event.get('Message')
                                         if msg == 'Extension Status':
@@ -751,7 +760,7 @@ while True: # loops over the reloads
                                                 buf = sel_i.readline()
                                                 astid = amilist.astid(sel_i)
                                                 if len(buf) == 0:
-                                                        log_debug(SYSLOG_WARNING, "%s : AMI : CLOSING" % astid)
+                                                        log_debug(SYSLOG_WARNING, "%s AMI : CLOSING" % astid)
                                                         amilist.remove(astid)
                                                         sel_i.close()
                                                         fdlist_full.remove(sel_i)

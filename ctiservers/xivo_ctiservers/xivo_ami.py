@@ -28,8 +28,13 @@ __author__    = 'Corentin Le Gall'
 Asterisk AMI utilities.
 """
 
+import random
 import socket
+import string
+import time
 from xivo_log import *
+
+__alphanums__ = string.uppercase + string.lowercase + string.digits
 
 def log_debug(level, text):
         log_debug_file(level, text, 'xivo_ami')
@@ -458,7 +463,10 @@ class AMIList:
                         amicl = AMIClass(address, loginname, password, True)
                         amicl.connect()
                         amicl.login()
-                        
+
+                        log_debug(SYSLOG_NOTICE, '%s AMI : OPENED' % astid)
+                        amicl.sendcommand('Command', [('Command', 'show version'),
+                                                      ('ActionID' , ''.join(random.sample(__alphanums__, 10)) + "-" + hex(int(time.time())))])
                         amicl.sendstatus()
                         amicl.sendagents()
                         amicl.sendqueuestatus()

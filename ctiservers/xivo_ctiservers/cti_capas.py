@@ -49,6 +49,7 @@ class Capabilities:
                          'agentdetails',
                          'calls',
                          'customerinfo',
+                         'datetime',
                          'dial',
                          'directory',
                          'fax',

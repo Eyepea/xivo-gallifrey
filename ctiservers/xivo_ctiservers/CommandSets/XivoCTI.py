@@ -1041,7 +1041,7 @@ class XivoCTICommand(BaseCommand):
         def dmessage_srv2clt(self, message):
                 return self.message_srv2clt('daemon-announce', message)
 
-        
+
         def phones_update(self, function, args):
                 strupdate = ''
                 if function == 'update':
@@ -1113,7 +1113,7 @@ class XivoCTICommand(BaseCommand):
                         elif icommand.name == 'pickup':
                                 if self.capas[capaid].match_funcs(ucapa, 'dial'):
                                         z = icommand.args[0].split('/')
-                                        self.amilist.execute(z[1], 'sendcommand', 'Command', [('Command', 'sip notify event-talk %s' % z[3])])
+                                        self.amilist.execute(z[0], 'sendcommand', 'Command', [('Command', 'sip notify event-talk %s' % z[1])])
 
                         elif icommand.name in ['phones-list', 'phones-add', 'phones-del']:
                                 if self.capas[capaid].match_funcs(ucapa, 'calls,switchboard,search,history'):
