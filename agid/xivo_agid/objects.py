@@ -693,6 +693,8 @@ class DialAction:
 
 		if not res:
 			self.action = "none"
+			self.actionarg1 = None
+			self.actionarg2 = None
 		else:
 			self.action = res['action']
 			self.actionarg1 = res['actionarg1']
