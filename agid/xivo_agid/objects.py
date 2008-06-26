@@ -679,6 +679,8 @@ class DialAction:
 	def __init__(self, agi, cursor, event, category, categoryval):
 		self.agi = agi
 		self.cursor = cursor
+		self.event = event
+		self.category = category
 
 		cursor.query("SELECT ${columns} FROM dialaction "
 			     "WHERE event = %s "
@@ -690,13 +692,11 @@ class DialAction:
 		res = cursor.fetchone()
 
 		if not res:
-			raise LookupError("Unable to find dial action (event: %s, category: %s, categoryval: %s)" % (event, category, categoryval))
-
-		self.category = category
-		self.event = event
-		self.action = res['action']
-		self.actionarg1 = res['actionarg1']
-		self.actionarg2 = res['actionarg2']
+			self.action = "none"
+		else:
+			self.action = res['action']
+			self.actionarg1 = res['actionarg1']
+			self.actionarg2 = res['actionarg2']
 
 	def set_variables(self):
 		type = ("%s_%s" % (self.category, self.event)).upper()
@@ -825,7 +825,6 @@ class DID:
 		if id:
 			cursor.query("SELECT ${columns} FROM incall "
 				     "WHERE id = %d "
-				     "AND linked = 1 "
 				     "AND commented = 0",
 				     columns,
 				     (xid,))
@@ -833,7 +832,6 @@ class DID:
 			cursor.query("SELECT ${columns} FROM incall "
 				     "WHERE exten = %s "
 				     "AND context = %s "
-				     "AND linked = 1 "
 				     "AND commented = 0",
 				     columns,
 				     (exten, context))
@@ -922,7 +920,6 @@ class Schedule:
 
 		cursor.query("SELECT ${columns} FROM schedule "
 			     "WHERE id = %d "
-			     "AND linked = 1 "
 			     "AND commented = 0",
 			     columns,
 			     (xid,))
