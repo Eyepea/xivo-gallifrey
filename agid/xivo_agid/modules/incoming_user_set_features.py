@@ -59,8 +59,8 @@ def incoming_user_set_features(agi, cursor, args):
 
 				for secretary in filter.secretaries:
 					if secretary.active:
-						agi.set_variable('XIVO_CALLFILTER_SECRETARY%d_INTERFACE' % index, secretary.interface)
-						agi.set_variable('XIVO_CALLFILTER_SECRETARY%d_TIMEOUT' % index, secretary.ringseconds)
+						agi.set_variable('XIVO_CALLFILTER_SECRETARY%d_INTERFACE' % (index,), secretary.interface)
+						agi.set_variable('XIVO_CALLFILTER_SECRETARY%d_TIMEOUT' % (index,), secretary.ringseconds)
 						index += 1
 
 			objects.DialAction(agi, cursor, 'noanswer', 'callfilter', filter.id).set_variables()
@@ -105,8 +105,8 @@ def incoming_user_set_features(agi, cursor, args):
 		agi.set_variable('XIVO_ENABLEVOICEMAIL', user.enablevoicemail)
 
 		if user.vmbox:
-			agi.set_variable('XIVO_MAILBOX' user.vmbox.mailbox)
-			agi.set_variable('XIVO_MAILBOX_CONTEXT' user.vmbox.context)
+			agi.set_variable('XIVO_MAILBOX', user.vmbox.mailbox)
+			agi.set_variable('XIVO_MAILBOX_CONTEXT', user.vmbox.context)
 
 			if user.vmbox.email:
 				agi.set_variable('XIVO_USEREMAIL', user.vmbox.email)

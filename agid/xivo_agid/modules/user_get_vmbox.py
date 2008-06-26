@@ -31,7 +31,7 @@ def user_get_vmbox(agi, cursor, args):
 	if user.vmbox.skipcheckpass:
 		agi.set_variable('XIVO_VMOPTIONS', "s")
 
-	agi.set_variable('XIVO_MAILBOX' user.vmbox.mailbox)
-	agi.set_variable('XIVO_MAILBOX_CONTEXT' user.vmbox.context)
+	agi.set_variable('XIVO_MAILBOX', user.vmbox.mailbox)
+	agi.set_variable('XIVO_MAILBOX_CONTEXT', user.vmbox.context)
 
 agid.register(user_get_vmbox)

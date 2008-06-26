@@ -61,6 +61,8 @@ def outgoing_user_set_features(agi, cursor, args):
 
 			if user.callrecord:
 				callrecord = True
+		except LookupError:
+			pass
 
 	for i, trunk in enumerate(outcall.trunks):
 		agi.set_variable('XIVO_INTERFACE%d' % (i,), trunk.interface)

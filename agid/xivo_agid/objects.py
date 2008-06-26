@@ -328,7 +328,7 @@ class User:
 		self.protocol = res['protocol']
 		self.protocolid = res['protocolid']
 		self.name = res['name']
-		self.ringseconds = int(res]'ringseconds'])
+		self.ringseconds = int(res['ringseconds'])
 		self.simultcalls = res['simultcalls']
 		self.enablevoicemail = res['enablevoicemail']
 		self.voicemailid = res['voicemailid']
