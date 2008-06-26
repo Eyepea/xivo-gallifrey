@@ -351,7 +351,7 @@ class User:
 			self.interface = "SIP/" + self.name
 		elif self.protocol == "iax":
 			self.interface = "IAX2/" + self.name
-		else:
+		elif self.protocol == "custom":
 			cursor.query("SELECT ${columns} FROM usercustom "
 				     "WHERE id = %s "
 				     "AND category = 'user' "
