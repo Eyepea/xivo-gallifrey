@@ -31,7 +31,11 @@ def incoming_user_set_features(agi, cursor, args):
 
 	feature_list = objects.FeatureList(agi, cursor)
 
-	caller = objects.User(agi, cursor, feature_list, xid = userid)
+	try:
+		caller = objects.User(agi, cursor, feature_list, xid = userid)
+	except LookupError:
+		caller = None
+
 	user = objects.User(agi, cursor, feature_list, xid = dstid)
 	filter = user.filter
 
@@ -73,13 +77,13 @@ def incoming_user_set_features(agi, cursor, args):
 	if user.enablexfer:
 		options += "t"
 
-	if caller.enablexfer:
+	if caller and caller.enablexfer:
 		options += "T"
 
 	if user.enableautomon:
 		options += "w"
 
-	if caller.enableautomon:
+	if caller and caller.enableautomon:
 		options += "W"
 
 	if feature_list.incallfilter and user.callfilter:
