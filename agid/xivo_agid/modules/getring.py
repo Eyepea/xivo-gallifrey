@@ -31,10 +31,11 @@ def getring(agi, cursor, args):
 	callorigin = agi.get_variable('XIVO_CALLORIGIN')
 
 	try:
+		# TODO: maybe replace number@context with user id in conf file ?
 		phonetype = config.get('number', "%s@%s" % (dstnum, context))
 		ringtype = config.get(phonetype, callorigin)
 		agi.set_variable('XIVO_RINGTYPE', ringtype)
-		agi.verbose("Using ring tone %s" % ringtype)
+		agi.verbose("Using ring tone %s" % (ringtype,))
 	except ConfigParser.NoOptionError:
 		agi.verbose("Using the native phone ring tone")
 

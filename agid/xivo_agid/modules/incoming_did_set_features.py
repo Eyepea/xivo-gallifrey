@@ -21,8 +21,8 @@ from xivo_agid import agid
 from xivo_agid import objects
 
 def incoming_did_set_features(agi, cursor, args):
-	exten_pattern = agi.get_variable('REAL_EXTENPATTERN')
-	context = agi.get_variable('REAL_CONTEXT')
+	exten_pattern = agi.get_variable('XIVO_EXTENPATTERN')
+	context = agi.get_variable('XIVO_CONTEXT')
 
 	did = objects.DID(agi, cursor, exten = exten_pattern, context = context)
 	did.set_dial_actions()

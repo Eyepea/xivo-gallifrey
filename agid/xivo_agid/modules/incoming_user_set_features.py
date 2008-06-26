@@ -23,9 +23,7 @@ from xivo_agid import agid
 from xivo_agid import objects
 
 def incoming_user_set_features(agi, cursor, args):
-	srcnum = agi.get_variable('XIVO_SRCNUM')
-	srcid = int(agi.get_variable('XIVO_USERID'))
-	dstnum = agi.get_variable('XIVO_DSTNUM')
+	userid = int(agi.get_variable('XIVO_USERID'))
 	dstid = agi.get_variable('XIVO_DSTID')
 	context = agi.get_variable('XIVO_CONTEXT')
 	zone = agi.get_variable('XIVO_CALLORIGIN')
@@ -33,23 +31,12 @@ def incoming_user_set_features(agi, cursor, args):
 
 	feature_list = objects.FeatureList(agi, cursor)
 
-	# TODO: look up source number/user id for some features, e.g. call
-	# recording.
-
-	if dstnum and context:
-		user = objects.User(agi, cursor, feature_list, number = dstnum, context = context)
-		agi.set_variable('XIVO_DSTID', user.id)
-	elif dstid:
-		user = objects.User(agi, cursor, feature_list, xid = dstid)
-	else:
-		agi.dp_break("No dstnum@context or userid given, unable to lookup user")
-
+	caller = objects.User(agi, cursor, feature_list, xid = userid)
+	user = objects.User(agi, cursor, feature_list, xid = dstid)
 	filter = user.filter
 
 	# Special case. If a boss-secretary filter is set, the code will prematurely
 	# exit because the other normally set variables are skipped.
-	# TODO: filters (well, there are only boss secretary filters for now) must
-	# be redesigned from the ground.
 	if not bypass and filter and filter.active:
 		zone_applies = filter.check_zone(zone)
 		secretary = filter.get_secretary(srcnum)
@@ -86,8 +73,14 @@ def incoming_user_set_features(agi, cursor, args):
 	if user.enablexfer:
 		options += "t"
 
+	if caller.enablexfer:
+		options += "T"
+
 	if user.enableautomon:
 		options += "w"
+
+	if caller.enableautomon:
+		options += "W"
 
 	if feature_list.incallfilter and user.callfilter:
 		options += "p"

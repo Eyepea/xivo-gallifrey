@@ -21,10 +21,10 @@ from xivo_agid import agid
 from xivo_agid import objects
 
 def incoming_queue_set_features(agi, cursor, args):
-	dstnum = agi.get_variable('REAL_DSTNUM')
-	context = agi.get_variable('REAL_CONTEXT')
+	queueid = agi.get_variable('XIVO_DSTID')
 
-	queue = objects.Queue(agi, cursor, number = dstnum, context = context)
+	queue = objects.Queue(agi, cursor, xid = queueid)
+
 	options = ""
 
 	if queue.data_quality:

@@ -23,10 +23,11 @@ from xivo_agid import agid
 from xivo_agid import objects
 
 def outgoing_user_set_features(agi, cursor, args):
-	srcnum = agi.get_variable('REAL_SRCNUM')
-	dstnum = agi.get_variable('REAL_DSTNUM')
-	context = agi.get_variable('REAL_CONTEXT')
-	exten_pattern = agi.get_variable('REAL_EXTENPATTERN')
+	userid = int(agi.get_variable('XIVO_USERID'))
+	srcnum = agi.get_variable('XIVO_SRCNUM')
+	dstnum = agi.get_variable('XIVO_DSTNUM')
+	context = agi.get_variable('XIVO_CONTEXT')
+	exten_pattern = agi.get_variable('XIVO_EXTENPATTERN')
 
 	feature_list = objects.FeatureList(agi, cursor)
 	outcall = objects.Outcall(agi, cursor, feature_list, exten = exten_pattern, context = context)
@@ -44,8 +45,7 @@ def outgoing_user_set_features(agi, cursor, args):
 
 	if not outcall.internal:
 		try:
-			user = objects.User(agi, cursor, feature_list,
-					    number = srcnum, context = context)
+			user = objects.User(agi, cursor, feature_list, xid = userid)
 
 			# TODO: Rethink all the caller id stuff.
 			if outcall.setcallerid:

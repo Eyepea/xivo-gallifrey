@@ -23,8 +23,8 @@ import time
 from xivo_agid import agid
 
 def callback(agi, cursor, args):
-	srcnum = agi.get_variable('REAL_SRCNUM')
-	dstnum = agi.get_variable('REAL_DSTNUM')
+	srcnum = agi.get_variable('XIVO_SRCNUM')
+	dstnum = agi.get_variable('XIVO_DSTNUM')
 	disa_params = '|'.join(args)
 
 	mtime = time.time() + 5

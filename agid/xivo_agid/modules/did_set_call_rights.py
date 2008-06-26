@@ -24,7 +24,6 @@ from xivo_agid import call_rights
 
 def _did_set_call_rights(agi, cursor, args):
 	srcnum = agi.get_variable('XIVO_SRCNUM')
-	dstnum = agi.get_variable('XIVO_DSTNUM')
 	context = agi.get_variable('XIVO_CONTEXT')
 	exten_pattern = agi.get_variable('XIVO_EXTENPATTERN')
 

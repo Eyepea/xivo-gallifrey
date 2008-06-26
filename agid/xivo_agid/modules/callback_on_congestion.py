@@ -30,9 +30,9 @@ retry_time = None
 wait_time = None
 
 def callback_on_congestion(agi, cursor, args):
-	srcnum = agi.get_variable('REAL_SRCNUM')
-	dstnum = agi.get_variable('REAL_DSTNUM')
-	context = agi.get_variable('REAL_CONTEXT')
+	srcnum = agi.get_variable('XIVO_SRCNUM')
+	dstnum = agi.get_variable('XIVO_DSTNUM')
+	context = agi.get_variable('XIVO_CONTEXT')
 
 	mtime = time.time()
 	filename = "%s-to-%s-%s.call" % (srcnum, dstnum, int(mtime))

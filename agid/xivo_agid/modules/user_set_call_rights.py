@@ -24,10 +24,10 @@ from xivo_agid import objects
 from xivo_agid import call_rights
 
 def _user_set_call_rights(agi, cursor, args):
-	srcnum = agi.get_variable('REAL_SRCNUM')
-	dstnum = agi.get_variable('REAL_DSTNUM')
-	context = agi.get_variable('REAL_CONTEXT')
-	exten_pattern = agi.get_variable('REAL_EXTENPATTERN')
+	userid = agi.get_variable('XIVO_USERID')
+	dstnum = agi.get_variable('XIVO_DSTNUM')
+	context = agi.get_variable('XIVO_CONTEXT')
+	exten_pattern = agi.get_variable('XIVO_EXTENPATTERN')
 
 	cursor.query("SELECT ${columns} FROM rightcallexten",
 		     ('rightcallid', 'exten'))
@@ -44,7 +44,7 @@ def _user_set_call_rights(agi, cursor, args):
 	rightcallids = '(' + ','.join((str(el) for el in rightcallidset)) + ')'
 
 	try:
-		user = objects.User(agi, cursor, number = srcnum, context = context)
+		user = objects.User(agi, cursor, xid = userid)
 	except LookupError:
 		call_rights.allow(agi)
 

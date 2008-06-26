@@ -28,7 +28,7 @@ MUTT = "/usr/bin/mutt"
 class FaxToMailException(Exception): pass
 
 def faxtomail(agi, cursor, args):
-	dstnum = agi.get_variable('REAL_DSTNUM')
+	dstnum = agi.get_variable('XIVO_DSTNUM')
 
 	filename = args[0]
 	filepdf = None
