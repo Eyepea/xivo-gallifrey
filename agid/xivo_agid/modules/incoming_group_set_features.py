@@ -21,10 +21,18 @@ from xivo_agid import agid
 from xivo_agid import objects
 
 def incoming_group_set_features(agi, cursor, args):
-	dstnum = agi.get_variable('REAL_DSTNUM')
-	context = agi.get_variable('REAL_CONTEXT')
+	dstnum = agi.get_variable('XIVO_DSTNUM')
+	dstid = int(agi.get_variable('XIVO_DSTID'))
+	context = agi.get_variable('XIVO_CONTEXT')
 
-	group = objects.Group(agi, cursor, number = dstnum, context = context)
+	if dstnum and context:
+		group = objects.Group(agi, cursor, number = dstnum, context = context)
+		agi.set_variable('XIVO_DSTID', group.id)
+	elif dstid:
+		group = objects.Group(agi, cursor, xid = dstid)
+	else:
+		agi.dp_break("No dstnum@context or groupid given, unable to lookup group")
+
 	options = ""
 
 	if group.transfer_user:
