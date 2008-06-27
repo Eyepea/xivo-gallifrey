@@ -66,6 +66,8 @@ class BaseCommand:
                 return
         def set_options(self, xivoconf):
                 return
+        def set_sheet_options(self, sheetevents, sheetactions):
+                return
 
         userfields = []
         def getuserslist(self):

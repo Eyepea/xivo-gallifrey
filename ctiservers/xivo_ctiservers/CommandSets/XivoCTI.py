@@ -51,18 +51,6 @@ from xivo.BackSQL import backsqlite
 def log_debug(level, text):
         log_debug_file(level, text, 'xivocti')
 
-SHEET_EVENT_INCOMING    = 1 << 0
-SHEET_EVENT_OUTGOING    = 1 << 1
-SHEET_EVENT_AGENTLINK   = 1 << 2
-SHEET_EVENT_AGI         = 1 << 3
-SHEET_EVENT_PHONELINK   = 1 << 4
-SHEET_EVENT_AGENTCALLED = 1 << 5
-
-SHEET_ACTION_XCFULL  = 1 << 0
-SHEET_ACTION_XCPOPUP = 1 << 1
-SHEET_ACTION_BOT     = 1 << 2
-SHEET_ACTION_URL     = 1 << 3
-
 XIVOVERSION = '0.4'
 REQUIRED_CLIENT_VERSION = 3150
 __revision__ = __version__.split()[1]
@@ -96,6 +84,8 @@ class XivoCTICommand(BaseCommand):
                 self.faxes = {}
                 self.queued_threads_pipe = queued_threads_pipe
                 self.disconnlist = []
+                self.sheet_actions = {}
+                self.sheet_actions_opt = {}
                 return
 
         def get_list_commands(self):
@@ -324,12 +314,12 @@ class XivoCTICommand(BaseCommand):
                 capaid = userinfo.get('capaid')
                 repstr = "loginok=" \
                          "context:%s;phonenum:%s;" \
-                         "capas:%s;capadisp:%s;capaappli:%s;" \
+                         "capafuncs:%s;capaxlets:%s;appliname:%s;" \
                          "xivoversion:%s;version:%s;state:%s" \
                          %(userinfo.get('context'),
                            userinfo.get('phonenum'),
                            self.capas[capaid].tostring(self.capas[capaid].all()),
-                           self.capas[capaid].capadisp,
+                           ','.join(self.capas[capaid].capadisps),
                            self.capas[capaid].appliname,
                            XIVOVERSION,
                            __revision__,
@@ -367,9 +357,7 @@ class XivoCTICommand(BaseCommand):
                                 [name, prop] = var.split('-', 1)
                                 if name not in self.capas:
                                         self.capas[name] = cti_capas.Capabilities()
-                                if prop == 'display':
-                                        self.capas[name].setdisplay(val)
-                                elif prop == 'xlets':
+                                if prop == 'xlets':
                                         self.capas[name].setxlets(val)
                                 elif prop == 'funcs':
                                         self.capas[name].setfuncs(val)
@@ -483,70 +471,67 @@ class XivoCTICommand(BaseCommand):
                         log_debug(SYSLOG_WARNING, '--- exception --- (__send_msg_to_cti_clients__) : %s' % str(exc))
                 return
 
+        sheet_allowed_events = ['incomingtop', 'incomingqueue', 'incomingsda',
+                                'localphonecalled', 'agentcalled', 'agentselected',
+                                'agi', 'outgoing']
+        sheet_allowed_actions = ['url', 'xcsystray', 'xcpopup']
 
-##        # actions = { SHEET_EVENT_INCOMING    : SHEET_ACTION_BOT | SHEET_ACTION_XCPOPUP,
-##        actions = { SHEET_EVENT_AGI         : SHEET_ACTION_XCFULL,
-
-        actions = { SHEET_EVENT_AGI         : SHEET_ACTION_XCFULL,
-                    SHEET_EVENT_INCOMING    : SHEET_ACTION_BOT | SHEET_ACTION_XCPOPUP,
-                    SHEET_EVENT_OUTGOING    : SHEET_ACTION_BOT,
-                    SHEET_EVENT_AGENTLINK   : SHEET_ACTION_URL,
-                    SHEET_EVENT_AGENTCALLED : SHEET_ACTION_XCPOPUP
-                    }
-        # SHEET_ACTION_WHOCALLED
+        def set_sheet_options(self, sheetevents, sheetactions):
+                for event, action in sheetevents.iteritems():
+                        if event in self.sheet_allowed_events and action in self.sheet_allowed_actions:
+                                self.sheet_actions[event] = action
+                for action, actionopt in sheetactions.iteritems():
+                        if action in self.sheet_allowed_actions:
+                                self.sheet_actions_opt[action] = actionopt
+                return
 
         def __sheet_alert__(self, where, event):
-            if where in self.actions:
-                if where == SHEET_EVENT_OUTGOING:
-                        exten = event.get('Extension')
-                        application = event.get('Application')
-                        if application == 'Dial' and exten.isdigit():
-                                print self.actions
+                if where in self.sheet_actions:
+                        actiontodo = self.sheet_actions[where]
+                        if where == 'outgoing':
+                                exten = event.get('Extension')
+                                application = event.get('Application')
+                                if application == 'Dial' and exten.isdigit():
+                                        pass
+
+                        elif where == 'agentselected':
+                                dst = event.get('Channel2')[6:]
+                                src = event.get('CallerID1')
+                                chan = event.get('Channel1')
+                                queuename = event.get('xivo_queuename')
+                                linestosend = ['<?xml version="1.0" encoding="utf-8"?>',
+                                               '<profile sessionid="47"><user>',
+                                               '<info name="File d Attente" type="text"><![CDATA[<h1><b>%s</b></h1>]]></info>' % queuename,
+                                               '<info name="Numero Appelant" type="phone"><![CDATA[%s]]></info>' % src]
+                                if 'sheeturl' in self.xivoconf:
+                                        linestosend.append('<info name="Site" type="urlauto"><![CDATA'
+                                                           '[%s?szTEL=%s&szFA=%s&lgAgent_Tel_Id=%s]'
+                                                           ']></info>'
+                                                           % (self.xivoconf['sheeturl'], src, queuename, dst))
+                                        # XXX TODO : replace szTEL, szFA, lgAgent_Tel_Id with custom-defined arguments
+                                linestosend.extend(['<info name="channel" type="internal"><![CDATA[%s]]></info>' % chan,
+                                                    '<info name="nopopup" type="internal"></info>',
+                                                    '<message>help</message>',
+                                                    '</user></profile>'])
+                                self.__send_msg_to_cti_client_byagentid__(dst, ''.join(linestosend))
+
+                        elif where == 'incomingtop':
+                                clid = event.get('CallerID')
+                                chan = event.get('Channel')
+                                if clid != '<unknown>':
+                                        print clid, chan, r.split(';')
+                                        r = self.__build_customers__('default', [clid])
+                                pass
+
+                        elif where == 'incomingqueue':
                                 print event
+                                pass
 
-                elif where == SHEET_EVENT_AGENTLINK:
-                        dst = event.get('Channel2')[6:]
-                        src = event.get('CallerID1')
-                        chan = event.get('Channel1')
-                        queuename = event.get('xivo_queuename')
-                        linestosend = ['<?xml version="1.0" encoding="utf-8"?>',
-                                       '<profile sessionid="47"><user>',
-                                       '<info name="File d Attente" type="text"><![CDATA[<h1><b>%s</b></h1>]]></info>' % queuename,
-                                       '<info name="Numero Appelant" type="phone"><![CDATA[%s]]></info>' % src]
-                        if 'sheeturl' in self.xivoconf:
-                                linestosend.append('<info name="Site" type="urlauto"><![CDATA'
-                                                   '[%s?szTEL=%s&szFA=%s&lgAgent_Tel_Id=%s]'
-                                                   ']></info>'
-                                                   % (self.xivoconf['sheeturl'], src, queuename, dst))
-                                # XXX TODO : replace szTEL, szFA, lgAgent_Tel_Id with custom-defined arguments
-                        linestosend.extend(['<info name="channel" type="internal"><![CDATA[%s]]></info>' % chan,
-                                            '<info name="nopopup" type="internal"></info>',
-                                            '<message>help</message>',
-                                            '</user></profile>'])
-                        self.__send_msg_to_cti_client_byagentid__(dst, ''.join(linestosend))
-
-##                        try:
-##                                if 'sheeturl' in self.xivoconf:
-##                                        f = urllib.urlopen('%s%s' % (self.xivoconf['sheeturl'], src))
-##                        except Exception, exc:
-##                                print '--- exception ---', exc, exc.__class__
-
-                elif where == SHEET_EVENT_AGI:
-                        pass
-
-                elif where == SHEET_EVENT_PHONELINK:
-                        pass
-
-                elif where == SHEET_EVENT_AGENTCALLED:
-                        pass
-
-                elif where == SHEET_EVENT_INCOMING:
-                        pass
+                        elif where == 'agi':
+                                pass
 ##                ts = None
 ##                if not (clid == '' or (clid == '<unknown>' and is_normal_channel(chan))):
 ##                        if len(clid) > 7 and clid != '<unknown>':
-##                                r1 = self.__build_customers__('default', clid)
-##                                r = r1.split(';')
 ##                                if len(r) > 7:
 ##                                        ts = 'E;%s;%s;%s;%s' % (clid, r[6], r[7], chan)
 ##                                else:
@@ -596,7 +581,7 @@ class XivoCTICommand(BaseCommand):
                                 del self.queues_channels_list[astid][chan1]
                                 # if (t1 - t0) < 1:
                                 event['xivo_queuename'] = qname
-                                self.__sheet_alert__(SHEET_EVENT_AGENTLINK, event)
+                                self.__sheet_alert__('agentselected', event)
                 else:
                         ag1 = None
                         ag2 = None
@@ -720,11 +705,11 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def ami_newexten(self, astid, event):
-                self.__sheet_alert__(SHEET_EVENT_OUTGOING, event)
+                self.__sheet_alert__('outgoing', event)
                 return
 
         def ami_newchannel(self, astid, event):
-                self.__sheet_alert__(SHEET_EVENT_INCOMING, event)
+                self.__sheet_alert__('incomingtop', event)
                 return
 
         def ami_parkedcall(self, astid, event):
@@ -974,6 +959,7 @@ class XivoCTICommand(BaseCommand):
                 queue = event.get('Queue')
                 count = event.get('Count')
                 position = event.get('Position')
+                self.__sheet_alert__('incomingqueue', event)
                 log_debug(SYSLOG_INFO, 'AMI Join (Queue) %s %s %s' % (queue, chan, count))
                 
                 if astid not in self.queues_list:
@@ -1018,7 +1004,7 @@ class XivoCTICommand(BaseCommand):
 
         def handle_agi(self, astid, message):
                 m = re.match('PUSH (\S+) (\S+) <(\S*)> ?(.*)', message.strip())
-                if m != None and SHEET_EVENT_AGI in self.actions:
+                if m != None and 'agi' in self.actions:
                         called = m.group(1)[3:]
                         callerid = m.group(2)
                         callerctx = m.group(3)
@@ -1713,6 +1699,10 @@ class XivoCTICommand(BaseCommand):
                         elif typedst == 'user':
                                 if whodst == 'special:me':
                                         dstuinfo = userinfo
+                                elif whodst == 'special:intercept':
+                                        dstuinfo = {'phonenum' : '*8',
+                                                    'fullname' : 'intercept',
+                                                    'context' : 'parkedcalls'}
                                 else:
                                         tofind = whodst.split('/')[1] + '@' + whodst.split('/')[0]
                                         dstuinfo = self.ulist_ng.finduser(tofind)
@@ -1955,9 +1945,11 @@ class XivoCTICommand(BaseCommand):
                                         selectline.append("(%s=*%s*)" %(fname, searchpattern))
 
                         try:
+                                results = None
                                 ldapid = xivo_ldap.xivo_ldap(z.uri)
-                                results = ldapid.getldap("(|%s)" % ''.join(selectline),
-                                                         z.search_matching_fields)
+                                if ldapid.l is not None:
+                                        results = ldapid.getldap("(|%s)" % ''.join(selectline),
+                                                                 z.search_matching_fields)
                                 if results is not None:
                                         for result in results:
                                                 result_v = {}

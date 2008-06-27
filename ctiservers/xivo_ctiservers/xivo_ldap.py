@@ -62,7 +62,7 @@ class xivo_ldap:
 
                 except ldap.LDAPError, exc:
 			log_debug(SYSLOG_ERR, '__init__ : exception ldap.LDAPError : %s' % exc)
-                        # sys.exit()
+                        self.l = None
 
         def getldap(self, filter, attrib):
                 try:

@@ -440,7 +440,7 @@ def handle_ami_function(astid, evfunction, this_event):
                 else:
                         log_debug(SYSLOG_WARNING, 'AMI %s ... this event (%s) is not tracked' % (astid, evfunction))
         except Exception, exc:
-                log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : %s : %s' % (evfunction, str(exc), str(this_event)))
+                log_debug(SYSLOG_ERR, '--- exception --- AMI / %s : event=%s : %s' % (evfunction, this_event, exc))
 
 
 
@@ -556,6 +556,8 @@ while True: # loops over the reloads
                 userlists = xivoconf_general['userlists'].split(',')
 
         xivoconf_commandset = cconf.read_section(commandset)
+        xivoconf_sheetevents = cconf.read_section('sheet-events')
+        xivoconf_sheetactions = cconf.read_section('sheet-actions')
 
         queued_threads_pipe = os.pipe()
         amilist = xivo_ami.AMIList()
@@ -576,6 +578,7 @@ while True: # loops over the reloads
         commandclass.set_contextlist(directorylist)
         commandclass.set_configs(configs)
         commandclass.set_options(xivoconf_commandset)
+        commandclass.set_sheet_options(xivoconf_sheetevents, xivoconf_sheetactions)
 
         for ctx in contextlist:
                 xivoconf_context = cconf.read_section(ctx)

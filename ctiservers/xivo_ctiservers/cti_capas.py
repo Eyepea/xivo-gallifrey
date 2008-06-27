@@ -64,12 +64,12 @@ class Capabilities:
                          'queueentrydetails',
                          'search',
                          'switchboard',
+                         'tabber',
                          'video']
 
         def __init__(self):
                 self.capafuncs = []
-                self.capaxlets = []
-                self.capadisp = ''
+                self.capadisps = []
                 self.appliname = 'Client'
                 self.conngui = 0
                 self.maxgui = -1
@@ -81,15 +81,11 @@ class Capabilities:
                         if capa in self.allowed_funcs:
                                 self.capafuncs.append(capa)
 
-        def setxlets(self, capalist_str):
-                lst = capalist_str.split(',')
-                for capa in lst:
-                        if capa in self.allowed_xlets:
-                                self.capaxlets.append(capa)
-                return
-        
-        def setdisplay(self, capadisp):
-                self.capadisp = capadisp
+        def setxlets(self, capadisp):
+                for capa in capadisp.split(','):
+                        detail = capa.split('-')
+                        if detail[0] in self.allowed_xlets:
+                                self.capadisps.append(capa)
                 return
 
         def setappliname(self, appliname):
@@ -122,7 +118,6 @@ class Capabilities:
                 return
 
 
-
         def all(self):
                 return (2 ** (len(self.allowed_funcs)) - 1)
 
@@ -131,11 +126,7 @@ class Capabilities:
                 for capa in self.capafuncs:
                         n = 2 ** self.allowed_funcs.index(capa)
                         if (n & capalist_int):
-                                lst.append('func-' + capa)
-                for capa in self.capaxlets:
-                        n = 2 ** self.allowed_xlets.index(capa)
-                        if (n & capalist_int):
-                                lst.append('xlet-' + capa)
+                                lst.append(capa)
                 return ','.join(lst)
 
         def match_funcs(self, ucapas, capa_str):
