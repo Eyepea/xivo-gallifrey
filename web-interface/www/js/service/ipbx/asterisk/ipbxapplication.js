@@ -542,7 +542,7 @@ function xivo_ast_application_vmauthenticate()
 
 function xivo_ast_application_get_vmauthenticate_identity(id)
 {
-	return(xivo_fm_get_text_opt_select('it-ipbxapplication-vmauthenticate-mailbox',id));
+	return(xivo_fm_get_text_opt_select('it-ipbxapplication-vmauthenticate-mailbox',id,true));
 }
 
 function xivo_ast_application_wait()

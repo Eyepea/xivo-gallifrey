@@ -238,7 +238,7 @@ function xivo_fm_pop_opt_select(from)
 	return(true);
 }
 
-function xivo_fm_get_text_opt_select(from,value)
+function xivo_fm_get_text_opt_select(from,value,chk)
 {
 	if((from = xivo_eid(from)) === false
 	|| from.type !== 'select-one'
@@ -255,6 +255,9 @@ function xivo_fm_get_text_opt_select(from,value)
 		r = from.options[valueindex].text;
 
 	from.selectedIndex = sltindex;
+
+	if(Boolean(chk) === true && String(from.value) !== String(value))
+		return(false);
 
 	return(r);
 }

@@ -347,8 +347,8 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 		{
 			$appdata = array('appdata' => XIVO_SRE_IPBX_AST_VOICEMENU_MACRO);
 
-			if(($rsexten = $this->set_macro($action,'exten',$number,$appdata,$context)) !== false)
-				$this->_set_result('exten',array('number'	=> $number,
+			if($this->set_macro($action,'exten',$number,$appdata,$context) !== false)
+				$this->_set_result('exten',array('exten'	=> $number,
 								 'context'	=> $context));
 
 			$this->set_extenumbers($action,$number,$context);
@@ -599,8 +599,9 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 		$appdata = array();
 		$appdata['appdata'][0] = XIVO_SRE_IPBX_AST_VOICEMENU_MACRO;
 		$appdata['appdata'][1] = $voicemenuid;
+		$appdata['appdata'][2] = 1;
 
-		if(($rsexten = $this->set_macro('add',$name,$rs['number'],$appdata,$rs['context'])) === false)
+		if(($rsexten = $this->set_macro('add',$name,$rs['exten'],$appdata,$rs['context'])) === false)
 			return(false);
 
 		$this->_set_result($name,$rsexten);

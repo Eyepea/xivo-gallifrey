@@ -35,11 +35,6 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 		return($data);
 	}
 
-	function mk_identity($arr)
-	{
-		return($this->_identity->mk_identity($arr));
-	}
-
 	function get($id,$delete=false)
 	{
 		return(parent::get($id,$delete));

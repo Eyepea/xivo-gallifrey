@@ -39,6 +39,15 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 			$this->_conf = array();
 	}
 
+	function mk_identity($arr)
+	{
+		if(isset($this->_identity) === false
+		|| is_object($this->_identity) === false)
+			return(false);
+
+		return($this->_identity->mk_identity($arr));
+	}
+
 	function chk_dest_endcall($action,$actionarg1=null)
 	{
 		$r = array();

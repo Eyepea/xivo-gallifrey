@@ -91,12 +91,12 @@ define('XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN_AUDIOFILE','(?:[a-zA-Z0-9%_-]{1,50}'.
 						     '(?:\.(?:(?:'.XIVO_SRE_IPBX_AST_REGEXP_AIDIO_FILE_EXTENSION.')'.
 						     '|'.XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN.'))?))');
 
-define('XIVO_SRE_IPBX_AST_USER_MACRO','incoming_user');
-define('XIVO_SRE_IPBX_AST_GROUP_MACRO','incoming_group');
-define('XIVO_SRE_IPBX_AST_QUEUE_MACRO','incoming_queue');
-define('XIVO_SRE_IPBX_AST_MEETME_MACRO','incoming_meetme');
-define('XIVO_SRE_IPBX_AST_INCALL_MACRO','incoming_did');
-define('XIVO_SRE_IPBX_AST_OUTCALL_MACRO','outgoing_user');
+define('XIVO_SRE_IPBX_AST_USER_MACRO','user');
+define('XIVO_SRE_IPBX_AST_GROUP_MACRO','group');
+define('XIVO_SRE_IPBX_AST_QUEUE_MACRO','queue');
+define('XIVO_SRE_IPBX_AST_MEETME_MACRO','meetme');
+define('XIVO_SRE_IPBX_AST_INCALL_MACRO','did');
+define('XIVO_SRE_IPBX_AST_OUTCALL_MACRO','outcall');
 define('XIVO_SRE_IPBX_AST_HANDYNUMBERS_MACRO','handynumbers');
 define('XIVO_SRE_IPBX_AST_VOICEMENU_MACRO','voicemenu');
 

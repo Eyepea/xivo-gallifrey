@@ -46,11 +46,6 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		return($data);
 	}
 
-	function mk_identity($arr)
-	{
-		return($this->_identity->mk_identity($arr));
-	}
-
 	function get($id,$orig=true,$disable=null)
 	{
 		$orig = (bool) $orig;

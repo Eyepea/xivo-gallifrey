@@ -8,6 +8,7 @@ class xivo_service_asterisk_agentfeatures extends xivo_service_asterisk_abstract
 	var $_name	= 'agentfeatures';
 	var $_filter	= false;
 	var $_origin	= false;
+	var $_identity	= false;
 
 	function xivo_service_asterisk_agentfeatures(&$sre,&$dso)
 	{
@@ -21,40 +22,17 @@ class xivo_service_asterisk_agentfeatures extends xivo_service_asterisk_abstract
 		$this->_dso = &$dso;
 
 		$this->_load_config();
+		$this->_identity = &$this->_sre->get_identity($this->_name);
 	}
 
 	function _prepare($data)
 	{
-		$this->_prepare_identity($data);
+		$this->_identity->_prepare_identity($data);
 
 		$data['commented'] = (bool) $data['commented'];
 		$data['silent'] = (bool) $data['silent'];
 
 		return($data);
-	}
-
-	function _prepare_identity(&$data)
-	{
-		$data['fullname'] = trim(trim($data['firstname']).' '.trim($data['lastname']));
-
-		if($data['fullname'] === '')
-			$data['fullname'] = '-';
-
-		$data['identity'] = $data['fullname'].' ('.$data['number'].')';
-
-		return($data);
-	}
-
-	function mk_identity($firstname,$lastname,$number)
-	{
-		$arr = array();
-		$arr['firstname'] = $firstname;
-		$arr['lastname'] = $lastname;
-		$arr['number'] = $number;
-
-		$this->_prepare_identity($arr);
-
-		return($arr['identity']);
 	}
 }
 

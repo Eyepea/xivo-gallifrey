@@ -32,11 +32,6 @@ class xivo_service_asterisk_queuefeatures extends xivo_service_asterisk_abstract
 		return($data);
 	}
 
-	function mk_identity($arr)
-	{
-		return($this->_identity->mk_identity($arr));
-	}
-
 	function add($arr,$id=0)
 	{
 		if(is_array($arr) === false)

@@ -1,6 +1,6 @@
 <?php
 
-class xivo_service_asterisk_callfilter_identity
+class xivo_service_asterisk_outcall_identity
 {
 	function _prepare_identity(&$data)
 	{

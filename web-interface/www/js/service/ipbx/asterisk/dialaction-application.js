@@ -70,7 +70,7 @@ function xivo_ast_defapplication_user(dialevent,targetid)
 
 function xivo_ast_defapplication_get_user_identity(id)
 {
-	return(xivo_fm_get_text_opt_select('it-dialaction-'+dialevent+'-user-actionarg1',id));
+	return(xivo_fm_get_text_opt_select('it-dialaction-'+dialevent+'-user-actionarg1',id,true));
 }
 
 function xivo_ast_defapplication_group(dialevent,targetid)
@@ -98,7 +98,7 @@ function xivo_ast_defapplication_group(dialevent,targetid)
 
 function xivo_ast_defapplication_get_group_identity(id)
 {
-	return(xivo_fm_get_text_opt_select('it-dialaction-'+dialevent+'-group-actionarg1',id));
+	return(xivo_fm_get_text_opt_select('it-dialaction-'+dialevent+'-group-actionarg1',id,true));
 }
 
 function xivo_ast_defapplication_queue(dialevent,targetid)
@@ -126,7 +126,7 @@ function xivo_ast_defapplication_queue(dialevent,targetid)
 
 function xivo_ast_defapplication_get_queue_identity(id)
 {
-	return(xivo_fm_get_text_opt_select('it-dialaction-'+dialevent+'-queue-actionarg1',id));
+	return(xivo_fm_get_text_opt_select('it-dialaction-'+dialevent+'-queue-actionarg1',id,true));
 }
 
 function xivo_ast_defapplication_meetme(dialevent,targetid)
@@ -144,7 +144,7 @@ function xivo_ast_defapplication_meetme(dialevent,targetid)
 
 function xivo_ast_defapplication_get_meetme_identity(id)
 {
-	return(xivo_fm_get_text_opt_select('it-dialaction-'+dialevent+'-meetme-actionarg1',id));
+	return(xivo_fm_get_text_opt_select('it-dialaction-'+dialevent+'-meetme-actionarg1',id,true));
 }
 
 function xivo_ast_defapplication_voicemail(dialevent,targetid)
@@ -162,7 +162,7 @@ function xivo_ast_defapplication_voicemail(dialevent,targetid)
 
 function xivo_ast_defapplication_get_voicemail_identity(id)
 {
-	return(xivo_fm_get_text_opt_select('it-dialaction-'+dialevent+'-voicemail-actionarg1',id));
+	return(xivo_fm_get_text_opt_select('it-dialaction-'+dialevent+'-voicemail-actionarg1',id,true));
 }
 
 function xivo_ast_defapplication_schedule(dialevent,targetid)
@@ -180,7 +180,7 @@ function xivo_ast_defapplication_schedule(dialevent,targetid)
 
 function xivo_ast_defapplication_get_schedule_identity(id)
 {
-	return(xivo_fm_get_text_opt_select('it-dialaction-'+dialevent+'-schedule-actionarg1',id));
+	return(xivo_fm_get_text_opt_select('it-dialaction-'+dialevent+'-schedule-actionarg1',id,true));
 }
 
 function xivo_ast_defapplication_voicemenu(dialevent,targetid)
@@ -198,7 +198,7 @@ function xivo_ast_defapplication_voicemenu(dialevent,targetid)
 
 function xivo_ast_defapplication_get_voicemenu_identity(id)
 {
-	return(xivo_fm_get_text_opt_select('it-dialaction-'+dialevent+'-voicemenu-actionarg1',id));
+	return(xivo_fm_get_text_opt_select('it-dialaction-'+dialevent+'-voicemenu-actionarg1',id,true));
 }
 
 function xivo_ast_defapplication_application(dialevent,targetid)

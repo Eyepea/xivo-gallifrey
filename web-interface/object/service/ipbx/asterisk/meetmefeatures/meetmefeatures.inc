@@ -42,11 +42,6 @@ class xivo_service_asterisk_meetmefeatures extends xivo_service_asterisk_abstrac
 		return($data);
 	}
 
-	function mk_identity($arr)
-	{
-		return($this->_identity->mk_identity($arr));
-	}
-
 	function add($arr,$id=0)
 	{
 		if(is_array($arr) === false)

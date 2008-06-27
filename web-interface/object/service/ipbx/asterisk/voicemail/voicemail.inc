@@ -9,6 +9,7 @@ class xivo_service_asterisk_voicemail extends xivo_service_asterisk_abstract
 	var $_filter		= false;
 	var $_origin		= false;
 	var $_origin_list	= false;
+	var $_identity		= false;
 
 	function xivo_service_asterisk_voicemail(&$sre,&$dso)
 	{
@@ -22,35 +23,16 @@ class xivo_service_asterisk_voicemail extends xivo_service_asterisk_abstract
 		$this->_dso = &$dso;
 
 		$this->_load_config();
+		$this->_identity = &$this->_sre->get_identity($this->_name);
 	}
 
 	function _prepare($data)
 	{
-		$this->_prepare_identity($data);
+		$this->_identity->_prepare_identity($data);
 
 		$data['commented'] = (bool) $data['commented'];
 
 		return($data);
-	}
-
-	function _prepare_identity(&$data)
-	{
-		$data['fullmailbox'] = $data['mailbox'].'@'.$data['context'];
-		$data['identity'] = $data['fullname'].' ('.$data['fullmailbox'].')';
-
-		return($data);
-	}
-
-	function mk_identity($mailbox,$fullname,$context)
-	{
-		$arr = array();
-		$arr['mailbox'] = $mailbox;
-		$arr['fullname'] = $fullname;
-		$arr['context'] = $context;
-
-		$this->_prepare_identity($arr);
-
-		return($arr['identity']);
 	}
 
 	function get_all_by_mailbox_context($arr=null,$disable=null,$prepare=true,$order=null,$limit=null)

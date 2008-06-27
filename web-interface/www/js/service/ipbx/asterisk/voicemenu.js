@@ -39,7 +39,7 @@ function xivo_ast_voicemenu_flow_display()
 
 			to.options[j++] = new Option(j+'. '+defapplication['text'],defapplication['value']);
 
-			if(from.options[i].text === 'ERR')
+			if(from.options[i].text === 'ERR' || defapplication['error'] === true)
 				to.options[j-1].className = 'fm-error';
 
 			continue nextoption;
@@ -52,7 +52,7 @@ function xivo_ast_voicemenu_flow_display()
 
 			to.options[j++] = new Option(j+'. '+application['text'],application['value']);
 
-			if(from.options[i].text === 'ERR')
+			if(from.options[i].text === 'ERR' || application['error'] === true)
 				to.options[j-1].className = 'fm-error';
 
 			continue nextoption;
@@ -83,7 +83,10 @@ function xivo_ast_voicemenu_event_display()
 			infoevent.innerHTML = '<a href="#" onclick="return(xivo_free_focus());" title="'+
 					      xivo_htmlsc(defapplication['text'])+'">'+
 					      xivo_htmlsc(xivo_trunc(defapplication['text'],40,'...',false))+'</a>';
-	
+
+			if(defapplication['error'] === true)
+				infoevent.parentNode.className = 'l-infos-error';
+
 			continue nextevent;
 		}
 
@@ -93,6 +96,9 @@ function xivo_ast_voicemenu_event_display()
 				continue;
 
 			itevent.value = application['value'];
+
+			if(application['error'] === true)
+				infoevent.parentNode.className = 'l-infos-error';
 
 			infoevent.innerHTML = '<a href="#" onclick="return(xivo_free_focus());" title="'+
 					      xivo_htmlsc(application['text'])+'">'+
@@ -115,6 +121,7 @@ function xivo_ast_voicemenu_get_defapplication(application,value)
 	var r = new Array();
 	r['text'] = displayname;
 	r['value'] = value.substring(0,application.length);
+	r['error'] = false;
 
 	if(lastchar === '')
 	{
@@ -146,6 +153,8 @@ function xivo_ast_voicemenu_get_defapplication(application,value)
 			args[0] = '\''+identity+'\'';
 			optarg = args.join(',');
 		}
+		else
+			r['error'] = true;
 	}
 
 	r['text'] += '('+optarg+')';
@@ -165,6 +174,7 @@ function xivo_ast_voicemenu_get_application(application,value)
 	var r = new Array();
 	r['text'] = displayname;
 	r['value'] = value.substring(0,application.length);
+	r['error'] = false;
 
 	if(lastchar === '')
 	{
@@ -196,6 +206,8 @@ function xivo_ast_voicemenu_get_application(application,value)
 			args[0] = '\''+identity+'\'';
 			optarg = args.join(',');
 		}
+		else
+			r['error'] = true;
 	}
 
 	r['text'] += '('+optarg+')';

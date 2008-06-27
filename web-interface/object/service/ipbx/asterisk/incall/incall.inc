@@ -8,6 +8,7 @@ class xivo_service_asterisk_incall extends xivo_service_asterisk_abstract
 	var $_name	= 'incall';
 	var $_filter	= false;
 	var $_origin	= false;
+	var $_identity	= false;
 
 	function xivo_service_asterisk_incall(&$sre,&$dso)
 	{
@@ -21,34 +22,16 @@ class xivo_service_asterisk_incall extends xivo_service_asterisk_abstract
 		$this->_dso = &$dso;
 
 		$this->_load_config();
+		$this->_identity = &$this->_sre->get_identity($this->_name);
 	}
 
 	function _prepare($data)
 	{
-		$this->_prepare_identity($data);
+		$this->_identity->_prepare_identity($data);
 
 		$data['commented'] = (bool) $data['commented'];
 
 		return($data);
-	}
-
-	function _prepare_identity(&$data)
-	{
-		$data['exten'] = $this->_sre->display_extension($data['exten']);
-		$data['identity'] = $data['exten'].' ('.$data['context'].')';
-
-		return($data);
-	}
-
-	function mk_identity($exten,$context)
-	{
-		$arr = array();
-		$arr['exten'] = $exten;
-		$arr['context'] = $context;
-
-		$this->_prepare_identity($arr);
-
-		return($arr['identity']);
 	}
 
 	function add($arr,$id=0)

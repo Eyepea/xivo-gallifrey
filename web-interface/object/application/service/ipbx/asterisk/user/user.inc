@@ -622,8 +622,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if($this->_errnb === 0 && $numhaslen === true)
 		{
 			$appdata = array('appdata' => XIVO_SRE_IPBX_AST_USER_MACRO);
-			if(($rsexten = $this->set_macro($action,'exten',$number,$appdata,$context)) !== false)
-				$this->_set_result('exten',$rsexten);
+
+			if($this->set_macro($action,'exten',$number,$appdata,$context) !== false)
+				$this->_set_result('exten',array('exten'	=> $number,
+								 'context'	=> $context));
 
 			$this->set_extenumbers($action,$number,$context);
 		}
@@ -980,7 +982,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| $this->_protocolname === false
 		|| ($protocolid = $this->add_protocol()) === false
 		|| ($ufeaturesid = $this->add_userfeatures($protocolid)) === false
-		|| $this->add_macro('exten') === false
+		|| $this->add_macro('exten',$ufeaturesid) === false
 		|| $this->add_hints() === false
 		|| $this->add_extenumbers($ufeaturesid) === false
 		|| $this->add_groupmember($ufeaturesid) === false
@@ -1026,6 +1028,28 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$this->_return['userfeatures'] = $this->_userfeatures->add($rs);
 
 		return($this->_return['userfeatures']);
+	}
+
+	function add_macro($name,$ufeaturesid)
+	{
+		$rs = false;
+
+		if(($ufeaturesid = xivo_ulongint($ufeaturesid)) === 0
+		|| ($rs = $this->get_result($name)) === null
+		|| $rs === false)
+			return($rs);
+
+		$appdata = array();
+		$appdata['appdata'][0] = XIVO_SRE_IPBX_AST_USER_MACRO;
+		$appdata['appdata'][1] = $ufeaturesid;
+		$appdata['appdata'][2] = 0;
+
+		if(($rsexten = $this->set_macro('add',$name,$rs['exten'],$appdata,$rs['context'])) === false)
+			return(false);
+
+		$this->_set_result($name,$rsexten);
+
+		return(parent::add_macro($name));
 	}
 
 	function add_hints()
@@ -1304,7 +1328,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				}
 			}
 		}
-		else if($this->add_macro('exten') === false
+		else if($this->add_macro('exten',$this->_info['ufeatures']['id']) === false
 		|| $this->add_extenumbers($this->_info['ufeatures']['id']) === false
 		|| ($this->_protocolname !== XIVO_SRE_IPBX_AST_PROTO_CUSTOM
 		   && $this->add_hints() === false) === true)

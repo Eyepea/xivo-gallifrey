@@ -2,16 +2,6 @@
 
 class xivo_service_asterisk_meetmefeatures_identity
 {
-	var $_sre	= null;
-
-	function xivo_service_asterisk_meetmefeatures_identity(&$sre)
-	{
-		if(is_object($sre) === false)
-			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
-
-		$this->_sre = &$sre;
-	}
-
 	function _prepare_identity(&$data)
 	{
 		if(xivo_haslen($data['context']) === false)
