@@ -31,21 +31,124 @@ class LinkedList(object):
     A list like class that rely on a linked list data structure.
     """
     
-    __slots__ = ('__base', '__len')
+    class Ref(object):
+        """
+        A reference on a list element.
+        """
+        
+        __slots__ = ('_llist', '_scan', '_serial')
+        
+        def __init__(self, llist, scan, serial):
+            self._llist = llist
+            self._scan = scan
+            self._serial = serial
+        
+        def __get_scan_at(self, rel_pos):
+            """
+            Get the link at relative position rel_pos of the pointed list
+            element.
+            """
+            if not isinstance(rel_pos, int):
+                raise TypeError, "list indices must be integers"
+            scan = self._scan
+            if len(scan) == 6:
+                if not self._llist._len:
+                    raise IndexError, "list index out of range"
+                scan = scan[1]
+                self._scan = scan
+                self._serial = scan[4]
+            if rel_pos and not scan[3]:
+                raise IndexError, "only index 0 is available on directly referenced links that have been removed from their list"
+            abs_rel_pos = abs(rel_pos)
+            nxt = (rel_pos > 0) + 1
+            for x in xrange(abs_rel_pos):
+                scan = scan[nxt]
+                if len(scan) == 6:
+                    raise IndexError, "list index out of range"
+            return scan
+        
+        def __delitem__(self, rel_pos):
+            "x.__delitem__(y) <==> del x[y]"
+            scan = self.__get_scan_at(rel_pos)
+            
+            if scan[4][0] > self._serial:
+                raise IndexError, "can not delete a referenced link if it has been rebased"
+            if not scan[3]:
+                raise IndexError, "trying to remove a link that is already dead"
+            
+            scan[2][1] = scan[1]
+            scan[1][2] = scan[2]
+            scan[3] = False
+            self._llist._len -= 1
+            scan = scan[2]
+            self._scan = scan
+            self._serial = scan[4]
+        
+        def __getitem__(self, rel_pos):
+            "x.__getitem__(y) <==> x[y]"
+            return self.__get_scan_at(rel_pos)[0]
+        
+        def __setitem__(self, rel_pos, value):
+            "x.__setitem__(i, y) <==> x[i]=y"
+            self.__get_scan_at(rel_pos)[0] = value
+        
+        def goto_rel(self, rel_pos=1):
+            """
+            Move the reference to another link.
+            """
+            if rel_pos == 0:
+                return
+            
+            scan = self.__get_scan_at(rel_pos)
+            
+            if scan[4][0] > self._serial:
+                raise IndexError, "can not update a link reference if the link has been rebased"
+            
+            self._scan = scan
+            self._serial = scan[4]
+        
+        def iter_right(self):
+            """
+            Generate values from the content of the referenced element to the
+            right until the end of the list.
+            """
+            scan = self._scan
+            while len(scan) != 6:
+                if scan[3]:
+                    yield scan[0]
+                scan = scan[2]
+        
+        def iter_left(self):
+            """
+            Generate values from the content of the referenced element to the
+            left until the beginning of the list.
+            """
+            scan = self._scan
+            while len(scan) != 6:
+                if scan[3]:
+                    yield scan[0]
+                scan = scan[1]
+    
+    __slots__ = ('_base', '_len', '_serial')
     
     def __init__(self, sequence=None):
-        self.__base = [None, None, None, True, None]
-        self.__base[1:3] = self.__base, self.__base
-        self.__len = 0
+        self._serial = 0
+        self._base = [None, None, None, True, [self._serial], None]
+        self._base[1:3] = self._base, self._base
+        self._len = 0
         if sequence is not None:
             self.extend(sequence)
     
     def __iter_scan(self):
         """
         Generate each link of the linked list, from the first to the last one.
+        
+        WARNING: does _not_ test for liveness of any link - this method should
+        not be called by anything that yields something derivated from these
+        links unless the caller checks the liveness of the link itself.
         """
-        scan = self.__base[2]
-        while len(scan) != 5:
+        scan = self._base[2]
+        while len(scan) != 6:
             yield scan
             scan = scan[2]
     
@@ -54,7 +157,7 @@ class LinkedList(object):
         Return the link which is at absolute position @pos.
         """
         # TODO: optimize by scanning in reverse if pos near the end
-        scan = self.__base[2]
+        scan = self._base[2]
         for x in xrange(pos):
             scan = scan[2]
         
@@ -69,8 +172,8 @@ class LinkedList(object):
         if not isinstance(pos, int):
             raise TypeError, "list indices must be integers"
         if pos < 0:
-            pos += self.__len
-        if not (0 <= pos < self.__len):
+            pos += self._len
+        if not (0 <= pos < self._len):
             raise IndexError, exc_str
         
         return self.__get_scan_positive(pos)
@@ -79,10 +182,12 @@ class LinkedList(object):
         """
         Remove the link @scan from the linked list.
         """
+        if not scan[3]:
+            raise IndexError, "trying to remove a link that is already dead"
         scan[2][1] = scan[1]
         scan[1][2] = scan[2]
         scan[3] = False
-        self.__len -= 1
+        self._len -= 1
     
     def __add__(self, other):
         "x.__add__(y) <==> x+y"
@@ -126,7 +231,7 @@ class LinkedList(object):
         Generate the links that are at positions represented by the slice
         object @slc.
         """
-        start, stop, step = slc.indices(self.__len)
+        start, stop, step = slc.indices(self._len)
         scan = self.__get_scan_positive(start)
         abs_step = abs(step)
         nxt = (step > 0) + 1
@@ -166,25 +271,25 @@ class LinkedList(object):
         if not isinstance(factor, int):
             raise TypeError, "can't multiply sequence by non-int"
         if factor < 1:
-            self.__base[1:3] = self.__base, self.__base
-            self.__len = 0
+            self._base[1:3] = self._base, self._base
+            self._len = 0
         else:
             iter_self = iter(self)
-            for x in xrange((factor - 1) * self.__len):
+            for x in xrange((factor - 1) * self._len):
                 self.append(iter_self.next())
         return self
     
     def __iter__(self):
         "x.__iter__() <==> iter(x)"
-        scan = self.__base[2]
-        while len(scan) != 5:
+        scan = self._base[2]
+        while len(scan) != 6:
             if scan[3]:
                 yield scan[0]
             scan = scan[2]
     
     def __len__(self):
-        "x.__len__() <==> len(x)"
-        return self.__len
+        "x._len__() <==> len(x)"
+        return self._len
     
     def __mul__(self, factor):
         "x.__mul__(n) <==> x*n"
@@ -204,8 +309,8 @@ class LinkedList(object):
     
     def __reversed__(self):
         "L.__reversed__() -- return a reverse iterator over the list"
-        scan = self.__base[1]
-        while len(scan) != 5:
+        scan = self._base[1]
+        while len(scan) != 6:
             if scan[3]:
                 yield scan[0]
             scan = scan[1]
@@ -217,7 +322,7 @@ class LinkedList(object):
     def __setitem__(self, key, y):
         "x.__setitem__(i, y) <==> x[i]=y"
         if isinstance(key, slice):
-            start, stop, step = key.indices(self.__len)
+            start, stop, step = key.indices(self._len)
             if key.step is None: # simple slice
                 iter_y = iter(y)
                 scan = self.__get_scan_positive(start)
@@ -233,10 +338,10 @@ class LinkedList(object):
                     scan = scan[2]
                 else:
                     for elt in iter_y:
-                        link = [elt, scan, scan[2], True]
+                        link = [elt, scan, scan[2], True, self._base[4]]
                         scan[2][1] = link
                         scan[2] = link
-                        self.__len += 1
+                        self._len += 1
                         scan = link
             else: # extended slice
                 lst = list(y)
@@ -253,16 +358,16 @@ class LinkedList(object):
     
     def append(self, obj):
         "L.append(object) -- append object to end"
-        link = [obj, self.__base[1], self.__base, True]
-        self.__base[1][2] = link
-        self.__base[1] = link
-        self.__len += 1
+        link = [obj, self._base[1], self._base, True, self._base[4]]
+        self._base[1][2] = link
+        self._base[1] = link
+        self._len += 1
     
     def count(self, value):
         "L.count(value) -> integer -- return number of occurrences of value"
         cnt = 0
-        scan = self.__base[2]
-        while len(scan) != 5:
+        scan = self._base[2]
+        while len(scan) != 6:
             if value == scan[0]:
                 cnt += 1
             scan = scan[2]
@@ -273,6 +378,13 @@ class LinkedList(object):
         for elt in iterable:
             self.append(elt)
     
+    def get_ref(self, index):
+        """
+        Return a reference on a particular element of the list.
+        """
+        scan = self.__get_scan_from_pos(index, "list index out of range")
+        return self.Ref(self, scan, scan[4][0])
+    
     def index(self, value, start=0, stop=None):
         "L.index(value, [start, [stop]]) -> integer -- return first index of value"
         if not isinstance(start, int):
@@ -281,9 +393,9 @@ class LinkedList(object):
             raise TypeError, "stop must be an integer or None"
         
         if start < 0:
-            start += self.__len
+            start += self._len
         if isinstance(stop, int) and stop < 0:
-            stop += self.__len
+            stop += self._len
         
         for pos, v in enumerate(self):
             if (stop is not None) and pos >= stop:
@@ -299,17 +411,17 @@ class LinkedList(object):
             raise TypeError, "index must be an integer"
         
         if index < 0:
-            index += self.__len
+            index += self._len
         
-        if index >= self.__len:
+        if index >= self._len:
             self.append(obj)
         else:
             scan = self.__get_scan_positive(index)
             
-            link = [obj, scan[1], scan, True]
+            link = [obj, scan[1], scan, True, self._base[4]]
             scan[1][2] = link
             scan[1] = link
-            self.__len += 1
+            self._len += 1
     
     def insert_after(self, lref, obj):
         pass # XXX
@@ -323,28 +435,30 @@ class LinkedList(object):
                                  other linked list, which is simultaneously
                                  emptied
         
-        >>> L = LinkedList(range(5))
-        >>> O = LinkedList(range(10,15))
+        >>> L = LinkedList(range(4))
+        >>> O = LinkedList(range(10,14))
         >>> L.merge_extend(O)
         >>> L
-        LinkedList([0, 1, 2, 3, 4, 10, 11, 12, 13, 14])
+        LinkedList([0, 1, 2, 3, 10, 11, 12, 13])
         >>> O
         LinkedList([])
         """
-        if other.__len:
-            self.__base[1][2], other.__base[2][1] = other.__base[2], self.__base[1]
-            self.__base[1], other.__base[1][2] = other.__base[1], self.__base
-            self.__len += other.__len
+        if other._len:
+            self._serial = max(self._serial, other._serial) + 1
             
-            other.__base[1:3] = other.__base, other.__base
-            other.__len = 0
+            self._base[1][2], other._base[2][1] = other._base[2], self._base[1]
+            self._base[1], other._base[1][2] = other._base[1], self._base
+            self._len += other._len
+            other._base[4][0] = self._serial
+            
+            other._base[1:3] = other._base, other._base
+            other._serial = self._serial + 1
+            other._base[4] = [other._serial]
+            other._len = 0
     
     def pop(self, index=-1):
         "L.pop([index]) -> item -- remove and return item at index (default last)"
-        if not isinstance(index, int):
-            raise TypeError, "index must be an integer"
-
-        if not self.__len:
+        if not self._len:
             raise IndexError, "pop from empty list"
         scan = self.__get_scan_from_pos(index, "pop index out of range")
         self.__remove_scan(scan)
@@ -352,15 +466,15 @@ class LinkedList(object):
     
     def prepend(self, obj):
         "L.prepend(object) -- prepend object to beginning"
-        link = [obj, self.__base, self.__base[2], True]
-        self.__base[2][1] = link
-        self.__base[2] = link
-        self.__len += 1
+        link = [obj, self._base, self._base[2], True, self._base[4]]
+        self._base[2][1] = link
+        self._base[2] = link
+        self._len += 1
     
     def remove(self, value):
         "L.remove(value) -- remove first occurrence of value"
-        scan = self.__base[2]
-        while len(scan) != 5:
+        scan = self._base[2]
+        while len(scan) != 6:
             if value == scan[0]:
                 self.__remove_scan(scan)
                 return
@@ -370,9 +484,9 @@ class LinkedList(object):
     
     def reverse(self):
         "L.reverse() -- reverse *IN PLACE*"
-        self.__base[2:0:-1] = self.__base[1:3]
-        scan = self.__base[1]
-        for x in xrange(self.__len):
+        self._base[2:0:-1] = self._base[1:3]
+        scan = self._base[1]
+        for x in xrange(self._len):
             scan[2:0:-1] = scan[1:3]
             scan = scan[1]
     
@@ -388,10 +502,10 @@ class LinkedList(object):
         
         sorted_links = sorted(self.__iter_scan(), cmp=cmp, key=mykey, reverse=reverse)
         
-        prev = self.__base
+        prev = self._base
         for link in sorted_links:
             prev[2] = link
             link[1] = prev
             prev = link
-        self.__base[1] = prev
-        prev[2] = self.__base
+        self._base[1] = prev
+        prev[2] = self._base
