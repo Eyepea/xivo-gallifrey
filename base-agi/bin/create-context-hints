@@ -1,5 +1,4 @@
 #!/usr/bin/python
- 
 __version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2006, 2007, 2008  Proformatique
@@ -27,10 +26,10 @@ from xivo import xivo_helpers
 
 cursor = xivo_helpers.db_connect().cursor()
 
-# In extenumbers, there are some lines where context is
-#   '': this is a global entity, whereas this script only computes local things
-#   'incall-extensions': describes a DID, cannot describe a user
-cursor.query("SELECT ${columns} FROM extenumbers WHERE context NOT IN ('', 'incall-extensions') GROUP BY context", ('context',))
+cursor.query("SELECT ${columns} FROM context "
+	     "WHERE commented = 0 "
+	     "ORDER BY name DESC",
+	     ('name',))
 res = cursor.fetchall()
 
 if not res:
@@ -48,65 +47,58 @@ if not config.has_section('template'):
 
 for (context,) in res:
 	print "[" + context + "]"
+
 	cursor.query("SELECT ${columns} FROM userfeatures "
-                     "WHERE context = %s "
-                     "AND IFNULL(number,'') != '' "
-                     "AND enablehint = 1",
-                     ('number', 'protocol', 'protocolid', 'name'),
-                     (context,))
+		     "INNER JOIN phonefunckey "
+		     "ON userfeatures.context = %s "
+		     "AND userfeatures.id = phonefunckey.iduserfeatures "
+		     "AND phonefunckey.typeextenumbers IS NULL "
+		     "AND phonefunckey.typevalextenumbers IS NULL "
+		     "AND phonefunckey.typeextenumbersright IN ('user', 'group', 'queue', 'meetme') "
+		     "AND phonefunckey.supervision = 1 "
+		     "LEFT OUTER JOIN extenumbers "
+		     "ON phonefunckey.typeextenumbersright = extenumbers.type "
+		     "AND phonefunckey.typevalextenumbersright = extenumbers.typeval "
+		     "WHERE IFNULL(userfeatures.number,'') != ''",
+		     ('extenumbers.exten', 'extenumbers.type'),
+		     (context,))
 	res2 = cursor.fetchall()
 
+	by_type = {}
 	for row in res2:
-		number = row['number']
-		protocol = row['protocol']
-		protocolid = row['protocolid']
-		name = row['name']
+		xtype = row['extenumbers.type']
+		exten = xivo_helpers.speed_dial_key_extension(None, row['extenumbers.exten'], None)
+		the_set = by_type.setdefault(xtype, set())
+		the_set.add(exten)
 
-		if protocol in ("sip", "iax"):
-			interface = protocol.upper() + "/" + name
-		elif protocol == "custom":
-			cursor.query("SELECT ${columns} FROM usercustom "
-                                     "WHERE id = %s "
-                                     "AND commented = 0 "
-                                     "AND category = 'user'",
-                                     ('interface',),
-                                     (protocolid,))
-			res2 = cursor.fetchone()
-
-			if not res2:
-				raise ValueError, "Database inconsistency: unable to find custom user (name = '%s', context = '%s')" % (name, context)
-
-			interface = res2['interface']
-		else:
-			raise ValueError, "Unknown protocol '%s'" % protocol
-
-		print "exten = " + str(number) + ",hint," + str(interface)
+	for xtype, exten_set in by_type.iteritems():
+		for exten in exten_set:
+			print "exten = %s,hint,%s:%s" % (exten, xtype, exten)
 
 	# Ewww. The following query is a closure of one in provisioning/autoprov
-	query = ("SELECT ${columns} FROM userfeatures INNER JOIN phonefunckey "
-                 "ON userfeatures.context = %s "
-                 "AND userfeatures.id = phonefunckey.iduserfeatures "
-                 "AND phonefunckey.typeextenumbers = 'extenfeatures' "
-                 "AND phonefunckey.typevalextenumbers = 'bsfilter' "
-                 "AND phonefunckey.typeextenumbersright = 'user' "
-                 "AND phonefunckey.supervision = 1 "
-                 "LEFT OUTER JOIN extenumbers AS extenumleft "
-                 "ON extenumleft.type = 'extenfeatures' "
-                 "AND extenumleft.typeval = 'bsfilter' "
-                 "LEFT OUTER JOIN extenumbers AS extenumright "
-                 "ON phonefunckey.typeextenumbersright = extenumright.type "
-                 "AND phonefunckey.typevalextenumbersright = extenumright.typeval "
-                 "WHERE IFNULL(userfeatures.number,'') != ''")
-	cursor.query(query,
-                     ('extenumleft.exten', 'phonefunckey.exten', 'extenumright.exten', 'userfeatures.number'),
-                     (context,))
+	cursor.query("SELECT ${columns} FROM userfeatures INNER JOIN phonefunckey "
+		     "ON userfeatures.context = %s "
+		     "AND userfeatures.id = phonefunckey.iduserfeatures "
+		     "AND phonefunckey.typeextenumbers = 'extenfeatures' "
+		     "AND phonefunckey.typevalextenumbers = 'bsfilter' "
+		     "AND phonefunckey.typeextenumbersright = 'user' "
+		     "AND phonefunckey.supervision = 1 "
+		     "LEFT OUTER JOIN extenumbers AS extenumleft "
+		     "ON extenumleft.type = 'extenfeatures' "
+		     "AND extenumleft.typeval = 'bsfilter' "
+		     "LEFT OUTER JOIN extenumbers AS extenumright "
+		     "ON phonefunckey.typeextenumbersright = extenumright.type "
+		     "AND phonefunckey.typevalextenumbersright = extenumright.typeval "
+		     "WHERE IFNULL(userfeatures.number,'') != ''",
+		     ('extenumleft.exten', 'phonefunckey.exten', 'extenumright.exten', 'userfeatures.number'),
+		     (context,))
 	res2 = cursor.fetchall()
 	extens = set(xivo_helpers.speed_dial_key_extension(row['extenumleft.exten'], row['extenumright.exten'],
-                                                           row['phonefunckey.exten'], row['userfeatures.number'], True)
-                     for row in res2)
+							   row['phonefunckey.exten'], row['userfeatures.number'], True)
+		     for row in res2)
 
 	for exten in extens:
-		print "exten = " + exten + ",hint,DS/" + exten
+		print "exten = " + exten + ",hint,Custom:" + exten
 
 	if config.has_section(context):
 		section_name = context
