@@ -497,7 +497,7 @@ class AMIList:
                         try:
                                 getattr(self.ami[astid], command)(*args)
                         except Exception, exc:
-                                log_debug(SYSLOG_WARNING, 'AMI command %s on %s : %s' % (command, astid, exc))
+                                log_debug(SYSLOG_ERR, '--- exception --- AMI command %s on %s : %s' % (command, astid, exc))
                 else:
-                        print 'ami : %s no more in list - wait for the next update ...' % astid
+                        log_debug(SYSLOG_WARNING, 'ami : %s not in list - wait for the next update ? ...' % astid)
                 return

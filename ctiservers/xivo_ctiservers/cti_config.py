@@ -28,6 +28,10 @@ from xivo import anysql
 from xivo.BackSQL import backmysql
 from xivo.BackSQL import backsqlite
 import ConfigParser
+from xivo_log import *
+
+def log_debug(level, text):
+        log_debug_file(level, text, 'cti_config')
 
 class Config:
         def __init__(self, uri):
@@ -50,13 +54,13 @@ class Config:
 
 
         def read_section(self, section):
+                v = {}
                 if self.kind == 'file':
                         try:
                                 v = dict(self.xivoconf.items(section))
                         except Exception, exc:
-                                print '--- exception (read_section) ---', self.kind, section, exc
+                                log_debug(SYSLOG_ERR, '--- exception --- kind=%s section=%s : %s' % (self.kind, section, exc))
                 elif self.kind == 'sql':
-                        v = {}
                         try:
                                 self.cursor.query('SELECT * from %s' % section)
                                 z = self.cursor.fetchall()
@@ -64,5 +68,5 @@ class Config:
                                         [num, var, val] = zz
                                         v[var] = val
                         except Exception, exc:
-                                print '--- exception (read_section) ---', self.kind, section, exc
+                                log_debug(SYSLOG_ERR, '--- exception --- kind=%s section=%s : %s' % (self.kind, section, exc))
                 return v
