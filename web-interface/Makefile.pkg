@@ -9,7 +9,7 @@ include $(NONO_MK)/autobuild-classic.mk
 
 
 DEB_PKG = "pf-xivo-web-interface"
-DEB_TB_DEPS = "php4-eaccelerator php-eaccelerator-common"
+DEB_TB_DEPS = "php4-cli php4-eaccelerator php-eaccelerator-common"
 DEB_TB_SCRAMBLED = "1"
 TARBALL_DIR := $(shell mktemp -d)
 
