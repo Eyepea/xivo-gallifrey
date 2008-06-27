@@ -1,0 +1,53 @@
+<?php
+
+$form = &$this->get_module('form');
+$url = &$this->get_module('url');
+$dhtml = &$this->get_module('dhtml');
+
+$element = $this->get_var('element');
+$list = $this->get_varra('destination_list','users');
+$event = $this->get_var('event');
+
+$linked = $this->get_varra('dialaction',array($event,'linked'));
+$action = $this->get_varra('dialaction',array($event,'action'));
+
+if(empty($list) === false):
+	echo	'<div id="fd-dialaction-'.$event.'-user-actiontype" class="b-nodisplay">',
+		$form->select(array('desc'	=> $this->bbf('fm_dialaction_user-actionarg1'),
+				    'name'	=> 'dialaction['.$event.'][actionarg1]',
+				    'labelid'	=> 'dialaction-'.$event.'-user-actionarg1',
+				    'key'	=> 'identity',
+				    'altkey'	=> 'id',
+				    'invalid'	=> ($linked === false && $action === 'user'),
+				    'default'	=> $element['dialaction']['actionarg1']['default'],
+				    'value' 	=> $this->get_varra('dialaction',array($event,'user','actionarg1'))),
+			      $list),
+		$form->text(array('desc'	=> $this->bbf('fm_dialaction_user-actionarg2'),
+				  'name'	=> 'dialaction['.$event.'][actionarg2]',
+				  'labelid'	=> 'dialaction-'.$event.'-user-actionarg2',
+				  'size'	=> 10,
+				  'value'	=> $this->get_varra('dialaction',array($event,'user','actionarg2'))));
+
+	if($event === 'voicemenuflow'):
+		echo	$form->button(array('name'	=> 'add-defapplication-user',
+					    'id'	=> 'it-add-defapplication-user',
+					    'value'	=> $this->bbf('fm_bt-add')),
+				      'onclick="xivo_ast_defapplication_user(\''.$dhtml->escape($event).'\',\'it-voicemenu-flow\');"');
+	elseif($event === 'voicemenuevent'):
+		echo	$form->button(array('name'	=> 'select-defapplication-user',
+					    'id'	=> 'it-select-defapplication-user',
+					    'value'	=> $this->bbf('fm_bt-select')),
+				      'onclick="xivo_ast_voicemenuevent_defapplication(\'user\');"');
+	endif;
+	echo	'</div>';
+else:
+	echo	'<div id="fd-dialaction-'.$event.'-user-actiontype" class="txt-center b-nodisplay">';
+	if($this->get_var('dialaction_from') === 'user'):
+		echo	$this->bbf('dialaction_no-user');
+	else:
+		echo	$url->href_html($this->bbf('create_user'),'service/ipbx/pbx_settings/users','act=add');
+	endif;
+	echo	'</div>';
+endif;
+
+?>

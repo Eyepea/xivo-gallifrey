@@ -62,7 +62,7 @@ if(isset($_QR['fm_send']) === true && xivo_issa('protocol',$_QR) === true && xiv
 	|| $appuser->edit() === false)
 	{
 		$result = $appuser->get_result();
-		$result['dialstatus'] = $appuser->get_dialstatus_result();
+		$result['dialaction'] = $appuser->get_dialaction_result();
 		$result['phonefunckey'] = $appuser->get_phonefunckey_result();
 
 		$error = $appuser->get_error();
@@ -147,8 +147,8 @@ if(empty($return) === false)
 {
 	$return['protocol']['allow'] = $allow;
 
-	if(xivo_issa('dialstatus',$return) === false || empty($return['dialstatus']) === true)
-		$return['dialstatus'] = null;
+	if(xivo_issa('dialaction',$return) === false || empty($return['dialaction']) === true)
+		$return['dialaction'] = null;
 
 	if(xivo_issa('voicemail',$return) === false || empty($return['voicemail']) === true)
 		$return['voicemail'] = null;
@@ -163,7 +163,8 @@ $_HTML->set_var('id',$info['ufeatures']['id']);
 $_HTML->set_var('info',$return);
 $_HTML->set_var('error',$error);
 $_HTML->set_var('voicemail',$return['voicemail']);
-$_HTML->set_var('dialstatus',$return['dialstatus']);
+$_HTML->set_var('dialaction',$return['dialaction']);
+$_HTML->set_var('dialaction_from','user');
 $_HTML->set_var('groups',$groups);
 $_HTML->set_var('gmember',$gmember);
 $_HTML->set_var('queues',$queues);
@@ -177,11 +178,12 @@ $_HTML->set_var('tz_list',$appuser->get_timezones());
 $_HTML->set_var('context_list',$appuser->get_context_list());
 $_HTML->set_var('autoprov_list',$appuser->get_autoprov_list());
 $_HTML->set_var('bsfilter_list',$appuser->get_bsfilter_list());
+$_HTML->set_var('fkdest_list',$appuser->get_phonefunckey_destination());
 $_HTML->set_var('fktype_list',$appuser->get_phonefunckey_type());
 
 $dhtml = &$_HTML->get_module('dhtml');
 $dhtml->set_js('js/xivo_ajs.js');
-$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialstatus.js');
+$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/phonefunckey.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users/sip.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users/iax.js');

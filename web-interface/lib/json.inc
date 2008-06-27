@@ -55,13 +55,19 @@ class xivo_json
 		$r = '';
 		$keys = array_keys($data);
 		$nb = count($keys);
-		
-		if(in_array(0,$keys,true) === true && array_keys($data) === range(0,$nb-1))
-		{
-			for($i = 0;$i < $nb;$i++)
-				$r .= ','.$this->_encode_data($data[$i]);
 
-			return('['.substr($r,1).']');
+		if(in_array(0,$keys,true) === true)
+		{
+			$skeys = $keys;
+			sort($skeys);
+
+			if($skeys === range(0,$nb-1))
+			{
+				for($i = 0;$i < $nb;$i++)
+					$r .= ','.$this->_encode_data($data[$i]);
+
+				return('['.substr($r,1).']');
+			}
 		}
 
 		for($i = 0;$i < $nb;$i++)

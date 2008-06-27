@@ -46,7 +46,10 @@ switch($act)
 		{
 			if($appqueue->set_add($_QR) === false
 			|| $appqueue->add() === false)
+			{
 				$result = $appqueue->get_result();
+				$result['dialaction'] = $appqueue->get_dialaction_result();
+			}
 			else
 				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
 		}
@@ -86,16 +89,24 @@ switch($act)
 			}
 		}
 
+		if(empty($result) === false
+		&& (xivo_issa('dialaction',$result) === false
+		    || empty($result['dialaction']) === true) === true)
+			$result['dialaction'] = null;
+
 		$dhtml = &$_HTML->get_module('dhtml');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialstatus.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/queues.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
 		$_HTML->set_var('info',$result);
+		$_HTML->set_var('dialaction',$result['dialaction']);
+		$_HTML->set_var('dialaction_from','queue');
 		$_HTML->set_var('element',$appqueue->get_elements());
 		$_HTML->set_var('user',$user);
 		$_HTML->set_var('agentgroup',$agentgroup);
 		$_HTML->set_var('agent',$agent);
-		$_HTML->set_var('dialstatus_list',$appqueue->get_dialstatus_destination_list());
+		$_HTML->set_var('destination_list',$appqueue->get_dialaction_destination_list());
 		$_HTML->set_var('moh_list',$appqueue->get_musiconhold());
 		$_HTML->set_var('announce_list',$appqueue->get_announce());
 		$_HTML->set_var('context_list',$appqueue->get_context_list());
@@ -142,7 +153,10 @@ switch($act)
 
 			if($appqueue->set_edit($_QR) === false
 			|| $appqueue->edit() === false)
+			{
 				$result = $appqueue->get_result();
+				$result['dialaction'] = $appqueue->get_dialaction_result();
+			}
 			else
 				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
 		}
@@ -182,17 +196,25 @@ switch($act)
 			}
 		}
 
+		if(empty($return) === false
+		&& (xivo_issa('dialaction',$return) === false
+		    || empty($return['dialaction']) === true) === true)
+			$return['dialaction'] = null;
+
 		$dhtml = &$_HTML->get_module('dhtml');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialstatus.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/queues.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
 		$_HTML->set_var('id',$info['qfeatures']['id']);
 		$_HTML->set_var('info',$return);
+		$_HTML->set_var('dialaction',$return['dialaction']);
+		$_HTML->set_var('dialaction_from','queue');
+		$_HTML->set_var('element',$appqueue->get_elements());
 		$_HTML->set_var('user',$user);
 		$_HTML->set_var('agentgroup',$agentgroup);
 		$_HTML->set_var('agent',$agent);
-		$_HTML->set_var('element',$appqueue->get_elements());
-		$_HTML->set_var('dialstatus_list',$appqueue->get_dialstatus_destination_list());
+		$_HTML->set_var('destination_list',$appqueue->get_dialaction_destination_list());
 		$_HTML->set_var('moh_list',$appqueue->get_musiconhold());
 		$_HTML->set_var('announce_list',$appqueue->get_announce());
 		$_HTML->set_var('context_list',$appqueue->get_context_list());

@@ -56,9 +56,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		$this->_info['contextnumbers'] = false;
 		$this->_origin['contextnumbers'] = false;
 
-		if(xivo_haslen($this->_info['context']['entity']) === false)
-			return(null);
-		else if(($this->_info['contextnumbers'] = $this->_contextnumbers->get_all_by_type(
+		if(($this->_info['contextnumbers'] = $this->_contextnumbers->get_all_by_type(
 								array('context' => $this->_info['context']['name']))) === false)
 			return(false);
 
@@ -123,11 +121,14 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 			if(xivo_haslen($info['context']['entity']) === false 
 			|| is_object($this->_entity) === false
-			|| ($info['contextnumbers'] = $this->_contextnumbers->get_all_where(
-								array('context' => $info['context']['name']))) === false
 			|| ($info['entity'] = $this->_entity->get_where(
 			   					array('name' => $info['context']['entity']))) === false)
-				$info['contextnumbers'] = $info['entity'] = false;
+				$info['entity'] = false;
+
+			if($info['entity'] === false
+			|| ($info['contextnumbers'] = $this->_contextnumbers->get_all_where(
+								array('context' => $info['context']['name']))) === false)
+				$info['contextnumbers'] = false;
 
 			if($this->_contextnummember->get_where(array('context' => $info['context']['name'])) !== false
 			|| $this->_contextmember->get_where(array('context' => $info['context']['name'])) !== false)
@@ -198,12 +199,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		if(xivo_issa('contextnumbers',$arr) === true)
 		{
 			$arr['contextnumbers']['context'] = $name;
-			$this->set_contextnumbers($action,$arr['contextnumbers']);
-		}
-		else
-		{
-			$this->_set_result('contextnumbers',null);
-			$this->_set_error('contextnumbers','invalid data');
+			$this->set_contextnumbers($arr['contextnumbers']);
 		}
 
 		$this->set_contextnummember($action,$name);
@@ -235,10 +231,9 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		return(true);
 	}
 
-	function set_contextnumbers($action,$arr)
+	function set_contextnumbers($arr)
 	{
-		if(($action !== 'add' && $action !== 'edit') === true
-		|| is_array($arr) === false)
+		if(is_array($arr) === false)
 		{
 			$this->_set_result('contextnumbers',null);
 			$this->_set_error('contextnumbers','invalid data');
@@ -250,7 +245,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 			$this->_set_error('contextnumbers','wrong context');
 			return(false);
 		}
-		
+
 		$info = $infotmp = $tmp = array();
 		$info['context'] = $arr['context'];
 		$info['numberbeg'] = '';
@@ -416,11 +411,17 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		}
 		else if(empty($reslist) === true)
 		{
-			$this->_set_error('contextnumbers','empty');
-			$this->_set_result('contextnumbers',false);
-			return(false);
+			if(isset($this->_info['deletable']) === true
+			&& $this->_info['deletable'] === true)
+				return(null);
+			else
+			{
+				$this->_set_error('contextnumbers','empty');
+				$this->_set_result('contextnumbers',false);
+				return(false);
+			}
 		}
-		
+
 		$this->_set_result('contextnumbers',$reslist);
 
 		return(true);
@@ -603,9 +604,16 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 	function edit_contextnumbers()
 	{
+		if(isset($this->_info['deletable']) === true
+		&& $this->_info['deletable'] === true)
+			$deletable = true;
+		else
+			$deletable = false;
+
 		if(xivo_issa('context',$this->_info) === false)
 			return(false);
-		else if((string) $this->get_result_var('context','entity') === '')
+		else if((string) $this->get_result_var('context','entity') === ''
+		&& $deletable === true)
 			return($this->delete_contextnumbers());
 		else if(xivo_issa('contextnumbers',$this->_info) === false)
 			return($this->add_contextnumbers());
@@ -615,7 +623,8 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 		$this->_return['contextnumbers'] = $this->_contextnumbers->delete_where($where);
 
-		if(($rs = $this->get_result('contextnumbers')) === null)
+		if(($rs = $this->get_result('contextnumbers')) === null
+		&& $deletable === true)
 			return($this->_return['contextnumbers']);
 		else if(is_array($rs) === false || empty($rs) === true)
 			return(false);
@@ -726,6 +735,8 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		   && $this->_update_trunkiax_contextmember($context,$newcontext) === false) === true
 		|| (isset($refinfo['trunkcustom']) === true
 		   && $this->_update_trunkcustom_contextmember($context,$newcontext) === false) === true
+		|| (isset($refinfo['voicemenu']) === true
+		   && $this->_update_voicemenu_contextmember($context,$newcontext) === false) === true
 		|| (isset($refinfo['voicemail']) === true
 		   && $this->_update_voicemail_contextmember($context,$newcontext,$refinfo['voicemail']) === false) === true)
 			return(false);
@@ -1039,6 +1050,11 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		return($this->_update_context_contextmember('trunkcustom',$context,$newcontext));
 	}
 
+	function _update_voicemenu_contextmember($context,$newcontext)
+	{
+		return($this->_update_context_contextmember('voicemenu',$context,$newcontext));
+	}
+
 	function _update_voicemail_contextmember($context,$newcontext,$data)
 	{
 		if(xivo_issa('contextmember',$this->_return) === false
@@ -1212,6 +1228,9 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 					if(isset($val['trunkcustom']) === true)
 						$this->_update_trunkcustom_contextmember($context,$newcontext);
+
+					if(isset($val['voicemenu']) === true)
+						$this->_update_voicemenu_contextmember($context,$newcontext);
 
 					if(isset($val['voicemail']) === true)
 						$this->_update_voicemail_contextmember($context,$newcontext,$val['voicemail']);

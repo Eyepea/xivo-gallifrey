@@ -72,7 +72,7 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 		if(($sounds = &$this->_service->get_module('sounds')) === false)
 			return(false);
 
-		return($sounds->get_list('playback',true));
+		return($sounds->get_list('playback','pathnoext'));
 	}
 
 	function get_element()

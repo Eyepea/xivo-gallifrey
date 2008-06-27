@@ -112,7 +112,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 			      $ref['member_number'],
 			      $ref['member_name']);
 
-			$user = $this->_userfeatures->mk_identity($user);
+			$user['identity'] = $this->_userfeatures->mk_identity($user);
 
 			$this->_info['userfeatures'][] = $user;
 			$this->_origin['callfiltermember'][] = $ref;
@@ -274,7 +274,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 				$member['lastname'] = $ref['member_lastname'];
 				$member['number'] = $ref['member_number'];
 				$member['name'] = $ref['member_name'];
-				$member = $this->_userfeatures->mk_identity($member);
+				$member['identity'] = $this->_userfeatures->mk_identity($member);
 				$ref['member_identity'] = $member['identity'];
 			}
 		}

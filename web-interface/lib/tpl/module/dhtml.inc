@@ -15,18 +15,36 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 		$this->_tpl = &$tpl;
 	}
 
-	function escape($str)
+	function escape($str,$entquote=ENT_COMPAT)
 	{
-		$r = xivo_htmlsc(preg_replace('/\s+/',' ',strval($str)),ENT_NOQUOTES);
+		$str = preg_replace('/\s+/',' ',strval($str));
 
-		return(str_replace(array('\'','"'),array('\\\'','&quot;'),$r));
+		$search = array('\'');
+		$replace = array('\\\'');
+
+		if($entquote === true)
+		{
+			$entquote = ENT_NOQUOTES;
+			$search[1] = '"';
+			$replace = array('&#039;','\"');
+		}
+		else if($entquote === ENT_NOQUOTES)
+		{
+			$search[1] = '"';
+			$replace[1] = '\"';
+		}
+		else if($entquote === ENT_QUOTES)
+			return(xivo_htmlsc($str,ENT_QUOTES));
+		else
+			$entquote = ENT_COMPAT;
+
+		return(str_replace($search,$replace,xivo_htmlsc($str,$entquote)));
 	}
 
 	function chk_function_name($str)
 	{
-		$str = strval($str);
-
-		if(preg_match('/^[a-zA-Z0-9_]+$/',$str) === 1)
+		if(is_string($str) === true
+		&& preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/',$str) === 1)
 			return($str);
 
 		return(false);
@@ -70,12 +88,10 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 			else
 				$file = XIVO_SEP_DIR.'bloc'.XIVO_SEP_DIR.$files[$i];
 
-			if(xivo_issa($type,$this->_inc) === false
-			|| xivo_file::is_f_r($this->get_option('tpl_path').$file) === false
-			|| xivo_issa($where,$this->_inc[$type]) === false)
-				continue;
-
-			$this->_inc[$type][$where][] = $file;
+			if(xivo_issa($type,$this->_inc) === true
+			&& xivo_file::is_f_r($this->get_option('tpl_path').$file) !== false
+			&& xivo_issa($where,$this->_inc[$type]) === true)
+				$this->_inc[$type][$where][] = $file;
 		}
 
 		return(true);

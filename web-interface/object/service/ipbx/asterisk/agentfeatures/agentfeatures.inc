@@ -25,6 +25,16 @@ class xivo_service_asterisk_agentfeatures extends xivo_service_asterisk_abstract
 
 	function _prepare($data)
 	{
+		$this->_prepare_identity($data);
+
+		$data['commented'] = (bool) $data['commented'];
+		$data['silent'] = (bool) $data['silent'];
+
+		return($data);
+	}
+
+	function _prepare_identity(&$data)
+	{
 		$data['fullname'] = trim(trim($data['firstname']).' '.trim($data['lastname']));
 
 		if($data['fullname'] === '')
@@ -32,10 +42,19 @@ class xivo_service_asterisk_agentfeatures extends xivo_service_asterisk_abstract
 
 		$data['identity'] = $data['fullname'].' ('.$data['number'].')';
 
-		$data['commented'] = (bool) $data['commented'];
-		$data['silent'] = (bool) $data['silent'];
-
 		return($data);
+	}
+
+	function mk_identity($firstname,$lastname,$number)
+	{
+		$arr = array();
+		$arr['firstname'] = $firstname;
+		$arr['lastname'] = $lastname;
+		$arr['number'] = $number;
+
+		$this->_prepare_identity($arr);
+
+		return($arr['identity']);
 	}
 }
 

@@ -20,13 +20,14 @@ define('XIVO_SRE_IPBX_AST_CODEC_AUDIO_G723','g723');
 define('XIVO_SRE_IPBX_AST_CODEC_AUDIO_GSM','gsm');
 define('XIVO_SRE_IPBX_AST_CODEC_AUDIO_ULAW','ulaw');
 define('XIVO_SRE_IPBX_AST_CODEC_AUDIO_ALAW','alaw');
-define('XIVO_SRE_IPBX_AST_CODEC_AUDIO_G726','g726');
 define('XIVO_SRE_IPBX_AST_CODEC_AUDIO_ADPCM','adpcm');
 define('XIVO_SRE_IPBX_AST_CODEC_AUDIO_SLIN','slin');
 define('XIVO_SRE_IPBX_AST_CODEC_AUDIO_LPC10','lpc10');
 define('XIVO_SRE_IPBX_AST_CODEC_AUDIO_G729','g729');
 define('XIVO_SRE_IPBX_AST_CODEC_AUDIO_SPEEX','speex');
 define('XIVO_SRE_IPBX_AST_CODEC_AUDIO_ILBC','ilbc');
+define('XIVO_SRE_IPBX_AST_CODEC_AUDIO_G726','g726');
+define('XIVO_SRE_IPBX_AST_CODEC_AUDIO_G722','g722');
 
 define('XIVO_SRE_IPBX_AST_CODEC_IMAGE_JPEG','jpeg');
 define('XIVO_SRE_IPBX_AST_CODEC_IMAGE_PNG','png');
@@ -34,6 +35,7 @@ define('XIVO_SRE_IPBX_AST_CODEC_IMAGE_PNG','png');
 define('XIVO_SRE_IPBX_AST_CODEC_VIDEO_H261','h261');
 define('XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263','h263');
 define('XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263P','h263p');
+define('XIVO_SRE_IPBX_AST_CODEC_VIDEO_H264','h264');
 
 define('XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV','wav');
 define('XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV49','wav49');
@@ -43,7 +45,8 @@ define('XIVO_SRE_IPBX_AST_FORMAT_AUDIO_ULAW','ulaw');
 define('XIVO_SRE_IPBX_AST_FORMAT_AUDIO_ALAW','alaw');
 define('XIVO_SRE_IPBX_AST_FORMAT_AUDIO_AU','au');
 define('XIVO_SRE_IPBX_AST_FORMAT_AUDIO_VOX','vox');
-define('XIVO_SRE_IPBX_AST_FORMAT_AUDIO_SLIN','slin');
+define('XIVO_SRE_IPBX_AST_FORMAT_AUDIO_SLIN','sln');
+define('XIVO_SRE_IPBX_AST_FORMAT_AUDIO_MP3','mp3');
 
 define('XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_DEFAULT',0);
 define('XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_OMIT',1);
@@ -63,6 +66,30 @@ define('XIVO_SRE_IPBX_AST_CDR_DISPOSITION_UNKNOWN','UNKNOWN');
 
 define('XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_PATTERN','a-zA-Z0-9_-');
 define('XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_LENGTH','{1,50}');
+define('XIVO_SRE_IPBX_AST_REGEXP_AIDIO_FILE_EXTENSION','wav|WAV|wav49|ogg|ul|ulaw|um|pcm|al|alaw|au|vox|sln|raw');
+
+define('XIVO_SRE_IPBX_AST_REGEXP_CONTEXT','(?!(?:macro|voicemenu|xivo)-)[a-z0-9_-]{1,39}');
+define('XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN','(?:\$\{[\(\)a-zA-Z0-9_\-\$\{\}\:]+\})');
+define('XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN_EXTEN','(?:[0-9\*#]{1,40}'.
+						 '|(?:[0-9\*#]*'.
+						 XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN.
+						 '[0-9\*#]*)+)');
+define('XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN_CONTEXT','(?:'.XIVO_SRE_IPBX_AST_REGEXP_CONTEXT.
+						   '|(?:[a-z0-9_-]*'.
+						   XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN.
+						   '[a-z0-9_-]*)+)');
+define('XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN_ATCONTEXT','(?:@'.
+						   XIVO_SRE_IPBX_AST_REGEXP_CONTEXT.
+						   '|@?(?:[a-z0-9_-]*'.
+						   XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN.
+						   '[a-z0-9_-]*)+)');
+define('XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN_AUDIOFILE','(?:[a-zA-Z0-9%_-]{1,50}'.
+						     '\.(?:'.XIVO_SRE_IPBX_AST_REGEXP_AIDIO_FILE_EXTENSION.')'.
+						     '|(?:(?:[a-zA-Z0-9%_-]*'.
+						     XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN.
+						     '[a-zA-Z0-9%_-]*)+'.
+						     '(?:\.(?:(?:'.XIVO_SRE_IPBX_AST_REGEXP_AIDIO_FILE_EXTENSION.')'.
+						     '|'.XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN.'))?))');
 
 define('XIVO_SRE_IPBX_AST_USER_MACRO','incoming_user');
 define('XIVO_SRE_IPBX_AST_GROUP_MACRO','incoming_group');
@@ -71,19 +98,21 @@ define('XIVO_SRE_IPBX_AST_MEETME_MACRO','incoming_meetme');
 define('XIVO_SRE_IPBX_AST_INCALL_MACRO','incoming_did');
 define('XIVO_SRE_IPBX_AST_OUTCALL_MACRO','outgoing_user');
 define('XIVO_SRE_IPBX_AST_HANDYNUMBERS_MACRO','handynumbers');
-define('XIVO_SRE_IPBX_AST_HANDYNUMBERS_CONTEXT','handynumbers');
+define('XIVO_SRE_IPBX_AST_VOICEMENU_MACRO','voicemenu');
 
 define('XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTIFICATION','authentification');
-define('XIVO_SRE_IPBX_AST_CONTEXT_EXTRAFEATURES','extra-features');
-define('XIVO_SRE_IPBX_AST_CONTEXT_FEATURES','features');
 define('XIVO_SRE_IPBX_AST_CONTEXT_GENERAL','general');
 define('XIVO_SRE_IPBX_AST_CONTEXT_GLOBAL','global');
 define('XIVO_SRE_IPBX_AST_CONTEXT_GLOBALS','globals');
+define('XIVO_SRE_IPBX_AST_CONTEXT_HANDYNUMBERS','xivo-handynumbers');
 define('XIVO_SRE_IPBX_AST_CONTEXT_HINT','hint');
 define('XIVO_SRE_IPBX_AST_CONTEXT_HINTS','hints');
-define('XIVO_SRE_IPBX_AST_CONTEXT_INITCONFIG','initconfig');
 define('XIVO_SRE_IPBX_AST_CONTEXT_PARKEDCALLS','parkedcalls');
 define('XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES','zonemessages');
+
+define('XIVO_SRE_IPBX_AST_MOH_DEFAULT','default');
+
+define('XIVO_SRE_IPBX_AST_PRECONTEXT_VOICEMENU','voicemenu-');
 
 define('XIVO_SRE_IPBX_AST_NBBYPAGE',20);
 define('XIVO_SRE_IPBX_AST_CDR_NBBYPAGE',30);
@@ -162,6 +191,9 @@ $array['module']['contextnumbers']['datastorage'] = true;
 
 $array['module']['contextnummember'] = array();
 $array['module']['contextnummember']['datastorage'] = true;
+
+$array['module']['dialaction'] = array();
+$array['module']['dialaction']['datastorage'] = true;
 
 $array['module']['dialstatus'] = array();
 $array['module']['dialstatus']['datastorage'] = true;
@@ -268,6 +300,9 @@ $array['module']['voicemail']['datastorage'] = true;
 $array['module']['voicemailfeatures'] = array();
 $array['module']['voicemailfeatures']['datastorage'] = true;
 
+$array['module']['voicemenu'] = array();
+$array['module']['voicemenu']['datastorage'] = true;
+
 $array['protocol'] = array();
 $array['protocol'][XIVO_SRE_IPBX_AST_PROTO_SIP] = array('module' => 'usersip'); 
 $array['protocol'][XIVO_SRE_IPBX_AST_PROTO_IAX] = array('module' => 'useriax'); 
@@ -281,30 +316,59 @@ $array['channel']['agent'] = XIVO_SRE_IPBX_AST_CHAN_AGENT;
 
 $array['format'] = array();
 $array['format'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV] = array(
-							'type' => 'audio',
-							'extension' => 'wav');
+				'type'		=> 'audio',
+				'extension'	=> 'wav',
+				'mime'		=> array('audio/wav',
+							 'audio/x-wav',
+							 'application/octet-stream'));
 $array['format'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV49] = array(
-							'type' => 'audio',
-							'extension' => 'WAV');
+				'type'		=> 'audio',
+				'extension'	=> array('WAV','wav49'),
+				'mime'		=> array('audio/wav',
+							 'audio/x-wav',
+							 'application/octet-stream'));
 $array['format'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_GSM] = array(
-							'type' => 'audio',
-							'extension' => 'gsm');
+				'type'		=> 'audio',
+				'extension'	=> 'gsm',
+				'mime'		=> array('audio/gsm',
+							 'audio/x-gsm',
+							 'application/octet-stream'));
 $array['format'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_OGG] = array(
-							'type' => 'audio',
-							'extension' => 'ogg');
+				'type'		=> 'audio',
+				'extension'	=> 'ogg',
+				'mime'		=> array('audio/ogg',
+							 'audio/x-ogg',
+							 'application/octet-stream',
+							 'application/ogg',
+							 'application/x-ogg'));
 $array['format'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_ULAW] = array(
-							'type' => 'audio',
-							'extension' => array('ul','ulaw','um','pcm'));
+				'type'		=> 'audio',
+				'extension'	=> array('ul','ulaw','um','pcm'),
+				'mime'		=> 'application/octet-stream');
 $array['format'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_ALAW] = array(
-							'type' => 'audio',
-							'extension' => array('al','alaw'));
+				'type'		=> 'audio',
+				'extension'	=> array('al','alaw'),
+				'mime'		=> 'application/octet-stream');
 $array['format'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_AU] = array(
-							'type' => 'audio',
-							'extension' => 'au');
+				'type'		=> 'audio',
+				'extension'	=> 'au',
+				'mime'		=> 'audio/basic');
 $array['format'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_VOX] = array(
-							'type' => 'audio',
-							'extension' => 'vox');
+				'type'		=> 'audio',
+				'extension'	=> 'vox',
+				'mime'		=> 'application/octet-stream');
 $array['format'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_SLIN] = array(
-							'type' => 'audio',
-							'extension' => array('sln','raw'));
+				'type'		=> 'audio',
+				'extension'	=> array('sln','raw'),
+				'mime'		=> 'application/octet-stream');
+$array['format'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_MP3] = array(
+				'type'		=> 'audio',
+				'extension'	=> 'mp3',
+				'mime'		=> array('audio/mp3',
+							 'audio/x-mp3',
+							 'audio/mpeg',
+							 'audio/x-mpeg',
+							 'audio/mpeg3',
+							 'audio/x-mpeg3'));
+
 ?>

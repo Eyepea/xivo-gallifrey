@@ -25,9 +25,9 @@
 		</div>
 		<div class="inout-list">
 
-		<a href="#" onclick="xivo_ingroup(); return(false);" title="<?=$this->bbf('bt_ingroup');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_ingroup'),'class="bt-inlist" id="bt-ingroup" border="0"');?></a><br />
+		<a href="#" onclick="xivo_ingroup(); return(xivo_free_focus());" title="<?=$this->bbf('bt_ingroup');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_ingroup'),'class="bt-inlist" id="bt-ingroup" border="0"');?></a><br />
 
-		<a href="#" onclick="xivo_outgroup(); return(false);" title="<?=$this->bbf('bt_outgroup');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outgroup'),'class="bt-outlist" id="bt-outgroup" border="0"');?></a>
+		<a href="#" onclick="xivo_outgroup(); return(xivo_free_focus());" title="<?=$this->bbf('bt_outgroup');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outgroup'),'class="bt-outlist" id="bt-outgroup" border="0"');?></a>
 
 		</div>
 		<div class="slt-inlist">
@@ -91,9 +91,9 @@
 		</div>
 		<div class="inout-list">
 
-			<a href="#" onclick="xivo_inqueue(); return(false);" title="<?=$this->bbf('bt_inqueue');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inqueue'),'class="bt-inlist" id="bt-inqueue" border="0"');?></a><br />
+			<a href="#" onclick="xivo_inqueue(); return(xivo_free_focus());" title="<?=$this->bbf('bt_inqueue');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inqueue'),'class="bt-inlist" id="bt-inqueue" border="0"');?></a><br />
 
-			<a href="#" onclick="xivo_outqueue(); return(false);" title="<?=$this->bbf('bt_outqueue');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outqueue'),'class="bt-outlist" id="bt-outqueue" border="0"');?></a>
+			<a href="#" onclick="xivo_outqueue(); return(xivo_free_focus());" title="<?=$this->bbf('bt_outqueue');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outqueue'),'class="bt-outlist" id="bt-outqueue" border="0"');?></a>
 
 		</div>
 		<div class="slt-inlist">

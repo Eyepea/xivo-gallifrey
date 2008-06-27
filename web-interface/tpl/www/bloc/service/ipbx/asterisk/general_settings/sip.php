@@ -90,7 +90,7 @@ endif;
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_callevents'),'name' => 'callevents','labelid' => 'callevents','checked' => $this->get_varra('info',array('callevents','var_val')),'default' => $element['callevents']['default']));?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_tos'),'name' => 'tos','labelid' => 'tos','key' => false,'value' => $this->get_varra('info',array('tos','var_val')),'default' => $element['tos']['default']),$element['tos']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_tos'),'name' => 'tos','labelid' => 'tos','value' => $this->get_varra('info',array('tos','var_val')),'default' => $element['tos']['default']),$element['tos']['value']);?>
 
 <?=$form->select(array('desc' => $this->bbf('fm_ospauth'),'name' => 'ospauth','labelid' => 'ospauth','key' => false,'bbf' => array('concatvalue','fm_ospauth-opt-'),'value' => $this->get_varra('info',array('ospauth','var_val')),'default' => $element['ospauth']['default']),$element['ospauth']['value']);?>
 
@@ -148,9 +148,9 @@ endif;
 	</div>
 	<div class="inout-list">
 
-		<a href="#" onclick="xivo_fm_move_selected('it-codeclist','it-codec'); return(false);" title="<?=$this->bbf('bt_incodec');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_incodec'),'class="bt-inlist" id="bt-incodec" border="0"');?></a><br />
+		<a href="#" onclick="xivo_fm_move_selected('it-codeclist','it-codec'); return(xivo_free_focus());" title="<?=$this->bbf('bt_incodec');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_incodec'),'class="bt-inlist" id="bt-incodec" border="0"');?></a><br />
 
-		<a href="#" onclick="xivo_fm_move_selected('it-codec','it-codeclist'); return(false);" title="<?=$this->bbf('bt_outcodec');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outcodec'),'class="bt-outlist" id="bt-outcodec" border="0"');?></a>
+		<a href="#" onclick="xivo_fm_move_selected('it-codec','it-codeclist'); return(xivo_free_focus());" title="<?=$this->bbf('bt_outcodec');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outcodec'),'class="bt-outlist" id="bt-outcodec" border="0"');?></a>
 	</div>
 	<div class="slt-inlist">
 
@@ -158,9 +158,9 @@ endif;
 
 		<div class="bt-updown">
 
-			<a href="#" onclick="xivo_fm_order_selected('it-codec',1); return(false);" title="<?=$this->bbf('bt_upcodec');?>"><?=$url->img_html('img/site/button/row-up.gif',$this->bbf('bt_upcodec'),'class="bt-uplist" id="bt-upcodec" border="0"');?></a><br />
+			<a href="#" onclick="xivo_fm_order_selected('it-codec',1); return(xivo_free_focus());" title="<?=$this->bbf('bt_upcodec');?>"><?=$url->img_html('img/site/button/row-up.gif',$this->bbf('bt_upcodec'),'class="bt-uplist" id="bt-upcodec" border="0"');?></a><br />
 
-			<a href="#" onclick="xivo_fm_order_selected('it-codec',-1); return(false);" title="<?=$this->bbf('bt_downcodec');?>"><?=$url->img_html('img/site/button/row-down.gif',$this->bbf('bt_downcodec'),'class="bt-downlist" id="bt-downcodec" border="0"');?></a>
+			<a href="#" onclick="xivo_fm_order_selected('it-codec',-1); return(xivo_free_focus());" title="<?=$this->bbf('bt_downcodec');?>"><?=$url->img_html('img/site/button/row-down.gif',$this->bbf('bt_downcodec'),'class="bt-downlist" id="bt-downcodec" border="0"');?></a>
 
 		</div>
 

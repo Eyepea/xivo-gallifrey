@@ -25,6 +25,8 @@ class xivo_service_asterisk_schedule extends xivo_service_asterisk_abstract
 
 	function _prepare($data)
 	{
+		$this->_prepare_identity($data);
+	
 		$data['timebeg'] = (string) $data['timebeg'];
 		$data['timeend'] = (string) $data['timeend'];
 
@@ -82,6 +84,24 @@ class xivo_service_asterisk_schedule extends xivo_service_asterisk_abstract
 			$data['timeminend'] = '00';
 
 		return($data);
+	}
+
+	function _prepare_identity(&$data)
+	{
+		$data['identity'] = $data['name'].' ('.$data['context'].')';
+
+		return($data);
+	}
+
+	function mk_identity($name,$context)
+	{
+		$arr = array();
+		$arr['name'] = $name;
+		$arr['context'] = $context;
+
+		$this->_prepare_identity($arr);
+
+		return($arr['identity']);
 	}
 
 	function add($arr,$id=0)
@@ -286,27 +306,21 @@ class xivo_service_asterisk_schedule extends xivo_service_asterisk_abstract
 		return(false);
 	}
 
-	function get_all_except($id,$disable=null,$prepare=true,$order=null,$limit=null,$assoc=false)
+	function get_all_except($id,$order=null,$limit=null)
 	{
 		if(($id = xivo_ulongint($id)) === 0)
-			return($this->get_all($disable,$prepare,$order,$limit,$assoc));
-
-		$prepare = (bool) $prepare;
-		$assoc = (bool) $assoc;
+			return($this->get_all(null,true,$order,$limit));
 
 		if(isset($this->_origin_list) === true)
 			$this->_origin_list = false;
 
-		if(($list = $this->_dso->get_all_except($id,$disable,$order,$limit)) === false
+		if(($list = $this->_dso->get_all_except($id,$order,$limit)) === false
 		|| isset($list[0]) === false)
 			return(false);
 		else if(isset($this->_origin_list) === true)
 			$this->_origin_list = $list;
 
-		if($prepare === false && $assoc === false)
-			return($list);
-
-		return($this->_mk_list_assoc_prepare($list,$assoc,$prepare));
+		return($this->_mk_list_assoc_prepare($list,false,true));
 	}
 }
 

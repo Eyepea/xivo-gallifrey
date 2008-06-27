@@ -96,11 +96,23 @@ $array['element']['callevents']['default'] = 'no';
 $array['element']['callevents']['set'] = true;
 
 $array['element']['tos'] = array();
-$array['element']['tos']['value'] = array('none','lowdelay','throughput','reliability','mincost',
-					  1,2,3,4,5,6,7,8,9,10,
-					  11,12,13,14,15,16,17,18,19,20,
-					  21,22,23,24,25,26,27,28,29,30,31);
-$array['element']['tos']['default'] = 'lowdelay';
+$array['element']['tos']['value'] = array(0	=> '0x00 (none)',
+					  2	=> '0x02 (mincost)',
+					  4	=> '0x04 (reliability)',
+					  6	=> '0x06',
+					  8	=> '0x08 (throughput)',
+					  10	=> '0x0A',
+					  12	=> '0x0C',
+					  14	=> '0x0E',
+					  16	=> '0x10 (lowdelay)',
+					  18	=> '0x12',
+					  20	=> '0x14',
+					  22	=> '0x16',
+					  24	=> '0x18',
+					  26	=> '0x1A',
+					  28	=> '0x1C',
+					  30	=> '0x1E');
+$array['element']['tos']['default'] = 16;
 
 $array['element']['ospauth'] = array();
 $array['element']['ospauth']['value'] = array('no','proxy','gateway','exclusive');
@@ -122,7 +134,8 @@ $array['element']['externrefresh'] = array();
 $array['element']['externrefresh']['value'] = array(1 => 1,10 => 10,20 => 20,30 => 30,
 						    40 => 40,50 => 50,60 => 1,70 => array(1,10),
 						    80 => array(1,20),90 => array(1,30),100 => array(1,40),
-						    110 => array(1,50),120 => 2);
+						    110 => array(1,50),120 => 2,180 => 3,240 => 4,300 => 5,
+						    600 => 10,900 => 15,1200 => 20,1800 => 30);
 $array['element']['externrefresh']['default'] = 10;
 
 $array['element']['outboundproxy'] = array();
@@ -144,18 +157,20 @@ $array['element']['allow']['value'] = array(
 					XIVO_SRE_IPBX_AST_CODEC_AUDIO_GSM,
 					XIVO_SRE_IPBX_AST_CODEC_AUDIO_ULAW,
 					XIVO_SRE_IPBX_AST_CODEC_AUDIO_ALAW,
-					XIVO_SRE_IPBX_AST_CODEC_AUDIO_G726,
 					XIVO_SRE_IPBX_AST_CODEC_AUDIO_ADPCM,
 					XIVO_SRE_IPBX_AST_CODEC_AUDIO_SLIN,
 					XIVO_SRE_IPBX_AST_CODEC_AUDIO_LPC10,
 					XIVO_SRE_IPBX_AST_CODEC_AUDIO_G729,
 					XIVO_SRE_IPBX_AST_CODEC_AUDIO_SPEEX,
 					XIVO_SRE_IPBX_AST_CODEC_AUDIO_ILBC,
+					XIVO_SRE_IPBX_AST_CODEC_AUDIO_G726,
+					XIVO_SRE_IPBX_AST_CODEC_AUDIO_G722,
 					XIVO_SRE_IPBX_AST_CODEC_IMAGE_JPEG,
 					XIVO_SRE_IPBX_AST_CODEC_IMAGE_PNG,
 					XIVO_SRE_IPBX_AST_CODEC_VIDEO_H261,
 					XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263,
-					XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263P);
+					XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263P,
+					XIVO_SRE_IPBX_AST_CODEC_VIDEO_H264);
 $array['element']['allow']['default'] = '';
 $array['element']['allow']['null'] = true;
 
@@ -262,7 +277,7 @@ $array['element']['language']['value'] = array('en','fr');
 $array['element']['language']['default'] = 'fr';
 
 $array['element']['musiconhold'] = array();
-$array['element']['musiconhold']['default'] = 'default';
+$array['element']['musiconhold']['default'] = XIVO_SRE_IPBX_AST_MOH_DEFAULT;
 $array['element']['musiconhold']['setdef'] = true;
 
 $array['element']['vmexten'] = array();
@@ -336,35 +351,34 @@ $array['filter']['sipdebug'] = array('bool' => true);
 $array['filter']['dumphistory'] = array('bool' => true);
 $array['filter']['recordhistory'] = array('bool' => true);
 $array['filter']['callevents'] = array('bool' => true);
-$array['filter']['tos'] = array('key' => array('none','lowdelay','throughput','reliability','mincost',
-					  1,2,3,4,5,6,7,8,9,10,
-					  11,12,13,14,15,16,17,18,19,20,
-					  21,22,23,24,25,26,27,28,29,30,31));
+$array['filter']['tos'] = array('key' => array(0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30));
 $array['filter']['ospauth'] = array('key' => array('no','proxy','gateway','exclusive'));
 $array['filter']['localnet'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9\.\/]+$/','maxlen' => 128);
 $array['filter']['externip'] = array('set' => false,'chk' => 2,'callback' => 'xivo_filter::chk_host_ipv4_strict','maxlen' => 64);
 $array['filter']['externhost'] = array('set' => false,'chk' => 2,'callback' => 'xivo_filter::chk_host_ipv4_strict','maxlen' => 64);
-$array['filter']['externrefresh'] = array('key' => array(1,10,20,30,40,50,60,70,80,90,100,110,120));
+$array['filter']['externrefresh'] = array('key' => array(1,10,20,30,40,50,60,70,80,90,100,110,120,180,240,300,600,900,1200,1800));
 $array['filter']['outboundproxy'] = array('set' => false,'chk' => 2,'callback' => 'xivo_filter::chk_host_ipv4_strict','maxlen' => 64);
 $array['filter']['outboundproxyport'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
 $array['filter']['disallow'] = array('set' => false,'chk' => 2,'key' => array('all'));
-$array['filter']['allow'] = array('set' => false,'chk' => 2,'value' => array(
+$array['filter']['allow'] = array('set' => false,'chk' => 2,'uvalue' => array(
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_G723,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_GSM,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_ULAW,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_ALAW,
-						XIVO_SRE_IPBX_AST_CODEC_AUDIO_G726,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_ADPCM,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_SLIN,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_LPC10,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_G729,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_SPEEX,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_ILBC,
+						XIVO_SRE_IPBX_AST_CODEC_AUDIO_G726,
+						XIVO_SRE_IPBX_AST_CODEC_AUDIO_G722,
 						XIVO_SRE_IPBX_AST_CODEC_IMAGE_JPEG,
 						XIVO_SRE_IPBX_AST_CODEC_IMAGE_PNG,
 						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H261,
 						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263,
-						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263P));
+						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263P,
+						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H264));
 $array['filter']['relaxdtmf'] = array('bool' => true);
 $array['filter']['compactheaders'] = array('bool' => true);
 $array['filter']['rtptimeout'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));

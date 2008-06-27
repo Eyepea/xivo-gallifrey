@@ -10,13 +10,16 @@ $prevpos = $this->get_var('prevpos');
 $tagdirectory = $xmlphone->get_tag('directory');
 
 if($prevpos > 0):
-
 	$prevparam = array();
 	$prevparam['node'] = 1;
 	$prevparam['pos'] = floor($pos / $prevpos) * $prevpos;
 	$prevparam['name'] = $this->get_var('name');
 
-	$previous = ' previous="'.$url->href('service/ipbx/web_services/phonebook/search',$prevparam,true,$xmlphone->get_argseparator(),false).'"';
+	$previous = ' previous="'.$url->href('service/ipbx/web_services/phonebook/search',
+				  $prevparam,
+				  true,
+				  $xmlphone->get_argseparator(),
+				  false).'"';
 else:
 	$previous = '';
 endif;

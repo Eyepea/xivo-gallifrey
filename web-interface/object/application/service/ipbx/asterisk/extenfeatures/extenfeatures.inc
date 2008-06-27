@@ -8,7 +8,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 	var $_status		= '';
 	var $_extensions	= false;
 	var $_extenumbers	= false;
-	var $_appgeneralsip	= null;
+	var $_staticsip		= null;
 	var $_conf		= array();
 	var $_filter		= false;
 	var $_context		= 'features';
@@ -88,8 +88,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 
 	function _mk_extenfeatures_appdata_vars($appdata,$exten)
 	{
-		if(is_scalar($appdata) === false
-		|| is_scalar($exten) === false
+		if(is_scalar($exten) === false
 		|| preg_match('/^[_]?([0-9\*#]+)/',$exten,$extmatch) !== 1)
 			return($appdata);
 
@@ -99,7 +98,17 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 		$vars['$<EXTNUM>'] = $extnum;
 		$vars['$<EXTNUMLEN>'] = strlen($extnum);
 
-		return(strtr($appdata,$vars));
+		if(is_string($appdata) === true)
+			return(strtr($appdata,$vars));
+		else if(is_array($appdata) === false)
+			return($appdata);
+		
+		$nb = count($appdata);
+
+		for($i = 0;$i < $nb;$i++)
+			$appdata[$i] = strtr($appdata[$i],$vars);
+
+		return($appdata);
 	}
 
 	function _mk_extenfeatures_dialplan($name,$val,$disable=null)
@@ -122,7 +131,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 			else if(isset($arr['appdata']) === true)
 				$arr['appdata'] = $this->_mk_extenfeatures_appdata_vars($arr['appdata'],$val);
 
-			return($this->_extensions->new_exten($arr['app'],$arr,$val,$this->_context));
+			return($this->_extensions->new_exten($val,$this->_context,$arr['app'],$arr));
 		}
 
 		unset($arr['_line']);
@@ -140,7 +149,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 		else if(isset($line['appdata']) === true)
 			$line['appdata'] = $this->_mk_extenfeatures_appdata_vars($line['appdata'],$val);
 
-		if(($id = $this->_extensions->new_exten($line['app'],$line,$val,$this->_context)) === false)
+		if(($id = $this->_extensions->new_exten($val,$this->_context,$line['app'],$line)) === false)
 			return(false);
 
 		for($i = 1;$i < $nb;$i++)
@@ -152,7 +161,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 			else if(isset($line['appdata']) === true)
 				$line['appdata'] = $this->_mk_extenfeatures_appdata_vars($line['appdata'],$val);
 
-			if($this->_extensions->set_exten($line['app'],$id,$line,$val,$this->_context) === false)
+			if($this->_extensions->set_exten($line['app'],$id,$line) === false)
 				return(false);
 		}
 
@@ -179,9 +188,6 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 		$context = '';
 
 		$this->set_extenumbers('save',$number,$context);
-
-		if($arr['name'] === 'voicemsg')
-			$this->set_sip_vmexten($number);
 
 		return(($this->get_errnb() < 1));
 	}
@@ -212,30 +218,6 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 
 		$rs['exten'] = $exten;
 		$this->_set_result('extenfeatures',$rs);
-
-		return(true);
-	}
-
-	function set_sip_vmexten($exten)
-	{
-		if(is_object($this->_appgeneralsip) === false
-		&& (($appsip = &$this->_service->get_apprealstatic('sip')) === false
-		   || ($this->_appgeneralsip = &$appsip->get_module('general')) === false) === true)
-		{
-			$this->_set_error('extenfeatures','invalid application');
-			return(false);
-		}
-
-		$rs = array();
-		$rs['var_name'] = 'vmexten';
-		$rs['var_val'] = $this->_service->clean_extension($exten);
-
-		if($this->_appgeneralsip->set($rs) === false)
-		{
-			$this->_set_error('extenfeatures',
-					  $this->_appgeneralsip->get_error($this->_appgeneralsip->get_name()));
-			return(false);
-		}
 
 		return(true);
 	}
@@ -305,15 +287,29 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 
 	function save_sip_vmexten()
 	{
-		if(is_object($this->_appgeneralsip) === false
-		|| ($rs = $this->_appgeneralsip->get_result($this->_appgeneralsip->get_name())) === null
-		|| is_array($rs) === false
-		|| isset($rs['var_name']) === false
-		|| $rs['var_name'] !== 'vmexten'
-		|| $this->_appgeneralsip->save_realstatic() === false)
+		if(is_object($this->_staticsip) === false
+		&& ($this->_staticsip = &$this->_service->get_realstatic('staticsip')) === false)
+		{
+			$this->_set_error('extenfeatures','invalid staticsip module');
 			return(false);
-	
-		return(true);
+		}
+		else if(($rs = $this->get_result('extenfeatures')) === false
+		|| is_array($rs) === false
+		|| isset($rs['name'],$rs['exten']) === false
+		|| $rs['name'] !== 'voicemsg')
+		{
+			$this->_set_error('extenfeatures','invalid data');
+			return(false);
+		}
+
+		$where = array();
+		$where['category'] = 'general';
+		$where['var_name'] = 'vmexten';
+
+		$value = array();
+		$value['var_val'] = $this->_service->clean_extension($rs['exten']);
+
+		return($this->_staticsip->edit_where($where,$value));
 	}
 
 	function _add_extenfeatures()

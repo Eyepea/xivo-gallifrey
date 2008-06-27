@@ -26,6 +26,7 @@ switch($act)
 		$dhtml->ajs_die('Error/404');
 }
 
-$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/voicemail/'.$act);
+$json = &$_HTML->get_module('json');
+$json->display();
 
 ?>

@@ -812,7 +812,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 		else if(is_array($val) === true || xivo_haslen($val) === true)
 		{
 			$val = (array) $val;
-			$r = vsprintf(xivo_printf_strip($cond,count($val)),
+			$r = vsprintf(xivo_printf_escape($cond,count($val)),
 				      array_map(array(&$this,'escape'),$val));
 		}
 		else if(xivo_haslen($cond) === true)
@@ -935,7 +935,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 
 		if($this->chk_attribute($column) === 0)
 			return(false);
-		else if(is_scalar($pattern) === true)
+		else if(is_scalar($pattern) === true || is_null($pattern) === true)
 			$pattern = array((string) $pattern);
 		else if(is_array($pattern) === false || empty($pattern) === true)
 			return(false);

@@ -25,6 +25,8 @@ class xivo_service_asterisk_outcall extends xivo_service_asterisk_abstract
 
 	function _prepare($data)
 	{
+		$this->_prepare_identity($data);
+
 		$data['exten'] = $this->_sre->display_extension($data['exten']);
 		$data['setcallerid'] = (bool) $data['setcallerid'];
 		$data['useenum'] = (bool) $data['useenum'];
@@ -32,6 +34,24 @@ class xivo_service_asterisk_outcall extends xivo_service_asterisk_abstract
 		$data['commented'] = (bool) $data['commented'];
 
 		return($data);
+	}
+
+	function _prepare_identity(&$data)
+	{
+		$data['identity'] = $data['name'].' ('.$data['context'].')';
+
+		return($data);
+	}
+
+	function mk_identity($name,$context)
+	{
+		$arr = array();
+		$arr['name'] = $name;
+		$arr['context'] = $context;
+
+		$this->_prepare_identity($arr);
+
+		return($arr['identity']);
 	}
 
 	function add($arr,$id=0)

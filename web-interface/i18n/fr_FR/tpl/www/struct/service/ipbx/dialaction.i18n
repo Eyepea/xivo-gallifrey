@@ -1,0 +1,200 @@
+; fld-dialaction-noanswer
+Aucune réponse
+
+; fld-dialaction-busy
+Occupé
+
+; fld-dialaction-congestion
+Saturé
+
+; fld-dialaction-chanunavail
+Echoué
+
+; fm_dialaction_actiontype
+Destination :
+
+; fm_dialaction_actiontype-opt-none
+Aucune
+
+; fm_dialaction_actiontype-opt-endcall
+Fin d'appel
+
+; fm_dialaction_actiontype-opt-user
+Utilisateur
+
+; fm_dialaction_user-actionarg1
+Renvoyez vers :
+
+; fm_dialaction_user-actionarg2
+Temps de sonnerie :
+
+; fm_dialaction_actiontype-opt-group
+Groupe
+
+; fm_dialaction_group-actionarg1
+Renvoyez vers :
+
+; fm_dialaction_group-actionarg2
+Temps de sonnerie :
+
+; fm_dialaction_actiontype-opt-queue
+File d'attente
+
+; fm_dialaction_queue-actionarg1
+Renvoyez vers :
+
+; fm_dialaction_queue-actionarg2
+Temps de sonnerie :
+
+; fm_dialaction_actiontype-opt-meetme
+Chambre de conférence
+
+; fm_dialaction_meetme-actionarg1
+Renvoyez vers :
+
+; fm_dialaction_actiontype-opt-voicemail
+Messagerie vocale
+
+; fm_dialaction_voicemail-actionarg1
+Renvoyez vers :
+
+; fm_dialaction_actiontype-opt-schedule
+Horaire
+
+; fm_dialaction_schedule-actionarg1
+Renvoyez vers :
+
+; fm_dialaction_actiontype-opt-voicemenu
+Menu vocal
+
+; fm_dialaction_voicemenu-actionarg1
+Renvoyez vers :
+
+; fm_dialaction_actiontype-opt-application
+Application
+
+; fm_dialaction_actiontype-opt-ipbxapplication
+Application %s
+
+; fm_dialaction_actiontype-opt-sound
+Fichier son
+
+; fm_dialaction_actiontype-opt-custom
+Personnalisée
+
+; fm_dialaction_endcall-action
+Choix :
+
+; fm_dialaction_application-action
+Application :
+
+; fm_dialaction_ipbxapplication-action
+Application :
+
+; fm_dialaction_sound-actionarg1
+Nom du fichier :
+
+; fm_dialaction_sound-actionarg2-skip
+Jouer le fichier si le canal a décroché :
+
+; fm_dialaction_sound-actionarg2-noanswer
+Ne pas décrocher le canal avant la lecture du fichier :
+
+; fm_dialaction_sound-actionarg2-j
+Utiliser la méthode n+101 :
+
+; fm_dialaction_custom-actionarg1
+Commande :
+
+; fm_dialaction_endcall-action-opt-hangup
+Raccrocher
+
+; fm_dialaction_endcall-action-opt-busy
+Occupé
+
+; fm_dialaction_endcall-busy-actionarg1
+Délai avant de raccrocher :
+
+; fm_dialaction_endcall-action-opt-congestion
+Saturé
+
+; fm_dialaction_endcall-congestion-actionarg1
+Délai avant de raccrocher :
+
+; fm_dialaction_application-action-opt-callback
+CallBack
+
+; fm_dialaction_application-callback-actionarg1
+Code PIN :
+
+; fm_dialaction_application-callback-actionarg2
+Contexte :
+
+; fm_dialaction_application-action-opt-callbackdisa
+CallBackDISA
+
+; fm_dialaction_application-callbackdisa-actionarg1
+Code PIN :
+
+; fm_dialaction_application-callbackdisa-actionarg2
+Contexte :
+
+; fm_dialaction_application-action-opt-directory
+Directory
+
+; fm_dialaction_application-directory-actionarg1
+Contexte :
+
+; fm_dialaction_application-action-opt-faxtomail
+FaxToMail
+
+; fm_dialaction_application-faxtomail-actionarg1
+E-mail :
+
+; fm_dialaction_application-action-opt-voicemailmain
+Consultation de la messagerie vocale
+
+; fm_dialaction_application-voicemailmain-actionarg1
+Contexte :
+
+; dialaction_no-user
+Aucun utilisateur trouvé
+
+; dialaction_no-group
+Aucun groupe trouvé
+
+; dialaction_no-queue
+Aucune file d'attente trouvée
+
+; dialaction_no-queue
+Aucune file d'attente trouvée
+
+; dialaction_no-schedule
+Aucune horaire trouvé
+
+; create_user
+Créer un utilisateur
+
+; create_group
+Créer un groupe
+
+; create_queue
+Créer une file d'attente
+
+; create_meetme
+Créer une chambre de conférence
+
+; create_voicemail
+Créer une messagerie vocale
+
+; create_schedule
+Créer un horaire
+
+; create_voicemenu
+Créer un menu vocal
+
+; add_playback-sound
+Ajouter un fichier son
+
+; create_callfilter
+Créer un filtrage d'appel

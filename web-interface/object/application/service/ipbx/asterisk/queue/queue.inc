@@ -10,7 +10,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 	var $_queue		= false;
 	var $_extensions	= false;
 	var $_extenumbers	= false;
-	var $_dialstatus	= false;
+	var $_dialaction	= false;
 	var $_contextnummember	= false;
 	var $_contextmember	= false;
 	var $_queuemember	= null;
@@ -25,8 +25,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		if(($this->_queuefeatures = &$this->_service->get_module('queuefeatures')) === false
 		|| ($this->_queue = &$this->_service->get_module('queue')) === false)
 			return(false);
-
-		if((bool) $components === true)
+		else if((bool) $components === true)
 			$this->load_components();
 
 		return(true);
@@ -38,7 +37,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 		if(($this->_extensions = &$this->_service->get_module('extensions')) === false
 		|| ($this->_extenumbers = $this->get_abstract('extenumbers',array('type' => 'queue'))) === false
-		|| ($this->_dialstatus = $this->get_abstract('dialstatus',array('category' => 'queue'))) === false
+		|| ($this->_dialaction = $this->get_abstract('dialaction',array('category' => 'queue'))) === false
 		|| ($this->_contextnummember = $this->get_abstract('contextnummember',array('type' => 'queue'))) === false
 		|| ($this->_contextmember = $this->get_abstract('contextmember',array('type' => 'queue'))) === false)
 			return(false);
@@ -67,7 +66,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		$this->_get_user();
 		$this->_get_agentgroup();
 		$this->_get_agent();
-		$this->_get_dialstatus($this->_info['qfeatures']['id']);
+		$this->_get_dialaction($this->_info['qfeatures']['id']);
 		$this->_get_contextnummember($this->_info['qfeatures']['id']);
 		$this->_get_contextmember($this->_info['queue']['name']);
 
@@ -89,9 +88,9 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		$this->_info['exten'] = false;
 		$this->_origin['exten'] = false;
 
-		if(($this->_info['exten'] = $this->_extensions->get_exten('macro',
-								      $this->_info['qfeatures']['number'],
-								      $this->_info['qfeatures']['context'])) !== false)
+		if(($this->_info['exten'] = $this->_extensions->get_exten($this->_info['qfeatures']['number'],
+									  $this->_info['qfeatures']['context'],
+									  'macro')) !== false)
 			$this->_origin['exten'] = $this->_extensions->get_origin();
 
 		return($this->_info['exten']);
@@ -151,7 +150,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 		$r['qfeatures'] = $this->_queuefeatures->get_element();
 		$r['queue'] = $this->_queue->get_element();
-		$r['dialstatus'] = $this->_dialstatus->get_element();
+		$r['dialaction'] = $this->_dialaction->get_element();
 
 		return($r);
 	}
@@ -197,15 +196,15 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		else if(($sounds = &$this->_service->get_module('sounds')) === false)
 			return(false);
 
-		return(($this->_announce = $sounds->get_list('acd',true)));
+		return(($this->_announce = $sounds->get_list('acd','pathnoext')));
 	}
 
-	function get_dialstatus_result()
+	function get_dialaction_result()
 	{
-		return($this->_dialstatus->get_result_for_display());
+		return($this->_dialaction->get_result_for_display());
 	}
 
-	function get_dialstatus_destination_list()
+	function get_dialaction_destination_list()
 	{
 		if(xivo_issa('qfeatures',$this->_info) === false)
 			$id = 0;
@@ -213,7 +212,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 			$id = $this->_info['qfeatures']['id'];
 
 		$r = $this->get_destination_list('queue',$id);
-		$r['sounds'] = $this->_dialstatus->get_sound();
+		$r['sounds'] = $this->_dialaction->get_sound();
 
 		return($r);
 	}
@@ -268,8 +267,8 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		if(xivo_issa('agent',$arr) === true)
 			$this->set_agent($action,$arr['agent'],$name);
 
-		if(xivo_issa('dialstatus',$arr) === true)
-			$this->set_dialstatus($arr['dialstatus']);
+		if(xivo_issa('dialaction',$arr) === true)
+			$this->set_dialaction($arr['dialaction']);
 
 		$this->set_contextnummember($context,$number);
 
@@ -528,7 +527,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		|| $this->add_user() === false
 		|| $this->add_agentgroup() === false
 		|| $this->add_agent() === false
-		|| $this->add_dialstatus($qfeaturesid) === false
+		|| $this->add_dialaction($qfeaturesid) === false
 		|| $this->add_contextnummember($qfeaturesid) === false
 		|| $this->add_contextmember($queuename) === false)
 		{
@@ -649,8 +648,8 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 							$this->_queuemember->delete($value);
 					}
 					break;
-				case 'dialstatus':
-					$this->_dialstatus->reverse_add();
+				case 'dialaction':
+					$this->_dialaction->reverse_add();
 					break;
 				case 'contextnummember':
 					$this->_contextnummember->reverse_add();
@@ -714,7 +713,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		if($this->edit_user($this->_info['qfeatures']['name']) === false
 		|| $this->edit_agentgroup($this->_info['qfeatures']['name']) === false
 		|| $this->edit_agent($this->_info['qfeatures']['name']) === false
-		|| $this->edit_dialstatus() === false
+		|| $this->edit_dialaction() === false
 		|| $this->edit_contextnummember() === false
 		|| $this->edit_contextmember($queuename) === false)
 		{
@@ -829,12 +828,12 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		return(true);
 	}
 
-	function edit_dialstatus()
+	function edit_dialaction()
 	{
 		if(xivo_issa('qfeatures',$this->_info) === false)
 			return(false);
 
-		return(parent::edit_dialstatus($this->_info['qfeatures']['id']));
+		return(parent::edit_dialaction($this->_info['qfeatures']['id']));
 	}
 
 	function edit_contextnummember()
@@ -896,8 +895,8 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 					&& $this->_origin[$key] !== false)
 						$this->_queuemember->add_origin_list($this->_origin[$key]);
 					break;
-				case 'dialstatus':
-					$this->_dialstatus->reverse_edit($this->_status);
+				case 'dialaction':
+					$this->_dialaction->reverse_edit($this->_status);
 					break;
 				case 'contextnummember':
 					$this->_contextnummember->reverse_edit($this->_status);
@@ -923,7 +922,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		|| $this->delete_user($this->_info['qfeatures']['name']) === false
 		|| $this->delete_agentgroup($this->_info['qfeatures']['name']) === false
 		|| $this->delete_agent($this->_info['qfeatures']['name']) === false
-		|| $this->delete_dialstatus() === false
+		|| $this->delete_dialaction() === false
 		|| $this->delete_contextnummember() === false
 		|| $this->delete_contextmember($this->_info['qfeatures']['name']) === false)
 		{
@@ -1058,8 +1057,8 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 					&& $this->_origin[$key] !== false)
 						$this->_queuemember->add_origin_list($this->_origin[$key]);
 					break;
-				case 'dialstatus':
-					$this->_dialstatus->add_origin_list();
+				case 'dialaction':
+					$this->_dialaction->add_origin_list();
 					break;
 				case 'contextnummember':
 					$this->_contextnummember->add_origin();
@@ -1077,16 +1076,8 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 	{
 		if(xivo_issa('qfeatures',$this->_info) === false)
 			return(false);
-		else if(($incall = &$this->_service->get_module('incall')) !== false)
-		{
-			$incall_where = array();
-			$incall_where['type'] = 'queue';
-			$incall_where['typeval'] = $this->_info['qfeatures']['id'];
 
-			$incall->unlinked_where($incall_where);
-		}
-
-		$this->_dialstatus->unlinked('queue',$this->_info['qfeatures']['id']);
+		$this->_dialaction->unlinked('queue',$this->_info['qfeatures']['id']);
 
 		if(($schedule = &$this->_service->get_module('schedule')) === false)
 			return(true);

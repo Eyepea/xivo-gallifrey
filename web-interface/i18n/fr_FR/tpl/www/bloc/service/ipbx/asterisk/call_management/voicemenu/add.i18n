@@ -1,0 +1,416 @@
+; title_content_name
+Menus vocaux > Ajouter
+
+; smenu_general
+Général
+
+; smenu_flow
+Flux
+
+; smenu_events
+Evénements
+
+; fm_voicemenu_name
+Nom :
+
+; fm_voicemenu_number
+Numéro :
+
+; fm_voicemenu_context
+Contexte :
+
+; create_context
+Créer un contexte
+
+; fm_voicemenu_description
+Description :
+
+; bt_up_voicemenu-application
+Monter une ou plusieurs applications
+
+; bt_down_voicemenu-application
+Descendre une ou plusieurs applications
+
+; bt_delete_voicemenu-application
+Supprimer une ou plusieurs applications
+
+; fm_dialaction_actiontype
+Action :
+
+; fm_ipbxapplications-optgroup-answer
+Réponse
+
+; fm_ipbxapplications-opt-answer
+Answer
+
+; fm_ipbxapplications-optgroup-authentification
+Authentification
+
+; fm_ipbxapplications-opt-authenticate
+Authenticate
+
+; fm_ipbxapplications-opt-vmauthenticate
+VMAuthenticate
+
+; fm_ipbxapplications-optgroup-execute
+Exécuter
+
+; fm_ipbxapplications-opt-macro
+Macro
+
+; fm_ipbxapplications-opt-agi
+AGI
+
+; fm_ipbxapplications-optgroup-jump
+Saut
+
+; fm_ipbxapplications-opt-goto
+Goto
+
+; fm_ipbxapplications-opt-gotoif
+GotoIf
+
+; fm_ipbxapplications-optgroup-sound
+Son
+
+; fm_ipbxapplications-opt-background
+BackGround
+
+; fm_ipbxapplications-opt-playback
+Playback
+
+; fm_ipbxapplications-optgroup-recording
+Enregistrement
+
+; fm_ipbxapplications-opt-mixmonitor
+MixMonitor
+
+; fm_ipbxapplications-opt-monitor
+Monitor
+
+; fm_ipbxapplications-opt-record
+Record
+
+; fm_ipbxapplications-opt-stopmonitor
+StopMonitor
+
+; fm_ipbxapplications-optgroup-timeout
+Temps
+
+; fm_ipbxapplications-opt-absolutetimeout
+AbsoluteTimeout
+
+; fm_ipbxapplications-opt-digittimeout
+DigitTimeout
+
+; fm_ipbxapplications-opt-responsetimeout
+ResponseTimeout
+
+; fm_ipbxapplications-optgroup-variable
+Variable
+
+; fm_ipbxapplications-opt-set
+Set
+
+; fm_ipbxapplications-opt-setcallerid
+SetCallerID
+
+; fm_ipbxapplications-opt-setcidname
+SetCIDName
+
+; fm_ipbxapplications-opt-setcidnum
+SetCIDNum
+
+; fm_ipbxapplications-opt-setlanguage
+SetLanguage
+
+; fm_ipbxapplications-opt-noop
+NoOp
+
+; fm_ipbxapplications-optgroup-wait
+Attente
+
+; fm_ipbxapplications-opt-wait
+Wait
+
+; fm_ipbxapplications-opt-waitexten
+WaitExten
+
+; fm_ipbxapplications-opt-waitforring
+WaitForRing
+
+; fm_ipbxapplications-opt-waitmusiconhold
+WaitMusicOnHold
+
+; fm_ipbxapplication_answer-delay
+Délai d'attente en milliseconde(s) :
+
+; fm_ipbxapplication_authenticate-password
+Mot de passe ou chemin des mots de passe :
+
+; fm_ipbxapplication_authenticate-passwordinterpreter
+Localisation des mots de passe :
+
+; fm_ipbxapplication_authenticate-passwordinterpreter-opt-astdb
+ASTDB
+
+; fm_ipbxapplication_authenticate-passwordinterpreter-opt-file
+Fichier
+
+; fm_ipbxapplication_authenticate-a
+Ajouter le mot de passe dans les journaux d'appels :
+
+; fm_ipbxapplication_authenticate-j
+Utiliser la méthode n+101 si l'authentification a échouée :
+
+; fm_ipbxapplication_authenticate-r
+Supprimer l'entrée d'ASTDB une fois l'authentification réussie :
+
+; fm_ipbxapplication_vmauthenticate-mailbox
+Boîte vocale :
+
+; fm_ipbxapplication_vmauthenticate-s
+Ne pas jouer l'introduction :
+
+; fm_ipbxapplication_macro-macroname
+Nom de la macro :
+
+; fm_ipbxapplication_macro-args
+Argument(s) de la macro :
+
+; fm_ipbxapplication_agi-command
+Nom de l'AGI :
+
+; fm_ipbxapplication_agi-args
+Argument(s) de l'AGI :
+
+; fm_ipbxapplication_goto-context
+Nom du contexte :
+
+; fm_ipbxapplication_goto-exten
+Nom de l'extension :
+
+; fm_ipbxapplication_goto-priority
+Nom de la priorité :
+
+; fm_ipbxapplication_gotoif-condition
+Expression :
+
+; fm_ipbxapplication_gotoif-iftrue
+Si c'est vrai :
+
+; fmipbxapplication_gotoif-iffalse
+Si c'est faux :
+
+; fm_ipbxapplication_absolutetimeout-timeout
+Temps en seconde(s) :
+
+; fm_ipbxapplication_mixmonitor-filename
+Nom du fichier :
+
+; fm_ipbxapplication_mixmonitor-fileformat
+Format du fichier :
+
+; fm_ipbxapplication_mixmonitor-a
+Ecrire à la fin du fichier au lieu de l'écraser :
+
+; fm_ipbxapplication_mixmonitor-b
+Enregistrer uniquement le canal lorsqu'il est bridgé :
+
+; fm_ipbxapplication_mixmonitor-v
+Ajuster le volume de l'appelant :
+
+; fm_ipbxapplication_mixmonitor-v-volume
+Puissance du volume :
+
+; fm_ipbxapplication_mixmonitor-V
+Ajuster le volume de l'appelé :
+
+; fm_ipbxapplication_mixmonitor-V-volume
+Puissance du volume :
+
+; fm_ipbxapplication_mixmonitor-W
+Ajuster le volume de l'appelé et de l'appelant :
+
+; fm_ipbxapplication_mixmonitor-W-volume
+Puissance du volume :
+
+; fm_ipbxapplication_monitor-fileformat
+Format du fichier :
+
+; fm_ipbxapplication_monitor-basename
+Nom du fichier :
+
+; fm_ipbxapplication_monitor-m
+Mixer les canaux entrant et sortant après l'enregistrement :
+
+; fm_ipbxapplication_monitor-b
+Ne pas commencer l'enregistrement si les canaux ne sont pas bridgé :
+
+; fm_ipbxapplication_record-filename
+Nom du fichier :
+
+; fm_ipbxapplication_record-fileformat
+Format du fichier :
+
+; fm_ipbxapplication_record-silence
+Temps en seconde(s) de détection d'un silence :
+
+; fm_ipbxapplication_record-maxduration
+Temps maximum d'enregistrement en seconde(s) :
+
+; fm_ipbxapplication_record-a
+Ecrire à la fin du fichier plutôt que l'écraser :
+
+; fm_ipbxapplication_record-n
+Ne pas décrocher le canal :
+
+; fm_ipbxapplication_record-q
+Ne pas jouer de beep avant l'enregistrement :
+
+; fm_ipbxapplication_record-s
+Enregistrer si le canal a décroché :
+
+; fm_ipbxapplication_record-t 
+Utiliser * au lieu de # pour indiquer la fin de l'enregistrement :
+
+; fm_ipbxapplication_background-filename
+Fichier son joué :
+
+; fm_ipbxapplication_background-s
+Jouer le fichier si le canal a décroché :
+
+; fm_ipbxapplication_background-n
+Ne pas décrocher le canal avant la lecture du fichier :
+
+; fm_ipbxapplication_background-m
+Utiliser une extension du contexte de destination :
+
+; fm_ipbxapplication_background-language
+Langue :
+
+; fm_ipbxapplication_background-context
+Contexte de sortie :
+
+; fm_ipbxapplication_playback-filename
+Nom du fichier :
+
+; fm_ipbxapplication_playback-skip
+Jouer le fichier si le canal a décroché :
+
+; fm_ipbxapplication_playback-noanswer
+Ne pas décrocher le canal avant la lecture du fichier :
+
+; fm_ipbxapplication_playback-j 
+Utiliser la méthode n+101 :
+
+; fm_ipbxapplication_digittimeout-timeout
+Temps en seconde(s) :
+
+; fm_ipbxapplication_responsetimeout-timeout
+Temps en seconde(s) :
+
+; fm_ipbxapplication_set-name
+Nom de la variable :
+
+; fm_ipbxapplication_set-value
+Valeur de la variable :
+
+; fm_ipbxapplication_set-g
+Variable globale :
+
+; fm_ipbxapplication_setcallerid-callerid
+Nom d'appel :
+
+; fm_ipbxapplication_setcidname-name
+Nom :
+
+; fm_ipbxapplication_setcidnum-number
+Numéro :
+
+; fm_ipbxapplication_setlanguage-language
+Langue :
+
+; fm_ipbxapplication_noop-data
+Valeur :
+
+; fm_ipbxapplication_wait-seconds
+Délai d'attente en seconde(s) :
+
+; fm_ipbxapplication_waitexten-seconds
+Délai d'attente en seconde(s) :
+
+; fm_ipbxapplication_waitexten-m
+Activer la musique d'attente :
+
+; fm_ipbxapplication_waitexten-musiconhold
+Musique d'attente :
+
+; fm_ipbxapplication_waitforring-timeout
+Délai d'attente en seconde(s) :
+
+; fm_ipbxapplication_waitmusiconhold-delay
+Délai d'attente en seconde(s) :
+
+; fm_voicemenuevent-type
+Evénement :
+
+; col_voicemenu-event
+Evénement
+
+; col_voicemenu-action
+Action
+
+; voicemenu_event-0
+Touche 0
+
+; voicemenu_event-1
+Touche 1
+
+; voicemenu_event-2
+Touche 2
+
+; voicemenu_event-3
+Touche 3
+
+; voicemenu_event-4
+Touche 4
+
+; voicemenu_event-5
+Touche 5
+
+; voicemenu_event-6
+Touche 6
+
+; voicemenu_event-7
+Touche 7
+
+; voicemenu_event-8
+Touche 8
+
+; voicemenu_event-9
+Touche 9
+
+; voicemenu_event-star
+Touche *
+
+; voicemenu_event-sharp
+Touche #
+
+; voicemenu_event-a
+Annulation de l'appel (a)
+
+; voicemenu_event-o
+Mise en relation avec un opérateur (o)
+
+; voicemenu_event-t
+Délai d'attente d'un événement dépassé (t)
+
+; voicemenu_event-T
+Durée maximale de l'appel (T)
+
+; voicemenu_event-i
+Touche invalide (i)
+
+; voicemenu_event-h
+Raccrocher (h)

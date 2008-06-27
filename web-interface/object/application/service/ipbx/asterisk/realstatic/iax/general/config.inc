@@ -58,11 +58,23 @@ $array['element']['bandwidth']['value'] = array('low','medium','high');
 $array['element']['bandwidth']['default'] = 'high';
 
 $array['element']['tos'] = array();
-$array['element']['tos']['value'] = array('none','lowdelay','throughput','reliability','mincost',
-					  1,2,3,4,5,6,7,8,9,10,
-					  11,12,13,14,15,16,17,18,19,20,
-					  21,22,23,24,25,26,27,28,29,30,31);
-$array['element']['tos']['default'] = 'lowdelay';
+$array['element']['tos']['value'] = array(0	=> '0x00 (none)',
+					  2	=> '0x02 (mincost)',
+					  4	=> '0x04 (reliability)',
+					  6	=> '0x06',
+					  8	=> '0x08 (throughput)',
+					  10	=> '0x0A',
+					  12	=> '0x0C',
+					  14	=> '0x0E',
+					  16	=> '0x10 (lowdelay)',
+					  18	=> '0x12',
+					  20	=> '0x14',
+					  22	=> '0x16',
+					  24	=> '0x18',
+					  26	=> '0x1A',
+					  28	=> '0x1C',
+					  30	=> '0x1E');
+$array['element']['tos']['default'] = 16;
 
 $array['element']['jitterbuffer'] = array();
 $array['element']['jitterbuffer']['value'] = array('no','yes');
@@ -151,18 +163,20 @@ $array['element']['allow']['value'] = array(
 					XIVO_SRE_IPBX_AST_CODEC_AUDIO_GSM,
 					XIVO_SRE_IPBX_AST_CODEC_AUDIO_ULAW,
 					XIVO_SRE_IPBX_AST_CODEC_AUDIO_ALAW,
-					XIVO_SRE_IPBX_AST_CODEC_AUDIO_G726,
 					XIVO_SRE_IPBX_AST_CODEC_AUDIO_ADPCM,
 					XIVO_SRE_IPBX_AST_CODEC_AUDIO_SLIN,
 					XIVO_SRE_IPBX_AST_CODEC_AUDIO_LPC10,
 					XIVO_SRE_IPBX_AST_CODEC_AUDIO_G729,
 					XIVO_SRE_IPBX_AST_CODEC_AUDIO_SPEEX,
 					XIVO_SRE_IPBX_AST_CODEC_AUDIO_ILBC,
+					XIVO_SRE_IPBX_AST_CODEC_AUDIO_G726,
+					XIVO_SRE_IPBX_AST_CODEC_AUDIO_G722,
 					XIVO_SRE_IPBX_AST_CODEC_IMAGE_JPEG,
 					XIVO_SRE_IPBX_AST_CODEC_IMAGE_PNG,
 					XIVO_SRE_IPBX_AST_CODEC_VIDEO_H261,
 					XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263,
-					XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263P);
+					XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263P,
+					XIVO_SRE_IPBX_AST_CODEC_VIDEO_H264);
 $array['element']['allow']['default'] = '';
 $array['element']['allow']['null'] = true;
 
@@ -220,10 +234,7 @@ $array['filter']['regcontext'] = array('set' => false,'chk' => 2,'callback' => '
 $array['filter']['minregexpire'] = array('key' => array(0,10,20,30,40,50,60,70,80,90,100,110,120));
 $array['filter']['maxregexpire'] = array('key' => array(0,10,20,30,40,50,60,70,80,90,100,110,120));
 $array['filter']['bandwidth'] = array('key' => array('low','medium','high'));
-$array['filter']['tos'] = array('key' => array('none','lowdelay','throughput','reliability','mincost',
-					  1,2,3,4,5,6,7,8,9,10,
-					  11,12,13,14,15,16,17,18,19,20,
-					  21,22,23,24,25,26,27,28,29,30,31));
+$array['filter']['tos'] = array('key' => array(0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30));
 $array['filter']['jitterbuffer'] = array('bool' => true);
 $array['filter']['forcejitterbuffer'] = array('bool' => true);
 $array['filter']['dropcount'] = array('key' => array(0,1,2,3,4,5,6,7,8,9,10));
@@ -246,23 +257,25 @@ $array['filter']['encryption'] = array('key' => array('no','yes','aes128'));
 $array['filter']['maxauthreq'] = array('key' => array(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20));
 $array['filter']['codecpriority'] = array('key' => array('disabled','host','caller','reqonly'));
 $array['filter']['disallow'] = array('set' => false,'chk' => 2,'key' => array('all'));
-$array['filter']['allow'] = array('set' => false,'chk' => 2,'value' => array(
+$array['filter']['allow'] = array('set' => false,'chk' => 2,'uvalue' => array(
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_G723,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_GSM,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_ULAW,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_ALAW,
-						XIVO_SRE_IPBX_AST_CODEC_AUDIO_G726,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_ADPCM,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_SLIN,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_LPC10,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_G729,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_SPEEX,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_ILBC,
+						XIVO_SRE_IPBX_AST_CODEC_AUDIO_G726,
+						XIVO_SRE_IPBX_AST_CODEC_AUDIO_G722,
 						XIVO_SRE_IPBX_AST_CODEC_IMAGE_JPEG,
 						XIVO_SRE_IPBX_AST_CODEC_IMAGE_PNG,
 						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H261,
 						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263,
-						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263P));
+						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263P,
+						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H264));
 $array['filter']['rtcachefriends'] = array('bool' => true);
 $array['filter']['rtupdate'] = array('bool' => true);
 $array['filter']['rtignoreregexpire'] = array('bool' => true);

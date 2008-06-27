@@ -7,7 +7,7 @@
 				<div class="stab">
 					<ul>
 						<li><a href="#" onclick="xivo_smenu_click(xivo_eid('smenu-tab-1'),'moc','sb-part-voicemail'); return(false);"><?=$this->bbf('smenu_voicemail');?></a></li>
-						<li><a href="#" onclick="xivo_smenu_click(xivo_eid('smenu-tab-1'),'moc','sb-part-dialstatus'); return(false);"><?=$this->bbf('smenu_dialstatus');?></a></li>
+						<li><a href="#" onclick="xivo_smenu_click(xivo_eid('smenu-tab-1'),'moc','sb-part-dialaction'); return(false);"><?=$this->bbf('smenu_dialaction');?></a></li>
 						<li><a href="#" onclick="xivo_smenu_click(xivo_eid('smenu-tab-1'),'moc','sb-part-service'); return(false);"><?=$this->bbf('smenu_services');?></a></li>
 					</ul>
 				</div>

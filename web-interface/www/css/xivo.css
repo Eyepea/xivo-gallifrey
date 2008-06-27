@@ -74,7 +74,7 @@ pre {text-align: left;}
 
 .fm-error, .fm-field .fm-error {background-color: #ffcbcb;}
 
-.fm-field .fm-desc {display: block;float: left;text-align: right;width: 50%;}
+.fm-field .fm-desc {display: block;float: left;text-align: right;min-width: 50%;}
 .fm-desc-inline {padding: 2px;width: auto;text-align: center;}
 .fm-desc-inline label {padding: 0px 10px;}
 .fm-desc-inline .fm-desc {display: inline;float: none;width: auto;}
@@ -87,8 +87,6 @@ pre {text-align: left;}
 
 .fm-multilist {text-align: center;width: 100%;}
 .fm-multilist div {float: left;width: 45%;}
-.fm-multilist .inout-list {width: 10%;}
-.fm-multilist .bt-inlist, .fm-multilist .bt-outlist, .fm-multilist .bt-uplist, .fm-multilist .bt-downlist, .fm-multilist .bt-addlist, .fm-multilist .bt-deletelist {margin: 20px 0px 10px 2px;}
 .fm-multilist .slt-inlist {text-align: left;}
 .fm-multilist .slt-list {width: 280px;margin: 0px auto;float: none;text-align: left;}
 .fm-multilist .slt-outlist {text-align: right;}
@@ -102,7 +100,10 @@ pre {text-align: left;}
 .fm-multilist .slt-inlist .it-disabled option:hover, .fm-multilist .slt-inlist .it-readonly option:hover {background-color: inherit;}
 .fm-multilist .slt-list .it-disabled option:hover {background-color: inherit;}
 .fm-multilist .slt-outlist .it-disabled option:hover, .fm-multilist .slt-outlist .it-readonly option:hover {background-color: inherit;}
-.fm-multilist .bt-updown, .fm-multilist .bt-adddelete {width: 20px;}
+.fm-multilist .bt-add, .fm-multilist .bt-delete {width: 20px;text-align: center;margin-top: 44px;}
+.fm-multilist .inout-list, .fm-multilist .bt-updown, .fm-multilist .bt-adddelete {width: 20px;text-align: center;height: 50px;margin-top: 16px;}
+.fm-multilist .inout-list img, .fm-multilist .bt-updown img, .fm-multilist .bt-adddelete img {margin: 10px 0px;vertical-align: middle;}
+.fm-multilist .inout-list {width: 10%;}
 
 .fm-multilist .slt-outlist select optgroup {border: 0px dashed #999;border-bottom-width: 1px;padding: 2px;}
 .fm-multilist .slt-outlist select optgroup option {padding: 0px;border-bottom-width: 0px;}
@@ -248,6 +249,7 @@ pre {text-align: left;}
 #b-content .sb-list .td-singlenotop {border: 1px solid #999;}
 #b-content .sb-list .l-infos-1on2 td {background-color: #eee;}
 #b-content .sb-list .l-infos-2on2 td {background-color: #e3e5fc;}
+#b-content .sb-list .l-infos-3on2 td {background-color: #ddd;}
 #b-content .sb-list .l-infos-over td {background-color: #fff;}
 #b-content .sb-list .l-infos-error td {background-color: #ffbcbc;}
 #b-content .sb-list .txt-left {text-align: left;padding-left: 2px;}

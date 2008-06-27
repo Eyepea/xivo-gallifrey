@@ -139,6 +139,17 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		return($this->_info['rightcall']);
 	}
 
+	function _get_dialaction($categoryval)
+	{
+		$this->_info['dialaction'] = false;
+		$this->_origin['dialaction'] = false;
+
+		if(($this->_info['dialaction'] = $this->_dialaction->get($categoryval)) !== false)
+			$this->_origin['dialaction'] = $this->_dialaction->get_origin();
+
+		return($this->_info['dialaction']);
+	}
+
 	function _get_dialstatus($categoryval)
 	{
 		$this->_info['dialstatus'] = false;
@@ -185,13 +196,12 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 	function set_macro($action,$name,$exten,$arr,$context)
 	{
 		if(($action !== 'add' && $action !== 'edit') === true
-		|| is_scalar($name) === false)
+		|| xivo_haslen($name) === false)
 			return(false);
-
-		if($action === 'edit' && xivo_issa($name,$this->_info) !== false)
-			$r = $this->_extensions->chk_exten('macro',$arr,$exten,$context);
+		else if($action === 'edit' && xivo_issa($name,$this->_info) !== false)
+			$r = $this->_extensions->chk_exten($exten,$context,'macro',$arr);
 		else
-			$r = $this->_extensions->new_exten('macro',$arr,$exten,$context);
+			$r = $this->_extensions->new_exten($exten,$context,'macro',$arr);
 
 		if($r !== false)
 			return($r);
@@ -209,6 +219,16 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 			$this->_set_error('rightcall',$this->_rightcall->get_error());
 
 		$this->_set_result('rightcall',$this->_rightcall->get_result());
+
+		return($r);
+	}
+
+	function set_dialaction($list)
+	{
+		if(($r = $this->_dialaction->set($list)) === false)
+			$this->_set_error('dialaction',$this->_dialaction->get_error());
+
+		$this->_set_result('dialaction',$this->_dialaction->get_result());
 
 		return($r);
 	}
@@ -268,6 +288,15 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		return($r);
 	}
 
+	function add_dialaction($categoryval)
+	{
+		$r = $this->_dialaction->add($categoryval);
+
+		$this->_return['dialaction'] = $this->_dialaction->get_return();
+
+		return($r);
+	}
+
 	function add_dialstatus($categoryval)
 	{
 		$r = $this->_dialstatus->add($categoryval);
@@ -322,6 +351,15 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		$r = $this->_rightcall->edit($this->_status,$typeval);
 
 		$this->_return['rightcall'] = $this->_rightcall->get_return();
+
+		return($r);
+	}
+
+	function edit_dialaction($categoryval)
+	{
+		$r = $this->_dialaction->edit($this->_status,$categoryval);
+
+		$this->_return['dialaction'] = $this->_dialaction->get_return();
 
 		return($r);
 	}
@@ -396,6 +434,16 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		return($r);
 	}
 
+	function delete_dialaction()
+	{
+		$r = $this->_dialaction->delete($this->_status);
+
+		if($this->_status === 'delete')
+			$this->_return['dialaction'] = $r;
+
+		return($r);
+	}
+
 	function delete_dialstatus()
 	{
 		$r = $this->_dialstatus->delete($this->_status);
@@ -426,13 +474,9 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		return($r);
 	}
 
-	function get_destination_list($type='',$id=0)
+	function get_destination_list($type='',$id=0,$number=false)
 	{
 		$r = array();
-
-		xivo::load_class('xivo_sort');
-		$sortidentity = new xivo_sort(array('key' => 'identity'));
-		$sortname = new xivo_sort(array('key' => 'name'));
 
 		$userid = $groupid = $queueid = $scheduleid = 0;
 
@@ -445,70 +489,114 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		else if($type === 'schedule')
 			$scheduleid = xivo_ulongint($id);
 
-		if(($ufeatures = &$this->_service->get_module('userfeatures')) !== false
-		&& ($r['users'] = $ufeatures->get_all_number($userid)) !== false)
-			usort($r['users'],array(&$sortidentity,'str_usort'));
-		else
-			$r['users'] = false;
-
-		if(($gfeatures = &$this->_service->get_module('groupfeatures')) !== false
-		&& ($r['groups'] = $gfeatures->get_all_number($groupid)) !== false)
-			usort($r['groups'],array(&$sortidentity,'str_usort'));
-		else
-			$r['groups'] = false;
-
-		if(($qfeatures = &$this->_service->get_module('queuefeatures')) !== false
-		&& ($r['queues'] = $qfeatures->get_all_number($queueid)) !== false)
-			usort($r['queues'],array(&$sortidentity,'str_usort'));
-		else
-			$r['queues'] = false;
-
-		if(($mfeatures = &$this->_service->get_module('meetmefeatures')) !== false
-		&& ($r['meetme'] = $mfeatures->get_all_number()) !== false)
-			usort($r['meetme'],array(&$sortidentity,'str_usort'));
-		else
-			$r['meetme'] = false;
-
-		$vmorder = array();
-		$vmorder['fullname'] = SORT_ASC;
-		$vmorder['mailbox'] = SORT_ASC;
-		$vmorder['context'] = SORT_ASC;
-
-		if(($voicemail = &$this->_service->get_module('voicemail')) !== false)
-			$r['voicemail'] = $voicemail->get_all(null,true,$vmorder);
-		else
-			$r['voicemail'] = false;
-
-		if(($schedule = &$this->_service->get_module('schedule')) !== false
-		&& ($r['schedule'] = $schedule->get_all_except($scheduleid)) !== false)
-			usort($r['schedule'],array(&$sortname,'str_usort'));
-		else
-			$r['schedule'] = false;
+		$r['users'] = $this->get_destination_users($userid,$number);
+		$r['groups'] = $this->get_destination_groups($groupid,$number);
+		$r['queues'] = $this->get_destination_queues($queueid,$number);
+		$r['meetme'] = $this->get_destination_meetme(0,$number);
+		$r['voicemail'] = $this->get_destination_voicemail();
+		$r['schedule'] = $this->get_destination_schedule($scheduleid);
+		$r['voicemenu'] = $this->get_destination_voicemenu();
 
 		return($r);
 	}
 
-	function get_destination_result_for_display($type)
+	function get_destination_users($id=0,$number=false)
 	{
-		$r = array();
-		$r['endcall'] = '';
-		$r['user'] = '';
-		$r['group'] = '';
-		$r['queue'] = '';
-		$r['meetme'] = '';
-		$r['voicemail'] = '';
-		$r['schedule'] = '';
-		$r['application'] = '';
-		$r['sound'] = '';
-		$r['custom'] = ''; 
+		$order = array();
+		$order['firstname'] = SORT_ASC;
+		$order['lastname'] = SORT_ASC;
+		$order['number'] = SORT_ASC;
+		$order['context'] = SORT_ASC;
+		$order['name'] = SORT_ASC;
 
-		if(xivo_issa($type,$this->_result) === true)
-		{
-			$r[$this->_result[$type]['type']] = $this->_result[$type]['typeval'];
-			$r = array_merge($r,$this->_result[$type]);
-		}
+		if(($ufeatures = &$this->_service->get_module('userfeatures')) !== false
+		&& ($r = $ufeatures->get_all_except($id,$number,$order)) !== false)
+			return($r);
 
-		return($r);
+		return(false);
+	}
+
+	function get_destination_groups($id=0,$number=false)
+	{
+		$order = array();
+		$order['name'] = SORT_ASC;
+		$order['number'] = SORT_ASC;
+		$order['context'] = SORT_ASC;
+
+		if(($gfeatures = &$this->_service->get_module('groupfeatures')) !== false
+		&& ($r = $gfeatures->get_all_except($id,$number,$order)) !== false)
+			return($r);
+
+		return(false);
+	}
+
+	function get_destination_queues($id=0,$number=false)
+	{
+		$order = array();
+		$order['name'] = SORT_ASC;
+		$order['number'] = SORT_ASC;
+		$order['context'] = SORT_ASC;
+
+		if(($qfeatures = &$this->_service->get_module('queuefeatures')) !== false
+		&& ($r = $qfeatures->get_all_except($id,$number,$order)) !== false)
+			return($r);
+
+		return(false);
+	}
+
+	function get_destination_meetme($id=0,$number=false)
+	{
+		$order = array();
+		$order['name'] = SORT_ASC;
+		$order['number'] = SORT_ASC;
+		$order['context'] = SORT_ASC;
+
+		if(($mfeatures = &$this->_service->get_module('meetmefeatures')) !== false
+		&& ($r = $mfeatures->get_all_except($id,$number,$order)) !== false)
+			return($r);
+
+		return(false);
+	}
+
+	function get_destination_voicemail()
+	{
+		$order = array();
+		$order['fullname'] = SORT_ASC;
+		$order['mailbox'] = SORT_ASC;
+		$order['context'] = SORT_ASC;
+
+		if(($voicemail = &$this->_service->get_module('voicemail')) !== false
+		&& ($r = $voicemail->get_all(null,true,$order)) !== false)
+			return($r);
+
+		return(false);
+	}
+
+	function get_destination_schedule($id=0)
+	{
+		$order = array();
+		$order['name'] = SORT_ASC;
+		$order['context'] = SORT_ASC;
+
+		if(($schedule = &$this->_service->get_module('schedule')) !== false
+		&& ($r = $schedule->get_all_except($id,$order)) !== false)
+			return($r);
+
+		return(false);
+	}
+
+	function get_destination_voicemenu()
+	{
+		$order = array();
+		$order['name'] = SORT_ASC;
+		$order['number'] = SORT_ASC;
+		$order['context'] = SORT_ASC;
+
+		if(($voicemenu = &$this->_service->get_module('voicemenu')) !== false
+		&& ($r = $voicemenu->get_all(null,true,$order)) !== false)
+			return($r);
+
+		return(false);
 	}
 }
 

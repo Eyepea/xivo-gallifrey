@@ -535,22 +535,13 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 	{
 		if(xivo_issa('voicemail',$this->_info) === false)
 			return(false);
-		else if(($incall = &$this->_service->get_module('incall')) !== false)
+		else if(($dialaction = &$this->_service->get_module('dialaction')) !== false)
 		{
-			$incall_where = array();
-			$incall_where['type'] = 'voicemail';
-			$incall_where['typeval'] = $this->_info['voicemail']['uniqueid'];
+			$dialaction_where = array();
+			$dialaction_where['type'] = 'voicemail';
+			$dialaction_where['typeval'] = $this->_info['voicemail']['uniqueid'];
 
-			$incall->unlinked_where($incall_where);
-		}
-
-		if(($dialstatus = &$this->_service->get_module('dialstatus')) !== false)
-		{
-			$dialstatus_where = array();
-			$dialstatus_where['type'] = 'voicemail';
-			$dialstatus_where['typeval'] = $this->_info['voicemail']['uniqueid'];
-
-			$dialstatus->unlinked_where($dialstatus_where);
+			$dialaction->unlinked_where($dialaction_where);
 		}
 
 		if(($ufeatures = &$this->_service->get_module('userfeatures')) !== false)

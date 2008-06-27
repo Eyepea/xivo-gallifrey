@@ -122,7 +122,7 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 		else if(($sounds = &$this->_service->get_module('sounds')) === false)
 			return(false);
 
-		return(($this->_sound = $sounds->get_list('playback',true)));
+		return(($this->_sound = $sounds->get_list('playback','pathnoext')));
 	}
 
 	function get_result_for_display()
@@ -506,14 +506,6 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 	{
 		if(xivo_issa('schedule',$this->_info) === false)
 			return(false);
-		else if(($incall = &$this->_service->get_module('incall')) !== false)
-		{
-			$incall_where = array();
-			$incall_where['type'] = 'schedule';
-			$incall_where['typeval'] = $this->_info['schedule']['id'];
-
-			$incall->unlinked_where($incall_where);
-		}
 
 		$schedule_where = array();
 		$schedule_where['typetrue'] = 'schedule';

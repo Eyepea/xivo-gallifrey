@@ -77,7 +77,7 @@ switch($act)
 	case 'deletes':
 		$param['page'] = $page;
 
-		if(($values = xivo_issa_val('voicemail',$_QR)) === false)
+		if(($values = xivo_issa_val('voicemails',$_QR)) === false)
 			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/voicemail'),$param);
 
 		$appvoicemail = &$ipbx->get_application('voicemail');
@@ -96,7 +96,7 @@ switch($act)
 	case 'disables':
 		$param['page'] = $page;
 
-		if(($values = xivo_issa_val('voicemail',$_QR)) === false)
+		if(($values = xivo_issa_val('voicemails',$_QR)) === false)
 			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/voicemail'),$param);
 
 		$appvoicemail = &$ipbx->get_application('voicemail');

@@ -7,6 +7,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 	var $_ini		= array();
 	var $_type		= 'ipbx';
 	var $_name		= 'asterisk';
+	var $_identity		= array();
 	var $_realstatic	= array();
 	var $_apprealstatic	= array();
 	var $_discuss		= null;
@@ -37,20 +38,56 @@ class xivo_service_asterisk extends xivo_service_abstract
 		if($this->_discuss === false
 		|| (is_object($this->_discuss) === false
 		   && ($this->_discuss = &$this->get_module('ami')) === false) === true)
-		{
-			$this->_discuss = false;
-			return(false);
-		}
+		   	return(($this->_discuss = false));
 
 		return($this->_discuss->cmd($cmd,$recv));
 	}
 
+	function _load_identity_class($name)
+	{
+		$dir = array(XIVO_PATH_OBJECT,'service',$this->_type,$this->_name,$name);
+		$class = 'xivo_service_'.$this->_name.'_'.$name.'_identity';
+
+		if(xivo_file::load_file('identity.inc',$dir,true) === false
+		|| class_exists($class) === false)
+			return(false);
+
+		return($class);
+	}
+
+	function _load_identity($name)
+	{
+		if($this->chk_module_enable($name) === false)
+		{
+			trigger_error('Invalid module in '.$name.' '.$this->_name.' to load identity class',E_USER_ERROR);
+			return(false);
+		}
+		else if(isset($this->_identity[$name]) === true)
+			return(true);
+		else if(($class = $this->_load_identity_class($name)) === false)
+		{
+			trigger_error($name.' identity class does not exist in '.$this->_name,E_USER_ERROR);
+			return(false);
+		}
+		else
+			$this->_identity[$name] = new $class($this);
+
+		return(true);
+	}
+
+	function &get_identity($name)
+	{
+		$r = false;
+
+		if($this->_load_identity($name) === true)
+			$r = &$this->_identity[$name];
+
+		return(($ref = &$r));
+	}
+
 	function _load_realstatic_class($name)
 	{
-		$name = (string) $name;
-
 		$file = $name.'.inc';
-
 		$dir = array(XIVO_PATH_OBJECT,'service',$this->_type,$this->_name);
 		$class = 'xivo_service_'.$this->_name.'_realstatic';
 
@@ -77,9 +114,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 	function _load_realstatic($name,$param=null)
 	{
-		$name = (string) $name;
-
-		if($this->_chk_exists_cfg('realstatic',$name) === false)
+		if($this->chk_realstatic_enable($name) === false)
 		{
 			trigger_error('Invalid realtime static in '.$name.' '.$this->_name,E_USER_ERROR);
 			return(false);
@@ -94,8 +129,6 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 			return(true);
 		}
-		else if($this->chk_realstatic_enable($name) === false)
-			return(false);
 		else if(($class = $this->_load_realstatic_class($name)) === false)
 		{
 			trigger_error('Realtime Static '.$name.' does not exist in '.$this->_name,E_USER_ERROR);
@@ -114,8 +147,6 @@ class xivo_service_asterisk extends xivo_service_abstract
 	function &get_realstatic($name,$param=null)
 	{
 		$r = false;
-
-		$name = (string) $name;
 
 		if($this->_load_realstatic($name,$param) === true)
 			$r = &$this->_realstatic[$name];
@@ -160,8 +191,6 @@ class xivo_service_asterisk extends xivo_service_abstract
 	function &get_apprealstatic($name)
 	{
 		$r = false;
-
-		$name = (string) $name;
 
 		if($this->_load_apprealstatic($name) === true)
 			$r = &$this->_apprealstatic[$name];
@@ -242,8 +271,8 @@ class xivo_service_asterisk extends xivo_service_abstract
 	function _get_service_info_from_discuss()
 	{
 		if((defined('XIVO_SESS_ENABLE') === true
-		&& (bool) XIVO_SESS_ENABLE === false) === true
-		|| ($info = $this->discuss('show version',true)) === false
+		   && (bool) XIVO_SESS_ENABLE === false) === true
+		|| ($info = $this->discuss('core show version',true)) === false
 		|| is_array($info) === false
 		|| isset($info[0]) === false)
 			return(false);
@@ -561,6 +590,11 @@ class xivo_service_asterisk extends xivo_service_abstract
 		return($r);
 	}
 
+	function get_formats()
+	{
+		return($this->_conf['format']);
+	}
+
 	function chk_channel($channel)
 	{
 		$channel = strtolower(strval($channel));
@@ -819,17 +853,13 @@ class xivo_service_asterisk extends xivo_service_abstract
 	function get_contexts_list($arr=null)
 	{
 		$r = array();
-		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_EXTRAFEATURES;
-		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_FEATURES;
 		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_GENERAL;
 		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_GLOBAL;
 		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_GLOBALS;
+		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_HANDYNUMBERS;
 		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_HINT;
 		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_HINTS;
-		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_INITCONFIG;
 		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_PARKEDCALLS;
-
-		$r[] = XIVO_SRE_IPBX_AST_HANDYNUMBERS_CONTEXT;
 
 		if(is_array($arr) === true)
 			$r = array_merge($arr,$r);
@@ -841,20 +871,10 @@ class xivo_service_asterisk extends xivo_service_abstract
 	{
 		if(is_scalar($context) === false
 		|| in_array($context,xivo_service_asterisk::get_contexts_list($arr)) === true
-		|| preg_match('/^(?!(?:macro|xivo)-)[a-z0-9_-]{1,39}$/',$context) !== 1)
+		|| preg_match('/^'.XIVO_SRE_IPBX_AST_REGEXP_CONTEXT.'$/',$context) !== 1)
 			return(false);
 
 		return($context);
-	}
-
-	function chk_passwd_context($args,$arr=null)
-	{
-		if(is_scalar($args) === false
-		|| preg_match('/^([0-9]{4,6}|no-password)\|((?!(?:macro|xivo)-)[a-z0-9_-]{1,39})$/',$args,$match) !== 1
-		|| in_array($match[2],xivo_service_asterisk::get_contexts_list($arr)) === true)
-			return(false);
-
-		return($match[1].'|'.$match[2]);
 	}
 }
 

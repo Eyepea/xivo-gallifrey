@@ -551,8 +551,8 @@ switch($act)
 		$musiconhold = &$ipbx->get_module('musiconhold');
 		$qmember = &$ipbx->get_module('queuemember');
 
-		$beep_list = $sounds->get_list('beep',true);
-		$goodbye_list = $sounds->get_list('goodbye',true);
+		$beep_list = $sounds->get_list('beep','pathnoext');
+		$goodbye_list = $sounds->get_list('goodbye','pathnoext');
 
 		if(is_array($beep_list) === true)
 			asort($beep_list);
@@ -737,8 +737,8 @@ switch($act)
 		$musiconhold = &$ipbx->get_module('musiconhold');
 		$qmember = &$ipbx->get_module('queuemember');
 
-		$beep_list = $sounds->get_list('beep',true);
-		$goodbye_list = $sounds->get_list('goodbye',true);
+		$beep_list = $sounds->get_list('beep','pathnoext');
+		$goodbye_list = $sounds->get_list('goodbye','pathnoext');
 
 		if(is_array($beep_list) === true)
 			asort($beep_list);

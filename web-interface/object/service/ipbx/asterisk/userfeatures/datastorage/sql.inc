@@ -90,6 +90,41 @@ class xivo_service_asterisk_userfeatures_sql extends xivo_service_asterisk_abstr
 		return($r);
 	}
 
+	function get_all_except($id,$number=false,$order=null,$limit=null)
+	{
+		$this->_dso->new_select($this->_table,'*');
+
+		$arr = array();
+	
+		if(isset($this->_forcecolumn) === true)
+			$arr = $this->_forcecolumn;
+
+		if(($internal = $this->_set_param_internal()) !== null)
+			$arr['internal'] = $internal;
+
+		if(empty($arr) === false)
+			$this->_dso->where($arr);
+
+		if(($id = xivo_ulongint($id)) !== 0)
+			$this->_dso->andwherenot(array('id' => $id));
+
+		if((bool) $number === true)
+			$this->_dso->andwherenot('IFNULL(number,\'\') = \'\'');
+
+		$this->_dso->new_order($order);
+		$this->_dso->limit($limit);
+
+		$r = $this->_dso->select_all();
+
+		$this->_dso->reset_order();
+		$this->_dso->reset_limit();
+
+		if(isset($r[0]) === false)
+			$r = false;
+
+		return($r);
+	}
+
 	function get_all_context($disable=null,$order=null,$limit=null)
 	{
 		$this->_cnt = 0;

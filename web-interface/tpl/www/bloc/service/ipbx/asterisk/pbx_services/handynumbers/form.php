@@ -14,12 +14,20 @@
 	<tr class="sb-top">
 		<th class="th-left"><?=$this->bbf('col_'.$type.'-trunk');?></th>
 		<th class="th-center"><?=$this->bbf('col_'.$type.'-exten');?></th>
-		<th class="th-right"><?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',$this->bbf('col_'.$type.'-add'),'border="0"'),'#',null,'onclick="xivo_table_list(\''.$type.'\',this); return(false);"',$this->bbf('col_'.$type.'-add'));?></th>
+		<th class="th-right">
+			<?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',
+							  $this->bbf('col_'.$type.'-add'),
+							  'border="0"'),
+					   '#',
+					   null,
+					   'onclick="xivo_table_list(\''.$type.'\',this); return(xivo_free_focus());"',
+					   $this->bbf('col_'.$type.'-add'));?>
+		</th>
 	</tr>
 	</thead>
 	<tbody id="<?=$type?>">
 <?php
-if($count !== 0):
+if($count > 0):
 	for($i = 0;$i < $count;$i++):
 		$ref = &$info[$type][$i];
 
@@ -30,9 +38,40 @@ if($count !== 0):
 		endif;
 ?>
 	<tr class="fm-field<?=$errdisplay?>">
-		<td class="td-left txt-center"><?=$form->select(array('field' => false,'name' => $type.'[trunkfeaturesid][]','id' => false,'label' => false,'key' => 'identity','altkey' => 'trunkfeaturesid','invalid' => true,'value' => $ref['trunkfeaturesid'],'default' => $element['handynumbers']['trunkfeaturesid']['default']),$trunkslist);?></td>
-		<td><?=$form->text(array('field' => false,'name' => $type.'[exten][]','id' => false,'label' => false,'size' => 15,'value' => $ref['exten'],'default' => $element['handynumbers']['exten']['default']));?></td>
-		<td class="td-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_'.$type.'-delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\''.$type.'\',this,1); return(false);"',$this->bbf('opt_'.$type.'-delete'));?></td>
+		<td class="td-left txt-center">
+			<?=$form->select(array('field'		=> false,
+					       'name'		=> $type.'[trunkfeaturesid][]',
+					       'id'		=> false,
+					       'label'		=> false,
+					       'key'		=> 'identity',
+					       'altkey'		=> 'trunkfeaturesid',
+					       'invalid'	=> true,
+					       'optgroup'	=> array('key'		=> true,
+									 'altkey'	=> 'protocol',
+									 'unique'	=> true,
+									 'bbf'		=> array('concat','fm_'.$type.'-trunk-opt-')),
+					       'value' => $ref['trunkfeaturesid'],
+					       'default' => $element['handynumbers']['trunkfeaturesid']['default']),
+					 $trunkslist);?>
+		</td>
+		<td>
+			<?=$form->text(array('field'	=> false,
+					     'name'	=> $type.'[exten][]',
+					     'id'	=> false,
+					     'label'	=> false,
+					     'size'	=> 15,
+					     'value'	=> $ref['exten'],
+					     'default'	=> $element['handynumbers']['exten']['default']));?>
+		</td>
+		<td class="td-right">
+			<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
+							  $this->bbf('opt_'.$type.'-delete'),
+							  'border="0"'),
+					   '#',
+					   null,
+					   'onclick="xivo_table_list(\''.$type.'\',this,1); return(xivo_free_focus());"',
+					   $this->bbf('opt_'.$type.'-delete'));?>
+		</td>
 	</tr>
 
 <?php
@@ -41,7 +80,7 @@ endif;
 ?>
 	</tbody>
 	<tfoot>
-	<tr id="no-<?=$type?>"<?=($count !== 0 ? ' class="b-nodisplay"' : '')?>>
+	<tr id="no-<?=$type?>"<?=($count > 0 ? ' class="b-nodisplay"' : '')?>>
 		<td colspan="3" class="td-single"><?=$this->bbf('no_'.$type);?></td>
 	</tr>
 	</tfoot>
@@ -49,9 +88,41 @@ endif;
 <table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
 	<tbody id="ex-<?=$type?>">
 	<tr class="fm-field">
-		<td class="td-left txt-center"><?=$form->select(array('field' => false,'name' => $type.'[trunkfeaturesid][]','id' => false,'label' => false,'key' => 'identity','altkey' => 'trunkfeaturesid','default' => $element['handynumbers']['trunkfeaturesid']['default']),$trunkslist,'disabled="disabled" onfocus="xivo_fm_set_onfocus(this);" onblur="xivo_fm_set_onblur(this);"');?></td>
-		<td><?=$form->text(array('field' => false,'name' => $type.'[exten][]','id' => false,'label' => false,'size' => 15,'default' => $element['handynumbers']['exten']['default']),'disabled="disabled" onfocus="xivo_fm_set_onfocus(this);" onblur="xivo_fm_set_onblur(this);"');?></td>
-		<td class="td-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_'.$type.'-delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\''.$type.'\',this,1); return(false);"',$this->bbf('opt_'.$type.'-delete'));?></td>
+		<td class="td-left txt-center">
+			<?=$form->select(array('field'		=> false,
+					       'name'		=> $type.'[trunkfeaturesid][]',
+					       'id'		=> false,
+					       'label'		=> false,
+					       'key'		=> 'identity',
+					       'altkey'		=> 'trunkfeaturesid',
+					       'disabled'	=> true,
+					       'optgroup'	=> array('key'		=> true,
+					       				 'altkey'	=> 'protocol',
+									 'unique'	=> true,
+									 'bbf'		=> array('concat','fm_'.$type.'-trunk-opt-')),
+					       'default' => $element['handynumbers']['trunkfeaturesid']['default']),
+					 $trunkslist,
+					 'onfocus="xivo_fm_set_onfocus(this);" onblur="xivo_fm_set_onblur(this);"');?>
+		</td>
+		<td>
+			<?=$form->text(array('field'	=> false,
+					     'name'	=> $type.'[exten][]',
+					     'id'	=> false,
+					     'label'	=> false,
+					     'disabled'	=> true,
+					     'size'	=> 15,
+					     'default'	=> $element['handynumbers']['exten']['default']),
+				       'onfocus="xivo_fm_set_onfocus(this);" onblur="xivo_fm_set_onblur(this);"');?>
+		</td>
+		<td class="td-right">
+			<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
+							  $this->bbf('opt_'.$type.'-delete'),
+							  'border="0"'),
+					   '#',
+					   null,
+					   'onclick="xivo_table_list(\''.$type.'\',this,1); return(xivo_free_focus());"',
+					   $this->bbf('opt_'.$type.'-delete'));?>
+		</td>
 	</tr>
 	</tbody>
 </table>

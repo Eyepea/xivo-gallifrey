@@ -121,6 +121,31 @@ function xivo_uint($str,$def=0,$t=false)
 	return($str);
 }
 
+function xivo_ufloat($str,$def=0,$t=false,$strval=false)
+{
+	$def = floatval($def);
+
+	if(is_scalar($str) === false)
+		$str = 0;
+	else
+	{
+		$str = floatval($str);
+
+		if($str < 0)
+			$str = (float) substr($str,1);
+	}
+
+	if((string) $def !== '0' && (string) $str === '0')
+		$str = (bool) $t === false ? $def : xivo_ufloat($def);
+
+	if((string) $str === '0')
+		$str = 0;
+	else if((bool) $strval === true)
+		$str = str_replace(',','.',$str);
+	
+	return($str);
+}
+
 function xivo_ulongint($str,$def=0,$t=false)
 {
 	$str = strval($str);
@@ -289,12 +314,7 @@ function xivo_trunc(&$str,$nb=0,$end='',$chr=null,$trim=false)
 	$end = (string) $end;
 	$chr = $chr === null ? ' ' : (string) $chr;
 	
-	$len = mb_strlen($r);
-
-	if($nb < 1)
-		$nb = mb_strlen($r);
-
-	if($len > $nb && ($sub = mb_substr($r,0,$nb)) !== '')
+	if($nb > 0 && mb_strlen($r) > $nb && ($sub = mb_substr($r,0,$nb)) !== '')
 	{
 		$r = $sub;
 
@@ -819,7 +839,7 @@ function xivo_gmlcstrftime($format,$time)
 	return(strftime($format,gmmktime($h,$m,$arr[2],$arr[3],$arr[4],$arr[5])));
 }
 
-function xivo_printf_strip($format,$argc=0)
+function xivo_printf_escape($format,$argc=0)
 {
 	$format = (string) $format;
 	$argc = xivo_uint($argc);

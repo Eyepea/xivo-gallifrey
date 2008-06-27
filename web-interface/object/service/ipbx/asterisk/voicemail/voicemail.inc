@@ -26,10 +26,31 @@ class xivo_service_asterisk_voicemail extends xivo_service_asterisk_abstract
 
 	function _prepare($data)
 	{
+		$this->_prepare_identity($data);
+
 		$data['commented'] = (bool) $data['commented'];
-		$data['identity'] = $data['fullname'].' ('.$data['mailbox'].'@'.$data['context'].')';
 
 		return($data);
+	}
+
+	function _prepare_identity(&$data)
+	{
+		$data['fullmailbox'] = $data['mailbox'].'@'.$data['context'];
+		$data['identity'] = $data['fullname'].' ('.$data['fullmailbox'].')';
+
+		return($data);
+	}
+
+	function mk_identity($mailbox,$fullname,$context)
+	{
+		$arr = array();
+		$arr['mailbox'] = $mailbox;
+		$arr['fullname'] = $fullname;
+		$arr['context'] = $context;
+
+		$this->_prepare_identity($arr);
+
+		return($arr['identity']);
 	}
 
 	function get_all_by_mailbox_context($arr=null,$disable=null,$prepare=true,$order=null,$limit=null)

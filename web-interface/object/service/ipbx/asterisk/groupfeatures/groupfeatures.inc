@@ -9,6 +9,7 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 	var $_filter		= false;
 	var $_origin		= false;
 	var $_origin_list	= false;
+	var $_identity		= false;
 
 	function xivo_service_asterisk_groupfeatures(&$sre,&$dso)
 	{
@@ -22,26 +23,21 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 		$this->_dso = &$dso;
 
 		$this->_load_config();
+		$this->_identity = &$this->_sre->get_identity($this->_name);
 	}
 
 	function _prepare($data)
 	{
-		if($data['context'] === '')
-			$data['context'] = 'default';
-
-		$data['identity'] = trim($data['name']);
-
-		if($data['identity'] === '')
-			$data['identity'] = '-';
-
-		if(xivo_haslen($data['number']) === false)
-			$data['identity'] .= ' ('.$data['context'].')';
-		else
-			$data['identity'] .= ' ('.$data['number'].'@'.$data['context'].')';
+		$this->_identity->_prepare_identity($data);
 
 		$data['deleted'] = (bool) $data['deleted'];
 
 		return($data);
+	}
+
+	function mk_identity($arr)
+	{
+		return($this->_identity->mk_identity($arr));
 	}
 
 	function get($id,$delete=false)
@@ -160,31 +156,21 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 		return(parent::get_all_where($arr,$delete,$prepare,$order,$limit,$assoc));
 	}
 
-	function get_all_number($id=0)
+	function get_all_except($id=0,$number=false,$order=null,$limit=null)
 	{
-		$id = xivo_ulongint($id);
+		if(($id = xivo_ulongint($id)) === 0 && (bool) $number === false)
+			return($this->get_all(false,true,$order,$limit));
 
-		if(($list = $this->get_all()) === false)
+		if(isset($this->_origin_list) === true)
+			$this->_origin_list = false;
+
+		if(($list = $this->_dso->get_all_except($id,$number,$order,$limit)) === false
+		|| isset($list[0]) === false)
 			return(false);
+		else if(isset($this->_origin_list) === true)
+			$this->_origin_list = $list;
 
-		$nb = count($list);
-
-		$r = array();
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$info = $list[$i];
-
-			if($id === $info['id'] || xivo_haslen($info['number']) === false)
-				continue;
-
-			$r[] = $info;
-		}
-
-		if(isset($r[0]) === false)
-			$r = false;
-
-		return($r);
+		return($this->_mk_list_assoc_prepare($list,false,true));
 	}
 }
 

@@ -83,9 +83,8 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 			$extenumbers_where['typeval'] = $val['id'];
 
 			if(($info['extenumbers'] = $this->_extenumbers->get_where($extenumbers_where)) === false
-			|| ($info['exten'] = $this->_extensions->get_exten(null,
-									   $val['exten'],
-									   XIVO_SRE_IPBX_AST_HANDYNUMBERS_CONTEXT)) === false)
+			|| ($info['exten'] = $this->_extensions->get_exten($val['exten'],
+									   XIVO_SRE_IPBX_AST_CONTEXT_HANDYNUMBERS)) === false)
 				continue;
 
 			$this->_info['extenumbers'][] = $info['extenumbers'];
@@ -110,10 +109,9 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 
 	function _mk_exten_appdata($exten)
 	{
-		$exten = $this->_service->clean_extension($exten);
-
 		$arr = array();
-		$arr['appdata'] = XIVO_SRE_IPBX_AST_HANDYNUMBERS_MACRO.'|'.$exten;
+		$arr['appdata'][0] = XIVO_SRE_IPBX_AST_HANDYNUMBERS_MACRO;
+		$arr['appdata'][1] = $this->_service->clean_extension($exten);
 
 		return($arr);
 	}
@@ -220,10 +218,10 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 	{
 		$r = true;
 
-		if(($rs = $this->_extensions->chk_exten('macro',
-					   $this->_mk_exten_appdata($exten),
-					   $exten,
-					   XIVO_SRE_IPBX_AST_HANDYNUMBERS_CONTEXT)) === false)
+		if(($rs = $this->_extensions->chk_exten($exten,
+							XIVO_SRE_IPBX_AST_CONTEXT_HANDYNUMBERS,
+							'macro',
+							$this->_mk_exten_appdata($exten))) === false)
 		{
 			$r = false;
 			$this->_set_error('exten',$this->_extensions->get_filter_error());

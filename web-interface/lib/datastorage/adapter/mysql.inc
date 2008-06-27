@@ -15,7 +15,8 @@ class xivo_datastorage_adapter_mysql extends xivo_datastorage_adapter_abstract_s
 				'compress'	=> false,
 				'ignore_space'	=> false,
 				'interactive'	=> false,
-				'ssl'		=> false);
+				'ssl'		=> false,
+				'charset'	=> '');
 
 	var $_flag	= 0;
 	var $_type	= 'mysql';
@@ -71,6 +72,10 @@ class xivo_datastorage_adapter_mysql extends xivo_datastorage_adapter_abstract_s
 
 		if(isset($param['ssl']) === true)
 			$this->_param['ssl'] = (bool) $param['ssl'];
+
+		if(isset($param['charset']) === true
+		&& preg_match('/^[a-zA-Z0-9-]+$/',$param['charset']) === 1)
+			$this->_param['charset'] = strtolower(str_replace('-','',$param['charset']));
 
 		$this->_escape = (bool) function_exists('mysql_real_escape_string'); 
 
@@ -132,6 +137,8 @@ class xivo_datastorage_adapter_mysql extends xivo_datastorage_adapter_abstract_s
 
 		if($this->_link === false)
 			$this->halt('Can\'t connect to mysql server');
+		else if($this->_param['charset'] !== '')
+			$this->query('SET NAMES \''.$this->_param['charset'].'\'');
 
 		return($this->_link);
 	}

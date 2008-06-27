@@ -8,6 +8,8 @@ class xivo_service_asterisk_callfilter extends xivo_service_asterisk_abstract
 	var $_name	= 'callfilter';
 	var $_filter	= false;
 	var $_origin	= false;
+	var $_filter	= false;
+	var $_identity	= false;
 
 	function xivo_service_asterisk_callfilter(&$sre,&$dso)
 	{
@@ -21,13 +23,28 @@ class xivo_service_asterisk_callfilter extends xivo_service_asterisk_abstract
 		$this->_dso = &$dso;
 
 		$this->_load_config();
+		$this->_identity = &$this->_sre->get_identity($this->_name);
 	}
 
 	function _prepare($data)
 	{
+		$this->_identity->_prepare_identity($data);
+
 		$data['commented'] = (bool) $data['commented'];
 
 		return($data);
+	}
+
+	function _prepare_identity(&$data)
+	{
+		$data['identity'] = $data['name'].' ('.$data['context'].')';
+
+		return($data);
+	}
+
+	function mk_identity($arr)
+	{
+		return($this->_identity->mk_identity($arr));
 	}
 
 	function add($arr,$id=0)

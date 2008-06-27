@@ -25,14 +25,33 @@ class xivo_service_asterisk_trunkcustom extends xivo_service_asterisk_abstract
 	
 	function _prepare($data)
 	{
+		$this->_prepare_identity($data);
+
 		$data['commented'] = (bool) $data['commented'];
 
+		return($data);
+	}
+
+	function _prepare_identity(&$data)
+	{
 		if(xivo_haslen($data['intfsuffix']) === true)
 			$data['identity'] = $data['name'].' ('.$data['interface'].'|'.$data['intfsuffix'].')';
 		else
 			$data['identity'] = $data['name'].' ('.$data['interface'].')';
 
 		return($data);
+	}
+
+	function mk_identity($name,$interface,$intfsuffix='')
+	{
+		$arr = array();
+		$arr['name'] = $name;
+		$arr['interface'] = $interface;
+		$arr['intfsuffix'] = $intfsuffix;
+
+		$this->_prepare_identity($arr);
+
+		return($arr['identity']);
 	}
 
 	function add($arr,$id=0)

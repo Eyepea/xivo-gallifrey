@@ -79,8 +79,13 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 				if(xivo_haslen($val) === true)
 					$r[strval($val)] = '';
 			}
-			else if(xivo_haslen($key) === true && is_scalar($val) === true)
-				$r[strval($key)] = is_null($val) === true || is_bool($val) === true ? '' : $val;
+			else if(xivo_haslen($key) === true)
+			{
+				if(is_null($val) === true || is_bool($val) === true)
+					$r[strval($key)] = '';
+				else if(is_scalar($val) === true)
+					$r[strval($key)] = $val;
+			}
 		}
 
 		if(empty($r) === false)

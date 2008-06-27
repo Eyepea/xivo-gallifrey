@@ -104,7 +104,7 @@ class xivo_service_asterisk_dialstatus extends xivo_service_asterisk_abstract
 			case 'group':
 				return($this->chk_dest_group($typeval,$id,$disable));
 			case 'queue':
-				return($this->chk_dest_queue($typeval,null,$disable));
+				return($this->chk_dest_queue($typeval,$id,$disable));
 			case 'meetme':
 				return($this->chk_dest_meetme($typeval,null,$disable));
 			case 'voicemail':

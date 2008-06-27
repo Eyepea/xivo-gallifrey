@@ -32,7 +32,12 @@ else:
 
 		echo	'<MenuItem>',"\n",
 			'<Name>[',$xmlphone->escape($this->bbf('phone_back')),']</Name>',"\n",
-			'<URL>',$url->href('service/ipbx/web_services/phonebook/search',$prevparam,true,$argseparator,false),'</URL>',"\n",
+			'<URL>',$url->href('service/ipbx/web_services/phonebook/search',
+					   $prevparam,
+					   true,
+					   $argseparator,
+					   false),
+			'</URL>',"\n",
 			'</MenuItem>',"\n";
 	endif;
 
@@ -67,10 +72,15 @@ else:
 
 		echo	'<MenuItem>',"\n",
 			'<Name>',$xmlphone->escape(xivo_trunc($name1,8,'.','',true)),
-				$xmlphone->escape(' > ',false),
-				$xmlphone->escape(xivo_trunc($name2,8,'.','',true)),
+				 $xmlphone->escape(' > ',false),
+				 $xmlphone->escape(xivo_trunc($name2,8,'.','',true)),
 			'</Name>',"\n",
-			'<URL>',$url->href('service/ipbx/web_services/phonebook/search',$param,true,$argseparator,false),'</URL>',"\n",
+			'<URL>',$url->href('service/ipbx/web_services/phonebook/search',
+				$param,
+				true,
+				$argseparator,
+				false),
+			'</URL>',"\n",
 			'</MenuItem>',"\n";
 	endfor;
 

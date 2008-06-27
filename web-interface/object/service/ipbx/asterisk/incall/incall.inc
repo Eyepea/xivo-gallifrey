@@ -25,25 +25,30 @@ class xivo_service_asterisk_incall extends xivo_service_asterisk_abstract
 
 	function _prepare($data)
 	{
-		$data['endcall'] = '';
-		$data['user'] = '';
-		$data['group'] = '';
-		$data['queue'] = '';
-		$data['meetme'] = '';
-		$data['voicemail'] = '';
-		$data['schedule'] = '';
-		$data['application'] = '';
-		$data['sound'] = '';
-		$data['custom'] = '';
+		$this->_prepare_identity($data);
 
-		if(isset($data[$data['type']]) === true)
-			$data[$data['type']] = $data['typeval'];
-
-		$data['exten'] = $this->_sre->display_extension($data['exten']);
-		$data['linked'] = (bool) $data['linked'];
 		$data['commented'] = (bool) $data['commented'];
 
 		return($data);
+	}
+
+	function _prepare_identity(&$data)
+	{
+		$data['exten'] = $this->_sre->display_extension($data['exten']);
+		$data['identity'] = $data['exten'].' ('.$data['context'].')';
+
+		return($data);
+	}
+
+	function mk_identity($exten,$context)
+	{
+		$arr = array();
+		$arr['exten'] = $exten;
+		$arr['context'] = $context;
+
+		$this->_prepare_identity($arr);
+
+		return($arr['identity']);
 	}
 
 	function add($arr,$id=0)
@@ -64,55 +69,6 @@ class xivo_service_asterisk_incall extends xivo_service_asterisk_abstract
 			$arr['exten'] = $this->_sre->clean_extension($arr['exten']);
 
 		return(parent::edit($id,$arr,$disable));
-	}
-
-	function linked($id,$disable=null)
-	{
-		return($this->edit($id,array('linked' => true),$disable));
-	}
-
-	function unlinked($id,$disable=null)
-	{
-		return($this->edit($id,array('linked' => false),$disable));
-	}
-
-	function linked_where($id,$disable=null)
-	{
-		return($this->edit_where($id,array('linked' => true),$disable));
-	}
-
-	function unlinked_where($id,$disable=null)
-	{
-		return($this->edit_where($id,array('linked' => false),$disable));
-	}
-
-	function is_valid($type,$typeval,$appval='',$disable=null)
-	{
-		switch($type)
-		{
-			case 'endcall':
-				return($this->_chk_dest_value($type,$typeval));
-			case 'user':
-				return($this->chk_dest_user($typeval,null,$disable));
-			case 'group':
-				return($this->chk_dest_group($typeval,null,$disable));
-			case 'queue':
-				return($this->chk_dest_queue($typeval,null,$disable));
-			case 'meetme':
-				return($this->chk_dest_meetme($typeval,null,$disable));
-			case 'voicemail':
-				return($this->chk_dest_voicemail($typeval,null,$disable));
-			case 'schedule':
-				return($this->chk_dest_schedule($typeval,null,$disable));
-			case 'application':
-				return($this->chk_dest_application($typeval,$appval));
-			case 'sound':
-				return($this->chk_dest_sound('playback',$typeval));
-			case 'custom':
-				return($this->chk_dest_custom($typeval));
-		}
-
-		return(false);
 	}
 
 	function search($exten,$disable=null,$order=null,$limit=null)

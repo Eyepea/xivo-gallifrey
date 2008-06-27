@@ -8,12 +8,12 @@
 
 		<script type="text/javascript">
 			document.title = '<?=$dhtml->escape($this->bbf('page_title',php_uname('n')));?>';
-			var xivo_i18n_lang = '<?=XIVO_I18N_BABELFISH_LANGUAGE?>';
-			var xivo_sess_name = '<?=XIVO_SESS_NAME?>';
-			var xivo_sess_id = '<?=XIVO_SESS_ID?>';
-			var xivo_sess_str = '<?=XIVO_SESS_STR?>';
+			var xivo_i18n_lang = '<?=$dhtml->escape(XIVO_I18N_BABELFISH_LANGUAGE);?>';
+			var xivo_sess_name = '<?=$dhtml->escape(XIVO_SESS_NAME);?>';
+			var xivo_sess_id = '<?=$dhtml->escape(XIVO_SESS_ID);?>';
+			var xivo_sess_str = '<?=$dhtml->escape(XIVO_SESS_STR);?>';
 			var xivo_script_root = '<?=$dhtml->escape($this->get_option('script_root'));?>';
-			var xivo_api_path_info = '<?=$this->get_option('api_path_info');?>';
+			var xivo_api_path_info = '<?=$dhtml->escape($this->get_option('api_path_info'));?>';
 			var xivo_tooltips = '&nbsp;';
 			var xivo_fm_onfocus_class = 'it-mfocus';
 			var xivo_fm_onblur_class = 'it-mblur';
@@ -32,3 +32,5 @@
 ?>
 	</head>
 	<body>
+	<a style="display: none;" name="xivo-free-focus"></a>
+	<a name="xivo-top"></a>

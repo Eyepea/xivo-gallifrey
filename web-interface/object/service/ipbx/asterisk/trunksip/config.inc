@@ -67,18 +67,20 @@ $array['element']['allow']['value'] = array(
 					XIVO_SRE_IPBX_AST_CODEC_AUDIO_GSM,
 					XIVO_SRE_IPBX_AST_CODEC_AUDIO_ULAW,
 					XIVO_SRE_IPBX_AST_CODEC_AUDIO_ALAW,
-					XIVO_SRE_IPBX_AST_CODEC_AUDIO_G726,
 					XIVO_SRE_IPBX_AST_CODEC_AUDIO_ADPCM,
 					XIVO_SRE_IPBX_AST_CODEC_AUDIO_SLIN,
 					XIVO_SRE_IPBX_AST_CODEC_AUDIO_LPC10,
 					XIVO_SRE_IPBX_AST_CODEC_AUDIO_G729,
 					XIVO_SRE_IPBX_AST_CODEC_AUDIO_SPEEX,
 					XIVO_SRE_IPBX_AST_CODEC_AUDIO_ILBC,
+					XIVO_SRE_IPBX_AST_CODEC_AUDIO_G726,
+					XIVO_SRE_IPBX_AST_CODEC_AUDIO_G722,
 					XIVO_SRE_IPBX_AST_CODEC_IMAGE_JPEG,
 					XIVO_SRE_IPBX_AST_CODEC_IMAGE_PNG,
 					XIVO_SRE_IPBX_AST_CODEC_VIDEO_H261,
 					XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263,
-					XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263P);
+					XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263P,
+					XIVO_SRE_IPBX_AST_CODEC_VIDEO_H264);
 $array['element']['allow']['default'] = '';
 $array['element']['allow']['null'] = true;
 
@@ -145,23 +147,25 @@ $array['filter']['qualify'] = array('bool' => true);
 $array['filter']['canreinvite'] = array('bool' => true);
 $array['filter']['insecure'] = array('set' => false,'chk' => 2,'key' => array('port','invite','port,invite'));
 $array['filter']['disallow'] = array('set' => false,'chk' => 2,'key' => array('all'));
-$array['filter']['allow'] = array('set' => false,'chk' => 2,'value' => array(
+$array['filter']['allow'] = array('set' => false,'chk' => 2,'uvalue' => array(
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_G723,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_GSM,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_ULAW,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_ALAW,
-						XIVO_SRE_IPBX_AST_CODEC_AUDIO_G726,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_ADPCM,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_SLIN,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_LPC10,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_G729,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_SPEEX,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_ILBC,
+						XIVO_SRE_IPBX_AST_CODEC_AUDIO_G726,
+						XIVO_SRE_IPBX_AST_CODEC_AUDIO_G722,
 						XIVO_SRE_IPBX_AST_CODEC_IMAGE_JPEG,
 						XIVO_SRE_IPBX_AST_CODEC_IMAGE_PNG,
 						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H261,
 						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263,
-						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263P));
+						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263P,
+						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H264));
 $array['filter']['port'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
 $array['filter']['ipaddr'] = array('set' => false,'chk' => 0);
 $array['filter']['regexten'] = array('set' => false,'chk' => 0);

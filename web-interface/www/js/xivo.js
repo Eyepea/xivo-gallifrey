@@ -33,6 +33,8 @@ function xivo_bwcheck()
 	this.ns6 = (this.dom && parseInt(this.ver) >= 5) ? 1 : 0; 
 	this.ns4 = (document.layers && !this.dom) ? 1 : 0;
 	this.bw = (this.ie6 || this.ie5 || this.ie4 || this.ns4 || this.ns6 || this.opera5);
+	this.cookie = (typeof navigator.cookieEnabled !== 'undefined') ? navigator.cookieEnabled : 0;
+
 	return(this);
 }
 
@@ -100,9 +102,9 @@ function xivo_etag(tag,obj,nb)
 {
 	if(xivo_is_string(tag) == false)
 		return(false);
-	else if(xivo_is_undef(obj) == true)
+	else if(obj === null || xivo_is_undef(obj) == true)
 		obj = document;
-	
+
 	if(xivo_is_object(obj) == false
 	|| xivo_is_undef(obj.getElementsByTagName) == true)
 		return(false);
@@ -159,7 +161,9 @@ function xivo_chg_style_attrib(elem,arr,type)
 	{
 		var styles = '';
 
-		if(xivo_is_undef(elem['style']) == false)
+		if(xivo_is_undef(elem['type']) === false && elem['type'] === 'hidden')
+			return(null);
+		else if(xivo_is_undef(elem['style']) == false)
 		{
 			var astyles = xivo_split(ref_style,';');
 			var astyle = new Array();
@@ -228,6 +232,57 @@ function xivo_chg_style_attrib(elem,arr,type)
 		}
 	}
 	catch(e) {}
+}
+
+function xivo_trunc(str,nb,end,chr)
+{
+	var r = String(str);
+	nb = Number(nb);
+	end = String(end);
+	chr = chr === null || xivo_is_undef(chr) === true ? ' ' : String(chr);
+	
+	if(nb < 1 || nb > r.length || (sub = xivo_substr(r,0,nb)) === '')
+		return(r);
+
+	r = sub;
+
+	if(chr !== '' && (spos = sub.lastIndexOf(chr)) > -1)
+		r = xivo_substr(r,0,spos);
+
+	if(end.length > 0)
+		r += end;
+
+	return(r);
+}
+
+function xivo_htmlen(str,quote_style)
+{
+	var span = document.createElement('span');
+	span.appendChild(document.createTextNode(str));
+
+	return(xivo_htmlsc(span.innerHTML,quote_style));
+}
+
+function xivo_htmlsc(str,quote_style)
+{
+	str = String(str);
+	quote_style = String(quote_style);
+
+	str = str.replace(/</g,'&lt;');
+	str = str.replace(/>/g,'&gt;');
+
+	switch(quote_style.toUpperCase())
+	{
+		default:
+			str = str.replace(/'/g,'&#039;');
+		case '2':
+		case 'ENT_COMPAT':
+			str = str.replace(/"/g,'&quot;');
+		case '0':
+		case 'ENT_NOQUOTES':
+	}
+
+	return(str);
 }
 
 function xivo_split(str,delimit)
@@ -455,9 +510,36 @@ function xivo_is_int(i)
 	return((i == y && i.toString() == y.toString()));
 }
 
+function xivo_is_float(i)
+{
+	var y = parseFloat(i);
+
+	if(isNaN(y) === true)
+		return(false);
+
+	return((i == y && i.toString() == y.toString()));
+}
+
 function xivo_is_uint(i)
 {
 	return(((xivo_is_int(i) === true && i >= 0)));
+}
+
+function xivo_is_ufloat(i)
+{
+	return(((xivo_is_float(i) === true && i >= 0)));
+}
+
+function xivo_is_scalar(val)
+{
+	switch(typeof(val))
+	{
+		case 'object':
+		case 'undefined':
+			return(false);
+	}
+
+	return(true);
 }
 
 function xivo_chk_ipv4_strict(value)
@@ -509,11 +591,51 @@ function xivo_chk_ipv4_subnet(value)
 	return(true);
 }
 
+function xivo_strcmp(str1,str2,len)
+{
+	if(xivo_is_scalar(str1) === false
+	|| xivo_is_scalar(str2) === false)
+		return(false);
+
+	str1 = str1.toString();
+	str2 = str2.toString();
+
+	if(xivo_is_uint(len) === true)
+		str1 = str1.substring(0,len);
+
+ 	if(str1 > str2)
+		return(1);
+	else if(str1 == str2)
+		return(0);
+
+	return(-1);
+}
+
+function xivo_strcasecmp(str1,str2,len)
+{
+	if(xivo_is_scalar(str1) === false
+	|| xivo_is_scalar(str2) === false)
+		return(false);
+
+	str1 = str1.toString().toLowerCase();
+	str2 = str2.toString().toLowerCase();
+ 
+	if(xivo_is_uint(len) === true)
+		str1 = str1.substring(0,len);
+
+ 	if(str1 > str2)
+		return(1);
+	else if(str1 == str2)
+		return(0);
+
+	return(-1);
+}
+
 function xivo_substr(str,beg,end)
 {
 	var r = '';
 
-	if(xivo_is_undef(str) == true)
+	if(xivo_is_scalar(str) == false)
 		return(r);
 
 	var len = str.length;
@@ -596,6 +718,13 @@ function xivo_leadzero(n)
 	return(n);
 }
 
+function xivo_free_focus()
+{
+	xivo_etag('a',null,0).focus();
+
+	return(false);
+}
+
 function xivo_smenu_click(obj,cname,part,last)
 {
 	if(xivo_is_undef(obj.id) == true || obj.id == '')
@@ -651,6 +780,8 @@ function xivo_smenu_click(obj,cname,part,last)
 	}
 
 	obj.className = last == false ? cname : cname+'-last';
+
+	xivo_free_focus();
 }
 
 function xivo_smenu_fmsubmit(obj)

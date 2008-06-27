@@ -52,12 +52,12 @@
 
 			$ref = &$list[$i];
 
-			$type = $this->bbf('incall_type-'.$ref['incall']['type']); 
+			$type = $this->bbf('incall_action-'.$ref['action']); 
 
-			if($ref['incall']['linked'] === false):
+			if($ref['linked'] === false):
 				$icon = 'unavailable';
 				$type = '-';
-			elseif($ref['incall']['commented'] === true):
+			elseif($ref['commented'] === true):
 				$icon = 'disable';
 			else:
 				$icon = 'enable';
@@ -65,26 +65,26 @@
 
 			$identity = '-';
 
-			if($ref['type'] !== false && $ref['incall']['linked'] === true):
-				if($ref['incall']['type'] === 'schedule'):
+			if($ref['action'] !== false && $ref['linked'] === true):
+				if($ref['type'] === 'schedule'):
 					$identity = $ref['type']['name'];
-				elseif($ref['incall']['type'] === 'application'):
-					$identity = $this->bbf('incall_type-application-'.$ref['incall']['typeval'],$ref['incall']['applicationval']);
-				elseif($ref['incall']['type'] === 'sound'):
-					$identity = basename($ref['incall']['typeval']);
+				elseif($ref['type'] === 'application'):
+					$identity = $this->bbf('incall_type-application-'.$ref['typeval'],$ref['applicationval']);
+				elseif($ref['type'] === 'sound'):
+					$identity = basename($ref['typeval']);
 				elseif(is_array($ref['type']) === true && isset($ref['type']['identity']) === true):
 					$identity = $ref['type']['identity'];
 				endif;
 			endif;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
-		<td class="td-left"><?=$form->checkbox(array('name' => 'incalls[]','value' => $ref['incall']['id'],'label' => false,'id' => 'it-incalls-'.$i,'checked' => false,'field' => false));?></td>
-		<td class="txt-left"><label for="it-incalls-<?=$i?>" id="lb-incalls-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['incall']['exten']?></label></td>
+		<td class="td-left"><?=$form->checkbox(array('name' => 'incalls[]','value' => $ref['id'],'label' => false,'id' => 'it-incalls-'.$i,'checked' => false,'field' => false));?></td>
+		<td class="txt-left"><label for="it-incalls-<?=$i?>" id="lb-incalls-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['exten']?></label></td>
 		<td><?=$type?></td>
 		<td><?=$identity?></td>
 		<td class="td-right" colspan="3">
-		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/call_management/incall',array('act' => 'edit','id' => $ref['incall']['id']),null,$this->bbf('opt_modify'));?>
-		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/call_management/incall',array('act' => 'delete','id' => $ref['incall']['id'],'page' => $pager['page'],$param),'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',$this->bbf('opt_delete'));?>
+		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/call_management/incall',array('act' => 'edit','id' => $ref['id']),null,$this->bbf('opt_modify'));?>
+		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/call_management/incall',array('act' => 'delete','id' => $ref['id'],'page' => $pager['page'],$param),'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',$this->bbf('opt_delete'));?>
 		</td>
 	</tr>
 <?php

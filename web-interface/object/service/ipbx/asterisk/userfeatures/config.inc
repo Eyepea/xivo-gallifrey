@@ -124,7 +124,7 @@ $array['element']['context'] = array();
 $array['element']['context']['default'] = '';
 
 $array['element']['musiconhold'] = array();
-$array['element']['musiconhold']['default'] = '';
+$array['element']['musiconhold']['default'] = XIVO_SRE_IPBX_AST_MOH_DEFAULT;
 
 $array['element']['outcallerid'] = array();
 $array['element']['outcallerid']['value'] = array('default','anonymous');

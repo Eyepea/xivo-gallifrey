@@ -14,10 +14,10 @@ Name:
 Number:
 
 ; fm_meetmeroom_pin
-PIN:
+PIN code:
 
 ; fm_meetmeroom_admin-pin
-Administrator PIN:
+Administrator PIN code:
 
 ; fm_meetmefeatures_mode
 Mode:

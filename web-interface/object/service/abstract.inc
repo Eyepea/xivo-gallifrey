@@ -185,7 +185,7 @@ class xivo_service_abstract
 	{
 		$name = (string) $name;
 
-		if($this->_chk_exists_cfg('module',$name) === false)
+		if($this->chk_module_enable($name) === false)
 		{
 			trigger_error('Invalid module in '.$name.' '.$this->_name,E_USER_ERROR);
 			return(false);
@@ -195,8 +195,6 @@ class xivo_service_abstract
 
 		if(isset($this->_module[$name]) === true)
 			return(true);
-		else if($this->chk_module_enable($name) === false)
-			return(false);
 		else if(($class = $this->_load_module_class($name)) === false)
 		{
 			trigger_error('Module '.$name.' does not exist in '.$this->_name,E_USER_ERROR);

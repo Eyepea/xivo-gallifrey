@@ -45,9 +45,7 @@ class xivo_application_service_asterisk_realstatic_features_general extends xivo
 		else if(($sounds = &$this->_service->get_module('sounds')) === false)
 			return(false);
 
-		$this->_sound = $sounds->get_list('features',true);
-
-		return($this->_sound);
+		return(($this->_sound = $sounds->get_list('features','pathnoext')));
 	}
 
 	function get_config_exten()

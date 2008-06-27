@@ -7,17 +7,22 @@ class xivo_filter
 	var $_errnb		= 0;
 	var $_result		= array();
 
-	function xivo_filter($content)
+	function xivo_filter($content=array())
 	{
-		if(is_array($content) === false)
-			trigger_error('Invalid content array in '.__CLASS__,E_USER_ERROR);
-
-		$this->_content = &$content;
+		if(is_array($content) === true
+		&& empty($content) === false)
+			$this->_content = &$content;
 	}
 
-	function chk(&$v,$set=true)
+	function chk($v,$set=true,$content=null)
 	{
-		$a = (array) $this->_content;
+		if(is_array($content) === true)
+			$a = $this->_content = $content;
+		else if(is_array($this->_content) === true)
+			$a = $this->_content;
+		else
+			trigger_error('Invalid content array in '.__CLASS__,E_USER_ERROR);
+
 		$set = (bool) $set;
 
 		$this->_reset_result();
@@ -349,6 +354,15 @@ class xivo_filter
 			case 'unsigned-integer':
 				$cast = xivo_uint($value);
 				break;
+			case 'ureal':
+			case 'ufloat':
+			case 'udouble':
+			case 'unsigned-real':
+			case 'unsigned-float':
+			case 'unsigned-double':
+				$value = strval($value);
+				$cast = xivo_ufloat($value,0,false,true);
+				break;
 			case 'ulongint':
 			case 'ulonginteger':
 			case 'unsigned-longinteger':
@@ -361,7 +375,8 @@ class xivo_filter
 			case 'real':
 			case 'float':
 			case 'double':
-				$cast = floatval($value);
+				$value = strval($value);
+				$cast = str_replace(',','.',floatval($value));
 				break;
 			case 'string':
 				$cast = strval($value);
@@ -398,9 +413,9 @@ class xivo_filter
 
 	function chk_between($beg,$end,$value)
 	{
-		$beg = (int) $beg;
-		$end = (int) $end;
-		$value = (int) $value;
+		$beg = strval($beg);
+		$end = strval($end);
+		$value = strval($value);
 
 		if($value < $beg || $value > $end)
 			return(false);
@@ -481,7 +496,7 @@ class xivo_filter
 		return(true);
 	}
 
-	function chk_array_value($arr,$value)
+	function chk_array_value($arr,$value,$unique=false)
 	{
 		if(is_array($arr) === false || is_array($value) === false)
 			return(false);
@@ -491,12 +506,76 @@ class xivo_filter
 		if(($nb = count($value)) === 0)
 			return(null);
 
+		$unique = (bool) $unique;
+		$uniqval = array();
+
 		for($i = 0;$i < $nb;$i++)
 		{
 			if(in_array($value[$i],$arr) === false)
 				return(false);
+			else if($unique === false)
+				continue;
+			else if(isset($uniqval[$value[$i]]) === true)
+				return(false);
+			else
+				$uniqval[$value[$i]] = 1;
 		}
 		
+		return(true);
+	}
+
+	function chk_str_in_strlist($strlist,$value,$unique=false)
+	{
+		if(is_array($strlist) === false
+		|| ($nb = count($strlist)) === 0)
+			return(false);
+		else if(xivo_haslen($value) === false)
+			return(null);
+
+		$strlist = array_values($strlist);
+
+		$unique = (bool) $unique;
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			if($unique === true && mb_substr_count($value,$strlist[$i]) > 1)
+				return(false);
+			else if(($pos = mb_strpos($value,$strlist[$i])) === false)
+				continue;
+
+			$prefix = mb_substr($value,0,$pos);
+			$suffix = mb_substr($value,$pos + mb_strlen($strlist[$i]));
+			$value = $prefix.$suffix;
+		}
+
+		return(isset($value[0]) === false);
+	}
+
+	function chk_char_in_charlist($charlist,$value,$unique=false)
+	{
+		if(is_array($charlist) === false
+		|| is_scalar($value) === false)
+			return(false);
+		else if(($len = mb_strlen($value)) === 0)
+			return(null);
+
+		$unique = (bool) $unique;
+		$uniqval = array();
+
+		for($i = 0;$i < $len;$i++)
+		{
+			$char = mb_substr($value,$i,1);
+
+			if(in_array($char,$charlist) === false)
+				return(false);
+			else if($unique === false)
+				continue;
+			else if(isset($uniqval[$char]) === true)
+				return(false);
+			else
+				$uniqval[$char] = 1;
+		}
+
 		return(true);
 	}
 
@@ -538,8 +617,23 @@ class xivo_filter
 				$this->_set_error($key,'invalid value');
 				return(false);
 			}
+			else if($arrvalue === true)
+				return($value);
+		}
 
-			if($arrvalue === true)
+		if(isset($arr['uvalue']) === true)
+		{
+			if($chk === 2 && empty($value) === true)
+				return('');
+
+			$arrvalue = $this->chk_array_value($arr['uvalue'],$value,true);
+
+			if($arrvalue === false && $strict === true)
+			{
+				$this->_set_error($key,'invalid value');
+				return(false);
+			}
+			else if($arrvalue === true)
 				return($value);
 		}
 
@@ -569,8 +663,7 @@ class xivo_filter
 				$this->_set_error($key,'invalid value');
 				return(false);
 			}
-
-			if($arrkey === true)
+			else if($arrkey === true)
 				return($value);
 		}
 
@@ -592,6 +685,70 @@ class xivo_filter
 		{
 			$this->_set_error($key,'invalid value');
 			return(false);
+		}
+
+		if(isset($arr['str']) === true)
+		{
+			if($chk === 2 && xivo_haslen($value) === false)
+				return('');
+
+			$strlist = $this->chk_str_in_strlist($arr['str'],$value);
+
+			if($strlist === false && $strict === true)
+			{
+				$this->_set_error($key,'invalid value');
+				return(false);
+			}
+			else if($strlist === true)
+				return($value);
+		}
+
+		if(isset($arr['ustr']) === true)
+		{
+			if($chk === 2 && xivo_haslen($value) === false)
+				return('');
+
+			$strlist = $this->chk_str_in_strlist($arr['ustr'],$value,true);
+
+			if($strlist === false && $strict === true)
+			{
+				$this->_set_error($key,'invalid value');
+				return(false);
+			}
+			else if($strlist === true)
+				return($value);
+		}
+
+		if(isset($arr['char']) === true)
+		{
+			if($chk === 2 && xivo_haslen($value) === false)
+				return('');
+
+			$charlist = $this->chk_char_in_charlist($arr['char'],$value);
+
+			if($charlist === false && $strict === true)
+			{
+				$this->_set_error($key,'invalid value');
+				return(false);
+			}
+			else if($charlist === true)
+				return($value);
+		}
+
+		if(isset($arr['uchar']) === true)
+		{
+			if($chk === 2 && xivo_haslen($value) === false)
+				return('');
+
+			$charlist = $this->chk_char_in_charlist($arr['uchar'],$value,true);
+
+			if($charlist === false && $strict === true)
+			{
+				$this->_set_error($key,'invalid value');
+				return(false);
+			}
+			else if($charlist === true)
+				return($value);
 		}
 
 		if(isset($arr['eol']) === true)

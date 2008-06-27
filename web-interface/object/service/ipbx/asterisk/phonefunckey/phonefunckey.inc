@@ -193,13 +193,13 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 		switch($typeright)
 		{
 			case 'user':
-				return($this->chk_dest_user($typevalright,$id,$disable,true,true,$context));
+				return($this->chk_dest_user($typevalright,null,$id,$disable,true,true,$context));
 			case 'group':
-				return($this->chk_dest_group($typevalright,null,$disable,true,true,$context));
+				return($this->chk_dest_group($typevalright,null,null,$disable,true,true,$context));
 			case 'queue':
-				return($this->chk_dest_queue($typevalright,null,$disable,true,true,$context));
+				return($this->chk_dest_queue($typevalright,null,null,$disable,true,true,$context));
 			case 'meetme':
-				return($this->chk_dest_meetme($typevalright,null,$disable,true,true,$context));
+				return($this->chk_dest_meetme($typevalright,null,null,$disable,true,true,$context));
 		}
 
 		return(false);

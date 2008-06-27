@@ -25,17 +25,34 @@ class xivo_service_asterisk_trunksip extends xivo_service_asterisk_abstract
 	
 	function _prepare($data)
 	{
-		$data['commented'] = (bool) $data['commented'];
+		$this->_prepare_identity($data);
 
 		if(empty($data['call-limit']) === true)
 			$data['call-limit'] = '';
 
-		if(($channel = $this->_sre->get_channel_by_protocol('sip')) !== false)
+		$data['commented'] = (bool) $data['commented'];
+
+		return($data);
+	}
+
+	function _prepare_identity(&$data)
+	{
+		if(($channel = $this->_sre->get_channel_by_protocol('iax')) !== false)
 			$data['identity'] = $data['name'].' ('.$channel.')';
 		else
 			$data['identity'] = $data['name'];
 
 		return($data);
+	}
+
+	function mk_identity($name)
+	{
+		$arr = array();
+		$arr['name'] = $name;
+
+		$this->_prepare_identity($arr);
+
+		return($arr['identity']);
 	}
 
 	function add($arr,$id=0)

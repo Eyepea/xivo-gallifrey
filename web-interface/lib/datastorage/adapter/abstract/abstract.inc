@@ -206,22 +206,22 @@ class xivo_datastorage_adapter_abstract
 
 	function andwherenull($column,$table='')
 	{
-		return($this->_set_wherenull($column,true,false,$table));
+		return($this->_set_wherenull($column,$table,true,false));
 	}
 
 	function andwherenotnull($column,$table='')
 	{
-		return($this->_set_wherenull($column,true,true,$table));
+		return($this->_set_wherenull($column,$table,true,true));
 	}
 
 	function orwherenull($column,$table='')
 	{
-		return($this->_set_wherenull($column,false,false,$table));
+		return($this->_set_wherenull($column,$table,false,false));
 	}
 
 	function orwherenotnull($column,$table='')
 	{
-		return($this->_set_wherenull($column,false,true,$table));
+		return($this->_set_wherenull($column,$table,false,true));
 	}
 
 	function wherebetween($column,$beg,$end,$table='')

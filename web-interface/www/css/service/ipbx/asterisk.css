@@ -11,7 +11,19 @@
 #s-asterisk #index #ipbx-logo ul {margin-top: 10px}
 
 #s-asterisk #sr-agentgroup .sb-list th, #s-asterisk #sr-agent .sb-list th {width: 50%;}
-#s-asterisk #sr-cdr .fm-multifield .fm-desc {width: 40%;}
+#s-asterisk #sr-voicemenu .fm-fieldbutton {text-align: center;padding: 4px 4px 0px 0px;}
+#s-asterisk #sr-voicemenu #fd-dialaction-voicemenuflow-type {margin-top: 10px;}
+#s-asterisk #sr-voicemenu #voicemenu-flow .slt-list {width: 580px;}
+#s-asterisk #sr-voicemenu #voicemenu-flow #it-voicemenu-flow {width: 550px;height: 200px;}
+#s-asterisk #sr-voicemenu #voicemenu-flow .bt-delete {margin-top: 92px;}
+#s-asterisk #sr-voicemenu #voicemenu-flow .bt-updown {margin-top: 65px;}
+#s-asterisk #sr-voicemenu #sb-part-voicemenuflow .fm-fieldbutton {margin-bottom: 5px;}
+#s-asterisk #sr-voicemenu #voicemenu-event {margin: 0px auto;width: 650px;}
+#s-asterisk #sr-voicemenu #voicemenu-event table {width: 650px;}
+#s-asterisk #sr-voicemenu #voicemenu-event table th {width: 50%;}
+#s-asterisk #sr-voicemenu #voicemenu-event table td a {font-weight: bold;text-decoration: underline;color: #0063bf;}
+#s-asterisk #sr-voicemenu #voicemenu-event table td a:hover {text-decoration: none;color: #ff9d03;}
+#s-asterisk #sr-cdr .fm-multifield .fm-desc {min-width: 40%;}
 #s-asterisk #sr-cdr .fm-desc-inline .fm-multifield, #s-asterisk #sr-schedule .fm-desc-inline .fm-multifield {width: auto;display: inline;padding: 0px 10px;}
 #s-asterisk #sr-cdr .fm-desc-inline .fm-multifield label, #s-asterisk #sr-schedule .fm-desc-inline .fm-multifield label {padding: 0px;}
 #s-asterisk #sr-cdr .sb-list table {margin-top: 0px;}

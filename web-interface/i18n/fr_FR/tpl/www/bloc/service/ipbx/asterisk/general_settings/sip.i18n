@@ -148,6 +148,27 @@ Temps de rafraîchissement du domaine externe :
 ; fm_externrefresh-opt120
 2 min.
 
+; fm_externrefresh-opt180
+3 min.
+
+; fm_externrefresh-opt240
+4 min.
+
+; fm_externrefresh-opt300
+5 min.
+
+; fm_externrefresh-opt600
+10 min.
+
+; fm_externrefresh-opt900
+15 min.
+
+; fm_externrefresh-opt1200
+20 min.
+
+; fm_externrefresh-opt1800
+30 min.
+
 ; fm_externrefresh-opt
 %s min. %s sec.
 

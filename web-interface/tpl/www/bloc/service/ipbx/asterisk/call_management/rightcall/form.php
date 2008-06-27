@@ -40,9 +40,9 @@ endif;
 		<?=$form->select(array('name' => 'rightcallexten[]','label' => false,'id' => 'it-exten','key' => true,'altkey' => 'exten','multiple' => true,'size' => 5,'field' => false),$rcallexten);?>
 		<div class="bt-adddelete">
 
-			<a href="#" onclick="xivo_fm_select_add_exten('it-exten',prompt('<?=$dhtml->escape($this->bbf('rightcallexten_add-extension'));?>')); return(false);" title="<?=$this->bbf('bt_addexten');?>"><?=$url->img_html('img/site/button/mini/blue/add.gif',$this->bbf('bt_addexten'),'class="bt-addlist" id="bt-addexten" border="0"');?></a><br />
+			<a href="#" onclick="xivo_fm_select_add_exten('it-exten',prompt('<?=$dhtml->escape($this->bbf('rightcallexten_add-extension'));?>')); return(xivo_free_focus());" title="<?=$this->bbf('bt_addexten');?>"><?=$url->img_html('img/site/button/mini/blue/add.gif',$this->bbf('bt_addexten'),'class="bt-addlist" id="bt-addexten" border="0"');?></a><br />
 
-			<a href="#" onclick="xivo_fm_select_delete_entry('it-exten'); return(false);" title="<?=$this->bbf('bt_deleteexten');?>"><?=$url->img_html('img/site/button/mini/orange/delete.gif',$this->bbf('bt_deleteexten'),'class="bt-deletelist" id="bt-deleteexten" border="0"');?></a>
+			<a href="#" onclick="xivo_fm_select_delete_entry('it-exten'); return(xivo_free_focus());" title="<?=$this->bbf('bt_deleteexten');?>"><?=$url->img_html('img/site/button/mini/orange/delete.gif',$this->bbf('bt_deleteexten'),'class="bt-deletelist" id="bt-deleteexten" border="0"');?></a>
 
 		</div>
 	</div>
@@ -68,9 +68,9 @@ endif;
 			</div>
 			<div class="inout-list">
 
-		<a href="#" onclick="xivo_fm_move_selected('it-userlist','it-user'); return(false);" title="<?=$this->bbf('bt_inuser');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inuser'),'class="bt-inlist" id="bt-inuser" border="0"');?></a><br />
+		<a href="#" onclick="xivo_fm_move_selected('it-userlist','it-user'); return(xivo_free_focus());" title="<?=$this->bbf('bt_inuser');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inuser'),'class="bt-inlist" id="bt-inuser" border="0"');?></a><br />
 
-		<a href="#" onclick="xivo_fm_move_selected('it-user','it-userlist'); return(false);" title="<?=$this->bbf('bt_outuser');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outuser'),'class="bt-outlist" id="bt-outuser" border="0"');?></a>
+		<a href="#" onclick="xivo_fm_move_selected('it-user','it-userlist'); return(xivo_free_focus());" title="<?=$this->bbf('bt_outuser');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outuser'),'class="bt-outlist" id="bt-outuser" border="0"');?></a>
 
 			</div>
 			<div class="slt-inlist">
@@ -96,19 +96,19 @@ endif;
 		<div id="grouplist" class="fm-field fm-multilist">
 			<div class="slt-outlist">
 
-		<?=$form->select(array('name' => 'grouplist','label' => false,'id' => 'it-grouplist','browse' => 'gfeatures','key' => 'name','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$rcallgroup['list']);?>
+		<?=$form->select(array('name' => 'grouplist','label' => false,'id' => 'it-grouplist','browse' => 'gfeatures','key' => 'identity','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$rcallgroup['list']);?>
 
 			</div>
 			<div class="inout-list">
 
-		<a href="#" onclick="xivo_fm_move_selected('it-grouplist','it-group'); return(false);" title="<?=$this->bbf('bt_ingroup');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_ingroup'),'class="bt-inlist" id="bt-ingroup" border="0"');?></a><br />
+		<a href="#" onclick="xivo_fm_move_selected('it-grouplist','it-group'); return(xivo_free_focus());" title="<?=$this->bbf('bt_ingroup');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_ingroup'),'class="bt-inlist" id="bt-ingroup" border="0"');?></a><br />
 
-		<a href="#" onclick="xivo_fm_move_selected('it-group','it-grouplist'); return(false);" title="<?=$this->bbf('bt_outgroup');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outgroup'),'class="bt-outlist" id="bt-outgroup" border="0"');?></a>
+		<a href="#" onclick="xivo_fm_move_selected('it-group','it-grouplist'); return(xivo_free_focus());" title="<?=$this->bbf('bt_outgroup');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outgroup'),'class="bt-outlist" id="bt-outgroup" border="0"');?></a>
 
 			</div>
 			<div class="slt-inlist">
 
-		<?=$form->select(array('name' => 'rightcallgroup[]','label' => false,'id' => 'it-group','browse' => 'gfeatures','key' => 'name','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$rcallgroup['slt']);?>
+		<?=$form->select(array('name' => 'rightcallgroup[]','label' => false,'id' => 'it-group','browse' => 'gfeatures','key' => 'identity','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$rcallgroup['slt']);?>
 
 			</div>
 		</div>
@@ -129,19 +129,19 @@ endif;
 		<div id="incalllist" class="fm-field fm-multilist">
 			<div class="slt-outlist">
 
-		<?=$form->select(array('name' => 'incalllist','label' => false,'id' => 'it-incalllist','browse' => 'incall','key' => 'exten','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$rcallincall['list']);?>
+		<?=$form->select(array('name' => 'incalllist','label' => false,'id' => 'it-incalllist','browse' => 'incall','key' => 'identity','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$rcallincall['list']);?>
 
 			</div>
 			<div class="inout-list">
 
-		<a href="#" onclick="xivo_fm_move_selected('it-incalllist','it-incall'); return(false);" title="<?=$this->bbf('bt_inincall');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inincall'),'class="bt-inlist" id="bt-inincall" border="0"');?></a><br />
+		<a href="#" onclick="xivo_fm_move_selected('it-incalllist','it-incall'); return(xivo_free_focus());" title="<?=$this->bbf('bt_inincall');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inincall'),'class="bt-inlist" id="bt-inincall" border="0"');?></a><br />
 
-		<a href="#" onclick="xivo_fm_move_selected('it-incall','it-incalllist'); return(false);" title="<?=$this->bbf('bt_outincall');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outincall'),'class="bt-outlist" id="bt-outincall" border="0"');?></a>
+		<a href="#" onclick="xivo_fm_move_selected('it-incall','it-incalllist'); return(xivo_free_focus());" title="<?=$this->bbf('bt_outincall');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outincall'),'class="bt-outlist" id="bt-outincall" border="0"');?></a>
 
 			</div>
 			<div class="slt-inlist">
 
-		<?=$form->select(array('name' => 'rightcallincall[]','label' => false,'id' => 'it-incall','browse' => 'incall','key' => 'exten','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$rcallincall['slt']);?>
+		<?=$form->select(array('name' => 'rightcallincall[]','label' => false,'id' => 'it-incall','browse' => 'incall','key' => 'identity','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$rcallincall['slt']);?>
 
 			</div>
 		</div>
@@ -162,19 +162,19 @@ endif;
 		<div id="outcalllist" class="fm-field fm-multilist">
 			<div class="slt-outlist">
 
-		<?=$form->select(array('name' => 'outcalllist','label' => false,'id' => 'it-outcalllist','browse' => 'outcall','key' => 'name','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$rcalloutcall['list']);?>
+		<?=$form->select(array('name' => 'outcalllist','label' => false,'id' => 'it-outcalllist','browse' => 'outcall','key' => 'identity','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$rcalloutcall['list']);?>
 
 			</div>
 			<div class="inout-list">
 
-		<a href="#" onclick="xivo_fm_move_selected('it-outcalllist','it-outcall'); return(false);" title="<?=$this->bbf('bt_inoutcall');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inoutcall'),'class="bt-inlist" id="bt-inoutcall" border="0"');?></a><br />
+		<a href="#" onclick="xivo_fm_move_selected('it-outcalllist','it-outcall'); return(xivo_free_focus());" title="<?=$this->bbf('bt_inoutcall');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inoutcall'),'class="bt-inlist" id="bt-inoutcall" border="0"');?></a><br />
 
-		<a href="#" onclick="xivo_fm_move_selected('it-outcall','it-outcalllist'); return(false);" title="<?=$this->bbf('bt_outoutcall');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outoutcall'),'class="bt-outlist" id="bt-outoutcall" border="0"');?></a>
+		<a href="#" onclick="xivo_fm_move_selected('it-outcall','it-outcalllist'); return(xivo_free_focus());" title="<?=$this->bbf('bt_outoutcall');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outoutcall'),'class="bt-outlist" id="bt-outoutcall" border="0"');?></a>
 
 			</div>
 			<div class="slt-inlist">
 
-		<?=$form->select(array('name' => 'rightcalloutcall[]','label' => false,'id' => 'it-outcall','browse' => 'outcall','key' => 'name','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$rcalloutcall['slt']);?>
+		<?=$form->select(array('name' => 'rightcalloutcall[]','label' => false,'id' => 'it-outcall','browse' => 'outcall','key' => 'identity','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$rcalloutcall['slt']);?>
 
 			</div>
 		</div>

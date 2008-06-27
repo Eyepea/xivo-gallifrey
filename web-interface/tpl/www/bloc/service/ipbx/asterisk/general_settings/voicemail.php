@@ -88,9 +88,9 @@
 	</div>
 	<div class="inout-list">
 
-		<a href="#" onclick="xivo_informat(); return(false);" title="<?=$this->bbf('bt_informat');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_informat'),'class="bt-inlist" id="bt-informat" border="0"');?></a><br />
+		<a href="#" onclick="xivo_informat(); return(xivo_free_focus());" title="<?=$this->bbf('bt_informat');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_informat'),'class="bt-inlist" id="bt-informat" border="0"');?></a><br />
 
-		<a href="#" onclick="xivo_outformat(); return(false);" title="<?=$this->bbf('bt_outformat');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outformat'),'class="bt-outlist" id="bt-outformat" border="0"');?></a>
+		<a href="#" onclick="xivo_outformat(); return(xivo_free_focus());" title="<?=$this->bbf('bt_outformat');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outformat'),'class="bt-outlist" id="bt-outformat" border="0"');?></a>
 	</div>
 	<div class="slt-inlist">
 
@@ -197,7 +197,7 @@ endif;
 			<th class="th-left"><?=$this->bbf('col_timezone-name');?></th>
 			<th class="th-center"><?=$this->bbf('col_timezone-timezone');?></th>
 			<th class="th-center"><?=$this->bbf('col_timezone-options');?></th>
-			<th class="th-right"><?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',$this->bbf('col_timezone-add'),'border="0"'),'#',null,'onclick="xivo_table_list(\'timezone\',this); return(false);"',$this->bbf('col_timezone-add'));?></th>
+			<th class="th-right"><?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',$this->bbf('col_timezone-add'),'border="0"'),'#',null,'onclick="xivo_table_list(\'timezone\',this); return(xivo_free_focus());"',$this->bbf('col_timezone-add'));?></th>
 		</tr>
 		</thead>
 		<tbody id="timezone">
@@ -217,7 +217,7 @@ endif;
 			<td class="td-left"><?=$form->text(array('field' => false,'name' => 'zonemessages[name][]','id' => false,'label' => false,'value' => $val['name'],'default' => $element['zonemessages']['name']['default']));?></td>
 			<td><?=$form->select(array('field' => false,'name' => 'zonemessages[timezone][]','key' => true,'id' => false,'label' => false,'value' => $val['timezone'],'default' => $element['zonemessages']['timezone']['default']),$this->get_var('timezone_list'));?></td>
 			<td><?=$form->text(array('field' => false,'name' => 'zonemessages[msg_format][]','id' => false,'label' => false,'size' => 25,'value' => $val['msg_format'],'default' => $element['zonemessages']['msg_format']['default']));?></td>
-			<td class="td-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'timezone\',this,1); return(false);"',$this->bbf('opt_delete'));?></td>
+			<td class="td-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'timezone\',this,1); return(xivo_free_focus());"',$this->bbf('opt_delete'));?></td>
 		</tr>
 <?php
 		endforeach;
@@ -233,10 +233,10 @@ endif;
 	<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
 		<tbody id="ex-timezone">
 		<tr class="fm-field">
-			<td class="td-left"><?=$form->text(array('field' => false,'name' => 'zonemessages[name][]','id' => false,'label' => false,'default' => $element['zonemessages']['name']['default']),'disabled="disabled" onfocus="xivo_fm_set_onfocus(this);" onblur="xivo_fm_set_onblur(this);"');?></td>
-			<td><?=$form->select(array('field' => false,'name' => 'zonemessages[timezone][]','key' => true,'id' => false,'label' => false,'default' => $element['zonemessages']['timezone']['default']),$this->get_var('timezone_list'),'disabled="disabled" onfocus="xivo_fm_set_onfocus(this);" onblur="xivo_fm_set_onblur(this);"');?></td>
-			<td><?=$form->text(array('field' => false,'name' => 'zonemessages[msg_format][]','id' => false,'label' => false,'size' => 25,'default' => $element['zonemessages']['msg_format']['default']),'disabled="disabled" onfocus="xivo_fm_set_onfocus(this);" onblur="xivo_fm_set_onblur(this);"');?></td>
-			<td class="td-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'timezone\',this,1); return(false);"',$this->bbf('opt_delete'));?></td>
+			<td class="td-left"><?=$form->text(array('field' => false,'name' => 'zonemessages[name][]','id' => false,'label' => false,'disabled' => true,'default' => $element['zonemessages']['name']['default']),'onfocus="xivo_fm_set_onfocus(this);" onblur="xivo_fm_set_onblur(this);"');?></td>
+			<td><?=$form->select(array('field' => false,'name' => 'zonemessages[timezone][]','key' => true,'id' => false,'label' => false,'disabled' => true,'default' => $element['zonemessages']['timezone']['default']),$this->get_var('timezone_list'),'onfocus="xivo_fm_set_onfocus(this);" onblur="xivo_fm_set_onblur(this);"');?></td>
+			<td><?=$form->text(array('field' => false,'name' => 'zonemessages[msg_format][]','id' => false,'label' => false,'disabled' => true,'size' => 25,'default' => $element['zonemessages']['msg_format']['default']),'onfocus="xivo_fm_set_onfocus(this);" onblur="xivo_fm_set_onblur(this);"');?></td>
+			<td class="td-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'timezone\',this,1); return(xivo_free_focus());"',$this->bbf('opt_delete'));?></td>
 		</tr>
 		</tbody>
 	</table>

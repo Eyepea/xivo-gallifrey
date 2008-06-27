@@ -578,7 +578,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		else if(is_array($val) === true || xivo_haslen($val) === true)
 		{
 			$val = (array) $val;
-			$r = vsprintf(xivo_printf_strip($cond,count($val)),
+			$r = vsprintf(xivo_printf_escape($cond,count($val)),
 				      array_map(array(&$this,'escape'),$val));
 		}
 		else if(xivo_haslen($cond) === true)
@@ -623,6 +623,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		}
 
 		$this->_where = $start.$logic.'('.substr(ltrim($end),$len).')';
+		$this->_aggwhere[] = strlen($this->_where)+1;
 
 		return(true);
 	}
@@ -667,6 +668,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		}
 
 		$this->_joinwhere[$table] = $start.$logic.'('.substr(ltrim($end),$len).')';
+		$this->_aggjoinwhere[$table][] = strlen($this->_joinwhere[$table])+1;
 
 		return(true);
 	}
@@ -701,9 +703,9 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		return($this->_set_where($cond,$val,$condand,false,true,$table));
 	}
 
-	function _set_wherenull($column,$and=true,$not=false,$join=false)
+	function _set_wherenull($column,$table='',$and=true,$not=false,$join=false)
 	{
-		if(($where = $this->_mk_wherenull($column,$join)) === false
+		if(($where = $this->_mk_wherenull($column,$table)) === false
 		|| ($join !== false && isset($this->_join[$join]) === false) === true)
 			return(false);
 		else if($join === false)
@@ -731,7 +733,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 	{
 		$column = trim($column);
 		$table = trim($table);
-	
+
 		if($column === '')
 			return(false);
 		else if($table === '')
@@ -751,22 +753,22 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 
 	function andjoinwherenull($table,$column)
 	{
-		return($this->_set_wherenull($column,true,false,$table));
+		return($this->_set_wherenull($column,$table,true,false,$table));
 	}
 
 	function andjoinwherenotnull($table,$column)
 	{
-		return($this->_set_wherenull($column,true,true,$table));
+		return($this->_set_wherenull($column,$table,true,true,$table));
 	}
 
 	function orjoinwherenull($table,$column)
 	{
-		return($this->_set_where($column,false,false,$table));
+		return($this->_set_wherenull($column,$table,false,false,$table));
 	}
 
 	function orjoinwherenotnull($table,$column)
 	{
-		return($this->_set_wherenull($column,false,true,$table));
+		return($this->_set_wherenull($column,$table,false,true,$table));
 	}
 
 	function _set_wherebetween($column,$beg,$end,$table='',$and=true,$not=false,$join=false)
@@ -1020,7 +1022,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		$table = trim($table);
 		$format = $format !== '' ? strtolower($format) : 'exact';
 
-		if(is_scalar($pattern) === true)
+		if(is_scalar($pattern) === true || is_null($pattern) === true)
 			$pattern = array((string) $pattern);
 		else if(is_array($pattern) === false || empty($pattern) === true)
 			return(false);

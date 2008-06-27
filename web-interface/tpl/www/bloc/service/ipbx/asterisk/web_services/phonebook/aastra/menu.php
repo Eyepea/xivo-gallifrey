@@ -33,7 +33,12 @@ else:
 
 		echo	'<MenuItem>',"\n",
 			'<Prompt>[',$xmlphone->escape($this->bbf('phone_back')),']</Prompt>',"\n",
-			'<URI>',$url->href('service/ipbx/web_services/phonebook/search',$prevparam,true,$argseparator,false),'</URI>',"\n",
+			'<URI>',$url->href('service/ipbx/web_services/phonebook/search',
+					   $prevparam,
+					   true,
+					   $argseparator,
+					   false),
+			'</URI>',"\n",
 			'</MenuItem>',"\n";
 	endif;
 
@@ -67,8 +72,15 @@ else:
 		$param['pos'] = $ref[2];
 
 		echo	'<MenuItem>',"\n",
-			'<Prompt>',$xmlphone->escape(xivo_trunc($name1,8,'.','',true).' > '.xivo_trunc($name2,8,'.','',true)),'</Prompt>',"\n",
-			'<URI>',$url->href('service/ipbx/web_services/phonebook/search',$param,true,$argseparator,false),'</URI>',"\n",
+			'<Prompt>',
+			$xmlphone->escape(xivo_trunc($name1,8,'.','',true).' > '.xivo_trunc($name2,8,'.','',true)),
+			'</Prompt>',"\n",
+			'<URI>',$url->href('service/ipbx/web_services/phonebook/search',
+					   $param,
+					   true,
+					   $argseparator,
+					   false),
+			'</URI>',"\n",
 			'</MenuItem>',"\n";
 	endfor;
 

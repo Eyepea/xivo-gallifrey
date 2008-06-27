@@ -433,7 +433,7 @@ class xivo_i18n
 				$r = (string) $babelfish[$namespace][$name];
 
 				if(empty($value) === false)
-					$r = vsprintf(xivo_printf_strip($r,count($value)),$value);
+					$r = vsprintf(xivo_printf_escape($r,count($value)),$value);
 				break;
 		}
 
@@ -615,6 +615,19 @@ class xivo_i18n
 		return(true);
 	}
 
+	function utf8_compliant($str)
+	{
+		if(is_scalar($str) === false)
+			return(false);
+
+		$str = (string) $str;
+
+		if(isset($str{0}) === false)
+			return(true);
+
+		return(preg_match('/^.{1}/us',$str) === 1);
+	}
+
 	function _parse_file()
 	{
 		if(is_array($this->_file) === false)
@@ -712,23 +725,29 @@ class xivo_i18n
 					}
 					break;
 				default:
-					if($line{0} === '\\' && isset($line{1}) === true && ($line{1} === '#' || $line{1} === ';') === true)
+					if($this->utf8_compliant($line) === false
+					|| $txt === false
+					|| $key === '')
+					{
+						$txt = false;
+						continue;
+					}
+					else if($line{0} === '\\'
+					&& isset($line{1}) === true
+					&& ($line{1} === '#'
+					   || $line{1} === ';') === true)
 						$line = substr($line,1);
 
-					if($txt === true && $key !== '')
+					if(isset($r[$key]) === false)
 					{
-						if(isset($r[$key]) === false)
-						{
-							$r[$key] = $line;
-							$priority |= 4;
-						}
-						else if(strlen(($line = trim($line))) > 0)
-						{
-							$r[$key] .= XIVO_EOL.$line;
-							$priority |= 4;
-						}
+						$r[$key] = $line;
+						$priority |= 4;
 					}
-					else $txt = false;
+					else if(strlen(($line = trim($line))) > 0)
+					{
+						$r[$key] .= XIVO_EOL.$line;
+						$priority |= 4;
+					}
 			}
 		}
 

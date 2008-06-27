@@ -8,12 +8,18 @@ $array['option']['dir']['name'] = '/^[a-z0-9_-]{1,20}$/';
 
 $array['option']['file'] = array();
 $array['option']['file']['name'] = '/^['.XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_PATTERN.']'.
-				    XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_LENGTH.'\.(mp3|wav|ogg|gsm)$/';
+				    XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_LENGTH.'\.[a-zA-Z0-9]{2,5}$/';
 $array['option']['file']['extension'] = array();
-$array['option']['file']['extension']['mp3'] = array('audio/mp3','audio/x-mp3','audio/mpeg','audio/x-mpeg','audio/mpeg3','audio/x-mpeg3');
-$array['option']['file']['extension']['wav'] = array('audio/wav','audio/x-wav','application/octet-stream');
-$array['option']['file']['extension']['ogg'] = array('audio/ogg','audio/x-ogg','application/octet-stream','application/ogg','application/x-ogg');
-$array['option']['file']['extension']['gsm'] = array('audio/gsm','audio/x-gsm','application/octet-stream');
+$array['option']['file']['extension'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV] = true;
+$array['option']['file']['extension'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV49] = true;
+$array['option']['file']['extension'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_GSM] = true;
+$array['option']['file']['extension'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_OGG] = true;
+$array['option']['file']['extension'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_ULAW] = true;
+$array['option']['file']['extension'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_ALAW] = true;
+$array['option']['file']['extension'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_AU] = true;
+$array['option']['file']['extension'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_VOX] = true;
+$array['option']['file']['extension'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_SLIN] = true;
+$array['option']['file']['extension'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_MP3] = true;
 
 $array['element'] = array();
 
@@ -45,6 +51,6 @@ $array['filter']['mode'] = array('key' => array('files','custom','quietmp3','mp3
 $array['filter']['application'] = array('set' => false,'chk' => 2,'maxlen' => 128);
 $array['filter']['random'] = array('bool' => true);
 $array['filter']['filename'] = array('set' => false,'regexp' => '/^['.XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_PATTERN.']'.
-							       XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_LENGTH.'\.(mp3|wav|ogg|gsm)$/');
+								XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_LENGTH.'\.[a-zA-Z0-9]{2,5}$/');
 
 ?>

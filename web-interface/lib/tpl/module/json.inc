@@ -21,6 +21,11 @@ class xivo_tpl_json extends xivo_tpl_module
 	{
 		return($this->_json->encode($data,$recursive));
 	}
+
+	function display()
+	{
+		return($this->_tpl->display('/json'));
+	}
 }
 
 ?>

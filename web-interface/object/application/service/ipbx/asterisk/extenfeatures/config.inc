@@ -25,19 +25,27 @@ $array['exten']['fwdundounc']['appdata'] = 'fwdundounc';
 
 $array['exten']['fwdrna'] = array();
 $array['exten']['fwdrna']['app'] = 'Macro';
-$array['exten']['fwdrna']['appdata'] = 'fwdrna|${EXTEN:$<EXTNUMLEN>}';
+$array['exten']['fwdrna']['appdata'] = array();
+$array['exten']['fwdrna']['appdata'][0] = 'fwdrna';
+$array['exten']['fwdrna']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['exten']['fwdbusy'] = array();
 $array['exten']['fwdbusy']['app'] = 'Macro';
-$array['exten']['fwdbusy']['appdata'] = 'fwdbusy|${EXTEN:$<EXTNUMLEN>}';
+$array['exten']['fwdbusy']['appdata'] = array();
+$array['exten']['fwdbusy']['appdata'][0] = 'fwdbusy';
+$array['exten']['fwdbusy']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['exten']['fwdunc'] = array();
 $array['exten']['fwdunc']['app'] = 'Macro';
-$array['exten']['fwdunc']['appdata'] = 'fwdunc|${EXTEN:$<EXTNUMLEN>}';
+$array['exten']['fwdunc']['appdata'] = array();
+$array['exten']['fwdunc']['appdata'][0] = 'fwdunc';
+$array['exten']['fwdunc']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['exten']['recsnd'] = array();
 $array['exten']['recsnd']['app'] = 'Macro';
-$array['exten']['recsnd']['appdata'] = 'recsnd|/usr/share/asterisk/sounds/web-interface/recordings|wav';
+$array['exten']['recsnd']['appdata'] = array();
+$array['exten']['recsnd']['appdata'][0] = 'recsnd';
+$array['exten']['recsnd']['appdata'][1] = 'wav';
 
 $array['exten']['phonestatus'] = array();
 $array['exten']['phonestatus']['app'] = 'Macro';
@@ -65,11 +73,15 @@ $array['exten']['pickup']['appdata'] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['exten']['agentstaticlogin'] = array();
 $array['exten']['agentstaticlogin']['app'] = 'Macro';
-$array['exten']['agentstaticlogin']['appdata'] = 'agentstaticlogin|${EXTEN:$<EXTNUMLEN>}';
+$array['exten']['agentstaticlogin']['appdata'] = array();
+$array['exten']['agentstaticlogin']['appdata'][0] = 'agentstaticlogin';
+$array['exten']['agentstaticlogin']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['exten']['agentstaticlogoff'] = array();
 $array['exten']['agentstaticlogoff']['app'] = 'Macro';
-$array['exten']['agentstaticlogoff']['appdata'] = 'agentstaticlogoff|${EXTEN:$<EXTNUMLEN>}|fr';
+$array['exten']['agentstaticlogoff']['appdata'] = array();
+$array['exten']['agentstaticlogoff']['appdata'][0] = 'agentstaticlogoff';
+$array['exten']['agentstaticlogoff']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}|fr';
 
 $array['exten']['agentdynamiclogin'] = array();
 $array['exten']['agentdynamiclogin']['app'] = 'AgentLogin';
@@ -81,7 +93,9 @@ $array['exten']['calllistening']['appdata'] = 'calllistening';
 
 $array['exten']['vmdelete'] = array();
 $array['exten']['vmdelete']['app'] = 'Macro';
-$array['exten']['vmdelete']['appdata'] = 'vmdelete|/var/spool/asterisk/voicemail';
+$array['exten']['vmdelete']['appdata'] = array();
+$array['exten']['vmdelete']['appdata'][0] = 'vmdelete';
+$array['exten']['vmdelete']['appdata'][1] = '/var/spool/asterisk/voicemail';
 
 $array['exten']['directoryaccess'] = array();
 $array['exten']['directoryaccess']['app'] = 'Directory';
@@ -89,7 +103,9 @@ $array['exten']['directoryaccess']['appdata'] = '${CONTEXT}';
 
 $array['exten']['bsfilter'] = array();
 $array['exten']['bsfilter']['app'] = 'Macro';
-$array['exten']['bsfilter']['appdata'] = 'bsfilter|${EXTEN:$<EXTNUMLEN>}';
+$array['exten']['bsfilter']['appdata'] = array();
+$array['exten']['bsfilter']['appdata'][0] = 'bsfilter';
+$array['exten']['bsfilter']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['element'] = array();
 $array['element']['voicemsg'] = array();

@@ -22,10 +22,10 @@ class xivo_file
 				'name'		=> '',
 				'path'		=> '',
 				'mtime'		=> '',
+				'pathnoext'	=> '',
 				'mime'		=> false,
 				'charset'	=> false,
-				'upload'	=> false,
-				'open'		=> 0);
+				'upload'	=> false);
 
 	function xivo_file()
 	{
@@ -58,6 +58,13 @@ class xivo_file
 		$info['dir'] = $pinfo['dirname'];
 		$info['name'] = $pinfo['basename'];
 		$info['ext'] = $pinfo['extension'];
+
+		if(($extlen = strlen($pinfo['extension'])) > 0)
+			$info['filename'] = substr($pinfo['basename'],0,-($extlen+1));
+		else
+			$info['filename'] = $info['name'];
+
+		$info['pathnoext'] = $pinfo['dirname'].XIVO_SEP_DIR.$info['filename'];
 		$info['mime'] = xivo_file::get_mime($info['path']);
 		$info['charset'] = xivo_file::get_charset($info['path']);
 		$info['mtime'] = filemtime($info['path']);
@@ -737,7 +744,8 @@ class xivo_file
 	{
 		if(($dir = xivo_file::is_d_rwx($dir)) === false
 		|| xivo_file::is_d_rw(dirname($dir)) === false
-		|| ($list = xivo_file::read_d($dir)) === false)
+		|| ($list = xivo_file::read_d($dir)) === false
+		|| is_link($dir) === true)
 			return(false);
 		else if(isset($list[0]) === false)
 			return(rmdir($dir));

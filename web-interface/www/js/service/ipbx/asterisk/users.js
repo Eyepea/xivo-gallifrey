@@ -607,10 +607,10 @@ function xivo_chg_protocol(protocol)
 	if((enableunc = xivo_eid('it-ufeatures-enableunc')) != false)
 		xivo_chg_attrib('fm_enableunc','it-ufeatures-destunc',(enableunc.checked == false ? 0 : 1));
 
-	xivo_chgdialstatus('noanswer',xivo_eid('it-dialstatus-noanswer-type'));
-	xivo_chgdialstatus('busy',xivo_eid('it-dialstatus-busy-type'));
-	xivo_chgdialstatus('congestion',xivo_eid('it-dialstatus-congestion-type'));
-	xivo_chgdialstatus('chanunavail',xivo_eid('it-dialstatus-chanunavail-type'));
+	xivo_ast_chg_dialaction('noanswer',xivo_eid('it-dialaction-noanswer-actiontype'));
+	xivo_ast_chg_dialaction('busy',xivo_eid('it-dialaction-busy-actiontype'));
+	xivo_ast_chg_dialaction('congestion',xivo_eid('it-dialaction-congestion-actiontype'));
+	xivo_ast_chg_dialaction('chanunavail',xivo_eid('it-dialaction-chanunavail-actiontype'));
 }
 
 function xivo_ingroup()
@@ -680,7 +680,7 @@ function xivo_voicemail_selection(value)
 			return(false);
 
 		for(property in xivo_fm_voicemail)
-			xivo_fm_empty_field(xivo_eid(property));
+			xivo_fm_reset_field(xivo_eid(property));
 
 		if(xivo_eid('it-ufeatures-firstname') == false
 		|| xivo_eid('it-ufeatures-lastname') == false
@@ -756,6 +756,11 @@ function xivo_user_onload()
 
 	if((enableunc = xivo_eid('it-ufeatures-enableunc')) != false)
 		xivo_chg_attrib('fm_enableunc','it-ufeatures-destunc',(enableunc.checked == false ? 0 : 1));
+	xivo_ast_build_dialaction_array('noanswer');
+	xivo_ast_build_dialaction_array('busy');
+	xivo_ast_build_dialaction_array('congestion');
+	xivo_ast_build_dialaction_array('chanunavail');
+	xivo_ast_dialaction_onload();
 }
 
 xivo_winload.push('xivo_user_onload();');

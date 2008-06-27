@@ -76,11 +76,10 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		$this->_info['exten'] = false;
 		$this->_origin['exten'] = false;
 
-		$this->_info['exten'] = $this->_extensions->get_exten('macro',
-								    $this->_info['mfeatures']['number'],
-								    $this->_info['mfeatures']['context']);
-
-		$this->_origin['exten'] = $this->_extensions->get_origin();
+		if(($this->_info['exten'] = $this->_extensions->get_exten($this->_info['mfeatures']['number'],
+									  $this->_info['mfeatures']['context'],
+									  'macro')) !== false)
+			$this->_origin['exten'] = $this->_extensions->get_origin();
 
 		return($this->_info['exten']);
 	}
@@ -524,22 +523,13 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 	{
 		if(xivo_issa('mfeatures',$this->_info) === false)
 			return(false);
-		else if(($incall = &$this->_service->get_module('incall')) !== false)
+		else if(($dialaction = &$this->_service->get_module('dialaction')) !== false)
 		{
-			$incall_where = array();
-			$incall_where['type'] = 'meetme';
-			$incall_where['typeval'] = $this->_info['mfeatures']['id'];
+			$dialaction_where = array();
+			$dialaction_where['type'] = 'meetme';
+			$dialaction_where['typeval'] = $this->_info['mfeatures']['id'];
 
-			$incall->unlinked_where($incall_where);
-		}
-
-		if(($dialstatus = &$this->_service->get_module('dialstatus')) !== false)
-		{
-			$dialstatus_where = array();
-			$dialstatus_where['type'] = 'meetme';
-			$dialstatus_where['typeval'] = $this->_info['mfeatures']['id'];
-
-			$dialstatus->unlinked_where($dialstatus_where);
+			$dialaction->unlinked_where($dialaction_where);
 		}
 
 		if(($schedule = &$this->_service->get_module('schedule')) === false)

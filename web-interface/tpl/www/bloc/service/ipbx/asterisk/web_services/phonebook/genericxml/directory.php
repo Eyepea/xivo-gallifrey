@@ -10,29 +10,24 @@ $prevpos = $this->get_var('prevpos');
 $tagdirectory = $xmlphone->get_tag('directory');
 
 echo '<',$tagdirectory,'>',"\n";
-/*
- * A day maybe...
- *
 
-if($prevpos > 0):
-
+if($xmlphone->get_vendor() === 'thomson' && $prevpos > 0):
 	$prevparam = array();
 	$prevparam['node'] = 1;
 	$prevparam['pos'] = floor($pos / $prevpos) * $prevpos;
 	$prevparam['name'] = $this->get_var('name');
 
-	$tagmenu = $xmlphone->get_tag('menu');
-
-	echo	'<',$tagmenu,'>',"\n",
-		'<MenuItem>',"\n",
-		'<Name>[',$xmlphone->escape($this->bbf('phone_back')),']</Name>',"\n",
-		'<URL>',$url->href('service/ipbx/web_services/phonebook/search',$prevparam,true,$xmlphone->get_argseparator(),false),'</URL>',"\n",
-		'</MenuItem>',"\n",
-		'</',$tagmenu,'>',"\n";
-
+	echo	'<MenuItem>',"\n",
+		'<Item>[',$xmlphone->escape($this->bbf('phone_back')),']</Item>',"\n",
+		'<URL>',$url->href('service/ipbx/web_services/phonebook/search',
+				   $prevparam,
+				   true,
+				   $xmlphone->get_argseparator(),
+				   false),
+		'</URL>',"\n",
+		'</MenuItem>',"\n";
 endif;
 
-*/
 if(is_array($list) === false || ($nb = count($list)) === 0):
 	echo	'<DirectoryEntry>',"\n",
 		'<Name>',$xmlphone->escape($this->bbf('phone_noentries')),'</Name>',"\n",

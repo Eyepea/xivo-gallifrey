@@ -11,8 +11,7 @@ function xivo_informat()
 
 	if(xivo_is_undef('it-voicemail-attachformat') == true)
 		return(false);
-
-	if(xivo_eid('it-voicemail-attachformat').length == 0)
+	else if(xivo_eid('it-voicemail-attachformat').length == 0)
 		xivo_chg_attrib('fm_format','it-voicemail-attachformat',1);
 	else
 		xivo_chg_attrib('fm_format','it-voicemail-attachformat',0);
@@ -27,8 +26,7 @@ function xivo_outformat()
 
 	if(xivo_is_undef('it-voicemail-attachformat') == true)
 		return(false);
-	
-	if(xivo_eid('it-voicemail-attachformat').length == 0)
+	else if(xivo_eid('it-voicemail-attachformat').length == 0)
 		xivo_chg_attrib('fm_format','it-voicemail-attachformat',1);
 	else
 		xivo_chg_attrib('fm_format','it-voicemail-attachformat',0);

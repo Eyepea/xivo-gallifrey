@@ -26,10 +26,29 @@ class xivo_service_asterisk_context extends xivo_service_asterisk_abstract
 
 	function _prepare($data)
 	{
+		$this->_prepare_identity($data);
+
 		$data['commented'] = (bool) $data['commented'];
+
+		return($data);
+	}
+
+	function _prepare_identity(&$data)
+	{
 		$data['identity'] = $data['displayname'].' ('.$data['name'].')';
 
 		return($data);
+	}
+
+	function mk_identity($displayname,$name)
+	{
+		$arr = array();
+		$arr['displayname'] = $displayname;
+		$arr['name'] = $name;
+
+		$this->_prepare_identity($arr);
+
+		return($arr['identity']);
 	}
 
 	function add($arr,$id=0)

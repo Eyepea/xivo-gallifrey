@@ -7,7 +7,7 @@ Général
 ; smenu_voicemail
 Messagerie vocale
 
-; smenu_dialstatus
+; smenu_dialaction
 Non réponse
 
 ; smenu_services
@@ -423,3 +423,6 @@ Désactivée
 
 ; fm_phonefunckey_supervision-opt-1
 Activée
+
+; phonefunckey_no-user
+Aucun utilisateur trouvé

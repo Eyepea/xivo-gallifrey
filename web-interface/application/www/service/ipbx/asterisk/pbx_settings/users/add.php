@@ -55,7 +55,7 @@ if(isset($_QR['fm_send']) === true
 	|| $appuser->add() === false)
 	{
 		$result = $appuser->get_result();
-		$result['dialstatus'] = $appuser->get_dialstatus_result();
+		$result['dialaction'] = $appuser->get_dialaction_result();
 		$result['phonefunckey'] = $appuser->get_phonefunckey_result();
 
 		$error = $appuser->get_error();
@@ -139,8 +139,8 @@ if(empty($result) === false)
 {
 	$result['protocol']['allow'] = $allow;
 
-	if(xivo_issa('dialstatus',$result) === false || empty($result['dialstatus']) === true)
-		$result['dialstatus'] = null;
+	if(xivo_issa('dialaction',$result) === false || empty($result['dialaction']) === true)
+		$result['dialaction'] = null;
 
 	if(xivo_issa('voicemail',$result) === false || empty($result['voicemail']) === true)
 		$result['voicemail'] = null;
@@ -154,7 +154,8 @@ else
 $_HTML->set_var('info',$result);
 $_HTML->set_var('error',$error);
 $_HTML->set_var('voicemail',$result['voicemail']);
-$_HTML->set_var('dialstatus',$result['dialstatus']);
+$_HTML->set_var('dialaction',$result['dialaction']);
+$_HTML->set_var('dialaction_from','user');
 $_HTML->set_var('groups',$groups);
 $_HTML->set_var('gmember',$gmember);
 $_HTML->set_var('queues',$queues);
@@ -167,11 +168,12 @@ $_HTML->set_var('moh_list',$appuser->get_musiconhold());
 $_HTML->set_var('tz_list',$appuser->get_timezones());
 $_HTML->set_var('context_list',$appuser->get_context_list());
 $_HTML->set_var('autoprov_list',$appuser->get_autoprov_list());
+$_HTML->set_var('fkdest_list',$appuser->get_phonefunckey_destination());
 $_HTML->set_var('fktype_list',$appuser->get_phonefunckey_type());
 
 $dhtml = &$_HTML->get_module('dhtml');
 $dhtml->set_js('js/xivo_ajs.js');
-$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialstatus.js');
+$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/phonefunckey.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users/sip.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users/iax.js');

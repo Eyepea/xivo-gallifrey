@@ -1,0 +1,44 @@
+<?php
+
+$form = &$this->get_module('form');
+$dhtml = &$this->get_module('dhtml');
+
+$element = $this->get_var('element');
+$event = $this->get_var('event');
+
+echo	'<div id="fd-dialaction-',$event,'-endcall-actiontype" class="b-nodisplay">',
+	$form->select(array('desc'	=> $this->bbf('fm_dialaction_endcall-action'),
+			    'name'	=> 'dialaction['.$event.'][action]',
+			    'labelid'	=> 'dialaction-'.$event.'-endcall-action',
+			    'bbf'	=> 'fm_dialaction_endcall-action-opt-',
+			    'key'	=> false,
+			    'default'	=> $element['dialaction']['endcall']['default'],
+			    'value'	=> $this->get_varra('dialaction',array($event,'endcall','action'))),
+		      $element['dialaction']['endcall']['value'],
+		      'onchange="xivo_ast_chg_dialaction_actionarg(\''.$dhtml->escape($event).'\',\'endcall\');"'),
+	$form->text(array('desc'	=> $this->bbf('fm_dialaction_endcall-busy-actionarg1'),
+			  'name'	=> 'dialaction['.$event.'][actionarg1]',
+			  'labelid'	=> 'dialaction-'.$event.'-endcall-busy-actionarg1',
+			  'size'	=> 10,
+			  'value'	=> $this->get_varra('dialaction',array($event,'busy','actionarg1')))),
+	$form->text(array('desc'	=> $this->bbf('fm_dialaction_endcall-congestion-actionarg1'),
+			  'name'	=> 'dialaction['.$event.'][actionarg1]',
+			  'labelid'	=> 'dialaction-'.$event.'-endcall-congestion-actionarg1',
+			  'size'	=> 10,
+			  'value'	=> $this->get_varra('dialaction',array($event,'congestion','actionarg1'))));
+
+	if($event === 'voicemenuflow'):
+		echo	$form->button(array('name'	=> 'add-defapplication-endcall',
+					    'id'	=> 'it-add-defapplication-endcall',
+					    'value'	=> $this->bbf('fm_bt-add')),
+				      'onclick="xivo_ast_defapplication_endcall(\''.$dhtml->escape($event).'\',\'it-voicemenu-flow\');"');
+	elseif($event === 'voicemenuevent'):
+		echo	$form->button(array('name'	=> 'select-defapplication-endcall',
+					    'id'	=> 'it-select-defapplication-endcall',
+					    'value'	=> $this->bbf('fm_bt-select')),
+				      'onclick="xivo_ast_voicemenuevent_defapplication(\'endcall\');"');
+	endif;
+
+echo	'</div>';
+
+?>

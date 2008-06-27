@@ -90,9 +90,9 @@ endif;
 	</div>
 	<div class="inout-list">
 
-		<a href="#" onclick="xivo_fm_move_selected('it-userlist','it-user'); return(false);" title="<?=$this->bbf('bt_inuser');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inuser'),'class="bt-inlist" id="bt-inuser" border="0"');?></a><br />
+		<a href="#" onclick="xivo_fm_move_selected('it-userlist','it-user'); return(xivo_free_focus());" title="<?=$this->bbf('bt_inuser');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inuser'),'class="bt-inlist" id="bt-inuser" border="0"');?></a><br />
 
-		<a href="#" onclick="xivo_fm_move_selected('it-user','it-userlist'); return(false);" title="<?=$this->bbf('bt_outuser');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outuser'),'class="bt-outlist" id="bt-outuser" border="0"');?></a>
+		<a href="#" onclick="xivo_fm_move_selected('it-user','it-userlist'); return(xivo_free_focus());" title="<?=$this->bbf('bt_outuser');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outuser'),'class="bt-outlist" id="bt-outuser" border="0"');?></a>
 
 	</div>
 	<div class="slt-inlist">
@@ -123,9 +123,9 @@ endif;
 			</div>
 			<div class="inout-list">
 
-			<a href="#" onclick="xivo_fm_move_selected('it-agentgrouplist','it-agentgroup'); return(false);" title="<?=$this->bbf('bt_inagentgroup');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inagentgroup'),'class="bt-inlist" id="bt-inagentgroup" border="0"');?></a><br />
+			<a href="#" onclick="xivo_fm_move_selected('it-agentgrouplist','it-agentgroup'); return(xivo_free_focus());" title="<?=$this->bbf('bt_inagentgroup');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inagentgroup'),'class="bt-inlist" id="bt-inagentgroup" border="0"');?></a><br />
 
-			<a href="#" onclick="xivo_fm_move_selected('it-agentgroup','it-agentgrouplist'); return(false);" title="<?=$this->bbf('bt_outagentgroup');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outagentgroup'),'class="bt-outlist" id="bt-outagentgroup" border="0"');?></a>
+			<a href="#" onclick="xivo_fm_move_selected('it-agentgroup','it-agentgrouplist'); return(xivo_free_focus());" title="<?=$this->bbf('bt_outagentgroup');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outagentgroup'),'class="bt-outlist" id="bt-outagentgroup" border="0"');?></a>
 
 			</div>
 			<div class="slt-inlist">
@@ -147,9 +147,9 @@ endif;
 			</div>
 			<div class="inout-list">
 
-			<a href="#" onclick="xivo_fm_move_selected('it-agentlist','it-agent'); return(false);" title="<?=$this->bbf('bt_inagent');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inagent'),'class="bt-inlist" id="bt-inagent" border="0"');?></a><br />
+			<a href="#" onclick="xivo_fm_move_selected('it-agentlist','it-agent'); return(xivo_free_focus());" title="<?=$this->bbf('bt_inagent');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inagent'),'class="bt-inlist" id="bt-inagent" border="0"');?></a><br />
 
-			<a href="#" onclick="xivo_fm_move_selected('it-agent','it-agentlist'); return(false);" title="<?=$this->bbf('bt_outagent');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outagent'),'class="bt-outlist" id="bt-outagent" border="0"');?></a>
+			<a href="#" onclick="xivo_fm_move_selected('it-agent','it-agentlist'); return(xivo_free_focus());" title="<?=$this->bbf('bt_outagent');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outagent'),'class="bt-outlist" id="bt-outagent" border="0"');?></a>
 
 			</div>
 			<div class="slt-inlist">
@@ -195,26 +195,26 @@ endif;
 
 </div>
 
-<div id="sb-part-dialstatus" class="b-nodisplay">
+<div id="sb-part-dialaction" class="b-nodisplay">
 
-	<fieldset id="fld-dialstatus-noanswer">
-		<legend><?=$this->bbf('fld-dialstatus-noanswer');?></legend>
-		<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/queues/dialstatus',array('status' => 'noanswer'));?>
+	<fieldset id="fld-dialaction-noanswer">
+		<legend><?=$this->bbf('fld-dialaction-noanswer');?></legend>
+		<?=$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',array('event' => 'noanswer'));?>
 	</fieldset>
 
-	<fieldset id="fld-dialstatus-busy">
-		<legend><?=$this->bbf('fld-dialstatus-busy');?></legend>
-		<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/queues/dialstatus',array('status' => 'busy'));?>
+	<fieldset id="fld-dialaction-busy">
+		<legend><?=$this->bbf('fld-dialaction-busy');?></legend>
+		<?=$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',array('event' => 'busy'));?>
 	</fieldset>
 
-	<fieldset id="fld-dialstatus-congestion">
-		<legend><?=$this->bbf('fld-dialstatus-congestion');?></legend>
-		<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/queues/dialstatus',array('status' => 'congestion'));?>
+	<fieldset id="fld-dialaction-congestion">
+		<legend><?=$this->bbf('fld-dialaction-congestion');?></legend>
+		<?=$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',array('event' => 'congestion'));?>
 	</fieldset>
 
-	<fieldset id="fld-dialstatus-chanunavail">
-		<legend><?=$this->bbf('fld-dialstatus-chanunavail');?></legend>
-		<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/queues/dialstatus',array('status' => 'chanunavail'));?>
+	<fieldset id="fld-dialaction-chanunavail">
+		<legend><?=$this->bbf('fld-dialaction-chanunavail');?></legend>
+		<?=$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',array('event' => 'chanunavail'));?>
 	</fieldset>
 
 </div>

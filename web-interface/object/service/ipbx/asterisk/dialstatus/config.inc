@@ -56,10 +56,6 @@ $array['element']['linked']['value'] = array(0,1);
 $array['element']['linked']['default'] = 0;
 $array['element']['linked']['set'] = true;
 
-$array['element']['commented'] = array();
-$array['element']['commented']['value'] = array(0,1);
-$array['element']['commented']['default'] = 0;
-$array['element']['commented']['set'] = true;
 
 $array['filter'] = array();
 $array['filter']['status'] = array('key' => array('noanswer','busy','congestion','chanunavail'));

@@ -54,6 +54,10 @@ $array['contextnummember'] = array();
 $array['contextnummember']['table'] = 'contextnummember';
 $array['contextnummember']['primary'] = array('context' => '','type' => '','typeval' => '');
 
+$array['dialaction'] = array();
+$array['dialaction']['table'] = 'dialaction';
+$array['dialaction']['primary'] = array('event' => '','category' => '','categoryval' => '');
+
 $array['dialstatus'] = array();
 $array['dialstatus']['table'] = 'dialstatus';
 $array['dialstatus']['primary'] = array('id' => '');
@@ -209,5 +213,9 @@ $array['voicemail']['primary'] = array('uniqueid' => '');
 $array['voicemailfeatures'] = array();
 $array['voicemailfeatures']['table'] = 'voicemailfeatures';
 $array['voicemailfeatures']['primary'] = array('id' => '');
+
+$array['voicemenu'] = array();
+$array['voicemenu']['table'] = 'voicemenu';
+$array['voicemenu']['primary'] = array('id' => '');
 
 ?>

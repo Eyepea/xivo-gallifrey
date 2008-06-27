@@ -18,7 +18,7 @@ $array['element']['mode']['value'] = array('talk','listen','all');
 $array['element']['mode']['default'] = 'all';
 
 $array['element']['musiconhold'] = array();
-$array['element']['musiconhold']['default'] = '';
+$array['element']['musiconhold']['default'] = XIVO_SRE_IPBX_AST_MOH_DEFAULT;
 
 $array['element']['context'] = array();
 $array['element']['context']['default'] = '';

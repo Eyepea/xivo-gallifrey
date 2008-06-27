@@ -206,8 +206,8 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 				$rs['var_val'] = '';
 
 			if($this->set($rs) === false
-			|| $this->_chk_pre_save($rs) === false
-			|| $this->save() === false)
+			|| ($pre_save = $this->_chk_pre_save($rs)) === false
+			|| ($pre_save !== 1 && $this->save() === false) === true)
 				$r['error'][] = $key;
 
 			$r['result'][$key] = $this->get_result($this->_name);

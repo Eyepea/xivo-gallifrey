@@ -30,9 +30,9 @@
 	</div>
 	<div class="inout-list">
 
-		<a href="#" onclick="xivo_fm_move_selected('it-agentlist','it-agent'); return(false);" title="<?=$this->bbf('bt_inagent');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inagent'),'class="bt-inlist" id="bt-inagent" border="0"');?></a><br />
+		<a href="#" onclick="xivo_fm_move_selected('it-agentlist','it-agent'); return(xivo_free_focus());" title="<?=$this->bbf('bt_inagent');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inagent'),'class="bt-inlist" id="bt-inagent" border="0"');?></a><br />
 
-		<a href="#" onclick="xivo_fm_move_selected('it-agent','it-agentlist'); return(false);" title="<?=$this->bbf('bt_outagent');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outagent'),'class="bt-outlist" id="bt-outagent" border="0"');?></a>
+		<a href="#" onclick="xivo_fm_move_selected('it-agent','it-agentlist'); return(xivo_free_focus());" title="<?=$this->bbf('bt_outagent');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outagent'),'class="bt-outlist" id="bt-outagent" border="0"');?></a>
 	</div>
 	<div class="slt-inlist">
 
@@ -40,9 +40,9 @@
 
 		<div class="bt-updown">
 
-			<a href="#" onclick="xivo_fm_order_selected('it-agent',1); return(false);" title="<?=$this->bbf('bt_upagent');?>"><?=$url->img_html('img/site/button/row-up.gif',$this->bbf('bt_upagent'),'class="bt-uplist" id="bt-upagent" border="0"');?></a><br />
+			<a href="#" onclick="xivo_fm_order_selected('it-agent',1); return(xivo_free_focus());" title="<?=$this->bbf('bt_upagent');?>"><?=$url->img_html('img/site/button/row-up.gif',$this->bbf('bt_upagent'),'class="bt-uplist" id="bt-upagent" border="0"');?></a><br />
 
-			<a href="#" onclick="xivo_fm_order_selected('it-agent',-1); return(false);" title="<?=$this->bbf('bt_downagent');?>"><?=$url->img_html('img/site/button/row-down.gif',$this->bbf('bt_downagent'),'class="bt-downlist" id="bt-downagent" border="0"');?></a>
+			<a href="#" onclick="xivo_fm_order_selected('it-agent',-1); return(xivo_free_focus());" title="<?=$this->bbf('bt_downagent');?>"><?=$url->img_html('img/site/button/row-down.gif',$this->bbf('bt_downagent'),'class="bt-downlist" id="bt-downagent" border="0"');?></a>
 
 		</div>
 
@@ -67,9 +67,9 @@
 		</div>
 		<div class="inout-list">
 
-			<a href="#" onclick="xivo_inqueue(); return(false);" title="<?=$this->bbf('bt_inqueue');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inqueue'),'class="bt-inlist" id="bt-inqueue" border="0"');?></a><br />
+			<a href="#" onclick="xivo_inqueue(); return(xivo_free_focus());" title="<?=$this->bbf('bt_inqueue');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inqueue'),'class="bt-inlist" id="bt-inqueue" border="0"');?></a><br />
 
-			<a href="#" onclick="xivo_outqueue(); return(false);" title="<?=$this->bbf('bt_outqueue');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outqueue'),'class="bt-outlist" id="bt-outqueue" border="0"');?></a>
+			<a href="#" onclick="xivo_outqueue(); return(xivo_free_focus());" title="<?=$this->bbf('bt_outqueue');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outqueue'),'class="bt-outlist" id="bt-outqueue" border="0"');?></a>
 
 		</div>
 		<div class="slt-inlist">

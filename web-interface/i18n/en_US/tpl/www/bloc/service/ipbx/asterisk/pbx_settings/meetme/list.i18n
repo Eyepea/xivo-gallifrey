@@ -5,10 +5,10 @@ Name
 Number
 
 ; col_pin
-PIN
+PIN code
 
 ; col_admin-pin
-Administrator PIN
+Administrator PIN code
 
 ; col_provisioning
 Provisioning

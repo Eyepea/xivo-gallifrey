@@ -70,10 +70,8 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		$where = array();
 		$where['outcallid'] = $this->_info['outcall']['id'];
 
-		if(($this->_info['outcalltrunk'] = $this->_outcalltrunk->get_all_where($where)) === false)
-			return(false);
-
-		$this->_origin['outcalltrunk'] = $this->_outcalltrunk->get_origin_list();
+		if(($this->_info['outcalltrunk'] = $this->_outcalltrunk->get_all_where($where)) !== false)
+			$this->_origin['outcalltrunk'] = $this->_outcalltrunk->get_origin_list();
 
 		return($this->_info['outcalltrunk']);
 	}
@@ -83,11 +81,10 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		$this->_info['exten'] = false;
 		$this->_origin['exten'] = false;
 
-		$this->_info['exten'] = $this->_extensions->get_exten('macro',
-								    $this->_info['outcall']['exten'],
-								    $this->_info['outcall']['context']);
-
-		$this->_origin['exten'] = $this->_extensions->get_origin();
+		if(($this->_info['exten'] = $this->_extensions->get_exten($this->_info['outcall']['exten'],
+									  $this->_info['outcall']['context'],
+									  'macro')) !== false)
+			$this->_origin['exten'] = $this->_extensions->get_origin();
 
 		return($this->_info['exten']);
 	}
@@ -114,10 +111,9 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 	function _mk_exten_appdata($exten)
 	{
-		$exten = $this->_service->clean_extension($exten);
-
 		$arr = array();
-		$arr['appdata'] = XIVO_SRE_IPBX_AST_OUTCALL_MACRO.'|'.$exten;
+		$arr['appdata'][0] = XIVO_SRE_IPBX_AST_OUTCALL_MACRO;
+		$arr['appdata'][1] = $this->_service->clean_extension($exten);
 
 		return($arr);
 	}

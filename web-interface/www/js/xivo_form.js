@@ -42,8 +42,7 @@ function xivo_fm_set_onfocus(obj)
 	|| xivo_is_undef(obj.tagName) == true
 	|| xivo_is_undef(arr[obj.tagName.toLowerCase()]) == true)
 		return(false);
-
-	if((obj.tagName.toLowerCase() == 'input'
+	else if((obj.tagName.toLowerCase() == 'input'
 	&& obj.type != 'text'
 	&& obj.type != 'file'
 	&& obj.type != 'password') == true
@@ -69,8 +68,7 @@ function xivo_fm_set_onblur(obj)
 	|| xivo_is_undef(obj.tagName) == true
 	|| xivo_is_undef(arr[obj.tagName.toLowerCase()]) == true)
 		return(false);
-
-	if((obj.tagName.toLowerCase() == 'input'
+	else if((obj.tagName.toLowerCase() == 'input'
 	&& obj.type != 'text'
 	&& obj.type != 'file'
 	&& obj.type != 'password') == true
@@ -119,6 +117,27 @@ function xivo_fm_onfocus_onblur()
 	return(true);
 }
 
+function xivo_fm_set_disable_submit_onenter(form)
+{
+	if((tag = xivo_etag('input',form)) == false
+	|| (len = tag.length) == 0)
+		return(null);
+
+	for(var i = 0;i < len;i++)
+	{
+		if((tag[i].type === 'text' 
+		   || tag[i].type === 'file'
+		   || tag[i].type === 'password'
+		   || tag[i].type === 'checkbox'
+		   || tag[i].type === 'radio') === true
+		&& (xivo_is_undef(tag[i].onkeypress) === true
+		   || tag[i].onkeypress === null) === true)
+			tag[i].onkeypress = function (event) { return(xivo_fm_disable_submit_onenter(event)); }
+	}
+
+	return(true);
+}
+
 function xivo_fm_move_selected(from,to)
 {
 	if((from = xivo_eid(from)) == false
@@ -150,10 +169,14 @@ function xivo_fm_move_selected(from,to)
 
 function xivo_fm_copy_select(from,to)
 {
-	if ((from = xivo_eid(from)) == false || (to = xivo_eid(to)) == false)
+	if((from = xivo_eid(from)) == false
+	|| (to = xivo_eid(to)) == false
+	|| (from.type != 'select-one'
+	   && from.type != 'select-multiple') == true
+	|| (to.type != 'select-one'
+	   && to.type != 'select-multiple') == true)
 		return(false);
-
-	if(to.selectedIndex == -1 || xivo_is_undef(to.options[to.selectedIndex]) == true)
+	else if(to.selectedIndex == -1 || xivo_is_undef(to.options[to.selectedIndex]) == true)
 		var selected = false;
 	else
 		var selected = to.options[to.selectedIndex].text;
@@ -180,8 +203,7 @@ function xivo_fm_unshift_opt_select(from,text,value)
 	|| (from.type != 'select-one'
 	   && from.type != 'select-multiple') == true)
 		return(false);
-
-	if(xivo_is_undef(text) == true)
+	else if(xivo_is_undef(text) == true)
 		text = '';
 
 	if(xivo_is_undef(value) == true)
@@ -216,6 +238,27 @@ function xivo_fm_pop_opt_select(from)
 	return(true);
 }
 
+function xivo_fm_get_text_opt_select(from,value)
+{
+	if((from = xivo_eid(from)) === false
+	|| from.type !== 'select-one'
+	|| xivo_is_scalar(value) === false)
+		return(false);
+
+	var r = false;
+	var sltindex = from.selectedIndex;
+
+	from.value = value;
+	var valueindex = from.selectedIndex;
+
+	if(xivo_is_undef(from.options[valueindex]) === false)
+		r = from.options[valueindex].text;
+
+	from.selectedIndex = sltindex;
+
+	return(r);
+}
+
 function xivo_fm_select(from,select)
 {
 	if((from = xivo_eid(from)) == false || from.type != 'select-multiple')
@@ -226,18 +269,16 @@ function xivo_fm_select(from,select)
 	var len = from.options.length;
 
 	for(var i = 0;i < len;i++)
-	{
 		from.options[i].selected = select;
-	}
 
 	return(true);
 }
 
-function xivo_fm_order_selected(from,order)
+function xivo_fm_order_selected(from,order,num)
 {
 	order = Number(order);
 
-	if ((from = xivo_eid(from)) == false || from.type != 'select-multiple')
+	if((from = xivo_eid(from)) == false || from.type != 'select-multiple')
 		return(false);
 
 	var len = from.length;
@@ -245,8 +286,7 @@ function xivo_fm_order_selected(from,order)
 
 	if(len < 2 || selected == -1 || xivo_is_undef(from.options[selected]) == true)
 		return(false);
-
-	if(order == -1)
+	else if(order == -1)
 	{
 		if(selected == len-1 || xivo_is_undef(from.options[selected+1]) == true)
 			return(false);
@@ -254,8 +294,30 @@ function xivo_fm_order_selected(from,order)
 		var noption = from.options[selected+1];
 		var soption = from.options[selected];
 
-		from.options[selected+1] = new Option(soption.text,soption.value);
-		from.options[selected] = new Option(noption.text,noption.value);
+		if(Boolean(num) === false)
+		{
+			ntext = noption.text;
+			stext = soption.text;
+		}
+		else
+		{
+			if((rs = noption.text.match(/^(\d+)\. (.*)$/)) != null)
+				ntext = rs[2];
+			else
+				ntext = noption.text;
+
+			ntext = (selected+1)+'. '+ntext;
+
+			if((rs = soption.text.match(/^(\d+)\. (.*)$/)) != null)
+				stext = rs[2];
+			else
+				stext = soption.text;
+
+			stext = (selected+2)+'. '+stext;
+		}
+
+		from.options[selected+1] = new Option(stext,soption.value);
+		from.options[selected] = new Option(ntext,noption.value);
 		
 		xivo_fm_select(from.id,false);
 
@@ -269,8 +331,30 @@ function xivo_fm_order_selected(from,order)
 		var noption = from.options[selected-1];
 		var soption = from.options[selected];
 
-		from.options[selected-1] = new Option(soption.text,soption.value);
-		from.options[selected] = new Option(noption.text,noption.value);
+		if(Boolean(num) === false)
+		{
+			ntext = noption.text;
+			stext = soption.text;
+		}
+		else
+		{
+			if((rs = noption.text.match(/^(\d+)\. (.*)$/)) != null)
+				ntext = rs[2];
+			else
+				ntext = noption.text;
+
+			ntext = (selected+1)+'. '+ntext;
+
+			if((rs = soption.text.match(/^(\d+)\. (.*)$/)) != null)
+				stext = rs[2];
+			else
+				stext = soption.text;
+
+			stext = selected+'. '+stext;
+		}
+
+		from.options[selected-1] = new Option(stext,soption.value);
+		from.options[selected] = new Option(ntext,noption.value);
 
 		xivo_fm_select(from.id,false);
 
@@ -278,14 +362,13 @@ function xivo_fm_order_selected(from,order)
 	}
 }
 
-function xivo_fm_select_add_entry(id,text,value)
+function xivo_fm_select_add_entry(id,text,value,num)
 {
 	if ((obj = xivo_eid(id)) == false
 	|| (obj.type != 'select-multiple'
 	   && obj.type != 'select-one') == true)
 		return(false);
-
-	if(xivo_is_undef(text) == true)
+	else if(xivo_is_undef(text) == true)
 		text = '';
 
 	if(xivo_is_undef(value) == true)
@@ -293,24 +376,49 @@ function xivo_fm_select_add_entry(id,text,value)
 
 	var len = obj.options.length;
 
+	if(Boolean(num) === true)
+		text = (len + 1)+'. '+text;
+
 	obj.options[len] = new Option(text,value);
+	obj.scrollTop = obj.scrollHeight;
 
 	return(true);
 }
 
-function xivo_fm_select_delete_entry(id)
+function xivo_fm_select_delete_entry(id,num)
 {
 	if ((obj = xivo_eid(id)) == false
 	|| (obj.type != 'select-multiple'
 	   && obj.type != 'select-one') == true)
 		return(false);
 	
-	var len = obj.options.length - 1;
+	var len = obj.options.length;
 
-	for(i = len; i >= 0; i--)
+	if(Boolean(num) === false)
+	{
+		for(i = len-1;i >= 0;i--)
+		{
+			if(obj.options[i].selected == true)
+				obj.options[i] = null;
+		}
+
+		return(true);
+	}
+
+	for(i = 0;i < len;i++)
 	{
 		if(obj.options[i].selected == true)
-			obj.options[i] = null;
+		{
+			obj.options[i--] = null;	
+			len--;
+			continue;
+		}
+		else if((rs = obj.options[i].text.match(/^(\d+)\. (.*)$/)) != null)
+			text = rs[2];
+		else
+			text = obj.options[i].text;
+
+		obj.options[i].text = (i+1)+'. '+text;
 	}
 
 	return(true);
@@ -322,8 +430,7 @@ function xivo_fm_unshift_pop_opt_select(from,text,value,chk,num)
 	|| (from.type != 'select-one'
 	   && from.type != 'select-multiple') == true)
 		return(false);
-
-	if(xivo_is_undef(text) == true)
+	else if(xivo_is_undef(text) == true)
 		text = '';
 
 	if(xivo_is_undef(value) == true)
@@ -350,16 +457,10 @@ function xivo_fm_field_disabled(obj,disable)
 {
 	if(xivo_is_object(obj) == false)
 		return(false);
-
-	if(xivo_is_undef(disable) == true)
+	else if(xivo_is_undef(disable) == true)
 		disable = false;
 
 	disable = Boolean(disable);
-
-	var i = 0;
-	var tag_input = false;
-	var tag_select = false;
-	var tag_textarea = false;
 
 	if((tag_input = xivo_etag('input',obj)) != false)
 	{
@@ -393,57 +494,21 @@ function xivo_fm_field_id_counter(obj,cnt)
 	if(xivo_is_object(obj) == false || xivo_is_int(cnt) == false)
 		return(false);
 
-	var i = 0;
-	var tag_input = false;
-	var tag_select = false;
-	var tag_textarea = false;
-	var tag_a = false;
+	var taglist = ['input','select','textarea','a','span'];
+	var len = taglist.length;
 
-	if((tag_input = xivo_etag('input',obj)) != false)
+	for(var i = 0;i < len;i++)
 	{
-		var tag_input_nb = tag_input.length;
+		if((tagobj = xivo_etag(taglist[i],obj)) === false)
+			continue;
 
-		for(i = 0;i < tag_input_nb;i++)
+		tagobj_nb = tagobj.length;
+
+		for(j = 0;j < tagobj_nb;j++)
 		{
-			if(xivo_is_undef(tag_input[i].id) == false
-			&& tag_input[i].id.length > 0)
-				tag_input[i].id += '-'+cnt;
-		}
-	}
-
-	if((tag_select = xivo_etag('select',obj)) != false)
-	{
-		var tag_select_nb = tag_select.length;
-
-		for(i = 0;i < tag_select_nb;i++)
-		{
-			if(xivo_is_undef(tag_select[i].id) == false
-			&& tag_select[i].id.length > 0)
-				tag_select[i].id += '-'+cnt;
-		}
-	}
-
-	if((tag_textarea = xivo_etag('textarea',obj)) != false)
-	{
-		var tag_textarea_nb = tag_textarea.length;
-
-		for(i = 0;i < tag_textarea_nb;i++)
-		{
-			if(xivo_is_undef(tag_textarea[i].id) == false
-			&& tag_textarea[i].id.length > 0)
-				tag_textarea[i].id += '-'+cnt;
-		}
-	}
-
-	if((tag_a = xivo_etag('a',obj)) != false)
-	{
-		var tag_a_nb = tag_a.length;
-
-		for(i = 0;i < tag_a_nb;i++)
-		{
-			if(xivo_is_undef(tag_a[i].id) == false
-			&& tag_a[i].id.length > 0)
-				tag_a[i].id += '-'+cnt;
+			if(xivo_is_undef(tagobj[j].id) == false
+			&& tagobj[j].id.length > 0)
+				tagobj[j].id += '-'+cnt;
 		}
 	}
 
@@ -454,13 +519,7 @@ function xivo_fm_field_name_counter(obj,cnt)
 {
 	if(xivo_is_object(obj) == false || xivo_is_int(cnt) == false)
 		return(false);
-
-	var i = 0;
-	var tag_input = false;
-	var tag_select = false;
-	var tag_textarea = false;
-
-	if((tag_input = xivo_etag('input',obj)) != false)
+	else if((tag_input = xivo_etag('input',obj)) != false)
 	{
 		var tag_input_nb = tag_input.length;
 
@@ -528,8 +587,7 @@ function xivo_fm_readonly(list,enable)
 	{
 		if((element = xivo_eid(list[i])) == false)
 			continue;
-
-		if(enable == true)
+		else if(enable == true)
 		{
 			element.disabled = false;
 			element.readOnly = false;
@@ -565,8 +623,7 @@ function xivo_fm_checked_all(form,name,mode)
 	|| xivo_is_undef(xivo_fm[form]) == true
 	|| xivo_is_undef(xivo_fm[form][name]) == true)
 		return(false);
-
-	if(xivo_is_undef(mode) == true)
+	else if(xivo_is_undef(mode) == true)
 		mode = true;
 	else if(mode != 'reverse')
 		mode = Boolean(mode);
@@ -714,31 +771,75 @@ function xivo_fm_enable_disable_field(form,name,disable,exform,exformtag)
 	return(true);
 }
 
-function xivo_fm_empty_field(obj)
+function xivo_fm_reset_field(obj,selected)
 {
 	if(xivo_is_undef(obj.tagName) == true
 	|| xivo_is_undef(obj.type) == true)
 		return(false);
+
+	selected = selected === true;
 
 	switch(obj.tagName.toLowerCase())
 	{
 		case 'input':
 			if(obj.type == 'checkbox'
 			|| obj.type == 'radio')
-				obj.checked = false;
-			else
-				obj.value = '';
+				obj.checked = obj.defaultChecked;
+			else if(obj.type == 'text'
+			|| obj.type == 'file'
+			|| obj.type == 'password')
+				obj.value = obj.defaultValue;
 			break;
 		case 'textearea':
-				obj.value = '';
+				obj.value = obj.defaultValue;
 			break;
 		case 'select':
 			if(obj.type != 'select-multiple' && obj.type != 'select-one')
 				return(false);
 
-			obj.selectedIndex = 0;
+			var len = obj.options.length;
+
+			for(i = 0; i < len; i++)
+				obj.options[i].selected = obj.options[i].defaultSelected;
 			break;
 	}
 
 	return(true);
+}
+
+function xivo_fm_reset_child_field(obj)
+{
+	if(xivo_is_object(obj) == false)
+		return(false);
+
+	if((tag_input = xivo_etag('input',obj)) != false)
+	{
+		var tag_input_nb = tag_input.length;
+
+		for(i = 0;i < tag_input_nb;i++)
+			xivo_fm_reset_field(tag_input[i]);
+	}
+
+	if((tag_select = xivo_etag('select',obj)) != false)
+	{
+		var tag_select_nb = tag_select.length;
+
+		for(i = 0;i < tag_select_nb;i++)
+			xivo_fm_reset_field(tag_select[i]);
+	}
+
+	if((tag_textarea = xivo_etag('textarea',obj)) != false)
+	{
+		var tag_textarea_nb = tag_textarea.length;
+
+		for(i = 0;i < tag_textarea_nb;i++)
+			xivo_fm_reset_field(tag_textarea[i]);
+	}
+
+	return(true);
+}
+
+function xivo_fm_disable_submit_onenter(e)
+{
+	return(((window.event) ? event.keyCode : e.which) != 13);
 }

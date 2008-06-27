@@ -8,6 +8,7 @@ class xivo_service_asterisk_meetmefeatures extends xivo_service_asterisk_abstrac
 	var $_name	= 'meetmefeatures';
 	var $_filter	= false;
 	var $_origin	= false;
+	var $_identity	= false;
 
 	function xivo_service_asterisk_meetmefeatures(&$sre,&$dso)
 	{
@@ -21,22 +22,12 @@ class xivo_service_asterisk_meetmefeatures extends xivo_service_asterisk_abstrac
 		$this->_dso = &$dso;
 
 		$this->_load_config();
+		$this->_identity = &$this->_sre->get_identity($this->_name);
 	}
 
 	function _prepare($data)
 	{
-		if($data['context'] === '')
-			$data['context'] = 'default';
-
-		$data['identity'] = trim($data['name']);
-
-		if($data['identity'] === '')
-			$data['identity'] = '-';
-
-		if(xivo_haslen($data['number']) === false)
-			$data['identity'] .= ' ('.$data['context'].')';
-		else
-			$data['identity'] .= ' ('.$data['number'].'@'.$data['context'].')';
+		$this->_identity->_prepare_identity($data);
 
 		$data['poundexit'] = (bool) $data['poundexit'];
 		$data['quiet'] = (bool) $data['quiet'];
@@ -49,6 +40,11 @@ class xivo_service_asterisk_meetmefeatures extends xivo_service_asterisk_abstrac
 		$data['enableexitcontext'] = (bool) $data['enableexitcontext'];
 
 		return($data);
+	}
+
+	function mk_identity($arr)
+	{
+		return($this->_identity->mk_identity($arr));
 	}
 
 	function add($arr,$id=0)
@@ -71,29 +67,21 @@ class xivo_service_asterisk_meetmefeatures extends xivo_service_asterisk_abstrac
 		return(parent::edit($id,$arr));
 	}
 
-	function get_all_number()
+	function get_all_except($id=0,$number=false,$order=null,$limit=null)
 	{
-		if(($list = $this->get_all()) === false)
+		if(($id = xivo_ulongint($id)) === 0 && (bool) $number === false)
+			return($this->get_all(null,true,$order,$limit));
+
+		if(isset($this->_origin_list) === true)
+			$this->_origin_list = false;
+
+		if(($list = $this->_dso->get_all_except($id,$number,$order,$limit)) === false
+		|| isset($list[0]) === false)
 			return(false);
+		else if(isset($this->_origin_list) === true)
+			$this->_origin_list = $list;
 
-		$nb = count($list);
-
-		$r = array();
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$info = $list[$i];
-
-			if(xivo_haslen($info['number']) === false)
-				continue;
-
-			$r[] = $info;
-		}
-
-		if(isset($r[0]) === false)
-			$r = false;
-
-		return($r);
+		return($this->_mk_list_assoc_prepare($list,false,true));
 	}
 }
 

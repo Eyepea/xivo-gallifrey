@@ -46,8 +46,28 @@
 		<td class="td-left txt-left curpointer" colspan="2" onclick="location.href = this.firstChild;"><?=$url->href_html($ref['dirname'],'service/ipbx/pbx_services/sounds',array('act' => 'list','dir' => $ref['dirname']));?></td>
 		<td><?=$ref['nb_files']?></td>
 		<td class="td-right" colspan="2">
-		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/pbx_services/sounds',array('act' => 'editdir','id' => $ref['dirname']),'id="ah-dirs-'.$i.'"',$this->bbf('opt_modify'));?>
-		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/pbx_services/sounds',array('act' => 'deletedir','id' => $ref['dirname'],'page' => $pager['page']),'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',$this->bbf('opt_delete'));?>
+<?php
+	if(isset($ref['defineddir']) === true && $ref['defineddir'] === true):
+		echo	$url->img_html('/z.gif',null,'width="15" height="15"');
+	else:
+		echo	$url->href_html($url->img_html('img/site/button/edit.gif',
+						       $this->bbf('opt_modify'),
+						       'border="0"'),
+					'service/ipbx/pbx_services/sounds',
+					array('act'	=> 'editdir',
+					      'id'	=> $ref['dirname']),
+					'id="ah-dirs-'.$i.'"',$this->bbf('opt_modify')),"\n",
+			$url->href_html($url->img_html('img/site/button/delete.gif',
+						       $this->bbf('opt_delete'),
+						       'border="0"'),
+					'service/ipbx/pbx_services/sounds',
+					array('act'	=> 'deletedir',
+					      'id'	=> $ref['dirname'],
+					      'page'	=> $pager['page']),
+					'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',
+					$this->bbf('opt_delete'));
+	endif;
+?>
 		</td>
 	</tr>
 <?php

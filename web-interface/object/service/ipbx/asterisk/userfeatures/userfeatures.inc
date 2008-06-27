@@ -4,11 +4,11 @@ xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
 class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 {
-	var $_cnt	= 0;
 	var $_dso	= null;
 	var $_name	= 'userfeatures';
 	var $_filter	= false;
 	var $_origin	= false;
+	var $_identity	= false;
 
 	function xivo_service_asterisk_userfeatures(&$sre,&$dso)
 	{
@@ -22,11 +22,12 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		$this->_dso = &$dso;
 
 		$this->_load_config();
+		$this->_identity = &$this->_sre->get_identity($this->_name);
 	}
 
 	function _prepare($data)
 	{
-		$this->mk_identity($data);
+		$this->_identity->_prepare_identity($data);
 
 		$data['enableclient'] = (bool) $data['enableclient'];
 		$data['enablehint'] = (bool) $data['enablehint'];
@@ -45,22 +46,9 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		return($data);
 	}
 
-	function mk_identity(&$data)
+	function mk_identity($arr)
 	{
-		if($data['context'] === '')
-			$data['context'] = 'default';
-
-		$data['fullname'] = trim(trim($data['firstname']).' '.trim($data['lastname']));
-
-		if($data['fullname'] === '')
-			$data['fullname'] = '-';
-
-		if(xivo_haslen($data['number']) === true)
-			$data['identity'] = $data['fullname'].' ('.$data['number'].'@'.$data['context'].')';
-		else
-			$data['identity'] = $data['fullname'].' ('.$data['name'].')';
-
-		return($data);
+		return($this->_identity->mk_identity($arr));
 	}
 
 	function get($id,$orig=true,$disable=null)
@@ -198,31 +186,21 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		return($this->search($value,$disable,$order,$limit,true));
 	}
 
-	function get_all_number($id=0,$disable=null)
+	function get_all_except($id=0,$number=false,$order=null,$limit=null)
 	{
-		$id = xivo_ulongint($id);
+		if(($id = xivo_ulongint($id)) === 0 && (bool) $number === false)
+			return($this->get_all(null,true,$order,$limit));
 
-		if(($list = $this->get_all($disable)) === false)
+		if(isset($this->_origin_list) === true)
+			$this->_origin_list = false;
+
+		if(($list = $this->_dso->get_all_except($id,$number,$order,$limit)) === false
+		|| isset($list[0]) === false)
 			return(false);
+		else if(isset($this->_origin_list) === true)
+			$this->_origin_list = $list;
 
-		$nb = count($list);
-
-		$r = array();
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$info = $list[$i];
-
-			if($id === $info['id'] || xivo_haslen($info['number']) === false)
-				continue;
-
-			$r[] = $info;
-		}
-
-		if(isset($r[0]) === false)
-			$r = false;
-
-		return($r);
+		return($this->_mk_list_assoc_prepare($list,false,true));
 	}
 
 	function get_all_context($disable=null)

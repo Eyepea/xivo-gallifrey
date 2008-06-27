@@ -45,7 +45,7 @@ class xivo_service_asterisk_staticconf_abstract_sql extends xivo_service_asteris
 	{
 		$r = false;
 
-		if($this->_dso->insert($this->_table,$arr) === true)
+		if($this->_dso->insert($this->_table,$arr) > 0)
 			$r = $this->_dso->insert_id();
 
 		return($r);

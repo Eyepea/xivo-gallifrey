@@ -13,7 +13,7 @@ $array['element']['timeout']['default'] = 15;
 $array['element']['timeout']['setdef'] = true;
 
 $array['element']['musiconhold'] = array();
-$array['element']['musiconhold']['default'] = '';
+$array['element']['musiconhold']['default'] = XIVO_SRE_IPBX_AST_MOH_DEFAULT;
 
 $array['element']['announce'] = array();
 $array['element']['announce']['default'] = '';

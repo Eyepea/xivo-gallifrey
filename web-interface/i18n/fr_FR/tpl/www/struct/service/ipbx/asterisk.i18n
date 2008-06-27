@@ -1,5 +1,7 @@
 ; load ./dialstatus
 
+; load ./dialaction
+
 ; service_type
 IPBX
 
@@ -14,9 +16,6 @@ G.711 u-law (Audio)
 
 ; ast_codec_name_type-alaw
 G.711 A-law (Audio)
-
-; ast_codec_name_type-g726
-G.726 (Audio)
 
 ; ast_codec_name_type-adpcm
 ADPCM (Audio)
@@ -36,6 +35,12 @@ SpeeX (Audio)
 ; ast_codec_name_type-ilbc
 iLBC (Audio)
 
+; ast_codec_name_type-g726
+G.726 RFC3551 (Audio)
+
+; ast_codec_name_type-g722
+G.722 (Audio)
+
 ; ast_codec_name_type-jpeg
 JPEG (Image)
 
@@ -50,6 +55,9 @@ H.263 (Vidéo)
 
 ; ast_codec_name_type-h263p
 H.263+ (Vidéo)
+
+; ast_codec_name_type-h264
+H.264 (Vidéo)
 
 ; ast_format_name_info-wav
 Microsoft WAV 8khz
@@ -78,7 +86,7 @@ Sun Microsystems AU
 ; ast_format_name_info-vox
 Dialogic VOX (ADPCM)
 
-; ast_format_name_info-slin
+; ast_format_name_info-sln
 Signed Linear (SLN)
 
 ; toolbar_add_menu_add-directory

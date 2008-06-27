@@ -8,8 +8,10 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 	var $_name		= 'musiconhold';
 	var $_filename		= 'musiconhold.conf';
 	var $_filter		= false;
+	var $_file		= false;
 	var $_mohpath		= '';
 	var $_musiconhold	= array();
+	var $_fileoption	= array();
 
 	function xivo_service_asterisk_musiconhold(&$sre,&$dso)
 	{
@@ -46,6 +48,8 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		|| isset($this->_sre->_ini[$this->_name]['path']) === false
 		|| ($this->_mohpath = xivo_file::is_d_rwx($this->_sre->_ini[$this->_name]['path'])) === false)
 			return(false);
+
+		return(true);
 	}
 
 	function _get_config_file_maxsize()
@@ -59,6 +63,101 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		return($r);
 	}
 
+	function _get_option_file()
+	{
+		if(empty($this->_fileoption) === false)
+			return($this->_fileoption);
+		if(($option = $this->get_option_value('file')) === false)
+			return(false);
+
+		if(xivo_haslen($option,'name') === true)
+			$this->_fileoption['name'] = $option['name'];
+
+		if(xivo_issa('mime',$option) === true)
+			$this->_fileoption['mime'] = array_keys($option['mime']);
+
+		if(xivo_issa('extension',$option) === false)
+			return($this->_fileoption);
+
+		$formats = $this->_sre->get_formats();
+
+		if(isset($this->_fileoption['mime']) === false)
+			$this->_fileoption['mime'] = array();
+
+		$this->_fileoption['extension'] = array();
+		$this->_fileoption['extensionlist'] = array();
+
+		$refmime = &$this->_fileoption['mime'];
+		$refext = &$this->_fileoption['extension'];
+		$refextlist = &$this->_fileoption['extensionlist'];
+
+		foreach($option['extension'] as $key => $val)
+		{
+			if($val === true && xivo_issa($key,$formats) === true)
+			{
+				$refformat = &$formats[$key];
+
+				if(($setext = isset($refformat['extension'])) === true)
+				{
+					$extension = array_values((array) $refformat['extension']);
+					$setext = isset($extension[0]) === true;
+				}
+
+				if(($setmime = isset($refformat['mime'])) === true)
+				{
+					$mime = array_values((array) $refformat['mime']);
+					$setmime = isset($mime[0]) === true;
+				}
+
+				if($setext === true)
+				{
+					if($setmime === true)
+					{
+						$nb = count($extension);
+
+						for($i = 0;$i < $nb;$i++)
+							$refext[$extension[$i]] = $mime;
+					}
+					else
+						$refext = array_merge($extension,$refext);
+					
+					$refextlist = array_merge($extension,$refextlist);
+				}
+				else if($setmime === true)
+					$refmime = array_merge($mime,$refmime);
+			}
+			else if(is_array($val) === true)
+			{
+				$mime = array_values((array) $val);
+
+				$refextlist[] = $key;
+				$refext[$key] = $mime;
+				$refmime = array_merge($mime,$refmime);
+			}
+			else if($val !== false)
+			{
+				$refextlist[] = $key;
+				$refext[] = $key;
+			}
+		}
+
+		if(empty($this->_fileoption['mime']) === true)
+			unset($this->_fileoption['mime']);
+
+		if(empty($this->_fileoption['extension']) === true)
+			unset($this->_fileoption['extension']);
+
+		if(empty($refextlist) === false)
+			$this->_fileoption['name'] = '/^['.XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_PATTERN.']'.
+						     XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_LENGTH.
+						     '\.(?:'.implode('|',array_map('preg_quote',
+						     				   $refextlist)).')$/';
+		else
+			unset($this->_fileoption['extensionlist']);
+
+		return($this->_fileoption);
+	}
+
 	function _get_option_dir_name()
 	{
 		if(($option = $this->get_option_value('dir')) === false
@@ -70,28 +169,11 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 
 	function _get_option_file_name()
 	{
-		if(($option = $this->get_option_value('file')) === false
-		|| isset($option['name']) === false)
+		if($this->_get_option_file() === false
+		|| isset($this->_fileoption['name']) === false)
 			return(false);
 
-		return($option['name']);
-	}
-
-	function _get_option_file_extension()
-	{
-		if(($option = $this->get_option_value('file')) === false
-		|| isset($option['extension']) === false)
-			return(false);
-
-		$r = (array) $option['extension'];
-
-		if(isset($r[0]) === false)
-			$r = array_keys($r);
-
-		if(isset($r[0]) === false)
-			return(false);
-
-		return($r);
+		return($this->_fileoption['name']);
 	}
 
 	function _chk_dir($dir,$exists=false)
@@ -110,17 +192,10 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		$name = strval($name);
 		$dir = strval($dir);
 
-		if(($extensions = $this->_get_option_file_extension()) === false
-		|| ($match_dir = $this->_get_option_dir_name()) === false
+		if(($match_dir = $this->_get_option_dir_name()) === false
 		|| preg_match($match_dir,$dir) !== 1
 		|| ($match_file = $this->_get_option_file_name()) === false
-		|| preg_match($match_file,$name) !== 1
-		|| ($pos = strrpos($name,'.')) === false)
-			return(false);
-
-		$ext = strtolower(substr($name,$pos + 1));
-
-		if(in_array($ext,$extensions) === false)
+		|| preg_match($match_file,$name) !== 1)
 			return(false);
 		else if((bool) $exists === false)
 			return(true);
@@ -224,6 +299,17 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		$r['basename'] = basename($r['filename'],'.'.$r['extension']);
 
 		return($r);
+	}
+
+	function get_upload($name)
+	{
+		if((is_object($this->_file) === false
+		   && ($this->_file = new xivo_file()) === false) === true
+		|| $this->_get_option_file() === false
+		|| $this->_file->get_upload($name,$this->_fileoption) === false)
+			return(false);
+
+		return($this->_file->info);
 	}
 
 	function add_file($name,$tmpname)
@@ -336,18 +422,21 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 
 	function delete_dir($name)
 	{
-		$name = (string) $name;
-
 		if(($info = $this->get_dir($name)) === false)
 			return(false);
+
+		$dirpath = $this->_mohpath.XIVO_SEP_DIR.$info['dirname'];
+
+		if(is_link($dirpath) === true)
+			return(false);
 		else if($info['files'] === false)
-			return(rmdir($this->_mohpath.XIVO_SEP_DIR.$name));
+			return(rmdir($dirpath));
 
 		$r = true;
 
 		for($i = 0;$i < $info['nb_files'];$i++)
 		{
-			if($this->delete_file($name.XIVO_SEP_DIR.$info['files'][$i]) === false)
+			if($this->delete_file($info['dirname'].XIVO_SEP_DIR.$info['files'][$i]) === false)
 			{
 				$r = false;
 				break;
@@ -355,7 +444,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		}
 
 		if($r === true)
-			$r = rmdir($this->_mohpath.XIVO_SEP_DIR.$name);
+			$r = rmdir($dirpath);
 
 		return($r);
 	}

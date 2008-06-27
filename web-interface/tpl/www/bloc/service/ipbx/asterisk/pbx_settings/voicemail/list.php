@@ -56,8 +56,8 @@
 			endif;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
-		<td class="td-left"><?=$form->checkbox(array('name' => 'voicemail[]','value' => $ref['uniqueid'],'label' => false,'id' => 'it-voicemail-'.$i,'checked' => false,'field' => false));?></td>
-		<td class="txt-left"><label for="it-voicemail-<?=$i?>" id="lb-voicemail-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['fullname']?></label></td>
+		<td class="td-left"><?=$form->checkbox(array('name' => 'voicemails[]','value' => $ref['uniqueid'],'label' => false,'id' => 'it-voicemails-'.$i,'checked' => false,'field' => false));?></td>
+		<td class="txt-left"><label for="it-voicemails-<?=$i?>" id="lb-voicemails-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['fullname']?></label></td>
 		<td><?=$ref['mailbox']?></td>
 		<td><?=$ref['email']?></td>
 		<td class="td-right" colspan="3">

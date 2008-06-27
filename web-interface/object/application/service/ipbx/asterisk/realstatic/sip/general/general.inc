@@ -69,6 +69,8 @@ class xivo_application_service_asterisk_realstatic_sip_general extends xivo_appl
 				if($appextenfeatures->set($voicemsg) === false
 				|| $appextenfeatures->save() === false)
 					return(false);
+
+				return(-1);
 				break;
 			case 'allow':
 				if(is_array($rs['var_val']) === true)

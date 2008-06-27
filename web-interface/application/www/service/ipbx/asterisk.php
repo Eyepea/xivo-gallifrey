@@ -9,7 +9,7 @@ $voicemailstat['enable'] = $voicemailstat['disable'] = $voicemailstat['total'] =
 
 $activecalls = 0;
 
-if(($recvactivecalls = $ipbx->discuss('show channels',true)) !== false
+if(($recvactivecalls = $ipbx->discuss('core show channels',true)) !== false
 && ($nb = count($recvactivecalls) - 1) > 0
 && ($pos = strpos($recvactivecalls[$nb],' ')) !== false
 && $pos !== 0)

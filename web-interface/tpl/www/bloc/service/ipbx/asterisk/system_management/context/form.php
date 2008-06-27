@@ -84,7 +84,9 @@
 					 'altkey'	=> 'name',
 					 'empty'	=> isset($info['deletable']) === true ? $info['deletable'] : true,
 					 'default'	=> $element['context']['entity']['default'],
-					 'value'	=> $info['context']['entity']),$entities,'onchange="xivo_context_entity_status(this.form,this.value.length === 0);"');
+					 'value'	=> $info['context']['entity']),
+				   $entities,
+				   'onchange="xivo_context_entity_status(this.form,this.value.length === 0);"');
 	else:
 		echo	'<div class="txt-center">',
 			$url->href_html($this->bbf('create_entity'),'xivo/configuration/manage/entity','act=add'),
@@ -148,7 +150,7 @@
 			<th class="th-left"><?=$this->bbf('col_contextnumbers_incall-numberbeg');?></th>
 			<th class="th-center"><?=$this->bbf('col_contextnumbers_incall-numberend');?></th>
 			<th class="th-center"><?=$this->bbf('col_contextnumbers_incall-didlength');?></th>
-			<th class="th-right"><?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',$this->bbf('col_contextnumbers_incall-add'),'border="0"'),'#',null,'onclick="xivo_context_entity_enable_add(\'incall\',this); return(false);"',$this->bbf('col_contextnumbers_incall-add'));?></th>
+			<th class="th-right"><?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',$this->bbf('col_contextnumbers_incall-add'),'border="0"'),'#',null,'onclick="xivo_context_entity_enable_add(\'incall\',this); return(xivo_free_focus());"',$this->bbf('col_contextnumbers_incall-add'));?></th>
 		</tr>
 		</thead>
 		<tbody id="contextnumbers-incall">
@@ -192,7 +194,7 @@ if($incall_list !== false):
 						       'default'	=> $element['contextnumbers']['didlength']['default']),
 					         $element['contextnumbers']['didlength']['value']);?>
 			</td>
-			<td class="td-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_contextnumbers_incall-delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'contextnumbers-incall\',this,1); return(false);"',$this->bbf('opt_contextnumbers_incall-delete'));?></td>
+			<td class="td-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_contextnumbers_incall-delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'contextnumbers-incall\',this,1); return(xivo_free_focus());"',$this->bbf('opt_contextnumbers_incall-delete'));?></td>
 		</tr>
 
 <?php
@@ -214,18 +216,20 @@ endif;
 						     'name'	=> 'contextnumbers[incall][numberbeg][]',
 						     'id'	=> false,
 						     'label'	=> false,
+						     'disabled'	=> true,
 						     'size'	=> 15,
 						     'default'	=> $element['contextnumbers']['numberend']['default']),
-					       'disabled="disabled" onfocus="xivo_fm_set_onfocus(this);" onblur="xivo_fm_set_onblur(this);"');?>
+					       'onfocus="xivo_fm_set_onfocus(this);" onblur="xivo_fm_set_onblur(this);"');?>
 			</td>
 			<td>
 				<?=$form->text(array('field'	=> false,
 						     'name'	=> 'contextnumbers[incall][numberend][]',
 						     'id'	=> false,
 						     'label'	=> false,
+						     'disabled'	=> true,
 						     'size'	=> 15,
 						     'default'	=> $element['contextnumbers']['numberend']['default']),
-					       'disabled="disabled" onfocus="xivo_fm_set_onfocus(this);" onblur="xivo_fm_set_onblur(this);"');?>
+					       'onfocus="xivo_fm_set_onfocus(this);" onblur="xivo_fm_set_onblur(this);"');?>
 			</td>
 			<td>
 				<?=$form->select(array('field'		=> false,
@@ -233,10 +237,11 @@ endif;
 						       'id'		=> false,
 						       'label'		=> false,
 						       'key'		=> false,
+						       'disabled'	=> true,
 						       'default'	=> $element['contextnumbers']['didlength']['default']),
 						 $element['contextnumbers']['didlength']['value'],
-						 'disabled="disabled" onfocus="xivo_fm_set_onfocus(this);" onblur="xivo_fm_set_onblur(this);"');?></td>
-			<td class="td-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_contextnumbers_incall-delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'contextnumbers-incall\',this,1); return(false);"',$this->bbf('opt_contextnumbers_incall-delete'));?></td>
+						 'onfocus="xivo_fm_set_onfocus(this);" onblur="xivo_fm_set_onblur(this);"');?></td>
+			<td class="td-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_contextnumbers_incall-delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'contextnumbers-incall\',this,1); return(xivo_free_focus());"',$this->bbf('opt_contextnumbers_incall-delete'));?></td>
 		</tr>
 		</tbody>
 	</table>

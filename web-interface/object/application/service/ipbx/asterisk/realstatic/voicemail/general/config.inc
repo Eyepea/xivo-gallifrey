@@ -260,7 +260,7 @@ $array['filter']['maxsilence'] = array('key' => array(1,2,3,4,5,6,7,8,9,10,
 						21,22,23,24,25,26,27,28,29,30));
 $array['filter']['review'] = array('bool' => true);
 $array['filter']['operator'] = array('bool' => true);
-$array['filter']['format'] = array('set' => false,'chk' => 2,'value' => array(
+$array['filter']['format'] = array('set' => false,'chk' => 2,'uvalue' => array(
 					XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV,
 					XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV49,
 					XIVO_SRE_IPBX_AST_FORMAT_AUDIO_GSM,

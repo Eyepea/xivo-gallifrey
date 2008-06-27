@@ -5,10 +5,10 @@ Nom
 Numéro
 
 ; col_pin
-PIN
+Code PIN
 
 ; col_admin-pin
-PIN Administrateur
+Code PIN Administrateur
 
 ; col_provisioning
 Approvisionnement
