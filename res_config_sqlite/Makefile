@@ -7,7 +7,7 @@
 
 # you can override default options by calling make OPTIONS=...
 CFLAGS ?= -O2 -fPIC
-Z_CFLAGS := $(CFLAGS) -D _GNU_SOURCE -Wall -Wmissing-prototypes -Wstrict-prototypes
+Z_CFLAGS := $(CFLAGS) -D _GNU_SOURCE -DAST_MODULE=\"res_config_sqlite\" -Wall -Wmissing-prototypes -Wstrict-prototypes
 LIBS ?=
 Z_LIBS := $(LIBS) -lpthread -lsqlite
 
