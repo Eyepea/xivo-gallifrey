@@ -62,13 +62,9 @@
 			else:
 				$icon = 'enable';
 			endif;
-
-			$identity = '-';
-
+/*
 			if($ref['action'] !== false && $ref['linked'] === true):
-				if($ref['type'] === 'schedule'):
-					$identity = $ref['type']['name'];
-				elseif($ref['type'] === 'application'):
+				if($ref['type'] === 'application'):
 					$identity = $this->bbf('incall_type-application-'.$ref['typeval'],$ref['applicationval']);
 				elseif($ref['type'] === 'sound'):
 					$identity = basename($ref['typeval']);
@@ -76,12 +72,13 @@
 					$identity = $ref['type']['identity'];
 				endif;
 			endif;
+*/
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
 		<td class="td-left"><?=$form->checkbox(array('name' => 'incalls[]','value' => $ref['id'],'label' => false,'id' => 'it-incalls-'.$i,'checked' => false,'field' => false));?></td>
 		<td class="txt-left"><label for="it-incalls-<?=$i?>" id="lb-incalls-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['exten']?></label></td>
 		<td><?=$type?></td>
-		<td><?=$identity?></td>
+		<td><?=$ref['identity']?></td>
 		<td class="td-right" colspan="3">
 		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/call_management/incall',array('act' => 'edit','id' => $ref['id']),null,$this->bbf('opt_modify'));?>
 		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/call_management/incall',array('act' => 'delete','id' => $ref['id'],'page' => $pager['page'],$param),'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',$this->bbf('opt_delete'));?>

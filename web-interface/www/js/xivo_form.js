@@ -254,10 +254,10 @@ function xivo_fm_get_text_opt_select(from,value,chk)
 	if(xivo_is_undef(from.options[valueindex]) === false)
 		r = from.options[valueindex].text;
 
-	from.selectedIndex = sltindex;
-
 	if(Boolean(chk) === true && String(from.value) !== String(value))
-		return(false);
+		r = false;
+
+	from.selectedIndex = sltindex;
 
 	return(r);
 }

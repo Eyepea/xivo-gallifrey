@@ -164,7 +164,7 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 		return(false);
 	}
 
-	function chk_dest_user($actionarg1,$actionarg2=0,$id=null,$disable=null,$chknumber=true,$chkcontext=false,$context=null)
+	function chk_dest_user($actionarg1,$actionarg2=0,$id=null,$disable=null,$chknumber=false,$chkcontext=false,$context=null)
 	{
 		return($this->_chk_dest('userfeatures',
 					'user',
@@ -177,7 +177,7 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 					$context));	
 	}
 
-	function chk_dest_group($actionarg1,$actionarg2=0,$id=null,$disable=null,$chknumber=true,$chkcontext=false,$context=null)
+	function chk_dest_group($actionarg1,$actionarg2=0,$id=null,$disable=null,$chknumber=false,$chkcontext=false,$context=null)
 	{
 		return($this->_chk_dest_group_queue('group',
 						    $actionarg1,
@@ -189,7 +189,7 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 						    $context));
 	}
 
-	function chk_dest_queue($actionarg1,$actionarg2=0,$id=null,$disable=null,$chknumber=true,$chkcontext=false,$context=null)
+	function chk_dest_queue($actionarg1,$actionarg2=0,$id=null,$disable=null,$chknumber=false,$chkcontext=false,$context=null)
 	{
 		return($this->_chk_dest_group_queue('queue',
 						    $actionarg1,
@@ -201,7 +201,7 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 						    $context));
 	}
 
-	function _chk_dest_group_queue($action,$actionarg1,$actionarg2=0,$id=null,$disable=null,$chknumber=true,$chkcontext=false,$context=null)
+	function _chk_dest_group_queue($action,$actionarg1,$actionarg2=0,$id=null,$disable=null,$chknumber=false,$chkcontext=false,$context=null)
 	{
 		$actionarg1 = intval($actionarg1);
 
@@ -231,7 +231,7 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 		return($info);
 	}
 
-	function chk_dest_meetme($actionarg1,$id=null,$disable=null,$chknumber=true,$chkcontext=false,$context=null)
+	function chk_dest_meetme($actionarg1,$id=null,$disable=null,$chknumber=false,$chkcontext=false,$context=null)
 	{
 		return($this->_chk_dest('meetmefeatures',
 					'meetme',
@@ -287,7 +287,7 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 					null));
 	}
 
-	function _chk_dest($type,$action,$actionarg1,$actionarg2=null,$id=null,$disable=null,$chknumber=true,$chkcontext=false,$context=null)
+	function _chk_dest($type,$action,$actionarg1,$actionarg2=null,$id=null,$disable=null,$chknumber=false,$chkcontext=false,$context=null)
 	{
 		if($id !== null)
 			$id = xivo_ulongint($id);

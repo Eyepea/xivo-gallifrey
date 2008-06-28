@@ -158,7 +158,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 		if(($r = $this->chk_exten($exten,$context,$app,$arr)) === false)
 			return(false);
 		else if(isset($r['priority']) === false)
-			$r['priority'] = count($this->_exten[$id]);
+			$r['priority'] = count($this->_exten[$id]) + 1;
 
 		$this->_exten[$id][] = $r;
 
@@ -253,8 +253,6 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			$this->_exten[$id][$i]['priority'] = $i+1;
-
 			if(($ret = $this->add($this->_exten[$id][$i])) !== false)
 				$r[] = $ret;
 		}
@@ -310,7 +308,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 		if(($r = $this->chk_context($context,$exten,$app,$arr)) === false)
 			return(false);
 		else if(isset($r['priority']) === false)
-			$r['priority'] = count($this->_context[$id]);
+			$r['priority'] = count($this->_context[$id]) + 1;
 
 		$this->_context[$id][] = $r;
 
@@ -375,8 +373,6 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			$this->_context[$id][$i]['priority'] = $i+1;
-
 			if(($ret = $this->add($this->_context[$id][$i])) !== false)
 				$r[] = $ret;
 		}

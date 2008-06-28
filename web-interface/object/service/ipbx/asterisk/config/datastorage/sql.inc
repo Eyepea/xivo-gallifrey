@@ -75,7 +75,7 @@ $array['features']['table'] = 'features';
 $array['features']['primary'] = array('id' => '');
 
 $array['generalqueue'] = array();
-$array['generalqueue']['table'] = 'generalqueue';
+$array['generalqueue']['table'] = 'staticqueue';
 $array['generalqueue']['primary'] = array('id' => '');
 
 $array['groupfeatures'] = array();
@@ -95,7 +95,7 @@ $array['ldapfilter']['table'] = 'ldapfilter';
 $array['ldapfilter']['primary'] = array('id' => '');
 
 $array['meetme'] = array();
-$array['meetme']['table'] = 'meetme';
+$array['meetme']['table'] = 'staticmeetme';
 $array['meetme']['primary'] = array('id' => '');
 
 $array['meetmefeatures'] = array();

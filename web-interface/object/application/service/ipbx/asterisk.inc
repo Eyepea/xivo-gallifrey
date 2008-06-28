@@ -193,6 +193,18 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		return($r);
 	}
 
+	function chk_macro($name,$exten,$arr,$context)
+	{
+		if(($r = $this->_extensions->chk_exten($exten,$context,'macro',$arr)) !== false)
+			return($r);
+		else if($this->_extensions->get_filter_errnb() > 0)
+			$this->_set_error($name,$this->_extensions->get_filter_error());
+		else
+			$this->_set_error($name,'invalid macro');
+
+		return($r);
+	}
+
 	function set_macro($action,$name,$exten,$arr,$context)
 	{
 		if(($action !== 'add' && $action !== 'edit') === true

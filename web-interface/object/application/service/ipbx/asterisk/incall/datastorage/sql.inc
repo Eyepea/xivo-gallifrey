@@ -22,7 +22,7 @@ class xivo_application_service_asterisk_incall_sql extends xivo_application_serv
 		$this->_dso->innerjoin($this->_table['dialaction'],
 				       $this->_table['incall'].'.id = '.$this->_table['dialaction'].'.categoryval',
 				       null,
-				       array('linked','action'));
+				       array('linked','action','actionarg1','actionarg2'));
 
 		$this->_dso->leftjoin($this->_table['userfeatures'],
 				      $this->_table['dialaction'].'.actionarg1 = '.$this->_table['userfeatures'].'.id',

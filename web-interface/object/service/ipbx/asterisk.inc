@@ -85,6 +85,14 @@ class xivo_service_asterisk extends xivo_service_abstract
 		return(($ref = &$r));
 	}
 
+	function identity($module,$arr)
+	{
+		if(($identity = &$this->get_identity($module)) === false)
+			return(false);
+
+		return($identity->mk_identity($arr));
+	}
+
 	function _load_realstatic_class($name)
 	{
 		$file = $name.'.inc';

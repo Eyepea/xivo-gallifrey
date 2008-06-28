@@ -133,8 +133,61 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			$ref = &$rs[$i];
-			$r[$ref['id']] = $ref;
+			$r[$rs[$i]['id']] = $rs[$i];
+
+			$ref = &$r[$rs[$i]['id']];
+
+			$ref['commented'] = (bool) $ref['commented'];
+			$ref['linked'] = (bool) $ref['linked'];
+
+			$arr = array();
+
+			switch($ref['action'])
+			{
+				case 'user':
+					$arr['firstname'] = $ref['userfirstname'];
+					$arr['lastname'] = $ref['userlastname'];
+					$arr['number'] = $ref['usernumber'];
+					$arr['context'] = $ref['usercontext'];
+					$arr['name'] = $ref['username'];
+					$ref['identity'] = $this->_service->identity('userfeatures',$arr);
+					break;
+				case 'group':
+					$arr['name'] = $ref['groupname'];
+					$arr['number'] = $ref['groupnumber'];
+					$arr['context'] = $ref['groupcontext'];
+					$ref['identity'] = $this->_service->identity('groupfeatures',$arr);
+					break;
+				case 'queue':
+					$arr['name'] = $ref['queuename'];
+					$arr['number'] = $ref['queuenumber'];
+					$arr['context'] = $ref['queuecontext'];
+					$ref['identity'] = $this->_service->identity('queuefeatures',$arr);
+					break;
+				case 'meetme':
+					$arr['name'] = $ref['meetmename'];
+					$arr['number'] = $ref['meetmenumber'];
+					$arr['context'] = $ref['meetmecontext'];
+					$ref['identity'] = $this->_service->identity('meetmefeatures',$arr);
+					break;
+				case 'voicemail':
+					$arr['fullname'] = $ref['voicemailfullname'];
+					$arr['mailbox'] = $ref['voicemailmailbox'];
+					$arr['context'] = $ref['voicemailcontext'];
+					$ref['identity'] = $this->_service->identity('voicemail',$arr);
+					break;
+				case 'voicemenu':
+					$arr['name'] = $ref['voicemenuname'];
+					$arr['number'] = $ref['voicemenunumber'];
+					$arr['context'] = $ref['voicemenucontext'];
+					$ref['identity'] = $this->_service->identity('voicemenu',$arr);
+					break;
+				case 'sound':
+					$ref['identity'] = basename($ref['actionarg1']);
+					break;
+				default:
+					$ref['identity'] = '-';
+			}
 		}
 
 		if(empty($r) === true)
