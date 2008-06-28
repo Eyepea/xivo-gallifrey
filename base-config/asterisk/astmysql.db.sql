@@ -1199,8 +1199,8 @@ CREATE TABLE `useriax` (
  `callerid` varchar(160),
  `callgroup` varchar(180),
  `context` varchar(39),
- `defaultip` varchar(15),
- `host` varchar(31) NOT NULL DEFAULT 'dynamic',
+ `defaultip` varchar(255),
+ `host` varchar(255) NOT NULL DEFAULT 'dynamic',
  `language` char(2),
  `mailbox` varchar(80),
  `deny` varchar(95),
@@ -1211,6 +1211,7 @@ CREATE TABLE `useriax` (
  `ipaddr` varchar(15),
  `port` smallint unsigned,
  `regseconds` int(10) unsigned DEFAULT 0,
+ `setvar` varchar(100) NOT NULL,
  `call-limit` tinyint(2) unsigned NOT NULL DEFAULT 0,
  `protocol` enum('iax') NOT NULL DEFAULT 'iax',
  `category` enum('user','trunk') NOT NULL,
@@ -1220,6 +1221,10 @@ CREATE TABLE `useriax` (
 CREATE INDEX `useriax__idx__commented` ON `useriax`(`commented`);
 CREATE INDEX `useriax__idx__protocol` ON `useriax`(`protocol`);
 CREATE INDEX `useriax__idx__category` ON `useriax`(`category`);
+CREATE INDEX `useriax__idx__name_host` ON `useriax`(`name`,`host`);
+CREATE INDEX `useriax__idx__name_ipaddr_port` ON `useriax`(`name`,`ipaddr`,`port`);
+CREATE INDEX `useriax__idx__ipaddr_port` ON `useriax`(`ipaddr`,`port`);
+CREATE INDEX `useriax__idx__host_port` ON `useriax`(`host`,`port`);
 CREATE UNIQUE INDEX `useriax__uidx__name` ON `useriax`(`name`);
 
 
@@ -1234,12 +1239,12 @@ CREATE TABLE `usersip` (
  `callerid` varchar(160),
  `canreinvite` char(3),
  `context` varchar(39),
- `defaultip` varchar(15),
+ `defaultip` varchar(255),
  `dtmfmode` varchar(7),
  `fromuser` varchar(80),
  `fromdomain` varchar(80),
  `fullcontact` varchar(80),
- `host` varchar(31) NOT NULL,
+ `host` varchar(255) NOT NULL DEFAULT 'dynamic',
  `insecure` varchar(11),
  `language` char(2),
  `mailbox` varchar(80),
@@ -1263,6 +1268,7 @@ CREATE TABLE `usersip` (
  `regseconds` int(10) unsigned NOT NULL DEFAULT 0,
  `ipaddr` varchar(15),
  `regexten` varchar(80),
+ `regserver` varchar(20),
  `cancallforward` char(3),
  `setvar` varchar(100) NOT NULL,
  `call-limit` tinyint(2) unsigned NOT NULL DEFAULT 0,
@@ -1274,9 +1280,11 @@ CREATE TABLE `usersip` (
 CREATE INDEX `usersip__idx__commented` ON `usersip`(`commented`);
 CREATE INDEX `usersip__idx__protocol` ON `usersip`(`protocol`);
 CREATE INDEX `usersip__idx__category` ON `usersip`(`category`);
+CREATE INDEX `usersip__idx__host_port` ON `usersip`(`host`,`port`);
+CREATE INDEX `usersip__idx__ipaddr_port` ON `usersip`(`ipaddr`,`port`);
 CREATE UNIQUE INDEX `usersip__uidx__name` ON `usersip`(`name`);
 
-INSERT INTO `usersip` VALUES (1,'guest',0,'','documentation','','Guest','no','initconfig',NULL,'rfc2833',NULL,NULL,'','dynamic',NULL,NULL,NULL,NULL,'no',NULL,NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'guest','friend','guest',NULL,NULL,NULL,0,NULL,NULL,NULL,'',0,'sip','user');
+INSERT INTO `usersip` VALUES (1,'guest',0,'','documentation','','Guest','no','initconfig',NULL,'rfc2833',NULL,NULL,'','dynamic',NULL,NULL,NULL,NULL,'no',NULL,NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'guest','friend','guest',NULL,NULL,NULL,0,NULL,NULL,NULL,NULL,'',0,'sip','user');
 
 
 DROP TABLE IF EXISTS `voicemail`;
