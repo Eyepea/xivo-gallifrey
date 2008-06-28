@@ -371,27 +371,6 @@ INSERT INTO features VALUES (NULL,1,0,0,'features.conf','featuremap','automon','
 INSERT INTO features VALUES (NULL,1,0,0,'features.conf','featuremap','disconnect','*0');
 
 
-DROP TABLE generalqueue;
-CREATE TABLE generalqueue (
- id integer unsigned,
- cat_metric integer unsigned NOT NULL DEFAULT 0,
- var_metric integer unsigned NOT NULL DEFAULT 0,
- commented tinyint(1) NOT NULL DEFAULT 0,
- filename varchar(128) NOT NULL,
- category varchar(128) NOT NULL,
- var_name varchar(128) NOT NULL,
- var_val varchar(128),
- PRIMARY KEY(id)
-);
-
-CREATE INDEX generalqueue__idx__commented ON generalqueue(commented);
-CREATE INDEX generalqueue__idx__filename ON generalqueue(filename);
-CREATE INDEX generalqueue__idx__category ON generalqueue(category);
-CREATE INDEX generalqueue__idx__var_name ON generalqueue(var_name);
-
-INSERT INTO generalqueue VALUES (1,0,0,0,'queues.conf','general','persistentmembers','yes');
-
-
 DROP TABLE groupfeatures;
 CREATE TABLE groupfeatures (
  id tinyint unsigned NOT NULL,
@@ -457,27 +436,6 @@ CREATE TABLE ldapfilter (
 CREATE INDEX ldapfilter__idx__ldapserverid ON ldapfilter(ldapserverid);
 CREATE INDEX ldapfilter__idx__commented ON ldapfilter(commented);
 CREATE UNIQUE INDEX ldapfilter__uidx__name ON ldapfilter(name);
-
-
-DROP TABLE meetme;
-CREATE TABLE meetme (
- id integer unsigned,
- cat_metric integer unsigned NOT NULL DEFAULT 0,
- var_metric integer unsigned NOT NULL DEFAULT 0,
- commented tinyint(1) NOT NULL DEFAULT 0,
- filename varchar(128) NOT NULL,
- category varchar(128) NOT NULL,
- var_name varchar(128) NOT NULL,
- var_val varchar(128),
- PRIMARY KEY(id)
-);
-
-CREATE INDEX meetme__idx__commented ON meetme(commented);
-CREATE INDEX meetme__idx__filename ON meetme(filename);
-CREATE INDEX meetme__idx__category ON meetme(category);
-CREATE INDEX meetme__idx__var_name ON meetme(var_name);
-
-INSERT INTO meetme VALUES (1,0,0,0,'meetme.conf','general','audiobuffer','32');
 
 
 DROP TABLE meetmefeatures;
@@ -899,6 +857,48 @@ INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','pingtime','20');
 INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','lagrqtime','10');
 INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','nochecksums','no');
 INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','autokill','yes');
+
+
+DROP TABLE staticmeetme;
+CREATE TABLE staticmeetme (
+ id integer unsigned,
+ cat_metric integer unsigned NOT NULL DEFAULT 0,
+ var_metric integer unsigned NOT NULL DEFAULT 0,
+ commented tinyint(1) NOT NULL DEFAULT 0,
+ filename varchar(128) NOT NULL,
+ category varchar(128) NOT NULL,
+ var_name varchar(128) NOT NULL,
+ var_val varchar(128),
+ PRIMARY KEY(id)
+);
+
+CREATE INDEX staticmeetme__idx__commented ON staticmeetme(commented);
+CREATE INDEX staticmeetme__idx__filename ON staticmeetme(filename);
+CREATE INDEX staticmeetme__idx__category ON staticmeetme(category);
+CREATE INDEX staticmeetme__idx__var_name ON staticmeetme(var_name);
+
+INSERT INTO staticmeetme VALUES (1,0,0,0,'meetme.conf','general','audiobuffer','32');
+
+
+DROP TABLE staticqueue;
+CREATE TABLE staticqueue (
+ id integer unsigned,
+ cat_metric integer unsigned NOT NULL DEFAULT 0,
+ var_metric integer unsigned NOT NULL DEFAULT 0,
+ commented tinyint(1) NOT NULL DEFAULT 0,
+ filename varchar(128) NOT NULL,
+ category varchar(128) NOT NULL,
+ var_name varchar(128) NOT NULL,
+ var_val varchar(128),
+ PRIMARY KEY(id)
+);
+
+CREATE INDEX staticqueue__idx__commented ON staticqueue(commented);
+CREATE INDEX staticqueue__idx__filename ON staticqueue(filename);
+CREATE INDEX staticqueue__idx__category ON staticqueue(category);
+CREATE INDEX staticqueue__idx__var_name ON staticqueue(var_name);
+
+INSERT INTO staticqueue VALUES (1,0,0,0,'queues.conf','general','persistentmembers','yes');
 
 
 DROP TABLE staticsip;

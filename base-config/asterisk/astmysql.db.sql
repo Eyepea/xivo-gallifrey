@@ -407,240 +407,6 @@ INSERT INTO `features` VALUES (NULL,1,0,0,'features.conf','featuremap','automon'
 INSERT INTO `features` VALUES (NULL,1,0,0,'features.conf','featuremap','disconnect','*0');
 
 
-DROP TABLE IF EXISTS `staticiax`;
-CREATE TABLE `staticiax` (
- `id` int(10) unsigned auto_increment,
- `cat_metric` int(10) unsigned NOT NULL DEFAULT 0,
- `var_metric` int(10) unsigned NOT NULL DEFAULT 0,
- `commented` tinyint(1) NOT NULL DEFAULT 0,
- `filename` varchar(128) NOT NULL,
- `category` varchar(128) NOT NULL,
- `var_name` varchar(128) NOT NULL,
- `var_val` varchar(255),
- PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
-CREATE INDEX `staticiax__idx__commented` ON `staticiax`(`commented`);
-CREATE INDEX `staticiax__idx__filename` ON `staticiax`(`filename`);
-CREATE INDEX `staticiax__idx__category` ON `staticiax`(`category`);
-CREATE INDEX `staticiax__idx__var_name` ON `staticiax`(`var_name`);
-
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','bindport','4569');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','bindaddr','0.0.0.0');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','iaxcompat','no');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','authdebug','yes');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','delayreject','no');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','trunkfreq','20');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','trunktimestamps','yes');
-INSERT INTO `staticiax` VALUES (NULL,0,0,1,'iax.conf','general','regcontext',NULL);
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','minregexpire','60');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','maxregexpire','60');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','bandwidth','high');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','tos','16');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','jitterbuffer','no');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','forcejitterbuffer','no');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','dropcount','3');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','maxjitterbuffer','1000');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','maxjitterinterps','10');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','resyncthreshold','1000');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','minexcessbuffer','10');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','maxexcessbuffer','50');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','jittershrinkrate','2');
-INSERT INTO `staticiax` VALUES (NULL,0,0,1,'iax.conf','general','accountcode',NULL);
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','amaflags','default');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','mailboxdetail','yes');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','notransfer','no');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','language','fr');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','encryption','no');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','maxauthreq','0');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','codecpriority','host');
-INSERT INTO `staticiax` VALUES (NULL,0,0,1,'iax.conf','general','disallow',NULL);
-INSERT INTO `staticiax` VALUES (NULL,0,0,1,'iax.conf','general','allow',NULL);
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','rtcachefriends','yes');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','rtupdate','yes');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','rtignoreregexpire','no');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','rtautoclear','no');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','pingtime','20');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','lagrqtime','10');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','nochecksums','no');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','autokill','yes');
-
-
-DROP TABLE IF EXISTS `generalqueue`;
-CREATE TABLE `generalqueue` (
- `id` int(10) unsigned auto_increment,
- `cat_metric` int(10) unsigned NOT NULL DEFAULT 0,
- `var_metric` int(10) unsigned NOT NULL DEFAULT 0,
- `commented` tinyint(1) NOT NULL DEFAULT 0,
- `filename` varchar(128) NOT NULL,
- `category` varchar(128) NOT NULL,
- `var_name` varchar(128) NOT NULL,
- `var_val` varchar(128),
- PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=ascii;
-
-CREATE INDEX `generalqueue__idx__commented` ON `generalqueue`(`commented`);
-CREATE INDEX `generalqueue__idx__filename` ON `generalqueue`(`filename`);
-CREATE INDEX `generalqueue__idx__category` ON `generalqueue`(`category`);
-CREATE INDEX `generalqueue__idx__var_name` ON `generalqueue`(`var_name`);
-
-INSERT INTO `generalqueue` VALUES (1,0,0,0,'queues.conf','general','persistentmembers','yes');
-
-
-DROP TABLE IF EXISTS `staticsip`;
-CREATE TABLE `staticsip` (
- `id` int(10) unsigned auto_increment,
- `cat_metric` int(10) unsigned NOT NULL DEFAULT 0,
- `var_metric` int(10) unsigned NOT NULL DEFAULT 0,
- `commented` tinyint(1) NOT NULL DEFAULT 0,
- `filename` varchar(128) NOT NULL,
- `category` varchar(128) NOT NULL,
- `var_name` varchar(128) NOT NULL,
- `var_val` varchar(255),
- PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
-CREATE INDEX `staticsip__idx__commented` ON `staticsip`(`commented`);
-CREATE INDEX `staticsip__idx__filename` ON `staticsip`(`filename`);
-CREATE INDEX `staticsip__idx__category` ON `staticsip`(`category`);
-CREATE INDEX `staticsip__idx__var_name` ON `staticsip`(`var_name`);
-
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','bindport',5060);
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','bindaddr','0.0.0.0');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','videosupport','no');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','autocreatepeer','no');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','allowguest','no');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','promiscredir','no');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','autodomain','no');
-INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','domain',NULL);
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','allowexternaldomains','yes');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','usereqphone','no');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','realm','xivo');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','alwaysauthreject','no');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','useragent','XIVO PBX');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','checkmwi',10);
-INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','regcontext',NULL);
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','callerid','xivo');
-INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','fromdomain',NULL);
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','sipdebug','no');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','dumphistory','no');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','recordhistory','no');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','callevents','no');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','tos','16');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','ospauth','no');
-INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','localnet',NULL);
-INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','externip',NULL);
-INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','externhost',NULL);
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','externrefresh',10);
-INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','outboundproxy',NULL);
-INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','outboundproxyport',NULL);
-INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','disallow',NULL);
-INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','allow',NULL);
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','relaxdtmf','no');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','compactheaders','no');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','rtptimeout',0);
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','rtpholdtimeout',0);
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','rtpkeepalive',0);
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','notifymimetype','application/simple-message-summary');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','srvlookup','no');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','pedantic','no');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','maxexpiry',3600);
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','defaultexpiry',120);
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','registertimeout',20);
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','registerattempts',0);
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','notifyringing','yes');
-INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','context',NULL);
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','nat','no');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','dtmfmode','info');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','qualify','no');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','useclientcode','no');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','progressinband','never');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','language','fr');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','musiconhold','default');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','vmexten','*98');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','trustrpid','no');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','sendrpid','no');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','canreinvite','yes');
-INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','insecure',NULL);
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','rtcachefriends','yes');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','rtupdate','yes');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','ignoreregexpire','no');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','rtautoclear','no');
-
-
-DROP TABLE IF EXISTS `staticvoicemail`;
-CREATE TABLE `staticvoicemail` (
- `id` int(10) unsigned auto_increment,
- `cat_metric` int(10) unsigned NOT NULL DEFAULT 0,
- `var_metric` int(10) unsigned NOT NULL DEFAULT 0,
- `commented` tinyint(1) NOT NULL DEFAULT 0,
- `filename` varchar(128) NOT NULL,
- `category` varchar(128) NOT NULL,
- `var_name` varchar(128) NOT NULL,
- `var_val` text,
- PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
-CREATE INDEX `staticvoicemail__idx__commented` ON `staticvoicemail`(`commented`);
-CREATE INDEX `staticvoicemail__idx__filename` ON `staticvoicemail`(`filename`);
-CREATE INDEX `staticvoicemail__idx__category` ON `staticvoicemail`(`category`);
-CREATE INDEX `staticvoicemail__idx__var_name` ON `staticvoicemail`(`var_name`);
-
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','maxmsg','100');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','silencethreshold','256');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','minmessage','0');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','maxmessage','0');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','maxsilence','15');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','review','yes');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','operator','yes');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','format','wav');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','maxlogins','3');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','envelope','yes');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','saycid','no');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','cidinternalcontexts',NULL);
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','sayduration','yes');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','saydurationm','2');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','forcename','no');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','forcegreetings','no');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','maxgreet','0');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','skipms','3000');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','sendvoicemail','no');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','usedirectory','yes');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','nextaftercmd','yes');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','dialout',NULL);
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','callback',NULL);
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','exitcontext',NULL);
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','attach','yes');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','mailcmd','/usr/sbin/sendmail -t');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','serveremail','xivo');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','charset','UTF-8');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','fromstring','XIVO PBX');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','emaildateformat','%A, %B %d, %Y à %r');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','pbxskip','no');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','emailsubject','Messagerie XIVO');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','emailbody','Bonjour ${VM_NAME} !
-
-Vous avez reçu un message d\'une durée de ${VM_DUR} minute(s), il vous reste actuellement ${VM_MSGNUM} message(s) non lu(s) sur votre messagerie vocale : ${VM_MAILBOX}.
-
-Le dernier a été envoyé par ${VM_CALLERID}, le ${VM_DATE}. Si vous le souhaitez vous pouvez l\'écouter ou le consulter en tapant le *98 sur votre téléphone.
-
-Merci.
-
--- Messagerie XIVO --');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','pagerfromstring','XIVO PBX');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','pagersubject',NULL);
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','pagerbody',NULL);
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','adsifdn','0000000F');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','adsisec','9BDBF7AC');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','adsiver','1');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','searchcontexts','no');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','externpass','/usr/share/asterisk/bin/change-pass-vm');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','externnotify',NULL);
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','odbcstorage',NULL);
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','odbctable',NULL);
-INSERT INTO `staticvoicemail` VALUES (NULL,1,0,0,'voicemail.conf','zonemessages','eu-fr','Europe/Paris|\'vm-received\' q \'digits/at\' kM');
-
-
 DROP TABLE IF EXISTS `groupfeatures`;
 CREATE TABLE `groupfeatures` (
  `id` tinyint(2) unsigned auto_increment,
@@ -706,27 +472,6 @@ CREATE TABLE `ldapfilter` (
 CREATE INDEX `ldapfilter__idx__ldapserverid` ON `ldapfilter`(`ldapserverid`);
 CREATE INDEX `ldapfilter__idx__commented` ON `ldapfilter`(`commented`);
 CREATE UNIQUE INDEX `ldapfilter__uidx__name` ON `ldapfilter`(`name`);
-
-
-DROP TABLE IF EXISTS `meetme`;
-CREATE TABLE `meetme` (
- `id` int(10) unsigned auto_increment,
- `cat_metric` int(10) unsigned NOT NULL DEFAULT 0,
- `var_metric` int(10) unsigned NOT NULL DEFAULT 0,
- `commented` tinyint(1) NOT NULL DEFAULT 0,
- `filename` varchar(128) NOT NULL,
- `category` varchar(128) NOT NULL,
- `var_name` varchar(128) NOT NULL,
- `var_val` varchar(128),
- PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=ascii;
-
-CREATE INDEX `meetme__idx__commented` ON `meetme`(`commented`);
-CREATE INDEX `meetme__idx__filename` ON `meetme`(`filename`);
-CREATE INDEX `meetme__idx__category` ON `meetme`(`category`);
-CREATE INDEX `meetme__idx__var_name` ON `meetme`(`var_name`);
-
-INSERT INTO `meetme` VALUES (1,0,0,0,'meetme.conf','general','audiobuffer','32');
 
 
 DROP TABLE IF EXISTS `meetmefeatures`;
@@ -1089,6 +834,261 @@ CREATE INDEX `serverfeatures__idx__feature` ON `serverfeatures`(`feature`);
 CREATE INDEX `serverfeatures__idx__type` ON `serverfeatures`(`type`);
 CREATE INDEX `serverfeatures__idx__commented` ON `serverfeatures`(`commented`);
 CREATE UNIQUE INDEX `serverfeatures__uidx__serverid_feature_type` ON `serverfeatures`(`serverid`,`feature`,`type`);
+
+
+DROP TABLE IF EXISTS `staticiax`;
+CREATE TABLE `staticiax` (
+ `id` int(10) unsigned auto_increment,
+ `cat_metric` int(10) unsigned NOT NULL DEFAULT 0,
+ `var_metric` int(10) unsigned NOT NULL DEFAULT 0,
+ `commented` tinyint(1) NOT NULL DEFAULT 0,
+ `filename` varchar(128) NOT NULL,
+ `category` varchar(128) NOT NULL,
+ `var_name` varchar(128) NOT NULL,
+ `var_val` varchar(255),
+ PRIMARY KEY(`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE INDEX `staticiax__idx__commented` ON `staticiax`(`commented`);
+CREATE INDEX `staticiax__idx__filename` ON `staticiax`(`filename`);
+CREATE INDEX `staticiax__idx__category` ON `staticiax`(`category`);
+CREATE INDEX `staticiax__idx__var_name` ON `staticiax`(`var_name`);
+
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','bindport','4569');
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','bindaddr','0.0.0.0');
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','iaxcompat','no');
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','authdebug','yes');
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','delayreject','no');
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','trunkfreq','20');
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','trunktimestamps','yes');
+INSERT INTO `staticiax` VALUES (NULL,0,0,1,'iax.conf','general','regcontext',NULL);
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','minregexpire','60');
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','maxregexpire','60');
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','bandwidth','high');
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','tos','16');
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','jitterbuffer','no');
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','forcejitterbuffer','no');
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','dropcount','3');
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','maxjitterbuffer','1000');
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','maxjitterinterps','10');
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','resyncthreshold','1000');
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','minexcessbuffer','10');
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','maxexcessbuffer','50');
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','jittershrinkrate','2');
+INSERT INTO `staticiax` VALUES (NULL,0,0,1,'iax.conf','general','accountcode',NULL);
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','amaflags','default');
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','mailboxdetail','yes');
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','notransfer','no');
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','language','fr');
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','encryption','no');
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','maxauthreq','0');
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','codecpriority','host');
+INSERT INTO `staticiax` VALUES (NULL,0,0,1,'iax.conf','general','disallow',NULL);
+INSERT INTO `staticiax` VALUES (NULL,0,0,1,'iax.conf','general','allow',NULL);
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','rtcachefriends','yes');
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','rtupdate','yes');
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','rtignoreregexpire','no');
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','rtautoclear','no');
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','pingtime','20');
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','lagrqtime','10');
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','nochecksums','no');
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','autokill','yes');
+
+
+DROP TABLE IF EXISTS `staticmeetme`;
+CREATE TABLE `staticmeetme` (
+ `id` int(10) unsigned auto_increment,
+ `cat_metric` int(10) unsigned NOT NULL DEFAULT 0,
+ `var_metric` int(10) unsigned NOT NULL DEFAULT 0,
+ `commented` tinyint(1) NOT NULL DEFAULT 0,
+ `filename` varchar(128) NOT NULL,
+ `category` varchar(128) NOT NULL,
+ `var_name` varchar(128) NOT NULL,
+ `var_val` varchar(128),
+ PRIMARY KEY(`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;
+
+CREATE INDEX `staticmeetme__idx__commented` ON `staticmeetme`(`commented`);
+CREATE INDEX `staticmeetme__idx__filename` ON `staticmeetme`(`filename`);
+CREATE INDEX `staticmeetme__idx__category` ON `staticmeetme`(`category`);
+CREATE INDEX `staticmeetme__idx__var_name` ON `staticmeetme`(`var_name`);
+
+INSERT INTO `staticmeetme` VALUES (1,0,0,0,'meetme.conf','general','audiobuffer','32');
+
+
+DROP TABLE IF EXISTS `staticqueue`;
+CREATE TABLE `staticqueue` (
+ `id` int(10) unsigned auto_increment,
+ `cat_metric` int(10) unsigned NOT NULL DEFAULT 0,
+ `var_metric` int(10) unsigned NOT NULL DEFAULT 0,
+ `commented` tinyint(1) NOT NULL DEFAULT 0,
+ `filename` varchar(128) NOT NULL,
+ `category` varchar(128) NOT NULL,
+ `var_name` varchar(128) NOT NULL,
+ `var_val` varchar(128),
+ PRIMARY KEY(`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;
+
+CREATE INDEX `staticqueue__idx__commented` ON `staticqueue`(`commented`);
+CREATE INDEX `staticqueue__idx__filename` ON `staticqueue`(`filename`);
+CREATE INDEX `staticqueue__idx__category` ON `staticqueue`(`category`);
+CREATE INDEX `staticqueue__idx__var_name` ON `staticqueue`(`var_name`);
+
+INSERT INTO `staticqueue` VALUES (1,0,0,0,'queues.conf','general','persistentmembers','yes');
+
+
+DROP TABLE IF EXISTS `staticsip`;
+CREATE TABLE `staticsip` (
+ `id` int(10) unsigned auto_increment,
+ `cat_metric` int(10) unsigned NOT NULL DEFAULT 0,
+ `var_metric` int(10) unsigned NOT NULL DEFAULT 0,
+ `commented` tinyint(1) NOT NULL DEFAULT 0,
+ `filename` varchar(128) NOT NULL,
+ `category` varchar(128) NOT NULL,
+ `var_name` varchar(128) NOT NULL,
+ `var_val` varchar(255),
+ PRIMARY KEY(`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE INDEX `staticsip__idx__commented` ON `staticsip`(`commented`);
+CREATE INDEX `staticsip__idx__filename` ON `staticsip`(`filename`);
+CREATE INDEX `staticsip__idx__category` ON `staticsip`(`category`);
+CREATE INDEX `staticsip__idx__var_name` ON `staticsip`(`var_name`);
+
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','bindport',5060);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','bindaddr','0.0.0.0');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','videosupport','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','autocreatepeer','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','allowguest','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','promiscredir','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','autodomain','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','domain',NULL);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','allowexternaldomains','yes');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','usereqphone','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','realm','xivo');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','alwaysauthreject','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','useragent','XIVO PBX');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','checkmwi',10);
+INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','regcontext',NULL);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','callerid','xivo');
+INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','fromdomain',NULL);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','sipdebug','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','dumphistory','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','recordhistory','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','callevents','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','tos','16');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','ospauth','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','localnet',NULL);
+INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','externip',NULL);
+INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','externhost',NULL);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','externrefresh',10);
+INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','outboundproxy',NULL);
+INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','outboundproxyport',NULL);
+INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','disallow',NULL);
+INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','allow',NULL);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','relaxdtmf','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','compactheaders','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','rtptimeout',0);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','rtpholdtimeout',0);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','rtpkeepalive',0);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','notifymimetype','application/simple-message-summary');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','srvlookup','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','pedantic','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','maxexpiry',3600);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','defaultexpiry',120);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','registertimeout',20);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','registerattempts',0);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','notifyringing','yes');
+INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','context',NULL);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','nat','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','dtmfmode','info');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','qualify','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','useclientcode','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','progressinband','never');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','language','fr');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','musiconhold','default');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','vmexten','*98');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','trustrpid','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','sendrpid','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','canreinvite','yes');
+INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','insecure',NULL);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','rtcachefriends','yes');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','rtupdate','yes');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','ignoreregexpire','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','rtautoclear','no');
+
+
+DROP TABLE IF EXISTS `staticvoicemail`;
+CREATE TABLE `staticvoicemail` (
+ `id` int(10) unsigned auto_increment,
+ `cat_metric` int(10) unsigned NOT NULL DEFAULT 0,
+ `var_metric` int(10) unsigned NOT NULL DEFAULT 0,
+ `commented` tinyint(1) NOT NULL DEFAULT 0,
+ `filename` varchar(128) NOT NULL,
+ `category` varchar(128) NOT NULL,
+ `var_name` varchar(128) NOT NULL,
+ `var_val` text,
+ PRIMARY KEY(`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE INDEX `staticvoicemail__idx__commented` ON `staticvoicemail`(`commented`);
+CREATE INDEX `staticvoicemail__idx__filename` ON `staticvoicemail`(`filename`);
+CREATE INDEX `staticvoicemail__idx__category` ON `staticvoicemail`(`category`);
+CREATE INDEX `staticvoicemail__idx__var_name` ON `staticvoicemail`(`var_name`);
+
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','maxmsg','100');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','silencethreshold','256');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','minmessage','0');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','maxmessage','0');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','maxsilence','15');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','review','yes');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','operator','yes');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','format','wav');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','maxlogins','3');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','envelope','yes');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','saycid','no');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','cidinternalcontexts',NULL);
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','sayduration','yes');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','saydurationm','2');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','forcename','no');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','forcegreetings','no');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','maxgreet','0');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','skipms','3000');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','sendvoicemail','no');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','usedirectory','yes');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','nextaftercmd','yes');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','dialout',NULL);
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','callback',NULL);
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','exitcontext',NULL);
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','attach','yes');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','mailcmd','/usr/sbin/sendmail -t');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','serveremail','xivo');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','charset','UTF-8');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','fromstring','XIVO PBX');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','emaildateformat','%A, %B %d, %Y à %r');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','pbxskip','no');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','emailsubject','Messagerie XIVO');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','emailbody','Bonjour ${VM_NAME} !
+
+Vous avez reçu un message d\'une durée de ${VM_DUR} minute(s), il vous reste actuellement ${VM_MSGNUM} message(s) non lu(s) sur votre messagerie vocale : ${VM_MAILBOX}.
+
+Le dernier a été envoyé par ${VM_CALLERID}, le ${VM_DATE}. Si vous le souhaitez vous pouvez l\'écouter ou le consulter en tapant le *98 sur votre téléphone.
+
+Merci.
+
+-- Messagerie XIVO --');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','pagerfromstring','XIVO PBX');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','pagersubject',NULL);
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','pagerbody',NULL);
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','adsifdn','0000000F');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','adsisec','9BDBF7AC');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','adsiver','1');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','searchcontexts','no');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','externpass','/usr/share/asterisk/bin/change-pass-vm');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','externnotify',NULL);
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','odbcstorage',NULL);
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','odbctable',NULL);
+INSERT INTO `staticvoicemail` VALUES (NULL,1,0,0,'voicemail.conf','zonemessages','eu-fr','Europe/Paris|\'vm-received\' q \'digits/at\' kM');
 
 
 DROP TABLE IF EXISTS `trunkfeatures`;
