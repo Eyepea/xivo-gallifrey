@@ -93,7 +93,12 @@ $array['element']['ipaddr']['default'] = '';
 $array['element']['ipaddr']['null'] = true;
 
 $array['element']['regexten'] = array();
-$array['element']['regexten']['default'] = 0;
+$array['element']['regexten']['default'] = '';
+$array['element']['regexten']['null'] = true;
+
+$array['element']['regserver'] = array();
+$array['element']['regserver']['default'] = '';
+$array['element']['regserver']['null'] = true;
 
 $array['element']['setvar'] = array();
 $array['element']['setvar']['default'] = '';
@@ -169,6 +174,7 @@ $array['filter']['allow'] = array('set' => false,'chk' => 2,'uvalue' => array(
 $array['filter']['port'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
 $array['filter']['ipaddr'] = array('set' => false,'chk' => 0);
 $array['filter']['regexten'] = array('set' => false,'chk' => 0);
+$array['filter']['regserver'] = array('set' => false,'chk' => 0);
 $array['filter']['setvar'] = array('set' => false,'chk' => 0);
 $array['filter']['fromuser'] = array('set' => false,'chk' => 2,'maxlen' => 80);
 $array['filter']['fromdomain'] = array('set' => false,'chk' => 2,'callback' => 'xivo_filter::chk_host_ipv4_strict');

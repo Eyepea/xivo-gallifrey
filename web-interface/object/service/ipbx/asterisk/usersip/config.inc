@@ -95,6 +95,10 @@ $array['element']['regexten'] = array();
 $array['element']['regexten']['default'] = '';
 $array['element']['regexten']['null'] = true;
 
+$array['element']['regserver'] = array();
+$array['element']['regserver']['default'] = '';
+$array['element']['regserver']['null'] = true;
+
 $array['element']['accountcode'] = array();
 $array['element']['accountcode']['default'] = '';
 
@@ -174,6 +178,7 @@ $array['filter']['type'] = array('set' => false,'chk' => 0);
 $array['filter']['port'] = array('set' => false,'chk' => 0);
 $array['filter']['ipaddr'] = array('set' => false,'chk' => 0);
 $array['filter']['regexten'] = array('set' => false,'chk' => 0);
+$array['filter']['regserver'] = array('set' => false,'chk' => 0);
 $array['filter']['setvar'] = array('set' => false,'chk' => 0);
 $array['filter']['username'] = array('set' => false,'chk' => 2,'maxlen' => 80);
 $array['filter']['mailbox'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9#\*]{1,40}(?:@[a-z0-9@_\-]{1,39})?$/','maxlen' => 80);

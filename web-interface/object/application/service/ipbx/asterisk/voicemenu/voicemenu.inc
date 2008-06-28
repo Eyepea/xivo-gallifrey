@@ -367,26 +367,6 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 		return(($this->get_errnb() < 1));
 	}
 
-	function _set_voicemenumacro($action,$voicemenuid)
-	{
-		$rs = false;
-
-		if(($voicemenuid = xivo_ulongint($voicemenuid)) === 0
-		|| ($rs = $this->get_result('voicemenumacro')) === null
-		|| $rs === false)
-			return($rs);
-		else if(($rsmacro = $this->set_macro($action,
-						     'voicemenumacro',
-						     $rs['exten'],
-						     $this->_mk_voicemenumacro_appdata($voicemenuid),
-						     $rs['context'])) === false)
-			return(false);
-
-		$this->_set_result('voicemenumacro',$rsmacro);
-
-		return(true);
-	}
-
 	function set_voicemenu($arr,$setval=true)
 	{
 		if(is_array($arr) === false)
@@ -406,6 +386,26 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 		}
 
 		$this->_set_result('voicemenu',$rs);
+
+		return(true);
+	}
+
+	function _set_voicemenumacro($action,$voicemenuid)
+	{
+		$rs = false;
+
+		if(($voicemenuid = xivo_ulongint($voicemenuid)) === 0
+		|| ($rs = $this->get_result('voicemenumacro')) === null
+		|| $rs === false)
+			return($rs);
+		else if(($rsmacro = $this->set_macro($action,
+						     'voicemenumacro',
+						     $rs['exten'],
+						     $this->_mk_voicemenumacro_appdata($voicemenuid),
+						     $rs['context'])) === false)
+			return(false);
+
+		$this->_set_result('voicemenumacro',$rsmacro);
 
 		return(true);
 	}

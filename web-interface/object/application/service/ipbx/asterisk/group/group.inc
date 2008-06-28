@@ -60,7 +60,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		if($this->_components === false)
 			return($this->_info);
 
-		$this->_get_exten();
+		$this->_get_groupmacro();
 		$this->_get_extenumbers($this->_info['gfeatures']['id']);
 		$this->_get_user();
 		$this->_get_rightcall($this->_info['gfeatures']['id']);
@@ -80,17 +80,17 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		return($this->_queue->get_nb($arr,$disable));
 	}
 
-	function _get_exten()
+	function _get_groupmacro()
 	{
-		$this->_info['exten'] = false;
-		$this->_origin['exten'] = false;
+		$this->_info['groupmacro'] = false;
+		$this->_origin['groupmacro'] = false;
 
-		if(($this->_info['exten'] = $this->_extensions->get_exten($this->_info['gfeatures']['number'],
-									  $this->_info['gfeatures']['context'],
-									  'macro')) !== false)
-			$this->_origin['exten'] = $this->_extensions->get_origin();
+		if(($this->_info['groupmacro'] = $this->_extensions->get_exten($this->_info['gfeatures']['number'],
+									       $this->_info['gfeatures']['context'],
+									       'macro')) !== false)
+			$this->_origin['groupmacro'] = $this->_extensions->get_origin();
 
-		return($this->_info['exten']);
+		return($this->_info['groupmacro']);
 	}
 
 	function _get_user()
@@ -178,6 +178,16 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		return($r);
 	}
 
+	function _mk_groupmacro_appdata($gfeaturesid,$timeout=1)
+	{
+		$arr = array();
+		$arr['appdata'][0] = XIVO_SRE_IPBX_AST_GROUP_MACRO;
+		$arr['appdata'][1] = xivo_ulongint($gfeaturesid);
+		$arr['appdata'][2] = xivo_ufloat($timeout);
+
+		return($arr);
+	}
+
 	function set_add($arr)
 	{
 		return($this->_set('add',$arr));
@@ -212,9 +222,11 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 
 		if($this->_errnb === 0 && $number !== '')
 		{
-			$appdata = array('appdata' => XIVO_SRE_IPBX_AST_GROUP_MACRO);
-			if(($rsexten = $this->set_macro($action,'exten',$number,$appdata,$context)) !== false)
-				$this->_set_result('exten',$rsexten);
+			if(($rsgroupmacro = $this->chk_macro('groupmacro',
+								 $number,
+								 $this->_mk_groupmacro_appdata(0),
+								 $context)) !== false)
+				$this->_set_result('groupmacro',$rsgroupmacro);
 
 			$this->set_extenumbers($action,$number,$context);
 		}
@@ -277,6 +289,26 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		}
 
 		$this->_set_result('queue',$rs);
+
+		return(true);
+	}
+
+	function _set_groupmacro($action,$gfeaturesid)
+	{
+		$rs = false;
+
+		if(($gfeaturesid = xivo_ulongint($gfeaturesid)) === 0
+		|| ($rs = $this->get_result('groupmacro')) === null
+		|| $rs === false)
+			return($rs);
+		else if(($rsmacro = $this->set_macro($action,
+						     'groupmacro',
+						     $rs['exten'],
+						     $this->_mk_groupmacro_appdata($gfeaturesid),
+						     $rs['context'])) === false)
+			return(false);
+
+		$this->_set_result('groupmacro',$rsmacro);
 
 		return(true);
 	}
@@ -385,7 +417,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		if($this->get_errnb() > 0
 		|| ($gfeaturesid = $this->add_groupfeatures()) === false
 		|| $this->add_queue() === false
-		|| $this->add_macro('exten') === false
+		|| $this->add_groupmacro($gfeaturesid) === false
 		|| $this->add_extenumbers($gfeaturesid) === false
 		|| $this->add_user() === false
 		|| $this->add_rightcall($gfeaturesid) === false
@@ -427,6 +459,14 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		$this->_return['queue'] = $rs['name'];
 
 		return($this->_return['queue']);
+	}
+
+	function add_groupmacro($gfeaturesid)
+	{
+		if(($rs = $this->_set_groupmacro('add',$gfeaturesid)) !== true)
+			return($rs);
+
+		return(parent::add_macro('groupmacro'));
 	}
 
 	function add_user()
@@ -511,7 +551,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 				case 'queue':
 					$this->_queue->delete($val);
 					break;
-				case 'exten':
+				case 'groupmacro':
 					$this->_extensions->delete_exten($val);
 					break;
 				case 'extenumbers':
@@ -566,14 +606,14 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 
 		if($this->_info['gfeatures']['number'] !== '')
 		{
-			if($this->get_result('exten') === null
+			if($this->get_result('groupmacro') === null
 			|| $this->get_result('extenumbers') === null)
 			{
 				$unlinks = true;
-				$this->delete_macro('exten');
+				$this->delete_macro('groupmacro');
 				$this->delete_extenumbers();
 			}
-			else if($this->edit_macro('exten') === false
+			else if($this->edit_groupmacro($this->_info['gfeatures']['id']) === false
 			|| $this->edit_extenumbers() === false)
 			{
 				$this->_reverse_edit();
@@ -581,7 +621,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 				return(false);
 			}
 		}
-		else if($this->add_macro('exten') === false
+		else if($this->add_groupmacro($this->_info['gfeatures']['id']) === false
 		|| $this->add_extenumbers($this->_info['gfeatures']['id']) === false)
 		{
 			$this->_reverse_edit();
@@ -632,6 +672,14 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		$this->_return['queue'] = $rs['name'];
 
 		return($this->_return['queue']);
+	}
+
+	function edit_groupmacro($gfeaturesid)
+	{
+		if(($rs = $this->_set_groupmacro('edit',$gfeaturesid)) !== true)
+			return($rs);
+
+		return(parent::edit_macro('groupmacro'));
 	}
 
 	function edit_user($name)
@@ -789,12 +837,12 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 					else
 						$this->_queue->edit_origin($this->_origin['queue']);
 					break;
-				case 'exten':
-					if(isset($this->_origin['exten']) === false
-					|| $this->_origin['exten'] === false)
-						$this->delete_macro('exten');
+				case 'groupmacro':
+					if(isset($this->_origin['groupmacro']) === false
+					|| $this->_origin['groupmacro'] === false)
+						$this->delete_macro('groupmacro');
 					else
-						$this->_extensions->edit_origin($this->_origin['exten']);
+						$this->_extensions->edit_origin($this->_origin['groupmacro']);
 					break;
 				case 'extenumbers':
 					$this->_extenumbers->reverse_edit($this->_status);
@@ -831,7 +879,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 
 		if($this->delete_groupfeatures() === false
 		|| $this->delete_queue() === false
-		|| $this->delete_macro('exten') === false
+		|| $this->delete_macro('groupmacro') === false
 		|| $this->delete_extenumbers() === false
 		|| $this->delete_user($this->_info['gfeatures']['name']) === false
 		|| $this->delete_rightcall() === false
@@ -843,7 +891,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 			return(false);
 		}
 
-		if(isset($this->_return['exten']) === true
+		if(isset($this->_return['groupmacro']) === true
 		|| isset($this->_return['extenumbers']) === true)
 			$this->unlinks();
 
@@ -933,10 +981,10 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 					&& $this->_origin['queue'] !== false)
 						$this->_queue->add_origin($this->_origin['queue']);
 					break;
-				case 'exten':
-					if(isset($this->_origin['exten']) === true
-					&& $this->_origin['exten'] !== false)
-						$this->_extensions->add_origin($this->_origin['exten']);
+				case 'groupmacro':
+					if(isset($this->_origin['groupmacro']) === true
+					&& $this->_origin['groupmacro'] !== false)
+						$this->_extensions->add_origin($this->_origin['groupmacro']);
 					break;
 				case 'extenumbers':
 					if(isset($this->_origin['extenumbers']) === true

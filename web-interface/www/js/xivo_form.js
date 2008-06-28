@@ -774,13 +774,11 @@ function xivo_fm_enable_disable_field(form,name,disable,exform,exformtag)
 	return(true);
 }
 
-function xivo_fm_reset_field(obj,selected)
+function xivo_fm_reset_field(obj,empty)
 {
 	if(xivo_is_undef(obj.tagName) == true
 	|| xivo_is_undef(obj.type) == true)
 		return(false);
-
-	selected = selected === true;
 
 	switch(obj.tagName.toLowerCase())
 	{
@@ -791,10 +789,10 @@ function xivo_fm_reset_field(obj,selected)
 			else if(obj.type == 'text'
 			|| obj.type == 'file'
 			|| obj.type == 'password')
-				obj.value = obj.defaultValue;
+				obj.value = Boolean(empty) === false ? obj.defaultValue : '';
 			break;
 		case 'textearea':
-				obj.value = obj.defaultValue;
+				obj.value = Boolean(empty) === false ? obj.defaultValue : '';
 			break;
 		case 'select':
 			if(obj.type != 'select-multiple' && obj.type != 'select-one')
@@ -810,7 +808,7 @@ function xivo_fm_reset_field(obj,selected)
 	return(true);
 }
 
-function xivo_fm_reset_child_field(obj)
+function xivo_fm_reset_child_field(obj,empty)
 {
 	if(xivo_is_object(obj) == false)
 		return(false);
@@ -820,7 +818,7 @@ function xivo_fm_reset_child_field(obj)
 		var tag_input_nb = tag_input.length;
 
 		for(i = 0;i < tag_input_nb;i++)
-			xivo_fm_reset_field(tag_input[i]);
+			xivo_fm_reset_field(tag_input[i],empty);
 	}
 
 	if((tag_select = xivo_etag('select',obj)) != false)
@@ -836,7 +834,7 @@ function xivo_fm_reset_child_field(obj)
 		var tag_textarea_nb = tag_textarea.length;
 
 		for(i = 0;i < tag_textarea_nb;i++)
-			xivo_fm_reset_field(tag_textarea[i]);
+			xivo_fm_reset_field(tag_textarea[i],empty);
 	}
 
 	return(true);

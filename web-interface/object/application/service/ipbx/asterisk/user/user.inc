@@ -116,7 +116,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if($this->_components === false)
 			return($this->_info);
 
-		$this->_get_exten();
+		$this->_get_usermacro();
 		$this->_get_hints();
 		$this->_get_extenumbers($this->_info['ufeatures']['id']);
 		$this->_get_groupmember();
@@ -141,18 +141,18 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return($this->_dso->get_nb($arr,$disable,$initialized));
 	}
 
-	function _get_exten()
+	function _get_usermacro()
 	{
-		$this->_info['exten'] = false;
-		$this->_origin['exten'] = false;
+		$this->_info['usermacro'] = false;
+		$this->_origin['usermacro'] = false;
 
 		if(isset($this->_info['protocol']['context']) === true
-		&& ($this->_info['exten'] = $this->_extensions->get_exten($this->_info['ufeatures']['number'],
-									  $this->_info['protocol']['context'],
-									  'macro')) !== false)
-			$this->_origin['exten'] = $this->_extensions->get_origin();
+		&& ($this->_info['usermacro'] = $this->_extensions->get_exten($this->_info['ufeatures']['number'],
+									      $this->_info['protocol']['context'],
+									      'macro')) !== false)
+			$this->_origin['usermacro'] = $this->_extensions->get_origin();
 
-		return($this->_info['exten']);
+		return($this->_info['usermacro']);
 	}
 
 	function _get_hints()
@@ -541,6 +541,16 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return(true);
 	}
 
+	function _mk_usermacro_appdata($ufeaturesid,$timeout=0)
+	{
+		$arr = array();
+		$arr['appdata'][0] = XIVO_SRE_IPBX_AST_USER_MACRO;
+		$arr['appdata'][1] = xivo_ulongint($ufeaturesid);
+		$arr['appdata'][2] = xivo_ufloat($timeout);
+
+		return($arr);
+	}
+
 	function set_add($arr,$protocolname)
 	{
 		return($this->_set('add',$arr,$protocolname));
@@ -621,11 +631,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if($this->_errnb === 0 && $numhaslen === true)
 		{
-			$appdata = array('appdata' => XIVO_SRE_IPBX_AST_USER_MACRO);
-
-			if($this->set_macro($action,'exten',$number,$appdata,$context) !== false)
-				$this->_set_result('exten',array('exten'	=> $number,
-								 'context'	=> $context));
+			if(($rsusermacro = $this->chk_macro('usermacro',
+							    $number,
+							    $this->_mk_usermacro_appdata(0),
+							    $context)) !== false)
+				$this->_set_result('usermacro',$rsusermacro);
 
 			$this->set_extenumbers($action,$number,$context);
 		}
@@ -731,6 +741,26 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		}
 
 		$this->_set_result('ufeatures',$rs);
+
+		return(true);
+	}
+
+	function _set_usermacro($action,$ufeaturesid)
+	{
+		$rs = false;
+
+		if(($ufeaturesid = xivo_ulongint($ufeaturesid)) === 0
+		|| ($rs = $this->get_result('usermacro')) === null
+		|| $rs === false)
+			return($rs);
+		else if(($rsmacro = $this->set_macro($action,
+						     'usermacro',
+						     $rs['exten'],
+						     $this->_mk_usermacro_appdata($ufeaturesid),
+						     $rs['context'])) === false)
+			return(false);
+
+		$this->_set_result('usermacro',$rsmacro);
 
 		return(true);
 	}
@@ -982,7 +1012,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| $this->_protocolname === false
 		|| ($protocolid = $this->add_protocol()) === false
 		|| ($ufeaturesid = $this->add_userfeatures($protocolid)) === false
-		|| $this->add_macro('exten',$ufeaturesid) === false
+		|| $this->update_protocol_setvar($protocolid,$ufeaturesid) === false
+		|| $this->add_usermacro($ufeaturesid) === false
 		|| $this->add_hints() === false
 		|| $this->add_extenumbers($ufeaturesid) === false
 		|| $this->add_groupmember($ufeaturesid) === false
@@ -1012,9 +1043,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| ($protocol = &$this->_service->get_protocol_module($this->_protocolname)) === false)
 			return(false);
 
-		$this->_return['protocol'] = $protocol->add($rs);
-
-		return($this->_return['protocol']);
+		return(($this->_return['protocol'] = $protocol->add($rs)));
 	}
 
 	function add_userfeatures($protocolid)
@@ -1025,31 +1054,31 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			return(false);
 
 		$rs['protocolid'] = $protocolid;
-		$this->_return['userfeatures'] = $this->_userfeatures->add($rs);
 
-		return($this->_return['userfeatures']);
+		return(($this->_return['userfeatures'] = $this->_userfeatures->add($rs)));
 	}
 
-	function add_macro($name,$ufeaturesid)
+	function update_protocol_setvar($protocolid,$ufeaturesid)
 	{
-		$rs = false;
-
-		if(($ufeaturesid = xivo_ulongint($ufeaturesid)) === 0
-		|| ($rs = $this->get_result($name)) === null
-		|| $rs === false)
-			return($rs);
-
-		$appdata = array();
-		$appdata['appdata'][0] = XIVO_SRE_IPBX_AST_USER_MACRO;
-		$appdata['appdata'][1] = $ufeaturesid;
-		$appdata['appdata'][2] = 0;
-
-		if(($rsexten = $this->set_macro('add',$name,$rs['exten'],$appdata,$rs['context'])) === false)
+		if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
+			return(null);
+		else if(($protocolid = xivo_ulongint($protocolid)) === 0
+		|| ($ufeaturesid = xivo_ulongint($ufeaturesid)) === 0
+		|| ($protocol = &$this->_service->get_protocol_module($this->_protocolname)) === false)
 			return(false);
 
-		$this->_set_result($name,$rsexten);
+		$val = array();
+		$val['setvar'] = 'XIVO_USERID='.$ufeaturesid;
+		
+		return($protocol->edit($protocolid,$val));
+	}
 
-		return(parent::add_macro($name));
+	function add_usermacro($ufeaturesid)
+	{
+		if(($rs = $this->_set_usermacro('add',$ufeaturesid)) !== true)
+			return($rs);
+
+		return(parent::add_macro('usermacro'));
 	}
 
 	function add_hints()
@@ -1057,9 +1086,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if(($rs = $this->get_result('hints')) === null || $rs === false)
 			return($rs);
 
-		$this->_return['hints'] = $this->_extensions->add_hints($rs);
-
-		return($this->_return['hints']);
+		return(($this->_return['hints'] = $this->_extensions->add_hints($rs)));
 	}
 
 	function add_groupmember($ufeaturesid)
@@ -1220,7 +1247,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				case 'userfeatures':
 					$this->_userfeatures->delete($val);
 					break;
-				case 'exten':
+				case 'usermacro':
 					$this->_extensions->delete_exten($val);
 					break;
 				case 'hints':
@@ -1296,15 +1323,15 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if($this->_info['ufeatures']['number'] !== '')
 		{
-			if($this->get_result('exten') === null
+			if($this->get_result('usermacro') === null
 			|| $this->get_result('extenumbers') === null)
 			{
 				$unlinks = true;
-				$this->delete_macro('exten');
+				$this->delete_macro('usermacro');
 				$this->delete_extenumbers();
 				$this->delete_hints();
 			}
-			else if($this->edit_macro('exten') === false
+			else if($this->edit_usermacro($this->_info['ufeatures']['id']) === false
 			|| $this->edit_extenumbers() === false)
 			{
 				$this->_reverse_edit($protocolret);
@@ -1328,7 +1355,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				}
 			}
 		}
-		else if($this->add_macro('exten',$this->_info['ufeatures']['id']) === false
+		else if($this->add_usermacro($this->_info['ufeatures']['id']) === false
 		|| $this->add_extenumbers($this->_info['ufeatures']['id']) === false
 		|| ($this->_protocolname !== XIVO_SRE_IPBX_AST_PROTO_CUSTOM
 		   && $this->add_hints() === false) === true)
@@ -1374,15 +1401,17 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 			return(($this->_return['protocol'] = $protocol->edit($this->_info['protocol']['id'],$rs)));
 		}
-		else if(($return = $this->add_protocol()) === false)
+		else if(($protocolid = $this->add_protocol()) === false)
 			return(false);
-		else if($this->delete_protocol() === false)
+		else if($this->delete_protocol() === false
+		|| $this->update_protocol_setvar($protocolid,
+						 $this->_info['ufeatures']['id']) === false)
 		{
-			$protocol->delete($return);
+			$protocol->delete($protocolid);
 			return(false);
 		}
 
-		return(($this->_return['protocol'] = $return));
+		return(($this->_return['protocol'] = $protocolid));
 	}
 
 	function edit_origin_protocol($protocolid=0)
@@ -1423,6 +1452,14 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			return(false);
 
 		return(($this->_return['userfeatures'] = $this->_userfeatures->edit($this->_info['ufeatures']['id'],$rs,$provisioning)));
+	}
+
+	function edit_usermacro($ufeaturesid)
+	{
+		if(($rs = $this->_set_usermacro('edit',$ufeaturesid)) !== true)
+			return($rs);
+
+		return(parent::edit_macro('usermacro'));
 	}
 
 	function edit_hints()
@@ -1649,12 +1686,12 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				case 'voicemail':
 					$this->_voicemail->reverse_edit();
 					break;
-				case 'exten':
-					if(isset($this->_origin['exten']) === false
-					|| $this->_origin['exten'] === false)
-						$this->delete_macro('exten');
+				case 'usermacro':
+					if(isset($this->_origin['usermacro']) === false
+					|| $this->_origin['usermacro'] === false)
+						$this->delete_macro('usermacro');
 					else
-						$this->_extensions->edit_origin($this->_origin['exten']);
+						$this->_extensions->edit_origin($this->_origin['usermacro']);
 					break;
 				case 'hints':
 					if(isset($this->_origin['hints']) === false
@@ -1707,7 +1744,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if($this->delete_protocol() === false
 		|| $this->delete_userfeatures() === false
-		|| $this->delete_macro('exten') === false
+		|| $this->delete_macro('usermacro') === false
 		|| $this->delete_hints() === false
 		|| $this->delete_extenumbers() === false
 		|| $this->delete_groupmember() === false
@@ -1726,7 +1763,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			return(false);
 		}
 
-		if(isset($this->_return['exten']) === true
+		if(isset($this->_return['usermacro']) === true
 		|| isset($this->_return['hints']) === true
 		|| isset($this->_return['extenumbers']) === true)
 			$this->unlinks();
@@ -1902,7 +1939,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 //				case 'voicemail':
 //					$this->_voicemail->reverse_delete();
 //					break;
-				case 'exten':
+				case 'usermacro':
 				case 'hints':
 					if(isset($this->_origin[$key]) === true
 					&& $this->_origin[$key] !== false)
