@@ -26,6 +26,17 @@ from xivo import xivo_helpers
 
 cursor = xivo_helpers.db_connect().cursor()
 
+cursor.query("SELECT ${columns} FROM voicemenu "
+             "WHERE commented = 0 "
+             "ORDER BY name DESC",
+             ('name',))
+res = cursor.fetchall()
+
+for (context,) in res:
+        print "[voicemenu-" + context + "]"
+        print "switch = Realtime/voicemenu-%s@extensions" % context
+
+
 cursor.query("SELECT ${columns} FROM context "
 	     "WHERE commented = 0 "
 	     "ORDER BY name DESC",

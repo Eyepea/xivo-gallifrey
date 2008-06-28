@@ -30,8 +30,8 @@ class DBUpdateException(Exception): pass
 
 class FeatureList:
 	def __init__(self, agi, cursor):
-		features = ('fwdunc', 'fwdrna', 'fwdbusy', 'enablevm', 'incallfilter',
-			    'incallrec', 'enablednd')
+		features = ('"fwdunc"', '"fwdrna"', '"fwdbusy"', '"enablevm"', '"incallfilter"',
+			    '"incallrec"', '"enablednd"')
 		cursor.query("SELECT ${columns} FROM extensions "
 			     "WHERE name IN (" + ','.join(features) + ") "
 			     "AND commented = 0",
@@ -142,7 +142,7 @@ class BossSecretaryFilter:
 		self.callfrom = res['callfilter.callfrom']
 		self.callerdisplay = res['callfilter.callerdisplay']
 		self.ringseconds = res['callfilter.ringseconds']
-		self.boss = BossSecretaryFilterMember(True, 'boss', res['userfeatures.id'],
+		self.boss = BossSecretaryFilterMember(self.agi, True, 'boss', res['userfeatures.id'],
 						      boss_number, res['callfiltermember.ringseconds'])
 		self.secretaries = []
 
@@ -193,7 +193,7 @@ class BossSecretaryFilter:
 			protocol = row['userfeatures.protocol']
 			protocolid = row['userfeatures.protocolid']
 			name = row['userfeatures.name']
-			secretary = BossSecretaryFilterMember(row['callfiltermember.active'], 'secretary', row['userfeatures.id'],
+			secretary = BossSecretaryFilterMember(self.agi, row['callfiltermember.active'], 'secretary', row['userfeatures.id'],
 							      row['userfeatures.number'], row['userfeatures.ringseconds'])
 
 			if secretary.active:
@@ -702,18 +702,18 @@ class DialAction:
 
 	def set_variables(self):
 		type = ("%s_%s" % (self.category, self.event)).upper()
-		agi.set_variable('XIVO_FWD_%s_ACTION' % type, self.action)
+		self.agi.set_variable('XIVO_FWD_%s_ACTION' % type, self.action)
 
 		# Sometimes, it's useful to know whether these variables were
 		# set manually, or by this object.
-		agi.set_variable('XIVO_FWD_%s_ISDA' % (type,), "1")
+		self.agi.set_variable('XIVO_FWD_%s_ISDA' % (type,), "1")
 
 		if self.actionarg1:
-			agi.set_variable('XIVO_FWD_%s_ACTIONARG1' % (type,),
+			self.agi.set_variable('XIVO_FWD_%s_ACTIONARG1' % (type,),
 					 self.actionarg1)
 
 		if self.actionarg2:
-			agi.set_variable('XIVO_FWD_%s_ACTIONARG2' % (type,),
+			self.agi.set_variable('XIVO_FWD_%s_ACTIONARG2' % (type,),
 					 self.actionarg2)
 
 class Trunk:
