@@ -29,6 +29,10 @@ def incoming_user_set_features(agi, cursor, args):
 	zone = agi.get_variable('XIVO_CALLORIGIN')
 	bypass_filter = agi.get_variable('XIVO_CALLFILTER_BYPASS')
 
+	# FIXME: this is only for the callrecord feature, which is likely to change
+	srcnum = agi.get_variable('XIVO_SRCNUM')
+	dstnum = agi.get_variable('XIVO_DSTNUM')
+
 	feature_list = objects.FeatureList(agi, cursor)
 
 	try:
@@ -36,39 +40,39 @@ def incoming_user_set_features(agi, cursor, args):
 	except LookupError:
 		caller = None
 
-	user = objects.User(agi, cursor, feature_list, xid = dstid, context = context)
-	filter = user.filter
+	user = objects.User(agi, cursor, feature_list, xid = dstid)
+	ufilter = user.filter
 
 	# Special case. If a boss-secretary filter is set, the code will prematurely
 	# exit because the other normally set variables are skipped.
-	if not bypass_filter and filter and filter.active:
-		zone_applies = filter.check_zone(zone)
-		secretary = filter.get_secretary(srcnum)
+	if not bypass_filter and ufilter and ufilter.active:
+		zone_applies = ufilter.check_zone(zone)
+		secretary = ufilter.get_secretary_by_id(userid)
 
 		if zone_applies and not secretary:
-			if filter.mode in ("bossfirst-simult", "bossfirst-serial", "all"):
-				agi.set_variable('XIVO_CALLFILTER_BOSS_INTERFACE', filter.boss.interface)
-				agi.set_variable('XIVO_CALLFILTER_BOSS_TIMEOUT', filter.boss.ringseconds)
+			if ufilter.mode in ("bossfirst-simult", "bossfirst-serial", "all"):
+				agi.set_variable('XIVO_CALLFILTER_BOSS_INTERFACE', ufilter.boss.interface)
+				agi.set_variable('XIVO_CALLFILTER_BOSS_TIMEOUT', ufilter.boss.ringseconds)
 
-			if filter.mode in ("bossfirst-simult", "secretary-simult", "all"):
-				interface = '&'.join(secretary.interface for secretary in filter.secretaries if secretary.active)
+			if ufilter.mode in ("bossfirst-simult", "secretary-simult", "all"):
+				interface = '&'.join(secretary.interface for secretary in ufilter.secretaries if secretary.active)
 				agi.set_variable('XIVO_CALLFILTER_INTERFACE', interface)
-				agi.set_variable('XIVO_CALLFILTER_TIMEOUT', filter.ringseconds)
-			elif filter.mode in ("bossfirst-serial", "secretary-serial"):
+				agi.set_variable('XIVO_CALLFILTER_TIMEOUT', ufilter.ringseconds)
+			elif ufilter.mode in ("bossfirst-serial", "secretary-serial"):
 				index = 0
 
-				for secretary in filter.secretaries:
+				for secretary in ufilter.secretaries:
 					if secretary.active:
 						agi.set_variable('XIVO_CALLFILTER_SECRETARY%d_INTERFACE' % (index,), secretary.interface)
 						agi.set_variable('XIVO_CALLFILTER_SECRETARY%d_TIMEOUT' % (index,), secretary.ringseconds)
 						index += 1
 
-			objects.DialAction(agi, cursor, 'noanswer', 'callfilter', filter.id).set_variables()
+			objects.DialAction(agi, cursor, 'noanswer', 'callfilter', ufilter.id).set_variables()
 
-			if filter.callerdisplay:
-				agi.set_variable('CALLERID(name)', "%s - %s" % (filter.callerdisplay, agi.get_variable("CALLERID(name)")))
+			if ufilter.callerdisplay:
+				agi.set_variable('CALLERID(name)', "%s - %s" % (ufilter.callerdisplay, agi.get_variable("CALLERID(name)")))
 
-			agi.set_variable('XIVO_CALLFILTER_MODE', filter.mode)
+			agi.set_variable('XIVO_CALLFILTER_MODE', ufilter.mode)
 			agi.set_variable('XIVO_CALLFILTER', '1')
 			return
 
@@ -147,6 +151,8 @@ def incoming_user_set_features(agi, cursor, args):
 	objects.DialAction(agi, cursor, 'chanunavail', 'user', user.id).set_variables()
 
 	if feature_list.incallrec and user.callrecord:
+		# BUGBUG wrong and harcoded path FIXME
+		# BUGBUG the context is missing in the filename TODO use ids
 		agi.set_variable('XIVO_CALLRECORDFILE', "/usr/share/asterisk/sounds/web-interface/monitor/user-%s-%s-%s.wav" % (srcnum, dstnum, int(time.time())))
 
 	if user.musiconhold:

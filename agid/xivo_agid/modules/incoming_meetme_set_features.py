@@ -25,7 +25,7 @@ from xivo_agid import objects
 def incoming_meetme_set_features(agi, cursor, args):
 	meetmeid = int(agi.get_variable('XIVO_DSTID'))
 
-	meetme = objects.MeetMe(agi, cursor, xid = dstid)
+	meetme = objects.MeetMe(agi, cursor, xid=meetmeid)
 
 	options = ""
 

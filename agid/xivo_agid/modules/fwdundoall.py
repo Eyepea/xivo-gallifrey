@@ -23,7 +23,7 @@ from xivo_agid import objects
 def fwdundoall(agi, cursor, args):
 	userid = int(agi.get_variable('XIVO_USERID'))
 
-	user = objects.user(agi, cursor, xid = userid)
+	user = objects.User(agi, cursor, xid = userid)
 	user.reset()
 
 agid.register(fwdundoall)

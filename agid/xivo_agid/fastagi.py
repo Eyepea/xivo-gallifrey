@@ -27,6 +27,7 @@ __license__ = """
 #       as if 200 is returned to all AGI commands.
 #     - removed stderr
 #     - removed double quoting from database_get()
+#     - replaced a reference to old style ListType with a call to isinstance(..., list)
 
 # Adapted for FastAGI by Proformatique :
 #     - replaced references to sys.std{in,out} to cutstom file objects.
@@ -35,8 +36,8 @@ __license__ = """
 
 import re
 import pprint
-from itertools import *
-from types import ListType
+from itertools import chain, imap
+
 
 DEFAULT_TIMEOUT = 2000 # 2sec timeout used as default for functions that take timeouts
 DEFAULT_RECORD  = 20000 # 20sec record time
@@ -175,7 +176,7 @@ class FastAGI:
             raise FastAGIUnknownError(code, 'Unhandled code or undefined response')
 
     def _process_digit_list(self, digits):
-        if type(digits) == ListType:
+        if isinstance(digits, list):
             digits = ''.join(imap(str, digits))
         return self._quote(digits)
 

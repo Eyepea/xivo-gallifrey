@@ -41,7 +41,7 @@ class FeatureList:
 		if not res:
 			raise LookupError("Unable to find features in table extensions")
 
-		enabled_features = [row['name'] for row in res]
+		enabled_features = set([row['name'] for row in res])
 
 		self.fwdunc = 'fwdunc' in enabled_features
 		self.fwdrna = 'fwdrna' in enabled_features
@@ -57,10 +57,10 @@ class BossSecretaryFilterMember:
 
 	"""
 
-	def __init__(self, agi, active, type, xid, number, ringseconds):
+	def __init__(self, agi, active, xtype, xid, number, ringseconds):
 		self.agi = agi
 		self.active = bool(active)
-		self.type = type
+		self.type = xtype
 		self.id = xid
 		self.number = number
 		self.interface = None
@@ -161,11 +161,11 @@ class BossSecretaryFilter:
 			res = cursor.fetchone()
 
 			if not res:
-				agi.dp_break("Database inconsistency: unable to find custom user (name = '%s', context = '%s')" % (name, context))
+				agi.dp_break("Database inconsistency: unable to find custom user with usercustom.id %d (name = %r, context = %r)" % (protocolid, name, boss_context))
 
 			interface = res['interface']
 		else:
-			agi.dp_break(agi, "Unknown protocol '%s'" % (protocol,))
+			agi.dp_break(agi, "Unknown protocol %r" % protocol)
 
 		self.boss.interface = interface
 
@@ -187,7 +187,7 @@ class BossSecretaryFilter:
 		res = cursor.fetchall()
 
 		if not res:
-			raise LookupError("Unable to find secretaries for call filter ID %d (context = '%s')" % (self.id, boss_context))
+			raise LookupError("Unable to find secretaries for call filter ID %d (context = %r)" % (self.id, boss_context))
 
 		for row in res:
 			protocol = row['userfeatures.protocol']
@@ -211,11 +211,11 @@ class BossSecretaryFilter:
 				res2 = cursor.fetchone()
 
 				if not res2:
-					agi.dp_break("Database inconsistency: unable to find custom user (name = '%s', context = '%s')" % (name, context))
+					agi.dp_break("Database inconsistency: unable to find custom user with usercustom.id %d (name = %r, context = %r)" % (protocolid, name, boss_context))
 
 				interface = res2['interface']
 			else:
-				agi.dp_break("Unknown protocol '%s'" % (protocol,))
+				agi.dp_break("Unknown protocol %r" % protocol)
 
 			secretary.interface = interface
 			self.secretaries.append(secretary)
@@ -248,15 +248,22 @@ class BossSecretaryFilter:
 		else:
 			return False
 
-	def get_secretary(self, number, context = None):
+	def get_secretary_by_number(self, number, context=None):
 		if context and context != self.context:
 			return None
 
 		for secretary in self.secretaries:
 			if number == secretary.number:
 				return secretary
+		else:
+			return None
 
-		return None
+	def get_secretary_by_id(self, xid):
+		for secretary in self.secretaries:
+			if xid == secretary.id:
+				return secretary
+		else:
+			return None
 
 class VMBox:
 	def __init__(self, agi, cursor, xid):
@@ -277,7 +284,7 @@ class VMBox:
 		res = cursor.fetchone()
 
 		if not res:
-			raise LookupError("Unable to find voicemail box (id: %d)" % (xid,))
+			raise LookupError("Unable to find voicemail box (id: %d)" % xid)
 
 		self.id = int(xid)
 		self.mailbox = res['voicemail.mailbox']
@@ -286,8 +293,7 @@ class VMBox:
 		self.skipcheckpass = res['voicemailfeatures.skipcheckpass']
 
 class User:
-	def __init__(self, agi, cursor, feature_list = None, xid = None,
-		     number = None, context = None):
+	def __init__(self, agi, cursor, feature_list=None, xid=None, number=None, context=None):
 		self.agi = agi
 		self.cursor = cursor
 
@@ -361,14 +367,14 @@ class User:
 			res = cursor.fetchone()
 
 			if not res:
-				raise LookupError("Database inconsistency: unable to find custom protocol (protocolid: %d)" % (self.protocolid,))
+				raise LookupError("Database inconsistency: unable to find custom protocol (protocolid: %d)" % self.protocolid)
 
 			self.interface = res['interface']
 		else:
-			raise LookupError("Unknown protocol '%s'" % (self.protocol,))
+			raise LookupError("Unknown protocol %r" % self.protocol)
 
 		if bsfilter == "boss":
-			self.filter = BossSecretaryFilter(agi, cursor, number, context)
+			self.filter = BossSecretaryFilter(agi, cursor, self.number, self.context)
 		else:
 			self.filter = None
 
@@ -429,7 +435,7 @@ class User:
 				  "WHERE id = %%d" % (feature, feature),
 				  parameters = (enabled, dest, self.id))
 
-		if cursor.rowcount != 1:
+		if self.cursor.rowcount != 1:
 			raise DBUpdateException("Unable to perform the requested update")
 
 	def toggle_feature(self, feature):
@@ -454,16 +460,16 @@ class User:
 
 		self.cursor.query("UPDATE userfeatures "
 				  "SET %s = %%d "
-				  "WHERE id = %%d" % (feature,),
+				  "WHERE id = %%d" % feature,
 				  parameters = (enabled, self.id))
 
-		if cursor.rowcount != 1:
+		if self.cursor.rowcount != 1:
 			raise DBUpdateException("Unable to perform the requested update")
 
 		return enabled
 
 class Group:
-	def __init__(self, agi, cursor, xid = None, number = None, context = None):
+	def __init__(self, agi, cursor, xid=None, number=None, context=None):
 		self.agi = agi
 		self.cursor = cursor
 
@@ -518,7 +524,7 @@ class Group:
 			DialAction(self.agi, self.cursor, event, "group", self.id).set_variables()
 
 class MeetMe:
-	def __init__(self, agi, cursor, xid = None, number = None, context = None):
+	def __init__(self, agi, cursor, xid=None, number=None, context=None):
 		self.agi = agi
 		self.cursor = cursor
 
@@ -557,15 +563,15 @@ class MeetMe:
 		self.id = int(res['meetmefeatures.id'])
 		self.number = res['meetmefeatures.number']
 		self.context = res['meetmefeatures.context']
-		mode = res['meetmefeatures.mode']
+		self.mode = res['meetmefeatures.mode']
 
-		if mode == "talk":
+		if self.mode == "talk":
 			self.mode_talk = True
 			self.mode_listen = False
-		elif mode == "listen":
+		elif self.mode == "listen":
 			self.mode_talk = False
 			self.mode_listen = True
-		elif mode == "all":
+		elif self.mode == "all":
 			self.mode_talk = True
 			self.mode_listen = True
 		else:
@@ -584,7 +590,7 @@ class MeetMe:
 		self.exitcontext = res['meetmefeatures.exitcontext']
 
 class Queue:
-	def __init__(self, agi, cursor, xid = None, number = None, context = None):
+	def __init__(self, agi, cursor, xid=None, number=None, context=None):
 		self.agi = agi
 		self.cursor = cursor
 
@@ -643,7 +649,7 @@ class Queue:
 			DialAction(self.agi, self.cursor, event, "queue", self.id).set_variables()
 
 class Agent:
-	def __init__(self, agi, cursor, xid = None, number = None):
+	def __init__(self, agi, cursor, xid=None, number=None):
 		self.agi = agi
 		self.cursor = cursor
 
@@ -701,19 +707,19 @@ class DialAction:
 			self.actionarg2 = res['actionarg2']
 
 	def set_variables(self):
-		type = ("%s_%s" % (self.category, self.event)).upper()
-		self.agi.set_variable('XIVO_FWD_%s_ACTION' % type, self.action)
+		xtype = ("%s_%s" % (self.category, self.event)).upper()
+		self.agi.set_variable('XIVO_FWD_%s_ACTION' % xtype, self.action)
 
 		# Sometimes, it's useful to know whether these variables were
 		# set manually, or by this object.
-		self.agi.set_variable('XIVO_FWD_%s_ISDA' % (type,), "1")
+		self.agi.set_variable('XIVO_FWD_%s_ISDA' % xtype, "1")
 
 		if self.actionarg1:
-			self.agi.set_variable('XIVO_FWD_%s_ACTIONARG1' % (type,),
+			self.agi.set_variable('XIVO_FWD_%s_ACTIONARG1' % xtype,
 					 self.actionarg1)
 
 		if self.actionarg2:
-			self.agi.set_variable('XIVO_FWD_%s_ACTIONARG2' % (type,),
+			self.agi.set_variable('XIVO_FWD_%s_ACTIONARG2' % xtype,
 					 self.actionarg2)
 
 class Trunk:
@@ -730,7 +736,7 @@ class Trunk:
 		res = cursor.fetchone()
 
 		if not res:
-			raise LookupError("Unable to find trunk (id: %d)" % (xid,))
+			raise LookupError("Unable to find trunk (id: %d)" % xid)
 
 		self.id = xid
 		self.protocol = res['protocol']
@@ -747,7 +753,7 @@ class Trunk:
 			if not res:
 				raise LookupError("Unable to find realtime SIP entry")
 
-			self.interface = "SIP/%s" % (res['name'],)
+			self.interface = "SIP/%s" % res['name']
 			self.intfsuffix = None
 		elif self.protocol == "iax":
 			cursor.query("SELECT ${columns} FROM useriax "
@@ -760,7 +766,7 @@ class Trunk:
 			if not res:
 				raise LookupError("Unable to find realtime IAX entry")
 
-			self.interface = "IAX2/%s" % (res['name'],)
+			self.interface = "IAX2/%s" % res['name']
 			self.intfsuffix = None
 		elif self.protocol == "custom":
 			cursor.query("SELECT ${columns} FROM usercustom "
@@ -781,16 +787,16 @@ class Trunk:
 			# a string prevents such an error.
 			self.intfsuffix = str(res['intfsuffix'])
 		else:
-			raise LookupError("Unknown protocol (protocol: %s)" % (self.protocol,))
+			raise LookupError("Unknown protocol (protocol: %r)" % self.protocol)
 
 class HandyNumber:
-	def __init__(self, agi, cursor, xid = None, exten = None):
+	def __init__(self, agi, cursor, xid=None, exten=None):
 		self.agi = agi
 		self.cursor = cursor
 
 		columns = ('id', 'exten', 'trunkfeaturesid', 'type')
 
-		if id:
+		if xid:
 			cursor.query("SELECT ${columns} FROM handynumbers "
 				     "WHERE id = %d "
 				     "AND commented = 0",
@@ -808,7 +814,7 @@ class HandyNumber:
 		res = cursor.fetchone()
 
 		if not res:
-			raise LookupError("Unable to find handy number (id: %d, exten: %s)" % (id, exten))
+			raise LookupError("Unable to find handy number (id: %d, exten: %s)" % (xid, exten))
 
 		self.id = int(res['id'])
 		self.exten = res['exten']
@@ -818,13 +824,13 @@ class HandyNumber:
 		self.trunk = Trunk(agi, cursor, self.trunkfeaturesid)
 
 class DID:
-	def __init__(self, agi, cursor, xid = None, exten = None, context = None):
+	def __init__(self, agi, cursor, xid=None, exten=None, context=None):
 		self.agi = agi
 		self.cursor = cursor
 
 		columns = ('id', 'exten', 'context')
 
-		if id:
+		if xid:
 			cursor.query("SELECT ${columns} FROM incall "
 				     "WHERE id = %d "
 				     "AND commented = 0",
@@ -853,7 +859,7 @@ class DID:
 		DialAction(self.agi, self.cursor, "answer", "incall", self.id).set_variables()
 
 class Outcall:
-	def __init__(self, agi, cursor, feature_list = None, xid = None, exten = None, context = None):
+	def __init__(self, agi, cursor, feature_list=None, xid=None, exten=None, context=None):
 		self.agi = agi
 		self.cursor = cursor
 
@@ -938,6 +944,7 @@ class Schedule:
 			self.forgetimefield(res['monthbeg'], res['monthend'])
 		))
 
+	@staticmethod
 	def forgetimefield(start, end):
 		if start == '*':
 			return '*'

@@ -25,10 +25,12 @@ def handynumbers(agi, cursor, args):
 	exten_pattern = agi.get_variable('XIVO_EXTENPATTERN')
 
 	user = objects.User(agi, cursor, xid = userid)
-	handy_number = objects.HandyNumber(agi, cursor, exten = exten_pattern)
+	handy_number = objects.HandyNumber(agi, cursor, exten=exten_pattern)
 	trunk = handy_number.trunk
 
 	agi.set_variable('XIVO_INTERFACE', trunk.interface)
+
+	# BUGBUG trunk.number does not exist FIXME
 	agi.set_variable('XIVO_TRUNKEXTEN', trunk.number)
 
 	if user.outcallerid:

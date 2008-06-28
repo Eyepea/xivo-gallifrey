@@ -19,7 +19,6 @@ __license__ = """
 
 import sys
 import signal
-import socket
 import SocketServer
 import ConfigParser
 from threading import Lock
@@ -265,7 +264,7 @@ def run():
 	conn = server.db_conn_pool.acquire()
 	cursor = conn.cursor()
 
-	debug("list of modules: %s" % ', '.join(sorted(modules.keys())))
+	debug("list of modules: %s" % ', '.join(sorted(modules.iterkeys())))
 
 	for module in modules.itervalues():
 		module.setup(cursor)

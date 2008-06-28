@@ -51,7 +51,7 @@ def outgoing_user_set_features(agi, cursor, args):
 			if outcall.setcallerid:
 				callerid = outcall.callerid
 			else:
-				callerid = user.callerid
+				callerid = user.outcallerid
 
 			if callerid == "default":
 				callerid = ""

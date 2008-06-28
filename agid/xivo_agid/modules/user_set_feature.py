@@ -22,6 +22,10 @@ from xivo_agid import objects
 
 def user_set_feature(agi, cursor, args):
 	userid = int(agi.get_variable('XIVO_USERID'))
+	context = agi.get_variable('XIVO_CONTEXT')
+	
+	# FIXME: we should probably get ride of srcnum here
+	srcnum = agi.get_variable('XIVO_SRCNUM')
 
 	user = objects.User(agi, cursor, xid = userid)
 	feature = args[0]
@@ -49,8 +53,6 @@ def user_set_feature(agi, cursor, args):
 
 	# TODO: rewrite.
 	elif feature == "bsfilter":
-		custom_query = True
-
 		try:
 			num1, num2 = args[1].split('*')
 		except ValueError:
@@ -82,7 +84,7 @@ def user_set_feature(agi, cursor, args):
 				caller_type = "boss"
 				secretary_number = number
 
-			secretary = bsf.get_secretary(secretary_number)
+			secretary = bsf.get_secretary_by_number(secretary_number)
 
 		# If all tries fail, give up.
 		except LookupError:
