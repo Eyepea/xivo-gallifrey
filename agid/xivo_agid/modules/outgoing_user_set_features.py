@@ -79,7 +79,7 @@ def outgoing_user_set_features(agi, cursor, args):
 
 	if callrecord:
 		if feature_list.incallrec:
-			agi.set_variable('XIVO_CALLRECORDFILE', "/usr/share/asterisk/sounds/web-interface/monitor/user-%s-%s-%s.wav" % (srcnum, orig_dstnum, int(time.time())))
+			agi.set_variable('XIVO_CALLRECORDFILE', "user-%s-%s-%s.wav" % (srcnum, orig_dstnum, int(time.time())))
 
 	if outcall.hangupringtime:
 		agi.set_variable('XIVO_HANGUPRINGTIME', outcall.hangupringtime)

@@ -151,9 +151,8 @@ def incoming_user_set_features(agi, cursor, args):
 	objects.DialAction(agi, cursor, 'chanunavail', 'user', user.id).set_variables()
 
 	if feature_list.incallrec and user.callrecord:
-		# BUGBUG wrong and harcoded path FIXME
 		# BUGBUG the context is missing in the filename TODO use ids
-		agi.set_variable('XIVO_CALLRECORDFILE', "/usr/share/asterisk/sounds/web-interface/monitor/user-%s-%s-%s.wav" % (srcnum, dstnum, int(time.time())))
+		agi.set_variable('XIVO_CALLRECORDFILE', "user-%s-%s-%s.wav" % (srcnum, dstnum, int(time.time())))
 
 	if user.musiconhold:
 		agi.set_variable('MUSICCLASS()', user.musiconhold)
