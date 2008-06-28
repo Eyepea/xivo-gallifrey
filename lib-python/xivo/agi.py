@@ -59,13 +59,13 @@ __license__ = """
 #	as if 200 is returned to all AGI commands.
 #     - removed stderr
 #     - removed double quoting from database_get()
+#     - replaced a reference to old style ListType with a call to isinstance(..., list)
 
 import sys
 import pprint
 import re
-from types import ListType
 import signal
-from itertools import *
+from itertools import chain, imap
 
 
 DEFAULT_TIMEOUT = 2000 # 2sec timeout used as default for functions that take timeouts
@@ -200,7 +200,7 @@ class AGI:
             raise AGIUnknownError(code, 'Unhandled code or undefined response')
 
     def _process_digit_list(self, digits):
-        if type(digits) == ListType:
+        if isinstance(digits, list):
             digits = ''.join(imap(str, digits))
         return self._quote(digits)
 
