@@ -2,14 +2,6 @@
 
 $array = array();
 
-$array['applicationarg'] = array();
-$array['applicationarg']['filter'] = array();
-$array['applicationarg']['filter']['callback'] = array('callback' => 'xivo_service_asterisk::chk_passwd_context');
-$array['applicationarg']['filter']['callbackdisa'] = array('callback' => 'xivo_service_asterisk::chk_passwd_context');
-$array['applicationarg']['filter']['directory'] = array('callback' => 'xivo_service_asterisk::chk_context');
-$array['applicationarg']['filter']['faxtomail'] = array('callback' => 'xivo_filter::chk_email','maxlen' => 80);
-$array['applicationarg']['filter']['voicemailmain'] = array('callback' => 'xivo_service_asterisk::chk_context');
-
 $array['categoryevent'] = array();
 $array['categoryevent']['callfilter'] = array('noanswer');
 $array['categoryevent']['group'] = array('noanswer','congestion','busy','chanunavail');
@@ -87,8 +79,8 @@ $array['element']['endcall']['default'] = 'hangup';
 $array['element']['endcall']['unset'] = true;
 
 $array['element']['application'] = array();
-$array['element']['application']['value'] = array('callback','callbackdisa','directory','faxtomail','voicemailmain');
-$array['element']['application']['default'] = 'callback';
+$array['element']['application']['value'] = array('callbackdisa','disa','directory','faxtomail','voicemailmain');
+$array['element']['application']['default'] = 'callbackdisa';
 $array['element']['application']['unset'] = true;
 
 $array['element']['linked'] = array();

@@ -16,8 +16,8 @@ xivo_ast_defapplication['macro|schedule'] = {displayname: 'GotoSchedule',
 					     identityfunc: 'xivo_ast_defapplication_get_schedule_identity'};
 xivo_ast_defapplication['macro|voicemenu'] = {displayname: 'GotoVoiceMenu',
 					      identityfunc: 'xivo_ast_defapplication_get_voicemenu_identity'};
-xivo_ast_defapplication['macro|callback'] = {displayname: 'CallBack'};
 xivo_ast_defapplication['macro|callbackdisa'] = {displayname: 'CallBackDISA'};
+xivo_ast_defapplication['macro|disa'] = {displayname: 'DISA'};
 xivo_ast_defapplication['macro|directory'] = {displayname: 'Directory'};
 xivo_ast_defapplication['macro|faxtomail'] = {displayname: 'FaxToMail'};
 xivo_ast_defapplication['macro|voicemailmain'] = {displayname: 'VoiceMailMain'};
@@ -211,8 +211,8 @@ function xivo_ast_defapplication_application(dialevent,targetid)
 
 	switch(application.value)
 	{
-		case 'callback':
 		case 'callbackdisa':
+		case 'disa':
 			if((applicationarg1 = xivo_eid(actionarg1_id)) === false
 			|| (applicationarg2 = xivo_eid(actionarg2_id)) === false)
 				return(false);

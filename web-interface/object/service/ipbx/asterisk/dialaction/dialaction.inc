@@ -170,10 +170,10 @@ class xivo_service_asterisk_dialaction extends xivo_service_asterisk_abstract
 				return($this->chk_dest_schedule($actionarg1,$id,$disable));
 			case 'voicemenu':
 				return($this->chk_dest_voicemenu($actionarg1,null,$disable));
-			case 'application:callback':
-				return($this->chk_dest_application('callback',$actionarg1,$actionarg2));
 			case 'application:callbackdisa':
 				return($this->chk_dest_application('callbackdisa',$actionarg1,$actionarg2));
+			case 'application:disa':
+				return($this->chk_dest_application('disa',$actionarg1,$actionarg2));
 			case 'application:directory':
 				return($this->chk_dest_application('directory',$actionarg1,$actionarg2));
 			case 'application:faxtomail':

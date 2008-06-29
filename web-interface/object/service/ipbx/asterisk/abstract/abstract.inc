@@ -75,8 +75,8 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 
 		switch($action)
 		{
-			case 'callback':
 			case 'callbackdisa':
+			case 'disa':
 				if(xivo_service_asterisk::chk_context($actionarg2) === false)
 					return(false);
 				else if($actionarg1 === 'no-password'

@@ -110,25 +110,16 @@ Commande :
 Raccrocher
 
 ; fm_dialaction_endcall-action-opt-busy
-Occupé
+Occuper
 
 ; fm_dialaction_endcall-busy-actionarg1
 Délai avant de raccrocher :
 
 ; fm_dialaction_endcall-action-opt-congestion
-Saturé
+Saturer
 
 ; fm_dialaction_endcall-congestion-actionarg1
 Délai avant de raccrocher :
-
-; fm_dialaction_application-action-opt-callback
-CallBack
-
-; fm_dialaction_application-callback-actionarg1
-Code PIN :
-
-; fm_dialaction_application-callback-actionarg2
-Contexte :
 
 ; fm_dialaction_application-action-opt-callbackdisa
 CallBackDISA
@@ -137,6 +128,15 @@ CallBackDISA
 Code PIN :
 
 ; fm_dialaction_application-callbackdisa-actionarg2
+Contexte :
+
+; fm_dialaction_application-action-opt-disa
+DISA
+
+; fm_dialaction_application-disa-actionarg1
+Code PIN :
+
+; fm_dialaction_application-disa-actionarg2
 Contexte :
 
 ; fm_dialaction_application-action-opt-directory

@@ -1,56 +1,65 @@
 ; col_did
 SDA
 
+; col_context
+Contexte
+
 ; col_destination
 Destination
 
 ; col_identity
 Identité
 
-; incall_type-endcall
-Fin d'appel
+; incall_destination-endcall-hangup
+Raccrocher
 
-; incall_type-user
+; incall_destination-endcall-busy
+Occuper
+
+; incall_destination-endcall-congestion
+Saturer
+
+; incall_destination-user
 Utilisateur
 
-; incall_type-group
+; incall_destination-group
 Groupe
 
-; incall_type-queue
+; incall_destination-queue
 File d'attente
 
-; incall_type-meetme
+; incall_destination-meetme
 Chambre de conférence
 
-; incall_type-voicemail
+; incall_destination-voicemail
 Messagerie vocale
 
-; incall_type-schedule
+; incall_destination-schedule
 Horaire
 
-; incall_type-application
-Application
+; incall_destination-voicemenu
+Menu vocal
 
-; incall_type-sound
+; incall_destination-application-callbackdisa
+CallBackDISA
+
+; incall_destination-application-disa
+DISA
+
+; incall_destination-application-directory
+Directory
+
+; incall_destination-application-faxtomail
+FaxToMail
+
+; incall_destination-application-voicemail
+Consultation de la messagerie vocale
+
+; incall_destination-sound
 Fichier son
 
-; incall_type-custom
+; incall_destination-custom
 Personnalisée
-
-; incall_type-application-faxtomail
-FaxToMail : %s
-
-; incall_type-application-disa
-DISA : %s
-
-; incall_type-application-directory
-Directory : %s
-
-; incall_type-application-voicemail
-Voicemail : %s
-
-; incall_type-application-callback
-Callback : %s
 
 ; no_incall
 Aucun appel entrant trouvé

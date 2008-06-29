@@ -84,6 +84,16 @@ class xivo_application_service_asterisk_incall_sql extends xivo_application_serv
 				       $this->_table['dialaction'].'.action = %s',
 				       'voicemail');
 
+		$this->_dso->leftjoin($this->_table['schedule'],
+				      $this->_table['dialaction'].'.actionarg1 = '.$this->_table['schedule'].'.id',
+				      null,
+				      array('schedulename'	=> 'name',
+					    'schedulecontext'	=> 'context'));
+
+		$this->_dso->joinwhere($this->_table['schedule'],
+				       $this->_table['dialaction'].'.action = %s',
+				       'schedule');
+
 		$this->_dso->leftjoin($this->_table['voicemenu'],
 				      $this->_table['dialaction'].'.actionarg1 = '.$this->_table['voicemenu'].'.id',
 				      null,
@@ -118,6 +128,9 @@ class xivo_application_service_asterisk_incall_sql extends xivo_application_serv
 			$this->_dso->orwherecontain('number',$value,true,$this->_table['queuefeatures']);
 			$this->_dso->orwherecontain('name',$value,true,$this->_table['meetmefeatures']);
 			$this->_dso->orwherecontain('number',$value,true,$this->_table['meetmefeatures']);
+			$this->_dso->orwherecontain('fullname',$value,true,$this->_table['voicemail']);
+			$this->_dso->orwherecontain('mailbox',$value,true,$this->_table['voicemail']);
+			$this->_dso->orwherecontain('name',$value,true,$this->_table['schedule']);
 			$this->_dso->orwherecontain('name',$value,true,$this->_table['voicemenu']);
 			$this->_dso->orwherecontain('number',$value,true,$this->_table['voicemenu']);
 			$this->_dso->aggregate_where();

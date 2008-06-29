@@ -234,8 +234,8 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 			case 'vmauthenticate':
 				if((bool) $astapp === false)
 					return(false);
-			case 'callback':
 			case 'callbackdisa':
+			case 'disa':
 			case 'directory':
 			case 'faxtomail':
 			case 'voicemailmain':

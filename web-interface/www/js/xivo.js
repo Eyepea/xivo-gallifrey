@@ -168,7 +168,7 @@ function xivo_chg_style_attrib(elem,arr,type)
 			var astyles = xivo_split(ref_style,';');
 			var astyle = new Array();
 
-			for(i = 0;i < astyles.length;i++)
+			for(var i = 0;i < astyles.length;i++)
 			{
 				styles = astyles[i].replace(/\s/g,'');
 
@@ -196,7 +196,7 @@ function xivo_chg_style_attrib(elem,arr,type)
 			var astyles = xivo_split(ref_style,';');
 			var astyle = new Array();
 
-			for(i = 0;i < astyles.length;i++)
+			for(var i = 0;i < astyles.length;i++)
 			{
 				styles = astyles[i].replace(/\s/g,'');
 
@@ -302,7 +302,7 @@ function xivo_split(str,delimit)
 	var c = out = '';
 	var r = new Array();
 
-	for(i = 0;i < len;i++)
+	for(var i = 0;i < len;i++)
 	{
 		c = str.charAt(i);
 
@@ -349,7 +349,7 @@ function xivo_chg_property_attrib(elem,arr,type)
 	var aproperty = new Array();
 	var len = aproperties.length;
 
-	for(i = 0;i < len;i++)
+	for(var i = 0;i < len;i++)
 	{
 		properties = aproperties[i];
 
@@ -432,7 +432,7 @@ function xivo_chg_attrib(name,id,type,link)
 		{
 			var len = ref_elem['link'].length;
 
-			for(i = 0;i < len; i++)
+			for(var i = 0;i < len; i++)
 			{
 				nlink = xivo_is_undef(ref_elem['link'][i][2]) == false ? ref_elem['link'][i][2] : 2;
 				xivo_chg_attrib(name,ref_elem['link'][i][0],ref_elem['link'][i][1],nlink);
@@ -670,19 +670,15 @@ function xivo_substr(str,beg,end)
 
 function xivo_clone(obj)
 {
-	if(typeof(obj) != 'object')
-		return(false);
+	if(xivo_is_array(obj) === true)
+		var r = [];
+	else if(xivo_is_object(obj) === true)
+		var r = {};
+	else
+		return(obj);
 
-	var r = new obj.constructor();
+	for (var property in obj) r[property] = xivo_clone(obj[property]);
 
-  	for(var property in obj)
-	{
-    		if(typeof(obj[property]) == 'object')
-			r[property] = xivo_clone(obj[property]);
-		else
-			r[property] = obj[property];
-	}
-	
 	return(r);
 }
 

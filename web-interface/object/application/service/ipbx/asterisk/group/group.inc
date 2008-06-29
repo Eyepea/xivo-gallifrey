@@ -223,9 +223,9 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		if($this->_errnb === 0 && $number !== '')
 		{
 			if(($rsgroupmacro = $this->chk_macro('groupmacro',
-								 $number,
-								 $this->_mk_groupmacro_appdata(0),
-								 $context)) !== false)
+							     $number,
+							     $this->_mk_groupmacro_appdata(0),
+							     $context)) !== false)
 				$this->_set_result('groupmacro',$rsgroupmacro);
 
 			$this->set_extenumbers($action,$number,$context);

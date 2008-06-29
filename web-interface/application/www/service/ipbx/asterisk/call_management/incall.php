@@ -113,10 +113,10 @@ switch($act)
 			}
 		}
 
-		if(empty($result) === false
-		&& (xivo_issa('dialaction',$result) === false
-		    || empty($result['dialaction']) === true) === true)
-			$result['dialaction'] = null;
+		if(empty($return) === false
+		&& (xivo_issa('dialaction',$return) === false
+		    || empty($return['dialaction']) === true) === true)
+			$return['dialaction'] = null;
 
 		$_HTML->set_var('id',$info['incall']['id']);
 		$_HTML->set_var('rightcall',$rightcall);
