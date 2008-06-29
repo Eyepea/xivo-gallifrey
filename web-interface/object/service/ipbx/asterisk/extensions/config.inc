@@ -443,7 +443,8 @@ $array['element']['commented']['set'] = true;
 
 $array['filter'] = array();
 $array['filter']['exten'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^(?:[saotTih]|[_]?[0-9NXZ\*#\-\[\]]+[\.\!]?)$/');
-$array['filter']['context'] = array('chk' => 2,'maxlen' => 39,'regexp' => '/^(?!(?:macro|xivo)-)[a-z0-9_-]+$/');
+$array['filter']['context'] = array('chk' => 2,'maxlen' => 39,'regexp' => '/^(?:'.XIVO_SRE_IPBX_AST_CONTEXT_FEATURES.
+									       '|(?!(?:macro|xivo)-)[a-z0-9_-]+)$/');
 $array['filter']['priority'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,255));
 $array['filter']['app'] = array('minlen' => 1,'maxlen' => 128,'regexp' => '/^[a-z0-9#\*\.\/_@:-]+$/i');
 $array['filter']['appdata'] = array('set' => false,'chk' => 2,'maxlen' => 128,'cast' => 'sgraph','notag' => false);

@@ -861,6 +861,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 	function get_contexts_list($arr=null)
 	{
 		$r = array();
+		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_FEATURES;
 		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_GENERAL;
 		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_GLOBAL;
 		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_GLOBALS;

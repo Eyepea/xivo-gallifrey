@@ -26,14 +26,27 @@ switch($act)
 		$appuser = &$ipbx->get_application('user',null,false);
 		$rcalluser['list'] = $appuser->get_users_list(null,null,$userorder,null,true);
 
+		$grouporder = array();
+		$grouporder['name'] = SORT_ASC;
+		$grouporder['number'] = SORT_ASC;
+		$grouporder['context'] = SORT_ASC;
+
 		$appgroup = &$ipbx->get_application('group',null,false);
-		$rcallgroup['list'] = $appgroup->get_groups_list(null,array('name' => SORT_ASC),null,true);
+		$rcallgroup['list'] = $appgroup->get_groups_list(null,$grouporder,null,true);
+
+		$incallorder = array();
+		$incallorder['exten'] = SORT_ASC;
+		$incallorder['context'] = SORT_ASC;
 
 		$appincall = &$ipbx->get_application('incall',null,false);
-		$rcallincall['list'] = $appincall->get_incalls_list(null,array('exten' => SORT_ASC),null,true);
+		$rcallincall['list'] = $appincall->get_incalls_list(null,$incallorder,null,true);
+
+		$outcallorder = array();
+		$outcallorder['name'] = SORT_ASC;
+		$outcallorder['context'] = SORT_ASC;
 
 		$appoutcall = &$ipbx->get_application('outcall',null,false);
-		$rcalloutcall['list'] = $appoutcall->get_outcalls_list(null,array('name' => SORT_ASC),null,true);
+		$rcalloutcall['list'] = $appoutcall->get_outcalls_list(null,$outcallorder,null,true);
 
 		if(isset($_QR['fm_send']) === true && xivo_issa('rightcall',$_QR) === true)
 		{
@@ -137,14 +150,27 @@ switch($act)
 		$appuser = &$ipbx->get_application('user',null,false);
 		$rcalluser['list'] = $appuser->get_users_list(null,null,$userorder,null,true);
 
+		$grouporder = array();
+		$grouporder['name'] = SORT_ASC;
+		$grouporder['number'] = SORT_ASC;
+		$grouporder['context'] = SORT_ASC;
+
 		$appgroup = &$ipbx->get_application('group',null,false);
-		$rcallgroup['list'] = $appgroup->get_groups_list(null,array('name' => SORT_ASC),null,true);
+		$rcallgroup['list'] = $appgroup->get_groups_list(null,$grouporder,null,true);
+
+		$incallorder = array();
+		$incallorder['exten'] = SORT_ASC;
+		$incallorder['context'] = SORT_ASC;
 
 		$appincall = &$ipbx->get_application('incall',null,false);
-		$rcallincall['list'] = $appincall->get_incalls_list(null,array('exten' => SORT_ASC),null,true);
+		$rcallincall['list'] = $appincall->get_incalls_list(null,$incallorder,null,true);
+
+		$outcallorder = array();
+		$outcallorder['name'] = SORT_ASC;
+		$outcallorder['context'] = SORT_ASC;
 
 		$appoutcall = &$ipbx->get_application('outcall',null,false);
-		$rcalloutcall['list'] = $appoutcall->get_outcalls_list(null,array('name' => SORT_ASC),null,true);
+		$rcalloutcall['list'] = $appoutcall->get_outcalls_list(null,$outcallorder,null,true);
 
 		if(isset($_QR['fm_send']) === true && xivo_issa('rightcall',$_QR) === true)
 		{
