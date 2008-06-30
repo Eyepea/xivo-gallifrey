@@ -100,9 +100,9 @@ endif;
 
 <div id="sb-part-last" class="b-nodisplay">
 
-	<fieldset id="fld-dialstatus-noanswer">
-		<legend><?=$this->bbf('fld-dialstatus-noanswer');?></legend>
-		<?=$this->file_include('bloc/service/ipbx/asterisk/call_management/callfilter/dialstatus',array('status' => 'noanswer'));?>
+	<fieldset id="fld-dialaction-noanswer">
+		<legend><?=$this->bbf('fld-dialaction-noanswer');?></legend>
+		<?=$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',array('event' => 'noanswer'));?>
 	</fieldset>
 
 </div>

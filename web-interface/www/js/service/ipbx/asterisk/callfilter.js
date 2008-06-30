@@ -47,6 +47,9 @@ function xivo_callfilter_onload()
 {
 	if(xivo_eid('it-callfilter-bosssecretary') != false)
 		xivo_chgmode('bosssecretary',xivo_eid('it-callfilter-bosssecretary'));
+
+	xivo_ast_build_dialaction_array('noanswer');
+	xivo_ast_dialaction_onload();
 }
 
 xivo_winload.push('xivo_callfilter_onload();');

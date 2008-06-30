@@ -56,11 +56,13 @@
 				echo	'</div>';
 			else:
 				if($i === 0):
-					echo '<table cellspacing="0" cellpadding="0" border="0" id="table-'.$v['parent']['id'].'"><tr><td>',"\n";
+					echo	'<table cellspacing="0" cellpadding="0" border="0" id="table-',
+						$v['parent']['id'],
+						'"><tr><td>',"\n";
 				elseif($mod9 === 0):
-					echo '</td></tr><tr><td>',"\n";
+					echo	'</td></tr><tr><td>',"\n";
 				elseif($mod3 === 0):
-					echo '</td><td>';
+					echo	'</td><td>';
 				endif;
 
 				echo	'<div class="acl-func">',
@@ -71,7 +73,8 @@
 							      'field'	=> false,
 							      'value'	=> $v['path'],
 							      'checked'	=> $v['access']),
-							'onclick="xivo_fm_mk_acl(this);"'),'</div>',"\n";
+							'onclick="xivo_fm_mk_acl(this);"'),
+					'</div>',"\n";
 
 				if($cnt === $i):
 					if($mod9 < 3):

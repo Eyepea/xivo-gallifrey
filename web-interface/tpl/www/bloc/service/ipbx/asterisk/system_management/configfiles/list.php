@@ -3,10 +3,14 @@
 	$form = &$this->get_module('form');
 
 	$pager = $this->get_var('pager');
-	$list = $this->get_var('list');
 	$act = $this->get_var('act');
 
-	$page = $url->pager($pager['pages'],$pager['page'],$pager['prev'],$pager['next'],'service/ipbx/system_management/configfiles',array('act' => $act));
+	$page = $url->pager($pager['pages'],
+			    $pager['page'],
+			    $pager['prev'],
+			    $pager['next'],
+			    'service/ipbx/system_management/configfiles',
+			    array('act' => $act));
 ?>
 <div class="b-list">
 <?php
@@ -22,8 +26,7 @@
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
 <?php
-
-	if($list === false || ($nb = count($list)) === 0):
+	if(($list = $this->get_var('list')) === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
 		<td colspan="4" class="td-single"><?=$this->bbf('no_file');?></td>
@@ -33,13 +36,22 @@
 		for($i = $pager['beg'],$j = 0;$i < $pager['end'] && $i < $pager['total'];$i++,$j++):
 
 			$name = &$list[$i];
-
-			$mod = $j % 2 === 0 ? 1 : 2;
 ?>
-	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
-		<td class="td-left txt-left curpointer" colspan="2" onclick="location.href = xivo_eid('ah-files-<?=$i?>').href;"><?=$name?></td>
+	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
+	    onmouseout="this.className = this.tmp;"
+	    class="sb-content l-infos-<?=(($j % 2) + 1)?>on2">
+		<td class="td-left txt-left curpointer"
+		    colspan="2"
+		    onclick="location.href = xivo_eid('ah-files-<?=$i?>').href;"><?=$name?></td>
 		<td class="td-right" colspan="2">
-		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/system_management/configfiles',array('act' => 'edit','id' => $name),'id="ah-files-'.$i.'"',$this->bbf('opt_modify'));?>
+			<?=$url->href_html($url->img_html('img/site/button/edit.gif',
+							  $this->bbf('opt_modify'),
+							  'border="0"'),
+					   'service/ipbx/system_management/configfiles',
+					   array('act'	=> 'edit',
+					   	 'id'	=> $name),
+					   'id="ah-files-'.$i.'"',
+					   $this->bbf('opt_modify'));?>
 		</td>
 	</tr>
 <?php

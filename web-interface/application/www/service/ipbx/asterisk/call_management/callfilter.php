@@ -24,11 +24,10 @@ switch($act)
 			|| $appcallfilter->add() === false)
 			{
 				$result = $appcallfilter->get_result();
+				$result['dialaction'] = $appcallfilter->get_dialaction_result();
 
 				if(xivo_issa('callfiltermember',$result) === true)
 					$callfiltermember = &$result['callfiltermember'];
-
-				$result['dialstatus'] = $appcallfilter->get_dialstatus_result();
 			}
 			else
 				$_QRY->go($_HTML->url('service/ipbx/call_management/callfilter'),$param);
@@ -47,21 +46,22 @@ switch($act)
 		}
 
 		if(empty($result) === false
-		&& (xivo_issa('dialstatus',$result) === false || empty($result['dialstatus']) === true) === true)
-			$result['dialstatus'] = null;
-
-		$dhtml = &$_HTML->get_module('dhtml');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callfilter.js');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialstatus.js');
+		&& (xivo_issa('dialaction',$result) === false
+		    || empty($result['dialaction']) === true) === true)
+			$result['dialaction'] = null;
 
 		$_HTML->set_var('info',$result);
-		$_HTML->set_var('dialstatus',$result['dialstatus']);
+		$_HTML->set_var('dialaction',$result['dialaction']);
 		$_HTML->set_var('element',$appcallfilter->get_elements());
-		$_HTML->set_var('dialstatus_list',$appcallfilter->get_dialstatus_destination_list());
+		$_HTML->set_var('destination_list',$appcallfilter->get_dialaction_destination_list());
 		$_HTML->set_var('context_list',$appcallfilter->get_context_list());
 		$_HTML->set_var('bosslist',$appcallfilter->get_free_boss_users());
 		$_HTML->set_var('secretary',$secretary);
+
+		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callfilter.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		break;
 	case 'edit':
 		$appcallfilter = &$ipbx->get_application('callfilter',array('type' => 'bosssecretary'));
@@ -83,7 +83,7 @@ switch($act)
 			|| $appcallfilter->edit() === false)
 			{
 				$result = $appcallfilter->get_result();
-				$result['dialstatus'] = $appcallfilter->get_dialstatus_result();
+				$result['dialaction'] = $appcallfilter->get_dialaction_result();
 			}
 			else
 				$_QRY->go($_HTML->url('service/ipbx/call_management/callfilter'),$param);
@@ -105,22 +105,23 @@ switch($act)
 		}
 
 		if(empty($return) === false
-		&& (xivo_issa('dialstatus',$return) === false || empty($return['dialstatus']) === true) === true)
-			$return['dialstatus'] = null;
-
-		$dhtml = &$_HTML->get_module('dhtml');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callfilter.js');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialstatus.js');
+		&& (xivo_issa('dialaction',$return) === false
+		    || empty($return['dialaction']) === true) === true)
+			$return['dialaction'] = null;
 
 		$_HTML->set_var('id',$info['callfilter']['id']);
 		$_HTML->set_var('info',$return);
-		$_HTML->set_var('dialstatus',$return['dialstatus']);
+		$_HTML->set_var('dialaction',$return['dialaction']);
 		$_HTML->set_var('element',$appcallfilter->get_elements());
-		$_HTML->set_var('dialstatus_list',$appcallfilter->get_dialstatus_destination_list());
+		$_HTML->set_var('destination_list',$appcallfilter->get_dialaction_destination_list());
 		$_HTML->set_var('context_list',$appcallfilter->get_context_list());
 		$_HTML->set_var('bosslist',$appcallfilter->get_boss_users());
 		$_HTML->set_var('secretary',$secretary);
+
+		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callfilter.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		break;
 	case 'delete':
 		$param['page'] = $page;
