@@ -906,7 +906,7 @@ class Outcall:
 		cursor.query("SELECT ${columns} FROM outcalltrunk "
 			     "WHERE outcallid = %d "
 			     "ORDER BY priority ASC",
-			     ('trunkfeaturesidi',),
+			     ('trunkfeaturesid',),
 			     (self.id,))
 		res = cursor.fetchall()
 
@@ -916,7 +916,7 @@ class Outcall:
 		self.trunks = []
 
 		for row in res:
-			self.trunks.append(Trunk(agi, cursor, row['trunkfeaturesidi']))
+			self.trunks.append(Trunk(agi, cursor, row['trunkfeaturesid']))
 
 class Schedule:
 	def __init__(self, agi, cursor, xid):
