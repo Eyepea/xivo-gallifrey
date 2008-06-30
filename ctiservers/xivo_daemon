@@ -600,7 +600,8 @@ while True: # loops over the reloads
                 xivoconf_asterisk = cconf.read_section(astid)
                 if len(xivoconf_asterisk) > 0:
                         localaddr = '127.0.0.1'
-                        phonelisturl = None
+                        urllist_phones = None
+                        urllist_queues = None
                         ipaddress = '127.0.0.1'
                         ipaddress_webi = '127.0.0.1'
                         ami_port = 5038
@@ -615,8 +616,10 @@ while True: # loops over the reloads
 
                         if 'localaddr' in xivoconf_asterisk:
                                 localaddr = xivoconf_asterisk['localaddr']
-                        if 'phonelisturl' in xivoconf_asterisk:
-                                phonelisturl = xivoconf_asterisk['phonelisturl']
+                        if 'urllist_phones' in xivoconf_asterisk:
+                                urllist_phones = xivoconf_asterisk['urllist_phones']
+                        if 'urllist_queues' in xivoconf_asterisk:
+                                urllist_queues = xivoconf_asterisk['urllist_queues']
                         if 'ipaddress' in xivoconf_asterisk:
                                 ipaddress = xivoconf_asterisk['ipaddress']
                         if 'ipaddress_webi' in xivoconf_asterisk:
@@ -660,7 +663,7 @@ while True: # loops over the reloads
                                                                     linkestablished,
                                                                     aoriginate)
 
-                        plist[astid] = xivo_phones.PhoneList(astid, commandclass, phonelisturl)
+                        plist[astid] = xivo_phones.PhoneList(astid, commandclass, urllist_phones)
 
                         if ipaddress not in ip_reverse_sht:
                                 ip_reverse_sht[ipaddress] = astid

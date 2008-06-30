@@ -86,6 +86,7 @@ class XivoCTICommand(BaseCommand):
                 self.disconnlist = []
                 self.sheet_actions = {}
                 self.sheet_actions_opt = {}
+                self.ldapids = {}
                 return
 
         def get_list_commands(self):
@@ -333,25 +334,6 @@ class XivoCTICommand(BaseCommand):
 
         def set_options(self, xivoconf):
                 self.xivoconf = xivoconf
-                if 'xivo_db_uri' in self.xivoconf:
-                        xivo_db_uri = self.xivoconf['xivo_db_uri']
-                        self.xivo_conn = anysql.connect_by_uri(xivo_db_uri)
-                        self.xivo_cursor = self.xivo_conn.cursor()
-                        columns = ('name',)
-                        self.xivo_cursor.query("SELECT ${columns} FROM queue",
-                                               columns)
-                        results = self.xivo_cursor.fetchall()
-
-                        astid = 'xivo'
-                        if astid not in self.queues_list:
-                                self.queues_list[astid] = {}
-                        for queue in results:
-                                if queue[0] not in self.queues_list[astid]:
-                                        self.queues_list[astid][queue[0]] = {'agents' : {},
-                                                                             'channels' : {}}
-                                        for field in self.QueueStats:
-                                                self.queues_list[astid][queue[0]][field] = ''
-
                 for var, val in self.xivoconf.iteritems():
                         if var.find('-') > 0:
                                 [name, prop] = var.split('-', 1)
@@ -471,7 +453,7 @@ class XivoCTICommand(BaseCommand):
                         log_debug(SYSLOG_WARNING, '--- exception --- (__send_msg_to_cti_clients__) : %s' % str(exc))
                 return
 
-        sheet_allowed_events = ['incomingtop', 'incomingqueue', 'incomingsda',
+        sheet_allowed_events = ['incomingtop', 'incomingqueue', 'incomingdid',
                                 'localphonecalled', 'agentcalled', 'agentselected',
                                 'agi', 'outgoing']
         sheet_allowed_actions = ['url', 'xcsystray', 'xcpopup']
@@ -485,7 +467,7 @@ class XivoCTICommand(BaseCommand):
                                 self.sheet_actions_opt[action] = actionopt
                 return
 
-        def __sheet_alert__(self, where, event):
+        def __sheet_alert__(self, where, astid, event):
                 if where in self.sheet_actions:
                         actiontodo = self.sheet_actions[where]
                         if where == 'outgoing':
@@ -518,14 +500,30 @@ class XivoCTICommand(BaseCommand):
                         elif where == 'incomingtop':
                                 clid = event.get('CallerID')
                                 chan = event.get('Channel')
-                                if clid != '<unknown>':
-                                        print clid, chan, r.split(';')
+                                uid = event.get('Uniqueid')
+                                print 'ALERT %s : (%s) %s uid=%s %s %s' % (where, time.asctime(), astid, uid, clid, chan)
+                                if clid is not None and len(clid) > 7 and clid != '<unknown>':
                                         r = self.__build_customers__('default', [clid])
-                                pass
+                                        if len(r) > 5:
+                                                print r.split(';')
+                                        # interception :
+                                        # self.amilist.execute(astid, 'transfer', chan, shortphonenum, 'default')
+
+                        elif where == 'incomingdid':
+                                chan = event.get('Channel')
+                                uid = event.get('Uniqueid')
+                                print 'ALERT %s : (%s) %s uid=%s %s did=%s' % (where, time.asctime(), astid, uid, chan, event.get('AppData'))
 
                         elif where == 'incomingqueue':
-                                print event
-                                pass
+                                clid = event.get('CallerID')
+                                chan = event.get('Channel')
+                                uid = event.get('Uniqueid')
+                                print 'ALERT %s : (%s) %s uid=%s %s %s (%s %s %s)' % (where, time.asctime(), astid, uid, clid, chan,
+                                                                                      event.get('Queue'), event.get('Position'), event.get('Count'))
+                                if len(clid) > 7 and clid != '<unknown>':
+                                        r = self.__build_customers__('default', [clid])
+                                        if len(r) > 5:
+                                                print r.split(';')
 
                         elif where == 'agi':
                                 pass
@@ -581,7 +579,7 @@ class XivoCTICommand(BaseCommand):
                                 del self.queues_channels_list[astid][chan1]
                                 # if (t1 - t0) < 1:
                                 event['xivo_queuename'] = qname
-                                self.__sheet_alert__('agentselected', event)
+                                self.__sheet_alert__('agentselected', astid, event)
                 else:
                         ag1 = None
                         ag2 = None
@@ -705,11 +703,11 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def ami_newexten(self, astid, event):
-                self.__sheet_alert__('outgoing', event)
+                self.__sheet_alert__('outgoing', astid, event)
                 return
 
         def ami_newchannel(self, astid, event):
-                self.__sheet_alert__('incomingtop', event)
+                self.__sheet_alert__('incomingtop', astid, event)
                 return
 
         def ami_parkedcall(self, astid, event):
@@ -802,6 +800,7 @@ class XivoCTICommand(BaseCommand):
                         self.agents_list[astid][agent]['name'] = event.get('Name')
                         self.agents_list[astid][agent]['loggedintime'] = event.get('LoggedInTime')
                 return
+
         def ami_agentscomplete(self, astid, event):
                 print 'AMI AgentsComplete', astid, event
                 if astid in self.agents_list:
@@ -943,6 +942,11 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def ami_userevent(self, astid, event):
+                eventname = event.get('Event')
+                if eventname == 'UserEventDID':
+                        self.__sheet_alert__('incomingdid', astid, event)
+                else:
+                        log_debug(SYSLOG_INFO, 'AMI UserEvent %s %s' % (astid, event))
                 return
         def ami_meetmejoin(self, astid, event):
                 return
@@ -959,7 +963,7 @@ class XivoCTICommand(BaseCommand):
                 queue = event.get('Queue')
                 count = event.get('Count')
                 position = event.get('Position')
-                self.__sheet_alert__('incomingqueue', event)
+                self.__sheet_alert__('incomingqueue', astid, event)
                 log_debug(SYSLOG_INFO, 'AMI Join (Queue) %s %s %s' % (queue, chan, count))
                 
                 if astid not in self.queues_list:
@@ -976,7 +980,7 @@ class XivoCTICommand(BaseCommand):
                 self.amilist.execute(astid, 'sendqueuestatus', queue)
                 self.__send_msg_to_cti_clients__(self.__build_queue_status__(astid, queue))
                 return
-        
+
         def ami_leave(self, astid, event):
                 print 'AMI Leave (Queue)', event
                 chan  = event.get('Channel')
@@ -997,7 +1001,7 @@ class XivoCTICommand(BaseCommand):
                 self.amilist.execute(astid, 'sendqueuestatus', queue)
                 self.__send_msg_to_cti_clients__(self.__build_queue_status__(astid, queue))
                 return
-        
+
         def ami_rename(self, astid, event):
                 return
         # END of AMI events
@@ -1946,7 +1950,12 @@ class XivoCTICommand(BaseCommand):
 
                         try:
                                 results = None
-                                ldapid = xivo_ldap.xivo_ldap(z.uri)
+                                if z.uri in self.ldapids:
+                                        ldapid = self.ldapids[z.uri]
+                                else:
+                                        ldapid = xivo_ldap.xivo_ldap(z.uri)
+                                        if ldapid.l is not None:
+                                                self.ldapids[z.uri] = ldapid
                                 if ldapid.l is not None:
                                         results = ldapid.getldap("(|%s)" % ''.join(selectline),
                                                                  z.search_matching_fields)

@@ -499,5 +499,6 @@ class AMIList:
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- AMI command %s on %s : %s' % (command, astid, exc))
                 else:
-                        log_debug(SYSLOG_WARNING, 'ami : %s not in list - wait for the next update ? ...' % astid)
+                        log_debug(SYSLOG_WARNING, 'ami (command %s) : %s not in list - wait for the next update ? ...'
+                                  % (astid, command))
                 return
