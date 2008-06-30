@@ -553,8 +553,10 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 		}
 		else if($r === false)
 			return(false);
+		else if(($r = $this->_register->get_return_var('register')) !== false)
+			$r = true;
 
-		return(($this->_return['register'] = $this->_register->get_return_var('register')));
+		return(($this->_return['register'] = $r));
 	}
 
 	function edit_contextmember()

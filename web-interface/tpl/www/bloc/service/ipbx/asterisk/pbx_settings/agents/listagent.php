@@ -4,7 +4,6 @@
 	$dhtml = &$this->get_module('dhtml');
 
 	$pager = $this->get_var('pager');
-	$list = $this->get_var('list');
 	$act = $this->get_var('act');
 	$group = $this->get_var('group');
 
@@ -13,7 +12,8 @@
 			    $pager['prev'],
 			    $pager['next'],
 			    'service/ipbx/pbx_settings/agents',
-			    array('act' => $act,'group' => $group));
+			    array('act'		=> $act,
+			    	  'group'	=> $group));
 ?>
 <div id="sr-agent" class="b-list">
 <?php
@@ -36,7 +36,7 @@
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
 <?php
-	if($list === false || ($nb = count($list)) === 0):
+	if(($list = $this->get_var('list')) === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
 		<td colspan="6" class="td-single"><?=$this->bbf('no_agent');?></td>
@@ -46,19 +46,37 @@
 		for($i = $pager['beg'],$j = 0;$i < $pager['end'] && $i < $pager['total'];$i++,$j++):
 
 			$ref = &$list[$i];
-
-			if($ref['agent']['passwd'] === '')
-				$ref['agent']['passwd'] = '-';
-
-			$mod = $j % 2 === 0 ? 1 : 2;
 ?>
-	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
-		<td class="td-left txt-left" colspan="2"><?=$ref['afeatures']['fullname']?></td>
+	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
+	    onmouseout="this.className = this.tmp;"
+	    class="sb-content l-infos-<?=(($j % 2) + 1)?>on2">
+		<td class="td-left txt-left" colspan="2">
+			<?=xivo_htmlen(xivo_trunc($ref['afeatures']['fullname'],25,'...',false));?>
+		</td>
 		<td><?=$ref['agent']['number']?></td>
-		<td><?=$ref['agent']['passwd']?></td>
+		<td><?=(xivo_haslen($ref['agent']['passwd']) === true ? $ref['agent']['passwd'] : '-')?></td>
 		<td class="td-right" colspan="2">
-		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/pbx_settings/agents',array('act' => 'editagent','group' => $ref['agroup']['id'],'id' => $ref['afeatures']['id']),null,$this->bbf('opt_modify'));?>
-		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/pbx_settings/agents',array('act' => 'deleteagent','group' => $ref['agroup']['id'],'id' => $ref['afeatures']['id'],'page' => $pager['page']),'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',$this->bbf('opt_delete'));?>
+<?php
+		echo	$url->href_html($url->img_html('img/site/button/edit.gif',
+						       $this->bbf('opt_modify'),
+						       'border="0"'),
+					'service/ipbx/pbx_settings/agents',
+					array('act'	=> 'editagent',
+					      'group'	=> $ref['agroup']['id'],
+					      'id'	=> $ref['afeatures']['id']),
+					null,
+					$this->bbf('opt_modify')),"\n",
+			$url->href_html($url->img_html('img/site/button/delete.gif',
+						       $this->bbf('opt_delete'),
+						       'border="0"'),
+					'service/ipbx/pbx_settings/agents',
+					array('act'	=> 'deleteagent',
+					      'group'	=> $ref['agroup']['id'],
+					      'id'	=> $ref['afeatures']['id'],
+					      'page'	=> $pager['page']),
+					'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',
+					$this->bbf('opt_delete'));
+?>
 		</td>
 	</tr>
 <?php

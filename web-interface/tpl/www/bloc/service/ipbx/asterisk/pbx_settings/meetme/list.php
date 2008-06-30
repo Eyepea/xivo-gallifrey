@@ -3,11 +3,15 @@
 	$form = &$this->get_module('form');
 	$dhtml = &$this->get_module('dhtml');
 
-	$list = $this->get_var('list');
 	$pager = $this->get_var('pager');
 	$act = $this->get_var('act');
 
-	$page = $url->pager($pager['pages'],$pager['page'],$pager['prev'],$pager['next'],'service/ipbx/pbx_settings/meetme',array('act' => $act));
+	$page = $url->pager($pager['pages'],
+			    $pager['page'],
+			    $pager['prev'],
+			    $pager['next'],
+			    'service/ipbx/pbx_settings/meetme',
+			    array('act' => $act));
 ?>
 <div class="b-list">
 <?php
@@ -30,7 +34,7 @@
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
 <?php
-	if($list === false || ($nb = count($list)) === 0):
+	if(($list = $this->get_var('list')) === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
 		<td colspan="8" class="td-single"><?=$this->bbf('no_meetme');?></td>
@@ -46,23 +50,49 @@
 			else:
 				$icon = 'enable';
 			endif;
-
-			if($ref['meetmeroom']['pin'] === '')
-				$ref['meetmeroom']['pin'] = '-';
-
-			if($ref['meetmeroom']['admin-pin'] === '')
-				$ref['meetmeroom']['admin-pin'] = '-';
 ?>
-	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
-		<td class="td-left"><?=$form->checkbox(array('name' => 'meetme[]','value' => $ref['meetmeroom']['id'],'label' => false,'id' => 'it-meetme-'.$i,'checked' => false,'field' => false));?></td>
-		<td class="txt-left"><label for="it-meetme-<?=$i?>" id="lb-meetme-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['mfeatures']['name']?></label></td>
+	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
+	    onmouseout="this.className = this.tmp;"
+	    class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
+		<td class="td-left">
+			<?=$form->checkbox(array('name'		=> 'meetme[]',
+						 'value'	=> $ref['meetmeroom']['id'],
+						 'label'	=> false,
+						 'id'		=> 'it-meetme-'.$i,
+						 'checked'	=> false,
+						 'field'	=> false));?>
+		</td>
+		<td class="txt-left">
+			<label for="it-meetme-<?=$i?>" id="lb-meetme-<?=$i?>">
+<?php
+				echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),
+					xivo_trunc($ref['mfeatures']['name'],25,'...',false);
+?>
+			</label>
+		</td>
 		<td><?=$ref['meetmeroom']['number']?></td>
-		<td><?=$ref['meetmeroom']['pin']?></td>
-		<td><?=$ref['meetmeroom']['admin-pin']?></td>
+		<td><?=(xivo_haslen($ref['meetmeroom']['pin']) === true ? $ref['meetmeroom']['pin'] : '-')?></td>
+		<td><?=(xivo_haslen($ref['meetmeroom']['admin-pin']) === true ? $ref['meetmeroom']['admin-pin'] : '-')?></td>
 		<td class="td-right" colspan="3">
-		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/pbx_settings/meetme',array('act' => 'edit','id' => $ref['meetmeroom']['id']),null,$this->bbf('opt_modify'));?>
-
-		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/pbx_settings/meetme',array('act' => 'delete','id' => $ref['meetmeroom']['id'],'page' => $pager['page']),'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',$this->bbf('opt_delete'));?>
+<?php
+		echo	$url->href_html($url->img_html('img/site/button/edit.gif',
+						       $this->bbf('opt_modify'),
+						       'border="0"'),
+					'service/ipbx/pbx_settings/meetme',
+					array('act'	=> 'edit',
+					      'id'	=> $ref['meetmeroom']['id']),
+					null,
+					$this->bbf('opt_modify')),"\n",
+			$url->href_html($url->img_html('img/site/button/delete.gif',
+						       $this->bbf('opt_delete'),
+						       'border="0"'),
+					'service/ipbx/pbx_settings/meetme',
+					array('act'	=> 'delete',
+					      'id'	=> $ref['meetmeroom']['id'],
+					      'page'	=> $pager['page']),
+					'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',
+					$this->bbf('opt_delete'));
+?>
 		</td>
 	</tr>
 <?php

@@ -52,7 +52,7 @@ Directory
 ; incall_destination-application-faxtomail
 FaxToMail
 
-; incall_destination-application-voicemail
+; incall_destination-application-voicemailmain
 Consultation de la messagerie vocale
 
 ; incall_destination-sound

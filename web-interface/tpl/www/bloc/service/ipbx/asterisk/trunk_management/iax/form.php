@@ -108,7 +108,7 @@ endif;
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_protocol_notransfer'),'name' => 'protocol[notransfer]','labelid' => 'protocol-notransfer','default' => $element['protocol']['notransfer']['default'],'checked' => $info['protocol']['notransfer']));?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_protocol_trunk'),'name' => 'protocol[trunk]','labelid' => 'protocol-trunk','default' => $element['protocol']['protocol']['default'],'checked' => $info['protocol']['protocol']));?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_protocol_trunk'),'name' => 'protocol[trunk]','labelid' => 'protocol-trunk','default' => $element['protocol']['trunk']['default'],'checked' => $info['protocol']['trunk']));?>
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_protocol_qualify'),'name' => 'protocol[qualify]','labelid' => 'protocol-qualify','default' => $element['protocol']['qualify']['default'],'checked' => $info['protocol']['qualify']));?>
 

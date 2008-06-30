@@ -41,7 +41,6 @@
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
 <?php
-
 	if(($list = $this->get_var('list')) === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
@@ -99,7 +98,7 @@
 		</td>
 		<td><?=$ref['context']?></td>
 		<td><?=$destination?></td>
-		<td><?=$destidentity?></td>
+		<td><?=xivo_htmlen(xivo_trunc($destidentity,30,'...',false));?></td>
 		<td class="td-right" colspan="3">
 <?php
 			echo	$url->href_html($url->img_html('img/site/button/edit.gif',

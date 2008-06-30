@@ -33,7 +33,6 @@
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
 <?php
-
 	if(($list = $this->get_var('list')) === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
@@ -49,10 +48,6 @@
 				$icon = 'disable';
 			else:
 				$icon = 'enable';
-			endif;
-
-			if(xivo_haslen($ref['number']) === false):
-				$ref['number'] = '-';
 			endif;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
@@ -74,7 +69,7 @@
 ?>
 			</label>
 		</td>
-		<td><?=$ref['number']?></td>
+		<td><?=(xivo_haslen($ref['number']) === true ? $ref['number'] : '-')?></td>
 		<td><?=$ref['context']?></td>
 		<td class="td-right" colspan="3">
 <?php

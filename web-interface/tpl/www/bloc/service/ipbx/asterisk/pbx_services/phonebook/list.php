@@ -24,8 +24,12 @@
 <div class="b-list">
 <?php
 	if($page !== ''):
-		echo '<div class="b-total">',$this->bbf('number_phonebook-result','<b>'.$this->get_var('total').'</b>'),
-		'</div><div class="b-page">',$page,'</div><div class="clearboth"></div>';
+		echo	'<div class="b-total">',
+			$this->bbf('number_phonebook-result',
+				   '<b>'.$this->get_var('total').'</b>'),
+			'</div><div class="b-page">',
+			$page,
+			'</div><div class="clearboth"></div>';
 	endif;
 ?>
 <form action="#" name="fm-phonebook-list" method="post" accept-charset="utf-8">
@@ -57,10 +61,6 @@
 
 			$ref = &$list[$i];
 
-			if(xivo_haslen($ref['phonebook']['society']) === false):
-				$ref['phonebook']['society'] = '-';
-			endif;
-
 			if(is_array($ref['phonebooknumber']) === false):
 				$ref['phonebooknumber'] = array();
 			endif;
@@ -76,21 +76,48 @@
 				$ref['phonebooknumber']['mobile'] = array();
 				$ref['phonebooknumber']['mobile']['number'] = '-';
 			endif;
-
-			if(xivo_haslen($ref['phonebook']['email']) === false):
-				$ref['phonebook']['email'] = '-';
-			endif;
 ?>
-	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
-		<td class="td-left"><?=$form->checkbox(array('name' => 'phonebook[]','value' => $ref['phonebook']['id'],'label' => false,'id' => 'it-phonebook-'.$i,'checked' => false,'field' => false));?></td>
-		<td class="txt-left"><label for="it-phonebook-<?=$i?>" id="lb-phonebook-<?=$i?>"><?=$ref['phonebook']['displayname']?></label></td>
-		<td><?=$ref['phonebook']['society']?></td>
+	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
+	    onmouseout="this.className = this.tmp;"
+	    class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
+		<td class="td-left">
+			<?=$form->checkbox(array('name'		=> 'phonebook[]',
+						 'value'	=> $ref['phonebook']['id'],
+						 'label'	=> false,
+						 'id'		=> 'it-phonebook-'.$i,
+						 'checked'	=> false,
+						 'field'	=> false));?>
+		</td>
+		<td class="txt-left">
+			<label for="it-phonebook-<?=$i?>" id="lb-phonebook-<?=$i?>">
+				<?=xivo_htmlen(xivo_trunc($ref['phonebook']['displayname'],30,'...',false));?>
+			</label>
+		</td>
+		<td><?=(xivo_haslen($ref['phonebook']['society']) === true ? $ref['phonebook']['society'] : '-')?></td>
 		<td><?=$ref['phonebooknumber']['office']['number']?></td>
 		<td><?=$ref['phonebooknumber']['mobile']['number']?></td>
-		<td><?=$ref['phonebook']['email']?></td>
+		<td><?=(xivo_haslen($ref['phonebook']['email']) === true ? $ref['phonebook']['email'] : '-')?></td>
 		<td class="td-right" colspan="3">
-		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/pbx_services/phonebook',array('act' => 'edit','id' => $ref['phonebook']['id']),null,$this->bbf('opt_modify'));?>
-		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/pbx_services/phonebook',array('act' => 'delete','id' => $ref['phonebook']['id'],'page' => $pager['page'],$param),'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\') ? true : false);"',$this->bbf('opt_delete'));?>
+<?php
+			echo	$url->href_html($url->img_html('img/site/button/edit.gif',
+							       $this->bbf('opt_modify'),
+							       'border="0"'),
+						'service/ipbx/pbx_services/phonebook',
+						array('act'	=> 'edit',
+						      'id'	=> $ref['phonebook']['id']),
+						null,
+						$this->bbf('opt_modify')),"\n",
+				$url->href_html($url->img_html('img/site/button/delete.gif',
+							       $this->bbf('opt_delete'),
+							       'border="0"'),
+						'service/ipbx/pbx_services/phonebook',
+						array('act'	=> 'delete',
+						      'id'	=> $ref['phonebook']['id'],
+						      'page'	=> $pager['page'],
+						      $param),
+						'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',
+						$this->bbf('opt_delete'));
+?>
 		</td>
 	</tr>
 <?php
@@ -106,8 +133,12 @@
 </form>
 <?php
 	if($page !== ''):
-		echo '<div class="b-total">',$this->bbf('number_phonebook-result','<b>'.$this->get_var('total').'</b>'),
-		'</div><div class="b-page">',$page,'</div><div class="clearboth"></div>';
+		echo	'<div class="b-total">',
+			$this->bbf('number_phonebook-result',
+				   '<b>'.$this->get_var('total').'</b>'),
+			'</div><div class="b-page">',
+			$page,
+			'</div><div class="clearboth"></div>';
 	endif;
 ?>
 </div>

@@ -14,6 +14,7 @@
 
 <link rel="stylesheet" type="text/css" href="<?=$this->file_time($this->url('css/xivo.css'));?>">
 <script type="text/javascript" src="<?=$this->file_time($this->url('js/xivo.js'));?>"></script>
+<script type="text/javascript" src="<?=$this->file_time($this->url('js/xivo_node.js'));?>"></script>
 <script type="text/javascript" src="<?=$this->file_time($this->url('js/xivo_form.js'));?>"></script>
 
 <?php

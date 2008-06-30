@@ -6,7 +6,12 @@
 	$pager = $this->get_var('pager');
 	$act = $this->get_var('act');
 
-	$page = $url->pager($pager['pages'],$pager['page'],$pager['prev'],$pager['next'],'xivo/configuration/manage/ldapserver',array('act' => $act));
+	$page = $url->pager($pager['pages'],
+			    $pager['page'],
+			    $pager['prev'],
+			    $pager['next'],
+			    'xivo/configuration/manage/ldapserver',
+			    array('act' => $act));
 ?>
 <div class="b-list">
 <?php
@@ -46,16 +51,48 @@
 				$icon = 'enable';
 			endif;
 ?>
-	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
-		<td class="td-left"><?=$form->checkbox(array('name' => 'ldapserver[]','value' => $ref['id'],'label' => false,'id' => 'it-ldapserver-'.$i,'checked' => false,'field' => false));?></td>
-		<td class="txt-left"><label for="it-ldapserver-<?=$i?>" id="lb-ldapserver-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['name']?></label></td>
+	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
+	    onmouseout="this.className = this.tmp;"
+	    class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
+		<td class="td-left">
+			<?=$form->checkbox(array('name'		=> 'ldapserver[]',
+						 'value'	=> $ref['id'],
+						 'label'	=> false,
+						 'id'		=> 'it-ldapserver-'.$i,
+						 'checked'	=> false,
+						 'field'	=> false));?>
+		</td>
+		<td class="txt-left">
+			<label for="it-ldapserver-<?=$i?>" id="lb-ldapserver-<?=$i?>">
+<?php
+				echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),
+					$ref['name'];
+?>
+			</label>
+		</td>
 		<td><?=$ref['host']?></td>
 		<td><?=$ref['port']?></td>
 		<td><?=$this->bbf('ssl_'.intval((bool) $ref['ssl']));?></td>
 		<td class="td-right" colspan="3">
-		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'xivo/configuration/manage/ldapserver',array('act' => 'edit','id' => $ref['id']),null,$this->bbf('opt_modify'));?>
-
-		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'xivo/configuration/manage/ldapserver',array('act' => 'delete','id' => $ref['id'],'page' => $pager['page']),'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',$this->bbf('opt_delete'));?>
+<?php
+			echo	$url->href_html($url->img_html('img/site/button/edit.gif',
+							       $this->bbf('opt_modify'),
+							       'border="0"'),
+						'xivo/configuration/manage/ldapserver',
+						array('act'	=> 'edit',
+						      'id'	=> $ref['id']),
+						null,
+						$this->bbf('opt_modify')),"\n",
+				$url->href_html($url->img_html('img/site/button/delete.gif',
+							       $this->bbf('opt_delete'),
+							       'border="0"'),
+						'xivo/configuration/manage/ldapserver',
+						array('act'	=> 'delete',
+						      'id'	=> $ref['id'],
+						      'page'	=> $pager['page']),
+						'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',
+						$this->bbf('opt_delete'));
+?>
 		</td>
 	</tr>
 <?php

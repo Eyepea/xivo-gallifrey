@@ -33,7 +33,6 @@
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
 <?php
-
 	if(($list = $this->get_var('list')) === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
@@ -59,14 +58,48 @@
 				$ref['member_identity'] = $this->bbf('callfilter_type-opt-bosssecretary',$ref['member_identity']);
 			endif;
 ?>
-	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
-		<td class="td-left"><?=$form->checkbox(array('name' => 'callfilters[]','value' => $ref['id'],'label' => false,'id' => 'it-callfilters-'.$i,'checked' => false,'field' => false));?></td>
-		<td class="txt-left"><label for="it-callfilters-<?=$i?>" id="lb-callfilters-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['name']?></label></td>
+	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
+	    onmouseout="this.className = this.tmp;"
+	    class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
+		<td class="td-left">
+			<?=$form->checkbox(array('name'		=> 'callfilters[]',
+						 'value'	=> $ref['id'],
+						 'label'	=> false,
+						 'id'		=> 'it-callfilters-'.$i,
+						 'checked'	=> false,
+						 'field'	=> false));?>
+		</td>
+		<td class="txt-left">
+			<label for="it-callfilters-<?=$i?>" id="lb-callfilters-<?=$i?>">
+<?php
+				echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),
+					$ref['name'];
+?>
+			</label></td>
 		<td><?=$this->bbf('callfilter_type-'.$ref['type']);?></td>
-		<td title="<?=xivo_htmlen($ref['member_identity']);?>"><?=xivo_trunc($ref['member_identity'],25,'...','');?></td>
+		<td title="<?=xivo_htmlen($ref['member_identity']);?>">
+			<?=xivo_htmlen(xivo_trunc($ref['member_identity'],40,'...',false));?>
+		</td>
 		<td class="td-right" colspan="3">
-		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/call_management/callfilter',array('act' => 'edit','id' => $ref['id']),null,$this->bbf('opt_modify'));?>
-		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/call_management/callfilter',array('act' => 'delete','id' => $ref['id'],'page' => $pager['page']),'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',$this->bbf('opt_delete'));?>
+<?php
+			echo	$url->href_html($url->img_html('img/site/button/edit.gif',
+							       $this->bbf('opt_modify'),
+							       'border="0"'),
+						'service/ipbx/call_management/callfilter',
+						array('act'	=> 'edit',
+						      'id'	=> $ref['id']),
+						null,
+						$this->bbf('opt_modify')),"\n",
+				$url->href_html($url->img_html('img/site/button/delete.gif',
+							       $this->bbf('opt_delete'),
+							       'border="0"'),
+						'service/ipbx/call_management/callfilter',
+						array('act'	=> 'delete',
+						      'id'	=> $ref['id'],
+						      'page'	=> $pager['page']),
+						'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',
+						$this->bbf('opt_delete'));
+?>
 		</td>
 	</tr>
 <?php

@@ -6,7 +6,12 @@
 	$pager = $this->get_var('pager');
 	$act = $this->get_var('act');
 
-	$page = $url->pager($pager['pages'],$pager['page'],$pager['prev'],$pager['next'],'xivo/configuration/manage/entity',array('act' => $act));
+	$page = $url->pager($pager['pages'],
+			    $pager['page'],
+			    $pager['prev'],
+			    $pager['next'],
+			    'xivo/configuration/manage/entity',
+			    array('act' => $act));
 ?>
 <div class="b-list">
 <?php
@@ -45,28 +50,51 @@
 			else:
 				$icon = 'enable';
 			endif;
-
-			if(xivo_haslen($ref['phonenumber']) === false):
-				$ref['phonenumber'] = '-';
-			endif;
-
-			if(xivo_haslen($ref['email']) === false):
-				$ref['email'] = '-';
-			endif;
 ?>
-	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
-		<td class="td-left"><?=$form->checkbox(array('name' => 'entity[]','value' => $ref['id'],'label' => false,'id' => 'it-entity-'.$i,'checked' => false,'field' => false));?></td>
-		<td class="txt-left"><label for="it-entity-<?=$i?>" id="lb-entity-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['name']?></label></td>
-		<td><?=$ref['displayname']?></td>
-		<td><?=$ref['phonenumber']?></td>
-		<td><?=$ref['email']?></td>
-		<td class="td-right" colspan="3">
-		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'xivo/configuration/manage/entity',array('act' => 'edit','id' => $ref['id']),null,$this->bbf('opt_modify'));?>
-
+	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
+	    onmouseout="this.className = this.tmp;"
+	    class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
+		<td class="td-left">
+			<?=$form->checkbox(array('name'		=> 'entity[]',
+						 'value'	=> $ref['id'],
+						 'label'	=> false,
+						 'id'		=> 'it-entity-'.$i,
+						 'checked'	=> false,
+						 'field'	=> false));?>
+		</td>
+		<td class="txt-left">
+			<label for="it-entity-<?=$i?>" id="lb-entity-<?=$i?>">
 <?php
-		if($list[$i]['nb_context'] < 1):
-			echo $url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'xivo/configuration/manage/entity',array('act' => 'delete','id' => $ref['id'],'page' => $pager['page']),'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',$this->bbf('opt_delete'));
-		endif;
+				echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),
+					$ref['name'];
+?>
+			</label>
+		</td>
+		<td><?=xivo_htmlen(xivo_trunc($ref['displayname'],25,'...',false));?></td>
+		<td><?=(xivo_haslen($ref['phonenumber']) === true ? $ref['phonenumber'] : '-')?></td>
+		<td><?=(xivo_haslen($ref['email']) === true ? $ref['email'] : '-')?></td>
+		<td class="td-right" colspan="3">
+<?php
+			echo	$url->href_html($url->img_html('img/site/button/edit.gif',
+							       $this->bbf('opt_modify'),
+							       'border="0"'),
+						'xivo/configuration/manage/entity',
+						array('act'	=> 'edit',
+						      'id'	=> $ref['id']),
+						null,
+						$this->bbf('opt_modify')),"\n";
+
+			if($list[$i]['nb_context'] < 1):
+				echo	$url->href_html($url->img_html('img/site/button/delete.gif',
+								       $this->bbf('opt_delete'),
+								       'border="0"'),
+							'xivo/configuration/manage/entity',
+							array('act'	=> 'delete',
+							      'id'	=> $ref['id'],
+							      'page'	=> $pager['page']),
+							'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',
+							$this->bbf('opt_delete'));
+			endif;
 ?>
 		</td>
 	</tr>

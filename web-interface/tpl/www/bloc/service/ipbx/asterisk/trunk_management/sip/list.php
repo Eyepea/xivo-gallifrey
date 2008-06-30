@@ -4,7 +4,6 @@
 	$dhtml = &$this->get_module('dhtml');
 
 	$pager = $this->get_var('pager');
-	$list = $this->get_var('list');
 	$act = $this->get_var('act');
 
 	$page = $url->pager($pager['pages'],
@@ -35,7 +34,7 @@
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
 <?php
-	if($list === false || ($nb = count($list)) === 0):
+	if(($list = $this->get_var('list')) === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
 		<td colspan="8" class="td-single"><?=$this->bbf('no_trunk');?></td>
@@ -54,15 +53,48 @@
 
 			$calllimit = xivo_uint($ref['protocol']['call-limit']);
 ?>
-	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
-		<td class="td-left"><?=$form->checkbox(array('name' => 'trunks[]','value' => $ref['trunkfeatures']['id'],'label' => false,'id' => 'it-trunks-'.$i,'checked' => false,'field' => false));?></td>
-		<td class="txt-left"><label for="it-trunks-<?=$i?>" id="lb-trunks-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['protocol']['name']?></label></td>
+	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
+	    onmouseout="this.className = this.tmp;"
+	    class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
+		<td class="td-left">
+			<?=$form->checkbox(array('name'		=> 'trunks[]',
+						 'value'	=> $ref['trunkfeatures']['id'],
+						 'label'	=> false,
+						 'id'		=> 'it-trunks-'.$i,
+						 'checked'	=> false,
+						 'field'	=> false));?>
+		</td>
+		<td class="txt-left">
+			<label for="it-trunks-<?=$i?>" id="lb-trunks-<?=$i?>">
+<?php
+				echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),
+					$ref['protocol']['name'];
+?>
+			</label>
+		</td>
 		<td><?=($ref['protocol']['host'] === 'dynamic' ? $this->bbf('protocol_host-unknown') : $ref['protocol']['host'])?></td>
 		<td><?=$this->bbf('protocol_type-'.$ref['protocol']['type']);?></td>
 		<td><?=($calllimit === 0 ? $this->bbf('protocol_call-unlimited') : $calllimit)?></td>
 		<td class="td-right" colspan="3">
-		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/trunk_management/sip',array('act' => 'edit','id' => $ref['trunkfeatures']['id']),null,$this->bbf('opt_modify'));?>
-		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/trunk_management/sip',array('act' => 'delete','id' => $ref['trunkfeatures']['id'],'page' => $pager['page']),'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',$this->bbf('opt_delete'));?>
+<?php
+			echo	$url->href_html($url->img_html('img/site/button/edit.gif',
+							       $this->bbf('opt_modify'),
+							       'border="0"'),
+						'service/ipbx/trunk_management/sip',
+						array('act'	=> 'edit',
+						      'id'	=> $ref['trunkfeatures']['id']),
+						null,
+						$this->bbf('opt_modify')),"\n",
+				$url->href_html($url->img_html('img/site/button/delete.gif',
+							       $this->bbf('opt_delete'),
+							       'border="0"'),
+						'service/ipbx/trunk_management/sip',
+						array('act'	=> 'delete',
+						      'id'	=> $ref['trunkfeatures']['id'],
+						      'page'	=> $pager['page']),
+						'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',
+						$this->bbf('opt_delete'));
+?>
 		</td>
 	</tr>
 <?php
