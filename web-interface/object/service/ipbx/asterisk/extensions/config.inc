@@ -268,6 +268,7 @@ $array['app']['playback']['arg'][1] = array('set'	=> false,
 
 $array['app']['record'] = array();
 $array['app']['record']['displayname'] = 'Record';
+$array['app']['record']['appdata'] = 'recordings/%s|%s|%s|%s';
 $array['app']['record']['arg'] = array();
 $array['app']['record']['arg'][0] = array('minlen'	=> 4,
 					  'regexp'	=> '/^'.XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN_AUDIOFILE.'$/');

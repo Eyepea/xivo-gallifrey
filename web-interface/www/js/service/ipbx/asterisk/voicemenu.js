@@ -184,7 +184,7 @@ function xivo_ast_voicemenu_get_application(application,value)
 
 	var narg = value.substring(application.length+1);
 
-	if(application === 'background' || application === 'playback')
+	if(application === 'background' || application === 'playback' || application === 'record')
 	{
 		var pipearg = narg.split('|');
 
@@ -192,6 +192,9 @@ function xivo_ast_voicemenu_get_application(application,value)
 			pipearg[0] = pipearg[0].substring(spos+1);
 
 		narg = pipearg.join('|');
+
+		if(application === 'record')
+			narg = narg.replace(/\|+$/,'');
 	}
 
 	r['value'] += ','+narg;
