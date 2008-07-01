@@ -283,7 +283,7 @@ INSERT INTO extensions VALUES (NULL,0,'xivo-features','*27',1,'Macro','incallfil
 INSERT INTO extensions VALUES (NULL,1,'xivo-features','*26',1,'Macro','incallrec','incallrec');
 INSERT INTO extensions VALUES (NULL,0,'xivo-features','*10',1,'Macro','phonestatus','phonestatus');
 INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*8.',1,'Pickup','${EXTEN:2}','pickup');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','*9',1,'Macro','recsnd|/var/lib/pf-xivo/sounds/recordings|wav','recsnd');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','*9',1,'Macro','recsnd|wav','recsnd');
 INSERT INTO extensions VALUES (NULL,1,'xivo-features','*35',1,'Macro','vmdelete|/var/spool/asterisk/voicemail','vmdelete');
 INSERT INTO extensions VALUES (NULL,0,'xivo-features','*98',1,'Macro','voicemsg','voicemsg');
 
