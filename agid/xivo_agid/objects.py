@@ -289,7 +289,7 @@ class VMBox:
 		self.id = int(xid)
 		self.mailbox = res['voicemail.mailbox']
 		self.context = res['voicemail.context']
-		self.email = res['email']
+		self.email = res['voicemail.email']
 		self.skipcheckpass = res['voicemailfeatures.skipcheckpass']
 
 class User:
