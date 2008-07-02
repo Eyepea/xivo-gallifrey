@@ -85,8 +85,8 @@ $array['element']['monitor-format']['default'] = '';
 $array['element']['monitor-format']['null'] = true;
 
 $array['element']['monitor-join'] = array();
-$array['element']['monitor-join']['value'] = array('no','yes');
-$array['element']['monitor-join']['default'] = 'no';
+$array['element']['monitor-join']['value'] = array(0,1);
+$array['element']['monitor-join']['default'] = 0;
 $array['element']['monitor-join']['set'] = true;
 
 $array['element']['joinempty'] = array();
@@ -100,18 +100,18 @@ $array['element']['leavewhenempty']['default'] = 'no';
 $array['element']['leavewhenempty']['setdef'] = true;
 
 $array['element']['eventwhencalled'] = array();
-$array['element']['eventwhencalled']['value'] = array('no','yes');
-$array['element']['eventwhencalled']['default'] = 'no';
+$array['element']['eventwhencalled']['value'] = array(0,1);
+$array['element']['eventwhencalled']['default'] = 0;
 $array['element']['eventwhencalled']['set'] = true;
 
 $array['element']['eventmemberstatus'] = array();
-$array['element']['eventmemberstatus']['value'] = array('no','yes');
-$array['element']['eventmemberstatus']['default'] = 'no';
+$array['element']['eventmemberstatus']['value'] = array(0,1);
+$array['element']['eventmemberstatus']['default'] = 0;
 $array['element']['eventmemberstatus']['set'] = true;
 
 $array['element']['reportholdtime'] = array();
-$array['element']['reportholdtime']['value'] = array('no','yes');
-$array['element']['reportholdtime']['default'] = 'no';
+$array['element']['reportholdtime']['value'] = array(0,1);
+$array['element']['reportholdtime']['default'] = 0;
 $array['element']['reportholdtime']['set'] = true;
 
 $array['element']['memberdelay'] = array();
@@ -120,8 +120,8 @@ $array['element']['memberdelay']['default'] = 0;
 $array['element']['memberdelay']['setdef'] = true;
 
 $array['element']['timeoutrestart'] = array();
-$array['element']['timeoutrestart']['value'] = array('no','yes');
-$array['element']['timeoutrestart']['default'] = 'no';
+$array['element']['timeoutrestart']['value'] = array(0,1);
+$array['element']['timeoutrestart']['default'] = 0;
 $array['element']['timeoutrestart']['set'] = true;
 
 $array['element']['category'] = array();
