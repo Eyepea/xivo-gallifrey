@@ -818,7 +818,7 @@ class HandyNumber:
 
 		self.id = int(res['id'])
 		self.exten = res['exten']
-		self.trunkfeaturesid = int(res['id'])
+		self.trunkfeaturesid = int(res['trunkfeaturesid'])
 		self.type = res['type']
 
 		self.trunk = Trunk(agi, cursor, self.trunkfeaturesid)
