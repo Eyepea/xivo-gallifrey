@@ -29,12 +29,14 @@ Asterisk AMI utilities.
 """
 
 import random
+import re
 import socket
 import string
 import time
 from xivo_log import *
 
 __alphanums__ = string.uppercase + string.lowercase + string.digits
+__dialallowed__ = '[0-9*#]'
 
 def log_debug(level, text):
         log_debug_file(level, text, 'xivo_ami')
@@ -249,6 +251,9 @@ class AMIClass:
         def originate(self, phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext):
                 # originate a call btw src and dst
                 # src will ring first, and dst will ring when src responds
+                ph = re.sub(__dialallowed__, '', phonedst)
+                if len(ph) > 0:
+                        return False
                 try:
                         ret = self.sendcommand('Originate', [('Channel', phoneproto + '/' + phonesrc),
                                                              ('Exten', phonedst),
@@ -269,6 +274,9 @@ class AMIClass:
         def aoriginate(self, phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext):
                 # originate a call btw src and dst
                 # src will ring first, and dst will ring when src responds
+                ph = re.sub(__dialallowed__, '', phonedst)
+                if len(ph) > 0:
+                        return False
                 try:
                         #print self.aorgcmd, phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext
                         ret = self.sendcommand(self.aorgcmd, [('Channel', phoneproto + '/' + phonesrc),
@@ -290,6 +298,9 @@ class AMIClass:
         def aoriginate_var(self, phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext, extravars, timeout):
                 # originate a call btw src and dst
                 # src will ring first, and dst will ring when src responds
+                ph = re.sub(__dialallowed__, '', phonedst)
+                if len(ph) > 0:
+                        return False
                 try:
                         #print self.aorgcmd, phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext
                         command_details = [('Channel', phoneproto + '/' + phonesrc),
@@ -397,6 +408,9 @@ class AMIClass:
 
         # \brief Transfers a channel towards a new extension.
         def transfer(self, channel, extension, context):
+                ph = re.sub(__dialallowed__, '', extension)
+                if len(ph) > 0:
+                        return False
                 try:
                         command_details = [('Channel', channel),
                                            ('Exten', extension),
@@ -411,6 +425,9 @@ class AMIClass:
 
         # \brief Atxfer a channel towards a new extension.
         def atxfer(self, channel, extension, context):
+                ph = re.sub(__dialallowed__, '', extension)
+                if len(ph) > 0:
+                        return False
                 try:
                         ret = self.sendcommand('Atxfer', [('Channel', channel),
                                                           ('Exten', extension),
