@@ -32,6 +32,9 @@ def handynumbers(agi, cursor, args):
 	agi.set_variable('XIVO_INTERFACE', trunk.interface)
 	agi.set_variable('XIVO_TRUNKEXTEN', dstnum)
 
+	if trunk.intfsuffix:
+		agi.set_variable('XIVO_TRUNKSUFFIX', "/" + trunk.intfsuffix)
+
 	if user.outcallerid:
 		agi.set_variable('CALLERID(num)', user.outcallerid)
 
