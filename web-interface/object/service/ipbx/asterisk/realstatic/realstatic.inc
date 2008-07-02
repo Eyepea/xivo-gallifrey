@@ -271,6 +271,8 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 			$arr['commented'] = true;
 		else if(isset($arr['commented']) === true)
 			$arr['commented'] = (bool) $arr['commented'];
+		else if(xivo_haslen($arr['var_val']) === true)
+			$arr['commented'] = false;
 		else
 			unset($arr['commented']);
 
