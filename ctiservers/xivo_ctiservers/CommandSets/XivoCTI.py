@@ -86,6 +86,9 @@ class XivoCTICommand(BaseCommand):
                 self.disconnlist = []
                 self.sheet_actions = {}
                 self.ldapids = {}
+                self.chans_incomingqueue = []
+                self.chans_incomingdid = []
+                self.meetme = {}
                 return
 
         def get_list_commands(self):
@@ -453,7 +456,7 @@ class XivoCTICommand(BaseCommand):
                 return
 
 
-        sheet_allowed_events = ['incomingtop', 'incomingqueue', 'incomingdid',
+        sheet_allowed_events = ['incomingqueue', 'incomingdid',
                                 'localphonecalled', 'agentcalled', 'agentselected',
                                 'agi', 'outgoing']
 
@@ -479,7 +482,8 @@ class XivoCTICommand(BaseCommand):
                         linestosend = ['<?xml version="1.0" encoding="utf-8"?>',
                                        '<profile sessionid="sessid">',
                                        '<user>']
-                        
+                        linestosend.append('<info name="Date" type="text"><![CDATA[%s]]></info>' % time.asctime())
+
                         if where == 'outgoing':
                                 exten = event.get('Extension')
                                 application = event.get('Application')
@@ -501,10 +505,7 @@ class XivoCTICommand(BaseCommand):
                                                            ']></info>'
                                                            % (self.xivoconf['sheeturl'], src, queuename, dst))
                                         # XXX TODO : replace szTEL, szFA, lgAgent_Tel_Id with custom-defined arguments
-                                linestosend.extend([
-                                        '<info name="channel" type="internal"><![CDATA[%s]]></info>' % chan,
-                                        '<message>help %s</message>'
-                                        ])
+                                linestosend.append('<info name="channel" type="internal"><![CDATA[%s]]></info>' % chan)
                                 userinfo = None
                                 for uinfo in self.ulist_ng.userlist.itervalues():
                                         if 'agentnum' in uinfo and uinfo.get('agentnum') == agentnum:
@@ -521,35 +522,33 @@ class XivoCTICommand(BaseCommand):
                                         '<message>%s</message>' % called
                                         ])
 
-                        elif where == 'incomingtop':
-                                clid = event.get('CallerID')
-                                chan = event.get('Channel')
-                                uid = event.get('Uniqueid')
-                                userinfo = None
-                                print 'ALERT %s : (%s) %s uid=%s %s %s' % (where, time.asctime(), astid, uid, clid, chan)
-                                if clid is not None and len(clid) > 7 and clid != '<unknown>':
-                                        linestosend.append('<info name="Numero Appelant" type="phone"><![CDATA[%s]]></info>' % clid)
-                                        r = self.__build_customers__('default', [clid]).split(';')
-                                        if len(r) > 5:
-                                                linestosend.append('<info name="Entreprise" type="text"><![CDATA[%s]]></info>' % r[6])
-                                                linestosend.append('<info name="Personne" type="text"><![CDATA[%s]]></info>' % r[7])
-                                        # interception :
-                                        # self.amilist.execute(astid, 'transfer', chan, shortphonenum, 'default')
-
                         elif where == 'incomingdid':
                                 chan = event.get('Channel')
                                 uid = event.get('Uniqueid')
                                 userinfo = None
-                                print 'ALERT %s : (%s) %s uid=%s %s did=%s' % (where, time.asctime(), astid, uid, chan, event.get('AppData'))
-                                linestosend.append('<info name="SDA" type="text"><![CDATA[%s]]></info>' % event.get('AppData'))
+                                [clid, did] = event.get('AppData').split('|')
+                                print 'ALERT %s : (%s) %s uid=%s %s %s did=%s' % (where, time.asctime(), astid, uid, clid, chan, did)
+                                self.chans_incomingdid.append(chan)
+                                linestosend.append('<info name="SDA" type="text"><![CDATA[%s]]></info>' % did)
+                                linestosend.append('<info name="Numero Appelant" type="phone"><![CDATA[%s]]></info>' % clid)
+                                r = self.__build_customers__('default', [clid]).split(';')
+                                if len(r) > 5:
+                                        linestosend.append('<info name="Entreprise" type="text"><![CDATA[%s]]></info>' % r[6])
+                                        linestosend.append('<info name="Personne" type="text"><![CDATA[%s]]></info>' % r[7])
+                                        linestosend.append('<message>%s</message>' % r[7])
+                                # interception :
+                                # self.amilist.execute(astid, 'transfer', chan, shortphonenum, 'default')
 
                         elif where == 'incomingqueue':
                                 clid = event.get('CallerID')
                                 chan = event.get('Channel')
                                 uid = event.get('Uniqueid')
+                                queue = event.get('Queue')
                                 userinfo = None
                                 print 'ALERT %s : (%s) %s uid=%s %s %s (%s %s %s)' % (where, time.asctime(), astid, uid, clid, chan,
-                                                                                      event.get('Queue'), event.get('Position'), event.get('Count'))
+                                                                                      queue, event.get('Position'), event.get('Count'))
+                                self.chans_incomingqueue.append(chan)
+                                linestosend.append('<info name="File d Attente" type="text"><![CDATA[%s]]></info>' % queue)
                                 if len(clid) > 7 and clid != '<unknown>':
                                         linestosend.append('<info name="Numero Appelant" type="phone"><![CDATA[%s]]></info>' % clid)
                                         r = self.__build_customers__('default', [clid]).split(';')
@@ -558,9 +557,11 @@ class XivoCTICommand(BaseCommand):
                                                 linestosend.append('<info name="Personne" type="text"><![CDATA[%s]]></info>' % r[7])
 
                         if actionopt.get('popup') == 'no':
-                                linestosend.extend(['<info name="nopopup" type="internal"></info>'])
+                                linestosend.append('<info name="nopopup" type="internal"></info>')
 
-                        linestosend.extend(['</user></profile>'])
+                        if 'popupdisplay' in actionopt:
+                                linestosend.append('<message>%s</message>' % actionopt.get('popupdisplay'))
+                        linestosend.append('</user></profile>')
                         fulllines = ''.join(linestosend)
                         print where, fulllines
 
@@ -568,8 +569,14 @@ class XivoCTICommand(BaseCommand):
                                 if userinfo is not None:
                                         self.__send_msg_to_cti_client__(userinfo, fulllines)
                         elif actionopt.get('whom') == 'subscribed':
-                                userinfo = self.ulist_ng.finduser('clg@proformatique.com')
-                                self.__send_msg_to_cti_client__(userinfo, fulllines)
+                                # userinfo = self.ulist_ng.finduser('clg@proformatique.com')
+                                # self.__send_msg_to_cti_client__(userinfo, fulllines)
+                                pass
+                        elif actionopt.get('whom') == 'all':
+                                for uinfo in self.ulist_ng.userlist.itervalues():
+                                        self.__send_msg_to_cti_client__(uinfo, fulllines)
+                        elif actionopt.get('whom') == 'sdadest':
+                                pass
                 return
 
 
@@ -653,7 +660,12 @@ class XivoCTICommand(BaseCommand):
                 uid = event.get('Uniqueid')
                 cause = event.get('Cause-txt')
                 self.plist[astid].handle_ami_event_hangup(chan, cause)
-                print 'HANGUP : (%s) %s uid=%s %s' % (time.asctime(), astid, uid, chan)
+                if chan in self.chans_incomingqueue or chan in self.chans_incomingdid:
+                        print 'HANGUP : (%s) %s uid=%s %s' % (time.asctime(), astid, uid, chan)
+                        if chan in self.chans_incomingqueue:
+                                self.chans_incomingqueue.remove(chan)
+                        if chan in self.chans_incomingdid:
+                                self.chans_incomingdid.remove(chan)
                 return
 
         def ami_response_extensionstatus(self, astid, event):
@@ -732,7 +744,6 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def ami_newchannel(self, astid, event):
-                self.__sheet_alert__('incomingtop', astid, event)
                 return
 
         def ami_parkedcall(self, astid, event):
@@ -799,6 +810,8 @@ class XivoCTICommand(BaseCommand):
 
         def ami_agentcalled(self, astid, event):
                 print 'AMI Agent', astid, event
+                # {'Extension': 's', 'CallerID': 'unknown', 'Priority': '2', 'ChannelCalling': 'IAX2/test-13', 'Context': 'macro-incoming_queue_call', 'CallerIDName': 'Comm. ', 'AgentCalled': 'iax2/192.168.0.120/101'}
+
                 return
         def ami_agentcomplete(self, astid, event):
                 print 'AMI AgentComplete', astid, event
@@ -808,6 +821,7 @@ class XivoCTICommand(BaseCommand):
                 return
         def ami_agentconnect(self, astid, event):
                 print 'AMI AgentConnect', astid, event
+                # {'Member': 'SIP/108', 'Queue': 'commercial', 'Uniqueid': '1215006134.1166', 'Privilege': 'agent,all', 'Holdtime': '9', 'Event': 'AgentConnect', 'Channel': 'SIP/108-08190098'}
                 return
 
         def ami_agents(self, astid, event):
@@ -843,7 +857,7 @@ class XivoCTICommand(BaseCommand):
                 position = event.get('Position')
                 wait = event.get('Wait')
                 channel = event.get('Channel')
-                print 'AMI QueueEntry', astid, queue, position, wait, channel, event
+                # print 'AMI QueueEntry', astid, queue, position, wait, channel, event
                 if astid not in self.queues_list:
                         self.queues_list[astid] = {}
                 if queue not in self.queues_list[astid]:
@@ -974,16 +988,43 @@ class XivoCTICommand(BaseCommand):
                 else:
                         log_debug(SYSLOG_INFO, 'AMI UserEvent %s %s' % (astid, event))
                 return
+
         def ami_meetmejoin(self, astid, event):
+                meetmenum = event.get('Meetme')
+                channel = event.get('Channel')
+                num = event.get('Usernum')
+                
+                if astid not in self.meetme:
+                        self.meetme[astid] = {}
+                if meetmenum not in self.meetme[astid]:
+                        self.meetme[astid][meetmenum] = []
+                if channel not in self.meetme[astid][meetmenum]:
+                        self.meetme[astid][meetmenum].append(channel)
+                else:
+                        log_debug(SYSLOG_WARNING, '%s : channel %s already in meetme %s' % (astid, channel, meetmenum))
                 return
+
         def ami_meetmeleave(self, astid, event):
+                meetmenum = event.get('Meetme')
+                channel = event.get('Channel')
+                num = event.get('Usernum')
+                
+                if astid not in self.meetme:
+                        self.meetme[astid] = {}
+                if meetmenum not in self.meetme[astid]:
+                        self.meetme[astid][meetmenum] = []
+                if channel in self.meetme[astid][meetmenum]:
+                        self.meetme[astid][meetmenum].remove(channel)
+                else:
+                        log_debug(SYSLOG_WARNING, '%s : channel %s not in meetme %s' % (astid, channel, meetmenum))
                 return
+
         def ami_status(self, astid, event):
                 return
 
 
         def ami_join(self, astid, event):
-                print 'AMI Join (Queue)', event
+                # print 'AMI Join (Queue)', event
                 chan  = event.get('Channel')
                 clid  = event.get('CallerID')
                 queue = event.get('Queue')
@@ -1008,7 +1049,7 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def ami_leave(self, astid, event):
-                print 'AMI Leave (Queue)', event
+                # print 'AMI Leave (Queue)', event
                 chan  = event.get('Channel')
                 queue = event.get('Queue')
                 count = event.get('Count')

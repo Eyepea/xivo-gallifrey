@@ -56,12 +56,17 @@ __revision__ = __version__.split()[1]
 # debian.org modules
 import getopt
 import os
+import random
 import select
 import signal
 import socket
+import string
 import sys
 import threading
 import time
+
+__alphanums__ = string.uppercase + string.lowercase + string.digits
+waiting_actionid = {}
 
 try:
         DAEMONNAME = os.path.basename(sys.argv[0])
@@ -213,10 +218,14 @@ def manage_webi_connections(connid, msg, sep):
                                                 elif stripped_usefulmsg == 'reload':
                                                         commandclass.pre_reload()
                                         except Exception, exc:
-                                                log_debug(SYSLOG_ERR, '--- exception --- (pre reloads) : %s' % str(exc))
+                                                log_debug(SYSLOG_ERR, '--- exception --- (pre reloads (%s)) : %s' % (stripped_usefulmsg, exc))
 
                                         try:
                                                 s = amilist.ami[astid].execclicommand(stripped_usefulmsg)
+                                                #actionid = ''.join(random.sample(__alphanums__, 10)) + "-" + hex(int(time.time()))
+                                                #waiting_actionid[actionid] = connid
+                                                #amilist.ami[astid].sendcommand('Command', [('Command', stripped_usefulmsg),
+                                                #('ActionID' , actionid)])
                                         except Exception, exc:
                                                 log_debug(SYSLOG_ERR, '--- exception --- (%s) WEBI command exec <%s> : (client %s) : %s'
                                                           % (astid, str(stripped_usefulmsg), requester, str(exc)))
@@ -341,11 +350,23 @@ def handle_ami_event(astid, idata):
                                 if response == 'Follows' and this_event.get('Privilege') == 'Command':
                                         if 'ActionID' in this_event:
                                                 actionid = this_event.get('ActionID')
+                                                connreply = waiting_actionid.get(actionid)
+                                                if connreply is not None:
+                                                        connreply.sendall('%s:ID <%s>\n' % (XIVO_CLI_WEBI_HEADER, astid))
                                                 for noc in nocolon:
                                                         arggs = noc.split('\n')
                                                         for argg in arggs:
                                                                 if len(argg) > 0 and argg != '--END COMMAND--':
                                                                         log_debug(SYSLOG_NOTICE, 'AMI %s : %s : %s' % (astid, actionid, argg))
+                                                                        if connreply is not None:
+                                                                                connreply.sendall(argg + '\n')
+                                                if connreply is not None:
+                                                        connreply.sendall('%s:OK\n' % XIVO_CLI_WEBI_HEADER)
+                                                        fdlist_full.remove(connreply)
+                                                        del fdlist_established[connreply]
+                                                        connreply.close()
+                                                        del waiting_actionid[actionid]
+
                                 elif response == 'Success':
                                         msg = this_event.get('Message')
                                         if msg == 'Extension Status':
@@ -356,9 +377,9 @@ def handle_ami_event(astid, idata):
                                 else:
                                         log_debug(SYSLOG_WARNING, 'AMI %s Response=%s (untracked) : %s' % (astid, response, this_event))
                         elif len(this_event) > 0:
-                                log_debug(SYSLOG_WARNING, 'AMI:XXX: <%s> : %s' % (astid, str(this_event)))
+                                log_debug(SYSLOG_WARNING, 'AMI:XXX: <%s> : %s' % (astid, this_event))
                         else:
-                                log_debug(SYSLOG_WARNING, 'AMI %s Other : %s' % (astid, str(this_event)))
+                                log_debug(SYSLOG_WARNING, 'AMI %s Other : %s' % (astid, this_event))
 
 
 evfunction_to_method_name = {
