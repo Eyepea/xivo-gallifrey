@@ -537,19 +537,19 @@ class MeetMe:
 
 		if xid:
 			cursor.query("SELECT ${columns} FROM meetmefeatures "
-				     "INNER JOIN meetme "
-				     "ON meetmefeatures.meetmeid = meetme.id "
+				     "INNER JOIN staticmeetme "
+				     "ON meetmefeatures.meetmeid = staticmeetme.id "
 				     "WHERE meetmefeatures.id = %d "
-				     "AND meetme.commented = 0",
+				     "AND staticmeetme.commented = 0",
 				     columns,
 				     (xid,))
 		elif number and context:
 			cursor.query("SELECT ${columns} FROM meetmefeatures "
-				     "INNER JOIN meetme "
-				     "ON meetmefeatures.meetmeid = meetme.id "
+				     "INNER JOIN staticmeetme "
+				     "ON meetmefeatures.meetmeid = staticmeetme.id "
 				     "WHERE meetmefeatures.number = %s "
 				     "AND meetmefeatures.context = %s "
-				     "AND meetme.commented = 0",
+				     "AND staticmeetme.commented = 0",
 				     columns,
 				     (number, context))
 		else:
