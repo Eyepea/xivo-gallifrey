@@ -66,7 +66,8 @@ def incoming_meetme_set_features(agi, cursor, args):
 		options += "X"
 		agi.set_variable('MEETME_EXIT_CONTEXT', meetme.exitcontext)
 
-	agi.set_variable('MEETME_RECORDINGFILE', "/usr/share/asterisk/sounds/web-interface/monitor/meetme-%s-%s" % (meetme.id, int(time.time())))
+	agi.set_variable('MEETME_RECORDINGFILE', "/usr/share/asterisk/sounds/web-interface/monitor/meetme-%s-%s" % (meetme.number, int(time.time())))
+	agi.set_variable('XIVO_MEETMENUMBER', meetme.number)
 	agi.set_variable('XIVO_MEETMEOPTIONS', options)
 
 agid.register(incoming_meetme_set_features)
