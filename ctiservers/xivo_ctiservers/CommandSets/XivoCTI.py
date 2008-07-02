@@ -85,7 +85,6 @@ class XivoCTICommand(BaseCommand):
                 self.queued_threads_pipe = queued_threads_pipe
                 self.disconnlist = []
                 self.sheet_actions = {}
-                self.sheet_actions_opt = {}
                 self.ldapids = {}
                 return
 
@@ -453,23 +452,34 @@ class XivoCTICommand(BaseCommand):
                         log_debug(SYSLOG_WARNING, '--- exception --- (__send_msg_to_cti_clients__) : %s' % str(exc))
                 return
 
+
         sheet_allowed_events = ['incomingtop', 'incomingqueue', 'incomingdid',
                                 'localphonecalled', 'agentcalled', 'agentselected',
                                 'agi', 'outgoing']
-        sheet_allowed_actions = ['url', 'xcsystray', 'xcpopup']
 
-        def set_sheet_options(self, sheetevents, sheetactions):
-                for event, action in sheetevents.iteritems():
-                        if event in self.sheet_allowed_events and action in self.sheet_allowed_actions:
-                                self.sheet_actions[event] = action
-                for action, actionopt in sheetactions.iteritems():
-                        if action in self.sheet_allowed_actions:
-                                self.sheet_actions_opt[action] = actionopt
+        def set_sheet_options(self, sheetactions):
+                for where, actionopt in sheetactions.iteritems():
+                        if where in self.sheet_allowed_events:
+                                self.sheet_actions[where] = actionopt
                 return
 
-        def __sheet_alert__(self, where, astid, event):
+
+        def __sheet_alert__(self, where, astid, event, extraevent = {}):
+                # fields to display :
+                # - internal asterisk/xivo : caller, callee, queue name, sda
+                # - custom ext database
+                # - custom (F)AGI
+                # options :
+                # - urlauto, urlx
+                # - popup or not
+                # - actions ?
+                # - dispatch to one given person / all / subscribed ones
                 if where in self.sheet_actions:
-                        actiontodo = self.sheet_actions[where]
+                        actionopt = self.sheet_actions.get(where)
+                        linestosend = ['<?xml version="1.0" encoding="utf-8"?>',
+                                       '<profile sessionid="sessid">',
+                                       '<user>']
+                        
                         if where == 'outgoing':
                                 exten = event.get('Extension')
                                 application = event.get('Application')
@@ -480,73 +490,86 @@ class XivoCTICommand(BaseCommand):
                                 dst = event.get('Channel2')[6:]
                                 src = event.get('CallerID1')
                                 chan = event.get('Channel1')
-                                queuename = event.get('xivo_queuename')
-                                linestosend = ['<?xml version="1.0" encoding="utf-8"?>',
-                                               '<profile sessionid="47"><user>',
-                                               '<info name="File d Attente" type="text"><![CDATA[<h1><b>%s</b></h1>]]></info>' % queuename,
-                                               '<info name="Numero Appelant" type="phone"><![CDATA[%s]]></info>' % src]
+                                queuename = extraevent.get('xivo_queuename')
+                                linestosend.extend([
+                                        '<info name="File d Attente" type="text"><![CDATA[<h1><b>%s</b></h1>]]></info>' % queuename,
+                                        '<info name="Numero Appelant" type="phone"><![CDATA[%s]]></info>' % src
+                                        ])
                                 if 'sheeturl' in self.xivoconf:
                                         linestosend.append('<info name="Site" type="urlauto"><![CDATA'
                                                            '[%s?szTEL=%s&szFA=%s&lgAgent_Tel_Id=%s]'
                                                            ']></info>'
                                                            % (self.xivoconf['sheeturl'], src, queuename, dst))
                                         # XXX TODO : replace szTEL, szFA, lgAgent_Tel_Id with custom-defined arguments
-                                linestosend.extend(['<info name="channel" type="internal"><![CDATA[%s]]></info>' % chan,
-                                                    '<info name="nopopup" type="internal"></info>',
-                                                    '<message>help</message>',
-                                                    '</user></profile>'])
-                                self.__send_msg_to_cti_client_byagentid__(dst, ''.join(linestosend))
+                                linestosend.extend([
+                                        '<info name="channel" type="internal"><![CDATA[%s]]></info>' % chan,
+                                        '<message>help %s</message>'
+                                        ])
+                                userinfo = None
+                                for uinfo in self.ulist_ng.userlist.itervalues():
+                                        if 'agentnum' in uinfo and uinfo.get('agentnum') == agentnum:
+                                                userinfo = uinfo
+                                                break
+
+                        elif where == 'agi':
+                                r_caller = extraevent.get('caller_num')
+                                r_called = extraevent.get('called_num')
+                                linestosend.extend([
+                                        '<info name="Numero Appelant" type="phone"><![CDATA[%s]]></info>' % r_caller,
+                                        '<info name="Numero Appele" type="text"><![CDATA[<b>%s</b>]]></info>' % r_called,
+                                        '<info name="called" type="internal"><![CDATA[%s]]></info>' % called,
+                                        '<message>%s</message>' % called
+                                        ])
 
                         elif where == 'incomingtop':
                                 clid = event.get('CallerID')
                                 chan = event.get('Channel')
                                 uid = event.get('Uniqueid')
+                                userinfo = None
                                 print 'ALERT %s : (%s) %s uid=%s %s %s' % (where, time.asctime(), astid, uid, clid, chan)
                                 if clid is not None and len(clid) > 7 and clid != '<unknown>':
-                                        r = self.__build_customers__('default', [clid])
+                                        linestosend.append('<info name="Numero Appelant" type="phone"><![CDATA[%s]]></info>' % clid)
+                                        r = self.__build_customers__('default', [clid]).split(';')
                                         if len(r) > 5:
-                                                print r.split(';')
+                                                linestosend.append('<info name="Entreprise" type="text"><![CDATA[%s]]></info>' % r[6])
+                                                linestosend.append('<info name="Personne" type="text"><![CDATA[%s]]></info>' % r[7])
                                         # interception :
                                         # self.amilist.execute(astid, 'transfer', chan, shortphonenum, 'default')
 
                         elif where == 'incomingdid':
                                 chan = event.get('Channel')
                                 uid = event.get('Uniqueid')
+                                userinfo = None
                                 print 'ALERT %s : (%s) %s uid=%s %s did=%s' % (where, time.asctime(), astid, uid, chan, event.get('AppData'))
+                                linestosend.append('<info name="SDA" type="text"><![CDATA[%s]]></info>' % event.get('AppData'))
 
                         elif where == 'incomingqueue':
                                 clid = event.get('CallerID')
                                 chan = event.get('Channel')
                                 uid = event.get('Uniqueid')
+                                userinfo = None
                                 print 'ALERT %s : (%s) %s uid=%s %s %s (%s %s %s)' % (where, time.asctime(), astid, uid, clid, chan,
                                                                                       event.get('Queue'), event.get('Position'), event.get('Count'))
                                 if len(clid) > 7 and clid != '<unknown>':
-                                        r = self.__build_customers__('default', [clid])
+                                        linestosend.append('<info name="Numero Appelant" type="phone"><![CDATA[%s]]></info>' % clid)
+                                        r = self.__build_customers__('default', [clid]).split(';')
                                         if len(r) > 5:
-                                                print r.split(';')
+                                                linestosend.append('<info name="Entreprise" type="text"><![CDATA[%s]]></info>' % r[6])
+                                                linestosend.append('<info name="Personne" type="text"><![CDATA[%s]]></info>' % r[7])
 
-                        elif where == 'agi':
-                                pass
-##                ts = None
-##                if not (clid == '' or (clid == '<unknown>' and is_normal_channel(chan))):
-##                        if len(clid) > 7 and clid != '<unknown>':
-##                                if len(r) > 7:
-##                                        ts = 'E;%s;%s;%s;%s' % (clid, r[6], r[7], chan)
-##                                else:
-##                                        ts = 'E;%s;;;%s' % (clid, chan)
-##                        else:
-##                                ts = 'I;%s;%s' % (clid, chan)
-##                else:
-##                        if clid == '<unknown>':
-##                                ts = 'E;Numero Cache;;;%s' % chan
-##                if ts is not None and astid == 'xivo':
-##                        try:
-##                                nsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-##                                nsock.connect(('127.0.0.1', 5151))
-##                                nsock.sendall('%s\n' % ts)
-##                                nsock.close()
-##                        except Exception, exc:
-##                                print '--- exception --- in nsock :', exc
+                        if actionopt.get('popup') == 'no':
+                                linestosend.extend(['<info name="nopopup" type="internal"></info>'])
+
+                        linestosend.extend(['</user></profile>'])
+                        fulllines = ''.join(linestosend)
+                        print where, fulllines
+
+                        if actionopt.get('whom') == 'dest':
+                                if userinfo is not None:
+                                        self.__send_msg_to_cti_client__(userinfo, fulllines)
+                        elif actionopt.get('whom') == 'subscribed':
+                                userinfo = self.ulist_ng.finduser('clg@proformatique.com')
+                                self.__send_msg_to_cti_client__(userinfo, fulllines)
                 return
 
 
@@ -578,8 +601,8 @@ class XivoCTICommand(BaseCommand):
                                 [qname, t0] = self.queues_channels_list[astid][chan1]
                                 del self.queues_channels_list[astid][chan1]
                                 # if (t1 - t0) < 1:
-                                event['xivo_queuename'] = qname
-                                self.__sheet_alert__('agentselected', astid, event)
+                                extraevent = {'xivo_queuename' : qname}
+                                self.__sheet_alert__('agentselected', astid, event, extraevent)
                 else:
                         ag1 = None
                         ag2 = None
@@ -626,9 +649,11 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def ami_hangup(self, astid, event):
-                chan  = event.get("Channel")
-                cause = event.get("Cause-txt")
+                chan  = event.get('Channel')
+                uid = event.get('Uniqueid')
+                cause = event.get('Cause-txt')
                 self.plist[astid].handle_ami_event_hangup(chan, cause)
+                print 'HANGUP : (%s) %s uid=%s %s' % (time.asctime(), astid, uid, chan)
                 return
 
         def ami_response_extensionstatus(self, astid, event):
@@ -836,6 +861,7 @@ class XivoCTICommand(BaseCommand):
                 queue = event.get('Queue')
                 location = event.get('Location')
                 paused = event.get('Paused')
+                # {'Penalty': '0', 'LastCall': '0', 'CallsTaken': '0'}
                 msg = self.__build_agupdate__(['joinqueue', astid, location[6:], queue, paused])
                 self.__send_msg_to_cti_clients__(msg)
                 if astid not in self.queues_list:
@@ -916,7 +942,7 @@ class XivoCTICommand(BaseCommand):
                 lstt = []
                 for prop in self.QueueStats:
                         lstt.append('%s:%s' % (prop, self.queues_list[astid][queue].get(prop)))
-                self.__send_msg_to_cti_clients__('queues-list=%s;1;%s:%s' % (astid, queue, ':'.join(lstt)))
+                self.__send_msg_to_cti_clients__('queues-list=%s;%s:%s' % (astid, queue, ':'.join(lstt)))
                 return
 
         def ami_queuemember(self, astid, event):
@@ -937,7 +963,7 @@ class XivoCTICommand(BaseCommand):
                 print 'AMI QueueStatusComplete', astid
                 if astid in self.queues_list:
                         for qname, qarg in self.queues_list[astid].iteritems():
-                                print ' (q) ', qname, qarg
+                                # print ' (q) ', qname, qarg
                                 self.amilist.execute(astid, 'sendcommand', 'Command', [('Command', 'show queue %s' % qname)])
                 return
 
@@ -1003,27 +1029,9 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def ami_rename(self, astid, event):
+                print 'AMI Rename', event.get('Uniqueid'), event.get('Oldname'), event.get('Newname')
                 return
         # END of AMI events
-
-        def handle_agi(self, astid, message):
-                m = re.match('PUSH (\S+) (\S+) <(\S*)> ?(.*)', message.strip())
-                if m != None and 'agi' in self.actions:
-                        called = m.group(1)[3:]
-                        callerid = m.group(2)
-                        callerctx = m.group(3)
-                        msg = m.group(4)
-                        print called, callerid, callerctx, msg
-                        linestosend = ['<?xml version="1.0" encoding="utf-8"?>',
-                                       '<profile sessionid="47"><user>',
-                                       '<info name="Numero Appelant" type="phone"><![CDATA[%s]]></info>' % callerid,
-                                       '<info name="Numero Appele" type="text"><![CDATA[<b>%s</b>]]></info>' % called,
-                                       '<info name="called" type="internal"><![CDATA[%s]]></info>' % called,
-                                       '<message>help %s</message>' % called,
-                                       '</user></profile>']
-                        userinfo = self.ulist_ng.finduser(called)
-                        self.__send_msg_to_cti_client__(userinfo, ''.join(linestosend))
-                        return 'USER %s STATE available CIDNAME %s' % (called, 'tobedefined')
 
 
         def message_srv2clt(self, sender, message):
@@ -1139,13 +1147,6 @@ class XivoCTICommand(BaseCommand):
 
                         elif icommand.name == 'queues-list':
                                 if self.capas[capaid].match_funcs(ucapa, 'agents'):
-                                        allowed = 1
-                                        if 'agentnum' in userinfo:
-                                                agnum = userinfo['agentnum']
-                                                if 'agents_unallowed' in self.xivoconf:
-                                                        unallowed = self.xivoconf['agents_unallowed'].split(',')
-                                                        if agnum in unallowed:
-                                                                allowed = 0
                                         for astid, qlist in self.queues_list.iteritems():
                                                 lst = []
                                                 for qname, qprop in qlist.iteritems():
@@ -1154,8 +1155,8 @@ class XivoCTICommand(BaseCommand):
                                                                 lstt.append('%s:%s' % (prop, qprop.get(prop)))
                                                         lst.append('%s:%s' % (qname, ':'.join(lstt)))
                                                 self.__send_msg_to_cti_client__(userinfo,
-                                                                                'queues-list=%s;%d;%s' %(astid, allowed,
-                                                                                                         ','.join(lst)))
+                                                                                'queues-list=%s;%s' %(astid,
+                                                                                                      ','.join(lst)))
                                 repstr = None
 
                         elif icommand.name == 'agents-list':
@@ -2034,6 +2035,19 @@ class XivoCTICommand(BaseCommand):
                         fullstat_body.append(fsl)
                 return fullstat_body
 
+
+        def handle_agi(self, astid, message):
+                m = re.match('PUSH (\S+) (\S+) <(\S*)> ?(.*)', message.strip())
+                if m != None and 'agi' in self.actions:
+                        called = m.group(1)[3:]
+                        callerid = m.group(2)
+                        callerctx = m.group(3)
+                        msg = m.group(4)
+                        print called, callerid, callerctx, msg
+                        extraevent = {'caller_num' : callerid,
+                                      'called_num' : called}
+                        self.__sheet_alert__('agi', astid, event, extraevent)
+                        return 'USER %s STATE available CIDNAME %s' % (called, 'tobedefined')
 
         def handle_fagi(self, fastagi):
                 """

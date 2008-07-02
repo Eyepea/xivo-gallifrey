@@ -57,7 +57,8 @@ class Config:
                 v = {}
                 if self.kind == 'file':
                         try:
-                                v = dict(self.xivoconf.items(section))
+                                if section in self.xivoconf.sections():
+                                        v = dict(self.xivoconf.items(section))
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- kind=%s section=%s : %s' % (self.kind, section, exc))
                 elif self.kind == 'sql':

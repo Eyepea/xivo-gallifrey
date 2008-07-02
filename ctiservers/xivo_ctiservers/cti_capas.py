@@ -36,6 +36,7 @@ class Capabilities:
                          'history',
                          'identity',
                          'messages',
+                         'nojoinleave',
                          'presence',
                          'parking',
                          'queues',

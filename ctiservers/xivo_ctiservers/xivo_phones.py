@@ -438,7 +438,7 @@ class LineProp:
         def set_chan_hangup(self, ichan):
                 nichan = ichan
                 if ichan.find("<ZOMBIE>") >= 0:
-                        log_debug(SYSLOG_INFO, "sch channel contains a <ZOMBIE> part (%s) : sending hup to %s anyway" %(ichan,nichan))
+                        # log_debug(SYSLOG_INFO, "sch channel contains a <ZOMBIE> part (%s) : sending hup to %s anyway" %(ichan,nichan))
                         nichan = ichan.split("<ZOMBIE>")[0]
                 firsttime = time.time()
                 self.chann[nichan] = ChannelStatus("Hangup", 0, "", "", "", firsttime, "")
@@ -450,7 +450,7 @@ class LineProp:
         def del_chan(self, ichan):
                 nichan = ichan
                 if ichan.find("<ZOMBIE>") >= 0:
-                        log_debug(SYSLOG_INFO, "dch channel contains a <ZOMBIE> part (%s) : deleting %s anyway" %(ichan,nichan))
+                        # log_debug(SYSLOG_INFO, "dch channel contains a <ZOMBIE> part (%s) : deleting %s anyway" %(ichan,nichan))
                         nichan = ichan.split("<ZOMBIE>")[0]
                 if nichan in self.chann: del self.chann[nichan]
 
