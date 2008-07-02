@@ -4,17 +4,18 @@ require_once(XIVO_PATH_LIB.XIVO_SEP_DIR.'datastorage'.XIVO_SEP_DIR.'adapter'.XIV
 
 class xivo_datastorage_adapter_sqlite extends xivo_datastorage_adapter_abstract_sql
 {
-	var $_param	= array(
-				'db'			=> '',
-				'persist'		=> false,
-				'short_column_names'	=> true,
-				'timeout'		=> 150);
+	var $_param			= array(
+						'db'			=> '',
+						'persist'		=> false,
+						'short_column_names'	=> true,
+						'timeout'		=> 150);
 
-	var $_type	= 'sqlite';
-	var $_date	= array(
-				'datetime'	=> '%Y-%m-%d %H:%M:%S',
-				'date'		=> '%Y-%m-%d',
-				'time'		=> '%H:%M:%S');
+	var $_type			= 'sqlite';
+	var $_date			= array(
+						'datetime'	=> '%Y-%m-%d %H:%M:%S',
+						'date'		=> '%Y-%m-%d',
+						'time'		=> '%H:%M:%S');
+	var $_fix_leftjoin_column	= false;
 
 	function xivo_datastorage_adapter_sqlite($param=array())
 	{
@@ -256,6 +257,19 @@ class xivo_datastorage_adapter_sqlite extends xivo_datastorage_adapter_abstract_
 	function unix_timestamp($column='',$time='')
 	{
 		return($this->_expr_typetime(null,$column,$time,'%s'));
+	}
+
+	function _fix_leftjoin_condition($val)
+	{
+		if($this->is_escaped($val) === false
+		&& is_int($val) === false
+		&& is_float($val) === false
+		&& is_bool($val) === false)
+			return($val);
+		else if(xivo_haslen($this->_fix_leftjoin_column) === false)
+			return($val);
+			
+		return(sprintf('SUBSTR(%s,0,0)||%s',$this->_fix_leftjoin_column,$val));
 	}
 
 	function _expr_typetime($type='',$column='',$time='',$format='',$table='')

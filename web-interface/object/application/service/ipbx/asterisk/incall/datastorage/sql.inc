@@ -118,7 +118,8 @@ class xivo_application_service_asterisk_incall_sql extends xivo_application_serv
 		if(xivo_haslen($value) === true)
 		{
 			$this->_dso->aggregate_where();
-			$this->_dso->wherecontain('firstname',$value,true,$this->_table['userfeatures']);
+			$this->_dso->wherecontain('exten',$value,true,$this->_table['incall']);
+			$this->_dso->orwherecontain('firstname',$value,true,$this->_table['userfeatures']);
 			$this->_dso->orwherecontain('lastname',$value,true,$this->_table['userfeatures']);
 			$this->_dso->orwherecontain('number',$value,true,$this->_table['userfeatures']);
 			$this->_dso->orwherecontain('name',$value,true,$this->_table['userfeatures']);

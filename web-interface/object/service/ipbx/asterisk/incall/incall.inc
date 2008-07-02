@@ -53,24 +53,6 @@ class xivo_service_asterisk_incall extends xivo_service_asterisk_abstract
 
 		return(parent::edit($id,$arr,$disable));
 	}
-
-	function search($exten,$disable=null,$order=null,$limit=null)
-	{
-		if(($list = $this->_dso->search($exten,$disable,$order,$limit)) === false)
-			return(false);
-
-		$nb = count($list);
-
-		$r = array();
-
-		for($i = 0;$i < $nb;$i++)
-			$r[] = $this->_prepare($list[$i]);
-
-		if(isset($r[0]) === false)
-			$r = false;
-
-		return($r);
-	}
 }
 
 ?>

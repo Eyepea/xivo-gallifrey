@@ -6,7 +6,9 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 {
 	var $_query		= '';
 	var $_meta		= 'sql';
+	var $_tablecolumn	= array();
 	var $_join		= array();
+	var $_jointype		= array();
 	var $_joinwhere		= array();
 	var $_aggjoinwhere	= array();
 	var $_group		= array();
@@ -72,6 +74,20 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		}
 
 		return('\''.$this->escape_string(strval($val)).'\'');
+	}
+
+	function is_escaped($val)
+	{
+		if(is_scalar($val) === false || isset($val{0},$val{1}) === false)
+			return(false);
+
+		$lastchar = substr($val,-1);
+
+		if(($val{0} === '\'' && $lastchar === '\'') === true
+		|| ($val{0} === '"' && $lastchar === '"') === true)
+			return(true);
+		
+		return(false);
 	}
 
 	function concat($list)
@@ -214,9 +230,9 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		return(sprintf('%s JOIN',$type));
 	}
 
-	function _mk_join($type,$table,$cond='',$val='',$column='')
+	function _mk_join($keytype,$table,$cond='',$val='',$column='')
 	{
-		if(($type = $this->_chk_join($type)) === false
+		if(($type = $this->_chk_join($keytype)) === false
 		|| ($table = $this->_mk_table($table)) === false)
 			return(false);
 		else if(is_array($table) === true)
@@ -237,6 +253,11 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 			if($this->joinwhere($table,$cond,$val) === false)
 				return(false);
 		}
+
+		if(isset($this->_jointype[$keytype]) === false)
+			$this->_jointype[$keytype] = array();
+
+		$this->_jointype[$keytype][$table] = 1;	
 
 		return($this->_mk_column($table,$column));
 	}
@@ -343,13 +364,17 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 
 			if(xivo_haslen($val) === false)
 				continue;
-			else if($noassoc === true && is_int($key) === true)
-				$col = sprintf('%s.%s',$this->quote_identifier($table),
-						       $this->quote_identifier($val));
-			else
-				$col = sprintf('%s.%s AS %s',$this->quote_identifier($table),
-							     $this->quote_identifier($val),
-							     $this->quote_identifier($key));
+
+			$col = sprintf('%s.%s',$this->quote_identifier($table),
+					       $this->quote_identifier($val));
+
+			if(isset($this->_tablecolumn[$table]) === false)
+				$this->_tablecolumn[$table] = array();
+
+			$this->_tablecolumn[$table][] = $col;
+
+			if($noassoc === false || is_int($key) === false)
+				$col .= ' AS '.$this->quote_identifier($key);
 
 			$this->_column[] = $col;
 		}
@@ -578,8 +603,28 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		else if(is_array($val) === true || xivo_haslen($val) === true)
 		{
 			$val = (array) $val;
-			$r = vsprintf(xivo_printf_escape($cond,count($val)),
-				      array_map(array(&$this,'escape'),$val));
+
+			$map = array_map(array(&$this,'escape'),$val);
+
+			// XXX Fix condition with SQLite2
+			// when there are multi left join with comparison of constant.
+
+			if($join !== false
+			&& $this->get_type() === 'sqlite'
+			&& isset($this->_jointype['left'],$this->_jointype['left'][$join]) === true
+			&& empty($this->_tablecolumn[$join]) === false)
+			{
+				if(isset($this->_tablecolumn[$join],$this->_tablecolumn[$join][0]) === true)
+					$this->_fix_leftjoin_column = $this->_tablecolumn[$join][0];
+				else
+					$this->_fix_leftjoin_column = $this->_tablecolumn[key($this->_tablecolumn)][0];
+
+				$map = array_map(array(&$this,'_fix_leftjoin_condition'),$map);
+
+				$this->_fix_leftjoin_condition = false;
+			}
+
+			$r = vsprintf(xivo_printf_escape($cond,count($val)),$map);
 		}
 		else if(xivo_haslen($cond) === true)
 			$r = (string) $cond;

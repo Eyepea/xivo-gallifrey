@@ -480,16 +480,6 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 		return(true);
 	}
 
-	function set_dialaction($list)
-	{
-		if(isset($list['noanswer']) === true)
-			$list = array('noanswer' => $list['noanswer']);
-		else
-			$list = array();
-
-		return(parent::set_dialaction($list));
-	}
-
 	function set_contextmember()
 	{
 		$rs = array();
