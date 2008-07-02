@@ -23,7 +23,7 @@ from xivo_agid import agid
 from xivo_agid import objects
 
 def incoming_user_set_features(agi, cursor, args):
-	userid = int(agi.get_variable('XIVO_USERID'))
+	userid = agi.get_variable('XIVO_USERID')
 	dstid = int(agi.get_variable('XIVO_DSTID'))
 	context = agi.get_variable('XIVO_CONTEXT')
 	zone = agi.get_variable('XIVO_CALLORIGIN')
@@ -36,7 +36,11 @@ def incoming_user_set_features(agi, cursor, args):
 	feature_list = objects.FeatureList(agi, cursor)
 
 	try:
-		caller = objects.User(agi, cursor, feature_list, xid = userid)
+		if userid:
+			caller = objects.User(agi, cursor, feature_list, xid=int(userid))
+		else:
+			# FIXME: lookup ids in a central point at the start of the dialplan, then remove this case
+			caller = objects.User(agi, cursor, feature_list, number=srcnum, context)
 	except LookupError:
 		caller = None
 
@@ -47,7 +51,9 @@ def incoming_user_set_features(agi, cursor, args):
 	# exit because the other normally set variables are skipped.
 	if not bypass_filter and ufilter and ufilter.active:
 		zone_applies = ufilter.check_zone(zone)
-		secretary = ufilter.get_secretary_by_id(userid)
+		# BUGBUG: can something like custom user having a secretary happen?
+		# CHECK does get_secretary_by_id takes an int or a string?
+		secretary = ufilter.get_secretary_by_id(caller.id)
 
 		if zone_applies and not secretary:
 			if ufilter.mode in ("bossfirst-simult", "bossfirst-serial", "all"):
