@@ -38,9 +38,11 @@ def incoming_user_set_features(agi, cursor, args):
 	try:
 		if userid:
 			caller = objects.User(agi, cursor, feature_list, xid=int(userid))
-		else:
+		elif zone == "intern":
 			# FIXME: lookup ids in a central point at the start of the dialplan, then remove this case
 			caller = objects.User(agi, cursor, feature_list, number=srcnum, context=context)
+		else:
+			caller = None
 	except LookupError:
 		caller = None
 
