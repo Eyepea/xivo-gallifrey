@@ -53,7 +53,10 @@ def incoming_user_set_features(agi, cursor, args):
 		zone_applies = ufilter.check_zone(zone)
 		# BUGBUG: can something like custom user having a secretary happen?
 		# CHECK does get_secretary_by_id takes an int or a string?
-		secretary = ufilter.get_secretary_by_id(caller.id)
+		if caller:
+			secretary = ufilter.get_secretary_by_id(caller.id)
+		else:
+			secretary = None
 
 		if zone_applies and not secretary:
 			if ufilter.mode in ("bossfirst-simult", "bossfirst-serial", "all"):
