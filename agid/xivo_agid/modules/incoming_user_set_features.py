@@ -40,7 +40,7 @@ def incoming_user_set_features(agi, cursor, args):
 			caller = objects.User(agi, cursor, feature_list, xid=int(userid))
 		else:
 			# FIXME: lookup ids in a central point at the start of the dialplan, then remove this case
-			caller = objects.User(agi, cursor, feature_list, number=srcnum, context)
+			caller = objects.User(agi, cursor, feature_list, number=srcnum, context=context)
 	except LookupError:
 		caller = None
 
