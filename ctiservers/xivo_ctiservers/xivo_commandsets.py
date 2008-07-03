@@ -122,7 +122,7 @@ class BaseCommand:
         # AGI events
         def handle_agi(self, astid, msg):
                 return
-        def handle_fagi(self, msg):
+        def handle_fagi(self, astid, msg):
                 return
 
         def phones_update(self, function, args):

@@ -511,11 +511,16 @@ class AMIList:
 
         def execute(self, astid, command, *args):
                 if astid in self.ami:
-                        try:
-                                getattr(self.ami[astid], command)(*args)
-                        except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- AMI command %s on %s : %s' % (command, astid, exc))
+                        conn_ami = self.ami.get(astid)
+                        if conn_ami is None:
+                                log_debug(SYSLOG_WARNING, 'ami (command %s) : %s in list but not connected - wait for the next update ?'
+                                          % (command, astid))
+                        else:
+                                try:
+                                        getattr(conn_ami, command)(*args)
+                                except Exception, exc:
+                                        log_debug(SYSLOG_ERR, '--- exception --- AMI command %s on %s : %s' % (command, astid, exc))
                 else:
-                        log_debug(SYSLOG_WARNING, 'ami (command %s) : %s not in list - wait for the next update ? ...'
-                                  % (astid, command))
+                        log_debug(SYSLOG_WARNING, 'ami (command %s) : %s not in list - wait for the next update ?'
+                                  % (command, astid))
                 return

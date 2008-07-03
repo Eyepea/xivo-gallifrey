@@ -2077,20 +2077,7 @@ class XivoCTICommand(BaseCommand):
                 return fullstat_body
 
 
-        def handle_agi(self, astid, message):
-                m = re.match('PUSH (\S+) (\S+) <(\S*)> ?(.*)', message.strip())
-                if m != None and 'agi' in self.actions:
-                        called = m.group(1)[3:]
-                        callerid = m.group(2)
-                        callerctx = m.group(3)
-                        msg = m.group(4)
-                        print called, callerid, callerctx, msg
-                        extraevent = {'caller_num' : callerid,
-                                      'called_num' : called}
-                        self.__sheet_alert__('agi', astid, event, extraevent)
-                        return 'USER %s STATE available CIDNAME %s' % (called, 'tobedefined')
-
-        def handle_fagi(self, fastagi):
+        def handle_fagi(self, astid, fastagi):
                 """
                 Previously known as 'xivo_push'
                 """
@@ -2101,29 +2088,26 @@ class XivoCTICommand(BaseCommand):
                 calleridnum  = fastagi.env['agi_callerid']
                 calleridname = fastagi.env['agi_calleridname']
                 msgext = fastagi.get_variable('CALLTYPE')
-                user = proto + exten
-                msg = 'PUSH %s %s <%s> %s' % (user, calleridnum, context, msgext)
+                
+                called = exten
+                extraevent = {'caller_num' : calleridnum,
+                              'called_num' : called}
+                clientstate = 'available'
+                calleridsolved = 'tobedefined'
 
-                list = self.handle_agi('xivo', msg).strip().split(' ', 5)
+                self.__sheet_alert__('agi', astid, {}, extraevent)
 
-                if len(list) < 5 or list[0] == 'ERROR':
-                        print "Received an ERROR for user <%s> : %s" % (user, str(list))
-                else:
-                        # USER xxx STATE xxx CIDNAME xxx
-                        clientstate = list[3]
+                if calleridnum == 'unknown':
+                        # to set according to os.getenv('LANG') or os.getenv('LANGUAGE') later on ?
+                        calleridnum = 'Inconnu'
+                if calleridname == 'unknown':
+                        calleridname = ''
 
-                        if calleridnum == 'unknown':
-                                # to set according to os.getenv('LANG') or os.getenv('LANGUAGE') later on ?
-                                calleridnum = 'Inconnu'
-                        if calleridname == 'unknown':
-                                calleridname = ''
-
-                        if len(list) > 5:
-                                calleridtoset = '"%s"<%s>' %(list[5], calleridnum)
-                        else:
-                                calleridtoset = '"%s"<%s>' %(calleridname, calleridnum)
-                        print 'The Caller Id will be set to %s' % calleridtoset
-                        fastagi.set_callerid(calleridtoset)
+                calleridtoset = '"%s"<%s>' %(calleridsolved, calleridnum)
+                # if calleridsolved not found
+                # calleridtoset = '"%s"<%s>' %(calleridname, calleridnum)
+                print 'The Caller Id will be set to %s' % calleridtoset
+                fastagi.set_callerid(calleridtoset)
 
                 if clientstate == 'available' or clientstate == 'nopresence':
                         fastagi.set_variable('XIVO_AIMSTATUS', 0)
@@ -2136,7 +2120,7 @@ class XivoCTICommand(BaseCommand):
                 elif clientstate == 'berightback':
                         fastagi.set_variable('XIVO_AIMSTATUS', 4)
                 else:
-                        print_verbose("Unknown user's availability status : <%s>" % clientstate)
+                        print "Unknown user's availability status : <%s>" % clientstate
                 return
 
 
