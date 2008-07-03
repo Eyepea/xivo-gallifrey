@@ -21,13 +21,15 @@ from xivo_agid import agid
 from xivo_agid import objects
 
 def user_set_feature(agi, cursor, args):
-	userid = int(agi.get_variable('XIVO_USERID'))
+	userid = agi.get_variable('XIVO_USERID')
+	srcnum = agi.get_variable('XIVO_SRCNUM')
 	context = agi.get_variable('XIVO_CONTEXT')
 	
-	# FIXME: we should probably get ride of srcnum here
-	srcnum = agi.get_variable('XIVO_SRCNUM')
+	if userid:
+		user = objects.User(agi, cursor, xid=int(userid))
+	else:
+		user = objects.User(agi, cursor, number=srcnum, context=context)
 
-	user = objects.User(agi, cursor, xid = userid)
 	feature = args[0]
 
 	if feature in ("unc", "rna", "busy"):

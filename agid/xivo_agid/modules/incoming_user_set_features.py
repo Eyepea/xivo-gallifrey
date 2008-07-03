@@ -29,8 +29,8 @@ def incoming_user_set_features(agi, cursor, args):
 	zone = agi.get_variable('XIVO_CALLORIGIN')
 	bypass_filter = agi.get_variable('XIVO_CALLFILTER_BYPASS')
 
-	# FIXME: this is only for the callrecord feature, which is likely to change
 	srcnum = agi.get_variable('XIVO_SRCNUM')
+	# FIXME: this is only for the callrecord feature, which is likely to change
 	dstnum = agi.get_variable('XIVO_DSTNUM')
 
 	feature_list = objects.FeatureList(agi, cursor)
