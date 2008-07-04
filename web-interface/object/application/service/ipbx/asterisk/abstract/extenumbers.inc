@@ -155,7 +155,10 @@ class xivo_application_service_asterisk_extenumbers_abstract extends xivo_applic
 
 	function reverse_add($status)
 	{
-		return($this->delete($status));
+		if(($id = xivo_ulongint($this->_return)) !== 0)
+			return($this->_extenumbers->delete($id));
+
+		return(false);
 	}
 
 	function reverse_edit($status)

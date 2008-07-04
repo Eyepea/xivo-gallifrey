@@ -1004,6 +1004,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function add()
 	{
+		$r = true;
+
 		$this->_status = 'add';
 		$this->_return = array();
 		$ufeaturesid = null;
@@ -1025,16 +1027,15 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| $this->add_phonefunckey($ufeaturesid) === false
 		|| $this->add_phone($ufeaturesid) === false)
 		{
+			$r = false;
+
 			if($ufeaturesid !== null)
 				$this->_reverse_add();
-
-			$this->_status = '';
-			return(false);
 		}
 
 		$this->_status = '';
 
-		return(true);
+		return($r);
 	}
 
 	function add_protocol()
@@ -1136,6 +1137,19 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	}
 
 	function add_voicemail($ufeaturesid)
+	{
+		if(($voicemailid = xivo_ulongint($this->get_result_var('ufeatures','voicemailid'))) === 0)
+			return($this->_add_voicemail($ufeaturesid));
+		else if(is_object($this->_voicemail) === false
+		|| $this->_voicemail->get($voicemailid) === false
+		|| ($rs = $this->get_result('voicemail')) === null
+		|| $rs === false)
+			return($rs);
+
+		return(($this->_return['voicemail'] = $this->_voicemail->edit(false)));
+	}
+
+	function _add_voicemail($ufeaturesid)
 	{
 		if(($ufeaturesid = xivo_ulongint($ufeaturesid)) === 0
 		|| ($rs = $this->get_result('voicemail')) === null
@@ -1563,7 +1577,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if(xivo_issa('ufeatures',$this->_info) === false)
 			return(false);
 		else if(($voicemailid = xivo_ulongint($this->get_result_var('ufeatures','voicemailid'))) === 0)
-			return($this->add_voicemail($this->_info['ufeatures']['id']));
+			return($this->_add_voicemail($this->_info['ufeatures']['id']));
 		else if(is_object($this->_voicemail) === false
 		|| $this->_voicemail->get($voicemailid) === false
 		|| ($rs = $this->get_result('voicemail')) === null
