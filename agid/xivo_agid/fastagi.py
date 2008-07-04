@@ -132,6 +132,18 @@ class FastAGI:
         self.outf.write(command)
         self.outf.flush()
 
+    def fail(self):
+        """Force Asterisk to change the result state of the AGI to
+        AGI_RESULT_FAILURE so that it will abort the AGI and hangup by itself.
+        This function catches internal EPIPE IOError and does not report them
+        in any way.
+        """
+        try:
+            self.send_command("failure to have pure code")
+        except IOError, e:
+            if e.errno != 32:
+                raise
+
     def get_result(self):
         """Read the result of a command from Asterisk"""
         code = 0

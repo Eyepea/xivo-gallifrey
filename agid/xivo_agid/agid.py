@@ -132,6 +132,7 @@ class FastAGIRequestHandler(SocketServer.StreamRequestHandler):
 
 			try:
 				self.fastagi.verbose(message)
+				self.fastagi.fail()
 			except:
 				pass
 		except:
@@ -139,6 +140,7 @@ class FastAGIRequestHandler(SocketServer.StreamRequestHandler):
 
 			try:
 				self.except_hook.handle()
+				self.fastagi.fail()
 			except:
 				pass
 
