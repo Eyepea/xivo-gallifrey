@@ -76,6 +76,18 @@ endif;
 ?>
 </div>
 
+<div id="sb-part-application" class="b-nodisplay">
+
+<?=$form->checkbox(array('desc' => $this->bbf('fm_gfeatures_transfer-user'),'name' => 'gfeatures[transfer_user]','labelid' => 'gfeatures-transfer-user','default' => $element['gfeatures']['transfer_user']['default'],'checked' => $info['gfeatures']['transfer_user']));?>
+
+<?=$form->checkbox(array('desc' => $this->bbf('fm_gfeatures_transfer-call'),'name' => 'gfeatures[transfer_call]','labelid' => 'gfeatures-transfer-call','default' => $element['gfeatures']['transfer_call']['default'],'checked' => $info['gfeatures']['transfer_call']));?>
+
+<?=$form->checkbox(array('desc' => $this->bbf('fm_gfeatures_write-caller'),'name' => 'gfeatures[write_caller]','labelid' => 'gfeatures-write-caller','default' => $element['gfeatures']['write_caller']['default'],'checked' => $info['gfeatures']['write_caller']));?>
+
+<?=$form->checkbox(array('desc' => $this->bbf('fm_gfeatures_write-calling'),'name' => 'gfeatures[write_calling]','labelid' => 'gfeatures-write-calling','default' => $element['gfeatures']['write_calling']['default'],'checked' => $info['gfeatures']['write_calling']));?>
+
+</div>
+
 <div id="sb-part-rightcall" class="b-nodisplay">
 
 <?php

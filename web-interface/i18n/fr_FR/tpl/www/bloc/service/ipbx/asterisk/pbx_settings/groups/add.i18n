@@ -7,6 +7,9 @@ Général
 ; smenu_users
 Utilisateurs
 
+; smenu_application
+Application
+
 ; smenu_rightcalls
 Droits d'appels
 
@@ -54,6 +57,18 @@ Illimité
 
 ; fm_gfeatures_timeout-opt
 %s secondes
+
+; fm_gfeatures_transfer-user
+Autorise l'appelé à transférer l'appelant :
+
+; fm_gfeatures_transfer-call
+Autorise l'appelant à transférer l'appel :
+
+; fm_gfeatures_write-caller
+Autorise l'appelé à enregistrer l'appel :
+
+; fm_gfeatures_write-calling
+Autorise l'appelant à enregistrer l'appel :
 
 ; fm_queue_timeout
 Délai d'attente pour joindre un utilisateur :

@@ -228,25 +228,6 @@ CREATE INDEX dialaction__idx__actionarg2 ON dialaction(actionarg2);
 CREATE INDEX dialaction__idx__linked ON dialaction(linked);
 
 
-DROP TABLE dialstatus;
-CREATE TABLE dialstatus (
- id integer unsigned,
- status varchar(11) NOT NULL,
- category varchar(10) NOT NULL,
- categoryval varchar(128) NOT NULL DEFAULT '',
- type varchar(64) NOT NULL DEFAULT '',
- typeval varchar(255) NOT NULL DEFAULT '',
- applicationval varchar(80) NOT NULL DEFAULT '',
- linked tinyint(1) NOT NULL DEFAULT 0,
- PRIMARY KEY(id)
-);
-
-CREATE INDEX dialstatus__idx__type_typeval ON dialstatus(type,typeval);
-CREATE INDEX dialstatus__idx__applicationval ON dialstatus(applicationval);
-CREATE INDEX dialstatus__idx__linked ON dialstatus(linked);
-CREATE UNIQUE INDEX dialstatus__uidx__status_category_categoryval ON dialstatus(status,category,categoryval);
-
-
 DROP TABLE extensions;
 CREATE TABLE extensions (
  id integer unsigned,
@@ -377,6 +358,10 @@ CREATE TABLE groupfeatures (
  name varchar(128) NOT NULL,
  number varchar(40) NOT NULL DEFAULT '',
  context varchar(39) NOT NULL,
+ transfer_user tinyint(1) NOT NULL DEFAULT 0,
+ transfer_call tinyint(1) NOT NULL DEFAULT 0,
+ write_caller tinyint(1) NOT NULL DEFAULT 0,
+ write_calling tinyint(1) NOT NULL DEFAULT 0,
  timeout tinyint unsigned NOT NULL DEFAULT 0,
  deleted tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(id)
@@ -760,25 +745,13 @@ CREATE TABLE schedule (
  daynumend varchar(2),
  monthbeg varchar(3) NOT NULL DEFAULT '*',
  monthend varchar(3),
- typetrue varchar(64) NOT NULL DEFAULT '',
- typevaltrue varchar(255) NOT NULL DEFAULT '',
- applicationvaltrue varchar(80) NOT NULL DEFAULT '',
- typefalse varchar(64) NOT NULL DEFAULT '',
- typevalfalse varchar(255) NOT NULL DEFAULT '',
- applicationvalfalse varchar(80) NOT NULL DEFAULT '',
  publicholiday tinyint(1) NOT NULL DEFAULT 0,
- linked tinyint(1) NOT NULL DEFAULT 0,
  commented tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(id)
 );
 
 CREATE INDEX schedule__idx__context ON schedule(context);
-CREATE INDEX schedule__idx__typetrue_typevaltrue ON schedule(typetrue,typevaltrue);
-CREATE INDEX schedule__idx__applicationvaltrue ON schedule(applicationvaltrue);
-CREATE INDEX schedule__idx__typefalse_typevalfalse ON schedule(typefalse,typevalfalse);
-CREATE INDEX schedule__idx__applicationvalfalse ON schedule(applicationvalfalse);
 CREATE INDEX schedule__idx__publicholiday ON schedule(publicholiday);
-CREATE INDEX schedule__idx__linked ON schedule(linked);
 CREATE INDEX schedule__idx__commented ON schedule(commented);
 CREATE UNIQUE INDEX schedule__uidx__name ON schedule(name);
 
