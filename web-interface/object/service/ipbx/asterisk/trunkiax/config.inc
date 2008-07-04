@@ -78,13 +78,6 @@ $array['element']['port'] = array();
 $array['element']['port']['default'] = '';
 $array['element']['port']['null'] = true;
 
-$array['element']['ipaddr'] = array();
-$array['element']['ipaddr']['default'] = '';
-$array['element']['ipaddr']['null'] = true;
-
-$array['element']['setvar'] = array();
-$array['element']['setvar']['default'] = '';
-
 $array['element']['host-static'] = array();
 $array['element']['host-static']['default'] = '';
 $array['element']['host-static']['unset'] = true;
@@ -141,8 +134,6 @@ $array['filter']['allow'] = array('set' => false,'chk' => 2,'uvalue' => array(
 						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263P,
 						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H264));
 $array['filter']['port'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
-$array['filter']['ipaddr'] = array('set' => false,'chk' => 0);
-$array['filter']['setvar'] = array('set' => false,'chk' => 0);
 $array['filter']['protocol'] = array('set' => false);
 $array['filter']['category'] = array('set' => false);
 

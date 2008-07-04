@@ -4,7 +4,6 @@
 	$dhtml = &$this->get_module('dhtml');
 
 	$pager = $this->get_var('pager');
-	$list = $this->get_var('list');
 	$act = $this->get_var('act');
 
 	$page = $url->pager($pager['pages'],
@@ -38,7 +37,7 @@
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
 <?php
-	if($list === false || ($nb = count($list)) === 0):
+	if(($list = $this->get_var('list')) === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
 		<td colspan="11" class="td-single"><?=$this->bbf('no_schedule');?></td>
@@ -47,14 +46,9 @@
 	else:
 		for($i = 0;$i < $nb;$i++):
 
-			$ref = &$list[$i]['schedule'];
+			$ref = &$list[$i];
 
-			$typetrue = $this->bbf('schedule_typetrue-'.$ref['typetrue']);
-
-			if($ref['linked'] === false):
-				$icon = 'unavailable';
-				$typetrue = '-';
-			elseif($ref['commented'] === true):
+			if($ref['commented'] === true):
 				$icon = 'disable';
 			else:
 				$icon = 'enable';
@@ -109,19 +103,65 @@
 			endif;
 
 			$ref['publicholiday'] = intval((bool) $ref['publicholiday']);
+
+			$destination = $this->bbf('schedule_destination-'.$ref['destination']);
+
+			if($ref['linked'] === false):
+				$icon = 'unavailable';
+				$destination = '-';
+			elseif($ref['destination'] === 'endcall'):
+				$destination = $this->bbf('schedule_destination-endcall-'.$ref['destidentity']);
+			elseif($ref['destination'] === 'application'):
+				$destination = $this->bbf('schedule_destination-application-'.$ref['destidentity']);
+			else:
+				$destination = $ref['destidentity'];
+			endif;
 ?>
-	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
-		<td class="td-left"><?=$form->checkbox(array('name' => 'schedules[]','value' => $ref['id'],'label' => false,'id' => 'it-schedules-'.$i,'checked' => false,'field' => false));?></td>
-		<td class="txt-left"><label for="it-schedules-<?=$i?>" id="lb-schedules-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['name']?></label></td>
+	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
+	    onmouseout="this.className = this.tmp;"
+	    class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
+		<td class="td-left">
+			<?=$form->checkbox(array('name'		=> 'schedules[]',
+						 'value'	=> $ref['id'],
+						 'label'	=> false,
+						 'id'		=> 'it-schedules-'.$i,
+						 'checked'	=> false,
+						 'field' => false));?>
+		</td>
+		<td class="txt-left">
+			<label for="it-schedules-<?=$i?>" id="lb-schedules-<?=$i?>">
+<?php
+				echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),
+					xivo_trunc($ref['name'],20,'...',false);
+?>
+			</label>
+		</td>
 		<td><?=$ref['time']?></td>
 		<td><?=$ref['dayname']?></td>
 		<td><?=$ref['daynum']?></td>
 		<td><?=$ref['month']?></td>
-		<td><?=$typetrue?></td>
+		<td><?=xivo_htmlen(xivo_trunc($destination,25,'...',false));?></td>
 		<td><?=$this->bbf('schedule_publicholiday-'.$ref['publicholiday']);?></td>
 		<td class="td-right" colspan="3">
-		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/call_management/schedule',array('act' => 'edit','id' => $ref['id']),null,$this->bbf('opt_modify'));?>
-		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/call_management/schedule',array('act' => 'delete','id' => $ref['id'],'page' => $pager['page']),'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',$this->bbf('opt_delete'));?>
+<?php
+			echo	$url->href_html($url->img_html('img/site/button/edit.gif',
+							       $this->bbf('opt_modify'),
+							       'border="0"'),
+						'service/ipbx/call_management/schedule',
+						array('act'	=> 'edit',
+						      'id'	=> $ref['id']),
+						null,
+						$this->bbf('opt_modify')),"\n",
+				$url->href_html($url->img_html('img/site/button/delete.gif',
+							       $this->bbf('opt_delete'),
+							       'border="0"'),
+						'service/ipbx/call_management/schedule',
+						array('act'	=> 'delete',
+						      'id'	=> $ref['id'],
+						      'page'	=> $pager['page']),
+						'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',
+						$this->bbf('opt_delete'));
+?>
 		</td>
 	</tr>
 <?php

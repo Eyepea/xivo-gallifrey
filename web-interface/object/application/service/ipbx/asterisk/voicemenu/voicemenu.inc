@@ -856,6 +856,8 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 
 	function delete()
 	{
+		$r = true;
+
 		$this->_status = 'delete';
 		$this->_return = array();
 
@@ -867,14 +869,15 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 		|| $delvoicemenuevent === 'error'
 		|| $this->delete_contextmember() === false)
 		{
-			$this->reverse_delete();
-			$this->_status = '';
-			return(false);
+			$r = false;
+			$this->_reverse_delete();
 		}
+		else
+			$this->unlinks();
 
 		$this->_status = '';
 
-		return(true);
+		return($r);
 	}
 
 	function delete_voicemenu()
@@ -938,7 +941,7 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 		return($r);
 	}
 
-	function reverse_delete()
+	function _reverse_delete()
 	{
 		if($this->_status !== 'delete'
 		|| is_array($this->_return) === false
@@ -982,6 +985,16 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 					break;
 			}
 		}
+
+		return(true);
+	}
+
+	function unlinks()
+	{
+		if(xivo_issa('voicemenu',$this->_info) === false)
+			return(false);
+
+		$this->_dialaction->unlinked('voicemenu',$this->_info['voicemenu']['id']);
 
 		return(true);
 	}

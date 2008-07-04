@@ -7,13 +7,19 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 	var $_origin		= array();
 	var $_status		= '';
 	var $_schedule		= false;
+	var $_dialaction	= false;
 	var $_contextmember	= false;
 	var $_sound		= array();
 	var $_contextlist	= array();
 
-	function xivo_application_service_asterisk_schedule(&$service,$param=null,$components=true)
+	function xivo_application_service_asterisk_schedule(&$service,&$dso,$param=null,$components=true)
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
+
+		if(is_object($dso) === false)
+			trigger_error('Invalid Datastorage object',E_USER_ERROR);
+
+		$this->_dso = &$dso;
 
 		if(($this->_schedule = &$this->_service->get_module('schedule')) === false)
 			return(false);
@@ -27,7 +33,8 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 	{
 		$this->_components = true;
 
-		if(($this->_contextmember = $this->get_abstract('contextmember',array('type' => 'schedule'))) === false)
+		if(($this->_dialaction = $this->get_abstract('dialaction',array('category' => 'schedule'))) === false
+		|| ($this->_contextmember = $this->get_abstract('contextmember',array('type' => 'schedule'))) === false)
 			return(false);
 
 		return(true);
@@ -45,6 +52,7 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 		if($this->_components === false)
 			return($this->_info);
 
+		$this->_get_dialaction($this->_info['schedule']['id']);
 		$this->_get_contextmember($this->_info['schedule']['id']);
 
 		return($this->_info);
@@ -54,63 +62,155 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 	{
 		$r = array();
 		$r['schedule'] = $this->_schedule->get_element();
+		$r['dialaction'] = $this->_dialaction->get_element();
 
 		return($r);
+	}
+
+	function get_schedules_search($search,$disable=null,$order=null,$limit=null,$assoc=false)
+	{
+		return($this->_get_schedules('search',$search,$disable,$order,$limit,$assoc));
 	}
 
 	function get_schedules_list($disable=null,$order=null,$limit=null,$assoc=false)
 	{
-		if(($rs = $this->_schedule->get_all($disable,true,$order,$limit,$assoc)) === false
-		|| empty($rs) === true)
+		return($this->_get_schedules('list',null,$disable,$order,$limit,$assoc));
+	}
+
+	function _get_schedules($action,$search='',$disable=null,$order=null,$limit=null,$assoc=false)
+	{
+		$action = (string) $action;
+		$search = strval($search);
+
+		switch($action)
 		{
-			$this->_cnt = $this->_schedule->get_cnt();
-			return(false);
+			case 'search':
+				$rs = $this->_dso->search($search,$disable,$order,$limit);
+				break;
+			default:
+				$rs = $this->_dso->get_all($disable,$order,$limit);
 		}
 
-		$this->_cnt = $this->_schedule->get_cnt();
+		$this->_cnt = $this->_dso->get_cnt();
 
-		$r = $info = array();
+		if($rs === false || ($nb = count($rs)) === 0)
+			return(false);
 
-		foreach($rs as $key => $val)
+		$r = array();
+
+		for($i = 0;$i < $nb;$i++)
 		{
-			$info['schedule'] = $val;
-			$info['typetrue'] = $info['typefalse'] = false;
+			$r[$rs[$i]['id']] = $rs[$i];
 
-			if($info['schedule']['linked'] === true
-			&& (($info['typetrue'] = $this->_schedule->is_valid($val['typetrue'],
-								     $val['typevaltrue'],
-								     $val['applicationvaltrue'],
-								     $val['id'])) === false
-			|| ($info['typefalse'] = $this->_schedule->is_valid($val['typefalse'],
-								     $val['typevalfalse'],
-								     $val['applicationvalfalse'],
-								     $val['id'])) === false) === true)
-				$info['schedule']['linked'] = false;
+			$ref = &$r[$rs[$i]['id']];
 
-			if($info['typetrue'] === true)
-				$info['typetrue'] = false;
+			$schedule = array();
+			$schedule['name'] = $ref['name'];
+			$schedule['context'] = $ref['context'];
+			$schedule['timebeg'] = $ref['timebeg'];
+			$schedule['timeend'] = $ref['timeend'];
+			$schedule['daynamebeg'] = $ref['daynamebeg'];
+			$schedule['daynameend'] = $ref['daynameend'];
+			$schedule['daynumbeg'] = $ref['daynumbeg'];
+			$schedule['daynumend'] = $ref['daynumend'];
+			$schedule['monthbeg'] = $ref['monthbeg'];
+			$schedule['monthend'] = $ref['monthend'];
+			$schedule['publicholiday'] = $ref['publicholiday'];
+			$schedule['commented'] = $ref['commented'];
 
-			if($info['typefalse'] === true)
-				$info['typefalse'] = false;
+			$ref = array_merge($ref,$this->_schedule->_prepare($schedule)); 
 
-			$r[$key] = $info;
+			$ref['destination'] = $ref['action'];
+			$ref['commented'] = (bool) $ref['commented'];
+			$ref['linked'] = (bool) $ref['linked'];
+
+			$arr = array();
+
+			switch($ref['action'])
+			{
+				case 'endcall:hangup':
+				case 'endcall:busy':
+				case 'endcall:congestion':
+				case 'application:callbackdisa':
+				case 'application:disa':
+				case 'application:directory':
+				case 'application:faxtomail':
+				case 'application:voicemailmain':
+					list($ref['destination'],$ref['destidentity']) = explode(':',$ref['action']);
+					break;
+				case 'user':
+					$arr['firstname'] = $ref['userfirstname'];
+					$arr['lastname'] = $ref['userlastname'];
+					$arr['number'] = $ref['usernumber'];
+					$arr['context'] = $ref['usercontext'];
+					$arr['name'] = $ref['username'];
+					$ref['destidentity'] = $this->_service->identity('userfeatures',$arr);
+					break;
+				case 'group':
+					$arr['name'] = $ref['groupname'];
+					$arr['number'] = $ref['groupnumber'];
+					$arr['context'] = $ref['groupcontext'];
+					$ref['destidentity'] = $this->_service->identity('groupfeatures',$arr);
+					break;
+				case 'queue':
+					$arr['name'] = $ref['queuename'];
+					$arr['number'] = $ref['queuenumber'];
+					$arr['context'] = $ref['queuecontext'];
+					$ref['destidentity'] = $this->_service->identity('queuefeatures',$arr);
+					break;
+				case 'meetme':
+					$arr['name'] = $ref['meetmename'];
+					$arr['number'] = $ref['meetmenumber'];
+					$arr['context'] = $ref['meetmecontext'];
+					$ref['destidentity'] = $this->_service->identity('meetmefeatures',$arr);
+					break;
+				case 'voicemail':
+					$arr['fullname'] = $ref['voicemailfullname'];
+					$arr['mailbox'] = $ref['voicemailmailbox'];
+					$arr['context'] = $ref['voicemailcontext'];
+					$ref['destidentity'] = $this->_service->identity('voicemail',$arr);
+					break;
+				case 'schedule':
+					$arr['name'] = $ref['schedulename'];
+					$arr['context'] = $ref['schedulecontext'];
+					$ref['destidentity'] = $this->_schedule->mk_identity($arr);
+					break;
+				case 'voicemenu':
+					$arr['name'] = $ref['voicemenuname'];
+					$arr['number'] = $ref['voicemenunumber'];
+					$arr['context'] = $ref['voicemenucontext'];
+					$ref['destidentity'] = $this->_service->identity('voicemenu',$arr);
+					break;
+				case 'sound':
+					$ref['destidentity'] = basename($ref['actionarg1']);
+					break;
+				default:
+					$ref['destidentity'] = '-';
+			}
 		}
 
 		if(empty($r) === true)
 			return(false);
+		else if((bool) $assoc === false)
+			return(array_values($r));
 
 		return($r);
 	}
 
-	function get_destination_list()
+	function get_dialaction_result()
+	{
+		return($this->_dialaction->get_result_for_display());
+	}
+
+	function get_dialaction_destination_list()
 	{
 		if(xivo_issa('schedule',$this->_info) === false)
 			$id = 0;
 		else
 			$id = $this->_info['schedule']['id'];
 
-		$r = parent::get_destination_list('schedule',$id);
-		$r['sounds'] = $this->get_sound();
+		$r = $this->get_destination_list('schedule',$id);
+		$r['sounds'] = $this->_dialaction->get_sound();
 
 		return($r);
 	}
@@ -134,43 +234,6 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 
 		if(xivo_issa('schedule',$r) === false)
 			$r['schedule'] = array();
-
-		$r['schedule']['endcall'] = null;
-		$r['schedule']['user'] = null;
-		$r['schedule']['group'] = null;
-		$r['schedule']['queue'] = null;
-		$r['schedule']['meetme'] = null;
-		$r['schedule']['voicemail'] = null;
-		$r['schedule']['schedule'] = null;
-		$r['schedule']['application'] = null;
-		$r['schedule']['sound'] = null;
-		$r['schedule']['custom'] = null;
-
-		if(xivo_haslen($r['schedule'],'typetrue') === true
-		&& array_key_exists($r['schedule']['typetrue'],$r['schedule']) === true)
-		{
-			$typetrue = &$r['schedule']['typetrue'];
-
-			$r['schedule'][$typetrue] = array('false' => '');
-
-			if(isset($r['schedule']['typevaltrue']) === true)
-				$r['schedule'][$typetrue]['true'] = $r['schedule']['typevaltrue'];
-			else
-				$r['schedule'][$typetrue]['true'] = '';
-		}
-
-		if(xivo_haslen($r['schedule'],'typefalse') === true
-		&& array_key_exists($r['schedule']['typefalse'],$r['schedule']) === true)
-		{
-			$typefalse = &$r['schedule']['typefalse'];
-
-			$r['schedule'][$typefalse] = array('true' => '');
-
-			if(isset($r['schedule']['typevalfalse']) === true)
-				$r['schedule'][$typefalse]['false'] = $r['schedule']['typevalfalse'];
-			else
-				$r['schedule'][$typefalse]['false'] = '';
-		}
 
 		$timebeg = $this->get_result_var('schedule','timebeg');
 		$timeend = $this->get_result_var('schedule','timeend');
@@ -222,21 +285,25 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 		|| xivo_issa('schedule',$arr) === false)
 			return(false);
 
-		$this->set_schedule($action,$arr['schedule']);
+		$this->set_schedule($arr['schedule']);
+
+		if(xivo_issa('dialaction',$arr) === false
+		|| $this->set_dialaction($arr['dialaction']) === null
+		|| is_array($this->get_result_var('dialaction','inschedule')) === false
+		|| is_array($this->get_result_var('dialaction','outschedule')) === false)
+			$this->_set_error('dialaction','invalid data');
 
 		$this->set_contextmember();
 
 		return(($this->get_errnb() < 1));
 	}
 
-	function set_schedule($action,$arr)
+	function set_schedule($arr)
 	{
 		$r = true;
 
-		if(($action !== 'add' && $action !== 'edit') === true
-		|| is_array($arr) === false
-		|| isset($arr['timebeg'],$arr['timeend']) === false
-		|| ($action === 'edit' && xivo_issa('schedule',$this->_info) === false) === true)
+		if(is_array($arr) === false
+		|| isset($arr['timebeg'],$arr['timeend']) === false)
 		{
 			$this->_set_result('schedule',null);
 			$this->_set_error('schedule','invalid data');
@@ -253,37 +320,13 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 			$arr['timeend'] = $time['end'];
 		}
 
-		$arr['linked'] = true;
 		$arr['commented'] = false;
 
-		if($action === 'edit')
-			$validid = $this->_info['schedule']['id'];
-		else
-			$validid = null;
-
-		$validtrue = $validfalse = null;
-
-		if(($rs = $this->_schedule->chk_values($arr)) === false
-		|| ($validtrue = $this->_schedule->is_valid($rs['typetrue'],
-							    $rs['typevaltrue'],
-							    $rs['applicationvaltrue'],
-							    $validid)) === false
-		|| ($validfalse = $this->_schedule->is_valid($rs['typefalse'],
-							     $rs['typevalfalse'],
-							     $rs['applicationvalfalse'],
-							     $validid)) === false)
+		if(($rs = $this->_schedule->chk_values($arr)) === false)
 		{
 			$r = false;
-
-			if($rs === false)
-			{
-				$rs = $this->_schedule->get_filter_result();
-				$this->_set_error('schedule',$this->_schedule->get_filter_error());
-			}
-			else if($validtrue === false)
-				$this->_set_error('schedule','invalid true destination');
-			else
-				$this->_set_error('schedule','invalid false destination');
+			$rs = $this->_schedule->get_filter_result();
+			$this->_set_error('schedule',$this->_schedule->get_filter_error());
 		}
 
 		if(($date = $this->_schedule->chk_date($rs)) !== false)
@@ -319,6 +362,7 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 
 		if($this->get_errnb() > 0
 		|| ($scheduleid = $this->add_schedule()) === false
+		|| $this->add_dialaction($scheduleid) === false
 		|| $this->add_contextmember($scheduleid) === false)
 		{
 			$r = false;
@@ -360,6 +404,9 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 				case 'schedule':
 					$this->_schedule->delete($scheduleid);
 					break;
+				case 'dialaction':
+					$this->_dialaction->reverse_add();
+					break;
 				case 'contextmember':
 					$this->_contextmember->reverse_add();
 					break;
@@ -378,6 +425,7 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 
 		if($this->get_errnb() > 0
 		|| $this->edit_schedule() === false
+		|| $this->edit_dialaction() === false
 		|| $this->edit_contextmember() === false)
 		{
 			$r = false;
@@ -399,6 +447,14 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 		$rs['commented'] = $this->_info['schedule']['commented'];
 
 		return(($this->_return['schedule'] = $this->_schedule->edit($this->_info['schedule']['id'],$rs)));
+	}
+
+	function edit_dialaction()
+	{
+		if(xivo_issa('schedule',$this->_info) === false)
+			return(false);
+
+		return(parent::edit_dialaction($this->_info['schedule']['id']));
 	}
 
 	function edit_contextmember()
@@ -431,6 +487,9 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 					else
 						$this->_schedule->edit_origin($this->_origin['schedule']);
 					break;
+				case 'dialaction':
+					$this->_dialaction->reverse_edit($this->_status);
+					break;
 				case 'contextmember':
 					$this->_contextmember->reverse_edit($this->_status);
 					break;
@@ -448,6 +507,7 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 		$this->_return = array();
 
 		if($this->delete_schedule() === false
+		|| $this->delete_dialaction() === false
 		|| $this->delete_contextmember() === false)
 		{
 			$r = false;
@@ -493,6 +553,9 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 					&& $this->_origin['schedule'] !== false)
 						$this->_schedule->add_origin($this->_origin['schedule']);
 					break;
+				case 'dialaction':
+					$this->_dialaction->add_origin_list();
+					break;
 				case 'contextmember':
 					$this->_contextmember->add_origin_list();
 					break;
@@ -507,17 +570,7 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 		if(xivo_issa('schedule',$this->_info) === false)
 			return(false);
 
-		$schedule_where = array();
-		$schedule_where['typetrue'] = 'schedule';
-		$schedule_where['typevaltrue'] = $this->_info['schedule']['id'];
-
-		$this->_schedule->unlinked_where($schedule_where);
-
-		$schedule_where = array();
-		$schedule_where['typefalse'] = 'schedule';
-		$schedule_where['typevalfalse'] = $this->_info['schedule']['id'];
-
-		$this->_schedule->unlinked_where($schedule_where);
+		$this->_dialaction->unlinked('schedule',$this->_info['schedule']['id']);
 
 		return(true);
 	}

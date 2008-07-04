@@ -32,26 +32,8 @@ class xivo_service_asterisk_schedule extends xivo_service_asterisk_abstract
 		$data['timebeg'] = (string) $data['timebeg'];
 		$data['timeend'] = (string) $data['timeend'];
 
-		$data['endcall'] = array('true' => '','false' => '');
-		$data['user'] = array('true' => '','false' => '');
-		$data['group'] = array('true' => '','false' => '');
-		$data['queue'] = array('true' => '','false' => '');
-		$data['meetme'] = array('true' => '','false' => '');
-		$data['voicemail'] = array('true' => '','false' => '');
-		$data['schedule'] = array('true' => '','false' => '');
-		$data['application'] = array('true' => '','false' => '');
-		$data['sound'] = array('true' => '','false' => '');
-		$data['custom'] = array('true' => '','false' => '');
-
-		if(isset($data[$data['typetrue']]) === true)
-			$data[$data['typetrue']]['true'] = $data['typevaltrue'];
-
-		if(isset($data[$data['typefalse']]) === true)
-			$data[$data['typefalse']]['false'] = $data['typevalfalse'];
-
 		$data['publicholiday'] = (bool) $data['publicholiday'];
 		$data['commented'] = (bool) $data['commented'];
-		$data['linked'] = (bool) $data['linked'];
 
 		if($data['timebeg'] === '' || $data['timebeg'] === '*')
 		{
@@ -108,12 +90,6 @@ class xivo_service_asterisk_schedule extends xivo_service_asterisk_abstract
 		&& $arr['monthbeg'] === $arr['monthend'])
 			$arr['monthend'] = null;
 
-		if(isset($arr['typetrue']) === true && $arr['typetrue'] !== 'application')
-			$arr['applicationvaltrue'] = '';
-
-		if(isset($arr['typefalse']) === true && $arr['typefalse'] !== 'application')
-			$arr['applicationvalfalse'] = '';
-
 		if(isset($arr['name']) === true)
 			$arr['name'] = strtolower($arr['name']);
 
@@ -140,36 +116,10 @@ class xivo_service_asterisk_schedule extends xivo_service_asterisk_abstract
 		&& $arr['monthbeg'] === $arr['monthend'])
 			$arr['monthend'] = null;
 
-		if(isset($arr['typetrue']) === true && $arr['typetrue'] !== 'application')
-			$arr['applicationvaltrue'] = '';
-
-		if(isset($arr['typefalse']) === true && $arr['typefalse'] !== 'application')
-			$arr['applicationvalfalse'] = '';
-
 		if(isset($arr['name']) === true)
 			$arr['name'] = strtolower($arr['name']);
 
 		return(parent::edit($id,$arr,$disable));
-	}
-
-	function linked($id,$disable=null)
-	{
-		return($this->edit($id,array('linked' => true),$disable));
-	}
-
-	function unlinked($id,$disable=null)
-	{
-		return($this->edit($id,array('linked' => false),$disable));
-	}
-
-	function linked_where($id,$disable=null)
-	{
-		return($this->edit_where($id,array('linked' => true),$disable));
-	}
-
-	function unlinked_where($id,$disable=null)
-	{
-		return($this->edit_where($id,array('linked' => false),$disable));
 	}
 
 	function mk_time($beg,$end)
@@ -259,35 +209,6 @@ class xivo_service_asterisk_schedule extends xivo_service_asterisk_abstract
 			return(false);
 
 		return($arr);
-	}
-
-	function is_valid($type,$typeval,$appval='',$id=null,$disable=null)
-	{
-		switch($type)
-		{
-			case 'endcall':
-				return($this->_chk_dest_value($type,$typeval));
-			case 'user':
-				return($this->chk_dest_user($typeval,null,$disable));
-			case 'group':
-				return($this->chk_dest_group($typeval,null,$disable));
-			case 'queue':
-				return($this->chk_dest_queue($typeval,null,$disable));
-			case 'meetme':
-				return($this->chk_dest_meetme($typeval,null,$disable));
-			case 'voicemail':
-				return($this->chk_dest_voicemail($typeval,null,$disable));
-			case 'schedule':
-				return($this->chk_dest_schedule($typeval,$id,$disable));
-			case 'application':
-				return($this->chk_dest_application($typeval,$appval));
-			case 'sound':
-				return($this->chk_dest_sound('playback',$typeval));
-			case 'custom':
-				return($this->chk_dest_custom($typeval));
-		}
-
-		return(false);
 	}
 
 	function get_all_except($id,$order=null,$limit=null)

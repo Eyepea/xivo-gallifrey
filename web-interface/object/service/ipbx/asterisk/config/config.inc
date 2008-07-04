@@ -196,9 +196,6 @@ $array['module']['contextnummember']['datastorage'] = true;
 $array['module']['dialaction'] = array();
 $array['module']['dialaction']['datastorage'] = true;
 
-$array['module']['dialstatus'] = array();
-$array['module']['dialstatus']['datastorage'] = true;
-
 $array['module']['extensions'] = array();
 $array['module']['extensions']['datastorage'] = true;
 

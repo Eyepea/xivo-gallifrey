@@ -63,6 +63,9 @@ class xivo_service_asterisk_useriax extends xivo_service_asterisk_abstract
 		if(isset($arr['name']) === true)
 			$arr['name'] = strtolower($arr['name']);
 
+		if(isset($arr['setvar'],$arr['setvar']{0}) === false)
+			unset($arr['setvar']);
+
 		return(parent::edit($id,$arr,$disable));
 	}
 }

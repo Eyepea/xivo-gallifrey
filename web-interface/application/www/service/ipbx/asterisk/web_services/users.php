@@ -10,7 +10,10 @@ if(($users = $appuser->get_users_list($protocols)) === false)
 
 $total = count($users);
 
-$msg = xivo_msg('beg-data')."\n";
+$msg =	xivo_msg('beg-data')."\n".
+	'"protocol"|"name"|"secret"|"enableclient"|'.
+	'"number"|"initialized"|"commented"|"callerid"|'.
+	'"firstname"|"lastname"|"context"|"enablehint"'."\n";
 
 for($i = 0;$i < $total;$i++)
 {

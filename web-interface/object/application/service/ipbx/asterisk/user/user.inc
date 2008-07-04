@@ -1318,15 +1318,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$this->_status = '';
 			return(false);
 		}
-
-		$unlinks = false;
-
-		if($this->_info['ufeatures']['number'] !== '')
+		else if($this->_info['ufeatures']['number'] !== '')
 		{
 			if($this->get_result('usermacro') === null
 			|| $this->get_result('extenumbers') === null)
 			{
-				$unlinks = true;
 				$this->delete_macro('usermacro');
 				$this->delete_extenumbers();
 				$this->delete_hints();
@@ -1379,10 +1375,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		}
 
 		$this->edit_phone();
-
-		if($unlinks === true)
-			$this->unlinks();
-
 		$this->_status = '';
 
 		return(true);
@@ -1739,6 +1731,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function delete()
 	{
+		$r = true;
+
 		$this->_status = 'delete';
 		$this->_return = array();
 
@@ -1757,20 +1751,15 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| $this->delete_phone() === false
 		|| $this->delete_callfiltermember() === false)
 		{
+			$r = false;
 			$this->_reverse_delete();
-			$this->_status = '';
-
-			return(false);
 		}
-
-		if(isset($this->_return['usermacro']) === true
-		|| isset($this->_return['hints']) === true
-		|| isset($this->_return['extenumbers']) === true)
+		else
 			$this->unlinks();
 
 		$this->_status = '';
 
-		return(true);
+		return($r);
 	}
 
 	function delete_protocol()
@@ -1984,21 +1973,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			return(false);
 
 		$this->_dialaction->unlinked('user',$this->_info['ufeatures']['id']);
-
-		if(($schedule = &$this->_service->get_module('schedule')) === false)
-			return(true);
-
-		$schedule_where = array();
-		$schedule_where['typetrue'] = 'user';
-		$schedule_where['typevaltrue'] = $this->_info['ufeatures']['id'];
-
-		$schedule->unlinked_where($schedule_where);
-
-		$schedule_where = array();
-		$schedule_where['typefalse'] = 'user';
-		$schedule_where['typevalfalse'] = $this->_info['ufeatures']['id'];
-
-		$schedule->unlinked_where($schedule_where);
 
 		return(true);
 	}

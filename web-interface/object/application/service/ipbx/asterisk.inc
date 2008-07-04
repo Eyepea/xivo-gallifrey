@@ -150,17 +150,6 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		return($this->_info['dialaction']);
 	}
 
-	function _get_dialstatus($categoryval)
-	{
-		$this->_info['dialstatus'] = false;
-		$this->_origin['dialstatus'] = false;
-
-		if(($this->_info['dialstatus'] = $this->_dialstatus->get($categoryval)) !== false)
-			$this->_origin['dialstatus'] = $this->_dialstatus->get_origin();
-
-		return($this->_info['dialstatus']);
-	}
-
 	function _get_contextnummember($typeval)
 	{
 		$this->_info['contextnummember'] = false;
@@ -245,16 +234,6 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		return($r);
 	}
 
-	function set_dialstatus($list)
-	{
-		if(($r = $this->_dialstatus->set($list)) === false)
-			$this->_set_error('dialstatus',$this->_dialstatus->get_error());
-
-		$this->_set_result('dialstatus',$this->_dialstatus->get_result());
-
-		return($r);
-	}
-
 	function set_contextnummember($context,$number='')
 	{
 		if(($r = $this->_contextnummember->set($context,$number)) === false)
@@ -305,15 +284,6 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		$r = $this->_dialaction->add($categoryval);
 
 		$this->_return['dialaction'] = $this->_dialaction->get_return();
-
-		return($r);
-	}
-
-	function add_dialstatus($categoryval)
-	{
-		$r = $this->_dialstatus->add($categoryval);
-
-		$this->_return['dialstatus'] = $this->_dialstatus->get_return();
 
 		return($r);
 	}
@@ -372,15 +342,6 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		$r = $this->_dialaction->edit($this->_status,$categoryval);
 
 		$this->_return['dialaction'] = $this->_dialaction->get_return();
-
-		return($r);
-	}
-
-	function edit_dialstatus($categoryval)
-	{
-		$r = $this->_dialstatus->edit($this->_status,$categoryval);
-
-		$this->_return['dialstatus'] = $this->_dialstatus->get_return();
 
 		return($r);
 	}
@@ -452,16 +413,6 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 
 		if($this->_status === 'delete')
 			$this->_return['dialaction'] = $r;
-
-		return($r);
-	}
-
-	function delete_dialstatus()
-	{
-		$r = $this->_dialstatus->delete($this->_status);
-
-		if($this->_status === 'delete')
-			$this->_return['dialstatus'] = $r;
 
 		return($r);
 	}

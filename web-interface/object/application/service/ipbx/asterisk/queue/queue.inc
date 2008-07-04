@@ -722,15 +722,11 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 			$this->_status = '';
 			return(false);
 		}
-
-		$unlinks = false;
-
-		if($this->_info['qfeatures']['number'] !== '')
+		else if($this->_info['qfeatures']['number'] !== '')
 		{
 			if($this->get_result('queuemacro') === null
 			|| $this->get_result('extenumbers') === null)
 			{
-				$unlinks = true;
 				$this->delete_macro('queuemacro');
 				$this->delete_extenumbers();
 			}
@@ -761,9 +757,6 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 			$this->_status = '';
 			return(false);
 		}
-
-		if($unlinks === true)
-			$this->unlinks();
 
 		$this->_status = '';
 
@@ -960,6 +953,8 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 	function delete()
 	{
+		$r = true;
+
 		$this->_status = 'delete';
 		$this->_return = array();
 
@@ -974,18 +969,15 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		|| $this->delete_contextnummember() === false
 		|| $this->delete_contextmember($this->_info['qfeatures']['name']) === false)
 		{
+			$r = false;
 			$this->_reverse_delete();
-			$this->_status = '';
-			return(false);
 		}
-
-		if(isset($this->_return['queuemacro']) === true
-		|| isset($this->_return['extenumbers']) === true)
+		else
 			$this->unlinks();
 
 		$this->_status = '';
 
-		return(true);
+		return($r);
 	}
 
 	function delete_queuefeatures()
@@ -1126,21 +1118,6 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 			return(false);
 
 		$this->_dialaction->unlinked('queue',$this->_info['qfeatures']['id']);
-
-		if(($schedule = &$this->_service->get_module('schedule')) === false)
-			return(true);
-		
-		$schedule_where = array();
-		$schedule_where['typetrue'] = 'queue';
-		$schedule_where['typevaltrue'] = $this->_info['qfeatures']['id'];
-
-		$schedule->unlinked_where($schedule_where);
-
-		$schedule_where = array();
-		$schedule_where['typefalse'] = 'queue';
-		$schedule_where['typevalfalse'] = $this->_info['qfeatures']['id'];
-
-		$schedule->unlinked_where($schedule_where);
 
 		return(true);
 	}

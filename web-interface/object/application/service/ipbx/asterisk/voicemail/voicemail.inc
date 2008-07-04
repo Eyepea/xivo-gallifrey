@@ -454,6 +454,8 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 
 	function delete()
 	{
+		$r = true;
+
 		$this->_status = 'delete';
 		$this->_return = array();
 
@@ -461,15 +463,15 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 		|| $this->delete_vmfeatures() === false
 		|| $this->delete_contextmember() === false)
 		{
+			$r = false;
 			$this->reverse_delete();
-			$this->_status = '';
-			return(false);
 		}
+		else
+			$this->unlinks();
 
-		$this->unlinks();
 		$this->_status = '';
 
-		return(true);
+		return($r);
 	}
 
 	function delete_voicemail()
@@ -573,21 +575,6 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 
 			$this->_modules['useriax']->edit_where($useriax_where,array('mailbox' => null));
 		}
-
-		if(($schedule = &$this->_service->get_module('schedule')) === false)
-			return(true);
-		
-		$schedule_where = array();
-		$schedule_where['typetrue'] = 'voicemail';
-		$schedule_where['typevaltrue'] = $this->_info['voicemail']['uniqueid'];
-
-		$schedule->unlinked_where($schedule_where);
-
-		$schedule_where = array();
-		$schedule_where['typefalse'] = 'voicemail';
-		$schedule_where['typevalfalse'] = $this->_info['voicemail']['uniqueid'];
-
-		$schedule->unlinked_where($schedule_where);
 
 		return(true);
 	}

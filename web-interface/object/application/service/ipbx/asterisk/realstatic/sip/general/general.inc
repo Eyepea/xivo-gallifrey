@@ -71,7 +71,6 @@ class xivo_application_service_asterisk_realstatic_sip_general extends xivo_appl
 					return(false);
 
 				return(-1);
-				break;
 			case 'allow':
 				if(is_array($rs['var_val']) === true)
 				{

@@ -52,18 +52,18 @@
 
 			$ref = &$list[$i];
 
-			$destination = $this->bbf('incall_destination-'.$ref['destination']);
-
-			if($ref['linked'] === false):
-				$icon = 'unavailable';
-				$destination = '-';
-			elseif($ref['commented'] === true):
+			if($ref['commented'] === true):
 				$icon = 'disable';
 			else:
 				$icon = 'enable';
 			endif;
 
-			if($ref['destination'] === 'endcall'):
+			$destination = $this->bbf('incall_destination-'.$ref['destination']);
+
+			if($ref['linked'] === false):
+				$icon = 'unavailable';
+				$destination = $destidentity = '-';
+			elseif($ref['destination'] === 'endcall'):
 				$destination = $this->bbf('incall_destination-endcall-'.$ref['destidentity']);
 				$destidentity = '-';
 			elseif($ref['destination'] === 'application'):

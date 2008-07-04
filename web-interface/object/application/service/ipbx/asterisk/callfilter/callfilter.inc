@@ -807,7 +807,8 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 			$r = false;
 			$this->_reverse_delete();
 		}
-		else $this->unlinks();
+		else
+			$this->unlinks();
 
 		$this->_status = '';
 

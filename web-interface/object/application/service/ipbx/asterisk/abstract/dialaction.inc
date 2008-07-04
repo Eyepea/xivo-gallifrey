@@ -167,9 +167,13 @@ class xivo_application_service_asterisk_dialaction_abstract extends xivo_applica
 		$r['application'] = $arr;
 		$r['sound'] = $arr;
 		$r['custom'] = $arr;
+		$r['linked'] = false;
 
 		if(xivo_issa($event,$this->_result) === false)
 			return($r);
+
+		if(isset($this->_result[$event]['linked']) === true)
+			$r['linked'] = (bool) $this->_result[$event]['linked'];
 
 		$exp = explode(':',$this->_result[$event]['action'],2);
 

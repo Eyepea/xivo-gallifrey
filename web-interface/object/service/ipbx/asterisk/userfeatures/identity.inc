@@ -15,7 +15,7 @@ class xivo_service_asterisk_userfeatures_identity
 		if(xivo_haslen($data['number']) === true)
 			$data['identity'] = $data['fullname'].' ('.$data['number'].'@'.$data['context'].')';
 		else if(xivo_haslen($data['name']) === true)
-			$data['identity'] = $data['fullname'].' ('.$data['name'].'@'.$data['context'].')';
+			$data['identity'] = $data['fullname'].' ('.$data['name'].')';
 		else
 			$data['identity'] = $data['fullname'].' ('.$data['context'].')';
 

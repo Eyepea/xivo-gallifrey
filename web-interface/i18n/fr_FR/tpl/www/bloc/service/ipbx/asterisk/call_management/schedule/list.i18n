@@ -34,34 +34,55 @@ Férié
 ; schedule_rangemonth
 %s - %s
 
-; schedule_typetrue-endcall
-Fin d'appel
+; schedule_destination-endcall-hangup
+Raccrocher
 
-; schedule_typetrue-user
+; schedule_destination-endcall-busy
+Occuper
+
+; schedule_destination-endcall-congestion
+Saturer
+
+; schedule_destination-user
 Utilisateur
 
-; schedule_typetrue-group
+; schedule_destination-group
 Groupe
 
-; schedule_typetrue-queue
+; schedule_destination-queue
 File d'attente
 
-; schedule_typetrue-meetme
+; schedule_destination-meetme
 Chambre de conférence
 
-; schedule_typetrue-voicemail
+; schedule_destination-voicemail
 Messagerie vocale
 
-; schedule_typetrue-schedule
+; schedule_destination-schedule
 Horaire
 
-; schedule_typetrue-application
-Application
+; schedule_destination-voicemenu
+Menu vocal
 
-; schedule_typetrue-sound
+; schedule_destination-application-callbackdisa
+CallBackDISA
+
+; schedule_destination-application-disa
+DISA
+
+; schedule_destination-application-directory
+Directory
+
+; schedule_destination-application-faxtomail
+FaxToMail
+
+; schedule_destination-application-voicemailmain
+Consultation de la messagerie vocale
+
+; schedule_destination-sound
 Fichier son
 
-; schedule_typetrue-custom
+; schedule_destination-custom
 Personnalisée
 
 ; schedule_publicholiday-0

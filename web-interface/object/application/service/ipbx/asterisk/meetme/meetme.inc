@@ -470,6 +470,8 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 	function delete()
 	{
+		$r = true;
+
 		$this->_status = 'delete';
 		$this->_return = array();
 
@@ -480,15 +482,15 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		|| $this->delete_contextnummember() === false
 		|| $this->delete_contextmember() === false)
 		{
+			$r = false;
 			$this->_reverse_delete();
-			$this->_status = '';
-			return(false);
 		}
+		else
+			$this->unlinks();
 
-		$this->unlinks();
 		$this->_status = '';
 
-		return(true);
+		return($r);
 	}
 
 	function delete_meetmeroom()
@@ -577,21 +579,6 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 			$dialaction->unlinked_where($dialaction_where);
 		}
-
-		if(($schedule = &$this->_service->get_module('schedule')) === false)
-			return(true);
-		
-		$schedule_where = array();
-		$schedule_where['typetrue'] = 'meetme';
-		$schedule_where['typevaltrue'] = $this->_info['mfeatures']['id'];
-
-		$schedule->unlinked_where($schedule_where);
-
-		$schedule_where = array();
-		$schedule_where['typefalse'] = 'meetme';
-		$schedule_where['typevalfalse'] = $this->_info['mfeatures']['id'];
-
-		$schedule->unlinked_where($schedule_where);
 
 		return(true);
 	}

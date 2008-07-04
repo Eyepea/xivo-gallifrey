@@ -601,15 +601,11 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 			$this->_status = '';
 			return(false);
 		}
-
-		$unlinks = false;
-
-		if($this->_info['gfeatures']['number'] !== '')
+		else if($this->_info['gfeatures']['number'] !== '')
 		{
 			if($this->get_result('groupmacro') === null
 			|| $this->get_result('extenumbers') === null)
 			{
-				$unlinks = true;
 				$this->delete_macro('groupmacro');
 				$this->delete_extenumbers();
 			}
@@ -638,9 +634,6 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 			$this->_status = '';
 			return(false);
 		}
-
-		if($unlinks === true)
-			$this->unlinks();
 
 		$this->edit_user_callgroup($this->_info['gfeatures']['id']);
 
@@ -874,6 +867,8 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 
 	function delete()
 	{
+		$r = true;
+
 		$this->_status = 'delete';
 		$this->_return = array();
 
@@ -886,20 +881,15 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		|| $this->delete_dialaction() === false
 		|| $this->delete_contextnummember() === false)
 		{
+			$r = false;
 			$this->_reverse_delete();
-			$this->_status = '';
-			return(false);
 		}
-
-		if(isset($this->_return['groupmacro']) === true
-		|| isset($this->_return['extenumbers']) === true)
+		else
 			$this->unlinks();
-
-		$this->delete_user_callgroup($this->_info['gfeatures']['id']);
 
 		$this->_status = '';
 
-		return(true);
+		return($r);
 	}
 
 	function delete_groupfeatures()
@@ -1016,22 +1006,8 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		if(xivo_issa('gfeatures',$this->_info) === false)
 			return(false);
 
+		$this->delete_user_callgroup($this->_info['gfeatures']['id']);
 		$this->_dialaction->unlinked('group',$this->_info['gfeatures']['id']);
-
-		if(($schedule = &$this->_service->get_module('schedule')) === false)
-			return(true);
-		
-		$schedule_where = array();
-		$schedule_where['typetrue'] = 'group';
-		$schedule_where['typevaltrue'] = $this->_info['gfeatures']['id'];
-
-		$schedule->unlinked_where($schedule_where);
-
-		$schedule_where = array();
-		$schedule_where['typefalse'] = 'group';
-		$schedule_where['typevalfalse'] = $this->_info['gfeatures']['id'];
-
-		$schedule->unlinked_where($schedule_where);
 
 		return(true);
 	}

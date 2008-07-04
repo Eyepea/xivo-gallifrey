@@ -58,10 +58,6 @@ $array['dialaction'] = array();
 $array['dialaction']['table'] = 'dialaction';
 $array['dialaction']['primary'] = array('event' => '','category' => '','categoryval' => '');
 
-$array['dialstatus'] = array();
-$array['dialstatus']['table'] = 'dialstatus';
-$array['dialstatus']['primary'] = array('id' => '');
-
 $array['extensions'] = array();
 $array['extensions']['table'] = 'extensions';
 $array['extensions']['primary'] = array('id' => '');

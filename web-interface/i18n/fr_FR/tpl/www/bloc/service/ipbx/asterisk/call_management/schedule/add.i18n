@@ -13,140 +13,29 @@ Créer un contexte
 ; fm_schedule_publicholiday
 Férié :
 
-; fm_schedule_timebeg
-Heure (début) :
+; col_schedule-time
+Temps
 
-; fm_schedule_timeend
-Heure (fin) :
+; col_schedule-begin
+Début
 
-; fm_schedule_daynamebeg
-Jour (début) :
+; col_schedule-end
+Fin
 
-; fm_schedule_daynameend
-Jour (fin) :
+; schedule_hour
+Heure
 
-; fm_schedule_daynumbeg
-Jour du mois (début) :
+; schedule_dayname
+Jour
 
-; fm_schedule_daynumend
-Jour du mois (fin) :
+; schedule_daynum
+Jour du mois
 
-; fm_schedule_monthbeg
-Mois (début) :
+; schedule_month
+Mois
 
-; fm_schedule_monthend
-Mois (fin) :
-
-; fld-inschedule
+; fld-dialaction-inschedule
 Dans la plage horaire
 
-; fm_schedule_type
-Destination :
-
-; fm_schedule_type-opt-endcall
-Fin d'appel
-
-; fm_schedule_type-opt-user
-Utilisateur
-
-; fm_schedule_type-opt-group
-Groupe
-
-; fm_schedule_type-opt-queue
-File d'attente
-
-; fm_schedule_type-opt-meetme
-Chambre de conférence
-
-; fm_schedule_type-opt-voicemail
-Messagerie vocale
-
-; fm_schedule_type-opt-schedule
-Horaire
-
-; fm_schedule_type-opt-application
-Application
-
-; fm_schedule_type-opt-sound
-Fichier son
-
-; fm_schedule_type-opt-custom
-Personnalisée
-
-; fm_schedule_endcall-typeval
-Action :
-
-; fm_schedule_user-typeval
-Renvoyer vers :
-
-; fm_schedule_group-typeval
-Renvoyer vers :
-
-; fm_schedule_queue-typeval
-Renvoyer vers :
-
-; fm_schedule_meetme-typeval
-Renvoyer vers :
-
-; fm_schedule_voicemail-typeval
-Renvoyer vers :
-
-; fm_schedule_schedule-typeval
-Renvoyer vers :
-
-; fm_schedule_application-typeval
-Renvoyer vers :
-
-; fm_schedule_sound-typeval
-Jouer :
-
-; fm_schedule_custom-typeval
-Commande :
-
-; fm_schedule_endcall-typeval-opt-hangup
-Raccrocher
-
-; fm_schedule_endcall-typeval-opt-busy
-Occupé
-
-; fm_schedule_endcall-typeval-opt-congestion
-Saturé
-
-; fm_schedule_application-typeval-opt-faxtomail
-FaxToMail
-
-; fm_schedule_application-typeval-opt-disa
-DISA
-
-; fm_schedule_application-typeval-opt-directory
-Directory
-
-; fm_schedule_application-typeval-opt-voicemail
-Voicemail
-
-; fm_schedule_application-typeval-opt-callback
-Callback
-
-; fld-outschedule
+; fld-dialaction-outschedule
 Hors de la plage horaire
-
-; create_user
-Créer un utilisateur
-
-; create_group
-Créer un groupe
-
-; create_queue
-Créer une file d'attente
-
-; create_meetme
-Créer une chambre de conférence
-
-; create_voicemail
-Créer une messagerie vocale
-
-; no_schedule
-Aucun horaire trouvé
-
-; add_playback-sound
-Ajouter un fichier son

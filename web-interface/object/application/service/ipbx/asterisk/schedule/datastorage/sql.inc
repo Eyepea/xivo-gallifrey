@@ -1,0 +1,156 @@
+<?php
+
+xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','abstract','datastorage','abstract','sql.inc'),true);
+
+class xivo_application_service_asterisk_schedule_sql extends xivo_application_service_asterisk_abstract_sql
+{
+	var $_table	= array(
+				'schedule'		=> '',
+				'dialaction'		=> '',
+				'userfeatures'		=> '',
+				'groupfeatures'		=> '',
+				'queuefeatures'		=> '',
+				'meetmefeatures'	=> '',
+				'voicemail'		=> '',
+				'voicemenu'		=> '');
+
+	function get_all($disable=null,$order=null,$limit=null,$value=null)
+	{
+		$this->_dso->new_select($this->_table['schedule']);
+
+		$this->_dso->innerjoin($this->_table['dialaction'],
+				       $this->_table['schedule'].'.id = '.$this->_table['dialaction'].'.categoryval',
+				       null,
+				       array('linked','action','actionarg1','actionarg2'));
+
+		$this->_dso->leftjoin($this->_table['userfeatures'],
+				      $this->_table['dialaction'].'.actionarg1 = '.$this->_table['userfeatures'].'.id',
+				      null,
+				      array('userfirstname'	=> 'firstname',
+				      	    'userlastname'	=> 'lastname',
+					    'usernumber'	=> 'number',
+					    'usercontext'	=> 'context',
+					    'username'		=> 'name'));
+
+		$this->_dso->joinwhere($this->_table['userfeatures'],
+				       $this->_table['dialaction'].'.action = %s',
+				       'user');
+
+		$this->_dso->leftjoin($this->_table['groupfeatures'],
+				      $this->_table['dialaction'].'.actionarg1 = '.$this->_table['groupfeatures'].'.id',
+				      null,
+				      array('groupname'		=> 'name',
+					    'groupnumber'	=> 'number',
+					    'groupcontext'	=> 'context'));
+
+		$this->_dso->joinwhere($this->_table['groupfeatures'],
+				       $this->_table['dialaction'].'.action = %s',
+				       'group');
+
+		$this->_dso->andjoinwhere($this->_table['groupfeatures'],
+					  $this->_table['groupfeatures'].'.deleted = 0');
+
+		$this->_dso->leftjoin($this->_table['queuefeatures'],
+				      $this->_table['dialaction'].'.actionarg1 = '.$this->_table['queuefeatures'].'.id',
+				      null,
+				      array('queuename'		=> 'name',
+					    'queuenumber'	=> 'number',
+					    'queuecontext'	=> 'context'));
+
+		$this->_dso->joinwhere($this->_table['queuefeatures'],
+				       $this->_table['dialaction'].'.action = %s',
+				       'queue');
+
+		$this->_dso->leftjoin($this->_table['meetmefeatures'],
+				      $this->_table['dialaction'].'.actionarg1 = '.$this->_table['meetmefeatures'].'.id',
+				      null,
+				      array('meetmename'	=> 'name',
+					    'meetmenumber'	=> 'number',
+					    'meetmecontext'	=> 'context'));
+
+		$this->_dso->joinwhere($this->_table['meetmefeatures'],
+				       $this->_table['dialaction'].'.action = %s',
+				       'meetme');
+
+		$this->_dso->leftjoin($this->_table['voicemail'],
+				      $this->_table['dialaction'].'.actionarg1 = '.$this->_table['voicemail'].'.uniqueid',
+				      null,
+				      array('voicemailfullname'	=> 'fullname',
+					    'voicemailmailbox'	=> 'mailbox',
+					    'voicemailcontext'	=> 'context'));
+
+		$this->_dso->joinwhere($this->_table['voicemail'],
+				       $this->_table['dialaction'].'.action = %s',
+				       'voicemail');
+
+		$this->_dso->leftjoin(array('scheduledest'	=> $this->_table['schedule']),
+				      $this->_table['dialaction'].'.actionarg1 = scheduledest.id',
+				      null,
+				      array('schedulename'	=> 'name',
+					    'schedulecontext'	=> 'context'));
+
+		$this->_dso->joinwhere('scheduledest',
+				       $this->_table['dialaction'].'.action = %s',
+				       'schedule');
+
+		$this->_dso->leftjoin($this->_table['voicemenu'],
+				      $this->_table['dialaction'].'.actionarg1 = '.$this->_table['voicemenu'].'.id',
+				      null,
+				      array('voicemenuname'	=> 'name',
+					    'voicemenunumber'	=> 'number',
+					    'voicemenucontext'	=> 'context'));
+
+		$this->_dso->joinwhere($this->_table['voicemenu'],
+				       $this->_table['dialaction'].'.action = %s',
+				       'voicemenu');
+
+		$this->_dso->where(array('category' => 'schedule'),$this->_table['dialaction']);
+
+		if($disable !== null)
+			$this->_dso->andwhere(array('commented' => intval((bool) $disable)),
+					      $this->_table['schedule']);
+
+		if(xivo_haslen($value) === true)
+		{
+			$this->_dso->aggregate_where();
+			$this->_dso->wherecontain('name',$value,true,$this->_table['schedule']);
+			$this->_dso->orwherecontain('firstname',$value,true,$this->_table['userfeatures']);
+			$this->_dso->orwherecontain('lastname',$value,true,$this->_table['userfeatures']);
+			$this->_dso->orwherecontain('number',$value,true,$this->_table['userfeatures']);
+			$this->_dso->orwherecontain('name',$value,true,$this->_table['userfeatures']);
+			$this->_dso->orwherecontain('name',$value,true,$this->_table['groupfeatures']);
+			$this->_dso->orwherecontain('number',$value,true,$this->_table['groupfeatures']);
+			$this->_dso->orwherecontain('name',$value,true,$this->_table['queuefeatures']);
+			$this->_dso->orwherecontain('number',$value,true,$this->_table['queuefeatures']);
+			$this->_dso->orwherecontain('name',$value,true,$this->_table['meetmefeatures']);
+			$this->_dso->orwherecontain('number',$value,true,$this->_table['meetmefeatures']);
+			$this->_dso->orwherecontain('fullname',$value,true,$this->_table['voicemail']);
+			$this->_dso->orwherecontain('mailbox',$value,true,$this->_table['voicemail']);
+			$this->_dso->orwherecontain('name',$value,true,'scheduledest');
+			$this->_dso->orwherecontain('name',$value,true,$this->_table['voicemenu']);
+			$this->_dso->orwherecontain('number',$value,true,$this->_table['voicemenu']);
+			$this->_dso->aggregate_where();
+		}
+
+		$this->_dso->new_order($order,null,$this->_table['schedule']);
+		$this->_dso->limit($limit);
+
+		$r = $this->_dso->select_all();
+
+		$this->_dso->reset_order();
+		$this->_dso->reset_limit();
+
+		if(($this->_cnt = $this->_dso->select_count(null,'id',$this->_table['schedule'])) === false
+		|| isset($r[0]) === false)
+			$r = false;
+
+		return($r);
+	}
+
+	function search($value,$disable=null,$order=null,$limit=null)
+	{
+		return($this->get_all($disable,$order,$limit,$value));
+	}
+}
+
+?>

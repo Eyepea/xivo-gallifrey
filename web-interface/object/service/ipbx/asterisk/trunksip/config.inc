@@ -100,9 +100,6 @@ $array['element']['regserver'] = array();
 $array['element']['regserver']['default'] = '';
 $array['element']['regserver']['null'] = true;
 
-$array['element']['setvar'] = array();
-$array['element']['setvar']['default'] = '';
-
 $array['element']['fromuser'] = array();
 $array['element']['fromuser']['default'] = '';
 
@@ -131,7 +128,7 @@ $array['element']['category']['forcedef'] = true;
 
 $array['filter'] = array();
 $array['filter']['name'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[a-z0-9_-]+$/');
-$array['filter']['username'] = array('set' => false,'chk' => 2,'maxlen' => 80);
+$array['filter']['username'] = array('set' => false,'chk' => 2,'maxlen' => 80,'cast' => 'sgraph');
 $array['filter']['secret'] = array('set' => false,'chk' => 2,'maxlen' => 80);
 $array['filter']['callerid'] = array('set' => false,'chk' => 2,'maxlen' => 160);
 $array['filter']['context'] = array('set' => false,
@@ -172,11 +169,9 @@ $array['filter']['allow'] = array('set' => false,'chk' => 2,'uvalue' => array(
 						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263P,
 						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H264));
 $array['filter']['port'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
-$array['filter']['ipaddr'] = array('set' => false,'chk' => 0);
 $array['filter']['regexten'] = array('set' => false,'chk' => 0);
 $array['filter']['regserver'] = array('set' => false,'chk' => 0);
-$array['filter']['setvar'] = array('set' => false,'chk' => 0);
-$array['filter']['fromuser'] = array('set' => false,'chk' => 2,'maxlen' => 80);
+$array['filter']['fromuser'] = array('set' => false,'chk' => 2,'maxlen' => 80,'cast' => 'sgraph');
 $array['filter']['fromdomain'] = array('set' => false,'chk' => 2,'callback' => 'xivo_filter::chk_host_ipv4_strict');
 $array['filter']['protocol'] = array('set' => false);
 $array['filter']['category'] = array('set' => false);

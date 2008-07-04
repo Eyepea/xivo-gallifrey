@@ -2,14 +2,6 @@
 
 $array = array();
 
-$array['applicationval'] = array();
-$array['applicationval']['filter'] = array();
-$array['applicationval']['filter']['faxtomail'] = array('callback' => 'xivo_filter::chk_email','maxlen' => 80);
-$array['applicationval']['filter']['disa'] = array('callback' => 'xivo_service_asterisk::chk_passwd_context');
-$array['applicationval']['filter']['directory'] = array('callback' => 'xivo_service_asterisk::chk_context');
-$array['applicationval']['filter']['voicemail'] = array('callback' => 'xivo_service_asterisk::chk_context');
-$array['applicationval']['filter']['callback'] = array('callback' => 'xivo_service_asterisk::chk_passwd_context');
-
 $array['element'] = array();
 
 $array['element']['name'] = array();
@@ -112,61 +104,10 @@ $array['element']['monthend']['value'] = array('jan',
 $array['element']['monthend']['default'] = '';
 $array['element']['monthend']['null'] = true;
 
-$array['element']['typetrue'] = array();
-$array['element']['typetrue']['value'] = array('endcall',
-					       'user',
-					       'group',
-					       'queue',
-					       'meetme',
-					       'voicemail',
-					       'schedule',
-					       'application',
-					       'sound',
-					       'custom');
-$array['element']['typetrue']['default'] = 'endcall';
-
-$array['element']['typevaltrue'] = array();
-$array['element']['typevaltrue']['default'] = '';
-
-$array['element']['applicationvaltrue'] = array();
-$array['element']['applicationvaltrue']['default'] = '';
-
-$array['element']['typefalse'] = array();
-$array['element']['typefalse']['value'] = array('endcall',
-						'user',
-						'group',
-						'queue',
-						'meetme',
-						'voicemail',
-						'schedule',
-						'application',
-						'sound',
-						'custom');
-$array['element']['typefalse']['default'] = '';
-
-$array['element']['typevalfalse'] = array();
-$array['element']['typevalfalse']['default'] = '';
-
-$array['element']['applicationvalfalse'] = array();
-$array['element']['applicationvalfalse']['default'] = '';
-
-$array['element']['endcall'] = array();
-$array['element']['endcall']['value'] = array('hangup','busy','congestion');
-$array['element']['endcall']['unset'] = true;
-
-$array['element']['application'] = array();
-$array['element']['application']['value'] = array('faxtomail','disa','directory','voicemail','callback');
-$array['element']['application']['unset'] = true;
-
 $array['element']['publicholiday'] = array();
 $array['element']['publicholiday']['value'] = array(0,1);
 $array['element']['publicholiday']['default'] = 0;
 $array['element']['publicholiday']['set'] = true;
-
-$array['element']['linked'] = array();
-$array['element']['linked']['value'] = array(0,1);
-$array['element']['linked']['default'] = 0;
-$array['element']['linked']['set'] = true;
 
 $array['element']['commented'] = array();
 $array['element']['commented']['value'] = array(0,1);
@@ -206,32 +147,7 @@ $array['filter']['monthend'] = array('set' => false,'chk' => 2,'key' => array('j
 									      'oct',
 									      'nov',
 									      'dec'));
-$array['filter']['typetrue'] = array('key' => array('endcall',
-						    'user',
-						    'group',
-						    'queue',
-						    'meetme',
-						    'voicemail',
-						    'schedule',
-						    'application',
-						    'sound',
-						    'custom'));
-$array['filter']['typevaltrue'] = array('maxlen' => 255,'cast' => 'sgraph');
-$array['filter']['typefalse'] = array('key' => array('endcall',
-						     'user',
-						     'group',
-						     'queue',
-						     'meetme',
-						     'voicemail',
-						     'schedule',
-						     'application',
-						     'sound',
-						     'custom'));
-$array['filter']['applicationvaltrue'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\-\.\|@]+$/i','maxlen' => 80);
-$array['filter']['typevalfalse'] = array('maxlen' => 255,'cast' => 'sgraph');
-$array['filter']['applicationvalfalse'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\-\.\|@]+$/i','maxlen' => 80);
 $array['filter']['publicholiday'] = array('bool' => true);
-$array['filter']['linked'] = array('bool' => true);
 $array['filter']['commented'] = array('bool' => true);
 
 ?>

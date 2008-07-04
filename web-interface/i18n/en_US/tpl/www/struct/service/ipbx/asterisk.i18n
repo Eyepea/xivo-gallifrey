@@ -1,4 +1,4 @@
-; load ./dialstatus
+; load ./dialaction
 
 ; service_type
 IPBX
