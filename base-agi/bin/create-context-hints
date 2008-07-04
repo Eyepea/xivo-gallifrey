@@ -59,6 +59,7 @@ if not config.has_section('template'):
 for (context,) in res:
 	print "[" + context + "]"
 
+	# Maybe a relation exists between hints and realtime TODO check
 	cursor.query("SELECT ${columns} FROM userfeatures "
 		     "WHERE context = %s "
 		     "AND IFNULL(number,'') != '' "
@@ -75,7 +76,7 @@ for (context,) in res:
 			if e[1] == "IAX":
 				e[1] = "IAX2";
 
-                        print "exten = " + str(e[0]) + ",hint," + str(e[1].upper()) + "/" + str(e[2])
+                        print "exten = " + str(e[0]) + ",hint," + str(e[1]) + "/" + str(e[2])
 
 	cursor.query("SELECT ${columns} FROM userfeatures "
 		     "INNER JOIN phonefunckey "
@@ -91,10 +92,10 @@ for (context,) in res:
 		     "WHERE IFNULL(userfeatures.number,'') != ''",
 		     ('extenumbers.exten', 'extenumbers.type'),
 		     (context,))
-	res3 = cursor.fetchall()
+	res2 = cursor.fetchall()
 
 	by_type = {}
-	for row in res3:
+	for row in res2:
 		xtype = row['extenumbers.type']
 		exten = xivo_helpers.speed_dial_key_extension(None, row['extenumbers.exten'], None)
 		the_set = by_type.setdefault(xtype, set())
@@ -121,10 +122,10 @@ for (context,) in res:
 		     "WHERE IFNULL(userfeatures.number,'') != ''",
 		     ('extenumleft.exten', 'phonefunckey.exten', 'extenumright.exten', 'userfeatures.number'),
 		     (context,))
-	res3 = cursor.fetchall()
+	res2 = cursor.fetchall()
 	extens = set(xivo_helpers.speed_dial_key_extension(row['extenumleft.exten'], row['extenumright.exten'],
 							   row['phonefunckey.exten'], row['userfeatures.number'], True)
-		     for row in res3)
+		     for row in res2)
 
 	for exten in extens:
 		print "exten = " + exten + ",hint,Custom:" + exten
