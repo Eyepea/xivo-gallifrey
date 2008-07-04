@@ -152,9 +152,7 @@ class AGI:
     @staticmethod
     def send_command(command, *args):
         """Send a command to Asterisk"""
-        command = (' '.join(chain((command.strip(),), imap(str, args)))).strip()
-        if command[-1] != '\n':
-            command += '\n'
+        command = (' '.join(chain((command.strip(),), imap(str, args)))).strip() + "\n"
         sys.stdout.write(command)
         sys.stdout.flush()
 

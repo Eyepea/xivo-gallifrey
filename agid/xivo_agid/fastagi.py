@@ -128,9 +128,7 @@ class FastAGI:
 
     def send_command(self, command, *args):
         """Send a command to Asterisk"""
-        command = (' '.join(chain((command.strip(),), imap(str, args)))).strip()
-        if command[-1] != '\n':
-            command += '\n'
+        command = (' '.join(chain((command.strip(),), imap(str, args)))).strip() + "\n"
         self.outf.write(command)
         self.outf.flush()
 
