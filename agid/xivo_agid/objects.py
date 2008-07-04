@@ -594,9 +594,11 @@ class Queue:
 		self.agi = agi
 		self.cursor = cursor
 
-		columns = ('name', 'data_quality', 'hitting_callee',
-			   'hitting_caller', 'retries', 'ring', 'transfer_user',
-			   'transfer_call', 'write_caller', 'write_calling',
+		columns = ('id', 'number', 'context', 'name', 'data_quality',
+			   'hitting_callee', 'hitting_caller',
+			   'retries', 'ring',
+			   'transfer_user', 'transfer_call',
+			   'write_caller', 'write_calling',
 			   'url', 'announceoverride', 'timeout')
 		columns = ["queuefeatures." + c for c in columns]
 
