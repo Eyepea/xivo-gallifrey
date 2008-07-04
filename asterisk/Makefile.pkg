@@ -11,7 +11,7 @@ DEB_PKG = "asterisk"
 TARBALL_DIR := $(shell mktemp -d)
 
 ASTVER = $(shell cat $(MODULE_PATH)/ASTERISK-VERSION)
-TARBALL_NAME = "asterisk_$(ASTVER).dfsg.orig.tar.gz"
+TARBALL_NAME = "asterisk_$(ASTVER)+dfsg.orig.tar.gz"
 XIVO_REV = $(ASTVER)+dfsg+pf.$(MAINREV)~svn$(SVNREV)
 
 
