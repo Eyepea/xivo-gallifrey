@@ -374,15 +374,21 @@ class User:
 			raise LookupError("Unknown protocol %r" % self.protocol)
 
 		if bsfilter == "boss":
-			self.filter = BossSecretaryFilter(agi, cursor, self.number, self.context)
+			try:
+				self.filter = BossSecretaryFilter(agi, cursor, self.number, self.context)
+			except LookupError:
+				self.filter = None
 		else:
 			self.filter = None
 
 		if not feature_list:
 			feature_list = FeatureList(agi, cursor)
 
-		if feature_list.enablevm and self.enablevoicemail:
-			self.vmbox = VMBox(agi, cursor, self.voicemailid)
+		if feature_list.enablevm and self.enablevoicemail and self.voicemailid:
+			try:
+				self.vmbox = VMBox(agi, cursor, self.voicemailid)
+			except LookupError:
+				self.vmbox = None
 		else:
 			self.vmbox = None
 

@@ -60,6 +60,24 @@ for (context,) in res:
 	print "[" + context + "]"
 
 	cursor.query("SELECT ${columns} FROM userfeatures "
+		     "WHERE context = %s "
+		     "AND IFNULL(number,'') != '' "
+		     "AND internal = 0 "
+		     "AND enablehint = 1",
+		     ('number', 'protocol', 'name'),
+		     (context,))
+        res2 = cursor.fetchall()
+
+        for e in res2:
+                if e[0] and e[1] and e[2]:
+
+			e[1] = e[1].upper()
+			if e[1] == "IAX":
+				e[1] = "IAX2";
+
+                        print "exten = " + str(e[0]) + ",hint," + str(e[1].upper()) + "/" + str(e[2])
+
+	cursor.query("SELECT ${columns} FROM userfeatures "
 		     "INNER JOIN phonefunckey "
 		     "ON userfeatures.context = %s "
 		     "AND userfeatures.id = phonefunckey.iduserfeatures "
@@ -73,10 +91,10 @@ for (context,) in res:
 		     "WHERE IFNULL(userfeatures.number,'') != ''",
 		     ('extenumbers.exten', 'extenumbers.type'),
 		     (context,))
-	res2 = cursor.fetchall()
+	res3 = cursor.fetchall()
 
 	by_type = {}
-	for row in res2:
+	for row in res3:
 		xtype = row['extenumbers.type']
 		exten = xivo_helpers.speed_dial_key_extension(None, row['extenumbers.exten'], None)
 		the_set = by_type.setdefault(xtype, set())
@@ -103,10 +121,10 @@ for (context,) in res:
 		     "WHERE IFNULL(userfeatures.number,'') != ''",
 		     ('extenumleft.exten', 'phonefunckey.exten', 'extenumright.exten', 'userfeatures.number'),
 		     (context,))
-	res2 = cursor.fetchall()
+	res3 = cursor.fetchall()
 	extens = set(xivo_helpers.speed_dial_key_extension(row['extenumleft.exten'], row['extenumright.exten'],
 							   row['phonefunckey.exten'], row['userfeatures.number'], True)
-		     for row in res2)
+		     for row in res3)
 
 	for exten in extens:
 		print "exten = " + exten + ",hint,Custom:" + exten
