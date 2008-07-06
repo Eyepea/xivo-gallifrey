@@ -33,3 +33,10 @@ NameVirtualHost *:8667
 	CustomLog /var/log/apache2/access-snom.log combined
 </VirtualHost>
 
+NameVirtualHost *:80
+
+<VirtualHost *:80>
+	RewriteEngine On
+	RewriteCond %{HTTPS} off
+	RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
+</VirtualHost>
