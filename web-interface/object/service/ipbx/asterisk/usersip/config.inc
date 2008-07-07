@@ -83,14 +83,6 @@ $array['element']['type'] = array();
 $array['element']['type']['default'] = 'friend';
 $array['element']['type']['forcedef'] = true;
 
-$array['element']['port'] = array();
-$array['element']['port']['default'] = '';
-$array['element']['port']['null'] = true;
-
-$array['element']['ipaddr'] = array();
-$array['element']['ipaddr']['default'] = '';
-$array['element']['ipaddr']['null'] = true;
-
 $array['element']['regexten'] = array();
 $array['element']['regexten']['default'] = '';
 $array['element']['regexten']['null'] = true;

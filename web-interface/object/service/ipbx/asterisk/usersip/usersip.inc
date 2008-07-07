@@ -55,12 +55,17 @@ class xivo_service_asterisk_usersip extends xivo_service_asterisk_abstract
 		if(is_array($arr) === false)
 			return(false);
 
+		$arr['username'] = '';
+		$arr['ipaddr'] = '';
+		$arr['regseconds'] = 0;
 		$arr['pickupgroup'] = $arr['callgroup'];
 		$arr['protocol'] = XIVO_SRE_IPBX_AST_PROTO_SIP;
 		$arr['category'] = 'user';
 
 		if(isset($arr['name']) === true)
 			$arr['name'] = strtolower($arr['name']);
+
+		unset($arr['port']);
 
 		return(parent::add($arr,$id));
 	}
@@ -80,6 +85,8 @@ class xivo_service_asterisk_usersip extends xivo_service_asterisk_abstract
 
 		if(isset($arr['setvar'],$arr['setvar']{0}) === false)
 			unset($arr['setvar']);
+
+		unset($arr['port']);
 
 		return(parent::edit($id,$arr,$disable));
 	}
