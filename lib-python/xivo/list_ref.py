@@ -5,7 +5,7 @@ Copyright (C) 2008  Proformatique
 WARNING: The algorithmic complexity caracteristics of this module are not very
 good.  Anyway we rely as most as possible on native Python objects and try to
 keep our own layer thin, so that the constant factor is kept small.
-Only for use with reasonable datasets.
+Only for use with reasonably sized datasets.
 """
 
 __version__ = "$Revision$ $Date$"
