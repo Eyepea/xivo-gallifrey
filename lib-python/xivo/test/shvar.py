@@ -29,6 +29,7 @@ import unittest
 
 from xivo import shvar
 
+
 class TestShVar(unittest.TestCase):
     
     def test_load_not_assign(self):
@@ -124,7 +125,148 @@ class TestShVar(unittest.TestCase):
     
     def test_load_compositing(self):
         self.load_value_helper("abc\\ \"bla bla\"'\tkikoo'$'\\x26'", "abc bla bla\tkikoo&")
+    
+    def test_strip_overridden_assignments(self):
+        self.assertEqual(shvar.strip_overridden_assignments([]), [])
+        
+        self.assertEqual(shvar.strip_overridden_assignments([("abc", "def", "")]), [("abc", "def", "")])
+        
+        param = [
+            ("abc", "def1", ""),
+            ("ghi", "def2", ""),
+        ]
+        expect = param[:]
+        self.assertEqual(shvar.strip_overridden_assignments(param), expect)
+        
+        param = [
+            (None, None, "# lol"),
+            ("abc", "def1", ""),
+            ("ghi", "def2", ""),
+        ]
+        expect = param[:]
+        self.assertEqual(shvar.strip_overridden_assignments(param), expect)
+        
+        param = [
+            (None, None, "# lol"),
+            ("abc", "def1", ""),
+            ("ghi", "def2", ""),
+        ]
+        expect = param[:]
+        self.assertEqual(shvar.strip_overridden_assignments(param), expect)
+        
+        param = [
+            ("abc", "def_rm", ""),
+            ("abc", "def", ""),
+        ]
+        expect = param[-1:]
+        self.assertEqual(shvar.strip_overridden_assignments(param), expect)
+        
+        param = [
+            (None, None, ""),
+            ("abc", "def_rm", ""),
+            ("abc", "def", ""),
+        ]
+        expect = param[::2]
+        self.assertEqual(shvar.strip_overridden_assignments(param), expect)
+        
+        param = [
+            ("abc", "def_rm", ""),
+            ("abc", "def", ""),
+            (None, None, ""),
+        ]
+        expect = param[-2:]
+        self.assertEqual(shvar.strip_overridden_assignments(param), expect)
 
-# TODO more tests
+        param = [
+            (None, None, ""),
+            ("abc", "def_rm", ""),
+            ("abc", "def", ""),
+            (None, None, ""),
+        ]
+        expect = param[:1] + param[-2:]
+        self.assertEqual(shvar.strip_overridden_assignments(param), expect)
+
+        param = [
+            (None, None, ""),
+            ("abc", "def1_rm", ""),
+            ("abc", "def1", ""),
+            ("ghi", "def2_rm", ""),
+            ("ghi", "def2", ""),
+            (None, None, ""),
+        ]
+        expect = param[::2] + param[-1:]
+        self.assertEqual(shvar.strip_overridden_assignments(param), expect)
+
+        param = [
+            (None, None, ""),
+            ("abc", "def1_rm", ""),
+            ("ghi", "def2_rm", ""),
+            ("ghi", "def2", ""),
+            ("klm", "def3_rm", ""),
+            ("klm", "def3", ""),
+            ("abc", "def1", ""),
+            (None, None, ""),
+        ]
+        expect = [
+            (None, None, ""),
+            ("ghi", "def2", ""),
+            ("klm", "def3", ""),
+            ("abc", "def1", ""),
+            (None, None, ""),
+        ]
+        self.assertEqual(shvar.strip_overridden_assignments(param), expect)
+
+        param = [
+            (None, None, "# c1"),
+            ("abc", "def1_rm", ""),
+            ("ghi", "def2_rm", ""),
+            ("ghi", "def2", ""),
+            (None, None, "# c2"),
+            ("klm", "def3_rm", ""),
+            ("klm", "def3", ""),
+            ("abc", "def1", ""),
+            (None, None, "# c3"),
+        ]
+        expect = [
+            (None, None, "# c1"),
+            ("ghi", "def2", ""),
+            (None, None, "# c2"),
+            ("klm", "def3", ""),
+            ("abc", "def1", ""),
+            (None, None, "# c3"),
+        ]
+        self.assertEqual(shvar.strip_overridden_assignments(param), expect)
+
+        param = [
+            (None, None, ""),
+            ("abc", "def1_rm", ""),
+            ("a1", "1", ""),
+            ("ghi", "def2_rm", ""),
+            ("a2", "2", ""),
+            ("ghi", "def2", ""),
+            ("a3", "3", ""),
+            ("klm", "def3_rm", ""),
+            ("a4", "4", ""),
+            ("klm", "def3", ""),
+            ("a5", "5", ""),
+            ("abc", "def1", ""),
+            ("a6", "6", ""),
+            (None, None, ""),
+        ]
+        expect = [
+            (None, None, ""),
+            ("a1", "1", ""),
+            ("a2", "2", ""),
+            ("ghi", "def2", ""),
+            ("a3", "3", ""),
+            ("a4", "4", ""),
+            ("klm", "def3", ""),
+            ("a5", "5", ""),
+            ("abc", "def1", ""),
+            ("a6", "6", ""),
+            (None, None, ""),
+        ]
+        self.assertEqual(shvar.strip_overridden_assignments(param), expect)
+
 
 unittest.main()

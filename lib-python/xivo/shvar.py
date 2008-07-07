@@ -126,7 +126,6 @@ def load(lineseq):
     NOTE: This implementation is very limited.
     * It does not support any kind of substitution / expression; an exception
       is raised if one is detected.
-    * The form $'string' with backslash escape sequences _is_ supported.
     * Each statement is limited to a single physical line.  Line continuations
       are _not_ supported.  <newline> in single or double quoted strings are
       _not_ supported.
@@ -135,6 +134,9 @@ def load(lineseq):
     * If on a single line quotes are not correctly balanced, an exception is
       raised.
     * Arrays are not supported.
+    
+    HOWEVER:
+    * The form $'string' with backslash escape sequences _is_ supported.
     
     KNOWN INCOMPATIBILITIES:
     * In bash 3.1.17(1)-release (Debian Etch):
@@ -367,3 +369,22 @@ def load(lineseq):
         resdct[varname] = value
     
     return reslst, resdct
+
+
+def strip_overridden_assignments(reslst):
+    """
+    Remove from @reslst (inplace) assignment lines which are overridden later.
+    Return the modified (inplace) @reslst
+    """
+    lines_to_remove = []
+    previous_assign = {}
+    for p, (varname, value, rotl) in enumerate(reslst):
+        if varname is not None:
+            line = previous_assign.get(varname)
+            if line is not None:
+                lines_to_remove.append(line)
+            previous_assign[varname] = p
+    lines_to_remove.sort(reverse=True)
+    for line in lines_to_remove:
+        del reslst[line]
+    return reslst
