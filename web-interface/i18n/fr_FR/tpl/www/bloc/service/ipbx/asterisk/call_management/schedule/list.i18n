@@ -34,6 +34,9 @@ Férié
 ; schedule_rangemonth
 %s - %s
 
+; schedule_destination-none
+Aucune
+
 ; schedule_destination-endcall-hangup
 Raccrocher
 

@@ -268,7 +268,6 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		|| $this->add_contextnummember($mfeaturesid) === false
 		|| $this->add_contextmember($mfeaturesid) === false)
 		{
-			xivo_var_dump($meetmeroomid);
 			$r = false;
 			if($meetmeroomid !== null)
 				$this->_reverse_add();

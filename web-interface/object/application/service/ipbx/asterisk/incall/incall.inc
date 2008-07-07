@@ -136,6 +136,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 			$r[$rs[$i]['id']] = $rs[$i];
 
 			$ref = &$r[$rs[$i]['id']];
+			$ref['exten'] = $this->_service->display_extension($ref['exten']);
 
 			$identity = array();
 			$identity['exten'] = $ref['exten'];

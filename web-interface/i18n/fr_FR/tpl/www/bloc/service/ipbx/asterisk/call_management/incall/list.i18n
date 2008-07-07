@@ -10,6 +10,9 @@ Destination
 ; col_identity
 Identité
 
+; incall_destination-none
+Aucune
+
 ; incall_destination-endcall-hangup
 Raccrocher
 
