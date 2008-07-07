@@ -36,7 +36,6 @@ __license__ = """
 
 import re
 import pprint
-from itertools import chain, imap
 
 
 DEFAULT_TIMEOUT = 2000 # 2sec timeout used as default for functions that take timeouts
@@ -128,7 +127,7 @@ class FastAGI:
 
     def send_command(self, command, *args):
         """Send a command to Asterisk"""
-        command = (' '.join(chain((command.strip(),), imap(str, args)))).strip() + "\n"
+        command = ' '.join([command.strip()] + map(str, args)).strip() + "\n"
         self.outf.write(command)
         self.outf.flush()
 
@@ -187,7 +186,7 @@ class FastAGI:
 
     def _process_digit_list(self, digits):
         if isinstance(digits, list):
-            digits = ''.join(imap(str, digits))
+            digits = ''.join(map(str, digits))
         return self._quote(digits)
 
     def answer(self):

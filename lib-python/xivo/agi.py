@@ -65,7 +65,6 @@ import sys
 import pprint
 import re
 import signal
-from itertools import chain, imap
 
 
 DEFAULT_TIMEOUT = 2000 # 2sec timeout used as default for functions that take timeouts
@@ -152,7 +151,7 @@ class AGI:
     @staticmethod
     def send_command(command, *args):
         """Send a command to Asterisk"""
-        command = (' '.join(chain((command.strip(),), imap(str, args)))).strip() + "\n"
+        command = ' '.join([command.strip()] + map(str, args)).strip() + "\n"
         sys.stdout.write(command)
         sys.stdout.flush()
 
@@ -199,7 +198,7 @@ class AGI:
 
     def _process_digit_list(self, digits):
         if isinstance(digits, list):
-            digits = ''.join(imap(str, digits))
+            digits = ''.join(map(str, digits))
         return self._quote(digits)
 
     def answer(self):
