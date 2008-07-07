@@ -49,6 +49,8 @@ Not all manager actions are implmented as of yet, feel free to add them
 and submit patches.
 """
 
+__version__ = "$Revision$ $Date$"
+
 import os
 import sys
 import socket

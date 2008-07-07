@@ -32,7 +32,8 @@ Modification by Proformatique:
 """
 
 __author__ = 'Matthew Nicholson'
-__version__ = '0.1.0'
+# original __version__ = '0.1.0'
+__version__ = "$Revision$ $Date$"
 
 import sys
 
