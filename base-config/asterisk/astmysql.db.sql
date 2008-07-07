@@ -1181,9 +1181,9 @@ CREATE TABLE `useriax` (
  `qualify` char(3),
  `disallow` varchar(100),
  `allow` varchar(100),
- `ipaddr` varchar(15),
+ `ipaddr` varchar(15) NOT NULL,
  `port` smallint unsigned,
- `regseconds` int(10) unsigned DEFAULT 0,
+ `regseconds` int(10) unsigned NOT NULL DEFAULT 0,
  `setvar` varchar(100) NOT NULL,
  `call-limit` tinyint(2) unsigned NOT NULL DEFAULT 0,
  `protocol` enum('iax') NOT NULL DEFAULT 'iax',
@@ -1239,7 +1239,7 @@ CREATE TABLE `usersip` (
  `allow` varchar(100),
  `musiconhold` varchar(100),
  `regseconds` int(10) unsigned NOT NULL DEFAULT 0,
- `ipaddr` varchar(15),
+ `ipaddr` varchar(15) NOT NULL,
  `regexten` varchar(80),
  `regserver` varchar(20),
  `cancallforward` char(3),
@@ -1257,7 +1257,7 @@ CREATE INDEX `usersip__idx__host_port` ON `usersip`(`host`,`port`);
 CREATE INDEX `usersip__idx__ipaddr_port` ON `usersip`(`ipaddr`,`port`);
 CREATE UNIQUE INDEX `usersip__uidx__name` ON `usersip`(`name`);
 
-INSERT INTO `usersip` VALUES (1,'guest',0,'','documentation','','Guest','no','initconfig',NULL,'rfc2833',NULL,NULL,'','dynamic',NULL,NULL,NULL,NULL,'no',NULL,NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'guest','friend','guest',NULL,NULL,NULL,0,NULL,NULL,NULL,NULL,'',0,'sip','user');
+INSERT INTO `usersip` VALUES (1,'guest',0,'','documentation','','Guest','no','initconfig',NULL,'rfc2833',NULL,NULL,'','dynamic',NULL,NULL,NULL,NULL,'no',NULL,NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'guest','friend','guest',NULL,NULL,NULL,0,'',NULL,NULL,NULL,'',0,'sip','user');
 
 
 DROP TABLE IF EXISTS `voicemail`;
