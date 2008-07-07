@@ -1342,7 +1342,8 @@ realtime_multi_handler(const char *database, const char *table, va_list ap)
    * Asterisk sends us an already escaped string when searching for
    * "exten LIKE" (uh!). Handle it separately.
    */
-  tmp_str = (strcmp(vals[0], "\\_%") == 0) ? "_%" : (char *)vals[0];
+  /* tmp_str = (strcmp(vals[0], "\\_%") == 0) ? "_%" : (char *)vals[0]; */
+  tmp_str = (char *)vals[0];
 
 /* @cond DOXYGEN_CAN_PARSE_THIS */
 #undef QUERY
