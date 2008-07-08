@@ -1292,6 +1292,7 @@ static struct ast_config *
 realtime_multi_handler(const char *database, const char *table, va_list ap)
 {
   char *query, *errormsg, *op, *tmp_str, *initfield;
+  char *tmp_params0;
   struct rt_multi_cfg_entry_args args;
   const char **params, **vals;
   struct ast_config *cfg;
@@ -1331,6 +1332,16 @@ realtime_multi_handler(const char *database, const char *table, va_list ap)
       return NULL;
     }
 
+  tmp_params0 = strdup(params[0]);
+
+  if (tmp_params0 == NULL) {
+          ast_log(LOG_WARNING, "Unable to allocate tmp_params0\n");
+          ast_config_destroy(cfg);
+          free(params);
+          free(vals);
+          return NULL;
+  }
+
   tmp_str = strchr(initfield, ' ');
 
   if (tmp_str != NULL)
@@ -1342,15 +1353,22 @@ realtime_multi_handler(const char *database, const char *table, va_list ap)
    * Asterisk sends us an already escaped string when searching for
    * "exten LIKE" (uh!). Handle it separately.
    */
-  /* tmp_str = (strcmp(vals[0], "\\_%") == 0) ? "_%" : (char *)vals[0]; */
-  tmp_str = (char *)vals[0];
+  if (strcmp(vals[0], "\\_%") == 0) {
+          if (strcmp(params[0], "exten LIKE") == 0) {
+                  tmp_params0 = "SUBSTR(exten,0,1)";
+                  op = " =";
+                  tmp_str = "_";
+          } else
+                  tmp_str = "_%";
+  } else
+          tmp_str = (char *)vals[0];
 
 /* @cond DOXYGEN_CAN_PARSE_THIS */
 #undef QUERY
 #define QUERY "SELECT * FROM '%q' WHERE commented = 0 AND %q%s '%q'"
 /* @endcond */
 
-  query = sqlite_mprintf(QUERY, table, params[0], op, tmp_str);
+  query = sqlite_mprintf(QUERY, table, tmp_params0, op, tmp_str);
 
   if (query == NULL)
     {
