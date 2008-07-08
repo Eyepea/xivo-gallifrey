@@ -149,8 +149,10 @@ class BossSecretaryFilter:
 		if self.ringseconds == 0:
 			self.ringseconds = ""
 
-		if protocol in ("sip", "iax"):
-			interface = protocol.upper() + "/" + name
+		if protocol == "sip":
+			interface = "SIP/" + name
+		elif protocol == "iax":
+			interface = "IAX2/" + name
 		elif protocol == "custom":
 			cursor.query("SELECT ${columns} FROM usercustom "
 				     "WHERE id = %s "
@@ -199,8 +201,10 @@ class BossSecretaryFilter:
 			if secretary.active:
 				self.active = True
 
-			if protocol in ("sip", "iax"):
-				interface = protocol.upper() + "/" + name
+			if protocol == "sip":
+				interface = "SIP/" + name
+			elif protocol == "iax":
+				interface = "IAX2/" + name
 			elif protocol == "custom":
 				cursor.query("SELECT ${columns} FROM usercustom "
 					     "WHERE id = %s "
