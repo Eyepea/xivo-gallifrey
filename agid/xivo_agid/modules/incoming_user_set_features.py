@@ -53,7 +53,6 @@ def incoming_user_set_features(agi, cursor, args):
 	# exit because the other normally set variables are skipped.
 	if not bypass_filter and ufilter and ufilter.active:
 		zone_applies = ufilter.check_zone(zone)
-		# BUGBUG: can something like custom user having a secretary happen?
 		# CHECK does get_secretary_by_id takes an int or a string?
 		if caller:
 			secretary = ufilter.get_secretary_by_id(caller.id)
@@ -154,9 +153,9 @@ def incoming_user_set_features(agi, cursor, args):
 		agi.set_variable('XIVO_ENABLERNA', user.enablerna)
 
 		if user.enablerna:
-			agi.set_variable('XIVO_FWD_USER_RNA_ACTION', 'extension')
-			agi.set_variable('XIVO_FWD_USER_RNA_ACTIONARG1', user.destrna)
-			agi.set_variable('XIVO_FWD_USER_RNA_ACTIONARG2', context)
+			agi.set_variable('XIVO_FWD_USER_NOANSWER_ACTION', 'extension')
+			agi.set_variable('XIVO_FWD_USER_NOANSWER_ACTIONARG1', user.destrna)
+			agi.set_variable('XIVO_FWD_USER_NOANSWER_ACTIONARG2', context)
 		else:
 			objects.DialAction(agi, cursor, 'noanswer', 'user', user.id).set_variables()
 	else:
