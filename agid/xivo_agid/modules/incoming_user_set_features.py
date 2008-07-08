@@ -128,11 +128,15 @@ def incoming_user_set_features(agi, cursor, args):
 	else:
 		agi.set_variable('XIVO_ENABLEVOICEMAIL', 0)
 
-	if feature_list.fwdunc and user.enableunc:
-		agi.set_variable('XIVO_ENABLEUNC', 1)
-		agi.set_variable('XIVO_FWD_USER_UNC_ACTION', 'extension')
-		agi.set_variable('XIVO_FWD_USER_UNC_ACTIONARG1', user.destunc)
-		agi.set_variable('XIVO_FWD_USER_UNC_ACTIONARG2', context)
+	if feature_list.fwdunc:
+		agi.set_variable('XIVO_ENABLEUNC', user.enableunc)
+		
+		if user.enableunc:
+			agi.set_variable('XIVO_FWD_USER_UNC_ACTION', 'extension')
+			agi.set_variable('XIVO_FWD_USER_UNC_ACTIONARG1', user.destunc)
+			agi.set_variable('XIVO_FWD_USER_UNC_ACTIONARG2', context)
+	else:
+		agi.set_variable('XIVO_ENABLEUNC', 0)
 
 	if feature_list.fwdbusy:
 		agi.set_variable('XIVO_ENABLEBUSY', user.enablebusy)
