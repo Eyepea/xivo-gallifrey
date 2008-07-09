@@ -269,6 +269,9 @@ class BossSecretaryFilter:
 		else:
 			return None
 
+	def set_dial_actions(self):
+		DialAction(self.agi, self.cursor, "noanswer", "callfilter", self.id).set_variables()
+
 class VMBox:
 	def __init__(self, agi, cursor, xid):
 		self.agi = agi
