@@ -14,8 +14,8 @@ NameVirtualHost *:443
 	SSLCipherSuite RSA:!EXP:!NULL:+HIGH:+MEDIUM:-LOW
 	SSLCertificateFile /etc/apache2/cert/server.crt
 	SSLCertificateKeyFile /etc/apache2/cert/server.key
-	SSLCACertificatePath /etc/apache2/cert/
-	SSLCACertificateFile /etc/apache2/cert/ca.crt
+	SSLCACertificatePath /etc/ssl/certs/
+	SSLCACertificateFile /etc/ssl/certs/proformatique.crt
 	SSLVerifyClient none
 
 	Include "/usr/share/pf-xivo-web-interface/apache.conf"
