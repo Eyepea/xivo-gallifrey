@@ -541,12 +541,12 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return(true);
 	}
 
-	function _mk_usermacro_appdata($ufeaturesid,$timeout=0)
+	function _mk_usermacro_appdata($ufeaturesid,$timeout='')
 	{
 		$arr = array();
 		$arr['appdata'][0] = XIVO_SRE_IPBX_AST_USER_MACRO;
 		$arr['appdata'][1] = xivo_ulongint($ufeaturesid);
-		$arr['appdata'][2] = xivo_ufloat($timeout);
+		$arr['appdata'][2] = xivo_haslen($timeout) === true ? xivo_ufloat($timeout) : '';
 
 		return($arr);
 	}

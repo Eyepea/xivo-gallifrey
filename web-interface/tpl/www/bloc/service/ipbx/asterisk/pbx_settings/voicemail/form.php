@@ -1,5 +1,6 @@
 <?php
 	$form = &$this->get_module('form');
+	$url = &$this->get_module('url');
 
 	$info = $this->get_var('info');
 	$element = $this->get_var('element');

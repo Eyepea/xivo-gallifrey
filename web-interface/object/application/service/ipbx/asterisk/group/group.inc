@@ -178,12 +178,12 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		return($r);
 	}
 
-	function _mk_groupmacro_appdata($gfeaturesid,$timeout=0)
+	function _mk_groupmacro_appdata($gfeaturesid,$timeout='')
 	{
 		$arr = array();
 		$arr['appdata'][0] = XIVO_SRE_IPBX_AST_GROUP_MACRO;
 		$arr['appdata'][1] = xivo_ulongint($gfeaturesid);
-		$arr['appdata'][2] = xivo_ufloat($timeout);
+		$arr['appdata'][2] = xivo_haslen($timeout) === true ? xivo_ufloat($timeout) : '';
 
 		return($arr);
 	}

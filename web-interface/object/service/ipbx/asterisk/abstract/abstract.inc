@@ -164,12 +164,14 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 		return(false);
 	}
 
-	function chk_dest_user($actionarg1,$actionarg2=0,$id=null,$disable=null,$chknumber=false,$chkcontext=false,$context=null)
+	function chk_dest_user($actionarg1,$actionarg2='',$id=null,$disable=null,$chknumber=false,$chkcontext=false,$context=null)
 	{
+		$actionarg2 = xivo_haslen($actionarg2) === true ? xivo_ufloat($actionarg2) : '';
+
 		return($this->_chk_dest('userfeatures',
 					'user',
 					$actionarg1,
-					xivo_ufloat($actionarg2),
+					$actionarg2,
 					$id,
 					$disable,
 					$chknumber,
@@ -177,7 +179,7 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 					$context));	
 	}
 
-	function chk_dest_group($actionarg1,$actionarg2=0,$id=null,$disable=null,$chknumber=false,$chkcontext=false,$context=null)
+	function chk_dest_group($actionarg1,$actionarg2='',$id=null,$disable=null,$chknumber=false,$chkcontext=false,$context=null)
 	{
 		return($this->_chk_dest_group_queue('group',
 						    $actionarg1,
@@ -189,7 +191,7 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 						    $context));
 	}
 
-	function chk_dest_queue($actionarg1,$actionarg2=0,$id=null,$disable=null,$chknumber=false,$chkcontext=false,$context=null)
+	function chk_dest_queue($actionarg1,$actionarg2='',$id=null,$disable=null,$chknumber=false,$chkcontext=false,$context=null)
 	{
 		return($this->_chk_dest_group_queue('queue',
 						    $actionarg1,
@@ -201,16 +203,17 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 						    $context));
 	}
 
-	function _chk_dest_group_queue($action,$actionarg1,$actionarg2=0,$id=null,$disable=null,$chknumber=false,$chkcontext=false,$context=null)
+	function _chk_dest_group_queue($action,$actionarg1,$actionarg2='',$id=null,$disable=null,$chknumber=false,$chkcontext=false,$context=null)
 	{
 		$actionarg1 = intval($actionarg1);
+		$actionarg2 = xivo_haslen($actionarg2) === true ? xivo_ufloat($actionarg2) : '';
 
 		if($action !== 'group' && $action !== 'queue')
 			return(false);
 		else if(($info = $this->_chk_dest($action.'features',
 						  $action,
 						  $actionarg1,
-						  xivo_ufloat($actionarg2),
+						  $actionarg2,
 						  $id,
 						  false,
 						  $chknumber,
