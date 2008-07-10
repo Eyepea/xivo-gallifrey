@@ -24,7 +24,11 @@ def phonestatus(agi, cursor, args):
 	userid = agi.get_variable('XIVO_USERID')
 
 	feature_list = objects.FeatureList(agi, cursor)
-	user = objects.User(agi, cursor, int(userid), feature_list)
+
+	try:
+		user = objects.User(agi, cursor, int(userid), feature_list)
+	except LookupError, e:
+		agi.dp_break(str(e))
 
 	if feature_list.fwdunc:
 		agi.set_variable('XIVO_ENABLEUNC', user.enableunc)
