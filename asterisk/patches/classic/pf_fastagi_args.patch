@@ -1,3 +1,16 @@
+2008-06-27  Guillaume Knispel <gknispel@proformatique.com>
+
+	pf_fastagi_args.patch
+	$Revision$
+	$Date$
+	FastAgi interface change (backport from Asterisk 1.6 for 1.4)
+
+	XIVO needs this Asterisk 1.6 style fastagi interface, so we backported
+	it for Asterisk 1.4.
+
+	It was first done for Asterisk 1.2 by Richard Braun, I just refreshed
+	it for Asterisk 1.4.
+
 Index: asterisk-1.4.21/res/res_agi.c
 ===================================================================
 --- asterisk-1.4.21.orig/res/res_agi.c	2008-06-27 20:08:44.000000000 +0200
