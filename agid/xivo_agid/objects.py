@@ -97,6 +97,7 @@ class BossSecretaryFilter:
 
 	def __init__(self, agi, cursor, boss_number, boss_context):
 		self.agi = agi
+		self.cursor = cursor
 		self.id = None
 		self.active = False
 		self.context = None
