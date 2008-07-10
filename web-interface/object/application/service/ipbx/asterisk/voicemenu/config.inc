@@ -72,9 +72,9 @@ $array['ipbxapplication']['answer']['arg'] = array();
 $array['ipbxapplication']['answer']['arg']['delay'] = array();
 $array['ipbxapplication']['answer']['arg']['delay']['default'] = '';
 
-// AUTHENTIFICATION
+// AUTHENTICATION
 $array['ipbxapplication']['authenticate'] = array();
-$array['ipbxapplication']['authenticate']['category'] = 'authentification';
+$array['ipbxapplication']['authenticate']['category'] = 'authentication';
 $array['ipbxapplication']['authenticate']['arg'] = array();
 $array['ipbxapplication']['authenticate']['arg']['password'] = array();
 $array['ipbxapplication']['authenticate']['arg']['password']['default'] = '';
@@ -89,7 +89,7 @@ $array['ipbxapplication']['authenticate']['arg']['r'] = array();
 $array['ipbxapplication']['authenticate']['arg']['r']['default'] = 0;
 
 $array['ipbxapplication']['vmauthenticate'] = array();
-$array['ipbxapplication']['vmauthenticate']['category'] = 'authentification';
+$array['ipbxapplication']['vmauthenticate']['category'] = 'authentication';
 $array['ipbxapplication']['vmauthenticate']['arg'] = array();
 $array['ipbxapplication']['vmauthenticate']['arg']['mailbox'] = array();
 $array['ipbxapplication']['vmauthenticate']['arg']['mailbox']['default'] = '';

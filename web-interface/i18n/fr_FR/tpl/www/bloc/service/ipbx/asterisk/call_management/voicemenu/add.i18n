@@ -43,7 +43,7 @@ Réponse
 ; fm_ipbxapplications-opt-answer
 Answer
 
-; fm_ipbxapplications-optgroup-authentification
+; fm_ipbxapplications-optgroup-authentication
 Authentification
 
 ; fm_ipbxapplications-opt-authenticate

@@ -41,7 +41,7 @@ class xivo_user_user extends xivo_user_abstract
 
 		if(isset($authent['type']) === false)
 		{
-			trigger_error('Missing authentification type in user ini file',E_USER_ERROR);
+			trigger_error('Missing authentication type in user ini file',E_USER_ERROR);
 			return(false);
 		}
 
@@ -54,7 +54,7 @@ class xivo_user_user extends xivo_user_abstract
 			case 'internal':
 				return(parent::load_authent());
 			case 'service':
-				// TODO: Authentification by service
+				// TODO: Authentication by service
 				break;
 			default:
 				$name = 'xivo_authent_'.$type;
@@ -62,7 +62,7 @@ class xivo_user_user extends xivo_user_abstract
 
 				if(xivo::load_class($name,$dir,$type,false) === false)
 				{
-					trigger_error('Failed to load user authentification',E_USER_ERROR);
+					trigger_error('Failed to load user authentication',E_USER_ERROR);
 					return(false);
 				}
 				else if(isset($authent['datastorage']) === true)
@@ -73,7 +73,7 @@ class xivo_user_user extends xivo_user_abstract
 						return(new $name(xivo_datastorage::factory($type,$datastorage),$authent));
 					else
 					{
-						trigger_error('Invalid user authentification datastorage',E_USER_ERROR);
+						trigger_error('Invalid user authentication datastorage',E_USER_ERROR);
 						return(false);
 					}
 				}

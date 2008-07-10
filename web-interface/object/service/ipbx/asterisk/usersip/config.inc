@@ -139,7 +139,7 @@ $array['filter']['accountcode'] = array('set' => false,'chk' => 2,'regexp' => '/
 $array['filter']['callgroup'] = array('set' => false,'chk' => 2,'regexp' => '/^(?:[0-9]+[,]?)*$/','maxlen' => 180);
 $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context',
 				    'callbackparam' => array(array(
-				    			XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTIFICATION,
+				    			XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION,
 							XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['nat'] = array('bool' => true);
 $array['filter']['qualify'] = array('bool' => true);

@@ -164,7 +164,7 @@ $array['filter']['lastname'] = array('set' => false,'chk' => 2,'cast' => 'sgraph
 $array['filter']['number'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9\*#]+$/','maxlen' => 40);
 $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context',
 				    'callbackparam' => array(array(
-				    			XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTIFICATION,
+				    			XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION,
 							XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['voicemailid'] = array('set' => false,'chk' => 2,'cast' => 'ulongint');
 $array['filter']['ringseconds'] = array('set' => false,'chk' => 2,'key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));

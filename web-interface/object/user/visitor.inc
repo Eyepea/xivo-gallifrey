@@ -30,14 +30,14 @@ class xivo_user_visitor extends xivo_user_abstract
 	function call_auth($func,$args=null)
 	{
 		if($this->_param['factory'] === true)
-			trigger_error('Unable to call authentification with factory',E_USER_ERROR);
+			trigger_error('Unable to call authentication with factory',E_USER_ERROR);
 
 		if(is_object($this->_authent) === false)
 		{
 			$user = &xivo_user::factory('user');
 
 			if(($this->_authent = $user->load_authent()) === false)
-				trigger_error('Failed to load user authentification in '.__CLASS__,E_USER_ERROR);
+				trigger_error('Failed to load user authentication in '.__CLASS__,E_USER_ERROR);
 		}
 
 		return(parent::call_auth($func,$args));

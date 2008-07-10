@@ -100,7 +100,7 @@ define('XIVO_SRE_IPBX_AST_OUTCALL_MACRO','outcall');
 define('XIVO_SRE_IPBX_AST_HANDYNUMBERS_MACRO','handynumbers');
 define('XIVO_SRE_IPBX_AST_VOICEMENU_MACRO','voicemenu');
 
-define('XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTIFICATION','authentification');
+define('XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION','authentication');
 define('XIVO_SRE_IPBX_AST_CONTEXT_FEATURES','xivo-features');
 define('XIVO_SRE_IPBX_AST_CONTEXT_GENERAL','general');
 define('XIVO_SRE_IPBX_AST_CONTEXT_GLOBAL','global');

@@ -338,7 +338,7 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 
 		if(isset($authent['type']) === false)
 		{
-			trigger_error('Missing type user authentification in user ini file',E_USER_ERROR);
+			trigger_error('Missing type user authentication in user ini file',E_USER_ERROR);
 			return(false);
 		}
 
@@ -354,7 +354,7 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 
 		if(xivo::load_class($name,$dir,$type,false) === false)
 		{
-			trigger_error('Failed to load user authentification',E_USER_ERROR);
+			trigger_error('Failed to load user authentication',E_USER_ERROR);
 			return(false);
 		}
 
@@ -368,23 +368,23 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 
 		if($this->_param['factory'] === true)
 		{
-			trigger_error('Unable to call authentification with factory',E_USER_ERROR);
+			trigger_error('Unable to call authentication with factory',E_USER_ERROR);
 			return(false);
 		}
 		else if(is_object($this->_authent) === false
 		&& ($this->_authent = $this->load_authent()) === false)
 		{
-			trigger_error('Failed to load user authentification in '.__CLASS__,E_USER_ERROR);
+			trigger_error('Failed to load user authentication in '.__CLASS__,E_USER_ERROR);
 			return(false);
 		}
 		else if(is_object($this->_authent) === false)
 		{
-			trigger_error('Invalid user authentification object',E_USER_ERROR);
+			trigger_error('Invalid user authentication object',E_USER_ERROR);
 			return(false);
 		}
 		else if(is_callable(array(&$this->_authent,$func)) === false)
 		{
-			trigger_error('Invalid user authentification method',E_USER_ERROR);
+			trigger_error('Invalid user authentication method',E_USER_ERROR);
 			return(false);
 		}
 		else if(method_exists($this,$auth_func) === false)
