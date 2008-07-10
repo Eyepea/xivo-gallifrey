@@ -122,6 +122,10 @@ class AMIClass:
                                        [('Exten', exten),
                                         ('Context', context)])
                 return ret
+        def sendparkedcalls(self):
+                ret = self.sendcommand('ParkedCalls', [])
+                return ret
+
         # \brief For debug.
         def printresponse_forever(self):
                 while True:
@@ -385,11 +389,23 @@ class AMIClass:
                         ret = self.sendcommand('QueuePause', [('Queue', queuename),
                                                               ('Interface', interface),
                                                               ('Paused', paused)])
-                        return ret
                 except self.AMIError, exc:
-                        return False
+                        ret = False
                 except Exception, exc:
-                        return False
+                        ret = False
+                return ret
+
+        # \brief Requests the Mailbox informations
+        def mailbox(self, phone, context):
+                try:
+                        ret1 = self.sendcommand('MailboxCount', [('Mailbox', '%s@%s' % (phone, context))])
+                        ret2 = self.sendcommand('MailboxStatus', [('Mailbox', '%s@%s' % (phone, context))])
+                        ret = ret1 and ret2
+                except self.AMIError, exc:
+                        ret = False
+                except Exception, exc:
+                        ret = False
+                return ret
 
         # \brief Retrieves the value of Variable in a Channel
         def getvar(self, channel, varname):
@@ -485,6 +501,7 @@ class AMIList:
                         amicl.sendcommand('Command', [('Command', 'show version'),
                                                       ('ActionID' , ''.join(random.sample(__alphanums__, 10)) + "-" + hex(int(time.time())))])
                         amicl.sendstatus()
+                        amicl.sendparkedcalls()
                         amicl.sendagents()
                         amicl.sendqueuestatus()
                         

@@ -408,6 +408,7 @@ class XivoCTICommand(BaseCommand):
         def askstatus(self, astid, npl):
                 for a, b in npl.iteritems():
                         self.amilist.execute(astid, 'sendextensionstate', b[0], b[1])
+                        self.amilist.execute(astid, 'mailbox', b[0], b[1])
                 return
 
 
@@ -482,6 +483,7 @@ class XivoCTICommand(BaseCommand):
                         linestosend = ['<?xml version="1.0" encoding="utf-8"?>',
                                        '<profile sessionid="sessid">',
                                        '<user>']
+                        # XXX : sessid => uniqueid, in order to update (did => queue => ...)
                         linestosend.append('<info name="Date" type="text"><![CDATA[%s]]></info>' % time.asctime())
 
                         if where == 'outgoing':
@@ -668,6 +670,22 @@ class XivoCTICommand(BaseCommand):
                                 self.chans_incomingdid.remove(chan)
                 return
 
+        def ami_response_mailboxcount(self, astid, event):
+                exten = event.get('Mailbox').split('@')[0]
+                for userinfo in self.ulist_ng.userlist.itervalues():
+                        if 'phonenum' in userinfo and userinfo.get('phonenum') == exten and userinfo.get('astid') == astid:
+                                userinfo['mwi-new'] = event.get('NewMessages')
+                                userinfo['mwi-old'] = event.get('OldMessages')
+                return
+
+        def ami_response_mailboxstatus(self, astid, event):
+                exten = event.get('Mailbox').split('@')[0]
+                for userinfo in self.ulist_ng.userlist.itervalues():
+                        if 'phonenum' in userinfo and userinfo.get('phonenum') == exten and userinfo.get('astid') == astid:
+                                userinfo['mwi-waiting'] = event.get('Waiting')
+                                print userinfo
+                return
+
         def ami_response_extensionstatus(self, astid, event):
                 # 90 seconds are needed to retrieve ~ 9000 phone statuses from an asterisk (on daemon startup)
                 status  = event.get('Status')
@@ -735,7 +753,14 @@ class XivoCTICommand(BaseCommand):
         # {'Uniqueid': '1213955764.88', 'CallerID': '6101', 'Exten': '6101', 'CallerIDNum': '6101', 'Response': 'Success', 'Reason': '4', 'Context': 'ctx-callbooster-agentlogin', 'CallerIDName': 'operateur', 'Privilege': 'call,all', 'Event': 'OriginateResponse', 'Channel': 'SIP/102-081f6730'}
 
         def ami_messagewaiting(self, astid, event):
+                exten = event.get('Mailbox').split('@')[0]
+                context = event.get('Mailbox').split('@')[1]
+                # instead of updating the mwi fields here, we request the current status,
+                # since the event returned when someone has erased one's mailbox seems to be false,
+                # or incomplete at least
+                self.amilist.execute(astid, 'mailbox', exten, context)
                 return
+
         def ami_newcallerid(self, astid, event):
                 return
 
@@ -778,10 +803,10 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def ami_agentlogin(self, astid, event):
-                print 'AMI Agent', astid, event
+                print 'AMI AgentLogin', astid, event
                 return
         def ami_agentlogoff(self, astid, event):
-                print 'AMI Agent', astid, event
+                print 'AMI AgentLogoff', astid, event
                 return
 
         def ami_agentcallbacklogin(self, astid, event):
@@ -809,7 +834,7 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def ami_agentcalled(self, astid, event):
-                print 'AMI Agent', astid, event
+                print 'AMI AgentCalled', astid, event
                 # {'Extension': 's', 'CallerID': 'unknown', 'Priority': '2', 'ChannelCalling': 'IAX2/test-13', 'Context': 'macro-incoming_queue_call', 'CallerIDName': 'Comm. ', 'AgentCalled': 'iax2/192.168.0.120/101'}
 
                 return
@@ -1152,6 +1177,7 @@ class XivoCTICommand(BaseCommand):
                         elif icommand.name == 'pickup':
                                 if self.capas[capaid].match_funcs(ucapa, 'dial'):
                                         z = icommand.args[0].split('/')
+                                        # on Thomson, it picks up the last received call
                                         self.amilist.execute(z[0], 'sendcommand', 'Command', [('Command', 'sip notify event-talk %s' % z[1])])
 
                         elif icommand.name in ['phones-list', 'phones-add', 'phones-del']:

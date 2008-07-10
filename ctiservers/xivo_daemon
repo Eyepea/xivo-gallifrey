@@ -371,6 +371,10 @@ def handle_ami_event(astid, idata):
                                         msg = this_event.get('Message')
                                         if msg == 'Extension Status':
                                                 commandclass.ami_response_extensionstatus(astid, this_event)
+                                        elif msg == 'Mailbox Message Count':
+                                                commandclass.ami_response_mailboxcount(astid, this_event)
+                                        elif msg == 'Mailbox Status':
+                                                commandclass.ami_response_mailboxstatus(astid, this_event)
                                 elif response == 'Error':
                                         # log_debug(SYSLOG_WARNING, 'AMI %s Response=Error : %s' % (astid, this_event))
                                         pass

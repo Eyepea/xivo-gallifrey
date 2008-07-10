@@ -265,6 +265,12 @@ class BaseCommand:
                 print 'AMI %s AgentsComplete' % astid
                 return
 
+        def ami_response_mailboxcount(self, astid, event):
+                return
+        def ami_response_mailboxstatus(self, astid, event):
+                return
+        def ami_response_extensionstatus(self, astid, event):
+                return
 
         # QueueMemberStatus ExtensionStatus
         #                 0                  AST_DEVICE_UNKNOWN
