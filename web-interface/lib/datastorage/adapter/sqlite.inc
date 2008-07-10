@@ -259,6 +259,11 @@ class xivo_datastorage_adapter_sqlite extends xivo_datastorage_adapter_abstract_
 		return($this->_expr_typetime(null,$column,$time,'%s'));
 	}
 
+	function _escape_like($str)
+	{
+		return($str);
+	}
+
 	function _fix_leftjoin_condition($val)
 	{
 		if($this->is_escaped($val) === false
