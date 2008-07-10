@@ -35,7 +35,7 @@ def incoming_meetme_set_features(agi, cursor, args):
 		options += "m"
 
 	if meetme.musiconhold:
-		agi.set_variable('MUSICCLASS()', meetme.musiconhold)
+		agi.set_variable('CHANNEL(musicclass)', meetme.musiconhold)
 		options += "M"
 
 	if meetme.poundexit:

@@ -169,6 +169,6 @@ def incoming_user_set_features(agi, cursor, args):
 		agi.set_variable('XIVO_CALLRECORDFILE', "user-%s-%s-%s.wav" % (srcnum, dstnum, int(time.time())))
 
 	if user.musiconhold:
-		agi.set_variable('MUSICCLASS()', user.musiconhold)
+		agi.set_variable('CHANNEL(musicclass)', user.musiconhold)
 
 agid.register(incoming_user_set_features)
