@@ -1,17 +1,19 @@
 
  -- Faidon Liambotis <paravoid@debian.org>
+ -- Guillaume Knispel <gknispel@proformatique.com>
 
 Index: asterisk-1.4.20.1/main/asterisk.c
 ===================================================================
 --- asterisk-1.4.20.1.orig/main/asterisk.c	2008-06-06 15:57:55.000000000 +0200
 +++ asterisk-1.4.20.1/main/asterisk.c	2008-06-06 15:58:02.000000000 +0200
-@@ -151,6 +151,9 @@
+@@ -151,6 +151,10 @@
  	ast_verbose("This is free software, with components licensed under the GNU General Public\n"); \
  	ast_verbose("License version 2 and other licenses; you are welcome to redistribute it under\n"); \
  	ast_verbose("certain conditions. Type 'core show license' for details.\n"); \
 +	ast_verbose("=========================================================================\n"); \
 +	ast_verbose("This package has been modified for the Debian GNU/Linux distribution\n"); \
-+	ast_verbose("Please report all bugs to http://bugs.debian.org/asterisk\n"); \
++	ast_verbose("This package has then been modified for XiVO, a product of Proformatique\n"); \
++	ast_verbose("Please report all bugs to technique@proformatique.com\n"); \
  	ast_verbose("=========================================================================\n")
  
  /*! \defgroup main_options Main Configuration Options
