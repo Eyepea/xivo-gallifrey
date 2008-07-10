@@ -264,7 +264,7 @@ class BossSecretaryFilter:
 
 	def get_secretary_by_id(self, xid):
 		for secretary in self.secretaries:
-			if xid == secretary.id:
+			if int(xid) == int(secretary.id):
 				return secretary
 		else:
 			return None
@@ -793,7 +793,7 @@ class Trunk:
 			res = cursor.fetchone()
 
 			if not res:
-				raise LookupError("Unable to find custom entry")
+				raise LookupError("Unable to find custom trunk entry")
 
 			self.interface = res['interface']
 

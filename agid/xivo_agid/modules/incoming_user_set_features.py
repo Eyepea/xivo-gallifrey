@@ -46,14 +46,18 @@ def incoming_user_set_features(agi, cursor, args):
 	except LookupError:
 		caller = None
 
-	user = objects.User(agi, cursor, feature_list, xid = dstid)
+	try:
+		user = objects.User(agi, cursor, feature_list, xid=dstid)
+	except LookupError, e:
+		agi.dp_break(str(e))
+
 	ufilter = user.filter
 
 	# Special case. If a boss-secretary filter is set, the code will prematurely
 	# exit because the other normally set variables are skipped.
 	if not bypass_filter and ufilter and ufilter.active:
 		zone_applies = ufilter.check_zone(zone)
-		# CHECK does get_secretary_by_id takes an int or a string?
+
 		if caller:
 			secretary = ufilter.get_secretary_by_id(caller.id)
 		else:

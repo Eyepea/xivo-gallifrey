@@ -25,8 +25,8 @@ def vmbox_get_info(agi, cursor, args):
 
 	try:
 		vmbox = objects.VMBox(agi, cursor, vmboxid)
-	except LookupError:
-		agi.dp_break("Voicemail box doesn't exist (id: %d)" % (vmboxid,))
+	except LookupError, e:
+		agi.dp_break(str(e))
 
 	if vmbox.skipcheckpass:
 		agi.set_variable('XIVO_VMOPTIONS', "s")

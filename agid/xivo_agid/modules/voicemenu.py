@@ -21,7 +21,10 @@ from xivo_agid import agid
 from xivo_agid import objects
 
 def voicemenu(agi, cursor, args):
-	vmenu = objects.VoiceMenu(agi, cursor, int(args[0]))
+	try:
+		vmenu = objects.VoiceMenu(agi, cursor, int(args[0]))
+	except LookupError, e:
+		agi.dp_break(str(e))
 
 	agi.set_variable("XIVO_VCMN_CONTEXT", "voicemenu-" + vmenu.name)
 

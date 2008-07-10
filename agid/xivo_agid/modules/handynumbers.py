@@ -21,12 +21,24 @@ from xivo_agid import agid
 from xivo_agid import objects
 
 def handynumbers(agi, cursor, args):
-	userid = int(agi.get_variable('XIVO_USERID'))
+	userid = agi.get_variable('XIVO_USERID')
 	dstnum = agi.get_variable('XIVO_DSTNUM')
 	exten_pattern = agi.get_variable('XIVO_EXTENPATTERN')
 
-	user = objects.User(agi, cursor, xid = userid)
-	handy_number = objects.HandyNumber(agi, cursor, exten=exten_pattern)
+	try:
+		if userid:
+			user = objects.User(agi, cursor, xid=int(userid))
+		else:
+			user = None
+	except LookupError, e:
+		user = None
+		agi.verbose(str(e))
+	
+	try:
+		handy_number = objects.HandyNumber(agi, cursor, exten=exten_pattern)
+	except LookupError, e:
+		agi.dp_break(str(e))
+
 	trunk = handy_number.trunk
 
 	agi.set_variable('XIVO_INTERFACE', trunk.interface)
@@ -35,7 +47,7 @@ def handynumbers(agi, cursor, args):
 	if trunk.intfsuffix:
 		agi.set_variable('XIVO_TRUNKSUFFIX', "/" + trunk.intfsuffix)
 
-	if user.outcallerid:
+	if user and user.outcallerid:
 		agi.set_variable('CALLERID(num)', user.outcallerid)
 
 agid.register(handynumbers)

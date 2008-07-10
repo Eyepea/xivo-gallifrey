@@ -44,7 +44,7 @@ def _user_set_call_rights(agi, cursor, args):
 	rightcallids = '(' + ','.join((str(el) for el in rightcallidset)) + ')'
 
 	try:
-		user = objects.User(agi, cursor, xid = userid)
+		user = objects.User(agi, cursor, xid=int(userid))
 	except LookupError:
 		call_rights.allow(agi)
 

@@ -21,10 +21,10 @@ from xivo_agid import agid
 from xivo_agid import objects
 
 def phonestatus(agi, cursor, args):
-	userid = int(agi.get_variable('XIVO_USERID'))
+	userid = agi.get_variable('XIVO_USERID')
 
 	feature_list = objects.FeatureList(agi, cursor)
-	user = objects.User(agi, cursor, feature_list, xid = userid)
+	user = objects.User(agi, cursor, feature_list, xid=int(userid))
 
 	if feature_list.fwdunc:
 		agi.set_variable('XIVO_ENABLEUNC', user.enableunc)

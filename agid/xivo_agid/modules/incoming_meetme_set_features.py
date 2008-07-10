@@ -25,14 +25,17 @@ from xivo_agid import objects
 def incoming_meetme_set_features(agi, cursor, args):
 	meetmeid = int(agi.get_variable('XIVO_DSTID'))
 
-	meetme = objects.MeetMe(agi, cursor, xid=meetmeid)
+	try:
+		meetme = objects.MeetMe(agi, cursor, xid=meetmeid)
+	except LookupError, e:
+		agi.dp_break(str(e))
 
 	options = ""
 
 	if meetme.mode == "talk":
 		options += "t"
 	elif meetme.mode == "listen":
-		options += "m"
+		options += "l"
 
 	if meetme.musiconhold:
 		agi.set_variable('CHANNEL(musicclass)', meetme.musiconhold)
