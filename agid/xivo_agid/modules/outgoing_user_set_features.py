@@ -24,10 +24,12 @@ from xivo_agid import objects
 
 def outgoing_user_set_features(agi, cursor, args):
 	userid = agi.get_variable('XIVO_USERID')
-	srcnum = agi.get_variable('XIVO_SRCNUM')
 	dstnum = agi.get_variable('XIVO_DSTNUM')
 	context = agi.get_variable('XIVO_CONTEXT')
 	exten_pattern = agi.get_variable('XIVO_EXTENPATTERN')
+
+	# FIXME: this is only for the callrecord feature, which is likely to change
+	srcnum = agi.get_variable('XIVO_SRCNUM')
 
 	feature_list = objects.FeatureList(agi, cursor)
 	outcall = objects.Outcall(agi, cursor, feature_list, exten=exten_pattern, context=context)
@@ -45,10 +47,7 @@ def outgoing_user_set_features(agi, cursor, args):
 
 	if not outcall.internal:
 		try:
-			if userid:
-				user = objects.User(agi, cursor, feature_list, xid=int(userid))
-			else:
-				user = objects.User(agi, cursor, feature_list, number=srcnum, context=context)
+			user = objects.User(agi, cursor, feature_list, xid=int(userid))
 
 			# TODO: Rethink all the caller id stuff.
 			if outcall.setcallerid:
@@ -81,6 +80,7 @@ def outgoing_user_set_features(agi, cursor, args):
 		agi.set_variable('CALLERID(num)', callerid)
 
 	if callrecord and feature_list.incallrec:
+		# BUGBUG the context is missing in the filename TODO use ids
 		agi.set_variable('XIVO_CALLRECORDFILE', "user-%s-%s-%s.wav" % (srcnum, orig_dstnum, int(time.time())))
 
 	if outcall.hangupringtime:

@@ -29,8 +29,8 @@ def incoming_user_set_features(agi, cursor, args):
 	zone = agi.get_variable('XIVO_CALLORIGIN')
 	bypass_filter = agi.get_variable('XIVO_CALLFILTER_BYPASS')
 
-	srcnum = agi.get_variable('XIVO_SRCNUM')
 	# FIXME: this is only for the callrecord feature, which is likely to change
+	srcnum = agi.get_variable('XIVO_SRCNUM')
 	dstnum = agi.get_variable('XIVO_DSTNUM')
 
 	feature_list = objects.FeatureList(agi, cursor)
@@ -38,9 +38,6 @@ def incoming_user_set_features(agi, cursor, args):
 	try:
 		if userid:
 			caller = objects.User(agi, cursor, feature_list, xid=int(userid))
-		elif zone == "intern":
-			# FIXME: lookup ids in a central point at the start of the dialplan, then remove this case
-			caller = objects.User(agi, cursor, feature_list, number=srcnum, context=context)
 		else:
 			caller = None
 	except LookupError:

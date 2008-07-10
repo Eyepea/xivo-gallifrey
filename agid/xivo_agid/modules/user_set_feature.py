@@ -25,10 +25,10 @@ def user_set_feature(agi, cursor, args):
 	srcnum = agi.get_variable('XIVO_SRCNUM')
 	context = agi.get_variable('XIVO_CONTEXT')
 	
-	if userid:
+	try:
 		user = objects.User(agi, cursor, xid=int(userid))
-	else:
-		user = objects.User(agi, cursor, number=srcnum, context=context)
+	except LookupError, e:
+		agi.dp_break(str(e))
 
 	feature = args[0]
 
@@ -105,7 +105,7 @@ def user_set_feature(agi, cursor, args):
 			res = cursor.fetchone()
 
 			if not res:
-				agi.dp_break("Unable to find secretary, userid = %d" % secretary.id)
+				agi.dp_break("Unable to find secretary, userid = %d" % int(secretary.id))
 
 			new_state = int(not res['active'])
 			cursor.query("UPDATE callfiltermember "
