@@ -47,7 +47,7 @@ def outgoing_user_set_features(agi, cursor, args):
 
 	if not outcall.internal:
 		try:
-			user = objects.User(agi, cursor, feature_list, xid=int(userid))
+			user = objects.User(agi, cursor, int(userid), feature_list)
 
 			# TODO: Rethink all the caller id stuff.
 			if outcall.setcallerid:

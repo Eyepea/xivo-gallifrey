@@ -264,7 +264,7 @@ class BossSecretaryFilter:
 
 	def get_secretary_by_id(self, xid):
 		for secretary in self.secretaries:
-			if int(xid) == int(secretary.id):
+			if xid == secretary.id:
 				return secretary
 		else:
 			return None
@@ -293,49 +293,36 @@ class VMBox:
 		if not res:
 			raise LookupError("Unable to find voicemail box (id: %d)" % xid)
 
-		self.id = int(xid)
+		self.id = xid
 		self.mailbox = res['voicemail.mailbox']
 		self.context = res['voicemail.context']
 		self.email = res['voicemail.email']
 		self.skipcheckpass = res['voicemailfeatures.skipcheckpass']
 
 class User:
-	def __init__(self, agi, cursor, feature_list=None, xid=None, number=None, context=None):
+	def __init__(self, agi, cursor, xid, feature_list=None):
 		self.agi = agi
 		self.cursor = cursor
 
-		columns = ('id', 'number', 'context', 'protocol', 'protocolid',
-			   'name', 'ringseconds', 'simultcalls',
-			   'enablevoicemail', 'voicemailid', 'enablexfer',
-			   'enableautomon', 'callrecord', 'callfilter',
-			   'enablednd', 'enableunc', 'destunc', 'enablerna',
-			   'destrna', 'enablebusy', 'destbusy', 'musiconhold',
-			   'outcallerid', 'bsfilter')
-
-		if xid:
-			cursor.query("SELECT ${columns} FROM userfeatures "
-				     "WHERE id = %d "
-				     "AND internal = 0 "
-				     "AND commented = 0",
-				     columns,
-				     (xid,))
-		elif number and context:
-			cursor.query("SELECT ${columns} FROM userfeatures "
-				     "WHERE number = %s "
-				     "AND context = %s "
-				     "AND internal = 0 "
-				     "AND commented = 0",
-				     columns,
-				     (number, context))
-		else:
-			raise LookupError("id or number@context must be provided to look up a user")
+		cursor.query("SELECT ${columns} FROM userfeatures "
+			     "WHERE id = %d "
+			     "AND internal = 0 "
+			     "AND commented = 0",
+			     ('id', 'number', 'context', 'protocol', 'protocolid',
+			      'name', 'ringseconds', 'simultcalls',
+			      'enablevoicemail', 'voicemailid', 'enablexfer',
+			      'enableautomon', 'callrecord', 'callfilter',
+			      'enablednd', 'enableunc', 'destunc', 'enablerna',
+			      'destrna', 'enablebusy', 'destbusy', 'musiconhold',
+			      'outcallerid', 'bsfilter'),
+			     (xid,))
 
 		res = cursor.fetchone()
 
 		if not res:
-			raise LookupError("Unable to find user (id: %d, number: %s, context: %s)" % (xid, number, context))
+			raise LookupError("Unable to find user (id: %d)" % xid)
 
-		self.id = int(res['id'])
+		self.id = res['id']
 		self.number = res['number']
 		self.context = res['context']
 		self.protocol = res['protocol']
@@ -521,7 +508,7 @@ class Group:
 		if not res:
 			raise LookupError("Unable to find group (id: %d, number: %s, context: %s)" % (xid, number, context))
 
-		self.id = int(res['groupfeatures.id'])
+		self.id = res['groupfeatures.id']
 		self.number = res['groupfeatures.number']
 		self.context = res['groupfeatures.context']
 		self.name = res['groupfeatures.name']
@@ -573,7 +560,7 @@ class MeetMe:
 		if not res:
 			raise LookupError("Unable to find conference room (id: %d, number: %s, context: %s)" % (xid, number, context))
 
-		self.id = int(res['meetmefeatures.id'])
+		self.id = res['meetmefeatures.id']
 		self.number = res['meetmefeatures.number']
 		self.context = res['meetmefeatures.context']
 		self.mode = res['meetmefeatures.mode']
@@ -642,7 +629,7 @@ class Queue:
 		if not res:
 			raise LookupError("Unable to find queue (id: %d, number: %s, context: %s)" % (xid, number, context))
 
-		self.id = int(res['queuefeatures.id'])
+		self.id = res['queuefeatures.id']
 		self.number = res['queuefeatures.number']
 		self.context = res['queuefeatures.context']
 		self.name = res['queuefeatures.name']
@@ -690,7 +677,7 @@ class Agent:
 		if not res:
 			raise LookupError("Unable to find agent (id: %d, number: %s)" % (xid, number))
 
-		self.id = int(res['id'])
+		self.id = res['id']
 		self.number = res['number']
 		self.firstname = res['firstname']
 		self.lastname = res['lastname']
@@ -755,7 +742,7 @@ class Trunk:
 
 		self.id = xid
 		self.protocol = res['protocol']
-		self.protocolid = int(res['protocolid'])
+		self.protocolid = res['protocolid']
 
 		if self.protocol == "sip":
 			cursor.query("SELECT ${columns} FROM usersip "
@@ -831,7 +818,7 @@ class HandyNumber:
 		if not res:
 			raise LookupError("Unable to find handy number (id: %d, exten: %s)" % (xid, exten))
 
-		self.id = int(res['id'])
+		self.id = res['id']
 		self.exten = res['exten']
 		self.trunkfeaturesid = int(res['trunkfeaturesid'])
 		self.type = res['type']
@@ -866,7 +853,7 @@ class DID:
 		if not res:
 			raise LookupError("Unable to find DID entry (id: %d, exten: %s, context: %s)" % (xid, exten, context))
 
-		self.id = int(res['id'])
+		self.id = res['id']
 		self.exten = res['exten']
 		self.context = res['context']
 
@@ -904,7 +891,7 @@ class Outcall:
 		if not res:
 			raise LookupError("Unable to find outcall entry (id: %d, exten: %s, context: %s)" % (xid, exten, context))
 
-		self.id = int(res['id'])
+		self.id = res['id']
 		self.exten = res['exten']
 		self.context = res['context']
 		self.externprefix = res['externprefix']

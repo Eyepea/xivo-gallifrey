@@ -24,7 +24,7 @@ from xivo_agid import objects
 
 def incoming_user_set_features(agi, cursor, args):
 	userid = agi.get_variable('XIVO_USERID')
-	dstid = int(agi.get_variable('XIVO_DSTID'))
+	dstid = agi.get_variable('XIVO_DSTID')
 	context = agi.get_variable('XIVO_CONTEXT')
 	zone = agi.get_variable('XIVO_CALLORIGIN')
 	bypass_filter = agi.get_variable('XIVO_CALLFILTER_BYPASS')
@@ -37,14 +37,14 @@ def incoming_user_set_features(agi, cursor, args):
 
 	try:
 		if userid:
-			caller = objects.User(agi, cursor, feature_list, xid=int(userid))
+			caller = objects.User(agi, cursor, int(userid), feature_list)
 		else:
 			caller = None
 	except LookupError:
 		caller = None
 
 	try:
-		user = objects.User(agi, cursor, feature_list, xid=dstid)
+		user = objects.User(agi, cursor, int(dstid), feature_list)
 	except LookupError, e:
 		agi.dp_break(str(e))
 

@@ -27,7 +27,7 @@ def handynumbers(agi, cursor, args):
 
 	try:
 		if userid:
-			user = objects.User(agi, cursor, xid=int(userid))
+			user = objects.User(agi, cursor, int(userid))
 		else:
 			user = None
 	except LookupError, e:

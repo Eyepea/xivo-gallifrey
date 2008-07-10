@@ -24,7 +24,7 @@ def fwdundoall(agi, cursor, args):
 	userid = agi.get_variable('XIVO_USERID')
 
 	try:
-		user = objects.User(agi, cursor, xid=int(userid))
+		user = objects.User(agi, cursor, int(userid))
 	except LookupError, e:
 		agi.dp_break(str(e))
 

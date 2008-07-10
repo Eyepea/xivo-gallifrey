@@ -23,10 +23,10 @@ from xivo_agid import objects
 def user_get_vmbox(agi, cursor, args):
 	userid = agi.get_variable('XIVO_USERID')
 
-	user = objects.User(agi, cursor, xid=int(userid))
+	user = objects.User(agi, cursor, int(userid))
 
 	if not user.vmbox:
-		agi.dp_break("User has no voicemail box (id: %d)" % (user.id,))
+		agi.dp_break("User has no voicemail box (id: %d)" % user.id)
 
 	if user.vmbox.skipcheckpass:
 		agi.set_variable('XIVO_VMOPTIONS', "s")
