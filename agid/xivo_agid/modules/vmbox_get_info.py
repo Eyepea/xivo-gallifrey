@@ -23,7 +23,10 @@ from xivo_agid import objects
 def vmbox_get_info(agi, cursor, args):
 	vmboxid = int(agi.get_variable('XIVO_VMBOXID'))
 
-	vmbox = objects.VMBox(agi, cursor, vmboxid)
+	try:
+		vmbox = objects.VMBox(agi, cursor, vmboxid)
+	except LookupError:
+		agi.dp_break("Voicemail box doesn't exist (id: %d)" % (vmboxid,))
 
 	if vmbox.skipcheckpass:
 		agi.set_variable('XIVO_VMOPTIONS', "s")
