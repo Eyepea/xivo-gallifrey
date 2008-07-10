@@ -23,10 +23,10 @@ from xivo_agid import agid
 from xivo_agid import objects
 
 def incoming_meetme_set_features(agi, cursor, args):
-	meetmeid = int(agi.get_variable('XIVO_DSTID'))
+	meetmeid = agi.get_variable('XIVO_DSTID')
 
 	try:
-		meetme = objects.MeetMe(agi, cursor, xid=meetmeid)
+		meetme = objects.MeetMe(agi, cursor, xid=int(meetmeid))
 	except LookupError, e:
 		agi.dp_break(str(e))
 

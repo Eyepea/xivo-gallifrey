@@ -21,10 +21,10 @@ from xivo_agid import agid
 from xivo_agid import objects
 
 def incoming_group_set_features(agi, cursor, args):
-	groupid = int(agi.get_variable('XIVO_DSTID'))
+	groupid = agi.get_variable('XIVO_DSTID')
 
 	try:
-		group = objects.Group(agi, cursor, xid=groupid)
+		group = objects.Group(agi, cursor, xid=int(groupid))
 	except LookupError, e:
 		agi.dp_break(str(e))
 

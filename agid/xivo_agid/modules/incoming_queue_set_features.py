@@ -21,10 +21,10 @@ from xivo_agid import agid
 from xivo_agid import objects
 
 def incoming_queue_set_features(agi, cursor, args):
-	queueid = int(agi.get_variable('XIVO_DSTID'))
+	queueid = agi.get_variable('XIVO_DSTID')
 
 	try:
-		queue = objects.Queue(agi, cursor, xid=queueid)
+		queue = objects.Queue(agi, cursor, xid=int(queueid))
 	except LookupError, e:
 		agi.dp_break(str(e))
 
