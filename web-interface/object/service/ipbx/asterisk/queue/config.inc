@@ -84,10 +84,11 @@ $array['element']['monitor-format']['value'] = array('gsm','wav','wav49');
 $array['element']['monitor-format']['default'] = '';
 $array['element']['monitor-format']['null'] = true;
 
-$array['element']['monitor-join'] = array();
-$array['element']['monitor-join']['value'] = array(0,1);
-$array['element']['monitor-join']['default'] = 0;
-$array['element']['monitor-join']['set'] = true;
+$array['element']['monitor-type'] = array();
+$array['element']['monitor-type']['value'] = array('','mixmonitor');
+$array['element']['monitor-type']['default'] = '';
+$array['element']['monitor-type']['null'] = true;
+$array['element']['monitor-type']['set'] = true;
 
 $array['element']['joinempty'] = array();
 $array['element']['joinempty']['value'] = array('no','yes','strict');
@@ -189,7 +190,7 @@ $array['filter']['periodic-announce-frequency'] = array('set' => false,'chk' => 
 $array['filter']['announce-holdtime'] = array('set' => false,'chk' => 2,'key' => array('no','yes','once'));
 $array['filter']['announce-round-seconds'] = array('set' => false,'chk' => 2,'key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['monitor-format'] = array('set' => false,'chk' => 2,'key' => array('gsm','wav','wav49'));
-$array['filter']['monitor-join'] = array('bool' => true);
+$array['filter']['monitor-type'] = array('bool' => true);
 $array['filter']['joinempty'] = array('set' => false,'chk' => 2,'key' => array('no','yes','strict'));
 $array['filter']['leavewhenempty'] = array('set' => false,'chk' => 2,'key' => array('no','yes','strict'));
 $array['filter']['eventwhencalled'] = array('bool' => true);

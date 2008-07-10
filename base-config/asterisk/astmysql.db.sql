@@ -641,7 +641,7 @@ CREATE TABLE `queue` (
  `announce` varchar(128),
  `context` varchar(39),
  `timeout` tinyint(2) unsigned DEFAULT 0,
- `monitor-join` tinyint(1) NOT NULL DEFAULT 0,
+ `monitor-type` enum('mixmonitor'),
  `monitor-format` varchar(128),
  `queue-youarenext` varchar(128),
  `queue-thereare` varchar(128),

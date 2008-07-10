@@ -605,7 +605,7 @@ CREATE TABLE queue (
  announce varchar(128),
  context varchar(39),
  timeout tinyint unsigned DEFAULT 0,
- 'monitor-join' tinyint(1) NOT NULL DEFAULT 0,
+ 'monitor-type' varchar(10),
  'monitor-format' varchar(128),
  'queue-youarenext' varchar(128),
  'queue-thereare' varchar(128),

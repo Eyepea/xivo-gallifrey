@@ -289,7 +289,7 @@ Désactivé
 ; fm_queue_monitor-format
 Format d'enregistrement :
 
-; fm_queue_monitor-join
+; fm_queue_monitor-type
 Enregistrement :
 
 ; fm_queue_joinempty

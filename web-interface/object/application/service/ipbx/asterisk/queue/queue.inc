@@ -285,7 +285,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		$this->set_contextnummember($context,$number);
 
 		$this->set_contextmember();
-
+	
 		return(($this->get_errnb() < 1));
 	}
 
