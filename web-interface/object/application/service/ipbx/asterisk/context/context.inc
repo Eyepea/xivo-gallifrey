@@ -366,7 +366,8 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 						if($key === 'incall')
 						{
-							$pattern = '/^'.$this->_service->_regexten_pattern($number).'$/';
+							$exten_pattern = $this->_service->_regexten_pattern($number);
+							$pattern = '/^'.$exten_pattern.'$/';
 
 							$didlength = -($rs['didlength']);
 							$numberbeg = substr($numberbeg,$didlength);
@@ -377,7 +378,13 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 							else if(preg_match($pattern,$numberend) === 1)
 								$number = $numberend;
 							else if(xivo_digit($number) === false)
+							{
+								if($this->_contextnumbers->chk_pattern_in_interval($numberbeg,
+												   		   $exten_pattern,
+												   		   $numberend) === true)
+									unset($contextnummember[$key][$k]);
 								continue;
+							}
 						}
 
 						if((isset($numberend{0}) === false && $numberbeg === $number) === true
