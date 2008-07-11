@@ -560,11 +560,13 @@ function xivo_ast_application_waitexten()
 {
 	if((seconds = xivo_eid('it-ipbxapplication-waitexten-seconds')) === false
 	|| (option_m = xivo_eid('it-ipbxapplication-waitexten-m')) === false
-	|| (musiconhold = xivo_eid('it-ipbxapplication-waitexten-musiconhold')) === false
 	|| (seconds.value.length > 0 && xivo_is_ufloat(seconds.value) === false) === true)
 		return(false);
 	
-	var musiconholdvalue = xivo_ast_application_sanitize_arg(musiconhold.value);
+	if((musiconhold = xivo_eid('it-ipbxapplication-waitexten-musiconhold')) !== false)
+		var musiconholdvalue = xivo_ast_application_sanitize_arg(musiconhold.value);
+	else
+		var musiconholdvalue = '';
 
 	var args = new Array(seconds.value);
 
