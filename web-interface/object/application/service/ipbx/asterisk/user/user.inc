@@ -1443,10 +1443,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| ($rs = $this->get_result('ufeatures')) === null
 		|| $rs === false)
 			return(false);
-
-		xivo_var_dump($rs);
-
-		if($this->_info['ufeatures']['protocol'] === $this->_protocolname)
+		else if($this->_info['ufeatures']['protocol'] === $this->_protocolname)
 		{
 			$rs['protocolid'] = $this->_info['protocol']['id'];
 			$provisioning = false;
