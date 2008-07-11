@@ -28,7 +28,7 @@
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
 		<th class="th-center"><?=$this->bbf('col_directory');?></th>
 		<th class="th-center"><?=$this->bbf('col_number-files');?></th>
-		<th class="th-center" id="col-action"><?=$this->bbf('col_action');?></th>
+		<th class="th-center col-action"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
 <?php

@@ -41,14 +41,14 @@
 		<th class="th-center"><?=$this->bbf('col_username');?></th>
 		<th class="th-center"><?=$this->bbf('col_phone');?></th>
 		<th class="th-center"><?=$this->bbf('col_provisioning');?></th>
-		<th class="th-center" id="col-action" colspan="2"><?=$this->bbf('col_action');?></th>
+		<th class="th-center col-action"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
 <?php
 	if(($list = $this->get_var('list')) === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
-		<td colspan="9" class="td-single"><?=$this->bbf('no_user');?></td>
+		<td colspan="8" class="td-single"><?=$this->bbf('no_user');?></td>
 	</tr>
 <?php
 	else:
@@ -87,7 +87,7 @@
 		<td><?=(xivo_haslen($ref['name']) === true ? $ref['name'] : '-')?></td>
 		<td><?=(xivo_haslen($ref['number']) === true ? $ref['number'] : '-')?></td>
 		<td><?=(xivo_haslen($ref['provisioningid']) === true ? $ref['provisioningid'] : '-')?></td>
-		<td class="td-right" colspan="3">
+		<td class="td-right" colspan="2">
 <?php
 		echo	$url->href_html($url->img_html('img/site/button/edit.gif',
 						       $this->bbf('opt_modify'),

@@ -29,14 +29,14 @@
 		<th class="th-center"><?=$this->bbf('col_fullname');?></th>
 		<th class="th-center"><?=$this->bbf('col_mailbox');?></th>
 		<th class="th-center"><?=$this->bbf('col_email');?></th>
-		<th class="th-center" id="col-action" colspan="2"><?=$this->bbf('col_action');?></th>
+		<th class="th-center col-action"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
 <?php
 	if(($list = $this->get_var('list')) === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
-		<td colspan="7" class="td-single"><?=$this->bbf('no_voicemail');?></td>
+		<td colspan="6" class="td-single"><?=$this->bbf('no_voicemail');?></td>
 	</tr>
 <?php
 	else:
@@ -71,7 +71,7 @@
 		</td>
 		<td><?=$ref['mailbox']?></td>
 		<td><?=(xivo_haslen($ref['email']) === true ? $ref['email'] : '-')?></td>
-		<td class="td-right" colspan="3">
+		<td class="td-right" colspan="2">
 <?php
 		echo	$url->href_html($url->img_html('img/site/button/edit.gif',
 						       $this->bbf('opt_modify'),
@@ -99,7 +99,7 @@
 ?>
 	<tr class="sb-foot">
 		<td class="td-left xspan b-nosize"><span class="span-left b-nosize">&nbsp;</span></td>
-		<td class="td-center" colspan="5"><span class="b-nosize">&nbsp;</span></td>
+		<td class="td-center" colspan="4"><span class="b-nosize">&nbsp;</span></td>
 		<td class="td-right xspan b-nosize"><span class="span-right b-nosize">&nbsp;</span></td>
 	</tr>
 </table>

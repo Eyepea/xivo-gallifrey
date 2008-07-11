@@ -585,7 +585,7 @@ function xivo_chg_protocol(protocol)
 	xivo_chg_attrib('fm_user-'+xivo_protocol,'links',0,1);
 
 	if((voicemail = xivo_eid('it-ufeatures-voicemailid')) != false && voicemail.value != '' && voicemail.disabled == false)
-		xivo_chg_attrib('fm_enablevoicemail','it-voicemail-fullname',0);
+		xivo_chg_attrib('fm_voicemail','it-voicemail-fullname',0);
 
 	var host_dynamic = xivo_eid('it-'+xivo_protocol+'-protocol-host-dynamic');
 

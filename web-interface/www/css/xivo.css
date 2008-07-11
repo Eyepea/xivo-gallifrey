@@ -200,7 +200,7 @@ pre {text-align: left;}
 #b-content .b-list .b-page , #b-content .sb-list .b-page {text-align: right; padding: 2px 10px 5px 0px;}
 #b-content .b-list .b-total, #b-content .sb-list .b-total {text-align: left; padding: 2px 0px 5px 10px;}
 #b-content .b-list table {width: 760px;}
-#b-content .b-list #col-action {width: 60px;}
+#b-content .b-list th.col-action {width: 50px;}
 #b-content .b-list td {font-size: 8pt;}
 #b-content .b-list .sb-top .th-left, #b-content .b-list .sb-top .th-right {width: 10px;background-image: url(../img/content/t-bg.gif);background-repeat: repeat-x;}
 #b-content .b-list .sb-top .th-right .span-right {float: right;background-image: url(../img/content/t-right.gif);}
@@ -215,7 +215,7 @@ pre {text-align: left;}
 
 #b-content .b-list form .sb-content td label {cursor: pointer;}
 
-#b-content .b-list .sb-foot .td-left, #b-content .b-list .sb-foot .td-right {width: 10px;background-image: url(../img/content/f-bg.gif);background-repeat: repeat-x;}
+#b-content .b-list .sb-foot .td-left, #b-content .b-list .sb-foot .td-right {width: 10px;background-image: url(../img/content/f-bg.gif);background-repeat: repeat-x;vertical-align: top;}
 #b-content .b-list .sb-foot .td-right .span-right {float: right;background-image: url(../img/content/f-right.gif);}
 #b-content .b-list .sb-foot .td-center {padding: 0px;background-image: url(../img/content/f-bg.gif); background-repeat: repeat-x;}
 
@@ -305,9 +305,9 @@ pre {text-align: left;}
 #r-xivo #s-configuration #index #xivo-logo ul {margin-top: 10px}
 
 #r-xivo #s-configuration #sr-acl table {border: 0px solid #999;border-bottom-width: 1px;}
-#r-xivo #s-configuration #sr-acl table th {background-image: url(../img/content/top/bg-1.gif);background-color: #fff;width: 735px;padding-bottom: 2px;border: 1px solid #999;border-bottom-width: 0px;}
-#r-xivo #s-configuration #sr-acl table input {margin: 0px 2px;}
-#r-xivo #s-configuration #sr-acl .acl-category div {width: 736px;float: left;background-color: #fee6c1;border: 1px solid #999;border-bottom-width: 0px;padding: 2px 0px;}
+#r-xivo #s-configuration #sr-acl table th {background-image: url(../img/content/top/bg-1.gif);background-color: #fff;width: 735px;padding: 1px 0px;border: 1px solid #999;border-bottom-width: 0px;}
+#r-xivo #s-configuration #sr-acl table input {margin: 1px 2px 0px;}
+#r-xivo #s-configuration #sr-acl .acl-category div {width: 736px;float: left;background-color: #fee6c1;border: 1px solid #999;border-bottom-width: 0px;padding-top: 2px;}
 #r-xivo #s-configuration #sr-acl .acl-category h4 {float: left;width: 710px;}
 #r-xivo #s-configuration #sr-acl .acl-category span {display: block;float: left;width: 20px;}
 #r-xivo #s-configuration #sr-acl .acl-category .fm-desc  {display: inline;float: none;text-align: left;width: auto;}

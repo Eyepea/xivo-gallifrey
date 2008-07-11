@@ -918,17 +918,17 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			{
 				$errlist[$j] = $this->_phonefunckey->get_filter_error();
 				$reslist[$j++] = $this->_phonefunckey->get_filter_result();
-				continue;
 			}
 			else if(isset($tmp[$info['fknum']]) === true)
 			{
 				$errlist[$j] = 'wrong phonefunckey';
 				$reslist[$j++] = $info;
-				continue;
 			}
-
-			$tmp[$info['fknum']] = 1;
-			$reslist[$j++] = $info;
+			else
+			{
+				$tmp[$info['fknum']] = 1;
+				$reslist[$j++] = $info;
+			}
 		}
 
 		$this->_set_result('phonefunckey',$reslist);
@@ -1443,6 +1443,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| ($rs = $this->get_result('ufeatures')) === null
 		|| $rs === false)
 			return(false);
+
+		xivo_var_dump($rs);
 
 		if($this->_info['ufeatures']['protocol'] === $this->_protocolname)
 		{
