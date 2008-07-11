@@ -193,7 +193,6 @@ class XivoCTICommand(BaseCommand):
                 # user match and authentication
                 username = '%s@%s' % (loginparams.get('userid'), loginparams.get('company'))
                 userinfo = self.ulist_ng.finduser(username)
-                print 'userinfo', userinfo
                 if userinfo == None:
                         return 'user_not_found'
                 password = loginparams.get('passwd') 
@@ -249,9 +248,11 @@ class XivoCTICommand(BaseCommand):
                                         return 'already_connected'
 
                 capaid = userinfo.get('capaid')
-                if self.capas[capaid].toomuchusers():
-                        return 'toomuchusers:%s' % self.capas[capaid].maxgui()
-
+                if capaid in self.capas:
+                        if self.capas[capaid].toomuchusers():
+                                return 'toomuchusers:%s' % self.capas[capaid].maxgui()
+                else:
+                        return 'capaid_undefined'
                 return None
 
 
@@ -396,7 +397,10 @@ class XivoCTICommand(BaseCommand):
                                              'state'    : 'unknown',
                                              'agentnum' : d[9],
                                              'techlist' : d[7],
-                                             'context'  : d[8]}
+                                             'context'  : d[8],
+                                             'mwi-waiting' : '0',
+                                             'mwi-old' : '0',
+                                             'mwi-new' : '0'}
                 return lulist
 
         def users(self):
@@ -483,7 +487,7 @@ class XivoCTICommand(BaseCommand):
                         linestosend = ['<?xml version="1.0" encoding="utf-8"?>',
                                        '<profile sessionid="sessid">',
                                        '<user>']
-                        # XXX : sessid => uniqueid, in order to update (did => queue => ...)
+                        # XXX : sessid => uniqueid, in order to update (did => queue => ... hangup ...)
                         linestosend.append('<info name="Date" type="text"><![CDATA[%s]]></info>' % time.asctime())
 
                         if where == 'outgoing':
@@ -683,7 +687,12 @@ class XivoCTICommand(BaseCommand):
                 for userinfo in self.ulist_ng.userlist.itervalues():
                         if 'phonenum' in userinfo and userinfo.get('phonenum') == exten and userinfo.get('astid') == astid:
                                 userinfo['mwi-waiting'] = event.get('Waiting')
-                                print userinfo
+                                msg = 'users-list-update=%s;%s;mwi;%s;%s;%s' % (userinfo.get('company'),
+                                                                                userinfo.get('user'),
+                                                                                userinfo.get('mwi-waiting'),
+                                                                                userinfo.get('mwi-old'),
+                                                                                userinfo.get('mwi-new'))
+                                self.__send_msg_to_cti_clients__(msg)
                 return
 
         def ami_response_extensionstatus(self, astid, event):
@@ -1197,7 +1206,10 @@ class XivoCTICommand(BaseCommand):
                                      uinfo.get('context'),
                                      uinfo.get('phonenum'),
                                      uinfo.get('techlist'),
-                                     uinfo.get('agentnum')]
+                                     uinfo.get('agentnum'),
+                                     uinfo.get('mwi-waiting'),
+                                     uinfo.get('mwi-old'),
+                                     uinfo.get('mwi-new')]
                                 for uinfo in self.ulist_ng.userlist.itervalues():
                                         f.extend([uinfo.get('user'),
                                                   uinfo.get('company'),
@@ -1208,7 +1220,10 @@ class XivoCTICommand(BaseCommand):
                                                   uinfo.get('context'),
                                                   uinfo.get('phonenum'),
                                                   uinfo.get('techlist'),
-                                                  uinfo.get('agentnum')])
+                                                  uinfo.get('agentnum'),
+                                                  uinfo.get('mwi-waiting'),
+                                                  uinfo.get('mwi-old'),
+                                                  uinfo.get('mwi-new')])
                                 self.__send_msg_to_cti_client__(userinfo, 'users-list=%d;%s' % (len(f), ';'.join(f)))
                                 repstr = None
 
@@ -1551,9 +1566,10 @@ class XivoCTICommand(BaseCommand):
                                 bstatus = ':'.join([pidx.context,
                                                     pidx.tech,
                                                     pidx.phoneid,
-                                                    pidx.hintstatus])
+                                                    pidx.hintstatus,
+                                                    ''])
                                 if pidx.towatch:
-                                        phoneinfo = ("ful",
+                                        phoneinfo = ('ful',
                                                      astid,
                                                      bstatus,
                                                      pidx.build_fullstatlist() + ";")
@@ -1604,7 +1620,7 @@ class XivoCTICommand(BaseCommand):
                                                                 '',
                                                                 ag])
                                             if phone.towatch:
-                                                    phoneinfo = ("ful",
+                                                    phoneinfo = ('ful',
                                                                  astid,
                                                                  bstatus,
                                                                  'rm:rm:rm',
@@ -1616,7 +1632,7 @@ class XivoCTICommand(BaseCommand):
 ##                                    plist_normal_keys.sort()
 ##                                    for phonenum in plist_normal_keys:
 ##                                            bstatus = plist_n.normal[phonenum].build_basestatus()
-##                                            phoneinfo = ("ful",
+##                                            phoneinfo = ('ful',
 ##                                                         plist_n.astid,
 ##                                                         bstatus,
 ##                                                         plist_n.normal[phonenum].build_cidstatus(),
