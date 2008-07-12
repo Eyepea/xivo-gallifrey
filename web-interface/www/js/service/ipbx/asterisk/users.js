@@ -532,9 +532,16 @@ function xivo_cpyname()
 	if(xivo_is_undef(lastname) == false)
 		name += name == '' ? lastname : ' '+lastname;
 
-	var callerid = xivo_eid('it-protocol-username').value;
+	var callerid = xivo_eid('it-protocol-callerid').value;
 
-	if(xivo_is_undef(callerid) == true || callerid == name || callerid.length == 0)
+	var phonenumber = xivo_eid('it-ufeatures-number').value;
+
+	if(xivo_is_undef(phonenumber) == false)
+		phonenumber = '<'+phonenumber+'>';
+	else
+		phonenumber = '';
+
+	if(xivo_is_undef(callerid) == true || callerid == name || callerid.length == 0 || callerid == phonenumber)
 		xivo_fm_cpyname['protocol-callerid'] = true;
 	else
 		xivo_fm_cpyname['protocol-callerid'] = false;
@@ -573,6 +580,28 @@ function xivo_chgname()
 		xivo_eid('it-voicemail-fullname').value = name;
 
 	return(true);
+}
+
+function xivo_ast_user_chg_callerid()
+{
+	xivo_cpyname();
+
+	if(xivo_fm_cpyname['protocol-callerid'] == false)
+		return(false);
+	
+	var name = '';
+
+	var firstname = xivo_eid('it-ufeatures-firstname').value;
+	var lastname = xivo_eid('it-ufeatures-lastname').value;
+
+	if(xivo_is_undef(firstname) == false)
+		name += firstname;
+
+	if(xivo_is_undef(lastname) == false)
+		name += name.length == 0 ? lastname : ' '+lastname;
+
+	if(xivo_fm_cpyname['protocol-callerid'] == true)
+		xivo_eid('it-protocol-callerid').value = name;
 }
 
 function xivo_chg_protocol(protocol)
@@ -671,7 +700,7 @@ function xivo_voicemail_selection(value)
 	if(value == 'add')
 	{
 		if(typeof(xivo_fm_voicemail) === 'undefined'
-		|| xivo_is_array(xivo_fm_voicemail) === false)
+		|| xivo_is_array(xivo_fm_voicemail) === false)
 			return(false);
 
 		for(property in xivo_fm_voicemail)

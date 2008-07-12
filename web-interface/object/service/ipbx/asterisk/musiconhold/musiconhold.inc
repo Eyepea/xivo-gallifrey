@@ -324,7 +324,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		|| move_uploaded_file($tmpname,$file) === false)
 			return(false);
 
-		chmod($file,0664);
+		@chmod($file,0664);
 
 		return(true);
 	}
@@ -345,7 +345,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		|| rename($file,$newfile) === false)
 			return(false);
 
-		chmod($newfile,0664);
+		@chmod($newfile,0664);
 
 		return(true);
 	}

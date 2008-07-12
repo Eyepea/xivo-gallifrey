@@ -1,95 +1,172 @@
 <?php
-	$form = &$this->get_module('form');
-	$url = &$this->get_module('url');
 
-	$info = $this->get_var('info');
-	$element = $this->get_var('element');
+$form = &$this->get_module('form');
+$url = &$this->get_module('url');
 
-	$voicemail_list = $this->get_var('voicemail_list');
-	$autoprov_list = $this->get_var('autoprov_list');
-	$context_list = $this->get_var('context_list');
-	$rightcall = $this->get_var('rightcall');
+$info = $this->get_var('info');
+$element = $this->get_var('element');
 
-	if(isset($info['protocol']['allow']) === true):
-		$allow = $info['protocol']['allow'];
-	else:
-		$allow = array();
-	endif;
+$voicemail_list = $this->get_var('voicemail_list');
+$autoprov_list = $this->get_var('autoprov_list');
+$context_list = $this->get_var('context_list');
+$rightcall = $this->get_var('rightcall');
 
-	$codec_active = empty($allow) === false;
+if(isset($info['protocol']['allow']) === true):
+	$allow = $info['protocol']['allow'];
+else:
+	$allow = array();
+endif;
 
-	if(isset($info['protocol']) === true):
-		$host = (string) xivo_ak('host',$info['protocol'],true);
-	else:
-		$host = '';
-	endif;
+$codec_active = empty($allow) === false;
 
-	if($host === '' || in_array($host,$element['protocol']['sip']['host']['value'],true) === true):
-		$sip_host_static = false;
-	else:
-		$sip_host_static = true;
-	endif;
+if(isset($info['protocol']) === true):
+	$host = (string) xivo_ak('host',$info['protocol'],true);
+else:
+	$host = '';
+endif;
 
-	if($host === '' || in_array($host,$element['protocol']['iax']['host']['value'],true) === true):
-		$iax_host_static = false;
-	else:
-		$iax_host_static = true;
-	endif;
+if($host === '' || in_array($host,$element['protocol']['sip']['host']['value'],true) === true):
+	$sip_host_static = false;
+else:
+	$sip_host_static = true;
+endif;
 
-	if(($outcallerid = (string) $info['ufeatures']['outcallerid']) === ''
-	|| in_array($outcallerid,$element['ufeatures']['outcallerid']['value'],true) === true):
-		$outcallerid_custom = false;
-	else:
-		$outcallerid_custom = true;
-	endif;
+if($host === '' || in_array($host,$element['protocol']['iax']['host']['value'],true) === true):
+	$iax_host_static = false;
+else:
+	$iax_host_static = true;
+endif;
 
-	if(empty($info['autoprov']) === true || $info['autoprov']['vendor'] === ''):
-		$vendormodel = '';
-	else:
-		$vendormodel = $info['autoprov']['vendor'].'.'.$info['autoprov']['model'];
-	endif;
+if(($outcallerid = (string) $info['ufeatures']['outcallerid']) === ''
+|| in_array($outcallerid,$element['ufeatures']['outcallerid']['value'],true) === true):
+	$outcallerid_custom = false;
+else:
+	$outcallerid_custom = true;
+endif;
 
-	if(isset($info['protocol']) === true):
-		$context = (string) xivo_ak('context',$info['protocol'],true);
-		$amaflags = (string) xivo_ak('amaflags',$info['protocol'],true);
-		$qualify = (string) xivo_ak('qualify',$info['protocol'],true);
-	else:
-		$context = $amaflags = $qualify = '';
-	endif;
+if(empty($info['autoprov']) === true || $info['autoprov']['vendor'] === ''):
+	$vendormodel = '';
+else:
+	$vendormodel = $info['autoprov']['vendor'].'.'.$info['autoprov']['model'];
+endif;
+
+if(isset($info['protocol']) === true):
+	$context = (string) xivo_ak('context',$info['protocol'],true);
+	$amaflags = (string) xivo_ak('amaflags',$info['protocol'],true);
+	$qualify = (string) xivo_ak('qualify',$info['protocol'],true);
+else:
+	$context = $amaflags = $qualify = '';
+endif;
+
 ?>
 
 <div id="sb-part-first">
 
-<?=$form->text(array('desc' => $this->bbf('fm_userfeatures_firstname'),'name' => 'ufeatures[firstname]','labelid' => 'ufeatures-firstname','value' => $info['ufeatures']['firstname'],'size' => 15),'onchange="xivo_chgname();" onfocus="xivo_cpyname(); xivo_fm_set_onfocus(this);" onblur="xivo_chgname(); xivo_fm_set_onblur(this);"');?>
-
-<?=$form->text(array('desc' => $this->bbf('fm_userfeatures_lastname'),'name' => 'ufeatures[lastname]','labelid' => 'ufeatures-lastname','value' => $info['ufeatures']['lastname'],'size' => 15),'onchange="xivo_chgname();" onfocus="xivo_cpyname(); xivo_fm_set_onfocus(this);" onblur="xivo_chgname(); xivo_fm_set_onblur(this);"');?>
-
-<?=$form->text(array('desc' => $this->bbf('fm_protocol_name'),'name' => 'protocol[name]','labelid' => 'protocol-name','value' => $info['protocol']['name'],'size' => 15));?>
-
-<?=$form->text(array('desc' => $this->bbf('fm_protocol_secret'),'name' => 'protocol[secret]','labelid' => 'protocol-secret','value' => $this->get_varra('info',array('protocol','secret')),'size' => 15));?>
-
-<?=$form->text(array('desc' => $this->bbf('fm_protocol_interface'),'name' => 'protocol[interface]','labelid' => 'protocol-interface','default' => $element['protocol']['custom']['interface']['default'],'value' => $this->get_varra('info',array('protocol','interface')),'size' => 15));?>
-
-<?=$form->text(array('desc' => $this->bbf('fm_ufeatures_number'),'name' => 'ufeatures[number]','labelid' => 'ufeatures-number','value' => $info['ufeatures']['number'],'size' => 15),'onchange="xivo_chgname();" onfocus="xivo_cpyname(); xivo_fm_set_onfocus(this);"');?>
-
-<?=$form->select(array('desc' => $this->bbf('fm_userfeatures_ringseconds'),'name' => 'ufeatures[ringseconds]','labelid' => 'ufeatures-ringseconds','bbf' => array('mixkey','fm_userfeatures_ringseconds-opt'),'key' => false,'default' => $element['ufeatures']['ringseconds']['default'],'value' => (isset($info['ufeatures']['ringseconds']) === true ? (int) $info['ufeatures']['ringseconds'] : null)),$element['ufeatures']['ringseconds']['value']);?>
-
-<?=$form->select(array('desc' => $this->bbf('fm_userfeatures_simultcalls'),'name' => 'ufeatures[simultcalls]','labelid' => 'ufeatures-simultcalls','key' => false,'default' => $element['ufeatures']['simultcalls']['default'],'value' => (isset($info['ufeatures']['simultcalls']) === true ? (int) $info['ufeatures']['simultcalls'] : null)),$element['ufeatures']['simultcalls']['value']);?>
-
-<?=$form->select(array('desc' => $this->bbf('fm_protocol_protocol'),'name' => 'protocol[protocol]','labelid' => 'protocol-protocol','bbf' => array('concatkey','fm_protocol_protocol-opt-'),'key' => false,'default' => $element['ufeatures']['protocol']['default'],'value' => $info['ufeatures']['protocol']),$element['ufeatures']['protocol']['value'],'onchange="xivo_chg_protocol(this.value);"');?>
-
 <?php
+	echo	$form->text(array('desc'	=> $this->bbf('fm_userfeatures_firstname'),
+				  'name'	=> 'ufeatures[firstname]',
+				  'labelid'	=> 'ufeatures-firstname',
+				  'value'	=> $info['ufeatures']['firstname'],
+				  'size'	=> 15),
+			    'onchange="xivo_chgname();"
+			     onfocus="xivo_cpyname(); xivo_fm_set_onfocus(this);"
+			     onblur="xivo_chgname(); xivo_fm_set_onblur(this);"'),
+		
+		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_lastname'),
+				  'name'	=> 'ufeatures[lastname]',
+				  'labelid'	=> 'ufeatures-lastname',
+				  'value'	=> $info['ufeatures']['lastname'],
+				  'size'	=> 15),
+			    'onchange="xivo_chgname();"
+			     onfocus="xivo_cpyname(); xivo_fm_set_onfocus(this);"
+			     onblur="xivo_chgname(); xivo_fm_set_onblur(this);"'),
 
-if($context_list !== false):
-	echo $form->select(array('desc' => $this->bbf('fm_protocol_context'),'name' => 'protocol[context]','labelid' => 'sip-protocol-context','key' => 'identity','altkey' => 'name','default' => $element['protocol']['sip']['context']['default'],'value' => $context),$context_list);
+		$form->text(array('desc'	=> $this->bbf('fm_protocol_name'),
+				  'name'	=> 'protocol[name]',
+				  'labelid'	=> 'protocol-name',
+				  'value'	=> $info['protocol']['name'],
+				  'size'	=> 15)),
 
-	echo $form->select(array('desc' => $this->bbf('fm_protocol_context'),'name' => 'protocol[context]','labelid' => 'iax-protocol-context','key' => 'identity','altkey' => 'name','default' => $element['protocol']['iax']['context']['default'],'value' => $context),$context_list);
+		$form->text(array('desc'	=> $this->bbf('fm_protocol_secret'),
+				  'name'	=> 'protocol[secret]',
+				  'labelid'	=> 'protocol-secret',
+				  'value'	=> $this->get_varra('info',array('protocol','secret')),
+				  'size'	=> 15)),
 
-	echo $form->select(array('desc' => $this->bbf('fm_protocol_context'),'name' => 'protocol[context]','labelid' => 'custom-protocol-context','key' => 'identity','altkey' => 'name','default' => $element['protocol']['custom']['context']['default'],'value' => $context),$context_list);
-else:
-	echo '<div id="fd-protocol-context" class="txt-center">',$url->href_html($this->bbf('create_context'),'service/ipbx/system_management/context','act=add'),'</div>';
-endif;
+		$form->text(array('desc'	=> $this->bbf('fm_protocol_interface'),
+				  'name'	=> 'protocol[interface]',
+				  'labelid'	=> 'protocol-interface',
+				  'default'	=> $element['protocol']['custom']['interface']['default'],
+				  'value'	=> $this->get_varra('info',array('protocol','interface')),
+				  'size'	=> 15)),
 
+		$form->text(array('desc'	=> $this->bbf('fm_ufeatures_number'),
+				  'name'	=> 'ufeatures[number]',
+				  'labelid'	=> 'ufeatures-number',
+				  'value'	=> $info['ufeatures']['number'],
+				  'size'	=> 15),
+			    'onchange="xivo_chgname();"
+			     onfocus="xivo_cpyname(); xivo_fm_set_onfocus(this);"'),
+
+		$form->select(array('desc'	=> $this->bbf('fm_userfeatures_ringseconds'),
+				    'name'	=> 'ufeatures[ringseconds]',
+				    'labelid'	=> 'ufeatures-ringseconds',
+				    'bbf'	=> array('mixkey','fm_userfeatures_ringseconds-opt'),
+				    'key'	=> false,
+				    'default'	=> $element['ufeatures']['ringseconds']['default'],
+				    'value'	=> (isset($info['ufeatures']['ringseconds']) === true ? (int) $info['ufeatures']['ringseconds'] : null)),			       $element['ufeatures']['ringseconds']['value']),
+
+		$form->select(array('desc'	=> $this->bbf('fm_userfeatures_simultcalls'),
+				    'name'	=> 'ufeatures[simultcalls]',
+				    'labelid'	=> 'ufeatures-simultcalls',
+				    'key'	=> false,
+				    'default'	=> $element['ufeatures']['simultcalls']['default'],
+				    'value'	=> (isset($info['ufeatures']['simultcalls']) === true ? (int) $info['ufeatures']['simultcalls'] : null)),			       $element['ufeatures']['simultcalls']['value']),
+
+		$form->select(array('desc'	=> $this->bbf('fm_protocol_protocol'),
+				    'name'	=> 'protocol[protocol]',
+				    'labelid'	=> 'protocol-protocol',
+				    'bbf'	=> array('concatkey','fm_protocol_protocol-opt-'),
+				    'key'	=> false,
+				    'default'	=> $element['ufeatures']['protocol']['default'],
+				    'value'	=> $info['ufeatures']['protocol']),
+			      $element['ufeatures']['protocol']['value'],
+			      'onchange="xivo_chg_protocol(this.value); xivo_chgname();"
+			       onfocus="xivo_cpyname(); xivo_fm_set_onfocus(this);"');
+
+	if($context_list !== false):
+		echo	$form->select(array('desc'	=> $this->bbf('fm_protocol_context'),
+					    'name'	=> 'protocol[context]',
+					    'labelid'	=> 'sip-protocol-context',
+					    'key'	=> 'identity',
+					    'altkey'	=> 'name',
+					    'default'	=> $element['protocol']['sip']['context']['default'],
+					    'value'	=> $context),$context_list),
+
+			$form->select(array('desc'	=> $this->bbf('fm_protocol_context'),
+					    'name'	=> 'protocol[context]',
+					    'labelid'	=> 'iax-protocol-context',
+					    'key'	=> 'identity',
+					    'altkey'	=> 'name',
+					    'default'	=> $element['protocol']['iax']['context']['default'],
+					    'value'	=> $context),
+				      $context_list),
+
+			$form->select(array('desc'	=> $this->bbf('fm_protocol_context'),
+					    'name'	=> 'protocol[context]',
+					    'labelid'	=> 'custom-protocol-context',
+					    'key'	=> 'identity',
+					    'altkey'	=> 'name',
+					    'default'	=> $element['protocol']['custom']['context']['default'],
+					    'value'	=> $context),
+				      $context_list);
+	else:
+		echo	'<div id="fd-protocol-context" class="txt-center">',
+			$url->href_html($this->bbf('create_context'),
+					'service/ipbx/system_management/context',
+					'act=add'),
+			'</div>';
+	endif;
 ?>
 </div>
 
@@ -99,11 +176,30 @@ endif;
 
 <div id="sb-part-codec" class="b-nodisplay">
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_codec-custom'),'name' => 'codec-active','labelid' => 'codec-active','checked' => $codec_active),'onclick="xivo_chg_attrib(\'fm_codec\',\'it-\'+xivo_protocol+\'-protocol-disallow\',(this.checked == true ? 0 : 1))"');?>
+<?php
+	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_codec-custom'),
+				      'name'	=> 'codec-active',
+				      'labelid'	=> 'codec-active',
+				      'checked'	=> $codec_active),
+				'onclick="xivo_chg_attrib(\'fm_codec\',
+							  \'it-\'+xivo_protocol+\'-protocol-disallow\',
+							  (this.checked == true ? 0 : 1))"'),
 
-<?=$form->select(array('desc' => $this->bbf('fm_protocol_codec-disallow'),'name' => 'protocol[disallow]','labelid' => 'sip-protocol-disallow','key' => false,'bbf' => array('concatvalue','fm_protocol_codec-disallow-opt-')),$element['protocol']['sip']['disallow']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_protocol_codec-disallow'),'name' => 'protocol[disallow]','labelid' => 'iax-protocol-disallow','key' => false,'bbf' => array('concatvalue','fm_protocol_codec-disallow-opt-')),$element['protocol']['iax']['disallow']['value']);?>
+		$form->select(array('desc'	=> $this->bbf('fm_protocol_codec-disallow'),
+				    'name'	=> 'protocol[disallow]',
+				    'labelid'	=> 'sip-protocol-disallow',
+				    'key'	=> false,
+				    'bbf'	=> array('concatvalue','fm_protocol_codec-disallow-opt-')),
+			      $element['protocol']['sip']['disallow']['value']),
+
+		$form->select(array('desc'	=> $this->bbf('fm_protocol_codec-disallow'),
+				    'name'	=> 'protocol[disallow]',
+				    'labelid'	=> 'iax-protocol-disallow',
+				    'key'	=> false,
+				    'bbf'	=> array('concatvalue','fm_protocol_codec-disallow-opt-')),
+			      $element['protocol']['iax']['disallow']['value']);
+?>
 
 <div id="codeclist" class="fm-field fm-multilist">
 	<p>
@@ -112,131 +208,314 @@ endif;
 		</label>
 	</p>
 	<div class="slt-outlist">
-		<?=$form->select(array('name' => 'codeclist','label' => false,'id' => 'it-sip-codeclist','multiple' => true,'size' => 5,'field' => false,'key' => false,'bbf' => 'ast_codec_name_type-'),$element['protocol']['sip']['allow']['value']);?>
-		<?=$form->select(array('name' => 'codeclist','label' => false,'id' => 'it-iax-codeclist','multiple' => true,'size' => 5,'field' => false,'key' => false,'bbf' => 'ast_codec_name_type-'),$element['protocol']['iax']['allow']['value']);?>
+<?php
+		echo	$form->select(array('name'	=> 'codeclist',
+					    'label'	=> false,
+					    'id'	=> 'it-sip-codeclist',
+					    'multiple'	=> true,
+					    'size'	=> 5,
+					    'field'	=> false,
+					    'key'	=> false,
+					    'bbf'	=> 'ast_codec_name_type-'),
+				      $element['protocol']['sip']['allow']['value']),
+
+			$form->select(array('name'	=> 'codeclist',
+					    'label'	=> false,
+					    'id'	=> 'it-iax-codeclist',
+					    'multiple'	=> true,
+					    'size'	=> 5,
+					    'field'	=> false,
+					    'key'	=> false,
+					    'bbf'	=> 'ast_codec_name_type-'),
+				      $element['protocol']['iax']['allow']['value']);
+?>
 	</div>
+
 	<div class="inout-list">
-		<a href="#" onclick="xivo_fm_move_selected('it-'+xivo_protocol+'-codeclist','it-'+xivo_protocol+'-codec'); return(xivo_free_focus());" title="<?=$this->bbf('bt_incodec');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_incodec'),'class="bt-inlist" id="bt-incodec" border="0"');?></a><br />
-
-		<a href="#" onclick="xivo_fm_move_selected('it-'+xivo_protocol+'-codec','it-'+xivo_protocol+'-codeclist'); return(xivo_free_focus());" title="<?=$this->bbf('bt_outcodec');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outcodec'),'class="bt-outlist" id="bt-outcodec" border="0"');?></a>
+		<a href="#"
+		   onclick="xivo_fm_move_selected('it-'+xivo_protocol+'-codeclist',
+		   				  'it-'+xivo_protocol+'-codec');
+			    return(xivo_free_focus());"
+		   title="<?=$this->bbf('bt_incodec');?>">
+		   	<?=$url->img_html('img/site/button/row-left.gif',
+					  $this->bbf('bt_incodec'),
+					  'class="bt-inlist" id="bt-incodec" border="0"');?></a><br />
+		<a href="#"
+		   onclick="xivo_fm_move_selected('it-'+xivo_protocol+'-codec',
+		   				  'it-'+xivo_protocol+'-codeclist');
+			    return(xivo_free_focus());"
+		   title="<?=$this->bbf('bt_outcodec');?>">
+			<?=$url->img_html('img/site/button/row-right.gif',
+					  $this->bbf('bt_outcodec'),
+					  'class="bt-outlist" id="bt-outcodec" border="0"');?></a>
 	</div>
+
 	<div class="slt-inlist">
+<?php
+		echo	$form->select(array('name'	=> 'protocol[allow][]',
+					    'label'	=> false,
+					    'id'	=> 'it-sip-codec',
+					    'multiple'	=> true,
+					    'size'	=> 5,
+					    'field'	=> false,
+					    'key'	=> false,
+					    'bbf'	=> 'ast_codec_name_type-'),
+				      $allow),
 
-		<?=$form->select(array('name' => 'protocol[allow][]','label' => false,'id' => 'it-sip-codec','multiple' => true,'size' => 5,'field' => false,'key' => false,'bbf' => 'ast_codec_name_type-'),$allow);?>
-
-		<?=$form->select(array('name' => 'protocol[allow][]','label' => false,'id' => 'it-iax-codec','multiple' => true,'size' => 5,'field' => false,'key' => false,'bbf' => 'ast_codec_name_type-'),$allow);?>
-
+			$form->select(array('name'	=> 'protocol[allow][]',
+					    'label'	=> false,
+					    'id'	=> 'it-iax-codec',
+					    'multiple'	=> true,
+					    'size'	=> 5,
+					    'field'	=> false,
+					    'key'	=> false,
+					    'bbf'	=> 'ast_codec_name_type-'),
+				      $allow);
+?>
 		<div class="bt-updown">
-
-			<a href="#" onclick="xivo_fm_order_selected('it-'+xivo_protocol+'-codec',1); return(xivo_free_focus());" title="<?=$this->bbf('bt_upcodec');?>"><?=$url->img_html('img/site/button/row-up.gif',$this->bbf('bt_upcodec'),'class="bt-uplist" id="bt-upcodec" border="0"');?></a><br />
-
-			<a href="#" onclick="xivo_fm_order_selected('it-'+xivo_protocol+'-codec',-1); return(xivo_free_focus());" title="<?=$this->bbf('bt_downcodec');?>"><?=$url->img_html('img/site/button/row-down.gif',$this->bbf('bt_downcodec'),'class="bt-downlist" id="bt-downcodec" border="0"');?></a>
-
+			<a href="#"
+			   onclick="xivo_fm_order_selected('it-'+xivo_protocol+'-codec',1);
+			   	    return(xivo_free_focus());"
+			   title="<?=$this->bbf('bt_upcodec');?>">
+			   	<?=$url->img_html('img/site/button/row-up.gif',
+						  $this->bbf('bt_upcodec'),
+						  'class="bt-uplist" id="bt-upcodec" border="0"');?></a><br />
+			<a href="#"
+			   onclick="xivo_fm_order_selected('it-'+xivo_protocol+'-codec',-1);
+			   	    return(xivo_free_focus());"
+			   title="<?=$this->bbf('bt_downcodec');?>">
+			   	<?=$url->img_html('img/site/button/row-down.gif',
+						  $this->bbf('bt_downcodec'),
+						  'class="bt-downlist" id="bt-downcodec" border="0"');?></a>
 		</div>
-
 	</div>
 </div>
 <div class="clearboth"></div>
-
 </div>
 
 <div id="sb-part-voicemail" class="b-nodisplay">
-
-	<?=$form->select(array('desc' => $this->bbf('fm_userfeatures_voicemailid'),'name' => 'ufeatures[voicemailid]','labelid' => 'ufeatures-voicemailid','empty' => true,'key' => 'identity','altkey' => 'uniqueid','value' => $info['ufeatures']['voicemailid']),$voicemail_list,'onchange="xivo_voicemail_selection(this.value);"',array('add' => $this->bbf('fm_voicemail-opt-add')));?>
-
-	<?=$form->text(array('desc' => $this->bbf('fm_voicemail_fullname'),'name' => 'voicemail[fullname]','labelid' => 'voicemail-fullname','value' => $this->get_varra('voicemail','fullname'),'size' => 15));?>
-
-	<?=$form->text(array('desc' => $this->bbf('fm_voicemail_mailbox'),'name' => 'voicemail[mailbox]','labelid' => 'voicemail-mailbox','value' => $this->get_varra('voicemail','mailbox'),'size' => 10));?>
-
-	<?=$form->text(array('desc' => $this->bbf('fm_voicemail_password'),'name' => 'voicemail[password]','labelid' => 'voicemail-password','value' => $this->get_varra('voicemail','password'),'size' => 10));?>
-
-	<?=$form->text(array('desc' => $this->bbf('fm_voicemail_email'),'name' => 'voicemail[email]','labelid' => 'voicemail-email','value' => $this->get_varra('voicemail','email'),'size' => 15));?>
-
 <?php
+	echo	$form->select(array('desc'	=> $this->bbf('fm_userfeatures_voicemailid'),
+				    'name'	=> 'ufeatures[voicemailid]',
+				    'labelid'	=> 'ufeatures-voicemailid',
+				    'empty'	=> true,
+				    'key'	=> 'identity',
+				    'altkey'	=> 'uniqueid',
+				    'value'	=> $info['ufeatures']['voicemailid']),
+			      $voicemail_list,
+			      'onchange="xivo_voicemail_selection(this.value);"',
+			      array('add'	=> $this->bbf('fm_voicemail-opt-add'))),
 
-if(($tz_list = $this->get_var('tz_list')) !== false):
+		$form->text(array('desc'	=> $this->bbf('fm_voicemail_fullname'),
+				  'name'	=> 'voicemail[fullname]',
+				  'labelid'	=> 'voicemail-fullname',
+				  'value'	=> $this->get_varra('voicemail','fullname'),
+				  'size'	=> 15)),
 
-	echo $form->select(array('desc' => $this->bbf('fm_voicemail_tz'),'name' => 'voicemail[tz]','labelid' => 'voicemail-tz','key' => 'name','default' => $element['voicemail']['tz']['default'],'value' => $this->get_varra('voicemail','tz')),$tz_list);
+		$form->text(array('desc'	=> $this->bbf('fm_voicemail_mailbox'),
+				  'name'	=> 'voicemail[mailbox]',
+				  'labelid'	=> 'voicemail-mailbox',
+				  'value'	=> $this->get_varra('voicemail','mailbox'),
+				  'size'	=> 10)),
 
-endif;
+		$form->text(array('desc'	=> $this->bbf('fm_voicemail_password'),
+				  'name'	=> 'voicemail[password]',
+				  'labelid'	=> 'voicemail-password',
+				  'value'	=> $this->get_varra('voicemail','password'),
+				  'size'	=> 10)),
 
+		$form->text(array('desc'	=> $this->bbf('fm_voicemail_email'),
+				  'name'	=> 'voicemail[email]',
+				  'labelid'	=> 'voicemail-email',
+				  'value'	=> $this->get_varra('voicemail','email'),
+				  'size'	=> 15));
+
+	if(($tz_list = $this->get_var('tz_list')) !== false):
+		echo	$form->select(array('desc'	=> $this->bbf('fm_voicemail_tz'),
+					    'name'	=> 'voicemail[tz]',
+					    'labelid'	=> 'voicemail-tz',
+					    'key'	=> 'name',
+					    'default'	=> $element['voicemail']['tz']['default'],
+					    'value'	=> $this->get_varra('voicemail','tz')),$tz_list);
+	endif;
+
+	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_voicemailfeatures_skipcheckpass'),
+				      'name'	=> 'vmfeatures[skipcheckpass]',
+				      'labelid'	=> 'vmfeatures-skipcheckpass',
+				      'default'	=> $element['vmfeatures']['skipcheckpass']['default'],
+				      'checked'	=> $this->get_varra('info',array('vmfeatures','skipcheckpass')))),
+
+		$form->select(array('desc'	=> $this->bbf('fm_voicemail_attach'),
+				    'name'	=> 'voicemail[attach]',
+				    'labelid'	=> 'voicemail-attach',
+				    'bbf'	=> 'fm_bool-opt-',
+				    'empty'	=> true,
+				    'key'	=> false,
+				    'value'	=> $this->get_varra('voicemail','attach'),
+				    'default'	=> $element['voicemail']['attach']['default']),
+			      $element['voicemail']['attach']['value']),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_voicemail_deletevoicemail'),
+				      'name'	=> 'voicemail[deletevoicemail]',
+				      'labelid'	=> 'voicemail-deletevoicemail',
+				      'checked'	=> $this->get_varra('voicemail','deletevoicemail')));
 ?>
-
-	<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemailfeatures_skipcheckpass'),'name' => 'vmfeatures[skipcheckpass]','labelid' => 'vmfeatures-skipcheckpass','default' => $element['vmfeatures']['skipcheckpass']['default'],'checked' => $this->get_varra('info',array('vmfeatures','skipcheckpass'))));?>
-
-	<?=$form->select(array('desc' => $this->bbf('fm_voicemail_attach'),'name' => 'voicemail[attach]','labelid' => 'voicemail-attach','bbf' => 'fm_bool-opt-','empty' => true,'key' => false,'value' => $this->get_varra('voicemail','attach'),'default' => $element['voicemail']['attach']['default']),$element['voicemail']['attach']['value']);?>
-
-	<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail_deletevoicemail'),'name' => 'voicemail[deletevoicemail]','labelid' => 'voicemail-deletevoicemail','checked' => $this->get_varra('voicemail','deletevoicemail')));?>
-
 </div>
 
 <div id="sb-part-service" class="b-nodisplay">
+<?php
+	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enableclient'),
+				      'name'	=> 'ufeatures[enableclient]',
+				      'labelid'	=> 'ufeatures-enableclient',
+				      'default'	=> $element['ufeatures']['enableclient']['default'],
+				      'checked'	=> $info['ufeatures']['enableclient'])),
 
-	<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_enableclient'),'name' => 'ufeatures[enableclient]','labelid' => 'ufeatures-enableclient','default' => $element['ufeatures']['enableclient']['default'],'checked' => $info['ufeatures']['enableclient']));?>
+		$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enablehint'),
+				      'name'	=> 'ufeatures[enablehint]',
+				      'labelid'	=> 'ufeatures-enablehint',
+				      'default'	=> $element['ufeatures']['enablehint']['default'],
+				      'checked'	=> $info['ufeatures']['enablehint'])),
 
-	<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_enablehint'),'name' => 'ufeatures[enablehint]','labelid' => 'ufeatures-enablehint','default' => $element['ufeatures']['enablehint']['default'],'checked' => $info['ufeatures']['enablehint']));?>
+		$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enablevoicemail'),
+				      'name'	=> 'ufeatures[enablevoicemail]',
+				      'labelid'	=> 'ufeatures-enablevoicemail',
+				      'default'	=> $element['ufeatures']['enablevoicemail']['default'],
+				      'checked'	=> $info['ufeatures']['enablevoicemail'])),
 
-	<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_enablevoicemail'),'name' => 'ufeatures[enablevoicemail]','labelid' => 'ufeatures-enablevoicemail','default' => $element['ufeatures']['enablevoicemail']['default'],'checked' => $info['ufeatures']['enablevoicemail']));?>
+		$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enablexfer'),
+				      'name'	=> 'ufeatures[enablexfer]',
+				      'labelid'	=> 'ufeatures-enablexfer',
+				      'default'	=> $element['ufeatures']['enablexfer']['default'],
+				      'checked'	=> $info['ufeatures']['enablexfer'])),
 
-	<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_enablexfer'),'name' => 'ufeatures[enablexfer]','labelid' => 'ufeatures-enablexfer','default' => $element['ufeatures']['enablexfer']['default'],'checked' => $info['ufeatures']['enablexfer']));?>
+		$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enableautomon'),
+				      'name'	=> 'ufeatures[enableautomon]',
+				      'labelid'	=> 'ufeatures-enableautomon',
+				      'default'	=> $element['ufeatures']['enableautomon']['default'],
+				      'checked'	=> $info['ufeatures']['enableautomon'])),
 
-	<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_enableautomon'),'name' => 'ufeatures[enableautomon]','labelid' => 'ufeatures-enableautomon','default' => $element['ufeatures']['enableautomon']['default'],'checked' => $info['ufeatures']['enableautomon']));?>
+		$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_callrecord'),
+				      'name'	=> 'ufeatures[callrecord]',
+				      'labelid'	=> 'ufeatures-callrecord',
+				      'default'	=> $element['ufeatures']['callrecord']['default'],
+				      'checked'	=> $info['ufeatures']['callrecord'])),
 
-	<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_callrecord'),'name' => 'ufeatures[callrecord]','labelid' => 'ufeatures-callrecord','default' => $element['ufeatures']['callrecord']['default'],'checked' => $info['ufeatures']['callrecord']));?>
+		$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_callfilter'),
+				      'name'	=> 'ufeatures[callfilter]',
+				      'labelid'	=> 'ufeatures-callfilter',
+				      'default'	=> $element['ufeatures']['callfilter']['default'],
+				      'checked'	=> $info['ufeatures']['callfilter'])),
 
-	<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_callfilter'),'name' => 'ufeatures[callfilter]','labelid' => 'ufeatures-callfilter','default' => $element['ufeatures']['callfilter']['default'],'checked' => $info['ufeatures']['callfilter']));?>
+		$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enablednd'),
+				      'name'	=> 'ufeatures[enablednd]',
+				      'labelid'	=> 'ufeatures-enablednd',
+				      'default'	=> $element['ufeatures']['enablednd']['default'],
+				      'checked'	=> $info['ufeatures']['enablednd'])),
 
-	<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_enablednd'),'name' => 'ufeatures[enablednd]','labelid' => 'ufeatures-enablednd','default' => $element['ufeatures']['enablednd']['default'],'checked' => $info['ufeatures']['enablednd']));?>
+		$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enablerna'),
+				      'name'	=> 'ufeatures[enablerna]',
+				      'labelid'	=> 'ufeatures-enablerna',
+				      'default'	=> $element['ufeatures']['enablerna']['default'],
+				      'checked'	=> $info['ufeatures']['enablerna']),
+				'onchange="xivo_chg_attrib(\'fm_enablerna\',\'it-ufeatures-destrna\',this.checked)"'),
 
-	<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_enablerna'),'name' => 'ufeatures[enablerna]','labelid' => 'ufeatures-enablerna','default' => $element['ufeatures']['enablerna']['default'],'checked' => $info['ufeatures']['enablerna']),'onchange="xivo_chg_attrib(\'fm_enablerna\',\'it-ufeatures-destrna\',(this.checked == false ? 0 : 1))"');?>
+		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_destrna'),
+				  'name'	=> 'ufeatures[destrna]',
+				  'labelid'	=> 'ufeatures-destrna',
+				  'value'	=> $info['ufeatures']['destrna'],
+				  'size'	=> 15)),
 
-	<?=$form->text(array('desc' => $this->bbf('fm_userfeatures_destrna'),'name' => 'ufeatures[destrna]','labelid' => 'ufeatures-destrna','value' => $info['ufeatures']['destrna'],'size' => 15));?>
+		$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enablebusy'),
+				      'name'	=> 'ufeatures[enablebusy]',
+				      'labelid'	=> 'ufeatures-enablebusy',
+				      'default'	=> $element['ufeatures']['enablebusy']['default'],
+				      'checked'	=> $info['ufeatures']['enablebusy']),
+				'onchange="xivo_chg_attrib(\'fm_enablebusy\',\'it-ufeatures-destbusy\',this.checked)"'),
 
-	<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_enablebusy'),'name' => 'ufeatures[enablebusy]','labelid' => 'ufeatures-enablebusy','default' => $element['ufeatures']['enablebusy']['default'],'checked' => $info['ufeatures']['enablebusy']),'onchange="xivo_chg_attrib(\'fm_enablebusy\',\'it-ufeatures-destbusy\',(this.checked == false ? 0 : 1))"');?>
+		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_destbusy'),
+				  'name'	=> 'ufeatures[destbusy]',
+				  'labelid'	=> 'ufeatures-destbusy',
+				  'value'	=> $info['ufeatures']['destbusy'],
+				  'size'	=> 15)),
 
-	<?=$form->text(array('desc' => $this->bbf('fm_userfeatures_destbusy'),'name' => 'ufeatures[destbusy]','labelid' => 'ufeatures-destbusy','value' => $info['ufeatures']['destbusy'],'size' => 15));?>
+		$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enableunc'),
+				      'name'	=> 'ufeatures[enableunc]',
+				      'labelid'	=> 'ufeatures-enableunc',
+				      'default'	=> $element['ufeatures']['enableunc']['default'],
+				      'checked'	=> $info['ufeatures']['enableunc']),
+				'onchange="xivo_chg_attrib(\'fm_enableunc\',\'it-ufeatures-destunc\',this.checked)"'),
 
-	<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_enableunc'),'name' => 'ufeatures[enableunc]','labelid' => 'ufeatures-enableunc','default' => $element['ufeatures']['enableunc']['default'],'checked' => $info['ufeatures']['enableunc']),'onchange="xivo_chg_attrib(\'fm_enableunc\',\'it-ufeatures-destunc\',(this.checked == false ? 0 : 1))"');?>
+		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_destunc'),
+				  'name'	=> 'ufeatures[destunc]',
+				  'labelid'	=> 'ufeatures-destunc',
+				  'value'	=> $info['ufeatures']['destunc'],
+				  'size'	=> 15)),
 
-	<?=$form->text(array('desc' => $this->bbf('fm_userfeatures_destunc'),'name' => 'ufeatures[destunc]','labelid' => 'ufeatures-destunc','value' => $info['ufeatures']['destunc'],'size' => 15));?>
-
-	<?=$form->select(array('desc' => $this->bbf('fm_userfeatures_bsfilter'),'name' => 'ufeatures[bsfilter]','labelid' => 'ufeatures-bsfilter','bbf' => array('concatkey','fm_userfeatures_bsfilter-opt-'),'key' => false,'default' => $element['ufeatures']['bsfilter']['default'],'value' => $info['ufeatures']['bsfilter']),$element['ufeatures']['bsfilter']['value']);?>
-
+		$form->select(array('desc'	=> $this->bbf('fm_userfeatures_bsfilter'),
+				    'name'	=> 'ufeatures[bsfilter]',
+				    'labelid'	=> 'ufeatures-bsfilter',
+				    'bbf'	=> array('concatkey','fm_userfeatures_bsfilter-opt-'),
+				    'key'	=> false,
+				    'default'	=> $element['ufeatures']['bsfilter']['default'],
+				    'value'	=> $info['ufeatures']['bsfilter']),
+			      $element['ufeatures']['bsfilter']['value']);
+?>
 </div>
 
 <div id="sb-part-autoprov" class="b-nodisplay">
 
 <?php
 	if($this->get_var('act') === 'edit'):
-
-	echo $form->select(array('desc' => $this->bbf('fm_autoprov_modact'),'name' => 'autoprov[modact]','labelid' => 'autoprov-modact','bbf' => 'fm_autoprov_modact-','key' => false,'empty' => true),$element['autoprov']['modact']['value'],'onchange="xivo_chg_attrib(\'fm_autoprov-\'+xivo_protocol,\'it-autoprov-modact\',(this.value != \'\' ? 0 : 1));"');
-
+		echo	$form->select(array('desc'	=> $this->bbf('fm_autoprov_modact'),
+					    'name'	=> 'autoprov[modact]',
+					    'labelid'	=> 'autoprov-modact',
+					    'bbf'	=> 'fm_autoprov_modact-',
+					    'key'	=> false,
+					    'empty'	=> true),
+				      $element['autoprov']['modact']['value'],
+				      'onchange="xivo_chg_attrib(\'fm_autoprov-\'+xivo_protocol,
+				      				 \'it-autoprov-modact\',
+								 (this.value == \'\'));"');
 	endif;
 
 	if(is_array($info['autoprov']) === false
 	|| $vendormodel === ''
 	|| (int) xivo_ak('iduserfeatures',$info['autoprov'],true) === 0):
-?>
-
-	<?=$form->select(array('desc' => $this->bbf('fm_autoprov_vendormodel'),'name' => 'autoprov[vendormodel]','labelid' => 'autoprov-vendormodel','optgroup' => array('key' => 'name'),'empty' => true,'key' => 'label','altkey' => 'path','value' => $vendormodel),$autoprov_list);?>
-
-	<?=$form->text(array('desc' => $this->bbf('fm_autoprov_macaddr'),'name' => 'autoprov[macaddr]','labelid' => 'autoprov-macaddr','value' => $info['autoprov']['macaddr'],'size' => 15));?>
-
-<?php
+		echo	$form->select(array('desc'	=> $this->bbf('fm_autoprov_vendormodel'),
+					    'name'	=> 'autoprov[vendormodel]',
+					    'labelid'	=> 'autoprov-vendormodel',
+					    'optgroup'	=> array('key'	=> 'name'),
+					    'empty'	=> true,
+					    'key'	=> 'label',
+					    'altkey'	=> 'path',
+					    'value'	=> $vendormodel),
+				      $autoprov_list),
+			$form->text(array('desc'	=> $this->bbf('fm_autoprov_macaddr'),
+					  'name'	=> 'autoprov[macaddr]',
+					  'labelid'	=> 'autoprov-macaddr',
+					  'value'	=> $info['autoprov']['macaddr'],
+					  'size'	=> 15));
 	elseif(isset($autoprov_list[$info['autoprov']['vendor']]) === true):
-?>
+		echo	'<p id="fd-autoprov-vendormodel" class="fm-field">',
+				'<label id="lb-autoprov-vendormodel"><span class="fm-desc">',
+				$this->bbf('fm_autoprov_vendormodel'),
+				'</span>&nbsp;',
+				$autoprov_list[$info['autoprov']['vendor']]['name'],
+				' ',
+				$autoprov_list[$info['autoprov']['vendor']]['model'][$info['autoprov']['model']]['label'],
+				'</label>',
+			'</p>',
 
-<p id="fd-autoprov-vendormodel" class="fm-field">
-	<label id="lb-autoprov-vendormodel"><span class="fm-desc"><?=$this->bbf('fm_autoprov_vendormodel');?></span>&nbsp;<?=$autoprov_list[$info['autoprov']['vendor']]['name']?> <?=$autoprov_list[$info['autoprov']['vendor']]['model'][$info['autoprov']['model']]['label']?></label>
-</p>
-
-<p id="fd-autoprov-macaddr" class="fm-field">
-	<label id="lb-autoprov-macaddr"><span class="fm-desc"><?=$this->bbf('fm_autoprov_macaddr');?></span>&nbsp;<?=$info['autoprov']['macaddr']?></label>
-</p>
-<?php
+			'<p id="fd-autoprov-macaddr" class="fm-field">',
+				'<label id="lb-autoprov-macaddr"><span class="fm-desc">',
+				$this->bbf('fm_autoprov_macaddr'),
+				'</span>&nbsp;',
+				$info['autoprov']['macaddr'],
+				'</label>',
+			'</p>';
 	endif;
 
-	echo $this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey');
+	echo	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey');
 ?>
 </div>
 
@@ -269,74 +548,198 @@ endif;
 <?php
 	if($rightcall['list'] !== false):
 ?>
-		<div id="rightcalllist" class="fm-field fm-multilist">
-			<div class="slt-outlist">
-
-		<?=$form->select(array('name' => 'rightcalllist','label' => false,'id' => 'it-rightcalllist','browse' => 'rightcall','key' => 'identity','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$rightcall['list']);?>
-
-			</div>
-			<div class="inout-list">
-
-		<a href="#" onclick="xivo_fm_move_selected('it-rightcalllist','it-rightcall'); return(xivo_free_focus());" title="<?=$this->bbf('bt_inrightcall');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inrightcall'),'class="bt-inlist" id="bt-inrightcall" border="0"');?></a><br />
-
-		<a href="#" onclick="xivo_fm_move_selected('it-rightcall','it-rightcalllist'); return(xivo_free_focus());" title="<?=$this->bbf('bt_outrightcall');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outrightcall'),'class="bt-outlist" id="bt-outrightcall" border="0"');?></a>
-
-			</div>
-			<div class="slt-inlist">
-
-		<?=$form->select(array('name' => 'rightcall[]','label' => false,'id' => 'it-rightcall','browse' => 'rightcall','key' => 'identity','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$rightcall['slt']);?>
-
-			</div>
+	<div id="rightcalllist" class="fm-field fm-multilist">
+		<div class="slt-outlist">
+			<?=$form->select(array('name'		=> 'rightcalllist',
+					       'label'		=> false,
+					       'id'		=> 'it-rightcalllist',
+					       'browse'		=> 'rightcall',
+					       'key'		=> 'identity',
+					       'altkey'		=> 'id',
+					       'multiple'	=> true,
+					       'size'		=> 5,
+					       'field'		=> false),
+					 $rightcall['list']);?>
 		</div>
-		<div class="clearboth"></div>
+		<div class="inout-list">
+			<a href="#"
+			   onclick="xivo_fm_move_selected('it-rightcalllist','it-rightcall');
+			            return(xivo_free_focus());"
+			   title="<?=$this->bbf('bt_inrightcall');?>">
+			   	<?=$url->img_html('img/site/button/row-left.gif',
+						  $this->bbf('bt_inrightcall'),
+						  'class="bt-inlist" id="bt-inrightcall" border="0"');?></a><br />
+			<a href="#"
+			   onclick="xivo_fm_move_selected('it-rightcall','it-rightcalllist');
+			   	    return(xivo_free_focus());"
+			   title="<?=$this->bbf('bt_outrightcall');?>">
+			   	<?=$url->img_html('img/site/button/row-right.gif',
+						  $this->bbf('bt_outrightcall'),
+						  'class="bt-outlist" id="bt-outrightcall" border="0"');?></a>
+		</div>
+		<div class="slt-inlist">
+			<?=$form->select(array('name'		=> 'rightcall[]',
+					       'label'		=> false,
+					       'id'		=> 'it-rightcall',
+					       'browse'		=> 'rightcall',
+					       'key'		=> 'identity',
+					       'altkey'		=> 'id',
+					       'multiple'	=> true,
+					       'size'		=> 5,
+					       'field'		=> false),
+					 $rightcall['slt']);?>
+		</div>
+	</div>
+	<div class="clearboth"></div>
 <?php
 	else:
-		echo '<div class="txt-center">',$url->href_html($this->bbf('create_rightcall'),'service/ipbx/call_management/rightcall','act=add'),'</div>';
+		echo	'<div class="txt-center">',
+			$url->href_html($this->bbf('create_rightcall'),
+					'service/ipbx/call_management/rightcall',
+					'act=add'),
+			'</div>';
 	endif;
 ?>
-
 </div>
 
 <div id="sb-part-last" class="b-nodisplay">
-
-	<?=$form->text(array('desc' => $this->bbf('fm_protocol_callerid'),'name' => 'protocol[callerid]','labelid' => 'protocol-callerid','value' => $this->get_varra('info',array('protocol','callerid')),'size' => 15,'notag' => false));?>
-
-	<?=$form->select(array('desc' => $this->bbf('fm_ufeatures_outcallerid'),'name' => 'ufeatures[outcallerid-type]','labelid' => 'ufeatures-outcallerid-type','bbf' => 'fm_ufeatures_outcallerid-opt-','key' => false,'value' => ($outcallerid_custom === true ? 'custom' : $outcallerid)),$element['ufeatures']['outcallerid-type']['value'],'onchange="xivo_chg_attrib(\'fm_outcallerid\',\'fd-ufeatures-outcallerid-custom\',(this.value != \'custom\' ? 0 : 1))"');?>
-
-	<?=$form->text(array('desc' => '&nbsp;','name' => 'ufeatures[outcallerid-custom]','labelid' => 'ufeatures-outcallerid-custom','value' => ($outcallerid_custom === true ? $outcallerid : ''),'size' => 15));?>
-
 <?php
+	echo	$form->text(array('desc'	=> $this->bbf('fm_protocol_callerid'),
+				  'name'	=> 'protocol[callerid]',
+				  'labelid'	=> 'protocol-callerid',
+				  'value'	=> $this->get_varra('info',array('protocol','callerid')),
+				  'size'	=> 15,
+				  'notag'	=> false)),
+
+		$form->select(array('desc'	=> $this->bbf('fm_ufeatures_outcallerid'),
+				    'name'	=> 'ufeatures[outcallerid-type]',
+				    'labelid'	=> 'ufeatures-outcallerid-type',
+				    'bbf'	=> 'fm_ufeatures_outcallerid-opt-',
+				    'key'	=> false,
+				    'value'	=> ($outcallerid_custom === true ? 'custom' : $outcallerid)),
+			      $element['ufeatures']['outcallerid-type']['value'],
+			      'onchange="xivo_chg_attrib(\'fm_outcallerid\',
+			      				 \'fd-ufeatures-outcallerid-custom\',
+							 (this.value == \'custom\'));"'),
+
+		$form->text(array('desc'	=> '&nbsp;',
+				  'name'	=> 'ufeatures[outcallerid-custom]',
+				  'labelid'	=> 'ufeatures-outcallerid-custom',
+				  'value'	=> ($outcallerid_custom === true ? $outcallerid : ''),
+				  'size'	=> 15));
+
 	if(($moh_list = $this->get_var('moh_list')) !== false):
-		echo $form->select(array('desc' => $this->bbf('fm_userfeatures_musiconhold'),'name' => 'ufeatures[musiconhold]','labelid' => 'ufeatures-musiconhold','key' => 'category','default' => $element['ufeatures']['musiconhold']['default'],'value' => $info['ufeatures']['musiconhold']),$moh_list);
+		echo	$form->select(array('desc'	=> $this->bbf('fm_userfeatures_musiconhold'),
+					    'name'	=> 'ufeatures[musiconhold]',
+					    'labelid'	=> 'ufeatures-musiconhold',
+					    'key'	=> 'category',
+					    'invalid'	=> ($this->get_var('act') === 'edit'),
+					    'default'	=> $element['ufeatures']['musiconhold']['default'],
+					    'value'	=> $info['ufeatures']['musiconhold']),
+				      $moh_list);
 	endif;
+
+	echo	$form->select(array('desc'	=> $this->bbf('fm_protocol_host'),
+				    'name'	=> 'protocol[host-dynamic]',
+				    'labelid'	=> 'sip-protocol-host-dynamic',
+				    'bbf'	=> 'fm_protocol_host-',
+				    'key'	=> false,
+				    'value'	=> ($sip_host_static === true ? 'static' : $host)),
+			      $element['protocol']['sip']['host-dynamic']['value'],
+			      'onchange="xivo_chg_attrib(\'fm_host\',
+			      				 \'fd-sip-protocol-host-static\',
+							 (this.value == \'static\'));"'),
+
+		$form->text(array('desc'	=> '&nbsp;',
+				  'name'	=> 'protocol[host-static]',
+				  'labelid'	=> 'sip-protocol-host-static',
+				  'size'	=> 15,
+				  'value'	=> ($sip_host_static === true ? $host : ''))),
+
+		$form->select(array('desc'	=> $this->bbf('fm_protocol_host'),
+				    'name'	=> 'protocol[host-dynamic]',
+				    'labelid'	=> 'iax-protocol-host-dynamic',
+				    'bbf'	=> 'fm_protocol_host-',
+				    'key'	=> false,
+				    'value'	=> ($iax_host_static === true ? 'static' : $host)),
+			      $element['protocol']['iax']['host-dynamic']['value'],
+			      'onchange="xivo_chg_attrib(\'fm_host\',
+			      				 \'fd-iax-protocol-host-static\',
+							 (this.value == \'static\'));"'),
+
+		$form->text(array('desc'	=> '&nbsp;',
+				  'name'	=> 'protocol[host-static]',
+				  'labelid'	=> 'iax-protocol-host-static',
+				  'size'	=> 15,
+				  'value'	=> ($iax_host_static === true ? $host : ''))),
+
+		$form->select(array('desc'	=> $this->bbf('fm_protocol_dtmfmode'),
+				    'name'	=> 'protocol[dtmfmode]',
+				    'labelid'	=> 'protocol-dtmfmode',
+				    'key'	=> false,
+				    'default'	=> $element['protocol']['sip']['dtmfmode']['default'],
+				    'value'	=> $this->get_varra('info',array('protocol','dtmfmode'))),
+			      $element['protocol']['sip']['dtmfmode']['value']),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_protocol_canreinvite'),
+				      'name'	=> 'protocol[canreinvite]',
+				      'labelid'	=> 'protocol-canreinvite',
+				      'default'	=> $element['protocol']['sip']['canreinvite']['default'],
+				      'checked'	=> $this->get_varra('info',array('protocol','canreinvite')))),
+
+		$form->select(array('desc'	=> $this->bbf('fm_protocol_amaflags'),
+				    'name'	=> 'protocol[amaflags]',
+				    'labelid'	=> 'sip-protocol-amaflags',
+				    'bbf'	=> 'fm_protocol_amaflags-opt-',
+				    'key'	=> false,
+				    'default'	=> $element['protocol']['sip']['amaflags']['default'],
+				    'value'	=> $amaflags),
+			      $element['protocol']['sip']['amaflags']['value']),
+
+		$form->select(array('desc'	=> $this->bbf('fm_protocol_amaflags'),
+				    'name'	=> 'protocol[amaflags]',
+				    'labelid'	=> 'iax-protocol-amaflags',
+				    'bbf'	=> 'fm_protocol_amaflags-opt-',
+				    'key'	=> false,
+				    'default'	=> $element['protocol']['sip']['amaflags']['default'],
+				    'value'	=> $amaflags),
+			      $element['protocol']['iax']['amaflags']['value']),
+
+		$form->text(array('desc'	=> $this->bbf('fm_protocol_accountcode'),
+				  'name'	=> 'protocol[accountcode]',
+				  'labelid'	=> 'protocol-accountcode',
+				  'value'	=> $this->get_varra('info',array('protocol','accountcode')),
+				  'size'	=> 15)),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_protocol_nat'),
+				      'name'	=> 'protocol[nat]',
+				      'labelid'	=> 'protocol-nat',
+				      'default'	=> $element['protocol']['sip']['nat']['default'],
+				      'checked'	=> $this->get_varra('info',array('protocol','nat')))),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_protocol_qualify'),
+				      'name'	=> 'protocol[qualify]',
+				      'labelid'	=> 'sip-protocol-qualify',
+				      'default'	=> $element['protocol']['sip']['qualify']['default'],
+				      'checked'	=> $qualify)),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_protocol_qualify'),
+				      'name'	=> 'protocol[qualify]',
+				      'labelid'	=> 'iax-protocol-qualify',
+				      'default'	=> $element['protocol']['iax']['qualify']['default'],
+				      'checked'	=> $qualify));
 ?>
-
-	<?=$form->select(array('desc' => $this->bbf('fm_protocol_host'),'name' => 'protocol[host-dynamic]','labelid' => 'sip-protocol-host-dynamic','bbf' => 'fm_protocol_host-','key' => false,'value' => ($sip_host_static === true ? 'static' : $host)),$element['protocol']['sip']['host-dynamic']['value'],'onchange="xivo_chg_attrib(\'fm_host\',\'fd-sip-protocol-host-static\',(this.value != \'static\' ? 0 : 1))"');?>
-
-	<?=$form->text(array('desc' => '&nbsp;','name' => 'protocol[host-static]','labelid' => 'sip-protocol-host-static','size' => 15,'value' => ($sip_host_static === true ? $host : '')));?>
-
-	<?=$form->select(array('desc' => $this->bbf('fm_protocol_host'),'name' => 'protocol[host-dynamic]','labelid' => 'iax-protocol-host-dynamic','bbf' => 'fm_protocol_host-','key' => false,'value' => ($iax_host_static === true ? 'static' : $host)),$element['protocol']['iax']['host-dynamic']['value'],'onchange="xivo_chg_attrib(\'fm_host\',\'fd-iax-protocol-host-static\',(this.value != \'static\' ? 0 : 1))"');?>
-
-	<?=$form->text(array('desc' => '&nbsp;','name' => 'protocol[host-static]','labelid' => 'iax-protocol-host-static','size' => 15,'value' => ($iax_host_static === true ? $host : '')));?>
-
-	<?=$form->select(array('desc' => $this->bbf('fm_protocol_dtmfmode'),'name' => 'protocol[dtmfmode]','labelid' => 'protocol-dtmfmode','key' => false,'default' => $element['protocol']['sip']['dtmfmode']['default'],'value' => $this->get_varra('info',array('protocol','dtmfmode'))),$element['protocol']['sip']['dtmfmode']['value']);?>
-
-	<?=$form->checkbox(array('desc' => $this->bbf('fm_protocol_canreinvite'),'name' => 'protocol[canreinvite]','labelid' => 'protocol-canreinvite','default' => $element['protocol']['sip']['canreinvite']['default'],'checked' => $this->get_varra('info',array('protocol','canreinvite'))));?>
-
-	<?=$form->select(array('desc' => $this->bbf('fm_protocol_amaflags'),'name' => 'protocol[amaflags]','labelid' => 'sip-protocol-amaflags','bbf' => 'fm_protocol_amaflags-opt-','key' => false,'default' => $element['protocol']['sip']['amaflags']['default'],'value' => $amaflags),$element['protocol']['sip']['amaflags']['value']);?>
-
-	<?=$form->select(array('desc' => $this->bbf('fm_protocol_amaflags'),'name' => 'protocol[amaflags]','labelid' => 'iax-protocol-amaflags','bbf' => 'fm_protocol_amaflags-opt-','key' => false,'default' => $element['protocol']['sip']['amaflags']['default'],'value' => $amaflags),$element['protocol']['iax']['amaflags']['value']);?>
-
-	<?=$form->text(array('desc' => $this->bbf('fm_protocol_accountcode'),'name' => 'protocol[accountcode]','labelid' => 'protocol-accountcode','value' => $this->get_varra('info',array('protocol','accountcode')),'size' => 15));?>
-
-	<?=$form->checkbox(array('desc' => $this->bbf('fm_protocol_nat'),'name' => 'protocol[nat]','labelid' => 'protocol-nat','default' => $element['protocol']['sip']['nat']['default'],'checked' => $this->get_varra('info',array('protocol','nat'))));?>
-
-	<?=$form->checkbox(array('desc' => $this->bbf('fm_protocol_qualify'),'name' => 'protocol[qualify]','labelid' => 'sip-protocol-qualify','default' => $element['protocol']['sip']['qualify']['default'],'checked' => $qualify));?>
-
-	<?=$form->checkbox(array('desc' => $this->bbf('fm_protocol_qualify'),'name' => 'protocol[qualify]','labelid' => 'iax-protocol-qualify','default' => $element['protocol']['iax']['qualify']['default'],'checked' => $qualify));?>
-
-<div class="fm-field fm-description"><p><label id="lb-ufeatures-description" for="it-ufeatures-description"><?=$this->bbf('fm_userfeatures_description');?></label></p>
-<?=$form->textarea(array('field' => false,'label' => false,'name' => 'ufeatures[description]','id' => 'it-ufeatures-description','cols' => 60,'rows' => 5,'default' => $element['ufeatures']['description']['default']),$info['ufeatures']['description']);?>
-</div>
-
+	<div class="fm-field fm-description">
+		<p>
+			<label id="lb-ufeatures-description" for="it-ufeatures-description"><?=$this->bbf('fm_userfeatures_description');?></label>
+		</p>
+		<?=$form->textarea(array('field'	=> false,
+					 'label'	=> false,
+					 'name'		=> 'ufeatures[description]',
+					 'id'		=> 'it-ufeatures-description',
+					 'cols'		=> 60,
+					 'rows'		=> 5,
+					 'default'	=> $element['ufeatures']['description']['default']),
+				   $info['ufeatures']['description']);?>
+	</div>
 </div>

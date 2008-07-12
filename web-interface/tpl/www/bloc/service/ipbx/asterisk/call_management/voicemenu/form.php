@@ -217,7 +217,6 @@
 <div id="voicemenu-flow" class="fm-field fm-multilist">
 
 	<div class="slt-list">
-
 		<div class="bt-updown">
 			<a href="#"
 			   onclick="xivo_fm_order_selected('it-voicemenu-flow',1,true); return(xivo_free_focus());"

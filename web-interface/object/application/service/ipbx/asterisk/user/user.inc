@@ -730,7 +730,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		$this->get_musiconhold();
 
-		if(isset($arr['musiconhold'],$this->_musiconhold[$arr['musiconhold']]) === false)
+		if(isset($arr['musiconhold']) === true
+		&& isset($this->_musiconhold[$arr['musiconhold']]) === false)
 			$arr['musiconhold'] = '';
 
 		if(($rs = $this->_userfeatures->chk_values($arr)) === false)
