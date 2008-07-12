@@ -19,6 +19,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
  */
 
+#include <asterisk.h>
+
+ASTERISK_FILE_VERSION(__FILE__, "$Revision$")
+
 #include <asterisk/lock.h>
 #include <asterisk/logger.h>
 #include <asterisk/channel.h>
@@ -33,10 +37,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-
-#define MODULE_DESCRIPTION	"Fast Originate action, implemented differently"
-
-const char module_date_revision[] = "ami_aoriginate $Date$ $Revision$";
 
 struct aoriginate_data {
 	char tech[AST_MAX_EXTENSION];
@@ -54,16 +54,12 @@ struct aoriginate_data {
 	struct ast_variable *vars;
 };
 
-char *description(void);
-char *key(void);
-
-#define AO_LOCAL_USER_ADD(u)
-
 #define AO_TOEXTEN 0
 #define AO_TOAPP 1
 #define AO_DEST(aodata) (!ast_strlen_zero((aodata)->app))
 
 /* evil use of not really exported function: */
+#error evil
 int ast_pbx_outgoing_cdr_failed(void);
 
 static void *action_aoriginate_run(void *data)
@@ -355,17 +351,4 @@ static int unload_module(void)
 	return 0;
 }
 
-char *description(void)
-{
-	return MODULE_DESCRIPTION;
-}
-
-char *key(void)
-{
-	return ASTERISK_GPL_KEY;
-}
-
-AST_MODULE_INFO(ASTERISK_GPL_KEY, AST_MODFLAG_GLOBAL_SYMBOLS, "Asynchronous Originate",
-		.load = load_module,
-		.unload = unload_module,
-		);
+AST_MODULE_INFO_STANDARD(ASTERISK_GPL_KEY, "Asynchronous Originate");
