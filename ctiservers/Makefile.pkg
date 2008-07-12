@@ -9,6 +9,6 @@ include $(NONO_MK)/autobuild-classic.mk
 
 DEB_PKG="pf-xivo-cti-server"
 DEB_TB_DEPS=""
-DEB_TAR_EXTRA_OPTIONS="--exclude=*.pyc" "--exclude=Calls" "--exclude=CallBooster.py"
+DEB_TAR_EXTRA_OPTIONS="--exclude=*.pyc"
 
 default:
