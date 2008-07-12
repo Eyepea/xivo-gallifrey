@@ -719,7 +719,7 @@ class DialAction:
 
 		if self.actionarg1:
 			self.agi.set_variable('XIVO_FWD_%s_ACTIONARG1' % xtype,
-					 self.actionarg1)
+					 self.actionarg1.replace('|',';'))
 
 		if self.actionarg2:
 			self.agi.set_variable('XIVO_FWD_%s_ACTIONARG2' % xtype,
