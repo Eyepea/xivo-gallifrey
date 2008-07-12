@@ -3,7 +3,7 @@
 # export CC=gcc
 
 CFLAGS ?= -O2 -fPIC
-Z_CFLAGS := $(CFLAGS) -D _GNU_SOURCE -W -Wall -Wmissing-prototypes -Wstrict-prototypes
+Z_CFLAGS := $(CFLAGS) -D _GNU_SOURCE -DAST_MODULE=\"func_strsubst\" -W -Wall -Wmissing-prototypes -Wstrict-prototypes
 LIBS ?=
 Z_LIBS := $(LIBS)
 
