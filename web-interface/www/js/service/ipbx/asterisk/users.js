@@ -582,28 +582,6 @@ function xivo_chgname()
 	return(true);
 }
 
-function xivo_ast_user_chg_callerid()
-{
-	xivo_cpyname();
-
-	if(xivo_fm_cpyname['protocol-callerid'] == false)
-		return(false);
-	
-	var name = '';
-
-	var firstname = xivo_eid('it-ufeatures-firstname').value;
-	var lastname = xivo_eid('it-ufeatures-lastname').value;
-
-	if(xivo_is_undef(firstname) == false)
-		name += firstname;
-
-	if(xivo_is_undef(lastname) == false)
-		name += name.length == 0 ? lastname : ' '+lastname;
-
-	if(xivo_fm_cpyname['protocol-callerid'] == true)
-		xivo_eid('it-protocol-callerid').value = name;
-}
-
 function xivo_chg_protocol(protocol)
 {
 	if(xivo_is_undef(xivo_elt_protocol[protocol]) == true)
