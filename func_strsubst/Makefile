@@ -18,7 +18,7 @@ MY_CFLAGS =     -std=gnu99                      \
                 -Wshadow
 
 CFLAGS ?= -O2 -fomit-frame-pointer
-Z_CFLAGS := $(CFLAGS) -fpic -DPIC -shared -pthread -D _GNU_SOURCE -DAST_MODULE=\"func_strsubst\" $(MY_CFLAGS)
+Z_CFLAGS := $(CFLAGS) -fpic -DPIC -shared -pthread -D _GNU_SOURCE $(MY_CFLAGS) -DAST_MODULE=\"func_strsubst\" 
 LIBS ?=
 Z_LIBS := $(LIBS)
 
