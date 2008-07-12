@@ -2,8 +2,23 @@
 # export PATH=/path/to/toolchain/powerpc-linux-gnu/bin:$PATH
 # export CC=gcc
 
-CFLAGS ?= -O2 -fPIC
-Z_CFLAGS := $(CFLAGS) -D _GNU_SOURCE -DAST_MODULE=\"func_strsubst\" -W -Wall -Wmissing-prototypes -Wstrict-prototypes
+# Relaxed Jedi Master Linux Compilation options:
+MY_CFLAGS =     -std=gnu99                      \
+                -Wundef                         \
+                -Wstrict-prototypes             \
+                -Wmissing-prototypes            \
+                -Wall                           \
+                -W                              \
+                -Wcast-qual                     \
+                -Wcast-align                    \
+                -Wwrite-strings                 \
+                -Wnested-externs                \
+                -Wmissing-declarations          \
+                -pedantic                       \
+                -Wshadow
+
+CFLAGS ?= -O2 -fomit-frame-pointer
+Z_CFLAGS := $(CFLAGS) -fpic -DPIC -shared -pthread -D _GNU_SOURCE -DAST_MODULE=\"func_strsubst\" $(MY_CFLAGS)
 LIBS ?=
 Z_LIBS := $(LIBS)
 
@@ -19,7 +34,7 @@ PREFIX ?= /usr
 all: $(BINARIES)
 
 %.so: %.o
-	$(CC) -shared -Xlinker -x -o $@ $< $(Z_LIBS)
+	$(CC) -fpic -shared -Xlinker -x -pthread -o $@ $< $(Z_LIBS)
 
 %.o: %.c
 	$(CC) $(Z_CFLAGS) -c -o $@ $<

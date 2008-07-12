@@ -93,7 +93,7 @@ static char *decode(char *string)
 	return string;
 }
 
-static char *strsubst(struct ast_channel *chan, char *cmd, char *data, char *buf, size_t len) 
+static int strsubst(struct ast_channel *chan, char *cmd, char *data, char *buf, size_t len) 
 {
 	char *string;
 	char *search;
@@ -104,7 +104,7 @@ static char *strsubst(struct ast_channel *chan, char *cmd, char *data, char *buf
 	UNUSED(cmd);
 
 	if (len == 0)
-		return buf;
+		return -1;
 
 	delim = ast_strdupa(data);
 	
@@ -121,16 +121,16 @@ static char *strsubst(struct ast_channel *chan, char *cmd, char *data, char *buf
 	if (ast_strlen_zero(search)) {
 		ast_log(LOG_WARNING, "Empty <string_to_search> argument in call to " STRSUBST_SYNTAX ", returning unchanged <string>\n");
 		ast_copy_string(buf, string, len);
-		return buf;
+		return -1;
 	}
 
 	real_strsubst(buf, len, string, search, replace);
-	return buf;
+	return 0;
 
 error_strsep:
 	ast_log(LOG_WARNING, "Wrong number of arguments in call to " STRSUBST_SYNTAX " function\n");
 	ast_copy_string(buf, "", len);
-	return buf;
+	return -1;
 }
 
 static struct ast_custom_function strsubst_function = {
