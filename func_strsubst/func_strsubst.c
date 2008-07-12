@@ -16,6 +16,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
  */
 
+#include <asterisk.h>
+
+ASTERISK_FILE_VERSION(__FILE__, "$Revision$")
+
 #include <asterisk/module.h>
 #include <asterisk/pbx.h>
 #include <string.h>
@@ -23,10 +27,7 @@
 
 #define UNUSED(x) ((void)x)
 
-#define MODULE_DESCRIPTION	"Function to replace substrings and application to set a channel variable with a string containing pipe characters"
 #define STRSUBST_SYNTAX		"STRSUBST(<string>,<string_to_search>,<replacement_string>)"
-
-const char module_date_revision[] = "func_strsubst $Date$ $Revision$ $HeadURL$";
 
 static void real_strsubst(char *retbuf, size_t len, const char *string, const char *search, const char *replace)
 {
@@ -198,7 +199,7 @@ error:
 }
 
 static int loaded;
-int load_module(void)
+static int load_module(void)
 {
 	ast_custom_function_register(&strsubst_function);
 	if (ast_register_application(
@@ -210,7 +211,7 @@ int load_module(void)
 	return 0;
 }
 
-int unload_module(void)
+static int unload_module(void)
 {
 	if (!loaded)
 		return 0;
@@ -219,17 +220,4 @@ int unload_module(void)
 	return 0;
 }
 
-char *description(void)
-{
-	return MODULE_DESCRIPTION;
-}
-
-int usecount(void)
-{
-	return 0;
-}
-
-char *key(void)
-{
-	return ASTERISK_GPL_KEY;
-}
+AST_MODULE_INFO_STANDARD(ASTERISK_GPL_KEY, "substrings replacement func + setvar with pipes in content app");
