@@ -22,6 +22,8 @@ Z_CFLAGS := $(CFLAGS) -fpic -DPIC -shared -pthread -D _GNU_SOURCE $(MY_CFLAGS) -
 LIBS ?=
 Z_LIBS := $(LIBS)
 
+LINKFLAGS = -fpic -shared -Xlinker -x -pthread
+
 BINARIES = func_strsubst.so
 
 # Use make DESTDIR=/path/to/sysroot PREFIX=/usr/local if you want to
@@ -34,7 +36,7 @@ PREFIX ?= /usr
 all: $(BINARIES)
 
 %.so: %.o
-	$(CC) -fpic -shared -Xlinker -x -pthread -o $@ $< $(Z_LIBS)
+	$(CC) $(LINKFLAGS) -o $@ $< $(Z_LIBS)
 
 %.o: %.c
 	$(CC) $(Z_CFLAGS) -c -o $@ $<
