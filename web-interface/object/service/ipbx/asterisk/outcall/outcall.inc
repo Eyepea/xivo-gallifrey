@@ -29,6 +29,7 @@ class xivo_service_asterisk_outcall extends xivo_service_asterisk_abstract
 	{
 		$this->_identity->_prepare_identity($data);
 
+		$data['exten'] = $this->_sre->display_extension($data['exten']);
 		$data['setcallerid'] = (bool) $data['setcallerid'];
 		$data['useenum'] = (bool) $data['useenum'];
 		$data['internal'] = (bool) $data['internal'];
