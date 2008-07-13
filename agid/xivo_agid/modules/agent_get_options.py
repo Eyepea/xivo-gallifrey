@@ -21,7 +21,11 @@ from xivo_agid import agid
 from xivo_agid import objects
 
 def agent_get_options(agi, cursor, args):
-	agent = objects.Agent(agi, cursor, number=int(args[0]))
+	try:
+		agent = objects.Agent(agi, cursor, number=args[0])
+	except LookupError, e:
+		agi.verbose(str(e))
+		return
 
 	options = ""
 

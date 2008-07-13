@@ -507,7 +507,7 @@ class Group:
 		res = cursor.fetchone()
 
 		if not res:
-			raise LookupError("Unable to find group (id: %d, number: %s, context: %s)" % (xid, number, context))
+			raise LookupError("Unable to find group (id: %s, number: %s, context: %s)" % (xid, number, context))
 
 		self.id = res['groupfeatures.id']
 		self.number = res['groupfeatures.number']
@@ -559,7 +559,7 @@ class MeetMe:
 		res = cursor.fetchone()
 
 		if not res:
-			raise LookupError("Unable to find conference room (id: %d, number: %s, context: %s)" % (xid, number, context))
+			raise LookupError("Unable to find conference room (id: %s, number: %s, context: %s)" % (xid, number, context))
 
 		self.id = res['meetmefeatures.id']
 		self.number = res['meetmefeatures.number']
@@ -628,7 +628,7 @@ class Queue:
 		res = cursor.fetchone()
 
 		if not res:
-			raise LookupError("Unable to find queue (id: %d, number: %s, context: %s)" % (xid, number, context))
+			raise LookupError("Unable to find queue (id: %s, number: %s, context: %s)" % (xid, number, context))
 
 		self.id = res['queuefeatures.id']
 		self.number = res['queuefeatures.number']
@@ -676,7 +676,7 @@ class Agent:
 		res = cursor.fetchone()
 
 		if not res:
-			raise LookupError("Unable to find agent (id: %d, number: %s)" % (xid, number))
+			raise LookupError("Unable to find agent (id: %s, number: %s)" % (xid, number))
 
 		self.id = res['id']
 		self.number = res['number']
@@ -817,7 +817,7 @@ class HandyNumber:
 		res = cursor.fetchone()
 
 		if not res:
-			raise LookupError("Unable to find handy number (id: %d, exten: %s)" % (xid, exten))
+			raise LookupError("Unable to find handy number (id: %s, exten: %s)" % (xid, exten))
 
 		self.id = res['id']
 		self.exten = res['exten']
@@ -852,7 +852,7 @@ class DID:
 		res = cursor.fetchone()
 
 		if not res:
-			raise LookupError("Unable to find DID entry (id: %d, exten: %s, context: %s)" % (xid, exten, context))
+			raise LookupError("Unable to find DID entry (id: %s, exten: %s, context: %s)" % (xid, exten, context))
 
 		self.id = res['id']
 		self.exten = res['exten']
@@ -890,7 +890,7 @@ class Outcall:
 		res = cursor.fetchone()
 
 		if not res:
-			raise LookupError("Unable to find outcall entry (id: %d, exten: %s, context: %s)" % (xid, exten, context))
+			raise LookupError("Unable to find outcall entry (id: %s, exten: %s, context: %s)" % (xid, exten, context))
 
 		self.id = res['id']
 		self.exten = res['exten']
