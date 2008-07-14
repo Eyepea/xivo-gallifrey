@@ -18,14 +18,23 @@ __license__ = """
 """
 
 import os
+import pwd
 import time
 
 from xivo_agid import agid
 
+def get_uid_gid(name):
+	pw_name, pw_passwd, pw_uid, pw_gid, pw_gecos, pw_dir, pw_shell = pwd.getpwnam(name)
+	return pw_uid, pw_gid
+
+ASTERISK_UID, ASTERISK_GID = get_uid_gid("asterisk")
+
 def callback(agi, cursor, args):
+	context = args[0]
 	srcnum = agi.get_variable('XIVO_SRCNUM')
-	dstnum = agi.get_variable('XIVO_DSTNUM')
-	disa_params = '|'.join(args)
+
+	if srcnum in (None, ''):
+		agi.dp_break("Unable to find srcnum, srcnum = '%s'" % srcnum)
 
 	mtime = time.time() + 5
 	filename = "%s-%s.call" % (srcnum, int(mtime))
@@ -35,17 +44,18 @@ def callback(agi, cursor, args):
 	realfile = "/var/spool/asterisk/outgoing/" + filename
 
 	f = open(tmpfile, 'w')
-	f.write("Channel: Local/%s\n"
+	f.write("Channel: Local/%s@%s\n"
 		"MaxRetries: 0\n"
 		"RetryTime: 30\n"
 		"WaitTime: 30\n"
 		"CallerID: %s\n"
-		"Set: XIVO_DISAPARAMS=%s\n"
+		"Set: XIVO_DISACONTEXT=%s\n"
 		"Context: xivo-callbackdisa\n"
-		"Extension: s" % (srcnum, srcnum, disa_params))
+		"Extension: s" % (srcnum, context, srcnum, context))
 	f.close()
 
 	os.utime(tmpfile, (mtime, mtime))
+	os.chown(tmpfile, ASTERISK_UID, ASTERISK_GID)
 	os.rename(tmpfile, realfile)
 
 agid.register(callback)
