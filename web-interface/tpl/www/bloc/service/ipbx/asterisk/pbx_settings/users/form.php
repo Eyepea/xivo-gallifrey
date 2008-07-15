@@ -183,7 +183,7 @@ endif;
 				      'checked'	=> $codec_active),
 				'onclick="xivo_chg_attrib(\'fm_codec\',
 							  \'it-\'+xivo_protocol+\'-protocol-disallow\',
-							  (this.checked == true ? 0 : 1))"'),
+							  Number((this.checked === false)));"'),
 
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_codec-disallow'),
@@ -417,7 +417,7 @@ endif;
 				      'labelid'	=> 'ufeatures-enablerna',
 				      'default'	=> $element['ufeatures']['enablerna']['default'],
 				      'checked'	=> $info['ufeatures']['enablerna']),
-				'onchange="xivo_chg_attrib(\'fm_enablerna\',\'it-ufeatures-destrna\',this.checked)"'),
+				'onchange="xivo_chg_attrib(\'fm_enablerna\',\'it-ufeatures-destrna\',Number(this.checked));"'),
 
 		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_destrna'),
 				  'name'	=> 'ufeatures[destrna]',
@@ -430,7 +430,7 @@ endif;
 				      'labelid'	=> 'ufeatures-enablebusy',
 				      'default'	=> $element['ufeatures']['enablebusy']['default'],
 				      'checked'	=> $info['ufeatures']['enablebusy']),
-				'onchange="xivo_chg_attrib(\'fm_enablebusy\',\'it-ufeatures-destbusy\',this.checked)"'),
+				'onchange="xivo_chg_attrib(\'fm_enablebusy\',\'it-ufeatures-destbusy\',Number(this.checked));"'),
 
 		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_destbusy'),
 				  'name'	=> 'ufeatures[destbusy]',
@@ -443,7 +443,7 @@ endif;
 				      'labelid'	=> 'ufeatures-enableunc',
 				      'default'	=> $element['ufeatures']['enableunc']['default'],
 				      'checked'	=> $info['ufeatures']['enableunc']),
-				'onchange="xivo_chg_attrib(\'fm_enableunc\',\'it-ufeatures-destunc\',this.checked)"'),
+				'onchange="xivo_chg_attrib(\'fm_enableunc\',\'it-ufeatures-destunc\',Number(this.checked));"'),
 
 		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_destunc'),
 				  'name'	=> 'ufeatures[destunc]',
@@ -475,7 +475,7 @@ endif;
 				      $element['autoprov']['modact']['value'],
 				      'onchange="xivo_chg_attrib(\'fm_autoprov-\'+xivo_protocol,
 				      				 \'it-autoprov-modact\',
-								 (this.value == \'\'));"');
+								 Number((this.value == \'\')));"');
 	endif;
 
 	if(is_array($info['autoprov']) === false
@@ -620,7 +620,7 @@ endif;
 			      $element['ufeatures']['outcallerid-type']['value'],
 			      'onchange="xivo_chg_attrib(\'fm_outcallerid\',
 			      				 \'fd-ufeatures-outcallerid-custom\',
-							 (this.value == \'custom\'));"'),
+							 Number((this.value == \'custom\')));"'),
 
 		$form->text(array('desc'	=> '&nbsp;',
 				  'name'	=> 'ufeatures[outcallerid-custom]',
@@ -648,7 +648,7 @@ endif;
 			      $element['protocol']['sip']['host-dynamic']['value'],
 			      'onchange="xivo_chg_attrib(\'fm_host\',
 			      				 \'fd-sip-protocol-host-static\',
-							 (this.value == \'static\'));"'),
+							 Number((this.value == \'static\')));"'),
 
 		$form->text(array('desc'	=> '&nbsp;',
 				  'name'	=> 'protocol[host-static]',
@@ -665,7 +665,7 @@ endif;
 			      $element['protocol']['iax']['host-dynamic']['value'],
 			      'onchange="xivo_chg_attrib(\'fm_host\',
 			      				 \'fd-iax-protocol-host-static\',
-							 (this.value == \'static\'));"'),
+							 Number((this.value == \'static\')));"'),
 
 		$form->text(array('desc'	=> '&nbsp;',
 				  'name'	=> 'protocol[host-static]',
