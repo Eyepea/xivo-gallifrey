@@ -58,9 +58,37 @@ struct aoriginate_data {
 #define AO_TOAPP 1
 #define AO_DEST(aodata) (!ast_strlen_zero((aodata)->app))
 
-/* evil use of not really exported function: */
-#error evil
-int ast_pbx_outgoing_cdr_failed(void);
+/*! Function to post an empty cdr after a spool call fails.
+ *
+ *  This function posts an empty cdr for a failed spool call
+ *
+ *  The same function exists in ast_pbx_outgoing_cdr_failed() in main/pbx.c
+ *  This one should be updated if ast_pbx_outgoing_cdr_failed() changes.
+ */
+static int my_pbx_outgoing_cdr_failed(void)
+{
+	/* allocate a channel */
+	struct ast_channel *chan = ast_channel_alloc(0, AST_STATE_DOWN, 0, 0, "", "", "", 0, 0);
+
+	if (!chan)
+		return -1;  /* failure */
+
+	if (!chan->cdr) {
+		/* allocation of the cdr failed */
+		ast_channel_free(chan);   /* free the channel */
+		return -1;                /* return failure */
+	}
+
+	/* allocation of the cdr was successful */
+	ast_cdr_init(chan->cdr, chan);  /* initilize our channel's cdr */
+	ast_cdr_start(chan->cdr);       /* record the start and stop time */
+	ast_cdr_end(chan->cdr);
+	ast_cdr_failed(chan->cdr);      /* set the status to failed */
+	ast_cdr_detach(chan->cdr);      /* post and free the record */
+	ast_channel_free(chan);         /* free the channel */
+
+	return 0;  /* success */
+}
 
 static void *action_aoriginate_run(void *data)
 {
@@ -73,8 +101,8 @@ static void *action_aoriginate_run(void *data)
 	int reason = 0;
 	char chan_uniqueid[32] = "<null>";
 
-	cid_num = !ast_strlen_zero(aodata->cid_num) ? aodata->cid_num : NULL;
-	cid_name = !ast_strlen_zero(aodata->cid_name) ? aodata->cid_name : NULL;
+	cid_num = S_OR(aodata->cid_num, NULL);
+	cid_name = S_OR(aodata->cid_name, NULL);
 
 	memset(&oh, 0, sizeof(oh));
 	oh.cid_num = cid_num;
@@ -98,18 +126,6 @@ static void *action_aoriginate_run(void *data)
 		goto error_local_user_add;
 
 	ast_mutex_lock(&chan->lock);
-	if (chan->cdr) {
-		ast_log(LOG_WARNING, "%s already has a call record??\n", chan->name);
-	} else {
-		chan->cdr = ast_cdr_alloc();
-		if(!chan->cdr) {
-			ast_mutex_unlock(&chan->lock);
-			ast_log(LOG_WARNING, "Unable to create Call Detail Record\n");
-			goto error_cdr_alloc;
-		}
-		ast_cdr_init(chan->cdr, chan);
-		ast_cdr_start(chan->cdr);
-	}
 	if (chan->_state != AST_STATE_UP) {
 		ast_mutex_unlock(&chan->lock);
 		goto error_chan_state_not_up;
@@ -126,17 +142,25 @@ static void *action_aoriginate_run(void *data)
 			"Context: %s\r\n"		\
 			"Exten: %s\r\n"			\
 			"Reason: %d\r\n"		\
-			"Uniqueid: %s\r\n",		\
+			"Uniqueid: %s\r\n"		\
+			"CallerID: %s\r\n"		/* This parameter is deprecated and will be removed post-1.4 */	\
+			"CallerIDNum: %s\r\n"		\
+			"CallerIDName: %s\r\n",		\
 			aodata->idtext,			\
 			aodata->tech,			\
 			aodata->data,			\
 			aodata->context,		\
 			aodata->exten,			\
 			reason,				\
-			chan->uniqueid)
+			chan->uniqueid,			\
+			S_OR(aodata->cid_num, "<unknown>"),	\
+			S_OR(aodata->cid_num, "<unknown>"),	\
+			S_OR(aodata->cid_name, "<unknown>"))
 
 	if (AO_DEST(aodata) == AO_TOAPP) {
 		struct ast_app *app;
+		/* NOTE that there is a race condition with (other) module
+		   unloading here, but Asterisk does the same. */
 		app = pbx_findapp(aodata->app);
 		if (app == NULL) {
 			ast_log(LOG_WARNING, "No such application '%s'\n", aodata->app);
@@ -150,7 +174,7 @@ static void *action_aoriginate_run(void *data)
 
 		MANAGER_EVENT_AORIGINATE_SUCCESS();
 
-		pbx_exec(chan, app, aodata->appdata);
+		pbx_exec(chan, app, S_OR(aodata->appdata, NULL));
 		ast_module_user_remove(u);
 		ast_hangup(chan);
 	} else {
@@ -160,9 +184,31 @@ static void *action_aoriginate_run(void *data)
 
 		if (ast_pbx_run(chan)) {
 			ast_log(LOG_ERROR, "Unable to run PBX on %s\n", chan->name);
+			/* should remain before ast_hangup so there is no risk
+			   that a race with ast_module_user_hangup_all() occurs: */
+			ast_module_user_remove(u);
 			ast_hangup(chan);
+		} else {
+			/* BUGBUG if we come here because of ast_module_user_hangup_all(),
+			   there will be a double free.
+			   This module (as any Asterisk module, because this is
+			   a general design bug) should be unloaded with extra care,
+			   and shall _NOT_ be unloaded if it is being used.
+			   I don't think there is any way to check whether
+			   ast_module_user_hangup_all() occured. Avoiding the bug with
+			   such a scheme would be a very lame way of fixing it anyway.
+			   Proper synchronization is needed to release resources on module
+			   unload (but anyway without proper module reference counting,
+			   some small race conditions will _always_ exists so module
+			   unloading should NEVER be used at all in Asterisk.
+			   An other improper way of bugfixing would be to check that u has
+			   been removed in __ast_module_user_remove(). This would be a
+			   little better but will not fix all potential issues anyway.
+			   If somebody ever reads this text and wants to know how to
+			   properly design a module unloading function, just go read a
+			   recent Linux. */
+			ast_module_user_remove(u);
 		}
-		ast_module_user_remove(u);
 	}
 	goto out;
 
@@ -174,14 +220,13 @@ error_chan_state_not_up:
 			ast_cdr_failed(chan->cdr);
 	}
 error_no_application:
-error_cdr_alloc:
 	ast_module_user_remove(u);
 error_local_user_add:
 	ast_copy_string(chan_uniqueid, chan->uniqueid, sizeof(chan_uniqueid));
 	ast_hangup(chan);
 error_request_and_dial:
 	if (reason == 0)
-		ast_pbx_outgoing_cdr_failed();
+		my_pbx_outgoing_cdr_failed();
 
 	manager_event(EVENT_FLAG_CALL,
 		"AOriginateFailure",
@@ -190,14 +235,20 @@ error_request_and_dial:
 		"Context: %s\r\n"
 		"Exten: %s\r\n"
 		"Reason: %d\r\n"
-		"Uniqueid: %s\r\n",
+		"Uniqueid: %s\r\n"
+		"CallerID: %s\r\n"		/* This parameter is deprecated and will be removed post-1.4 */
+		"CallerIDNum: %s\r\n"
+		"CallerIDName: %s\r\n",
 		aodata->idtext,
 		aodata->tech,
 		aodata->data,
 		aodata->context,
 		aodata->exten,
 		reason,
-		chan_uniqueid);
+		chan_uniqueid,
+		S_OR(aodata->cid_num, "<unknown>"),
+		S_OR(aodata->cid_num, "<unknown>"),
+		S_OR(aodata->cid_name, "<unknown>"));
 
 out:
 	ast_variables_destroy(aodata->vars);
@@ -232,25 +283,24 @@ static const char mandescr_aoriginate[] =
 "	CallerID: Caller ID to be set on the outgoing channel\n"
 "	Variable: Channel variable to set, multiple Variable: headers are allowed\n"
 "	Account: Account code\n";
-static int action_aoriginate(struct mansession *s, struct message *m)
+static int action_aoriginate(struct mansession *s, const struct message *m)
 {
-	/* STANDARD_INCREMENT_USECOUNT; */
 	ast_module_ref(ast_module_info->self);
 
-	char *name = astman_get_header(m, "Channel");
-	char *exten = astman_get_header(m, "Exten");
-	char *context = astman_get_header(m, "Context");
-	char *priority = astman_get_header(m, "Priority");
-	char *timeout = astman_get_header(m, "Timeout");
-	char *callerid = astman_get_header(m, "CallerID");
-	char *account = astman_get_header(m, "Account");
-	char *app = astman_get_header(m, "Application");
-	char *appdata = astman_get_header(m, "Data");
-	char *id = astman_get_header(m, "ActionID");
+	const char *name = astman_get_header(m, "Channel");
+	const char *exten = astman_get_header(m, "Exten");
+	const char *context = astman_get_header(m, "Context");
+	const char *priority = astman_get_header(m, "Priority");
+	const char *timeout = astman_get_header(m, "Timeout");
+	const char *callerid = astman_get_header(m, "CallerID");
+	const char *account = astman_get_header(m, "Account");
+	const char *app = astman_get_header(m, "Application");
+	const char *appdata = astman_get_header(m, "Data");
+	const char *id = astman_get_header(m, "ActionID");
 	struct ast_variable *vars = astman_get_variables(m);
 	struct aoriginate_data *aodata;
 	char *tech, *data;
-	char *l=NULL, *n=NULL;
+	char *l = NULL, *n = NULL;
 	char tmp[256];
 	char tmp2[256];
 	int pi = 0;
@@ -263,39 +313,36 @@ static int action_aoriginate(struct mansession *s, struct message *m)
 		goto out;
 	}
 	if (!ast_strlen_zero(priority) && (sscanf(priority, "%d", &pi) != 1)) {
-		astman_send_error(s, m, "Invalid priority\n");
-		goto out;
+		if ((pi = ast_findlabel_extension(NULL, context, exten, priority, NULL)) < 1) {
+			astman_send_error(s, m, "Invalid priority");
+			goto out;
+		}
 	}
 	if (!ast_strlen_zero(timeout) && (sscanf(timeout, "%d", &to) != 1)) {
-		astman_send_error(s, m, "Invalid timeout\n");
+		astman_send_error(s, m, "Invalid timeout");
 		goto out;
 	}
 	ast_copy_string(tmp, name, sizeof(tmp));
 	tech = tmp;
 	data = strchr(tmp, '/');
 	if (!data) {
-		astman_send_error(s, m, "Invalid channel\n");
+		astman_send_error(s, m, "Invalid channel");
 		goto out;
 	}
-	*data = '\0';
-	data++;
+	*data++ = '\0';
 	ast_copy_string(tmp2, callerid, sizeof(tmp2));
 	ast_callerid_parse(tmp2, &n, &l);
-	if (n) {
-		if (ast_strlen_zero(n))
-			n = NULL;
-	}
+	n = S_OR(n, NULL);
 	if (l) {
 		ast_shrink_phone_number(l);
 		if (ast_strlen_zero(l))
 			l = NULL;
 	}
-	aodata = malloc(sizeof(*aodata));
+	aodata = ast_calloc(1, sizeof(*aodata));
 	if (aodata == NULL) {
-		astman_send_error(s, m, "Memory allocation failure\n");
+		astman_send_error(s, m, "Memory allocation failure");
 		goto out;
 	}
-	memset(aodata, 0, sizeof(*aodata));
 	if (!ast_strlen_zero(id))
 		snprintf(aodata->idtext,
 		         sizeof(aodata->idtext),
@@ -323,7 +370,6 @@ static int action_aoriginate(struct mansession *s, struct message *m)
 		astman_send_ack(s, m, "AOriginate successfully queued");
 	pthread_attr_destroy(&attr);
 out:
-	/* STANDARD_DECREMENT_USECOUNT; */
 	ast_module_unref(ast_module_info->self);
 
 	return 0;
@@ -338,9 +384,9 @@ static int load_module(void)
 	                          action_aoriginate,
 	                          synopsis_aoriginate,
 	                          mandescr_aoriginate))
-		return -1;
+		return AST_MODULE_LOAD_FAILURE;
 	loaded = 1;
-	return 0;
+	return AST_MODULE_LOAD_SUCCESS;
 }
 
 static int unload_module(void)
@@ -348,6 +394,7 @@ static int unload_module(void)
 	if (!loaded)
 		return 0;
 	ast_manager_unregister(name_aoriginate);
+	ast_module_user_hangup_all();
 	return 0;
 }
 
