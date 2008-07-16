@@ -1173,15 +1173,14 @@ class XivoCTICommand(BaseCommand):
                         elif icommand.name in ['originate', 'transfer', 'atxfer']:
                                 if self.capas[capaid].match_funcs(ucapa, 'dial'):
                                         repstr = self.__originate_or_transfer__(userinfo,
-                                                                                # "%s/%s" %(astid, username),
                                                                                 [icommand.name, icommand.args[0], icommand.args[1]])
                         elif icommand.name == 'hangup':
                                 if self.capas[capaid].match_funcs(ucapa, 'dial'):
-                                        repstr = self.__hangup__("%s/%s" %(astid, username),
+                                        repstr = self.__hangup__(astid, username,
                                                                  icommand.args[0], True)
                         elif icommand.name == 'simplehangup':
                                 if self.capas[capaid].match_funcs(ucapa, 'dial'):
-                                        repstr = self.__hangup__("%s/%s" %(astid, username),
+                                        repstr = self.__hangup__(astid, username,
                                                                  icommand.args[0], False)
                         elif icommand.name == 'pickup':
                                 if self.capas[capaid].match_funcs(ucapa, 'dial'):
@@ -1811,11 +1810,43 @@ class XivoCTICommand(BaseCommand):
                                                                    proto_src, phonenum_src, cidname_src,
                                                                    exten_dst, cidname_dst,  context_dst)
                         except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- unable to originate ...')
+                                log_debug(SYSLOG_ERR, '--- exception --- unable to originate ... %s' % exc)
                         if ret:
                                 ret_message = 'originate OK'
                         else:
                                 ret_message = 'originate KO'
+                elif commname in ['transfer', 'atxfer']:
+                        [typesrc, whosrc] = srcsplit
+                        [typedst, whodst] = dstsplit
+
+                        if typesrc == 'chan':
+                                if whosrc.startswith('special:me:'):
+                                        srcuinfo = userinfo
+                                        chan_src = whosrc[len('special:me:'):]
+                                if srcuinfo is not None:
+                                        astid_src = srcuinfo.get('astid')
+                                        context_src = srcuinfo.get('context')
+                                        proto_src = 'local'
+                                        phonenum_src = srcuinfo.get('phonenum')
+                                        # if termlist empty + agentphonenum not empty => call this one
+                                        cidname_src = srcuinfo.get('fullname')
+
+                        if typedst == 'ext':
+                                exten_dst = whodst
+
+                        print astid_src, commname, chan_src, exten_dst, context_src
+                        ret = False
+                        try:
+                                if len(exten_dst) > 0:
+                                        ret = self.amilist.execute(astid_src, commname,
+                                                                   chan_src,
+                                                                   exten_dst, context_src)
+                        except Exception, exc:
+                                log_debug(SYSLOG_ERR, '--- exception --- unable to %s ... %s' % (commname, exc))
+                        if ret:
+                                ret_message = '%s OK' % commname
+                        else:
+                                ret_message = '%s KO' % commname
                 else:
                         log_debug(SYSLOG_WARNING, 'unallowed command %s' % commargs)
 
@@ -1910,23 +1941,24 @@ class XivoCTICommand(BaseCommand):
 
 
         # \brief Hangs up.
-        def __hangup__(self, requester, chan, peer_hangup):
-                astid_src = chan.split("/")[1]
-                ret_message = 'hangup KO from %s' % requester
-                if astid_src in self.configs:
-                        log_debug(SYSLOG_INFO, "%s is attempting a HANGUP : %s" %(requester, chan))
-                        phone, channel = split_from_ui(chan)
-                        if phone in self.plist[astid_src].normal:
-                                if channel in self.plist[astid_src].normal[phone].chann:
+        def __hangup__(self, astid, username, chan, peer_hangup):
+                print astid, username, chan, peer_hangup
+                ret_message = 'hangup KO from %s' % username
+                if astid in self.configs:
+                        log_debug(SYSLOG_INFO, "%s is attempting a HANGUP : %s" %(username, chan))
+                        channel = chan
+                        phone = chan.split('-')[0]
+                        if phone in self.plist[astid].normal:
+                                if channel in self.plist[astid].normal[phone].chann:
                                         if peer_hangup:
-                                                channel_peer = self.plist[astid_src].normal[phone].chann[channel].getChannelPeer()
+                                                channel_peer = self.plist[astid].normal[phone].chann[channel].getChannelPeer()
                                                 log_debug(SYSLOG_INFO, "UI action : %s : hanging up <%s> and <%s>"
-                                                          %(self.configs[astid_src].astid , channel, channel_peer))
+                                                          %(astid , channel, channel_peer))
                                         else:
                                                 channel_peer = ''
                                                 log_debug(SYSLOG_INFO, "UI action : %s : hanging up <%s>"
-                                                          %(self.configs[astid_src].astid , channel))
-                                        ret = self.amilist.execute(astid_src, 'hangup', channel, channel_peer)
+                                                          %(astid , channel))
+                                        ret = self.amilist.execute(astid, 'hangup', channel, channel_peer)
                                         if ret > 0:
                                                 ret_message = 'hangup OK (%d) <%s>' %(ret, chan)
                                         else:
@@ -1936,7 +1968,7 @@ class XivoCTICommand(BaseCommand):
                         else:
                                 ret_message = 'hangup KO : no such phone <%s>' % phone
                 else:
-                        ret_message = 'hangup KO : no such asterisk id <%s>' % astid_src
+                        ret_message = 'hangup KO : no such asterisk id <%s>' % astid
                 return self.dmessage_srv2clt(ret_message)
 
 

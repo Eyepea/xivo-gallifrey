@@ -375,6 +375,23 @@ def handle_ami_event(astid, idata):
                                                 commandclass.ami_response_mailboxcount(astid, this_event)
                                         elif msg == 'Mailbox Status':
                                                 commandclass.ami_response_mailboxstatus(astid, this_event)
+                                        elif msg in ['Channel status will follow',
+                                                     'Parked calls will follow',
+                                                     'Agents will follow',
+                                                     'Queue status will follow',
+                                                     'Authentication accepted',
+                                                     'Variable Set',
+                                                     'Originate successfully queued',
+                                                     'Redirect successful',
+                                                     'Added interface to queue',
+                                                     'Removed interface from queue',
+                                                     'Interface paused successfully',
+                                                     'Interface unpaused successfully',
+                                                     'Agent logged out',
+                                                     'Agent logged in']:
+                                                pass
+                                        else:
+                                                log_debug(SYSLOG_WARNING, 'AMI %s Response=Success : untracked message <%s>' % (astid, msg))
                                 elif response == 'Error':
                                         # log_debug(SYSLOG_WARNING, 'AMI %s Response=Error : %s' % (astid, this_event))
                                         pass
