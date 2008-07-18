@@ -285,7 +285,7 @@ class VMBox:
 		cursor.query("SELECT ${columns} FROM voicemail "
 			     "INNER JOIN voicemailfeatures "
 			     "ON voicemail.uniqueid = voicemailfeatures.id "
-			     "WHERE voicemail.uniqueid = %d "
+			     "WHERE voicemail.uniqueid = %s "
 			     "AND voicemail.commented = 0",
 			     columns,
 			     (xid,))
@@ -306,7 +306,7 @@ class User:
 		self.cursor = cursor
 
 		cursor.query("SELECT ${columns} FROM userfeatures "
-			     "WHERE id = %d "
+			     "WHERE id = %s "
 			     "AND internal = 0 "
 			     "AND commented = 0",
 			     ('id', 'number', 'context', 'protocol', 'protocolid',
@@ -403,7 +403,7 @@ class User:
 				  "    destrna = '', "
 				  "    enablebusy = 0, "
 				  "    destbusy = '' "
-				  "WHERE id = %d",
+				  "WHERE id = %s",
 				  parameters = (self.id,))
 
 		if self.cursor.rowcount != 1:
@@ -484,7 +484,7 @@ class Group:
 			cursor.query("SELECT ${columns} FROM groupfeatures "
 				     "INNER JOIN queue "
 				     "ON groupfeatures.name = queue.name "
-				     "WHERE groupfeatures.id = %d "
+				     "WHERE groupfeatures.id = %s "
 				     "AND groupfeatures.deleted = 0 "
 				     "AND queue.category = 'group' "
 				     "AND queue.commented = 0",
@@ -540,7 +540,7 @@ class MeetMe:
 			cursor.query("SELECT ${columns} FROM meetmefeatures "
 				     "INNER JOIN staticmeetme "
 				     "ON meetmefeatures.meetmeid = staticmeetme.id "
-				     "WHERE meetmefeatures.id = %d "
+				     "WHERE meetmefeatures.id = %s "
 				     "AND staticmeetme.commented = 0",
 				     columns,
 				     (xid,))
@@ -607,7 +607,7 @@ class Queue:
 			cursor.query("SELECT ${columns} FROM queuefeatures "
 				     "INNER JOIN queue "
 				     "ON queuefeatures.name = queue.name "
-				     "WHERE queuefeatures.id = %d "
+				     "WHERE queuefeatures.id = %s "
 				     "AND queue.commented = 0 "
 				     "AND queue.category = 'queue'",
 				     columns,
@@ -660,7 +660,7 @@ class Agent:
 
 		if xid:
 			cursor.query("SELECT ${columns} FROM agentfeatures "
-				     "WHERE id = %d "
+				     "WHERE id = %s "
 				     "AND commented = 0",
 				     columns,
 				     (xid,))
@@ -733,7 +733,7 @@ class Trunk:
 		columns = ('protocol', 'protocolid')
 
 		cursor.query("SELECT ${columns} FROM trunkfeatures "
-			     "WHERE id = %d",
+			     "WHERE id = %s",
 			     columns,
 			     (xid,))
 		res = cursor.fetchone()
@@ -747,7 +747,7 @@ class Trunk:
 
 		if self.protocol == "sip":
 			cursor.query("SELECT ${columns} FROM usersip "
-				     "WHERE id = %d "
+				     "WHERE id = %s "
 				     "AND commented = 0",
 				     ('name',),
 				     (self.protocolid,))
@@ -760,7 +760,7 @@ class Trunk:
 			self.intfsuffix = None
 		elif self.protocol == "iax":
 			cursor.query("SELECT ${columns} FROM useriax "
-				     "WHERE id = %d "
+				     "WHERE id = %s "
 				     "AND commented = 0",
 				     ('name',),
 				     (self.protocolid,))
@@ -773,7 +773,7 @@ class Trunk:
 			self.intfsuffix = None
 		elif self.protocol == "custom":
 			cursor.query("SELECT ${columns} FROM usercustom "
-				     "WHERE id = %d "
+				     "WHERE id = %s "
 				     "AND category = 'trunk' "
 				     "AND commented = 0",
 				     ('interface', 'intfsuffix'),
@@ -801,7 +801,7 @@ class HandyNumber:
 
 		if xid:
 			cursor.query("SELECT ${columns} FROM handynumbers "
-				     "WHERE id = %d "
+				     "WHERE id = %s "
 				     "AND commented = 0",
 				     columns,
 				     (xid,))
@@ -835,7 +835,7 @@ class DID:
 
 		if xid:
 			cursor.query("SELECT ${columns} FROM incall "
-				     "WHERE id = %d "
+				     "WHERE id = %s "
 				     "AND commented = 0",
 				     columns,
 				     (xid,))
@@ -872,7 +872,7 @@ class Outcall:
 
 		if xid:
 			cursor.query("SELECT ${columns} FROM outcall "
-				     "WHERE id = %d "
+				     "WHERE id = %s "
 				     "AND commented = 0",
 				     ('exten', 'context'),
 				     columns,
@@ -907,7 +907,7 @@ class Outcall:
 			feature_list = FeatureList(agi, cursor)
 
 		cursor.query("SELECT ${columns} FROM outcalltrunk "
-			     "WHERE outcallid = %d "
+			     "WHERE outcallid = %s "
 			     "ORDER BY priority ASC",
 			     ('trunkfeaturesid',),
 			     (self.id,))
@@ -930,7 +930,7 @@ class Schedule:
 			   'daynumbeg', 'daynumend', 'monthbeg', 'monthend')
 
 		cursor.query("SELECT ${columns} FROM schedule "
-			     "WHERE id = %d "
+			     "WHERE id = %s "
 			     "AND commented = 0",
 			     columns,
 			     (xid,))
@@ -969,7 +969,7 @@ class VoiceMenu:
 		columns = ('name', 'context')
 
 		cursor.query("SELECT ${columns} FROM voicemenu "
-			     "WHERE id = %d "
+			     "WHERE id = %s "
 			     "AND commented = 0",
 			     columns,
 			     (xid,))
