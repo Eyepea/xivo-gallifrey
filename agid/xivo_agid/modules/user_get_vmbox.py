@@ -36,5 +36,6 @@ def user_get_vmbox(agi, cursor, args):
 
 	agi.set_variable('XIVO_MAILBOX', user.vmbox.mailbox)
 	agi.set_variable('XIVO_MAILBOX_CONTEXT', user.vmbox.context)
+	agi.set_variable('XIVO_VOICEMAIL_DIR', agi.env.get('ast_spool_dir') + "/voicemail")
 
 agid.register(user_get_vmbox)

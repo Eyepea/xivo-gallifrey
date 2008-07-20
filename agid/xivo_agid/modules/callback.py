@@ -37,11 +37,10 @@ def callback(agi, cursor, args):
 		agi.dp_break("Unable to find srcnum, srcnum = '%s'" % srcnum)
 
 	mtime = time.time() + 5
-	filename = "%s-%s.call" % (srcnum, int(mtime))
+	filepath = "%s/%%s/%s-%s.call" % (agi.env.get('ast_spool_dir'), srcnum, int(mtime))
 
-	# TODO fetch path from configuration file.
-	tmpfile = "/var/spool/asterisk/tmp/" + filename
-	realfile = "/var/spool/asterisk/outgoing/" + filename
+	tmpfile = filepath % "tmp"
+	realfile = filepath % "outgoing"
 
 	f = open(tmpfile, 'w')
 	f.write("Channel: Local/%s@%s\n"
