@@ -26,4 +26,6 @@ apptest_sleep
 
 pf_iax2_deadlock.patch
 
+pf_agi_astconfigpaths.patch
+
 pf_fastagi_args.patch
