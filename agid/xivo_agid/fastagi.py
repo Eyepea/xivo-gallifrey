@@ -133,7 +133,7 @@ class FastAGI:
 
     def fail(self):
         """Force Asterisk to change the result state of the AGI to
-        AGI_RESULT_FAILURE so that it will abort the AGI and hangup by itself.
+        AGI_RESULT_FAILURE so that it will abort the AGI.
         This function catches internal EPIPE IOError and does not report them
         in any way.
         """

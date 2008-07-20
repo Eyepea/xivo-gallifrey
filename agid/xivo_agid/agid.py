@@ -132,6 +132,7 @@ class FastAGIRequestHandler(SocketServer.StreamRequestHandler):
 
 			try:
 				self.fastagi.verbose(message)
+				self.fastagi.appexec('Goto', 'macro-agi_fail|s|1')
 				self.fastagi.fail()
 			except:
 				pass
