@@ -388,3 +388,84 @@ def strip_overridden_assignments(reslst):
     for line in lines_to_remove:
         del reslst[line]
     return reslst
+
+
+# Identity character translaction table, see str.translate
+ID_TABLE = ''.join(map(chr, xrange(0, 256)))
+
+# String that only contains normal non control ascii characters,
+# even excluding \n \t \v \r etc...
+NORMAL_ASCII = ''.join(map(chr, xrange(32, 127)))
+
+
+def single_escape_char(o):
+    """
+    Given @o, return (c, coded).
+    
+    @o is the ordinal of the considered character.
+    @c is the corresponding character: c == chr(o)
+    @coded is the representation of @c in the SINGLE_QUOTED_WITH_ESCAPING
+    context.
+    """
+    c = chr(o)
+    if c in ("'", "\\") or o < 32 or o >= 127:
+        for code, char in ANSI_C_ESCAPED_CODE.iteritems():
+            if c == char:
+                return (c, "\\" + code)
+        else:
+            return (c, "\\x%02x" % o)
+    else:
+        return (c, c)
+
+
+# Transformation table used to code characters for the
+# SINGLE_QUOTED_WITH_ESCAPING context
+# key: character to be coded
+# value: coded representation of the character
+SINGLE_ESCAPE_TABLE = dict((single_escape_char(x) for x in xrange(0, 256)))
+
+
+# Transformation table used to code characters for the
+# DOUBLE_QUOTED context
+# key: character to be coded
+# value: coded representation of the character
+DOUBLE_ESCAPE_TABLE = dict(((chr(x), chr(x)) for x in xrange(32, 127)))
+DOUBLE_ESCAPE_TABLE['"'] = '\\"'
+DOUBLE_ESCAPE_TABLE["\\"] = "\\\\" 
+DOUBLE_ESCAPE_TABLE['$'] = "\\$"
+DOUBLE_ESCAPE_TABLE['`'] = "\\`"
+
+
+def escape(value):
+    """
+    Return an acceptable shell representation of @value, that, when parsed back
+    in @load(), will result in @value.
+    """
+    # if value contains non ASCII characters
+    if value.translate(ID_TABLE, NORMAL_ASCII):
+        return "$'%s'" % ''.join(map(SINGLE_ESCAPE_TABLE.__getitem__, value))
+    elif '"' in value and "'" not in value:
+        return "'%s'" % value
+    else:
+        return '"%s"' % ''.join(map(DOUBLE_ESCAPE_TABLE.__getitem__, value))
+
+
+def format(reslst):
+    """
+    Generate lines that, when parsed back by load, will result in @reslst
+    """
+    for varname, value, rotl in reslst:
+        if varname is None:
+            yield rotl + "\n"
+        else:
+            yield "%s=%s%s\n" % (varname, escape(value), rotl)
+
+
+def save(filename, reslst):
+    """
+    Generate lines with @format() and store them in @filename.
+    Overwrite a previously existing file if needed.
+    """
+    fp = open(filename, "w")
+    fp.writelines(format(reslst))
+    fp.close()

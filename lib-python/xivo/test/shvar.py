@@ -122,6 +122,8 @@ class TestShVar(unittest.TestCase):
         self.load_value_helper('"$"', "$")
         self.load_value_helper('"\\a"', "\\a")
         self.load_value_helper("'\\'", "\\")
+        self.load_value_helper("a#b", "a#b")
+        self.load_value_helper('"a"#b', "a#b")
     
     def test_load_compositing(self):
         self.load_value_helper("abc\\ \"bla bla\"'\tkikoo'$'\\x26'", "abc bla bla\tkikoo&")
@@ -267,6 +269,56 @@ class TestShVar(unittest.TestCase):
             (None, None, ""),
         ]
         self.assertEqual(shvar.strip_overridden_assignments(param), expect)
+    
+    def escape_helper(self, to_code):
+        line = "A=" + shvar.escape(to_code) + "\n"
+        reslst, resdct = shvar.load([line])
+        self.assertEqual(resdct['A'], to_code)
+    
+    def test_escape(self):
+        self.escape_helper("")
+        self.escape_helper(" ")
+        self.escape_helper("abc")
+        self.escape_helper(" abc")
+        self.escape_helper("abc ")
+        self.escape_helper(" abc ")
+        self.escape_helper("abc def")
+        self.escape_helper(" abc def")
+        self.escape_helper("abc def ")
+        self.escape_helper(" abc def ")
+        self.escape_helper("\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f")
+        self.escape_helper('"')
+        self.escape_helper("'")
+        self.escape_helper("\xe9")
+        self.escape_helper(''.join((chr(c) for c in xrange(32, 127))))
+        self.escape_helper(''.join((chr(c) for c in xrange(1, 256))))
+    
+    def format_helper(self, initial_content):
+        # 1) parse
+        reslst, resdct = shvar.load(initial_content)
+        # 2) format
+        new_content = list(shvar.format(reslst))
+        # 3) re parse
+        new_reslst, new_resdct = shvar.load(new_content)
+        # 4) check
+        self.assertEqual([(a,b) for a,b,c in reslst if a], [(a,b) for a,b,c in new_reslst if a])
+    
+    def test_format(self):
+        self.format_helper([
+            "A=\n",
+        ])
+        self.format_helper([
+            "A=1\n",
+            "B=a\n",
+        ])
+        self.format_helper([
+            "# comment 1\n",
+            "A=1 # comment 2\n",
+            "B=a#b\n",
+        ])
+        self.format_helper([
+            'A="\xe9"\n',
+        ])
 
 
 unittest.main()
