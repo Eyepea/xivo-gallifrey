@@ -35,12 +35,12 @@ def incoming_user_set_features(agi, cursor, args):
 
 	feature_list = objects.FeatureList(agi, cursor)
 
-	try:
-		if userid:
+	if userid:
+		try:
 			caller = objects.User(agi, cursor, int(userid), feature_list)
-		else:
+		except LookupError:
 			caller = None
-	except LookupError:
+	else:
 		caller = None
 
 	try:
