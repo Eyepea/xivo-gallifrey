@@ -35,7 +35,7 @@ def outgoing_user_set_features(agi, cursor, args):
 	outcall = objects.Outcall(agi, cursor, feature_list, exten=exten_pattern, context=context)
 
 	orig_dstnum = dstnum
-	callerid = ""
+	callerid = None
 	callrecord = False
 	options = ""
 
@@ -50,13 +50,7 @@ def outgoing_user_set_features(agi, cursor, args):
 			user = objects.User(agi, cursor, int(userid), feature_list)
 
 			# TODO: Rethink all the caller id stuff.
-			if outcall.setcallerid:
-				callerid = outcall.callerid
-			else:
-				callerid = user.outcallerid
-
-			if callerid == "default":
-				callerid = ""
+			callerid = user.outcallerid
 
 			if user.enableautomon:
 				options += "W"
@@ -66,15 +60,22 @@ def outgoing_user_set_features(agi, cursor, args):
 		except LookupError:
 			pass
 
+	# TODO: Rethink all the caller id stuff.
+	if outcall.setcallerid:
+		callerid = outcall.callerid
+
+	if callerid == "default":
+		callerid = None
+
 	for i, trunk in enumerate(outcall.trunks):
-		agi.set_variable('XIVO_INTERFACE%d' % (i,), trunk.interface)
+		agi.set_variable('XIVO_INTERFACE%d' % i, trunk.interface)
 
 		# XXX numbers of stripped digits and prefix should be set on
 		# per-trunk basis instead of per-outcall.
-		agi.set_variable('XIVO_TRUNKEXTEN%d' % (i,), dstnum)
+		agi.set_variable('XIVO_TRUNKEXTEN%d' % i, dstnum)
 
 		if trunk.intfsuffix:
-			agi.set_variable('XIVO_TRUNKSUFFIX%d' % (i,), "/" + trunk.intfsuffix)
+			agi.set_variable('XIVO_TRUNKSUFFIX%d' % i, "/" + trunk.intfsuffix)
 
 	if callerid:
 		agi.set_variable('CALLERID(num)', callerid)
