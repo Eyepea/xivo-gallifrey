@@ -18,13 +18,13 @@ MY_CFLAGS =     -std=gnu99                      \
                 -Wshadow
 
 CFLAGS ?= -O2 -fomit-frame-pointer
-Z_CFLAGS := $(CFLAGS) -fpic -DPIC -shared -pthread -D _GNU_SOURCE $(MY_CFLAGS) -DAST_MODULE=\"func_strsubst\" 
+Z_CFLAGS := $(CFLAGS) -fpic -DPIC -shared -pthread -D _GNU_SOURCE $(MY_CFLAGS) -DAST_MODULE=\"module_xivo\" 
 LIBS ?=
 Z_LIBS := $(LIBS)
 
 LINKFLAGS = -fpic -shared -Xlinker -x -pthread
 
-BINARIES = func_strsubst.so
+BINARIES = module_xivo.so
 
 # Use make DESTDIR=/path/to/sysroot PREFIX=/usr/local if you want to
 # install this module in a non-standard location.
