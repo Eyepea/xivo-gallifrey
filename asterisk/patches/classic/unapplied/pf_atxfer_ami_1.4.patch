@@ -1,3 +1,16 @@
+2008-07-21  Corentin Le Gall <clegall@proformatique.com>
+
+	pf_atxfer_ami_1.4.patch
+	$Revision$
+	$Date$
+        Feature
+
+        The Attended Transfer can be issued with AMI.
+
+        This patch comes from http://bugs.digium.com/view.php?id=10585
+        It was meant to apply on Asterisk ~ 1.4.1[23]. Here it has been
+        updated for 1.4.21.1.
+
 Index: asterisk-1.4.21.1/CREDITS
 ===================================================================
 --- asterisk-1.4.21.1.orig/CREDITS	2008-07-16 11:30:45.000000000 +0200
