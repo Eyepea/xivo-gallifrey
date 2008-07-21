@@ -117,11 +117,13 @@ class AGI:
             if line == '':
                 #blank line signals end
                 break
-            key, data = line.split(':')[0], ':'.join(line.split(':')[1:])
-            key = key.strip()
-            data = data.strip()
-            if key != '':
-                self.env[key] = data
+            key_data = line.split(':', 1)
+            key = key_data[0].strip()
+            if key:
+                if len(key_data) > 1:
+                    self.env[key] = key_data[1].strip()
+                else:
+                    self.env[key] = ""
 
     @staticmethod
     def _quote(string):
