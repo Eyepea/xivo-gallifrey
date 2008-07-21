@@ -25,14 +25,14 @@ def handynumbers(agi, cursor, args):
 	dstnum = agi.get_variable('XIVO_DSTNUM')
 	exten_pattern = agi.get_variable('XIVO_EXTENPATTERN')
 
-	try:
-		if userid:
+	if userid:
+		try:
 			user = objects.User(agi, cursor, int(userid))
-		else:
+		except LookupError, e:
 			user = None
-	except LookupError, e:
+			agi.verbose(str(e))
+	else:
 		user = None
-		agi.verbose(str(e))
 	
 	try:
 		handy_number = objects.HandyNumber(agi, cursor, exten=exten_pattern)
