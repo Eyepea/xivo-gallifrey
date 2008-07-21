@@ -216,6 +216,19 @@ class xivo_libconfig_abstract
 		return($this->_conf['element'][$key]['null']);
 	}
 
+	function element_is_multi($key)
+	{
+		$key = (string) $key;
+
+		if(isset($this->_conf) === false
+		|| xivo_issa('element',$this->_conf) === false 
+		|| xivo_issa($key,$this->_conf['element']) === false
+		|| isset($this->_conf['element'][$key]['multi']) === false)
+			return(false);
+
+		return($this->_conf['element'][$key]['multi']);
+	}
+
 	function _load_filter()
 	{
 		if(isset($this->_conf,$this->_filter) === false

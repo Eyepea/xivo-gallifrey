@@ -386,17 +386,20 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 
 	function add_dir($name)
 	{
-		$name = (string) $name;
-
 		$dir = $this->_mohpath.XIVO_SEP_DIR.$name;
 
 		if(($match_dir = $this->_get_option_dir_name()) === false
 		|| preg_match($match_dir,$name) !== 1
-		|| xivo_file::is_d_rwx($this->_mohpath) === false
-		|| xivo_file::is_d($dir) !== false) 
+		|| xivo_file::is_d_rwx($this->_mohpath) === false) 
 			return(false);
+		else if(xivo_file::is_d($dir) === false)
+			$r = mkdir($dir);
+		else if(xivo_file::is_d_rwx($dir) !== false)
+			$r = true;
 
-		return(mkdir($dir));
+		@chmod($dir,02775);
+
+		return($r);
 	}
 
 	function edit_dir($name,$newname)

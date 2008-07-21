@@ -279,9 +279,9 @@ $array['filter']['allow'] = array('set' => false,'chk' => 2,'uvalue' => array(
 $array['filter']['rtcachefriends'] = array('bool' => true);
 $array['filter']['rtupdate'] = array('bool' => true);
 $array['filter']['rtignoreregexpire'] = array('bool' => true);
-$array['filter']['rtautoclear'] = array('yes','no',1,10,20,30,40,50,60,70,80,90,
-					100,110,120,130,140,150,160,170,180,
-					190,200,210,220,230,240);
+$array['filter']['rtautoclear'] = array('key' => array('yes','no',1,10,20,30,40,50,60,70,80,90,
+						       100,110,120,130,140,150,160,170,180,
+						       190,200,210,220,230,240));
 $array['filter']['pingtime'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['lagrqtime'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['nochecksums'] = array('bool' => true);

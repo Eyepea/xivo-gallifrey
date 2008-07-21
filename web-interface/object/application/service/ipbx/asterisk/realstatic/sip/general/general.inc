@@ -34,6 +34,33 @@ class xivo_application_service_asterisk_realstatic_sip_general extends xivo_appl
 
 		switch($rs['var_name'])
 		{
+			case 'localnet':
+				$result = $this->get_result($this->_name);
+
+				if(is_array($result) === false
+				|| isset($result[0],$result[0]['var_name']) === false)
+					return(true);
+				else if($result[0]['var_name'] !== $rs['var_name'])
+					return(false);
+
+				$res = $tmp = array();
+
+				$nb = count($result);
+
+				for($i = 0;$i < $nb;$i++)
+				{
+					$value = strtolower($result[$i]['var_val']);
+
+					$result[$i]['var_val'] = $value;
+
+					if(isset($tmp[$value]) === false)
+						$tmp[$value] = 1;
+					else
+						unset($result[$i]);
+				}
+
+				$this->_set_result($this->_name,array_values($result));
+				break;
 			case 'context':
 				$this->_get_contextmember(null,'context');
 
@@ -87,14 +114,17 @@ class xivo_application_service_asterisk_realstatic_sip_general extends xivo_appl
 	{
 		if(is_array($arr) === false)
 			return(false);
-		else if(isset($arr['externip']) === false
-		|| xivo_haslen($arr['externip']) === false)
-			$arr['localnet'] = null;
 
 		$this->get_musiconhold();
 
 		if(isset($arr['musiconhold'],$this->_musiconhold[$arr['musiconhold']]) === false)
 			$arr['musiconhold'] = '';
+
+		if(isset($arr['mohsuggest']) === true)
+		{
+			if(isset($this->_musiconhold[$arr['mohsuggest']]) === false)
+				$arr['mohsuggest'] = '';
+		}
 
 		return(parent::set_save_all($arr,$disable));
 	}

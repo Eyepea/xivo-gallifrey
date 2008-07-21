@@ -986,15 +986,7 @@ class xivo_tpl_form extends xivo_tpl_module
 					$this->_mk_slt_option($ref);
 			}
 			else
-			{
-				if($this->_is_slt_altkey($ref) === true)
-					$key = $ref[$this->_param['altkey']];
-
-				if($this->_is_slt_key($ref) === true)
-					$ref = $ref[$this->_param['key']];
-
 				$this->_mk_slt_option_render($this->_mk_slt_option_param($key,$ref));
-			}
 		}
 	}
 

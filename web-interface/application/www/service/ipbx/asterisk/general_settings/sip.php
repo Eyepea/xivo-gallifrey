@@ -5,7 +5,7 @@ $appgeneralsip = &$appsip->get_module('general');
 
 $fm_save = null;
 
-$info = $appgeneralsip->get_all_by_category();
+$info = $appgeneralsip->get_all_val_by_category(false);
 
 if(isset($_QR['fm_send']) === true)
 {
@@ -30,6 +30,11 @@ if(xivo_issa('allow',$element) === true
 	$info['allow']['var_val'] = explode(',',$info['allow']['var_val']);
 	$element['allow']['value'] = array_diff($element['allow']['value'],$info['allow']['var_val']);
 }
+
+if(xivo_issa('localnet',$info) === true
+&& array_key_exists('var_val',$info['localnet']) === true
+&& xivo_haslen($info['localnet']['var_val']) === false)
+	$info['localnet'] = null;
 
 $dhtml = &$_HTML->get_module('dhtml');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');

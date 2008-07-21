@@ -10,6 +10,12 @@ Réseau
 ; smenu_signalling
 Signalisation
 
+; smenu_t38
+T38
+
+; smenu_jitterbuffer
+Jitter Buffer
+
 ; smenu_default
 Défaut
 
@@ -31,14 +37,11 @@ Création automatique d'un utilisateur :
 ; fm_allowguest
 Accepter un appel non authentifié :
 
-; fm_allowguest-opt-no
-Non
+; fm_allowsubscribe
+Activer le support des souscriptions :
 
-; fm_allowguest-opt-yes
-Oui
-
-; fm_allowguest-opt-osp
-OSP
+; fm_allowoverlap
+Activer l'overlap :
 
 ; fm_promiscredir
 Support des redirections 302 :
@@ -61,6 +64,9 @@ Realm :
 ; fm_alwaysauthreject
 Rejeter les invitations et enregistrements :
 
+; fm_limitonpeer
+Activer les limitations sur les appels sortants :
+
 ; fm_useragent
 User-Agent :
 
@@ -72,6 +78,9 @@ Désactivée
 
 ; fm_checkmwi-opt
 %s secondes
+
+; fm_buggymwi
+Vérification, non conforme à la RFC, de nouveaux messages :
 
 ; fm_regcontext
 Context d'enregistrement :
@@ -94,32 +103,23 @@ Enregistrement de l'historique :
 ; fm_callevents
 Evénements des appels (AMI) :
 
-; fm_ospauth
-Authentification OSP :
+; fm_tos-sip
+TOS SIP :
 
-; fm_ospauth-opt-no
-Non
+; fm_tos-audio
+TOS audio :
 
-; fm_ospauth-opt-proxy
-Proxy
+; fm_tos-video
+TOS vidéo :
 
-; fm_ospauth-opt-gateway
-Passerelle
-
-; fm_ospauth-opt-exclusive
-Exclusive
-
-; fm_tos
-TOS :
-
-; fm_localnet
-Réseau local :
+; fm_rfc2833compensate
+Compenser les DTMF depuis un autre IPBX :
 
 ; fm_externip
 Adresse IP externe :
 
 ; fm_externhost
-Domaine externe :
+Hôte externe :
 
 ; fm_externrefresh
 Temps de rafraîchissement du domaine externe :
@@ -178,6 +178,30 @@ Proxy Outbound :
 ; fm_outboundproxyport
 Port du proxy Outbound :
 
+; fm_matchexterniplocally
+Remplacer l'IP ou l'hôte externe s'il correspond au réseau local :
+
+; fm_localnet
+Réseau local :
+
+; localnet_add
+Ajouter un hôte :
+
+; bt_add-localnet
+Ajouter un hôte
+
+; bt_delete-localnet
+Supprimer un ou plusieurs hôtes
+
+; fm_t1min
+Délai minimum de l'aller-retour (RTT) des messages :
+
+; fm_t1min-opt0
+0 milliseconde
+
+; fm_t1min-opt
+%s millisecondes
+
 ; fm_relaxdtmf
 Relax DTMF :
 
@@ -211,6 +235,9 @@ Désactivée
 ; fm_rtpkeepalive-opt
 %s secondes
 
+; fm_directrtpsetup
+Activer le RTP direct :
+
 ; fm_notifymimetype
 Notification du type de MIME :
 
@@ -220,8 +247,11 @@ Requête DNS :
 ; fm_pedantic
 Conforme aux standards :
 
+; fm_minexpiry
+Durée minimum pour l'enregistrement :
+
 ; fm_maxexpiry
-Durée maximum :
+Durée maximum pour l'enregistrement :
 
 ; fm_maxexpiry-opt1
 1 sec.
@@ -245,78 +275,78 @@ Durée maximum :
 %s heure %s min.
 
 ; fm_defaultexpiry
-Durée par défaut :
+Durée par défaut pour l'enregistrement :
 
-; fm_defaultexpiry-opt1
+; fm_expiry-opt1
 1 sec.
 
-; fm_defaultexpiry-opt10
+; fm_expiry-opt10
 10 sec.
 
-; fm_defaultexpiry-opt20
+; fm_expiry-opt20
 20 sec.
 
-; fm_defaultexpiry-opt30
+; fm_expiry-opt30
 30 sec.
 
-; fm_defaultexpiry-opt40
+; fm_expiry-opt40
 40 sec.
 
-; fm_defaultexpiry-opt50
+; fm_expiry-opt50
 50 sec.
 
-; fm_defaultexpiry-opt60
+; fm_expiry-opt60
 1 min.
 
-; fm_defaultexpiry-opt120
+; fm_expiry-opt120
 2 min.
 
-; fm_defaultexpiry-opt180
+; fm_expiry-opt180
 3 min.
 
-; fm_defaultexpiry-opt240
+; fm_expiry-opt240
 4 min.
 
-; fm_defaultexpiry-opt300
+; fm_expiry-opt300
 5 min.
 
-; fm_defaultexpiry-opt600
+; fm_expiry-opt600
 10 min.
 
-; fm_defaultexpiry-opt900
+; fm_expiry-opt900
 15 min.
 
-; fm_defaultexpiry-opt1200
+; fm_expiry-opt1200
 20 min.
 
-; fm_defaultexpiry-opt1800
+; fm_expiry-opt1800
 30 min.
 
-; fm_defaultexpiry-opt2400
+; fm_expiry-opt2400
 40 min.
 
-; fm_defaultexpiry-opt2700
+; fm_expiry-opt2700
 45 min.
 
-; fm_defaultexpiry-opt3000
+; fm_expiry-opt3000
 50 min.
 
-; fm_defaultexpiry-opt
+; fm_expiry-opt
 %s min. %s sec.
 
-; fm_defaultexpiry-opt3600
+; fm_expiry-opt3600
 1 heure
 
-; fm_defaultexpiry-opt4500
+; fm_expiry-opt4500
 1 heure 15 min.
 
-; fm_defaultexpiry-opt5400
+; fm_expiry-opt5400
 1 heure 30 min.
 
-; fm_defaultexpiry-opt6300
+; fm_expiry-opt6300
 1 heure 45 min.
 
-; fm_defaultexpiry-opt7200
+; fm_expiry-opt7200
 2 heures
 
 ; fm_registertimeout
@@ -382,6 +412,21 @@ Illimité
 ; fm_notifyringing
 Notification de sonnerie :
 
+; fm_notifyhold
+Notification de la mise en attente :
+
+; fm_allowtransfer
+Autoriser les transferts :
+
+; fm_maxcallbitrate
+Bit rate maximal pour les appels vidéo :
+
+; fm_autoframing
+Frame automatique :
+
+; fm_g726nonstandard
+Activer le support du G.726 non standard :
+
 ; fm_codec-disallow
 Codecs désactivés :
 
@@ -402,6 +447,57 @@ Ajouter un ou plusieurs codecs ->
 
 ; bt_outcodec
 <- Enlever un ou plusieurs codecs
+
+; fm_t38pt-udptl
+Activer le T38 (UDPTL) :
+
+; fm_t38pt-rtp
+Activer le T38 (RTP) :
+
+; fm_t38pt-tcp
+Activer le T38 (TCP) :
+
+; fm_t38pt-usertpsource
+Utiliser l'adresse IP source comme destination pour le T38 : 
+
+; fm_jbenable
+Activer le Jitter Buffer :
+
+; fm_jbforce
+Forcer le Jitter Buffer :
+
+; fm_jbmaxsize
+Taille maximale du Jitter Buffer :
+
+; fm_jbmaxsize-opt0
+Désactivé
+
+; fm_jbmaxsize-opt
+%s millisecondes
+
+; fm_jbresyncthreshold
+Resynchronisation en cas de délai trop important :
+
+; fm_jbresyncthreshold-opt-1
+Désactivé
+
+; fm_jbresyncthreshold-opt0
+0 milliseconde
+
+; fm_jbresyncthreshold-opt
+%s millisecondes
+
+; fm_jbimpl
+Implémentation :
+
+; fm_jbimpl-opt-fixed
+Fixe
+
+; fm_jbimpl-opt-adaptative
+Adaptative
+
+; fm_jblog
+Activer la journalisation des frames :
 
 ; fm_context
 Contexte :
@@ -457,6 +553,9 @@ Langages :
 ; fm_musiconhold
 Musique d'attente :
 
+; fm_mohsuggest
+Musique d'attente sur un appel sortant :
+
 ; fm_vmexten
 Numéro de la messagerie vocale :
 
@@ -478,6 +577,12 @@ Oui
 ; fm_canreinvite-opt-update
 Mise à jour
 
+; fm_canreinvite-opt-nonat
+Sans NAT
+
+; fm_canreinvite-opt-update-nonat
+Mise à jour sans NAT
+
 ; fm_insecure
 Insécurité :
 
@@ -498,6 +603,9 @@ Mise à jour du cache :
 
 ; fm_ignoreregexpire
 Ignorer l'expiration :
+
+; fm_rtsavesysname
+Sauvegarder le nom du système lors d'un enregistrement :
 
 ; fm_rtautoclear
 Suppression automatique du cache :

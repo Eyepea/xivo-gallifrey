@@ -30,7 +30,7 @@ class xivo_application_service_asterisk_realstatic_features_general extends xivo
 	{
 		$this->_info = $this->_origin = array();
 
-		$this->_get_realstatic($name);
+		$this->_realstatic_get($name);
 
 		if($this->_chk_exists_cfg('exten',$name) === true)
 			$this->_get_extenumbers($name);
@@ -98,9 +98,9 @@ class xivo_application_service_asterisk_realstatic_features_general extends xivo
 		return(($this->get_errnb() < 1));
 	}
 
-	function set_realstatic($arr)
+	function _realstatic_set($arr)
 	{
-		if(parent::set_realstatic($arr) === false)
+		if(parent::_realstatic_set($arr) === false)
 			return(false);
 		else if(($value = $this->get_result_var($this->_name,'var_val')) === null)
 			$value = $arr['var_val'];
@@ -125,7 +125,7 @@ class xivo_application_service_asterisk_realstatic_features_general extends xivo
 		if(is_array($this->_info) === false
 		|| empty($this->_info) === true
 		|| $this->get_errnb() > 0
-		|| ($name = $this->save_realstatic()) === false
+		|| ($name = $this->_realstatic_save()) === false
 		|| $this->save_extenumbers($name) === false)
 		{
 			$r = false;
@@ -163,7 +163,7 @@ class xivo_application_service_asterisk_realstatic_features_general extends xivo
 			switch($key)
 			{
 				case $this->_name:
-					$this->_reverse_realstatic($val);
+					$this->_realstatic_reverse($val);
 					break;
 				case 'extenumbers':
 					$this->_extenumbers->reverse_edit($this->_status);

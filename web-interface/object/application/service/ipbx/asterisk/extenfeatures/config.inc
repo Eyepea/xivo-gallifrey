@@ -93,9 +93,7 @@ $array['exten']['calllistening']['appdata'] = 'calllistening';
 
 $array['exten']['vmdelete'] = array();
 $array['exten']['vmdelete']['app'] = 'Macro';
-$array['exten']['vmdelete']['appdata'] = array();
-$array['exten']['vmdelete']['appdata'][0] = 'vmdelete';
-$array['exten']['vmdelete']['appdata'][1] = '/var/spool/asterisk/voicemail';
+$array['exten']['vmdelete']['appdata'] = 'vmdelete';
 
 $array['exten']['directoryaccess'] = array();
 $array['exten']['directoryaccess']['app'] = 'Directory';

@@ -453,6 +453,51 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
+	function get_all_val_by_category($category='',$disable=null)
+	{
+		if(xivo_haslen($category) === false)
+		{
+			if(isset($this->_category) === true)
+				$category = $this->_category;
+			else
+				return(false);
+		}
+
+		if(($list = $this->_prepare_get_all_where(array('category' => $category),
+							  $disable,
+							  true,
+							  array('id' => SORT_ASC))) === false)
+			return(false);
+		
+		$nb = count($list);
+
+		$r = array();
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$info = &$list[$i];
+
+			if(isset($r[$info['var_name']]) === false)
+				$r[$info['var_name']] = $info;
+			else
+			{
+				if(isset($r[$info['var_name']]['id']) === true)
+				{
+					$preinfo = $r[$info['var_name']];
+					$r[$info['var_name']] = array();
+					$r[$info['var_name']][] = $preinfo;
+				}
+
+				$r[$info['var_name']][] = $info;
+			}
+		}
+
+		if(empty($r) === true)
+			$r = false;
+
+		return($r);
+	}
+
 	function _prepare_get_all_where($arr=array(),$disable=null,$prepare=true,$order=null,$limit=null)
 	{
 		$arr = (array) $arr;

@@ -29,7 +29,7 @@ class xivo_application_service_asterisk_realstatic_features_featuremap extends x
 	{
 		$this->_info = $this->_origin = array();
 
-		$this->_get_realstatic($name,$disable);
+		$this->_realstatic_get($name,$disable);
 		$this->_get_extenumbers($name);
 
 		return($this->_info);
@@ -60,7 +60,7 @@ class xivo_application_service_asterisk_realstatic_features_featuremap extends x
 		if(is_array($this->_info) === false
 		|| empty($this->_info) === true
 		|| $this->get_errnb() > 0
-		|| ($name = $this->save_realstatic()) === false
+		|| ($name = $this->_realstatic_save()) === false
 		|| $this->save_extenumbers($name) === false)
 		{
 			$r = false;
@@ -96,7 +96,7 @@ class xivo_application_service_asterisk_realstatic_features_featuremap extends x
 			switch($key)
 			{
 				case $this->_name:
-					$this->_reverse_realstatic($val);
+					$this->_realstatic_reverse($val);
 					break;
 				case 'extenumbers':
 					$this->_extenumbers->reverse_edit($this->_status);

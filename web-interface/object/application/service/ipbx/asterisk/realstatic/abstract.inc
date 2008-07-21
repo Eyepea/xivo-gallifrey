@@ -9,6 +9,7 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 	var $_filter		= false;
 	var $_realstatic	= null;
 	var $_status		= '';
+	var $_multi		= false;
 
 	function _init(&$service)
 	{
@@ -47,8 +48,11 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 	function get($name,$disable=null)
 	{
 		$this->_info = $this->_origin = array();
-
-		$this->_get_realstatic($name,$disable);
+		
+		if($this->_multi === false)
+			$this->_realstatic_get($name,$disable);
+		else
+			$this->_realstatic_get_all($name,$disable);
 
 		return($this->_info);
 	}
@@ -75,6 +79,13 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 		return($this->_realstatic->get_all_by_category(null,$disable));
 	}
 
+	function get_all_val_by_category($disable=null)
+	{
+		$this->_info = $this->_origin = array();
+
+		return($this->_realstatic->get_all_val_by_category(null,$disable));
+	}
+
 	function enable($id)
 	{
 		return($this->_realstatic->enable($id));
@@ -90,7 +101,7 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 		return($this->get_element());
 	}
 
-	function _get_realstatic($name,$disable=null)
+	function _realstatic_get($name,$disable=null)
 	{
 		$this->_info[$this->_name] = false;
 		$this->_origin[$this->_name] = false;
@@ -99,8 +110,23 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 		$arr['var_name'] = $name;
 		$arr['category'] = $this->_category;
 
-		$this->_info[$this->_name] = $this->_realstatic->get_where($arr,$disable);
-		$this->_origin[$this->_name] = $this->_realstatic->get_origin();
+		if(($this->_info[$this->_name] = $this->_realstatic->get_where($arr,$disable)) !== false)
+			$this->_origin[$this->_name] = $this->_realstatic->get_origin();
+
+		return($this->_info[$this->_name]);
+	}
+
+	function _realstatic_get_all($name,$disable=null)
+	{
+		$this->_info[$this->_name] = false;
+		$this->_origin[$this->_name] = false;
+
+		$arr = array();
+		$arr['var_name'] = $name;
+		$arr['category'] = $this->_category;
+
+		if(($this->_info[$this->_name] = $this->_realstatic->get_all_where($arr,$disable)) !== false)
+			$this->_origin[$this->_name] = $this->_realstatic->get_origin_list();
 
 		return($this->_info[$this->_name]);
 	}
@@ -113,13 +139,12 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 			return(false);
 
 		$this->get($arr['var_name']);
-
-		$this->set_realstatic($arr);
+		$this->_realstatic_set($arr);
 
 		return(($this->get_errnb() < 1));
 	}
 
-	function set_realstatic($arr)
+	function _realstatic_set($arr)
 	{
 		if(is_array($arr) === false
 		|| isset($arr['var_name'],$arr['var_val']) === false)
@@ -132,19 +157,64 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 		if(isset($arr['commented']) === true)
 			$rs['commented'] = (bool) $arr['commented'];
 
-		if(($value = $this->set_chk_value($arr['var_name'],$arr['var_val'],true)) === false)
+		if($this->_multi === true)
 		{
-			if(($value = $this->get_filter_result()) !== false)
-				$rs['var_val'] = $value[$arr['var_name']];
-
-			$this->_set_result($this->_name,$rs);
-			$this->_set_error($this->_name,$this->get_filter_error());
-			return(false);
+			if(is_array($arr['var_val']) === false
+			|| empty($arr['var_val']) === true)
+			{
+				$this->_multi = false;
+				$arr['var_val'] = '';
+			}
 		}
 
-		$rs['var_val'] = $value;
+		if($this->_multi === false)
+		{
+			if(($value = $this->set_chk_value($arr['var_name'],$arr['var_val'],true)) === false)
+			{
+				if(($value = $this->get_filter_result()) !== false)
+					$rs['var_val'] = $value[$arr['var_name']];
 
-		$this->_set_result($this->_name,$rs);
+				$this->_set_error($this->_name,$this->get_filter_error());
+				$this->_set_result($this->_name,$rs);
+				return(false);
+			}
+
+			$rs['var_val'] = $value;
+			$this->_set_result($this->_name,$rs);
+		}
+		else
+		{
+			$res = $err = array();
+
+			$i = 0;
+
+			foreach($arr['var_val'] as $value)
+			{
+				$res[$i] = $rs;
+
+				if(xivo_haslen($value) === false)
+					$err[$i] = 'empty value';
+				else if(($value = $this->set_chk_value($arr['var_name'],$value,true)) === false)
+				{
+					if(($value = $this->get_filter_result()) !== false)
+						$res[$i]['var_val'] = $value[$arr['var_name']];
+
+					$err[$i] = $this->get_filter_error();
+				}
+				else
+					$res[$i]['var_val'] = $value;
+
+				$i++;
+			}
+
+			$this->_set_result($this->_name,$res);
+
+			if(empty($err) === false)
+			{
+				$this->_set_error($this->_name,$err);
+				return(false);
+			}
+		}
 
 		return(true);
 	}
@@ -159,7 +229,7 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 		if(is_array($this->_info) === false
 		|| empty($this->_info) === true
 		|| $this->get_errnb() > 0
-		|| ($name = $this->save_realstatic()) === false)
+		|| $this->_realstatic_save() === false)
 		{
 			$r = false;
 			$this->_reverse_save();
@@ -205,6 +275,8 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 			else
 				$rs['var_val'] = '';
 
+			$this->_multi = (bool) xivo_ak('multi',$list[$key],true);
+
 			if($this->set($rs) === false
 			|| ($pre_save = $this->_chk_pre_save($rs)) === false
 			|| ($pre_save !== 1 && $this->save() === false) === true)
@@ -216,45 +288,114 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 		return($r);
 	}
 
-	function save_realstatic()
+	function _realstatic_save()
 	{
 		if(isset($this->_info[$this->_name]) === false)
 			return(false);
 		else if($this->_info[$this->_name] === false)
-			return($this->_add_realstatic());
+			return($this->_realstatic_add());
 		else if(($rs = $this->get_result($this->_name)) === null
 		|| $rs === false)
 			return(false);
 
-		$realstatic_where = array();
-		$realstatic_where['category'] = $this->_category;
-		$realstatic_where['var_name'] = $rs['var_name'];
+		$where = array();
+		$where['category'] = $this->_category;
 
-		$r = $this->_realstatic->edit_where($realstatic_where,$rs);
+		if($this->_multi === false)
+		{
+			$where['var_name'] = $rs['var_name'];
 
-		if($r === false)
-			$this->_return[$this->_name] = false;
-		else
-			$this->_return[$this->_name] = $rs['var_name'];
+			if(($r = $this->_realstatic->edit_where($where,$rs)) === false)
+				$this->_return[$this->_name] = false;
+			else
+				$this->_return[$this->_name] = $rs['var_name'];
+				
+			return($r);
+		}
+		else if(is_array($rs) === false || isset($rs[0],$rs[0]['var_name']) === false)
+			return(($this->_return[$this->_name] = false));
 
-		return($this->_return[$this->_name]);
+		$where['var_name'] = $rs[0]['var_name'];
+
+		if($this->_realstatic->delete_where($where) === false)
+			return(($this->_return[$this->_name] = false));
+
+		$res = array();
+		$res['category'] = $this->_category;
+		$res['cat_metric'] = $this->_cat_metric;
+		$res['var_name'] = $rs[0]['var_name'];
+
+		$nb = count($rs);
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			if(array_key_exists('commented',$rs[$i]) === true)
+				$res['commented'] = $rs[$i]['commented'];
+			else
+				unset($res['commented']);
+
+			if(array_key_exists('var_val',$rs[$i]) === true)
+				$res['var_val'] = $rs[$i]['var_val'];
+			else
+				unset($res['var_val']);
+
+			if($this->_realstatic->add($res) === false)
+			{
+				$this->_return[$this->_name] = $res['var_name'];
+				return(false);
+			}
+		}
+
+		return(true);
 	}
 
-	function _add_realstatic()
+	function _realstatic_add()
 	{
 		if(($rs = $this->get_result($this->_name)) === null
 		|| $rs === false)
 			return(false);
+		else if($this->_multi === false)
+		{
+			$rs['category'] = $this->_category;
+			$rs['cat_metric'] = $this->_cat_metric;
 
-		$rs['category'] = $this->_category;
-		$rs['cat_metric'] = $this->_cat_metric;
+			if(($r = $this->_realstatic->add($rs)) === false)
+				$this->_return[$this->_name] = false;
+			else
+				$this->_return[$this->_name] = $rs['var_name'];
 
-		if($this->_realstatic->add($rs) === false)
-			$this->_return[$this->_name] = false;
-		else
-			$this->_return[$this->_name] = $rs['var_name'];
+			return($r);
+		}
+		else if(is_array($rs) === false || isset($rs[0],$rs[0]['var_name']) === false)
+			return(($this->_return[$this->_name] = false));
 
-		return($this->_return[$this->_name]);
+		$res = array();
+		$res['category'] = $this->_category;
+		$res['cat_metric'] = $this->_cat_metric;
+		$res['var_name'] = $rs[0]['var_name'];
+
+		$nb = count($rs);
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			if(array_key_exists('commented',$rs[$i]) === true)
+				$res['commented'] = $rs[$i]['commented'];
+			else
+				unset($res['commented']);
+
+			if(array_key_exists('var_val',$rs[$i]) === true)
+				$res['var_val'] = $rs[$i]['var_val'];
+			else
+				unset($res['var_val']);
+
+			if($this->_realstatic->add($res) === false)
+			{
+				$this->_return[$this->_name] = $res['var_name'];
+				return(false);
+			}
+		}
+
+		return(true);
 	}
 
 	function _reverse_save()
@@ -266,26 +407,33 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 		|| $this->_return[$this->_name] === false)
 			return(false);
 
-		return($this->_reverse_realstatic($this->_return[$this->_name]));
+		return($this->_realstatic_reverse($this->_return[$this->_name]));
 	}
 
-	function _reverse_realstatic($val)
+	function _realstatic_reverse($val)
 	{
 		if(is_scalar($val) === false
 		|| $val === false
 		|| isset($this->_origin[$this->_name]) === false)
 			return(false);
-
-		if($this->_origin[$this->_name] !== false)
-			$this->_realstatic->edit_origin($this->_origin[$this->_name]);
-		else
+		else if($this->_multi === false
+		&& isset($this->_origin[$this->_name]) === true
+		&& $this->_origin[$this->_name] !== false)
 		{
-			$realstatic_where = array();
-			$realstatic_where['category'] = $this->_category;
-			$realstatic_where['var_name'] = $val;
-
-			$this->_realstatic->delete_where($realstatic_where);
+			$this->_realstatic->edit_origin($this->_origin[$this->_name]);
+			return(true);
 		}
+
+		$where = array();
+		$where['category'] = $this->_category;
+		$where['var_name'] = $val;
+
+		$this->_realstatic->delete_where($where);
+
+		if($this->_multi === true
+		&& isset($this->_origin[$this->_name]) === true
+		&& $this->_origin[$this->_name] !== false)
+			$this->_realstatic->add_origin_list($this->_origin[$this->_name]);
 
 		return(true);
 	}
