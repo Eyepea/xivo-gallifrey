@@ -93,7 +93,7 @@ static char *decode(char *string)
 	return string;
 }
 
-static int strsubst(struct ast_channel *chan, char *cmd, char *data, char *buf, size_t len) 
+static int strsubst(struct ast_channel *chan, char *cmd, char *data, char *buf, size_t len)
 {
 	char *string;
 	char *search;
@@ -153,6 +153,74 @@ static struct ast_custom_function strsubst_function = {
 	.read = strsubst,
 };
 
+
+#define GETCONF_SYNTAX		"GETCONF(<varname>)"
+
+#define GETCONF_FUNC_TABLE(var)	{ #var , ast_config_AST_ ## var},
+
+#define GETCONF_FUNC_DOC(var)	"\t" #var "\n"
+
+#define GETCONF_FUNC_VAR(mode, var) GETCONF_FUNC_ ## mode (var)
+
+#define GETCONF_FUNC_LIST(mode)				\
+	GETCONF_FUNC_VAR(mode, CONFIG_DIR)		\
+	GETCONF_FUNC_VAR(mode, CONFIG_FILE)		\
+	GETCONF_FUNC_VAR(mode, MODULE_DIR)		\
+	GETCONF_FUNC_VAR(mode, SPOOL_DIR)		\
+	GETCONF_FUNC_VAR(mode, MONITOR_DIR)		\
+	GETCONF_FUNC_VAR(mode, VAR_DIR)			\
+	GETCONF_FUNC_VAR(mode, DATA_DIR)		\
+	GETCONF_FUNC_VAR(mode, LOG_DIR)			\
+	GETCONF_FUNC_VAR(mode, AGI_DIR)			\
+	GETCONF_FUNC_VAR(mode, DB)			\
+	GETCONF_FUNC_VAR(mode, KEY_DIR)			\
+	GETCONF_FUNC_VAR(mode, PID)			\
+	GETCONF_FUNC_VAR(mode, SOCKET)			\
+	GETCONF_FUNC_VAR(mode, RUN_DIR)			\
+	GETCONF_FUNC_VAR(mode, CTL_PERMISSIONS)		\
+	GETCONF_FUNC_VAR(mode, CTL_OWNER)		\
+	GETCONF_FUNC_VAR(mode, CTL_GROUP)		\
+	GETCONF_FUNC_VAR(mode, CTL)			\
+	GETCONF_FUNC_VAR(mode, SYSTEM_NAME)
+
+static int getconf(struct ast_channel *chan, char *cmd, char *data, char *buf, size_t len)
+{
+	static const struct {
+		const char *varname;
+		const char *ast_config_ptr;
+	} confvars[] = {
+		GETCONF_FUNC_LIST(TABLE)
+	};
+
+	UNUSED(chan);
+	UNUSED(cmd);
+
+	if (len == 0)
+		return -1;
+
+	for (unsigned i = 0; i < ARRAY_LEN(confvars); i++) {
+		if (!strcasecmp(confvars[i].varname, data)) {
+			ast_copy_string(buf, confvars[i].ast_config_ptr, len);
+			return 0;
+		}
+	}
+
+	ast_log(LOG_WARNING, "Asterisk configuration variable \"%s\" unknown\n", data);
+	ast_copy_string(buf, "", len);
+	return -1;
+}
+
+static struct ast_custom_function getconf_function = {
+	.name = "GETCONF",
+	.synopsis = "Retrieves an Asterisk configuration string",
+	.syntax = GETCONF_SYNTAX,
+	.desc =
+"Available Asterisk configuration strings are:\n"
+GETCONF_FUNC_LIST(DOC),
+	.read = getconf,
+};
+
+
 static const char *set_one_name = "SetOne";
 static const char *set_one_synopsis = "Set exactly one channel variable and allow the rvalue to contain pipes characters";
 static const char *set_one_description =
@@ -202,9 +270,11 @@ static int loaded;
 static int load_module(void)
 {
 	ast_custom_function_register(&strsubst_function);
+	ast_custom_function_register(&getconf_function);
 	if (ast_register_application(
 			set_one_name, set_one,
 			set_one_synopsis, set_one_description) < 0) {
+		ast_custom_function_unregister(&getconf_function);
 		ast_custom_function_unregister(&strsubst_function);
 	}
 	loaded = 1;
@@ -216,8 +286,9 @@ static int unload_module(void)
 	if (!loaded)
 		return 0;
 	ast_unregister_application(set_one_name);
+	ast_custom_function_unregister(&getconf_function);
 	ast_custom_function_unregister(&strsubst_function);
 	return 0;
 }
 
-AST_MODULE_INFO_STANDARD(ASTERISK_GPL_KEY, "substrings replacement func + setvar with pipes in content app");
+AST_MODULE_INFO_STANDARD(ASTERISK_GPL_KEY, "STRSUBST() & GETCONF() funcs + SetOne() app");
