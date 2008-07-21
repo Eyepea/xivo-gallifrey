@@ -1,6 +1,9 @@
 2008-07-20  Adrien DELLE CAVE <adellecave@proformatique.com>
 
 	pf_agi_astconfigpaths.patch
+	$Revision$
+	$Date$
+	Feature
 
 	XIVO needs Asterisk's configuration paths in AGI scripts.
 
