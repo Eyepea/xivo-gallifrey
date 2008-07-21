@@ -291,7 +291,7 @@ INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','*26',1,'Macro','incallr
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*10',1,'Macro','phonestatus','phonestatus');
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*8.',1,'Pickup','${EXTEN:2}','pickup');
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*9',1,'Macro','recsnd|wav','recsnd');
-INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','*35',1,'Macro','vmdelete|/var/spool/asterisk/voicemail','vmdelete');
+INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','*35',1,'Macro','vmdelete','vmdelete');
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*98',1,'Macro','voicemsg','voicemsg');
 
 
@@ -933,6 +933,8 @@ INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','bindaddr','0.0.
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','videosupport','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','autocreatepeer','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','allowguest','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','allowsubscribe','yes');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','allowoverlap','yes');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','promiscredir','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','autodomain','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','domain',NULL);
@@ -940,8 +942,10 @@ INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','allowexternaldo
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','usereqphone','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','realm','xivo');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','alwaysauthreject','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','limitonpeer','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','useragent','XIVO PBX');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','checkmwi',10);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','buggymwi','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','regcontext',NULL);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','callerid','xivo');
 INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','fromdomain',NULL);
@@ -949,29 +953,50 @@ INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','sipdebug','no')
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','dumphistory','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','recordhistory','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','callevents','no');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','tos','16');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','ospauth','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','tos_sip','CS3');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','tos_audio','EF');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','tos_video','AF41');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','t38pt_udptl','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','t38pt_rtp','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','t38pt_tcp','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','t38pt_usertpsource','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','rfc2833compensate','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','localnet',NULL);
 INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','externip',NULL);
 INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','externhost',NULL);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','externrefresh',10);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','matchexterniplocally','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','outboundproxy',NULL);
 INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','outboundproxyport',NULL);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','g726nonstandard','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','disallow',NULL);
 INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','allow',NULL);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','t1min',100);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','relaxdtmf','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','compactheaders','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','rtptimeout',0);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','rtpholdtimeout',0);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','rtpkeepalive',0);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','directrtpsetup','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','notifymimetype','application/simple-message-summary');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','srvlookup','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','pedantic','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','minexpiry',60);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','maxexpiry',3600);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','defaultexpiry',120);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','registertimeout',20);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','registerattempts',0);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','notifyringing','yes');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','notifyhold','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','allowtransfer','yes');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','maxcallbitrate',384);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','autoframing','yes');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','jbenable','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','jbforce','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','jbmaxsize',200);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','jbresyncthreshold',1000);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','jbimpl','fixed');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','jblog','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','context',NULL);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','nat','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','dtmfmode','info');
@@ -980,6 +1005,7 @@ INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','useclientcode',
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','progressinband','never');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','language','fr');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','musiconhold','default');
+INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','mohsuggest',NULL);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','vmexten','*98');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','trustrpid','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','sendrpid','no');
@@ -988,6 +1014,7 @@ INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','insecure',NULL)
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','rtcachefriends','yes');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','rtupdate','yes');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','ignoreregexpire','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','rtsavesysname','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','rtautoclear','no');
 
 
