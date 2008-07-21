@@ -21,12 +21,12 @@ from xivo_agid import agid
 
 def get_ast_dir(agi, cursor, args):
 	name = str(args[0]).lower()
-        ast_dir = agi.env.get("ast_%s_dir" % name)
+	ast_dir = agi.env.get("ast_%s_dir" % name)
 
-        if ast_dir is None:
-                ast_dir = ""
+	if ast_dir is None:
+		ast_dir = ""
 		agi.verbose("Unable to fetch an Asterisk's directory path from: %s", name)
 
-        agi.set_variable('XIVO_AST_DIR', ast_dir)
+	agi.set_variable('XIVO_AST_DIR', ast_dir)
 
 agid.register(get_ast_dir)
