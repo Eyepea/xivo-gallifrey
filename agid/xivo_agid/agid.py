@@ -108,20 +108,23 @@ class FastAGIRequestHandler(SocketServer.StreamRequestHandler):
 		try:
 			debug("handling request")
 
-			self.fastagi = fastagi.FastAGI(self.rfile, self.wfile)
-			self.except_hook = agitb.Hook(agi = self.fastagi)
+			fagi = fastagi.FastAGI(self.rfile, self.wfile)
+			except_hook = agitb.Hook(agi = fagi)
 
 			conn = server.db_conn_pool.acquire()
-			self.cursor = conn.cursor()
+			try:
+				cursor = conn.cursor()
 
-			module_name = self.fastagi.env['agi_network_script']
-			debug("delegating request handling to module %s" % module_name)
-			modules[module_name].handle(self.fastagi, self.cursor, self.fastagi.args)
+				module_name = fagi.env['agi_network_script']
+				debug("delegating request handling to module %s" % module_name)
+				modules[module_name].handle(fagi, cursor, fagi.args)
 
-			conn.commit()
+				conn.commit()
 
-			self.fastagi.verbose('AGI module "%s" successfully executed' % module_name)
-			debug("request successfully handled")
+				fagi.verbose('AGI module "%s" successfully executed' % module_name)
+				debug("request successfully handled")
+			finally:
+				server.db_conn_pool.release(conn)
 
 		# Attempt to relay errors to Asterisk, but if it fails, we
 		# just give up.
@@ -131,22 +134,20 @@ class FastAGIRequestHandler(SocketServer.StreamRequestHandler):
 			debug("invalid request, dial plan broken")
 
 			try:
-				self.fastagi.verbose(message)
-				self.fastagi.appexec('Goto', 'macro-agi_fail|s|1')
-				self.fastagi.fail()
+				fagi.verbose(message)
+				fagi.appexec('Goto', 'macro-agi_fail|s|1')
+				fagi.fail()
 			except:
 				pass
 		except:
 			debug("an unexpected error occurred")
 
 			try:
-				self.except_hook.handle()
-				self.fastagi.appexec('Goto', 'macro-agi_fail|s|1')
-				self.fastagi.fail()
+				except_hook.handle()
+				fagi.appexec('Goto', 'macro-agi_fail|s|1')
+				fagi.fail()
 			except:
 				pass
-
-		server.db_conn_pool.release(conn)
 
 class AGID(SocketServer.ThreadingTCPServer):
 	allow_reuse_address = True
