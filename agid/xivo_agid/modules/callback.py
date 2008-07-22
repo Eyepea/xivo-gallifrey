@@ -36,8 +36,13 @@ def callback(agi, cursor, args):
 	if srcnum in (None, ''):
 		agi.dp_break("Unable to find srcnum, srcnum = '%s'" % srcnum)
 
+	spooldir = agi.get_variable('GETCONF(SPOOL_DIR)')
+
+	if not spooldir:
+		agi.dp_break("Unable to fetch AST_SPOOL_DIR")
+
 	mtime = time.time() + 5
-	filepath = "%s/%%s/%s-%s.call" % (agi.env.get('ast_spool_dir'), srcnum, int(mtime))
+	filepath = "%s/%%s/%s-%s.call" % (spooldir, srcnum, int(mtime))
 
 	tmpfile = filepath % "tmp"
 	realfile = filepath % "outgoing"
