@@ -29,7 +29,6 @@ import re
 import sys
 import copy
 import yaml
-import shutil
 import os.path
 from ConfigParser import ConfigParser
 from itertools import chain, count
@@ -42,6 +41,7 @@ from xivo import except_tb
 from xivo import system
 from xivo import xys
 from xivo import udev
+from xivo import shvar
 from xivo.easyslog import *
 
 
@@ -375,6 +375,10 @@ def phone_desc_by_ua(ua, exception_handler=default_handler):
 
 def specific(docstr):
     return docstr not in ('reserved', 'none', 'void')
+
+
+def specific_or_reserved(docstr):
+    return docstr not in ('none', 'void')
 
 
 def network_from_static(static):
@@ -732,7 +736,7 @@ def load_configuration(conf_source, trace=trace_null):
     conf = yaml.safe_load(conf_source)
     if not xys.validate(conf, SCHEMA_NETWORK_CONFIG, trace):
         raise InvalidConfigurationError("Invalid configuration")
-    # TODO: do that thanks to schema based mapping ("mapping" in functional programming meaning)
+    # TODO: do that thanks to a schema based mapping ("mapping" in functional programming meaning)
     nameservers = conf['resolvConf'].get('nameservers')
     if nameservers:
         conf['resolvConf']['nameservers'] = map(network.normalize_ipv4_address, nameservers)
@@ -789,14 +793,14 @@ def natural_vlan_name(phy, vlanId):
         return "%s.%d" % (phy, vlanId)
 
 
-def generate_interfaces(old_interfaces_lines, conf, trace=trace_null):
+def generate_interfaces(old_lines, conf, trace=trace_null):
     """
     Yield the new lines of interfaces(5) according to the old ones and the
     current configuration
     """
     trace.notice("ENTERING generate_interfaces()")
     
-    eni = interfaces.parse(old_interfaces_lines)
+    eni = interfaces.parse(old_lines)
     
     rsvd_base = reserved_netIfaces(conf)
     rsvd_full = reserved_vlans(conf)
@@ -996,6 +1000,50 @@ def generate_dhcpd_conf(conf, trace=trace_null):
     trace.notice("LEAVING generate_dhcpd_conf.")
 
 
+# note: we use the header below because it is the header also used by the
+# ifplugd package
+DEFAULT_IFPLUGD = \
+"""# This file may be changed either manually or by running dpkg-reconfigure.
+#
+# N.B.: dpkg-reconfigure deletes everything from this file except for
+# the assignments to variables INTERFACES, HOTPLUG_INTERFACES, ARGS and
+# SUSPEND_ACTION.  When run it uses the current values of those variables
+# as their default values, thus preserving the administrator's changes.
+#
+# This file is sourced by both the init script /etc/init.d/ifplugd and
+# the hotplug script /etc/hotplug.d/net/ifplugd.hotplug to give default
+# values. The init script starts ifplugd for all interfaces listed in
+# INTERFACES, and the hotplug script starts ifplugd for all interfaces
+# listed in HOTPLUG_INTERFACES. The special value all starts one
+# ifplugd for all interfaces being present.
+INTERFACES=""
+HOTPLUG_INTERFACES=""
+ARGS="-q -f -u0 -d10 -w -I"
+SUSPEND_ACTION="stop"
+"""
+
+
+def generate_default_ifplugd(old_lines, conf, trace=trace_null):
+    """
+    Yield the new lines of /etc/default/ifplugd according to the old ones and
+    the current configuration
+    """
+    trace.notice("ENTERING generate_default_ifplugd()")
+    
+    if not old_lines:
+        old_lines = DEFAULT_IFPLUGD.split("\n")
+    
+    reslst, resdct = shvar.load(old_lines)
+    shvar.strip_overridden_assignments(reslst)
+    iflist = [phy for phy, vsTag in conf['netIfaces'] if specific_or_reserved(vsTag)]
+    shvar.slow_set_assign(reslst, "INTERFACES", " ".join(iflist))
+    
+    for line in shvar.format(reslst):
+        yield line
+    
+    trace.notice("LEAVING generate_default_ifplugd.")
+
+
 class TransactionError(Exception):
     "Error raised on transaction cancellation."
     def __init__(self, msg, original_exception=None):
@@ -1188,23 +1236,25 @@ def transactional_generation(store_base, store_subs, gen_base, gen_subs, generat
 def generate_system_configuration(to_gen, prev_gen, current_xivo_conf, trace=trace_null):
     """
     Generate system configuration from our own configuration model.
-    
-    TODO: generate /etc/default/ifplugd
     """
     os.mkdir(to_gen)
     
     config = load_configuration(file(os.path.join(current_xivo_conf, NETWORK_CONFIG_FILE)), trace)
     
-    if prev_gen:
-        old_interfaces_lines = file(os.path.join(prev_gen, INTERFACES_FILE))
-    else:
-        old_interfaces_lines = ()
-    system.file_writelines_flush_sync(os.path.join(to_gen, INTERFACES_FILE),
-                                      generate_interfaces(old_interfaces_lines, config, trace))
-    if old_interfaces_lines:
-        old_interfaces_lines.close()
-        old_interfaces_lines = None
+    def gen_from_old(filename, genfunc):
+        if prev_gen:
+            old_lines = file(os.path.join(prev_gen, filename))
+        else:
+            old_lines = ()
+        system.file_writelines_flush_sync(os.path.join(to_gen, filename),
+                                          genfunc(old_lines, config, trace))
+        if old_lines:
+            old_lines.close()
     
+    gen_from_old(INTERFACES_FILE, generate_interfaces)
+
+    gen_from_old(IFPLUGD_FILE, generate_default_ifplugd)
+        
     system.file_writelines_flush_sync(os.path.join(to_gen, DHCPD_CONF_FILE),
                                       generate_dhcpd_conf(config, trace))
 
@@ -1484,7 +1534,7 @@ def proc_reneth_init(src_dst_lst, pure_dst_set, trace):
     for pure_dst in pure_dst_set:
         if not phy_free_in_conf(config, pure_dst):
             raise ValueError, "Target interface name busy in XIVO configuration: %r" % pure_dst
-    for src, dst in src_dst_list:
+    for src, dst in src_dst_lst:
         if src not in config['netIfaces']:
             raise ValueError, "Source interface name does not exist in XIVO configuration: %r" % src
         if not netif_source_name(src):

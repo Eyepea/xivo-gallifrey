@@ -390,6 +390,20 @@ def strip_overridden_assignments(reslst):
     return reslst
 
 
+def slow_set_assign(reslst, varname, new_value):
+    """
+    Scan @reslst from start until @varname is found, then change the value that
+    was affected to @varname to @new_value.
+    If no such @varname has been found, append a new one.
+    """
+    for p, (var_scan, val_scan, rotl) in enumerate(reslst):
+        if var_scan == varname:
+            reslst[p] = (varname, new_value, rotl)
+            return
+    else:
+        reslst.append((varname, new_value, ""))
+
+
 # Identity character translaction table, see str.translate
 ID_TABLE = ''.join(map(chr, xrange(0, 256)))
 
