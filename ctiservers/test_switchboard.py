@@ -185,8 +185,8 @@ for x in a.readresponse('StatusComplete'):
 #a.sendcommand('Status', [])
 #for x in a.readresponse('StatusComplete'):
 #	print x
-# stuff server
-# too bad : pas de sécurité !
+# stuff server
+# too bad : pas de sécurité !
 import SocketServer
 class ConnHandler(SocketServer.StreamRequestHandler):
 	def handle(self):
