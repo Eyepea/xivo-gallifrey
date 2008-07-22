@@ -9,7 +9,6 @@ $moh_list = $this->get_var('moh_list');
 $context_list = $this->get_var('context_list');
 
 if($this->get_var('fm_save') === true):
-	$dhtml = &$this->get_module('dhtml');
 	$dhtml->write_js('xivo_form_success(\''.$dhtml->escape($this->bbf('fm_success-save')).'\');');
 endif;
 
@@ -122,7 +121,6 @@ endif;
 <div id="sb-part-first">
 
 <?php
-
 	echo	$form->text(array('desc'	=> $this->bbf('fm_bindport'),
 				  'name'	=> 'bindport',
 				  'labelid'	=> 'bindport',

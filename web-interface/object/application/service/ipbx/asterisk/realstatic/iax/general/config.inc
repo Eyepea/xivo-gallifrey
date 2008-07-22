@@ -11,6 +11,14 @@ $array['element']['bindaddr'] = array();
 $array['element']['bindaddr']['default'] = '0.0.0.0';
 $array['element']['bindaddr']['setdef'] = true;
 
+$array['element']['iaxthreadcount'] = array();
+$array['element']['iaxthreadcount']['value'] = range(1,256);
+$array['element']['iaxthreadcount']['default'] = 10;
+
+$array['element']['iaxmaxthreadcount'] = array();
+$array['element']['iaxmaxthreadcount']['value'] = range(0,256);
+$array['element']['iaxmaxthreadcount']['default'] = 100;
+
 $array['element']['iaxcompat'] = array();
 $array['element']['iaxcompat']['value'] = array('no','yes');
 $array['element']['iaxcompat']['default'] = 'no';
@@ -58,23 +66,10 @@ $array['element']['bandwidth']['value'] = array('low','medium','high');
 $array['element']['bandwidth']['default'] = 'high';
 
 $array['element']['tos'] = array();
-$array['element']['tos']['value'] = array(0	=> '0x00 (none)',
-					  2	=> '0x02 (mincost)',
-					  4	=> '0x04 (reliability)',
-					  6	=> '0x06',
-					  8	=> '0x08 (throughput)',
-					  10	=> '0x0A',
-					  12	=> '0x0C',
-					  14	=> '0x0E',
-					  16	=> '0x10 (lowdelay)',
-					  18	=> '0x12',
-					  20	=> '0x14',
-					  22	=> '0x16',
-					  24	=> '0x18',
-					  26	=> '0x1A',
-					  28	=> '0x1C',
-					  30	=> '0x1E');
-$array['element']['tos']['default'] = 16;
+$array['element']['tos']['value'] = array('CS0','CS1','CS2','CS3','CS4','CS5','CS6','CS7',
+					  'AF11','AF12','AF13','AF21','AF22','AF23',
+					  'AF31', 'AF32','AF33','AF41','AF42','AF43','EF');
+$array['element']['tos']['default'] = 'EF';
 
 $array['element']['jitterbuffer'] = array();
 $array['element']['jitterbuffer']['value'] = array('no','yes');
@@ -85,10 +80,6 @@ $array['element']['forcejitterbuffer'] = array();
 $array['element']['forcejitterbuffer']['value'] = array('no','yes');
 $array['element']['forcejitterbuffer']['default'] = 'no';
 $array['element']['forcejitterbuffer']['set'] = true;
-
-$array['element']['dropcount'] = array();
-$array['element']['dropcount']['value'] = array(0,1,2,3,4,5,6,7,8,9,10);
-$array['element']['dropcount']['default'] = 3;
 
 $array['element']['maxjitterbuffer'] = array();
 $array['element']['maxjitterbuffer']['value'] = array(0,250,500,750,1000,1250,1500,1750,2000);
@@ -102,18 +93,6 @@ $array['element']['resyncthreshold'] = array();
 $array['element']['resyncthreshold']['value'] = array(-1,0,250,500,750,1000,1250,1500,1750,2000);
 $array['element']['resyncthreshold']['default'] = 1000;
 
-$array['element']['minexcessbuffer'] = array();
-$array['element']['minexcessbuffer']['value'] = array(0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100);
-$array['element']['minexcessbuffer']['default'] = 10;
-
-$array['element']['maxexcessbuffer'] = array();
-$array['element']['maxexcessbuffer']['value'] = array(0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100);
-$array['element']['maxexcessbuffer']['default'] = 50;
-
-$array['element']['jittershrinkrate'] = array();
-$array['element']['jittershrinkrate']['value'] = array(0,1,2,3,4,5,6,7,8,9,10);
-$array['element']['jittershrinkrate']['default'] = 2;
-
 $array['element']['accountcode'] = array();
 $array['element']['accountcode']['default'] = '';
 $array['element']['accountcode']['null'] = true;
@@ -126,19 +105,26 @@ $array['element']['amaflags']['value'] = array(
 				XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_DOCUMENTATION);
 $array['element']['amaflags']['default'] = XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_DEFAULT;
 
-$array['element']['mailboxdetail'] = array();
-$array['element']['mailboxdetail']['value'] = array('no','yes');
-$array['element']['mailboxdetail']['default'] = 'yes';
-$array['element']['mailboxdetail']['set'] = true;
+$array['element']['adsi'] = array();
+$array['element']['adsi']['value'] = array('no','yes');
+$array['element']['adsi']['default'] = 'no';
+$array['element']['adsi']['set'] = true;
 
-$array['element']['notransfer'] = array();
-$array['element']['notransfer']['value'] = array('no','yes');
-$array['element']['notransfer']['default'] = 'no';
-$array['element']['notransfer']['set'] = true;
+$array['element']['transfer'] = array();
+$array['element']['transfer']['value'] = array('yes','no','mediaonly');
+$array['element']['transfer']['default'] = 'yes';
 
 $array['element']['language'] = array();
 $array['element']['language']['value'] = array('en','fr');
 $array['element']['language']['default'] = 'fr';
+
+$array['element']['mohinterpret'] = array();
+$array['element']['mohinterpret']['default'] = XIVO_SRE_IPBX_AST_MOH_DEFAULT;
+$array['element']['mohinterpret']['setdef'] = true;
+
+$array['element']['mohsuggest'] = array();
+$array['element']['mohsuggest']['default'] = '';
+$array['element']['mohsuggest']['null'] = true;
 
 $array['element']['encryption'] = array();
 $array['element']['encryption']['value'] = array('no','yes','aes128');
@@ -146,7 +132,7 @@ $array['element']['encryption']['default'] = 'no';
 
 $array['element']['maxauthreq'] = array();
 $array['element']['maxauthreq']['value'] = array(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20);
-$array['element']['maxauthreq']['default'] = 0;
+$array['element']['maxauthreq']['default'] = 3;
 
 $array['element']['codecpriority'] = array();
 $array['element']['codecpriority']['value'] = array('disabled','host','caller','reqonly');
@@ -225,6 +211,8 @@ $array['element']['autokill']['default'] = 'yes';
 $array['filter'] = array();
 $array['filter']['bindport'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
 $array['filter']['bindaddr'] = array('set' => false,'chk' => 2,'callback' => 'xivo_filter::chk_host_ipv4_strict','maxlen' => 64);
+$array['filter']['iaxthreadcount'] = array('cast' => 'uint','between' => array(1,256));
+$array['filter']['iaxmaxthreadcount'] = array('cast' => 'uint','between' => array(0,256));
 $array['filter']['iaxcompat'] = array('bool' => true);
 $array['filter']['authdebug'] = array('bool' => true);
 $array['filter']['delayreject'] = array('bool' => true);
@@ -234,25 +222,23 @@ $array['filter']['regcontext'] = array('set' => false,'chk' => 2,'callback' => '
 $array['filter']['minregexpire'] = array('key' => array(0,10,20,30,40,50,60,70,80,90,100,110,120));
 $array['filter']['maxregexpire'] = array('key' => array(0,10,20,30,40,50,60,70,80,90,100,110,120));
 $array['filter']['bandwidth'] = array('key' => array('low','medium','high'));
-$array['filter']['tos'] = array('key' => array(0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30));
+$array['filter']['tos'] = array('regexp' => '/^(CS[0-7]|AF[1-4][1-3]|EF)$/');
 $array['filter']['jitterbuffer'] = array('bool' => true);
 $array['filter']['forcejitterbuffer'] = array('bool' => true);
-$array['filter']['dropcount'] = array('key' => array(0,1,2,3,4,5,6,7,8,9,10));
 $array['filter']['maxjitterbuffer'] = array('key' => array(0,250,500,750,1000,1250,1500,1750,2000));
 $array['filter']['maxjitterinterps'] = array('key' => array(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20));
 $array['filter']['resyncthreshold'] = array('key' => array(-1,0,250,500,750,1000,1250,1500,1750,2000));
-$array['filter']['minexcessbuffer'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100));
-$array['filter']['maxexcessbuffer'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100));
-$array['filter']['jittershrinkrate'] = array('key' => array(0,1,2,3,4,5,6,7,8,9,10));
 $array['filter']['accountcode'] = array('set' => false,'chk' => 2,'maxlen' => 20,'regexp' => '/^[a-z0-9_-]+$/i');
 $array['filter']['amaflags'] = array('key' => array(
 				XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_DEFAULT,
 				XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_OMIT,
 				XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_BILLING,
 				XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_DOCUMENTATION));
-$array['filter']['mailboxdetail'] = array('bool' => true);
-$array['filter']['notransfer'] = array('bool' => true);
+$array['filter']['adsi'] = array('bool' => true);
+$array['filter']['transfer'] = array('key' => array('yes','no','mediaonly'));
 $array['filter']['language'] = array('key' => array('en','fr'));
+$array['filter']['mohinterpret'] = array('set' => false,'chk' => 2,'maxlen' => 20);
+$array['filter']['mohsuggest'] = array('set' => false,'chk' => 2,'maxlen' => 20);
 $array['filter']['encryption'] = array('key' => array('no','yes','aes128'));
 $array['filter']['maxauthreq'] = array('key' => array(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20));
 $array['filter']['codecpriority'] = array('key' => array('disabled','host','caller','reqonly'));

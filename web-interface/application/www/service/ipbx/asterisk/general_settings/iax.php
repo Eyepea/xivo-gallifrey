@@ -37,6 +37,7 @@ $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 $_HTML->set_var('fm_save',$fm_save);
 $_HTML->set_var('info',$info);
 $_HTML->set_var('element',$element);
+$_HTML->set_var('moh_list',$appgeneraliax->get_musiconhold());
 $_HTML->set_var('context_list',$appgeneraliax->get_context_list());
 
 $menu = &$_HTML->get_module('menu');

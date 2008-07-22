@@ -83,7 +83,7 @@ Désactivée
 Vérification, non conforme à la RFC, de nouveaux messages :
 
 ; fm_regcontext
-Context d'enregistrement :
+Contexte d'enregistrement :
 
 ; fm_callerid
 Nom d'appel :
@@ -470,7 +470,7 @@ Forcer le Jitter Buffer :
 Taille maximale du Jitter Buffer :
 
 ; fm_jbmaxsize-opt0
-Désactivé
+Désactivée
 
 ; fm_jbmaxsize-opt
 %s millisecondes
@@ -479,7 +479,7 @@ Désactivé
 Resynchronisation en cas de délai trop important :
 
 ; fm_jbresyncthreshold-opt-1
-Désactivé
+Désactivée
 
 ; fm_jbresyncthreshold-opt0
 0 milliseconde

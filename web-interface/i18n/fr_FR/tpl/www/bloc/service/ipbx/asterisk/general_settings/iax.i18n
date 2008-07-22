@@ -22,6 +22,16 @@ Port :
 ; fm_bindaddr
 Adresse IP :
 
+; fm_iaxthreadcount
+
+; fm_iaxmaxthreadcount
+
+; fm_iaxmaxthreadcount-opt0
+Désactivé
+
+; fm_iaxmaxthreadcount-opt
+%s
+
 ; fm_iaxcompat
 Compatibilité IAX :
 
@@ -41,13 +51,13 @@ Fréquence des interconnexions :
 Ajoute un timestamp individuel :
 
 ; fm_regcontext
-Context d'enregistrement :
+Contexte d'enregistrement :
 
 ; fm_minregexpire
-Expiration minimum d'enregistrement :
+Délai minimum d'expiration d'un enregistrement :
 
 ; fm_minregexpire-opt0
-Désactivée
+Désactivé
 
 ; fm_minregexpire-opt10
 10 sec.
@@ -74,10 +84,10 @@ Désactivée
 %s min. %s sec.
 
 ; fm_maxregexpire
-Expiration maximum d'enregistrement :
+Délai maximum d'expiration d'un enregistrement :
 
 ; fm_maxregexpire-opt0
-Désactivée
+Désactivé
 
 ; fm_maxregexpire-opt10
 10 sec.
@@ -119,19 +129,16 @@ Elevée
 TOS :
 
 ; fm_jitterbuffer
-Jitter buffer :
+Activer le Jitter Buffer :
 
 ; fm_forcejitterbuffer
-Forcer Jitter buffer :
-
-; fm_dropcount
-Compteur de saut :
+Forcer le Jitter Buffer :
 
 ; fm_maxjitterbuffer
-Jitter buffer maximum :
+Taille maximale du Jitter Buffer :
 
 ; fm_maxjitterbuffer-opt0
-Désactivé
+Désactivée
 
 ; fm_maxjitterbuffer-opt
 %s millisecondes
@@ -149,40 +156,13 @@ Désactivé
 Resynchronisation en cas de délai trop important :
 
 ; fm_resyncthreshold-opt-1
-Désactivé
+Désactivée
 
 ; fm_resyncthreshold-opt0
 0 milliseconde
 
 ; fm_resyncthreshold-opt
 %s millisecondes
-
-; fm_jittershrinkrate
-Contrôle du débit :
-
-; fm_jittershrinkrate-opt0
-Désactivé
-
-; fm_jittershrinkrate-opt
-%s
-
-; fm_minexcessbuffer
-Dépassement minimum du buffer :
-
-; fm_minexcessbuffer-opt0
-Désactivé
-
-; fm_minexcessbuffer-opt
-%s
-
-; fm_maxexcessbuffer
-Dépassement maximum du buffer :
-
-; fm_maxexcessbuffer-opt0
-Désactivé
-
-; fm_maxexcessbuffer-opt
-%s
 
 ; fm_accountcode
 Numéro d'acompte :
@@ -202,11 +182,17 @@ Omission
 ; fm_amaflags-opt-documentation
 Documentation
 
-; fm_mailboxdetail
-Recevoir le nombre de messages :
+; fm_adsi
+Activer le support de l'ADSI :
 
 ; fm_language
 Langages :
+
+; fm_mohinterpret
+Musique d'attente :
+
+; fm_mohsuggest
+Musique d'attente sur un appel sortant :
 
 ; fm_encryption
 Chiffrage :
@@ -252,9 +238,6 @@ Tous
 
 ; fm_codec-allow
 Codecs activés :
-
-; fm_channel-lang
-Langages :
 
 ; bt_upcodec
 Monter un ou plusieurs codecs
@@ -340,8 +323,17 @@ Temps de latence RQ :
 ; fm_nochecksums
 Désactiver UDP checksums :
 
-; fm_notransfer
-Interdiction des transfers :
+; fm_transfer
+Activer les transferts :
+
+; fm_transfer-opt-yes
+Oui
+
+; fm_transfer-opt-no
+Non
+
+; fm_transfer-opt-mediaonly
+MediaOnly
 
 ; fm_autokill
 Auto destruction :

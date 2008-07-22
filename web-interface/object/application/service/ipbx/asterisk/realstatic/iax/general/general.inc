@@ -69,12 +69,16 @@ class xivo_application_service_asterisk_realstatic_iax_general extends xivo_appl
 		&& $arr['minregexpire'] > $arr['maxregexpire'])
 			$arr['minregexpire'] = $arr['maxregexpire'];
 
-		if(isset($arr['minexcessbuffer']) === false
-		&& isset($arr['maxexcessbuffer']) === true)
-			$arr['minexcessbuffer'] = $arr['maxexcessbuffer'];
-		else if(isset($arr['minexcessbuffer'],$arr['maxexcessbuffer']) === true
-		&& $arr['minexcessbuffer'] > $arr['maxexcessbuffer'])
-			$arr['minexcessbuffer'] = $arr['maxexcessbuffer'];
+		$this->get_musiconhold();
+
+		if(isset($arr['mohinterpret'],$this->_musiconhold[$arr['mohinterpret']]) === false)
+			$arr['mohinterpret'] = '';
+
+		if(isset($arr['mohsuggest']) === true)
+		{
+			if(isset($this->_musiconhold[$arr['mohsuggest']]) === false)
+				$arr['mohsuggest'] = '';
+		}
 
 		return(parent::set_save_all($arr,$disable));
 	}
