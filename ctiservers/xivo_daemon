@@ -172,7 +172,7 @@ def manage_cti_connections(connid, msg, sep):
                                                                                command)
                                         else:
                                                 log_debug(SYSLOG_WARNING,
-                                                          "unlogged %s is attempting a %s (TCP) : %s"
+                                                          'unlogged %s is attempting a %s (TCP) : %s'
                                                           % (requester, command.name, str(command.args)))
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- CTI connection when managing [%s] for %s : %s'
@@ -222,7 +222,7 @@ def manage_webi_connections(connid, msg, sep):
 
                                         try:
                                                 s = amilist.ami[astid].execclicommand(stripped_usefulmsg)
-                                                #actionid = ''.join(random.sample(__alphanums__, 10)) + "-" + hex(int(time.time()))
+                                                #actionid = ''.join(random.sample(__alphanums__, 10)) + '-' + hex(int(time.time()))
                                                 #waiting_actionid[actionid] = connid
                                                 #amilist.ami[astid].sendcommand('Command', [('Command', stripped_usefulmsg),
                                                 #('ActionID' , actionid)])
@@ -258,15 +258,15 @@ def manage_info_connections(connid, msg, sep):
                 if len(usefulmsg) == 0:
                         break
                 try:
-                        if usefulmsg == "show_infos":
+                        if usefulmsg == 'show_infos':
                                 time_uptime = int(time.time() - time_start)
                                 reply = 'infos=' \
                                         'xivo_version=%s;' \
                                         'server_version=%s;' \
                                         'uptime=%d s' \
                                         % (XIVOVERSION, __revision__, time_uptime)
-                                connid.sendall(reply + "\n")
-                                # connid.sendall("server capabilities = %s\n" % (",".join()))
+                                connid.sendall(reply + '\n')
+                                # connid.sendall('server capabilities = %s\n' % (','.join()))
                         elif usefulmsg == 'show_users':
                                 for user, info in commandclass.users().iteritems():
                                         connid.sendall('%s %s\n' % (user.encode('latin1'), info))
@@ -286,7 +286,7 @@ def manage_info_connections(connid, msg, sep):
                                 commandclass.cliaction(connid, usefulmsg)
                         else:
                                 pass
-                        connid.sendall("XIVO-INFO:OK\n")
+                        connid.sendall('XIVO-INFO:OK\n')
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, '--- exception --- INFO connection [%s] : KO when sending to %s : %s'
                                   % (usefulmsg, requester, str(exc)))
@@ -323,11 +323,11 @@ def handle_ami_event(astid, idata):
         """
         global save_for_next_packet_events
         if astid not in configs:
-                log_debug(SYSLOG_INFO, "%s : no such asterisk Id" % astid)
+                log_debug(SYSLOG_INFO, '%s : no such asterisk Id' % astid)
                 return
 
         full_idata = save_for_next_packet_events[astid] + idata
-        evlist = full_idata.split("\r\n\r\n")
+        evlist = full_idata.split('\r\n\r\n')
         save_for_next_packet_events[astid] = evlist.pop()
 
         for evt in evlist:
@@ -340,10 +340,11 @@ def handle_ami_event(astid, idata):
                         else:
                                 nocolon.append(myline)
                 evfunction = this_event.get('Event')
-                verboselog("/%s/ %s" % (astid, str(this_event)), True, False)
                 # print '////////', evfunction, '   ------  ', this_event
                 if evfunction is not None:
                         handle_ami_function(astid, evfunction, this_event)
+                        if evfunction not in ['Newexten', 'Newchannel', 'Newstate', 'Newcallerid']:
+                                verboselog('%s %s' % (astid, this_event), True, False)
                 else:
                         response = this_event.get('Response')
                         if response is not None:
@@ -381,6 +382,8 @@ def handle_ami_event(astid, idata):
                                                      'Queue status will follow',
                                                      'Authentication accepted',
                                                      'Variable Set',
+                                                     'Attended transfer started',
+                                                     'Channel Hungup',
                                                      'Originate successfully queued',
                                                      'Redirect successful',
                                                      'Added interface to queue',
@@ -468,12 +471,12 @@ def handle_ami_function(astid, evfunction, this_event):
         try:
                 if evfunction == 'Reload':
                         message = this_event.get('Message')
-                        log_debug(SYSLOG_WARNING, "AMI:Reload: %s : %s" % (astid, str(this_event)))
+                        log_debug(SYSLOG_WARNING, 'AMI:Reload: %s : %s' % (astid, str(this_event)))
                         commandclass.ami_reload(astid, this_event)
                 elif evfunction == 'Shutdown':
                         shutdown = this_event.get('Shutdown')
                         restart  = this_event.get('Restart')
-                        log_debug(SYSLOG_WARNING, "AMI:Shutdown: %s (how=%s restart=%s)" % (astid, shutdown, restart))
+                        log_debug(SYSLOG_WARNING, 'AMI:Shutdown: %s (how=%s restart=%s)' % (astid, shutdown, restart))
                         commandclass.ami_shutdown(astid, this_event)
                 elif evfunction.startswith('UserEvent'):
                         commandclass.ami_userevent(astid, this_event)
@@ -514,7 +517,7 @@ def sighandler(signum, frame):
         global askedtoquit
         print '--- signal %s (atq = %s) received : quits' % (signum, askedtoquit)
         for t in filter(lambda x: x.getName() != 'MainThread', threading.enumerate()):
-                print "--- living thread <%s>" % (t.getName())
+                print '--- living thread <%s>' % (t.getName())
                 t._Thread__stop()
         askedtoquit = True
 
@@ -731,7 +734,7 @@ while True: # loops over the reloads
         xivodaemonreload = False
         
         log_debug(SYSLOG_INFO, "the monitored asterisk's is/are : %s" % str(asterisklist))
-        log_debug(SYSLOG_INFO, "# STARTING %s # (1/2) AMI socket connections + fetch Web Services" % xdname)
+        log_debug(SYSLOG_INFO, '# STARTING %s # (1/2) AMI socket connections + fetch Web Services' % xdname)
 
         for astid in configs:
                 try:
@@ -745,7 +748,7 @@ while True: # loops over the reloads
                                   % (astid, str(exc)))
         commandclass.updates() # users' update, ...
 
-        log_debug(SYSLOG_INFO, "# STARTING %s # (2/2) listening sockets (CTI, WEBI, (F)AGI, INFO)" % xdname)
+        log_debug(SYSLOG_INFO, '# STARTING %s # (2/2) listening sockets (CTI, WEBI, (F)AGI, INFO)' % xdname)
         # opens the listening socket for incoming (CTI, WEBI, (F)AGI, INFO) connections
         for portkind in incoming_tcp_ports:
                 pk = portkind.split(':')
@@ -789,7 +792,7 @@ while True: # loops over the reloads
                                 except Exception, exc:
                                         print exc
                                 for t in filter(lambda x: x.getName() != 'MainThread', threading.enumerate()):
-                                        print "--- (stop) killing thread <%s>" % t.getName()
+                                        print '--- (stop) killing thread <%s>' % t.getName()
                                         t._Thread__stop()
                                 sys.exit(5)
                         else:
@@ -798,7 +801,7 @@ while True: # loops over the reloads
                                 for s in fdlist_full:
                                         s.close()
                                 for t in filter(lambda x: x.getName() != 'MainThread', threading.enumerate()):
-                                        print "--- (reload) the thread <%s> remains" % t.getName()
+                                        print '--- (reload) the thread <%s> remains' % t.getName()
                                         # t._Thread__stop() # does not work in reload case (vs. stop case)
                                 continue
                 if sels_i:
@@ -809,7 +812,7 @@ while True: # loops over the reloads
                                                 buf = sel_i.readline()
                                                 astid = amilist.astid(sel_i)
                                                 if len(buf) == 0:
-                                                        log_debug(SYSLOG_WARNING, "%s AMI : CLOSING" % astid)
+                                                        log_debug(SYSLOG_WARNING, '%s AMI : CLOSING' % astid)
                                                         amilist.remove(astid)
                                                         sel_i.close()
                                                         fdlist_full.remove(sel_i)

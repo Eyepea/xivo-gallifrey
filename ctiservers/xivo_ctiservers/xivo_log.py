@@ -38,6 +38,8 @@ from xivo.easyslog import *
 
 MAXLOG = SYSLOG_NOTICE
 # MAXLOG = SYSLOG_INFO
+evtfile = False
+# evtfile = open('/var/log/xivo_daemon_ami_events.log', 'a')
 
 def varlog(syslogprio, string):
         if syslogprio <= MAXLOG:
@@ -64,9 +66,11 @@ def varlog(syslogprio, string):
 # \param updatesgui log to gui files
 # \return zero
 def verboselog(string, events, updatesgui):
-##        if events and evtfile:
-##                evtfile.write(time.strftime('%b %2d %H:%M:%S ', time.localtime()) + string + '\n')
-##                evtfile.flush()
+        if evtfile and events:
+                try:
+                        evtfile.write(time.strftime('%b %2d %H:%M:%S ', time.localtime()) + string + '\n')
+                except Exception, exc:
+                        log_debug_file(SYSLOG_ERR, '--- exception --- (verboselog) : %s' % exc, 'xivo_log')
 ##        if updatesgui and guifile:
 ##                guifile.write(time.strftime('%b %2d %H:%M:%S ', time.localtime()) + string + '\n')
 ##                guifile.flush()
@@ -82,7 +86,7 @@ def log_debug(syslogprio, string):
                 print '#debug# ' + string
         return varlog(syslogprio, string)
 
-def log_debug_file(syslogprio, string, file):
+def log_debug_file(syslogprio, string, filename):
         if syslogprio <= SYSLOG_INFO:
-                print '#debug# (%s) ' % file + string
-        return varlog(syslogprio, '(%s) ' % file + string)
+                print '#debug# (%s) ' % filename + string
+        return varlog(syslogprio, '(%s) ' % filename + string)

@@ -63,14 +63,15 @@ class UserList:
 
         def update(self):
                 for url, urllist in self.requested_list.iteritems():
-                        gl = urllist.getlist(0, 10)
-                        # print url, urllist, gl, urllist.list
-                        for j, k in urllist.list.iteritems():
-                                self.list[j] = k
-                newuserlist = self.commandclass.getuserslist(self.list)
-                for a, b in newuserlist.iteritems():
-                        if a not in self.userlist:
-                                self.userlist[a] = b
+                        gl = urllist.getlist(0, 10, True)
+                        if len(urllist.list) == 0:
+                                gl = urllist.getlist(1, 12, False)
+                                newuserlist = self.commandclass.getuserslist_compat(urllist.list)
+                        else:
+                                newuserlist = self.commandclass.getuserslist(urllist.list)
+                        for a, b in newuserlist.iteritems():
+                                if a not in self.userlist:
+                                        self.userlist[a] = b
                 return
 
         def finduser(self, username):

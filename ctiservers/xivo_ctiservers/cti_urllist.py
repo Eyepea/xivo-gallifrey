@@ -39,7 +39,8 @@ class UrlList:
                 self.urlmd5 = ''
                 return
 
-        def getlist(self, index, length):
+        def getlist(self, index, length, header = False):
+                self.list = {}
                 try:
                         if self.url is not None:
                                 kind = self.url.split(':')[0]
@@ -68,6 +69,8 @@ class UrlList:
                         savemd5 = self.urlmd5
                         self.listmd5 = md5.md5(fulltable).hexdigest()
                         csvreader = csv.reader(mytab, delimiter = '|')
+                        if header:
+                                keys = csvreader.next()
                         # builds the users list
                         for line in csvreader:
                                 if len(line) == length:

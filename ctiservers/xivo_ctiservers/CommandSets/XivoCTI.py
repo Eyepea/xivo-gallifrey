@@ -38,6 +38,7 @@ import urllib
 from xivo_ctiservers import cti_capas
 from xivo_ctiservers import cti_fax
 from xivo_ctiservers import cti_userlist
+from xivo_ctiservers import cti_urllist
 from xivo_ctiservers import cti_agentlist
 from xivo_ctiservers import cti_queuelist
 from xivo_ctiservers import xivo_commandsets
@@ -373,6 +374,7 @@ class XivoCTICommand(BaseCommand):
 
         def set_userlist_urls(self, urls):
                 self.ulist_ng.getuserslist(urls)
+                return
 
         def getagentslist(self, dlist):
                 lalist = {}
@@ -401,6 +403,30 @@ class XivoCTICommand(BaseCommand):
                                              'mwi-waiting' : '0',
                                              'mwi-old' : '0',
                                              'mwi-new' : '0'}
+                return lulist
+
+        def getuserslist_compat(self, dlist):
+                lulist = {}
+                for c, d in dlist.iteritems():
+                        if len(d) > 11:
+                                userid = d[1]
+                                company = 'acme'
+                                fieldname = '%s@%s' % (userid, company)
+                                lulist[fieldname] = {'user'     : userid,
+                                                     'company'  : company,
+                                                     'passwd'   : d[2],
+                                                     'capaid'   : 'default',
+                                                     'fullname' : d[8] + ' ' + d[9],
+                                                     'astid'    : 'xivo',
+                                                     'phonenum' : d[4],
+                                                     'init'     : True,
+                                                     'state'    : 'unknown',
+                                                     'agentnum' : '',
+                                                     'techlist' : d[0].upper() + '/' + d[4],
+                                                     'context'  : d[10],
+                                                     'mwi-waiting' : '0',
+                                                     'mwi-old' : '0',
+                                                     'mwi-new' : '0'}
                 return lulist
 
         def users(self):
@@ -597,6 +623,26 @@ class XivoCTICommand(BaseCommand):
 ##                        print event
                 self.plist[astid].handle_ami_event_dial(src, dst, clid, clidn)
                 return
+
+
+        def __clidlist_from_event__(self, chan1, chan2, clid1, clid2):
+                # backport from autoescape, to be checked/improved/fixed
+                LOCALNUMSIZE = 3
+                clidlist = []
+                if len(clid1) == LOCALNUMSIZE and clid1 not in clidlist:
+                        clidlist.append(clid1)
+                if len(clid2) == LOCALNUMSIZE and clid2 not in clidlist:
+                        clidlist.append(clid2)
+                if chan1.startswith('SIP/'):
+                        num1 = chan1[4:].split('-')[0]
+                        if len(num1) == LOCALNUMSIZE and num1 not in clidlist:
+                                clidlist.append(num1)
+                if chan2.startswith('SIP/'):
+                        num2 = chan2[4:].split('-')[0]
+                        if len(num2) == LOCALNUMSIZE and num2 not in clidlist:
+                                clidlist.append(num2)
+                return clidlist
+
 
         def ami_link(self, astid, event):
                 chan1 = event.get("Channel1")
@@ -881,6 +927,11 @@ class XivoCTICommand(BaseCommand):
                                 print ' (a) ', aname, aargs
                 return
 
+        # XIVO-WEBI: beg-data
+        # "category"|"name"|"number"|"context"|"commented"
+        # "queue"|"callcenter"|"330"|"proformatique"|"0"
+        # ""|""|""|""|"0"
+        # XIVO-WEBI: end-data
         def ami_queuecallerabandon(self, astid, event):
                 # Asterisk 1.4 event
                 # {'Queue': 'qcb_00000', 'OriginalPosition': '1', 'Uniqueid': '1213891256.41', 'Privilege': 'agent,all', 'Position': '1', 'HoldTime': '2', 'Event': 'QueueCallerAbandon'}
