@@ -77,8 +77,6 @@ class XivoCTICommand(BaseCommand):
                 self.capas = {}
                 self.ulist_ng = cti_userlist.UserList()
                 self.ulist_ng.setcommandclass(self)
-                self.alist_ng = cti_agentlist.AgentList()
-                self.alist_ng.setcommandclass(self)
                 self.plist = {}
                 self.qlist = {}
                 self.alist = {}
@@ -229,7 +227,7 @@ class XivoCTICommand(BaseCommand):
                         if 'phonenum' in userinfo:
                                 phonenum = userinfo['phonenum']
                                 self.amilist.execute(astid, 'setvar', 'AGENTBYCALLERID_%s' % phonenum, '')
-                        if agentnum is not None:
+                        if agentnum is not None and len(agentnum) > 0:
                                 self.amilist.execute(astid, 'agentlogoff', agentnum)
                 if 'agentphonenum' in userinfo:
                         del userinfo['agentphonenum']
@@ -380,10 +378,8 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def updates(self):
-                self.alist_ng.update()
                 self.ulist_ng.update()
                 # self.plist_ng.update()
-
                 for astid, plist in self.plist.iteritems():
                         self.alist[astid].update()
                         self.qlist[astid].update()
@@ -746,7 +742,41 @@ class XivoCTICommand(BaseCommand):
                                 self.chans_incomingdid.remove(chan)
                 return
 
-        def ami_response_mailboxcount(self, astid, event):
+
+        def amiresponse_success(self, astid, event):
+                msg = event.get('Message')
+                if msg == 'Extension Status':
+                        self.amiresponse_extensionstatus(astid, event)
+                elif msg == 'Mailbox Message Count':
+                        self.amiresponse_mailboxcount(astid, event)
+                elif msg == 'Mailbox Status':
+                        self.amiresponse_mailboxstatus(astid, event)
+                elif msg in ['Channel status will follow',
+                             'Parked calls will follow',
+                             'Agents will follow',
+                             'Queue status will follow',
+                             'Authentication accepted',
+                             'Variable Set',
+                             'Attended transfer started',
+                             'Channel Hungup',
+                             'Originate successfully queued',
+                             'Redirect successful',
+                             'Added interface to queue',
+                             'Removed interface from queue',
+                             'Interface paused successfully',
+                             'Interface unpaused successfully',
+                             'Agent logged out',
+                             'Agent logged in']:
+                        pass
+                else:
+                        log_debug(SYSLOG_WARNING, 'AMI %s Response=Success : untracked message <%s>' % (astid, msg))
+                return
+
+        def amiresponse_error(self, astid, event):
+                log_debug(SYSLOG_WARNING, 'AMI %s Response=Error : %s' % (astid, event))
+                return
+
+        def amiresponse_mailboxcount(self, astid, event):
                 exten = event.get('Mailbox').split('@')[0]
                 for userinfo in self.ulist_ng.userlist.itervalues():
                         if 'phonenum' in userinfo and userinfo.get('phonenum') == exten and userinfo.get('astid') == astid:
@@ -754,7 +784,7 @@ class XivoCTICommand(BaseCommand):
                                 userinfo['mwi-old'] = event.get('OldMessages')
                 return
 
-        def ami_response_mailboxstatus(self, astid, event):
+        def amiresponse_mailboxstatus(self, astid, event):
                 exten = event.get('Mailbox').split('@')[0]
                 for userinfo in self.ulist_ng.userlist.itervalues():
                         if 'phonenum' in userinfo and userinfo.get('phonenum') == exten and userinfo.get('astid') == astid:
@@ -767,7 +797,7 @@ class XivoCTICommand(BaseCommand):
                                 self.__send_msg_to_cti_clients__(msg)
                 return
 
-        def ami_response_extensionstatus(self, astid, event):
+        def amiresponse_extensionstatus(self, astid, event):
                 # 90 seconds are needed to retrieve ~ 9000 phone statuses from an asterisk (on daemon startup)
                 status  = event.get('Status')
                 hint    = event.get('Hint')
@@ -1594,7 +1624,8 @@ class XivoCTICommand(BaseCommand):
                                 phonenum = userinfo['phonenum']
                         if astid is not None and anum is not None:
                                 self.amilist.execute(astid, 'setvar', 'AGENTBYCALLERID_%s' % phonenum, '')
-                                self.amilist.execute(astid, 'agentlogoff', anum)
+                                if len(anum) > 0:
+                                        self.amilist.execute(astid, 'agentlogoff', anum)
                 elif subcommand == 'lists':
                         pass
                 else:
@@ -1610,7 +1641,7 @@ class XivoCTICommand(BaseCommand):
                                 if 'phonenum' in userinfo:
                                         phonenum = userinfo['phonenum']
                                         self.amilist.execute(astid, 'setvar', 'AGENTBYCALLERID_%s' % phonenum, '')
-                                if agentnum is not None:
+                                if agentnum is not None and len(agentnum) > 0:
                                         self.amilist.execute(astid, 'agentlogoff', agentnum)
                 return
 

@@ -530,13 +530,13 @@ class AMIList:
                 if astid in self.ami:
                         conn_ami = self.ami.get(astid)
                         if conn_ami is None:
-                                log_debug(SYSLOG_WARNING, 'ami (command %s) : %s in list but not connected - wait for the next update ?'
+                                log_debug(SYSLOG_WARNING, 'ami (command %s) : <%s> in list but not connected - wait for the next update ?'
                                           % (command, astid))
                         else:
                                 try:
                                         getattr(conn_ami, command)(*args)
                                 except Exception, exc:
-                                        log_debug(SYSLOG_ERR, '--- exception --- AMI command %s on %s : %s' % (command, astid, exc))
+                                        log_debug(SYSLOG_ERR, '--- exception --- AMI command %s on <%s> : %s' % (command, astid, exc))
                 else:
                         log_debug(SYSLOG_WARNING, 'ami (command %s) : %s not in list - wait for the next update ?'
                                   % (command, astid))

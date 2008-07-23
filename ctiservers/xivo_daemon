@@ -367,35 +367,9 @@ def handle_ami_event(astid, idata):
                                                         del waiting_actionid[actionid]
 
                                 elif response == 'Success':
-                                        msg = this_event.get('Message')
-                                        if msg == 'Extension Status':
-                                                commandclass.ami_response_extensionstatus(astid, this_event)
-                                        elif msg == 'Mailbox Message Count':
-                                                commandclass.ami_response_mailboxcount(astid, this_event)
-                                        elif msg == 'Mailbox Status':
-                                                commandclass.ami_response_mailboxstatus(astid, this_event)
-                                        elif msg in ['Channel status will follow',
-                                                     'Parked calls will follow',
-                                                     'Agents will follow',
-                                                     'Queue status will follow',
-                                                     'Authentication accepted',
-                                                     'Variable Set',
-                                                     'Attended transfer started',
-                                                     'Channel Hungup',
-                                                     'Originate successfully queued',
-                                                     'Redirect successful',
-                                                     'Added interface to queue',
-                                                     'Removed interface from queue',
-                                                     'Interface paused successfully',
-                                                     'Interface unpaused successfully',
-                                                     'Agent logged out',
-                                                     'Agent logged in']:
-                                                pass
-                                        else:
-                                                log_debug(SYSLOG_WARNING, 'AMI %s Response=Success : untracked message <%s>' % (astid, msg))
+                                        commandclass.amiresponse_success(astid, this_event)
                                 elif response == 'Error':
-                                        # log_debug(SYSLOG_WARNING, 'AMI %s Response=Error : %s' % (astid, this_event))
-                                        pass
+                                        commandclass.amiresponse_error(astid, this_event)
                                 else:
                                         log_debug(SYSLOG_WARNING, 'AMI %s Response=%s (untracked) : %s' % (astid, response, this_event))
                         elif len(this_event) > 0:
