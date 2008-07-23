@@ -24,51 +24,34 @@ __author__    = 'Corentin Le Gall'
 # with this program; if not, you will find one at
 # <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>.
 
-import csv
-import md5
-import urllib
 from xivo_log import *
-import cti_urllist
+from xivo_ctiservers.cti_anylist import AnyList
 
 def log_debug(level, text):
         log_debug_file(level, text, 'userlist')
+        return
 
-class UserList:
+class UserList(AnyList):
         def __init__(self, newurls = []):
-                self.list = {}
-                self.commandclass = None
-                self.requested_list = {}
+                AnyList.__init__(self, newurls)
                 self.userlist = {}
-                self.__seturls__(newurls)
-                return
-
-        def setcommandclass(self, commandclass):
-                self.commandclass = commandclass
-                return
-
-        def __seturls__(self, newurls):
-                for url in newurls:
-                        if url not in self.requested_list:
-                                self.requested_list[url] = cti_urllist.UrlList(url)
-                return
-
-        def getuserslist(self, newurls = []):
-                self.__seturls__(newurls)
-
-                if len(self.requested_list) == 0:
-                        return -1
-
-                self.update()
                 return
 
         def update(self):
-                for url, urllist in self.requested_list.iteritems():
-                        gl = urllist.getlist(0, 10, True)
-                        if len(urllist.list) == 0:
-                                gl = urllist.getlist(1, 12, False)
-                                newuserlist = self.commandclass.getuserslist_compat(urllist.list)
-                        else:
-                                newuserlist = self.commandclass.getuserslist(urllist.list)
+                if len(self.requested_list) > 0:
+                        for url, urllist in self.requested_list.iteritems():
+                                gl = urllist.getlist(0, 10, True)
+                                if len(urllist.list) == 0:
+                                        # fallback to 'phones'-style definition
+                                        gl = urllist.getlist(1, 12, False)
+                                        newuserlist = self.commandclass.getuserslist_compat(urllist.list)
+                                else:
+                                        newuserlist = self.commandclass.getuserslist(urllist.list)
+                                for a, b in newuserlist.iteritems():
+                                        if a not in self.userlist:
+                                                self.userlist[a] = b
+                else:
+                        newuserlist = self.commandclass.getuserslist()
                         for a, b in newuserlist.iteritems():
                                 if a not in self.userlist:
                                         self.userlist[a] = b
@@ -94,7 +77,6 @@ class UserList:
                 username = inparams['user']
                 if self.userlist.has_key(username):
                         # updates
-                        # self.list[user]['agentnum'] = agentnum
                         pass
                 else:
                         self.userlist[username] = {}

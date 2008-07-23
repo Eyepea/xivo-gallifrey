@@ -43,6 +43,7 @@ from xivo_ctiservers import cti_agentlist
 from xivo_ctiservers import cti_queuelist
 from xivo_ctiservers import xivo_commandsets
 from xivo_ctiservers import xivo_ldap
+from xivo_ctiservers import xivo_phones
 from xivo_ctiservers.xivo_commandsets import BaseCommand
 from xivo_ctiservers.xivo_log import *
 from xivo import anysql
@@ -76,10 +77,13 @@ class XivoCTICommand(BaseCommand):
                 self.capas = {}
                 self.ulist_ng = cti_userlist.UserList()
                 self.ulist_ng.setcommandclass(self)
-                self.qlist_ng = cti_queuelist.QueueList()
-                self.qlist_ng.setcommandclass(self)
                 self.alist_ng = cti_agentlist.AgentList()
                 self.alist_ng.setcommandclass(self)
+                self.plist = {}
+                self.qlist = {}
+                self.alist = {}
+                # self.plist_ng = cti_phonelist.PhoneList()
+                # self.plist_ng.setcommandclass(self)
                 self.transfers_buf = {}
                 self.transfers_ref = {}
                 self.faxes = {}
@@ -357,8 +361,18 @@ class XivoCTICommand(BaseCommand):
                 self.configs = configs
                 return
 
-        def set_phonelist(self, plist):
-                self.plist = plist
+        def set_phonelist(self, astid, urllist_phones):
+                self.plist[astid] = xivo_phones.PhoneList(astid, self, urllist_phones)
+                return
+
+        def set_agentlist(self, astid, urllist_agents):
+                self.alist[astid] = cti_agentlist.AgentList(urllist_agents)
+                self.alist[astid].setcommandclass(self)
+                return
+
+        def set_queuelist(self, astid, urllist_queues):
+                self.qlist[astid] = cti_queuelist.QueueList(urllist_queues)
+                self.qlist[astid].setcommandclass(self)
                 return
 
         def set_contextlist(self, ctxlist):
@@ -367,13 +381,20 @@ class XivoCTICommand(BaseCommand):
 
         def updates(self):
                 self.alist_ng.update()
-                self.qlist_ng.update()
                 self.ulist_ng.update()
+                # self.plist_ng.update()
+
+                for astid, plist in self.plist.iteritems():
+                        self.alist[astid].update()
+                        self.qlist[astid].update()
+                        npl = self.plist[astid].update_phonelist()
+                        self.askstatus(astid, npl)
+
                 # check : agentnumber should be unique
                 return
 
         def set_userlist_urls(self, urls):
-                self.ulist_ng.getuserslist(urls)
+                self.ulist_ng.setandupdate(urls)
                 return
 
         def getagentslist(self, dlist):
@@ -382,6 +403,11 @@ class XivoCTICommand(BaseCommand):
 
         def getqueueslist(self, dlist):
                 lqlist = {}
+                for c, d in dlist.iteritems():
+                        if d[0] == 'queue' and d[4] == '0':
+                                lqlist[c] = {'queuename' : d[1],
+                                             'number' : d[2],
+                                             'context' : d[3]}
                 return lqlist
 
         def getuserslist(self, dlist):

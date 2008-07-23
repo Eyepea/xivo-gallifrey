@@ -61,6 +61,7 @@ class UrlList:
                         return -1
 
                 try:
+                        keys = []
                         mytab = []
                         for line in f:
                                 mytab.append(line)
@@ -69,12 +70,14 @@ class UrlList:
                         savemd5 = self.urlmd5
                         self.listmd5 = md5.md5(fulltable).hexdigest()
                         csvreader = csv.reader(mytab, delimiter = '|')
-                        if header:
-                                keys = csvreader.next()
                         # builds the users list
                         for line in csvreader:
                                 if len(line) == length:
-                                        self.list[line[index]] = line
+                                        if header and len(keys) == 0:
+                                                keys = line
+                                        else:
+                                                if line[index] != '':
+                                                        self.list[line[index]] = line
                                 elif len(line) == 1:
                                         if line[0] == 'XIVO-WEBI: no-data':
                                                 log_debug(SYSLOG_INFO, 'received no-data from WEBI')
@@ -88,5 +91,4 @@ class UrlList:
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, "--- exception --- (UrlList) problem occured when retrieving list : %s" % str(exc))
                         return -1
-
                 return 0

@@ -79,7 +79,11 @@ class BaseCommand:
 
         def set_configs(self, configs):
                 return
-        def set_phonelist(self, plist):
+        def set_phonelist(self, astid, urllist_phones):
+                return
+        def set_agentlist(self, astid, urllist_agents):
+                return
+        def set_queuelist(self, astid, urllist_queues):
                 return
         def set_userlist_urls(self, urls):
                 return

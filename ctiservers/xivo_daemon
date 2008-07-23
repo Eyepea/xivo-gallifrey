@@ -103,12 +103,10 @@ from xivo.BackSQL import backsqlite
 # XIVO CTI modules
 from xivo_agid import fastagi
 from xivo_ctiservers import xivo_ami
-from xivo_ctiservers import xivo_phones
 from xivo_ctiservers import xivo_contexts
 from xivo_ctiservers import xivo_commandsets
 from xivo_ctiservers import xivo_astcfg
 from xivo_ctiservers import cti_config
-from xivo_ctiservers import cti_userlist
 from xivo_ctiservers.xivo_log import *
 from xivo_ctiservers.CommandSets import *
 
@@ -553,7 +551,6 @@ signal.signal(signal.SIGTERM, sighandler)
 signal.signal(signal.SIGHUP, sighandler_reload)
 
 nreload = 0
-plist = {}
 directorylist = xivo_contexts.Contexts()
 configs = {}
 xdname = None
@@ -621,7 +618,6 @@ while True: # loops over the reloads
         log_debug(SYSLOG_NOTICE, '# STARTING %s / %d' % (xdname, nreload))
 
         commandclass.set_userlist_urls(userlists)
-        commandclass.set_phonelist(plist)
         commandclass.set_contextlist(directorylist)
         commandclass.set_configs(configs)
         commandclass.set_options(xivoconf_commandset)
@@ -647,8 +643,9 @@ while True: # loops over the reloads
                 xivoconf_asterisk = cconf.read_section(astid)
                 if len(xivoconf_asterisk) > 0:
                         localaddr = '127.0.0.1'
-                        urllist_phones = None
-                        urllist_queues = None
+                        urllist_phones = []
+                        urllist_queues = []
+                        urllist_agents = []
                         ipaddress = '127.0.0.1'
                         ipaddress_webi = '127.0.0.1'
                         ami_port = 5038
@@ -666,7 +663,9 @@ while True: # loops over the reloads
                         if 'urllist_phones' in xivoconf_asterisk:
                                 urllist_phones = xivoconf_asterisk['urllist_phones']
                         if 'urllist_queues' in xivoconf_asterisk:
-                                urllist_queues = xivoconf_asterisk['urllist_queues']
+                                urllist_queues = xivoconf_asterisk['urllist_queues'].split(',')
+                        if 'urllist_agents' in xivoconf_asterisk:
+                                urllist_agents = xivoconf_asterisk['urllist_agents'].split(',')
                         if 'ipaddress' in xivoconf_asterisk:
                                 ipaddress = xivoconf_asterisk['ipaddress']
                         if 'ipaddress_webi' in xivoconf_asterisk:
@@ -710,7 +709,9 @@ while True: # loops over the reloads
                                                                     linkestablished,
                                                                     aoriginate)
 
-                        plist[astid] = xivo_phones.PhoneList(astid, commandclass, urllist_phones)
+                        commandclass.set_phonelist(astid, urllist_phones)
+                        commandclass.set_agentlist(astid, urllist_agents)
+                        commandclass.set_queuelist(astid, urllist_queues)
 
                         if ipaddress not in ip_reverse_sht:
                                 ip_reverse_sht[ipaddress] = astid
@@ -741,8 +742,6 @@ while True: # loops over the reloads
                         update_userlist[astid] = False
                         lastrequest_time[astid] = time.time()
                         update_amisocks(astid)
-                        npl = plist[astid].update_phonelist()
-                        commandclass.askstatus(astid, npl)
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, '--- exception --- %s : failed while setting lists and sockets : %s'
                                   % (astid, str(exc)))
@@ -950,7 +949,6 @@ while True: # loops over the reloads
                                                                         fdlist_full.append(outsock)
                                                         update_amisocks(astid)
                                                         commandclass.regular_update()
-                                                        plist[astid].update_phonelist()
                                                         update_userlist[astid] = False
                                                 except Exception, exc:
                                                         log_debug(SYSLOG_ERR, '--- exception --- %s : failed while updating lists and sockets (computed timeout) : %s'
@@ -970,7 +968,6 @@ while True: # loops over the reloads
                                                         fdlist_full.append(outsock)
                                         update_amisocks(astid)
                                         commandclass.regular_update()
-                                        plist[astid].update_phonelist()
                                 except Exception, exc:
                                         log_debug(SYSLOG_ERR, '--- exception --- %s : failed while updating lists and sockets (select s timeout) : %s'
                                                   % (astid, str(exc)))
