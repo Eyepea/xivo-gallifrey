@@ -22,8 +22,9 @@ import subprocess
 
 from xivo_agid import agid
 
-TIFF2PDF = "/usr/bin/tiff2pdf"
-MUTT = "/usr/bin/mutt -e 'set copy=no'"
+# TODO fetch paths from configuration file?
+TIFF2PDF_BIN = "/usr/bin/tiff2pdf"
+MUTT_BIN = "/usr/bin/mutt"
 
 class FaxToMailException(Exception): pass
 
@@ -47,16 +48,15 @@ def faxtomail(agi, cursor, args):
 
 		# TODO fetch tiff2pdf path from configuration file.
 		try:
-			status = subprocess.call([TIFF2PDF, "-o", filepdf, filename], close_fds=True)
+			status = subprocess.call([TIFF2PDF_BIN, "-o", filepdf, filename], close_fds=True)
 		except OSError:
 			status = 1
 
 		if status:
 			raise FaxToMailException("Unable to convert fax to PDF")
 
-		# TODO fetch Mutt path from configuration file.
 		try:
-			mutt = subprocess.Popen([ MUTT, "-s", "Reception de FAX vers %s" % dstnum, "-a", filepdf, email ],
+			mutt = subprocess.Popen([MUTT_BIN, "-e", "set copy=no", "-s", "Reception de FAX vers %s" % dstnum, "-a", filepdf, email ],
 			                        stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
 			                        close_fds=True)
 			mutt.communicate("Un nouveau fax est arrive. Il est joint dans ce mail.\n\nCordialement,\nService IPBX\n")
