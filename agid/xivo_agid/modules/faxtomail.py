@@ -23,7 +23,7 @@ import subprocess
 from xivo_agid import agid
 
 TIFF2PDF = "/usr/bin/tiff2pdf"
-MUTT = "/usr/bin/mutt"
+MUTT = "/usr/bin/mutt -e 'set copy=no'"
 
 class FaxToMailException(Exception): pass
 
