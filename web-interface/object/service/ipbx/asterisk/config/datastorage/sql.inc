@@ -70,10 +70,6 @@ $array['features'] = array();
 $array['features']['table'] = 'features';
 $array['features']['primary'] = array('id' => '');
 
-$array['generalqueue'] = array();
-$array['generalqueue']['table'] = 'staticqueue';
-$array['generalqueue']['primary'] = array('id' => '');
-
 $array['groupfeatures'] = array();
 $array['groupfeatures']['table'] = 'groupfeatures';
 $array['groupfeatures']['primary'] = array('id' => '');
@@ -161,6 +157,10 @@ $array['serverfeatures']['primary'] = array('id' => '');
 $array['staticiax'] = array();
 $array['staticiax']['table'] = 'staticiax';
 $array['staticiax']['primary'] = array('id' => '');
+
+$array['staticqueue'] = array();
+$array['staticqueue']['table'] = 'staticqueue';
+$array['staticqueue']['primary'] = array('id' => '');
 
 $array['staticsip'] = array();
 $array['staticsip']['table'] = 'staticsip';

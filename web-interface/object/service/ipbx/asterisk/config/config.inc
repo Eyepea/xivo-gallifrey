@@ -133,14 +133,14 @@ $array['realstatic']['agents']['datastorage'] = true;
 $array['realstatic']['features'] = array();
 $array['realstatic']['features']['datastorage'] = true;
 
-$array['realstatic']['generalqueue'] = array();
-$array['realstatic']['generalqueue']['datastorage'] = true;
-
 $array['realstatic']['meetme'] = array();
 $array['realstatic']['meetme']['datastorage'] = true;
 
 $array['realstatic']['staticiax'] = array();
 $array['realstatic']['staticiax']['datastorage'] = true;
+
+$array['realstatic']['staticqueue'] = array();
+$array['realstatic']['staticqueue']['datastorage'] = true;
 
 $array['realstatic']['staticsip'] = array();
 $array['realstatic']['staticsip']['datastorage'] = true;

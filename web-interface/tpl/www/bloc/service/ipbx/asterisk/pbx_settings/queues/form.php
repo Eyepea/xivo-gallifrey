@@ -241,7 +241,7 @@ endif;
 
 <?=$form->text(array('desc' => $this->bbf('fm_queue_maxlen'),'name' => 'queue[maxlen]','labelid' => 'queue-maxlen','size' => 15,'default' => $element['queue']['maxlen']['default'],'value' => $info['queue']['maxlen']));?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_queue_monitor-type'),'name' => 'queue[monitor-type]','labelid' => 'queue-monitor-type','default' => $element['queue']['monitor-type']['default'],'checked' => $info['queue']['monitor-type']));?>
+<?=$form->select(array('desc' => $this->bbf('fm_queue_monitor-type'),'name' => 'queue[monitor-type]','labelid' => 'queue-monitor-type','bbf' => 'fm_queue_monitor-type-opt-','empty' => true,'key' => false,'default' => $element['queue']['monitor-type']['default'],'value' => $info['queue']['monitor-type']),$element['queue']['monitor-type']['value']);?>
 
 <?=$form->select(array('desc' => $this->bbf('fm_queue_monitor-format'),'name' => 'queue[monitor-format]','labelid' => 'queue-monitor-format','empty' => true,'key' => false,'default' => $element['queue']['monitor-format']['default'],'value' => $info['queue']['monitor-format']),$element['queue']['monitor-format']['value']);?>
 

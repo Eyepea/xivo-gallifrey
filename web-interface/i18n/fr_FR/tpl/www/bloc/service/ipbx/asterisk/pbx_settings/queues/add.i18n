@@ -292,6 +292,12 @@ Format d'enregistrement :
 ; fm_queue_monitor-type
 Enregistrement :
 
+; fm_queue_monitor-type-opt-no
+Non
+
+; fm_queue_monitor-type-opt-mixmonitor
+MixMonitor
+
 ; fm_queue_joinempty
 Joindre une file d'attente vide :
 

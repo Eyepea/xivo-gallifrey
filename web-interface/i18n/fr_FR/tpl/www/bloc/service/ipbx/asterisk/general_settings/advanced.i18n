@@ -22,6 +22,9 @@ Agents persistants :
 ; fm_generalqueue_persistentmembers
 Membres persistants :
 
+; fm_generalqueue_monitor-type
+Enregistrement :
+
 ; fm_generalmeetme_audiobuffer
 Taille du tampon audio :
 

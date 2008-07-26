@@ -3,7 +3,8 @@
 $appagents = &$ipbx->get_apprealstatic('agents');
 $appgeneralagents = &$appagents->get_module('general');
 
-$appgeneralqueue = &$ipbx->get_apprealstatic('generalqueue');
+$appqueue = &$ipbx->get_apprealstatic('queue');
+$appgeneralqueue = &$appqueue->get_module('general');
 
 $appmeetme = &$ipbx->get_apprealstatic('meetme');
 $appgeneralmeetme = &$appmeetme->get_module('general');
