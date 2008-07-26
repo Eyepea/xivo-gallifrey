@@ -26,7 +26,7 @@ Membres persistants :
 Enregistrement :
 
 ; fm_generalmeetme_audiobuffers
-Taille du tampon audio par canal :
+Taille des tampons audio par canal :
 
 ; fm_success-save
 Paramètres globaux avancés sauvegardées avec succès
