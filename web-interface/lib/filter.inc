@@ -360,7 +360,7 @@ class xivo_filter
 			case 'unsigned-real':
 			case 'unsigned-float':
 			case 'unsigned-double':
-				$value = strval($value);
+				$value = str_replace(',','.',strval($value));
 				$cast = xivo_ufloat($value,0,false,true);
 				break;
 			case 'ulongint':
@@ -375,7 +375,7 @@ class xivo_filter
 			case 'real':
 			case 'float':
 			case 'double':
-				$value = strval($value);
+				$value = str_replace(',','.',strval($value));
 				$cast = str_replace(',','.',floatval($value));
 				break;
 			case 'string':

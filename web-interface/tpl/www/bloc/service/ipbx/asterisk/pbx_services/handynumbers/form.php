@@ -27,6 +27,7 @@
 	</thead>
 	<tbody id="<?=$type?>">
 <?php
+
 if($count > 0):
 	for($i = 0;$i < $count;$i++):
 		$ref = &$info[$type][$i];
@@ -36,6 +37,7 @@ if($count > 0):
 		else:
 			$errdisplay = '';
 		endif;
+
 ?>
 	<tr class="fm-field<?=$errdisplay?>">
 		<td class="td-left txt-center">
@@ -50,8 +52,8 @@ if($count > 0):
 									 'altkey'	=> 'protocol',
 									 'unique'	=> true,
 									 'bbf'		=> array('concat','fm_'.$type.'-trunk-opt-')),
-					       'value' => $ref['trunkfeaturesid'],
-					       'default' => $element['handynumbers']['trunkfeaturesid']['default']),
+					       'value'		=> $ref['trunkfeaturesid'],
+					       'default'	=> $element['handynumbers']['trunkfeaturesid']['default']),
 					 $trunkslist);?>
 		</td>
 		<td>
@@ -100,7 +102,7 @@ endif;
 					       				 'altkey'	=> 'protocol',
 									 'unique'	=> true,
 									 'bbf'		=> array('concat','fm_'.$type.'-trunk-opt-')),
-					       'default' => $element['handynumbers']['trunkfeaturesid']['default']),
+					       'default'	=> $element['handynumbers']['trunkfeaturesid']['default']),
 					 $trunkslist,
 					 'onfocus="xivo_fm_set_onfocus(this);" onblur="xivo_fm_set_onblur(this);"');?>
 		</td>

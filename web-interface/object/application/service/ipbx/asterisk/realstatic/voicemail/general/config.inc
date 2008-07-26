@@ -108,6 +108,11 @@ $array['element']['forcegreetings']['value'] = array('no','yes');
 $array['element']['forcegreetings']['default'] = 'no';
 $array['element']['forcegreetings']['set'] = true;
 
+$array['element']['tempgreetwarn'] = array();
+$array['element']['tempgreetwarn']['value'] = array('no','yes');
+$array['element']['tempgreetwarn']['default'] = 'yes';
+$array['element']['tempgreetwarn']['set'] = true;
+
 $array['element']['maxgreet'] = array();
 $array['element']['maxgreet']['value'] = array(0 => 0,1 => 1,2 => 2,3 => 3,4 => 4,5 => 5,6 => 6,7 => 7,8 => 8,
 						    9 => 9,10 => 10,20 => 20,30 => 30,40 => 40,50 => 50,60 => 1,
@@ -161,6 +166,16 @@ $array['element']['attach'] = array();
 $array['element']['attach']['value'] = array('no','yes');
 $array['element']['attach']['default'] = 'yes';
 $array['element']['attach']['set'] = true;
+
+$array['element']['volgain'] = array();
+$array['element']['volgain']['value'] = array(-5,'-4.5',-4,
+					      '-3.5',-3,'-2.5',
+					      -2,-1.5,1,'-0.5',
+					      0,'0.5',1,
+					      '1.5',2,'2.5',
+					      3,'3.5',4,
+					      '4.5',5);
+$array['element']['volgain']['default'] = 0;
 
 $array['element']['mailcmd'] = array();
 $array['element']['mailcmd']['default'] = '/usr/sbin/sendmail -t';
@@ -232,6 +247,10 @@ $array['element']['externnotify'] = array();
 $array['element']['externnotify']['default'] = '';
 $array['element']['externnotify']['null'] = true;
 
+$array['element']['smdiport'] = array();
+$array['element']['smdiport']['default'] = '';
+$array['element']['smdiport']['null'] = true;
+
 $array['element']['odbcstorage'] = array();
 $array['element']['odbcstorage']['default'] = '';
 $array['element']['odbcstorage']['null'] = true;
@@ -278,6 +297,7 @@ $array['filter']['sayduration'] = array('bool' => true);
 $array['filter']['saydurationm'] = array('key' => array(1,2,3,4,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['forcename'] = array('bool' => true);
 $array['filter']['forcegreetings'] = array('bool' => true);
+$array['filter']['tempgreetwarn'] = array('bool' => true);
 $array['filter']['maxgreet'] = array('key' => array(0,1,2,3,4,5,6,7,8,9,
 							10,20,30,40,50,60,70,80,90,
 							100,110,120,130,140,150,160,170,180,190,
@@ -293,6 +313,7 @@ $array['filter']['dialout'] = array('set' => false,'chk' => 2,'callback' => 'xiv
 $array['filter']['callback'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context');
 $array['filter']['exitcontext'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context');
 $array['filter']['attach'] = array('bool' => true);
+$array['filter']['volgain'] = array('cast' => 'float','between' => array(-5,5));
 //$array['filter']['mailcmd'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 160);
 $array['filter']['mailcmd'] = array('set' => false);
 $array['filter']['serveremail'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9@\-_\.]+$/i','maxlen' => 80);
@@ -312,6 +333,7 @@ $array['filter']['searchcontexts'] = array('bool' => true);
 //$array['filter']['externpass'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
 $array['filter']['externpass'] = array('set' => false);
 $array['filter']['externnotify'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 160);
+$array['filter']['smdiport'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 255);
 $array['filter']['odbcstorage'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 80);
 $array['filter']['odbctable'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 80);
 
