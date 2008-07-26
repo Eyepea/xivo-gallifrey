@@ -641,7 +641,7 @@ CREATE TABLE `queue` (
  `announce` varchar(128),
  `context` varchar(39),
  `timeout` tinyint(2) unsigned DEFAULT 0,
- `monitor-type` enum('mixmonitor'),
+ `monitor-type` enum('no','mixmonitor'),
  `monitor-format` varchar(128),
  `queue-youarenext` varchar(128),
  `queue-thereare` varchar(128),
@@ -885,7 +885,7 @@ CREATE INDEX `staticmeetme__idx__filename` ON `staticmeetme`(`filename`);
 CREATE INDEX `staticmeetme__idx__category` ON `staticmeetme`(`category`);
 CREATE INDEX `staticmeetme__idx__var_name` ON `staticmeetme`(`var_name`);
 
-INSERT INTO `staticmeetme` VALUES (1,0,0,0,'meetme.conf','general','audiobuffer',32);
+INSERT INTO `staticmeetme` VALUES (NULL,0,0,0,'meetme.conf','general','audiobuffer',32);
 
 
 DROP TABLE IF EXISTS `staticqueue`;
@@ -906,7 +906,9 @@ CREATE INDEX `staticqueue__idx__filename` ON `staticqueue`(`filename`);
 CREATE INDEX `staticqueue__idx__category` ON `staticqueue`(`category`);
 CREATE INDEX `staticqueue__idx__var_name` ON `staticqueue`(`var_name`);
 
-INSERT INTO `staticqueue` VALUES (1,0,0,0,'queues.conf','general','persistentmembers','yes');
+INSERT INTO `staticqueue` VALUES (NULL,0,0,0,'queues.conf','general','persistentmembers','yes');
+INSERT INTO `staticqueue` VALUES (NULL,0,0,0,'queues.conf','general','autofill','no');
+INSERT INTO `staticqueue` VALUES (NULL,0,0,0,'queues.conf','general','monitor-type','no');
 
 
 DROP TABLE IF EXISTS `staticsip`;
