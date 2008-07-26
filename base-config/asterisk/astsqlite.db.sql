@@ -849,7 +849,7 @@ CREATE INDEX staticmeetme__idx__filename ON staticmeetme(filename);
 CREATE INDEX staticmeetme__idx__category ON staticmeetme(category);
 CREATE INDEX staticmeetme__idx__var_name ON staticmeetme(var_name);
 
-INSERT INTO staticmeetme VALUES (NULL,0,0,0,'meetme.conf','general','audiobuffer',32);
+INSERT INTO staticmeetme VALUES (NULL,0,0,0,'meetme.conf','general','audiobuffers',32);
 
 
 DROP TABLE staticqueue;
