@@ -885,7 +885,7 @@ CREATE INDEX `staticmeetme__idx__filename` ON `staticmeetme`(`filename`);
 CREATE INDEX `staticmeetme__idx__category` ON `staticmeetme`(`category`);
 CREATE INDEX `staticmeetme__idx__var_name` ON `staticmeetme`(`var_name`);
 
-INSERT INTO `staticmeetme` VALUES (1,0,0,0,'meetme.conf','general','audiobuffer','32');
+INSERT INTO `staticmeetme` VALUES (1,0,0,0,'meetme.conf','general','audiobuffer',32);
 
 
 DROP TABLE IF EXISTS `staticqueue`;
@@ -1035,24 +1035,25 @@ CREATE INDEX `staticvoicemail__idx__filename` ON `staticvoicemail`(`filename`);
 CREATE INDEX `staticvoicemail__idx__category` ON `staticvoicemail`(`category`);
 CREATE INDEX `staticvoicemail__idx__var_name` ON `staticvoicemail`(`var_name`);
 
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','maxmsg','100');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','silencethreshold','256');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','minmessage','0');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','maxmessage','0');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','maxsilence','15');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','maxmsg',100);
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','silencethreshold',256);
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','minmessage',0);
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','maxmessage',0);
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','maxsilence',15);
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','review','yes');
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','operator','yes');
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','format','wav');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','maxlogins','3');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','maxlogins',3);
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','envelope','yes');
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','saycid','no');
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','cidinternalcontexts',NULL);
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','sayduration','yes');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','saydurationm','2');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','saydurationm',2);
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','forcename','no');
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','forcegreetings','no');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','maxgreet','0');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','skipms','3000');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','tempgreetwarn','yes');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','maxgreet',0);
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','skipms',3000);
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','sendvoicemail','no');
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','usedirectory','yes');
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','nextaftercmd','yes');
@@ -1060,6 +1061,7 @@ INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','dia
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','callback',NULL);
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','exitcontext',NULL);
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','attach','yes');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','volgain',0);
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','mailcmd','/usr/sbin/sendmail -t');
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','serveremail','xivo');
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','charset','UTF-8');
@@ -1081,10 +1083,11 @@ INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','pag
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','pagerbody',NULL);
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','adsifdn','0000000F');
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','adsisec','9BDBF7AC');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','adsiver','1');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','adsiver',1);
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','searchcontexts','no');
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','externpass','/usr/share/asterisk/bin/change-pass-vm');
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','externnotify',NULL);
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','smdiport',NULL);
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','odbcstorage',NULL);
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','odbctable',NULL);
 INSERT INTO `staticvoicemail` VALUES (NULL,1,0,0,'voicemail.conf','zonemessages','eu-fr','Europe/Paris|\'vm-received\' q \'digits/at\' kM');
