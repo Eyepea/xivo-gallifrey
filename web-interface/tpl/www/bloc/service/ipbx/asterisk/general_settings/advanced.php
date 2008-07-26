@@ -129,13 +129,13 @@ if(isset($error_js[0]) === true)
 </div>
 
 <div id="sb-part-last" class="b-nodisplay">
-	<?=$form->select(array('desc'		=> $this->bbf('fm_generalmeetme_audiobuffer'),
-			       'name'		=> 'generalmeetme[audiobuffer]',
-			       'labelid'	=> 'generalmeetme-audiobuffer',
+	<?=$form->select(array('desc'		=> $this->bbf('fm_generalmeetme_audiobuffers'),
+			       'name'		=> 'generalmeetme[audiobuffers]',
+			       'labelid'	=> 'generalmeetme-audiobuffers',
 			       'key'		=> false,
-			       'default'	=> $element['generalmeetme']['audiobuffer']['default'],
-			       'value'		=> $this->get_varra('generalmeetme',array('audiobuffer','var_val'))),
-			 $element['generalmeetme']['audiobuffer']['value']);?>
+			       'default'	=> $element['generalmeetme']['audiobuffers']['default'],
+			       'value'		=> $this->get_varra('generalmeetme',array('audiobuffers','var_val'))),
+			 $element['generalmeetme']['audiobuffers']['value']);?>
 </div>
 <?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>
 

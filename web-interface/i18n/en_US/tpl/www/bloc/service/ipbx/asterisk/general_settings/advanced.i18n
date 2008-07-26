@@ -22,8 +22,8 @@ Persistent agents:
 ; fm_generalqueue_persistentmembers
 Persistent members:
 
-; fm_generalmeetme_audiobuffer
-Audio buffer size:
+; fm_generalmeetme_audiobuffers
+Audio buffers size per channel:
 
 ; fm_success-save
 Global advanced parameters successfully saved
