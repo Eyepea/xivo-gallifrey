@@ -42,7 +42,7 @@ class xivo_application_service_asterisk_realstatic_features_featuremap extends x
 		if(is_array($arr) === false || isset($arr['var_name']) === false)
 			return(false);
 
-		$number = (string) $this->get_result_var($this->_name,'var_val');
+		$number = (string) $this->get_result_var('var_val');
 		$context = '';
 
 		$this->set_extenumbers('save',$number,$context);

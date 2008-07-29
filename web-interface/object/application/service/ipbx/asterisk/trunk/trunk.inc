@@ -119,7 +119,7 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 		else if(($this->_info['register'] = $this->_register->get_register($registerid)) === false)
 			return(false);
 
-		$this->_origin['register'] = $this->_register->get_origin_var('register');
+		$this->_origin['register'] = $this->_register->get_origin();
 
 		return(true);
 	}
@@ -442,7 +442,7 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 		|| $rs === false)
 			return($rs);
 
-		return(($this->_return['register'] = $this->_register->get_return_var('register')));
+		return(($this->_return['register'] = $this->_register->get_return()));
 	}
 
 	function _reverse_add()
@@ -553,7 +553,7 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 		}
 		else if($r === false)
 			return(false);
-		else if(($r = $this->_register->get_return_var('register')) !== false)
+		else if(($r = $this->_register->get_return()) !== false)
 			$r = true;
 
 		return(($this->_return['register'] = $r));

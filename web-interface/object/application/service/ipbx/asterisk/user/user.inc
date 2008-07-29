@@ -226,11 +226,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| $this->_voicemail->get($this->_info['ufeatures']['voicemailid']) === false)
 			return(false);
 
-		$this->_info['voicemail'] = $this->_voicemail->get_info_var('voicemail');
-		$this->_info['vmfeatures'] = $this->_voicemail->get_info_var('vmfeatures');
+		$this->_info['voicemail'] = $this->_voicemail->get_info('voicemail');
+		$this->_info['vmfeatures'] = $this->_voicemail->get_info('vmfeatures');
 
-		$this->_origin['voicemail'] = $this->_voicemail->get_origin_var('voicemail');
-		$this->_origin['vmfeatures'] = $this->_voicemail->get_origin_var('vmfeatures');
+		$this->_origin['voicemail'] = $this->_voicemail->get_origin('voicemail');
+		$this->_origin['vmfeatures'] = $this->_voicemail->get_origin('vmfeatures');
 
 		return($this->_info['voicemail']);
 	}
@@ -603,6 +603,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		$number = (string) $this->get_result_var('ufeatures','number');
 		$protocolname = (string) $this->get_result_var('ufeatures','protocol');
+		$simultcalls = (int) $this->get_result_var('ufeatures','simultcalls');
+
+		$this->_set_result_var('protocol','call-limit',2 * $simultcalls);
 
 		if(xivo_issa('group',$arr) === true
 		&& xivo_issa('group-select',$arr) === true
@@ -1157,7 +1160,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| $rs === false)
 			return($rs);
 		else if(($this->_return['voicemail'] = $this->_voicemail->add()) === true
-		&& (($voicemailid = xivo_ulongint($voicemailid = $this->_voicemail->get_return_var('voicemail'))) === 0
+		&& (($voicemailid = xivo_ulongint($voicemailid = $this->_voicemail->get_return('voicemail'))) === 0
 		   || $this->_userfeatures->edit($ufeaturesid,array('voicemailid' => $voicemailid)) === false) === true)
 			return(false);
 
@@ -2133,7 +2136,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		$appincall = &$this->_service->get_application('incall');
 
-		$incall['incall'] = $incall = array();
+		$incall['dialaction']['answer'] = $incall['dialaction'] = $incall = array();
 
 		$r = true;
 
@@ -2172,8 +2175,15 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			&& xivo_haslen($ref['incall'],'exten') === true)
 			{
 				$incall['incall'] = $ref['incall'];
-				$incall['incall']['type'] = 'user';
-				$incall['incall']['typeval'] = $this->get_return_var('userfeatures');
+				$incall['dialaction']['answer']['actiontype'] = 'user';
+				$incall['dialaction']['answer']['actionarg1'] = $this->get_return('userfeatures');
+
+				if(xivo_haslen($ref['incall'],'ringseconds') === true)
+					$incall['dialaction']['answer']['actionarg2'] = $ref['incall']['ringseconds'];
+				else
+					$incall['dialaction']['answer']['actionarg2'] = '';
+
+				unset($incall['incall']['ringseconds']);
 
 				if($appincall->set_add($incall) === false
 				|| $appincall->add() === false)

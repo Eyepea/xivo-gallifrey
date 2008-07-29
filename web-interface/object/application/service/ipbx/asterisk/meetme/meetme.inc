@@ -53,7 +53,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 			return(false);
 
 		$this->_origin['mfeatures'] = $this->_meetmefeatures->get_origin();
-		$this->_origin['meetmeroom'] = $this->_meetmeroom->get_origin_var('meetmeroom');
+		$this->_origin['meetmeroom'] = $this->_meetmeroom->get_origin();
 
 		if($this->_components === false)
 			return($this->_info);
@@ -284,7 +284,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		|| $rs === false)
 			return(false);
 
-		return(($this->_return['meetmeroom'] = $this->_meetmeroom->get_return_var('meetmeroom')));
+		return(($this->_return['meetmeroom'] = $this->_meetmeroom->get_return()));
 	}
 
 	function add_meetmefeatures($meetmeid)
@@ -377,7 +377,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		|| $rs === false)
 			return(false);
 
-		return(($this->_return['meetmeroom'] = $this->_meetmeroom->get_return_var('meetmeroom')));
+		return(($this->_return['meetmeroom'] = $this->_meetmeroom->get_return()));
 	}
 
 	function edit_meetmefeatures()

@@ -28,5 +28,6 @@ $array['import']['field']['enableclient'] = array('ufeatures','enableclient');
 $array['import']['field']['enablehint'] = array('ufeatures','enablehint');
 $array['import']['field']['incallexten'] = array('incall','exten');
 $array['import']['field']['incallcontext'] = array('incall','context');
+$array['import']['field']['incallringseconds'] = array('incall','ringseconds');
 
 ?>

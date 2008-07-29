@@ -208,8 +208,11 @@ class xivo_service_asterisk_contextnumbers extends xivo_service_asterisk_abstrac
 					$max = substr($max,2);
 					continue;
 				default:
-					if(ctype_digit($split[$i]) === false
-					|| $min{0} > $split[$i]
+					if(ctype_digit($split[$i]) === false)
+						return(false);
+					else if($min{0} < $split[$i] && $split[$i] < $max{0})
+						return(true);
+					else if($min{0} > $split[$i]
 					|| $max{0} < $split[$i])
 						return(false);
 

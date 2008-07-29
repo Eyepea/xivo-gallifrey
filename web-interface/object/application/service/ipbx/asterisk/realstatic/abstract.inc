@@ -40,6 +40,80 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 		return(true);
 	}
 
+	function get_info()
+	{
+		if(empty($this->_info) === true)
+			return(null);
+		else if(isset($this->_info[$this->_name]) === true)
+			return($this->_info[$this->_name]);
+
+		return(null);
+	}
+
+	function get_info_var($var)
+	{
+		$var = (string) $var;
+
+		if(xivo_issa($this->_name,$this->_info) === false
+		|| isset($this->_info[$this->_name][$var]) === false)
+			return(null);
+
+		return($this->_info[$this->_name][$var]);
+	}
+
+	function get_origin()
+	{
+		if(empty($this->_origin) === true)
+			return(null);
+		else if(isset($this->_origin[$this->_name]) === true)
+			return($this->_origin[$this->_name]);
+
+		return(null);
+	}
+
+	function get_origin_var($var)
+	{
+		$var = (string) $var;
+
+		if(xivo_issa($this->_name,$this->_origin) === false
+		|| isset($this->_origin[$this->_name][$var]) === false)
+			return(null);
+
+		return($this->_origin[$this->_name][$var]);
+	}
+
+	function get_result_var($var)
+	{
+		$var = (string) $var;
+
+		if(xivo_issa($this->_name,$this->_result) === false
+		|| isset($this->_result[$this->_name][$var]) === false)
+			return(null);
+
+		return($this->_result[$this->_name][$var]);
+	}
+
+	function get_return()
+	{
+		if(empty($this->_return) === true)
+			return(null);
+		else if(isset($this->_return[$this->_name]) === true)
+			return($this->_return[$this->_name]);
+
+		return(null);
+	}
+
+	function get_return_var($var)
+	{
+		$var = (string) $var;
+
+		if(xivo_issa($this->_name,$this->_return) === false
+		|| isset($this->_return[$this->_name][$var]) === false)
+			return(null);
+
+		return($this->_return[$this->_name][$var]);
+	}
+
 	function get_name()
 	{
 		return($this->_name);
@@ -74,15 +148,11 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 
 	function get_all_by_category($disable=null)
 	{
-		$this->_info = $this->_origin = array();
-
 		return($this->_realstatic->get_all_by_category(null,$disable));
 	}
 
 	function get_all_val_by_category($disable=null)
 	{
-		$this->_info = $this->_origin = array();
-
 		return($this->_realstatic->get_all_val_by_category(null,$disable));
 	}
 

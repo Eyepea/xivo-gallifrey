@@ -4,7 +4,7 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_realstatic_meetme_general extends xivo_application_service_asterisk_realstatic_abstract
 {
-	var $_name		= 'generalmeetme';
+	var $_name		= 'general';
 	var $_modulename	= 'meetme';
 	var $_category		= 'general';
 	var $_cat_metric	= 0;

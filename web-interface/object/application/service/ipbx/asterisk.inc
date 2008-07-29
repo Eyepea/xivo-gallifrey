@@ -18,22 +18,6 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		$this->_service = &$service;
 	}
 
-	function get_origin()
-	{
-		return($this->_origin);
-	}
-
-	function get_origin_var($var)
-	{
-		$var = (string) $var;
-
-		if(is_array($this->_origin) === false
-		|| isset($this->_origin[$var]) === false)
-			return(null);
-
-		return($this->_origin[$var]);
-	}
-
 	function mk_interface($name,$chantype,$context='',$number='',$protocol='')
 	{
 		$chantype = strval($chantype);

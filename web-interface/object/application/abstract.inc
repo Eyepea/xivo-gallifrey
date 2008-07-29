@@ -109,20 +109,56 @@ class xivo_application_abstract extends xivo_libconfig_abstract
 		return(xivo_ulongint($this->_cnt));
 	}
 
-	function get_info()
+	function get_info($name='')
 	{
-		return($this->_info);
+		$name = (string) $name;
+
+		if(empty($this->_info) === true)
+			return(null);
+		else if($name === '')
+			return($this->_info);
+		else if(isset($this->_info[$name]) === true)
+			return($this->_info[$name]);
+
+		return(null);
 	}
 
-	function get_info_var($var)
+	function get_info_var($name,$var)
 	{
+		$name = (string) $name;
 		$var = (string) $var;
 
-		if(is_array($this->_info) === false
-		|| isset($this->_info[$var]) === false)
+		if(xivo_issa($name,$this->_info) === false
+		|| isset($this->_info[$name][$var]) === false)
 			return(null);
 
-		return($this->_info[$var]);
+		return($this->_info[$name][$var]);
+	}
+
+	function get_origin($name='')
+	{
+		$name = (string) $name;
+
+		if(empty($this->_origin) === true)
+			return(null);
+		else if($name === '')
+			return($this->_origin);
+		else if(isset($this->_origin[$name]) === true)
+			return($this->_origin[$name]);
+
+		return(null);
+	}
+
+	function get_origin_var($name,$var)
+	{
+		$name = (string) $name;
+		$var = (string) $var;
+
+		if(xivo_issa($name,$this->_origin) === false
+		|| isset($this->_origin[$name][$var]) === false)
+			return(null);
+
+		return($this->_origin[$name][$var]);
 	}
 
 	function _set_result($name,$value)
@@ -165,20 +201,30 @@ class xivo_application_abstract extends xivo_libconfig_abstract
 		return($this->_result[$name][$var]);
 	}
 
-	function get_return()
+	function get_return($name='')
 	{
-		return($this->_return);
+		$name = (string) $name;
+
+		if(empty($this->_return) === true)
+			return(null);
+		else if($name === '')
+			return($this->_return);
+		else if(isset($this->_return[$name]) === true)
+			return($this->_return[$name]);
+
+		return(null);
 	}
 
-	function get_return_var($var)
+	function get_return_var($name,$var)
 	{
+		$name = (string) $name;
 		$var = (string) $var;
 
-		if(is_array($this->_return) === false
-		|| isset($this->_return[$var]) === false)
+		if(xivo_issa($name,$this->_return) === false
+		|| isset($this->_return[$name][$var]) === false)
 			return(null);
 
-		return($this->_return[$var]);
+		return($this->_return[$name][$var]);
 	}
 
 	function _set_error($name,$value=false)
