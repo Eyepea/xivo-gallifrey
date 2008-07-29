@@ -271,9 +271,12 @@ def manage_info_connections(connid, msg, sep):
                         elif usefulmsg == 'show_logged_ip':
                                 for user, info in commandclass.connected_users().iteritems():
                                         if 'connection' in info['login']:
-                                                connid.sendall('user %s : ip:port = %s:%s\n' % (user.encode('latin1'),
-                                                                                                info['login']['connection'].getpeername()[0],
-                                                                                                info['login']['connection'].getpeername()[1]))
+                                                try:
+                                                        [ipaddr, ipport] = info['login']['connection'].getpeername()
+                                                except Exception, exc:
+                                                        log_debug(SYSLOG_ERR, '--- exception --- INFO show_logged_ip : %s' % exc)
+                                                        [ipaddr, ipport] = ['err_addr', 'err_port']
+                                                connid.sendall('user %s : ip:port = %s:%s\n' % (user.encode('latin1'), ipaddr, ipport))
                         elif usefulmsg == 'show_logged':
                                 for user, info in commandclass.connected_users().iteritems():
                                         connid.sendall('%s %s\n' % (user.encode('latin1'), info))
