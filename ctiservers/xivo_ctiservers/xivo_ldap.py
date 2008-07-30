@@ -61,7 +61,8 @@ class xivo_ldap:
                                 self.l.simple_bind_s()
 
                 except ldap.LDAPError, exc:
-			log_debug(SYSLOG_ERR, '__init__ : exception ldap.LDAPError : %s' % exc)
+			log_debug(SYSLOG_ERR, '__init__ : exception ldap.LDAPError (%s) : %s'
+                                  % (iuri, exc))
                         self.l = None
 
         def getldap(self, filter, attrib):
@@ -72,8 +73,8 @@ class xivo_ldap:
                                                    attrib)
                         return resultat
                 except ldap.LDAPError, exc:
-                        log_debug(SYSLOG_ERR, 'getldap : exception ldap.LDAPError : %s'
-                                  % exc)
+                        log_debug(SYSLOG_ERR, 'getldap : exception ldap.LDAPError (%s) : %s'
+                                  % (self.uri, exc))
 
 
 class xivo_csv:

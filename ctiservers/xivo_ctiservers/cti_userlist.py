@@ -47,9 +47,13 @@ class UserList(AnyList):
                                         newuserlist = self.commandclass.getuserslist_compat(urllist.list)
                                 else:
                                         newuserlist = self.commandclass.getuserslist(urllist.list)
+                                nnew = 0
                                 for a, b in newuserlist.iteritems():
                                         if a not in self.userlist:
+                                                nnew += 1
                                                 self.userlist[a] = b
+                                if nnew > 0:
+                                        log_debug(SYSLOG_INFO, '%d new users read from %s' % (nnew, url))
                 else:
                         newuserlist = self.commandclass.getuserslist()
                         for a, b in newuserlist.iteritems():

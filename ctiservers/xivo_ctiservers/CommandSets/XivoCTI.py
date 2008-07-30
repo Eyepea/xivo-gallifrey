@@ -67,7 +67,6 @@ class XivoCTICommand(BaseCommand):
         xivoclient_session_timeout = 60 # XXX
 
         fullstat_heavies = {}
-        queues_list = {}
         queues_channels_list = {}
         agents_list = {}
 
@@ -157,9 +156,6 @@ class XivoCTICommand(BaseCommand):
                                         cfg[param] = value
                 return cfg
 
-
-        # fields set at startup by reading informations
-        userfields = ['astid', 'user', 'phonenum', 'passwd', 'init', 'fullname', 'company', 'capaid', 'context']
 
         # fields set at login time by a user, some are a id-dimension, others are auth-related
         # TBD : fields set once logged in ...
@@ -399,13 +395,19 @@ class XivoCTICommand(BaseCommand):
 
         def getqueueslist(self, dlist):
                 lqlist = {}
-                for c, d in dlist.iteritems():
+                for queuename, d in dlist.iteritems():
                         if d[0] == 'queue' and d[4] == '0':
-                                lqlist[c] = {'queuename' : d[1],
-                                             'number' : d[2],
-                                             'context' : d[3]}
+                                lqlist[queuename] = {'queuename' : d[1],
+                                                     'number' : d[2],
+                                                     'context' : d[3],
+                                                     
+                                                     'agents' : {},
+                                                     'channels' : {},
+                                                     'stats' : {}}
                 return lqlist
 
+        # fields set at startup by reading informations
+        userfields = ['user', 'company', 'astid', 'passwd', 'fullname', 'capaid', 'context', 'phonenum', 'techlist', 'agentnum']
         def getuserslist(self, dlist):
                 lulist = {}
                 for c, d in dlist.iteritems():
@@ -416,12 +418,12 @@ class XivoCTICommand(BaseCommand):
                                              'capaid'   : d[2],
                                              'fullname' : d[3] + ' ' + d[4],
                                              'astid'    : d[5],
-                                             'phonenum' : d[6],
-                                             'init'     : True,
-                                             'state'    : 'unknown',
                                              'agentnum' : d[9],
                                              'techlist' : d[7],
                                              'context'  : d[8],
+                                             'phonenum' : d[6],
+                                             
+                                             'state'    : 'unknown',
                                              'mwi-waiting' : '0',
                                              'mwi-old' : '0',
                                              'mwi-new' : '0'}
@@ -440,12 +442,12 @@ class XivoCTICommand(BaseCommand):
                                                      'capaid'   : 'default',
                                                      'fullname' : d[8] + ' ' + d[9],
                                                      'astid'    : 'xivo',
-                                                     'phonenum' : d[4],
-                                                     'init'     : True,
-                                                     'state'    : 'unknown',
                                                      'agentnum' : '',
                                                      'techlist' : d[0].upper() + '/' + d[4],
                                                      'context'  : d[10],
+                                                     'phonenum' : d[4],
+                                                     
+                                                     'state'    : 'unknown',
                                                      'mwi-waiting' : '0',
                                                      'mwi-old' : '0',
                                                      'mwi-new' : '0'}
@@ -641,8 +643,6 @@ class XivoCTICommand(BaseCommand):
                 clid    = event.get("CallerID")
                 clidn   = event.get("CallerIDName")
                 context = event.get("Context")
-##                if clidn in self.queues_list[astid]:
-##                        print event
                 self.plist[astid].handle_ami_event_dial(src, dst, clid, clidn)
                 return
 
@@ -672,16 +672,14 @@ class XivoCTICommand(BaseCommand):
                 clid1 = event.get("CallerID1")
                 clid2 = event.get("CallerID2")
                 if chan2.startswith('Agent/'):
-                        msg = self.__build_agupdate__(['agentlink', astid, chan2[6:]])
+                        msg = self.__build_agupdate__(['agentlink', astid, chan2])
                         self.__send_msg_to_cti_clients__(msg)
-                        # To identify which queue a call comes from, we match a previous AMI Leave event, not too far away
-                        # in the past (1 second here), that involved the same channel as the one catched here.
+                        # To identify which queue a call comes from, we match a previous AMI Leave event,
+                        # that involved the same channel as the one catched here.
                         # Any less-tricky-method is welcome, though.
                         if chan1 in self.queues_channels_list[astid]:
-                                t1 = time.time()
-                                [qname, t0] = self.queues_channels_list[astid][chan1]
+                                qname = self.queues_channels_list[astid][chan1]
                                 del self.queues_channels_list[astid][chan1]
-                                # if (t1 - t0) < 1:
                                 extraevent = {'xivo_queuename' : qname}
                                 self.__sheet_alert__('agentselected', astid, event, extraevent)
                 else:
@@ -694,10 +692,10 @@ class XivoCTICommand(BaseCommand):
                                         if uinfo.get('phonenum') == event.get('CallerID2'):
                                                 ag2 = uinfo.get('agentnum')
                         if ag1 is not None:
-                                msg = self.__build_agupdate__(['phonelink', astid, ag1])
+                                msg = self.__build_agupdate__(['phonelink', astid, 'Agent/%s' % ag1])
                                 self.__send_msg_to_cti_clients__(msg)
                         if ag2 is not None:
-                                msg = self.__build_agupdate__(['phonelink', astid, ag2])
+                                msg = self.__build_agupdate__(['phonelink', astid, 'Agent/%s' % ag2])
                                 self.__send_msg_to_cti_clients__(msg)
                 self.plist[astid].handle_ami_event_link(chan1, chan2, clid1, clid2)
 
@@ -709,7 +707,7 @@ class XivoCTICommand(BaseCommand):
                 clid1 = event.get("CallerID1")
                 clid2 = event.get("CallerID2")
                 if chan2.startswith('Agent/'):
-                        msg = self.__build_agupdate__(['agentunlink', astid, chan2[6:]])
+                        msg = self.__build_agupdate__(['agentunlink', astid, chan2])
                         self.__send_msg_to_cti_clients__(msg)
                 else:
                         ag1 = None
@@ -721,10 +719,10 @@ class XivoCTICommand(BaseCommand):
                                         if uinfo.get('phonenum') == event.get('CallerID2'):
                                                 ag2 = uinfo.get('agentnum')
                         if ag1 is not None:
-                                msg = self.__build_agupdate__(['phoneunlink', astid, ag1])
+                                msg = self.__build_agupdate__(['phoneunlink', astid, 'Agent/%s' % ag1])
                                 self.__send_msg_to_cti_clients__(msg)
                         if ag2 is not None:
-                                msg = self.__build_agupdate__(['phoneunlink', astid, ag2])
+                                msg = self.__build_agupdate__(['phoneunlink', astid, 'Agent/%s' % ag2])
                                 self.__send_msg_to_cti_clients__(msg)
                 self.plist[astid].handle_ami_event_unlink(chan1, chan2, clid1, clid2)
                 return
@@ -926,7 +924,7 @@ class XivoCTICommand(BaseCommand):
                 if astid in self.agents_list and agent in self.agents_list[astid]:
                         self.agents_list[astid][agent]['status'] = 'AGENT_IDLE'
                         self.agents_list[astid][agent]['phonenum'] = event.get('Loginchan')
-                msg = self.__build_agupdate__(['agentlogin', astid, agent, loginchan])
+                msg = self.__build_agupdate__(['agentlogin', astid, 'Agent/%s' % agent, loginchan])
                 print 'ami_agentcallbacklogin', msg
                 self.__send_msg_to_cti_clients__(msg)
                 return
@@ -939,7 +937,7 @@ class XivoCTICommand(BaseCommand):
                 if astid in self.agents_list and agent in self.agents_list[astid]:
                         self.agents_list[astid][agent]['status'] = 'AGENT_LOGGEDOFF'
                         self.agents_list[astid][agent]['phonenum'] = loginchan
-                msg = self.__build_agupdate__(['agentlogout', astid, agent, loginchan])
+                msg = self.__build_agupdate__(['agentlogout', astid, 'Agent/%s' % agent, loginchan])
                 print 'ami_agentcallbacklogoff', msg
                 self.__send_msg_to_cti_clients__(msg)
                 return
@@ -989,77 +987,65 @@ class XivoCTICommand(BaseCommand):
         # ""|""|""|""|"0"
         # XIVO-WEBI: end-data
         def ami_queuecallerabandon(self, astid, event):
+                if astid not in self.qlist:
+                        log_debug(SYSLOG_WARNING, 'ami_queuecallerabandon : no queue list has been defined for %s' % astid)
+                        return
                 # Asterisk 1.4 event
                 # {'Queue': 'qcb_00000', 'OriginalPosition': '1', 'Uniqueid': '1213891256.41', 'Privilege': 'agent,all', 'Position': '1', 'HoldTime': '2', 'Event': 'QueueCallerAbandon'}
                 return
         
         def ami_queueentry(self, astid, event):
+                if astid not in self.qlist:
+                        log_debug(SYSLOG_WARNING, 'ami_queueentry : no queue list has been defined for %s' % astid)
+                        return
                 queue = event.get('Queue')
                 position = event.get('Position')
                 wait = event.get('Wait')
                 channel = event.get('Channel')
                 # print 'AMI QueueEntry', astid, queue, position, wait, channel, event
-                if astid not in self.queues_list:
-                        self.queues_list[astid] = {}
-                if queue not in self.queues_list[astid]:
-                        self.queues_list[astid][queue] = {'agents' : {},
-                                                          'channels' : {}}
-                        for field in self.QueueStats:
-                                self.queues_list[astid][queue][field] = ''
-                self.queues_list[astid][queue]['channels'][channel] = [position, wait]
-##                msg = 'update-queues=queueentry;%s;%s;%s;%s;%s' % (astid, queue, position, wait, channel)
-##                self.__send_msg_to_cti_clients__(msg)
+                self.qlist[astid].queueentry_update(queue, channel, position, wait)
                 self.__send_msg_to_cti_clients__(self.__build_queue_status__(astid, queue))
                 return
         
         def ami_queuememberadded(self, astid, event):
+                if astid not in self.qlist:
+                        log_debug(SYSLOG_WARNING, 'ami_queuememberadded : no queue list has been defined for %s' % astid)
+                        return
                 queue = event.get('Queue')
                 location = event.get('Location')
                 paused = event.get('Paused')
-                # {'Penalty': '0', 'LastCall': '0', 'CallsTaken': '0'}
-                msg = self.__build_agupdate__(['joinqueue', astid, location[6:], queue, paused])
+                self.qlist[astid].queuememberupdate(queue, location, event)
+                msg = self.__build_agupdate__(['joinqueue', astid, location, queue, paused])
                 self.__send_msg_to_cti_clients__(msg)
-                if astid not in self.queues_list:
-                        self.queues_list[astid] = {}
-                if queue not in self.queues_list[astid]:
-                        self.queues_list[astid][queue] = {'agents' : {},
-                                                          'channels' : {}}
-                        for field in self.QueueStats:
-                                self.queues_list[astid][queue][field] = ''
-                if location not in self.queues_list[astid][queue]['agents']:
-                        self.queues_list[astid][queue]['agents'][location] = [event.get('Paused'), event.get('Status'), event.get('Membership')]
                 return
         
         def ami_queuememberremoved(self, astid, event):
+                if astid not in self.qlist:
+                        log_debug(SYSLOG_WARNING, 'ami_queuememberremoved : no queue list has been defined for %s' % astid)
+                        return
                 queue = event.get('Queue')
                 location = event.get('Location')
-                msg = self.__build_agupdate__(['leavequeue', astid, location[6:], queue])
+                self.qlist[astid].queuememberremove(queue, location)
+                msg = self.__build_agupdate__(['leavequeue', astid, location, queue])
                 self.__send_msg_to_cti_clients__(msg)
-                if astid in self.queues_list and queue in self.queues_list[astid] and location in self.queues_list[astid][queue]['agents']:
-                        del self.queues_list[astid][queue]['agents'][location]
                 return
-
-
+        
         def __build_agupdate__(self, arrgs):
-                arg = ':'.join(['agu',
-                                '/'.join(arrgs)])
-                return 'update-agents=%s' % arg
-
-
+                return 'update-agents=%s' % ';'.join(arrgs)
+        
         def ami_queuememberstatus(self, astid, event):
+                print 'AMI_QUEUEMEMBERSTATUS', event
+                if astid not in self.qlist:
+                        log_debug(SYSLOG_WARNING, 'ami_queuememberstatus : no queue list has been defined for %s' % astid)
+                        return
                 status = event.get('Status')
                 queue = event.get('Queue')
                 location = event.get('Location')
                 paused = event.get('Paused')
-
-                agentnum = location[6:]
-
-                if astid in self.queues_list and queue in self.queues_list[astid] and location in self.queues_list[astid][queue]['agents']:
-                        self.queues_list[astid][queue]['agents'][location] = [paused, status, event.get('Membership')]
-
-                msg = self.__build_agupdate__(['queuememberstatus', astid, agentnum, queue, status, paused])
+                self.qlist[astid].queuememberupdate(queue, location, event)
+                msg = self.__build_agupdate__(['queuememberstatus', astid, location, queue, status, paused])
                 self.__send_msg_to_cti_clients__(msg)
-
+                
                 # status = 3 => ringing
                 # status = 1 => do not ring anymore => the one who has not gone to '1' among the '3's is the one who answered ...
                 # 5 is received when unavailable members of a queue are attempted to be joined ... use agentcallbacklogoff to detect exit instead
@@ -1067,59 +1053,48 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def ami_queuememberpaused(self, astid, event):
-                paused = event.get('Paused')
+                print 'AMI_QUEUEMEMBERPAUSED', event
+                if astid not in self.qlist:
+                        log_debug(SYSLOG_WARNING, 'ami_queuememberpaused : no queue list has been defined for %s' % astid)
+                        return
                 queue = event.get('Queue')
+                paused = event.get('Paused')
                 location = event.get('Location')
+                self.qlist[astid].queuememberupdate(queue, location, event)
                 if location.startswith('Agent/'):
-                        if astid in self.queues_list and queue in self.queues_list[astid] and location in self.queues_list[astid][queue]['agents']:
-                                self.queues_list[astid][queue]['agents'][location][0] = event.get('Paused')
-                        agname = location[6:]
                         if paused == '0':
-                                msg = self.__build_agupdate__(['unpaused', astid, agname, queue])
+                                msg = self.__build_agupdate__(['unpaused', astid, location, queue])
                                 self.__send_msg_to_cti_clients__(msg)
                         else:
-                                msg = self.__build_agupdate__(['paused', astid, agname, queue])
+                                msg = self.__build_agupdate__(['paused', astid, location, queue])
                                 self.__send_msg_to_cti_clients__(msg)
                 return
 
-        QueueStats = ['ServicelevelPerf', 'Abandoned', 'Max', 'Completed', 'ServiceLevel', 'Weight', 'Holdtime', 'Calls']
-
         def ami_queueparams(self, astid, event):
+                if astid not in self.qlist:
+                        log_debug(SYSLOG_WARNING, 'ami_queueparams : no queue list has been defined for %s' % astid)
+                        return
                 queue = event.get('Queue')
-                if astid not in self.queues_list:
-                        self.queues_list[astid] = {}
-                if queue not in self.queues_list[astid]:
-                        self.queues_list[astid][queue] = {'agents' : {},
-                                                          'channels' : {}}
-                for field in self.QueueStats:
-                        self.queues_list[astid][queue][field] = event.get(field)
-
-                lstt = []
-                for prop in self.QueueStats:
-                        lstt.append('%s:%s' % (prop, self.queues_list[astid][queue].get(prop)))
-                self.__send_msg_to_cti_clients__('queues-list=%s;%s:%s' % (astid, queue, ':'.join(lstt)))
+                self.qlist[astid].update_queuestats(queue, event)
+                self.__send_msg_to_cti_clients__('queues-list=%s;%s' % (astid, self.qlist[astid].get_queuestats(queue)))
                 return
 
         def ami_queuemember(self, astid, event):
+                if astid not in self.qlist:
+                        log_debug(SYSLOG_WARNING, 'ami_queuemember : no queue list has been defined for %s' % astid)
+                        return
                 queue = event.get('Queue')
                 location = event.get('Location')
-                if astid not in self.queues_list:
-                        self.queues_list[astid] = {}
-                if queue not in self.queues_list[astid]:
-                        self.queues_list[astid][queue] = {'agents' : {},
-                                                          'channels' : {}}
-                        for field in self.QueueStats:
-                                self.queues_list[astid][queue][field] = ''
-                if location not in self.queues_list[astid][queue]['agents']:
-                        self.queues_list[astid][queue]['agents'][location] = [event.get('Paused'), event.get('Status'), event.get('Membership')]
+                self.qlist[astid].queuememberupdate(queue, location, event)
                 return
 
         def ami_queuestatuscomplete(self, astid, event):
+                if astid not in self.qlist:
+                        log_debug(SYSLOG_WARNING, 'ami_queuestatuscomplete : no queue list has been defined for %s' % astid)
+                        return
                 print 'AMI QueueStatusComplete', astid
-                if astid in self.queues_list:
-                        for qname, qarg in self.queues_list[astid].iteritems():
-                                # print ' (q) ', qname, qarg
-                                self.amilist.execute(astid, 'sendcommand', 'Command', [('Command', 'show queue %s' % qname)])
+                for qname in self.qlist[astid].get_queues():
+                        self.amilist.execute(astid, 'sendcommand', 'Command', [('Command', 'show queue %s' % qname)])
                 return
 
         def ami_userevent(self, astid, event):
@@ -1165,6 +1140,9 @@ class XivoCTICommand(BaseCommand):
 
 
         def ami_join(self, astid, event):
+                if astid not in self.qlist:
+                        log_debug(SYSLOG_WARNING, 'ami_join : no queue list has been defined for %s' % astid)
+                        return
                 # print 'AMI Join (Queue)', event
                 chan  = event.get('Channel')
                 clid  = event.get('CallerID')
@@ -1173,39 +1151,33 @@ class XivoCTICommand(BaseCommand):
                 position = event.get('Position')
                 self.__sheet_alert__('incomingqueue', astid, event)
                 log_debug(SYSLOG_INFO, 'AMI Join (Queue) %s %s %s' % (queue, chan, count))
-                
-                if astid not in self.queues_list:
-                        self.queues_list[astid] = {}
-                if queue not in self.queues_list[astid]:
-                        self.queues_list[astid][queue] = {'agents' : {},
-                                                          'channels' : {}}
-                        for field in self.QueueStats:
-                                self.queues_list[astid][queue][field] = ''
-                if chan not in self.queues_list[astid][queue]['channels']:
-                        self.queues_list[astid][queue]['channels'][chan] = [position, '0']
-                self.queues_list[astid][queue]['Calls'] = count
+                self.qlist[astid].queueentry_update(queue, chan, position, '0')
+                event['Calls'] = count
+                self.qlist[astid].update_queuestats(queue, event)
                 self.__send_msg_to_cti_clients__('update-queues=queuechannels;%s;%s;%s' % (astid, queue, count))
                 self.amilist.execute(astid, 'sendqueuestatus', queue)
                 self.__send_msg_to_cti_clients__(self.__build_queue_status__(astid, queue))
                 return
 
         def ami_leave(self, astid, event):
+                if astid not in self.qlist:
+                        log_debug(SYSLOG_WARNING, 'ami_leave : no queue list has been defined for %s' % astid)
+                        return
                 # print 'AMI Leave (Queue)', event
                 chan  = event.get('Channel')
                 queue = event.get('Queue')
                 count = event.get('Count')
                 log_debug(SYSLOG_INFO, 'AMI Leave (Queue) %s %s %s' % (queue, chan, count))
                 
-                if astid in self.queues_list and queue in self.queues_list[astid] and chan in self.queues_list[astid][queue]['channels']:
-                        del self.queues_list[astid][queue]['channels'][chan]
-                        print 'AMI Queue LEAVE', len(self.queues_list[astid][queue]['channels']), count
-                self.queues_list[astid][queue]['Calls'] = count
+                self.qlist[astid].queueentry_remove(queue, chan)
+                event['Calls'] = count
+                self.qlist[astid].update_queuestats(queue, event)
                 self.__send_msg_to_cti_clients__('update-queues=queuechannels;%s;%s;%s' % (astid, queue, count))
-
+                
                 if astid not in self.queues_channels_list:
                         self.queues_channels_list[astid] = {}
                 # always sets the queue information since it might not have been deleted
-                self.queues_channels_list[astid][chan] = [queue, time.time()]
+                self.queues_channels_list[astid][chan] = queue
                 self.amilist.execute(astid, 'sendqueuestatus', queue)
                 self.__send_msg_to_cti_clients__(self.__build_queue_status__(astid, queue))
                 return
@@ -1335,42 +1307,9 @@ class XivoCTICommand(BaseCommand):
 
                         elif icommand.name == 'queues-list':
                                 if self.capas[capaid].match_funcs(ucapa, 'agents'):
-                                        for astid, qlist in self.queues_list.iteritems():
-                                                lst = []
-                                                for qname, qprop in qlist.iteritems():
-                                                        lstt = []
-                                                        for prop in self.QueueStats:
-                                                                lstt.append('%s:%s' % (prop, qprop.get(prop)))
-                                                        lst.append('%s:%s' % (qname, ':'.join(lstt)))
+                                        for astid, qlist in self.qlist.iteritems():
                                                 self.__send_msg_to_cti_client__(userinfo,
-                                                                                'queues-list=%s;%s' %(astid,
-                                                                                                      ','.join(lst)))
-                                repstr = None
-
-                        elif icommand.name == 'agents-list':
-                                if self.capas[capaid].match_funcs(ucapa, 'agents'):
-                                        for astid, aglist in self.agents_list.iteritems():
-                                                lst = []
-                                                for agname, agprop in aglist.iteritems():
-                                                        agid = 'Agent/%s' % agname
-                                                        qjoined = []
-                                                        qunpaused = []
-                                                        if astid in self.queues_list:
-                                                                for qref, ql in self.queues_list[astid].iteritems():
-                                                                        if agid in ql['agents']:
-                                                                                qjoined.append(qref)
-                                                                                agpropq = ql['agents'][agid]
-                                                                                if agpropq[0] == '0':
-                                                                                        qunpaused.append(qref)
-                                                                        else:
-                                                                                pass
-                                                        if agprop['status'] == 'AGENT_LOGGEDOFF':
-                                                                lst.append('%s:0:%s:%s:%s' % (agname, agprop['name'], ','.join(qjoined), ','.join(qunpaused)))
-                                                        else:
-                                                                lst.append('%s:1:%s:%s:%s' % (agname, agprop['name'], ','.join(qjoined), ','.join(qunpaused)))
-                                                self.__send_msg_to_cti_client__(userinfo,
-                                                                                'agents-list=%s;%s' %(astid,
-                                                                                                      ';'.join(lst)))
+                                                                                'queues-list=%s;%s' % (astid, qlist.get_queuestats_long()))
                                 repstr = None
 
                         elif icommand.name == 'queue-status':
@@ -1381,35 +1320,47 @@ class XivoCTICommand(BaseCommand):
                                         self.__send_msg_to_cti_client__(userinfo, self.__build_queue_status__(astid, qname))
                                 repstr = None
 
+                        elif icommand.name == 'agents-list':
+                                if self.capas[capaid].match_funcs(ucapa, 'agents'):
+                                        for astid, aglist in self.agents_list.iteritems():
+                                                if astid in self.qlist:
+                                                        lst = []
+                                                        for agname, agprop in aglist.iteritems():
+                                                                lstatus = '1'
+                                                                if agprop['status'] == 'AGENT_LOGGEDOFF':
+                                                                        lstatus = '0'
+                                                                lst.append('%s:%s:%s:%s:%s' % (agname, lstatus,
+                                                                                               agprop['name'],
+                                                                                               agprop['phonenum'],
+                                                                                               self.qlist[astid].get_queues_byagent('Agent/%s' % agname)))
+                                                        self.__send_msg_to_cti_client__(userinfo,
+                                                                                        'agents-list=%s;%s' %(astid,
+                                                                                                              ';'.join(lst)))
+                                repstr = None
+
                         elif icommand.name == 'agents-status':
                                 # issued by one user when he logs in
                                 if self.capas[capaid].match_funcs(ucapa, 'agents') and len(userinfo.get('agentnum')) > 0:
-                                    for astid in self.queues_list:
+                                        astid = userinfo.get('astid')
                                         agname = userinfo.get('agentnum')
                                         agid = 'Agent/%s' % agname
-                                        qref_joined = []
-                                        qref_unjoined = []
-
-                                        for qref, ql in self.queues_list[astid].iteritems():
-                                                if agid in ql['agents']:
-                                                        qref_joined.append(qref)
-                                                else:
-                                                        qref_unjoined.append(qref)
-
-                                        for qref in qref_unjoined:
-                                                msg = self.__build_agupdate__(['leavequeue', astid, agname, qref])
-                                                self.__send_msg_to_cti_client__(userinfo, msg)
-                                        for qref in qref_joined:
-                                                msg = self.__build_agupdate__(['joinqueue', astid, agname, qref])
-                                                self.__send_msg_to_cti_client__(userinfo, msg)
-
-                                        # lookup the logged in/out status of agent agname and sends it back to the requester
-                                        if astid in self.agents_list and agname in self.agents_list[astid]:
+                                        
+                                        if astid in self.qlist and astid in self.agents_list and agname in self.agents_list[astid]:
                                                 agprop = self.agents_list[astid][agname]
+
+                                                for qref, ql in self.qlist[astid].queuelist.iteritems():
+                                                        if agid in ql['agents']:
+                                                                msg = self.__build_agupdate__(['joinqueue', astid, agid, qref])
+                                                                self.__send_msg_to_cti_client__(userinfo, msg)
+                                                        else:
+                                                                msg = self.__build_agupdate__(['leavequeue', astid, agid, qref])
+                                                                self.__send_msg_to_cti_client__(userinfo, msg)
+
+                                                # lookup the logged in/out status of agent agname and sends it back to the requester
                                                 if agprop['status'] == 'AGENT_LOGGEDOFF':
-                                                        msg = self.__build_agupdate__(['agentlogout', astid, agname, agprop['phonenum']])
+                                                        msg = self.__build_agupdate__(['agentlogout', astid, agid, agprop['phonenum']])
                                                 else:
-                                                        msg = self.__build_agupdate__(['agentlogin', astid, agname, agprop['phonenum']])
+                                                        msg = self.__build_agupdate__(['agentlogin', astid, agid, agprop['phonenum']])
                                                 self.__send_msg_to_cti_client__(userinfo, msg)
                                 repstr = None
 
@@ -1418,31 +1369,19 @@ class XivoCTICommand(BaseCommand):
                                 # issued by one user when he requests the status for one given agent
                                 if self.capas[capaid].match_funcs(ucapa, 'agents'):
                                         astid = icommand.args[0]
-                                        agname = icommand.args[1]
+                                        agname = icommand.args[1] # agname = userinfo.get('agentnum')
                                         agid = 'Agent/%s' % agname
-                                        qref_joined = []
-                                        qref_unjoined = []
-
-                                        if astid in self.queues_list:
-                                                for qref, ql in self.queues_list[astid].iteritems():
-                                                        if agid in ql['agents']:
-                                                                agprop = ql['agents'][agid]
-                                                                qref_joined.append(':'.join([qref, agprop[0], agprop[1]]))
-                                                        else:
-                                                                qref_unjoined.append(qref)
-
-                                        # lookup the logged in/out status of agent agname and sends it back to the requester
-                                        if astid in self.agents_list and agname in self.agents_list[astid]:
+                                        
+                                        if astid in self.qlist and astid in self.agents_list and agname in self.agents_list[astid]:
                                                 agprop = self.agents_list[astid][agname]
+                                                # lookup the logged in/out status of agent agname and sends it back to the requester
+                                                lstatus = '1'
                                                 if agprop['status'] == 'AGENT_LOGGEDOFF':
-                                                        msg = 'agent-status=%s;%s;0;%s;%s' %(astid, agname,
-                                                                                             ','.join(qref_joined),
-                                                                                             ','.join(qref_unjoined))
-                                                else:
-                                                        msg = 'agent-status=%s;%s;%s;%s;%s' %(astid, agname,
-                                                                                              agprop['phonenum'],
-                                                                                              ','.join(qref_joined),
-                                                                                              ','.join(qref_unjoined))
+                                                        lstatus = '0'
+                                                msg = 'agent-status=%s;%s;%s;%s;%s;%s' % (astid, agname, lstatus,
+                                                                                          agprop['name'],
+                                                                                          agprop['phonenum'],
+                                                                                          self.qlist[astid].get_queues_byagent(agid))
                                                 self.__send_msg_to_cti_client__(userinfo, msg)
                                 repstr = None
 
@@ -1514,13 +1453,10 @@ class XivoCTICommand(BaseCommand):
         def __build_queue_status__(self, astid, qname):
                 lst_agents = []
                 lst_entries = []
-                if astid in self.queues_list and qname in self.queues_list[astid]:
-                        for agid, agprop in self.queues_list[astid][qname]['agents'].iteritems():
-                                if agid.startswith('Agent/'):
-                                        lst_agents.append('%s,%s,%s' % (agid[6:], agprop[0], agprop[1]))
-                                else:
-                                        lst_agents.append('%s,%s,%s' % (agid, agprop[0], agprop[1]))
-                        for chan, chanprop in self.queues_list[astid][qname]['channels'].iteritems():
+                if astid in self.qlist and qname in self.qlist[astid].queuelist:
+                        for agid, agprop in self.qlist[astid].queuelist[qname]['agents'].iteritems():
+                                lst_agents.append('%s,%s,%s' % (agid, agprop['Paused'], agprop['Status']))
+                        for chan, chanprop in self.qlist[astid].queuelist[qname]['channels'].iteritems():
                                 lst_entries.append('%s,%s,%s' % (chan, chanprop[0], chanprop[1]))
                         return 'queue-status=%s;%s;%d;%s;%d;%s' % (astid, qname,
                                                                    len(lst_agents), ';'.join(lst_agents),
@@ -1697,20 +1633,19 @@ class XivoCTICommand(BaseCommand):
                     if kind == 'phones-list':
                             for userinfo in self.ulist_ng.list.itervalues():
                                     if 'agentnum' in userinfo:
-				    	    status = '0'
+				    	    lstatus = '0'
                                             for ast, qlist in self.agents_list.iteritems():
                                                     if userinfo.get('agentnum') in qlist:
-                                                            if qlist[userinfo.get('agentnum')]['status'] != 'AGENT_LOGGEDOFF':
-                                                                    status = '1'
-                                                            else:
-                                                                    status = '0'
+                                                            lstatus = '1'
+                                                            if qlist[userinfo.get('agentnum')]['status'] == 'AGENT_LOGGEDOFF':
+                                                                    lstatus = '0'
                                                             break
                                             astqueues = []
-                                            for ast, qlist in self.queues_list.iteritems():
-                                                    for q, qq in qlist.iteritems():
+                                            for ast, qlist in self.qlist.iteritems():
+                                                    for q, qq in qlist.queuelist.iteritems():
                                                             if len(qq['agents']) > 0 and ('Agent/%s' % userinfo.get('agentnum')) in qq['agents']:
                                                                     astqueues.append(q)
-                                            ag = '/'.join(['agentstatus', userinfo.get('astid'), userinfo.get('agentnum'), status, ','.join(astqueues)])
+                                            ag = '/'.join(['agentstatus', userinfo.get('astid'), userinfo.get('agentnum'), lstatus, ','.join(astqueues)])
                                     else:
                                             ag = ''
                                     phonenum = 'SIP/' + userinfo['user']
@@ -2191,7 +2126,7 @@ class XivoCTICommand(BaseCommand):
                                                                 result_v[f] = result[1][f][0]
                                                 fullstatlist.append(';'.join(z.result_by_valid_field(result_v)))
                         except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- ldaprequest : %s' % str(exc))
+                                log_debug(SYSLOG_ERR, '--- exception --- ldaprequest (directory) : %s' % exc)
 
                 elif dbkind == 'file':
                         f = urllib.urlopen(z.uri)
