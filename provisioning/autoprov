@@ -416,15 +416,15 @@ def __mode_dependant_provlogic_locked(mode, ctx, phone, config, prev_iduserfeatu
 		syslogf(SYSLOG_DEBUG, "__mode_dependant_provlogic_locked() in notification mode for phone %s and user %s" % (phone['macaddr'], config['iduserfeatures']))
 		if prev_iduserfeatures:
 			if config['iduserfeatures'] != prev_iduserfeatures:
-				syslogf(SYSLOG_ERR, "__mode_dependant_provlogic_locked(): outdated iduserfeatures received for update notification of phone %s; wanted %s; got %s" % (str(phone), prev_iduserfeatures, config['iduserfeatures']))
-				raise ConflictError, "Outdated iduserfeatures received for update notification of phone %s; wanted %s; got %s" % (str(phone), prev_iduserfeatures, config['iduserfeatures'])
+				syslogf(SYSLOG_ERR, "__mode_dependant_provlogic_locked(): outdated iduserfeatures received for update notification of phone %r; wanted %s; got %s" % (phone, prev_iduserfeatures, config['iduserfeatures']))
+				raise ConflictError, "Outdated iduserfeatures received for update notification of phone %r; wanted %s; got %s" % (phone, prev_iduserfeatures, config['iduserfeatures'])
 		existing_phone = ctx.dbinfos.phone_by_iduserfeatures(config['iduserfeatures'])
 		if not existing_phone:
-			syslogf(SYSLOG_ERR, "__mode_dependant_provlogic_locked(): non existing phone %s to update for iduserfeatures %s" % (str(phone), config['iduserfeatures']))
-			raise ConflictError, "Non existing phone %s to update for iduserfeatures %s" % (str(phone), config['iduserfeatures'])
+			syslogf(SYSLOG_ERR, "__mode_dependant_provlogic_locked(): non existing phone %r to update for iduserfeatures %s" % (phone, config['iduserfeatures']))
+			raise ConflictError, "Non existing phone %r to update for iduserfeatures %s" % (phone, config['iduserfeatures'])
 		if existing_phone['macaddr'] != phone['macaddr']:
-			syslogf(SYSLOG_ERR, "__mode_dependant_provlogic_locked(): another phone %s already exists instead of %s for iduserfeatures %s" % (str(existing_phone), str(phone), config['iduserfeatures']))
-			raise ConflictError, "Another phone %s already exists instead of %s for iduserfeatures %s" % (str(existing_phone), str(phone), config['iduserfeatures'])
+			syslogf(SYSLOG_ERR, "__mode_dependant_provlogic_locked(): another phone %r already exists instead of %r for iduserfeatures %s" % (existing_phone, phone, config['iduserfeatures']))
+			raise ConflictError, "Another phone %r already exists instead of %r for iduserfeatures %s" % (existing_phone, phone, config['iduserfeatures'])
 		# nothing more to do: no exception has been raised so the caller
 		# will continue the correct execution of its own code flow
 
@@ -432,10 +432,10 @@ def __save_phone(ctx, phone, config):
 	"Save new configuration of the local phone in the database."
 	if "iduserfeatures" not in phone and config is not None \
 	   and "iduserfeatures" in config:
-		syslogf(SYSLOG_DEBUG, "__provisioning(): iduserfeatures='%s' from config to phone" % config["iduserfeatures"])
+		syslogf(SYSLOG_DEBUG, "__provisioning(): iduserfeatures=%r from config to phone" % config["iduserfeatures"])
 		phone["iduserfeatures"] = config["iduserfeatures"]
 	if "iduserfeatures" in phone:
-		syslogf("__provisioning(): SAVING phone %s informations to backend" % str(phone))
+		syslogf("__provisioning(): SAVING phone %r informations to backend" % phone)
 		ctx.dbinfos.save_phone(phone)
 
 def __provisioning(mode, ctx, phone):
@@ -448,7 +448,7 @@ def __provisioning(mode, ctx, phone):
 			% phone["proto"])
 		raise BadRequest, "Unknown protocol '%s' != sip" % phone["proto"]
 
-	syslogf(SYSLOG_NOTICE, "__provisioning(): handling phone %s" % str(phone))
+	syslogf(SYSLOG_NOTICE, "__provisioning(): handling phone %r" % phone)
 
 	prev_iduserfeatures = None
 	if mode == "notification":
@@ -462,8 +462,8 @@ def __provisioning(mode, ctx, phone):
 		prev_iduserfeatures = phonedesc['iduserfeatures']
 
 	if field_empty(phone['vendor']) or field_empty(phone['model']) or field_empty(phone['isinalan']):
-		syslogf(SYSLOG_ERR, "__provisioning(): Empty model or vendor or isinalan in phone %s" % str(phone))
-		raise BadRequest, "Empty model or vendor or isinalan in phone %s" % str(phone)
+		syslogf(SYSLOG_ERR, "__provisioning(): Empty model or vendor or isinalan in phone %r" % phone)
+		raise BadRequest, "Empty model or vendor or isinalan in phone %r" % phone
 
 	if "provcode" in phone and phone["provcode"] != "0" and \
 	   not xivo_config.well_formed_provcode(phone["provcode"]):
@@ -492,16 +492,16 @@ def __provisioning(mode, ctx, phone):
 		    phone["iduserfeatures"] = "0"
 	    
 	    if "iduserfeatures" in phone and phone["iduserfeatures"] == "0":
-		    syslogf(SYSLOG_NOTICE, "__provisioning(): reinitializing provisioning to GUEST for phone %s" % str(phone))
+		    syslogf(SYSLOG_NOTICE, "__provisioning(): reinitializing provisioning to GUEST for phone %r" % phone)
 		    prov_inst.generate_reinitprov()
 		    __save_phone(ctx, phone, None)
 		    prov_inst.action_reinit()
 	    else:
 		if "iduserfeatures" in phone:
-		    syslogf("__provisioning(): getting configuration from iduserfeatures for phone %s" % str(phone))
+		    syslogf("__provisioning(): getting configuration from iduserfeatures for phone %r" % phone)
 		    config = ctx.dbinfos.config_by_iduserfeatures_proto(phone["iduserfeatures"], phone["proto"])
 		else:
-		    syslogf("__provisioning(): getting configuration from provcode for phone %s" % str(phone))
+		    syslogf("__provisioning(): getting configuration from provcode for phone %r" % phone)
 		    config = ctx.dbinfos.config_by_provcode_proto(phone["provcode"], phone["proto"])
 		if config is not None \
 		   and 'iduserfeatures' in config \
@@ -511,7 +511,7 @@ def __provisioning(mode, ctx, phone):
 			syslogf(SYSLOG_WARNING, "__provisioning(): Operation already in progress for user %s" % config['iduserfeatures'])
 			raise ConflictError, "Operation already in progress for user %s" % config['iduserfeatures']
 		    try:
-			syslogf(SYSLOG_NOTICE, "__provisioning(): AUTOPROV'isioning phone %s with config %s" % (str(phone), str(config)))
+			syslogf(SYSLOG_NOTICE, "__provisioning(): AUTOPROV'isioning phone %r with config %r" % (phone, config))
 			__mode_dependant_provlogic_locked(mode, ctx, phone, config, prev_iduserfeatures)
 			prov_inst.generate_autoprov(config)
 			__save_phone(ctx, phone, config)
@@ -520,8 +520,8 @@ def __provisioning(mode, ctx, phone):
 			syslogf(SYSLOG_DEBUG, "__provisioning(): unlocking user %s" % config['iduserfeatures'])
 			ctx.userlocks.release(config['iduserfeatures'])
 		else:
-		    syslogf(SYSLOG_ERR, "__provisioning(): not AUTOPROV'isioning phone %s cause no config found or no iduserfeatures in config" % str(phone))
-		    raise NotFoundError, "no config found or no iduserfeatures in config for phone %s" % str(phone)
+		    syslogf(SYSLOG_ERR, "__provisioning(): not AUTOPROV'isioning phone %r cause no config found or no iduserfeatures in config" % phone)
+		    raise NotFoundError, "no config found or no iduserfeatures in config for phone %r" % phone
 	finally:
 	    syslogf(SYSLOG_DEBUG, "__provisioning(): unlocking phone %s" % phone["macaddr"])
 	    ctx.maclocks.release(phone["macaddr"])
@@ -535,7 +535,7 @@ def __userdeleted(ctx, iduserfeatures):
 	try:
 		phone = ctx.dbinfos.phone_by_iduserfeatures(iduserfeatures)
 		if phone:
-			syslogf("__userdeleted(): phone to destroy, because destruction of its owner - %s" % str(phone))
+			syslogf("__userdeleted(): phone to destroy, because destruction of its owner - %r" % phone)
 			phone['mode'] = 'authoritative'
 			phone['actions'] = 'no'
 			phone['iduserfeatures'] = '0'
@@ -555,7 +555,7 @@ def lock_and_provision(mode, ctx, phone):
 	Will attempt to provision with a global lock
 	hold in shared mode
 	"""
-	syslogf(SYSLOG_DEBUG, "Entering lock_and_provision(phone=%s)" % str(phone))
+	syslogf(SYSLOG_DEBUG, "Entering lock_and_provision(phone=%r)" % phone)
 	if not ctx.rwlock.acquire_read(Pgc['excl_del_lock_to_s']):
 		raise ConflictError, "Could not acquire the global lock in shared mode"
 	try:
@@ -583,7 +583,7 @@ def clean_at_startup(ctx):
 	"Put back every non guest orphan phones in GUEST state at startup."
 	orphans = ctx.dbinfos.find_orphan_phones()
 	for phone in orphans:
-		syslogf(SYSLOG_NOTICE, "clean_at_startup(): about to remove orphan %s at startup" % str(phone))
+		syslogf(SYSLOG_NOTICE, "clean_at_startup(): about to remove orphan %r at startup" % phone)
 		lock_and_userdel(ctx, phone['iduserfeatures'])
 
 class ProvHttpHandler(BaseHTTPRequestHandler):
@@ -761,7 +761,7 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 			syslogf(SYSLOG_ERR, "handle_prov(): Unknown mode %s" % self.posted["mode"])
 			raise BadRequest, "Unknown mode %s" % self.posted["mode"]
 	    except Exception, x:
-		syslogf(SYSLOG_NOTICE, "handle_prov(): action FAILED - phone %s - userinfo %s" % (str(phone), str(userinfo)))
+		syslogf(SYSLOG_NOTICE, "handle_prov(): action FAILED - phone %r - userinfo %r" % (phone, userinfo))
 		errcode = 500
 		for t, rcode in ExceptToHTTP.iteritems():
 			if isinstance(x, t):
@@ -770,7 +770,7 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 		except_tb.log_full_exception(self.full_xcept_sender(errcode),
 					     except_tb.SYSLOG_EXCEPT(SYSLOG_ERR))
 		return
-	    syslogf(SYSLOG_NOTICE, "handle_prov(): provisioning OK for phone %s" % str(phone))
+	    syslogf(SYSLOG_NOTICE, "handle_prov(): provisioning OK for phone %r" % phone)
 	    self.send_response_lines(('Ok',))
 
 	def handle_list(self):
