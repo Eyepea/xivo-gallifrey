@@ -32,6 +32,7 @@ import os
 import random
 import re
 import socket
+import sha
 import string
 import time
 import urllib
@@ -94,7 +95,7 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def get_list_commands(self):
-                return ['login',
+                return ['login_id', 'login_pass', 'login_capas',
                         'history', 'directory-search',
                         'featuresget', 'featuresput',
                         'phones-list', 'phones-add', 'phones-del',
@@ -111,8 +112,12 @@ class XivoCTICommand(BaseCommand):
         def parsecommand(self, linein):
                 params = linein.split()
                 cmd = xivo_commandsets.Command(params[0], params[1:])
-                if cmd.name == 'login':
-                        cmd.type = xivo_commandsets.CMD_LOGIN
+                if cmd.name == 'login_id':
+                        cmd.type = xivo_commandsets.CMD_LOGIN_ID
+                elif cmd.name == 'login_pass':
+                        cmd.type = xivo_commandsets.CMD_LOGIN_PASS
+                elif cmd.name == 'login_capas':
+                        cmd.type = xivo_commandsets.CMD_LOGIN_CAPAS
                 elif cmd.name == 'faxdata':
                         cmd.type = xivo_commandsets.CMD_TRANSFER
                 else:
@@ -142,7 +147,7 @@ class XivoCTICommand(BaseCommand):
                                 del self.faxes[ref]
                 return
 
-        def get_login_params(self, astid, command, connid):
+        def get_login_params(self, command, astid, connid):
                 """
                 Login syntax awaited : "login astid=xivo;...=..."
                 """
@@ -157,61 +162,94 @@ class XivoCTICommand(BaseCommand):
                 return cfg
 
 
-        # fields set at login time by a user, some are a id-dimension, others are auth-related
-        # TBD : fields set once logged in ...
-        def required_login_params(self):
-                return ['loginkind', 'company', 'userid', # identification
-                        'state', 'passwd', 'ident', 'xivoversion', 'version'] # authentication & information
+        def manage_login(self, loginparams, phase, uinfo):
+                if phase == xivo_commandsets.CMD_LOGIN_ID:
+                        missings = []
+                        for argum in ['company', 'userid', 'ident', 'xivoversion', 'version']:
+                                if argum not in loginparams:
+                                        missings.append(argum)
+                        if len(missings) > 0:
+                                log_debug(SYSLOG_WARNING, 'missing args in loginparams : %s' % ','.join(missings))
+                                return 'missing:%s' % ','.join(missings)
 
-        def manage_login(self, loginparams):
-                missings = []
-                for argum in self.required_login_params():
-                        if argum not in loginparams:
-                                missings.append(argum)
-                if len(missings) > 0:
-                        log_debug(SYSLOG_WARNING, 'missing args in loginparams : %s' % ','.join(missings))
-                        return 'missing:%s' % ','.join(missings)
+                        # trivial checks (version, client kind) dealing with the software used
+                        xivoversion = loginparams.get('xivoversion')
+                        if xivoversion != XIVOVERSION:
+                                return 'xivoversion_client:%s;%d' % (xivoversion, XIVOVERSION)
+                        svnversion = loginparams.get('version')
+                        ident = loginparams.get('ident')
+                        if len(ident.split("@")) == 2:
+                                [whoami, whatsmyos] = ident.split("@")
+                                # return 'wrong_client_identifier:%s' % whoami
+                                if whatsmyos[:3] not in ['X11', 'WIN', 'MAC']:
+                                        return 'wrong_os_identifier:%s' % whatsmyos
+                        else:
+                                return 'wrong_client_os_identifier:%s' % ident
+                        if (not svnversion.isdigit()) or int(svnversion) < REQUIRED_CLIENT_VERSION:
+                                return 'version_client:%s;%d' % (svnversion, REQUIRED_CLIENT_VERSION)
 
-                # trivial checks (version, client kind) dealing with the software used
-                xivoversion = loginparams.get('xivoversion')
-                if xivoversion != XIVOVERSION:
-                        return 'xivoversion_client:%s;%d' % (xivoversion, XIVOVERSION)
-                svnversion = loginparams.get('version')
-                ident = loginparams.get('ident')
-                if len(ident.split("@")) == 2:
-                        [whoami, whatsmyos] = ident.split("@")
-                        # return 'wrong_client_identifier:%s' % whoami
-                        if whatsmyos[:3] not in ['X11', 'WIN', 'MAC']:
-                                return 'wrong_os_identifier:%s' % whatsmyos
-                else:
-                        return 'wrong_client_os_identifier:%s' % ident
-                if (not svnversion.isdigit()) or int(svnversion) < REQUIRED_CLIENT_VERSION:
-                        return 'version_client:%s;%d' % (svnversion, REQUIRED_CLIENT_VERSION)
+                        # user match
+                        username = '%s@%s' % (loginparams.get('userid'), loginparams.get('company'))
+                        userinfo = self.ulist_ng.finduser(username)
+                        if userinfo == None:
+                                return 'user_not_found'
+                        userinfo['prelogin'] = {'cticlienttype' : whoami,
+                                                'cticlientos' : whatsmyos,
+                                                'version' : svnversion,
+                                                'sessionid' : ''.join(random.sample(__alphanums__, 10))}
+                        return userinfo
 
+                elif phase == xivo_commandsets.CMD_LOGIN_PASS:
+                        # user authentication
+                        missings = []
+                        for argum in ['hashedpassword']:
+                                if argum not in loginparams:
+                                        missings.append(argum)
+                        if len(missings) > 0:
+                                log_debug(SYSLOG_WARNING, 'missing args in loginparams : %s' % ','.join(missings))
+                                return 'missing:%s' % ','.join(missings)
 
-                # user match and authentication
-                username = '%s@%s' % (loginparams.get('userid'), loginparams.get('company'))
-                userinfo = self.ulist_ng.finduser(username)
-                if userinfo == None:
-                        return 'user_not_found'
-                password = loginparams.get('passwd') 
-                if  password != userinfo.get('passwd'):
-                        return 'login_passwd'
+                        if uinfo is not None:
+                                userinfo = uinfo
+                        hashedpassword = loginparams.get('hashedpassword')
+                        tohash = '%s:%s' % (userinfo['prelogin']['sessionid'], userinfo.get('password'))
+                        sha1sum = sha.sha(tohash).hexdigest()
+                        if sha1sum != hashedpassword:
+                                return 'login_password'
+                        
+                        iserr = self.__check_user_connection__(userinfo)
+                        if iserr is not None:
+                                return iserr
+                        return userinfo
 
-                iserr = self.__check_user_connection__(userinfo, whoami)
-                if iserr is not None:
-                        return iserr
+                elif phase == xivo_commandsets.CMD_LOGIN_CAPAS:
+                        missings = []
+                        for argum in ['state', 'capaid', 'lastconnwins', 'loginkind']:
+                                if argum not in loginparams:
+                                        missings.append(argum)
+                        if len(missings) > 0:
+                                log_debug(SYSLOG_WARNING, 'missing args in loginparams : %s' % ','.join(missings))
+                                return 'missing:%s' % ','.join(missings)
 
-                # settings (in agent mode for instance)
-                ## userinfo['agent']['phonenum'] = phonenum
-                state = loginparams.get('state')
-                self.__connect_user__(userinfo, whoami, whatsmyos, svnversion, state, False)
+                        if uinfo is not None:
+                                userinfo = uinfo
+                        # settings (in agent mode for instance)
+                        # userinfo['agent']['phonenum'] = phonenum
 
-                loginkind = loginparams.get('loginkind')
-                if loginkind == 'agent':
-                        userinfo['agentphonenum'] = loginparams.get('phonenumber')
-                        # self.amilist.execute(astid, 'agentcallbacklogin', agentnum, phonenum)
-                return userinfo
+                        state = loginparams.get('state')
+                        capaid = loginparams.get('capaid')
+                        
+                        iserr = self.__check_capa_connection__(userinfo, capaid)
+                        if iserr is not None:
+                                return iserr
+                        
+                        self.__connect_user__(userinfo, state, capaid, False)
+                        
+                        loginkind = loginparams.get('loginkind')
+                        if loginkind == 'agent':
+                                userinfo['agentphonenum'] = loginparams.get('phonenumber')
+                                # self.amilist.execute(astid, 'agentcallbacklogin', agentnum, phonenum)
+                        return userinfo
 
 
         def manage_logoff(self, userinfo, when):
@@ -231,7 +269,7 @@ class XivoCTICommand(BaseCommand):
                 return
 
 
-        def __check_user_connection__(self, userinfo, whoami):
+        def __check_user_connection__(self, userinfo):
                 #if userinfo.has_key('init'):
                 #       if not userinfo['init']:
                 #              return 'uninit_phone'
@@ -239,15 +277,17 @@ class XivoCTICommand(BaseCommand):
                         if time.time() - userinfo['login'].get('sessiontimestamp') < self.xivoclient_session_timeout:
                                 if 'lastconnwins' in userinfo:
                                         if userinfo['lastconnwins'] is True:
-                                                # one should then disconnect the first peer
+                                                # one should then disconnect the already connected instance
                                                 pass
                                         else:
                                                 return 'already_connected'
                                 else:
                                         return 'already_connected'
+                return None
 
-                capaid = userinfo.get('capaid')
-                if capaid in self.capas:
+
+        def __check_capa_connection__(self, userinfo, capaid):
+                if capaid in self.capas and capaid in userinfo.get('capaids').split(','):
                         if self.capas[capaid].toomuchusers():
                                 return 'toomuchusers:%s' % self.capas[capaid].maxgui()
                 else:
@@ -255,17 +295,15 @@ class XivoCTICommand(BaseCommand):
                 return None
 
 
-        def __connect_user__(self, userinfo,
-                             whoami, whatsmyos, version, state,
-                             lastconnwins):
+        def __connect_user__(self, userinfo, state, capaid, lastconnwins):
                 try:
+                        userinfo['capaid'] = capaid
                         userinfo['login'] = {}
-                        userinfo['login']['sessionid'] = ''.join(random.sample(__alphanums__, 10))
                         userinfo['login']['sessiontimestamp'] = time.time()
                         userinfo['login']['logintimestamp'] = time.time()
-                        userinfo['login']['cticlienttype'] = whoami
-                        userinfo['login']['cticlientos'] = whatsmyos
-                        userinfo['login']['version'] = version
+                        for v, vv in userinfo['prelogin'].iteritems():
+                                userinfo['login'][v] = vv
+                        del userinfo['prelogin']
                         # lastconnwins was introduced in the aim of forcing a new connection to take on for
                         # a given user, however it might breed problems if the previously logged-in process
                         # tries to reconnect ... unless we send something asking to Kill the process
@@ -286,7 +324,6 @@ class XivoCTICommand(BaseCommand):
                                           % (userinfo.get('user'), state))
                                 userinfo['state'] = 'undefinedstate-connect'
 
-                        capaid = userinfo.get('capaid')
                         self.capas[capaid].conn_inc()
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, "--- exception --- connect_user %s : %s" %(str(userinfo), str(exc)))
@@ -298,6 +335,7 @@ class XivoCTICommand(BaseCommand):
                         if 'login' in userinfo:
                                 capaid = userinfo.get('capaid')
                                 self.capas[capaid].conn_dec()
+                                del userinfo['capaid']
                                 del userinfo['login']
                                 userinfo['state'] = 'unknown'
                                 self.__update_availstate__(userinfo, userinfo.get('state'))
@@ -311,26 +349,27 @@ class XivoCTICommand(BaseCommand):
                 log_debug(SYSLOG_WARNING, 'user can not connect (%s) : sending %s' % (loginparams, errorstring))
                 connid.sendall('loginko=%s\n' % errorstring)
                 return
+        
+        def loginok(self, loginparams, userinfo, connid, phase):
+                if phase == xivo_commandsets.CMD_LOGIN_ID:
+                        repstr = 'login_id_ok=xivoversion:%s;version:%s;sessionid:%s' \
+                                 % (XIVOVERSION, __revision__, userinfo['prelogin']['sessionid'])
+                elif phase == xivo_commandsets.CMD_LOGIN_PASS:
+                        repstr = 'login_pass_ok=capalist:%s' % userinfo.get('capaids')
+                elif phase == xivo_commandsets.CMD_LOGIN_CAPAS:
+                        capaid = userinfo.get('capaid')
+                        repstr = 'login_capas_ok=capafuncs:%s;capaxlets:%s;appliname:%s;state:%s' \
+                                 % (self.capas[capaid].tostring(self.capas[capaid].all()),
+                                    ','.join(self.capas[capaid].capadisps),
+                                    self.capas[capaid].appliname,
+                                    userinfo.get('state'))
+                        # if 'features' in capa_user:
+                        # repstr += ';capas_features:%s' %(','.join(configs[astid].capafeatures))
+                connid.sendall(repstr + '\n')
 
-
-        def loginok(self, loginparams, userinfo):
-                capaid = userinfo.get('capaid')
-                repstr = "loginok=" \
-                         "context:%s;phonenum:%s;" \
-                         "capafuncs:%s;capaxlets:%s;appliname:%s;" \
-                         "xivoversion:%s;version:%s;state:%s" \
-                         %(userinfo.get('context'),
-                           userinfo.get('phonenum'),
-                           self.capas[capaid].tostring(self.capas[capaid].all()),
-                           ','.join(self.capas[capaid].capadisps),
-                           self.capas[capaid].appliname,
-                           XIVOVERSION,
-                           __revision__,
-                           userinfo.get('state'))
-##                if 'features' in capa_user:
-##                        repstr += ';capas_features:%s' %(','.join(configs[astid].capafeatures))
-                userinfo['login']['connection'].sendall(repstr + '\n')
-                self.__update_availstate__(userinfo, userinfo.get('state'))
+                if phase == xivo_commandsets.CMD_LOGIN_CAPAS:
+                        self.__update_availstate__(userinfo, userinfo.get('state'))
+                
                 return
 
 
@@ -407,15 +446,15 @@ class XivoCTICommand(BaseCommand):
                 return lqlist
 
         # fields set at startup by reading informations
-        userfields = ['user', 'company', 'astid', 'passwd', 'fullname', 'capaid', 'context', 'phonenum', 'techlist', 'agentnum']
+        userfields = ['user', 'company', 'astid', 'password', 'fullname', 'capaids', 'context', 'phonenum', 'techlist', 'agentnum']
         def getuserslist(self, dlist):
                 lulist = {}
                 for c, d in dlist.iteritems():
                         if len(d) > 9:
                                 lulist[c] = {'user'     : d[0].split('@')[0],
                                              'company'  : d[0].split('@')[1],
-                                             'passwd'   : d[1],
-                                             'capaid'   : d[2],
+                                             'password' : d[1],
+                                             'capaids'  : d[2],
                                              'fullname' : d[3] + ' ' + d[4],
                                              'astid'    : d[5],
                                              'agentnum' : d[9],
@@ -438,8 +477,8 @@ class XivoCTICommand(BaseCommand):
                                 fieldname = '%s@%s' % (userid, company)
                                 lulist[fieldname] = {'user'     : userid,
                                                      'company'  : company,
-                                                     'passwd'   : d[2],
-                                                     'capaid'   : 'default',
+                                                     'password' : d[2],
+                                                     'capaids'  : 'default',
                                                      'fullname' : d[8] + ' ' + d[9],
                                                      'astid'    : 'xivo',
                                                      'agentnum' : '',
@@ -1321,6 +1360,7 @@ class XivoCTICommand(BaseCommand):
                                 repstr = None
 
                         elif icommand.name == 'agents-list':
+                                # issued by one user when he logs in
                                 if self.capas[capaid].match_funcs(ucapa, 'agents'):
                                         for astid, aglist in self.agents_list.iteritems():
                                                 if astid in self.qlist:
@@ -1337,33 +1377,6 @@ class XivoCTICommand(BaseCommand):
                                                                                         'agents-list=%s;%s' %(astid,
                                                                                                               ';'.join(lst)))
                                 repstr = None
-
-                        elif icommand.name == 'agents-status':
-                                # issued by one user when he logs in
-                                if self.capas[capaid].match_funcs(ucapa, 'agents') and len(userinfo.get('agentnum')) > 0:
-                                        astid = userinfo.get('astid')
-                                        agname = userinfo.get('agentnum')
-                                        agid = 'Agent/%s' % agname
-                                        
-                                        if astid in self.qlist and astid in self.agents_list and agname in self.agents_list[astid]:
-                                                agprop = self.agents_list[astid][agname]
-
-                                                for qref, ql in self.qlist[astid].queuelist.iteritems():
-                                                        if agid in ql['agents']:
-                                                                msg = self.__build_agupdate__(['joinqueue', astid, agid, qref])
-                                                                self.__send_msg_to_cti_client__(userinfo, msg)
-                                                        else:
-                                                                msg = self.__build_agupdate__(['leavequeue', astid, agid, qref])
-                                                                self.__send_msg_to_cti_client__(userinfo, msg)
-
-                                                # lookup the logged in/out status of agent agname and sends it back to the requester
-                                                if agprop['status'] == 'AGENT_LOGGEDOFF':
-                                                        msg = self.__build_agupdate__(['agentlogout', astid, agid, agprop['phonenum']])
-                                                else:
-                                                        msg = self.__build_agupdate__(['agentlogin', astid, agid, agprop['phonenum']])
-                                                self.__send_msg_to_cti_client__(userinfo, msg)
-                                repstr = None
-
 
                         elif icommand.name == 'agent-status':
                                 # issued by one user when he requests the status for one given agent

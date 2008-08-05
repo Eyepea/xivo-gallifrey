@@ -29,8 +29,10 @@ Base class for miscellaneous Command Sets
 """
 
 CMD_OTHER = 1 << 0
-CMD_LOGIN = 1 << 1
-CMD_TRANSFER = 1 << 2
+CMD_LOGIN_ID = 1 << 1
+CMD_LOGIN_PASS = 1 << 2
+CMD_LOGIN_CAPAS = 1 << 3
+CMD_TRANSFER = 1 << 10
 
 class Command:
         def __init__(self, commandname, commandargs):

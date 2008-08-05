@@ -148,18 +148,26 @@ def manage_cti_connections(connid, msg, sep):
                 command = commandclass.parsecommand(usefulmsg)
                 if command.name in commandclass.get_list_commands():
                         try:
-                                if command.type == xivo_commandsets.CMD_LOGIN:
-                                        loginparams = commandclass.get_login_params(asterisklist[0],
-                                                                                    command, connid)
-                                        log_debug(SYSLOG_INFO, 'LOGIN : loginparams = %s' % loginparams)
-                                        uinfo = commandclass.manage_login(loginparams)
-                                        log_debug(SYSLOG_INFO, 'LOGIN : uinfo = %s' % uinfo)
+                                if command.type in [xivo_commandsets.CMD_LOGIN_ID,
+                                                    xivo_commandsets.CMD_LOGIN_PASS,
+                                                    xivo_commandsets.CMD_LOGIN_CAPAS]:
+                                        log_debug(SYSLOG_INFO, 'LOGIN(%s) %s : args   %s' % (command.type, requester, command.args))
+                                        loginparams = commandclass.get_login_params(command, asterisklist[0], connid)
+                                        log_debug(SYSLOG_INFO, 'LOGIN(%s) %s : params %s' % (command.type, requester, loginparams))
+                                        uinfo = commandclass.manage_login(loginparams, command.type, userinfo_current.get(connid))
+                                        log_debug(SYSLOG_INFO, 'LOGIN(%s) %s : uinfo  %s' % (command.type, requester, uinfo))
+                                        
                                         if uinfo.__class__.__name__ == 'str':
                                                 commandclass.loginko(loginparams, uinfo, connid)
                                         else:
-                                                uinfo['login']['connection'] = connid
-                                                commandclass.loginok(loginparams, uinfo)
-                                                userinfo_by_requester[connid] = uinfo
+                                                if command.type == xivo_commandsets.CMD_LOGIN_CAPAS:
+                                                        uinfo['login']['connection'] = connid
+                                                        userinfo_by_requester[connid] = uinfo
+                                                        if connid in userinfo_current:
+                                                                del userinfo_current[connid]
+                                                else:
+                                                        userinfo_current[connid] = uinfo
+                                                commandclass.loginok(loginparams, uinfo, connid, command.type)
                                 elif command.type == xivo_commandsets.CMD_TRANSFER:
                                         log_debug(SYSLOG_INFO, 'TRANSFER on %s (ref %s)' % (requester, command.args))
                                         commandclass.transfer_addref(requester, command.args[0])
@@ -554,6 +562,7 @@ while True: # loops over the reloads
         userlists = []
 
         userinfo_by_requester = {}
+        userinfo_current = {}
 
         cconf = cti_config.Config(XIVOCONFFILE)
         xivoconf_general = cconf.read_section('general')
