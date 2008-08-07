@@ -291,6 +291,7 @@ def enable_tofp(fp, returns = 1):
 
 def voluntary_trace(msg, add_depth=0):
 	global last_ttf
-	last_ttf.voluntary_trace(msg, add_depth)
+	if last_ttf:
+		last_ttf.voluntary_trace(msg, add_depth)
 
 all = ('enable_tofp', 'voluntary')
