@@ -26,11 +26,11 @@ Precisely, formatargvalues() from inspect fails to format arguments of functions
 which prototypes include one or multiple tuple pattern matching, for example of
 the form:
 
-	def function1((a,b)):
+	def function1((a, b)):
 		...
 or:
 
-	def function2(a, (b,c), ((d,),)):
+	def function2(a, (b, c), ((d,),)):
 		...
 
 It has been found, by trial and error, that when such parameter exists in a
@@ -40,7 +40,7 @@ inspect.getargvalues(), but that instead the local dictionary contains an entry
 '.X' for each top level tuple argument to be pattern matched, where X is a
 decimal number and its value is 2 times the argument number, starting at 0 from
 the left to the right. For example, in the function2() prototype given above,
-the value of (b,c) is stored in inspect.getargvalues()[3][".2"] and the value of
+the value of (b, c) is stored in inspect.getargvalues()[3][".2"] and the value of
 ((d,),) in ".4".
 Both formatargvalues(), strseq() and the nested closure function convert()
 defined inside formatargvalues() have consequently been adapted to process
@@ -60,7 +60,7 @@ enhanced.
 __version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (c) 2001, 2002, 2003, 2004 Python Software Foundation;
-    Copyright (C) 2007, Proformatique
+    Copyright (C) 2007, 2008  Proformatique
                                         All Rights Reserved
 
     Under PSF LICENSE AGREEMENT FOR PYTHON
@@ -115,7 +115,7 @@ def strseqval(obj, val, convert, join=joinseq):
 	"""Recursively walk a sequence, stringifying each element."""
 	if type(obj) in [types.ListType, types.TupleType]:
 		return join([strseqval(subobj, subval, convert, join)
-		             for (subobj,subval) in zip(obj,val)])
+		             for (subobj, subval) in zip(obj, val)])
 	else:
 		return convert(obj, val)
 
@@ -136,7 +136,7 @@ def formatargvalues(args, varargs, varkw, lcals,
         	    formatarg=formatarg, formatvalue=formatvalue):
 		return formatarg(name) + formatvalue(val)
 	values = []
-	for p,onearg in enumerate(args):
+	for p, onearg in enumerate(args):
 		if type(onearg) in [types.ListType, types.TupleType]:
 			topval = lcals['.' + str(p*2)]
 		else:
@@ -148,21 +148,21 @@ def formatargvalues(args, varargs, varkw, lcals,
 		values.append(formatvarkw(varkw) + formatvalue(lcals[varkw]))
 	return '(' + ", ".join(values) + ')'
 
-#def foobar2000(a,(b,),(c,),(d,)):
+#def foobar2000(a, (b,), (c,), (d,)):
 #	pass
 #
-#foobar2000(1,(2,),(3,),(4,))
+#foobar2000(1, (2,), (3,), (4,))
 #
-#def foobar((a,(b,),c,(d,(e,((f,),))),g),(h,i)):
+#def foobar((a, (b,), c, (d, (e, ((f,),))), g), (h, i)):
 #	pass
 #
-#foobar((0,(1,),2,(3,(4,((5,),))),6),(7,8))
+#foobar((0, (1,), 2, (3, (4, ((5,),))), 6), (7, 8))
 #
 #
-#def foobar3000(a,(c,),(d,),(e,),(f,),(g,),b,(h,),(i,),(j,),(k,),(l,),((m,),)):
+#def foobar3000(a, (c,), (d,), (e,), (f,), (g,), b, (h,), (i,), (j,), (k,), (l,), ((m,),)):
 #	pass
 #
-#foobar3000(1,(3,),(4,),(5,),(6,),(7,),42,(8,),(9,),(10,),(11,),(12,),((13,),))
+#foobar3000(1, (3,), (4,), (5,), (6,), (7,), 42, (8,), (9,), (10,), (11,), (12,), ((13,),))
 #
 # Fixed implementation of formatargvalues() should be able to trace function
 # calls above :)
@@ -186,7 +186,7 @@ class TraceToFile:
 		modname = frame.f_globals["__name__"]
 		
 		# never trace ourself XXX parametrize list of untracable modules
-		if modname in ('tracer','copy','inspect','copy_reg'):
+		if modname in ('tracer', 'copy', 'inspect', 'copy_reg'):
 			return
 		
 		lineno = frame.f_lineno
