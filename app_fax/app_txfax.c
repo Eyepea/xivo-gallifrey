@@ -210,7 +210,10 @@ static int txfax_exec(struct ast_channel *chan, void *data)
         }
         fax_init(&fax, calling_party);
         if (verbose)
-	    fax.logging.level = SPAN_LOG_SHOW_SEVERITY | SPAN_LOG_SHOW_PROTOCOL | SPAN_LOG_FLOW;
+        {
+            span_log_set_level(&fax.logging, SPAN_LOG_SHOW_SEVERITY | SPAN_LOG_SHOW_PROTOCOL | SPAN_LOG_FLOW);
+            span_log_set_level(&fax.t30_state.logging, SPAN_LOG_SHOW_SEVERITY | SPAN_LOG_SHOW_PROTOCOL | SPAN_LOG_FLOW);
+        }
 
         x = pbx_builtin_getvar_helper(chan, "LOCALSTATIONID");
         if (x  &&  x[0])
