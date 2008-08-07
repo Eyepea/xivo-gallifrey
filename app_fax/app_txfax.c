@@ -190,6 +190,7 @@ static int txfax_exec(struct ast_channel *chan, void *data)
             if (res < 0)
             {
                 ast_log(LOG_WARNING, "Unable to set to linear read mode, giving up\n");
+                LOCAL_USER_REMOVE(u);
                 return -1;
             }
         }
@@ -203,6 +204,7 @@ static int txfax_exec(struct ast_channel *chan, void *data)
                 res = ast_set_read_format(chan, original_read_fmt);
                 if (res)
                     ast_log(LOG_WARNING, "Unable to restore read format on '%s'\n", chan->name);
+                LOCAL_USER_REMOVE(u);
                 return -1;
             }
         }
