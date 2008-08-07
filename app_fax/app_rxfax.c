@@ -106,16 +106,16 @@ static void phase_e_handler(t30_state_t *s, void *user_data, int result)
 		ast_log(LOG_DEBUG, "Transfer Rate:     %i\n", t.bit_rate);
 		ast_log(LOG_DEBUG, "==============================================================================\n");
 		manager_event(EVENT_FLAG_CALL,
-					  "FaxReceived", "Channel: %s\nExten: %s\nCallerID: %s\nRemoteStationID: %s\nLocalStationID: %s\nPagesTransferred: %i\nResolution: %i\nTransferRate: %i\nFileName: %s\n",
-					  chan->name,
-					  chan->exten,
-					  (chan->cid.cid_num)  ?  chan->cid.cid_num  :  "",
-					  far_ident,
-					  local_ident,
-					  t.pages_transferred,
-					  t.y_resolution,
-					  t.bit_rate,
-					  s->rx_file);
+			      "FaxReceived", "Channel: %s\nExten: %s\nCallerID: %s\nRemoteStationID: %s\nLocalStationID: %s\nPagesTransferred: %i\nResolution: %i\nTransferRate: %i\nFileName: %s\n",
+			      chan->name,
+			      chan->exten,
+			      (chan->cid.cid_num)  ?  chan->cid.cid_num  :  "",
+			      far_ident,
+			      local_ident,
+			      t.pages_transferred,
+			      t.y_resolution,
+			      t.bit_rate,
+			      s->rx_file);
 		pbx_builtin_setvar_helper(chan, "REMOTESTATIONID", far_ident);
 		snprintf(buf, sizeof(buf), "%i", t.pages_transferred);
 		pbx_builtin_setvar_helper(chan, "FAXPAGES", buf);
