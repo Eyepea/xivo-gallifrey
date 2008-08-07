@@ -65,8 +65,8 @@ static void span_message(int level, const char *msg)
 {
     int ast_level;
     
-    if (level == SPAN_LOG_WARNING)
-        ast_level = __LOG_WARNING;
+    if (level == SPAN_LOG_ERROR)
+        ast_level = __LOG_ERROR;
     else if (level == SPAN_LOG_WARNING)
         ast_level = __LOG_WARNING;
     else
