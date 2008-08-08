@@ -28,6 +28,7 @@ class Capabilities:
         allowed_funcs = ['agents',
                          'agentdetails',
                          'calls',
+                         'conference',
                          'customerinfo',
                          'dial',
                          'directory',
@@ -48,7 +49,14 @@ class Capabilities:
 
         allowed_xlets = ['agents',
                          'agentdetails',
+                         'queues',
+                         'queuedetails',
+                         'queueentrydetails',
+                         
                          'calls',
+                         'parking',
+                         'switchboard',
+                         
                          'customerinfo',
                          'datetime',
                          'dial',
@@ -57,14 +65,12 @@ class Capabilities:
                          'features',
                          'history',
                          'identity',
-                         'messages',
-                         'operator',
-                         'parking',
-                         'queues',
-                         'queuedetails',
-                         'queueentrydetails',
                          'search',
-                         'switchboard',
+                         
+                         'messages',
+                         'conference',
+                         'operator',
+                         
                          'tabber',
                          'video']
 

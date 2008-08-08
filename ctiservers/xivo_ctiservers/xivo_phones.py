@@ -484,7 +484,10 @@ class ChannelStatus:
                 self.time = itime
                 self.direction = idir
                 self.channel_peer = ipeerch
-                self.channel_num = ipeernum
+                if ipeernum in ['', '<Unknown>', '<unknown>', 'anonymous', '(null)']:
+                        self.channel_num = '(?)'
+                else:
+                        self.channel_num = ipeernum
                 self.channel_mynum = imynum
         def updateDeltaTime(self, dtime):
                 self.deltatime = dtime
@@ -507,5 +510,3 @@ class ChannelStatus:
                 return self.deltatime
         def getStatus(self):
                 return self.status
-
-

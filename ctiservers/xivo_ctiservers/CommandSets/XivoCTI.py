@@ -55,7 +55,7 @@ def log_debug(level, text):
         log_debug_file(level, text, 'xivocti')
 
 XIVOVERSION = '0.4'
-REQUIRED_CLIENT_VERSION = 3150
+REQUIRED_CLIENT_VERSION = 3700
 __revision__ = __version__.split()[1]
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 allowed_states = ['available', 'away', 'outtolunch', 'donotdisturb', 'berightback']
@@ -238,12 +238,13 @@ class XivoCTICommand(BaseCommand):
 
                         state = loginparams.get('state')
                         capaid = loginparams.get('capaid')
-                        
+                        lastconnwins = (loginparams.get('lastconnwins') == 'true')
+
                         iserr = self.__check_capa_connection__(userinfo, capaid)
                         if iserr is not None:
                                 return iserr
                         
-                        self.__connect_user__(userinfo, state, capaid, False)
+                        self.__connect_user__(userinfo, state, capaid, lastconnwins)
                         
                         loginkind = loginparams.get('loginkind')
                         if loginkind == 'agent':
@@ -276,7 +277,7 @@ class XivoCTICommand(BaseCommand):
                 if userinfo.has_key('login') and userinfo['login'].has_key('sessiontimestamp'):
                         if time.time() - userinfo['login'].get('sessiontimestamp') < self.xivoclient_session_timeout:
                                 if 'lastconnwins' in userinfo:
-                                        if userinfo['lastconnwins'] is True:
+                                        if userinfo['lastconnwins']:
                                                 # one should then disconnect the already connected instance
                                                 pass
                                         else:
@@ -1294,12 +1295,10 @@ class XivoCTICommand(BaseCommand):
                                                                                 [icommand.name, icommand.args[0], icommand.args[1]])
                         elif icommand.name == 'hangup':
                                 if self.capas[capaid].match_funcs(ucapa, 'dial'):
-                                        repstr = self.__hangup__(astid, username,
-                                                                 icommand.args[0], True)
+                                        repstr = self.__hangup__(userinfo, icommand.args, True)
                         elif icommand.name == 'simplehangup':
                                 if self.capas[capaid].match_funcs(ucapa, 'dial'):
-                                        repstr = self.__hangup__(astid, username,
-                                                                 icommand.args[0], False)
+                                        repstr = self.__hangup__(userinfo, icommand.args, False)
                         elif icommand.name == 'pickup':
                                 if self.capas[capaid].match_funcs(ucapa, 'dial'):
                                         z = icommand.args[0].split('/')
@@ -1424,6 +1423,7 @@ class XivoCTICommand(BaseCommand):
                 reply = []
                 for termin in termlist:
                         [techno, phoneid] = termin.split('/')
+                        print requester_id, nlines, kind, techno, phoneid
                         try:
                                 hist = self.__update_history_call__(self.configs[astid], techno, phoneid, nlines, kind)
                                 for x in hist:
@@ -1439,12 +1439,7 @@ class XivoCTICommand(BaseCommand):
                                                                       x[11]])
                                         if kind == '0':
                                                 num = x[3].replace('"', '')
-                                                sipcid = "SIP/%s" % num
                                                 cidname = num
-                                                if sipcid in self.plist[astid].normal:
-                                                        cidname = '%s %s <%s>' %(self.plist[astid].normal[sipcid].calleridfirst,
-                                                                                 self.plist[astid].normal[sipcid].calleridlast,
-                                                                                 num)
                                                 ry2 = HISTSEPAR.join([cidname, 'OUT', termin])
                                         else:   # display callerid for incoming calls
                                                 ry2 = HISTSEPAR.join([x[1].replace('"', ''), 'IN', termin])
@@ -1458,7 +1453,10 @@ class XivoCTICommand(BaseCommand):
                                           % (requester_id, termin, str(exc)))
 
                 if len(reply) > 0:
-                        return 'history=%s' % ''.join(reply)
+                        k = ''.join(reply)
+                        sha1sum = sha.sha(k).hexdigest()
+                        print 'history', sha1sum
+                        return 'history=%s' % k
                 else:
                         return
 
@@ -1997,11 +1995,14 @@ class XivoCTICommand(BaseCommand):
 
 
         # \brief Hangs up.
-        def __hangup__(self, astid, username, chan, peer_hangup):
-                print astid, username, chan, peer_hangup
+        def __hangup__(self, uinfo, args, peer_hangup):
+                print uinfo, args, peer_hangup
+                username = uinfo.get('fullname')
+                astid = args[0]
+                chan = args[1]
                 ret_message = 'hangup KO from %s' % username
                 if astid in self.configs:
-                        log_debug(SYSLOG_INFO, "%s is attempting a HANGUP : %s" %(username, chan))
+                        log_debug(SYSLOG_INFO, "%s is attempting a HANGUP : %s" % (username, chan))
                         channel = chan
                         phone = chan.split('-')[0]
                         if phone in self.plist[astid].normal:
@@ -2212,12 +2213,14 @@ class XivoCTICommand(BaseCommand):
                 Previously known as 'xivo_push'
                 """
                 # check capas !
-                proto   = fastagi.get_variable('XIVO_INTERFACE').split('/')[0].lower()
+                iface   = fastagi.get_variable('XIVO_INTERFACE')
                 exten   = fastagi.get_variable('REAL_DSTNUM')
                 context = fastagi.get_variable('REAL_CONTEXT')
                 calleridnum  = fastagi.env['agi_callerid']
                 calleridname = fastagi.env['agi_calleridname']
                 msgext = fastagi.get_variable('CALLTYPE')
+
+                print iface, exten, context, calleridnum, calleridname, msgext
                 
                 called = exten
                 extraevent = {'caller_num' : calleridnum,
