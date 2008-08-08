@@ -681,6 +681,16 @@ services:
             router?: !~ipv4_address 192.168.1.254
 """)
 
+# TODO: 
+# ipConfs:
+#	static_xxxx:
+#		comment:
+# dont le contenu sera injecte dans /e/n/i
+
+# TODO creer un program qui fill les truc par defaut non remplis de network.yaml
+
+# TODO interface de lookup inverse: envoyer la liste des static_xxxx => mac addr + VLan ID
+
 
 def reserved_netIfaces(conf):
     """
@@ -1440,6 +1450,23 @@ def autoattrib_conf(conf):
         conf['netIfaces'][phy] = vsTag
     
     return conf
+
+
+class AlreadyExist(Exception):
+    """
+    Raised if one tries to create something that already exists.
+    """
+    pass
+
+
+def add_vlan(conf, vsTag, vlanId):
+    """
+    Add a VLan in conf, in-place.
+    """
+    vs = conf['vlans'][vsTag]
+    if vlanId in vs:
+        raise AlreadyExist, "VLan %d already exists in %s" % (vlanId, vsTag)
+    vs[vlanId] = "void"
 
 
 def save_configuration_initiate_transaction(conf, trace=trace_null):
