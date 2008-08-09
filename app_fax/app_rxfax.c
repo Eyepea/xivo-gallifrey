@@ -6,6 +6,9 @@
  * - added ECM support
  * - added more env variables
  * - added logging to external file
+ * PATCHED BY (C) 2008 Proformatique <technique@proformatique.com>
+ * - removed useless logging to external file
+ * - cleaned up all the mess
  */
 
 /*** MODULEINFO
@@ -70,17 +73,6 @@ static char *descrip =
 
 #define MAX_BLOCK_SIZE 240
 
-static FILE *rxfax_logfile = NULL;
-
-static void file_log(const char *msg)
-{
-	if (msg==NULL) 
-		return;
-	if (rxfax_logfile==NULL)
-		return;
-	fprintf(rxfax_logfile, msg);
-}
-
 static void span_message(int level, const char *msg)
 {
 	if (msg==NULL) return;
@@ -92,17 +84,13 @@ static void span_message(int level, const char *msg)
 	else
 		ast_level = __LOG_DEBUG;
 	ast_log(ast_level, _A_, "%s", msg);
-	file_log(msg);
 }
 
 /*- End of function --------------------------------------------------------*/
 
 static void phase_b_handler(t30_state_t *s, void *user_data, int result)
 {
-	if (rxfax_logfile!=NULL) {
-		fprintf( rxfax_logfile, "[phase_b_handler] mark\n" );
-		fflush(rxfax_logfile);
-	}
+	/* nothing */
 }
 
 /*- End of function --------------------------------------------------------*/
@@ -151,21 +139,9 @@ static void phase_e_handler(t30_state_t *s, void *user_data, int result)
 				t.y_resolution,
 				t.bit_rate,
 				s->rx_file);
-		if (rxfax_logfile!=NULL) {
-			fprintf( rxfax_logfile, "\n[FAX OK] Remote: %s Local: %s Pages: %i Speed: %i\n\n", 
-				far_ident, local_ident, t.pages_transferred, t.bit_rate
-			);
-			fflush(rxfax_logfile);
-		}
 	}
 	else
-	{
 		ast_log(LOG_DEBUG, "Fax receive not successful - result (%d) %s.\n", result, t30_completion_code_to_str(result));
-		if (rxfax_logfile!=NULL) {
-			fprintf( rxfax_logfile, "\n[FAX ERROR] code: %d %s\n\n", result, t30_completion_code_to_str(result) );
-			fflush(rxfax_logfile);
-		}
-	}
 	ast_log(LOG_DEBUG, "==============================================================================\n");
 }
 /*- End of function --------------------------------------------------------*/
@@ -189,10 +165,6 @@ static void phase_d_handler(t30_state_t *s, void *user_data, int result)
 		ast_log(LOG_DEBUG, "Compression type    %s\n", t4_encoding_to_str(t.encoding));
 		ast_log(LOG_DEBUG, "Image size (bytes)  %i\n", t.image_size);
 		ast_log(LOG_DEBUG, "==============================================================================\n");
-		if (rxfax_logfile!=NULL) {
-			fprintf( rxfax_logfile, "\n[phase_d_handler] Page: %i at %i\n\n",  t.pages_transferred, t.bit_rate );
-			fflush(rxfax_logfile);
-		}
 	}
 }
 /*- End of function --------------------------------------------------------*/
@@ -227,7 +199,6 @@ static int rxfax_exec(struct ast_channel *chan, void *data)
 
 	if (chan == NULL) {
 		ast_log(LOG_WARNING, "Fax receive channel is NULL. Giving up.\n");
-		file_log("ERROR: Fax receive channel is NULL. Giving up.\n");
 		return -1;
 	}
 
@@ -250,7 +221,6 @@ static int rxfax_exec(struct ast_channel *chan, void *data)
 	{
 		/* No data implies no filename or anything is present */
 		ast_log(LOG_WARNING, "Rxfax requires an argument (filename)\n");
-		file_log("ERROR: Rxfax requires an argument (filename)\n");
 		return -1;
 	}
 
@@ -300,13 +270,6 @@ static int rxfax_exec(struct ast_channel *chan, void *data)
 		/* Shouldn't need this, but checking to see if channel is already answered
 		 * Theoretically asterisk should already have answered before running the app */
 		res = ast_answer(chan);
-		/* NO NEED TO WARN ANYMORE 
-		if (!res)
-		{
-			ast_log(LOG_WARNING, "Could not answer channel '%s'\n", chan->name);
-			file_log("Could not answer channel\n" );
-		}
-		*/
 	}
 
 	/* Setting read and write formats */
@@ -318,7 +281,6 @@ static int rxfax_exec(struct ast_channel *chan, void *data)
 		if (res < 0)
 		{
 			ast_log(LOG_WARNING, "Unable to set to linear read mode, giving up\n");
-			file_log("ERROR: Unable to set to linear read mode, giving up\n");
 			ast_module_user_remove(u);
 			return -1;
 		}
@@ -331,7 +293,6 @@ static int rxfax_exec(struct ast_channel *chan, void *data)
 		if (res < 0)
 		{
 			ast_log(LOG_WARNING, "Unable to set to linear write mode, giving up\n");
-			file_log("ERROR: Unable to set to linear write mode, giving up\n");
 			res = ast_set_read_format(chan, original_read_fmt);
 			if (res)
 				ast_log(LOG_WARNING, "Unable to restore read format on '%s'\n", chan->name);
@@ -357,7 +318,6 @@ static int rxfax_exec(struct ast_channel *chan, void *data)
 	if (fax_init(&fax, calling_party) == NULL)
 	{
 		ast_log(LOG_WARNING, "Unable to set to start fax_init\n");
-		file_log("ERROR: Unable to set to start fax_init\n");
 		ast_module_user_remove(u);
 		return -1;
 	}
@@ -395,7 +355,6 @@ static int rxfax_exec(struct ast_channel *chan, void *data)
 		t30_set_ecm_capability(&(fax.t30_state), TRUE);
 		t30_set_supported_compressions(&(fax.t30_state), T30_SUPPORT_T4_1D_COMPRESSION | T30_SUPPORT_T4_2D_COMPRESSION | T30_SUPPORT_T6_COMPRESSION);
 		ast_log(LOG_DEBUG, "Enabling ECM mode for app_rxfax\n"  );
-		file_log("DEBUG: Enabling ECM mode for app_rxfax\n"  );
 	}
 
 
@@ -406,33 +365,29 @@ static int rxfax_exec(struct ast_channel *chan, void *data)
 	{
 		if (ast_check_hangup(chan)) {
 			ast_log(LOG_WARNING, "Channel has been hanged at fax.\n");
-			file_log("NOTICE: Channel has been hanged at fax.\n");
 			res = 0;
 			break;
 		}
 
 		if ((res = ast_waitfor(chan, 20)) < 0) {
 			ast_log(LOG_WARNING, "Channel ast_waitfor < 0.\n");
-			file_log("WARNING: Channel ast_waitfor < 0.\n");
 			res = 0;
 			break;
 		}
 
 		if ((fax.current_rx_type == T30_MODEM_DONE)  ||  (fax.current_tx_type == T30_MODEM_DONE)) {
 			ast_log(LOG_WARNING, "Channel T30 DONE < 0.\n");
-			file_log("DEBUG: Channel T30 DONE.\n");
-/*JUST WARNING:		res = 0;
-			break;*/
+/*JUST WARNING:		res = 0;  
+			break;*/ /* ??? WTF ??? FIXME */
 		}
 
 		inf = ast_read(chan);
 		if (inf == NULL)
 		{
 			ast_log(LOG_WARNING, "Channel INF is NULL.\n");
-			file_log("DEBUG: Channel INF is NULL.\n");
 
-			// While trasmiitting i got: Received a DCN from remote after sending a page
-			// at last page
+			/* While trasmitting i got: Received a DCN from remote after sending a page
+			   at last page */
 			continue;
 #ifdef AGX_DEBUGGING
 			res = 0;
@@ -441,7 +396,6 @@ static int rxfax_exec(struct ast_channel *chan, void *data)
 		}
 
 		/* We got a frame */
-		//if (inf->frametype == AST_FRAME_VOICE) {
 		/* Check the frame type. Format also must be checked because there is a chance
 		   that a frame in old format was already queued before we set chanel format
 		   to slinear so it will still be received by ast_read */
@@ -454,12 +408,7 @@ static int rxfax_exec(struct ast_channel *chan, void *data)
 
 			samples = (inf->samples <= MAX_BLOCK_SIZE) ? inf->samples : MAX_BLOCK_SIZE;
 			len = fax_tx(&fax, (int16_t *) &buf[AST_FRIENDLY_OFFSET], samples);
-			if (len>0) {
-				/*if (len <= 0) {
-					ast_log(LOG_WARNING, "len <=0 using samples.\n");
-					file_log("len <= 0 using samples.\n");
-					len = samples;
-				}*/
+			if (len > 0) {
 				memset(&outf, 0, sizeof(outf));
 				outf.frametype = AST_FRAME_VOICE;
 				outf.subclass = AST_FORMAT_SLINEAR;
@@ -468,13 +417,9 @@ static int rxfax_exec(struct ast_channel *chan, void *data)
 				outf.data = &buf[AST_FRIENDLY_OFFSET];
 				outf.offset = AST_FRIENDLY_OFFSET;
 				outf.src = "RxFAX";
-				/*if (len <= 0) {
-					memset(&buf[AST_FRIENDLY_OFFSET], 0, outf.datalen);
-				}*/
 				if (ast_write(chan, &outf) < 0)
 				{
 					ast_log(LOG_WARNING, "Unable to write frame to channel; %s\n", strerror(errno));
-					file_log("ERROR: Unable to write frame to channel\n");
 					res = -1;
 					break;
 				}
@@ -518,10 +463,6 @@ static int unload_module(void)
 	int res;
 	ast_module_user_hangup_all();
 	res = ast_unregister_application(app);	
-	if (rxfax_logfile) {
-		fclose(rxfax_logfile);
-		rxfax_logfile = NULL;
-	}
 	return res;
 }
 /*- End of function --------------------------------------------------------*/
@@ -529,9 +470,6 @@ static int unload_module(void)
 static int load_module(void)
 {
 	ast_log(LOG_NOTICE, "RxFax using spandsp %i %i\n", SPANDSP_RELEASE_DATE, SPANDSP_RELEASE_TIME );
-	rxfax_logfile = fopen("/var/log/rxfax.log", "w+" );
-	if (rxfax_logfile)
-		ast_log(LOG_WARNING, "RxFax output also available in /var/log/rxfax.log\n" );
 	return ast_register_application(app, rxfax_exec, synopsis, descrip);
 }
 /*- End of function --------------------------------------------------------*/

@@ -1,10 +1,13 @@
 /*
  * Application to send a TIFF file as a FAX
  * based on app_txfax.c from: Copyright (C) 2003, Steve Underwood <steveu@coppice.org>
- * PATCHED BY (C) 20007 by Antonio Gallo <agx@linux.it>
+ * PATCHED BY (C) 2007 by Antonio Gallo <agx@linux.it>
  * - added ECM support
  * - added more env variables
  * - added logging to external file
+ * PATCHED BY (C) 2008 Proformatique <technique@proformatique.com>
+ * - removed useless logging to external file
+ * - cleaned up all the mess
  */
 
 /*** MODULEINFO
@@ -63,17 +66,6 @@ static char *descrip =
 
 #define MAX_BLOCK_SIZE 240
 
-static FILE *txfax_logfile = NULL;
-
-static void file_log(const char *msg)
-{
-	if (msg==NULL) 
-		return;
-	if (txfax_logfile==NULL)
-		return;
-	fprintf(txfax_logfile, msg);
-}
-
 static void span_message(int level, const char *msg)
 {
 	if (msg==NULL) return;
@@ -85,7 +77,6 @@ static void span_message(int level, const char *msg)
 	else
 		ast_level = __LOG_DEBUG;
 	ast_log(ast_level, _A_, "%s", msg);
-	file_log(msg);
 }
 /*- End of function --------------------------------------------------------*/
 
@@ -97,10 +88,7 @@ typedef struct {
 
 static void phase_b_handler(t30_state_t *s, void *user_data, int result)
 {
-	if (txfax_logfile!=NULL) {
-		fprintf( txfax_logfile, "[phase_b_handler] mark\n" );
-		fflush(txfax_logfile);
-	}
+	/* nothing */
 }
 
 static void phase_e_handler(t30_state_t *s, void *user_data, int result)
@@ -129,7 +117,7 @@ static void phase_e_handler(t30_state_t *s, void *user_data, int result)
 	snprintf(buf, sizeof(buf), "%s", t30_completion_code_to_str(result));
 	pbx_builtin_setvar_helper(chan, "PHASEESTRING", buf);
 
-	// This is to tell asterisk later that the fax has finished (with or without error)
+	/* This is to tell asterisk later that the fax has finished (with or without error) */
 	fax->finished = 1; 
 
 	ast_log(LOG_DEBUG, "==============================================================================\n");
@@ -152,31 +140,17 @@ static void phase_e_handler(t30_state_t *s, void *user_data, int result)
 				t.y_resolution,
 				t.bit_rate,
 				s->rx_file);
-		if (txfax_logfile!=NULL) {
-			fprintf( txfax_logfile, "\n[FAX OK] Remote: %s Local: %s Pages: %i Speed: %i\n\n", 
-				far_ident, local_ident, t.pages_transferred, t.bit_rate
-			);
-			fflush(txfax_logfile);
-		}
 	}
 	else
-	{
 		ast_log(LOG_DEBUG, "Fax send not successful - result (%d) %s.\n", result, t30_completion_code_to_str(result));
-		if (txfax_logfile!=NULL) {
-			fprintf( txfax_logfile, "\n[FAX ERROR] code: %d %s\n\n", result, t30_completion_code_to_str(result) );
-			fflush(txfax_logfile);
-		}
-	}
 	ast_log(LOG_DEBUG, "==============================================================================\n");
 }
 /*- End of function --------------------------------------------------------*/
 
 static void phase_d_handler(t30_state_t *s, void *user_data, int result)
 {
-//    struct ast_channel *chan;
 	t30_stats_t t;
 
-//    chan = (struct ast_channel *) user_data;
 	if (result)
 	{
 		t30_get_transfer_statistics(s, &t);
@@ -187,14 +161,10 @@ static void phase_d_handler(t30_state_t *s, void *user_data, int result)
 		ast_log(LOG_DEBUG, "Transfer Rate:      %i\n", t.bit_rate);
 		ast_log(LOG_DEBUG, "Bad rows            %i\n", t.bad_rows);
 		ast_log(LOG_DEBUG, "Longest bad row run %i\n", t.longest_bad_row_run);
-		//ast_log(LOG_DEBUG, "Compression type    %i\n", t.encoding);
+		/* ast_log(LOG_DEBUG, "Compression type    %i\n", t.encoding); */ /* ??? WTF ??? FIXME */
 		ast_log(LOG_DEBUG, "Compression type    %s\n", t4_encoding_to_str(t.encoding));
 		ast_log(LOG_DEBUG, "Image size (bytes)  %i\n", t.image_size);
 		ast_log(LOG_DEBUG, "==============================================================================\n");
-		if (txfax_logfile!=NULL) {
-			fprintf( txfax_logfile, "\n[phase_d_handler] Page: %i at %i\n\n",  t.pages_transferred, t.bit_rate );
-			fflush(txfax_logfile);
-		}
 	}
 }
 /*- End of function --------------------------------------------------------*/
@@ -231,7 +201,6 @@ static int txfax_exec(struct ast_channel *chan, void *data)
 
 	if (chan == NULL) {
 		ast_log(LOG_WARNING, "Fax transmit channel is NULL. Giving up.\n");
-		file_log("ERROR: Fax receive channel is NULL. Giving up.\n");
 		return -1;
 	}
 
@@ -254,7 +223,6 @@ static int txfax_exec(struct ast_channel *chan, void *data)
 	{
 		/* No data implies no filename or anything is present */
 		ast_log(LOG_WARNING, "Txfax requires an argument (filename)\n");
-		file_log("ERROR: Txfax requires an argument (filename)\n");
 		return -1;
 	}
 
@@ -294,13 +262,6 @@ static int txfax_exec(struct ast_channel *chan, void *data)
 		/* Shouldn't need this, but checking to see if channel is already answered
 		 * Theoretically asterisk should already have answered before running the app */
 		res = ast_answer(chan);
-		/* NO NEED TO WARN ANYMORE 
-		if (!res)
-		{
-			ast_log(LOG_WARNING, "Could not answer channel '%s'\n", chan->name);
-			file_log("Could not answer channel\n" );
-		}
-		*/
 	}
 
 	/* Setting read and write formats */
@@ -312,7 +273,6 @@ static int txfax_exec(struct ast_channel *chan, void *data)
 		if (res < 0)
 		{
 			ast_log(LOG_WARNING, "Unable to set to linear read mode, giving up\n");
-			file_log("ERROR: Unable to set to linear read mode, giving up\n");
 			ast_module_user_remove(u);
 			return -1;
 		}
@@ -325,7 +285,6 @@ static int txfax_exec(struct ast_channel *chan, void *data)
 		if (res < 0)
 		{
 			ast_log(LOG_WARNING, "Unable to set to linear write mode, giving up\n");
-			file_log("Unable to set to linear write mode, giving up\n");
 			res = ast_set_read_format(chan, original_read_fmt);
 			if (res)
 				ast_log(LOG_WARNING, "Unable to restore read format on '%s'\n", chan->name);
@@ -351,7 +310,6 @@ static int txfax_exec(struct ast_channel *chan, void *data)
 	if (fax_init(&fax, calling_party) == NULL)
 	{
 		ast_log(LOG_WARNING, "Unable to start FAX\n");
-		file_log("Unable to set to start fax_init\n");
 		ast_module_user_remove(u);
 		return -1;
 	}
@@ -389,7 +347,6 @@ static int txfax_exec(struct ast_channel *chan, void *data)
 		t30_set_ecm_capability(&(fax.t30_state), TRUE);
 		t30_set_supported_compressions(&(fax.t30_state), T30_SUPPORT_T4_1D_COMPRESSION | T30_SUPPORT_T4_2D_COMPRESSION | T30_SUPPORT_T6_COMPRESSION);
 		ast_log(LOG_DEBUG, "Enabling ECM mode for app_txfax\n"  );
-		file_log("Enabling ECM mode for app_rxfax\n"  );
 	}
 
 
@@ -400,34 +357,29 @@ static int txfax_exec(struct ast_channel *chan, void *data)
 	{
 		if (ast_check_hangup(chan)) {
 			ast_log(LOG_WARNING, "TXFAX: Channel has been hanged at fax.\n");
-			file_log("Channel has been hanged at fax.\n");
 			res = 0;
 			break;
 		}
 
 		if ((res = ast_waitfor(chan, 20)) < 0) {
 			ast_log(LOG_WARNING, "TXFAX: ast_waitfor returned less then 0.\n");
-			file_log("Channel ast_waitfor < 0.\n");
 			res = 0;
 			break;
 		}
 
 		/*if ((fax.current_rx_type == T30_MODEM_DONE)  ||  (fax.current_tx_type == T30_MODEM_DONE)) {
 			ast_log(LOG_WARNING, "Channel T30 DONE < 0.\n");
-			file_log("Channel T30 DONE.\n");
 			res = 0;
 			break;
-		}*/
+		}*/ /* ??? WTF ??? FIXME */
 
 		inf = ast_read(chan);
 		if (inf == NULL)
 		{
-			//ast_log(LOG_WARNING, "TXFAX: transmission done with ast_read(chan) == NULL\n");
 			ast_log(LOG_WARNING, "Channel INF is NULL.\n");
-			file_log("Channel INF is NULL.\n");
 
-			// While trasmiitting i got: Received a DCN from remote after sending a page
-			// at last page
+			/* While trasmitting i got: Received a DCN from remote after sending a page
+			   at last page */
 			continue;
 #ifdef AGX_DEBUGGING
 			res = 0;
@@ -436,7 +388,6 @@ static int txfax_exec(struct ast_channel *chan, void *data)
 		}
 
 		/* We got a frame */
-		//if (inf->frametype == AST_FRAME_VOICE) {
 		/* Check the frame type. Format also must be checked because there is a chance
 		   that a frame in old format was already queued before we set chanel format
 		   to slinear so it will still be received by ast_read */
@@ -449,12 +400,7 @@ static int txfax_exec(struct ast_channel *chan, void *data)
 
 			samples = (inf->samples <= MAX_BLOCK_SIZE) ? inf->samples : MAX_BLOCK_SIZE;
 			len = fax_tx(&fax, (int16_t *) &buf[AST_FRIENDLY_OFFSET], samples);
-			if (len>0) {
-				/*if (len <= 0) {
-					ast_log(LOG_WARNING, "len <=0 using samples.\n");
-					file_log("len <= 0 using samples.\n");
-					len = samples;
-				}*/
+			if (len > 0) {
 				memset(&outf, 0, sizeof(outf));
 				outf.frametype = AST_FRAME_VOICE;
 				outf.subclass = AST_FORMAT_SLINEAR;
@@ -463,13 +409,9 @@ static int txfax_exec(struct ast_channel *chan, void *data)
 				outf.data = &buf[AST_FRIENDLY_OFFSET];
 				outf.offset = AST_FRIENDLY_OFFSET;
 				outf.src = "TxFAX";
-				/*if (len <= 0) {
-					memset(&buf[AST_FRIENDLY_OFFSET], 0, outf.datalen);
-				}*/
 				if (ast_write(chan, &outf) < 0)
 				{
 					ast_log(LOG_WARNING, "TXFAX: Unable to write frame to channel; %s\n", strerror(errno));
-					file_log("Unable to write frame to channel\n");
 					res = -1;
 					break;
 				}
@@ -523,10 +465,6 @@ static int unload_module(void)
 	int res;
 	ast_module_user_hangup_all();
 	res = ast_unregister_application(app);	
-	if (txfax_logfile) {
-		fclose(txfax_logfile);
-		txfax_logfile = NULL;
-	}
 	return res;
 }
 /*- End of function --------------------------------------------------------*/
@@ -534,9 +472,6 @@ static int unload_module(void)
 static int load_module(void)
 {
 	ast_log(LOG_NOTICE, "TxFax using spandsp %i %i\n", SPANDSP_RELEASE_DATE, SPANDSP_RELEASE_TIME );
-	txfax_logfile = fopen("/var/log/txfax.log", "w+" );
-	if (txfax_logfile)
-		ast_log(LOG_WARNING, "TxFax output also available in /var/log/txfax.log\n" );
 	return ast_register_application(app, txfax_exec, synopsis, descrip);
 }
 /*- End of function --------------------------------------------------------*/
