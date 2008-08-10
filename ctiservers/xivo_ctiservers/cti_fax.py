@@ -87,7 +87,7 @@ class Fax:
                                 try:
                                         reply = 'ko;AMI'
                                         ret = ami.txfax(PATH_SPOOL_ASTERISK_FAX,
-                                                        filename, callerid, number, context)
+                                                        filename, callerid, number, self.uinfo.get('context'))
                                         if ret:
                                                 reply = 'ok;'
                                 except Exception, exc:
@@ -98,8 +98,9 @@ class Fax:
                                           % PATH_SPOOL_ASTERISK_FAX)
 
                 if reply == 'ok;':
+			# BUGFIX: myconn is undefined
                         # filename is actually an identifier.
-                        faxclients[filename] = myconn
+                        #faxclients[filename] = myconn
                         reply = 'queued;'
 
                 self.uinfo.get('login').get('connection').sendall('faxsent=%s\n' % reply)

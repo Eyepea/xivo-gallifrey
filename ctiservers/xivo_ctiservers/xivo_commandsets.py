@@ -162,6 +162,8 @@ class BaseCommand:
                 return
         def ami_cdr(self, astid, event):
                 return
+	def ami_faxsent(self, astid, event):
+		return
         def ami_faxreceived(self, astid, event):
                 return
         def ami_dial(self, astid, event):
