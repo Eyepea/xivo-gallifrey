@@ -919,7 +919,12 @@ class Outcall:
 		self.trunks = []
 
 		for row in res:
-			self.trunks.append(Trunk(agi, cursor, row['trunkfeaturesid']))
+			try:
+				trunk = Trunk(agi, cursor, row['trunkfeaturesid'])
+			except LookupError:
+				continue
+
+			self.trunks.append(trunk)
 
 class Schedule:
 	def __init__(self, agi, cursor, xid):
