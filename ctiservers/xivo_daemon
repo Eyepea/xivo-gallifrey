@@ -416,7 +416,7 @@ evfunction_to_method_name = {
         'Cdr':                  'ami_cdr',
         'Alarm':                'ami_alarm',
         'AlarmClear':           'ami_alarmclear',
-	'FaxSent':		'ami_faxsent',
+        'FaxSent':		'ami_faxsent',
         'FaxReceived':          'ami_faxreceived',
         'MeetmeJoin':           'ami_meetmejoin',               # when a member joins a conference
         'MeetmeLeave':          'ami_meetmeleave',              # when a member leaves a conference

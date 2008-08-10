@@ -98,7 +98,7 @@ class Fax:
                                           % PATH_SPOOL_ASTERISK_FAX)
 
                 if reply == 'ok;':
-			# BUGFIX: myconn is undefined
+                        # BUGFIX: myconn is undefined
                         # filename is actually an identifier.
                         #faxclients[filename] = myconn
                         reply = 'queued;'

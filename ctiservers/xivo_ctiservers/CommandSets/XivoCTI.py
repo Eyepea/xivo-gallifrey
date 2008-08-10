@@ -1145,30 +1145,30 @@ class XivoCTICommand(BaseCommand):
                         log_debug(SYSLOG_INFO, 'AMI UserEvent %s %s' % (astid, event))
                 return
 
-	def ami_faxsent(self, astid, event):
-		channel = event.get('Channel')
-		filename = event.get('FileName')
-		phaseestatus = event.get('phaseestatus')
-		phaseestring = event.get('phaseestring','Unknown')
+        def ami_faxsent(self, astid, event):
+                channel = event.get('Channel')
+                filename = event.get('FileName')
+                phaseestatus = event.get('phaseestatus')
+                phaseestring = event.get('phaseestring','Unknown')
 
-		# Force to hang up the channel
-		if channel:
-			self.amilist.execute(astid, 'hangup', channel, '')
+                # Force to hang up the channel
+                if channel:
+                        self.amilist.execute(astid, 'hangup', channel, '')
 
-		if filename and os.path.isfile(filename):
-			os.unlink(filename)
-			log_debug(SYSLOG_INFO, 'faxsent event handler : removed %s' % filename)
+                if filename and os.path.isfile(filename):
+                        os.unlink(filename)
+                        log_debug(SYSLOG_INFO, 'faxsent event handler : removed %s' % filename)
 
-		repstr = 'faxsent='
+                repstr = 'faxsent='
 
-		if phaseestatus == '0':
-			repstr += 'ok;'
-		else:
-			repstr += 'ko;%s' % phaseestring
+                if phaseestatus == '0':
+                        repstr += 'ok;'
+                else:
+                        repstr += 'ko;%s' % phaseestring
 
-		# TODO: Send the result to XIVO Client.
+                # TODO: Send the result to XIVO Client.
 
-		return
+                return
 
         def ami_meetmejoin(self, astid, event):
                 meetmenum = event.get('Meetme')
