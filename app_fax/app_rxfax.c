@@ -9,6 +9,7 @@
  * PATCHED BY (C) 2008 Proformatique <technique@proformatique.com>
  * - removed useless logging to external file
  * - cleaned up all the mess
+ * - added CR in manager event
  */
 
 /*** MODULEINFO
@@ -132,7 +133,7 @@ static void phase_e_handler(t30_state_t *s, void *user_data, int result)
 				"FaxReceived", "Channel: %s\r\nExten: %s\r\nCallerID: %s\r\nRemoteStationID: %s\r\nLocalStationID: %s\r\nPagesTransferred: %i\r\nResolution: %i\r\nTransferRate: %i\r\nFileName: %s\r\n",
 				chan->name,
 				chan->exten,
-				(chan->cid.cid_num)  ?  chan->cid.cid_num  :  "",
+				S_OR(chan->cid.cid_num, ""),
 				far_ident,
 				local_ident,
 				t.pages_transferred,

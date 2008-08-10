@@ -8,6 +8,8 @@
  * PATCHED BY (C) 2008 Proformatique <technique@proformatique.com>
  * - removed useless logging to external file
  * - cleaned up all the mess
+ * - added CR in manager event
+ * - fixed filename in manager event
  */
 
 /*** MODULEINFO
@@ -84,6 +86,7 @@ typedef struct {
 	struct ast_channel *chan;
 	fax_state_t fax;
 	volatile int finished;
+	char *file_name;
 } fax_session;
 
 static void phase_b_handler(t30_state_t *s, void *user_data, int result)
@@ -133,13 +136,13 @@ static void phase_e_handler(t30_state_t *s, void *user_data, int result)
 				"FaxSent", "Channel: %s\r\nExten: %s\r\nCallerID: %s\r\nRemoteStationID: %s\r\nLocalStationID: %s\r\nPagesTransferred: %i\r\nResolution: %i\r\nTransferRate: %i\r\nFileName: %s\r\n",
 				chan->name,
 				chan->exten,
-				(chan->cid.cid_num)  ?  chan->cid.cid_num  :  "",
+				S_OR(chan->cid.cid_num, ""),
 				far_ident,
 				local_ident,
 				t.pages_transferred,
 				t.y_resolution,
 				t.bit_rate,
-				s->rx_file);
+				fax->file_name);
 	}
 	else
 		ast_log(LOG_DEBUG, "Fax send not successful - result (%d) %s.\n", result, t30_completion_code_to_str(result));
@@ -194,6 +197,7 @@ static int txfax_exec(struct ast_channel *chan, void *data)
 
 	fax_session session;
 	session.chan = chan;
+	session.file_name = source_file;
 	session.finished = 0;
 
 
