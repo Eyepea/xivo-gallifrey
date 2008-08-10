@@ -9,7 +9,8 @@
  * PATCHED BY (C) 2008 Proformatique <technique@proformatique.com>
  * - removed useless logging to external file
  * - cleaned up all the mess
- * - added CR in manager event
+ * - replaced LF by CRLF in FaxReceived event
+ * - sent FaxReceived event even if fax didn't successfully receive
  */
 
 /*** MODULEINFO
@@ -100,6 +101,7 @@ static void phase_e_handler(t30_state_t *s, void *user_data, int result)
 	struct ast_channel *chan;
 	char local_ident[21];
 	char far_ident[21];
+	char phase_estring[128];
 	char buf[128];
 	t30_stats_t t;
 
@@ -117,8 +119,33 @@ static void phase_e_handler(t30_state_t *s, void *user_data, int result)
 	pbx_builtin_setvar_helper(chan, "FAXBITRATE", buf);
 	snprintf(buf, sizeof(buf), "%d", result);
 	pbx_builtin_setvar_helper(chan, "PHASEESTATUS", buf);
-	snprintf(buf, sizeof(buf), "%s", t30_completion_code_to_str(result));
-	pbx_builtin_setvar_helper(chan, "PHASEESTRING", buf);
+	snprintf(phase_estring, sizeof(phase_estring), "%s", t30_completion_code_to_str(result));
+	pbx_builtin_setvar_helper(chan, "PHASEESTRING", phase_estring);
+
+	manager_event(EVENT_FLAG_CALL,
+		"FaxReceived",
+		"Channel: %s\r\n"
+		"Exten: %s\r\n"
+		"CallerID: %s\r\n"
+		"RemoteStationID: %s\r\n"
+		"LocalStationID: %s\r\n"
+		"PagesTransferred: %i\r\n"
+		"Resolution: %i\r\n"
+		"TransferRate: %i\r\n"
+		"FileName: %s\r\n"
+		"PhaseEStatus: %d\r\n"
+		"PhaseEString: %s\r\n",
+		chan->name,
+		chan->exten,
+		S_OR(chan->cid.cid_num, ""),
+		far_ident,
+		local_ident,
+		t.pages_transferred,
+		t.y_resolution,
+		t.bit_rate,
+		s->rx_file,
+		result,
+		phase_estring);
 
 	ast_log(LOG_DEBUG, "==============================================================================\n");
 	if (result == T30_ERR_OK)
@@ -129,20 +156,9 @@ static void phase_e_handler(t30_state_t *s, void *user_data, int result)
 		ast_log(LOG_DEBUG, "Pages transferred: %i\n", t.pages_transferred);
 		ast_log(LOG_DEBUG, "Image resolution:  %i x %i\n", t.x_resolution, t.y_resolution);
 		ast_log(LOG_DEBUG, "Transfer Rate:     %i\n", t.bit_rate);
-		manager_event(EVENT_FLAG_CALL,
-				"FaxReceived", "Channel: %s\r\nExten: %s\r\nCallerID: %s\r\nRemoteStationID: %s\r\nLocalStationID: %s\r\nPagesTransferred: %i\r\nResolution: %i\r\nTransferRate: %i\r\nFileName: %s\r\n",
-				chan->name,
-				chan->exten,
-				S_OR(chan->cid.cid_num, ""),
-				far_ident,
-				local_ident,
-				t.pages_transferred,
-				t.y_resolution,
-				t.bit_rate,
-				s->rx_file);
 	}
 	else
-		ast_log(LOG_DEBUG, "Fax receive not successful - result (%d) %s.\n", result, t30_completion_code_to_str(result));
+		ast_log(LOG_DEBUG, "Fax receive not successful - result (%d) %s.\n", result, phase_estring);
 	ast_log(LOG_DEBUG, "==============================================================================\n");
 }
 /*- End of function --------------------------------------------------------*/
