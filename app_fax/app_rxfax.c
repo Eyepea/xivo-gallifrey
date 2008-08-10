@@ -19,7 +19,7 @@ DisplayName: RxFAX
 
 #include "asterisk.h"
 
-ASTERISK_FILE_VERSION(__FILE__, "$Revision:$")
+ASTERISK_FILE_VERSION(__FILE__, "$Revision$")
 
 #include <string.h>
 #include <stdarg.h>
@@ -129,7 +129,7 @@ static void phase_e_handler(t30_state_t *s, void *user_data, int result)
 		ast_log(LOG_DEBUG, "Image resolution:  %i x %i\n", t.x_resolution, t.y_resolution);
 		ast_log(LOG_DEBUG, "Transfer Rate:     %i\n", t.bit_rate);
 		manager_event(EVENT_FLAG_CALL,
-				"FaxReceived", "Channel: %s\nExten: %s\nCallerID: %s\nRemoteStationID: %s\nLocalStationID: %s\nPagesTransferred: %i\nResolution: %i\nTransferRate: %i\nFileName: %s\n",
+				"FaxReceived", "Channel: %s\r\nExten: %s\r\nCallerID: %s\r\nRemoteStationID: %s\r\nLocalStationID: %s\r\nPagesTransferred: %i\r\nResolution: %i\r\nTransferRate: %i\r\nFileName: %s\r\n",
 				chan->name,
 				chan->exten,
 				(chan->cid.cid_num)  ?  chan->cid.cid_num  :  "",
