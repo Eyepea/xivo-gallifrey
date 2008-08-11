@@ -99,7 +99,6 @@ static void phase_e_handler(t30_state_t *s, void *user_data, int result)
 	struct ast_channel *chan;
 	char local_ident[21];
 	char far_ident[21];
-	char phase_estring[128];
 	char buf[128];
 	t30_stats_t t;
 
@@ -118,8 +117,10 @@ static void phase_e_handler(t30_state_t *s, void *user_data, int result)
 	pbx_builtin_setvar_helper(chan, "FAXBITRATE", buf);
 	snprintf(buf, sizeof(buf), "%d", result);
 	pbx_builtin_setvar_helper(chan, "PHASEESTATUS", buf);
-	snprintf(phase_estring, sizeof(phase_estring), "%s", t30_completion_code_to_str(result));
-	pbx_builtin_setvar_helper(chan, "PHASEESTRING", phase_estring);
+
+	/* WARNING: buf is used again below */
+	snprintf(buf, sizeof(buf), "%s", t30_completion_code_to_str(result));
+	pbx_builtin_setvar_helper(chan, "PHASEESTRING", buf);
 
 	/* This is to tell asterisk later that the fax has finished (with or without error) */
 	fax->finished = 1; 
@@ -147,7 +148,7 @@ static void phase_e_handler(t30_state_t *s, void *user_data, int result)
 		t.bit_rate,
 		fax->file_name,
 		result,
-		phase_estring);
+		buf);
 
 	ast_log(LOG_DEBUG, "==============================================================================\n");
 	if (result == T30_ERR_OK)
@@ -160,7 +161,7 @@ static void phase_e_handler(t30_state_t *s, void *user_data, int result)
 		ast_log(LOG_DEBUG, "Transfer Rate:     %i\n", t.bit_rate);
 	}
 	else
-		ast_log(LOG_DEBUG, "Fax send not successful - result (%d) %s.\n", result, phase_estring);
+		ast_log(LOG_DEBUG, "Fax send not successful - result (%d) %s.\n", result, buf);
 	ast_log(LOG_DEBUG, "==============================================================================\n");
 }
 /*- End of function --------------------------------------------------------*/
