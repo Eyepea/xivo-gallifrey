@@ -85,7 +85,6 @@ static void span_message(int level, const char *msg)
 typedef struct {
 	struct ast_channel *chan;
 	fax_state_t fax;
-	char *file_name;
 	volatile int finished;
 } fax_session;
 
@@ -146,7 +145,7 @@ static void phase_e_handler(t30_state_t *s, void *user_data, int result)
 		t.pages_transferred,
 		t.y_resolution,
 		t.bit_rate,
-		fax->file_name,
+		s->tx_file,
 		result,
 		buf);
 
@@ -213,7 +212,6 @@ static int txfax_exec(struct ast_channel *chan, void *data)
 
 	fax_session session;
 	session.chan = chan;
-	session.file_name = source_file;
 	session.finished = 0;
 
 
