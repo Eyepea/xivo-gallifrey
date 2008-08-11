@@ -1146,25 +1146,16 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def ami_faxsent(self, astid, event):
-                channel = event.get('Channel')
                 filename = event.get('FileName')
-                phaseestatus = event.get('phaseestatus')
-                phaseestring = event.get('phaseestring','Unknown')
-
-                # Force to hang up the channel
-                if channel:
-                        self.amilist.execute(astid, 'hangup', channel, '')
 
                 if filename and os.path.isfile(filename):
                         os.unlink(filename)
                         log_debug(SYSLOG_INFO, 'faxsent event handler : removed %s' % filename)
 
-                repstr = 'faxsent='
-
-                if phaseestatus == '0':
-                        repstr += 'ok;'
+                if event.get('phaseestatus') == '0':
+                        repstr = "faxsent=ok;"
                 else:
-                        repstr += 'ko;%s' % phaseestring
+                        repstr = "ko;%s" % event.get('phaseestring','Unknown')
 
                 # TODO: Send the result to XIVO Client.
 
