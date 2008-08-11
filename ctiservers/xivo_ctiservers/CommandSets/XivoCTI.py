@@ -1155,7 +1155,7 @@ class XivoCTICommand(BaseCommand):
                 if event.get('phaseestatus') == '0':
                         repstr = "faxsent=ok;"
                 else:
-                        repstr = "ko;%s" % event.get('phaseestring','Unknown')
+                        repstr = "faxsent=ko;%s" % event.get('phaseestring','Unknown')
 
                 # TODO: Send the result to XIVO Client.
 
