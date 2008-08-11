@@ -132,9 +132,7 @@ def manage_cti_connections(connid, msg, sep):
         """
         Handles CTI connections.
         """
-        requester_ip = connid.getpeername()[0]
-        requester_port = connid.getpeername()[1]
-        requester = '%s:%d' % (requester_ip, requester_port)
+        requester = '%s:%d' % connid.getpeername()
 
         if requester in commandclass.transfers_ref:
                 commandclass.transfer_addbuf(requester, msg)
@@ -258,7 +256,7 @@ def manage_info_connections(connid, msg, sep):
         Handles INFO connections (basic administration console,
         primarily aimed at displaying informations first).
         """
-        requester = '%s:%d' % (connid.getpeername()[0], connid.getpeername()[1])
+        requester = '%s:%d' % connid.getpeername()
         multimsg = msg.replace('\r', '').split(sep)
         for usefulmsg in multimsg:
                 if len(usefulmsg) == 0:
@@ -416,7 +414,7 @@ evfunction_to_method_name = {
         'Cdr':                  'ami_cdr',
         'Alarm':                'ami_alarm',
         'AlarmClear':           'ami_alarmclear',
-        'FaxSent':		'ami_faxsent',
+        'FaxSent':              'ami_faxsent',
         'FaxReceived':          'ami_faxreceived',
         'MeetmeJoin':           'ami_meetmejoin',               # when a member joins a conference
         'MeetmeLeave':          'ami_meetmeleave',              # when a member leaves a conference
@@ -858,7 +856,7 @@ while True: # loops over the reloads
                                 elif sel_i in fdlist_established:
                                         try:
                                                 kind = fdlist_established[sel_i]
-                                                requester = '%s:%d' % (sel_i.getpeername()[0], sel_i.getpeername()[1])
+                                                requester = '%s:%d' % sel_i.getpeername()
                                                 try:
                                                         msg = sel_i.recv(BUFSIZE_LARGE, socket.MSG_DONTWAIT)
                                                         lmsg = len(msg)

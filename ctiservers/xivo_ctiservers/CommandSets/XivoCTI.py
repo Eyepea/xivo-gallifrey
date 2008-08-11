@@ -178,8 +178,8 @@ class XivoCTICommand(BaseCommand):
                                 return 'xivoversion_client:%s;%d' % (xivoversion, XIVOVERSION)
                         svnversion = loginparams.get('version')
                         ident = loginparams.get('ident')
-                        if len(ident.split("@")) == 2:
-                                [whoami, whatsmyos] = ident.split("@")
+                        if len(ident.split('@')) == 2:
+                                [whoami, whatsmyos] = ident.split('@')
                                 # return 'wrong_client_identifier:%s' % whoami
                                 if whatsmyos[:3] not in ['X11', 'WIN', 'MAC']:
                                         return 'wrong_os_identifier:%s' % whatsmyos
@@ -276,14 +276,16 @@ class XivoCTICommand(BaseCommand):
                 #              return 'uninit_phone'
                 if userinfo.has_key('login') and userinfo['login'].has_key('sessiontimestamp'):
                         if time.time() - userinfo['login'].get('sessiontimestamp') < self.xivoclient_session_timeout:
+                                log_debug(SYSLOG_WARNING, 'user %s already connected from %s'
+                                          % (userinfo['user'], userinfo['login']['connection'].getpeername()))
                                 if 'lastconnwins' in userinfo:
                                         if userinfo['lastconnwins']:
                                                 # one should then disconnect the already connected instance
                                                 pass
                                         else:
-                                                return 'already_connected'
+                                                return 'already_connected:%s:%d' % userinfo['login']['connection'].getpeername()
                                 else:
-                                        return 'already_connected'
+                                        return 'already_connected:%s:%d' % userinfo['login']['connection'].getpeername()
                 return None
 
 
@@ -1155,10 +1157,13 @@ class XivoCTICommand(BaseCommand):
                 if event.get('phaseestatus') == '0':
                         repstr = "faxsent=ok;"
                 else:
-                        repstr = "faxsent=ko;%s" % event.get('phaseestring','Unknown')
+                        repstr = "faxsent=ko;%s" % event.get('phaseestring', 'Unknown')
 
                 # TODO: Send the result to XIVO Client.
+                return
 
+        def ami_faxreceived(self, astid, event):
+                log_debug(SYSLOG_INFO, '%s : %s' % (astid, event))
                 return
 
         def ami_meetmejoin(self, astid, event):
@@ -1418,8 +1423,8 @@ class XivoCTICommand(BaseCommand):
                                         repstr = self.__agent__(userinfo, icommand.args)
 
                 except Exception, exc:
-                        log_debug(SYSLOG_ERR, '--- exception --- (manage_cticommand) %s %s %s %s'
-                                  %(icommand.name, str(icommand.args), str(userinfo.get('login').get('connection')), str(exc)))
+                        log_debug(SYSLOG_ERR, '--- exception --- (manage_cticommand) %s %s %s : %s'
+                                  % (icommand.name, icommand.args, userinfo.get('login').get('connection'), exc))
 
                 if repstr is not None: # might be useful to reply sth different if there is a capa problem for instance, a bad syntaxed command
                         try:
@@ -1902,7 +1907,10 @@ class XivoCTICommand(BaseCommand):
                                         cidname_src = srcuinfo.get('fullname')
 
                         if typedst == 'ext':
-                                exten_dst = whodst
+                                if whodst == 'special:parkthecall':
+                                        exten_dst = self.configs[astid_src].parkingnumber
+                                else:
+                                        exten_dst = whodst
 
                         print astid_src, commname, chan_src, exten_dst, context_src
                         ret = False
@@ -2128,7 +2136,7 @@ class XivoCTICommand(BaseCommand):
                 if searchpattern == "":
                         return []
 
-                dbkind = z.uri.split(":")[0]
+                dbkind = z.uri.split(':')[0]
                 if dbkind == 'ldap':
                         selectline = []
                         for fname in z.search_matching_fields:
@@ -2286,7 +2294,7 @@ def channel_splitter(channel):
 def split_from_ui(fullname):
         phone = ""
         channel = ""
-        s1 = fullname.split("/")
+        s1 = fullname.split('/')
         if len(s1) == 5:
                 phone = s1[3] + "/" + channel_splitter(s1[4])
                 channel = s1[3] + "/" + s1[4]
