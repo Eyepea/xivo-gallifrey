@@ -379,7 +379,7 @@ static int txfax_exec(struct ast_channel *chan, void *data)
 			break;
 		}
 
-		if ((res = ast_waitfor(chan, 20)) < 0) {
+		if ((res = ast_waitfor(chan, 100)) < 0) {
 			ast_log(LOG_WARNING, "TXFAX: ast_waitfor returned less then 0.\n");
 			res = 0;
 			break;
