@@ -2,7 +2,7 @@
 fw_filename=Thomson/binary/v2030SG.080619.1.62.3.zz
 
 [config]
-telcfg=Thomson/binary/TelConf2030SG_v1.62.3.txt
+telcfg=Thomson/TelConf2030SG_v1.62.3.txt
 common_config=Thomson/ST2030S_common_v1.62-200808120000.txt
 
 melodies=Thomson/Melodies_1.62.txt
