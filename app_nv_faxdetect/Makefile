@@ -1,5 +1,5 @@
 CFLAGS ?= -O2 -fPIC
-Z_CFLAGS := $(CFLAGS) -D _GNU_SOURCE -Wall -Wmissing-prototypes -Wstrict-prototypes
+Z_CFLAGS := $(CFLAGS) -D _GNU_SOURCE -Wall -Wmissing-prototypes -Wstrict-prototypes -DAST_MODULE=\"app_nv_faxdetect\"
 LIBS ?=
 Z_LIBS := $(LIBS) -lpthread
 

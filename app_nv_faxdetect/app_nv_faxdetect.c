@@ -37,7 +37,7 @@
 #include <asterisk/dsp.h>
 #include <asterisk/utils.h>
 
-static char *tdesc = "Newman's fax detection application";
+//static char *tdesc = "Newman's fax detection application";
 
 static char *app = "NVFaxDetect";
 
@@ -71,14 +71,14 @@ static char *descrip =
 #define CALLERID_FIELD cid.cid_num
 //#define CALLERID_FIELD callerid
 
-STANDARD_LOCAL_USER;
+//STANDARD_LOCAL_USER;
 
-LOCAL_USER_DECL;
+//LOCAL_USER_DECL;
 
 static int nv_detectfax_exec(struct ast_channel *chan, void *data)
 {
 	int res = 0;
-	struct localuser *u;
+	//struct localuser *u;
 	char tmp[256] = "\0";
 	char *p = NULL;
 	char *waitstr = NULL;
@@ -158,7 +158,7 @@ static int nv_detectfax_exec(struct ast_channel *chan, void *data)
 	ast_log(LOG_DEBUG, "Preparing detect of fax (waitdur=%dms, sildur=%dms, mindur=%dms, maxdur=%dms)\n", 
 						waitdur, sildur, mindur, maxdur);
 						
-	LOCAL_USER_ADD(u);
+	//LOCAL_USER_ADD(u);
 	if (chan->_state != AST_STATE_UP && !skipanswer) {
 		/* Otherwise answer unless we're supposed to send this while on-hook */
 		res = ast_answer(chan);
@@ -308,22 +308,22 @@ static int nv_detectfax_exec(struct ast_channel *chan, void *data)
 	if (dsp)
 		ast_dsp_free(dsp);
 	
-	LOCAL_USER_REMOVE(u);
+	//LOCAL_USER_REMOVE(u);
 	
 	return res;
 }
 
-int unload_module(void)
+static int unload_module(void)
 {
-	STANDARD_HANGUP_LOCALUSERS;
+	//STANDARD_HANGUP_LOCALUSERS;
 	return ast_unregister_application(app);
 }
 
-int load_module(void)
+static int load_module(void)
 {
 	return ast_register_application(app, nv_detectfax_exec, synopsis, descrip);
 }
-
+/*
 char *description(void)
 {
 	return tdesc;
@@ -340,3 +340,5 @@ char *key()
 {
 	return ASTERISK_GPL_KEY;
 }
+*/
+AST_MODULE_INFO_STANDARD(ASTERISK_GPL_KEY, "Fax detection application");
