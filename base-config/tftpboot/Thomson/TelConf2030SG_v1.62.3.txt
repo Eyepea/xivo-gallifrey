@@ -285,7 +285,7 @@ set coding 0 usage              data  off
 ;
 ;set coding 0 vif                640
 set coding 0 encap              rtp
-set coding 0 vad                off
+set coding 0 vad                on
 set coding 0 vad_thresh         32767
 ;set coding 0 min_delay              20
 ;set coding 0 nom_delay          	30
