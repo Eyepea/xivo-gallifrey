@@ -420,3 +420,16 @@ url: http://www.thomsontelecompartner.com/getfile.php?id=5020
 size: 4018854
 md5sum: 6fb1a09b5eee85c4ade26a47053be5d5
 sha1sum: ad71ff6b71ac07871fac9ae05b748b32f2aa8aa3
+
+# Thomson ST2030 1.62
+[thst2030_162]
+brand: Thomson
+model: ST2030
+version: 1.62
+files: ST2030_SG_v1.62_Release_Package.zip
+
+[ST2030_SG_v1.62_Release_Package.zip]
+url: http://www.thomsontelecompartner.com/getfile.php?id=5190
+size: 12322582
+md5sum: 8e1cf5a37283d4d2a07b6fcfef2a3ce3
+sha1sum: 3a9fd90b5cc8d0a80536f1010a22d7a9e8d21eda
