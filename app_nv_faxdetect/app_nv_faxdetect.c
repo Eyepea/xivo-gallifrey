@@ -323,22 +323,5 @@ static int load_module(void)
 {
 	return ast_register_application(app, nv_detectfax_exec, synopsis, descrip);
 }
-/*
-char *description(void)
-{
-	return tdesc;
-}
 
-int usecount(void)
-{
-	int res;
-	STANDARD_USECOUNT(res);
-	return res;
-}
-
-char *key()
-{
-	return ASTERISK_GPL_KEY;
-}
-*/
 AST_MODULE_INFO_STANDARD(ASTERISK_GPL_KEY, "Fax detection application");
