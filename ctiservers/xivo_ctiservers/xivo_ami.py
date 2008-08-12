@@ -464,7 +464,7 @@ class AMIClass:
                                                              ('Variable', 'FAXDIR=%s' % faxdir),
                                                              ('Variable', 'FAXID=%s' % faxid),
                                                              ('Context', 'macro-txfax'),
-                                                             ('Extension', 's'),
+                                                             ('Exten', 's'),
                                                              ('Priority', '1')])
                         return ret
                 except self.AMIError, exc:
