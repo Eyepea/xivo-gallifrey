@@ -52,7 +52,7 @@ def aastra_install_fw(firmware, file):
 
 def aastra_install(firmware):
 	for file in firmware.remote_files:
-		if file.filename.find("5xi_LangPacks") != -1:
+		if file.filename.find("LangPacks") != -1:
 			aastra_install_langs(firmware, file)
 		else:
 			aastra_install_fw(firmware, file)
