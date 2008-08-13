@@ -289,7 +289,6 @@ static int nv_detectfax_exec(struct ast_channel *chan, void *data)
 				}						
 			}
 			ast_frfree(fr);
-			fr = NULL;
 		}
 	} else
 		ast_log(LOG_WARNING, "Could not answer channel '%s'\n", chan->name);
