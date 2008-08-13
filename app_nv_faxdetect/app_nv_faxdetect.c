@@ -149,7 +149,7 @@ static int nv_detectfax_exec(struct ast_channel *chan, void *data)
 			maxdur = x;
 	}
 	
-	ast_log(LOG_DEBUG, "Preparing detect of fax (waitdur=%dms, sildur=%dms, mindur=%dms, maxdur=%dms)\n", 
+	ast_log(LOG_DEBUG, "Preparing detect of fax (waitdur=%ds, sildur=%dms, mindur=%dms, maxdur=%dms)\n", 
 						waitdur, sildur, mindur, maxdur);
 	
 	u = ast_module_user_add(chan);
@@ -211,7 +211,7 @@ static int nv_detectfax_exec(struct ast_channel *chan, void *data)
 					if (strcmp(chan->exten, "fax")) {
 						ast_log(LOG_NOTICE, "Redirecting %s to fax extension\n", chan->name);
 						pbx_builtin_setvar_helper(chan, "FAX_DETECTED", "1");
-						pbx_builtin_setvar_helper(chan,"FAXEXTEN",chan->exten);								
+						pbx_builtin_setvar_helper(chan, "FAXEXTEN", chan->exten);								
 						if (ast_exists_extension(chan, chan->context, "fax", 1, chan->CALLERID_FIELD)) {
 							/* Save the DID/DNIS when we transfer the fax call to a "fax" extension */
 							strncpy(chan->exten, "fax", sizeof(chan->exten)-1);
