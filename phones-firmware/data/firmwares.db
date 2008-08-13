@@ -378,9 +378,9 @@ files: ST2022_SG_v3.62_Release_Package.zip
 
 [ST2022_SG_v3.62_Release_Package.zip]
 url: http://www.thomsontelecompartner.com/getfile.php?id=5191
-size: 1584894
-md5sum: 3053ca7d55ffc5756508e3ff5ac246b1
-sha1sum: d60af23713a9d5f2777ac1f5f2cf391de44c8d56
+size: 7408697
+md5sum: e3f0478b75da6208dbfbd50a3bc08298
+sha1sum: b2d49508faf53af9ccdfb370c8265e4ba0b52f77
 
 # Thomson ST2030 1.62
 [thst2030_162]
