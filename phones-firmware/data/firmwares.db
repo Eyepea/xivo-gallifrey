@@ -369,57 +369,18 @@ size: 950248
 md5sum: 6718cf10c657b04024b4e432ecac36fa
 sha1sum: 17579a78954dbf3016174bd1fbb9cd45e659dfb0
 
-# Thomson ST2022 1.58
-[thst2022_158]
+# Thomson ST2022 1.62
+[thst2022_162]
 brand: Thomson
 model: ST2022
-version: 1.58
-files: ST2022_SG_v3.58-update.zip
+version: 1.62
+files: ST2022_SG_v3.62_Release_Package.zip
 
-[ST2022_SG_v3.58-update.zip]
-url: http://www.thomsontelecompartner.com/getfile.php?id=4806
-size: 4211741
-md5sum: 5f3477e1f9e6188b55ffd1671d4be971
-sha1sum: bc86611bd76a8cfc29923ac8e00e3b032de88f4c
-
-# Thomson ST2022 1.59
-[thst2022_159]
-brand: Thomson
-model: ST2022
-version: 1.59
-files: ST2022_SG_v3.59_Release_Package.zip
-
-[ST2022_SG_v3.59_Release_Package.zip]
-url: http://www.thomsontelecompartner.com/getfile.php?id=4961
-size: 4087939
-md5sum: 8485ce14554ebef42063f14643455da1
-sha1sum: 4e459ab3fd12874a48e10be95537b6f92a885e59
-
-# Thomson ST2030 1.58
-[thst2030_158]
-brand: Thomson
-model: ST2030
-version: 1.58
-files: ST2030_SG_v1.58_Release_Package.zip
-
-[ST2030_SG_v1.58_Release_Package.zip]
-url: http://www.thomsontelecompartner.com/getfile.php?id=4718
-size: 4217835
-md5sum: aa776ad4683ceca0b0a2af1bfe01b125
-sha1sum: 239a0ac49ec3f72bb4dafc6d1d22110cf8b805e6
-
-# Thomson ST2030 1.59
-[thst2030_159]
-brand: Thomson
-model: ST2030
-version: 1.59
-files: ST2030_SG_v1.59_Release_Package-updated.zip
-
-[ST2030_SG_v1.59_Release_Package-updated.zip]
-url: http://www.thomsontelecompartner.com/getfile.php?id=5020
-size: 4018854
-md5sum: 6fb1a09b5eee85c4ade26a47053be5d5
-sha1sum: ad71ff6b71ac07871fac9ae05b748b32f2aa8aa3
+[ST2022_SG_v3.62_Release_Package.zip]
+url: http://www.thomsontelecompartner.com/getfile.php?id=5191
+size: 1584894
+md5sum: 3053ca7d55ffc5756508e3ff5ac246b1
+sha1sum: d60af23713a9d5f2777ac1f5f2cf391de44c8d56
 
 # Thomson ST2030 1.62
 [thst2030_162]
