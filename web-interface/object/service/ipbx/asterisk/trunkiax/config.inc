@@ -90,6 +90,10 @@ $array['element']['call-limit'] = array();
 $array['element']['call-limit']['default'] = 0;
 $array['element']['call-limit']['setdef'] = true;
 
+$array['element']['setvar'] = array();
+$array['element']['setvar']['default'] = '';
+$array['element']['setvar']['forcedef'] = true;
+
 $array['element']['protocol'] = array();
 $array['element']['protocol']['default'] = XIVO_SRE_IPBX_AST_PROTO_IAX;
 $array['element']['protocol']['forcedef'] = true;
@@ -134,6 +138,7 @@ $array['filter']['allow'] = array('set' => false,'chk' => 2,'uvalue' => array(
 						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263P,
 						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H264));
 $array['filter']['port'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
+$array['filter']['setvar'] = array('set' => false);
 $array['filter']['protocol'] = array('set' => false);
 $array['filter']['category'] = array('set' => false);
 
