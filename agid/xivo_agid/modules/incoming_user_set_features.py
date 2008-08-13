@@ -28,7 +28,6 @@ def incoming_user_set_features(agi, cursor, args):
 	context = agi.get_variable('XIVO_CONTEXT')
 	zone = agi.get_variable('XIVO_CALLORIGIN')
 	bypass_filter = agi.get_variable('XIVO_CALLFILTER_BYPASS')
-	faxdetect = bool(agi.get_variable('XIVO_FAXDETECT'))
 
 	# FIXME: this is only for the callrecord feature, which is likely to change
 	srcnum = agi.get_variable('XIVO_SRCNUM')
@@ -53,7 +52,7 @@ def incoming_user_set_features(agi, cursor, args):
 
 	# Special case. If a boss-secretary filter is set, the code will prematurely
 	# exit because the other normally set variables are skipped.
-	if not faxdetect and not bypass_filter and ufilter and ufilter.active:
+	if not bypass_filter and ufilter and ufilter.active:
 		zone_applies = ufilter.check_zone(zone)
 
 		if caller:
