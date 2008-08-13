@@ -949,8 +949,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	function set_autoprov($action,$arr,$protocolname)
 	{
 		if(($action !== 'add' && $action !== 'edit') === true
-		|| is_array($arr) === false
-		|| $this->get_autoprov_list() === false)
+		|| is_array($arr) === false)
 			return(false);
 
 		if($action === 'edit' && xivo_issa('autoprov',$this->_info) === true)
@@ -976,6 +975,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$arr['iduserfeatures'] = 0;
 			$vendor = substr($arr['vendormodel'],0,$pos);
 			$model = substr($arr['vendormodel'],$pos+1);
+
+			if(($list = $this->get_autoprov_list()) === false)
+				return(false);
 
 			if(xivo_issa($vendor,$list) === true
 			&& xivo_issa('model',$list[$vendor]) === true
