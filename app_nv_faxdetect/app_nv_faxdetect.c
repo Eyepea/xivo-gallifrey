@@ -289,10 +289,23 @@ static int nv_detectfax_exec(struct ast_channel *chan, void *data)
 				}						
 			}
 			ast_frfree(fr);
+			fr = NULL;
 		}
 	} else
 		ast_log(LOG_WARNING, "Could not answer channel '%s'\n", chan->name);
-	
+
+	if (fr != NULL)
+	{
+		ast_frfree(fr);
+		fr = NULL;
+	}
+
+	if (fr2 != NULL)
+	{
+		ast_frfree(fr2);
+		fr2 = NULL;
+	}
+
 	if (res > -1) {
 		if (origrformat && ast_set_read_format(chan, origrformat)) {
 			ast_log(LOG_WARNING, "Failed to restore read format for %s to %s\n", 
