@@ -84,7 +84,7 @@ class Snom(PhoneVendor):
                 fk_config_lines = []
                 for key in sorted_keys:
                         exten, supervise = funckey[key]
-                        fk_config_lines.append("fkey%01d: blf <sip:%s@%s;phone=user>" % int(key))
+                        fk_config_lines.append("fkey%01d: blf <sip:%s@%s;phone=user>" % (int(key), exten, Pgc['asterisk_ipv4']))
                 return "\n".join(fk_config_lines)
 
         
