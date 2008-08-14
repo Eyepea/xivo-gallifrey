@@ -36,6 +36,8 @@ __license__ = """
 
 import re
 import pprint
+import pwd
+import grd
 
 
 DEFAULT_TIMEOUT = 2000 # 2sec timeout used as default for functions that take timeouts
@@ -115,6 +117,39 @@ class FastAGI:
     @staticmethod
     def dp_break(message):
         raise FastAGIDialPlanBreak(message)
+
+    @staticmethod
+    def _get_pwd_uid_gid(name)
+        pw_name, pw_passwd, pw_uid, pw_gid, pw_gecos, pw_dir, pw_shell = pwd.getpwnam(name)
+        return pw_uid, pw_gid
+
+    @staticmethod
+    def _get_grd_gid(name):
+        gr_name, gr_passwd, gr_gid, gr_mem = grp.getgrnam(name)
+        return gr_gid
+
+    def get_ctl_uid_gid(self):
+        ctlowner = self.get_variable('GETCONF(CTL_OWNER)')
+        ctlgroup = self.get_variable('GETCONF(CTL_GROUP)')
+
+        if not ctlowner:
+                ctlowner = "asterisk"
+
+        try:
+                ctluid, pw_gid = _get_pwd_uid_gid(ctlowner)
+        except:
+                raise FastAGIError('Unable to fetch uid and gid of user: %s' % ctlowner)
+
+        if not ctluid or not ctlgroup:
+                return ctluid, pw_gid
+
+        try:
+                ctlgid = _get_grd_gid(ctlgroup)
+        except:
+                ctlgid = pw_gid
+                raise FastAGIError('Unable to fetch gid of group: %s' % ctlgroup)
+
+        return ctluid, ctlgid
 
     def execute(self, command, *args):
         try:

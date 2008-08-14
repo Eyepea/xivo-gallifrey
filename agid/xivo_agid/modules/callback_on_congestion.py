@@ -33,13 +33,29 @@ def callback_on_congestion(agi, cursor, args):
 	srcnum = agi.get_variable('XIVO_SRCNUM')
 	dstnum = agi.get_variable('XIVO_DSTNUM')
 	context = agi.get_variable('XIVO_CONTEXT')
+	spooldir = agi.get_variable('GETCONF(SPOOL_DIR)')
+	ctluid, ctlgid = agi.get_ctl_uid_gid()
+
+	if srcnum in (None, ''):
+		agi.dp_break("Unable to find srcnum, srcnum = '%s'" % srcnum)
+
+	if dstnum in (None, ''):
+		agi.dp_break("Unable to find dstnum, dstnum = '%s'" % dstnum)
+
+	if not context:
+		agi.dp_break("Unable to find context, context = '%s'" % context)
+
+	if not spooldir:
+		agi.dp_break("Unable to fetch AST_SPOOL_DIR")
+
+	if ctluid is None or ctlgid is None:
+		agi.dp_break("Unable to fetch uid or gid")
 
 	mtime = time.time()
-	filename = "%s-to-%s-%s.call" % (srcnum, dstnum, int(mtime))
+	filepath = "%s/%%s/%s-to-%s-%s.call" % (spooldir, srcnum, dstnum, int(mtime))
 
-	# TODO fetch path from configuration file.
-	tmpfile = "/var/spool/asterisk/tmp/" + filename
-	realfile = "/var/spool/asterisk/outgoing/" + filename
+	tmpfile = filepath % "tmp"
+	realfile = filepath % "outgoing"
 
 	f = open(tmpfile, 'w')
 	f.write("Channel: Local/%s\n"
@@ -53,6 +69,7 @@ def callback_on_congestion(agi, cursor, args):
 	f.close()
 
 	os.utime(tmpfile, (mtime, mtime))
+	os.chown(tmpfile, ctluid, ctlgid)
 	os.rename(tmpfile, realfile)
 
 def setup(cursor):
