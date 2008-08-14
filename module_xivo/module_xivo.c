@@ -221,6 +221,34 @@ GETCONF_FUNC_LIST(DOC),
 };
 
 
+static int appexists(struct ast_channel *chan, char *cmd, char *data, char *buf, size_t len)
+{
+	UNUSED(chan);
+	UNUSED(cmd);
+
+	if (len == 0) {
+		ast_log(LOG_WARNING, "APPEXISTS requires an application name.\n");
+		ast_copy_string(buf, "", len);
+		return -1;
+	}
+
+	ast_copy_string(buf, pbx_findapp(data) ? "1" : "0", len);
+	return 0;
+}
+
+#define APPEXISTS_SYNTAX		"APPEXISTS(<application_name>)"
+
+static struct ast_custom_function appexists_function = {
+	.name = "APPEXISTS",
+	.synopsis = "Checks if an application exists",
+	.syntax = APPEXISTS_SYNTAX,
+	.desc = 
+"Checks the list of loaded applications for <application_name>.\n"
+"Returns 1 if <application_name> exists, 0 otherwise.\n",
+	.read = appexists,
+};
+
+
 static const char *set_one_name = "SetOne";
 static const char *set_one_synopsis = "Set exactly one channel variable and allow the rvalue to contain pipes characters";
 static const char *set_one_description =
@@ -271,9 +299,11 @@ static int load_module(void)
 {
 	ast_custom_function_register(&strsubst_function);
 	ast_custom_function_register(&getconf_function);
+	ast_custom_function_register(&appexists_function);
 	if (ast_register_application(
 			set_one_name, set_one,
 			set_one_synopsis, set_one_description) < 0) {
+		ast_custom_function_unregister(&appexists_function);
 		ast_custom_function_unregister(&getconf_function);
 		ast_custom_function_unregister(&strsubst_function);
 	}
@@ -286,9 +316,10 @@ static int unload_module(void)
 	if (!loaded)
 		return 0;
 	ast_unregister_application(set_one_name);
+	ast_custom_function_unregister(&appexists_function);
 	ast_custom_function_unregister(&getconf_function);
 	ast_custom_function_unregister(&strsubst_function);
 	return 0;
 }
 
-AST_MODULE_INFO_STANDARD(ASTERISK_GPL_KEY, "STRSUBST() & GETCONF() funcs + SetOne() app");
+AST_MODULE_INFO_STANDARD(ASTERISK_GPL_KEY, "STRSUBST(), GETCONF() & APPEXISTS() funcs + SetOne() app");
