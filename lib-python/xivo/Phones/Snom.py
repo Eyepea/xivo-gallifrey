@@ -76,6 +76,17 @@ class Snom(PhoneVendor):
                                         close_fds = True)
                 except OSError:
                         except_tb.syslog_exception()
+
+        @staticmethod
+        def __format_function_keys(funckey):
+                sorted_keys = funckey.keys()
+                sorted_keys.sort()
+                fk_config_lines = []
+                for key in sorted_keys:
+                        exten, supervise = funckey[key]
+                        fk_config_lines.append("fkey%01d: blf <sip:%s@%s;phone=user>" % int(key))
+                return "\n".join(fk_config_lines)
+
         
         def do_reinit(self):
                 """
@@ -109,6 +120,10 @@ class Snom(PhoneVendor):
                 template_file.close()
                 tmp_filename = os.path.join(SNOM_SPEC_DIR, "snom" + self.phone['model'] + "-" + self.phone['macaddr'].replace(":", "") + ".htm.tmp")
                 htm_filename = tmp_filename[:-4]
+
+		function_keys_config_lines = \
+                        self.__format_function_keys(provinfo['funckey'])
+
                 txt = xivo_config.txtsubst(template_lines,
                         { 'user_display_name': provinfo['name'],
                           'user_phone_ident':  provinfo['ident'],
@@ -116,6 +131,7 @@ class Snom(PhoneVendor):
                           'user_phone_passwd': provinfo['passwd'],
                           'http_user': SNOM_COMMON_HTTP_USER,
                           'http_pass': SNOM_COMMON_HTTP_PASS,
+			  'function_keys': function_keys_config_lines,
                         },
                         htm_filename)
                 tmp_file = open(tmp_filename, 'w')
