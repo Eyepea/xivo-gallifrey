@@ -91,6 +91,10 @@ class Linksys(PhoneVendor):
                 template_file.close()
                 tmp_filename = os.path.join(LINKSYS_COMMON_DIR, model + "-" + macaddr + ".cfg.tmp")
                 cfg_filename = tmp_filename[:-4]
+
+		function_keys_config_lines = \
+                        self.__format_function_keys(provinfo['funckey'])		
+
                 txt = xivo_config.txtsubst(template_lines,
                         { 'user_display_name': provinfo['name'],
                           'user_phone_ident':  provinfo['ident'],
@@ -98,12 +102,25 @@ class Linksys(PhoneVendor):
                           'user_phone_passwd': provinfo['passwd'],
                           'asterisk_ipv4' : Pgc['asterisk_ipv4'],
                           'ntp_server_ipv4' : Pgc['ntp_server_ipv4'],
+			  'function_keys': function_keys_config_lines,
                         },
                         cfg_filename)
                 tmp_file = open(tmp_filename, 'w')
                 tmp_file.writelines(txt)
                 tmp_file.close()
                 os.rename(tmp_filename, cfg_filename)
+
+        @staticmethod
+        def __format_function_keys(funckey):
+                sorted_keys = funckey.keys()
+                sorted_keys.sort()
+                fk_config_lines = []
+                for key in sorted_keys:
+                        exten, supervise = funckey[key]
+                        fk_config_lines.append("<Unit_1_Key_%01d>fnc=blf+sd+cp;sub=%s@%s:nme=%s</Unit_1_Key_%01d>" 
+                                               % (int(key), exten, Pgc['asterisk_ipv4'], exten))
+                return "\n".join(fk_config_lines)
+
         
         def do_autoprov(self, provinfo):
                 """
