@@ -228,7 +228,7 @@ static int appexists(struct ast_channel *chan, char *cmd, char *data, char *buf,
 
 	if (len == 0) {
 		ast_log(LOG_WARNING, "APPEXISTS requires an application name.\n");
-		ast_copy_string(buf, "", len);
+		ast_copy_string(buf, "0", len);
 		return -1;
 	}
 
