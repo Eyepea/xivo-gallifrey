@@ -1,5 +1,5 @@
 /*
- * String Substitution Function for Asterisk
+ * Various Asterisk functions and applications used in XIVO.
  * Copyright (C) 2008  Proformatique
  *
  * This program is free software; you can redistribute it and/or modify
@@ -103,9 +103,6 @@ static int strsubst(struct ast_channel *chan, char *cmd, char *data, char *buf, 
 	UNUSED(chan);
 	UNUSED(cmd);
 
-	if (len == 0)
-		return -1;
-
 	delim = ast_strdupa(data);
 	
 	string = strsep(&delim, "|");
@@ -195,9 +192,6 @@ static int getconf(struct ast_channel *chan, char *cmd, char *data, char *buf, s
 	UNUSED(chan);
 	UNUSED(cmd);
 
-	if (len == 0)
-		return -1;
-
 	for (unsigned i = 0; i < ARRAY_LEN(confvars); i++) {
 		if (!strcasecmp(confvars[i].varname, data)) {
 			ast_copy_string(buf, confvars[i].ast_config_ptr, len);
@@ -228,12 +222,6 @@ static int appexists(struct ast_channel *chan, char *cmd, char *data, char *buf,
 	UNUSED(chan);
 	UNUSED(cmd);
 
-	if (len == 0) {
-		ast_log(LOG_WARNING, "APPEXISTS requires an application name.\n");
-		ast_copy_string(buf, "0", len);
-		return -1;
-	}
-
 	ast_copy_string(buf, pbx_findapp(data) ? "1" : "0", len);
 	return 0;
 }
@@ -255,12 +243,6 @@ static int funcexists(struct ast_channel *chan, char *cmd, char *data, char *buf
 {
 	UNUSED(chan);
 	UNUSED(cmd);
-
-	if (len == 0) {
-		ast_log(LOG_WARNING, "FUNCEXISTS requires a function name.\n");
-		ast_copy_string(buf, "0", len);
-		return -1;
-	}
 
 	ast_copy_string(buf, ast_custom_function_find(data) ? "1" : "0", len);
 	return 0;
