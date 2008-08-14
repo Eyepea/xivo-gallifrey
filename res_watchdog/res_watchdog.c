@@ -15,9 +15,8 @@
  * the GNU General Public License
  */
 
-#include <asterisk.h>
-
-ASTERISK_FILE_VERSION(__FILE__, "$Revision$")
+const char module_date_revision[] =
+"res_watchdog (patched by Proformatique) $Date: 2008-06-19 10:18:06 +0200 (jeu, 19 jun 2008) $ $Revision$ $HeadURL: svn+ssh://decryptus@rcs.lan.proformatique.com/rcs/svn/xivo/clients_branches/autoescape/res_watchdog/res_watchdog.c $";
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -54,6 +53,13 @@ typedef struct watchdog_pvt {
     pthread_t watchdog_thread;
     struct watchdog_pvt *next;
 } watchdog_pvt;
+
+/* Function Prototypes */
+int load_module(void);
+int unload_module(void);
+char *description(void);
+int usecount(void);
+char *key(void);
 
 static void *do_watchdog_thread(void *data)
 {
@@ -239,7 +245,7 @@ static int serial_config(int fd, const char *dev_name,
 	return 0;
 }
 
-static int load_module(void)
+int load_module(void)
 {
 	char *cat, *utype, *udevice, *uinterval,
 	     *userial, *ubitrate, *uparity, *ustop, *uflow, *ubits;
@@ -314,7 +320,8 @@ static int load_module(void)
 	return 0;
 }
 
-static int unload_module(void)
+
+int unload_module(void)
 {
 	struct watchdog_pvt *dogs, *woof;
 
@@ -332,4 +339,22 @@ static int unload_module(void)
 	return 0;
 }
 
-AST_MODULE_INFO_STANDARD(ASTERISK_GPL_KEY, "Watchdog API");
+char *description(void)
+{
+	return "Watchdog Resource";
+}
+
+int usecount(void)
+{
+	return 1;
+}
+
+char *key(void)
+{
+	return ASTERISK_GPL_KEY;
+}
+
+AST_MODULE_INFO(ASTERISK_GPL_KEY, AST_MODFLAG_GLOBAL_SYMBOLS, "Watchdog API",
+		.load = load_module,
+		.unload = unload_module,
+		);
