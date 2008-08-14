@@ -171,16 +171,16 @@ class Aastra(PhoneVendor):
                 # Aastra 53i/2.2.0.166
                 # Aastra 55i/2.2.0.166
                 
-		if 'aastra' != ua[:6].lower():
+                if 'aastra' != ua[:6].lower():
                         return None
                 modelfw = ua[6:].strip().split('/', 1)
                 model = 'unknown'
                 fw = 'unknown'
 
-		if len(modelfw[0]) > 0:
-			model = modelfw[0].lower()
-			if len(modelfw) == 2:
-				fw = modelfw[1]
+                if len(modelfw[0]) > 0:
+                        model = modelfw[0].lower()
+                        if len(modelfw) == 2:
+                                fw = modelfw[1]
                 return ("aastra", model, fw)
         
         # Entry points for system configuration
