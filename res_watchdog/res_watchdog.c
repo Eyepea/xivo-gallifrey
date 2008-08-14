@@ -241,12 +241,10 @@ static int serial_config(int fd, const char *dev_name,
 
 static int load_module(void)
 {
-	char *cat, *utype, *udevice, *uinterval,
+	const char *cat, *utype, *udevice, *uinterval,
 	     *userial, *ubitrate, *uparity, *ustop, *uflow, *ubits;
 	struct ast_config *cfg;
 	struct watchdog_pvt *woof = NULL;
-
-	ast_log(LOG_DEBUG, "Loading module ; infos: %s\n", module_date_revision);
 
 	cfg = ast_config_load("watchdog.conf");
 	if (cfg) {
@@ -317,9 +315,6 @@ static int load_module(void)
 static int unload_module(void)
 {
 	struct watchdog_pvt *dogs, *woof;
-
-	ast_log(LOG_DEBUG, "Unloading module ; infos: %s\n",
-		module_date_revision);
 
 	dogs = watchdogs;
 	while (dogs) {
