@@ -22,6 +22,7 @@ ASTERISK_FILE_VERSION(__FILE__, "$Revision$")
 
 #include <asterisk/module.h>
 #include <asterisk/pbx.h>
+#include <asterisk/app.h>
 #include <string.h>
 #include <stdlib.h>
 
@@ -259,6 +260,45 @@ static struct ast_custom_function funcexists_function = {
 };
 
 
+#define EXTENEXISTS_SYNTAX		"EXTENEXISTS(<extension>[|<context>])"
+
+static int extenexists(struct ast_channel *chan, char *cmd, char *data, char *buf, size_t len)
+{
+	UNUSED(cmd);
+
+	AST_DECLARE_APP_ARGS(args,
+		AST_APP_ARG(extension);
+		AST_APP_ARG(context);
+	);
+
+	if (ast_strlen_zero(data)) {
+		ast_log(LOG_WARNING, "EXTENEXISTS requires an argument (extension)\n");
+		ast_copy_string(buf, "0", len);
+		return -1;
+	}
+
+	AST_STANDARD_APP_ARGS(args, data);
+
+	ast_copy_string(buf, ast_exists_extension(chan,
+						  S_OR(args.context, chan->context),
+						  args.extension,
+						  1,
+						  chan->cid.cid_num) ? "1" : "0", len);
+
+	return 0;
+}
+
+static struct ast_custom_function extenexists_function = {
+	.name = "EXTENEXISTS",
+	.synopsis = "Checks if an extension exists",
+	.syntax = EXTENEXISTS_SYNTAX,
+	.desc = 
+"Checks the list of registered extensions for <extension> in the current context or in <context>.\n"
+"Returns 1 if <extension> exists, 0 otherwise.\n",
+	.read = extenexists,
+};
+
+
 static const char *set_one_name = "SetOne";
 static const char *set_one_synopsis = "Set exactly one channel variable and allow the rvalue to contain pipes characters";
 static const char *set_one_description =
@@ -311,9 +351,11 @@ static int load_module(void)
 	ast_custom_function_register(&getconf_function);
 	ast_custom_function_register(&appexists_function);
 	ast_custom_function_register(&funcexists_function);
+	ast_custom_function_register(&extenexists_function);
 	if (ast_register_application(
 			set_one_name, set_one,
 			set_one_synopsis, set_one_description) < 0) {
+		ast_custom_function_unregister(&extenexists_function);
 		ast_custom_function_unregister(&funcexists_function);
 		ast_custom_function_unregister(&appexists_function);
 		ast_custom_function_unregister(&getconf_function);
@@ -328,6 +370,7 @@ static int unload_module(void)
 	if (!loaded)
 		return 0;
 	ast_unregister_application(set_one_name);
+	ast_custom_function_unregister(&extenexists_function);
 	ast_custom_function_unregister(&funcexists_function);
 	ast_custom_function_unregister(&appexists_function);
 	ast_custom_function_unregister(&getconf_function);
@@ -335,4 +378,4 @@ static int unload_module(void)
 	return 0;
 }
 
-AST_MODULE_INFO_STANDARD(ASTERISK_GPL_KEY, "STRSUBST(), GETCONF(), APPEXISTS() & FUNCEXISTS funcs + SetOne() app");
+AST_MODULE_INFO_STANDARD(ASTERISK_GPL_KEY, "STRSUBST(), GETCONF(), APPEXISTS(), FUNCEXISTS & EXTENEXISTS funcs + SetOne() app");
