@@ -37,11 +37,11 @@
 #include <asterisk/dsp.h>
 #include <asterisk/utils.h>
 
-static char *app = "NVFaxDetect";
+static const char *app = "NVFaxDetect";
 
-static char *synopsis = "Detects fax sounds on all channel types (IAX and SIP too)";
+static const char *synopsis = "Detects fax sounds on all channel types (IAX and SIP too)";
 
-static char *descrip = 
+static const char *descrip = 
 "  NVFaxDetect([waitdur[|options[|sildur[|mindur[|maxdur]]]]]):\n"
 "This application listens for fax tones (on IAX and SIP channels too)\n"
 "for waitdur seconds of time. In addition, it can be interrupted by digits,\n"
@@ -185,7 +185,7 @@ static int nv_detectfax_exec(struct ast_channel *chan, void *data)
 		if (waitdur > 0)
 			timeout = time(NULL) + (time_t)waitdur;
 
-		while(ast_waitfor(chan, -1) > -1) {
+		while(ast_waitfor(chan, 100) > -1) {
 			if (waitdur > 0 && time(NULL) > timeout) {
 				res = 0;
 				break;
@@ -198,9 +198,14 @@ static int nv_detectfax_exec(struct ast_channel *chan, void *data)
 				break;
 			}
 
-			fr2 = ast_dsp_process(chan, dsp, fr);
+			/* Duplicate frame because ast_dsp_process may free the frame passed */
+			fr2 = ast_frdup(fr);
+
+			/* Do not pass channel to ast_dsp_process otherwise it may queue modified audio frame back */
+			fr2 = ast_dsp_process(NULL, dsp, fr2);
 			if (!fr2) {
 				ast_log(LOG_WARNING, "Bad DSP received (what happened?)\n");
+				ast_frfree(fr2);
 				fr2 = fr;
 			} 
 
@@ -209,13 +214,14 @@ static int nv_detectfax_exec(struct ast_channel *chan, void *data)
 					/* Fax tone -- Handle and return NULL */
 					ast_log(LOG_DEBUG, "Fax detected on %s\n", chan->name);
 					if (strcmp(chan->exten, "fax")) {
-						ast_log(LOG_NOTICE, "Redirecting %s to fax extension\n", chan->name);
+						ast_log(LOG_NOTICE, "Redirecting '%s' to fax extension on context '%s'\n", chan->name, chan->context);
 						pbx_builtin_setvar_helper(chan, "FAX_DETECTED", "1");
-						pbx_builtin_setvar_helper(chan, "FAXEXTEN", chan->exten);								
+						pbx_builtin_setvar_helper(chan, "FAXEXTEN", chan->exten);
+
 						if (ast_exists_extension(chan, chan->context, "fax", 1, chan->CALLERID_FIELD)) {
 							/* Save the DID/DNIS when we transfer the fax call to a "fax" extension */
 							strncpy(chan->exten, "fax", sizeof(chan->exten)-1);
-							chan->priority = 0;									
+							chan->priority = 0;
 						} else
 							ast_log(LOG_WARNING, "Fax detected, but no fax extension\n");
 					} else
@@ -223,6 +229,7 @@ static int nv_detectfax_exec(struct ast_channel *chan, void *data)
 
 					res = 0;
 					ast_frfree(fr);
+					ast_frfree(fr2);
 					break;
 				} else if (!ignoredtmf) {
 					ast_log(LOG_DEBUG, "DTMF detected on %s\n", chan->name);
@@ -240,6 +247,7 @@ static int nv_detectfax_exec(struct ast_channel *chan, void *data)
 							res = fr2->subclass;
 						}
 						ast_frfree(fr);
+						ast_frfree(fr2);
 						break;
 					} else
 						ast_log(LOG_DEBUG, "Valid extension requested and DTMF did not match\n");
@@ -274,6 +282,7 @@ static int nv_detectfax_exec(struct ast_channel *chan, void *data)
 								ast_log(LOG_WARNING, "Talk detected, but no talk extension\n");
 							res = 0;
 							ast_frfree(fr);
+							ast_frfree(fr2);
 							break;
 						} else
 							ast_log(LOG_DEBUG, "Found unqualified token of %d ms\n", ms);
@@ -289,6 +298,7 @@ static int nv_detectfax_exec(struct ast_channel *chan, void *data)
 				}						
 			}
 			ast_frfree(fr);
+			ast_frfree(fr2);
 		}
 	} else
 		ast_log(LOG_WARNING, "Could not answer channel '%s'\n", chan->name);
