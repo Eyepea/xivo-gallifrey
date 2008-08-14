@@ -98,6 +98,20 @@ class Aastra(PhoneVendor):
                                         close_fds = True)
                 except OSError:
                         except_tb.syslog_exception()
+
+        @staticmethod
+        def __format_function_keys(funckey):
+                sorted_keys = funckey.keys()
+                sorted_keys.sort()
+                fk_config_lines = []
+                for key in sorted_keys:
+                        exten, supervise = funckey[key]
+                        fk_config_lines.append("softkey%01d type: blf" % int(key))
+                        fk_config_lines.append("softkey%01d label: %s" % (int(key), exten))
+                        fk_config_lines.append("softkey%01d value: %s" % (int(key), exten))
+                        fk_config_lines.append("softkey%01d line: 1" % int(key))
+                return "\n".join(fk_config_lines)
+
         
         def do_reinit(self):
                 """
@@ -122,11 +136,16 @@ class Aastra(PhoneVendor):
                 template_file.close()
                 tmp_filename = os.path.join(AASTRA_COMMON_DIR, macaddr + '.cfg.tmp')
                 cfg_filename = tmp_filename[:-4]
+
+		function_keys_config_lines = \
+                        self.__format_function_keys(provinfo['funckey'])
+
                 txt = xivo_config.txtsubst(template_lines,
                         { 'user_display_name': provinfo['name'],
                           'user_phone_ident':  provinfo['ident'],
                           'user_phone_number': provinfo['number'],
                           'user_phone_passwd': provinfo['passwd'],
+			  'function_keys': function_keys_config_lines,
                         },
                         cfg_filename)
                 tmp_file = open(tmp_filename, 'w')
