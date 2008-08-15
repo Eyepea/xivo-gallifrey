@@ -173,7 +173,7 @@ static int nv_detectfax_exec(struct ast_channel *chan, void *data)
 			; /* features |= DSP_FEATURE_SILENCE_SUPPRESS; */
 		if (!ignorefax)
 			features |= DSP_FEATURE_FAX_DETECT;
-		//if (!ignoredtmf)
+		if (!ignoredtmf)
 			features |= DSP_FEATURE_DTMF_DETECT;
 			
 		ast_dsp_set_threshold(dsp, 256); 
@@ -185,7 +185,7 @@ static int nv_detectfax_exec(struct ast_channel *chan, void *data)
 		if (waitdur > 0)
 			timeout = time(NULL) + (time_t)waitdur;
 
-		while(ast_waitfor(chan, 100) > -1) {
+		while (ast_waitfor(chan, 100) > -1) {
 			if (waitdur > 0 && time(NULL) > timeout) {
 				res = 0;
 				break;
@@ -204,10 +204,10 @@ static int nv_detectfax_exec(struct ast_channel *chan, void *data)
 			/* Do not pass channel to ast_dsp_process otherwise it may queue modified audio frame back */
 			fr2 = ast_dsp_process(NULL, dsp, fr2);
 			if (!fr2) {
-				ast_log(LOG_WARNING, "Bad DSP received (what happened?)\n");
-				ast_frfree(fr2);
-				fr2 = fr;
-			} 
+				ast_log(LOG_ERROR, "Bad DSP received (what happened?)\n");
+				ast_frfree(fr);
+				break;
+			}
 
 			if (fr2->frametype == AST_FRAME_DTMF) {
 				if (fr2->subclass == 'f' && !ignorefax) {
