@@ -2,7 +2,7 @@
  * Asterisk -- A telephony toolkit for Linux.
  *
  * Fax detection application for all channel types.
- * 
+ *
  * Copyright (C) 2004-2005, Newman Telecom, Inc. and Newman Ventures, Inc.
  * Copyright (c) 2008 Proformatique
  *
@@ -23,7 +23,7 @@
  * This program is free software, distributed under the terms of
  * the GNU General Public License
  */
- 
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -41,7 +41,7 @@ static const char *app = "NVFaxDetect";
 
 static const char *synopsis = "Detects fax sounds on all channel types (IAX and SIP too)";
 
-static const char *descrip = 
+static const char *descrip =
 "  NVFaxDetect([waitdur[|options[|sildur[|mindur[|maxdur]]]]]):\n"
 "This application listens for fax tones (on IAX and SIP channels too)\n"
 "for waitdur seconds of time. In addition, it can be interrupted by digits,\n"
@@ -98,29 +98,29 @@ static int nv_detectfax_exec(struct ast_channel *chan, void *data)
 	int features = 0;
 	time_t timeout = 0;
 	struct ast_dsp *dsp = NULL;
-	
+
 	pbx_builtin_setvar_helper(chan, "FAX_DETECTED", "");
 	pbx_builtin_setvar_helper(chan, "FAXEXTEN", "");
 	pbx_builtin_setvar_helper(chan, "DTMF_DETECTED", "");
 	pbx_builtin_setvar_helper(chan, "TALK_DETECTED", "");
-	
+
 	if (data || !ast_strlen_zero((char *)data)) {
 		strncpy(tmp, (char *)data, sizeof(tmp)-1);
-	}	
-	
+	}
+
 	p = tmp;
-	
+
 	waitstr = strsep(&p, "|");
 	options = strsep(&p, "|");
 	silstr = strsep(&p, "|");
-	minstr = strsep(&p, "|");	
-	maxstr = strsep(&p, "|");	
-	
+	minstr = strsep(&p, "|");
+	maxstr = strsep(&p, "|");
+
 	if (waitstr) {
 		if ((sscanf(waitstr, "%d", &x) == 1) && (x > 0))
 			waitdur = x;
 	}
-	
+
 	if (options) {
 		if (strchr(options, 'n'))
 			skipanswer = 1;
@@ -133,25 +133,25 @@ static int nv_detectfax_exec(struct ast_channel *chan, void *data)
 		if (strchr(options, 't'))
 			ignoretalk = 1;
 	}
-	
+
 	if (silstr) {
 		if ((sscanf(silstr, "%d", &x) == 1) && (x > 0))
 			sildur = x;
 	}
-	
+
 	if (minstr) {
 		if ((sscanf(minstr, "%d", &x) == 1) && (x > 0))
 			mindur = x;
 	}
-	
+
 	if (maxstr) {
 		if ((sscanf(maxstr, "%d", &x) == 1) && (x > 0))
 			maxdur = x;
 	}
-	
-	ast_log(LOG_DEBUG, "Preparing detect of fax (waitdur=%ds, sildur=%dms, mindur=%dms, maxdur=%dms)\n", 
+
+	ast_log(LOG_DEBUG, "Preparing detect of fax (waitdur=%ds, sildur=%dms, mindur=%dms, maxdur=%dms)\n",
 						waitdur, sildur, mindur, maxdur);
-	
+
 	u = ast_module_user_add(chan);
 
 	if (chan->_state != AST_STATE_UP && !skipanswer) {
@@ -160,23 +160,23 @@ static int nv_detectfax_exec(struct ast_channel *chan, void *data)
 	}
 	if (!res) {
 		origrformat = chan->readformat;
-		if ((res = ast_set_read_format(chan, AST_FORMAT_SLINEAR))) 
+		if ((res = ast_set_read_format(chan, AST_FORMAT_SLINEAR)))
 			ast_log(LOG_WARNING, "Unable to set read format to linear!\n");
 	}
 	if (!(dsp = ast_dsp_new())) {
 		ast_log(LOG_WARNING, "Unable to allocate DSP!\n");
 		res = -1;
 	}
-	
-	if (dsp) {	
+
+	if (dsp) {
 		if (!ignoretalk)
 			; /* features |= DSP_FEATURE_SILENCE_SUPPRESS; */
 		if (!ignorefax)
 			features |= DSP_FEATURE_FAX_DETECT;
 		if (!ignoredtmf)
 			features |= DSP_FEATURE_DTMF_DETECT;
-			
-		ast_dsp_set_threshold(dsp, 256); 
+
+		ast_dsp_set_threshold(dsp, 256);
 		ast_dsp_set_features(dsp, features | DSP_DIGITMODE_RELAXDTMF);
 		ast_dsp_digitmode(dsp, DSP_DIGITMODE_DTMF);
 	}
@@ -206,6 +206,7 @@ static int nv_detectfax_exec(struct ast_channel *chan, void *data)
 			if (!fr2) {
 				ast_log(LOG_ERROR, "Bad DSP received (what happened?)\n");
 				ast_frfree(fr);
+				res = 0;
 				break;
 			}
 
@@ -271,8 +272,8 @@ static int nv_detectfax_exec(struct ast_channel *chan, void *data)
 							ast_log(LOG_DEBUG, "Found qualified token of %d ms\n", ms);
 							ast_log(LOG_NOTICE, "Redirecting %s to talk extension\n", chan->name);
 
-							/* Save detected talk time (in milliseconds) */ 
-							sprintf(ms_str, "%d", ms);	
+							/* Save detected talk time (in milliseconds) */
+							sprintf(ms_str, "%d", ms);
 							pbx_builtin_setvar_helper(chan, "TALK_DETECTED", ms_str);
 
 							if (ast_exists_extension(chan, chan->context, "talk", 1, chan->CALLERID_FIELD)) {
@@ -295,7 +296,7 @@ static int nv_detectfax_exec(struct ast_channel *chan, void *data)
 						ast_log(LOG_DEBUG, "Start of voice token!\n");
 						notsilent = 1;
 					}
-				}						
+				}
 			}
 			ast_frfree(fr);
 			ast_frfree(fr2);
@@ -305,16 +306,16 @@ static int nv_detectfax_exec(struct ast_channel *chan, void *data)
 
 	if (res > -1) {
 		if (origrformat && ast_set_read_format(chan, origrformat)) {
-			ast_log(LOG_WARNING, "Failed to restore read format for %s to %s\n", 
+			ast_log(LOG_WARNING, "Failed to restore read format for %s to %s\n",
 				chan->name, ast_getformatname(origrformat));
 		}
 	}
-	
+
 	if (dsp)
 		ast_dsp_free(dsp);
 
 	ast_module_user_remove(u);
-	
+
 	return res;
 }
 
