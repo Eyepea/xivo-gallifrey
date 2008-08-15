@@ -119,7 +119,7 @@ class FastAGI:
         raise FastAGIDialPlanBreak(message)
 
     @staticmethod
-    def _get_pwd_uid_gid(name)
+    def _get_pwd_uid_gid(name):
         pw_name, pw_passwd, pw_uid, pw_gid, pw_gecos, pw_dir, pw_shell = pwd.getpwnam(name)
         return pw_uid, pw_gid
 
