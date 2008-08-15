@@ -37,7 +37,6 @@ __license__ = """
 import re
 import pprint
 import pwd
-import grd
 
 
 DEFAULT_TIMEOUT = 2000 # 2sec timeout used as default for functions that take timeouts
