@@ -43,15 +43,17 @@ ASTERISK_FILE_VERSION(__FILE__, "$Revision$")
 #include "asterisk/module.h"
 #include "asterisk/manager.h"
 
+#define UNUSED(x) ((void)x)
+
 #ifndef AST_MODULE
 #define AST_MODULE "app_rxfax"
 #endif
 
-static char *app = "RxFAX";
+static const char *app = "RxFAX";
 
-static char *synopsis = "Receive a FAX to a file";
+static const char *synopsis = "Receive a FAX to a file";
 
-static char *descrip = 
+static const char *descrip = 
 	"  RxFAX(filename[|caller][|debug]): Receives a FAX from the channel into the\n"
 	"given filename. If the file exists it will be overwritten. The file\n"
 	"should be in TIFF/F format.\n"
@@ -93,6 +95,9 @@ static void span_message(int level, const char *msg)
 static void phase_b_handler(t30_state_t *s, void *user_data, int result)
 {
 	/* nothing */
+	UNUSED(s);
+	UNUSED(user_data);
+	UNUSED(result);
 }
 
 /*- End of function --------------------------------------------------------*/

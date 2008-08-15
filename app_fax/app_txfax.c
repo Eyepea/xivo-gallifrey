@@ -41,15 +41,17 @@ ASTERISK_FILE_VERSION(__FILE__, "$Revision$")
 #include "asterisk/module.h"
 #include "asterisk/manager.h"
 
+#define UNUSED(x) ((void)x)
+
 #ifndef AST_MODULE
 #define AST_MODULE "app_txfax"
 #endif
 
-static char *app = "TxFAX";
+static const char *app = "TxFAX";
 
-static char *synopsis = "Send a FAX file";
+static const char *synopsis = "Send a FAX file";
 
-static char *descrip = 
+static const char *descrip = 
 	"  TxFAX(filename[|caller][|debug][|ecm]):  Send a given TIFF file to the channel as a FAX.\n"
 	"The \"caller\" option makes the application behave as a calling machine,\n"
 	"rather than the answering machine. The default behaviour is to behave as\n"
@@ -91,6 +93,9 @@ typedef struct {
 static void phase_b_handler(t30_state_t *s, void *user_data, int result)
 {
 	/* nothing */
+	UNUSED(s);
+	UNUSED(user_data);
+	UNUSED(result);
 }
 
 static void phase_e_handler(t30_state_t *s, void *user_data, int result)
@@ -168,6 +173,8 @@ static void phase_e_handler(t30_state_t *s, void *user_data, int result)
 static void phase_d_handler(t30_state_t *s, void *user_data, int result)
 {
 	t30_stats_t t;
+
+	UNUSED(user_data);
 
 	if (result)
 	{
