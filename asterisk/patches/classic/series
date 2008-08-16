@@ -25,5 +25,6 @@ astgenkey-security
 apptest_sleep
 
 pf_iax2_deadlock.patch
+pf_iax2_moh-config.patch
 
 pf_fastagi_args.patch
