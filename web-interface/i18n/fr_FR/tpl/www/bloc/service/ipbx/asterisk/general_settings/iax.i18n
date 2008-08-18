@@ -23,8 +23,10 @@ Port :
 Adresse IP :
 
 ; fm_iaxthreadcount
+Nombre de thread :
 
 ; fm_iaxmaxthreadcount
+Nombre de thread maximum :
 
 ; fm_iaxmaxthreadcount-opt0
 Désactivé

@@ -220,6 +220,9 @@ Forcer l'enregistrement du nom :
 ; fm_voicemail-forcegreetings
 Forcer l'enregistrement du message d'accueil :
 
+; fm_voicemail-tempgreetwarn
+Signaler l'activation du message d'accueil temporaire :
+
 ; fm_voicemail-maxgreet
 Durée maximum du message d'accueil :
 
@@ -322,6 +325,9 @@ Joindre le fichier audio :
 ; fm_voicemail-attachformat
 Format du fichier joint :
 
+; fm_voicemail-volgain
+Augmenter/diminuer le volume sonore du fichier joint :
+
 ; fm_voicemail-mailcmd
 Programme d'envoi d'e-mail :
 
@@ -387,6 +393,9 @@ Programme externe pour changer le mot de passe :
 
 ; fm_voicemail-externnotify
 Programme externe pour notifier un nouveau message :
+
+; fm_smdiport
+Périphérique SMDI :
 
 ; fm_voicemail-odbcstorage
 Système ODBC :

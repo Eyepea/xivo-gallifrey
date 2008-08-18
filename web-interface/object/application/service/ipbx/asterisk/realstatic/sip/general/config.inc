@@ -70,7 +70,7 @@ $array['element']['alwaysauthreject']['set'] = true;
 
 $array['element']['limitonpeer'] = array();
 $array['element']['limitonpeer']['value'] = array('no','yes');
-$array['element']['limitonpeer']['default'] = 'no';
+$array['element']['limitonpeer']['default'] = 'yes';
 $array['element']['limitonpeer']['set'] = true;
 
 $array['element']['useragent'] = array();

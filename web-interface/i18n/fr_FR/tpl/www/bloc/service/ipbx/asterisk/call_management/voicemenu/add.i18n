@@ -245,7 +245,7 @@ Nom du fichier :
 Mixer les canaux entrant et sortant après l'enregistrement :
 
 ; fm_ipbxapplication_monitor-b
-Ne pas commencer l'enregistrement si les canaux ne sont pas bridgé :
+Enregistrer uniquement le canal lorsqu'il est bridgé :
 
 ; fm_ipbxapplication_record-filename
 Nom du fichier :

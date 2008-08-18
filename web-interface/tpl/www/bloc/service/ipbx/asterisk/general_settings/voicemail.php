@@ -194,7 +194,7 @@ endif;
 
 <div id="formatlist" class="fm-field fm-multilist">
 	<p>
-		<label id="lb-formatlist" for="it-formatlist">
+		<label id="lb-formatlist" for="it-voicemail-formatlist">
 			<?=$this->bbf('fm_voicemail-format');?>
 		</label>
 	</p>

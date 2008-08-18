@@ -299,12 +299,6 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 		else if(is_array($primary) === true)
 			$this->_dso->andwherenot($primary,null,false);
 
-		if(isset($this->_forcecolumn) === true)
-		{
-			$this->_dso->aggregate_where();
-			$this->_dso->andwhere($this->_forcecolumn);
-		}
-
 		return(($this->_dso->select_single() === false));
 	}
 

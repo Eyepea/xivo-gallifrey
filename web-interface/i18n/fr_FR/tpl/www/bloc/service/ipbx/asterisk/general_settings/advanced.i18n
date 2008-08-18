@@ -22,6 +22,9 @@ Agents persistants :
 ; fm_generalqueue_persistentmembers
 Membres persistants :
 
+; fm_generalqueue_autofill
+Activer le nouveau système de distribution des appels :
+
 ; fm_generalqueue_monitor-type
 Enregistrement :
 

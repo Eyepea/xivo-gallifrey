@@ -364,7 +364,7 @@ endif;
 
 <div id="localnetlist" class="fm-field fm-multilist">
 	<p>
-		<label id="lb-localnetlist" for="it-localnetlist">
+		<label id="lb-localnetlist" for="it-localnet">
 			<?=$this->bbf('fm_localnet');?>
 		</label>
 	</p>
