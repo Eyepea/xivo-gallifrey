@@ -907,7 +907,7 @@ INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','allowexternaldoma
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','usereqphone','no');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','realm','xivo');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','alwaysauthreject','no');
-INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','limitonpeer','no');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','limitonpeer','yes');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','useragent','XIVO PBX');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','checkmwi',10);
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','buggymwi','no');
