@@ -428,9 +428,12 @@ CREATE TABLE `incall` (
  `id` int(10) unsigned auto_increment,
  `exten` varchar(40) NOT NULL,
  `context` varchar(39) NOT NULL,
+ `faxdetectenable` tinyint(1) NOT NULL DEFAULT 0,
+ `faxdetecttimeout` tinyint(2) unsigned NOT NULL DEFAULT 4,
+ `faxdetectemail` varchar(255) NOT NULL DEFAULT '',
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
 CREATE INDEX `incall__idx__commented` ON `incall`(`commented`);
 CREATE UNIQUE INDEX `incall__uidx__exten_context` ON `incall`(`exten`,`context`);
