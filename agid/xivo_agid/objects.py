@@ -857,6 +857,9 @@ class DID:
 		self.id = res['id']
 		self.exten = res['exten']
 		self.context = res['context']
+		self.faxdetectenable = int(bool(res['faxdetectenable']))
+		self.faxdetecttimeout = res['faxdetecttimeout']
+		self.faxdetectemail = res['faxdetectemail']
 
 	def set_dial_actions(self):
 		DialAction(self.agi, self.cursor, "answer", "incall", self.id).set_variables()
