@@ -7,7 +7,7 @@ else
 	$macaddr = '';
 
 if(isset($_SERVER['HTTP_USER_AGENT']) === false
-|| preg_match('/^(snom3[026]0)/',$_SERVER['HTTP_USER_AGENT'],$match) !== 1)
+|| preg_match('/ (snom3[026]0)-',$_SERVER['HTTP_USER_AGENT'],$match) !== 1)
 	snom_get_config('snom',$macaddr);
 else
 	snom_get_config($match[1],$macaddr);
