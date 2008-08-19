@@ -8,11 +8,6 @@ NameVirtualHost *:443
 	ErrorLog /var/log/apache2/xivo_error.log
 	CustomLog /var/log/apache2/xivo_access.log combined
 
-	# XXX Snom phones don't work with SSL
-	RewriteEngine On
-	RewriteCond %{HTTP_USER_AGENT} snom3[026]0-
-	RewriteRule .* http://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-
 	SSLEngine on
 	SSLOptions +FakeBasicAuth +StrictRequire +StdEnvVars +ExportCertData
 	SSLProtocol all
@@ -44,12 +39,26 @@ NameVirtualHost *:8667
 NameVirtualHost *:80
 
 <VirtualHost *:80>
+	ServerAdmin technique@proformatique.com
+	DocumentRoot /usr/share/pf-xivo-web-interface/www
+
+	ErrorLog /var/log/apache2/xivo_error.log
+	CustomLog /var/log/apache2/xivo_access.log combined
+
 	RewriteEngine On
-
-	# XXX Snom phones don't work with SSL
-	RewriteCond %{HTTP_USER_AGENT} snom3[026]0-
-	RewriteRule .* - [L,R=301]
-
 	RewriteCond %{HTTPS} off
+	# XXX Snom phones don't work with SSL
+	RewriteCond %{HTTP_USER_AGENT} !snom3[026]0-
 	RewriteRule .* https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+	<Location "/">
+		Deny from all
+	</Location>
+
+	<Location "/service/ipbx/web_services.php/phonebook/search/">
+		Order Deny,Allow
+		Allow from all
+	</Location>
+
+	Include "/usr/share/pf-xivo-web-interface/apache.conf"
 </VirtualHost>
