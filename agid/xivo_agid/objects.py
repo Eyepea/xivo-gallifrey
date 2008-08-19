@@ -831,7 +831,8 @@ class DID:
 		self.agi = agi
 		self.cursor = cursor
 
-		columns = ('id', 'exten', 'context')
+		columns = ('id', 'exten', 'context',
+			   'faxdetectenable', 'faxdetecttimeout', 'faxdetectemail')
 
 		if xid:
 			cursor.query("SELECT ${columns} FROM incall "
