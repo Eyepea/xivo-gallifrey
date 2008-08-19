@@ -8,6 +8,11 @@ NameVirtualHost *:443
 	ErrorLog /var/log/apache2/xivo_error.log
 	CustomLog /var/log/apache2/xivo_access.log combined
 
+	# XXX Snom phones don't work with SSL
+	RewriteEngine On
+	RewriteCond %{HTTP_USER_AGENT} ^snom3[026]0/.*$
+	RewriteRule .* http://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
 	SSLEngine on
 	SSLOptions +FakeBasicAuth +StrictRequire +StdEnvVars +ExportCertData
 	SSLProtocol all
@@ -37,6 +42,11 @@ NameVirtualHost *:80
 
 <VirtualHost *:80>
 	RewriteEngine On
+
+	# XXX Snom phones don't work with SSL
+	RewriteCond %{HTTP_USER_AGENT} ^snom3[026]0/.*$
+	RewriteRule .* - [L,R=301]
+
 	RewriteCond %{HTTPS} off
 	RewriteRule .* https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 </VirtualHost>
