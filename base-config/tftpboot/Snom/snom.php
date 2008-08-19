@@ -1,29 +1,28 @@
 <?php
 
-$agent = $HTTP_SERVER_VARS['HTTP_USER_AGENT'];
+if(isset($_GET['mac']) === true
+&& preg_match('/^[A-F0-9]{12}$/',strval($_GET['mac']),$match) === 1)
+	$macaddr = $match[0];
+else
+	$macaddr = '';
 
-$info = explode(';', $agent);
+if(isset($_SERVER['HTTP_USER_AGENT']) === false
+|| preg_match('/^(snom3[026]0)/',$_SERVER['HTTP_USER_AGENT'],$match) !== 1)
+	snom_get_config('snom',$macaddr);
+else
+	snom_get_config($match[1],$macaddr);
 
-$phone_type = "snom";
+die();
 
-if (strpos($agent, "snom300") > 0) {
-	$phone_type = "snom300";
-	} 
-else if (strpos($agent, "snom320") > 0) {
-	$phone_type = "snom320";
-	} 
-else if (strpos($agent, "snom360") > 0) {
-	$phone_type = "snom360";
-	}
+function snom_get_config($type,$macaddr)
+{
+	if(isset($macaddr{0}) === true)
+		$filename = $type.'-'.$macaddr.'.htm';
+	else
+		$filename = $type.'.htm';
 
-if (isset($_GET['mac'])) {
-	if (is_file("$phone_type-" . $_GET['mac'] . ".htm")) {
-		include("$phone_type-" . $_GET['mac'] . ".htm");
-		exit();
-	} else {
-		include("$phone_type.htm");
-		exit();
-	}
+	if(is_file($filename) === true)
+		include($filename);
 }
 
 ?>
