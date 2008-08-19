@@ -6,7 +6,7 @@ $dhtml = &$this->get_module('dhtml');
 $element = $this->get_var('element');
 $event = $this->get_var('event');
 
-if($this->get_var('dialaction_from') === 'incall'):
+if($this->get_var('dialaction_from') === 'incall' && $event === 'answer'):
 	$onchange = 'xivo_ast_incall_chg_dialaction_actionarg_answer_application();';
 else:
 	$onchange = 'xivo_ast_chg_dialaction_actionarg(\''.$dhtml->escape($event).'\',\'application\');';
