@@ -10,7 +10,7 @@ NameVirtualHost *:443
 
 	# XXX Snom phones don't work with SSL
 	RewriteEngine On
-	RewriteCond %{HTTP_USER_AGENT} ^snom3[026]0/.*$
+	RewriteCond %{HTTP_USER_AGENT} snom3[026]0-
 	RewriteRule .* http://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
 	SSLEngine on
@@ -47,7 +47,7 @@ NameVirtualHost *:80
 	RewriteEngine On
 
 	# XXX Snom phones don't work with SSL
-	RewriteCond %{HTTP_USER_AGENT} ^snom3[026]0/.*$
+	RewriteCond %{HTTP_USER_AGENT} snom3[026]0-
 	RewriteRule .* - [L,R=301]
 
 	RewriteCond %{HTTPS} off
