@@ -597,22 +597,22 @@ function xivo_chg_protocol(protocol)
 	var host_dynamic = xivo_eid('it-'+xivo_protocol+'-protocol-host-dynamic');
 
 	if(host_dynamic != false)
-		xivo_chg_attrib('fm_host','fd-'+xivo_protocol+'-protocol-host-static',(host_dynamic.value != 'static' ? 0 : 1));
+		xivo_chg_attrib('fm_host','fd-'+xivo_protocol+'-protocol-host-static',Number(host_dynamic.value === 'static'));
 
 	if(xivo_eid('it-autoprov-modact') != false)
-		xivo_chg_attrib('fm_autoprov-'+xivo_protocol,'it-autoprov-modact',(xivo_eid('it-autoprov-modact').value != '' ? 0 : 1));
+		xivo_chg_attrib('fm_autoprov-'+xivo_protocol,'it-autoprov-modact',Number(xivo_eid('it-autoprov-modact').value === ''));
 
 	if(xivo_eid('it-codec-active') != false)
-		xivo_chg_attrib('fm_codec','it-'+xivo_protocol+'-protocol-disallow',(xivo_eid('it-codec-active').checked == true ? 0 : 1));
+		xivo_chg_attrib('fm_codec','it-'+xivo_protocol+'-protocol-disallow',Number(xivo_eid('it-codec-active').checked === false));
 
 	if((enablerna = xivo_eid('it-ufeatures-enablerna')) != false)
-		xivo_chg_attrib('fm_enablerna','it-ufeatures-destrna',(enablerna.checked == false ? 0 : 1));
+		xivo_chg_attrib('fm_enablerna','it-ufeatures-destrna',Number(enablerna.checked));
 
 	if((enablebusy = xivo_eid('it-ufeatures-enablebusy')) != false)
-		xivo_chg_attrib('fm_enablebusy','it-ufeatures-destbusy',(enablebusy.checked == false ? 0 : 1));
+		xivo_chg_attrib('fm_enablebusy','it-ufeatures-destbusy',Number(enablebusy.checked));
 
 	if((enableunc = xivo_eid('it-ufeatures-enableunc')) != false)
-		xivo_chg_attrib('fm_enableunc','it-ufeatures-destunc',(enableunc.checked == false ? 0 : 1));
+		xivo_chg_attrib('fm_enableunc','it-ufeatures-destunc',Number(enableunc.checked));
 }
 
 function xivo_ingroup()
@@ -736,7 +736,7 @@ function xivo_voicemail_set_info(obj)
 function xivo_enable_voicemail()
 {
 	if((voicemail = xivo_eid('it-ufeatures-voicemailid')) != false)
-		xivo_chg_attrib('fm_enablevoicemail','it-voicemail-fullname',(voicemail.value != '' ? 0 : 1));
+		xivo_chg_attrib('fm_enablevoicemail','it-voicemail-fullname',Number(voicemail.value === ''));
 }
 
 function xivo_user_onload()
@@ -745,19 +745,19 @@ function xivo_user_onload()
 		xivo_chg_protocol(xivo_eid('it-protocol-protocol').value);
 
 	if((voicemail = xivo_eid('it-ufeatures-voicemailid')) != false)
-		xivo_chg_attrib('fm_voicemail','it-voicemail-fullname',(voicemail.value != '' ? 0 : 1));
+		xivo_chg_attrib('fm_voicemail','it-voicemail-fullname',Number(voicemail.value === ''));
 
 	if((outcallerid_type = xivo_eid('it-ufeatures-outcallerid-type')) != false)
-		xivo_chg_attrib('fm_outcallerid','fd-ufeatures-outcallerid-custom',(outcallerid_type.value != 'custom' ? 0 : 1));
+		xivo_chg_attrib('fm_outcallerid','fd-ufeatures-outcallerid-custom',Number(outcallerid_type.value === 'custom'));
 
 	if((enablerna = xivo_eid('it-ufeatures-enablerna')) != false)
-		xivo_chg_attrib('fm_enablerna','it-ufeatures-destrna',(enablerna.checked == false ? 0 : 1));
+		xivo_chg_attrib('fm_enablerna','it-ufeatures-destrna',Number(enablerna.checked));
 
 	if((enablebusy = xivo_eid('it-ufeatures-enablebusy')) != false)
-		xivo_chg_attrib('fm_enablebusy','it-ufeatures-destbusy',(enablebusy.checked == false ? 0 : 1));
+		xivo_chg_attrib('fm_enablebusy','it-ufeatures-destbusy',Number(enablebusy.checked));
 
 	if((enableunc = xivo_eid('it-ufeatures-enableunc')) != false)
-		xivo_chg_attrib('fm_enableunc','it-ufeatures-destunc',(enableunc.checked == false ? 0 : 1));
+		xivo_chg_attrib('fm_enableunc','it-ufeatures-destunc',Number(enableunc.checked));
 
 	xivo_ast_build_dialaction_array('noanswer');
 	xivo_ast_build_dialaction_array('busy');

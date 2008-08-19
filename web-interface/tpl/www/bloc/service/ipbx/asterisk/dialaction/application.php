@@ -6,6 +6,12 @@ $dhtml = &$this->get_module('dhtml');
 $element = $this->get_var('element');
 $event = $this->get_var('event');
 
+if($this->get_var('dialaction_from') === 'incall'):
+	$onchange = 'xivo_ast_incall_chg_dialaction_actionarg_answer_application();';
+else:
+	$onchange = 'xivo_ast_chg_dialaction_actionarg(\''.$dhtml->escape($event).'\',\'application\');';
+endif;
+
 echo	'<div id="fd-dialaction-',$event,'-application-actiontype" class="b-nodisplay">',
 	$form->select(array('desc'	=> $this->bbf('fm_dialaction_application-action'),
 			    'name'	=> 'dialaction['.$event.'][action]',
@@ -15,7 +21,7 @@ echo	'<div id="fd-dialaction-',$event,'-application-actiontype" class="b-nodispl
 			    'default'	=> $element['dialaction']['application']['default'],
 			    'value'	=> $this->get_varra('dialaction',array($event,'application','action'))),
 		      $element['dialaction']['application']['value'],
-		      'onchange="xivo_ast_chg_dialaction_actionarg(\''.$dhtml->escape($event).'\',\'application\');"'),
+		      'onchange="'.$onchange.'"'),
 	$form->text(array('desc'	=> $this->bbf('fm_dialaction_application-callbackdisa-actionarg1'),
 			  'name'	=> 'dialaction['.$event.'][actionarg1]',
 			  'labelid'	=> 'dialaction-'.$event.'-application-callbackdisa-actionarg1',

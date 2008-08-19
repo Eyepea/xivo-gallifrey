@@ -60,6 +60,7 @@ switch($act)
 		$_HTML->set_var('rightcall',$rightcall);
 		$_HTML->set_var('incall',$result['incall']);
 		$_HTML->set_var('dialaction',$result['dialaction']);
+		$_HTML->set_var('dialaction_from','incall');
 		$_HTML->set_var('element',$appincall->get_elements());
 		$_HTML->set_var('destination_list',$appincall->get_dialaction_destination_list());
 		$_HTML->set_var('context_list',$appincall->get_context_list());
@@ -122,6 +123,7 @@ switch($act)
 		$_HTML->set_var('rightcall',$rightcall);
 		$_HTML->set_var('incall',$return['incall']);
 		$_HTML->set_var('dialaction',$return['dialaction']);
+		$_HTML->set_var('dialaction_from','incall');
 		$_HTML->set_var('element',$appincall->get_elements());
 		$_HTML->set_var('destination_list',$appincall->get_dialaction_destination_list());
 		$_HTML->set_var('context_list',$appincall->get_context_list());

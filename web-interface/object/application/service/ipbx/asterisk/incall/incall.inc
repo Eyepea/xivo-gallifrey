@@ -270,8 +270,10 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 		if(xivo_issa('dialaction',$arr) === false
 		|| $this->set_dialaction($arr['dialaction']) === null
-		|| is_array($this->get_result_var('dialaction','answer')) === false)
+		|| is_array(($dialaction_answer = $this->get_result_var('dialaction','answer'))) === false)
 			$this->_set_error('dialaction','invalid data');
+		else if(xivo_ak('action',$dialaction_answer,true) === 'application:faxtomail')
+			$this->_set_result_var('incall','faxdetectenable',false);
 
 		if(($rsexten = $this->set_macro($action,'exten',$number,$this->_mk_exten_appdata($number),$context)) !== false)
 			$this->_set_result('exten',$rsexten);
@@ -283,6 +285,11 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 		if($this->get_errnb() < 1)
 			$this->set_contextnummember($context,$number);
+
+		if($this->get_errnb() < 1
+		&& (bool) $this->get_result_var('incall','faxdetectenable') === true
+		&& xivo_haslen($this->get_result_var('incall','faxdetectemail')) === false)
+			$this->_set_result_var('incall','faxdetectenable',false);
 
 		return(($this->get_errnb() < 1));
 	}

@@ -1,7 +1,59 @@
+var xivo_fm_ast_faxdetectenable = new Array();
+
+xivo_fm_ast_faxdetectenable['it-incall-faxdetecttimeout'] = new Array();
+xivo_fm_ast_faxdetectenable['it-incall-faxdetecttimeout']['property'] = new Array(
+								'disabled|true:boolean;className|it-disabled',
+								'disabled|false:boolean;className|it-enabled');
+xivo_fm_ast_faxdetectenable['it-incall-faxdetecttimeout']['link'] = 'it-incall-faxdetectemail';
+
+xivo_fm_ast_faxdetectenable['it-incall-faxdetectemail'] = new Array();
+xivo_fm_ast_faxdetectenable['it-incall-faxdetectemail']['property'] = new Array(
+								'readOnly|true:boolean;className|it-readonly',
+								'readOnly|false:boolean;className|it-enabled');
+
+xivo_attrib_register('fm_ast_faxdetectenable',xivo_fm_ast_faxdetectenable);
+
+function xivo_ast_enable_faxdetect()
+{
+	if((faxdetectenable = xivo_eid('it-incall-faxdetectenable')) === false)
+		return(false);
+	else if((dialaction_answer_actiontype = xivo_eid('it-dialaction-answer-actiontype')) === false
+	|| (dialaction_answer_application_action = xivo_eid('it-dialaction-answer-application-action')) === false
+	|| dialaction_answer_actiontype.value !== 'application'
+	|| dialaction_answer_application_action.value !== 'faxtomail')
+	{
+		enable = faxdetectenable.checked;
+		faxdetectenable.disabled = false;
+	}
+	else
+	{
+		enable = false;
+		faxdetectenable.disabled = true;
+	}
+
+	xivo_chg_attrib('fm_ast_faxdetectenable','it-incall-faxdetecttimeout',Number(enable));
+
+	return(true);
+}
+
+function xivo_ast_incall_chg_dialaction_answer(obj)
+{
+	xivo_ast_chg_dialaction('answer',obj);
+	xivo_ast_enable_faxdetect();
+}
+
+function xivo_ast_incall_chg_dialaction_actionarg_answer_application()
+{
+	xivo_ast_chg_dialaction_actionarg('answer','application');
+	xivo_ast_enable_faxdetect();
+}
+
 function xivo_ast_incall_onload()
 {
 	xivo_ast_build_dialaction_array('answer');
 	xivo_ast_dialaction_onload();
+
+	xivo_ast_enable_faxdetect();
 }
 
 xivo_winload.push('xivo_ast_incall_onload();');

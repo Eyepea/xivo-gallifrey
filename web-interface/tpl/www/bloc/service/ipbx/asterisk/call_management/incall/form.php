@@ -27,7 +27,8 @@ if($context_list !== false):
 				    'key'	=> 'identity',
 				    'altkey'	=> 'name',
 				    'default'	=> $element['incall']['context']['default'],
-				    'value'	=> $this->get_varra('incall','context')),$context_list);
+				    'value'	=> $this->get_varra('incall','context')),
+			      $context_list);
 else:
 	echo	'<div id="fd-incall-context" class="txt-center">',
 		$url->href_html($this->bbf('create_context'),
@@ -37,6 +38,37 @@ else:
 endif;
 
 echo	$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',array('event' => 'answer'));
+
+?>
+
+</div>
+
+<div id="sb-part-faxdetect" class="b-nodisplay">
+
+<?php
+
+echo	$form->checkbox(array('desc'	=> $this->bbf('fm_incall_faxdetectenable'),
+			      'name'	=> 'incall[faxdetectenable]',
+			      'labelid'	=> 'incall-faxdetectenable',
+			      'checked'	=> $this->get_varra('incall','faxdetectenable'),
+			      'default'	=> $element['incall']['faxdetectenable']['default']),
+			'onchange="xivo_ast_enable_faxdetect();"'),
+
+	$form->select(array('desc'	=> $this->bbf('fm_incall_faxdetecttimeout'),
+			    'name'	=> 'incall[faxdetecttimeout]',
+			    'labelid'	=> 'incall-faxdetecttimeout',
+			    'key'	=> false,
+			    'bbf'	=> array('mixkey','fm_incall_faxdetecttimeout-opt'),
+			    'default'	=> $element['incall']['faxdetecttimeout']['default'],
+			    'value'	=> $this->get_varra('incall','faxdetecttimeout')),
+		      $element['incall']['faxdetecttimeout']['value']),
+
+	$form->text(array('desc'	=> $this->bbf('fm_incall_faxdetectemail'),
+			  'name'	=> 'incall[faxdetectemail]',
+			  'labelid'	=> 'incall-faxdetectemail',
+			  'size'	=> 15,
+			  'default'	=> $element['incall']['faxdetectemail']['default'],
+			  'value'	=> $this->get_varra('incall','faxdetectemail')));
 
 ?>
 

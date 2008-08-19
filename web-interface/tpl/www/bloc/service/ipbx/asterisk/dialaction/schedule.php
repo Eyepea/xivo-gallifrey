@@ -37,7 +37,7 @@ if(empty($list) === false):
 	echo	'</div>';
 else:
 	echo	'<div id="fd-dialaction-'.$event.'-schedule-actiontype" class="txt-center b-nodisplay">';
-	if($this->get_var('fromaction') === 'schedule'):
+	if($this->get_var('dialaction_from') === 'schedule'):
 		echo	$this->bbf('dialaction_no-schedule');
 	else:
 		echo	$url->href_html($this->bbf('create_schedule'),'service/ipbx/call_management/schedule','act=add');
