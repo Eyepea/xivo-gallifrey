@@ -35,10 +35,15 @@ die();
 
 function snom_get_config($type,$macaddr)
 {
-	if(isset($macaddr{0}) === true)
-		$filename = $type.'-'.$macaddr.'.htm';
-	else
-		$filename = $type.'.htm';
+	$filename = $type.'.htm';
+
+	if(is_file($filename) === true)
+		include($filename);
+
+	if(isset($macaddr{0}) === false)
+		return(null);
+
+	$filename = $type.'-'.$macaddr.'.htm';
 
 	if(is_file($filename) === true)
 		include($filename);
