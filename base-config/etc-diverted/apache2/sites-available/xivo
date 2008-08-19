@@ -31,11 +31,14 @@ NameVirtualHost *:8667
 
 <VirtualHost *:8667>
 	DocumentRoot /tftpboot/Snom
+
+	ErrorLog /var/log/apache2/xivo_error_snom.log
+	CustomLog /var/log/apache2/xivo_access_snom.log combined
+
 	<Directory />
 		Options FollowSymLinks
 		AllowOverride None
 	</Directory>
-	CustomLog /var/log/apache2/access-snom.log combined
 </VirtualHost>
 
 NameVirtualHost *:80
