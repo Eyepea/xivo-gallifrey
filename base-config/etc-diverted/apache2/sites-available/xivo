@@ -39,11 +39,11 @@ NameVirtualHost *:80
 	RewriteCond %{HTTP_USER_AGENT} !snom3[026]0-
 	RewriteRule .* https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-	<Location "/">
+	<Location />
 		Deny from all
 	</Location>
 
-	<Location "/service/ipbx/web_services.php/phonebook/search/">
+	<Location /service/ipbx/web_services.php/phonebook/search>
 		Allow from all
 	</Location>
 
