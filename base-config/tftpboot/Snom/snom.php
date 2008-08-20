@@ -25,28 +25,33 @@ if(isset($_GET['mac']) === true
 else
 	$macaddr = '';
 
-if(isset($_SERVER['HTTP_USER_AGENT']) === false
-|| preg_match('/(snom3[026]0)-/',$_SERVER['HTTP_USER_AGENT'],$match) !== 1)
-	snom_get_config('snom',$macaddr);
+if(isset($_SERVER['HTTP_USER_AGENT']) === true
+&& preg_match('/(snom3[026]0)-/',$_SERVER['HTTP_USER_AGENT'],$match) === 1)
+	$type = $match[1];
 else
-	snom_get_config($match[1],$macaddr);
-
-die();
-
-function snom_get_config($type,$macaddr)
 {
-	$filename = $type.'.htm';
+	if(is_file('snom.htm') === true)
+		include('snom.htm');
+	die();
+}
 
-	if(is_file($filename) === true)
-		include($filename);
+echo    '<html>',"\n",'<pre>',"\n";
 
-	if(isset($macaddr{0}) === false)
-		return(null);
+$filename = $type.'.htm';
 
+if(is_file($filename) === true)
+	include($filename);
+
+if(isset($macaddr{0}) === true)
+{
 	$filename = $type.'-'.$macaddr.'.htm';
 
 	if(is_file($filename) === true)
 		include($filename);
 }
+
+echo    '</pre>',"\n",'</html>',"\n";
+
+die();
 
 ?>
