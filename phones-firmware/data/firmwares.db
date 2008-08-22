@@ -260,96 +260,57 @@ size: 44091381
 md5sum: d53f1ae15b33d3f8d69753f78b50000d
 sha1sum: eae5ef7fa0879815e2296fb92c9d9270a49bbb58
 
-# Snom 300 6.5.17
-[sn300_6517]
+# Snom 300 7.3.7
+[sn300_737]
 brand: Snom
 model: 300
-version: 6.5.17
-files: snom300-6.5.17-SIP-j.bin
+version: 7.3.7
+files: snom300-7.3.7-SIP-f.bin
 
-[snom300-6.5.17-SIP-j.bin]
-url: http://provisioning.snom.com/download/fw/snom300-6.5.17-SIP-j.bin
-size: 1453032
-md5sum: 457f4c938c8d75648552a91c7c3c2691
-sha1sum: 048ebc0c1d3373410e05e35c148f432d5d6200f1
+[snom300-7.3.7-SIP-f.bin]
+url: http://provisioning.snom.com/download/fw/snom300-7.3.7-SIP-f.bin
+size: 2915632
+md5sum: d8b106d5b09f8f0b3633cb6ec536126f
+sha1sum: aca233eb226e284557258601a8f085dbc1812bd5
 
-# Snom 300 7.1.33
-[sn300_7133]
-brand: Snom
-model: 300
-version: 7.1.33
-files: snom300-7.1.33-SIP-f.bin
-
-[snom300-7.1.33-SIP-f.bin]
-url: http://provisioning.snom.com/download/fw/snom300-7.1.33-SIP-f.bin
-size: 2811400
-md5sum: 95b77f0a13e9c7bab06119607fbee425
-sha1sum: 75fcc0c71385d203c74fddf0a2e090159a8bf256
-
-# Snom 320 6.5.17
-[sn320_6517]
+# Snom 320 7.3.7
+[sn320_737]
 brand: Snom
 model: 320
-version: 6.5.17
-files: snom320-6.5.17-SIP-j.bin
+version: 7.3.7
+files: snom320-7.3.7-SIP-f.bin
 
-[snom320-6.5.17-SIP-j.bin]
-url: http://provisioning.snom.com/download/fw/snom320-6.5.17-SIP-j.bin
-size: 1463304
-md5sum: 618758b73bda8d6b43fe5879d0b06e03
-sha1sum: 772e229efe99002d16b375bc3c128aaba5c2e6d4
+[snom320-7.3.7-SIP-f.bin]
+url: http://provisioning.snom.com/download/fw/snom320-7.3.7-SIP-f.bin
+size: 2928428
+md5sum: b16a23408a2b0358e0d8719fd9032723
+sha1sum: 58cf14b679326364417ed253e4702877089ac16b
 
-# Snom 320 7.1.33
-[sn320_7133]
-brand: Snom
-model: 320
-version: 7.1.33
-files: snom320-7.1.33-SIP-f.bin
-
-[snom320-7.1.33-SIP-f.bin]
-url: http://provisioning.snom.com/download/fw/snom320-7.1.33-SIP-f.bin
-size: 2824072
-md5sum: d3501e1b21ac9d1dfb97ef0b5e011b02
-sha1sum: 1de62e0131b58acabfd66b93f8c9d2224d931293
-
-# Snom 360 6.5.17
-[sn360_6517]
-brand: Snom
-model: 360
-version: 6.5.17
-files: snom360-6.5.17-SIP-j.bin
-
-[snom360-6.5.17-SIP-j.bin]
-url: http://provisioning.snom.com/download/fw/snom360-6.5.17-SIP-j.bin
-size: 1525908
-md5sum: 22e2a6515ad5ae5d3723cf106087cd4f
-sha1sum: 4b033035c11e192fc9ea5378da89a288792bc78e
-
-# Snom 360 7.1.33
-[sn360_7133]
+# Snom 360 7.3.7
+[sn360_737]
 brand: Snom
 model: 360
 version: 7.1.33
-files: snom360-7.1.33-SIP-f.bin
+files: snom360-7.3.7-SIP-f.bin
 
-[snom360-7.1.33-SIP-f.bin]
-url: http://provisioning.snom.com/download/fw/snom360-7.1.33-SIP-f.bin
-size: 2867600
-md5sum: 18131750db52844322617428713c8722
-sha1sum: 7a722a406fdc98a5dfbf0ebc01ff3dc4a61e2293
+[snom360-7.3.7-SIP-f.bin]
+url: http://provisioning.snom.com/download/fw/snom360-7.3.7-SIP-f.bin
+size: 2971044
+md5sum: 200f1089d2c65044ecd7ab8ce8f4b49c
+sha1sum: 88b78553b31b17f967619d187b42758889a90ba8
 
-# Snom 370 7.1.33
-[sn370_7133]
+# Snom 370 7.3.7
+[sn370_737]
 brand: Snom
 model: 370
-version: 7.1.33
-files: snom370-7.1.33-SIP-f.bin
+version: 7.3.7
+files: snom370-7.3.7-SIP-f.bin
 
-[snom370-7.1.33-SIP-f.bin]
-url: http://provisioning.snom.com/download/fw/snom370-7.1.33-SIP-f.bin
-size: 4048472
-md5sum: 5b9f1f3c4ca3e63f7d9f3e50be13ac5a
-sha1sum: 151c5d7e966d399aab2fd3cf53aaba2366814702
+[snom370-7.3.7-SIP-f.bin]
+url: http://provisioning.snom.com/download/fw/snom370-7.3.7-SIP-f.bin
+size: 3777536
+md5sum: 5eb9854c4ca0489900472ff4b5a01ae9
+sha1sum: f565cc725a28c9b8a1faba45c438c538d7c16dfc
 
 # Snom m3 1.1.6
 [snm3_116]
