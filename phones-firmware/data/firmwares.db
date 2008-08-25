@@ -97,19 +97,6 @@ size: 1548720
 md5sum: b6c99b91bbb1625d088b4f3a90794522
 sha1sum: fe3616d709599763fd27fc5afebd1c8f71a95b9c
 
-# Linksys SPA942 5.1.15a
-[lsspa942_5115a]
-brand: Linksys
-model: SPA942
-version: 5.1.15a
-files: spa942-5-1-15a.zip
-
-[spa942-5-1-15a.zip]
-url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%2Fzip&blobheadervalue2=inline%3B+filename%3Dspa942-5.1.15a.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193773807062&ssbinary=true&lid=4602227625B14
-size: 1736301
-md5sum: 822ca4365dbb0ef639469fe1505a32a7
-sha1sum: 22e27cc469ed0687a491167f7417ad8f9c9fb55c
-
 # Linksys SPA942 5.1.18
 [lsspa942_5118]
 brand: Linksys
@@ -136,6 +123,19 @@ size: 1781834
 md5sum: 66e49205ae82f4f63549d041346c5f0b
 sha1sum: 56a298586301c0a80dc32750a146b1cad6f03d37
 
+# Linksys SPA942 5.2.8
+[lsspa942_528]
+brand: Linksys
+model: SPA942
+version: 5.2.8
+files: spa942-5-2-8.bin
+
+[spa942-5-2-8.bin]
+url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%2Fzip&blobheadervalue2=inline%3B+filename%3DSPA942-5-2-8.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193787330702&ssbinary=true&lid=4542256524B20
+size: 2710028
+md5sum: 504c677c87b69c4490492fbdf9b52104
+sha1sum: c61950672320dd075f786c83d8c700a042c3cb53
+
 # Linksys SPA962 5.1.18(SC)
 [lsspa962_5118sc]
 brand: Linksys
@@ -161,6 +161,19 @@ url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Co
 size: 3254976
 md5sum: f2d221ea1dd5f1a3fdcd7e3853b1e333
 sha1sum: 657c0ad44396edae0ec10d4b8e743fa0cc641cc1
+
+# Linksys SPA8000 6.1.3
+[lsspa8000_613]
+brand: Linksys
+model: SPA8000
+version: 6.1.3
+files: spa8000-6-1-3.bin
+
+[spa8000-6-1-3.bin]
+url: ftp://ftp.linksys.com/downloads/NA/firmware/SPA8000_v6.1.3_fw.zip
+size: 3783070
+md5sum: bb9512cf8ba07a78b12a94b4f153396d
+sha1sum: 86171bd8d65497e594b79a03188acbe51b4e32e9
 
 # Polycom SoundPoint IP 300 4.0.0
 [pcspip300_400]
