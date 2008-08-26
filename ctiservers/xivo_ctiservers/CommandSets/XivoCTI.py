@@ -105,6 +105,7 @@ class XivoCTICommand(BaseCommand):
                         'faxsend',
                         'faxdata',
                         'database',
+                        'meetme',
                         'message',
                         'availstate',
                         'originate', 'transfer', 'atxfer', 'hangup', 'simplehangup', 'pickup']
@@ -160,7 +161,6 @@ class XivoCTICommand(BaseCommand):
                                         [param, value] = argms
                                         cfg[param] = value
                 return cfg
-
 
         def manage_login(self, loginparams, phase, uinfo):
                 if phase == xivo_commandsets.CMD_LOGIN_ID:
@@ -384,9 +384,9 @@ class XivoCTICommand(BaseCommand):
                                 if name not in self.capas:
                                         self.capas[name] = cti_capas.Capabilities()
                                 if prop == 'xlets':
-                                        self.capas[name].setxlets(val)
+                                        self.capas[name].setxlets(val.split(','))
                                 elif prop == 'funcs':
-                                        self.capas[name].setfuncs(val)
+                                        self.capas[name].setfuncs(val.split(','))
                                 elif prop == 'maxgui':
                                         self.capas[name].setmaxgui(val)
                                 elif prop == 'appliname':
@@ -1177,6 +1177,8 @@ class XivoCTICommand(BaseCommand):
                         self.meetme[astid][meetmenum] = []
                 if channel not in self.meetme[astid][meetmenum]:
                         self.meetme[astid][meetmenum].append(channel)
+                        self.__send_msg_to_cti_clients__('meetme=join;%s;%s;%s;%s;%d'
+                                                         % (astid, meetmenum, num, channel, len(self.meetme[astid][meetmenum])))
                 else:
                         log_debug(SYSLOG_WARNING, '%s : channel %s already in meetme %s' % (astid, channel, meetmenum))
                 return
@@ -1192,6 +1194,8 @@ class XivoCTICommand(BaseCommand):
                         self.meetme[astid][meetmenum] = []
                 if channel in self.meetme[astid][meetmenum]:
                         self.meetme[astid][meetmenum].remove(channel)
+                        self.__send_msg_to_cti_clients__('meetme=leave;%s;%s;%s;%s;%d'
+                                                         % (astid, meetmenum, num, channel, len(self.meetme[astid][meetmenum])))
                 else:
                         log_debug(SYSLOG_WARNING, '%s : channel %s not in meetme %s' % (astid, channel, meetmenum))
                 return
@@ -1310,6 +1314,14 @@ class XivoCTICommand(BaseCommand):
                                 if self.capas[capaid].match_funcs(ucapa, 'messages'):
                                         self.__send_msg_to_cti_clients__(self.message_srv2clt('%s/%s' %(astid, username),
                                                                                              '<%s>' % icommand.args[0]))
+                        elif icommand.name == 'meetme':
+                                if self.capas[capaid].match_funcs(ucapa, 'conference'):
+                                        if icommand.args[0] == 'kick':
+                                                astid = icommand.args[1]
+                                                room = icommand.args[2]
+                                                num = icommand.args[3]
+                                                self.amilist.execute(astid, 'sendcommand', 'Command', [('Command', 'meetme kick %s %s' % (room, num))])
+
                         elif icommand.name in ['originate', 'transfer', 'atxfer']:
                                 if self.capas[capaid].match_funcs(ucapa, 'dial'):
                                         repstr = self.__originate_or_transfer__(userinfo,
@@ -1327,7 +1339,7 @@ class XivoCTICommand(BaseCommand):
                                         self.amilist.execute(z[0], 'sendcommand', 'Command', [('Command', 'sip notify event-talk %s' % z[1])])
 
                         elif icommand.name in ['phones-list', 'phones-add', 'phones-del']:
-                                if self.capas[capaid].match_funcs(ucapa, 'calls,switchboard,search,history'):
+                                if True: # XXX define when it would not be compulsory
                                         # repstr = self.__build_callerids_hints__(icommand)
                                         if icommand.name == 'phones-list':
                                                 repstr = self.__phlist__()

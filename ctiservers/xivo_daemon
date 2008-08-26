@@ -193,9 +193,8 @@ def manage_webi_connections(connid, msg, sep):
         Handles WEBI connections.
         """
         global askedtoquit
+        requester = '%s:%d' % connid.getpeername()
         requester_ip = connid.getpeername()[0]
-        requester_port = connid.getpeername()[1]
-        requester = '%s:%d' % (requester_ip, requester_port)
 
         multimsg = msg.split(sep)
         for usefulmsgpart in multimsg:
@@ -564,13 +563,21 @@ while True: # loops over the reloads
         userinfo_current = {}
 
         cconf = cti_config.Config(XIVOCONFFILE)
-        xivoconf_general = cconf.read_section('general')
+        xivoconf_general = cconf.read_section('general', 'general')
 
         # loads the general configuration
         if 'commandset' in xivoconf_general:
                 commandset = xivoconf_general['commandset']
         if 'incoming_tcp_ports' in xivoconf_general:
                 incoming_tcp_ports = xivoconf_general['incoming_tcp_ports'].split(',')
+        for func in ['CTI', 'WEBI', 'FAGI', 'INFO']:
+                fieldname = 'incoming_tcp_%s' % func.lower()
+                if fieldname in xivoconf_general:
+                        port_and_bind = xivoconf_general[fieldname].split(':')
+                        if len(port_and_bind) > 1:
+                                incoming_tcp_ports.append('%s:%s:%s' % (port_and_bind[0], func, port_and_bind[1]))
+                        else:
+                                incoming_tcp_ports.append('%s:%s' % (port_and_bind[0], func))
         if 'extraconn' in xivoconf_general:
                 extraconn = xivoconf_general['extraconn']
         if 'updates_period' in xivoconf_general:
@@ -582,11 +589,11 @@ while True: # loops over the reloads
         if 'userlists' in xivoconf_general:
                 userlists = xivoconf_general['userlists'].split(',')
 
-        xivoconf_commandset = cconf.read_section(commandset)
+        xivoconf_commandset = cconf.read_section('commandset', commandset)
         xivoconf_sheetactions = {}
-        for event, sheetaction in cconf.read_section('sheet_events').iteritems():
+        for event, sheetaction in cconf.read_section('sheet_events', 'sheet_events').iteritems():
                 if len(sheetaction) > 0:
-                        xivoconf_sheetactions[event] = cconf.read_section(sheetaction)
+                        xivoconf_sheetactions[event] = cconf.read_section('sheet_action', sheetaction)
 
         queued_threads_pipe = os.pipe()
         amilist = xivo_ami.AMIList()
@@ -609,14 +616,14 @@ while True: # loops over the reloads
         commandclass.set_sheet_options(xivoconf_sheetactions)
 
         for ctx in contextlist:
-                xivoconf_context = cconf.read_section(ctx)
+                xivoconf_context = cconf.read_section('context', ctx)
                 if len(xivoconf_context) > 0:
                         if 'contextname' in xivoconf_context:
                                 contextname = xivoconf_context['contextname']
                         if 'directories' in xivoconf_context:
                                 directories = xivoconf_context['directories'].split(',')
                                 for dr in directories:
-                                        xivoconf_dir = cconf.read_section(dr)
+                                        xivoconf_dir = cconf.read_section('directory', dr)
                                         directorylist.update(contextname, dr, xivoconf_dir)
 
         save_for_next_packet_events = {}
@@ -625,7 +632,7 @@ while True: # loops over the reloads
 
         # loads the configuration for each asterisk
         for astid in asterisklist:
-                xivoconf_asterisk = cconf.read_section(astid)
+                xivoconf_asterisk = cconf.read_section('ipbx', astid)
                 if len(xivoconf_asterisk) > 0:
                         localaddr = '127.0.0.1'
                         urllist_phones = []
@@ -897,7 +904,7 @@ while True: # loops over the reloads
                                                         else:
                                                                 log_debug(SYSLOG_WARNING, 'could not find a match for socket %s' % sel_i)
                                                 except Exception, exc2:
-                                                        log_debug(SYSLOG_ERR, '--- exception (2) [CTI, WEBI, AGI, INFO] --- %s' % str(exc2))
+                                                        log_debug(SYSLOG_ERR, '--- exception (2) [CTI, WEBI, AGI, INFO] --- %s' % exc2)
 
                                 # local pipe fd
                                 elif queued_threads_pipe[0] == sel_i:

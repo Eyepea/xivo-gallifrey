@@ -26,8 +26,7 @@ __author__    = 'Corentin Le Gall'
 
 class Capabilities:
         allowed_funcs = ['agents',
-                         'agentdetails',
-                         'calls',
+                         
                          'conference',
                          'customerinfo',
                          'dial',
@@ -35,44 +34,39 @@ class Capabilities:
                          'fax',
                          'features',
                          'history',
-                         'identity',
                          'messages',
+                         
                          'nojoinleave',
                          'presence',
-                         'parking',
-                         'queues',
-                         'queuedetails',
-                         'queueentrydetails',
-                         'search',
-                         'switchboard',
-                         'video']
-
-        allowed_xlets = ['agents',
-                         'agentdetails',
-                         'queues',
-                         'queuedetails',
-                         'queueentrydetails',
+                         'database',
+                         'switchboard']
+        
+        allowed_xlets = {'agents' : ['agents'],
+                         'agentdetails' : ['agents'],
+                         'queues' : ['agents'],
+                         'queuedetails' : ['agents'],
+                         'queueentrydetails' : ['agents'],
                          
-                         'calls',
-                         'parking',
-                         'switchboard',
+                         'calls' : ['dial'],
+                         'parking' : ['dial'],
+                         'switchboard' : ['dial'],
                          
-                         'customerinfo',
-                         'datetime',
-                         'dial',
-                         'directory',
-                         'fax',
-                         'features',
-                         'history',
-                         'identity',
-                         'search',
+                         'customerinfo' : ['customerinfo'],
+                         'datetime' : [],
+                         'dial' : ['dial'],
+                         'directory' : ['directory'],
+                         'fax' : ['fax'],
+                         'features' : ['features'],
+                         'history' : ['history'],
+                         'identity' : [],     # might need 'agents'
+                         'search' : ['dial'], # might need 'agents'
                          
-                         'messages',
-                         'conference',
-                         'operator',
+                         'messages' : [],
+                         'conference' : ['conference'],
+                         'operator' : ['dial'],
                          
-                         'tabber',
-                         'video']
+                         'tabber' : [],
+                         'video' : []}
 
         def __init__(self):
                 self.capafuncs = []
@@ -82,17 +76,17 @@ class Capabilities:
                 self.maxgui = -1
                 return
 
-        def setfuncs(self, capalist_str):
-                lst = capalist_str.split(',')
-                for capa in lst:
-                        if capa in self.allowed_funcs:
+        def setfuncs(self, capalist):
+                for capa in capalist:
+                        if capa in self.allowed_funcs and capa not in self.capafuncs:
                                 self.capafuncs.append(capa)
 
-        def setxlets(self, capadisp):
-                for capa in capadisp.split(','):
+        def setxlets(self, capalist):
+                for capa in capalist:
                         detail = capa.split('-')
-                        if detail[0] in self.allowed_xlets:
+                        if detail[0] in self.allowed_xlets.keys():
                                 self.capadisps.append(capa)
+                                self.setfuncs(self.allowed_xlets[detail[0]])
                 return
 
         def setappliname(self, appliname):

@@ -53,21 +53,50 @@ class Config:
                 return
 
 
-        def read_section(self, section):
+        def read_section(self, type, sectionname):
                 v = {}
                 if self.kind == 'file':
                         try:
-                                if section in self.xivoconf.sections():
-                                        v = dict(self.xivoconf.items(section))
+                                if sectionname in self.xivoconf.sections():
+                                        v = dict(self.xivoconf.items(sectionname))
                         except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- kind=%s section=%s : %s' % (self.kind, section, exc))
+                                log_debug(SYSLOG_ERR, '--- exception --- kind=%s section=%s : %s' % (self.kind, sectionname, exc))
                 elif self.kind == 'sql':
                         try:
-                                self.cursor.query('SELECT * from %s' % section)
-                                z = self.cursor.fetchall()
-                                for zz in z:
-                                        [num, var, val] = zz
-                                        v[var] = val
+                                if type == 'commandset':
+                                        self.cursor.query('SELECT * FROM metaxlet_props')
+                                        z = self.cursor.fetchall()
+                                        for zz in z:
+                                                [name, displayname, maxgui] = zz
+                                                v['%s-xlets' % name] = ''
+                                                v['%s-funcs' % name] = ''
+                                                v['%s-maxgui' % name] = maxgui
+                                                v['%s-appliname' % name] = displayname
+                                        self.cursor.query('SELECT * FROM metaxlet_defs')
+                                        z = self.cursor.fetchall()
+                                        for zz in z:
+                                                [name, xtype, display, option] = zz
+                                                if display != 'func':
+                                                        v['%s-xlets' % xtype] = '%s-%s-%s' % (name, display, option)
+                                                else:
+                                                        v['%s-funcs' % xtype] = name
+                                elif type == 'ipbx':
+                                        self.cursor.query('SELECT * FROM asterisk_defs')
+                                        z = self.cursor.fetchall()
+                                        for zz in z:
+                                                if zz[0] == sectionname:
+                                                        [xivoname, localaddr, ipaddress, ipaddress_webi,
+                                                         urllist_phones, urllist_queues, urllist_agents,
+                                                         ami_port, ami_login, ami_pass,
+                                                         cdr_db_uri, userfeatures_db_uri] = zz
+                                else:
+                                        self.cursor.query('SELECT ${columns} FROM xivodaemonconf WHERE sectionname = %s',
+                                                          ('sectionname', 'var_name', 'var_val'),
+                                                          sectionname)
+                                        z = self.cursor.fetchall()
+                                        for zz in z:
+                                                [catname, var_name, var_val] = zz
+                                                v[var_name] = var_val
                         except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- kind=%s section=%s : %s' % (self.kind, section, exc))
+                                log_debug(SYSLOG_ERR, '--- exception --- kind=%s type=%s section=%s : %s' % (self.kind, type, sectionname, exc))
                 return v
