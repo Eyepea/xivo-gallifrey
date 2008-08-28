@@ -643,6 +643,7 @@ class XivoCTICommand(BaseCommand):
                                 uid = event.get('Uniqueid')
                                 queue = event.get('Queue')
                                 userinfo = None
+                                print where, event
                                 print 'ALERT %s : (%s) %s uid=%s %s %s (%s %s %s)' % (where, time.asctime(), astid, uid, clid, chan,
                                                                                       queue, event.get('Position'), event.get('Count'))
                                 self.chans_incomingqueue.append(chan)
@@ -2127,18 +2128,31 @@ class XivoCTICommand(BaseCommand):
         # \sa manage_tcp_connection
         def __build_customers__(self, ctx, searchpatterns):
                 fulllist = []
-                header = ''
                 if ctx in self.ctxlist.ctxlist:
                         for dirsec, dirdef in self.ctxlist.ctxlist[ctx].iteritems():
                                 y = self.__build_customers_bydirdef__(dirsec, searchpatterns, dirdef)
-                                header = 'directory-response=%d;%s' %(len(dirdef.search_valid_fields), ';'.join(dirdef.search_titles))
                                 fulllist.extend(y)
                 else:
                         log_debug(SYSLOG_WARNING, 'there has been no section defined for context %s : can not proceed directory search' % ctx)
-                if len(fulllist) == 0:
-                        return header
-                else:
-                        return header + ';' + ';'.join(fulllist)
+
+                mylines = []
+                for itemdir in fulllist:
+                        myitems = []
+                        for k in self.ctxlist.display_items[ctx]:
+                                [title, type, defaultval, format] = self.ctxlist.displays[ctx][k].split('|')
+                                basestr = format
+                                for k, v in itemdir.iteritems():
+                                        basestr = basestr.replace('{%s}' % k, v)
+                                myitems.append(basestr)
+                        mylines.append(';'.join(myitems))
+
+                mylines.sort()
+##                uniq = {}
+##                fullstat_body = []
+##                for fsl in [uniq.setdefault(e,e) for e in fullstatlist if e not in uniq]:
+##                        fullstat_body.append(fsl)
+##                return fullstat_body
+                return 'directory-response=' + ';'.join(self.ctxlist.display_header[ctx]) + ';' + ';'.join(mylines)
 
 
         def __build_customers_bydirdef__(self, dirname, searchpatterns, z):
@@ -2149,9 +2163,9 @@ class XivoCTICommand(BaseCommand):
                         return []
 
                 dbkind = z.uri.split(':')[0]
-                if dbkind == 'ldap':
+                if dbkind in ['ldap', 'ldaps']:
                         selectline = []
-                        for fname in z.search_matching_fields:
+                        for fname in z.match_direct:
                                 if searchpattern == "*":
                                         selectline.append("(%s=*)" % fname)
                                 else:
@@ -2167,14 +2181,15 @@ class XivoCTICommand(BaseCommand):
                                                 self.ldapids[z.uri] = ldapid
                                 if ldapid.l is not None:
                                         results = ldapid.getldap("(|%s)" % ''.join(selectline),
-                                                                 z.search_matching_fields)
+                                                                 z.match_direct)
                                 if results is not None:
                                         for result in results:
-                                                result_v = {}
-                                                for f in z.search_matching_fields:
-                                                        if f in result[1]:
-                                                                result_v[f] = result[1][f][0]
-                                                fullstatlist.append(';'.join(z.result_by_valid_field(result_v)))
+                                                futureline = {}
+                                                for keyw, dbkeys in z.fkeys.iteritems():
+                                                        for dbkey in dbkeys:
+                                                                if dbkey in result[1]:
+                                                                        futureline[keyw] = result[1][dbkey][0]
+                                                fullstatlist.append(futureline)
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- ldaprequest (directory) : %s' % exc)
 
@@ -2187,11 +2202,12 @@ class XivoCTICommand(BaseCommand):
                                 ll = line.strip()
                                 if ll.lower().find(searchpattern.lower()) >= 0:
                                         t = ll.split(delimit)
-                                        futureline = []
-                                        for mf in z.search_matching_fields:
-                                                idx = headerfields.index(mf)
-                                                futureline.append(t[idx])
-                                        fullstatlist.append(';'.join(futureline))
+                                        futureline = {}
+                                        for keyw, dbkeys in z.fkeys.iteritems():
+                                                for dbkey in dbkeys:
+                                                        idx = headerfields.index(dbkey)
+                                                        futureline[keyw] = t[idx]
+                                        fullstatlist.append(futureline)
 
                 elif dbkind == 'http':
                         f = urllib.urlopen('%s%s' % (z.uri, searchpattern))
@@ -2201,18 +2217,19 @@ class XivoCTICommand(BaseCommand):
                         for line in f:
                                 ll = line.strip()
                                 t = ll.split(delimit)
-                                futureline = []
-                                for mf in z.search_matching_fields:
-                                        idx = headerfields.index(mf)
-                                        futureline.append(t[idx])
-                                fullstatlist.append(';'.join(futureline))
+                                futureline = {}
+                                for keyw, dbkeys in z.fkeys.iteritems():
+                                        for dbkey in dbkeys:
+                                                idx = headerfields.index(dbkey)
+                                                futureline[keyw] = t[idx]
+                                fullstatlist.append(futureline)
 
                 elif dbkind != '':
                         if searchpattern == '*':
                                 whereline = ''
                         else:
                                 wl = []
-                                for fname in z.search_matching_fields:
+                                for fname in z.match_direct:
                                         wl.append("%s REGEXP '%s'" %(fname, searchpattern))
                                 whereline = 'WHERE ' + ' OR '.join(wl)
 
@@ -2220,28 +2237,24 @@ class XivoCTICommand(BaseCommand):
                                 conn = anysql.connect_by_uri(z.uri)
                                 cursor = conn.cursor()
                                 cursor.query("SELECT ${columns} FROM " + z.sqltable + " " + whereline,
-                                             tuple(z.search_matching_fields),
+                                             tuple(z.match_direct),
                                              None)
                                 results = cursor.fetchall()
                                 conn.close()
                                 for result in results:
-                                        result_v = {}
-                                        n = 0
-                                        for f in z.search_matching_fields:
-                                                result_v[f] = result[n]
-                                                n += 1
-                                        fullstatlist.append(';'.join(z.result_by_valid_field(result_v)))
+                                        futureline = {}
+                                        for keyw, dbkeys in z.fkeys.iteritems():
+                                                for dbkey in dbkeys:
+                                                        if dbkey in z.match_direct:
+                                                                n = z.match_direct.index(dbkey)
+                                                                futureline[keyw] = result[n]
+                                        fullstatlist.append(futureline)
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- sqlrequest : %s' % str(exc))
                 else:
-                        log_debug(SYSLOG_WARNING, "no database method defined - please fill the dir_db_uri field of the <%s> context" % dirname)
+                        log_debug(SYSLOG_WARNING, "no database method defined - please fill the uri field of the <%s> context" % dirname)
 
-                uniq = {}
-                fullstatlist.sort()
-                fullstat_body = []
-                for fsl in [uniq.setdefault(e,e) for e in fullstatlist if e not in uniq]:
-                        fullstat_body.append(fsl)
-                return fullstat_body
+                return fullstatlist
 
 
         def handle_fagi(self, astid, fastagi):

@@ -75,7 +75,7 @@ def callerid_match(dbfield, cid):
 # \param ctxinfos context informations
 def get_ldap_infos(cid, ctxinfos):
         str_cidm = []
-        for cidm in ctxinfos.sheet_callidmatch:
+        for cidm in ctxinfos.match_reverse:
                 if cidm != "":
                         str_cidm.append('(%s=%s)' %(cidm, cid))
         reply_by_field = {}
@@ -108,7 +108,7 @@ def get_ldap_infos(cid, ctxinfos):
 # \param ctxinfos context informations
 def get_sql_infos(cid, ctxinfos):
         str_cidm = []
-        for cidm in ctxinfos.sheet_callidmatch:
+        for cidm in ctxinfos.match_reverse:
                 if cidm != "":
                         str_cidm.append("%s REGEXP '%s'" %(cidm, cid))
         reply_by_field = {}
@@ -161,7 +161,7 @@ def get_csv_infos(cid, ctxinfos):
 	try:
                 csv = xivo_ldap.xivo_csv(ctxinfos.uri)
                 if csv.open():
-                        for cidm in ctxinfos.sheet_callidmatch:
+                        for cidm in ctxinfos.match_reverse:
                                 if cidm in csv.keys:
                                         str_cidm.append(csv.index(cidm))
                         for items in csv.items:
@@ -385,7 +385,7 @@ def senduiasync(userinfo, ctxinfos, callerid, xdconfig):
         [fields, params['todisplay']] = retrieve_callerid_data(callerid, ctxinfos, xdconfig, None)
         callidname = fields['callidname']
         for lv in listvars:
-                if lv in ctxinfos.sheet_callidmatch:
+                if lv in ctxinfos.match_reverse:
                         value = callerid
                 else:
                         value = ''

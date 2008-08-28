@@ -43,7 +43,9 @@ class xivo_ldap:
         def __init__(self, iuri):
                 try:
                         log_debug(SYSLOG_INFO, 'requested uri = %s' % iuri)
-                        postldap = iuri.split('ldap://')[1]
+                        ldapf = iuri.split('://')
+                        ldapkind = ldapf[0]
+                        postldap = ldapf[1]
                         if postldap.find('@') > 0:
                                 userpass = postldap.split('@')[0]
                                 [addport, self.dbname] = postldap.split('@')[1].split('/')
@@ -53,6 +55,9 @@ class xivo_ldap:
                         self.uri  = 'ldap://%s' % addport
                         self.l = ldap.initialize(self.uri)
                         self.l.protocol_version = ldap.VERSION3
+                        if ldapkind == 'ldaps':
+                                # find a better way to define when TLS has to be used ? (ldaps:// doesn't seem proper)
+                                self.l.start_tls_s()
                         if userpass is not None:
                                 self.user = userpass.split(':', 1)[0]
                                 self.passwd = userpass.split(':', 1)[1]

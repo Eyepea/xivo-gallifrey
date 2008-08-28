@@ -620,6 +620,9 @@ while True: # loops over the reloads
                 if len(xivoconf_context) > 0:
                         if 'contextname' in xivoconf_context:
                                 contextname = xivoconf_context['contextname']
+                        if 'display' in xivoconf_context:
+                                displaysection = xivoconf_context['display']
+                                directorylist.setdisplay(contextname, cconf.read_section('displayitem', displaysection))
                         if 'directories' in xivoconf_context:
                                 directories = xivoconf_context['directories'].split(',')
                                 for dr in directories:
