@@ -27,12 +27,12 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-from operator import attrgetter
-from itertools import imap, izip
-import sys
+from operator import attrgetter as _attrgetter
+from itertools import imap as _imap, izip as _izip
+from sys import maxint as _maxint
 
 
-def unsigned_word(w):
+def _unsigned_word(w):
     """
     Return the value of w reinterpreted as an unsigned word having the same
     bit-level representation in a word machine.
@@ -40,7 +40,7 @@ def unsigned_word(w):
     if w >= 0:
         return w
     else:
-        return w + (sys.maxint + 1) * 2
+        return w + (_maxint + 1) * 2
 
 
 class _Ref(object):
@@ -55,18 +55,9 @@ class _Ref(object):
         self._parent = parent
     
     def __repr__(self):
-        return "<%s.%s 0x%08x %r>" % (self.__class__.__module__, self.__class__.__name__, unsigned_word(id(self)), self.value)
+        return "<elt.ref. 0x%08x %r>" % (_unsigned_word(id(self)), self.value)
     
-    def get_parent(self):
-        """
-        Accessor for self._parent
-        """
-        return self._parent
-    
-    parent = property(get_parent)
-
-
-ATTR_VALUE_GET = attrgetter('value')	
+    parent = property(_attrgetter('_parent'))
 
 
 class ListRef(object):
@@ -111,7 +102,7 @@ class ListRef(object):
     
     def __contains__(self, value):
         "seq.__contains__(value) <==> value in seq"
-        return value in imap(ATTR_VALUE_GET, self._reflist)
+        return value in _imap(_attrgetter('value'), self._reflist)
     
     def __delitem__(self, k):
         "x.__delitem__(k) <==> del x[k]"
@@ -125,7 +116,7 @@ class ListRef(object):
     def __getitem__(self, k):
         "x.__getitem__(k) <==> x[k]"
         if isinstance(k, slice):
-            return ListRef(map(ATTR_VALUE_GET, self._reflist[k]))
+            return ListRef(map(_attrgetter('value'), self._reflist[k]))
         else:
             return self._reflist[k].value
     
@@ -150,13 +141,13 @@ class ListRef(object):
             self._reflist = []
         else:
             neg_old_len = -len(self._reflist)
-            for x in xrange(n - 1):
-                self.extend(map(ATTR_VALUE_GET, self._reflist[neg_old_len:]))
+            for x in xrange(n - 1): # pylint: disable-msg=W0612
+                self.extend(map(_attrgetter('value'), self._reflist[neg_old_len:]))
         return self
     
     def __iter__(self):
         "x.__iter__() <==> iter(x)"
-        return imap(ATTR_VALUE_GET, self._reflist)
+        return _imap(_attrgetter('value'), self._reflist)
     
     def __len__(self):
         "x._len__() <==> len(x)"
@@ -170,7 +161,7 @@ class ListRef(object):
             return ListRef()
         else:
             nlst = ListRef()
-            for x in xrange(n):
+            for x in xrange(n): # pylint: disable-msg=W0612
                 nlst.extend(self)
             return nlst
     
@@ -180,7 +171,7 @@ class ListRef(object):
     
     def __reversed__(self):
         "L.__reversed__() -- return a reverse iterator over the list"
-        return imap(ATTR_VALUE_GET, reversed(self._reflist))
+        return _imap(_attrgetter('value'), reversed(self._reflist))
     
     def __rmul__(self, n):
         "x.__rmul__(n) <==> n*x"
@@ -228,7 +219,7 @@ class ListRef(object):
                 if len(seq) != n_elt:
                     raise ValueError, "attempt to assign sequence of size %d to extended slice of size %d" % (len(seq), n_elt)
                 
-                for p, el in izip(xrange(start, stop, step), seq):
+                for p, el in _izip(xrange(start, stop, step), seq):
                     self._reflist[p].value = el
             
         else:
@@ -240,7 +231,7 @@ class ListRef(object):
     
     def count(self, value):
         "L.count(value) -> integer -- return number of occurrences of value"
-        return map(ATTR_VALUE_GET, self._reflist).count(value)
+        return map(_attrgetter('value'), self._reflist).count(value)
     
     def extend(self, iterable):
         "L.extend(iterable) -- extend list by appending elements from the iterable"
@@ -252,7 +243,7 @@ class ListRef(object):
             start += len(self._reflist)
         start = max(0, start)
         
-        return map(ATTR_VALUE_GET, self._reflist[start:stop]).index(value) + start
+        return map(_attrgetter('value'), self._reflist[start:stop]).index(value) + start
     
     def insert(self, index, obj):
         "L.insert(index, object) -- insert object before index"
@@ -277,7 +268,7 @@ class ListRef(object):
         cmp(x, y) -> -1, 0, 1
         """
         if key is None:
-            mykey = ATTR_VALUE_GET
+            mykey = _attrgetter('value')
         else:
             mykey = lambda x: key(x.value)
         
