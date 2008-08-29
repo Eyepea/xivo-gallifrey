@@ -790,7 +790,7 @@ while True: # loops over the reloads
                                         t._Thread__stop()
                                 sys.exit(5)
                         else:
-                                print '--- exception --- after select :', exc
+                                print '--- exception --- after select (%s) : %s' % (fdlist_full, exc)
                                 askedtoquit = True
                                 for s in fdlist_full:
                                         s.close()

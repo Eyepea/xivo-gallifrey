@@ -59,7 +59,6 @@ class Contexts:
                 self.display_items[ctxname].sort()
                 self.display_header[ctxname] = ['%s' % len(self.display_items[ctxname])]
                 for k in self.display_items[ctxname]:
-                        print self.displays[ctxname][k].split('|')
                         [title, type, defaultval, format] = self.displays[ctxname][k].split('|')
                         self.display_header[ctxname].append(title)
                 return
@@ -81,17 +80,10 @@ class Contexts:
                 z.setSqlTable(dir_db_sqltable)
                 z.setSheetUi(dir_db_sheetui)
 
-                fnames = {}
                 snames = {}
                 fkeys = {}
                 for field in xivoconf_local:
-                        if field.find('dir_db_search') == 0:
-                                ffs = field.split('.')
-                                if len(ffs) == 3:
-                                        if ffs[1] not in fnames:
-                                                fnames[ffs[1]] = {}
-                                        fnames[ffs[1]][ffs[2]] = xivoconf_local[field]
-                        elif field.find('dir_db_sheet') == 0:
+                        if field.find('dir_db_sheet') == 0:
                                 ffs = field.split('.')
                                 if len(ffs) == 3:
                                         if ffs[1] not in snames:

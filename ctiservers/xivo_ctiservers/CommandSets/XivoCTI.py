@@ -554,8 +554,8 @@ class XivoCTICommand(BaseCommand):
 
 
         sheet_allowed_events = ['incomingqueue', 'incomingdid',
-                                'localphonecalled', 'agentcalled', 'agentselected',
-                                'agi', 'outgoing']
+                                'agentcalled', 'agentselected',
+                                'localphonecalled', 'agi', 'outgoing']
 
         def set_sheet_options(self, sheetactions):
                 for where, actionopt in sheetactions.iteritems():
@@ -625,6 +625,8 @@ class XivoCTICommand(BaseCommand):
                                 uid = event.get('Uniqueid')
                                 userinfo = None
                                 [clid, did] = event.get('AppData').split('|')
+                                # 1.4 : clid = event.get('XIVO_SRCNUM')
+                                # 1.4 : did  = event.get('XIVO_EXTENPATTERN')
                                 print 'ALERT %s : (%s) %s uid=%s %s %s did=%s' % (where, time.asctime(), astid, uid, clid, chan, did)
                                 self.chans_incomingdid.append(chan)
                                 linestosend.append('<info name="SDA" type="text"><![CDATA[%s]]></info>' % did)
@@ -1144,8 +1146,11 @@ class XivoCTICommand(BaseCommand):
                 eventname = event.get('Event')
                 if eventname == 'UserEventDID':
                         self.__sheet_alert__('incomingdid', astid, event)
+                elif eventname == 'UserEventFeature':
+                        log_debug(SYSLOG_INFO, 'AMI %s UserEventFeature %s' % (astid, event))
+                        # 'XIVO_CONTEXT', 'CHANNEL', 'Function', 'Status', 'Value'
                 else:
-                        log_debug(SYSLOG_INFO, 'AMI UserEvent %s %s' % (astid, event))
+                        log_debug(SYSLOG_INFO, 'AMI %s UserEvent %s' % (astid, event))
                 return
 
         def ami_faxsent(self, astid, event):
