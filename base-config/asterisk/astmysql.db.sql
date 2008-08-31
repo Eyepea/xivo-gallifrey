@@ -1008,18 +1008,19 @@ INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','qualify','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','useclientcode','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','progressinband','never');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','language','fr');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','musiconhold','default');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','mohinterpret','default');
 INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','mohsuggest',NULL);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','vmexten','*98');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','trustrpid','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','sendrpid','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','canreinvite','yes');
-INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','insecure',NULL);
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','insecure','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','rtcachefriends','yes');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','rtupdate','yes');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','ignoreregexpire','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','rtsavesysname','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','rtautoclear','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','subscribecontext',NULL);
 
 
 DROP TABLE IF EXISTS `staticvoicemail`;
@@ -1183,51 +1184,78 @@ CREATE INDEX `userfeatures__idx__commented` ON `userfeatures`(`commented`);
 CREATE UNIQUE INDEX `userfeatures__uidx__protocol_name` ON `userfeatures`(`protocol`,`name`);
 CREATE UNIQUE INDEX `userfeatures__uidx__protocol_protocolid` ON `userfeatures`(`protocol`,`protocolid`);
 
-INSERT INTO `userfeatures` VALUES (1,'sip',1,'Guest','','guest','','xivo-initconfig',NULL,148378,30,5,0,0,0,0,0,0,0,0,0,'',0,'',0,'','','',1,'no',0,'');
+INSERT INTO `userfeatures` VALUES (1,'sip',1,'Guest','','guest','','xivo-initconfig',NULL,148378,
+				   30,5,0,0,0,0,0,0,0,0,0,'',0,'',0,'','','',1,'no',0,'');
 
 
 DROP TABLE IF EXISTS `useriax`;
 CREATE TABLE `useriax` (
  `id` int(10) unsigned auto_increment,
- `name` varchar(40) NOT NULL,
- `commented` tinyint(1) NOT NULL DEFAULT 0,
- `username` varchar(80) NOT NULL,
- `type` enum('friend','peer','user') NOT NULL,
- `secret` varchar(80),
- `md5secret` varchar(32),
- `dbsecret` varchar(100),
- `notransfer` char(3),
- `trunk` char(3),
- `inkeys` varchar(100),
- `outkey` varchar(100),
- `auth` varchar(100),
- `accountcode` varchar(100),
- `amaflags` varchar(13),
- `callerid` varchar(160),
- `callgroup` varchar(180),
- `context` varchar(39),
- `defaultip` varchar(255),
- `host` varchar(255) NOT NULL DEFAULT 'dynamic',
- `language` char(2),
- `mailbox` varchar(80),
- `deny` varchar(95),
- `permit` varchar(95),
- `qualify` char(3),
- `disallow` varchar(100),
- `allow` varchar(100),
- `ipaddr` varchar(15) NOT NULL,
- `port` smallint unsigned,
+ `name` varchar(40) NOT NULL, -- user / peer --
+ `type` enum('friend','peer','user') NOT NULL, -- user / peer --
+ `username` varchar(80), -- peer --
+ `secret` varchar(80) NOT NULL DEFAULT '', -- peer / user --
+ `dbsecret` varchar(255) NOT NULL DEFAULT '', -- peer / user --
+ `context` varchar(39), -- peer / user --
+ `language` varchar(20), -- general / user --
+ `accountcode` varchar(20), -- general / user --
+ `amaflags` enum('default',
+ 		 'omit',
+		 'billing',
+		 'documentation') DEFAULT 'documentation', -- general / user --
+ `mailbox` varchar(80), -- peer --
+ `callerid` varchar(160), -- user / peer --
+ `fullname` varchar(80), -- user / peer --
+ `cid_number` varchar(80), -- user / peer --
+ `trunk` tinyint(1) NOT NULL DEFAULT 0, -- user / peer --
+ `auth` enum('plaintext',
+ 	     'md5',
+	     'rsa',
+	     'plaintext,md5',
+	     'plaintext,rsa',
+	     'md5,rsa',
+	     'plaintext,md5,rsa') NOT NULL DEFAULT 'plaintext,md5', -- user / peer --
+ `encryption` enum('no','yes','aes128'), -- user / peer --
+ `maxauthreq` tinyint(2) unsigned, -- general / user --
+ `inkeys` varchar(80), -- user / peer --
+ `outkey` varchar(80), -- peer --
+ `adsi` tinyint(1), -- general / user / peer --
+ `transfer` enum('no','yes','mediaonly'), -- general / user / peer --
+ `codecpriority` enum('disabled','host','caller','reqonly'), -- general / user --
+ `jitterbuffer` tinyint(1), -- general / user / peer --
+ `forcejitterbuffer` tinyint(1), -- general / user / peer --
+ `sendani` tinyint(1) NOT NULL DEFAULT 0, -- peer --
+ `qualify` varchar(4) NOT NULL DEFAULT 'no', -- peer --
+ `qualifysmoothing` tinyint(1) NOT NULL DEFAULT 0, -- peer --
+ `qualifyfreqok` int(10) unsigned NOT NULL DEFAULT 60000, -- peer --
+ `qualifyfreqnotok` int(10) unsigned NOT NULL DEFAULT 10000, -- peer --
+ `timezone` varchar(80), -- peer --
+ `disallow` varchar(100), -- general / user / peer --
+ `allow` varchar(100), -- general / user / peer --
+ `mohinterpret` varchar(80), -- general / user / peer --
+ `mohsuggest` varchar(80), -- general / user / peer --
+ `deny` varchar(32), -- user / peer --
+ `permit` varchar(32), -- user / peer --
+ `defaultip` varchar(255), -- peer --
+ `sourceaddress` varchar(255), -- peer --
+ `setvar` varchar(100) NOT NULL DEFAULT '', -- user --
+ `host` varchar(255) NOT NULL DEFAULT 'dynamic', -- peer --
+ `port` smallint unsigned, -- peer --
+ `mask` varchar(15), -- peer --
+ `regexten` varchar(80), -- peer --
+ `peercontext` varchar(80), -- peer --
+ `ipaddr` varchar(255) NOT NULL DEFAULT '',
  `regseconds` int(10) unsigned NOT NULL DEFAULT 0,
- `setvar` varchar(100) NOT NULL,
- `call-limit` tinyint(2) unsigned NOT NULL DEFAULT 0,
  `protocol` enum('iax') NOT NULL DEFAULT 'iax',
  `category` enum('user','trunk') NOT NULL,
+ `commented` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE INDEX `useriax__idx__commented` ON `useriax`(`commented`);
+CREATE INDEX `useriax__idx__mailbox` ON `useriax`(`mailbox`);
 CREATE INDEX `useriax__idx__protocol` ON `useriax`(`protocol`);
 CREATE INDEX `useriax__idx__category` ON `useriax`(`category`);
+CREATE INDEX `useriax__idx__commented` ON `useriax`(`commented`);
 CREATE INDEX `useriax__idx__name_host` ON `useriax`(`name`,`host`);
 CREATE INDEX `useriax__idx__name_ipaddr_port` ON `useriax`(`name`,`ipaddr`,`port`);
 CREATE INDEX `useriax__idx__ipaddr_port` ON `useriax`(`ipaddr`,`port`);
@@ -1238,89 +1266,122 @@ CREATE UNIQUE INDEX `useriax__uidx__name` ON `useriax`(`name`);
 DROP TABLE IF EXISTS `usersip`;
 CREATE TABLE `usersip` (
  `id` int(10) unsigned auto_increment,
- `name` varchar(40) NOT NULL,
- `commented` tinyint(1) NOT NULL DEFAULT 0,
- `accountcode` varchar(20),
- `amaflags` varchar(13),
- `callgroup` varchar(180),
- `callerid` varchar(160),
- `canreinvite` char(3),
- `context` varchar(39),
- `defaultip` varchar(255),
- `dtmfmode` varchar(7),
- `fromuser` varchar(80),
- `fromdomain` varchar(80),
- `fullcontact` varchar(80),
- `host` varchar(255) NOT NULL DEFAULT 'dynamic',
- `insecure` varchar(11),
- `language` char(2),
- `mailbox` varchar(80),
- `md5secret` varchar(80),
- `nat` varchar(5) NOT NULL DEFAULT 'no',
- `deny` varchar(95),
- `permit` varchar(95),
- `mask` varchar(95),
- `pickupgroup` varchar(80),
- `port` smallint unsigned,
- `qualify` char(3),
- `restrictcid` char(1),
- `rtptimeout` char(3),
- `rtpholdtimeout` char(3),
- `secret` varchar(80),
- `type` enum('friend','peer','user') NOT NULL,
- `username` varchar(80) NOT NULL,
- `disallow` varchar(100),
- `allow` varchar(100),
- `musiconhold` varchar(100),
+ `name` varchar(40) NOT NULL, -- user / peer --
+ `type` enum('friend','peer','user') NOT NULL, -- user / peer --
+ `username` varchar(80), -- peer --
+ `secret` varchar(80) NOT NULL DEFAULT '', -- user / peer --
+ `md5secret` varchar(32) NOT NULL DEFAULT '', -- user / peer --
+ `context` varchar(39), -- general / user / peer --
+ `language` varchar(20), -- general / user / peer --
+ `accountcode` varchar(20), -- user / peer --
+ `amaflags` enum('default',
+ 		 'omit',
+		 'billing',
+		 'documentation') NOT NULL DEFAULT 'documentation', -- user / peer --
+ `allowtransfer` tinyint(1), -- general / user / peer --
+ `fromuser` varchar(80), -- peer --
+ `fromdomain` varchar(255), -- general / peer --
+ `mailbox` varchar(80), -- peer --
+ `subscribemwi` tinyint(1) NOT NULL DEFAULT 1, -- peer --
+ `buggymwi` tinyint(1), -- general / user / peer --
+ `call-limit` tinyint(2) unsigned NOT NULL DEFAULT 0, -- user / peer --
+ `callerid` varchar(160), -- general / user / peer --
+ `fullname` varchar(80), -- user / peer --
+ `cid_number` varchar(80), -- user / peer --
+ `maxcallbitrate` smallint(4) unsigned, -- general / user / peer --
+ `insecure` enum('port','invite','port,invite'), -- general / user / peer --
+ `nat` enum('no','yes','never','route'), -- general / user / peer --
+ `canreinvite` enum('no','yes','update','nonat','update,nonat'), -- general / user / peer --
+ `promiscredir` tinyint(1), -- general / user / peer --
+ `usereqphone` tinyint(1), -- general / peer --
+ `videosupport` tinyint(1), -- general / user / peer --
+ `trustrpid` tinyint(1), -- general / user / peer --
+ `sendrpid` tinyint(1), -- general / user / peer --
+ `allowsubscribe` tinyint(1), -- general / user / peer --
+ `allowoverlap` tinyint(1), -- general / user / peer --
+ `dtmfmode` enum('rfc2833','inband','info','auto'), -- general / user / peer --
+ `rfc2833compensate` tinyint(1), -- general / user / peer --
+ `qualify` varchar(4), -- general / peer --
+ `g726nonstandard` tinyint(1), -- general / user / peer --
+ `disallow` varchar(100), -- general / user / peer --
+ `allow` varchar(100), -- general / user / peer --
+ `autoframing` tinyint(1), -- general / user / peer --
+ `mohinterpret` varchar(80), -- general / user / peer --
+ `mohsuggest` varchar(80), -- general / user / peer --
+ `useclientcode` tinyint(1), -- general / user / peer --
+ `progressinband` enum('no','yes','never'), -- general / user / peer --
+ `t38pt_udptl` tinyint(1), -- general / user / peer --
+ `t38pt_rtp` tinyint(1), -- general / user / peer --
+ `t38pt_tcp` tinyint(1), -- general / user / peer --
+ `t38pt_usertpsource` tinyint(1), -- general / user / peer --
+ `rtptimeout` tinyint unsigned, -- general / peer --
+ `rtpholdtimeout` tinyint unsigned, -- general / peer --
+ `rtpkeepalive` tinyint unsigned, -- general / peer --
+ `deny` varchar(32), -- user / peer --
+ `permit` varchar(32), -- user / peer --
+ `defaultip` varchar(255), -- peer --
+ `callgroup` varchar(180), -- user / peer --
+ `pickupgroup` varchar(180), -- user / peer --
+ `setvar` varchar(100) NOT NULL DEFAULT '', -- user / peer --
+ `host` varchar(255) NOT NULL DEFAULT 'dynamic', -- peer --
+ `port` smallint unsigned, -- peer --
+ `regexten` varchar(80), -- peer --
+ `subscribecontext` varchar(80), -- general / user / peer --
+ `fullcontact` varchar(255), -- peer --
+ `vmexten` varchar(40), -- general / peer --
+ `callingpres` tinyint(1), -- user / peer --
+ `ipaddr` varchar(255) NOT NULL DEFAULT '',
  `regseconds` int(10) unsigned NOT NULL DEFAULT 0,
- `ipaddr` varchar(15) NOT NULL,
- `regexten` varchar(80),
  `regserver` varchar(20),
- `cancallforward` char(3),
- `setvar` varchar(100) NOT NULL,
- `call-limit` tinyint(2) unsigned NOT NULL DEFAULT 0,
  `protocol` enum('sip') NOT NULL DEFAULT 'sip',
  `category` enum('user','trunk') NOT NULL,
+ `commented` tinyint(1) NOT NULL DEFAULT 0, -- user / peer --
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE INDEX `usersip__idx__commented` ON `usersip`(`commented`);
+CREATE INDEX `usersip__idx__mailbox` ON `usersip`(`mailbox`);
 CREATE INDEX `usersip__idx__protocol` ON `usersip`(`protocol`);
 CREATE INDEX `usersip__idx__category` ON `usersip`(`category`);
+CREATE INDEX `usersip__idx__commented` ON `usersip`(`commented`);
 CREATE INDEX `usersip__idx__host_port` ON `usersip`(`host`,`port`);
 CREATE INDEX `usersip__idx__ipaddr_port` ON `usersip`(`ipaddr`,`port`);
 CREATE UNIQUE INDEX `usersip__uidx__name` ON `usersip`(`name`);
 
-INSERT INTO `usersip` VALUES (1,'guest',0,'','documentation','','Guest','no','xivo-initconfig',NULL,'rfc2833',NULL,NULL,'','dynamic',NULL,NULL,NULL,NULL,'no',NULL,NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'guest','friend','guest',NULL,NULL,NULL,0,'',NULL,NULL,NULL,'',0,'sip','user');
+INSERT INTO `usersip` VALUES (1,'guest','friend','guest','guest','','xivo-initconfig',NULL,
+			      NULL,'documentation',NULL,NULL,NULL,NULL,0,NULL,0,'Guest',
+			      NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+			      NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+			      NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'XIVO_USERID=1',
+			      'dynamic',NULL,NULL,NULL,NULL,NULL,NULL,'',0,NULL,'sip','user',0);
 
 
 DROP TABLE IF EXISTS `voicemail`;
 CREATE TABLE `voicemail` (
  `uniqueid` int(10) unsigned auto_increment,
- `context` varchar(39),
- `mailbox` varchar(40) NOT NULL DEFAULT '',
+ `context` varchar(39) NOT NULL,
+ `mailbox` varchar(40) NOT NULL,
  `password` varchar(80) NOT NULL DEFAULT '',
  `fullname` varchar(80) NOT NULL DEFAULT '',
- `email` varchar(80) NOT NULL DEFAULT '',
- `pager` varchar(80) NOT NULL DEFAULT '',
+ `email` varchar(80),
+ `pager` varchar(80),
  `dialout` varchar(39),
  `callback` varchar(39),
  `exitcontext` varchar(39),
- `language` varchar(20) NOT NULL DEFAULT '',
- `tz` varchar(80) NOT NULL DEFAULT '',
- `attach` tinyint(1) DEFAULT 1,
- `saycid` tinyint(1) DEFAULT 1,
- `review` tinyint(1) DEFAULT 0,
- `operator` tinyint(1) DEFAULT 0,
- `envelope` tinyint(1) DEFAULT 0,
- `sayduration` tinyint(1) DEFAULT 0,
- `saydurationm` tinyint(2) unsigned DEFAULT 2,
- `sendvoicemail` tinyint(1) DEFAULT 0,
+ `language` varchar(20),
+ `tz` varchar(80),
+ `attach` tinyint(1),
+ `saycid` tinyint(1),
+ `review` tinyint(1),
+ `operator` tinyint(1),
+ `envelope` tinyint(1),
+ `sayduration` tinyint(1),
+ `saydurationm` tinyint(2) unsigned,
+ `sendvoicemail` tinyint(1),
  `deletevoicemail` tinyint(1) NOT NULL DEFAULT 0,
- `forcename` tinyint(1) DEFAULT 0,
- `forcegreetings` tinyint(1) DEFAULT 0,
+ `forcename` tinyint(1),
+ `forcegreetings` tinyint(1),
  `hidefromdir` enum('yes','no') NOT NULL DEFAULT 'no',
- `maxmsg` smallint(4) unsigned DEFAULT 100,
+ `maxmsg` smallint(4) unsigned,
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`uniqueid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
