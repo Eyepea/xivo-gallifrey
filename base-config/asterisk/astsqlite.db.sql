@@ -984,6 +984,7 @@ INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','rtupdate','yes');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','ignoreregexpire','no');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','rtsavesysname','no');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','rtautoclear','no');
+INSERT INTO staticsip VALUES (NULL,0,0,1,'sip.conf','general','subscribecontext',NULL);
 
 
 DROP TABLE staticvoicemail;
