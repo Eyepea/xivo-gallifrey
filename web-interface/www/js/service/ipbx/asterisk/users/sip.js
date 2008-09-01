@@ -75,12 +75,12 @@ xivo_elt_protocol['sip']['codec-active'] = new Array();
 xivo_elt_protocol['sip']['codec-active']['it'] = true;
 xivo_elt_protocol['sip']['sip-codeclist'] = new Array();
 xivo_elt_protocol['sip']['sip-codeclist']['it'] = new Array();
-xivo_elt_protocol['sip']['sip-codeclist']['it']['style'] = 'display:inline';
-xivo_elt_protocol['sip']['sip-codeclist']['it']['property'] = 'disabled|false:boolean;className|it-enabled';
+xivo_elt_protocol['sip']['sip-codeclist']['it']['style'] = {display: 'inline'};
+xivo_elt_protocol['sip']['sip-codeclist']['it']['property'] = {disabled: true, className: 'it-enabled'};
 xivo_elt_protocol['sip']['sip-codec'] = new Array();
 xivo_elt_protocol['sip']['sip-codec']['it'] = new Array();
-xivo_elt_protocol['sip']['sip-codec']['it']['style'] = 'display:inline';
-xivo_elt_protocol['sip']['sip-codec']['it']['property'] = 'disabled|false:boolean;className|it-enabled';
+xivo_elt_protocol['sip']['sip-codec']['it']['style'] = {display: 'inline'};
+xivo_elt_protocol['sip']['sip-codec']['it']['property'] = {disabled: true, className: 'it-enabled'};
 
 xivo_elt_protocol['sip']['autoprov-modact'] = new Array();
 xivo_elt_protocol['sip']['autoprov-modact']['it'] = true;

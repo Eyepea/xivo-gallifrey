@@ -3,9 +3,9 @@ var xivo_imode = 0;
 var xivo_elt_mode = new Array();
 
 xivo_elt_mode['fd-callfilter-ringseconds'] = new Array();
-xivo_elt_mode['fd-callfilter-ringseconds']['style'] = 'display:block';
+xivo_elt_mode['fd-callfilter-ringseconds']['style'] = {display: 'block'};
 xivo_elt_mode['it-callfilter-ringseconds'] = new Array();
-xivo_elt_mode['it-callfilter-ringseconds']['property'] = 'disabled|false:boolean';
+xivo_elt_mode['it-callfilter-ringseconds']['property'] = {disabled: false};
 
 xivo_elt_mode['links'] = new Array();
 xivo_elt_mode['links']['link'] = new Array();
@@ -22,11 +22,11 @@ xivo_fm_mode['bosssecretary']['secretary-serial'] = xivo_clone(xivo_elt_mode);
 xivo_fm_mode['bosssecretary']['secretary-simult'] = xivo_clone(xivo_elt_mode);
 xivo_fm_mode['bosssecretary']['secretary-all'] = xivo_clone(xivo_elt_mode);
 
-xivo_fm_mode['bosssecretary']['bossfirst-serial']['fd-callfilter-ringseconds']['style'] = 'display:none';
-xivo_fm_mode['bosssecretary']['bossfirst-serial']['it-callfilter-ringseconds']['property'] = 'disabled|false:boolean';
+xivo_fm_mode['bosssecretary']['bossfirst-serial']['fd-callfilter-ringseconds']['style'] = {display: 'none'};
+xivo_fm_mode['bosssecretary']['bossfirst-serial']['it-callfilter-ringseconds']['property'] = {disabled: false};
 
-xivo_fm_mode['bosssecretary']['secretary-serial']['fd-callfilter-ringseconds']['style'] = 'display:none';
-xivo_fm_mode['bosssecretary']['secretary-serial']['it-callfilter-ringseconds']['property'] = 'disabled|false:boolean';
+xivo_fm_mode['bosssecretary']['secretary-serial']['fd-callfilter-ringseconds']['style'] = {display: 'none'};
+xivo_fm_mode['bosssecretary']['secretary-serial']['it-callfilter-ringseconds']['property'] = {disabled: false};
 
 xivo_attrib_register('fm_mode-bosssecretary-bossfirst-serial',xivo_fm_mode['bosssecretary']['bossfirst-serial']);
 xivo_attrib_register('fm_mode-bosssecretary-bossfirst-simult',xivo_fm_mode['bosssecretary']['bossfirst-simult']);

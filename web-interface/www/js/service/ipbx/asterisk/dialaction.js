@@ -104,12 +104,12 @@ function xivo_ast_build_dialaction_array(dialevent)
 		{
 			var key = 'fd-dialaction-'+dialevent+'-'+property+'-'+ref[j];
 			xivo_elt_dialaction[dialevent][key] = new Array();
-			xivo_elt_dialaction[dialevent][key]['style'] = 'display:none';
+			xivo_elt_dialaction[dialevent][key]['style'] = {display: 'none'};
 			xivo_elt_dialaction[dialevent]['links']['link'][i++] = new Array(key,0,1);
 
 			var key = 'it-dialaction-'+dialevent+'-'+property+'-'+ref[j];
 			xivo_elt_dialaction[dialevent][key] = new Array();
-			xivo_elt_dialaction[dialevent][key]['property'] = 'disabled|true:boolean;className|it-disabled';
+			xivo_elt_dialaction[dialevent][key]['property'] = {disabled: true, className: 'it-disabled'};
 			xivo_elt_dialaction[dialevent]['links']['link'][i++] = new Array(key,0,1);
 		}
 	}
@@ -133,8 +133,8 @@ function xivo_ast_register_dialaction(dialevent,actiontype)
 			var keyfd = 'fd-dialaction-'+dialevent+'-'+actiontype+'-'+ref[i];
 			var keyit = 'it-dialaction-'+dialevent+'-'+actiontype+'-'+ref[i];
 
-			xivo_fm_dialaction[dialevent][actiontype][keyfd]['style'] = 'display:block';
-			xivo_fm_dialaction[dialevent][actiontype][keyit]['property'] = 'disabled|false:boolean;className|it-enabled';
+			xivo_fm_dialaction[dialevent][actiontype][keyfd]['style'] = {display: 'block'};
+			xivo_fm_dialaction[dialevent][actiontype][keyit]['property'] = {disabled: false, className: 'it-enabled'};
 		}
 	}
 
@@ -176,9 +176,9 @@ function xivo_ast_chg_dialaction_actionarg(dialevent,actiontype)
 		if((itactionarg = xivo_eid('it-dialaction-'+dialevent+'-'+actiontype+'-'+ref[i].name)) !== false)
 		{
 			if(ref[i].display === false)
-				xivo_chg_property_attrib(itactionarg,'disabled|true:boolean;className|it-disabled');
+				xivo_chg_property_attrib(itactionarg,{disabled: true, className: 'it-disabled'});
 			else
-				xivo_chg_property_attrib(itactionarg,'disabled|false:boolean;className|it-enabled');
+				xivo_chg_property_attrib(itactionarg,{disabled: false, className: 'it-enabled'});
 		}
 	}
 }

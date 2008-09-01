@@ -146,92 +146,73 @@ function xivo_attrib_register(id,arr)
 		xivo_conf['attrib'][id] = arr;
 }
 
-function xivo_chg_style_attrib(elem,arr,type)
+function xivo_chg_style_attrib(elem,obj,type)
 {
-	type = type == 'undefined' ? 0 : type;
+	type = xivo_is_undef(type) === true ? 0 : type;
 
-	if(typeof(arr) == 'string')
-		var ref_style = arr;
-	else if(xivo_is_array(arr) == true && xivo_is_undef(arr[type]) == false)
-		var ref_style = arr[type];
-	else
+	if(xivo_is_array(obj) === true && xivo_is_object(obj[type]) === true)
+		obj = obj[type];
+	else if(xivo_is_object(obj) === false)
 		return(false);
+	else if(xivo_is_undef(elem['type']) === false && elem['type'] === 'hidden')
+		return(null);
+
+	var style = '';
+	var styles = '';
 
 	try
 	{
-		var styles = '';
-
-		if(xivo_is_undef(elem['type']) === false && elem['type'] === 'hidden')
-			return(null);
-		else if(xivo_is_undef(elem['style']) == false)
-		{
-			var astyles = xivo_split(ref_style,';');
-			var astyle = new Array();
-
-			for(var i = 0;i < astyles.length;i++)
-			{
-				styles = astyles[i].replace(/\s/g,'');
-
-				if(styles.length == 0)
-					continue;
-
-				astyle = xivo_split(styles,':');
-
-				if(astyle.length == 1)
-					continue;
-
-				if((pos = astyle[0].search(/-/)) != -1)
-				{
-					var tmp = astyle[0];
-					astyle[0]  = tmp.substring(0,pos);
-					astyle[0] += tmp.substr(pos+1,1).toUpperCase();
-					astyle[0] += tmp.substr(pos+2,(tmp.length - pos-2));
-				}
-
-				elem['style'][astyle[0]] = astyle[1];
-			}
-		}
-		else if(xivo_is_undef(elem.style.setAttribute) == false)
-		{
-			var astyles = xivo_split(ref_style,';');
-			var astyle = new Array();
-
-			for(var i = 0;i < astyles.length;i++)
-			{
-				styles = astyles[i].replace(/\s/g,'');
-
-				if(styles.length == 0)
-					continue;
-
-				astyle = xivo_split(styles,':');
-
-				if(astyle.length == 1)
-					continue;
-
-				if((pos = astyle[0].search(/-/)) != -1)
-				{
-					var tmp = astyle[0];
-					astyle[0]  = tmp.substring(0,pos);
-					astyle[0] += tmp.substr(pos+1,1).toUpperCase();
-					astyle[0] += tmp.substr(pos+2,(tmp.length - pos-2));
-				}
-
-				elem.style.setAttribute(astyle[0],astyle[1]);
-			}
-		}
+		if(xivo_is_undef(elem['style']) === false)
+			var styletype = 1;
+		else if(xivo_is_undef(elem.style.setAttribute) === false)
+			var styletype = 2;
 		else
+			var styletype = 3;
+
+		for(property in obj)
 		{
-			styles = elem.style.cssText.replace(/\s/g,'');
+			style = obj[property];
 
-			if(styles.charAt(styles.length-1) != ';')
-				styles += ';'+ref_style;
+			if(xivo_is_scalar(style) === false)
+				continue;
+
+			style = String(style);
+			style = style.replace(/\s/g,'');
+
+			if(style.length === 0)
+				continue;
+			else if(styletype !== 3 && (pos = property.search(/-/)) != -1)
+			{
+				tmp = property;
+				property  = tmp.substring(0,pos);
+				property += tmp.substr(pos+1,1).toUpperCase();
+				property += tmp.substr(pos+2,(tmp.length - pos-2));
+			}
+
+			if(styletype === 1)
+				elem['style'][property] = style;
+			else if(styletype === 2)
+				elem.style.setAttribute(property,style);
 			else
-				styles += ref_style;
+				styles += property+':'+obj[style]+';';
+		}
 
-			elem.style.cssText = styles;
+		if(styletype === 3 && styles.length > 2)
+		{
+			elemstyle = elem.style.cssText.replace(/\s/g,'');
+
+			if(elemstyle.charAt(elemstyle.length-1) !== ';')
+				elemstyle += ';';
+
+			elem.style.cssText = elemstyle+styles;
 		}
 	}
-	catch(e) {}
+	catch(e)
+	{
+		return(false);
+	}
+
+	return(true);
 }
 
 function xivo_trunc(str,nb,end,chr)
@@ -335,62 +316,22 @@ function xivo_split(str,delimit)
 	return(r);
 }
 
-function xivo_chg_property_attrib(elem,arr,type)
+function xivo_chg_property_attrib(elem,obj,type)
 {
-	if(typeof(arr) == 'string')
-		var aproperties = xivo_split(arr,';');
-	else if(xivo_is_array(arr) == true && xivo_is_undef(arr[type]) == false)
-		var aproperties = xivo_split(arr[type],';');
-	else
+	if(xivo_is_array(obj) === true && xivo_is_object(obj[type]) === true)
+		obj = obj[type];
+	else if(xivo_is_object(obj) === false)
 		return(false);
 
-	var properties = '';
-	var nproperty = '';
-	var aproperty = new Array();
-	var len = aproperties.length;
-
-	for(var i = 0;i < len;i++)
+	for(property in obj)
 	{
-		properties = aproperties[i];
-
-		if(properties.length == 0)
-			continue;
-
-		nproperty = xivo_split(properties,'|');
-
-		if(nproperty.length > 2 || xivo_is_undef(elem[nproperty[0]]) == true)
-			continue;
-		else if(nproperty[0] == 'style')
-		{
-			xivo_chg_style_attrib(elem,nproperty[1],type);
-			continue;
-		}
-
-		aproperty = xivo_split(nproperty[1],':');
-					
-		if(xivo_is_undef(aproperty[1]) == false)
-		{
-			var vtype = aproperty[1].toLowerCase();
-					
-			switch(vtype)
-			{
-				case 'boolean':
-					if(aproperty[0] == 'false')
-						aproperty[0] = false;
-					else
-						aproperty[0] = Boolean(aproperty[0]);
-					break;
-				case 'number':
-						aproperty[0] = Number(aproperty[0]);
-					break;
-				case 'string':
-						aproperty[0] = String(aproperty[0]);
-					break;
-			}		
-		}
-
-		elem[nproperty[0]] = aproperty[0];
+		if(property === 'style')
+			xivo_chg_style_attrib(elem,obj,type);
+		else
+			elem[property] = obj[property];
 	}
+
+	return(true);
 }
 
 function xivo_chg_attrib(name,id,type,link)
@@ -961,14 +902,14 @@ function xivo_form_success(str)
 	str = String(str);
 
 	if(str == 'undefined' || str.length == 0 || xivo_eid('tooltips') == false)
-		var property = 'innerHTML|&nbsp\\;';
+		var property = {innerHTML: '&nbsp;'};
 	else
 	{
 		str = str.replace(/;/g,'\\;');
 		str = str.replace(/\|/g,'\\|');
 		str = str.replace(/:/g,'\\:');
 
-		var property = 'className|c-green;innerHTML|'+str;
+		var property = {className: 'c-green', innerHTML: str};
 	}
 
 	xivo_chg_property_attrib(xivo_eid('tooltips'),property);

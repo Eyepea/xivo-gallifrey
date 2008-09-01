@@ -1,6 +1,7 @@
 xivo_fm_format = new Array();
 xivo_fm_format['it-voicemail-attachformat'] = new Array();
-xivo_fm_format['it-voicemail-attachformat']['property'] = new Array('disabled|false:boolean;className|it-enabled','disabled|true:boolean;className|it-disabled');
+xivo_fm_format['it-voicemail-attachformat']['property'] = new Array({disabled: false, className: 'it-enabled'},
+								    {disabled: true, className: 'it-disabled'});
 
 xivo_attrib_register('fm_format',xivo_fm_format);
 

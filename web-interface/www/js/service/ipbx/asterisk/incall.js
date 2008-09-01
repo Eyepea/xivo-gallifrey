@@ -2,14 +2,14 @@ var xivo_fm_ast_faxdetectenable = new Array();
 
 xivo_fm_ast_faxdetectenable['it-incall-faxdetecttimeout'] = new Array();
 xivo_fm_ast_faxdetectenable['it-incall-faxdetecttimeout']['property'] = new Array(
-								'disabled|true:boolean;className|it-disabled',
-								'disabled|false:boolean;className|it-enabled');
+								{disabled: true, className: 'it-disabled'},
+								{disabled: false, className: 'it-enabled'});
 xivo_fm_ast_faxdetectenable['it-incall-faxdetecttimeout']['link'] = 'it-incall-faxdetectemail';
 
 xivo_fm_ast_faxdetectenable['it-incall-faxdetectemail'] = new Array();
 xivo_fm_ast_faxdetectenable['it-incall-faxdetectemail']['property'] = new Array(
-								'readOnly|true:boolean;className|it-readonly',
-								'readOnly|false:boolean;className|it-enabled');
+								{readOnly: true, className: 'it-readonly'},
+								{readOnly: false, className: 'it-enabled'});
 
 xivo_attrib_register('fm_ast_faxdetectenable',xivo_fm_ast_faxdetectenable);
 

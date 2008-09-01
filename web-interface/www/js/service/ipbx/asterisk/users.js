@@ -118,12 +118,12 @@ xivo_list_elt_users['codec-active'] = new Array();
 xivo_list_elt_users['codec-active']['it'] = false;
 xivo_list_elt_users['codeclist'] = new Array();
 xivo_list_elt_users['codeclist']['it'] = new Array();
-xivo_list_elt_users['codeclist']['it']['style'] = 'display:none';
-xivo_list_elt_users['codeclist']['it']['property'] = 'disabled|true:boolean';
+xivo_list_elt_users['codeclist']['it']['style'] = {display: 'none'};
+xivo_list_elt_users['codeclist']['it']['property'] = {disabled: true};
 xivo_list_elt_users['codec'] = new Array();
 xivo_list_elt_users['codec']['it'] = new Array();
-xivo_list_elt_users['codec']['it']['style'] = 'display:none';
-xivo_list_elt_users['codec']['it']['property'] = 'disabled|true:boolean';
+xivo_list_elt_users['codec']['it']['style'] = {display: 'none'};
+xivo_list_elt_users['codec']['it']['property'] = {disabled: true};
 
 xivo_list_elt_users['autoprov-modact'] = new Array();
 xivo_list_elt_users['autoprov-modact']['it'] = false;
@@ -166,16 +166,16 @@ function xivo_loaduser()
 		return(false);
 
 	var it_true = new Array();
-	it_true['property'] = 'disabled|false:boolean;className|it-enabled';
+	it_true['property'] = {disabled: false, className: 'it-enabled'};
 	
 	var fd_true = new Array();
-	fd_true['style'] = 'display:block';
+	fd_true['style'] = {display: 'block'};
 
 	var it_false = new Array();
-	it_false['property'] = 'disabled|true:boolean;className|it-disabled';
+	it_false['property'] = {disabled: true, className: 'it-disabled'};
 	
 	var fd_false = new Array();
-	fd_false['style'] = 'display:none';
+	fd_false['style'] = {display: 'none'};
 
 	var i = 0;
 
@@ -277,16 +277,16 @@ function xivo_build_protocol_array(protocol)
 		return(false);
 
 	var it_true = new Array();
-	it_true['property'] = 'disabled|false:boolean;className|it-enabled';
+	it_true['property'] = {disabled: false, className: 'it-enabled'};
 	
 	var fd_true = new Array();
-	fd_true['style'] = 'display:block';
+	fd_true['style'] = {display: 'block'};
 
 	var it_false = new Array();
-	it_false['property'] = 'disabled|true:boolean;className|it-disabled';
+	it_false['property'] = {disabled: true, className: 'it-disabled'};
 	
 	var fd_false = new Array();
-	fd_false['style'] = 'display:none';
+	fd_false['style'] = {display: 'none'};
 
 	xivo_fm_users[protocol] = xivo_clone(xivo_elt_users);
 
@@ -331,8 +331,8 @@ var xivo_fm_enablerna = new Array();
 
 xivo_fm_enablerna['it-ufeatures-destrna'] = new Array();
 xivo_fm_enablerna['it-ufeatures-destrna']['property'] = new Array(
-							'readOnly|true:boolean;className|it-readonly',
-							'readOnly|false:boolean;className|it-enabled');
+							{readOnly: true, className: 'it-readonly'},
+							{readOnly: false, className: 'it-enabled'});
 
 xivo_attrib_register('fm_enablerna',xivo_fm_enablerna);
 
@@ -340,8 +340,8 @@ var xivo_fm_enablebusy = new Array();
 
 xivo_fm_enablebusy['it-ufeatures-destbusy'] = new Array();
 xivo_fm_enablebusy['it-ufeatures-destbusy']['property'] = new Array(
-							'readOnly|true:boolean;className|it-readonly',
-							'readOnly|false:boolean;className|it-enabled');
+							{readOnly: true, className: 'it-readonly'},
+							{readOnly: false, className: 'it-enabled'});
 
 xivo_attrib_register('fm_enablebusy',xivo_fm_enablebusy);
 
@@ -349,124 +349,124 @@ var xivo_fm_enableunc = new Array();
 
 xivo_fm_enableunc['it-ufeatures-destunc'] = new Array();
 xivo_fm_enableunc['it-ufeatures-destunc']['property'] = new Array(
-							'readOnly|true:boolean;className|it-readonly',
-							'readOnly|false:boolean;className|it-enabled');
+							{readOnly: true, className: 'it-readonly'},
+							{readOnly: false, className: 'it-enabled'});
 
 xivo_attrib_register('fm_enableunc',xivo_fm_enableunc);
 
 var xivo_fm_outcallerid = new Array();
 
 xivo_fm_outcallerid['fd-ufeatures-outcallerid-custom'] = new Array();
-xivo_fm_outcallerid['fd-ufeatures-outcallerid-custom']['style'] = new Array('display:none','display:block');
+xivo_fm_outcallerid['fd-ufeatures-outcallerid-custom']['style'] = new Array({display: 'none'},{display: 'block'});
 xivo_fm_outcallerid['fd-ufeatures-outcallerid-custom']['link'] = 'it-outcallerid-custom';
 
 xivo_fm_outcallerid['it-ufeatures-outcallerid-custom'] = new Array();
-xivo_fm_outcallerid['it-ufeatures-outcallerid-custom']['property'] = new Array('disabled|true:boolean','disabled|false:boolean');
+xivo_fm_outcallerid['it-ufeatures-outcallerid-custom']['property'] = new Array({disabled: true},{disabled: false});
 
 xivo_attrib_register('fm_outcallerid',xivo_fm_outcallerid);
 
 var xivo_fm_host = new Array();
 
 xivo_fm_host['fd-sip-protocol-host-static'] = new Array();
-xivo_fm_host['fd-sip-protocol-host-static']['style'] = new Array('display:none','display:block');
+xivo_fm_host['fd-sip-protocol-host-static']['style'] = new Array({display: 'none'},{display: 'block'});
 xivo_fm_host['fd-sip-protocol-host-static']['link'] = 'it-sip-protocol-host-static';
 
 xivo_fm_host['it-sip-protocol-host-static'] = new Array();
-xivo_fm_host['it-sip-protocol-host-static']['property'] = new Array('disabled|true:boolean','disabled|false:boolean');
+xivo_fm_host['it-sip-protocol-host-static']['property'] = new Array({disabled: true},{disabled: false});
 
 xivo_fm_host['fd-iax-protocol-host-static'] = new Array();
-xivo_fm_host['fd-iax-protocol-host-static']['style'] = new Array('display:none','display:block');
+xivo_fm_host['fd-iax-protocol-host-static']['style'] = new Array({display: 'none'},{display: 'block'});
 xivo_fm_host['fd-iax-protocol-host-static']['link'] = 'it-iax-protocol-host-static';
 
 xivo_fm_host['it-iax-protocol-host-static'] = new Array();
-xivo_fm_host['it-iax-protocol-host-static']['property'] = new Array('disabled|true:boolean','disabled|false:boolean');
+xivo_fm_host['it-iax-protocol-host-static']['property'] = new Array({disabled: true},{disabled: false});
 
 xivo_attrib_register('fm_host',xivo_fm_host);
 
 xivo_fm_codec = new Array();
 xivo_fm_codec['it-sip-protocol-disallow'] = new Array();
 xivo_fm_codec['it-sip-protocol-disallow']['property'] = new Array(
-							'disabled|false:boolean;className|it-enabled',
-							'disabled|true:boolean;className|it-disabled');
+							{disabled: false, className: 'it-enabled'},
+							{disabled: true, className: 'it-disabled'});
 xivo_fm_codec['it-sip-protocol-disallow']['link'] = 'it-sip-codeclist';
 
 xivo_fm_codec['it-sip-codeclist'] = new Array();
 xivo_fm_codec['it-sip-codeclist']['property'] = new Array(
-							'disabled|false:boolean;className|it-enabled',
-							'disabled|true:boolean;className|it-disabled;selectedIndex|-1');
+							{disabled: false, className: 'it-enabled'},
+							{disabled: true, className: 'it-disabled', selectedIndex: -1});
 xivo_fm_codec['it-sip-codeclist']['link'] = 'it-sip-codec';
 
 xivo_fm_codec['it-sip-codec'] = new Array();
 xivo_fm_codec['it-sip-codec']['property'] = new Array(
-							'disabled|false:boolean;className|it-enabled',
-							'disabled|true:boolean;className|it-disabled;selectedIndex|-1');
+							{disabled: false, className: 'it-enabled'},
+							{disabled: true, className: 'it-disabled', selectedIndex: -1});
 
 xivo_fm_codec['it-iax-protocol-disallow'] = new Array();
 xivo_fm_codec['it-iax-protocol-disallow']['property'] = new Array(
-							'disabled|false:boolean;className|it-enabled',
-							'disabled|true:boolean;className|it-disabled');
+							{disabled: false, className: 'it-enabled'},
+							{disabled: true, className: 'it-disabled'});
 xivo_fm_codec['it-iax-protocol-disallow']['link'] = 'it-iax-codeclist';
 
 xivo_fm_codec['it-iax-codeclist'] = new Array();
 xivo_fm_codec['it-iax-codeclist']['property'] = new Array(
-							'disabled|false:boolean;className|it-enabled',
-							'disabled|true:boolean;className|it-disabled');
+							{disabled: false, className: 'it-enabled'},
+							{disabled: true, className: 'it-disabled'});
 xivo_fm_codec['it-iax-codeclist']['link'] = 'it-iax-codec';
 
 xivo_fm_codec['it-iax-codec'] = new Array();
 xivo_fm_codec['it-iax-codec']['property'] = new Array(
-							'disabled|false:boolean;className|it-enabled',
-							'disabled|true:boolean;className|it-disabled;selectedIndex|-1');
+							{disabled: false, className: 'it-enabled'},
+							{disabled: true, className: 'it-disabled', selectedIndex: -1});
 
 xivo_attrib_register('fm_codec',xivo_fm_codec);
 
 xivo_fm_voicemail = new Array();
 xivo_fm_voicemail['it-voicemail-fullname'] = new Array();
 xivo_fm_voicemail['it-voicemail-fullname']['property'] = new Array(
-							'disabled|false:boolean;className|it-enabled',
-							'disabled|true:boolean;className|it-disabled');
+							{disabled: false, className: 'it-enabled'},
+							{disabled: true, className: 'it-disabled'});
 xivo_fm_voicemail['it-voicemail-fullname']['link'] = 'it-voicemail-mailbox';
 
 xivo_fm_voicemail['it-voicemail-mailbox'] = new Array();
 xivo_fm_voicemail['it-voicemail-mailbox']['property'] = new Array(
-							'disabled|false:boolean;className|it-enabled',
-							'disabled|true:boolean;className|it-disabled');
+							{disabled: false, className: 'it-enabled'},
+							{disabled: true, className: 'it-disabled'});
 xivo_fm_voicemail['it-voicemail-mailbox']['link'] = 'it-voicemail-password';
 
 xivo_fm_voicemail['it-voicemail-password'] = new Array();
 xivo_fm_voicemail['it-voicemail-password']['property'] = new Array(
-							'disabled|false:boolean;className|it-enabled',
-							'disabled|true:boolean;className|it-disabled');
+							{disabled: false, className: 'it-enabled'},
+							{disabled: true, className: 'it-disabled'});
 xivo_fm_voicemail['it-voicemail-password']['link'] = 'it-voicemail-email';
 
 xivo_fm_voicemail['it-voicemail-email'] = new Array();
 xivo_fm_voicemail['it-voicemail-email']['property'] = new Array(
-							'disabled|false:boolean;className|it-enabled',
-							'disabled|true:boolean;className|it-disabled');
+							{disabled: false, className: 'it-enabled'},
+							{disabled: true, className: 'it-disabled'});
 xivo_fm_voicemail['it-voicemail-email']['link'] = 'it-voicemail-tz';
 
 xivo_fm_voicemail['it-voicemail-tz'] = new Array();
 xivo_fm_voicemail['it-voicemail-tz']['property'] = new Array(
-							'disabled|false:boolean;className|it-enabled',
-							'disabled|true:boolean;className|it-disabled');
+							{disabled: false, className: 'it-enabled'},
+							{disabled: true, className: 'it-disabled'});
 xivo_fm_voicemail['it-voicemail-tz']['link'] = 'it-vmfeatures-skipcheckpass';
 
 xivo_fm_voicemail['it-vmfeatures-skipcheckpass'] = new Array();
 xivo_fm_voicemail['it-vmfeatures-skipcheckpass']['property'] = new Array(
-							'disabled|false:boolean;className|it-enabled',
-							'disabled|true:boolean;className|it-disabled');
+							{disabled: false, className: 'it-enabled'},
+							{disabled: true, className: 'it-disabled'});
 xivo_fm_voicemail['it-vmfeatures-skipcheckpass']['link'] = 'it-voicemail-attach';
 
 xivo_fm_voicemail['it-voicemail-attach'] = new Array();
 xivo_fm_voicemail['it-voicemail-attach']['property'] = new Array(
-							'disabled|false:boolean;className|it-enabled',
-							'disabled|true:boolean;className|it-disabled');
+							{disabled: false, className: 'it-enabled'},
+							{disabled: true, className: 'it-disabled'});
 xivo_fm_voicemail['it-voicemail-attach']['link'] = 'it-voicemail-deletevoicemail';
 
 xivo_fm_voicemail['it-voicemail-deletevoicemail'] = new Array();
 xivo_fm_voicemail['it-voicemail-deletevoicemail']['property'] = new Array(
-							'disabled|false:boolean;className|it-enabled',
-							'disabled|true:boolean;className|it-disabled');
+							{disabled: false, className: 'it-enabled'},
+							{disabled: true, className: 'it-disabled'});
 
 xivo_attrib_register('fm_voicemail',xivo_fm_voicemail);
 
@@ -475,7 +475,7 @@ xivo_fm_enablevoicemail = xivo_clone(xivo_fm_voicemail);
 xivo_fm_enablevoicemail['it-voicemail-deletevoicemail']['link'] = 'it-ufeatures-enablevoicemail';
 
 xivo_fm_enablevoicemail['it-ufeatures-enablevoicemail'] = new Array();
-xivo_fm_enablevoicemail['it-ufeatures-enablevoicemail']['property'] = new Array('checked|true:boolean','checked|false:boolean');
+xivo_fm_enablevoicemail['it-ufeatures-enablevoicemail']['property'] = new Array({checked: true},{checked: false});
 
 xivo_attrib_register('fm_enablevoicemail',xivo_fm_enablevoicemail);
 
@@ -483,19 +483,19 @@ xivo_attrib_register('fm_enablevoicemail',xivo_fm_enablevoicemail);
 xivo_elt_autoprov = new Array();
 
 xivo_elt_autoprov['it-autoprov-modact'] = new Array();
-xivo_elt_autoprov['it-autoprov-modact']['property'] = 'disabled|false:boolean;className|it-enabled';
+xivo_elt_autoprov['it-autoprov-modact']['property'] = {disabled: false, className: 'it-enabled'};
 xivo_elt_autoprov['it-autoprov-modact']['link'] = 'it-autoprov-vendormodel';
 
 xivo_elt_autoprov['it-autoprov-vendormodel'] = new Array();
 xivo_elt_autoprov['it-autoprov-vendormodel']['property'] = new Array(
-							'disabled|false:boolean;className|it-enabled',
-							'disabled|true:boolean;className|it-disabled');
+							{disabled: false, className: 'it-enabled'},
+							{disabled: true, className: 'it-disabled'});
 xivo_elt_autoprov['it-autoprov-vendormodel']['link'] = 'it-autoprov-macaddr';
 
 xivo_elt_autoprov['it-autoprov-macaddr'] = new Array();
 xivo_elt_autoprov['it-autoprov-macaddr']['property'] = new Array(
-							'disabled|false:boolean;className|it-enabled',
-							'disabled|true:boolean;className|it-disabled');
+							{disabled: false, className: 'it-enabled'},
+							{disabled: true, className: 'it-disabled'});
 
 var xivo_fm_autoprov = new Array();
 
@@ -504,9 +504,9 @@ xivo_fm_autoprov['sip'] = xivo_clone(xivo_elt_autoprov);
 xivo_attrib_register('fm_autoprov-sip',xivo_fm_autoprov['sip']);
 
 xivo_fm_autoprov['iax'] = xivo_clone(xivo_elt_autoprov);
-xivo_fm_autoprov['iax']['it-autoprov-modact']['property'] = 'disabled|true:boolean;className|it-disabled';
-xivo_fm_autoprov['iax']['it-autoprov-vendormodel']['property'] = 'disabled|true:boolean;className|it-disabled';
-xivo_fm_autoprov['iax']['it-autoprov-macaddr']['property'] = 'disabled|true:boolean;className|it-disabled';
+xivo_fm_autoprov['iax']['it-autoprov-modact']['property'] = {disabled: true, className: 'it-disabled'};
+xivo_fm_autoprov['iax']['it-autoprov-vendormodel']['property'] = {disabled: true, className: 'it-disabled'};
+xivo_fm_autoprov['iax']['it-autoprov-macaddr']['property'] = {disabled: true, className: 'it-disabled'};
 
 xivo_attrib_register('fm_autoprov-iax',xivo_fm_autoprov['iax']);
 

@@ -3,15 +3,15 @@ var xivo_imode = 0;
 var xivo_elt_mode = new Array();
 
 xivo_elt_mode['fd-outcall-prefix'] = new Array();
-xivo_elt_mode['fd-outcall-prefix']['style'] = 'display:none';
+xivo_elt_mode['fd-outcall-prefix']['style'] = {display: 'none'};
 xivo_elt_mode['it-outcall-prefix'] = new Array();
-xivo_elt_mode['it-outcall-prefix']['property'] = 'disabled|true:boolean';
+xivo_elt_mode['it-outcall-prefix']['property'] = {disabled: true};
 xivo_elt_mode['fd-outcall-numlen'] = new Array();
-xivo_elt_mode['fd-outcall-numlen']['style'] = 'display:none';
+xivo_elt_mode['fd-outcall-numlen']['style'] = {display: 'none'};
 xivo_elt_mode['it-outcall-numlen'] = new Array();
-xivo_elt_mode['it-outcall-numlen']['property'] = 'disabled|true:boolean';
+xivo_elt_mode['it-outcall-numlen']['property'] = {disabled: true};
 xivo_elt_mode['fd-outcall-exten'] = new Array();
-xivo_elt_mode['fd-outcall-exten']['style'] = 'display:none';
+xivo_elt_mode['fd-outcall-exten']['style'] = {display: 'none'};
 
 xivo_elt_mode['links'] = new Array();
 xivo_elt_mode['links']['link'] = new Array();
@@ -25,15 +25,15 @@ xivo_elt_mode['links']['link'][xivo_imode++] = new Array('it-outcall-exten',0,1)
 var xivo_fm_mode = new Array();
 
 xivo_fm_mode['wizard'] = xivo_clone(xivo_elt_mode);
-xivo_fm_mode['wizard']['fd-outcall-prefix']['style'] = 'display:block';
-xivo_fm_mode['wizard']['it-outcall-prefix']['property'] = 'disabled|false:boolean';
-xivo_fm_mode['wizard']['fd-outcall-numlen']['style'] = 'display:block';
-xivo_fm_mode['wizard']['it-outcall-numlen']['property'] = 'disabled|false:boolean';
+xivo_fm_mode['wizard']['fd-outcall-prefix']['style'] = {display: 'block'};
+xivo_fm_mode['wizard']['it-outcall-prefix']['property'] = {disabled: false};
+xivo_fm_mode['wizard']['fd-outcall-numlen']['style'] = {display: 'block'};
+xivo_fm_mode['wizard']['it-outcall-numlen']['property'] = {disabled: false};
 
 xivo_attrib_register('fm_mode-wizard',xivo_fm_mode['wizard']);
 
 xivo_fm_mode['extension'] = xivo_clone(xivo_elt_mode);
-xivo_fm_mode['extension']['fd-outcall-exten']['style'] = 'display:block';
+xivo_fm_mode['extension']['fd-outcall-exten']['style'] = {display: 'block'};
 
 xivo_attrib_register('fm_mode-extension',xivo_fm_mode['extension']);
 

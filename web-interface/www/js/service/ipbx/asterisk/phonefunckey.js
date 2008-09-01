@@ -29,35 +29,35 @@ function xivo_build_phonefunckey_array(id)
 	{
 		key = 'fd-phonefunckey-'+property+'-typeval-'+id;
 		xivo_elt_phonefunckey[id][key] = new Array();
-		xivo_elt_phonefunckey[id][key]['style'] = 'display:none';
+		xivo_elt_phonefunckey[id][key]['style'] = {display: 'none'};
 		xivo_elt_phonefunckey[id]['links']['link'][i++] = new Array(key,0,1);
 
 		key = 'it-phonefunckey-supervision-'+id;
 		xivo_elt_phonefunckey[id][key] = new Array();
-		xivo_elt_phonefunckey[id][key]['property'] = 'disabled|true:boolean;className|it-disabled';
+		xivo_elt_phonefunckey[id][key]['property'] = {disabled: true, className: 'it-disabled'};
 		xivo_elt_phonefunckey[id]['links']['link'][i++] = new Array(key,0,1);
 
 		key = 'it-phonefunckey-'+property+'-typeval-'+id;
 		xivo_elt_phonefunckey[id][key] = new Array();
-		xivo_elt_phonefunckey[id][key]['style'] = 'display:none';
-		xivo_elt_phonefunckey[id][key]['property'] = 'disabled|true:boolean;className|it-disabled';
+		xivo_elt_phonefunckey[id][key]['style'] = {display: 'none'};
+		xivo_elt_phonefunckey[id][key]['property'] = {disabled: true, className: 'it-disabled'};
 		xivo_elt_phonefunckey[id]['links']['link'][i++] = new Array(key,0,1);
 	}
 
 	for(property in xivo_phonefunckey_type)
 	{
 		xivo_fm_phonefunckey[id][property] = xivo_clone(xivo_elt_phonefunckey[id]);
-		xivo_fm_phonefunckey[id][property]['fd-phonefunckey-'+property+'-typeval-'+id]['style'] = 'display:inline';
+		xivo_fm_phonefunckey[id][property]['fd-phonefunckey-'+property+'-typeval-'+id]['style'] = {display: 'inline'};
 
 		keyit = 'it-phonefunckey-'+property+'-typeval-'+id;
-		xivo_fm_phonefunckey[id][property][keyit]['style'] = 'display:inline';
-		xivo_fm_phonefunckey[id][property][keyit]['property'] = 'disabled|false:boolean;className|it-enabled';
+		xivo_fm_phonefunckey[id][property][keyit]['style'] = {display: 'inline'};
+		xivo_fm_phonefunckey[id][property][keyit]['property'] = {disabled: false, className: 'it-enabled'};
 
 		if(property == 'user'
 		|| property == 'bosssecretary')
 		{
 			keyit = 'it-phonefunckey-supervision-'+id;
-			xivo_fm_phonefunckey[id][property][keyit]['property'] = 'disabled|false:boolean;className|it-enabled';
+			xivo_fm_phonefunckey[id][property][keyit]['property'] = {disabled: false, className: 'it-enabled'};
 		}
 
 		xivo_attrib_register('fm_phonefunckey-'+id+'-'+property,xivo_fm_phonefunckey[id][property]);

@@ -66,12 +66,12 @@ xivo_elt_protocol['iax']['codec-active'] = new Array();
 xivo_elt_protocol['iax']['codec-active']['it'] = true;
 xivo_elt_protocol['iax']['iax-codeclist'] = new Array();
 xivo_elt_protocol['iax']['iax-codeclist']['it'] = new Array();
-xivo_elt_protocol['iax']['iax-codeclist']['it']['style'] = 'display:inline';
-xivo_elt_protocol['iax']['iax-codeclist']['it']['property'] = 'disabled|false:boolean;className|it-enabled';
+xivo_elt_protocol['iax']['iax-codeclist']['it']['style'] = {display: 'inline'};
+xivo_elt_protocol['iax']['iax-codeclist']['it']['property'] = {disabled: false, className: 'it-enabled'};
 xivo_elt_protocol['iax']['iax-codec'] = new Array();
 xivo_elt_protocol['iax']['iax-codec']['it'] = new Array();
-xivo_elt_protocol['iax']['iax-codec']['it']['style'] = 'display:inline';
-xivo_elt_protocol['iax']['iax-codec']['it']['property'] = 'disabled|false:boolean;className|it-enabled';
+xivo_elt_protocol['iax']['iax-codec']['it']['style'] = {display: 'inline'};
+xivo_elt_protocol['iax']['iax-codec']['it']['property'] = {disabled: false, className: 'it-enabled'};
 
 xivo_elt_protocol['iax']['ufeatures-voicemailid'] = new Array();
 xivo_elt_protocol['iax']['ufeatures-voicemailid']['it'] = true;
