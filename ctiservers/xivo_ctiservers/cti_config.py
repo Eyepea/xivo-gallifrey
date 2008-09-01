@@ -34,22 +34,24 @@ def log_debug(level, text):
         log_debug_file(level, text, 'cti_config')
 
 class Config:
-        def __init__(self, uri):
-                self.uri = uri
-                if uri.find(':') >= 0:
-                        xconf = uri.split(':')
+        def __init__(self, urilist):
+                if urilist.find(':') >= 0:
+                        xconf = urilist.split(':')
                         if xconf[0] == 'file':
                                 self.kind = 'file'
                                 self.xivoconf = ConfigParser.ConfigParser()
                                 self.xivoconf.readfp(open(xconf[1]))
                         elif xconf[0] in ['mysql', 'sqlite']:
                                 self.kind = 'sql'
-                                self.conn = anysql.connect_by_uri(uri)
+                                self.conn = anysql.connect_by_uri(urilist)
                                 self.cursor = self.conn.cursor()
                 else:
-                        self.kind = 'file'
-                        self.xivoconf = ConfigParser.ConfigParser()
-                        self.xivoconf.readfp(open(uri))
+                        if len(urilist) > 0:
+                                uris = urilist.split(',')
+                                self.kind = 'file'
+                                self.xivoconf = ConfigParser.ConfigParser()
+                                for uri in uris:
+                                        self.xivoconf.readfp(open(uri))
                 return
 
 

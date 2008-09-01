@@ -642,18 +642,18 @@ class XivoCTICommand(BaseCommand):
                         elif where == 'incomingqueue':
                                 clid = event.get('CallerID')
                                 chan = event.get('Channel')
-                                uid = event.get('Uniqueid')
+                                # uid = event.get('Uniqueid') # No Uniqueid in Join
                                 queue = event.get('Queue')
                                 userinfo = None
                                 print where, event
-                                print 'ALERT %s : (%s) %s uid=%s %s %s (%s %s %s)' % (where, time.asctime(), astid, uid, clid, chan,
-                                                                                      queue, event.get('Position'), event.get('Count'))
+                                print 'ALERT %s : (%s) %s %s %s (%s %s %s)' % (where, time.asctime(), astid, clid, chan,
+                                                                               queue, event.get('Position'), event.get('Count'))
                                 self.chans_incomingqueue.append(chan)
                                 linestosend.append('<info name="File d Attente" type="text"><![CDATA[%s]]></info>' % queue)
                                 if len(clid) > 7 and clid != '<unknown>':
                                         linestosend.append('<info name="Numero Appelant" type="phone"><![CDATA[%s]]></info>' % clid)
                                         r = self.__build_customers__('default', [clid]).split(';')
-                                        if len(r) > 5:
+                                        if len(r) > 7:
                                                 linestosend.append('<info name="Entreprise" type="text"><![CDATA[%s]]></info>' % r[6])
                                                 linestosend.append('<info name="Personne" type="text"><![CDATA[%s]]></info>' % r[7])
 
@@ -683,11 +683,11 @@ class XivoCTICommand(BaseCommand):
 
         # Methods to handle Asterisk AMI events
         def ami_dial(self, astid, event):
-                src     = event.get("Source")
-                dst     = event.get("Destination")
-                clid    = event.get("CallerID")
-                clidn   = event.get("CallerIDName")
-                context = event.get("Context")
+                src     = event.get('Source')
+                dst     = event.get('Destination')
+                clid    = event.get('CallerID')
+                clidn   = event.get('CallerIDName')
+                context = event.get('Context')
                 self.plist[astid].handle_ami_event_dial(src, dst, clid, clidn)
                 return
 
@@ -712,10 +712,10 @@ class XivoCTICommand(BaseCommand):
 
 
         def ami_link(self, astid, event):
-                chan1 = event.get("Channel1")
-                chan2 = event.get("Channel2")
-                clid1 = event.get("CallerID1")
-                clid2 = event.get("CallerID2")
+                chan1 = event.get('Channel1')
+                chan2 = event.get('Channel2')
+                clid1 = event.get('CallerID1')
+                clid2 = event.get('CallerID2')
                 if chan2.startswith('Agent/'):
                         msg = self.__build_agupdate__(['agentlink', astid, chan2])
                         self.__send_msg_to_cti_clients__(msg)
@@ -747,10 +747,10 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def ami_unlink(self, astid, event):
-                chan1 = event.get("Channel1")
-                chan2 = event.get("Channel2")
-                clid1 = event.get("CallerID1")
-                clid2 = event.get("CallerID2")
+                chan1 = event.get('Channel1')
+                chan2 = event.get('Channel2')
+                clid1 = event.get('CallerID1')
+                clid2 = event.get('CallerID2')
                 if chan2.startswith('Agent/'):
                         msg = self.__build_agupdate__(['agentunlink', astid, chan2])
                         self.__send_msg_to_cti_clients__(msg)
@@ -1208,7 +1208,6 @@ class XivoCTICommand(BaseCommand):
 
         def ami_status(self, astid, event):
                 return
-
 
         def ami_join(self, astid, event):
                 if astid not in self.qlist:

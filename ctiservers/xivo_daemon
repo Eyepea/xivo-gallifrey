@@ -929,7 +929,7 @@ while True: # loops over the reloads
                                                                 log_debug(SYSLOG_WARNING, 'WARNING - no login/connection field present in userinfo')
                                                 commandclass.clear_disconnlist()
                                         except Exception, exc:
-                                                log_debug(SYSLOG_ERR, '--- exception --- [queued threads] %s' % str(exc))
+                                                log_debug(SYSLOG_ERR, '--- exception --- [queued threads] : %s' % exc)
 
 
                                 for astid in configs:
