@@ -2134,8 +2134,12 @@ class XivoCTICommand(BaseCommand):
                 fulllist = []
                 if ctx in self.ctxlist.ctxlist:
                         for dirsec, dirdef in self.ctxlist.ctxlist[ctx].iteritems():
-                                y = self.__build_customers_bydirdef__(dirsec, searchpatterns, dirdef)
-                                fulllist.extend(y)
+                                try:
+                                        y = self.__build_customers_bydirdef__(dirsec, searchpatterns, dirdef)
+                                        fulllist.extend(y)
+                                except Exception, exc:
+                                        log_debug(SYSLOG_ERR, '--- exception --- __build_customers__ (%s) : %s'
+                                                  % (dirsec, exc))
                 else:
                         log_debug(SYSLOG_WARNING, 'there has been no section defined for context %s : can not proceed directory search' % ctx)
 
