@@ -656,7 +656,7 @@ class Agent:
 		self.agi = agi
 		self.cursor = cursor
 
-		columns = ('id', 'number', 'firstname', 'lastname', 'silent')
+		columns = ('id', 'number', 'passwd', 'firstname', 'lastname', 'silent')
 
 		if xid:
 			cursor.query("SELECT ${columns} FROM agentfeatures "
@@ -680,6 +680,7 @@ class Agent:
 
 		self.id = res['id']
 		self.number = res['number']
+		self.passwd = res['passwd']
 		self.firstname = res['firstname']
 		self.lastname = res['lastname']
 		self.silent = res['silent']
