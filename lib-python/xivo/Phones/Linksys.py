@@ -118,8 +118,14 @@ class Linksys(PhoneVendor):
         fk_config_lines = []
         for key in sorted_keys:
             exten, supervise = funckey[key]
-            fk_config_lines.append("<Unit_1_Key_%01d>fnc=blf+sd+cp;sub=%s@%s:nme=%s</Unit_1_Key_%01d>"
-                                   % (int(key), exten, Pgc['asterisk_ipv4'], exten, int(key)))
+
+            if supervise:
+                blf = "+blf"
+            else:
+                blf = ""
+
+            fk_config_lines.append("<Unit_1_Key_%01d>fnc=sd+cp%s;sub=%s@%s:nme=%s</Unit_1_Key_%01d>"
+                                   % (int(key), blf, exten, Pgc['asterisk_ipv4'], exten, int(key)))
         return "\n".join(fk_config_lines)
 
 
