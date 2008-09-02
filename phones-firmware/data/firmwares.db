@@ -303,7 +303,7 @@ sha1sum: 58cf14b679326364417ed253e4702877089ac16b
 [sn360_737]
 brand: Snom
 model: 360
-version: 7.1.33
+version: 7.3.7
 files: snom360-7.3.7-SIP-f.bin
 
 [snom360-7.3.7-SIP-f.bin]
