@@ -375,6 +375,15 @@ class XivoCTICommand(BaseCommand):
                 
                 return
 
+        def set_cticonfig(self, lconf):
+                self.lconf = lconf
+
+                self.sheet_actions = {}
+                for where, sheetaction in lconf.read_section('sheet_events', 'sheet_events').iteritems():
+                        if where in self.sheet_allowed_events and len(sheetaction) > 0:
+                                self.sheet_actions[where] = lconf.read_section('sheet_action', sheetaction)
+                return
+
 
         def set_options(self, xivoconf):
                 self.xivoconf = xivoconf
@@ -555,13 +564,8 @@ class XivoCTICommand(BaseCommand):
 
         sheet_allowed_events = ['incomingqueue', 'incomingdid',
                                 'agentcalled', 'agentselected',
+                                'callmissed', # see GG (in order to tell a user that he missed a call)
                                 'localphonecalled', 'agi', 'outgoing']
-
-        def set_sheet_options(self, sheetactions):
-                for where, actionopt in sheetactions.iteritems():
-                        if where in self.sheet_allowed_events:
-                                self.sheet_actions[where] = actionopt
-                return
 
 
         def __sheet_alert__(self, where, astid, event, extraevent = {}):
@@ -575,12 +579,19 @@ class XivoCTICommand(BaseCommand):
                 # - actions ?
                 # - dispatch to one given person / all / subscribed ones
                 if where in self.sheet_actions:
+                        userinfos = []
                         actionopt = self.sheet_actions.get(where)
                         linestosend = ['<?xml version="1.0" encoding="utf-8"?>',
                                        '<profile sessionid="sessid">',
                                        '<user>']
                         # XXX : sessid => uniqueid, in order to update (did => queue => ... hangup ...)
-                        linestosend.append('<info name="Date" type="text"><![CDATA[%s]]></info>' % time.asctime())
+                        linestosend.append('<internal name="datetime"><![CDATA[%s]]></internal>' % time.asctime())
+                        linestosend.append('<internal name="kind"><![CDATA[%s]]></internal>' % where)
+                        if actionopt.get('systraypopup') == 'no':
+                                linestosend.append('<internal name="nosystraypopup"></internal>')
+                        if actionopt.get('focus') == 'no':
+                                linestosend.append('<internal name="nofocus"></internal>')
+
 
                         if where == 'outgoing':
                                 exten = event.get('Extension')
@@ -603,27 +614,49 @@ class XivoCTICommand(BaseCommand):
                                                            ']></info>'
                                                            % (self.xivoconf['sheeturl'], src, queuename, dst))
                                         # XXX TODO : replace szTEL, szFA, lgAgent_Tel_Id with custom-defined arguments
-                                linestosend.append('<info name="channel" type="internal"><![CDATA[%s]]></info>' % chan)
-                                userinfo = None
+                                linestosend.append('<internal name="channel"><![CDATA[%s]]></internal>' % chan)
                                 for uinfo in self.ulist_ng.userlist.itervalues():
                                         if 'agentnum' in uinfo and uinfo.get('agentnum') == agentnum:
-                                                userinfo = uinfo
+                                                userinfos.append(uinfo)
                                                 break
 
                         elif where == 'agi':
                                 r_caller = extraevent.get('caller_num')
                                 r_called = extraevent.get('called_num')
-                                linestosend.extend([
-                                        '<info name="Numero Appelant" type="phone"><![CDATA[%s]]></info>' % r_caller,
-                                        '<info name="Numero Appele" type="text"><![CDATA[<b>%s</b>]]></info>' % r_called,
-                                        '<info name="called" type="internal"><![CDATA[%s]]></info>' % called,
-                                        '<message>%s</message>' % called
-                                        ])
+                                for uinfo in self.ulist_ng.userlist.itervalues():
+                                        if uinfo.get('astid') == astid and uinfo.get('phonenum') == r_called:
+                                                userinfos.append(uinfo)
+
+                                itemdir = {'xivo-callerid' : r_caller,
+                                           'xivo-calledid' : r_called,
+                                           'xivo-time' : time.strftime('%H:%M:%S', time.localtime()),
+                                           'xivo-date' : time.strftime('%Y-%m-%d', time.localtime())}
+
+                                for k, v in self.lconf.read_section('sheet_action', actionopt.get('sheetdisplay')).iteritems():
+                                        [title, type, defaultval, format] = v.split('|')
+                                        basestr = format
+                                        for kk, vv in itemdir.iteritems():
+                                                basestr = basestr.replace('{%s}' % kk, vv)
+                                        linestosend.append('<info name="%s" type="%s"><![CDATA[%s]]></info>'
+                                                           % (title, type, basestr))
+
+                                if actionopt.get('systraydisplay') is None:
+                                        linestosend.append('<internal name="nosystraypopup"></internal>')
+                                else:
+                                        for k, v in self.lconf.read_section('sheet_action', actionopt.get('systraydisplay')).iteritems():
+                                                [title, type, defaultval, format] = v.split('|')
+                                                basestr = format
+                                                for kk, vv in itemdir.iteritems():
+                                                        basestr = basestr.replace('{%s}' % kk, vv)
+                                                linestosend.append('<message type="%s" name="%s"><![CDATA[%s]]></message>'
+                                                                   % (type, k, basestr))
+
+                                linestosend.append('<internal name="called"><![CDATA[%s]]></internal>' % r_called)
+
 
                         elif where == 'incomingdid':
                                 chan = event.get('Channel')
                                 uid = event.get('Uniqueid')
-                                userinfo = None
                                 [clid, did] = event.get('AppData').split('|')
                                 # 1.4 : clid = event.get('XIVO_SRCNUM')
                                 # 1.4 : did  = event.get('XIVO_EXTENPATTERN')
@@ -638,13 +671,13 @@ class XivoCTICommand(BaseCommand):
                                         linestosend.append('<message>%s</message>' % r[7])
                                 # interception :
                                 # self.amilist.execute(astid, 'transfer', chan, shortphonenum, 'default')
-
+                                
                         elif where == 'incomingqueue':
                                 clid = event.get('CallerID')
                                 chan = event.get('Channel')
                                 # uid = event.get('Uniqueid') # No Uniqueid in Join
                                 queue = event.get('Queue')
-                                userinfo = None
+                                # userinfos.append() # find who are the queue memebers
                                 print where, event
                                 print 'ALERT %s : (%s) %s %s %s (%s %s %s)' % (where, time.asctime(), astid, clid, chan,
                                                                                queue, event.get('Position'), event.get('Count'))
@@ -657,9 +690,6 @@ class XivoCTICommand(BaseCommand):
                                                 linestosend.append('<info name="Entreprise" type="text"><![CDATA[%s]]></info>' % r[6])
                                                 linestosend.append('<info name="Personne" type="text"><![CDATA[%s]]></info>' % r[7])
 
-                        if actionopt.get('popup') == 'no':
-                                linestosend.append('<info name="nopopup" type="internal"></info>')
-
                         if 'popupdisplay' in actionopt:
                                 linestosend.append('<message>%s</message>' % actionopt.get('popupdisplay'))
                         linestosend.append('</user></profile>')
@@ -667,13 +697,17 @@ class XivoCTICommand(BaseCommand):
                         print where, fulllines
 
                         if actionopt.get('whom') == 'dest':
-                                if userinfo is not None:
+                                for userinfo in userinfos:
                                         self.__send_msg_to_cti_client__(userinfo, fulllines)
                         elif actionopt.get('whom') == 'subscribed':
                                 # userinfo = self.ulist_ng.finduser('clg@proformatique.com')
                                 # self.__send_msg_to_cti_client__(userinfo, fulllines)
                                 pass
                         elif actionopt.get('whom') == 'all':
+                                for uinfo in self.ulist_ng.userlist.itervalues():
+                                        if astid == uinfo.get('astid'):
+                                                self.__send_msg_to_cti_client__(uinfo, fulllines)
+                        elif actionopt.get('whom') == 'reallyall':
                                 for uinfo in self.ulist_ng.userlist.itervalues():
                                         self.__send_msg_to_cti_client__(uinfo, fulllines)
                         elif actionopt.get('whom') == 'sdadest':
@@ -2299,18 +2333,18 @@ class XivoCTICommand(BaseCommand):
                 print 'The Caller Id will be set to %s' % calleridtoset
                 fastagi.set_callerid(calleridtoset)
 
-                if clientstate == 'available' or clientstate == 'nopresence':
-                        fastagi.set_variable('XIVO_AIMSTATUS', 0)
-                elif clientstate == 'away':
-                        fastagi.set_variable('XIVO_AIMSTATUS', 1)
-                elif clientstate == 'donotdisturb':
-                        fastagi.set_variable('XIVO_AIMSTATUS', 2)
-                elif clientstate == 'outtolunch':
-                        fastagi.set_variable('XIVO_AIMSTATUS', 3)
-                elif clientstate == 'berightback':
-                        fastagi.set_variable('XIVO_AIMSTATUS', 4)
-                else:
-                        print "Unknown user's availability status : <%s>" % clientstate
+##                if clientstate == 'available' or clientstate == 'nopresence':
+##                        fastagi.set_variable('XIVO_AIMSTATUS', 0)
+##                elif clientstate == 'away':
+##                        fastagi.set_variable('XIVO_AIMSTATUS', 1)
+##                elif clientstate == 'donotdisturb':
+##                        fastagi.set_variable('XIVO_AIMSTATUS', 2)
+##                elif clientstate == 'outtolunch':
+##                        fastagi.set_variable('XIVO_AIMSTATUS', 3)
+##                elif clientstate == 'berightback':
+##                        fastagi.set_variable('XIVO_AIMSTATUS', 4)
+##                else:
+##                        print "Unknown user's availability status : <%s>" % clientstate
                 return
 
 

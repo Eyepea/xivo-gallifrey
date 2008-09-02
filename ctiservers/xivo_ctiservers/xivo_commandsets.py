@@ -68,7 +68,7 @@ class BaseCommand:
                 return
         def set_options(self, xivoconf):
                 return
-        def set_sheet_options(self, sheetactions):
+        def set_cticonfig(self, cticonfig):
                 return
 
         userfields = []
