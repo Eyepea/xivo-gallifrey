@@ -140,6 +140,7 @@ class Linksys(PhoneVendor):
                   'ident':  "guest",
                   'number': "guest",
                   'passwd': "guest",
+                  'funckey': {},
                 })
 
     # Introspection entry points

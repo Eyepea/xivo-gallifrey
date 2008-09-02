@@ -170,6 +170,7 @@ class Aastra(PhoneVendor):
                   'ident':  "guest",
                   'number': "guest",
                   'passwd': "guest",
+                  'funckey': {},
                 })
 
     # Introspection entry points
