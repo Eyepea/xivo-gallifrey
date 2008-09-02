@@ -190,7 +190,7 @@ class Thomson(PhoneVendor):
             os.unlink(inf_filename)
         except:
             pass
-        os.symlink(THOMSON_COMMON_INF + model + "_common", inf_filename)
+        os.symlink(THOMSON_COMMON_INF + model, inf_filename)
 
     # Daemon entry points for configuration generation and issuing commands
 
