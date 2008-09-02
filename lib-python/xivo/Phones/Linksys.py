@@ -41,6 +41,7 @@ LINKSYS_COMMON_HTTP_PASS = "adminpass"
 class Linksys(PhoneVendor):
 
     LINKSYS_SPA_MODELS = ('901', '921', '922', '941', '942', '962')
+    LINKSYS_PAP_MACADDR_PREFIX = ('1:00:18:f8', '1:00:1c:10', '1:00:1e:e5')
 
     def __init__(self, phone):
         PhoneVendor.__init__(self, phone)
@@ -186,11 +187,13 @@ class Linksys(PhoneVendor):
             yield '    next-server %s;\n' % addresses['bootServer']
             yield '}\n'
             yield '\n'
-        yield 'subclass "phone-mac-address-prefix" 1:00:1c:10 {\n'
-        yield '    log("class Linksys PAP prefix 1:00:1c:10");\n'
-        yield '    option tftp-server-name "%s";\n' % addresses['bootServer']
-        yield '}\n'
-        yield '\n'
+
+        for macaddr_prefix in cls.LINKSYS_PAP_MACADDR_PREFIX:
+            yield 'subclass "phone-mac-address-prefix" %s {\n' % macaddr_prefix
+            yield '    log("class Linksys PAP prefix %s");\n' % macaddr_prefix
+            yield '    option tftp-server-name "%s";\n' % addresses['bootServer']
+            yield '}\n'
+            yield '\n'
 
     @classmethod
     def get_dhcp_pool_lines(cls):
