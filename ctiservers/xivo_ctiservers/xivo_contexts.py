@@ -96,6 +96,8 @@ class Contexts:
                                 z.setDirectMatch(xivoconf_local[field].split(','))
                         elif field == 'match_reverse':
                                 z.setReverseMatch(xivoconf_local[field].split(','))
+                        elif field == 'name':
+                                z.setName(xivoconf_local[field])
 
                 z.setKeys(fkeys)
 
@@ -125,6 +127,7 @@ class Context:
                 self.uri = ''
                 self.sqltable = ''
                 self.sheetui = ''
+                self.name = '(noname)'
                 self.search_matching_fields = []
                 self.sheet_valid_fields = []
                 self.sheet_matching_fields = []
@@ -140,6 +143,8 @@ class Context:
         def setSheetUi(self, sheetui):
                 self.sheetui = sheetui
 
+        def setName(self, name):
+                self.name = name
         def setSheetValidFields(self, vf):
                 self.sheet_valid_fields = vf
         def setSheetMatchingFields(self, mf):

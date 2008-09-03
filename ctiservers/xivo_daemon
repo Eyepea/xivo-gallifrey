@@ -580,11 +580,12 @@ while True: # loops over the reloads
         for func in ['CTI', 'WEBI', 'FAGI', 'INFO']:
                 fieldname = 'incoming_tcp_%s' % func.lower()
                 if fieldname in xivoconf_general:
-                        port_and_bind = xivoconf_general[fieldname].split(':')
-                        if len(port_and_bind) > 1:
-                                incoming_tcp_ports.append('%s:%s:%s' % (port_and_bind[0], func, port_and_bind[1]))
-                        else:
-                                incoming_tcp_ports.append('%s:%s' % (port_and_bind[0], func))
+                        bind_and_port = xivoconf_general[fieldname].split(':')
+                        if len(bind_and_port) > 1:
+                                try:
+                                        incoming_tcp_ports.append('%d:%s:%s' % (int(bind_and_port[1]), func, bind_and_port[0]))
+                                except Exception, exc:
+                                        log_debug(SYSLOG_ERR, '--- exception --- %s definition : %s' % (fieldname, exc))
         if 'extraconn' in xivoconf_general:
                 extraconn = xivoconf_general['extraconn']
         if 'updates_period' in xivoconf_general:
