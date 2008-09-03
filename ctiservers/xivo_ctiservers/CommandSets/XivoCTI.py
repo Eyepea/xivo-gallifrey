@@ -2319,20 +2319,18 @@ class XivoCTICommand(BaseCommand):
                 Previously known as 'xivo_push'
                 """
                 # check capas !
-                iface   = fastagi.get_variable('XIVO_INTERFACE')
-                exten   = fastagi.get_variable('REAL_DSTNUM')
-                context = fastagi.get_variable('REAL_CONTEXT')
+                # fastagi.get_variable('XIVO_INTERFACE') # CHANNEL
+                callednum = fastagi.get_variable('XIVO_DSTNUM')
+                context = fastagi.get_variable('XIVO_CONTEXT')
                 calleridnum  = fastagi.env['agi_callerid']
                 calleridname = fastagi.env['agi_calleridname']
-                msgext = fastagi.get_variable('CALLTYPE')
 
-                print iface, exten, context, calleridnum, calleridname, msgext
-                
-                called = exten
+                log_debug(SYSLOG_INFO, '%s %s %s <%s>' % (callednum, context, calleridnum, calleridname))
+
                 extraevent = {'caller_num' : calleridnum,
-                              'called_num' : called}
+                              'called_num' : callednum}
                 clientstate = 'available'
-                calleridsolved = 'tobedefined'
+                calleridsolved = calleridname
 
                 self.__sheet_alert__('agi', astid, {}, extraevent)
 
