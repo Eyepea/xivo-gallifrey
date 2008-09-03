@@ -455,7 +455,7 @@ class AMIClass:
                 except Exception, exc:
                         return False
 
-        def txfax(self, faxdir, faxid, callerid, number, context):
+        def txfax(self, faxdir, faxid, userid, callerid, number, context):
                 # originate a call btw src and dst
                 # src will ring first, and dst will ring when src responds
                 try:
@@ -463,6 +463,7 @@ class AMIClass:
                                                              ('CallerID', callerid),
                                                              ('Variable', 'FAXDIR=%s' % faxdir),
                                                              ('Variable', 'FAXID=%s' % faxid),
+                                                             ('Variable', 'XIVO_USERID=%s' % userid),
                                                              ('Context', 'macro-txfax'),
                                                              ('Exten', 's'),
                                                              ('Priority', '1')])

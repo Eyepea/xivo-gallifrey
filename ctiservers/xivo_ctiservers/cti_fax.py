@@ -50,7 +50,7 @@ class Fax:
                 self.uinfo = uinfo
                 return
 
-        def send(self, buffer, callerid, ami):
+        def sendfax(self, buffer, callerid, ami):
                 filename = 'astfaxsend-' + self.reference
                 tmpfilepath = PATH_SPOOL_ASTERISK_TMP + '/' + filename
                 faxfilepath = PATH_SPOOL_ASTERISK_FAX + '/' + filename + '.tif'
@@ -86,8 +86,8 @@ class Fax:
                         if os.path.exists(PATH_SPOOL_ASTERISK_FAX):
                                 try:
                                         reply = 'ko;AMI'
-                                        ret = ami.txfax(PATH_SPOOL_ASTERISK_FAX,
-                                                        filename, callerid, number, self.uinfo.get('context'))
+                                        ret = ami.txfax(PATH_SPOOL_ASTERISK_FAX, filename,
+                                                        self.uinfo.get('id'), callerid, number, self.uinfo.get('context'))
                                         if ret:
                                                 reply = 'ok;'
                                 except Exception, exc:

@@ -40,7 +40,7 @@ class UserList(AnyList):
         def update(self):
                 if len(self.requested_list) > 0:
                         for url, urllist in self.requested_list.iteritems():
-                                gl = urllist.getlist(0, 10, True)
+                                gl = urllist.getlist(0, 11, True)
                                 if len(urllist.list) == 0:
                                         # fallback to 'phones'-style definition
                                         gl = urllist.getlist(1, 12, False)
