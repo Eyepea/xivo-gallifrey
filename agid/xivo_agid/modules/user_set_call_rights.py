@@ -45,7 +45,7 @@ def _user_set_call_rights(agi, cursor, args):
 
 	try:
 		user = objects.User(agi, cursor, int(userid))
-	except LookupError:
+	except (ValueError, LookupError):
 		call_rights.allow(agi)
 
 	cursor.query("SELECT ${columns} FROM rightcall "

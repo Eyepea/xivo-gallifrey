@@ -38,14 +38,14 @@ def incoming_user_set_features(agi, cursor, args):
 	if userid:
 		try:
 			caller = objects.User(agi, cursor, int(userid), feature_list)
-		except LookupError:
+		except (ValueError, LookupError):
 			caller = None
 	else:
 		caller = None
 
 	try:
 		user = objects.User(agi, cursor, int(dstid), feature_list)
-	except LookupError, e:
+	except (ValueError, LookupError), e:
 		agi.dp_break(str(e))
 
 	ufilter = user.filter

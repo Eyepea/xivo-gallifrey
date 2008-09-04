@@ -23,7 +23,7 @@ from xivo_agid import objects
 def schedule(agi, cursor, args):
 	try:
 		sched = objects.Schedule(agi, cursor, int(args[0]))
-	except LookupError, e:
+	except (ValueError, LookupError), e:
 		agi.dp_break(str(e))
 
 	agi.set_variable("XIVO_SCHEDULE_TIMERANGE", sched.timerange)

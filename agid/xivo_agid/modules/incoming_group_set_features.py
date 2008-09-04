@@ -25,7 +25,7 @@ def incoming_group_set_features(agi, cursor, args):
 
 	try:
 		group = objects.Group(agi, cursor, xid=int(groupid))
-	except LookupError, e:
+	except (ValueError, LookupError), e:
 		agi.dp_break(str(e))
 
 	options = ""

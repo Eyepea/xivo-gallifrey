@@ -21,11 +21,11 @@ from xivo_agid import agid
 from xivo_agid import objects
 
 def vmbox_get_info(agi, cursor, args):
-	vmboxid = int(agi.get_variable('XIVO_VMBOXID'))
+	vmboxid = agi.get_variable('XIVO_VMBOXID')
 
 	try:
-		vmbox = objects.VMBox(agi, cursor, vmboxid)
-	except LookupError, e:
+		vmbox = objects.VMBox(agi, cursor, int(vmboxid))
+	except (ValueError, LookupError), e:
 		agi.dp_break(str(e))
 
 	if vmbox.skipcheckpass:

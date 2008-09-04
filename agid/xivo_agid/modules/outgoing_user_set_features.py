@@ -57,7 +57,7 @@ def outgoing_user_set_features(agi, cursor, args):
 
 			if user.callrecord:
 				callrecord = True
-		except Exception:
+		except (ValueError, LookupError):
 			pass
 
 	# TODO: Rethink all the caller id stuff.

@@ -25,7 +25,7 @@ def incoming_queue_set_features(agi, cursor, args):
 
 	try:
 		queue = objects.Queue(agi, cursor, xid=int(queueid))
-	except LookupError, e:
+	except (ValueError, LookupError), e:
 		agi.dp_break(str(e))
 
 	options = ""

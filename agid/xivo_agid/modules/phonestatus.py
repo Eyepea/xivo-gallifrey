@@ -27,7 +27,7 @@ def phonestatus(agi, cursor, args):
 
 	try:
 		user = objects.User(agi, cursor, int(userid), feature_list)
-	except LookupError, e:
+	except (ValueError, LookupError), e:
 		agi.dp_break(str(e))
 
 	if feature_list.fwdunc:

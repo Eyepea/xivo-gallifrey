@@ -27,7 +27,7 @@ def user_set_feature(agi, cursor, args):
 	
 	try:
 		user = objects.User(agi, cursor, int(userid))
-	except LookupError, e:
+	except (ValueError, LookupError), e:
 		agi.dp_break(str(e))
 
 	feature = args[0]

@@ -28,7 +28,7 @@ def handynumbers(agi, cursor, args):
 	if userid:
 		try:
 			user = objects.User(agi, cursor, int(userid))
-		except LookupError, e:
+		except (ValueError, LookupError), e:
 			user = None
 			agi.verbose(str(e))
 	else:

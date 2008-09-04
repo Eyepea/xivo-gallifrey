@@ -27,7 +27,7 @@ def incoming_meetme_set_features(agi, cursor, args):
 
 	try:
 		meetme = objects.MeetMe(agi, cursor, xid=int(meetmeid))
-	except LookupError, e:
+	except (ValueError, LookupError), e:
 		agi.dp_break(str(e))
 
 	options = ""
