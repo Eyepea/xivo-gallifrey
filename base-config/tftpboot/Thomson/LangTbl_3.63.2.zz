@@ -79,6 +79,7 @@
             <CStr_By>by</CStr_By>
             <CStr_out_of_service>Out of Service!</CStr_out_of_service>
             <CStr_unavailable>&lt;Unavailable&gt;</CStr_unavailable>
+            <CStr_SCA_alert>&lt;Active appearances&gt;</CStr_SCA_alert>
             <CStr_next_page>Next</CStr_next_page>
             <CStr_previous_page>Previous</CStr_previous_page>
         </ContextString>
