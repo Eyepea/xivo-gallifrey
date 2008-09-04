@@ -272,7 +272,10 @@ def manage_info_connections(connid, msg, sep):
                                 # connid.sendall('server capabilities = %s\n' % (','.join()))
                         elif usefulmsg == 'show_users':
                                 for user, info in commandclass.users().iteritems():
-                                        connid.sendall('%s %s\n' % (user.encode('latin1'), info))
+                                        try:
+                                                connid.sendall('%s %s\n' % (user.encode('latin1'), info))
+                                        except Exception, exc:
+                                                log_debug(SYSLOG_ERR, '--- exception --- INFO show_users : %s' % exc)
                         elif usefulmsg == 'show_logged_ip':
                                 for user, info in commandclass.connected_users().iteritems():
                                         if 'connection' in info['login']:
@@ -284,7 +287,10 @@ def manage_info_connections(connid, msg, sep):
                                                 connid.sendall('user %s : ip:port = %s:%s\n' % (user.encode('latin1'), ipaddr, ipport))
                         elif usefulmsg == 'show_logged':
                                 for user, info in commandclass.connected_users().iteritems():
-                                        connid.sendall('%s %s\n' % (user.encode('latin1'), info))
+                                        try:
+                                                connid.sendall('%s %s\n' % (user.encode('latin1'), info))
+                                        except Exception, exc:
+                                                log_debug(SYSLOG_ERR, '--- exception --- INFO show_logged : %s' % exc)
                         elif usefulmsg == 'show_ami':
                                 for astid, ami in amilist.ami.iteritems():
                                         connid.sendall('commands : %s : %s\n' % (astid, ami))

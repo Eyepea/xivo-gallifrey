@@ -241,6 +241,7 @@ class XivoCTICommand(BaseCommand):
 
                         state = loginparams.get('state')
                         capaid = loginparams.get('capaid')
+                        subscribe = loginparams.get('subscribe')
                         lastconnwins = (loginparams.get('lastconnwins') == 'true')
 
                         iserr = self.__check_capa_connection__(userinfo, capaid)
@@ -253,6 +254,8 @@ class XivoCTICommand(BaseCommand):
                         if loginkind == 'agent':
                                 userinfo['agentphonenum'] = loginparams.get('phonenumber')
                                 # self.amilist.execute(astid, 'agentcallbacklogin', agentnum, phonenum)
+                        if subscribe is not None:
+                                userinfo['subscribe'] = 0
                         return userinfo
 
 
@@ -575,15 +578,24 @@ class XivoCTICommand(BaseCommand):
 
         def __build_xmlsheet__(self, sheetkind, actionopt, inputvars):
                 linestosend = []
-                if actionopt.get(sheetkind) is not None and len(actionopt.get(sheetkind)) > 0:
-                        for k, v in self.lconf.read_section('sheet_action', actionopt.get(sheetkind)).iteritems():
-                                [title, type, defaultval, format] = v.split('|')
-                                basestr = format
-                                for kk, vv in inputvars.iteritems():
-                                        basestr = basestr.replace('{%s}' % kk, vv)
-                                basestr = re.sub('{[a-z\-]*}', defaultval, basestr)
-                                linestosend.append('<%s order="%s" name="%s" type="%s"><![CDATA[%s]]></%s>'
-                                                   % (sheetkind, k, title, type, basestr, sheetkind))
+                whichitem = actionopt.get(sheetkind)
+                if whichitem is not None and len(whichitem) > 0:
+                        for k, v in self.lconf.read_section('sheet_action', whichitem).iteritems():
+                                try:
+                                        vsplit = v.split('|')
+                                        if len(vsplit) == 4:
+                                                [title, type, defaultval, format] = v.split('|')
+                                                basestr = format
+                                                for kk, vv in inputvars.iteritems():
+                                                        basestr = basestr.replace('{%s}' % kk, vv)
+                                                basestr = re.sub('{[a-z\-]*}', defaultval, basestr)
+                                                linestosend.append('<%s order="%s" name="%s" type="%s"><![CDATA[%s]]></%s>'
+                                                                   % (sheetkind, k, title, type, basestr, sheetkind))
+                                        else:
+                                                log_debug(SYSLOG_WARNING, '__build_xmlsheet__ wrong number of fields in definition for %s %s %s'
+                                                          % (sheetkind, whichitem, k))
+                                except Exception, exc:
+                                        log_debug(SYSLOG_ERR, '--- exception --- __build_xmlsheet__ %s %s : %s' % (sheetkind, whichitem, exc))
                 return linestosend
 
 
@@ -715,10 +727,10 @@ class XivoCTICommand(BaseCommand):
                         if whom == 'dest':
                                 for userinfo in userinfos:
                                         self.__send_msg_to_cti_client__(userinfo, fulllines)
-                        elif whom == 'subscribed':
-                                # userinfo = self.ulist_ng.finduser('clg@proformatique.com')
-                                # self.__send_msg_to_cti_client__(userinfo, fulllines)
-                                pass
+                        elif whom == 'subscribe':
+                                for uinfo in self.ulist_ng.userlist.itervalues():
+                                        if 'subscribe' in uinfo:
+                                                self.__send_msg_to_cti_client__(uinfo, fulllines)
                         elif whom == 'all':
                                 for uinfo in self.ulist_ng.userlist.itervalues():
                                         if astid == uinfo.get('astid'):
