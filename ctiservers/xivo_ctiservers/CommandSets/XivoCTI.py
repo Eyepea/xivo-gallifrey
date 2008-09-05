@@ -464,7 +464,7 @@ class XivoCTICommand(BaseCommand):
                 return lqlist
 
         # fields set at startup by reading informations
-        userfields = ['user', 'company', 'astid', 'password', 'fullname', 'capaids', 'context', 'phonenum', 'techlist', 'agentnum', 'id']
+        userfields = ['user', 'company', 'astid', 'password', 'fullname', 'capaids', 'context', 'phonenum', 'techlist', 'agentnum', 'xivo_userid']
         def getuserslist(self, dlist):
                 lulist = {}
                 for c, d in dlist.iteritems():
@@ -479,7 +479,7 @@ class XivoCTICommand(BaseCommand):
                                              'techlist' : d[7],
                                              'context'  : d[8],
                                              'phonenum' : d[6],
-                                             'id'       : d[10],
+                                             'xivo_userid' : d[10],
                                              
                                              'state'    : 'unknown',
                                              'mwi-waiting' : '0',
@@ -504,7 +504,7 @@ class XivoCTICommand(BaseCommand):
                                                      'techlist' : d[0].upper() + '/' + d[4],
                                                      'context'  : d[10],
                                                      'phonenum' : d[4],
-                                                     'id'       : '-1',
+                                                     'xivo_userid' : '-1',
 
                                                      'state'    : 'unknown',
                                                      'mwi-waiting' : '0',
@@ -572,6 +572,7 @@ class XivoCTICommand(BaseCommand):
 
         sheet_allowed_events = ['incomingqueue', 'incomingdid',
                                 'agentcalled', 'agentselected',
+                                'link', 'unlink',
                                 'callmissed', # see GG (in order to tell a user that he missed a call)
                                 'localphonecalled', 'agi', 'outgoing']
 
@@ -612,8 +613,8 @@ class XivoCTICommand(BaseCommand):
                 if where in self.sheet_actions:
                         userinfos = []
                         actionopt = self.sheet_actions.get(where)
-                        whom = actionopt.get('whom')
-                        if whom is None:
+                        whoms = actionopt.get('whom')
+                        if whoms is None or whoms == '':
                                 log_debug(SYSLOG_WARNING, '__sheet_alert__ (%s) : whom field for %s action has not been defined'
                                           % (astid, where))
                                 return
@@ -646,11 +647,11 @@ class XivoCTICommand(BaseCommand):
                                 chan = event.get('Channel1')
                                 queuename = extraevent.get('xivo_queuename')
 
+                                itemdir['xivo-channel'] = chan
                                 itemdir['xivo-queuename'] = queuename
                                 itemdir['xivo-callerid'] = src
                                 itemdir['xivo-agentid'] = dst
 
-                                linestosend.append('<internal name="channel"><![CDATA[%s]]></internal>' % chan)
                                 for uinfo in self.ulist_ng.userlist.itervalues():
                                         if 'agentnum' in uinfo and uinfo.get('agentnum') == agentnum:
                                                 userinfos.append(uinfo)
@@ -665,21 +666,48 @@ class XivoCTICommand(BaseCommand):
                                 itemdir['xivo-callerid'] = r_caller
                                 itemdir['xivo-calledid'] = r_called
                                 itemdir['xivo-tomatch-callerid'] = r_caller
+                                itemdir['xivo-channel'] = extraevent.get('channel')
+                                itemdir['xivo-uniqueid'] = extraevent.get('uniqueid')
 
                                 linestosend.append('<internal name="called"><![CDATA[%s]]></internal>' % r_called)
 
+                        elif where == 'link':
+                                print where, event
+                                itemdir['xivo-channel'] = event.get('Channel1')
+                                itemdir['xivo-channelpeer'] = event.get('Channel2')
+                                itemdir['xivo-uniqueid'] = event.get('Uniqueid1')
+                                itemdir['xivo-calledid'] = event.get('CallerID2')
+                                for uinfo in self.ulist_ng.userlist.itervalues():
+                                        if uinfo.get('astid') == astid and uinfo.get('phonenum') == itemdir['xivo-calledid']:
+                                                userinfos.append(uinfo)
+
+                        elif where == 'unlink':
+                                print where, event
+                                itemdir['xivo-channel'] = event.get('Channel1')
+                                itemdir['xivo-channelpeer'] = event.get('Channel2')
+                                itemdir['xivo-uniqueid'] = event.get('Uniqueid1')
+                                itemdir['xivo-calledid'] = event.get('CallerID2')
+                                for uinfo in self.ulist_ng.userlist.itervalues():
+                                        if uinfo.get('astid') == astid and uinfo.get('phonenum') == itemdir['xivo-calledid']:
+                                                userinfos.append(uinfo)
+
                         elif where == 'incomingdid':
-                                chan = event.get('Channel')
-                                uid = event.get('Uniqueid')
+                                chan = event.get('CHANNEL', '')
+                                uid = event.get('UNIQUEID', '')
                                 clid = event.get('XIVO_SRCNUM')
                                 did  = event.get('XIVO_EXTENPATTERN')
-                                print 'ALERT %s : (%s) %s uid=%s %s %s did=%s' % (where, time.asctime(), astid, uid, clid, chan, did)
+                                
+                                print 'ALERT %s %s (%s) uid=%s %s %s did=%s' % (astid, where, time.asctime(), uid, clid, chan,
+                                                                                did)
                                 self.chans_incomingdid.append(chan)
 
+                                itemdir['xivo-channel'] = chan
+                                itemdir['xivo-uniqueid'] = uid
                                 itemdir['xivo-did'] = did
                                 itemdir['xivo-callerid'] = clid
                                 if len(clid) > 7 and clid != '<unknown>':
                                         itemdir['xivo-tomatch-callerid'] = clid
+                                linestosend.append('<internal name="uniqueid"><![CDATA[%s]]></internal>' % uid)
 
                                 # userinfos.append() : users matching the SDA ?
 
@@ -689,12 +717,15 @@ class XivoCTICommand(BaseCommand):
                         elif where == 'incomingqueue':
                                 clid = event.get('CallerID')
                                 chan = event.get('Channel')
-                                # uid = event.get('Uniqueid') # No Uniqueid in Join
+                                uid = event.get('Uniqueid')
                                 queue = event.get('Queue')
                                 # userinfos.append() # find who are the queue memebers
-                                print 'ALERT %s : (%s) %s %s %s (%s %s %s)' % (where, time.asctime(), astid, clid, chan,
-                                                                               queue, event.get('Position'), event.get('Count'))
+                                print 'ALERT %s %s (%s) uid=%s %s %s queue=(%s %s %s)' % (astid, where, time.asctime(), uid, clid, chan,
+                                                                                          queue, event.get('Position'), event.get('Count'))
                                 self.chans_incomingqueue.append(chan)
+                                
+                                itemdir['xivo-channel'] = chan
+                                itemdir['xivo-uniqueid'] = uid
                                 itemdir['xivo-queuename'] = queue
                                 itemdir['xivo-callerid'] = clid
                                 if len(clid) > 7 and clid != '<unknown>':
@@ -703,44 +734,55 @@ class XivoCTICommand(BaseCommand):
                         # 2/4
                         # call a database for xivo-callerid matching (or another pattern to set somewhere)
                         dirlist = actionopt.get('directories')
-                        if 'xivo-tomatch-callerid' in itemdir and dirlist is not None:
-                                for dirname in dirlist.split(','):
-                                        dirdef = self.ctxlist.ctxlist[context][dirname]
-                                        y = self.__build_customers_bydirdef__(dirname, [itemdir['xivo-tomatch-callerid']], dirdef)
-                                        if len(y) > 0:
-                                                for g, gg in y[0].iteritems():
-                                                        itemdir[g] = gg
+                        if 'xivo-tomatch-callerid' in itemdir:
+                                callingnum = itemdir['xivo-tomatch-callerid']
+                                if dirlist is not None:
+                                        for dirname in dirlist.split(','):
+                                                dirdef = self.ctxlist.ctxlist[context][dirname]
+                                                y = self.__build_customers_bydirdef__(dirname, [callingnum], dirdef)
+                                                if len(y) > 0:
+                                                        for g, gg in y[0].iteritems():
+                                                                itemdir[g] = gg
+                                if callingnum[:2] == '00':
+                                        internatprefix = callingnum[2:6]
                         print itemdir
 
                         # 3/4
                         # build XML items from daemon-config + filled-in items
+                        if 'xivo-channel' in itemdir:
+                                linestosend.append('<internal name="channel"><![CDATA[%s]]></internal>'
+                                                   % itemdir['xivo-channel'])
+                        if 'xivo-uniqueid' in itemdir:
+                                linestosend.append('<internal name="sessionid"><![CDATA[%s]]></internal>'
+                                                   % itemdir['xivo-uniqueid'])
                         linestosend.extend(self.__build_xmlsheet__('action_info', actionopt, itemdir))
                         linestosend.extend(self.__build_xmlsheet__('sheet_info', actionopt, itemdir))
                         linestosend.extend(self.__build_xmlsheet__('systray_info', actionopt, itemdir))
                         linestosend.append('</user></profile>')
                         fulllines = ''.join(linestosend)
 
-                        print '---------', where, whom, fulllines
+                        print '---------', where, whoms, fulllines
 
                         # 4/4
                         # send the payload to the appropriate people
-                        if whom == 'dest':
-                                for userinfo in userinfos:
-                                        self.__send_msg_to_cti_client__(userinfo, fulllines)
-                        elif whom == 'subscribe':
-                                for uinfo in self.ulist_ng.userlist.itervalues():
-                                        if 'subscribe' in uinfo:
+                        for whom in whoms.split(','):
+                                if whom == 'dest':
+                                        for userinfo in userinfos:
+                                                self.__send_msg_to_cti_client__(userinfo, fulllines)
+                                elif whom == 'subscribe':
+                                        for uinfo in self.ulist_ng.userlist.itervalues():
+                                                if 'subscribe' in uinfo:
+                                                        self.__send_msg_to_cti_client__(uinfo, fulllines)
+                                elif whom == 'all':
+                                        for uinfo in self.ulist_ng.userlist.itervalues():
+                                                if astid == uinfo.get('astid'):
+                                                        self.__send_msg_to_cti_client__(uinfo, fulllines)
+                                elif whom == 'reallyall':
+                                        for uinfo in self.ulist_ng.userlist.itervalues():
                                                 self.__send_msg_to_cti_client__(uinfo, fulllines)
-                        elif whom == 'all':
-                                for uinfo in self.ulist_ng.userlist.itervalues():
-                                        if astid == uinfo.get('astid'):
-                                                self.__send_msg_to_cti_client__(uinfo, fulllines)
-                        elif whom == 'reallyall':
-                                for uinfo in self.ulist_ng.userlist.itervalues():
-                                        self.__send_msg_to_cti_client__(uinfo, fulllines)
-                        else:
-                                log_debug(SYSLOG_WARNING, '__sheet_alert__ (%s) : unknown %s for %s'
-                                          % (astid, whom, where))
+                                else:
+                                        log_debug(SYSLOG_WARNING, '__sheet_alert__ (%s) : unknown destination <%s> in <%s>'
+                                                  % (astid, whom, where))
                 return
 
 
@@ -779,6 +821,7 @@ class XivoCTICommand(BaseCommand):
                 chan2 = event.get('Channel2')
                 clid1 = event.get('CallerID1')
                 clid2 = event.get('CallerID2')
+                self.__sheet_alert__('link', astid, DEFAULTCONTEXT, event, {})
                 if chan2.startswith('Agent/'):
                         msg = self.__build_agupdate__(['agentlink', astid, chan2])
                         self.__send_msg_to_cti_clients__(msg)
@@ -814,6 +857,7 @@ class XivoCTICommand(BaseCommand):
                 chan2 = event.get('Channel2')
                 clid1 = event.get('CallerID1')
                 clid2 = event.get('CallerID2')
+                self.__sheet_alert__('unlink', astid, DEFAULTCONTEXT, event, {})
                 if chan2.startswith('Agent/'):
                         msg = self.__build_agupdate__(['agentunlink', astid, chan2])
                         self.__send_msg_to_cti_clients__(msg)
@@ -1208,7 +1252,9 @@ class XivoCTICommand(BaseCommand):
         def ami_userevent(self, astid, event):
                 eventname = event.get('UserEvent')
                 if eventname == 'DID':
-                        self.__sheet_alert__('incomingdid', astid, DEFAULTCONTEXT, event)
+                        self.__sheet_alert__('incomingdid', astid,
+                                             event.get('XIVO_CONTEXT', DEFAULTCONTEXT),
+                                             event)
                 elif eventname == 'Feature':
                         log_debug(SYSLOG_INFO, 'AMI %s UserEventFeature %s' % (astid, event))
                         # 'XIVO_CONTEXT', 'CHANNEL', 'Function', 'Status', 'Value'
@@ -2338,13 +2384,17 @@ class XivoCTICommand(BaseCommand):
                 # fastagi.get_variable('XIVO_INTERFACE') # CHANNEL
                 callednum = fastagi.get_variable('XIVO_DSTNUM')
                 context = fastagi.get_variable('XIVO_CONTEXT')
+                uniqueid = fastagi.get_variable('UNIQUEID')
+                channel = fastagi.get_variable('CHANNEL')
                 calleridnum  = fastagi.env['agi_callerid']
                 calleridname = fastagi.env['agi_calleridname']
 
                 log_debug(SYSLOG_INFO, 'handle_fagi : %s : context=%s %s %s <%s>' % (astid, context, callednum, calleridnum, calleridname))
 
                 extraevent = {'caller_num' : calleridnum,
-                              'called_num' : callednum}
+                              'called_num' : callednum,
+                              'uniqueid' : uniqueid,
+                              'channel' : channel}
                 clientstate = 'available'
                 calleridsolved = calleridname
 

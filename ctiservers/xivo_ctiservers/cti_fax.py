@@ -87,7 +87,7 @@ class Fax:
                                 try:
                                         reply = 'ko;AMI'
                                         ret = ami.txfax(PATH_SPOOL_ASTERISK_FAX, filename,
-                                                        self.uinfo.get('id'), callerid, number, self.uinfo.get('context'))
+                                                        self.uinfo.get('xivo_userid'), callerid, number, self.uinfo.get('context'))
                                         if ret:
                                                 reply = 'ok;'
                                 except Exception, exc:
