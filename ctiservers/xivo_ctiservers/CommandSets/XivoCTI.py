@@ -676,6 +676,7 @@ class XivoCTICommand(BaseCommand):
                                 itemdir['xivo-channel'] = event.get('Channel1')
                                 itemdir['xivo-channelpeer'] = event.get('Channel2')
                                 itemdir['xivo-uniqueid'] = event.get('Uniqueid1')
+                                itemdir['xivo-callerid'] = event.get('CallerID1')
                                 itemdir['xivo-calledid'] = event.get('CallerID2')
                                 for uinfo in self.ulist_ng.userlist.itervalues():
                                         if uinfo.get('astid') == astid and uinfo.get('phonenum') == itemdir['xivo-calledid']:
@@ -686,6 +687,7 @@ class XivoCTICommand(BaseCommand):
                                 itemdir['xivo-channel'] = event.get('Channel1')
                                 itemdir['xivo-channelpeer'] = event.get('Channel2')
                                 itemdir['xivo-uniqueid'] = event.get('Uniqueid1')
+                                itemdir['xivo-callerid'] = event.get('CallerID1')
                                 itemdir['xivo-calledid'] = event.get('CallerID2')
                                 for uinfo in self.ulist_ng.userlist.itervalues():
                                         if uinfo.get('astid') == astid and uinfo.get('phonenum') == itemdir['xivo-calledid']:
