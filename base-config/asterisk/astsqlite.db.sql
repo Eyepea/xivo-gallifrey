@@ -188,7 +188,7 @@ CREATE INDEX contextnummember__idx__number ON contextnummember(number);
 DROP TABLE contextmember;
 CREATE TABLE contextmember (
  context varchar(39) NOT NULL,
- type varchar(64) NOT NULL,
+ type varchar(32) NOT NULL,
  typeval varchar(128) NOT NULL DEFAULT '',
  varname varchar(128) NOT NULL DEFAULT '',
  PRIMARY KEY(context,type,typeval,varname)
@@ -928,7 +928,6 @@ INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','t38pt_udptl','no'
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','t38pt_rtp','no');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','t38pt_tcp','no');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','t38pt_usertpsource','no');
-INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','rfc2833compensate','no');
 INSERT INTO staticsip VALUES (NULL,0,0,1,'sip.conf','general','localnet',NULL);
 INSERT INTO staticsip VALUES (NULL,0,0,1,'sip.conf','general','externip',NULL);
 INSERT INTO staticsip VALUES (NULL,0,0,1,'sip.conf','general','externhost',NULL);
@@ -941,6 +940,7 @@ INSERT INTO staticsip VALUES (NULL,0,0,1,'sip.conf','general','disallow',NULL);
 INSERT INTO staticsip VALUES (NULL,0,0,1,'sip.conf','general','allow',NULL);
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','t1min',100);
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','relaxdtmf','no');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','rfc2833compensate','no');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','compactheaders','no');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','rtptimeout',0);
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','rtpholdtimeout',0);
@@ -1189,8 +1189,8 @@ CREATE TABLE useriax (
  allow varchar(100),
  mohinterpret varchar(80),
  mohsuggest varchar(80),
- deny varchar(32),
- permit varchar(32),
+ deny varchar(31),
+ permit varchar(31),
  defaultip varchar(255),
  sourceaddress varchar(255),
  setvar varchar(100) NOT NULL DEFAULT '',
@@ -1269,8 +1269,8 @@ CREATE TABLE usersip (
  rtptimeout tinyint unsigned,
  rtpholdtimeout tinyint unsigned,
  rtpkeepalive tinyint unsigned,
- deny varchar(32),
- permit varchar(32),
+ deny varchar(31),
+ permit varchar(31),
  defaultip varchar(255),
  callgroup varchar(180),
  pickupgroup varchar(180),

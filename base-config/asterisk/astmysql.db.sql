@@ -177,7 +177,7 @@ CREATE INDEX `context__idx__commented` ON `context`(`commented`);
 DROP TABLE IF EXISTS `contextmember`;
 CREATE TABLE `contextmember` (
  `context` varchar(39) NOT NULL,
- `type` varchar(64) NOT NULL,
+ `type` varchar(32) NOT NULL,
  `typeval` varchar(128) NOT NULL DEFAULT '',
  `varname` varchar(128) NOT NULL DEFAULT '',
  PRIMARY KEY(`context`,`type`,`typeval`,`varname`)
@@ -964,7 +964,6 @@ INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','t38pt_udptl','n
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','t38pt_rtp','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','t38pt_tcp','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','t38pt_usertpsource','no');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','rfc2833compensate','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','localnet',NULL);
 INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','externip',NULL);
 INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','externhost',NULL);
@@ -977,6 +976,7 @@ INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','disallow',NULL)
 INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','allow',NULL);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','t1min',100);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','relaxdtmf','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','rfc2833compensate','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','compactheaders','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','rtptimeout',0);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','rtpholdtimeout',0);
@@ -1202,7 +1202,7 @@ CREATE TABLE `useriax` (
  `amaflags` enum('default',
  		 'omit',
 		 'billing',
-		 'documentation') DEFAULT 'documentation', -- general / user --
+		 'documentation') DEFAULT 'default', -- general / user --
  `mailbox` varchar(80), -- peer --
  `callerid` varchar(160), -- user / peer --
  `fullname` varchar(80), -- user / peer --
@@ -1234,8 +1234,8 @@ CREATE TABLE `useriax` (
  `allow` varchar(100), -- general / user / peer --
  `mohinterpret` varchar(80), -- general / user / peer --
  `mohsuggest` varchar(80), -- general / user / peer --
- `deny` varchar(32), -- user / peer --
- `permit` varchar(32), -- user / peer --
+ `deny` varchar(31), -- user / peer --
+ `permit` varchar(31), -- user / peer --
  `defaultip` varchar(255), -- peer --
  `sourceaddress` varchar(255), -- peer --
  `setvar` varchar(100) NOT NULL DEFAULT '', -- user --
@@ -1277,7 +1277,7 @@ CREATE TABLE `usersip` (
  `amaflags` enum('default',
  		 'omit',
 		 'billing',
-		 'documentation') NOT NULL DEFAULT 'documentation', -- user / peer --
+		 'documentation') NOT NULL DEFAULT 'default', -- user / peer --
  `allowtransfer` tinyint(1), -- general / user / peer --
  `fromuser` varchar(80), -- peer --
  `fromdomain` varchar(255), -- general / peer --
@@ -1317,8 +1317,8 @@ CREATE TABLE `usersip` (
  `rtptimeout` tinyint unsigned, -- general / peer --
  `rtpholdtimeout` tinyint unsigned, -- general / peer --
  `rtpkeepalive` tinyint unsigned, -- general / peer --
- `deny` varchar(32), -- user / peer --
- `permit` varchar(32), -- user / peer --
+ `deny` varchar(31), -- user / peer --
+ `permit` varchar(31), -- user / peer --
  `defaultip` varchar(255), -- peer --
  `callgroup` varchar(180), -- user / peer --
  `pickupgroup` varchar(180), -- user / peer --
@@ -1348,7 +1348,7 @@ CREATE INDEX `usersip__idx__ipaddr_port` ON `usersip`(`ipaddr`,`port`);
 CREATE UNIQUE INDEX `usersip__uidx__name` ON `usersip`(`name`);
 
 INSERT INTO `usersip` VALUES (1,'guest','friend','guest','guest','','xivo-initconfig',NULL,
-			      NULL,'documentation',NULL,NULL,NULL,NULL,0,NULL,0,'Guest',
+			      NULL,'default',NULL,NULL,NULL,NULL,0,NULL,0,'Guest',
 			      NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
 			      NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
 			      NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'XIVO_USERID=1',
