@@ -61,7 +61,7 @@ class Aastra(PhoneVendor):
             # We first make two attempts
             # The first one replies: 401 Unauthorized (Authorization failed)
             # The second one does not fail
-            for attempts in 1, 2:
+            for attempts in 1, 2: # pylint: disable-msg=W0612
                 subprocess.call([Pgc['curl_cmd'],
                                  "--retry", "0",
                                  "--connect-timeout", str(Pgc['curl_to_s']),
@@ -105,14 +105,13 @@ class Aastra(PhoneVendor):
         sorted_keys.sort()
         fk_config_lines = []
         for key in sorted_keys:
-            exten, supervise = funckey[key]
+            exten, supervise = funckey[key] # pylint: disable-msg=W0612
             fk_config_lines.append("softkey%01d type: blf" % int(key))
             fk_config_lines.append("softkey%01d label: %s" % (int(key), exten))
             fk_config_lines.append("softkey%01d value: %s" % (int(key), exten))
             fk_config_lines.append("softkey%01d line: 1" % int(key))
         return "\n".join(fk_config_lines)
-
-
+    
     def do_reinit(self):
         """
         Entry point to send the (possibly post) reinit command to
