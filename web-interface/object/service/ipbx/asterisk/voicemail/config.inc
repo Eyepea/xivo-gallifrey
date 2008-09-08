@@ -36,9 +36,11 @@ $array['element']['exitcontext']['null'] = true;
 
 $array['element']['tz'] = array();
 $array['element']['tz']['default'] = '';
+$array['element']['tz']['null'] = true;
 
 $array['element']['language'] = array();
 $array['element']['language']['default'] = '';
+$array['element']['language']['null'] = true;
 
 $array['element']['attach'] = array();
 $array['element']['attach']['value'] = array(1,0);

@@ -1,5 +1,9 @@
 <?php
 
+define('XIVO_IPV4_NETMASK_BIT',1);
+define('XIVO_IPV4_NETMASK_DOTDEC',2);
+define('XIVO_IPV4_NETMASK_ALL',(XIVO_IPV4_NETMASK_BIT | XIVO_IPV4_NETMASK_DOTDEC));
+
 class xivo_filter
 {
 	var $_content		= array();
@@ -149,9 +153,7 @@ class xivo_filter
 
 	function chk_macaddr($macaddr)
 	{
-		$macaddr = strval($macaddr);
-
-		if(preg_match_all('/([A-F0-9]{2})[-: ]?/i',$macaddr,$match) !== 6)
+		if(preg_match_all('/([A-F0-9]{2})[-: ]?/i',strval($macaddr),$match) !== 6)
 			return(false);
 
 		return(strtoupper(implode(':',$match[1])));
@@ -159,12 +161,7 @@ class xivo_filter
 
 	function chk_ipv4($ip)
 	{
-		$ip = strval($ip);
-	
-		if(($long = ip2long($ip)) === -1 || $long === false)
-			return(false);
-
-		return(true);
+		return((xivo_ip2long($ip) !== false));
 	}
 
 	function chk_ipv4_in_lhost($ip,$host)
@@ -200,14 +197,16 @@ class xivo_filter
 
 	function chk_ipv4_in_subnet($ip,$sub)
 	{
+		$sub = strval($sub);
+
 		if(($pos = strrpos($sub,'/')) === false)
 			return(false);
 
 		$ipsub = substr($sub,0,$pos);
-		$mask = xivo_uint(substr($sub,$pos+1));
+		$mask = substr($sub,$pos+1);
 
 		if(xivo_filter::chk_ipv4_strict($ip) === false
-		|| xivo_filter::chk_ipv4_subnet($ipsub,$mask) === false)
+		|| ($mask = xivo_filter::chk_ipv4_subnet($ipsub,$mask,true)) === false)
 			return(false);
 
 		$r = array();
@@ -228,35 +227,77 @@ class xivo_filter
 		return(false);
 	}
 
-	function chk_ipv4_subnet($ip,$mask=null)
+	function chk_ipv4_subnet($ip,$mask=null,$type=XIVO_IPV4_NETMASK_ALL,$ret=false)
 	{
+		$ip = strval($ip);
+
 		if($mask === null)
 		{
 			if(($pos = strrpos($ip,'/')) === false)
 				return(false);
-
+		
 			$mask = substr($ip,$pos+1);
 			$ip = substr($ip,0,$pos);
 		}
 
-		if(($mask = xivo_uint($mask)) === 0
-		|| $mask > 32
+		$mask = strval($mask);
+
+		if(($mask = xivo_filter::chk_ipv4_netmask($mask,$type,$ret)) === false
 		|| xivo_filter::chk_ipv4_strict($ip) === false)
 			return(false);
 
+		return($mask);
+	}
+
+	function chk_ipv4_netmask($nm,$type=XIVO_IPV4_NETMASK_ALL,$ret=false)
+	{
+		$r = false;
+
+		$type = intval($type);
+
+		if(($type & XIVO_IPV4_NETMASK_ALL) === 0)
+			$type = XIVO_IPV4_NETMASK_ALL;
+
+		if(($type & XIVO_IPV4_NETMASK_BIT) !== 0)
+			$r = xivo_filter::chk_ipv4_netmask_bit($nm);
+
+		if($r === false && ($type & XIVO_IPV4_NETMASK_DOTDEC) !== 0)
+			$r = xivo_filter::chk_ipv4_netmask_dotdec($nm);
+
+		if($r !== false && (bool) $ret === false)
+			$r = true;
+
+		return($r);
+	}
+
+	function chk_ipv4_netmask_bit($bit)
+	{
+		if(xivo_is_uint($bit) === false
+		|| $bit > 32)
+			return(false);
+
 		return(true);
+	}
+
+	function chk_ipv4_netmask_dotdec($nm)
+	{
+		if(($nm = xivo_ip2long($nm)) === 0)
+			return(0);
+		else if($nm === -1)
+			return(32);
+		else if($nm === false
+		|| ($inv = ($nm ^ 0xFFFFFFFF)) === 0
+		|| ($inv & ($inv + 1)) !== 0)
+			return(false);
+
+		return(32 - intval(log($inv + 1,2)));
 	}
 
 	function chk_ipv4_strict($ip)
 	{
 		$ip = strval($ip);
 
-		if(xivo_filter::chk_ipv4($ip) === true
-		&& preg_match('#^(?:(?:\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])\.){3}'.
-				'(?:\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])$#',$ip) === 1)
-			return(true);
-
-		return(false);
+		return(($ip === long2ip(ip2long($ip))));
 	}
 
 	function chk_host($host)
@@ -385,10 +426,7 @@ class xivo_filter
 				return(null);
 		}
 
-		if((string) $cast !== $value)
-			return(false);
-
-		return(true);
+		return(((string) $cast === $value));
 	}
 
 	function chk_minlen($min,$value)

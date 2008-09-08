@@ -43,7 +43,23 @@ class xivo_service_asterisk_useriax extends xivo_service_asterisk_abstract
 		if(is_array($arr) === false)
 			return(false);
 
-		$arr['username'] = '';
+		$arr['username'] = null;
+		$arr['dbsecret'] = '';
+		$arr['fullname'] = null;
+		$arr['cid_number'] = null;
+		$arr['trunk'] = 0;
+		$arr['encryption'] = null;
+		$arr['inkeys'] = null;
+		$arr['outkey'] = null;
+		$arr['transfer'] = null;
+		$arr['timezone'] = null;
+		$arr['mohinterpret'] = null;
+		$arr['mohsuggest'] = null;
+		$arr['defaultip'] = null;
+		$arr['sourceaddress'] = null;
+		$arr['port'] = null;
+		$arr['regexten'] = null;
+		$arr['peercontext'] = null;
 		$arr['ipaddr'] = '';
 		$arr['regseconds'] = 0;
 		$arr['protocol'] = XIVO_SRE_IPBX_AST_PROTO_IAX;
@@ -71,7 +87,25 @@ class xivo_service_asterisk_useriax extends xivo_service_asterisk_abstract
 		if(isset($arr['setvar'],$arr['setvar']{0}) === false)
 			unset($arr['setvar']);
 
-		unset($arr['port']);
+		unset($arr['username'],
+		      $arr['dbsecret'],
+		      $arr['fullname'],
+		      $arr['cid_number'],
+		      $arr['trunk'],
+		      $arr['encryption'],
+		      $arr['inkeys'],
+		      $arr['outkey'],
+		      $arr['transfer'],
+		      $arr['timezone'],
+		      $arr['mohinterpret'],
+		      $arr['mohsuggest'],
+		      $arr['defaultip'],
+		      $arr['sourceaddress'],
+		      $arr['port'],
+		      $arr['regexten'],
+		      $arr['peercontext'],
+		      $arr['ipaddr'],
+		      $arr['regseconds']);
 
 		return(parent::edit($id,$arr,$disable));
 	}

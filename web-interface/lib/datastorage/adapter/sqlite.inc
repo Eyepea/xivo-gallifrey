@@ -61,7 +61,7 @@ class xivo_datastorage_adapter_sqlite extends xivo_datastorage_adapter_abstract_
 		$this->_param['db'] = XIVO_PATH_DS.XIVO_SEP_DIR.$this->_type.XIVO_SEP_DIR.ltrim($this->_param['db'],XIVO_SEP_DIR);
 
 		if(($db = xivo_file::is_f($this->_param['db'])) === false)
-			$this->halt('Can\'t find database');
+			$this->halt('Can\'t find database SQLite');
 	}
 
 	function _chk_pragma($key,$value)

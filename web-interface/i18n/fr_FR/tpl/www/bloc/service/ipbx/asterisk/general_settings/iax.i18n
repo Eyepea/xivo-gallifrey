@@ -172,18 +172,6 @@ Numéro d'acompte :
 ; fm_amaflags
 Drapeau de facturation :
 
-; fm_amaflags-opt-default
-Défaut
-
-; fm_amaflags-opt-billing
-Facturation
-
-; fm_amaflags-opt-omit
-Omission
-
-; fm_amaflags-opt-documentation
-Documentation
-
 ; fm_adsi
 Activer le support de l'ADSI :
 

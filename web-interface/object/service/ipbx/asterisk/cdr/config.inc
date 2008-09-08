@@ -36,11 +36,7 @@ $array['element']['disposition']['value'] = array(
 $array['element']['disposition']['default'] = '';
 
 $array['element']['amaflags'] = array();
-$array['element']['amaflags']['value'] = array(
-	XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_DEFAULT		=> XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_DEFAULT,
-	XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_OMIT		=> XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_OMIT,
-	XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_BILLING		=> XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_BILLING,
-	XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_DOCUMENTATION	=> XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_DOCUMENTATION);
+$array['element']['amaflags']['value'] = xivo_service_asterisk::get_amaflags_list(false);
 $array['element']['amaflags']['default'] = '';
 
 $array['element']['src'] = array();
@@ -142,11 +138,7 @@ $array['filter']['dcontext'] = array('set' => false,'chk' => 2,'callback' => 'xi
 				     'callbackparam' => array(array(
 					XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION,
 					XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
-$array['filter']['amaflags'] = array('set' => false,'chk' => 2,'key' => array(
-				XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_DEFAULT,
-				XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_OMIT,
-				XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_BILLING,
-				XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_DOCUMENTATION));
+$array['filter']['amaflags'] = array('set' => false,'chk' => 2,'key' => xivo_service_asterisk::get_amaflags_list());
 $array['filter']['src'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 80);
 $array['filter']['srcformat'] = array('key' => array('exact','begin','contain','end'));
 $array['filter']['dst'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 80);

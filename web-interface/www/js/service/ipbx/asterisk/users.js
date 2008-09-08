@@ -1,102 +1,198 @@
 var xivo_list_elt_users = new Array();
 
-xivo_list_elt_users['protocol-protocol'] = new Array();
-xivo_list_elt_users['protocol-protocol']['it'] = true;
-xivo_list_elt_users['protocol-protocol']['fd'] = true;
 xivo_list_elt_users['protocol-name'] = new Array();
-xivo_list_elt_users['protocol-name']['it'] = false;
+xivo_list_elt_users['protocol-name']['it'] = true;
 xivo_list_elt_users['protocol-secret'] = new Array();
-xivo_list_elt_users['protocol-secret']['it'] = false;
-xivo_list_elt_users['protocol-accountcode'] = new Array();
-xivo_list_elt_users['protocol-accountcode']['it'] = false;
-xivo_list_elt_users['protocol-callerid'] = new Array();
-xivo_list_elt_users['protocol-callerid']['it'] = false;
+xivo_list_elt_users['protocol-secret']['it'] = true;
 xivo_list_elt_users['protocol-interface'] = new Array();
 xivo_list_elt_users['protocol-interface']['it'] = false;
 xivo_list_elt_users['protocol-interface']['fd'] = false;
+xivo_list_elt_users['protocol-protocol'] = new Array();
+xivo_list_elt_users['protocol-protocol']['it'] = true;
+xivo_list_elt_users['protocol-context'] = new Array();
+xivo_list_elt_users['protocol-context']['it'] = true;
+xivo_list_elt_users['protocol-language'] = new Array();
+xivo_list_elt_users['protocol-language']['it'] = true;
+xivo_list_elt_users['protocol-language']['fd'] = true;
 xivo_list_elt_users['protocol-nat'] = new Array();
 xivo_list_elt_users['protocol-nat']['it'] = false;
 xivo_list_elt_users['protocol-nat']['fd'] = false;
+xivo_list_elt_users['protocol-progressinband'] = new Array();
+xivo_list_elt_users['protocol-progressinband']['it'] = false;
+xivo_list_elt_users['protocol-progressinband']['fd'] = false;
 xivo_list_elt_users['protocol-dtmfmode'] = new Array();
 xivo_list_elt_users['protocol-dtmfmode']['it'] = false;
 xivo_list_elt_users['protocol-dtmfmode']['fd'] = false;
-xivo_list_elt_users['protocol-canreinvite'] = new Array();
-xivo_list_elt_users['protocol-canreinvite']['it'] = false;
-xivo_list_elt_users['protocol-canreinvite']['fd'] = false;
+xivo_list_elt_users['protocol-rfc2833compensate'] = new Array();
+xivo_list_elt_users['protocol-rfc2833compensate']['it'] = false;
+xivo_list_elt_users['protocol-rfc2833compensate']['fd'] = false;
 xivo_list_elt_users['protocol-qualify'] = new Array();
 xivo_list_elt_users['protocol-qualify']['it'] = false;
 xivo_list_elt_users['protocol-qualify']['fd'] = false;
+xivo_list_elt_users['protocol-qualifysmoothing'] = new Array();
+xivo_list_elt_users['protocol-qualifysmoothing']['it'] = false;
+xivo_list_elt_users['protocol-qualifysmoothing']['fd'] = false;
+xivo_list_elt_users['protocol-qualifyfreqok'] = new Array();
+xivo_list_elt_users['protocol-qualifyfreqok']['it'] = false;
+xivo_list_elt_users['protocol-qualifyfreqok']['fd'] = false;
+xivo_list_elt_users['protocol-qualifyfreqnotok'] = new Array();
+xivo_list_elt_users['protocol-qualifyfreqnotok']['it'] = false;
+xivo_list_elt_users['protocol-qualifyfreqnotok']['fd'] = false;
+xivo_list_elt_users['protocol-rtptimeout'] = new Array();
+xivo_list_elt_users['protocol-rtptimeout']['it'] = false;
+xivo_list_elt_users['protocol-rtptimeout']['fd'] = false;
+xivo_list_elt_users['protocol-rtpholdtimeout'] = new Array();
+xivo_list_elt_users['protocol-rtpholdtimeout']['it'] = false;
+xivo_list_elt_users['protocol-rtpholdtimeout']['fd'] = false;
+xivo_list_elt_users['protocol-rtpkeepalive'] = new Array();
+xivo_list_elt_users['protocol-rtpkeepalive']['it'] = false;
+xivo_list_elt_users['protocol-rtpkeepalive']['fd'] = false;
+xivo_list_elt_users['protocol-allowtransfer'] = new Array();
+xivo_list_elt_users['protocol-allowtransfer']['it'] = false;
+xivo_list_elt_users['protocol-allowtransfer']['fd'] = false;
+xivo_list_elt_users['protocol-autoframing'] = new Array();
+xivo_list_elt_users['protocol-autoframing']['it'] = false;
+xivo_list_elt_users['protocol-autoframing']['fd'] = false;
+xivo_list_elt_users['protocol-videosupport'] = new Array();
+xivo_list_elt_users['protocol-videosupport']['it'] = false;
+xivo_list_elt_users['protocol-videosupport']['fd'] = false;
+xivo_list_elt_users['protocol-maxcallbitrate'] = new Array();
+xivo_list_elt_users['protocol-maxcallbitrate']['it'] = false;
+xivo_list_elt_users['protocol-maxcallbitrate']['fd'] = false;
+xivo_list_elt_users['protocol-g726nonstandard'] = new Array();
+xivo_list_elt_users['protocol-g726nonstandard']['it'] = false;
+xivo_list_elt_users['protocol-g726nonstandard']['fd'] = false;
+xivo_list_elt_users['protocol-jitterbuffer'] = new Array();
+xivo_list_elt_users['protocol-jitterbuffer']['it'] = false;
+xivo_list_elt_users['protocol-jitterbuffer']['fd'] = false;
+xivo_list_elt_users['protocol-forcejitterbuffer'] = new Array();
+xivo_list_elt_users['protocol-forcejitterbuffer']['it'] = false;
+xivo_list_elt_users['protocol-forcejitterbuffer']['fd'] = false;
+xivo_list_elt_users['protocol-codecpriority'] = new Array();
+xivo_list_elt_users['protocol-codecpriority']['it'] = false;
+xivo_list_elt_users['protocol-codecpriority']['fd'] = false;
 xivo_list_elt_users['protocol-disallow'] = new Array();
-xivo_list_elt_users['protocol-disallow']['it'] = false;
-xivo_list_elt_users['protocol-disallow']['fd'] = false;
+xivo_list_elt_users['protocol-disallow']['it'] = true;
+xivo_list_elt_users['protocol-t38pt-udptl'] = new Array();
+xivo_list_elt_users['protocol-t38pt-udptl']['it'] = false;
+xivo_list_elt_users['protocol-t38pt-rtp'] = new Array();
+xivo_list_elt_users['protocol-t38pt-rtp']['it'] = false;
+xivo_list_elt_users['protocol-t38pt-tcp'] = new Array();
+xivo_list_elt_users['protocol-t38pt-tcp']['it'] = false;
+xivo_list_elt_users['protocol-t38pt-usertpsource'] = new Array();
+xivo_list_elt_users['protocol-t38pt-usertpsource']['it'] = false;
+xivo_list_elt_users['protocol-callerid'] = new Array();
+xivo_list_elt_users['protocol-callerid']['it'] = true;
+xivo_list_elt_users['protocol-sendani'] = new Array();
+xivo_list_elt_users['protocol-sendani']['it'] = false;
+xivo_list_elt_users['protocol-sendani']['fd'] = false;
+xivo_list_elt_users['protocol-insecure'] = new Array();
+xivo_list_elt_users['protocol-insecure']['it'] = false;
+xivo_list_elt_users['protocol-insecure']['fd'] = false;
 xivo_list_elt_users['protocol-host-dynamic'] = new Array();
-xivo_list_elt_users['protocol-host-dynamic']['it'] = false;
-xivo_list_elt_users['protocol-host-dynamic']['fd'] = false;
+xivo_list_elt_users['protocol-host-dynamic']['it'] = true;
 xivo_list_elt_users['protocol-host-static'] = new Array();
-xivo_list_elt_users['protocol-host-static']['it'] = false;
-xivo_list_elt_users['protocol-host-static']['fd'] = false;
-xivo_list_elt_users['protocol-context'] = new Array();
-xivo_list_elt_users['protocol-context']['it'] = false;
-xivo_list_elt_users['protocol-context']['fd'] = false;
+xivo_list_elt_users['protocol-host-static']['it'] = true;
+xivo_list_elt_users['protocol-mask'] = new Array();
+xivo_list_elt_users['protocol-mask']['it'] = false;
+xivo_list_elt_users['protocol-mask']['fd'] = false;
+xivo_list_elt_users['protocol-permit'] = new Array();
+xivo_list_elt_users['protocol-permit']['it'] = true;
+xivo_list_elt_users['protocol-deny'] = new Array();
+xivo_list_elt_users['protocol-deny']['it'] = true;
+xivo_list_elt_users['protocol-trustrpid'] = new Array();
+xivo_list_elt_users['protocol-trustrpid']['it'] = false;
+xivo_list_elt_users['protocol-trustrpid']['fd'] = false;
+xivo_list_elt_users['protocol-sendrpid'] = new Array();
+xivo_list_elt_users['protocol-sendrpid']['it'] = false;
+xivo_list_elt_users['protocol-sendrpid']['fd'] = false;
+xivo_list_elt_users['protocol-allowsubscribe'] = new Array();
+xivo_list_elt_users['protocol-allowsubscribe']['it'] = false;
+xivo_list_elt_users['protocol-allowsubscribe']['fd'] = false;
+xivo_list_elt_users['protocol-allowoverlap'] = new Array();
+xivo_list_elt_users['protocol-allowoverlap']['it'] = false;
+xivo_list_elt_users['protocol-allowoverlap']['fd'] = false;
+xivo_list_elt_users['protocol-promiscredir'] = new Array();
+xivo_list_elt_users['protocol-promiscredir']['it'] = false;
+xivo_list_elt_users['protocol-promiscredir']['fd'] = false;
+xivo_list_elt_users['protocol-usereqphone'] = new Array();
+xivo_list_elt_users['protocol-usereqphone']['it'] = false;
+xivo_list_elt_users['protocol-usereqphone']['fd'] = false;
+xivo_list_elt_users['protocol-canreinvite'] = new Array();
+xivo_list_elt_users['protocol-canreinvite']['it'] = false;
+xivo_list_elt_users['protocol-canreinvite']['fd'] = false;
+xivo_list_elt_users['protocol-fromuser'] = new Array();
+xivo_list_elt_users['protocol-fromuser']['it'] = false;
+xivo_list_elt_users['protocol-fromuser']['fd'] = false;
+xivo_list_elt_users['protocol-fromdomain'] = new Array();
+xivo_list_elt_users['protocol-fromdomain']['it'] = false;
+xivo_list_elt_users['protocol-fromdomain']['fd'] = false;
+xivo_list_elt_users['protocol-maxauthreq'] = new Array();
+xivo_list_elt_users['protocol-maxauthreq']['it'] = false;
+xivo_list_elt_users['protocol-maxauthreq']['fd'] = false;
+xivo_list_elt_users['protocol-adsi'] = new Array();
+xivo_list_elt_users['protocol-adsi']['it'] = false;
+xivo_list_elt_users['protocol-adsi']['fd'] = false;
 xivo_list_elt_users['protocol-amaflags'] = new Array();
 xivo_list_elt_users['protocol-amaflags']['it'] = false;
 xivo_list_elt_users['protocol-amaflags']['fd'] = false;
+xivo_list_elt_users['protocol-accountcode'] = new Array();
+xivo_list_elt_users['protocol-accountcode']['it'] = true;
+xivo_list_elt_users['protocol-useclientcode'] = new Array();
+xivo_list_elt_users['protocol-useclientcode']['it'] = false;
+xivo_list_elt_users['protocol-useclientcode']['fd'] = false;
 
 xivo_list_elt_users['ufeatures-firstname'] = new Array();
 xivo_list_elt_users['ufeatures-firstname']['it'] = true;
-xivo_list_elt_users['ufeatures-firstname']['fd'] = true;
 xivo_list_elt_users['ufeatures-lastname'] = new Array();
 xivo_list_elt_users['ufeatures-lastname']['it'] = true;
-xivo_list_elt_users['ufeatures-lastname']['fd'] = true;
-xivo_list_elt_users['ufeatures-description'] = new Array();
-xivo_list_elt_users['ufeatures-description']['it'] = true;
-xivo_list_elt_users['ufeatures-description']['fd'] = true;
 xivo_list_elt_users['ufeatures-number'] = new Array();
 xivo_list_elt_users['ufeatures-number']['it'] = true;
-xivo_list_elt_users['ufeatures-number']['fd'] = true;
 xivo_list_elt_users['ufeatures-ringseconds'] = new Array();
 xivo_list_elt_users['ufeatures-ringseconds']['it'] = true;
 xivo_list_elt_users['ufeatures-simultcalls'] = new Array();
 xivo_list_elt_users['ufeatures-simultcalls']['it'] = true;
-xivo_list_elt_users['ufeatures-enableclient'] = new Array();
-xivo_list_elt_users['ufeatures-enableclient']['it'] = false;
-xivo_list_elt_users['ufeatures-enablehint'] = new Array();
-xivo_list_elt_users['ufeatures-enablehint']['it'] = false;
-xivo_list_elt_users['ufeatures-enablevoicemail'] = new Array();
-xivo_list_elt_users['ufeatures-enablevoicemail']['it'] = false;
-xivo_list_elt_users['ufeatures-enablexfer'] = new Array();
-xivo_list_elt_users['ufeatures-enablexfer']['it'] = false;
-xivo_list_elt_users['ufeatures-enableautomon'] = new Array();
-xivo_list_elt_users['ufeatures-enableautomon']['it'] = false;
-xivo_list_elt_users['ufeatures-callrecord'] = new Array();
-xivo_list_elt_users['ufeatures-callrecord']['it'] = false;
-xivo_list_elt_users['ufeatures-callfilter'] = new Array();
-xivo_list_elt_users['ufeatures-callfilter']['it'] = false;
-xivo_list_elt_users['ufeatures-enablednd'] = new Array();
-xivo_list_elt_users['ufeatures-enablednd']['it'] = false;
-xivo_list_elt_users['ufeatures-enablerna'] = new Array();
-xivo_list_elt_users['ufeatures-enablerna']['it'] = false;
-xivo_list_elt_users['ufeatures-destrna'] = new Array();
-xivo_list_elt_users['ufeatures-destrna']['it'] = false;
-xivo_list_elt_users['ufeatures-enablebusy'] = new Array();
-xivo_list_elt_users['ufeatures-enablebusy']['it'] = false;
-xivo_list_elt_users['ufeatures-destbusy'] = new Array();
-xivo_list_elt_users['ufeatures-destbusy']['it'] = false;
-xivo_list_elt_users['ufeatures-enableunc'] = new Array();
-xivo_list_elt_users['ufeatures-enableunc']['it'] = false;
-xivo_list_elt_users['ufeatures-destunc'] = new Array();
-xivo_list_elt_users['ufeatures-destunc']['it'] = false;
-xivo_list_elt_users['ufeatures-outcallerid-type'] = new Array();
-xivo_list_elt_users['ufeatures-outcallerid-type']['it'] = false;
-xivo_list_elt_users['ufeatures-outcallerid-custom'] = new Array();
-xivo_list_elt_users['ufeatures-outcallerid-custom']['it'] = false;
 xivo_list_elt_users['ufeatures-musiconhold'] = new Array();
-xivo_list_elt_users['ufeatures-musiconhold']['it'] = false;
+xivo_list_elt_users['ufeatures-musiconhold']['it'] = true;
+xivo_list_elt_users['ufeatures-enableclient'] = new Array();
+xivo_list_elt_users['ufeatures-enableclient']['it'] = true;
+xivo_list_elt_users['ufeatures-enablehint'] = new Array();
+xivo_list_elt_users['ufeatures-enablehint']['it'] = true;
+xivo_list_elt_users['ufeatures-enablevoicemail'] = new Array();
+xivo_list_elt_users['ufeatures-enablevoicemail']['it'] = true;
+xivo_list_elt_users['ufeatures-enablexfer'] = new Array();
+xivo_list_elt_users['ufeatures-enablexfer']['it'] = true;
+xivo_list_elt_users['ufeatures-enableautomon'] = new Array();
+xivo_list_elt_users['ufeatures-enableautomon']['it'] = true;
+xivo_list_elt_users['ufeatures-callrecord'] = new Array();
+xivo_list_elt_users['ufeatures-callrecord']['it'] = true;
+xivo_list_elt_users['ufeatures-callfilter'] = new Array();
+xivo_list_elt_users['ufeatures-callfilter']['it'] = true;
+xivo_list_elt_users['ufeatures-enablednd'] = new Array();
+xivo_list_elt_users['ufeatures-enablednd']['it'] = true;
+xivo_list_elt_users['ufeatures-enablerna'] = new Array();
+xivo_list_elt_users['ufeatures-enablerna']['it'] = true;
+xivo_list_elt_users['ufeatures-destrna'] = new Array();
+xivo_list_elt_users['ufeatures-destrna']['it'] = true;
+xivo_list_elt_users['ufeatures-enablebusy'] = new Array();
+xivo_list_elt_users['ufeatures-enablebusy']['it'] = true;
+xivo_list_elt_users['ufeatures-destbusy'] = new Array();
+xivo_list_elt_users['ufeatures-destbusy']['it'] = true;
+xivo_list_elt_users['ufeatures-enableunc'] = new Array();
+xivo_list_elt_users['ufeatures-enableunc']['it'] = true;
+xivo_list_elt_users['ufeatures-destunc'] = new Array();
+xivo_list_elt_users['ufeatures-destunc']['it'] = true;
 xivo_list_elt_users['ufeatures-bsfilter'] = new Array();
 xivo_list_elt_users['ufeatures-bsfilter']['it'] = true;
+xivo_list_elt_users['ufeatures-outcallerid-type'] = new Array();
+xivo_list_elt_users['ufeatures-outcallerid-type']['it'] = true;
+xivo_list_elt_users['ufeatures-outcallerid-custom'] = new Array();
+xivo_list_elt_users['ufeatures-outcallerid-custom']['it'] = true;
+xivo_list_elt_users['ufeatures-description'] = new Array();
+xivo_list_elt_users['ufeatures-description']['it'] = true;
 
 xivo_list_elt_users['ufeatures-voicemailid'] = new Array();
-xivo_list_elt_users['ufeatures-voicemailid']['it'] = false;
+xivo_list_elt_users['ufeatures-voicemailid']['it'] = true;
 xivo_list_elt_users['voicemail-fullname'] = new Array();
 xivo_list_elt_users['voicemail-fullname']['it'] = false;
 xivo_list_elt_users['voicemail-mailbox'] = new Array();
@@ -113,17 +209,21 @@ xivo_list_elt_users['voicemail-attach'] = new Array();
 xivo_list_elt_users['voicemail-attach']['it'] = false;
 xivo_list_elt_users['voicemail-deletevoicemail'] = new Array();
 xivo_list_elt_users['voicemail-deletevoicemail']['it'] = false;
+xivo_list_elt_users['protocol-subscribemwi'] = new Array();
+xivo_list_elt_users['protocol-subscribemwi']['it'] = false;
+xivo_list_elt_users['protocol-buggymwi'] = new Array();
+xivo_list_elt_users['protocol-buggymwi']['it'] = false;
 
 xivo_list_elt_users['codec-active'] = new Array();
-xivo_list_elt_users['codec-active']['it'] = false;
+xivo_list_elt_users['codec-active']['it'] = true;
 xivo_list_elt_users['codeclist'] = new Array();
 xivo_list_elt_users['codeclist']['it'] = new Array();
-xivo_list_elt_users['codeclist']['it']['style'] = {display: 'none'};
-xivo_list_elt_users['codeclist']['it']['property'] = {disabled: true};
+xivo_list_elt_users['codeclist']['it']['style'] = {display: 'inline'};
+xivo_list_elt_users['codeclist']['it']['property'] = {disabled: true, className: 'it-enabled'};
 xivo_list_elt_users['codec'] = new Array();
 xivo_list_elt_users['codec']['it'] = new Array();
-xivo_list_elt_users['codec']['it']['style'] = {display: 'none'};
-xivo_list_elt_users['codec']['it']['property'] = {disabled: true};
+xivo_list_elt_users['codec']['it']['style'] = {display: 'inline'};
+xivo_list_elt_users['codec']['it']['property'] = {disabled: true, className: 'it-enabled'};
 
 xivo_list_elt_users['autoprov-modact'] = new Array();
 xivo_list_elt_users['autoprov-modact']['it'] = false;
@@ -138,9 +238,9 @@ xivo_list_elt_users['group'] = new Array();
 xivo_list_elt_users['group']['it'] = true;
 
 xivo_list_elt_users['rightcalllist'] = new Array();
-xivo_list_elt_users['rightcalllist']['it'] = false;
+xivo_list_elt_users['rightcalllist']['it'] = true;
 xivo_list_elt_users['rightcall'] = new Array();
-xivo_list_elt_users['rightcall']['it'] = false;
+xivo_list_elt_users['rightcall']['it'] = true;
 
 var xivo_elt_users = new Array();
 xivo_elt_users['links'] = new Array();
@@ -367,54 +467,54 @@ xivo_attrib_register('fm_outcallerid',xivo_fm_outcallerid);
 
 var xivo_fm_host = new Array();
 
-xivo_fm_host['fd-sip-protocol-host-static'] = new Array();
-xivo_fm_host['fd-sip-protocol-host-static']['style'] = new Array({display: 'none'},{display: 'block'});
-xivo_fm_host['fd-sip-protocol-host-static']['link'] = 'it-sip-protocol-host-static';
+xivo_fm_host['fd-protocol-host-static'] = new Array();
+xivo_fm_host['fd-protocol-host-static']['style'] = new Array({display: 'none'},{display: 'block'});
+xivo_fm_host['fd-protocol-host-static']['link'] = 'it-protocol-host-static';
 
-xivo_fm_host['it-sip-protocol-host-static'] = new Array();
-xivo_fm_host['it-sip-protocol-host-static']['property'] = new Array({disabled: true},{disabled: false});
+xivo_fm_host['it-protocol-host-static'] = new Array();
+xivo_fm_host['it-protocol-host-static']['property'] = new Array({disabled: true},{disabled: false});
 
-xivo_fm_host['fd-iax-protocol-host-static'] = new Array();
-xivo_fm_host['fd-iax-protocol-host-static']['style'] = new Array({display: 'none'},{display: 'block'});
-xivo_fm_host['fd-iax-protocol-host-static']['link'] = 'it-iax-protocol-host-static';
+xivo_fm_host['fd-protocol-host-static'] = new Array();
+xivo_fm_host['fd-protocol-host-static']['style'] = new Array({display: 'none'},{display: 'block'});
+xivo_fm_host['fd-protocol-host-static']['link'] = 'it-protocol-host-static';
 
-xivo_fm_host['it-iax-protocol-host-static'] = new Array();
-xivo_fm_host['it-iax-protocol-host-static']['property'] = new Array({disabled: true},{disabled: false});
+xivo_fm_host['it-protocol-host-static'] = new Array();
+xivo_fm_host['it-protocol-host-static']['property'] = new Array({disabled: true},{disabled: false});
 
 xivo_attrib_register('fm_host',xivo_fm_host);
 
 xivo_fm_codec = new Array();
-xivo_fm_codec['it-sip-protocol-disallow'] = new Array();
-xivo_fm_codec['it-sip-protocol-disallow']['property'] = new Array(
-							{disabled: false, className: 'it-enabled'},
-							{disabled: true, className: 'it-disabled'});
-xivo_fm_codec['it-sip-protocol-disallow']['link'] = 'it-sip-codeclist';
+xivo_fm_codec['it-protocol-disallow'] = new Array();
+xivo_fm_codec['it-protocol-disallow']['property'] = new Array(
+		    				{disabled: false, className: 'it-enabled'},
+		    				{disabled: true, className: 'it-disabled'});
+xivo_fm_codec['it-protocol-disallow']['link'] = 'it-codeclist';
 
-xivo_fm_codec['it-sip-codeclist'] = new Array();
-xivo_fm_codec['it-sip-codeclist']['property'] = new Array(
-							{disabled: false, className: 'it-enabled'},
-							{disabled: true, className: 'it-disabled', selectedIndex: -1});
-xivo_fm_codec['it-sip-codeclist']['link'] = 'it-sip-codec';
+xivo_fm_codec['it-codeclist'] = new Array();
+xivo_fm_codec['it-codeclist']['property'] = new Array(
+		    				{disabled: false, className: 'it-enabled'},
+		    				{disabled: true, className: 'it-disabled', selectedIndex: -1});
+xivo_fm_codec['it-codeclist']['link'] = 'it-codec';
 
-xivo_fm_codec['it-sip-codec'] = new Array();
-xivo_fm_codec['it-sip-codec']['property'] = new Array(
-							{disabled: false, className: 'it-enabled'},
-							{disabled: true, className: 'it-disabled', selectedIndex: -1});
+xivo_fm_codec['it-codec'] = new Array();
+xivo_fm_codec['it-codec']['property'] = new Array(
+		    				{disabled: false, className: 'it-enabled'},
+		    				{disabled: true, className: 'it-disabled', selectedIndex: -1});
 
-xivo_fm_codec['it-iax-protocol-disallow'] = new Array();
-xivo_fm_codec['it-iax-protocol-disallow']['property'] = new Array(
-							{disabled: false, className: 'it-enabled'},
-							{disabled: true, className: 'it-disabled'});
-xivo_fm_codec['it-iax-protocol-disallow']['link'] = 'it-iax-codeclist';
+xivo_fm_codec['it-protocol-disallow'] = new Array();
+xivo_fm_codec['it-protocol-disallow']['property'] = new Array(
+		    				{disabled: false, className: 'it-enabled'},
+		    				{disabled: true, className: 'it-disabled'});
+xivo_fm_codec['it-protocol-disallow']['link'] = 'it-codeclist';
 
-xivo_fm_codec['it-iax-codeclist'] = new Array();
-xivo_fm_codec['it-iax-codeclist']['property'] = new Array(
-							{disabled: false, className: 'it-enabled'},
-							{disabled: true, className: 'it-disabled'});
-xivo_fm_codec['it-iax-codeclist']['link'] = 'it-iax-codec';
+xivo_fm_codec['it-codeclist'] = new Array();
+xivo_fm_codec['it-codeclist']['property'] = new Array(
+		    				{disabled: false, className: 'it-enabled'},
+		    				{disabled: true, className: 'it-disabled'});
+xivo_fm_codec['it-codeclist']['link'] = 'it-codec';
 
-xivo_fm_codec['it-iax-codec'] = new Array();
-xivo_fm_codec['it-iax-codec']['property'] = new Array(
+xivo_fm_codec['it-codec'] = new Array();
+xivo_fm_codec['it-codec']['property'] = new Array(
 							{disabled: false, className: 'it-enabled'},
 							{disabled: true, className: 'it-disabled', selectedIndex: -1});
 
@@ -467,12 +567,24 @@ xivo_fm_voicemail['it-voicemail-deletevoicemail'] = new Array();
 xivo_fm_voicemail['it-voicemail-deletevoicemail']['property'] = new Array(
 							{disabled: false, className: 'it-enabled'},
 							{disabled: true, className: 'it-disabled'});
+xivo_fm_voicemail['it-voicemail-deletevoicemail']['link'] = 'it-protocol-subscribemwi';
+
+xivo_fm_voicemail['it-protocol-subscribemwi'] = new Array();
+xivo_fm_voicemail['it-protocol-subscribemwi']['property'] = new Array(
+							{disabled: false, className: 'it-enabled'},
+							{disabled: true, className: 'it-disabled'});
+xivo_fm_voicemail['it-protocol-subscribemwi']['link'] = 'it-protocol-buggymwi';
+
+xivo_fm_voicemail['it-protocol-buggymwi'] = new Array();
+xivo_fm_voicemail['it-protocol-buggymwi']['property'] = new Array(
+							{disabled: false, className: 'it-enabled'},
+							{disabled: true, className: 'it-disabled'});
 
 xivo_attrib_register('fm_voicemail',xivo_fm_voicemail);
 
 
 xivo_fm_enablevoicemail = xivo_clone(xivo_fm_voicemail);
-xivo_fm_enablevoicemail['it-voicemail-deletevoicemail']['link'] = 'it-ufeatures-enablevoicemail';
+xivo_fm_enablevoicemail['it-protocol-buggymwi']['link'] = 'it-ufeatures-enablevoicemail';
 
 xivo_fm_enablevoicemail['it-ufeatures-enablevoicemail'] = new Array();
 xivo_fm_enablevoicemail['it-ufeatures-enablevoicemail']['property'] = new Array({checked: true},{checked: false});
@@ -594,16 +706,16 @@ function xivo_chg_protocol(protocol)
 	if((voicemail = xivo_eid('it-ufeatures-voicemailid')) != false && voicemail.value != '' && voicemail.disabled == false)
 		xivo_chg_attrib('fm_voicemail','it-voicemail-fullname',0);
 
-	var host_dynamic = xivo_eid('it-'+xivo_protocol+'-protocol-host-dynamic');
+	var host_dynamic = xivo_eid('it-protocol-host-dynamic');
 
 	if(host_dynamic != false)
-		xivo_chg_attrib('fm_host','fd-'+xivo_protocol+'-protocol-host-static',Number(host_dynamic.value === 'static'));
+		xivo_chg_attrib('fm_host','fd-protocol-host-static',Number(host_dynamic.value === 'static'));
 
 	if(xivo_eid('it-autoprov-modact') != false)
 		xivo_chg_attrib('fm_autoprov-'+xivo_protocol,'it-autoprov-modact',Number(xivo_eid('it-autoprov-modact').value === ''));
 
 	if(xivo_eid('it-codec-active') != false)
-		xivo_chg_attrib('fm_codec','it-'+xivo_protocol+'-protocol-disallow',Number(xivo_eid('it-codec-active').checked === false));
+		xivo_chg_attrib('fm_codec','it-protocol-disallow',Number(xivo_eid('it-codec-active').checked === false));
 
 	if((enablerna = xivo_eid('it-ufeatures-enablerna')) != false)
 		xivo_chg_attrib('fm_enablerna','it-ufeatures-destrna',Number(enablerna.checked));

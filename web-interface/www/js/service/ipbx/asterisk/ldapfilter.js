@@ -8,13 +8,8 @@ function xivo_fm_select_add_attrldap(id,value)
 
 function xivo_chk_attrldap(value)
 {
-	if(xivo_is_undef(value) == true
-	|| xivo_is_string(value) == false)
-		return(false);
-
-	var regstr = new RegExp('^(?:[a-zA-Z0-9-]+|[0-9]+(?:\\.[0-9]+)*)$');
-
-	if(value.match(regstr) == null)
+	if(xivo_is_string(value) === false
+	|| value.match(/^(?:[a-zA-Z0-9-]+|[0-9]+(?:\.[0-9]+)*)$/) === null)
 		return(false);
 
 	return(value);

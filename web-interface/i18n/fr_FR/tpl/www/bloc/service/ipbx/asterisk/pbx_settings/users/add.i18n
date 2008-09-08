@@ -13,6 +13,9 @@ Non réponse
 ; smenu_services
 Services
 
+; smenu_signalling
+Signalisation
+
 ; smenu_groups
 Groupes
 
@@ -22,11 +25,11 @@ Approvisionnement
 ; smenu_advanced
 Avancé
 
-; smenu_codecs
-Codecs
-
 ; smenu_rightcalls
 Droits d'appels
+
+; smenu_t38
+T38
 
 ; fm_userfeatures_firstname 
 Prénom :
@@ -40,62 +43,11 @@ Identifiant :
 ; fm_protocol_secret
 Mot de passe :
 
-; fm_protocol_interface
-Interface :
-
-; fm_protocol_host
-Type d'adressage IP :
-
-; fm_protocol_protocol
-Protocole :
-
-; fm_protocol_protocol-opt-sip
-SIP
-
-; fm_protocol_protocol-opt-iax
-IAX
-
-; fm_protocol_protocol-opt-custom
-Personnalisé
-
-; fm_protocol_nat
-NAT :
-
-; fm_protocol_context
-Contexte :
-
-; create_context
-Créer un contexte
-
-; fm_protocol_amaflags
-Drapeau de facturation :
-
-; fm_protocol_amaflags-opt-default
-Défaut
-
-; fm_protocol_amaflags-opt-omit
-Omission
-
-; fm_protocol_amaflags-opt-billing
-Facturation
-
-; fm_protocol_amaflags-opt-documentation
-Documentation
-
-; fm_protocol_canreinvite
-Invite :
-
-; fm_protocol_accountcode
-Numéro d'acompte :
-
-; fm_protocol_qualify
-Supervision de la latence :
-
-; fm_protocol_dtmfmode
-DTMF :
-
 ; fm_ufeatures_number
 Numéro de téléphone :
+
+; fm_protocol_interface
+Interface :
 
 ; fm_userfeatures_ringseconds
 Temps de sonnerie :
@@ -109,8 +61,80 @@ Illimité
 ; fm_userfeatures_simultcalls
 Appels simultanés :
 
+; fm_protocol_protocol
+Protocole :
+
+; fm_protocol_protocol-opt-sip
+SIP
+
+; fm_protocol_protocol-opt-iax
+IAX
+
+; fm_protocol_protocol-opt-custom
+Personnalisé
+
+; fm_protocol_context
+Contexte :
+
+; create_context
+Créer un contexte
+
 ; fm_userfeatures_musiconhold
 Musique d'attente :
+
+; fm_protocol_language
+Langages :
+
+; fm_protocol_nat
+NAT :
+
+; fm_protocol_nat-opt-no
+Non
+
+; fm_protocol_nat-opt-yes
+Oui
+
+; fm_protocol_nat-opt-never
+Jamais
+
+; fm_protocol_nat-opt-route
+Route
+
+; fm_userfeatures_voicemailid
+Sélection de la messagerie vocale :
+
+; fm_voicemail-opt-add
+[Ajouter une messagerie vocale]
+
+; fm_voicemail_fullname
+Nom complet :
+
+; fm_voicemail_mailbox
+Numéro de boîte vocale :
+
+; fm_voicemail_password
+Mot de passe :
+
+; fm_voicemail_email
+E-mail :
+
+; fm_voicemail_tz
+Fuseau horaire :
+
+; fm_voicemailfeatures_skipcheckpass
+Désactiver la vérification du mot de passe :
+
+; fm_voicemail_attach
+Joindre le fichier audio :
+
+; fm_voicemail_deletevoicemail
+Supprimer message après notification :
+
+; fm_protocol_subscribemwi
+Vérifier la présence de nouveaux messages :
+
+; fm_protocol_buggymwi
+Vérification, non conforme à la RFC, de nouveaux messages :
 
 ; fm_userfeatures_enableclient
 Activer XIVO Client :
@@ -166,6 +190,141 @@ Patron
 ; fm_userfeatures_bsfilter-opt-secretary
 Secrétaire
 
+; fm_protocol_progressinband
+Evénement RING dans la bande :
+
+; fm_protocol_progressinband-opt-no
+Non
+
+; fm_protocol_progressinband-opt-yes
+Oui
+
+; fm_protocol_progressinband-opt-never
+Jamais
+
+; fm_protocol_dtmfmode
+DTMF :
+
+; fm_protocol_dtmfmode-opt-rfc2833
+RFC 2833
+
+; fm_protocol_dtmfmode-opt-inband
+InBand
+
+; fm_protocol_dtmfmode-opt-info
+INFO
+
+; fm_protocol_dtmfmode-opt-auto
+Auto
+
+; fm_protocol_rfc2833compensate
+Compenser les DTMF RFC 2833 provenant d'un autre IPBX :
+
+; fm_protocol_qualify
+Supervision de la latence :
+
+; fm_protocol_qualify-optno
+Non
+
+; fm_protocol_qualify-optyes
+Oui
+
+; fm_protocol_qualify-opt
+%s millisecondes
+
+; fm_protocol_qualifyfreqok-opt
+%s millisecondes
+
+; fm_protocol_qualifyfreqnotok-opt
+%s millisecondes
+
+; fm_protocol_rtptimeout
+Délai d'attente pour le RTP :
+
+; fm_protocol_rtptimeout-opt0
+Désactivé
+
+; fm_protocol_rtptimeout-opt
+%s secondes
+
+; fm_protocol_rtpholdtimeout
+Délai du RTP sur attente :
+
+; fm_protocol_rtpholdtimeout-opt0
+Désactivé
+
+; fm_protocol_rtpholdtimeout-opt
+%s secondes
+
+; fm_protocol_rtpkeepalive
+Présence du RTP :
+
+; fm_protocol_rtpkeepalive-opt0
+Désactivée
+
+; fm_protocol_rtpkeepalive-opt
+%s secondes
+
+; fm_protocol_allowtransfer
+Autoriser les transferts :
+
+; fm_protocol_autoframing
+Frame automatique :
+
+; fm_protocol_videosupport
+Support vidéo :
+
+; fm_protocol_maxcallbitrate
+Bit rate maximal pour les appels vidéo :
+
+; fm_protocol_g726nonstandard
+Activer le support du G.726 non standard :
+
+; fm_protocol_jitterbuffer
+Activer le Jitter Buffer :
+
+; fm_protocol_forcejitterbuffer
+Forcer le Jitter Buffer :
+
+; fm_protocol_codecpriority
+Priorité des codecs :
+
+; fm_protocol_codecpriority-opt-disabled
+Désactivée
+
+; fm_protocol_codecpriority-opt-host
+Hôte
+
+; fm_protocol_codecpriority-opt-caller
+Appelant
+
+; fm_protocol_codecpriority-opt-reqonly
+Requête seulement
+
+; fm_codec-custom
+Personnaliser les codecs :
+
+; fm_protocol_codec-disallow
+Codecs désactivés :
+
+; fm_protocol_codec-disallow-opt-all
+Tous
+
+; fm_protocol_codec-allow
+Codecs activés :
+
+; bt_upcodec
+Monter un ou plusieurs codecs
+
+; bt_downcodec
+Descendre un ou plusieurs codecs
+
+; bt_incodec
+Ajouter un ou plusieurs codecs ->
+
+; bt_outcodec
+<- Enlever un ou plusieurs codecs
+
 ; fld-callgroup
 Groupes
 
@@ -210,93 +369,6 @@ Ajouter une ou plusieurs files d'attente ->
 
 ; bt_outqueue
 <- Enlever une ou plusieurs files d'attente
-
-; fm_codec-custom
-Personnaliser :
-
-; fm_protocol_codec-disallow
-Désactiver :
-
-; fm_protocol_codec-disallow-opt-all
-Tous
-
-; fm_protocol_codec-allow
-Activer :
-
-; bt_upcodec
-Monter un ou plusieurs codecs
-
-; bt_downcodec
-Descendre un ou plusieurs codecs
-
-; bt_incodec
-Ajouter un ou plusieurs codecs ->
-
-; bt_outcodec
-<- Enlever un ou plusieurs codecs
-
-; fm_userfeatures_voicemailid
-Sélection de la messagerie vocale :
-
-; fm_voicemail-opt-add
-[Ajouter une messagerie vocale]
-
-; fm_voicemail_fullname
-Nom complet :
-
-; fm_voicemail_mailbox
-Numéro de boîte vocale :
-
-; fm_voicemail_password
-Mot de passe :
-
-; fm_voicemail_email
-E-mail :
-
-; fm_voicemail_tz
-Fuseau horaire :
-
-; fm_voicemailfeatures_skipcheckpass
-Désactiver la vérification du mot de passe :
-
-; fm_voicemail_attach
-Joindre le fichier audio :
-
-; fm_voicemail_deletevoicemail
-Supprimer message après notification :
-
-; fm_userfeatures_description
-Description :
-
-; bt_inrightcall
-Ajouter un ou plusieurs droits d'appels ->
-
-; bt_outrightcall
-<- Enlever un ou plusieurs droits d'appels
-
-; create_rightcall
-Créer un droit d'appel
-
-; fm_protocol_callerid
-Nom d'appel :
-
-; fm_ufeatures_outcallerid
-Nom d'appel sortant :
-
-; fm_ufeatures_outcallerid-opt-default
-Défaut
-
-; fm_ufeatures_outcallerid-opt-anonymous
-Anonyme
-
-; fm_ufeatures_outcallerid-opt-custom
-Personnaliser
-
-; fm_protocol_host-dynamic
-Dynamique
-
-; fm_protocol_host-static
-Statique
 
 ; fm_autoprov_modact
 Mode :
@@ -426,3 +498,135 @@ Activée
 
 ; phonefunckey_no-user
 Aucun utilisateur trouvé
+
+; fm_protocol_callerid
+Nom d'appel :
+
+; fm_ufeatures_outcallerid
+Nom d'appel sortant :
+
+; fm_ufeatures_outcallerid-opt-default
+Défaut
+
+; fm_ufeatures_outcallerid-opt-anonymous
+Anonyme
+
+; fm_ufeatures_outcallerid-opt-custom
+Personnaliser
+
+; fm_protocol_insecure
+Insécurité :
+
+; fm_protocol_insecure-opt-no
+Non
+
+; fm_protocol_insecure-opt-port
+Port
+
+; fm_protocol_insecure-opt-invite
+Invite
+
+; fm_protocol_insecure-opt-all
+Tout
+
+; fm_protocol_host
+Type d'adressage IP :
+
+; fm_protocol_host-dynamic
+Dynamique
+
+; fm_protocol_host-static
+Statique
+
+; fm_protocol_permit
+Adresse IP ou masque sous-réseau autorisés :
+
+; fm_protocol_deny
+Adresse IP ou masque sous-réseau refusés :
+
+; fm_protocol_trustrpid
+Faire confiance au Remote-Party-ID :
+
+; fm_protocol_sendrpid
+Envoyer le Remote-Party-ID :
+
+; fm_protocol_allowsubscribe
+Activer le support des souscriptions :
+
+; fm_protocol_allowoverlap
+Activer l'overlap :
+
+; fm_protocol_promiscredir
+Support des redirections 302 :
+
+; fm_protocol_usereqphone
+Ajouter ";user=phone" dans l'URI :
+
+; fm_protocol_canreinvite
+Invite :
+
+; fm_protocol_canreinvite-opt-no
+Non
+
+; fm_protocol_canreinvite-opt-yes
+Oui
+
+; fm_protocol_canreinvite-opt-update
+Mise à jour
+
+; fm_protocol_canreinvite-opt-nonat
+Sans NAT
+
+; fm_protocol_canreinvite-opt-update-nonat
+Mise à jour sans NAT
+
+; fm_protocol_fromuser
+Réécriture du champ From-User :
+
+; fm_protocol_fromdomain
+Réécriture du champ From-Domain :
+
+; fm_protocol_maxauthreq
+Maximum AUTHREQs autorisées :
+
+; fm_protocol_maxauthreq-opt0
+Désactivé
+
+; fm_protocol_maxauthreq-opt
+%s
+
+; fm_protocol_adsi
+Activer le support de l'ADSI : 
+
+; fm_protocol_amaflags
+Drapeau de facturation :
+
+; fm_protocol_accountcode
+Numéro d'acompte :
+
+; fm_protocol_useclientcode
+Code client :
+
+; fm_userfeatures_description
+Description :
+
+; bt_inrightcall
+Ajouter un ou plusieurs droits d'appels ->
+
+; bt_outrightcall
+<- Enlever un ou plusieurs droits d'appels
+
+; create_rightcall
+Créer un droit d'appel
+
+; fm_protocol_t38pt-udptl
+Activer le T38 (UDPTL) :
+
+; fm_protocol_t38pt-rtp
+Activer le T38 (RTP) :
+
+; fm_protocol_t38pt-tcp
+Activer le T38 (TCP) :
+
+; fm_protocol_t38pt-usertpsource
+Utiliser l'adresse IP source comme destination pour le T38 : 

@@ -9,7 +9,7 @@ class xivo_datastorage_adapter_mysql extends xivo_datastorage_adapter_abstract_s
 				'user'		=> '',
 				'pass'		=> '',
 				'db'		=> '',
-				'port'		=> 3306,
+				'port'		=> 0,
 				'socket'	=> '',
 				'persist'	=> false,
 				'compress'	=> false,
@@ -136,7 +136,7 @@ class xivo_datastorage_adapter_mysql extends xivo_datastorage_adapter_abstract_s
 			$this->_link = mysql_pconnect($host,$this->_param['user'],$this->_param['pass'],false,$this->_flag);
 
 		if($this->_link === false)
-			$this->halt('Can\'t connect to mysql server');
+			$this->halt('Can\'t connect to MySQL server');
 		else if($this->_param['charset'] !== '')
 			$this->query('SET NAMES \''.$this->_param['charset'].'\'');
 

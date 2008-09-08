@@ -308,13 +308,7 @@ endif;
 				    'key'	=> false,
 				    'value'	=> $this->get_varra('info',array('tos_video','var_val')),
 				    'default'	=> $element['tos_video']['default']),
-			      $element['tos_video']['value']),
-
-		$form->checkbox(array('desc'	=> $this->bbf('fm_rfc2833compensate'),
-				      'name'	=> 'rfc2833compensate',
-				      'labelid'	=> 'rfc2833compensate',
-				      'checked'	=> $this->get_varra('info',array('rfc2833compensate','var_val')),
-				      'default'	=> $element['rfc2833compensate']['default']));
+			      $element['tos_video']['value']);
 ?>
 </div>
 
@@ -415,6 +409,12 @@ endif;
 				      'labelid'	=> 'relaxdtmf',
 				      'checked'	=> $this->get_varra('info',array('relaxdtmf','var_val')),
 				      'default'	=> $element['relaxdtmf']['default'])),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_rfc2833compensate'),
+				      'name'	=> 'rfc2833compensate',
+				      'labelid'	=> 'rfc2833compensate',
+				      'checked'	=> $this->get_varra('info',array('rfc2833compensate','var_val')),
+				      'default'	=> $element['rfc2833compensate']['default'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_compactheaders'),
 				      'name'	=> 'compactheaders',
@@ -732,6 +732,7 @@ endif;
 				    'name'	=> 'dtmfmode',
 				    'labelid'	=> 'dtmfmode',
 				    'key'	=> false,
+				    'bbf'	=> array('concatvalue','fm_dtmfmode-opt-'),
 				    'value'	=> $this->get_varra('info',array('dtmfmode','var_val')),
 				    'default'	=> $element['dtmfmode']['default']),
 			      $element['dtmfmode']['value']),
@@ -769,12 +770,12 @@ endif;
 			      $element['language']['value']);
 
 if($moh_list !== false):
-	echo	$form->select(array('desc'	=> $this->bbf('fm_musiconhold'),
-				    'name'	=> 'musiconhold',
-				    'labelid'	=> 'musiconhold',
+	echo	$form->select(array('desc'	=> $this->bbf('fm_mohinterpret'),
+				    'name'	=> 'mohinterpret',
+				    'labelid'	=> 'mohinterpret',
 				    'key'	=> 'category',
-				    'value'	=> $this->get_varra('info',array('musiconhold','var_val')),
-				    'default'	=> $element['musiconhold']['default']),
+				    'value'	=> $this->get_varra('info',array('mohinterpret','var_val')),
+				    'default'	=> $element['mohinterpret']['default']),
 			      $moh_list),
 
 		$form->select(array('desc'	=> $this->bbf('fm_mohsuggest'),
@@ -816,7 +817,6 @@ endif;
 		$form->select(array('desc'	=> $this->bbf('fm_insecure'),
 				    'name'	=> 'insecure',
 				    'labelid'	=> 'insecure',
-				    'empty'	=> true,
 				    'bbf'	=> array('concatvalue','fm_insecure-opt-'),
 				    'value'	=> $this->get_varra('info',array('insecure','var_val')),
 				    'default'	=> $element['insecure']['default']),

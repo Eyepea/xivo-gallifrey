@@ -17,8 +17,9 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 					'host'		=> 'localhost',
 					'user'		=> '',
 					'pass'		=> '',
-					'port'		=> 389,
+					'port'		=> 0,
 					'ssl'		=> false,
+					'tls'		=> false,
 					'protocol'	=> 0);
 
 	var $_type		= 'ldap';
@@ -60,10 +61,12 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 			$this->_param['pass'] = (string) $param['passdn'];
 
 		if(isset($param['port']) === true)
-			$this->_param['port'] = xivo_uint($param['port'],389);
+			$this->_param['port'] = xivo_uint($param['port']);
 
 		if(isset($param['ssl']) === true)
 			$this->_param['ssl'] = (bool) $param['ssl'];
+		else if(isset($param['tls']) === true)
+			$this->_param['tls'] = (bool) $param['tls'];
 
 		if(isset($param['protocol']) === true)
 			$this->_param['protocol'] = xivo_uint($param['protocol'],3);
@@ -216,7 +219,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 	function explode_dn($dn,$attrib=false,$empty=false,$count=true)
 	{
 		if(xivo_haslen($dn) === false
-		|| ($r = ldap_explode_dn($dn,intval((bool)$attrib))) === false
+		|| ($r = ldap_explode_dn($dn,intval((bool) $attrib))) === false
 		|| is_array($r) === false
 		|| ($r['count'] === 0 && (bool) $empty === false) === true)
 			return(false);
@@ -235,31 +238,42 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 		else
 			$host = 'localhost';
 
-		if((bool) $this->_param['ssl'] === true)
+		if((bool) $this->_param['ssl'] === false)
+			$host = 'ldap://'.$host;
+		else
 			$host = 'ldaps://'.$host;
+
+		if($this->_param['port'] !== 0)
+			$host .= ':'.$this->_param['port'];
 
 		if($this->_debug !== 0)
 			$this->set_option('debug',$this->_debug);
 
-		$this->_link = ldap_connect($host,$this->_param['port']);
+		$this->_link = ldap_connect($host);
 
 		if($this->_link === false)
 		{
-			$this->halt('Can\'t connect to ldap server');
+			$this->halt('Can\'t connect to LDAP server');
 			return(false);
 		}
-		else if(isset($this->_param['protocol']) === true)
-			$this->set_option('protocol',$this->_param['protocol']);
+
+		$this->set_option('protocol',$this->_param['protocol']);
+
+		if((bool) $this->_param['tls'] === true && $this->get_option('protocol') > 2)
+			ldap_start_tls($this->_link);
 
 		return($this->_link);
 	}
 
 	function bind()
 	{
-		if(is_resource($this->_link) === false)
-			return(false);
+		if(is_resource($this->_link) === true
+		&& ldap_bind($this->_link,$this->_param['user'],$this->_param['pass']) === true)
+			return(true);
 
-		return(ldap_bind($this->_link,$this->_param['user'],$this->_param['pass']));
+		$this->close();
+
+		return(false);
 	}
 	
 	function search($basedn,$scope=LDAP_SCOPE_SUBTREE,$filter='',$attrib='',$attrsonly=0,$sizelimit=0,$timelimit=0,$deref=0)
@@ -826,7 +840,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 		return($r);
 	}
 
-	function _set_wherenull($column,$and=true,$not=false)
+	function _set_wherenull($column,$table='',$and=true,$not=false)
 	{
 		if(($where = $this->_mk_wherenull($column)) === false)
 			return(false);

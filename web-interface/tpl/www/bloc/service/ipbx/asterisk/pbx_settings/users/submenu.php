@@ -26,6 +26,16 @@
 		</li>
 		<li id="smenu-tab-2"
 		    class="moo"
+		    onclick="xivo_smenu_click(this,'moc','sb-part-signalling');"
+		    onmouseout="xivo_smenu_out(this,'moo');"
+		    onmouseover="xivo_smenu_over(this,'mov');">
+			<div class="tab">
+				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_signalling');?></a></span>
+			</div>
+			<span class="span-right">&nbsp;</span>
+		</li>
+		<li id="smenu-tab-3"
+		    class="moo"
 		    onclick="xivo_smenu_click(this,'moc','sb-part-group');"
 		    onmouseout="xivo_smenu_out(this,'moo');"
 		    onmouseover="xivo_smenu_over(this,'mov');">
@@ -34,7 +44,7 @@
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
-		<li id="smenu-tab-3"
+		<li id="smenu-tab-4"
 		    class="moo"
 		    onclick="xivo_smenu_click(this,'moc','sb-part-autoprov');"
 		    onmouseout="xivo_smenu_out(this,'moo');"
@@ -44,11 +54,11 @@
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
-		<li id="smenu-tab-4"
+		<li id="smenu-tab-5"
 		    class="moo-last"
 		    onmouseout="xivo_smenu_out(this,'moo',1);"
 		    onmouseover="xivo_smenu_over(this,'mov',1);">
-			<div onclick="xivo_smenu_click(xivo_eid('smenu-tab-4'),'moc','sb-part-last',1);">
+			<div onclick="xivo_smenu_click(xivo_eid('smenu-tab-5'),'moc','sb-part-last',1);">
 				<div class="tab">
 					<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_advanced');?></a></span>
 				</div>
@@ -57,11 +67,11 @@
 			<div class="stab">
 				<ul>
 					<li><a href="#"
-					       onclick="xivo_smenu_click(xivo_eid('smenu-tab-4'),'moc','sb-part-codec',1);
-					       		return(false);"><?=$this->bbf('smenu_codecs');?></a></li>
-					<li><a href="#"
-					       onclick="xivo_smenu_click(xivo_eid('smenu-tab-4'),'moc','sb-part-rightcall',1);
+					       onclick="xivo_smenu_click(xivo_eid('smenu-tab-5'),'moc','sb-part-rightcall',1);
 					       		return(false);"><?=$this->bbf('smenu_rightcalls');?></a></li>
+					<li><a href="#"
+					       onclick="xivo_smenu_click(xivo_eid('smenu-tab-5'),'moc','sb-part-t38',1);
+					       		return(false);"><?=$this->bbf('smenu_t38');?></a></li>
 				</ul>
 			</div>
 		</li>

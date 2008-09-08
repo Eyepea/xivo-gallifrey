@@ -107,7 +107,7 @@
 
 <?=$form->select(array('desc' => $this->bbf('fm_disposition'),'name' => 'disposition','labelid' => 'disposition','empty' => true,'key' => false,'bbf' => array('concatkey','fm_disposition-opt-'),'default' => $element['disposition']['default'],'value' => $info['disposition']),$element['disposition']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_amaflags'),'name' => 'amaflags','labelid' => 'amaflags','empty' => true,'bbf' => array('mixvalue','fm_amaflags-opt-'),'default' => $element['amaflags']['default'],'value' => $amaflags),$element['amaflags']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_amaflags'),'name' => 'amaflags','labelid' => 'amaflags','empty' => true,'bbf' => array('mixvalue','ast_amaflag_name_info-'),'default' => $element['amaflags']['default'],'value' => $amaflags),$element['amaflags']['value']);?>
 
 <?php
 
@@ -255,7 +255,7 @@ endif;
 				endif;
 				if(xivo_haslen($ref['amaflagsmeta']) === true):
 					echo '<dt>',$this->bbf('entry_amaflagsmeta'),'</dt>';
-					echo '<dd>',$this->bbf('entry_amaflagsmeta-'.$ref['amaflagsmeta']),'<br /></dd>';
+					echo '<dd>',$this->bbf('ast_amaflag_name_info-'.$ref['amaflagsmeta']),'<br /></dd>';
 				endif;
 				if(xivo_haslen($ref['clid']) === true):
 					echo '<dt>',$this->bbf('entry_clid'),'</dt>';

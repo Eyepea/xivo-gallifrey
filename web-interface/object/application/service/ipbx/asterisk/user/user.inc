@@ -605,11 +605,13 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$protocolname = (string) $this->get_result_var('ufeatures','protocol');
 		$simultcalls = (int) $this->get_result_var('ufeatures','simultcalls');
 
-		$this->_set_result_var('protocol','call-limit',2 * $simultcalls);
+		if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_SIP)
+			$this->_set_result_var('protocol','call-limit',(2 * $simultcalls));
 
 		if(xivo_issa('group',$arr) === true
 		&& xivo_issa('group-select',$arr) === true
-		&& $this->set_groupmember($arr['group'],$arr['group-select'],$name,$context,$number,$protocolname) === true)
+		&& $this->set_groupmember($arr['group'],$arr['group-select'],$name,$context,$number,$protocolname) === true
+		&& $this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_SIP)
 		{
 			$callgroup = $this->get_result('callgroup');
 
@@ -618,8 +620,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			else
 				$callgroup = '';
 			
-			if($this->_protocolname !== XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
-				$this->_set_result_var('protocol','callgroup',$callgroup);
+			$this->_set_result_var('protocol','callgroup',$callgroup);
 		}
 
 		if(xivo_issa('queue',$arr) === true && xivo_issa('queue-select',$arr) === true)

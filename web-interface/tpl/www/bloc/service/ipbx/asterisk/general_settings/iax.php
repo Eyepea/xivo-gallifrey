@@ -263,7 +263,7 @@ endif;
 				    'name'	=> 'amaflags',
 				    'labelid'	=> 'amaflags',
 				    'key'	=> false,
-				    'bbf'	=> array('concatvalue','fm_amaflags-opt-'),
+				    'bbf'	=> array('concatvalue','ast_amaflag_name_info-'),
 				    'value'	=> $this->get_varra('info',array('amaflags','var_val')),
 				    'default'	=> $element['amaflags']['default']),
 			      $element['amaflags']['value']),

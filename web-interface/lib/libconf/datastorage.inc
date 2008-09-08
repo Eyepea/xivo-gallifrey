@@ -1,8 +1,19 @@
 <?php
 
-$array = array(
-	'mysql'		=> array('meta' => 'sql','extension' => 'mysql','ssl' => true),
-	'sqlite'	=> array('meta' => 'sql','extension' => 'sqlite'),
-	'ldap'		=> array('meta' => 'ldap','extension' => 'ldap','ssl' => true));
+$array = array();
+
+$array['mysql'] = array();
+$array['mysql']['meta'] = 'sql';
+$array['mysql']['extension'] = 'mysql';
+$array['mysql']['ssl'] = true;
+
+$array['sqlite'] = array();
+$array['sqlite']['meta'] = 'sql';
+$array['sqlite']['extension'] = 'sqlite';
+
+$array['ldap'] = array();
+$array['ldap']['meta'] = 'ldap';
+$array['ldap']['extension'] = 'ldap';
+$array['ldap']['ssl'] = true;
 
 ?>

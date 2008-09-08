@@ -17,12 +17,6 @@ switch($act)
 
 		if(isset($_QR['fm_send']) === true && xivo_issa('ldapfilter',$_QR) === true)
 		{
-			if(xivo_issa('attrdisplayname',$_QR['ldapfilter']) === true)
-				$_QR['ldapfilter']['attrdisplayname'] = implode(',',$_QR['ldapfilter']['attrdisplayname']);
-
-			if(xivo_issa('attrphonenumber',$_QR['ldapfilter']) === true)
-				$_QR['ldapfilter']['attrphonenumber'] = implode(',',$_QR['ldapfilter']['attrphonenumber']);
-
 			if($appldapfilter->set_add($_QR) === false
 			|| $appldapfilter->add() === false)
 				$result = $appldapfilter->get_result();
@@ -61,12 +55,6 @@ switch($act)
 		if(isset($_QR['fm_send']) === true && xivo_issa('ldapfilter',$_QR) === true)
 		{
 			$return = &$result;
-
-			if(xivo_issa('attrdisplayname',$_QR['ldapfilter']) === true)
-				$_QR['ldapfilter']['attrdisplayname'] = implode(',',$_QR['ldapfilter']['attrdisplayname']);
-
-			if(xivo_issa('attrphonenumber',$_QR['ldapfilter']) === true)
-				$_QR['ldapfilter']['attrphonenumber'] = implode(',',$_QR['ldapfilter']['attrphonenumber']);
 
 			if($appldapfilter->set_edit($_QR) === false
 			|| $appldapfilter->edit() === false)

@@ -154,11 +154,6 @@ $array['element']['t38pt_usertpsource']['value'] = array('no','yes');
 $array['element']['t38pt_usertpsource']['default'] = 'no';
 $array['element']['t38pt_usertpsource']['set'] = true;
 
-$array['element']['rfc2833compensate'] = array();
-$array['element']['rfc2833compensate']['value'] = array('no','yes');
-$array['element']['rfc2833compensate']['default'] = 'no';
-$array['element']['rfc2833compensate']['set'] = true;
-
 $array['element']['localnet'] = array();
 $array['element']['localnet']['default'] = '';
 $array['element']['localnet']['null'] = true;
@@ -237,6 +232,11 @@ $array['element']['relaxdtmf'] = array();
 $array['element']['relaxdtmf']['value'] = array('no','yes');
 $array['element']['relaxdtmf']['default'] = 'no';
 $array['element']['relaxdtmf']['set'] = true;
+
+$array['element']['rfc2833compensate'] = array();
+$array['element']['rfc2833compensate']['value'] = array('no','yes');
+$array['element']['rfc2833compensate']['default'] = 'no';
+$array['element']['rfc2833compensate']['set'] = true;
 
 $array['element']['compactheaders'] = array();
 $array['element']['compactheaders']['value'] = array('no','yes');
@@ -403,9 +403,9 @@ $array['element']['language'] = array();
 $array['element']['language']['value'] = array('en','fr');
 $array['element']['language']['default'] = 'fr';
 
-$array['element']['musiconhold'] = array();
-$array['element']['musiconhold']['default'] = XIVO_SRE_IPBX_AST_MOH_DEFAULT;
-$array['element']['musiconhold']['setdef'] = true;
+$array['element']['mohinterpret'] = array();
+$array['element']['mohinterpret']['default'] = XIVO_SRE_IPBX_AST_MOH_DEFAULT;
+$array['element']['mohinterpret']['setdef'] = true;
 
 $array['element']['mohsuggest'] = array();
 $array['element']['mohsuggest']['default'] = '';
@@ -433,9 +433,11 @@ $array['element']['canreinvite']['value'] = array('no'			=> 'no',
 $array['element']['canreinvite']['default'] = 'yes';
 
 $array['element']['insecure'] = array();
-$array['element']['insecure']['value'] = array('port' => 'port','invite' => 'invite','port,invite' => 'all');
-$array['element']['insecure']['default'] = '';
-$array['element']['insecure']['null'] = true;
+$array['element']['insecure']['value'] = array('no'		=> 'no',
+					       'port'		=> 'port',
+					       'invite'		=> 'invite',
+					       'port,invite'	=> 'all');
+$array['element']['insecure']['default'] = 'no';
 
 $array['element']['rtcachefriends'] = array();
 $array['element']['rtcachefriends']['value'] = array('no','yes');
@@ -467,6 +469,10 @@ $array['element']['rtautoclear']['value'] = array('no' => 'no','yes' => 'yes',1 
 						  210 => array(3,30),220 => array(3,40),230 => array(3,50),240 => 4);
 $array['element']['rtautoclear']['default'] = 'no'; 
 
+$array['element']['subscribecontext'] = array();
+$array['element']['subscribecontext']['default'] = '';
+$array['element']['subscribecontext']['forcedef'] = true;
+$array['element']['subscribecontext']['null'] = true;
 
 $array['filter'] = array();
 $array['filter']['bindport'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
@@ -503,7 +509,6 @@ $array['filter']['t38pt_udptl'] = array('bool' => true);
 $array['filter']['t38pt_rtp'] = array('bool' => true);
 $array['filter']['t38pt_tcp'] = array('bool' => true);
 $array['filter']['t38pt_usertpsource'] = array('bool' => true);
-$array['filter']['rfc2833compensate'] = array('bool' => true);
 $array['filter']['localnet'] = array('set' => false,'chk' => 2,'callback' => 'xivo_filter::chk_host_subnet_ipv4_strict','maxlen' => 128);
 $array['filter']['externip'] = array('set' => false,'chk' => 2,'callback' => 'xivo_filter::chk_host_ipv4_strict','maxlen' => 64);
 $array['filter']['externhost'] = array('set' => false,'chk' => 2,'callback' => 'xivo_filter::chk_host_ipv4_strict','maxlen' => 64);
@@ -537,6 +542,7 @@ $array['filter']['t1min'] = array('key' => array(0,10,20,30,40,50,60,70,80,90,10
 						 1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,
 						 2000,2500,3000,3500,4000));
 $array['filter']['relaxdtmf'] = array('bool' => true);
+$array['filter']['rfc2833compensate'] = array('bool' => true);
 $array['filter']['compactheaders'] = array('bool' => true);
 $array['filter']['rtptimeout'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['rtpholdtimeout'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
@@ -587,15 +593,15 @@ $array['filter']['nat'] = array('key' => array('no','yes','never','route'));
 $array['filter']['dtmfmode'] = array('key' => array('rfc2833','inband','info','auto'));
 $array['filter']['qualify'] = array('key' => array('no','yes',500,1000,1500,2000,2500,3000,3500,4000));
 $array['filter']['useclientcode'] = array('bool' => true);
-$array['filter']['progressinband'] = array('key' => array('yes','no','never'));
+$array['filter']['progressinband'] = array('key' => array('no','yes','never'));
 $array['filter']['language'] = array('key' => array('en','fr'));
-$array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'maxlen' => 20);
+$array['filter']['mohinterpret'] = array('set' => false,'chk' => 2,'maxlen' => 20);
 $array['filter']['mohsuggest'] = array('set' => false,'chk' => 2,'maxlen' => 20);
 $array['filter']['vmexten'] = array('regexp' => '/^[0-9#\*]+$/','maxlen' => 40);
 $array['filter']['trustrpid'] = array('bool' => true);
 $array['filter']['sendrpid'] = array('bool' => true);
-$array['filter']['canreinvite'] = array('key' => array('yes','no','update','nonat','update,nonat'));
-$array['filter']['insecure'] = array('set' => false,'chk' => 2,'key' => array('port','invite','port,invite'));
+$array['filter']['canreinvite'] = array('key' => array('no','yes','update','nonat','update,nonat'));
+$array['filter']['insecure'] = array('key' => array('no','port','invite','port,invite'));
 $array['filter']['rtcachefriends'] = array('bool' => true);
 $array['filter']['rtupdate'] = array('bool' => true);
 $array['filter']['ignoreregexpire'] = array('bool' => true);
@@ -603,5 +609,6 @@ $array['filter']['rtsavesysname'] = array('bool' => true);
 $array['filter']['rtautoclear'] = array('key' => array('yes','no',1,10,20,30,40,50,60,70,80,90,
 						       100,110,120,130,140,150,160,170,180,
 						       190,200,210,220,230,240));
+$array['filter']['subscribecontext'] = array('set' => false,'chk' => 0);
 
 ?>

@@ -112,9 +112,6 @@ TOS audio :
 ; fm_tos-video
 TOS vidéo :
 
-; fm_rfc2833compensate
-Compenser les DTMF depuis un autre IPBX :
-
 ; fm_externip
 Adresse IP externe :
 
@@ -204,6 +201,9 @@ Délai minimum de l'aller-retour (RTT) des messages :
 
 ; fm_relaxdtmf
 Relax DTMF :
+
+; fm_rfc2833compensate
+Compenser les DTMF RFC 2833 provenant d'un autre IPBX :
 
 ; fm_compactheaders
 Compacter les en-têtes :
@@ -520,6 +520,18 @@ Route
 ; fm_dtmfmode
 DTMF :
 
+; fm_dtmfmode-opt-rfc2833
+RFC 2833
+
+; fm_dtmfmode-opt-inband
+InBand
+
+; fm_dtmfmode-opt-info
+INFO
+
+; fm_dtmfmode-opt-auto
+Auto
+
 ; fm_qualify
 Supervision de la latence :
 
@@ -550,7 +562,7 @@ Jamais
 ; fm_language
 Langages :
 
-; fm_musiconhold
+; fm_mohinterpret
 Musique d'attente :
 
 ; fm_mohsuggest
@@ -585,6 +597,9 @@ Mise à jour sans NAT
 
 ; fm_insecure
 Insécurité :
+
+; fm_insecure-opt-no
+Non
 
 ; fm_insecure-opt-port
 Port

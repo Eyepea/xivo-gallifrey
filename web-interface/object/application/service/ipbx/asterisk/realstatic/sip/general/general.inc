@@ -117,8 +117,8 @@ class xivo_application_service_asterisk_realstatic_sip_general extends xivo_appl
 
 		$this->get_musiconhold();
 
-		if(isset($arr['musiconhold'],$this->_musiconhold[$arr['musiconhold']]) === false)
-			$arr['musiconhold'] = '';
+		if(isset($arr['mohinterpret'],$this->_musiconhold[$arr['mohinterpret']]) === false)
+			$arr['mohinterpret'] = '';
 
 		if(isset($arr['mohsuggest']) === true)
 		{

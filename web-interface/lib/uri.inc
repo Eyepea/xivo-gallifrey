@@ -482,10 +482,7 @@ class xivo_uri
 
 	function valid_ipv4($ip)
 	{
-		if(($ip = ip2long($ip)) === -1 || $ip === false)
-			return(false);
-
-		return(true);
+		return((xivo_ip2long($ip) !== false));
 	}
 
 	function valid_ipv6($ip)

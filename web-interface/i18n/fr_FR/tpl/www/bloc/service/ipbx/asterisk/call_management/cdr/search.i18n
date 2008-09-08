@@ -55,18 +55,6 @@ Inconnu
 ; fm_amaflags
 Drapeau de facturation :
 
-; fm_amaflags-opt-default
-Défaut
-
-; fm_amaflags-opt-billing
-Facturation
-
-; fm_amaflags-opt-omit
-Omission
-
-; fm_amaflags-opt-documentation
-Documentation
-
 ; fm_dcontext
 Contexte :
 
@@ -222,18 +210,6 @@ Inconnu
 
 ; entry_amaflagsmeta
 Drapeau de facturation :
-
-; entry_amaflagsmeta-default
-Défaut
-
-; entry_amaflagsmeta-billing
-Facturation
-
-; entry_amaflagsmeta-omit
-Omission
-
-; entry_amaflagsmeta-documentation
-Documentation
 
 ; entry_clid
 Nom d'appel :

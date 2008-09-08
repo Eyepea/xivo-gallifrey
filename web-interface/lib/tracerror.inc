@@ -95,8 +95,10 @@ class xivo_tracerror
 	{
 		$r = false;
 
-		if((int) $level === 0 || ((int) $level & XIVO_TE_ERR_ALL) !== 0)
-			$r = (int) $level;
+		$level = intval($level);
+
+		if($level === 0 || ($level & XIVO_TE_ERR_ALL) !== 0)
+			$r = $level;
 
 		return($r);
 	}
@@ -105,8 +107,10 @@ class xivo_tracerror
 	{
 		$r = false;
 
-		if((int) $type === 0 || ((int) $type & XIVO_TE_RTYPE_ALL) !== 0)
-			$r = (int) $type;
+		$type = intval($type);
+
+		if($type === 0 || ($type & XIVO_TE_RTYPE_ALL) !== 0)
+			$r = $type;
 
 		return($r);
 	}
@@ -149,10 +153,9 @@ class xivo_tracerror
 
 		$context = $context !== '' ? (string) $context : XIVO_TE_CONTEXT;
 
-		if($this->_param['report_mode'] === XIVO_TE_RMODE_REALTIME || $report_type !== XIVO_TE_RTYPE_SCREEN)
-		{
+		if($this->_param['report_mode'] === XIVO_TE_RMODE_REALTIME
+		|| $report_type !== XIVO_TE_RTYPE_SCREEN)
 			return($this->display($msg,$level,$report_type,$context,$this->_param['report_mode']));
-		}
 
 		return($this->display($msg,XIVO_TE_ERR_TRAC,XIVO_TE_RTYPE_SCREEN,$context,XIVO_TE_RMODE_DELAYED));
 	}

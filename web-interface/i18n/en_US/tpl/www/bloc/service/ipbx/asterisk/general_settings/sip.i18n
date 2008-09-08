@@ -454,7 +454,7 @@ Never
 ; fm_language
 Languages:
 
-; fm_musiconhold
+; fm_mohinterpret
 On-Hold Music:
 
 ; fm_vmexten
@@ -480,6 +480,9 @@ Update
 
 ; fm_insecure
 Insecure:
+
+; fm_insecure-opt-no
+No
 
 ; fm_insecure-opt-port
 Port

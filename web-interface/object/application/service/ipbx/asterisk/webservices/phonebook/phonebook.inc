@@ -241,7 +241,11 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 			if($ldapserver === false
 			|| isset($ldapfilter['attrphonenumber'][0]) === false)
 				continue;
-			else if(xivo_haslen($ldapfilter['filter']) === true)
+
+                        $ldapfilter['attrdisplayname'] = xivo_array_change_value_case($ldapfilter['attrdisplayname'],CASE_LOWER);
+                        $ldapfilter['attrphonenumber'] = xivo_array_change_value_case($ldapfilter['attrphonenumber'],CASE_LOWER);
+
+			if(xivo_haslen($ldapfilter['filter']) === true)
 			{
 				$ldapserver['user'] = $ldapfilter['user'];
 				$ldapserver['passwd'] = $ldapfilter['passwd'];

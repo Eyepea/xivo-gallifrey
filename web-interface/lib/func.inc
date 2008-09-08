@@ -173,8 +173,18 @@ function xivo_sgraph($str='',$def=null,$t=false)
 	return((xivo_is_sgraph($def) === true ? $def : false));
 }
 
+function xivo_is_int($int)
+{
+	return(((string) intval($int) === strval($int)));
+}
+
+function xivo_is_uint($uint)
+{
+	return((xivo_is_int($uint) === true && $uint >= 0));
+}
+
 function xivo_is_sgraph($str,$type='')
-{	
+{
 	if(is_scalar($str) === false)
 		return(false);
 
@@ -295,6 +305,18 @@ function xivo_is_alpunct($str)
 function xivo_is_alnumpunct($str)
 {
 	return(xivo_is_spunct($str,'alphanum',false));
+}
+
+function xivo_ip2long($ip_address)
+{
+	if(is_scalar($ip_address) === false)
+		return(false);
+	else if(($long = ip2long($ip_address)) === -1
+	&& $ip_address !== 0xFFFFFFFF
+	&& $ip_address !== '255.255.255.255')
+		return(false);
+
+	return($long);
 }
 
 function xivo_instanceof($obj,$name)
@@ -540,6 +562,11 @@ function xivo_array_reduce_level($arr,$t=false)
 	}
 
 	return($r);
+}
+
+function xivo_array_change_value_case($arr,$case=CASE_LOWER)
+{
+	return(array_flip(array_change_key_case(array_flip(&$arr),intval((bool) $case))));
 }
 
 function xivo_build_array_ref(&$a)

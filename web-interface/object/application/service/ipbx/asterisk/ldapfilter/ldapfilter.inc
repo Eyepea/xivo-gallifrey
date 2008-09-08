@@ -99,6 +99,27 @@ class xivo_application_service_asterisk_ldapfilter extends xivo_application_aste
 		return($this->_ldapserver->get_all($disable,true,$order,$limit,$assoc));
 	}
 
+	function _mk_unique_attribut($arr)
+	{
+		if(is_array($arr) === false)
+			return(false);
+
+		$r = array();
+
+		foreach($arr as $value)
+		{
+			if(is_scalar($value) === false)
+				continue;
+
+			$valuelower = strtolower($value);
+
+			if(isset($r[$valuelower]) === false)
+				$r[$valuelower] = $value;
+		}
+
+		return(implode(',',$r));
+	}
+
 	function set_add($arr)
 	{
 		return($this->_set('add',$arr));
@@ -133,6 +154,14 @@ class xivo_application_service_asterisk_ldapfilter extends xivo_application_aste
 			$this->_set_error('ldapfilter','invalid data');
 			return(false);
 		}
+
+		if(isset($arr['attrdisplayname']) === true
+		&& ($arr['attrdisplayname'] = $this->_mk_unique_attribut($arr['attrdisplayname'])) === false)
+			$arr['attrdisplayname'] = '';
+
+		if(isset($arr['attrphonenumber']) === true
+		&& ($arr['attrphonenumber'] = $this->_mk_unique_attribut($arr['attrphonenumber'])) === false)
+			$arr['attrphonenumber'] = '';
 
 		$arr['commented'] = false;
 

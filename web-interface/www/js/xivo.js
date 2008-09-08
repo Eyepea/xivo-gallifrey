@@ -270,7 +270,7 @@ function xivo_split(str,delimit)
 {
 	str = String(str);
 
-	if(str.match(/\\/) == null || delimit.length != 1)
+	if(str.match(/\\/) === null || delimit.length != 1)
 		return(str.split(delimit));
 
 	var len = str.length;
@@ -485,29 +485,74 @@ function xivo_is_scalar(val)
 
 function xivo_chk_ipv4_strict(value)
 {
-	if(xivo_is_undef(value) == true || xivo_is_string(value) == false)
-		return(false);
-	
-	var regstr = new RegExp('^(?:(?:\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])\\.){3}'+
-				'(?:\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])$');
-	
-	if(value.match(regstr) == null)
+	if(xivo_is_string(value) === false
+	|| (value === xivo_long2ip(xivo_ip2long(value))) === false)
 		return(false);
 
 	return(value);
 }
 
+function xivo_long2ip(value)
+{
+	if(xivo_is_int(value) === false || value > 0xFFFFFFFF)
+		value = 0xFFFFFFFF;
+
+	var r	= ((value >> 24) & 0xFF) + '.'
+		+ ((value >> 16) & 0xFF) + '.'
+		+ ((value >> 8) & 0xFF) + '.'
+		+ ((value & 0xFF));
+
+	return(r);
+}
+
+function xivo_ip2long(value)
+{
+	if(xivo_is_scalar(value) === false)
+		return(false);
+
+	var split = String(value).split('.');
+
+	if((len = split.length) > 4)
+		return(false);
+
+	var rs = 0;
+
+	for(var i = 0;i < len;i++)
+	{
+		if(split[i].match(/^(?:[1-9][0-9]*|0[0-7]*|0x[0-9A-F]*)$/i) === null)
+			return(false);
+
+		var lsn = parseInt(split[i]);
+
+		if(len === 1)
+		{
+			if (lsn <= 0xFFFFFFFF)
+				return(lsn | 0);
+			else
+				return(false);
+		}
+		else if(i < len-1)
+			mul = 1 << 8;
+		else
+			mul = 1 << (8 * (4-i));
+
+		if (lsn >= mul)
+			return(false);
+
+		rs = rs * mul + lsn;
+	}
+
+	return(rs | 0);
+}
+
 function xivo_chk_host(value)
 {
-	if(xivo_is_undef(value) == true
-	|| xivo_is_string(value) == false
+	if(xivo_is_string(value) === false
 	|| value.length < 4
 	|| value.length > 255)
 		return(false);
 	
-	var regstr = new RegExp('^[a-z0-9-]+(?:\\.[a-z0-9-]+)*\\.[a-z]{2,4}$','i');
-
-	if(value.match(regstr) == null)
+	if(value.match(/^[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,4}$/i) === null)
 		return(false);
 
 	return(value);
@@ -515,21 +560,50 @@ function xivo_chk_host(value)
 
 function xivo_chk_ipv4_subnet(value)
 {
-	if(xivo_is_undef(value) == true
-	|| xivo_is_string(value) == false
+	if(xivo_is_string(value) === false
 	|| (pos = value.indexOf('/')) < 7)
 		return(false);
 
 	var mask = xivo_substr(value,pos+1);
 	var ip = xivo_substr(value,0,pos);
 
-	if(xivo_is_uint(mask) === false
-	|| (mask = Number(mask)) === 0
-	|| mask > 32
-	|| xivo_chk_ipv4_strict(ip) == false)
+	if(xivo_chk_ipv4_netmask(mask) === false
+	|| xivo_chk_ipv4_strict(ip) === false)
 		return(false);
-		
+
 	return(true);
+}
+
+function xivo_chk_ipv4_netmask(nm)
+{
+	if(xivo_chk_ipv4_netmask_bit(nm) === false
+	&& xivo_chk_ipv4_netmask_dotdec(nm) === false)
+		return(false);
+
+	return(true);
+}
+
+function xivo_chk_ipv4_netmask_bit(bit)
+{
+	if(xivo_is_uint(bit) === false
+	|| bit > 32)
+		return(false);
+
+	return(true);
+}
+
+function xivo_chk_ipv4_netmask_dotdec(nm)
+{
+	if((nm = xivo_ip2long(nm)) === 0)
+		return(0);
+	else if(nm === -1)
+		return(32);
+	else if(nm === false
+	|| (inv = (nm ^ 0xFFFFFFFF)) === 0
+	|| (inv & (inv + 1)) !== 0)
+		return(false);
+
+	return((32 - parseInt(Math.log(inv + 1,2))));
 }
 
 function xivo_strcmp(str1,str2,len)
