@@ -128,7 +128,6 @@ class Linksys(PhoneVendor):
                                    % (int(key), blf, exten, Pgc['asterisk_ipv4'], exten, int(key)))
         return "\n".join(fk_config_lines)
 
-
     def do_autoprov(self, provinfo):
         """
         Entry point to generate the provisioned configuration for

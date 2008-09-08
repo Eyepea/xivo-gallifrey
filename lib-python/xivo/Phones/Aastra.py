@@ -111,7 +111,7 @@ class Aastra(PhoneVendor):
             fk_config_lines.append("softkey%01d value: %s" % (int(key), exten))
             fk_config_lines.append("softkey%01d line: 1" % int(key))
         return "\n".join(fk_config_lines)
-    
+
     def do_reinit(self):
         """
         Entry point to send the (possibly post) reinit command to

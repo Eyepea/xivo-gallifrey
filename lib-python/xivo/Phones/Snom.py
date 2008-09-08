@@ -83,10 +83,9 @@ class Snom(PhoneVendor):
         sorted_keys.sort()
         fk_config_lines = []
         for key in sorted_keys:
-            exten, supervise = funckey[key]
+            exten, supervise = funckey[key] # pylint: disable-msg=W0612
             fk_config_lines.append("fkey%01d: blf <sip:%s@%s;phone=user>" % (int(key), exten, Pgc['asterisk_ipv4']))
         return "\n".join(fk_config_lines)
-
 
     def do_reinit(self):
         """
