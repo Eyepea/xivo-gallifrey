@@ -47,7 +47,7 @@ CREATE TABLE ldapserver (
  name varchar(64) NOT NULL DEFAULT '',
  host varchar(255) NOT NULL DEFAULT '',
  port smallint unsigned NOT NULL,
- ssl tinyint(1) NOT NULL DEFAULT 0,
+ securitylayer char(3),
  protocolversion char(1) NOT NULL DEFAULT '3',
  disable tinyint(1) NOT NULL DEFAULT 0,
  dcreate integer unsigned NOT NULL DEFAULT 0,
