@@ -10,8 +10,14 @@ Hôte :
 ; fm_port
 Port :
 
-; fm_ssl
-SSL :
+; fm_securitylayer
+Couche d'authentification :
+
+; fm_securitylayer-opt-tls
+TLS
+
+; fm_securitylayer-opt-ssl
+SSL
 
 ; fm_protocolversion
 Version du protocole :

@@ -29,7 +29,7 @@
 		<th class="th-center"><?=$this->bbf('col_name');?></th>
 		<th class="th-center"><?=$this->bbf('col_host');?></th>
 		<th class="th-center"><?=$this->bbf('col_port');?></th>
-		<th class="th-center"><?=$this->bbf('col_ssl');?></th>
+		<th class="th-center"><?=$this->bbf('col_securitylayer');?></th>
 		<th class="th-center col-action"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
@@ -47,18 +47,17 @@
 
 			if(is_array($ref['ldapserver']) === false):
 				$icon = 'unavailable';
-				$host = $port = '-';
-				$ssl = 0;
-			elseif($ref['ldapfilter']['commented'] === true):
-				$icon = 'disable';
-				$host = $ref['ldapserver']['host'];
-				$port = $ref['ldapserver']['port'];
-				$ssl = intval((bool) $ref['ldapserver']['ssl']);
+				$host = $port = $securitylayer = '-';
 			else:
-				$icon = 'enable';
+				if($ref['ldapfilter']['commented'] === true):
+					$icon = 'disable';
+				else:
+					$icon = 'enable';
+				endif;
+
 				$host = $ref['ldapserver']['host'];
 				$port = $ref['ldapserver']['port'];
-				$ssl = intval((bool) $ref['ldapserver']['ssl']);
+				$securitylayer = $this->bbf('securitylayer_'.$ref['ldapserver']['securitylayer']);
 			endif;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
@@ -81,7 +80,7 @@
 		</td>
 		<td><?=$host?></td>
 		<td><?=$port?></td>
-		<td><?=$this->bbf('ssl_'.$ssl);?></td>
+		<td><?=$securitylayer?></td>
 		<td class="td-right" colspan="2">
 <?php
 			echo	$url->href_html($url->img_html('img/site/button/edit.gif',

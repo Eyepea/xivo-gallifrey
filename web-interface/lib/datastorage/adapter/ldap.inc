@@ -63,10 +63,13 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 		if(isset($param['port']) === true)
 			$this->_param['port'] = xivo_uint($param['port']);
 
-		if(isset($param['ssl']) === true)
-			$this->_param['ssl'] = (bool) $param['ssl'];
-		else if(isset($param['tls']) === true)
+		if(isset($param['tls']) === true)
 			$this->_param['tls'] = (bool) $param['tls'];
+
+		if((bool) $this->_param['tls'] === true)
+			$this->_param['ssl'] = false;
+		else if(isset($param['ssl']) === true)
+			$this->_param['ssl'] = (bool) $param['ssl'];
 
 		if(isset($param['protocol']) === true)
 			$this->_param['protocol'] = xivo_uint($param['protocol'],3);
@@ -254,13 +257,20 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 		if($this->_link === false)
 		{
 			$this->halt('Can\'t connect to LDAP server');
+			$this->close();
 			return(false);
 		}
 
 		$this->set_option('protocol',$this->_param['protocol']);
 
-		if((bool) $this->_param['tls'] === true && $this->get_option('protocol') > 2)
-			ldap_start_tls($this->_link);
+		if((bool) $this->_param['tls'] === true
+		&& $this->get_option('protocol') > 2
+		&& @ldap_start_tls($this->_link) === false)
+		{
+			$this->halt('Unable to start TLS: Can\'t contact LDAP server');
+			$this->close();
+			return(false);
+		}
 
 		return($this->_link);
 	}

@@ -7,14 +7,14 @@ Hôte
 ; col_port
 Port
 
-; col_ssl
+; col_securitylayer
+Couche d'authentification
+
+; securitylayer_tls
+TLS
+
+; securitylayer_ssl
 SSL
-
-; ssl_1
-Oui
-
-; ssl_0
-Non
 
 ; no_ldapserver
 Aucun serveur LDAP trouvé

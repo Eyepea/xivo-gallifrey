@@ -49,7 +49,7 @@ CREATE TABLE `ldapserver` (
  `name` varchar(64) NOT NULL DEFAULT '',
  `host` varchar(255) NOT NULL DEFAULT '',
  `port` smallint unsigned NOT NULL,
- `ssl` tinyint(1) NOT NULL DEFAULT 0,
+ `securitylayer` enum('tls','ssl'),
  `protocolversion` enum('2','3') NOT NULL DEFAULT '3',
  `disable` tinyint(1) NOT NULL DEFAULT 0,
  `dcreate` int(10) unsigned NOT NULL DEFAULT 0,

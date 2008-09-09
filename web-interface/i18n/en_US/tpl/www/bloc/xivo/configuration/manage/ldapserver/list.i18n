@@ -7,14 +7,14 @@ Host
 ; col_port
 Port
 
-; col_ssl
+; col_securitylayer
+Security layer
+
+; securitylayer_tls
+TLS
+
+; securitylayer_ssl
 SSL
-
-; ssl_1
-Yes
-
-; ssl_0
-No
 
 ; no_ldapserver
 No LDAP servers found

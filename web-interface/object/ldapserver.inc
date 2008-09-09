@@ -18,7 +18,12 @@ class xivo_ldapserver extends xivo_libdatastorage_abstract
 
 	function _prepare($data)
 	{
-		$data['ssl'] = (bool) $data['ssl'];
+		$data['tls'] = false;
+		$data['ssl'] = false;
+
+		if(isset($data['securitylayer'],$data[$data['securitylayer']]) === true)
+			$data[$data['securitylayer']] = true;
+
 		$data['disable'] = (bool) $data['disable'];
 		$data['identity'] = $data['name'].' ('.$data['host'].')';
 
