@@ -27,7 +27,6 @@ class xivo_service_asterisk_useriax extends xivo_service_asterisk_abstract
 	{
 		$data['initialized'] = false;
 		$data['commented'] = (bool) $data['commented'];
-		$data['callgroup'] = empty($data['callgroup']) === false ? explode(',',$data['callgroup']) : '';
 
 		if(($pos = strrpos($data['mailbox'],'@')) !== false)
 		{

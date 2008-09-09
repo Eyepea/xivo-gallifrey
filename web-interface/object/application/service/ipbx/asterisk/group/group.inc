@@ -379,8 +379,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 			if(($rs = $this->_queuemember->chk_values($info)) === false
 			|| isset($tmp[$uinfo['id']]) === true)
 				continue;
-
-			if($uinfo['protocol'] === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
+			else if($uinfo['protocol'] !== XIVO_SRE_IPBX_AST_PROTO_SIP)
 				$callgroup[$uinfo['id']] = false;
 			else
 			{
@@ -511,7 +510,8 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		{
 			if($val === false
 			|| ($protocol = &$this->_service->get_protocol_module($val['protocol'])) === false
-			|| ($info = $protocol->get($val['protocolid'])) === false)
+			|| ($info = $protocol->get($val['protocolid'])) === false
+			|| array_key_exists('callgroup',$info) === false)
 				continue;
 			else if(is_array($info['callgroup']) === false)
 				$callgroup['callgroup'] = $gfeaturesid;
@@ -756,9 +756,10 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 			if(is_array($rs) === false || isset($rs[$ref['userid']]) === false)
 			{
 				if(($uinfo = $ufeatures->get($ref['userid'])) === false
-				|| $uinfo['protocol'] === XIVO_SRE_IPBX_AST_PROTO_CUSTOM
+				|| $uinfo['protocol'] !== XIVO_SRE_IPBX_AST_PROTO_SIP
 				|| ($protocol = &$this->_service->get_protocol_module($uinfo['protocol'])) === false
 				|| ($pinfo = $protocol->get($uinfo['protocolid'])) === false
+				|| array_key_exists('callgroup',$pinfo) === false
 				|| is_array($pinfo['callgroup']) === false
 				|| ($key = array_search($gfeaturesid,$pinfo['callgroup'])) === false)
 					continue;
@@ -775,7 +776,8 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 				unset($rs[$ref['userid']]);
 
 				if(($protocol = &$this->_service->get_protocol_module($res['protocol'])) === false
-				|| ($pinfo = $protocol->get($res['protocolid'])) === false)
+				|| ($pinfo = $protocol->get($res['protocolid'])) === false
+				|| array_key_exists('callgroup',$pinfo) === false)
 					continue;
 				else if(is_array($pinfo['callgroup']) === false)
 					$callgroup['callgroup'] = $gfeaturesid;
