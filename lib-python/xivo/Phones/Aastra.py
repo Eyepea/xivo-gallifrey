@@ -49,12 +49,14 @@ class Aastra(PhoneVendor):
             raise ValueError, "Unknown Aastra model %r" % self.phone['model']
 
     def __action(self, user, passwd):
+        cnx_to = max_to = max(1, Pgc['curl_to_s'] / 2)
         try: # XXX: also check return values?
 
             ## curl options
             # -s                    -- silent
             # -o /dev/null          -- dump result
-            # --connect-timeout 30  -- timeout after 30s
+            # --connect-timeout 15  -- timeout connection after 15s
+            # --max-time 15         -- timeout after 15s when connected
             # -retry 0              -- don't retry
             # -d DATA               -- post DATA
 
@@ -64,7 +66,8 @@ class Aastra(PhoneVendor):
             for attempts in 1, 2: # pylint: disable-msg=W0612
                 subprocess.call([Pgc['curl_cmd'],
                                  "--retry", "0",
-                                 "--connect-timeout", str(Pgc['curl_to_s']),
+                                 "--connect-timeout", str(cnx_to),
+                                 "--max-time", str(max_to),
                                  "-s",
                                  "-o", "/dev/null",
                                  "-u", "%s:%s" % (user, passwd),
@@ -78,7 +81,8 @@ class Aastra(PhoneVendor):
             # can not handle the Aastra/ subdirectory with the out-of-the-box version
             subprocess.call([Pgc['curl_cmd'],
                              "--retry", "0",
-                             "--connect-timeout", str(Pgc['curl_to_s']),
+                             "--connect-timeout", str(cnx_to),
+                             "--max-time", str(max_to),
                              "-s",
                              "-o", "/dev/null",
                              "-u", "%s:%s" % (user, passwd),
@@ -89,7 +93,8 @@ class Aastra(PhoneVendor):
             # then reset
             subprocess.call([Pgc['curl_cmd'],
                              "--retry", "0",
-                             "--connect-timeout", str(Pgc['curl_to_s']),
+                             "--connect-timeout", str(cnx_to),
+                             "--max-time", str(max_to),
                              "-s",
                              "-o", "/dev/null",
                              "-u", "%s:%s" % (user, passwd),

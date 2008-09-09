@@ -59,12 +59,14 @@ class Swissvoice(PhoneVendor):
             raise ValueError, "Unknown Swissvoice model %r" % self.phone['model']
 
     def __action(self, user, passwd):
+        cnx_to = max_to = max(1, Pgc['curl_to_s'] / 2)
         try: # XXX: also check return values?
 
             ## curl options
             # -s                    -- silent
             # -o /dev/null          -- dump result
             # --connect-timeout 30  -- timeout after 30s
+            # --max-time 15         -- timeout after 15s when connected
             # -retry 0              -- don't retry
             url_rep1 = "Administrator_Settings"
             url_rep2 = "reboot_choice_B.html?WINDWEB_URL=/Administrator_Settings/reboot_choice_B.html"
@@ -72,7 +74,8 @@ class Swissvoice(PhoneVendor):
 
             subprocess.call([Pgc['curl_cmd'],
                              "--retry", "0",
-                             "--connect-timeout", str(Pgc['curl_to_s']),
+                             "--connect-timeout", str(cnx_to),
+                             "--max-time", str(max_to),
                              "-s",
                              "-o", "/dev/null",
                              "-u", "%s:%s" % (user, passwd),

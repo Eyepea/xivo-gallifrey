@@ -29,6 +29,8 @@ import os
 import socket
 import os.path
 
+from xivo import timeoutsocket
+
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendor
 from xivo.xivo_config import ProvGeneralConf as Pgc
