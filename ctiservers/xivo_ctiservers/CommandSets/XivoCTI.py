@@ -262,6 +262,7 @@ class XivoCTICommand(BaseCommand):
         def manage_logoff(self, userinfo, when):
                 log_debug(SYSLOG_INFO, 'logoff (%s) %s'
                           % (when, userinfo))
+                userinfo['lastlogofftimestamp'] = time.time()
                 if 'agentnum' in userinfo:
                         agentnum = userinfo['agentnum']
                         astid = userinfo['astid']
@@ -572,9 +573,9 @@ class XivoCTICommand(BaseCommand):
 
         sheet_allowed_events = ['incomingqueue', 'incomingdid',
                                 'agentcalled', 'agentselected',
-                                'link', 'unlink',
+                                'agi', 'link', 'unlink', 'hangup',
                                 'callmissed', # see GG (in order to tell a user that he missed a call)
-                                'localphonecalled', 'agi', 'outgoing']
+                                'localphonecalled', 'outgoing']
 
 
         def __build_xmlsheet__(self, sheetkind, actionopt, inputvars):
@@ -624,7 +625,6 @@ class XivoCTICommand(BaseCommand):
                                        '<user>']
                         # XXX : sessid => uniqueid, in order to update (did => queue => ... hangup ...)
                         linestosend.append('<internal name="datetime"><![CDATA[%s]]></internal>' % time.asctime())
-                        linestosend.append('<internal name="kind"><![CDATA[%s]]></internal>' % where)
                         itemdir = {'xivo-where' : where,
                                    'xivo-astid' : astid,
                                    'xivo-context' : context,
@@ -672,7 +672,6 @@ class XivoCTICommand(BaseCommand):
                                 linestosend.append('<internal name="called"><![CDATA[%s]]></internal>' % r_called)
 
                         elif where == 'link':
-                                print where, event
                                 itemdir['xivo-channel'] = event.get('Channel1')
                                 itemdir['xivo-channelpeer'] = event.get('Channel2')
                                 itemdir['xivo-uniqueid'] = event.get('Uniqueid1')
@@ -683,7 +682,6 @@ class XivoCTICommand(BaseCommand):
                                                 userinfos.append(uinfo)
 
                         elif where == 'unlink':
-                                print where, event
                                 itemdir['xivo-channel'] = event.get('Channel1')
                                 itemdir['xivo-channelpeer'] = event.get('Channel2')
                                 itemdir['xivo-uniqueid'] = event.get('Uniqueid1')
@@ -693,14 +691,20 @@ class XivoCTICommand(BaseCommand):
                                         if uinfo.get('astid') == astid and uinfo.get('phonenum') == itemdir['xivo-calledid']:
                                                 userinfos.append(uinfo)
 
+                        elif where == 'hangup':
+                                print where, event
+                                itemdir['xivo-channel'] = event.get('Channel')
+                                itemdir['xivo-uniqueid'] = event.get('Uniqueid')
+                                # find which userinfo's to contact ...
+
                         elif where == 'incomingdid':
                                 chan = event.get('CHANNEL', '')
                                 uid = event.get('UNIQUEID', '')
                                 clid = event.get('XIVO_SRCNUM')
                                 did  = event.get('XIVO_EXTENPATTERN')
                                 
-                                print 'ALERT %s %s (%s) uid=%s %s %s did=%s' % (astid, where, time.asctime(), uid, clid, chan,
-                                                                                did)
+                                print 'ALERT %s %s (%s) uid=%s %s %s did=%s' % (astid, where, time.asctime(),
+                                                                                uid, clid, chan, did)
                                 self.chans_incomingdid.append(chan)
 
                                 itemdir['xivo-channel'] = chan
@@ -760,6 +764,7 @@ class XivoCTICommand(BaseCommand):
                         linestosend.extend(self.__build_xmlsheet__('action_info', actionopt, itemdir))
                         linestosend.extend(self.__build_xmlsheet__('sheet_info', actionopt, itemdir))
                         linestosend.extend(self.__build_xmlsheet__('systray_info', actionopt, itemdir))
+                        linestosend.append('<internal name="kind"><![CDATA[%s]]></internal>' % where)
                         linestosend.append('</user></profile>')
                         fulllines = ''.join(linestosend)
 
@@ -885,6 +890,7 @@ class XivoCTICommand(BaseCommand):
                 chan  = event.get('Channel')
                 uid = event.get('Uniqueid')
                 cause = event.get('Cause-txt')
+                self.__sheet_alert__('hangup', astid, DEFAULTCONTEXT, event)
                 self.plist[astid].handle_ami_event_hangup(chan, cause)
                 if chan in self.chans_incomingqueue or chan in self.chans_incomingdid:
                         print 'HANGUP : (%s) %s uid=%s %s' % (time.asctime(), astid, uid, chan)
@@ -893,7 +899,6 @@ class XivoCTICommand(BaseCommand):
                         if chan in self.chans_incomingdid:
                                 self.chans_incomingdid.remove(chan)
                 return
-
 
         def amiresponse_success(self, astid, event):
                 msg = event.get('Message')
