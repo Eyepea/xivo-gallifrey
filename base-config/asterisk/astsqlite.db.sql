@@ -1163,7 +1163,7 @@ CREATE TABLE useriax (
  context varchar(39),
  language varchar(20),
  accountcode varchar(20),
- amaflags varchar(13) DEFAULT 'documentation',
+ amaflags varchar(13) DEFAULT 'default',
  mailbox varchar(80),
  callerid varchar(160),
  fullname varchar(80),
@@ -1229,7 +1229,7 @@ CREATE TABLE usersip (
  context varchar(39),
  language varchar(20),
  accountcode varchar(20),
- amaflags varchar(13) NOT NULL DEFAULT 'documentation',
+ amaflags varchar(13) NOT NULL DEFAULT 'default',
  allowtransfer tinyint(1),
  fromuser varchar(80),
  fromdomain varchar(255),
@@ -1300,7 +1300,7 @@ CREATE INDEX usersip__idx__ipaddr_port ON usersip(ipaddr,port);
 CREATE UNIQUE INDEX usersip__uidx__name ON usersip(name);
 
 INSERT INTO usersip VALUES (1,'guest','friend','guest','guest','','xivo-initconfig',NULL,
-			    NULL,'documentation',NULL,NULL,NULL,NULL,0,NULL,0,'Guest',
+			    NULL,'default',NULL,NULL,NULL,NULL,0,NULL,0,'Guest',
 			    NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
 			    NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
 			    NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'XIVO_USERID=1',
