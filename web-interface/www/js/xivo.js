@@ -336,51 +336,43 @@ function xivo_chg_property_attrib(elem,obj,type)
 
 function xivo_chg_attrib(name,id,type,link)
 {
-	link = link == 1 || link == true ? true : false;
-	type = type == 'undefined' ? 0 : type;
+	link = Boolean(link);
+	type = xivo_is_undef(type) === true ? 0 : type;
 
-	var i = 0;
-
-	if(xivo_is_undef(xivo_conf['attrib'][name]) == true || xivo_is_undef(xivo_conf['attrib'][name][id]) == true)
+	if(xivo_is_undef(xivo_conf['attrib'][name]) === true
+	|| xivo_is_undef(xivo_conf['attrib'][name][id]) === true)
 		return(false);
 
 	var ref_elem = xivo_conf['attrib'][name][id];
 
-	if((get = xivo_eid(id)))
+	if((get = xivo_eid(id)) !== false)
 	{
-		if(xivo_is_undef(ref_elem['switch']) == false && xivo_is_array(ref_elem['switch']) == true
-		&& xivo_is_undef(ref_elem['switch'][type]) == false && xivo_is_undef(ref_elem['switch_var']) == false)
-		{
-			if(ref_elem['switch_var'] == ref_elem['switch'][type])
-				type = ref_elem['switch_var'];
-
-			ref_elem['switch_var'] = ref_elem['switch'][type];
-		}
-		
-		if(xivo_is_undef(ref_elem['img']) == false && xivo_is_undef(ref_elem['img'][type]) == false)
-			get.src = ref_elem['img'][type];
-
-		if(xivo_is_undef(ref_elem['property']) == false)
+		if(xivo_is_undef(ref_elem['property']) === false)
 			xivo_chg_property_attrib(get,ref_elem['property'],type);
 
-		if(xivo_is_undef(ref_elem['style']) == false)
+		if(xivo_is_undef(ref_elem['style']) === false)
 			xivo_chg_style_attrib(get,ref_elem['style'],type);
 	}
 
-	if(xivo_is_undef(ref_elem['link']) == false)
+	if(xivo_is_undef(ref_elem['link']) === false)
 	{
-		if(xivo_is_array(ref_elem['link']) == true && link == true)
+		if(xivo_type_object(ref_elem['link']) === false || link === false)
+			xivo_chg_attrib(name,ref_elem['link'],type,2);
+		else
 		{
-			var len = ref_elem['link'].length;
-
-			for(var i = 0;i < len; i++)
+			for(property in ref_elem['link'])
 			{
-				nlink = xivo_is_undef(ref_elem['link'][i][2]) == false ? ref_elem['link'][i][2] : 2;
-				xivo_chg_attrib(name,ref_elem['link'][i][0],ref_elem['link'][i][1],nlink);
+				if(xivo_is_undef(ref_elem['link'][property][2]) === false)
+					nlink = ref_elem['link'][property][2];
+				else
+					nlink = 2;
+
+				xivo_chg_attrib(name,
+						ref_elem['link'][property][0],
+						ref_elem['link'][property][1],
+						nlink);
 			}
 		}
-		else
-			xivo_chg_attrib(name,ref_elem['link'],type,2);
 	}
 }
 
@@ -426,9 +418,14 @@ function xivo_is_array(a)
 	return((a instanceof Array));
 }
 
+function xivo_type_object(o)
+{
+	return((o !== null && typeof(o) === 'object'));
+}
+
 function xivo_is_object(o)
 {
-	return((typeof(o) === 'object' && xivo_is_array(o) === false));
+	return((xivo_type_object(o) === true && xivo_is_array(o) === false));
 }
 
 function xivo_is_undef(v)

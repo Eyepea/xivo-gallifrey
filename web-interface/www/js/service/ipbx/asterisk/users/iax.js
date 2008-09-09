@@ -1,38 +1,13 @@
-xivo_elt_protocol['iax'] = new Array();
-
-xivo_elt_protocol['iax']['iax-protocol-qualify'] = new Array();
-xivo_elt_protocol['iax']['iax-protocol-qualify']['it'] = true;
-xivo_elt_protocol['iax']['iax-protocol-qualify']['fd'] = true;
-xivo_elt_protocol['iax']['protocol-qualifysmoothing'] = new Array();
-xivo_elt_protocol['iax']['protocol-qualifysmoothing']['it'] = true;
-xivo_elt_protocol['iax']['protocol-qualifysmoothing']['fd'] = true;
-xivo_elt_protocol['iax']['protocol-qualifyfreqok'] = new Array();
-xivo_elt_protocol['iax']['protocol-qualifyfreqok']['it'] = true;
-xivo_elt_protocol['iax']['protocol-qualifyfreqok']['fd'] = true;
-xivo_elt_protocol['iax']['protocol-qualifyfreqnotok'] = new Array();
-xivo_elt_protocol['iax']['protocol-qualifyfreqnotok']['it'] = true;
-xivo_elt_protocol['iax']['protocol-qualifyfreqnotok']['fd'] = true;
-xivo_elt_protocol['iax']['protocol-jitterbuffer'] = new Array();
-xivo_elt_protocol['iax']['protocol-jitterbuffer']['it'] = true;
-xivo_elt_protocol['iax']['protocol-jitterbuffer']['fd'] = true;
-xivo_elt_protocol['iax']['protocol-forcejitterbuffer'] = new Array();
-xivo_elt_protocol['iax']['protocol-forcejitterbuffer']['it'] = true;
-xivo_elt_protocol['iax']['protocol-forcejitterbuffer']['fd'] = true;
-xivo_elt_protocol['iax']['protocol-codecpriority'] = new Array();
-xivo_elt_protocol['iax']['protocol-codecpriority']['it'] = true;
-xivo_elt_protocol['iax']['protocol-codecpriority']['fd'] = true;
-xivo_elt_protocol['iax']['protocol-sendani'] = new Array();
-xivo_elt_protocol['iax']['protocol-sendani']['it'] = true;
-xivo_elt_protocol['iax']['protocol-sendani']['fd'] = true;
-xivo_elt_protocol['iax']['protocol-mask'] = new Array();
-xivo_elt_protocol['iax']['protocol-mask']['it'] = true;
-xivo_elt_protocol['iax']['protocol-mask']['fd'] = true;
-xivo_elt_protocol['iax']['protocol-maxauthreq'] = new Array();
-xivo_elt_protocol['iax']['protocol-maxauthreq']['it'] = true;
-xivo_elt_protocol['iax']['protocol-maxauthreq']['fd'] = true;
-xivo_elt_protocol['iax']['protocol-adsi'] = new Array();
-xivo_elt_protocol['iax']['protocol-adsi']['it'] = true;
-xivo_elt_protocol['iax']['protocol-adsi']['fd'] = true;
-xivo_elt_protocol['iax']['iax-protocol-amaflags'] = new Array();
-xivo_elt_protocol['iax']['iax-protocol-amaflags']['it'] = true;
-xivo_elt_protocol['iax']['iax-protocol-amaflags']['fd'] = true;
+xivo_elt_protocol['iax'] = {
+	'iax-protocol-qualify': {it: true, fd: true},
+	'protocol-qualifysmoothing': {it: true, fd: true},
+	'protocol-qualifyfreqok': {it: true, fd: true},
+	'protocol-qualifyfreqnotok': {it: true, fd: true},
+	'protocol-jitterbuffer': {it: true, fd: true},
+	'protocol-forcejitterbuffer': {it: true, fd: true},
+	'protocol-codecpriority': {it: true, fd: true},
+	'protocol-sendani': {it: true, fd: true},
+	'protocol-mask': {it: true, fd: true},
+	'protocol-maxauthreq': {it: true, fd: true},
+	'protocol-adsi': {it: true, fd: true},
+	'iax-protocol-amaflags': {it: true, fd: true}};

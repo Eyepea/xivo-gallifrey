@@ -1,92 +1,37 @@
-xivo_elt_protocol['sip'] = new Array();
+xivo_elt_protocol['sip'] = {
+	'protocol-nat': {it: true, fd: true},
+	'protocol-progressinband': {it: true, fd: true},
+	'protocol-dtmfmode': {it: true, fd: true},
+	'protocol-rfc2833compensate': {it: true, fd: true},
+	'sip-protocol-qualify': {it: true, fd: true},
+	'protocol-rtptimeout': {it: true, fd: true},
+	'protocol-rtpholdtimeout': {it: true, fd: true},
+	'protocol-rtpkeepalive': {it: true, fd: true},
+	'protocol-allowtransfer': {it: true, fd: true},
+	'protocol-autoframing': {it: true, fd: true},
+	'protocol-videosupport': {it: true, fd: true},
+	'protocol-maxcallbitrate': {it: true, fd: true},
+	'protocol-g726nonstandard': {it: true, fd: true},
+	'protocol-t38pt-udptl': {it: true},
+	'protocol-t38pt-rtp': {it: true},
+	'protocol-t38pt-tcp': {it: true},
+	'protocol-t38pt-usertpsource': {it: true},
+	'protocol-insecure': {it: true, fd: true},
+	'protocol-trustrpid': {it: true, fd: true},
+	'protocol-sendrpid': {it: true, fd: true},
+	'protocol-allowsubscribe': {it: true, fd: true},
+	'protocol-allowoverlap': {it: true, fd: true},
+	'protocol-promiscredir': {it: true, fd: true},
+	'protocol-usereqphone': {it: true, fd: true},
+	'protocol-canreinvite': {it: true, fd: true},
+	'protocol-fromuser': {it: true, fd: true},
+	'protocol-fromdomain': {it: true, fd: true},
+	'sip-protocol-amaflags': {it: true, fd: true},
+	'protocol-useclientcode': {it: true, fd: true},
 
-xivo_elt_protocol['sip']['protocol-nat'] = new Array();
-xivo_elt_protocol['sip']['protocol-nat']['it'] = true;
-xivo_elt_protocol['sip']['protocol-nat']['fd'] = true;
-xivo_elt_protocol['sip']['protocol-progressinband'] = new Array();
-xivo_elt_protocol['sip']['protocol-progressinband']['it'] = true;
-xivo_elt_protocol['sip']['protocol-progressinband']['fd'] = true;
-xivo_elt_protocol['sip']['protocol-dtmfmode'] = new Array();
-xivo_elt_protocol['sip']['protocol-dtmfmode']['it'] = true;
-xivo_elt_protocol['sip']['protocol-dtmfmode']['fd'] = true;
-xivo_elt_protocol['sip']['protocol-rfc2833compensate'] = new Array();
-xivo_elt_protocol['sip']['protocol-rfc2833compensate']['it'] = true;
-xivo_elt_protocol['sip']['protocol-rfc2833compensate']['fd'] = true;
-xivo_elt_protocol['sip']['sip-protocol-qualify'] = new Array();
-xivo_elt_protocol['sip']['sip-protocol-qualify']['it'] = true;
-xivo_elt_protocol['sip']['sip-protocol-qualify']['fd'] = true;
-xivo_elt_protocol['sip']['protocol-rtptimeout'] = new Array();
-xivo_elt_protocol['sip']['protocol-rtptimeout']['it'] = true;
-xivo_elt_protocol['sip']['protocol-rtptimeout']['fd'] = true;
-xivo_elt_protocol['sip']['protocol-rtpholdtimeout'] = new Array();
-xivo_elt_protocol['sip']['protocol-rtpholdtimeout']['it'] = true;
-xivo_elt_protocol['sip']['protocol-rtpholdtimeout']['fd'] = true;
-xivo_elt_protocol['sip']['protocol-rtpkeepalive'] = new Array();
-xivo_elt_protocol['sip']['protocol-rtpkeepalive']['it'] = true;
-xivo_elt_protocol['sip']['protocol-rtpkeepalive']['fd'] = true;
-xivo_elt_protocol['sip']['protocol-allowtransfer'] = new Array();
-xivo_elt_protocol['sip']['protocol-allowtransfer']['it'] = true;
-xivo_elt_protocol['sip']['protocol-allowtransfer']['fd'] = true;
-xivo_elt_protocol['sip']['protocol-autoframing'] = new Array();
-xivo_elt_protocol['sip']['protocol-autoframing']['it'] = true;
-xivo_elt_protocol['sip']['protocol-autoframing']['fd'] = true;
-xivo_elt_protocol['sip']['protocol-videosupport'] = new Array();
-xivo_elt_protocol['sip']['protocol-videosupport']['it'] = true;
-xivo_elt_protocol['sip']['protocol-videosupport']['fd'] = true;
-xivo_elt_protocol['sip']['protocol-maxcallbitrate'] = new Array();
-xivo_elt_protocol['sip']['protocol-maxcallbitrate']['it'] = true;
-xivo_elt_protocol['sip']['protocol-maxcallbitrate']['fd'] = true;
-xivo_elt_protocol['sip']['protocol-g726nonstandard'] = new Array();
-xivo_elt_protocol['sip']['protocol-g726nonstandard']['it'] = true;
-xivo_elt_protocol['sip']['protocol-g726nonstandard']['fd'] = true;
-xivo_elt_protocol['sip']['protocol-t38pt-udptl'] = new Array();
-xivo_elt_protocol['sip']['protocol-t38pt-udptl']['it'] = true;
-xivo_elt_protocol['sip']['protocol-t38pt-rtp'] = new Array();
-xivo_elt_protocol['sip']['protocol-t38pt-rtp']['it'] = true;
-xivo_elt_protocol['sip']['protocol-t38pt-tcp'] = new Array();
-xivo_elt_protocol['sip']['protocol-t38pt-tcp']['it'] = true;
-xivo_elt_protocol['sip']['protocol-t38pt-usertpsource'] = new Array();
-xivo_elt_protocol['sip']['protocol-t38pt-usertpsource']['it'] = true;
-xivo_elt_protocol['sip']['protocol-insecure'] = new Array();
-xivo_elt_protocol['sip']['protocol-insecure']['it'] = true;
-xivo_elt_protocol['sip']['protocol-insecure']['fd'] = true;
-xivo_elt_protocol['sip']['protocol-trustrpid'] = new Array();
-xivo_elt_protocol['sip']['protocol-trustrpid']['it'] = true;
-xivo_elt_protocol['sip']['protocol-trustrpid']['fd'] = true;
-xivo_elt_protocol['sip']['protocol-sendrpid'] = new Array();
-xivo_elt_protocol['sip']['protocol-sendrpid']['it'] = true;
-xivo_elt_protocol['sip']['protocol-sendrpid']['fd'] = true;
-xivo_elt_protocol['sip']['protocol-allowsubscribe'] = new Array();
-xivo_elt_protocol['sip']['protocol-allowsubscribe']['it'] = true;
-xivo_elt_protocol['sip']['protocol-allowsubscribe']['fd'] = true;
-xivo_elt_protocol['sip']['protocol-allowoverlap'] = new Array();
-xivo_elt_protocol['sip']['protocol-allowoverlap']['it'] = true;
-xivo_elt_protocol['sip']['protocol-allowoverlap']['fd'] = true;
-xivo_elt_protocol['sip']['protocol-promiscredir'] = new Array();
-xivo_elt_protocol['sip']['protocol-promiscredir']['it'] = true;
-xivo_elt_protocol['sip']['protocol-promiscredir']['fd'] = true;
-xivo_elt_protocol['sip']['protocol-usereqphone'] = new Array();
-xivo_elt_protocol['sip']['protocol-usereqphone']['it'] = true;
-xivo_elt_protocol['sip']['protocol-usereqphone']['fd'] = true;
-xivo_elt_protocol['sip']['protocol-canreinvite'] = new Array();
-xivo_elt_protocol['sip']['protocol-canreinvite']['it'] = true;
-xivo_elt_protocol['sip']['protocol-canreinvite']['fd'] = true;
-xivo_elt_protocol['sip']['protocol-fromuser'] = new Array();
-xivo_elt_protocol['sip']['protocol-fromuser']['it'] = true;
-xivo_elt_protocol['sip']['protocol-fromuser']['fd'] = true;
-xivo_elt_protocol['sip']['protocol-fromdomain'] = new Array();
-xivo_elt_protocol['sip']['protocol-fromdomain']['it'] = true;
-xivo_elt_protocol['sip']['protocol-fromdomain']['fd'] = true;
-xivo_elt_protocol['sip']['sip-protocol-amaflags'] = new Array();
-xivo_elt_protocol['sip']['sip-protocol-amaflags']['it'] = true;
-xivo_elt_protocol['sip']['sip-protocol-amaflags']['fd'] = true;
-xivo_elt_protocol['sip']['protocol-useclientcode'] = new Array();
-xivo_elt_protocol['sip']['protocol-useclientcode']['it'] = true;
-xivo_elt_protocol['sip']['protocol-useclientcode']['fd'] = true;
+	'protocol-subscribemwi': {fd: true},
+	'protocol-buggymwi': {fd: true},
 
-xivo_elt_protocol['sip']['autoprov-modact'] = new Array();
-xivo_elt_protocol['sip']['autoprov-modact']['it'] = true;
-xivo_elt_protocol['sip']['autoprov-vendormodel'] = new Array();
-xivo_elt_protocol['sip']['autoprov-vendormodel']['it'] = true;
-xivo_elt_protocol['sip']['autoprov-macaddr'] = new Array();
-xivo_elt_protocol['sip']['autoprov-macaddr']['it'] = true;
+	'autoprov-modact': {it: true},
+	'autoprov-vendormodel': {it: true},
+	'autoprov-macaddr': {it: true}};
