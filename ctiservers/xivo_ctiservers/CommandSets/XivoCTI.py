@@ -262,7 +262,7 @@ class XivoCTICommand(BaseCommand):
         def manage_logoff(self, userinfo, when):
                 log_debug(SYSLOG_INFO, 'logoff (%s) %s'
                           % (when, userinfo))
-                userinfo['lastlogofftimestamp'] = time.time()
+                userinfo['last-logofftime'] = time.asctime()
                 if 'agentnum' in userinfo:
                         agentnum = userinfo['agentnum']
                         astid = userinfo['astid']
@@ -346,6 +346,7 @@ class XivoCTICommand(BaseCommand):
                                 capaid = userinfo.get('capaid')
                                 self.capas[capaid].conn_dec()
                                 del userinfo['capaid']
+                                userinfo['last-version'] = userinfo['login']['version']
                                 del userinfo['login']
                                 userinfo['state'] = 'unknown'
                                 self.__update_availstate__(userinfo, userinfo.get('state'))

@@ -65,6 +65,9 @@ class Capabilities:
                          'conference' : ['conference'],
                          'operator' : ['dial'],
                          
+                         'mylocaldir' : [],
+                         'callcampaign' : [],
+                         'xletproto' : [],
                          'tabber' : [],
                          'video' : []}
 
