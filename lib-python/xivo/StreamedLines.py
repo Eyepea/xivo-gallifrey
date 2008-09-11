@@ -107,29 +107,18 @@ def rxStreamedLines(fobjs=None, timeout=None, ctx=None):
 	"""
 	rxStreamedLines() is a generator function that iterates over lines
 	received on multiple Python unbuffered non-blocking selectable file
-	objects.  A Python selectable file object has a .fileno() method that
-	returns a file descriptor integer suitable for a call to the underlying
-	select() POSIX function, through the standard Python select module.
-	For proper operation, file objects passed to this generator function
-	must also be unbuffured (Python property defined during a call to
-	open() or os.fdopen() for example, and eventually passed to an
-	underlying stdio FILE* via a setbuffer(3) call) and non-blocking -- a
-	file object / FD is typically blocking by default, and can be set
-	non-blocking by:
+	objects - suitable to be used through the standard Python select
+	module.
 	
-	import fcntl, os
-	fl = fcntl.fcntl(fobj, fcntl.F_GETFL)
-	fcntl.fcntl(fobj, fcntl.F_SETFL, fl | os.O_NONBLOCK)
+	A file object can be made non-blocking using the makeNonBlocking()
+	function of this module.
 	
-	(the function makeNonBlocking(fobj) in this module does just that)
+	NOTE: under Unix, Python file objects wrapping pipes, sockets, ttys,
+	and some char devices are acceptable if open as unbuffured then
+	configured as non-blocking, while under Windows only sockets are
+	allowed.  See the manual of the Python select module for more details.
 	
-	NOTICE: under Unix, Python file objects wrapping pipes, sockets, ttys,
-	and some char devices are acceptable once properly configured as
-	unbuffured non-blocking, while under Windows only sockets are allowed.
-	See the manual of the Python select module for more details.
-	
-	Focusing on parameters, there are two ways to call this generator
-	function:
+	There are two ways to call this generator function:
 	
 	* for lines in rxStreamedLines(fobjs, timeout):
 	    print lines
