@@ -27,7 +27,6 @@ __license__ = """
 
 import os
 import socket
-import os.path
 
 from xivo import timeoutsocket
 

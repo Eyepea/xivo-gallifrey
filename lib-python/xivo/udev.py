@@ -28,7 +28,6 @@ __license__ = """
 import os
 import re
 import time
-import os.path
 import subprocess
 from copy import deepcopy
 from itertools import count

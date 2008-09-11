@@ -29,7 +29,6 @@ import re
 import sys
 import copy
 import yaml
-import os.path
 from ConfigParser import ConfigParser
 from itertools import chain, count
 

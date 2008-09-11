@@ -28,7 +28,6 @@ __license__ = """
 import os
 import time
 import syslog
-import os.path
 import telnetlib
 
 from xivo import xivo_config

@@ -29,7 +29,6 @@ import os
 import re
 import sys
 import errno
-import os.path
 
 from xivo import except_tb
 

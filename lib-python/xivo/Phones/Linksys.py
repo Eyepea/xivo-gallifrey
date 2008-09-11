@@ -26,7 +26,6 @@ __license__ = """
 """
 
 import os
-import os.path
 import subprocess
 
 from xivo import xivo_config

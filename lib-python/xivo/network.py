@@ -26,7 +26,6 @@ __license__ = """
 
 import re
 import os
-import os.path
 import subprocess
 
 from xivo.UpAllAny import all

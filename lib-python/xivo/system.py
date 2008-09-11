@@ -26,7 +26,6 @@ __license__ = """
 
 import os
 import shutil
-import os.path
 import subprocess
 
 from xivo import trace_null
