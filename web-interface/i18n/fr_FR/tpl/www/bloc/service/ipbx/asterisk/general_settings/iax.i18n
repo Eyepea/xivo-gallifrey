@@ -185,7 +185,7 @@ Musique d'attente :
 Musique d'attente sur un appel sortant :
 
 ; fm_encryption
-Chiffrage :
+Chiffrement :
 
 ; fm_encryption-opt-no
 Non
@@ -215,7 +215,7 @@ Appelant
 Désactivée
 
 ; fm_codecpriority-opt-reqonly
-Requête seulement
+Seulement par requête
 
 ; fm_codecpriority-opt-host
 Hôte
@@ -323,7 +323,7 @@ Oui
 Non
 
 ; fm_transfer-opt-mediaonly
-MediaOnly
+Uniquement la voix
 
 ; fm_autokill
 Auto destruction :

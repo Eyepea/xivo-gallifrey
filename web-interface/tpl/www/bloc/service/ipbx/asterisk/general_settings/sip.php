@@ -290,6 +290,7 @@ endif;
 				    'name'	=> 'tos_sip',
 				    'labelid'	=> 'tos-sip',
 				    'key'	=> false,
+				    'empty'	=> true,
 				    'value'	=> $this->get_varra('info',array('tos_sip','var_val')),
 				    'default'	=> $element['tos_sip']['default']),
 			      $element['tos_sip']['value']),
@@ -298,6 +299,7 @@ endif;
 				    'name'	=> 'tos_audio',
 				    'labelid'	=> 'tos-audio',
 				    'key'	=> false,
+				    'empty'	=> true,
 				    'value'	=> $this->get_varra('info',array('tos_audio','var_val')),
 				    'default'	=> $element['tos_audio']['default']),
 			      $element['tos_audio']['value']),
@@ -306,6 +308,7 @@ endif;
 				    'name'	=> 'tos_video',
 				    'labelid'	=> 'tos-video',
 				    'key'	=> false,
+				    'empty'	=> true,
 				    'value'	=> $this->get_varra('info',array('tos_video','var_val')),
 				    'default'	=> $element['tos_video']['default']),
 			      $element['tos_video']['value']);

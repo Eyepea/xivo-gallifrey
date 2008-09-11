@@ -169,7 +169,7 @@ function xivo_chg_style_attrib(elem,obj,type)
 		else
 			var styletype = 3;
 
-		for(property in obj)
+		for(var property in obj)
 		{
 			style = obj[property];
 
@@ -323,7 +323,7 @@ function xivo_chg_property_attrib(elem,obj,type)
 	else if(xivo_is_object(obj) === false)
 		return(false);
 
-	for(property in obj)
+	for(var property in obj)
 	{
 		if(property === 'style')
 			xivo_chg_style_attrib(elem,obj,type);
@@ -360,7 +360,7 @@ function xivo_chg_attrib(name,id,type,link)
 			xivo_chg_attrib(name,ref_elem['link'],type,2);
 		else
 		{
-			for(property in ref_elem['link'])
+			for(var property in ref_elem['link'])
 			{
 				if(xivo_is_undef(ref_elem['link'][property][2]) === false)
 					nlink = ref_elem['link'][property][2];
@@ -689,7 +689,7 @@ function xivo_clone(obj)
 	else
 		return(obj);
 
-	for (var property in obj) r[property] = xivo_clone(obj[property]);
+	for(var property in obj) r[property] = xivo_clone(obj[property]);
 
 	return(r);
 }

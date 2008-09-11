@@ -252,9 +252,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 		if($this->_debug !== 0)
 			$this->set_option('debug',$this->_debug);
 
-		$this->_link = ldap_connect($host);
-
-		if($this->_link === false)
+		if(($this->_link = @ldap_connect($host)) === false)
 		{
 			$this->halt('Can\'t connect to LDAP server');
 			$this->close();

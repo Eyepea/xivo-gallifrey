@@ -185,10 +185,10 @@ $dhtml = &$_HTML->get_module('dhtml');
 $dhtml->set_js('js/xivo_ajs.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/phonefunckey.js');
+$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users/sip.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users/iax.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users/custom.js');
-$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
 ?>

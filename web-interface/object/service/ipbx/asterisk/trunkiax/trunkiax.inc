@@ -28,11 +28,7 @@ class xivo_service_asterisk_trunkiax extends xivo_service_asterisk_abstract
 	function _prepare($data)
 	{
 		$this->_identity->_prepare_identity($data);
-
 		$data['commented'] = (bool) $data['commented'];
-
-		if(empty($data['call-limit']) === true)
-			$data['call-limit'] = '';
 
 		return($data);
 	}
@@ -42,6 +38,16 @@ class xivo_service_asterisk_trunkiax extends xivo_service_asterisk_abstract
 		if(is_array($arr) === false)
 			return(false);
 
+		$arr['dbsecret'] = '';
+		$arr['mailbox'] = null;
+		$arr['fullname'] = null;
+		$arr['cid_number'] = null;
+		$arr['mohinterpret'] = null;
+		$arr['mohsuggest'] = null;
+		$arr['defaultip'] = null;
+		$arr['sourceaddress'] = null;
+		$arr['regexten'] = null;
+		$arr['peercontext'] = null;
 		$arr['ipaddr'] = '';
 		$arr['regseconds'] = 0;
 		$arr['protocol'] = XIVO_SRE_IPBX_AST_PROTO_IAX;
@@ -58,11 +64,25 @@ class xivo_service_asterisk_trunkiax extends xivo_service_asterisk_abstract
 		if(is_array($arr) === false)
 			return(false);
 
-		$arr['protocol'] = XIVO_SRE_IPBX_AST_PROTO_IAX;
-		$arr['category'] = 'trunk';
-
 		if(isset($arr['name']) === true)
 			$arr['name'] = strtolower($arr['name']);
+
+		unset($arr['mailbox'],
+		      $arr['fullname'],
+		      $arr['cid_number'],
+		      $arr['mohinterpret'],
+		      $arr['mohsuggest'],
+		      $arr['defaultip'],
+		      $arr['sourceaddress'],
+		      $arr['regexten'],
+		      $arr['peercontext'],
+		      $arr['ipaddr'],
+		      $arr['regseconds']);
+
+		$arr['dbsecret'] = '';
+		$arr['setvar'] = '';
+		$arr['protocol'] = XIVO_SRE_IPBX_AST_PROTO_IAX;
+		$arr['category'] = 'trunk';
 
 		return(parent::edit($id,$arr,$disable));
 	}

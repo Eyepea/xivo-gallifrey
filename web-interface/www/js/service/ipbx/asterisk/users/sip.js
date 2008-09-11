@@ -1,4 +1,4 @@
-xivo_elt_protocol['sip'] = {
+xivo_ast_user_protocol_elt['sip'] = {
 	'protocol-nat': {it: true, fd: true},
 	'protocol-progressinband': {it: true, fd: true},
 	'protocol-dtmfmode': {it: true, fd: true},

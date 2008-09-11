@@ -4,6 +4,7 @@ require_once(XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'config.inc');
 
 define('XIVO_PATH_LIBCONF',XIVO_PATH_LIB.DIRECTORY_SEPARATOR.'libconf');
 
+require_once(XIVO_PATH_LIBCONF.DIRECTORY_SEPARATOR.'define.inc');
 require_once(XIVO_PATH_LIB.DIRECTORY_SEPARATOR.'func.inc');
 require_once(XIVO_PATH_LIB.DIRECTORY_SEPARATOR.'file.inc');
 require_once(XIVO_PATH_LIB.DIRECTORY_SEPARATOR.'gateclass.inc');

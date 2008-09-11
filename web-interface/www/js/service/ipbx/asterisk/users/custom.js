@@ -1,4 +1,4 @@
-xivo_elt_protocol['custom'] = {
+xivo_ast_user_protocol_elt['custom'] = {
 	'protocol-name': {it: false},
 	'protocol-secret': {it: false},
 	'protocol-interface': {it: true, fd: true},

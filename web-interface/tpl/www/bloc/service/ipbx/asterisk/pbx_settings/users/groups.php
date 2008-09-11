@@ -1,15 +1,17 @@
 <?php
-	$form = &$this->get_module('form');
-	$url = &$this->get_module('url');
 
-	$info = $this->get_var('info');
-	$element = $this->get_var('element');
+$form = &$this->get_module('form');
+$url = &$this->get_module('url');
 
-	$groups = $this->get_var('groups');
-	$gmember = $this->get_var('gmember');
+$info = $this->get_var('info');
+$element = $this->get_var('element');
 
-	$queues = $this->get_var('queues');
-	$qmember = $this->get_var('qmember');
+$groups = $this->get_var('groups');
+$gmember = $this->get_var('gmember');
+
+$queues = $this->get_var('queues');
+$qmember = $this->get_var('qmember');
+
 ?>
 
 <fieldset id="fld-group">
@@ -25,9 +27,9 @@
 		</div>
 		<div class="inout-list">
 
-		<a href="#" onclick="xivo_ingroup(); return(xivo_free_focus());" title="<?=$this->bbf('bt_ingroup');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_ingroup'),'class="bt-inlist" id="bt-ingroup" border="0"');?></a><br />
+		<a href="#" onclick="xivo_ast_user_ingroup(); return(xivo_free_focus());" title="<?=$this->bbf('bt_ingroup');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_ingroup'),'class="bt-inlist" id="bt-ingroup" border="0"');?></a><br />
 
-		<a href="#" onclick="xivo_outgroup(); return(xivo_free_focus());" title="<?=$this->bbf('bt_outgroup');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outgroup'),'class="bt-outlist" id="bt-outgroup" border="0"');?></a>
+		<a href="#" onclick="xivo_ast_user_outgroup(); return(xivo_free_focus());" title="<?=$this->bbf('bt_outgroup');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outgroup'),'class="bt-outlist" id="bt-outgroup" border="0"');?></a>
 
 		</div>
 		<div class="slt-inlist">
@@ -47,12 +49,12 @@
 			</tr>
 <?php
 		foreach($groups as $value):
-			$name = &$value['gfeatures']['name'];
+			$name = $value['gfeatures']['name'];
 
 			if(xivo_issa($value['gfeatures']['id'],$gmember['info']) === true):
 				$class = '';
 				$value['member'] = $gmember['info'][$value['gfeatures']['id']];
-				$calllimit = (int) $value['member']['call-limit'];
+				$calllimit = intval($value['member']['call-limit']);
 			else:
 				$class = ' b-nodisplay';
 				$value['member'] = null;
@@ -91,9 +93,9 @@
 		</div>
 		<div class="inout-list">
 
-			<a href="#" onclick="xivo_inqueue(); return(xivo_free_focus());" title="<?=$this->bbf('bt_inqueue');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inqueue'),'class="bt-inlist" id="bt-inqueue" border="0"');?></a><br />
+			<a href="#" onclick="xivo_ast_inqueue(); return(xivo_free_focus());" title="<?=$this->bbf('bt_inqueue');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt_inqueue'),'class="bt-inlist" id="bt-inqueue" border="0"');?></a><br />
 
-			<a href="#" onclick="xivo_outqueue(); return(xivo_free_focus());" title="<?=$this->bbf('bt_outqueue');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outqueue'),'class="bt-outlist" id="bt-outqueue" border="0"');?></a>
+			<a href="#" onclick="xivo_ast_outqueue(); return(xivo_free_focus());" title="<?=$this->bbf('bt_outqueue');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt_outqueue'),'class="bt-outlist" id="bt-outqueue" border="0"');?></a>
 
 		</div>
 		<div class="slt-inlist">
@@ -113,13 +115,13 @@
 			</tr>
 <?php
 		foreach($queues as $value):
-			$name = &$value['qfeatures']['name'];
+			$name = $value['qfeatures']['name'];
 
 			if(xivo_issa($value['qfeatures']['id'],$qmember['info']) === true):
 				$class = '';
 				$value['member'] = $qmember['info'][$value['qfeatures']['id']];
-				$calllimit = (int) $value['member']['call-limit'];
-				$penalty = (int) $value['member']['penalty'];
+				$calllimit = intval($value['member']['call-limit']);
+				$penalty = intval($value['member']['penalty']);
 			else:
 				$class = ' b-nodisplay';
 				$value['member'] = null;

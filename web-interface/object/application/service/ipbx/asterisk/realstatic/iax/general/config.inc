@@ -69,7 +69,8 @@ $array['element']['tos'] = array();
 $array['element']['tos']['value'] = array('CS0','CS1','CS2','CS3','CS4','CS5','CS6','CS7',
 					  'AF11','AF12','AF13','AF21','AF22','AF23',
 					  'AF31', 'AF32','AF33','AF41','AF42','AF43','EF');
-$array['element']['tos']['default'] = 'EF';
+$array['element']['tos']['default'] = '';
+$array['element']['tos']['null'] = true;
 
 $array['element']['jitterbuffer'] = array();
 $array['element']['jitterbuffer']['value'] = array('no','yes');
@@ -200,7 +201,7 @@ $array['filter']['regcontext'] = array('set' => false,'chk' => 2,'callback' => '
 $array['filter']['minregexpire'] = array('key' => array(0,10,20,30,40,50,60,70,80,90,100,110,120));
 $array['filter']['maxregexpire'] = array('key' => array(0,10,20,30,40,50,60,70,80,90,100,110,120));
 $array['filter']['bandwidth'] = array('key' => array('low','medium','high'));
-$array['filter']['tos'] = array('regexp' => '/^(CS[0-7]|AF[1-4][1-3]|EF)$/');
+$array['filter']['tos'] = array('set' => false,'chk' => 2,'regexp' => '/^(CS[0-7]|AF[1-4][1-3]|EF)$/');
 $array['filter']['jitterbuffer'] = array('bool' => true);
 $array['filter']['forcejitterbuffer'] = array('bool' => true);
 $array['filter']['maxjitterbuffer'] = array('key' => array(0,250,500,750,1000,1250,1500,1750,2000));

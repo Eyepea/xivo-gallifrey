@@ -20,7 +20,8 @@ $array['element']['secret'] = array();
 $array['element']['secret']['default'] = '';
 
 $array['element']['dbsecret'] = array();
-$array['element']['dbsecret']['unset'] = true;
+$array['element']['dbsecret']['default'] = '';
+$array['element']['dbsecret']['forcedef'] = true;
 
 $array['element']['context'] = array();
 $array['element']['context']['default'] = '';
@@ -56,12 +57,7 @@ $array['element']['cid_number']['unset'] = true;
 $array['element']['trunk'] = array();
 $array['element']['trunk']['default'] = 0;
 $array['element']['trunk']['forcedef'] = true;
-/*
-$array['element']['trunk'] = array();
-$array['element']['trunk']['value'] = array(0,1);
-$array['element']['trunk']['default'] = 0;
-$array['element']['trunk']['set'] = true;
-*/
+
 $array['element']['auth'] = array();
 $array['element']['auth']['value'] = array('plaintext',
 					   'md5',
@@ -72,12 +68,7 @@ $array['element']['auth']['value'] = array('plaintext',
 					   'plaintext,md5,rsa');
 $array['element']['auth']['default'] = 'plaintext,md5';
 $array['element']['auth']['setdef'] = true;
-/*
-$array['element']['encryption'] = array();
-$array['element']['encryption']['value'] = array('no','yes','aes128');
-$array['element']['encryption']['default'] = '';
-$array['element']['encryption']['null'] = true;
-*/
+
 $array['element']['encryption'] = array();
 $array['element']['encryption']['unset'] = true;
 
@@ -96,12 +87,7 @@ $array['element']['adsi'] = array();
 $array['element']['adsi']['value'] = array(1,0);
 $array['element']['adsi']['default'] = '';
 $array['element']['adsi']['null'] = true;
-/*
-$array['element']['transfer'] = array();
-$array['element']['transfer']['value'] = array('no','yes','mediaonly');
-$array['element']['transfer']['default'] = '';
-$array['element']['transfer']['null'] = true;
-*/
+
 $array['element']['transfer'] = array();
 $array['element']['transfer']['unset'] = true;
 
@@ -150,11 +136,6 @@ $array['element']['qualifyfreqnotok']['value'] = array(500,1000,2000,3000,4000,5
 						       95000,100000,105000,110000,115000,120000);
 $array['element']['qualifyfreqnotok']['default'] = 10000;
 $array['element']['qualifyfreqnotok']['setdef'] = true;
-/*
-$array['element']['timezone'] = array();
-$array['element']['timezone']['default'] = '';
-$array['element']['timezone']['null'] = true;
-*/
 
 $array['element']['timezone'] = array();
 $array['element']['timezone']['unset'] = true;
@@ -256,9 +237,8 @@ $array['filter']['amaflags'] = array('set'	=> false,
 				     'key'	=> xivo_service_asterisk::get_amaflags_list());
 $array['filter']['mailbox'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9#\*]{1,40}(?:@[a-z0-9@_\-]{1,39})?$/','maxlen' => 80);
 $array['filter']['callerid'] = array('set' => false,'chk' => 2,'maxlen' => 80,'cast' => 'sgraph','notag' => false);
-$array['filter']['fullname'] = array('set' => false,'chk' => 2);
-$array['filter']['cid_number'] = array('set' => false,'chk' => 2);
-//$array['filter']['trunk'] = array('bool' => true);
+$array['filter']['fullname'] = array('set' => false,'chk' => 0);
+$array['filter']['cid_number'] = array('set' => false,'chk' => 0);
 $array['filter']['trunk'] = array('set' => false);
 $array['filter']['auth'] = array('set'	=> false,
 				 'chk'	=> 2,
@@ -269,31 +249,30 @@ $array['filter']['auth'] = array('set'	=> false,
 						 'plaintext,rsa',
 						 'md5,rsa',
 						 'plaintext,md5,rsa'));
-/*$array['filter']['encryption'] = array('set' => false,'chk' => 2,'key' => array('no','yes','aes128'));*/
 $array['filter']['encryption'] = array('set' => false,'chk' => 0);
 $array['filter']['maxauthreq'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,20));
-//$array['filter']['inkeys'] = array('set' => false,'chk' => 2,'maxlen' => 80,'cast' => 'sgraph');
 $array['filter']['inkeys'] = array('set' => false,'chk' => 0);
-//$array['filter']['outkey'] = array('set' => false,'chk' => 2,'maxlen' => 80,'cast' => 'sgraph');
 $array['filter']['outkey'] = array('set' => false,'chk' => 0);
 $array['filter']['adsi'] = array('set' => false,'chk' => 2,'bool' => true);
-//$array['filter']['transfer'] = array('set' => false,'chk' => 2,'key' => array('no','yes','mediaonly'));
 $array['filter']['transfer'] = array('set' => false,'chk' => 0);
 $array['filter']['codecpriority'] = array('set' => false,'chk' => 2,'key' => array('disabled','host','caller','reqonly'));
 $array['filter']['jitterbuffer'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['forcejitterbuffer'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['sendani'] = array('bool' => true);
-$array['filter']['qualify'] = array('key' => array('no','yes',500,1000,1500,2000,2500,3000,3500,4000));
+$array['filter']['qualify'] = array('set' => false,'chk' => 2,'key' => array('no','yes',500,1000,1500,2000,2500,3000,3500,4000));
 $array['filter']['qualifysmoothing'] = array('bool' => true);
-$array['filter']['qualifyfreqok'] = array('key'	=> array(500,1000,2000,3000,4000,5000,
+$array['filter']['qualifyfreqok'] = array('set'	=> false,
+					  'chk'	=> 2,
+					  'key'	=> array(500,1000,2000,3000,4000,5000,
 							 10000,15000,20000,30000,35000,40000,45000,50000,
 							 55000,60000,65000,70000,75000,80000,85000,90000,
 							 95000,100000,105000,110000,115000,120000));
-$array['filter']['qualifyfreqnotok'] = array('key'	=> array(500,1000,2000,3000,4000,5000,
+$array['filter']['qualifyfreqnotok'] = array('set'	=> false,
+					     'chk'	=> 2,
+					     'key'	=> array(500,1000,2000,3000,4000,5000,
 								 10000,15000,20000,30000,35000,40000,45000,50000,
 								 55000,60000,65000,70000,75000,80000,85000,90000,
 								 95000,100000,105000,110000,115000,120000));
-/*$array['filter']['timezone'] = array('set' => false,'chk' => 2,'minlen' => 1,'maxlen' => 80,'regexp' => '/^[a-z0-9_-]+$/i');*/
 $array['filter']['timezone'] = array('set' => false,'chk' => 0);
 $array['filter']['disallow'] = array('set' => false,'chk' => 2,'key' => array('all'));
 $array['filter']['allow'] = array('set' => false,'chk' => 2,'uvalue' => xivo_service_asterisk::get_codecs_list());
@@ -308,8 +287,6 @@ $array['filter']['permit'] = array('set'		=> false,
 				   'callback'		=> 'xivo_filter::chk_ipv4_subnet',
 				   'callbackparam'	=> array(null,XIVO_IPV4_NETMASK_DOTDEC));
 $array['filter']['defaultip'] = array('set' => false,'chk' => 0);
-# TODO: sourceaddress can be host:port
-/*$array['filter']['sourceaddress'] = array('set' => false,'chk' => 2,'callback' => 'xivo_filter::chk_host_ipv4_strict');*/
 $array['filter']['sourceaddress'] = array('set' => false,'chk' => 0);
 $array['filter']['setvar'] = array('set'	=> false,
 				   'chk'	=> 2,

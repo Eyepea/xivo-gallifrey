@@ -7,8 +7,8 @@ Général
 ; smenu_register
 Enregistrement
 
-; smenu_codecs
-Codecs
+; smenu_signalling
+Signalisation
 
 ; smenu_advanced
 Avancé
@@ -28,14 +28,14 @@ Nom d'appel :
 ; fm_protocol_context
 Contexte :
 
-; fm_protocol_fromuser
-Champ From-User :
-
-; fm_protocol_fromdomain
-Champ From-Domain :
-
 ; fm_protocol_calllimit
-Nombre d'appels :
+Nombre d'appels simultanés :
+
+; fm_protocol_calllimit-opt0
+Illimité
+
+; fm_protocol_calllimit-opt
+%s
 
 ; fm_protocol_host
 Type d'adressage IP :
@@ -45,12 +45,6 @@ Dynamique
 
 ; fm_protocol_host-static
 Statique
-
-; fm_protocol_port
-Port :
-
-; fm_protocol_dtmfmode
-DTMF :
 
 ; fm_protocol_type
 Type de connexion :
@@ -64,50 +58,23 @@ Sortant
 ; fm_protocol_type-friend
 Entrant/Sortant
 
+; fm_protocol_language
+Langages :
+
 ; fm_protocol_nat
 NAT :
 
-; fm_protocol_qualify
-Supervision :
+; fm_protocol_nat-opt-no
+Non
 
-; fm_protocol_canreinvite
-Invite :
+; fm_protocol_nat-opt-yes
+Oui
 
-; fm_protocol_insecure
-Insécurité :
+; fm_protocol_nat-opt-never
+Jamais
 
-; fm_protocol_insecure-opt-port
-Port
-
-; fm_protocol_insecure-opt-invite
-Invite
-
-; fm_protocol_insecure-opt-all
-Tout
-
-; fm_codec-custom
-Personnaliser :
-
-; fm_protocol_codec-disallow
-Désactiver :
-
-; fm_protocol_codec-disallow-opt-all
-Tous
-
-; fm_protocol_codec-allow
-Activer :
-
-; bt_upcodec
-Monter un ou plusieurs codecs
-
-; bt_downcodec
-Descendre un ou plusieurs codecs
-
-; bt_incodec
-Ajouter un ou plusieurs codecs ->
-
-; bt_outcodec
-<- Enlever un ou plusieurs codecs
+; fm_protocol_nat-opt-route
+Route
 
 ; fm_register
 Enregistrement :
@@ -129,3 +96,186 @@ Port :
 
 ; fm_register_contact
 Contact :
+
+; fm_protocol_progressinband
+Evénement RING dans la bande :
+
+; fm_protocol_progressinband-opt-no
+Non
+
+; fm_protocol_progressinband-opt-yes
+Oui
+
+; fm_protocol_progressinband-opt-never
+Jamais
+
+; fm_protocol_dtmfmode
+DTMF :
+
+; fm_protocol_dtmfmode-opt-rfc2833
+RFC 2833
+
+; fm_protocol_dtmfmode-opt-inband
+InBand
+
+; fm_protocol_dtmfmode-opt-info
+INFO
+
+; fm_protocol_dtmfmode-opt-auto
+Auto
+
+; fm_protocol_rfc2833compensate
+Compenser les DTMF RFC 2833 provenant d'un autre IPBX :
+
+; fm_protocol_qualify
+Supervision de la latence :
+
+; fm_protocol_qualify-optno
+Non
+
+; fm_protocol_qualify-optyes
+Oui
+
+; fm_protocol_qualify-opt
+%s millisecondes
+
+; fm_protocol_rtptimeout
+Délai d'attente pour le RTP :
+
+; fm_protocol_rtptimeout-opt0
+Désactivé
+
+; fm_protocol_rtptimeout-opt
+%s secondes
+
+; fm_protocol_rtpholdtimeout
+Délai du RTP sur attente :
+
+; fm_protocol_rtpholdtimeout-opt0
+Désactivé
+
+; fm_protocol_rtpholdtimeout-opt
+%s secondes
+
+; fm_protocol_rtpkeepalive
+Présence du RTP :
+
+; fm_protocol_rtpkeepalive-opt0
+Désactivée
+
+; fm_protocol_rtpkeepalive-opt
+%s secondes
+
+; fm_protocol_allowtransfer
+Autoriser les transferts :
+
+; fm_protocol_autoframing
+Frame automatique :
+
+; fm_protocol_videosupport
+Support vidéo :
+
+; fm_protocol_maxcallbitrate
+Bit rate maximal pour les appels vidéo :
+
+; fm_protocol_g726nonstandard
+Activer le support du G.726 non standard :
+
+; fm_codec-custom
+Personnaliser les codecs :
+
+; fm_protocol_codec-disallow
+Codecs désactivés :
+
+; fm_protocol_codec-disallow-opt-all
+Tous
+
+; fm_protocol_codec-allow
+Codecs activés :
+
+; bt_upcodec
+Monter un ou plusieurs codecs
+
+; bt_downcodec
+Descendre un ou plusieurs codecs
+
+; bt_incodec
+Ajouter un ou plusieurs codecs ->
+
+; bt_outcodec
+<- Enlever un ou plusieurs codecs
+
+; fm_protocol_insecure
+Insécurité :
+
+; fm_protocol_insecure-opt-no
+Non
+
+; fm_protocol_insecure-opt-port
+Port
+
+; fm_protocol_insecure-opt-invite
+Invite
+
+; fm_protocol_insecure-opt-all
+Tout
+
+; fm_protocol_port
+Port :
+
+; fm_protocol_permit
+Adresse IP ou masque sous-réseau autorisés :
+
+; fm_protocol_deny
+Adresse IP ou masque sous-réseau refusés :
+
+; fm_protocol_trustrpid
+Faire confiance au Remote-Party-ID :
+
+; fm_protocol_sendrpid
+Envoyer le Remote-Party-ID :
+
+; fm_protocol_allowsubscribe
+Activer le support des souscriptions :
+
+; fm_protocol_allowoverlap
+Activer le chevauchement :
+
+; fm_protocol_promiscredir
+Support des redirections 302 :
+
+; fm_protocol_usereqphone
+Ajouter ";user=phone" dans l'URI :
+
+; fm_protocol_canreinvite
+Invite :
+
+; fm_protocol_canreinvite-opt-no
+Non
+
+; fm_protocol_canreinvite-opt-yes
+Oui
+
+; fm_protocol_canreinvite-opt-update
+Mise à jour
+
+; fm_protocol_canreinvite-opt-nonat
+Sans NAT
+
+; fm_protocol_canreinvite-opt-update-nonat
+Mise à jour sans NAT
+
+; fm_protocol_fromuser
+Réécriture du champ From-User :
+
+; fm_protocol_fromdomain
+Réécriture du champ From-Domain :
+
+; fm_protocol_amaflags
+Drapeau de facturation :
+
+; fm_protocol_accountcode
+Numéro d'acompte :
+
+; fm_protocol_useclientcode
+Code client :

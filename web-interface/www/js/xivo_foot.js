@@ -27,7 +27,7 @@ window.onload = function()
 		var tchild = document.createElement('SPAN');
 		tchild.id = 'tips-info-bindaddr';
 		tchild.className = 'tooltips-info';
-		tchild.textContent = 'titi jsqhdqsjhd qsjdhjqs dqshdqshdqsjdhqs';
+		tchild.textContent = '...';
 
 		var achild = document.createElement('A');
 		achild.id = 'ancr-tooltips-bindaddr';

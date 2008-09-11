@@ -51,7 +51,6 @@ endif;
 ?>
 
 <div id="sb-part-first">
-
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_userfeatures_firstname'),
 				  'name'	=> 'ufeatures[firstname]',
@@ -59,9 +58,9 @@ endif;
 				  'size'	=> 15,
 				  'default'	=> $element['ufeatures']['firstname']['default'],
 				  'value'	=> $info['ufeatures']['firstname']),
-			    'onchange="xivo_chgname();"
-			     onfocus="xivo_cpyname(); xivo_fm_set_onfocus(this);"
-			     onblur="xivo_chgname(); xivo_fm_set_onblur(this);"'),
+			    'onchange="xivo_ast_chg_user_name();"
+			     onfocus="xivo_ast_cpy_user_name(); xivo_fm_set_onfocus(this);"
+			     onblur="xivo_ast_chg_user_name(); xivo_fm_set_onblur(this);"'),
 		
 		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_lastname'),
 				  'name'	=> 'ufeatures[lastname]',
@@ -69,9 +68,9 @@ endif;
 				  'size'	=> 15,
 				  'default'	=> $element['ufeatures']['lastname']['default'],
 				  'value'	=> $info['ufeatures']['lastname']),
-			    'onchange="xivo_chgname();"
-			     onfocus="xivo_cpyname(); xivo_fm_set_onfocus(this);"
-			     onblur="xivo_chgname(); xivo_fm_set_onblur(this);"'),
+			    'onchange="xivo_ast_chg_user_name();"
+			     onfocus="xivo_ast_cpy_user_name(); xivo_fm_set_onfocus(this);"
+			     onblur="xivo_ast_chg_user_name(); xivo_fm_set_onblur(this);"'),
 
 		$form->text(array('desc'	=> $this->bbf('fm_protocol_name'),
 				  'name'	=> 'protocol[name]',
@@ -98,8 +97,8 @@ endif;
 				  'size'	=> 15,
 				  'default'	=> $element['ufeatures']['number']['default'],
 				  'value'	=> $info['ufeatures']['number']),
-			    'onchange="xivo_chgname();"
-			     onfocus="xivo_cpyname(); xivo_fm_set_onfocus(this);"'),
+			    'onchange="xivo_ast_chg_user_name();"
+			     onfocus="xivo_ast_cpy_user_name(); xivo_fm_set_onfocus(this);"'),
 
 		$form->select(array('desc'	=> $this->bbf('fm_userfeatures_ringseconds'),
 				    'name'	=> 'ufeatures[ringseconds]',
@@ -124,8 +123,8 @@ endif;
 				    'default'	=> $element['ufeatures']['protocol']['default'],
 				    'value'	=> $info['ufeatures']['protocol']),
 			      $element['ufeatures']['protocol']['value'],
-			      'onchange="xivo_chg_protocol(this.value); xivo_chgname();"
-			       onfocus="xivo_cpyname(); xivo_fm_set_onfocus(this);"');
+			      'onchange="xivo_ast_chg_user_protocol(this.value); xivo_ast_chg_user_name();"
+			       onfocus="xivo_ast_cpy_user_name(); xivo_fm_set_onfocus(this);"');
 
 	if($context_list !== false):
 		echo	$form->select(array('desc'	=> $this->bbf('fm_protocol_context'),
@@ -133,7 +132,6 @@ endif;
 					    'labelid'	=> 'protocol-context',
 					    'key'	=> 'identity',
 					    'altkey'	=> 'name',
-					    'default'	=> $element['protocol']['sip']['context']['default'],
 					    'value'	=> $context),
 				      $context_list);
 	else:
@@ -186,7 +184,7 @@ endif;
 				    'altkey'	=> 'uniqueid',
 				    'value'	=> $info['ufeatures']['voicemailid']),
 			      $voicemail_list,
-			      'onchange="xivo_voicemail_selection(this.value);"',
+			      'onchange="xivo_ast_user_voicemail_selection(this.value);"',
 			      array('add'	=> $this->bbf('fm_voicemail-opt-add'))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_voicemail_fullname'),
@@ -346,7 +344,9 @@ endif;
 				      'labelid'	=> 'ufeatures-enablerna',
 				      'default'	=> $element['ufeatures']['enablerna']['default'],
 				      'checked'	=> $info['ufeatures']['enablerna']),
-				'onchange="xivo_chg_attrib(\'fm_enablerna\',\'it-ufeatures-destrna\',Number(this.checked));"'),
+				'onchange="xivo_chg_attrib(\'ast_fm_user_enablerna\',
+							   \'it-ufeatures-destrna\',
+							   Number(this.checked));"'),
 
 		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_destrna'),
 				  'name'	=> 'ufeatures[destrna]',
@@ -360,7 +360,9 @@ endif;
 				      'labelid'	=> 'ufeatures-enablebusy',
 				      'default'	=> $element['ufeatures']['enablebusy']['default'],
 				      'checked'	=> $info['ufeatures']['enablebusy']),
-				'onchange="xivo_chg_attrib(\'fm_enablebusy\',\'it-ufeatures-destbusy\',Number(this.checked));"'),
+				'onchange="xivo_chg_attrib(\'ast_fm_user_enablebusy\',
+							   \'it-ufeatures-destbusy\',
+							   Number(this.checked));"'),
 
 		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_destbusy'),
 				  'name'	=> 'ufeatures[destbusy]',
@@ -374,7 +376,9 @@ endif;
 				      'labelid'	=> 'ufeatures-enableunc',
 				      'default'	=> $element['ufeatures']['enableunc']['default'],
 				      'checked'	=> $info['ufeatures']['enableunc']),
-				'onchange="xivo_chg_attrib(\'fm_enableunc\',\'it-ufeatures-destunc\',Number(this.checked));"'),
+				'onchange="xivo_chg_attrib(\'ast_fm_user_enableunc\',
+							   \'it-ufeatures-destunc\',
+							   Number(this.checked));"'),
 
 		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_destunc'),
 				  'name'	=> 'ufeatures[destunc]',
@@ -587,7 +591,7 @@ endif;
 				      'name'	=> 'codec-active',
 				      'labelid'	=> 'codec-active',
 				      'checked'	=> $codec_active),
-				'onclick="xivo_chg_attrib(\'fm_codec\',
+				'onclick="xivo_chg_attrib(\'ast_fm_user_codec\',
 							  \'it-protocol-disallow\',
 							  Number((this.checked === false)));"'),
 
@@ -673,7 +677,6 @@ endif;
 </div>
 
 <div id="sb-part-autoprov" class="b-nodisplay">
-
 <?php
 	if($this->get_var('act') === 'edit'):
 		echo	$form->select(array('desc'	=> $this->bbf('fm_autoprov_modact'),
@@ -683,9 +686,9 @@ endif;
 					    'key'	=> false,
 					    'empty'	=> true),
 				      $element['autoprov']['modact']['value'],
-				      'onchange="xivo_chg_attrib(\'fm_autoprov-\'+xivo_protocol,
+				      'onchange="xivo_chg_attrib(\'ast_fm_user_autoprov-\'+xivo_ast_user_protocol,
 				      				 \'it-autoprov-modact\',
-								 Number((this.value == \'\')));"');
+								 Number((this.value === \'\')));"');
 	endif;
 
 	if(is_array($info['autoprov']) === false
@@ -730,7 +733,6 @@ endif;
 </div>
 
 <div id="sb-part-rightcall" class="b-nodisplay">
-
 <?php
 	if($rightcall['list'] !== false):
 ?>
@@ -848,9 +850,9 @@ endif;
 				    'bbf'	=> 'fm_ufeatures_outcallerid-opt-',
 				    'value'	=> ($outcallerid_custom === true ? 'custom' : $outcallerid)),
 			      $element['ufeatures']['outcallerid-type']['value'],
-			      'onchange="xivo_chg_attrib(\'fm_outcallerid\',
+			      'onchange="xivo_chg_attrib(\'ast_fm_user_outcallerid\',
 			      				 \'fd-ufeatures-outcallerid-custom\',
-							 Number((this.value == \'custom\')));"'),
+							 Number((this.value === \'custom\')));"'),
 
 		$form->text(array('desc'	=> '&nbsp;',
 				  'name'	=> 'ufeatures[outcallerid-custom]',
@@ -880,9 +882,9 @@ endif;
 				    'bbf'	=> 'fm_protocol_host-',
 				    'value'	=> ($host_static === true ? 'static' : $host)),
 			      $element['protocol']['sip']['host-dynamic']['value'],
-			      'onchange="xivo_chg_attrib(\'fm_host\',
+			      'onchange="xivo_chg_attrib(\'ast_fm_user_host\',
 			      				 \'fd-protocol-host-static\',
-							 Number((this.value == \'static\')));"'),
+							 Number((this.value === \'static\')));"'),
 
 		$form->text(array('desc'	=> '&nbsp;',
 				  'name'	=> 'protocol[host-static]',

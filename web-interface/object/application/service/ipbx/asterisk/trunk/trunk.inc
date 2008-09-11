@@ -189,12 +189,6 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 					$ref['type'] = $ref['iaxtype'];
 					$ref['context'] = $ref['iaxcontext'];
 					$ref['host'] = $ref['iaxhost'];
-
-					if(empty($ref['iaxcalllimit']) === true)
-						$ref['call-limit'] = '';
-					else
-						$ref['call-limit'] = $ref['iaxcalllimit'];
-						
 					$ref['commented'] = (bool) $ref['iaxcommented'];
 
 					if(($channel = $this->_service->get_channel_by_protocol($ref['protocol'])) !== false)
@@ -314,13 +308,18 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 		}
 		else if($this->_param['protocol'] !== XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
 		{
-			if(isset($arr['host-dynamic']) === true)
-				$arr['host'] = $arr['host-dynamic'];
+			if(isset($arr['type']) === true && $arr['type'] === 'user')
+				$arr['host'] = 'dynamic';
 			else
-				$arr['host'] = '';
+			{
+				if(isset($arr['host-dynamic']) === true)
+					$arr['host'] = $arr['host-dynamic'];
+				else
+					$arr['host'] = '';
 
-			if(isset($arr['host-static']) === true && $arr['host'] === 'static')
-				$arr['host'] = $arr['host-static'];
+				if(isset($arr['host-static']) === true && $arr['host'] === 'static')
+					$arr['host'] = $arr['host-static'];
+			}
 		}
 
 		$arr['commented'] = false;

@@ -28,10 +28,6 @@ class xivo_service_asterisk_trunksip extends xivo_service_asterisk_abstract
 	function _prepare($data)
 	{
 		$this->_identity->_prepare_identity($data);
-
-		if(empty($data['call-limit']) === true)
-			$data['call-limit'] = '';
-
 		$data['commented'] = (bool) $data['commented'];
 
 		return($data);
@@ -42,13 +38,30 @@ class xivo_service_asterisk_trunksip extends xivo_service_asterisk_abstract
 		if(is_array($arr) === false)
 			return(false);
 
-		$arr['ipaddr'] = '';
-		$arr['regseconds'] = 0;
-		$arr['protocol'] = XIVO_SRE_IPBX_AST_PROTO_SIP;
-		$arr['category'] = 'trunk';
-
 		if(isset($arr['name']) === true)
 			$arr['name'] = strtolower($arr['name']);
+
+		$arr['mailbox'] = null;
+		$arr['subscribemwi'] = 0;
+		$arr['buggymwi'] = null;
+		$arr['fullname'] = null;
+		$arr['cid_number'] = null;
+		$arr['mohinterpret'] = null;
+		$arr['mohsuggest'] = null;
+		$arr['defaultip'] = null;
+		$arr['callgroup'] = null;
+		$arr['pickupgroup'] = null;
+		$arr['setvar'] = '';
+		$arr['regexten'] = null;
+		$arr['subscribecontext'] = null;
+		$arr['fullcontact'] = null;
+		$arr['vmexten'] = null;
+		$arr['callingpres'] = null;
+		$arr['ipaddr'] = '';
+		$arr['regseconds'] = 0;
+		$arr['regserver'] = null;
+		$arr['protocol'] = XIVO_SRE_IPBX_AST_PROTO_SIP;
+		$arr['category'] = 'trunk';
 
 		return(parent::add($arr,$id));
 	}
@@ -58,11 +71,32 @@ class xivo_service_asterisk_trunksip extends xivo_service_asterisk_abstract
 		if(is_array($arr) === false)
 			return(false);
 
-		$arr['protocol'] = XIVO_SRE_IPBX_AST_PROTO_SIP;
-		$arr['category'] = 'trunk';
-
 		if(isset($arr['name']) === true)
 			$arr['name'] = strtolower($arr['name']);
+
+		unset($arr['mailbox'],
+		      $arr['buggymwi'],
+		      $arr['fullname'],
+		      $arr['cid_number'],
+		      $arr['mohinterpret'],
+		      $arr['mohsuggest'],
+		      $arr['defaultip'],
+		      $arr['callgroup'],
+		      $arr['pickupgroup'],
+		      $arr['setvar'],
+		      $arr['regexten'],
+		      $arr['subscribecontext'],
+		      $arr['fullcontact'],
+		      $arr['vmexten'],
+		      $arr['callingpres'],
+		      $arr['ipaddr'],
+		      $arr['regseconds'],
+		      $arr['regserver']);
+
+		$arr['subscribemwi'] = 0;
+		$arr['setvar'] = '';
+		$arr['protocol'] = XIVO_SRE_IPBX_AST_PROTO_SIP;
+		$arr['category'] = 'trunk';
 
 		return(parent::edit($id,$arr,$disable));
 	}

@@ -7,8 +7,8 @@ Général
 ; smenu_register
 Enregistrement
 
-; smenu_codecs
-Codecs
+; smenu_signalling
+Signalisation
 
 ; smenu_advanced
 Avancé
@@ -28,9 +28,6 @@ Nom d'appel :
 ; fm_protocol_context
 Contexte :
 
-; fm_protocol_calllimit
-Nombre d'appels :
-
 ; fm_protocol_host
 Type d'adressage IP :
 
@@ -39,12 +36,6 @@ Dynamique
 
 ; fm_protocol_host-static
 Statique
-
-; fm_protocol_port
-Port :
-
-; fm_protocol_dtmfmode
-DTMF :
 
 ; fm_protocol_type
 Type de connexion :
@@ -58,29 +49,83 @@ Sortant
 ; fm_protocol_type-friend
 Entrant/Sortant
 
-; fm_protocol_nat
-NAT :
+; fm_protocol_language
+Langages :
+
+; fm_register
+Enregistrement :
+
+; fm_register_username
+Identifiant :
+
+; fm_register_password
+Mot de passe :
+
+; fm_register_host
+Serveur distant :
+
+; fm_register_port
+Port :
 
 ; fm_protocol_qualify
-Supervision :
+Supervision de la latence :
 
-; fm_protocol_canreinvite
-Invite :
+; fm_protocol_qualify-optno
+Non
 
-; fm_protocol_insecure
-Authentification :
+; fm_protocol_qualify-optyes
+Oui
+
+; fm_protocol_qualify-opt
+%s millisecondes
+
+; fm_protocol_qualifysmoothing
+Calcul de la durée moyenne de la latence :
+
+; fm_protocol_qualifyfreqok
+Fréquence de vérification quand tout fonctionne :
+
+; fm_protocol_qualifyfreqok-opt
+%s millisecondes
+
+; fm_protocol_qualifyfreqnotok
+Fréquence de vérification quand il y a un problème :
+
+; fm_protocol_qualifyfreqnotok-opt
+%s millisecondes
+
+; fm_protocol_jitterbuffer
+Activer le Jitter Buffer :
+
+; fm_protocol_forcejitterbuffer
+Forcer le Jitter Buffer :
+
+; fm_protocol_codecpriority
+Priorité des codecs :
+
+; fm_protocol_codecpriority-opt-disabled
+Désactivée
+
+; fm_protocol_codecpriority-opt-host
+Hôte
+
+; fm_protocol_codecpriority-opt-caller
+Appelant
+
+; fm_protocol_codecpriority-opt-reqonly
+Seulement par requête
 
 ; fm_codec-custom
-Personnaliser :
+Personnaliser les codecs :
 
 ; fm_protocol_codec-disallow
-Désactiver :
+Codecs désactivés :
 
 ; fm_protocol_codec-disallow-opt-all
 Tous
 
 ; fm_protocol_codec-allow
-Activer :
+Codecs activés :
 
 ; bt_upcodec
 Monter un ou plusieurs codecs
@@ -94,29 +139,92 @@ Ajouter un ou plusieurs codecs ->
 ; bt_outcodec
 <- Enlever un ou plusieurs codecs
 
-; fm_register
-Enregistrement :
-
-; fm_register_username
-Identifiant :
-
-; fm_register_password
-Mot de passe :
-
-; fm_register_authuser
-Authentification :
-
-; fm_register_host
-Serveur distant :
-
-; fm_register_port
-Port :
-
-; fm_register_contact
-Contact :
-
-; fm_protocol_notransfer
-Transfert interdit :
+; fm_protocol_sendani
+Envoyer la présentation du nom et numéro d'appel :
 
 ; fm_protocol_trunk
-Activation du mode trunk :
+Activer le multiplexage des flux :
+
+; fm_protocol_transfer
+Activer les transferts :
+
+; fm_protocol_transfer-opt-no
+Non
+
+; fm_protocol_transfer-opt-yes
+Oui
+
+; fm_protocol_transfer-opt-mediaonly
+Uniquement la voix
+
+; fm_protocol_port
+Port :
+
+; fm_protocol_mask
+Masque réseau :
+
+; fm_protocol_permit
+Adresse IP ou masque sous-réseau autorisés :
+
+; fm_protocol_deny
+Adresse IP ou masque sous-réseau refusés :
+
+; fm_protocol_auth
+Mécanismes d'authentification :
+
+; fm_protocol_auth-opt-plaintext
+Texte
+
+; fm_protocol_auth-opt-md5
+MD5
+
+; fm_protocol_auth-opt-rsa
+RSA
+
+; fm_protocol_auth-opt-plaintext-md5
+Texte ou MD5
+
+; fm_protocol_auth-opt-plaintext-rsa
+Texte ou RSA
+
+; fm_protocol_auth-opt-md5-rsa
+MD5 ou RSA
+
+; fm_protocol_auth-opt-plaintext-md5-rsa
+Texte, MD5 ou RSA
+
+; fm_protocol_inkeys
+Clé RSA publique :
+
+; fm_protocol_outkey
+Clé RSA privée :
+
+; fm_protocol_encryption
+Chiffrement :
+
+; fm_protocol_encryption-opt-no
+Non
+
+; fm_protocol_encryption-opt-yes
+Oui
+
+; fm_protocol_encryption-opt-aes128
+AES 128
+
+; fm_protocol_maxauthreq
+Maximum AUTHREQs autorisées :
+
+; fm_protocol_maxauthreq-opt0
+Désactivé
+
+; fm_protocol_maxauthreq-opt
+%s
+
+; fm_protocol_adsi
+Activer le support de l'ADSI : 
+
+; fm_protocol_amaflags
+Drapeau de facturation :
+
+; fm_protocol_accountcode
+Numéro d'acompte :

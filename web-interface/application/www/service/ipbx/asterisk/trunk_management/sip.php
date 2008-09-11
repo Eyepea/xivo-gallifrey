@@ -27,6 +27,9 @@ switch($act)
 
 				if(xivo_issa('protocol',$result) === true && isset($result['protocol']['allow']) === true)
 					$allow = $result['protocol']['allow'];
+
+				if(xivo_issa('register',$result) === true && isset($result['register']['arr']) === true)
+					$result['register'] = $result['register']['arr'];
 			}
 			else
 				$_QRY->go($_HTML->url('service/ipbx/trunk_management/sip'),$param);
@@ -48,7 +51,8 @@ switch($act)
 			$result['protocol']['allow'] = $allow;
 
 		$dhtml = &$_HTML->get_module('dhtml');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/trunksip.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/trunks/sip.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/trunks.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
 		$_HTML->set_var('info',$result);
@@ -82,6 +86,9 @@ switch($act)
 
 				if(xivo_issa('protocol',$result) === true && isset($result['protocol']['allow']) === true)
 					$allow = $result['protocol']['allow'];
+
+				if(xivo_issa('register',$result) === true && isset($result['register']['arr']) === true)
+					$result['register'] = $result['register']['arr'];
 			}
 			else
 				$_QRY->go($_HTML->url('service/ipbx/trunk_management/sip'),$param);
@@ -103,7 +110,8 @@ switch($act)
 			$return['protocol']['allow'] = $allow;
 
 		$dhtml = &$_HTML->get_module('dhtml');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/trunksip.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/trunks/sip.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/trunks.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
 		$_HTML->set_var('id',$info['trunkfeatures']['id']);

@@ -42,6 +42,10 @@ class xivo_service_asterisk_useriax extends xivo_service_asterisk_abstract
 		if(is_array($arr) === false)
 			return(false);
 
+		if(isset($arr['name']) === true)
+			$arr['name'] = strtolower($arr['name']);
+
+		$arr['type'] = 'friend';
 		$arr['username'] = null;
 		$arr['dbsecret'] = '';
 		$arr['fullname'] = null;
@@ -64,11 +68,6 @@ class xivo_service_asterisk_useriax extends xivo_service_asterisk_abstract
 		$arr['protocol'] = XIVO_SRE_IPBX_AST_PROTO_IAX;
 		$arr['category'] = 'user';
 
-		if(isset($arr['name']) === true)
-			$arr['name'] = strtolower($arr['name']);
-
-		unset($arr['port']);
-
 		return(parent::add($arr,$id));
 	}
 
@@ -77,9 +76,6 @@ class xivo_service_asterisk_useriax extends xivo_service_asterisk_abstract
 		if(is_array($arr) === false)
 			return(false);
 
-		$arr['protocol'] = XIVO_SRE_IPBX_AST_PROTO_IAX;
-		$arr['category'] = 'user';
-
 		if(isset($arr['name']) === true)
 			$arr['name'] = strtolower($arr['name']);
 
@@ -87,10 +83,8 @@ class xivo_service_asterisk_useriax extends xivo_service_asterisk_abstract
 			unset($arr['setvar']);
 
 		unset($arr['username'],
-		      $arr['dbsecret'],
 		      $arr['fullname'],
 		      $arr['cid_number'],
-		      $arr['trunk'],
 		      $arr['encryption'],
 		      $arr['inkeys'],
 		      $arr['outkey'],
@@ -105,6 +99,12 @@ class xivo_service_asterisk_useriax extends xivo_service_asterisk_abstract
 		      $arr['peercontext'],
 		      $arr['ipaddr'],
 		      $arr['regseconds']);
+
+		$arr['type'] = 'friend';
+		$arr['dbsecret'] = '';
+		$arr['trunk'] = 0;
+		$arr['protocol'] = XIVO_SRE_IPBX_AST_PROTO_IAX;
+		$arr['category'] = 'user';
 
 		return(parent::edit($id,$arr,$disable));
 	}

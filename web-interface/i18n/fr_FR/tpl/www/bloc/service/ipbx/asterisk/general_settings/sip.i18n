@@ -41,7 +41,7 @@ Accepter un appel non authentifié :
 Activer le support des souscriptions :
 
 ; fm_allowoverlap
-Activer l'overlap :
+Activer le chevauchement :
 
 ; fm_promiscredir
 Support des redirections 302 :

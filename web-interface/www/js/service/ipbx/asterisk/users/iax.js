@@ -1,4 +1,4 @@
-xivo_elt_protocol['iax'] = {
+xivo_ast_user_protocol_elt['iax'] = {
 	'iax-protocol-qualify': {it: true, fd: true},
 	'protocol-qualifysmoothing': {it: true, fd: true},
 	'protocol-qualifyfreqok': {it: true, fd: true},

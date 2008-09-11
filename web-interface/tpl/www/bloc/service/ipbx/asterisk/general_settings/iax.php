@@ -201,6 +201,7 @@ endif;
 				    'name'	=> 'tos',
 				    'labelid'	=> 'tos',
 				    'key'	=> false,
+				    'empty'	=> true,
 				    'value'	=> $this->get_varra('info',array('tos','var_val')),
 				    'default'	=> $element['tos']['default']),
 			      $element['tos']['value']);

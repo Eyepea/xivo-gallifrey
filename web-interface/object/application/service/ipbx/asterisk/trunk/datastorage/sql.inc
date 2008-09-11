@@ -72,7 +72,6 @@ class xivo_application_service_asterisk_trunk_sql extends xivo_application_servi
 						    'iaxtype'		=> 'type',
 						    'iaxcontext'	=> 'context',
 						    'iaxhost'		=> 'host',
-						    'iaxcalllimit'	=> 'call-limit',
 						    'iaxcommented'	=> 'commented'));
 
 			$this->_dso->joinwhere($this->_table['trunkiax'],$iax);

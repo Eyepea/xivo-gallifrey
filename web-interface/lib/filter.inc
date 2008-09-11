@@ -1,9 +1,5 @@
 <?php
 
-define('XIVO_IPV4_NETMASK_BIT',1);
-define('XIVO_IPV4_NETMASK_DOTDEC',2);
-define('XIVO_IPV4_NETMASK_ALL',(XIVO_IPV4_NETMASK_BIT | XIVO_IPV4_NETMASK_DOTDEC));
-
 class xivo_filter
 {
 	var $_content		= array();

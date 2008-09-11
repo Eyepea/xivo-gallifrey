@@ -1,4 +1,8 @@
-var xivo_list_elt_users = {
+var xivo_ast_user_protocol_elt = {};
+var xivo_ast_users_elt = {'links': {'link': []}};
+var xivo_ast_fm_users = {};
+
+var xivo_ast_users_elt_default = {
 	'protocol-name': {it: true},
 	'protocol-secret': {it: true},
 	'protocol-interface': {it: false, fd: false},
@@ -103,214 +107,46 @@ var xivo_list_elt_users = {
 	'rightcalllist': {it: true},
 	'rightcall': {it: true}};
 
-var xivo_elt_users = {'links': {'link': []}};
-var xivo_fm_users = {};
-
-function xivo_chk_elt_protocol(protocol,element)
-{
-	if(xivo_type_object(xivo_elt_protocol) === false
-	|| xivo_type_object(xivo_elt_protocol[protocol]) === false
-	|| xivo_is_undef(xivo_elt_protocol[protocol][protocol+'-'+element]) === true)
-		return(false);
-
-	return(xivo_elt_protocol[protocol][protocol+'-'+element]);
-}
-
-function xivo_loaduser()
-{
-	if(xivo_type_object(xivo_list_elt_users) === false
-	|| xivo_type_object(xivo_elt_users) === false)
-		return(false);
-
-	var it_true = {property: {disabled: false, className: 'it-enabled'}};
-	var fd_true = {style: {display: 'block'}};
-
-	var it_false = {property: {disabled: true, className: 'it-disabled'}};
-	var fd_false = {style: {display: 'none'}};
-
-	var i = 0;
-
-	for(property in xivo_list_elt_users)
-	{
-		it_protocol = fd_protocol = changed = false;
-
-		key = xivo_list_elt_users[property];
-
-		for(protocol in xivo_elt_protocol)
-		{
-			elt_protocol = xivo_chk_elt_protocol(protocol,property);
-
-			if(xivo_is_undef(key['it']) == false)
-			{
-				if(elt_protocol !== false
-				&& xivo_is_undef(elt_protocol['it']) == false)
-				{
-					it_protocol = true;
-					it_key = 'it-'+protocol+'-'+property;
-
-					if(key['it'] === true)
-						xivo_elt_users[it_key] = xivo_clone(it_true);
-					else if(key['it'] === false)
-						xivo_elt_users[it_key] = xivo_clone(it_false);
-					else
-						xivo_elt_users[it_key] = xivo_clone(key['it']);
-
-					xivo_elt_users['links']['link'][i++] = new Array(it_key,0,1);
-				}
-			}
-
-			if(xivo_is_undef(key['fd']) == false)
-			{
-				if(elt_protocol !== false
-				&& xivo_is_undef(elt_protocol['fd']) == false)
-				{
-					fd_protocol = true;
-					fd_key = 'fd-'+protocol+'-'+property;
-
-					if(key['fd'] === true)
-						xivo_elt_users[fd_key] = xivo_clone(fd_true);
-					else if(key['fd'] === false)
-						xivo_elt_users[fd_key] = xivo_clone(fd_false);
-					else
-						xivo_elt_users[fd_key] = xivo_clone(key['fd']);
-
-					xivo_elt_users['links']['link'][i++] = new Array(fd_key,0,1);
-				}
-			}
-		}
-
-		if(it_protocol == false && xivo_is_undef(key['it']) == false)
-		{
-			changed = true;
-
-			it_key = 'it-'+property;
-
-			if(key['it'] === true)
-				xivo_elt_users[it_key] = xivo_clone(it_true);
-			else if(key['it'] === false)
-				xivo_elt_users[it_key] = xivo_clone(it_false);
-			else
-				xivo_elt_users[it_key] = xivo_clone(key['it']);
-
-			xivo_elt_users['links']['link'][i++] = new Array(it_key,0,1);
-		}
-
-		if(fd_protocol == false && xivo_is_undef(key['fd']) == false)
-		{
-			changed = true;
-
-			fd_key = 'fd-'+property;
-
-			if(key['fd'] === true)
-				xivo_elt_users[fd_key] = xivo_clone(fd_true);
-			else if(key['fd'] === false)
-				xivo_elt_users[fd_key] = xivo_clone(fd_false);
-			else
-				xivo_elt_users[fd_key] = xivo_clone(key['fd']);
-
-			xivo_elt_users['links']['link'][i++] = new Array(fd_key,0,1);
-		}
-
-		if(changed === false && xivo_type_object(key) === true)
-		{
-			xivo_elt_users[property] = xivo_clone(key);
-			xivo_elt_users['links']['link'][i++] = new Array(property,0,1);
-		}
-	}
-}
-
-function xivo_build_protocol_array(protocol)
-{
-	if(xivo_type_object(xivo_list_elt_users) === false
-	|| xivo_type_object(xivo_elt_users) === false
-	|| xivo_type_object(xivo_elt_protocol[protocol]) === false)
-		return(false);
-
-	var it_true = {property: {disabled: false, className: 'it-enabled'}};
-	var fd_true = {style: {display: 'block'}};
-
-	var it_false = {property: {disabled: true, className: 'it-disabled'}};
-	var fd_false = {style: {display: 'none'}};
-
-	xivo_fm_users[protocol] = xivo_clone(xivo_elt_users);
-
-	for(property in xivo_elt_protocol[protocol])
-	{
-		key = xivo_elt_protocol[protocol][property];
-
-		if(xivo_is_undef(key['it']) == false)
-		{
-			it_key = 'it-'+property;
-
-			if(key['it'] === true)
-				xivo_fm_users[protocol][it_key] = xivo_clone(it_true);
-			else if(key['it'] === false)
-				xivo_fm_users[protocol][it_key] = xivo_clone(it_false);
-			else
-				xivo_fm_users[protocol][it_key] = xivo_clone(key['it']);
-		}
-
-		if(xivo_is_undef(key['fd']) == false)
-		{
-			fd_key = 'fd-'+property;
-
-			if(key['fd'] === true)
-				xivo_fm_users[protocol][fd_key] = xivo_clone(fd_true);
-			else if(key['fd'] === false)
-				xivo_fm_users[protocol][fd_key] = xivo_clone(fd_false);
-			else
-				xivo_fm_users[protocol][fd_key] = xivo_clone(key['fd']);
-		}
-	}
-
-	xivo_attrib_register('fm_user-'+protocol,xivo_fm_users[protocol]);
-}
-
-xivo_loaduser();
-xivo_build_protocol_array('sip');
-xivo_build_protocol_array('iax');
-xivo_build_protocol_array('custom');
-
-var xivo_fm_enablerna = {
+var xivo_ast_fm_user_enablerna = {
 	'it-ufeatures-destrna':
 		{property: [{readOnly: true, className: 'it-readonly'},
 			    {readOnly: false, className: 'it-enabled'}]}};
 
-xivo_attrib_register('fm_enablerna',xivo_fm_enablerna);
+xivo_attrib_register('ast_fm_user_enablerna',xivo_ast_fm_user_enablerna);
 
-var xivo_fm_enablebusy = {
+var xivo_ast_fm_user_enablebusy = {
 	'it-ufeatures-destbusy':
 		{property: [{readOnly: true, className: 'it-readonly'},
 			    {readOnly: false, className: 'it-enabled'}]}};
 
-xivo_attrib_register('fm_enablebusy',xivo_fm_enablebusy);
+xivo_attrib_register('ast_fm_user_enablebusy',xivo_ast_fm_user_enablebusy);
 
-var xivo_fm_enableunc = {
+var xivo_ast_fm_user_enableunc = {
 	'it-ufeatures-destunc':
 		{property: [{readOnly: true, className: 'it-readonly'},
 			    {readOnly: false, className: 'it-enabled'}]}};
 
-xivo_attrib_register('fm_enableunc',xivo_fm_enableunc);
+xivo_attrib_register('ast_fm_user_enableunc',xivo_ast_fm_user_enableunc);
 
-var xivo_fm_outcallerid = {
+var xivo_ast_fm_user_outcallerid = {
 	'fd-ufeatures-outcallerid-custom':
 		{style: [{display: 'none'}, {display: 'block'}],
 		 link: 'it-outcallerid-custom'},
 	'it-ufeatures-outcallerid-custom':
 		{property: [{disabled: true}, {disabled: false}]}};
 
-xivo_attrib_register('fm_outcallerid',xivo_fm_outcallerid);
+xivo_attrib_register('ast_fm_user_outcallerid',xivo_ast_fm_user_outcallerid);
 
-var xivo_fm_host = {
+var xivo_ast_fm_user_host = {
 	'fd-protocol-host-static':
 		{style: [{display: 'none'}, {display: 'block'}],
 		 link: 'it-protocol-host-static'},
 	'it-protocol-host-static':
 		{property: [{disabled: true}, {disabled: false}]}};
 
-xivo_attrib_register('fm_host',xivo_fm_host);
+xivo_attrib_register('ast_fm_user_host',xivo_ast_fm_user_host);
 
-var xivo_fm_codec = {
+var xivo_ast_fm_user_codec = {
 	'it-protocol-disallow':
 		{property: [{disabled: false, className: 'it-enabled'},
 			    {disabled: true, className: 'it-disabled'}],
@@ -323,9 +159,9 @@ var xivo_fm_codec = {
 		{property: [{disabled: false, className: 'it-enabled'},
 			    {disabled: true, className: 'it-disabled', selectedIndex: -1}]}};
 
-xivo_attrib_register('fm_codec',xivo_fm_codec);
+xivo_attrib_register('ast_fm_user_codec',xivo_ast_fm_user_codec);
 
-var xivo_fm_voicemail = {
+var xivo_ast_fm_user_voicemail = {
 	'it-voicemail-fullname':
 		{property: [{disabled: false, className: 'it-enabled'},
 			    {disabled: true, className: 'it-disabled'}],
@@ -366,13 +202,13 @@ var xivo_fm_voicemail = {
 		{property: [{disabled: false, className: 'it-enabled'},
 			    {disabled: true, className: 'it-disabled'}]}};
 
-xivo_attrib_register('fm_voicemail',xivo_fm_voicemail);
+xivo_attrib_register('ast_fm_user_voicemail',xivo_ast_fm_user_voicemail);
 
-xivo_fm_enablevoicemail = xivo_clone(xivo_fm_voicemail);
-xivo_fm_enablevoicemail['it-protocol-buggymwi']['link'] = 'it-ufeatures-enablevoicemail';
-xivo_fm_enablevoicemail['it-ufeatures-enablevoicemail'] = {property: [{checked: true},{checked: false}]};
+xivo_ast_fm_user_enablevoicemail = xivo_clone(xivo_ast_fm_user_voicemail);
+xivo_ast_fm_user_enablevoicemail['it-protocol-buggymwi']['link'] = 'it-ufeatures-enablevoicemail';
+xivo_ast_fm_user_enablevoicemail['it-ufeatures-enablevoicemail'] = {property: [{checked: true},{checked: false}]};
 
-xivo_attrib_register('fm_enablevoicemail',xivo_fm_enablevoicemail);
+xivo_attrib_register('ast_fm_user_enablevoicemail',xivo_ast_fm_user_enablevoicemail);
 
 var xivo_elt_autoprov = {
 	'it-autoprov-modact':
@@ -386,22 +222,182 @@ var xivo_elt_autoprov = {
 		{property: [{disabled: false, className: 'it-enabled'},
 			    {disabled: true, className: 'it-disabled'}]}};
 
-xivo_attrib_register('fm_autoprov-sip',xivo_clone(xivo_elt_autoprov));
+xivo_attrib_register('ast_fm_user_autoprov-sip',xivo_clone(xivo_elt_autoprov));
 
-var xivo_fm_autoprov_iax = xivo_clone(xivo_elt_autoprov);
-xivo_fm_autoprov_iax['it-autoprov-modact']['property'] = {disabled: true, className: 'it-disabled'};
-xivo_fm_autoprov_iax['it-autoprov-vendormodel']['property'] = {disabled: true, className: 'it-disabled'};
-xivo_fm_autoprov_iax['it-autoprov-macaddr']['property'] = {disabled: true, className: 'it-disabled'};
+var xivo_ast_fm_user_autoprov_iax = xivo_clone(xivo_elt_autoprov);
+xivo_ast_fm_user_autoprov_iax['it-autoprov-modact']['property'] = {disabled: true, className: 'it-disabled'};
+xivo_ast_fm_user_autoprov_iax['it-autoprov-vendormodel']['property'] = {disabled: true, className: 'it-disabled'};
+xivo_ast_fm_user_autoprov_iax['it-autoprov-macaddr']['property'] = {disabled: true, className: 'it-disabled'};
 
-xivo_attrib_register('fm_autoprov-iax',xivo_fm_autoprov_iax);
+xivo_attrib_register('ast_fm_user_autoprov-iax',xivo_ast_fm_user_autoprov_iax);
 
-var xivo_fm_cpyname = {'protocol-callerid': false, 'voicemail-fullname': false};
+var xivo_ast_fm_cpy_user_name = {'protocol-callerid': false, 'voicemail-fullname': false};
 
-function xivo_cpyname()
+function xivo_ast_get_user_protocol_elt_info(protocol,element)
 {
-	if(xivo_eid('it-ufeatures-firstname') == false
-	|| xivo_eid('it-ufeatures-lastname') == false
-	|| xivo_eid('it-protocol-callerid') == false)
+	if(xivo_type_object(xivo_ast_user_protocol_elt) === false
+	|| xivo_type_object(xivo_ast_user_protocol_elt[protocol]) === false
+	|| xivo_is_undef(xivo_ast_user_protocol_elt[protocol][protocol+'-'+element]) === true)
+		return(false);
+
+	return(xivo_ast_user_protocol_elt[protocol][protocol+'-'+element]);
+}
+
+function xivo_ast_build_users_elt()
+{
+	if(xivo_type_object(xivo_ast_users_elt_default) === false
+	|| xivo_type_object(xivo_ast_users_elt) === false)
+		return(false);
+
+	var it_true = {property: {disabled: false, className: 'it-enabled'}};
+	var fd_true = {style: {display: 'block'}};
+
+	var it_false = {property: {disabled: true, className: 'it-disabled'}};
+	var fd_false = {style: {display: 'none'}};
+
+	var i = 0;
+
+	for(property in xivo_ast_users_elt_default)
+	{
+		it_protocol = fd_protocol = changed = false;
+
+		key = xivo_ast_users_elt_default[property];
+
+		for(protocol in xivo_ast_user_protocol_elt)
+		{
+			protocol_elt_info = xivo_ast_get_user_protocol_elt_info(protocol,property);
+
+			if(xivo_is_undef(key['it']) === false)
+			{
+				if(protocol_elt_info !== false
+				&& xivo_is_undef(protocol_elt_info['it']) === false)
+				{
+					it_protocol = true;
+					it_key = 'it-'+protocol+'-'+property;
+
+					if(key['it'] === true)
+						xivo_ast_users_elt[it_key] = xivo_clone(it_true);
+					else if(key['it'] === false)
+						xivo_ast_users_elt[it_key] = xivo_clone(it_false);
+					else
+						xivo_ast_users_elt[it_key] = xivo_clone(key['it']);
+
+					xivo_ast_users_elt['links']['link'][i++] = new Array(it_key,0,1);
+				}
+			}
+
+			if(xivo_is_undef(key['fd']) === false)
+			{
+				if(protocol_elt_info !== false
+				&& xivo_is_undef(protocol_elt_info['fd']) === false)
+				{
+					fd_protocol = true;
+					fd_key = 'fd-'+protocol+'-'+property;
+
+					if(key['fd'] === true)
+						xivo_ast_users_elt[fd_key] = xivo_clone(fd_true);
+					else if(key['fd'] === false)
+						xivo_ast_users_elt[fd_key] = xivo_clone(fd_false);
+					else
+						xivo_ast_users_elt[fd_key] = xivo_clone(key['fd']);
+
+					xivo_ast_users_elt['links']['link'][i++] = new Array(fd_key,0,1);
+				}
+			}
+		}
+
+		if(it_protocol === false && xivo_is_undef(key['it']) === false)
+		{
+			changed = true;
+
+			it_key = 'it-'+property;
+
+			if(key['it'] === true)
+				xivo_ast_users_elt[it_key] = xivo_clone(it_true);
+			else if(key['it'] === false)
+				xivo_ast_users_elt[it_key] = xivo_clone(it_false);
+			else
+				xivo_ast_users_elt[it_key] = xivo_clone(key['it']);
+
+			xivo_ast_users_elt['links']['link'][i++] = new Array(it_key,0,1);
+		}
+
+		if(fd_protocol === false && xivo_is_undef(key['fd']) === false)
+		{
+			changed = true;
+
+			fd_key = 'fd-'+property;
+
+			if(key['fd'] === true)
+				xivo_ast_users_elt[fd_key] = xivo_clone(fd_true);
+			else if(key['fd'] === false)
+				xivo_ast_users_elt[fd_key] = xivo_clone(fd_false);
+			else
+				xivo_ast_users_elt[fd_key] = xivo_clone(key['fd']);
+
+			xivo_ast_users_elt['links']['link'][i++] = new Array(fd_key,0,1);
+		}
+
+		if(changed === false && xivo_type_object(key) === true)
+		{
+			xivo_ast_users_elt[property] = xivo_clone(key);
+			xivo_ast_users_elt['links']['link'][i++] = new Array(property,0,1);
+		}
+	}
+}
+
+function xivo_ast_build_user_protocol_array(protocol)
+{
+	if(xivo_type_object(xivo_ast_users_elt_default) === false
+	|| xivo_type_object(xivo_ast_users_elt) === false
+	|| xivo_type_object(xivo_ast_user_protocol_elt[protocol]) === false)
+		return(false);
+
+	var it_true = {property: {disabled: false, className: 'it-enabled'}};
+	var fd_true = {style: {display: 'block'}};
+
+	var it_false = {property: {disabled: true, className: 'it-disabled'}};
+	var fd_false = {style: {display: 'none'}};
+
+	xivo_ast_fm_users[protocol] = xivo_clone(xivo_ast_users_elt);
+
+	for(property in xivo_ast_user_protocol_elt[protocol])
+	{
+		key = xivo_ast_user_protocol_elt[protocol][property];
+
+		if(xivo_is_undef(key['it']) === false)
+		{
+			it_key = 'it-'+property;
+
+			if(key['it'] === true)
+				xivo_ast_fm_users[protocol][it_key] = xivo_clone(it_true);
+			else if(key['it'] === false)
+				xivo_ast_fm_users[protocol][it_key] = xivo_clone(it_false);
+			else
+				xivo_ast_fm_users[protocol][it_key] = xivo_clone(key['it']);
+		}
+
+		if(xivo_is_undef(key['fd']) === false)
+		{
+			fd_key = 'fd-'+property;
+
+			if(key['fd'] === true)
+				xivo_ast_fm_users[protocol][fd_key] = xivo_clone(fd_true);
+			else if(key['fd'] === false)
+				xivo_ast_fm_users[protocol][fd_key] = xivo_clone(fd_false);
+			else
+				xivo_ast_fm_users[protocol][fd_key] = xivo_clone(key['fd']);
+		}
+	}
+
+	xivo_attrib_register('ast_fm_user-'+protocol,xivo_ast_fm_users[protocol]);
+}
+
+function xivo_ast_cpy_user_name()
+{
+	if(xivo_eid('it-ufeatures-firstname') === false
+	|| xivo_eid('it-ufeatures-lastname') === false
+	|| xivo_eid('it-protocol-callerid') === false)
 		return(false);
 
 	var name = '';
@@ -409,44 +405,44 @@ function xivo_cpyname()
 	var firstname = xivo_eid('it-ufeatures-firstname').value;
 	var lastname = xivo_eid('it-ufeatures-lastname').value;
 
-	if(xivo_is_undef(firstname) == false)
+	if(xivo_is_undef(firstname) === false)
 		name += firstname;
 
-	if(xivo_is_undef(lastname) == false)
-		name += name == '' ? lastname : ' '+lastname;
+	if(xivo_is_undef(lastname) === false)
+		name += name.length === 0 ? lastname : ' '+lastname;
 
 	var callerid = xivo_eid('it-protocol-callerid').value;
 
 	var phonenumber = xivo_eid('it-ufeatures-number').value;
 
-	if(xivo_is_undef(phonenumber) == false)
+	if(xivo_is_undef(phonenumber) === false)
 		phonenumber = '<'+phonenumber+'>';
 	else
 		phonenumber = '';
 
-	if(xivo_is_undef(callerid) == true
-	|| callerid == name
-	|| callerid.length == 0
-	|| callerid == phonenumber)
-		xivo_fm_cpyname['protocol-callerid'] = true;
+	if(xivo_is_undef(callerid) === true
+	|| callerid === name
+	|| callerid.length === 0
+	|| callerid === phonenumber)
+		xivo_ast_fm_cpy_user_name['protocol-callerid'] = true;
 	else
-		xivo_fm_cpyname['protocol-callerid'] = false;
+		xivo_ast_fm_cpy_user_name['protocol-callerid'] = false;
 
-	if(xivo_eid('it-voicemail-fullname') == false)
+	if(xivo_eid('it-voicemail-fullname') === false)
 		return(false);
 
 	var fullname = xivo_eid('it-voicemail-fullname').value;
 
-	if(xivo_is_undef(fullname) == true || fullname == name || fullname.length == 0)
-		xivo_fm_cpyname['voicemail-fullname'] = true;
+	if(xivo_is_undef(fullname) === true || fullname === name || fullname.length === 0)
+		xivo_ast_fm_cpy_user_name['voicemail-fullname'] = true;
 	else
-		xivo_fm_cpyname['voicemail-fullname'] = false;
+		xivo_ast_fm_cpy_user_name['voicemail-fullname'] = false;
 }
 
-function xivo_chgname()
+function xivo_ast_chg_user_name()
 {
-	if(xivo_fm_cpyname['protocol-callerid'] === false
-	&& xivo_fm_cpyname['voicemail-fullname'] === false)
+	if(xivo_ast_fm_cpy_user_name['protocol-callerid'] === false
+	&& xivo_ast_fm_cpy_user_name['voicemail-fullname'] === false)
 		return(false);
 
 	var name = '';
@@ -454,83 +450,65 @@ function xivo_chgname()
 	var firstname = xivo_eid('it-ufeatures-firstname').value;
 	var lastname = xivo_eid('it-ufeatures-lastname').value;
 
-	if(xivo_is_undef(firstname) == false)
+	if(xivo_is_undef(firstname) === false)
 		name += firstname;
 
-	if(xivo_is_undef(lastname) == false)
-		name += name.length == 0 ? lastname : ' '+lastname;
+	if(xivo_is_undef(lastname) === false)
+		name += name.length === 0 ? lastname : ' '+lastname;
 
-	if(xivo_fm_cpyname['protocol-callerid'] == true)
+	if(xivo_ast_fm_cpy_user_name['protocol-callerid'] === true)
 		xivo_eid('it-protocol-callerid').value = name;
 
-	if(xivo_fm_cpyname['voicemail-fullname'] == true)
+	if(xivo_ast_fm_cpy_user_name['voicemail-fullname'] === true)
 		xivo_eid('it-voicemail-fullname').value = name;
 
 	return(true);
 }
 
-function xivo_chg_protocol(protocol)
+function xivo_ast_chg_user_protocol(protocol)
 {
-	if(xivo_is_undef(xivo_elt_protocol[protocol]) == true)
+	if(xivo_is_undef(xivo_ast_user_protocol_elt[protocol]) === true)
 		return(false);
 	
-	xivo_protocol = protocol;
+	xivo_ast_user_protocol = protocol;
 
-	xivo_chg_attrib('fm_user-'+xivo_protocol,'links',0,1);
+	if(xivo_is_undef(xivo_ast_fm_users[xivo_ast_user_protocol]) === true)
+		xivo_ast_build_user_protocol_array(xivo_ast_user_protocol);
 
-	if((voicemail = xivo_eid('it-ufeatures-voicemailid')) != false
-	&& voicemail.value != ''
-	&& voicemail.disabled == false)
-		xivo_chg_attrib('fm_voicemail','it-voicemail-fullname',0);
+	xivo_chg_attrib('ast_fm_user-'+xivo_ast_user_protocol,'links',0,1);
 
-	var host_dynamic = xivo_eid('it-protocol-host-dynamic');
+	if((voicemail = xivo_eid('it-ufeatures-voicemailid')) !== false
+	&& voicemail.value !== ''
+	&& voicemail.disabled === false)
+		xivo_chg_attrib('ast_fm_user_voicemail','it-voicemail-fullname',0);
 
-	if(host_dynamic != false)
-		xivo_chg_attrib('fm_host',
+	if((host_dynamic = xivo_eid('it-protocol-host-dynamic')) !== false)
+		xivo_chg_attrib('ast_fm_user_host',
 				'fd-protocol-host-static',
 				Number(host_dynamic.value === 'static'));
 
-	if(xivo_eid('it-autoprov-modact') != false)
-		xivo_chg_attrib('fm_autoprov-'+xivo_protocol,
+	if((autoprov_modact = xivo_eid('it-autoprov-modact')) !== false)
+		xivo_chg_attrib('ast_fm_user_autoprov-'+xivo_ast_user_protocol,
 				'it-autoprov-modact',
-				Number(xivo_eid('it-autoprov-modact').value === ''));
+				Number(autoprov_modact.value === ''));
 
-	if(xivo_eid('it-codec-active') != false)
-		xivo_chg_attrib('fm_codec',
+	if((codec_active = xivo_eid('it-codec-active')) !== false)
+		xivo_chg_attrib('ast_fm_user_codec',
 				'it-protocol-disallow',
-				Number(xivo_eid('it-codec-active').checked === false));
-
-	if((enablerna = xivo_eid('it-ufeatures-enablerna')) != false)
-		xivo_chg_attrib('fm_enablerna',
-				'it-ufeatures-destrna',
-				Number(enablerna.checked));
-
-	if((enablebusy = xivo_eid('it-ufeatures-enablebusy')) != false)
-		xivo_chg_attrib('fm_enablebusy',
-				'it-ufeatures-destbusy',
-				Number(enablebusy.checked));
-
-	if((enableunc = xivo_eid('it-ufeatures-enableunc')) != false)
-		xivo_chg_attrib('fm_enableunc',
-				'it-ufeatures-destunc',
-				Number(enableunc.checked));
+				Number(codec_active.checked === false));
 }
 
-function xivo_ingroup()
+function xivo_ast_user_ingroup()
 {
 	xivo_fm_move_selected('it-grouplist','it-group');
 
-	var len = 0;
-
-	if(xivo_eid('it-group') == false || (len = xivo_eid('it-group').length) < 1)
+	if((grouplist = xivo_eid('it-group')) === false || (len = grouplist.length) < 1)
 		return(false);
-
-	var group = xivo_eid('it-group');
 
 	for(i = 0;i < len;i++)
 	{
-		if((grp = xivo_eid('group-'+group[i].value)) !== false)
-			grp.style.display = 'table-row';
+		if((group = xivo_eid('group-'+grouplist[i].value)) !== false)
+			group.style.display = 'table-row';
 	}
 
 	if(xivo_eid('it-group').length > 0)
@@ -539,62 +517,62 @@ function xivo_ingroup()
 	return(true);
 }
 
-function xivo_outgroup()
+function xivo_ast_user_outgroup()
 {
 	xivo_fm_move_selected('it-group','it-grouplist');
 	
-	var len = 0;
-
-	if(xivo_eid('it-grouplist') == false || (len = xivo_eid('it-grouplist').length) < 1)
+	if((grouplist = xivo_eid('it-grouplist')) === false || (len = grouplist.length) < 1)
 		return(false);
-
-	var group = xivo_eid('it-grouplist');
 
 	for(i = 0;i < len;i++)
 	{
-		if((grp = xivo_eid('group-'+group[i].value)) !== false)
-			grp.style.display = 'none';
+		if((group = xivo_eid('group-'+grouplist[i].value)) !== false)
+			group.style.display = 'none';
 	}
 
-	if(xivo_eid('it-group').length == 0)
+	if(xivo_eid('it-group').length === 0)
 		xivo_eid('no-group').style.display = 'table-row';
 
 	return(true);
 }
 
-function xivo_voicemail_selection(value)
+function xivo_ast_user_voicemail_selection(value)
 {
-	if(value.length == 0)
+	if(value.length === 0)
 	{
-		xivo_chg_attrib('fm_enablevoicemail','it-voicemail-fullname',1);
+		xivo_chg_attrib('ast_fm_user_enablevoicemail',
+				'it-voicemail-fullname',
+				1);
 		return(true);
 	}
 
-	xivo_chg_attrib('fm_enablevoicemail','it-voicemail-fullname',0);
+	xivo_chg_attrib('ast_fm_user_enablevoicemail',
+			'it-voicemail-fullname',
+			0);
 
-	if(value == 'add')
+	if(value === 'add')
 	{
-		if(typeof(xivo_fm_voicemail) === 'undefined'
-		|| xivo_type_object(xivo_fm_voicemail) === false)
+		if(typeof(xivo_ast_fm_user_voicemail) === 'undefined'
+		|| xivo_type_object(xivo_ast_fm_user_voicemail) === false)
 			return(false);
 
-		for(property in xivo_fm_voicemail)
+		for(property in xivo_ast_fm_user_voicemail)
 			xivo_fm_reset_field(xivo_eid(property),true);
 
-		if(xivo_eid('it-ufeatures-firstname') == false
-		|| xivo_eid('it-ufeatures-lastname') == false
-		|| xivo_eid('it-voicemail-fullname') == false)
+		if(xivo_eid('it-ufeatures-firstname') === false
+		|| xivo_eid('it-ufeatures-lastname') === false
+		|| xivo_eid('it-voicemail-fullname') === false)
 			return(true);
 
 		var name = '';
 		var firstname = xivo_eid('it-ufeatures-firstname').value;
 		var lastname = xivo_eid('it-ufeatures-lastname').value;
 
-		if(xivo_is_undef(firstname) == false)
+		if(xivo_is_undef(firstname) === false)
 			name += firstname;
 
-		if(xivo_is_undef(lastname) == false)
-			name += name == '' ? lastname : ' '+lastname;
+		if(xivo_is_undef(lastname) === false)
+			name += name.length === 0 ? lastname : ' '+lastname;
 
 		xivo_eid('it-voicemail-fullname').value = name;
 
@@ -603,7 +581,7 @@ function xivo_voicemail_selection(value)
 
 	var param = {'act': 'view',
 		     'id': value,
-		     'callback': 'xivo_voicemail_set_info'};
+		     'callback': 'xivo_ast_user_voicemail_set_info'};
 
 	if(xivo_ajs_load_script('/service/ipbx/ajs.php/voicemail/',
 				param,
@@ -614,7 +592,7 @@ function xivo_voicemail_selection(value)
 	return(true);
 }
 
-function xivo_voicemail_set_info(obj)
+function xivo_ast_user_voicemail_set_info(obj)
 {
 	if(xivo_is_undef(obj['voicemail']) === true)
 		return(false);
@@ -629,41 +607,43 @@ function xivo_voicemail_set_info(obj)
 	xivo_eid('it-voicemail-deletevoicemail').checked = xivo_bool(obj['voicemail']['deletevoicemail']);
 }
 
-function xivo_enable_voicemail()
+function xivo_ast_user_enable_voicemail()
 {
-	if((voicemail = xivo_eid('it-ufeatures-voicemailid')) != false)
-		xivo_chg_attrib('fm_enablevoicemail',
+	if((voicemail = xivo_eid('it-ufeatures-voicemailid')) !== false)
+		xivo_chg_attrib('ast_fm_user_enablevoicemail',
 				'it-voicemail-fullname',
 				Number(voicemail.value === ''));
 }
 
-function xivo_user_onload()
+function xivo_ast_user_onload()
 {
-	if(xivo_eid('it-protocol-protocol') != false)
-		xivo_chg_protocol(xivo_eid('it-protocol-protocol').value);
+	xivo_ast_build_users_elt();
 
-	if((voicemail = xivo_eid('it-ufeatures-voicemailid')) != false)
-		xivo_chg_attrib('fm_voicemail',
+	if(xivo_eid('it-protocol-protocol') !== false)
+		xivo_ast_chg_user_protocol(xivo_eid('it-protocol-protocol').value);
+
+	if((voicemail = xivo_eid('it-ufeatures-voicemailid')) !== false)
+		xivo_chg_attrib('ast_fm_user_voicemail',
 				'it-voicemail-fullname',
 				Number(voicemail.value === ''));
 
-	if((outcallerid_type = xivo_eid('it-ufeatures-outcallerid-type')) != false)
-		xivo_chg_attrib('fm_outcallerid',
+	if((outcallerid_type = xivo_eid('it-ufeatures-outcallerid-type')) !== false)
+		xivo_chg_attrib('ast_fm_user_outcallerid',
 				'fd-ufeatures-outcallerid-custom',
 				Number(outcallerid_type.value === 'custom'));
 
-	if((enablerna = xivo_eid('it-ufeatures-enablerna')) != false)
-		xivo_chg_attrib('fm_enablerna',
+	if((enablerna = xivo_eid('it-ufeatures-enablerna')) !== false)
+		xivo_chg_attrib('ast_fm_user_enablerna',
 				'it-ufeatures-destrna',
 				Number(enablerna.checked));
 
-	if((enablebusy = xivo_eid('it-ufeatures-enablebusy')) != false)
-		xivo_chg_attrib('fm_enablebusy',
+	if((enablebusy = xivo_eid('it-ufeatures-enablebusy')) !== false)
+		xivo_chg_attrib('ast_fm_user_enablebusy',
 				'it-ufeatures-destbusy',
 				Number(enablebusy.checked));
 
-	if((enableunc = xivo_eid('it-ufeatures-enableunc')) != false)
-		xivo_chg_attrib('fm_enableunc',
+	if((enableunc = xivo_eid('it-ufeatures-enableunc')) !== false)
+		xivo_chg_attrib('ast_fm_user_enableunc',
 				'it-ufeatures-destunc',
 				Number(enableunc.checked));
 
@@ -675,4 +655,4 @@ function xivo_user_onload()
 	xivo_ast_dialaction_onload();
 }
 
-xivo_winload.push('xivo_user_onload();');
+xivo_winload.push('xivo_ast_user_onload();');

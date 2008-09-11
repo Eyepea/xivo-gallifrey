@@ -120,19 +120,22 @@ $array['element']['tos_sip'] = array();
 $array['element']['tos_sip']['value'] = array('CS0','CS1','CS2','CS3','CS4','CS5','CS6','CS7',
 					      'AF11','AF12','AF13','AF21','AF22','AF23',
 					      'AF31', 'AF32','AF33','AF41','AF42','AF43','EF');
-$array['element']['tos_sip']['default'] = 'CS3';
+$array['element']['tos_sip']['default'] = '';
+$array['element']['tos_sip']['null'] = true;
 
 $array['element']['tos_audio'] = array();
 $array['element']['tos_audio']['value'] = array('CS0','CS1','CS2','CS3','CS4','CS5','CS6','CS7',
 						'AF11','AF12','AF13','AF21','AF22','AF23',
 						'AF31', 'AF32','AF33','AF41','AF42','AF43','EF');
-$array['element']['tos_audio']['default'] = 'EF';
+$array['element']['tos_audio']['default'] = '';
+$array['element']['tos_audio']['null'] = true;
 
 $array['element']['tos_video'] = array();
 $array['element']['tos_video']['value'] = array('CS0','CS1','CS2','CS3','CS4','CS5','CS6','CS7',
 						'AF11','AF12','AF13','AF21','AF22','AF23',
 						'AF31', 'AF32','AF33','AF41','AF42','AF43','EF');
-$array['element']['tos_video']['default'] = 'AF41';
+$array['element']['tos_video']['default'] = '';
+$array['element']['tos_video']['null'] = true;
 
 $array['element']['t38pt_udptl'] = array();
 $array['element']['t38pt_udptl']['value'] = array('no','yes');
@@ -502,9 +505,9 @@ $array['filter']['sipdebug'] = array('bool' => true);
 $array['filter']['dumphistory'] = array('bool' => true);
 $array['filter']['recordhistory'] = array('bool' => true);
 $array['filter']['callevents'] = array('bool' => true);
-$array['filter']['tos_sip'] = array('regexp' => '/^(CS[0-7]|AF[1-4][1-3]|EF)$/');
-$array['filter']['tos_audio'] = array('regexp' => '/^(CS[0-7]|AF[1-4][1-3]|EF)$/');
-$array['filter']['tos_video'] = array('regexp' => '/^(CS[0-7]|AF[1-4][1-3]|EF)$/');
+$array['filter']['tos_sip'] = array('set' => false,'chk' => 2,'regexp' => '/^(CS[0-7]|AF[1-4][1-3]|EF)$/');
+$array['filter']['tos_audio'] = array('set' => false,'chk' => 2,'regexp' => '/^(CS[0-7]|AF[1-4][1-3]|EF)$/');
+$array['filter']['tos_video'] = array('set' => false,'chk' => 2,'regexp' => '/^(CS[0-7]|AF[1-4][1-3]|EF)$/');
 $array['filter']['t38pt_udptl'] = array('bool' => true);
 $array['filter']['t38pt_rtp'] = array('bool' => true);
 $array['filter']['t38pt_tcp'] = array('bool' => true);

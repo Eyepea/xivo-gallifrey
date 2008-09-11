@@ -59,7 +59,7 @@ Illimité
 %s secondes
 
 ; fm_userfeatures_simultcalls
-Appels simultanés :
+Nombre d'appels simultanés :
 
 ; fm_protocol_protocol
 Protocole :
@@ -232,8 +232,17 @@ Oui
 ; fm_protocol_qualify-opt
 %s millisecondes
 
+; fm_protocol_qualifysmoothing
+Calcul de la durée moyenne de la latence :
+
+; fm_protocol_qualifyfreqok
+Fréquence de vérification quand tout fonctionne :
+
 ; fm_protocol_qualifyfreqok-opt
 %s millisecondes
+
+; fm_protocol_qualifyfreqnotok
+Fréquence de vérification quand il y a un problème :
 
 ; fm_protocol_qualifyfreqnotok-opt
 %s millisecondes
@@ -299,7 +308,7 @@ Hôte
 Appelant
 
 ; fm_protocol_codecpriority-opt-reqonly
-Requête seulement
+Seulement par requête
 
 ; fm_codec-custom
 Personnaliser les codecs :
@@ -529,6 +538,9 @@ Invite
 ; fm_protocol_insecure-opt-all
 Tout
 
+; fm_protocol_sendani
+Envoyer la présentation du nom et numéro d'appel :
+
 ; fm_protocol_host
 Type d'adressage IP :
 
@@ -537,6 +549,9 @@ Dynamique
 
 ; fm_protocol_host-static
 Statique
+
+; fm_protocol_mask
+Masque réseau :
 
 ; fm_protocol_permit
 Adresse IP ou masque sous-réseau autorisés :
@@ -554,7 +569,7 @@ Envoyer le Remote-Party-ID :
 Activer le support des souscriptions :
 
 ; fm_protocol_allowoverlap
-Activer l'overlap :
+Activer le chevauchement :
 
 ; fm_protocol_promiscredir
 Support des redirections 302 :
