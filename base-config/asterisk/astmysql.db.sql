@@ -843,7 +843,7 @@ INSERT INTO `staticiax` VALUES (NULL,0,0,1,'iax.conf','general','regcontext',NUL
 INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','minregexpire',60);
 INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','maxregexpire',60);
 INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','bandwidth','high');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','tos','EF');
+INSERT INTO `staticiax` VALUES (NULL,0,0,1,'iax.conf','general','tos',NULL);
 INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','jitterbuffer','no');
 INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','forcejitterbuffer','no');
 INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','maxjitterbuffer',1000);
@@ -957,9 +957,9 @@ INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','sipdebug','no')
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','dumphistory','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','recordhistory','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','callevents','no');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','tos_sip','CS3');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','tos_audio','EF');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','tos_video','AF41');
+INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','tos_sip',NULL);
+INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','tos_audio',NULL);
+INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','tos_video',NULL);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','t38pt_udptl','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','t38pt_rtp','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','t38pt_tcp','no');
