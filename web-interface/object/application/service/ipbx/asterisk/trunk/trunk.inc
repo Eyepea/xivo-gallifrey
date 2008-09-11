@@ -10,6 +10,7 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 	var $_contextmember	= false;
 	var $_param		= array('protocol'	=> '');
 	var $_contextlist	= array();
+	var $_timezones		= array();
 
 	function xivo_application_service_asterisk_trunk(&$service,&$dso,$param=array(),$components=true)
 	{
@@ -122,6 +123,15 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 		$this->_origin['register'] = $this->_register->get_origin();
 
 		return(true);
+	}
+
+	function get_timezones()
+	{
+		if(empty($this->_timezones) === true
+		&& ($timezones = xivo_i18n::get_timezone_list()) !== false)
+			$this->_timezones = $timezones;
+
+		return($this->_timezones);
 	}
 
 	function get_elements()
@@ -319,6 +329,15 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 
 				if(isset($arr['host-static']) === true && $arr['host'] === 'static')
 					$arr['host'] = $arr['host-static'];
+			}
+
+			if($this->_param['protocol'] === XIVO_SRE_IPBX_AST_PROTO_IAX
+			&& xivo_haslen($arr,'timezone') === true)
+			{
+				$this->get_timezones();
+
+				if(isset($this->_timezones[$arr['timezone']]) === false)
+					$arr['timezone'] = '';
 			}
 		}
 

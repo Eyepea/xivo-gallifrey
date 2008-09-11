@@ -283,7 +283,11 @@ $array['filter']['qualifyfreqnotok'] = array('set'	=> false,
 								 10000,15000,20000,30000,35000,40000,45000,50000,
 								 55000,60000,65000,70000,75000,80000,85000,90000,
 								 95000,100000,105000,110000,115000,120000));
-$array['filter']['timezone'] = array('set' => false,'chk' => 2,'minlen' => 1,'maxlen' => 80,'regexp' => '/^[a-z0-9_-]+$/i');
+$array['filter']['timezone'] = array('set'	=> false,
+				     'chk'	=> 2,
+				     'minlen'	=> 9,
+				     'maxlen'	=> 30,
+				     'regexp'	=> '/^[A-Z][a-z]{3,9}\/[a-zA-Z\/_-]{4,22}$/');
 $array['filter']['disallow'] = array('set' => false,'chk' => 2,'key' => array('all'));
 $array['filter']['allow'] = array('set' => false,'chk' => 2,'uvalue' => xivo_service_asterisk::get_codecs_list());
 $array['filter']['mohinterpret'] = array('set' => false,'chk' => 0);

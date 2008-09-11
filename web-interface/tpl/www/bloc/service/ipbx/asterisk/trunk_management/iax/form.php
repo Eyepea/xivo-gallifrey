@@ -203,6 +203,15 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 				    'value'	=> $info['protocol']['forcejitterbuffer']),
 			      $element['protocol']['forcejitterbuffer']['value']),
 
+		$form->select(array('desc'	=> $this->bbf('fm_protocol_timezone'),
+				    'name'	=> 'protocol[timezone]',
+				    'labelid'	=> 'protocol-timezone',
+				    'key'	=> true,
+				    'empty'	=> true,
+				    'default'	=> $element['protocol']['timezone']['default'],
+				    'value'	=> $info['protocol']['timezone']),
+			      $this->get_var('timezone_list')),
+
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_codecpriority'),
 				    'name'	=> 'protocol[codecpriority]',
 				    'labelid'	=> 'protocol-codecpriority',

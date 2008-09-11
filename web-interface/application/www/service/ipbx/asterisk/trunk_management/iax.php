@@ -58,6 +58,7 @@ switch($act)
 		$_HTML->set_var('info',$result);
 		$_HTML->set_var('element',$element);
 		$_HTML->set_var('context_list',$apptrunk->get_context_list());
+		$_HTML->set_var('timezone_list',$apptrunk->get_timezones());
 		break;
 	case 'edit':
 		$apptrunk = &$ipbx->get_application('trunk',
@@ -118,6 +119,7 @@ switch($act)
 		$_HTML->set_var('info',$return);
 		$_HTML->set_var('element',$element);
 		$_HTML->set_var('context_list',$apptrunk->get_context_list());
+		$_HTML->set_var('timezone_list',$apptrunk->get_timezones());
 		break;
 	case 'delete':
 		$param['page'] = $page;
