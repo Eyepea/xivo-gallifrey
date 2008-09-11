@@ -103,6 +103,7 @@ class XivoCTICommand(BaseCommand):
                         'agents-list', 'agents-status', 'agent-status', 'agent',
                         'queues-list', 'queue-status',
                         'users-list',
+                        'calllist-fetch',
                         'faxsend',
                         'faxdata',
                         'database',
@@ -262,7 +263,7 @@ class XivoCTICommand(BaseCommand):
         def manage_logoff(self, userinfo, when):
                 log_debug(SYSLOG_INFO, 'logoff (%s) %s'
                           % (when, userinfo))
-                userinfo['last-logofftime'] = time.asctime()
+                userinfo['logofftime-ascii-last'] = time.asctime()
                 if 'agentnum' in userinfo:
                         agentnum = userinfo['agentnum']
                         astid = userinfo['astid']
@@ -311,6 +312,7 @@ class XivoCTICommand(BaseCommand):
                         userinfo['login'] = {}
                         userinfo['login']['sessiontimestamp'] = time.time()
                         userinfo['login']['logintimestamp'] = time.time()
+                        userinfo['login']['logintime-ascii'] = time.asctime()
                         for v, vv in userinfo['prelogin'].iteritems():
                                 userinfo['login'][v] = vv
                         del userinfo['prelogin']
@@ -1446,6 +1448,10 @@ class XivoCTICommand(BaseCommand):
                                                 num = icommand.args[3]
                                                 self.amilist.execute(astid, 'sendcommand', 'Command', [('Command', 'meetme kick %s %s' % (room, num))])
 
+                        elif icommand.name == 'calllist-fetch':
+                                self.__send_msg_to_cti_client__(userinfo,
+                                                                'calllist=101;102;103')
+                                
                         elif icommand.name in ['originate', 'transfer', 'atxfer']:
                                 if self.capas[capaid].match_funcs(ucapa, 'dial'):
                                         repstr = self.__originate_or_transfer__(userinfo,
