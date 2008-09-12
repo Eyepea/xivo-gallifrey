@@ -1,6 +1,6 @@
 #!/bin/sh
-# $Revision: 678 $
-# $Date: 2007-05-22 15:22:15 +0200 (mar, 22 mai 2007) $
+# $Revision$
+# $Date$
 #
 # Startup daemon script for xivo_daemon_bazile
 #

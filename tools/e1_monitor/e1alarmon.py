@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-__version__ = "$Revision$ $Date: 2007-06-15 18:42:49 +0200 (ven, 15 jun 2007) $"
+__version__ = "$Revision$ $Date$"
 
 import ConfigParser
 import encodings.utf_8
