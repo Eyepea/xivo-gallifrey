@@ -7,18 +7,27 @@ $info = $this->get_var('info');
 $element = $this->get_var('element');
 $context_list = $this->get_var('context_list');
 
-$allow = $info['protocol']['allow'];
+if(isset($info['protocol']) === true):
+	if(xivo_issa('allow',$info['protocol']) === true):
+		$allow = $info['protocol']['allow'];
+	else:
+		$allow = array();
+	endif;
+
+	$host = (string) xivo_ak('host',$info['protocol'],true);
+	$protocol_disable = (bool) xivo_ak('commented',$info['protocol'],true);
+else:
+	$allow = array();
+	$host = '';
+	$protocol_disable = false;
+endif;
 
 $codec_active = empty($allow) === false;
-
-$protocol_disable = (bool) $this->get_varra('info',array('protocol','commented'));
+$host_static = ($host !== '' && $host !== 'dynamic');
 
 if(($reg_active = $this->get_varra('info',array('register','commented'))) !== null):
 	$reg_active = xivo_bool($reg_active) === false;
 endif;
-
-$host = (string) xivo_ak('host',$info['protocol'],true);
-$host_static = ($host !== '' && $host !== 'dynamic');
 
 ?>
 
@@ -168,8 +177,7 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_qualifyfreqok'),
 				    'name'	=> 'protocol[qualifyfreqok]',
 				    'labelid'	=> 'protocol-qualifyfreqok',
-				    'key'	=> false,
-				    'bbf'	=> array('mixkey','fm_protocol_qualifyfreqok-opt'),
+				    'bbf'	=> array('mixkey','fm_protocol_qualifyfreq-opt','paramarray'),
 				    'default'	=> $element['protocol']['qualifyfreqok']['default'],
 				    'value'	=> $info['protocol']['qualifyfreqok']),
 			      $element['protocol']['qualifyfreqok']['value']),
@@ -177,8 +185,7 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_qualifyfreqnotok'),
 				    'name'	=> 'protocol[qualifyfreqnotok]',
 				    'labelid'	=> 'protocol-qualifyfreqnotok',
-				    'key'	=> false,
-				    'bbf'	=> array('mixkey','fm_protocol_qualifyfreqnotok-opt'),
+				    'bbf'	=> array('mixkey','fm_protocol_qualifyfreq-opt','paramarray'),
 				    'default'	=> $element['protocol']['qualifyfreqnotok']['default'],
 				    'value'	=> $info['protocol']['qualifyfreqnotok']),
 			      $element['protocol']['qualifyfreqnotok']['value']),
@@ -433,4 +440,19 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 				  'default'	=> $element['protocol']['accountcode']['default'],
 				  'value'	=> $info['protocol']['accountcode']));
 ?>
+	<div class="fm-field fm-description">
+		<p>
+			<label id="lb-trunkfeatures-description" for="it-trunkfeatures-description">
+				<?=$this->bbf('fm_trunkfeatures_description');?>
+			</label>
+		</p>
+		<?=$form->textarea(array('field'	=> false,
+					 'label'	=> false,
+					 'name'		=> 'trunkfeatures[description]',
+					 'id'		=> 'it-trunkfeatures-description',
+					 'cols'		=> 60,
+					 'rows'		=> 5,
+					 'default'	=> $element['trunkfeatures']['description']['default']),
+				   $info['trunkfeatures']['description']);?>
+	</div>
 </div>

@@ -279,3 +279,6 @@ Numéro d'acompte :
 
 ; fm_protocol_useclientcode
 Code client :
+
+; fm_trunkfeatures_description
+Description :

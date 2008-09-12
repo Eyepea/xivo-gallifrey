@@ -19,6 +19,9 @@ $array['element']['registercommented']['value'] = array(0,1);
 $array['element']['registercommented']['default'] = 0;
 $array['element']['registercommented']['set'] = true;
 
+$array['element']['description'] = array();
+$array['element']['description']['default'] = '';
+
 $array['filter'] = array();
 $array['filter']['protocol'] = array('key' => array(
 						XIVO_SRE_IPBX_AST_PROTO_SIP,
@@ -27,5 +30,6 @@ $array['filter']['protocol'] = array('key' => array(
 $array['filter']['protocolid'] = array('cast' => 'ulongint');
 $array['filter']['registerid'] = array('set' => false,'chk' => 2,'cast' => 'ulongint');
 $array['filter']['registercommented'] = array('bool' => true);
+$array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
 
 ?>

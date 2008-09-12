@@ -138,6 +138,8 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 	{
 		$r = array();
 
+		$r['trunkfeatures'] = $this->_trunkfeatures->get_element();
+
 		if(is_object($this->_protocol) === true)
 			$r['protocol'] = $this->_protocol->get_element();
 		else
@@ -289,8 +291,11 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 		$this->_reset();
 
 		if(($action !== 'add' && $action !== 'edit') === true
+		|| xivo_issa('trunkfeatures',$arr) === false
 		|| xivo_issa('protocol',$arr) === false)
 			return(false);
+
+		$this->set_trunkfeatures($arr['trunkfeatures']);
 
 		$this->set_protocol($arr['protocol']);
 
@@ -300,6 +305,32 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 		$this->set_contextmember();
 
 		return(($this->get_errnb() < 1));
+	}
+
+	function set_trunkfeatures($arr)
+	{
+		if(is_array($arr) === false)
+		{
+			$this->_set_result('trunkfeatures',null);
+			$this->_set_error('trunkfeatures','invalid data');
+			return(false);
+		}
+
+		$arr['protocol'] = $this->_param['protocol'];
+		$arr['protocolid'] = 0;
+		$arr['registerid'] = 0;
+		$arr['registercommented'] = true;
+
+		if(($rs = $this->_trunkfeatures->chk_values($arr)) === false)
+		{
+			$this->_set_result('trunkfeatures',$this->_trunkfeatures->get_filter_result());
+			$this->_set_error('trunkfeatures',$this->_trunkfeatures->get_filter_error());
+			return(false);
+		}
+
+		$this->_set_result('trunkfeatures',$rs);
+
+		return(true);
 	}
 
 	function set_protocol($arr)
@@ -420,11 +451,9 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 
 	function add_trunkfeatures($protocolid,$registerid=null)
 	{
-		$rs = array();
-		$rs['registerid'] = 0;
-		$rs['registercommented'] = true;
-
-		if(($protocolid = xivo_ulongint($protocolid)) === 0)
+		if(($protocolid = xivo_ulongint($protocolid)) === 0
+		|| ($rs = $this->get_result('trunkfeatures')) === null
+		|| $rs === false)
 			return(false);
 		else if($registerid !== null)
 		{
@@ -434,7 +463,6 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 			$rs['registercommented'] = false;
 		}
 
-		$rs['protocol'] = $this->_param['protocol'];
 		$rs['protocolid'] = $protocolid;
 
 		return(($this->_return['trunkfeatures'] = $this->_trunkfeatures->add($rs)));
@@ -522,7 +550,9 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 
 	function edit_trunkfeatures($registerid)
 	{
-		if(xivo_issa('trunkfeatures',$this->_info) === false)
+		if(xivo_issa('trunkfeatures',$this->_info) === false
+		|| ($rs = $this->get_result('trunkfeatures')) === null
+		|| $rs === false)
 			return(false);
 
 		$rs['registercommented'] = false;

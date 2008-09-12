@@ -7,18 +7,27 @@ $info = $this->get_var('info');
 $element = $this->get_var('element');
 $context_list = $this->get_var('context_list');
 
-$allow = $info['protocol']['allow'];
+if(isset($info['protocol']) === true):
+	if(xivo_issa('allow',$info['protocol']) === true):
+		$allow = $info['protocol']['allow'];
+	else:
+		$allow = array();
+	endif;
+
+	$host = (string) xivo_ak('host',$info['protocol'],true);
+	$protocol_disable = (bool) xivo_ak('commented',$info['protocol'],true);
+else:
+	$allow = array();
+	$host = '';
+	$protocol_disable = false;
+endif;
 
 $codec_active = empty($allow) === false;
-
-$protocol_disable = (bool) $this->get_varra('info',array('protocol','commented'));
+$host_static = ($host !== '' && $host !== 'dynamic');
 
 if(($reg_active = $this->get_varra('info',array('register','commented'))) !== null):
 	$reg_active = xivo_bool($reg_active) === false;
 endif;
-
-$host = (string) xivo_ak('host',$info['protocol'],true);
-$host_static = ($host !== '' && $host !== 'dynamic');
 
 ?>
 
@@ -527,4 +536,19 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 				    'value'	=> $info['protocol']['useclientcode']),
 			      $element['protocol']['useclientcode']['value']);
 ?>
+	<div class="fm-field fm-description">
+		<p>
+			<label id="lb-trunkfeatures-description" for="it-trunkfeatures-description">
+				<?=$this->bbf('fm_trunkfeatures_description');?>
+			</label>
+		</p>
+		<?=$form->textarea(array('field'	=> false,
+					 'label'	=> false,
+					 'name'		=> 'trunkfeatures[description]',
+					 'id'		=> 'it-trunkfeatures-description',
+					 'cols'		=> 60,
+					 'rows'		=> 5,
+					 'default'	=> $element['trunkfeatures']['description']['default']),
+				   $info['trunkfeatures']['description']);?>
+	</div>
 </div>

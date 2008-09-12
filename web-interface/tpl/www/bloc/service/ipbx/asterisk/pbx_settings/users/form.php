@@ -11,22 +11,6 @@ $autoprov_list = $this->get_var('autoprov_list');
 $context_list = $this->get_var('context_list');
 $rightcall = $this->get_var('rightcall');
 
-if(isset($info['protocol']['allow']) === true):
-	$allow = $info['protocol']['allow'];
-else:
-	$allow = array();
-endif;
-
-$codec_active = empty($allow) === false;
-
-if(isset($info['protocol']) === true):
-	$host = (string) xivo_ak('host',$info['protocol'],true);
-else:
-	$host = '';
-endif;
-
-$host_static = ($host !== '' && $host !== 'dynamic');
-
 if(($outcallerid = (string) $info['ufeatures']['outcallerid']) === ''
 || in_array($outcallerid,$element['ufeatures']['outcallerid']['value'],true) === true):
 	$outcallerid_custom = false;
@@ -41,12 +25,23 @@ else:
 endif;
 
 if(isset($info['protocol']) === true):
+	if(xivo_issa('allow',$info['protocol']) === true):
+		$allow = $info['protocol']['allow'];
+	else:
+		$allow = array();
+	endif;
+
 	$context = (string) xivo_ak('context',$info['protocol'],true);
 	$amaflags = (string) xivo_ak('amaflags',$info['protocol'],true);
 	$qualify = (string) xivo_ak('qualify',$info['protocol'],true);
+	$host = (string) xivo_ak('host',$info['protocol'],true);
 else:
-	$context = $amaflags = $qualify = '';
+	$allow = array();
+	$context = $amaflags = $qualify = $host = '';
 endif;
+
+$codec_active = empty($allow) === false;
+$host_static = ($host !== '' && $host !== 'dynamic');
 
 ?>
 
@@ -465,8 +460,7 @@ endif;
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_qualifyfreqok'),
 				    'name'	=> 'protocol[qualifyfreqok]',
 				    'labelid'	=> 'protocol-qualifyfreqok',
-				    'key'	=> false,
-				    'bbf'	=> array('mixkey','fm_protocol_qualifyfreqok-opt'),
+				    'bbf'	=> array('mixkey','fm_protocol_qualifyfreq-opt','paramarray'),
 				    'default'	=> $element['protocol']['iax']['qualifyfreqok']['default'],
 				    'value'	=> $this->get_varra('info',array('protocol','qualifyfreqok'))),
 			      $element['protocol']['iax']['qualifyfreqok']['value']),
@@ -474,8 +468,7 @@ endif;
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_qualifyfreqnotok'),
 				    'name'	=> 'protocol[qualifyfreqnotok]',
 				    'labelid'	=> 'protocol-qualifyfreqnotok',
-				    'key'	=> false,
-				    'bbf'	=> array('mixkey','fm_protocol_qualifyfreqnotok-opt'),
+				    'bbf'	=> array('mixkey','fm_protocol_qualifyfreq-opt','paramarray'),
 				    'default'	=> $element['protocol']['iax']['qualifyfreqnotok']['default'],
 				    'value'	=> $this->get_varra('info',array('protocol','qualifyfreqnotok'))),
 			      $element['protocol']['iax']['qualifyfreqnotok']['value']),
