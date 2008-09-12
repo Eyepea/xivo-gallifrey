@@ -161,7 +161,7 @@ endif;
 		<div class="clearboth"></div>
 <?php
 		else:
-			echo '<div class="txt-center">',$url->href_html($this->bbf('create_agent'),'service/ipbx/pbx_settings/agents','act=addagent'),'</div>';
+			echo '<div id="create-agent" class="txt-center">',$url->href_html($this->bbf('create_agent'),'service/ipbx/pbx_settings/agents','act=addagent'),'</div>';
 		endif;
 
 	else:
