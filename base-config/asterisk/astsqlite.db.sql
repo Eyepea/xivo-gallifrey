@@ -1070,6 +1070,7 @@ CREATE TABLE trunkfeatures (
  protocolid integer unsigned NOT NULL,
  registerid integer unsigned NOT NULL DEFAULT 0,
  registercommented tinyint(1) NOT NULL DEFAULT 0,
+ description text NOT NULL,
  PRIMARY KEY(id)
 );
 

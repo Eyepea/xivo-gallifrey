@@ -1106,6 +1106,7 @@ CREATE TABLE `trunkfeatures` (
  `protocolid` int(10) unsigned NOT NULL,
  `registerid` int(10) unsigned NOT NULL DEFAULT 0,
  `registercommented` tinyint(1) NOT NULL DEFAULT 0,
+ `description` text NOT NULL,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
