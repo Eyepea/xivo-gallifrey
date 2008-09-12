@@ -1,8 +1,8 @@
 #!/usr/bin/make -f
 # -*- mode: makefile; coding: utf-8 -*-
 #
-# $Revision: 1479 $
-# $Date: 2007-09-07 15:17:42 +0200 (Fri, 07 Sep 2007) $
+# $Revision$
+# $Date$
 #
 # set PATH and CC to include cross compiling tools for cross compilation, e.g.
 # export PATH=/path/to/toolchain/powerpc-linux-gnu/bin:$PATH
