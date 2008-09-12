@@ -87,7 +87,7 @@ qos_drop=10
 RIPFlag=0
 TelnetTime=240
 TelnetPort=23
-TelnetSrv=0
+TelnetSrv=1
 VLAN=0
 
 [pstn]
