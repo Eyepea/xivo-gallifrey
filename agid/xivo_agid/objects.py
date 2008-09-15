@@ -30,10 +30,8 @@ class DBUpdateException(Exception): pass
 
 class FeatureList:
 	def __init__(self, agi, cursor):
-		features = ('"fwdunc"', '"fwdrna"', '"fwdbusy"', '"enablevm"', '"incallfilter"',
-			    '"incallrec"', '"enablednd"')
 		cursor.query("SELECT ${columns} FROM extensions "
-			     "WHERE name IN (" + ','.join(features) + ") "
+			     'WHERE name IN ("fwdunc", "fwdrna", "fwdbusy", "enablevm", "incallfilter", "incallrec", "enablednd") '
 			     "AND commented = 0",
 			     ('name',))
 		res = cursor.fetchall()
