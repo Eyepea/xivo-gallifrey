@@ -56,7 +56,6 @@ __revision__ = __version__.split()[1]
 # debian.org modules
 import getopt
 import os
-import random
 import select
 import signal
 import socket
@@ -64,6 +63,8 @@ import string
 import sys
 import threading
 import time
+import logging
+import logging.handlers
 
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 waiting_actionid = {}
@@ -457,7 +458,6 @@ def handle_ami_function(astid, evfunction, this_event):
         """
         try:
                 if evfunction == 'Reload':
-                        message = this_event.get('Message')
                         log_debug(SYSLOG_WARNING, 'AMI:Reload: %s : %s' % (astid, str(this_event)))
                         commandclass.ami_reload(astid, this_event)
                 elif evfunction == 'Shutdown':
@@ -526,21 +526,17 @@ def sighandler_reload(signum, frame):
         askedtoquit = False
 
 # ==============================================================================
-# ==============================================================================
-
-def log_stderr_and_syslog(x):
-        print >> sys.stderr, x
-        syslogf(SYSLOG_ERR, x)
-
-# ==============================================================================
 # Main Code starts here
 # ==============================================================================
 
-# daemonize if not in debug mode
+logging.basicConfig(level=logging.INFO)
+sysloghandler = logging.handlers.SysLogHandler(('localhost', 514), syslog.LOG_DAEMON)
+logging.getLogger('').addHandler(sysloghandler)
+
 if not debug_mode:
-        daemonize.daemonize(log_stderr_and_syslog, PIDFILE, True)
+        daemonize.daemonize(PIDFILE, pidfile_lock=True)
 else:
-        daemonize.create_pidfile_or_die(log_stderr_and_syslog, PIDFILE, True)
+        daemonize.create_pidfile_or_die(PIDFILE, pidfile_lock=True)
 
 signal.signal(signal.SIGINT, sighandler)
 signal.signal(signal.SIGTERM, sighandler)
