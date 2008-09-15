@@ -27,14 +27,14 @@ import Queue
 import urllib
 import syslog
 import logging
-import logging.handlers
+from logging.handlers import SysLogHandler
 
 from xivo import ami
 from xivo import daemonize
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("xivo_daemon_bazile")
-sysloghandler = logging.handlers.SysLogHandler(('localhost', 514), syslog.LOG_DAEMON)
+sysloghandler = SysLogHandler(('localhost', 514), SysLogHandler.LOG_DAEMON)
 logging.getLogger('').addHandler(sysloghandler)
 
 # Dictionnaire des status Callerid, Channel et status du channel
