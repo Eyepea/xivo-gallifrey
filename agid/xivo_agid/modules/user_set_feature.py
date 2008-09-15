@@ -86,7 +86,7 @@ def user_set_feature(agi, cursor, args):
 				caller_type = "boss"
 				secretary_number = number
 
-			bsf.set_dial_actions();
+			bsf.set_dial_actions()
 			secretary = bsf.get_secretary_by_number(secretary_number)
 
 		# If all tries fail, give up.
