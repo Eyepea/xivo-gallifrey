@@ -29,7 +29,7 @@ from xivo import daemonize
 
 PIDFILE = "/var/run/agid.pid"
 
-sysloghandler = SysLogHandler(('localhost', 514), SysLogHandler.LOG_DAEMON)
+sysloghandler = SysLogHandler("/dev/log", SysLogHandler.LOG_DAEMON)
 logging.getLogger('').setLevel(logging.NOTSET)
 logging.getLogger('').addHandler(sysloghandler)
 

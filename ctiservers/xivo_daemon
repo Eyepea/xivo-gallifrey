@@ -530,7 +530,7 @@ def sighandler_reload(signum, frame):
 # ==============================================================================
 
 logging.basicConfig(level=logging.INFO)
-sysloghandler = SysLogHandler(('localhost', 514), SysLogHandler.LOG_DAEMON)
+sysloghandler = SysLogHandler("/dev/log", SysLogHandler.LOG_DAEMON)
 logging.getLogger('').addHandler(sysloghandler)
 
 if not debug_mode:
