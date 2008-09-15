@@ -1457,10 +1457,18 @@ class XivoCTICommand(BaseCommand):
                         elif icommand.name == 'callcampaign':
                                 if icommand.args[0] == 'fetchlist':
                                         self.__send_msg_to_cti_client__(userinfo,
-                                                                        'calllist=101;102;103')
-                                elif icommand.args[0] == 'call':
-                                        pass
-                                
+                                                                        'callcampaign=fetchlist;101:102:103')
+                                elif icommand.args[0] == 'startcall':
+                                        exten = icommand.args[1]
+                                        self.__originate_or_transfer__(userinfo,
+                                                                       ['originate', 'user:special:me', 'ext:%s' % exten])
+                                        self.__send_msg_to_cti_client__(userinfo,
+                                                                        'callcampaign=callstarted;%s' % exten)
+                                elif icommand.args[0] == 'stopcall':
+                                        self.__send_msg_to_cti_client__(userinfo,
+                                                                        'callcampaign=callstopped;%s' % icommand.args[1])
+##                                        self.__send_msg_to_cti_client__(userinfo,
+##                                                                        'callcampaign=callnext;%s' % icommand.args[1])
                         elif icommand.name in ['originate', 'transfer', 'atxfer']:
                                 if self.capas[capaid].match_funcs(ucapa, 'dial'):
                                         repstr = self.__originate_or_transfer__(userinfo,
@@ -1991,7 +1999,10 @@ class XivoCTICommand(BaseCommand):
                                 if srcuinfo is not None:
                                         astid_src = srcuinfo.get('astid')
                                         context_src = srcuinfo.get('context')
-                                        proto_src = 'local'
+                                        proto_src = 'SIP'
+                                        # 'local' might break the XIVO_ORIGSRCNUM mechanism (trick for thomson)
+                                        # XXX (+ dialplan) since 'SIP' is not the solution either
+                                        
                                         phonenum_src = srcuinfo.get('phonenum')
                                         # if termlist empty + agentphonenum not empty => call this one
                                         cidname_src = srcuinfo.get('fullname')
