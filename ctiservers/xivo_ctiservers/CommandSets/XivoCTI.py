@@ -103,7 +103,7 @@ class XivoCTICommand(BaseCommand):
                         'agents-list', 'agents-status', 'agent-status', 'agent',
                         'queues-list', 'queue-status',
                         'users-list',
-                        'calllist-fetch',
+                        'callcampaign',
                         'faxsend',
                         'faxdata',
                         'database',
@@ -338,7 +338,7 @@ class XivoCTICommand(BaseCommand):
 
                         self.capas[capaid].conn_inc()
                 except Exception, exc:
-                        log_debug(SYSLOG_ERR, "--- exception --- connect_user %s : %s" %(str(userinfo), str(exc)))
+                        log_debug(SYSLOG_ERR, "--- exception --- connect_user %s : %s" %(userinfo, exc))
 
 
         def __disconnect_user__(self, userinfo):
@@ -355,7 +355,7 @@ class XivoCTICommand(BaseCommand):
                         else:
                                 log_debug(SYSLOG_WARNING, 'userinfo does not contain login field : %s' % userinfo)
                 except Exception, exc:
-                        log_debug(SYSLOG_ERR, "--- exception --- disconnect_user %s : %s" %(str(userinfo), str(exc)))
+                        log_debug(SYSLOG_ERR, "--- exception --- disconnect_user %s : %s" %(userinfo, exc))
 
 
         def loginko(self, loginparams, errorstring, connid):
@@ -560,7 +560,7 @@ class XivoCTICommand(BaseCommand):
                                 if 'agentnum' in userinfo and userinfo.get('agentnum') == agentnum:
                                         self.__send_msg_to_cti_client__(userinfo, strupdate)
                 except Exception, exc:
-                        log_debug(SYSLOG_WARNING, '--- exception --- (__send_msg_to_cti_client_byagentid__) : %s' % str(exc))
+                        log_debug(SYSLOG_WARNING, '--- exception --- (__send_msg_to_cti_client_byagentid__) : %s' % exc)
                 return
 
 
@@ -570,7 +570,7 @@ class XivoCTICommand(BaseCommand):
                                 for userinfo in self.ulist_ng.userlist.itervalues():
                                         self.__send_msg_to_cti_client__(userinfo, strupdate)
                 except Exception, exc:
-                        log_debug(SYSLOG_WARNING, '--- exception --- (__send_msg_to_cti_clients__) : %s' % str(exc))
+                        log_debug(SYSLOG_WARNING, '--- exception --- (__send_msg_to_cti_clients__) : %s' % exc)
                 return
 
 
@@ -747,11 +747,17 @@ class XivoCTICommand(BaseCommand):
                                 callingnum = itemdir['xivo-tomatch-callerid']
                                 if dirlist is not None:
                                         for dirname in dirlist.split(','):
-                                                dirdef = self.ctxlist.ctxlist[context][dirname]
-                                                y = self.__build_customers_bydirdef__(dirname, [callingnum], dirdef)
-                                                if len(y) > 0:
-                                                        for g, gg in y[0].iteritems():
-                                                                itemdir[g] = gg
+                                                if context in self.ctxlist.ctxlist and dirname in self.ctxlist.ctxlist[context]:
+                                                        dirdef = self.ctxlist.ctxlist[context][dirname]
+                                                        try:
+                                                                y = self.__build_customers_bydirdef__(dirname, [callingnum], dirdef)
+                                                        except Exception, exc:
+                                                                log_debug(SYSLOG_ERR, '--- exception --- (xivo-tomatch-callerid : %s, %s) : %s'
+                                                                          % (dirname, context, exc))
+                                                                y = []
+                                                        if len(y) > 0:
+                                                                for g, gg in y[0].iteritems():
+                                                                        itemdir[g] = gg
                                 if callingnum[:2] == '00':
                                         internatprefix = callingnum[2:6]
                         print itemdir
@@ -1448,9 +1454,12 @@ class XivoCTICommand(BaseCommand):
                                                 num = icommand.args[3]
                                                 self.amilist.execute(astid, 'sendcommand', 'Command', [('Command', 'meetme kick %s %s' % (room, num))])
 
-                        elif icommand.name == 'calllist-fetch':
-                                self.__send_msg_to_cti_client__(userinfo,
-                                                                'calllist=101;102;103')
+                        elif icommand.name == 'callcampaign':
+                                if icommand.args[0] == 'fetchlist':
+                                        self.__send_msg_to_cti_client__(userinfo,
+                                                                        'calllist=101;102;103')
+                                elif icommand.args[0] == 'call':
+                                        pass
                                 
                         elif icommand.name in ['originate', 'transfer', 'atxfer']:
                                 if self.capas[capaid].match_funcs(ucapa, 'dial'):
@@ -1573,7 +1582,7 @@ class XivoCTICommand(BaseCommand):
                                 userinfo.get('login').get('connection').sendall(repstr + '\n')
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- (sendall) attempt to send <%s ...> (%d chars) failed : %s'
-                                          % (repstr[:40], len(repstr), str(exc)))
+                                          % (repstr[:40], len(repstr), exc))
                 return ret
 
 
@@ -1613,7 +1622,7 @@ class XivoCTICommand(BaseCommand):
                                         reply.append(HISTSEPAR)
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- error : history : (client %s, termin %s) : %s'
-                                          % (requester_id, termin, str(exc)))
+                                          % (requester_id, termin, exc))
 
                 if len(reply) > 0:
                         k = ''.join(reply)
@@ -1773,7 +1782,7 @@ class XivoCTICommand(BaseCommand):
                                 else:
                                         log_debug(SYSLOG_INFO, '(%2d h %2d min) => no action' % (thour, tmin))
                 except Exception, exc:
-                        log_debug(SYSLOG_ERR, '--- exception --- (regular update) : %s' % str(exc))
+                        log_debug(SYSLOG_ERR, '--- exception --- (regular update) : %s' % exc)
 
 
         def __phlist__(self):
@@ -1904,7 +1913,7 @@ class XivoCTICommand(BaseCommand):
                                         repstr += "%s;%s:;" %(key, str(results[0][0]))
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- features_get(bool) id=%s key=%s : %s'
-                                          %(str(reqlist), key, str(exc)))
+                                          %(str(reqlist), key, exc))
                                 return 'featuresget=%s;KO' % reqlist[0]
 
                 for key in ['unc', 'busy', 'rna']:
@@ -1922,7 +1931,7 @@ class XivoCTICommand(BaseCommand):
 
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- features_get(str) id=%s key=%s : %s'
-                                          %(str(reqlist), key, str(exc)))
+                                          %(str(reqlist), key, exc))
                                 return 'featuresget=%s;KO' % reqlist[0]
 
                 if len(repstr) == 0:
@@ -1954,7 +1963,7 @@ class XivoCTICommand(BaseCommand):
                                 response = 'featuresput=%s;KO' % reqlist[0]
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, '--- exception --- features_put id=%s : %s'
-                                  %(str(reqlist), str(exc)))
+                                  %(str(reqlist), exc))
                         response = 'featuresput=%s;KO' % reqlist[0]
                 return response
 
@@ -2229,7 +2238,7 @@ class XivoCTICommand(BaseCommand):
                                 results = cursor.fetchall()
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- %s : Connection to DataBase failed in History request : %s'
-                                          %(cfg.astid, str(exc)))
+                                          %(cfg.astid, exc))
                 return results
 
 
@@ -2329,11 +2338,37 @@ class XivoCTICommand(BaseCommand):
                 elif dbkind == 'file':
                         f = urllib.urlopen(z.uri)
                         delimit = ':'
-                        header = f.next()
-                        headerfields = header.strip().split(delimit)
+                        n = 0
                         for line in f:
-                                ll = line.strip()
-                                if ll.lower().find(searchpattern.lower()) >= 0:
+                                if n == 0:
+                                        header = line
+                                        headerfields = header.strip().split(delimit)
+                                else:
+                                        ll = line.strip()
+                                        if ll.lower().find(searchpattern.lower()) >= 0:
+                                                t = ll.split(delimit)
+                                                futureline = {'xivo-dir' : z.name}
+                                                for keyw, dbkeys in z.fkeys.iteritems():
+                                                        for dbkey in dbkeys:
+                                                                idx = headerfields.index(dbkey)
+                                                                futureline[keyw] = t[idx]
+                                                fullstatlist.append(futureline)
+                                n += 1
+                        if n == 0:
+                                log_debug(SYSLOG_WARNING, 'WARNING : %s is empty' % z.uri)
+                        elif n == 1:
+                                log_debug(SYSLOG_WARNING, 'WARNING : %s contains only one line (the header one)' % z.uri)
+
+                elif dbkind == 'http':
+                        f = urllib.urlopen('%s%s' % (z.uri, searchpattern))
+                        delimit = ':'
+                        n = 0
+                        for line in f:
+                                if n == 0:
+                                        header = line
+                                        headerfields = header.strip().split(delimit)
+                                else:
+                                        ll = line.strip()
                                         t = ll.split(delimit)
                                         futureline = {'xivo-dir' : z.name}
                                         for keyw, dbkeys in z.fkeys.iteritems():
@@ -2341,21 +2376,10 @@ class XivoCTICommand(BaseCommand):
                                                         idx = headerfields.index(dbkey)
                                                         futureline[keyw] = t[idx]
                                         fullstatlist.append(futureline)
-
-                elif dbkind == 'http':
-                        f = urllib.urlopen('%s%s' % (z.uri, searchpattern))
-                        delimit = ':'
-                        header = f.next()
-                        headerfields = header.strip().split(delimit)
-                        for line in f:
-                                ll = line.strip()
-                                t = ll.split(delimit)
-                                futureline = {'xivo-dir' : z.name}
-                                for keyw, dbkeys in z.fkeys.iteritems():
-                                        for dbkey in dbkeys:
-                                                idx = headerfields.index(dbkey)
-                                                futureline[keyw] = t[idx]
-                                fullstatlist.append(futureline)
+                                n += 1
+                        if n == 0:
+                                log_debug(SYSLOG_WARNING, 'WARNING : %s is empty' % z.uri)
+                        # we don't warn about "only one line" here since the filter has probably already been applied
 
                 elif dbkind != '':
                         if searchpattern == '*':
@@ -2383,7 +2407,7 @@ class XivoCTICommand(BaseCommand):
                                                                 futureline[keyw] = result[n]
                                         fullstatlist.append(futureline)
                         except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- sqlrequest : %s' % str(exc))
+                                log_debug(SYSLOG_ERR, '--- exception --- sqlrequest : %s' % exc)
                 else:
                         log_debug(SYSLOG_WARNING, 'no database method defined - please fill the uri field of the directory <%s> definition' % dirname)
 
