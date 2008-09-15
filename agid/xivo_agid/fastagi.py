@@ -23,8 +23,6 @@ __license__ = """
 # Modifications by Proformatique from pyst-0.2:
 #     - AGI._quote does escaping
 #     - small optimization in AGI.send_command()
-#     - DEBUG_PASSTHROUGH in AGI.get_result() so that scripts can be tested
-#       as if 200 is returned to all AGI commands.
 #     - removed stderr
 #     - removed double quoting from database_get()
 #     - replaced a reference to old style ListType with a call to isinstance(..., list)
@@ -86,7 +84,6 @@ class FastAGI:
         self.env = {}
         self._get_agi_env()
         self._get_agi_args()
-        self.DEBUG_PASSTHROUGH = 0
 
     def _get_agi_env(self):
         while 1:
@@ -117,39 +114,6 @@ class FastAGI:
     @staticmethod
     def dp_break(message):
         raise FastAGIDialPlanBreak(message)
-
-    @staticmethod
-    def _get_pwd_uid_gid(name):
-        pw_name, pw_passwd, pw_uid, pw_gid, pw_gecos, pw_dir, pw_shell = pwd.getpwnam(name)
-        return pw_uid, pw_gid
-
-    @staticmethod
-    def _get_grd_gid(name):
-        gr_name, gr_passwd, gr_gid, gr_mem = grp.getgrnam(name)
-        return gr_gid
-
-    def get_ctl_uid_gid(self):
-        ctlowner = self.get_variable('GETCONF(CTL_OWNER)')
-        ctlgroup = self.get_variable('GETCONF(CTL_GROUP)')
-
-        if not ctlowner:
-                ctlowner = "asterisk"
-
-        try:
-                ctluid, pw_gid = _get_pwd_uid_gid(ctlowner)
-        except:
-                raise FastAGIError('Unable to fetch uid and gid of user: %s' % ctlowner)
-
-        if not ctluid or not ctlgroup:
-                return ctluid, pw_gid
-
-        try:
-                ctlgid = _get_grd_gid(ctlgroup)
-        except:
-                ctlgid = pw_gid
-                raise FastAGIError('Unable to fetch gid of group: %s' % ctlgroup)
-
-        return ctluid, ctlgid
 
     def execute(self, command, *args):
         try:
@@ -188,13 +152,7 @@ class FastAGI:
         m = re_code.search(line)
         if m:
             code, response = m.groups()
-            if self.DEBUG_PASSTHROUGH:
-                try:
-                    code = int(code)
-                except:
-                    code = 200
-            else:
-                code = int(code)
+            code = int(code)
 
         if code == 200:
             for key, value, data in re_kv.findall(response):
