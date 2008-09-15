@@ -25,7 +25,6 @@ import sys
 import time
 import Queue
 import urllib
-import syslog
 import logging
 from logging.handlers import SysLogHandler
 
