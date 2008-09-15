@@ -64,7 +64,7 @@ import sys
 import threading
 import time
 import logging
-import logging.handlers
+from logging.handlers import SysLogHandler
 
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 waiting_actionid = {}
@@ -530,7 +530,7 @@ def sighandler_reload(signum, frame):
 # ==============================================================================
 
 logging.basicConfig(level=logging.INFO)
-sysloghandler = logging.handlers.SysLogHandler(('localhost', 514), syslog.LOG_DAEMON)
+sysloghandler = SysLogHandler(('localhost', 514), SysLogHandler.LOG_DAEMON)
 logging.getLogger('').addHandler(sysloghandler)
 
 if not debug_mode:
