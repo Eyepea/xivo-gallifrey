@@ -18,6 +18,7 @@ __license__ = """
 """
 
 import os
+import pwd
 import time
 import ConfigParser
 
@@ -29,12 +30,18 @@ max_retries = None
 retry_time = None
 wait_time = None
 
+def get_uid_gid(name):
+	# pylint: disable-msg=W0612
+	pw_name, pw_passwd, pw_uid, pw_gid, pw_gecos, pw_dir, pw_shell = pwd.getpwnam(name)
+	return pw_uid, pw_gid
+
+ASTERISK_UID, ASTERISK_GID = get_uid_gid("asterisk")
+
 def callback_on_congestion(agi, cursor, args):
 	srcnum = agi.get_variable('XIVO_SRCNUM')
 	dstnum = agi.get_variable('XIVO_DSTNUM')
 	context = agi.get_variable('XIVO_CONTEXT')
 	spooldir = agi.get_variable('GETCONF(SPOOL_DIR)')
-	ctluid, ctlgid = agi.get_ctl_uid_gid()
 
 	if srcnum in (None, ''):
 		agi.dp_break("Unable to find srcnum, srcnum = '%s'" % srcnum)
@@ -47,9 +54,6 @@ def callback_on_congestion(agi, cursor, args):
 
 	if not spooldir:
 		agi.dp_break("Unable to fetch AST_SPOOL_DIR")
-
-	if ctluid is None or ctlgid is None:
-		agi.dp_break("Unable to fetch uid or gid")
 
 	mtime = time.time()
 	filepath = "%s/%%s/%s-to-%s-%s.call" % (spooldir, srcnum, dstnum, int(mtime))
@@ -69,7 +73,7 @@ def callback_on_congestion(agi, cursor, args):
 	f.close()
 
 	os.utime(tmpfile, (mtime, mtime))
-	os.chown(tmpfile, ctluid, ctlgid)
+	os.chown(tmpfile, ASTERISK_UID, ASTERISK_GID)
 	os.rename(tmpfile, realfile)
 
 def setup(cursor):

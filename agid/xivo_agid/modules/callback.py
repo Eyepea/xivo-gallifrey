@@ -18,24 +18,28 @@ __license__ = """
 """
 
 import os
+import pwd
 import time
 
 from xivo_agid import agid
+
+def get_uid_gid(name):
+	# pylint: disable-msg=W0612
+	pw_name, pw_passwd, pw_uid, pw_gid, pw_gecos, pw_dir, pw_shell = pwd.getpwnam(name)
+	return pw_uid, pw_gid
+
+ASTERISK_UID, ASTERISK_GID = get_uid_gid("asterisk")
 
 def callback(agi, cursor, args):
 	context = args[0]
 	srcnum = agi.get_variable('XIVO_SRCNUM')
 	spooldir = agi.get_variable('GETCONF(SPOOL_DIR)')
-	ctluid, ctlgid = agi.get_ctl_uid_gid()
 
 	if srcnum in (None, ''):
 		agi.dp_break("Unable to find srcnum, srcnum = '%s'" % srcnum)
 
 	if not spooldir:
 		agi.dp_break("Unable to fetch AST_SPOOL_DIR")
-
-	if ctluid is None or ctlgid is None:
-		agi.dp_break("Unable to fetch uid or gid")
 
 	mtime = time.time() + 5
 	filepath = "%s/%%s/%s-%s.call" % (spooldir, srcnum, int(mtime))
@@ -55,7 +59,7 @@ def callback(agi, cursor, args):
 	f.close()
 
 	os.utime(tmpfile, (mtime, mtime))
-	os.chown(tmpfile, ctluid, ctlgid)
+	os.chown(tmpfile, ASTERISK_UID, ASTERISK_GID)
 	os.rename(tmpfile, realfile)
 
 agid.register(callback)
