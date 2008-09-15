@@ -26,9 +26,16 @@ import time
 import Queue
 import urllib
 import syslog
+import logging
+import logging.handlers
 
 from xivo import ami
 from xivo import daemonize
+
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger("xivo_daemon_bazile")
+sysloghandler = logging.handlers.SysLogHandler(('localhost', 514), syslog.LOG_DAEMON)
+logging.getLogger('').addHandler(sysloghandler)
 
 # Dictionnaire des status Callerid, Channel et status du channel
 # identifiant unique UniqID Asterisk
@@ -45,12 +52,12 @@ key = 'SAD8Z8ZR53D1FZEER872N2QA873'
 website = 'http://monbazile.fr/connect.php'
 
 def handle_shutdown(event, mng):
-   log_stderr_and_syslog("Received shutdown event")
+   log.info("Received shutdown event")
    mng.close()
       
 def handle_event(event, mng):
-   log_stderr_and_syslog("Received event: %s" % event.name)
-   log_stderr_and_syslog(event.headers)
+   log.info("Received event: %s", event.name)
+   log.info(event.headers)
 
 def handle_newchannel(event, mng):
 	if event.headers['State'] == 'Ring':
@@ -80,45 +87,40 @@ def handle_hangup(event, mng):
 		# Hangup non correspondant a un appel entrant pour le context actuel
 		pass
 
-def url_call(id):
+def url_call(uid):
 	url = ''
 	response = ''
-	callerid = lines[id][0]
-	channel = lines[id][1]
-	operator = lines[id][2]
-	status = lines[id][3]
+	callerid = lines[uid][0]
+	channel = lines[uid][1]
+	operator = lines[uid][2]
+	status = lines[uid][3]
 	if not 'Zap' in channel:
 		return -1
 	if len(callerid) < 10:
 		callerid = '0%s' % callerid
 	if status == 0:
 		# Gere en AGI
-		log_stderr_and_syslog("Appel arrive")
+		log.info("Appel arrive")
 		return -1
 	if status == 1:
 		url = "%s?N=%s&I=%s&W=2&C=%s&E=%s" % (website, callerid, key, channel, operator)
-		log_stderr_and_syslog("Appel decroche")
+		log.info("Appel decroche")
 	if status == 3:
 		url = "%s?N=%s&I=%s&W=3&C=%s&E=%s" % (website, callerid, key, channel, operator)
-		log_stderr_and_syslog("Appel hangup")
+		log.info("Appel hangup")
 
 	if url:
 		response = urllib.urlopen(url).read()
-		log_stderr_and_syslog(url)
+		log.info(url)
 
 	if response == "ok":
 		return status
 	
 	return -1
 
-def log_stderr_and_syslog(x):
-	print >> sys.stderr, x
-	syslog.syslog(syslog.LOG_ERR, x)
+daemonize.daemonize(PIDFILE, True)
 
-
-daemonize.daemonize(log_stderr_and_syslog, PIDFILE, True)
-
-log_stderr_and_syslog("Bazile call center starting")
+log.info("Bazile call center starting")
 
 mng = ami.Manager()
 try:
@@ -135,17 +137,17 @@ try:
        mng.register_event('Hangup', handle_hangup)
 
        if mng.version != "1.0":
-         log_stderr_and_syslog("Version Manager error")
+         log.info("Version Manager error")
 	 sys.exit()
        if mng.title != "Asterisk Call Manager":
-       	 log_stderr_and_syslog("Banner Manager error")
+       	 log.info("Banner Manager error")
 	 sys.exit()
         
        # get a status report
        response = mng.status()
 
        if str(response) != "Success":
-       	 log_stderr_and_syslog("Error Manager is not ready")
+       	 log.info("Error Manager is not ready")
 	 sys.exit()
 
        while 1:
@@ -168,13 +170,13 @@ try:
             idx += 1
 	  uniqid.reverse()
 
-	  for id in uniqid:
-	     r = url_call(id)
+	  for uid in uniqid:
+	     r = url_call(uid)
 	     if r == 3:
-		del lines[id]
+		del lines[uid]
 	     if r == -1:
-	        log_stderr_and_syslog("Error for get URL")
-	     	del lines[id]
+	        log.info("Error for get URL")
+	     	del lines[uid]
 
        mng.logoff()
 
@@ -193,4 +195,4 @@ finally:
    try:
       mng.close()
    except ami.ManagerSocketException:
-      log_stderr_and_syslog("Connexion close")
+      log.info("Connexion close")
