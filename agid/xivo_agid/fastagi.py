@@ -34,9 +34,6 @@ __license__ = """
 
 import re
 import pprint
-import pwd
-import grp
-
 
 DEFAULT_TIMEOUT = 2000 # 2sec timeout used as default for functions that take timeouts
 DEFAULT_RECORD  = 20000 # 20sec record time
@@ -49,25 +46,36 @@ __all__ = ('FastAGIException', 'FastAGIError', 'FastAGIUnknownError',
            'FastAGIResultHangup', 'FastAGIDBError', 'FastAGIUsageError',
            'FastAGIInvalidCommand', 'FastAGI')
 
-class FastAGIException(Exception): pass
-class FastAGIError(FastAGIException): pass
+class FastAGIException(Exception):
+    pass
+class FastAGIError(FastAGIException):
+    pass
 
-class FastAGIUnknownError(FastAGIError): pass
+class FastAGIUnknownError(FastAGIError):
+    pass
 
-class FastAGIAppError(FastAGIError): pass
+class FastAGIAppError(FastAGIError):
+    pass
 
 # there are several different types of hangups we can detect
 # they all are derrived from FastAGIHangup
-class FastAGIHangup(FastAGIAppError): pass
-class FastAGISIGPIPEHangup(FastAGIHangup): pass
-class FastAGIResultHangup(FastAGIHangup): pass
+class FastAGIHangup(FastAGIAppError):
+    pass
+class FastAGISIGPIPEHangup(FastAGIHangup):
+    pass
+class FastAGIResultHangup(FastAGIHangup):
+    pass
 
-class FastAGIDBError(FastAGIAppError): pass
+class FastAGIDBError(FastAGIAppError):
+    pass
 
-class FastAGIUsageError(FastAGIError): pass
-class FastAGIInvalidCommand(FastAGIError): pass
+class FastAGIUsageError(FastAGIError):
+    pass
+class FastAGIInvalidCommand(FastAGIError):
+    pass
 
-class FastAGIDialPlanBreak(FastAGIException): pass
+class FastAGIDialPlanBreak(FastAGIException):
+    pass
 
 class FastAGI:
     """
@@ -188,7 +196,7 @@ class FastAGI:
         """agi.answer() --> None
         Answer channel if not already in answer state.
         """
-        self.execute('ANSWER')['result'][0]
+        self.execute('ANSWER')['result'][0] # pylint: disable-msg=W0104
 
     def wait_for_digit(self, timeout=DEFAULT_TIMEOUT):
         """agi.wait_for_digit(timeout=DEFAULT_TIMEOUT) --> digit
@@ -211,7 +219,7 @@ class FastAGI:
         transmission of text.
         Throws FastAGIError on error/hangup
         """
-        self.execute('SEND TEXT', self._quote(text))['result'][0]
+        self.execute('SEND TEXT', self._quote(text))['result'][0] # pylint: disable-msg=W0104
 
     def receive_char(self, timeout=DEFAULT_TIMEOUT):
         """agi.receive_char(timeout=DEFAULT_TIMEOUT) --> chr
@@ -395,7 +403,8 @@ class FastAGI:
         in seconds since the UNIX Epoch (Jan 1, 1970 00:00:00).
         """
         escape_digits = self._process_digit_list(escape_digits)
-        if format: format = self._quote(format)
+        if format:
+            format = self._quote(format)
         res = self.execute('SAY DATETIME', seconds, escape_digits, format, zone)['result'][0]
         if res == '0':
             return ''
@@ -410,7 +419,7 @@ class FastAGI:
         Stream the given file and receive dialed digits
         """
         result = self.execute('GET DATA', filename, timeout, max_digits)
-        res, value = result['result']
+        res, value = result['result'] # pylint: disable-msg=W0612
         return res
     
     def get_option(self, filename, escape_digits='', timeout=0):
@@ -557,7 +566,7 @@ class FastAGI:
         except FastAGIResultHangup:
             result = {'result': ('1', 'hangup')}
 
-        res, value = result['result']
+        res, value = result['result'] # pylint: disable-msg=W0612
         return value
 
     def get_full_variable(self, name, channel = None):
@@ -575,7 +584,7 @@ class FastAGI:
         except FastAGIResultHangup:
             result = {'result': ('1', 'hangup')}
 
-        res, value = result['result']
+        res, value = result['result'] # pylint: disable-msg=W0612
         return value
 
     def verbose(self, message, level=1):
@@ -617,7 +626,7 @@ class FastAGI:
         given family and key.
         """
         result = self.execute('DATABASE DEL', self._quote(family), self._quote(key))
-        res, value = result['result']
+        res, value = result['result']  # pylint: disable-msg=W0612
         if res == '0':
             raise FastAGIDBError('Unable to delete from database: family=%s, key=%s' % (family, key))
 
@@ -627,7 +636,7 @@ class FastAGI:
         in the Asterisk database.
         """
         result = self.execute('DATABASE DELTREE', self._quote(family), self._quote(key))
-        res, value = result['result']
+        res, value = result['result'] # pylint: disable-msg=W0612
         if res == '0':
             raise FastAGIDBError('Unable to delete tree from database: family=%s, key=%s' % (family, key))
 
