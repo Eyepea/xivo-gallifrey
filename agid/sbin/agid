@@ -20,9 +20,8 @@ __license__ = """
 """
 
 import sys
-import syslog
 import logging
-import logging.handlers
+from logging.handlers import SysLogHandler
 
 from xivo_agid import agid
 from xivo_agid.modules import *
@@ -30,7 +29,7 @@ from xivo import daemonize
 
 PIDFILE = "/var/run/agid.pid"
 
-sysloghandler = logging.handlers.SysLogHandler(('localhost', 514), syslog.LOG_DAEMON)
+sysloghandler = SysLogHandler(('localhost', 514), SysLogHandler.LOG_DAEMON)
 logging.getLogger('').setLevel(logging.NOTSET)
 logging.getLogger('').addHandler(sysloghandler)
 
