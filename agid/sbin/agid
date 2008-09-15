@@ -30,9 +30,9 @@ from xivo import daemonize
 
 PIDFILE = "/var/run/agid.pid"
 
-syslog = logging.handlers.SysLogHandler(('localhost', 514), syslog.LOG_DAEMON)
+sysloghandler = logging.handlers.SysLogHandler(('localhost', 514), syslog.LOG_DAEMON)
 logging.getLogger('').setLevel(logging.NOTSET)
-logging.getLogger('').addHandler(syslog)
+logging.getLogger('').addHandler(sysloghandler)
 
 if '-f' not in sys.argv:
 	daemonize.daemonize(PIDFILE, pidfile_lock=True)
