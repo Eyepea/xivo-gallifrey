@@ -20,11 +20,15 @@ __license__ = """
 RULES_FILE = '/etc/asterisk/xivo_in_callerid.conf'
 
 import re
+import sys
+import logging
 import ConfigParser
 
 from xivo import OrderedConf
 
 from xivo_agid import agid
+
+log = logging.getLogger('xivo_agid.modules.in_callerid')
 
 config = None
 re_objs = {}
@@ -71,12 +75,14 @@ def setup(cursor):
 		try:
 			regexp = section.get('callerid')
 		except ConfigParser.NoOptionError:
-			agid.error("option 'callerid' not found in section \"%s\"" % section.get_name())
+			log.error("option 'callerid' not found in section %r", section.get_name())
+			sys.exit(1)
 
 		try:
 			re_obj = re.compile(regexp)
 		except re.error:
-			agid.error("invalid regexp \"%s\" in section \"%s\"" % (regexp, section.get_name()))
+			log.error("invalid regexp %r in section %r", regexp, section.get_name())
+			sys.exit(1)
 
 		re_objs[section.get_name()] = re_obj
 

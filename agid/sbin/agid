@@ -20,29 +20,22 @@ __license__ = """
 """
 
 import sys
+import syslog
+import logging
+import logging.handlers
 
 from xivo_agid import agid
 from xivo_agid.modules import *
 from xivo import daemonize
 
-PIDFILE="/var/run/agid.pid"
+PIDFILE = "/var/run/agid.pid"
 
-def log_stderr_and_syslog(x):
-	"""
-	This function logs the string x to both stderr and the system log.
-	The string to be logged must not have a trailing '\\n'
-	"""
-
-	print >> sys.stderr, x
-	syslogf(SYSLOG_ERR, x)
-
-if '-d' not in sys.argv:
-	debug_enabled = True
-else:
-	debug_enabled = False
+syslog = logging.handlers.SysLogHandler(('localhost', 514), syslog.LOG_DAEMON)
+logging.getLogger('').setLevel(logging.NOTSET)
+logging.getLogger('').addHandler(syslog)
 
 if '-f' not in sys.argv:
-	daemonize.daemonize(log_stderr_and_syslog, PIDFILE, pidfile_lock = True)
+	daemonize.daemonize(PIDFILE, pidfile_lock=True)
 
-agid.init(debug_enabled)
+agid.init()
 agid.run()

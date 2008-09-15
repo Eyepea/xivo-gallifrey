@@ -17,8 +17,8 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-import sys
 import signal
+import logging
 import SocketServer
 import ConfigParser
 from threading import Lock
@@ -39,9 +39,10 @@ LISTEN_ADDR_DEFAULT = "127.0.0.1"
 LISTEN_PORT_DEFAULT = 4573
 CONN_POOL_SIZE_DEFAULT = 10
 
+log = logging.getLogger('xivo_agid.agid')
+
 server = None
-modules = {}
-debug_enabled = False
+handlers = {}
 
 class DBConnectionPool:
 	def __init__(self):
@@ -63,8 +64,8 @@ class DBConnectionPool:
 
 			self.size = size
 			self.db_uri = db_uri
-			debug("reloaded db conn pool")
-			debug(self)
+			log.debug("reloaded db conn pool")
+			log.debug("%s", self)
 		finally:
 			self.lock.release()
 
@@ -73,12 +74,12 @@ class DBConnectionPool:
 		try:
 			try:
 				conn = self.conns.pop()
-				debug("acquiring connection: got connection from pool")
+				log.debug("acquiring connection: got connection from pool")
 			except IndexError:
 				conn = anysql.connect_by_uri(self.db_uri)
-				debug("acquiring connection: pool empty, created new connection")
+				log.debug("acquiring connection: pool empty, created new connection")
 		finally:
-			debug(self)
+			log.debug("%s", self)
 			self.lock.release()
 
 		return conn
@@ -88,13 +89,13 @@ class DBConnectionPool:
 		try:
 			if len(self.conns) < self.size:
 				self.conns.append(conn)
-				debug("releasing connection: pool not full, refilled with connection")
+				log.debug("releasing connection: pool not full, refilled with connection")
 			else:
 				conn.close()
-				debug("releasing connection: pool full, connection closed")
+				log.debug("releasing connection: pool full, connection closed")
 
 		finally:
-			debug(self)
+			log.debug("%s", self)
 			self.lock.release()
 
 	# The connection pool lock must be hold.
@@ -106,7 +107,7 @@ class DBConnectionPool:
 class FastAGIRequestHandler(SocketServer.StreamRequestHandler):
 	def handle(self):
 		try:
-			debug("handling request")
+			log.debug("handling request")
 
 			fagi = fastagi.FastAGI(self.rfile, self.wfile)
 			except_hook = agitb.Hook(agi = fagi)
@@ -115,14 +116,14 @@ class FastAGIRequestHandler(SocketServer.StreamRequestHandler):
 			try:
 				cursor = conn.cursor()
 
-				module_name = fagi.env['agi_network_script']
-				debug("delegating request handling to module %s" % module_name)
-				modules[module_name].handle(fagi, cursor, fagi.args)
+				handler_name = fagi.env['agi_network_script']
+				log.debug("delegating request handling %r", handler_name)
+				handlers[handler_name].handle(fagi, cursor, fagi.args)
 
 				conn.commit()
 
-				fagi.verbose('AGI module "%s" successfully executed' % module_name)
-				debug("request successfully handled")
+				fagi.verbose('AGI handler %r successfully executed' % handler_name)
+				log.debug("request successfully handled")
 			finally:
 				server.db_conn_pool.release(conn)
 
@@ -131,7 +132,7 @@ class FastAGIRequestHandler(SocketServer.StreamRequestHandler):
 		# XXX It may be here that dropping database connection
 		# exceptions could be catched.
 		except fastagi.FastAGIDialPlanBreak, message:
-			debug("invalid request, dial plan broken")
+			log.debug("invalid request, dial plan broken")
 
 			try:
 				fagi.verbose(message)
@@ -140,7 +141,7 @@ class FastAGIRequestHandler(SocketServer.StreamRequestHandler):
 			except:
 				pass
 		except:
-			debug("an unexpected error occurred")
+			log.debug("an unexpected error occurred")
 
 			try:
 				except_hook.handle()
@@ -154,7 +155,7 @@ class AGID(SocketServer.ThreadingTCPServer):
 	initialized = False
 
 	def __init__(self):
-		log('%s %s.%s starting...' % (NAME, VERSION_MAJOR, VERSION_MINOR))
+		log.info('%s %s.%s starting...', NAME, VERSION_MAJOR, VERSION_MINOR)
 
 		signal.signal(signal.SIGHUP, sighup_handle)
 
@@ -177,14 +178,14 @@ class AGID(SocketServer.ThreadingTCPServer):
 			except ConfigParser.NoOptionError:
 				self.listen_addr = LISTEN_ADDR_DEFAULT
 
-			debug("listen_addr: %s" % self.listen_addr)
+			log.debug("listen_addr: %s", self.listen_addr)
 
 			try:
 				self.listen_port = config.getint("general", "listen_port")
 			except ConfigParser.NoOptionError:
 				self.listen_port = LISTEN_PORT_DEFAULT
 
-			debug("listen_port: %d" % self.listen_port)
+			log.debug("listen_port: %d", self.listen_port)
 
 		try:
 			conn_pool_size = config.getint("general", "conn_pool_size")
@@ -194,15 +195,12 @@ class AGID(SocketServer.ThreadingTCPServer):
 		db_uri = config.get("db", "db_uri")
 		self.db_conn_pool.reload(conn_pool_size, db_uri)
 
-class Module:
-	def __init__(self, module_name, setup_fn, handle_fn):
-		self.module_name = module_name
+class Handler:
+	def __init__(self, handler_name, setup_fn, handle_fn):
+		self.handler_name = handler_name
 		self.setup_fn = setup_fn
 		self.handle_fn = handle_fn
 		self.lock = moresynchro.RWLock()
-
-		if not self.handle_fn:
-			raise ValueError("invalid module handler")
 
 	def setup(self, cursor):
 		if self.setup_fn:
@@ -214,7 +212,7 @@ class Module:
 
 		self.lock.acquire_write()
 		self.setup_fn(cursor)
-		debug('module "%s" reloaded' % self.module_name)
+		log.debug('handler %r reloaded', self.handler_name)
 		self.lock.release()
 
 	def handle(self, agi, cursor, args):
@@ -222,46 +220,31 @@ class Module:
 		self.handle_fn(agi, cursor, args)
 		self.lock.release()
 
-def log(s, prefix = None):
-	for line in str(s).splitlines():
-		print "%s: %s%s" % (NAME, prefix or "", line)
-
-def warning(s):
-	log(s, "WARNING: ")
-
-def error(s):
-	log(s, "ERROR: ")
-	sys.exit(1)
-
-def debug(s):
-	if debug_enabled:
-		log(s, "DEBUG: ")
-
 def register(handle_fn, setup_fn = None):
-	module_name = handle_fn.__name__
+	handler_name = handle_fn.__name__
 
-	if module_name in modules:
-		raise ValueError('module "%s" already registered' % module_name)
+	if handler_name in handlers:
+		raise ValueError("handler %r already registered", handler_name)
 
-	modules[module_name] = Module(module_name, setup_fn, handle_fn)
+	handlers[handler_name] = Handler(handler_name, setup_fn, handle_fn)
 
-def sighup_handle(signum, frame):
+def sighup_handle(signum, frame): # pylint: disable-msg=W0613
 	try:
-		debug("reloading core engine")
+		log.debug("reloading core engine")
 
 		server.setup()
 
-		debug("reloading modules")
+		log.debug("reloading handlers")
 
 		conn = server.db_conn_pool.acquire()
 		cursor = conn.cursor()
 
-		for module in modules.itervalues():
-			module.reload(cursor)
+		for handler in handlers.itervalues():
+			handler.reload(cursor)
 
 		conn.commit()
 
-		debug("finished reload")
+		log.debug("finished reload")
 	finally:
 		server.db_conn_pool.release(conn)
 
@@ -269,19 +252,16 @@ def run():
 	conn = server.db_conn_pool.acquire()
 	cursor = conn.cursor()
 
-	debug("list of modules: %s" % ', '.join(sorted(modules.iterkeys())))
+	log.debug("list of handlers: %s", ', '.join(sorted(handlers.iterkeys())))
 
-	for module in modules.itervalues():
-		module.setup(cursor)
+	for handler in handlers.itervalues():
+		handler.setup(cursor)
 
 	conn.commit()
 	server.db_conn_pool.release(conn)
 
 	server.serve_forever()
 
-def init(debugging_on = False):
-	global debug_enabled
+def init():
 	global server
-
-	debug_enabled = debugging_on
 	server = AGID()
