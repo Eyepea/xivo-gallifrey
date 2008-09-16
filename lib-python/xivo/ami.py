@@ -51,15 +51,11 @@ and submit patches.
 
 __version__ = "$Revision$ $Date$"
 
-import os
-import sys
 import socket
 import threading
 import Queue
-import re
 from cStringIO import StringIO
 from types import *
-from time import sleep
 
 EOL = '\r\n'
 
@@ -89,11 +85,12 @@ class ManagerMsg(object):
         for line in response.readlines():
             line = line.rstrip()  # strip trailing whitespace
 
-            if not line: continue  # don't process if this is not a message
+            if not line:
+                continue  # don't process if this is not a message
 
             # locate the ':' in our message, if there is one
             if line.find(':') > -1:
-                item = [x.strip() for x in line.split(':',1)]
+                item = [x.strip() for x in line.split(':', 1)]
 
                 # if this is a header
                 if len(item) == 2:
@@ -156,7 +153,7 @@ class Event(object):
         return self.headers['Event']
 
     def get_action_id(self):
-        return self.headers.get('ActionID',0000)
+        return self.headers.get('ActionID', 0000)
 
 class Manager(object):
     def __init__(self):
@@ -232,7 +229,8 @@ class Manager(object):
         cdict.update(kwargs)
 
         # set the action id
-        if not cdict.has_key('ActionID'): cdict['ActionID'] = '%s-%08x' % (self.hostname, self.next_seq())
+        if not cdict.has_key('ActionID'):
+            cdict['ActionID'] = '%s-%08x' % (self.hostname, self.next_seq())
         clist = []
 
         # generate the command
@@ -253,7 +251,7 @@ class Manager(object):
         except socket.error, (errno, reason):
             raise ManagerSocketException(errno, reason)
         
-        self._reswaiting.insert(0,1)
+        self._reswaiting.insert(0, 1)
         response = self._response_queue.get()
         self._reswaiting.pop(0)
 
@@ -296,7 +294,8 @@ class Manager(object):
 
                         # if we are no longer connected we probably did not
                         # recieve a full message, don't try to handle it
-                        if not self._connected.isSet(): break
+                        if not self._connected.isSet():
+                            break
 
                         # make sure our line is a string
                         assert type(line) in StringTypes
@@ -312,8 +311,6 @@ class Manager(object):
                             self.title = line.split('/')[0].strip() # store the title of the manager we are connecting to
                             self.version = line.split('/')[1].strip() # store the version of the manager we are connecting to
                             break
-
-                        #sleep(.001)  # waste some time before reading another line
 
                 except socket.error:
                     self._sock.close()
@@ -540,7 +537,8 @@ class Manager(object):
         # join dict of vairables together in a string in the form of 'key=val|key=val'
         # with the latest CVS HEAD this is no longer necessary
         # if variables: cdict['Variable'] = '|'.join(['='.join((str(key), str(value))) for key, value in variables.items()])
-        if variables: cdict['Variable'] = ['='.join((str(key), str(value))) for key, value in variables.items()]
+        if variables:
+            cdict['Variable'] = ['='.join((str(key), str(value))) for key, value in variables.items()]
               
         response = self.send_action(cdict)
         
