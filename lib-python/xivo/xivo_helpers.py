@@ -201,5 +201,3 @@ def db_close():
 		db_conn.commit()
 		db_conn.close()
 		db_conn = None
-
-__all__ = ('speed_dial_key_extension', 'speed_dial_key_components')
