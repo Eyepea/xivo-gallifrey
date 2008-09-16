@@ -26,22 +26,22 @@ __license__ = """
 
 import os
 import re
-import sys
 import copy
 import yaml
 from ConfigParser import ConfigParser
 from itertools import chain, count
+import logging
 
 from xivo import network
-from xivo import trace_null
 from xivo import ConfigDict
 from xivo import interfaces
-from xivo import except_tb
 from xivo import system
 from xivo import xys
 from xivo import udev
 from xivo import shvar
-from xivo.easyslog import *
+
+
+log = logging.getLogger("xivo.xivo_config")
 
 
 # SYSCONF_DIR = "/etc/pf-xivo/sysconf"
@@ -86,7 +86,7 @@ ProvGeneralConf = {
     'scan_ifaces_prefix':       "eth",
     'arping_cmd':               "sudo /usr/sbin/arping",
     'arping_sleep_us':          150000,
-    'log_level':                "notice",
+    'log_level':                "info",
     'curl_cmd':                 "/usr/bin/curl",
     'curl_to_s':                30,
     'telnet_to_s':              30,
@@ -202,9 +202,9 @@ def linesubst(line, variables):
         elif st is TERM:
             if c == '}':
                 if curvar not in variables:
-                    syslogf(SYSLOG_WARNING, "Unknown variable '%s' detected, will just be replaced by an empty string" % curvar)
+                    log.warning("Unknown variable %r detected, will just be replaced by an empty string", curvar)
                 else:
-                    syslogf(SYSLOG_DEBUG, "Substitution of {{%s}} by %r" % (curvar, variables[curvar]))
+                    log.debug("Substitution of {{%s}} by %r", curvar, variables[curvar])
                     out += variables[curvar]
                 curvar = ''
                 st = NORM
@@ -215,8 +215,8 @@ def linesubst(line, variables):
                 curvar += '}' + c
                 st = TWO
     if st is not NORM:
-        syslogf(SYSLOG_WARNING, "st is not NORM at end of line: " + line)
-        syslogf(SYSLOG_WARNING, "returned substitution: " + out)
+        log.warning("st is not NORM at end of line: " + line)
+        log.warning("returned substitution: " + out)
     return out
 
 
@@ -227,7 +227,7 @@ def txtsubst(lines, variables, target_file=None):
     given lines.
     """
     if target_file:
-        syslogf("In process of generating file %r" % target_file)
+        log.info("In process of generating file %r", target_file)
     return [linesubst(line, variables) for line in lines]
 
 
@@ -244,7 +244,7 @@ def well_formed_provcode(provcode):
     return True
 
 
-class PhoneVendor:
+class PhoneVendorMixin:
     """
     Phone vendor base class
     """
@@ -259,7 +259,7 @@ class PhoneVendor:
         for 'actions' is not 'no'
         """
         self.phone = phone
-        syslogf("Instantiation of %s" % str(self.phone))
+        log.info("Instantiation of %r", self.phone)
     
     def action_reinit(self):
         """
@@ -268,11 +268,11 @@ class PhoneVendor:
         generate_reinitprov() method.
         """
         if self.phone["actions"] == "no": # possible cause: "distant" provisioning
-            syslogf("Skipping REINIT action for phone %s" % self.phone['macaddr'])
+            log.info("Skipping REINIT action for phone %s", self.phone['macaddr'])
             return
-        syslogf("Sending REINIT command to phone %s" % self.phone['macaddr'])
+        log.info("Sending REINIT command to phone %s", self.phone['macaddr'])
         self.do_reinit()
-        syslogf(SYSLOG_DEBUG, "Sent REINIT command to phone %s" % self.phone['macaddr'])
+        log.debug("Sent REINIT command to phone %s", self.phone['macaddr'])
     
     def action_reboot(self):
         """
@@ -281,19 +281,19 @@ class PhoneVendor:
         generate_autoprov() method.
         """
         if self.phone["actions"] == "no": # distant provisioning with actions disabled
-            syslogf("Skipping REBOOT action for phone %s" % self.phone['macaddr'])
+            log.info("Skipping REBOOT action for phone %s" % self.phone['macaddr'])
             return
-        syslogf("Sending REBOOT command to phone %s" % self.phone['macaddr'])
+        log.info("Sending REBOOT command to phone %s", self.phone['macaddr'])
         self.do_reboot()
-        syslogf(SYSLOG_DEBUG, "Sent REBOOT command to phone %s" % self.phone['macaddr'])
+        log.debug("Sent REBOOT command to phone %s", self.phone['macaddr'])
     
     def generate_reinitprov(self):
         """
         This function put the configuration for the phone back in guest state.
         """
-        syslogf("About to GUEST'ify the phone %s" % self.phone['macaddr'])
+        log.info("About to GUEST'ify the phone %s", self.phone['macaddr'])
         self.do_reinitprov()
-        syslogf(SYSLOG_DEBUG, "Phone GUEST'ified %s" % self.phone['macaddr'])
+        log.debug("Phone GUEST'ified %s", self.phone['macaddr'])
     
     def generate_autoprov(self, provinfo):
         """
@@ -303,9 +303,9 @@ class PhoneVendor:
 
         'name', 'ident', 'number', 'passwd'
         """
-        syslogf("About to AUTOPROV the phone %s with infos %s" % (self.phone['macaddr'], str(provinfo)))
+        log.info("About to AUTOPROV the phone %s with infos %s", self.phone['macaddr'], str(provinfo))
         self.do_autoprov(provinfo)
-        syslogf(SYSLOG_DEBUG, "Phone AUTOPROV'ed %s" % self.phone['macaddr'])
+        log.debug("Phone AUTOPROV'ed %s", self.phone['macaddr'])
 
 
 PhoneClasses = {}
@@ -313,7 +313,7 @@ PhoneClasses = {}
 
 def register_phone_vendor_class(cls):
     """
-    Register a new class, derived from PhoneVendor, that implements
+    Register a new class, derived from PhoneVendorMixin, that implements
     provisioning methods for some phones of a given vendor.
     """
     global PhoneClasses
@@ -334,7 +334,7 @@ def phone_vendor_iter_key_class():
 
 def phone_factory(phone):
     """
-    Instantiate a PhoneVendor derived class according to the phone
+    Instantiate a PhoneVendorMixin derived class according to the phone
     description.
     """
     global PhoneClasses
@@ -342,17 +342,10 @@ def phone_factory(phone):
     return phone_class(phone)
 
 
-def default_handler():
+def phone_desc_by_ua(ua, exc_info=True):
     """
-    Default exception handler for phone_desc_by_ua()
-    """
-    except_tb.log_exception(lambda x: syslogf(SYSLOG_ERR, x))
-
-
-def phone_desc_by_ua(ua, exception_handler=default_handler):
-    """
-    Return a tuple (vendor_key, model, firmware), or None if no PhoneVendor
-    derived class has recognized the user agent string.
+    Return a tuple (vendor_key, model, firmware), or None if no
+    PhoneVendorMixin derived class has recognized the user agent string.
     vendor_key, model, and firmware are strings.
     """
     global PhoneClasses
@@ -361,8 +354,8 @@ def phone_desc_by_ua(ua, exception_handler=default_handler):
             r = phone_class.get_vendor_model_fw(ua)
         except Exception:
             r = None
-            exception_handler()
-            sys.exc_clear()
+            if exc_info:
+                log.exception("in phone_desc_by_ua(ua=%r)", ua)
         if r:
             return r
     return None
@@ -410,7 +403,7 @@ def ip_in_network(ipv4, net, netmask):
     return (net == other_net), other_net
 
 
-def search_domain(docstr, schema, trace):
+def search_domain(docstr, schema):
     """
     !~search_domain
         Return True if the string in docstr is suitable for use in the
@@ -419,7 +412,7 @@ def search_domain(docstr, schema, trace):
     return network.plausible_search_domain(docstr)
 
 
-def ipv4_address(docstr, schema, trace):
+def ipv4_address(docstr, schema):
     """
     !~ipv4_address
         Check that corresponding document strings are IPv4 addresses
@@ -432,7 +425,7 @@ def reserved_none_void_prefixDec(fname, prefix):
     Return a XYS validator that checks that corresponding document strings are
     'reserved', 'none', 'void', or valid per !~~prefixDec prefix.
     """
-    def validator(docstr, schema, trace):
+    def validator(docstr, schema):
         """
         !~<validator generated by reserved_none_void_prefixDec() >
             Checks that corresponding document strings are 'reserved',
@@ -451,7 +444,7 @@ def reserved_none_void_prefixDec(fname, prefix):
     return validator
 
 
-def plausible_static(static, schema, trace):
+def plausible_static(static, schema):
     """
     !~plausible_static (from !!map)
         Check that the netmask is plausible, that every address is in the
@@ -532,7 +525,7 @@ def references_relation(set_defined_symbols, lst_references, minref, maxref):
     return dict_ok, dict_out_of_bounds, dict_undefined
 
 
-def plausible_configuration(conf, schema, trace):
+def plausible_configuration(conf, schema):
     """
     !~plausible_configuration
         Validate the general system configuration
@@ -540,19 +533,19 @@ def plausible_configuration(conf, schema, trace):
     
     dict_ok, dict_out_of_bounds, dict_undefined = references_relation(conf['ipConfs'], get_referenced_ipConfTags(conf), minref=0, maxref=1)
     if dict_out_of_bounds:
-        trace.err("duplicated static IP conf references in vlans description: %r" % dict_out_of_bounds)
+        log.error("duplicated static IP conf references in vlans description: %r", dict_out_of_bounds)
         return False
     if dict_undefined:
-        trace.err("undefined referenced static IP configurations: %r" % dict_undefined)
+        log.error("undefined referenced static IP configurations: %r", dict_undefined)
         return False
     
     referenced_vsTags = get_referenced_vsTags(conf)
     dict_ok, dict_out_of_bounds, dict_undefined = references_relation(conf['vlans'], referenced_vsTags, minref=0, maxref=1)
     if dict_out_of_bounds:
-        trace.err("duplicated vlan references in network interfaces description: %r" % dict_out_of_bounds)
+        log.error("duplicated vlan references in network interfaces description: %r", dict_out_of_bounds)
         return False
     if dict_undefined:
-        trace.err("undefined vlan configurations: %r" % dict_undefined)
+        log.error("undefined vlan configurations: %r", dict_undefined)
         return False
     
     # TODO: uniqueness concept in schema, default types in schema
@@ -561,7 +554,7 @@ def plausible_configuration(conf, schema, trace):
         nameservers = map(network.normalize_ipv4_address, nameservers)
         unique_nameservers = frozenset(nameservers)
         if len(unique_nameservers) != len(nameservers):
-            trace.err("duplicated nameservers in " + `tuple(nameservers)`)
+            log.error("duplicated nameservers in %r", tuple(nameservers))
             return False
     
     # Check that active networks are distinct
@@ -581,13 +574,13 @@ def plausible_configuration(conf, schema, trace):
         non_duplicated_networks = [net for net, names in active_networks.iteritems() if len(names) <= 1]
         for net in non_duplicated_networks:
             del active_networks[net]
-        trace.err("duplicated active networks: %r" % dict((('.'.join(map(str, net)), tuple(names)) for net, names in active_networks.iteritems())))
+        log.error("duplicated active networks: %r", dict((('.'.join(map(str, net)), tuple(names)) for net, names in active_networks.iteritems())))
         return False
     
     # VOIP service
     ipConfVoip = conf['services']['voip']['ipConf']
     if ipConfVoip not in conf['ipConfs']:
-        trace.err("the voip service references a static ip configuration that does not exists: %r" % ipConfVoip)
+        log.error("the voip service references a static ip configuration that does not exists: %r", ipConfVoip)
         return False
     ipConfVoip_static = conf['ipConfs'][ipConfVoip]
     netmask = netmask_from_static(ipConfVoip_static)
@@ -598,14 +591,14 @@ def plausible_configuration(conf, schema, trace):
     for field in voip_fixed:
         if field in addresses:
             if network.parse_ipv4(addresses[field]) == broadcast: # TODO: other sanity checks...
-                trace.err("invalid voip service related IP %r: %r" % (field, addresses[field]))
+                log.error("invalid voip service related IP %r: %r", field, addresses[field])
                 return False
     # router, if present, must be in the network
     if 'router' in addresses:
         ok, other = ip_in_network(network.parse_ipv4(addresses['router']), net, netmask)
         if not ok:
-            trace.err("router must be in network %s/%s but seems to be in %s/%s" %
-                      (network.format_ipv4(net), network.format_ipv4(netmask), network.format_ipv4(other), network.format_ipv4(netmask)))
+            log.error("router must be in network %s/%s but seems to be in %s/%s",
+                      network.format_ipv4(net), network.format_ipv4(netmask), network.format_ipv4(other), network.format_ipv4(netmask))
             return False
     # check that any range is in the network and with min <= max
     for range_field in 'voipRange', 'alienRange':
@@ -615,10 +608,10 @@ def plausible_configuration(conf, schema, trace):
         for ip in ip_range:
             ok, other = ip_in_network(ip, net, netmask)
             if not ok:
-                trace.err("IP %s is not in network %s/%s" % (network.format_ipv4(ip), network.format_ipv4(net), network.format_ipv4(netmask)))
+                log.error("IP %s is not in network %s/%s", network.format_ipv4(ip), network.format_ipv4(net), network.format_ipv4(netmask))
                 return False
         if not (ip_range[0] <= ip_range[1]):
-            trace.err("Invalid IP range: " + `tuple(addresses[range_field])`)
+            log.error("Invalid IP range: %r", tuple(addresses[range_field]))
             return False
     # check that there is no overlapping ranges
     parsed_voipRange = map(network.parse_ipv4, addresses['voipRange'])
@@ -628,7 +621,7 @@ def plausible_configuration(conf, schema, trace):
         two = map(network.parse_ipv4, addresses['alienRange'])
         all_ranges.append(two)
         if (one[0] <= two[0] <= one[1]) or (one[0] <= two[1] <= one[1]):
-            trace.err("overlapping DHCP ranges detected")
+            log.error("overlapping DHCP ranges detected")
             return False
     # check that there is no fixed IP in any DHCP range
     fixed_addresses = [ network.parse_ipv4(ipConfVoip_static[field]) for field in ('address', 'gateway') if field in ipConfVoip_static ]
@@ -637,7 +630,7 @@ def plausible_configuration(conf, schema, trace):
     for rang in all_ranges:
         for addr in fixed_addresses:
             if rang[0] <= addr <= rang[1]:
-                trace.err("fixed address %r detected in DHCP range %r" % (network.format_ipv4(addr), tuple(rang)))
+                log.error("fixed address %r detected in DHCP range %r", network.format_ipv4(addr), tuple(rang))
                 return False
     
     return True
@@ -734,7 +727,7 @@ class InvalidConfigurationError(Exception):
         return self.__strmsg
 
 
-def load_configuration(conf_source, trace=trace_null):
+def load_configuration(conf_source):
     """
     Parse the first YAML document in a stream and produce the corresponding
     normalized internal representation of the configuration.
@@ -743,7 +736,7 @@ def load_configuration(conf_source, trace=trace_null):
     invalid.
     """
     conf = yaml.safe_load(conf_source)
-    if not xys.validate(conf, SCHEMA_NETWORK_CONFIG, trace):
+    if not xys.validate(conf, SCHEMA_NETWORK_CONFIG):
         raise InvalidConfigurationError("Invalid configuration")
     # TODO: do that thanks to a schema based mapping ("mapping" in functional programming meaning)
     nameservers = conf['resolvConf'].get('nameservers')
@@ -761,7 +754,7 @@ def load_configuration(conf_source, trace=trace_null):
     return conf
 
 
-def save_configuration(conf, file_obj, trace=trace_null):
+def save_configuration(conf, file_obj):
     """
     Serialize the internal representation of the configuration to @file_obj in
     YAML.
@@ -769,26 +762,26 @@ def save_configuration(conf, file_obj, trace=trace_null):
     This can only be done if the configuration is valid.
     InvalidConfigurationError will be raised if the configuration is not valid.
     """
-    if not xys.validate(conf, SCHEMA_NETWORK_CONFIG, trace):
+    if not xys.validate(conf, SCHEMA_NETWORK_CONFIG):
         raise InvalidConfigurationError("Invalid configuration")
     result = yaml.safe_dump(conf, stream=file_obj, default_flow_style=False, indent=4)
     system.flush_sync_file_object(file_obj)
     return result
 
 
-def load_current_configuration(trace=trace_null):
+def load_current_configuration():
     """
     Load the configuration from the standard current path.
     """
-    return load_configuration(file(os.path.join(STORE_BASE, STORE_CURRENT, NETWORK_CONFIG_FILE)), trace)
+    return load_configuration(file(os.path.join(STORE_BASE, STORE_CURRENT, NETWORK_CONFIG_FILE)))
 
 
-def save_configuration_for_transaction(conf, trace=trace_null):
+def save_configuration_for_transaction(conf):
     """
     Serialize the internal representation of the XIVO configuration in a file
     that will be used during the system configuration generation transaction.
     """
-    return save_configuration(conf, system.file_w_create_directories(os.path.join(STORE_BASE, STORE_TMP, NETWORK_CONFIG_FILE)), trace)
+    return save_configuration(conf, system.file_w_create_directories(os.path.join(STORE_BASE, STORE_TMP, NETWORK_CONFIG_FILE)))
 
 
 def natural_vlan_name(phy, vlanId):
@@ -802,12 +795,12 @@ def natural_vlan_name(phy, vlanId):
         return "%s.%d" % (phy, vlanId)
 
 
-def generate_interfaces(old_lines, conf, trace=trace_null):
+def generate_interfaces(old_lines, conf):
     """
     Yield the new lines of interfaces(5) according to the old ones and the
     current configuration
     """
-    trace.notice("ENTERING generate_interfaces()")
+    log.info("ENTERING generate_interfaces()")
     
     eni = interfaces.parse(old_lines)
     
@@ -864,33 +857,33 @@ def generate_interfaces(old_lines, conf, trace=trace_null):
             down = SPACE
         elif isinstance(block, interfaces.EniBlockWithIfName):
             if unhandled_or_reserved(block.ifname):
-                trace.debug("keeping unhandled or reserved %s block %r" % (block.__class__.__name__, block.ifname))
+                log.debug("keeping unhandled or reserved %s block %r", block.__class__.__name__, block.ifname)
                 down = KEPT
             else:
-                trace.info("removing handled and not reserved %s block %r" % (block.__class__.__name__, block.ifname))
+                log.info("removing handled and not reserved %s block %r", block.__class__.__name__, block.ifname)
                 down = REMOVED
         elif isinstance(block, interfaces.EniBlockAllow):
             assert len(block.cooked_lines) == 1, "a EniBlockAllow contains more than one cooked line"
             line_recipe = interfaces.EniCookLineRecipe(block.raw_lines)
             for ifname in block.allow_list[:]:
                 if unhandled_or_reserved(ifname):
-                    trace.debug("keeping unhandled or reserved %r in %r stanza" % (ifname, block.allow_kw))
+                    log.debug("keeping unhandled or reserved %r in %r stanza", ifname, block.allow_kw)
                 else:
-                    trace.info("removing handled and not reserved %r in %r stanza" % (ifname, block.allow_kw))
+                    log.info("removing handled and not reserved %r in %r stanza", ifname, block.allow_kw)
                     mo = re.search(re.escape(ifname) + r'(\s)*', line_recipe.cooked_line)
                     if mo:
                         line_recipe.remove_part(mo.start(), mo.end())
                     else:
-                        trace.warning("%r has not been found in %r" % (ifname, line_recipe.cooked_line))
+                        log.warning("%r has not been found in %r", ifname, line_recipe.cooked_line)
                     block.allow_list.remove(ifname)
             line_recipe.update_block(block)
             if block.allow_list:
                 down = KEPT
             else:
-                trace.info("removing empty %r stanza" % block.allow_kw)
+                log.info("removing empty %r stanza", block.allow_kw)
                 down = REMOVED
         else: # interfaces.EniBlockUnknown
-            trace.info("removing invalid block")
+            log.info("removing invalid block")
             down = REMOVED
         
         if down is not SPACE:
@@ -927,7 +920,7 @@ def generate_interfaces(old_lines, conf, trace=trace_null):
             if not specific(ipConfs_tag):
                 continue
             ifname = natural_vlan_name(phy, vlanId)
-            trace.info("generating configuration for %r" % ifname)
+            log.info("generating configuration for %r", ifname)
             static = conf['ipConfs'][ipConfs_tag]
             yield "iface %s inet static\n" % ifname
             yield "\taddress %s\n" % static['address']
@@ -939,15 +932,15 @@ def generate_interfaces(old_lines, conf, trace=trace_null):
                 yield "\tmtu %d\n" % static['mtu']
             yield "\n"
     
-    trace.notice("LEAVING generate_interfaces.")
+    log.info("LEAVING generate_interfaces.")
 
 
 # XXX traces
-def generate_dhcpd_conf(conf, trace=trace_null):
+def generate_dhcpd_conf(conf):
     """
     Yield each line of the generated dhcpd.conf
     """
-    trace.notice("ENTERING generate_dhcpd_conf()")
+    log.info("ENTERING generate_dhcpd_conf()")
     
     addresses = conf['services']['voip']['addresses']
     ipConfVoip_key = conf['services']['voip']['ipConf']
@@ -1006,7 +999,7 @@ def generate_dhcpd_conf(conf, trace=trace_null):
         yield '    }\n'
     yield '}\n'
     
-    trace.notice("LEAVING generate_dhcpd_conf.")
+    log.info("LEAVING generate_dhcpd_conf.")
 
 
 # note: we use the header below because it is the header also used by the
@@ -1032,12 +1025,12 @@ SUSPEND_ACTION="stop"
 """
 
 
-def generate_default_ifplugd(old_lines, conf, trace=trace_null):
+def generate_default_ifplugd(old_lines, conf):
     """
     Yield the new lines of /etc/default/ifplugd according to the old ones and
     the current configuration
     """
-    trace.notice("ENTERING generate_default_ifplugd()")
+    log.info("ENTERING generate_default_ifplugd()")
     
     if not old_lines:
         old_lines = DEFAULT_IFPLUGD.split("\n")
@@ -1050,7 +1043,7 @@ def generate_default_ifplugd(old_lines, conf, trace=trace_null):
     for line in shvar.format(reslst):
         yield line
     
-    trace.notice("LEAVING generate_default_ifplugd.")
+    log.info("LEAVING generate_default_ifplugd.")
 
 
 class TransactionError(Exception):
@@ -1066,7 +1059,7 @@ class TransactionError(Exception):
         return self.__strmsg
 
 
-def rotate_entries(previous, current, new, trace):
+def rotate_entries(previous, current, new):
     """
     If current exists:
       1) Delete previous.
@@ -1078,38 +1071,35 @@ def rotate_entries(previous, current, new, trace):
     instead.
     Other exceptions are not catched.
     """
-    trace.info("Entering rotate_entries(previous=%r, current=%r, new=%r)" % (previous, current, new))
+    log.info("Entering rotate_entries(previous=%r, current=%r, new=%r)", previous, current, new)
     
     if os.path.exists(current):
-        trace.info("%r to %r" % (current, previous))
+        log.info("%r to %r", current, previous)
         
-        trace.debug("about to remove %r" % previous)
+        log.debug("about to remove %r", previous)
         try:
             system.rm_rf(previous)
         except OSError:
-            trace.warning("rotate_entries: failed to delete %r" % previous)
-            except_tb.log_exception(trace.warning)
+            log.warning("rotate_entries: failed to delete %r", previous, exc_info=True)
         
-        trace.debug("about to rename %r to %r" % (current, previous))
+        log.debug("about to rename %r to %r", current, previous)
         try:
             os.rename(current, previous)
         except OSError:
-            trace.warning("rotate_entries: failed to rename %r to %r" % (current, previous))
-            except_tb.log_exception(trace.warning)
-            
+            log.warning("rotate_entries: failed to rename %r to %r", current, previous, exc_info=True)
             system.rm_rf(current)
         
-        system.sync_no_oserror(trace)
+        system.sync_no_oserror()
     
-    trace.debug("about to rename %r to %r" % (new, current))
+    log.debug("about to rename %r to %r", new, current)
     os.rename(new, current)
     
-    system.sync_no_oserror(trace)
+    system.sync_no_oserror()
     
-    trace.info("Leaving rotate_entries.")
+    log.info("Leaving rotate_entries.")
 
 
-def transactional_generation(store_base, store_subs, gen_base, gen_subs, generation_func, trace=trace_null):
+def transactional_generation(store_base, store_subs, gen_base, gen_subs, generation_func):
     """
     This function first removes some temporary directories. Then it completes a
     three staged transaction if it has been started, or does nothing otherwise.
@@ -1136,119 +1126,115 @@ def transactional_generation(store_base, store_subs, gen_base, gen_subs, generat
                   failed.
     * gen_base: base directory of all generated configurations.
     * gen_subs: sub-paths from gen_base to previous, current, new, and tmp.
-    * generation_func(to_gen, prev_gen, current_src, trace):
+    * generation_func(to_gen, prev_gen, current_src):
         where:
         * to_gen contains the path where the configuration must be generated.
         * prev_gen contains the path where the previously generated
           configuration stands.  If no configuration has been previously
           generated, prev_gen contains None instead.
         * current_src contains the path where the source configuration stands.
-    * trace: A trace support object.  See the module xivo.trace_stderr for an
-      implementation example.
     
     NOTE: Because of our requirements some state that is only stored in the
     generated files must be preserved (configuration of reserved interfaces and
     of unhandled interfaces).  That is why generation_func takes its second
     parameter.
     """
-    trace.notice("ENTERING transactional_generation()")
-    trace.debug("  store_base = %r" % store_base)
-    trace.debug("  store_subs = %s" % `store_subs`)
-    trace.debug("  gen_base = %r" % gen_base)
-    trace.debug("  gen_subs = %s" % `gen_subs`)
+    log.info("ENTERING transactional_generation()")
+    log.debug("  store_base = %r", store_base)
+    log.debug("  store_subs = %r", store_subs)
+    log.debug("  gen_base = %r", gen_base)
+    log.debug("  gen_subs = %r", gen_subs)
     
     store_previous, store_current, store_new, store_tmp, store_failed = [os.path.join(store_base, x) for x in store_subs]
     gen_previous, gen_current, gen_new, gen_tmp = [os.path.join(gen_base, x) for x in gen_subs]
     
     for entry in (store_tmp, gen_tmp):
         if os.path.exists(entry):
-            trace.warning("transactional_generation: removing stalled entry %r" % entry)
+            log.warning("transactional_generation: removing stalled entry %r", entry)
             system.rm_rf(entry)
     
     if os.path.exists(store_new) and not os.path.exists(gen_new):
-        trace.notice("BEGIN PHASE 1")
+        log.info("BEGIN PHASE 1")
         
-        trace.debug("about to remove %r" % gen_tmp)
+        log.debug("about to remove %r", gen_tmp)
         system.rm_rf(gen_tmp)
         
         if os.path.exists(gen_current):
-            trace.info("%r exists" % gen_current)
+            log.info("%r exists", gen_current)
             previously_generated = gen_current
         else:
-            trace.info("%r does not exist" % gen_current)
+            log.info("%r does not exist", gen_current)
             previously_generated = None
         
-        trace.debug("about to call %r" % generation_func)
-        trace.debug("  gen_tmp = %r" % gen_tmp)
-        trace.debug("  previously_generated = %r" % previously_generated)
-        trace.debug("  store_new = %r" % store_new)
+        log.debug("about to call %r", generation_func)
+        log.debug("  gen_tmp = %r", gen_tmp)
+        log.debug("  previously_generated = %r", previously_generated)
+        log.debug("  store_new = %r", store_new)
         
         try:
-            generation_func(gen_tmp, previously_generated, store_new, trace)
+            generation_func(gen_tmp, previously_generated, store_new)
             
         except Exception, ex:
-            except_tb.log_exception(trace.err)
-            trace.info("Error during generation - cancelling transaction")
+            log.exception("Error during generation - cancelling transaction")
             
             system.rm_rf(store_failed)
             
-            trace.debug("about to %r rename to %r" % (store_new, store_failed))
+            log.debug("about to %r rename to %r", store_new, store_failed)
             try:
                 os.rename(store_new, store_failed)
             except OSError:
-                trace.warning("transactional_generation: failed to rename %r to %r - destroying %r"
-                              % (store_new, store_failed, store_new))
-                except_tb.log_exception(trace.warning)
+                log.warning("transactional_generation: failed to rename %r to %r - destroying %r",
+                            store_new, store_failed, store_new, exc_info=True)
                 system.rm_rf(store_new)
             
-            trace.notice("about to remove incompletely generated directory %r" % gen_tmp)
+            log.info("about to remove incompletely generated directory %r", gen_tmp)
             system.rm_rf(gen_tmp)
             
-            system.sync_no_oserror(trace)
+            system.sync_no_oserror()
             
-            trace.notice("END PHASE 1 - transaction cancelled - raising TransactionError")
+            log.info("END PHASE 1 - transaction cancelled - raising TransactionError")
             
             raise TransactionError("generation failure", ex)
             
         else:
-            trace.info("Successful generation")
+            log.info("Successful generation")
             
-            system.sync_no_oserror(trace)
+            system.sync_no_oserror()
             
-            trace.debug("about to rename %r to %r" % (gen_tmp, gen_new))
+            log.debug("about to rename %r to %r", gen_tmp, gen_new)
             os.rename(gen_tmp, gen_new)
             
-            system.sync_no_oserror(trace)
+            system.sync_no_oserror()
             
-            trace.notice("END PHASE 1 - generation performed")
+            log.info("END PHASE 1 - generation performed")
     
     if os.path.exists(store_new) and os.path.exists(gen_new):
-        trace.notice("BEGIN PHASE 2")
+        log.info("BEGIN PHASE 2")
         
-        rotate_entries(store_previous, store_current, store_new, trace)
+        rotate_entries(store_previous, store_current, store_new)
         
-        trace.notice("END PHASE 2")
+        log.info("END PHASE 2")
     
     if (not os.path.exists(store_new)) and os.path.exists(gen_new):
-        trace.notice("BEGIN PHASE 3")
+        log.info("BEGIN PHASE 3")
         
-        rotate_entries(gen_previous, gen_current, gen_new, trace)
+        rotate_entries(gen_previous, gen_current, gen_new)
         
-        trace.notice("END PHASE 3")
+        log.info("END PHASE 3")
         
-        trace.notice("LEAVING transactional_generation - success no error")
+        log.info("LEAVING transactional_generation - success")
         return True
     
-    trace.notice("LEAVING transactional_generation - no transaction completion")
+    log.info("LEAVING transactional_generation - no transaction to complete")
 
 
-def generate_system_configuration(to_gen, prev_gen, current_xivo_conf, trace=trace_null):
+def generate_system_configuration(to_gen, prev_gen, current_xivo_conf):
     """
     Generate system configuration from our own configuration model.
     """
     os.mkdir(to_gen)
     
-    config = load_configuration(file(os.path.join(current_xivo_conf, NETWORK_CONFIG_FILE)), trace)
+    config = load_configuration(file(os.path.join(current_xivo_conf, NETWORK_CONFIG_FILE)))
     
     def gen_from_old(filename, genfunc):
         if prev_gen:
@@ -1256,7 +1242,7 @@ def generate_system_configuration(to_gen, prev_gen, current_xivo_conf, trace=tra
         else:
             old_lines = ()
         system.file_writelines_flush_sync(os.path.join(to_gen, filename),
-                                          genfunc(old_lines, config, trace))
+                                          genfunc(old_lines, config))
         if old_lines:
             old_lines.close()
     
@@ -1265,17 +1251,17 @@ def generate_system_configuration(to_gen, prev_gen, current_xivo_conf, trace=tra
     gen_from_old(IFPLUGD_FILE, generate_default_ifplugd)
         
     system.file_writelines_flush_sync(os.path.join(to_gen, DHCPD_CONF_FILE),
-                                      generate_dhcpd_conf(config, trace))
+                                      generate_dhcpd_conf(config))
 
 
-def transaction_system_configuration(trace=trace_null):
+def transaction_system_configuration():
     """
     Transactionally generate system configuration from our own
     configuration model.
     """
     transactional_generation(STORE_BASE, (STORE_PREVIOUS, STORE_CURRENT, STORE_NEW, STORE_TMP, STORE_FAILED),
                              GENERATED_BASE, (GENERATED_PREVIOUS, GENERATED_CURRENT, GENERATED_NEW, GENERATED_TMP),
-                             generate_system_configuration, trace)
+                             generate_system_configuration)
 
 
 def gen_plugged_by_phy(phys):
@@ -1468,7 +1454,7 @@ def add_vlan(conf, vsTag, vlanId):
     vs[vlanId] = "void"
 
 
-def save_configuration_initiate_transaction(conf, trace=trace_null):
+def save_configuration_initiate_transaction(conf):
     """
     Save XIVO configuration in a place suitable for the system configuration
     generation transaction, then initiate the transaction but do *not* run it.
@@ -1477,8 +1463,8 @@ def save_configuration_initiate_transaction(conf, trace=trace_null):
     transaction_system_configuration() - note that there is such a call at
     system startup.
     """
-    save_configuration_for_transaction(conf, trace)
-    system.sync_no_oserror(trace)
+    save_configuration_for_transaction(conf)
+    system.sync_no_oserror()
     os.rename(os.path.join(STORE_BASE, STORE_TMP), os.path.join(STORE_BASE, STORE_NEW))
 
 
@@ -1502,22 +1488,22 @@ def undo_transaction_initiation():
     system.rm_rf(os.path.join(STORE_BASE, STORE_TMP))
 
 
-def save_configuration_perform_generation_transaction(conf, trace=trace_null):
+def save_configuration_perform_generation_transaction(conf):
     """
     Save XIVO configuration in a place suitable for the system configuration
     generation transaction, then initiate and perform the transaction.
     """
-    save_configuration_initiate_transaction(conf, trace)
-    transaction_system_configuration(trace)
+    save_configuration_initiate_transaction(conf)
+    transaction_system_configuration()
 
 
-def autoattrib(trace=trace_null):
+def autoattrib():
     """
     Auto VLAN Set and IP Configuration attributions.
     Should be called at server startup, after any potential transaction is
     completed by transactional_generation()
     """
-    config = load_current_configuration(trace)
+    config = load_current_configuration()
     aaconf = autoattrib_conf(config)
     if aaconf == config:
         return
@@ -1552,11 +1538,11 @@ def phy_free_in_conf(conf, ifname):
     return conf['netIfaces'].get(ifname, 'void') == 'void'
 
 
-def proc_reneth_init(src_dst_lst, pure_dst_set, trace):
+def proc_reneth_init(src_dst_lst, pure_dst_set):
     """
     Initialization procedure for ethernet interface renaming/swapping
     """
-    config = load_current_configuration(trace)
+    config = load_current_configuration()
     for pure_dst in pure_dst_set:
         if not phy_free_in_conf(config, pure_dst):
             raise ValueError, "Target interface name busy in XIVO configuration: %r" % pure_dst
@@ -1570,7 +1556,7 @@ def proc_reneth_init(src_dst_lst, pure_dst_set, trace):
     return config
 
 
-def proc_reneth_edit(config, src_dst_lst, pure_dst_set, trace):
+def proc_reneth_edit(config, src_dst_lst, pure_dst_set):
     """
     Edition procedure for ethernet interface renaming
     """
@@ -1578,17 +1564,17 @@ def proc_reneth_edit(config, src_dst_lst, pure_dst_set, trace):
     for src, dst in src_dst_lst:
         config['netIfaces'][dst] = orig_netIfaces[src]
         del config['netIfaces'][src]
-    save_configuration_initiate_transaction(config, trace)
+    save_configuration_initiate_transaction(config)
 
 
-def proc_reneth_preup(config, trace):
+def proc_reneth_preup(config):
     """
     Commit procedure for ethernet interface renaming
     """
-    transaction_system_configuration(trace)
+    transaction_system_configuration()
 
 
-def proc_reneth_rollback(config, trace):
+def proc_reneth_rollback(config):
     """
     Rollback procedure for ethernet interface renaming
     """
@@ -1596,7 +1582,7 @@ def proc_reneth_rollback(config, trace):
         undo_transaction_initiation()
 
 
-def rename_ethernet_interface(old_name, new_name, trace=trace_null):
+def rename_ethernet_interface(old_name, new_name):
     """
     Rename the @old_name physical interface to @new_name.
     On internal failure, the operation is undone.
@@ -1608,13 +1594,13 @@ def rename_ethernet_interface(old_name, new_name, trace=trace_null):
     # hard way (kill -9, power failure) and rollback if possible.
     # This will be better placed in an other function.
 
-    udev.rename_persistent_net_rules([(old_name, new_name)], (proc_reneth_init, proc_reneth_edit, proc_reneth_preup, proc_reneth_rollback), trace)
+    udev.rename_persistent_net_rules([(old_name, new_name)], (proc_reneth_init, proc_reneth_edit, proc_reneth_preup, proc_reneth_rollback))
 
 
-def swap_ethernet_interfaces(name1, name2, trace=trace_null):
+def swap_ethernet_interfaces(name1, name2):
     """
     Swap ethernet interfaces @name1 and @name2.
     """
     # NOTE: see also rename_ethernet_interface() for various generic comments
 
-    udev.rename_persistent_net_rules([(name1, name2), (name2, name1)], (proc_reneth_init,  proc_reneth_edit, proc_reneth_preup, proc_reneth_rollback), trace)
+    udev.rename_persistent_net_rules([(name1, name2), (name2, name1)], (proc_reneth_init,  proc_reneth_edit, proc_reneth_preup, proc_reneth_rollback))
