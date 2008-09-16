@@ -29,34 +29,22 @@ import os
 import re
 import sys
 import errno
+import logging
 
-from xivo import except_tb
 
 SLASH_PROC = os.sep + 'proc'
 PROG_SLINK = 'exe'
 PROG_CMDLN = 'cmdline'
 
-class DaemonError(Exception):
-	pass
 
-def remove_if_stale_pidfile(pidfile, logline_func = except_tb.LOGLINE_STDERR):
+log = logging.getLogger("xivo.daemonize")
+
+
+def remove_if_stale_pidfile(pidfile):
 	"""
-	If the given 'pidfile' does not exists, do nothing.
-	If it contains a PID that does not correspond to a living process on
-	the local host, remove the stale 'pidfile'.
-	If it contains a PID for which the corresponding process neither comes from
-	an executable with our own name (as per sys.argv[0], any r'\.py$' put
-	appart) nor has been launched with a command line containing our own name
-	in the command or one of the parameters, remove the stale 'pidfile'.
-
-	As this function is intended to be used during the startup process of a
-	daemon, deciding what to do exactly when a pidfile was and maybe remains
-	present is out of its responsibility.  Therefore, it will catch and confine
-	any exception that could be raised during its work because of any
-	unrespected precondition (in this context, understand bad/unexpected state
-	of the environment).  Anyway unexpected exceptions are logged thanks to
-	the 'logline_func' function, which is called one line at a time when
-	applicable.
+	@pidfile: PID file to remove if it is staled.
+	
+	Exceptions are logged.
 	"""
 	c14n_prog_name = lambda arg: os.path.basename(re.sub(r'\.py$', '', arg))
 	try:
@@ -70,7 +58,7 @@ def remove_if_stale_pidfile(pidfile, logline_func = except_tb.LOGLINE_STDERR):
 		i_am = c14n_prog_name(sys.argv[0])
 		try:
 			other_cmdline = file(os.path.join(SLASH_PROC, str(pid_maydaemon), PROG_CMDLN)).read().split('\0')
-			if len(other_cmdline) and other_cmdline[-1] == '':
+			if len(other_cmdline) and other_cmdline[-1] == "":
 				other_cmdline.pop()
 		except IOError, e:
 			if e.errno == errno.ENOENT:
@@ -81,8 +69,8 @@ def remove_if_stale_pidfile(pidfile, logline_func = except_tb.LOGLINE_STDERR):
 			raise
 		# Check the whole command line of the other process
 		if i_am in map(c14n_prog_name, other_cmdline):
-			logline_func("A pidfile %r already exists (contains pid %d) and the correponding process command line contains our own name %r"
-			             % (pidfile, pid_maydaemon, i_am))
+			log.warning("A pidfile %r already exists (contains pid %d) and the correponding process command line contains our own name %r",
+			            pidfile, pid_maydaemon, i_am)
 			return
 		# It may not be us, but we must be quite sure about that so also try
 		# to validate with the name of the executable.
@@ -102,33 +90,32 @@ def remove_if_stale_pidfile(pidfile, logline_func = except_tb.LOGLINE_STDERR):
 			else:
 				raise
 		if i_am == lock_pgm:
-			logline_func("A pidfile %r already exists (contains pid %d) and an executable with our name %r is runnning with that pid."
-			             % (pidfile, pid_maydaemon, i_am))
+			log.warning("A pidfile %r already exists (contains pid %d) and an executable with our name %r is runnning with that pid.",
+			            pidfile, pid_maydaemon, i_am)
 			return
 		# Ok to remove the previously existing pidfile now.
-		logline_func("A pidfile %r already exists (contains pid %d) but the corresponding process does not seem to match with our own name %r.  "
-		             "Will remove the pidfile."
-		             % (pidfile, pid_maydaemon, i_am))
-		logline_func("Splitted command line of the other process: %s" % str(other_cmdline))
+		log.info("A pidfile %r already exists (contains pid %d) but the corresponding process does not seem to match with our own name %r.  "
+		         "Will remove the pidfile.", pidfile, pid_maydaemon, i_am)
+		log.info("Splitted command line of the other process: %s", other_cmdline)
 		if lock_pgm:
-			logline_func("Name of the executable the other process comes from: %s" % full_pgm)
+			log.info("Name of the executable the other process comes from: %s", full_pgm)
 		os.unlink(pidfile)
 		return
 	except:
-		except_tb.log_exception(logline_func)
+		log.exception("unexpected error")
 
-def take_file_lock_or_die(own_file, lock_file, own_content):
+
+def take_file_lock(own_file, lock_file, own_content):
 	"""
-	Creates an hard link from own_file to lock_file, then unconditionally
-	unlink own_file.  If the hard link has been successfully created check
-	that what is inside this file really is what is expected (that is
-	what is passed in parameter own_content)
+	Atomically "move" @own_file to @lock_file if the latter does not exists,
+	else just remove @own_file.
 	
-	No exception is completely catched by this function, and a failure
-	of os.link() would mean the raise of one.  OSError are "translated"
-	into DaemonError if the OSError is of type EEXIST, so it's easy to
-	know when this function raised and exception because an other one
-	is already running and when this is for an other reason.
+	@own_file: filepath of the temporary file that contains our PID
+	@lock_file: destination filepath
+	@own_content: content of @own_file
+	
+	Return True if the lock has been successfully taken, else False.
+	(Caller should also be prepared for OSError exceptions)
 	"""
 	try:
 		try:
@@ -137,44 +124,36 @@ def take_file_lock_or_die(own_file, lock_file, own_content):
 			os.unlink(own_file)
 	except OSError, e:
 		if e.errno == errno.EEXIST:
-			raise DaemonError, (
-				"The lock file %s already exists - won't "
+			log.warning("The lock file %r already exists - won't "
 				"overwrite it.  An other instance of ourself "
-				"is probably running." % `lock_file`)
+				"is probably running.", lock_file)
+			return False
 		else:
 			raise
 	content = file(lock_file).read(len(own_content) + 1)
 	if content != own_content:
-		raise DaemonError, (
-			"I thought I successfully took the lock file %s but "
+		log.warning(
+			"I thought I successfully took the lock file %r but "
 			"it does not contain what was expected.  Somebody is "
-			"playing with us."
-			% `lock_file`)
+			"playing with us.", lock_file)
+		return False
+	return True
 
-def create_pidfile_or_die(logline_func = except_tb.LOGLINE_STDERR, pidfile = None, pidfile_lock = False):
+
+def create_pidfile_or_die(pidfile, pidfile_lock):
 	"""
-	You must give a writable filename in parameter 'pidfile', or None.
+	@pidfile:
+		None => this function just returns the PID
+		Else @pidfile must be a writable filepath
 	
-	If you pass None no action will be performed.
+	@pidfile_lock:
+		False => Create the pidfile unconditionally
+			(WARNING: potentially subject to race conditions)
+		True => Remove potentially existing staled PID file
+			Create a new one atomically
+			If the new one is ours: success
 	
-	Otherwise there are two modes of operation to create the pidfile:
-	
-	* If pidfile_lock is False we can unconditionally create a pidfile,
-	  overwriting any previously existing one.  If its possible to start
-	  the process only when no such pidfile exists or when it contains a
-	  PID pointing on nothing or on a totaly unrelated process, this can
-	  be acceptable.  But this is still subject to race conditions.
-	* If pidfile_lock is True the pidfile will be created using a two stage
-	  process.  First remove_if_stale_pidfile() is called so that any
-	  existing stale pidfile will be removed.  Then a temporary pidfile
-	  whose name is postfixed with our own PID is generated.  Eventually,
-	  an hard link is created from the temporary pidfile to the
-	  non-temporary one and the temporary link is destroyed.  At this point
-	  if the non-temporary pidfile contains our own PID, we know for sure
-	  that we just atomically grabbed a lock and the right to serenely run.
-	
-	Exceptions are logged thanks to the 'logline_func' function, which is
-	called one line at a time when applicable.	
+	Exceptions are logged.
 	
 	This function returns the PID.
 	"""
@@ -182,7 +161,7 @@ def create_pidfile_or_die(logline_func = except_tb.LOGLINE_STDERR, pidfile = Non
 	try:
 		if pidfile:
 			if pidfile_lock:
-				remove_if_stale_pidfile(pidfile, logline_func)
+				remove_if_stale_pidfile(pidfile)
 				pid_write_file = pidfile + '.' + str(pid)
 			else:
 				pid_write_file = pidfile
@@ -192,36 +171,45 @@ def create_pidfile_or_die(logline_func = except_tb.LOGLINE_STDERR, pidfile = Non
 			finally:
 				fpid.close()
 			if pidfile_lock:
-				take_file_lock_or_die(pid_write_file, pidfile, "%s\n" % pid)
+				if not take_file_lock(pid_write_file, pidfile, "%s\n" % pid):
+					sys.exit(1)
+	except SystemExit:
+		raise
 	except:
-		except_tb.log_exception(logline_func)
+		log.exception("unable to take pidfile")
 		sys.exit(1)
 	return pid
 
-def daemonize(logline_func = except_tb.LOGLINE_STDERR, pidfile = None, pidfile_lock = False,
-              logout = None, logerr = None):
+
+def daemonize(pidfile=None, pidfile_lock=True, logout=None, logerr=None):
 	"""
-	Daemonize the program, ie. make it runs in the "background",
-	detach it from its controlling terminal, and detach it from its
-	controlling process group session.
+	Daemonize the program, ie. make it run in the "background", detach
+	it from its controlling terminal and from its controlling process
+	group session.
 	
-	'pidfile' and 'pidfile_lock' will be passed to function
-	create_pidfile_or_die() after forking.  'pidfile' can contain None 
-	(default value) in which case create_pidfile_or_die() will take no
-	action.
+	@pidfile:
+		PID file path, or None
 	
-	If 'logout' is not None, standard output will be directed to this
-	Python file interface object instead of /dev/null.  Same thing for
-	'logerr' and standard error.
+	@pidfile_lock: (significant only when @pidfile is not None)
+		False => just write @pidfile unconditionally
+		True => @pidfile is a lockfile, take the lock or die
+	
+	@logout:
+		File object to use to replace sys.stdout
+		Warning: original file object potentially closed
+		None => stdout will be /dev/null
+	
+	@logerr:
+		File object to use to replace sys.stderr
+		Warning: original file object potentially closed
+		None => stderr will be /dev/null
 	"""
 	try:
 		pid = os.fork()
 		if pid > 0:
-			os._exit(0) # XXX check that
-	except SystemExit:
-		raise
-	except:
-		except_tb.log_exception(logline_func)
+			os._exit(0)
+	except Exception:
+		log.exception("first fork() failed")
 		sys.exit(1)
 	os.setsid()
 	os.umask(0)
@@ -230,48 +218,57 @@ def daemonize(logline_func = except_tb.LOGLINE_STDERR, pidfile = None, pidfile_l
 		pid = os.fork()
 		if pid > 0:
 			os._exit(0)
-	except SystemExit:
-		raise
-	except:
-		except_tb.log_exception(logline_func)
+	except Exception:
+		log.exception("second fork() failed")
 		sys.exit(1)
 	
-	pid = create_pidfile_or_die(logline_func, pidfile, pidfile_lock)
+	pid = create_pidfile_or_die(pidfile, pidfile_lock)
 	
-	# Redirect standard file descriptors.
-	sys.stdout.flush()
-	sys.stderr.flush()
-	os.close(sys.__stdin__.fileno())
-	os.close(sys.__stdout__.fileno())
-	os.close(sys.__stderr__.fileno())
-	
-	# stdin always from /dev/null
-	newstdin = open(os.devnull, 'r')
-	if newstdin.fileno() == 0:
-		sys.stdin = newstdin
-	else:
-		os.dup2(newstdin.fileno(), 0)
-		newstdin.close()
-	
-	if logout is None:
-		sys.stdout = open(os.devnull, 'w')
-	else:
-		so = sys.stdout = logout
-		os.dup2(so.fileno(), 1)
-	
-	if logerr is None:
-		sys.stdout = open(os.devnull, 'w', 0)
-	else:
-		se = sys.stderr = logerr
-		os.dup2(se.fileno(), 2)
+	try:
+		# Redirect standard file descriptors.
+		sys.stdout.flush()
+		sys.stderr.flush()
+		os.close(sys.__stdin__.fileno())
+		os.close(sys.__stdout__.fileno())
+		os.close(sys.__stderr__.fileno())
+
+		# stdin always from /dev/null
+		newstdin = open(os.devnull, 'r')
+		if newstdin.fileno() == 0:
+			sys.stdin = newstdin
+		else:
+			os.dup2(newstdin.fileno(), 0)
+			newstdin.close()
+
+		if logout is None:
+			sys.stdout = open(os.devnull, 'w')
+		elif logout.fileno() == 1:
+			sys.stdout = logout
+		else:
+			os.dup2(logout.fileno(), 1)
+			logout.close()
+
+		if logerr is None:
+			sys.stderr = open(os.devnull, 'w', 0)
+		elif logerr.fileno() == 2:
+			sys.stderr = logerr
+		else:
+			os.dup2(logerr.fileno(), 2)
+			logerr.close()
+	except Exception:
+		log.exception("error during file descriptor redirection")
 	
 	return pid
+
 
 if __name__ == '__main__':
 	def stupidtest():
 		import time
-		out = open('/home/xilun/daemon_out', 'w')
-		err = open('/home/xilun/daemon_err', 'w')
-		daemonize(pidfile = '/home/xilun/pidfile', pidfile_lock = True, logout=out, logerr=err)
-		time.sleep(42)
+		logging.basicConfig(level=logging.DEBUG, filename="/home/xilun/daemon_log")
+		out = open("/home/xilun/daemon_out", "w")
+		err = open("/home/xilun/daemon_err", "w")
+		daemonize(pidfile="/home/xilun/pidfile", pidfile_lock=True, logout=out, logerr=err)
+		print "loleuh"
+		print >> sys.stderr, "loleuhmais"
+		time.sleep(10)
 	stupidtest()
