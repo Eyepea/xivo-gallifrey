@@ -1457,18 +1457,18 @@ class XivoCTICommand(BaseCommand):
                         elif icommand.name == 'callcampaign':
                                 if icommand.args[0] == 'fetchlist':
                                         self.__send_msg_to_cti_client__(userinfo,
-                                                                        'callcampaign=fetchlist;101:102:103')
+                                                                        '{"class":"callcampaign","direction":"client","command":"fetchlist","list":["101","102","103"]}')
                                 elif icommand.args[0] == 'startcall':
                                         exten = icommand.args[1]
                                         self.__originate_or_transfer__(userinfo,
                                                                        ['originate', 'user:special:me', 'ext:%s' % exten])
                                         self.__send_msg_to_cti_client__(userinfo,
-                                                                        'callcampaign=callstarted;%s' % exten)
+                                                                        '{"class":"callcampaign","direction":"client","command":"callstarted","list":["%s"]}' % exten)
                                 elif icommand.args[0] == 'stopcall':
                                         self.__send_msg_to_cti_client__(userinfo,
-                                                                        'callcampaign=callstopped;%s' % icommand.args[1])
-##                                        self.__send_msg_to_cti_client__(userinfo,
-##                                                                        'callcampaign=callnext;%s' % icommand.args[1])
+                                                                        '{"class":"callcampaign","direction":"client","command":"callstopped","list":["%s"]}' % icommand.args[1])
+                                        # self.__send_msg_to_cti_client__(userinfo,
+                                        # '{"class":"callcampaign","direction":"client","command":"callnext","list":["%s"]}' % icommand.args[1])
                         elif icommand.name in ['originate', 'transfer', 'atxfer']:
                                 if self.capas[capaid].match_funcs(ucapa, 'dial'):
                                         repstr = self.__originate_or_transfer__(userinfo,
