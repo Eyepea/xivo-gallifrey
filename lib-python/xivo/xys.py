@@ -94,25 +94,25 @@ Application-specific validation functions:
 import re
 
 def ipv4_address(docstr, schema):
-	elts = docstr.split('.', 4)
-	if len(elts) != 4:
-		return False
-	for e in elts:
-		try:
-			i = int(e)
-		except ValueError:
-			return False
-		if i < 0 or i > 255:
-			return False
-	return True
+    elts = docstr.split('.', 4)
+    if len(elts) != 4:
+        return False
+    for e in elts:
+        try:
+            i = int(e)
+        except ValueError:
+            return False
+        if i < 0 or i > 255:
+            return False
+    return True
 
 def search_domain(docstr, schema):
-	domain_label_ok = \\
-		re.compile(r'[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$').match
-	return docstr and len(docstr) <= 251 and \\
-	       all((((len(label) <= 63)
-	             and domain_label_ok(label))
-	            for label in docstr.split('.')))
+    domain_label_ok = \\
+        re.compile(r'[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$').match
+    return docstr and len(docstr) <= 251 and \\
+           all((((len(label) <= 63)
+                 and domain_label_ok(label))
+                for label in docstr.split('.')))
 
 
 Registration of above functions:
@@ -168,116 +168,116 @@ Optional = namedtuple('Optional', 'content')
 Mandatory = namedtuple('Mandatory', 'content')
 
 def get_content_optmand_val(x):
-	if isinstance(x, Optional) or isinstance(x, Mandatory):
-		return x.content
-	else:
-		return x
+    if isinstance(x, Optional) or isinstance(x, Mandatory):
+        return x.content
+    else:
+        return x
 
 def construct_node(loader, node, base_tag):
-	node = copy.copy(node) # bypass YAML anti recursion
-	best_tag = base_tag
-	best_fit = 0
-	for key, val in loader.DEFAULT_TAGS.iteritems():
-		lenk = len(key)
-		if lenk <= best_fit:
-			continue
-		if base_tag.startswith(key):
-			best_tag = val + base_tag[lenk:]
-			best_fit = lenk
-	node.tag = best_tag
-	return loader.construct_object(node, deep=True)
+    node = copy.copy(node) # bypass YAML anti recursion
+    best_tag = base_tag
+    best_fit = 0
+    for key, val in loader.DEFAULT_TAGS.iteritems():
+        lenk = len(key)
+        if lenk <= best_fit:
+            continue
+        if base_tag.startswith(key):
+            best_tag = val + base_tag[lenk:]
+            best_fit = lenk
+    node.tag = best_tag
+    return loader.construct_object(node, deep=True)
 
 def split_int_params(tag_prefix, tag_suffix):
-	if tag_suffix[-1:] != ')':
-		raise ValueError, "unbalanced parenthesis in type %s%s" % (tag_prefix, tag_suffix)
-	return map(int, tag_suffix[:-1].split(','))
+    if tag_suffix[-1:] != ')':
+        raise ValueError, "unbalanced parenthesis in type %s%s" % (tag_prefix, tag_suffix)
+    return map(int, tag_suffix[:-1].split(','))
 
 def add_validator(validator, base_tag, tag=None):
-	"""
-	Add a validator for the given tag, which defines a subset of base_tag.
-	If tag is None, it is automatically constructed as
-	u'!~' + validator.__name__
-	Validator is a function that accepts a document node (in the form of a
-	Python object), a schema node (also a Python object) and a tracing
-	object, and returns True if the document node is valid according to the
-	schema node.  Note that the validator function does not have to recurse
-	in sub-nodes, because XYS already does it.
-	"""
-	if not tag:
-		tag = u'!~' + validator.__name__
-	yaml.add_constructor(
-	    tag,
-	    lambda loader, node:
-	        ValidatorNode(
-	            construct_node(loader, node, base_tag),
-	            validator))
+    """
+    Add a validator for the given tag, which defines a subset of base_tag.
+    If tag is None, it is automatically constructed as
+    u'!~' + validator.__name__
+    Validator is a function that accepts a document node (in the form of a
+    Python object), a schema node (also a Python object) and a tracing
+    object, and returns True if the document node is valid according to the
+    schema node.  Note that the validator function does not have to recurse
+    in sub-nodes, because XYS already does it.
+    """
+    if not tag:
+        tag = u'!~' + validator.__name__
+    yaml.add_constructor(
+        tag,
+        lambda loader, node:
+            ValidatorNode(
+                construct_node(loader, node, base_tag),
+                validator))
 
 def add_parameterized_validator(param_validator, base_tag, tag_prefix=None):
-	"""
-	Add a parameterized validator for the given tag prefix.
-	If tag_prefix is None, it is automatically constructed as
-	u'!~%s(' % param_validator.__name__
-	A parametrized validator is a function that accepts a document node (in
-	the form of a Python object) and a schema node (also a Python object)
-	and other integer parameters that directly come from its complete name
-	in the schema.  It returns True if the document node is valid according
-	to the schema node.  Note that the validator function does not have to
-	recurse in sub-nodes, because XYS already does it.
-	"""
-	if not tag_prefix:
-		tag_prefix = u'!~%s(' % param_validator.__name__
-	def multi_constructor(loader, tag_suffix, node):
-		def temp_validator(node, schema):
-			return param_validator(node, schema, *split_int_params(tag_prefix, tag_suffix))
-		temp_validator.__name__ = str(tag_prefix + tag_suffix)
-		return ValidatorNode(construct_node(loader, node, base_tag), temp_validator)
-	yaml.add_multi_constructor(tag_prefix, multi_constructor)
+    """
+    Add a parameterized validator for the given tag prefix.
+    If tag_prefix is None, it is automatically constructed as
+    u'!~%s(' % param_validator.__name__
+    A parametrized validator is a function that accepts a document node (in
+    the form of a Python object) and a schema node (also a Python object)
+    and other integer parameters that directly come from its complete name
+    in the schema.  It returns True if the document node is valid according
+    to the schema node.  Note that the validator function does not have to
+    recurse in sub-nodes, because XYS already does it.
+    """
+    if not tag_prefix:
+        tag_prefix = u'!~%s(' % param_validator.__name__
+    def multi_constructor(loader, tag_suffix, node):
+        def temp_validator(node, schema):
+            return param_validator(node, schema, *split_int_params(tag_prefix, tag_suffix))
+        temp_validator.__name__ = str(tag_prefix + tag_suffix)
+        return ValidatorNode(construct_node(loader, node, base_tag), temp_validator)
+    yaml.add_multi_constructor(tag_prefix, multi_constructor)
 
 def _add_validator_internal(validator, base_tag):
-	add_validator(validator, base_tag, tag = u'!~~' + validator.__name__)
+    add_validator(validator, base_tag, tag = u'!~~' + validator.__name__)
 
 def _add_parameterized_validator_internal(param_validator, base_tag):
-	add_parameterized_validator(param_validator, base_tag, tag_prefix=u'!~~%s(' % param_validator.__name__)
+    add_parameterized_validator(param_validator, base_tag, tag_prefix=u'!~~%s(' % param_validator.__name__)
 
 def seqlen(lst, schema, min_len, max_len):
-	"""
-	!~~seqlen(min,max)
-	    corresponding sequences in documents must have a length between min
-	    and max, included.
-	"""
-	return min_len <= len(lst) <= max_len
+    """
+    !~~seqlen(min,max)
+        corresponding sequences in documents must have a length between min
+        and max, included.
+    """
+    return min_len <= len(lst) <= max_len
 
 def between(val, schema, min_val, max_val):
-	"""
-	!~~between(min,max)
-	    corresponding integers in documents must be between min and max,
-	    included.
-	"""
-	return min_val <= val <= max_val
+    """
+    !~~between(min,max)
+        corresponding integers in documents must be between min and max,
+        included.
+    """
+    return min_val <= val <= max_val
 
 def startswith(docstr, schema):
-	"""
-	!~~startswith
-	    corresponding strings in documents must begin with the associated
-	    string in the schema.
-	"""
-	return docstr.startswith(schema)
+    """
+    !~~startswith
+        corresponding strings in documents must begin with the associated
+        string in the schema.
+    """
+    return docstr.startswith(schema)
 
 def prefixedDec(docstr, schema):
-	"""
-	!~~prefixedDec
-	    corresponding strings in documents must begin with the associated
-	    string in the schema, and the right part of strings in documents
-	    must be decimal.
-	"""
-	if not docstr.startswith(schema):
-		return False
-	postfix = docstr[len(schema):]
-	try:
-		int(postfix)
-	except ValueError:
-		return False
-	return True
+    """
+    !~~prefixedDec
+        corresponding strings in documents must begin with the associated
+        string in the schema, and the right part of strings in documents
+        must be decimal.
+    """
+    if not docstr.startswith(schema):
+        return False
+    postfix = docstr[len(schema):]
+    try:
+        int(postfix)
+    except ValueError:
+        return False
+    return True
 
 _add_parameterized_validator_internal(seqlen, u'!!seq')
 _add_parameterized_validator_internal(between, u'!!int')
@@ -285,34 +285,34 @@ _add_validator_internal(startswith, u'!!str')
 _add_validator_internal(prefixedDec, u'!!str')
 
 def qualify_map(key, content):
-	if isinstance(key, basestring):
-		if key[-1:] == '?':
-			return key[:-1], Optional(content)
-		else:
-			return key, Mandatory(content)
-	else:
-		return key, content
+    if isinstance(key, basestring):
+        if key[-1:] == '?':
+            return key[:-1], Optional(content)
+        else:
+            return key, Mandatory(content)
+    else:
+        return key, content
 
 def transschema(x):
-	"""
-	Transform a schema, once loaded from its YAML representation, to its
-	final internal representation
-	"""
-	if isinstance(x, tuple):
-		return x.__class__(transschema(x[0]), *x[1:])
-	elif isinstance(x, dict):
-		return dict((qualify_map(key, transschema(val)) for key, val in x.iteritems()))
-	elif isinstance(x, list):
-		return map(transschema, x)
-	else:
-		return x
+    """
+    Transform a schema, once loaded from its YAML representation, to its
+    final internal representation
+    """
+    if isinstance(x, tuple):
+        return x.__class__(transschema(x[0]), *x[1:])
+    elif isinstance(x, dict):
+        return dict((qualify_map(key, transschema(val)) for key, val in x.iteritems()))
+    elif isinstance(x, list):
+        return map(transschema, x)
+    else:
+        return x
 
 def load(src):
-	"""
-	Parse the first XYS schema in a stream and produce the corresponding
-	internal representation.
-	"""
-	return transschema(yaml.load(src))
+    """
+    Parse the first XYS schema in a stream and produce the corresponding
+    internal representation.
+    """
+    return transschema(yaml.load(src))
 
 Nothing = object()
 
@@ -320,88 +320,88 @@ Nothing = object()
 # TODO: allow error messages from validators
 
 def validate(document, schema):
-	"""
-	If the document is valid according to the schema, this function returns
-	True.
-	If the document is not valid according to the schema, errors are logged
-	then False is returned.
-	"""
-	if isinstance(schema, ValidatorNode):
-		if not validate(document, schema.content):
-			return False
-		if not schema.validator(document, schema.content):
-			log.error("%r failed to validate with qualifier %s", document, schema.validator.__name__)
-			return False
-		return True
-	elif isinstance(schema, dict):
-		if not isinstance(document, dict):
-			log.error("wanted a dictionary, got a %s", document.__class__.__name__)
-			return False
-		generic = []
-		optional = {}
-		mandatory = []
-		for key, schema_val in schema.iteritems():
-			schema_val_content = get_content_optmand_val(schema_val)
-			if isinstance(key, ValidatorNode):
-				generic.append((key, schema_val_content))
-			elif isinstance(schema_val, Optional):
-				optional[key] = schema_val_content
-			else: # Mandatory
-				mandatory.append((key, schema_val_content))
-		doc_copy = document.copy()
-		for key, schema_val in mandatory:
-			doc_val = doc_copy.get(key, Nothing)
-			if doc_val is Nothing:
-				log.error("missing key %r in document", key)
-				return False
-			if not validate(doc_val, schema_val):
-				return False
-			del doc_copy[key]
-		for key, doc_val in doc_copy.iteritems():
-			schema_val = optional.get(key, Nothing)
-			if schema_val is Nothing:
-				for gen_key, schema_val in generic:
-					if validate(key, gen_key):
-						break
-				else:
-					log.error("forbidden key %s in document", key)
-					return False
-			if not validate(doc_val, schema_val):
-				return False
-		return True
-	elif isinstance(schema, list):
-		if not isinstance(document, list):
-			log.error("wanted a list, got a %s", document.__class__.__name__)
-		for elt in document:
-			# XXX: give a meaning when there are multiple element in a sequence of a schema?
-			if not validate(elt, schema[0]):
-				return False
-		return True
-	else: # scalar
-		if isinstance(schema, str):
-			schema = unicode(schema)
-		if isinstance(document, str):
-			document = unicode(document)
-		if schema.__class__ != document.__class__:
-			log.error("wanted a %s, got a %s", schema.__class__.__name__, document.__class__.__name__)
-			return False
-		return True
+    """
+    If the document is valid according to the schema, this function returns
+    True.
+    If the document is not valid according to the schema, errors are logged
+    then False is returned.
+    """
+    if isinstance(schema, ValidatorNode):
+        if not validate(document, schema.content):
+            return False
+        if not schema.validator(document, schema.content):
+            log.error("%r failed to validate with qualifier %s", document, schema.validator.__name__)
+            return False
+        return True
+    elif isinstance(schema, dict):
+        if not isinstance(document, dict):
+            log.error("wanted a dictionary, got a %s", document.__class__.__name__)
+            return False
+        generic = []
+        optional = {}
+        mandatory = []
+        for key, schema_val in schema.iteritems():
+            schema_val_content = get_content_optmand_val(schema_val)
+            if isinstance(key, ValidatorNode):
+                generic.append((key, schema_val_content))
+            elif isinstance(schema_val, Optional):
+                optional[key] = schema_val_content
+            else: # Mandatory
+                mandatory.append((key, schema_val_content))
+        doc_copy = document.copy()
+        for key, schema_val in mandatory:
+            doc_val = doc_copy.get(key, Nothing)
+            if doc_val is Nothing:
+                log.error("missing key %r in document", key)
+                return False
+            if not validate(doc_val, schema_val):
+                return False
+            del doc_copy[key]
+        for key, doc_val in doc_copy.iteritems():
+            schema_val = optional.get(key, Nothing)
+            if schema_val is Nothing:
+                for gen_key, schema_val in generic:
+                    if validate(key, gen_key):
+                        break
+                else:
+                    log.error("forbidden key %s in document", key)
+                    return False
+            if not validate(doc_val, schema_val):
+                return False
+        return True
+    elif isinstance(schema, list):
+        if not isinstance(document, list):
+            log.error("wanted a list, got a %s", document.__class__.__name__)
+        for elt in document:
+            # XXX: give a meaning when there are multiple element in a sequence of a schema?
+            if not validate(elt, schema[0]):
+                return False
+        return True
+    else: # scalar
+        if isinstance(schema, str):
+            schema = unicode(schema)
+        if isinstance(document, str):
+            document = unicode(document)
+        if schema.__class__ != document.__class__:
+            log.error("wanted a %s, got a %s", schema.__class__.__name__, document.__class__.__name__)
+            return False
+        return True
 
 __all__ = (
-	'validate', 'load',
-	'seqlen', 'between', 'startswith', 'prefixedDec',
-	'add_validator', 'add_parameterized_validator',
-	'ValidatorNode', 'Optional', 'Mandatory',
+        'validate', 'load',
+        'seqlen', 'between', 'startswith', 'prefixedDec',
+        'add_validator', 'add_parameterized_validator',
+        'ValidatorNode', 'Optional', 'Mandatory',
 )
 
 # IDEAS:
 # 04:05 < obk> xilun: You use '?' for optional... do you use '*' and '?' for zero-or-more and one-or-more (in sequences)?
 # 04:05 < obk> '*' and '+' I meant
-# 04:12 < xilun> im not sure where i could put the tag 
+# 04:12 < xilun> im not sure where i could put the tag
 # 04:13 < xilun> perhaps an abbreviated form of seqlen
 # 04:13 < xilun> which need to be extended so it supports lengths < and lengths > too, not just ranges
 # 04:22 < obk> xilun: Hmm... good point
-# 04:24 < obk> Of course you could put it in the tag (!*, !+, !?) - that would preclude specifying tags however... 
+# 04:24 < obk> Of course you could put it in the tag (!*, !+, !?) - that would preclude specifying tags however...
 # 04:24 < obk> Actually - you could postfix the original tag
 # 04:24 < obk> E.g.:
 # 04:24 < obk> ---
@@ -413,7 +413,7 @@ __all__ = (
 # 04:25 < obk> ---
 # 04:25 < obk> !? foo:
 # 04:25 < obk> - !* 7
-# 
+#
 # NOTE: i'll rather write it like (really? not sure about that)
 # ---
 # !? foo: !*
@@ -436,7 +436,7 @@ __all__ = (
 #
 # IDEA: If, in a schema, a sequence is not qualified, the
 # corresponding part of the document must be a matching sequence
-# in which the 
+# in which the
 #
 # schema ex:
 # ---

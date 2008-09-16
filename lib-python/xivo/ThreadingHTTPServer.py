@@ -19,17 +19,17 @@ import SocketServer
 from SocketServer import socket
 
 class ThreadingHTTPServer(SocketServer.ThreadingTCPServer):
-	"""Same as HTTPServer, but derivates from ThreadingTCPServer instead
-	of TCPServer so that any instance of ProvHttpHandler created for any
-	incoming connection runs in its own thread.
-	
-	"""
-	allow_reuse_address = 1    # Seems to make sense in testing environment
-	def server_bind(self):
-		"""Override server_bind to store the server name."""
-		SocketServer.TCPServer.server_bind(self)
-		host, port = self.socket.getsockname()[:2]
-		self.server_name = socket.getfqdn(host)
-		self.server_port = port
+    """Same as HTTPServer, but derivates from ThreadingTCPServer instead
+    of TCPServer so that any instance of ProvHttpHandler created for any
+    incoming connection runs in its own thread.
+
+    """
+    allow_reuse_address = 1    # Seems to make sense in testing environment
+    def server_bind(self):
+        """Override server_bind to store the server name."""
+        SocketServer.TCPServer.server_bind(self)
+        host, port = self.socket.getsockname()[:2]
+        self.server_name = socket.getfqdn(host)
+        self.server_port = port
 
 __all__ = ('ThreadingHTTPServer',)

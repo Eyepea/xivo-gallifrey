@@ -29,7 +29,7 @@ __license__ = """
 """
 
 import re
-import string
+import string # pylint: disable-msg=W0612
 
 
 FORBIDDEN_VARNAMES = ('IFS', '_')

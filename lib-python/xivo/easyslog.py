@@ -33,23 +33,23 @@ from syslog import LOG_INFO    as SYSLOG_INFO
 from syslog import LOG_DEBUG   as SYSLOG_DEBUG
 
 syslogmap = {
-	'emerg':   SYSLOG_EMERG,
-	'alert':   SYSLOG_ALERT,
-	'crit':    SYSLOG_CRIT,
-	'err':     SYSLOG_ERR,
-	'warning': SYSLOG_WARNING,
-	'notice':  SYSLOG_NOTICE,
-	'info':    SYSLOG_INFO,
-	'debug':   SYSLOG_DEBUG
+    'emerg':   SYSLOG_EMERG,
+    'alert':   SYSLOG_ALERT,
+    'crit':    SYSLOG_CRIT,
+    'err':     SYSLOG_ERR,
+    'warning': SYSLOG_WARNING,
+    'notice':  SYSLOG_NOTICE,
+    'info':    SYSLOG_INFO,
+    'debug':   SYSLOG_DEBUG
 }
 
 def sysloglevel_from_str(v):
-	if v.lower() not in syslogmap:
-		raise ValueError, "Unknown log filter '%s'" % v
-	return syslogmap[v.lower()]
+    if v.lower() not in syslogmap:
+        raise ValueError, "Unknown log filter '%s'" % v
+    return syslogmap[v.lower()]
 
 __all__ = (
-	'syslogf', 'SYSLOG_EMERG', 'SYSLOG_ALERT', 'SYSLOG_CRIT',
-	'SYSLOG_ERR', 'SYSLOG_WARNING', 'SYSLOG_NOTICE', 'SYSLOG_INFO',
-	'SYSLOG_DEBUG', 'syslogmap', 'sysloglevel_from_str'
+    'syslogf', 'SYSLOG_EMERG', 'SYSLOG_ALERT', 'SYSLOG_CRIT',
+    'SYSLOG_ERR', 'SYSLOG_WARNING', 'SYSLOG_NOTICE', 'SYSLOG_INFO',
+    'SYSLOG_DEBUG', 'syslogmap', 'sysloglevel_from_str'
 )
