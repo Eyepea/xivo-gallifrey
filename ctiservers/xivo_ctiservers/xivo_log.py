@@ -28,13 +28,22 @@ __author__    = 'Corentin Le Gall'
 Simple wrapper for syslogs
 """
 
+import logging
 import time
-from xivo.easyslog import *
+from logging.handlers import SysLogHandler
 
 ## \brief Logs actions to a log file, prepending them with a timestamp.
 # \param string the string to log
 # \return zero
 # \sa log_debug
+
+log = logging.getLogger('xivo_daemon')
+
+SYSLOG_DEBUG = 7
+SYSLOG_INFO = 6
+SYSLOG_NOTICE = 5
+SYSLOG_WARNING = 4
+SYSLOG_ERR = 3
 
 MAXLOG = SYSLOG_NOTICE
 # MAXLOG = SYSLOG_INFO
@@ -44,9 +53,9 @@ evtfile = False
 def varlog(syslogprio, string):
         if syslogprio <= MAXLOG:
                 try:
-                        syslogf(syslogprio, 'xivo_daemon : ' + string)
+                        log.debug(string)
                 except Exception, exc:
-                        syslogf(syslogprio, '--- exception --- in varlog : xivo_daemon : %s' % str(exc))
+                        log.debug('--- exception --- in varlog : %s' % exc)
         return 0
 
 # reminder :

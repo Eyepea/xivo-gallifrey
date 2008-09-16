@@ -31,7 +31,6 @@ import ConfigParser
 import getopt
 import ldap
 import sys
-import syslog
 import threading
 import urllib
 

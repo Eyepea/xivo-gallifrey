@@ -30,7 +30,6 @@ LDAP class.
 
 import csv
 import ldap
-import syslog
 import sys
 import urllib
 from xivo_log import *

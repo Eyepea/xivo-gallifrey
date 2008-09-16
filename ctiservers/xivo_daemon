@@ -95,8 +95,6 @@ config_path()
 # XIVO lib-python modules imports
 from xivo import agitb
 from xivo import daemonize
-from xivo import except_tb
-from xivo.easyslog import *
 from xivo import anysql
 from xivo.BackSQL import backmysql
 from xivo.BackSQL import backsqlite
@@ -885,7 +883,7 @@ while True: # loops over the reloads
                                                                 manage_tcp_connections(sel_i, msg, kind)
                                                         except Exception:
                                                                 log_debug(SYSLOG_ERR, '--- exception --- handling %s (%s) : %s'
-                                                                          % (requester, kind, str(except_tb.exception_traceback())))
+                                                                          % (requester, kind, exc))
                                                 else:
                                                         if kind == 'CTI':
                                                                 if sel_i in userinfo_by_requester:
