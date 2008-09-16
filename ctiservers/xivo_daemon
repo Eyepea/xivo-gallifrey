@@ -531,6 +531,7 @@ def sighandler_reload(signum, frame):
 
 logging.basicConfig(level=logging.INFO)
 sysloghandler = SysLogHandler("/dev/log", SysLogHandler.LOG_DAEMON)
+sysloghandler.setFormatter(logging.Formatter("%s[%%(process)d]: %%(message)s" % DAEMONNAME))
 logging.getLogger('').addHandler(sysloghandler)
 
 if not debug_mode:

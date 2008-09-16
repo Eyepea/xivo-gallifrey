@@ -20,6 +20,7 @@ __license__ = """
 """
 
 PIDFILE = '/var/run/xivo_daemon_bazile.pid'
+SYSLOG_NAME = 'xivo_daemon_bazile'
 
 import sys
 import time
@@ -34,6 +35,7 @@ from xivo import daemonize
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("xivo_daemon_bazile")
 sysloghandler = SysLogHandler("/dev/log", SysLogHandler.LOG_DAEMON)
+sysloghandler.setFormatter(logging.Formatter("%s[%%(process)d]: %%(message)s" % SYSLOG_NAME))
 logging.getLogger('').addHandler(sysloghandler)
 
 # Dictionnaire des status Callerid, Channel et status du channel

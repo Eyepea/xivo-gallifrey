@@ -28,9 +28,11 @@ from xivo_agid.modules import *
 from xivo import daemonize
 
 PIDFILE = "/var/run/agid.pid"
+SYSLOG_NAME = 'agid'
 
 logging.basicConfig(level=logging.DEBUG)
 sysloghandler = SysLogHandler("/dev/log", SysLogHandler.LOG_DAEMON)
+sysloghandler.setFormatter(logging.Formatter("%s[%%(process)d]: %%(message)s" % SYSLOG_NAME))
 logging.getLogger('').addHandler(sysloghandler)
 
 if '-f' not in sys.argv:

@@ -34,6 +34,8 @@ FK_TABLE		= 'phonefunckey'
 XNUM_TABLE		= 'extenumbers'
 TECH			= 'sip' # only allowed tech right now
 
+SYSLOG_NAME		= 'autoprovisioning'
+
 import sys
 
 def help_screen():
@@ -802,6 +804,7 @@ def main(log_level, foreground):
 	"""
 	logging.basicConfig(level=logging.DEBUG)
 	sysloghandler = SysLogHandler("/dev/log", SysLogHandler.LOG_DAEMON)
+	sysloghandler.setFormatter(logging.Formatter("%s[%%(process)d]: %%(message)s" % SYSLOG_NAME))
 	root_logger = logging.getLogger('')
 	root_logger.addHandler(sysloghandler)
 	
