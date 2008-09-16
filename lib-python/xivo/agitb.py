@@ -39,10 +39,10 @@ import sys
 
 __UNDEF__ = []                          # a special sentinel object
 
-def lookup(name, frame, locals):
+def lookup(name, frame, lcals):
     """Find the value for a given name in the given environment."""
-    if name in locals:
-        return 'local', locals[name]
+    if name in lcals:
+        return 'local', lcals[name]
     if name in frame.f_globals:
         return 'global', frame.f_globals[name]
     if '__builtins__' in frame.f_globals:
@@ -55,27 +55,28 @@ def lookup(name, frame, locals):
                 return 'builtin', getattr(builtins, name)
     return None, __UNDEF__
 
-def scanvars(reader, frame, locals):
+def scanvars(reader, frame, lcals):
     """Scan one logical line of Python and look up values of variables used."""
     import tokenize, keyword
-    vars, lasttoken, parent, prefix, value = [], None, None, '', __UNDEF__
-    for ttype, token, start, end, line in tokenize.generate_tokens(reader):
-        if ttype == tokenize.NEWLINE: break
+    xvars, lasttoken, parent, prefix, value = [], None, None, '', __UNDEF__
+    for ttype, token, start, end, line in tokenize.generate_tokens(reader): # pylint: disable-msg=W0612
+        if ttype == tokenize.NEWLINE:
+            break
         if ttype == tokenize.NAME and token not in keyword.kwlist:
             if lasttoken == '.':
                 if parent is not __UNDEF__:
                     value = getattr(parent, token, __UNDEF__)
-                    vars.append((prefix + token, prefix, value))
+                    xvars.append((prefix + token, prefix, value))
             else:
-                where, value = lookup(token, frame, locals)
-                vars.append((token, where, value))
+                where, value = lookup(token, frame, lcals)
+                xvars.append((token, where, value))
         elif token == '.':
             prefix += lasttoken + '.'
             parent = value
         else:
             parent, prefix = None, ''
         lasttoken = token
-    return vars
+    return xvars
 
 
 def text((etype, evalue, etb), context=5):
@@ -93,23 +94,25 @@ function calls leading up to the error, in the order they occurred.
 
     frames = []
     records = inspect.getinnerframes(etb, context)
-    for frame, file, lnum, func, lines, index in records:
-        file = file and os.path.abspath(file) or '?'
-        args, varargs, varkw, locals = inspect.getargvalues(frame)
+    for frame, filen, lnum, func, lines, index in records:
+        filen = filen and os.path.abspath(filen) or '?'
+        args, varargs, varkw, lcals = inspect.getargvalues(frame)
         call = ''
         if func != '?':
             call = 'in ' + func + \
-                inspect.formatargvalues(args, varargs, varkw, locals,
+                inspect.formatargvalues(args, varargs, varkw, lcals,
                     formatvalue=lambda value: '=' + pydoc.text.repr(value))
 
         highlight = {}
         def reader(lnum=[lnum]):
             highlight[lnum[0]] = 1
-            try: return linecache.getline(file, lnum[0])
-            finally: lnum[0] += 1
-        vars = scanvars(reader, frame, locals)
+            try:
+                return linecache.getline(filen, lnum[0])
+            finally:
+                lnum[0] += 1
+        xvars = scanvars(reader, frame, lcals)
 
-        rows = [' %s %s' % (file, call)]
+        rows = [' %s %s' % (filen, call)]
         if index is not None:
             i = lnum - index
             for line in lines:
@@ -118,13 +121,17 @@ function calls leading up to the error, in the order they occurred.
                 i += 1
 
         done, dump = {}, []
-        for name, where, value in vars:
-            if name in done: continue
+        for name, where, value in xvars:
+            if name in done:
+                continue
             done[name] = 1
             if value is not __UNDEF__:
-                if where == 'global': name = 'global ' + name
-                elif where == 'local': name = name
-                else: name = where + name.split('.')[-1]
+                if where == 'global':
+                    name = 'global ' + name
+                elif where == 'local':
+                    name = name
+                else:
+                    name = where + name.split('.')[-1]
                 dump.append('%s = %s' % (name, pydoc.text.repr(value)))
             else:
                 dump.append(name + ' undefined')
@@ -151,12 +158,12 @@ class Hook:
     """A hook to replace sys.excepthook that sends detailed tracebacks to
     Asterisk via agi.verbose() calls."""
 
-    def __init__(self, display=1, logdir=None, context=5, file=None,
+    def __init__(self, display=1, logdir=None, context=5, filen=None,
                   agi=None):
         self.display = display          # send tracebacks to browser if true
         self.logdir = logdir            # log tracebacks to files if not None
         self.context = context          # number of source code lines per frame
-        self.file = file or sys.stderr  # place to send the output
+        self.file = filen or sys.stderr  # place to send the output
         self.agi = agi
 
     def __call__(self, etype, evalue, etb):
@@ -167,7 +174,7 @@ class Hook:
 
         try:
             doc = text(info, self.context)
-        except:                         # just in case something goes wrong
+        except Exception:               # just in case something goes wrong
             import traceback
             doc = ''.join(traceback.format_exception(*info))
 
@@ -187,11 +194,11 @@ class Hook:
             import os, tempfile
             (fd, path) = tempfile.mkstemp(suffix='.txt', dir=self.logdir)
             try:
-                file = os.fdopen(fd, 'w')
-                file.write(doc)
-                file.close()
+                filen = os.fdopen(fd, 'w')
+                filen.write(doc)
+                filen.close()
                 msg = '%s contains the description of this error.' % path
-            except:
+            except Exception:
                 msg = 'Tried to save traceback to %s, but failed.' % path
 
             if self.agi:
@@ -201,7 +208,8 @@ class Hook:
         
         try:
             self.file.flush()
-        except: pass
+        except Exception:
+            pass
 
 
 handler = Hook().handle
