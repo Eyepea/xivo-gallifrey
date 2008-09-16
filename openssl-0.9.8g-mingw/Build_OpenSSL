@@ -28,10 +28,9 @@ critères que la distribution des codes sources sous GPL.
 
 4) on est tenu d'offrir de distribuer la chaîne de compilation MinGW+Cygwin
 dont on se sert pour produire nos binaires aux gens à qui l'on distribue ces
-mêmes binaires, et aux tiers qui les auraient obtenus indirectement si
-l'offre de distribuer les sources c'est elle aussi vue propagée.
-Il faut bien entendu respecter les licences respective des logiciels faisant
-partie de cette chaîne, donc il nous faut aussi leur sources.
+mêmes binaires, et aux tiers qui les auraient obtenus indirectement via un
+particulier. Il faut bien entendu respecter les licences respective des
+logiciels faisant partie de cette chaîne, donc il nous faut aussi leur sources.
 On est aussi tenu de fournir tous les scripts et autres dispositifs de
 contrôle et d'une manière générale toute information permettant de réussir le
 build.
