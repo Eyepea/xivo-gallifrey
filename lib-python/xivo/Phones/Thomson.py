@@ -166,7 +166,7 @@ class Thomson(PhoneVendorMixin):
 
         txt = xivo_config.txtsubst(txt_template_lines,
                 { 'user_display_name': provinfo['name'],
-# THOMSON BUGBUG #1
+# THOMSON BUG #1
 # provinfo['number'] is volontarily not set in "TEL1Number" because Thomson
 # phones authentify with their telnumber.. :/
                   'user_phone_ident':  provinfo['ident'],
@@ -203,7 +203,7 @@ class Thomson(PhoneVendorMixin):
         Entry point to send the (possibly post) reinit command to
         the phone.
         """
-# THOMSON BUGBUG #2
+# THOMSON BUG #2
 # We are waiting for Thomson to correctly reload their common .txt file after a
 # reinit; until then we don't really reinit the phone but just put it in the
 # guest state, by its mac specific configuration

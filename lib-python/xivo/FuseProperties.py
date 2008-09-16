@@ -1,12 +1,12 @@
 """Fuse Protected Properties
 
-Copyright (C) 2007, Proformatique
+Copyright (C) 2007, 2008  Proformatique
 
 """
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2007, Proformatique
+    Copyright (C) 2007, 2008  Proformatique
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -33,7 +33,7 @@ def _burn_fuse(attrname):
             raise AttributeError, "you think you can just replace a burned fuse like that?"
     return burn_fuse
 
-def _set_fused_protected(attrname, fusename, fv = lambda x: x):
+def _set_fused_protected(attrname, fusename, fv = lambda x: x): # pylint: disable-msg=E0602
     def set_fused_bool(self, v):
         if not getattr(self, fusename):
             setattr(self, attrname, fv(v))

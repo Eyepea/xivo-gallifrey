@@ -1,12 +1,12 @@
 """Support routines to load content of configuration sections to a dictionary
 
-Copyright (C) 2007, Proformatique
+Copyright (C) 2007, 2008  Proformatique
 
 """
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2007, Proformatique
+    Copyright (C) 2007, 2008  Proformatique
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -23,6 +23,7 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
+# pylint: disable-msg=W0611
 from ConfigParser import ConfigParser, Error, NoSectionError, NoOptionError, \
                          DuplicateSectionError, InterpolationError, \
                          InterpolationDepthError, InterpolationSyntaxError, \

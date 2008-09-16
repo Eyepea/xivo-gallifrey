@@ -37,7 +37,7 @@ from xivo.xivo_config import ProvGeneralConf as Pgc
 log = logging.getLogger("xivo.Phones.Swissvoice")
 
 
-# SWISSVOICE BUGBUG
+# SWISSVOICE BUG
 # It would be possible to make tftp upload a /tftpboot/Swissvoice/swupdate_ip10.inf
 # into the phones, however in order for any MAC address to be taken care of,
 # the <MACADDR>_ip10.inf files have to be located directly under /tftpboot/

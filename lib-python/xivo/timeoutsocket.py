@@ -106,7 +106,7 @@ PERFORMANCE OF THIS SOFTWARE.
 # Imports
 #
 import select
-import string
+import string # pylint: disable-msg=W0402
 import socket
 if not hasattr(socket, "_no_timeoutsocket"):
     _socket = socket.socket
@@ -162,7 +162,6 @@ def timeoutsocket(family=AF_INET, type=SOCK_STREAM, proto=None):
         else:
             return _socket(family, type)
     return TimeoutSocket( _socket(family, type), _DefaultTimeout )
-# end timeoutsocket
 
 #
 # The TimeoutSocket class definition
@@ -181,24 +180,19 @@ class TimeoutSocket:
     def __init__(self, sock, timeout):
         self._sock     = sock
         self._timeout  = timeout
-    # end __init__
 
     def __getattr__(self, key):
         return getattr(self._sock, key)
-    # end __getattr__
 
     def get_timeout(self):
         return self._timeout
-    # end set_timeout
 
     def set_timeout(self, timeout=None):
         self._timeout = timeout
-    # end set_timeout
 
     def setblocking(self, blocking):
         self._blocking = blocking
         return self._sock.setblocking(blocking)
-    # end setblocking
 
     def connect_ex(self, addr):
         errcode = 0
@@ -207,11 +201,11 @@ class TimeoutSocket:
         except Error, why:
             errcode = why[0]
         return errcode
-    # end connect_ex
         
     def connect(self, addr, port=None, dumbhack=None):
         # In case we were called as connect(host, port)
-        if port != None:  addr = (addr, port)
+        if port != None:
+            addr = (addr, port)
 
         # Shortcuts
         sock    = self._sock
@@ -245,13 +239,12 @@ class TimeoutSocket:
         #   If select raises an error, we pass it on.
         #   Is this the right behavior?
         if not dumbhack:
-            r,w,e = select.select([], [sock], [], timeout)
+            r, w, e = select.select([], [sock], [], timeout) # pylint: disable-msg=W0612
             if w:
                 return self.connect(addr, dumbhack=1)
 
         # If we get here, then we should raise Timeout
         raise Timeout("Attempted connect to %s timed out." % str(addr) )
-    # end connect
 
     def accept(self, dumbhack=None):
         # Shortcuts
@@ -288,50 +281,43 @@ class TimeoutSocket:
         #   If select raises an error, we pass it on.
         #   Is this the right behavior?
         if not dumbhack:
-            r,w,e = select.select([sock], [], [], timeout)
+            r, w, e = select.select([sock], [], [], timeout) # pylint: disable-msg=W0612
             if r:
                 return self.accept(dumbhack=1)
 
         # If we get here, then we should raise Timeout
         raise Timeout("Attempted accept timed out.")
-    # end accept
 
     def send(self, data, flags=0):
         sock = self._sock
         blocking = self._blocking
         if blocking:
-            r,w,e = select.select([],[sock],[], self._timeout)
+            r, w, e = select.select([], [sock], [], self._timeout) # pylint: disable-msg=W0612
             if not w:
                 raise Timeout("Send timed out")
         sock.setblocking(0)
         try:
-                return sock.send(data, flags)
+            return sock.send(data, flags)
         finally:
-                sock.setblocking(blocking)
-    # end send
+            sock.setblocking(blocking)
 
     def recv(self, bufsize, flags=0):
         sock = self._sock
         if self._blocking:
-            r,w,e = select.select([sock], [], [], self._timeout)
+            r, w, e = select.select([sock], [], [], self._timeout) # pylint: disable-msg=W0612
             if not r:
                 raise Timeout("Recv timed out")
         return sock.recv(bufsize, flags)
-    # end recv
 
     def makefile(self, flags="r", bufsize=-1):
         self._copies = self._copies +1
         return TimeoutFile(self, flags, bufsize)
-    # end makefile
 
     def close(self):
         if self._copies <= 0:
             self._sock.close()
         else:
             self._copies = self._copies -1
-    # end close
-
-# end TimeoutSocket
 
 
 class TimeoutFile:
@@ -343,30 +329,27 @@ class TimeoutFile:
         self.closed         = False
         self._sock          = sock
         self._bufsize       = 4096
-        if bufsize > 0: self._bufsize = bufsize
-        if not hasattr(sock, "_inqueue"): self._sock._inqueue = ""
-    # end __init__
+        if bufsize > 0:
+            self._bufsize = bufsize
+        if not hasattr(sock, "_inqueue"):
+            self._sock._inqueue = ""
 
     def __getattr__(self, key):
         return getattr(self._sock, key)
-    # end __getattr__
 
     def close(self):
         self._sock.close()
         self._sock = None
         self.closed = True
-    # end close
     
     def write(self, data):
         while data:
             written = self.send(data)
             data = data[written:]
-    # end write
 
     def writelines(self, lines):
         for line in lines:
             self.write(line)
-    # end writelines
 
     def read(self, size=-1):
         _sock = self._sock
@@ -388,7 +371,6 @@ class TimeoutFile:
             _sock._inqueue = data[size:]
             data = data[:size]
         return data
-    # end read
 
     def readline(self, size=-1):
         _sock = self._sock
@@ -418,7 +400,6 @@ class TimeoutFile:
             _sock._inqueue = data[size:]
             data = data[:size]
         return data
-    # end readline
 
     def readlines(self, sizehint=-1):
         result = []
@@ -433,11 +414,9 @@ class TimeoutFile:
                 result.append( data )
                 data = ""
         return result
-    # end readlines
 
-    def flush(self):  pass
-
-# end TimeoutFile
+    def flush(self):
+        pass
 
 
 #
@@ -449,4 +428,3 @@ if not hasattr(socket, "_no_timeoutsocket"):
     socket.socket = timeoutsocket
 del socket
 socket = timeoutsocket
-# Finis

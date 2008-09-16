@@ -37,11 +37,11 @@ from xivo.xivo_config import ProvGeneralConf as Pgc
 log = logging.getLogger("xivo.Phones.Snom")
 
 
-# SNOM BUGBUG #1
+# SNOM BUG #1
 # Snom doesn't support something else than files at root of tftproot when using
 # tftp... :/ (It just internaly replaces the first '/' with a '\0' :/// )
 
-# SNOM BUGBUG #2
+# SNOM BUG #2
 # Because it seems much technically impossible to detect the phone model by
 # dhcp request (model not in the request.... :///), we'll need to also support
 # HTTP based xivo_config

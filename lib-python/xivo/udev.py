@@ -450,7 +450,8 @@ def replace_simple_in_file(rules_file, match_repl_lst):
         unlock_rules_file(rules_file)
 
 
-class TriggerError(Exception): pass
+class TriggerError(Exception):
+    pass
 
 
 def trigger():

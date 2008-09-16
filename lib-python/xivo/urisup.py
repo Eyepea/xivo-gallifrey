@@ -24,7 +24,7 @@ __license__ = """
 """
 
 import re
-import string
+import string # pylint: disable-msg=W0402
 
 # Right from RFC 3986 section B
 RFC3986_MATCHER = re.compile('^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?').match
