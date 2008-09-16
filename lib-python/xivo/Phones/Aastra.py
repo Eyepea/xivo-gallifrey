@@ -26,23 +26,27 @@ __license__ = """
 """
 
 import os
+import logging
 import subprocess
 
 from xivo import xivo_config
-from xivo.xivo_config import PhoneVendor
+from xivo.xivo_config import PhoneVendorMixin
 from xivo.xivo_config import ProvGeneralConf as Pgc
-from xivo import except_tb
+
+
+log = logging.getLogger("xivo.Phones.Aastra")
+
 
 AASTRA_COMMON_DIR = os.path.join(Pgc['tftproot'], 'Aastra/')
 AASTRA_COMMON_HTTP_USER = 'admin'
 AASTRA_COMMON_HTTP_PASS = '22222'
 
-class Aastra(PhoneVendor):
+class Aastra(PhoneVendorMixin):
 
     AASTRA_MODELS = ('51i', '53i', '55i', '57i')
 
     def __init__(self, phone):
-        PhoneVendor.__init__(self, phone)
+        PhoneVendorMixin.__init__(self, phone)
         # TODO: handle this with a lookup table stored in the DB?
         if self.phone['model'] not in self.AASTRA_MODELS:
             raise ValueError, "Unknown Aastra model %r" % self.phone['model']
@@ -101,7 +105,7 @@ class Aastra(PhoneVendor):
                              "-d", "resetOption=0"],
                             close_fds = True)
         except OSError:
-            except_tb.syslog_exception()
+            log.exception("error when trying to call curl")
 
     @staticmethod
     def __format_function_keys(funckey):

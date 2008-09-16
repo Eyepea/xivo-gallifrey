@@ -31,7 +31,7 @@ import syslog
 import telnetlib
 
 from xivo import xivo_config
-from xivo.xivo_config import PhoneVendor
+from xivo.xivo_config import PhoneVendorMixin
 from xivo.xivo_config import ProvGeneralConf as Pgc
 
 # NOTES:
@@ -103,10 +103,10 @@ class TimeoutingTelnet(telnetlib.Telnet):
                 return gotstr
             raise TelnetExpectationFailed, "Expected string '%s' has not been received before termination of the telnet session with peer %s" % (expected, str(self.__my_cnx))
 
-class Thomson(PhoneVendor):
+class Thomson(PhoneVendorMixin):
 
     def __init__(self, phone):
-        PhoneVendor.__init__(self, phone)
+        PhoneVendorMixin.__init__(self, phone)
         # TODO: handle this with a lookup table stored in the DB?
         if self.phone['model'] != "2022s" and \
            self.phone['model'] != "2030s":
@@ -187,7 +187,7 @@ class Thomson(PhoneVendor):
         try:
             os.lstat(inf_filename)
             os.unlink(inf_filename)
-        except:
+        except Exception: # XXX: OsError?
             pass
         os.symlink(THOMSON_COMMON_INF + model, inf_filename)
 
