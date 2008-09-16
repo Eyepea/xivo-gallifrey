@@ -671,10 +671,13 @@ services:
             router?: !~ipv4_address 192.168.1.254
 """
 
-import logging
+# DEBUG
+# from xivo import trace_stderr
+# TRACE = trace_stderr
 
-
-logging.basicConfig(level=logging.CRITICAL)
+# NORMAL
+from xivo import trace_null
+TRACE = trace_null
 
 
 class TestXysXivoConfigValidation(unittest.TestCase):
@@ -682,13 +685,13 @@ class TestXysXivoConfigValidation(unittest.TestCase):
     for p, (test_title, src_conf) in enumerate(VALID_CONFIGS):
         exec \
          """def test_valid_%s(self):
-                conf = xivo_config.load_configuration(VALID_CONFIGS[%d][1])
+                conf = xivo_config.load_configuration(VALID_CONFIGS[%d][1], TRACE)
                 self.assertEqual(isinstance(conf, dict), True)""" % (test_title, p)
 
     for p, (test_title, src_conf) in enumerate(INVALID_CONFIGS):
         exec \
          """def test_invalid_%s(self):
-                self.assertRaises(xivo_config.InvalidConfigurationError, xivo_config.load_configuration, INVALID_CONFIGS[%d][1])""" % (test_title, p)
+                self.assertRaises(xivo_config.InvalidConfigurationError, xivo_config.load_configuration, INVALID_CONFIGS[%d][1], TRACE)""" % (test_title, p)
 
 
 unittest.main()

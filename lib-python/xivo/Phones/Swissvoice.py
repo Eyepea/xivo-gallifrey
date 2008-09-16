@@ -26,16 +26,12 @@ __license__ = """
 """
 
 import os
-import logging
 import subprocess
 
 from xivo import xivo_config
-from xivo.xivo_config import PhoneVendorMixin
+from xivo.xivo_config import PhoneVendor
 from xivo.xivo_config import ProvGeneralConf as Pgc
-
-
-log = logging.getLogger("xivo.Phones.Swissvoice")
-
+from xivo import except_tb
 
 # SWISSVOICE BUGBUG
 # It would be possible to make tftp upload a /tftpboot/Swissvoice/swupdate_ip10.inf
@@ -53,10 +49,10 @@ SWISSVOICE_SPEC_CFG_TEMPLATE = os.path.join(Pgc['templates_dir'], "template_ip10
 SWISSVOICE_COMMON_HTTP_USER = "admin"
 SWISSVOICE_COMMON_HTTP_PASS = "admin"
 
-class Swissvoice(PhoneVendorMixin):
+class Swissvoice(PhoneVendor):
 
     def __init__(self, phone):
-        PhoneVendorMixin.__init__(self, phone)
+        PhoneVendor.__init__(self, phone)
         # TODO: handle this with a lookup table stored in the DB?
         if self.phone['model'] != "ip10s":
             raise ValueError, "Unknown Swissvoice model %r" % self.phone['model']
@@ -85,7 +81,7 @@ class Swissvoice(PhoneVendorMixin):
                              "http://%s/%s/%s%s" % (self.phone['ipv4'], url_rep1, url_rep2, url_rep3)],
                             close_fds = True)
         except OSError:
-            log.exception("error when trying to call curl")
+            except_tb.syslog_exception()
 
     def do_reinit(self):
         """

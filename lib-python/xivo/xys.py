@@ -153,14 +153,11 @@ __license__ = """
 
 from xivo import UpCollections
 
+from xivo import trace_null
+
 from collections import namedtuple
 import copy
 import yaml
-import logging
-
-
-log = logging.getLogger("xivo.xys")
-
 
 # NOTE: content must stay first
 ValidatorNode = namedtuple('ValidatorNode', 'content validator')
@@ -227,8 +224,8 @@ def add_parameterized_validator(param_validator, base_tag, tag_prefix=None):
 	if not tag_prefix:
 		tag_prefix = u'!~%s(' % param_validator.__name__
 	def multi_constructor(loader, tag_suffix, node):
-		def temp_validator(node, schema):
-			return param_validator(node, schema, *split_int_params(tag_prefix, tag_suffix))
+		def temp_validator(node, schema, trace):
+			return param_validator(node, schema, trace, *split_int_params(tag_prefix, tag_suffix))
 		temp_validator.__name__ = str(tag_prefix + tag_suffix)
 		return ValidatorNode(construct_node(loader, node, base_tag), temp_validator)
 	yaml.add_multi_constructor(tag_prefix, multi_constructor)
@@ -239,7 +236,7 @@ def _add_validator_internal(validator, base_tag):
 def _add_parameterized_validator_internal(param_validator, base_tag):
 	add_parameterized_validator(param_validator, base_tag, tag_prefix=u'!~~%s(' % param_validator.__name__)
 
-def seqlen(lst, schema, min_len, max_len):
+def seqlen(lst, schema, trace, min_len, max_len):
 	"""
 	!~~seqlen(min,max)
 	    corresponding sequences in documents must have a length between min
@@ -247,7 +244,7 @@ def seqlen(lst, schema, min_len, max_len):
 	"""
 	return min_len <= len(lst) <= max_len
 
-def between(val, schema, min_val, max_val):
+def between(val, schema, trace, min_val, max_val):
 	"""
 	!~~between(min,max)
 	    corresponding integers in documents must be between min and max,
@@ -255,7 +252,7 @@ def between(val, schema, min_val, max_val):
 	"""
 	return min_val <= val <= max_val
 
-def startswith(docstr, schema):
+def startswith(docstr, schema, trace):
 	"""
 	!~~startswith
 	    corresponding strings in documents must begin with the associated
@@ -263,7 +260,7 @@ def startswith(docstr, schema):
 	"""
 	return docstr.startswith(schema)
 
-def prefixedDec(docstr, schema):
+def prefixedDec(docstr, schema, trace):
 	"""
 	!~~prefixedDec
 	    corresponding strings in documents must begin with the associated
@@ -319,23 +316,25 @@ Nothing = object()
 # TODO: display the document path to errors, and other error message enhancements
 # TODO: allow error messages from validators
 
-def validate(document, schema):
+def validate(document, schema, trace=trace_null):
 	"""
 	If the document is valid according to the schema, this function returns
 	True.
-	If the document is not valid according to the schema, errors are logged
-	then False is returned.
+	If the document is not valid according to the schema, one or more calls
+	to trace.err() are performed with a single string parameter which
+	contains a description of some of the detected defaults, then False is
+	returned.
 	"""
 	if isinstance(schema, ValidatorNode):
-		if not validate(document, schema.content):
+		if not validate(document, schema.content, trace):
 			return False
-		if not schema.validator(document, schema.content):
-			log.error("%r failed to validate with qualifier %s", document, schema.validator.__name__)
+		if not schema.validator(document, schema.content, trace):
+			trace.err("%s failed to validate with qualifier %s" % (`document`, schema.validator.__name__))
 			return False
 		return True
 	elif isinstance(schema, dict):
 		if not isinstance(document, dict):
-			log.error("wanted a dictionary, got a %s", document.__class__.__name__)
+			trace.err("wanted a dictionary, got a %s" %  document.__class__.__name__)
 			return False
 		generic = []
 		optional = {}
@@ -352,26 +351,26 @@ def validate(document, schema):
 		for key, schema_val in mandatory:
 			doc_val = doc_copy.get(key, Nothing)
 			if doc_val is Nothing:
-				log.error("missing key %r in document", key)
+				trace.err("missing key %s in document" % `key`)
 				return False
-			if not validate(doc_val, schema_val):
+			if not validate(doc_val, schema_val, trace):
 				return False
 			del doc_copy[key]
 		for key, doc_val in doc_copy.iteritems():
 			schema_val = optional.get(key, Nothing)
 			if schema_val is Nothing:
 				for gen_key, schema_val in generic:
-					if validate(key, gen_key):
+					if validate(key, gen_key, trace=trace_null):
 						break
 				else:
-					log.error("forbidden key %s in document", key)
+					trace.err("forbidden key %s in document" % `key`)
 					return False
-			if not validate(doc_val, schema_val):
+			if not validate(doc_val, schema_val, trace):
 				return False
 		return True
 	elif isinstance(schema, list):
 		if not isinstance(document, list):
-			log.error("wanted a list, got a %s", document.__class__.__name__)
+			trace.err("wanted a list, got a %s" % document.__class__.__name__)
 		for elt in document:
 			# XXX: give a meaning when there are multiple element in a sequence of a schema?
 			if not validate(elt, schema[0]):
@@ -383,7 +382,7 @@ def validate(document, schema):
 		if isinstance(document, str):
 			document = unicode(document)
 		if schema.__class__ != document.__class__:
-			log.error("wanted a %s, got a %s", schema.__class__.__name__, document.__class__.__name__)
+			trace.err("wanted a %s, got a %s" % (schema.__class__.__name__, document.__class__.__name__))
 			return False
 		return True
 

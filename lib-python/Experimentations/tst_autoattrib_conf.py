@@ -1,5 +1,6 @@
 import yaml
 from xivo import xivo_config
+from xivo import trace_stderr
 
 conf = xivo_config.load_configuration("""
 resolvConf: {}
@@ -30,7 +31,7 @@ services:
             voipRange:
             - 192.168.0.100
             - 192.168.0.199
-""")
+""", trace_stderr)
 
 #import tracer
 #import time

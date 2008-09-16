@@ -26,10 +26,6 @@ __license__ = """
 """
 
 import unittest
-import logging
-
-logging.basicConfig(level=logging.CRITICAL)
-
 from xivo import udev
 
 

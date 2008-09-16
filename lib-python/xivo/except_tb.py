@@ -24,10 +24,7 @@ __license__ = """
 """
 
 import sys
-import warnings
 import traceback
-
-warnings.warn("This module is deprecated and will be removed in XIVO 1.0, and maybe even in XIVO 0.4", DeprecationWarning)
 
 from xivo.easyslog import *
 

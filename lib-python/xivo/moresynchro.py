@@ -65,7 +65,7 @@ class RWLock:
 		self.__writer_lock_count = 0
 		self.__writer = None
 		self.__pending_writers = []
-	def acquire_read(self, timeout=None):
+	def acquire_read(self,timeout=None):
 		"""Acquire a read lock for the current thread, waiting at most
 		timeout seconds or doing a non-blocking check in case timeout
 		is <= 0.
@@ -98,7 +98,7 @@ class RWLock:
 				# else: does nothing, will wait below
 				# writers are given priority
 			    else:
-			        self.__readers[me] = self.__readers.get(me, 0) + 1
+			        self.__readers[me] = self.__readers.get(me,0)+1
 				return True
 			if timeout is not None:
 			    remaining = endtime - time.time()
@@ -109,7 +109,7 @@ class RWLock:
 			    self.__condition.wait()
 		finally:
 		    self.__condition.release()
-	def acquire_write(self, timeout=None):
+	def acquire_write(self,timeout=None):
         	"""Acquire a write lock for the current thread, waiting at most
         	timeout seconds or doing a non-blocking check in case timeout
 		is <= 0.
@@ -198,7 +198,7 @@ class ListLock:
 		self.lock.acquire()
 		try:
 			if elt not in self.locked:
-				self.locked[elt] = [me, 1]
+				self.locked[elt] = [me,1]
 				return True
 			elif self.locked[elt][0] == me:
 				self.locked[elt][1] += 1

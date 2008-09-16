@@ -25,15 +25,13 @@ __license__ = """
 
 import re
 import sys
-import logging
 
+from xivo import except_tb
 from xivo import ConfigDict
 
 from xivo import anysql
 from xivo.BackSQL import backsqlite
 from xivo.BackSQL import backmysql
-
-log = logging.getLogger("xivo.xivo_helpers")
 
 AGI_CONFFILE = "/etc/asterisk/xivo_agi.conf"
 
@@ -181,7 +179,7 @@ def abort(message, show_tb = False):
 	output_fn(message)
 
 	if show_tb:
-		log.exception("abort")
+		except_tb.log_exception(output_fn)
 
 	sys.exit(1)
 

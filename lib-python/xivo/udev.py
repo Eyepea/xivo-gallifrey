@@ -31,13 +31,11 @@ import time
 import subprocess
 from copy import deepcopy
 from itertools import count
-import logging
 
 from xivo import system
 from xivo import network
-
-
-log = logging.getLogger("xivo.udev")
+from xivo import except_tb
+from xivo import trace_null
 
 
 PERSISTENT_NET_RULES_FILE = "/etc/udev/rules.d/z25_persistent-net.rules"
@@ -211,7 +209,7 @@ def base_attr_strip_opt(key):
         return base, attr
 
 
-def parse_rule(mline):
+def parse_rule(mline, trace=trace_null):
     """
     Parse @mline quite like add_to_rules() does in udev.
     
@@ -258,7 +256,7 @@ def parse_rule(mline):
         try:
             base, attr = base_attr_strip_opt(key)
         except ValueError:
-            log.error("parse_rule: unclosed attribute in %r", key)
+            trace.err("parse_rule: unclosed attribute in %r" % key)
             return None
         
         # key with attribute?
@@ -266,34 +264,34 @@ def parse_rule(mline):
             if base in KEY_ATTR:
                 rule_key, rule_allowed_ops = KEY_ATTR[base]
                 if op not in rule_allowed_ops:
-                    log.error("parse_rule: invalid rule multiline %r (invalid operation %r for key %r)", mline, op, key)
+                    trace.err("parse_rule: invalid rule multiline %r (invalid operation %r for key %r)" % (mline, op, key))
                     return None
                 rule.setdefault(rule_key, {})
                 rule[rule_key][attr] = [op, val]
             else:
-                log.warning("parse_rule: unknown key %r", key)
+                trace.warning("parse_rule: unknown key %r" % key)
                 continue
         
         # Simple key 
         if base in KEY:
             rule_key, rule_allowed_ops = KEY[base]
             if op not in rule_allowed_ops:
-                log.error("parse_rule: invalid rule multiline %r (invalid operation %r for key %r)", mline, op, key)
+                trace.err("parse_rule: invalid rule multiline %r (invalid operation %r for key %r)" % (mline, op, key))
                 return None
             rule[rule_key] = [op, val]
         else:
-            log.warning("parse_rule: unknown key %r", key)
+            trace.warning("parse_rule: unknown key %r" % key)
     
     # next line is magic logic taken from udev_rules_parse.c:add_to_rules()
     valid = len(rule) >= 2 or (len(rule) == 1 and "NAME" not in rule)
     if not valid:
-        log.error("parse_rule: invalid rule multiline %r", mline)
+        trace.err("parse_rule: invalid rule multiline %r" % mline)
         return None
     
     return rule, reconstructible_rule
 
 
-def parse_lines(lines):
+def parse_lines(lines, trace=trace_null):
     """
     @lines is a sequence of lines that comes from a udev rules file.
     This function parses the rules, taking into account continued lines, blank
@@ -304,28 +302,28 @@ def parse_lines(lines):
     for mline in iter_multilines(lines):
         if (not mline) or is_comment(mline):
             continue
-        rule_recons = parse_rule(mline)
+        rule_recons = parse_rule(mline, trace)
         if not rule_recons:
             continue
         rules.append(rule_recons[0])
     return rules    
 
 
-def parse_file_nolock(rules_file):
+def parse_file_nolock(rules_file, trace=trace_null):
     """
     Parse the @rules_file with parse_lines()
     """
-    return parse_lines(file(rules_file))
+    return parse_lines(file(rules_file), trace)
 
 
-def parse_file(rules_file):
+def parse_file(rules_file, trace=trace_null):
     """
     Lock @rules_file, parse it with parse_file_nolock(), and unlock it.
     Return the result of parse_file_nolock().
     """
     lock_rules_file(rules_file) # RW lock, anybody? :)
     try:
-        return parse_file_nolock(rules_file)
+        return parse_file_nolock(rules_file, trace)
     finally:
         unlock_rules_file(rules_file)
 
@@ -391,7 +389,7 @@ def replace_simple_op_values(recons, repl):
     return reconstruct_rule(modified_recons)
 
 
-def replace_simple(lines, match_repl_lst):
+def replace_simple(lines, match_repl_lst, trace=trace_null):
     """
     Transform @lines (generate the output) by doing some replacement in rules
     according to @match_repl_lst.
@@ -416,7 +414,7 @@ def replace_simple(lines, match_repl_lst):
             yield mline + "\n"
             continue
         
-        rule_recons = parse_rule(mline)
+        rule_recons = parse_rule(mline, trace)
         if not rule_recons:
             yield mline + "\n"
             continue
@@ -430,22 +428,22 @@ def replace_simple(lines, match_repl_lst):
         yield replace_simple_op_values(rule_recons[1], repl) + "\n"
 
 
-def replace_simple_in_file_nolock(rules_file, match_repl_lst):
+def replace_simple_in_file_nolock(rules_file, match_repl_lst, trace=trace_null):
     """
     Change the lines of @rules_file using replace_simple()
     """
-    system.file_writelines_flush_sync(rules_file + ".tmp", replace_simple(file(rules_file), match_repl_lst))
+    system.file_writelines_flush_sync(rules_file + ".tmp", replace_simple(file(rules_file), match_repl_lst, trace))
     os.rename(rules_file + ".tmp", rules_file)
 
 
-def replace_simple_in_file(rules_file, match_repl_lst):
+def replace_simple_in_file(rules_file, match_repl_lst, trace=trace_null):
     """
     Lock @rules_file, modify it using replace_simple_in_file_nolock(),
     and unlock it.
     """
     lock_rules_file(rules_file)
     try:
-        replace_simple_in_file_nolock(rules_file, match_repl_lst)
+        replace_simple_in_file_nolock(rules_file, match_repl_lst, trace)
     finally:
         unlock_rules_file(rules_file)
 
@@ -453,14 +451,14 @@ def replace_simple_in_file(rules_file, match_repl_lst):
 class TriggerError(Exception): pass
 
 
-def trigger():
+def trigger(trace=trace_null):
     """
     Call udevtrigger
     """
     try:
         status = subprocess.call([UDEVTRIGGER], close_fds=True)
     except OSError:
-        log.exception("could not invoke udevtrigger")
+        except_tb.log_exception(trace.err)
         raise TriggerError("could not invoke udevtrigger")
     if status != 0:
         raise TriggerError("udevtrigger failed")
@@ -483,7 +481,7 @@ def assert_frozenset(lst):
     """
     fset = frozenset(lst)
     if len(fset) != len(lst):
-        raise ValueError, "Duplicates found: " + repr(tuple(list_duplicates(lst)))
+        raise ValueError, "Duplicates found: " + `tuple(list_duplicates(lst))`
     return fset
 
 
@@ -507,13 +505,13 @@ def consider_rule_for_rollback(rule, src_set):
     return name_field and (len(rule) > 2) and (name_field[0] == "=") and (name_field[1] in src_set)
 
 
-def rename_persistent_net_rules(src_dst_lst, (procedure_init, procedure_edit, procedure_preup, procedure_rollback)):
+def rename_persistent_net_rules(src_dst_lst, (procedure_init, procedure_edit, procedure_preup, procedure_rollback), trace=trace_null):
     """
     @src_dst_lst: [(src, dst), ...]
         where @src is a network interface name that appears in
         "z25_persistent-net.rules" and must be renamed to @dst
     
-    @procedure_init(src_dst_lst, pure_dst_set) -> context:
+    @procedure_init(src_dst_lst, pure_dst_set, trace) -> context:
         function called just after initial checks that can do its own
         additional checks (and raise an exception on failure) and setup a
         @context, which it returns - note that the context is opaque to
@@ -526,7 +524,7 @@ def rename_persistent_net_rules(src_dst_lst, (procedure_init, procedure_edit, pr
         @pure_dst_set:
             set of target names that are not also source names
     
-    @procedure_edit(context):
+    @procedure_edit(context, trace):
         function called after "z25_persistent-net.rules" has been modified
         
         @context:
@@ -534,7 +532,7 @@ def rename_persistent_net_rules(src_dst_lst, (procedure_init, procedure_edit, pr
             other @procedure functions - never modified by
             rename_persistent_net_rules()
     
-    @procedure_preup(context):
+    @procedure_preup(context, trace):
         function called just before the attempt to re-up the interfaces
         
         @context:
@@ -542,7 +540,7 @@ def rename_persistent_net_rules(src_dst_lst, (procedure_init, procedure_edit, pr
             other @procedure functions - never modified by
             rename_persistent_net_rules()
     
-    @procedure_rollback(context):
+    @procedure_rollback(context, trace):
         function called if an Exception is raised between the beginning of the
         call to procedure_edit() and the beginning of the call to
         procedure_preup()
@@ -572,12 +570,12 @@ def rename_persistent_net_rules(src_dst_lst, (procedure_init, procedure_edit, pr
     start_needed = False
     runtime_renamed_possible = False
     
-    context = procedure_init(src_dst_lst, pure_dst_set)
+    context = procedure_init(src_dst_lst, pure_dst_set, trace)
     
     lock_rules_file(PERSISTENT_NET_RULES_FILE)
     locked = True
     try:
-        net_rules = parse_file_nolock(PERSISTENT_NET_RULES_FILE)
+        net_rules = parse_file_nolock(PERSISTENT_NET_RULES_FILE, trace)
         rule_iface_set = frozenset([rule['NAME'][1] for rule in net_rules if 'NAME' in rule])
         system_iface_set = frozenset(network.get_filtered_phys())
         known_iface_set = rule_iface_set.union(system_iface_set)
@@ -596,34 +594,34 @@ def rename_persistent_net_rules(src_dst_lst, (procedure_init, procedure_edit, pr
         rollback = [rule_to_restore_name(rule) for rule in net_rules if consider_rule_for_rollback(rule)]
         
         try:
-            replace_simple_in_file_nolock(PERSISTENT_NET_RULES_FILE, replacement)
+            replace_simple_in_file_nolock(PERSISTENT_NET_RULES_FILE, replacement, trace)
             
-            procedure_edit(context, src_dst_lst, pure_dst_set)
+            procedure_edit(context, src_dst_lst, pure_dst_set, trace)
             
             unlock_rules_file(PERSISTENT_NET_RULES_FILE)
             locked = False
             
             start_needed = True
             for dst in dst_set:
-                network.force_shutdown(dst)
+                network.force_shutdown(dst, trace)
             
             runtime_renamed_possible = True
-            trigger()
+            trigger(trace)
             
-            procedure_preup(context)
+            procedure_preup(context, trace)
         except:
-            log.exception("rename_persistent_net_rules: error during ethernet interface renaming, will rollback")
+            except_tb.log_exception(trace.err) # XXX maybe let the caller log exceptions?
             
             if not locked:
                 lock_rules_file(PERSISTENT_NET_RULES_FILE)
                 locked = True
             
-            procedure_rollback(context)
+            procedure_rollback(context, trace)
             
-            replace_simple_in_file_nolock(PERSISTENT_NET_RULES_FILE, rollback)
+            replace_simple_in_file_nolock(PERSISTENT_NET_RULES_FILE, rollback, trace)
             
             if runtime_renamed_possible:
-                trigger()
+                trigger(trace)
             
             raise
     
@@ -631,4 +629,4 @@ def rename_persistent_net_rules(src_dst_lst, (procedure_init, procedure_edit, pr
         if locked:
             unlock_rules_file(PERSISTENT_NET_RULES_FILE)
         if start_needed:
-            network.ifplugd_start()
+            network.ifplugd_start(trace)

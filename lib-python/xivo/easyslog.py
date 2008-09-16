@@ -17,10 +17,6 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-import warnings
-
-warnings.warn("This module is deprecated and will be removed in XIVO 1.0, and maybe even in XIVO 0.4", DeprecationWarning)
-
 import syslog
 from syslog import syslog      as syslogf
 from syslog import LOG_EMERG   as SYSLOG_EMERG

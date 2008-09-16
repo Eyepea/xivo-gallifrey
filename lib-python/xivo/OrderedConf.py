@@ -129,7 +129,6 @@ from ConfigParser import Error, NoSectionError, DuplicateSectionError, \
 
 import re
 
-
 SECTCRE = re.compile(
     r'\['                                 # [
     r'(?P<header>[^]]+)'                  # very permissive!
@@ -143,14 +142,6 @@ OPTCRE = re.compile(
                                           # by any # space/tab
     r'(?P<value>.*)$'                     # everything up to eol
     )
-
-
-def _id1(x):
-    """
-    Identity
-    """
-    return x
-
 
 class AlreadyLoadedError(Error):
     """
@@ -166,7 +157,6 @@ class AlreadyLoadedError(Error):
 	    % (done_filename, second_filename))
         self.done_filename = done_filename
         self.second_filename = second_filename
-
 
 class SectionDesc:
     """
@@ -322,7 +312,6 @@ class SectionDesc:
         """
         return self.conf_instance._iter_options_by_section_token(self.sect_id_token)
 
-
 class OptionDesc:
     """
     NEW API
@@ -380,14 +369,12 @@ class OptionDesc:
         except AttributeError:
             raise AttributeError, name
 
-
 def _str_to_boolean(v):
     _boolean_states = {'1': True, 'yes': True, 'true': True, 'on': True,
                        '0': False, 'no': False, 'false': False, 'off': False}
     if v.lower() not in _boolean_states:
         raise ValueError, 'Not a boolean: %s' % v
     return _boolean_states[v.lower()]
-
 
 class OrderedRawConf:
     """
@@ -399,7 +386,7 @@ class OrderedRawConf:
     provides a new API specialy designed to retrieve ordered entities in
     various pythonic ways :)
     """
-    def __init__(self, fp = None, filename = None, sect_trans=_id1, opt_trans=_id1):
+    def __init__(self, fp = None, filename = None, sect_trans = lambda x: x, opt_trans = lambda x: x):
         """
         The constructor can optionally parse an open file or open and
         parse a file using its filename.  You can also provide it
@@ -919,7 +906,6 @@ class OrderedRawConf:
         if e:
             raise e
 
-
 if __name__ == '__main__':
     from cStringIO import StringIO
     import unittest
@@ -1189,12 +1175,12 @@ k=v
 
     class C14nOptionsSimpleOldApiNoChange(SimpleOldApi):
         def setUp(self):
-            self.ord_cnf = OrderedRawConf(StringIO(VALID_CONF), parser_origin(), _id1, string.lower)
+            self.ord_cnf = OrderedRawConf(StringIO(VALID_CONF), parser_origin(), lambda x: x, string.lower)
 
     class C14nOptionsNonIterConfictApiNoChange(NonIterConfictApi):
         @staticmethod
         def factory(conftxt):
-            return OrderedRawConf(StringIO(conftxt), parser_origin(), _id1, string.lower)
+            return OrderedRawConf(StringIO(conftxt), parser_origin(), lambda x: x, string.lower)
 
     def map_skv_sec_upper(skv):
         return map(lambda (s, k, v): (s.upper(), k, v), skv)
@@ -1218,7 +1204,7 @@ k=v
         def keyToCanon(k):
             return k.lower()
         def setUp(self):
-            self.ord_cnf = OrderedRawConf(StringIO(VALID_CONF), parser_origin(), _id1, string.lower)
+            self.ord_cnf = OrderedRawConf(StringIO(VALID_CONF), parser_origin(), lambda x: x, string.lower)
 
     class C14nSectionsNonIterConfictRequestUpper(NonIterConfictApi):
         @staticmethod
@@ -1266,7 +1252,7 @@ k=v
     class C14nOptionsNonIterConfictApiRequestUpper(NonIterConfictApi):
         @staticmethod
         def factory(conftxt):
-            return OrderedRawConf(StringIO(conftxt), parser_origin(), _id1, string.lower)
+            return OrderedRawConf(StringIO(conftxt), parser_origin(), lambda x: x, string.lower)
         def testC14nMoreOptionConflict(self):
             ord_cnf = self.factory(MORE_CANONICAL_OPTION_CONFLICT_CONF)
             ConfOptName = [
@@ -1402,7 +1388,7 @@ key=second_one
     class C14nOptionsNewApi(NewApi):
         @staticmethod
         def factory(conftxt):
-            return OrderedRawConf(StringIO(conftxt), parser_origin(), _id1, string.lower)
+            return OrderedRawConf(StringIO(conftxt), parser_origin(), lambda x: x, string.lower)
 
     class IterSections(unittest.TestCase):
         hcon = (False, False, False, True, False, False, False, False, False)
@@ -1568,7 +1554,7 @@ key=second_one
             return optname.lower()
         @staticmethod
         def factory(conftxt):
-            return OrderedRawConf(StringIO(conftxt), parser_origin(), _id1, string.lower)
+            return OrderedRawConf(StringIO(conftxt), parser_origin(), lambda x: x, string.lower)
 
     class C14nIterOptions_c14nSections(IterOptions):
         c14n_skv = ('NAME_C14N_CONFLICT', 'key', 'this_one')
@@ -1582,6 +1568,6 @@ key=second_one
     class C14nIterOptions(IterOptions):
         @staticmethod
         def factory(conftxt):
-            return OrderedRawConf(StringIO(conftxt), parser_origin(), _id1, string.lower)
+            return OrderedRawConf(StringIO(conftxt), parser_origin(), lambda x: x, string.lower)
 
     unittest.main()

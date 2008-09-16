@@ -29,15 +29,12 @@ from xivo import daemonize
 
 PIDFILE = "/var/run/agid.pid"
 
-logging.basicConfig(level=logging.DEBUG)
 sysloghandler = SysLogHandler("/dev/log", SysLogHandler.LOG_DAEMON)
+logging.getLogger('').setLevel(logging.NOTSET)
 logging.getLogger('').addHandler(sysloghandler)
 
 if '-f' not in sys.argv:
 	daemonize.daemonize(PIDFILE, pidfile_lock=True)
-
-if '-d' not in sys.argv:
-	logging.getLogger('').setLevel(logging.INFO)
 
 agid.init()
 agid.run()

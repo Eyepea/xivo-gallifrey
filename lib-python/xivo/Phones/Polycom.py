@@ -31,7 +31,7 @@ import socket
 from xivo import timeoutsocket
 
 from xivo import xivo_config
-from xivo.xivo_config import PhoneVendorMixin
+from xivo.xivo_config import PhoneVendor
 from xivo.xivo_config import ProvGeneralConf as Pgc
 
 POLYCOM_COMMON_DIR = os.path.join(Pgc['tftproot'], "Polycom/")
@@ -42,10 +42,10 @@ AMI_PORT = 5038
 AMI_USER = 'xivouser'
 AMI_PASS = 'xivouser'
 
-class Polycom(PhoneVendorMixin):
+class Polycom(PhoneVendor):
 
     def __init__(self, phone):
-        PhoneVendorMixin.__init__(self, phone)
+        PhoneVendor.__init__(self, phone)
         # TODO: handle this with a lookup table stored in the DB?
         if self.phone['model'] != 'spip_430' and \
            self.phone['model'] != 'spip_650':
@@ -106,7 +106,7 @@ class Polycom(PhoneVendorMixin):
         peerinfo = None
         try:
             peerinfo = self.__retrieve_peerinfo()
-        except Exception: # XXX: don't catch ALL exceptions
+        except: # XXX: don't catch ALL exceptions
             pass
 
         if peerinfo is not None and len(peerinfo) > 1:
