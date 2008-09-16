@@ -27,12 +27,14 @@ __license__ = """
 import re
 import os
 import subprocess
+import logging
 
 from xivo.UpAllAny import all
 
-from xivo import except_tb
 from xivo import StreamedLines
-from xivo import trace_null
+
+
+log = logging.getLogger("xivo.network")
 
 
 # CONFIG
@@ -204,7 +206,7 @@ def normalize_mac_address(macaddr):
     return ':'.join([('%02X' % int(s, 16)) for s in macaddr_split])
 
 
-def ipv4_from_macaddr(macaddr, logexceptfunc=None, ifname_match_func=lambda x: True, arping_cmd_list=None, arping_sleep_us=150000):
+def ipv4_from_macaddr(macaddr, exc_info=True, ifname_match_func=lambda x: True, arping_cmd_list=None, arping_sleep_us=150000):
     """
     Given a mac address, get an IPv4 address for an host living on the
     LAN.  This makes use of the tool "arping".  Of course the remote peer
@@ -228,16 +230,16 @@ def ipv4_from_macaddr(macaddr, logexceptfunc=None, ifname_match_func=lambda x: T
             StreamedLines.makeNonBlocking(child.stdout)
             for (result,) in StreamedLines.rxStreamedLines(fobjs = (child.stdout,), timeout = arping_sleep_us * 10. / 1000000.):
                 break
-        except:
+        except Exception:
             result = None
-            if logexceptfunc:
-                except_tb.log_exception(logexceptfunc)
+            if exc_info:
+                log.exception("ipv4 / macaddr lookup failed for %r", macaddr)
         if result:
             return result.strip()
     return None
 
 
-def macaddr_from_ipv4(ipv4, logexceptfunc=None, ifname_match_func=lambda x: True, arping_cmd_list=None, arping_sleep_us=150000):
+def macaddr_from_ipv4(ipv4, exc_info=True, ifname_match_func=lambda x: True, arping_cmd_list=None, arping_sleep_us=150000):
     """
     ipv4_from_macaddr() is indeed a symetrical fonction that can be
     used to retrieve an ipv4 address from a given mac address.  This
@@ -246,7 +248,7 @@ def macaddr_from_ipv4(ipv4, logexceptfunc=None, ifname_match_func=lambda x: True
     WARNING: this is of course ipv4_from_macaddr() implementation dependent
     """
     return ipv4_from_macaddr(ipv4,
-                             logexceptfunc=logexceptfunc,
+                             exc_info=exc_info,
                              ifname_match_func=ifname_match_func,
                              arping_cmd_list=arping_cmd_list,
                              arping_sleep_us=arping_sleep_us)
@@ -332,7 +334,7 @@ class NetworkOpError(Exception):
     pass
 
 
-def force_shutdown(phy, trace=trace_null):
+def force_shutdown(phy):
     """
     Remove all VLAN on the network interface @phy, then shutdown it.
     First "ifplugd" is stopped for this interface, then both VLAN removal and
@@ -352,11 +354,12 @@ def force_shutdown(phy, trace=trace_null):
     try:
         status = subprocess.call([IFPLUGD, "-i", phy, "-k"], close_fds=True)
     except OSError:
-        except_tb.log_exception(trace.err)
-        raise NetworkOpError("could not invoke ifplugd to kill its %r instance" % phy)
+        errmsg = "could not invoke ifplugd to kill its %r instance" % phy
+        log.exception(errmsg)
+        raise NetworkOpError(errmsg)
     if status:
         if status == 6:
-            trace.warning("%r ifplugd instance seems to have already been stopped" % phy)
+            log.warning("%r ifplugd instance seems to have already been stopped", phy)
         else:
             raise NetworkOpError("ifplugd miserably failed while trying to kill instance %r" % phy)
     
@@ -367,23 +370,25 @@ def force_shutdown(phy, trace=trace_null):
         try:
             status = subprocess.call([IFDOWN, vlan], close_fds=True)
         except OSError:
-            except_tb.log_exception(trace.err)
-            raise NetworkOpError("could not invoke ifdown to shutdown interface %r" % vlan)
+            errmsg = "could not invoke ifdown to shutdown interface %r" % vlan
+            log.exception(errmsg)
+            raise NetworkOpError(errmsg)
         if status:
             raise NetworkOpError("ifdown miserably failed to shutdown the %r network interface" % vlan)
 
 
-def ifplugd_start(trace=trace_null):
+def ifplugd_start():
     """
     /etc/init.d/ifplugd start
     """
     try:
         status = subprocess.call(IFPLUGD_START, close_fds=True)
     except OSError:
-        except_tb.log_exception(trace.err)
-        raise NetworkOpError("could not invoke %s" % ' '.join(IFPLUGD_START))
+        errmsg = "could not invoke " + ' '.join(IFPLUGD_START)
+        log.exception(errmsg)
+        raise NetworkOpError(errmsg)
     if status:
-        raise NetworkOpError("failure of: %s" % ' '.join(IFPLUGD_START))
+        raise NetworkOpError("failure of: " + ' '.join(IFPLUGD_START))
 
 
 def _test():

@@ -26,24 +26,28 @@ __license__ = """
 """
 
 import os
+import logging
 import subprocess
 
 from xivo import xivo_config
-from xivo.xivo_config import PhoneVendor
+from xivo.xivo_config import PhoneVendorMixin
 from xivo.xivo_config import ProvGeneralConf as Pgc
-from xivo import except_tb
+
+
+log = logging.getLogger("xivo.Phones.Linksys")
+
 
 LINKSYS_COMMON_DIR = os.path.join(Pgc['tftproot'], "Linksys/")
 LINKSYS_COMMON_HTTP_USER = "admin"
 LINKSYS_COMMON_HTTP_PASS = "adminpass"
 
-class Linksys(PhoneVendor):
+class Linksys(PhoneVendorMixin):
 
     LINKSYS_SPA_MODELS = ('901', '921', '922', '941', '942', '962')
     LINKSYS_PAP_MACADDR_PREFIX = ('1:00:18:f8', '1:00:1c:10', '1:00:1e:e5')
 
     def __init__(self, phone):
-        PhoneVendor.__init__(self, phone)
+        PhoneVendorMixin.__init__(self, phone)
         # TODO: handle this with a lookup table stored in the DB?
         if (self.phone['model'] not in ["spa" + x for x in self.LINKSYS_SPA_MODELS]) and (self.phone['model'] != "pap2t"):
             raise ValueError, "Unknown Linksys model %r" % self.phone['model']
@@ -69,7 +73,7 @@ class Linksys(PhoneVendor):
                              "http://%s/admin/%s" % (self.phone['ipv4'], command)],
                             close_fds = True)
         except OSError:
-            except_tb.syslog_exception()
+            log.exception("error when trying to call curl")
 
     def do_reinit(self):
         """

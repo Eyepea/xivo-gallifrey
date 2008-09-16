@@ -27,21 +27,21 @@ __license__ = """
 import os
 import shutil
 import subprocess
-
-from xivo import trace_null
-from xivo import except_tb
+import logging
 
 
-def sync_no_oserror(trace=trace_null):
+log = logging.getLogger("xivo.system")
+
+
+def sync_no_oserror():
     """
     Call /bin/sync.
-    Catch and trace OSError exceptions.
+    Catch and log OSError exceptions.
     """
     try:
         subprocess.call("/bin/sync", close_fds=True)
     except OSError:
-        trace.warning("sync_no_oserror: call of /bin/sync failed")
-        except_tb.log_exception(trace.warning)
+        log.warning("sync_no_oserror: call of /bin/sync failed", exc_info=True)
 
 
 def rm_rf(path):

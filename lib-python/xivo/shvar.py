@@ -378,7 +378,7 @@ def strip_overridden_assignments(reslst):
     """
     lines_to_remove = []
     previous_assign = {}
-    for p, (varname, value, rotl) in enumerate(reslst):
+    for p, (varname, value, rotl) in enumerate(reslst): # pylint: disable-msg=W0612
         if varname is not None:
             line = previous_assign.get(varname)
             if line is not None:
@@ -396,7 +396,7 @@ def slow_set_assign(reslst, varname, new_value):
     was affected to @varname to @new_value.
     If no such @varname has been found, append a new one.
     """
-    for p, (var_scan, val_scan, rotl) in enumerate(reslst):
+    for p, (var_scan, val_scan, rotl) in enumerate(reslst): # pylint: disable-msg=W0612
         if var_scan == varname:
             reslst[p] = (varname, new_value, rotl)
             return

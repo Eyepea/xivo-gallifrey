@@ -26,12 +26,16 @@ __license__ = """
 """
 
 import os
+import logging
 import subprocess
 
 from xivo import xivo_config
-from xivo.xivo_config import PhoneVendor
+from xivo.xivo_config import PhoneVendorMixin
 from xivo.xivo_config import ProvGeneralConf as Pgc
-from xivo import except_tb
+
+
+log = logging.getLogger("xivo.Phones.Snom")
+
 
 # SNOM BUGBUG #1
 # Snom doesn't support something else than files at root of tftproot when using
@@ -47,12 +51,12 @@ SNOM_SPEC_TEMPLATE = os.path.join(Pgc['templates_dir'], "snom-template.htm")
 SNOM_COMMON_HTTP_USER = "guest"
 SNOM_COMMON_HTTP_PASS = "guest"
 
-class Snom(PhoneVendor):
+class Snom(PhoneVendorMixin):
 
     SNOM_MODELS = ('300', '320', '360')
 
     def __init__(self, phone):
-        PhoneVendor.__init__(self, phone)
+        PhoneVendorMixin.__init__(self, phone)
         # TODO: handle this with a lookup table stored in the DB?
         if self.phone['model'] not in self.SNOM_MODELS:
             raise ValueError, "Unknown Snom model %r" % self.phone['model']
@@ -77,7 +81,7 @@ class Snom(PhoneVendor):
                              "http://%s/confirm.html?%s=yes" % (self.phone['ipv4'], command)],
                             close_fds = True)
         except OSError:
-            except_tb.syslog_exception()
+            log.exception("error when trying to call curl")
 
     @staticmethod
     def __format_function_keys(funckey):
