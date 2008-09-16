@@ -65,15 +65,17 @@ import httplib
 from xivo import xivo_config
 from xivo.xivo_config import ProvGeneralConf as Pgc
 
-from xivo import agi_helpers
+from xivo import agi
 from xivo import agitb
+from xivo import xivo_helpers
 
-agi = agi_helpers.agi_get_session()
+agi_session = agi.AGI()
+agitb.enable(agi_session)
 
 def return_exit(error, playback=None):
-	agi.verbose(error)
+	agi_session.verbose(error)
 	if playback:
-		agi.appexec("PLAYBACK", playback)
+		agi_session.appexec("PLAYBACK", playback)
 	sys.exit(1)
 
 # TODO: use an RFC compliant regexp instead of
@@ -108,7 +110,7 @@ def main():
 	if not user_ipv4:
 		return_exit("Could not parse Sip URI \"%s\"" % sip_uri)
 	sip_user, ipv4 = user_ipv4
-	macaddr = xivo_config.macaddr_from_ipv4(ipv4) # XXX, agi.verbose)
+	macaddr = xivo_config.macaddr_from_ipv4(ipv4) # XXX, agi_session.verbose)
 	if not macaddr:
 		return_exit("Could not find Mac Address from IPv4 \"%s\"" % ipv4)
 

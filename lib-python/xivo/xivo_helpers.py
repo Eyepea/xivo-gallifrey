@@ -161,28 +161,14 @@ def speed_dial_key_extension(xleft, xright, fkext, monitoringext = None, isbsfil
 def stderr_write_nl(message):
 	sys.stderr.write("%s\n" % message)
 
-output_fn = stderr_write_nl
-
 db_conn = None
 
-def set_output_fn(out_fn):
-	global output_fn
-	output_fn = out_fn
-
-def abort(message, show_tb = False):
-	"""Generic abort function
-	
-	Display a message using the global output_fn function, optionally
-	dumping the exception trace, and stop execution.
-	
-	If show_tb is True, this function must be called from an except block.
+def abort(message, show_tb=False):
 	"""
-
-	output_fn(message)
-
-	if show_tb:
-		log.exception("abort")
-
+	Log @message at critical level (including a backtrace
+	if @show_tb is true) then exit.
+	"""
+	log.critical(message, exc_info=show_tb)
 	sys.exit(1)
 
 def db_connect():
@@ -208,7 +194,7 @@ def db_connect():
 	try:
 		db_conn = anysql.connect_by_uri(db_uri)
 	except:
-		abort("Unable to connect to %s" % db_uri, True)
+		abort("Unable to connect to %s" % db_uri, show_tb=True)
 
 	return db_conn
 
