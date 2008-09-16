@@ -44,7 +44,7 @@ def remove_if_stale_pidfile(pidfile):
 	"""
 	@pidfile: PID file to remove if it is staled.
 	
-	Exceptions are logged.
+	Exceptions are logged and are not propagated.
 	"""
 	c14n_prog_name = lambda arg: os.path.basename(re.sub(r'\.py$', '', arg))
 	try:
