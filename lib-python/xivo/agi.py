@@ -78,24 +78,35 @@ __all__ = ('AGIException', 'AGIError', 'AGIUnknownError', 'AGIAppError',
            'AGIResultHangup', 'AGIDBError', 'AGIUsageError',
            'AGIInvalidCommand', 'AGI')
 
-class AGIException(Exception): pass
-class AGIError(AGIException): pass
+class AGIException(Exception):
+    pass
+class AGIError(AGIException):
+    pass
 
-class AGIUnknownError(AGIError): pass
+class AGIUnknownError(AGIError):
+    pass
 
-class AGIAppError(AGIError): pass
+class AGIAppError(AGIError):
+    pass
 
 # there are several different types of hangups we can detect
 # they all are derrived from AGIHangup
-class AGIHangup(AGIAppError): pass
-class AGISIGHUPHangup(AGIHangup): pass
-class AGISIGPIPEHangup(AGIHangup): pass
-class AGIResultHangup(AGIHangup): pass
+class AGIHangup(AGIAppError):
+    pass
+class AGISIGHUPHangup(AGIHangup):
+    pass
+class AGISIGPIPEHangup(AGIHangup):
+    pass
+class AGIResultHangup(AGIHangup):
+    pass
 
-class AGIDBError(AGIAppError): pass
+class AGIDBError(AGIAppError):
+    pass
 
-class AGIUsageError(AGIError): pass
-class AGIInvalidCommand(AGIError): pass
+class AGIUsageError(AGIError):
+    pass
+class AGIInvalidCommand(AGIError):
+    pass
 
 class AGI:
     """
@@ -131,6 +142,7 @@ class AGI:
 
     def _handle_sighup(self, signum, frame):
         """Handle the SIGHUP signal"""
+        # pylint: disable-msg=W0613
         self._got_sighup = True
 
     def test_hangup(self):
@@ -168,7 +180,7 @@ class AGI:
             if self.DEBUG_PASSTHROUGH:
                 try:
                     code = int(code)
-                except:
+                except ValueError:
                     code = 200
             else:
                 code = int(code)
@@ -208,7 +220,21 @@ class AGI:
         agi.answer() --> None
         Answer channel if not already in answer state.
         """
-        self.execute('ANSWER')['result'][0]
+        self.execute('ANSWER')['result'][0] # pylint: disable-msg=W0104
+
+    @staticmethod
+    def code_to_char(code):
+        """
+        Return chr(int(code))
+        Raise FastAGIError on error
+        """
+        if code == '0':
+            return ''
+        else:
+            try:
+                return chr(int(code))
+            except (TypeError, ValueError):
+                raise AGIError('Unable to convert result to char: %s' % code)
 
     def wait_for_digit(self, timeout=DEFAULT_TIMEOUT):
         """
@@ -218,13 +244,7 @@ class AGI:
         Throw AGIError on channel falure.
         """
         res = self.execute('WAIT FOR DIGIT', timeout)['result'][0]
-        if res == '0':
-            return ''
-        else:
-            try:
-                return chr(int(res))
-            except ValueError:
-                raise AGIError('Unable to convert result to digit: %s' % res)
+        return self.code_to_char(res)
 
     def send_text(self, text=''):
         """agi.send_text(text='') --> None
@@ -232,7 +252,7 @@ class AGI:
         transmission of text.
         Throw AGIError on error/hangup.
         """
-        self.execute('SEND TEXT', self._quote(text))['result'][0]
+        self.execute('SEND TEXT', self._quote(text))['result'][0] # pylint: disable-msg=W0104
 
     def receive_char(self, timeout=DEFAULT_TIMEOUT):
         """
@@ -242,14 +262,7 @@ class AGI:
 	Most channels do not support the reception of text.
         """
         res = self.execute('RECEIVE CHAR', timeout)['result'][0]
-
-        if res == '0':
-            return ''
-        else:
-            try:
-                return chr(int(res))
-            except:
-                raise AGIError('Unable to convert result to char: %s' % res)
+        return self.code_to_char(res)
 
     def tdd_mode(self, mode='off'):
         """
@@ -275,13 +288,7 @@ class AGI:
         escape_digits = self._process_digit_list(escape_digits)
         response = self.execute('STREAM FILE', filename, escape_digits, sample_offset)
         res = response['result'][0]
-        if res == '0':
-            return ''
-        else:
-            try:
-                return chr(int(res))
-            except:
-                raise AGIError('Unable to convert result to char: %s' % res)
+        return self.code_to_char(res)
     
     def control_stream_file(self, filename, escape_digits='', skipms=3000, fwd='', rew='', pause=''):
         """
@@ -296,13 +303,7 @@ class AGI:
         escape_digits = self._process_digit_list(escape_digits)
         response = self.execute('CONTROL STREAM FILE', self._quote(filename), escape_digits, self._quote(skipms), self._quote(fwd), self._quote(rew), self._quote(pause))
         res = response['result'][0]
-        if res == '0':
-            return ''
-        else:
-            try:
-                return chr(int(res))
-            except:
-                raise AGIError('Unable to convert result to char: %s' % res)
+        return self.code_to_char(res)
 
     def send_image(self, filename):
         """
@@ -325,13 +326,7 @@ class AGI:
         digits = self._process_digit_list(digits)
         escape_digits = self._process_digit_list(escape_digits)
         res = self.execute('SAY DIGITS', digits, escape_digits)['result'][0]
-        if res == '0':
-            return ''
-        else:
-            try:
-                return chr(int(res))
-            except:
-                raise AGIError('Unable to convert result to char: %s' % res)
+        return self.code_to_char(res)
 
     def say_number(self, number, escape_digits=''):
         """
@@ -343,13 +338,7 @@ class AGI:
         number = self._process_digit_list(number)
         escape_digits = self._process_digit_list(escape_digits)
         res = self.execute('SAY NUMBER', number, escape_digits)['result'][0]
-        if res == '0':
-            return ''
-        else:
-            try:
-                return chr(int(res))
-            except:
-                raise AGIError('Unable to convert result to char: %s' % res)
+        return self.code_to_char(res)
 
     def say_alpha(self, characters, escape_digits=''):
         """
@@ -361,13 +350,7 @@ class AGI:
         characters = self._process_digit_list(characters)
         escape_digits = self._process_digit_list(escape_digits)
         res = self.execute('SAY ALPHA', characters, escape_digits)['result'][0]
-        if res == '0':
-            return ''
-        else:
-            try:
-                return chr(int(res))
-            except:
-                raise AGIError('Unable to convert result to char: %s' % res)
+        return self.code_to_char(res)
 
     def say_phonetic(self, characters, escape_digits=''):
         """
@@ -379,13 +362,7 @@ class AGI:
         characters = self._process_digit_list(characters)
         escape_digits = self._process_digit_list(escape_digits)
         res = self.execute('SAY PHONETIC', characters, escape_digits)['result'][0]
-        if res == '0':
-            return ''
-        else:
-            try:
-                return chr(int(res))
-            except:
-                raise AGIError('Unable to convert result to char: %s' % res)
+        return self.code_to_char(res)
 
     def say_date(self, seconds, escape_digits=''):
         """
@@ -396,13 +373,7 @@ class AGI:
         """
         escape_digits = self._process_digit_list(escape_digits)
         res = self.execute('SAY DATE', seconds, escape_digits)['result'][0]
-        if res == '0':
-            return ''
-        else:
-            try:
-                return chr(int(res))
-            except:
-                raise AGIError('Unable to convert result to char: %s' % res)
+        return self.code_to_char(res)
 
     def say_time(self, seconds, escape_digits=''):
         """
@@ -413,13 +384,7 @@ class AGI:
         """
         escape_digits = self._process_digit_list(escape_digits)
         res = self.execute('SAY TIME', seconds, escape_digits)['result'][0]
-        if res == '0':
-            return ''
-        else:
-            try:
-                return chr(int(res))
-            except:
-                raise AGIError('Unable to convert result to char: %s' % res)
+        return self.code_to_char(res)
     
     def say_datetime(self, seconds, escape_digits='', format='', zone=''):
         """
@@ -429,15 +394,10 @@ class AGI:
         in seconds since the UNIX Epoch (Jan 1, 1970 00:00:00).
         """
         escape_digits = self._process_digit_list(escape_digits)
-        if format: format = self._quote(format)
+        if format:
+            format = self._quote(format)
         res = self.execute('SAY DATETIME', seconds, escape_digits, format, zone)['result'][0]
-        if res == '0':
-            return ''
-        else:
-            try:
-                return chr(int(res))
-            except:
-                raise AGIError('Unable to convert result to char: %s' % res)
+        return self.code_to_char(res)
 
     def get_data(self, filename, timeout=DEFAULT_TIMEOUT, max_digits=255):
         """
@@ -445,7 +405,7 @@ class AGI:
         Stream the given file and receive dialed digits
         """
         result = self.execute('GET DATA', filename, timeout, max_digits)
-        res, value = result['result']
+        res, value = result['result'] # pylint: disable-msg=W0612
         return res
     
     def get_option(self, filename, escape_digits='', timeout=0):
@@ -465,13 +425,7 @@ class AGI:
             response = self.execute('GET OPTION', filename, escape_digits)
 
         res = response['result'][0]
-        if res == '0':
-            return ''
-        else:
-            try:
-                return chr(int(res))
-            except:
-                raise AGIError('Unable to convert result to char: %s' % res)
+        return self.code_to_char(res)
 
     def set_context(self, context):
         """
@@ -522,10 +476,7 @@ class AGI:
         """
         escape_digits = self._process_digit_list(escape_digits)
         res = self.execute('RECORD FILE', self._quote(filename), format, escape_digits, timeout, offset, beep)['result'][0]
-        try:
-            return chr(int(res))
-        except:
-            raise AGIError('Unable to convert result to digit: %s' % res)
+        return self.code_to_char(res)
 
     def set_autohangup(self, secs):
         """
@@ -607,7 +558,7 @@ class AGI:
         except AGIResultHangup:
             result = {'result': ('1', 'hangup')}
 
-        res, value = result['result']
+        res, value = result['result'] # pylint: disable-msg=W0612
         return value
 
     def get_full_variable(self, name, channel = None):
@@ -626,7 +577,7 @@ class AGI:
         except AGIResultHangup:
             result = {'result': ('1', 'hangup')}
 
-        res, value = result['result']
+        res, value = result['result'] # pylint: disable-msg=W0612
         return value
 
     def verbose(self, message, level=1):
@@ -671,7 +622,7 @@ class AGI:
         Delete an entry in the Asterisk database for a given family and key.
         """
         result = self.execute('DATABASE DEL', self._quote(family), self._quote(key))
-        res, value = result['result']
+        res, value = result['result'] # pylint: disable-msg=W0612
         if res == '0':
             raise AGIDBError('Unable to delete from database: family=%s, key=%s' % (family, key))
 
@@ -682,7 +633,7 @@ class AGI:
         database.
         """
         result = self.execute('DATABASE DELTREE', self._quote(family), self._quote(key))
-        res, value = result['result']
+        res, value = result['result'] # pylint: disable-msg=W0612
         if res == '0':
             raise AGIDBError('Unable to delete tree from database: family=%s, key=%s' % (family, key))
 

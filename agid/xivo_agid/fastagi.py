@@ -91,6 +91,7 @@ class FastAGI:
         self._got_sighup = False
         self.env = {}
         self._get_agi_env()
+        self.args = []
         self._get_agi_args()
 
     def _get_agi_env(self):
@@ -108,9 +109,7 @@ class FastAGI:
                     self.env[key] = ""
 
     def _get_agi_args(self):
-        self.args = []
         i = 1
-
         while "agi_arg_%d" % i in self.env:
             self.args.append(self.env["agi_arg_%d" % i])
             i += 1
@@ -198,6 +197,20 @@ class FastAGI:
         """
         self.execute('ANSWER')['result'][0] # pylint: disable-msg=W0104
 
+    @staticmethod
+    def code_to_char(code):
+        """
+        Return chr(int(code))
+        Raise FastAGIError on error
+        """
+        if code == '0':
+            return ''
+        else:
+            try:
+                return chr(int(code))
+            except (TypeError, ValueError):
+                raise FastAGIError('Unable to convert result to char: %s' % code)
+
     def wait_for_digit(self, timeout=DEFAULT_TIMEOUT):
         """agi.wait_for_digit(timeout=DEFAULT_TIMEOUT) --> digit
         Waits for up to 'timeout' milliseconds for a channel to receive a DTMF
@@ -205,13 +218,7 @@ class FastAGI:
         Throws FastAGIError on channel falure
         """
         res = self.execute('WAIT FOR DIGIT', timeout)['result'][0]
-        if res == '0':
-            return ''
-        else:
-            try:
-                return chr(int(res))
-            except ValueError:
-                raise FastAGIError('Unable to convert result to digit: %s' % res)
+        return self.code_to_char(res)
 
     def send_text(self, text=''):
         """agi.send_text(text='') --> None
@@ -228,14 +235,7 @@ class FastAGI:
         do not support the reception of text.
         """
         res = self.execute('RECEIVE CHAR', timeout)['result'][0]
-
-        if res == '0':
-            return ''
-        else:
-            try:
-                return chr(int(res))
-            except:
-                raise FastAGIError('Unable to convert result to char: %s' % res)
+        return self.code_to_char(res)
 
     def tdd_mode(self, mode='off'):
         """agi.tdd_mode(mode='on'|'off') --> None
@@ -259,13 +259,7 @@ class FastAGI:
         escape_digits = self._process_digit_list(escape_digits)
         response = self.execute('STREAM FILE', filename, escape_digits, sample_offset)
         res = response['result'][0]
-        if res == '0':
-            return ''
-        else:
-            try:
-                return chr(int(res))
-            except:
-                raise FastAGIError('Unable to convert result to char: %s' % res)
+        return self.code_to_char(res)
     
     def control_stream_file(self, filename, escape_digits='', skipms=3000, fwd='', rew='', pause=''):
         """
@@ -280,13 +274,7 @@ class FastAGI:
         escape_digits = self._process_digit_list(escape_digits)
         response = self.execute('CONTROL STREAM FILE', self._quote(filename), escape_digits, self._quote(skipms), self._quote(fwd), self._quote(rew), self._quote(pause))
         res = response['result'][0]
-        if res == '0':
-            return ''
-        else:
-            try:
-                return chr(int(res))
-            except:
-                raise FastAGIError('Unable to convert result to char: %s' % res)
+        return self.code_to_char(res)
 
     def send_image(self, filename):
         """agi.send_image(filename) --> None
@@ -307,13 +295,7 @@ class FastAGI:
         digits = self._process_digit_list(digits)
         escape_digits = self._process_digit_list(escape_digits)
         res = self.execute('SAY DIGITS', digits, escape_digits)['result'][0]
-        if res == '0':
-            return ''
-        else:
-            try:
-                return chr(int(res))
-            except:
-                raise FastAGIError('Unable to convert result to char: %s' % res)
+        return self.code_to_char(res)
 
     def say_number(self, number, escape_digits=''):
         """agi.say_number(number, escape_digits='') --> digit
@@ -324,13 +306,7 @@ class FastAGI:
         number = self._process_digit_list(number)
         escape_digits = self._process_digit_list(escape_digits)
         res = self.execute('SAY NUMBER', number, escape_digits)['result'][0]
-        if res == '0':
-            return ''
-        else:
-            try:
-                return chr(int(res))
-            except:
-                raise FastAGIError('Unable to convert result to char: %s' % res)
+        return self.code_to_char(res)
 
     def say_alpha(self, characters, escape_digits=''):
         """agi.say_alpha(string, escape_digits='') --> digit
@@ -341,13 +317,7 @@ class FastAGI:
         characters = self._process_digit_list(characters)
         escape_digits = self._process_digit_list(escape_digits)
         res = self.execute('SAY ALPHA', characters, escape_digits)['result'][0]
-        if res == '0':
-            return ''
-        else:
-            try:
-                return chr(int(res))
-            except:
-                raise FastAGIError('Unable to convert result to char: %s' % res)
+        return self.code_to_char(res)
 
     def say_phonetic(self, characters, escape_digits=''):
         """agi.say_phonetic(string, escape_digits='') --> digit
@@ -358,13 +328,7 @@ class FastAGI:
         characters = self._process_digit_list(characters)
         escape_digits = self._process_digit_list(escape_digits)
         res = self.execute('SAY PHONETIC', characters, escape_digits)['result'][0]
-        if res == '0':
-            return ''
-        else:
-            try:
-                return chr(int(res))
-            except:
-                raise FastAGIError('Unable to convert result to char: %s' % res)
+        return self.code_to_char(res)
 
     def say_date(self, seconds, escape_digits=''):
         """agi.say_date(seconds, escape_digits='') --> digit
@@ -373,13 +337,7 @@ class FastAGI:
         """
         escape_digits = self._process_digit_list(escape_digits)
         res = self.execute('SAY DATE', seconds, escape_digits)['result'][0]
-        if res == '0':
-            return ''
-        else:
-            try:
-                return chr(int(res))
-            except:
-                raise FastAGIError('Unable to convert result to char: %s' % res)
+        return self.code_to_char(res)
 
     def say_time(self, seconds, escape_digits=''):
         """agi.say_time(seconds, escape_digits='') --> digit
@@ -388,13 +346,7 @@ class FastAGI:
         """
         escape_digits = self._process_digit_list(escape_digits)
         res = self.execute('SAY TIME', seconds, escape_digits)['result'][0]
-        if res == '0':
-            return ''
-        else:
-            try:
-                return chr(int(res))
-            except:
-                raise FastAGIError('Unable to convert result to char: %s' % res)
+        return self.code_to_char(res)
     
     def say_datetime(self, seconds, escape_digits='', format='', zone=''):
         """agi.say_datetime(seconds, escape_digits='', format='', zone='') --> digit
@@ -406,13 +358,7 @@ class FastAGI:
         if format:
             format = self._quote(format)
         res = self.execute('SAY DATETIME', seconds, escape_digits, format, zone)['result'][0]
-        if res == '0':
-            return ''
-        else:
-            try:
-                return chr(int(res))
-            except:
-                raise FastAGIError('Unable to convert result to char: %s' % res)
+        return self.code_to_char(res)
 
     def get_data(self, filename, timeout=DEFAULT_TIMEOUT, max_digits=255):
         """agi.get_data(filename, timeout=DEFAULT_TIMEOUT, max_digits=255) --> digits
@@ -438,13 +384,7 @@ class FastAGI:
             response = self.execute('GET OPTION', filename, escape_digits)
 
         res = response['result'][0]
-        if res == '0':
-            return ''
-        else:
-            try:
-                return chr(int(res))
-            except:
-                raise FastAGIError('Unable to convert result to char: %s' % res)
+        return self.code_to_char(res)
 
     def set_context(self, context):
         """agi.set_context(context)
@@ -488,10 +428,7 @@ class FastAGI:
         """
         escape_digits = self._process_digit_list(escape_digits)
         res = self.execute('RECORD FILE', self._quote(filename), format, escape_digits, timeout, offset, beep)['result'][0]
-        try:
-            return chr(int(res))
-        except:
-            raise FastAGIError('Unable to convert result to digit: %s' % res)
+        return self.code_to_char(res)
 
     def set_autohangup(self, secs):
         """agi.set_autohangup(secs) --> None
