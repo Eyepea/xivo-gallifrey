@@ -158,9 +158,6 @@ def speed_dial_key_extension(xleft, xright, fkext, monitoringext = None, isbsfil
 	                              monitoringext, isbsfilter)
 	                     if c)
 
-def stderr_write_nl(message):
-	sys.stderr.write("%s\n" % message)
-
 db_conn = None
 
 def abort(message, show_tb=False):
