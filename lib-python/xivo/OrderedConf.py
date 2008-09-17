@@ -3,7 +3,7 @@
 Copyright (c) 2001, 2002, 2003, 2004 Python Software Foundation;
 Copyright (C) 2007, 2008  Proformatique
 
-This module derivates from the ConfigParser module distributed in Python 2.4.4
+This module derives from the ConfigParser module distributed in Python 2.4.4
 
 A setup file consists of sections, lead by a "[section]" header,
 and followed by "name: value" entries, with continuations and such in
@@ -183,7 +183,7 @@ class SectionDesc:
             print section.ordered_items()
             ...
 
-    Methods callable on this object are automatically derivated from
+    Methods callable on this object are automatically derived from
     methods of the OrderedRawConf having a conventional name of
     _<method_name>_by_section_token() in the latter, where <method_name>
     is to be replaced by what you can use on the former.  This happens

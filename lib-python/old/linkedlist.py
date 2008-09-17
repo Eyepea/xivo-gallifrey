@@ -144,7 +144,7 @@ class LinkedList(object):
         Generate each link of the linked list, from the first to the last one.
         
         WARNING: does _not_ test for liveness of any link - this method should
-        not be called by anything that yields something derivated from these
+        not be called by anything that yields something derived from these
         links unless the caller checks the liveness of the link itself.
         """
         scan = self._base[2]
