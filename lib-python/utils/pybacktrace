@@ -1,0 +1,39 @@
+#!/usr/bin/python -u
+"""
+Format a syslogged Python backtrace (where newlines have been replaced with
+spaces) into something readable.
+
+Ex:
+
+$ echo "Sep 18 00:28:22 xilun sysconf[4890]: grrrr Traceback (most recent call last):   File \"./server.py\", line 100, in main     foobar()   File \"./server.py\", line 86, in foobar     lol()   File \"./server.py\", line 83, in lol     meuh()   File \"./server.py\", line 80, in meuh     grrrrr NameError: global name 'grrrrr' is not defined" | pybacktrace.py
+
+Sep 18 00:28:22 xilun sysconf[4890]: grrrr
+Traceback (most recent call last):
+  File "./server.py", line 100, in main
+    foobar()
+  File "./server.py", line 86, in foobar
+    lol()
+  File "./server.py", line 83, in lol
+    meuh()
+  File "./server.py", line 80, in meuh
+    grrrrr
+NameError: global name 'grrrrr' is not defined
+
+$ # yeepee \o/
+"""
+
+__version__ = "$Revision$ $Date$"
+
+import sys
+import re
+
+while 1:
+    line = sys.stdin.readline()
+    if not line:
+        break
+    line = line.strip()
+    line = re.sub(r" Traceback \(most recent call last\):", "\nTraceback (most recent call last):", line, 1)
+    line = re.sub(r" (  File .*?, line [0-9]+, in [A-Za-z0-9_.]+) ", "\n\\1\n", line)
+    line = re.sub(r" ([A-Za-z0-9_.]+: .*?)$", "\n\\1\n", line)
+    print
+    print line

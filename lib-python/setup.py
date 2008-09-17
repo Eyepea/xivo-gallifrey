@@ -11,4 +11,7 @@ setup(name='xivo',
       author_email='technique@proformatique.com',
       url='http://xivo.fr/',
       packages=['xivo', 'xivo.BackSQL', 'xivo.Phones'],
+      data_files=[
+                  ('/usr/bin', ['utils/pybacktrace']),
+                 ],
      )
