@@ -34,6 +34,10 @@ while 1:
     line = line.strip()
     line = re.sub(r" Traceback \(most recent call last\):", "\nTraceback (most recent call last):", line, 1)
     line = re.sub(r" (  File .*?, line [0-9]+, in [A-Za-z0-9_.]+) ", "\n\\1\n", line)
-    line = re.sub(r" ([A-Za-z0-9_.]+: .*?)$", "\n\\1\n", line)
+    # line = re.sub(r" ([A-Za-z0-9_.]+: .*?)$", "\n\\1\n", line)
+    # evil hack follow because the ? modifier seems to be buggy when searching for $
+    line = line[::-1]
+    line = re.sub(r"(.*? :[A-Za-z0-9_.]+) ", "\n\\1\n", line, 1)
+    line = line[::-1]
     print
     print line
