@@ -21,13 +21,13 @@ from xivo_agid import agid
 from xivo_agid import objects
 
 def fwdundoall(agi, cursor, args):
-	userid = agi.get_variable('XIVO_USERID')
+    userid = agi.get_variable('XIVO_USERID')
 
-	try:
-		user = objects.User(agi, cursor, int(userid))
-	except (ValueError, LookupError), e:
-		agi.dp_break(str(e))
+    try:
+        user = objects.User(agi, cursor, int(userid))
+    except (ValueError, LookupError), e:
+        agi.dp_break(str(e))
 
-	user.reset()
+    user.reset()
 
 agid.register(fwdundoall)

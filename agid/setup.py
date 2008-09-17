@@ -12,6 +12,6 @@ setup(name='xivo_agid',
       url='http://xivo.fr/',
       packages=['xivo_agid', 'xivo_agid.modules'],
       data_files=[
-		  ('/usr/sbin', ['sbin/agid']),
-		 ],
+                  ('/usr/sbin', ['sbin/agid']),
+                 ],
      )

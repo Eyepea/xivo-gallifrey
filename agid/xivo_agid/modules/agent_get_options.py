@@ -21,19 +21,19 @@ from xivo_agid import agid
 from xivo_agid import objects
 
 def agent_get_options(agi, cursor, args):
-	try:
-		agent = objects.Agent(agi, cursor, number=args[0])
-	except LookupError, e:
-		agi.verbose(str(e))
-		return
+    try:
+        agent = objects.Agent(agi, cursor, number=args[0])
+    except LookupError, e:
+        agi.verbose(str(e))
+        return
 
-	options = ""
+    options = ""
 
-	if agent.silent:
-		options += "s"
+    if agent.silent:
+        options += "s"
 
-	agi.set_variable('XIVO_AGENTEXISTS', 1)
-	agi.set_variable('XIVO_AGENTPASSWD', agent.passwd)
-	agi.set_variable('XIVO_AGENTOPTIONS', options)
+    agi.set_variable('XIVO_AGENTEXISTS', 1)
+    agi.set_variable('XIVO_AGENTPASSWD', agent.passwd)
+    agi.set_variable('XIVO_AGENTOPTIONS', options)
 
 agid.register(agent_get_options)

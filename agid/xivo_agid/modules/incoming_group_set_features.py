@@ -21,36 +21,36 @@ from xivo_agid import agid
 from xivo_agid import objects
 
 def incoming_group_set_features(agi, cursor, args):
-	groupid = agi.get_variable('XIVO_DSTID')
+    groupid = agi.get_variable('XIVO_DSTID')
 
-	try:
-		group = objects.Group(agi, cursor, xid=int(groupid))
-	except (ValueError, LookupError), e:
-		agi.dp_break(str(e))
+    try:
+        group = objects.Group(agi, cursor, xid=int(groupid))
+    except (ValueError, LookupError), e:
+        agi.dp_break(str(e))
 
-	options = ""
+    options = ""
 
-	if group.transfer_user:
-		options += "t"
+    if group.transfer_user:
+        options += "t"
 
-	if group.transfer_call:
-		options += "T"
+    if group.transfer_call:
+        options += "T"
 
-	if group.write_caller:
-		options += "w"
+    if group.write_caller:
+        options += "w"
 
-	if group.write_calling:
-		options += "W"
+    if group.write_calling:
+        options += "W"
 
-	if not group.musiconhold:
-		options += "r"
+    if not group.musiconhold:
+        options += "r"
 
-	agi.set_variable('XIVO_GROUPNAME', group.name)
-	agi.set_variable('XIVO_GROUPOPTIONS', options)
+    agi.set_variable('XIVO_GROUPNAME', group.name)
+    agi.set_variable('XIVO_GROUPOPTIONS', options)
 
-	if group.timeout:
-		agi.set_variable('XIVO_GROUPTIMEOUT', group.timeout)
+    if group.timeout:
+        agi.set_variable('XIVO_GROUPTIMEOUT', group.timeout)
 
-	group.set_dial_actions()
+    group.set_dial_actions()
 
 agid.register(incoming_group_set_features)

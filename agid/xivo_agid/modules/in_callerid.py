@@ -34,56 +34,56 @@ config = None
 re_objs = {}
 
 def in_callerid(agi, cursor, args):
-	callerid_num = agi.env['agi_callerid']
+    callerid_num = agi.env['agi_callerid']
 
-	for section in config:
-		section_name = section.get_name()
-		re_obj = re_objs[section_name]
+    for section in config:
+        section_name = section.get_name()
+        re_obj = re_objs[section_name]
 
-		if not re_obj.match(callerid_num):
-			continue
+        if not re_obj.match(callerid_num):
+            continue
 
-		# We got a match.
-		if section.has_option('strip'):
-			str_strip = section.get('strip')
+        # We got a match.
+        if section.has_option('strip'):
+            str_strip = section.get('strip')
 
-			try:
-				strip = int(str_strip)
-			except ValueError:
-				strip = 0
+            try:
+                strip = int(str_strip)
+            except ValueError:
+                strip = 0
 
-			if strip > 0:
-				callerid_num = callerid_num[strip:]
-				agi.set_variable('CALLERID(num)', callerid_num)
+            if strip > 0:
+                callerid_num = callerid_num[strip:]
+                agi.set_variable('CALLERID(num)', callerid_num)
 
-		if section.has_option('add'):
-			add = section.get('add')
+        if section.has_option('add'):
+            add = section.get('add')
 
-			if add:
-				callerid_num = add + callerid_num
-				agi.set_variable("CALLERID(num)", callerid_num)
+            if add:
+                callerid_num = add + callerid_num
+                agi.set_variable("CALLERID(num)", callerid_num)
 
-		return
+        return
 
 def setup(cursor):
-	global config
+    global config
 
-	re_objs.clear()
-	config = OrderedConf.OrderedRawConf(filename=RULES_FILE)
+    re_objs.clear()
+    config = OrderedConf.OrderedRawConf(filename=RULES_FILE)
 
-	for section in config:
-		try:
-			regexp = section.get('callerid')
-		except ConfigParser.NoOptionError:
-			log.error("option 'callerid' not found in section %r", section.get_name())
-			sys.exit(1)
+    for section in config:
+        try:
+            regexp = section.get('callerid')
+        except ConfigParser.NoOptionError:
+            log.error("option 'callerid' not found in section %r", section.get_name())
+            sys.exit(1)
 
-		try:
-			re_obj = re.compile(regexp)
-		except re.error:
-			log.error("invalid regexp %r in section %r", regexp, section.get_name())
-			sys.exit(1)
+        try:
+            re_obj = re.compile(regexp)
+        except re.error:
+            log.error("invalid regexp %r in section %r", regexp, section.get_name())
+            sys.exit(1)
 
-		re_objs[section.get_name()] = re_obj
+        re_objs[section.get_name()] = re_obj
 
 agid.register(in_callerid, setup)

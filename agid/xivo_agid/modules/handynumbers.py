@@ -21,33 +21,33 @@ from xivo_agid import agid
 from xivo_agid import objects
 
 def handynumbers(agi, cursor, args):
-	userid = agi.get_variable('XIVO_USERID')
-	dstnum = agi.get_variable('XIVO_DSTNUM')
-	exten_pattern = agi.get_variable('XIVO_EXTENPATTERN')
+    userid = agi.get_variable('XIVO_USERID')
+    dstnum = agi.get_variable('XIVO_DSTNUM')
+    exten_pattern = agi.get_variable('XIVO_EXTENPATTERN')
 
-	if userid:
-		try:
-			user = objects.User(agi, cursor, int(userid))
-		except (ValueError, LookupError), e:
-			user = None
-			agi.verbose(str(e))
-	else:
-		user = None
-	
-	try:
-		handy_number = objects.HandyNumber(agi, cursor, exten=exten_pattern)
-	except LookupError, e:
-		agi.dp_break(str(e))
+    if userid:
+        try:
+            user = objects.User(agi, cursor, int(userid))
+        except (ValueError, LookupError), e:
+            user = None
+            agi.verbose(str(e))
+    else:
+        user = None
 
-	trunk = handy_number.trunk
+    try:
+        handy_number = objects.HandyNumber(agi, cursor, exten=exten_pattern)
+    except LookupError, e:
+        agi.dp_break(str(e))
 
-	agi.set_variable('XIVO_INTERFACE', trunk.interface)
-	agi.set_variable('XIVO_TRUNKEXTEN', dstnum)
+    trunk = handy_number.trunk
 
-	if trunk.intfsuffix:
-		agi.set_variable('XIVO_TRUNKSUFFIX', "/" + trunk.intfsuffix)
+    agi.set_variable('XIVO_INTERFACE', trunk.interface)
+    agi.set_variable('XIVO_TRUNKEXTEN', dstnum)
 
-	if user and user.outcallerid:
-		agi.set_variable('CALLERID(num)', user.outcallerid)
+    if trunk.intfsuffix:
+        agi.set_variable('XIVO_TRUNKSUFFIX', "/" + trunk.intfsuffix)
+
+    if user and user.outcallerid:
+        agi.set_variable('CALLERID(num)', user.outcallerid)
 
 agid.register(handynumbers)

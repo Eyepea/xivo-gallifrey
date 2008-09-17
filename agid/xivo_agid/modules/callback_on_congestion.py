@@ -31,60 +31,60 @@ retry_time = None
 wait_time = None
 
 def get_uid_gid(name):
-	# pylint: disable-msg=W0612
-	pw_name, pw_passwd, pw_uid, pw_gid, pw_gecos, pw_dir, pw_shell = pwd.getpwnam(name)
-	return pw_uid, pw_gid
+    # pylint: disable-msg=W0612
+    pw_name, pw_passwd, pw_uid, pw_gid, pw_gecos, pw_dir, pw_shell = pwd.getpwnam(name)
+    return pw_uid, pw_gid
 
 ASTERISK_UID, ASTERISK_GID = get_uid_gid("asterisk")
 
 def callback_on_congestion(agi, cursor, args):
-	srcnum = agi.get_variable('XIVO_SRCNUM')
-	dstnum = agi.get_variable('XIVO_DSTNUM')
-	context = agi.get_variable('XIVO_CONTEXT')
-	spooldir = agi.get_variable('GETCONF(SPOOL_DIR)')
+    srcnum = agi.get_variable('XIVO_SRCNUM')
+    dstnum = agi.get_variable('XIVO_DSTNUM')
+    context = agi.get_variable('XIVO_CONTEXT')
+    spooldir = agi.get_variable('GETCONF(SPOOL_DIR)')
 
-	if srcnum in (None, ''):
-		agi.dp_break("Unable to find srcnum, srcnum = '%s'" % srcnum)
+    if srcnum in (None, ''):
+        agi.dp_break("Unable to find srcnum, srcnum = '%s'" % srcnum)
 
-	if dstnum in (None, ''):
-		agi.dp_break("Unable to find dstnum, dstnum = '%s'" % dstnum)
+    if dstnum in (None, ''):
+        agi.dp_break("Unable to find dstnum, dstnum = '%s'" % dstnum)
 
-	if not context:
-		agi.dp_break("Unable to find context, context = '%s'" % context)
+    if not context:
+        agi.dp_break("Unable to find context, context = '%s'" % context)
 
-	if not spooldir:
-		agi.dp_break("Unable to fetch AST_SPOOL_DIR")
+    if not spooldir:
+        agi.dp_break("Unable to fetch AST_SPOOL_DIR")
 
-	mtime = time.time()
-	filepath = "%s/%%s/%s-to-%s-%s.call" % (spooldir, srcnum, dstnum, int(mtime))
+    mtime = time.time()
+    filepath = "%s/%%s/%s-to-%s-%s.call" % (spooldir, srcnum, dstnum, int(mtime))
 
-	tmpfile = filepath % "tmp"
-	realfile = filepath % "outgoing"
+    tmpfile = filepath % "tmp"
+    realfile = filepath % "outgoing"
 
-	f = open(tmpfile, 'w')
-	f.write("Channel: Local/%s\n"
-		"MaxRetries: %d\n"
-		"RetryTime: %d\n"
-		"WaitTime: %d\n"
-		"CallerID: %s\n"
-		"Context: %s\n"
-		"Extension: %s\n"
-		"Priority: 1\n" % (srcnum, max_retries, retry_time, wait_time, srcnum, context, dstnum))
-	f.close()
+    f = open(tmpfile, 'w')
+    f.write("Channel: Local/%s\n"
+            "MaxRetries: %d\n"
+            "RetryTime: %d\n"
+            "WaitTime: %d\n"
+            "CallerID: %s\n"
+            "Context: %s\n"
+            "Extension: %s\n"
+            "Priority: 1\n" % (srcnum, max_retries, retry_time, wait_time, srcnum, context, dstnum))
+    f.close()
 
-	os.utime(tmpfile, (mtime, mtime))
-	os.chown(tmpfile, ASTERISK_UID, ASTERISK_GID)
-	os.rename(tmpfile, realfile)
+    os.utime(tmpfile, (mtime, mtime))
+    os.chown(tmpfile, ASTERISK_UID, ASTERISK_GID)
+    os.rename(tmpfile, realfile)
 
 def setup(cursor):
-	global max_retries
-	global retry_time
-	global wait_time
+    global max_retries
+    global retry_time
+    global wait_time
 
-	config = ConfigParser.RawConfigParser()
-	config.readfp(open(CONFIG_FILE))
-	max_retries = config.getint('general', 'max_retries')
-	retry_time = config.getint('general', 'retry_time')
-	wait_time = config.getint('general', 'wait_time')
+    config = ConfigParser.RawConfigParser()
+    config.readfp(open(CONFIG_FILE))
+    max_retries = config.getint('general', 'max_retries')
+    retry_time = config.getint('general', 'retry_time')
+    wait_time = config.getint('general', 'wait_time')
 
 agid.register(callback_on_congestion, setup)

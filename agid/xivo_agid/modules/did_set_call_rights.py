@@ -23,44 +23,44 @@ from xivo_agid import agid
 from xivo_agid import call_rights
 
 def _did_set_call_rights(agi, cursor, args):
-	srcnum = agi.get_variable('XIVO_SRCNUM')
-	context = agi.get_variable('XIVO_CONTEXT')
-	exten_pattern = agi.get_variable('XIVO_EXTENPATTERN')
+    srcnum = agi.get_variable('XIVO_SRCNUM')
+    context = agi.get_variable('XIVO_CONTEXT')
+    exten_pattern = agi.get_variable('XIVO_EXTENPATTERN')
 
-	cursor.query("SELECT ${columns} FROM rightcallexten",
-		     ('rightcallid', 'exten'))
-	res = cursor.fetchall()
+    cursor.query("SELECT ${columns} FROM rightcallexten",
+                 ('rightcallid', 'exten'))
+    res = cursor.fetchall()
 
-	if not res:
-		call_rights.allow(agi)
+    if not res:
+        call_rights.allow(agi)
 
-	rightcallidset = set((row['rightcallid'] for row in res if call_rights.extension_matches(srcnum, row['exten'])))
+    rightcallidset = set((row['rightcallid'] for row in res if call_rights.extension_matches(srcnum, row['exten'])))
 
-	if not rightcallidset:
-		call_rights.allow(agi)
+    if not rightcallidset:
+        call_rights.allow(agi)
 
-	rightcallids = '(' + ','.join((str(el) for el in rightcallidset)) + ')'
-	cursor.query("SELECT ${columns} FROM rightcall "
-		     "INNER JOIN rightcallmember "
-		     "ON rightcall.id = rightcallmember.rightcallid "
-		     "INNER JOIN extenumbers "
-		     "ON rightcallmember.typeval = extenumbers.typeval "
-		     "WHERE rightcall.id IN " + rightcallids + " "
-		     "AND rightcallmember.type = 'incall' "
-		     "AND extenumbers.exten = %s "
-		     "AND extenumbers.context = %s "
-		     "AND extenumbers.type = 'incall' "
-		     "AND rightcall.commented = 0",
-		     (call_rights.RIGHTCALL_AUTHORIZATION_COLNAME, call_rights.RIGHTCALL_PASSWD_COLNAME),
-		     (exten_pattern, context))
-	res = cursor.fetchall()
-	call_rights.apply_rules(agi, res)
-	call_rights.allow(agi)
+    rightcallids = '(' + ','.join((str(el) for el in rightcallidset)) + ')'
+    cursor.query("SELECT ${columns} FROM rightcall "
+                 "INNER JOIN rightcallmember "
+                 "ON rightcall.id = rightcallmember.rightcallid "
+                 "INNER JOIN extenumbers "
+                 "ON rightcallmember.typeval = extenumbers.typeval "
+                 "WHERE rightcall.id IN " + rightcallids + " "
+                 "AND rightcallmember.type = 'incall' "
+                 "AND extenumbers.exten = %s "
+                 "AND extenumbers.context = %s "
+                 "AND extenumbers.type = 'incall' "
+                 "AND rightcall.commented = 0",
+                 (call_rights.RIGHTCALL_AUTHORIZATION_COLNAME, call_rights.RIGHTCALL_PASSWD_COLNAME),
+                 (exten_pattern, context))
+    res = cursor.fetchall()
+    call_rights.apply_rules(agi, res)
+    call_rights.allow(agi)
 
 def did_set_call_rights(agi, cursor, args):
-	try:
-		_did_set_call_rights(agi, cursor, args)
-	except call_rights.RuleAppliedException:
-		return
+    try:
+        _did_set_call_rights(agi, cursor, args)
+    except call_rights.RuleAppliedException:
+        return
 
 agid.register(did_set_call_rights)

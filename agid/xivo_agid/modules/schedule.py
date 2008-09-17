@@ -21,12 +21,12 @@ from xivo_agid import agid
 from xivo_agid import objects
 
 def schedule(agi, cursor, args):
-	try:
-		sched = objects.Schedule(agi, cursor, int(args[0]))
-	except (ValueError, LookupError), e:
-		agi.dp_break(str(e))
+    try:
+        sched = objects.Schedule(agi, cursor, int(args[0]))
+    except (ValueError, LookupError), e:
+        agi.dp_break(str(e))
 
-	agi.set_variable("XIVO_SCHEDULE_TIMERANGE", sched.timerange)
-	sched.set_dial_actions()
+    agi.set_variable("XIVO_SCHEDULE_TIMERANGE", sched.timerange)
+    sched.set_dial_actions()
 
 agid.register(schedule)

@@ -21,17 +21,17 @@ from xivo_agid import agid
 from xivo_agid import objects
 
 def vmbox_get_info(agi, cursor, args):
-	vmboxid = agi.get_variable('XIVO_VMBOXID')
+    vmboxid = agi.get_variable('XIVO_VMBOXID')
 
-	try:
-		vmbox = objects.VMBox(agi, cursor, int(vmboxid))
-	except (ValueError, LookupError), e:
-		agi.dp_break(str(e))
+    try:
+        vmbox = objects.VMBox(agi, cursor, int(vmboxid))
+    except (ValueError, LookupError), e:
+        agi.dp_break(str(e))
 
-	if vmbox.skipcheckpass:
-		agi.set_variable('XIVO_VMOPTIONS', "s")
+    if vmbox.skipcheckpass:
+        agi.set_variable('XIVO_VMOPTIONS', "s")
 
-	agi.set_variable('XIVO_MAILBOX', vmbox.mailbox)
-	agi.set_variable('XIVO_MAILBOX_CONTEXT', vmbox.context)
+    agi.set_variable('XIVO_MAILBOX', vmbox.mailbox)
+    agi.set_variable('XIVO_MAILBOX_CONTEXT', vmbox.context)
 
 agid.register(vmbox_get_info)

@@ -33,31 +33,37 @@ rep = (('_', ''),
        ('.', '[0-9#\*]+'),
        ('!', '[0-9#\*]*'))
 
-class RuleAppliedException(Exception): pass
+
+class RuleAppliedException(Exception):
+    pass
+
 
 def allow(agi):
-	agi.set_variable('XIVO_AUTHORIZATION', "ALLOW")
-	raise RuleAppliedException()
+    agi.set_variable('XIVO_AUTHORIZATION', "ALLOW")
+    raise RuleAppliedException()
+
 
 def deny(agi, password):
-	if password:
-		agi.set_variable('XIVO_PASSWORD', password)
+    if password:
+        agi.set_variable('XIVO_PASSWORD', password)
 
-	agi.set_variable('XIVO_AUTHORIZATION', "DENY")
-	raise RuleAppliedException()
+    agi.set_variable('XIVO_AUTHORIZATION', "DENY")
+    raise RuleAppliedException()
+
 
 def extension_matches(number, pattern):
-	for (key, val) in rep:
-		pattern = pattern.replace(key, val)
+    for (key, val) in rep:
+        pattern = pattern.replace(key, val)
 
-	return bool(re.match(pattern, number))
+    return bool(re.match(pattern, number))
+
 
 def apply_rules(agi, rules):
-	if not rules:
-		return
+    if not rules:
+        return
 
-	for rule in rules:
-		if rule[RIGHTCALL_AUTHORIZATION_COLNAME]:
-			allow(agi)
+    for rule in rules:
+        if rule[RIGHTCALL_AUTHORIZATION_COLNAME]:
+            allow(agi)
 
-	deny(agi, rule[RIGHTCALL_PASSWD_COLNAME])
+    deny(agi, rule[RIGHTCALL_PASSWD_COLNAME])

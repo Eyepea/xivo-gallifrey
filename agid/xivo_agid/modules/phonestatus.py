@@ -21,43 +21,43 @@ from xivo_agid import agid
 from xivo_agid import objects
 
 def phonestatus(agi, cursor, args):
-	userid = agi.get_variable('XIVO_USERID')
+    userid = agi.get_variable('XIVO_USERID')
 
-	feature_list = objects.FeatureList(agi, cursor)
+    feature_list = objects.FeatureList(agi, cursor)
 
-	try:
-		user = objects.User(agi, cursor, int(userid), feature_list)
-	except (ValueError, LookupError), e:
-		agi.dp_break(str(e))
+    try:
+        user = objects.User(agi, cursor, int(userid), feature_list)
+    except (ValueError, LookupError), e:
+        agi.dp_break(str(e))
 
-	if feature_list.fwdunc:
-		agi.set_variable('XIVO_ENABLEUNC', user.enableunc)
+    if feature_list.fwdunc:
+        agi.set_variable('XIVO_ENABLEUNC', user.enableunc)
 
-		if user.enableunc:
-			agi.set_variable('XIVO_DESTUNC', user.destunc)
+        if user.enableunc:
+            agi.set_variable('XIVO_DESTUNC', user.destunc)
 
-	if feature_list.fwdbusy:
-		agi.set_variable('XIVO_ENABLEBUSY', user.enablebusy)
+    if feature_list.fwdbusy:
+        agi.set_variable('XIVO_ENABLEBUSY', user.enablebusy)
 
-		if user.enablebusy:
-			agi.set_variable('XIVO_DESTBUSY', user.destbusy)
+        if user.enablebusy:
+            agi.set_variable('XIVO_DESTBUSY', user.destbusy)
 
-	if feature_list.fwdrna:
-		agi.set_variable('XIVO_ENABLERNA', user.enablerna)
+    if feature_list.fwdrna:
+        agi.set_variable('XIVO_ENABLERNA', user.enablerna)
 
-		if user.enablerna:
-			agi.set_variable('XIVO_DESTRNA', user.destrna)
+        if user.enablerna:
+            agi.set_variable('XIVO_DESTRNA', user.destrna)
 
-	if user.vmbox:
-		agi.set_variable('XIVO_ENABLEVOICEMAIL', user.enablevoicemail)
+    if user.vmbox:
+        agi.set_variable('XIVO_ENABLEVOICEMAIL', user.enablevoicemail)
 
-	if feature_list.incallfilter:
-		agi.set_variable('XIVO_CALLFILTER', user.callfilter)
+    if feature_list.incallfilter:
+        agi.set_variable('XIVO_CALLFILTER', user.callfilter)
 
-	if feature_list.incallrec:
-		agi.set_variable('XIVO_CALLRECORD', user.callrecord)
+    if feature_list.incallrec:
+        agi.set_variable('XIVO_CALLRECORD', user.callrecord)
 
-	if feature_list.enablednd:
-		agi.set_variable('XIVO_ENABLEDND', user.enablednd)
+    if feature_list.enablednd:
+        agi.set_variable('XIVO_ENABLEDND', user.enablednd)
 
 agid.register(phonestatus)

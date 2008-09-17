@@ -36,12 +36,12 @@ sysloghandler.setFormatter(logging.Formatter("%s[%%(process)d]: %%(message)s" % 
 logging.getLogger('').addHandler(sysloghandler)
 
 if '-f' not in sys.argv:
-	daemonize.daemonize(PIDFILE, pidfile_lock=True)
+    daemonize.daemonize(PIDFILE, pidfile_lock=True)
 else:
-	daemonize.create_pidfile_or_die(PIDFILE, pidfile_lock=True)
+    daemonize.create_pidfile_or_die(PIDFILE, pidfile_lock=True)
 
 if '-d' not in sys.argv:
-	logging.getLogger('').setLevel(logging.INFO)
+    logging.getLogger('').setLevel(logging.INFO)
 
 agid.init()
 agid.run()

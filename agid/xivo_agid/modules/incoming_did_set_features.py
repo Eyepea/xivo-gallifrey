@@ -21,15 +21,15 @@ from xivo_agid import agid
 from xivo_agid import objects
 
 def incoming_did_set_features(agi, cursor, args):
-	exten_pattern = agi.get_variable('XIVO_EXTENPATTERN')
-	context = agi.get_variable('XIVO_CONTEXT')
+    exten_pattern = agi.get_variable('XIVO_EXTENPATTERN')
+    context = agi.get_variable('XIVO_CONTEXT')
 
-	did = objects.DID(agi, cursor, exten = exten_pattern, context = context)
+    did = objects.DID(agi, cursor, exten = exten_pattern, context = context)
 
-	agi.set_variable('XIVO_FAXDETECT_ENABLE', did.faxdetectenable)
-	agi.set_variable('XIVO_FAXDETECT_TIMEOUT', did.faxdetecttimeout)
-	agi.set_variable('XIVO_FAXDETECT_EMAIL', did.faxdetectemail)
+    agi.set_variable('XIVO_FAXDETECT_ENABLE', did.faxdetectenable)
+    agi.set_variable('XIVO_FAXDETECT_TIMEOUT', did.faxdetecttimeout)
+    agi.set_variable('XIVO_FAXDETECT_EMAIL', did.faxdetectemail)
 
-	did.set_dial_actions()
+    did.set_dial_actions()
 
 agid.register(incoming_did_set_features)

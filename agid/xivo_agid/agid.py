@@ -31,6 +31,7 @@ from xivo.BackSQL import backsqlite
 
 from xivo_agid import fastagi
 
+
 NAME = "agid"
 VERSION_MAJOR = 0
 VERSION_MINOR = 1
@@ -44,224 +45,232 @@ log = logging.getLogger('xivo_agid.agid')
 server = None
 handlers = {}
 
+
 class DBConnectionPool:
-	def __init__(self):
-		self.conns = []
-		self.size = 0
-		self.db_uri = None
-		self.lock = Lock()
+    def __init__(self):
+        self.conns = []
+        self.size = 0
+        self.db_uri = None
+        self.lock = Lock()
 
-	def reload(self, size, db_uri):
-		self.lock.acquire()
-		try:
-			for conn in self.conns:
-				conn.close()
+    def reload(self, size, db_uri):
+        self.lock.acquire()
+        try:
+            for conn in self.conns:
+                conn.close()
 
-			del self.conns[:]
+            del self.conns[:]
 
-			while len(self.conns) < size:
-				self.conns.append(anysql.connect_by_uri(db_uri))
+            while len(self.conns) < size:
+                self.conns.append(anysql.connect_by_uri(db_uri))
 
-			self.size = size
-			self.db_uri = db_uri
-			log.debug("reloaded db conn pool")
-			log.debug("%s", self)
-		finally:
-			self.lock.release()
+            self.size = size
+            self.db_uri = db_uri
+            log.debug("reloaded db conn pool")
+            log.debug("%s", self)
+        finally:
+            self.lock.release()
 
-	def acquire(self):
-		self.lock.acquire()
-		try:
-			try:
-				conn = self.conns.pop()
-				log.debug("acquiring connection: got connection from pool")
-			except IndexError:
-				conn = anysql.connect_by_uri(self.db_uri)
-				log.debug("acquiring connection: pool empty, created new connection")
-		finally:
-			log.debug("%s", self)
-			self.lock.release()
+    def acquire(self):
+        self.lock.acquire()
+        try:
+            try:
+                conn = self.conns.pop()
+                log.debug("acquiring connection: got connection from pool")
+            except IndexError:
+                conn = anysql.connect_by_uri(self.db_uri)
+                log.debug("acquiring connection: pool empty, created new connection")
+        finally:
+            log.debug("%s", self)
+            self.lock.release()
 
-		return conn
+        return conn
 
-	def release(self, conn):
-		self.lock.acquire()
-		try:
-			if len(self.conns) < self.size:
-				self.conns.append(conn)
-				log.debug("releasing connection: pool not full, refilled with connection")
-			else:
-				conn.close()
-				log.debug("releasing connection: pool full, connection closed")
+    def release(self, conn):
+        self.lock.acquire()
+        try:
+            if len(self.conns) < self.size:
+                self.conns.append(conn)
+                log.debug("releasing connection: pool not full, refilled with connection")
+            else:
+                conn.close()
+                log.debug("releasing connection: pool full, connection closed")
 
-		finally:
-			log.debug("%s", self)
-			self.lock.release()
+        finally:
+            log.debug("%s", self)
+            self.lock.release()
 
-	# The connection pool lock must be hold.
-	def __str__(self):
-		return ("connection pool: size = %d\n"
-			"connection pool: available connections = %d\n"
-			"connection pool: db_uri = %s") % (self.size, len(self.conns), self.db_uri)
+    # The connection pool lock must be hold.
+    def __str__(self):
+        return ("connection pool: size = %d\n"
+                "connection pool: available connections = %d\n"
+                "connection pool: db_uri = %s") % (self.size, len(self.conns), self.db_uri)
+
 
 class FastAGIRequestHandler(SocketServer.StreamRequestHandler):
-	def handle(self):
-		try:
-			log.debug("handling request")
+    def handle(self):
+        try:
+            log.debug("handling request")
 
-			fagi = fastagi.FastAGI(self.rfile, self.wfile)
-			except_hook = agitb.Hook(agi = fagi)
+            fagi = fastagi.FastAGI(self.rfile, self.wfile)
+            except_hook = agitb.Hook(agi = fagi)
 
-			conn = server.db_conn_pool.acquire()
-			try:
-				cursor = conn.cursor()
+            conn = server.db_conn_pool.acquire()
+            try:
+                cursor = conn.cursor()
 
-				handler_name = fagi.env['agi_network_script']
-				log.debug("delegating request handling %r", handler_name)
-				handlers[handler_name].handle(fagi, cursor, fagi.args)
+                handler_name = fagi.env['agi_network_script']
+                log.debug("delegating request handling %r", handler_name)
+                handlers[handler_name].handle(fagi, cursor, fagi.args)
 
-				conn.commit()
+                conn.commit()
 
-				fagi.verbose('AGI handler %r successfully executed' % handler_name)
-				log.debug("request successfully handled")
-			finally:
-				server.db_conn_pool.release(conn)
+                fagi.verbose('AGI handler %r successfully executed' % handler_name)
+                log.debug("request successfully handled")
+            finally:
+                server.db_conn_pool.release(conn)
 
-		# Attempt to relay errors to Asterisk, but if it fails, we
-		# just give up.
-		# XXX It may be here that dropping database connection
-		# exceptions could be catched.
-		except fastagi.FastAGIDialPlanBreak, message:
-			log.debug("invalid request, dial plan broken")
+        # Attempt to relay errors to Asterisk, but if it fails, we
+        # just give up.
+        # XXX It may be here that dropping database connection
+        # exceptions could be catched.
+        except fastagi.FastAGIDialPlanBreak, message:
+            log.debug("invalid request, dial plan broken")
 
-			try:
-				fagi.verbose(message)
-				fagi.appexec('Goto', 'macro-agi_fail|s|1')
-				fagi.fail()
-			except:
-				pass
-		except:
-			log.debug("an unexpected error occurred")
+            try:
+                fagi.verbose(message)
+                fagi.appexec('Goto', 'macro-agi_fail|s|1')
+                fagi.fail()
+            except:
+                pass
+        except:
+            log.debug("an unexpected error occurred")
 
-			try:
-				except_hook.handle()
-				fagi.appexec('Goto', 'macro-agi_fail|s|1')
-				fagi.fail()
-			except:
-				pass
+            try:
+                except_hook.handle()
+                fagi.appexec('Goto', 'macro-agi_fail|s|1')
+                fagi.fail()
+            except:
+                pass
+
 
 class AGID(SocketServer.ThreadingTCPServer):
-	allow_reuse_address = True
-	initialized = False
+    allow_reuse_address = True
+    initialized = False
 
-	def __init__(self):
-		log.info('%s %s.%s starting...', NAME, VERSION_MAJOR, VERSION_MINOR)
+    def __init__(self):
+        log.info('%s %s.%s starting...', NAME, VERSION_MAJOR, VERSION_MINOR)
 
-		signal.signal(signal.SIGHUP, sighup_handle)
+        signal.signal(signal.SIGHUP, sighup_handle)
 
-		self.db_conn_pool = DBConnectionPool()
-		self.setup()
+        self.db_conn_pool = DBConnectionPool()
+        self.setup()
 
-		SocketServer.ThreadingTCPServer.__init__(self,
-			(self.listen_addr, self.listen_port),
-			FastAGIRequestHandler)
+        SocketServer.ThreadingTCPServer.__init__(self,
+                (self.listen_addr, self.listen_port),
+                FastAGIRequestHandler)
 
-		self.initialized = True
+        self.initialized = True
 
-	def setup(self):
-		config = ConfigParser.RawConfigParser()
-		config.readfp(open(AGI_CONFFILE))
+    def setup(self):
+        config = ConfigParser.RawConfigParser()
+        config.readfp(open(AGI_CONFFILE))
 
-		if not self.initialized:
-			try:
-				self.listen_addr = config.get("general", "listen_addr")
-			except ConfigParser.NoOptionError:
-				self.listen_addr = LISTEN_ADDR_DEFAULT
+        if not self.initialized:
+            try:
+                self.listen_addr = config.get("general", "listen_addr")
+            except ConfigParser.NoOptionError:
+                self.listen_addr = LISTEN_ADDR_DEFAULT
 
-			log.debug("listen_addr: %s", self.listen_addr)
+            log.debug("listen_addr: %s", self.listen_addr)
 
-			try:
-				self.listen_port = config.getint("general", "listen_port")
-			except ConfigParser.NoOptionError:
-				self.listen_port = LISTEN_PORT_DEFAULT
+            try:
+                self.listen_port = config.getint("general", "listen_port")
+            except ConfigParser.NoOptionError:
+                self.listen_port = LISTEN_PORT_DEFAULT
 
-			log.debug("listen_port: %d", self.listen_port)
+            log.debug("listen_port: %d", self.listen_port)
 
-		try:
-			conn_pool_size = config.getint("general", "conn_pool_size")
-		except ConfigParser.NoOptionError:
-			conn_pool_size = CONN_POOL_SIZE_DEFAULT
+        try:
+            conn_pool_size = config.getint("general", "conn_pool_size")
+        except ConfigParser.NoOptionError:
+            conn_pool_size = CONN_POOL_SIZE_DEFAULT
 
-		db_uri = config.get("db", "db_uri")
-		self.db_conn_pool.reload(conn_pool_size, db_uri)
+        db_uri = config.get("db", "db_uri")
+        self.db_conn_pool.reload(conn_pool_size, db_uri)
+
 
 class Handler:
-	def __init__(self, handler_name, setup_fn, handle_fn):
-		self.handler_name = handler_name
-		self.setup_fn = setup_fn
-		self.handle_fn = handle_fn
-		self.lock = moresynchro.RWLock()
+    def __init__(self, handler_name, setup_fn, handle_fn):
+        self.handler_name = handler_name
+        self.setup_fn = setup_fn
+        self.handle_fn = handle_fn
+        self.lock = moresynchro.RWLock()
 
-	def setup(self, cursor):
-		if self.setup_fn:
-			self.setup_fn(cursor)
+    def setup(self, cursor):
+        if self.setup_fn:
+            self.setup_fn(cursor)
 
-	def reload(self, cursor):
-		if not self.setup_fn:
-			return
+    def reload(self, cursor):
+        if not self.setup_fn:
+            return
 
-		self.lock.acquire_write()
-		self.setup_fn(cursor)
-		log.debug('handler %r reloaded', self.handler_name)
-		self.lock.release()
+        self.lock.acquire_write()
+        self.setup_fn(cursor)
+        log.debug('handler %r reloaded', self.handler_name)
+        self.lock.release()
 
-	def handle(self, agi, cursor, args):
-		self.lock.acquire_read()
-		self.handle_fn(agi, cursor, args)
-		self.lock.release()
+    def handle(self, agi, cursor, args):
+        self.lock.acquire_read()
+        self.handle_fn(agi, cursor, args)
+        self.lock.release()
+
 
 def register(handle_fn, setup_fn = None):
-	handler_name = handle_fn.__name__
+    handler_name = handle_fn.__name__
 
-	if handler_name in handlers:
-		raise ValueError("handler %r already registered", handler_name)
+    if handler_name in handlers:
+        raise ValueError("handler %r already registered", handler_name)
 
-	handlers[handler_name] = Handler(handler_name, setup_fn, handle_fn)
+    handlers[handler_name] = Handler(handler_name, setup_fn, handle_fn)
+
 
 def sighup_handle(signum, frame): # pylint: disable-msg=W0613
-	try:
-		log.debug("reloading core engine")
+    try:
+        log.debug("reloading core engine")
 
-		server.setup()
+        server.setup()
 
-		log.debug("reloading handlers")
+        log.debug("reloading handlers")
 
-		conn = server.db_conn_pool.acquire()
-		cursor = conn.cursor()
+        conn = server.db_conn_pool.acquire()
+        cursor = conn.cursor()
 
-		for handler in handlers.itervalues():
-			handler.reload(cursor)
+        for handler in handlers.itervalues():
+            handler.reload(cursor)
 
-		conn.commit()
+        conn.commit()
 
-		log.debug("finished reload")
-	finally:
-		server.db_conn_pool.release(conn)
+        log.debug("finished reload")
+    finally:
+        server.db_conn_pool.release(conn)
+
 
 def run():
-	conn = server.db_conn_pool.acquire()
-	cursor = conn.cursor()
+    conn = server.db_conn_pool.acquire()
+    cursor = conn.cursor()
 
-	log.debug("list of handlers: %s", ', '.join(sorted(handlers.iterkeys())))
+    log.debug("list of handlers: %s", ', '.join(sorted(handlers.iterkeys())))
 
-	for handler in handlers.itervalues():
-		handler.setup(cursor)
+    for handler in handlers.itervalues():
+        handler.setup(cursor)
 
-	conn.commit()
-	server.db_conn_pool.release(conn)
+    conn.commit()
+    server.db_conn_pool.release(conn)
 
-	server.serve_forever()
+    server.serve_forever()
+
 
 def init():
-	global server
-	server = AGID()
+    global server
+    server = AGID()

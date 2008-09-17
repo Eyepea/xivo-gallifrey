@@ -21,50 +21,50 @@ from xivo_agid import agid
 from xivo_agid import objects
 
 def incoming_queue_set_features(agi, cursor, args):
-	queueid = agi.get_variable('XIVO_DSTID')
+    queueid = agi.get_variable('XIVO_DSTID')
 
-	try:
-		queue = objects.Queue(agi, cursor, xid=int(queueid))
-	except (ValueError, LookupError), e:
-		agi.dp_break(str(e))
+    try:
+        queue = objects.Queue(agi, cursor, xid=int(queueid))
+    except (ValueError, LookupError), e:
+        agi.dp_break(str(e))
 
-	options = ""
+    options = ""
 
-	if queue.data_quality:
-		options += "d"
+    if queue.data_quality:
+        options += "d"
 
-	if queue.hitting_callee:
-		options += "h"
+    if queue.hitting_callee:
+        options += "h"
 
-	if queue.hitting_caller:
-		options += "H"
+    if queue.hitting_caller:
+        options += "H"
 
-	if queue.retries:
-		options += "n"
+    if queue.retries:
+        options += "n"
 
-	if queue.ring:
-		options += "r"
+    if queue.ring:
+        options += "r"
 
-	if queue.transfer_user:
-		options += "t"
+    if queue.transfer_user:
+        options += "t"
 
-	if queue.transfer_call:
-		options += "T"
+    if queue.transfer_call:
+        options += "T"
 
-	if queue.write_caller:
-		options += "w"
+    if queue.write_caller:
+        options += "w"
 
-	if queue.write_calling:
-		options += "W"
+    if queue.write_calling:
+        options += "W"
 
-	agi.set_variable('XIVO_QUEUENAME', queue.name)
-	agi.set_variable('XIVO_QUEUEOPTIONS', options)
-	agi.set_variable('XIVO_QUEUEURL', queue.url)
-	agi.set_variable('XIVO_QUEUEANNOUNCEOVERRIDE', queue.announceoverride)
+    agi.set_variable('XIVO_QUEUENAME', queue.name)
+    agi.set_variable('XIVO_QUEUEOPTIONS', options)
+    agi.set_variable('XIVO_QUEUEURL', queue.url)
+    agi.set_variable('XIVO_QUEUEANNOUNCEOVERRIDE', queue.announceoverride)
 
-	if queue.timeout:
-		agi.set_variable('XIVO_QUEUETIMEOUT', queue.timeout)
+    if queue.timeout:
+        agi.set_variable('XIVO_QUEUETIMEOUT', queue.timeout)
 
-	queue.set_dial_actions()
+    queue.set_dial_actions()
 
 agid.register(incoming_queue_set_features)
