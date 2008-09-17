@@ -25,129 +25,136 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-CONFIG_FILE		= '/etc/pf-xivo/provisioning.conf' # can be overridden by cmd line param
-GETOPT_SHORTOPTS	= 'c:h'
+CONFIG_FILE         = '/etc/pf-xivo/provisioning.conf' # can be overridden by cmd line param
+GETOPT_SHORTOPTS    = 'c:h'
+SYSLOG_NAME         = 'initconfig'
 
 import sys
 
 def help_screen():
-	print >> sys.stderr, \
+    print >> sys.stderr, \
 """Syntax:
 %s [-c <conffile>] [-h] <sip_uri> <provisioning_code> <user_agent>
 
--c <conffile>	Use <conffile> instead of %s
--h		Display this help screen and exit
+-c <conffile>   Use <conffile> instead of %s
+-h              Display this help screen and exit
 """ % (sys.argv[0], `CONFIG_FILE`)
-	sys.exit(1)
+    sys.exit(1)
 
 from getopt import getopt, GetoptError
 def config_path():
-	global CONFIG_FILE
-	try:
-		opts, args = getopt(sys.argv[1:], GETOPT_SHORTOPTS)
-	except GetoptError, x:
-		print >> sys.stderr, x
-		help_screen()
-	sys.argv[1:] = args # strip options for legacy code behind
-	for k, v in opts: # DO NOT MERGE THE TWO LOOPS
-		if k == '-h':
-			help_screen()
-	for k, v in opts:
-		if k == '-c':
-			CONFIG_FILE = v
+    global CONFIG_FILE
+    try:
+        opts, args = getopt(sys.argv[1:], GETOPT_SHORTOPTS)
+    except GetoptError, x:
+        print >> sys.stderr, x
+        help_screen()
+    sys.argv[1:] = args # strip options for legacy code behind
+    for k, v in opts: # DO NOT MERGE THE TWO LOOPS
+        if k == '-h':
+            help_screen()
+    for k, v in opts:
+        if k == '-c':
+            CONFIG_FILE = v
 config_path()
 
 from xivo import timeoutsocket
-from xivo.timeoutsocket import Timeout
 
 import httplib
+import logging
+from logging.handlers import SysLogHandler
 
 from xivo import xivo_config
 from xivo.xivo_config import ProvGeneralConf as Pgc
 
 from xivo import agi
 from xivo import agitb
-from xivo import xivo_helpers
+
+sysloghandler = SysLogHandler("/dev/log", SysLogHandler.LOG_DAEMON)
+sysloghandler.setFormatter(logging.Formatter("%s[%%(process)d]: %%(message)s" % SYSLOG_NAME))
+root_logger = logging.getLogger('')
+root_logger.addHandler(sysloghandler)
+root_logger.setLevel(logging.DEBUG) # XXX
 
 agi_session = agi.AGI()
 agitb.enable(agi_session)
 
 def return_exit(error, playback=None):
-	agi_session.verbose(error)
-	if playback:
-		agi_session.appexec("PLAYBACK", playback)
-	sys.exit(1)
+    agi_session.verbose(error)
+    if playback:
+        agi_session.appexec("PLAYBACK", playback)
+    sys.exit(1)
 
 # TODO: use an RFC compliant regexp instead of
 # this stupid way of parsing things
 def user_ipv4_from_sip_uri(sip_addr):
-	splitted_sip = sip_addr.split(':')
-	if len(splitted_sip) < 2:
-		return None
-	splitted_sip = splitted_sip[1].split('@')
-	if len(splitted_sip) < 2:
-		return None
-	sip_user = splitted_sip[0]
-	ip = splitted_sip[1].split('>')[0]
-	return (sip_user, ip)
+    splitted_sip = sip_addr.split(':')
+    if len(splitted_sip) < 2:
+        return None
+    splitted_sip = splitted_sip[1].split('@')
+    if len(splitted_sip) < 2:
+        return None
+    sip_user = splitted_sip[0]
+    ip = splitted_sip[1].split('>')[0]
+    return (sip_user, ip)
 
 def main():
-	xivo_config.LoadConfig(CONFIG_FILE)
+    xivo_config.LoadConfig(CONFIG_FILE)
 
-	# WARNING: xivo_config.LoadConfig must be called before
-	from xivo.Phones import *
+    # WARNING: xivo_config.LoadConfig must be called before
+    from xivo.Phones import *
 
-	if len(sys.argv) < 4:
-		return_exit("Too few arguments")
+    if len(sys.argv) < 4:
+        return_exit("Too few arguments")
 
-	sip_uri = sys.argv[1]
-	code = sys.argv[2]
-	ua = sys.argv[3]
-	isinalan = "1"
+    sip_uri = sys.argv[1]
+    code = sys.argv[2]
+    ua = sys.argv[3]
+    isinalan = "1"
 
-	# Get Sip User, IPv4 and Mac Address
-	user_ipv4 = user_ipv4_from_sip_uri(sip_uri)
-	if not user_ipv4:
-		return_exit("Could not parse Sip URI \"%s\"" % sip_uri)
-	sip_user, ipv4 = user_ipv4
-	macaddr = xivo_config.macaddr_from_ipv4(ipv4) # XXX, agi_session.verbose)
-	if not macaddr:
-		return_exit("Could not find Mac Address from IPv4 \"%s\"" % ipv4)
+    # Get Sip User, IPv4 and Mac Address
+    user_ipv4 = user_ipv4_from_sip_uri(sip_uri)
+    if not user_ipv4:
+        return_exit("Could not parse Sip URI \"%s\"" % sip_uri)
+    sip_user, ipv4 = user_ipv4
+    macaddr = xivo_config.macaddr_from_ipv4(ipv4) # XXX, agi_session.verbose)
+    if not macaddr:
+        return_exit("Could not find Mac Address from IPv4 \"%s\"" % ipv4)
 
-	# Get Phone description (if we are able to handle this vendor...)
-	phone_desc = xivo_config.phone_desc_by_ua(ua) # XXX, agitb.handler)
-	if not phone_desc:
-		return_exit("Unknown UA %s" % `ua`)
-	phone_vendor = phone_desc[0]
-	phone_model = phone_desc[1]
+    # Get Phone description (if we are able to handle this vendor...)
+    phone_desc = xivo_config.phone_desc_by_ua(ua) # XXX, agitb.handler)
+    if not phone_desc:
+        return_exit("Unknown UA %s" % `ua`)
+    phone_vendor = phone_desc[0]
+    phone_model = phone_desc[1]
 
-	if code == 'init':
-		code = '0'
-	if not xivo_config.well_formed_provcode(code):
-		return_exit("Badly formed provisioning code", "privacy-incorrect")
+    if code == 'init':
+        code = '0'
+    if not xivo_config.well_formed_provcode(code):
+        return_exit("Badly formed provisioning code", "privacy-incorrect")
 
-	command = ( "mode=authoritative\r\nvendor=%s\r\nmodel=%s\r\n" + 
-		    "macaddr=%s\r\nipv4=%s\r\nprovcode=%s\r\nactions=yes\r\n" + 
-		    "proto=sip\r\nisinalan=%s\r\n" ) % (phone_vendor, phone_model,
-							macaddr, ipv4, code, isinalan)
+    command = ("mode=authoritative\r\nvendor=%s\r\nmodel=%s\r\n" +
+               "macaddr=%s\r\nipv4=%s\r\nprovcode=%s\r\nactions=yes\r\n" +
+               "proto=sip\r\nisinalan=%s\r\n") % (phone_vendor, phone_model,
+                                                  macaddr, ipv4, code, isinalan)
 
-	try:
-		timeoutsocket.setDefaultSocketTimeout(Pgc['http_request_to_s'])
-		conn = httplib.HTTPConnection(Pgc['connect_ipv4'] + ':' + str(Pgc['connect_port']))
-		conn.request("POST", "/prov", command, {"Content-Type": "text/plain; charset=ISO-8859-1"})
-		response = conn.getresponse()
-		response.read()	# eat every data sent by the provisioning server
-		conn.close()
-		reason = response.reason
-		status = response.status
-	except Exception, xcept:
-		reason = str(xcept)
-		status = 500
-		agitb.handler()
-		sys.exc_clear()
+    try:
+        timeoutsocket.setDefaultSocketTimeout(Pgc['http_request_to_s'])
+        conn = httplib.HTTPConnection(Pgc['connect_ipv4'] + ':' + str(Pgc['connect_port']))
+        conn.request("POST", "/prov", command, {"Content-Type": "text/plain; charset=ISO-8859-1"})
+        response = conn.getresponse()
+        response.read() # eat every data sent by the provisioning server
+        conn.close()
+        reason = response.reason
+        status = response.status
+    except Exception, xcept:
+        reason = str(xcept)
+        status = 500
+        agitb.handler()
+        sys.exc_clear()
 
-	if status != 200:
-		return_exit("Provisioning failure; %s" % reason, "prov-error")
+    if status != 200:
+        return_exit("Provisioning failure; %s" % reason, "prov-error")
 
 if __name__ == '__main__':
-	main()
+    main()
