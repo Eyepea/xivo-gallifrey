@@ -57,7 +57,10 @@ def unstringify_keys(obj):
     See also stringify_keys()
     
     WARNING: There is no warranty that
-        obj == unstringify_keys(stringify_keys(obj)
+        obj == unstringify_keys(stringify_keys(obj))
+    
+    >>> unstringify_keys([{'vs_0001': {'0': 'static_0001'}}, 12])
+    [{'vs_0001': {0: 'static_0001'}}, 12]
     """
     if isinstance(obj, list):
         return map(unstringify_keys, obj)
