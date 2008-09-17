@@ -68,3 +68,8 @@ def unstringify_keys(obj):
         return dict(((_try_int(k), unstringify_keys(v)) for k, v in obj.iteritems()))
     else:
         return obj
+
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
