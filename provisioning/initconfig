@@ -58,8 +58,7 @@ def config_path():
             CONFIG_FILE = v
 config_path()
 
-from xivo import timeoutsocket
-
+import socket
 import httplib
 import logging
 from logging.handlers import SysLogHandler
@@ -99,11 +98,6 @@ def user_ipv4_from_sip_uri(sip_addr):
     return (sip_user, ip)
 
 def main():
-    xivo_config.LoadConfig(CONFIG_FILE)
-
-    # WARNING: xivo_config.LoadConfig must be called before
-    from xivo.Phones import *
-
     if len(sys.argv) < 4:
         return_exit("Too few arguments")
 
@@ -116,7 +110,7 @@ def main():
     user_ipv4 = user_ipv4_from_sip_uri(sip_uri)
     if not user_ipv4:
         return_exit("Could not parse Sip URI \"%s\"" % sip_uri)
-    sip_user, ipv4 = user_ipv4
+    sip_user, ipv4 = user_ipv4 # pylint: disable-msg=W0612
     macaddr = xivo_config.macaddr_from_ipv4(ipv4) # XXX, agi_session.verbose)
     if not macaddr:
         return_exit("Could not find Mac Address from IPv4 \"%s\"" % ipv4)
@@ -139,7 +133,7 @@ def main():
                                                   macaddr, ipv4, code, isinalan)
 
     try:
-        timeoutsocket.setDefaultSocketTimeout(Pgc['http_request_to_s'])
+        socket.setdefaulttimeout(float(Pgc['http_request_to_s']))
         conn = httplib.HTTPConnection(Pgc['connect_ipv4'] + ':' + str(Pgc['connect_port']))
         conn.request("POST", "/prov", command, {"Content-Type": "text/plain; charset=ISO-8859-1"})
         response = conn.getresponse()
@@ -157,4 +151,9 @@ def main():
         return_exit("Provisioning failure; %s" % reason, "prov-error")
 
 if __name__ == '__main__':
+    xivo_config.LoadConfig(CONFIG_FILE)
+    
+    # WARNING: xivo_config.LoadConfig must be called before
+    from xivo.Phones import *
+    
     main()
