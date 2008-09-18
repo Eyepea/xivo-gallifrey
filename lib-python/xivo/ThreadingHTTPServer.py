@@ -20,11 +20,12 @@ from SocketServer import socket
 
 class ThreadingHTTPServer(SocketServer.ThreadingTCPServer):
     """
-    Same as HTTPServer, but derives from ThreadingTCPServer instead
-    of TCPServer so that any instance of ProvHttpHandler created for any
-    incoming connection runs in its own thread.
+    Same as HTTPServer, but derives from ThreadingTCPServer instead of
+    TCPServer so that each http handler instance runs in its own thread.
     """
+    
     allow_reuse_address = 1    # Seems to make sense in testing environment
+    
     def server_bind(self):
         """Override server_bind to store the server name."""
         SocketServer.TCPServer.server_bind(self)
