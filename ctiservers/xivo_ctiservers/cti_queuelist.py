@@ -112,7 +112,7 @@ class QueueList(AnyList):
                                 if prop in queueprops['stats']:
                                         lst.append('%s:%s' % (prop, queueprops['stats'][prop]))
                         lst_byqueue.append(':'.join(lst))
-                return ','.join(lst_byqueue)
+                return lst_byqueue
         
         def get_queues_byagent(self, agid):
                 queuelist = []

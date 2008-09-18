@@ -252,30 +252,30 @@ class PhoneList:
 ##                                                                 %(sipnuml[snl][3], sipnuml[snl][4]))
                         if snl.find("SIP") == 0:
                                 self.normal[snl] = LineProp("SIP",
-                                                                    snl.split("/")[1],
-                                                                    self.rough_phonelist[snl][0],
-                                                                    self.rough_phonelist[snl][1],
-                                                                    "Timeout", True)
+                                                            snl.split("/")[1],
+                                                            self.rough_phonelist[snl][0],
+                                                            self.rough_phonelist[snl][1],
+                                                            "Timeout", True)
                                 # replaced previous 'BefSubs' initial status here : avoids flooding of Timeout's
                                 # when many phones are added at once
                         elif snl.find("IAX2") == 0:
                                 self.normal[snl] = LineProp("IAX2",
-                                                                    snl.split("/")[1],
-                                                                    self.rough_phonelist[snl][0],
-                                                                    self.rough_phonelist[snl][1],
-                                                                    "Ready", True)
+                                                            snl.split("/")[1],
+                                                            self.rough_phonelist[snl][0],
+                                                            self.rough_phonelist[snl][1],
+                                                            "Ready", True)
                         elif snl.find("mISDN") == 0:
                                 self.normal[snl] = LineProp("mISDN",
-                                                                    snl.split("/")[1],
-                                                                    self.rough_phonelist[snl][0],
-                                                                    self.rough_phonelist[snl][1],
-                                                                    "Ready", True)
+                                                            snl.split("/")[1],
+                                                            self.rough_phonelist[snl][0],
+                                                            self.rough_phonelist[snl][1],
+                                                            "Ready", True)
                         elif snl.find("Zap") == 0:
                                 self.normal[snl] = LineProp("Zap",
-                                                                    snl.split("/")[1],
-                                                                    self.rough_phonelist[snl][0],
-                                                                    self.rough_phonelist[snl][1],
-                                                                    "Ready", True)
+                                                            snl.split("/")[1],
+                                                            self.rough_phonelist[snl][0],
+                                                            self.rough_phonelist[snl][1],
+                                                            "Ready", True)
                         else:
                                 log_debug(SYSLOG_WARNING, 'format <%s> not supported' % snl)
 

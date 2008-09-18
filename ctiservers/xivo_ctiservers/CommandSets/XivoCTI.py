@@ -28,6 +28,7 @@ __author__    = 'Corentin Le Gall'
 This is the XivoCTI class.
 """
 
+import cjson
 import os
 import random
 import re
@@ -695,7 +696,7 @@ class XivoCTICommand(BaseCommand):
                                                 userinfos.append(uinfo)
 
                         elif where == 'hangup':
-                                print where, event
+                                # print where, event
                                 itemdir['xivo-channel'] = event.get('Channel')
                                 itemdir['xivo-uniqueid'] = event.get('Uniqueid')
                                 # find which userinfo's to contact ...
@@ -760,7 +761,7 @@ class XivoCTICommand(BaseCommand):
                                                                         itemdir[g] = gg
                                 if callingnum[:2] == '00':
                                         internatprefix = callingnum[2:6]
-                        print itemdir
+                        # print itemdir
 
                         # 3/4
                         # build XML items from daemon-config + filled-in items
@@ -777,7 +778,7 @@ class XivoCTICommand(BaseCommand):
                         linestosend.append('</user></profile>')
                         fulllines = ''.join(linestosend)
 
-                        print '---------', where, whoms, fulllines
+                        # print '---------', where, whoms, fulllines
 
                         # 4/4
                         # send the payload to the appropriate people
@@ -1026,7 +1027,9 @@ class XivoCTICommand(BaseCommand):
                 return
         def ami_originatefailure(self, astid, event):
                 return
-        # seem to be superseded by OriginateResponse in asterisk 1.4 :
+        
+        def ami_originateresponse(self, astid, event):
+                return
         # {'Uniqueid': '1213955764.88', 'CallerID': '6101', 'Exten': '6101', 'CallerIDNum': '6101', 'Response': 'Success', 'Reason': '4', 'Context': 'ctx-callbooster-agentlogin', 'CallerIDName': 'operateur', 'Privilege': 'call,all', 'Event': 'OriginateResponse', 'Channel': 'SIP/102-081f6730'}
 
         def ami_messagewaiting(self, astid, event):
@@ -1053,30 +1056,42 @@ class XivoCTICommand(BaseCommand):
                 cfrom   = event.get('From')
                 exten   = event.get('Exten')
                 timeout = event.get('Timeout')
-                strupdate = 'parkedcall=%s;%s;%s;%s;%s' %(astid, channel, cfrom, exten, timeout)
-                self.__send_msg_to_cti_clients__(strupdate)
+                tosend = {'class' : "parkcall",
+                          'direction' : 'client',
+                          'payload' : {"status" : "parkedcall",
+                                       "args" : [astid, channel, cfrom, exten, timeout]}}
+                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
                 return
         
         def ami_unparkedcall(self, astid, event):
                 channel = event.get('Channel')
                 cfrom   = event.get('From')
                 exten   = event.get('Exten')
-                strupdate = 'unparkedcall=%s;%s;%s;%s;unpark' %(astid, channel, cfrom, exten)
-                self.__send_msg_to_cti_clients__(strupdate)
+                tosend = {'class' : "parkcall",
+                          'direction' : 'client',
+                          'payload' : {"status" : "unparkedcall",
+                                       "args" : [astid, channel, cfrom, exten]}}
+                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
                 return
         
         def ami_parkedcallgiveup(self, astid, event):
                 channel = event.get('Channel')
                 exten   = event.get('Exten')
-                strupdate = 'parkedcallgiveup=%s;%s;;%s;giveup' %(astid, channel, exten)
-                self.__send_msg_to_cti_clients__(strupdate)
+                tosend = {'class' : "parkcall",
+                          'direction' : 'client',
+                          'payload' : {"status" : "parkedcallgiveup",
+                                       "args" : [astid, channel, exten]}}
+                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
                 return
         
         def ami_parkedcalltimeout(self, astid, event):
                 channel = event.get('Channel')
                 exten   = event.get('Exten')
-                strupdate = 'parkedcalltimeout=%s;%s;;%s;timeout' %(astid, channel, exten)
-                self.__send_msg_to_cti_clients__(strupdate)
+                tosend = {'class' : "parkcall",
+                          'direction' : 'client',
+                          'payload' : {"status" : "parkedcalltimeout",
+                                       "args" : [astid, channel, exten]}}
+                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
                 return
         
         def ami_agentlogin(self, astid, event):
@@ -1199,7 +1214,10 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def __build_agupdate__(self, arrgs):
-                return 'update-agents=%s' % ';'.join(arrgs)
+                tosend = { 'class' : "update-agents",
+                           'direction' : 'client',
+                           'payload' : arrgs }
+                return cjson.encode(tosend)
         
         def ami_queuememberstatus(self, astid, event):
                 print 'AMI_QUEUEMEMBERSTATUS', event
@@ -1244,7 +1262,13 @@ class XivoCTICommand(BaseCommand):
                         return
                 queue = event.get('Queue')
                 self.qlist[astid].update_queuestats(queue, event)
-                self.__send_msg_to_cti_clients__('queues-list=%s;%s' % (astid, self.qlist[astid].get_queuestats(queue)))
+                tosend = { 'class' : "queues-list",
+                           'direction' : 'client',
+                           'payload' : { "astid" : astid,
+                                         "queuestats" : self.qlist[astid].get_queuestats(queue)
+                                         }
+                           }
+                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
                 return
 
         def ami_queuemember(self, astid, event):
@@ -1456,19 +1480,34 @@ class XivoCTICommand(BaseCommand):
 
                         elif icommand.name == 'callcampaign':
                                 if icommand.args[0] == 'fetchlist':
-                                        self.__send_msg_to_cti_client__(userinfo,
-                                                                        '{"class":"callcampaign","direction":"client","command":"fetchlist","list":["101","102","103"]}')
+                                        tosend = { 'class' : "callcampaign",
+                                                   'direction' : 'client',
+                                                   'payload' : { "command" : "fetchlist",
+                                                                 "list" : [ "101", "102", "103" ]
+                                                                 }
+                                                   }
+                                        self.__send_msg_to_cti_client__(userinfo, cjson.encode(tosend))
                                 elif icommand.args[0] == 'startcall':
                                         exten = icommand.args[1]
                                         self.__originate_or_transfer__(userinfo,
                                                                        ['originate', 'user:special:me', 'ext:%s' % exten])
-                                        self.__send_msg_to_cti_client__(userinfo,
-                                                                        '{"class":"callcampaign","direction":"client","command":"callstarted","list":["%s"]}' % exten)
+                                        tosend = { 'class' : "callcampaign",
+                                                   'direction' : 'client',
+                                                   'payload' : { "command" : "callstarted",
+                                                                 "number" : exten
+                                                                 }
+                                                   }
+                                        self.__send_msg_to_cti_client__(userinfo, cjson.encode(tosend))
                                 elif icommand.args[0] == 'stopcall':
-                                        self.__send_msg_to_cti_client__(userinfo,
-                                                                        '{"class":"callcampaign","direction":"client","command":"callstopped","list":["%s"]}' % icommand.args[1])
+                                        tosend = { 'class' : "callcampaign",
+                                                   'direction' : 'client',
+                                                   'payload' : { "command" : "callstopped",
+                                                                 "number" : icommand.args[1]
+                                                                 }
+                                                   }
+                                        self.__send_msg_to_cti_client__(userinfo, cjson.encode(tosend))
                                         # self.__send_msg_to_cti_client__(userinfo,
-                                        # '{"class":"callcampaign","direction":"client","command":"callnext","list":["%s"]}' % icommand.args[1])
+                                        # '{'class':"callcampaign","direction":"client","command":"callnext","list":["%s"]}' % icommand.args[1])
                         elif icommand.name in ['originate', 'transfer', 'atxfer']:
                                 if self.capas[capaid].match_funcs(ucapa, 'dial'):
                                         repstr = self.__originate_or_transfer__(userinfo,
@@ -1526,8 +1565,13 @@ class XivoCTICommand(BaseCommand):
                         elif icommand.name == 'queues-list':
                                 if self.capas[capaid].match_funcs(ucapa, 'agents'):
                                         for astid, qlist in self.qlist.iteritems():
-                                                self.__send_msg_to_cti_client__(userinfo,
-                                                                                'queues-list=%s;%s' % (astid, qlist.get_queuestats_long()))
+                                                tosend = { 'class' : "queues-list",
+                                                           'direction' : 'client',
+                                                           'payload' : { "astid" : astid,
+                                                                         "queuestats" : qlist.get_queuestats_long()
+                                                                         }
+                                                           }
+                                                self.__send_msg_to_cti_client__(userinfo, cjson.encode(tosend))
                                 repstr = None
 
                         elif icommand.name == 'queue-status':
@@ -1552,9 +1596,13 @@ class XivoCTICommand(BaseCommand):
                                                                                                agprop['name'],
                                                                                                agprop['phonenum'],
                                                                                                self.qlist[astid].get_queues_byagent('Agent/%s' % agname)))
-                                                        self.__send_msg_to_cti_client__(userinfo,
-                                                                                        'agents-list=%s;%s' %(astid,
-                                                                                                              ';'.join(lst)))
+                                                        tosend = { 'class' : 'agents-list',
+                                                                   'direction' : 'client',
+                                                                   'payload' : { 'astid' : astid,
+                                                                                 'list' : lst
+                                                                                 }
+                                                                   }
+                                                        self.__send_msg_to_cti_client__(userinfo, cjson.encode(tosend))
                                 repstr = None
 
                         elif icommand.name == 'agent-status':
@@ -1570,11 +1618,14 @@ class XivoCTICommand(BaseCommand):
                                                 lstatus = '1'
                                                 if agprop['status'] == 'AGENT_LOGGEDOFF':
                                                         lstatus = '0'
-                                                msg = 'agent-status=%s;%s;%s;%s;%s;%s' % (astid, agname, lstatus,
-                                                                                          agprop['name'],
-                                                                                          agprop['phonenum'],
-                                                                                          self.qlist[astid].get_queues_byagent(agid))
-                                                self.__send_msg_to_cti_client__(userinfo, msg)
+                                                tosend = { 'class' : 'agent-status',
+                                                           'direction' : 'client',
+                                                           'payload' : [astid, agname, lstatus,
+                                                                        agprop['name'],
+                                                                        agprop['phonenum'],
+                                                                        self.qlist[astid].get_queues_byagent(agid)]
+                                                           }
+                                                self.__send_msg_to_cti_client__(userinfo, cjson.encode(tosend))
                                 repstr = None
 
                         elif icommand.name == 'agent':
@@ -1624,19 +1675,17 @@ class XivoCTICommand(BaseCommand):
                                         else:   # display callerid for incoming calls
                                                 ry2 = HISTSEPAR.join([x[1].replace('"', ''), 'IN', termin])
                                                 
-                                        reply.append(ry1)
-                                        reply.append(HISTSEPAR)
-                                        reply.append(ry2)
-                                        reply.append(HISTSEPAR)
+                                        reply.append(HISTSEPAR.join([ry1, ry2]))
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- error : history : (client %s, termin %s) : %s'
                                           % (requester_id, termin, exc))
 
                 if len(reply) > 0:
-                        k = ''.join(reply)
-                        sha1sum = sha.sha(k).hexdigest()
-                        print 'history', sha1sum
-                        return 'history=%s' % k
+                        # sha1sum = sha.sha(''.join(reply)).hexdigest()
+                        tosend = {'class' : 'history',
+                                  'direction' : 'client',
+                                  'payload' : reply}
+                        return cjson.encode(tosend)
                 else:
                         return
 
