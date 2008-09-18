@@ -56,8 +56,6 @@ def help_screen():
 
 from getopt import getopt, GetoptError
 
-from xivo import timeoutsocket # pylint: disable-msg=W0611
-
 import os
 import cgi
 import traceback
@@ -614,7 +612,7 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 
     def setup(self):
         self.connection = self.request
-        self.connection.set_timeout(Pgc['http_read_request_to_s'])
+        self.connection.settimeout(float(Pgc['http_read_request_to_s']))
         self.rfile = self.connection.makefile('rb', self.rbufsize)
         self.wfile = self.connection.makefile('wb', self.wbufsize)
 

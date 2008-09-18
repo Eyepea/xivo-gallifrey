@@ -28,8 +28,6 @@ __license__ = """
 import os
 import socket
 
-from xivo import timeoutsocket
-
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
 from xivo.xivo_config import ProvGeneralConf as Pgc
@@ -58,7 +56,7 @@ class Polycom(PhoneVendorMixin):
         # TODO: get ride of this AMI communication if possible
 
         amisock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        amisock.set_timeout(Pgc['telnet_to_s'])
+        amisock.settimeout(float(Pgc['telnet_to_s']))
         amisock.connect(("127.0.0.1", AMI_PORT))
         actioncommand = ( "Action: login\r\n"
                           "Username: %s\r\n"
