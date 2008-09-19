@@ -110,12 +110,14 @@ class XivoCTICommand(BaseCommand):
                         'database',
                         'meetme',
                         'message',
+                        'json',
                         'availstate',
                         'originate', 'transfer', 'atxfer', 'hangup', 'simplehangup', 'pickup']
 
         def parsecommand(self, linein):
                 params = linein.split()
                 cmd = xivo_commandsets.Command(params[0], params[1:])
+                cmd.struct = {}
                 if cmd.name == 'login_id':
                         cmd.type = xivo_commandsets.CMD_LOGIN_ID
                 elif cmd.name == 'login_pass':
@@ -126,6 +128,12 @@ class XivoCTICommand(BaseCommand):
                         cmd.type = xivo_commandsets.CMD_TRANSFER
                 else:
                         cmd.type = xivo_commandsets.CMD_OTHER
+                        try:
+                                cmd.struct = cjson.decode(linein)
+                                cmd.name = 'json'
+                        except Exception, exc:
+                                log_debug(SYSLOG_ERR, '--- exception --- parsing json for <%s> : %s' % (linein, exc))
+                                cmd.struct = {}
                 return cmd
 
         def transfer_addbuf(self, req, buf):
@@ -1448,18 +1456,21 @@ class XivoCTICommand(BaseCommand):
         def phones_update(self, function, args):
                 strupdate = ''
                 if function == 'update':
-                        tosend = { 'class' : 'phones-update',
+                        tosend = { 'class' : 'phones',
+                                   'function' : 'update',
                                    'direction' : 'client',
                                    'payload' : args }
                         strupdate = cjson.encode(tosend)
                 elif function == 'noupdate':
-                        tosend = { 'class' : 'phones-noupdate',
+                        tosend = { 'class' : 'phones',
+                                   'function' : 'noupdate',
                                    'direction' : 'client',
                                    'payload' : args }
                         strupdate = cjson.encode(tosend)
                 elif function == 'signal-deloradd':
                         [astid, ndel, nadd, ntotal] = args
-                        tosend = { 'class' : 'phones-signal-deloradd',
+                        tosend = { 'class' : 'phones',
+                                   'function' : 'signal-deloradd',
                                    'direction' : 'client',
                                    'payload' : [astid, str(ndel), str(nadd), str(ntotal)] }
                         strupdate = cjson.encode(tosend)
@@ -1475,7 +1486,7 @@ class XivoCTICommand(BaseCommand):
                 context  = userinfo.get('context')
                 capaid   = userinfo.get('capaid')
                 ucapa    = self.capas[capaid].all() # userinfo.get('capas')
-
+                
                 try:
                         if icommand.name == 'history':
                                 if self.capas[capaid].match_funcs(ucapa, 'history'):
@@ -1512,38 +1523,49 @@ class XivoCTICommand(BaseCommand):
                                 if self.capas[capaid].match_funcs(ucapa, 'messages'):
                                         self.__send_msg_to_cti_clients__(self.message_srv2clt('%s/%s' %(astid, username),
                                                                                              '<%s>' % icommand.args[0]))
-                        elif icommand.name == 'meetme':
-                                if self.capas[capaid].match_funcs(ucapa, 'conference'):
-                                        if icommand.args[0] == 'kick':
-                                                astid = icommand.args[1]
-                                                room = icommand.args[2]
-                                                num = icommand.args[3]
-                                                self.amilist.execute(astid, 'sendcommand', 'Command', [('Command', 'meetme kick %s %s' % (room, num))])
-
-                        elif icommand.name == 'callcampaign':
-                                if icommand.args[0] == 'fetchlist':
-                                        tosend = { 'class' : 'callcampaign',
-                                                   'direction' : 'client',
-                                                   'payload' : { 'command' : 'fetchlist',
-                                                                 'list' : [ '101', "102", "103" ] } }
-                                        repstr = cjson.encode(tosend)
-                                elif icommand.args[0] == 'startcall':
-                                        exten = icommand.args[1]
-                                        self.__originate_or_transfer__(userinfo,
-                                                                       ['originate', 'user:special:me', 'ext:%s' % exten])
-                                        tosend = { 'class' : 'callcampaign',
-                                                   'direction' : 'client',
-                                                   'payload' : { 'command' : 'callstarted',
-                                                                 'number' : exten } }
-                                        repstr = cjson.encode(tosend)
-                                elif icommand.args[0] == 'stopcall':
-                                        tosend = { 'class' : 'callcampaign',
-                                                   'direction' : 'client',
-                                                   'payload' : { 'command' : 'callstopped',
-                                                                 'number' : icommand.args[1] } }
-                                        repstr = cjson.encode(tosend)
+                        elif icommand.name == 'json':
+                                classcomm = icommand.struct.get('class')
+                                dircomm = icommand.struct.get('direction')
+                                argums = icommand.struct.get('command').split()
+                                
+                                if dircomm is not None and dircomm == 'xivoserver':
+                                        if classcomm == 'meetme':
+                                                if self.capas[capaid].match_funcs(ucapa, 'conference'):
+                                                        if argums[0] == 'kick':
+                                                                astid = argums[1]
+                                                                room = argums[2]
+                                                                num = argums[3]
+                                                                self.amilist.execute(astid, 'sendcommand',
+                                                                                     'Command', [('Command', 'meetme kick %s %s' % (room, num))])
+                                        elif classcomm == 'callcampaign':
+                                                if argums[0] == 'fetchlist':
+                                                        tosend = { 'class' : 'callcampaign',
+                                                                   'direction' : 'client',
+                                                                   'payload' : { 'command' : 'fetchlist',
+                                                                                 'list' : [ '101', "102", "103" ] } }
+                                                        repstr = cjson.encode(tosend)
+                                                elif argums[0] == 'startcall':
+                                                        exten = argums[1]
+                                                        self.__originate_or_transfer__(userinfo,
+                                                                                       ['originate', 'user:special:me', 'ext:%s' % exten])
+                                                        tosend = { 'class' : 'callcampaign',
+                                                                   'direction' : 'client',
+                                                                   'payload' : { 'command' : 'callstarted',
+                                                                                 'number' : exten } }
+                                                        repstr = cjson.encode(tosend)
+                                                elif argums[0] == 'stopcall':
+                                                        tosend = { 'class' : 'callcampaign',
+                                                                   'direction' : 'client',
+                                                                   'payload' : { 'command' : 'callstopped',
+                                                                                 'number' : argums[1] } }
+                                                        repstr = cjson.encode(tosend)
                                         # self.__send_msg_to_cti_client__(userinfo,
                                         # '{'class':"callcampaign","direction":"client","command":"callnext","list":["%s"]}' % icommand.args[1])
+
+                                        elif classcomm == 'agent':
+                                                if self.capas[capaid].match_funcs(ucapa, 'agents'):
+                                                        repstr = self.__agent__(userinfo, argums)
+
                         elif icommand.name in ['originate', 'transfer', 'atxfer']:
                                 if self.capas[capaid].match_funcs(ucapa, 'dial'):
                                         repstr = self.__originate_or_transfer__(userinfo,
@@ -1664,10 +1686,6 @@ class XivoCTICommand(BaseCommand):
                                                            }
                                                 self.__send_msg_to_cti_client__(userinfo, cjson.encode(tosend))
                                 repstr = None
-
-                        elif icommand.name == 'agent':
-                                if self.capas[capaid].match_funcs(ucapa, 'agents'):
-                                        repstr = self.__agent__(userinfo, icommand.args)
 
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, '--- exception --- (manage_cticommand) %s %s %s : %s'
@@ -1889,18 +1907,19 @@ class XivoCTICommand(BaseCommand):
                 fullstat = []
                 for astid, iplist in self.plist.iteritems():
                         for idx, pidx in iplist.normal.iteritems():
-                                bstatus = ':'.join([pidx.context,
-                                                    pidx.tech,
-                                                    pidx.phoneid,
-                                                    pidx.hintstatus,
-                                                    ''])
+                                bstatus = [pidx.context,
+                                           pidx.tech,
+                                           pidx.phoneid,
+                                           pidx.hintstatus,
+                                           '']
                                 if pidx.towatch:
-                                        phoneinfo = ('ful',
-                                                     astid,
-                                                     bstatus,
-                                                     pidx.build_fullstatlist())
-                                        fullstat.append(':'.join(phoneinfo))
-                tosend = { 'class' : 'phones-list',
+                                        phoneinfo = ['ful',
+                                                     astid]
+                                        phoneinfo.append(bstatus)
+                                        phoneinfo.append(pidx.build_fullstatlist())
+                                        fullstat.append(phoneinfo)
+                tosend = { 'class' : 'phones',
+                           'function' : 'list',
                            'direction' : 'client',
                            'payload' : fullstat }
                 return cjson.encode(tosend)
@@ -2017,7 +2036,8 @@ class XivoCTICommand(BaseCommand):
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- features_get(bool) id=%s key=%s : %s'
                                           %(str(reqlist), key, exc))
-                                tosend = { 'class' : 'featuresget',
+                                tosend = { 'class' : 'features',
+                                           'function' : 'get',
                                            'direction' : 'client',
                                            'payload' : [ reqlist[0], 'KO' ] }
                                 return cjson.encode(tosend)
@@ -2038,14 +2058,16 @@ class XivoCTICommand(BaseCommand):
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- features_get(str) id=%s key=%s : %s'
                                           %(str(reqlist), key, exc))
-                                tosend = { 'class' : 'featuresget',
+                                tosend = { 'class' : 'features',
+                                           'function' : 'get',
                                            'direction' : 'client',
                                            'payload' : [ reqlist[0], 'KO' ] }
                                 return cjson.encode(tosend)
 
                 if len(repstr) == 0:
                         repstr = 'KO'
-                tosend = { 'class' : 'featuresget',
+                tosend = { 'class' : 'features',
+                           'function' : 'get',
                            'direction' : 'client',
                            'payload' : [ reqlist[0], repstr ] }
                 return cjson.encode(tosend)
@@ -2070,17 +2092,20 @@ class XivoCTICommand(BaseCommand):
                                 cursor = self.configs[astid].userfeatures_db_conn.cursor()
                                 cursor.query(query, parameters = params)
                                 self.configs[astid].userfeatures_db_conn.commit()
-                                tosend = { 'class' : 'featuresput',
+                                tosend = { 'class' : 'features',
+                                           'function' : 'put',
                                            'direction' : 'client',
                                            'payload' : [ reqlist[0], 'OK', key, value ] }
                         else:
-                                tosend = { 'class' : 'featuresput',
+                                tosend = { 'class' : 'features',
+                                           'function' : 'put',
                                            'direction' : 'client',
                                            'payload' : [ reqlist[0], 'KO' ] }
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, '--- exception --- features_put id=%s : %s'
                                   %(str(reqlist), exc))
-                        tosend = { 'class' : 'featuresput',
+                        tosend = { 'class' : 'features',
+                                   'function' : 'put',
                                    'direction' : 'client',
                                    'payload' : [ reqlist[0], 'KO' ] }
                 return cjson.encode(tosend)

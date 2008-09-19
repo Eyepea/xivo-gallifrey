@@ -179,7 +179,7 @@ def manage_cti_connections(connid, msg, sep):
                                                           % (requester, command.name, str(command.args)))
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- CTI connection when managing [%s] for %s : %s'
-                                          % (command.name, requester, str(exc)))
+                                          % (command.name, requester, exc))
                 else:
                         connid.sendall('Unknown Command <%s>\n' % command.name)
 
@@ -881,7 +881,7 @@ while True: # loops over the reloads
                                                 if lmsg > 0:
                                                         try:
                                                                 manage_tcp_connections(sel_i, msg, kind)
-                                                        except Exception:
+                                                        except Exception, exc:
                                                                 log_debug(SYSLOG_ERR, '--- exception --- handling %s (%s) : %s'
                                                                           % (requester, kind, exc))
                                                 else:

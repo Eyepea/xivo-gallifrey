@@ -116,10 +116,10 @@ class PhoneList:
                 self.phlist = cti_urllist.UrlList(url)
 
         def update_gui_clients(self, phonenum, fromwhom):
-                phoneinfo = (fromwhom,
-                             self.astid,
-                             self.normal[phonenum].build_basestatus(),
-                             self.normal[phonenum].build_fullstatlist())
+                phoneinfo = [fromwhom,
+                             self.astid]
+                phoneinfo.extend(self.normal[phonenum].build_basestatus())
+                phoneinfo.extend(self.normal[phonenum].build_fullstatlist())
                 if self.normal[phonenum].towatch:
                         self.commandclass.phones_update('update', phoneinfo)
                 else:
@@ -237,9 +237,8 @@ class PhoneList:
          for snl in sipnumlistold:
                 pln = self.normal[snl]
                 if snl not in sipnumlistnew:
-                        self.lstdel.append(":".join(["del",
-                                                       self.astid,
-                                                       pln.build_basestatus() + ';']))
+                        self.lstdel.append([self.astid,
+                                            pln.build_basestatus()])
                         del self.normal[snl] # or = "Absent"/0 ?
          for snl in sipnumlistnew:
                 if snl not in sipnumlistold:
@@ -279,11 +278,10 @@ class PhoneList:
                         else:
                                 log_debug(SYSLOG_WARNING, 'format <%s> not supported' % snl)
 
-                        self.lstadd.append(":".join(["add",
-                                                            self.astid,
-                                                            self.normal[snl].build_basestatus(),
-                                                            'rm:rm:rm',
-                                                            self.normal[snl].build_fullstatlist() + ';']))
+                        self.lstadd.append([self.astid,
+                                            self.normal[snl].build_basestatus(),
+                                            'rm:rm:rm',
+                                            self.normal[snl].build_fullstatlist()])
          if len(self.lstdel) > 0 or len(self.lstadd) > 0:
                  self.commandclass.phones_update('signal-deloradd',
                                                  [self.astid,
@@ -355,12 +353,11 @@ class LineProp:
                 self.lasttime = ilasttime
 
         def build_basestatus(self):
-                basestatus = (self.context,
-                              self.tech,
-                              self.phoneid,
-                              self.hintstatus,
-                              self.voicemail)
-                return ':'.join(basestatus)
+                return [self.context,
+                        self.tech,
+                        self.phoneid,
+                        self.hintstatus,
+                        self.voicemail]
         ## \brief Builds the channel-by-channel part for the hints/update replies.
         # \param phoneid the "pointer" to the Asterisk phone statuses
         # \return the string containing the statuses for each channel of the given phone
@@ -368,13 +365,13 @@ class LineProp:
                 nchans = len(self.chann)
                 fstat = [str(nchans)]
                 for chan, phone_chan in self.chann.iteritems():
-                        fstat.extend((":", chan, ":",
-                                      phone_chan.getStatus(), ":",
-                                      str(phone_chan.getDeltaTime()), ":",
-                                      phone_chan.getDirection(), ":",
-                                      phone_chan.getChannelPeer(), ":",
-                                      phone_chan.getChannelNum()))
-                return ''.join(fstat)
+                        fstat.extend([chan,
+                                      phone_chan.getStatus(),
+                                      str(phone_chan.getDeltaTime()),
+                                      phone_chan.getDirection(),
+                                      phone_chan.getChannelPeer(),
+                                      phone_chan.getChannelNum()])
+                return fstat
 
         ##  \brief Updates the time elapsed on a channel according to current time.
         def update_time(self):
