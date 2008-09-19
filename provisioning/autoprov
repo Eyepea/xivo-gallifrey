@@ -727,7 +727,7 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 
     def log_message(self, fmt, *args):
         "Override default logging method."
-        log.info(fmt, args)
+        log.info(fmt, *args)
 
     def full_xcept_sender(self, errcode):
         return lambda x:self.send_error_explain(
