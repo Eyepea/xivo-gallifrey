@@ -63,8 +63,7 @@ def outgoing_user_set_features(agi, cursor, args):
     # TODO: Rethink all the caller id stuff.
     if outcall.setcallerid:
         callerid = outcall.callerid
-
-    if callerid == "default":
+    elif callerid == "default":
         callerid = None
 
     for i, trunk in enumerate(outcall.trunks):
@@ -78,7 +77,7 @@ def outgoing_user_set_features(agi, cursor, args):
             agi.set_variable('XIVO_TRUNKSUFFIX%d' % i, "/" + trunk.intfsuffix)
 
     if callerid:
-        agi.set_variable('CALLERID(num)', callerid)
+        agi.set_variable('CALLERID(all)', callerid)
 
     if callrecord and feature_list.incallrec:
         # BUGBUG the context is missing in the filename TODO use ids
