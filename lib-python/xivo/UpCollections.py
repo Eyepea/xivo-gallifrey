@@ -1,18 +1,18 @@
 # This module magically adds namedtuple (that will be standard Python 2.6) to
 # the collections module when it's imported.
 #
-# Code comes from http://svn.python.org/view/*checkout*/python/trunk/Lib/collections.py?rev=63807
+# Code comes from http://svn.python.org/view/*checkout*/python/trunk/Lib/collections.py?rev=64047
 
 # Proformatique version control:
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006, 2007 Python Software Foundation;
+    Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008 Python Software Foundation;
     Copyright (C) 2007, 2008  Proformatique
                                         All Rights Reserved
 
     Under PSF LICENSE AGREEMENT FOR PYTHON
     See the following URI for the full license:
-	http://svn.python.org/view/python/trunk/LICENSE?rev=63807
+	http://svn.python.org/view/python/trunk/LICENSE?rev=64047
 """
 
 from operator import itemgetter as _itemgetter
@@ -104,7 +104,9 @@ except AttributeError:
                 result = self._make(map(kwds.pop, %(field_names)r, self))
                 if kwds:
                     raise ValueError('Got unexpected field names: %%r' %% kwds.keys())
-                return result \n\n''' % locals()
+                return result \n
+            def __getnewargs__(self):
+                return tuple(self) \n\n''' % locals()
         for i, name in enumerate(field_names):
             template += '            %s = property(itemgetter(%d))\n' % (name, i)
         if verbose:
