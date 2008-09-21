@@ -5,7 +5,7 @@ Copyright (C) 2007, 2008  Proformatique
 - RWLock                simple implementation with timeouts, without promotion
 
     Highly inspired from
-        http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/502283
+        http://code.activestate.com/recipes/502283/
     which does promotion, and behave differently on timeouts / failures
     (raising exceptions)
 
