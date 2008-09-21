@@ -142,6 +142,8 @@ def take_file_lock(own_file, lock_file, own_content):
     return True
 
 
+# XXX: remove the pidfile = None case after XXX change of daemonize()
+
 def create_pidfile_or_die(pidfile, pidfile_lock):
     """
     @pidfile:
@@ -182,6 +184,8 @@ def create_pidfile_or_die(pidfile, pidfile_lock):
         sys.exit(1)
     return pid
 
+
+# XXX: remove the PID stuff; the caller can call create_pidfile_or_die by itself
 
 def daemonize(pidfile=None, pidfile_lock=True):
     """
