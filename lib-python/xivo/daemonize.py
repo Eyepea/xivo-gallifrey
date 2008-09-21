@@ -2,8 +2,10 @@
 
 Copyright (C) 2007, 2008  Proformatique
 
-WARNING: Linux specific module, needs /proc/
+SEE ALSO:
+    http://www.unixguide.net/unix/programming/1.7.shtml
 
+WARNING: Linux specific module, needs /proc/
 """
 
 __version__ = "$Revision$ $Date$"
@@ -37,7 +39,7 @@ PROG_SLINK = 'exe'
 PROG_CMDLN = 'cmdline'
 
 
-log = logging.getLogger("xivo.daemonize")
+log = logging.getLogger("xivo.daemonize") # pylint: disable-msg=C0103
 
 
 def remove_if_stale_pidfile(pidfile):
@@ -101,7 +103,7 @@ def remove_if_stale_pidfile(pidfile):
             log.info("Name of the executable the other process comes from: %s", full_pgm)
         os.unlink(pidfile)
         return
-    except:
+    except Exception: # pylint: disable-msg=W0703
         log.exception("unexpected error")
 
 
@@ -175,13 +177,13 @@ def create_pidfile_or_die(pidfile, pidfile_lock):
                     sys.exit(1)
     except SystemExit:
         raise
-    except:
+    except Exception:
         log.exception("unable to take pidfile")
         sys.exit(1)
     return pid
 
 
-def daemonize(pidfile=None, pidfile_lock=True, logout=None, logerr=None):
+def daemonize(pidfile=None, pidfile_lock=True):
     """
     Daemonize the program, ie. make it run in the "background", detach
     it from its controlling terminal and from its controlling process
@@ -194,68 +196,49 @@ def daemonize(pidfile=None, pidfile_lock=True, logout=None, logerr=None):
             False => just write @pidfile unconditionally
             True => @pidfile is a lockfile, take the lock or die
 
-    @logout:
-            File object to use to replace sys.stdout
-            Warning: original file object potentially closed
-            None => stdout will be /dev/null
+    NOTE:
+        This function also umask(0) and chdir("/")
 
-    @logerr:
-            File object to use to replace sys.stderr
-            Warning: original file object potentially closed
-            None => stderr will be /dev/null
+    SEE ALSO:
+        http://www.unixguide.net/unix/programming/1.7.shtml
     """
     try:
         pid = os.fork()
         if pid > 0:
-            os._exit(0)
-    except Exception:
-        log.exception("first fork() failed")
+            os._exit(0) # pylint: disable-msg=W0212
+    except OSError, e:
+        log.exception("first fork() failed: %d (%s)", e.errno, e.strerror)
         sys.exit(1)
+    
     os.setsid()
     os.umask(0)
-    os.chdir('/')
+    os.chdir("/")
+    
     try:
         pid = os.fork()
         if pid > 0:
-            os._exit(0)
-    except Exception:
-        log.exception("second fork() failed")
+            os._exit(0) # pylint: disable-msg=W0212
+    except OSError, e:
+        log.exception("first fork() failed: %d (%s)", e.errno, e.strerror)
         sys.exit(1)
 
     pid = create_pidfile_or_die(pidfile, pidfile_lock)
 
     try:
-        # Redirect standard file descriptors.
-        sys.stdout.flush()
-        sys.stderr.flush()
-        os.close(sys.__stdin__.fileno())
-        os.close(sys.__stdout__.fileno())
-        os.close(sys.__stderr__.fileno())
-
-        # stdin always from /dev/null
-        newstdin = open(os.devnull, 'r')
-        if newstdin.fileno() == 0:
-            sys.stdin = newstdin
-        else:
-            os.dup2(newstdin.fileno(), 0)
-            newstdin.close()
-
-        if logout is None:
-            sys.stdout = open(os.devnull, 'w')
-        elif logout.fileno() == 1:
-            sys.stdout = logout
-        else:
-            os.dup2(logout.fileno(), 1)
-            logout.close()
-
-        if logerr is None:
-            sys.stderr = open(os.devnull, 'w', 0)
-        elif logerr.fileno() == 2:
-            sys.stderr = logerr
-        else:
-            os.dup2(logerr.fileno(), 2)
-            logerr.close()
-    except Exception:
+        devnull_fd = os.open(os.devnull, os.O_RDWR)
+        
+        for stdf in (sys.__stdout__, sys.__stderr__):
+            try:
+                stdf.flush()
+            except Exception: # pylint: disable-msg=W0703,W0704
+                pass
+        
+        for stdf in (sys.__stdin__, sys.__stdout__, sys.__stderr__):
+            try:
+                os.dup2(devnull_fd, stdf.fileno())
+            except OSError: # pylint: disable-msg=W0704
+                pass
+    except Exception: # pylint: disable-msg=W0703
         log.exception("error during file descriptor redirection")
 
     return pid
@@ -263,12 +246,9 @@ def daemonize(pidfile=None, pidfile_lock=True, logout=None, logerr=None):
 
 if __name__ == '__main__':
     def stupidtest():
+        "daemonize then sleep; suitable for hand made quick & dirty test"
         import time
         logging.basicConfig(level=logging.DEBUG, filename="/home/xilun/daemon_log")
-        out = open("/home/xilun/daemon_out", "w")
-        err = open("/home/xilun/daemon_err", "w")
-        daemonize(pidfile="/home/xilun/pidfile", pidfile_lock=True, logout=out, logerr=err)
-        print "loleuh"
-        print >> sys.stderr, "loleuhmais"
+        daemonize(pidfile="/home/xilun/pidfile", pidfile_lock=True)
         time.sleep(10)
     stupidtest()
