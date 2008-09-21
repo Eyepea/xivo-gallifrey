@@ -1,23 +1,29 @@
-import re, os, os.path
+import re as _re
+import os as _os
 
 __version__ = "$Revision$ $Date$"
 
-# WARNING: non order preserving
-def uniqlist(lst):
-    if not lst:
-        return []
-    return list(set(lst))
+def _package_path():
+    return _os.path.dirname(_os.path.abspath(__file__))
 
-def get_this_internal_package_path():
-    return os.path.dirname(os.path.abspath(__file__))
-
+def _is_package_child(path, name):
+    full = _os.path.join(path, name)
+    if _os.path.isdir(full):
+        for sub in _os.listdir(full):
+            if _re.match(r"__init__\.py[a-z]?$", sub):
+                return True
+        else:
+            return False
+    else:
+        return _re.search(r"\.py[a-z]*$", name) \
+               and '__init__' not in name
+    
 # Python doesn't really want us to do that because of
 # compatibility with stupid operating systems, but thanks
 # to this function we can do it anyway... :)
-def get_module_list_from_package_path(package_path):
-    return uniqlist([re.sub(r'\.py[^\.]*$', '', filename)
-                     for filename in os.listdir(package_path)
-                     if re.search(r'\.py[^\.]*$', filename)
-                     and '__init__' not in filename])
+def _get_module_list(path):
+    return list(set([_re.sub(r"\.py[a-z]?$", "", name)
+                     for name in _os.listdir(path)
+                     if _is_package_child(path, name)]))
 
-__all__ = get_module_list_from_package_path(get_this_internal_package_path())
+__all__ = _get_module_list(_package_path())
