@@ -305,7 +305,7 @@ if __name__ == "__main__":
     _test()
 
 
-__all__ = ('loop', 'partial_order_sink')
+__all__ = ['loop', 'partial_order_sink']
 
 # XXX unit tests for everything and stats with big graphs for
 # partial_order_from_reversed_ord_pot()

@@ -73,10 +73,10 @@ DEFAULT_RECORD = 20000 # 20sec record time
 re_code = re.compile(r'(^\d*)\s*(.*)')
 re_kv = re.compile(r'(?P<key>\w+)=(?P<value>[^\s]+)\s*(?:\((?P<data>.*)\))*')
 
-__all__ = ('AGIException', 'AGIError', 'AGIUnknownError', 'AGIAppError',
+__all__ = ['AGIException', 'AGIError', 'AGIUnknownError', 'AGIAppError',
            'AGIHangup', 'AGISIGHUPHangup', 'AGISIGPIPEHangup',
            'AGIResultHangup', 'AGIDBError', 'AGIUsageError',
-           'AGIInvalidCommand', 'AGI')
+           'AGIInvalidCommand', 'AGI']
 
 class AGIException(Exception):
     pass

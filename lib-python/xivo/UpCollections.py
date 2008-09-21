@@ -129,7 +129,7 @@ except AttributeError:
 
     _collections.namedtuple = namedtuple
 
-__all__ = ()
+__all__ = []
 
 
 

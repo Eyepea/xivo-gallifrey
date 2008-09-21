@@ -41,10 +41,10 @@ DEFAULT_RECORD  = 20000 # 20sec record time
 re_code = re.compile(r'(^\d*)\s*(.*)')
 re_kv = re.compile(r'(?P<key>\w+)=(?P<value>[^\s]+)\s*(?:\((?P<data>.*)\))*')
 
-__all__ = ('FastAGIException', 'FastAGIError', 'FastAGIUnknownError',
+__all__ = ['FastAGIException', 'FastAGIError', 'FastAGIUnknownError',
            'FastAGIAppError', 'FastAGIHangup', 'FastAGISIGPIPEHangup',
            'FastAGIResultHangup', 'FastAGIDBError', 'FastAGIUsageError',
-           'FastAGIInvalidCommand', 'FastAGI')
+           'FastAGIInvalidCommand', 'FastAGI']
 
 class FastAGIException(Exception):
     pass

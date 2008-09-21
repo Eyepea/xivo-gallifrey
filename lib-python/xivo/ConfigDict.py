@@ -99,11 +99,11 @@ def ReadSingleKey(config_file_path, section, option):
     conf_obj.readfp(open(config_file_path))
     return conf_obj.get(section, option)
 
-__all__ = ('NoSectionError', 'NoOptionError',
+__all__ = ['NoSectionError', 'NoOptionError',
            'Error', 'DuplicateSectionError',
            'InterpolationError', 'InterpolationDepthError',
            'InterpolationSyntaxError', 'ParsingError',
            'MissingSectionHeaderError',
            'FillDictFromConfigSection',
            'FillDictFromMultipleConfig',
-           'ReadSingleKey')
+           'ReadSingleKey']

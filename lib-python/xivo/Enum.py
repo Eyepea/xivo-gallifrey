@@ -1,6 +1,6 @@
 """True immutable symbolic enumeration with qualified value access.
 
-From http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/413486
+From http://code.activestate.com/recipes/413486/ 
 
 Proformatique changes:
 2008-02-20      A __call__ method has been added in EnumClass that just does

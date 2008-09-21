@@ -387,12 +387,12 @@ def validate(document, schema):
             return False
         return True
 
-__all__ = (
+__all__ = [
         'validate', 'load',
         'seqlen', 'between', 'startswith', 'prefixedDec',
         'add_validator', 'add_parameterized_validator',
         'ValidatorNode', 'Optional', 'Mandatory',
-)
+]
 
 # IDEAS:
 # 04:05 < obk> xilun: You use '?' for optional... do you use '*' and '?' for zero-or-more and one-or-more (in sequences)?

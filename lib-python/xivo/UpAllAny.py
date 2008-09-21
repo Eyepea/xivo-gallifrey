@@ -25,4 +25,4 @@ except NameError:
     __builtins__['any'] = any
 
 
-__all__ = ('all', 'any')
+__all__ = ['all', 'any']

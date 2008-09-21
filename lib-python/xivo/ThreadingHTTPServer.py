@@ -33,4 +33,4 @@ class ThreadingHTTPServer(SocketServer.ThreadingTCPServer):
         self.server_name = socket.getfqdn(host)
         self.server_port = port
 
-__all__ = ('ThreadingHTTPServer',)
+__all__ = ['ThreadingHTTPServer']

@@ -421,7 +421,7 @@ if __name__ == '__main__':
             time.sleep(1/256.)
     testfunc()
 
-__all__ = (
+__all__ = [
     'rxStreamedLines', 'makeNonBlocking'
     'Error', 'InvalidParam', 'RestartableException', 'Timeout'
-)
+]
