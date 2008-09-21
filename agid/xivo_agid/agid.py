@@ -215,15 +215,15 @@ class Handler:
         if not self.setup_fn:
             return
 
-        self.lock.acquire_write()
+        self.lock.acquire_write() # BUGBUG
         self.setup_fn(cursor)
         log.debug('handler %r reloaded', self.handler_name)
-        self.lock.release()
+        self.lock.release() # BUGBUG
 
     def handle(self, agi, cursor, args):
-        self.lock.acquire_read()
+        self.lock.acquire_read() # BUGBUG
         self.handle_fn(agi, cursor, args)
-        self.lock.release()
+        self.lock.release() # BUGBUG
 
 
 def register(handle_fn, setup_fn = None):
