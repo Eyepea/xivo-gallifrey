@@ -215,15 +215,22 @@ class Handler:
         if not self.setup_fn:
             return
 
-        self.lock.acquire_write() # BUGBUG
-        self.setup_fn(cursor)
-        log.debug('handler %r reloaded', self.handler_name)
-        self.lock.release() # BUGBUG
+        if not self.lock.acquire_write():
+            log.error("deadlock detected and avoided for %r", self.handler_name)
+            log.error("%r has not be reloaded", self.handler_name)
+            return
+        try:
+            self.setup_fn(cursor)
+            log.debug('handler %r reloaded', self.handler_name)
+        finally:
+            self.lock.release()
 
     def handle(self, agi, cursor, args):
-        self.lock.acquire_read() # BUGBUG
-        self.handle_fn(agi, cursor, args)
-        self.lock.release() # BUGBUG
+        self.lock.acquire_read()
+        try: 
+            self.handle_fn(agi, cursor, args)
+        finally:
+            self.lock.release()
 
 
 def register(handle_fn, setup_fn = None):
