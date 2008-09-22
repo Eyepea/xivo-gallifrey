@@ -57,7 +57,7 @@ class RWLock:
     without leaving a window only for readers.
 
     Maybe optimisations could be done by adding another condition to
-    distinguish between waiting readers and waiting writers ?
+    distinguish between waiting readers and waiting writers?
     """
 
     def __init__(self):
@@ -135,7 +135,7 @@ class RWLock:
                 self.__writer_lock_count += 1
                 return True
             if me in self.__readers:
-                # trivial deadlock detected:
+                # trivial deadlock detected (we do not handle promotion)
                 return False
             self.__pending_writers.append(me)
             while True:
