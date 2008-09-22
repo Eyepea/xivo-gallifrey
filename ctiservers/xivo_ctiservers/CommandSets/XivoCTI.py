@@ -101,7 +101,7 @@ class XivoCTICommand(BaseCommand):
                         'history', 'directory-search',
                         'featuresget', 'featuresput',
                         'phones-list', 'phones-add', 'phones-del',
-                        'agents-list', 'agents-status', 'agent-status', 'agent',
+                        'agents-list', 'agent-status', 'agent',
                         'queues-list', 'queue-status',
                         'users-list',
                         'callcampaign',
@@ -771,7 +771,7 @@ class XivoCTICommand(BaseCommand):
                                                 if context in self.ctxlist.ctxlist and dirname in self.ctxlist.ctxlist[context]:
                                                         dirdef = self.ctxlist.ctxlist[context][dirname]
                                                         try:
-                                                                y = self.__build_customers_bydirdef__(dirname, [callingnum], dirdef)
+                                                                y = self.__build_customers_bydirdef__(dirname, callingnum, dirdef)
                                                         except Exception, exc:
                                                                 log_debug(SYSLOG_ERR, '--- exception --- (xivo-tomatch-callerid : %s, %s) : %s'
                                                                           % (dirname, context, exc))
@@ -1488,48 +1488,16 @@ class XivoCTICommand(BaseCommand):
                 ucapa    = self.capas[capaid].all() # userinfo.get('capas')
                 
                 try:
-                        if icommand.name == 'history':
-                                if self.capas[capaid].match_funcs(ucapa, 'history'):
-                                        repstr = self.__build_history_string__(icommand.args[0],
-                                                                               icommand.args[1],
-                                                                               icommand.args[2])
-                        elif icommand.name == 'directory-search':
-                                if self.capas[capaid].match_funcs(ucapa, 'directory'):
-                                        repstr = self.__build_customers__(context, icommand.args)
-
-                        elif icommand.name == 'availstate':
-                                if self.capas[capaid].match_funcs(ucapa, 'presence'):
-                                        repstr = self.__update_availstate__(userinfo, icommand.args[0])
-                        elif icommand.name == 'database':
+                        if icommand.name == 'database':
                                 if self.capas[capaid].match_funcs(ucapa, 'database'):
                                         repstr = database_update(me, icommand.args)
-                        elif icommand.name == 'featuresget':
-                                if self.capas[capaid].match_funcs(ucapa, 'features'):
-##                                        if username in userlist[astid]:
-##                                                userlist[astid][username]['monit'] = icommand.args
-                                        repstr = self.__build_features_get__(icommand.args)
-                        elif icommand.name == 'featuresput':
-                                if self.capas[capaid].match_funcs(ucapa, 'features'):
-                                        repstr = self.__build_features_put__(icommand.args)
-                        elif icommand.name == 'faxsend':
-                                if self.capas[capaid].match_funcs(ucapa, 'fax'):
-                                        newfax = cti_fax.Fax(userinfo, icommand.args)
-                                        self.faxes[newfax.reference] = newfax
-                                        tosend = { 'class' : 'faxsend',
-                                                   'direction' : 'client',
-                                                   'payload' : newfax.reference }
-                                        repstr = cjson.encode(tosend)
-                        elif icommand.name == 'message':
-                                if self.capas[capaid].match_funcs(ucapa, 'messages'):
-                                        self.__send_msg_to_cti_clients__(self.message_srv2clt('%s/%s' %(astid, username),
-                                                                                             '<%s>' % icommand.args[0]))
                         elif icommand.name == 'json':
                                 classcomm = icommand.struct.get('class')
                                 dircomm = icommand.struct.get('direction')
-                                argums = icommand.struct.get('command').split()
-                                
+
                                 if dircomm is not None and dircomm == 'xivoserver':
                                         if classcomm == 'meetme':
+                                                argums = icommand.struct.get('command')
                                                 if self.capas[capaid].match_funcs(ucapa, 'conference'):
                                                         if argums[0] == 'kick':
                                                                 astid = argums[1]
@@ -1537,7 +1505,56 @@ class XivoCTICommand(BaseCommand):
                                                                 num = argums[3]
                                                                 self.amilist.execute(astid, 'sendcommand',
                                                                                      'Command', [('Command', 'meetme kick %s %s' % (room, num))])
+                                        elif classcomm == 'history':
+                                                if self.capas[capaid].match_funcs(ucapa, 'history'):
+                                                        repstr = self.__build_history_string__(icommand.struct.get('peer'),
+                                                                                               icommand.struct.get('size'),
+                                                                                               icommand.struct.get('mode'))
+                                        elif classcomm == 'directory-search':
+                                                if self.capas[capaid].match_funcs(ucapa, 'directory'):
+                                                        repstr = self.__build_customers__(context, icommand.struct.get('pattern'))
+
+                                        elif classcomm == 'faxsend':
+                                                if self.capas[capaid].match_funcs(ucapa, 'fax'):
+                                                        newfax = cti_fax.Fax(userinfo,
+                                                                             icommand.struct.get('size'),
+                                                                             icommand.struct.get('number'),
+                                                                             icommand.struct.get('hide'))
+                                                        self.faxes[newfax.reference] = newfax
+                                                        tosend = { 'class' : 'faxsend',
+                                                                   'direction' : 'client',
+                                                                   'payload' : newfax.reference }
+                                                        repstr = cjson.encode(tosend)
+
+                                        elif classcomm == 'availstate':
+                                                if self.capas[capaid].match_funcs(ucapa, 'presence'):
+                                                        repstr = self.__update_availstate__(userinfo, icommand.struct.get('availstate'))
+
+                                        elif classcomm == 'message':
+                                                if self.capas[capaid].match_funcs(ucapa, 'messages'):
+                                                        self.__send_msg_to_cti_clients__(self.message_srv2clt('%s/%s' % (astid, username),
+                                                                                                              '<%s>' % icommand.struct.get('message')))
+
+                                        elif classcomm == 'featuresget':
+                                                if self.capas[capaid].match_funcs(ucapa, 'features'):
+##                                        if username in userlist[astid]:
+##                                                userlist[astid][username]['monit'] = icommand.args
+                                                        repstr = self.__build_features_get__(icommand.struct.get('userid'))
+
+                                        elif classcomm == 'featuresput':
+                                                if self.capas[capaid].match_funcs(ucapa, 'features'):
+                                                        rep = self.__build_features_put__(icommand.struct.get('userid'),
+                                                                                          icommand.struct.get('function'),
+                                                                                          icommand.struct.get('value'))
+                                                        self.__send_msg_to_cti_client__(userinfo, rep)
+                                                        if 'destination' in icommand.struct:
+                                                                rep = self.__build_features_put__(icommand.struct.get('userid'),
+                                                                                                  'dest' + icommand.struct.get('function')[6:],
+                                                                                                  icommand.struct.get('destination'))
+                                                                self.__send_msg_to_cti_client__(userinfo, rep)
+
                                         elif classcomm == 'callcampaign':
+                                                argums = icommand.struct.get('command')
                                                 if argums[0] == 'fetchlist':
                                                         tosend = { 'class' : 'callcampaign',
                                                                    'direction' : 'client',
@@ -1559,133 +1576,144 @@ class XivoCTICommand(BaseCommand):
                                                                    'payload' : { 'command' : 'callstopped',
                                                                                  'number' : argums[1] } }
                                                         repstr = cjson.encode(tosend)
-                                        # self.__send_msg_to_cti_client__(userinfo,
-                                        # '{'class':"callcampaign","direction":"client","command":"callnext","list":["%s"]}' % icommand.args[1])
+                                                        # self.__send_msg_to_cti_client__(userinfo,
+                                                        # '{'class':"callcampaign","direction":"client","command":"callnext","list":["%s"]}' % icommand.args[1])
+                                        elif classcomm in ['originate', 'transfer', 'atxfer']:
+                                                if self.capas[capaid].match_funcs(ucapa, 'dial'):
+                                                        repstr = self.__originate_or_transfer__(userinfo,
+                                                                                                [classcomm,
+                                                                                                 icommand.struct.get('source'),
+                                                                                                 icommand.struct.get('destination')])
+
+                                        elif classcomm == 'hangup':
+                                                if self.capas[capaid].match_funcs(ucapa, 'dial'):
+                                                        repstr = self.__hangup__(userinfo,
+                                                                                 icommand.struct.get('astid'),
+                                                                                 icommand.struct.get('channel'),
+                                                                                 True)
+
+                                        elif classcomm == 'simplehangup':
+                                                if self.capas[capaid].match_funcs(ucapa, 'dial'):
+                                                        repstr = self.__hangup__(userinfo,
+                                                                                 icommand.struct.get('astid'),
+                                                                                 icommand.struct.get('channel'),
+                                                                                 False)
+
+                                        elif classcomm == 'pickup':
+                                                if self.capas[capaid].match_funcs(ucapa, 'dial'):
+                                                        # on Thomson, it picks up the last received call
+                                                        self.amilist.execute(icommand.struct.get('astid'),
+                                                                             'sendcommand',
+                                                                             'Command',
+                                                                             [('Command',
+                                                                               'sip notify event-talk %s' % icommand.struct.get('phonenum'))])
 
                                         elif classcomm == 'agent':
+                                                argums = icommand.struct.get('command')
                                                 if self.capas[capaid].match_funcs(ucapa, 'agents'):
                                                         repstr = self.__agent__(userinfo, argums)
 
-                        elif icommand.name in ['originate', 'transfer', 'atxfer']:
-                                if self.capas[capaid].match_funcs(ucapa, 'dial'):
-                                        repstr = self.__originate_or_transfer__(userinfo,
-                                                                                [icommand.name, icommand.args[0], icommand.args[1]])
-                        elif icommand.name == 'hangup':
-                                if self.capas[capaid].match_funcs(ucapa, 'dial'):
-                                        repstr = self.__hangup__(userinfo, icommand.args, True)
-                        elif icommand.name == 'simplehangup':
-                                if self.capas[capaid].match_funcs(ucapa, 'dial'):
-                                        repstr = self.__hangup__(userinfo, icommand.args, False)
-                        elif icommand.name == 'pickup':
-                                if self.capas[capaid].match_funcs(ucapa, 'dial'):
-                                        z = icommand.args[0].split('/')
-                                        # on Thomson, it picks up the last received call
-                                        self.amilist.execute(z[0], 'sendcommand', 'Command', [('Command', 'sip notify event-talk %s' % z[1])])
+                                        elif classcomm in ['phones-list', 'phones-add', 'phones-del']:
+                                                if True: # XXX define when it would not be compulsory
+                                                        # repstr = self.__build_callerids_hints__(icommand)
+                                                        if classcomm == 'phones-list':
+                                                                repstr = self.__phlist__()
 
-                        elif icommand.name in ['phones-list', 'phones-add', 'phones-del']:
-                                if True: # XXX define when it would not be compulsory
-                                        # repstr = self.__build_callerids_hints__(icommand)
-                                        if icommand.name == 'phones-list':
-                                                repstr = self.__phlist__()
+                                        elif classcomm == 'agents-list':
+                                                # issued by one user when he logs in
+                                                if self.capas[capaid].match_funcs(ucapa, 'agents'):
+                                                        for astid, aglist in self.agents_list.iteritems():
+                                                                if astid in self.qlist:
+                                                                        lst = []
+                                                                        for agname, agprop in aglist.iteritems():
+                                                                                lstatus = '1'
+                                                                                if agprop['status'] == 'AGENT_LOGGEDOFF':
+                                                                                        lstatus = '0'
+                                                                                lst.append('%s:%s:%s:%s:%s' % (agname, lstatus,
+                                                                                                               agprop['name'],
+                                                                                                               agprop['phonenum'],
+                                                                                                               self.qlist[astid].get_queues_byagent('Agent/%s' % agname)))
+                                                                        tosend = { 'class' : 'agents-list',
+                                                                                   'direction' : 'client',
+                                                                                   'payload' : { 'astid' : astid,
+                                                                                                 'list' : lst
+                                                                                                 }
+                                                                                   }
+                                                                        self.__send_msg_to_cti_client__(userinfo, cjson.encode(tosend))
+                                                repstr = None
 
-                        elif icommand.name == 'users-list':
-                                uinfo = userinfo
-                                f = [uinfo.get('user'),
-                                     uinfo.get('company'),
-                                     uinfo.get('fullname'),
-                                     uinfo.get('state'),
-                                     str(1),
-                                     uinfo.get('astid'),
-                                     uinfo.get('context'),
-                                     uinfo.get('phonenum'),
-                                     uinfo.get('techlist'),
-                                     uinfo.get('agentnum'),
-                                     uinfo.get('mwi-waiting'),
-                                     uinfo.get('mwi-old'),
-                                     uinfo.get('mwi-new')]
-                                for uinfo in self.ulist_ng.userlist.itervalues():
-                                        f.extend([uinfo.get('user'),
-                                                  uinfo.get('company'),
-                                                  uinfo.get('fullname'),
-                                                  uinfo.get('state'),
-                                                  str(1), # add/del/update (new fullname)/other ...
-                                                  uinfo.get('astid'),
-                                                  uinfo.get('context'),
-                                                  uinfo.get('phonenum'),
-                                                  uinfo.get('techlist'),
-                                                  uinfo.get('agentnum'),
-                                                  uinfo.get('mwi-waiting'),
-                                                  uinfo.get('mwi-old'),
-                                                  uinfo.get('mwi-new')])
-                                tosend = { 'class' : 'users-list',
-                                           'direction' : 'client',
-                                           'payload' : f }
-                                self.__send_msg_to_cti_client__(userinfo, cjson.encode(tosend))
-                                repstr = None
-
-                        elif icommand.name == 'queues-list':
-                                if self.capas[capaid].match_funcs(ucapa, 'agents'):
-                                        for astid, qlist in self.qlist.iteritems():
-                                                tosend = { 'class' : 'queues-list',
+                                        elif classcomm == 'users-list':
+                                                uinfo = userinfo
+                                                f = [uinfo.get('user'),
+                                                     uinfo.get('company'),
+                                                     uinfo.get('fullname'),
+                                                     uinfo.get('state'),
+                                                     str(1),
+                                                     uinfo.get('astid'),
+                                                     uinfo.get('context'),
+                                                     uinfo.get('phonenum'),
+                                                     uinfo.get('techlist'),
+                                                     uinfo.get('agentnum'),
+                                                     uinfo.get('mwi-waiting'),
+                                                     uinfo.get('mwi-old'),
+                                                     uinfo.get('mwi-new')]
+                                                for uinfo in self.ulist_ng.userlist.itervalues():
+                                                        f.extend([uinfo.get('user'),
+                                                                  uinfo.get('company'),
+                                                                  uinfo.get('fullname'),
+                                                                  uinfo.get('state'),
+                                                                  str(1), # add/del/update (new fullname)/other ...
+                                                                  uinfo.get('astid'),
+                                                                  uinfo.get('context'),
+                                                                  uinfo.get('phonenum'),
+                                                                  uinfo.get('techlist'),
+                                                                  uinfo.get('agentnum'),
+                                                                  uinfo.get('mwi-waiting'),
+                                                                  uinfo.get('mwi-old'),
+                                                                  uinfo.get('mwi-new')])
+                                                tosend = { 'class' : 'users-list',
                                                            'direction' : 'client',
-                                                           'payload' : { 'astid' : astid,
-                                                                         'queuestats' : qlist.get_queuestats_long() } }
-                                                self.__send_msg_to_cti_client__(userinfo, cjson.encode(tosend))
-                                repstr = None
+                                                           'payload' : f }
+                                                repstr = cjson.encode(tosend)
 
-                        elif icommand.name == 'queue-status':
-                                # issued towards a user when he wants to monitor a new queue
-                                if self.capas[capaid].match_funcs(ucapa, 'agents'):
-                                        astid = icommand.args[0]
-                                        qname = icommand.args[1]
-                                        self.__send_msg_to_cti_client__(userinfo, self.__build_queue_status__(astid, qname))
-                                repstr = None
+                                        elif classcomm == 'queues-list':
+                                                if self.capas[capaid].match_funcs(ucapa, 'agents'):
+                                                        for astid, qlist in self.qlist.iteritems():
+                                                                tosend = { 'class' : 'queues-list',
+                                                                           'direction' : 'client',
+                                                                           'payload' : { 'astid' : astid,
+                                                                                         'queuestats' : qlist.get_queuestats_long() } }
+                                                                self.__send_msg_to_cti_client__(userinfo, cjson.encode(tosend))
+                                                repstr = None
 
-                        elif icommand.name == 'agents-list':
-                                # issued by one user when he logs in
-                                if self.capas[capaid].match_funcs(ucapa, 'agents'):
-                                        for astid, aglist in self.agents_list.iteritems():
-                                                if astid in self.qlist:
-                                                        lst = []
-                                                        for agname, agprop in aglist.iteritems():
+                                        elif classcomm == 'queue-status':
+                                                # issued towards a user when he wants to monitor a new queue
+                                                if self.capas[capaid].match_funcs(ucapa, 'agents'):
+                                                        astid = icommand.struct.get('astid')
+                                                        qname = icommand.struct.get('queuename')
+                                                        repstr = self.__build_queue_status__(astid, qname)
+
+                                        elif classcomm == 'agent-status':
+                                                # issued by one user when he requests the status for one given agent
+                                                if self.capas[capaid].match_funcs(ucapa, 'agents'):
+                                                        astid = icommand.struct.get('astid')
+                                                        agname = icommand.struct.get('agentid') # agname = userinfo.get('agentnum')
+                                                        agid = 'Agent/%s' % agname
+                                                        
+                                                        if astid in self.qlist and astid in self.agents_list and agname in self.agents_list[astid]:
+                                                                agprop = self.agents_list[astid][agname]
+                                                                # lookup the logged in/out status of agent agname and sends it back to the requester
                                                                 lstatus = '1'
                                                                 if agprop['status'] == 'AGENT_LOGGEDOFF':
                                                                         lstatus = '0'
-                                                                lst.append('%s:%s:%s:%s:%s' % (agname, lstatus,
-                                                                                               agprop['name'],
-                                                                                               agprop['phonenum'],
-                                                                                               self.qlist[astid].get_queues_byagent('Agent/%s' % agname)))
-                                                        tosend = { 'class' : 'agents-list',
-                                                                   'direction' : 'client',
-                                                                   'payload' : { 'astid' : astid,
-                                                                                 'list' : lst
-                                                                                 }
-                                                                   }
-                                                        self.__send_msg_to_cti_client__(userinfo, cjson.encode(tosend))
-                                repstr = None
-
-                        elif icommand.name == 'agent-status':
-                                # issued by one user when he requests the status for one given agent
-                                if self.capas[capaid].match_funcs(ucapa, 'agents'):
-                                        astid = icommand.args[0]
-                                        agname = icommand.args[1] # agname = userinfo.get('agentnum')
-                                        agid = 'Agent/%s' % agname
-                                        
-                                        if astid in self.qlist and astid in self.agents_list and agname in self.agents_list[astid]:
-                                                agprop = self.agents_list[astid][agname]
-                                                # lookup the logged in/out status of agent agname and sends it back to the requester
-                                                lstatus = '1'
-                                                if agprop['status'] == 'AGENT_LOGGEDOFF':
-                                                        lstatus = '0'
-                                                tosend = { 'class' : 'agent-status',
-                                                           'direction' : 'client',
-                                                           'payload' : [astid, agname, lstatus,
-                                                                        agprop['name'],
-                                                                        agprop['phonenum'],
-                                                                        self.qlist[astid].get_queues_byagent(agid)]
-                                                           }
-                                                self.__send_msg_to_cti_client__(userinfo, cjson.encode(tosend))
-                                repstr = None
+                                                                tosend = { 'class' : 'agent-status',
+                                                                           'direction' : 'client',
+                                                                           'payload' : [astid, agname, lstatus,
+                                                                                        agprop['name'],
+                                                                                        agprop['phonenum'],
+                                                                                        self.qlist[astid].get_queues_byagent(agid)]
+                                                                           }
+                                                                repstr = cjson.encode(tosend)
 
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, '--- exception --- (manage_cticommand) %s %s %s : %s'
@@ -1709,7 +1737,7 @@ class XivoCTICommand(BaseCommand):
                 reply = []
                 for termin in termlist:
                         [techno, phoneid] = termin.split('/')
-                        print requester_id, nlines, kind, techno, phoneid
+                        print '__build_history_string__', requester_id, nlines, kind, techno, phoneid
                         try:
                                 hist = self.__update_history_call__(self.configs[astid], techno, phoneid, nlines, kind)
                                 for x in hist:
@@ -2014,8 +2042,8 @@ class XivoCTICommand(BaseCommand):
 
 
         # \brief Builds the features_get reply.
-        def __build_features_get__(self, reqlist):
-                [company, user] = reqlist[0].split('/')
+        def __build_features_get__(self, userid):
+                [company, user] = userid.split('/')
                 userinfo = self.ulist_ng.finduser(user + '@' + company)
                 astid = userinfo.get('astid')
                 context = userinfo.get('context')
@@ -2035,11 +2063,11 @@ class XivoCTICommand(BaseCommand):
                                         repstr += "%s;%s:;" %(key, str(results[0][0]))
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- features_get(bool) id=%s key=%s : %s'
-                                          %(str(reqlist), key, exc))
+                                          %(userid, key, exc))
                                 tosend = { 'class' : 'features',
                                            'function' : 'get',
                                            'direction' : 'client',
-                                           'payload' : [ reqlist[0], 'KO' ] }
+                                           'payload' : [ userid, 'KO' ] }
                                 return cjson.encode(tosend)
 
                 for key in ['unc', 'busy', 'rna']:
@@ -2057,11 +2085,11 @@ class XivoCTICommand(BaseCommand):
 
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- features_get(str) id=%s key=%s : %s'
-                                          %(str(reqlist), key, exc))
+                                          % (userid, key, exc))
                                 tosend = { 'class' : 'features',
                                            'function' : 'get',
                                            'direction' : 'client',
-                                           'payload' : [ reqlist[0], 'KO' ] }
+                                           'payload' : [ userid, 'KO' ] }
                                 return cjson.encode(tosend)
 
                 if len(repstr) == 0:
@@ -2069,45 +2097,34 @@ class XivoCTICommand(BaseCommand):
                 tosend = { 'class' : 'features',
                            'function' : 'get',
                            'direction' : 'client',
-                           'payload' : [ reqlist[0], repstr ] }
+                           'payload' : [ userid, repstr ] }
                 return cjson.encode(tosend)
 
 
         # \brief Builds the features_put reply.
-        def __build_features_put__(self, reqlist):
-                [company, user] = reqlist[0].split('/')
+        def __build_features_put__(self, userid, key, value):
+                [company, user] = userid.split('/')
                 userinfo = self.ulist_ng.finduser(user + '@' + company)
                 astid = userinfo.get('astid')
                 context = userinfo.get('context')
                 srcnum = userinfo.get('phonenum')
                 try:
-                        len_reqlist = len(reqlist)
-                        if len_reqlist >= 2:
-                                key = reqlist[1]
-                                value = ''
-                                if len_reqlist >= 3:
-                                        value = reqlist[2]
-                                query = 'UPDATE userfeatures SET ' + key + ' = %s WHERE number = %s AND context = %s'
-                                params = [value, srcnum, context]
-                                cursor = self.configs[astid].userfeatures_db_conn.cursor()
-                                cursor.query(query, parameters = params)
-                                self.configs[astid].userfeatures_db_conn.commit()
-                                tosend = { 'class' : 'features',
-                                           'function' : 'put',
-                                           'direction' : 'client',
-                                           'payload' : [ reqlist[0], 'OK', key, value ] }
-                        else:
-                                tosend = { 'class' : 'features',
-                                           'function' : 'put',
-                                           'direction' : 'client',
-                                           'payload' : [ reqlist[0], 'KO' ] }
-                except Exception, exc:
-                        log_debug(SYSLOG_ERR, '--- exception --- features_put id=%s : %s'
-                                  %(str(reqlist), exc))
+                        query = 'UPDATE userfeatures SET ' + key + ' = %s WHERE number = %s AND context = %s'
+                        params = [value, srcnum, context]
+                        cursor = self.configs[astid].userfeatures_db_conn.cursor()
+                        cursor.query(query, parameters = params)
+                        self.configs[astid].userfeatures_db_conn.commit()
                         tosend = { 'class' : 'features',
                                    'function' : 'put',
                                    'direction' : 'client',
-                                   'payload' : [ reqlist[0], 'KO' ] }
+                                   'payload' : [ userid, 'OK', key, value ] }
+                except Exception, exc:
+                        log_debug(SYSLOG_ERR, '--- exception --- features_put id=%s %s %s : %s'
+                                  %(userid, key, value, exc))
+                        tosend = { 'class' : 'features',
+                                   'function' : 'put',
+                                   'direction' : 'client',
+                                   'payload' : [ userid, 'KO' ] }
                 return cjson.encode(tosend)
 
 
@@ -2316,11 +2333,9 @@ class XivoCTICommand(BaseCommand):
 
 
         # \brief Hangs up.
-        def __hangup__(self, uinfo, args, peer_hangup):
-                print uinfo, args, peer_hangup
+        def __hangup__(self, uinfo, astid, chan, peer_hangup):
+                print '__hangup__', uinfo, astid, chan, peer_hangup
                 username = uinfo.get('fullname')
-                astid = args[0]
-                chan = args[1]
                 ret_message = 'hangup KO from %s' % username
                 if astid in self.configs:
                         log_debug(SYSLOG_INFO, "%s is attempting a HANGUP : %s" % (username, chan))
@@ -2413,12 +2428,12 @@ class XivoCTICommand(BaseCommand):
         # This should be done after a command called "customers".
         # \return a string containing the full customers list
         # \sa manage_tcp_connection
-        def __build_customers__(self, ctx, searchpatterns):
+        def __build_customers__(self, ctx, searchpattern):
                 fulllist = []
                 if ctx in self.ctxlist.ctxlist:
                         for dirsec, dirdef in self.ctxlist.ctxlist[ctx].iteritems():
                                 try:
-                                        y = self.__build_customers_bydirdef__(dirsec, searchpatterns, dirdef)
+                                        y = self.__build_customers_bydirdef__(dirsec, searchpattern, dirdef)
                                         fulllist.extend(y)
                                 except Exception, exc:
                                         log_debug(SYSLOG_ERR, '--- exception --- __build_customers__ (%s) : %s'
@@ -2449,18 +2464,17 @@ class XivoCTICommand(BaseCommand):
                 return cjson.encode(tosend)
 
 
-        def __build_customers_bydirdef__(self, dirname, searchpatterns, z):
-                searchpattern = ' '.join(searchpatterns)
+        def __build_customers_bydirdef__(self, dirname, searchpattern, z):
                 fullstatlist = []
 
-                if searchpattern == "":
+                if searchpattern == '':
                         return []
 
                 dbkind = z.uri.split(':')[0]
                 if dbkind in ['ldap', 'ldaps']:
                         selectline = []
                         for fname in z.match_direct:
-                                if searchpattern == "*":
+                                if searchpattern == '*':
                                         selectline.append("(%s=*)" % fname)
                                 else:
                                         selectline.append("(%s=*%s*)" %(fname, searchpattern))

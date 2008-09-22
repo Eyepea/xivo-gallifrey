@@ -44,9 +44,11 @@ def log_debug(level, text):
         log_debug_file(level, text, 'fax')
 
 class Fax:
-        def __init__(self, uinfo, args):
+        def __init__(self, uinfo, size, number, hide):
                 self.reference = ''.join(random.sample(__alphanums__, 10)) + "-" + hex(int(time.time()))
-                self.params = args
+                self.size = size
+                self.number = number
+                self.hide = hide
                 self.uinfo = uinfo
                 return
 
@@ -57,17 +59,8 @@ class Fax:
                 z = open(tmpfilepath, 'w')
                 z.write(buffer)
                 z.close()
-                log_debug(SYSLOG_INFO, 'args = %s' % self.params)
-                for p in self.params:
-                        [var, val] = p.split('=')
-                        if var == 'number':
-                                number = val
-                        elif var == 'size':
-                                size = val
-                        elif var == 'hide':
-                                hide = val
-
-                if hide != '0':
+                log_debug(SYSLOG_INFO, 'size = %s, number = %s, hide = %s' % (self.size, self.number, self.hide))
+                if self.hide != '0':
                         callerid = 'anonymous'
 
                 reply = 'ko;unknown'
@@ -87,7 +80,7 @@ class Fax:
                                 try:
                                         reply = 'ko;AMI'
                                         ret = ami.txfax(PATH_SPOOL_ASTERISK_FAX, filename,
-                                                        self.uinfo.get('xivo_userid'), callerid, number, self.uinfo.get('context'))
+                                                        self.uinfo.get('xivo_userid'), callerid, self.number, self.uinfo.get('context'))
                                         if ret:
                                                 reply = 'ok;'
                                 except Exception, exc:
