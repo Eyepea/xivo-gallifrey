@@ -74,8 +74,8 @@ tag which means that corresponding integers in documents must be between
 42 and 128.  Because of the YAML grammar, these tags must be integers in
 decimal representation or symbols of the form /[A-Za-z_][A-Za-z0-9_]*/
 and there must be no space character between the opening parenthesis and
-the closing one.  Qualifiers without parameter must be written with no
-parenthesis.
+the closing one.  Qualifiers which never take parameters must be written
+with no parenthesis.
 
 Example of schema with qualifiers:
 ---
