@@ -118,19 +118,19 @@ class XivoCTICommand(BaseCommand):
                 params = linein.split()
                 cmd = xivo_commandsets.Command(params[0], params[1:])
                 cmd.struct = {}
-                if cmd.name == 'login_id':
-                        cmd.type = xivo_commandsets.CMD_LOGIN_ID
-                elif cmd.name == 'login_pass':
-                        cmd.type = xivo_commandsets.CMD_LOGIN_PASS
-                elif cmd.name == 'login_capas':
-                        cmd.type = xivo_commandsets.CMD_LOGIN_CAPAS
-                elif cmd.name == 'faxdata':
+                if cmd.name == 'faxdata':
                         cmd.type = xivo_commandsets.CMD_TRANSFER
                 else:
                         cmd.type = xivo_commandsets.CMD_OTHER
                         try:
                                 cmd.struct = cjson.decode(linein)
                                 cmd.name = 'json'
+                                if cmd.struct.get('class') == 'login_id':
+                                        cmd.type = xivo_commandsets.CMD_LOGIN_ID
+                                elif cmd.struct.get('class') == 'login_pass':
+                                        cmd.type = xivo_commandsets.CMD_LOGIN_PASS
+                                elif cmd.struct.get('class') == 'login_capas':
+                                        cmd.type = xivo_commandsets.CMD_LOGIN_CAPAS
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- parsing json for <%s> : %s' % (linein, exc))
                                 cmd.struct = {}
@@ -165,15 +165,17 @@ class XivoCTICommand(BaseCommand):
                 """
                 Login syntax awaited : "login astid=xivo;...=..."
                 """
-                cfg = {}
-                if len(command.args) > 0:
-                        arglist = command.args[0].split(';')
-                        for argm in arglist:
-                                argms = argm.split('=')
-                                if len(argms) == 2:
-                                        [param, value] = argms
-                                        cfg[param] = value
-                return cfg
+##                print 'get_login_params()', command.struct
+##                cfg = {}
+##                if len(command.args) > 0:
+##                        arglist = command.args[0].split(';')
+##                        for argm in arglist:
+##                                argms = argm.split('=')
+##                                if len(argms) == 2:
+##                                        [param, value] = argms
+##                                        cfg[param] = value
+##                return cfg
+                return command.struct
 
         def manage_login(self, loginparams, phase, uinfo):
                 if phase == xivo_commandsets.CMD_LOGIN_ID:
