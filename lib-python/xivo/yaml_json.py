@@ -23,6 +23,7 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
+
 def stringify_keys(obj):
     """
     In YAML, it is possible to code a dictionary with integers keys.
