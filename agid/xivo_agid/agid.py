@@ -40,10 +40,10 @@ LISTEN_ADDR_DEFAULT = "127.0.0.1"
 LISTEN_PORT_DEFAULT = 4573
 CONN_POOL_SIZE_DEFAULT = 10
 
-log = logging.getLogger('xivo_agid.agid')
+log = logging.getLogger('xivo_agid.agid') # pylint: disable-msg=C0103
 
-server = None
-handlers = {}
+_server = None
+_handlers = {}
 
 
 class DBConnectionPool:
@@ -113,44 +113,48 @@ class FastAGIRequestHandler(SocketServer.StreamRequestHandler):
             log.debug("handling request")
 
             fagi = fastagi.FastAGI(self.rfile, self.wfile)
-            except_hook = agitb.Hook(agi = fagi)
+            except_hook = agitb.Hook(agi=fagi)
 
-            conn = server.db_conn_pool.acquire()
+            conn = _server.db_conn_pool.acquire()
             try:
                 cursor = conn.cursor()
 
                 handler_name = fagi.env['agi_network_script']
                 log.debug("delegating request handling %r", handler_name)
-                handlers[handler_name].handle(fagi, cursor, fagi.args)
+                _handlers[handler_name].handle(fagi, cursor, fagi.args)
 
                 conn.commit()
 
                 fagi.verbose('AGI handler %r successfully executed' % handler_name)
                 log.debug("request successfully handled")
             finally:
-                server.db_conn_pool.release(conn)
+                _server.db_conn_pool.release(conn)
 
         # Attempt to relay errors to Asterisk, but if it fails, we
         # just give up.
         # XXX It may be here that dropping database connection
         # exceptions could be catched.
         except fastagi.FastAGIDialPlanBreak, message:
-            log.debug("invalid request, dial plan broken")
+            log.info("invalid request, dial plan broken")
 
             try:
                 fagi.verbose(message)
+                # TODO: see under
                 fagi.appexec('Goto', 'macro-agi_fail|s|1')
                 fagi.fail()
-            except:
+            except Exception:
                 pass
         except:
-            log.debug("an unexpected error occurred")
+            log.exception("unexpected exception")
 
             try:
                 except_hook.handle()
+                # TODO: (important!)
+                #   - rename macro-agi_fail, or find a better way
+                #   - move at the beginning of a safe block
                 fagi.appexec('Goto', 'macro-agi_fail|s|1')
                 fagi.fail()
-            except:
+            except Exception:
                 pass
 
 
@@ -236,48 +240,48 @@ class Handler:
 def register(handle_fn, setup_fn = None):
     handler_name = handle_fn.__name__
 
-    if handler_name in handlers:
+    if handler_name in _handlers:
         raise ValueError("handler %r already registered", handler_name)
 
-    handlers[handler_name] = Handler(handler_name, setup_fn, handle_fn)
+    _handlers[handler_name] = Handler(handler_name, setup_fn, handle_fn)
 
 
 def sighup_handle(signum, frame): # pylint: disable-msg=W0613
     try:
         log.debug("reloading core engine")
 
-        server.setup()
+        _server.setup()
 
         log.debug("reloading handlers")
 
-        conn = server.db_conn_pool.acquire()
+        conn = _server.db_conn_pool.acquire()
         cursor = conn.cursor()
 
-        for handler in handlers.itervalues():
+        for handler in _handlers.itervalues():
             handler.reload(cursor)
 
         conn.commit()
 
         log.debug("finished reload")
     finally:
-        server.db_conn_pool.release(conn)
+        _server.db_conn_pool.release(conn)
 
 
 def run():
-    conn = server.db_conn_pool.acquire()
+    conn = _server.db_conn_pool.acquire()
     cursor = conn.cursor()
 
-    log.debug("list of handlers: %s", ', '.join(sorted(handlers.iterkeys())))
+    log.debug("list of handlers: %s", ', '.join(sorted(_handlers.iterkeys())))
 
-    for handler in handlers.itervalues():
+    for handler in _handlers.itervalues():
         handler.setup(cursor)
 
     conn.commit()
-    server.db_conn_pool.release(conn)
+    _server.db_conn_pool.release(conn)
 
-    server.serve_forever()
+    _server.serve_forever()
 
 
 def init():
-    global server
-    server = AGID()
+    global _server
+    _server = AGID()
