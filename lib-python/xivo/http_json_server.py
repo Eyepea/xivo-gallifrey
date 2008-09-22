@@ -305,7 +305,7 @@ def sigterm_handler(signum, stack_frame):
 def run(options):
     "Start and execute the server"
     http_server = KillableThreadingHTTPServer(
-        (options.listen_ip, options.listen_port),
+        (options.listen_addr, options.listen_port),
         HttpReqHandler
     )
     while not _killed:
