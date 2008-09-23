@@ -178,11 +178,8 @@ def normalize_ipv4_address(addr):
 
 
 def is_ipv4_address_valid(addr):
-    """
-    Return True if addr is a valid string representation of an IPv4 address
-    or False if this is not the case.
-    """
-    elements = addr.split('.', 4)
+    "True <=> valid"
+    elements = addr.split(".", 4)
     if len(elements) != 4:
         return False
     for elt in elements:
@@ -190,7 +187,22 @@ def is_ipv4_address_valid(addr):
             i = int(elt)
         except ValueError:
             return False
-        if i < 0 or i > 255:
+        if not (0 <= i < 256):
+            return False
+    return True
+
+
+def is_mac_address_valid(addr):
+    "True <=> valid"
+    elements = addr.split(":", 6)
+    if len(elements) != 6:
+        return False
+    for elt in elements:
+        try:
+            i = int(elt, 16)
+        except ValueError:
+            return False
+        if not (0 <= i < 256):
             return False
     return True
 
