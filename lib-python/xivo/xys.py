@@ -298,6 +298,15 @@ def between(val, schema, min_val, max_val): # pylint: disable-msg=W0613
     return min_val <= val <= max_val
 
 
+def fixed(nstr, schema):
+    """
+    !~~fixedStr
+    !~~fixedInt
+        nst == schema
+    """
+    return nstr == schema
+
+
 def startswith(nstr, schema):
     """
     !~~startswith
@@ -327,6 +336,8 @@ def prefixedDec(nstr, schema):
 _add_parameterized_validator_internal(seqlen, u'!!seq')
 _add_parameterized_validator_internal(between, u'!!int')
 _add_parameterized_validator_internal(enum, u'!!str')
+add_validator(fixed, u'!!str', '!~~fixedStr')
+add_validator(fixed, u'!!int', '!~~fixedInt') # XXX: validation tag overloading?
 _add_validator_internal(startswith, u'!!str')
 _add_validator_internal(prefixedDec, u'!!str')
 
