@@ -2,9 +2,6 @@
 
 Copyright (C) 2007, 2008  Proformatique
 
-SEE ALSO:
-    http://www.unixguide.net/unix/programming/1.7.shtml
-
 WARNING: Linux specific module, needs /proc/
 """
 
@@ -142,41 +139,26 @@ def take_file_lock(own_file, lock_file, own_content):
     return True
 
 
-# XXX: remove the pidfile = None case after XXX change of daemonize()
-
-def create_pidfile_or_die(pidfile, pidfile_lock):
+def lock_pidfile_or_die(pidfile):
     """
     @pidfile:
-            None => this function just returns the PID
-            Else @pidfile must be a writable filepath
-
-    @pidfile_lock:
-            False => Create the pidfile unconditionally
-                    (WARNING: potentially subject to race conditions)
-            True => Remove potentially existing staled PID file
-                    Create a new one atomically
-                    If the new one is ours: success
+        must be a writable path
 
     Exceptions are logged.
 
-    This function returns the PID.
+    Returns the PID.
     """
     pid = os.getpid()
     try:
-        if pidfile:
-            if pidfile_lock:
-                remove_if_stale_pidfile(pidfile)
-                pid_write_file = pidfile + '.' + str(pid)
-            else:
-                pid_write_file = pidfile
-            fpid = open(pid_write_file, 'w')
-            try:
-                fpid.write("%s\n" % pid)
-            finally:
-                fpid.close()
-            if pidfile_lock:
-                if not take_file_lock(pid_write_file, pidfile, "%s\n" % pid):
-                    sys.exit(1)
+        remove_if_stale_pidfile(pidfile)
+        pid_write_file = pidfile + '.' + str(pid)
+        fpid = open(pid_write_file, 'w')
+        try:
+            fpid.write("%s\n" % pid)
+        finally:
+            fpid.close()
+        if not take_file_lock(pid_write_file, pidfile, "%s\n" % pid):
+            sys.exit(1)
     except SystemExit:
         raise
     except Exception:
@@ -185,23 +167,27 @@ def create_pidfile_or_die(pidfile, pidfile_lock):
     return pid
 
 
-# XXX: remove the PID stuff; the caller can call create_pidfile_or_die by itself
+def unlock_pidfile(pidfile):
+    """
+    @pidfile:
+        path to the pidfile that will just be removed
+    """
+    pid = "%s\n" % os.getpid()
+    content = file(pidfile).read(len(pid) + 1)
+    if content != pid:
+        raise RuntimeError, "can not force unlock the pidfile of others"
+    os.unlink(pidfile)
 
-def daemonize(pidfile=None, pidfile_lock=True):
+
+def daemonize():
     """
     Daemonize the program, ie. make it run in the "background", detach
     it from its controlling terminal and from its controlling process
     group session.
 
-    @pidfile:
-            PID file path, or None
-
-    @pidfile_lock: (significant only when @pidfile is not None)
-            False => just write @pidfile unconditionally
-            True => @pidfile is a lockfile, take the lock or die
-
-    NOTE:
-        This function also umask(0) and chdir("/")
+    NOTES:
+        - This function also umask(0) and chdir("/")
+        - stdin, stdout, and stderr are redirected from/to /dev/null
 
     SEE ALSO:
         http://www.unixguide.net/unix/programming/1.7.shtml
@@ -225,9 +211,7 @@ def daemonize(pidfile=None, pidfile_lock=True):
     except OSError, e:
         log.exception("first fork() failed: %d (%s)", e.errno, e.strerror)
         sys.exit(1)
-
-    pid = create_pidfile_or_die(pidfile, pidfile_lock)
-
+    
     try:
         devnull_fd = os.open(os.devnull, os.O_RDWR)
         
@@ -245,14 +229,5 @@ def daemonize(pidfile=None, pidfile_lock=True):
     except Exception: # pylint: disable-msg=W0703
         log.exception("error during file descriptor redirection")
 
-    return pid
 
-
-if __name__ == '__main__':
-    def stupidtest():
-        "daemonize then sleep; suitable for hand made quick & dirty test"
-        import time
-        logging.basicConfig(level=logging.DEBUG, filename="/home/xilun/daemon_log")
-        daemonize(pidfile="/home/xilun/pidfile", pidfile_lock=True)
-        time.sleep(10)
-    stupidtest()
+# TODO: some automatic tests

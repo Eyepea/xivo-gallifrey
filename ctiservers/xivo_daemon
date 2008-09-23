@@ -533,9 +533,9 @@ sysloghandler.setFormatter(logging.Formatter("%s[%%(process)d]: %%(message)s" % 
 logging.getLogger('').addHandler(sysloghandler)
 
 if not debug_mode:
-        daemonize.daemonize(PIDFILE, pidfile_lock=True)
-else:
-        daemonize.create_pidfile_or_die(PIDFILE, pidfile_lock=True)
+        daemonize.daemonize()
+
+daemonize.lock_pidfile_or_die(PIDFILE)
 
 signal.signal(signal.SIGINT, sighandler)
 signal.signal(signal.SIGTERM, sighandler)
@@ -793,6 +793,7 @@ while True: # loops over the reloads
                                 for t in filter(lambda x: x.getName() != 'MainThread', threading.enumerate()):
                                         print '--- (stop) killing thread <%s>' % t.getName()
                                         t._Thread__stop()
+                                daemonize.unlock_pidfile(PIDFILE)
                                 sys.exit(5)
                         else:
                                 print '--- exception --- after select (%s) : %s' % (fdlist_full, exc)

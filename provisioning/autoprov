@@ -32,7 +32,7 @@ UF_TABLE            = 'userfeatures'
 SIP_TABLE           = 'usersip'
 FK_TABLE            = 'phonefunckey'
 XNUM_TABLE          = 'extenumbers'
-TECH                = 'sip' # only allowed tech right now
+TECH_SIP            = 'sip' # only allowed tech right now
 
 SYSLOG_NAME         = 'autoprovisioning'
 
@@ -218,7 +218,7 @@ class SQLBackEnd:
 
         Right now proto must evaluate to 'sip'
         """
-        if proto != TECH:
+        if proto != TECH_SIP:
             raise ValueError, "proto must be 'sip' for now"
         mapping = {
             UF_TABLE+".firstname":      'firstname',
@@ -337,7 +337,7 @@ class SQLBackEnd:
              "WHERE iduserfeatures=%s AND proto=%s")
              % ( TABLE, '%s', '%s' ),
             ('macaddr', 'vendor', 'model', 'proto', 'iduserfeatures', 'isinalan'),
-            (iduserfeatures, TECH))
+            (iduserfeatures, TECH_SIP))
 
     def delete_phone_by_iduserfeatures(self, iduserfeatures):
         """
@@ -446,7 +446,7 @@ def __save_phone(ctx, phone, config):
 def __provisioning(mode, ctx, phone):
     "Provisioning high level logic for the described phone"
     # I only allow "sip" right now
-    if phone["proto"] != TECH:
+    if phone["proto"] != TECH_SIP:
         log.error("__provisioning(): the only protocol supported "
                   "right now is SIP, but I got %s", phone["proto"])
         raise BadRequest, "Unknown protocol '%s' != 'sip'" % phone["proto"]
@@ -602,9 +602,6 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
     def __init__(self, request, client_address, server):
         self.my_server = server
         self.my_ctx = self.my_server.my_ctx
-
-        self.my_infos = self.my_ctx.dbinfos # compability with legacy code in this class
-
         self.posted = None
         BaseHTTPRequestHandler.__init__(self, request, client_address, server)
 
@@ -822,24 +819,29 @@ def main(log_level, foreground):
         log.info("Starting up")
         if not foreground:
             log.info("Transforming into a daemon from hell")
-            daemonize.daemonize(PIDFILE, pidfile_lock=True)
-        else:
-            log.info("Not daemonizing, PID locking anyway")
-            daemonize.create_pidfile_or_die(PIDFILE, pidfile_lock=True)
-        os.umask(022) # daemonize() reset umask
-        log.info("HTTP server creation")
-        http_server = ThreadingHTTPServer((Pgc['listen_ipv4'], Pgc['listen_port']), ProvHttpHandler)
-        http_server.my_ctx = CommonProvContext(
-            ListLock(), # userlocks
-            ListLock(), # maclocks
-            SQLBackEnd(Pgc['database_uri']),
-            RWLock()
-        )
-        log.info("Orphan phones cleanup")
-        clean_at_startup(http_server.my_ctx)
-        root_logger.setLevel(log_level)
-        log.info("Will now serve incoming HTTP requests")
-        http_server.serve_forever()
+            daemonize.daemonize()
+        log.info("locking PID")
+        daemonize.lock_pidfile_or_die(PIDFILE)
+        try:
+            os.umask(022) # daemonize() reset umask
+            log.info("HTTP server creation")
+            http_server = ThreadingHTTPServer(
+                (Pgc['listen_ipv4'], Pgc['listen_port']),
+                ProvHttpHandler
+            )
+            http_server.my_ctx = CommonProvContext(
+                ListLock(), # userlocks
+                ListLock(), # maclocks
+                SQLBackEnd(Pgc['database_uri']),
+                RWLock()
+            )
+            log.info("Orphan phones cleanup")
+            clean_at_startup(http_server.my_ctx)
+            root_logger.setLevel(log_level)
+            log.info("Will now serve incoming HTTP requests")
+            http_server.serve_forever()
+        finally:
+            daemonize.unlock_pidfile(PIDFILE)
     except SystemExit:
         raise
     except:
