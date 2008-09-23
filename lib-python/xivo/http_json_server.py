@@ -325,9 +325,9 @@ def init(options):
         def fortytwo():
             "test GET method"
             return 42
-        def ping(params):
+        def ping(args):
             "test POST method"
-            return params
+            return args
         register(fortytwo, CMD_R)
         register(ping, CMD_RW)
     for fname, (func, setup, op) in _commands.iteritems():
