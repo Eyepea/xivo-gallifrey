@@ -34,7 +34,7 @@ from xivo.UpAllAny import all
 from xivo import StreamedLines
 
 
-log = logging.getLogger("xivo.network")
+log = logging.getLogger("xivo.network") # pylint: disable-msg=C0103
 
 
 # CONFIG
