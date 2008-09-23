@@ -170,13 +170,17 @@ def lock_pidfile_or_die(pidfile):
 def unlock_pidfile(pidfile):
     """
     @pidfile:
-        path to the pidfile that will just be removed
+        path to the pidfile that will be removed if it is not too unsafe
     """
-    pid = "%s\n" % os.getpid()
-    content = file(pidfile).read(len(pid) + 1)
-    if content != pid:
-        raise RuntimeError, "can not force unlock the pidfile of others"
-    os.unlink(pidfile)
+    try:
+        pid = "%s\n" % os.getpid()
+        content = file(pidfile).read(len(pid) + 1)
+        if content == pid:
+            os.unlink(pidfile)
+        else:
+            log.error("can not force unlock the pidfile of others")
+    except (IOError, OSError), e:
+        log.error("%s: %s", type(e).__name__, e)
 
 
 def daemonize():
