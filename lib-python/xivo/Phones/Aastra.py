@@ -31,28 +31,32 @@ import subprocess
 
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
-from xivo.xivo_config import ProvGeneralConf as Pgc
 
 
-log = logging.getLogger("xivo.Phones.Aastra")
+log = logging.getLogger("xivo.Phones.Aastra") # pylint: disable-msg=C0103
 
-
-AASTRA_COMMON_DIR = os.path.join(Pgc['tftproot'], 'Aastra/')
-AASTRA_COMMON_HTTP_USER = 'admin'
-AASTRA_COMMON_HTTP_PASS = '22222'
 
 class Aastra(PhoneVendorMixin):
 
     AASTRA_MODELS = ('51i', '53i', '55i', '57i')
+    AASTRA_COMMON_HTTP_USER = 'admin'
+    AASTRA_COMMON_HTTP_PASS = '22222'
+
+    AASTRA_COMMON_DIR = None
+
+    @classmethod
+    def setup(cls, config):
+        "Configuration of class attributes"
+        PhoneVendorMixin.setup(cls, config)
+        cls.AASTRA_COMMON_DIR = os.path.join(cls.TFTPROOT, "Aastra/")
 
     def __init__(self, phone):
         PhoneVendorMixin.__init__(self, phone)
-        # TODO: handle this with a lookup table stored in the DB?
         if self.phone['model'] not in self.AASTRA_MODELS:
             raise ValueError, "Unknown Aastra model %r" % self.phone['model']
 
     def __action(self, user, passwd):
-        cnx_to = max_to = max(1, Pgc['curl_to_s'] / 2)
+        cnx_to = max_to = max(1, self.CURL_TO_S / 2)
         try: # XXX: also check return values?
 
             ## curl options
@@ -67,7 +71,7 @@ class Aastra(PhoneVendorMixin):
             # The first one replies: 401 Unauthorized (Authorization failed)
             # The second one does not fail
             for attempts in 1, 2: # pylint: disable-msg=W0612
-                subprocess.call([Pgc['curl_cmd'],
+                subprocess.call([self.CURL_CMD,
                                  "--retry", "0",
                                  "--connect-timeout", str(cnx_to),
                                  "--max-time", str(max_to),
@@ -82,7 +86,7 @@ class Aastra(PhoneVendorMixin):
             # first : upgrade
             # this seems to be compulsory when taking the phones out of their box, since the tftpboot parameters
             # can not handle the Aastra/ subdirectory with the out-of-the-box version
-            subprocess.call([Pgc['curl_cmd'],
+            subprocess.call([self.CURL_CMD,
                              "--retry", "0",
                              "--connect-timeout", str(cnx_to),
                              "--max-time", str(max_to),
@@ -90,11 +94,11 @@ class Aastra(PhoneVendorMixin):
                              "-o", "/dev/null",
                              "-u", "%s:%s" % (user, passwd),
                              "http://%s/upgrade.html" % self.phone['ipv4'],
-                             "-d", "tftp=%s&file=Aastra/%s.st" % (Pgc['asterisk_ipv4'], self.phone['model'])],
+                             "-d", "tftp=%s&file=Aastra/%s.st" % (self.ASTERISK_IPV4, self.phone['model'])],
                             close_fds = True)
 
             # then reset
-            subprocess.call([Pgc['curl_cmd'],
+            subprocess.call([self.CURL_CMD,
                              "--retry", "0",
                              "--connect-timeout", str(cnx_to),
                              "--max-time", str(max_to),
@@ -125,11 +129,11 @@ class Aastra(PhoneVendorMixin):
         Entry point to send the (possibly post) reinit command to
         the phone.
         """
-        self.__action(AASTRA_COMMON_HTTP_USER, AASTRA_COMMON_HTTP_PASS)
+        self.__action(self.AASTRA_COMMON_HTTP_USER, self.AASTRA_COMMON_HTTP_PASS)
 
     def do_reboot(self):
         "Entry point to send the reboot command to the phone."
-        self.__action(AASTRA_COMMON_HTTP_USER, AASTRA_COMMON_HTTP_PASS)
+        self.__action(self.AASTRA_COMMON_HTTP_USER, self.AASTRA_COMMON_HTTP_PASS)
 
     def __generate(self, provinfo):
         """
@@ -138,10 +142,10 @@ class Aastra(PhoneVendorMixin):
         """
         model = self.phone['model']
         macaddr = self.phone['macaddr'].upper().replace(":", "")
-        template_file = open(os.path.join(Pgc['templates_dir'], "aastra-" + model + ".cfg"))
+        template_file = open(os.path.join(self.TEMPLATES_DIR, "aastra-" + model + ".cfg"))
         template_lines = template_file.readlines()
         template_file.close()
-        tmp_filename = os.path.join(AASTRA_COMMON_DIR, macaddr + '.cfg.tmp')
+        tmp_filename = os.path.join(self.AASTRA_COMMON_DIR, macaddr + '.cfg.tmp')
         cfg_filename = tmp_filename[:-4]
 
         function_keys_config_lines = \
@@ -215,18 +219,18 @@ class Aastra(PhoneVendorMixin):
     @classmethod
     def get_dhcp_classes_and_sub(cls, addresses):
         for model in cls.AASTRA_MODELS:
-            yield 'class "Aastra%s" {\n' % model
-            yield '    match if option vendor-class-identifier = "AastraIPPhone%s";\n' % model
-            yield '    log("boot Aastra %s");\n' % model
-            yield '    option tftp-server-name "%s";\n' % addresses['bootServer']
-            yield '    option bootfile-name "aastra.cfg";\n'
-            yield '    next-server %s;\n' % addresses['bootServer']
-            yield '}\n'
-            yield '\n'
+            for line in (
+                'class "Aastra%s" {\n' % model,
+                '    match if option vendor-class-identifier = "AastraIPPhone%s";\n' % model,
+                '    log("boot Aastra %s");\n' % model,
+                '    option tftp-server-name "%s";\n' % addresses['bootServer'],
+                '    option bootfile-name "aastra.cfg";\n',
+                '    next-server %s;\n' % addresses['bootServer'],
+                '}\n',
+                '\n'):
+                yield line
 
     @classmethod
     def get_dhcp_pool_lines(cls):
         for model in cls.AASTRA_MODELS:
             yield '        allow members of "Aastra%s";\n' % model
-
-xivo_config.register_phone_vendor_class(Aastra)

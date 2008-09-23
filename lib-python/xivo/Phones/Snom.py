@@ -31,38 +31,47 @@ import subprocess
 
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
-from xivo.xivo_config import ProvGeneralConf as Pgc
 
 
-log = logging.getLogger("xivo.Phones.Snom")
+log = logging.getLogger("xivo.Phones.Snom") # pylint: disable-msg=C0103
 
 
 # SNOM BUG #1
 # Snom doesn't support something else than files at root of tftproot when using
 # tftp... :/ (It just internaly replaces the first '/' with a '\0' :/// )
+# TODO: check if still true!
 
 # SNOM BUG #2
 # Because it seems much technically impossible to detect the phone model by
 # dhcp request (model not in the request.... :///), we'll need to also support
 # HTTP based xivo_config
+# TODO: check if still true!
 
-SNOM_SPEC_DIR = os.path.join(Pgc['tftproot'], "Snom/")
-SNOM_SPEC_TEMPLATE = os.path.join(Pgc['templates_dir'], "snom-template.htm")
-SNOM_COMMON_HTTP_USER = "guest"
-SNOM_COMMON_HTTP_PASS = "guest"
 
 class Snom(PhoneVendorMixin):
 
     SNOM_MODELS = ('300', '320', '360')
 
+    SNOM_COMMON_HTTP_USER = "guest"
+    SNOM_COMMON_HTTP_PASS = "guest"
+
+    SNOM_SPEC_DIR = None
+    SNOM_SPEC_TEMPLATE = None
+
+    @classmethod
+    def setup(cls, config):
+        "Configuration of class attributes"
+        PhoneVendorMixin.setup(cls, config)
+        cls.SNOM_SPEC_DIR = os.path.join(cls.TFTPROOT, "Snom/")
+        cls.SNOM_SPEC_TEMPLATE = os.path.join(cls.TEMPLATES_DIR, "snom-template.htm")
+
     def __init__(self, phone):
         PhoneVendorMixin.__init__(self, phone)
-        # TODO: handle this with a lookup table stored in the DB?
         if self.phone['model'] not in self.SNOM_MODELS:
             raise ValueError, "Unknown Snom model %r" % self.phone['model']
 
     def __action(self, command, user, passwd):
-        cnx_to = max_to = max(1, Pgc['curl_to_s'] / 2)
+        cnx_to = max_to = max(1, self.CURL_TO_S / 2)
         try: # XXX: also check return values?
 
             ## curl options
@@ -71,7 +80,7 @@ class Snom(PhoneVendorMixin):
             # --connect-timeout 30  -- timeout after 30s
             # --max-time 15         -- timeout after 15s when connected
             # -retry 0              -- don't retry
-            subprocess.call([Pgc['curl_cmd'],
+            subprocess.call([self.CURL_CMD,
                              "--retry", "0",
                              "--connect-timeout", str(cnx_to),
                              "--max-time", str(max_to),
@@ -83,14 +92,14 @@ class Snom(PhoneVendorMixin):
         except OSError:
             log.exception("error when trying to call curl")
 
-    @staticmethod
-    def __format_function_keys(funckey):
+    @classmethod
+    def __format_function_keys(cls, funckey):
         sorted_keys = funckey.keys()
         sorted_keys.sort()
         fk_config_lines = []
         for key in sorted_keys:
             exten, supervise = funckey[key] # pylint: disable-msg=W0612
-            fk_config_lines.append("fkey%01d: blf <sip:%s@%s;phone=user>" % (int(key), exten, Pgc['asterisk_ipv4']))
+            fk_config_lines.append("fkey%01d: blf <sip:%s@%s;phone=user>" % (int(key), exten, cls.ASTERISK_IPV4))
         return "\n".join(fk_config_lines)
 
     def do_reinit(self):
@@ -98,18 +107,18 @@ class Snom(PhoneVendorMixin):
         Entry point to send the (possibly post) reinit command to
         the phone.
         """
-        self.__action("RESET", SNOM_COMMON_HTTP_USER, SNOM_COMMON_HTTP_PASS)
+        self.__action("RESET", self.SNOM_COMMON_HTTP_USER, self.SNOM_COMMON_HTTP_PASS)
 
     def do_reboot(self):
         "Entry point to send the reboot command to the phone."
-        self.__action("REBOOT", SNOM_COMMON_HTTP_USER, SNOM_COMMON_HTTP_PASS)
+        self.__action("REBOOT", self.SNOM_COMMON_HTTP_USER, self.SNOM_COMMON_HTTP_PASS)
 
     def do_reinitprov(self):
         """
         Entry point to generate the reinitialized (GUEST)
         configuration for this phone.
         """
-        htm_filename = os.path.join(SNOM_SPEC_DIR, "snom" + self.phone['model'] + "-" + self.phone['macaddr'].replace(":", "") + ".htm")
+        htm_filename = os.path.join(self.SNOM_SPEC_DIR, "snom" + self.phone['model'] + "-" + self.phone['macaddr'].replace(":", "") + ".htm")
         try:
             os.unlink(htm_filename)
         except OSError:
@@ -120,23 +129,23 @@ class Snom(PhoneVendorMixin):
         Entry point to generate the provisioned configuration for
         this phone.
         """
-        template_file = open(SNOM_SPEC_TEMPLATE)
+        template_file = open(self.SNOM_SPEC_TEMPLATE)
         template_lines = template_file.readlines()
         template_file.close()
-        tmp_filename = os.path.join(SNOM_SPEC_DIR, "snom" + self.phone['model'] + "-" + self.phone['macaddr'].replace(":", "") + ".htm.tmp")
+        tmp_filename = os.path.join(self.SNOM_SPEC_DIR, "snom" + self.phone['model'] + "-" + self.phone['macaddr'].replace(":", "") + ".htm.tmp")
         htm_filename = tmp_filename[:-4]
 
         function_keys_config_lines = \
                 self.__format_function_keys(provinfo['funckey'])
 
         txt = xivo_config.txtsubst(template_lines,
-                { 'user_display_name': provinfo['name'],
-                  'user_phone_ident':  provinfo['ident'],
-                  'user_phone_number': provinfo['number'],
-                  'user_phone_passwd': provinfo['passwd'],
-                  'http_user': SNOM_COMMON_HTTP_USER,
-                  'http_pass': SNOM_COMMON_HTTP_PASS,
-                  'function_keys': function_keys_config_lines,
+                { 'user_display_name':  provinfo['name'],
+                  'user_phone_ident':   provinfo['ident'],
+                  'user_phone_number':  provinfo['number'],
+                  'user_phone_passwd':  provinfo['passwd'],
+                  'http_user':          self.SNOM_COMMON_HTTP_USER,
+                  'http_pass':          self.SNOM_COMMON_HTTP_PASS,
+                  'function_keys':      function_keys_config_lines,
                 },
                 htm_filename)
         tmp_file = open(tmp_filename, 'w')
@@ -172,16 +181,16 @@ class Snom(PhoneVendorMixin):
 
     @classmethod
     def get_dhcp_classes_and_sub(cls, addresses):
-        yield 'subclass "phone-mac-address-prefix" 1:00:04:13 {\n'
-        yield '    log("class Snom prefix 1:00:04:13");\n'
-        yield '    option tftp-server-name "http://%s:8667/";\n' % addresses['bootServer']
-        yield '    option bootfile-name "snom.php?mac={mac}";\n'
-        yield '    next-server %s;\n' % addresses['bootServer']
-        yield '}\n'
-        yield '\n'
+        for line in (
+            'subclass "phone-mac-address-prefix" 1:00:04:13 {\n',
+            '    log("class Snom prefix 1:00:04:13");\n',
+            '    option tftp-server-name "http://%s:8667/";\n' % addresses['bootServer'],
+            '    option bootfile-name "snom.php?mac={mac}";\n',
+            '    next-server %s;\n' % addresses['bootServer'],
+            '}\n',
+            '\n'):
+            yield line
 
     @classmethod
     def get_dhcp_pool_lines(cls):
         return ()
-
-xivo_config.register_phone_vendor_class(Snom)

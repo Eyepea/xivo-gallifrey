@@ -31,10 +31,9 @@ import subprocess
 
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
-from xivo.xivo_config import ProvGeneralConf as Pgc
 
 
-log = logging.getLogger("xivo.Phones.Swissvoice")
+log = logging.getLogger("xivo.Phones.Swissvoice") # pylint: disable-msg=C0103
 
 
 # SWISSVOICE BUG
@@ -47,22 +46,31 @@ log = logging.getLogger("xivo.Phones.Swissvoice")
 # Swissvoice User-Agent format :
 # User-Agent: Swissvoice IP10 SP v1.0.1 (Build 4) 3.0.5.1
 
-SWISSVOICE_SPEC_DIR = os.path.join(Pgc['tftproot'], "Swissvoice/")
-SWISSVOICE_SPEC_INF_TEMPLATE = os.path.join(Pgc['templates_dir'], "template_ip10.inf")
-SWISSVOICE_SPEC_CFG_TEMPLATE = os.path.join(Pgc['templates_dir'], "template_ip10.cfg")
-SWISSVOICE_COMMON_HTTP_USER = "admin"
-SWISSVOICE_COMMON_HTTP_PASS = "admin"
 
 class Swissvoice(PhoneVendorMixin):
 
+    SWISSVOICE_COMMON_HTTP_USER = "admin"
+    SWISSVOICE_COMMON_HTTP_PASS = "admin"
+
+    SWISSVOICE_SPEC_DIR = None
+    SWISSVOICE_SPEC_INF_TEMPLATE = None
+    SWISSVOICE_SPEC_CFG_TEMPLATE = None
+
+    @classmethod
+    def setup(cls, config):
+        "Configuration of class attributes"
+        PhoneVendorMixin.setup(cls, config)
+        cls.SWISSVOICE_SPEC_DIR = os.path.join(cls.TFTPROOT, "Swissvoice/")
+        cls.SWISSVOICE_SPEC_INF_TEMPLATE = os.path.join(cls.TEMPLATES_DIR, "template_ip10.inf")
+        cls.SWISSVOICE_SPEC_CFG_TEMPLATE = os.path.join(cls.TEMPLATES_DIR, "template_ip10.cfg")
+
     def __init__(self, phone):
         PhoneVendorMixin.__init__(self, phone)
-        # TODO: handle this with a lookup table stored in the DB?
         if self.phone['model'] != "ip10s":
             raise ValueError, "Unknown Swissvoice model %r" % self.phone['model']
 
     def __action(self, user, passwd):
-        cnx_to = max_to = max(1, Pgc['curl_to_s'] / 2)
+        cnx_to = max_to = max(1, self.CURL_TO_S / 2)
         try: # XXX: also check return values?
 
             ## curl options
@@ -75,7 +83,7 @@ class Swissvoice(PhoneVendorMixin):
             url_rep2 = "reboot_choice_B.html?WINDWEB_URL=/Administrator_Settings/reboot_choice_B.html"
             url_rep3 = "&EraseFlash=0&Reboot=+Reboot"
 
-            subprocess.call([Pgc['curl_cmd'],
+            subprocess.call([self.CURL_CMD,
                              "--retry", "0",
                              "--connect-timeout", str(cnx_to),
                              "--max-time", str(max_to),
@@ -92,11 +100,11 @@ class Swissvoice(PhoneVendorMixin):
         Entry point to send the (possibly post) reinit command to
         the phone.
         """
-        self.__action(SWISSVOICE_COMMON_HTTP_USER, SWISSVOICE_COMMON_HTTP_PASS)
+        self.__action(self.SWISSVOICE_COMMON_HTTP_USER, self.SWISSVOICE_COMMON_HTTP_PASS)
 
     def do_reboot(self):
         "Entry point to send the reboot command to the phone."
-        self.__action(SWISSVOICE_COMMON_HTTP_USER, SWISSVOICE_COMMON_HTTP_PASS)
+        self.__action(self.SWISSVOICE_COMMON_HTTP_USER, self.SWISSVOICE_COMMON_HTTP_PASS)
 
     def do_reinitprov(self):
         """
@@ -104,8 +112,8 @@ class Swissvoice(PhoneVendorMixin):
         configuration for this phone.
         """
         macaddr = self.phone['macaddr'].lower().replace(":", "")
-        cfg_filename = os.path.join(SWISSVOICE_SPEC_DIR, macaddr + "_ip10.cfg")
-        inf_filename = os.path.join(SWISSVOICE_SPEC_DIR, "..", macaddr + "_ip10.inf")
+        cfg_filename = os.path.join(self.SWISSVOICE_SPEC_DIR, macaddr + "_ip10.cfg")
+        inf_filename = os.path.join(self.SWISSVOICE_SPEC_DIR, "..", macaddr + "_ip10.inf")
         try:
             os.unlink(cfg_filename)
         except OSError:
@@ -120,17 +128,17 @@ class Swissvoice(PhoneVendorMixin):
         Entry point to generate the provisioned configuration for
         this phone.
         """
-        cfg_template_file = open(SWISSVOICE_SPEC_CFG_TEMPLATE)
+        cfg_template_file = open(self.SWISSVOICE_SPEC_CFG_TEMPLATE)
         cfg_template_lines = cfg_template_file.readlines()
         cfg_template_file.close()
-        inf_template_file = open(SWISSVOICE_SPEC_INF_TEMPLATE)
+        inf_template_file = open(self.SWISSVOICE_SPEC_INF_TEMPLATE)
         inf_template_lines = inf_template_file.readlines()
         inf_template_file.close()
 
         macaddr = self.phone['macaddr'].lower().replace(":", "")
 
-        cfg_tmp_filename = os.path.join(SWISSVOICE_SPEC_DIR, macaddr + "_ip10.cfg.tmp")
-        inf_tmp_filename = os.path.join(SWISSVOICE_SPEC_DIR, "..", macaddr + "_ip10.inf.tmp")
+        cfg_tmp_filename = os.path.join(self.SWISSVOICE_SPEC_DIR, macaddr + "_ip10.cfg.tmp")
+        inf_tmp_filename = os.path.join(self.SWISSVOICE_SPEC_DIR, "..", macaddr + "_ip10.inf.tmp")
         cfg_filename = cfg_tmp_filename[:-4]
         inf_filename = inf_tmp_filename[:-4]
 
@@ -144,15 +152,15 @@ class Swissvoice(PhoneVendorMixin):
             dtmf_swissvoice = "on oob"
 
         txt = xivo_config.txtsubst(cfg_template_lines,
-                { 'user_display_name': provinfo['name'],
-                  'user_phone_ident':  provinfo['ident'],
-                  'user_phone_number': provinfo['number'],
-                  'user_phone_passwd': provinfo['passwd'],
-                  'http_user': SWISSVOICE_COMMON_HTTP_USER,
-                  'http_pass': SWISSVOICE_COMMON_HTTP_PASS,
-                  'dtmfmode': dtmf_swissvoice,
-                  'asterisk_ipv4' : Pgc['asterisk_ipv4'],
-                  'ntp_server_ipv4' : Pgc['ntp_server_ipv4'],
+                { 'user_display_name':  provinfo['name'],
+                  'user_phone_ident':   provinfo['ident'],
+                  'user_phone_number':  provinfo['number'],
+                  'user_phone_passwd':  provinfo['passwd'],
+                  'http_user':          self.SWISSVOICE_COMMON_HTTP_USER,
+                  'http_pass':          self.SWISSVOICE_COMMON_HTTP_PASS,
+                  'dtmfmode':           dtmf_swissvoice,
+                  'asterisk_ipv4' :     self.ASTERISK_IPV4,
+                  'ntp_server_ipv4' :   self.NTP_SERVER_IPV4,
                 },
                 cfg_filename)
         tmp_file = open(cfg_tmp_filename, 'w')
@@ -194,15 +202,15 @@ class Swissvoice(PhoneVendorMixin):
 
     @classmethod
     def get_dhcp_classes_and_sub(cls, addresses):
-        yield 'subclass "phone-mac-address-prefix" 1:00:05:90 {\n'
-        yield '    log("class Swissvoice prefix 1:00:05:90");\n'
-        yield '    option tftp-server-name "%s";\n' % addresses['bootServer']
-        yield '    option bootfile-name "swupdate_ip10.inf";\n'
-        yield '}\n'
-        yield '\n'
+        for line in (
+            'subclass "phone-mac-address-prefix" 1:00:05:90 {\n',
+            '    log("class Swissvoice prefix 1:00:05:90");\n',
+            '    option tftp-server-name "%s";\n' % addresses['bootServer'],
+            '    option bootfile-name "swupdate_ip10.inf";\n',
+            '}\n',
+            '\n'):
+            yield line
 
     @classmethod
     def get_dhcp_pool_lines(cls):
         return ()
-
-xivo_config.register_phone_vendor_class(Swissvoice)

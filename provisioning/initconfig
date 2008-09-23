@@ -65,6 +65,7 @@ from logging.handlers import SysLogHandler
 
 from xivo import xivo_config
 from xivo.xivo_config import ProvGeneralConf as Pgc
+from xivo.Phones import *
 
 from xivo import agi
 from xivo import agitb
@@ -152,8 +153,6 @@ def main():
 
 if __name__ == '__main__':
     xivo_config.LoadConfig(CONFIG_FILE)
-    
-    # WARNING: xivo_config.LoadConfig must be called before
-    from xivo.Phones import *
+    xivo_config.phone_classes_setup()
     
     main()

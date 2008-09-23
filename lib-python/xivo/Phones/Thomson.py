@@ -27,29 +27,15 @@ __license__ = """
 
 import os
 import time
-import syslog
+import logging
 import telnetlib
 
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
-from xivo.xivo_config import ProvGeneralConf as Pgc
 
-# NOTES:
-# ~/etc/dhcpd3/dhcpd.conf -> /tftpboot/Thomson/ST2030S_v1.53.inf
-#                               -> /tftpboot/Thomson/ST2030S_common_v1.53.txt
-#                               -> /tftpboot/Thomson/binary/v2030SG.070309.1.53.zz
-#                               -> ...also firmware and other global
-#                                       config files like ringing tones...
 
-THOMSON_COMMON_DIR = os.path.join(Pgc['tftproot'], "Thomson/")
-THOMSON_COMMON_INF = os.path.join(THOMSON_COMMON_DIR, "ST") # + "2030S_common"
+log = logging.getLogger("xivo.Phones.Thomson") # pylint: disable-msg=C0103
 
-THOMSON_USER = "admin"          # XXX
-THOMSON_PASSWD = "superpass"    # XXX
-THOMSON_SPEC_TXT_TEMPLATE = os.path.join(Pgc['templates_dir'], "ST") # + "2030S_template.txt"
-
-# for some tests: THOMSON_SPEC_TXT_BASENAME = Pgc['templates_dir'] + "ST2030S_"
-THOMSON_SPEC_TXT_BASENAME = "/tftpboot/ST" # + "2030S_"
 
 class TelnetExpectationFailed(RuntimeError):
     """
@@ -58,18 +44,20 @@ class TelnetExpectationFailed(RuntimeError):
     """
     pass
 
+
 class TimeoutingTelnet(telnetlib.Telnet):
     """
     This class extends Telnet so that a global timeout can occur
     during the newly introduced read_until_to().  An exception will
     be raised when that happens.
     """
-    def __init__(self, cnx, global_TO = Pgc['telnet_to_s']):
+    def __init__(self, cnx, global_TO):
         if type(cnx) != tuple or len(cnx) < 1:
             raise ValueError, "The cnx argument must be (peer,) or (peer, port) ; %s was given" % str(cnx)
         elif len(cnx) < 2:
             telnetlib.Telnet.__init__(self, cnx[0])
         else:
+            # pylint: disable-msg=W0233
             telnetlib.Telnet.__init__(self, cnx[0], cnx[1])
         self.__my_global_to = global_TO
         self.__my_global_to_start = None
@@ -103,11 +91,36 @@ class TimeoutingTelnet(telnetlib.Telnet):
                 return gotstr
             raise TelnetExpectationFailed, "Expected string '%s' has not been received before termination of the telnet session with peer %s" % (expected, str(self.__my_cnx))
 
+
+# NOTES:
+# ~/etc/dhcpd3/dhcpd.conf -> /tftpboot/Thomson/ST2030S_v1.53.inf
+#                               -> /tftpboot/Thomson/ST2030S_common_v1.53.txt
+#                               -> /tftpboot/Thomson/binary/v2030SG.070309.1.53.zz
+#                               -> ...also firmware and other global
+#                                       config files like ringing tones...
+
+
 class Thomson(PhoneVendorMixin):
+
+    THOMSON_USER = "admin"          # XXX
+    THOMSON_PASSWD = "superpass"    # XXX
+
+    THOMSON_COMMON_DIR = None
+    THOMSON_COMMON_INF = None
+    THOMSON_SPEC_TXT_TEMPLATE = None
+    THOMSON_SPEC_TXT_BASENAME = None
+
+    @classmethod
+    def setup(cls, config):
+        "Configuration of class attributes"
+        PhoneVendorMixin.setup(cls, config)
+        cls.THOMSON_COMMON_DIR = os.path.join(cls.TFTPROOT, "Thomson/")
+        cls.THOMSON_COMMON_INF = os.path.join(cls.THOMSON_COMMON_DIR, "ST") # + "2030S_common"
+        cls.THOMSON_SPEC_TXT_TEMPLATE = os.path.join(cls.TEMPLATES_DIR, "ST") # + "2030S_template.txt"
+        cls.THOMSON_SPEC_TXT_BASENAME = os.path.join(cls.TFTPROOT, "ST") # + "2030S_template.txt"
 
     def __init__(self, phone):
         PhoneVendorMixin.__init__(self, phone)
-        # TODO: handle this with a lookup table stored in the DB?
         if self.phone['model'] != "2022s" and \
            self.phone['model'] != "2030s":
             raise ValueError, "Unknown Thomson model %r" % self.phone['model']
@@ -124,7 +137,7 @@ class Thomson(PhoneVendorMixin):
 
     def __action(self, commands):
         ip = self.phone['ipv4']
-        tn = TimeoutingTelnet((ip,))
+        tn = TimeoutingTelnet((ip,), self.TELNET_TO_S)
         tn.restart_global_to()
         try:
             tn.read_until_to("Login: ")
@@ -134,7 +147,7 @@ class Thomson(PhoneVendorMixin):
                 tn.write(self.passwd + "\r\n")
             for cmd in commands:
                 tn.read_until_to("[" + self.user + "]#")
-                syslog.syslog(syslog.LOG_DEBUG, "sending telnet command (%s): %s" % (self.phone['macaddr'], cmd))
+                log.debug("sending telnet command (%s): %s", self.phone['macaddr'], cmd)
                 tn.write("%s\n" % cmd)
                 if cmd == 'reboot':
                     break
@@ -152,12 +165,12 @@ class Thomson(PhoneVendorMixin):
         return "\n".join(fk_config_lines)
 
     def __generate(self, provinfo):
-        txt_template_file = open(THOMSON_SPEC_TXT_TEMPLATE + self.phone['model'].upper() + "_template.txt")
+        txt_template_file = open(self.THOMSON_SPEC_TXT_TEMPLATE + self.phone['model'].upper() + "_template.txt")
         txt_template_lines = txt_template_file.readlines()
         txt_template_file.close()
         macaddr = self.phone['macaddr'].replace(":", "")
         model = self.phone['model'].upper()
-        tmp_filename = THOMSON_SPEC_TXT_BASENAME + model + "_" + macaddr + ".txt.tmp"
+        tmp_filename = self.THOMSON_SPEC_TXT_BASENAME + model + "_" + macaddr + ".txt.tmp"
         txt_filename = tmp_filename[:-4]
 
         multilines = str(provinfo['simultcalls'])
@@ -183,19 +196,19 @@ class Thomson(PhoneVendorMixin):
         tmp_file.writelines(txt)
         tmp_file.close()
         os.rename(tmp_filename, txt_filename) # atomically update the file
-        inf_filename = THOMSON_SPEC_TXT_BASENAME + model + "_" + macaddr + ".inf"
+        inf_filename = self.THOMSON_SPEC_TXT_BASENAME + model + "_" + macaddr + ".inf"
         try:
             os.lstat(inf_filename)
             os.unlink(inf_filename)
         except Exception: # XXX: OsError?
             pass
-        os.symlink(THOMSON_COMMON_INF + model, inf_filename)
+        os.symlink(self.THOMSON_COMMON_INF + model, inf_filename)
 
     # Daemon entry points for configuration generation and issuing commands
 
     def do_reboot(self):
         "Entry point to send the reboot command to the phone."
-        self.__configurate_telnet(THOMSON_USER, THOMSON_PASSWD)
+        self.__configurate_telnet(self.THOMSON_USER, self.THOMSON_PASSWD)
         self.__action(('reboot',))
 
     def do_reinit(self):
@@ -207,7 +220,7 @@ class Thomson(PhoneVendorMixin):
 # We are waiting for Thomson to correctly reload their common .txt file after a
 # reinit; until then we don't really reinit the phone but just put it in the
 # guest state, by its mac specific configuration
-        self.__configurate_telnet(THOMSON_USER, THOMSON_PASSWD)
+        self.__configurate_telnet(self.THOMSON_USER, self.THOMSON_PASSWD)
 #               self.__action(('sys set rel 0', 'ffs format', 'ffs commit', 'ffs commit', 'reboot', 'quit'))
         self.__action(('reboot',))
 
@@ -265,24 +278,24 @@ class Thomson(PhoneVendorMixin):
 
     @classmethod
     def get_dhcp_classes_and_sub(cls, addresses):
-        yield 'class "ThomsonST2022S" {\n'
-        yield '    match if option user-class = "Thomson ST2022S";\n'
-        yield '    log("class ThomsonST2022S");\n'
-        yield '    next-server %s;\n' % addresses['bootServer']
-        yield '    option bootfile-name "Thomson/ST2022S";\n'
-        yield '}\n'
-        yield '\n'
-        yield 'class "ThomsonST2030S" {\n'
-        yield '    match if option user-class = "Thomson ST2030S";\n'
-        yield '    log("class ThomsonST2030S");\n'
-        yield '    next-server %s;\n' % addresses['bootServer']
-        yield '    option bootfile-name "Thomson/ST2030S";\n'
-        yield '}\n'
-        yield '\n'
+        for line in (
+            'class "ThomsonST2022S" {\n',
+            '    match if option user-class = "Thomson ST2022S";\n',
+            '    log("class ThomsonST2022S");\n',
+            '    next-server %s;\n' % addresses['bootServer'],
+            '    option bootfile-name "Thomson/ST2022S";\n',
+            '}\n',
+            '\n',
+            'class "ThomsonST2030S" {\n',
+            '    match if option user-class = "Thomson ST2030S";\n',
+            '    log("class ThomsonST2030S");\n',
+            '    next-server %s;\n' % addresses['bootServer'],
+            '    option bootfile-name "Thomson/ST2030S";\n',
+            '}\n',
+            '\n'):
+            yield line
 
     @classmethod
     def get_dhcp_pool_lines(cls):
         yield '        allow members of "ThomsonST2022S";\n'
         yield '        allow members of "ThomsonST2030S";\n'
-
-xivo_config.register_phone_vendor_class(Thomson)

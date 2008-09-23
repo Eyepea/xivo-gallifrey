@@ -73,6 +73,7 @@ from xivo.ThreadingHTTPServer import ThreadingHTTPServer
 from xivo import xivo_config
 from xivo.xivo_config import ProvGeneralConf as Pgc
 from xivo import network
+from xivo.Phones import * # pylint: disable-msg=W0614
 
 from xivo.moresynchro import RWLock
 from xivo.moresynchro import ListLock
@@ -913,13 +914,12 @@ def init():
     # database uri that could depends upon current envt.
     Pgc['database_uri'] = anysql.c14n_uri(Pgc['database_uri'])
 
+    xivo_config.phone_classes_setup()
+
     return dontlauchmain, foreground, log_level
 
 
 dontlauchmain, foreground, log_level = init()
 
-# WARNING: xivo_config.LoadConfig must be called before
-# TODO: adopt a two stage load + setup approach as in AGId
-from xivo.Phones import * # pylint: disable-msg=W0614
 if __name__ == '__main__' and not dontlauchmain:
     main(log_level, foreground)

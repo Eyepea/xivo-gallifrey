@@ -30,11 +30,7 @@ import socket
 
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
-from xivo.xivo_config import ProvGeneralConf as Pgc
 
-POLYCOM_COMMON_DIR = os.path.join(Pgc['tftproot'], "Polycom/")
-POLYCOM_COMMON_HTTP_USER = "Polycom"
-POLYCOM_COMMON_HTTP_PASS = "456"
 SIP_PORT = 5060
 AMI_PORT = 5038
 AMI_USER = 'xivouser'
@@ -42,9 +38,19 @@ AMI_PASS = 'xivouser'
 
 class Polycom(PhoneVendorMixin):
 
+    POLYCOM_COMMON_HTTP_USER = "Polycom"
+    POLYCOM_COMMON_HTTP_PASS = "456"
+
+    POLYCOM_COMMON_DIR = None
+
+    @classmethod
+    def setup(cls, config):
+        "Configuration of class attributes"
+        PhoneVendorMixin.setup(cls, config)
+        cls.POLYCOM_COMMON_DIR = os.path.join(cls.TFTPROOT, "Polycom/")
+
     def __init__(self, phone):
         PhoneVendorMixin.__init__(self, phone)
-        # TODO: handle this with a lookup table stored in the DB?
         if self.phone['model'] != 'spip_430' and \
            self.phone['model'] != 'spip_650':
             raise ValueError, "Unknown Polycom model %r" % self.phone['model']
@@ -56,7 +62,7 @@ class Polycom(PhoneVendorMixin):
         # TODO: get ride of this AMI communication if possible
 
         amisock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        amisock.settimeout(float(Pgc['telnet_to_s']))
+        amisock.settimeout(float(self.TELNET_TO_S))
         amisock.connect(("127.0.0.1", AMI_PORT))
         actioncommand = ( "Action: login\r\n"
                           "Username: %s\r\n"
@@ -99,7 +105,7 @@ class Polycom(PhoneVendorMixin):
 
     def __sendsipnotify(self):
         phoneip = self.phone['ipv4']
-        myip = Pgc['asterisk_ipv4']
+        myip = self.ASTERISK_IPV4
 
         peerinfo = None
         try:
@@ -142,28 +148,28 @@ class Polycom(PhoneVendorMixin):
         self.__sendsipnotify()
 
     def __generate(self, provinfo):
-        template_main_file = open(os.path.join(Pgc['templates_dir'], "polycom-%s.cfg" % self.phone['model']))
+        template_main_file = open(os.path.join(self.TEMPLATES_DIR, "polycom-%s.cfg" % self.phone['model']))
         template_main_lines = template_main_file.readlines()
         template_main_file.close()
-        template_phone_file = open(os.path.join(Pgc['templates_dir'], "polycom-phone.cfg"))
+        template_phone_file = open(os.path.join(self.TEMPLATES_DIR, "polycom-phone.cfg"))
         template_phone_lines = template_phone_file.readlines()
         template_phone_file.close()
 
         macaddr = self.phone['macaddr'].replace(":", "").lower()
-        tmp_main_filename = os.path.join(POLYCOM_COMMON_DIR, macaddr + ".cfg.tmp")
+        tmp_main_filename = os.path.join(self.POLYCOM_COMMON_DIR, macaddr + ".cfg.tmp")
         cfg_main_filename = tmp_main_filename[:-4]
-        tmp_phone_filename = os.path.join(POLYCOM_COMMON_DIR, macaddr + "-phone.cfg.tmp")
+        tmp_phone_filename = os.path.join(self.POLYCOM_COMMON_DIR, macaddr + "-phone.cfg.tmp")
         cfg_phone_filename = tmp_phone_filename[:-4]
 
         txt_main = xivo_config.txtsubst(template_main_lines,
                 { 'phone.cfg': macaddr + "-phone.cfg" },
                 cfg_main_filename)
         txt_phone = xivo_config.txtsubst(template_phone_lines,
-                { 'user_display_name': provinfo['name'],
-                  'user_phone_ident':  provinfo['ident'],
-                  'user_phone_number': provinfo['number'],
-                  'user_phone_passwd': provinfo['passwd'],
-                  'asterisk_ipv4' : Pgc['asterisk_ipv4']
+                { 'user_display_name':  provinfo['name'],
+                  'user_phone_ident':   provinfo['ident'],
+                  'user_phone_number':  provinfo['number'],
+                  'user_phone_passwd':  provinfo['passwd'],
+                  'asterisk_ipv4' :     self.ASTERISK_IPV4
                 },
                 cfg_phone_filename)
 
@@ -228,14 +234,14 @@ class Polycom(PhoneVendorMixin):
 
     @classmethod
     def get_dhcp_classes_and_sub(cls, addresses):
-        yield 'subclass "phone-mac-address-prefix" 1:00:04:f2 {\n'
-        yield '    log("class Polycom prefix 1:00:04:f2");\n'
-        yield '    option tftp-server-name "tftp://%s/Polycom";\n' % addresses['bootServer']
-        yield '}\n'
-        yield '\n'
+        for line in (
+            'subclass "phone-mac-address-prefix" 1:00:04:f2 {\n',
+            '    log("class Polycom prefix 1:00:04:f2");\n',
+            '    option tftp-server-name "tftp://%s/Polycom";\n' % addresses['bootServer'],
+            '}\n',
+            '\n'):
+            yield line
 
     @classmethod
     def get_dhcp_pool_lines(cls):
         return ()
-
-xivo_config.register_phone_vendor_class(Polycom)

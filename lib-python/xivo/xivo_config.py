@@ -41,7 +41,7 @@ from xivo import udev
 from xivo import shvar
 
 
-log = logging.getLogger("xivo.xivo_config")
+log = logging.getLogger("xivo.xivo_config") # pylint: disable-msg=C0103
 
 
 # SYSCONF_DIR = "/etc/pf-xivo/sysconf"
@@ -82,11 +82,12 @@ ProvGeneralConf = {
     'listen_port':              8666,
     'connect_ipv4':             "127.0.0.1",
     'connect_port':             8666,
-    'tftproot':                 "/tftpboot/",
     'scan_ifaces_prefix':       "eth",
     'arping_cmd':               "sudo /usr/sbin/arping",
     'arping_sleep_us':          150000,
     'log_level':                "info",
+
+    'tftproot':                 "/tftpboot/",
     'curl_cmd':                 "/usr/bin/curl",
     'curl_to_s':                30,
     'telnet_to_s':              30,
@@ -244,10 +245,48 @@ def well_formed_provcode(provcode):
     return True
 
 
-class PhoneVendorMixin:
+class ProviConfigurability(type):
+    """
+    Metaclass that manages phone vendor classes
+    """
+
+    # Workaround pylint bug:
+    # pylint: disable-msg=C0203
+
+    def __init__(cls, name, bases, dct):
+        super(ProviConfigurability, cls).__init__(name, bases, dct)
+        if hasattr(cls, 'do_reinitprov'):
+            register_phone_vendor_class(cls)
+
+
+class PhoneVendorMixin(object):
     """
     Phone vendor base class
     """
+
+    __metaclass__ = ProviConfigurability
+
+    TELNET_TO_S = None
+    CURL_TO_S = None
+    CURL_CMD = None
+    ASTERISK_IPV4 = None
+    TEMPLATES_DIR = None
+    NTP_SERVER_IPV4 = None
+    TFTPROOT = None
+
+    @classmethod
+    def setup(cls, config):
+        """
+        Configuration of class attributes
+        """
+        cls.TELNET_TO_S = config['telnet_to_s']
+        cls.CURL_TO_S = config['curl_to_s']
+        cls.CURL_CMD = config['curl_cmd']
+        cls.ASTERISK_IPV4 = config['asterisk_ipv4']
+        cls.TEMPLATES_DIR = config['templates_dir']
+        cls.NTP_SERVER_IPV4 = config['ntp_server_ipv4']
+        cls.TFTPROOT = config['tftproot']
+    
     def __init__(self, phone):
         """
         Constructor.
@@ -361,6 +400,13 @@ def phone_desc_by_ua(ua, exc_info=True):
     return None
 
 
+def phone_classes_setup():
+    """
+    For each registered phone class k, call k.setup(Pgc)
+    """
+    for phone_class in PhoneClasses.itervalues():
+        phone_class.setup(Pgc)
+
 
 ### GENERAL CONF
 
@@ -448,7 +494,7 @@ def reserved_none_void_prefixDec(fname, prefix):
         except ValueError:
             return False
         return True
-    validator.__name__ = fname
+    validator.__name__ = fname # pylint: disable-msg=W0621
     return validator
 
 
