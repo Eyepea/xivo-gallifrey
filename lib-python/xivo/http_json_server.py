@@ -228,6 +228,7 @@ class HttpReqHandler(BaseHTTPRequestHandler):
     
     def common_req(self, execute, send_body=True):
         "Common code for GET and POST requests"
+        cmd = None
         try:
             try:
                 path, query, fragment = self.pathify() # pylint: disable-msg=W0612
@@ -258,7 +259,7 @@ class HttpReqHandler(BaseHTTPRequestHandler):
                     self.wfile.write("\n")
 
         except Exception: # pylint: disable-msg=W0703
-            log.exception("unexpected exception")
+            log.exception("exception - cmd=%r - method=%r", cmd, self.command)
 
     def do_GET(self):
         "GET method"
