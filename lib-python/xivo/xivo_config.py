@@ -474,6 +474,15 @@ def ipv4_address(nstr, schema):
     return network.is_ipv4_address_valid(nstr)
 
 
+def netmask(nstr, schema):
+    """
+    !~netmask
+        Check that corresponding document strings are IPv4 netmasks
+    """
+    return network.is_ipv4_address_valid(nstr) \
+           and network.plausible_netmask(network.parse_ipv4(nstr))
+
+
 def reserved_none_void_prefixDec(fname, prefix):
     """
     Return a XYS validator that checks that corresponding document strings are
@@ -692,6 +701,7 @@ def plausible_configuration(conf, schema):
 
 xys.add_validator(search_domain, u'!!str')
 xys.add_validator(ipv4_address, u'!!str')
+xys.add_validator(netmask, u'!!str')
 xys.add_validator(macaddr, u'!!str')
 xys.add_validator(plausible_static, u'!!map')
 xys.add_validator(plausible_configuration, u'!!map')
@@ -706,7 +716,7 @@ resolvConf:
 ipConfs:
     !~~prefixedDec static_: !~plausible_static
         address:     !~ipv4_address 192.168.0.100
-        netmask:     !~ipv4_address 255.255.255.0
+        netmask:     !~netmask 255.255.255.0
         broadcast?:  !~ipv4_address 192.168.0.255
         gateway?:    !~ipv4_address 192.168.0.254
         mtu?:        !~~between(68,1500) 1500
