@@ -405,7 +405,7 @@ def slow_set_assign(reslst, varname, new_value):
 
 
 # Identity character translaction table, see str.translate
-ID_TABLE = ''.join(map(chr, xrange(0, 256)))
+ID_CHR = ''.join(map(chr, xrange(0, 256)))
 
 # String that only contains normal non control ascii characters,
 # even excluding \n \t \v \r etc...
@@ -456,7 +456,7 @@ def escape(value):
     in @load(), will result in @value.
     """
     # if value contains non ASCII characters
-    if value.translate(ID_TABLE, NORMAL_ASCII):
+    if value.translate(ID_CHR, NORMAL_ASCII):
         return "$'%s'" % ''.join(map(SINGLE_ESCAPE_TABLE.__getitem__, value))
     elif '"' in value and "'" not in value:
         return "'%s'" % value
