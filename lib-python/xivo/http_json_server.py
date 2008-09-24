@@ -33,6 +33,12 @@ __license__ = """
 
 # TODO: locks and implements SIGHUP (by reloading the configuration)
 
+# TODO: add some teardown callbacks?
+# maybe two stages:
+#   - cb teardown stage 1
+#   - wait for tread completion in this module
+#   - cb teardown stage 2
+
 from BaseHTTPServer import BaseHTTPRequestHandler
 from xivo.ThreadingHTTPServer import ThreadingHTTPServer
 from xivo import urisup
@@ -336,6 +342,6 @@ def init(options):
         else: # op == CMD_RW
             _cmd_rw[fname] = (func, setup)
         if setup:
-            setup()
+            setup(options)
     # signal.signal(signal.SIGHUP, lambda *x: None) # XXX
     signal.signal(signal.SIGTERM, sigterm_handler)
