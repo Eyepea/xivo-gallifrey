@@ -39,6 +39,8 @@ __license__ = """
 #   - wait for tread completion in this module
 #   - cb teardown stage 2
 
+# TODO: split backtraces in syslog when they are too long
+
 from BaseHTTPServer import BaseHTTPRequestHandler
 from xivo.ThreadingHTTPServer import ThreadingHTTPServer
 from xivo import urisup
@@ -65,14 +67,26 @@ _cmd_r = {}
 _cmd_rw = {}
 
 
+class Command(object):
+    """
+    Each registration results in an instance of this class being created.
+    """
+    def __init__(self, name, handler, op, safe_init, at_start):
+        self.handler = handler
+        self.name = name
+        self.op = op
+        self.safe_init = safe_init
+        self.at_start = at_start
+
+
 class HttpReqError(Exception):
     """
     Catched in HttpReqHandler.common_req() which calls .report().
-    This is useful to be sure only one response (in this case an
-    error response) will be sent to the client; if an exception
-    occurs while sending this response, we must not try to send an
-    other response!
+    
+    Used to implement the unicity of the response to a single request,
+    in a consistent way.
     """
+
     def __init__(self, code, text=None, exc=None):
         self.code = code
         self.text = text
@@ -190,8 +204,7 @@ class HttpReqHandler(BaseHTTPRequestHandler):
         if cmd not in _cmd_r:
             raise HttpReqError(404)
 
-        func = _cmd_r[cmd][0]
-        res = func()
+        res = _cmd_r[cmd].handler()
         return cjson.encode(res)
     
     def json_from_post(self, cmd):
@@ -222,8 +235,7 @@ class HttpReqHandler(BaseHTTPRequestHandler):
         except cjson.DecodeError, e:
             raise HttpReqError(415, text=str(e))
         
-        func = _cmd_rw[cmd][0]
-        res = func(params)
+        res = _cmd_rw[cmd].handler(params)
         return cjson.encode(res)
     
     def common_req(self, execute, send_body=True):
@@ -283,17 +295,31 @@ class KillableThreadingHTTPServer(ThreadingHTTPServer):
             self.handle_request()
 
 
-def register(func, op, setup=None, fname=None):
+def register(handler, op, safe_init=None, at_start=None, name=None):
     """
     Register a command
-    @func: function to execute
+    @handler: function to execute when the command is received
     @op: CMD_R or CMD_RW
+    @safe_init: called by the safe_init() function of this module
+    @at_start: called once just before the server starts
+    @name: name of the command (if not name, handler.__name__ is used)
+    
+    prototypes:
+        handler(args)
+        safe_init(options)
+        at_start(options)
     """
-    if not fname:
-        fname = func.__name__
-    if fname in _commands:
-        raise ValueError, "%s is already registred" % fname
-    _commands[fname] = (func, setup, op)
+    if not name:
+        name = handler.__name__
+    if name in _commands:
+        raise ValueError, "%s is already registred" % name
+    
+    _commands[name] = Command(name, handler, op, safe_init, at_start)
+    
+    if op == CMD_R:
+        _cmd_r[name] = _commands[name]
+    else: # op == CMD_RW
+        _cmd_rw[name] = _commands[name]
 
 
 def sigterm_handler(signum, stack_frame):
@@ -310,11 +336,20 @@ def sigterm_handler(signum, stack_frame):
 
 
 def run(options):
-    "Start and execute the server"
+    """
+    Start and execute the server
+    """
     http_server = KillableThreadingHTTPServer(
         (options.listen_addr, options.listen_port),
         HttpReqHandler
     )
+
+    for name, cmd in _commands.iteritems():
+        if cmd.at_start:
+            log.info("at_start: %r", name)
+            cmd.at_start(options)
+
+    log.info("will now serve")
     while not _killed:
         try:
             http_server.serve_until_killed()
@@ -323,13 +358,16 @@ def run(options):
                 log.debug("interrupted system call")
             else:
                 raise
+    
     log.info("exiting")
 
 
 def init(options):
-    "Must be called before anything else"
+    """
+    Must be called just after registration, before anything else
+    """
     if hasattr(options, 'testmethods') and options.testmethods:
-        def fortytwo():
+        def fortytwo(args):
             "test GET method"
             return 42
         def ping(args):
@@ -337,12 +375,11 @@ def init(options):
             return args
         register(fortytwo, CMD_R)
         register(ping, CMD_RW)
-    for fname, (func, setup, op) in _commands.iteritems():
-        if op == CMD_R:
-            _cmd_r[fname] = (func, setup)
-        else: # op == CMD_RW
-            _cmd_rw[fname] = (func, setup)
-        if setup:
-            setup(options)
+
+    for name, cmd in _commands.iteritems():
+        if cmd.safe_init:
+            log.info("safe_init: %r", name)
+            cmd.safe_init(options)
+
     # signal.signal(signal.SIGHUP, lambda *x: None) # XXX
     signal.signal(signal.SIGTERM, sigterm_handler)
