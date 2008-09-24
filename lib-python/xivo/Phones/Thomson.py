@@ -113,7 +113,7 @@ class Thomson(PhoneVendorMixin):
     @classmethod
     def setup(cls, config):
         "Configuration of class attributes"
-        PhoneVendorMixin.setup(cls, config)
+        PhoneVendorMixin.setup(config)
         cls.THOMSON_COMMON_DIR = os.path.join(cls.TFTPROOT, "Thomson/")
         cls.THOMSON_COMMON_INF = os.path.join(cls.THOMSON_COMMON_DIR, "ST") # + "2030S_common"
         cls.THOMSON_SPEC_TXT_TEMPLATE = os.path.join(cls.TEMPLATES_DIR, "ST") # + "2030S_template.txt"

@@ -61,7 +61,7 @@ class Snom(PhoneVendorMixin):
     @classmethod
     def setup(cls, config):
         "Configuration of class attributes"
-        PhoneVendorMixin.setup(cls, config)
+        PhoneVendorMixin.setup(config)
         cls.SNOM_SPEC_DIR = os.path.join(cls.TFTPROOT, "Snom/")
         cls.SNOM_SPEC_TEMPLATE = os.path.join(cls.TEMPLATES_DIR, "snom-template.htm")
 

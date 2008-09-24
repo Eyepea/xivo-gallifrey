@@ -48,7 +48,7 @@ class Linksys(PhoneVendorMixin):
     @classmethod
     def setup(cls, config):
         "Configuration of class attributes"
-        PhoneVendorMixin.setup(cls, config)
+        PhoneVendorMixin.setup(config)
         cls.LINKSYS_COMMON_DIR = os.path.join(cls.TFTPROOT, "Linksys/")
 
     def __init__(self, phone):

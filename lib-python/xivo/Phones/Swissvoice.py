@@ -59,7 +59,7 @@ class Swissvoice(PhoneVendorMixin):
     @classmethod
     def setup(cls, config):
         "Configuration of class attributes"
-        PhoneVendorMixin.setup(cls, config)
+        PhoneVendorMixin.setup(config)
         cls.SWISSVOICE_SPEC_DIR = os.path.join(cls.TFTPROOT, "Swissvoice/")
         cls.SWISSVOICE_SPEC_INF_TEMPLATE = os.path.join(cls.TEMPLATES_DIR, "template_ip10.inf")
         cls.SWISSVOICE_SPEC_CFG_TEMPLATE = os.path.join(cls.TEMPLATES_DIR, "template_ip10.cfg")

@@ -47,7 +47,7 @@ class Aastra(PhoneVendorMixin):
     @classmethod
     def setup(cls, config):
         "Configuration of class attributes"
-        PhoneVendorMixin.setup(cls, config)
+        PhoneVendorMixin.setup(config)
         cls.AASTRA_COMMON_DIR = os.path.join(cls.TFTPROOT, "Aastra/")
 
     def __init__(self, phone):
