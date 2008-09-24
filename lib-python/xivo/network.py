@@ -28,6 +28,8 @@ import re
 import os
 import subprocess
 import logging
+import socket
+import struct
 
 from xivo.UpAllAny import all
 
@@ -173,23 +175,28 @@ def is_interface_plugged(ifname):
 def normalize_ipv4_address(addr):
     """
     Return a canonical string repr of addr (which must be a valid IPv4)
+    
+    >>> normalize_ipv4_address("1.2.3.4")
+    '1.2.3.4'
+    >>> normalize_ipv4_address("1.2.259")
+    '1.2.1.3'
+    >>> normalize_ipv4_address("4")
+    '0.0.0.4'
+    >>> normalize_ipv4_address("1.13")
+    '1.0.0.13'
+    >>> normalize_ipv4_address("1.16383")
+    '1.0.63.255'
     """
-    return '.'.join([str(int(elt)) for elt in addr.split('.', 3)])
+    return socket.inet_ntoa(socket.inet_aton(addr))
 
 
 def is_ipv4_address_valid(addr):
     "True <=> valid"
-    elements = addr.split(".", 4)
-    if len(elements) != 4:
+    try:
+        socket.inet_aton(addr)
+        return True
+    except socket.error:
         return False
-    for elt in elements:
-        try:
-            i = int(elt)
-        except ValueError:
-            return False
-        if not (0 <= i < 256):
-            return False
-    return True
 
 
 def is_mac_address_valid(addr):
@@ -211,6 +218,11 @@ def normalize_mac_address(macaddr):
     """
     input: mac address, with bytes in hexa, ':' separated
     ouput: mac address in format %02X:%02X:%02X:%02X:%02X:%02X
+
+    >>> normalize_mac_address("1a:b:c:d:e:f")
+    '1A:0B:0C:0D:0E:0F'
+    >>> normalize_mac_address("1A:0B:0C:0D:0E:0F")
+    '1A:0B:0C:0D:0E:0F'
     """
     macaddr_split = macaddr.upper().split(':', 6)
     if len(macaddr_split) != 6:
@@ -240,7 +252,7 @@ def ipv4_from_macaddr(macaddr, exc_info=True, ifname_match_func=lambda x: True, 
             child = subprocess.Popen(arping_cmd_list + ["-r", "-c", "1", "-w", str(arping_sleep_us), '-I', iface, macaddr],
                                      bufsize = 0, stdout = subprocess.PIPE, close_fds = True)
             StreamedLines.makeNonBlocking(child.stdout)
-            for (result,) in StreamedLines.rxStreamedLines(fobjs = (child.stdout,), timeout = arping_sleep_us * 10. / 1000000.):
+            for (result,) in StreamedLines.rxStreamedLines(fobjs=(child.stdout,), timeout=arping_sleep_us * 10. / 1000000.):
                 break
         except Exception:
             result = None
@@ -269,15 +281,39 @@ def macaddr_from_ipv4(ipv4, exc_info=True, ifname_match_func=lambda x: True, arp
 def parse_ipv4(straddr):
     """
     Return an IPv4 address as a 4uple of ints
-    * straddr is an IPv4 address stored as a string
+    @straddr: IPv4 address stored as a string
+
+    >>> parse_ipv4("192.168.0.42")
+    (192, 168, 0, 42)
+    >>> parse_ipv4("192.168.42")
+    (192, 168, 0, 42)
+    >>> parse_ipv4("192.168.16383")
+    (192, 168, 63, 255)
+    >>> parse_ipv4("16383")
+    (0, 0, 63, 255)
+    >>> parse_ipv4("1")
+    (0, 0, 0, 1)
+    >>> parse_ipv4("1.13")
+    (1, 0, 0, 13)
     """
-    return tuple(map(int, straddr.split('.', 3)))
+    return struct.unpack("BBBB", socket.inet_aton(straddr))
 
 
 def format_ipv4(tupaddr):
     """
     Return a string repr of an IPv4 internal repr
-    * tupaddr is an IPv4 address stored as a tuple of 4 ints
+    @tupaddr is an IPv4 address stored as a tuple of 4 ints
+
+    >>> format_ipv4((192, 168, 0, 42))
+    '192.168.0.42'
+    >>> format_ipv4((192, 168, 63, 255))
+    '192.168.63.255'
+    >>> format_ipv4((0, 0, 63, 255))
+    '0.0.63.255'
+    >>> format_ipv4((0, 0, 0, 1))
+    '0.0.0.1'
+    >>> format_ipv4((1, 0, 0, 13))
+    '1.0.0.13'
     """
     return '.'.join(map(str, tupaddr))
 
@@ -306,21 +342,27 @@ def netmask_invert(mask):
     return tuple([m ^ 0xFF for m in mask])
 
 
+_valid_netmask = frozenset([
+    struct.unpack("BBBB", struct.pack(">L", 0xFFFFFFFF ^ ((1 << _m) - 1)))
+    for _m in xrange(0, 33)
+])
+del _m
+
 def plausible_netmask(addr):
     """
     Check that addr (4uple of ints) makes a plausible netmask
     (set bits first, reset bits last)
+
+    >>> plausible_netmask((255, 255, 255, 255))
+    True
+    >>> plausible_netmask((0, 0, 0, 0))
+    True
+    >>> plausible_netmask((255, 255, 128, 0))
+    True
+    >>> plausible_netmask((255, 255, 64, 0))
+    False
     """
-    state = 1
-    for addr_part in addr:
-        for bitval in (128, 64, 32, 16, 8, 4, 2, 1):
-            if state:
-                if not (addr_part & bitval):
-                    state = 0
-            else:
-                if (addr_part & bitval):
-                    return False
-    return True
+    return addr in _valid_netmask
 
 
 # WARNING: the following function does not test the length which must be <= 63
@@ -403,10 +445,8 @@ def ifplugd_start():
         raise NetworkOpError("failure of: " + ' '.join(IFPLUGD_START))
 
 
-def _test():
-    import doctest
-    doctest.testmod()
-
-
 if __name__ == "__main__":
+    def _test():
+        import doctest
+        doctest.testmod()
     _test()
