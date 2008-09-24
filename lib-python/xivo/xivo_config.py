@@ -74,18 +74,22 @@ IFPLUGD_FILE = "ifplugd"            # /etc/default/
 
 
 ProvGeneralConf = {
-    'database_uri':             "sqlite:/var/lib/asterisk/astsqlite?timeout_ms=150",
-    'excl_del_lock_to_s':       45,
-    'http_read_request_to_s':   90,
-    'http_request_to_s':        90,
     'listen_ipv4':              "127.0.0.1",
     'listen_port':              8666,
     'connect_ipv4':             "127.0.0.1",
     'connect_port':             8666,
+
     'scan_ifaces_prefix':       "eth",
     'arping_cmd':               "sudo /usr/sbin/arping",
     'arping_sleep_us':          150000,
+
     'log_level':                "info",
+
+    'database_uri':             "sqlite:/var/lib/asterisk/astsqlite?timeout_ms=150",
+    'http_read_request_to_s':   90,
+    'http_request_to_s':        90,
+
+    'excl_del_lock_to_s':       45,
 
     'tftproot':                 "/tftpboot/",
     'curl_cmd':                 "/usr/bin/curl",
@@ -232,17 +236,14 @@ def txtsubst(lines, variables, target_file=None):
     return [linesubst(line, variables) for line in lines]
 
 
+ID_CHR = ''.join(map(chr, xrange(0, 256)))
+
 def well_formed_provcode(provcode):
     """
-    Check whether provcode really is a well formed Xivo provisioning
-    code.
+    @provcode: string
+    Return True <=> provcode is a well formed XIVO provisioning code
     """
-    if provcode == '0':
-        return True
-    for d in provcode:
-        if d not in '0123456789':
-            return False
-    return True
+    return provcode and not provcode.translate(ID_CHR, "0123456789")
 
 
 class ProviConfigurability(type):
