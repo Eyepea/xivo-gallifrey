@@ -24,12 +24,10 @@ __author__    = 'Corentin Le Gall'
 # with this program; if not, you will find one at
 # <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>.
 
-from xivo_log import *
+import logging
 from xivo_ctiservers.cti_anylist import AnyList
 
-def log_debug(level, text):
-        log_debug_file(level, text, 'userlist')
-        return
+log = logging.getLogger('userlist')
 
 class UserList(AnyList):
         def __init__(self, newurls = []):
@@ -53,7 +51,7 @@ class UserList(AnyList):
                                                 nnew += 1
                                                 self.userlist[a] = b
                                 if nnew > 0:
-                                        log_debug(SYSLOG_INFO, '%d new users read from %s' % (nnew, url))
+                                        log.info('%d new users read from %s' % (nnew, url))
                 else:
                         newuserlist = self.commandclass.getuserslist()
                         for a, b in newuserlist.iteritems():

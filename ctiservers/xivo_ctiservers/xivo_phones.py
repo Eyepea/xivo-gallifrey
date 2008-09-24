@@ -28,12 +28,11 @@ __author__    = 'Corentin Le Gall'
 Phones lists.
 """
 
+import logging
 import time
-from xivo_log import *
 import cti_urllist
 
-def log_debug(level, text):
-        log_debug_file(level, text, 'phones')
+log = logging.getLogger('phones')
 
 DIR_TO_STRING = '>'
 DIR_FROM_STRING = '<'
@@ -78,10 +77,10 @@ def p2p(phone_list):
                                         if bool(int(isinitialized)):
                                                 phonelist[argg] = [sso_phonenum, sso_context, bool(int(enable_hint))]
                 except Exception, exc:
-                        log_debug(SYSLOG_ERR, '--- exception --- a problem occured when building phone list : %s' % str(exc))
+                        log.error('--- exception --- a problem occured when building phone list : %s' % str(exc))
                         # return phonelist
         if len(phonelist) > 0:
-                log_debug(SYSLOG_INFO, 'found %d ids in phone list, among which %d ids are registered as users'
+                log.info('found %d ids in phone list, among which %d ids are registered as users'
                           %(len(phone_list), len(phonelist)))
 
         return phonelist
@@ -228,7 +227,7 @@ class PhoneList:
                          self.rough_phonelist = newphlist
                  sipnumlistnew = dict.fromkeys(self.rough_phonelist.keys())
          except Exception, exc:
-                 log_debug(SYSLOG_ERR, '--- exception --- : get_phonelist_fromurl failed : %s' % str(exc))
+                 log.error('--- exception --- : get_phonelist_fromurl failed : %s' % str(exc))
                  self.rough_phonelist = {}
 
          sipnumlistold = dict.fromkeys(filter(lambda j: self.normal[j].towatch, self.normal))
@@ -276,7 +275,7 @@ class PhoneList:
                                                             self.rough_phonelist[snl][1],
                                                             "Ready", True)
                         else:
-                                log_debug(SYSLOG_WARNING, 'format <%s> not supported' % snl)
+                                log.warning('format <%s> not supported' % snl)
 
                         self.lstadd.append([self.astid,
                                             self.normal[snl].build_basestatus(),
@@ -435,7 +434,7 @@ class LineProp:
         def set_chan_hangup(self, ichan):
                 nichan = ichan
                 if ichan.find("<ZOMBIE>") >= 0:
-                        # log_debug(SYSLOG_INFO, "sch channel contains a <ZOMBIE> part (%s) : sending hup to %s anyway" %(ichan,nichan))
+                        # log.info("sch channel contains a <ZOMBIE> part (%s) : sending hup to %s anyway" %(ichan,nichan))
                         nichan = ichan.split("<ZOMBIE>")[0]
                 firsttime = time.time()
                 self.chann[nichan] = ChannelStatus("Hangup", 0, "", "", "", firsttime, "")
@@ -447,7 +446,7 @@ class LineProp:
         def del_chan(self, ichan):
                 nichan = ichan
                 if ichan.find("<ZOMBIE>") >= 0:
-                        # log_debug(SYSLOG_INFO, "dch channel contains a <ZOMBIE> part (%s) : deleting %s anyway" %(ichan,nichan))
+                        # log.info("dch channel contains a <ZOMBIE> part (%s) : deleting %s anyway" %(ichan,nichan))
                         nichan = ichan.split("<ZOMBIE>")[0]
                 if nichan in self.chann: del self.chann[nichan]
 

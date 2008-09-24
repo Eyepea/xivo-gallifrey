@@ -25,12 +25,11 @@ __author__    = 'Corentin Le Gall'
 # <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>.
 
 import csv
+import logging
 import md5
 import urllib
-from xivo_log import *
 
-def log_debug(level, text):
-        log_debug_file(level, text, 'urllist')
+log = logging.getLogger('urllist')
 
 class UrlList:
         def __init__(self, url):
@@ -47,17 +46,17 @@ class UrlList:
                                 if kind == 'file' or kind == self.url:
                                         f = urllib.urlopen(self.url)
                                 elif kind in ['mysql', 'sqlite', 'ldap']:
-                                        log_debug(SYSLOG_WARNING, 'URL kind %s not supported yet' % kind)
+                                        log.warning('URL kind %s not supported yet' % kind)
                                 elif kind in ['http', 'https']:
                                         f = urllib.urlopen(self.url + "?sum=%s" % self.urlmd5)
                                 else:
-                                        log_debug(SYSLOG_WARNING, 'URL kind %s not supported' % kind)
+                                        log.warning('URL kind %s not supported' % kind)
                                         return -1
                         else:
-                                log_debug(SYSLOG_WARNING, 'No URL has been defined')
+                                log.warning('No URL has been defined')
                                 return -1
                 except Exception, exc:
-                        log_debug(SYSLOG_ERR, "--- exception --- (UrlList) unable to open URL %s : %s" %(self.url, str(exc)))
+                        log.error("--- exception --- (UrlList) unable to open URL %s : %s" %(self.url, str(exc)))
                         return -1
 
                 try:
@@ -80,15 +79,15 @@ class UrlList:
                                                         self.list[line[index]] = line
                                 elif len(line) == 1:
                                         if line[0] == 'XIVO-WEBI: no-data':
-                                                log_debug(SYSLOG_INFO, 'received no-data from WEBI')
+                                                log.info('received no-data from WEBI')
                                         elif line[0] == 'XIVO-WEBI: no-update':
-                                                log_debug(SYSLOG_INFO, 'received no-update from WEBI')
+                                                log.info('received no-update from WEBI')
                                                 self.urlmd5 = savemd5
                                 else:
-                                        # log_debug(SYSLOG_WARNING, 'unallowed line length %d' % len(line))
+                                        # log.warning('unallowed line length %d' % len(line))
                                         pass
                         f.close()
                 except Exception, exc:
-                        log_debug(SYSLOG_ERR, "--- exception --- (UrlList) problem occured when retrieving list : %s" % str(exc))
+                        log.error('--- exception --- (UrlList) problem occured when retrieving list : %s' % exc)
                         return -1
                 return 0

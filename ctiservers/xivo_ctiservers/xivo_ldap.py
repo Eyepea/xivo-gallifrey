@@ -30,18 +30,17 @@ LDAP class.
 
 import csv
 import ldap
+import logging
 import sys
 import urllib
-from xivo_log import *
 
-def log_debug(a, b):
-        log_debug_file(a, b, 'ldap')
+log = logging.getLogger('ldap')
 
 ## \class xivo_ldap
 class xivo_ldap:
         def __init__(self, iuri):
                 try:
-                        log_debug(SYSLOG_INFO, 'requested uri = %s' % iuri)
+                        log.info('requested uri = %s' % iuri)
                         ldapf = iuri.split('://')
                         ldapkind = ldapf[0]
                         postldap = ldapf[1]
@@ -65,7 +64,7 @@ class xivo_ldap:
                                 self.l.simple_bind_s()
 
                 except ldap.LDAPError, exc:
-			log_debug(SYSLOG_ERR, '__init__ : exception ldap.LDAPError (%s) : %s'
+			log.error('__init__ : exception ldap.LDAPError (%s) : %s'
                                   % (iuri, exc))
                         self.l = None
 
@@ -77,7 +76,7 @@ class xivo_ldap:
                                                    attrib)
                         return resultat
                 except ldap.LDAPError, exc:
-                        log_debug(SYSLOG_ERR, 'getldap : exception ldap.LDAPError (%s) : %s'
+                        log.error('getldap : exception ldap.LDAPError (%s) : %s'
                                   % (self.uri, exc))
 
 

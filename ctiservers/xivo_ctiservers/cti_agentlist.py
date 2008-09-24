@@ -24,12 +24,7 @@ __author__    = 'Corentin Le Gall'
 # with this program; if not, you will find one at
 # <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>.
 
-from xivo_log import *
 from xivo_ctiservers.cti_anylist import AnyList
-
-def log_debug(level, text):
-        log_debug_file(level, text, 'agentlist')
-        return
 
 class AgentList(AnyList):
         def __init__(self, newurls = []):

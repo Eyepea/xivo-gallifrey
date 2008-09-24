@@ -29,6 +29,7 @@ This is the XivoCTI class.
 """
 
 import cjson
+import logging
 import os
 import random
 import re
@@ -47,19 +48,28 @@ from xivo_ctiservers import xivo_commandsets
 from xivo_ctiservers import xivo_ldap
 from xivo_ctiservers import xivo_phones
 from xivo_ctiservers.xivo_commandsets import BaseCommand
-from xivo_ctiservers.xivo_log import *
 from xivo import anysql
 from xivo.BackSQL import backmysql
 from xivo.BackSQL import backsqlite
 
-def log_debug(level, text):
-        log_debug_file(level, text, 'xivocti')
+log = logging.getLogger('xivocti')
 
 XIVOVERSION = '0.4'
 REQUIRED_CLIENT_VERSION = 4141
 __revision__ = __version__.split()[1]
 __alphanums__ = string.uppercase + string.lowercase + string.digits
-allowed_states = ['available', 'away', 'outtolunch', 'donotdisturb', 'berightback']
+allowed_states = { 'available' : 'user-user-Disponible',
+                   'away' : 'user-user-Absent',
+                   'outtolunch' : 'user-user-Parti Manger',
+                   'donotdisturb' : 'user-user-Ne Pas Déranger',
+                   'berightback' : 'user-user-Bientot de Retour' } # ô character seems to be badly parsed on client-side
+##allowed_states = { 'available' : 'user-any-Disponible',
+##                   'fastpickup' : 'user-any-Décroche Rapide',
+##                   'onlineoutgoing' : 'calls-calls-En ligne appel sortant',
+##                   'onlineincoming' : 'calls-calls-En ligne appel entrant',
+##                   'postcall' : 'calls-user-Post Appel',
+##                   'pause' : 'user-user-Pause',
+##                   'backoffice' : 'user-user-Back Office' }
 ITEMS_PER_PACKET = 500
 HISTSEPAR = ';'
 DEFAULTCONTEXT = 'default'
@@ -132,7 +142,7 @@ class XivoCTICommand(BaseCommand):
                                 elif cmd.struct.get('class') == 'login_capas':
                                         cmd.type = xivo_commandsets.CMD_LOGIN_CAPAS
                         except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- parsing json for <%s> : %s' % (linein, exc))
+                                log.error('--- exception --- parsing json for <%s> : %s' % (linein, exc))
                                 cmd.struct = {}
                 return cmd
 
@@ -146,7 +156,7 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def transfer_endbuf(self, req):
-                log_debug(SYSLOG_INFO, 'full buffer received for %s : len=%d %s'
+                log.info('full buffer received for %s : len=%d %s'
                           % (req, len(''.join(self.transfers_buf[req])), self.transfers_ref))
                 if req in self.transfers_ref:
                         ref = self.transfers_ref[req]
@@ -162,19 +172,6 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def get_login_params(self, command, astid, connid):
-                """
-                Login syntax awaited : "login astid=xivo;...=..."
-                """
-##                print 'get_login_params()', command.struct
-##                cfg = {}
-##                if len(command.args) > 0:
-##                        arglist = command.args[0].split(';')
-##                        for argm in arglist:
-##                                argms = argm.split('=')
-##                                if len(argms) == 2:
-##                                        [param, value] = argms
-##                                        cfg[param] = value
-##                return cfg
                 return command.struct
 
         def manage_login(self, loginparams, phase, uinfo):
@@ -184,7 +181,7 @@ class XivoCTICommand(BaseCommand):
                                 if argum not in loginparams:
                                         missings.append(argum)
                         if len(missings) > 0:
-                                log_debug(SYSLOG_WARNING, 'missing args in loginparams : %s' % ','.join(missings))
+                                log.warning('missing args in loginparams : %s' % ','.join(missings))
                                 return 'missing:%s' % ','.join(missings)
 
                         # trivial checks (version, client kind) dealing with the software used
@@ -221,7 +218,7 @@ class XivoCTICommand(BaseCommand):
                                 if argum not in loginparams:
                                         missings.append(argum)
                         if len(missings) > 0:
-                                log_debug(SYSLOG_WARNING, 'missing args in loginparams : %s' % ','.join(missings))
+                                log.warning('missing args in loginparams : %s' % ','.join(missings))
                                 return 'missing:%s' % ','.join(missings)
 
                         if uinfo is not None:
@@ -243,7 +240,7 @@ class XivoCTICommand(BaseCommand):
                                 if argum not in loginparams:
                                         missings.append(argum)
                         if len(missings) > 0:
-                                log_debug(SYSLOG_WARNING, 'missing args in loginparams : %s' % ','.join(missings))
+                                log.warning('missing args in loginparams : %s' % ','.join(missings))
                                 return 'missing:%s' % ','.join(missings)
 
                         if uinfo is not None:
@@ -265,26 +262,17 @@ class XivoCTICommand(BaseCommand):
                         loginkind = loginparams.get('loginkind')
                         if loginkind == 'agent':
                                 userinfo['agentphonenum'] = loginparams.get('phonenumber')
-                                # self.amilist.execute(astid, 'agentcallbacklogin', agentnum, phonenum)
+                                # self.__login_agent__(userinfo)
                         if subscribe is not None:
                                 userinfo['subscribe'] = 0
                         return userinfo
 
 
         def manage_logoff(self, userinfo, when):
-                log_debug(SYSLOG_INFO, 'logoff (%s) %s'
+                log.info('logoff (%s) %s'
                           % (when, userinfo))
                 userinfo['logofftime-ascii-last'] = time.asctime()
-                if 'agentnum' in userinfo:
-                        agentnum = userinfo['agentnum']
-                        astid = userinfo['astid']
-                        if 'phonenum' in userinfo:
-                                phonenum = userinfo['phonenum']
-                                self.amilist.execute(astid, 'setvar', 'AGENTBYCALLERID_%s' % phonenum, '')
-                        if agentnum is not None and len(agentnum) > 0:
-                                self.amilist.execute(astid, 'agentlogoff', agentnum)
-                if 'agentphonenum' in userinfo:
-                        del userinfo['agentphonenum']
+                self.__logoff_agent__(userinfo)
                 self.__disconnect_user__(userinfo)
                 return
 
@@ -295,7 +283,7 @@ class XivoCTICommand(BaseCommand):
                 #              return 'uninit_phone'
                 if userinfo.has_key('login') and userinfo['login'].has_key('sessiontimestamp'):
                         if time.time() - userinfo['login'].get('sessiontimestamp') < self.xivoclient_session_timeout:
-                                log_debug(SYSLOG_WARNING, 'user %s already connected from %s'
+                                log.warning('user %s already connected from %s'
                                           % (userinfo['user'], userinfo['login']['connection'].getpeername()))
                                 if 'lastconnwins' in userinfo:
                                         if userinfo['lastconnwins']:
@@ -337,19 +325,19 @@ class XivoCTICommand(BaseCommand):
                         if 'state' in userinfo:
                                 futurestate = userinfo.get('state')
                                 # only if it was a "defined" state anyway
-                                if futurestate in allowed_states:
+                                if futurestate in allowed_states.keys():
                                         state = futurestate
 
-                        if state in allowed_states:
+                        if state in allowed_states.keys():
                                 userinfo['state'] = state
                         else:
-                                log_debug(SYSLOG_WARNING, '(user %s) : state <%s> is not an allowed one => undefinedstate-connect'
+                                log.warning('(user %s) : state <%s> is not an allowed one => undefinedstate-connect'
                                           % (userinfo.get('user'), state))
                                 userinfo['state'] = 'undefinedstate-connect'
 
                         self.capas[capaid].conn_inc()
                 except Exception, exc:
-                        log_debug(SYSLOG_ERR, "--- exception --- connect_user %s : %s" %(userinfo, exc))
+                        log.error("--- exception --- connect_user %s : %s" % (userinfo, exc))
 
 
         def __disconnect_user__(self, userinfo):
@@ -364,13 +352,13 @@ class XivoCTICommand(BaseCommand):
                                 userinfo['state'] = 'unknown'
                                 self.__update_availstate__(userinfo, userinfo.get('state'))
                         else:
-                                log_debug(SYSLOG_WARNING, 'userinfo does not contain login field : %s' % userinfo)
+                                log.warning('userinfo does not contain login field : %s' % userinfo)
                 except Exception, exc:
-                        log_debug(SYSLOG_ERR, "--- exception --- disconnect_user %s : %s" %(userinfo, exc))
+                        log.error("--- exception --- disconnect_user %s : %s" % (userinfo, exc))
 
 
         def loginko(self, loginparams, errorstring, connid):
-                log_debug(SYSLOG_WARNING, 'user can not connect (%s) : sending %s' % (loginparams, errorstring))
+                log.warning('user can not connect (%s) : sending %s' % (loginparams, errorstring))
                 tosend = { 'class' : 'loginko',
                            'direction' : 'client',
                            'errorstring' : errorstring }
@@ -396,6 +384,7 @@ class XivoCTICommand(BaseCommand):
                                    'direction' : 'client',
                                    'capafuncs' : self.capas[capaid].tostring(self.capas[capaid].all()),
                                    'capaxlets' : self.capas[capaid].capadisps,
+                                   'capapresence' : allowed_states,
                                    'appliname' : self.capas[capaid].appliname,
                                    'state' : userinfo.get('state') }
                         repstr = cjson.encode(tosend)
@@ -554,7 +543,7 @@ class XivoCTICommand(BaseCommand):
 
         def checkqueue(self):
                 buf = os.read(self.queued_threads_pipe[0], 1024)
-                log_debug(SYSLOG_WARNING, 'checkqueue : read buf = %s' % buf)
+                log.warning('checkqueue : read buf = %s' % buf)
                 return self.disconnlist
 
 
@@ -569,7 +558,7 @@ class XivoCTICommand(BaseCommand):
                                 mysock = userinfo.get('login')['connection']
                                 mysock.sendall(strupdate + '\n', socket.MSG_WAITALL)
                 except Exception, exc:
-                        log_debug(SYSLOG_ERR, '--- exception --- (__send_msg_to_cti_client__) : %s (%s) userinfo = %s'
+                        log.error('--- exception --- (__send_msg_to_cti_client__) : %s (%s) userinfo = %s'
                                   % (exc, exc.__class__, userinfo))
                         if userinfo not in self.disconnlist:
                                 self.disconnlist.append(userinfo)
@@ -583,7 +572,7 @@ class XivoCTICommand(BaseCommand):
                                 if 'agentnum' in userinfo and userinfo.get('agentnum') == agentnum:
                                         self.__send_msg_to_cti_client__(userinfo, strupdate)
                 except Exception, exc:
-                        log_debug(SYSLOG_WARNING, '--- exception --- (__send_msg_to_cti_client_byagentid__) : %s' % exc)
+                        log.warning('--- exception --- (__send_msg_to_cti_client_byagentid__) : %s' % exc)
                 return
 
 
@@ -593,7 +582,7 @@ class XivoCTICommand(BaseCommand):
                                 for userinfo in self.ulist_ng.userlist.itervalues():
                                         self.__send_msg_to_cti_client__(userinfo, strupdate)
                 except Exception, exc:
-                        log_debug(SYSLOG_WARNING, '--- exception --- (__send_msg_to_cti_clients__) : %s' % exc)
+                        log.warning('--- exception --- (__send_msg_to_cti_clients__) : %s' % exc)
                 return
 
 
@@ -620,10 +609,10 @@ class XivoCTICommand(BaseCommand):
                                                 linestosend.append('<%s order="%s" name="%s" type="%s"><![CDATA[%s]]></%s>'
                                                                    % (sheetkind, k, title, type, basestr, sheetkind))
                                         else:
-                                                log_debug(SYSLOG_WARNING, '__build_xmlsheet__ wrong number of fields in definition for %s %s %s'
+                                                log.warning('__build_xmlsheet__ wrong number of fields in definition for %s %s %s'
                                                           % (sheetkind, whichitem, k))
                                 except Exception, exc:
-                                        log_debug(SYSLOG_ERR, '--- exception --- __build_xmlsheet__ %s %s : %s' % (sheetkind, whichitem, exc))
+                                        log.error('--- exception --- __build_xmlsheet__ %s %s : %s' % (sheetkind, whichitem, exc))
                 return linestosend
 
 
@@ -642,7 +631,7 @@ class XivoCTICommand(BaseCommand):
                         actionopt = self.sheet_actions.get(where)
                         whoms = actionopt.get('whom')
                         if whoms is None or whoms == '':
-                                log_debug(SYSLOG_WARNING, '__sheet_alert__ (%s) : whom field for %s action has not been defined'
+                                log.warning('__sheet_alert__ (%s) : whom field for %s action has not been defined'
                                           % (astid, where))
                                 return
 
@@ -775,7 +764,7 @@ class XivoCTICommand(BaseCommand):
                                                         try:
                                                                 y = self.__build_customers_bydirdef__(dirname, callingnum, dirdef)
                                                         except Exception, exc:
-                                                                log_debug(SYSLOG_ERR, '--- exception --- (xivo-tomatch-callerid : %s, %s) : %s'
+                                                                log.error('--- exception --- (xivo-tomatch-callerid : %s, %s) : %s'
                                                                           % (dirname, context, exc))
                                                                 y = []
                                                         if len(y) > 0:
@@ -820,7 +809,7 @@ class XivoCTICommand(BaseCommand):
                                         for uinfo in self.ulist_ng.userlist.itervalues():
                                                 self.__send_msg_to_cti_client__(uinfo, fulllines)
                                 else:
-                                        log_debug(SYSLOG_WARNING, '__sheet_alert__ (%s) : unknown destination <%s> in <%s>'
+                                        log.warning('__sheet_alert__ (%s) : unknown destination <%s> in <%s>'
                                                   % (astid, whom, where))
                 return
 
@@ -958,11 +947,11 @@ class XivoCTICommand(BaseCommand):
                              'Agent logged in']:
                         pass
                 else:
-                        log_debug(SYSLOG_WARNING, 'AMI %s Response=Success : untracked message <%s>' % (astid, msg))
+                        log.warning('AMI %s Response=Success : untracked message <%s>' % (astid, msg))
                 return
 
         def amiresponse_error(self, astid, event):
-                log_debug(SYSLOG_WARNING, 'AMI %s Response=Error : %s' % (astid, event))
+                log.warning('AMI %s Response=Error : %s' % (astid, event))
                 return
 
         def amiresponse_mailboxcount(self, astid, event):
@@ -1196,7 +1185,7 @@ class XivoCTICommand(BaseCommand):
         # XIVO-WEBI: end-data
         def ami_queuecallerabandon(self, astid, event):
                 if astid not in self.qlist:
-                        log_debug(SYSLOG_WARNING, 'ami_queuecallerabandon : no queue list has been defined for %s' % astid)
+                        log.warning('ami_queuecallerabandon : no queue list has been defined for %s' % astid)
                         return
                 # Asterisk 1.4 event
                 # {'Queue': 'qcb_00000', 'OriginalPosition': '1', 'Uniqueid': '1213891256.41', 'Privilege': 'agent,all', 'Position': '1', 'HoldTime': '2', 'Event': 'QueueCallerAbandon'}
@@ -1204,7 +1193,7 @@ class XivoCTICommand(BaseCommand):
         
         def ami_queueentry(self, astid, event):
                 if astid not in self.qlist:
-                        log_debug(SYSLOG_WARNING, 'ami_queueentry : no queue list has been defined for %s' % astid)
+                        log.warning('ami_queueentry : no queue list has been defined for %s' % astid)
                         return
                 queue = event.get('Queue')
                 position = event.get('Position')
@@ -1217,7 +1206,7 @@ class XivoCTICommand(BaseCommand):
         
         def ami_queuememberadded(self, astid, event):
                 if astid not in self.qlist:
-                        log_debug(SYSLOG_WARNING, 'ami_queuememberadded : no queue list has been defined for %s' % astid)
+                        log.warning('ami_queuememberadded : no queue list has been defined for %s' % astid)
                         return
                 queue = event.get('Queue')
                 location = event.get('Location')
@@ -1229,7 +1218,7 @@ class XivoCTICommand(BaseCommand):
         
         def ami_queuememberremoved(self, astid, event):
                 if astid not in self.qlist:
-                        log_debug(SYSLOG_WARNING, 'ami_queuememberremoved : no queue list has been defined for %s' % astid)
+                        log.warning('ami_queuememberremoved : no queue list has been defined for %s' % astid)
                         return
                 queue = event.get('Queue')
                 location = event.get('Location')
@@ -1247,7 +1236,7 @@ class XivoCTICommand(BaseCommand):
         def ami_queuememberstatus(self, astid, event):
                 print 'AMI_QUEUEMEMBERSTATUS', event
                 if astid not in self.qlist:
-                        log_debug(SYSLOG_WARNING, 'ami_queuememberstatus : no queue list has been defined for %s' % astid)
+                        log.warning('ami_queuememberstatus : no queue list has been defined for %s' % astid)
                         return
                 status = event.get('Status')
                 queue = event.get('Queue')
@@ -1266,7 +1255,7 @@ class XivoCTICommand(BaseCommand):
         def ami_queuememberpaused(self, astid, event):
                 print 'AMI_QUEUEMEMBERPAUSED', event
                 if astid not in self.qlist:
-                        log_debug(SYSLOG_WARNING, 'ami_queuememberpaused : no queue list has been defined for %s' % astid)
+                        log.warning('ami_queuememberpaused : no queue list has been defined for %s' % astid)
                         return
                 queue = event.get('Queue')
                 paused = event.get('Paused')
@@ -1283,7 +1272,7 @@ class XivoCTICommand(BaseCommand):
 
         def ami_queueparams(self, astid, event):
                 if astid not in self.qlist:
-                        log_debug(SYSLOG_WARNING, 'ami_queueparams : no queue list has been defined for %s' % astid)
+                        log.warning('ami_queueparams : no queue list has been defined for %s' % astid)
                         return
                 queue = event.get('Queue')
                 self.qlist[astid].update_queuestats(queue, event)
@@ -1296,7 +1285,7 @@ class XivoCTICommand(BaseCommand):
 
         def ami_queuemember(self, astid, event):
                 if astid not in self.qlist:
-                        log_debug(SYSLOG_WARNING, 'ami_queuemember : no queue list has been defined for %s' % astid)
+                        log.warning('ami_queuemember : no queue list has been defined for %s' % astid)
                         return
                 queue = event.get('Queue')
                 location = event.get('Location')
@@ -1305,7 +1294,7 @@ class XivoCTICommand(BaseCommand):
 
         def ami_queuestatuscomplete(self, astid, event):
                 if astid not in self.qlist:
-                        log_debug(SYSLOG_WARNING, 'ami_queuestatuscomplete : no queue list has been defined for %s' % astid)
+                        log.warning('ami_queuestatuscomplete : no queue list has been defined for %s' % astid)
                         return
                 print 'AMI QueueStatusComplete', astid
                 for qname in self.qlist[astid].get_queues():
@@ -1319,10 +1308,10 @@ class XivoCTICommand(BaseCommand):
                                              event.get('XIVO_CONTEXT', DEFAULTCONTEXT),
                                              event)
                 elif eventname == 'Feature':
-                        log_debug(SYSLOG_INFO, 'AMI %s UserEventFeature %s' % (astid, event))
+                        log.info('AMI %s UserEventFeature %s' % (astid, event))
                         # 'XIVO_CONTEXT', 'CHANNEL', 'Function', 'Status', 'Value'
                 else:
-                        log_debug(SYSLOG_INFO, 'AMI %s UserEvent %s' % (astid, event))
+                        log.info('AMI %s UserEvent %s' % (astid, event))
                 return
 
         def ami_faxsent(self, astid, event):
@@ -1331,7 +1320,7 @@ class XivoCTICommand(BaseCommand):
                 
                 if filename and os.path.isfile(filename):
                         os.unlink(filename)
-                        log_debug(SYSLOG_INFO, 'faxsent event handler : removed %s' % filename)
+                        log.info('faxsent event handler : removed %s' % filename)
 
                 if event.get('phaseestatus') == '0':
                         tosend = { 'class' : 'faxsent',
@@ -1346,7 +1335,7 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def ami_faxreceived(self, astid, event):
-                log_debug(SYSLOG_INFO, '%s : %s' % (astid, event))
+                log.info('%s : %s' % (astid, event))
                 # debug# (xivocti) xivo-obelisk : {'PhaseEString': 'OK', 'CallerID': '0141389960', 'Exten': 's', 'LocalStationID': '', 'PagesTransferred': '1', 'TransferRate': '14400', 'RemoteStationID': '', 'PhaseEStatus': '0', 'Privilege': 'call,all', 'FileName': '/var/spool/asterisk/fax/0141389960-1220442150.tif', 'Resolution': '3850', 'Event': 'FaxReceived', 'Channel': 'IAX2/asteriskisdn-7665'}
                 return
 
@@ -1368,7 +1357,7 @@ class XivoCTICommand(BaseCommand):
                                    }
                         self.__send_msg_to_cti_clients__(cjson.encode(tosend))
                 else:
-                        log_debug(SYSLOG_WARNING, '%s : channel %s already in meetme %s' % (astid, channel, meetmenum))
+                        log.warning('%s : channel %s already in meetme %s' % (astid, channel, meetmenum))
                 return
 
         def ami_meetmeleave(self, astid, event):
@@ -1385,7 +1374,7 @@ class XivoCTICommand(BaseCommand):
                         self.__send_msg_to_cti_clients__('meetme=leave;%s;%s;%s;%s;%d'
                                                          % (astid, meetmenum, num, channel, len(self.meetme[astid][meetmenum])))
                 else:
-                        log_debug(SYSLOG_WARNING, '%s : channel %s not in meetme %s' % (astid, channel, meetmenum))
+                        log.warning('%s : channel %s not in meetme %s' % (astid, channel, meetmenum))
                 return
 
         def ami_status(self, astid, event):
@@ -1393,7 +1382,7 @@ class XivoCTICommand(BaseCommand):
 
         def ami_join(self, astid, event):
                 if astid not in self.qlist:
-                        log_debug(SYSLOG_WARNING, 'ami_join : no queue list has been defined for %s' % astid)
+                        log.warning('ami_join : no queue list has been defined for %s' % astid)
                         return
                 # print 'AMI Join (Queue)', event
                 chan  = event.get('Channel')
@@ -1402,7 +1391,7 @@ class XivoCTICommand(BaseCommand):
                 count = event.get('Count')
                 position = event.get('Position')
                 self.__sheet_alert__('incomingqueue', astid, DEFAULTCONTEXT, event)
-                log_debug(SYSLOG_INFO, 'AMI Join (Queue) %s %s %s' % (queue, chan, count))
+                log.info('AMI Join (Queue) %s %s %s' % (queue, chan, count))
                 self.qlist[astid].queueentry_update(queue, chan, position, '0')
                 event['Calls'] = count
                 self.qlist[astid].update_queuestats(queue, event)
@@ -1416,13 +1405,13 @@ class XivoCTICommand(BaseCommand):
 
         def ami_leave(self, astid, event):
                 if astid not in self.qlist:
-                        log_debug(SYSLOG_WARNING, 'ami_leave : no queue list has been defined for %s' % astid)
+                        log.warning('ami_leave : no queue list has been defined for %s' % astid)
                         return
                 # print 'AMI Leave (Queue)', event
                 chan  = event.get('Channel')
                 queue = event.get('Queue')
                 count = event.get('Count')
-                log_debug(SYSLOG_INFO, 'AMI Leave (Queue) %s %s %s' % (queue, chan, count))
+                log.info('AMI Leave (Queue) %s %s %s' % (queue, chan, count))
                 
                 self.qlist[astid].queueentry_remove(queue, chan)
                 event['Calls'] = count
@@ -1718,14 +1707,14 @@ class XivoCTICommand(BaseCommand):
                                                                 repstr = cjson.encode(tosend)
 
                 except Exception, exc:
-                        log_debug(SYSLOG_ERR, '--- exception --- (manage_cticommand) %s %s %s : %s'
+                        log.error('--- exception --- (manage_cticommand) %s %s %s : %s'
                                   % (icommand.name, icommand.args, userinfo.get('login').get('connection'), exc))
 
                 if repstr is not None: # might be useful to reply sth different if there is a capa problem for instance, a bad syntaxed command
                         try:
                                 userinfo.get('login').get('connection').sendall(repstr + '\n')
                         except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- (sendall) attempt to send <%s ...> (%d chars) failed : %s'
+                                log.error('--- exception --- (sendall) attempt to send <%s ...> (%d chars) failed : %s'
                                           % (repstr[:40], len(repstr), exc))
                 return ret
 
@@ -1762,7 +1751,7 @@ class XivoCTICommand(BaseCommand):
                                                 
                                         reply.append(HISTSEPAR.join([ry1, ry2]))
                         except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- error : history : (client %s, termin %s) : %s'
+                                log.error('--- exception --- error : history : (client %s, termin %s) : %s'
                                           % (requester_id, termin, exc))
 
                 if len(reply) > 0:
@@ -1856,43 +1845,22 @@ class XivoCTICommand(BaseCommand):
                                 if astid is not None and anum is not None:
                                         for queuename in queuenames:
                                                 self.amilist.execute(astid, 'queuepause', queuename, 'Agent/%s' % anum, 'false')
-                elif subcommand == 'login':
+                elif subcommand in ['login', 'logout']:
                         if len(commandargs) > 2:
                                 astid = commandargs[1]
                                 anum = commandargs[2]
-                                phonenum = None
-                                for userinfo in self.ulist_ng.userlist.itervalues():
-                                        if 'agentnum' in userinfo and userinfo.get('agentnum') == anum and userinfo.get('astid') == astid:
-                                                phonenum = userinfo.get('agentphonenum')
-                                                if phonenum is None:
-                                                        phonenum = userinfo.get('phonenum')
+                                uinfo = None
+                                for uinfo_iter in self.ulist_ng.userlist.itervalues():
+                                        if 'agentnum' in uinfo_iter and uinfo_iter.get('agentnum') == anum and uinfo_iter.get('astid') == astid:
+                                                uinfo = uinfo_iter
                                                 break
                         else:
-                                astid = myastid
-                                anum = myagentnum
-                                phonenum = userinfo.get('agentphonenum')
-                        if astid is not None and anum is not None and phonenum is not None:
-                                self.amilist.execute(astid, 'agentcallbacklogin', anum, phonenum)
-                                # chan_agent.c:2318 callback_deprecated: AgentCallbackLogin is deprecated and will be removed in a future release.
-                                # chan_agent.c:2319 callback_deprecated: See doc/queues-with-callback-members.txt for an example of how to achieve
-                                # chan_agent.c:2320 callback_deprecated: the same functionality using only dialplan logic.
-                                self.amilist.execute(astid, 'setvar', 'AGENTBYCALLERID_%s' % phonenum, anum)
+                                uinfo = userinfo
+                        if subcommand == 'login':
+                                self.__login_agent__(uinfo)
                         else:
-                                log_debug(SYSLOG_WARNING, 'cannot login agent since astid,anum,phonenum = %s,%s,%s (%s)'
-                                          % (astid, anum, phonenum, commandargs))
-                elif subcommand == 'logout':
-                        if len(commandargs) > 2:
-                                astid = commandargs[1]
-                                anum = commandargs[2]
-                                phonenum = str(int(anum) - 6000)
-                        else:
-                                astid = myastid
-                                anum = myagentnum
-                                phonenum = userinfo['phonenum']
-                        if astid is not None and anum is not None:
-                                self.amilist.execute(astid, 'setvar', 'AGENTBYCALLERID_%s' % phonenum, '')
-                                if len(anum) > 0:
-                                        self.amilist.execute(astid, 'agentlogoff', anum)
+                                self.__logoff_agent__(uinfo)
+
                 elif subcommand == 'lists':
                         pass
                 else:
@@ -1900,16 +1868,41 @@ class XivoCTICommand(BaseCommand):
                 return
 
 
+        def __login_agent__(self, uinfo):
+                if uinfo is None:
+                        return
+                astid = uinfo.get('astid')
+                # if phonenum is None:
+                # phonenum = userinfo.get('phonenum')
+                if 'agentnum' in uinfo and 'agentphonenum' in uinfo and astid is not None:
+                        agentnum = uinfo['agentnum']
+                        agentphonenum = uinfo['agentphonenum']
+                        if len(agentnum) > 0 and len(agentphonenum) > 0:
+                                self.amilist.execute(astid, 'agentcallbacklogin', agentnum, agentphonenum)
+                                # chan_agent.c:2318 callback_deprecated: AgentCallbackLogin is deprecated and will be removed in a future release.
+                                # chan_agent.c:2319 callback_deprecated: See doc/queues-with-callback-members.txt for an example of how to achieve
+                                # chan_agent.c:2320 callback_deprecated: the same functionality using only dialplan logic.
+                                self.amilist.execute(astid, 'setvar', 'AGENTBYCALLERID_%s' % agentphonenum, agentnum)
+                return
+
+        def __logoff_agent__(self, uinfo):
+                if uinfo is None:
+                        return
+                astid = uinfo.get('astid')
+                if 'agentnum' in uinfo and astid is not None:
+                        agentnum = uinfo['agentnum']
+                        if 'agentphonenum' in uinfo:
+                                agentphonenum = uinfo['agentphonenum']
+                                self.amilist.execute(astid, 'setvar', 'AGENTBYCALLERID_%s' % agentphonenum, '')
+                                # del uinfo['agentphonenum']
+                        if len(agentnum) > 0:
+                                self.amilist.execute(astid, 'agentlogoff', agentnum)
+                return
+
+
         def logoff_all_agents(self):
                 for userinfo in self.ulist_ng.userlist.itervalues():
-                        astid = userinfo.get('astid')
-                        if 'agentnum' in userinfo and astid is not None:
-                                agentnum = userinfo['agentnum']
-                                if 'phonenum' in userinfo:
-                                        phonenum = userinfo['phonenum']
-                                        self.amilist.execute(astid, 'setvar', 'AGENTBYCALLERID_%s' % phonenum, '')
-                                if agentnum is not None and len(agentnum) > 0:
-                                        self.amilist.execute(astid, 'agentlogoff', agentnum)
+                        self.__logoff_agent__(userinfo)
                 return
 
 
@@ -1924,13 +1917,13 @@ class XivoCTICommand(BaseCommand):
                         if 'regupdate' in self.xivoconf:
                                 regactions = self.xivoconf['regupdate'].split(';')
                                 if len(regactions) == 3 and thour == int(regactions[0]) and tmin < int(regactions[1]):
-                                        log_debug(SYSLOG_INFO, '(%2d h %2d min) => %s' % (thour, tmin, regactions[2]))
+                                        log.info('(%2d h %2d min) => %s' % (thour, tmin, regactions[2]))
                                         if regactions[2] == 'logoffagents':
                                                 self.logoff_all_agents()
                                 else:
-                                        log_debug(SYSLOG_INFO, '(%2d h %2d min) => no action' % (thour, tmin))
+                                        log.info('(%2d h %2d min) => no action' % (thour, tmin))
                 except Exception, exc:
-                        log_debug(SYSLOG_ERR, '--- exception --- (regular update) : %s' % exc)
+                        log.error('--- exception --- (regular update) : %s' % exc)
 
 
         def __phlist__(self):
@@ -1963,7 +1956,7 @@ class XivoCTICommand(BaseCommand):
             kind = icommand.name
             if len(icommand.args) == 0:
                     reqid = kind + '-' + ''.join(random.sample(__alphanums__, 10)) + "-" + hex(int(time.time()))
-                    log_debug(SYSLOG_INFO, 'transaction ID for %s is %s' % (kind, reqid))
+                    log.info('transaction ID for %s is %s' % (kind, reqid))
                     self.fullstat_heavies[reqid] = []
                     if kind == 'phones-list':
                             for userinfo in self.ulist_ng.list.itervalues():
@@ -2032,14 +2025,14 @@ class XivoCTICommand(BaseCommand):
                         if len(self.fullstat_heavies[reqid]) > 0:
                                 fullstat.append(self.fullstat_heavies[reqid].pop())
                     if nstat > 0:
-                            rtab = '%s=%s;%s' %(kind, reqid, ''.join(fullstat))
+                            rtab = '%s=%s;%s' % (kind, reqid, ''.join(fullstat))
                     else:
                             del self.fullstat_heavies[reqid]
-                            rtab = '%s=0;%s'  %(kind, ''.join(fullstat))
-                            log_debug(SYSLOG_INFO, 'building last packet reply for <%s ...>' %(rtab[0:40]))
+                            rtab = '%s=0;%s'  % (kind, ''.join(fullstat))
+                            log.info('building last packet reply for <%s ...>' %(rtab[0:40]))
                     return rtab
             else:
-                    log_debug(SYSLOG_INFO, 'reqid <%s> not defined for %s reply' %(reqid, kind))
+                    log.info('reqid <%s> not defined for %s reply' % (reqid, kind))
                     return ''
 
 
@@ -2062,10 +2055,10 @@ class XivoCTICommand(BaseCommand):
                                 cursor.query(query, columns, params)
                                 results = cursor.fetchall()
                                 if len(results) > 0:
-                                        repstr += "%s;%s:;" %(key, str(results[0][0]))
+                                        repstr += "%s;%s:;" % (key, str(results[0][0]))
                         except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- features_get(bool) id=%s key=%s : %s'
-                                          %(userid, key, exc))
+                                log.error('--- exception --- features_get(bool) id=%s key=%s : %s'
+                                          % (userid, key, exc))
                                 tosend = { 'class' : 'features',
                                            'function' : 'get',
                                            'direction' : 'client',
@@ -2086,7 +2079,7 @@ class XivoCTICommand(BaseCommand):
                                         repstr += '%s;%s:%s;' % (key, str(resenable[0][0]), str(resdest[0][0]))
 
                         except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- features_get(str) id=%s key=%s : %s'
+                                log.error('--- exception --- features_get(str) id=%s key=%s : %s'
                                           % (userid, key, exc))
                                 tosend = { 'class' : 'features',
                                            'function' : 'get',
@@ -2121,8 +2114,8 @@ class XivoCTICommand(BaseCommand):
                                    'direction' : 'client',
                                    'payload' : [ userid, 'OK', key, value ] }
                 except Exception, exc:
-                        log_debug(SYSLOG_ERR, '--- exception --- features_put id=%s %s %s : %s'
-                                  %(userid, key, value, exc))
+                        log.error('--- exception --- features_put id=%s %s %s : %s'
+                                  % (userid, key, value, exc))
                         tosend = { 'class' : 'features',
                                    'function' : 'put',
                                    'direction' : 'client',
@@ -2132,7 +2125,7 @@ class XivoCTICommand(BaseCommand):
 
         # \brief Originates / transfers.
         def __originate_or_transfer__(self, userinfo, commargs):
-                log_debug(SYSLOG_INFO, '%s %s' % (userinfo, commargs))
+                log.info('%s %s' % (userinfo, commargs))
                 if len(commargs) != 3:
                         return
                 [commname, src, dst] = commargs
@@ -2164,7 +2157,7 @@ class XivoCTICommand(BaseCommand):
                         elif typesrc == 'term':
                                 pass
                         else:
-                                log_debug(SYSLOG_WARNING, 'unknown typesrc <%s>' % typesrc)
+                                log.warning('unknown typesrc <%s>' % typesrc)
 
                         # dst
                         if typedst == 'ext':
@@ -2191,7 +2184,7 @@ class XivoCTICommand(BaseCommand):
                         elif typedst == 'term':
                                 pass
                         else:
-                                log_debug(SYSLOG_WARNING, 'unknown typedst <%s>' % typedst)
+                                log.warning('unknown typedst <%s>' % typedst)
 
 
                         ret = False
@@ -2201,7 +2194,7 @@ class XivoCTICommand(BaseCommand):
                                                                    proto_src, phonenum_src, cidname_src,
                                                                    exten_dst, cidname_dst,  context_dst)
                         except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- unable to originate ... %s' % exc)
+                                log.error('--- exception --- unable to originate ... %s' % exc)
                         if ret:
                                 ret_message = 'originate OK'
                         else:
@@ -2236,13 +2229,13 @@ class XivoCTICommand(BaseCommand):
                                                                    chan_src,
                                                                    exten_dst, context_src)
                         except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- unable to %s ... %s' % (commname, exc))
+                                log.error('--- exception --- unable to %s ... %s' % (commname, exc))
                         if ret:
                                 ret_message = '%s OK' % commname
                         else:
                                 ret_message = '%s KO' % commname
                 else:
-                        log_debug(SYSLOG_WARNING, 'unallowed command %s' % commargs)
+                        log.warning('unallowed command %s' % commargs)
 
 
         # \brief Originates / transfers.
@@ -2267,7 +2260,7 @@ class XivoCTICommand(BaseCommand):
                         exten_dst = self.configs[astid_dst].parkingnumber
                 if astid_src in self.plist:
                         if l[0] == 'originate':
-                                log_debug(SYSLOG_INFO, "%s is attempting an ORIGINATE : %s" %(requester, str(l)))
+                                log.info("%s is attempting an ORIGINATE : %s" % (requester, str(l)))
                                 if astid_dst != '':
                                         sipcid_src = "SIP/%s" % userid_src
                                         sipcid_dst = "SIP/%s" % userid_dst
@@ -2289,7 +2282,7 @@ class XivoCTICommand(BaseCommand):
                                 else:
                                         ret_message = 'originate KO (%s) %s %s' %(astid_src, l[1], l[2])
                         elif l[0] == 'transfer':
-                                log_debug(SYSLOG_INFO, "%s is attempting a TRANSFER : %s" %(requester, str(l)))
+                                log.info("%s is attempting a TRANSFER : %s" %(requester, str(l)))
                                 phonesrc, phonesrcchan = split_from_ui(l[1])
                                 if phonesrc == phonesrcchan:
                                         ret_message = 'transfer KO : %s not a channel' % phonesrcchan
@@ -2308,7 +2301,7 @@ class XivoCTICommand(BaseCommand):
                                                         else:
                                                                 ret_message = 'transfer KO (%s) %s %s' %(astid_src, l[1], l[2])
                         elif l[0] == 'atxfer':
-                                log_debug(SYSLOG_INFO, "%s is attempting an ATXFER : %s" %(requester, str(l)))
+                                log.info("%s is attempting an ATXFER : %s" %(requester, str(l)))
                                 phonesrc, phonesrcchan = split_from_ui(l[1])
                                 if phonesrc == phonesrcchan:
                                         ret_message = 'atxfer KO : %s not a channel' % phonesrcchan
@@ -2327,7 +2320,7 @@ class XivoCTICommand(BaseCommand):
                                                         else:
                                                                 ret_message = 'atxfer KO (%s) %s %s' %(astid_src, l[1], l[2])
                                         else:
-                                                log_debug(SYSLOG_WARNING, "%s not in my phone list" % phonesrc)
+                                                log.warning("%s not in my phone list" % phonesrc)
          else:
                 ret_message = 'originate or transfer KO : asterisk id mismatch (%s %s)' %(astid_src, astid_dst)
          return self.dmessage_srv2clt(ret_message)
@@ -2340,18 +2333,18 @@ class XivoCTICommand(BaseCommand):
                 username = uinfo.get('fullname')
                 ret_message = 'hangup KO from %s' % username
                 if astid in self.configs:
-                        log_debug(SYSLOG_INFO, "%s is attempting a HANGUP : %s" % (username, chan))
+                        log.info("%s is attempting a HANGUP : %s" % (username, chan))
                         channel = chan
                         phone = chan.split('-')[0]
                         if phone in self.plist[astid].normal:
                                 if channel in self.plist[astid].normal[phone].chann:
                                         if peer_hangup:
                                                 channel_peer = self.plist[astid].normal[phone].chann[channel].getChannelPeer()
-                                                log_debug(SYSLOG_INFO, "UI action : %s : hanging up <%s> and <%s>"
+                                                log.info("UI action : %s : hanging up <%s> and <%s>"
                                                           %(astid , channel, channel_peer))
                                         else:
                                                 channel_peer = ''
-                                                log_debug(SYSLOG_INFO, "UI action : %s : hanging up <%s>"
+                                                log.info("UI action : %s : hanging up <%s>"
                                                           %(astid , channel))
                                         ret = self.amilist.execute(astid, 'hangup', channel, channel_peer)
                                         if ret > 0:
@@ -2376,7 +2369,7 @@ class XivoCTICommand(BaseCommand):
         def __update_history_call__(self, cfg, techno, phoneid, nlines, kind):
                 results = []
                 if cfg.cdr_db_conn is None:
-                        log_debug(SYSLOG_WARNING, '%s : no CDR uri defined for this asterisk - see cdr_db_uri parameter' % cfg.astid)
+                        log.warning('%s : no CDR uri defined for this asterisk - see cdr_db_uri parameter' % cfg.astid)
                 else:
                         try:
                                 cursor = cfg.cdr_db_conn.cursor()
@@ -2400,8 +2393,8 @@ class XivoCTICommand(BaseCommand):
                                                      (likestring,))
                                 results = cursor.fetchall()
                         except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- %s : Connection to DataBase failed in History request : %s'
-                                          %(cfg.astid, exc))
+                                log.error('--- exception --- %s : Connection to DataBase failed in History request : %s'
+                                          % (cfg.astid, exc))
                 return results
 
 
@@ -2411,10 +2404,10 @@ class XivoCTICommand(BaseCommand):
 
                 if 'login' in userinfo and 'sessiontimestamp' in userinfo.get('login'):
                         userinfo['login']['sessiontimestamp'] = time.time()
-                if state in allowed_states:
+                if state in allowed_states.keys():
                         userinfo['state'] = state
                 else:
-                        log_debug(SYSLOG_WARNING, '(user %s) : state <%s> is not an allowed one => undefinedstate-updated'
+                        log.warning('(user %s) : state <%s> is not an allowed one => undefinedstate-updated'
                                   % (username, state))
                         userinfo['state'] = 'undefinedstate-updated'
 
@@ -2438,10 +2431,10 @@ class XivoCTICommand(BaseCommand):
                                         y = self.__build_customers_bydirdef__(dirsec, searchpattern, dirdef)
                                         fulllist.extend(y)
                                 except Exception, exc:
-                                        log_debug(SYSLOG_ERR, '--- exception --- __build_customers__ (%s) : %s'
+                                        log.error('--- exception --- __build_customers__ (%s) : %s'
                                                   % (dirsec, exc))
                 else:
-                        log_debug(SYSLOG_WARNING, 'there has been no section defined for context %s : can not proceed directory search' % ctx)
+                        log.warning('there has been no section defined for context %s : can not proceed directory search' % ctx)
 
                 mylines = []
                 for itemdir in fulllist:
@@ -2501,7 +2494,7 @@ class XivoCTICommand(BaseCommand):
                                                                         futureline[keyw] = result[1][dbkey][0]
                                                 fullstatlist.append(futureline)
                         except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- ldaprequest (directory) : %s' % exc)
+                                log.error('--- exception --- ldaprequest (directory) : %s' % exc)
 
                 elif dbkind == 'file':
                         f = urllib.urlopen(z.uri)
@@ -2523,9 +2516,9 @@ class XivoCTICommand(BaseCommand):
                                                 fullstatlist.append(futureline)
                                 n += 1
                         if n == 0:
-                                log_debug(SYSLOG_WARNING, 'WARNING : %s is empty' % z.uri)
+                                log.warning('WARNING : %s is empty' % z.uri)
                         elif n == 1:
-                                log_debug(SYSLOG_WARNING, 'WARNING : %s contains only one line (the header one)' % z.uri)
+                                log.warning('WARNING : %s contains only one line (the header one)' % z.uri)
 
                 elif dbkind == 'http':
                         f = urllib.urlopen('%s%s' % (z.uri, searchpattern))
@@ -2546,7 +2539,7 @@ class XivoCTICommand(BaseCommand):
                                         fullstatlist.append(futureline)
                                 n += 1
                         if n == 0:
-                                log_debug(SYSLOG_WARNING, 'WARNING : %s is empty' % z.uri)
+                                log.warning('WARNING : %s is empty' % z.uri)
                         # we don't warn about "only one line" here since the filter has probably already been applied
 
                 elif dbkind != '':
@@ -2575,9 +2568,9 @@ class XivoCTICommand(BaseCommand):
                                                                 futureline[keyw] = result[n]
                                         fullstatlist.append(futureline)
                         except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- sqlrequest : %s' % exc)
+                                log.error('--- exception --- sqlrequest : %s' % exc)
                 else:
-                        log_debug(SYSLOG_WARNING, 'no database method defined - please fill the uri field of the directory <%s> definition' % dirname)
+                        log.warning('no database method defined - please fill the uri field of the directory <%s> definition' % dirname)
 
                 return fullstatlist
 
@@ -2595,7 +2588,7 @@ class XivoCTICommand(BaseCommand):
                 calleridnum  = fastagi.env['agi_callerid']
                 calleridname = fastagi.env['agi_calleridname']
 
-                log_debug(SYSLOG_INFO, 'handle_fagi : %s : context=%s %s %s <%s>' % (astid, context, callednum, calleridnum, calleridname))
+                log.info('handle_fagi : %s : context=%s %s %s <%s>' % (astid, context, callednum, calleridnum, calleridname))
 
                 extraevent = {'caller_num' : calleridnum,
                               'called_num' : callednum,

@@ -55,6 +55,7 @@ class Capabilities:
                          'datetime' : [],
                          'dial' : ['dial'],
                          'directory' : ['directory'],
+                         'outlook' : [],
                          'fax' : ['fax'],
                          'features' : ['features'],
                          'history' : ['history'],

@@ -24,12 +24,10 @@ __author__    = 'Corentin Le Gall'
 # with this program; if not, you will find one at
 # <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>.
 
-from xivo_log import *
+import logging
 from xivo_ctiservers.cti_anylist import AnyList
 
-def log_debug(level, text):
-        log_debug_file(level, text, 'queuelist')
-        return
+log = logging.getLogger('queuelist')
 
 class QueueList(AnyList):
         def __init__(self, newurls = []):
@@ -53,7 +51,7 @@ class QueueList(AnyList):
                 if queue in self.queuelist:
                         self.queuelist[queue]['channels'][channel] = [position, wait]
                 else:
-                        log_debug(SYSLOG_WARNING, 'queueentry_update : no such queue %s' % queue)
+                        log.warning('queueentry_update : no such queue %s' % queue)
                 return
         
         def queueentry_remove(self, queue, channel):
@@ -61,7 +59,7 @@ class QueueList(AnyList):
                         if channel in self.queuelist[queue]['channels']:
                                 del self.queuelist[queue]['channels'][channel]                                
                 else:
-                        log_debug(SYSLOG_WARNING, 'queueentry_remove : no such queue %s' % queue)
+                        log.warning('queueentry_remove : no such queue %s' % queue)
                 return
         
         def queuememberupdate(self, queue, location, event):
@@ -72,7 +70,7 @@ class QueueList(AnyList):
                                 if prop in event:
                                         self.queuelist[queue]['agents'][location][prop] = event.get(prop)
                 else:
-                        log_debug(SYSLOG_WARNING, 'queuememberupdate : no such queue %s' % queue)
+                        log.warning('queuememberupdate : no such queue %s' % queue)
                 return
         
         def queuememberremove(self, queue, location):
@@ -80,7 +78,7 @@ class QueueList(AnyList):
                         if location in self.queuelist[queue]['agents']:
                                 del self.queuelist[queue]['agents'][location]
                 else:
-                        log_debug(SYSLOG_WARNING, 'queuememberremove : no such queue %s' % queue)
+                        log.warning('queuememberremove : no such queue %s' % queue)
                 return
 
         def update_queuestats(self, queue, event):
@@ -89,7 +87,7 @@ class QueueList(AnyList):
                                 if statfield in event:
                                         self.queuelist[queue]['stats'][statfield] = event.get(statfield)
                 else:
-                        log_debug(SYSLOG_WARNING, 'update_queuestats : no such queue %s' % queue)
+                        log.warning('update_queuestats : no such queue %s' % queue)
                 return
 
         def get_queues(self):

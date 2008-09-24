@@ -53,9 +53,9 @@ evtfile = False
 def varlog(syslogprio, string):
         if syslogprio <= MAXLOG:
                 try:
-                        log.debug(string)
+                        log.info(string)
                 except Exception, exc:
-                        log.debug('--- exception --- in varlog : %s' % exc)
+                        log.info('--- exception --- in varlog : %s' % exc)
         return 0
 
 # reminder :
@@ -96,6 +96,4 @@ def log_debug(syslogprio, string):
         return varlog(syslogprio, string)
 
 def log_debug_file(syslogprio, string, filename):
-        if syslogprio <= SYSLOG_INFO:
-                print '#debug# (%s) ' % filename + string
         return varlog(syslogprio, '(%s) ' % filename + string)

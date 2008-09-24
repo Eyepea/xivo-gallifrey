@@ -25,13 +25,12 @@ __author__    = 'Corentin Le Gall'
 # <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>.
 
 import commands
+import logging
 import os
 import random
 import SocketServer
 import string
 import threading
-
-from xivo_log import *
 
 PATH_SPOOL_ASTERISK     = '/var/spool/asterisk'
 PATH_SPOOL_ASTERISK_FAX = PATH_SPOOL_ASTERISK + '/fax'
@@ -40,8 +39,7 @@ PDF2FAX = '/usr/bin/xivo_pdf2fax'
 
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 
-def log_debug(level, text):
-        log_debug_file(level, text, 'fax')
+log = logging.getLogger('fax')
 
 class Fax:
         def __init__(self, uinfo, size, number, hide):
@@ -59,7 +57,7 @@ class Fax:
                 z = open(tmpfilepath, 'w')
                 z.write(buffer)
                 z.close()
-                log_debug(SYSLOG_INFO, 'size = %s, number = %s, hide = %s' % (self.size, self.number, self.hide))
+                log.info('size = %s, number = %s, hide = %s' % (self.size, self.number, self.hide))
                 if self.hide != '0':
                         callerid = 'anonymous'
 
@@ -67,12 +65,12 @@ class Fax:
                 comm = commands.getoutput('file -b %s' % tmpfilepath)
                 brieffile = ' '.join(comm.split()[0:2])
                 if brieffile == 'PDF document,':
-                        log_debug(SYSLOG_INFO, 'fax : the file received is a PDF one : converting to TIFF/F')
+                        log.info('fax : the file received is a PDF one : converting to TIFF/F')
                         reply = 'ko;convert-pdftif'
                         ret = os.system("%s -o %s %s" % (PDF2FAX, faxfilepath, tmpfilepath))
                 else:
                         reply = 'ko;filetype'
-                        log_debug(SYSLOG_WARNING, 'fax : the file received is a <%s> one : format not supported' % brieffile)
+                        log.warning('fax : the file received is a <%s> one : format not supported' % brieffile)
                         ret = -1
 
                 if ret == 0:
@@ -84,10 +82,10 @@ class Fax:
                                         if ret:
                                                 reply = 'ok;'
                                 except Exception, exc:
-                                        log_debug(SYSLOG_ERR, '--- exception --- (fax handler - AMI) : %s' %(str(exc)))
+                                        log.error('--- exception --- (fax handler - AMI) : %s' %(str(exc)))
                         else:
                                 reply = 'ko;exists-pathspool'
-                                log_debug(SYSLOG_INFO, 'directory %s does not exist - could not send fax'
+                                log.info('directory %s does not exist - could not send fax'
                                           % PATH_SPOOL_ASTERISK_FAX)
 
                 if reply == 'ok;':
@@ -99,4 +97,4 @@ class Fax:
                 self.uinfo.get('login').get('connection').sendall('faxsent=%s\n' % reply)
 
                 os.unlink(tmpfilepath)
-                log_debug(SYSLOG_INFO, "faxhandler : removed %s" % tmpfilepath)
+                log.info("faxhandler : removed %s" % tmpfilepath)

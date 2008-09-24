@@ -28,18 +28,17 @@ __author__    = 'Corentin Le Gall'
 Asterisk AMI utilities.
 """
 
+import logging
 import random
 import re
 import socket
 import string
 import time
-from xivo_log import *
 
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 __dialallowed__ = '[0-9*#]'
 
-def log_debug(level, text):
-        log_debug_file(level, text, 'xivo_ami')
+log = logging.getLogger('xivo_ami')
 
 ## \class AMIClass
 # AMI definition in order to interact with the Asterisk AMI.
@@ -82,11 +81,11 @@ class AMIClass:
                         self.fd.flush()
                         ret = True
                 except Exception, exc:
-                        log_debug(SYSLOG_ERR, '--- exception --- (action %s) %s' % (action, str(exc)))
+                        log.error('--- exception --- (action %s) %s' % (action, str(exc)))
                         ret = False
                 if ret == False:
                         if loopnum == 0:
-                                log_debug(SYSLOG_WARNING, 'second attempt for AMI command (%s)' % action)
+                                log.warning('second attempt for AMI command (%s)' % action)
                                 # tries to reconnect
                                 try:
                                         self.connect()
@@ -95,10 +94,10 @@ class AMIClass:
                                                 # "retrying AMI command=<%s> args=<%s>" % (action, str(args)))
                                                 self.sendcommand(action, args, 1)
                                 except Exception, exc:
-                                        # log_debug("--- exception --- AMI not connected (action=%s args=%s) : %s" %(action, str(args), str(exc)))
+                                        # log.error("--- exception --- AMI not connected (action=%s args=%s) : %s" %(action, str(args), str(exc)))
                                         pass
                         else:
-                                log_debug(SYSLOG_WARNING, 'warning : 2 attempts have failed for AMI command (%s)' % action)
+                                log.warning('warning : 2 attempts have failed for AMI command (%s)' % action)
                 return ret
         # \brief Requesting a Status.
         def sendstatus(self):
@@ -493,12 +492,12 @@ class AMIList:
                 if astid not in self.ami:
                         self.ami[astid] = None
                 if self.ami[astid] is None:
-                        log_debug(SYSLOG_INFO, '%s AMI : attempting to connect' % astid)
+                        log.info('%s AMI : attempting to connect' % astid)
                         amicl = AMIClass(address, loginname, password, True)
                         amicl.connect()
                         amicl.login()
 
-                        log_debug(SYSLOG_NOTICE, '%s AMI : OPENED' % astid)
+                        log.info('%s AMI : OPENED' % astid)
                         amicl.sendcommand('Command', [('Command', 'show version'),
                                                       ('ActionID' , ''.join(random.sample(__alphanums__, 10)) + "-" + hex(int(time.time())))])
                         amicl.sendstatus()
@@ -509,8 +508,8 @@ class AMIList:
                         self.ami[astid] = amicl
                         self.rami[amicl.fd] = astid
                 else:
-                        log_debug(SYSLOG_INFO, '%s AMI : already connected %s'
-                                  % (astid, self.ami[astid]))
+                        log.info('%s AMI : already connected %s'
+                                 % (astid, self.ami[astid]))
                 return
 
         def set_aoriginate(self, astid, aoriginatecmd):
@@ -531,14 +530,14 @@ class AMIList:
                 if astid in self.ami:
                         conn_ami = self.ami.get(astid)
                         if conn_ami is None:
-                                log_debug(SYSLOG_WARNING, 'ami (command %s) : <%s> in list but not connected - wait for the next update ?'
-                                          % (command, astid))
+                                log.warning('ami (command %s) : <%s> in list but not connected - wait for the next update ?'
+                                            % (command, astid))
                         else:
                                 try:
                                         getattr(conn_ami, command)(*args)
                                 except Exception, exc:
-                                        log_debug(SYSLOG_ERR, '--- exception --- AMI command %s on <%s> : %s' % (command, astid, exc))
+                                        log.error('--- exception --- AMI command %s on <%s> : %s' % (command, astid, exc))
                 else:
-                        log_debug(SYSLOG_WARNING, 'ami (command %s) : %s not in list - wait for the next update ?'
-                                  % (command, astid))
+                        log.warning('ami (command %s) : %s not in list - wait for the next update ?'
+                                    % (command, astid))
                 return

@@ -28,10 +28,9 @@ from xivo import anysql
 from xivo.BackSQL import backmysql
 from xivo.BackSQL import backsqlite
 import ConfigParser
-from xivo_log import *
+import logging
 
-def log_debug(level, text):
-        log_debug_file(level, text, 'cti_config')
+log = logging.getLogger('cti_config')
 
 class Config:
         def __init__(self, urilist):
@@ -62,7 +61,7 @@ class Config:
                                 if sectionname in self.xivoconf.sections():
                                         v = dict(self.xivoconf.items(sectionname))
                         except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- kind=%s section=%s : %s' % (self.kind, sectionname, exc))
+                                log.error('--- exception --- kind=%s section=%s : %s' % (self.kind, sectionname, exc))
                 elif self.kind == 'sql':
                         try:
                                 if type == 'commandset':
@@ -100,5 +99,5 @@ class Config:
                                                 [catname, var_name, var_val] = zz
                                                 v[var_name] = var_val
                         except Exception, exc:
-                                log_debug(SYSLOG_ERR, '--- exception --- kind=%s type=%s section=%s : %s' % (self.kind, type, sectionname, exc))
+                                log.error('--- exception --- kind=%s type=%s section=%s : %s' % (self.kind, type, sectionname, exc))
                 return v
