@@ -452,7 +452,7 @@ def __provisioning(mode, ctx, phone):
                   "right now is SIP, but I got %s", phone["proto"])
         raise BadRequest, "Unknown protocol '%s' != 'sip'" % phone["proto"]
 
-    log.info("__provisioning(): handling phone %r", phone)
+    log.info("__provisioning(): handling phone %r - mode %r", phone, mode)
 
     prev_iduserfeatures = None
     if mode == "notification":
