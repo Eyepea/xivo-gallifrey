@@ -559,7 +559,7 @@ def lock_and_provision(mode, ctx, phone):
     Will attempt to provision with a global lock
     hold in shared mode
     """
-    log.debug("Entering lock_and_provision(phone=%r)", phone)
+    log.debug("Entering lock_and_provision(mode=%r, phone=%r)", mode, phone)
     if not ctx.rwlock.acquire_read(Pgc['excl_del_lock_to_s']):
         raise ConflictError, "Could not acquire the global lock in shared mode"
     try:
