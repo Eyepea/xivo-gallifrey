@@ -204,7 +204,7 @@ class HttpReqHandler(BaseHTTPRequestHandler):
         if cmd not in _cmd_r:
             raise HttpReqError(404)
 
-        res = _cmd_r[cmd].handler()
+        res = _cmd_r[cmd].handler({})
         return cjson.encode(res)
     
     def json_from_post(self, cmd):
