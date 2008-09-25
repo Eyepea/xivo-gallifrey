@@ -37,7 +37,7 @@ from xivo import system
 from xivo import network
 
 
-log = logging.getLogger("xivo.udev")
+log = logging.getLogger("xivo.udev") # pylint: disable-msg=C0103
 
 
 PERSISTENT_NET_RULES_FILE = "/etc/udev/rules.d/z25_persistent-net.rules"
@@ -68,9 +68,10 @@ def lockpath(rules_file):
 def lock_rules_file(rules_file):
     """
     Take a lock on @rules_file as udev does.
-    On errors, this function retries to grab the lock for as much as 30 times,
-    with pauses of 1 second between successive attempts.
-    If the lock could not be grabbed at all, the last exception is re-raised.
+    On errors, this function retries to grab the lock for as much as 30
+    times, with pauses of 1 second between successive attempts.
+    If the lock could not be grabbed at all, the last exception is
+    re-raised.
     """
     lpath = lockpath(rules_file)
     for x in count():
@@ -87,8 +88,8 @@ def lock_rules_file(rules_file):
 def unlock_rules_file(rules_file):
     """
     Unlock a lock previously taken with lock_rules_file()
-    The user should _not_ try to unlock a lock that has not been successfully
-    taken with lock_rules_file(), or unlock it twice, etc.
+    The user should _not_ try to unlock a lock that has not been
+    successfully taken with lock_rules_file(), or unlock it twice, etc.
     """
     lpath = lockpath(rules_file)
     os.rmdir(lpath)
@@ -103,11 +104,11 @@ def is_comment(mline):
 
 def iter_multilines(lines):
     """
-    Iterate over @lines and yield the multilines they form.  A multiline stops
-    only on a "\\n" (newline) that is not preceded with a "\\\\" (backslash) or at
-    end of file.  "\\\\\\n" of continued lines are stripped, as well as regular
-    "\\n" at end of multilines and spaces at their beginning.  Comment lines and
-    blank lines are not skipped.
+    Iterate over @lines and yield the multilines they form.  A multiline
+    stops only on a "\\n" (newline) that is not preceded with a "\\\\"
+    (backslash) or at end of file.  "\\\\\\n" of continued lines are
+    stripped, as well as regular "\\n" at end of multilines and spaces at
+    their beginning.  Comment lines and blank lines are not skipped.
     """
     current = []
     for line in lines:
@@ -181,7 +182,8 @@ KEY_WITH_ATTR_REO = re.compile(r'([^{]+)\{([^}]*)\}')
 
 def base_attr_key(key):
     """
-    If "{" not in key: return key, None.
+    If "{" not in key:
+        return key, None.
     If "{" in key:
         key must be in the form base + "{" + attr + "}"
         where key is non empty and attr can be empty.
@@ -216,8 +218,8 @@ def parse_rule(mline):
     Parse @mline quite like add_to_rules() does in udev.
     
     If the rule is syntaxically invalid, this function returns None.
-    If the rule is not too much syntaxically invalid, this function returns
-    (rule, reconstructible_rule).
+    If the rule is not too much syntaxically invalid, this function
+    returns (rule, reconstructible_rule).
     
     @rule is a dictionary with the following structure:
     { key_attr_1: { attr_1: [op_1, val_1],
@@ -226,18 +228,19 @@ def parse_rule(mline):
       ...,
       key_3: [op_3, val_3],
       ... }
-    where @key_attr_{n} is an element of the "key in dict" column of @KEY_ATTR,
-    @attr_{p} can be any string, @op_{q} is an udev rule operator in
-    ('==', '!=', '+=', '=', ':='), @val_{r} can be any string, and @key_{s} is
-    an element of the "key in dict" column of @KEY.
+    where @key_attr_{n} is an element of the "key in dict" column of
+    @KEY_ATTR, @attr_{p} can be any string, @op_{q} is an udev rule
+    operator in ('==', '!=', '+=', '=', ':='), @val_{r} can be any string,
+    and @key_{s} is an element of the "key in dict" column of @KEY.
     
     @reconstructible_rule is a list with the following structure:
     [elem, ...]
-    where @elem is a list of the first subgroups as they are in @RULE_KEY_REO
-    (the last subgroup is the "rest of the line" and is parsed using the same
-    r.e. until it does not match)
-    @reconstructible_rule store even the unrecognized keys, so when the line is
-    reconstructed using it it is possible to avoid unnecessary changes.
+    where @elem is a list of the first subgroups as they are in
+    @RULE_KEY_REO (the last subgroup is the "rest of the line" and is
+    parsed using the same regex until it does not match)
+    @reconstructible_rule store even the unrecognized keys, so when the
+    line is reconstructed using it it is possible to avoid unnecessary
+    changes.
     
     NOTE: the "key in dict" columns are a subset of the keys of @KEY or
     @KEY_ATTR and the sets are disjoint.
@@ -296,9 +299,10 @@ def parse_rule(mline):
 def parse_lines(lines):
     """
     @lines is a sequence of lines that comes from a udev rules file.
-    This function parses the rules, taking into account continued lines, blank
-    lines and comment lines.  It returns a list a rules, in which each rule is
-    a dictionary formatted as described in the documentation of parse_rule().
+    This function parses the rules, taking into account continued lines,
+    blank lines and comment lines.  It returns a list a rules, in which
+    each rule is a dictionary formatted as described in the documentation
+    of parse_rule().
     """
     rules = []
     for mline in iter_multilines(lines):
@@ -334,8 +338,8 @@ def match_rule(rule, match):
     """
     @rule: Parsed udev rule.  See format in parse_rule() pydoc.
     @match: Dictionary (see format in parse_rule() pydoc)
-            There will be a match iff for each key of @match, a corresponding
-            key exists in @rule with the same value in both.
+            There will be a match iff for each key of @match, a
+            corresponding key exists in @rule with the same value in both.
     """
     for key, value in match.iteritems():
         if key not in rule:
@@ -363,8 +367,8 @@ def reconstruct_rule(recons):
 
 def replace_simple_op_values(recons, repl):
     """
-    @recons is a list in the format of @reconstructible_rule described in pydoc
-    of parse_rule().
+    @recons is a list in the format of @reconstructible_rule described in
+    pydoc of parse_rule().
     
     This function returns a reconstructed rule line in which operations and
     values are replaced by using those of @repl for each corresponding key.
@@ -393,23 +397,24 @@ def replace_simple_op_values(recons, repl):
 
 def replace_simple(lines, match_repl_lst):
     """
-    Transform @lines (generate the output) by doing some replacement in rules
-    according to @match_repl_lst.
+    Transform @lines (generate the output) by doing some replacement in
+    rules according to @match_repl_lst.
     
     @match_repl_lst: [(match, repl), ...]
     @match: Dictionary (see format in parse_rule() pydoc)
-            There will be a match iff for each key of @match, a corresponding
-            key exists in the parsed rule with the same value.
+            There will be a match iff for each key of @match, a
+            corresponding key exists in the parsed rule with the same
+            value.
     @repl: Dictionary (see format in parse_rule() pydoc)
-           When there is a match, this dictionary is used to replace entries of
-           the matching rule.
+           When there is a match, this dictionary is used to replace
+           entries of the matching rule.
            You can only use simple entries in this dictionary (in the form
-           @key_{s} described in parse_rule() pydoc; possible keys are listed
-           in @KEY).
+           @key_{s} described in parse_rule() pydoc; possible keys are
+           listed in @KEY).
     
-    WARNING: there will be no continued line in output; any line which was
-    continued in input will be transformed into its non-continued equivalent.
-    Also lines will be left stripped.
+    WARNING: There will be no continued line in output; any line which was
+    continued in input will be transformed into its non-continued
+    equivalent.  Also lines will be left stripped.
     """
     for mline in iter_multilines(lines):
         if (not mline) or is_comment(mline):
@@ -451,7 +456,7 @@ def replace_simple_in_file(rules_file, match_repl_lst):
 
 
 class TriggerError(Exception):
-    pass
+    "udevtrigger invocation/failure error"
 
 
 def trigger():
@@ -501,8 +506,9 @@ def rule_to_restore_name(rule):
 
 def consider_rule_for_rollback(rule, src_set):
     """
-    Test if rule is suitable for transformation to a match and replace tuple
-    (by rule_to_restore_name() that can itself be used in a rollback operation.
+    Test if rule is suitable for transformation to a match and replace
+    tuple (by rule_to_restore_name() that can itself be used in a rollback
+    operation.
     """
     name_field = rule.get('NAME')
     return name_field and (len(rule) > 2) and (name_field[0] == "=") and (name_field[1] in src_set)
@@ -531,30 +537,31 @@ def rename_persistent_net_rules(src_dst_lst, (procedure_init, procedure_edit, pr
         function called after "z25_persistent-net.rules" has been modified
         
         @context:
-            initially returned by procedure_init() then passed between various
-            other @procedure functions - never modified by
+            initially returned by procedure_init() then passed between
+            various other @procedure functions - never modified by
             rename_persistent_net_rules()
     
     @procedure_preup(context):
         function called just before the attempt to re-up the interfaces
         
         @context:
-            initially returned by procedure_init() then passed between various
-            other @procedure functions - never modified by
+            initially returned by procedure_init() then passed between
+            various other @procedure functions - never modified by
             rename_persistent_net_rules()
     
     @procedure_rollback(context):
-        function called if an Exception is raised between the beginning of the
-        call to procedure_edit() and the beginning of the call to
+        function called if an Exception is raised between the beginning of
+        the call to procedure_edit() and the beginning of the call to
         procedure_preup()
         
         @context:
-            initially returned by procedure_init() then passed between various
-            other @procedure functions - never modified by
+            initially returned by procedure_init() then passed between
+            various other @procedure functions - never modified by
             rename_persistent_net_rules()
     
     XXX: On external failure (kill -9, power outage), a small time window
-    remains where the configuration could be leaved in an inconsistent state.
+    remains where the configuration could be leaved in an inconsistent
+    state.
     """
     # WARNING: code not 100% safe in case asynchronous exceptions can occur
     
