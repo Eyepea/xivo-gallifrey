@@ -4,7 +4,7 @@
 Copyright (C) 2007, 2008  Proformatique
 
 """
-# TODO WARNING: must be used only if the caller is of a SIP tech
+# TODO WARNING: can be used only if the caller is of a SIP tech
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
