@@ -227,9 +227,9 @@ def linesubst(line, variables):
 
 def txtsubst(lines, variables, target_file=None):
     """
-    Log that target_file is going to be generated, and calculate its content by
-    applying the linesubst() transformation with the given variables to each
-    given lines.
+    Log that target_file is going to be generated, and calculate its
+    content by applying the linesubst() transformation with the given
+    variables to each given lines.
     """
     if target_file:
         log.info("In process of generating file %r", target_file)
@@ -292,8 +292,9 @@ class PhoneVendorMixin(object):
         """
         Constructor.
         
-        phone must be a dictionary containing everything needed for the one
-        phone provisioning process to take place.  That is the following keys:
+        @phone must be a dictionary containing everything needed for the
+        one phone provisioning process to take place.  That is the
+        following keys:
         
         'model', 'vendor', 'macaddr', 'actions', 'ipv4' if the value
         for 'actions' is not 'no'
@@ -329,7 +330,8 @@ class PhoneVendorMixin(object):
     
     def generate_reinitprov(self):
         """
-        This function put the configuration for the phone back in guest state.
+        This function put the configuration for the phone back in guest
+        state.
         """
         log.info("About to GUEST'ify the phone %s", self.phone['macaddr'])
         self.do_reinitprov()
@@ -338,8 +340,8 @@ class PhoneVendorMixin(object):
     def generate_autoprov(self, provinfo):
         """
         This function generate the configuration for the phone with
-        provisioning informations provided in the provinfo dictionary, which
-        must contain the following keys:
+        provisioning informations provided in the provinfo dictionary,
+        which must contain the following keys:
 
         'name', 'ident', 'number', 'passwd'
         """
@@ -443,8 +445,8 @@ def netmask_from_static(static):
 
 def ip_in_network(ipv4, net, netmask):
     """
-    Return a tuple (innet, other_net) where innet is a boolean that is True iff
-    ipv4/netmask is the same as net and other_net is ipv4/netmask.
+    Return a tuple (innet, other_net) where innet is a boolean that is True
+    iff ipv4/netmask is the same as net and other_net is ipv4/netmask.
     """
     other_net = network.mask_ipv4(netmask, ipv4)
     return (net == other_net), other_net
@@ -453,7 +455,7 @@ def ip_in_network(ipv4, net, netmask):
 def search_domain(nstr, schema):
     """
     !~search_domain
-        Return True if the string in nstr is suitable for use in the
+        Return True if the document string is suitable for use in the
         search line of /etc/resolv.conf, else False
     """
     return network.plausible_search_domain(nstr)
@@ -462,7 +464,7 @@ def search_domain(nstr, schema):
 def macaddr(nstr, schema):
     """
     !~macaddr
-        Check that corresponding document strings are ethernet mac addresses
+        Check that the document string is an ethernet mac addresses
     """
     return network.is_mac_address_valid(nstr)
 
@@ -470,7 +472,7 @@ def macaddr(nstr, schema):
 def ipv4_address(nstr, schema):
     """
     !~ipv4_address
-        Check that corresponding document strings are IPv4 addresses
+        Check that the document strings is an IPv4 addresses
     """
     return network.is_ipv4_address_valid(nstr)
 
@@ -478,7 +480,7 @@ def ipv4_address(nstr, schema):
 def netmask(nstr, schema):
     """
     !~netmask
-        Check that corresponding document strings are IPv4 netmasks
+        Check that the document string is an IPv4 netmasks
     """
     return network.is_ipv4_address_valid(nstr) \
            and network.plausible_netmask(network.parse_ipv4(nstr))
@@ -486,8 +488,8 @@ def netmask(nstr, schema):
 
 def reserved_none_void_prefixDec(fname, prefix):
     """
-    Return a XYS validator that checks that corresponding document strings are
-    'reserved', 'none', 'void', or valid per !~~prefixDec prefix.
+    Return a XYS validator that checks that corresponding document strings
+    are 'reserved', 'none', 'void', or valid per !~~prefixDec prefix.
     """
     def validator(nstr, schema):
         """
@@ -536,9 +538,9 @@ def plausible_static(static, schema):
 
 def get_referenced_ipConfTags(conf):
     """
-    Get tags of the static IP configurations that are owned by vlans (in our
-    relational model vlans include untaggued vlan and physical interfaces are
-    never directly related to IP configurations).
+    Get tags of the static IP configurations that are owned by vlans (in
+    our relational model vlans include untaggued vlan and physical
+    interfaces are never directly related to IP configurations).
     
     Return a list
     """
@@ -558,11 +560,11 @@ def references_relation(set_defined_symbols, lst_references, minref, maxref):
     """
     Pure function.
     
-    For each element of set_defined_symbols, there must be between minref and
-    maxref, included, identical elements in references.
+    For each element of set_defined_symbols, there must be between minref
+    and maxref, included, identical elements in references.
     
-    This function returns (dict_ok, dict_out_of_bounds, dict_undefined) where
-    dictionaries contain entries of symbol: count.
+    This function returns (dict_ok, dict_out_of_bounds, dict_undefined)
+    where dictionaries contain entries of symbol: count.
     
     Any symbol of set_defined_symbols appears either in dict_ok or in
     dict_out_of_bounds, even if it is unreferenced: in this case count == 0
@@ -716,11 +718,11 @@ resolvConf:
     nameservers?: !~~seqlen(1,3) [ !~ipv4_address 192.168.0.200 ]
 ipConfs:
     !~~prefixedDec static_: !~plausible_static
-        address:     !~ipv4_address 192.168.0.100
-        netmask:     !~netmask 255.255.255.0
-        broadcast?:  !~ipv4_address 192.168.0.255
-        gateway?:    !~ipv4_address 192.168.0.254
-        mtu?:        !~~between(68,1500) 1500
+        address:    !~ipv4_address 192.168.0.100
+        netmask:    !~netmask 255.255.255.0
+        broadcast?: !~ipv4_address 192.168.0.255
+        gateway?:   !~ipv4_address 192.168.0.254
+        mtu?:       !~~between(68,1500) 1500
 vlans:
     !~~prefixedDec vs_:
         !~~between(0,4094) 0: !~vlanIpConf static_0001
@@ -822,11 +824,12 @@ def load_configuration(conf_source):
 
 def save_configuration(conf, file_obj):
     """
-    Serialize the internal representation of the configuration to @file_obj in
-    YAML.
+    Serialize the internal representation of the configuration to @file_obj
+    in YAML.
     
     This can only be done if the configuration is valid.
-    InvalidConfigurationError will be raised if the configuration is not valid.
+    InvalidConfigurationError will be raised if the configuration is not
+    valid.
     """
     if not xys.validate(conf, SCHEMA_NETWORK_CONFIG):
         raise InvalidConfigurationError("Invalid configuration")
@@ -844,16 +847,17 @@ def load_current_configuration():
 
 def save_configuration_for_transaction(conf):
     """
-    Serialize the internal representation of the XIVO configuration in a file
-    that will be used during the system configuration generation transaction.
+    Serialize the internal representation of the XIVO configuration in a
+    file that will be used during the system configuration generation
+    transaction.
     """
     return save_configuration(conf, system.file_w_create_directories(os.path.join(STORE_BASE, STORE_TMP, NETWORK_CONFIG_FILE)))
 
 
 def natural_vlan_name(phy, vlanId):
     """
-    * phy: string
-    * vlanId: integer
+    @phy: string
+    @vlanId: integer
     """
     if not vlanId:
         return phy
@@ -1167,43 +1171,44 @@ def rotate_entries(previous, current, new):
 
 def transactional_generation(store_base, store_subs, gen_base, gen_subs, generation_func):
     """
-    This function first removes some temporary directories. Then it completes a
-    three staged transaction if it has been started, or does nothing otherwise.
-    The purpose of the transaction is to generate some configuration files from
-    others.  The source files are all stored along in a common subdirectory,
-    and the destination files are in an other subdirectory.  The transaction
-    guaranty as much as possible (we depends on the filesystem) that in the
-    stable state the source and the destination configurations are in sync.
-    The transaction must be externally initiated by the creation of the new
-    store entry in the filesystem.
-    
+    This function first removes some temporary directories.  Then it
+    completes a three staged transaction if it has been started, or does
+    nothing otherwise.  The purpose of the transaction is to generate some
+    configuration files from others.  The source files are all stored along
+    in a common subdirectory, and the destination files are in an other
+    subdirectory.  The transaction guaranty as much as possible (we depends
+    on the filesystem) that in the stable state the source and the
+    destination configurations are in sync.  The transaction must be
+    externally initiated by the creation of the new store entry in the
+    filesystem.
+
     This function returns True if a transaction has been processed
     successfully or None if no transaction was in progress.  A transaction
-    fails and is cancelled iff generation_func() raises an exception; in this
-    case a TransactionError is raised.  Uncatched exceptions raised by
+    fails and is cancelled iff generation_func() raises an exception; in
+    this case a TransactionError is raised.  Uncatched exceptions raised by
     transactional_generation() must be considered as fatal errors requiring
     human intervention or at least restoration of a known stable state.
+
+    If this function returns with no exception, the resulting state is
+    stable and clean; there are no remaining temporary directories.
     
-    If this function returns with no exception, the resulting state is stable
-    and clean; there are no remaining temporary directories.
-    
-    * store_base: base directory of source configurations.
-    * store_subs: sub-paths from store_base to previous, current, new, tmp, and
-                  failed.
-    * gen_base: base directory of all generated configurations.
-    * gen_subs: sub-paths from gen_base to previous, current, new, and tmp.
-    * generation_func(to_gen, prev_gen, current_src):
+    @store_base: base directory of source configurations.
+    @store_subs: sub-paths from store_base to previous, current, new, tmp,
+                 and failed.
+    @gen_base: base directory of all generated configurations.
+    @gen_subs: sub-paths from gen_base to previous, current, new, and tmp.
+    @generation_func(to_gen, prev_gen, current_src):
         where:
-        * to_gen contains the path where the configuration must be generated.
-        * prev_gen contains the path where the previously generated
-          configuration stands.  If no configuration has been previously
-          generated, prev_gen contains None instead.
-        * current_src contains the path where the source configuration stands.
+        @to_gen: path where the configuration must be generated.
+        @prev_gen: path where the previously generated configuration
+            stands.  If no configuration has been previously generated,
+            prev_gen contains None instead.
+        @current_src: path where the source configuration stands.
     
     NOTE: Because of our requirements some state that is only stored in the
-    generated files must be preserved (configuration of reserved interfaces and
-    of unhandled interfaces).  That is why generation_func takes its second
-    parameter.
+    generated files must be preserved (configuration of reserved interfaces
+    and of unhandled interfaces).  That is why generation_func takes its
+    second parameter.
     """
     log.info("ENTERING transactional_generation()")
     log.debug("  store_base = %r", store_base)
@@ -1334,8 +1339,8 @@ def gen_plugged_by_phy(phys):
     """
     Construct a cache of carrier status of interfaces in the sequence phys.
     The cache is a mapping where keys are interfaces and values a boolean
-    representing the carrier status (False => disconnected,
-    True => connected)
+    representing the carrier status:
+        (False => disconnected, True => connected)
     """
     return dict(((phy, network.is_interface_plugged(phy)) for phy in phys))
 
@@ -1345,14 +1350,11 @@ def cmp_bool_lexdec(x, y):
     Let X = (x[0], x[1]) and Y = (y[0], y[1]) where
       x[0] and y[0] are boolean and
       x[1] and y[1] are lexico-decimal strings
-        where a lexico-decimal string is a string representing a
-        lexico-decimal tuple by concatenating alternating strings and
-        decimal represenations of integers in the same order as they appear
-        in the tuple.  Lexico-decimal strings are totally ordered by the
+        Lexico-decimal strings are totally ordered by the
         network.cmp_lexdec function.
     
     This function defines a total order on the set of
-    boolean x lexico-decimal strings, which X and Y belong to.
+    boolean times lexico-decimal strings, which X and Y belong to.
     """
     return cmp((x[0], network.split_lexdec(x[1])), (y[0], network.split_lexdec(y[1])))
 
@@ -1360,8 +1362,8 @@ def cmp_bool_lexdec(x, y):
 def aa_lst_npst_phy(conf, plugged_by_phy):
     """
     Return a list of (npst, phy) in cmp_bool_lexdec order.
-    * npst: not plugged status
-    * phy: physical interfaces name
+    @npst: not plugged status
+    @phy: physical interfaces name
     
     Only phys that are in the "void" will be enumerated.
     """
@@ -1380,11 +1382,11 @@ def aa_lst_npst_fifn_vsTag_vlanId(conf, plugged_by_phy):
     """
     Return a list of (npst, fifn, vsTag, vlanId) in cmp_bool_lexdec order
     for (npst, fifn) where:
-    * npst: True if the supporting interface is not connected (boolean)
-    * fifn: "full" interface name - that is the linux vlan interface name
-      or ethXX.0 for untagged vlans (string)
-    * vsTag: vlan set tag (string)
-    * vlanId: vlan Id (integer)
+    @npst: True if the supporting interface is not connected (boolean)
+    @fifn: "full" interface name - that is the linux vlan interface name
+        or ethXX.0 for untagged vlans (string)
+    @vsTag: vlan set tag (string)
+    @vlanId: vlan Id (integer)
     
     Only interfaces that are in the "void" will be enumerated.
     """
@@ -1401,10 +1403,10 @@ def aa_lst_npst_fifn_vsTag_vlanId(conf, plugged_by_phy):
 
 def aa_lst_vsTag(conf):
     """
-    Return a list of vlan set names that are not owned by a physical interface
-    and for which related IP configurations will not be in conflict with IP
-    configurations already used or previously selected IP configurations.
-    The list is sorted by network.sorted_lst_lexdec().
+    Return a list of vlan set names that are not owned by a physical
+    interface and for which related IP configurations will not be in
+    conflict with IP configurations already used or previously selected IP
+    configurations.  The list is sorted by network.sorted_lst_lexdec().
     """
     referenced_networks = frozenset([network_from_static(conf['ipConfs'][ipConfTag]) for ipConfTag in get_referenced_ipConfTags(conf)])
     owned = frozenset(get_referenced_vsTags(conf))
@@ -1430,8 +1432,8 @@ def aa_lst_ipConfTag(conf):
     """
     Return a list of ipconf tags that are not owned by a vlan (in our
     terminology vlans include untaggued vlan) for which corresponding IP
-    configurations will not be in conflict with IP configurations already used
-    or previously selected IP configurations.
+    configurations will not be in conflict with IP configurations already
+    used or previously selected IP configurations.
     The list is sorted by network.sorted_lst_lexdec().
     """
     owned = frozenset(get_referenced_ipConfTags(conf))
@@ -1462,8 +1464,8 @@ def autoattrib_conf(conf):
     priority to plugged interfaces then to unplugged interfaces.
     Once done auto attribute vlan interfaces (including untagged vlans) to
     orphan ip configurations.  Finally auto attribute remaining IP
-    configuration directly to remaining interfaces, creating trivial vlan sets
-    so that the end to end relationship is made possible.
+    configuration directly to remaining interfaces, creating trivial vlan
+    sets so that the end to end relationship is made possible.
     """
     conf = copy.deepcopy(conf)
     
@@ -1522,8 +1524,9 @@ def add_vlan(conf, vsTag, vlanId):
 
 def save_configuration_initiate_transaction(conf):
     """
-    Save XIVO configuration in a place suitable for the system configuration
-    generation transaction, then initiate the transaction but do *not* run it.
+    Save XIVO configuration in a place suitable for the system
+    configuration generation transaction, then initiate the transaction but
+    do *not* run it.
     
     The transaction will be completed during the next call of
     transaction_system_configuration() - note that there is such a call at
@@ -1543,8 +1546,9 @@ def transaction_just_initiatiated():
 
 def undo_transaction_initiation():
     """
-    Cancel a transaction that has just been initiated but for which absolutely
-    no work of transactional_generation() has been performed yet.
+    Cancel a transaction that has just been initiated but for which
+    absolutely no work of transactional_generation() has been performed
+    yet.
     
     WARNING: the temporary store directory must not exists - and when this
     function completes it still won't exist.
@@ -1556,8 +1560,9 @@ def undo_transaction_initiation():
 
 def save_configuration_perform_generation_transaction(conf):
     """
-    Save XIVO configuration in a place suitable for the system configuration
-    generation transaction, then initiate and perform the transaction.
+    Save XIVO configuration in a place suitable for the system
+    configuration generation transaction, then initiate and perform the
+    transaction.
     """
     save_configuration_initiate_transaction(conf)
     transaction_system_configuration()
