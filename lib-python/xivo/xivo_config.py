@@ -732,13 +732,13 @@ services:
     voip:
         ipConf: !~~prefixedDec static_
         addresses:
-            voipServer: !~ipv4_address 192.168.1.200
-            bootServer: !~ipv4_address 192.168.1.200
-            voipRange: !~~seqlen(2,2) [ !~ipv4_address 192.168.1.200 ]
+            voipServer:  !~ipv4_address 192.168.1.200
+            bootServer:  !~ipv4_address 192.168.1.200
+            voipRange:   !~~seqlen(2,2) [ !~ipv4_address 192.168.1.200 ]
             alienRange?: !~~seqlen(2,2) [ !~ipv4_address 192.168.1.200 ]
-            directory?: !~ipv4_address 192.168.1.200
-            ntp?: !~ipv4_address 192.168.1.200
-            router?: !~ipv4_address 192.168.1.254
+            directory?:  !~ipv4_address 192.168.1.200
+            ntp?:        !~ipv4_address 192.168.1.200
+            router?:     !~ipv4_address 192.168.1.254
 """)
 
 # TODO: 
