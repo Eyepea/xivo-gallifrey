@@ -24,7 +24,12 @@ __license__ = """
 """
 
 
-EXISTS = object()
+class _EType(object): # pylint: disable-msg=R0903
+    "cosmetic class"
+    @staticmethod
+    def __repr__():
+        return 'EXISTS'
+EXISTS = _EType()
 
 
 def _get_match(op, tree):
@@ -86,7 +91,7 @@ def _suppl_ok(op, k, tree, incl_metaop):
             return part == incl_metaop
 
 
-def _int_comp(op, tree1, tree2):
+def _compare_one(op, tree1, tree2):
     """
     @op: internal representation of the tree comparison relational operator
     @tree1: the left tree
@@ -114,11 +119,21 @@ def _int_comp(op, tree1, tree2):
     return True
 
 
-def _parse_op(op):
+def _compare_conj(ops, tree1, tree2):
     """
-    @op: string representation of the tree comparison relational operator
-    Return the internal representation of @op.
+    @ops: list of @op (see _compare_one)
+    @tree1: the left tree
+    @tree2: the right tree
     """
+    for op in ops:
+        if not _compare_one(op, tree1, tree2):
+            return False
+    else:
+        return True
+
+
+def _parse_one(op):
+    "internal parser"
     res = []
     done = False
     for part in op.split('.'):
@@ -152,24 +167,41 @@ def _parse_op(op):
     return tuple(res)
 
 
-def relate(op, tree1, tree2):
+def compile_one(op):
     """
-    @op: string representation of the tree comparison relational operator
-    @tree1: the left tree
-    @tree2: the right tree
-    Return the truth value of the proposition:
-        @tree1 @op @tree2
+    @op: string
+    Returns a relational operator between two JSON trees, implemented as a
+    function:
+        compile_one(op)(tree1, tree2) -> boolean
     """
-    return _int_comp(_parse_op(op), tree1, tree2)
+    pop = _parse_one(op)
+    return lambda t1, t2: _compare_one(pop, t1, t2)
+
+
+def compile_conj(ops):
+    """
+    @ops: list of strings
+    Returns a relational operator between two JSON trees, implemented as a
+    function:
+        compile_conj(ops)(tree1, tree2) -> boolean
+    Note that this relation is the conjunction of compile_one(op) for each
+    op of ops.
+    """
+    pops = map(_parse_one, ops)
+    return lambda t1, t2: _compare_conj(pops, t1, t2)
+
+
+def relate_one(op, tree1, tree2):
+    """
+    Equivalent to:
+        compile_one(op)(tree1, tree2)
+    """
+    return _compare_one(_parse_one(op), tree1, tree2)
 
 
 def relate_conj(ops, tree1, tree2):
     """
-    Truth value of the proposition:
-        for each op in ops, tree1 op tree2
+    Equivalent to
+        compile_conj(ops)(tree1, tree2)
     """
-    for op in ops:
-        if not relate(op, tree1, tree2):
-            return False
-    else:
-        return True
+    return _compare_conj(map(_parse_one, ops), tree1, tree2)
