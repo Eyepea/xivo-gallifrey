@@ -28,6 +28,7 @@ __author__    = 'Corentin Le Gall'
 This is the XivoCTI class.
 """
 
+import base64
 import cjson
 import logging
 import os
@@ -39,6 +40,7 @@ import string
 import threading
 import time
 import urllib
+import zlib
 import Queue
 from xivo_ctiservers import cti_capas
 from xivo_ctiservers import cti_fax
@@ -861,7 +863,17 @@ class XivoCTICommand(BaseCommand):
                         linestosend.extend(self.__build_xmlsheet__('systray_info', actionopt, itemdir))
                         linestosend.append('<internal name="kind"><![CDATA[%s]]></internal>' % where)
                         linestosend.append('</user></profile>')
-                        fulllines = ''.join(linestosend)
+                        dozip = True
+                        if dozip:
+                                tosend = { 'class' : 'sheet',
+                                           'compressed' : 'anything',
+                                           'direction' : 'client',
+                                           'payload' : base64.b64encode((chr(0) * 4) + zlib.compress(''.join(linestosend))) }
+                        else:
+                                tosend = { 'class' : 'sheet',
+                                           'direction' : 'client',
+                                           'payload' : base64.b64encode(''.join(linestosend)) }
+                        fulllines = cjson.encode(tosend)
 
                         # print '---------', where, whoms, fulllines
 
@@ -1148,7 +1160,6 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def ami_newexten(self, astid, event):
-                print event
                 self.__sheet_alert__('outgoing', astid, event.get('Context'), event)
                 return
 
