@@ -152,6 +152,9 @@ def manage_cti_connections(connid, msg, sep):
                                         
                                         if uinfo.__class__.__name__ == 'str':
                                                 commandclass.loginko(loginparams, uinfo, connid)
+                                                fdlist_full.remove(connid)
+                                                del fdlist_established[connid]
+                                                connid.close()
                                         else:
                                                 if command.type == xivo_commandsets.CMD_LOGIN_CAPAS:
                                                         uinfo['login']['connection'] = connid
@@ -503,6 +506,7 @@ def update_amisocks(astid):
 # \return none
 def sighandler(signum, frame):
         global askedtoquit
+        print
         print '--- signal %s (atq = %s) received : quits' % (signum, askedtoquit)
         for t in filter(lambda x: x.getName() != 'MainThread', threading.enumerate()):
                 print '--- living thread <%s>' % (t.getName())
@@ -516,6 +520,7 @@ def sighandler(signum, frame):
 # \return none
 def sighandler_reload(signum, frame):
         global askedtoquit
+        print
         print '--- signal %s (atq = %s) received : reloads' % (signum, askedtoquit)
         askedtoquit = False
 
@@ -777,26 +782,30 @@ while True: # loops over the reloads
                 try:
                         [sels_i, sels_o, sels_e] = select.select(fdlist_full, [], [], updates_period)
                 except Exception, exc:
+                        print '--- exception --- after select (%s, %s) : %s' % (askedtoquit, fdlist_full, exc)
+                        print ' current open TCP connections : (CTI, WEBI, (F)AGI, INFO) ', fdlist_established
+                        print ' current open TCP connections : (AMI) ', amilist.fdlist()
+                        print ' current open TCP connections : (OUT) ', outsock
+                        print
+                        
+                        for s in fdlist_full:
+                                if s in fdlist_established and fdlist_established[s] == 'CTI':
+                                        if askedtoquit:
+                                                commandclass.reset('stop', s)
+                                        else:
+                                                commandclass.reset('reload', s)
+                                if s.__class__.__name__ == 'int':
+                                        os.close(s)
+                                else:
+                                        s.close()
                         if askedtoquit:
-                                try:
-                                        print
-                                        print 'current open TCP connections : (CTI, WEBI, (F)AGI, INFO) ', fdlist_established
-                                        print 'current open TCP connections : (AMI) ', amilist.fdlist()
-                                        print 'current open TCP connections : (OUT) ', outsock
-                                        print
-                                        os.unlink(PIDFILE)
-                                except Exception, exc:
-                                        print exc
                                 for t in filter(lambda x: x.getName() != 'MainThread', threading.enumerate()):
                                         print '--- (stop) killing thread <%s>' % t.getName()
                                         t._Thread__stop()
                                 daemonize.unlock_pidfile(PIDFILE)
                                 sys.exit(5)
                         else:
-                                print '--- exception --- after select (%s) : %s' % (fdlist_full, exc)
                                 askedtoquit = True
-                                for s in fdlist_full:
-                                        s.close()
                                 for t in filter(lambda x: x.getName() != 'MainThread', threading.enumerate()):
                                         print '--- (reload) the thread <%s> remains' % t.getName()
                                         # t._Thread__stop() # does not work in reload case (vs. stop case)
@@ -915,22 +924,31 @@ while True: # loops over the reloads
                                 # local pipe fd
                                 elif queued_threads_pipe[0] == sel_i:
                                         try:
-                                                disconnlist = commandclass.checkqueue()
-                                                for userinfo in disconnlist:
-                                                        log.error('checkqueue return : will disconnect %s' % userinfo)
-                                                        if 'login' in userinfo and 'connection' in userinfo.get('login'):
-                                                                connid = userinfo.get('login')['connection']
-                                                                if connid in fdlist_full and connid in fdlist_established:
+                                                actionqueue = commandclass.checkqueue()
+                                                for actionname, actionarg in actionqueue.iteritems():
+                                                        if actionname == 'disconnlist-user':
+                                                                disconnlist = actionarg
+                                                                for userinfo in disconnlist:
+                                                                        log.error('checkqueue return : will disconnect %s' % userinfo)
+                                                                        if 'login' in userinfo and 'connection' in userinfo.get('login'):
+                                                                                connid = userinfo.get('login')['connection']
+                                                                                if connid in fdlist_full and connid in fdlist_established:
+                                                                                        fdlist_full.remove(connid)
+                                                                                        del fdlist_established[connid]
+                                                                                else:
+                                                                                        log.warning('connid %s no more in fdlists' % connid)
+                                                                                connid.close()
+                                                                                commandclass.manage_logoff(userinfo, 'pipe')
+                                                                                del userinfo_by_requester[connid]
+                                                                        else:
+                                                                                log.warning('WARNING - no login/connection field present in userinfo')
+                                                                commandclass.clear_disconnlist()
+                                                        elif actionname == 'disconnlist-tcp':
+                                                                disconnlist = actionarg
+                                                                for connid in disconnlist:
                                                                         fdlist_full.remove(connid)
                                                                         del fdlist_established[connid]
-                                                                else:
-                                                                        log.warning('connid %s no more in fdlists' % connid)
-                                                                connid.close()
-                                                                commandclass.manage_logoff(userinfo, 'pipe')
-                                                                del userinfo_by_requester[connid]
-                                                        else:
-                                                                log.warning('WARNING - no login/connection field present in userinfo')
-                                                commandclass.clear_disconnlist()
+                                                                        connid.close()
                                         except Exception, exc:
                                                 log.error('--- exception --- [queued threads] : %s' % exc)
 

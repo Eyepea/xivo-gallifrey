@@ -516,7 +516,7 @@ class AMIList:
                 self.ami[astid].set_aoriginate(aoriginatecmd)
 
         def fdlist(self):
-                return self.rami.iterkeys()
+                return self.rami.keys()
 
         def remove(self, astid):
                 fd = self.ami[astid].fd

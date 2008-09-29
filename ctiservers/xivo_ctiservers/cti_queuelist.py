@@ -36,13 +36,24 @@ class QueueList(AnyList):
                 return
         
         def update(self):
+                lstadd = []
+                lstdel = []
+                oldqueuelist = self.queuelist
+                newqueuelist = {}
                 for url, urllist in self.requested_list.iteritems():
                         gl = urllist.getlist(1, 5, True)
-                        newqueuelist = self.commandclass.getqueueslist(urllist.list)
-                        for a, b in newqueuelist.iteritems():
-                                if a not in self.queuelist:
-                                        self.queuelist[a] = b
-                return
+                        newqueuelist.update(self.commandclass.getqueueslist(urllist.list))
+                for a, b in newqueuelist.iteritems():
+                        if a not in oldqueuelist:
+                                self.queuelist[a] = b
+                                lstadd.append(a)
+                for a, b in oldqueuelist.iteritems():
+                        if a not in newqueuelist:
+                                lstdel.append(a)
+                for a in lstdel:
+                        del self.queuelist[a]
+                return { 'add' : lstadd,
+                         'del' : lstdel }
 
         queuelocationprops = ['Paused', 'Status', 'Membership', 'Penalty', 'LastCall', 'CallsTaken']
         queuestats = ['ServicelevelPerf', 'Abandoned', 'Max', 'Completed', 'ServiceLevel', 'Weight', 'Holdtime', 'Calls']
@@ -57,7 +68,7 @@ class QueueList(AnyList):
         def queueentry_remove(self, queue, channel):
                 if queue in self.queuelist:
                         if channel in self.queuelist[queue]['channels']:
-                                del self.queuelist[queue]['channels'][channel]                                
+                                del self.queuelist[queue]['channels'][channel]
                 else:
                         log.warning('queueentry_remove : no such queue %s' % queue)
                 return

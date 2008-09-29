@@ -33,13 +33,24 @@ class AgentList(AnyList):
                 return
         
         def update(self):
+                lstadd = []
+                lstdel = []
+                oldagentlist = self.agentlist
+                newagentlist = {}
                 for url, urllist in self.requested_list.iteritems():
-                        gl = urllist.getlist(0, 5, True)
-                        newagentlist = self.commandclass.getagentslist(urllist.list)
-                        for a, b in newagentlist.iteritems():
-                                if a not in self.agentlist:
-                                        self.agentlist[a] = b
-                return
+                        gl = urllist.getlist(1, 4, True)
+                        newagentlist.update(self.commandclass.getagentslist(urllist.list))
+                for a, b in newagentlist.iteritems():
+                        if a not in oldagentlist:
+                                self.agentlist[a] = b
+                                lstadd.append(a)
+                for a, b in oldagentlist.iteritems():
+                        if a not in newagentlist:
+                                lstdel.append(a)
+                for a in lstdel:
+                        del self.agentlist[a]
+                return { 'add' : lstadd,
+                         'del' : lstdel }
         
         def findagent(self, agentname):
                 if agentname in self.agentlist:

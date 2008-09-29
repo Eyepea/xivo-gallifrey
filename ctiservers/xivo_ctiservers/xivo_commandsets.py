@@ -56,6 +56,8 @@ class BaseCommand:
         def clear_disconnlist(self):
                 return
 
+        def reset(self, mode, conn):
+                return
         def transfer_addbuf(self, req, buf):
                 return
         def transfer_addref(self, req, ref):
