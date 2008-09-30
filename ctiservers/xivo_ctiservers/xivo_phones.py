@@ -88,13 +88,16 @@ class PhoneList:
         # \brief "Normal" phone lines, like SIP, IAX, Zap, ...
         
         ##  \brief Class initialization.
-        def __init__(self, iastid, cclass, url):
-                self.astid = iastid
+        def __init__(self, url):
                 self.normal = {}
                 self.star10 = []
-                self.commandclass = cclass
                 self.rough_phonelist = {}
-                self.phlist = cti_urllist.UrlList(url)
+                self.phlist = cti_urllist.UrlList(url[0])
+                return
+
+        def setcommandclass(self, commandclass):
+                self.commandclass = commandclass
+                return
 
         def update_gui_clients(self, phonenum, fromwhom):
                 if self.normal[phonenum].towatch:

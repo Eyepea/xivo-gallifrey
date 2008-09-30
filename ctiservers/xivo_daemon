@@ -128,7 +128,6 @@ def manage_cti_connections(connid, msg, sep):
         Handles CTI connections.
         """
         requester = '%s:%d' % connid.getpeername()
-
         if requester in commandclass.transfers_ref:
                 commandclass.transfer_addbuf(requester, msg)
                 return
@@ -165,9 +164,8 @@ def manage_cti_connections(connid, msg, sep):
                                                         userinfo_current[connid] = uinfo
                                                 commandclass.loginok(loginparams, uinfo, connid, command.type)
                                 elif command.type == xivo_commandsets.CMD_TRANSFER:
-                                        log.info('TRANSFER on %s (ref %s)' % (requester, command.args))
-                                        commandclass.transfer_addref(requester, command.args[0])
-                                        connid.sendall('fileref=%s\n' % command.args[0])
+                                        log.info('TRANSFER on %s : %s' % (requester, command.struct))
+                                        commandclass.transfer_addref(connid, command.struct.get('faxid'))
                                 else:
                                         if connid in userinfo_by_requester:
                                                 commandclass.manage_cticommand(userinfo_by_requester[connid],
@@ -469,7 +467,7 @@ def handle_ami_function(astid, evfunction, this_event):
                 else:
                         log.warning('AMI %s ... this event (%s) is not tracked' % (astid, evfunction))
         except Exception, exc:
-                log.error('--- exception --- AMI / %s : event=%s : %s' % (evfunction, this_event, exc))
+                log.error('--- exception --- AMI %s / %s : event %s : %s' % (astid, evfunction, this_event, exc))
 
 
 def update_readconf():
@@ -663,7 +661,7 @@ while True: # loops over the reloads
                         if 'localaddr' in xivoconf_asterisk:
                                 localaddr = xivoconf_asterisk['localaddr']
                         if 'urllist_phones' in xivoconf_asterisk:
-                                urllist_phones = xivoconf_asterisk['urllist_phones']
+                                urllist_phones = xivoconf_asterisk['urllist_phones'].split(',')
                         if 'urllist_queues' in xivoconf_asterisk:
                                 urllist_queues = xivoconf_asterisk['urllist_queues'].split(',')
                         if 'urllist_agents' in xivoconf_asterisk:
@@ -946,6 +944,7 @@ while True: # loops over the reloads
                                                         elif actionname == 'disconnlist-tcp':
                                                                 disconnlist = actionarg
                                                                 for connid in disconnlist:
+                                                                        commandclass.telldisconn(connid)
                                                                         fdlist_full.remove(connid)
                                                                         del fdlist_established[connid]
                                                                         connid.close()

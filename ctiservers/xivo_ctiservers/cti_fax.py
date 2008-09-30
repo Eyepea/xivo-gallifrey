@@ -31,6 +31,7 @@ import random
 import SocketServer
 import string
 import threading
+import time
 
 PATH_SPOOL_ASTERISK     = '/var/spool/asterisk'
 PATH_SPOOL_ASTERISK_FAX = PATH_SPOOL_ASTERISK + '/fax'
@@ -65,7 +66,7 @@ class Fax:
                 comm = commands.getoutput('file -b %s' % tmpfilepath)
                 brieffile = ' '.join(comm.split()[0:2])
                 if brieffile == 'PDF document,':
-                        log.info('fax : the file received is a PDF one : converting to TIFF/F')
+                        log.info('fax : the file received is a PDF one : converting to TIF(F)')
                         reply = 'ko;convert-pdftif'
                         ret = os.system("%s -o %s %s" % (PDF2FAX, faxfilepath, tmpfilepath))
                 else:
@@ -78,23 +79,23 @@ class Fax:
                                 try:
                                         reply = 'ko;AMI'
                                         ret = ami.txfax(PATH_SPOOL_ASTERISK_FAX, filename,
-                                                        self.uinfo.get('xivo_userid'), callerid, self.number, self.uinfo.get('context'))
+                                                        self.uinfo.get('xivo_userid'),
+                                                        callerid, self.number,
+                                                        self.uinfo.get('context'),
+                                                        self.reference)
                                         if ret:
-                                                reply = 'ok;'
+                                                reply = 'queued;'
                                 except Exception, exc:
                                         log.error('--- exception --- (fax handler - AMI) : %s' %(str(exc)))
                         else:
                                 reply = 'ko;exists-pathspool'
                                 log.info('directory %s does not exist - could not send fax'
-                                          % PATH_SPOOL_ASTERISK_FAX)
+                                         % PATH_SPOOL_ASTERISK_FAX)
 
-                if reply == 'ok;':
-                        # BUGFIX: myconn is undefined
-                        # filename is actually an identifier.
-                        #faxclients[filename] = myconn
-                        reply = 'queued;'
-
-                self.uinfo.get('login').get('connection').sendall('faxsent=%s\n' % reply)
+                # BUGFIX: myconn is undefined
+                # filename is actually an identifier.
+                # faxclients[filename] = myconn
 
                 os.unlink(tmpfilepath)
                 log.info("faxhandler : removed %s" % tmpfilepath)
+                return reply

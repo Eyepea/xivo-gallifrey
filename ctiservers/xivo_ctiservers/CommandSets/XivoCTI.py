@@ -110,7 +110,7 @@ class XivoCTICommand(BaseCommand):
                                  'phones' : {} }
                 # self.plist_ng = cti_phonelist.PhoneList()
                 # self.plist_ng.setcommandclass(self)
-                self.channels = {}
+                self.uniqueids = {}
                 self.transfers_buf = {}
                 self.transfers_ref = {}
                 self.faxes = {}
@@ -149,22 +149,21 @@ class XivoCTICommand(BaseCommand):
                 params = linein.split()
                 cmd = xivo_commandsets.Command(params[0], params[1:])
                 cmd.struct = {}
-                if cmd.name == 'faxdata':
-                        cmd.type = xivo_commandsets.CMD_TRANSFER
-                else:
-                        cmd.type = xivo_commandsets.CMD_OTHER
-                        try:
-                                cmd.struct = cjson.decode(linein)
-                                cmd.name = 'json'
-                                if cmd.struct.get('class') == 'login_id':
-                                        cmd.type = xivo_commandsets.CMD_LOGIN_ID
-                                elif cmd.struct.get('class') == 'login_pass':
-                                        cmd.type = xivo_commandsets.CMD_LOGIN_PASS
-                                elif cmd.struct.get('class') == 'login_capas':
-                                        cmd.type = xivo_commandsets.CMD_LOGIN_CAPAS
-                        except Exception, exc:
-                                log.error('--- exception --- parsing json for <%s> : %s' % (linein, exc))
-                                cmd.struct = {}
+                cmd.type = xivo_commandsets.CMD_OTHER
+                try:
+                        cmd.struct = cjson.decode(linein)
+                        cmd.name = 'json'
+                        if cmd.struct.get('class') == 'login_id':
+                                cmd.type = xivo_commandsets.CMD_LOGIN_ID
+                        elif cmd.struct.get('class') == 'login_pass':
+                                cmd.type = xivo_commandsets.CMD_LOGIN_PASS
+                        elif cmd.struct.get('class') == 'login_capas':
+                                cmd.type = xivo_commandsets.CMD_LOGIN_CAPAS
+                        elif cmd.struct.get('class') == 'faxdata':
+                                cmd.type = xivo_commandsets.CMD_TRANSFER
+                except Exception, exc:
+                        log.error('--- exception --- parsing json for <%s> : %s' % (linein, exc))
+                        cmd.struct = {}
                 return cmd
         
         def reset(self, mode, conn):
@@ -181,9 +180,17 @@ class XivoCTICommand(BaseCommand):
                 self.transfers_buf[req].append(buf)
                 return
 
-        def transfer_addref(self, req, ref):
-                self.transfers_ref[req] = ref
-                self.transfers_buf[req] = []
+        def transfer_addref(self, connid, faxid):
+                requester = '%s:%d' % connid.getpeername()
+                if connid in self.timeout_login:
+                        self.timeout_login[connid].cancel()
+                        del self.timeout_login[connid]
+                self.transfers_ref[requester] = faxid
+                self.transfers_buf[requester] = []
+                tosend = { 'class' : 'fileref',
+                           'direction' : 'client',
+                           'faxid' : faxid }
+                connid.sendall(cjson.encode(tosend) + '\n')
                 return
 
         def transfer_endbuf(self, req):
@@ -194,12 +201,16 @@ class XivoCTICommand(BaseCommand):
                         if ref in self.faxes:
                                 uinfo = self.faxes[ref].uinfo
                                 astid = uinfo.get('astid')
-                                self.faxes[ref].sendfax(''.join(self.transfers_buf[req]),
-                                                        self.configs[astid].faxcallerid,
-                                                        self.amilist.ami[astid])
+                                reply = self.faxes[ref].sendfax(''.join(self.transfers_buf[req]),
+                                                                self.configs[astid].faxcallerid,
+                                                                self.amilist.ami[astid])
+                                tosend = { 'class' : 'faxprogress',
+                                           'direction' : 'client',
+                                           'status' : reply.split(';')[0],
+                                           'reason' : reply.split(';')[1] }
+                                self.__send_msg_to_cti_client__(uinfo, cjson.encode(tosend))
                                 del self.transfers_ref[req]
                                 del self.transfers_buf[req]
-                                del self.faxes[ref]
                 return
 
         def get_login_params(self, command, astid, connid):
@@ -395,7 +406,13 @@ class XivoCTICommand(BaseCommand):
                            'errorstring' : errorstring }
                 connid.sendall('%s\n' % cjson.encode(tosend))
                 return
-        
+
+        def telldisconn(self, connid):
+                tosend = { 'class' : 'disconn',
+                           'direction' : 'client' }
+                connid.sendall('%s\n' % cjson.encode(tosend))
+                return
+
         def loginok(self, loginparams, userinfo, connid, phase):
                 if phase == xivo_commandsets.CMD_LOGIN_ID:
                         tosend = { 'class' : 'login_id_ok',
@@ -463,7 +480,8 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def set_phonelist(self, astid, urllist_phones):
-                self.weblist['phones'][astid] = xivo_phones.PhoneList(astid, self, urllist_phones)
+                self.weblist['phones'][astid] = xivo_phones.PhoneList(urllist_phones)
+                self.weblist['phones'][astid].setcommandclass(self)
                 return
 
         def set_agentlist(self, astid, urllist_agents):
@@ -665,6 +683,7 @@ class XivoCTICommand(BaseCommand):
         sheet_allowed_events = ['incomingqueue', 'incomingdid',
                                 'agentcalled', 'agentselected',
                                 'agi', 'link', 'unlink', 'hangup',
+                                'faxreceived',
                                 'callmissed', # see GG (in order to tell a user that he missed a call)
                                 'localphonecalled', 'outgoing']
 
@@ -731,7 +750,13 @@ class XivoCTICommand(BaseCommand):
                                 application = event.get('Application')
                                 if application == 'Dial' and exten.isdigit():
                                         pass
-
+                                
+                        elif where == 'faxreceived':
+                                itemdir['xivo-callerid'] = event.get('CallerID')
+                                itemdir['xivo-faxpages'] = event.get('PagesTransferred')
+                                itemdir['xivo-faxfile'] = event.get('FileName')
+                                itemdir['xivo-faxstatus'] = event.get('PhaseEString')
+                                
                         elif where == 'agentselected':
                                 dst = event.get('Channel2')[6:]
                                 src = event.get('CallerID1')
@@ -930,6 +955,21 @@ class XivoCTICommand(BaseCommand):
                 return
 
 
+        def treatsall(self, args):
+                what = args.get('event')
+                if what == 'channel-src':
+                        pidsrc = self.__fromchannel__(astid, src)
+                        piddst = self.__fromchannel__(astid, dst)
+                        treatsall(self, 'phone-src', pidsrc)
+                        treatsall(self, 'phone-dst', piddst)
+                        pass
+                elif what == 'phone-src':
+                        pass
+                elif what == 'agent-src':
+                        pass
+                return
+
+
         def __clidlist_from_event__(self, chan1, chan2, clid1, clid2):
                 # XXXX backport from autoescape, to be checked/improved/fixed
                 LOCALNUMSIZE = 3
@@ -954,9 +994,18 @@ class XivoCTICommand(BaseCommand):
                 chan2 = event.get('Channel2')
                 clid1 = event.get('CallerID1')
                 clid2 = event.get('CallerID2')
+                uid1 = event.get('Uniqueid1')
+                uid2 = event.get('Uniqueid2')
+                if uid1 in self.uniqueids[astid] and chan1 == self.uniqueids[astid][uid1]['channel']:
+                        self.uniqueids[astid][uid1].update({'link' : chan2,
+                                                            'time-link' : time.time()})
+                if uid2 in self.uniqueids[astid] and chan2 == self.uniqueids[astid][uid2]['channel']:
+                        self.uniqueids[astid][uid2].update({'link' : chan1,
+                                                            'time-link' : time.time()})
                 #print '(phone)', astid, self.__fromchannel__(astid, chan1), 'chan1'
                 #print '(phone)', astid, self.__fromchannel__(astid, chan2), 'chan2'
-                self.__sheet_alert__('link', astid, DEFAULTCONTEXT, event, {})
+                if 'context' in self.uniqueids[astid][uid1]:
+                        self.__sheet_alert__('link', astid, self.uniqueids[astid][uid1]['context'], event, {})
                 if chan2.startswith('Agent/'):
                         msg = self.__build_agupdate__(['agentlink', astid, chan2])
                         self.__send_msg_to_cti_clients__(msg)
@@ -994,9 +1043,18 @@ class XivoCTICommand(BaseCommand):
                 chan2 = event.get('Channel2')
                 clid1 = event.get('CallerID1')
                 clid2 = event.get('CallerID2')
+                uid1 = event.get('Uniqueid1')
+                uid2 = event.get('Uniqueid2')
+                if uid1 in self.uniqueids[astid] and chan1 == self.uniqueids[astid][uid1]['channel']:
+                        self.uniqueids[astid][uid1].update({'unlink' : chan2,
+                                                            'time-unlink' : time.time()})
+                if uid2 in self.uniqueids[astid] and chan2 == self.uniqueids[astid][uid2]['channel']:
+                        self.uniqueids[astid][uid2].update({'unlink' : chan1,
+                                                            'time-unlink' : time.time()})
                 #print '(phone)', astid, self.__fromchannel__(astid, chan1), 'chan1'
                 #print '(phone)', astid, self.__fromchannel__(astid, chan2), 'chan2'
-                self.__sheet_alert__('unlink', astid, DEFAULTCONTEXT, event, {})
+                if 'context' in self.uniqueids[astid][uid1]:
+                        self.__sheet_alert__('unlink', astid, self.uniqueids[astid][uid1]['context'], event, {})
                 if chan2.startswith('Agent/'):
                         msg = self.__build_agupdate__(['agentunlink', astid, chan2])
                         self.__send_msg_to_cti_clients__(msg)
@@ -1022,7 +1080,12 @@ class XivoCTICommand(BaseCommand):
                 chan  = event.get('Channel')
                 uid = event.get('Uniqueid')
                 cause = event.get('Cause-txt')
-                self.__sheet_alert__('hangup', astid, DEFAULTCONTEXT, event)
+                if uid in self.uniqueids[astid] and chan == self.uniqueids[astid][uid]['channel']:
+                        self.uniqueids[astid][uid].update({'hangup' : chan,
+                                                           'time-hangup' : time.time()})
+                if 'context' in self.uniqueids[astid][uid]:
+                        self.__sheet_alert__('hangup', astid, self.uniqueids[astid][uid]['context'], event)
+
                 self.weblist['phones'][astid].handle_ami_event_hangup(chan, cause)
                 if chan in self.chans_incomingqueue or chan in self.chans_incomingdid:
                         print 'HANGUP : (%s) %s uid=%s %s' % (time.asctime(), astid, uid, chan)
@@ -1030,11 +1093,13 @@ class XivoCTICommand(BaseCommand):
                                 self.chans_incomingqueue.remove(chan)
                         if chan in self.chans_incomingdid:
                                 self.chans_incomingdid.remove(chan)
-                del self.channels[astid][chan]
+                if astid in self.uniqueids and uid in self.uniqueids[astid]:
+                        del self.uniqueids[astid][uid]
                 return
 
         def amiresponse_success(self, astid, event):
                 msg = event.get('Message')
+                actionid = event.get('ActionID')
                 if msg == 'Extension Status':
                         self.amiresponse_extensionstatus(astid, event)
                 elif msg == 'Mailbox Message Count':
@@ -1059,11 +1124,27 @@ class XivoCTICommand(BaseCommand):
                              'Agent logged in']:
                         pass
                 else:
-                        log.warning('AMI %s Response=Success : untracked message <%s>' % (astid, msg))
+                        log.warning('AMI %s Response=Success : untracked message (%s) <%s>' % (astid, actionid, msg))
                 return
 
         def amiresponse_error(self, astid, event):
-                log.warning('AMI %s Response=Error : %s' % (astid, event))
+                msg = event.get('Message')
+                actionid = event.get('ActionID')
+                if msg == 'Originate failed':
+                        if actionid in self.faxes:
+                                faxid = self.faxes[actionid]
+                                log.warning('AMI %s : fax not sent %s %s %s %s'
+                                            % (astid, faxid.size, faxid.number, faxid.hide, faxid.uinfo))
+                                tosend = { 'class' : 'faxprogress',
+                                           'direction' : 'client',
+                                           'status' : 'ko',
+                                           'reason' : 'orig' }
+                                self.__send_msg_to_cti_client__(faxid.uinfo, cjson.encode(tosend))
+                                del self.faxes[actionid]
+                        else:
+                                log.warning('AMI %s Response=Error : (%s) <%s>' % (astid, actionid, msg))
+                else:
+                        log.warning('AMI %s Response=Error : untracked message (%s) <%s>' % (astid, actionid, msg))
                 return
 
         def amiresponse_mailboxcount(self, astid, event):
@@ -1100,13 +1181,10 @@ class XivoCTICommand(BaseCommand):
                 phoneref = '.'.join([hint.split('/')[0].lower(), context,
                                      hint.split('/')[1], exten])
                 if phoneref in self.weblist['phones'][astid].rough_phonelist:
-                        print '(phone)', astid, phoneref, status, self.sippresence[status], time.time()
+                        #print '(phone)', astid, phoneref, status, self.sippresence[status], time.time()
+                        pass
                 return
 
-
-        def treatsall(self):
-                
-                return
 
         sippresence = {'-1' : 'Fail', '0' : 'Ready', '1' : 'On the phone', '4' : 'Unavailable', '8' : 'Ringing'}
 
@@ -1119,8 +1197,9 @@ class XivoCTICommand(BaseCommand):
                 context = event.get('Context')
                 for phoneref, b in self.weblist['phones'][astid].rough_phonelist.iteritems():
                         if b['number'] == exten and b['context'] == context:
-                                print '(phone)', astid, phoneref, status, self.sippresence[status], time.time()
+                                #print '(phone)', astid, phoneref, status, self.sippresence[status], time.time()
                                 # treatsall(phone event)
+                                pass
                 return
         
         
@@ -1140,6 +1219,7 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def ami_originateresponse(self, astid, event):
+                print event
                 return
         # {'Uniqueid': '1213955764.88', 'CallerID': '6101', 'Exten': '6101', 'CallerIDNum': '6101', 'Response': 'Success', 'Reason': '4', 'Context': 'ctx-callbooster-agentlogin', 'CallerIDName': 'operateur', 'Privilege': 'call,all', 'Event': 'OriginateResponse', 'Channel': 'SIP/102-081f6730'}
 
@@ -1157,18 +1237,26 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def ami_newcallerid(self, astid, event):
+                # print event
                 return
 
         def ami_newexten(self, astid, event):
+                application = event.get('Application')
+                uniqueid = event.get('Uniqueid')
+                if application == 'Dial' and uniqueid in self.uniqueids[astid]:
+                        self.uniqueids[astid][uniqueid]['context'] = event.get('Context')
+                        self.uniqueids[astid][uniqueid]['time-newexten-dial'] = time.time()
                 self.__sheet_alert__('outgoing', astid, event.get('Context'), event)
                 return
 
         def ami_newchannel(self, astid, event):
+                # print event
                 channel = event.get('Channel')
                 uniqueid = event.get('Uniqueid')
-                if astid not in self.channels:
-                        self.channels[astid] = {}
-                self.channels[astid][channel] = uniqueid
+                if astid not in self.uniqueids:
+                        self.uniqueids[astid] = {}
+                self.uniqueids[astid][uniqueid] = {'channel' : channel,
+                                                   'time-newchannel' : time.time()}
                 return
 
         def ami_parkedcall(self, astid, event):
@@ -1424,23 +1512,31 @@ class XivoCTICommand(BaseCommand):
 
         def ami_faxsent(self, astid, event):
                 filename = event.get('FileName')
-                # debug# (xivocti) xivo-obelisk : {'PhaseEString': 'OK', 'CallerID': '00141389970', 'Exten': 's', 'LocalStationID': '', 'PagesTransferred': '1', 'TransferRate': '14400', 'RemoteStationID': '', 'PhaseEStatus': '0', 'Privilege': 'call,all', 'FileName': '/var/spool/asterisk/fax/astfaxsend-q6yZAKTJvU-0x48be7930.tif', 'Resolution': '3850', 'Event': 'FaxSent', 'Channel': 'IAX2/asteriskisdn-1363'}
-                
                 if filename and os.path.isfile(filename):
                         os.unlink(filename)
                         log.info('faxsent event handler : removed %s' % filename)
-                
-                tosend = { 'class' : 'faxsent',
-                           'direction' : 'client',
-                           'payload' : event.get('PhaseEString', 'Unknown') }
+
+                if event.get('PhaseEStatus') == '0':
+                        tosend = { 'class' : 'faxprogress',
+                                   'direction' : 'client',
+                                   'status' : 'ok' }
+                else:
+                        tosend = { 'class' : 'faxprogress',
+                                   'direction' : 'client',
+                                   'status' : 'ko',
+                                   'reason' : event.get('PhaseEStatus') }
                 repstr = cjson.encode(tosend)
-                # TODO: Send the result to XIVO Client.
+
+                # 'FileName': '/var/spool/asterisk/fax/astfaxsend-q6yZAKTJvU-0x48be7930.tif'
+                faxid = filename[len('/var/spool/asterisk/fax/astfaxsend-'):-4]
+                if faxid in self.faxes:
+                        self.__send_msg_to_cti_client__(self.faxes[faxid].uinfo, cjson.encode(tosend))
+                        del self.faxes[faxid]
                 return
 
         def ami_faxreceived(self, astid, event):
                 log.info('%s : %s' % (astid, event))
-                # debug# (xivocti) xivo-obelisk : {'PhaseEString': 'OK', 'CallerID': '0141389960', 'Exten': 's', 'LocalStationID': '', 'PagesTransferred': '1', 'TransferRate': '14400', 'RemoteStationID': '', 'PhaseEStatus': '0', 'Privilege': 'call,all', 'FileName': '/var/spool/asterisk/fax/0141389960-1220442150.tif', 'Resolution': '3850', 'Event': 'FaxReceived', 'Channel': 'IAX2/asteriskisdn-7665'}
-                # #INFO:xivocti:xivo-obelisk : {'PhaseEString': 'The call dropped prematurely', 'CallerID': '0149885555', 'Exten': 's', 'LocalStationID': '', 'PagesTransferred': '0', 'TransferRate': '14400', 'RemoteStationID': '', 'PhaseEStatus': '51', 'Privilege': 'call,all', 'FileName': '/var/spool/asterisk/fax/0149885555-1222437392.tif', 'Resolution': '0', 'Event': 'FaxReceived', 'Channel': 'IAX2/asteriskisdn-3096'}
+                self.__sheet_alert__('faxreceived', astid, DEFAULTCONTEXT, event)
                 return
 
         def ami_meetmejoin(self, astid, event):
@@ -1565,7 +1661,15 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def ami_rename(self, astid, event):
-                log.info('AMI Rename %s %s %s' % (event.get('Uniqueid'), event.get('Oldname'), event.get('Newname')))
+                oldname = event.get('Oldname')
+                newname = event.get('Newname')
+                uid = event.get('Uniqueid')
+                if uid in self.uniqueids and oldname == self.uniqueids[uid]['channel']:
+                        self.uniqueids[uid] = {'channel' : newname}
+                        log.info('AMI Rename %s %s %s (success)' % (uid, oldname, newname))
+                else:
+                        print uid, self.uniqueids.get(uid)
+                        log.info('AMI Rename %s %s %s (failure)' % (uid, oldname, newname))
                 return
         # END of AMI events
 

@@ -115,6 +115,8 @@ class BaseCommand:
                 return
         def loginok(self, loginparams, userinfo):
                 return
+        def telldisconn(self, connid):
+                return
 
         # command events (~ CTI)
         def get_list_commands(self):
