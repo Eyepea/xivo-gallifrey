@@ -1456,7 +1456,7 @@ class XivoCTICommand(BaseCommand):
                         self.meetme[astid][meetmenum].append(channel)
                         tosend = { 'class' : 'meetme',
                                    'direction' : 'client',
-                                   'payload' : [ 'join', meetmenum, num, channel,
+                                   'payload' : [ 'join', astid, meetmenum, num, channel,
                                                  str(len(self.meetme[astid][meetmenum])) ]
                                    }
                         self.__send_msg_to_cti_clients__(cjson.encode(tosend))
@@ -1475,8 +1475,12 @@ class XivoCTICommand(BaseCommand):
                         self.meetme[astid][meetmenum] = []
                 if channel in self.meetme[astid][meetmenum]:
                         self.meetme[astid][meetmenum].remove(channel)
-                        self.__send_msg_to_cti_clients__('meetme=leave;%s;%s;%s;%s;%d'
-                                                         % (astid, meetmenum, num, channel, len(self.meetme[astid][meetmenum])))
+                        tosend = { 'class' : 'meetme',
+                                   'direction' : 'client',
+                                   'payload' : [ 'leave', astid, meetmenum, num, channel,
+                                                 str(len(self.meetme[astid][meetmenum])) ]
+                                   }
+                        self.__send_msg_to_cti_clients__(cjson.encode(tosend))
                 else:
                         log.warning('%s : channel %s not in meetme %s' % (astid, channel, meetmenum))
                 return
@@ -1484,16 +1488,29 @@ class XivoCTICommand(BaseCommand):
         def ami_status(self, astid, event):
                 state = event.get('State')
                 if state == 'Up':
+                        link = event.get('Link')
+                        channel = event.get('Channel')
+                        uniqueid = event.get('Uniqueid')
+                        
                         seconds = event.get('Seconds')
                         priority = event.get('Priority')
                         context = event.get('Context')
                         extension = event.get('Extension')
-                        link = event.get('Link')
-                        channel = event.get('Channel')
+                        print 'ami_status', astid, state, uniqueid, channel, link, '/', priority, context, extension, seconds
+                elif state == 'Ring': # Caller
                         uniqueid = event.get('Uniqueid')
-                        print state, link, channel, '/', priority, context, extension, seconds
+                        channel = event.get('Channel')
+                        
+                        seconds = event.get('Seconds')
+                        context = event.get('Context')
+                        extension = event.get('Extension')
+                        print 'ami_status', astid, state, uniqueid, channel, seconds, context, extension
+                elif state == 'Ringing': # Callee
+                        uniqueid = event.get('Uniqueid')
+                        channel = event.get('Channel')
+                        print 'ami_status', astid, state, uniqueid, channel
                 else:
-                        print event
+                        print 'ami_status', astid, event
                 return
 
         def ami_join(self, astid, event):
