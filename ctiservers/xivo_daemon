@@ -572,6 +572,7 @@ while True: # loops over the reloads
         asterisklist = []
         contextlist = []
         userlists = []
+        config_presence = None
 
         userinfo_by_requester = {}
         userinfo_current = {}
@@ -603,6 +604,8 @@ while True: # loops over the reloads
                 contextlist = xivoconf_general['contextlist'].split(',')
         if 'userlists' in xivoconf_general:
                 userlists = xivoconf_general['userlists'].split(',')
+        if 'presence' in xivoconf_general:
+                config_presence = xivoconf_general['presence']
 
         xivoconf_commandset = cconf.read_section('commandset', commandset)
 
@@ -625,6 +628,7 @@ while True: # loops over the reloads
         commandclass.set_contextlist(directorylist)
         commandclass.set_configs(configs)
         commandclass.set_options(xivoconf_commandset)
+        commandclass.set_presence(cconf.read_section('presence', config_presence))
 
         for ctx in contextlist:
                 xivoconf_context = cconf.read_section('context', ctx)

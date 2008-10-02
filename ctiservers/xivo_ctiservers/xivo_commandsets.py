@@ -81,6 +81,8 @@ class BaseCommand:
         def connected_users(self):
                 return {}
 
+        def set_presence(self, config_presence):
+                return
         def set_configs(self, configs):
                 return
         def set_phonelist(self, astid, urllist_phones):

@@ -63,30 +63,6 @@ XIVOVERSION_NAME = 'k-9'
 REQUIRED_CLIENT_VERSION = 4163
 __revision__ = __version__.split()[1]
 __alphanums__ = string.uppercase + string.lowercase + string.digits
-allowed_states = { 'available' : 'Disponible',
-                   'away' : 'Absent',
-                   'outtolunch' : 'Parti Manger',
-                   'donotdisturb' : 'Ne Pas Déranger',
-                   'berightback' : 'Bientot de Retour' } # ô character seems to be badly parsed on client-side
-actions_states = { 'available' : 'user-user',
-                   'away' : 'user-user',
-                   'outtolunch' : 'user-user',
-                   'donotdisturb' : 'user-user',
-                   'berightback' : 'user-user' }
-##allowed_states = { 'available' : 'Disponible',
-##                   'fastpickup' : 'Décroche Rapide',
-##                   'onlineoutgoing' : 'En ligne appel sortant',
-##                   'onlineincoming' : 'En ligne appel entrant',
-##                   'postcall' : 'Post Appel',
-##                   'pause' : 'Pause',
-##                   'backoffice' : 'Back Office' }
-##actions_states = { 'available' : 'user-any',
-##                   'fastpickup' : 'user-any',
-##                   'onlineoutgoing' : 'calls-calls',
-##                   'onlineincoming' : 'calls-calls',
-##                   'postcall' : 'calls-user',
-##                   'pause' : 'user-user',
-##                   'backoffice' : 'user-user' }
 HISTSEPAR = ';'
 DEFAULTCONTEXT = 'default'
 
@@ -369,10 +345,10 @@ class XivoCTICommand(BaseCommand):
                         if 'state' in userinfo:
                                 futurestate = userinfo.get('state')
                                 # only if it was a "defined" state anyway
-                                if futurestate in allowed_states.keys():
+                                if futurestate in self.presence_states.keys():
                                         state = futurestate
 
-                        if state in allowed_states.keys():
+                        if state in self.presence_states.keys():
                                 userinfo['state'] = state
                         else:
                                 log.warning('(user %s) : state <%s> is not an allowed one => undefinedstate-connect'
@@ -434,7 +410,7 @@ class XivoCTICommand(BaseCommand):
                                    'direction' : 'client',
                                    'capafuncs' : self.capas[capaid].tostring(self.capas[capaid].all()),
                                    'capaxlets' : self.capas[capaid].capadisps,
-                                   'capapresence' : allowed_states,
+                                   'capapresence' : self.presence_states,
                                    'appliname' : self.capas[capaid].appliname,
                                    'state' : userinfo.get('state') }
                         repstr = cjson.encode(tosend)
@@ -459,7 +435,15 @@ class XivoCTICommand(BaseCommand):
                                 self.sheet_actions[where] = lconf.read_section('sheet_action', sheetaction)
                 return
 
-
+        def set_presence(self, config_presence):
+                self.presence_states = {}
+                self.actions_states = {}
+                for stateid, stateprops in config_presence.iteritems():
+                        [name, a, b] = stateprops.split(',')
+                        self.presence_states.update({stateid : name})
+                        self.actions_states.update({stateid : '-'.join([a, b])})
+                return
+        
         def set_options(self, xivoconf):
                 self.xivoconf = xivoconf
                 for var, val in self.xivoconf.iteritems():
@@ -2633,7 +2617,7 @@ class XivoCTICommand(BaseCommand):
 
                 if 'login' in userinfo and 'sessiontimestamp' in userinfo.get('login'):
                         userinfo['login']['sessiontimestamp'] = time.time()
-                if state in allowed_states.keys():
+                if state in self.presence_states.keys():
                         userinfo['state'] = state
                 else:
                         log.warning('(user %s) : state <%s> is not an allowed one => undefinedstate-updated'
@@ -2641,7 +2625,7 @@ class XivoCTICommand(BaseCommand):
                         userinfo['state'] = 'undefinedstate-updated'
 
                 jj = {}
-                for u, v in actions_states.iteritems():
+                for u, v in self.actions_states.iteritems():
                         # jj[u] = random.sample('au', 1)[0]
                         jj[u] = 'u'
                         # v[0]
