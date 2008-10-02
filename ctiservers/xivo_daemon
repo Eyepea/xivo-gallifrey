@@ -143,11 +143,11 @@ def manage_cti_connections(connid, msg, sep):
                                 if command.type in [xivo_commandsets.CMD_LOGIN_ID,
                                                     xivo_commandsets.CMD_LOGIN_PASS,
                                                     xivo_commandsets.CMD_LOGIN_CAPAS]:
-                                        log.info('LOGIN(%s) %s : args   %s' % (command.type, requester, command.args))
+                                        # log.info('LOGIN(%s) %s : args   %s' % (command.type, requester, command.args))
                                         loginparams = commandclass.get_login_params(command, asterisklist[0], connid)
-                                        log.info('LOGIN(%s) %s : params %s' % (command.type, requester, loginparams))
+                                        # log.info('LOGIN(%s) %s : params %s' % (command.type, requester, loginparams))
                                         uinfo = commandclass.manage_login(loginparams, command.type, userinfo_current.get(connid))
-                                        log.info('LOGIN(%s) %s : uinfo  %s' % (command.type, requester, uinfo))
+                                        # log.info('LOGIN(%s) %s : uinfo  %s' % (command.type, requester, uinfo))
                                         
                                         if uinfo.__class__.__name__ == 'str':
                                                 commandclass.loginko(loginparams, uinfo, connid)
@@ -336,7 +336,7 @@ def handle_ami_event(astid, idata):
         full_idata = save_for_next_packet_events[astid] + idata
         evlist = full_idata.split('\r\n\r\n')
         save_for_next_packet_events[astid] = evlist.pop()
-
+        
         for evt in evlist:
                 this_event = {}
                 nocolon = []
@@ -377,9 +377,15 @@ def handle_ami_event(astid, idata):
                                                         del waiting_actionid[actionid]
 
                                 elif response == 'Success':
-                                        commandclass.amiresponse_success(astid, this_event)
+                                        try:
+                                                commandclass.amiresponse_success(astid, this_event)
+                                        except Exception, exc:
+                                                log.error('%s amiresponse_success (%s) : %s' % (astid, this_event, exc))
                                 elif response == 'Error':
-                                        commandclass.amiresponse_error(astid, this_event)
+                                        try:
+                                                commandclass.amiresponse_error(astid, this_event)
+                                        except Exception, exc:
+                                                log.error('%s amiresponse_error (%s) : %s' % (astid, this_event, exc))
                                 else:
                                         log.warning('AMI %s Response=%s (untracked) : %s' % (astid, response, this_event))
                         elif len(this_event) > 0:

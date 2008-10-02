@@ -237,10 +237,10 @@ class AMIClass:
         def setvar(self, var, val, chan = None):
                 try:
                         if chan is None:
-                                ret = self.sendcommand('SetVar', [('Variable', var),
+                                ret = self.sendcommand('Setvar', [('Variable', var),
                                                                   ('Value', val)])
                         else:
-                                ret = self.sendcommand('SetVar', [('Channel', chan),
+                                ret = self.sendcommand('Setvar', [('Channel', chan),
                                                                   ('Variable', var),
                                                                   ('Value', val)])
                         return ret
@@ -407,19 +407,16 @@ class AMIClass:
                 return ret
 
         # \brief Retrieves the value of Variable in a Channel
-        def getvar(self, channel, varname):
+        def getvar(self, channel, varname, actionid):
                 try:
-                        ret = self.sendcommand('GetVar', [('Channel', channel),
-                                                          ('Variable', varname)])
-                        if ret:
-                                reply = self.readresponsechunk()
-                                return reply.get('Value')
-                        else:
-                                return False
+                        ret = self.sendcommand('Getvar', [('Channel', channel),
+                                                          ('Variable', varname),
+                                                          ('ActionId', actionid)])
                 except self.AMIError, exc:
-                        return False
+                        ret = False
                 except Exception, exc:
-                        return False
+                        ret = False
+                return ret
 
         # \brief Transfers a channel towards a new extension.
         def transfer(self, channel, extension, context):
@@ -501,8 +498,9 @@ class AMIList:
                         log.info('%s AMI : OPENED' % astid)
                         amicl.sendcommand('Command', [('Command', 'show version'),
                                                       ('ActionID' , ''.join(random.sample(__alphanums__, 10)) + "-" + hex(int(time.time())))])
-                        amicl.sendstatus()
+                        # sendparkedcalls before sendstatus, so that parked calls can be identified later
                         amicl.sendparkedcalls()
+                        amicl.sendstatus()
                         amicl.sendagents()
                         amicl.sendqueuestatus()
                         
