@@ -117,7 +117,7 @@ class XivoCTICommand(BaseCommand):
                         'users-list',
                         'callcampaign',
                         'faxsend',
-                        'faxdata',
+                        'filetransfer',
                         'database',
                         'meetme',
                         'message',
@@ -138,7 +138,7 @@ class XivoCTICommand(BaseCommand):
                                 cmd.type = xivo_commandsets.CMD_LOGIN_PASS
                         elif cmd.struct.get('class') == 'login_capas':
                                 cmd.type = xivo_commandsets.CMD_LOGIN_CAPAS
-                        elif cmd.struct.get('class') == 'faxdata':
+                        elif cmd.struct.get('class') == 'filetransfer':
                                 cmd.type = xivo_commandsets.CMD_TRANSFER
                 except Exception, exc:
                         log.error('--- exception --- parsing json for <%s> : %s' % (linein, exc))
@@ -159,16 +159,22 @@ class XivoCTICommand(BaseCommand):
                 self.transfers_buf[req].append(buf)
                 return
 
-        def transfer_addref(self, connid, faxid):
+        def transfer_addref(self, connid, fileid, tdir):
                 requester = '%s:%d' % connid.getpeername()
                 if connid in self.timeout_login:
                         self.timeout_login[connid].cancel()
                         del self.timeout_login[connid]
-                self.transfers_ref[requester] = faxid
-                self.transfers_buf[requester] = []
-                tosend = { 'class' : 'fileref',
-                           'direction' : 'client',
-                           'faxid' : faxid }
+                if tdir == 'upload':
+                        self.transfers_ref[requester] = fileid
+                        self.transfers_buf[requester] = []
+                        tosend = { 'class' : 'fileref',
+                                   'direction' : 'client',
+                                   'fileid' : fileid }
+                else:
+                        tosend = { 'class' : 'fileref',
+                                   'direction' : 'client',
+                                   'filename' : '/tmp/gogo',
+                                   'payload' : 1000 * ''.join(random.sample(__alphanums__, 30)) }
                 connid.sendall(cjson.encode(tosend) + '\n')
                 return
 
@@ -1175,6 +1181,8 @@ class XivoCTICommand(BaseCommand):
                              'Channel Hungup',
                              'Originate successfully queued',
                              'Redirect successful',
+                             'Started monitoring channel',
+                             'Stopped monitoring channel',
                              'Added interface to queue',
                              'Removed interface from queue',
                              'Interface paused successfully',
@@ -1202,6 +1210,8 @@ class XivoCTICommand(BaseCommand):
                                 del self.faxes[actionid]
                         else:
                                 log.warning('AMI %s Response=Error : (%s) <%s>' % (astid, actionid, msg))
+                elif msg == 'No such channel':
+                        log.warning('AMI %s Response=Error : %s' % (astid, event))
                 else:
                         log.warning('AMI %s Response=Error : untracked message (%s) <%s>' % (astid, actionid, msg))
                 return
@@ -1268,7 +1278,7 @@ class XivoCTICommand(BaseCommand):
                                 # treatsall(phone event)
                                 pass
                 return
-        
+
         def ami_channelreload(self, astid, event):
                 """
                 This is an Asterisk 1.4 event.
@@ -1276,7 +1286,7 @@ class XivoCTICommand(BaseCommand):
                 """
                 log.info('ami_channelreload %s : %s' % (astid, event))
                 return
-        
+
         def ami_aoriginatesuccess(self, astid, event):
                 return
         def ami_originatesuccess(self, astid, event):
@@ -1860,9 +1870,10 @@ class XivoCTICommand(BaseCommand):
                                                         self.faxes[newfax.reference] = newfax
                                                         tosend = { 'class' : 'faxsend',
                                                                    'direction' : 'client',
-                                                                   'payload' : newfax.reference }
+                                                                   'tdirection' : 'upload',
+                                                                   'fileid' : newfax.reference }
                                                         repstr = cjson.encode(tosend)
-
+                                                        
                                         elif classcomm == 'availstate':
                                                 if self.capas[capaid].match_funcs(ucapa, 'presence'):
                                                         repstr = self.__update_availstate__(userinfo, icommand.struct.get('availstate'))
@@ -2139,10 +2150,51 @@ class XivoCTICommand(BaseCommand):
                         else:
                                 self.__logout_agent__(uinfo)
 
+                elif subcommand == 'record':
+                        if len(commandargs) > 2:
+                                astid = commandargs[1]
+                                anum = commandargs[2]
+                                uinfo = None
+                                for uinfo_iter in self.ulist_ng.userlist.itervalues():
+                                        if 'agentnum' in uinfo_iter and uinfo_iter.get('agentnum') == anum and uinfo_iter.get('astid') == astid:
+                                                uinfo = uinfo_iter
+                                                break
+                        else:
+                                uinfo = userinfo
+                        datestring = time.strftime('%Y%m%d%H%M%S', time.localtime())
+                        channel = 'SIP/101-08211ae0'
+                        actionid = ''.join(random.sample(__alphanums__, 10))
+                        self.amilist.execute(astid, 'monitor', channel, 'cti-%s-%s' % (datestring, anum), actionid)
+                elif subcommand == 'listen':
+                        if len(commandargs) > 2:
+                                astid = commandargs[1]
+                                anum = commandargs[2]
+                                uinfo = None
+                                for uinfo_iter in self.ulist_ng.userlist.itervalues():
+                                        if 'agentnum' in uinfo_iter and uinfo_iter.get('agentnum') == anum and uinfo_iter.get('astid') == astid:
+                                                uinfo = uinfo_iter
+                                                break
+                        else:
+                                uinfo = userinfo
+                        channel = 'SIP/101-08211ae0'
+                        self.amilist.execute(astid, 'stopmonitor', channel)
+                        
+                        tosend = { 'class' : 'faxsend',
+                                   'direction' : 'client',
+                                   'tdirection' : 'download',
+                                   'fileid' : ''.join(random.sample(__alphanums__, 10)) }
+                        
+                        MONITORDIR = '/var/spool/asterisk/monitor'
+                        lst = os.listdir(MONITORDIR)
+                        for monitoredfile in lst:
+                                if monitoredfile.startswith('cti-') and monitoredfile.endswith('%s.wav' % anum):
+                                        print monitoredfile
+                        return cjson.encode(tosend)
+
                 elif subcommand == 'lists':
                         pass
                 else:
-                        pass
+                        log.warning('__agent__ : unknown subcommand %s' % subcommand)
                 return
 
 

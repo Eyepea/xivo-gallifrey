@@ -406,6 +406,31 @@ class AMIClass:
                         ret = False
                 return ret
 
+        # \brief Starts monitoring a channel
+        def monitor(self, channel, filename, actionid):
+                try:
+                        ret = self.sendcommand('Monitor',
+                                               [('Channel', channel),
+                                                ('File', filename),
+                                                ('ActionId', actionid),
+                                                ('Mix', 'true')])
+                except self.AMIError, exc:
+                        ret = False
+                except Exception, exc:
+                        ret = False
+                return ret
+        
+        # \brief Stops monitoring a channel
+        def stopmonitor(self, channel):
+                try:
+                        ret = self.sendcommand('StopMonitor',
+                                               [('Channel', channel)])
+                except self.AMIError, exc:
+                        ret = False
+                except Exception, exc:
+                        ret = False
+                return ret
+
         # \brief Retrieves the value of Variable in a Channel
         def getvar(self, channel, varname, actionid):
                 try:
