@@ -65,6 +65,7 @@ __revision__ = __version__.split()[1]
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 HISTSEPAR = ';'
 DEFAULTCONTEXT = 'default'
+AMI_ORIGINATE = 'originate'
 
 class XivoCTICommand(BaseCommand):
 
@@ -288,12 +289,13 @@ class XivoCTICommand(BaseCommand):
                         return userinfo
 
 
-        def manage_logoff(self, userinfo, when):
-                log.info('logoff (%s) %s'
+        def manage_logout(self, userinfo, when):
+                log.info('logout (%s) %s'
                           % (when, userinfo))
-                userinfo['logofftime-ascii-last'] = time.asctime()
-                self.__logoff_agent__(userinfo)
+                userinfo['logouttime-ascii-last'] = time.asctime()
+                self.__logout_agent__(userinfo)
                 self.__disconnect_user__(userinfo)
+                self.__fill_cticdr__(userinfo, 'cti_logout')
                 return
 
 
@@ -419,6 +421,7 @@ class XivoCTICommand(BaseCommand):
                         if connid in self.timeout_login:
                                 self.timeout_login[connid].cancel()
                                 del self.timeout_login[connid]
+                        self.__fill_cticdr__(userinfo, 'cti_login')
                 connid.sendall(repstr + '\n')
 
                 if phase == xivo_commandsets.CMD_LOGIN_CAPAS:
@@ -435,13 +438,35 @@ class XivoCTICommand(BaseCommand):
                                 self.sheet_actions[where] = lconf.read_section('sheet_action', sheetaction)
                 return
 
+        def set_cticdr(self, cticdr):
+                if cticdr is not None:
+                        self.cticdr_conn = anysql.connect_by_uri(cticdr)
+                        self.cticdr_cursor = self.cticdr_conn.cursor()
+                else:
+                        self.cticdr_conn = None
+                        self.cticdr_cursor = None
+                return
+        
+        def __fill_cticdr__(self, uinfo, what):
+                if self.cticdr_conn is not None and self.cticdr_cursor is not None:
+                        try:
+                                datetime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+                                self.cticdr_cursor.query("INSERT INTO cticdr VALUES"
+                                                         " ('%s', '%s', '%s', '%s', '%s')"
+                                                         % (datetime, uinfo.get('user'), uinfo.get('company'), uinfo.get('state'), what))
+                        except Exception, exc:
+                                log.error('--- exception --- (__fill_cticdr__) %s' % exc)
+                        self.cticdr_conn.commit()
+                return
+        
         def set_presence(self, config_presence):
                 self.presence_states = {}
                 self.actions_states = {}
-                for stateid, stateprops in config_presence.iteritems():
-                        [name, a, b] = stateprops.split(',')
-                        self.presence_states.update({stateid : name})
-                        self.actions_states.update({stateid : '-'.join([a, b])})
+                if config_presence is not  None:
+                        for stateid, stateprops in config_presence.iteritems():
+                                [name, a, b] = stateprops.split(',')
+                                self.presence_states.update({stateid : name})
+                                self.actions_states.update({stateid : '-'.join([a, b])})
                 return
         
         def set_options(self, xivoconf):
@@ -608,6 +633,9 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def connected(self, connid):
+                """
+                Send a banner at login time
+                """
                 connid.sendall('XIVO CTI Server Version %s(%s) svn:%s\n'
                                'I would advise you (XIVO CTI client) to be at least svn:%s\n'
                                % (XIVOVERSION_NUM, XIVOVERSION_NAME,
@@ -1873,7 +1901,7 @@ class XivoCTICommand(BaseCommand):
                                                 elif argums[0] == 'startcall':
                                                         exten = argums[1]
                                                         self.__originate_or_transfer__(userinfo,
-                                                                                       ['originate', 'user:special:me', 'ext:%s' % exten])
+                                                                                       [AMI_ORIGINATE, 'user:special:me', 'ext:%s' % exten])
                                                         tosend = { 'class' : 'callcampaign',
                                                                    'direction' : 'client',
                                                                    'payload' : { 'command' : 'callstarted',
@@ -2109,7 +2137,7 @@ class XivoCTICommand(BaseCommand):
                         if subcommand == 'login':
                                 self.__login_agent__(uinfo)
                         else:
-                                self.__logoff_agent__(uinfo)
+                                self.__logout_agent__(uinfo)
 
                 elif subcommand == 'lists':
                         pass
@@ -2133,9 +2161,10 @@ class XivoCTICommand(BaseCommand):
                                 # chan_agent.c:2319 callback_deprecated: See doc/queues-with-callback-members.txt for an example of how to achieve
                                 # chan_agent.c:2320 callback_deprecated: the same functionality using only dialplan logic.
                                 self.amilist.execute(astid, 'setvar', 'AGENTBYCALLERID_%s' % agentphonenum, agentnum)
+                                self.__fill_cticdr__(uinfo, 'agent_login')
                 return
 
-        def __logoff_agent__(self, uinfo):
+        def __logout_agent__(self, uinfo):
                 if uinfo is None:
                         return
                 astid = uinfo.get('astid')
@@ -2147,12 +2176,13 @@ class XivoCTICommand(BaseCommand):
                                 # del uinfo['agentphonenum']
                         if len(agentnum) > 0:
                                 self.amilist.execute(astid, 'agentlogoff', agentnum)
+                                self.__fill_cticdr__(uinfo, 'agent_logout')
                 return
 
 
-        def logoff_all_agents(self):
+        def logout_all_agents(self):
                 for userinfo in self.ulist_ng.userlist.itervalues():
-                        self.__logoff_agent__(userinfo)
+                        self.__logout_agent__(userinfo)
                 return
 
 
@@ -2168,8 +2198,8 @@ class XivoCTICommand(BaseCommand):
                                 regactions = self.xivoconf['regupdate'].split(';')
                                 if len(regactions) == 3 and thour == int(regactions[0]) and tmin < int(regactions[1]):
                                         log.info('(%2d h %2d min) => %s' % (thour, tmin, regactions[2]))
-                                        if regactions[2] == 'logoffagents':
-                                                self.logoff_all_agents()
+                                        if regactions[2] == 'logoutagents':
+                                                self.logout_all_agents()
                                 else:
                                         log.info('(%2d h %2d min) => no action' % (thour, tmin))
                 except Exception, exc:
@@ -2366,7 +2396,7 @@ class XivoCTICommand(BaseCommand):
                                         phonenum_src = srcuinfo.get('phonenum')
                                         # if termlist empty + agentphonenum not empty => call this one
                                         cidname_src = srcuinfo.get('fullname')
-
+                                        
                         elif typesrc == 'term':
                                 pass
                         else:
@@ -2375,6 +2405,9 @@ class XivoCTICommand(BaseCommand):
                         # dst
                         if typedst == 'ext':
                                 context_dst = context_src
+                                # this string will appear on the caller's phone, before he calls someone
+                                # for internal calls, one could solve the name of the called person,
+                                # but it could be misleading with an incoming call from the given person
                                 cidname_dst = 'direct number'
                                 if whodst == 'special:parkthecall':
                                         exten_dst = self.configs[astid_src].parkingnumber
@@ -2403,7 +2436,7 @@ class XivoCTICommand(BaseCommand):
                         ret = False
                         try:
                                 if len(exten_dst) > 0:
-                                        ret = self.amilist.execute(astid_src, 'originate',
+                                        ret = self.amilist.execute(astid_src, AMI_ORIGINATE,
                                                                    proto_src, phonenum_src, cidname_src,
                                                                    exten_dst, cidname_dst,  context_dst)
                         except Exception, exc:

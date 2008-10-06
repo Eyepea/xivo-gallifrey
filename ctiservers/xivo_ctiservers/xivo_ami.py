@@ -262,8 +262,8 @@ class AMIClass:
                                                              ('Exten', phonedst),
                                                              ('Context', locext),
                                                              ('Priority', '1'),
-                                                             # ('CallerID', "%s" %(phonesrc)),
-                                                             ('CallerID', "%s <%s>" %(cidnamedst, phonedst)),
+                                                             # ('CallerID', '%s<%s>' % (cidnamesrc, phonesrc)),
+                                                             ('CallerID', '%s<%s>' % (cidnamedst, phonedst)),
                                                              ('Variable', 'XIVO_ORIGSRCNAME=%s' % cidnamesrc),
                                                              ('Variable', 'XIVO_ORIGSRCNUM=%s'  % phonesrc),
                                                              ('Async', 'true')])
@@ -286,8 +286,8 @@ class AMIClass:
                                                               ('Exten', phonedst),
                                                               ('Context', locext),
                                                               ('Priority', '1'),
-                                                              # ('CallerID', "%s" %(phonesrc)),
-                                                              ('CallerID', "%s <%s>" %(cidnamedst, phonedst)),
+                                                              # ('CallerID', '%s<%s>' % (cidnamesrc, phonesrc)),
+                                                              ('CallerID', '%s<%s>' % (cidnamedst, phonedst)),
                                                               ('Variable', 'XIVO_ORIGSRCNAME=%s' % cidnamesrc),
                                                               ('Variable', 'XIVO_ORIGSRCNUM=%s'  % phonesrc),
                                                               ('Async', 'true')])
@@ -312,7 +312,7 @@ class AMIClass:
                                            ('Priority', '1'),
                                            ('Timeout', str(timeout * 1000)),
                                            # ('CallerID', "%s" %(phonesrc)),
-                                           ('CallerID', "%s <%s>" %(cidnamedst, phonedst)),
+                                           ('CallerID', '%s<%s>' %(cidnamedst, phonedst)),
                                            ('Variable', 'XIVO_ORIGSRCNAME=%s' % cidnamesrc),
                                            ('Async', 'true')]
                         if 'XIVO_ORIGSRCNUM' not in extravars:
@@ -455,7 +455,7 @@ class AMIClass:
                 # originate a call btw src and dst
                 # src will ring first, and dst will ring when src responds
                 try:
-                        ret = self.sendcommand('Originate', [('Channel', "Local/%s@%s" % (number, context)),
+                        ret = self.sendcommand('Originate', [('Channel', 'Local/%s@%s' % (number, context)),
                                                              ('CallerID', callerid),
                                                              ('Variable', 'FAXDIR=%s' % faxdir),
                                                              ('Variable', 'FAXID=%s' % faxid),

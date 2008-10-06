@@ -81,6 +81,8 @@ class BaseCommand:
         def connected_users(self):
                 return {}
 
+        def set_cticdr(self, cticdr):
+                return
         def set_presence(self, config_presence):
                 return
         def set_configs(self, configs):
@@ -112,6 +114,8 @@ class BaseCommand:
         def get_login_params(self, astid, command, connid):
                 return
         def manage_login(self, loginparams):
+                return
+        def manage_logout(self, userinfo, when):
                 return
         def loginko(self, loginparams, connid, errorstring):
                 return

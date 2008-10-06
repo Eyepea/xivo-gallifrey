@@ -573,7 +573,8 @@ while True: # loops over the reloads
         contextlist = []
         userlists = []
         config_presence = None
-
+        cticdr = None
+        
         userinfo_by_requester = {}
         userinfo_current = {}
 
@@ -606,6 +607,8 @@ while True: # loops over the reloads
                 userlists = xivoconf_general['userlists'].split(',')
         if 'presence' in xivoconf_general:
                 config_presence = xivoconf_general['presence']
+        if 'cticdr' in xivoconf_general:
+                cticdr = xivoconf_general['cticdr']
 
         xivoconf_commandset = cconf.read_section('commandset', commandset)
 
@@ -629,7 +632,8 @@ while True: # loops over the reloads
         commandclass.set_configs(configs)
         commandclass.set_options(xivoconf_commandset)
         commandclass.set_presence(cconf.read_section('presence', config_presence))
-
+        commandclass.set_cticdr(cticdr)
+        
         for ctx in contextlist:
                 xivoconf_context = cconf.read_section('context', ctx)
                 if len(xivoconf_context) > 0:
@@ -903,7 +907,7 @@ while True: # loops over the reloads
                                                         if kind == 'CTI':
                                                                 if sel_i in userinfo_by_requester:
                                                                         userinfo = userinfo_by_requester.get(sel_i)
-                                                                        commandclass.manage_logoff(userinfo, 'end')
+                                                                        commandclass.manage_logout(userinfo, 'end')
                                                                         del userinfo_by_requester[sel_i]
                                                 if kind in ['CTI', 'INFO'] and lmsg > 0:
                                                         continue
@@ -922,7 +926,7 @@ while True: # loops over the reloads
                                                         if sel_i in userinfo_by_requester:
                                                                 userinfo = userinfo_by_requester.get(sel_i)
                                                                 log.warning('logging off %s following unexpected socket breakup' % userinfo)
-                                                                commandclass.manage_logoff(userinfo, 'exc')
+                                                                commandclass.manage_logout(userinfo, 'exc')
                                                                 del userinfo_by_requester[sel_i]
                                                         else:
                                                                 log.warning('could not find a match for socket %s' % sel_i)
@@ -946,7 +950,7 @@ while True: # loops over the reloads
                                                                                 else:
                                                                                         log.warning('connid %s no more in fdlists' % connid)
                                                                                 connid.close()
-                                                                                commandclass.manage_logoff(userinfo, 'pipe')
+                                                                                commandclass.manage_logout(userinfo, 'pipe')
                                                                                 del userinfo_by_requester[connid]
                                                                         else:
                                                                                 log.warning('WARNING - no login/connection field present in userinfo')
