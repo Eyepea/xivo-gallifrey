@@ -60,7 +60,7 @@ log = logging.getLogger('xivocti')
 
 XIVOVERSION_NUM = '0.4'
 XIVOVERSION_NAME = 'k-9'
-REQUIRED_CLIENT_VERSION = 4163
+REQUIRED_CLIENT_VERSION = 4250
 __revision__ = __version__.split()[1]
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 HISTSEPAR = ';'
@@ -159,8 +159,11 @@ class XivoCTICommand(BaseCommand):
                 self.transfers_buf[req].append(buf)
                 return
 
-        def transfer_addref(self, connid, fileid, tdir):
+        def transfer_addref(self, connid, commandstruct):
                 requester = '%s:%d' % connid.getpeername()
+                fileid = commandstruct.get('fileid')
+                tdir = commandstruct.get('tdirection')
+                
                 if connid in self.timeout_login:
                         self.timeout_login[connid].cancel()
                         del self.timeout_login[connid]
@@ -173,7 +176,7 @@ class XivoCTICommand(BaseCommand):
                 else:
                         tosend = { 'class' : 'fileref',
                                    'direction' : 'client',
-                                   'filename' : '/tmp/gogo',
+                                   'filename' : commandstruct.get('filename'),
                                    'payload' : 1000 * ''.join(random.sample(__alphanums__, 30)) }
                 connid.sendall(cjson.encode(tosend) + '\n')
                 return
@@ -301,7 +304,7 @@ class XivoCTICommand(BaseCommand):
                 userinfo['logouttime-ascii-last'] = time.asctime()
                 self.__logout_agent__(userinfo)
                 self.__disconnect_user__(userinfo)
-                self.__fill_cticdr__(userinfo, 'cti_logout')
+                self.__fill_user_cticdr__(userinfo, 'cti_logout', '')
                 return
 
 
@@ -427,7 +430,7 @@ class XivoCTICommand(BaseCommand):
                         if connid in self.timeout_login:
                                 self.timeout_login[connid].cancel()
                                 del self.timeout_login[connid]
-                        self.__fill_cticdr__(userinfo, 'cti_login')
+                        self.__fill_user_cticdr__(userinfo, 'cti_login', '%s:%d' % connid.getpeername())
                 connid.sendall(repstr + '\n')
 
                 if phase == xivo_commandsets.CMD_LOGIN_CAPAS:
@@ -448,20 +451,33 @@ class XivoCTICommand(BaseCommand):
                 if cticdr is not None:
                         self.cticdr_conn = anysql.connect_by_uri(cticdr)
                         self.cticdr_cursor = self.cticdr_conn.cursor()
+                        self.__fill_cticdr__('daemon start')
                 else:
                         self.cticdr_conn = None
                         self.cticdr_cursor = None
                 return
         
-        def __fill_cticdr__(self, uinfo, what):
+        def __fill_cticdr__(self, what):
                 if self.cticdr_conn is not None and self.cticdr_cursor is not None:
                         try:
                                 datetime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
                                 self.cticdr_cursor.query("INSERT INTO cticdr VALUES"
-                                                         " ('%s', '%s', '%s', '%s', '%s')"
-                                                         % (datetime, uinfo.get('user'), uinfo.get('company'), uinfo.get('state'), what))
+                                                         " ('%s', '', '', '', '%s', '')"
+                                                         % (datetime, what))
                         except Exception, exc:
                                 log.error('--- exception --- (__fill_cticdr__) %s' % exc)
+                        self.cticdr_conn.commit()
+                return
+        
+        def __fill_user_cticdr__(self, uinfo, what, options):
+                if self.cticdr_conn is not None and self.cticdr_cursor is not None:
+                        try:
+                                datetime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+                                self.cticdr_cursor.query("INSERT INTO cticdr VALUES"
+                                                         " ('%s', '%s', '%s', '%s', '%s', '%s')"
+                                                         % (datetime, uinfo.get('user'), uinfo.get('company'), uinfo.get('state'), what, options))
+                        except Exception, exc:
+                                log.error('--- exception --- (__fill_user_cticdr__) %s' % exc)
                         self.cticdr_conn.commit()
                 return
         
@@ -642,10 +658,11 @@ class XivoCTICommand(BaseCommand):
                 """
                 Send a banner at login time
                 """
-                connid.sendall('XIVO CTI Server Version %s(%s) svn:%s\n'
-                               'I would advise you (XIVO CTI client) to be at least svn:%s\n'
-                               % (XIVOVERSION_NUM, XIVOVERSION_NAME,
-                                  __revision__, REQUIRED_CLIENT_VERSION))
+                tosend = {'class' : 'banner',
+                          'contents' : 'XIVO CTI Server Version %s(%s) svn:%s' % (XIVOVERSION_NUM, XIVOVERSION_NAME,
+                                                                                  __revision__)
+                          }
+                connid.sendall(cjson.encode(tosend) + '\n')
                 self.timeout_login[connid] = threading.Timer(5, self.__callback_timer__, ('login',))
                 self.timeout_login[connid].start()
                 return
@@ -912,6 +929,9 @@ class XivoCTICommand(BaseCommand):
                         linestosend.extend(self.__build_xmlsheet__('systray_info', actionopt, itemdir))
                         linestosend.append('<internal name="kind"><![CDATA[%s]]></internal>' % where)
                         linestosend.append('</user></profile>')
+                        
+                        # print ''.join(linestosend)
+                        
                         dozip = True
                         if dozip:
                                 tosend = { 'class' : 'sheet',
@@ -923,9 +943,9 @@ class XivoCTICommand(BaseCommand):
                                            'direction' : 'client',
                                            'payload' : base64.b64encode(''.join(linestosend)) }
                         fulllines = cjson.encode(tosend)
-
+                        
                         # print '---------', where, whoms, fulllines
-
+                        
                         # 4/4
                         # send the payload to the appropriate people
                         for whom in whoms.split(','):
@@ -1843,6 +1863,7 @@ class XivoCTICommand(BaseCommand):
                                 dircomm = icommand.struct.get('direction')
 
                                 if dircomm is not None and dircomm == 'xivoserver':
+                                        log.info('command attempt %s from %s' % (classcomm, username))
                                         if classcomm == 'meetme':
                                                 argums = icommand.struct.get('command')
                                                 if self.capas[capaid].match_funcs(ucapa, 'conference'):
@@ -1946,6 +1967,9 @@ class XivoCTICommand(BaseCommand):
                                                                                  icommand.struct.get('astid'),
                                                                                  icommand.struct.get('channel'),
                                                                                  False)
+
+                                        elif classcomm == 'actionfiche':
+                                                print 'FICHE ...', icommand.struct
 
                                         elif classcomm == 'pickup':
                                                 if self.capas[capaid].match_funcs(ucapa, 'dial'):
@@ -2134,7 +2158,7 @@ class XivoCTICommand(BaseCommand):
                                 if astid is not None and anum is not None:
                                         for queuename in queuenames:
                                                 self.amilist.execute(astid, 'queuepause', queuename, 'Agent/%s' % anum, 'false')
-                elif subcommand in ['login', 'logout']:
+                elif subcommand in ['login', 'logout', 'record', 'stoprecord', 'getfile', 'listrecords']:
                         if len(commandargs) > 2:
                                 astid = commandargs[1]
                                 anum = commandargs[2]
@@ -2145,52 +2169,33 @@ class XivoCTICommand(BaseCommand):
                                                 break
                         else:
                                 uinfo = userinfo
+
                         if subcommand == 'login':
                                 self.__login_agent__(uinfo)
-                        else:
+                        elif subcommand == 'logout':
                                 self.__logout_agent__(uinfo)
-
-                elif subcommand == 'record':
-                        if len(commandargs) > 2:
-                                astid = commandargs[1]
-                                anum = commandargs[2]
-                                uinfo = None
-                                for uinfo_iter in self.ulist_ng.userlist.itervalues():
-                                        if 'agentnum' in uinfo_iter and uinfo_iter.get('agentnum') == anum and uinfo_iter.get('astid') == astid:
-                                                uinfo = uinfo_iter
-                                                break
-                        else:
-                                uinfo = userinfo
-                        datestring = time.strftime('%Y%m%d%H%M%S', time.localtime())
-                        channel = 'SIP/101-08211ae0'
-                        actionid = ''.join(random.sample(__alphanums__, 10))
-                        self.amilist.execute(astid, 'monitor', channel, 'cti-%s-%s' % (datestring, anum), actionid)
-                elif subcommand == 'listen':
-                        if len(commandargs) > 2:
-                                astid = commandargs[1]
-                                anum = commandargs[2]
-                                uinfo = None
-                                for uinfo_iter in self.ulist_ng.userlist.itervalues():
-                                        if 'agentnum' in uinfo_iter and uinfo_iter.get('agentnum') == anum and uinfo_iter.get('astid') == astid:
-                                                uinfo = uinfo_iter
-                                                break
-                        else:
-                                uinfo = userinfo
-                        channel = 'SIP/101-08211ae0'
-                        self.amilist.execute(astid, 'stopmonitor', channel)
-                        
-                        tosend = { 'class' : 'faxsend',
-                                   'direction' : 'client',
-                                   'tdirection' : 'download',
-                                   'fileid' : ''.join(random.sample(__alphanums__, 10)) }
-                        
-                        MONITORDIR = '/var/spool/asterisk/monitor'
-                        lst = os.listdir(MONITORDIR)
-                        for monitoredfile in lst:
-                                if monitoredfile.startswith('cti-') and monitoredfile.endswith('%s.wav' % anum):
-                                        print monitoredfile
-                        return cjson.encode(tosend)
-
+                        elif subcommand == 'record':
+                                datestring = time.strftime('%Y%m%d%H%M%S', time.localtime())
+                                channel = 'SIP/101-08211ae0'
+                                actionid = ''.join(random.sample(__alphanums__, 10))
+                                self.amilist.execute(astid, 'monitor', channel, 'cti-%s-%s' % (datestring, anum), actionid)
+                        elif subcommand == 'stoprecord':
+                                channel = 'SIP/101-08211ae0'
+                                self.amilist.execute(astid, 'stopmonitor', channel)
+                        elif subcommand == 'listen':
+                                pass
+                        elif subcommand == 'getfile':
+                                tosend = { 'class' : 'faxsend',
+                                           'direction' : 'client',
+                                           'tdirection' : 'download',
+                                           'fileid' : ''.join(random.sample(__alphanums__, 10)) }
+                                return cjson.encode(tosend)
+                        elif subcommand == 'listrecords':
+                                MONITORDIR = '/var/spool/asterisk/monitor'
+                                lst = os.listdir(MONITORDIR)
+                                for monitoredfile in lst:
+                                        if monitoredfile.startswith('cti-') and monitoredfile.endswith('%s.wav' % anum):
+                                                print monitoredfile
                 elif subcommand == 'lists':
                         pass
                 else:
@@ -2213,7 +2218,7 @@ class XivoCTICommand(BaseCommand):
                                 # chan_agent.c:2319 callback_deprecated: See doc/queues-with-callback-members.txt for an example of how to achieve
                                 # chan_agent.c:2320 callback_deprecated: the same functionality using only dialplan logic.
                                 self.amilist.execute(astid, 'setvar', 'AGENTBYCALLERID_%s' % agentphonenum, agentnum)
-                                self.__fill_cticdr__(uinfo, 'agent_login')
+                                self.__fill_user_cticdr__(uinfo, 'agent_login', '')
                 return
 
         def __logout_agent__(self, uinfo):
@@ -2228,7 +2233,7 @@ class XivoCTICommand(BaseCommand):
                                 # del uinfo['agentphonenum']
                         if len(agentnum) > 0:
                                 self.amilist.execute(astid, 'agentlogoff', agentnum)
-                                self.__fill_cticdr__(uinfo, 'agent_logout')
+                                self.__fill_user_cticdr__(uinfo, 'agent_logout', '')
                 return
 
 

@@ -60,7 +60,7 @@ class BaseCommand:
                 return
         def transfer_addbuf(self, req, buf):
                 return
-        def transfer_addref(self, req, ref, tdir):
+        def transfer_addref(self, req, ref):
                 return
         def transfer_endbuf(self, req):
                 return

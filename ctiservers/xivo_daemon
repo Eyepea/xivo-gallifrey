@@ -165,9 +165,7 @@ def manage_cti_connections(connid, msg, sep):
                                                 commandclass.loginok(loginparams, uinfo, connid, command.type)
                                 elif command.type == xivo_commandsets.CMD_TRANSFER:
                                         log.info('TRANSFER on %s : %s' % (requester, command.struct))
-                                        commandclass.transfer_addref(connid,
-                                                                     command.struct.get('fileid'),
-                                                                     command.struct.get('tdirection'))
+                                        commandclass.transfer_addref(connid, command.struct)
                                 else:
                                         if connid in userinfo_by_requester:
                                                 commandclass.manage_cticommand(userinfo_by_requester[connid],
