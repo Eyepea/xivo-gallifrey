@@ -46,7 +46,7 @@ class Fax:
         def __init__(self, uinfo, size, number, hide):
                 self.reference = ''.join(random.sample(__alphanums__, 10)) + "-" + hex(int(time.time()))
                 self.size = size
-                self.number = number
+                self.number = number.replace('.', '').replace(' ', '')
                 self.hide = hide
                 self.uinfo = uinfo
                 return

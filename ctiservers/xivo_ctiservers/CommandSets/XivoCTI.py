@@ -304,7 +304,7 @@ class XivoCTICommand(BaseCommand):
                 userinfo['logouttime-ascii-last'] = time.asctime()
                 self.__logout_agent__(userinfo)
                 self.__disconnect_user__(userinfo)
-                self.__fill_user_cticdr__(userinfo, 'cti_logout', '')
+                self.__fill_user_cticdr__(userinfo, 'cti_logout')
                 return
 
 
@@ -431,6 +431,7 @@ class XivoCTICommand(BaseCommand):
                                 self.timeout_login[connid].cancel()
                                 del self.timeout_login[connid]
                         self.__fill_user_cticdr__(userinfo, 'cti_login', '%s:%d' % connid.getpeername())
+                        # we could also log : client's OS & version
                 connid.sendall(repstr + '\n')
 
                 if phase == xivo_commandsets.CMD_LOGIN_CAPAS:
@@ -451,25 +452,25 @@ class XivoCTICommand(BaseCommand):
                 if cticdr is not None:
                         self.cticdr_conn = anysql.connect_by_uri(cticdr)
                         self.cticdr_cursor = self.cticdr_conn.cursor()
-                        self.__fill_cticdr__('daemon start')
+                        self.__fill_cticdr__('daemon start', __revision__)
                 else:
                         self.cticdr_conn = None
                         self.cticdr_cursor = None
                 return
         
-        def __fill_cticdr__(self, what):
+        def __fill_cticdr__(self, what, options = ''):
                 if self.cticdr_conn is not None and self.cticdr_cursor is not None:
                         try:
                                 datetime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
                                 self.cticdr_cursor.query("INSERT INTO cticdr VALUES"
-                                                         " ('%s', '', '', '', '%s', '')"
-                                                         % (datetime, what))
+                                                         " ('%s', '', '', '', '%s', '%s')"
+                                                         % (datetime, what, options))
                         except Exception, exc:
                                 log.error('--- exception --- (__fill_cticdr__) %s' % exc)
                         self.cticdr_conn.commit()
                 return
         
-        def __fill_user_cticdr__(self, uinfo, what, options):
+        def __fill_user_cticdr__(self, uinfo, what, options = ''):
                 if self.cticdr_conn is not None and self.cticdr_cursor is not None:
                         try:
                                 datetime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
@@ -1864,6 +1865,7 @@ class XivoCTICommand(BaseCommand):
 
                                 if dircomm is not None and dircomm == 'xivoserver':
                                         log.info('command attempt %s from %s' % (classcomm, username))
+                                        self.__fill_user_cticdr__(userinfo, 'cticommand:%s' % classcomm)
                                         if classcomm == 'meetme':
                                                 argums = icommand.struct.get('command')
                                                 if self.capas[capaid].match_funcs(ucapa, 'conference'):
@@ -2218,7 +2220,7 @@ class XivoCTICommand(BaseCommand):
                                 # chan_agent.c:2319 callback_deprecated: See doc/queues-with-callback-members.txt for an example of how to achieve
                                 # chan_agent.c:2320 callback_deprecated: the same functionality using only dialplan logic.
                                 self.amilist.execute(astid, 'setvar', 'AGENTBYCALLERID_%s' % agentphonenum, agentnum)
-                                self.__fill_user_cticdr__(uinfo, 'agent_login', '')
+                                self.__fill_user_cticdr__(uinfo, 'agent_login')
                 return
 
         def __logout_agent__(self, uinfo):
@@ -2233,7 +2235,7 @@ class XivoCTICommand(BaseCommand):
                                 # del uinfo['agentphonenum']
                         if len(agentnum) > 0:
                                 self.amilist.execute(astid, 'agentlogoff', agentnum)
-                                self.__fill_user_cticdr__(uinfo, 'agent_logout', '')
+                                self.__fill_user_cticdr__(uinfo, 'agent_logout')
                 return
 
 
