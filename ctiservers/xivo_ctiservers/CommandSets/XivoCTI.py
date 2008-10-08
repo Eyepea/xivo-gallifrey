@@ -44,6 +44,7 @@ import zlib
 import Queue
 from xivo_ctiservers import cti_capas
 from xivo_ctiservers import cti_fax
+from xivo_ctiservers import cti_presence
 from xivo_ctiservers import cti_userlist
 from xivo_ctiservers import cti_urllist
 from xivo_ctiservers import cti_agentlist
@@ -356,10 +357,10 @@ class XivoCTICommand(BaseCommand):
                         if 'state' in userinfo:
                                 futurestate = userinfo.get('state')
                                 # only if it was a "defined" state anyway
-                                if futurestate in self.presence_states.keys():
+                                if futurestate in self.presence.getstates():
                                         state = futurestate
 
-                        if state in self.presence_states.keys():
+                        if state in self.presence.getstates():
                                 userinfo['state'] = state
                         else:
                                 log.warning('(user %s) : state <%s> is not an allowed one => undefinedstate-connect'
@@ -421,9 +422,11 @@ class XivoCTICommand(BaseCommand):
                                    'direction' : 'client',
                                    'capafuncs' : self.capas[capaid].tostring(self.capas[capaid].all()),
                                    'capaxlets' : self.capas[capaid].capadisps,
-                                   'capapresence' : self.presence_states,
                                    'appliname' : self.capas[capaid].appliname,
-                                   'state' : userinfo.get('state') }
+                                   'capapresence' : { 'names'   : self.presence.getstatesnames(),
+                                                      'state'   : userinfo.get('state'),
+                                                      'allowed' : self.presence.allowed(userinfo.get('state')) } }
+                        print tosend
                         repstr = cjson.encode(tosend)
                         # if 'features' in capa_user:
                         # repstr += ';capas_features:%s' %(','.join(configs[astid].capafeatures))
@@ -483,13 +486,7 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def set_presence(self, config_presence):
-                self.presence_states = {}
-                self.actions_states = {}
-                if config_presence is not  None:
-                        for stateid, stateprops in config_presence.iteritems():
-                                [name, a, b] = stateprops.split(',')
-                                self.presence_states.update({stateid : name})
-                                self.actions_states.update({stateid : '-'.join([a, b])})
+                self.presence = cti_presence.Presence(config_presence)
                 return
         
         def set_options(self, xivoconf):
@@ -688,6 +685,7 @@ class XivoCTICommand(BaseCommand):
                 self.disconnlist = []
                 return
 
+
         def __send_msg_to_cti_client__(self, userinfo, strupdate):
                 try:
                         if 'login' in userinfo and 'connection' in userinfo.get('login'):
@@ -701,7 +699,6 @@ class XivoCTICommand(BaseCommand):
                                 os.write(self.queued_threads_pipe[1], 'uinfo\n')
                 return
 
-
         def __send_msg_to_cti_client_byagentid__(self, agentnum, strupdate):
                 try:
                         for userinfo in self.ulist_ng.userlist.itervalues():
@@ -711,12 +708,21 @@ class XivoCTICommand(BaseCommand):
                         log.warning('--- exception --- (__send_msg_to_cti_client_byagentid__) : %s' % exc)
                 return
 
-
         def __send_msg_to_cti_clients__(self, strupdate):
                 try:
                         if strupdate is not None:
                                 for userinfo in self.ulist_ng.userlist.itervalues():
                                         self.__send_msg_to_cti_client__(userinfo, strupdate)
+                except Exception, exc:
+                        log.warning('--- exception --- (__send_msg_to_cti_clients__) : %s' % exc)
+                return
+
+        def __send_msg_to_cti_clients_except__(self, uinfo, strupdate):
+                try:
+                        if strupdate is not None:
+                                for userinfo in self.ulist_ng.userlist.itervalues():
+                                        if userinfo is not uinfo:
+                                                self.__send_msg_to_cti_client__(userinfo, strupdate)
                 except Exception, exc:
                         log.warning('--- exception --- (__send_msg_to_cti_clients__) : %s' % exc)
                 return
@@ -1138,8 +1144,10 @@ class XivoCTICommand(BaseCommand):
                         for uinfo in self.ulist_ng.userlist.itervalues():
                                 if uinfo.get('astid') == astid:
                                         if uinfo.get('phonenum') == event.get('CallerID1'):
+                                                self.__update_availstate__(uinfo, 'postcall')
                                                 ag1 = uinfo.get('agentnum')
                                         if uinfo.get('phonenum') == event.get('CallerID2'):
+                                                self.__update_availstate__(uinfo, 'postcall')
                                                 ag2 = uinfo.get('agentnum')
                         if ag1 is not None:
                                 msg = self.__build_agupdate__(['phoneunlink', astid, 'Agent/%s' % ag1])
@@ -2709,26 +2717,27 @@ class XivoCTICommand(BaseCommand):
 
                 if 'login' in userinfo and 'sessiontimestamp' in userinfo.get('login'):
                         userinfo['login']['sessiontimestamp'] = time.time()
-                if state in self.presence_states.keys():
+                if state in self.presence.getstates():
                         userinfo['state'] = state
                 else:
                         log.warning('(user %s) : state <%s> is not an allowed one => undefinedstate-updated'
                                   % (username, state))
                         userinfo['state'] = 'undefinedstate-updated'
 
-                jj = {}
-                for u, v in self.actions_states.iteritems():
-                        # jj[u] = random.sample('au', 1)[0]
-                        jj[u] = 'u'
-                        # v[0]
                 tosend = { 'class' : 'presence',
                            'direction' : 'client',
                            'company' : company,
                            'userid' : username,
-                           'status' : userinfo['state'],
-                           'allowed' : jj }
-                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
-
+                           'capapresence' : { 'state' : userinfo['state'],
+                                              'allowed' : self.presence.allowed(userinfo['state']) } }
+                self.__send_msg_to_cti_client__(userinfo, cjson.encode(tosend))
+                
+                tosend = { 'class' : 'presence',
+                           'direction' : 'client',
+                           'company' : company,
+                           'userid' : username,
+                           'capapresence' : { 'state' : userinfo['state'] } }
+                self.__send_msg_to_cti_clients_except__(userinfo, cjson.encode(tosend))
                 return None
 
 
