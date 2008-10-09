@@ -33,16 +33,23 @@ class Presence:
                 if config is not  None:
                         for stateid, stateprops in config.iteritems():
                                 splitprops = stateprops.split(',')
-                                if len(splitprops) > 1:
+                                if len(splitprops) > 2:
                                         longname = splitprops[0]
                                         allowednext = splitprops[1]
+                                        action = splitprops[2]
+                                        
                                         if len(allowednext) > 0:
                                                 allowednexts = allowednext.split(':')
                                         else:
                                                 allowednexts = []
+                                        if len(action) > 0:
+                                                actions = action.split(':')
+                                        else:
+                                                actions = []
                                         self.details.update( { stateid :
                                                                { 'longname' : longname,
-                                                                 'allowednext' : allowednexts }
+                                                                 'allowednexts' : allowednexts,
+                                                                 'actions' : actions }
                                                                } )
                                         self.statesnames[stateid] = longname
                                         self.states.append(stateid)
@@ -64,5 +71,11 @@ class Presence:
                         w = self.details[status]
                         for u, v in self.details.iteritems():
                                 # use 'True' and 'False' instead of True and False because of an error in JsonQt parsing
-                                rep[u] = repr(u in w['allowednext'] or u == status)
+                                rep[u] = repr(u in w['allowednexts'] or u == status)
                 return rep
+
+        def actions(self, status):
+                if status is not None and status in self.details:
+                        w = self.details[status]
+                        return w['actions']
+                return []

@@ -61,7 +61,7 @@ log = logging.getLogger('xivocti')
 
 XIVOVERSION_NUM = '0.4'
 XIVOVERSION_NAME = 'k-9'
-REQUIRED_CLIENT_VERSION = 4250
+REQUIRED_CLIENT_VERSION = 4258
 __revision__ = __version__.split()[1]
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 HISTSEPAR = ';'
@@ -1239,8 +1239,10 @@ class XivoCTICommand(BaseCommand):
                                 del self.faxes[actionid]
                         else:
                                 log.warning('AMI %s Response=Error : (%s) <%s>' % (astid, actionid, msg))
-                elif msg == 'No such channel':
-                        log.warning('AMI %s Response=Error : %s' % (astid, event))
+                elif msg in ['No such channel',
+                             'Unable to add interface: Already there',
+                             'Unable to remove interface: Not there'] :
+                        log.warning('AMI %s Response=Error : (tracked) %s' % (astid, event))
                 else:
                         log.warning('AMI %s Response=Error : untracked message (%s) <%s>' % (astid, actionid, msg))
                 return
@@ -1907,6 +1909,15 @@ class XivoCTICommand(BaseCommand):
                                                         
                                         elif classcomm == 'availstate':
                                                 if self.capas[capaid].match_funcs(ucapa, 'presence'):
+                                                        zz = self.presence.actions(icommand.struct.get('availstate'))
+                                                        for z in zz:
+                                                                anum = userinfo.get('agentnum')
+                                                                params = z.split('-')
+                                                                if params[0] == 'queueadd':
+                                                                        self.amilist.execute(astid, params[0], params[1], 'Agent/%s' % anum, params[2])
+                                                                elif params[0] == 'queueremove':
+                                                                        self.amilist.execute(astid, params[0], params[1], 'Agent/%s' % anum)
+                                                        # updates the new status and sends it to other people
                                                         repstr = self.__update_availstate__(userinfo, icommand.struct.get('availstate'))
 
                                         elif classcomm == 'message':
