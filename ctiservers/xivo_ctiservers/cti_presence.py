@@ -32,14 +32,21 @@ class Presence:
                 self.defaultstate = None
                 if config is not  None:
                         for stateid, stateprops in config.iteritems():
-                                [longname, kind, change] = stateprops.split(',')
-                                self.details.update( { stateid :
-                                                       { 'longname' : longname,
-                                                         'kind' : kind,
-                                                         'change' : change }
-                                                       } )
-                                self.statesnames[stateid] = longname
-                                self.states.append(stateid)
+                                splitprops = stateprops.split(',')
+                                if len(splitprops) > 1:
+                                        longname = splitprops[0]
+                                        allowednext = splitprops[1]
+                                        if len(allowednext) > 0:
+                                                allowednexts = allowednext.split(':')
+                                        else:
+                                                allowednexts = []
+                                        self.details.update( { stateid :
+                                                               { 'longname' : longname,
+                                                                 'allowednext' : allowednexts }
+                                                               } )
+                                        self.statesnames[stateid] = longname
+                                        self.states.append(stateid)
+                # to add : actions associated with status : change queue / remove or pause from queue
                 return
 
         def getstates(self):
@@ -56,15 +63,6 @@ class Presence:
                 if status is not None and status in self.details:
                         w = self.details[status]
                         for u, v in self.details.iteritems():
-                                rep[u] = 'u'
-                                if w['kind'] == 'calls':
-                                        if u == status:
-                                                rep[u] = 'u'
-                                        else:
-                                                rep[u] = 'd'
-                                elif w['kind'] == 'user':
-                                        if v['kind'] == 'user':
-                                                rep[u] = 'u'
-                                        else:
-                                                rep[u] = 'd'
+                                # use 'True' and 'False' instead of True and False because of an error in JsonQt parsing
+                                rep[u] = repr(u in w['allowednext'] or u == status)
                 return rep

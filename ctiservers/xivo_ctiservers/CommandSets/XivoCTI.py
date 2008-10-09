@@ -2720,9 +2720,8 @@ class XivoCTICommand(BaseCommand):
                 if state in self.presence.getstates():
                         userinfo['state'] = state
                 else:
-                        log.warning('(user %s) : state <%s> is not an allowed one => undefinedstate-updated'
-                                  % (username, state))
-                        userinfo['state'] = 'undefinedstate-updated'
+                        log.warning('(user %s) : state <%s> is not an allowed one => keeping current <%s>'
+                                    % (username, state, userinfo['state']))
 
                 tosend = { 'class' : 'presence',
                            'direction' : 'client',
