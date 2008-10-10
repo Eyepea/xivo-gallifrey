@@ -76,7 +76,25 @@ class XivoCTICommand(BaseCommand):
         fullstat_heavies = {}
         queues_channels_list = {}
         agents_list = {}
-
+        commnames = ['login_id', 'login_pass', 'login_capas',
+                     'history', 'directory-search',
+                     'featuresget', 'featuresput',
+                     'phones',
+                     'agents',
+                     'queues',
+                     'users',
+                     'agent-status', 'agent',
+                     'queue-status',
+                     'callcampaign',
+                     'faxsend',
+                     'filetransfer',
+                     'database',
+                     'meetme',
+                     'message',
+                     'actionfiche',
+                     'availstate',
+                     'originate', 'transfer', 'atxfer', 'hangup', 'simplehangup', 'pickup']
+        
         def __init__(self, amilist, ctiports, queued_threads_pipe):
 		BaseCommand.__init__(self)
                 self.amilist = amilist
@@ -104,26 +122,9 @@ class XivoCTICommand(BaseCommand):
                 self.getvar_requests = {}
                 self.parkedcalls = {}
                 return
-
+        
         def get_list_commands(self):
                 return ['json']
-        
-        def get_list_json_commands(self):
-                return ['login_id', 'login_pass', 'login_capas',
-                        'history', 'directory-search',
-                        'featuresget', 'featuresput',
-                        'phones',
-                        'agents-list', 'agent-status', 'agent',
-                        'queues-list', 'queue-status',
-                        'users-list',
-                        'callcampaign',
-                        'faxsend',
-                        'filetransfer',
-                        'database',
-                        'meetme',
-                        'message',
-                        'availstate',
-                        'originate', 'transfer', 'atxfer', 'hangup', 'simplehangup', 'pickup']
         
         def parsecommand(self, linein):
                 params = linein.split()
@@ -159,7 +160,7 @@ class XivoCTICommand(BaseCommand):
         def transfer_addbuf(self, req, buf):
                 self.transfers_buf[req].append(buf)
                 return
-
+        
         def transfer_addref(self, connid, commandstruct):
                 requester = '%s:%d' % connid.getpeername()
                 fileid = commandstruct.get('fileid')
@@ -181,7 +182,7 @@ class XivoCTICommand(BaseCommand):
                                    'payload' : 1000 * ''.join(random.sample(__alphanums__, 30)) }
                 connid.sendall(cjson.encode(tosend) + '\n')
                 return
-
+        
         def transfer_endbuf(self, req):
                 log.info('full buffer received for %s : len=%d %s'
                           % (req, len(''.join(self.transfers_buf[req])), self.transfers_ref))
@@ -201,7 +202,7 @@ class XivoCTICommand(BaseCommand):
                                 del self.transfers_ref[req]
                                 del self.transfers_buf[req]
                 return
-
+        
         def get_login_params(self, command, astid, connid):
                 return command.struct
 
@@ -1873,7 +1874,7 @@ class XivoCTICommand(BaseCommand):
                                 classcomm = icommand.struct.get('class')
                                 dircomm = icommand.struct.get('direction')
 
-                                if dircomm is not None and dircomm == 'xivoserver':
+                                if dircomm is not None and dircomm == 'xivoserver' and classcomm in self.commnames:
                                         log.info('command attempt %s from %s' % (classcomm, username))
                                         self.__fill_user_cticdr__(userinfo, 'cticommand:%s' % classcomm)
                                         if classcomm == 'meetme':
@@ -1989,9 +1990,6 @@ class XivoCTICommand(BaseCommand):
                                                                                  icommand.struct.get('channel'),
                                                                                  False)
 
-                                        elif classcomm == 'actionfiche':
-                                                print 'FICHE ...', icommand.struct
-
                                         elif classcomm == 'pickup':
                                                 if self.capas[capaid].match_funcs(ucapa, 'dial'):
                                                         # on Thomson, it picks up the last received call
@@ -2001,15 +1999,21 @@ class XivoCTICommand(BaseCommand):
                                                                              [('Command',
                                                                                'sip notify event-talk %s' % icommand.struct.get('phonenum'))])
 
-                                        elif classcomm == 'agent':
-                                                argums = icommand.struct.get('command')
-                                                if self.capas[capaid].match_funcs(ucapa, 'agents'):
-                                                        repstr = self.__agent__(userinfo, argums)
+                                        elif classcomm == 'actionfiche':
+                                                log.info('%s : %s' % (classcomm, icommand.struct))
+                                                actionid = icommand.struct.get('buttonaction')[1]
+                                                if actionid in self.uniqueids[astid]:
+                                                        log.info('%s : %s' % (classcomm, self.uniqueids[astid][actionid]))
 
                                         elif classcomm in ['phones', 'users', 'agents', 'queues']:
                                                 function = icommand.struct.get('function')
                                                 if function == 'getlist':
                                                         repstr = self.__getlist__(userinfo, classcomm)
+
+                                        elif classcomm == 'agent':
+                                                argums = icommand.struct.get('command')
+                                                if self.capas[capaid].match_funcs(ucapa, 'agents'):
+                                                        repstr = self.__agent__(userinfo, argums)
 
                                         elif classcomm == 'queue-status':
                                                 # issued towards a user when he wants to monitor a new queue
@@ -2039,6 +2043,8 @@ class XivoCTICommand(BaseCommand):
                                                                                         self.weblist['queues'][astid].get_queues_byagent(agid)]
                                                                            }
                                                                 repstr = cjson.encode(tosend)
+                                else:
+                                        log.warning('unallowed json event %s' % icommand.struct)
 
                 except Exception, exc:
                         log.error('--- exception --- (manage_cticommand) %s %s %s : %s'
