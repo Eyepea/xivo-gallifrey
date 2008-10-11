@@ -1,7 +1,6 @@
 [general]
 name = asterisk
 label = Asterisk
-version = 1.2.24
 datastorage = "mysql://asterisk:proformatique@localhost/asterisk"
 
 [ami]
@@ -16,10 +15,7 @@ port = 8666
 path = /etc/asterisk
 
 [musiconhold]
-path = /usr/share/asterisk/moh
+path = /var/lib/pf-xivo/moh
 
 [sounds]
-path = /usr/share/asterisk/sounds/web-interface
-
-[agent]
-callpath = /usr/share/asterisk/sounds/web-interface/monitor
+path = /var/lib/pf-xivo/sounds
