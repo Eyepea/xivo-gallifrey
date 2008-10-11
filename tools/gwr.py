@@ -3,7 +3,7 @@
 GCC warning messages filter
 """
 
-__version__ = "$Revision: 11 $ $Date: 2008-10-01 17:55:24 +0200 (Wed, 01 Oct 2008) $"
+__version__ = "$Revision$ $Date$"
 
 import os
 import re
