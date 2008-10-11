@@ -24,7 +24,7 @@ CREATE TABLE agent (
  filename varchar(128) NOT NULL,
  category varchar(128) NOT NULL,
  var_name varchar(128) NOT NULL,
- var_val varchar(128),
+ var_val varchar(255),
  PRIMARY KEY(id)
 );
 
@@ -37,7 +37,8 @@ CREATE INDEX agent__idx__var_name ON agent(var_name);
 CREATE INDEX agent__idx__var_val ON agent(var_val);
 
 INSERT INTO agent VALUES (1,0,0,0,'agents.conf','general','persistentagents','yes');
-INSERT INTO agent VALUES (2,1,1000000,0,'agents.conf','agents','group',1);
+INSERT INTO agent VALUES (2,0,0,0,'agents.conf','general','multiplelogin','yes');
+INSERT INTO agent VALUES (3,1,1000000,0,'agents.conf','agents','group',1);
 
 
 DROP TABLE agentfeatures;
@@ -49,8 +50,11 @@ CREATE TABLE agentfeatures (
  lastname varchar(128) NOT NULL DEFAULT '',
  number varchar(40) NOT NULL,
  passwd varchar(128) NOT NULL,
- commented tinyint(1) NOT NULL DEFAULT 0,
+ context varchar(39) NOT NULL,
+ language varchar(20) NOT NULL,
  silent tinyint(1) NOT NULL DEFAULT 0,
+ commented tinyint(1) NOT NULL DEFAULT 0,
+ description text NOT NULL,
  PRIMARY KEY(id)
 );
 
@@ -67,6 +71,7 @@ CREATE TABLE agentgroup (
  groups varchar(255) NOT NULL DEFAULT '',
  commented tinyint(1) NOT NULL DEFAULT 0,
  deleted tinyint(1) NOT NULL DEFAULT 0,
+ description text NOT NULL,
  PRIMARY KEY(id)
 );
 
@@ -75,7 +80,7 @@ CREATE INDEX agentgroup__idx__name ON agentgroup(name);
 CREATE INDEX agentgroup__idx__commented ON agentgroup(commented);
 CREATE INDEX agentgroup__idx__deleted ON agentgroup(deleted);
 
-INSERT INTO agentgroup VALUES (1,2,'default','',0,0);
+INSERT INTO agentgroup VALUES (1,3,'default','',0,0,'');
 
 
 DROP TABLE callfilter;
