@@ -1,25 +1,27 @@
 <?php
-	$url = &$this->get_module('url');
-	$form = &$this->get_module('form');
-	$dhtml = &$this->get_module('dhtml');
 
-	$pager = $this->get_var('pager');
-	$act = $this->get_var('act');
+$url = &$this->get_module('url');
+$form = &$this->get_module('form');
+$dhtml = &$this->get_module('dhtml');
 
-	$param = array();
+$pager = $this->get_var('pager');
+$act = $this->get_var('act');
 
-	if(($search = (string) $this->get_var('search')) !== ''):
-		$param['search'] = $search;
-	elseif(($context = $this->get_var('context')) !== ''):
-		$param['context'] = $context;
-	endif;
+$param = array();
 
-	$page = $url->pager($pager['pages'],
-			    $pager['page'],
-			    $pager['prev'],
-			    $pager['next'],
-			    'service/ipbx/pbx_settings/users',
-			    array('act' => $act,$param));
+if(($search = (string) $this->get_var('search')) !== ''):
+	$param['search'] = $search;
+elseif(($context = $this->get_var('context')) !== ''):
+	$param['context'] = $context;
+endif;
+
+$page = $url->pager($pager['pages'],
+		    $pager['page'],
+		    $pager['prev'],
+		    $pager['next'],
+		    'service/ipbx/pbx_settings/users',
+		    array('act' => $act,$param));
+
 ?>
 <div class="b-list">
 <?php
@@ -28,11 +30,22 @@
 	endif;
 ?>
 <form action="#" name="fm-users-list" method="post" accept-charset="utf-8">
-<?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
-<?=$form->hidden(array('name' => 'act','value' => $act));?>
-<?=$form->hidden(array('name' => 'page','value' => $pager['page']));?>
-<?=$form->hidden(array('name' => 'search','value' => ''));?>
-<?=$form->hidden(array('name' => 'context','value' => ''));?>
+<?php
+	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
+				    'value'	=> XIVO_SESS_ID)),
+
+		$form->hidden(array('name'	=> 'act',
+				    'value'	=> $act)),
+
+		$form->hidden(array('name'	=> 'page',
+				    'value'	=> $pager['page'])),
+
+		$form->hidden(array('name'	=> 'search',
+				    'value'	=> '')),
+
+		$form->hidden(array('name'	=> 'context',
+				    'value'	=> ''));
+?>
 <table cellspacing="0" cellpadding="0" border="0">
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>

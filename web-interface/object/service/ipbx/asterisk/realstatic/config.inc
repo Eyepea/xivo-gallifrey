@@ -30,7 +30,9 @@ $array['element']['var_val']['null'] = true;
 
 $array['filter'] = array();
 $array['filter']['commented'] = array('bool' => true);
-$array['filter']['filename'] = array('regexp' => '/^[a-zA-Z0-9_-]+\.(conf|ael)$/','maxlen' => 128);
+$array['filter']['cat_metric'] = array('set' => false,'cast' => 'uint');
+$array['filter']['var_metric'] = array('set' => false,'cast' => 'uint');
+$array['filter']['filename'] = array('regexp' => '/^[a-zA-Z0-9_-]+\.(?:conf|ael)$/','maxlen' => 128);
 $array['filter']['category'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
 $array['filter']['var_name'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
 $array['filter']['var_val'] = array('set' => false,'chk' => 2);

@@ -4,11 +4,9 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_realstatic_abstract extends xivo_application_asterisk_abstract
 {
-	var $_origin		= array();
 	var $_conf		= array();
 	var $_filter		= false;
 	var $_realstatic	= null;
-	var $_status		= '';
 	var $_multi		= false;
 
 	function _init(&$service)
@@ -16,16 +14,20 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 		$this->xivo_application_asterisk_abstract(&$service);
 
 		$param = array();
-		$param['filename'] = $this->_filename;
 
-		if(isset($this->_cat_metric) === true)
-			$param['cat_metric'] = $this->_cat_metric;
+		if(isset($this->_filename) === false)
+			trigger_error('Missing filename attribute in '.__CLASS__,E_USER_ERROR);
+
+		if(isset($this->_category,$this->_cat_metric) === false)
+			trigger_error('Missing category or cat_metric attribute in '.__CLASS__,E_USER_ERROR);
+
+		$param = array();
+		$param['filename'] = $this->_filename;
+		$param['category'] = $this->_category;
+		$param['cat_metric'] = $this->_cat_metric;
 
 		if(isset($this->_var_metric) === true)
 			$param['var_metric'] = $this->_var_metric;
-
-		if(isset($this->_category) === true)
-			$param['category'] = $this->_category;
 
 		if(isset($this->_var_name) === true)
 			$param['var_name'] = $this->_var_name;
@@ -122,7 +124,7 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 	function get($name,$disable=null)
 	{
 		$this->_info = $this->_origin = array();
-		
+
 		if($this->_multi === false)
 			$this->_realstatic_get($name,$disable);
 		else
@@ -178,7 +180,6 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 
 		$arr = array();
 		$arr['var_name'] = $name;
-		$arr['category'] = $this->_category;
 
 		if(($this->_info[$this->_name] = $this->_realstatic->get_where($arr,$disable)) !== false)
 			$this->_origin[$this->_name] = $this->_realstatic->get_origin();
@@ -193,7 +194,6 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 
 		$arr = array();
 		$arr['var_name'] = $name;
-		$arr['category'] = $this->_category;
 
 		if(($this->_info[$this->_name] = $this->_realstatic->get_all_where($arr,$disable)) !== false)
 			$this->_origin[$this->_name] = $this->_realstatic->get_origin_list();
@@ -390,10 +390,7 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 		if($this->_realstatic->delete_where($where) === false)
 			return(($this->_return[$this->_name] = false));
 
-		$res = array();
-		$res['category'] = $this->_category;
-		$res['cat_metric'] = $this->_cat_metric;
-		$res['var_name'] = $rs[0]['var_name'];
+		$res = $where;
 
 		$nb = count($rs);
 
@@ -426,9 +423,6 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 			return(false);
 		else if($this->_multi === false)
 		{
-			$rs['category'] = $this->_category;
-			$rs['cat_metric'] = $this->_cat_metric;
-
 			if(($r = $this->_realstatic->add($rs)) === false)
 				$this->_return[$this->_name] = false;
 			else
@@ -440,8 +434,6 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 			return(($this->_return[$this->_name] = false));
 
 		$res = array();
-		$res['category'] = $this->_category;
-		$res['cat_metric'] = $this->_cat_metric;
 		$res['var_name'] = $rs[0]['var_name'];
 
 		$nb = count($rs);
@@ -523,7 +515,8 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 		if(empty($this->_origin[$this->_name]) === false
 		&& $origin === null)
 			$origin = $this->_origin[$this->_name];
-		else if(is_array($origin) === false)
+
+		if(is_array($origin) === false)
 			return(false);
 			
 		return($this->_realstatic->add_origin($origin));
@@ -534,10 +527,35 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 		if(empty($this->_origin[$this->_name]) === false
 		&& $origin === null)
 			$origin = $this->_origin[$this->_name];
-		else if(is_array($origin) === false)
+
+		if(is_array($origin) === false)
 			return(false);
 			
 		return($this->_realstatic->edit_origin($origin));
+	}
+
+	function add_origin_list($origin=null)
+	{
+		if(empty($this->_origin[$this->_name]) === false
+		&& $origin === null)
+			$origin = $this->_origin[$this->_name];
+
+		if(is_array($origin) === false)
+			return(false);
+
+		return($this->_realstatic->add_origin_list($origin));
+	}
+
+	function edit_origin_list($origin=null)
+	{
+		if(empty($this->_origin[$this->_name]) === false
+		&& $origin === null)
+			$origin = $this->_origin[$this->_name];
+
+		if(is_array($origin) === false)
+			return(false);
+
+		return($this->_realstatic->edit_origin_list($origin));
 	}
 }
 

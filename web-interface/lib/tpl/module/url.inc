@@ -58,7 +58,7 @@ class xivo_tpl_url extends xivo_tpl_module
 		else
 			$title = $content;
 
-		$title = isset($title{0}) === true ? ' title="'.xivo_alttitle($title).'"' : '';
+		$title = isset($title{0}) === true ? ' title="'.trim(xivo_alttitle($title)).'"' : '';
 
 		return('<a href="'.$url.'"'.(isset($opt{0}) === true ? ' '.$opt : '').$title.'>'.$content.'</a>');
 	}
@@ -84,7 +84,7 @@ class xivo_tpl_url extends xivo_tpl_module
 
 		$url = $this->img($url,$i18n);
 
-		return('<img src="'.$url.'"'.(isset($opt{0}) === true ? ' '.$opt : '').' alt="'.xivo_alttitle($alt).'" />');
+		return('<img src="'.$url.'"'.(isset($opt{0}) === true ? ' '.$opt : '').' alt="'.trim(xivo_alttitle($alt)).'" />');
 	}
 
 	function pager($nb,$page,$prev=false,$next=false,$url='',$param='',$opt='',$absolute=false,$sep=null,$sid=true,$pre='',$key='')

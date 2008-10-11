@@ -49,6 +49,12 @@ Oui
 ; fm_bool-opt-0
 Non
 
+; fm_bool-opt(yes)
+Oui
+
+; fm_bool-opt(no)
+Non
+
 ; fm_bt-add
 Ajouter
 

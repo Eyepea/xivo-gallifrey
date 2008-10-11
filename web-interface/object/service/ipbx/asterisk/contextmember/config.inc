@@ -8,7 +8,8 @@ $array['element']['context'] = array();
 $array['element']['context']['default'] = '';
 
 $array['element']['type'] = array();
-$array['element']['type']['value'] = array('callfilter',
+$array['element']['type']['value'] = array('agent',
+					   'callfilter',
 					   'generalsip',
 					   'generaliax',
 					   'generalvoicemail',
@@ -36,7 +37,8 @@ $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_co
 				    'callbackparam' => array(array(
 				    			XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION,
 							XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
-$array['filter']['type'] = array('callfilter',
+$array['filter']['type'] = array('agent',
+				 'callfilter',
 				 'generalsip',
 				 'generaliax',
 				 'generalvoicemail',

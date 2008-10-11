@@ -4,7 +4,6 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_handynumbers extends xivo_application_asterisk_abstract
 {
-	var $_status		= '';
 	var $_handynumbers	= false;
 	var $_extenumbers	= false;
 	var $_extensions	= false;

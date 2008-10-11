@@ -205,33 +205,108 @@
 </div>
 
 <div id="sb-part-last" class="b-nodisplay">
+<?php
+	echo	$form->text(array('desc'	=> $this->bbf('fm_generalfeatures_parkext'),
+				  'name'	=> 'generalfeatures[parkext]',
+				  'labelid'	=> 'generalfeatures-parkext',
+				  'size'	=> 15,
+				  'value'	=> $this->get_varra('generalfeatures',array('parkext','var_val')),
+				  'default'	=> $element['generalfeatures']['parkext']['default'],
+				  'invalid'	=> isset($invalid['generalfeatures']['parkext']))),
 
-<?=$form->text(array('desc' => $this->bbf('fm_generalfeatures_parkext'),'name' => 'generalfeatures[parkext]','labelid' => 'generalfeatures-parkext','size' => 15,'value' => $this->get_varra('generalfeatures',array('parkext','var_val')),'default' => $element['generalfeatures']['parkext']['default'],'invalid' => isset($invalid['generalfeatures']['parkext'])));?>
+		$form->text(array('desc'	=> $this->bbf('fm_generalfeatures_context'),
+				  'name'	=> 'generalfeatures[context]',
+				  'labelid'	=> 'generalfeatures-context',
+				  'size'	=> 15,
+				  'value'	=> $this->get_varra('generalfeatures',array('context','var_val')),
+				  'default'	=> $element['generalfeatures']['context']['default'],
+				  'invalid'	=> isset($invalid['generalfeatures']['context'])),
+			    'class="it-readonly" readonly="readonly"'),
 
-<?=$form->text(array('desc' => $this->bbf('fm_generalfeatures_context'),'name' => 'generalfeatures[context]','labelid' => 'generalfeatures-context','size' => 15,'value' => $this->get_varra('generalfeatures',array('context','var_val')),'default' => $element['generalfeatures']['context']['default'],'invalid' => isset($invalid['generalfeatures']['context'])),'class="it-readonly" readonly="readonly"');?>
+		$form->select(array('desc'	=> $this->bbf('fm_generalfeatures_parkingtime'),
+				    'name'	=> 'generalfeatures[parkingtime]',
+				    'labelid'	=> 'generalfeatures-parkingtime',
+				    'key'	=> false,
+				    'bbf'	=> 'fm_generalfeatures_parkingtime-opt',
+				    'bbf_opt'	=> array('argmode'	=> 'paramkey',
+				    			 'time'		=> array(
+							 		'from'		=> 'second',
+							 		'format'	=> '%M%s')),
+				    'value'	=> $this->get_varra('generalfeatures',array('parkingtime','var_val')),
+				    'default'	=> $element['generalfeatures']['parkingtime']['default']),
+			      $element['generalfeatures']['parkingtime']['value']),
 
-<?=$form->select(array('desc' => $this->bbf('fm_generalfeatures_parkingtime'),'name' => 'generalfeatures[parkingtime]','labelid' => 'generalfeatures-parkingtime','bbf' => array('mixkey','fm_generalfeatures_parkingtime-opt','paramarray'),'value' => $this->get_varra('generalfeatures',array('parkingtime','var_val')),'default' => $element['generalfeatures']['parkingtime']['default']),$element['generalfeatures']['parkingtime']['value']);?>
+		$form->text(array('desc'	=> $this->bbf('fm_generalfeatures_parkpos'),
+				  'name'	=> 'generalfeatures[parkpos]',
+				  'labelid'	=> 'generalfeatures-parkpos',
+				  'size'	=> 15,
+				  'value'	=> $this->get_varra('generalfeatures',array('parkpos','var_val')),
+				  'default'	=> $element['generalfeatures']['parkpos']['default'],
+				  'invalid'	=> isset($invalid['generalfeatures']['parkpos']))),
 
-<?=$form->text(array('desc' => $this->bbf('fm_generalfeatures_parkpos'),'name' => 'generalfeatures[parkpos]','labelid' => 'generalfeatures-parkpos','size' => 15,'value' => $this->get_varra('generalfeatures',array('parkpos','var_val')),'default' => $element['generalfeatures']['parkpos']['default'],'invalid' => isset($invalid['generalfeatures']['parkpos'])));?>
+		$form->checkbox(array('desc'	=> $this->bbf('fm_generalfeatures_parkfindnext'),
+				      'name'	=> 'generalfeatures[parkfindnext]',
+				      'labelid'	=> 'generalfeatures-parkfindnext',
+				      'checked'	=> $this->get_varra('generalfeatures',array('parkfindnext','var_val')),
+				      'default'	=> $element['generalfeatures']['parkfindnext']['default'])),
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_generalfeatures_parkfindnext'),'name' => 'generalfeatures[parkfindnext]','labelid' => 'generalfeatures-parkfindnext','checked' => $this->get_varra('generalfeatures',array('parkfindnext','var_val')),'default' => $element['generalfeatures']['parkfindnext']['default']));?>
+		$form->checkbox(array('desc'	=> $this->bbf('fm_generalfeatures_adsipark'),
+				      'name'	=> 'generalfeatures[adsipark]',
+				      'labelid'	=> 'generalfeatures-adsipark',
+				      'checked'	=> $this->get_varra('generalfeatures',array('adsipark','var_val')),
+				      'default'	=> $element['generalfeatures']['adsipark']['default'])),
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_generalfeatures_adsipark'),'name' => 'generalfeatures[adsipark]','labelid' => 'generalfeatures-adsipark','checked' => $this->get_varra('generalfeatures',array('adsipark','var_val')),'default' => $element['generalfeatures']['adsipark']['default']));?>
+		$form->select(array('desc'	=> $this->bbf('fm_generalfeatures_transferdigittimeout'),
+				    'name'	=> 'generalfeatures[transferdigittimeout]',
+				    'labelid'	=> 'generalfeatures-transferdigittimeout',
+				    'key'	=> false,
+				    'bbf'	=> array('paramkey','fm_generalfeatures_transferdigittimeout-opt'),
+				    'value'	=> $this->get_varra('generalfeatures',array('transferdigittimeout','var_val')),
+				    'default'	=> $element['generalfeatures']['transferdigittimeout']['default']),
+			      $element['generalfeatures']['transferdigittimeout']['value']),
 
-<?=$form->select(array('desc' => $this->bbf('fm_generalfeatures_transferdigittimeout'),'name' => 'generalfeatures[transferdigittimeout]','labelid' => 'generalfeatures-transferdigittimeout','key' => false,'bbf' => array('mixkey','fm_generalfeatures_transferdigittimeout-opt'),'value' => $this->get_varra('generalfeatures',array('transferdigittimeout','var_val')),'default' => $element['generalfeatures']['transferdigittimeout']['default']),$element['generalfeatures']['transferdigittimeout']['value']);?>
+		$form->select(array('desc'	=> $this->bbf('fm_generalfeatures_featuredigittimeout'),
+				    'name'	=> 'generalfeatures[featuredigittimeout]',
+				    'labelid'	=> 'generalfeatures-featuredigittimeout',
+				    'key'	=> false,
+				    'bbf'	=> array('paramkey','fm_generalfeatures_featuredigittimeout-opt'),
+				    'value'	=> $this->get_varra('generalfeatures',array('featuredigittimeout','var_val')),
+				    'default'	=> $element['generalfeatures']['featuredigittimeout']['default']),
+				    $element['generalfeatures']['featuredigittimeout']['value']),
 
-<?=$form->select(array('desc' => $this->bbf('fm_generalfeatures_featuredigittimeout'),'name' => 'generalfeatures[featuredigittimeout]','labelid' => 'generalfeatures-featuredigittimeout','key' => false,'bbf' => array('mixkey','fm_generalfeatures_featuredigittimeout-opt'),'value' => $this->get_varra('generalfeatures',array('featuredigittimeout','var_val')),'default' => $element['generalfeatures']['featuredigittimeout']['default']),$element['generalfeatures']['featuredigittimeout']['value']);?>
+		$form->select(array('desc'	=> $this->bbf('fm_generalfeatures_courtesytone'),
+				    'name'	=> 'generalfeatures[courtesytone]',
+				    'labelid'	=> 'generalfeatures-courtesytone',
+				    'empty'	=> $this->bbf('fm_generalfeatures_courtesytone-opt-default'),
+				    'default'	=> $element['generalfeatures']['courtesytone']['default'],
+				    'value'	=> $this->get_varra('generalfeatures',array('courtesytone','var_val'))),
+			      $sound_list),
 
-<?=$form->select(array('desc' => $this->bbf('fm_generalfeatures_courtesytone'),'name' => 'generalfeatures[courtesytone]','labelid' => 'generalfeatures-courtesytone','empty' => $this->bbf('fm_generalfeatures_courtesytone-opt-default'),'default' => $element['generalfeatures']['courtesytone']['default'],'value' => $this->get_varra('generalfeatures',array('courtesytone','var_val'))),$sound_list);?>
+		$form->select(array('desc'	=> $this->bbf('fm_generalfeatures_xfersound'),
+				    'name'	=> 'generalfeatures[xfersound]',
+				    'labelid'	=> 'generalfeatures-xfersound',
+				    'empty'	=> $this->bbf('fm_generalfeatures_xfersound-opt-default'),
+				    'default'	=> $element['generalfeatures']['xfersound']['default'],
+				    'value'	=> $this->get_varra('generalfeatures',array('xfersound','var_val'))),
+			      $sound_list),
 
-<?=$form->select(array('desc' => $this->bbf('fm_generalfeatures_xfersound'),'name' => 'generalfeatures[xfersound]','labelid' => 'generalfeatures-xfersound','empty' => $this->bbf('fm_generalfeatures_xfersound-opt-default'),'default' => $element['generalfeatures']['xfersound']['default'],'value' => $this->get_varra('generalfeatures',array('xfersound','var_val'))),$sound_list);?>
-
-<?=$form->select(array('desc' => $this->bbf('fm_generalfeatures_xferfailsound'),'name' => 'generalfeatures[xferfailsound]','labelid' => 'generalfeatures-xferfailsound','empty' => $this->bbf('fm_generalfeatures_xferfailsound-opt-default'),'default' => $element['generalfeatures']['xferfailsound']['default'],'value' => $this->get_varra('generalfeatures',array('xferfailsound','var_val'))),$sound_list);?>
-
+		$form->select(array('desc'	=> $this->bbf('fm_generalfeatures_xferfailsound'),
+				    'name'	=> 'generalfeatures[xferfailsound]',
+				    'labelid'	=> 'generalfeatures-xferfailsound',
+				    'empty'	=> $this->bbf('fm_generalfeatures_xferfailsound-opt-default'),
+				    'default'	=> $element['generalfeatures']['xferfailsound']['default'],
+				    'value'	=> $this->get_varra('generalfeatures',array('xferfailsound','var_val'))),
+			      $sound_list);
+?>
 </div>
-
-	<?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>
+	<?=$form->submit(array('name'	=> 'submit',
+			       'id'	=> 'it-submit',
+			       'value'	=> $this->bbf('fm_bt-save')));?>
 </form>
 	</div>
-	<div class="sb-foot xspan"><span class="span-left">&nbsp;</span><span class="span-center">&nbsp;</span><span class="span-right">&nbsp;</span></div>
+	<div class="sb-foot xspan">
+		<span class="span-left">&nbsp;</span>
+		<span class="span-center">&nbsp;</span>
+		<span class="span-right">&nbsp;</span>
+	</div>
 </div>

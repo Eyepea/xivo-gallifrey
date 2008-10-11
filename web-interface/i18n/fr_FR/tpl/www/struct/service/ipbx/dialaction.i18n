@@ -73,6 +73,9 @@ Renvoyez vers :
 ; fm_dialaction_actiontype-opt-application
 Application
 
+; fm_dialaction_actiontype-opt-ipbxapplication(unknown)
+Application IPBX
+
 ; fm_dialaction_actiontype-opt-ipbxapplication
 Application %s
 

@@ -4,8 +4,6 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_meetme extends xivo_application_asterisk_abstract
 {
-	var $_origin		= array();
-	var $_status		= '';
 	var $_appmeetme		= false;
 	var $_meetmefeatures	= false;
 	var $_meetmeroom	= false;
@@ -88,8 +86,8 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 	{
 		$r = array();
 
-		$r['mfeatures'] = $this->_meetmefeatures->get_element();
 		$r['meetmeroom'] = $this->_meetmeroom->get_element();
+		$r['mfeatures'] = $this->_meetmefeatures->get_element();
 
 		return($r);
 	}
@@ -494,12 +492,11 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 	function delete_meetmeroom()
 	{
-		$r = false;
-
 		if(xivo_issa('meetmeroom',$this->_info) === false
-		|| ($r = $this->_meetmeroom->delete_meetmeroom($this->_status,$this->_info['meetmeroom']['id'])) === null
+		|| ($r = $this->_meetmeroom->delete_meetmeroom($this->_status,
+							       $this->_info['meetmeroom']['id'])) === null
 		|| $r === false)
-			return($r);
+			return(false);
 
 		if($this->_status === 'delete')
 			$this->_return['meetmeroom'] = $r;
@@ -572,11 +569,11 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 			return(false);
 		else if(($dialaction = &$this->_service->get_module('dialaction')) !== false)
 		{
-			$dialaction_where = array();
-			$dialaction_where['type'] = 'meetme';
-			$dialaction_where['typeval'] = $this->_info['mfeatures']['id'];
+			$where = array();
+			$where['type'] = 'meetme';
+			$where['typeval'] = $this->_info['mfeatures']['id'];
 
-			$dialaction->unlinked_where($dialaction_where);
+			$dialaction->unlinked_where($where);
 		}
 
 		return(true);

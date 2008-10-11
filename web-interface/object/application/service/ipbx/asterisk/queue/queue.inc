@@ -4,8 +4,6 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_queue extends xivo_application_asterisk_abstract
 {
-	var $_origin		= array();
-	var $_status		= '';
 	var $_queuefeatures	= false;
 	var $_queue		= false;
 	var $_extensions	= false;
@@ -442,9 +440,6 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 			$modulename = 'agentgroup';
 			$where['usertype'] = 'agent';
 			$where['category'] = 'group';
-
-			if(($agent = &$this->_service->get_module('agent')) === false)
-				return(false);
 		}
 		else
 		{
@@ -477,11 +472,6 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 				$this->_set_error($type,'wrong '.$type);
 				continue;
 			}
-			else if($type === 'agentgroup' && ($ainfo = $agent->get($uinfo['groupid'])) === false)
-			{
-				$this->_set_error('agentgroup','wrong agentgroup');
-				continue;
-			}
 
 			$where['userid'] = $uinfo['id'];
 
@@ -497,7 +487,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 				if($type === 'agent')
 					$interface = $this->mk_agent_interface($uinfo['number']);
 				else if($type === 'agentgroup')
-					$interface = $this->mk_agent_interface($ainfo['var_val'],true);
+					$interface = $this->mk_agent_interface($uinfo['id'],true);
 				else
 					$interface = $this->mk_interface($uinfo['name'],
 									 null,

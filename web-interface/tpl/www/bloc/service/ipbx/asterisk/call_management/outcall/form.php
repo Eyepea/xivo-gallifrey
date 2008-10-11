@@ -44,9 +44,19 @@ endif;
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_outcall_internal'),'name' => 'outcall[internal]','labelid' => 'internal','checked' => $info['outcall']['internal'],'default' => $element['outcall']['internal']['default']));?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_outcall_hangupringtime'),'name' => 'outcall[hangupringtime]','labelid' => 'outcall-hangupringtime','bbf' => array('mixkey','fm_outcall_hangupringtime-opt','paramarray'),'default' => $element['outcall']['hangupringtime']['default'],'value' => $info['outcall']['hangupringtime']),$element['outcall']['hangupringtime']['value']);?>
-
 <?php
+	echo	$form->select(array('desc'	=> $this->bbf('fm_outcall_hangupringtime'),
+				    'name'	=> 'outcall[hangupringtime]',
+				    'labelid'	=> 'outcall-hangupringtime',
+				    'key'	=> false,
+				    'bbf'	=> 'fm_outcall_hangupringtime-opt',
+				    'bbf_opt'	=> array('argmode'	=> 'mixkey',
+				    			 'time'		=> array(
+							 		'from'		=> 'second',
+							 		'format'	=> '%M%s')),
+				    'default'	=> $element['outcall']['hangupringtime']['default'],
+				    'value'	=> $info['outcall']['hangupringtime']),
+			      $element['outcall']['hangupringtime']['value']);
 
 if($outcalltrunk['list'] !== false):
 

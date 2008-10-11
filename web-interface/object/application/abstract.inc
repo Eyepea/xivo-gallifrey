@@ -7,9 +7,10 @@ class xivo_application_abstract extends xivo_libconfig_abstract
 	var $_cnt	= 0;
 	var $_errnb	= 0;
 	var $_error	= array();
+	var $_info	= array();
+	var $_origin	= array();
 	var $_result	= array();
 	var $_return	= array();
-	var $_info	= array();
 
 	function _load_abstract_class($abstract)
 	{
@@ -100,6 +101,7 @@ class xivo_application_abstract extends xivo_libconfig_abstract
 	{
 		$this->_errnb = 0;
 		$this->_error = array();
+		$this->_status = '';
 		$this->_result = array();
 		$this->_return = array();
 	}

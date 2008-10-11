@@ -99,7 +99,7 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 				    'name'	=> 'ufeatures[ringseconds]',
 				    'labelid'	=> 'ufeatures-ringseconds',
 				    'key'	=> false,
-				    'bbf'	=> array('mixkey','fm_userfeatures_ringseconds-opt'),
+				    'bbf'	=> array('paramkey','fm_userfeatures_ringseconds-opt'),
 				    'default'	=> $element['ufeatures']['ringseconds']['default'],
 				    'value'	=> (isset($info['ufeatures']['ringseconds']) === true ? (int) $info['ufeatures']['ringseconds'] : null)),			       $element['ufeatures']['ringseconds']['value']),
 
@@ -114,7 +114,7 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 				    'name'	=> 'protocol[protocol]',
 				    'labelid'	=> 'protocol-protocol',
 				    'key'	=> false,
-				    'bbf'	=> array('concatkey','fm_protocol_protocol-opt-'),
+				    'bbf'	=> array('paramkey','fm_protocol_protocol-opt'),
 				    'default'	=> $element['ufeatures']['protocol']['default'],
 				    'value'	=> $info['ufeatures']['protocol']),
 			      $element['ufeatures']['protocol']['value'],
@@ -162,7 +162,7 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 				    'labelid'	=> 'protocol-nat',
 				    'key'	=> false,
 				    'empty'	=> true,
-				    'bbf'	=> array('concatvalue','fm_protocol_nat-opt-'),
+				    'bbf'	=> array('paramkey','fm_protocol_nat-opt'),
 				    'default'	=> $element['protocol']['sip']['nat']['default'],
 				    'value'	=> $this->get_varra('info',array('protocol','nat'))),
 			      $element['protocol']['sip']['nat']['value']);
@@ -261,27 +261,37 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 </div>
 
 <div id="sb-part-dialaction" class="b-nodisplay">
-
 	<fieldset id="fld-dialaction-noanswer">
 		<legend><?=$this->bbf('fld-dialaction-noanswer');?></legend>
-		<?=$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',array('event' => 'noanswer'));?>
+<?php
+		$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',
+				    array('event'	=> 'noanswer'));
+?>
 	</fieldset>
 
 	<fieldset id="fld-dialaction-busy">
 		<legend><?=$this->bbf('fld-dialaction-busy');?></legend>
-		<?=$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',array('event' => 'busy'));?>
+<?php
+		$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',
+				    array('event'	=> 'busy'));
+?>
 	</fieldset>
 
 	<fieldset id="fld-dialaction-congestion">
 		<legend><?=$this->bbf('fld-dialaction-congestion');?></legend>
-		<?=$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',array('event' => 'congestion'));?>
+<?php
+		$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',
+				    array('event'	=> 'congestion'));
+?>
 	</fieldset>
 
 	<fieldset id="fld-dialaction-chanunavail">
 		<legend><?=$this->bbf('fld-dialaction-chanunavail');?></legend>
-		<?=$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',array('event' => 'chanunavail'));?>
+<?php
+		$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',
+				    array('event'	=> 'chanunavail'));
+?>
 	</fieldset>
-
 </div>
 
 <div id="sb-part-service" class="b-nodisplay">
@@ -386,7 +396,7 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 				    'name'	=> 'ufeatures[bsfilter]',
 				    'labelid'	=> 'ufeatures-bsfilter',
 				    'key'	=> false,
-				    'bbf'	=> array('concatkey','fm_userfeatures_bsfilter-opt-'),
+				    'bbf'	=> array('paramkey','fm_userfeatures_bsfilter-opt'),
 				    'default'	=> $element['ufeatures']['bsfilter']['default'],
 				    'value'	=> $info['ufeatures']['bsfilter']),
 			      $element['ufeatures']['bsfilter']['value']);
@@ -394,7 +404,9 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 </div>
 
 <div id="sb-part-group" class="b-nodisplay">
-	<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/groups');?>
+<?php
+	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/groups');
+?>
 </div>
 
 <div id="sb-part-signalling" class="b-nodisplay">
@@ -404,7 +416,7 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 				    'labelid'	=> 'protocol-progressinband',
 				    'key'	=> false,
 				    'empty'	=> true,
-				    'bbf'	=> array('concatvalue','fm_protocol_progressinband-opt-'),
+				    'bbf'	=> array('paramkey','fm_protocol_progressinband-opt'),
 				    'default'	=> $element['protocol']['sip']['progressinband']['default'],
 				    'value'	=> $this->get_varra('info',array('protocol','progressinband'))),
 			      $element['protocol']['sip']['progressinband']['value']),
@@ -414,7 +426,7 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 				    'labelid'	=> 'protocol-dtmfmode',
 				    'key'	=> false,
 				    'empty'	=> true,
-				    'bbf'	=> array('concatvalue','fm_protocol_dtmfmode-opt-'),
+				    'bbf'	=> array('paramkey','fm_protocol_dtmfmode-opt'),
 				    'default'	=> $element['protocol']['sip']['dtmfmode']['default'],
 				    'value'	=> $this->get_varra('info',array('protocol','dtmfmode'))),
 			      $element['protocol']['sip']['dtmfmode']['value']),
@@ -434,7 +446,7 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 				    'labelid'	=> 'sip-protocol-qualify',
 				    'key'	=> false,
 				    'empty'	=> true,
-				    'bbf'	=> array('mixkey','fm_protocol_qualify-opt'),
+				    'bbf'	=> array('paramkey','fm_protocol_qualify-opt'),
 				    'default'	=> $element['protocol']['sip']['qualify']['default'],
 				    'value'	=> $qualify),
 			      $element['protocol']['sip']['qualify']['value']),
@@ -443,7 +455,7 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 				    'name'	=> 'protocol[qualify]',
 				    'labelid'	=> 'iax-protocol-qualify',
 				    'key'	=> false,
-				    'bbf'	=> array('mixkey','fm_protocol_qualify-opt'),
+				    'bbf'	=> array('paramkey','fm_protocol_qualify-opt'),
 				    'default'	=> $element['protocol']['iax']['qualify']['default'],
 				    'value'	=> $qualify),
 			      $element['protocol']['iax']['qualify']['value']),
@@ -460,7 +472,12 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_qualifyfreqok'),
 				    'name'	=> 'protocol[qualifyfreqok]',
 				    'labelid'	=> 'protocol-qualifyfreqok',
-				    'bbf'	=> array('mixkey','fm_protocol_qualifyfreq-opt','paramarray'),
+				    'key'	=> false,
+				    'bbf'	=> 'fm_protocol_qualifyfreq-opt',
+				    'bbf_opt'	=> array('argmode'	=> 'paramkey',
+				    			 'time'		=> array(
+							 		'from'		=> 'millisecond',
+							 		'format'	=> '%M%s%ms')),
 				    'default'	=> $element['protocol']['iax']['qualifyfreqok']['default'],
 				    'value'	=> $this->get_varra('info',array('protocol','qualifyfreqok'))),
 			      $element['protocol']['iax']['qualifyfreqok']['value']),
@@ -468,7 +485,12 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_qualifyfreqnotok'),
 				    'name'	=> 'protocol[qualifyfreqnotok]',
 				    'labelid'	=> 'protocol-qualifyfreqnotok',
-				    'bbf'	=> array('mixkey','fm_protocol_qualifyfreq-opt','paramarray'),
+				    'key'	=> false,
+				    'bbf'	=> 'fm_protocol_qualifyfreq-opt',
+				    'bbf_opt'	=> array('argmode'	=> 'paramkey',
+				    			 'time'		=> array(
+							 		'from'		=> 'millisecond',
+							 		'format'	=> '%M%s%ms')),
 				    'default'	=> $element['protocol']['iax']['qualifyfreqnotok']['default'],
 				    'value'	=> $this->get_varra('info',array('protocol','qualifyfreqnotok'))),
 			      $element['protocol']['iax']['qualifyfreqnotok']['value']),
@@ -478,7 +500,7 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 				    'labelid'	=> 'protocol-rtptimeout',
 				    'key'	=> false,
 				    'empty'	=> true,
-				    'bbf'	=> array('mixkey','fm_protocol_rtptimeout-opt'),
+				    'bbf'	=> array('paramkey','fm_protocol_rtptimeout-opt'),
 				    'default'	=> $element['protocol']['sip']['rtptimeout']['default'],
 				    'value'	=> $this->get_varra('info',array('protocol','rtptimeout'))),
 			      $element['protocol']['sip']['rtptimeout']['value']),
@@ -488,7 +510,7 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 				    'labelid'	=> 'protocol-rtpholdtimeout',
 				    'key'	=> false,
 				    'empty'	=> true,
-				    'bbf'	=> array('mixkey','fm_protocol_rtpholdtimeout-opt'),
+				    'bbf'	=> array('paramkey','fm_protocol_rtpholdtimeout-opt'),
 				    'default'	=> $element['protocol']['sip']['rtpholdtimeout']['default'],
 				    'value'	=> $this->get_varra('info',array('protocol','rtpholdtimeout'))),
 			      $element['protocol']['sip']['rtpholdtimeout']['value']),
@@ -498,7 +520,7 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 				    'labelid'	=> 'protocol-rtpkeepalive',
 				    'key'	=> false,
 				    'empty'	=> true,
-				    'bbf'	=> array('mixkey','fm_protocol_rtpkeepalive-opt'),
+				    'bbf'	=> array('paramkey','fm_protocol_rtpkeepalive-opt'),
 				    'default'	=> $element['protocol']['sip']['rtpkeepalive']['default'],
 				    'value'	=> $this->get_varra('info',array('protocol','rtpkeepalive'))),
 			      $element['protocol']['sip']['rtpkeepalive']['value']),
@@ -575,7 +597,7 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 				    'labelid'	=> 'protocol-codecpriority',
 				    'key'	=> false,
 				    'empty'	=> true,
-				    'bbf'	=> array('concatvalue','fm_protocol_codecpriority-opt-'),
+				    'bbf'	=> array('paramkey','fm_protocol_codecpriority-opt'),
 				    'default'	=> $element['protocol']['iax']['codecpriority']['default'],
 				    'value'	=> $this->get_varra('info',array('protocol','codecpriority'))),
 			      $element['protocol']['iax']['codecpriority']['value']),
@@ -592,7 +614,7 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 				    'name'	=> 'protocol[disallow]',
 				    'labelid'	=> 'protocol-disallow',
 				    'key'	=> false,
-				    'bbf'	=> array('concatvalue','fm_protocol_codec-disallow-opt-')),
+				    'bbf'	=> array('paramkey','fm_protocol_codec-disallow-opt')),
 			      $element['protocol']['sip']['disallow']['value']);
 ?>
 
@@ -721,7 +743,7 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 			'</p>';
 	endif;
 
-	echo	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey');
+	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey');
 ?>
 </div>
 
@@ -840,7 +862,7 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 				    'name'	=> 'ufeatures[outcallerid-type]',
 				    'labelid'	=> 'ufeatures-outcallerid-type',
 				    'key'	=> false,
-				    'bbf'	=> 'fm_ufeatures_outcallerid-opt-',
+				    'bbf'	=> array('paramkey','fm_ufeatures_outcallerid-opt'),
 				    'value'	=> ($outcallerid_custom === true ? 'custom' : $outcallerid)),
 			      $element['ufeatures']['outcallerid-type']['value'],
 			      'onchange="xivo_chg_attrib(\'ast_fm_user_outcallerid\',
@@ -863,7 +885,7 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 				    'name'	=> 'protocol[insecure]',
 				    'labelid'	=> 'protocol-insecure',
 				    'empty'	=> true,
-				    'bbf'	=> array('concatvalue','fm_protocol_insecure-opt-'),
+				    'bbf'	=> array('paramvalue','fm_protocol_insecure-opt'),
 				    'default'	=> $element['protocol']['sip']['insecure']['default'],
 				    'value'	=> $this->get_varra('info',array('protocol','insecure'))),
 			      $element['protocol']['sip']['insecure']['value']),
@@ -968,7 +990,7 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 				    'name'	=> 'protocol[canreinvite]',
 				    'labelid'	=> 'protocol-canreinvite',
 				    'empty'	=> true,
-				    'bbf'	=> array('concatvalue','fm_protocol_canreinvite-opt-'),
+				    'bbf'	=> array('paramvalue','fm_protocol_canreinvite-opt'),
 				    'default'	=> $element['protocol']['sip']['canreinvite']['default'],
 				    'value'	=> $this->get_varra('info',array('protocol','canreinvite'))),
 			      $element['protocol']['sip']['canreinvite']['value']),
@@ -992,7 +1014,7 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 				    'labelid'	=> 'protocol-maxauthreq',
 				    'key'	=> false,
 				    'empty'	=> true,
-				    'bbf'	=> array('mixkey','fm_protocol_maxauthreq-opt'),
+				    'bbf'	=> array('paramkey','fm_protocol_maxauthreq-opt'),
 				    'default'	=> $element['protocol']['iax']['maxauthreq']['default'],
 				    'value'	=> $this->get_varra('info',array('protocol','maxauthreq'))),
 			      $element['protocol']['iax']['maxauthreq']['value']),

@@ -203,17 +203,17 @@ class xivo_application_service_asterisk_contextmember_abstract extends xivo_appl
 		if(xivo_issa(0,$this->_origin) === false)
 			return(null);
 
-		$contextmember_where = array();
-		$contextmember_where['type'] = $this->_origin[0]['type'];
+		$where = array();
+		$where['type'] = $this->_origin[0]['type'];
 
 		if(xivo_haslen($this->_origin[0],'typeval') === true)
-			$contextmember_where['typeval'] = $this->_origin[0]['typeval'];
+			$where['typeval'] = $this->_origin[0]['typeval'];
 		else if(xivo_haslen($this->_origin[0],'varname') === true)
-			$contextmember_where['varname'] = $this->_origin[0]['varname'];
+			$where['varname'] = $this->_origin[0]['varname'];
 		else
 			return(false);
 
-		$r = $this->_contextmember->delete_where($contextmember_where);
+		$r = $this->_contextmember->delete_where($where);
 
 		if($status === 'delete')
 			$this->_return = $r;

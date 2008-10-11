@@ -28,17 +28,20 @@ switch($act)
 		$appuser = &$ipbx->get_application('user',null,false);
 		$user['list'] = $appuser->get_users_list(null,null,$userorder,null,true);
 
-		xivo::load_class('xivo_sort');
+		$appagentgroup = &$ipbx->get_application('agentgroup',null,false);
+		$agentgroup['list'] = $appagentgroup->get_agentgroups_list(null,
+									   array('name'	=> SORT_ASC),
+									   null,
+									   true);
 
-		$agentgroupsort = new xivo_sort(array('browse' => 'agroup','key' => 'name'));
-
-		if(($agentgroup['list'] = $ipbx->get_agent_groups_list(null,true)) !== false)
-			uasort($agentgroup['list'],array(&$agentgroupsort,'str_usort'));
-
-		$agentsort = new xivo_sort(array('browse' => 'afeatures','key' => 'identity'));
-
-		if(($agent['list'] = $ipbx->get_agents_list(null,null,true)) !== false)
-			uasort($agent['list'],array(&$agentsort,'str_usort'));
+		$appagent = &$ipbx->get_application('agent',null,false);
+		$agent['list'] = $appagent->get_agents_list(null,
+							    array('firstname'	=> SORT_ASC,
+								  'lastname'	=> SORT_ASC,
+								  'number'	=> SORT_ASC,
+								  'context'	=> SORT_ASC),
+							    null,
+							    true);
 
 		if(isset($_QR['fm_send']) === true
 		&& xivo_issa('qfeatures',$_QR) === true
@@ -54,9 +57,13 @@ switch($act)
 				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
 		}
 
+		xivo::load_class('xivo_sort');
+
 		if($user['list'] !== false && xivo_ak('user',$result) === true)
 		{
-			$user['slt'] = xivo_array_intersect_key($result['user'],$user['list'],'userid');
+			$user['slt'] = xivo_array_intersect_key($result['user'],
+								$user['list'],
+								'userid');
 			
 			if($user['slt'] !== false)
 			{
@@ -69,10 +76,15 @@ switch($act)
 
 		if($agentgroup['list'] !== false && xivo_ak('agentgroup',$result) === true)
 		{
-			$agentgroup['slt'] = xivo_array_intersect_key($result['agentgroup'],$agentgroup['list'],'agentgroupid');
+			$agentgroup['slt'] = xivo_array_intersect_key($result['agentgroup'],
+								      $agentgroup['list'],
+								      'userid');
 			
 			if($agentgroup['slt'] !== false)
 			{
+				$agentgroupsort = new xivo_sort(array('browse'	=> 'agentgroup',
+								      'key'	=> 'name'));
+
 				$agentgroup['list'] = xivo_array_diff_key($agentgroup['list'],$agentgroup['slt']);
 				uasort($agentgroup['slt'],array(&$agentgroupsort,'str_usort'));
 			}
@@ -80,10 +92,15 @@ switch($act)
 
 		if($agent['list'] !== false && xivo_ak('agent',$result) === true)
 		{
-			$agent['slt'] = xivo_array_intersect_key($result['agent'],$agent['list'],'agentid');
+			$agent['slt'] = xivo_array_intersect_key($result['agent'],
+								 $agent['list'],
+								 'userid');
 			
 			if($agent['slt'] !== false)
 			{
+				$agentsort = new xivo_sort(array('browse'	=> 'afeatures',
+								 'key'		=> 'identity'));
+
 				$agent['list'] = xivo_array_diff_key($agent['list'],$agent['slt']);
 				uasort($agent['slt'],array(&$agentsort,'str_usort'));
 			}
@@ -133,17 +150,20 @@ switch($act)
 		$appuser = &$ipbx->get_application('user',null,false);
 		$user['list'] = $appuser->get_users_list(null,null,$userorder,null,true);
 
-		xivo::load_class('xivo_sort');
+		$appagentgroup = &$ipbx->get_application('agentgroup',null,false);
+		$agentgroup['list'] = $appagentgroup->get_agentgroups_list(null,
+									   array('name'	=> SORT_ASC),
+									   null,
+									   true);
 
-		$agentgroupsort = new xivo_sort(array('browse' => 'agroup','key' => 'name'));
-
-		if(($agentgroup['list'] = $ipbx->get_agent_groups_list(null,true)) !== false)
-			uasort($agentgroup['list'],array(&$agentgroupsort,'str_usort'));
-
-		$agentsort = new xivo_sort(array('browse' => 'afeatures','key' => 'identity'));
-
-		if(($agent['list'] = $ipbx->get_agents_list(null,null,true)) !== false)
-			uasort($agent['list'],array(&$agentsort,'str_usort'));
+		$appagent = &$ipbx->get_application('agent',null,false);
+		$agent['list'] = $appagent->get_agents_list(null,
+							    array('firstname'	=> SORT_ASC,
+								  'lastname'	=> SORT_ASC,
+								  'number'	=> SORT_ASC,
+								  'context'	=> SORT_ASC),
+							    null,
+							    true);
 
 		if(isset($_QR['fm_send']) === true
 		&& xivo_issa('qfeatures',$_QR) === true
@@ -161,9 +181,13 @@ switch($act)
 				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
 		}
 
+		xivo::load_class('xivo_sort');
+
 		if($user['list'] !== false && xivo_ak('user',$return) === true)
 		{
-			$user['slt'] = xivo_array_intersect_key($return['user'],$user['list'],'userid');
+			$user['slt'] = xivo_array_intersect_key($return['user'],
+								$user['list'],
+								'userid');
 			
 			if($user['slt'] !== false)
 			{
@@ -176,10 +200,15 @@ switch($act)
 
 		if($agentgroup['list'] !== false && xivo_ak('agentgroup',$return) === true)
 		{
-			$agentgroup['slt'] = xivo_array_intersect_key($return['agentgroup'],$agentgroup['list'],'userid');
+			$agentgroup['slt'] = xivo_array_intersect_key($return['agentgroup'],
+								      $agentgroup['list'],
+								      'userid');
 			
 			if($agentgroup['slt'] !== false)
 			{
+				$agentgroupsort = new xivo_sort(array('browse'	=> 'agentgroup',
+								      'key'	=> 'name'));
+
 				$agentgroup['list'] = xivo_array_diff_key($agentgroup['list'],$agentgroup['slt']);
 				uasort($agentgroup['slt'],array(&$agentgroupsort,'str_usort'));
 			}
@@ -187,10 +216,15 @@ switch($act)
 
 		if($agent['list'] !== false && xivo_ak('agent',$return) === true)
 		{
-			$agent['slt'] = xivo_array_intersect_key($return['agent'],$agent['list'],'userid');
+			$agent['slt'] = xivo_array_intersect_key($return['agent'],
+								 $agent['list'],
+								 'userid');
 			
 			if($agent['slt'] !== false)
 			{
+				$agentsort = new xivo_sort(array('browse'	=> 'afeatures',
+								 'key'		=> 'identity'));
+
 				$agent['list'] = xivo_array_diff_key($agent['list'],$agent['slt']);
 				uasort($agent['slt'],array(&$agentsort,'str_usort'));
 			}

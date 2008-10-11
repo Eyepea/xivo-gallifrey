@@ -54,10 +54,9 @@ $array['element']['announceoverride'] = array();
 $array['element']['announceoverride']['default'] = '';
 
 $array['element']['timeout'] = array();
-$array['element']['timeout']['value'] = array(0 => 0,30 => 30,60 => 1,90 => array(1,30),
-					      120 => 2,180 => 3,240 => 4,300 => 5,360 => 6,
-					      420 => 7,480 => 8,540 => 9,
-					      600 => 10,900 => 15,1200 => 20,1500 => 25,1800 => 30);
+$array['element']['timeout']['value'] = array(0,30,60,90,120,180,240,
+					      300,360,420,480,540,
+					      600,900,1200,1500,1800);
 $array['element']['timeout']['default'] = 0;
 
 $array['filter'] = array();

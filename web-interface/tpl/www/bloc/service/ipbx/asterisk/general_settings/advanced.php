@@ -99,11 +99,19 @@ if(isset($error_js[0]) === true)
 </div>
 
 <div id="sb-part-agent" class="b-nodisplay">
-	<?=$form->checkbox(array('desc'		=> $this->bbf('fm_generalagents_persistentagents'),
-				 'name'		=> 'generalagents[persistentagents]',
-				 'labelid'	=> 'generalagents-persistentagents',
-				 'default'	=> $element['generalagents']['persistentagents']['default'],
-				 'checked'	=> $this->get_varra('generalagents',array('persistentagents','var_val'))));?>
+<?php
+	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_generalagents_persistentagents'),
+				      'name'	=> 'generalagents[persistentagents]',
+				      'labelid'	=> 'generalagents-persistentagents',
+				      'default'	=> $element['generalagents']['persistentagents']['default'],
+				      'checked'	=> $this->get_varra('generalagents',array('persistentagents','var_val')))),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_generalagents_multiplelogin'),
+				      'name'	=> 'generalagents[multiplelogin]',
+				      'labelid'	=> 'generalagents-multiplelogin',
+				      'default'	=> $element['generalagents']['multiplelogin']['default'],
+				      'checked'	=> $this->get_varra('generalagents',array('multiplelogin','var_val'))));
+?>
 </div>
 
 <div id="sb-part-queue" class="b-nodisplay">

@@ -178,13 +178,18 @@ $array['filter']['callrecord'] = array('bool' => true);
 $array['filter']['callfilter'] = array('bool' => true);
 $array['filter']['enablednd'] = array('bool' => true);
 $array['filter']['enablerna'] = array('bool' => true);
-$array['filter']['destrna'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9\*#_-]+$/i','maxlen' => 128);
+$array['filter']['destrna'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9\*#]+$/i','maxlen' => 128);
 $array['filter']['enablebusy'] = array('bool' => true);
-$array['filter']['destbusy'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9\*#_-]+$/i','maxlen' => 128);
+$array['filter']['destbusy'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9\*#]+$/i','maxlen' => 128);
 $array['filter']['enableunc'] = array('bool' => true);
-$array['filter']['destunc'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9\*#_-]+$/i','maxlen' => 128);
+$array['filter']['destunc'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9\*#]+$/i','maxlen' => 128);
 $array['filter']['musiconhold'] = array('set' => false,'chk' => 1,'cast' => 'sgraph','maxlen' => 20);
-$array['filter']['outcallerid'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 80);
+$array['filter']['outcallerid'] = array('set'		=> false,
+					'chk'		=> 2,
+					'maxlen'	=> 80,
+					'regexp'	=> '/^'.XIVO_SRE_IPBX_AST_REGEXP_CALLERID.'$/',
+					'cast'		=> 'sgraph',
+					'notag'		=> false);
 $array['filter']['internal'] = array('set' => false,'chk' => 0);
 $array['filter']['bsfilter'] = array('set' => false,'chk' => 2,'key' => array('no','boss','secretary'));
 $array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);

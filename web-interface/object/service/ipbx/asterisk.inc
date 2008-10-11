@@ -96,7 +96,12 @@ class xivo_service_asterisk extends xivo_service_abstract
 	function _load_realstatic_class($name)
 	{
 		$file = $name.'.inc';
-		$dir = array(XIVO_PATH_OBJECT,'service',$this->_type,$this->_name);
+
+		$dir = array(XIVO_PATH_OBJECT,
+			     'service',
+			     $this->_type,
+			     $this->_name);
+
 		$class = 'xivo_service_'.$this->_name.'_realstatic';
 
 		$dirapi = $dir;
@@ -168,7 +173,13 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		$file = $application.'.inc';
 
-		$dir = array(XIVO_PATH_OBJECT,'application','service',$this->_type,$this->_name,'realstatic',$application);
+		$dir = array(XIVO_PATH_OBJECT,
+			     'application',
+			     'service',
+			     $this->_type,
+			     $this->_name,
+			     'realstatic',
+			     $application);
 
 		$class = 'xivo_application_service_'.$this->_name.'_realstatic_'.$application;
 
@@ -231,8 +242,8 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		if(isset($_SESSION['_SRE'][$this->_type][$this->_name]) === false)
 		{
-			define($define_label,'undefined');
-			define($define_version,'undefined');
+			define($define_label,'unknown');
+			define($define_version,'unknown');
 			return(false);
 		}
 
@@ -241,7 +252,8 @@ class xivo_service_asterisk extends xivo_service_abstract
 		$label = $version = false;
 
 		if(xivo_issa('info',$sess_sre) === true
-		&& isset($sess_sre['info']['label'],$sess_sre['info']['version']) === true)
+		&& isset($sess_sre['info']['label'],
+			 $sess_sre['info']['version']) === true)
 		{
 			$label = (string) $sess_sre['info']['label'];
 			$version = (string) $sess_sre['info']['version'];
@@ -255,22 +267,17 @@ class xivo_service_asterisk extends xivo_service_abstract
 				$version = $sess_sre['info']['version'] = $nversion['version'];
 		}
 
-		if(($label === false || $version === false) === true
+		if($label === false
 		&& xivo_issa('ini',$sess_sre) === true
-		&& xivo_issa('general',$sess_sre['ini']) === true)
-		{
-			if($label === false && isset($sess_sre['ini']['general']['label']) === true)
-				$label = (string) $sess_sre['ini']['general']['label'];
+		&& xivo_issa('general',$sess_sre['ini']) === true
+		&& isset($sess_sre['ini']['general']['label']) === true)
+			$label = (string) $sess_sre['ini']['general']['label'];
 
-			if($version === false && isset($sess_sre['ini']['general']['version']) === true)
-				$version = (string) $sess_sre['ini']['general']['version'];
-		}
-		
 		if($label === false)
-			$label = 'undefined';
+			$label = 'unknown';
 
 		if($version === false)
-			$version = 'undefined';
+			$version = 'unknown';
 
 		define($define_label,$label);
 		define($define_version,$version);
@@ -298,213 +305,6 @@ class xivo_service_asterisk extends xivo_service_abstract
 		}
 
 		if(empty($r) === true)
-			$r = false;
-
-		return($r);
-	}
-
-	function get_agents_list($group=0,$disable=null,$assoc=false)
-	{
-		$group = xivo_ulongint($group);
-
-		$afeatures = &$this->get_module('agentfeatures');
-		$agroup = &$this->get_module('agentgroup');
-		$agent = &$this->get_module('agent');
-
-		if($group === 0)
-			$rs = $afeatures->get_all($disable);
-		else
-			$rs = $afeatures->get_all_where(array('numgroup' => $group),$disable);
-
-		if($rs === false || ($nb = count($rs)) === 0)
-			return(false);
-
-		$r = $info = array();
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$info['afeatures'] = $rs[$i];
-
-			if(($info['agent'] = $agent->get_agent($info['afeatures']['agentid'],$disable)) === false
-			|| ($info['agroup'] = $agroup->get($info['afeatures']['numgroup'],$disable)) === false)
-				continue;
-
-			$info['sort'] = array();
-			$info['sort']['id'] = $info['afeatures']['id'];
-			$info['sort']['identity'] = $info['afeatures']['identity'];
-			$info['sort']['var_metric'] = $info['agent']['var_metric'];
-
-			$r[$info['afeatures']['id']] = $info;
-		}
-
-		if(empty($r) === true)
-			return(false);
-		else if((bool) $assoc === false)
-			return(array_values($r));
-
-		return($r);
-	}
-
-	function get_agent_groups_list($disable=null,$assoc=false)
-	{
-		$agroup = &$this->get_module('agentgroup');
-		$agent = &$this->get_module('agent');
-		$afeatures = &$this->get_module('agentfeatures');
-
-		if(($rs = $agroup->get_all($disable)) === false || ($nb = count($rs)) === 0)
-			return(false);
-
-		$r = $info = array();
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$info['agroup'] = $rs[$i];
-
-			if(($info['agent'] = $agent->get($info['agroup']['groupid'],$disable)) === false
-			|| ($info['nb_agent'] = $afeatures->get_nb(array('numgroup' => $info['agroup']['id']),$disable)) === false)
-				continue;
-
-			$r[$info['agroup']['id']] = $info;
-		}
-
-		if(empty($r) === true)
-			return(false);
-		else if((bool) $assoc === false)
-			return(array_values($r));
-
-		return($r);
-	}
-
-	function get_queue_user($id=0,$disable=null,$assoc=false)
-	{
-		return($this->_get_queue_member('user',$id,$disable,$assoc));
-	}
-
-	function get_queue_agent($id=0,$disable=null,$assoc=false)
-	{
-		return($this->_get_queue_member('agent',$id,$disable,$assoc));
-	}
-
-	function _get_queue_member($usertype='',$userid=0,$disable=null,$assoc=false)
-	{
-		$usertype = (string) $usertype;
-		$userid = xivo_ulongint($userid);
-	
-		$qfeatures = &$this->get_module('queuefeatures');
-		$queue = &$this->get_module('queue');
-		$qmember = &$this->get_module('queuemember');
-
-		if(($rs = $qfeatures->get_all($disable)) === false || ($nb = count($rs)) === 0)
-			return(false);
-
-		$r = $info = array();
-		$where = array('category' => 'queue');
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$info['qfeatures'] = $rs[$i];
-
-			if(($info['queue'] = $queue->get($info['qfeatures']['name'],$disable)) === false)
-				continue;
-
-			$where['queue_name'] = $info['qfeatures']['name'];
-
-			if($usertype === 'user' || $usertype === 'agent')
-			{
-				$where['usertype'] = $usertype;
-
-				if($userid !== 0)
-				{
-					$where['userid'] = $userid;
-
-					if(($member = $qmember->get_all_where($where)) !== false)
-						$info['member'] = $member[0];
-					else
-						$info['member'] = false;
-
-					$r[$info['qfeatures']['id']] = $info;
-					continue;
-				}
-			}
-
-			$info['member'] = $qmember->get_all_where($where);
-
-			$r[$info['qfeatures']['id']] = $info;
-		}
-
-		if(empty($r) === true)
-			return(false);
-		else if((bool) $assoc === false)
-			return(array_values($r));
-
-		return($r);
-	}
-
-	function get_group_agent($userid=0,$disable=null)
-	{
-		$userid = xivo_ulongint($userid);
-	
-		$agroup = &$this->get_module('agentgroup');
-		$agent = &$this->get_module('agent');
-		$queue = &$this->get_module('queue');
-		$qmember = &$this->get_module('queuemember');
-
-		if(($rs = $queue->get_all_where(array('category' => 'queue'),$disable)) === false || ($nb = count($rs)) === 0)
-			return(false);
-
-		$r = $info = array();
-		$where = array('usertype' => 'agent','category' => 'group');
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$info['queue'] = $rs[$i];
-
-			$where['queue_name'] = $info['queue']['name'];
-
-			if($userid !== 0)
-			{
-				$where['userid'] = $userid;
-
-				if(($member = $qmember->get_all_where($where)) !== false
-				&& ($aginfo = $agent->get($member[0]['userid'],$disable)) !== false)
-				{
-					$info['member'] = $member[0];
-					$info['agroup'] = $aginfo;
-				}
-				else
-					$info['member'] = $info['agroup'] = false;
-
-				$r[] = $info;
-				continue;
-			}
-
-			if(($info['member'] = $qmember->get_all_where($where)) === false)
-			{
-				$info['agroup'] = false;
-				$r[] = $info;
-				continue;
-			}
-
-			$memberinfo = $agroupinfo = array();
-
-			$cnt = count($info['member']);
-
-			for($j = 0;$j < $cnt;$j++)
-			{
-				if(($aginfo = $agent->get($info['member'][$j]['userid'],$disable)) === false)
-					continue;
-
-				$memberinfo[] = $info['member'][$j];
-				$agroupinfo[] = $aginfo;
-			}
-
-			$info['member'] = $memberinfo;
-			$info['agroup'] = $agroupinfo;
-
-			$r[] = $info;
-		}
-
-		if(isset($r[0]) === false)
 			$r = false;
 
 		return($r);
@@ -605,9 +405,8 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 	function chk_channel($channel)
 	{
-		$channel = strtolower(strval($channel));
-
-		return($this->_chk_exists_cfg('channel',$channel));
+		return($this->_chk_exists_cfg('channel',
+					      strtolower(strval($channel))));
 	}
 
 	function chk_channel_by_protocol($protocol)
@@ -665,7 +464,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 		if(ctype_digit($number) === false)
 			return(false);
 		else if((bool) $group === true)
-			$number = ':'.$number;
+			$number = '@'.$number;
 
 		return($this->mk_interface($number,null,null,null,XIVO_SRE_IPBX_AST_CHAN_AGENT));
 	}
@@ -682,20 +481,22 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		if($protocol === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
 			return($name);
-
-		if($number !== '')
+		else if(xivo_haslen($number) === true)
 		{
-			$context = $context === '' ? 'default' : $context;
-
 			if(($channel = $this->get_channel(XIVO_SRE_IPBX_AST_CHAN_LOCAL)) !== false)
+			{
+				if(xivo_haslen($context) === false)
+					$context = 'default';
+
 				$r = $channel.'/'.$number.'@'.$context;
+			}
 
 			return($r);
 		}
 
 		$chan = $channel;
 
-		if($channel !== '')
+		if(xivo_haslen($channel) === true)
 		{
 			if(($channel = $this->chk_channel_by_interface($chan)) === false
 			&& ($channel = $this->get_channel($chan)) === false)
@@ -704,9 +505,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 		else if(($channel = $this->get_channel_by_protocol($protocol)) === false)
 			return($r);
 
-		$r = $channel.'/'.$name;
-
-		return($r);
+		return($channel.'/'.$name);
 	}
 
 	function display_extension($str)
@@ -849,7 +648,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 	{
 		$r = '';
 
-		if(preg_match('/^[0-9\*#]+$/',$number) !== 1)
+		if(preg_match('/^[0-9\*#]{1,40}$/',$number) !== 1)
 			return($r);
 
 		$r = preg_replace('/<'.preg_quote($number).'>$/','',$callerid);

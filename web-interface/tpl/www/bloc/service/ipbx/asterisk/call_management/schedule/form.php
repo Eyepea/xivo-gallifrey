@@ -170,10 +170,16 @@ echo	$form->checkbox(array('desc'	=> $this->bbf('fm_schedule_publicholiday'),
 
 <fieldset id="fld-dialaction-inschedule">
 	<legend><?=$this->bbf('fld-dialaction-inschedule');?></legend>
-	<?=$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',array('event' => 'inschedule'));?>
+<?php
+	$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',
+			    array('event'	=> 'inschedule'));
+?>
 </fieldset>
 
 <fieldset id="fld-dialaction-outchedule">
 	<legend><?=$this->bbf('fld-dialaction-outschedule');?></legend>
-	<?=$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',array('event' => 'outschedule'));?>
+<?php
+	$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',
+			    array('event'	=> 'outschedule'));
+?>
 </fieldset>

@@ -121,25 +121,35 @@ endif;
 </div>
 
 <div id="sb-part-last" class="b-nodisplay">
-
 	<fieldset id="fld-dialaction-noanswer">
 		<legend><?=$this->bbf('fld-dialaction-noanswer');?></legend>
-		<?=$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',array('event' => 'noanswer'));?>
+<?php
+		$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',
+				    array('event'	=> 'noanswer'));
+?>
 	</fieldset>
 
 	<fieldset id="fld-dialaction-busy">
 		<legend><?=$this->bbf('fld-dialaction-busy');?></legend>
-		<?=$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',array('event' => 'busy'));?>
+<?php
+		$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',
+				    array('event'	=> 'busy'));
+?>
 	</fieldset>
 
 	<fieldset id="fld-dialaction-congestion">
 		<legend><?=$this->bbf('fld-dialaction-congestion');?></legend>
-		<?=$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',array('event' => 'congestion'));?>
+<?php
+		$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',
+				    array('event'	=> 'congestion'));
+?>
 	</fieldset>
 
 	<fieldset id="fld-dialaction-chanunavail">
 		<legend><?=$this->bbf('fld-dialaction-chanunavail');?></legend>
-		<?=$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',array('event' => 'chanunavail'));?>
+<?php
+		$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',
+				    array('event'	=> 'chanunavail'));
+?>
 	</fieldset>
-
 </div>

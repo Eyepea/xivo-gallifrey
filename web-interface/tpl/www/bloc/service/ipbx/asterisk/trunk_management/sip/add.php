@@ -1,5 +1,7 @@
 <?php
+
 $form = &$this->get_module('form');
+
 ?>
 <div class="b-infos b-form">
 	<h3 class="sb-top xspan">
@@ -8,8 +10,10 @@ $form = &$this->get_module('form');
 		<span class="span-right">&nbsp;</span>
 	</h3>
 
-	<?=$this->file_include('bloc/service/ipbx/asterisk/trunk_management/sip/submenu');?>
-	
+<?php
+	$this->file_include('bloc/service/ipbx/asterisk/trunk_management/sip/submenu');
+?>
+
 	<div class="sb-content">
 		<form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-codec');">
 <?php
@@ -20,11 +24,11 @@ $form = &$this->get_module('form');
 					    'value'	=> 1)),
 
 			$form->hidden(array('name'	=> 'act',
-					    'value'	=> 'add')),
+					    'value'	=> 'add'));
 
-			$this->file_include('bloc/service/ipbx/asterisk/trunk_management/sip/form'),
+		$this->file_include('bloc/service/ipbx/asterisk/trunk_management/sip/form');
 
-			$form->submit(array('name'	=> 'submit',
+		echo	$form->submit(array('name'	=> 'submit',
 					    'id'	=> 'it-submit',
 					    'value'	=> $this->bbf('fm_bt-save')));
 ?>

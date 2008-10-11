@@ -4,8 +4,6 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_group extends xivo_application_asterisk_abstract
 {
-	var $_origin		= array();
-	var $_status		= '';
 	var $_groupfeatures	= false;
 	var $_queue		= false;
 	var $_extensions	= false;
@@ -143,13 +141,12 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		{
 			$info['gfeatures'] = $rs[$i];
 
-			if(($info['queue'] = $this->_queue->get($info['gfeatures']['name'],$disable)) === false
-			|| ($info['nb_qmember'] = $this->_queuemember->get_nb(
+			if(($info['queue'] = $this->_queue->get($info['gfeatures']['name'],
+								$disable)) !== false
+			&& ($info['nb_qmember'] = $this->_queuemember->get_nb(
 							array('queue_name' => $info['queue']['name']),
-							$disable)) === false)
-				continue;
-
-			$r[$info['gfeatures']['id']] = $info;
+							$disable)) !== false)
+				$r[$info['gfeatures']['id']] = $info;
 		}
 
 		if(empty($r) === true)
@@ -965,8 +962,8 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 			switch($key)
 			{
 				case 'groupfeatures':
-					if(xivo_issa('gfeatures',$this->_info) === true)
-						$this->_groupfeatures->recover($this->_info['gfeatures']['id']);
+					if(xivo_issa('gfeatures',$this->_origin) === true)
+						$this->_groupfeatures->recover($this->_origin['gfeatures']['id']);
 					break;
 				case 'queue':
 					if(isset($this->_origin['queue']) === true

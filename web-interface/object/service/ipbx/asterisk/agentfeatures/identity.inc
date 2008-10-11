@@ -9,7 +9,7 @@ class xivo_service_asterisk_agentfeatures_identity
 		if($data['fullname'] === '')
 			$data['fullname'] = '-';
 
-		$data['identity'] = $data['fullname'].' ('.$data['number'].')';
+		$data['identity'] = $data['fullname'].' ('.$data['number'].'@'.$data['context'].')';
 
 		return($data);
 	}
@@ -17,7 +17,10 @@ class xivo_service_asterisk_agentfeatures_identity
 	function mk_identity($arr)
 	{
 		if(is_array($arr) === false
-		|| isset($arr['firstname'],$arr['lastname'],$arr['number']) === false)
+		|| isset($arr['firstname'],
+			 $arr['lastname'],
+			 $arr['number'],
+			 $arr['context']) === false)
 			return(false);
 		
 		$this->_prepare_identity($arr);

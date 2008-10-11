@@ -109,14 +109,26 @@ Filtres LDAP
 ; mn_left_ti_controlsystem
 Système de contrôle
 
+; mn_left_controlsystem-ipbxreload(unknown)
+Recharger
+
 ; mn_left_controlsystem-ipbxreload
 Recharger %s
+
+; controlsystem_ipbxreload_confirm(unknown)
+Etes-vous certain de vouloir recharger ?
 
 ; controlsystem_ipbxreload_confirm
 Etes-vous certain de vouloir recharger %s ?
 
+; mn_left_controlsystem-ipbxrestart(unknown)
+Redémarrer
+
 ; mn_left_controlsystem-ipbxrestart
 Redémarrer %s
+
+; controlsystem_ipbxrestart_confirm(unknown)
+Etes-vous certain de vouloir redémarrer ?
 
 ; controlsystem_ipbxrestart_confirm
 Etes-vous certain de vouloir redémarrer %s ?

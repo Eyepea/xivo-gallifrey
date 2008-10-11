@@ -1,14 +1,15 @@
 <?php
-	$url = &$this->get_module('url');
-	$dhtml = &$this->get_module('dhtml');
 
-	echo $url->href_html($url->img_html('img/menu/top/toolbar/bt-add.gif',
-					    $this->bbf('toolbar_opt_add'),
-					    'border="0"'),
-			     'service/ipbx/call_management/voicemenu',
-			     'act=add',
-			     null,
-			     $this->bbf('toolbar_opt_add'));
+$url = &$this->get_module('url');
+$dhtml = &$this->get_module('dhtml');
+
+echo	$url->href_html($url->img_html('img/menu/top/toolbar/bt-add.gif',
+				       $this->bbf('toolbar_opt_add'),
+				       'border="0"'),
+			'service/ipbx/call_management/voicemenu',
+			'act=add',
+			null,
+			$this->bbf('toolbar_opt_add'));
 
 	if($this->get_var('act') === 'list'):
 ?>

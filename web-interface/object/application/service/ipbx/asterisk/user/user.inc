@@ -6,8 +6,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 {
 	var $_dso		= null;
 	var $_protocolname	= false;
-	var $_origin		= array();
-	var $_status		= '';
 	var $_userfeatures	= false;
 	var $_protocol		= false;
 	var $_extensions	= false;
@@ -198,7 +196,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| ($module = &$this->_service->get_module($type.'features')) === false
 		|| ($this->_info[$membertype] = $this->_queuemember->get_all_where($where)) === false
 		|| ($nb = count($this->_info[$membertype])) === 0)
+		{
+			$this->_info[$membertype] = false;
 			return(false);
+		}
 
 		$ref = &$this->_info[$membertype];
 
@@ -610,7 +611,12 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if(xivo_issa('group',$arr) === true
 		&& xivo_issa('group-select',$arr) === true
-		&& $this->set_groupmember($arr['group'],$arr['group-select'],$name,$context,$number,$protocolname) === true
+		&& $this->set_groupmember($arr['group'],
+					  $arr['group-select'],
+					  $name,
+					  $context,
+					  $number,
+					  $protocolname) === true
 		&& $this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_SIP)
 		{
 			$callgroup = $this->get_result('callgroup');
@@ -624,7 +630,12 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		}
 
 		if(xivo_issa('queue',$arr) === true && xivo_issa('queue-select',$arr) === true)
-			$this->set_queuemember($arr['queue'],$arr['queue-select'],$name,$context,$number,$protocolname);
+			$this->set_queuemember($arr['queue'],
+					       $arr['queue-select'],
+					       $name,
+					       $context,
+					       $number,
+					       $protocolname);
 
 		if(xivo_issa('dialaction',$arr) === true)
 			$this->set_dialaction($arr['dialaction']);
@@ -1838,12 +1849,12 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| is_object($this->_queuemember) === false)
 			return(false);
 
-		$queuemember_where = array();
-		$queuemember_where['usertype'] = 'user';
-		$queuemember_where['category'] = $type;
-		$queuemember_where['userid'] = $this->_info['ufeatures']['id'];
+		$where = array();
+		$where['usertype'] = 'user';
+		$where['category'] = $type;
+		$where['userid'] = $this->_info['ufeatures']['id'];
 
-		$r = $this->_queuemember->delete_where($queuemember_where);
+		$r = $this->_queuemember->delete_where($where);
 
 		if($this->_status === 'delete')
 			$this->_return[$key] = $r;
@@ -1874,10 +1885,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| is_object($this->_phonefunckey) === false)
 			return(false);
 
-		$phonefunckey_where = array();
-		$phonefunckey_where['iduserfeatures'] = $this->_info['ufeatures']['id'];
+		$where = array();
+		$where['iduserfeatures'] = $this->_info['ufeatures']['id'];
 
-		$r = $this->_phonefunckey->delete_where($phonefunckey_where);
+		$r = $this->_phonefunckey->delete_where($where);
 
 		if($this->_status === 'delete')
 			$this->_return['phonefunckey'] = $r;
@@ -1908,11 +1919,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if(($callfiltermember = &$this->_service->get_module('callfiltermember')) === false)
 			return(true);
 
-		$callfiltermember_where = array();
-		$callfiltermember_where['type'] = 'user';
-		$callfiltermember_where['typeval'] = $this->_info['ufeatures']['id'];
+		$where = array();
+		$where['type'] = 'user';
+		$where['typeval'] = $this->_info['ufeatures']['id'];
 
-		$callfiltermember->delete_where($callfiltermember_where);
+		$callfiltermember->delete_where($where);
 
 		return(true);
 	}

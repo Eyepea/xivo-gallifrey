@@ -1,5 +1,7 @@
 <?php
-	$form = &$this->get_module('form');
+
+$form = &$this->get_module('form');
+
 ?>
 
 <div class="b-infos b-form">
@@ -13,7 +15,9 @@
 <?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
 <?=$form->hidden(array('name' => 'id','value' => $this->get_var('id')));?>
 
-<?=$this->file_include('bloc/xivo/configuration/manage/ldapserver/form');?>
+<?php
+	$this->file_include('bloc/xivo/configuration/manage/ldapserver/form');
+?>
 
 <?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>
 

@@ -304,7 +304,7 @@ $array['app']['set']['arg'][1] = array('set'	=> false,
 $array['app']['setcallerid'] = array();
 $array['app']['setcallerid']['displayname'] = 'SetCallerID';
 $array['app']['setcallerid']['app'] = 'Set';
-$array['app']['setcallerid']['appdata'] = 'CALLERID()=%s';
+$array['app']['setcallerid']['appdata'] = 'CALLERID(all)=%s';
 $array['app']['setcallerid']['arg'] = array();
 $array['app']['setcallerid']['arg'][0] = array('minlen'		=> 1,
 					       'notag'		=> false,

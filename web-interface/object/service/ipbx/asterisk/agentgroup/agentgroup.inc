@@ -27,7 +27,7 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 	{
 		$data['deleted'] = (bool) $data['deleted'];
 		$data['commented'] = (bool) $data['commented'];
-		$data['deletable'] = $this->get_defgroup() !== $data['id'];
+		$data['deletable'] = (string) XIVO_SRE_IPBX_AST_AGENT_GROUP_DEFAULT !== (string) $data['id'];
 
 		return($data);
 	}
@@ -80,13 +80,13 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 		return($this->_dso->get_nb($arr,$disable,$delete));
 	}
 
-	function get_defgroup()
+	function is_valid($id,$disable=null)
 	{
-		if(isset($this->_conf['group_default']) === false
-		|| ($r = xivo_ulongint($this->_conf['group_default'])) === 0)
-			$r = false;
+		if(($id = xivo_ulongint($id)) === 0
+		|| $this->get_primary($id,$disable) === false)
+			return(false);
 
-		return($r);
+		return(true);
 	}
 
 	function add($arr)

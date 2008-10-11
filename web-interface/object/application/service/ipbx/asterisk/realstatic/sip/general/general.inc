@@ -96,8 +96,7 @@ class xivo_application_service_asterisk_realstatic_sip_general extends xivo_appl
 				if($appextenfeatures->set($voicemsg) === false
 				|| $appextenfeatures->save() === false)
 					return(false);
-
-				return(-1);
+				break;
 			case 'allow':
 				if(is_array($rs['var_val']) === true)
 				{
@@ -120,11 +119,9 @@ class xivo_application_service_asterisk_realstatic_sip_general extends xivo_appl
 		if(isset($arr['mohinterpret'],$this->_musiconhold[$arr['mohinterpret']]) === false)
 			$arr['mohinterpret'] = '';
 
-		if(isset($arr['mohsuggest']) === true)
-		{
-			if(isset($this->_musiconhold[$arr['mohsuggest']]) === false)
-				$arr['mohsuggest'] = '';
-		}
+		if(isset($arr['mohsuggest']) === true
+		&& isset($this->_musiconhold[$arr['mohsuggest']]) === false)
+			$arr['mohsuggest'] = '';
 
 		return(parent::set_save_all($arr,$disable));
 	}

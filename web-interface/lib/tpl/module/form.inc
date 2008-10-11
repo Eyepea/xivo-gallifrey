@@ -40,7 +40,7 @@ class xivo_tpl_form extends xivo_tpl_module
 		$this->_param['optgroup'] = false;
 		$this->_param['null'] = false;
 		$this->_param['bbf'] = false;
-		$this->_param['bbf_paramarray'] = false;
+		$this->_param['bbf_opt'] = false;
 		$this->_param['browse'] = false;
 		$this->_param['invalid'] = false;
 
@@ -175,6 +175,9 @@ class xivo_tpl_form extends xivo_tpl_module
 		if(isset($v['bbf']) === true && is_bool($v['bbf']) === false)
 			$this->_param['bbf'] = $this->_mk_param_bbf($v);
 
+		if(isset($v['bbf_opt']) === true && is_bool($v['bbf_opt']) === false)
+			$this->_param['bbf_opt'] = $this->_mk_param_bbf_opt($v['bbf_opt']);
+
 		if(isset($v['browse']) === true)
 		{
 			$v['browse'] = array_values((array) $v['browse']);
@@ -240,8 +243,6 @@ class xivo_tpl_form extends xivo_tpl_module
 				case 'paramvalue':
 				case 'mixvalue':
 				case 'concatkey':
-				case 'mixvaluekey':
-				case 'mixkeyvalue':
 					break;
 				default:
 					$v['bbf'][0] = 'concatvalue';
@@ -249,14 +250,50 @@ class xivo_tpl_form extends xivo_tpl_module
 
 			$r = array($v['bbf'][0],$v['bbf'][1]);
 
-			if(isset($v['bbf'][2]) === true && $v['bbf'][2] === 'paramarray')
-				$this->_param['bbf_paramarray'] = true;
-
 			if(isset($v['bbf'][3]) === true
 			&& (is_array($v['bbf'][3]) === true
 			   || is_scalar($v['bbf'][3]) === true) === true)
 				$r[2] = (array) $v['bbf'][3];
 		}
+
+		return($r);
+	}
+
+	function _mk_param_bbf_opt(&$v)
+	{
+		$r = array();
+
+		if(is_array($v) === true && isset($v['argmode']) === true)
+			$this->_param['bbf'][0] = $v['argmode'];
+
+		if(is_string($v) === true)
+			$v = array('argmode' => $v);
+		else if(is_array($v) === false)
+			return(false);
+		else if(isset($v['argmode']) === false)
+			$v['argmode'] = 'concatvalue';
+
+		switch($v['argmode'])
+		{
+			case 'paramkey':
+			case 'mixkey':
+			case 'paramvalue':
+			case 'mixvalue':
+			case 'concatkey':
+				$r['argmode'] = $v['argmode'];
+				break;
+			default:
+				$r['argmode'] = 'concatvalue';
+		}
+
+		if(xivo_issa('time',$v) === true)
+		{
+			if(isset($v['time']['from'],$v['time']['format']) === true)
+				$r['time'] = array('from'	=> $v['time']['from'],
+						   'format'	=> $v['time']['format']);
+		}
+		else if(isset($v['argvalue']) === true)
+			$r['argvalue'] = true;
 
 		return($r);
 	}
@@ -592,7 +629,8 @@ class xivo_tpl_form extends xivo_tpl_module
 			$this->_param['label'] = false;
 			return(null);
 		}
-		else if(is_array($this->_param['desc']) === true && isset($this->_param['desc'][0],$this->_param['desc'][1]) === true)
+		else if(is_array($this->_param['desc']) === true
+		&& isset($this->_param['desc'][0],$this->_param['desc'][1]) === true)
 		{
 			$this->_mk_field();
 
@@ -717,7 +755,7 @@ class xivo_tpl_form extends xivo_tpl_module
 		if(is_array($render) === false)
 			return(null);
 
-		$render['key'] = xivo_alttitle($render['key']);
+		$render['key'] = xivo_htmlsc($render['key']);
 
 		if($this->_param['optgroup'] === true)
 		{
@@ -763,56 +801,108 @@ class xivo_tpl_form extends xivo_tpl_module
 				$nparam = $oparam;
 		}
 
+		$bbfkey = $this->_param['bbf'][1];
+		$bbfkeyorig = $this->_param['bbf'][1];
+		$renderkey = $render['key'];
+		$rendervalue = $render['value'];
+
+		if(($time = $this->_mk_slt_option_bbf_time($render['key'])) !== false)
+		{
+			$bbfkey .= $time['bbfkey'];
+			$bbfkeyorig .= $time['bbfkey'];
+			$renderkey = $time['timevalue'];
+			$rendervalue = $time['timevalue'];
+		}
+
 		switch($key)
 		{
 			case 'paramkey':
-				$render['value'] = $this->bbf($this->_param['bbf'][1],
-							(is_array($param) === true ? $param : $render['key']));
+				$render['value'] = $this->bbf($bbfkey,
+							(is_array($param) === true ? $param : $renderkey));
 				break;
 			case 'paramvalue':
-				$render['value'] = $this->bbf($this->_param['bbf'][1],
-							(is_array($param) === true ? $param : $render['value']));
+				$render['value'] = $this->bbf($bbfkey,
+							(is_array($param) === true ? $param : $rendervalue));
 				break;
 			case 'concatkey':
-				$render['value'] = $this->bbf($this->_param['bbf'][1].$render['key'],$oparam);
+				if(is_scalar($render['key']) === true)
+					$bbfkey .= $render['key'];
+
+				$render['value'] = $this->bbf($bbfkey,$oparam);
 				break;
 			case 'concatvalue':
-				$render['value'] = $this->bbf($this->_param['bbf'][1].$render['value'],$oparam);
+				if(is_scalar($render['value']) === true)
+					$bbfkey .= $render['value'];
+
+				$render['value'] = $this->bbf($bbfkey,$oparam);
 				break;
 			default:
 				if($key === 'mixkey')
 				{
-					$concat = $this->_param['bbf'][1].$render['key'];
-					$nparam = $render['key'];
+					if(is_scalar($render['key']) === true)
+						$bbfkey .= $render['key'];
+
+					$nparam = $renderkey;
 				}
 				else if($key === 'mixvalue')
 				{
-					$concat = $this->_param['bbf'][1].$render['value'];
-					$nparam = $render['value'];
-				}
-				else if($key === 'mixkeyvalue')
-				{
-					$concat = $this->_param['bbf'][1].$render['value'];
-					$nparam = $render['key'];
-				}
-				else if($key === 'mixvaluekey')
-				{
-					$concat = $this->_param['bbf'][1].$render['key'];
-					$nparam = $render['value'];
+					if(is_scalar($render['value']) === true)
+						$bbfkey .= $render['value'];
+
+					$nparam = $rendervalue;
 				}
 				else
 					break;
 
-				if(($render['value'] = $this->bbf($concat,$oparam)) !== $concat)
+				if(($render['value'] = $this->bbf($bbfkey,$oparam)) !== $bbfkey)
 					break;
 				else if(is_array($param) === true)
-					$render['value'] = $this->bbf($this->_param['bbf'][1],$param);
+					$render['value'] = $this->bbf($bbfkeyorig,$param);
 				else
-					$render['value'] = $this->bbf($this->_param['bbf'][1],$nparam);
+					$render['value'] = $this->bbf($bbfkeyorig,$nparam);
 				break;
 		}
 
 		return($this->_set_slt_option_render($render));
+	}
+
+	function _mk_slt_option_bbf_time($time)
+	{
+		if(isset($this->_param['bbf_opt']['time']) === false
+		|| ($time = xivo_calc_time($this->_param['bbf_opt']['time']['from'],
+					   $time,
+					   $this->_param['bbf_opt']['time']['format'],
+					   false)) === false)
+			return(false);
+
+		$arr = array();
+
+		if(isset($time['d']) === true)
+			$arr[] = 'day'.($time['d'] > 1 ? 's' : '');
+
+		if(isset($time['H']) === true)
+			$arr[] = 'hour'.($time['H'] > 1 ? 's' : '');
+
+		if(isset($time['M']) === true)
+			$arr[] = 'minute'.($time['M'] > 1 ? 's' : '');
+
+		if(isset($time['s']) === true)
+			$arr[] = 'second'.($time['s'] > 1 ? 's' : '');
+
+		if(isset($time['ms']) === true)
+			$arr[] = 'millisecond'.($time['ms'] > 1 ? 's' : '');
+
+		if(isset($time['f']) === true)
+			$arr[] = 'microsecond'.($time['f'] > 1 ? 's' : '');
+
+		if(isset($arr[0]) === false)
+			return(false);
+
+		if(isset($arr[1]) === false)
+			$time = current($time);
+
+		return(array('bbfkey'		=> '-'.implode('-',$arr),
+			     'timevalue'	=> $time));
 	}
 
 	function _mk_slt_optgroup_render($render)
@@ -979,7 +1069,7 @@ class xivo_tpl_form extends xivo_tpl_module
 					$this->_mk_slt_optgroup($key,$ref);
 				else if(($render = $this->_mk_slt_option_param_array($key,$ref)) !== false)
 					$this->_mk_slt_option_render($render);
-				else if($this->_param['bbf_paramarray'] === true
+				else if(isset($this->_param['bbf_opt']['argvalue']) === true
 				&& ($render = $this->_mk_slt_option_param($key,$ref)) !== false)
 					$this->_mk_slt_option_render($render,$ref);
 				else

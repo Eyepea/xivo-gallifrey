@@ -1,483 +1,206 @@
 <?php
 
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
-$group = isset($_QR['group']) === true ? strval($_QR['group']) : '';
+$group = isset($_QR['group']) === true ? xivo_uint($_QR['group'],1) : 1;
 $page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
-
-$agent = &$ipbx->get_module('agent');
-$afeatures = &$ipbx->get_module('agentfeatures');
-$agroup = &$ipbx->get_module('agentgroup');
-
-if(($list_grps = $ipbx->get_agent_groups_list()) !== false)
-{
-	xivo::load_class('xivo_sort');
-	$sort = new xivo_sort(array('browse' => 'agroup','key' => 'name'));
-	usort($list_grps,array(&$sort,'str_usort'));
-}
-
-$_HTML->set_var('list_grps',$list_grps);
 
 $param = array();
 $param['act'] = 'list';
+$param['group'] = $group;
 
 $info = $result = array();
 
 switch($act)
 {
 	case 'add':
-		$add = true;
-		$result = null;
-		$agent_slt = $agent_unslt = array();
+		$amember = $qmember = array();
+		$amember['list'] = $qmember['list'] = false;
+		$amember['info'] = $qmember['info'] = false;
+		$amember['slt'] = $qmember['slt'] = array();
 
-		if(($agents = $ipbx->get_agents_list()) !== false)
-		{
-			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('browse' => 'sort','key' => 'identity'));
-			usort($agents,array(&$sort,'str_usort'));
-		}
+		$appagent = &$ipbx->get_application('agent',null,false);
 
-		$qmember = &$ipbx->get_module('queuemember');
-
-		$qmember_unslt = false;
+		if(($agents = $appagent->get_agents_list(null,
+							 array('firstname'	=> SORT_ASC,
+							       'lastname'	=> SORT_ASC,
+							       'number'		=> SORT_ASC,
+							       'context'	=> SORT_ASC),
+							 null,
+							 true)) !== false)
+			$amember['list'] = $agents;
 
 		$appqueue = &$ipbx->get_application('queue',null,false);
 
-		if(($queues = $appqueue->get_queues_list(null,array('name' => SORT_ASC))) !== false)
+		if(($queues = $appqueue->get_queues_list(null,
+							 array('name'		=> SORT_ASC),
+							 null,
+							 true)) !== false)
+			$qmember['list'] = $queues;
+
+		$appagentgroup = &$ipbx->get_application('agentgroup');
+
+		$result = null;
+
+		if(isset($_QR['fm_send']) === true
+		&& xivo_issa('agentgroup',$_QR) === true)
 		{
-			$qmember_unslt = array();
-
-			$nb = count($queues);
-
-			for($i = 0;$i < $nb;$i++)
-			{
-				$name = &$queues[$i]['queue']['name'];
-				$qmember_unslt[$name] = $name;
-			}
-
-			if(empty($qmember_unslt) === true)
-				$qmember_unslt = $queues = false;
+			if($appagentgroup->set_add($_QR) === false
+			|| $appagentgroup->add() === false)
+				$result = $appagentgroup->get_result();
+			else
+				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 		}
 
-		do
+		xivo::load_class('xivo_sort');
+
+		if($amember['list'] !== false && xivo_ak('agentmember',$result) === true)
 		{
-			if(isset($_QR['fm_send']) === false || xivo_issa('agroup',$_QR) === false)
-				break;
+			$amember['slt'] = xivo_array_intersect_key($result['agentmember'],
+								   $amember['list'],
+								   'id');
 
-			$result = array();
-
-			$_QR['agroup']['groupid'] = 0;
-
-			if(($result['agroup'] = $agroup->chk_values($_QR['agroup'])) === false)
+			if($amember['slt'] !== false)
 			{
-				$add = false;
-				$result['agroup'] = $agroup->get_filter_result();
+				$amember['list'] = xivo_array_diff_key($amember['list'],$amember['slt']);
+
+				$agentsort = new xivo_sort(array('browse'	=> 'afeatures',
+								 'key'		=> 'identity'));
+
+				uasort($amember['slt'],array(&$agentsort,'str_usort'));
 			}
-
-			if($agents !== false && ($arr_agent = xivo_issa_val('agent-select',$_QR)) !== false)
-			{
-				$nb = count($agents);
-
-				for($i = 0;$i < $nb;$i++)
-				{
-					$ref = &$agents[$i];	
-
-					$agent_info = array();
-					$agent_info['sort'] = &$ref['sort'];
-					$agent_info['agentid'] = $ref['afeatures']['agentid'];
-					$agent_info['numgroup'] = $ref['afeatures']['numgroup'];
-
-					if(in_array($ref['afeatures']['id'],$arr_agent) === false)
-						$agent_unslt[] = $agent_info;
-					else
-						$agent_slt[$ref['afeatures']['id']] = $agent_info;
-				}
-			}
-
-			$aqueue_where = array(
-					'usertype' => 'agent',
-					'userid' => 0,
-					'category' => 'group');
-
-			$queue_add = $queue_tmp = array();
-
-			if(($queue_slt = xivo_issa_val('queue-select',$_QR)) !== false && xivo_issa('queue',$_QR) !== false)
-			{
-				$nb = count($queue_slt);
-				$aqueue_info = $aqueue_where;
-				$aqueue_info['call-limit'] = 0;
-				$aqueue_info['channel'] = XIVO_SRE_IPBX_AST_CHAN_AGENT;
-
-				for($i = 0;$i < $nb;$i++)
-				{
-					$qname = &$queue_slt[$i];
-
-					if(isset($queue_tmp[$qname]) === true)
-						continue;
-
-					$aqueue_info['queue_name'] = $qname;
-					$aqueue_info['interface'] = $ipbx->mk_agent_interface(0,true);
-
-					$aqueue_tmp = array_merge($_QR['queue'][$qname],$aqueue_info);
-
-					if(($qinfo = $qmember->chk_values($aqueue_tmp)) !== false)
-					{
-						$queue_tmp[$qname] = 1;
-						$queue_add[] = $qinfo;
-					}
-				}
-			}
-
-			if($add === false || ($agroupid = $agroup->add($result['agroup'])) === false)
-				break;
-			else if(($group = $agent->chk_value('group',$agroupid)) === false
-			|| ($groupid = $agent->add_group($group)) === false)
-			{
-				$agroup->delete($agroupid);
-				break;
-			}
-			else if($agroup->edit($agroupid,array('groupid' => $groupid)) === false)
-			{
-				$agroup->delete($agroupid);
-				$agent->delete($groupid);
-				break;
-			}
-			else if(empty($agent_slt) === false)
-			{
-				$nb = count($arr_agent);
-
-				for($i = 0;$i < $nb;$i++)
-				{
-					$agent_id = &$arr_agent[$i];
-
-					if(isset($agent_slt[$agent_id]) === false)
-						continue;
-
-					$ref = &$agent_slt[$agent_id];
-
-					if($afeatures->edit($agent_id,array('numgroup' => $agroupid)) !== false
-					&& $agent->edit_agent($ref['agentid'],array('group' => $agroupid)) === false)
-						$afeatures->edit($agent_id,array('numgroup' => $ref['numgroup']));
-				}
-			}
-
-			if(($nb = count($queue_add)) !== 0)
-			{
-				for($i = 0;$i < $nb;$i++)
-				{
-					$queue_add[$i]['userid'] = $agroupid;
-
-					if(($queue_add[$i]['interface'] = $ipbx->mk_agent_interface($agroupid,true)) !== false)
-						$qmember->add($queue_add[$i]);
-				}
-			}
-
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 		}
-		while(false);
 
-		$element = array();
-		$element['agroup'] = $agroup->get_element();
-		$element['qmember'] = $qmember->get_element();
+		if($qmember['list'] !== false && xivo_ak('queuemember',$result) === true)
+		{
+			$qmember['slt'] = xivo_array_intersect_key($result['queuemember'],
+								   $qmember['list'],
+								   'qfeaturesid');
 
-		if(isset($agent_unslt[0]) === false && empty($agent_slt) === true)
-			$agent_unslt = $agents;
+			if($qmember['slt'] !== false)
+			{
+				$qmember['info'] = xivo_array_copy_intersect_key($result['queuemember'],
+										 $qmember['slt'],
+										 'qfeaturesid');
 
-		$_HTML->set_var('queues',$queues);
-		$_HTML->set_var('qmember_slt',false);
-		$_HTML->set_var('qmember_unslt',$qmember_unslt);
-		$_HTML->set_var('agents',($agents !== false));
-		$_HTML->set_var('agent_slt',$agent_slt);
-		$_HTML->set_var('agent_unslt',$agent_unslt);
+				$qmember['list'] = xivo_array_diff_key($qmember['list'],$qmember['slt']);
+
+				$queuesort = new xivo_sort(array('browse'	=> 'qfeatures',
+								 'key'		=> 'name'));
+
+				uasort($qmember['slt'],array(&$queuesort,'str_usort'));
+			}
+		}
+
+		$agentgroup_list = $appagentgroup->get_agentgroups_list(null,
+									array('name'	=> SORT_ASC));
+
 		$_HTML->set_var('info',$result);
-		$_HTML->set_var('element',$element);
+		$_HTML->set_var('element',$appagentgroup->get_elements());
+		$_HTML->set_var('agents',$agents);
+		$_HTML->set_var('amember',$amember);
+		$_HTML->set_var('queues',$queues);
+		$_HTML->set_var('qmember',$qmember);
+		$_HTML->set_var('agentgroup_list',$agentgroup_list);
 
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		break;
 	case 'edit':
-		$edit = true;
+		$appagentgroup = &$ipbx->get_application('agentgroup');
 
+		if(isset($_QR['group']) === false
+		|| ($info = $appagentgroup->get($_QR['group'])) === false)
+			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+
+		$amember = $qmember = array();
+		$amember['list'] = $qmember['list'] = false;
+		$amember['info'] = $qmember['info'] = false;
+		$amember['slt'] = $qmember['slt'] = array();
+
+		$appagent = &$ipbx->get_application('agent',null,false);
+
+		if(($agents = $appagent->get_agents_list(null,
+							 array('firstname'	=> SORT_ASC,
+							       'lastname'	=> SORT_ASC,
+							       'number'		=> SORT_ASC,
+							       'context'	=> SORT_ASC),
+							 null,
+							 true)) !== false)
+			$amember['list'] = $agents;
+
+		$appqueue = &$ipbx->get_application('queue',null,false);
+
+		if(($queues = $appqueue->get_queues_list(null,
+							 array('name'		=> SORT_ASC),
+							 null,
+							 true)) !== false)
+			$qmember['list'] = $queues;
+
+		$result = null;
 		$return = &$info;
 
-		if(($info['agroup'] = $agroup->get($group)) === false
-		|| ($info['agent'] = $agent->get($info['agroup']['groupid'])) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
-
-		$group = $info['agroup']['id'];
-
-		$agent_slt = $agent_unslt = array();
-
-		if(($agents = $ipbx->get_agents_list()) !== false)
+		if(isset($_QR['fm_send']) === true
+		&& xivo_issa('agentgroup',$_QR) === true)
 		{
-			$nb = count($agents);
-			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('browse' => 'sort','key' => 'var_metric'));
-			usort($agents,array(&$sort,'num_usort'));
-
-			for($i = 0;$i < $nb;$i++)
-			{
-				$ref = &$agents[$i];	
-
-				$agent_info = array();
-				$agent_info['sort'] = &$ref['sort'];
-				$agent_info['agentid'] = $ref['afeatures']['agentid'];
-				$agent_info['numgroup'] = $ref['afeatures']['numgroup'];
-
-				if(xivo_ulongint($agents[$i]['afeatures']['numgroup']) !== xivo_ulongint($group))
-				{
-					$agent_info['afeaturesid'] = $ref['afeatures']['id'];
-					$agent_unslt[] = $agent_info;
-				}
-				else
-					$agent_slt[$ref['afeatures']['id']] = $agent_info;
-			}
-		}
-
-		$qmember = &$ipbx->get_module('queuemember');
-
-		$qmember_slt = $qmember_unslt = false;
-
-		if(($queues = $ipbx->get_group_agent($info['agroup']['id'])) !== false)
-		{
-			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('browse' => 'queue','key' => 'name'));
-			usort($queues,array(&$sort,'str_usort'));
-
-			$qmember_slt = $qmember_unslt = array();
-
-			$nb = count($queues);
-
-			for($i = 0;$i < $nb;$i++)
-			{
-				$name = &$queues[$i]['queue']['name'];
-
-				if($queues[$i]['member'] !== false)
-					$qmember_slt[$name] = $queues[$i]['member'];
-				else
-					$qmember_unslt[$name] = $name;
-			}
-
-			if(empty($qmember_slt) === true)
-				$qmember_slt = false;
-
-			if(empty($qmember_unslt) === true)
-			{
-				$qmember_unslt = false;
-
-				if($qmember_slt === false)
-					$queues = false;
-			}
-		}
-
-		do
-		{
-			if(isset($_QR['fm_send']) === false || xivo_issa('agroup',$_QR) === false)
-				break;
-
-			$_QR['agroup']['groupid'] = $info['agent']['id'];
-
 			$return = &$result;
 
-			if(($result['agroup'] = $agroup->chk_values($_QR['agroup'])) === false)
-			{
-				$edit = false;
-				$result['agroup'] = $agroup->get_filter_result();
-			}
-
-			$agent_slt = $agent_unslt = array();
-
-			if($agents !== false)
-			{
-				if(($arr_agent = xivo_issa_val('agent-select',$_QR)) === false)
-					$arr_agent = array();
-
-				$nb = count($agents);
-
-				for($i = 0;$i < $nb;$i++)
-				{
-					$ref = &$agents[$i];	
-
-					$agent_info = array();
-					$agent_info['sort'] = &$ref['sort'];
-					$agent_info['agentid'] = $ref['afeatures']['agentid'];
-					$agent_info['numgroup'] = $ref['afeatures']['numgroup'];
-
-					if(in_array($ref['afeatures']['id'],$arr_agent) === false)
-					{
-						$agent_info['afeaturesid'] = $ref['afeatures']['id'];
-						$agent_unslt[] = $agent_info;
-					}
-					else
-						$agent_slt[$ref['afeatures']['id']] = $agent_info;
-				}
-			}
-
-			$aqueue_where = array(
-					'usertype' => 'agent',
-					'userid' => $info['agroup']['id'],
-					'category' => 'group');
-
-			$edit_queue = false;
-			$queue_add = $queue_edit = $queue_del = $queue_tmp = array();
-
-			if(($queue_slt = xivo_issa_val('queue-select',$_QR)) !== false && xivo_issa('queue',$_QR) !== false)
-			{
-				$nb = count($queue_slt);
-
-				$aqueue_info = $aqueue_where;
-				$aqueue_info['call-limit'] = 0;
-				$aqueue_info['channel'] = XIVO_SRE_IPBX_AST_CHAN_AGENT;
-				$aqueue_info['interface'] = $ipbx->mk_agent_interface($info['agroup']['id'],true);
-
-				for($i = 0;$i < $nb;$i++)
-				{
-					$qname = &$queue_slt[$i];
-					$aqueue_info['queue_name'] = $qname;
-
-					if(isset($queue_tmp[$qname]) === true)
-					{
-						if(isset($qmember_slt[$qname]) === true)
-						{
-							$edit_queue = true;
-							$queue_tmp[$qname] = 1;
-							$queue_del[] = $aqueue_info;
-						}
-						continue;
-					}
-
-					if(isset($qmember_unslt[$qname]) === true)
-						$ref_queue = &$queue_add;
-					else if(isset($qmember_slt[$qname]) === true)
-						$ref_queue = &$queue_edit;
-					else
-						continue;
-
-					$aqueue_tmp = array_merge($_QR['queue'][$qname],$aqueue_info);
-
-					if(($qinfo = $qmember->chk_values($aqueue_tmp)) !== false)
-					{
-						$edit_queue = true;
-						$queue_tmp[$qname] = 1;
-						$ref_queue[] = $qinfo;
-					}
-				}
-			}
-
-			if($qmember_slt !== false)
-			{
-				$aqueue_info = $aqueue_where;
-
-				reset($qmember_slt);
-
-				while(list($qname) = each($qmember_slt))
-				{
-					$aqueue_info['queue_name'] = $qname;
-
-					if(isset($queue_tmp[$qname]) === true)
-						continue;
-
-					$edit_queue = true;
-					$queue_del[] = $aqueue_info;
-				}
-			}
-
-			if($edit === false || $agroup->edit($info['agroup']['id'],$result['agroup']) === false)
-				break;
-			else if(isset($agent_unslt[0]) === true && ($defgroup = $agroup->get_defgroup()) !== false)
-			{
-				$nb = count($agent_unslt);
-
-				for($i = 0;$i < $nb;$i++)
-				{
-					$ref = &$agent_unslt[$i];
-
-					if(xivo_ulongint($ref['numgroup']) === $defgroup
-					|| xivo_ulongint($ref['numgroup']) !== xivo_ulongint($info['agroup']['id']))
-						continue;
-
-					$agent_id = $ref['agentid'];
-
-					if($afeatures->edit($ref['afeaturesid'],array('numgroup' => $defgroup)) !== false
-					&& $agent->edit_agent($ref['agentid'],array('group' => $defgroup)) === false)
-						$afeatures->edit($ref['afeaturesid'],array('numgroup' => $ref['numgroup']));
-				}
-			}
-
-			if(empty($agent_slt) === false)
-			{
-				$nb = count($arr_agent);
-
-				$agent_order = array();
-
-				for($i = 0;$i < $nb;$i++)
-				{
-					$agent_id = &$arr_agent[$i];
-
-					if(isset($agent_slt[$agent_id]) === false)
-						continue;
-
-					$ref = &$agent_slt[$agent_id];
-					
-					if(xivo_ulongint($ref['numgroup']) === xivo_ulongint($info['agroup']['id']))
-					{
-						$agent_order[] = $ref['agentid'];
-						continue;
-					}
-					else if($afeatures->edit($agent_id,array('numgroup' => $info['agroup']['id'])) === false)
-						continue;
-					else if($agent->edit_agent($ref['agentid'],array('group' => $info['agroup']['id'])) === false)
-						$afeatures->edit($agent_id,array('numgroup' => $ref['numgroup']));
-					else
-						$agent_order[] = $ref['agentid'];
-				}
-
-				if(isset($agent_order[0]) === true)
-					$agent->order_agent($info['agroup']['id'],$agent_order);
-			}
-			
-			if($edit_queue === true)
-			{
-				if(($nb = count($queue_del)) !== 0)
-				{
-					for($i = 0;$i < $nb;$i++)
-					{
-						$aqueue_where['queue_name'] = $queue_del[$i]['queue_name'];
-						$qmember->delete_where($aqueue_where);
-					}
-				}
-
-				if(isset($queue_add[0]) === true)
-					$qmember->add_list($queue_add);
-
-				if(($nb = count($queue_edit)) !== 0)
-				{
-					for($i = 0;$i < $nb;$i++)
-					{
-						$aqueue_where['queue_name'] = $queue_edit[$i]['queue_name'];
-						$qmember->edit_where($aqueue_where,$queue_edit[$i]);
-					}
-				}
-			}
-
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+			if($appagentgroup->set_edit($_QR) === false
+			|| $appagentgroup->edit() === false)
+				$result = $appagentgroup->get_result();
+			else
+				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 		}
-		while(false);
 
-		$element = array();
-		$element['agroup'] = $agroup->get_element();
-		$element['qmember'] = $qmember->get_element();
+		xivo::load_class('xivo_sort');
 
-		if(isset($agent_unslt[0]) === false && empty($agent_slt) === true)
-			$agent_unslt = $agents;
+		if($amember['list'] !== false && xivo_ak('agentmember',$return) === true)
+		{
+			$amember['slt'] = xivo_array_intersect_key($return['agentmember'],
+								   $amember['list'],
+								   'id');
 
+			if($amember['slt'] !== false)
+			{
+				$amember['list'] = xivo_array_diff_key($amember['list'],$amember['slt']);
+
+				$agentsort = new xivo_sort(array('browse'	=> 'afeatures',
+								 'key'		=> 'identity'));
+
+				uasort($amember['slt'],array(&$agentsort,'str_usort'));
+			}
+		}
+
+		if($qmember['list'] !== false && xivo_ak('queuemember',$return) === true)
+		{
+			$qmember['slt'] = xivo_array_intersect_key($return['queuemember'],
+								   $qmember['list'],
+								   'qfeaturesid');
+
+			if($qmember['slt'] !== false)
+			{
+				$qmember['info'] = xivo_array_copy_intersect_key($return['queuemember'],
+										 $qmember['slt'],
+										 'qfeaturesid');
+				$qmember['list'] = xivo_array_diff_key($qmember['list'],$qmember['slt']);
+
+				$queuesort = new xivo_sort(array('browse'	=> 'qfeatures',
+								 'key'		=> 'name'));
+
+				uasort($qmember['slt'],array(&$queuesort,'str_usort'));
+			}
+		}
+
+		$agentgroup_list = $appagentgroup->get_agentgroups_list(null,
+									array('name'	=> SORT_ASC));
+
+		$_HTML->set_var('id',$info['agentgroup']['id']);
 		$_HTML->set_var('info',$return);
-		$_HTML->set_var('element',$element);
-		$_HTML->set_var('agents',($agents !== false));
-		$_HTML->set_var('agent_slt',$agent_slt);
-		$_HTML->set_var('agent_unslt',$agent_unslt);
+		$_HTML->set_var('element',$appagentgroup->get_elements());
+		$_HTML->set_var('agents',$agents);
+		$_HTML->set_var('amember',$amember);
 		$_HTML->set_var('queues',$queues);
-		$_HTML->set_var('qmember_slt',$qmember_slt);
-		$_HTML->set_var('qmember_unslt',$qmember_unslt);
+		$_HTML->set_var('qmember',$qmember);
+		$_HTML->set_var('agentgroup_list',$agentgroup_list);
 
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
@@ -485,540 +208,328 @@ switch($act)
 	case 'delete':
 		$param['page'] = $page;
 
-		if(($info['agroup'] = $agroup->get($group)) === false
-		|| ($info['agent'] = $agent->get($info['agroup']['groupid'])) === false
-		|| $info['agroup']['deletable'] === false)
+		$appagentgroup = &$ipbx->get_application('agentgroup');
+
+		if(isset($_QR['group']) === false
+		|| ($info = $appagentgroup->get($_QR['group'])) === false
+		|| (string) $info['agentgroup']['id'] === (string) XIVO_SRE_IPBX_AST_AGENT_GROUP_DEFAULT)
 			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 
-		do
+		$appagentgroup->delete();
+
+		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+		break;
+	case 'deletes':
+		$param['page'] = $page;
+
+		if(($values = xivo_issa_val('agentgroups',$_QR)) === false)
+			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+
+		$appagentgroup = &$ipbx->get_application('agentgroup');
+
+		$nb = count($values);
+
+		for($i = 0;$i < $nb;$i++)
 		{
-			$qmember = &$ipbx->get_module('queuemember');
-			$aqueue_where = array('usertype' => 'agent');
-
-			if(($agents = $ipbx->get_agents_list($info['agroup']['id'])) !== false)
-			{
-				$aqueue_where['category'] = 'queue';
-
-				$nb = count($agents);
-
-				for($i = 0;$i < $nb;$i++)
-				{
-					$ref_agent = &$agents[$i];
-
-					if($afeatures->delete($ref_agent['afeatures']['id']) === false)
-						break 2;
-
-					if($agent->delete_agent($ref_agent['agent']['id']) === false)
-					{
-						$afeatures->add($ref_agent['afeatures'],$ref_agent['afeatures']['id']);
-						break 2;
-					}
-
-					$aqueue_where['userid'] = $ref_agent['afeatures']['id'];
-
-					$qmember->delete_where($aqueue_where);
-				}
-			}
-
-			if($agroup->delete($info['agroup']['id']) === false)
-				break;
-			else if($agent->delete($info['agent']['id']) === false)
-			{
-				$agroup->recover($info['agroup']['id']);
-				break;
-			}
-
-			$aqueue_where['category'] = 'group';
-			$aqueue_where['userid'] = $info['agroup']['id'];
-
-			$qmember->delete_where($aqueue_where);
+			if(($info = $appagentgroup->get($values[$i])) !== false
+			&& (string) $info['agentgroup']['id'] !== (string) XIVO_SRE_IPBX_AST_AGENT_GROUP_DEFAULT)
+				$appagentgroup->delete();
 		}
-		while(false);
+
+		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+		break;
+	case 'enables':
+	case 'disables':
+		$param['page'] = $page;
+
+		if(($values = xivo_issa_val('agentgroups',$_QR)) === false)
+			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+
+		$appagentgroup = &$ipbx->get_application('agentgroup');
+
+		$nb = count($values);
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			if($appagentgroup->get($values[$i]) === false)
+				continue;
+			else if($act === 'disables')
+				$appagentgroup->disable();
+			else
+				$appagentgroup->enable();
+		}
 
 		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 		break;
 	case 'addagent':
-		if($list_grps === false)
+		$appagentgroup = &$ipbx->get_application('agentgroup',null,false);
+
+		if(($agentgroup_list = $appagentgroup->get_agentgroups_list(null,
+									    array('name' => SORT_ASC))) === false)
 			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 
-		$act = 'addagent';
 		$param['act'] = 'listagent';
 
-		$add = true;
-		$result = null;
-
-		$sounds = &$ipbx->get_module('sounds');
-		$musiconhold = &$ipbx->get_module('musiconhold');
-		$qmember = &$ipbx->get_module('queuemember');
-
-		$beep_list = $sounds->get_list('beep','pathnoext');
-		$goodbye_list = $sounds->get_list('goodbye','pathnoext');
-
-		if(is_array($beep_list) === true)
-			asort($beep_list);
-
-		if(is_array($goodbye_list) === true)
-			asort($goodbye_list);
-
-		if(($moh_list = $musiconhold->get_all_category(null,false)) !== false)
-			ksort($moh_list);
-
-		$qmember_unslt = false;
+		$qmember = array();
+		$qmember['list'] = $qmember['info'] = false;
+		$qmember['slt'] = array();
 
 		$appqueue = &$ipbx->get_application('queue',null,false);
 
-		if(($queues = $appqueue->get_queues_list(null,array('name' => SORT_ASC))) !== false)
+		if(($queues = $appqueue->get_queues_list(null,
+							 array('name'	=> SORT_ASC),
+							 null,
+							 true)) !== false)
+			$qmember['list'] = $queues;
+
+		$appagent = &$ipbx->get_application('agent');
+
+		$result = null;
+
+		if(isset($_QR['fm_send']) === true
+		&& xivo_issa('afeatures',$_QR) === true
+		&& xivo_issa('agentoptions',$_QR) === true)
 		{
-			$qmember_unslt = array();
-
-			$nb = count($queues);
-
-			for($i = 0;$i < $nb;$i++)
+			if($appagent->set_add($_QR) === false
+			|| $appagent->add() === false)
+				$result = $appagent->get_result();
+			else
 			{
-				$name = &$queues[$i]['queue']['name'];
-				$qmember_unslt[$name] = $name;
+				$param['group'] = $appagent->get_result_var('afeatures','numgroup');
+				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 			}
-
-			if(empty($qmember_unslt) === true)
-				$qmember_unslt = $queues = false;
 		}
 
-		do
+		if($qmember['list'] !== false && xivo_ak('queuemember',$result) === true)
 		{
-			if(isset($_QR['fm_send']) === false || xivo_issa('afeatures',$_QR) === false
-			|| xivo_issa('agent',$_QR) === false || isset($_QR['afeatures']['numgroup']) === false
-			|| ($info['agroup'] = $agroup->get($_QR['afeatures']['numgroup'])) === false)
-				break;
+			$qmember['slt'] = xivo_array_intersect_key($result['queuemember'],
+								   $qmember['list'],
+								   'qfeaturesid');
 
-			$group = $param['group'] = $info['agroup']['id'];
-
-			$result = array();
-
-			if($moh_list === false || isset($_QR['agent']['musiconhold'],$moh_list[$_QR['agent']['musiconhold']]) === false)
-				$_QR['agent']['musiconhold'] = '';
-
-			if($beep_list === false || isset($_QR['agent']['custom_beep'],$beep_list[$_QR['agent']['custom_beep']]) === false)
-				$_QR['agent']['custom_beep'] = '';
-
-			if($goodbye_list === false || isset($_QR['agent']['goodbye'],$goodbye_list[$_QR['agent']['goodbye']]) === false)
-				$_QR['agent']['goodbye'] = '';
-
-			$_QR['afeatures']['agentid'] = 0;
-
-			if(($result['afeatures'] = $afeatures->chk_values($_QR['afeatures'])) === false)
+			if($qmember['slt'] !== false)
 			{
-				$add = false;
-				$result['afeatures'] = $afeatures->get_filter_result();
+				$qmember['info'] = xivo_array_copy_intersect_key($result['queuemember'],
+										 $qmember['slt'],
+										 'qfeaturesid');
+				$qmember['list'] = xivo_array_diff_key($qmember['list'],$qmember['slt']);
+
+				xivo::load_class('xivo_sort');
+				$queuesort = new xivo_sort(array('browse'	=> 'qfeatures',
+								 'key'		=> 'name'));
+
+				uasort($qmember['slt'],array(&$queuesort,'str_usort'));
 			}
-
-			$agentval = $result['afeatures']['number'].',';
-
-			if($result['afeatures']['passwd'] !== '')
-				$agentval .= $result['afeatures']['passwd'];
-
-			$agentname = ',';
-
-			if($result['afeatures']['firstname'] !== '')
-				$agentname .= $result['afeatures']['firstname'].' ';
-
-			if($result['afeatures']['lastname'] !== '')
-				$agentname .= $result['afeatures']['lastname'];
-
-			$agentval .= rtrim($agentname,' ');
-
-			$_QR['agent']['agent'] = rtrim($agentval,',');
-			$_QR['agent']['group'] = $result['afeatures']['numgroup'];
-
-			if(($result['agent'] = $agent->chk_values($_QR['agent'])) === false)
-			{
-				$add = false;
-				$result['agent'] = $agent->get_filter_result();
-			}
-
-			$aqueue_where = array(
-					'usertype' => 'agent',
-					'userid' => 0,
-					'category' => 'queue');
-
-			$queue_add = $queue_tmp = array();
-
-			if(($queue_slt = xivo_issa_val('queue-select',$_QR)) !== false && xivo_issa('queue',$_QR) !== false)
-			{
-				$nb = count($queue_slt);
-				$aqueue_info = $aqueue_where;
-				$aqueue_info['call-limit'] = 0;
-				$aqueue_info['channel'] = XIVO_SRE_IPBX_AST_CHAN_AGENT;
-
-				for($i = 0;$i < $nb;$i++)
-				{
-					$qname = &$queue_slt[$i];
-
-					if(isset($queue_tmp[$qname]) === true)
-						continue;
-
-					$aqueue_info['queue_name'] = $qname;
-					$aqueue_info['interface'] = $ipbx->mk_agent_interface($result['afeatures']['number']);
-
-					$aqueue_tmp = array_merge($_QR['queue'][$qname],$aqueue_info);
-
-					if(($qinfo = $qmember->chk_values($aqueue_tmp)) === false)
-						continue;
-
-					$queue_tmp[$qname] = 1;
-					$queue_add[] = $qinfo;
-				}
-			}
-
-			if($add === false || ($agentid = $agent->add_agent($result['agent'])) === false)
-				break;
-
-			$result['afeatures']['agentid'] = $agentid;
-
-			if(($afeaturesid = $afeatures->add($result['afeatures'])) === false)
-			{
-				$agent->delete_agent($agentid);
-				break;
-			}
-			else if(($nb = count($queue_add)) !== 0)
-			{
-				for($i = 0;$i < $nb;$i++)
-				{
-					$queue_add[$i]['userid'] = $afeaturesid;
-					$qmember->add($queue_add[$i]);
-				}
-			}
-
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 		}
-		while(false);
-
-		$element = array();
-		$element['afeatures'] = $afeatures->get_element();
-		$element['agent'] = $agent->get_element();
-		$element['qmember'] = $qmember->get_element();
 
 		$_HTML->set_var('info',$result);
-		$_HTML->set_var('element',$element);
+		$_HTML->set_var('element',$appagent->get_elements());
 		$_HTML->set_var('queues',$queues);
-		$_HTML->set_var('qmember_slt',false);
-		$_HTML->set_var('qmember_unslt',$qmember_unslt);
-		$_HTML->set_var('moh_list',$moh_list);
-		$_HTML->set_var('beep_list',$beep_list);
-		$_HTML->set_var('goodbye_list',$goodbye_list);
+		$_HTML->set_var('qmember',$qmember);
+		$_HTML->set_var('moh_list',$appagent->get_musiconhold());
+		$_HTML->set_var('beep_list',$appagent->get_beep());
+		$_HTML->set_var('goodbye_list',$appagent->get_goodbye());
+		$_HTML->set_var('context_list',$appagent->get_context_list());
+		$_HTML->set_var('agentgroup_list',$agentgroup_list);
 
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		break;
 	case 'editagent':
-		if($list_grps === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
-
-		$return = &$info;
-
-		if(($info['agroup'] = $agroup->get($group)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
-
-		$group = $param['group'] = $info['agroup']['id'];
-
-		$act = 'editagent';
-		$param['act'] = 'listagent';
-
-		$edit = true;
+		$appagent = &$ipbx->get_application('agent');
 
 		if(isset($_QR['id']) === false
-		|| ($info['afeatures'] = $afeatures->get($_QR['id'])) === false
-		|| ($info['agent'] = $agent->get_agent($info['afeatures']['agentid'])) === false)
+		|| ($info = $appagent->get($_QR['id'])) === false)
 			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 
-		$id = $info['afeatures']['id'];
-		$info['agent']['group'] = $info['afeatures']['numgroup'];
+		$param['act'] = 'listagent';
+		$param['group'] = $info['agentgroup']['id'];
 
-		$sounds = &$ipbx->get_module('sounds');
-		$musiconhold = &$ipbx->get_module('musiconhold');
-		$qmember = &$ipbx->get_module('queuemember');
+		$qmember = array();
+		$qmember['list'] = $qmember['info'] = false;
+		$qmember['slt'] = array();
 
-		$beep_list = $sounds->get_list('beep','pathnoext');
-		$goodbye_list = $sounds->get_list('goodbye','pathnoext');
+		$appqueue = &$ipbx->get_application('queue',null,false);
 
-		if(is_array($beep_list) === true)
-			asort($beep_list);
+		if(($queues = $appqueue->get_queues_list(null,
+							 array('name'	=> SORT_ASC),
+							 null,
+							 true)) !== false)
+			$qmember['list'] = $queues;
 
-		if(is_array($goodbye_list) === true)
-			asort($goodbye_list);
+		$result = null;
+		$return = &$info;
 
-		if(($moh_list = $musiconhold->get_all_category(null,false)) !== false)
-			ksort($moh_list);
-
-		$qmember_slt = $qmember_unslt = false;
-
-		if(($queues = $ipbx->get_queue_agent($info['afeatures']['id'])) !== false)
+		if(isset($_QR['fm_send']) === true
+		&& xivo_issa('afeatures',$_QR) === true
+		&& xivo_issa('agentoptions',$_QR) === true)
 		{
-			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('browse' => 'qfeatures','key' => 'name'));
-			usort($queues,array(&$sort,'str_usort'));
-
-			$qmember_slt = $qmember_unslt = array();
-
-			$nb = count($queues);
-
-			for($i = 0;$i < $nb;$i++)
-			{
-				$name = &$queues[$i]['queue']['name'];
-
-				if($queues[$i]['member'] !== false)
-					$qmember_slt[$name] = $queues[$i]['member'];
-				else
-					$qmember_unslt[$name] = $name;
-			}
-
-			if(empty($qmember_slt) === true)
-				$qmember_slt = false;
-
-			if(empty($qmember_unslt) === true)
-			{
-				$qmember_unslt = false;
-
-				if($qmember_slt === false)
-					$queues = false;
-			}
-		}
-		
-		do
-		{
-			if(isset($_QR['fm_send']) === false || xivo_issa('agent',$_QR) === false || xivo_issa('afeatures',$_QR) === false)
-				break;
-
 			$return = &$result;
 
-			if($moh_list === false || isset($_QR['agent']['musiconhold'],$moh_list[$_QR['agent']['musiconhold']]) === false)
-				$_QR['agent']['musiconhold'] = '';
-
-			if($beep_list === false || isset($_QR['agent']['custom_beep'],$beep_list[$_QR['agent']['custom_beep']]) === false)
-				$_QR['agent']['custom_beep'] = '';
-
-			if($goodbye_list === false || isset($_QR['agent']['goodbye'],$goodbye_list[$_QR['agent']['goodbye']]) === false)
-				$_QR['agent']['goodbye'] = '';
-
-			$_QR['afeatures']['agentid'] = $info['afeatures']['agentid'];
-
-			if(($result['afeatures'] = $afeatures->chk_values($_QR['afeatures'])) === false)
+			if($appagent->set_edit($_QR) === false
+			|| $appagent->edit() === false)
+				$result = $appagent->get_result();
+			else
 			{
-				$edit = false;
-				$result['afeatures'] = $afeatures->get_filter_result();
+				$param['group'] = $appagent->get_result_var('afeatures','numgroup');
+				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 			}
-
-			$agentval = $result['afeatures']['number'].',';
-
-			if($result['afeatures']['passwd'] !== '')
-				$agentval .= $result['afeatures']['passwd'];
-
-			$agentname = ',';
-
-			if($result['afeatures']['firstname'] !== '')
-				$agentname .= $result['afeatures']['firstname'].' ';
-
-			if($result['afeatures']['lastname'] !== '')
-				$agentname .= $result['afeatures']['lastname'];
-
-			$agentval .= rtrim($agentname,' ');
-
-			$_QR['agent']['agent'] = rtrim($agentval,',');
-			$_QR['agent']['group'] = $result['afeatures']['numgroup'];
-
-			if(($result['agent'] = $agent->chk_values($_QR['agent'])) === false)
-			{
-				$edit = false;
-				$result['agent'] = $agent->get_filter_result();
-			}
-
-			if(xivo_ulongint($result['afeatures']['numgroup']) === xivo_ulongint($info['afeatures']['numgroup']))
-				unset($result['agent']['group']);
-
-			$aqueue_where = array(
-					'usertype' => 'agent',
-					'userid' => $info['afeatures']['id'],
-					'category' => 'queue');
-
-			$edit_queue = false;
-			$queue_add = $queue_edit = $queue_del = $queue_tmp = array();
-
-			if(($queue_slt = xivo_issa_val('queue-select',$_QR)) !== false && xivo_issa('queue',$_QR) !== false)
-			{
-				$nb = count($queue_slt);
-				$aqueue_info = $aqueue_where;
-				$aqueue_info['call-limit'] = 0;
-				$aqueue_info['channel'] = XIVO_SRE_IPBX_AST_CHAN_AGENT;
-
-				for($i = 0;$i < $nb;$i++)
-				{
-					$qname = &$queue_slt[$i];
-					$aqueue_info['queue_name'] = $qname;
-
-					if(isset($queue_tmp[$qname]) === true)
-					{
-						if(isset($qmember_slt[$qname]) === true)
-						{
-							$edit_queue = true;
-							$queue_tmp[$qname] = 1;
-							$queue_del[] = $aqueue_info;
-						}
-						continue;
-					}
-
-					if(isset($qmember_unslt[$qname]) === true)
-						$ref_queue = &$queue_add;
-					else if(isset($qmember_slt[$qname]) === true)
-						$ref_queue = &$queue_edit;
-					else
-						continue;
-
-					$aqueue_info['interface'] = $ipbx->mk_agent_interface($result['afeatures']['number']);
-
-					$aqueue_tmp = array_merge($_QR['queue'][$qname],$aqueue_info);
-
-					if(($qinfo = $qmember->chk_values($aqueue_tmp)) === false)
-						continue;
-
-					$edit_queue = true;
-					$queue_tmp[$qname] = 1;
-					$ref_queue[] = $qinfo;
-				}
-			}
-
-			if($qmember_slt !== false)
-			{
-				$aqueue_info = $aqueue_where;
-
-				reset($qmember_slt);
-
-				while(list($qname) = each($qmember_slt))
-				{
-					$aqueue_info['queue_name'] = $qname;
-
-					if(isset($queue_tmp[$qname]) === true)
-						continue;
-
-					$edit_queue = true;
-					$queue_del[] = $aqueue_info;
-				}
-			}
-
-			if($edit === false || $afeatures->edit($info['afeatures']['id'],$result['afeatures']) === false)
-				break;
-			else if($agent->edit_agent($info['agent']['id'],$result['agent']) === false)
-			{
-				$afeatures->edit_origin();
-				break;
-			}
-			else if($edit_queue === true)
-			{
-				if(isset($queue_add[0]) === true)
-					$qmember->add_list($queue_add);
-
-				if(($nb = count($queue_edit)) !== 0)
-				{
-					for($i = 0;$i < $nb;$i++)
-					{
-						$aqueue_where['queue_name'] = $queue_edit[$i]['queue_name'];
-						$qmember->edit_where($aqueue_where,$queue_edit[$i]);
-					}
-				}
-
-				if(($nb = count($queue_del)) !== 0)
-				{
-					for($i = 0;$i < $nb;$i++)
-					{
-						$aqueue_where['queue_name'] = $queue_del[$i]['queue_name'];
-						$qmember->delete_where($aqueue_where);
-					}
-				}
-			}
-
-			$param['group'] = $result['afeatures']['numgroup'];
-
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 		}
-		while(false);
 
-		$element = array();
-		$element['afeatures'] = $afeatures->get_element();
-		$element['agent'] = $agent->get_element();
-		$element['qmember'] = $qmember->get_element();
+		if($qmember['list'] !== false && xivo_ak('queuemember',$return) === true)
+		{
+			$qmember['slt'] = xivo_array_intersect_key($return['queuemember'],
+								   $qmember['list'],
+								   'qfeaturesid');
 
-		$_HTML->set_var('id',$id);
+			if($qmember['slt'] !== false)
+			{
+				$qmember['info'] = xivo_array_copy_intersect_key($return['queuemember'],
+										 $qmember['slt'],
+										 'qfeaturesid');
+				$qmember['list'] = xivo_array_diff_key($qmember['list'],$qmember['slt']);
+
+				xivo::load_class('xivo_sort');
+				$queuesort = new xivo_sort(array('browse'	=> 'qfeatures',
+								 'key'		=> 'name'));
+
+				uasort($qmember['slt'],array(&$queuesort,'str_usort'));
+			}
+		}
+
+		$appagentgroup = &$ipbx->get_application('agentgroup',null,false);
+
+		$agentgroup_list = $appagentgroup->get_agentgroups_list(null,
+									array('name' => SORT_ASC));
+
+		$_HTML->set_var('id',$info['afeatures']['id']);
 		$_HTML->set_var('info',$return);
-		$_HTML->set_var('element',$element);
+		$_HTML->set_var('element',$appagent->get_elements());
 		$_HTML->set_var('queues',$queues);
-		$_HTML->set_var('qmember_slt',$qmember_slt);
-		$_HTML->set_var('qmember_unslt',$qmember_unslt);
-		$_HTML->set_var('moh_list',$moh_list);
-		$_HTML->set_var('beep_list',$beep_list);
-		$_HTML->set_var('goodbye_list',$goodbye_list);
+		$_HTML->set_var('qmember',$qmember);
+		$_HTML->set_var('moh_list',$appagent->get_musiconhold());
+		$_HTML->set_var('beep_list',$appagent->get_beep());
+		$_HTML->set_var('goodbye_list',$appagent->get_goodbye());
+		$_HTML->set_var('context_list',$appagent->get_context_list());
+		$_HTML->set_var('agentgroup_list',$agentgroup_list);
 
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		break;
 	case 'deleteagent':
-		if(($info['agroup'] = $agroup->get($group)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),'act=list');
+		$appagent = &$ipbx->get_application('agent');
+
+		if(isset($_QR['id']) === false || $appagent->get($_QR['id']) === false)
+			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 
 		$param['act'] = 'listagent';
+		$param['numgroup'] = $appagent->get_info_var('afeatures','numgroup');
 		$param['page'] = $page;
-		$param['group'] = $info['agroup']['id'];
 
-		do
+		$appagent->delete();
+
+		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+		break;
+	case 'deleteagents':
+		$param['act'] = 'listagent';
+		$param['page'] = $page;
+
+		if(($values = xivo_issa_val('agents',$_QR)) === false)
+			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+
+		$appagent = &$ipbx->get_application('agent');
+
+		$nb = count($values);
+
+		for($i = 0;$i < $nb;$i++)
 		{
-			if(isset($_QR['id']) === false
-			|| ($info['afeatures'] = $afeatures->get($_QR['id'])) === false
-			|| ($info['agent'] = $agent->get_agent($info['afeatures']['agentid'])) === false)
-				break;
-			else if($afeatures->delete($info['afeatures']['id']) === false)
-				break;
-			else if($agent->delete_agent($info['agent']['id']) === false)
-			{
-				$afeatures->add_origin();
-				break;
-			}
-
-			$qmember = &$ipbx->get_module('queuemember');
-
-			$aqueue_where = array('usertype'	=> 'agent',
-					      'userid'		=> $info['afeatures']['id'],
-					      'category'	=> 'queue');
-
-			$qmember->delete_where($aqueue_where);
+			if($appagent->get($values[$i]) !== false)
+				$appagent->delete();
 		}
-		while(false);
+
+		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+		break;
+	case 'enableagents':
+	case 'disableagents':
+		$param['act'] = 'listagent';
+		$param['page'] = $page;
+
+		if(($values = xivo_issa_val('agents',$_QR)) === false)
+			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+
+		$appagent = &$ipbx->get_application('agent',null,false);
+
+		$nb = count($values);
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			if($appagent->get($values[$i]) === false)
+				continue;
+			else if($act === 'disableagents')
+				$appagent->disable();
+			else
+				$appagent->enable();
+		}
 
 		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 		break;
 	case 'listagent':
-		if(($info['agroup'] = $agroup->get($group)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+		$prevpage = $page - 1;
+		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
 
-		$total = 0;
-		$act = $param['act'] = 'listagent';
+		$appagent = &$ipbx->get_application('agent',null,false);
 
-		if(($agents = $ipbx->get_agents_list($info['agroup']['id'])) !== false)
+		$order = array();
+		$order['firstname'] = SORT_ASC;
+		$order['lastname'] = SORT_ASC;
+
+		$limit = array();
+		$limit[0] = $prevpage * $nbbypage;
+		$limit[1] = $nbbypage;
+
+		$list = $appagent->get_agents_group($group,null,$order,$limit);
+		$total = $appagent->get_cnt();
+
+		if($list === false && $total > 0 && $prevpage > 0)
 		{
-			$total = count($agents);
-			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('browse' => 'sort','key' => 'var_metric'));
-			usort($agents,array(&$sort,'num_usort'));
+			$param['page'] = $prevpage;
+			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 		}
 
-		$_HTML->set_var('group',$info['agroup']['id']);
-		$_HTML->set_var('pager',xivo_calc_page($page,20,$total));
-		$_HTML->set_var('list',$agents);
+		$appagentgroup = &$ipbx->get_application('agentgroup',null,false);
+
+		$agentgroup_list = $appagentgroup->get_agentgroups_list(null,
+									array('name' => SORT_ASC));
+
+		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_HTML->set_var('list',$list);
+		$_HTML->set_var('agentgroup_list',$agentgroup_list);
 		break;
 	default:
 		$act = 'list';
-		$total = 0;
+		$prevpage = $page - 1;
+		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
 
-		if($list_grps !== false)
-			$total = count($list_grps);
+		$appagentgroup = &$ipbx->get_application('agentgroup',null,false);
 
-		$_HTML->set_var('pager',xivo_calc_page($page,20,$total));
+		$order = array();
+		$order['name'] = SORT_ASC;
+
+		$limit = array();
+		$limit[0] = $prevpage * $nbbypage;
+		$limit[1] = $nbbypage;
+
+		$list = $appagentgroup->get_agentgroups_list(null,$order,$limit);
+		$total = $appagentgroup->get_cnt();
+
+		if($list === false && $total > 0 && $prevpage > 0)
+		{
+			$param['page'] = $prevpage;
+			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+		}
+
+		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_HTML->set_var('list',$list);
+		$_HTML->set_var('agentgroup_list',$appagentgroup->get_agentgroups_list(null,$order));
 }
 
 $_HTML->set_var('act',$act);

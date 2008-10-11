@@ -10,8 +10,10 @@ $form = &$this->get_module('form');
 		<span class="span-right">&nbsp;</span>
 	</h3>
 
-	<?=$this->file_include('bloc/service/ipbx/asterisk/trunk_management/iax/submenu');?>
-	
+<?php
+	$this->file_include('bloc/service/ipbx/asterisk/trunk_management/iax/submenu');
+?>
+
 	<div class="sb-content">
 		<form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-codec');">
 <?php
@@ -22,11 +24,11 @@ $form = &$this->get_module('form');
 					    'value'	=> 1)),
 
 			$form->hidden(array('name'	=> 'act',
-					    'value'	=> 'add')),
+					    'value'	=> 'add'));
 
-			$this->file_include('bloc/service/ipbx/asterisk/trunk_management/iax/form'),
+		$this->file_include('bloc/service/ipbx/asterisk/trunk_management/iax/form');
 
-			$form->submit(array('name'	=> 'submit',
+		echo	$form->submit(array('name'	=> 'submit',
 					    'id'	=> 'it-submit',
 					    'value'	=> $this->bbf('fm_bt-save')));
 ?>

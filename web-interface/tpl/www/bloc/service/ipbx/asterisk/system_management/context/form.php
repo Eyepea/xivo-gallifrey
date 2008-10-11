@@ -112,33 +112,45 @@
 
 <div id="sb-part-user" class="b-nodisplay">
 	<div class="sb-list">
-<?=$this->file_include('bloc/service/ipbx/asterisk/system_management/context/entity',array('type'	=> 'user',
-											    'count'	=> $user_nb,
-											    'list'	=> $user_list));?>
+<?php
+	$this->file_include('bloc/service/ipbx/asterisk/system_management/context/entity',
+			    array('type'	=> 'user',
+				  'count'	=> $user_nb,
+				  'list'	=> $user_list));
+?>
 	</div>
 </div>
 
 <div id="sb-part-group" class="b-nodisplay">
 	<div class="sb-list">
-<?=$this->file_include('bloc/service/ipbx/asterisk/system_management/context/entity',array('type'	=> 'group',
-											    'count'	=> $group_nb,
-											    'list'	=> $group_list));?>
+<?php
+	$this->file_include('bloc/service/ipbx/asterisk/system_management/context/entity',
+			    array('type'	=> 'group',
+				  'count'	=> $group_nb,
+				  'list'	=> $group_list));
+?>
 	</div>
 </div>
 
 <div id="sb-part-queue" class="b-nodisplay">
 	<div class="sb-list">
-<?=$this->file_include('bloc/service/ipbx/asterisk/system_management/context/entity',array('type'	=> 'queue',
-											    'count'	=> $queue_nb,
-											    'list'	=> $queue_list));?>
+<?php
+	$this->file_include('bloc/service/ipbx/asterisk/system_management/context/entity',
+			    array('type'	=> 'queue',
+				  'count'	=> $queue_nb,
+				  'list'	=> $queue_list));
+?>
 	</div>
 </div>
 
 <div id="sb-part-meetme" class="b-nodisplay">
 	<div class="sb-list">
-<?=$this->file_include('bloc/service/ipbx/asterisk/system_management/context/entity',array('type'	=> 'meetme',
-											    'count'	=> $meetme_nb,
-											    'list'	=> $meetme_list));?>
+<?php
+	$this->file_include('bloc/service/ipbx/asterisk/system_management/context/entity',
+			    array('type'	=> 'meetme',
+				  'count'	=> $meetme_nb,
+				  'list'	=> $meetme_list));
+?>
 	</div>
 </div>
 

@@ -37,7 +37,8 @@ else:
 		'</div>';
 endif;
 
-echo	$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',array('event' => 'answer'));
+$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',
+		    array('event'	=> 'answer'));
 
 ?>
 

@@ -2,9 +2,6 @@
 
 $array = array();
 
-$array['var_metric'] = array();
-$array['var_metric']['range'] = 1000000;
-
 $array['element'] = array();
 
 $array['element']['agent'] = array();

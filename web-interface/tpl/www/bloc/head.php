@@ -1,5 +1,7 @@
 <?php
-	$dhtml = &$this->get_module('dhtml');
+
+$dhtml = &$this->get_module('dhtml');
+
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="<?=XIVO_I18N_BABELFISH_LANGUAGE?>">
@@ -25,10 +27,12 @@
 		<!-- Date: <?=gmstrftime('%Y-%m-%d %H:%M:%S %Z');?> -->
 
 <?php
-	$this->file_include('bloc/meta');
 
-	$dhtml->load_css();
-	$dhtml->load_js();
+$this->file_include('bloc/meta');
+
+$dhtml->load_css();
+$dhtml->load_js();
+
 ?>
 	</head>
 	<body>

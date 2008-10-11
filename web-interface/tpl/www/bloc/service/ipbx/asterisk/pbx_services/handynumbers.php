@@ -72,13 +72,21 @@ else:
 
 <div id="sb-part-first" class="b-nodisplay">
 	<div class="sb-list">
-	<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_services/handynumbers/form',array('type' => 'emergency','count' => $egency_nb));?>
+<?php
+	$this->file_include('bloc/service/ipbx/asterisk/pbx_services/handynumbers/form',
+			    array('type'	=> 'emergency',
+				  'count'	=> $egency_nb));
+?>
 	</div>
 </div>
 
 <div id="sb-part-last" class="b-nodisplay">
 	<div class="sb-list">
-	<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_services/handynumbers/form',array('type' => 'special','count' => $special_nb));?>
+<?php
+	$this->file_include('bloc/service/ipbx/asterisk/pbx_services/handynumbers/form',
+			    array('type'	=> 'special',
+				  'count'	=> $special_nb));
+?>
 	</div>
 </div>
 

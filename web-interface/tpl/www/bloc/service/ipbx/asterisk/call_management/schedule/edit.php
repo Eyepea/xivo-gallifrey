@@ -11,7 +11,9 @@
 <?=$form->hidden(array('name' => 'act','value' => 'edit'));?>
 <?=$form->hidden(array('name' => 'id','value' => $this->get_var('id')));?>
 
-<?=$this->file_include('bloc/service/ipbx/asterisk/call_management/schedule/form');?>
+<?php
+	$this->file_include('bloc/service/ipbx/asterisk/call_management/schedule/form');
+?>
 
 <?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>
 

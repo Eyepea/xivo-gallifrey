@@ -69,6 +69,8 @@ define('XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_LENGTH','{1,50}');
 define('XIVO_SRE_IPBX_AST_REGEXP_AIDIO_FILE_EXTENSION','wav|WAV|wav49|ogg|ul|ulaw|um|pcm|al|alaw|au|vox|sln|raw');
 
 define('XIVO_SRE_IPBX_AST_REGEXP_CONTEXT','(?!(?:macro|voicemenu|xivo)-)[a-z0-9_-]{1,39}');
+define('XIVO_SRE_IPBX_AST_REGEXP_CALLERID','(?:"[\w +]"|[\w ]+)'.
+					   '(?: ?\<[0-9\*#]{1,40}\>)?');
 define('XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN','(?:\$\{[\(\)a-zA-Z0-9_\-\$\{\}\:]+\})');
 define('XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN_EXTEN','(?:[0-9\*#]{1,40}'.
 						 '|(?:[0-9\*#]*'.
@@ -110,6 +112,9 @@ define('XIVO_SRE_IPBX_AST_CONTEXT_HINT','hint');
 define('XIVO_SRE_IPBX_AST_CONTEXT_HINTS','hints');
 define('XIVO_SRE_IPBX_AST_CONTEXT_PARKEDCALLS','parkedcalls');
 define('XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES','zonemessages');
+
+define('XIVO_SRE_IPBX_AST_AGENT_GROUP_DEFAULT',1);
+define('XIVO_SRE_IPBX_AST_AGENT_VAR_METRIC_RANGE',1000000);
 
 define('XIVO_SRE_IPBX_AST_MOH_DEFAULT','default');
 

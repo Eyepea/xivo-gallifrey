@@ -169,32 +169,20 @@ Contexte :
 ; fm_generalfeatures_parkingtime
 Délai d'attente :
 
-; fm_generalfeatures_parkingtime-opt15
-15 sec.
+; fm_generalfeatures_parkingtime-opt-seconds
+%s secondes
 
-; fm_generalfeatures_parkingtime-opt30
-30 sec.
+; fm_generalfeatures_parkingtime-opt-minute
+1 minute
 
-; fm_generalfeatures_parkingtime-opt45
-45 sec.
+; fm_generalfeatures_parkingtime-opt-minute-seconds
+%s min. %s sec.
 
-; fm_generalfeatures_parkingtime-opt60
-1 min.
+; fm_generalfeatures_parkingtime-opt-minutes
+%s minutes
 
-; fm_generalfeatures_parkingtime-opt120
-2 min.
-
-; fm_generalfeatures_parkingtime-opt180
-3 min.
-
-; fm_generalfeatures_parkingtime-opt240
-4 min.
-
-; fm_generalfeatures_parkingtime-opt300
-5 min.
-
-; fm_generalfeatures_parkingtime-opt
-%s min. %s sec. 
+; fm_generalfeatures_parkingtime-opt-minutes-seconds
+%s min. %s sec.
 
 ; fm_generalfeatures_parkpos
 Extensions des appels parkés :
@@ -208,21 +196,19 @@ Utiliser les annonces ADSI :
 ; fm_generalfeatures_transferdigittimeout
 Délai d'attente pour la numérotation d'un transfert :
 
-; fm_generalfeatures_xferfailsound
-
-; fm_generalfeatures_transferdigittimeout-opt1
+; fm_generalfeatures_transferdigittimeout-opt(1)
 1 seconde
-
-; fm_generalfeatures_transferdigittimeout-opt60
-1 minute
 
 ; fm_generalfeatures_transferdigittimeout-opt
 %s secondes
 
+; fm_generalfeatures_transferdigittimeout-opt(60)
+1 minute
+
 ; fm_generalfeatures_featuredigittimeout
 Délai d'attente pour la numérotation d'une fonctionnalité  :
 
-; fm_generalfeatures_featuredigittimeout-opt1
+; fm_generalfeatures_featuredigittimeout-opt(1)
 1 milliseconde
 
 ; fm_generalfeatures_featuredigittimeout-opt

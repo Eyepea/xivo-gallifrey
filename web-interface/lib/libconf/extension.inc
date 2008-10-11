@@ -7,6 +7,8 @@ define('XIVO_EXT__MIME_MAGIC',8);
 define('XIVO_EXT__MYSQL',16);
 define('XIVO_EXT__SQLITE',32);
 define('XIVO_EXT__PGSQL',64);
+define('XIVO_EXT__LDAP',128);
+define('XIVO_EXT__JSON',256);
 
 $array = array();
 
@@ -58,5 +60,19 @@ $array[XIVO_EXT__PGSQL]	= array(
 				'load'		=> 2,
 				'optionnal'	=> 1,
 				'const'		=> 'XIVO_EXT__PGSQL');
+
+$array[XIVO_EXT__LDAP]	= array(
+				'meta'		=> 'ldap',
+				'label'		=> 'LDAP',
+				'load'		=> 2,
+				'optionnal'	=> 1,
+				'const'		=> 'XIVO_EXT__LDAP');
+
+$array[XIVO_EXT__JSON]	= array(
+				'meta'		=> 'json',
+				'label'		=> 'JSON',
+				'load'		=> 2,
+				'optionnal'	=> 1,
+				'const'		=> 'XIVO_EXT__JSON');
 
 ?>

@@ -11,7 +11,7 @@ class xivo_service_asterisk_realstatic_meetme extends xivo_service_asterisk_real
 		if($data['category'] === 'rooms'
 		&& $data['var_name'] === 'conf')
 		{
-			$val = explode(',',$data['var_val']);
+			$val = explode(',',$data['var_val'],3);
 
 			$data['number'] = xivo_haslen($val,0) === true ? $val[0] : '';
 			$data['pin'] = xivo_haslen($val,1) === true ? $val[1] : '';

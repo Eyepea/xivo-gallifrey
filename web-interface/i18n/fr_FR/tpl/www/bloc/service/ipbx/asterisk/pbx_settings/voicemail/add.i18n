@@ -61,7 +61,7 @@ Annoncer la durée :
 ; fm_voicemail_saydurationm
 Temps minimum pour énoncer la durée :
 
-; fm_voicemail_saydurationm-opt1
+; fm_voicemail_saydurationm-opt(1)
 1 minute
 
 ; fm_voicemail_saydurationm-opt

@@ -1,14 +1,20 @@
 <?php
-	$url = &$this->get_module('url');
 
-	$userstat = $this->get_var('userstat');
-	$groupstat = $this->get_var('groupstat');
-	$queuestat = $this->get_var('queuestat');
-	$meetmestat = $this->get_var('meetmestat');
-	$voicemailstat = $this->get_var('voicemailstat');
+$url = &$this->get_module('url');
+
+$userstat = $this->get_var('userstat');
+$groupstat = $this->get_var('groupstat');
+$queuestat = $this->get_var('queuestat');
+$meetmestat = $this->get_var('meetmestat');
+$voicemailstat = $this->get_var('voicemailstat');
+
 ?>
 <div id="index" class="b-infos">
-	<h3 class="sb-top xspan"><span class="span-left">&nbsp;</span><span class="span-center"><?=$this->bbf('title_content_name');?></span><span class="span-right">&nbsp;</span></h3>
+	<h3 class="sb-top xspan">
+		<span class="span-left">&nbsp;</span>
+		<span class="span-center"><?=$this->bbf('title_content_name');?></span>
+		<span class="span-right">&nbsp;</span>
+	</h3>
 	<div class="sb-content sb-list">
 		<div id="ipbx-stats">
 			<table border="0" cellpadding="0" cellspacing="0">
@@ -22,7 +28,9 @@
 					<td class="td-left txt-left">
 <?php
 	if(xivo_user::chk_acl('pbx_settings','users') === true):
-		echo $url->href_html($this->bbf('stats_type-user'),'service/ipbx/pbx_settings/users','act=add');
+		echo	$url->href_html($this->bbf('stats_type-user'),
+					'service/ipbx/pbx_settings/users',
+					'act=add');
 	else:
 		echo $this->bbf('stats_type-user');
 	endif;
@@ -36,7 +44,9 @@
 					<td class="td-left txt-left">
 <?php
 	if(xivo_user::chk_acl('pbx_settings','groups') === true):
-		echo $url->href_html($this->bbf('stats_type-group'),'service/ipbx/pbx_settings/groups','act=add');
+		echo	$url->href_html($this->bbf('stats_type-group'),
+					'service/ipbx/pbx_settings/groups',
+					'act=add');
 	else:
 		echo $this->bbf('stats_type-group');
 	endif;
@@ -50,9 +60,11 @@
 					<td class="td-left txt-left">
 <?php
 	if(xivo_user::chk_acl('pbx_settings','queues') === true):
-		echo $url->href_html($this->bbf('stats_type-queue'),'service/ipbx/pbx_settings/queues','act=add');
+		echo	$url->href_html($this->bbf('stats_type-queue'),
+					'service/ipbx/pbx_settings/queues',
+					'act=add');
 	else:
-		echo $this->bbf('stats_type-queue');
+		echo	$this->bbf('stats_type-queue');
 	endif;
 ?>
 					</td>
@@ -64,9 +76,11 @@
 					<td class="td-left txt-left">
 <?php
 	if(xivo_user::chk_acl('pbx_settings','meetme') === true):
-		echo $url->href_html($this->bbf('stats_type-meetme'),'service/ipbx/pbx_settings/meetme','act=add');
+		echo	$url->href_html($this->bbf('stats_type-meetme'),
+					'service/ipbx/pbx_settings/meetme',
+					'act=add');
 	else:
-		echo $this->bbf('stats_type-meetme');
+		echo	$this->bbf('stats_type-meetme');
 	endif;
 ?>
 					</td>
@@ -78,9 +92,11 @@
 					<td class="td-left txt-left">
 <?php
 	if(xivo_user::chk_acl('pbx_settings','voicemail') === true):
-		echo $url->href_html($this->bbf('stats_type-voicemail'),'service/ipbx/pbx_settings/voicemail','act=add');
+		echo	$url->href_html($this->bbf('stats_type-voicemail'),
+					'service/ipbx/pbx_settings/voicemail',
+					'act=add');
 	else:
-		echo $this->bbf('stats_type-voicemail');
+		echo	$this->bbf('stats_type-voicemail');
 	endif;
 ?>
 					</td>
@@ -105,18 +121,30 @@
 
 			<table border="0" cellpadding="0" cellspacing="0">
 				<tr class="l-infos-1on2">
-					<td class="td-singlenotop"><?=$this->bbf('stats_calls-active',$this->get_var('activecalls'));?></td>
+					<td class="td-singlenotop">
+						<?=$this->bbf('stats_calls-active',$this->get_var('activecalls'));?>
+					</td>
 				</tr>
 			</table>
 		</div>
 		<div id="ipbx-logo">
 			<?=$url->img_html('img/service/ipbx/asterisk.png',XIVO_SRE_IPBX_LABEL);?>
 			<ul>
-				<li><b><?=$this->bbf('info_service_label');?></b> <?=XIVO_SRE_IPBX_LABEL?></li>
-				<li><b><?=$this->bbf('info_service_version');?></b> <?=XIVO_SRE_IPBX_VERSION?></li>
+				<li><b><?=$this->bbf('info_service_label');?></b>
+				       <?=$this->bbf('info_service_version-opt',
+						     XIVO_SRE_IPBX_LABEL);?>
+				</li>
+				<li><b><?=$this->bbf('info_service_version');?></b>
+				       <?=$this->bbf('info_service_version-opt',
+						     XIVO_SRE_IPBX_VERSION);?>
+				</li>
 			</ul>
 		</div>
 		<div class="clearboth"></div>
 	</div>
-	<div class="sb-foot xspan"><span class="span-left">&nbsp;</span><span class="span-center">&nbsp;</span><span class="span-right">&nbsp;</span></div>
+	<div class="sb-foot xspan">
+		<span class="span-left">&nbsp;</span>
+		<span class="span-center">&nbsp;</span>
+		<span class="span-right">&nbsp;</span>
+	</div>
 </div>

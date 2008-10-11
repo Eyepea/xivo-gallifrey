@@ -4,11 +4,12 @@ xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
 class xivo_service_asterisk_agentfeatures extends xivo_service_asterisk_abstract
 {
-	var $_dso	= null;
-	var $_name	= 'agentfeatures';
-	var $_filter	= false;
-	var $_origin	= false;
-	var $_identity	= false;
+	var $_dso		= null;
+	var $_name		= 'agentfeatures';
+	var $_filter		= false;
+	var $_origin		= false;
+	var $_origin_list	= false;
+	var $_identity		= false;
 
 	function xivo_service_asterisk_agentfeatures(&$sre,&$dso)
 	{

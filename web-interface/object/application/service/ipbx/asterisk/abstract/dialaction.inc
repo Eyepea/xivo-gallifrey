@@ -264,8 +264,6 @@ class xivo_application_service_asterisk_dialaction_abstract extends xivo_applica
 
 		$this->_return = array();
 
-		$list = is_array($this->_origin) === true ? $this->_origin : false;
-
 		$categoryval = $this->_origin[0]['categoryval'];
 
 		foreach($rs as $val)
@@ -298,11 +296,11 @@ class xivo_application_service_asterisk_dialaction_abstract extends xivo_applica
 		if(xivo_issa(0,$this->_origin) === false)
 			return(null);
 
-		$dialaction_where = array();
-		$dialaction_where['category'] = $this->_origin[0]['category'];
-		$dialaction_where['categoryval'] = $this->_origin[0]['categoryval'];
+		$where = array();
+		$where['category'] = $this->_origin[0]['category'];
+		$where['categoryval'] = $this->_origin[0]['categoryval'];
 
-		$r = $this->_dialaction->delete_where($dialaction_where);
+		$r = $this->_dialaction->delete_where($where);
 
 		if($status === 'delete')
 			$this->_return = $r;
@@ -338,11 +336,11 @@ class xivo_application_service_asterisk_dialaction_abstract extends xivo_applica
 		|| ($actionarg1 = xivo_ulongint($actionarg1)) === 0)
 			return(false);
 
-		$dialaction_where = array();
-		$dialaction_where['action'] = $action;
-		$dialaction_where['actionarg1'] = $actionarg1;
+		$where = array();
+		$where['action'] = $action;
+		$where['actionarg1'] = $actionarg1;
 
-		return($this->_dialaction->unlinked_where($dialaction_where));
+		return($this->_dialaction->unlinked_where($where));
 	}
 }
 

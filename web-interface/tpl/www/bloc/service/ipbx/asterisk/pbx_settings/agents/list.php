@@ -1,22 +1,36 @@
 <?php
-	$url = &$this->get_module('url');
-	$form = &$this->get_module('form');
-	$dhtml = &$this->get_module('dhtml');
 
-	$pager = $this->get_var('pager');
+$url = &$this->get_module('url');
+$form = &$this->get_module('form');
+$dhtml = &$this->get_module('dhtml');
 
-	$page = $url->pager($pager['pages'],
-			    $pager['page'],
-			    $pager['prev'],
-			    $pager['next'],
-			    'service/ipbx/pbx_settings/agents',
-			    array('act' => $this->get_var('act')));
+$pager = $this->get_var('pager');
+$act = $this->get_var('act');
+
+$page = $url->pager($pager['pages'],
+		    $pager['page'],
+		    $pager['prev'],
+		    $pager['next'],
+		    'service/ipbx/pbx_settings/agents',
+		    array('act' => $act));
+
 ?>
 <div id="sr-agentgroup" class="b-list">
 <?php
 	if($page !== ''):
 		echo '<div class="b-page">',$page,'</div>';
 	endif;
+?>
+<form action="#" name="fm-agentgroups-list" method="post" accept-charset="utf-8">
+<?php
+	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
+				    'value'	=> XIVO_SESS_ID)),
+
+		$form->hidden(array('name'	=> 'act',
+				    'value'	=> $act)),
+
+		$form->hidden(array('name'	=> 'page',
+				    'value'	=> $pager['page']));
 ?>
 <table cellspacing="0" cellpadding="0" border="0">
 	<tr class="sb-top">
@@ -27,29 +41,45 @@
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
 <?php
-	if(($list = $this->get_var('list_grps')) === false || ($nb = count($list)) === 0):
+	if(($list = $this->get_var('list')) === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
 		<td colspan="5" class="td-single"><?=$this->bbf('no_group');?></td>
 	</tr>
 <?php
 	else:
-		for($i = $pager['beg'],$j = 0;$i < $pager['end'] && $i < $pager['total'];$i++,$j++):
+		for($i = 0;$i < $nb;$i++):
 
 			$ref = &$list[$i];
+
+			if($ref['agentgroup']['commented'] === true):
+				$icon = 'disable';
+			else:
+				$icon = 'enable';
+			endif;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
 	    onmouseout="this.className = this.tmp;"
-	    class="sb-content l-infos-<?=(($j % 2) + 1)?>on2">
-		<td class="td-left txt-left curpointer"
-		    colspan="2"
-		    onclick="location.href = xivo_firstchild(this);">
-			<?=$url->href_html(xivo_trunc($ref['agroup']['name'],40,'...',false),
-					   'service/ipbx/pbx_settings/agents',
-					   array('act'		=> 'listagent',
-					   	 'group'	=> $ref['agroup']['id']));?>
+	    class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
+		<td class="td-left">
+			<?=$form->checkbox(array('name'		=> 'agentgroups[]',
+						 'value'	=> $ref['agentgroup']['id'],
+						 'label'	=> false,
+						 'id'		=> 'it-agentgroups-'.$i,
+						 'checked'	=> false,
+						 'field'	=> false));?>
 		</td>
-		<td><?=$ref['nb_agent']?></td>
+		<td class="txt-left curpointer"
+		    onclick="location.href = xivo_lastchild(this);">
+<?php
+			echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),
+				$url->href_html(xivo_trunc($ref['agentgroup']['name'],40,'...',false),
+						'service/ipbx/pbx_settings/agents',
+						array('act'	=> 'listagent',
+						      'group'	=> $ref['agentgroup']['id']));
+?>
+		</td>
+		<td><?=$ref['nb_amember']?></td>
 		<td class="td-right" colspan="2">
 <?php
 		echo	$url->href_html($url->img_html('img/site/button/edit.gif',
@@ -57,17 +87,17 @@
 						       'border="0"'),
 					'service/ipbx/pbx_settings/agents',
 					array('act'	=> 'edit',
-					      'group'	=> $ref['agroup']['id']),
+					      'group'	=> $ref['agentgroup']['id']),
 					null,
 					$this->bbf('opt_modify')),"\n";
 
-		if($ref['agroup']['deletable'] === true):
+		if($ref['agentgroup']['deletable'] === true):
 			echo	$url->href_html($url->img_html('img/site/button/delete.gif',
 							       $this->bbf('opt_delete'),
 							       'border="0"'),
 						'service/ipbx/pbx_settings/agents',
 						array('act'	=> 'delete',
-						      'group'	=> $ref['agroup']['id'],
+						      'group'	=> $ref['agentgroup']['id'],
 						      'page'	=> $pager['page']),
 						'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',
 						$this->bbf('opt_delete'));
@@ -85,6 +115,7 @@
 		<td class="td-right xspan b-nosize"><span class="span-right b-nosize">&nbsp;</span></td>
 	</tr>
 </table>
+</form>
 <?php
 	if($page !== ''):
 		echo '<div class="b-page">',$page,'</div>';

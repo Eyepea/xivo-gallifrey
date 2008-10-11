@@ -43,5 +43,17 @@ Appel(s) actif(s) : %s
 ; info_service_label
 Logiciel :
 
+; info_service_label-opt(unknown)
+Inconnu
+
+; info_service_label-opt
+%s
+
 ; info_service_version
 Version :
+
+; info_service_version-opt(unknown)
+Inconnue
+
+; info_service_version-opt
+%s

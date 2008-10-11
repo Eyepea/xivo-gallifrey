@@ -48,17 +48,11 @@ $array['element']['regcontext']['default'] = '';
 $array['element']['regcontext']['null'] = true;
 
 $array['element']['minregexpire'] = array();
-$array['element']['minregexpire']['value'] = array(0 => 0,10 => 10,20 => 20,30 => 30,
-						   40 => 40,50 => 50,60 => 1,70 => array(1,10),
-						   80 => array(1,20),90 => array(1,30),100 => array(1,40),
-						   110 => array(1,50),120 => 2);
+$array['element']['minregexpire']['value'] = array(0,10,20,30,40,50,60,70,80,90,100,110,120);
 $array['element']['minregexpire']['default'] = 60;
 
 $array['element']['maxregexpire'] = array();
-$array['element']['maxregexpire']['value'] = array(0 => 0,10 => 10,20 => 20,30 => 30,
-						   40 => 40,50 => 50,60 => 1,70 => array(1,10),
-						   80 => array(1,20),90 => array(1,30),100 => array(1,40),
-						   110 => array(1,50),120 => 2);
+$array['element']['maxregexpire']['value'] = array(0,10,20,30,40,50,60,70,80,90,100,110,120);
 $array['element']['maxregexpire']['default'] = 60;
 
 $array['element']['bandwidth'] = array();
@@ -161,12 +155,9 @@ $array['element']['rtignoreregexpire']['default'] = 'no';
 $array['element']['rtignoreregexpire']['set'] = true;
 
 $array['element']['rtautoclear'] = array();
-$array['element']['rtautoclear']['value'] = array('no' => 'no','yes' => 'yes',1 => 1,10 => 10,20 => 20,30 => 30,40 => 40,50 => 50,60 => 1,
-						    70 => array(1,10),80 => array(1,20),90 => array(1,30),
-						    100 => array(1,40),110 => array(1,50),120 => 2,130 => array(2,10),
-						    140 => array(2,20),150 => array(2,30),160 => array(2,40),
-						    170 => array(2,50),180 => 3,190 => array(3,10),200 => array(3,20),
-						    210 => array(3,30),220 => array(3,40),230 => array(3,50),240 => 4);
+$array['element']['rtautoclear']['value'] = array('no','yes',1,10,20,30,40,50,60,70,80,90,
+						  100,110,120,130,140,150,160,170,180,190,
+						  200,210,220,230,240);
 $array['element']['rtautoclear']['default'] = 'no'; 
 
 $array['element']['pingtime'] = array();

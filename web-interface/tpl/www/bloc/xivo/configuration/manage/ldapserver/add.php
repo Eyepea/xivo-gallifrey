@@ -12,7 +12,9 @@
 <?=$form->hidden(array('name' => 'act','value' => 'add'));?>
 <?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
 
-<?=$this->file_include('bloc/xivo/configuration/manage/ldapserver/form');?>
+<?php
+	$this->file_include('bloc/xivo/configuration/manage/ldapserver/form');
+?>
 
 <?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>
 

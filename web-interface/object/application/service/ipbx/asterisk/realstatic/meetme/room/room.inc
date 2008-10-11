@@ -29,6 +29,7 @@ class xivo_application_service_asterisk_realstatic_meetme_room extends xivo_appl
 			return(false);
 
 		$this->_info = $this->_origin = array();
+
 		$this->_info[$this->_name] = $info;
 		$this->_origin[$this->_name] = $this->_realstatic->get_origin();
 
@@ -57,62 +58,50 @@ class xivo_application_service_asterisk_realstatic_meetme_room extends xivo_appl
 		return(true);
 	}
 
+	function _prepare_result()
+	{
+		if(($rs = $this->get_result($this->_name)) === null || $rs === false)
+			return($rs);
+
+		$arr = array();
+		$arr['category'] = $this->_category;
+		$arr['cat_metric'] = $this->_cat_metric;
+		$arr['var_name'] = $this->_var_name;
+
+		$arr['var_val'] = $rs['number'].',';
+
+		if(xivo_haslen($rs,'pin') === true)
+			$arr['var_val'] .= $rs['pin'];
+
+		if(xivo_haslen($rs,'admin-pin') === true)
+			$arr['var_val'] .= ','.$rs['admin-pin'];
+
+		$arr['var_val'] = rtrim($arr['var_val'],',');
+
+		return($arr);
+	}
+
 	function add_meetmeroom()
 	{
-		if(($rs = $this->get_result($this->_name)) === null || $rs === false)
+		if(($rs = $this->_prepare_result()) === null || $rs === false)
 			return($rs);
 
-		$arr = array();
-		$arr['category'] = $this->_category;
-		$arr['cat_metric'] = $this->_cat_metric;
-		$arr['var_name'] = $this->_var_name;
-
-		$arr['var_val'] = $rs['number'].',';
-
-		if(xivo_haslen($rs,'pin') === true)
-			$arr['var_val'] .= $rs['pin'];
-
-		if(xivo_haslen($rs,'admin-pin') === true)
-			$arr['var_val'] .= ','.$rs['admin-pin'];
-
-		$arr['var_val'] = rtrim($arr['var_val'],',');
-
-		return(($this->_return[$this->_name] = $this->_realstatic->add($arr)));
+		return(($this->_return[$this->_name] = $this->_realstatic->add($rs)));
 	}
 
-	function edit_meetmeroom($id=0)
+	function edit_meetmeroom($id)
 	{
-		if(xivo_issa($this->_name,$this->_info) === true)
-			$id = $this->_info[$this->_name]['id'];
-		else if(($id = xivo_ulongint($id)) === 0)
+		if(($id = xivo_ulongint($id)) === 0)
 			return(false);
-
-		if(($rs = $this->get_result($this->_name)) === null || $rs === false)
+		else if(($rs = $this->_prepare_result()) === null || $rs === false)
 			return($rs);
 
-		$arr = array();
-		$arr['category'] = $this->_category;
-		$arr['cat_metric'] = $this->_cat_metric;
-		$arr['var_name'] = $this->_var_name;
-
-		$arr['var_val'] = $rs['number'].',';
-
-		if(xivo_haslen($rs,'pin') === true)
-			$arr['var_val'] .= $rs['pin'];
-
-		if(xivo_haslen($rs,'admin-pin') === true)
-			$arr['var_val'] .= ','.$rs['admin-pin'];
-
-		$arr['var_val'] = rtrim($arr['var_val'],',');
-
-		return(($this->_return[$this->_name] = $this->_realstatic->edit($id,$arr)));
+		return(($this->_return[$this->_name] = $this->_realstatic->edit($id,$rs)));
 	}
 
-	function delete_meetmeroom($status,$id=0)
+	function delete_meetmeroom($status,$id)
 	{
-		if(xivo_issa($this->_name,$this->_info) === true)
-			$id = $this->_info[$this->_name]['id'];
-		else if(($id = xivo_ulongint($id)) === 0)
+		if(($id = xivo_ulongint($id)) === 0)
 			return(null);
 
 		$r = $this->_realstatic->delete($id);

@@ -4,8 +4,10 @@
 
 <div class="b-infos b-form">
 	<h3 class="sb-top xspan"><span class="span-left">&nbsp;</span><span class="span-center"><?=$this->bbf('title_content_name');?></span><span class="span-right">&nbsp;</span></h3>
-	
-<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/voicemail/submenu');?>
+
+<?php
+	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/voicemail/submenu');
+?>
 
 	<div class="sb-content">
 <form action="#" method="post" accept-charset="utf-8">
@@ -14,7 +16,9 @@
 <?=$form->hidden(array('name' => 'act','value' => 'add'));?>
 <?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
 
-<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/voicemail/form');?>
+<?php
+	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/voicemail/form');
+?>
 
 <?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>
 

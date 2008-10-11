@@ -26,7 +26,7 @@ function xivo_ajs_load_script(url,urlparam,id,sess)
 
 	var uri = xivo_script_root+url+'?'+new Date().getTime();
 
-	if(xivo_is_array(urlparam) === true)
+	if(xivo_type_object(urlparam) === true)
 	{
 		for(property in urlparam)
 			uri += '&'+property+'='+urlparam[property];

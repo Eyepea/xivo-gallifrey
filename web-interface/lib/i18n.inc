@@ -412,22 +412,30 @@ class xivo_i18n
 					$r = &$babelfish[$namespace];
 				break;
 			case 'translate':
-				$r = '';
-
-				if($name === '')
-					return($r);
+				if($name === ''
+				|| (xivo_issa($namespace,$babelfish) === false
+				   && xivo_issa('_empty_',$babelfish) === false) === true)
+					return($name);
 
 				$value = (array) $value;
 
-				if(xivo_issa($namespace,$babelfish) === false || isset($babelfish[$namespace][$name]) === false)
+				if(empty($value) === false)
 				{
-					if(xivo_issa('_empty_',$babelfish) === false || isset($babelfish['_empty_'][$name]) === false)
-					{
-						//trigger_error('Undefined translation: '.$name,E_USER_NOTICE);
-						return($name);
-					}
-					else
+					$value = array_map('strval',array_filter($value,'is_scalar'));
+					$name_args = $name.'('.implode('|',$value).')';
+
+					if(isset($babelfish[$namespace][$name_args]) === true)
+						return($babelfish[$namespace][$name_args]);
+					else if(isset($babelfish['_empty_'][$name_args]) === true)
+						return($babelfish['_empty_'][$name_args]);
+				}
+
+				if(isset($babelfish[$namespace][$name]) === false)
+				{
+					if(isset($babelfish['_empty_'][$name]) === true)
 						$namespace = '_empty_';
+					else
+						return($name);
 				}
 
 				$r = (string) $babelfish[$namespace][$name];
@@ -705,20 +713,42 @@ class xivo_i18n
 						$this->_load = $_load; 
 						$this->_file = $_file;
 					}
-					else if(preg_match('/^;[\t ]*([a-zA-Z0-9-_]+)$/',$line,$match) === 1)
+					else if(preg_match('/^;[\t ]*([a-zA-Z0-9-_]+)(\(.*\))?$/',$line,$match) === 1)
 					{
 						$txt = true;
 						$key = $match[1];
 
+						if(isset($match[2]) === true)
+						{
+							if(xivo_is_sgraph($match[2]) === true)
+								$key .= $match[2];
+							else
+							{
+								$txt = false;
+								continue;
+							}
+						}
+
 						if(isset($r[$key]) === true)
 							$txt = false;
 					}
-					else if(preg_match('/^;[\t ]*"([a-zA-Z0-9_ -]+)"$/',$line,$match) === 1
+					else if(preg_match('/^;[\t ]*"([a-zA-Z0-9_ -]+)"(\(.*\))?$/',$line,$match) === 1
 					&& strpos($match[1],'  ') === false
 					&& $match[1]{0} !== ' ' && substr($match[1],-1,1) !== ' ')
 					{
 						$txt = true;
 						$key = $match[1];
+
+						if(isset($match[2]) === true)
+						{
+							if(xivo_is_sgraph($match[2]) === true)
+								$key .= $match[2];
+							else
+							{
+								$txt = false;
+								continue;
+							}
+						}
 
 						if(isset($r[$key]) === true)
 							$txt = false;

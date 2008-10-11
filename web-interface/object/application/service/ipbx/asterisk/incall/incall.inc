@@ -5,8 +5,6 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 class xivo_application_service_asterisk_incall extends xivo_application_asterisk_abstract
 {
 	var $_dso		= null;
-	var $_origin		= array();
-	var $_status		= '';
 	var $_incall		= false;
 	var $_dialaction	= false;
 	var $_extenumbers	= false;

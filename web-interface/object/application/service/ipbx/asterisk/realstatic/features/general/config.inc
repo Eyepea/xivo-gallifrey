@@ -20,15 +20,9 @@ $array['element']['context']['default'] = 'parkedcalls';
 $array['element']['context']['forcedef'] = true;
 
 $array['element']['parkingtime'] = array();
-$array['element']['parkingtime']['value'] = array(15 => 15,30 => 30,45 => 45,60 => 1,
-						  75 => array(1,15),90 => array(1,30),
-						  105 => array(1,45),120 => 2,
-						  135 => array(2,15),150 => array(2,30),
-						  165 => array(2,45),180 => 3,
-						  195 => array(3,15),210 => array(3,30),
-						  225 => array(3,45),240 => 4,
-						  255 => array(4,15),270 => array(4,30),
-						  285 => array(4,45),300 => 5);
+$array['element']['parkingtime']['value'] = array(15,30,45,60,75,90,105,120,
+						  135,150,165,180,195,210,225,
+						  240,255,270,285,300);
 $array['element']['parkingtime']['default'] = 45;
 
 $array['element']['parkpos'] = array();
@@ -71,11 +65,9 @@ $array['element']['pickupexten']['default'] = '*8';
 $array['filter'] = array();
 $array['filter']['parkext'] = array('regexp' => '/^[0-9\*#]+$/','minlen' => 1,'maxlen' => 40);
 $array['filter']['context'] = array('set' => false);
-$array['filter']['parkingtime'] = array('key' => array(15,30,45,60,
-						       75,90,105,120,
-						       135,150,165,180,
-						       195,210,225,240,
-						       255,270,285,300));
+$array['filter']['parkingtime'] = array('key' => array(15,30,45,60,75,90,105,120,
+						       135,150,165,180,195,210,225,
+						       240,255,270,285,300));
 $array['filter']['parkpos'] = array('regexp' => '/^[0-9]{1,5}-[0-9]{1,5}$/','minlen' => 3,'maxlen' => 11);
 $array['filter']['parkfindnext'] = array('bool' => true);
 $array['filter']['adsipark'] = array('bool' => true);

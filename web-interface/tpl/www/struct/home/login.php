@@ -1,3 +1,5 @@
 <div id="r-login">
-	<?=$this->file_include('bloc/home/login');?>
+<?php
+	$this->file_include('bloc/home/login');
+?>
 </div>

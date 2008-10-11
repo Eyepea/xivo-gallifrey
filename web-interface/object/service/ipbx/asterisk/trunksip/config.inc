@@ -326,7 +326,12 @@ $array['filter']['mailbox'] = array('set' => false,'chk' => 0);
 $array['filter']['subscribemwi'] = array('set' => false);
 $array['filter']['buggymwi'] = array('set' => false,'chk' => 0);
 $array['filter']['call-limit'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,50));
-$array['filter']['callerid'] = array('set' => false,'chk' => 2,'maxlen' => 80,'cast' => 'sgraph','notag' => false);
+$array['filter']['callerid'] = array('set'	=> false,
+				     'chk'	=> 2,
+				     'maxlen'	=> 80,
+				     'regexp'	=> '/^'.XIVO_SRE_IPBX_AST_REGEXP_CALLERID.'$/',
+				     'cast'	=> 'sgraph',
+				     'notag'	=> false);
 $array['filter']['fullname'] = array('set' => false,'chk' => 2);
 $array['filter']['cid_number'] = array('set' => false,'chk' => 2);
 $array['filter']['maxcallbitrate'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,1860));

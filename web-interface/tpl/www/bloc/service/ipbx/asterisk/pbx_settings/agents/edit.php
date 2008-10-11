@@ -4,7 +4,9 @@
 <div id="sr-agentgroup" class="b-infos b-form">
 	<h3 class="sb-top xspan"><span class="span-left">&nbsp;</span><span class="span-center"><?=$this->bbf('title_content_name');?></span><span class="span-right">&nbsp;</span></h3>
 
-	<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/agents/submenu');?>
+<?php
+	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/agents/submenu');
+?>
 
 	<div class="sb-content">
 <form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-agent'); xivo_fm_select('it-queue');">
@@ -14,7 +16,9 @@
 <?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
 <?=$form->hidden(array('name' => 'group','value' => $this->get_var('group')));?>
 
-<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/agents/form');?>
+<?php
+	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/agents/form');
+?>
 
 <?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>
 

@@ -102,7 +102,10 @@ endif;
 
 	<fieldset id="fld-dialaction-noanswer">
 		<legend><?=$this->bbf('fld-dialaction-noanswer');?></legend>
-		<?=$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',array('event' => 'noanswer'));?>
+<?php
+		$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',
+				    array('event'	=> 'noanswer'));
+?>
 	</fieldset>
 
 </div>

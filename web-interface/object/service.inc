@@ -17,12 +17,6 @@ class xivo_service
 
 		if(xivo_issa('_SRE',$_SESSION) === false)
 			$_SESSION['_SRE'] = array();
-/*
-		reset($ini);
-
-		while(list($key) = each($ini))
-			$this->_load_service($key);
-*/
 	}
 
 	function _load_service($name)

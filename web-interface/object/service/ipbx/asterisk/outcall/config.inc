@@ -54,12 +54,9 @@ $array['element']['internal']['default'] = 0;
 $array['element']['internal']['set'] = true;
 
 $array['element']['hangupringtime'] = array();
-$array['element']['hangupringtime']['value'] = array(0 => 0,15 => 15,30 => 30,45 => 45,60 => 1,
-						     75 => array(1,15),90 => array(1,30),105 => array(1,45),
-						     120 => 2,135 => array(2,15),150 => array(2,30),
-						     165 => array(2,45),180 => 3,195 => array(3,15),
-						     210 => array(3,30),225 => array(3,45),240 => 4,
-						     255 => array(4,15),270 => array(4,30),285 => array(4,45),300 => 5);
+$array['element']['hangupringtime']['value'] = array(0,15,30,45,60,75,90,
+						     105,120,135,150,165,180,195,
+						     210,225,240,255,270,285,300);
 $array['element']['hangupringtime']['default'] = 0;
 $array['element']['hangupringtime']['setdef'] = true;
 
@@ -81,12 +78,19 @@ $array['filter']['numlen'] = array('set' => false,'chk' => 2,'key' => array('*',
 					     				    21,22,23,24,25,26,27,28,29,30,
 									    31,32,33,34,35,36,37,38,39));
 $array['filter']['setcallerid'] = array('bool' => true);
-$array['filter']['callerid'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 80);
+$array['filter']['callerid'] = array('set'	=> false,
+				     'chk'	=> 2,
+				     'maxlen'	=> 80,
+				     'regexp'	=> '/^'.XIVO_SRE_IPBX_AST_REGEXP_CALLERID.'$/',
+				     'cast'	=> 'sgraph',
+				     'notag'	=> false);
 $array['filter']['useenum'] = array('bool' => true);
 $array['filter']['internal'] = array('bool' => true);
-$array['filter']['hangupringtime'] = array('set' => false,'chk' => 2,'key' => array(0,15,30,45,60,75,90,105,120,135,
-										    150,165,180,210,225,240,255,270,
-										    285,300));
+$array['filter']['hangupringtime'] = array('set'	=> false,
+					   'chk'	=> 2,
+					   'key' => array(0,15,30,45,60,75,90,
+							  105,120,135,150,165,180,
+							  210,225,240,255,270,285,300));
 $array['filter']['commented'] = array('bool' => true);
 
 ?>

@@ -52,7 +52,7 @@ Interface :
 ; fm_userfeatures_ringseconds
 Temps de sonnerie :
 
-; fm_userfeatures_ringseconds-opt0
+; fm_userfeatures_ringseconds-opt(0)
 Illimité
 
 ; fm_userfeatures_ringseconds-opt
@@ -64,13 +64,13 @@ Nombre d'appels simultanés :
 ; fm_protocol_protocol
 Protocole :
 
-; fm_protocol_protocol-opt-sip
+; fm_protocol_protocol-opt(sip)
 SIP
 
-; fm_protocol_protocol-opt-iax
+; fm_protocol_protocol-opt(iax)
 IAX
 
-; fm_protocol_protocol-opt-custom
+; fm_protocol_protocol-opt(custom)
 Personnalisé
 
 ; fm_protocol_context
@@ -83,21 +83,21 @@ Créer un contexte
 Musique d'attente :
 
 ; fm_protocol_language
-Langages :
+Langage :
 
 ; fm_protocol_nat
 NAT :
 
-; fm_protocol_nat-opt-no
+; fm_protocol_nat-opt(no)
 Non
 
-; fm_protocol_nat-opt-yes
+; fm_protocol_nat-opt(yes)
 Oui
 
-; fm_protocol_nat-opt-never
+; fm_protocol_nat-opt(never)
 Jamais
 
-; fm_protocol_nat-opt-route
+; fm_protocol_nat-opt(route)
 Route
 
 ; fm_userfeatures_voicemailid
@@ -181,40 +181,40 @@ Destination :
 ; fm_userfeatures_bsfilter
 Filtrage Patron - Secrétaire :
 
-; fm_userfeatures_bsfilter-opt-no
+; fm_userfeatures_bsfilter-opt(no)
 Non
 
-; fm_userfeatures_bsfilter-opt-boss
+; fm_userfeatures_bsfilter-opt(boss)
 Patron
 
-; fm_userfeatures_bsfilter-opt-secretary
+; fm_userfeatures_bsfilter-opt(secretary)
 Secrétaire
 
 ; fm_protocol_progressinband
 Evénement RING dans la bande :
 
-; fm_protocol_progressinband-opt-no
+; fm_protocol_progressinband-opt(no)
 Non
 
-; fm_protocol_progressinband-opt-yes
+; fm_protocol_progressinband-opt(yes)
 Oui
 
-; fm_protocol_progressinband-opt-never
+; fm_protocol_progressinband-opt(never)
 Jamais
 
 ; fm_protocol_dtmfmode
 DTMF :
 
-; fm_protocol_dtmfmode-opt-rfc2833
+; fm_protocol_dtmfmode-opt(rfc2833)
 RFC 2833
 
-; fm_protocol_dtmfmode-opt-inband
+; fm_protocol_dtmfmode-opt(inband)
 InBand
 
-; fm_protocol_dtmfmode-opt-info
+; fm_protocol_dtmfmode-opt(info)
 INFO
 
-; fm_protocol_dtmfmode-opt-auto
+; fm_protocol_dtmfmode-opt(auto)
 Auto
 
 ; fm_protocol_rfc2833compensate
@@ -223,10 +223,10 @@ Compenser les DTMF RFC 2833 provenant d'un autre IPBX :
 ; fm_protocol_qualify
 Supervision de la latence :
 
-; fm_protocol_qualify-optno
+; fm_protocol_qualify-opt(no)
 Non
 
-; fm_protocol_qualify-optyes
+; fm_protocol_qualify-opt(yes)
 Oui
 
 ; fm_protocol_qualify-opt
@@ -241,64 +241,31 @@ Fréquence de vérification quand tout fonctionne :
 ; fm_protocol_qualifyfreqnotok
 Fréquence de vérification quand il y a un problème :
 
-; fm_protocol_qualifyfreq-opt500
-500 millisecondes
+; fm_protocol_qualifyfreq-opt-milliseconds
+%s millisecondes
 
-; fm_protocol_qualifyfreq-opt1000
+; fm_protocol_qualifyfreq-opt-second
 1 seconde
 
-; fm_protocol_qualifyfreq-opt2000
-2 secondes
+; fm_protocol_qualifyfreq-opt-seconds
+%s secondes
 
-; fm_protocol_qualifyfreq-opt3000
-3 secondes
-
-; fm_protocol_qualifyfreq-opt4000
-4 secondes
-
-; fm_protocol_qualifyfreq-opt5000
-5 secondes
-
-; fm_protocol_qualifyfreq-opt10000
-10 secondes
-
-; fm_protocol_qualifyfreq-opt15000
-15 secondes
-
-; fm_protocol_qualifyfreq-opt20000
-20 secondes
-
-; fm_protocol_qualifyfreq-opt30000
-30 secondes
-
-; fm_protocol_qualifyfreq-opt35000
-35 secondes
-
-; fm_protocol_qualifyfreq-opt40000
-40 secondes
-
-; fm_protocol_qualifyfreq-opt45000
-45 secondes
-
-; fm_protocol_qualifyfreq-opt50000
-50 secondes
-
-; fm_protocol_qualifyfreq-opt55000
-55 secondes
-
-; fm_protocol_qualifyfreq-opt60000
+; fm_protocol_qualifyfreq-opt-minute
 1 minute
 
-; fm_protocol_qualifyfreq-opt120000
-2 minutes
+; fm_protocol_qualifyfreq-opt-minute-seconds
+%s min. %s sec.
 
-; fm_protocol_qualifyfreq-opt
+; fm_protocol_qualifyfreq-opt-minutes
+%s minutes
+
+; fm_protocol_qualifyfreq-opt-minutes-seconds
 %s min. %s sec.
 
 ; fm_protocol_rtptimeout
 Délai d'attente pour le RTP :
 
-; fm_protocol_rtptimeout-opt0
+; fm_protocol_rtptimeout-opt(0)
 Désactivé
 
 ; fm_protocol_rtptimeout-opt
@@ -307,7 +274,7 @@ Désactivé
 ; fm_protocol_rtpholdtimeout
 Délai du RTP sur attente :
 
-; fm_protocol_rtpholdtimeout-opt0
+; fm_protocol_rtpholdtimeout-opt(0)
 Désactivé
 
 ; fm_protocol_rtpholdtimeout-opt
@@ -316,7 +283,7 @@ Désactivé
 ; fm_protocol_rtpkeepalive
 Présence du RTP :
 
-; fm_protocol_rtpkeepalive-opt0
+; fm_protocol_rtpkeepalive-opt(0)
 Désactivée
 
 ; fm_protocol_rtpkeepalive-opt
@@ -346,16 +313,16 @@ Forcer le Jitter Buffer :
 ; fm_protocol_codecpriority
 Priorité des codecs :
 
-; fm_protocol_codecpriority-opt-disabled
+; fm_protocol_codecpriority-opt(disabled)
 Désactivée
 
-; fm_protocol_codecpriority-opt-host
+; fm_protocol_codecpriority-opt(host)
 Hôte
 
-; fm_protocol_codecpriority-opt-caller
+; fm_protocol_codecpriority-opt(caller)
 Appelant
 
-; fm_protocol_codecpriority-opt-reqonly
+; fm_protocol_codecpriority-opt(reqonly)
 Seulement par requête
 
 ; fm_codec-custom
@@ -364,7 +331,7 @@ Personnaliser les codecs :
 ; fm_protocol_codec-disallow
 Codecs désactivés :
 
-; fm_protocol_codec-disallow-opt-all
+; fm_protocol_codec-disallow-opt(all)
 Tous
 
 ; fm_protocol_codec-allow
@@ -562,28 +529,28 @@ Nom d'appel :
 ; fm_ufeatures_outcallerid
 Nom d'appel sortant :
 
-; fm_ufeatures_outcallerid-opt-default
+; fm_ufeatures_outcallerid-opt(default)
 Défaut
 
-; fm_ufeatures_outcallerid-opt-anonymous
+; fm_ufeatures_outcallerid-opt(anonymous)
 Anonyme
 
-; fm_ufeatures_outcallerid-opt-custom
+; fm_ufeatures_outcallerid-opt(custom)
 Personnaliser
 
 ; fm_protocol_insecure
 Insécurité :
 
-; fm_protocol_insecure-opt-no
+; fm_protocol_insecure-opt(no)
 Non
 
-; fm_protocol_insecure-opt-port
+; fm_protocol_insecure-opt(port)
 Port
 
-; fm_protocol_insecure-opt-invite
+; fm_protocol_insecure-opt(invite)
 Invite
 
-; fm_protocol_insecure-opt-all
+; fm_protocol_insecure-opt(all)
 Tout
 
 ; fm_protocol_sendani
@@ -628,19 +595,19 @@ Ajouter ";user=phone" dans l'URI :
 ; fm_protocol_canreinvite
 Invite :
 
-; fm_protocol_canreinvite-opt-no
+; fm_protocol_canreinvite-opt(no)
 Non
 
-; fm_protocol_canreinvite-opt-yes
+; fm_protocol_canreinvite-opt(yes)
 Oui
 
-; fm_protocol_canreinvite-opt-update
+; fm_protocol_canreinvite-opt(update)
 Mise à jour
 
-; fm_protocol_canreinvite-opt-nonat
+; fm_protocol_canreinvite-opt(nonat)
 Sans NAT
 
-; fm_protocol_canreinvite-opt-update-nonat
+; fm_protocol_canreinvite-opt(update-nonat)
 Mise à jour sans NAT
 
 ; fm_protocol_fromuser
@@ -652,7 +619,7 @@ Réécriture du champ From-Domain :
 ; fm_protocol_maxauthreq
 Maximum AUTHREQs autorisées :
 
-; fm_protocol_maxauthreq-opt0
+; fm_protocol_maxauthreq-opt(0)
 Désactivé
 
 ; fm_protocol_maxauthreq-opt

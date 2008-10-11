@@ -10,7 +10,9 @@
 <?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
 <?=$form->hidden(array('name' => 'act','value' => 'add'));?>
 
-<?=$this->file_include('bloc/service/ipbx/asterisk/call_management/schedule/form');?>
+<?php
+	$this->file_include('bloc/service/ipbx/asterisk/call_management/schedule/form');
+?>
 
 <?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>
 

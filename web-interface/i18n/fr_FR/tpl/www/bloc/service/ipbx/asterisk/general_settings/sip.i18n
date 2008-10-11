@@ -73,7 +73,7 @@ User-Agent :
 ; fm_checkmwi
 Vérifier la présence de nouveaux messages :
 
-; fm_checkmwi-opt0
+; fm_checkmwi-opt(0)
 Désactivée
 
 ; fm_checkmwi-opt
@@ -121,52 +121,22 @@ Hôte externe :
 ; fm_externrefresh
 Temps de rafraîchissement du domaine externe :
 
-; fm_externrefresh-opt1
-1 sec.
+; fm_externrefresh-opt-second
+1 seconde
 
-; fm_externrefresh-opt10
-10 sec.
+; fm_externrefresh-opt-seconds
+%s secondes
 
-; fm_externrefresh-opt20
-20 sec.
+; fm_externrefresh-opt-minute
+1 minute
 
-; fm_externrefresh-opt30
-30 sec.
+; fm_externrefresh-opt-minute-seconds
+%s min. %s sec.
 
-; fm_externrefresh-opt40
-40 sec.
+; fm_externrefresh-opt-minutes
+%s minutes
 
-; fm_externrefresh-opt50
-50 sec.
-
-; fm_externrefresh-opt60
-1 min.
-
-; fm_externrefresh-opt120
-2 min.
-
-; fm_externrefresh-opt180
-3 min.
-
-; fm_externrefresh-opt240
-4 min.
-
-; fm_externrefresh-opt300
-5 min.
-
-; fm_externrefresh-opt600
-10 min.
-
-; fm_externrefresh-opt900
-15 min.
-
-; fm_externrefresh-opt1200
-20 min.
-
-; fm_externrefresh-opt1800
-30 min.
-
-; fm_externrefresh-opt
+; fm_externrefresh-opt-minutes-seconds
 %s min. %s sec.
 
 ; fm_outboundproxy
@@ -193,7 +163,7 @@ Supprimer un ou plusieurs hôtes
 ; fm_t1min
 Délai minimum de l'aller-retour (RTT) des messages :
 
-; fm_t1min-opt0
+; fm_t1min-opt(0)
 0 milliseconde
 
 ; fm_t1min-opt
@@ -211,7 +181,7 @@ Compacter les en-têtes :
 ; fm_rtptimeout
 Délai d'attente pour le RTP :
 
-; fm_rtptimeout-opt0
+; fm_rtptimeout-opt(0)
 Désactivé
 
 ; fm_rtptimeout-opt
@@ -220,7 +190,7 @@ Désactivé
 ; fm_rtpholdtimeout
 Délai du RTP sur attente :
 
-; fm_rtpholdtimeout-opt0
+; fm_rtpholdtimeout-opt(0)
 Désactivé
 
 ; fm_rtpholdtimeout-opt
@@ -229,7 +199,7 @@ Désactivé
 ; fm_rtpkeepalive
 Présence du RTP :
 
-; fm_rtpkeepalive-opt0
+; fm_rtpkeepalive-opt(0)
 Désactivée
 
 ; fm_rtpkeepalive-opt
@@ -253,161 +223,62 @@ Durée minimum pour l'enregistrement :
 ; fm_maxexpiry
 Durée maximum pour l'enregistrement :
 
-; fm_maxexpiry-opt1
-1 sec.
-
-; fm_maxexpiry-opt900
-15 min.
-
-; fm_maxexpiry-opt1800
-30 min.
-
-; fm_maxexpiry-opt2700
-45 min.
-
-; fm_maxexpiry-opt3600
-1 heure
-
-; fm_maxexpiry-opt7200
-2 heures
-
-; fm_maxexpiry-opt
-%s heure %s min.
-
 ; fm_defaultexpiry
 Durée par défaut pour l'enregistrement :
 
-; fm_expiry-opt1
-1 sec.
+; fm_expiry-opt-second
+1 seconde
 
-; fm_expiry-opt10
-10 sec.
+; fm_expiry-opt-seconds
+%s secondes
 
-; fm_expiry-opt20
-20 sec.
+; fm_expiry-opt-minute
+1 minute
 
-; fm_expiry-opt30
-30 sec.
-
-; fm_expiry-opt40
-40 sec.
-
-; fm_expiry-opt50
-50 sec.
-
-; fm_expiry-opt60
-1 min.
-
-; fm_expiry-opt120
-2 min.
-
-; fm_expiry-opt180
-3 min.
-
-; fm_expiry-opt240
-4 min.
-
-; fm_expiry-opt300
-5 min.
-
-; fm_expiry-opt600
-10 min.
-
-; fm_expiry-opt900
-15 min.
-
-; fm_expiry-opt1200
-20 min.
-
-; fm_expiry-opt1800
-30 min.
-
-; fm_expiry-opt2400
-40 min.
-
-; fm_expiry-opt2700
-45 min.
-
-; fm_expiry-opt3000
-50 min.
-
-; fm_expiry-opt
+; fm_expiry-opt-minute-seconds
 %s min. %s sec.
 
-; fm_expiry-opt3600
+; fm_expiry-opt-minutes
+%s minutes
+
+; fm_expiry-opt-minutes-seconds
+%s min. %s sec.
+
+; fm_expiry-opt-hour
 1 heure
 
-; fm_expiry-opt4500
-1 heure 15 min.
+; fm_expiry-opt-hour-minutes
+%s heure %s min.
 
-; fm_expiry-opt5400
-1 heure 30 min.
-
-; fm_expiry-opt6300
-1 heure 45 min.
-
-; fm_expiry-opt7200
-2 heures
+; fm_expiry-opt-hours
+%s heures
 
 ; fm_registertimeout
 Délai d'enregistrement :
 
-; fm_registertimeout-opt1
-1 sec.
+; fm_registertimeout-opt-second
+1 seconde
 
-; fm_registertimeout-opt10
-10 sec.
+; fm_registertimeout-opt-seconds
+%s secondes
 
-; fm_registertimeout-opt20
-20 sec.
+; fm_registertimeout-opt-minute
+1 minute
 
-; fm_registertimeout-opt30
-30 sec.
-
-; fm_registertimeout-opt40
-40 sec.
-
-; fm_registertimeout-opt50
-50 sec.
-
-; fm_registertimeout-opt60
-1 min.
-
-; fm_registertimeout-opt120
-2 min.
-
-; fm_registertimeout-opt
+; fm_registertimeout-opt-minute-seconds
 %s min. %s sec.
+
+; fm_registertimeout-opt-minutes
+%s minutes
 
 ; fm_registerattempts
 Nombre de tentative d'enregistrement :
 
-; fm_registerattempts-opt0
+; fm_registerattempts-opt(0)
 Illimité
 
-; fm_registerattempts-opt10
-10 sec.
-
-; fm_registerattempts-opt20
-20 sec.
-
-; fm_registerattempts-opt30
-30 sec.
-
-; fm_registerattempts-opt40
-40 sec.
-
-; fm_registerattempts-opt50
-50 sec.
-
-; fm_registerattempts-opt60
-1 min.
-
-; fm_registerattempts-opt120
-2 min.
-
 ; fm_registerattempts-opt
-%s min. %s sec.
+%s
 
 ; fm_notifyringing
 Notification de sonnerie :
@@ -430,7 +301,7 @@ Activer le support du G.726 non standard :
 ; fm_codec-disallow
 Codecs désactivés :
 
-; fm_codec-disallow-opt-all
+; fm_codec-disallow-opt(all)
 Tous
 
 ; fm_codec-allow
@@ -469,7 +340,7 @@ Forcer le Jitter Buffer :
 ; fm_jbmaxsize
 Taille maximale du Jitter Buffer :
 
-; fm_jbmaxsize-opt0
+; fm_jbmaxsize-opt(0)
 Désactivée
 
 ; fm_jbmaxsize-opt
@@ -478,10 +349,10 @@ Désactivée
 ; fm_jbresyncthreshold
 Resynchronisation en cas de délai trop important :
 
-; fm_jbresyncthreshold-opt-1
+; fm_jbresyncthreshold-opt(-1)
 Désactivée
 
-; fm_jbresyncthreshold-opt0
+; fm_jbresyncthreshold-opt(0)
 0 milliseconde
 
 ; fm_jbresyncthreshold-opt
@@ -490,10 +361,10 @@ Désactivée
 ; fm_jbimpl
 Implémentation :
 
-; fm_jbimpl-opt-fixed
+; fm_jbimpl-opt(fixed)
 Fixe
 
-; fm_jbimpl-opt-adaptative
+; fm_jbimpl-opt(adaptative)
 Adaptative
 
 ; fm_jblog
@@ -505,40 +376,40 @@ Contexte :
 ; fm_nat
 NAT :
 
-; fm_nat-opt-no
+; fm_nat-opt(no)
 Non
 
-; fm_nat-opt-yes
+; fm_nat-opt(yes)
 Oui
 
-; fm_nat-opt-never
+; fm_nat-opt(never)
 Jamais
 
-; fm_nat-opt-route
+; fm_nat-opt(route)
 Route
 
 ; fm_dtmfmode
 DTMF :
 
-; fm_dtmfmode-opt-rfc2833
+; fm_dtmfmode-opt(rfc2833)
 RFC 2833
 
-; fm_dtmfmode-opt-inband
+; fm_dtmfmode-opt(inband)
 InBand
 
-; fm_dtmfmode-opt-info
+; fm_dtmfmode-opt(info)
 INFO
 
-; fm_dtmfmode-opt-auto
+; fm_dtmfmode-opt(auto)
 Auto
 
 ; fm_qualify
 Supervision de la latence :
 
-; fm_qualify-optno
+; fm_qualify-opt(no)
 Non
 
-; fm_qualify-optyes
+; fm_qualify-opt(yes)
 Oui
 
 ; fm_qualify-opt
@@ -550,17 +421,17 @@ Code client :
 ; fm_progressinband
 Evénement RING dans la bande :
 
-; fm_progressinband-opt-no
+; fm_progressinband-opt(no)
 Non
 
-; fm_progressinband-opt-yes
+; fm_progressinband-opt(yes)
 Oui
 
-; fm_progressinband-opt-never
+; fm_progressinband-opt(never)
 Jamais
 
 ; fm_language
-Langages :
+Langage :
 
 ; fm_mohinterpret
 Musique d'attente :
@@ -580,34 +451,34 @@ Envoyer le Remote-Party-ID :
 ; fm_canreinvite
 Invite :
 
-; fm_canreinvite-opt-no
+; fm_canreinvite-opt(no)
 Non
 
-; fm_canreinvite-opt-yes
+; fm_canreinvite-opt(yes)
 Oui
 
-; fm_canreinvite-opt-update
+; fm_canreinvite-opt(update)
 Mise à jour
 
-; fm_canreinvite-opt-nonat
+; fm_canreinvite-opt(nonat)
 Sans NAT
 
-; fm_canreinvite-opt-update-nonat
+; fm_canreinvite-opt(update-nonat)
 Mise à jour sans NAT
 
 ; fm_insecure
 Insécurité :
 
-; fm_insecure-opt-no
+; fm_insecure-opt(no)
 Non
 
-; fm_insecure-opt-port
+; fm_insecure-opt(port)
 Port
 
-; fm_insecure-opt-invite
+; fm_insecure-opt(invite)
 Invite
 
-; fm_insecure-opt-all
+; fm_insecure-opt(all)
 Tout
 
 ; fm_rtcachefriends
@@ -625,43 +496,28 @@ Sauvegarder le nom du système lors d'un enregistrement :
 ; fm_rtautoclear
 Suppression automatique du cache :
 
-; fm_rtautoclear-optno
+; fm_rtautoclear-opt(no)
 Non
 
-; fm_rtautoclear-optyes
+; fm_rtautoclear-opt(yes)
 Oui
 
-; fm_rtautoclear-opt1
-1 sec.
+; fm_rtautoclear-opt-second
+1 seconde
 
-; fm_rtautoclear-opt10
-10 sec.
+; fm_rtautoclear-opt-seconds
+%s secondes
 
-; fm_rtautoclear-opt20
-20 sec.
+; fm_rtautoclear-opt-minute
+1 minute
 
-; fm_rtautoclear-opt30
-30 sec.
+; fm_rtautoclear-opt-minute-seconds
+%s min. %s sec.
 
-; fm_rtautoclear-opt40
-40 sec.
+; fm_rtautoclear-opt-minutes
+%s minutes
 
-; fm_rtautoclear-opt50
-50 sec.
-
-; fm_rtautoclear-opt60
-1 min.
-
-; fm_rtautoclear-opt120
-2 min.
-
-; fm_rtautoclear-opt180
-3 min.
-
-; fm_rtautoclear-opt240
-4 min.
-
-; fm_rtautoclear-opt
+; fm_rtautoclear-opt-minutes-seconds
 %s min. %s sec.
 
 ; fm_success-save

@@ -31,19 +31,22 @@
 </div>
 
 <div id="sb-part-office" class="b-nodisplay">
-
-<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_services/phonebook/type',array('type' => 'office'));?>
-
+<?php
+	$this->file_include('bloc/service/ipbx/asterisk/pbx_services/phonebook/type',
+			    array('type'	=> 'office'));
+?>
 </div>
 
 <div id="sb-part-home" class="b-nodisplay">
-
-<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_services/phonebook/type',array('type' => 'home'));?>
-
+<?php
+	$this->file_include('bloc/service/ipbx/asterisk/pbx_services/phonebook/type',
+			    array('type'	=> 'home'));
+?>
 </div>
 
 <div id="sb-part-last" class="b-nodisplay">
-
-<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_services/phonebook/type',array('type' => 'other'));?>
-
+<?php
+	$this->file_include('bloc/service/ipbx/asterisk/pbx_services/phonebook/type',
+			    array('type'	=> 'other'));
+?>
 </div>

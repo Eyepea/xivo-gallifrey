@@ -1,6 +1,8 @@
 <?php
-	$menu = &$this->get_module('menu');
-	$this->file_include('bloc/head');
+
+$menu = &$this->get_module('menu');
+$this->file_include('bloc/head');
+
 ?>
 <div id="bc-body">
 
@@ -35,5 +37,7 @@
 </div>
 </div>
 <?php
-	$this->file_include('bloc/foot');
+
+$this->file_include('bloc/foot');
+
 ?>

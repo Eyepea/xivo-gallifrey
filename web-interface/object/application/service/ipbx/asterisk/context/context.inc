@@ -5,8 +5,6 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 class xivo_application_service_asterisk_context extends xivo_application_asterisk_abstract
 {
 	var $_dso		= null;
-	var $_origin		= array();
-	var $_status		= '';
 	var $_context		= false;
 	var $_contextnumbers	= false;
 	var $_contextnummember	= false;
@@ -718,7 +716,9 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 		$refinfo = &$this->_info['contextmember'];
 
-		if((isset($refinfo['callfilter']) === true
+		if((isset($refinfo['agent']) === true
+		   && $this->_update_agent_contextmember($context,$newcontext) === false) === true
+		|| (isset($refinfo['callfilter']) === true
 		   && $this->_update_callfilter_contextmember($context,$newcontext) === false) === true
 		|| (isset($refinfo['generalsip']) === true
 		   && $this->_update_generalsip_contextmember($context,$newcontext,$refinfo['generalsip']) === false) === true
@@ -871,6 +871,11 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 			return(false);
 
 		return(true);
+	}
+
+	function _update_agent_contextmember($context,$newcontext)
+	{
+		return($this->_update_context_contextmember('agentfeatures',$context,$newcontext));
 	}
 
 	function _update_callfilter_contextmember($context,$newcontext)
@@ -1199,6 +1204,9 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 					$this->_contextmember->edit_where($where,array('context' => $newcontext),
 									  null,null,false);
+
+					if(isset($val['agent']) === true)
+						$this->_update_agent_contextmember($context,$newcontext);
 
 					if(isset($val['callfilter']) === true)
 						$this->_update_callfilter_contextmember($context,$newcontext);

@@ -43,5 +43,17 @@ Active Call(s): %s
 ; info_service_label
 Software:
 
+; info_service_label-opt(unknown)
+Unknown
+
+; info_service_label-opt
+%s
+
 ; info_service_version
 Version:
+
+; info_service_version-opt(unknown)
+Unknown
+
+; info_service_version-opt
+%s

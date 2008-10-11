@@ -118,14 +118,26 @@ Manager
 ; mn_left_ti_controlsystem
 Control
 
+; mn_left_controlsystem-ipbxreload(unknown)
+Reload
+
 ; mn_left_controlsystem-ipbxreload
 Reload %s
+
+; controlsystem_ipbxreload_confirm(unknown)
+Are you sure you want to reload?
 
 ; controlsystem_ipbxreload_confirm
 Are you sure you want to reload %s?
 
+; mn_left_controlsystem-ipbxrestart(unknown)
+Restart
+
 ; mn_left_controlsystem-ipbxrestart
 Restart %s
+
+; controlsystem_ipbxrestart_confirm(unknown)
+Are you sure you want to restart?
 
 ; controlsystem_ipbxrestart_confirm
 Are you sure you want to restart %s?

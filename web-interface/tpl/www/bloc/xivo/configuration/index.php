@@ -1,13 +1,19 @@
 <?php
-	$url = &$this->get_module('url');
 
-	$userstat = $this->get_var('userstat');
-	$serverstat = $this->get_var('serverstat');
-	$ldapserverstat = $this->get_var('ldapserverstat');
-	$entitystat = $this->get_var('entitystat');
+$url = &$this->get_module('url');
+
+$userstat = $this->get_var('userstat');
+$serverstat = $this->get_var('serverstat');
+$ldapserverstat = $this->get_var('ldapserverstat');
+$entitystat = $this->get_var('entitystat');
+
 ?>
 <div id="index" class="b-infos">
-	<h3 class="sb-top xspan"><span class="span-left">&nbsp;</span><span class="span-center"><?=$this->bbf('title_content_name');?></span><span class="span-right">&nbsp;</span></h3>
+	<h3 class="sb-top xspan">
+		<span class="span-left">&nbsp;</span>
+		<span class="span-center"><?=$this->bbf('title_content_name');?></span>
+		<span class="span-right">&nbsp;</span>
+	</h3>
 	<div class="sb-content sb-list">
 		<div id="xivo-stats">
 			<table border="0" cellpadding="0" cellspacing="0">
@@ -52,5 +58,9 @@
 		</div>
 		<div class="clearboth"></div>
 	</div>
-	<div class="sb-foot xspan"><span class="span-left">&nbsp;</span><span class="span-center">&nbsp;</span><span class="span-right">&nbsp;</span></div>
+	<div class="sb-foot xspan">
+		<span class="span-left">&nbsp;</span>
+		<span class="span-center">&nbsp;</span>
+		<span class="span-right">&nbsp;</span>
+	</div>
 </div>

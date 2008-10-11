@@ -4,8 +4,6 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_voicemenu extends xivo_application_asterisk_abstract
 {
-	var $_origin		= array();
-	var $_status		= '';
 	var $_voicemenu		= false;
 	var $_contextmember	= false;
 	var $_dialaction	= false;

@@ -4,6 +4,66 @@ require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'abstract'.XIVO_SEP_DIR.'libconfig.in
 
 class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 {
+	function _reset_params()
+	{
+		if(isset($this->_param) === false)
+			return(false);
+
+		$vars = get_class_vars(get_class($this));
+
+		if(isset($vars['param']) === true)
+			$this->_param = $vars['param'];
+
+		return(true);
+	}
+
+	function set_params($params)
+	{
+		if(is_array($params) === false
+		|| empty($params) === true
+		|| isset($this->_param) === false
+		|| is_array($this->_param) === false)
+			return(false);
+
+		foreach($params as $key => $value)
+		{
+			if(isset($this->_param[$key]) === true)
+				$this->_param[$key] = $value;
+		}
+
+		return(true);
+	}
+
+	function get_params()
+	{
+		if(isset($this->_param) === false)
+			return(false);
+
+		return($this->_param);
+	}
+
+	function set_param($name,$value)
+	{
+		if(isset($this->_param) === false
+		|| is_array($this->_param) === false
+		|| isset($this->_param[$name]) === false)
+			return(false);
+
+		$this->_param[$name] = $value;
+
+		return(true);
+	}
+
+	function get_param($name)
+	{
+		if(isset($this->_param) === false
+		|| is_array($this->_param) === false
+		|| isset($this->_param[$name]) === false)
+			return(false);
+
+		return($this->_param[$name]);
+	}
+
 	function set_dso_param($name,$value)
 	{
 		if(is_object($this->_dso) === false)
@@ -155,35 +215,28 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 		else
 			$orig = $this->_origin_list;
 
-		if(is_array($orig) === false || ($nb = count($orig)) === 0)
+		if(is_array($orig) === false
+		|| empty($orig) === true)
 			return(false);
 		else if($type === 'add')
 		{
-			for($i = 0;$i < $nb;$i++)
+			foreach($orig as $value)
 			{
-				$ref = &$orig[$i];
-
-				if(($origid = $this->_origin_get_primary_key($type,$ref)) === false)
+				if(($origid = $this->_origin_get_primary_key($type,$value)) === false)
 					return(false);
-				else if($origid !== null)
-					$this->add($ref,$origid);
-				else
-					$this->add($ref);
+
+				$this->add($value,$origid);
 			}
 
 			return(true);
 		}
 
-		for($i = 0;$i < $nb;$i++)
+		foreach($orig as $value)
 		{
-			$ref = &$orig[$i];
-
-			if(($origid = $this->_origin_get_primary_key($type,$ref)) === false)
+			if(($origid = $this->_origin_get_primary_key($type,$value)) === false)
 				return(false);
-			else if($origid !== null)
-				$this->edit($origid,$ref);
-			else
-				$this->edit($ref);
+
+			$this->edit($origid,$value);
 		}
 
 		return(true);
@@ -450,9 +503,7 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 		|| ($disable = $this->_dso->get_disable()) === false)
 			return(false);
 
-		$value = intval((bool) $value);
-
-		return($this->_dso->edit($id,array($disable => $value)));
+		return($this->_dso->edit($id,array($disable => intval((bool) $value))));
 	}
 
 	function disable($id,$value=true)
@@ -461,9 +512,7 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 		|| ($disable = $this->_dso->get_disable()) === false)
 			return(false);
 
-		$value = intval((bool) $value);
-
-		return($this->_dso->edit($id,array($disable => $value)));
+		return($this->_dso->edit($id,array($disable => intval((bool) $value))));
 	}
 
 	function enable_where($id,$value=false)
@@ -473,9 +522,7 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 		|| ($disable = $this->_dso->get_disable()) === false)
 			return(false);
 
-		$value = intval((bool) $value);
-
-		return($this->_dso->edit($where,array($disable => $value)));
+		return($this->_dso->edit($where,array($disable => intval((bool) $value))));
 	}
 
 	function disable_where($id,$value=true)
@@ -485,9 +532,7 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 		|| ($disable = $this->_dso->get_disable()) === false)
 			return(false);
 
-		$value = intval((bool) $value);
-
-		return($this->_dso->edit($where,array($disable => $value)));
+		return($this->_dso->edit($where,array($disable => intval((bool) $value))));
 	}
 }
 

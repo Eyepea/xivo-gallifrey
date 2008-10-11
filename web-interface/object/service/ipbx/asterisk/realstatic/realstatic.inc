@@ -32,6 +32,13 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 
 	function load_init($param=array())
 	{
+		$vars = get_class_vars(get_class($this));
+
+		$this->_cat_metric = $vars['_cat_metric'];
+		$this->_var_metric = $vars['_var_metric'];
+		$this->_category = $vars['_category'];
+		$this->_var_name = $vars['_var_name'];
+
 		if(is_array($param) === true && empty($param) === false)
 		{
 			if(isset($param['filename']) === true)
@@ -145,7 +152,7 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 		if(isset($this->_category) === true)
 			$arr['category'] = $this->_category;
 
-		if(isset($this->_var_name) === true)
+		if(isset($arr['var_name']) === false && isset($this->_var_name) === true)
 			$arr['var_name'] = $this->_var_name;
 
 		if(isset($arr['cat_metric']) === true)
@@ -237,7 +244,7 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 		if(isset($this->_category) === true)
 			$arr['category'] = $this->_category;
 
-		if(isset($this->_var_name) === true)
+		if(isset($arr['var_name']) === false && isset($this->_var_name) === true)
 			$arr['var_name'] = $this->_var_name;
 
 		if(isset($arr['cat_metric']) === true)
@@ -267,11 +274,14 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 	{
 		if(is_array($arr) === false)
 			return(false);
-		else if(array_key_exists('var_val',$arr) === true && $arr['var_val'] === null)
+
+		$var_val_exists = array_key_exists('var_val',$arr);
+
+		if($var_val_exists === true && $arr['var_val'] === null)
 			$arr['commented'] = true;
 		else if(isset($arr['commented']) === true)
 			$arr['commented'] = (bool) $arr['commented'];
-		else if(xivo_haslen($arr['var_val']) === true)
+		else if($var_val_exists === true && xivo_haslen($arr['var_val']) === true)
 			$arr['commented'] = false;
 		else
 			unset($arr['commented']);

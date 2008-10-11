@@ -50,7 +50,7 @@ Sortant
 Entrant/Sortant
 
 ; fm_protocol_language
-Langages :
+Langage :
 
 ; fm_register
 Enregistrement :
@@ -88,58 +88,25 @@ Fréquence de vérification quand tout fonctionne :
 ; fm_protocol_qualifyfreqnotok
 Fréquence de vérification quand il y a un problème :
 
-; fm_protocol_qualifyfreq-opt500
-500 millisecondes
+; fm_protocol_qualifyfreq-opt-milliseconds
+%s millisecondes
 
-; fm_protocol_qualifyfreq-opt1000
+; fm_protocol_qualifyfreq-opt-second
 1 seconde
 
-; fm_protocol_qualifyfreq-opt2000
-2 secondes
+; fm_protocol_qualifyfreq-opt-seconds
+%s secondes
 
-; fm_protocol_qualifyfreq-opt3000
-3 secondes
-
-; fm_protocol_qualifyfreq-opt4000
-4 secondes
-
-; fm_protocol_qualifyfreq-opt5000
-5 secondes
-
-; fm_protocol_qualifyfreq-opt10000
-10 secondes
-
-; fm_protocol_qualifyfreq-opt15000
-15 secondes
-
-; fm_protocol_qualifyfreq-opt20000
-20 secondes
-
-; fm_protocol_qualifyfreq-opt30000
-30 secondes
-
-; fm_protocol_qualifyfreq-opt35000
-35 secondes
-
-; fm_protocol_qualifyfreq-opt40000
-40 secondes
-
-; fm_protocol_qualifyfreq-opt45000
-45 secondes
-
-; fm_protocol_qualifyfreq-opt50000
-50 secondes
-
-; fm_protocol_qualifyfreq-opt55000
-55 secondes
-
-; fm_protocol_qualifyfreq-opt60000
+; fm_protocol_qualifyfreq-opt-minute
 1 minute
 
-; fm_protocol_qualifyfreq-opt120000
-2 minutes
+; fm_protocol_qualifyfreq-opt-minute-seconds
+%s min. %s sec.
 
-; fm_protocol_qualifyfreq-opt
+; fm_protocol_qualifyfreq-opt-minutes
+%s minutes
+
+; fm_protocol_qualifyfreq-opt-minutes-seconds
 %s min. %s sec.
 
 ; fm_protocol_jitterbuffer

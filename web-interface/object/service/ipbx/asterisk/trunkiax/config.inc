@@ -127,66 +127,24 @@ $array['element']['qualifysmoothing']['default'] = 0;
 $array['element']['qualifysmoothing']['set'] = true;
 
 $array['element']['qualifyfreqok'] = array();
-$array['element']['qualifyfreqok']['value'] = array(500		=> 500,
-						    1000	=> 1,
-						    2000	=> 2,
-						    3000	=> 3,
-						    4000	=> 4,
-						    5000	=> 5,
-						    10000	=> 10,
-						    15000	=> 15,
-						    20000	=> 20,
-						    30000	=> 30,
-						    35000	=> 35,
-						    40000	=> 40,
-						    45000	=> 45,
-						    50000	=> 50,
-						    55000	=> 55,
-						    60000	=> 1,
-						    65000	=> array(1,5),
-						    70000	=> array(1,10),
-						    75000	=> array(1,15),
-						    80000	=> array(1,20),
-						    85000	=> array(1,25),
-						    90000	=> array(1,30),
-						    95000	=> array(1,35),
-						    100000	=> array(1,40),
-						    105000	=> array(1,45),
-						    110000	=> array(1,50),
-						    115000	=> array(1,55),
-						    120000	=> 2);
+$array['element']['qualifyfreqok']['value'] = array(500,1000,2000,3000,4000,5000,
+						    10000,15000,20000,30000,35000,
+						    40000,45000,50000,55000,
+						    60000,65000,70000,75000,
+						    80000,85000,90000,95000,
+						    100000,105000,110000,
+						    115000,120000);
 $array['element']['qualifyfreqok']['default'] = 60000;
 $array['element']['qualifyfreqok']['setdef'] = true;
 
 $array['element']['qualifyfreqnotok'] = array();
-$array['element']['qualifyfreqnotok']['value'] = array(500	=> 500,
-						       1000	=> 1,
-						       2000	=> 2,
-						       3000	=> 3,
-						       4000	=> 4,
-						       5000	=> 5,
-						       10000	=> 10,
-						       15000	=> 15,
-						       20000	=> 20,
-						       30000	=> 30,
-						       35000	=> 35,
-						       40000	=> 40,
-						       45000	=> 45,
-						       50000	=> 50,
-						       55000	=> 55,
-						       60000	=> 1,
-						       65000	=> array(1,5),
-						       70000	=> array(1,10),
-						       75000	=> array(1,15),
-						       80000	=> array(1,20),
-						       85000	=> array(1,25),
-						       90000	=> array(1,30),
-						       95000	=> array(1,35),
-						       100000	=> array(1,40),
-						       105000	=> array(1,45),
-						       110000	=> array(1,50),
-						       115000	=> array(1,55),
-						       120000	=> 2);
+$array['element']['qualifyfreqnotok']['value'] = array(500,1000,2000,3000,4000,5000,
+						       10000,15000,20000,30000,35000,
+						       40000,45000,50000,55000,
+						       60000,65000,70000,75000,
+						       80000,85000,90000,95000,
+						       100000,105000,110000,
+						       115000,120000);
 $array['element']['qualifyfreqnotok']['default'] = 10000;
 $array['element']['qualifyfreqnotok']['setdef'] = true;
 
@@ -294,7 +252,12 @@ $array['filter']['amaflags'] = array('set'	=> false,
 				     'chk'	=> 2,
 				     'key'	=> xivo_service_asterisk::get_amaflags_list());
 $array['filter']['mailbox'] = array('set' => false,'chk' => 0);
-$array['filter']['callerid'] = array('set' => false,'chk' => 2,'maxlen' => 80,'cast' => 'sgraph','notag' => false);
+$array['filter']['callerid'] = array('set'	=> false,
+				     'chk'	=> 2,
+				     'maxlen'	=> 80,
+				     'regexp'	=> '/^'.XIVO_SRE_IPBX_AST_REGEXP_CALLERID.'$/',
+				     'cast'	=> 'sgraph',
+				     'notag'	=> false);
 $array['filter']['fullname'] = array('set' => false,'chk' => 0);
 $array['filter']['cid_number'] = array('set' => false,'chk' => 0);
 $array['filter']['trunk'] = array('bool' => true);
@@ -322,15 +285,19 @@ $array['filter']['qualifysmoothing'] = array('bool' => true);
 $array['filter']['qualifyfreqok'] = array('set'	=> false,
 					  'chk'	=> 2,
 					  'key'	=> array(500,1000,2000,3000,4000,5000,
-							 10000,15000,20000,30000,35000,40000,45000,50000,
-							 55000,60000,65000,70000,75000,80000,85000,90000,
-							 95000,100000,105000,110000,115000,120000));
+							 10000,15000,20000,30000,35000,
+							 40000,45000,50000,55000,60000,
+							 65000,70000,75000,80000,85000,
+							 90000,95000,100000,105000,110000,
+							 115000,120000));
 $array['filter']['qualifyfreqnotok'] = array('set'	=> false,
 					     'chk'	=> 2,
 					     'key'	=> array(500,1000,2000,3000,4000,5000,
-								 10000,15000,20000,30000,35000,40000,45000,50000,
-								 55000,60000,65000,70000,75000,80000,85000,90000,
-								 95000,100000,105000,110000,115000,120000));
+								 10000,15000,20000,30000,35000,
+								 40000,45000,50000,55000,60000,
+								 65000,70000,75000,80000,85000,
+								 90000,95000,100000,105000,110000,
+								 115000,120000));
 $array['filter']['timezone'] = array('set'	=> false,
 				     'chk'	=> 2,
 				     'minlen'	=> 9,

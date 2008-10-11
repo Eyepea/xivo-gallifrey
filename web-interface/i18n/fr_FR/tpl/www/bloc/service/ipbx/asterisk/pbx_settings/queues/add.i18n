@@ -67,22 +67,22 @@ Numéro :
 ; fm_queue_strategy
 Stratégie de sonnerie :
 
-; fm_queue_strategy-opt-leastrecent
+; fm_queue_strategy-opt(leastrecent)
 Le moins récent
 
-; fm_queue_strategy-opt-fewestcalls
+; fm_queue_strategy-opt(fewestcalls)
 Le moins d'appels
 
-; fm_queue_strategy-opt-roundrobin
+; fm_queue_strategy-opt(roundrobin)
 Répartition cyclique
 
-; fm_queue_strategy-opt-rrmemory
+; fm_queue_strategy-opt(rrmemory)
 Répartition cyclique (mémorisée)
 
-; fm_queue_strategy-opt-random
+; fm_queue_strategy-opt(random)
 Aléatoire
 
-; fm_queue_strategy-opt-ringall
+; fm_queue_strategy-opt(ringall)
 Tous
 
 ; fm_qfeatures_context
@@ -97,19 +97,19 @@ Musique d'attente :
 ; fm_qfeatures_timeout
 Temps de sonnerie :
 
-; fm_qfeatures_timeout-opt0
+; fm_qfeatures_timeout-opt(0)
 Illimité
 
-; fm_qfeatures_timeout-opt30
-30 secondes
+; fm_qfeatures_timeout-opt-seconds
+%s secondes
 
-; fm_qfeatures_timeout-opt60
+; fm_qfeatures_timeout-opt-minute
 1 minute
 
-; fm_qfeatures_timeout-opt90
-1 min. 30 sec.
+; fm_qfeatures_timeout-opt-minute-seconds
+%s min. %s sec.
 
-; fm_qfeatures_timeout-opt
+; fm_qfeatures_timeout-opt-minutes
 %s minutes
 
 ; fm_qfeatures_data-quality
@@ -154,7 +154,7 @@ Poids :
 ; fm_queue_timeout
 Délai d'attente pour joindre un membre :
 
-; fm_queue_timeout-opt0
+; fm_queue_timeout-opt(0)
 Désactivé
 
 ; fm_queue_timeout-opt
@@ -163,7 +163,7 @@ Désactivé
 ; fm_queue_retry
 Délai d'attente avant rappel des membres :
 
-; fm_queue_retry-opt1
+; fm_queue_retry-opt(1)
 1 seconde
 
 ; fm_queue_retry-opt
@@ -172,7 +172,7 @@ Délai d'attente avant rappel des membres :
 ; fm_queue_wrapuptime
 Délai de réattribution d'appel :
 
-; fm_queue_wrapuptime-opt0
+; fm_queue_wrapuptime-opt(0)
 Désactivé
 
 ; fm_queue_wrapuptime-opt
@@ -184,103 +184,43 @@ Nombre de personnes autorisées à attendre :
 ; fm_queue_announce-frequency
 Fréquence d'annonce de position :
 
-; fm_queue_announce-frequency-opt0
-Désactivée
-
-; fm_queue_announce-frequency-opt15
-15 sec.
-
-; fm_queue_announce-frequency-opt30
-30 sec.
-
-; fm_queue_announce-frequency-opt45
-45 sec.
-
-; fm_queue_announce-frequency-opt60
-1 min.
-
-; fm_queue_announce-frequency-opt75
-1 min. 15 sec.
-
-; fm_queue_announce-frequency-opt90
-1 min. 30 sec.
-
-; fm_queue_announce-frequency-opt105
-1 min. 45 sec.
-
-; fm_queue_announce-frequency-opt120
-2 min.
-
-; fm_queue_announce-frequency-opt180
-3 min.
-
-; fm_queue_announce-frequency-opt240
-4 min.
-
-; fm_queue_announce-frequency-opt300
-5 min.
-
-; fm_queue_announce-frequency-opt
-%s min. %s sec.
-
 ; fm_queue_periodic-announce-frequency
 Fréquence d'annonce :
 
-; fm_queue_periodic-announce-frequency-opt0
+; fm_queue_announce-frequency-opt(0)
 Désactivée
 
-; fm_queue_periodic-announce-frequency-opt15
-15 sec.
+; fm_queue_announce-frequency-opt-seconds
+%s secondes
 
-; fm_queue_periodic-announce-frequency-opt30
-30 sec.
+; fm_queue_announce-frequency-opt-minute
+1 minute
 
-; fm_queue_periodic-announce-frequency-opt45
-45 sec.
+; fm_queue_announce-frequency-opt-minute-seconds
+%s min. %s sec.
 
-; fm_queue_periodic-announce-frequency-opt60
-1 min.
+; fm_queue_announce-frequency-opt-minutes
+%s minutes
 
-; fm_queue_periodic-announce-frequency-opt75
-1 min. 15 sec.
-
-; fm_queue_periodic-announce-frequency-opt90
-1 min. 30 sec.
-
-; fm_queue_periodic-announce-frequency-opt105
-1 min. 45 sec.
-
-; fm_queue_periodic-announce-frequency-opt120
-2 min.
-
-; fm_queue_periodic-announce-frequency-opt180
-3 min.
-
-; fm_queue_periodic-announce-frequency-opt240
-4 min.
-
-; fm_queue_periodic-announce-frequency-opt300
-5 min.
-
-; fm_queue_periodic-announce-frequency-opt
+; fm_queue_announce-frequency-opt-minutes-seconds
 %s min. %s sec.
 
 ; fm_queue_announce-holdtime
 Annoncer le temps d'attente :
 
-; fm_queue_announce-holdtime-opt-no
+; fm_queue_announce-holdtime-opt(no)
 Non
 
-; fm_queue_announce-holdtime-opt-yes
+; fm_queue_announce-holdtime-opt(yes)
 Oui
 
-; fm_queue_announce-holdtime-opt-once
+; fm_queue_announce-holdtime-opt(once)
 Une fois
 
 ; fm_queue_announce-round-seconds
 Arrondi du temps d'attente :
 
-; fm_queue_announce-round-seconds-opt0
+; fm_queue_announce-round-seconds-opt(0)
 Désactivé
 
 ; fm_queue_announce-round-seconds-opt
@@ -292,34 +232,34 @@ Format d'enregistrement :
 ; fm_queue_monitor-type
 Enregistrement :
 
-; fm_queue_monitor-type-opt-no
+; fm_queue_monitor-type-opt(no)
 Non
 
-; fm_queue_monitor-type-opt-mixmonitor
+; fm_queue_monitor-type-opt(mixmonitor)
 MixMonitor
 
 ; fm_queue_joinempty
 Joindre une file d'attente vide :
 
-; fm_queue_joinempty-opt-no
+; fm_queue_joinempty-opt(no)
 Non
 
-; fm_queue_joinempty-opt-yes
+; fm_queue_joinempty-opt(yes)
 Oui
 
-; fm_queue_joinempty-opt-strict
+; fm_queue_joinempty-opt(strict)
 Strict
 
 ; fm_queue_leavewhenempty
 Vider la file d'attente :
 
-; fm_queue_leavewhenempty-opt-no
+; fm_queue_leavewhenempty-opt(no)
 Non
 
-; fm_queue_leavewhenempty-opt-yes
+; fm_queue_leavewhenempty-opt(yes)
 Oui
 
-; fm_queue_leavewhenempty-opt-strict
+; fm_queue_leavewhenempty-opt(strict)
 Strict
 
 ; fm_queue_eventwhencalled
@@ -334,7 +274,7 @@ Activer le rapport d'attente d'un appelant :
 ; fm_queue_memberdelay
 Délai d'attente avant de passer l'appel :
 
-; fm_queue_memberdelay-opt0
+; fm_queue_memberdelay-opt(0)
 Désactivé
 
 ; fm_queue_memberdelay-opt
@@ -346,59 +286,59 @@ Délai de réinitialisation du temps de réponse d'un membre :
 ; fm_queue_queue-youarenext
 Vous serez le prochain :
 
-; fm_queue_queue-youarenext-opt-default
+; fm_queue_queue-youarenext-opt(default)
 Défaut
 
 ; fm_queue_queue-thereare
 Il y a :
 
-; fm_queue_queue-thereare-opt-default
+; fm_queue_queue-thereare-opt(default)
 Défaut
 
 ; fm_queue_queue-callswaiting
 Appel en attente :
 
-; fm_queue_queue-callswaiting-opt-default
+; fm_queue_queue-callswaiting-opt(default)
 Défaut
 
 ; fm_queue_queue-holdtime
 Durée d'attente est de :
 
-; fm_queue_queue-holdtime-opt-default
+; fm_queue_queue-holdtime-opt(default)
 Défaut
 
 ; fm_queue_queue-minutes
 Minutes :
 
-; fm_queue_queue-minutes-opt-default
+; fm_queue_queue-minutes-opt(default)
 Défaut
 
 ; fm_queue_queue-seconds
 Secondes :
 
-; fm_queue_queue-seconds-opt-default
+; fm_queue_queue-seconds-opt(default)
 Défaut
 
 ; fm_queue_queue-thankyou
 Merci de votre patience :
 
-; fm_queue_queue-thankyou-opt-default
+; fm_queue_queue-thankyou-opt(default)
 Défaut
 
 ; fm_queue_queue-lessthan
 Reste plus que :
 
-; fm_queue_queue-lessthan-opt-default
+; fm_queue_queue-lessthan-opt(default)
 Défaut
 
 ; fm_queue_queue-reporthold
 Durée d'attente d'un appelant :
 
-; fm_queue_queue-reporthold-opt-default
+; fm_queue_queue-reporthold-opt(default)
 Défaut
 
 ; fm_queue_periodic-announce
 Annonce périodique :
 
-; fm_queue_periodic-announce-opt-default
+; fm_queue_periodic-announce-opt(default)
 Défaut

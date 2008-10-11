@@ -4,7 +4,9 @@
 <div class="b-infos b-form">
 	<h3 class="sb-top xspan"><span class="span-left">&nbsp;</span><span class="span-center"><?=$this->bbf('title_content_name');?></span><span class="span-right">&nbsp;</span></h3>
 
-	<?=$this->file_include('bloc/service/ipbx/asterisk/system_management/context/submenu');?>
+<?php
+	$this->file_include('bloc/service/ipbx/asterisk/system_management/context/submenu');
+?>
 
 	<div class="sb-content">
 <form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-contextnumbers-user'); xivo_fm_select('it-contextnumbers-group'); xivo_fm_select('it-contextnumbers-queue'); xivo_fm_select('it-contextnumbers-meetme');">
@@ -13,7 +15,9 @@
 <?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
 <?=$form->hidden(array('name' => 'act','value' => 'add'));?>
 
-<?=$this->file_include('bloc/service/ipbx/asterisk/system_management/context/form');?>
+<?php
+	$this->file_include('bloc/service/ipbx/asterisk/system_management/context/form');
+?>
 
 <?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>
 

@@ -79,31 +79,19 @@ Temps de sonnerie avant de raccrocher :
 ; fm_outcall_hangupringtime-opt0
 Illimité
 
-; fm_outcall_hangupringtime-opt15
-15 secondes
+; fm_outcall_hangupringtime-opt-seconds
+%s secondes
 
-; fm_outcall_hangupringtime-opt30
-30 secondes
-
-; fm_outcall_hangupringtime-opt45
-45 secondes
-
-; fm_outcall_hangupringtime-opt60
+; fm_outcall_hangupringtime-opt-minute
 1 minute
 
-; fm_outcall_hangupringtime-opt120
-2 minutes
+; fm_outcall_hangupringtime-opt-minute-seconds
+%s min. %s sec.
 
-; fm_outcall_hangupringtime-opt180
-3 minutes
+; fm_outcall_hangupringtime-opt-minutes
+%s minutes
 
-; fm_outcall_hangupringtime-opt240
-4 minutes
-
-; fm_outcall_hangupringtime-opt300
-5 minutes
-
-; fm_outcall_hangupringtime-opt
+; fm_outcall_hangupringtime-opt-minutes-seconds
 %s min. %s sec.
 
 ; bt_inrightcall

@@ -19,19 +19,31 @@ $gmember['slt'] = $qmember['slt'] = $rightcall['slt'] = array();
 
 $appgroup = &$ipbx->get_application('group',null,false);
 
-if(($groups = $appgroup->get_groups_list(null,array('name' => SORT_ASC),null,true)) !== false)
+if(($groups = $appgroup->get_groups_list(null,
+					 array('name' => SORT_ASC),
+					 null,
+					 true)) !== false)
 	$gmember['list'] = $groups;
 
 $appqueue = &$ipbx->get_application('queue',null,false);
 
-if(($queues = $appqueue->get_queues_list(null,array('name' => SORT_ASC),null,true)) !== false)
+if(($queues = $appqueue->get_queues_list(null,
+					 array('name' => SORT_ASC),
+					 null,
+					 true)) !== false)
 	$qmember['list'] = $queues;
 
 $apprightcall = &$ipbx->get_application('rightcall',null,false);
 
-$rightcall['list'] = $apprightcall->get_rightcalls_list(null,array('name' => SORT_ASC),null,true);
+$rightcall['list'] = $apprightcall->get_rightcalls_list(null,
+							array('name' => SORT_ASC),
+							null,
+							true);
 
-if(isset($_QR['fm_send']) === true && xivo_issa('protocol',$_QR) === true && xivo_issa('ufeatures',$_QR) === true)
+if(isset($_QR['fm_send']) === true
+&& xivo_issa('protocol',$_QR) === true
+&& xivo_issa('ufeatures',$_QR) === true
+&& isset($_QR['protocol']['protocol']) === true)
 {
 	$return = &$result;
 
@@ -43,7 +55,8 @@ if(isset($_QR['fm_send']) === true && xivo_issa('protocol',$_QR) === true && xiv
 	else
 		$_QR['protocol']['host'] = '';
 
-	if(isset($_QR['protocol']['host-static']) === true && $_QR['protocol']['host'] === 'static')
+	if(isset($_QR['protocol']['host-static']) === true
+	&& $_QR['protocol']['host'] === 'static')
 		$_QR['protocol']['host'] = $_QR['protocol']['host-static'];
 
 	unset($_QR['protocol']['host-dynamic'],$_QR['protocol']['host-static']);
@@ -53,7 +66,8 @@ if(isset($_QR['fm_send']) === true && xivo_issa('protocol',$_QR) === true && xiv
 	else
 		$_QR['ufeatures']['outcallerid'] = '';
 
-	if(isset($_QR['ufeatures']['outcallerid-custom']) === true && $_QR['ufeatures']['outcallerid'] === 'custom')
+	if(isset($_QR['ufeatures']['outcallerid-custom']) === true
+	&& $_QR['ufeatures']['outcallerid'] === 'custom')
 		$_QR['ufeatures']['outcallerid'] = $_QR['ufeatures']['outcallerid-custom'];
 
 	unset($_QR['ufeatures']['outcallerid-type'],$_QR['ufeatures']['outcallerid-custom']);
@@ -70,6 +84,10 @@ if(isset($_QR['fm_send']) === true && xivo_issa('protocol',$_QR) === true && xiv
 		if(xivo_issa('protocol',$result) === true
 		&& isset($result['protocol']['allow']) === true)
 			$allow = $result['protocol']['allow'];
+
+		if(isset($_QR['ufeatures']['voicemailid']) === true
+		&& $_QR['ufeatures']['voicemailid'] === 'add')
+			$result['ufeatures']['voicemailid'] = 'add';
 	}
 	else
 	{
@@ -82,11 +100,15 @@ xivo::load_class('xivo_sort');
 
 if($gmember['list'] !== false && xivo_ak('groupmember',$return) === true)
 {
-	$gmember['slt'] = xivo_array_intersect_key($return['groupmember'],$gmember['list'],'gfeaturesid');
+	$gmember['slt'] = xivo_array_intersect_key($return['groupmember'],
+						   $gmember['list'],
+						   'gfeaturesid');
 
 	if($gmember['slt'] !== false)
 	{
-		$gmember['info'] = xivo_array_copy_intersect_key($return['groupmember'],$gmember['slt'],'gfeaturesid');
+		$gmember['info'] = xivo_array_copy_intersect_key($return['groupmember'],
+								 $gmember['slt'],
+								 'gfeaturesid');
 		$gmember['list'] = xivo_array_diff_key($gmember['list'],$gmember['slt']);
 
 		$groupsort = new xivo_sort(array('browse' => 'gfeatures','key' => 'name'));
@@ -96,11 +118,15 @@ if($gmember['list'] !== false && xivo_ak('groupmember',$return) === true)
 
 if($qmember['list'] !== false && xivo_ak('queuemember',$return) === true)
 {
-	$qmember['slt'] = xivo_array_intersect_key($return['queuemember'],$qmember['list'],'qfeaturesid');
+	$qmember['slt'] = xivo_array_intersect_key($return['queuemember'],
+						   $qmember['list'],
+						   'qfeaturesid');
 
 	if($qmember['slt'] !== false)
 	{
-		$qmember['info'] = xivo_array_copy_intersect_key($return['queuemember'],$qmember['slt'],'qfeaturesid');
+		$qmember['info'] = xivo_array_copy_intersect_key($return['queuemember'],
+								 $qmember['slt'],
+								 'qfeaturesid');
 		$qmember['list'] = xivo_array_diff_key($qmember['list'],$qmember['slt']);
 
 		$queuesort = new xivo_sort(array('browse' => 'qfeatures','key' => 'name'));
@@ -110,7 +136,9 @@ if($qmember['list'] !== false && xivo_ak('queuemember',$return) === true)
 
 if($rightcall['list'] !== false && xivo_ak('rightcall',$return) === true)
 {
-	$rightcall['slt'] = xivo_array_intersect_key($return['rightcall'],$rightcall['list'],'rightcallid');
+	$rightcall['slt'] = xivo_array_intersect_key($return['rightcall'],
+						     $rightcall['list'],
+						     'rightcallid');
 
 	if($rightcall['slt'] !== false)
 	{

@@ -12,16 +12,6 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 		return($this->_name);
 	}
 
-	function &get_dso()
-	{
-		$r = false;
-
-		if(isset($this->_dso) === true && is_object($this->_dso) === true)
-			$r = &$this->_dso;
-
-		return(($ref = &$r));
-	}
-
 	function _load_config()
 	{
 		if(empty($this->_conf) === false)

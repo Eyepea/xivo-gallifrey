@@ -14,37 +14,21 @@ $array['element']['silencethreshold']['value'] = array(0,2,4,8,16,32,64,128,256,
 $array['element']['silencethreshold']['default'] = 256;
 
 $array['element']['minmessage'] = array();
-$array['element']['minmessage']['value'] = array(0 => 0,1 => 1,2 => 2,3 => 3,4 => 4,5 => 5,6 => 6,7 => 7,8 => 8,
-						    9 => 9,10 => 10,20 => 20,30 => 30,40 => 40,50 => 50,60 => 1,
-						    70 => array(1,10),80 => array(1,20),90 => array(1,30),
-						    100 => array(1,40),110 => array(1,50),120 => 2,130 => array(2,10),
-						    140 => array(2,20),150 => array(2,30),160 => array(2,40),
-						    170 => array(2,50),180 => 3,190 => array(3,10),200 => array(3,20),
-						    210 => array(3,30),220 => array(3,40),230 => array(3,50),240 => 4,
-						    250 => array(4,10),260 => array(4,20),270 => array(4,30),
-						    280 => array(4,40),290 => array(4,50),300 => 5,310 => array(5,10),
-						    320 => array(5,20),330 => array(5,30),340 => array(5,40),
-						    350 => array(5,50),360 => 6);
+$array['element']['minmessage']['value'] = array(0,1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,
+						 100,110,120,130,140,150,160,170,180,190,
+						 200,210,220,230,240,250,260,270,280,290,
+						 300,310,320,330,340,350,360);
 $array['element']['minmessage']['default'] = 2;
 
 $array['element']['maxmessage'] = array();
-$array['element']['maxmessage']['value'] = array(0 => 0,1 => 1,2 => 2,3 => 3,4 => 4,5 => 5,6 => 6,7 => 7,8 => 8,
-						    9 => 9,10 => 10,20 => 20,30 => 30,40 => 40,50 => 50,60 => 1,
-						    70 => array(1,10),80 => array(1,20),90 => array(1,30),
-						    100 => array(1,40),110 => array(1,50),120 => 2,130 => array(2,10),
-						    140 => array(2,20),150 => array(2,30),160 => array(2,40),
-						    170 => array(2,50),180 => 3,190 => array(3,10),200 => array(3,20),
-						    210 => array(3,30),220 => array(3,40),230 => array(3,50),240 => 4,
-						    250 => array(4,10),260 => array(4,20),270 => array(4,30),
-						    280 => array(4,40),290 => array(4,50),300 => 5,310 => array(5,10),
-						    320 => array(5,20),330 => array(5,30),340 => array(5,40),
-						    350 => array(5,50),360 => 6);
+$array['element']['maxmessage']['value'] = array(0,1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,
+						 100,110,120,130,140,150,160,170,180,190,
+						 200,210,220,230,240,250,260,270,280,290,
+						 300,310,320,330,340,350,360);
 $array['element']['maxmessage']['default'] = 0;
 
 $array['element']['maxsilence'] = array();
-$array['element']['maxsilence']['value'] = array(1,2,3,4,5,6,7,8,9,10,
-						11,12,13,14,15,16,17,18,19,20,
-						21,22,23,24,25,26,27,28,29,30);
+$array['element']['maxsilence']['value'] = range(1,30);
 $array['element']['maxsilence']['default'] = 15;
 
 $array['element']['review'] = array();
@@ -72,7 +56,7 @@ $array['element']['format']['default'] = '';
 $array['element']['format']['null'] = true;
 
 $array['element']['maxlogins'] = array();
-$array['element']['maxlogins']['value'] = array(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20);
+$array['element']['maxlogins']['value'] = range(1,20);
 $array['element']['maxlogins']['default'] = 3;
 
 $array['element']['envelope'] = array();
@@ -114,25 +98,16 @@ $array['element']['tempgreetwarn']['default'] = 'yes';
 $array['element']['tempgreetwarn']['set'] = true;
 
 $array['element']['maxgreet'] = array();
-$array['element']['maxgreet']['value'] = array(0 => 0,1 => 1,2 => 2,3 => 3,4 => 4,5 => 5,6 => 6,7 => 7,8 => 8,
-						    9 => 9,10 => 10,20 => 20,30 => 30,40 => 40,50 => 50,60 => 1,
-						    70 => array(1,10),80 => array(1,20),90 => array(1,30),
-						    100 => array(1,40),110 => array(1,50),120 => 2,130 => array(2,10),
-						    140 => array(2,20),150 => array(2,30),160 => array(2,40),
-						    170 => array(2,50),180 => 3,190 => array(3,10),200 => array(3,20),
-						    210 => array(3,30),220 => array(3,40),230 => array(3,50),240 => 4,
-						    250 => array(4,10),260 => array(4,20),270 => array(4,30),
-						    280 => array(4,40),290 => array(4,50),300 => 5,310 => array(5,10),
-						    320 => array(5,20),330 => array(5,30),340 => array(5,40),
-						    350 => array(5,50),360 => 6);
+$array['element']['maxgreet']['value'] = array(0,1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,
+					       100,110,120,130,140,150,160,170,180,190,
+					       200,210,220,230,240,250,260,270,280,290,
+					       300,310,320,330,340,350,360);
 $array['element']['maxgreet']['default'] = 0;
 
 $array['element']['skipms'] = array();
-$array['element']['skipms']['value'] = array(1000 => 1,2000 => 2,3000 => 3,4000 => 4,5000 => 5,
-						6000 => 6,7000 => 7,8000 => 8,9000 => 9,
-						10000 => 10,15000 => 15,20000 => 20,25000 => 25,
-						30000 => 30,35000 => 35,40000 => 40,
-						45000 => 45,50000 => 50,55000 => 55,60000 => 60);
+$array['element']['skipms']['value'] = array(1000,2000,3000,4000,5000,6000,7000,8000,9000,
+					     10000,15000,20000,25000,30000,35000,
+					     40000,45000,50000,55000,60000);
 $array['element']['skipms']['default'] = 3000;
 
 $array['element']['sendvoicemail'] = array();
@@ -168,13 +143,8 @@ $array['element']['attach']['default'] = 'yes';
 $array['element']['attach']['set'] = true;
 
 $array['element']['volgain'] = array();
-$array['element']['volgain']['value'] = array(-5,'-4.5',-4,
-					      '-3.5',-3,'-2.5',
-					      -2,-1.5,1,'-0.5',
-					      0,'0.5',1,
-					      '1.5',2,'2.5',
-					      3,'3.5',4,
-					      '4.5',5);
+$array['element']['volgain']['value'] = array(-5,'-4.5',-4,'-3.5',-3,'-2.5',-2,-1.5,1,'-0.5',
+					      0,'0.5',1,'1.5',2,'2.5',3,'3.5',4,'4.5',5);
 $array['element']['volgain']['default'] = 0;
 
 $array['element']['mailcmd'] = array();
@@ -261,22 +231,18 @@ $array['element']['odbctable']['null'] = true;
 
 $array['filter'] = array();
 $array['filter']['maxmsg'] = array('key' => array(1,10,15,20,25,50,75,100,
-				     125,150,175,200,300,400,500,600,700,800,900,
-				     1000,2000,3000,4000,5000,6000,7000,8000,9000,9999));
+						  125,150,175,200,300,400,500,600,700,800,900,
+						  1000,2000,3000,4000,5000,6000,7000,8000,9000,9999));
 $array['filter']['silencethreshold'] = array('key' => array(0,2,4,8,16,32,64,128,256,512));
-$array['filter']['minmessage'] = array('key' => array(0,1,2,3,4,5,6,7,8,9,
-							10,20,30,40,50,60,70,80,90,
-							100,110,120,130,140,150,160,170,180,190,
-							200,210,220,230,240,250,260,270,280,290,
-							300,310,320,330,340,350,360));
-$array['filter']['maxmessage'] = array('key' => array(0,1,2,3,4,5,6,7,8,9,
-							10,20,30,40,50,60,70,80,90,
-							100,110,120,130,140,150,160,170,180,190,
-							200,210,220,230,240,250,260,270,280,290,
-							300,310,320,330,340,350,360));
-$array['filter']['maxsilence'] = array('key' => array(1,2,3,4,5,6,7,8,9,10,
-						11,12,13,14,15,16,17,18,19,20,
-						21,22,23,24,25,26,27,28,29,30));
+$array['filter']['minmessage'] = array('key' => array(0,1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,
+						      100,110,120,130,140,150,160,170,180,190,
+						      200,210,220,230,240,250,260,270,280,290,
+						      300,310,320,330,340,350,360));
+$array['filter']['maxmessage'] = array('key' => array(0,1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,
+						      100,110,120,130,140,150,160,170,180,190,
+						      200,210,220,230,240,250,260,270,280,290,
+						      300,310,320,330,340,350,360));
+$array['filter']['maxsilence'] = array('cast' => 'uint','between' => array(1,30));
 $array['filter']['review'] = array('bool' => true);
 $array['filter']['operator'] = array('bool' => true);
 $array['filter']['format'] = array('set' => false,'chk' => 2,'uvalue' => array(
@@ -289,7 +255,7 @@ $array['filter']['format'] = array('set' => false,'chk' => 2,'uvalue' => array(
 					XIVO_SRE_IPBX_AST_FORMAT_AUDIO_AU,
 					XIVO_SRE_IPBX_AST_FORMAT_AUDIO_VOX,
 					XIVO_SRE_IPBX_AST_FORMAT_AUDIO_SLIN));
-$array['filter']['maxlogins'] = array('key' => array(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20));
+$array['filter']['maxlogins'] = array('cast' => 'uint','between' => array(1,20));
 $array['filter']['envelope'] = array('bool' => true);
 $array['filter']['saycid'] = array('bool' => true);
 $array['filter']['cidinternalcontexts'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context');
@@ -298,14 +264,13 @@ $array['filter']['saydurationm'] = array('key' => array(1,2,3,4,5,10,15,20,25,30
 $array['filter']['forcename'] = array('bool' => true);
 $array['filter']['forcegreetings'] = array('bool' => true);
 $array['filter']['tempgreetwarn'] = array('bool' => true);
-$array['filter']['maxgreet'] = array('key' => array(0,1,2,3,4,5,6,7,8,9,
-							10,20,30,40,50,60,70,80,90,
-							100,110,120,130,140,150,160,170,180,190,
-							200,210,220,230,240,250,260,270,280,290,
-							300,310,320,330,340,350,360));
+$array['filter']['maxgreet'] = array('key' => array(0,1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,
+						    100,110,120,130,140,150,160,170,180,190,
+						    200,210,220,230,240,250,260,270,280,290,
+						    300,310,320,330,340,350,360));
 $array['filter']['skipms'] = array('key' => array(1000,2000,3000,4000,5000,6000,7000,8000,9000,
-							10000,15000,20000,25000,30000,35000,40000,
-							45000,50000,55000,60000));
+						  10000,15000,20000,25000,30000,35000,40000,
+						  45000,50000,55000,60000));
 $array['filter']['sendvoicemail'] = array('bool' => true);
 $array['filter']['usedirectory'] = array('bool' => true);
 $array['filter']['nextaftercmd'] = array('bool' => true);

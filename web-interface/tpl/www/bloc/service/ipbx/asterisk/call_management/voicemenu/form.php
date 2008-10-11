@@ -57,18 +57,28 @@
 </div>
 <div id="sb-part-voicemenuflow" class="b-nodisplay">
 <?php
-	echo	$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/voicemenuflow-action',array('event' => 'voicemenuflow')),
-		$this->file_include('bloc/service/ipbx/asterisk/dialaction/endcall',array('event' => 'voicemenuflow')),
-		$this->file_include('bloc/service/ipbx/asterisk/dialaction/user',array('event' => 'voicemenuflow')),
-		$this->file_include('bloc/service/ipbx/asterisk/dialaction/group',array('event' => 'voicemenuflow')),
-		$this->file_include('bloc/service/ipbx/asterisk/dialaction/queue',array('event' => 'voicemenuflow')),
-		$this->file_include('bloc/service/ipbx/asterisk/dialaction/meetme',array('event' => 'voicemenuflow')),
-		$this->file_include('bloc/service/ipbx/asterisk/dialaction/voicemail',array('event' => 'voicemenuflow')),
-		$this->file_include('bloc/service/ipbx/asterisk/dialaction/schedule',array('event' => 'voicemenuflow')),
-		$this->file_include('bloc/service/ipbx/asterisk/dialaction/voicemenu',array('event' => 'voicemenuflow')),
-		$this->file_include('bloc/service/ipbx/asterisk/dialaction/application',array('event' => 'voicemenuflow')),
+	$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/voicemenuflow-action',
+			    array('event'	=> 'voicemenuflow'));
+	$this->file_include('bloc/service/ipbx/asterisk/dialaction/endcall',
+			    array('event'	=> 'voicemenuflow'));
+	$this->file_include('bloc/service/ipbx/asterisk/dialaction/user',
+			    array('event'	=> 'voicemenuflow'));
+	$this->file_include('bloc/service/ipbx/asterisk/dialaction/group',
+			    array('event'	=> 'voicemenuflow'));
+	$this->file_include('bloc/service/ipbx/asterisk/dialaction/queue',
+			    array('event'	=> 'voicemenuflow'));
+	$this->file_include('bloc/service/ipbx/asterisk/dialaction/meetme',
+			    array('event'	=> 'voicemenuflow'));
+	$this->file_include('bloc/service/ipbx/asterisk/dialaction/voicemail',
+			    array('event'	=> 'voicemenuflow'));
+	$this->file_include('bloc/service/ipbx/asterisk/dialaction/schedule',
+			    array('event'	=> 'voicemenuflow'));
+	$this->file_include('bloc/service/ipbx/asterisk/dialaction/voicemenu',
+			    array('event'	=> 'voicemenuflow'));
+	$this->file_include('bloc/service/ipbx/asterisk/dialaction/application',
+			    array('event'	=> 'voicemenuflow'));
 
-		'<div id="fd-dialaction-voicemenuflow-ipbxapplication-actiontype" class="b-nodisplay">',
+	echo	'<div id="fd-dialaction-voicemenuflow-ipbxapplication-actiontype" class="b-nodisplay">',
 
 		$form->select(array('desc'	=> $this->bbf('fm_dialaction_ipbxapplication-action'),
 				    'name'	=> 'ipbxapplications',
@@ -79,137 +89,137 @@
 				    'empty'	=> true,
 				    'key'	=> true,
 				    'bbf'	=> 'fm_ipbxapplications-opt-'),
-		           $ipbxapplications,
-			   'onchange="xivo_ast_chg_ipbxapplication(this.value);"');
+			      $ipbxapplications,
+			      'onchange="xivo_ast_chg_ipbxapplication(this.value);"');
 
 	if(isset($ipbxapplications['answer']) === true):
-		echo $this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/answer',
-					 array('apparg_answer' => $ipbxapplications['answer']['arg']));
+		$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/answer',
+				    array('apparg_answer'		=> $ipbxapplications['answer']['arg']));
 	endif;
 
 	if(isset($ipbxapplications['authenticate']) === true):
-		echo $this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/authenticate',
-					 array('apparg_authenticate' => $ipbxapplications['authenticate']['arg']));
+		$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/authenticate',
+				    array('apparg_authenticate'		=> $ipbxapplications['authenticate']['arg']));
 	endif;
 
 	if(isset($ipbxapplications['vmauthenticate']) === true):
-		echo $this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/vmauthenticate',
-					 array('apparg_vmauthenticate' => $ipbxapplications['vmauthenticate']['arg']));
+		$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/vmauthenticate',
+				    array('apparg_vmauthenticate'	=> $ipbxapplications['vmauthenticate']['arg']));
 	endif;
 
 	if(isset($ipbxapplications['macro']) === true):
-		echo $this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/macro',
-					 array('apparg_macro' => $ipbxapplications['macro']['arg']));
+		$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/macro',
+				    array('apparg_macro'		=> $ipbxapplications['macro']['arg']));
 	endif;
 
 	if(isset($ipbxapplications['agi']) === true):
-		echo $this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/agi',
-					 array('apparg_agi' => $ipbxapplications['agi']['arg']));
+		$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/agi',
+				    array('apparg_agi'			=> $ipbxapplications['agi']['arg']));
 	endif;
 
 	if(isset($ipbxapplications['goto']) === true):
-		echo $this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/goto',
-					 array('apparg_goto' => $ipbxapplications['goto']['arg']));
+		$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/goto',
+				    array('apparg_goto'			=> $ipbxapplications['goto']['arg']));
 	endif;
 
 	if(isset($ipbxapplications['gotoif']) === true):
-		echo $this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/gotoif',
-					 array('apparg_gotoif' => $ipbxapplications['gotoif']['arg']));
+		$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/gotoif',
+				    array('apparg_gotoif'		=> $ipbxapplications['gotoif']['arg']));
 	endif;
 
 	if(isset($ipbxapplications['mixmonitor']) === true):
-		echo $this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/mixmonitor',
-					 array('apparg_mixmonitor' => $ipbxapplications['mixmonitor']['arg']));
+		$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/mixmonitor',
+				    array('apparg_mixmonitor'		=> $ipbxapplications['mixmonitor']['arg']));
 	endif;
 
 	if(isset($ipbxapplications['monitor']) === true):
-		echo $this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/monitor',
-					 array('apparg_monitor' => $ipbxapplications['monitor']['arg']));
+		$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/monitor',
+				    array('apparg_monitor'		=> $ipbxapplications['monitor']['arg']));
 	endif;
 
 	if(isset($ipbxapplications['record']) === true):
-		echo $this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/record',
-					 array('apparg_record' => $ipbxapplications['record']['arg']));
+		$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/record',
+				    array('apparg_record'		=> $ipbxapplications['record']['arg']));
 	endif;
 
 	if(isset($ipbxapplications['stopmonitor']) === true):
-		echo $this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/stopmonitor',
-					 array('apparg_stopmonitor' => $ipbxapplications['stopmonitor']['arg']));
+		$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/stopmonitor',
+				    array('apparg_stopmonitor'		=> $ipbxapplications['stopmonitor']['arg']));
 	endif;
 
 	if(isset($ipbxapplications['background']) === true):
-		echo $this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/background',
-					 array('apparg_background' => $ipbxapplications['background']['arg']));
+		$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/background',
+				    array('apparg_background'		=> $ipbxapplications['background']['arg']));
 	endif;
 
 	if(isset($ipbxapplications['playback']) === true):
-		echo $this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/playback',
-					 array('apparg_playback' => $ipbxapplications['playback']['arg']));
+		$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/playback',
+				    array('apparg_playback'		=> $ipbxapplications['playback']['arg']));
 	endif;
 
 	if(isset($ipbxapplications['absolutetimeout']) === true):
-		echo $this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/absolutetimeout',
-					 array('apparg_absolutetimeout' => $ipbxapplications['absolutetimeout']['arg']));
+		$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/absolutetimeout',
+				    array('apparg_absolutetimeout'	=> $ipbxapplications['absolutetimeout']['arg']));
 	endif;
 
 	if(isset($ipbxapplications['digittimeout']) === true):
-		echo $this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/digittimeout',
-					 array('apparg_digittimeout' => $ipbxapplications['digittimeout']['arg']));
+		$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/digittimeout',
+				    array('apparg_digittimeout'		=> $ipbxapplications['digittimeout']['arg']));
 	endif;
 
 	if(isset($ipbxapplications['responsetimeout']) === true):
-		echo $this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/responsetimeout',
-					 array('apparg_responsetimeout' => $ipbxapplications['responsetimeout']['arg']));
+		$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/responsetimeout',
+				    array('apparg_responsetimeout'	=> $ipbxapplications['responsetimeout']['arg']));
 	endif;
 
 	if(isset($ipbxapplications['set']) === true):
-		echo $this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/set',
-					 array('apparg_set' => $ipbxapplications['set']['arg']));
+		$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/set',
+				    array('apparg_set'			=> $ipbxapplications['set']['arg']));
 	endif;
 
 	if(isset($ipbxapplications['setcallerid']) === true):
-		echo $this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/setcallerid',
-					 array('apparg_setcallerid' => $ipbxapplications['setcallerid']['arg']));
+		$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/setcallerid',
+				    array('apparg_setcallerid'		=> $ipbxapplications['setcallerid']['arg']));
 	endif;
 
 	if(isset($ipbxapplications['setcidname']) === true):
-		echo $this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/setcidname',
-					 array('apparg_setcidname' => $ipbxapplications['setcidname']['arg']));
+		$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/setcidname',
+				    array('apparg_setcidname'		=> $ipbxapplications['setcidname']['arg']));
 	endif;
 
 	if(isset($ipbxapplications['setcidnum']) === true):
-		echo $this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/setcidnum',
-					 array('apparg_setcidnum' => $ipbxapplications['setcidnum']['arg']));
+		$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/setcidnum',
+				    array('apparg_setcidnum'		=> $ipbxapplications['setcidnum']['arg']));
 	endif;
 
 	if(isset($ipbxapplications['setlanguage']) === true):
-		echo $this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/setlanguage',
-					 array('apparg_setlanguage' => $ipbxapplications['setlanguage']['arg']));
+		$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/setlanguage',
+				    array('apparg_setlanguage'		=> $ipbxapplications['setlanguage']['arg']));
 	endif;
 
 	if(isset($ipbxapplications['noop']) === true):
-		echo $this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/noop',
-					 array('apparg_noop' => $ipbxapplications['noop']['arg']));
+		$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/noop',
+				    array('apparg_noop'			=> $ipbxapplications['noop']['arg']));
 	endif;
 
 	if(isset($ipbxapplications['wait']) === true):
-		echo $this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/wait',
-					 array('apparg_wait' => $ipbxapplications['wait']['arg']));
+		$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/wait',
+				    array('apparg_wait'			=> $ipbxapplications['wait']['arg']));
 	endif;
 
 	if(isset($ipbxapplications['waitexten']) === true):
-		echo $this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/waitexten',
-					 array('apparg_waitexten' => $ipbxapplications['waitexten']['arg']));
+		$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/waitexten',
+				    array('apparg_waitexten'		=> $ipbxapplications['waitexten']['arg']));
 	endif;
 
 	if(isset($ipbxapplications['waitforring']) === true):
-		echo $this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/waitforring',
-					 array('apparg_waitforring' => $ipbxapplications['waitforring']['arg']));
+		$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/waitforring',
+				    array('apparg_waitforring'		=> $ipbxapplications['waitforring']['arg']));
 	endif;
 
 	if(isset($ipbxapplications['waitmusiconhold']) === true):
-		echo $this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/waitmusiconhold',
-					 array('apparg_waitfmusiconhold' => $ipbxapplications['waitmusiconhold']['arg']));
+		$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/waitmusiconhold',
+				    array('apparg_waitfmusiconhold'	=> $ipbxapplications['waitmusiconhold']['arg']));
 	endif;
 
 	echo	'</div>';
@@ -262,8 +272,8 @@
 				    'cols'	=> 0,
 				    'size'	=> 0,
 				    'field'	=> false),
-		 $info['voicemenuflow-data'],
-		 'class="b-nodisplay"');
+			      $info['voicemenuflow-data'],
+			      'class="b-nodisplay"');
 ?>
 </div>
 <div id="sb-part-last" class="b-nodisplay">
@@ -272,8 +282,7 @@
 				    'name'	=> 'voicemenuevent-type',
 				    'labelid'	=> 'voicemenuevent-type',
 				    'key'	=> false),
-		           $element['voicemenuevent']['event']['value'],
-			   'onchange=""'),
+			      $element['voicemenuevent']['event']['value']),
 
 		$form->hidden(array('name'	=> 'voicemenuevent[0]',
 				    'id'	=> 'it-voicemenuevent-0',
@@ -328,20 +337,32 @@
 				    'value'	=> $this->get_varra('voicemenuevent','i'))),
 		$form->hidden(array('name'	=> 'voicemenuevent[h]',
 				    'id'	=> 'it-voicemenuevent-h',
-				    'value'	=> $this->get_varra('voicemenuevent','h'))),
+				    'value'	=> $this->get_varra('voicemenuevent','h')));
 
-		$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/voicemenuevent-action',array('event' => 'voicemenuevent')),
-		$this->file_include('bloc/service/ipbx/asterisk/dialaction/none',array('event' => 'voicemenuevent')),
-		$this->file_include('bloc/service/ipbx/asterisk/dialaction/endcall',array('event' => 'voicemenuevent')),
-		$this->file_include('bloc/service/ipbx/asterisk/dialaction/user',array('event' => 'voicemenuevent')),
-		$this->file_include('bloc/service/ipbx/asterisk/dialaction/group',array('event' => 'voicemenuevent')),
-		$this->file_include('bloc/service/ipbx/asterisk/dialaction/queue',array('event' => 'voicemenuevent')),
-		$this->file_include('bloc/service/ipbx/asterisk/dialaction/meetme',array('event' => 'voicemenuevent')),
-		$this->file_include('bloc/service/ipbx/asterisk/dialaction/voicemail',array('event' => 'voicemenuevent')),
-		$this->file_include('bloc/service/ipbx/asterisk/dialaction/schedule',array('event' => 'voicemenuevent')),
-		$this->file_include('bloc/service/ipbx/asterisk/dialaction/voicemenu',array('event' => 'voicemenuevent')),
-		$this->file_include('bloc/service/ipbx/asterisk/dialaction/application',array('event' => 'voicemenuevent')),
-		$this->file_include('bloc/service/ipbx/asterisk/dialaction/sound',array('event' => 'voicemenuevent'));
+	$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/voicemenuevent-action',
+			    array('event'	=> 'voicemenuevent'));
+	$this->file_include('bloc/service/ipbx/asterisk/dialaction/none',
+			    array('event'	=> 'voicemenuevent'));
+	$this->file_include('bloc/service/ipbx/asterisk/dialaction/endcall',
+			    array('event'	=> 'voicemenuevent'));
+	$this->file_include('bloc/service/ipbx/asterisk/dialaction/user',
+			    array('event'	=> 'voicemenuevent'));
+	$this->file_include('bloc/service/ipbx/asterisk/dialaction/group',
+			    array('event'	=> 'voicemenuevent'));
+	$this->file_include('bloc/service/ipbx/asterisk/dialaction/queue',
+			    array('event'	=> 'voicemenuevent'));
+	$this->file_include('bloc/service/ipbx/asterisk/dialaction/meetme',
+			    array('event'	=> 'voicemenuevent'));
+	$this->file_include('bloc/service/ipbx/asterisk/dialaction/voicemail',
+			    array('event'	=> 'voicemenuevent'));
+	$this->file_include('bloc/service/ipbx/asterisk/dialaction/schedule',
+			    array('event'	=> 'voicemenuevent'));
+	$this->file_include('bloc/service/ipbx/asterisk/dialaction/voicemenu',
+			    array('event'	=> 'voicemenuevent'));
+	$this->file_include('bloc/service/ipbx/asterisk/dialaction/application',
+			    array('event'	=> 'voicemenuevent'));
+	$this->file_include('bloc/service/ipbx/asterisk/dialaction/sound',
+			    array('event'	=> 'voicemenuevent'));
 ?>
 	<div id="voicemenu-event" class="sb-list">
 	<table cellspacing="0" cellpadding="0" border="0">

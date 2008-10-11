@@ -171,11 +171,9 @@ $array['element']['externhost']['default'] = '';
 $array['element']['externhost']['null'] = true;
 
 $array['element']['externrefresh'] = array();
-$array['element']['externrefresh']['value'] = array(1 => 1,10 => 10,20 => 20,30 => 30,
-						    40 => 40,50 => 50,60 => 1,70 => array(1,10),
-						    80 => array(1,20),90 => array(1,30),100 => array(1,40),
-						    110 => array(1,50),120 => 2,180 => 3,240 => 4,300 => 5,
-						    600 => 10,900 => 15,1200 => 20,1800 => 30);
+$array['element']['externrefresh']['value'] = array(1,10,20,30,40,50,60,70,80,90,
+						    100,110,120,180,240,300,600,900,
+						    1200,1800);
 $array['element']['externrefresh']['default'] = 10;
 
 $array['element']['matchexterniplocally'] = array();
@@ -278,53 +276,38 @@ $array['element']['pedantic']['default'] = 'no';
 $array['element']['pedantic']['set'] = true;
 
 $array['element']['minexpiry'] = array();
-$array['element']['minexpiry']['value'] = array(1 => 1,10 => 10,20 => 20,30 => 30,40 => 40,50 => 50,60 => 1,
-						70 => array(1,10),80 => array(1,20),90 => array(1,30),
-						100 => array(1,40),110 => array(1,50),120 => 2,130 => array(2,10),
-						140 => array(2,20),150 => array(2,30),160 => array(2,40),
-						170 => array(2,50),180 => 3,190 => array(3,10),200 => array(3,20),
-						210 => array(3,30),220 => array(3,40),230 => array(3,50),240 => 4,
-						300 => 5,600 => 10,900 => 15,1200 => 20,1800 => 30,2400 => 40,
-						2700 => 45,3000 => 50,3600 => 1,4500 => array(1,15),
-						5400 => array(1,30),6300 => array(1,45),7200 => 2);
+$array['element']['minexpiry']['value'] = array(1,10,20,30,40,50,60,70,80,90,
+						100,110,120,130,140,150,160,170,180,190,
+						200,210,220,230,240,300,600,900,
+						1200,1800,2400,2700,3000,3600,4500,
+						5400,6300,7200);
 $array['element']['minexpiry']['default'] = 60;
 
 $array['element']['maxexpiry'] = array();
-$array['element']['maxexpiry']['value'] = array(1 => 1,10 => 10,20 => 20,30 => 30,40 => 40,50 => 50,60 => 1,
-						70 => array(1,10),80 => array(1,20),90 => array(1,30),
-						100 => array(1,40),110 => array(1,50),120 => 2,130 => array(2,10),
-						140 => array(2,20),150 => array(2,30),160 => array(2,40),
-						170 => array(2,50),180 => 3,190 => array(3,10),200 => array(3,20),
-						210 => array(3,30),220 => array(3,40),230 => array(3,50),240 => 4,
-						300 => 5,600 => 10,900 => 15,1200 => 20,1800 => 30,2400 => 40,
-						2700 => 45,3000 => 50,3600 => 1,4500 => array(1,15),
-						5400 => array(1,30),6300 => array(1,45),7200 => 2);
+$array['element']['maxexpiry']['value'] = array(1,10,20,30,40,50,60,70,80,90,
+						100,110,120,130,140,150,160,170,180,190,
+						200,210,220,230,240,300,600,900,
+						1200,1800,2400,2700,3000,3600,4500,
+						5400,6300,7200);
 $array['element']['maxexpiry']['default'] = 3600;
 
 $array['element']['defaultexpiry'] = array();
-$array['element']['defaultexpiry']['value'] = array(1 => 1,10 => 10,20 => 20,30 => 30,40 => 40,50 => 50,60 => 1,
-						    70 => array(1,10),80 => array(1,20),90 => array(1,30),
-						    100 => array(1,40),110 => array(1,50),120 => 2,130 => array(2,10),
-						    140 => array(2,20),150 => array(2,30),160 => array(2,40),
-						    170 => array(2,50),180 => 3,190 => array(3,10),200 => array(3,20),
-						    210 => array(3,30),220 => array(3,40),230 => array(3,50),240 => 4,
-						    300 => 5,600 => 10,900 => 15,1200 => 20,1800 => 30,2400 => 40,
-						    2700 => 45,3000 => 50,3600 => 1,4500 => array(1,15),
-						    5400 => array(1,30),6300 => array(1,45),7200 => 2);
+$array['element']['defaultexpiry']['value'] = array(1,10,20,30,40,50,60,70,80,90,
+						    100,110,120,130,140,150,160,170,180,190,
+						    200,210,220,230,240,300,600,900,
+						    1200,1800,2400,2700,3000,3600,4500,
+						    5400,6300,7200);
 $array['element']['defaultexpiry']['default'] = 120;
 
 $array['element']['registertimeout'] = array();
-$array['element']['registertimeout']['value'] = array(1 => 1,10 => 10,20 => 20,30 => 30,
-						    40 => 40,50 => 50,60 => 1,70 => array(1,10),
-						    80 => array(1,20),90 => array(1,30),100 => array(1,40),
-						    110 => array(1,50),120 => 2);
+$array['element']['registertimeout']['value'] = array(1,10,20,30,40,50,60,70,80,90,100,110,120);
 $array['element']['registertimeout']['default'] = 20;
 
 $array['element']['registerattempts'] = array();
-$array['element']['registerattempts']['value'] = array(0 => 0,10 => 10,20 => 20,30 => 30,
-						    40 => 40,50 => 50,60 => 1,70 => array(1,10),
-						    80 => array(1,20),90 => array(1,30),100 => array(1,40),
-						    110 => array(1,50),120 => 2);
+$array['element']['registerattempts']['value'] = array(0,5,10,15,20,25,30,35,40,45,
+						       50,55,60,65,70,75,80,85,90,95,
+						       100,105,110,115,120,125,130,135,140,145,
+						       150,155,160,165,170,175,180,185,190,195,200);
 $array['element']['registerattempts']['default'] = 0;
 
 $array['element']['notifyringing'] = array();
@@ -463,13 +446,9 @@ $array['element']['rtsavesysname']['default'] = 'no';
 $array['element']['rtsavesysname']['set'] = true;
 
 $array['element']['rtautoclear'] = array();
-$array['element']['rtautoclear']['value'] = array('no' => 'no','yes' => 'yes',1 => 1,10 => 10,20 => 20,
-						  30 => 30,40 => 40,50 => 50,60 => 1,
-						  70 => array(1,10),80 => array(1,20),90 => array(1,30),
-						  100 => array(1,40),110 => array(1,50),120 => 2,130 => array(2,10),
-						  140 => array(2,20),150 => array(2,30),160 => array(2,40),
-						  170 => array(2,50),180 => 3,190 => array(3,10),200 => array(3,20),
-						  210 => array(3,30),220 => array(3,40),230 => array(3,50),240 => 4);
+$array['element']['rtautoclear']['value'] = array('no','yes',1,10,20,30,40,50,60,70,80,90,
+						  100,110,120,130,140,150,160,170,180,190,
+						  200,210,220,230,240);
 $array['element']['rtautoclear']['default'] = 'no'; 
 
 $array['element']['subscribecontext'] = array();
@@ -499,7 +478,10 @@ $array['filter']['buggymwi'] = array('bool' => true);
 $array['filter']['regcontext'] = array('set' => false,'chk' => 2,
 				       'callback' => 'xivo_service_asterisk::chk_context',
 				       'callbackparam' => array(array(XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION)));
-$array['filter']['callerid'] = array('regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 80);
+$array['filter']['callerid'] = array('maxlen'	=> 80,
+				     'regexp'	=> '/^'.XIVO_SRE_IPBX_AST_REGEXP_CALLERID.'$/',
+				     'cast'	=> 'sgraph',
+				     'notag'	=> false);
 $array['filter']['fromdomain'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-\.]+$/i','maxlen' => 80);
 $array['filter']['sipdebug'] = array('bool' => true);
 $array['filter']['dumphistory'] = array('bool' => true);
@@ -577,7 +559,10 @@ $array['filter']['defaultexpiry'] = array('key' => array(1,10,20,30,40,50,60,
 							 2400,2700,3000,3600,4500,
 							 5400,6300,7200));
 $array['filter']['registertimeout'] = array('key' => array(1,10,20,30,40,50,60,70,80,90,100,110,120));
-$array['filter']['registerattempts'] = array('key' => array(0,10,20,30,40,50,60,70,80,90,100,110,120));
+$array['filter']['registerattempts'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,
+							    50,55,60,65,70,75,80,85,90,95,
+							    100,105,110,115,120,125,130,135,140,145,
+							    150,155,160,165,170,175,180,185,190,195,200));
 $array['filter']['notifyringing'] = array('bool' => true);
 $array['filter']['notifyhold'] = array('bool' => true);
 $array['filter']['allowtransfer'] = array('bool' => true);

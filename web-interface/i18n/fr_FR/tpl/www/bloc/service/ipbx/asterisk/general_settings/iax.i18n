@@ -28,7 +28,7 @@ Nombre de thread :
 ; fm_iaxmaxthreadcount
 Nombre de thread maximum :
 
-; fm_iaxmaxthreadcount-opt0
+; fm_iaxmaxthreadcount-opt(0)
 Désactivé
 
 ; fm_iaxmaxthreadcount-opt
@@ -58,73 +58,37 @@ Contexte d'enregistrement :
 ; fm_minregexpire
 Délai minimum d'expiration d'un enregistrement :
 
-; fm_minregexpire-opt0
-Désactivé
-
-; fm_minregexpire-opt10
-10 sec.
-
-; fm_minregexpire-opt20
-20 sec.
-
-; fm_minregexpire-opt30
-30 sec.
-
-; fm_minregexpire-opt40
-40 sec.
-
-; fm_minregexpire-opt50
-50 sec.
-
-; fm_minregexpire-opt60
-1 min.
-
-; fm_minregexpire-opt120
-2 min.
-
-; fm_minregexpire-opt
-%s min. %s sec.
-
 ; fm_maxregexpire
 Délai maximum d'expiration d'un enregistrement :
 
-; fm_maxregexpire-opt0
+; fm_regexpire-opt(0)
 Désactivé
 
-; fm_maxregexpire-opt10
-10 sec.
+; fm_regexpire-opt-second
+1 seconde
 
-; fm_maxregexpire-opt20
-20 sec.
+; fm_regexpire-opt-seconds
+%s secondes
 
-; fm_maxregexpire-opt30
-30 sec.
+; fm_regexpire-opt-minute
+1 minute
 
-; fm_maxregexpire-opt40
-40 sec.
-
-; fm_maxregexpire-opt50
-50 sec.
-
-; fm_maxregexpire-opt60
-1 min.
-
-; fm_maxregexpire-opt120
-2 min.
-
-; fm_maxregexpire-opt
+; fm_regexpire-opt-minute-seconds
 %s min. %s sec.
+
+; fm_regexpire-opt-minutes
+%s minutes
 
 ; fm_bandwidth
 Bande passante :
 
-; fm_bandwidth-opt-low
+; fm_bandwidth-opt(low)
 Faible
 
-; fm_bandwidth-opt-medium
+; fm_bandwidth-opt(medium)
 Moyenne
 
-; fm_bandwidth-opt-high
+; fm_bandwidth-opt(high)
 Elevée
 
 ; fm_tos
@@ -139,7 +103,7 @@ Forcer le Jitter Buffer :
 ; fm_maxjitterbuffer
 Taille maximale du Jitter Buffer :
 
-; fm_maxjitterbuffer-opt0
+; fm_maxjitterbuffer-opt(0)
 Désactivée
 
 ; fm_maxjitterbuffer-opt
@@ -148,7 +112,7 @@ Désactivée
 ; fm_maxjitterinterps
 Nombre maximum d'interpolation de frames :
 
-; fm_maxjitterinterps-opt0
+; fm_maxjitterinterps-opt(0)
 Désactivé
 
 ; fm_maxjitterinterps-opt
@@ -157,10 +121,10 @@ Désactivé
 ; fm_resyncthreshold
 Resynchronisation en cas de délai trop important :
 
-; fm_resyncthreshold-opt-1
+; fm_resyncthreshold-opt(-1)
 Désactivée
 
-; fm_resyncthreshold-opt0
+; fm_resyncthreshold-opt(0)
 0 milliseconde
 
 ; fm_resyncthreshold-opt
@@ -176,7 +140,7 @@ Drapeau de facturation :
 Activer le support de l'ADSI :
 
 ; fm_language
-Langages :
+Langage :
 
 ; fm_mohinterpret
 Musique d'attente :
@@ -187,19 +151,19 @@ Musique d'attente sur un appel sortant :
 ; fm_encryption
 Chiffrement :
 
-; fm_encryption-opt-no
+; fm_encryption-opt(no)
 Non
 
-; fm_encryption-opt-yes
+; fm_encryption-opt(yes)
 Oui
 
-; fm_encryption-opt-aes128
+; fm_encryption-opt(aes128)
 AES 128
 
 ; fm_maxauthreq
 Maximum AUTHREQs autorisées :
 
-; fm_maxauthreq-opt0
+; fm_maxauthreq-opt(0)
 Désactivé
 
 ; fm_maxauthreq-opt
@@ -208,22 +172,22 @@ Désactivé
 ; fm_codecpriority
 Priorité des codecs :
 
-; fm_codecpriority-opt-caller
+; fm_codecpriority-opt(caller)
 Appelant
 
-; fm_codecpriority-opt-disabled
+; fm_codecpriority-opt(disabled)
 Désactivée
 
-; fm_codecpriority-opt-reqonly
+; fm_codecpriority-opt(reqonly)
 Seulement par requête
 
-; fm_codecpriority-opt-host
+; fm_codecpriority-opt(host)
 Hôte
 
 ; fm_codec-disallow
 Codecs désactivés :
 
-; fm_codec-disallow-opt-all
+; fm_codec-disallow-opt(all)
 Tous
 
 ; fm_codec-allow
@@ -253,49 +217,34 @@ Ignorer l'expiration :
 ; fm_rtautoclear
 Suppression automatique du cache :
 
-; fm_rtautoclear-optno
+; fm_rtautoclear-opt(no)
 Non
 
-; fm_rtautoclear-optyes
+; fm_rtautoclear-opt(yes)
 Oui
 
-; fm_rtautoclear-opt1
-1 sec.
+; fm_rtautoclear-opt-second
+1 seconde
 
-; fm_rtautoclear-opt10
-10 sec.
+; fm_rtautoclear-opt-seconds
+%s secondes
 
-; fm_rtautoclear-opt20
-20 sec.
+; fm_rtautoclear-opt-minute
+1 minute
 
-; fm_rtautoclear-opt30
-30 sec.
+; fm_rtautoclear-opt-minute-seconds
+%s min. %s sec.
 
-; fm_rtautoclear-opt40
-40 sec.
+; fm_rtautoclear-opt-minutes
+%s minutes
 
-; fm_rtautoclear-opt50
-50 sec.
-
-; fm_rtautoclear-opt60
-1 min.
-
-; fm_rtautoclear-opt120
-2 min.
-
-; fm_rtautoclear-opt180
-3 min.
-
-; fm_rtautoclear-opt240
-4 min.
-
-; fm_rtautoclear-opt
+; fm_rtautoclear-opt-minutes-seconds
 %s min. %s sec.
 
 ; fm_pingtime
 Ping time :
 
-; fm_pingtime-opt0
+; fm_pingtime-opt(0)
 0 seconde
 
 ; fm_pingtime-opt
@@ -304,7 +253,7 @@ Ping time :
 ; fm_lagrqtime
 Temps de latence RQ :
 
-; fm_lagrqtime-opt0
+; fm_lagrqtime-opt(0)
 0 seconde
 
 ; fm_lagrqtime-opt
@@ -316,22 +265,22 @@ Désactiver UDP checksums :
 ; fm_transfer
 Activer les transferts :
 
-; fm_transfer-opt-yes
+; fm_transfer-opt(yes)
 Oui
 
-; fm_transfer-opt-no
+; fm_transfer-opt(no)
 Non
 
-; fm_transfer-opt-mediaonly
+; fm_transfer-opt(mediaonly)
 Uniquement la voix
 
 ; fm_autokill
 Auto destruction :
 
-; fm_autokill-optno
+; fm_autokill-opt(no)
 Non
 
-; fm_autokill-optyes
+; fm_autokill-opt(yes)
 Oui
 
 ; fm_autokill-opt

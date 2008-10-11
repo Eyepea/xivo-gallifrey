@@ -757,6 +757,86 @@ function xivo_last_key(&$a,$sort=SORT_NUMERIC)
 	return(end($ak));
 }
 
+function xivo_calc_time($from,$time,$format,$valzero=true)
+{
+	$valzero = (bool) $valzero;
+
+	if(is_numeric($time) === false)
+		return(false);
+
+	switch($from)
+	{
+		case 'day':
+			$time *= 24;
+		case 'hour':
+			$time *= 60;
+		case 'minute':
+			$time *= 60;
+		case 'second':
+			$time *= 1000;
+		case 'millisecond':
+			$time *= 1000;
+		case 'microsecond':
+			break;
+		default:
+			return(false);
+	}
+
+	$r = array();
+
+	if(strpos($format,'%d') !== false)
+	{
+		if(($r['d'] = floor($time / 8640000000)) === (float) 0
+		&& $valzero === false)
+			unset($r['d']);
+		else
+			$time -= $r['d'] * 8640000000;
+	}
+
+	if(strpos($format,'%H') !== false)
+	{
+		if(($r['H'] = floor($time / 3600000000)) === (float) 0
+		&& $valzero === false)
+			unset($r['H']);
+		else
+			$time -= $r['H'] * 3600000000;
+	}
+
+	if(strpos($format,'%M') !== false)
+	{
+		if(($r['M'] = floor($time / 60000000)) === (float) 0
+		&& $valzero === false)
+			unset($r['M']);
+		else
+			$time -= $r['M'] * 60000000;
+	}
+
+	if(strpos($format,'%s') !== false)
+	{
+		if(($r['s'] = floor($time / 1000000)) === (float) 0
+		&& $valzero === false)
+			unset($r['s']);
+		else
+			$time -= $r['s'] * 1000000;
+	}
+
+	if(strpos($format,'%ms') !== false)
+	{
+		if(($r['ms'] = floor($time / 1000)) === (float) 0
+		&& $valzero === false)
+			unset($r['ms']);
+		else
+			$time -= $r['ms'] * 1000;
+	}
+
+	if(strpos($format,'%f') !== false
+	&& ($r['f'] = (int) $time) === 0
+	&& $valzero === false)
+		unset($r['f']);
+
+	return($r);
+}
+
 function xivo_calc_duration($beg,$end,$diff=false,$unset=false)
 {
 	$r = array();
