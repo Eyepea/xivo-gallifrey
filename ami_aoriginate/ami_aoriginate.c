@@ -287,16 +287,16 @@ static int action_aoriginate(struct mansession *s, const struct message *m)
 {
 	ast_module_ref(ast_module_info->self);
 
-	const char *name = astman_get_header(m, "Channel");
-	const char *exten = astman_get_header(m, "Exten");
-	const char *context = astman_get_header(m, "Context");
-	const char *priority = astman_get_header(m, "Priority");
-	const char *timeout = astman_get_header(m, "Timeout");
-	const char *callerid = astman_get_header(m, "CallerID");
-	const char *account = astman_get_header(m, "Account");
-	const char *app = astman_get_header(m, "Application");
-	const char *appdata = astman_get_header(m, "Data");
-	const char *id = astman_get_header(m, "ActionID");
+	const char *name = astman_get_header(m, "Channel");       /* WWW [1] */
+	const char *exten = astman_get_header(m, "Exten");        /* WWW [1] */
+	const char *context = astman_get_header(m, "Context");    /* WWW [1] */
+	const char *priority = astman_get_header(m, "Priority");  /* WWW [1] */
+	const char *timeout = astman_get_header(m, "Timeout");    /* WWW [1] */
+	const char *callerid = astman_get_header(m, "CallerID");  /* WWW [1] */
+	const char *account = astman_get_header(m, "Account");    /* WWW [1] */
+	const char *app = astman_get_header(m, "Application");    /* WWW [1] */
+	const char *appdata = astman_get_header(m, "Data");       /* WWW [1] */
+	const char *id = astman_get_header(m, "ActionID");        /* WWW [1] */
 	struct ast_variable *vars = astman_get_variables(m);
 	struct aoriginate_data *aodata;
 	char *tech, *data;
@@ -309,25 +309,25 @@ static int action_aoriginate(struct mansession *s, const struct message *m)
 	pthread_attr_t attr;
 
 	if (!name) {
-		astman_send_error(s, m, "Channel not specified");
-		goto out;
+		astman_send_error(s, m, "Channel not specified"); /* WWW [1] */
+		goto clear_vars;
 	}
 	if (!ast_strlen_zero(priority) && (sscanf(priority, "%d", &pi) != 1)) {
 		if ((pi = ast_findlabel_extension(NULL, context, exten, priority, NULL)) < 1) {
-			astman_send_error(s, m, "Invalid priority");
-			goto out;
+			astman_send_error(s, m, "Invalid priority"); /* WWW [1] */
+			goto clear_vars;
 		}
 	}
 	if (!ast_strlen_zero(timeout) && (sscanf(timeout, "%d", &to) != 1)) {
-		astman_send_error(s, m, "Invalid timeout");
-		goto out;
+		astman_send_error(s, m, "Invalid timeout");       /* WWW [1] */
+		goto clear_vars;
 	}
 	ast_copy_string(tmp, name, sizeof(tmp));
 	tech = tmp;
 	data = strchr(tmp, '/');
 	if (!data) {
-		astman_send_error(s, m, "Invalid channel");
-		goto out;
+		astman_send_error(s, m, "Invalid channel");       /* WWW [1] */
+		goto clear_vars;
 	}
 	*data++ = '\0';
 	ast_copy_string(tmp2, callerid, sizeof(tmp2));
@@ -340,8 +340,8 @@ static int action_aoriginate(struct mansession *s, const struct message *m)
 	}
 	aodata = ast_calloc(1, sizeof(*aodata));
 	if (aodata == NULL) {
-		astman_send_error(s, m, "Memory allocation failure");
-		goto out;
+		astman_send_error(s, m, "Memory allocation failure");/* WWW [1] */
+		goto clear_vars;
 	}
 	if (!ast_strlen_zero(id))
 		snprintf(aodata->idtext,
@@ -364,14 +364,19 @@ static int action_aoriginate(struct mansession *s, const struct message *m)
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 	if (ast_pthread_create(&th, &attr, action_aoriginate_run, aodata)) {
+		ast_variables_destroy(vars);
 		free(aodata);
-		astman_send_error(s, m, "AOriginate failed");
+		astman_send_error(s, m, "AOriginate failed");     /* WWW [1] */
 	} else
-		astman_send_ack(s, m, "AOriginate successfully queued");
+		astman_send_ack(s, m, "AOriginate successfully queued");/* WWW [1] */
 	pthread_attr_destroy(&attr);
-out:
-	ast_module_unref(ast_module_info->self);
 
+	ast_module_unref(ast_module_info->self);
+	return 0;
+
+clear_vars:
+	ast_variables_destroy(vars);
+	ast_module_unref(ast_module_info->self);
 	return 0;
 }
 
@@ -398,4 +403,12 @@ static int unload_module(void)
 	return 0;
 }
 
-AST_MODULE_INFO_STANDARD(ASTERISK_GPL_KEY, "Asynchronous Originate");
+AST_MODULE_INFO_STANDARD(ASTERISK_GPL_KEY, "Asynchronous Originate");/* WWW [2] */
+
+/*
+ * [1]: discards qualifiers from pointer target type
+ *	Compiler warning due to poor Asterisk prototypes
+ *
+ * [2]: 'static' is not at beginning of declaration
+ *      harmless
+ */
