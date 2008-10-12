@@ -10,7 +10,7 @@ class xivo_json
 
 	function get_header()
 	{
-		return('Content-Type: text/plain');
+		return('Content-Type: application/json');
 	}
 
 	function encode($data)

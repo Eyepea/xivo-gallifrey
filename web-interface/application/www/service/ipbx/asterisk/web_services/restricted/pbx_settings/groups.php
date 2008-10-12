@@ -1,7 +1,5 @@
 <?php
 
-$_SERVER['REMOTE_ADDR'] = '127.0.0.1';
-
 if(isset($_SERVER['REMOTE_ADDR']) === false
 || $_SERVER['REMOTE_ADDR'] !== '127.0.0.1')
 	xivo_die('Error/403');
