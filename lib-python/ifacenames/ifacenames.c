@@ -26,6 +26,7 @@
 #include <assert.h>
 #include <errno.h>
 #include <ctype.h>
+#include <limits.h>
 
 
 /* CONSTANTS */
@@ -330,11 +331,13 @@ static int line_fgets_append(struct line *line, FILE* f)
 		remaining_bufsz = line->bufsz - line->len;
 		if (remaining_bufsz < MINIMAL_READ_BUFFER_SIZE) {
 			/* NOTE: not a while, voluntarily */
+			if (line->bufsz >= INT_MAX / 2)
+				fatal("fatal: line well too long detected");
 			line_realloc(line, line->bufsz * 2);
 			remaining_bufsz = line->bufsz - line->len;
 		}
 
-		s = fgets(line->buf + line->len, remaining_bufsz, f);
+		s = fgets(line->buf + line->len, (int)remaining_bufsz, f);
 		if (s == NULL && ferror(f)) {
 			perror(program_name);
 			fatal("%s(): aborting due to "
