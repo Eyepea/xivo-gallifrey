@@ -271,8 +271,8 @@ static int validexten(struct ast_channel *chan, char *cmd, char *data, char *buf
 	UNUSED(cmd);
 
 	AST_DECLARE_APP_ARGS(args,
-		AST_APP_ARG(extension);
 		AST_APP_ARG(context);
+		AST_APP_ARG(extension);
 		AST_APP_ARG(priority);
 	);
 
