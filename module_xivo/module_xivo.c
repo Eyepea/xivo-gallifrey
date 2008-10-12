@@ -183,6 +183,8 @@ static struct ast_custom_function strsubst_function = {
 
 static int getconf(struct ast_channel *chan, char *cmd, char *data, char *buf, size_t len)
 {
+	unsigned i;
+
 	static const struct {
 		const char *varname;
 		const char *ast_config_ptr;
@@ -193,7 +195,7 @@ static int getconf(struct ast_channel *chan, char *cmd, char *data, char *buf, s
 	UNUSED(chan);
 	UNUSED(cmd);
 
-	for (unsigned i = 0; i < ARRAY_LEN(confvars); i++) {
+	for (i = 0; i < ARRAY_LEN(confvars); i++) {
 		if (!strcasecmp(confvars[i].varname, data)) {
 			ast_copy_string(buf, confvars[i].ast_config_ptr, len);
 			return 0;
@@ -260,42 +262,47 @@ static struct ast_custom_function funcexists_function = {
 };
 
 
-#define EXTENEXISTS_SYNTAX		"EXTENEXISTS(<extension>[|<context>])"
+#define VALIDEXTEN_SYNTAX		"VALID_EXTEN([<context>]|<extension>[|<priority>])"
 
-static int extenexists(struct ast_channel *chan, char *cmd, char *data, char *buf, size_t len)
+static int validexten(struct ast_channel *chan, char *cmd, char *data, char *buf, size_t len)
 {
+	int priority_int;
+
 	UNUSED(cmd);
 
 	AST_DECLARE_APP_ARGS(args,
 		AST_APP_ARG(extension);
 		AST_APP_ARG(context);
+		AST_APP_ARG(priority);
 	);
 
-	if (ast_strlen_zero(data)) {
-		ast_log(LOG_WARNING, "EXTENEXISTS requires an argument (extension)\n");
-		ast_copy_string(buf, "0", len);
+	AST_STANDARD_APP_ARGS(args, data);
+
+	if (ast_strlen_zero(args.extension)) {
+		ast_log(LOG_WARNING, "Syntax: %s - missing argument <extension>!\n", VALIDEXTEN_SYNTAX);
+		ast_copy_string(buf, "", len);
 		return -1;
 	}
 
-	AST_STANDARD_APP_ARGS(args, data);
+	if (ast_strlen_zero(args.priority) || (priority_int = atoi(args.priority)) < 1)
+		priority_int = 1;
 
 	ast_copy_string(buf, ast_exists_extension(chan,
 						  S_OR(args.context, chan->context),
 						  args.extension,
-						  1,
+						  priority_int,
 						  chan->cid.cid_num) ? "1" : "0", len);
-
 	return 0;
 }
 
-static struct ast_custom_function extenexists_function = {
-	.name = "EXTENEXISTS",
-	.synopsis = "Checks if an extension exists",
-	.syntax = EXTENEXISTS_SYNTAX,
+static struct ast_custom_function validexten_function = {
+	.name = "VALID_EXTEN",
+	.synopsis = "Determine whether an extension exists or not",
+	.syntax = VALIDEXTEN_SYNTAX,
 	.desc = 
-"Checks the list of registered extensions for <extension> in the current context or in <context>.\n"
-"Returns 1 if <extension> exists, 0 otherwise.\n",
-	.read = extenexists,
+"Returns a true value if the indicated context, extension, and priority exist.\n"
+"Context defaults to the current context, priority defaults to 1.\n",
+	.read = validexten,
 };
 
 
@@ -351,11 +358,11 @@ static int load_module(void)
 	ast_custom_function_register(&getconf_function);
 	ast_custom_function_register(&appexists_function);
 	ast_custom_function_register(&funcexists_function);
-	ast_custom_function_register(&extenexists_function);
+	ast_custom_function_register(&validexten_function);
 	if (ast_register_application(
 			set_one_name, set_one,
 			set_one_synopsis, set_one_description) < 0) {
-		ast_custom_function_unregister(&extenexists_function);
+		ast_custom_function_unregister(&validexten_function);
 		ast_custom_function_unregister(&funcexists_function);
 		ast_custom_function_unregister(&appexists_function);
 		ast_custom_function_unregister(&getconf_function);
@@ -370,7 +377,7 @@ static int unload_module(void)
 	if (!loaded)
 		return 0;
 	ast_unregister_application(set_one_name);
-	ast_custom_function_unregister(&extenexists_function);
+	ast_custom_function_unregister(&validexten_function);
 	ast_custom_function_unregister(&funcexists_function);
 	ast_custom_function_unregister(&appexists_function);
 	ast_custom_function_unregister(&getconf_function);
@@ -378,4 +385,10 @@ static int unload_module(void)
 	return 0;
 }
 
-AST_MODULE_INFO_STANDARD(ASTERISK_GPL_KEY, "STRSUBST(), GETCONF(), APPEXISTS(), FUNCEXISTS() & EXTENEXISTS() funcs + SetOne() app");
+AST_MODULE_INFO_STANDARD(ASTERISK_GPL_KEY, "XIVO specific code");/* WWW [1] */
+
+/*
+ *
+ * [1]: 'static' is not at beginning of declaration
+ *      harmless
+ */

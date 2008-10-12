@@ -3,8 +3,7 @@
 # export CC=gcc
 
 # Relaxed Jedi Master Linux Compilation options:
-MY_CFLAGS =     -std=gnu99                      \
-                -Wundef                         \
+MY_CFLAGS =     -Wundef                         \
                 -Wstrict-prototypes             \
                 -Wmissing-prototypes            \
                 -Wall                           \
@@ -14,7 +13,6 @@ MY_CFLAGS =     -std=gnu99                      \
                 -Wwrite-strings                 \
                 -Wnested-externs                \
                 -Wmissing-declarations          \
-                -pedantic                       \
                 -Wshadow
 
 CFLAGS ?= -O2 -fomit-frame-pointer
@@ -39,7 +37,7 @@ all: $(BINARIES)
 	$(CC) $(LINKFLAGS) -o $@ $< $(Z_LIBS)
 
 %.o: %.c
-	$(CC) $(Z_CFLAGS) -c -o $@ $<
+	./gwr.py $< --- $(CC) $(Z_CFLAGS) -c -o $@ $<
 
 install: $(BINARIES)
 	install -d $(DESTDIR)$(PREFIX)/lib/asterisk/modules
