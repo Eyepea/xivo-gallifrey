@@ -3,6 +3,11 @@
 GCC warning messages filter
 """
 
+# TODO:
+#   Implement reverse check; generate our own warning when we should
+#   have received one from gcc but we have not.  This feature must be
+#   optional with a command line flag.
+
 __version__ = "$Revision$ $Date$"
 
 import os
@@ -83,13 +88,14 @@ class GccWarningLineFilter(object):
             self._plines_closed = True
             return False
 
-    def _print_prelines(self, line):
+    def print_prelines(self, line):
         """
         XXX
         """
         for l in self._plines:
             print >> sys.stderr, l
-        print >> sys.stderr, line
+        if line is not None:
+            print >> sys.stderr, line
         self._plines = []
         self._plines_closed = False
 
@@ -100,7 +106,7 @@ class GccWarningLineFilter(object):
         if not self._preline(line):
             w = match_gcc_warning(line)
             if not w:
-                self._print_prelines(line)
+                self.print_prelines(line)
             else:
                 try:
                     lineno = int(w.group(1))
@@ -109,9 +115,9 @@ class GccWarningLineFilter(object):
                         if df in line:
                             break # remove gcc warning
                     else:
-                        self._print_prelines(line)
+                        self.print_prelines(line)
                 except (KeyError, TypeError, ValueError, IndexError):
-                    self._print_prelines(line)
+                    self.print_prelines(line)
 
 
 def run_gcc_filt(cmd, filt):
@@ -124,7 +130,9 @@ def run_gcc_filt(cmd, filt):
         if not line:
             break
         filt.push(line.rstrip())
-    return c.wait()
+    rval = c.wait()
+    filt.print_prelines(None)
+    return rval
 
 
 def gcc_with_warning_removal(args):
