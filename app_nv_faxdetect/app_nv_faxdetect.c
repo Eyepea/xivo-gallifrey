@@ -169,8 +169,10 @@ static int nv_detectfax_exec(struct ast_channel *chan, void *data)
 	}
 
 	if (dsp) {
+#if 0
 		if (!ignoretalk)
 			; /* features |= DSP_FEATURE_SILENCE_SUPPRESS; */
+#endif
 		if (!ignorefax)
 			features |= DSP_FEATURE_FAX_DETECT;
 		if (!ignoredtmf)
@@ -330,4 +332,10 @@ static int load_module(void)
 	return ast_register_application(app, nv_detectfax_exec, synopsis, descrip);
 }
 
-AST_MODULE_INFO_STANDARD(ASTERISK_GPL_KEY, "Fax detection application");
+AST_MODULE_INFO_STANDARD(ASTERISK_GPL_KEY, "Fax detection application");/* WWW [1] */
+
+/*
+ *
+ * [1]: 'static' is not at beginning of declaration
+ *      harmless
+ */

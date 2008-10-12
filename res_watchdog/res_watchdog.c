@@ -327,4 +327,10 @@ static int unload_module(void)
 	return 0;
 }
 
-AST_MODULE_INFO_STANDARD(ASTERISK_GPL_KEY, "Watchdog API");
+AST_MODULE_INFO_STANDARD(ASTERISK_GPL_KEY, "Watchdog API");/* WWW [1] */
+
+/*
+ *
+ * [1]: 'static' is not at beginning of declaration
+ *      harmless
+ */

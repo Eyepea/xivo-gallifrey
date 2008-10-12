@@ -497,6 +497,12 @@ static int load_module(void)
 }
 /*- End of function --------------------------------------------------------*/
 
-AST_MODULE_INFO_STANDARD(ASTERISK_GPL_KEY, "Trivial FAX Receive Application");
+AST_MODULE_INFO_STANDARD(ASTERISK_GPL_KEY, "Trivial FAX Receive Application");/* WWW [1] */
+
+/*
+ *
+ * [1]: 'static' is not at beginning of declaration
+ *      harmless
+ */
 
 /*- End of file ------------------------------------------------------------*/
