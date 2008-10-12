@@ -31,10 +31,10 @@ PREFIX ?= /usr
 all: $(BINARIES)
 
 %.so: %.o
-	./gwr.py $< --- $(CC) -shared -Xlinker -x -o $@ $< $(Z_LIBS)
+	$(CC) -shared -Xlinker -x -o $@ $< $(Z_LIBS)
 
 %.o: %.c
-	$(CC) $(Z_CFLAGS) -c -o $@ $<
+	./gwr.py $< --- $(CC) $(Z_CFLAGS) -c -o $@ $<
 
 install: $(BINARIES)
 	install -d $(DESTDIR)$(PREFIX)/lib/asterisk/modules
