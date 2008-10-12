@@ -34,6 +34,7 @@ def agent_get_options(agi, cursor, args):
 
     agi.set_variable('XIVO_AGENTEXISTS', 1)
     agi.set_variable('XIVO_AGENTPASSWD', agent.passwd)
+    agi.set_variable('XIVO_AGENTLANGUAGE', agent.language)
     agi.set_variable('XIVO_AGENTOPTIONS', options)
 
 agid.register(agent_get_options)
