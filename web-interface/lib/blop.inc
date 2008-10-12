@@ -378,9 +378,9 @@ class blop
 		else if(defined('XIVO_EXT_ENABLE') === false || XIVO_EXT_ENABLE === false)
 			return(false);
 
-		$file = XIVO_SEP_DIR.XIVO_EXT_PRE.$ext.'.'.XIVO_EXT_SUF;
+		$file = XIVO_EXT_PRE.$ext.'.'.XIVO_EXT_SUF;
 
-		$path = ini_get('extension_dir').$file;
+		$path = ini_get('extension_dir').XIVO_SEP_DIR.$file;
 
 		if(xivo_file::is_f_r($path) === false)
 			return(false);

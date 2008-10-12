@@ -10,13 +10,23 @@ class xivo_tpl_json extends xivo_tpl_module
 	{
 		$this->_tpl = &$tpl;
 
-		if(blop::load_extension('json') === false)
-			trigger_error('Unable to load JSON',E_USER_ERROR);
+		if(xivo::load_class('xivo_json') === false)
+			trigger_error('Failed to load json class',E_USER_ERROR);
+	}
+
+	function get_header()
+	{
+		return(xivo_json::get_header());
 	}
 
 	function encode($data)
 	{
-		return(json_encode($data));
+		return(xivo_json::encode($data));
+	}
+
+	function decode($data,$assoc=false)
+	{
+		return(xivo_json::decode($data,$assoc));
 	}
 
 	function display()

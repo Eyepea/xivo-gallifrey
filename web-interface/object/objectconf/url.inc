@@ -46,10 +46,11 @@ $array['service/ipbx/system_management/context'] = 'service/ipbx/index.php/syste
 $array['service/ipbx/system_management/ldapfilter'] = 'service/ipbx/index.php/system_management/ldapfilter/';
 $array['service/ipbx/control_system/reload'] = 'service/ipbx/index.php/control_system/reload/';
 $array['service/ipbx/control_system/restart'] = 'service/ipbx/index.php/control_system/restart/';
-$array['service/ipbx/web_services/users'] = 'service/ipbx/web_services.php/users/';
-$array['service/ipbx/web_services/queues'] = 'service/ipbx/web_services.php/queues/';
 $array['service/ipbx/web_services/phonebook/search'] = 'service/ipbx/web_services.php/phonebook/search/';
 $array['service/ipbx/web_services/phonebook/local'] = 'service/ipbx/web_services.php/phonebook/local/';
 $array['service/ipbx/ajs/voicemail'] = 'service/ipbx/ajs.php/voicemail/';
+$array['service/ipbx/json/restricted/pbx_settings/users'] = 'service/ipbx/json.php/restricted/pbx_settings/users/';
+$array['service/ipbx/json/restricted/pbx_settings/groups'] = 'service/ipbx/json.php/restricted/pbx_settings/groups/';
+$array['service/ipbx/json/restricted/pbx_settings/queues'] = 'service/ipbx/json.php/restricted/pbx_settings/queues/';
 
 ?>

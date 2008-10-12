@@ -28,9 +28,7 @@ class xivo_tpl
 		if(isset($param['script_root']) === true)
 			$script_root = rtrim($param['script_root'],'/');
 
-		$pos = strrpos($tpl_path,XIVO_SEP_DIR);
-
-		if($pos !== 0 && $pos !== false)
+		if(($pos = strrpos($tpl_path,XIVO_SEP_DIR)) !== 0 && $pos !== false)
 			$tpl_dir = substr($tpl_path,$pos+1);
 		else
 			$tpl_dir = '';
@@ -497,7 +495,7 @@ class xivo_tpl
 		$this->set_option('api_section_info',$section);
 
 		$dir = XIVO_SEP_DIR.trim($section.XIVO_SEP_DIR.$path,XIVO_SEP_DIR).'.'.$ext;
-
+		
 		return(xivo_file::is_f_r($this->get_option('application_path').$dir));
 	}
 }

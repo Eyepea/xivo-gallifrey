@@ -460,6 +460,12 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 					break;
 			}
 
+			unset($ref['fullcontact'],
+			      $ref['sipsecret'],
+			      $ref['sipcallerid'],
+			      $ref['iaxsecret'],
+			      $ref['iaxcallerid']);
+
 			$r[$ref['id']] = $this->_userfeatures->_prepare($ref);
 		}
 
