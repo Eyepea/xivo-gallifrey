@@ -10,11 +10,6 @@ $array['sys']['php_version'] = array(
 				'min'		=> '4.4',
 				'max'		=> '5.0');
 
-$array['sys']['extension'] = array(
-				'prefix'	=> '',
-				'suffix'	=> '',
-				'const'		=> 'XIVO_EXT__');
-
 $array['sys']['separator'] = array(
 				'dir'		=> '/',
 				'path'		=> ':',

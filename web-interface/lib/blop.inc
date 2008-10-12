@@ -18,11 +18,6 @@ class blop
 	{
 		if(($this->_conf['xivo'] = xivo_gat::load_get('blop',XIVO_PATH_LIBCONF)) === false)
 			die('ERR: Failed to load BLOP Array');
-
-		$this->_conf['xivo']['ini']['extension_loaded'] = 0;
-
-		if(($this->_conf['extension'] = xivo_gat::load_get('extension',XIVO_PATH_LIBCONF)) === false)
-			die('ERR: Failed to load extension Array');
 		else if(($this->_conf['datastorage'] = xivo_gat::load_get('datastorage',XIVO_PATH_LIBCONF)) === false)
 			die('ERR: Failed to load datastorage Array');
 		else if(function_exists('version_compare') === false
@@ -93,7 +88,6 @@ class blop
 		$this->_conf['xivo']['ini']['safe_mode'] = (bool) ini_get('safe_mode');
 		$this->_conf['xivo']['ini']['enable_dl'] = (bool) ini_get('enable_dl');
 		$this->_conf['xivo']['ini']['file_uploads'] = (bool) ini_get('file_uploads');
-		$this->_conf['xivo']['ini']['extension_dir'] = ini_get('extension_dir');
 
 		define('XIVO_PHP_SAFE',$this->_conf['xivo']['ini']['safe_mode']);
 	}
@@ -112,7 +106,7 @@ class blop
 		ini_set('include_path',XIVO_PATH_ROOT.XIVO_SEP_PATH.XIVO_PATH_LIB.XIVO_SEP_PATH.ini_get('include_path'));
 		ini_set('default_charset',XIVO_LC_CHARSET);
 
-		if($this->chk_extension_loaded(XIVO_EXT__MBSTRING) === true)
+		if($this->load_extension('mbstring') !== false)
 		{
 			ini_set('mbstring.internal_encoding',XIVO_LC_CHARSET);
 			ini_set('mbstring.language',XIVO_LC_CHARSET);
@@ -275,18 +269,14 @@ class blop
 					$suffix = 'so';
 		}
 	
-		$this->_conf['xivo']['sys']['extension']['prefix'] = $prefix;
-		$this->_conf['xivo']['sys']['extension']['suffix'] = $suffix;
-
-		if($this->_conf['xivo']['ini']['safe_mode'] === true || $this->_conf['xivo']['ini']['enable_dl'] === false)
-			$this->_conf['xivo']['sys']['extension']['enable'] = false;
+		if($this->_conf['xivo']['ini']['safe_mode'] === true
+		|| $this->_conf['xivo']['ini']['enable_dl'] === false)
+			define('XIVO_EXT_ENABLE',false);
 		else
-			$this->_conf['xivo']['sys']['extension']['enable'] = true;
+			define('XIVO_EXT_ENABLE',true);
 
-		define('XIVO_EXT_ENABLE',$this->_conf['xivo']['sys']['extension']['enable']);
-		define('XIVO_EXT_CONST',$this->_conf['xivo']['sys']['extension']['const']);
-		define('XIVO_EXT_PRE',$this->_conf['xivo']['sys']['extension']['prefix']);
-		define('XIVO_EXT_SUF',$this->_conf['xivo']['sys']['extension']['suffix']);
+		define('XIVO_EXT_PRE',$prefix);
+		define('XIVO_EXT_SUF',$suffix);
 	}
 
 	function _cfg_ini_datastorage($a)
@@ -303,8 +293,7 @@ class blop
 
 		if(xivo_datastorage::is_valid($a['type']) === false)
 			die('ERR: Invalid datastorage "type" configuration in XIVO ini file');
-		else if(xivo_datastorage::chk_extension_exists($a['type']) === true
-		&& $this->chk_extension_loaded(xivo_datastorage::get_extension_name($a['type'])) === false)
+		else if(xivo_datastorage::chk_extension_loaded($a['type'],true) === false)
 			die('ERR: Datastorage '.$a['type'].' extension is not loaded');
 		else if(($dso = &xivo_gct::set_get(xivo_datastorage::factory($a['type'],$a),'XIVO_DSO')) === false)
 			die('ERR: Datastorage class '.$a['type'].' does not exist');
@@ -313,23 +302,6 @@ class blop
 
 		$this->_conf['xivo']['sys']['datastorage']['type'] = $a['type'];
 		$this->_conf['xivo']['sys']['datastorage']['param'] = $a;
-	}
-
-	function _cfg_ini_extension($a)
-	{
-		if(is_array($a) === false || empty($a) === true)
-			return(false);
-
-		foreach($a as $k => $v)
-		{
-			if(($const = $this->chk_ini_extension($k)) === false
-			|| $this->_conf['extension'][$const]['optionnal'] !== 1)
-				continue;
-			else if((bool) $v === true)
-				$this->_conf['extension'][$const]['load'] = 1;
-			else
-				$this->_conf['extension'][$const]['load'] = 2;
-		}
 	}
 
 	function _cfg_ini_template($a)
@@ -388,92 +360,34 @@ class blop
 		}
 	}
 
-	function _load_ini_extension()
+	function chk_extension_loaded($ext)
 	{
-		if(is_array($this->_conf['extension']) === false
-		|| empty($this->_conf['extension']) === true)
-		{
-			define('XIVO_EXT_INI_LD',$this->_conf['xivo']['ini']['extension_loaded']);
-			return(null);
-		}
-
-		foreach($this->_conf['extension'] as $k => $v)
-		{
-			if(extension_loaded($v['meta']) === true)
-				$this->_conf['xivo']['ini']['extension_loaded'] |= $k;
-			else if($v['load'] === 1 && XIVO_EXT_ENABLE === true)
-			{
-				$file = XIVO_EXT_PRE.$this->_conf['extension'][$k]['meta'].'.'.XIVO_EXT_SUF;
-				$path = $this->_conf['xivo']['ini']['extension_dir'].XIVO_SEP_DIR.$file;
-
-				if(xivo_file::is_f_r($path) === false)
-					continue;
-
-				dl($file);
-
-				if(extension_loaded($this->_conf['extension'][$k]['meta']) === true)
-					$this->_conf['xivo']['ini']['extension_loaded'] |= $k;
-			}
-		}
-
-		define('XIVO_EXT_INI_LD',$this->_conf['xivo']['ini']['extension_loaded']);
-	}
-
-	function chk_ini_extension($meta)
-	{
-		$name = XIVO_EXT_CONST.strtoupper($meta);
-
-		if(defined($name) === false)
+		if(xivo_haslen($ext) === false)
 			return(false);
 
-		$const = constant($name);
-		$extension = &xivo_gat::get('extension');
-
-		if(xivo_issa($const,$extension) === true)
-			return($const);
-
-		return(false);
-	}
-
-	function chk_extension_loaded($meta)
-	{
-		$extension = &xivo_gat::get('extension');
-
-		if(($ext = xivo_uint($meta)) !== 0)
-		{
-			if(xivo_issa($ext,$extension) === true)
-				$name = $extension[$ext]['meta'];
-			else
-				return(false);
-		}
-		else if(($ext = blop::chk_ini_extension($meta)) !== false)
-			$name = $extension[$ext]['meta'];
-		else
-			$name = (string) $meta;
-
-		return(extension_loaded($name));
+		return(extension_loaded($ext));
 	}
 
 	function load_extension($ext)
 	{
-		if(is_string($ext) === true)
-			$ext = (array) $ext;
-
-		if(is_array($ext) === false)
+		if(xivo_haslen($ext) === false
+		|| preg_match('/^[a-z0-9_-]+$/',$ext) !== 1)
+			return(false);
+		else if(extension_loaded($ext) === true)
+			return(null);
+		else if(defined('XIVO_EXT_ENABLE') === false || XIVO_EXT_ENABLE === false)
 			return(false);
 
-		$nb = count($ext);
+		$file = XIVO_SEP_DIR.XIVO_EXT_PRE.$ext.'.'.XIVO_EXT_SUF;
 
-		for($i = 0;$i < $nb;$i++)
-		{
-			if(isset($ext[$i]) === false || preg_match('/^[a-z0-9\-_]+$/',$ext[$i]) !== 1)
-				continue;
+		$path = ini_get('extension_dir').$file;
 
-			$meta = $ext[$i];
+		if(xivo_file::is_f_r($path) === false)
+			return(false);
 
-			if(extension_loaded($meta) === false && XIVO_EXT_ENABLE === true)
-				dl(XIVO_EXT_PRE.$meta.'.'.XIVO_EXT_SUF);
-		}
+		dl($file);
+
+		return(extension_loaded($ext));
 	}
 
 	function load_class($class,$dir='',$file='',$lib=true)

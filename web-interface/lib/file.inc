@@ -29,15 +29,12 @@ class xivo_file
 
 	function xivo_file()
 	{
-		if(defined('XIVO_EXT_INI_LD') === false)
-			return(null);
-
 		$this->_finfo = $this->_load_fileinfo();
 	}
 
 	function _load_fileinfo()
 	{
-		if((XIVO_EXT_INI_LD & XIVO_EXT__FILEINFO) === 0
+		if(blop::load_extension('fileinfo') === false
 		|| xivo::load_class('xivo_file_fileinfo','file','fileinfo') === false)
 			return(false);
 
@@ -113,7 +110,7 @@ class xivo_file
 
 		if($static === false && is_object($this->_finfo) === true)
 			$r = $this->_finfo->get_mime($file);
-		else if(($file = xivo_file::is_f($file)) !== false && (XIVO_EXT_INI_LD & XIVO_EXT__MIME_MAGIC) !== 0)
+		else if(($file = xivo_file::is_f($file)) !== false && blop::load_extension('mime_magic') !== false)
 			$r = mime_content_type($file);
 		else
 			$r = false;

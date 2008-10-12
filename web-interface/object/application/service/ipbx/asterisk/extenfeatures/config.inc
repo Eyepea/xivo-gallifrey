@@ -81,7 +81,7 @@ $array['exten']['agentstaticlogoff'] = array();
 $array['exten']['agentstaticlogoff']['app'] = 'Macro';
 $array['exten']['agentstaticlogoff']['appdata'] = array();
 $array['exten']['agentstaticlogoff']['appdata'][0] = 'agentstaticlogoff';
-$array['exten']['agentstaticlogoff']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}|fr';
+$array['exten']['agentstaticlogoff']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['exten']['agentdynamiclogin'] = array();
 $array['exten']['agentdynamiclogin']['app'] = 'AgentLogin';

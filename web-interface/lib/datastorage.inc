@@ -9,8 +9,7 @@ class xivo_datastorage
 
 		if(xivo_datastorage::is_valid($type) === false)
 			trigger_error('Invalid datastorage type',E_USER_ERROR);
-		else if(xivo_datastorage::chk_extension_exists($type) === true
-		&& xivo_datastorage::chk_extension_loaded($type,true) === false)
+		else if(xivo_datastorage::chk_extension_loaded($type,true) === false)
 			trigger_error('Datastorage '.$type.' extension is not loaded',E_USER_ERROR);
 		else if(xivo::load_class($name,array('datastorage','adapter'),$type) === false)
 			return(false);
@@ -135,9 +134,9 @@ class xivo_datastorage
 		$datastorage = &xivo_gat::get('datastorage');
 	
 		if((bool) $load === true)
-			xivo::load_extension($datastorage[$type]['extension']);
+			blop::load_extension($datastorage[$type]['extension']);
 
-		return(xivo::chk_extension_loaded($datastorage[$type]['extension']));
+		return(blop::chk_extension_loaded($datastorage[$type]['extension']));
 	}
 
 	function chk_extension_exists($type)

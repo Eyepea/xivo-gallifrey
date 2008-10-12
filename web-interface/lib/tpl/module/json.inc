@@ -10,9 +10,7 @@ class xivo_tpl_json extends xivo_tpl_module
 	{
 		$this->_tpl = &$tpl;
 
-		xivo::load_extension('json');
-
-		if(xivo::chk_extension_loaded('json') === false)
+		if(blop::load_extension('json') === false)
 			trigger_error('Unable to load JSON',E_USER_ERROR);
 	}
 

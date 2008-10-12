@@ -47,10 +47,6 @@ class xivo extends blop
 		if(xivo_issa('error',$xivo_ini) === true)
 			$this->_cfg_ini_error($xivo_ini['error']);
 
-		if(xivo_issa('extension',$xivo_ini) === true)
-			$this->_cfg_ini_extension($xivo_ini['extension']);
-
-		$this->_load_ini_extension();
 		$this->_cfg_ini_set();
 
 		if(xivo_issa('datastorage',$xivo_ini) === true)

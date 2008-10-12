@@ -12,6 +12,12 @@ class xivo_curl
 	var $_link	= null;
 	var $_uri	= null;
 
+	function xivo_curl()
+	{
+		if(blop::load_extension('curl') === false)
+			trigger_error('Unable to load CURL',E_USER_ERROR);
+	}
+
 	function load($url='',$option=array(),$open=true)
 	{
 		$option = (array) $option;
