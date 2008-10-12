@@ -6,9 +6,22 @@
 # export CC=gcc
 #
 
+# Relaxed Jedi Master Linux Compilation options:
+MY_CFLAGS =     -Wundef                         \
+                -Wstrict-prototypes             \
+                -Wmissing-prototypes            \
+                -Wall                           \
+                -W                              \
+                -Wcast-qual                     \
+                -Wcast-align                    \
+                -Wwrite-strings                 \
+                -Wnested-externs                \
+                -Wmissing-declarations          \
+                -Wshadow
+
 # you can override default options by calling make OPTIONS=...
 CFLAGS ?= -O2
-Z_CFLAGS = $(CFLAGS) -D _GNU_SOURCE -DAST_MODULE=\"res_watchdog\" -Wall -Wmissing-prototypes -Wstrict-prototypes $(OPTIONS)
+Z_CFLAGS = $(CFLAGS) -D _GNU_SOURCE $(MY_CFLAGS) -DAST_MODULE=\"res_watchdog\" -Wall -Wmissing-prototypes -Wstrict-prototypes $(OPTIONS)
 LIBS ?=
 Z_LIBS = $(LIBS) -lpthread
 
@@ -26,7 +39,7 @@ $(BINARY): $(OBJECTS)
 	$(CC) -shared -Xlinker -x -o $(BINARY) $(OBJECTS) $(Z_LIBS)
 
 %.o: %.c
-	$(CC) $(Z_CFLAGS) -c -o $@ $<
+	./gwr.py $< --- $(CC) $(Z_CFLAGS) -c -o $@ $<
 
 install: $(BINARY)
 	install -d $(DESTDIR)$(PREFIX)/lib/asterisk/modules

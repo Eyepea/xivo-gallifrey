@@ -13,6 +13,7 @@ include $(NONO_MK)/autobuild-classic.mk
 
 DEB_PKG="pf-asterisk-app-nv-faxdetect"
 DEB_TB_DEPS=""
+DEB_TAR_EXTRA_OPTIONS="-h"
 
 default:
 

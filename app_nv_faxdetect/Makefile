@@ -1,5 +1,18 @@
+# Relaxed Jedi Master Linux Compilation options:
+MY_CFLAGS =     -Wundef                         \
+                -Wstrict-prototypes             \
+                -Wmissing-prototypes            \
+                -Wall                           \
+                -W                              \
+                -Wcast-qual                     \
+                -Wcast-align                    \
+                -Wwrite-strings                 \
+                -Wnested-externs                \
+                -Wmissing-declarations          \
+                -Wshadow
+
 CFLAGS ?= -O2 -fPIC
-Z_CFLAGS := $(CFLAGS) -D _GNU_SOURCE -Wall -Wmissing-prototypes -Wstrict-prototypes -DAST_MODULE=\"app_nv_faxdetect\"
+Z_CFLAGS := $(CFLAGS) -D _GNU_SOURCE $(MY_CFLAGS) -Wall -Wmissing-prototypes -Wstrict-prototypes -DAST_MODULE=\"app_nv_faxdetect\"
 LIBS ?=
 Z_LIBS := $(LIBS) -lpthread
 
@@ -15,7 +28,7 @@ $(BINARY): $(OBJECTS)
 	$(CC) -shared -Xlinker -x -o $(BINARY) $(OBJECTS) $(Z_LIBS)
 
 %.o: %.c
-	$(CC) $(Z_CFLAGS) -c -o $@ $<
+	./gwr.py $< --- $(CC) $(Z_CFLAGS) -c -o $@ $<
 
 install: $(BINARY)
 	install -d $(DESTDIR)$(PREFIX)/lib/asterisk/modules
