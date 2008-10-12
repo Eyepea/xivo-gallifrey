@@ -88,16 +88,23 @@ class GccWarningLineFilter(object):
             self._plines_closed = True
             return False
 
-    def print_prelines(self, line):
+    def _print_prelines(self, line):
         """
         XXX
         """
         for l in self._plines:
             print >> sys.stderr, l
-        if line is not None:
-            print >> sys.stderr, line
+        print >> sys.stderr, line
         self._plines = []
         self._plines_closed = False
+
+    def flush(self):
+        """
+        XXX
+        """
+        if not self._plines_closed:
+            for l in self._plines:
+                print >> sys.stderr, l
 
     def push(self, line):
         """
@@ -106,7 +113,7 @@ class GccWarningLineFilter(object):
         if not self._preline(line):
             w = match_gcc_warning(line)
             if not w:
-                self.print_prelines(line)
+                self._print_prelines(line)
             else:
                 try:
                     lineno = int(w.group(1))
@@ -115,9 +122,9 @@ class GccWarningLineFilter(object):
                         if df in line:
                             break # remove gcc warning
                     else:
-                        self.print_prelines(line)
+                        self._print_prelines(line)
                 except (KeyError, TypeError, ValueError, IndexError):
-                    self.print_prelines(line)
+                    self._print_prelines(line)
 
 
 def run_gcc_filt(cmd, filt):
@@ -131,7 +138,7 @@ def run_gcc_filt(cmd, filt):
             break
         filt.push(line.rstrip())
     rval = c.wait()
-    filt.print_prelines(None)
+    filt.flush()
     return rval
 
 
