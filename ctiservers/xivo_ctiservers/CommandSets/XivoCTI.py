@@ -364,9 +364,9 @@ class XivoCTICommand(BaseCommand):
                         if state in self.presence.getstates():
                                 userinfo['state'] = state
                         else:
-                                log.warning('(user %s) : state <%s> is not an allowed one => undefinedstate-connect'
-                                          % (userinfo.get('user'), state))
-                                userinfo['state'] = 'undefinedstate-connect'
+                                log.warning('(user %s) : state <%s> is not an allowed one => <%s>'
+                                            % (userinfo.get('user'), state, self.presence.getdefaultstate()))
+                                userinfo['state'] = self.presence.getdefaultstate()
 
                         self.capas[capaid].conn_inc()
                 except Exception, exc:
@@ -427,7 +427,6 @@ class XivoCTICommand(BaseCommand):
                                    'capapresence' : { 'names'   : self.presence.getstatesnames(),
                                                       'state'   : userinfo.get('state'),
                                                       'allowed' : self.presence.allowed(userinfo.get('state')) } }
-                        print tosend
                         repstr = cjson.encode(tosend)
                         # if 'features' in capa_user:
                         # repstr += ';capas_features:%s' %(','.join(configs[astid].capafeatures))

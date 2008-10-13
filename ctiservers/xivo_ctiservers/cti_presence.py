@@ -29,7 +29,7 @@ class Presence:
                 self.details = {}
                 self.states = []
                 self.statesnames = {}
-                self.defaultstate = None
+                self.defaultstate = 'available'
                 if config is not  None:
                         for stateid, stateprops in config.iteritems():
                                 splitprops = stateprops.split(',')
