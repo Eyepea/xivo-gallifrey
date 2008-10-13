@@ -80,6 +80,10 @@ class BaseCommand:
                 return {}
         def connected_users(self):
                 return {}
+        def getqueueslist(self, qlist):
+                return {}
+        def getqueueslist_json(self, qlist):
+                return {}
 
         def set_cticdr(self, cticdr):
                 return

@@ -42,7 +42,10 @@ class QueueList(AnyList):
                 newqueuelist = {}
                 for url, urllist in self.requested_list.iteritems():
                         gl = urllist.getlist(1, 5, True)
-                        newqueuelist.update(self.commandclass.getqueueslist(urllist.list))
+                        if gl == 1:
+                                newqueuelist.update(self.commandclass.getqueueslist(urllist.list))
+                        elif gl == 2:
+                                newqueuelist.update(self.commandclass.getqueueslist_json(urllist.jsonreply))
                 for a, b in newqueuelist.iteritems():
                         if a not in oldqueuelist:
                                 self.queuelist[a] = b

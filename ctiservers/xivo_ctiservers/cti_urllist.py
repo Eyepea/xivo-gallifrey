@@ -24,6 +24,7 @@ __author__    = 'Corentin Le Gall'
 # with this program; if not, you will find one at
 # <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>.
 
+import cjson
 import csv
 import logging
 import md5
@@ -40,15 +41,18 @@ class UrlList:
 
         def getlist(self, index, length, header = False):
                 self.list = {}
+                contenttype = None
                 try:
                         if self.url is not None:
                                 kind = self.url.split(':')[0]
                                 if kind == 'file' or kind == self.url:
                                         f = urllib.urlopen(self.url)
+                                        contenttype = f.headers.getheaders('Content-Type')
                                 elif kind in ['mysql', 'sqlite', 'ldap']:
                                         log.warning('URL kind %s not supported yet' % kind)
                                 elif kind in ['http', 'https']:
                                         f = urllib.urlopen(self.url + "?sum=%s" % self.urlmd5)
+                                        contenttype = f.headers.getheaders('Content-Type')
                                 else:
                                         log.warning('URL kind %s not supported' % kind)
                                         return -1
@@ -59,6 +63,7 @@ class UrlList:
                         log.error("--- exception --- (UrlList) unable to open URL %s : %s" %(self.url, str(exc)))
                         return -1
 
+                ret = -1
                 try:
                         keys = []
                         mytab = []
@@ -68,26 +73,30 @@ class UrlList:
                         fulltable = ''.join(mytab)
                         savemd5 = self.urlmd5
                         self.listmd5 = md5.md5(fulltable).hexdigest()
-                        csvreader = csv.reader(mytab, delimiter = '|')
-                        # builds the users list
-                        for line in csvreader:
-                                if len(line) == length:
-                                        if header and len(keys) == 0:
-                                                keys = line
+                        if contenttype == ['application/json']:
+                                self.jsonreply = cjson.decode(fulltable)
+                                ret = 2
+                        else:
+                                csvreader = csv.reader(mytab, delimiter = '|')
+                                # builds the users list
+                                for line in csvreader:
+                                        if len(line) == length:
+                                                if header and len(keys) == 0:
+                                                        keys = line
+                                                else:
+                                                        if line[index] != '':
+                                                                self.list[line[index]] = line
+                                        elif len(line) == 1:
+                                                if line[0] == 'XIVO-WEBI: no-data':
+                                                        log.info('received no-data from WEBI')
+                                                elif line[0] == 'XIVO-WEBI: no-update':
+                                                        log.info('received no-update from WEBI')
+                                                        self.urlmd5 = savemd5
                                         else:
-                                                if line[index] != '':
-                                                        self.list[line[index]] = line
-                                elif len(line) == 1:
-                                        if line[0] == 'XIVO-WEBI: no-data':
-                                                log.info('received no-data from WEBI')
-                                        elif line[0] == 'XIVO-WEBI: no-update':
-                                                log.info('received no-update from WEBI')
-                                                self.urlmd5 = savemd5
-                                else:
-                                        # log.warning('unallowed line length %d' % len(line))
-                                        pass
-                        f.close()
+                                                # log.warning('unallowed line length %d' % len(line))
+                                                pass
+                                ret = 1
                 except Exception, exc:
                         log.error('--- exception --- (UrlList) problem occured when retrieving list : %s' % exc)
-                        return -1
-                return 0
+                        ret = -1
+                return ret

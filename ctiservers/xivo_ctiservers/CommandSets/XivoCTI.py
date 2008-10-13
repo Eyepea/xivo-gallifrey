@@ -581,7 +581,21 @@ class XivoCTICommand(BaseCommand):
                                                      'channels' : {},
                                                      'stats' : {}}
                 return lqlist
-
+        
+        def getqueueslist_json(self, dlist):
+                lqlist = {}
+                for qitem in dlist:
+                        if not qitem.get('commented'):
+                                queuename = qitem.get('name')
+                                lqlist[queuename] = {'queuename' : queuename,
+                                                     'number' : qitem.get('number'),
+                                                     'context' : qitem.get('context'),
+                                                     
+                                                     'agents' : {},
+                                                     'channels' : {},
+                                                     'stats' : {}}
+                return lqlist
+        
         # fields set at startup by reading informations
         userfields = ['user', 'company', 'astid', 'password', 'fullname', 'capaids', 'context', 'phonenum', 'techlist', 'agentnum', 'xivo_userid']
         def getuserslist(self, dlist):
