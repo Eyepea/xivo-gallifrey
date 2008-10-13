@@ -1,28 +1,36 @@
-# Set PATH and CC to include cross compiling tools for cross compilation, e.g.
-# export PATH=/path/to/toolchain/powerpc-linux-gnu/bin:$PATH
-# export CC=gcc
+MY_CFLAGS =	-fstrict-aliasing
 
 # Relaxed Jedi Master Linux Compilation options:
-MY_CFLAGS =     -std=gnu99                      \
-                -Wundef                         \
-                -Wstrict-prototypes             \
-                -Wmissing-prototypes            \
-                -Wall                           \
-                -W                              \
-                -Wcast-qual                     \
-                -Wcast-align                    \
-                -Wwrite-strings                 \
-                -Wnested-externs                \
-                -Wmissing-declarations          \
-                -pedantic                       \
-                -Wshadow
+MY_CFLAGS +=	-Wall				\
+		-Wextra				\
+		-Wundef 			\
+		-Wstrict-prototypes		\
+		-Wmissing-prototypes		\
+		-Wmissing-declarations		\
+		-Wcast-qual			\
+		-Wcast-align			\
+		-Wwrite-strings 		\
+		-Wnested-externs		\
+		-Wshadow			\
+		-Winit-self			\
+		-Wstrict-aliasing		\
+		-Wsign-conversion
 
-CFLAGS ?= -O2 -fomit-frame-pointer
-Z_CFLAGS := $(CFLAGS) -fpic -DPIC -shared -pthread -D _GNU_SOURCE $(MY_CFLAGS) -DAST_MODULE=\"ami_aoriginate\"
-LIBS ?=
-Z_LIBS := $(LIBS)
+MY_CFLAGS +=	-D_GNU_SOURCE -DPIC -fPIC -pthread -DAST_MODULE=\"ami_aoriginate\"
 
-LINKFLAGS = -fpic -shared -Xlinker -x -pthread
+CFLAGS ?= -O2
+
+Z_CFLAGS = $(CFLAGS) $(MY_CFLAGS) $(OPTIONS)
+
+
+MY_LDFLAGS := -shared -fPIC -pthread -lpthread
+
+ADD_LDFLAGS ?= 
+
+LDFLAGS ?= -Xlinker -x
+
+Z_LIBS := $(MY_LDFLAGS) $(LDFLAGS) $(ADD_LDFLAGS)
+
 
 BINARIES = ami_aoriginate.so
 
@@ -36,7 +44,7 @@ PREFIX ?= /usr
 all: $(BINARIES)
 
 %.so: %.o
-	$(CC) $(LINKFLAGS) -o $@ $< $(Z_LIBS)
+	$(CC) -o $@ $< $(Z_LIBS)
 
 %.o: %.c
 	./gwr.py $< --- $(CC) $(Z_CFLAGS) -c -o $@ $<
