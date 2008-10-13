@@ -42,6 +42,10 @@ ASTERISK_FILE_VERSION(__FILE__, "$Revision$")
 /* After MAXERR_REPORT errors, report only one error on 
    REDUCE_RATE_AFTER_OVER_MAXERR */
 
+/* In ms: */
+#define INTERVAL_MIN			1
+#define INTERVAL_MAX			60000
+
 static struct watchdog_pvt *watchdogs = NULL;
 
 typedef struct watchdog_pvt {
@@ -91,7 +95,7 @@ static void *do_watchdog_thread(void *data)
 	    	    "Exiting watchdog thread\n", __FUNCTION__);
 	    return NULL;
 	}
-	usleep(woof->interval * 1000);
+	usleep((useconds_t)(woof->interval * 1000));
 	pthread_testcancel();
     }
     return NULL;
@@ -274,7 +278,7 @@ static int load_module(void)
 		    woof = malloc(sizeof(struct watchdog_pvt));
 		    if (!woof) {
 			ast_log(LOG_ERROR, "unable to malloc!\n");
-			return -1;
+			return AST_MODULE_LOAD_FAILURE;
 		    }
 		    memset(woof, 0x0, sizeof(struct watchdog_pvt));
 
@@ -282,6 +286,13 @@ static int load_module(void)
 		    woof->device[sizeof(woof->device)-1] = 0;
 		    
 		    woof->interval = atoi(uinterval);
+		    if (woof->interval < INTERVAL_MIN
+		        || woof->interval > INTERVAL_MAX) {
+			free(woof);
+			ast_log(LOG_ERROR, "interval out of range: %i ms\n", woof->interval);
+			return AST_MODULE_LOAD_FAILURE;
+		    }
+		    ast_log(LOG_DEBUG, "interval: %i ms\n", woof->interval);
 		    woof->next = watchdogs;
 		    watchdogs = woof;
 
@@ -309,7 +320,7 @@ static int load_module(void)
 	    }
     	    ast_config_destroy(cfg);
 	}
-	return 0;
+	return AST_MODULE_LOAD_SUCCESS;
 }
 
 static int unload_module(void)
@@ -330,7 +341,6 @@ static int unload_module(void)
 AST_MODULE_INFO_STANDARD(ASTERISK_GPL_KEY, "Watchdog API");/* WWW [1] */
 
 /*
- *
  * [1]: 'static' is not at beginning of declaration
  *      harmless
  */

@@ -6,24 +6,39 @@
 # export CC=gcc
 #
 
-# Relaxed Jedi Master Linux Compilation options:
-MY_CFLAGS =     -Wundef                         \
-                -Wstrict-prototypes             \
-                -Wmissing-prototypes            \
-                -Wall                           \
-                -W                              \
-                -Wcast-qual                     \
-                -Wcast-align                    \
-                -Wwrite-strings                 \
-                -Wnested-externs                \
-                -Wmissing-declarations          \
-                -Wshadow
+MY_CFLAGS =	-fstrict-aliasing
 
-# you can override default options by calling make OPTIONS=...
+# Relaxed Jedi Master Linux Compilation options:
+MY_CFLAGS +=	-Wall				\
+		-Wextra				\
+		-Wundef 			\
+		-Wstrict-prototypes		\
+		-Wmissing-prototypes		\
+		-Wmissing-declarations		\
+		-Wcast-qual			\
+		-Wcast-align			\
+		-Wwrite-strings 		\
+		-Wnested-externs		\
+		-Wshadow			\
+		-Winit-self			\
+		-Wstrict-aliasing		\
+		-Wsign-conversion
+
+MY_CFLAGS +=	-D_GNU_SOURCE -DPIC -fPIC -pthread
+
 CFLAGS ?= -O2
-Z_CFLAGS = $(CFLAGS) -D _GNU_SOURCE $(MY_CFLAGS) -DAST_MODULE=\"res_watchdog\" -Wall -Wmissing-prototypes -Wstrict-prototypes $(OPTIONS)
-LIBS ?=
-Z_LIBS = $(LIBS) -lpthread
+
+Z_CFLAGS = $(CFLAGS) $(MY_CFLAGS) -DAST_MODULE=\"res_watchdog\" $(OPTIONS)
+
+
+MY_LDFLAGS := -shared -fPIC -pthread -lpthread
+
+ADD_LDFLAGS ?= 
+
+LDFLAGS ?= -Xlinker -x
+
+Z_LIBS := $(MY_LDFLAGS) $(LDFLAGS) $(ADD_LDFLAGS)
+
 
 BINARY = res_watchdog.so
 OBJECTS = res_watchdog.o
@@ -36,7 +51,7 @@ PREFIX ?= /usr
 .PHONY: install clean
 
 $(BINARY): $(OBJECTS)
-	$(CC) -shared -Xlinker -x -o $(BINARY) $(OBJECTS) $(Z_LIBS)
+	$(CC) -o $(BINARY) $(OBJECTS) $(Z_LIBS)
 
 %.o: %.c
 	./gwr.py $< --- $(CC) $(Z_CFLAGS) -c -o $@ $<
