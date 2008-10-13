@@ -107,7 +107,9 @@ class BaseCommand:
                 return
         def updates(self):
                 return
-
+        
+        def getprofilelist(self):
+                return []
         # connection
         def connected(self, connid):
                 return

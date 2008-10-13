@@ -208,6 +208,12 @@ def manage_webi_connections(connid, msg, sep):
                                         askedtoquit = True
                                         connid.sendall('%s:OK\n' % XIVO_CLI_WEBI_HEADER)
                                         log.info('%s : daemon reload request received' % astid)
+                                elif usefulmsg == 'xivo[ctiprofilelist,get]':
+                                        proflist = commandclass.getprofilelist()
+                                        if proflist:
+                                                connid.sendall('%s\n' % '\n'.join(proflist))
+                                        connid.sendall('%s:OK\n' % XIVO_CLI_WEBI_HEADER)
+                                        log.info('%s : ctiprofilelist request received' % astid)
                                 elif astid in amilist.ami and amilist.ami[astid]:
                                         stripped_usefulmsg = usefulmsg.strip()
                                         try:

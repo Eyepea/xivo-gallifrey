@@ -532,7 +532,10 @@ class XivoCTICommand(BaseCommand):
         def set_contextlist(self, ctxlist):
                 self.ctxlist = ctxlist
                 return
-
+        
+        def getprofilelist(self):
+                return self.capas.keys()
+        
         def updates(self):
                 u_update = self.ulist_ng.update()
                 # self.plist_ng.update()
@@ -564,6 +567,21 @@ class XivoCTICommand(BaseCommand):
                                 lalist[agentname] = {'agentname' : d[0],
                                                      'number' : d[1],
                                                      'password' : d[2],
+                                                     
+                                                     'queues' : {},
+                                                     'stats' : {}}
+                return lalist
+        
+        def getagentslist_json(self, dlist):
+                lalist = {}
+                for aitem in dlist:
+                        if not aitem.get('commented'):
+                                agentname = aitem.get('number')
+                                lalist[agentname] = {'agentname' : aitem.get('number'),
+                                                     'number' :    aitem.get('number'),
+                                                     'password' :  aitem.get('passwd'),
+                                                     'context' :   aitem.get('context'),
+                                                     'id' :        aitem.get('id'),
                                                      
                                                      'queues' : {},
                                                      'stats' : {}}
@@ -622,14 +640,30 @@ class XivoCTICommand(BaseCommand):
 
         def getuserslist_json(self, dlist):
                 lulist = {}
-                for qitem in dlist:
-                        uid = '%s@%s' % (qitem.get('userid'), qitem.get('context'))
-                        # XXX waiting for more fields from WEBI
-                        # if qitem.get('enableclient')
-##                        lulist[uid] = {'state'    : 'unknown',
-##                                       'mwi-waiting' : '0',
-##                                       'mwi-old' : '0',
-##                                       'mwi-new' : '0'}
+                for uitem in dlist:
+                        if uitem.get('enableclient'):
+                                uid = '%s@%s' % (uitem.get('userid'), uitem.get('context'))
+                                lulist[uid] = {'user' : uitem.get('loginclient'),
+                                               'company' : uitem.get('context'),
+                                               'password' : uitem.get('passwdclient'),
+                                               'capaids' : '', # XXX
+                                               'fullname' : uitem.get('fullname'),
+                                               'astid' : 'xivo', # XXX
+                                               'techlist' : '.'.join([uitem.get('protocol'), uitem.get('context'),
+                                                                      uitem.get('name'), uitem.get('number')]),
+                                               'context' : uitem.get('context'),
+                                               'phonenum' : uitem.get('number'),
+                                               'xivo_userid' : uitem.get('id'),
+                                               
+                                               'state'    : 'unknown',
+                                               'mwi-waiting' : '0',
+                                               'mwi-old' : '0',
+                                               'mwi-new' : '0'}
+                                if uitem.get('agentid') is not None:
+                                        lulist[uid]['agentnum'] = uitem.get('agentid')
+                                else:
+                                        lulist[uid]['agentnum'] = ''
+                                print lulist[uid]
                 return lulist
         
         def getuserslist_compat(self, dlist):
@@ -650,7 +684,7 @@ class XivoCTICommand(BaseCommand):
                                                      'context'  : d[10],
                                                      'phonenum' : d[4],
                                                      'xivo_userid' : '-1',
-
+                                                     
                                                      'state'    : 'unknown',
                                                      'mwi-waiting' : '0',
                                                      'mwi-old' : '0',
@@ -2085,14 +2119,13 @@ class XivoCTICommand(BaseCommand):
 
 
         def __build_history_string__(self, requester_id, nlines, kind):
-                # p/xivo/x/sip/103/103
                 [company, userid] = requester_id.split('/')
                 userinfo = self.ulist_ng.finduser(userid + '@' + company)
                 astid = userinfo.get('astid')
                 termlist = userinfo.get('techlist').split(',')
                 reply = []
                 for termin in termlist:
-                        [techno, phoneid] = termin.split('/')
+                        [techno, ctx, phoneid, exten] = termin.split('.')
                         print '__build_history_string__', requester_id, nlines, kind, techno, phoneid
                         try:
                                 hist = self.__update_history_call__(self.configs[astid], techno, phoneid, nlines, kind)
