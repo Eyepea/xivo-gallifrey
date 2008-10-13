@@ -38,7 +38,7 @@ MY_CFLAGS +=	-Wall				\
 #MY_CFLAGS +=	-Wlogical-op			\
 #		-Wstrict-overflow
 
-CFLAGS ?= -O2 -fomit-frame-pointer
+CFLAGS ?=	-O2 -fomit-frame-pointer
 
 ADD_CFLAGS ?=
 
