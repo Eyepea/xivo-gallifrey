@@ -1,7 +1,9 @@
+START TRANSACTION;
+
 GRANT ALL PRIVILEGES ON `asterisk`.* TO `asterisk`@`localhost` IDENTIFIED BY PASSWORD '*DBA86DFECE903EB25FE460A66BDCDA790A1CA4A4';
 CREATE DATABASE IF NOT EXISTS `asterisk` DEFAULT CHARACTER SET utf8;
-USE `asterisk`;
 
+USE `asterisk`;
 
 DROP TABLE IF EXISTS `accessfeatures`;
 CREATE TABLE `accessfeatures` (
@@ -278,7 +280,7 @@ CREATE INDEX `extensions__idx__name` ON `extensions`(`name`);
 
 INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','*33',1,'AgentLogin','','agentdynamiclogin');
 INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','_*31.',1,'Macro','agentstaticlogin|${EXTEN:3}','agentstaticlogin');
-INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','_*32.',1,'Macro','agentstaticlogoff|${EXTEN:3}|fr','agentstaticlogoff');
+INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','_*32.',1,'Macro','agentstaticlogoff|${EXTEN:3}','agentstaticlogoff');
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*37.',1,'Macro','bsfilter|${EXTEN:3}','bsfilter');
 INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','*34',1,'Macro','calllistening','calllistening');
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*36',1,'Directory','${CONTEXT}','directoryaccess');
@@ -783,12 +785,35 @@ CREATE TABLE `schedule` (
  `context` varchar(39) NOT NULL,
  `timebeg` varchar(5) NOT NULL DEFAULT '*',
  `timeend` varchar(5),
- `daynamebeg` varchar(3) NOT NULL DEFAULT '*',
- `daynameend` varchar(3),
+ `daynamebeg` enum('*','sun','mon','tue','wed','thu','fri','sat') NOT NULL DEFAULT '*',
+ `daynameend` enum('sun','mon','tue','wed','thu','fri','sat'),
  `daynumbeg` varchar(2) NOT NULL DEFAULT '*',
  `daynumend` varchar(2),
- `monthbeg` varchar(3) NOT NULL DEFAULT '*',
- `monthend` varchar(3),
+ `monthbeg` enum('*',
+ 		 'jan',
+		 'feb',
+		 'mar',
+		 'apr',
+		 'may',
+		 'jun',
+		 'jul',
+		 'aug',
+		 'sep',
+		 'oct',
+		 'nov',
+		 'dec') NOT NULL DEFAULT '*',
+ `monthend` enum('jan',
+		 'feb',
+		 'mar',
+		 'apr',
+		 'may',
+		 'jun',
+		 'jul',
+		 'aug',
+		 'sep',
+		 'oct',
+		 'nov',
+		 'dec') NOT NULL DEFAULT '*',
  `publicholiday` tinyint(1) NOT NULL DEFAULT 0,
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
@@ -1152,10 +1177,14 @@ CREATE TABLE `userfeatures` (
  `number` varchar(40) NOT NULL,
  `context` varchar(39),
  `voicemailid` int(10) unsigned,
+ `agentid` int(10) unsigned,
  `provisioningid` mediumint(8) unsigned,
  `ringseconds` tinyint(2) unsigned NOT NULL DEFAULT 30,
  `simultcalls` tinyint(2) unsigned NOT NULL DEFAULT 5,
  `enableclient` tinyint(1) NOT NULL DEFAULT 1,
+ `loginclient` varchar(64) NOT NULL DEFAULT '',
+ `passwdclient` varchar(64) NOT NULL DEFAULT '',
+ `profileclient` varchar(64) NOT NULL DEFAULT '',
  `enablehint` tinyint(1) NOT NULL DEFAULT 1,
  `enablevoicemail` tinyint(1) NOT NULL DEFAULT 0,
  `enablexfer` tinyint(1) NOT NULL DEFAULT 0,
@@ -1183,15 +1212,17 @@ CREATE INDEX `userfeatures__idx__lastname` ON `userfeatures`(`lastname`);
 CREATE INDEX `userfeatures__idx__number` ON `userfeatures`(`number`);
 CREATE INDEX `userfeatures__idx__context` ON `userfeatures`(`context`);
 CREATE INDEX `userfeatures__idx__voicemailid` ON `userfeatures`(`voicemailid`);
+CREATE INDEX `userfeatures__idx__agentid` ON `userfeatures`(`agentid`);
 CREATE INDEX `userfeatures__idx__provisioningid` ON `userfeatures`(`provisioningid`);
+CREATE INDEX `userfeatures__idx__loginclient` ON `userfeatures`(`logiclient`);
 CREATE INDEX `userfeatures__idx__musiconhold` ON `userfeatures`(`musiconhold`);
 CREATE INDEX `userfeatures__idx__internal` ON `userfeatures`(`internal`);
 CREATE INDEX `userfeatures__idx__commented` ON `userfeatures`(`commented`);
 CREATE UNIQUE INDEX `userfeatures__uidx__protocol_name` ON `userfeatures`(`protocol`,`name`);
 CREATE UNIQUE INDEX `userfeatures__uidx__protocol_protocolid` ON `userfeatures`(`protocol`,`protocolid`);
 
-INSERT INTO `userfeatures` VALUES (1,'sip',1,'Guest','','guest','','xivo-initconfig',NULL,148378,
-				   30,5,0,0,0,0,0,0,0,0,0,'',0,'',0,'','','',1,'no',0,'');
+INSERT INTO `userfeatures` VALUES (1,'sip',1,'Guest','','guest','','xivo-initconfig',NULL,NULL,148378,
+				   30,5,0,'','','',0,0,0,0,0,0,0,0,'',0,'',0,'','','',1,'no',0,'');
 
 
 DROP TABLE IF EXISTS `useriax`;
@@ -1423,3 +1454,5 @@ CREATE INDEX `voicemenu__idx__number` ON `voicemenu`(`number`);
 CREATE INDEX `voicemenu__idx__context` ON `voicemenu`(`context`);
 CREATE INDEX `voicemenu__idx__commented` ON `voicemenu`(`commented`);
 CREATE UNIQUE INDEX `voicemenu__uidx__name` ON `voicemenu`(`name`);
+
+COMMIT;
