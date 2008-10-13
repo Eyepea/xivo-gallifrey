@@ -4,25 +4,40 @@
 # set PATH and CC to include cross compiling tools for cross compilation, e.g.
 # export PATH=/path/to/toolchain/powerpc-linux-gnu/bin:$PATH
 # export CC=gcc
-#
-# Relaxed Jedi Master Linux Compilation options:
-MY_CFLAGS =     -Wundef                         \
-                -Wstrict-prototypes             \
-                -Wmissing-prototypes            \
-                -Wall                           \
-                -W                              \
-                -Wcast-qual                     \
-                -Wcast-align                    \
-                -Wwrite-strings                 \
-                -Wnested-externs                \
-                -Wmissing-declarations          \
-                -Wshadow
 
-# you can override default options by calling make OPTIONS=...
-CFLAGS ?= -O2 -fPIC
-Z_CFLAGS := $(CFLAGS) -D _GNU_SOURCE $(MY_CFLAGS) -DAST_MODULE=\"res_config_sqlite\" -Wall -Wmissing-prototypes -Wstrict-prototypes
-LIBS ?=
-Z_LIBS := $(LIBS) -lpthread -lsqlite
+MY_CFLAGS =	-fstrict-aliasing
+
+# Relaxed Jedi Master Linux Compilation options:
+MY_CFLAGS +=	-Wall				\
+		-Wextra				\
+		-Wundef 			\
+		-Wstrict-prototypes		\
+		-Wmissing-prototypes		\
+		-Wmissing-declarations		\
+		-Wcast-qual			\
+		-Wcast-align			\
+		-Wwrite-strings 		\
+		-Wnested-externs		\
+		-Wshadow			\
+		-Winit-self			\
+		-Wstrict-aliasing		\
+		-Wsign-conversion
+
+MY_CFLAGS +=	-D_GNU_SOURCE -DPIC -fPIC -pthread
+
+CFLAGS ?= -O2
+
+Z_CFLAGS = $(CFLAGS) $(MY_CFLAGS) -DAST_MODULE=\"res_config_sqlite\" $(OPTIONS)
+
+
+MY_LDFLAGS := -shared -fPIC -pthread -lsqlite
+
+ADD_LDFLAGS ?= 
+
+LDFLAGS ?= -Xlinker -x
+
+Z_LIBS := $(MY_LDFLAGS) $(LDFLAGS) $(ADD_LDFLAGS)
+
 
 BINARY = res_config_sqlite.so
 OBJECTS = res_config_sqlite.o
