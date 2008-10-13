@@ -21,8 +21,7 @@ MY_CFLAGS +=	-Wall				\
 		-Wnested-externs		\
 		-Wshadow			\
 		-Winit-self			\
-		-Wstrict-aliasing		\
-		-Wsign-conversion
+		-Wstrict-aliasing
 
 MY_CFLAGS +=	-D_GNU_SOURCE -DPIC -fPIC -pthread
 

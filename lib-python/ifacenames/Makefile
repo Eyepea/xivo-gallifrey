@@ -31,8 +31,7 @@ MY_CFLAGS +=	-Wall				\
 		-Wshadow			\
 		-Winit-self			\
 		-Wstrict-aliasing		\
-		-pedantic			\
-		-Wsign-conversion
+		-pedantic
 
 # for gcc 4.3+
 #MY_CFLAGS +=	-Wlogical-op			\
