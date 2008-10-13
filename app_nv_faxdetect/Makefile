@@ -1,20 +1,36 @@
-# Relaxed Jedi Master Linux Compilation options:
-MY_CFLAGS =     -Wundef                         \
-                -Wstrict-prototypes             \
-                -Wmissing-prototypes            \
-                -Wall                           \
-                -W                              \
-                -Wcast-qual                     \
-                -Wcast-align                    \
-                -Wwrite-strings                 \
-                -Wnested-externs                \
-                -Wmissing-declarations          \
-                -Wshadow
+MY_CFLAGS =	-fstrict-aliasing
 
-CFLAGS ?= -O2 -fPIC
-Z_CFLAGS := $(CFLAGS) -D _GNU_SOURCE $(MY_CFLAGS) -Wall -Wmissing-prototypes -Wstrict-prototypes -DAST_MODULE=\"app_nv_faxdetect\"
-LIBS ?=
-Z_LIBS := $(LIBS) -lpthread
+# Relaxed Jedi Master Linux Compilation options:
+MY_CFLAGS +=	-Wall				\
+		-Wextra				\
+		-Wundef 			\
+		-Wstrict-prototypes		\
+		-Wmissing-prototypes		\
+		-Wmissing-declarations		\
+		-Wcast-qual			\
+		-Wcast-align			\
+		-Wwrite-strings 		\
+		-Wnested-externs		\
+		-Wshadow			\
+		-Winit-self			\
+		-Wstrict-aliasing		\
+		-Wsign-conversion
+
+MY_CFLAGS +=	-D_GNU_SOURCE -DPIC -fPIC -pthread -DAST_MODULE=\"app_nv_faxdetect\"
+
+CFLAGS ?= -O2
+
+Z_CFLAGS = $(CFLAGS) $(MY_CFLAGS) $(OPTIONS)
+
+
+MY_LDFLAGS := -shared -fPIC -pthread
+
+ADD_LDFLAGS ?= 
+
+LDFLAGS ?= -Xlinker -x
+
+Z_LIBS := $(MY_LDFLAGS) $(LDFLAGS) $(ADD_LDFLAGS)
+
 
 BINARY = app_nv_faxdetect.so
 OBJECTS = app_nv_faxdetect.o
@@ -25,7 +41,7 @@ PREFIX ?= /usr
 .PHONY: install clean
 
 $(BINARY): $(OBJECTS)
-	$(CC) -shared -Xlinker -x -o $(BINARY) $(OBJECTS) $(Z_LIBS)
+	$(CC) -o $(BINARY) $(OBJECTS) $(Z_LIBS)
 
 %.o: %.c
 	./gwr.py $< --- $(CC) $(Z_CFLAGS) -c -o $@ $<
