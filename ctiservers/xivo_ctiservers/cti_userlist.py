@@ -39,12 +39,15 @@ class UserList(AnyList):
                 if len(self.requested_list) > 0:
                         for url, urllist in self.requested_list.iteritems():
                                 gl = urllist.getlist(0, 11, True)
-                                if len(urllist.list) == 0:
+                                if gl != 2 and len(urllist.list) == 0:
                                         # fallback to 'phones'-style definition
                                         gl = urllist.getlist(1, 12, False)
                                         newuserlist = self.commandclass.getuserslist_compat(urllist.list)
                                 else:
-                                        newuserlist = self.commandclass.getuserslist(urllist.list)
+                                        if gl == 1:
+                                                newuserlist = self.commandclass.getuserslist(urllist.list)
+                                        elif gl == 2:
+                                                newuserlist = self.commandclass.getuserslist_json(urllist.jsonreply)
                                 nnew = 0
                                 for a, b in newuserlist.iteritems():
                                         if a not in self.userlist:

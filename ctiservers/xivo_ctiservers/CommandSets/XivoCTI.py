@@ -620,6 +620,18 @@ class XivoCTICommand(BaseCommand):
                                              'mwi-new' : '0'}
                 return lulist
 
+        def getuserslist_json(self, dlist):
+                lulist = {}
+                for qitem in dlist:
+                        uid = '%s@%s' % (qitem.get('userid'), qitem.get('context'))
+                        # XXX waiting for more fields from WEBI
+                        # if qitem.get('enableclient')
+##                        lulist[uid] = {'state'    : 'unknown',
+##                                       'mwi-waiting' : '0',
+##                                       'mwi-old' : '0',
+##                                       'mwi-new' : '0'}
+                return lulist
+        
         def getuserslist_compat(self, dlist):
                 lulist = {}
                 for c, d in dlist.iteritems():

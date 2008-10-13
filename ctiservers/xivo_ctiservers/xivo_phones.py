@@ -199,11 +199,22 @@ class PhoneList:
                         self.star10.remove(chan)
                 self.normal_channel_hangup(chan, "ami-eh0")
 
-
         def update(self):
                 try:
                         u = self.phlist.getlist(1, 12)
-                        newphlist = readphonelist(self.phlist.list)
+                        if u == 1:
+                                newphlist = readphonelist(self.phlist.list)
+                        elif u == 2:
+                                newphlist = {}
+                                for jr in self.phlist.jsonreply:
+                                        idx = '.'.join([jr.get('protocol'), jr.get('context'), jr.get('name'), jr.get('number')])
+                                        newphlist[idx] = {'number' : jr.get('number'),
+                                                          'tech' : jr.get('protocol'),
+                                                          'context': jr.get('context'),
+                                                          'enable_hint': jr.get('enableautomon'),
+                                                          'initialized': jr.get('initialized'),
+                                                          'phoneid': jr.get('name')
+                                                          }
                         if newphlist is not None:
                                 self.rough_phonelist = newphlist
                         sipnumlistnew = dict.fromkeys(self.rough_phonelist.keys())
