@@ -2,25 +2,39 @@
 # export PATH=/path/to/toolchain/powerpc-linux-gnu/bin:$PATH
 # export CC=gcc
 
+MY_CFLAGS =	-fstrict-aliasing
+
 # Relaxed Jedi Master Linux Compilation options:
-MY_CFLAGS =     -Wundef                         \
-                -Wstrict-prototypes             \
-                -Wmissing-prototypes            \
-                -Wall                           \
-                -W                              \
-                -Wcast-qual                     \
-                -Wcast-align                    \
-                -Wwrite-strings                 \
-                -Wnested-externs                \
-                -Wmissing-declarations          \
-                -Wshadow
+MY_CFLAGS +=	-Wall				\
+		-Wextra				\
+		-Wundef 			\
+		-Wstrict-prototypes		\
+		-Wmissing-prototypes		\
+		-Wmissing-declarations		\
+		-Wcast-qual			\
+		-Wcast-align			\
+		-Wwrite-strings 		\
+		-Wnested-externs		\
+		-Wshadow			\
+		-Winit-self			\
+		-Wstrict-aliasing		\
+		-Wsign-conversion
 
-CFLAGS ?= -O2 -fomit-frame-pointer
-Z_CFLAGS := $(CFLAGS) -fpic -DPIC -shared -pthread -D _GNU_SOURCE $(MY_CFLAGS) -DAST_MODULE=\"module_xivo\" 
-LIBS ?=
-Z_LIBS := $(LIBS)
+MY_CFLAGS +=	-D_GNU_SOURCE -DPIC -fPIC -pthread
 
-LINKFLAGS = -fpic -shared -Xlinker -x -pthread
+CFLAGS ?= -O2
+
+Z_CFLAGS = $(CFLAGS) $(MY_CFLAGS) -DAST_MODULE=\"module_xivo\" $(OPTIONS)
+
+
+MY_LDFLAGS := -shared -fPIC -pthread
+
+ADD_LDFLAGS ?= 
+
+LDFLAGS ?= -Xlinker -x
+
+Z_LIBS := $(MY_LDFLAGS) $(LDFLAGS) $(ADD_LDFLAGS)
+
 
 BINARIES = module_xivo.so
 
@@ -34,7 +48,7 @@ PREFIX ?= /usr
 all: $(BINARIES)
 
 %.so: %.o
-	$(CC) $(LINKFLAGS) -o $@ $< $(Z_LIBS)
+	$(CC) -o $@ $< $(Z_LIBS)
 
 %.o: %.c
 	./gwr.py $< --- $(CC) $(Z_CFLAGS) -c -o $@ $<

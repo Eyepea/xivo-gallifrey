@@ -21,6 +21,7 @@
 ASTERISK_FILE_VERSION(__FILE__, "$Revision$")
 
 #include <asterisk/module.h>
+#include <asterisk/utils.h>
 #include <asterisk/pbx.h>
 #include <asterisk/app.h>
 #include <string.h>
@@ -36,7 +37,7 @@ static void real_strsubst(char *retbuf, size_t len, const char *string, const ch
 	char *needle;
 	char *dest = retbuf;
 	ssize_t nb;	/* number of chars to copy, without the final \0 */
-	ssize_t dest_len = len - 1;
+	ssize_t dest_len = ((ssize_t)len) - 1;
 	size_t search_strlen = strlen(search);
 	size_t replace_strlen = strlen(replace);
 
@@ -44,20 +45,21 @@ static void real_strsubst(char *retbuf, size_t len, const char *string, const ch
 	     (needle = strstr(start, search)) != NULL;
 	     start = needle + search_strlen) {
 		nb = MIN(dest_len, needle - start);
-		ast_copy_string(dest, start, nb + 1);
+		ast_copy_string(dest, start, (size_t)(nb + 1));
 		dest_len -= nb;
 		if (dest_len <= 0)
 			return;
 		dest += nb;
 		nb = MIN(dest_len, (ssize_t)replace_strlen);
-		ast_copy_string(dest, replace, nb + 1);
+		ast_copy_string(dest, replace, (size_t)(nb + 1));
 		dest_len -= nb;
 		if (dest_len <= 0)
 			return;
 		dest += nb;
 	}
 
-	ast_copy_string(dest, start, dest_len);
+	if (dest_len > 0)
+		ast_copy_string(dest, start, (size_t)dest_len);
 
 	return;
 }
@@ -100,6 +102,8 @@ static int strsubst(struct ast_channel *chan, char *cmd, char *data, char *buf, 
 	char *search;
 	char *replace;
 	char *delim;
+
+	ast_assert(len > 0);
 
 	UNUSED(chan);
 	UNUSED(cmd);
@@ -367,9 +371,10 @@ static int load_module(void)
 		ast_custom_function_unregister(&appexists_function);
 		ast_custom_function_unregister(&getconf_function);
 		ast_custom_function_unregister(&strsubst_function);
+		return AST_MODULE_LOAD_FAILURE;
 	}
 	loaded = 1;
-	return 0;
+	return AST_MODULE_LOAD_SUCCESS;
 }
 
 static int unload_module(void)
@@ -388,7 +393,6 @@ static int unload_module(void)
 AST_MODULE_INFO_STANDARD(ASTERISK_GPL_KEY, "XIVO specific code");/* WWW [1] */
 
 /*
- *
  * [1]: 'static' is not at beginning of declaration
  *      harmless
  */
