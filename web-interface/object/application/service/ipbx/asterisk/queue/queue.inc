@@ -618,19 +618,19 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		|| $rs === false)
 			return($rs);
 
-		$id = $this->_return[$type] = array();
+		$ret = $this->_return[$type] = array();
 
 		$nb = count($rs);
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			$id['queue_name'] = $rs[$i]['queue_name'];
-			$id['interface'] = $rs[$i]['interface'];
-
 			if($this->_queuemember->add($rs[$i]) === false)
 				return(false);
 
-			$this->_return[$type][] = $id;
+			$ret['queue_name'] = $rs[$i]['queue_name'];
+			$ret['interface'] = $rs[$i]['interface'];
+
+			$this->_return[$type][] = $ret;
 		}
 
 		if(isset($this->_return[$type][0]) === false)
@@ -673,10 +673,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 						continue;
 
 					foreach($val as $value)
-					{
-						if($value !== false)
-							$this->_queuemember->delete($value);
-					}
+						$this->_queuemember->delete($value);
 					break;
 				case 'dialaction':
 					$this->_dialaction->reverse_add();
@@ -838,19 +835,19 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		else if(($rs = $this->get_result($type)) === null || $rs === false)
 			return($rs);
 
-		$id = $this->_return[$type] = array();
+		$ret = $this->_return[$type] = array();
 
 		$nb = count($rs);
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			$id['queue_name'] = $rs[$i]['queue_name'];
-			$id['interface'] = $rs[$i]['interface'];
-
 			if($this->_queuemember->add($rs[$i]) === false)
 				return(false);
 
-			$this->_return[$type][] = $id;
+			$ret['queue_name'] = $rs[$i]['queue_name'];
+			$ret['interface'] = $rs[$i]['interface'];
+
+			$this->_return[$type][] = $ret;
 		}
 
 		if(isset($this->_return[$type][0]) === false)
@@ -918,7 +915,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 				case 'agentgroup':
 				case 'agent':
 					if(xivo_issa('qfeatures',$this->_info) === false)
-						break;
+						continue;
 
 					$this->delete_user($this->_info['qfeatures']['name']);
 
@@ -1016,28 +1013,27 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		if(($type !== 'user' && $type !== 'agent' && $type !== 'agentgroup') === true
 		|| xivo_issa($type,$this->_info) === false)
 			return(null);
-
-		if(xivo_issa('qfeatures',$this->_info) === false
+		else if(xivo_issa('qfeatures',$this->_info) === false
 		|| is_scalar($name) === false
 		|| is_object($this->_queuemember) === false)
 			return(false);
 
-		$queuemember_where = array();
+		$where = array();
 
 		if($type === 'agentgroup')
 		{
-			$queuemember_where['usertype'] = 'agent';
-			$queuemember_where['category'] = 'group';
+			$where['usertype'] = 'agent';
+			$where['category'] = 'group';
 		}
 		else
 		{
-			$queuemember_where['usertype'] = $type;
-			$queuemember_where['category'] = 'queue';
+			$where['usertype'] = $type;
+			$where['category'] = 'queue';
 		}
 
-		$queuemember_where['queue_name'] = $name;
+		$where['queue_name'] = $name;
 
-		$r = $this->_queuemember->delete_where($queuemember_where);
+		$r = $this->_queuemember->delete_where($where);
 
 		if($this->_status === 'delete')
 			$this->_return[$type] = $r;

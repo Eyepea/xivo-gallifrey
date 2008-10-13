@@ -200,6 +200,7 @@ $_HTML->set_var('qmember',$qmember);
 $_HTML->set_var('rightcall',$rightcall);
 $_HTML->set_var('element',$element);
 $_HTML->set_var('voicemail_list',$appuser->get_voicemail_list());
+$_HTML->set_var('agent_list',$appuser->get_agent_list());
 $_HTML->set_var('destination_list',$appuser->get_destination_list());
 $_HTML->set_var('moh_list',$appuser->get_musiconhold());
 $_HTML->set_var('tz_list',$appuser->get_timezones());
@@ -208,6 +209,7 @@ $_HTML->set_var('autoprov_list',$appuser->get_autoprov_list());
 $_HTML->set_var('bsfilter_list',$appuser->get_bsfilter_list());
 $_HTML->set_var('fkdest_list',$appuser->get_phonefunckey_destination());
 $_HTML->set_var('fktype_list',$appuser->get_phonefunckey_type());
+$_HTML->set_var('profileclient_list',$appuser->get_profileclient_list());
 
 $dhtml = &$_HTML->get_module('dhtml');
 $dhtml->set_js('js/xivo_ajs.js');

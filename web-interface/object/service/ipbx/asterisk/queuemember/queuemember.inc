@@ -23,22 +23,6 @@ class xivo_service_asterisk_queuemember extends xivo_service_asterisk_abstract
 
 		$this->_load_config();
 	}
-
-	function add_list($arr)
-	{
-		if(is_array($arr) === false)
-			return(false);
-
-		$list = array_values($arr);
-
-		if(($nb = count($list)) === 0)
-			return(false);
-
-		for($i = 0;$i < $nb;$i++)
-			$this->add($list[$i]);
-
-		return(true);
-	}
 }
 
 ?>

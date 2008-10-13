@@ -8,7 +8,9 @@ $element = $this->get_var('element');
 
 $voicemail_list = $this->get_var('voicemail_list');
 $autoprov_list = $this->get_var('autoprov_list');
+$agent_list = $this->get_var('agent_list');
 $context_list = $this->get_var('context_list');
+$profileclient_list = $this->get_var('profileclient_list');
 $rightcall = $this->get_var('rightcall');
 
 if(($outcallerid = (string) $info['ufeatures']['outcallerid']) === ''
@@ -295,14 +297,48 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 </div>
 
 <div id="sb-part-service" class="b-nodisplay">
+	<fieldset id="fld-client">
+		<legend><?=$this->bbf('fld-client');?></legend>
 <?php
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enableclient'),
 				      'name'	=> 'ufeatures[enableclient]',
 				      'labelid'	=> 'ufeatures-enableclient',
 				      'default'	=> $element['ufeatures']['enableclient']['default'],
-				      'checked'	=> $info['ufeatures']['enableclient'])),
+				      'checked'	=> $info['ufeatures']['enableclient']),
+				'onchange="xivo_chg_attrib(\'ast_fm_user_enableclient\',
+							   \'it-ufeatures-loginclient\',
+							   Number(this.checked));"'),
 
-		$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enablehint'),
+		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_loginclient'),
+				  'name'	=> 'ufeatures[loginclient]',
+				  'labelid'	=> 'ufeatures-loginclient',
+				  'size'	=> 15,
+				  'default'	=> $element['ufeatures']['loginclient']['default'],
+				  'value'	=> $info['ufeatures']['loginclient'])),
+
+		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_passwdclient'),
+				  'name'	=> 'ufeatures[passwdclient]',
+				  'labelid'	=> 'ufeatures-passwdclient',
+				  'size'	=> 15,
+				  'default'	=> $element['ufeatures']['passwdclient']['default'],
+				  'value'	=> $info['ufeatures']['passwdclient']));
+
+	if(is_array($profileclient_list) === true && empty($profileclient_list) === false):
+		echo	$form->select(array('desc'	=> $this->bbf('fm_userfeatures_profileclient'),
+					    'name'	=> 'ufeatures[profileclient]',
+					    'labelid'	=> 'ufeatures-profileclient',
+					    'empty'	=> true,
+					    'default'	=> $element['ufeatures']['profileclient']['default'],
+					    'value'	=> $info['ufeatures']['profileclient']),
+				      $profileclient_list);
+	endif;
+?>
+	</fieldset>
+
+	<fieldset id="fld-services">
+		<legend><?=$this->bbf('fld-services');?></legend>
+<?php
+	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enablehint'),
 				      'name'	=> 'ufeatures[enablehint]',
 				      'labelid'	=> 'ufeatures-enablehint',
 				      'default'	=> $element['ufeatures']['enablehint']['default'],
@@ -344,7 +380,41 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 				      'default'	=> $element['ufeatures']['enablednd']['default'],
 				      'checked'	=> $info['ufeatures']['enablednd'])),
 
-		$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enablerna'),
+		$form->select(array('desc'	=> $this->bbf('fm_userfeatures_bsfilter'),
+				    'name'	=> 'ufeatures[bsfilter]',
+				    'labelid'	=> 'ufeatures-bsfilter',
+				    'key'	=> false,
+				    'bbf'	=> array('paramkey','fm_userfeatures_bsfilter-opt'),
+				    'default'	=> $element['ufeatures']['bsfilter']['default'],
+				    'value'	=> $info['ufeatures']['bsfilter']),
+			      $element['ufeatures']['bsfilter']['value']);
+
+	if($agent_list !== false):
+		echo	$form->select(array('desc'	=> $this->bbf('fm_userfeatures_agentid'),
+					    'name'	=> 'ufeatures[agentid]',
+					    'labelid'	=> 'ufeatures-agentid',
+					    'empty'	=> true,
+					    'key'	=> 'identity',
+					    'altkey'	=> 'id',
+					    'default'	=> $element['ufeatures']['agentid']['default'],
+					    'value'	=> $info['ufeatures']['agentid']),
+				      $agent_list);
+	else:
+		echo	'<div id="fd-ufeatures-agentid" class="txt-center">',
+			$url->href_html($this->bbf('create_agent'),
+					'service/ipbx/pbx_settings/agents',
+					array('act'	=> 'addagent',
+					      'group'	=> 1)),
+			'</div>';
+	endif;
+?>
+	</fieldset>
+
+	<fieldset id="fld-callforwards">
+		<legend><?=$this->bbf('fld-callforwards');?></legend>
+<?php
+
+	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enablerna'),
 				      'name'	=> 'ufeatures[enablerna]',
 				      'labelid'	=> 'ufeatures-enablerna',
 				      'default'	=> $element['ufeatures']['enablerna']['default'],
@@ -390,17 +460,9 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 				  'labelid'	=> 'ufeatures-destunc',
 				  'size'	=> 15,
 				  'default'	=> $element['ufeatures']['destunc']['default'],
-				  'value'	=> $info['ufeatures']['destunc'])),
-
-		$form->select(array('desc'	=> $this->bbf('fm_userfeatures_bsfilter'),
-				    'name'	=> 'ufeatures[bsfilter]',
-				    'labelid'	=> 'ufeatures-bsfilter',
-				    'key'	=> false,
-				    'bbf'	=> array('paramkey','fm_userfeatures_bsfilter-opt'),
-				    'default'	=> $element['ufeatures']['bsfilter']['default'],
-				    'value'	=> $info['ufeatures']['bsfilter']),
-			      $element['ufeatures']['bsfilter']['value']);
+				  'value'	=> $info['ufeatures']['destunc']));
 ?>
+	</fieldset>
 </div>
 
 <div id="sb-part-group" class="b-nodisplay">

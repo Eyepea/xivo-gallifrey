@@ -470,19 +470,19 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		if(($rs = $this->get_result('user')) === null || $rs === false)
 			return($rs);
 
-		$id = $this->_return['user'] = array();
+		$ret = $this->_return['user'] = array();
 
 		$nb = count($rs);
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			$id['queue_name'] = $rs[$i]['queue_name'];
-			$id['interface'] = $rs[$i]['interface'];
-
 			if($this->_queuemember->add($rs[$i]) === false)
 				return(false);
 
-			$this->_return['user'][] = $id;
+			$ret['queue_name'] = $rs[$i]['queue_name'];
+			$ret['interface'] = $rs[$i]['interface'];
+
+			$this->_return['user'][] = $ret;
 		}
 
 		if(isset($this->_return['user'][0]) === false)
@@ -559,10 +559,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 						continue;
 
 					foreach($val as $queuememberval)
-					{
-						if($queuememberval !== false)
-							$this->_queuemember->delete($queuememberval);
-					}
+						$this->_queuemember->delete($queuememberval);
 					break;
 				case 'rightcall':
 					$this->_rightcall->reverse_add();
@@ -686,19 +683,19 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		else if($rs === false)
 			return(false);
 
-		$id = $this->_return['user'] = array();
+		$ret = $this->_return['user'] = array();
 
 		$nb = count($rs);
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			$id['queue_name'] = $rs[$i]['queue_name'];
-			$id['interface'] = $rs[$i]['interface'];
-
 			if($this->_queuemember->add($rs[$i]) === false)
 				return(false);
 
-			$this->_return['user'][] = $id;
+			$ret['queue_name'] = $rs[$i]['queue_name'];
+			$ret['interface'] = $rs[$i]['interface'];
+
+			$this->_return['user'][] = $ret;
 		}
 
 		if(isset($this->_return['user'][0]) === false)
@@ -926,12 +923,12 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		|| $this->_queuemember === false)
 			return(false);
 
-		$queuemember_where = array();
-		$queuemember_where['usertype'] = 'user';
-		$queuemember_where['category'] = 'group';
-		$queuemember_where['queue_name'] = $name;
+		$where = array();
+		$where['usertype'] = 'user';
+		$where['category'] = 'group';
+		$where['queue_name'] = $name;
 
-		$r = $this->_queuemember->delete_where($queuemember_where);
+		$r = $this->_queuemember->delete_where($where);
 
 		if($this->_status === 'delete')
 			$this->_return['user'] = $r;

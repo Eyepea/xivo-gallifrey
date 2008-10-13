@@ -6,7 +6,6 @@ $url = &$this->get_module('url');
 $element = $this->get_var('element');
 $info = $this->get_var('info');
 
-$agents = $this->get_var('agents');
 $amember = $this->get_var('amember');
 
 $queues = $this->get_var('queues');
@@ -23,7 +22,7 @@ $qmember = $this->get_var('qmember');
 				  'default'	=> $element['agentgroup']['name']['default'],
 				  'value'	=> $info['agentgroup']['name']));
 
-	if(is_array($agents) === true && empty($agents) === false):
+	if($amember['list'] !== false):
 ?>
 <div id="agentlist" class="fm-field fm-multilist">
 	<p><label id="lb-agentlist" for="it-agentlist"><?=$this->bbf('fm_agents');?></label></p>

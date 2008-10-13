@@ -136,8 +136,23 @@ Vérifier la présence de nouveaux messages :
 ; fm_protocol_buggymwi
 Vérification, non conforme à la RFC, de nouveaux messages :
 
+; fld-client
+XIVO Client
+
 ; fm_userfeatures_enableclient
-Activer XIVO Client :
+Activer :
+
+; fm_userfeatures_loginclient
+Identifiant :
+
+; fm_userfeatures_passwdclient
+Mot de passe :
+
+; fm_userfeatures_profileclient
+Profile :
+
+; fld-services
+Services
 
 ; fm_userfeatures_enablehint
 Activer la supervision :
@@ -160,6 +175,27 @@ Filtrage d'appel :
 ; fm_userfeatures_enablednd
 Ne pas déranger :
 
+; fm_userfeatures_bsfilter
+Filtrage Patron - Secrétaire :
+
+; fm_userfeatures_bsfilter-opt(no)
+Non
+
+; fm_userfeatures_bsfilter-opt(boss)
+Patron
+
+; fm_userfeatures_bsfilter-opt(secretary)
+Secrétaire
+
+; fm_userfeatures_agentid
+Agent :
+
+; create_agent
+Créer un agent
+
+; fld-callforwards
+Renvois d'appel
+
 ; fm_userfeatures_enablerna
 Renvoi sur non réponse :
 
@@ -177,18 +213,6 @@ Renvoi inconditionnel :
 
 ; fm_userfeatures_destunc
 Destination :
-
-; fm_userfeatures_bsfilter
-Filtrage Patron - Secrétaire :
-
-; fm_userfeatures_bsfilter-opt(no)
-Non
-
-; fm_userfeatures_bsfilter-opt(boss)
-Patron
-
-; fm_userfeatures_bsfilter-opt(secretary)
-Secrétaire
 
 ; fm_protocol_progressinband
 Evénement RING dans la bande :

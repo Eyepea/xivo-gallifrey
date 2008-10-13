@@ -42,7 +42,10 @@ switch($act)
 				$result['dialaction'] = $appgroup->get_dialaction_result();
 			}
 			else
+			{
+				$ipbx->discuss('xivo[grouplist,update]');
 				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
+			}
 		}
 
 		xivo::load_class('xivo_sort');
@@ -131,7 +134,10 @@ switch($act)
 				$result['dialaction'] = $appgroup->get_dialaction_result();
 			}
 			else
+			{
+				$ipbx->discuss('xivo[grouplist,update]');
 				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
+			}
 		}
 
 		xivo::load_class('xivo_sort');
@@ -193,6 +199,8 @@ switch($act)
 
 		$appgroup->delete();
 
+		$ipbx->discuss('xivo[grouplist,update]');
+
 		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
 		break;
 	case 'deletes':
@@ -210,6 +218,8 @@ switch($act)
 			if($appgroup->get($values[$i]) !== false)
 				$appgroup->delete();
 		}
+
+		$ipbx->discuss('xivo[grouplist,update]');
 
 		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
 		break;
@@ -232,6 +242,8 @@ switch($act)
 			if(($info = $gfeatures->get($values[$i])) !== false)
 				$queue->disable($info['name'],$disable);
 		}
+
+		$ipbx->discuss('xivo[grouplist,update]');
 
 		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
 		break;

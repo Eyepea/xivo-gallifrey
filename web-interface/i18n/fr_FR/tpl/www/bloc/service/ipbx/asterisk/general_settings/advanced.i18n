@@ -19,6 +19,9 @@ Invité :
 ; fm_generalagents_persistentagents
 Agents persistants :
 
+; fm_generalagents_multiplelogin
+Permettre à une extension d'avoir plusieurs agents :
+
 ; fm_generalqueue_persistentmembers
 Membres persistants :
 

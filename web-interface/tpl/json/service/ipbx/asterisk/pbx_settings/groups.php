@@ -7,7 +7,7 @@ if(is_array($groups) === false)
 else if(($nb = count($groups)) === 0)
 	xivo_die('no-data');
 
-$data = array();
+$data = $list = array();
 
 for($i = 0;$i < $nb;$i++)
 {
@@ -18,15 +18,17 @@ for($i = 0;$i < $nb;$i++)
 	$data['number'] = $ref['gfeatures']['number'];
 	$data['context'] = $ref['gfeatures']['context'];
 	$data['commented'] = $ref['queue']['commented'];
+
+	$list[] = $data;
 }
 
-if(($data = xivo_json::encode($data)) === false)
+if(($list = xivo_json::encode($list)) === false)
 	xivo_die('Error/500');
 
-if(isset($_QR['sum']) === true && $_QR['sum'] === md5($data))
+if(isset($_QR['sum']) === true && $_QR['sum'] === md5($list))
 	xivo_die('no-update');
 
 header(xivo_json::get_header());
-die($data);
+die($list);
 
 ?>

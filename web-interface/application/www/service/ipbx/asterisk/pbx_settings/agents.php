@@ -15,19 +15,18 @@ switch($act)
 	case 'add':
 		$amember = $qmember = array();
 		$amember['list'] = $qmember['list'] = false;
-		$amember['info'] = $qmember['info'] = false;
+		$qmember['info'] = false;
 		$amember['slt'] = $qmember['slt'] = array();
 
 		$appagent = &$ipbx->get_application('agent',null,false);
 
-		if(($agents = $appagent->get_agents_list(null,
-							 array('firstname'	=> SORT_ASC,
-							       'lastname'	=> SORT_ASC,
-							       'number'		=> SORT_ASC,
-							       'context'	=> SORT_ASC),
-							 null,
-							 true)) !== false)
-			$amember['list'] = $agents;
+		$amember['list'] = $appagent->get_agents_list(null,
+							      array('firstname'	=> SORT_ASC,
+								    'lastname'	=> SORT_ASC,
+								    'number'	=> SORT_ASC,
+								    'context'	=> SORT_ASC),
+							      null,
+							      true);
 
 		$appqueue = &$ipbx->get_application('queue',null,false);
 
@@ -96,7 +95,6 @@ switch($act)
 
 		$_HTML->set_var('info',$result);
 		$_HTML->set_var('element',$appagentgroup->get_elements());
-		$_HTML->set_var('agents',$agents);
 		$_HTML->set_var('amember',$amember);
 		$_HTML->set_var('queues',$queues);
 		$_HTML->set_var('qmember',$qmember);
@@ -114,19 +112,18 @@ switch($act)
 
 		$amember = $qmember = array();
 		$amember['list'] = $qmember['list'] = false;
-		$amember['info'] = $qmember['info'] = false;
+		$qmember['info'] = false;
 		$amember['slt'] = $qmember['slt'] = array();
 
 		$appagent = &$ipbx->get_application('agent',null,false);
 
-		if(($agents = $appagent->get_agents_list(null,
-							 array('firstname'	=> SORT_ASC,
-							       'lastname'	=> SORT_ASC,
-							       'number'		=> SORT_ASC,
-							       'context'	=> SORT_ASC),
-							 null,
-							 true)) !== false)
-			$amember['list'] = $agents;
+		$amember['list'] = $appagent->get_agents_list(null,
+							      array('firstname'	=> SORT_ASC,
+								    'lastname'	=> SORT_ASC,
+								    'number'	=> SORT_ASC,
+								    'context'	=> SORT_ASC),
+							      null,
+							      true);
 
 		$appqueue = &$ipbx->get_application('queue',null,false);
 
@@ -196,7 +193,6 @@ switch($act)
 		$_HTML->set_var('id',$info['agentgroup']['id']);
 		$_HTML->set_var('info',$return);
 		$_HTML->set_var('element',$appagentgroup->get_elements());
-		$_HTML->set_var('agents',$agents);
 		$_HTML->set_var('amember',$amember);
 		$_HTML->set_var('queues',$queues);
 		$_HTML->set_var('qmember',$qmember);
@@ -259,6 +255,8 @@ switch($act)
 				$appagentgroup->enable();
 		}
 
+		$ipbx->discuss('xivo[agentlist,update]');
+
 		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 		break;
 	case 'addagent':
@@ -295,6 +293,8 @@ switch($act)
 				$result = $appagent->get_result();
 			else
 			{
+				$ipbx->discuss('xivo[agentlist,update]');
+
 				$param['group'] = $appagent->get_result_var('afeatures','numgroup');
 				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 			}
@@ -370,6 +370,8 @@ switch($act)
 				$result = $appagent->get_result();
 			else
 			{
+				$ipbx->discuss('xivo[agentlist,update]');
+
 				$param['group'] = $appagent->get_result_var('afeatures','numgroup');
 				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 			}
@@ -427,6 +429,8 @@ switch($act)
 
 		$appagent->delete();
 
+		$ipbx->discuss('xivo[agentlist,update]');
+
 		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 		break;
 	case 'deleteagents':
@@ -445,6 +449,8 @@ switch($act)
 			if($appagent->get($values[$i]) !== false)
 				$appagent->delete();
 		}
+
+		$ipbx->discuss('xivo[agentlist,update]');
 
 		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 		break;
@@ -469,6 +475,8 @@ switch($act)
 			else
 				$appagent->enable();
 		}
+
+		$ipbx->discuss('xivo[agentlist,update]');
 
 		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 		break;

@@ -1,5 +1,6 @@
 <?php
 
+define('XIVO_SESS_ENABLE',false);
 define('XIVO_TPL_SPACE','json');
 
 require_once('xivo.php');

@@ -54,7 +54,10 @@ switch($act)
 				$result['dialaction'] = $appqueue->get_dialaction_result();
 			}
 			else
+			{
+				$ipbx->discuss('xivo[queuelist,update]');
 				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
+			}
 		}
 
 		xivo::load_class('xivo_sort');
@@ -178,7 +181,10 @@ switch($act)
 				$result['dialaction'] = $appqueue->get_dialaction_result();
 			}
 			else
+			{
+				$ipbx->discuss('xivo[queuelist,update]');
 				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
+			}
 		}
 
 		xivo::load_class('xivo_sort');
@@ -263,6 +269,8 @@ switch($act)
 
 		$appqueue->delete();
 
+		$ipbx->discuss('xivo[queuelist,update]');
+
 		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
 		break;
 	case 'deletes':
@@ -280,6 +288,8 @@ switch($act)
 			if($appqueue->get($values[$i]) !== false)
 				$appqueue->delete();
 		}
+
+		$ipbx->discuss('xivo[queuelist,update]');
 
 		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
 		break;
@@ -302,6 +312,8 @@ switch($act)
 			if(($info = $qfeatures->get($values[$i])) !== false)
 				$queue->disable($info['name'],$disable);
 		}
+
+		$ipbx->discuss('xivo[queuelist,update]');
 
 		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
 		break;

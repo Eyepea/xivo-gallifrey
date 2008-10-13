@@ -140,7 +140,9 @@ class xivo_application_service_asterisk_contextnummember_abstract extends xivo_a
 		if($this->_contextnummember->add($rs) === false)
 			return(($this->_return = false));
 
-		$this->_return = array('type' => $rs['type'],'typeval' => $rs['typeval']);
+		$this->_return = array();
+		$this->_return['type'] = $rs['type'];
+		$this->_return['typeval'] = $rs['typeval'];
 
 		return(true);
 	}
@@ -150,11 +152,11 @@ class xivo_application_service_asterisk_contextnummember_abstract extends xivo_a
 		if(empty($this->_origin) === true)
 			return(null);
 
-		$contextnummember_where = array();
-		$contextnummember_where['type'] = $this->_origin['type'];
-		$contextnummember_where['typeval'] = $this->_origin['typeval'];
+		$where = array();
+		$where['type'] = $this->_origin['type'];
+		$where['typeval'] = $this->_origin['typeval'];
 
-		$r = $this->_contextnummember->delete_where($contextnummember_where);
+		$r = $this->_contextnummember->delete_where($where);
 
 		if($status === 'delete')
 			$this->_return = $r;
@@ -168,11 +170,11 @@ class xivo_application_service_asterisk_contextnummember_abstract extends xivo_a
 		|| isset($this->_return['type'],$this->_return['typeval']) === false)
 			return(null);
 
-		$contextnummember_where = array();
-		$contextnummember_where['type'] = $this->_return['type'];
-		$contextnummember_where['typeval'] = $this->_return['typeval'];
+		$where = array();
+		$where['type'] = $this->_return['type'];
+		$where['typeval'] = $this->_return['typeval'];
 
-		$this->_contextnummember->delete_where($contextnummember_where);
+		$this->_contextnummember->delete_where($where);
 
 		return(true);
 	}

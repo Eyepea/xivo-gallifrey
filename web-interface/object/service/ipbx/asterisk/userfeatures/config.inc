@@ -46,6 +46,10 @@ $array['element']['voicemailid'] = array();
 $array['element']['voicemailid']['default'] = 0;
 $array['element']['voicemailid']['null'] = true;
 
+$array['element']['agentid'] = array();
+$array['element']['agentid']['default'] = 0;
+$array['element']['agentid']['null'] = true;
+
 $array['element']['ringseconds'] = array();
 $array['element']['ringseconds']['value'] = array(0,5,10,15,20,25,30,35,40,45,50,55,60);
 $array['element']['ringseconds']['default'] = 30;
@@ -60,6 +64,15 @@ $array['element']['enableclient'] = array();
 $array['element']['enableclient']['value'] = array(0,1);
 $array['element']['enableclient']['default'] = 1;
 $array['element']['enableclient']['set'] = true;
+
+$array['element']['loginclient'] = array();
+$array['element']['loginclient']['default'] = '';
+
+$array['element']['passwdclient'] = array();
+$array['element']['passwdclient']['default'] = '';
+
+$array['element']['profileclient'] = array();
+$array['element']['profileclient']['default'] = '';
 
 $array['element']['enablehint'] = array();
 $array['element']['enablehint']['value'] = array(0,1);
@@ -167,9 +180,21 @@ $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_co
 				    			XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION,
 							XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['voicemailid'] = array('set' => false,'chk' => 2,'cast' => 'ulongint');
+$array['filter']['agentid'] = array('set' => false,'chk' => 2,'cast' => 'ulongint');
 $array['filter']['ringseconds'] = array('set' => false,'chk' => 2,'key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['simultcalls'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,20));
 $array['filter']['enableclient'] = array('bool' => true);
+$array['filter']['loginclient'] = array('set'		=> false,
+					'chk'		=> 2,
+					'minlen'	=> 4,
+					'maxlen'	=> 64,
+					'regexp'	=> '/^[a-zA-Z0-9-\._~\!\$&\'\(\)\*\+,;=%]+$/');
+$array['filter']['passwdclient'] = array('set'		=> false,
+					 'chk'		=> 2,
+					 'minlen'	=> 4,
+					 'maxlen'	=> 64,
+					 'regexp'	=> '/^[a-zA-Z0-9-\._~\!\$&\'\(\)\*\+,;=:%]+$/');
+$array['filter']['profileclient'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 64);
 $array['filter']['enablehint'] = array('bool' => true);
 $array['filter']['enablevoicemail'] = array('bool' => true);
 $array['filter']['enablexfer'] = array('bool' => true);

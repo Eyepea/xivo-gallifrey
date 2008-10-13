@@ -104,11 +104,22 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		return($this->_mk_provisioning_id($protocol));
 	}
 
+	function loginclient_exists($loginclient,$id=null)
+	{
+		if(xivo_haslen($loginclient) === false)
+			return(null);
+		else if(($primary = $this->get_primary(array('loginclient' => $loginclient))) === false
+		|| (empty($id) === false
+		   && xivo_ulongint($primary) === xivo_ulongint($id)) === true)
+			return(false);
+
+		return(true);
+	}
+
 	function add($arr,$id=0)
 	{
-		if(is_array($arr) === false)
-			return(false);
-		else if(isset($arr['protocol']) === false
+		if(is_array($arr) === false
+		|| isset($arr['protocol']) === false
 		|| ($arr['provisioningid'] = $this->_mk_provisioning_id($arr['protocol'])) === false
 		|| $this->_sre->chk_protocol($arr['protocol']) === false)
 			return(false);
@@ -124,6 +135,10 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 			   && $arr['name'] === $arr['destunc']) === true)
 				return(false);
 		}
+
+		if(isset($arr['loginclient']) === true
+		&& $this->loginclient_exists($arr['loginclient'],$id) === true)
+			return(false);
 
 		return(parent::add($arr,$id));
 	}
@@ -144,6 +159,10 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 			   && $arr['name'] === $arr['destunc']) === true)
 				return(false);
 		}
+
+		if(isset($arr['loginclient']) === true
+		&& $this->loginclient_exists($arr['loginclient'],$id) === true)
+			return(false);
 
 		if(isset($arr['protocol']) === true)
 		{

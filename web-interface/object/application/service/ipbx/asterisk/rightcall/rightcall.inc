@@ -768,11 +768,11 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 		else if(xivo_issa('rightcall',$this->_info) === false)
 			return(false);
 
-		$rightcallmember_where = array();
-		$rightcallmember_where['type'] = $type;
-		$rightcallmember_where['rightcallid'] = $this->_info['rightcall']['id'];
+		$where = array();
+		$where['type'] = $type;
+		$where['rightcallid'] = $this->_info['rightcall']['id'];
 
-		$r = $this->_rightcallmember->delete_where($rightcallmember_where);
+		$r = $this->_rightcallmember->delete_where($where);
 
 		if($this->_status === 'delete')
 			$this->_return[$key] = $r;
@@ -787,9 +787,9 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 		else if(xivo_issa('rightcall',$this->_info) === false)
 			return(false);
 
-		$rightcallexten_where = array('rightcallid' => $this->_info['rightcall']['id']);
+		$where = array('rightcallid' => $this->_info['rightcall']['id']);
 
-		$r = $this->_rightcallexten->delete_where($rightcallexten_where);
+		$r = $this->_rightcallexten->delete_where($where);
 
 		if($this->_status === 'delete')
 			$this->_return['rightcallexten'] = $r;

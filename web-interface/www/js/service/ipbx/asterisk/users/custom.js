@@ -12,6 +12,9 @@ xivo_ast_user_protocol_elt['custom'] = {
 	'protocol-accountcode': {it: false},
 
 	'ufeatures-enableclient': {it: false},
+	'ufeatures-loginclient': {it: false},
+	'ufeatures-passwdclient': {it: false},
+	'ufeatures-profileclient': {it: false},
 	'ufeatures-enablehint': {it: false},
 	'ufeatures-enablevoicemail': {it: false},
 	'ufeatures-enablexfer': {it: false},
@@ -25,6 +28,7 @@ xivo_ast_user_protocol_elt['custom'] = {
 	'ufeatures-destbusy': {it: false},
 	'ufeatures-enableunc': {it: false},
 	'ufeatures-destunc': {it: false},
+	'ufeatures-agentid': {it: false},
 
 	'ufeatures-voicemailid': {it: false},
 

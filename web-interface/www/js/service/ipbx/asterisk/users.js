@@ -63,6 +63,9 @@ var xivo_ast_users_elt_default = {
 	'ufeatures-simultcalls': {it: true},
 	'ufeatures-musiconhold': {it: true},
 	'ufeatures-enableclient': {it: true},
+	'ufeatures-loginclient': {it: true},
+	'ufeatures-passwdclient': {it: true},
+	'ufeatures-profileclient': {it: true},
 	'ufeatures-enablehint': {it: true},
 	'ufeatures-enablevoicemail': {it: true},
 	'ufeatures-enablexfer': {it: true},
@@ -77,6 +80,7 @@ var xivo_ast_users_elt_default = {
 	'ufeatures-enableunc': {it: true},
 	'ufeatures-destunc': {it: true},
 	'ufeatures-bsfilter': {it: true},
+	'ufeatures-agentid': {it: true},
 	'ufeatures-outcallerid-type': {it: true},
 	'ufeatures-outcallerid-custom': {it: true},
 	'ufeatures-description': {it: true},
@@ -106,6 +110,21 @@ var xivo_ast_users_elt_default = {
 
 	'rightcalllist': {it: true},
 	'rightcall': {it: true}};
+
+var xivo_ast_fm_user_enableclient = {
+	'it-ufeatures-loginclient':
+		{property: [{readOnly: true, className: 'it-readonly'},
+			    {readOnly: false, className: 'it-enabled'}],
+		 link: 'it-ufeatures-passwdclient'},
+	'it-ufeatures-passwdclient':
+		{property: [{readOnly: true, className: 'it-readonly'},
+			    {readOnly: false, className: 'it-enabled'}],
+		 link: 'it-ufeatures-profileclient'},
+	'it-ufeatures-profileclient':
+		{property: [{disabled: true, className: 'it-readonly'},
+			    {disabled: false, className: 'it-enabled'}]}};
+
+xivo_attrib_register('ast_fm_user_enableclient',xivo_ast_fm_user_enableclient);
 
 var xivo_ast_fm_user_enablerna = {
 	'it-ufeatures-destrna':
@@ -631,6 +650,11 @@ function xivo_ast_user_onload()
 		xivo_chg_attrib('ast_fm_user_outcallerid',
 				'fd-ufeatures-outcallerid-custom',
 				Number(outcallerid_type.value === 'custom'));
+
+	if((enableclient = xivo_eid('it-ufeatures-enableclient')) !== false)
+		xivo_chg_attrib('ast_fm_user_enableclient',
+				'it-ufeatures-loginclient',
+				Number(enableclient.checked));
 
 	if((enablerna = xivo_eid('it-ufeatures-enablerna')) !== false)
 		xivo_chg_attrib('ast_fm_user_enablerna',
