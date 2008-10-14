@@ -531,6 +531,14 @@ class XivoCTICommand(BaseCommand):
         def set_agentlist(self, astid, urllist_agents):
                 self.weblist['agents'][astid] = cti_agentlist.AgentList(urllist_agents)
                 self.weblist['agents'][astid].setcommandclass(self)
+                for v, vv in self.weblist['agents'][astid].agentlist:
+                        agent = vv['number']
+                        if agent not in self.agents_list[astid]:
+                                self.agents_list[astid][agent] = {}
+                                self.agents_list[astid][agent]['status'] = 'AGENT_LOGGEDOFF'
+                                self.agents_list[astid][agent]['phonenum'] = ''
+                                self.agents_list[astid][agent]['name'] = vv['firstname'] + ' ' + vv['lastname']
+                                self.agents_list[astid][agent]['loggedintime'] = '0'
                 return
         
         def set_queuelist(self, astid, urllist_queues):
