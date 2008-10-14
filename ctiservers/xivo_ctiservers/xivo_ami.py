@@ -249,6 +249,19 @@ class AMIClass:
                 except Exception, exc:
                         return False
 
+        def chanspy(self, phoneproto, phonesrc, channel, locext):
+                try:
+                        ret = self.sendcommand('Originate', [('Channel', phoneproto + '/' + phonesrc),
+                                                             ('Context', locext),
+                                                             ('Priority', '1'),
+                                                             ('Application', 'ChanSpy'),
+                                                             ('Data', channel),
+                                                             ('Async', 'true')])
+                        return ret
+                except self.AMIError, exc:
+                        return False
+                except Exception, exc:
+                        return False
 
         # \brief Originates a call from a phone towards another.
         def originate(self, phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext):
@@ -421,10 +434,11 @@ class AMIClass:
                 return ret
         
         # \brief Stops monitoring a channel
-        def stopmonitor(self, channel):
+        def stopmonitor(self, channel, actionid):
                 try:
                         ret = self.sendcommand('StopMonitor',
-                                               [('Channel', channel)])
+                                               [('Channel', channel),
+                                                ('ActionId', actionid)])
                 except self.AMIError, exc:
                         ret = False
                 except Exception, exc:

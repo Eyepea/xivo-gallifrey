@@ -211,7 +211,7 @@ class PhoneList:
                                         newphlist[idx] = {'number' : jr.get('number'),
                                                           'tech' : jr.get('protocol'),
                                                           'context': jr.get('context'),
-                                                          'enable_hint': jr.get('enableautomon'),
+                                                          'enable_hint': jr.get('enablehint'),
                                                           'initialized': jr.get('initialized'),
                                                           'phoneid': jr.get('name')
                                                           }

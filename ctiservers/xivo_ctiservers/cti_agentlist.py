@@ -39,9 +39,7 @@ class AgentList(AnyList):
                 newagentlist = {}
                 for url, urllist in self.requested_list.iteritems():
                         gl = urllist.getlist(1, 4, True)
-                        if gl == 1:
-                                newagentlist.update(self.commandclass.getagentslist(urllist.list))
-                        elif gl == 2:
+                        if gl == 2:
                                 newagentlist.update(self.commandclass.getagentslist_json(urllist.jsonreply))
                 for a, b in newagentlist.iteritems():
                         if a not in oldagentlist:

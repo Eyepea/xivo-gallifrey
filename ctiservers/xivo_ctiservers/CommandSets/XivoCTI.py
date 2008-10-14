@@ -560,31 +560,19 @@ class XivoCTICommand(BaseCommand):
                 self.ulist_ng.setandupdate(urls)
                 return
 
-        def getagentslist(self, dlist):
-                lalist = {}
-                for agentname, d in dlist.iteritems():
-                        if d[3] == '0':
-                                lalist[agentname] = {'agentname' : d[0],
-                                                     'number' : d[1],
-                                                     'password' : d[2],
-                                                     
-                                                     'queues' : {},
-                                                     'stats' : {}}
-                return lalist
-        
         def getagentslist_json(self, dlist):
                 lalist = {}
                 for aitem in dlist:
                         if not aitem.get('commented'):
-                                agentname = aitem.get('number')
-                                lalist[agentname] = {'agentname' : aitem.get('number'),
-                                                     'number' :    aitem.get('number'),
-                                                     'password' :  aitem.get('passwd'),
-                                                     'context' :   aitem.get('context'),
-                                                     'id' :        aitem.get('id'),
-                                                     
-                                                     'queues' : {},
-                                                     'stats' : {}}
+                                aid = aitem.get('id')
+                                lalist[aid] = {'firstname' : aitem.get('firstname'),
+                                               'lastname' :  aitem.get('lastname'),
+                                               'number' :    aitem.get('number'),
+                                               'password' :  aitem.get('passwd'),
+                                               'context' :   aitem.get('context'),
+                                               
+                                               'queues' : {},
+                                               'stats' : {}}
                 return lalist
 
         def getqueueslist(self, dlist):
@@ -642,11 +630,11 @@ class XivoCTICommand(BaseCommand):
                 lulist = {}
                 for uitem in dlist:
                         if uitem.get('enableclient'):
-                                uid = '%s@%s' % (uitem.get('userid'), uitem.get('context'))
+                                uid = '%s@%s' % (uitem.get('loginclient'), uitem.get('context'))
                                 lulist[uid] = {'user' : uitem.get('loginclient'),
                                                'company' : uitem.get('context'),
                                                'password' : uitem.get('passwdclient'),
-                                               'capaids' : '', # XXX
+                                               'capaids' : uitem.get('profileclient'),
                                                'fullname' : uitem.get('fullname'),
                                                'astid' : 'xivo', # XXX
                                                'techlist' : '.'.join([uitem.get('protocol'), uitem.get('context'),
@@ -2243,7 +2231,7 @@ class XivoCTICommand(BaseCommand):
                                 if astid is not None and anum is not None:
                                         for queuename in queuenames:
                                                 self.amilist.execute(astid, 'queuepause', queuename, 'Agent/%s' % anum, 'false')
-                elif subcommand in ['login', 'logout', 'record', 'stoprecord', 'getfile', 'listrecords']:
+                elif subcommand in ['login', 'logout', 'record', 'stoprecord', 'getfile', 'getfilelist', 'listen']:
                         if len(commandargs) > 2:
                                 astid = commandargs[1]
                                 anum = commandargs[2]
@@ -2261,26 +2249,53 @@ class XivoCTICommand(BaseCommand):
                                 self.__logout_agent__(uinfo)
                         elif subcommand == 'record':
                                 datestring = time.strftime('%Y%m%d%H%M%S', time.localtime())
-                                channel = 'SIP/101-08211ae0'
-                                actionid = ''.join(random.sample(__alphanums__, 10))
-                                self.amilist.execute(astid, 'monitor', channel, 'cti-%s-%s' % (datestring, anum), actionid)
+                                for ui in self.ulist_ng.userlist.itervalues():
+                                        if 'agentnum' in ui and ui.get('agentnum') == anum and ui.get('astid') == astid:
+                                                techref = ui.get('techlist').split(',')[0]
+                                                for v, vv in self.uniqueids[astid].iteritems():
+                                                        if 'channel' in vv:
+                                                                if techref == self.__phoneid_from_channel__(astid, vv['channel']):
+                                                                        actionid = ''.join(random.sample(__alphanums__, 10))
+                                                                        self.amilist.execute(astid, 'monitor', vv['channel'], 'cti-%s-%s' % (datestring, anum), actionid)
+                                                                        log.info('started monitor on %s %s' % (astid, vv['channel']))
                         elif subcommand == 'stoprecord':
-                                channel = 'SIP/101-08211ae0'
-                                self.amilist.execute(astid, 'stopmonitor', channel)
+                                for ui in self.ulist_ng.userlist.itervalues():
+                                        if 'agentnum' in ui and ui.get('agentnum') == anum and ui.get('astid') == astid:
+                                                techref = ui.get('techlist').split(',')[0]
+                                                for v, vv in self.uniqueids[astid].iteritems():
+                                                        if 'channel' in vv:
+                                                                if techref == self.__phoneid_from_channel__(astid, vv['channel']):
+                                                                        actionid = ''.join(random.sample(__alphanums__, 10))
+                                                                        self.amilist.execute(astid, 'stopmonitor', vv['channel'], actionid)
+                                                                        log.info('stopped monitor on %s %s' % (astid, vv['channel']))
                         elif subcommand == 'listen':
-                                pass
+                                for ui in self.ulist_ng.userlist.itervalues():
+                                        if 'agentnum' in ui and ui.get('agentnum') == anum and ui.get('astid') == astid:
+                                                techref = ui.get('techlist').split(',')[0]
+                                                for v, vv in self.uniqueids[astid].iteritems():
+                                                        if 'channel' in vv:
+                                                                if techref == self.__phoneid_from_channel__(astid, vv['channel']):
+                                                                        actionid = ''.join(random.sample(__alphanums__, 10))
+                                                                        self.amilist.execute(astid, 'chanspy', 'Local',
+                                                                                             userinfo.get('phonenum'), vv['channel'], 'context')
                         elif subcommand == 'getfile':
                                 tosend = { 'class' : 'faxsend',
                                            'direction' : 'client',
                                            'tdirection' : 'download',
                                            'fileid' : ''.join(random.sample(__alphanums__, 10)) }
                                 return cjson.encode(tosend)
-                        elif subcommand == 'listrecords':
+                        elif subcommand == 'getfilelist':
                                 MONITORDIR = '/var/spool/asterisk/monitor'
                                 lst = os.listdir(MONITORDIR)
+                                monitoredfiles = []
                                 for monitoredfile in lst:
                                         if monitoredfile.startswith('cti-') and monitoredfile.endswith('%s.wav' % anum):
-                                                print monitoredfile
+                                                monitoredfiles.append(monitoredfile)
+                                tosend = { 'class' : 'filelist',
+                                           'direction' : 'client',
+                                           'filelist' : monitoredfiles }
+                                return cjson.encode(tosend)
+                        
                 elif subcommand == 'lists':
                         pass
                 else:
