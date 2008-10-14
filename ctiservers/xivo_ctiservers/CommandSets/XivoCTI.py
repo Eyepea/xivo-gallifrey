@@ -1197,6 +1197,14 @@ class XivoCTICommand(BaseCommand):
                         for uinfo in self.ulist_ng.userlist.itervalues():
                                 if uinfo.get('agentnum') == ag_id:
                                         self.__update_availstate__(uinfo, 'postcall')
+                                        zz = self.presence.actions('postcall')
+                                        for z in zz:
+                                                anum = self.__agentnum__(uinfo)
+                                                params = z.split('-')
+                                                if params[0] == 'queueadd':
+                                                        self.amilist.execute(astid, params[0], params[1], 'Agent/%s' % anum, params[2])
+                                                elif params[0] == 'queueremove':
+                                                        self.amilist.execute(astid, params[0], params[1], 'Agent/%s' % anum)
                         msg = self.__build_agupdate__(['agentunlink', astid, chan2])
                         self.__send_msg_to_cti_clients__(msg)
                 else:
@@ -1206,9 +1214,25 @@ class XivoCTICommand(BaseCommand):
                                 if uinfo.get('astid') == astid:
                                         if uinfo.get('phonenum') == event.get('CallerID1'):
                                                 self.__update_availstate__(uinfo, 'postcall')
+                                                zz = self.presence.actions('postcall')
+                                                for z in zz:
+                                                        anum = self.__agentnum__(uinfo)
+                                                        params = z.split('-')
+                                                        if params[0] == 'queueadd':
+                                                                self.amilist.execute(astid, params[0], params[1], 'Agent/%s' % anum, params[2])
+                                                        elif params[0] == 'queueremove':
+                                                                self.amilist.execute(astid, params[0], params[1], 'Agent/%s' % anum)
                                                 ag1 = self.__agentnum__(uinfo)
                                         if uinfo.get('phonenum') == event.get('CallerID2'):
                                                 self.__update_availstate__(uinfo, 'postcall')
+                                                zz = self.presence.actions('postcall')
+                                                for z in zz:
+                                                        anum = self.__agentnum__(uinfo)
+                                                        params = z.split('-')
+                                                        if params[0] == 'queueadd':
+                                                                self.amilist.execute(astid, params[0], params[1], 'Agent/%s' % anum, params[2])
+                                                        elif params[0] == 'queueremove':
+                                                                self.amilist.execute(astid, params[0], params[1], 'Agent/%s' % anum)
                                                 ag2 = self.__agentnum__(uinfo)
                         if ag1 is not None:
                                 msg = self.__build_agupdate__(['phoneunlink', astid, 'Agent/%s' % ag1])
