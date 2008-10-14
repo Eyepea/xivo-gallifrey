@@ -69,7 +69,7 @@ define('XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_LENGTH','{1,50}');
 define('XIVO_SRE_IPBX_AST_REGEXP_AIDIO_FILE_EXTENSION','wav|WAV|wav49|ogg|ul|ulaw|um|pcm|al|alaw|au|vox|sln|raw');
 
 define('XIVO_SRE_IPBX_AST_REGEXP_CONTEXT','(?!(?:macro|voicemenu|xivo)-)[a-z0-9_-]{1,39}');
-define('XIVO_SRE_IPBX_AST_REGEXP_CALLERID','(?:"[^\<\>]+"|[^\<\>]+)'.
+define('XIVO_SRE_IPBX_AST_REGEXP_CALLERID','(?:"[^"\<\>]+"|[^"\<\>]+)'.
 					   '(?: ?\<[0-9\*#]{1,40}\>)?');
 define('XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN','(?:\$\{[\(\)a-zA-Z0-9_\-\$\{\}\:]+\})');
 define('XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN_EXTEN','(?:[0-9\*#]{1,40}'.

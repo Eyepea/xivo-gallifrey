@@ -327,7 +327,6 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 		echo	$form->select(array('desc'	=> $this->bbf('fm_userfeatures_profileclient'),
 					    'name'	=> 'ufeatures[profileclient]',
 					    'labelid'	=> 'ufeatures-profileclient',
-					    'empty'	=> true,
 					    'default'	=> $element['ufeatures']['profileclient']['default'],
 					    'value'	=> $info['ufeatures']['profileclient']),
 				      $profileclient_list);

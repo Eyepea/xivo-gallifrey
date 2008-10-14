@@ -72,7 +72,8 @@ $array['element']['passwdclient'] = array();
 $array['element']['passwdclient']['default'] = '';
 
 $array['element']['profileclient'] = array();
-$array['element']['profileclient']['default'] = '';
+$array['element']['profileclient']['default'] = 'client';
+$array['element']['profileclient']['setdef'] = true;
 
 $array['element']['enablehint'] = array();
 $array['element']['enablehint']['value'] = array(0,1);
@@ -194,7 +195,7 @@ $array['filter']['passwdclient'] = array('set'		=> false,
 					 'minlen'	=> 4,
 					 'maxlen'	=> 64,
 					 'regexp'	=> '/^[a-zA-Z0-9-\._~\!\$&\'\(\)\*\+,;=:%]+$/');
-$array['filter']['profileclient'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 64);
+$array['filter']['profileclient'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/','maxlen' => 64);
 $array['filter']['enablehint'] = array('bool' => true);
 $array['filter']['enablevoicemail'] = array('bool' => true);
 $array['filter']['enablexfer'] = array('bool' => true);

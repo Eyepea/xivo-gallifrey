@@ -383,16 +383,19 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			return($this->_profileclientlist);
 		else if(($list = $this->_service->discuss('xivo[ctiprofilelist,get]',true)) === false
 		|| is_array($list) === false
-		|| ($nb = count($list)) === 0)
+		|| isset($list[0]) === false
+		|| xivo::load_class('xivo_json') === false
+		|| ($list = xivo_json::decode($list[0],true)) === false
+		|| is_array($list) === false
+		|| empty($list) === true)
 			return(false);
 
 		$this->_profileclientlist = array();
 
-		for($i = 0;$i < $nb;$i++)
+		foreach($list as $key => $val)
 		{
-			if(preg_match('/^[a-z0-9_-]+$/i',$list[$i]) === 1
-			&& isset($this->_profileclientlist[$list[$i]]) === false)
-				$this->_profileclientlist[$list[$i]] = $list[$i];
+			if(preg_match('/^[a-z0-9_-]+$/',$key) === 1)
+				$this->_profileclientlist[$key] = $val;
 		}
 
 		return($this->_profileclientlist);
