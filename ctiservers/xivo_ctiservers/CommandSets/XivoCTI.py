@@ -370,7 +370,7 @@ class XivoCTICommand(BaseCommand):
                                 if futurestate in self.presence.getstates():
                                         state = futurestate
 
-                        if state in self.presence.getstates():
+                        if state in self.presence.getstates() and state not in ['onlineoutgoing', 'onlineincoming']:
                                 userinfo['state'] = state
                         else:
                                 log.warning('(user %s) : state <%s> is not an allowed one => <%s>'

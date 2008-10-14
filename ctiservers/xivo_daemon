@@ -485,6 +485,7 @@ def update_readconf():
         lconf = cti_config.Config(XIVOCONFFILE)
 
         commandclass.set_cticonfig(lconf)
+        commandclass.set_options(cconf.read_section('commandset', commandset))
         return
 
 
@@ -614,8 +615,6 @@ while True: # loops over the reloads
         if 'ctilog' in xivoconf_general:
                 ctilog = xivoconf_general['ctilog']
 
-        xivoconf_commandset = cconf.read_section('commandset', commandset)
-
         queued_threads_pipe = os.pipe()
         amilist = xivo_ami.AMIList()
         if commandset in xivo_commandsets.CommandClasses:
@@ -634,7 +633,6 @@ while True: # loops over the reloads
         commandclass.set_userlist_urls(userlists)
         commandclass.set_contextlist(directorylist)
         commandclass.set_configs(configs)
-        commandclass.set_options(xivoconf_commandset)
         commandclass.set_presence(cconf.read_section('presence', config_presence))
         commandclass.set_ctilog(ctilog)
         
