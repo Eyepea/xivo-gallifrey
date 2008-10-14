@@ -1193,6 +1193,10 @@ class XivoCTICommand(BaseCommand):
                 if 'context' in self.uniqueids[astid][uid1]:
                         self.__sheet_alert__('unlink', astid, self.uniqueids[astid][uid1]['context'], event, {})
                 if chan2.startswith('Agent/'):
+                        ag_id = self.__find_agentid_by_agentnum__(astid, chan2[6:])
+                        for uinfo in self.ulist_ng.userlist.itervalues():
+                                if uinfo.get('agentnum') == ag_id:
+                                        self.__update_availstate__(uinfo, 'postcall')
                         msg = self.__build_agupdate__(['agentunlink', astid, chan2])
                         self.__send_msg_to_cti_clients__(msg)
                 else:
@@ -1298,7 +1302,9 @@ class XivoCTICommand(BaseCommand):
                                 log.warning('AMI %s Response=Error : (%s) <%s>' % (astid, actionid, msg))
                 elif msg in ['No such channel',
                              'No such agent',
+                             'Member not dynamic',
                              'Unable to add interface: Already there',
+                             'Unable to remove interface from queue: No such queue',
                              'Unable to remove interface: Not there'] :
                         log.warning('AMI %s Response=Error : (tracked) %s' % (astid, event))
                 else:
