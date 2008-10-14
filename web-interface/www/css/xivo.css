@@ -58,6 +58,7 @@ pre {text-align: left;}
 .fm-field {padding: 3px;}
 .fm-field {text-align: left;}
 .fm-field input {padding: 0px 2px;}
+.fm-field select {max-width: 350px;}
 .fm-field textarea, .fm-field select {padding-left: 2px;}
 .fm-field .it-mblur {border: 1px solid #7f99b1;}
 .fm-field .it-mfocus {border: 1px solid #ff9d03;}
