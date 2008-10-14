@@ -534,7 +534,10 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def getprofilelist(self):
-                return self.capas.keys()
+                ret = {}
+                for capaid in self.capas.keys():
+                        ret[capaid] = self.capas[capaid].appliname
+                return cjson.encode(ret)
         
         def updates(self):
                 u_update = self.ulist_ng.update()
