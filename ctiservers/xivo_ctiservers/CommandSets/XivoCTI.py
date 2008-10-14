@@ -2173,6 +2173,17 @@ class XivoCTICommand(BaseCommand):
                 else:
                         return None
 
+        def __find_channel_byagent__(self, astid, anum):
+                chans = []
+                for ui in self.ulist_ng.userlist.itervalues():
+                        if 'agentnum' in ui and ui.get('agentnum') == anum and ui.get('astid') == astid:
+                                techref = ui.get('techlist').split(',')[0]
+                                for v, vv in self.uniqueids[astid].iteritems():
+                                        if 'channel' in vv:
+                                                if techref == self.__phoneid_from_channel__(astid, vv['channel']):
+                                                        chans.append(vv['channel'])
+                return chans
+        
         def __agent__(self, userinfo, commandargs):
                 myastid = None
                 myagentnum = None
@@ -2252,35 +2263,27 @@ class XivoCTICommand(BaseCommand):
                                 self.__logout_agent__(uinfo)
                         elif subcommand == 'record':
                                 datestring = time.strftime('%Y%m%d%H%M%S', time.localtime())
-                                for ui in self.ulist_ng.userlist.itervalues():
-                                        if 'agentnum' in ui and ui.get('agentnum') == anum and ui.get('astid') == astid:
-                                                techref = ui.get('techlist').split(',')[0]
-                                                for v, vv in self.uniqueids[astid].iteritems():
-                                                        if 'channel' in vv:
-                                                                if techref == self.__phoneid_from_channel__(astid, vv['channel']):
-                                                                        actionid = ''.join(random.sample(__alphanums__, 10))
-                                                                        self.amilist.execute(astid, 'monitor', vv['channel'], 'cti-%s-%s' % (datestring, anum), actionid)
-                                                                        log.info('started monitor on %s %s' % (astid, vv['channel']))
+                                channels = self.__find_channel_byagent__(astid, anum)
+                                for channel in channels:
+                                        actionid = ''.join(random.sample(__alphanums__, 10))
+                                        self.amilist.execute(astid, 'monitor', channel, 'cti-%s-%s' % (datestring, anum), actionid)
+                                        log.info('started monitor on %s %s (agent %s)' % (astid, channel, anum))
+
                         elif subcommand == 'stoprecord':
-                                for ui in self.ulist_ng.userlist.itervalues():
-                                        if 'agentnum' in ui and ui.get('agentnum') == anum and ui.get('astid') == astid:
-                                                techref = ui.get('techlist').split(',')[0]
-                                                for v, vv in self.uniqueids[astid].iteritems():
-                                                        if 'channel' in vv:
-                                                                if techref == self.__phoneid_from_channel__(astid, vv['channel']):
-                                                                        actionid = ''.join(random.sample(__alphanums__, 10))
-                                                                        self.amilist.execute(astid, 'stopmonitor', vv['channel'], actionid)
-                                                                        log.info('stopped monitor on %s %s' % (astid, vv['channel']))
+                                channels = self.__find_channel_byagent__(astid, anum)
+                                for channel in channels:
+                                        actionid = ''.join(random.sample(__alphanums__, 10))
+                                        self.amilist.execute(astid, 'stopmonitor', channel, actionid)
+                                        log.info('stopped monitor on %s %s (agent %s)' % (astid, channel, anum))
+
                         elif subcommand == 'listen':
-                                for ui in self.ulist_ng.userlist.itervalues():
-                                        if 'agentnum' in ui and ui.get('agentnum') == anum and ui.get('astid') == astid:
-                                                techref = ui.get('techlist').split(',')[0]
-                                                for v, vv in self.uniqueids[astid].iteritems():
-                                                        if 'channel' in vv:
-                                                                if techref == self.__phoneid_from_channel__(astid, vv['channel']):
-                                                                        actionid = ''.join(random.sample(__alphanums__, 10))
-                                                                        self.amilist.execute(astid, 'chanspy', 'Local',
-                                                                                             userinfo.get('phonenum'), vv['channel'], 'context')
+                                channels = self.__find_channel_byagent__(astid, anum)
+                                for channel in channels:
+                                        actionid = ''.join(random.sample(__alphanums__, 10))
+                                        self.amilist.execute(astid, 'chanspy', 'Local',
+                                                             userinfo.get('phonenum'), channel, userinfo.get('context'))
+                                        log.info('started listening on %s %s (agent %s)' % (astid, channel, anum))
+
                         elif subcommand == 'getfile':
                                 tosend = { 'class' : 'faxsend',
                                            'direction' : 'client',
