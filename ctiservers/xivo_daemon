@@ -577,7 +577,7 @@ while True: # loops over the reloads
         contextlist = []
         userlists = []
         config_presence = None
-        cticdr = None
+        ctilog = None
         
         userinfo_by_requester = {}
         userinfo_current = {}
@@ -611,8 +611,8 @@ while True: # loops over the reloads
                 userlists = xivoconf_general['userlists'].split(',')
         if 'presence' in xivoconf_general:
                 config_presence = xivoconf_general['presence']
-        if 'cticdr' in xivoconf_general:
-                cticdr = xivoconf_general['cticdr']
+        if 'ctilog' in xivoconf_general:
+                ctilog = xivoconf_general['ctilog']
 
         xivoconf_commandset = cconf.read_section('commandset', commandset)
 
@@ -636,7 +636,7 @@ while True: # loops over the reloads
         commandclass.set_configs(configs)
         commandclass.set_options(xivoconf_commandset)
         commandclass.set_presence(cconf.read_section('presence', config_presence))
-        commandclass.set_cticdr(cticdr)
+        commandclass.set_ctilog(ctilog)
         
         for ctx in contextlist:
                 xivoconf_context = cconf.read_section('context', ctx)

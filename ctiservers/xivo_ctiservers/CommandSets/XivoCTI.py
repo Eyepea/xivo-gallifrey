@@ -67,6 +67,7 @@ __alphanums__ = string.uppercase + string.lowercase + string.digits
 HISTSEPAR = ';'
 DEFAULTCONTEXT = 'default'
 AMI_ORIGINATE = 'originate'
+MONITORDIR = '/var/spool/asterisk/monitor'
 
 class XivoCTICommand(BaseCommand):
 
@@ -109,6 +110,7 @@ class XivoCTICommand(BaseCommand):
                 self.uniqueids = {}
                 self.transfers_buf = {}
                 self.transfers_ref = {}
+                self.filestodownload = {}
                 self.faxes = {}
                 self.queued_threads_pipe = queued_threads_pipe
                 self.disconnlist = []
@@ -175,12 +177,19 @@ class XivoCTICommand(BaseCommand):
                         tosend = { 'class' : 'fileref',
                                    'direction' : 'client',
                                    'fileid' : fileid }
+                        connid.sendall(cjson.encode(tosend) + '\n')
                 else:
-                        tosend = { 'class' : 'fileref',
-                                   'direction' : 'client',
-                                   'filename' : commandstruct.get('filename'),
-                                   'payload' : 1000 * ''.join(random.sample(__alphanums__, 30)) }
-                connid.sendall(cjson.encode(tosend) + '\n')
+                        if fileid in self.filestodownload:
+                                fname = self.filestodownload[fileid]
+                                data = urllib.urlopen('file:%s' % fname).read()
+                                tosend = { 'class' : 'fileref',
+                                           'direction' : 'client',
+                                           'filename' : fname,
+                                           'payload' : base64.b64encode(data) }
+                                connid.sendall(cjson.encode(tosend) + '\n')
+                                del self.filestodownload[fileid]
+                        else:
+                                log.warning('fileid %s does not exist' % fileid)
                 return
         
         def transfer_endbuf(self, req):
@@ -274,17 +283,17 @@ class XivoCTICommand(BaseCommand):
                         if len(missings) > 0:
                                 log.warning('missing args in loginparams : %s' % ','.join(missings))
                                 return 'missing:%s' % ','.join(missings)
-
+                        
                         if uinfo is not None:
                                 userinfo = uinfo
                         # settings (in agent mode for instance)
                         # userinfo['agent']['phonenum'] = phonenum
-
+                        
                         state = loginparams.get('state')
                         capaid = loginparams.get('capaid')
                         subscribe = loginparams.get('subscribe')
                         lastconnwins = (loginparams.get('lastconnwins') == 'true')
-
+                        
                         iserr = self.__check_capa_connection__(userinfo, capaid)
                         if iserr is not None:
                                 return iserr
@@ -306,7 +315,7 @@ class XivoCTICommand(BaseCommand):
                 userinfo['logouttime-ascii-last'] = time.asctime()
                 self.__logout_agent__(userinfo)
                 self.__disconnect_user__(userinfo)
-                self.__fill_user_cticdr__(userinfo, 'cti_logout')
+                self.__fill_user_ctilog__(userinfo, 'cti_logout')
                 return
 
 
@@ -433,7 +442,7 @@ class XivoCTICommand(BaseCommand):
                         if connid in self.timeout_login:
                                 self.timeout_login[connid].cancel()
                                 del self.timeout_login[connid]
-                        self.__fill_user_cticdr__(userinfo, 'cti_login', '%s:%d' % connid.getpeername())
+                        self.__fill_user_ctilog__(userinfo, 'cti_login', '%s:%d' % connid.getpeername())
                         # we could also log : client's OS & version
                 connid.sendall(repstr + '\n')
 
@@ -451,38 +460,38 @@ class XivoCTICommand(BaseCommand):
                                 self.sheet_actions[where] = lconf.read_section('sheet_action', sheetaction)
                 return
 
-        def set_cticdr(self, cticdr):
-                if cticdr is not None:
-                        self.cticdr_conn = anysql.connect_by_uri(cticdr)
-                        self.cticdr_cursor = self.cticdr_conn.cursor()
-                        self.__fill_cticdr__('daemon start', __revision__)
+        def set_ctilog(self, ctilog):
+                if ctilog is not None:
+                        self.ctilog_conn = anysql.connect_by_uri(ctilog)
+                        self.ctilog_cursor = self.ctilog_conn.cursor()
+                        self.__fill_ctilog__('daemon start', __revision__)
                 else:
-                        self.cticdr_conn = None
-                        self.cticdr_cursor = None
+                        self.ctilog_conn = None
+                        self.ctilog_cursor = None
                 return
         
-        def __fill_cticdr__(self, what, options = ''):
-                if self.cticdr_conn is not None and self.cticdr_cursor is not None:
+        def __fill_ctilog__(self, what, options = ''):
+                if self.ctilog_conn is not None and self.ctilog_cursor is not None:
                         try:
                                 datetime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-                                self.cticdr_cursor.query("INSERT INTO cticdr VALUES"
+                                self.ctilog_cursor.query("INSERT INTO ctilog VALUES"
                                                          " ('%s', '', '', '', '%s', '%s')"
                                                          % (datetime, what, options))
                         except Exception, exc:
-                                log.error('--- exception --- (__fill_cticdr__) %s' % exc)
-                        self.cticdr_conn.commit()
+                                log.error('--- exception --- (__fill_ctilog__) %s' % exc)
+                        self.ctilog_conn.commit()
                 return
         
-        def __fill_user_cticdr__(self, uinfo, what, options = ''):
-                if self.cticdr_conn is not None and self.cticdr_cursor is not None:
+        def __fill_user_ctilog__(self, uinfo, what, options = ''):
+                if self.ctilog_conn is not None and self.ctilog_cursor is not None:
                         try:
                                 datetime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-                                self.cticdr_cursor.query("INSERT INTO cticdr VALUES"
+                                self.ctilog_cursor.query("INSERT INTO ctilog VALUES"
                                                          " ('%s', '%s', '%s', '%s', '%s', '%s')"
                                                          % (datetime, uinfo.get('user'), uinfo.get('company'), uinfo.get('state'), what, options))
                         except Exception, exc:
-                                log.error('--- exception --- (__fill_user_cticdr__) %s' % exc)
-                        self.cticdr_conn.commit()
+                                log.error('--- exception --- (__fill_user_ctilog__) %s' % exc)
+                        self.ctilog_conn.commit()
                 return
         
         def set_presence(self, config_presence):
@@ -505,11 +514,11 @@ class XivoCTICommand(BaseCommand):
                                 elif prop == 'appliname':
                                         self.capas[name].setappliname(val)
                 return
-
+        
         def set_configs(self, configs):
                 self.configs = configs
                 return
-
+        
         def set_phonelist(self, astid, urllist_phones):
                 if astid not in self.uniqueids:
                         self.uniqueids[astid] = {}
@@ -518,17 +527,17 @@ class XivoCTICommand(BaseCommand):
                 self.weblist['phones'][astid] = xivo_phones.PhoneList(urllist_phones)
                 self.weblist['phones'][astid].setcommandclass(self)
                 return
-
+        
         def set_agentlist(self, astid, urllist_agents):
                 self.weblist['agents'][astid] = cti_agentlist.AgentList(urllist_agents)
                 self.weblist['agents'][astid].setcommandclass(self)
                 return
-
+        
         def set_queuelist(self, astid, urllist_queues):
                 self.weblist['queues'][astid] = cti_queuelist.QueueList(urllist_queues)
                 self.weblist['queues'][astid].setcommandclass(self)
                 return
-
+        
         def set_contextlist(self, ctxlist):
                 self.ctxlist = ctxlist
                 return
@@ -1926,7 +1935,7 @@ class XivoCTICommand(BaseCommand):
 
                                 if dircomm is not None and dircomm == 'xivoserver' and classcomm in self.commnames:
                                         log.info('command attempt %s from %s' % (classcomm, username))
-                                        self.__fill_user_cticdr__(userinfo, 'cticommand:%s' % classcomm)
+                                        self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm)
                                         if classcomm == 'meetme':
                                                 argums = icommand.struct.get('command')
                                                 if self.capas[capaid].match_funcs(ucapa, 'conference'):
@@ -2284,14 +2293,7 @@ class XivoCTICommand(BaseCommand):
                                                              userinfo.get('phonenum'), channel, userinfo.get('context'))
                                         log.info('started listening on %s %s (agent %s)' % (astid, channel, anum))
 
-                        elif subcommand == 'getfile':
-                                tosend = { 'class' : 'faxsend',
-                                           'direction' : 'client',
-                                           'tdirection' : 'download',
-                                           'fileid' : ''.join(random.sample(__alphanums__, 10)) }
-                                return cjson.encode(tosend)
                         elif subcommand == 'getfilelist':
-                                MONITORDIR = '/var/spool/asterisk/monitor'
                                 lst = os.listdir(MONITORDIR)
                                 monitoredfiles = []
                                 for monitoredfile in lst:
@@ -2302,6 +2304,16 @@ class XivoCTICommand(BaseCommand):
                                            'filelist' : monitoredfiles }
                                 return cjson.encode(tosend)
                         
+                        elif subcommand == 'getfile':
+                                filename = '%s/%s' % (MONITORDIR, commandargs[3])
+                                fileid = ''.join(random.sample(__alphanums__, 10))
+                                self.filestodownload[fileid] = filename
+                                tosend = { 'class' : 'faxsend',
+                                           'direction' : 'client',
+                                           'tdirection' : 'download',
+                                           'fileid' : fileid }
+                                return cjson.encode(tosend)
+
                 elif subcommand == 'lists':
                         pass
                 else:
@@ -2324,7 +2336,7 @@ class XivoCTICommand(BaseCommand):
                                 # chan_agent.c:2319 callback_deprecated: See doc/queues-with-callback-members.txt for an example of how to achieve
                                 # chan_agent.c:2320 callback_deprecated: the same functionality using only dialplan logic.
                                 self.amilist.execute(astid, 'setvar', 'AGENTBYCALLERID_%s' % agentphonenum, agentnum)
-                                self.__fill_user_cticdr__(uinfo, 'agent_login')
+                                self.__fill_user_ctilog__(uinfo, 'agent_login')
                 return
 
         def __logout_agent__(self, uinfo):
@@ -2339,7 +2351,7 @@ class XivoCTICommand(BaseCommand):
                                 # del uinfo['agentphonenum']
                         if len(agentnum) > 0:
                                 self.amilist.execute(astid, 'agentlogoff', agentnum)
-                                self.__fill_user_cticdr__(uinfo, 'agent_logout')
+                                self.__fill_user_ctilog__(uinfo, 'agent_logout')
                 return
 
 
