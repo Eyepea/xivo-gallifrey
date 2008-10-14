@@ -193,8 +193,10 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 			return($this->_announce);
 		else if(($sounds = &$this->_service->get_module('sounds')) === false)
 			return(false);
+		else if(($this->_announce = $sounds->get_list('acd','pathnoext')) !== false)
+			asort($this->_announce);
 
-		return(($this->_announce = $sounds->get_list('acd','pathnoext')));
+		return($this->_announce);
 	}
 
 	function get_dialaction_result()

@@ -12,6 +12,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 	var $_rightcall		= false;
 	var $_contextnummember	= false;
 	var $_contextlist	= array();
+	var $_sound		= array();
 
 	function xivo_application_service_asterisk_incall(&$service,&$dso,$param=null,$components=true)
 	{
@@ -81,10 +82,14 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 	function get_sound()
 	{
-		if(($sounds = &$this->_service->get_module('sounds')) === false)
+		if(empty($this->_sound) === false)
+			return($this->_sound);
+		else if(($sounds = &$this->_service->get_module('sounds')) === false)
 			return(false);
+		else if(($this->_sound = $sounds->get_list('playback','pathnoext')) !== false)
+			asort($this->_sound);
 
-		return($sounds->get_list('playback','pathnoext'));
+		return($this->_sound);
 	}
 
 	function get_elements()

@@ -847,7 +847,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if(isset($rs['loginclient']) === false
 		|| xivo_haslen($rs['loginclient']) === false)
+		{
 			$rs['enableclient'] = false;
+			$rs['passwdclient'] = '';
+		}
 
 		if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM
 		|| xivo_haslen($rs['agentid']) === false

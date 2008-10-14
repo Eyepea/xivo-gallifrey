@@ -219,8 +219,10 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 			return($this->_sound);
 		else if(($sounds = &$this->_service->get_module('sounds')) === false)
 			return(false);
+		else if(($this->_sound = $sounds->get_list('playback','pathnoext')) !== false)
+			asort($this->_sound);
 
-		return(($this->_sound = $sounds->get_list('playback','pathnoext')));
+		return($this->_sound);
 	}
 
 	function get_result_for_display()

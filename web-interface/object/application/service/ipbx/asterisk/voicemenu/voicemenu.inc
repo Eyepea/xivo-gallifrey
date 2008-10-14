@@ -169,8 +169,10 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 			return($this->_sound);
 		else if(($sounds = &$this->_service->get_module('sounds')) === false)
 			return(false);
+		else if(($this->_sound = $sounds->get_list('playback',true)) !== false)
+			asort($this->_sound);
 
-		return(($this->_sound = $sounds->get_list('playback',true)));
+		return($this->_sound);
 	}
 
 	function get_elements()

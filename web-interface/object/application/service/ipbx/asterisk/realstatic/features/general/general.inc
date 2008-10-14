@@ -7,7 +7,7 @@ class xivo_application_service_asterisk_realstatic_features_general extends xivo
 	var $_name		= 'generalfeatures';
 	var $_modulename	= 'features';
 	var $_extenumbers	= null;
-	var $_sound		= false;
+	var $_sound		= array();
 	var $_category		= 'general';
 	var $_cat_metric	= 0;
 	var $_filename		= 'features.conf';
@@ -40,12 +40,14 @@ class xivo_application_service_asterisk_realstatic_features_general extends xivo
 
 	function get_sound()
 	{
-		if($this->_sound !== false)
+		if(empty($this->_sound) === false)
 			return($this->_sound);
 		else if(($sounds = &$this->_service->get_module('sounds')) === false)
 			return(false);
+		else if(($this->_sound = $sounds->get_list('features','pathnoext')) !== false)
+			asort($this->_sound);
 
-		return(($this->_sound = $sounds->get_list('features','pathnoext')));
+		return($this->_sound);
 	}
 
 	function get_config_exten()

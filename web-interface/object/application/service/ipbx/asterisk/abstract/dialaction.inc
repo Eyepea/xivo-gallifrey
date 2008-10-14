@@ -5,6 +5,7 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 class xivo_application_service_asterisk_dialaction_abstract extends xivo_application_service_asterisk_abstract
 {
 	var $_dialaction	= false;
+	var $_sound		= array();
 	var $_param		= array('category'	=> '');
 
 	function xivo_application_service_asterisk_dialaction_abstract(&$service,$param=array())
@@ -69,10 +70,14 @@ class xivo_application_service_asterisk_dialaction_abstract extends xivo_applica
 
 	function get_sound()
 	{
-		if(($sounds = &$this->_service->get_module('sounds')) === false)
+		if(empty($this->_sound) === false)
+			return($this->_sound);
+		else if(($sounds = &$this->_service->get_module('sounds')) === false)
 			return(false);
+		else if(($this->_sound = $sounds->get_list('playback','pathnoext')) !== false)
+			asort($this->_sound);
 
-		return($sounds->get_list('playback','pathnoext'));
+		return($this->_sound);
 	}
 
 	function get_element()
