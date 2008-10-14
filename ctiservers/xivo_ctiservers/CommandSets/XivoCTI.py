@@ -2336,6 +2336,11 @@ class XivoCTICommand(BaseCommand):
                                         actionid = ''.join(random.sample(__alphanums__, 10))
                                         self.amilist.execute(astid, 'monitor', channel, 'cti-%s-%s' % (datestring, anum), actionid)
                                         log.info('started monitor on %s %s (agent %s)' % (astid, channel, anum))
+                                        tosend = { 'class' : 'agentrecord',
+                                                   'direction' : 'client',
+                                                   'agentnum' : anum,
+                                                   'status' : 'started' }
+                                        return cjson.encode(tosend)
 
                         elif subcommand == 'stoprecord':
                                 channels = self.__find_channel_byagent__(astid, anum)
@@ -2343,6 +2348,11 @@ class XivoCTICommand(BaseCommand):
                                         actionid = ''.join(random.sample(__alphanums__, 10))
                                         self.amilist.execute(astid, 'stopmonitor', channel, actionid)
                                         log.info('stopped monitor on %s %s (agent %s)' % (astid, channel, anum))
+                                        tosend = { 'class' : 'agentrecord',
+                                                   'direction' : 'client',
+                                                   'agentnum' : anum,
+                                                   'status' : 'stopped' }
+                                        return cjson.encode(tosend)
 
                         elif subcommand == 'listen':
                                 channels = self.__find_channel_byagent__(astid, anum)
