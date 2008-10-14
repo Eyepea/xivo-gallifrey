@@ -842,6 +842,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			}
 		}
 
+		if(isset($rs['loginclient']) === false
+		|| xivo_haslen($rs['loginclient']) === false)
+			$rs['enableclient'] = false;
+
 		if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM
 		|| xivo_haslen($rs['agentid']) === false
 		|| is_object($this->_agentfeatures) === false
@@ -2224,6 +2228,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		$incall['dialaction']['answer'] = $incall['dialaction'] = $incall = array();
 
+		$is_object_agentfeatures = is_object($this->_agentfeatures);
+
 		$r = true;
 
 		for($i = 0;$i < $nb;$i++)
@@ -2237,8 +2243,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			else
 				unset($ref['voicemail']);
 
-			if(xivo_issa('protocol',$ref) === true
-			&& xivo_issa('ufeatures',$ref) === true
+			$issa_protocol = xivo_issa('protocol',$ref);
+			$issa_ufeatures = xivo_issa('ufeatures',$ref);
+
+			if($issa_protocol === true
+			&& $issa_ufeatures === true
 			&& xivo_haslen($ref['protocol'],'callerid') === false)
 			{
 				$ref['protocol']['callerid'] = '';
@@ -2251,6 +2260,15 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				
 				trim($ref['protocol']['callerid']);
 			}
+
+			if($issa_ufeatures === true
+			&& xivo_haslen($ref['ufeatures'],'agentnumber') === true
+			&& $is_object_agentfeatures === true
+			&& ($agentid = $this->_agentfeatures->get_primary(
+							array('number' => $ref['ufeatures']['agentnumber']))) !== false)
+				$ref['ufeatures']['agentid'] = $agentid;
+
+			unset($ref['ufeatures']['agentnumber']);
 
 			if(xivo_issa('protocol',$ref) === false
 			|| isset($ref['protocol']['protocol']) === false

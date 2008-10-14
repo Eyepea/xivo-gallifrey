@@ -62,7 +62,7 @@ $array['element']['simultcalls']['setdef'] = true;
 
 $array['element']['enableclient'] = array();
 $array['element']['enableclient']['value'] = array(0,1);
-$array['element']['enableclient']['default'] = 1;
+$array['element']['enableclient']['default'] = 0;
 $array['element']['enableclient']['set'] = true;
 
 $array['element']['loginclient'] = array();
