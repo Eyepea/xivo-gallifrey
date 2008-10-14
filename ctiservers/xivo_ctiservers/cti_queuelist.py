@@ -61,9 +61,9 @@ class QueueList(AnyList):
         queuelocationprops = ['Paused', 'Status', 'Membership', 'Penalty', 'LastCall', 'CallsTaken']
         queuestats = ['ServicelevelPerf', 'Abandoned', 'Max', 'Completed', 'ServiceLevel', 'Weight', 'Holdtime', 'Calls']
 
-        def queueentry_update(self, queue, channel, position, wait):
+        def queueentry_update(self, queue, channel, position, wait, calleridnum, calleridname):
                 if queue in self.queuelist:
-                        self.queuelist[queue]['channels'][channel] = [position, wait]
+                        self.queuelist[queue]['channels'][channel] = [position, wait, calleridnum, calleridname]
                 else:
                         log.warning('queueentry_update : no such queue %s' % queue)
                 return

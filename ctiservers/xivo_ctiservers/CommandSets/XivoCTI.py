@@ -1405,7 +1405,10 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def ami_newcallerid(self, astid, event):
-                # print event
+                uniqueid = event.get('Uniqueid')
+                if astid in self.uniqueids and uniqueid in self.uniqueids[astid]:
+                        self.uniqueids[astid][uniqueid].update({'calleridname' : event.get('CallerIDName'),
+                                                                'calleridnum'  : event.get('CallerID')})
                 return
 
         def ami_newexten(self, astid, event):
@@ -1567,8 +1570,15 @@ class XivoCTICommand(BaseCommand):
                 position = event.get('Position')
                 wait = event.get('Wait')
                 channel = event.get('Channel')
+
+                calleridnum = None
+                calleridname = None
+                for v, vv in self.uniqueids[astid].iteritems():
+                        if 'channel' in vv and vv['channel'] == channel:
+                                calleridnum = vv.get('calleridnum')
+                                calleridname = vv.get('calleridname')
                 # print 'AMI QueueEntry', astid, queue, position, wait, channel, event
-                self.weblist['queues'][astid].queueentry_update(queue, channel, position, wait)
+                self.weblist['queues'][astid].queueentry_update(queue, channel, position, wait, calleridnum, calleridname)
                 self.__send_msg_to_cti_clients__(self.__build_queue_status__(astid, queue))
                 return
         
@@ -1831,12 +1841,14 @@ class XivoCTICommand(BaseCommand):
                 # print 'AMI Join (Queue)', event
                 chan  = event.get('Channel')
                 clid  = event.get('CallerID')
+                clidname = event.get('CallerIDName')
                 queue = event.get('Queue')
                 count = event.get('Count')
                 position = event.get('Position')
                 self.__sheet_alert__('incomingqueue', astid, DEFAULTCONTEXT, event)
                 log.info('AMI Join (Queue) %s %s %s' % (queue, chan, count))
-                self.weblist['queues'][astid].queueentry_update(queue, chan, position, '0')
+                self.weblist['queues'][astid].queueentry_update(queue, chan, position, '0',
+                                                                clid, clidname)
                 event['Calls'] = count
                 self.weblist['queues'][astid].update_queuestats(queue, event)
                 tosend = { 'class' : 'queues',
@@ -2167,7 +2179,7 @@ class XivoCTICommand(BaseCommand):
                         for agid, agprop in self.weblist['queues'][astid].queuelist[qname]['agents'].iteritems():
                                 lst_agents.append('%s,%s,%s' % (agid, agprop['Paused'], agprop['Status']))
                         for chan, chanprop in self.weblist['queues'][astid].queuelist[qname]['channels'].iteritems():
-                                lst_entries.append('%s,%s,%s' % (chan, chanprop[0], chanprop[1]))
+                                lst_entries.append('%s,%s,%s,%s,%s' % (chan, chanprop[0], chanprop[1], chanprop[2], chanprop[3]))
                         payload = [astid, qname]
                         payload.append(str(len(lst_agents)))
                         payload.extend(lst_agents)
@@ -2176,7 +2188,9 @@ class XivoCTICommand(BaseCommand):
                         tosend = { 'class' : 'queue-status',
                                    'direction' : 'client',
                                    'payload' : payload }
-                        return cjson.encode(tosend)
+                        cjsonenc = cjson.encode(tosend)
+                        log.info('__build_queue_status__ : %s' % cjsonenc)
+                        return cjsonenc
                 else:
                         return None
 
