@@ -1,5 +1,8 @@
+START TRANSACTION;
+
 GRANT ALL PRIVILEGES ON `xivo`.* TO `xivo`@`localhost` IDENTIFIED BY PASSWORD '*DBA86DFECE903EB25FE460A66BDCDA790A1CA4A4';
 CREATE DATABASE IF NOT EXISTS `xivo` DEFAULT CHARACTER SET utf8;
+
 USE `xivo`;
 
 DROP TABLE IF EXISTS `entity`;
@@ -121,3 +124,5 @@ CREATE UNIQUE INDEX `user__uidx__login_meta` ON `user`(`login`,`meta`);
 
 INSERT INTO `user` VALUES (1,'root','proformatique','root',1,0,UNIX_TIMESTAMP(UTC_TIMESTAMP()),0,'');
 INSERT INTO `user` VALUES (2,'admin','proformatique','admin',1,0,UNIX_TIMESTAMP(UTC_TIMESTAMP()),0,'');
+
+COMMIT;
