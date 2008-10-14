@@ -48,7 +48,7 @@ class UrlList:
                                 if kind == 'file' or kind == self.url:
                                         f = urllib.urlopen(self.url)
                                         contenttype = f.headers.getheaders('Content-Type')
-                                        # contenttype = ['application/json']
+                                        contenttype = ['application/json']
                                 elif kind in ['mysql', 'sqlite', 'ldap']:
                                         log.warning('URL kind %s not supported yet' % kind)
                                 elif kind in ['http', 'https']:
