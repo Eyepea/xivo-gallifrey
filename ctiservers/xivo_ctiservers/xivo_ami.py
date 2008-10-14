@@ -255,7 +255,7 @@ class AMIClass:
                                                              ('Context', locext),
                                                              ('Priority', '1'),
                                                              ('Application', 'ChanSpy'),
-                                                             ('Data', channel),
+                                                             ('Data', '%s|q' % channel),
                                                              ('Async', 'true')])
                         return ret
                 except self.AMIError, exc:
