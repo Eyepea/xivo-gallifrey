@@ -48,6 +48,7 @@ class UrlList:
                                 if kind == 'file' or kind == self.url:
                                         f = urllib.urlopen(self.url)
                                         contenttype = f.headers.getheaders('Content-Type')
+                                        # contenttype = ['application/json']
                                 elif kind in ['mysql', 'sqlite', 'ldap']:
                                         log.warning('URL kind %s not supported yet' % kind)
                                 elif kind in ['http', 'https']:
@@ -97,6 +98,6 @@ class UrlList:
                                                 pass
                                 ret = 1
                 except Exception, exc:
-                        log.error('--- exception --- (UrlList) problem occured when retrieving list : %s' % exc)
+                        log.error('--- exception --- (UrlList) problem occured when retrieving list for %s : %s' % (self.url, exc))
                         ret = -1
                 return ret
