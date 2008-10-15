@@ -2215,21 +2215,13 @@ class XivoCTICommand(BaseCommand):
 
 
         def __build_queue_status__(self, astid, qname):
-                lst_agents = []
-                lst_entries = []
                 if astid in self.weblist['queues'] and qname in self.weblist['queues'][astid].queuelist:
-                        for agid, agprop in self.weblist['queues'][astid].queuelist[qname]['agents'].iteritems():
-                                lst_agents.append('%s,%s,%s' % (agid, agprop['Paused'], agprop['Status']))
-                        for chan, chanprop in self.weblist['queues'][astid].queuelist[qname]['channels'].iteritems():
-                                lst_entries.append('%s,%s,%s,%s,%s' % (chan, chanprop[0], chanprop[1], chanprop[2], chanprop[3]))
-                        payload = [astid, qname]
-                        payload.append(str(len(lst_agents)))
-                        payload.extend(lst_agents)
-                        payload.append(str(len(lst_entries)))
-                        payload.extend(lst_entries)
                         tosend = { 'class' : 'queue-status',
                                    'direction' : 'client',
-                                   'payload' : payload }
+                                   'astid' : astid,
+                                   'queuename' : qname,
+                                   'payload' : { 'agents' : self.weblist['queues'][astid].queuelist[qname]['agents'],
+                                                 'entries' : self.weblist['queues'][astid].queuelist[qname]['channels'] } }
                         cjsonenc = cjson.encode(tosend)
                         log.info('__build_queue_status__ : %s' % cjsonenc)
                         return cjsonenc
