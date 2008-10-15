@@ -1157,8 +1157,13 @@ class XivoCTICommand(BaseCommand):
                 uid1 = event.get('Uniqueid1')
                 uid2 = event.get('Uniqueid2')
                 self.__fill_uniqueids__(astid, uid1, uid2, chan1, chan2, 'link')
-                print '(phone) LINK %s phone=%s callerid=%s' % (astid, self.__phoneid_from_channel__(astid, chan1), clid1)
-                print '(phone) LINK %s phone=%s callerid=%s' % (astid, self.__phoneid_from_channel__(astid, chan2), clid2)
+                phoneid1 = self.__phoneid_from_channel__(astid, chan1)
+                phoneid2 = self.__phoneid_from_channel__(astid, chan2)
+                uinfo1 = self.__userinfo_from_phoneid__(astid, phoneid1)
+                uinfo2 = self.__userinfo_from_phoneid__(astid, phoneid2)
+                log.info('(phone) LINK %s phone=%s callerid=%s user=%s' % (astid, phoneid1, clid1, uinfo1))
+                log.info('(phone) LINK %s phone=%s callerid=%s user=%s' % (astid, phoneid2, clid2, uinfo2))
+                
                 if 'context' in self.uniqueids[astid][uid1]:
                         self.__sheet_alert__('link', astid, self.uniqueids[astid][uid1]['context'], event, {})
                 if chan2.startswith('Agent/'):
@@ -1172,23 +1177,25 @@ class XivoCTICommand(BaseCommand):
                                 del self.queues_channels_list[astid][chan1]
                                 extraevent = {'xivo_queuename' : qname}
                                 self.__sheet_alert__('agentselected', astid, DEFAULTCONTEXT, event, extraevent)
-                else:
-                        ag1 = None
-                        ag2 = None
-                        for uinfo in self.ulist_ng.userlist.itervalues():
-                                if uinfo.get('astid') == astid:
-                                        if uinfo.get('phonenum') == event.get('CallerID1'):
-                                                self.__update_availstate__(uinfo, 'onlineoutgoing')
-                                                ag1 = self.__agentnum__(uinfo)
-                                        if uinfo.get('phonenum') == event.get('CallerID2'):
-                                                self.__update_availstate__(uinfo, 'onlineincoming')
-                                                ag2 = self.__agentnum__(uinfo)
-                        if ag1 is not None:
-                                msg = self.__build_agupdate__(['phonelink', astid, 'Agent/%s' % ag1])
+
+                if uinfo1:
+                        status = 'onlineoutgoing'
+                        self.__update_availstate__(uinfo1, status)
+                        ag = self.__agentnum__(uinfo1)
+                        if ag:
+                                self.__presence_action__(astid, ag, status)
+                                msg = self.__build_agupdate__(['phoneunlink', astid, 'Agent/%s' % ag])
                                 self.__send_msg_to_cti_clients__(msg)
-                        if ag2 is not None:
-                                msg = self.__build_agupdate__(['phonelink', astid, 'Agent/%s' % ag2])
+
+                if uinfo2:
+                        status = 'onlineincoming'
+                        self.__update_availstate__(uinfo2, status)
+                        ag = self.__agentnum__(uinfo2)
+                        if ag:
+                                self.__presence_action__(astid, ag, status)
+                                msg = self.__build_agupdate__(['phoneunlink', astid, 'Agent/%s' % ag])
                                 self.__send_msg_to_cti_clients__(msg)
+
                 self.weblist['phones'][astid].handle_ami_event_link(chan1, chan2, clid1, clid2)
                 return
 
@@ -1200,8 +1207,13 @@ class XivoCTICommand(BaseCommand):
                 uid1 = event.get('Uniqueid1')
                 uid2 = event.get('Uniqueid2')
                 self.__fill_uniqueids__(astid, uid1, uid2, chan1, chan2, 'unlink')
-                print '(phone) UNLINK %s phone=%s callerid=%s' % (astid, self.__phoneid_from_channel__(astid, chan1), clid1)
-                print '(phone) UNLINK %s phone=%s callerid=%s' % (astid, self.__phoneid_from_channel__(astid, chan2), clid2)
+                phoneid1 = self.__phoneid_from_channel__(astid, chan1)
+                phoneid2 = self.__phoneid_from_channel__(astid, chan2)
+                uinfo1 = self.__userinfo_from_phoneid__(astid, phoneid1)
+                uinfo2 = self.__userinfo_from_phoneid__(astid, phoneid2)
+                log.info('(phone) UNLINK %s phone=%s callerid=%s user=%s' % (astid, phoneid1, clid1, uinfo1))
+                log.info('(phone) UNLINK %s phone=%s callerid=%s user=%s' % (astid, phoneid2, clid2, uinfo2))
+                
                 if 'context' in self.uniqueids[astid][uid1]:
                         self.__sheet_alert__('unlink', astid, self.uniqueids[astid][uid1]['context'], event, {})
                 if chan2.startswith('Agent/'):
@@ -1213,32 +1225,24 @@ class XivoCTICommand(BaseCommand):
                                         self.__presence_action__(astid, anum, 'postcall')
                         msg = self.__build_agupdate__(['agentunlink', astid, chan2])
                         self.__send_msg_to_cti_clients__(msg)
-                else:
-                        ag1 = None
-                        ag2 = None
-                        for uinfo in self.ulist_ng.userlist.itervalues():
-                                if uinfo.get('astid') == astid:
-                                        if uinfo.get('phonenum') == event.get('CallerID1'):
-                                                self.__update_availstate__(uinfo, 'postcall')
-                                                ag1 = self.__agentnum__(uinfo)
-                                                self.__presence_action__(astid, ag1, 'postcall')
-                                        if uinfo.get('phonenum') == event.get('CallerID2'):
-                                                self.__update_availstate__(uinfo, 'postcall')
-                                                ag2 = self.__agentnum__(uinfo)
-                                                self.__presence_action__(astid, ag2, 'postcall')
-                        if ag1 is not None:
-                                msg = self.__build_agupdate__(['phoneunlink', astid, 'Agent/%s' % ag1])
-                                self.__send_msg_to_cti_clients__(msg)
-                        if ag2 is not None:
-                                msg = self.__build_agupdate__(['phoneunlink', astid, 'Agent/%s' % ag2])
-                                self.__send_msg_to_cti_clients__(msg)
+
+                for uinfo in [uinfo1, uinfo2]:
+                        if uinfo:
+                                status = 'postcall'
+                                self.__update_availstate__(uinfo, status)
+                                ag = self.__agentnum__(uinfo)
+                                if ag:
+                                        self.__presence_action__(astid, ag, status)
+                                        msg = self.__build_agupdate__(['phoneunlink', astid, 'Agent/%s' % ag])
+                                        self.__send_msg_to_cti_clients__(msg)
+
                 self.weblist['phones'][astid].handle_ami_event_unlink(chan1, chan2, clid1, clid2)
                 return
 
         def __presence_action__(self, astid, anum, status):
-                zz = self.presence.actions(status)
-                for z in zz:
-                        params = z.split('-')
+                presenceactions = self.presence.actions(status)
+                for paction in presenceactions:
+                        params = paction.split('-')
                         if params[0] == 'queueadd' and len(params) > 2:
                                 self.__ami_execute__(astid, params[0], params[1], 'Agent/%s' % anum, params[2])
                         elif params[0] == 'queueremove' and len(params) > 1:
@@ -1247,7 +1251,8 @@ class XivoCTICommand(BaseCommand):
 
         def __ami_execute__(self, *args):
                 actionid = self.amilist.execute(*args)
-                self.ami_requests[actionid] = args
+                if actionid is not None:
+                        self.ami_requests[actionid] = args
 
         def ami_hangup(self, astid, event):
                 chan  = event.get('Channel')
