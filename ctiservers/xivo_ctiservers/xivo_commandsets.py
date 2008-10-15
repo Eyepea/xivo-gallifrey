@@ -324,3 +324,4 @@ class BaseCommand:
                 return
 
 CommandClasses = {}
+from xivo import daemonize as ctidaemonize

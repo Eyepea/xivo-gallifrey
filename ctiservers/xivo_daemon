@@ -94,7 +94,6 @@ config_path()
 
 # XIVO lib-python modules imports
 from xivo import agitb
-from xivo import daemonize
 from xivo import anysql
 from xivo.BackSQL import backmysql
 from xivo.BackSQL import backsqlite
@@ -103,10 +102,11 @@ from xivo.BackSQL import backsqlite
 from xivo_agid import fastagi
 from xivo_ctiservers import xivo_ami
 from xivo_ctiservers import xivo_contexts
-from xivo_ctiservers import xivo_commandsets
 from xivo_ctiservers import xivo_astcfg
 from xivo_ctiservers import cti_config
+from xivo_ctiservers import xivo_commandsets
 from xivo_ctiservers.CommandSets import *
+from xivo_ctiservers.xivo_commandsets import ctidaemonize as daemonize
 
 PIDFILE = '/var/run/%s.pid' % DAEMONNAME
 # TODO: command line parameter
