@@ -39,7 +39,7 @@ log = logging.getLogger("xivo.Phones.Linksys") # pylint: disable-msg=C0103
 class Linksys(PhoneVendorMixin):
 
     LINKSYS_SPA_MODELS = ('901', '921', '922', '941', '942', '962')
-    LINKSYS_PAP_MACADDR_PREFIX = ('1:00:18:f8', '1:00:1c:10', '1:00:1e:e5')
+    LINKSYS_PAP_MACADDR_PREFIX = ('1:00:18:f8', '1:00:1c:10', '1:00:1e:e5', '1:00:1d:7e')
     LINKSYS_COMMON_HTTP_USER = "admin"
     LINKSYS_COMMON_HTTP_PASS = "adminpass"
 
