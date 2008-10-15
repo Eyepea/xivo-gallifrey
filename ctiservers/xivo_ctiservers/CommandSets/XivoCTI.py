@@ -121,8 +121,12 @@ class XivoCTICommand(BaseCommand):
                 self.meetme = {}
                 self.tqueue = Queue.Queue()
                 self.timeout_login = {}
-                self.getvar_requests = {}
                 self.parkedcalls = {}
+                
+                # actionid (AMI) indexed hashes
+                self.getvar_requests = {}
+                self.ami_requests = {}
+                
                 return
         
         def get_list_commands(self):
@@ -706,8 +710,8 @@ class XivoCTICommand(BaseCommand):
 
         def askstatus(self, astid, npl):
                 for a, b in npl.iteritems():
-                        self.amilist.execute(astid, 'sendextensionstate', b['number'], b['context'])
-                        self.amilist.execute(astid, 'mailbox', b['number'], b['context'])
+                        self.__ami_execute__(astid, 'sendextensionstate', b['number'], b['context'])
+                        self.__ami_execute__(astid, 'mailbox', b['number'], b['context'])
                 return
 
         def __callback_timer__(self, what):
@@ -940,7 +944,7 @@ class XivoCTICommand(BaseCommand):
                                 # userinfos.append() : users matching the SDA ?
 
                                 # interception :
-                                # self.amilist.execute(astid, 'transfer', chan, shortphonenum, 'default')
+                                # self.__ami_execute__(astid, 'transfer', chan, shortphonenum, 'default')
                                 
                         elif where == 'incomingqueue':
                                 clid = event.get('CallerID')
@@ -1153,8 +1157,8 @@ class XivoCTICommand(BaseCommand):
                 uid1 = event.get('Uniqueid1')
                 uid2 = event.get('Uniqueid2')
                 self.__fill_uniqueids__(astid, uid1, uid2, chan1, chan2, 'link')
-                print '(phone)', '  LINK', astid, self.__phoneid_from_channel__(astid, chan1)
-                print '(phone)', '  LINK', astid, self.__phoneid_from_channel__(astid, chan2)
+                print '(phone) LINK %s phone=%s callerid=%s' % (astid, self.__phoneid_from_channel__(astid, chan1), clid1)
+                print '(phone) LINK %s phone=%s callerid=%s' % (astid, self.__phoneid_from_channel__(astid, chan2), clid2)
                 if 'context' in self.uniqueids[astid][uid1]:
                         self.__sheet_alert__('link', astid, self.uniqueids[astid][uid1]['context'], event, {})
                 if chan2.startswith('Agent/'):
@@ -1196,8 +1200,8 @@ class XivoCTICommand(BaseCommand):
                 uid1 = event.get('Uniqueid1')
                 uid2 = event.get('Uniqueid2')
                 self.__fill_uniqueids__(astid, uid1, uid2, chan1, chan2, 'unlink')
-                print '(phone)', 'UNLINK', astid, self.__phoneid_from_channel__(astid, chan1)
-                print '(phone)', 'UNLINK', astid, self.__phoneid_from_channel__(astid, chan2)
+                print '(phone) UNLINK %s phone=%s callerid=%s' % (astid, self.__phoneid_from_channel__(astid, chan1), clid1)
+                print '(phone) UNLINK %s phone=%s callerid=%s' % (astid, self.__phoneid_from_channel__(astid, chan2), clid2)
                 if 'context' in self.uniqueids[astid][uid1]:
                         self.__sheet_alert__('unlink', astid, self.uniqueids[astid][uid1]['context'], event, {})
                 if chan2.startswith('Agent/'):
@@ -1205,14 +1209,8 @@ class XivoCTICommand(BaseCommand):
                         for uinfo in self.ulist_ng.userlist.itervalues():
                                 if uinfo.get('agentnum') == ag_id:
                                         self.__update_availstate__(uinfo, 'postcall')
-                                        zz = self.presence.actions('postcall')
-                                        for z in zz:
-                                                anum = self.__agentnum__(uinfo)
-                                                params = z.split('-')
-                                                if params[0] == 'queueadd':
-                                                        self.amilist.execute(astid, params[0], params[1], 'Agent/%s' % anum, params[2])
-                                                elif params[0] == 'queueremove':
-                                                        self.amilist.execute(astid, params[0], params[1], 'Agent/%s' % anum)
+                                        anum = self.__agentnum__(uinfo)
+                                        self.__presence_action__(astid, anum, 'postcall')
                         msg = self.__build_agupdate__(['agentunlink', astid, chan2])
                         self.__send_msg_to_cti_clients__(msg)
                 else:
@@ -1222,26 +1220,12 @@ class XivoCTICommand(BaseCommand):
                                 if uinfo.get('astid') == astid:
                                         if uinfo.get('phonenum') == event.get('CallerID1'):
                                                 self.__update_availstate__(uinfo, 'postcall')
-                                                zz = self.presence.actions('postcall')
-                                                for z in zz:
-                                                        anum = self.__agentnum__(uinfo)
-                                                        params = z.split('-')
-                                                        if params[0] == 'queueadd':
-                                                                self.amilist.execute(astid, params[0], params[1], 'Agent/%s' % anum, params[2])
-                                                        elif params[0] == 'queueremove':
-                                                                self.amilist.execute(astid, params[0], params[1], 'Agent/%s' % anum)
                                                 ag1 = self.__agentnum__(uinfo)
+                                                self.__presence_action__(astid, ag1, 'postcall')
                                         if uinfo.get('phonenum') == event.get('CallerID2'):
                                                 self.__update_availstate__(uinfo, 'postcall')
-                                                zz = self.presence.actions('postcall')
-                                                for z in zz:
-                                                        anum = self.__agentnum__(uinfo)
-                                                        params = z.split('-')
-                                                        if params[0] == 'queueadd':
-                                                                self.amilist.execute(astid, params[0], params[1], 'Agent/%s' % anum, params[2])
-                                                        elif params[0] == 'queueremove':
-                                                                self.amilist.execute(astid, params[0], params[1], 'Agent/%s' % anum)
                                                 ag2 = self.__agentnum__(uinfo)
+                                                self.__presence_action__(astid, ag2, 'postcall')
                         if ag1 is not None:
                                 msg = self.__build_agupdate__(['phoneunlink', astid, 'Agent/%s' % ag1])
                                 self.__send_msg_to_cti_clients__(msg)
@@ -1250,6 +1234,20 @@ class XivoCTICommand(BaseCommand):
                                 self.__send_msg_to_cti_clients__(msg)
                 self.weblist['phones'][astid].handle_ami_event_unlink(chan1, chan2, clid1, clid2)
                 return
+
+        def __presence_action__(self, astid, anum, status):
+                zz = self.presence.actions(status)
+                for z in zz:
+                        params = z.split('-')
+                        if params[0] == 'queueadd' and len(params) > 2:
+                                self.__ami_execute__(astid, params[0], params[1], 'Agent/%s' % anum, params[2])
+                        elif params[0] == 'queueremove' and len(params) > 1:
+                                self.__ami_execute__(astid, params[0], params[1], 'Agent/%s' % anum)
+                return
+
+        def __ami_execute__(self, *args):
+                actionid = self.amilist.execute(*args)
+                self.ami_requests[actionid] = args
 
         def ami_hangup(self, astid, event):
                 chan  = event.get('Channel')
@@ -1278,15 +1276,16 @@ class XivoCTICommand(BaseCommand):
                 msg = event.get('Message')
                 actionid = event.get('ActionID')
                 if msg is None:
-                        if actionid is not None and actionid in self.getvar_requests:
-                                variable = event.get('Variable')
-                                value = event.get('Value')
-                                if variable is not None and value is not None:
-                                        log.info('AMI %s Response=Success (%s) : %s = %s (%s)'
-                                                 % (astid, actionid, variable, value, self.getvar_requests[actionid]['channel']))
-                                del self.getvar_requests[actionid]
+                        if actionid is not None:
+                                if actionid in self.getvar_requests:
+                                        variable = event.get('Variable')
+                                        value = event.get('Value')
+                                        if variable is not None and value is not None:
+                                                log.info('AMI %s Response=Success (%s) : %s = %s (%s)'
+                                                         % (astid, actionid, variable, value, self.getvar_requests[actionid]['channel']))
+                                        del self.getvar_requests[actionid]
                         else:
-                                log.warning('AMI %s Response=Success : actionid = %s event = %s' % (astid, actionid, event))
+                                log.warning('AMI %s Response=Success : event = %s' % (astid, event))
                 elif msg == 'Extension Status':
                         self.amiresponse_extensionstatus(astid, event)
                 elif msg == 'Mailbox Message Count':
@@ -1311,7 +1310,11 @@ class XivoCTICommand(BaseCommand):
                              'Interface unpaused successfully',
                              'Agent logged out',
                              'Agent logged in']:
-                        pass
+                        if actionid in self.ami_requests:
+                                # log.info('AMI %s Response=Success : (tracked) %s %s' % (astid, event, self.ami_requests[actionid]))
+                                del self.ami_requests[actionid]
+                        else:
+                                log.info('AMI %s Response=Success : (tracked) %s' % (astid, event))
                 else:
                         log.warning('AMI %s Response=Success : untracked message (%s) <%s>' % (astid, actionid, msg))
                 return
@@ -1338,7 +1341,11 @@ class XivoCTICommand(BaseCommand):
                              'Unable to add interface: Already there',
                              'Unable to remove interface from queue: No such queue',
                              'Unable to remove interface: Not there'] :
-                        log.warning('AMI %s Response=Error : (tracked) %s' % (astid, event))
+                        if actionid in self.ami_requests:
+                                log.warning('AMI %s Response=Error : (tracked) %s %s' % (astid, event, self.ami_requests[actionid]))
+                                del self.ami_requests[actionid]
+                        else:
+                                log.warning('AMI %s Response=Error : (tracked) %s' % (astid, event))
                 else:
                         log.warning('AMI %s Response=Error : untracked message (%s) <%s>' % (astid, actionid, msg))
                 return
@@ -1435,7 +1442,7 @@ class XivoCTICommand(BaseCommand):
                 incomplete.
                 """
                 [exten, context] = event.get('Mailbox').split('@')
-                self.amilist.execute(astid, 'mailbox', exten, context)
+                self.__ami_execute__(astid, 'mailbox', exten, context)
                 return
 
         def ami_newstate(self, astid, event):
@@ -1716,7 +1723,7 @@ class XivoCTICommand(BaseCommand):
                         return
                 print 'AMI QueueStatusComplete', astid
                 for qname in self.weblist['queues'][astid].get_queues():
-                        self.amilist.execute(astid, 'sendcommand', 'Command', [('Command', 'show queue %s' % qname)])
+                        self.__ami_execute__(astid, 'sendcommand', 'Command', [('Command', 'show queue %s' % qname)])
                 return
 
         def ami_userevent(self, astid, event):
@@ -1821,9 +1828,8 @@ class XivoCTICommand(BaseCommand):
                                         print '-- this is a parked call', self.parkedcalls[astid][channel]
                         if context is not None:
                                 if context == 'macro-meetme':
-                                        actionid = ''.join(random.sample(__alphanums__, 10))
+                                        actionid = self.amilist.execute(astid, 'getvar', channel, 'XIVO_MEETMENUMBER')
                                         self.getvar_requests[actionid] = {'channel' : channel, 'variable' : 'XIVO_MEETMENUMBER'}
-                                        self.amilist.execute(astid, 'getvar', channel, 'XIVO_MEETMENUMBER', actionid)
                                 elif context.startswith('macro-phonestatus'):
                                         # *10
                                         pass
@@ -1894,7 +1900,7 @@ class XivoCTICommand(BaseCommand):
                            'direction' : 'client',
                            'payload' : 'queuechannels;%s;%s;%s' % (astid, queue, count) }
                 self.__send_msg_to_cti_clients__(cjson.encode(tosend))
-                self.amilist.execute(astid, 'sendqueuestatus', queue)
+                self.__ami_execute__(astid, 'sendqueuestatus', queue)
                 self.__send_msg_to_cti_clients__(self.__build_queue_status__(astid, queue))
                 return
 
@@ -1921,7 +1927,7 @@ class XivoCTICommand(BaseCommand):
                         self.queues_channels_list[astid] = {}
                 # always sets the queue information since it might not have been deleted
                 self.queues_channels_list[astid][chan] = queue
-                self.amilist.execute(astid, 'sendqueuestatus', queue)
+                self.__ami_execute__(astid, 'sendqueuestatus', queue)
                 self.__send_msg_to_cti_clients__(self.__build_queue_status__(astid, queue))
                 return
 
@@ -1991,7 +1997,7 @@ class XivoCTICommand(BaseCommand):
                                                                 astid = argums[1]
                                                                 room = argums[2]
                                                                 num = argums[3]
-                                                                self.amilist.execute(astid, 'sendcommand',
+                                                                self.__ami_execute__(astid, 'sendcommand',
                                                                                      'Command', [('Command', 'meetme kick %s %s' % (room, num))])
                                         elif classcomm == 'history':
                                                 if self.capas[capaid].match_funcs(ucapa, 'history'):
@@ -2017,17 +2023,11 @@ class XivoCTICommand(BaseCommand):
                                                         
                                         elif classcomm == 'availstate':
                                                 if self.capas[capaid].match_funcs(ucapa, 'presence'):
-                                                        zz = self.presence.actions(icommand.struct.get('availstate'))
-                                                        for z in zz:
-                                                                anum = self.__agentnum__(userinfo)
-                                                                params = z.split('-')
-                                                                if params[0] == 'queueadd':
-                                                                        self.amilist.execute(astid, params[0], params[1], 'Agent/%s' % anum, params[2])
-                                                                elif params[0] == 'queueremove':
-                                                                        self.amilist.execute(astid, params[0], params[1], 'Agent/%s' % anum)
                                                         # updates the new status and sends it to other people
                                                         repstr = self.__update_availstate__(userinfo, icommand.struct.get('availstate'))
-
+                                                        self.__presence_action__(astid, self.__agentnum__(userinfo),
+                                                                                 icommand.struct.get('availstate'))
+                                                        
                                         elif classcomm == 'message':
                                                 if self.capas[capaid].match_funcs(ucapa, 'messages'):
                                                         self.__send_msg_to_cti_clients__(self.message_srv2clt('%s/%s' % (astid, username),
@@ -2100,7 +2100,7 @@ class XivoCTICommand(BaseCommand):
                                         elif classcomm == 'pickup':
                                                 if self.capas[capaid].match_funcs(ucapa, 'dial'):
                                                         # on Thomson, it picks up the last received call
-                                                        self.amilist.execute(icommand.struct.get('astid'),
+                                                        self.__ami_execute__(icommand.struct.get('astid'),
                                                                              'sendcommand',
                                                                              'Command',
                                                                              [('Command',
@@ -2270,7 +2270,7 @@ class XivoCTICommand(BaseCommand):
                                         anum = myagentnum
                                 if astid is not None and anum is not None:
                                         for queuename in queuenames:
-                                                self.amilist.execute(astid, 'queueremove', queuename, 'Agent/%s' % anum)
+                                                self.__ami_execute__(astid, 'queueremove', queuename, 'Agent/%s' % anum)
                 elif subcommand == 'join':
                         if len(commandargs) > 1:
                                 queuenames = commandargs[1].split(',')
@@ -2287,7 +2287,7 @@ class XivoCTICommand(BaseCommand):
                                         spause = 'false' # unpauses by default for user-requests
                                 if astid is not None and anum is not None:
                                         for queuename in queuenames:
-                                                self.amilist.execute(astid, 'queueadd', queuename, 'Agent/%s' % anum, spause)
+                                                self.__ami_execute__(astid, 'queueadd', queuename, 'Agent/%s' % anum, spause)
                 elif subcommand == 'pause':
                         if len(commandargs) > 1:
                                 queuenames = commandargs[1].split(',')
@@ -2299,7 +2299,7 @@ class XivoCTICommand(BaseCommand):
                                         anum = myagentnum
                                 if astid is not None and anum is not None:
                                         for queuename in queuenames:
-                                                self.amilist.execute(astid, 'queuepause', queuename, 'Agent/%s' % anum, 'true')
+                                                self.__ami_execute__(astid, 'queuepause', queuename, 'Agent/%s' % anum, 'true')
                 elif subcommand == 'unpause':
                         if len(commandargs) > 1:
                                 queuenames = commandargs[1].split(',')
@@ -2311,7 +2311,7 @@ class XivoCTICommand(BaseCommand):
                                         anum = myagentnum
                                 if astid is not None and anum is not None:
                                         for queuename in queuenames:
-                                                self.amilist.execute(astid, 'queuepause', queuename, 'Agent/%s' % anum, 'false')
+                                                self.__ami_execute__(astid, 'queuepause', queuename, 'Agent/%s' % anum, 'false')
                 elif subcommand in ['login', 'logout', 'record', 'stoprecord', 'getfile', 'getfilelist', 'listen']:
                         if len(commandargs) > 2:
                                 astid = commandargs[1]
@@ -2333,8 +2333,7 @@ class XivoCTICommand(BaseCommand):
                                 datestring = time.strftime('%Y%m%d%H%M%S', time.localtime())
                                 channels = self.__find_channel_byagent__(astid, anum)
                                 for channel in channels:
-                                        actionid = ''.join(random.sample(__alphanums__, 10))
-                                        self.amilist.execute(astid, 'monitor', channel, 'cti-%s-%s' % (datestring, anum), actionid)
+                                        self.__ami_execute__(astid, 'monitor', channel, 'cti-%s-%s' % (datestring, anum))
                                         log.info('started monitor on %s %s (agent %s)' % (astid, channel, anum))
                                         tosend = { 'class' : 'agentrecord',
                                                    'direction' : 'client',
@@ -2345,8 +2344,7 @@ class XivoCTICommand(BaseCommand):
                         elif subcommand == 'stoprecord':
                                 channels = self.__find_channel_byagent__(astid, anum)
                                 for channel in channels:
-                                        actionid = ''.join(random.sample(__alphanums__, 10))
-                                        self.amilist.execute(astid, 'stopmonitor', channel, actionid)
+                                        self.__ami_execute__(astid, 'stopmonitor', channel)
                                         log.info('stopped monitor on %s %s (agent %s)' % (astid, channel, anum))
                                         tosend = { 'class' : 'agentrecord',
                                                    'direction' : 'client',
@@ -2357,8 +2355,7 @@ class XivoCTICommand(BaseCommand):
                         elif subcommand == 'listen':
                                 channels = self.__find_channel_byagent__(astid, anum)
                                 for channel in channels:
-                                        actionid = ''.join(random.sample(__alphanums__, 10))
-                                        self.amilist.execute(astid, 'chanspy', 'Local',
+                                        self.__ami_execute__(astid, 'chanspy', 'Local',
                                                              userinfo.get('phonenum'), channel, userinfo.get('context'))
                                         log.info('started listening on %s %s (agent %s)' % (astid, channel, anum))
 
@@ -2400,11 +2397,11 @@ class XivoCTICommand(BaseCommand):
                         agentnum = self.__agentnum__(uinfo)
                         agentphonenum = uinfo['agentphonenum']
                         if agentnum and agentphonenum:
-                                self.amilist.execute(astid, 'agentcallbacklogin', agentnum, agentphonenum)
+                                self.__ami_execute__(astid, 'agentcallbacklogin', agentnum, agentphonenum)
                                 # chan_agent.c:2318 callback_deprecated: AgentCallbackLogin is deprecated and will be removed in a future release.
                                 # chan_agent.c:2319 callback_deprecated: See doc/queues-with-callback-members.txt for an example of how to achieve
                                 # chan_agent.c:2320 callback_deprecated: the same functionality using only dialplan logic.
-                                self.amilist.execute(astid, 'setvar', 'AGENTBYCALLERID_%s' % agentphonenum, agentnum)
+                                self.__ami_execute__(astid, 'setvar', 'AGENTBYCALLERID_%s' % agentphonenum, agentnum)
                                 self.__fill_user_ctilog__(uinfo, 'agent_login')
                 return
 
@@ -2416,10 +2413,10 @@ class XivoCTICommand(BaseCommand):
                         agentnum = self.__agentnum__(uinfo)
                         if 'agentphonenum' in uinfo:
                                 agentphonenum = uinfo['agentphonenum']
-                                self.amilist.execute(astid, 'setvar', 'AGENTBYCALLERID_%s' % agentphonenum, '')
+                                self.__ami_execute__(astid, 'setvar', 'AGENTBYCALLERID_%s' % agentphonenum, '')
                                 # del uinfo['agentphonenum']
                         if len(agentnum) > 0:
-                                self.amilist.execute(astid, 'agentlogoff', agentnum)
+                                self.__ami_execute__(astid, 'agentlogoff', agentnum)
                                 self.__fill_user_ctilog__(uinfo, 'agent_logout')
                 return
 
@@ -2680,7 +2677,7 @@ class XivoCTICommand(BaseCommand):
                         ret = False
                         try:
                                 if len(exten_dst) > 0:
-                                        ret = self.amilist.execute(astid_src, AMI_ORIGINATE,
+                                        ret = self.__ami_execute__(astid_src, AMI_ORIGINATE,
                                                                    proto_src, phonenum_src, cidname_src,
                                                                    exten_dst, cidname_dst,  context_dst)
                         except Exception, exc:
@@ -2715,7 +2712,7 @@ class XivoCTICommand(BaseCommand):
                         ret = False
                         try:
                                 if len(exten_dst) > 0:
-                                        ret = self.amilist.execute(astid_src, commname,
+                                        ret = self.__ami_execute__(astid_src, commname,
                                                                    chan_src,
                                                                    exten_dst, context_src)
                         except Exception, exc:
@@ -2762,7 +2759,7 @@ class XivoCTICommand(BaseCommand):
                                         if sipcid_dst in self.weblist['phones'][astid_dst].normal:
                                                 cidname_dst = '%s %s' %(self.weblist['phones'][astid_dst].normal[sipcid_dst].calleridfirst,
                                                                         self.weblist['phones'][astid_dst].normal[sipcid_dst].calleridlast)
-                                        ret = self.amilist.execute(astid_src, 'originate',
+                                        ret = self.__ami_execute__(astid_src, 'originate',
                                                                    proto_src, userid_src, cidname_src,
                                                                    exten_dst, cidname_dst, context_dst)
                                 else:
@@ -2784,7 +2781,7 @@ class XivoCTICommand(BaseCommand):
                                                         ret_message = 'transfer KO : no channel opened on %s' % phonesrc
                                                 else:
                                                         tchan = channellist[phonesrcchan].channel_peer
-                                                        ret = self.amilist.execute(astid_src, 'transfer',
+                                                        ret = self.__ami_execute__(astid_src, 'transfer',
                                                                                    tchan, exten_dst, context_dst)
                                                         if ret:
                                                                 ret_message = 'transfer OK (%s) %s %s' %(astid_src, l[1], l[2])
@@ -2803,7 +2800,7 @@ class XivoCTICommand(BaseCommand):
                                                         ret_message = 'atxfer KO : no channel opened on %s' % phonesrc
                                                 else:
                                                         tchan = channellist[phonesrcchan].channel_peer
-                                                        ret = self.amilist.execute(astid_src, 'atxfer',
+                                                        ret = self.__ami_execute__(astid_src, 'atxfer',
                                                                                    tchan, exten_dst, context_dst)
                                                         if ret:
                                                                 ret_message = 'atxfer OK (%s) %s %s' %(astid_src, l[1], l[2])
@@ -2836,7 +2833,7 @@ class XivoCTICommand(BaseCommand):
                                                 channel_peer = ''
                                                 log.info("UI action : %s : hanging up <%s>"
                                                           %(astid , channel))
-                                        ret = self.amilist.execute(astid, 'hangup', channel, channel_peer)
+                                        ret = self.__ami_execute__(astid, 'hangup', channel, channel_peer)
                                         if ret > 0:
                                                 ret_message = 'hangup OK (%d) <%s>' %(ret, chan)
                                         else:

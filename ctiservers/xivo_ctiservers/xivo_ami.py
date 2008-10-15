@@ -57,6 +57,7 @@ class AMIClass:
                 self.events    = events
                 self.i = 1
                 self.aorgcmd = 'AOriginate'
+                self.actionid = None
 
         def set_aoriginate(self, aoriginatecmd):
                 self.aorgcmd = aoriginatecmd
@@ -77,6 +78,9 @@ class AMIClass:
                         self.fd.write('Action: %s\r\n' % action)
                         for (name, value) in args:
                                 self.fd.write('%s: %s\r\n' % (name, value))
+                        if self.actionid:
+                                self.fd.write('ActionId: %s\r\n' % self.actionid)
+                                self.actionid = None
                         self.fd.write('\r\n')
                         self.fd.flush()
                         ret = True
@@ -99,6 +103,9 @@ class AMIClass:
                         else:
                                 log.warning('warning : 2 attempts have failed for AMI command (%s)' % action)
                 return ret
+        def setactionid(self, actionid):
+                self.actionid = actionid
+                return
         # \brief Requesting a Status.
         def sendstatus(self):
                 ret = self.sendcommand('Status', [])
@@ -420,12 +427,11 @@ class AMIClass:
                 return ret
 
         # \brief Starts monitoring a channel
-        def monitor(self, channel, filename, actionid):
+        def monitor(self, channel, filename):
                 try:
                         ret = self.sendcommand('Monitor',
                                                [('Channel', channel),
                                                 ('File', filename),
-                                                ('ActionId', actionid),
                                                 ('Mix', 'true')])
                 except self.AMIError, exc:
                         ret = False
@@ -434,11 +440,10 @@ class AMIClass:
                 return ret
         
         # \brief Stops monitoring a channel
-        def stopmonitor(self, channel, actionid):
+        def stopmonitor(self, channel):
                 try:
                         ret = self.sendcommand('StopMonitor',
-                                               [('Channel', channel),
-                                                ('ActionId', actionid)])
+                                               [('Channel', channel)])
                 except self.AMIError, exc:
                         ret = False
                 except Exception, exc:
@@ -446,11 +451,10 @@ class AMIClass:
                 return ret
 
         # \brief Retrieves the value of Variable in a Channel
-        def getvar(self, channel, varname, actionid):
+        def getvar(self, channel, varname):
                 try:
                         ret = self.sendcommand('Getvar', [('Channel', channel),
-                                                          ('Variable', varname),
-                                                          ('ActionId', actionid)])
+                                                          ('Variable', varname)])
                 except self.AMIError, exc:
                         ret = False
                 except Exception, exc:
@@ -565,6 +569,7 @@ class AMIList:
                 return self.rami.get(sock)
 
         def execute(self, astid, command, *args):
+                actionid = None
                 if astid in self.ami:
                         conn_ami = self.ami.get(astid)
                         if conn_ami is None:
@@ -572,10 +577,12 @@ class AMIList:
                                             % (command, astid))
                         else:
                                 try:
-                                        getattr(conn_ami, command)(*args)
+                                        actionid = ''.join(random.sample(__alphanums__, 10))
+                                        conn_ami.setactionid(actionid)
+                                        ret = getattr(conn_ami, command)(*args)
                                 except Exception, exc:
                                         log.error('--- exception --- AMI command %s on <%s> : %s' % (command, astid, exc))
                 else:
                         log.warning('ami (command %s) : %s not in list - wait for the next update ?'
                                     % (command, astid))
-                return
+                return actionid
