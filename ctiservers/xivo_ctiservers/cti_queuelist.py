@@ -135,7 +135,7 @@ class QueueList(AnyList):
                                 for v in self.queuelocationprops:
                                         lst.append(agprop[v])
                         queuelist.append('-'.join(lst))
-                return ','.join(queuelist)
+                return queuelist
         
         def findqueue(self, queuename):
                 if queuename in self.queuelist:

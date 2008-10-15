@@ -89,7 +89,8 @@ class Capabilities:
                 for capa in capalist:
                         detail = capa.split('-')
                         if detail[0] in self.allowed_xlets.keys():
-                                self.capadisps.append(capa)
+                                if capa not in self.capadisps:
+                                        self.capadisps.append(capa)
                                 self.setfuncs(self.allowed_xlets[detail[0]])
                 return
 

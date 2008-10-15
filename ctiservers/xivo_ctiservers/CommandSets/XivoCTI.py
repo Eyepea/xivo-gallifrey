@@ -543,6 +543,7 @@ class XivoCTICommand(BaseCommand):
                                 self.agents_list[astid][agent]['phonenum'] = ''
                                 self.agents_list[astid][agent]['name'] = vv['firstname'] + ' ' + vv['lastname']
                                 self.agents_list[astid][agent]['loggedintime'] = '0'
+                                self.agents_list[astid][agent]['recorded'] = '0'
                 return
         
         def set_queuelist(self, astid, urllist_queues):
@@ -1590,6 +1591,7 @@ class XivoCTICommand(BaseCommand):
                         self.agents_list[astid][agent]['phonenum'] = linchan
                         self.agents_list[astid][agent]['name'] = event.get('Name')
                         self.agents_list[astid][agent]['loggedintime'] = event.get('LoggedInTime')
+                        self.agents_list[astid][agent]['recorded'] = '0'
                 return
 
         def ami_agentscomplete(self, astid, event):
@@ -2144,15 +2146,12 @@ class XivoCTICommand(BaseCommand):
                                                         if astid in self.weblist['queues'] and astid in self.agents_list and agname in self.agents_list[astid]:
                                                                 agprop = self.agents_list[astid][agname]
                                                                 # lookup the logged in/out status of agent agname and sends it back to the requester
-                                                                lstatus = '1'
-                                                                if agprop['status'] == 'AGENT_LOGGEDOFF':
-                                                                        lstatus = '0'
                                                                 tosend = { 'class' : 'agent-status',
                                                                            'direction' : 'client',
-                                                                           'payload' : [astid, agname, lstatus,
-                                                                                        agprop['name'],
-                                                                                        agprop['phonenum'],
-                                                                                        self.weblist['queues'][astid].get_queues_byagent(agid)]
+                                                                           'astid' : astid,
+                                                                           'agentnum' : agname,
+                                                                           'payload' : {'properties' : agprop,
+                                                                                        'queues' : self.weblist['queues'][astid].get_queues_byagent(agid)}
                                                                            }
                                                                 repstr = cjson.encode(tosend)
                                 else:
@@ -2339,6 +2338,7 @@ class XivoCTICommand(BaseCommand):
                                 channels = self.__find_channel_byagent__(astid, anum)
                                 for channel in channels:
                                         self.__ami_execute__(astid, 'monitor', channel, 'cti-%s-%s' % (datestring, anum))
+                                        self.agents_list[astid][anum]['recorded'] = '1'
                                         log.info('started monitor on %s %s (agent %s)' % (astid, channel, anum))
                                         tosend = { 'class' : 'agentrecord',
                                                    'direction' : 'client',
@@ -2350,6 +2350,7 @@ class XivoCTICommand(BaseCommand):
                                 channels = self.__find_channel_byagent__(astid, anum)
                                 for channel in channels:
                                         self.__ami_execute__(astid, 'stopmonitor', channel)
+                                        self.agents_list[astid][anum]['recorded'] = '0'
                                         log.info('stopped monitor on %s %s (agent %s)' % (astid, channel, anum))
                                         tosend = { 'class' : 'agentrecord',
                                                    'direction' : 'client',
@@ -2500,17 +2501,13 @@ class XivoCTICommand(BaseCommand):
                         if self.capas[capaid].match_funcs(ucapa, 'agents'):
                                 for astid, aglist in self.agents_list.iteritems():
                                         if astid in self.weblist['queues']:
-                                                lst = []
+                                                newlst = {}
                                                 for agname, agprop in aglist.iteritems():
-                                                        lstatus = '1'
-                                                        if agprop['status'] == 'AGENT_LOGGEDOFF':
-                                                                lstatus = '0'
-                                                        lst.append('%s:%s:%s:%s:%s' % (agname, lstatus,
-                                                                                       agprop['name'],
-                                                                                       agprop['phonenum'],
-                                                                                       self.weblist['queues'][astid].get_queues_byagent('Agent/%s' % agname)))
+                                                        agid = 'Agent/%s' % agname
+                                                        newlst[agname] = {'properties' : agprop,
+                                                                          'queues' : self.weblist['queues'][astid].get_queues_byagent(agid)}
                                                 fullstat.append({ 'astid' : astid,
-                                                                  'list' : lst })
+                                                                  'newlist' : newlst })
                 elif ccomm == 'queues':
                         fullstat = []
                         if self.capas[capaid].match_funcs(ucapa, 'agents'):
