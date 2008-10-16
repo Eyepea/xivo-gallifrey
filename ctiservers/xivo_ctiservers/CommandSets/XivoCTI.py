@@ -308,7 +308,8 @@ class XivoCTICommand(BaseCommand):
                         loginkind = loginparams.get('loginkind')
                         if loginkind == 'agent':
                                 userinfo['agentphonenum'] = loginparams.get('phonenumber')
-                                # self.__login_agent__(userinfo)
+                                if loginparams.get('agentlogin'):
+                                        self.__login_agent__(userinfo)
                         if subscribe is not None:
                                 userinfo['subscribe'] = 0
                         return userinfo
