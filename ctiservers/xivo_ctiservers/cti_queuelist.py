@@ -30,9 +30,10 @@ from xivo_ctiservers.cti_anylist import AnyList
 log = logging.getLogger('queuelist')
 
 class QueueList(AnyList):
-        def __init__(self, newurls = []):
+        def __init__(self, newurls = [], virtual = False):
                 AnyList.__init__(self, newurls)
                 self.queuelist = {}
+                self.virtual = virtual
                 return
         
         def update(self):
@@ -45,7 +46,7 @@ class QueueList(AnyList):
                         if gl == 1:
                                 newqueuelist.update(self.commandclass.getqueueslist(urllist.list))
                         elif gl == 2:
-                                newqueuelist.update(self.commandclass.getqueueslist_json(urllist.jsonreply))
+                                newqueuelist.update(self.commandclass.getqueueslist_json(urllist.jsonreply, self.virtual))
                 for a, b in newqueuelist.iteritems():
                         if a not in oldqueuelist:
                                 self.queuelist[a] = b
@@ -108,23 +109,16 @@ class QueueList(AnyList):
                 return self.queuelist.keys()
 
         def get_queuestats(self, queuename):
-                lst = []
+                lst = {}
                 if queuename in self.queuelist:
-                        lst.append(queuename)
-                        for prop in self.queuestats:
-                                if prop in self.queuelist[queuename]['stats']:
-                                        lst.append('%s:%s' % (prop, self.queuelist[queuename]['stats'][prop]))
-                return ':'.join(lst)
+                        lst[queuename] = self.queuelist[queuename]['stats']
+                return lst
         
         def get_queuestats_long(self):
-                lst_byqueue = []
+                lst = {}
                 for queuename, queueprops in self.queuelist.iteritems():
-                        lst = [queuename]
-                        for prop in self.queuestats:
-                                if prop in queueprops['stats']:
-                                        lst.append('%s:%s' % (prop, queueprops['stats'][prop]))
-                        lst_byqueue.append(':'.join(lst))
-                return lst_byqueue
+                        lst[queuename] = queueprops['stats']
+                return lst
         
         def get_queues_byagent(self, agid):
                 queuelist = []
@@ -134,7 +128,7 @@ class QueueList(AnyList):
                                 agprop = ql['agents'][agid]
                                 for v in self.queuelocationprops:
                                         lst.append(agprop[v])
-                        queuelist.append('-'.join(lst))
+                        queuelist.append(lst)
                 return queuelist
         
         def findqueue(self, queuename):

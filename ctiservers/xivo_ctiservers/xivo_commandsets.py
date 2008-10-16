@@ -82,9 +82,9 @@ class BaseCommand:
                 return {}
         def getqueueslist(self, qlist):
                 return {}
-        def getqueueslist_json(self, qlist):
+        def getqueueslist_json(self, qlist, virtual):
                 return {}
-
+        
         def set_cticdr(self, cticdr):
                 return
         def set_presence(self, config_presence):
@@ -96,6 +96,8 @@ class BaseCommand:
         def set_agentlist(self, astid, urllist_agents):
                 return
         def set_queuelist(self, astid, urllist_queues):
+                return
+        def set_vqueuelist(self, astid, urllist_vqueues):
                 return
         def set_userlist_urls(self, urls):
                 return

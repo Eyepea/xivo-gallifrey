@@ -104,6 +104,7 @@ class XivoCTICommand(BaseCommand):
                 self.ulist_ng.setcommandclass(self)
                 self.weblist = { 'agents' : {},
                                  'queues' : {},
+                                 'vqueues' : {},
                                  'phones' : {} }
                 # self.plist_ng = cti_phonelist.PhoneList()
                 # self.plist_ng.setcommandclass(self)
@@ -546,6 +547,11 @@ class XivoCTICommand(BaseCommand):
                                 self.agents_list[astid][agent]['recorded'] = '0'
                 return
         
+        def set_vqueuelist(self, astid, urllist_vqueues):
+                self.weblist['vqueues'][astid] = cti_queuelist.QueueList(urllist_vqueues, True)
+                self.weblist['vqueues'][astid].setcommandclass(self)
+                return
+                
         def set_queuelist(self, astid, urllist_queues):
                 self.weblist['queues'][astid] = cti_queuelist.QueueList(urllist_queues)
                 self.weblist['queues'][astid].setcommandclass(self)
@@ -565,7 +571,7 @@ class XivoCTICommand(BaseCommand):
                 u_update = self.ulist_ng.update()
                 # self.plist_ng.update()
                 for astid, plist in self.weblist['phones'].iteritems():
-                        for itemname in ['agents', 'queues', 'phones']:
+                        for itemname in ['agents', 'queues', 'vqueues', 'phones']:
                                 updatestatus = self.weblist[itemname][astid].update()
                                 for function in ['del', 'add']:
                                         if updatestatus[function]:
@@ -613,18 +619,22 @@ class XivoCTICommand(BaseCommand):
                                                      'stats' : {}}
                 return lqlist
         
-        def getqueueslist_json(self, dlist):
+        def getqueueslist_json(self, dlist, virtual = False):
                 lqlist = {}
-                for qitem in dlist:
-                        if not qitem.get('commented'):
-                                queuename = qitem.get('name')
-                                lqlist[queuename] = {'queuename' : queuename,
-                                                     'number' : qitem.get('number'),
-                                                     'context' : qitem.get('context'),
-                                                     
-                                                     'agents' : {},
-                                                     'channels' : {},
-                                                     'stats' : {}}
+                if virtual:
+                        for vq in dlist:
+                                lqlist[vq.get('name')] = vq.get('contents')
+                else:
+                        for qitem in dlist:
+                                if not qitem.get('commented'):
+                                        queuename = qitem.get('name')
+                                        lqlist[queuename] = {'queuename' : queuename,
+                                                             'number' : qitem.get('number'),
+                                                             'context' : qitem.get('context'),
+                                                             
+                                                             'agents' : {},
+                                                             'channels' : {},
+                                                             'stats' : {}}
                 return lqlist
         
         # fields set at startup by reading informations
@@ -667,6 +677,7 @@ class XivoCTICommand(BaseCommand):
                                                'context' : uitem.get('context'),
                                                'phonenum' : uitem.get('number'),
                                                'xivo_userid' : uitem.get('id'),
+                                               'enablevoicemail' : uitem.get('enablevoicemail'),
                                                
                                                'state'    : 'unknown',
                                                'mwi-waiting' : '0',
@@ -2496,8 +2507,9 @@ class XivoCTICommand(BaseCommand):
                                                 newlst = {}
                                                 for agname, agprop in aglist.iteritems():
                                                         agid = 'Agent/%s' % agname
-                                                        newlst[agname] = {'properties' : agprop,
-                                                                          'queues' : self.weblist['queues'][astid].get_queues_byagent(agid)}
+                                                        newlst[agname] = { 'properties' : agprop,
+                                                                           'queues' : self.weblist['queues'][astid].get_queues_byagent(agid)
+                                                                           }
                                                 fullstat.append({ 'astid' : astid,
                                                                   'newlist' : newlst })
                 elif ccomm == 'queues':
