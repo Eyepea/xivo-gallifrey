@@ -1,3 +1,0 @@
-dumper = Dumper(StringIO.StringIO())
-dumper.open()
-dumper.open()
