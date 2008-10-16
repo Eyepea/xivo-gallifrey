@@ -255,6 +255,7 @@ switch($act)
 				$appagentgroup->enable();
 		}
 
+		$ipbx->discuss('module reload chan_agent.so');
 		$ipbx->discuss('xivo[agentlist,update]');
 
 		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
@@ -268,9 +269,21 @@ switch($act)
 
 		$param['act'] = 'listagent';
 
-		$qmember = array();
-		$qmember['list'] = $qmember['info'] = false;
-		$qmember['slt'] = array();
+		$umember = $qmember = array();
+		$umember['list'] = $qmember['list'] = false;
+		$umember['info'] = $qmember['info'] = false;
+		$umember['slt'] = $qmember['slt'] = array();
+
+		$appuser = &$ipbx->get_application('user',null,false);
+		$umember['list'] = $appuser->get_users_list(null,
+							    null,
+							    array('firstname'	=> SORT_ASC,
+							          'lastname'	=> SORT_ASC,
+							          'number'	=> SORT_ASC,
+							          'context'	=> SORT_ASC,
+							          'name'	=> SORT_ASC),
+							    null,
+							    true);
 
 		$appqueue = &$ipbx->get_application('queue',null,false);
 
@@ -293,10 +306,27 @@ switch($act)
 				$result = $appagent->get_result();
 			else
 			{
+				$ipbx->discuss('module reload chan_agent.so');
 				$ipbx->discuss('xivo[agentlist,update]');
 
 				$param['group'] = $appagent->get_result_var('afeatures','numgroup');
 				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+			}
+		}
+
+		if($umember['list'] !== false && xivo_ak('usermember',$result) === true)
+		{
+			$umember['slt'] = xivo_array_intersect_key($result['usermember'],
+								   $umember['list'],
+								   'id');
+
+			if($umember['slt'] !== false)
+			{
+				$umember['list'] = xivo_array_diff_key($umember['list'],$umember['slt']);
+
+				$usersort = new xivo_sort(array('key'	=> 'identity'));
+
+				uasort($umember['slt'],array(&$usersort,'str_usort'));
 			}
 		}
 
@@ -311,6 +341,7 @@ switch($act)
 				$qmember['info'] = xivo_array_copy_intersect_key($result['queuemember'],
 										 $qmember['slt'],
 										 'qfeaturesid');
+
 				$qmember['list'] = xivo_array_diff_key($qmember['list'],$qmember['slt']);
 
 				xivo::load_class('xivo_sort');
@@ -323,6 +354,7 @@ switch($act)
 
 		$_HTML->set_var('info',$result);
 		$_HTML->set_var('element',$appagent->get_elements());
+		$_HTML->set_var('umember',$umember);
 		$_HTML->set_var('queues',$queues);
 		$_HTML->set_var('qmember',$qmember);
 		$_HTML->set_var('moh_list',$appagent->get_musiconhold());
@@ -344,9 +376,21 @@ switch($act)
 		$param['act'] = 'listagent';
 		$param['group'] = $info['agentgroup']['id'];
 
-		$qmember = array();
-		$qmember['list'] = $qmember['info'] = false;
-		$qmember['slt'] = array();
+		$umember = $qmember = array();
+		$umember['list'] = $qmember['list'] = false;
+		$umember['info'] = $qmember['info'] = false;
+		$umember['slt'] = $qmember['slt'] = array();
+
+		$appuser = &$ipbx->get_application('user',null,false);
+		$umember['list'] = $appuser->get_users_list(null,
+							    null,
+							    array('firstname'	=> SORT_ASC,
+							          'lastname'	=> SORT_ASC,
+							          'number'	=> SORT_ASC,
+							          'context'	=> SORT_ASC,
+							          'name'	=> SORT_ASC),
+							    null,
+							    true);
 
 		$appqueue = &$ipbx->get_application('queue',null,false);
 
@@ -370,10 +414,29 @@ switch($act)
 				$result = $appagent->get_result();
 			else
 			{
+				$ipbx->discuss('module reload chan_agent.so');
 				$ipbx->discuss('xivo[agentlist,update]');
 
 				$param['group'] = $appagent->get_result_var('afeatures','numgroup');
 				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+			}
+		}
+
+		xivo::load_class('xivo_sort');
+
+		if($umember['list'] !== false && xivo_ak('usermember',$return) === true)
+		{
+			$umember['slt'] = xivo_array_intersect_key($return['usermember'],
+								   $umember['list'],
+								   'id');
+
+			if($umember['slt'] !== false)
+			{
+				$umember['list'] = xivo_array_diff_key($umember['list'],$umember['slt']);
+
+				$usersort = new xivo_sort(array('key'	=> 'identity'));
+
+				uasort($umember['slt'],array(&$usersort,'str_usort'));
 			}
 		}
 
@@ -388,9 +451,9 @@ switch($act)
 				$qmember['info'] = xivo_array_copy_intersect_key($return['queuemember'],
 										 $qmember['slt'],
 										 'qfeaturesid');
+
 				$qmember['list'] = xivo_array_diff_key($qmember['list'],$qmember['slt']);
 
-				xivo::load_class('xivo_sort');
 				$queuesort = new xivo_sort(array('browse'	=> 'qfeatures',
 								 'key'		=> 'name'));
 
@@ -406,6 +469,7 @@ switch($act)
 		$_HTML->set_var('id',$info['afeatures']['id']);
 		$_HTML->set_var('info',$return);
 		$_HTML->set_var('element',$appagent->get_elements());
+		$_HTML->set_var('umember',$umember);
 		$_HTML->set_var('queues',$queues);
 		$_HTML->set_var('qmember',$qmember);
 		$_HTML->set_var('moh_list',$appagent->get_musiconhold());
@@ -429,6 +493,7 @@ switch($act)
 
 		$appagent->delete();
 
+		$ipbx->discuss('module reload chan_agent.so');
 		$ipbx->discuss('xivo[agentlist,update]');
 
 		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
@@ -450,6 +515,7 @@ switch($act)
 				$appagent->delete();
 		}
 
+		$ipbx->discuss('module reload chan_agent.so');
 		$ipbx->discuss('xivo[agentlist,update]');
 
 		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
@@ -476,6 +542,7 @@ switch($act)
 				$appagent->enable();
 		}
 
+		$ipbx->discuss('module reload chan_agent.so');
 		$ipbx->discuss('xivo[agentlist,update]');
 
 		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);

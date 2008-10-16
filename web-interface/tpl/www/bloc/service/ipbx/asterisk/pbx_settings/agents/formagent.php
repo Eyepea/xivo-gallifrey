@@ -7,6 +7,8 @@ $element = $this->get_var('element');
 $info = $this->get_var('info');
 $context_list = $this->get_var('context_list');
 
+$umember = $this->get_var('umember');
+
 $queues = $this->get_var('queues');
 $qmember = $this->get_var('qmember');
 
@@ -85,6 +87,68 @@ $qmember = $this->get_var('qmember');
 					    'default'	=> $element['agentoptions']['musiconhold']['default'],
 					    'value'	=> $info['agentoptions']['musiconhold']),
 				      $moh_list);
+	endif;
+?>
+</div>
+
+<div id="sb-part-user" class="b-nodisplay">
+<?php
+	if($umember['list'] !== false):
+?>
+<div id="userlist" class="fm-field fm-multilist">
+	<div class="slt-outlist">
+<?php
+		echo	$form->select(array('name'	=> 'userlist',
+					    'label'	=> false,
+					    'id'	=> 'it-userlist',
+					    'multiple'	=> true,
+					    'size'	=> 5,
+					    'field'	=> false,
+					    'key'	=> 'identity',
+					    'altkey'	=> 'id'),
+				      $umember['list']);
+?>
+	</div>
+
+	<div class="inout-list">
+		<a href="#"
+		   onclick="xivo_fm_move_selected('it-userlist','it-user');
+			    return(xivo_free_focus());"
+		   title="<?=$this->bbf('bt_inuser');?>">
+			<?=$url->img_html('img/site/button/row-left.gif',
+					  $this->bbf('bt_inuser'),
+					  'class="bt-inlist" id="bt-inuser" border="0"');?></a><br />
+		<a href="#"
+		   onclick="xivo_fm_move_selected('it-user','it-userlist');
+			    return(xivo_free_focus());"
+		   title="<?=$this->bbf('bt_outuser');?>">
+			<?=$url->img_html('img/site/button/row-right.gif',
+					  $this->bbf('bt_outuser'),
+					  'class="bt-outlist" id="bt-outuser" border="0"');?></a>
+	</div>
+
+	<div class="slt-inlist">
+<?php
+		echo	$form->select(array('name'	=> 'user-select[]',
+					    'label'	=> false,
+					    'id'	=> 'it-user',
+					    'multiple'	=> true,
+					    'size'	=> 5,
+					    'field'	=> false,
+					    'key'	=> 'identity',
+					    'altkey'	=> 'id'),
+				      $umember['slt']);
+?>
+	</div>
+</div>
+<div class="clearboth"></div>
+<?php
+	else:
+		echo	'<div class="txt-center">',
+			$url->href_html($this->bbf('create_user'),
+					'service/ipbx/pbx_settings/users',
+					'act=add'),
+			'</div>';
 	endif;
 ?>
 </div>

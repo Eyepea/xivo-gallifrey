@@ -210,7 +210,7 @@ function xivo_is_sgraph($str,$type='')
 			$reg .= '\x09\x0A\x0D';
 	}
 
-	if(preg_match('/['.$reg.']/',$str) === 0)
+	if(preg_match('/['.$reg.']/u',$str) === 0)
 		return(true);
 
 	return(false);
@@ -266,7 +266,7 @@ function xivo_is_spunct($str,$type='',$space=true)
 				return(ctype_punct($str));
 	}
 
-	if(preg_match('/^['.$reg.']+$/',$str) === 1)
+	if(preg_match('/^['.$reg.']+$/u',$str) === 1)
 		return(true);
 
 	return(false);

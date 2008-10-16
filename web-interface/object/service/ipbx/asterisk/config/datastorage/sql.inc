@@ -6,10 +6,6 @@ $array['accessfeatures'] = array();
 $array['accessfeatures']['table'] = 'accessfeatures';
 $array['accessfeatures']['primary'] = array('id' => '');
 
-$array['agent'] = array();
-$array['agent']['table'] = 'agent';
-$array['agent']['primary'] = array('id' => '');
-
 $array['agentfeatures'] = array();
 $array['agentfeatures']['table'] = 'agentfeatures';
 $array['agentfeatures']['primary'] = array('id' => '');
@@ -17,10 +13,6 @@ $array['agentfeatures']['primary'] = array('id' => '');
 $array['agentgroup'] = array();
 $array['agentgroup']['table'] = 'agentgroup';
 $array['agentgroup']['primary'] = array('id' => '');
-
-$array['agents'] = array();
-$array['agents']['table'] = 'agent';
-$array['agents']['primary'] = array('id' => '');
 
 $array['autoprov'] = array();
 $array['autoprov']['table'] = 'phone';
@@ -153,6 +145,10 @@ $array['schedule']['primary'] = array('id' => '');
 $array['serverfeatures'] = array();
 $array['serverfeatures']['table'] = 'serverfeatures';
 $array['serverfeatures']['primary'] = array('id' => '');
+
+$array['staticagent'] = array();
+$array['staticagent']['table'] = 'staticagent';
+$array['staticagent']['primary'] = array('id' => '');
 
 $array['staticiax'] = array();
 $array['staticiax']['table'] = 'staticiax';

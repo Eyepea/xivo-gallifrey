@@ -116,23 +116,23 @@ if(isset($error_js[0]) === true)
 
 <div id="sb-part-queue" class="b-nodisplay">
 <?php
-	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_generalqueue_persistentmembers'),
-				      'name'	=> 'generalqueue[persistentmembers]',
-				      'labelid'	=> 'generalqueue-persistentmembers',
-				      'default'	=> $element['generalqueue']['persistentmembers']['default'],
-				      'checked'	=> $this->get_varra('generalqueue',array('persistentmembers','var_val')))),
+	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_generalqueues_persistentmembers'),
+				      'name'	=> 'generalqueues[persistentmembers]',
+				      'labelid'	=> 'generalqueues-persistentmembers',
+				      'default'	=> $element['generalqueues']['persistentmembers']['default'],
+				      'checked'	=> $this->get_varra('generalqueues',array('persistentmembers','var_val')))),
 
-		$form->checkbox(array('desc'	=> $this->bbf('fm_generalqueue_autofill'),
-				      'name'	=> 'generalqueue[autofill]',
-				      'labelid'	=> 'generalqueue-autofill',
-				      'default'	=> $element['generalqueue']['autofill']['default'],
-				      'checked'	=> $this->get_varra('generalqueue',array('autofill','var_val')))),
+		$form->checkbox(array('desc'	=> $this->bbf('fm_generalqueues_autofill'),
+				      'name'	=> 'generalqueues[autofill]',
+				      'labelid'	=> 'generalqueues-autofill',
+				      'default'	=> $element['generalqueues']['autofill']['default'],
+				      'checked'	=> $this->get_varra('generalqueues',array('autofill','var_val')))),
 
-		$form->checkbox(array('desc'	=> $this->bbf('fm_generalqueue_monitor-type'),
-				      'name'	=> 'generalqueue[monitor-type]',
-				      'labelid'	=> 'generalqueue-monitor-type',
-				      'default'	=> $element['generalqueue']['monitor-type']['default'],
-				      'checked'	=> $this->get_varra('generalqueue',array('monitor-type','var_val'))));
+		$form->checkbox(array('desc'	=> $this->bbf('fm_generalqueues_monitor-type'),
+				      'name'	=> 'generalqueues[monitor-type]',
+				      'labelid'	=> 'generalqueues-monitor-type',
+				      'default'	=> $element['generalqueues']['monitor-type']['default'],
+				      'checked'	=> $this->get_varra('generalqueues',array('monitor-type','var_val'))));
 ?>
 </div>
 
@@ -145,10 +145,18 @@ if(isset($error_js[0]) === true)
 			       'value'		=> $this->get_varra('generalmeetme',array('audiobuffers','var_val'))),
 			 $element['generalmeetme']['audiobuffers']['value']);?>
 </div>
-<?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>
 
+<?php
+	echo	$form->submit(array('name'	=> 'submit',
+				    'id'	=> 'it-submit',
+				    'value'	=> $this->bbf('fm_bt-save')));
+?>
 </form>
 
 	</div>
-	<div class="sb-foot xspan"><span class="span-left">&nbsp;</span><span class="span-center">&nbsp;</span><span class="span-right">&nbsp;</span></div>
+	<div class="sb-foot xspan">
+		<span class="span-left">&nbsp;</span>
+		<span class="span-center">&nbsp;</span>
+		<span class="span-right">&nbsp;</span>
+	</div>
 </div>

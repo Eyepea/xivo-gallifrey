@@ -22,13 +22,13 @@ Agents persistants :
 ; fm_generalagents_multiplelogin
 Permettre à une extension d'avoir plusieurs agents :
 
-; fm_generalqueue_persistentmembers
+; fm_generalqueues_persistentmembers
 Membres persistants :
 
-; fm_generalqueue_autofill
+; fm_generalqueues_autofill
 Activer le nouveau système de distribution des appels :
 
-; fm_generalqueue_monitor-type
+; fm_generalqueues_monitor-type
 Enregistrement :
 
 ; fm_generalmeetme_audiobuffers

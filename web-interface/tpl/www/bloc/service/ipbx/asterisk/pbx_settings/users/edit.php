@@ -15,7 +15,7 @@ $form = &$this->get_module('form');
 	<div class="sb-content">
 		<form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-group');
 										xivo_fm_select('it-queue');
-										xivo_fm_select('it-'+xivo_ast_user_protocol+'-codec');
+										xivo_fm_select('it-codec');
 										xivo_fm_select('it-rightcall');">
 <?php
 		echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,

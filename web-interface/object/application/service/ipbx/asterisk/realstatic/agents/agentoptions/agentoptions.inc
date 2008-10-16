@@ -5,7 +5,7 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 class xivo_application_service_asterisk_realstatic_agents_agentoptions extends xivo_application_service_asterisk_realstatic_abstract
 {
 	var $_name		= 'agentoptions';
-	var $_modulename	= 'agents';
+	var $_modulename	= 'staticagent';
 	var $_category		= 'agents';
 	var $_cat_metric	= 1;
 	var $_filename		= 'agents.conf';
@@ -93,10 +93,10 @@ class xivo_application_service_asterisk_realstatic_agents_agentoptions extends x
 		$where['category'] = $this->_category;
 		$where['var_metric'] = $old_var_metric;
 
-		$arr = array();
-		$arr['var_metric'] = $var_metric;
+		$value = array();
+		$value['var_metric'] = $var_metric;
 
-		return(($this->_return[$this->_name] = $this->_realstatic->edit_where($where,$arr)));
+		return(($this->_return[$this->_name] = $this->_realstatic->edit_where($where,$value)));
 	}
 
 	function set_agentoptions($arr)

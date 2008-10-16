@@ -2,7 +2,7 @@
 
 xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','realstatic','abstract.inc'),true);
 
-class xivo_application_service_asterisk_realstatic_queue_general extends xivo_application_service_asterisk_realstatic_abstract
+class xivo_application_service_asterisk_realstatic_queues_general extends xivo_application_service_asterisk_realstatic_abstract
 {
 	var $_name		= 'general';
 	var $_modulename	= 'staticqueue';
@@ -10,7 +10,7 @@ class xivo_application_service_asterisk_realstatic_queue_general extends xivo_ap
 	var $_cat_metric	= 0;
 	var $_filename		= 'queues.conf';
 
-	function xivo_application_service_asterisk_realstatic_queue_general(&$service)
+	function xivo_application_service_asterisk_realstatic_queues_general(&$service)
 	{
 		return($this->_init(&$service));
 	}

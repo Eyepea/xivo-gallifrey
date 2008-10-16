@@ -4,6 +4,9 @@ Agents > Ajouter un agent
 ; smenu_general
 Général
 
+; smenu_users
+Utilisateurs
+
 ; smenu_queues
 Files d'attente
 
@@ -37,6 +40,12 @@ Groupe :
 ; fm_agentoptions_musiconhold
 Musique d'attente :
 
+; bt_inuser
+Ajouter un ou plusieurs utilisateurs ->
+
+; bt_outuser
+<- Enlever un ou plusieurs utilisateurs
+
 ; bt_inqueue
 Ajouter une ou plusieurs files d'attente ->
 
@@ -51,9 +60,6 @@ Pénalité
 
 ; no_queue
 Aucune file d'attente
-
-; create_queue
-Créer une file d'attente
 
 ; fm_agentfeatures_silent
 Désactiver l'annonce de connexion :

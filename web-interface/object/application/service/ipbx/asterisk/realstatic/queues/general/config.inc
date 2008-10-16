@@ -20,5 +20,7 @@ $array['element']['monitor-type']['set'] = true;
 
 $array['filter'] = array();
 $array['filter']['persistentmembers'] = array('bool' => true);
+$array['filter']['autofill'] = array('bool' => true);
+$array['filter']['monitor-type'] = array('bool' => true);
 
 ?>

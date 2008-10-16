@@ -132,14 +132,14 @@ $array['appcustom']['webservices']['phonebook'] = true;
 
 $array['realstatic'] = array();
 
-$array['realstatic']['agents'] = array();
-$array['realstatic']['agents']['datastorage'] = true;
-
 $array['realstatic']['features'] = array();
 $array['realstatic']['features']['datastorage'] = true;
 
 $array['realstatic']['meetme'] = array();
 $array['realstatic']['meetme']['datastorage'] = true;
+
+$array['realstatic']['staticagent'] = array();
+$array['realstatic']['staticagent']['datastorage'] = true;
 
 $array['realstatic']['staticiax'] = array();
 $array['realstatic']['staticiax']['datastorage'] = true;
@@ -157,9 +157,6 @@ $array['module'] = array();
 
 $array['module']['accessfeatures'] = array();
 $array['module']['accessfeatures']['datastorage'] = true;
-
-$array['module']['agent'] = array();
-$array['module']['agent']['datastorage'] = true;
 
 $array['module']['agentfeatures'] = array();
 $array['module']['agentfeatures']['datastorage'] = true;
@@ -209,9 +206,6 @@ $array['module']['extenumbers']['datastorage'] = true;
 
 $array['module']['handynumbers'] = array();
 $array['module']['handynumbers']['datastorage'] = true;
-
-$array['module']['generalqueue'] = array();
-$array['module']['generalqueue']['datastorage'] = true;
 
 $array['module']['groupfeatures'] = array();
 $array['module']['groupfeatures']['datastorage'] = true;

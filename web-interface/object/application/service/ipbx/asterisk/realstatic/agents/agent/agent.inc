@@ -5,7 +5,7 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 class xivo_application_service_asterisk_realstatic_agents_agent extends xivo_application_service_asterisk_realstatic_abstract
 {
 	var $_name		= 'agent';
-	var $_modulename	= 'agents';
+	var $_modulename	= 'staticagent';
 	var $_category		= 'agents';
 	var $_cat_metric	= 1;
 	var $_var_name		= 'agent';

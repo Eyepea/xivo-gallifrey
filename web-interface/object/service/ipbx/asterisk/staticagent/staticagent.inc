@@ -2,7 +2,7 @@
 
 xivo_service_asterisk::required(array('realstatic','realstatic.inc'),true);
 
-class xivo_service_asterisk_realstatic_agents extends xivo_service_asterisk_realstatic
+class xivo_service_asterisk_realstatic_staticagent extends xivo_service_asterisk_realstatic
 {
 	var $_filename	=		'agents.conf';
 	var $_var_metric_range =	XIVO_SRE_IPBX_AST_AGENT_VAR_METRIC_RANGE;
