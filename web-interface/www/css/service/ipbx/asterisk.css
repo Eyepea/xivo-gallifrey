@@ -27,7 +27,7 @@
 #s-asterisk #sr-voicemenu .fm-fieldbutton {text-align: center;padding: 4px 4px 0px 0px;}
 #s-asterisk #sr-voicemenu #fd-dialaction-voicemenuflow-type {margin-top: 10px;}
 #s-asterisk #sr-voicemenu #voicemenu-flow .slt-list {width: 580px;}
-#s-asterisk #sr-voicemenu #voicemenu-flow #it-voicemenu-flow {width: 550px;height: 200px;}
+#s-asterisk #sr-voicemenu #voicemenu-flow #it-voicemenu-flow {width: 550px;max-width: 550px;height: 200px;}
 #s-asterisk #sr-voicemenu #voicemenu-flow .bt-delete {margin-top: 92px;}
 #s-asterisk #sr-voicemenu #voicemenu-flow .bt-updown {margin-top: 65px;}
 #s-asterisk #sr-voicemenu #sb-part-voicemenuflow .fm-fieldbutton {margin-bottom: 5px;}
