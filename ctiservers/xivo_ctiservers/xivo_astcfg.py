@@ -82,13 +82,18 @@ class AsteriskConfig:
                 self.faxcallerid = faxcallerid
                 self.linkestablished = linkestablished
                 self.aoriginate = aoriginate
-
-                if userfeatures_db_uri is not None:
-                        self.userfeatures_db_conn = anysql.connect_by_uri(userfeatures_db_uri)
-                else:
-                        self.userfeatures_db_conn = None
-
+                
+                self.userfeatures_db_conn = None
+                try:
+                        if userfeatures_db_uri is not None:
+                                self.userfeatures_db_conn = anysql.connect_by_uri(userfeatures_db_uri)
+                except Exception, exc:
+                        pass
+                
                 if cdr_db_uri == userfeatures_db_uri:
                         self.cdr_db_conn = self.userfeatures_db_conn
                 else:
-                        self.cdr_db_conn = anysql.connect_by_uri(cdr_db_uri)
+                        try:
+                                self.cdr_db_conn = anysql.connect_by_uri(cdr_db_uri)
+                        except Exception, exc:
+                                self.cdr_db_conn = None

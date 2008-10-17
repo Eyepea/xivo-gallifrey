@@ -1137,21 +1137,26 @@ class XivoCTICommand(BaseCommand):
                         pass
                 return
 
-        def read_queuelog(self):
-                qlog = urllib.urlopen('file:/var/log/asterisk/queue_log')
+        def read_queuelog(self, astid, url_queuelog):
+                if astid not in self.stats_queues:
+                        self.stats_queues[astid] = {}
+                if url_queuelog is None:
+                        return
+                qlog = urllib.urlopen(url_queuelog)
                 csvreader = csv.reader(qlog, delimiter = '|')
-                one_hour_ago = time.time() - 3600
+                time_now = int(time.time())
+                time_1ha = time_now - 3600
                 for line in csvreader:
                         qdate = int(line[0])
                         qaction = line[4]
                         qname = line[2]
-                        if qdate > one_hour_ago and qaction in ['ENTERQUEUE', 'CONNECT']:
-                                if qname not in self.stats_queues:
-                                        self.stats_queues[qname] = {'ENTERQUEUE' : [],
-                                                                    'CONNECT' : []}
-                                self.stats_queues[qname][qaction].append(qdate)
+                        if qdate > time_1ha and qaction in ['ENTERQUEUE', 'CONNECT']:
+                                if qname not in self.stats_queues[astid]:
+                                        self.stats_queues[astid][qname] = {'ENTERQUEUE' : [],
+                                                                           'CONNECT' : []}
+                                self.stats_queues[astid][qname][qaction].append(qdate)
                 qlog.close()
-
+                return
 
         def __clidlist_from_event__(self, chan1, chan2, clid1, clid2):
                 # XXXX backport from autoescape, to be checked/improved/fixed
@@ -1192,21 +1197,21 @@ class XivoCTICommand(BaseCommand):
                 if uid1info['link'].startswith('Agent/') and 'join' in uid1info:
                         queuename = uid1info['join'].get('queue')
                         log.info('STAT LINK %s %s %s' % (astid, queuename, uid1info['link']))
-                        if queuename in self.stats_queues and 'CONNECT' in self.stats_queues[queuename]:
+                        if astid in self.stats_queues and queuename in self.stats_queues[astid] and 'CONNECT' in self.stats_queues[astid][queuename]:
                                 time_now = int(time.time())
                                 time_1ha = time_now - 3600
                                 toremove = []
-                                for t in self.stats_queues[queuename]['CONNECT']:
+                                for t in self.stats_queues[astid][queuename]['CONNECT']:
                                         if t < time_1ha:
                                                 toremove.append(t)
                                 for t in toremove:
-                                        self.stats_queues[queuename]['CONNECT'].remove(t)
-                                self.stats_queues[queuename]['CONNECT'].append(time_now)
+                                        self.stats_queues[astid][queuename]['CONNECT'].remove(t)
+                                self.stats_queues[astid][queuename]['CONNECT'].append(time_now)
                                 self.__send_msg_to_cti_clients__(cjson.encode({'class' : 'statistics',
                                                                                'direction': 'client',
                                                                                'what' : 'calllinked',
                                                                                'queuename' : queuename,
-                                                                               'value' : len(self.stats_queues[queuename]['CONNECT'])}))
+                                                                               'value' : len(self.stats_queues[astid][queuename]['CONNECT'])}))
                                 
                 phoneid1 = self.__phoneid_from_channel__(astid, chan1)
                 phoneid2 = self.__phoneid_from_channel__(astid, chan2)
@@ -1763,7 +1768,9 @@ class XivoCTICommand(BaseCommand):
                            'function' : 'sendlist',
                            'direction' : 'client',
                            'payload' : [ { 'astid' : astid,
-                                           'queuestats' : self.weblist['queues'][astid].get_queuestats(queue) } ] }
+                                           'queuestats' : self.weblist['queues'][astid].get_queuestats(queue),
+                                           'vqueues' : self.weblist['vqueues'][astid].queuelist
+                                           } ] }
                 self.__send_msg_to_cti_clients__(cjson.encode(tosend))
                 return
 
@@ -1953,22 +1960,21 @@ class XivoCTICommand(BaseCommand):
                         self.uniqueids[astid][uniqueid]['join'] = {'queue' : queue,
                                                                    'time' : time.time()}
                 log.info('STAT JOIN %s %s %s %s' % (astid, queue, chan, uniqueid))
-                ## XXX : stats_queues by astid
-                if queue in self.stats_queues and 'ENTERQUEUE' in self.stats_queues[queue]:
+                if astid in self.stats_queues and queue in self.stats_queues[astid] and 'ENTERQUEUE' in self.stats_queues[astid][queue]:
                         time_now = int(time.time())
                         time_1ha = time_now - 3600
                         toremove = []
-                        for t in self.stats_queues[queue]['ENTERQUEUE']:
+                        for t in self.stats_queues[astid][queue]['ENTERQUEUE']:
                                 if t < time_1ha:
                                         toremove.append(t)
                         for t in toremove:
-                                self.stats_queues[queue]['ENTERQUEUE'].remove(t)
-                        self.stats_queues[queue]['ENTERQUEUE'].append(time_now)
+                                self.stats_queues[astid][queue]['ENTERQUEUE'].remove(t)
+                        self.stats_queues[astid][queue]['ENTERQUEUE'].append(time_now)
                         self.__send_msg_to_cti_clients__(cjson.encode({'class' : 'statistics',
                                                                        'direction': 'client',
                                                                        'what' : 'queuejoined',
                                                                        'queuename' : queue,
-                                                                       'value' : len(self.stats_queues[queue]['ENTERQUEUE'])}))
+                                                                       'value' : len(self.stats_queues[astid][queue]['ENTERQUEUE'])}))
                         
                 self.__sheet_alert__('incomingqueue', astid, DEFAULTCONTEXT, event)
                 log.info('AMI Join (Queue) %s %s %s %s' % (astid, queue, chan, count))
@@ -2581,8 +2587,9 @@ class XivoCTICommand(BaseCommand):
                         if self.capas[capaid].match_funcs(ucapa, 'agents'):
                                 for astid, qlist in self.weblist['queues'].iteritems():
                                         fullstat.append({ 'astid' : astid,
-                                                          'queuestats' : qlist.get_queuestats_long() })
-
+                                                          'queuestats' : qlist.get_queuestats_long(),
+                                                          'vqueues' : self.weblist['vqueues'][astid].queuelist
+                                                          })
                 tosend = { 'class' : ccomm,
                            'function' : 'sendlist',
                            'direction' : 'client',

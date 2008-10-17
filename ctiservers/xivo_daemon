@@ -108,7 +108,7 @@ from xivo_ctiservers import xivo_commandsets
 from xivo_ctiservers.CommandSets import *
 from xivo_ctiservers.xivo_commandsets import ctidaemonize as daemonize
 
-PIDFILE = '/var/run/%s.pid' % DAEMONNAME
+PIDFILE = '/var/run/xivo/%s.pid' % DAEMONNAME
 # TODO: command line parameter
 
 BUFSIZE_LARGE = 8192
@@ -635,8 +635,7 @@ while True: # loops over the reloads
         commandclass.set_configs(configs)
         commandclass.set_presence(cconf.read_section('presence', config_presence))
         commandclass.set_ctilog(ctilog)
-        commandclass.read_queuelog()
-
+        
         for ctx in contextlist:
                 xivoconf_context = cconf.read_section('context', ctx)
                 if len(xivoconf_context) > 0:
@@ -675,7 +674,8 @@ while True: # loops over the reloads
                         faxcallerid = 'faxcallerid'
                         linkestablished = ''
                         aoriginate = 'AOriginate'
-
+                        url_queuelog = None
+                        
                         if 'localaddr' in xivoconf_asterisk:
                                 localaddr = xivoconf_asterisk['localaddr']
                         if 'urllist_phones' in xivoconf_asterisk:
@@ -686,6 +686,8 @@ while True: # loops over the reloads
                                 urllist_vqueues = xivoconf_asterisk['urllist_vqueues'].split(',')
                         if 'urllist_agents' in xivoconf_asterisk:
                                 urllist_agents = xivoconf_asterisk['urllist_agents'].split(',')
+                        if 'url_queuelog' in xivoconf_asterisk:
+                                url_queuelog = xivoconf_asterisk['url_queuelog']
                         if 'ipaddress' in xivoconf_asterisk:
                                 ipaddress = xivoconf_asterisk['ipaddress']
                         if 'ipaddress_webi' in xivoconf_asterisk:
@@ -728,12 +730,13 @@ while True: # loops over the reloads
                                                                     faxcallerid,
                                                                     linkestablished,
                                                                     aoriginate)
-
+                        
                         commandclass.set_phonelist(astid, urllist_phones)
                         commandclass.set_agentlist(astid, urllist_agents)
                         commandclass.set_queuelist(astid, urllist_queues)
                         commandclass.set_vqueuelist(astid, urllist_vqueues)
-
+                        commandclass.read_queuelog(astid, url_queuelog)
+                        
                         if ipaddress not in ip_reverse_sht:
                                 ip_reverse_sht[ipaddress] = astid
                         else:
