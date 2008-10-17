@@ -1160,7 +1160,8 @@ class XivoCTICommand(BaseCommand):
                         agent_id = userinfo['agentnum']
                         if astid in self.weblist['agents'] and agent_id in self.weblist['agents'][astid].agentlist:
                                 return self.weblist['agents'][astid].agentlist[agent_id].get('number')
-                return None
+                # return an empty string instead of None because of parsing issue in JsonQt
+                return ''
 
         def ami_link(self, astid, event):
                 chan1 = event.get('Channel1')
@@ -1170,13 +1171,20 @@ class XivoCTICommand(BaseCommand):
                 uid1 = event.get('Uniqueid1')
                 uid2 = event.get('Uniqueid2')
                 self.__fill_uniqueids__(astid, uid1, uid2, chan1, chan2, 'link')
+                uid1info = self.uniqueids[astid][uid1]
+                if uid1info['link'].startswith('Agent/') and 'join' in uid1info:
+                        log.info('STAT LINK %s %s %s' % (astid, uid1info['join'].get('queue'), uid1info['link']))
+                        self.__send_msg_to_cti_clients__(cjson.encode({'class' : 'statistics',
+                                                                       'direction': 'client',
+                                                                       'what' : 'calllinked',
+                                                                       'value' : random.randint(5, 70)}))
                 phoneid1 = self.__phoneid_from_channel__(astid, chan1)
                 phoneid2 = self.__phoneid_from_channel__(astid, chan2)
                 uinfo1 = self.__userinfo_from_phoneid__(astid, phoneid1)
                 uinfo2 = self.__userinfo_from_phoneid__(astid, phoneid2)
                 log.info('(phone) LINK %s phone=%s callerid=%s user=%s' % (astid, phoneid1, clid1, uinfo1))
                 log.info('(phone) LINK %s phone=%s callerid=%s user=%s' % (astid, phoneid2, clid2, uinfo2))
-                
+
                 if 'context' in self.uniqueids[astid][uid1]:
                         self.__sheet_alert__('link', astid, self.uniqueids[astid][uid1]['context'], event, {})
                 if chan2.startswith('Agent/'):
@@ -1464,7 +1472,9 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def ami_newstate(self, astid, event):
-                #print '(phone)', astid, self.__phoneid_from_channel__(astid, event.get('Channel')), event.get('State')
+                # print '(phone)', astid, self.__phoneid_from_channel__(astid, event.get('Channel')), event.get('State')
+                # uniqueid = event.get('Uniqueid')
+                # log.info('STAT NEWS %s %s %s %s %s' % (astid, time.time(), uniqueid, event.get('Channel'), event.get('State')))
                 return
 
         def ami_newcallerid(self, astid, event):
@@ -1908,8 +1918,17 @@ class XivoCTICommand(BaseCommand):
                 queue = event.get('Queue')
                 count = event.get('Count')
                 position = event.get('Position')
+                uniqueid = event.get('Uniqueid')
+                if uniqueid in self.uniqueids[astid]:
+                        self.uniqueids[astid][uniqueid]['join'] = {'queue' : queue,
+                                                                   'time' : time.time()}
+                log.info('STAT JOIN %s %s %s %s' % (astid, queue, chan, uniqueid))
+                self.__send_msg_to_cti_clients__(cjson.encode({'class' : 'statistics',
+                                                               'direction': 'client',
+                                                               'what' : 'queuejoined',
+                                                               'value' : random.randint(5, 70)}))
                 self.__sheet_alert__('incomingqueue', astid, DEFAULTCONTEXT, event)
-                log.info('AMI Join (Queue) %s %s %s' % (queue, chan, count))
+                log.info('AMI Join (Queue) %s %s %s %s' % (astid, queue, chan, count))
                 self.weblist['queues'][astid].queueentry_update(queue, chan, position, '0',
                                                                 clid, clidname)
                 event['Calls'] = count
@@ -1917,7 +1936,7 @@ class XivoCTICommand(BaseCommand):
                 tosend = { 'class' : 'queues',
                            'function' : 'update',
                            'direction' : 'client',
-                           'payload' : 'queuechannels;%s;%s;%s' % (astid, queue, count) }
+                           'payload' : [astid, queue, count] }
                 self.__send_msg_to_cti_clients__(cjson.encode(tosend))
                 self.__ami_execute__(astid, 'sendqueuestatus', queue)
                 self.__send_msg_to_cti_clients__(self.__build_queue_status__(astid, queue))
@@ -1939,7 +1958,7 @@ class XivoCTICommand(BaseCommand):
                 tosend = { 'class' : 'queues',
                            'function' : 'update',
                            'direction' : 'client',
-                           'payload' : 'queuechannels;%s;%s;%s' % (astid, queue, count) }
+                           'payload' : [astid, queue, count] }
                 self.__send_msg_to_cti_clients__(cjson.encode(tosend))
                 
                 if astid not in self.queues_channels_list:
@@ -2490,6 +2509,7 @@ class XivoCTICommand(BaseCommand):
                                                  uinfo.get('mwi-waiting'),
                                                  uinfo.get('mwi-old'),
                                                  uinfo.get('mwi-new')])
+                                
                 elif ccomm == 'phones':
                         # XXX define capas ?
                         fullstat = {}
