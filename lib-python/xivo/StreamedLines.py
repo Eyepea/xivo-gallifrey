@@ -422,6 +422,6 @@ if __name__ == '__main__':
     testfunc()
 
 __all__ = [
-    'rxStreamedLines', 'makeNonBlocking'
+    'rxStreamedLines', 'makeNonBlocking',
     'Error', 'InvalidParam', 'RestartableException', 'Timeout'
 ]
