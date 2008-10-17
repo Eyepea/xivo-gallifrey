@@ -54,7 +54,8 @@ class UserList(AnyList):
                                                 nnew += 1
                                                 self.userlist[a] = b
                                         else:
-                                                for keyw in ['capaids', 'password', 'fullname']:
+                                                for keyw in ['capaids', 'password', 'fullname',
+                                                             'agentnum', 'techlist', 'phonenum']:
                                                         self.userlist[a][keyw] = b[keyw]
                                 if nnew > 0:
                                         log.info('%d new users read from %s' % (nnew, url))
