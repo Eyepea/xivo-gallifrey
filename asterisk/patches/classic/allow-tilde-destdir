@@ -8,11 +8,11 @@ Should be reported upstream.
 
  -- Faidon Liambotis <paravoid@debian.org>
 
-Index: asterisk-1.4.20.1/Makefile
+Index: asterisk-1.4.22/Makefile
 ===================================================================
---- asterisk-1.4.20.1.orig/Makefile	2008-05-05 22:17:55.000000000 +0200
-+++ asterisk-1.4.20.1/Makefile	2008-06-06 15:57:09.000000000 +0200
-@@ -507,7 +507,7 @@
+--- asterisk-1.4.22.orig/Makefile	2008-09-08 22:15:42.000000000 +0200
++++ asterisk-1.4.22/Makefile	2008-10-17 16:42:32.000000000 +0200
+@@ -506,7 +506,7 @@
  	@exit 1
  endif
  
@@ -21,9 +21,11 @@ Index: asterisk-1.4.20.1/Makefile
  	@if [ -x /usr/sbin/asterisk-post-install ]; then \
  		/usr/sbin/asterisk-post-install $(DESTDIR) . ; \
  	fi
-@@ -774,4 +774,4 @@
+@@ -760,6 +760,6 @@
  	@cat sounds/sounds.xml >> $@
  	@echo "</menu>" >> $@
  
--.PHONY: menuselect main sounds clean dist-clean distclean all prereqs cleantest uninstall _uninstall uninstall-all dont-optimize $(SUBDIRS_INSTALL) $(SUBDIRS_DIST_CLEAN) $(SUBDIRS_CLEAN) $(SUBDIRS_UNINSTALL) $(SUBDIRS) $(MOD_SUBDIRS_EMBED_LDSCRIPT) $(MOD_SUBDIRS_EMBED_LDFLAGS) $(MOD_SUBDIRS_EMBED_LIBS) badshell menuselect.makeopts include/asterisk/version.h installdirs
-+.PHONY: menuselect main sounds clean dist-clean distclean all prereqs cleantest uninstall _uninstall uninstall-all dont-optimize $(SUBDIRS_INSTALL) $(SUBDIRS_DIST_CLEAN) $(SUBDIRS_CLEAN) $(SUBDIRS_UNINSTALL) $(SUBDIRS) $(MOD_SUBDIRS_EMBED_LDSCRIPT) $(MOD_SUBDIRS_EMBED_LDFLAGS) $(MOD_SUBDIRS_EMBED_LIBS) menuselect.makeopts include/asterisk/version.h installdirs
+-.PHONY: menuselect main sounds clean dist-clean distclean all prereqs cleantest uninstall _uninstall uninstall-all dont-optimize $(SUBDIRS_INSTALL) $(SUBDIRS_DIST_CLEAN) $(SUBDIRS_CLEAN) $(SUBDIRS_UNINSTALL) $(SUBDIRS) $(MOD_SUBDIRS_EMBED_LDSCRIPT) $(MOD_SUBDIRS_EMBED_LDFLAGS) $(MOD_SUBDIRS_EMBED_LIBS) badshell menuselect.makeopts installdirs
++.PHONY: menuselect main sounds clean dist-clean distclean all prereqs cleantest uninstall _uninstall uninstall-all dont-optimize $(SUBDIRS_INSTALL) $(SUBDIRS_DIST_CLEAN) $(SUBDIRS_CLEAN) $(SUBDIRS_UNINSTALL) $(SUBDIRS) $(MOD_SUBDIRS_EMBED_LDSCRIPT) $(MOD_SUBDIRS_EMBED_LDFLAGS) $(MOD_SUBDIRS_EMBED_LIBS) menuselect.makeopts installdirs
+ 
+ FORCE:

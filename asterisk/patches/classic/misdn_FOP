@@ -21,9 +21,11 @@ http://bugs.digium.com/view.php?id=0011142
 
  -- Victor Seva <linuxmaniac@torreviejawireless.org>
 
---- a/channels/chan_misdn.c
-+++ b/channels/chan_misdn.c
-@@ -3334,17 +3334,19 @@ static void update_name(struct ast_chann
+Index: asterisk-1.4.22/channels/chan_misdn.c
+===================================================================
+--- asterisk-1.4.22.orig/channels/chan_misdn.c	2008-10-17 16:43:09.000000000 +0200
++++ asterisk-1.4.22/channels/chan_misdn.c	2008-10-17 16:43:56.000000000 +0200
+@@ -3330,17 +3330,19 @@
  {
  	int chan_offset=0;
  	int tmp_port = misdn_cfg_get_next_port(0);
@@ -48,7 +50,7 @@ http://bugs.digium.com/view.php?id=0011142
  }
  
  static struct ast_channel *misdn_new(struct chan_list *chlist, int state,  char *exten, char *callerid, int format, int port, int c)
-@@ -3364,7 +3366,10 @@ static struct ast_channel *misdn_new(str
+@@ -3360,7 +3362,10 @@
  	if (callerid) 
  		ast_callerid_parse(callerid, &cid_name, &cid_num);
  

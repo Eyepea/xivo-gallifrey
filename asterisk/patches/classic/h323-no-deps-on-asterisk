@@ -7,11 +7,11 @@ We are working around this, see patch h323-workaround-openh323-segfault.
 
  -- Faidon Liambotis <paravoid@debian.org>
 
-Index: asterisk-1.4.20.1/main/Makefile
+Index: asterisk-1.4.22/main/Makefile
 ===================================================================
---- asterisk-1.4.20.1.orig/main/Makefile	2008-06-06 15:57:55.000000000 +0200
-+++ asterisk-1.4.20.1/main/Makefile	2008-06-06 15:58:24.000000000 +0200
-@@ -131,13 +131,6 @@
+--- asterisk-1.4.22.orig/main/Makefile	2008-10-17 16:43:09.000000000 +0200
++++ asterisk-1.4.22/main/Makefile	2008-10-17 16:43:44.000000000 +0200
+@@ -126,13 +126,6 @@
  AST_EMBED_LIBS:=$(foreach dep,$(EMBED_LIBS),$(value $(dep)))
  OBJS:=$(sort $(OBJS))
  
@@ -25,7 +25,7 @@ Index: asterisk-1.4.20.1/main/Makefile
  asterisk: $(OBJS) editline/libedit.a db1-ast/libdb1.a $(AST_EMBED_LDSCRIPTS)
  	@$(ASTTOPDIR)/build_tools/make_build_h > $(ASTTOPDIR)/include/asterisk/build.h.tmp
  	@if cmp -s $(ASTTOPDIR)/include/asterisk/build.h.tmp $(ASTTOPDIR)/include/asterisk/build.h ; then echo ; else \
-@@ -146,11 +139,7 @@
+@@ -141,11 +134,7 @@
  	@rm -f $(ASTTOPDIR)/include/asterisk/build.h.tmp
  	@$(CC) -c -o buildinfo.o $(ASTCFLAGS) buildinfo.c
  	$(ECHO_PREFIX) echo "   [LD] $^ -> $@"

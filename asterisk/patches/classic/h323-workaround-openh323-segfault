@@ -13,9 +13,11 @@ Should be removed when #438815 closes.
 
  -- Faidon Liambotis <paravoid@debian.org>
 
---- a/main/loader.c
-+++ b/main/loader.c
-@@ -359,6 +359,12 @@ static struct ast_module *load_dynamic_m
+Index: asterisk-1.4.22/main/loader.c
+===================================================================
+--- asterisk-1.4.22.orig/main/loader.c	2008-10-17 16:43:09.000000000 +0200
++++ asterisk-1.4.22/main/loader.c	2008-10-17 16:43:47.000000000 +0200
+@@ -355,6 +355,12 @@
  
  	strcpy(resource_being_loaded->resource, resource);
  
