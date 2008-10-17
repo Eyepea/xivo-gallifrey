@@ -109,7 +109,8 @@ class BaseCommand:
                 return
         def updates(self):
                 return
-        
+        def read_queuelog(self):
+                return
         def getprofilelist(self):
                 return []
         # connection

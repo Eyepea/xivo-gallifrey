@@ -635,7 +635,8 @@ while True: # loops over the reloads
         commandclass.set_configs(configs)
         commandclass.set_presence(cconf.read_section('presence', config_presence))
         commandclass.set_ctilog(ctilog)
-        
+        commandclass.read_queuelog()
+
         for ctx in contextlist:
                 xivoconf_context = cconf.read_section('context', ctx)
                 if len(xivoconf_context) > 0:
