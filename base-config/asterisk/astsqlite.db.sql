@@ -15,32 +15,6 @@ CREATE INDEX accessfeatures__idx__commented ON accessfeatures(commented);
 CREATE UNIQUE INDEX accessfeatures__uidx__host_type ON accessfeatures(host,feature);
 
 
-DROP TABLE agent;
-CREATE TABLE agent (
- id integer unsigned,
- cat_metric integer unsigned NOT NULL DEFAULT 0,
- var_metric integer unsigned NOT NULL DEFAULT 0,
- commented tinyint(1) NOT NULL DEFAULT 0,
- filename varchar(128) NOT NULL,
- category varchar(128) NOT NULL,
- var_name varchar(128) NOT NULL,
- var_val varchar(255),
- PRIMARY KEY(id)
-);
-
-CREATE INDEX agent__idx__cat_metric ON agent(cat_metric);
-CREATE INDEX agent__idx__var_metric ON agent(var_metric);
-CREATE INDEX agent__idx__commented ON agent(commented);
-CREATE INDEX agent__idx__filename ON agent(filename);
-CREATE INDEX agent__idx__category ON agent(category);
-CREATE INDEX agent__idx__var_name ON agent(var_name);
-CREATE INDEX agent__idx__var_val ON agent(var_val);
-
-INSERT INTO agent VALUES (1,0,0,0,'agents.conf','general','persistentagents','yes');
-INSERT INTO agent VALUES (2,0,0,0,'agents.conf','general','multiplelogin','yes');
-INSERT INTO agent VALUES (3,1,1000000,0,'agents.conf','agents','group',1);
-
-
 DROP TABLE agentfeatures;
 CREATE TABLE agentfeatures (
  id integer unsigned,
@@ -779,6 +753,32 @@ CREATE INDEX serverfeatures__idx__feature ON serverfeatures(feature);
 CREATE INDEX serverfeatures__idx__type ON serverfeatures(type);
 CREATE INDEX serverfeatures__idx__commented ON serverfeatures(commented);
 CREATE UNIQUE INDEX serverfeatures__uidx__serverid_feature_type ON serverfeatures(serverid,feature,type);
+
+
+DROP TABLE staticagent;
+CREATE TABLE staticagent (
+ id integer unsigned,
+ cat_metric integer unsigned NOT NULL DEFAULT 0,
+ var_metric integer unsigned NOT NULL DEFAULT 0,
+ commented tinyint(1) NOT NULL DEFAULT 0,
+ filename varchar(128) NOT NULL,
+ category varchar(128) NOT NULL,
+ var_name varchar(128) NOT NULL,
+ var_val varchar(255),
+ PRIMARY KEY(id)
+);
+
+CREATE INDEX staticagent__idx__cat_metric ON staticagent(cat_metric);
+CREATE INDEX staticagent__idx__var_metric ON staticagent(var_metric);
+CREATE INDEX staticagent__idx__commented ON staticagent(commented);
+CREATE INDEX staticagent__idx__filename ON staticagent(filename);
+CREATE INDEX staticagent__idx__category ON staticagent(category);
+CREATE INDEX staticagent__idx__var_name ON staticagent(var_name);
+CREATE INDEX staticagent__idx__var_val ON staticagent(var_val);
+
+INSERT INTO staticagent VALUES (1,0,0,0,'agents.conf','general','persistentagents','yes');
+INSERT INTO staticagent VALUES (2,0,0,0,'agents.conf','general','multiplelogin','yes');
+INSERT INTO staticagent VALUES (3,1,1000000,0,'agents.conf','agents','group',1);
 
 
 DROP TABLE staticiax;
