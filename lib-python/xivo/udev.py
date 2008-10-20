@@ -514,50 +514,41 @@ def consider_rule_for_rollback(rule, src_set):
     return name_field and (len(rule) > 2) and (name_field[0] == "=") and (name_field[1] in src_set)
 
 
-def rename_persistent_net_rules(src_dst_lst, (procedure_init, procedure_edit, procedure_preup, procedure_rollback)):
+def rename_persistent_net_rules(src_dst_lst, out_renamer):
     """
     @src_dst_lst: [(src, dst), ...]
         where @src is a network interface name that appears in
         "z25_persistent-net.rules" and must be renamed to @dst
     
-    @procedure_init(src_dst_lst, pure_dst_set) -> context:
-        function called just after initial checks that can do its own
-        additional checks (and raise an exception on failure) and setup a
-        @context, which it returns - note that the context is opaque to
-        rename_persistent_net_rules()
+    @out_renamer:
+        class that implements non udev procedures needed to complete the
+        renaming operations
         
-        @src_dst_lst:
-            directly passed from the same argument of
-            rename_persistent_net_rules() - must not be modified
+        Must implement the following interface:
         
-        @pure_dst_set:
-            set of target names that are not also source names
-    
-    @procedure_edit(context):
-        function called after "z25_persistent-net.rules" has been modified
-        
-        @context:
-            initially returned by procedure_init() then passed between
-            various other @procedure functions - never modified by
-            rename_persistent_net_rules()
-    
-    @procedure_preup(context):
-        function called just before the attempt to re-up the interfaces
-        
-        @context:
-            initially returned by procedure_init() then passed between
-            various other @procedure functions - never modified by
-            rename_persistent_net_rules()
-    
-    @procedure_rollback(context):
-        function called if an Exception is raised between the beginning of
-        the call to procedure_edit() and the beginning of the call to
-        procedure_preup()
-        
-        @context:
-            initially returned by procedure_init() then passed between
-            various other @procedure functions - never modified by
-            rename_persistent_net_rules()
+        class out_renamer:
+            def __init__(self, src_dst_lst, pure_dst_set):
+                Instantiation is tried just after initial checks.
+                __init__() can do its own additional checks (and raise
+                an exception on failure).
+                
+                @src_dst_lst:
+                    directly passed from the same argument of
+                    rename_persistent_net_rules()
+                    must not be modified (but can be saved)
+                @pure_dst_set:
+                    set of target names that are not also source names
+                    must not be modified (can be saved)
+            
+            def edit(self):
+                called after "z25_persistent-net.rules" has been modified
+            
+            def preup(self):
+                called just before the attempt to re-up the interfaces
+            
+            def rollback(self):
+                called if an exception is raised resulting in a potential
+                need to undo the work of edit
     
     XXX: On external failure (kill -9, power outage), a small time window
     remains where the configuration could be leaved in an inconsistent
@@ -580,7 +571,7 @@ def rename_persistent_net_rules(src_dst_lst, (procedure_init, procedure_edit, pr
     start_needed = False
     runtime_renamed_possible = False
     
-    context = procedure_init(src_dst_lst, pure_dst_set)
+    context = out_renamer(src_dst_lst, pure_dst_set)
     
     lock_rules_file(PERSISTENT_NET_RULES_FILE)
     locked = True
@@ -606,7 +597,7 @@ def rename_persistent_net_rules(src_dst_lst, (procedure_init, procedure_edit, pr
         try:
             replace_simple_in_file_nolock(PERSISTENT_NET_RULES_FILE, replacement)
             
-            procedure_edit(context, src_dst_lst, pure_dst_set)
+            context.edit()
             
             unlock_rules_file(PERSISTENT_NET_RULES_FILE)
             locked = False
@@ -618,7 +609,7 @@ def rename_persistent_net_rules(src_dst_lst, (procedure_init, procedure_edit, pr
             runtime_renamed_possible = True
             trigger()
             
-            procedure_preup(context)
+            context.preup()
         except:
             log.exception("rename_persistent_net_rules: error during ethernet interface renaming, will rollback")
             
@@ -626,7 +617,7 @@ def rename_persistent_net_rules(src_dst_lst, (procedure_init, procedure_edit, pr
                 lock_rules_file(PERSISTENT_NET_RULES_FILE)
                 locked = True
             
-            procedure_rollback(context)
+            context.rollback()
             
             replace_simple_in_file_nolock(PERSISTENT_NET_RULES_FILE, rollback)
             

@@ -1609,48 +1609,52 @@ def phy_free_in_conf(conf, ifname):
     return conf['netIfaces'].get(ifname, 'void') == 'void'
 
 
-def proc_reneth_init(src_dst_lst, pure_dst_set):
+class EthernetRenamer(object):
     """
-    Initialization procedure for ethernet interface renaming/swapping
+    Class of operations passed to udev.rename_persistent_net_rules()
+    Implements non udev procedures needed to complete an udev based
+    renaming of Ethernet interfaces.
     """
-    config = load_current_configuration()
-    for pure_dst in pure_dst_set:
-        if not phy_free_in_conf(config, pure_dst):
-            raise ValueError, "Target interface name busy in XIVO configuration: %r" % pure_dst
-    for src, dst in src_dst_lst:
-        if src not in config['netIfaces']:
-            raise ValueError, "Source interface name does not exist in XIVO configuration: %r" % src
-        if not netif_source_name(src):
-            raise ValueError, "Invalid source interface name %r" % src
-        if not netif_target_name(dst):
-            raise ValueError, "Invalid target interface name %r" % dst
-    return config
+    def __init__(self, src_dst_lst, pure_dst_set):
+        self.config = load_current_configuration()
+        for pure_dst in pure_dst_set:
+            if not phy_free_in_conf(self.config, pure_dst):
+                raise ValueError, "Target interface name busy in XIVO configuration: %r" % pure_dst
+        for src, dst in src_dst_lst:
+            if src not in self.config['netIfaces']:
+                raise ValueError, "Source interface name does not exist in XIVO configuration: %r" % src
+            if not netif_source_name(src):
+                raise ValueError, "Invalid source interface name %r" % src
+            if not netif_target_name(dst):
+                raise ValueError, "Invalid target interface name %r" % dst
+        self.src_dst_lst = src_dst_lst
+        self.pure_dst_set = pure_dst_set
 
+    def edit(self):
+        """
+        Do the change, initiate a transaction but do not complete it.
+        """
+        orig_netIfaces = dict(self.config['netIfaces'])
+        for src, dst in self.src_dst_lst:
+            self.config['netIfaces'][dst] = orig_netIfaces[src]
+            del self.config['netIfaces'][src]
+        save_configuration_initiate_transaction(self.config)
 
-def proc_reneth_edit(config, src_dst_lst, pure_dst_set):
-    """
-    Edition procedure for ethernet interface renaming
-    """
-    orig_netIfaces = dict(config['netIfaces'])
-    for src, dst in src_dst_lst:
-        config['netIfaces'][dst] = orig_netIfaces[src]
-        del config['netIfaces'][src]
-    save_configuration_initiate_transaction(config)
+    @staticmethod
+    def preup():
+        """
+        Run the transaction to completion.
+        """
+        transaction_system_configuration()
 
-
-def proc_reneth_preup(config):
-    """
-    Commit procedure for ethernet interface renaming
-    """
-    transaction_system_configuration()
-
-
-def proc_reneth_rollback(config):
-    """
-    Rollback procedure for ethernet interface renaming
-    """
-    if transaction_just_initiatiated():
-        undo_transaction_initiation()
+    @staticmethod
+    def rollback():
+        """
+        Rollback the transaction (but do nothing if no transaction has
+        been just initiated).
+        """
+        if transaction_just_initiatiated():
+            undo_transaction_initiation()
 
 
 def rename_ethernet_interface(old_name, new_name):
@@ -1665,7 +1669,7 @@ def rename_ethernet_interface(old_name, new_name):
     # hard way (kill -9, power failure) and rollback if possible.
     # This will be better placed in an other function.
 
-    udev.rename_persistent_net_rules([(old_name, new_name)], (proc_reneth_init, proc_reneth_edit, proc_reneth_preup, proc_reneth_rollback))
+    udev.rename_persistent_net_rules([(old_name, new_name)], EthernetRenamer)
 
 
 def swap_ethernet_interfaces(name1, name2):
@@ -1674,4 +1678,4 @@ def swap_ethernet_interfaces(name1, name2):
     """
     # NOTE: see also rename_ethernet_interface() for various generic comments
 
-    udev.rename_persistent_net_rules([(name1, name2), (name2, name1)], (proc_reneth_init,  proc_reneth_edit, proc_reneth_preup, proc_reneth_rollback))
+    udev.rename_persistent_net_rules([(name1, name2), (name2, name1)], EthernetRenamer)
