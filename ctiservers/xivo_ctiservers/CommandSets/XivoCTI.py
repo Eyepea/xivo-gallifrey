@@ -1198,7 +1198,11 @@ class XivoCTICommand(BaseCommand):
                 if uid1info['link'].startswith('Agent/') and 'join' in uid1info:
                         queuename = uid1info['join'].get('queue')
                         log.info('STAT LINK %s %s %s' % (astid, queuename, uid1info['link']))
-                        if astid in self.stats_queues and queuename in self.stats_queues[astid] and 'CONNECT' in self.stats_queues[astid][queuename]:
+                        if astid in self.stats_queues:
+                                if queuename not in self.stats_queues[astid]:
+                                        self.stats_queues[astid][queuename] = {}
+                                if 'CONNECT' not in self.stats_queues[astid][queuename]:
+                                        self.stats_queues[astid][queuename].update({'CONNECT' : []})
                                 time_now = int(time.time())
                                 time_1ha = time_now - 3600
                                 toremove = []
@@ -1961,7 +1965,11 @@ class XivoCTICommand(BaseCommand):
                         self.uniqueids[astid][uniqueid]['join'] = {'queue' : queue,
                                                                    'time' : time.time()}
                 log.info('STAT JOIN %s %s %s %s' % (astid, queue, chan, uniqueid))
-                if astid in self.stats_queues and queue in self.stats_queues[astid] and 'ENTERQUEUE' in self.stats_queues[astid][queue]:
+                if astid in self.stats_queues:
+                        if queue not in self.stats_queues[astid]:
+                                self.stats_queues[astid][queue] = {}
+                        if 'ENTERQUEUE' not in self.stats_queues[astid][queue]:
+                                self.stats_queues[astid][queue].update({'ENTERQUEUE' : []})
                         time_now = int(time.time())
                         time_1ha = time_now - 3600
                         toremove = []
