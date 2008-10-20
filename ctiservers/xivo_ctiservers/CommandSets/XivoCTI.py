@@ -403,7 +403,7 @@ class XivoCTICommand(BaseCommand):
                                 del userinfo['capaid']
                                 userinfo['last-version'] = userinfo['login']['version']
                                 del userinfo['login']
-                                userinfo['state'] = 'unknown'
+                                userinfo['state'] = 'xivo_unknown'
                                 self.__update_availstate__(userinfo, userinfo.get('state'))
                         else:
                                 log.warning('userinfo does not contain login field : %s' % userinfo)
@@ -668,7 +668,7 @@ class XivoCTICommand(BaseCommand):
                                              'phonenum' : d[6],
                                              'xivo_userid' : d[10],
                                              
-                                             'state'    : 'unknown',
+                                             'state'    : 'xivo_unknown',
                                              'mwi-waiting' : '0',
                                              'mwi-old' : '0',
                                              'mwi-new' : '0'}
@@ -692,7 +692,7 @@ class XivoCTICommand(BaseCommand):
                                                'xivo_userid' : uitem.get('id'),
                                                'enablevoicemail' : uitem.get('enablevoicemail'),
                                                
-                                               'state'    : 'unknown',
+                                               'state'    : 'xivo_unknown',
                                                'mwi-waiting' : '0',
                                                'mwi-old' : '0',
                                                'mwi-new' : '0'}
@@ -721,7 +721,7 @@ class XivoCTICommand(BaseCommand):
                                                      'phonenum' : d[4],
                                                      'xivo_userid' : '-1',
                                                      
-                                                     'state'    : 'unknown',
+                                                     'state'    : 'xivo_unknown',
                                                      'mwi-waiting' : '0',
                                                      'mwi-old' : '0',
                                                      'mwi-new' : '0'}
