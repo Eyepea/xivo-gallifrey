@@ -157,14 +157,17 @@ class XivoCTICommand(BaseCommand):
                         cmd.struct = {}
                 return cmd
         
-        def reset(self, mode, conn):
+        def reset(self, mode, conn = None):
                 """
                 Tells a CTI client that the server will shortly be down.
                 """
-                tosend = { 'class' : 'serverdown',
-                           'direction' : 'client',
-                           'mode' : mode }
-                conn.sendall(cjson.encode(tosend) + '\n')
+                if conn is None:
+                        self.__fill_ctilog__('daemon stop', mode)
+                else:
+                        tosend = { 'class' : 'serverdown',
+                                   'direction' : 'client',
+                                   'mode' : mode }
+                        conn.sendall(cjson.encode(tosend) + '\n')
                 return
         
         def transfer_addbuf(self, req, buf):
@@ -2083,7 +2086,7 @@ class XivoCTICommand(BaseCommand):
 
                                 if dircomm is not None and dircomm == 'xivoserver' and classcomm in self.commnames:
                                         log.info('command attempt %s from %s' % (classcomm, username))
-                                        if classcomm not in ['keepalive', 'availstate']:
+                                        if classcomm not in ['keepalive', 'availstate', 'actionfiche']:
                                                 self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm)
                                         if classcomm == 'meetme':
                                                 argums = icommand.struct.get('command')
@@ -2204,6 +2207,7 @@ class XivoCTICommand(BaseCommand):
                                         elif classcomm == 'actionfiche':
                                                 log.info('%s : %s' % (classcomm, icommand.struct))
                                                 actionid = icommand.struct.get('buttonaction')[1]
+                                                self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm, icommand.struct.get('buttonaction')[0])
                                                 if actionid in self.uniqueids[astid]:
                                                         log.info('%s : %s' % (classcomm, self.uniqueids[astid][actionid]))
 

@@ -824,12 +824,14 @@ while True: # loops over the reloads
                                 else:
                                         s.close()
                         if askedtoquit:
+                                commandclass.reset('stop')
                                 for t in filter(lambda x: x.getName() != 'MainThread', threading.enumerate()):
                                         print '--- (stop) killing thread <%s>' % t.getName()
                                         t._Thread__stop()
                                 daemonize.unlock_pidfile(PIDFILE)
                                 sys.exit(5)
                         else:
+                                commandclass.reset('reload')
                                 askedtoquit = True
                                 for t in filter(lambda x: x.getName() != 'MainThread', threading.enumerate()):
                                         print '--- (reload) the thread <%s> remains' % t.getName()
