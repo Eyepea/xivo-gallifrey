@@ -35,7 +35,7 @@ from xivo.BackSQL import backmysql
 
 log = logging.getLogger("xivo.xivo_helpers")
 
-AGI_CONFFILE = "/etc/asterisk/xivo_agi.conf"
+AGI_CONFFILE = "/etc/pf-xivo/agid.conf"
 
 find_asterisk_pattern_char = re.compile('[[NXZ!.]').search
 

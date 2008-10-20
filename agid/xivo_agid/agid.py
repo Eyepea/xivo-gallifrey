@@ -35,7 +35,7 @@ from xivo_agid import fastagi
 NAME = "agid"
 VERSION_MAJOR = 0
 VERSION_MINOR = 1
-AGI_CONFFILE = "/etc/asterisk/xivo_agi.conf"
+AGI_CONFFILE = "/etc/pf-xivo/agid.conf"
 LISTEN_ADDR_DEFAULT = "127.0.0.1"
 LISTEN_PORT_DEFAULT = 4573
 CONN_POOL_SIZE_DEFAULT = 10
