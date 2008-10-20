@@ -908,17 +908,18 @@ class XivoCTICommand(BaseCommand):
                                 src = event.get('CallerID1')
                                 chan = event.get('Channel1')
                                 queuename = extraevent.get('xivo_queuename')
-
+                                
                                 itemdir['xivo-channel'] = chan
                                 itemdir['xivo-queuename'] = queuename
                                 itemdir['xivo-callerid'] = src
                                 itemdir['xivo-agentid'] = dst
+                                itemdir['xivo-uniqueid'] = event.get('Uniqueid1')
                                 
                                 ag_id = self.__find_agentid_by_agentnum__(astid, dst)
                                 for uinfo in self.ulist_ng.userlist.itervalues():
                                         if uinfo.get('agentnum') == ag_id:
                                                 userinfos.append(uinfo)
-
+                                
                         elif where == 'agi':
                                 r_caller = extraevent.get('caller_num')
                                 r_called = extraevent.get('called_num')
@@ -933,7 +934,7 @@ class XivoCTICommand(BaseCommand):
 
                                 linestosend.append('<internal name="called"><![CDATA[%s]]></internal>' % r_called)
 
-                        elif where == 'link':
+                        elif where in ['link', 'unlink']:
                                 itemdir['xivo-channel'] = event.get('Channel1')
                                 itemdir['xivo-channelpeer'] = event.get('Channel2')
                                 itemdir['xivo-uniqueid'] = event.get('Uniqueid1')
@@ -942,17 +943,7 @@ class XivoCTICommand(BaseCommand):
                                 for uinfo in self.ulist_ng.userlist.itervalues():
                                         if uinfo.get('astid') == astid and uinfo.get('phonenum') == itemdir['xivo-calledid']:
                                                 userinfos.append(uinfo)
-
-                        elif where == 'unlink':
-                                itemdir['xivo-channel'] = event.get('Channel1')
-                                itemdir['xivo-channelpeer'] = event.get('Channel2')
-                                itemdir['xivo-uniqueid'] = event.get('Uniqueid1')
-                                itemdir['xivo-callerid'] = event.get('CallerID1')
-                                itemdir['xivo-calledid'] = event.get('CallerID2')
-                                for uinfo in self.ulist_ng.userlist.itervalues():
-                                        if uinfo.get('astid') == astid and uinfo.get('phonenum') == itemdir['xivo-calledid']:
-                                                userinfos.append(uinfo)
-
+                                
                         elif where == 'hangup':
                                 # print where, event
                                 itemdir['xivo-channel'] = event.get('Channel')
