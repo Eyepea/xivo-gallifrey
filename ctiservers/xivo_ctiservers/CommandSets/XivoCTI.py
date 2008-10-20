@@ -440,6 +440,15 @@ class XivoCTICommand(BaseCommand):
                         repstr = cjson.encode(tosend)
                 elif phase == xivo_commandsets.CMD_LOGIN_CAPAS:
                         capaid = userinfo.get('capaid')
+                        
+                        counts = {}
+                        for istate in self.presence.getstates():
+                                counts[istate] = 0
+                        for iuserinfo in self.ulist_ng.userlist.itervalues():
+                                if iuserinfo['state'] in self.presence.getstates():
+                                        counts[iuserinfo['state']] += 1
+                        cstatus = self.presence.countstatus(counts)
+                        
                         tosend = { 'class' : 'login_capas_ok',
                                    'direction' : 'client',
                                    'capafuncs' : self.capas[capaid].tostring(self.capas[capaid].all()),
@@ -447,7 +456,9 @@ class XivoCTICommand(BaseCommand):
                                    'appliname' : self.capas[capaid].appliname,
                                    'capapresence' : { 'names'   : self.presence.getdisplaydetails(),
                                                       'state'   : userinfo.get('state'),
-                                                      'allowed' : self.presence.allowed(userinfo.get('state')) } }
+                                                      'allowed' : self.presence.allowed(userinfo.get('state')) },
+                                   'presencecounter' : cstatus
+                                   }
                         repstr = cjson.encode(tosend)
                         # if 'features' in capa_user:
                         # repstr += ';capas_features:%s' %(','.join(configs[astid].capafeatures))
