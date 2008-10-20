@@ -176,6 +176,8 @@ def normalize_ipv4_address(addr):
     """
     Return a canonical string repr of addr (which must be a valid IPv4)
     
+    >>> normalize_ipv4_address("1.2.3.077")
+    '1.2.3.63'
     >>> normalize_ipv4_address("1.2.3.4")
     '1.2.3.4'
     >>> normalize_ipv4_address("1.2.259")
@@ -186,6 +188,8 @@ def normalize_ipv4_address(addr):
     '1.0.0.13'
     >>> normalize_ipv4_address("1.16383")
     '1.0.63.255'
+    >>> normalize_ipv4_address("0xA.0xa.0x00a.012")
+    '10.10.10.10'
     """
     return socket.inet_ntoa(socket.inet_aton(addr))
 
@@ -283,6 +287,10 @@ def parse_ipv4(straddr):
     Return an IPv4 address as a 4uple of ints
     @straddr: IPv4 address stored as a string
 
+    >>> parse_ipv4("192.168.0.050")
+    (192, 168, 0, 40)
+    >>> parse_ipv4("192.168.0.0xA")
+    (192, 168, 0, 10)
     >>> parse_ipv4("192.168.0.42")
     (192, 168, 0, 42)
     >>> parse_ipv4("192.168.42")

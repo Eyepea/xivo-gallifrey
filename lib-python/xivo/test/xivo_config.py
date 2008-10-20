@@ -149,7 +149,7 @@ outerSpace:
 resolvConf:
     nameservers:
     - 192.168.0.50
-    - 192.168.0.050
+    - 192.168.0.50
 ipConfs:
     static_001:
         address:     192.168.0.200
