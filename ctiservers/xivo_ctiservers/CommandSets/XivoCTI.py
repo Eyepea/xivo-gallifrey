@@ -827,7 +827,7 @@ class XivoCTICommand(BaseCommand):
 
 
         sheet_allowed_events = ['incomingqueue', 'incomingdid',
-                                'agentcalled', 'agentselected',
+                                'agentcalled', 'agentlinked', 'agentunlinked',
                                 'agi', 'link', 'unlink', 'hangup',
                                 'faxreceived',
                                 'callmissed', # see GG (in order to tell a user that he missed a call)
@@ -903,7 +903,7 @@ class XivoCTICommand(BaseCommand):
                                 itemdir['xivo-faxfile'] = event.get('FileName')
                                 itemdir['xivo-faxstatus'] = event.get('PhaseEString')
                                 
-                        elif where == 'agentselected':
+                        elif where in ['agentlinked', 'agentunlinked']:
                                 dst = event.get('Channel2')[6:]
                                 src = event.get('CallerID1')
                                 chan = event.get('Channel1')
@@ -913,11 +913,11 @@ class XivoCTICommand(BaseCommand):
                                 itemdir['xivo-queuename'] = queuename
                                 itemdir['xivo-callerid'] = src
                                 itemdir['xivo-agentid'] = dst
-
+                                
+                                ag_id = self.__find_agentid_by_agentnum__(astid, dst)
                                 for uinfo in self.ulist_ng.userlist.itervalues():
-                                        if 'agentnum' in uinfo and uinfo.get('agentnum') == agentnum:
+                                        if uinfo.get('agentnum') == ag_id:
                                                 userinfos.append(uinfo)
-                                                break
 
                         elif where == 'agi':
                                 r_caller = extraevent.get('caller_num')
@@ -1251,9 +1251,9 @@ class XivoCTICommand(BaseCommand):
                         # Any less-tricky-method is welcome, though.
                         if chan1 in self.queues_channels_list[astid]:
                                 qname = self.queues_channels_list[astid][chan1]
-                                del self.queues_channels_list[astid][chan1]
+                                ## del self.queues_channels_list[astid][chan1]
                                 extraevent = {'xivo_queuename' : qname}
-                                self.__sheet_alert__('agentselected', astid, DEFAULTCONTEXT, event, extraevent)
+                                self.__sheet_alert__('agentlinked', astid, DEFAULTCONTEXT, event, extraevent)
 
                 if uinfo1:
                         status = 'onlineoutgoing'
@@ -1302,6 +1302,11 @@ class XivoCTICommand(BaseCommand):
                                         self.__presence_action__(astid, anum, 'postcall')
                         msg = self.__build_agupdate__(['agentunlink', astid, chan2])
                         self.__send_msg_to_cti_clients__(msg)
+                        if chan1 in self.queues_channels_list[astid]:
+                                qname = self.queues_channels_list[astid][chan1]
+                                del self.queues_channels_list[astid][chan1]
+                                extraevent = {'xivo_queuename' : qname}
+                                self.__sheet_alert__('agentunlinked', astid, DEFAULTCONTEXT, event, extraevent)
 
                 for uinfo in [uinfo1, uinfo2]:
                         if uinfo:
