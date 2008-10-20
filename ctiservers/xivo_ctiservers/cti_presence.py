@@ -28,15 +28,17 @@ class Presence:
         def __init__(self, config):
                 self.details = {}
                 self.states = []
-                self.statesnames = {}
+                self.displaydetails = {}
                 self.defaultstate = 'available'
                 if config is not  None:
                         for stateid, stateprops in config.iteritems():
                                 splitprops = stateprops.split(',')
-                                if len(splitprops) > 2:
+                                if len(splitprops) > 4:
                                         longname = splitprops[0]
                                         allowednext = splitprops[1]
                                         action = splitprops[2]
+                                        color = splitprops[3]
+                                        available = splitprops[4]
                                         
                                         if len(allowednext) > 0:
                                                 allowednexts = allowednext.split(':')
@@ -46,12 +48,14 @@ class Presence:
                                                 actions = action.split(':')
                                         else:
                                                 actions = []
+
                                         self.details.update( { stateid :
-                                                               { 'longname' : longname,
-                                                                 'allowednexts' : allowednexts,
-                                                                 'actions' : actions }
+                                                               { 'allowednexts' : allowednexts,
+                                                                 'actions' : actions,
+                                                                 'available' : available}
                                                                } )
-                                        self.statesnames[stateid] = longname
+                                        self.displaydetails[stateid] = {'longname' : longname,
+                                                                        'color' : color}
                                         self.states.append(stateid)
                 # to add : actions associated with status : change queue / remove or pause from queue
                 return
@@ -59,11 +63,24 @@ class Presence:
         def getstates(self):
                 return self.states
 
-        def getstatesnames(self):
-                return self.statesnames
+        def getdisplaydetails(self):
+                return self.displaydetails
+
+        def getcolors(self):
+                return self.colors
 
         def getdefaultstate(self):
                 return self.defaultstate
+
+        def countstatus(self, counts):
+                nok = 0
+                nko = 0
+                for statename, count in counts.iteritems():
+                        if self.details[statename]['available'] == 'ok':
+                                nok += count
+                        elif self.details[statename]['available'] == 'ko':
+                                nko += count
+                return [nok, nko]
 
         def allowed(self, status):
                 rep = {}

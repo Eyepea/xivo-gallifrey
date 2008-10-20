@@ -442,7 +442,7 @@ class XivoCTICommand(BaseCommand):
                                    'capafuncs' : self.capas[capaid].tostring(self.capas[capaid].all()),
                                    'capaxlets' : self.capas[capaid].capadisps,
                                    'appliname' : self.capas[capaid].appliname,
-                                   'capapresence' : { 'names'   : self.presence.getstatesnames(),
+                                   'capapresence' : { 'names'   : self.presence.getdisplaydetails(),
                                                       'state'   : userinfo.get('state'),
                                                       'allowed' : self.presence.allowed(userinfo.get('state')) } }
                         repstr = cjson.encode(tosend)
@@ -586,7 +586,13 @@ class XivoCTICommand(BaseCommand):
                                                            'astid' : astid,
                                                            'deltalist' : updatestatus[function] }
                                                 self.__send_msg_to_cti_clients__(cjson.encode(tosend))
-
+                                if itemname == 'queues':
+                                        for qname, qq in self.weblist['queues'][astid].queuelist.iteritems():
+                                                qq['stats']['Xivo-Join'] = 0
+                                                qq['stats']['Xivo-Link'] = 0
+                                                if qname in self.stats_queues[astid]:
+                                                        qq['stats']['Xivo-Join'] = len(self.stats_queues[astid][qname].get('ENTERQUEUE', []))
+                                                        qq['stats']['Xivo-Link'] = len(self.stats_queues[astid][qname].get('CONNECT', []))
                         self.askstatus(astid, self.weblist['phones'][astid].rough_phonelist)
                 # check : agentnumber should be unique
                 return
@@ -1212,12 +1218,8 @@ class XivoCTICommand(BaseCommand):
                                 for t in toremove:
                                         self.stats_queues[astid][queuename]['CONNECT'].remove(t)
                                 self.stats_queues[astid][queuename]['CONNECT'].append(time_now)
-                                self.__send_msg_to_cti_clients__(cjson.encode({'class' : 'statistics',
-                                                                               'direction': 'client',
-                                                                               'what' : 'calllinked',
-                                                                               'queuename' : queuename,
-                                                                               'value' : len(self.stats_queues[astid][queuename]['CONNECT'])}))
-                                
+                                self.weblist['queues'][astid].queuelist[queuename]['stats']['Xivo-Link'] = len(self.stats_queues[astid][queuename]['CONNECT'])
+
                 phoneid1 = self.__phoneid_from_channel__(astid, chan1)
                 phoneid2 = self.__phoneid_from_channel__(astid, chan2)
                 uinfo1 = self.__userinfo_from_phoneid__(astid, phoneid1)
@@ -1979,12 +1981,8 @@ class XivoCTICommand(BaseCommand):
                         for t in toremove:
                                 self.stats_queues[astid][queue]['ENTERQUEUE'].remove(t)
                         self.stats_queues[astid][queue]['ENTERQUEUE'].append(time_now)
-                        self.__send_msg_to_cti_clients__(cjson.encode({'class' : 'statistics',
-                                                                       'direction': 'client',
-                                                                       'what' : 'queuejoined',
-                                                                       'queuename' : queue,
-                                                                       'value' : len(self.stats_queues[astid][queue]['ENTERQUEUE'])}))
-                        
+                        self.weblist['queues'][astid].queuelist[queue]['stats']['Xivo-Join'] = len(self.stats_queues[astid][queue]['ENTERQUEUE'])
+
                 self.__sheet_alert__('incomingqueue', astid, DEFAULTCONTEXT, event)
                 log.info('AMI Join (Queue) %s %s %s %s' % (astid, queue, chan, count))
                 self.weblist['queues'][astid].queueentry_update(queue, chan, position, '0',
@@ -2085,7 +2083,7 @@ class XivoCTICommand(BaseCommand):
 
                                 if dircomm is not None and dircomm == 'xivoserver' and classcomm in self.commnames:
                                         log.info('command attempt %s from %s' % (classcomm, username))
-                                        if classcomm not in ['keepalive']:
+                                        if classcomm not in ['keepalive', 'availstate']:
                                                 self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm)
                                         if classcomm == 'meetme':
                                                 argums = icommand.struct.get('command')
@@ -2124,7 +2122,7 @@ class XivoCTICommand(BaseCommand):
                                                         repstr = self.__update_availstate__(userinfo, icommand.struct.get('availstate'))
                                                         self.__presence_action__(astid, self.__agentnum__(userinfo),
                                                                                  icommand.struct.get('availstate'))
-                                                        
+                                                        self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm)
                                         elif classcomm == 'message':
                                                 if self.capas[capaid].match_funcs(ucapa, 'messages'):
                                                         self.__send_msg_to_cti_clients__(self.message_srv2clt('%s/%s' % (astid, username),
@@ -2984,19 +2982,31 @@ class XivoCTICommand(BaseCommand):
                         log.warning('(user %s) : state <%s> is not an allowed one => keeping current <%s>'
                                     % (username, state, userinfo['state']))
 
+                counts = {}
+                for state in self.presence.getstates():
+                        counts[state] = 0
+                for userinfo in self.ulist_ng.userlist.itervalues():
+                        if userinfo['state'] in self.presence.getstates():
+                                counts[userinfo['state']] += 1
+                cstatus = self.presence.countstatus(counts)
+
                 tosend = { 'class' : 'presence',
                            'direction' : 'client',
                            'company' : company,
                            'userid' : username,
                            'capapresence' : { 'state' : userinfo['state'],
-                                              'allowed' : self.presence.allowed(userinfo['state']) } }
+                                              'allowed' : self.presence.allowed(userinfo['state']) },
+                           'presencecounter' : cstatus
+                           }
                 self.__send_msg_to_cti_client__(userinfo, cjson.encode(tosend))
                 
                 tosend = { 'class' : 'presence',
                            'direction' : 'client',
                            'company' : company,
                            'userid' : username,
-                           'capapresence' : { 'state' : userinfo['state'] } }
+                           'capapresence' : { 'state' : userinfo['state'] },
+                           'presencecounter' : cstatus
+                           }
                 self.__send_msg_to_cti_clients_except__(userinfo, cjson.encode(tosend))
                 return None
 

@@ -60,7 +60,9 @@ class QueueList(AnyList):
                          'del' : lstdel }
 
         queuelocationprops = ['Paused', 'Status', 'Membership', 'Penalty', 'LastCall', 'CallsTaken']
-        queuestats = ['ServicelevelPerf', 'Abandoned', 'Max', 'Completed', 'ServiceLevel', 'Weight', 'Holdtime', 'Calls']
+        queuestats = ['Abandoned', 'Max', 'Completed', 'ServiceLevel', 'Weight', 'Holdtime',
+                      'Xivo-Join', 'Xivo-Link',
+                      'Calls']
 
         def queueentry_update(self, queue, channel, position, wait, calleridnum, calleridname):
                 if queue in self.queuelist:
