@@ -108,7 +108,7 @@ from xivo_ctiservers import xivo_commandsets
 from xivo_ctiservers.CommandSets import *
 from xivo_ctiservers.xivo_commandsets import ctidaemonize as daemonize
 
-PIDFILE = '/var/run/xivo/%s.pid' % DAEMONNAME
+PIDFILE = '/var/run/%s.pid' % DAEMONNAME
 # TODO: command line parameter
 
 BUFSIZE_LARGE = 8192

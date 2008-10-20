@@ -95,6 +95,7 @@ class XivoCTICommand(BaseCommand):
                      'message',
                      'actionfiche',
                      'availstate',
+                     'keepalive',
                      'originate', 'transfer', 'atxfer', 'hangup', 'simplehangup', 'pickup']
         
         def __init__(self, amilist, ctiports, queued_threads_pipe):
@@ -2076,7 +2077,8 @@ class XivoCTICommand(BaseCommand):
 
                                 if dircomm is not None and dircomm == 'xivoserver' and classcomm in self.commnames:
                                         log.info('command attempt %s from %s' % (classcomm, username))
-                                        self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm)
+                                        if classcomm not in ['keepalive']:
+                                                self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm)
                                         if classcomm == 'meetme':
                                                 argums = icommand.struct.get('command')
                                                 if self.capas[capaid].match_funcs(ucapa, 'conference'):
