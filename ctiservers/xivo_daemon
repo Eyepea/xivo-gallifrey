@@ -200,7 +200,10 @@ def manage_webi_connections(connid, msg, sep):
                         try:
                                 astid = ip_reverse_webi[requester_ip]
                                 connid.sendall('%s:ID <%s>\n' % (XIVO_CLI_WEBI_HEADER, astid))
-                                if usefulmsg == 'xivo[userlist,update]':
+                                if usefulmsg in ['xivo[userlist,update]',
+                                                 'xivo[agentlist,update]',
+                                                 'xivo[queuelist,update]',
+                                                 'xivo[grouplist,update]']:
                                         update_userlist[astid] = True
                                         connid.sendall('%s:OK\n' % XIVO_CLI_WEBI_HEADER)
                                         log.info('%s : userlist update request received' % astid)

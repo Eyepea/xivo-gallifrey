@@ -2983,11 +2983,11 @@ class XivoCTICommand(BaseCommand):
                                     % (username, state, userinfo['state']))
 
                 counts = {}
-                for state in self.presence.getstates():
-                        counts[state] = 0
-                for userinfo in self.ulist_ng.userlist.itervalues():
-                        if userinfo['state'] in self.presence.getstates():
-                                counts[userinfo['state']] += 1
+                for istate in self.presence.getstates():
+                        counts[istate] = 0
+                for iuserinfo in self.ulist_ng.userlist.itervalues():
+                        if iuserinfo['state'] in self.presence.getstates():
+                                counts[iuserinfo['state']] += 1
                 cstatus = self.presence.countstatus(counts)
 
                 tosend = { 'class' : 'presence',
