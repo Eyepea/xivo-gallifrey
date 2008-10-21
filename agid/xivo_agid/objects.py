@@ -532,8 +532,8 @@ class Group:
         for event in ('noanswer', 'congestion', 'busy', 'chanunavail'):
             DialAction(self.agi, self.cursor, event, "group", self.id).set_variables()
 
-    def set_caller_id(self, force_rewrite=False):
-        CallerID(self.agi, self.cursor, "group", self.id).set_caller_id(force_rewrite)
+    def set_caller_id(self):
+        CallerID(self.agi, self.cursor, "group", self.id).set_caller_id(force_rewrite=False)
 
 
 class MeetMe:
@@ -664,8 +664,8 @@ class Queue:
         for event in ('noanswer', 'congestion', 'busy', 'chanunavail'):
             DialAction(self.agi, self.cursor, event, "queue", self.id).set_variables()
 
-    def set_caller_id(self, force_rewrite=False):
-        CallerID(self.agi, self.cursor, "queue", self.id).set_caller_id(force_rewrite)
+    def set_caller_id(self):
+        CallerID(self.agi, self.cursor, "queue", self.id).set_caller_id(force_rewrite=False)
 
 
 class Agent:
@@ -888,8 +888,8 @@ class DID:
     def set_dial_actions(self):
         DialAction(self.agi, self.cursor, "answer", "incall", self.id).set_variables()
 
-    def set_caller_id(self, force_rewrite=True):
-        CallerID(self.agi, self.cursor, "incall", self.id).set_caller_id(force_rewrite)
+    def set_caller_id(self):
+        CallerID(self.agi, self.cursor, "incall", self.id).set_caller_id(force_rewrite=True)
 
 
 class Outcall:
@@ -1068,9 +1068,9 @@ class CallerID:
         if not self.mode:
             return
 
-        cidrewritten = bool(self.agi.get_variable('XIVO_CID_REWRITTEN'))
+        cidrewritten = self.agi.get_variable('XIVO_CID_REWRITTEN')
 
-        if force_rewrite is True or cidrewritten is False:
+        if force_rewrite or not cidrewritten:
 
             calleridname = self.agi.get_variable('CALLERID(name)')
             calleridnum = self.agi.get_variable('CALLERID(num)')
@@ -1097,5 +1097,5 @@ class CallerID:
             self.agi.appexec('SetCallerPres', 'allowed')
             self.agi.set_variable('CALLERID(all)', '"%s" <%s>' % (name, calleridnum))
 
-            if force_rewrite is not True:
+            if not force_rewrite:
                 self.agi.set_variable('XIVO_CID_REWRITTEN', 1)
