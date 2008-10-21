@@ -1054,7 +1054,7 @@ class CallerID:
             self.calleridname = m.group(1)
             self.calleridnum = m.group(2)
 
-    def set_caller_id(self, referer=None)
+    def set_caller_id(self, referer=None):
         if not self.mode:
             return
 
