@@ -1060,10 +1060,17 @@ class CallerID:
 
     def set_caller_id(self, force_rewrite):
         """
+        Set/Modify the caller ID if needed and allowed and create
+        the XIVO_CID_REWRITTEN channel variable in some cases.
+
         @force_rewrite:
             True <=> CID modification is always allowed in this case.
-            False <=> CID modification is only allowed if the variable
-                XIVO_CID_REWRITTEN is not set.
+                XIVO_CID_REWRITTEN is neither taken into account nor
+                written.
+            False <=> CID modification is only allowed if the channel
+                variable XIVO_CID_REWRITTEN is not set prior to the
+                call to this method.  If the CID modification really
+                took place, XIVO_CID_REWRITTEN is created.
         """
         if not self.mode:
             return
