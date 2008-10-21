@@ -1024,10 +1024,10 @@ class VoiceMenu:
 CALLERID_MATCHER = re.compile('^(?:"(.+)"|([a-zA-Z0-9\-\.\!%\*_\+`\'\~]+)) ?(?:<([0-9\*#]+)>)?$').match
 
 class CallerID:
-    def __init__(self, agi, cursor, type, typeval):
+    def __init__(self, agi, cursor, xtype, typeval):
         self.agi = agi
         self.cursor = cursor
-        self.type = type
+        self.type = xtype
         self.typeval = typeval
 
         cursor.query("SELECT ${columns} FROM callerid "
@@ -1035,7 +1035,7 @@ class CallerID:
                      "AND typeval = %s "
                      "AND mode IS NOT NULL",
                      ('mode', 'callerdisplay'),
-                     (type, typeval))
+                     (xtype, typeval))
         res = cursor.fetchone()
 
         self.mode = None
@@ -1059,11 +1059,19 @@ class CallerID:
                 self.calleridname = m.group(2)
 
     def set_caller_id(self, referer=None):
+        """
+        @referer:
+            None <=> DID (CID modification is allowed in this case)
+            not None <=> content of XIVO_FWD_REFERER, which is only set
+                once after DID handling (by group, user, ...)
+                CID modification is only allowed if the entity about to
+                handle the call is the same as the XIVO_FWD_REFERER, that
+                is the first entity after DID having handled the call.
+                (BUGBUG: is this really the wanted behavior?)
+        """
         if not self.mode:
             return
 
-        # referer is None <=> DID
-        # if not in DID, setting caller id is only allowed for the first referer
         if referer is None or referer == ("%s:%s" % (self.type, self.typeval)):
 
             calleridname = self.agi.get_variable('CALLERID(name)')
@@ -1084,7 +1092,7 @@ class CallerID:
                 raise RuntimeError("Unknown callerid mode: %r" % self.mode)
 
             if self.calleridnum is not None:
-               calleridnum = self.calleridnum
+                calleridnum = self.calleridnum
             elif calleridnum in (None, ''):
                 calleridnum = 'unknown'
 
