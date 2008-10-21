@@ -532,8 +532,8 @@ class Group:
         for event in ('noanswer', 'congestion', 'busy', 'chanunavail'):
             DialAction(self.agi, self.cursor, event, "group", self.id).set_variables()
 
-    def set_caller_id(self, referer=None):
-        CallerID(self.agi, self.cursor, "group", self.id).set_caller_id(referer)
+    def set_caller_id(self, force_rewrite=False):
+        CallerID(self.agi, self.cursor, "group", self.id).set_caller_id(force_rewrite)
 
 
 class MeetMe:
@@ -664,8 +664,8 @@ class Queue:
         for event in ('noanswer', 'congestion', 'busy', 'chanunavail'):
             DialAction(self.agi, self.cursor, event, "queue", self.id).set_variables()
 
-    def set_caller_id(self, referer=None):
-        CallerID(self.agi, self.cursor, "queue", self.id).set_caller_id(referer)
+    def set_caller_id(self, force_rewrite=False):
+        CallerID(self.agi, self.cursor, "queue", self.id).set_caller_id(force_rewrite)
 
 
 class Agent:
@@ -888,8 +888,8 @@ class DID:
     def set_dial_actions(self):
         DialAction(self.agi, self.cursor, "answer", "incall", self.id).set_variables()
 
-    def set_caller_id(self):
-        CallerID(self.agi, self.cursor, "incall", self.id).set_caller_id()
+    def set_caller_id(self, force_rewrite=True):
+        CallerID(self.agi, self.cursor, "incall", self.id).set_caller_id(force_rewrite)
 
 
 class Outcall:
@@ -1058,27 +1058,20 @@ class CallerID:
             if self.calleridname is None:
                 self.calleridname = m.group(2)
 
-    def set_caller_id(self, referer=None):
+    def set_caller_id(self, force_rewrite=False):
         """
-        @referer:
-            None <=> DID (CID modification is allowed in this case)
-            not None <=> content of XIVO_FWD_REFERER, which is only set
-                once after DID handling (by group, user, ...)
-                CID modification is only allowed if the entity about to
-                handle the call is the same as the XIVO_FWD_REFERER
-                and if the variable XIVO_CID_REWRITED is not set, that
-                is the first entity after DID having handled the call.
-                (BUGBUG: is this really the wanted behavior?)
+        @force_rewrite:
+            True <=> CID modification is always allowed in this case.
+            False <=> CID modification is only allowed if the variable
+                XIVO_CID_REWRITTEN is not set.
         """
         if not self.mode:
             return
 
-        if referer is None or referer == ("%s:%s" % (self.type, self.typeval)):
+        force_rewrite = bool(force_rewrite)
+        cidrewritten = bool(self.agi.get_variable('XIVO_CID_REWRITTEN'))
 
-            cidrewrited = bool(self.agi.get_variable('XIVO_CID_REWRITED'))
-
-            if referer is not None and cidrewrited is True:
-                return
+        if force_rewrite is True or cidrewritten is False:
 
             calleridname = self.agi.get_variable('CALLERID(name)')
             calleridnum = self.agi.get_variable('CALLERID(num)')
@@ -1105,5 +1098,5 @@ class CallerID:
             self.agi.appexec('SetCallerPres', 'allowed')
             self.agi.set_variable('CALLERID(all)', '"%s" <%s>' % (name, calleridnum))
 
-            if referer is not None:
-                self.agi.set_variable('XIVO_CID_REWRITED', 1)
+            if force_rewrite is False:
+                self.agi.set_variable('XIVO_CID_REWRITTEN', 1)
