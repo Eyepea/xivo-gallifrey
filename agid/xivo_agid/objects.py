@@ -1040,8 +1040,8 @@ class CallerID:
 
         self.mode = None
         self.callerdisplay = ''
-        self.callername = None
-        self.callernum = None
+        self.calleridname = None
+        self.calleridnum = None
 
         if not res:
             return
@@ -1067,6 +1067,12 @@ class CallerID:
         if referer is None or referer == ("%s:%s" % (self.type, self.typeval)):
 
             calleridname = str(self.agi.get_variable('CALLERID(name)'))
+            calleridnum = str(self.agi.get_variable('CALLERID(num)'))
+
+            if self.calleridnum is not None:
+               calleridnum = self.calleridnum
+            elif calleridnum in (None, ''):
+                calleridnum = 'unknown'
 
             if calleridname in (None, '', '""'):
                 calleridname = 'unknown'
@@ -1074,15 +1080,13 @@ class CallerID:
                 calleridname = calleridname[1:-1]
 
             if self.mode == 'prepend':
-                name = '""%s - %s""' % (self.calleridname, calleridname)
+                name = '"%s - %s"' % (self.calleridname, calleridname)
             elif self.mode == 'overwrite':
-                name = '""%s""' % self.calleridname
+                name = '"%s"' % self.calleridname
             elif self.mode == 'append':
-                name = '""%s - %s""' % (calleridname, self.calleridname)
+                name = '"%s - %s"' % (calleridname, self.calleridname)
             else:
                 raise RuntimeError("Unknown callerid mode: %r" % mode)
 
-            self.agi.set_variable('CALLERID(name)', name)
-
-            if self.calleridnum:
-                self.agi.set_variable('CALLERID(num)', self.calleridnum)
+            self.agi.appexec('SetCallerPres', 'allowed')
+            self.agi.set_variable('CALLERID(all)', "%s <%s>" % (name, calleridnum))
