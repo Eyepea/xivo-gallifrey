@@ -8,7 +8,7 @@ include $(NONO_MK)/autobuild.mk
 
 DEB_PKG = "dahdi-linux"
 
-SRCVER = $(shell cat $(MODULE_PATH)/ASTERISK-VERSION)
+SRCVER = $(shell cat $(MODULE_PATH)/SOURCE-VERSION)
 TARBALL_NAME = "dahdi-linux_$(SRCVER)+dfsg.orig.tar.gz"
 XIVO_REV = $(SRCVER)+dfsg+pf.$(MAINREV)~svn$(SVNREV)
 
