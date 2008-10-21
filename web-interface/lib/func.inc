@@ -681,7 +681,7 @@ function xivo_eol($str)
 
 function xivo_alttitle($str,$sc=true)
 {
-	$pat = array('/<.+?>/','/\t+/','/\s+/','/&nbsp;| +/');
+	$pat = array('/<.+?>/s','/\t+/s','/\s+/s','/&nbsp;| +/s');
 	$rep = array('','',' ',' ');
 	$r = preg_replace($pat,$rep,strval($str));
 
@@ -690,7 +690,7 @@ function xivo_alttitle($str,$sc=true)
 
 function xivo_notag($str)
 {
-	$pat = array('/<.+?>/','/\t+/','/&nbsp;| +/');
+	$pat = array('/<.+?>/s','/\t+/s','/&nbsp;| +/s');
 	$rep = array('','',' ');
 
 	return(preg_replace($pat,$rep,strval($str)));
@@ -698,7 +698,7 @@ function xivo_notag($str)
 
 function xivo_notagscript($str)
 {
-	return(preg_replace('@<script[^>]*?>.*?</script>@si','',strval($str)));
+	return(preg_replace('@<script[^>]*?>.*?</script[^>]*?>@si','',strval($str)));
 }
 
 function xivo_tagreplace($str)
@@ -843,6 +843,9 @@ function xivo_calc_duration($beg,$end,$diff=false,$unset=false)
 
 	if(is_numeric($diff) === true)
 		$r['diff'] = $diff;
+	else if(is_numeric($beg) === false
+	|| is_numeric($end) === false)
+		return(false);
 	else
 	{
 		$r['beg'] = $beg;

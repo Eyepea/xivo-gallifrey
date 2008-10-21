@@ -6,6 +6,7 @@ class xivo_service_asterisk_contextnummember_sql extends xivo_service_asterisk_a
 {
 	var $_autoincrement	= false;
 	var $_unique		= array(array('context','type','typeval'));
+	var $_disable		= null;
 }
 
 ?>

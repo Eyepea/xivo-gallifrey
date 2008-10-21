@@ -11,6 +11,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 	var $_dialaction	= false;
 	var $_contextnummember	= false;
 	var $_contextmember	= false;
+	var $_callerid		= false;
 	var $_queuemember	= null;
 	var $_musiconhold	= array();
 	var $_announce		= array();
@@ -37,7 +38,8 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		|| ($this->_extenumbers = $this->get_abstract('extenumbers',array('type' => 'queue'))) === false
 		|| ($this->_dialaction = $this->get_abstract('dialaction',array('category' => 'queue'))) === false
 		|| ($this->_contextnummember = $this->get_abstract('contextnummember',array('type' => 'queue'))) === false
-		|| ($this->_contextmember = $this->get_abstract('contextmember',array('type' => 'queue'))) === false)
+		|| ($this->_contextmember = $this->get_abstract('contextmember',array('type' => 'queue'))) === false
+		|| ($this->_callerid = $this->get_abstract('callerid',array('type' => 'queue'))) === false)
 			return(false);
 
 		$this->_queuemember = &$this->_service->get_module('queuemember');
@@ -67,6 +69,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		$this->_get_dialaction($this->_info['qfeatures']['id']);
 		$this->_get_contextnummember($this->_info['qfeatures']['id']);
 		$this->_get_contextmember($this->_info['queue']['name']);
+		$this->_get_callerid($this->_info['qfeatures']['id']);
 
 		return($this->_info);
 	}
@@ -149,6 +152,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		$r['qfeatures'] = $this->_queuefeatures->get_element();
 		$r['queue'] = $this->_queue->get_element();
 		$r['dialaction'] = $this->_dialaction->get_element();
+		$r['callerid'] = $this->_callerid->get_element();
 
 		return($r);
 	}
@@ -285,6 +289,9 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		$this->set_contextnummember($context,$number);
 
 		$this->set_contextmember();
+
+		if(xivo_issa('callerid',$arr) === true)
+			$this->set_callerid($arr['callerid']);
 	
 		return(($this->get_errnb() < 1));
 	}
@@ -553,7 +560,8 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		|| $this->add_agent() === false
 		|| $this->add_dialaction($qfeaturesid) === false
 		|| $this->add_contextnummember($qfeaturesid) === false
-		|| $this->add_contextmember($queuename) === false)
+		|| $this->add_contextmember($queuename) === false
+		|| $this->add_callerid($qfeaturesid) === false)
 		{
 			$r = false;
 			if($qfeaturesid !== null)
@@ -666,7 +674,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 					$this->_extensions->delete_exten($val);
 					break;
 				case 'extenumbers':
-					$this->_extenumbers->reverse_add($this->_status);
+					$this->_extenumbers->reverse_add();
 					break;
 				case 'user':
 				case 'agentgroup':
@@ -685,6 +693,9 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 					break;
 				case 'contextmember':
 					$this->_contextmember->reverse_add();
+					break;
+				case 'callerid':
+					$this->_callerid->reverse_add();
 					break;
 			}
 		}
@@ -740,7 +751,8 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		|| $this->edit_agent($this->_info['qfeatures']['name']) === false
 		|| $this->edit_dialaction() === false
 		|| $this->edit_contextnummember() === false
-		|| $this->edit_contextmember($queuename) === false)
+		|| $this->edit_contextmember($queuename) === false
+		|| $this->edit_callerid() === false)
 		{
 			$this->_reverse_edit();
 			$this->_status = '';
@@ -874,6 +886,14 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		return(parent::edit_contextnummember($this->_info['qfeatures']['id']));
 	}
 
+	function edit_callerid()
+	{
+		if(xivo_issa('qfeatures',$this->_info) === false)
+			return(false);
+
+		return(parent::edit_callerid($this->_info['qfeatures']['id']));
+	}
+
 	function _reverse_edit()
 	{
 		if($this->get_errnb() > 0
@@ -934,6 +954,9 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 				case 'contextmember':
 					$this->_contextmember->reverse_edit($this->_status);
 					break;
+				case 'callerid':
+					$this->_callerid->reverse_edit($this->_status);
+					break;
 			}
 		}
 
@@ -956,7 +979,8 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		|| $this->delete_agent($this->_info['qfeatures']['name']) === false
 		|| $this->delete_dialaction() === false
 		|| $this->delete_contextnummember() === false
-		|| $this->delete_contextmember($this->_info['qfeatures']['name']) === false)
+		|| $this->delete_contextmember($this->_info['qfeatures']['name']) === false
+		|| $this->delete_callerid() === false)
 		{
 			$r = false;
 			$this->_reverse_delete();
@@ -1093,6 +1117,9 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 					break;
 				case 'contextmember':
 					$this->_contextmember->add_origin_list();
+					break;
+				case 'callerid':
+					$this->_callerid->add_origin();
 					break;
 			}
 		}

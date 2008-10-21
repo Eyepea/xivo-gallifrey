@@ -252,6 +252,7 @@ endif;
 				  'name'	=> 'callerid',
 				  'labelid'	=> 'callerid',
 				  'size'	=> 15,
+				  'notag'	=> false,
 				  'value'	=> $this->get_varra('info',array('callerid','var_val')),
 				  'default'	=> $element['callerid']['default'])),
 

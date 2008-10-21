@@ -644,17 +644,24 @@ class xivo_service_asterisk extends xivo_service_abstract
 		return(str_replace($pat,$rep,$str));
 	}
 
-	function mk_callerid($number,$callerid='')
+	function mk_callerid($calleridname,$calleridnum='')
 	{
-		$r = '';
+		$calleridname = trim(preg_replace('/<[^<]*>$/','',trim(strval($calleridname))));
+		$calleridnum = strval($calleridnum);
 
-		if(preg_match('/^[0-9\*#]{1,40}$/',$number) !== 1)
-			return($r);
+		if(isset($calleridname{0}) === true)
+		{
+			if($calleridname{0} === '"'
+			&& substr($calleridname,-1) === '"')
+				$calleridname = substr($calleridname,1,-1);
 
-		$r = preg_replace('/<'.preg_quote($number).'>$/','',$callerid);
-		$r = trim(str_replace(array('<','>','"'),'',$r)).' <'.$number.'>';
+			$calleridname = '"'.str_replace('"','\"',$calleridname).'"';
+		}
 
-		return(trim($r));
+		if(preg_match('/^[0-9\*#]{1,40}$/',$calleridnum) === 1)
+			$calleridname .= ' <'.$calleridnum.'>';
+
+		return(trim($calleridname));
 	}
 
 	function get_contexts_list($arr=null)

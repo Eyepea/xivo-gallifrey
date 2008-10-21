@@ -50,6 +50,8 @@ class xivo_socket
 				else
 					$this->open = false;
 			}
+			else if(xivo_ip2long($param['address']) !== false)
+				$this->_param['address'] = $param['address'];
 			else
 				$this->_param['address'] = gethostbyname($param['address']);
 		}

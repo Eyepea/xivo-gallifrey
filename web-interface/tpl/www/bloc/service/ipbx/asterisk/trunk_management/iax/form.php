@@ -58,6 +58,7 @@ endif;
 				  'name'	=> 'protocol[callerid]',
 				  'labelid'	=> 'protocol-callerid',
 				  'size'	=> 15,
+				  'notag'	=> false,
 				  'default'	=> $element['protocol']['callerid']['default'],
 				  'value'	=> $info['protocol']['callerid'])),
 

@@ -676,7 +676,7 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 					$this->_extensions->delete_exten($val);
 					break;
 				case 'extenumbers':
-					$this->_extenumbers->reverse_add($this->_status);
+					$this->_extenumbers->reverse_add();
 					break;
 				case 'contextmember':
 					$this->_contextmember->reverse_add();

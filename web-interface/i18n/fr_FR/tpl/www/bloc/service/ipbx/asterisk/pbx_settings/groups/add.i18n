@@ -82,6 +82,18 @@ Désactivé
 ; fm_queue_musiconhold
 Musique d'attente :
 
+; fm_callerid_mode
+Modifier le nom de l'appelant :
+
+; fm_callerid_mode-opt(prepend)
+Préfixer
+
+; fm_callerid_mode-opt(overwrite)
+Remplacer
+
+; fm_callerid_mode-opt(append)
+Suffixer
+
 ; bt_inuser
 Ajouter un ou plusieurs utilisateurs ->
 

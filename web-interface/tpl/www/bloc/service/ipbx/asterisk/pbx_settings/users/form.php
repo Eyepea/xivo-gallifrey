@@ -934,7 +934,8 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 				  'name'	=> 'ufeatures[outcallerid-custom]',
 				  'labelid'	=> 'ufeatures-outcallerid-custom',
 				  'value'	=> ($outcallerid_custom === true ? $outcallerid : ''),
-				  'size'	=> 15)),
+				  'size'	=> 15,
+				  'notag'	=> false)),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_protocol_sendani'),
 				      'name'	=> 'protocol[sendani]',

@@ -330,7 +330,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 					$this->_extensions->delete_exten($val);
 					break;
 				case 'extenumbers':
-					$this->_extenumbers->reverse_add($this->_status);
+					$this->_extenumbers->reverse_add();
 					break;
 				case 'contextnummember':
 					$this->_contextnummember->reverse_add();

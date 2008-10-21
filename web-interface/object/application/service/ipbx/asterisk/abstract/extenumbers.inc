@@ -153,7 +153,7 @@ class xivo_application_service_asterisk_extenumbers_abstract extends xivo_applic
 		return($r);
 	}
 
-	function reverse_add($status)
+	function reverse_add()
 	{
 		if(($id = xivo_ulongint($this->_return)) !== 0)
 			return($this->_extenumbers->delete($id));

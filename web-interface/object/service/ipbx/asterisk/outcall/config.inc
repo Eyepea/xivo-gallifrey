@@ -81,8 +81,7 @@ $array['filter']['setcallerid'] = array('bool' => true);
 $array['filter']['callerid'] = array('set'	=> false,
 				     'chk'	=> 2,
 				     'maxlen'	=> 80,
-				     'regexp'	=> '/^'.XIVO_SRE_IPBX_AST_REGEXP_CALLERID.'$/',
-				     'cast'	=> 'sgraph',
+				     'regexp'	=> '/^'.XIVO_SRE_IPBX_AST_REGEXP_CALLERID.'$/u',
 				     'notag'	=> false);
 $array['filter']['useenum'] = array('bool' => true);
 $array['filter']['internal'] = array('bool' => true);

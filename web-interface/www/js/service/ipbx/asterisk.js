@@ -2,7 +2,8 @@ function xivo_ast_inqueue()
 {
 	xivo_fm_move_selected('it-queuelist','it-queue');
 
-	if((queuelist = xivo_eid('it-queue')) === false || (len = queuelist.length) < 1)
+	if((queuelist = xivo_eid('it-queue')) === false
+	|| (len = queuelist.length) < 1)
 		return(false);
 
 	for(i = 0;i < len;i++)
@@ -21,7 +22,8 @@ function xivo_ast_outqueue()
 {
 	xivo_fm_move_selected('it-queue','it-queuelist');
 
-	if((queuelist = xivo_eid('it-queuelist')) === false || (len = queuelist.length) < 1)
+	if((queuelist = xivo_eid('it-queuelist')) === false
+	|| (len = queuelist.length) < 1)
 		return(false);
 
 	for(i = 0;i < len;i++)

@@ -159,7 +159,6 @@ function xivo_ast_chg_dialaction_actionarg(dialevent,actiontype)
 {
 	if(xivo_is_array(xivo_fm_dialaction[dialevent]) === false
 	|| xivo_is_array(xivo_dialaction_actionarg[actiontype]) === false
-	|| (nb = xivo_dialaction_actionarg[actiontype]) === 0
 	|| (action = xivo_eid('it-dialaction-'+dialevent+'-'+actiontype+'-action')) === false
 	|| xivo_is_undef(action.value) === true
 	|| xivo_is_array(xivo_dialaction_actionarg[actiontype][action.value]) === false

@@ -1,65 +1,53 @@
-var xivo_conf = new Array();
-xivo_conf['attrib'] = new Array();
-xivo_conf['eid'] = new Array();
+var xivo_conf = {'attrib': {},'eid': {}};
 
-var xivo_smenu = new Array();
-xivo_smenu['click'] = new Array();
-xivo_smenu['click']['id'] = '';
-xivo_smenu['click']['class'] = '';
-xivo_smenu['bak'] = new Array();
-xivo_smenu['before'] = new Array();
-xivo_smenu['before']['id'] = '';
-xivo_smenu['before']['class'] = '';
-xivo_smenu['display'] = '';
-xivo_smenu['tab'] = 'smenu-tab-1';
-xivo_smenu['class'] = 'moc';
-xivo_smenu['part'] = 'sb-part-first';
-xivo_smenu['last'] = false;
+var xivo_smenu = {
+	'click': {'id': '','class': ''},
+	'bak': {},
+	'before': {'id': '','class': ''},
+	'class': 'moc',
+	'display': {},
+	'part': 'sb-part-first',
+	'tab': 'smenu-tab-1',
+	'last': false};
 
 var xivo_tlist = new Array();
 var xivo_winload = new Array();
 
 function xivo_bwcheck()
 {
-	this.ver = navigator.appVersion;
-	this.agent = navigator.userAgent;
-	this.dom = document.getElementById ? 1 : 0;
-	this.opera5 = (navigator.userAgent.indexOf('Opera') >-1 && document.getElementById) ? 1 : 0;
-	this.ie5 = (this.ver.indexOf('MSIE 5') >-1 && this.dom && !this.opera5) ? 1 : 0;
-	this.ie6 = (this.ver.indexOf('MSIE 6') >-1 && this.dom && !this.opera5) ? 1 : 0;
-	this.ie4 = (document.all && !this.dom && !this.opera5) ? 1 : 0;
-	this.ie = this.ie4 || this.ie5 || this.ie6;
-	this.mac = this.agent.indexOf('Mac') > -1;
-	this.ns6 = (this.dom && parseInt(this.ver) >= 5) ? 1 : 0; 
-	this.ns4 = (document.layers && !this.dom) ? 1 : 0;
-	this.bw = (this.ie6 || this.ie5 || this.ie4 || this.ns4 || this.ns6 || this.opera5);
-	this.cookie = (typeof navigator.cookieEnabled !== 'undefined') ? navigator.cookieEnabled : 0;
+	this.ver		= navigator.appVersion;
+	this.agent		= navigator.userAgent;
+	this.opera		= (navigator.userAgent.indexOf('Opera') > -1);
+	this.ie5		= (this.ver.indexOf('MSIE 5') > -1 && this.opera === false);
+	this.ie6		= (this.ver.indexOf('MSIE 6') > -1 && this.opera === false);
+	this.ie7		= (this.ver.indexOf('MSIE 7') > -1 && this.opera === false);
+	this.ie			= (this.ie5 || this.ie6 || this.ie7);
+	this.mac		= (this.agent.indexOf('Mac') > -1);
+	this.cookie		= typeof(navigator.cookieEnabled) !== 'undefined' ? navigator.cookieEnabled : false;
 
-	return(this);
+	if(typeof(window.XMLHttpRequest) !== 'undefined')
+		this.httpreq = function () { return(window.XMLHttpRequest); };
+	else
+		this.httpreq = function () { return(new ActiveXObject('Microsoft.XMLHTTP')); };
 }
 
-var xivo_bw = xivo_bwcheck();
+var xivo_bw = new xivo_bwcheck();
 
 function xivo_open_center(url,name,width,height,param)
 {
-	var x=0;
-	var y=0;
-	var w=0;
-	var h=0;
-
-	if (bw.ie)
+	if(xivo_bw.ie)
 	{
-		x = 0;
-		y = 0;
-		w = screen.width;
-		h = screen.height;
+		var x = 0;
+		var y = 0;
+		var w = screen.width;
+		var h = screen.height;
 	}
 	else
 	{
-		x = window.screenX;
-		y = window.screenY;
-		w = window.outerWidth;
-		h = window.outerHeight;
+		var x = window.screenX;
+		var y = window.screenY;
+		var w = window.outerWidth;
+		var h = window.outerHeight;
 	}
 
 	var cx = x;
@@ -70,7 +58,7 @@ function xivo_open_center(url,name,width,height,param)
 	if(h > height)
 		cy += Math.round((h - height) / 2);
 
-	return open(url, name,'left=' + cx + 'px,top=' + cy + 'px,width=' + width + 'px,height=' + height +'px'+ param);
+	return open(url,name,'left=' + cx + 'px,top=' + cy + 'px,width=' + width + 'px,height=' + height + 'px' + param);
 }
 
 function xivo_str_repeat(str,len)
@@ -90,9 +78,9 @@ function xivo_str_repeat(str,len)
 
 function xivo_eid(id,forcereload)
 {
-	if(Boolean(forcereload) === false && xivo_is_undef(xivo_conf['eid'][id]) == false)
+	if(Boolean(forcereload) === false && xivo_is_undef(xivo_conf['eid'][id]) === false)
 		return(xivo_conf['eid'][id]);
-	else if(xivo_bw.dom && (get = document.getElementById(id)))
+	else if((get = document.getElementById(id)))
 		return((xivo_conf['eid'][id] = get));
 
 	return(false);
@@ -354,25 +342,25 @@ function xivo_chg_attrib(name,id,type,link)
 			xivo_chg_style_attrib(get,ref_elem['style'],type);
 	}
 
-	if(xivo_is_undef(ref_elem['link']) === false)
+	if(xivo_is_undef(ref_elem['link']) === true)
+		return(null);
+	else if(xivo_type_object(ref_elem['link']) === false || link === false)
 	{
-		if(xivo_type_object(ref_elem['link']) === false || link === false)
-			xivo_chg_attrib(name,ref_elem['link'],type,2);
-		else
-		{
-			for(var property in ref_elem['link'])
-			{
-				if(xivo_is_undef(ref_elem['link'][property][2]) === false)
-					nlink = ref_elem['link'][property][2];
-				else
-					nlink = 2;
+		xivo_chg_attrib(name,ref_elem['link'],type,2);
+		return(null);
+	}
 
-				xivo_chg_attrib(name,
-						ref_elem['link'][property][0],
-						ref_elem['link'][property][1],
-						nlink);
-			}
-		}
+	for(var property in ref_elem['link'])
+	{
+		if(xivo_is_undef(ref_elem['link'][property][2]) === false)
+			nlink = ref_elem['link'][property][2];
+		else
+			nlink = 2;
+
+		xivo_chg_attrib(name,
+				ref_elem['link'][property][0],
+				ref_elem['link'][property][1],
+				nlink);
 	}
 }
 

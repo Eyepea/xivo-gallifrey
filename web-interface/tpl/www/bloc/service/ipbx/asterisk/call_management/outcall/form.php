@@ -38,7 +38,7 @@ endif;
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_outcall_setcallerid'),'name' => 'outcall[setcallerid]','labelid' => 'setcallerid','checked' => $info['outcall']['setcallerid'],'default' => $element['outcall']['setcallerid']['default']));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_outcall_callerid'),'name' => 'outcall[callerid]','labelid' => 'outcall-callerid','size' => 15,'default' => $element['outcall']['callerid']['default'],'value' => $info['outcall']['callerid']));?>
+<?=$form->text(array('desc' => $this->bbf('fm_outcall_callerid'),'name' => 'outcall[callerid]','labelid' => 'outcall-callerid','size' => 15,'notag' => false,'default' => $element['outcall']['callerid']['default'],'value' => $info['outcall']['callerid']));?>
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_outcall_useenum'),'name' => 'outcall[useenum]','labelid' => 'useenum','checked' => $info['outcall']['useenum'],'default' => $element['outcall']['useenum']['default']));?>
 

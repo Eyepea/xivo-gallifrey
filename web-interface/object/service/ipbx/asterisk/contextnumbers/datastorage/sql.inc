@@ -6,6 +6,7 @@ class xivo_service_asterisk_contextnumbers_sql extends xivo_service_asterisk_abs
 {
 	var $_autoincrement	= false;
 	var $_unique		= array(array('context','type','numberbeg','numberend'));
+	var $_disable		= null;
 }
 
 ?>

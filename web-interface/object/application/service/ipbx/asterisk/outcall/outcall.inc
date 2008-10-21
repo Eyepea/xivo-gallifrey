@@ -329,7 +329,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 					$this->_extensions->delete_exten($val);
 					break;
 				case 'extenumbers':
-					$this->_extenumbers->reverse_add($this->_status);
+					$this->_extenumbers->reverse_add();
 					break;
 				case 'outcalltrunk':
 					$this->_outcalltrunk->delete_where(array('outcallid' => $outcallid));

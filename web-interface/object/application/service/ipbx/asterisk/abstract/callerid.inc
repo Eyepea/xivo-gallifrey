@@ -2,20 +2,16 @@
 
 xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','abstract.inc'),true);
 
-class xivo_application_service_asterisk_contextnummember_abstract extends xivo_application_service_asterisk_abstract
+class xivo_application_service_asterisk_callerid_abstract extends xivo_application_service_asterisk_abstract
 {
-	var $_context		= false;
-	var $_contextnumbers	= false;
-	var $_contextnummember	= false;
-	var $_param		= array('type'	=> '');
+	var $_callerid	= false;
+	var $_param	= array('type'	=> '');
 
-	function xivo_application_service_asterisk_contextnummember_abstract(&$service,$param=array())
+	function xivo_application_service_asterisk_callerid_abstract(&$service,$param=array())
 	{
 		$this->xivo_application_service_asterisk_abstract(&$service);
 		
-		if(($this->_context = &$this->_service->get_module('context')) === false
-		|| ($this->_contextnumbers = &$this->_service->get_module('contextnumbers')) === false
-		|| ($this->_contextnummember = &$this->_service->get_module('contextnummember')) === false)
+		if(($this->_callerid = &$this->_service->get_module('callerid')) === false)
 			return(false);
 
 		return($this->load_init($param));
@@ -29,7 +25,7 @@ class xivo_application_service_asterisk_contextnummember_abstract extends xivo_a
 
 		if($this->set_params($param) === false
 		|| isset($param['type']) === false
-		|| $this->_contextnummember->chk_element_value('type',$param['type']) === false)
+		|| $this->_callerid->chk_element_value('type',$param['type']) === false)
 		{
 			$this->_param['type'] = '';
 			return(false);
@@ -52,49 +48,38 @@ class xivo_application_service_asterisk_contextnummember_abstract extends xivo_a
 		$where['type'] = $this->_param['type'];
 		$where['typeval'] = $typeval;
 
-		if(($this->_info = $this->_contextnummember->get_where($where)) !== false)
-			$this->_origin = $this->_contextnummember->get_origin();
+		if(($this->_info = $this->_callerid->get_where($where)) !== false)
+			$this->_origin = $this->_callerid->get_origin();
 
 		return($this->_info);
 	}
 
-	function set($context,$number='')
+	function get_element()
+	{
+		return($this->_callerid->get_element());
+	}
+
+	function set($arr)
 	{
 		$this->_reset();
 
 		$info = array();
-		$info['context'] = $context;
 		$info['type'] = $this->_param['type'];
 		$info['typeval'] = 0;
 
-		if(xivo_haslen($number) === false)
-		{
-			$info['number'] = '';
-			$chkerror = 'invalid context';
+		$arr = array_merge($arr,$info);
 
-			$chk = $this->_context->get_where(array('name' => $context));
-		}
-		else
+		if(($rs = $this->_callerid->chk_values($arr)) === false)
 		{
-			$chkerror = 'out of interval';
-			$info['number'] = $this->_service->display_extension($this->_service->clean_extension($number));
-
-			$chk = $this->_contextnumbers->interval_number_exists($context,
-									      $this->_param['type'],
-									      $info['number']);
-		}
-
-		if($chk === false)
-		{
-			$this->_set_result($info);
-			$this->_set_error($chkerror);
+			$this->_set_error($this->_callerid->get_filter_error());
+			$this->_set_result($this->_callerid->get_filter_result());
 			return(false);
 		}
-		else if(($rs = $this->_contextnummember->chk_values($info)) === false)
+		else if(isset($rs['callerdisplay']) === true
+		&& xivo_haslen($rs['callerdisplay']) === false)
 		{
-			$this->_set_result($this->_contextnummember->get_filter_result());
-			$this->_set_error($this->_contextnummember->get_filter_error());
-			return(false);
+			$rs['mode'] = null;
+			$rs['callerdisplay'] = '';
 		}
 
 		$this->_set_result($rs);
@@ -104,14 +89,14 @@ class xivo_application_service_asterisk_contextnummember_abstract extends xivo_a
 
 	function add($typeval)
 	{
-		if(($typeval = xivo_ulongint($typeval)) === 0)
-			return(false);
-		else if(($rs = $this->get_result()) === null || $rs === false)
+		if(($rs = xivo_ulongint($typeval)) === 0
+		|| ($rs = $this->get_result()) === null
+		|| $rs === false)
 			return($rs);
 
 		$rs['typeval'] = $typeval;
 
-		if($this->_contextnummember->add($rs) === false)
+		if($this->_callerid->add($rs) === false)
 			return(($this->_return = false));
 
 		$this->_return = array();
@@ -137,7 +122,7 @@ class xivo_application_service_asterisk_contextnummember_abstract extends xivo_a
 
 		$rs['typeval'] = $this->_origin['typeval'];
 
-		if($this->_contextnummember->add($rs) === false)
+		if($this->_callerid->add($rs) === false)
 			return(($this->_return = false));
 
 		$this->_return = array();
@@ -156,7 +141,7 @@ class xivo_application_service_asterisk_contextnummember_abstract extends xivo_a
 		$where['type'] = $this->_origin['type'];
 		$where['typeval'] = $this->_origin['typeval'];
 
-		$r = $this->_contextnummember->delete_where($where);
+		$r = $this->_callerid->delete_where($where);
 
 		if($status === 'delete')
 			$this->_return = $r;
@@ -174,7 +159,7 @@ class xivo_application_service_asterisk_contextnummember_abstract extends xivo_a
 		$where['type'] = $this->_return['type'];
 		$where['typeval'] = $this->_return['typeval'];
 
-		$this->_contextnummember->delete_where($where);
+		$this->_callerid->delete_where($where);
 
 		return(true);
 	}
@@ -183,7 +168,7 @@ class xivo_application_service_asterisk_contextnummember_abstract extends xivo_a
 	{
 		$this->delete($status);
 
-		return($this->_contextnummember->add_origin($this->_origin));
+		return($this->_callerid->add_origin($this->_origin));
 	}
 }
 

@@ -120,8 +120,8 @@ class xivo_uri
 				if($authority === '' && $scheme === ''
 				&& ($pos = strpos($path,'/')) !== false)
 				{
-					$path = str_replace(':','%3A',substr($path,0,$pos)).
-						substr($path,$pos);
+					$path  = str_replace(':','%3A',substr($path,0,$pos)).
+						 substr($path,$pos);
 				}
 			}
 		}
@@ -403,8 +403,12 @@ class xivo_uri
 			}
 
 			if(xivo_haslen($ref,1) === false)
+			{
+				if($r[$i] === '')
+					unset($r[$i]);
 				continue;
-			
+			}
+
 			$ref[1] = (string) $ref[1];
 
 			if($encode === true)

@@ -1,24 +1,25 @@
 <?php
-	$form = &$this->get_module('form');
-	$url = &$this->get_module('url');
 
-	$incall = $this->get_var('incall');
-	$element = $this->get_var('element');
-	$rightcall = $this->get_var('rightcall');
-	$list = $this->get_var('list');
-	$context_list = $this->get_var('context_list');
+$form = &$this->get_module('form');
+$url = &$this->get_module('url');
+
+$incall = $this->get_var('incall');
+$callerid = $this->get_var('callerid');
+$element = $this->get_var('element');
+$rightcall = $this->get_var('rightcall');
+$list = $this->get_var('list');
+$context_list = $this->get_var('context_list');
+
 ?>
 
 <div id="sb-part-first">
-
 <?php
-
-echo	$form->text(array('desc'	=> $this->bbf('fm_incall_exten'),
-			  'name'	=> 'incall[exten]',
-			  'labelid'	=> 'incall-exten',
-			  'size'	=> 15,
-			  'default'	=> $element['incall']['exten']['default'],
-			  'value'	=> $this->get_varra('incall','exten')));
+	echo	$form->text(array('desc'	=> $this->bbf('fm_incall_exten'),
+				  'name'	=> 'incall[exten]',
+				  'labelid'	=> 'incall-exten',
+				  'size'	=> 15,
+				  'default'	=> $element['incall']['exten']['default'],
+				  'value'	=> $this->get_varra('incall','exten')));
 
 if($context_list !== false):
 	echo	$form->select(array('desc'	=> $this->bbf('fm_incall_context'),
@@ -37,46 +38,57 @@ else:
 		'</div>';
 endif;
 
-$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',
-		    array('event'	=> 'answer'));
+	$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',
+			    array('event'	=> 'answer'));
 
+	echo	$form->select(array('desc'	=> $this->bbf('fm_callerid_mode'),
+				    'name'	=> 'callerid[mode]',
+				    'labelid'	=> 'callerid-mode',
+				    'key'	=> false,
+				    'empty'	=> true,
+				    'bbf'	=> array('paramkey','fm_callerid_mode-opt'),
+				    'default'	=> $element['callerid']['mode']['default'],
+				    'value'	=> $callerid['mode']),
+			      $element['callerid']['mode']['value'],
+			      'onchange="xivo_ast_chg_callerid_mode(this);"'),
+
+		$form->text(array('desc'	=> '&nbsp;',
+				  'name'	=> 'callerid[callerdisplay]',
+				  'labelid'	=> 'callerid-callerdisplay',
+				  'size'	=> 15,
+				  'default'	=> $element['callerid']['callerdisplay']['default'],
+				  'value'	=> $callerid['callerdisplay']));
 ?>
-
 </div>
 
 <div id="sb-part-faxdetect" class="b-nodisplay">
-
 <?php
+	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_incall_faxdetectenable'),
+				      'name'	=> 'incall[faxdetectenable]',
+				      'labelid'	=> 'incall-faxdetectenable',
+				      'checked'	=> $this->get_varra('incall','faxdetectenable'),
+				      'default'	=> $element['incall']['faxdetectenable']['default']),
+				'onchange="xivo_ast_enable_faxdetect();"'),
 
-echo	$form->checkbox(array('desc'	=> $this->bbf('fm_incall_faxdetectenable'),
-			      'name'	=> 'incall[faxdetectenable]',
-			      'labelid'	=> 'incall-faxdetectenable',
-			      'checked'	=> $this->get_varra('incall','faxdetectenable'),
-			      'default'	=> $element['incall']['faxdetectenable']['default']),
-			'onchange="xivo_ast_enable_faxdetect();"'),
+		$form->select(array('desc'	=> $this->bbf('fm_incall_faxdetecttimeout'),
+				    'name'	=> 'incall[faxdetecttimeout]',
+				    'labelid'	=> 'incall-faxdetecttimeout',
+				    'key'	=> false,
+				    'bbf'	=> array('mixkey','fm_incall_faxdetecttimeout-opt'),
+				    'default'	=> $element['incall']['faxdetecttimeout']['default'],
+				    'value'	=> $this->get_varra('incall','faxdetecttimeout')),
+			      $element['incall']['faxdetecttimeout']['value']),
 
-	$form->select(array('desc'	=> $this->bbf('fm_incall_faxdetecttimeout'),
-			    'name'	=> 'incall[faxdetecttimeout]',
-			    'labelid'	=> 'incall-faxdetecttimeout',
-			    'key'	=> false,
-			    'bbf'	=> array('mixkey','fm_incall_faxdetecttimeout-opt'),
-			    'default'	=> $element['incall']['faxdetecttimeout']['default'],
-			    'value'	=> $this->get_varra('incall','faxdetecttimeout')),
-		      $element['incall']['faxdetecttimeout']['value']),
-
-	$form->text(array('desc'	=> $this->bbf('fm_incall_faxdetectemail'),
-			  'name'	=> 'incall[faxdetectemail]',
-			  'labelid'	=> 'incall-faxdetectemail',
-			  'size'	=> 15,
-			  'default'	=> $element['incall']['faxdetectemail']['default'],
-			  'value'	=> $this->get_varra('incall','faxdetectemail')));
-
+		$form->text(array('desc'	=> $this->bbf('fm_incall_faxdetectemail'),
+				  'name'	=> 'incall[faxdetectemail]',
+				  'labelid'	=> 'incall-faxdetectemail',
+				  'size'	=> 15,
+				  'default'	=> $element['incall']['faxdetectemail']['default'],
+				  'value'	=> $this->get_varra('incall','faxdetectemail')));
 ?>
-
 </div>
 
 <div id="sb-part-last" class="b-nodisplay">
-
 <?php
 	if($rightcall['list'] !== false):
 ?>
@@ -133,5 +145,4 @@ echo	$form->checkbox(array('desc'	=> $this->bbf('fm_incall_faxdetectenable'),
 			'</div>';
 	endif;
 ?>
-
 </div>

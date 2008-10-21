@@ -637,6 +637,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		$this->_protocolname = $protocolname;
 
+		if(isset($arr['protocol']['callerid']) === true)
+			$arr['protocol']['callerid'] = $this->_service->mk_callerid($arr['protocol']['callerid']);
+
 		$this->set_protocol($arr['protocol'],$protocolname);
 
 		$arr['ufeatures']['protocol'] = $protocolname;
@@ -729,7 +732,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if($this->_errnb === 0 && $numhaslen === true)
 		{
 			$callerid = (string) $this->get_result_var('protocol','callerid');
-			$callerid = $this->_service->mk_callerid($number,$callerid);
+			$callerid = $this->_service->mk_callerid($callerid,$number);
 			$this->_set_result_var('protocol','callerid',$callerid);
 
 			$enablehint = (bool) $this->get_result_var('ufeatures','enablehint') === false;
@@ -966,9 +969,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if(isset($reslist[0]) === false)
 		{
 			$this->_set_result($key,false);
+			$this->_set_error($key,'empty');
 
 			if($type === 'group')
 				$this->_set_result('callgroup','');
+
 			return(false);
 		}
 
@@ -1421,7 +1426,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 					$this->_autoprov->userdeleted($val);
 					break;
 				case 'extenumbers':
-					$this->_extenumbers->reverse_add($this->_status);
+					$this->_extenumbers->reverse_add();
 					break;
 			}
 		}

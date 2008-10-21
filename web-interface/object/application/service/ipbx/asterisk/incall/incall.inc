@@ -11,6 +11,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 	var $_extensions	= false;
 	var $_rightcall		= false;
 	var $_contextnummember	= false;
+	var $_callerid		= false;
 	var $_contextlist	= array();
 	var $_sound		= array();
 
@@ -39,7 +40,8 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		$this->_components = true;
 
 		if(($this->_rightcall = $this->get_abstract('rightcall',array('type' => 'incall'))) === false
-		|| ($this->_contextnummember = $this->get_abstract('contextnummember',array('type' => 'incall'))) === false)
+		|| ($this->_contextnummember = $this->get_abstract('contextnummember',array('type' => 'incall'))) === false
+		|| ($this->_callerid = $this->get_abstract('callerid',array('type' => 'incall'))) === false)
 			return(false);
 
 		return(true);
@@ -63,6 +65,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 		$this->_get_rightcall($this->_info['incall']['id']);
 		$this->_get_contextnummember($this->_info['incall']['id']);
+		$this->_get_callerid($this->_info['incall']['id']);
 
 		return($this->_info);
 	}
@@ -97,8 +100,9 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		$r = array();
 
 		$r['incall'] = $this->_incall->get_element();
-		$r['dialaction'] = $this->_dialaction->get_element();
 		$r['extenumbers'] = $this->_extenumbers->get_element();
+		$r['dialaction'] = $this->_dialaction->get_element();
+		$r['callerid'] = $this->_callerid->get_element();
 
 		return($r);
 	}
@@ -289,6 +293,9 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		if($this->get_errnb() < 1)
 			$this->set_contextnummember($context,$number);
 
+		if(xivo_issa('callerid',$arr) === true)
+			$this->set_callerid($arr['callerid']);
+
 		if($this->get_errnb() < 1
 		&& (bool) $this->get_result_var('incall','faxdetectenable') === true
 		&& xivo_haslen($this->get_result_var('incall','faxdetectemail')) === false)
@@ -334,7 +341,8 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		|| $this->add_extenumbers($incallid) === false
 		|| $this->add_macro('exten') === false
 		|| $this->add_rightcall($incallid) === false
-		|| $this->add_contextnummember($incallid) === false)
+		|| $this->add_contextnummember($incallid) === false
+		|| $this->add_callerid($incallid) === false)
 		{
 			$r = false;
 			if($incallid !== null)
@@ -380,13 +388,16 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 					$this->_extensions->delete_exten($val);
 					break;
 				case 'extenumbers':
-					$this->_extenumbers->reverse_add($this->_status);
+					$this->_extenumbers->reverse_add();
 					break;
 				case 'rightcall':
 					$this->_rightcall->reverse_add();
 					break;
 				case 'contextnummember':
 					$this->_contextnummember->reverse_add();
+					break;
+				case 'callerid':
+					$this->_callerid->reverse_add();
 					break;
 			}
 		}
@@ -407,7 +418,8 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		|| $this->edit_extenumbers() === false
 		|| $this->edit_macro('exten') === false
 		|| $this->edit_rightcall() === false
-		|| $this->edit_contextnummember() === false)
+		|| $this->edit_contextnummember() === false
+		|| $this->edit_callerid() === false)
 		{
 			$r = false;
 			$this->_reverse_edit();
@@ -454,6 +466,14 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		return(parent::edit_contextnummember($this->_info['incall']['id']));
 	}
 
+	function edit_callerid()
+	{
+		if(xivo_issa('incall',$this->_info) === false)
+			return(false);
+
+		return(parent::edit_callerid($this->_info['incall']['id']));
+	}
+
 	function _reverse_edit()
 	{
 		if($this->get_errnb() > 0
@@ -495,6 +515,9 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 				case 'contextnummember':
 					$this->_contextnummember->reverse_edit($this->_status);
 					break;
+				case 'callerid':
+					$this->_callerid->reverse_edit($this->_status);
+					break;
 			}
 		}
 		return(true);
@@ -512,7 +535,8 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		|| $this->delete_extenumbers() === false
 		|| $this->delete_macro('exten') === false
 		|| $this->delete_rightcall() === false
-		|| $this->delete_contextnummember() === false)
+		|| $this->delete_contextnummember() === false
+		|| $this->delete_callerid() === false)
 		{
 			$r = false;
 			$this->_reverse_delete();
@@ -573,6 +597,9 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 					break;
 				case 'contextnummember':
 					$this->_contextnummember->add_origin();
+					break;
+				case 'callerid':
+					$this->_callerid->add_origin();
 					break;
 			}
 		}

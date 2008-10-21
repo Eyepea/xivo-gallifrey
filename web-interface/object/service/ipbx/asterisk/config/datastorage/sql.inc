@@ -18,6 +18,10 @@ $array['autoprov'] = array();
 $array['autoprov']['table'] = 'phone';
 $array['autoprov']['primary'] = array('macaddr' => '');
 
+$array['callerid'] = array();
+$array['callerid']['table'] = 'callerid';
+$array['callerid']['primary'] = array('type' => '','typeval' => '');
+
 $array['callfilter'] = array();
 $array['callfilter']['table'] = 'callfilter';
 $array['callfilter']['primary'] = array('id' => '');

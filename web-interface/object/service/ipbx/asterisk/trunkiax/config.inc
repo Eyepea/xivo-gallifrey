@@ -255,8 +255,7 @@ $array['filter']['mailbox'] = array('set' => false,'chk' => 0);
 $array['filter']['callerid'] = array('set'	=> false,
 				     'chk'	=> 2,
 				     'maxlen'	=> 80,
-				     'regexp'	=> '/^'.XIVO_SRE_IPBX_AST_REGEXP_CALLERID.'$/',
-				     'cast'	=> 'sgraph',
+				     'regexp'	=> '/^'.XIVO_SRE_IPBX_AST_REGEXP_CALLERID.'$/u',
 				     'notag'	=> false);
 $array['filter']['fullname'] = array('set' => false,'chk' => 0);
 $array['filter']['cid_number'] = array('set' => false,'chk' => 0);

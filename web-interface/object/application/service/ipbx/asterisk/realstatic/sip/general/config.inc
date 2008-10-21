@@ -479,8 +479,7 @@ $array['filter']['regcontext'] = array('set' => false,'chk' => 2,
 				       'callback' => 'xivo_service_asterisk::chk_context',
 				       'callbackparam' => array(array(XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION)));
 $array['filter']['callerid'] = array('maxlen'	=> 80,
-				     'regexp'	=> '/^'.XIVO_SRE_IPBX_AST_REGEXP_CALLERID.'$/',
-				     'cast'	=> 'sgraph',
+				     'regexp'	=> '/^'.XIVO_SRE_IPBX_AST_REGEXP_CALLERID.'$/u',
 				     'notag'	=> false);
 $array['filter']['fromdomain'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-\.]+$/i','maxlen' => 80);
 $array['filter']['sipdebug'] = array('bool' => true);

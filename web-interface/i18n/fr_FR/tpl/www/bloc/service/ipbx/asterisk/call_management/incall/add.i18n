@@ -19,6 +19,18 @@ Contexte :
 ; create_context
 Créer un contexte
 
+; fm_callerid_mode
+Modifier le nom de l'appelant :
+
+; fm_callerid_mode-opt(prepend)
+Préfixer
+
+; fm_callerid_mode-opt(overwrite)
+Remplacer
+
+; fm_callerid_mode-opt(append)
+Suffixer
+
 ; fm_incall_faxdetectenable
 Activer la détection :
 

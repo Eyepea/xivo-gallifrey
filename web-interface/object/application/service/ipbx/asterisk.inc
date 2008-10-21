@@ -156,6 +156,17 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		return($this->_info['contextmember']);
 	}
 
+	function _get_callerid($typeval)
+	{
+		$this->_info['callerid'] = false;
+		$this->_origin['callerid'] = false;
+
+		if(($this->_info['callerid'] = $this->_callerid->get($typeval)) !== false)
+			$this->_origin['callerid'] = $this->_callerid->get_origin();
+
+		return($this->_info['callerid']);
+	}
+
 	function set_extenumbers($action,$number,$context='',$typeval='')
 	{
 		if(($r = $this->_extenumbers->set($action,$number,$context,$typeval)) === false)
@@ -238,6 +249,16 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		return($r);
 	}
 
+	function set_callerid($arr)
+	{
+		if(($r = $this->_callerid->set($arr)) === false)
+			$this->_set_error('callerid',$this->_callerid->get_error());
+
+		$this->_set_result('callerid',$this->_callerid->get_result());
+
+		return($r);
+	}
+
 	function add_extenumbers($typeval)
 	{
 		if(($rs = $this->_extenumbers->add($typeval)) === null || $rs === false)
@@ -286,6 +307,15 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		$r = $this->_contextmember->add($typeval);
 
 		$this->_return['contextmember'] = $this->_contextmember->get_return();
+
+		return($r);
+	}
+
+	function add_callerid($typeval)
+	{
+		$r = $this->_callerid->add($typeval);
+
+		$this->_return['callerid'] = $this->_callerid->get_return();
 
 		return($r);
 	}
@@ -344,6 +374,15 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		$r = $this->_contextmember->edit($this->_status,$typeval);
 
 		$this->_return['contextmember'] = $this->_contextmember->get_return();
+
+		return($r);
+	}
+
+	function edit_callerid($typeval)
+	{
+		$r = $this->_callerid->edit($this->_status,$typeval);
+
+		$this->_return['callerid'] = $this->_callerid->get_return();
 
 		return($r);
 	}
@@ -417,6 +456,16 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 
 		if($this->_status === 'delete')
 			$this->_return['contextmember'] = $r;
+
+		return($r);
+	}
+
+	function delete_callerid()
+	{
+		$r = $this->_callerid->delete($this->_status);
+
+		if($this->_status === 'delete')
+			$this->_return['callerid'] = $r;
 
 		return($r);
 	}

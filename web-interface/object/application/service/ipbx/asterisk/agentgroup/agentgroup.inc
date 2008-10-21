@@ -289,6 +289,7 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 		if(isset($reslist[0]) === false)
 		{
 			$this->_set_result('queuemember',false);
+			$this->_set_error('queuemember','empty');
 			return(false);
 		}
 

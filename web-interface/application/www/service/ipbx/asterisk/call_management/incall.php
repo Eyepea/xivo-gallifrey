@@ -52,21 +52,27 @@ switch($act)
 			}
 		}
 
-		if(empty($result) === false
-		&& (xivo_issa('dialaction',$result) === false
-		    || empty($result['dialaction']) === true) === true)
-			$result['dialaction'] = null;
+		if(empty($result) === false)
+		{
+			if(xivo_issa('dialaction',$result) === false || empty($result['dialaction']) === true)
+				$result['dialaction'] = null;
+
+			if(xivo_issa('callerid',$result) === false || empty($result['callerid']) === true)
+				$result['callerid'] = null;
+		}
 
 		$_HTML->set_var('rightcall',$rightcall);
 		$_HTML->set_var('incall',$result['incall']);
 		$_HTML->set_var('dialaction',$result['dialaction']);
 		$_HTML->set_var('dialaction_from','incall');
+		$_HTML->set_var('callerid',$result['callerid']);
 		$_HTML->set_var('element',$appincall->get_elements());
 		$_HTML->set_var('destination_list',$appincall->get_dialaction_destination_list());
 		$_HTML->set_var('context_list',$appincall->get_context_list());
 
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callerid.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/incall.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		break;
@@ -114,22 +120,28 @@ switch($act)
 			}
 		}
 
-		if(empty($return) === false
-		&& (xivo_issa('dialaction',$return) === false
-		    || empty($return['dialaction']) === true) === true)
-			$return['dialaction'] = null;
+		if(empty($return) === false)
+		{
+			if(xivo_issa('dialaction',$return) === false || empty($return['dialaction']) === true)
+				$return['dialaction'] = null;
+
+			if(xivo_issa('callerid',$return) === false || empty($return['callerid']) === true)
+				$return['callerid'] = null;
+		}
 
 		$_HTML->set_var('id',$info['incall']['id']);
 		$_HTML->set_var('rightcall',$rightcall);
 		$_HTML->set_var('incall',$return['incall']);
 		$_HTML->set_var('dialaction',$return['dialaction']);
 		$_HTML->set_var('dialaction_from','incall');
+		$_HTML->set_var('callerid',$return['callerid']);
 		$_HTML->set_var('element',$appincall->get_elements());
 		$_HTML->set_var('destination_list',$appincall->get_dialaction_destination_list());
 		$_HTML->set_var('context_list',$appincall->get_context_list());
 
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callerid.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/incall.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		break;

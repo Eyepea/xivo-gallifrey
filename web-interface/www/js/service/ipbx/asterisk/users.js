@@ -229,7 +229,7 @@ xivo_ast_fm_user_enablevoicemail['it-ufeatures-enablevoicemail'] = {property: [{
 
 xivo_attrib_register('ast_fm_user_enablevoicemail',xivo_ast_fm_user_enablevoicemail);
 
-var xivo_elt_autoprov = {
+var xivo_ast_fm_user_autoprov = {
 	'it-autoprov-modact':
 		{property: [{disabled: false, className: 'it-enabled'}],
 		 link: 'it-autoprov-vendormodel'},
@@ -241,9 +241,9 @@ var xivo_elt_autoprov = {
 		{property: [{disabled: false, className: 'it-enabled'},
 			    {disabled: true, className: 'it-disabled'}]}};
 
-xivo_attrib_register('ast_fm_user_autoprov-sip',xivo_clone(xivo_elt_autoprov));
+xivo_attrib_register('ast_fm_user_autoprov-sip',xivo_clone(xivo_ast_fm_user_autoprov));
 
-var xivo_ast_fm_user_autoprov_iax = xivo_clone(xivo_elt_autoprov);
+var xivo_ast_fm_user_autoprov_iax = xivo_clone(xivo_ast_fm_user_autoprov);
 xivo_ast_fm_user_autoprov_iax['it-autoprov-modact']['property'] = {disabled: true, className: 'it-disabled'};
 xivo_ast_fm_user_autoprov_iax['it-autoprov-vendormodel']['property'] = {disabled: true, className: 'it-disabled'};
 xivo_ast_fm_user_autoprov_iax['it-autoprov-macaddr']['property'] = {disabled: true, className: 'it-disabled'};
@@ -420,18 +420,16 @@ function xivo_ast_cpy_user_name()
 		return(false);
 
 	var name = '';
-
 	var firstname = xivo_eid('it-ufeatures-firstname').value;
 	var lastname = xivo_eid('it-ufeatures-lastname').value;
 
-	if(xivo_is_undef(firstname) === false)
+	if(xivo_is_undef(firstname) === false && firstname.length > 0)
 		name += firstname;
 
-	if(xivo_is_undef(lastname) === false)
+	if(xivo_is_undef(lastname) === false && lastname.length > 0)
 		name += name.length === 0 ? lastname : ' '+lastname;
 
 	var callerid = xivo_eid('it-protocol-callerid').value;
-
 	var phonenumber = xivo_eid('it-ufeatures-number').value;
 
 	if(xivo_is_undef(phonenumber) === false)
@@ -465,14 +463,13 @@ function xivo_ast_chg_user_name()
 		return(false);
 
 	var name = '';
-
 	var firstname = xivo_eid('it-ufeatures-firstname').value;
 	var lastname = xivo_eid('it-ufeatures-lastname').value;
 
-	if(xivo_is_undef(firstname) === false)
+	if(xivo_is_undef(firstname) === false && firstname.length > 0)
 		name += firstname;
 
-	if(xivo_is_undef(lastname) === false)
+	if(xivo_is_undef(lastname) === false && lastname.length > 0)
 		name += name.length === 0 ? lastname : ' '+lastname;
 
 	if(xivo_ast_fm_cpy_user_name['protocol-callerid'] === true)

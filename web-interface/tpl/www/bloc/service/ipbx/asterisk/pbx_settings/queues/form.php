@@ -90,7 +90,25 @@ endif;
 				    'empty'	=> $this->bbf('fm_queue_periodic-announce-opt(default)'),
 				    'default'	=> $element['queue']['periodic-announce']['default'],
 				    'value'	=> $info['queue']['periodic-announce']),
-				    $announce_list);
+				    $announce_list),
+
+		$form->select(array('desc'	=> $this->bbf('fm_callerid_mode'),
+				    'name'	=> 'callerid[mode]',
+				    'labelid'	=> 'callerid-mode',
+				    'key'	=> false,
+				    'empty'	=> true,
+				    'bbf'	=> array('paramkey','fm_callerid_mode-opt'),
+				    'default'	=> $element['callerid']['mode']['default'],
+				    'value'	=> $info['callerid']['mode']),
+			      $element['callerid']['mode']['value'],
+			      'onchange="xivo_ast_chg_callerid_mode(this);"'),
+
+		$form->text(array('desc'	=> '&nbsp;',
+				  'name'	=> 'callerid[callerdisplay]',
+				  'labelid'	=> 'callerid-callerdisplay',
+				  'size'	=> 15,
+				  'default'	=> $element['callerid']['callerdisplay']['default'],
+				  'value'	=> $info['callerid']['callerdisplay']));
 ?>
 </div>
 
