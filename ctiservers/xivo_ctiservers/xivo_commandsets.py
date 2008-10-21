@@ -85,7 +85,7 @@ class BaseCommand:
         def getqueueslist_json(self, qlist, virtual):
                 return {}
         
-        def set_cticdr(self, cticdr):
+        def set_ctilog(self, ctilog):
                 return
         def set_presence(self, config_presence):
                 return
