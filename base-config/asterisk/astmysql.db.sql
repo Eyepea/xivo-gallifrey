@@ -62,6 +62,16 @@ CREATE INDEX `agentgroup__idx__deleted` ON `agentgroup`(`deleted`);
 INSERT INTO `agentgroup` VALUES (1,3,'default','',0,0,'');
 
 
+DROP TABLE IF EXISTS `callerid`;
+CREATE TABLE `callerid` (
+ `mode` enum('prepend','overwrite','append'),
+ `callerdisplay` varchar(80) NOT NULL DEFAULT '',
+ `type` enum('incall','group','queue') NOT NULL,
+ `typeval` int(10) unsigned NOT NULL,
+ PRIMARY KEY(`type`,`typeval`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
 DROP TABLE IF EXISTS `callfilter`;
 CREATE TABLE `callfilter` (
  `id` int(10) unsigned auto_increment,

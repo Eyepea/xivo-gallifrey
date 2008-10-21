@@ -57,6 +57,16 @@ CREATE INDEX agentgroup__idx__deleted ON agentgroup(deleted);
 INSERT INTO agentgroup VALUES (1,3,'default','',0,0,'');
 
 
+DROP TABLE callerid;
+CREATE TABLE callerid (
+ mode varchar(9),
+ callerdisplay varchar(80) NOT NULL DEFAULT '',
+ type varchar(32) NOT NULL,
+ typeval integer unsigned NOT NULL,
+ PRIMARY KEY(type,typeval)
+);
+
+
 DROP TABLE callfilter;
 CREATE TABLE callfilter (
  id integer unsigned,
