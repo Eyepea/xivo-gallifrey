@@ -1,0 +1,6 @@
+DEST_PATH=tarballs
+BASE_URL="http://downloads.digium.com/pub/telephony/dahdi-tools/releases"
+TARBALL_PREFIX="dahdi-tools-"
+SRC_DIR_PREFIX="dahdi-tools-"
+PKG_NAME="dahdi-tools"
+DFSG_EXCLUDE_PATTERNS=
