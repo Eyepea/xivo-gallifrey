@@ -1241,9 +1241,20 @@ class XivoCTICommand(BaseCommand):
 
                 if 'context' in self.uniqueids[astid][uid1]:
                         self.__sheet_alert__('link', astid, self.uniqueids[astid][uid1]['context'], event, {})
+
                 if chan2.startswith('Agent/'):
                         msg = self.__build_agupdate__(['agentlink', astid, chan2])
                         self.__send_msg_to_cti_clients__(msg)
+                        
+                        # 'onlineincoming' for the agent
+                        anum = chan2[6:]
+                        ag_id = self.__find_agentid_by_agentnum__(astid, anum)
+                        for uinfo in self.ulist_ng.userlist.itervalues():
+                                if uinfo.get('agentnum') == ag_id:
+                                        status = 'onlineincoming'
+                                        self.__update_availstate__(uinfo, status)
+                                        self.__presence_action__(astid, anum, status)
+                        
                         # To identify which queue a call comes from, we match a previous AMI Leave event,
                         # that involved the same channel as the one catched here.
                         # Any less-tricky-method is welcome, though.
@@ -1265,11 +1276,9 @@ class XivoCTICommand(BaseCommand):
                 if uinfo2:
                         status = 'onlineincoming'
                         self.__update_availstate__(uinfo2, status)
-                        ag = self.__agentnum__(uinfo2)
-                        if ag:
-                                self.__presence_action__(astid, ag, status)
-                                msg = self.__build_agupdate__(['phoneunlink', astid, 'Agent/%s' % ag])
-                                self.__send_msg_to_cti_clients__(msg)
+                        # self.__presence_action__(astid, ag, status)
+                        # msg = self.__build_agupdate__(['phoneunlink', astid, 'Agent/%s' % ag])
+                        # self.__send_msg_to_cti_clients__(msg)
 
                 self.weblist['phones'][astid].handle_ami_event_link(chan1, chan2, clid1, clid2)
                 return
@@ -2992,8 +3001,13 @@ class XivoCTICommand(BaseCommand):
                 company = userinfo['company']
                 username = userinfo['user']
 
+                if userinfo['state'] == 'xivo_unknown' and state in ['onlineincoming', 'onlineoutgoing', 'postcall']:
+                        # we forbid 'asterisk-related' presence events to change the status of unlogged users
+                        return None
+                
                 if 'login' in userinfo and 'sessiontimestamp' in userinfo.get('login'):
                         userinfo['login']['sessiontimestamp'] = time.time()
+
                 if state in self.presence.getstates():
                         userinfo['state'] = state
                 else:
