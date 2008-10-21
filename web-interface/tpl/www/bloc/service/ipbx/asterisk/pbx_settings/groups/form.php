@@ -98,6 +98,7 @@ endif;
 				  'name'	=> 'callerid[callerdisplay]',
 				  'labelid'	=> 'callerid-callerdisplay',
 				  'size'	=> 15,
+				  'notag'	=> false,
 				  'default'	=> $element['callerid']['callerdisplay']['default'],
 				  'value'	=> $info['callerid']['callerdisplay']));
 ?>
