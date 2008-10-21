@@ -497,9 +497,11 @@ class XivoCTICommand(BaseCommand):
                 if self.ctilog_conn is not None and self.ctilog_cursor is not None:
                         try:
                                 datetime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-                                self.ctilog_cursor.query("INSERT INTO ctilog VALUES"
-                                                         " ('%s', '', '', '', '%s', '%s')"
-                                                         % (datetime, what, options))
+                                columns = ('eventdate', 'loginclient', 'company', 'status', 'action', 'arguments')
+                                self.ctilog_cursor.query("INSERT INTO ctilog (${columns}) "
+                                                         "VALUES (%s, NULL, NULL, NULL, %s, %s)",
+                                                         columns,
+                                                         (datetime, what, options))
                         except Exception, exc:
                                 log.error('--- exception --- (__fill_ctilog__) %s' % exc)
                         self.ctilog_conn.commit()
@@ -509,9 +511,11 @@ class XivoCTICommand(BaseCommand):
                 if self.ctilog_conn is not None and self.ctilog_cursor is not None:
                         try:
                                 datetime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-                                self.ctilog_cursor.query("INSERT INTO ctilog VALUES"
-                                                         " ('%s', '%s', '%s', '%s', '%s', '%s')"
-                                                         % (datetime, uinfo.get('user'), uinfo.get('company'), uinfo.get('state'), what, options))
+                                columns = ('eventdate', 'loginclient', 'company', 'status', 'action', 'arguments')
+                                self.ctilog_cursor.query("INSERT INTO ctilog (${columns}) "
+                                                         "VALUES (%s, %s, %s, %s, %s, %s)",
+                                                         columns,
+                                                         (datetime, uinfo.get('user'), uinfo.get('company'), uinfo.get('state'), what, options))
                         except Exception, exc:
                                 log.error('--- exception --- (__fill_user_ctilog__) %s' % exc)
                         self.ctilog_conn.commit()

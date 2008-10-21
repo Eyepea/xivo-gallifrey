@@ -354,7 +354,7 @@ def handle_ami_event(astid, idata):
                         else:
                                 nocolon.append(myline)
                 evfunction = this_event.get('Event')
-                # print '////////', evfunction, '   ------  ', this_event
+                # log.info('AMI(all)  %s  : %s' % (evfunction, this_event))
                 if evfunction is not None:
                         handle_ami_function(astid, evfunction, this_event)
                         if evfunction not in ['Newexten', 'Newchannel', 'Newstate', 'Newcallerid']:
