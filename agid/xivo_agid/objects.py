@@ -1051,8 +1051,12 @@ class CallerID:
         if m:
             self.mode = res['mode']
             self.callerdisplay = res['callerdisplay']
+            self.calleridnum = m.group(3)
+
             self.calleridname = m.group(1)
-            self.calleridnum = m.group(2)
+
+            if self.calleridname is None:
+                self.calleridname = m.group(2)
 
     def set_caller_id(self, referer=None):
         if not self.mode:
@@ -1062,16 +1066,23 @@ class CallerID:
         # if not in DID, setting caller id is only allowed for the first referer
         if referer is None or referer == ("%s:%s" % (self.type, self.typeval)):
 
+            calleridname = str(self.agi.get_variable('CALLERID(name)'))
+
+            if calleridname in (None, '', '""'):
+                calleridname = 'unknown'
+            elif calleridname[0] == '"' and calleridname[-1] == '"':
+                calleridname = calleridname[1:-1]
+
             if self.mode == 'prepend':
-                calleridname = '"%s - %s"' % (self.calleridname, self.agi.get_variable('CALLERID(name)'))
+                name = '""%s - %s""' % (self.calleridname, calleridname)
             elif self.mode == 'overwrite':
-                calleridname = '"%s"' % self.calleridname
+                name = '""%s""' % self.calleridname
             elif self.mode == 'append':
-                calleridname = '"%s - %s"' % (self.agi.get_variable('CALLERID(name)'), self.calleridname)
+                name = '""%s - %s""' % (calleridname, self.calleridname)
             else:
                 raise RuntimeError("Unknown callerid mode: %r" % mode)
 
-            self.agi.set_variable('CALLERID(name)', calleridname)
+            self.agi.set_variable('CALLERID(name)', name)
 
             if self.calleridnum:
                 self.agi.set_variable('CALLERID(num)', self.calleridnum)
