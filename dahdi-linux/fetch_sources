@@ -15,7 +15,11 @@ if [ -z "${UPVERSION}" ]; then
 	exit 1
 fi
 
-FILENAME="${PKG_NAME}_${UPVERSION}+dfsg.orig.tar.gz"
+if [ -n "${DFSG_EXCLUDE_PATTERNS}" ]; then
+	FILENAME="${PKG_NAME}_${UPVERSION}+dfsg.orig.tar.gz"
+else
+	FILENAME="${PKG_NAME}_${UPVERSION}.orig.tar.gz"
+fi
 
 mkdir -p ${DEST_PATH}
 
@@ -57,7 +61,9 @@ if [ -n "${DFSG_EXCLUDE_PATTERNS}" ]; then
 	rm -rf ${DIR}
 	rm -f ${DEST_PATH}/${UPFILENAME}
 else
-	mv ${DEST_PATH}/${UPFILENAME} ${DEST_PATH}/${FILENAME}
+	if [ "${UPFILENAME}" != "${FILENAME}" ]; then
+		mv ${DEST_PATH}/${UPFILENAME} ${DEST_PATH}/${FILENAME}
+	fi
 fi
 
 echo "Done !"
