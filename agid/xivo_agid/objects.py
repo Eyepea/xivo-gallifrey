@@ -1081,7 +1081,7 @@ class CallerID:
             elif self.mode == 'append':
                 name = "%s - %s" % (calleridname, self.calleridname)
             else:
-                raise RuntimeError("Unknown callerid mode: %r" % mode)
+                raise RuntimeError("Unknown callerid mode: %r" % self.mode)
 
             if self.calleridnum is not None:
                calleridnum = self.calleridnum
