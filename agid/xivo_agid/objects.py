@@ -1066,15 +1066,10 @@ class CallerID:
         # if not in DID, setting caller id is only allowed for the first referer
         if referer is None or referer == ("%s:%s" % (self.type, self.typeval)):
 
-            calleridname = str(self.agi.get_variable('CALLERID(name)'))
-            calleridnum = str(self.agi.get_variable('CALLERID(num)'))
+            calleridname = self.agi.get_variable('CALLERID(name)')
+            calleridnum = self.agi.get_variable('CALLERID(num)')
 
-            if self.calleridnum is not None:
-               calleridnum = self.calleridnum
-            elif calleridnum == '':
-                calleridnum = 'unknown'
-
-            if calleridname in ('', '""'):
+            if calleridname in (None, '', '""'):
                 calleridname = 'unknown'
             elif calleridname[0] == '"' and calleridname[-1] == '"':
                 calleridname = calleridname[1:-1]
@@ -1087,6 +1082,11 @@ class CallerID:
                 name = "%s - %s" % (calleridname, self.calleridname)
             else:
                 raise RuntimeError("Unknown callerid mode: %r" % mode)
+
+            if self.calleridnum is not None:
+               calleridnum = self.calleridnum
+            elif calleridnum in (None, ''):
+                calleridnum = 'unknown'
 
             self.agi.appexec('SetCallerPres', 'allowed')
             self.agi.set_variable('CALLERID(all)', '"%s" <%s>' % (name, calleridnum))
