@@ -1032,7 +1032,7 @@ class CallerID:
 
         cursor.query("SELECT ${columns} FROM callerid "
                      "WHERE type = %s "
-                     "AND typeval = %s ",
+                     "AND typeval = %s "
                      "AND mode IS NOT NULL",
                      ('mode', 'callerdisplay'),
                      (type, typeval))
