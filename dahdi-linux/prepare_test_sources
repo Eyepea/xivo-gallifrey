@@ -1,0 +1,29 @@
+#!/bin/sh
+
+. sources.pkg
+
+VER=$(cat SOURCE-VERSION)
+
+echo "Preparing source for ${PKG_NAME}_${VER}"
+
+rm -rf tmp
+mkdir tmp
+cd tmp
+tar xzf ../tarballs/${PKG_NAME}_${VER}+dfsg.orig.tar.gz
+cd ${PKG_NAME}-${VER}
+
+if [ -e ../../patches ]; then
+  if [ -e ../../patches/classic ]; then
+    PATCH_DIR="../../patches/classic"
+  else
+    PATCH_DIR="../../patches"
+  fi
+  
+  ln -s ${PATCH_DIR} patches
+  if [ -e patches/series ]; then
+    quilt push -a
+  fi
+fi
+
+echo "Done !"
+

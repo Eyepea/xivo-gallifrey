@@ -1,0 +1,6 @@
+DEST_PATH=tarballs
+BASE_URL="http://downloads.digium.com/pub/telephony/dahdi-linux/releases"
+TARBALL_PREFIX="dahdi-linux-"
+SRC_DIR_PREFIX="dahdi-linux-"
+PKG_NAME="dahdi-linux"
+DFSG_EXCLUDE_PATTERNS="drivers/dahdi/xpp/firmwares/*.hex"
