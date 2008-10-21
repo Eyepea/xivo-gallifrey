@@ -26,6 +26,9 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
+import re
+
+
 class DBUpdateException(Exception):
     pass
 
@@ -529,6 +532,9 @@ class Group:
         for event in ('noanswer', 'congestion', 'busy', 'chanunavail'):
             DialAction(self.agi, self.cursor, event, "group", self.id).set_variables()
 
+    def set_caller_id(self, referer=None):
+        CallerID(self.agi, self.cursor, "group", self.id).set_caller_id(referer)
+
 
 class MeetMe:
     def __init__(self, agi, cursor, xid=None, number=None, context=None):
@@ -657,6 +663,9 @@ class Queue:
     def set_dial_actions(self):
         for event in ('noanswer', 'congestion', 'busy', 'chanunavail'):
             DialAction(self.agi, self.cursor, event, "queue", self.id).set_variables()
+
+    def set_caller_id(self, referer=None):
+        CallerID(self.agi, self.cursor, "queue", self.id).set_caller_id(referer)
 
 
 class Agent:
@@ -879,6 +888,9 @@ class DID:
     def set_dial_actions(self):
         DialAction(self.agi, self.cursor, "answer", "incall", self.id).set_variables()
 
+    def set_caller_id(self):
+        CallerID(self.agi, self.cursor, "incall", self.id).set_caller_id()
+
 
 class Outcall:
     def __init__(self, agi, cursor, feature_list=None, xid=None, exten=None, context=None):
@@ -1007,3 +1019,59 @@ class VoiceMenu:
         self.id = xid
         self.name = res['name']
         self.context = res['context']
+
+
+CALLERID_MATCHER = re.compile('^(?:"(.+)"|([a-zA-Z0-9\-\.\!%\*_\+`\'\~]+)) ?(?:<([0-9\*#]+)>)?$').match
+
+class CallerID:
+    def __init__(self, agi, cursor, type, typeval):
+        self.agi = agi
+        self.cursor = cursor
+        self.type = type
+        self.typeval = typeval
+
+        cursor.query("SELECT ${columns} FROM callerid "
+                     "WHERE type = %s "
+                     "AND typeval = %s ",
+                     "AND mode IS NOT NULL",
+                     ('mode', 'callerdisplay'),
+                     (type, typeval))
+        res = cursor.fetchone()
+
+        self.mode = None
+        self.callerdisplay = ''
+        self.callername = None
+        self.callernum = None
+
+        if not res:
+            return
+
+        m = CALLERID_MATCHER(res['callerdisplay'])
+
+        if m:
+            self.mode = res['mode']
+            self.callerdisplay = res['callerdisplay']
+            self.calleridname = m.group(1)
+            self.calleridnum = m.group(2)
+
+    def set_caller_id(self, referer=None)
+        if not self.mode:
+            return
+
+        # referer is None <=> DID
+        # if not in DID, setting caller id is only allowed for the first referer
+        if referer is None or referer == ("%s:%s" % (self.type, self.typeval)):
+
+            if self.mode == 'prepend':
+                calleridname = '"%s - %s"' % (self.calleridname, self.agi.get_variable('CALLERID(name)'))
+            elif self.mode == 'overwrite':
+                calleridname = '"%s"' % self.calleridname
+            elif self.mode == 'append':
+                calleridname = '"%s - %s"' % (self.agi.get_variable('CALLERID(name)'), self.calleridname)
+            else:
+                raise RuntimeError("Unknown callerid mode: %r" % mode)
+
+            self.agi.set_variable('CALLERID(name)', calleridname)
+
+            if self.calleridnum:
+                self.agi.set_variable('CALLERID(num)', self.calleridnum)

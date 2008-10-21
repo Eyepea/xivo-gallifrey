@@ -66,5 +66,6 @@ def incoming_queue_set_features(agi, cursor, args):
         agi.set_variable('XIVO_QUEUETIMEOUT', queue.timeout)
 
     queue.set_dial_actions()
+    queue.set_caller_id(agi.get_variable('XIVO_FWD_REFERER'))
 
 agid.register(incoming_queue_set_features)

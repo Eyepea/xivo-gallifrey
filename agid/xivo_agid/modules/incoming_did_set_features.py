@@ -31,5 +31,6 @@ def incoming_did_set_features(agi, cursor, args):
     agi.set_variable('XIVO_FAXDETECT_EMAIL', did.faxdetectemail)
 
     did.set_dial_actions()
+    did.set_caller_id()
 
 agid.register(incoming_did_set_features)

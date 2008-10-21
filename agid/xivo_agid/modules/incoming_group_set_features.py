@@ -52,5 +52,6 @@ def incoming_group_set_features(agi, cursor, args):
         agi.set_variable('XIVO_GROUPTIMEOUT', group.timeout)
 
     group.set_dial_actions()
+    group.set_caller_id(agi.get_variable('XIVO_FWD_REFERER'))
 
 agid.register(incoming_group_set_features)
