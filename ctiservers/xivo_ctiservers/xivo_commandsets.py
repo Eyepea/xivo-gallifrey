@@ -109,7 +109,7 @@ class BaseCommand:
                 return
         def updates(self):
                 return
-        def read_queuelog(self):
+        def read_queuelog(self, astid, url_queuelog):
                 return
         def getprofilelist(self):
                 return []
