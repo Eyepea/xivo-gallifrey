@@ -1065,7 +1065,8 @@ class CallerID:
             not None <=> content of XIVO_FWD_REFERER, which is only set
                 once after DID handling (by group, user, ...)
                 CID modification is only allowed if the entity about to
-                handle the call is the same as the XIVO_FWD_REFERER, that
+                handle the call is the same as the XIVO_FWD_REFERER
+                and if the variable XIVO_CID_REWRITED is not set, that
                 is the first entity after DID having handled the call.
                 (BUGBUG: is this really the wanted behavior?)
         """
@@ -1073,6 +1074,11 @@ class CallerID:
             return
 
         if referer is None or referer == ("%s:%s" % (self.type, self.typeval)):
+
+            cidrewrited = bool(self.agi.get_variable('XIVO_CID_REWRITED'))
+
+            if referer is not None and cidrewrited is True:
+                return
 
             calleridname = self.agi.get_variable('CALLERID(name)')
             calleridnum = self.agi.get_variable('CALLERID(num)')
@@ -1098,3 +1104,6 @@ class CallerID:
 
             self.agi.appexec('SetCallerPres', 'allowed')
             self.agi.set_variable('CALLERID(all)', '"%s" <%s>' % (name, calleridnum))
+
+            if referer is not None:
+                self.agi.set_variable('XIVO_CID_REWRITED', 1)
