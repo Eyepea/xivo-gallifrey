@@ -1071,22 +1071,22 @@ class CallerID:
 
             if self.calleridnum is not None:
                calleridnum = self.calleridnum
-            elif calleridnum in (None, ''):
+            elif calleridnum == '':
                 calleridnum = 'unknown'
 
-            if calleridname in (None, '', '""'):
+            if calleridname in ('', '""'):
                 calleridname = 'unknown'
             elif calleridname[0] == '"' and calleridname[-1] == '"':
                 calleridname = calleridname[1:-1]
 
             if self.mode == 'prepend':
-                name = '"%s - %s"' % (self.calleridname, calleridname)
+                name = "%s - %s" % (self.calleridname, calleridname)
             elif self.mode == 'overwrite':
-                name = '"%s"' % self.calleridname
+                name = self.calleridname
             elif self.mode == 'append':
-                name = '"%s - %s"' % (calleridname, self.calleridname)
+                name = "%s - %s" % (calleridname, self.calleridname)
             else:
                 raise RuntimeError("Unknown callerid mode: %r" % mode)
 
             self.agi.appexec('SetCallerPres', 'allowed')
-            self.agi.set_variable('CALLERID(all)', "%s <%s>" % (name, calleridnum))
+            self.agi.set_variable('CALLERID(all)', '"%s" <%s>' % (name, calleridnum))
