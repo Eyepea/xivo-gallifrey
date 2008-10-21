@@ -1058,7 +1058,7 @@ class CallerID:
             if self.calleridname is None:
                 self.calleridname = m.group(2)
 
-    def set_caller_id(self, force_rewrite=False):
+    def set_caller_id(self, force_rewrite):
         """
         @force_rewrite:
             True <=> CID modification is always allowed in this case.
@@ -1068,7 +1068,6 @@ class CallerID:
         if not self.mode:
             return
 
-        force_rewrite = bool(force_rewrite)
         cidrewritten = bool(self.agi.get_variable('XIVO_CID_REWRITTEN'))
 
         if force_rewrite is True or cidrewritten is False:
@@ -1098,5 +1097,5 @@ class CallerID:
             self.agi.appexec('SetCallerPres', 'allowed')
             self.agi.set_variable('CALLERID(all)', '"%s" <%s>' % (name, calleridnum))
 
-            if force_rewrite is False:
+            if force_rewrite is not True:
                 self.agi.set_variable('XIVO_CID_REWRITTEN', 1)
