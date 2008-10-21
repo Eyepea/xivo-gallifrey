@@ -914,7 +914,7 @@ class XivoCTICommand(BaseCommand):
                                 itemdir['xivo-callerid'] = src
                                 itemdir['xivo-agentid'] = dst
                                 itemdir['xivo-uniqueid'] = event.get('Uniqueid1')
-                                
+
                                 ag_id = self.__find_agentid_by_agentnum__(astid, dst)
                                 for uinfo in self.ulist_ng.userlist.itervalues():
                                         if uinfo.get('agentnum') == ag_id:
@@ -959,7 +959,7 @@ class XivoCTICommand(BaseCommand):
                                 print 'ALERT %s %s (%s) uid=%s %s %s did=%s' % (astid, where, time.asctime(),
                                                                                 uid, clid, chan, did)
                                 self.chans_incomingdid.append(chan)
-
+                                
                                 itemdir['xivo-channel'] = chan
                                 itemdir['xivo-uniqueid'] = uid
                                 itemdir['xivo-did'] = did
@@ -978,7 +978,14 @@ class XivoCTICommand(BaseCommand):
                                 chan = event.get('Channel')
                                 uid = event.get('Uniqueid')
                                 queue = event.get('Queue')
-                                # userinfos.append() # find who are the queue memebers
+                                
+                                # find who are the queue members
+                                for agentname, status in self.weblist['queues'][astid].queuelist[queue]['agents'].iteritems():
+                                        if status.get('Paused') == '0':
+                                                ag_id = self.__find_agentid_by_agentnum__(astid, agentname[6:])
+                                                for uinfo in self.ulist_ng.userlist.itervalues():
+                                                        if uinfo.get('agentnum') == ag_id:
+                                                                userinfos.append(uinfo)
                                 print 'ALERT %s %s (%s) uid=%s %s %s queue=(%s %s %s)' % (astid, where, time.asctime(), uid, clid, chan,
                                                                                           queue, event.get('Position'), event.get('Count'))
                                 self.chans_incomingqueue.append(chan)
@@ -1010,7 +1017,7 @@ class XivoCTICommand(BaseCommand):
                                                                         itemdir[g] = gg
                                 if callingnum[:2] == '00':
                                         internatprefix = callingnum[2:6]
-                        # print itemdir
+                        # print where, itemdir
 
                         # 3/4
                         # build XML items from daemon-config + filled-in items
