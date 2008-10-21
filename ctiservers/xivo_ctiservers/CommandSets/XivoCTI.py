@@ -604,6 +604,8 @@ class XivoCTICommand(BaseCommand):
                                         for qname, qq in self.weblist['queues'][astid].queuelist.iteritems():
                                                 qq['stats']['Xivo-Join'] = 0
                                                 qq['stats']['Xivo-Link'] = 0
+                                                qq['stats']['Xivo-Chat'] = 0
+                                                qq['stats']['Xivo-Wait'] = 0
                                                 if qname in self.stats_queues[astid]:
                                                         qq['stats']['Xivo-Join'] = len(self.stats_queues[astid][qname].get('ENTERQUEUE', []))
                                                         qq['stats']['Xivo-Link'] = len(self.stats_queues[astid][qname].get('CONNECT', []))
@@ -1291,6 +1293,7 @@ class XivoCTICommand(BaseCommand):
                 uid1 = event.get('Uniqueid1')
                 uid2 = event.get('Uniqueid2')
                 self.__fill_uniqueids__(astid, uid1, uid2, chan1, chan2, 'unlink')
+                uid1info = self.uniqueids[astid][uid1]
                 phoneid1 = self.__phoneid_from_channel__(astid, chan1)
                 phoneid2 = self.__phoneid_from_channel__(astid, chan2)
                 uinfo1 = self.__userinfo_from_phoneid__(astid, phoneid1)
@@ -1298,6 +1301,46 @@ class XivoCTICommand(BaseCommand):
                 log.info('(phone) UNLINK %s phone=%s callerid=%s user=%s' % (astid, phoneid1, clid1, uinfo1))
                 log.info('(phone) UNLINK %s phone=%s callerid=%s user=%s' % (astid, phoneid2, clid2, uinfo2))
                 
+                if uid1info['link'].startswith('Agent/') and 'join' in uid1info:
+                        queuename = uid1info['join'].get('queue')
+                        clength = {'Xivo-Wait' : uid1info['time-link'] - uid1info['time-newchannel'],
+                                   'Xivo-Chat' : uid1info['time-unlink'] - uid1info['time-link']
+                                   }
+                        log.info('STAT UNLINK %s %s %s' % (astid, queuename, clength))
+                        if astid in self.stats_queues:
+                                if queuename not in self.stats_queues[astid]:
+                                        self.stats_queues[astid][queuename] = {}
+                                time_now = int(time.time())
+                                time_1ha = time_now - 3600
+
+                                for field in ['Xivo-Wait', 'Xivo-Chat']:
+                                        if field not in self.stats_queues[astid][queuename]:
+                                                self.stats_queues[astid][queuename].update({field : {}})
+                                        self.stats_queues[astid][queuename][field][time_now] = clength[field]
+                                        toremove = []
+                                        for t in self.stats_queues[astid][queuename][field].keys():
+                                                if t < time_1ha:
+                                                        toremove.append(t)
+                                        for t in toremove:
+                                                del self.stats_queues[astid][queuename][field][t]
+                                        ttotal = 0
+                                        for val in self.stats_queues[astid][queuename][field].values():
+                                                ttotal += val
+                                        nvals = len(self.stats_queues[astid][queuename][field])
+                                        if nvals > 0:
+                                                self.weblist['queues'][astid].queuelist[queuename]['stats'][field] = int(round(ttotal / nvals))
+                                        else:
+                                                self.weblist['queues'][astid].queuelist[queuename]['stats'][field] = 0
+
+                                tosend = { 'class' : 'queues',
+                                           'function' : 'sendlist',
+                                           'direction' : 'client',
+                                           'payload' : [ { 'astid' : astid,
+                                                           'queuestats' : self.weblist['queues'][astid].get_queuestats(queuename),
+                                                           'vqueues' : self.weblist['vqueues'][astid].queuelist
+                                                           } ] }
+                                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+
                 if 'context' in self.uniqueids[astid][uid1]:
                         self.__sheet_alert__('unlink', astid, self.uniqueids[astid][uid1]['context'], event, {})
                 if chan2.startswith('Agent/'):
