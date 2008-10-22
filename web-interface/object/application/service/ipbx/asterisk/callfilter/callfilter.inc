@@ -10,6 +10,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 	var $_callfiltermember	= false;
 	var $_dialaction	= false;
 	var $_contextmember	= false;
+	var $_callerid		= false;
 	var $_param		= array('type'	=> '');
 	var $_contextlist	= array();
 
@@ -53,7 +54,8 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 
 		if(($this->_callfiltermember = &$this->_service->get_module('callfiltermember')) === false
 		|| ($this->_dialaction = $this->get_abstract('dialaction',array('category' => 'callfilter'))) === false
-		|| ($this->_contextmember = $this->get_abstract('contextmember',array('type' => 'callfilter'))) === false)
+		|| ($this->_contextmember = $this->get_abstract('contextmember',array('type' => 'callfilter'))) === false
+		|| ($this->_callerid = $this->get_abstract('callerid',array('type' => 'callfilter'))) === false)
 			return(false);
 
 		return(true);
@@ -74,6 +76,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 		$this->_get_callfiltermember();
 		$this->_get_dialaction($this->_info['callfilter']['id']);
 		$this->_get_contextmember($this->_info['callfilter']['id']);
+		$this->_get_callerid($this->_info['callfilter']['id']);
 
 		return($this->_info);
 	}
@@ -237,6 +240,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 		$r['callfiltermember'] = $this->_callfiltermember->get_element();
 		$r['userfeatures'] = $this->_userfeatures->get_element();
 		$r['dialaction'] = $this->_dialaction->get_element();
+		$r['callerid'] = $this->_callerid->get_element();
 
 		return($r);
 	}
@@ -337,6 +341,9 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 			$this->set_dialaction($arr['dialaction']);
 
 		$this->set_contextmember();
+
+		if(xivo_issa('callerid',$arr) === true)
+			$this->set_callerid($arr['callerid']);
 
 		return(($this->get_errnb() < 1));
 	}
@@ -500,7 +507,8 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 		|| ($callfilterid = $this->add_callfilter()) === false
 		|| $this->add_callfiltermember($callfilterid) === false
 		|| $this->add_dialaction($callfilterid) === false
-		|| $this->add_contextmember($callfilterid) === false)
+		|| $this->add_contextmember($callfilterid) === false
+		|| $this->add_callerid($callfilterid) === false)
 		{
 			$r = false;
 
@@ -603,6 +611,9 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 				case 'contextmember':
 					$this->_contextmember->reverse_add();
 					break;
+				case 'callerid':
+					$this->_callerid->reverse_add();
+					break;
 			}
 		}
 
@@ -620,7 +631,8 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 		|| $this->edit_callfilter() === false
 		|| $this->edit_callfiltermember() === false
 		|| $this->edit_dialaction() === false
-		|| $this->edit_contextmember() === false)
+		|| $this->edit_contextmember() === false
+		|| $this->edit_callerid() === false)
 		{
 			$r = false;
 			$this->_reverse_edit();
@@ -750,6 +762,14 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 		return(parent::edit_contextmember($this->_info['callfilter']['id']));
 	}
 
+	function edit_callerid()
+	{
+		if(xivo_issa('callfilter',$this->_info) === false)
+			return(false);
+
+		return(parent::edit_callerid($this->_info['callfilter']['id']));
+	}
+
 	function _reverse_edit()
 	{
 		if($this->get_errnb() > 0
@@ -784,6 +804,9 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 				case 'contextmember':
 					$this->_contextmember->reverse_edit($this->_status);
 					break;
+				case 'callerid':
+					$this->_callerid->reverse_edit($this->_status);
+					break;
 			}
 		}
 
@@ -800,7 +823,8 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 		if($this->delete_callfilter() === false
 		|| $this->delete_callfiltermember() === false
 		|| $this->delete_dialaction() === false
-		|| $this->delete_contextmember() === false)
+		|| $this->delete_contextmember() === false
+		|| $this->delete_callerid() === false)
 		{
 			$r = false;
 			$this->_reverse_delete();
@@ -846,11 +870,11 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 		else if(xivo_issa('callfilter',$this->_info) === false)
 			return(false);
 
-		$callfiltermember_where = array();
-		$callfiltermember_where['type'] = 'user';
-		$callfiltermember_where['callfilterid'] = $this->_info['callfilter']['id'];
+		$where = array();
+		$where['type'] = 'user';
+		$where['callfilterid'] = $this->_info['callfilter']['id'];
 
-		$r = $this->_callfiltermember->delete_where($callfiltermember_where);
+		$r = $this->_callfiltermember->delete_where($where);
 
 		if($this->_status === 'delete')
 			$this->_return['callfiltermember'] = $r;
@@ -886,6 +910,9 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 					break;
 				case 'contextmember':
 					$this->_contextmember->add_origin_list();
+					break;
+				case 'callerid':
+					$this->_callerid->add_origin();
 					break;
 			}
 		}

@@ -12,7 +12,7 @@ $array['element']['callerdisplay'] = array();
 $array['element']['callerdisplay']['default'] = '';
 
 $array['element']['type'] = array();
-$array['element']['type']['value'] = array('incall','group','queue');
+$array['element']['type']['value'] = array('callfilter','incall','group','queue');
 $array['element']['type']['default'] = '';
 
 $array['element']['typeval'] = array();
@@ -25,7 +25,7 @@ $array['filter']['callerdisplay'] = array('set'		=> false,
 					  'maxlen'	=> 80,
 					  'regexp'	=> '/^'.XIVO_SRE_IPBX_AST_REGEXP_CALLERID.'$/u',
 					  'notag'	=> false);
-$array['filter']['type'] = array('key' => array('incall','group','queue'));
+$array['filter']['type'] = array('key' => array('callfilter','incall','group','queue'));
 $array['filter']['typeval'] = array('cast' => 'ulongint');
 
 ?>

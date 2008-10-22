@@ -19,40 +19,49 @@ Créer un contexte
 ; fm_callfilter_callfrom
 Provenance de l'appel :
 
-; fm_callfilter_callfrom-opt-internal
+; fm_callfilter_callfrom-opt(internal)
 Interne
 
-; fm_callfilter_callfrom-opt-external
+; fm_callfilter_callfrom-opt(external)
 Externe
 
-; fm_callfilter_callfrom-opt-all
+; fm_callfilter_callfrom-opt(all)
 Tout
 
 ; fm_callfilter_bosssecretary
 Mode :
 
-; fm_callfilter_bosssecretary-opt-bossfirst-serial
+; fm_callfilter_bosssecretary-opt(bossfirst-serial)
 Patron puis secrétaires en série
 
-; fm_callfilter_bosssecretary-opt-bossfirst-simult
+; fm_callfilter_bosssecretary-opt(bossfirst-simult)
 Patron puis secrétaires en simultané
 
-; fm_callfilter_bosssecretary-opt-secretary-serial
+; fm_callfilter_bosssecretary-opt(secretary-serial)
 Secrétaires en série
 
-; fm_callfilter_bosssecretary-opt-secretary-simult
+; fm_callfilter_bosssecretary-opt(secretary-simult)
 Secrétaires en simultané
 
-; fm_callfilter_bosssecretary-opt-all
+; fm_callfilter_bosssecretary-opt(all)
 Patron et secrétaires en simultané
 
-; fm_callfilter_callerdisplay
-Texte d'appel additionnel :
+; fm_callerid_mode
+Modifier le nom de l'appelant :
+
+; fm_callerid_mode-opt(prepend)
+Préfixer
+
+; fm_callerid_mode-opt(overwrite)
+Remplacer
+
+; fm_callerid_mode-opt(append)
+Suffixer
 
 ; fm_callfilter_ringseconds
 Temps de sonnerie :
 
-; fm_callfilter_ringseconds-opt0
+; fm_callfilter_ringseconds-opt(0)
 Illimité
 
 ; fm_callfilter_ringseconds-opt
@@ -67,7 +76,7 @@ Identité :
 ; fm_callfiltermember_ringseconds-boss
 Temps de sonnerie :
 
-; fm_callfiltermember_ringseconds-boss-opt0
+; fm_callfiltermember_ringseconds-boss-opt(0)
 Illimité
 
 ; fm_callfiltermember_ringseconds-boss-opt

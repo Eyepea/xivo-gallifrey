@@ -327,10 +327,10 @@ pre {text-align: left;}
 #r-help dt {font-weight: bold;padding-top: 4px;}
 #r-help dd {padding-left: 20px;}
 
-.xivo-calendar {width: 140px;border: 1px solid #9e9e9e;text-align: center;background-image: url(../img/menu/left/s-bg.gif);background-repeat: repeat-x;background-position: left top;margin: 0px 0px 0px auto;}
-.xivo-calendar .cal-prev {text-align: right;float: left;width: 8px;padding: 0px 2px;}
-.xivo-calendar .cal-next {text-align: left;padding: 0px 2px;}
-.xivo-calendar .cal-month-year {display: block;width: 116px;float: left;font-weight: bold;padding-bottom: 1px;}
+.xivo-calendar {max-width: 140px;border: 1px solid #9e9e9e;text-align: center;background-image: url(../img/menu/left/s-bg.gif);background-repeat: repeat-x;background-position: left top;margin: 0px 0px 0px auto;}
+.xivo-calendar .cal-prev {text-align: right;float: left;width: 8px;padding: 0px 6px 0px 2px;}
+.xivo-calendar .cal-next {text-align: left;padding: 0px 2px;float: right;}
+.xivo-calendar .cal-month-year {display: block;min-width: 110px;max-width: 116px;float: left;font-weight: bold;padding-bottom: 1px;}
 .xivo-calendar table {background-color: #fff;border: 0px solid #7f99b1;border-top-width: 1px;}
 .xivo-calendar th, .xivo-calendar td {font-size: 8pt;padding: 2px 3px;}
 .xivo-calendar th {background-color: #fee6c1;}

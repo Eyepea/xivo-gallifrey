@@ -27,9 +27,6 @@ $array['element']['callfrom'] = array();
 $array['element']['callfrom']['value'] = array('internal','external','all');
 $array['element']['callfrom']['default'] = 'all';
 
-$array['element']['callerdisplay'] = array();
-$array['element']['callerdisplay']['default'] = '';
-
 $array['element']['ringseconds'] = array();
 $array['element']['ringseconds']['value'] = array(0,5,10,15,20,25,30,35,40,45,50,55,60);
 $array['element']['ringseconds']['default'] = 0;
@@ -53,7 +50,6 @@ $array['filter']['bosssecretary'] = array('set' => false,'key' => array('bossfir
 									'secretary-simult',
 									'all'));
 $array['filter']['callfrom'] = array('key' => array('internal','external','all'));
-$array['filter']['callerdisplay'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 80);
 $array['filter']['ringseconds'] = array('set' => false,'chk' => 2,'key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['commented'] = array('bool' => true);
 $array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);

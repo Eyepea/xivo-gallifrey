@@ -207,6 +207,7 @@ endif;
 					       'field'		=> false),
 					 $rightcall['list']);?>
 		</div>
+
 		<div class="inout-list">
 			<a href="#"
 			   onclick="xivo_fm_move_selected('it-rightcalllist','it-rightcall');
@@ -223,6 +224,7 @@ endif;
 						  $this->bbf('bt_outrightcall'),
 						  'class="bt-outlist" id="bt-outrightcall" border="0"');?></a>
 		</div>
+
 		<div class="slt-inlist">
 			<?=$form->select(array('name'		=> 'rightcall[]',
 					       'label'		=> false,

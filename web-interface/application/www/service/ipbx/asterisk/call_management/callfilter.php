@@ -45,10 +45,14 @@ switch($act)
 				$secretary['list'] = xivo_array_diff_key($secretary['list'],$secretary['slt']);
 		}
 
-		if(empty($result) === false
-		&& (xivo_issa('dialaction',$result) === false
-		    || empty($result['dialaction']) === true) === true)
-			$result['dialaction'] = null;
+		if(empty($result) === false)
+		{
+			if(xivo_issa('dialaction',$result) === false || empty($result['dialaction']) === true)
+				$result['dialaction'] = null;
+
+			if(xivo_issa('callerid',$result) === false || empty($result['callerid']) === true)
+				$result['callerid'] = null;
+		}
 
 		$_HTML->set_var('info',$result);
 		$_HTML->set_var('dialaction',$result['dialaction']);
@@ -60,6 +64,7 @@ switch($act)
 
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callerid.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callfilter.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		break;
@@ -104,10 +109,14 @@ switch($act)
 				$secretary['list'] = xivo_array_diff_key($secretary['list'],$secretary['slt']);
 		}
 
-		if(empty($return) === false
-		&& (xivo_issa('dialaction',$return) === false
-		    || empty($return['dialaction']) === true) === true)
-			$return['dialaction'] = null;
+		if(empty($return) === false)
+		{
+			if(xivo_issa('dialaction',$return) === false || empty($return['dialaction']) === true)
+				$return['dialaction'] = null;
+
+			if(xivo_issa('callerid',$return) === false || empty($return['callerid']) === true)
+				$return['callerid'] = null;
+		}
 
 		$_HTML->set_var('id',$info['callfilter']['id']);
 		$_HTML->set_var('info',$return);
@@ -120,6 +129,7 @@ switch($act)
 
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callerid.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callfilter.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		break;

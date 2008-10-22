@@ -103,14 +103,16 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 				    'key'	=> false,
 				    'bbf'	=> array('paramkey','fm_userfeatures_ringseconds-opt'),
 				    'default'	=> $element['ufeatures']['ringseconds']['default'],
-				    'value'	=> (isset($info['ufeatures']['ringseconds']) === true ? (int) $info['ufeatures']['ringseconds'] : null)),			       $element['ufeatures']['ringseconds']['value']),
+				    'value'	=> $info['ufeatures']['ringseconds']),
+			      $element['ufeatures']['ringseconds']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_userfeatures_simultcalls'),
 				    'name'	=> 'ufeatures[simultcalls]',
 				    'labelid'	=> 'ufeatures-simultcalls',
 				    'key'	=> false,
 				    'default'	=> $element['ufeatures']['simultcalls']['default'],
-				    'value'	=> (isset($info['ufeatures']['simultcalls']) === true ? (int) $info['ufeatures']['simultcalls'] : null)),			       $element['ufeatures']['simultcalls']['value']),
+				    'value'	=> $info['ufeatures']['simultcalls']),
+			      $element['ufeatures']['simultcalls']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_protocol'),
 				    'name'	=> 'protocol[protocol]',
