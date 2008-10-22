@@ -10,7 +10,7 @@ DEB_PKG = "dahdi-tools"
 
 SRCVER = $(shell cat $(MODULE_PATH)/SOURCE-VERSION)
 TARBALL_NAME = "dahdi-tools_$(SRCVER).orig.tar.gz"
-XIVO_REV = $(SRCVER)+dfsg+pf.$(MAINREV)~svn$(SVNREV)
+XIVO_REV = $(SRCVER)+pf.$(MAINREV)~svn$(SVNREV)
 
 
 default:
