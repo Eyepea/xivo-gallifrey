@@ -1384,12 +1384,13 @@ class XivoCTICommand(BaseCommand):
                         elif params[0] == 'queueremove' and len(params) > 1:
                                 self.__ami_execute__(astid, params[0], params[1], 'Agent/%s' % anum)
                 return
-
+        
         def __ami_execute__(self, *args):
                 actionid = self.amilist.execute(*args)
                 if actionid is not None:
                         self.ami_requests[actionid] = args
-
+                        return actionid
+                
         def ami_hangup(self, astid, event):
                 chan  = event.get('Channel')
                 uid = event.get('Uniqueid')
@@ -1573,9 +1574,14 @@ class XivoCTICommand(BaseCommand):
         
         def ami_originateresponse(self, astid, event):
                 log.info('ami_originateresponse %s : %s' % (astid, event))
+                uniqueid = event.get('Uniqueid')
+                actionid = event.get('ActionID')
+                if uniqueid in self.uniqueids[astid]:
+                        self.uniqueids[astid][uniqueid].update({'time-originateresponse' : time.time(),
+                                                                'actionid' : actionid})
+                # {'Uniqueid': '1213955764.88', 'CallerID': '6101', 'Exten': '6101', 'CallerIDNum': '6101', 'Response': 'Success', 'Reason': '4', 'Context': 'ctx-callbooster-agentlogin', 'CallerIDName': 'operateur', 'Privilege': 'call,all', 'Event': 'OriginateResponse', 'Channel': 'SIP/102-081f6730'}
                 return
-        # {'Uniqueid': '1213955764.88', 'CallerID': '6101', 'Exten': '6101', 'CallerIDNum': '6101', 'Response': 'Success', 'Reason': '4', 'Context': 'ctx-callbooster-agentlogin', 'CallerIDName': 'operateur', 'Privilege': 'call,all', 'Event': 'OriginateResponse', 'Channel': 'SIP/102-081f6730'}
-
+        
         def ami_messagewaiting(self, astid, event):
                 """
                 Instead of updating the mwi fields here, we request the current status,
@@ -1881,8 +1887,10 @@ class XivoCTICommand(BaseCommand):
                 elif eventname == 'Feature':
                         log.info('AMI %s UserEventFeature %s' % (astid, event))
                         # 'XIVO_CONTEXT', 'CHANNEL', 'Function', 'Status', 'Value'
+                elif eventname == 'TagCall':
+                        log.info('AMI %s UserEvent %s %s' % (astid, eventname, event))
                 else:
-                        log.info('AMI %s UserEvent %s' % (astid, event))
+                        log.info('AMI %s untracked UserEvent %s' % (astid, event))
                 return
 
         def ami_faxsent(self, astid, event):
@@ -2515,9 +2523,14 @@ class XivoCTICommand(BaseCommand):
                         elif subcommand == 'listen':
                                 channels = self.__find_channel_byagent__(astid, anum)
                                 for channel in channels:
-                                        self.__ami_execute__(astid, 'chanspy', 'Local',
-                                                             userinfo.get('phonenum'), channel, userinfo.get('context'))
-                                        log.info('started listening on %s %s (agent %s)' % (astid, channel, anum))
+                                        aid = self.__ami_execute__(astid,
+                                                                   'origapplication',
+                                                                   'ChanSpy',
+                                                                   '%s|q' % channel,
+                                                                   'Local',
+                                                                   userinfo.get('phonenum'),
+                                                                   userinfo.get('context'))
+                                        log.info('started listening on %s %s (agent %s) aid = %s' % (astid, channel, anum, aid))
 
                         elif subcommand == 'getfilelist':
                                 lst = os.listdir(MONITORDIR)

@@ -256,13 +256,15 @@ class AMIClass:
                 except Exception, exc:
                         return False
 
-        def chanspy(self, phoneproto, phonesrc, channel, locext):
+        def origapplication(self, application, data, phoneproto, phonesrc, context):
                 try:
                         ret = self.sendcommand('Originate', [('Channel', phoneproto + '/' + phonesrc),
-                                                             ('Context', locext),
+                                                             ('Context', context),
                                                              ('Priority', '1'),
-                                                             ('Application', 'ChanSpy'),
-                                                             ('Data', '%s|q' % channel),
+                                                             ('Application', application),
+                                                             ('Data', data),
+                                                             ('Variable', 'XIVO_ACTIONID=%s' % self.actionid),
+                                                             ('Variable', 'XIVO_ORIGAPPLI=%s' % application),
                                                              ('Async', 'true')])
                         return ret
                 except self.AMIError, exc:
