@@ -22,6 +22,7 @@ from xivo_agid import objects
 
 def incoming_group_set_features(agi, cursor, args):
     groupid = agi.get_variable('XIVO_DSTID')
+    referer = agi.get_variable('XIVO_FWD_REFERER')
 
     try:
         group = objects.Group(agi, cursor, xid=int(groupid))
@@ -52,6 +53,8 @@ def incoming_group_set_features(agi, cursor, args):
         agi.set_variable('XIVO_GROUPTIMEOUT', group.timeout)
 
     group.set_dial_actions()
-    group.set_caller_id()
+
+    if referer == ("group:%s" % group.id):
+        group.set_caller_id()
 
 agid.register(incoming_group_set_features)

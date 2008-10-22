@@ -22,6 +22,7 @@ from xivo_agid import objects
 
 def incoming_queue_set_features(agi, cursor, args):
     queueid = agi.get_variable('XIVO_DSTID')
+    referer = agi.get_variable('XIVO_FWD_REFERER')
 
     try:
         queue = objects.Queue(agi, cursor, xid=int(queueid))
@@ -66,6 +67,8 @@ def incoming_queue_set_features(agi, cursor, args):
         agi.set_variable('XIVO_QUEUETIMEOUT', queue.timeout)
 
     queue.set_dial_actions()
-    queue.set_caller_id()
+
+    if referer == ("queue:%s" % queue.id):
+        queue.set_caller_id()
 
 agid.register(incoming_queue_set_features)
