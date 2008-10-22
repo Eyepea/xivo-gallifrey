@@ -62,7 +62,7 @@ log = logging.getLogger('xivocti')
 
 XIVOVERSION_NUM = '0.4'
 XIVOVERSION_NAME = 'k-9'
-REQUIRED_CLIENT_VERSION = 4258
+REQUIRED_CLIENT_VERSION = 4440
 __revision__ = __version__.split()[1]
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 HISTSEPAR = ';'
@@ -351,7 +351,7 @@ class XivoCTICommand(BaseCommand):
 
 
         def __check_capa_connection__(self, userinfo, capaid):
-                if capaid in self.capas and capaid in userinfo.get('capaids').split(','):
+                if capaid in self.capas and capaid in userinfo.get('capaids'):
                         if self.capas[capaid].toomuchusers():
                                 return 'toomuchusers:%s' % self.capas[capaid].maxgui()
                 else:
@@ -451,7 +451,7 @@ class XivoCTICommand(BaseCommand):
                         
                         tosend = { 'class' : 'login_capas_ok',
                                    'direction' : 'client',
-                                   'capafuncs' : self.capas[capaid].tostring(self.capas[capaid].all()),
+                                   'capafuncs' : self.capas[capaid].tostringlist(self.capas[capaid].all()),
                                    'capaxlets' : self.capas[capaid].capadisps,
                                    'appliname' : self.capas[capaid].appliname,
                                    'capapresence' : { 'names'   : self.presence.getdisplaydetails(),
@@ -676,7 +676,7 @@ class XivoCTICommand(BaseCommand):
                                 lulist[c] = {'user'     : d[0].split('@')[0],
                                              'company'  : d[0].split('@')[1],
                                              'password' : d[1],
-                                             'capaids'  : d[2],
+                                             'capaids'  : d[2].split(','),
                                              'fullname' : d[3] + ' ' + d[4],
                                              'astid'    : d[5],
                                              'agentnum' : d[9],
@@ -699,7 +699,7 @@ class XivoCTICommand(BaseCommand):
                                 lulist[uid] = {'user' : uitem.get('loginclient'),
                                                'company' : uitem.get('context'),
                                                'password' : uitem.get('passwdclient'),
-                                               'capaids' : uitem.get('profileclient'),
+                                               'capaids' : uitem.get('profileclient').split(','),
                                                'fullname' : uitem.get('fullname'),
                                                'astid' : 'xivo', # XXX
                                                'techlist' : '.'.join([uitem.get('protocol'), uitem.get('context'),
@@ -729,7 +729,7 @@ class XivoCTICommand(BaseCommand):
                                 lulist[fieldname] = {'user'     : userid,
                                                      'company'  : company,
                                                      'password' : d[2],
-                                                     'capaids'  : 'default',
+                                                     'capaids'  : ['default'],
                                                      'fullname' : d[8] + ' ' + d[9],
                                                      'astid'    : 'xivo',
                                                      'agentnum' : '',

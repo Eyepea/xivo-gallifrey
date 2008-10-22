@@ -127,13 +127,13 @@ class Capabilities:
         def all(self):
                 return (2 ** (len(self.allowed_funcs)) - 1)
 
-        def tostring(self, capalist_int):
+        def tostringlist(self, capalist_int):
                 lst = []
                 for capa in self.capafuncs:
                         n = 2 ** self.allowed_funcs.index(capa)
                         if (n & capalist_int):
                                 lst.append(capa)
-                return ','.join(lst)
+                return lst
 
         def match_funcs(self, ucapas, capa_str):
                 capas = capa_str.split(',')
