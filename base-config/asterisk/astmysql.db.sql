@@ -66,7 +66,7 @@ DROP TABLE IF EXISTS `callerid`;
 CREATE TABLE `callerid` (
  `mode` enum('prepend','overwrite','append'),
  `callerdisplay` varchar(80) NOT NULL DEFAULT '',
- `type` enum('incall','group','queue') NOT NULL,
+ `type` enum('callfilter','incall','group','queue') NOT NULL,
  `typeval` int(10) unsigned NOT NULL,
  PRIMARY KEY(`type`,`typeval`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -80,7 +80,6 @@ CREATE TABLE `callfilter` (
  `type` enum('bosssecretary') NOT NULL,
  `bosssecretary` enum('bossfirst-serial','bossfirst-simult','secretary-serial','secretary-simult','all'),
  `callfrom` enum('internal','external','all') NOT NULL,
- `callerdisplay` varchar(80) NOT NULL DEFAULT '',
  `ringseconds` tinyint(2) unsigned NOT NULL DEFAULT 0,
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  `description` text NOT NULL,

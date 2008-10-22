@@ -75,7 +75,6 @@ CREATE TABLE callfilter (
  type varchar(14) NOT NULL DEFAULT 'bosssecretary',
  bosssecretary varchar(16),
  callfrom varchar(8) NOT NULL DEFAULT 'all',
- callerdisplay varchar(80) NOT NULL DEFAULT '',
  ringseconds tinyint unsigned NOT NULL DEFAULT 0,
  commented tinyint(1) NOT NULL DEFAULT 0,
  description text NOT NULL,
