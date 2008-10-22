@@ -1219,6 +1219,10 @@ class XivoCTICommand(BaseCommand):
                 uid2 = event.get('Uniqueid2')
                 self.__fill_uniqueids__(astid, uid1, uid2, chan1, chan2, 'link')
                 uid1info = self.uniqueids[astid][uid1]
+                
+                if 'time-chanspy' in uid1info:
+                        return
+                
                 if uid1info['link'].startswith('Agent/') and 'join' in uid1info:
                         queuename = uid1info['join'].get('queue')
                         log.info('STAT LINK %s %s %s' % (astid, queuename, uid1info['link']))
@@ -1889,6 +1893,13 @@ class XivoCTICommand(BaseCommand):
                         # 'XIVO_CONTEXT', 'CHANNEL', 'Function', 'Status', 'Value'
                 elif eventname == 'LocalCall':
                         log.info('AMI %s UserEvent %s %s' % (astid, eventname, event))
+                        uniqueid = event.get('UNIQUEID')
+                        appli = event.get('XIVO_ORIGAPPLI')
+                        actionid = event.get('XIVO_ORIGACTIONID')
+                        if uniqueid in self.uniqueids[astid]:
+                                if appli == 'ChanSpy':
+                                        self.uniqueids[astid][uniqueid].update({'time-chanspy' : time.time(),
+                                                                                'actionid' : actionid})
                 else:
                         log.info('AMI %s untracked UserEvent %s' % (astid, event))
                 return
