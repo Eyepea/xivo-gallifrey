@@ -352,20 +352,20 @@ version: 1.63
 files: ST2022_SG_v3.63_Release_Package.zip
 
 [ST2022_SG_v3.63_Release_Package.zip]
-url: http://www.thomsontelecompartner.com/getfile.php?id=5234
+url: http://www.thomsonbroadbandpartner.com/getfile.php?id=5234
 size: 7973318
 md5sum: c898557f53dc6efdbe166f4a4f031caf
 sha1sum: 474ebddff5e6306f858518e7bd6037ae0b939b39
 
-# Thomson ST2030 1.63
-[thst2030_163]
+# Thomson ST2030 1.64
+[thst2030_164]
 brand: Thomson
 model: ST2030
-version: 1.63
-files: ST2030_SG_v1.63_Release_package.zip
+version: 1.64
+files: ST2030_SG_v1.64_Release_package.zip
 
-[ST2030_SG_v1.63_Release_package.zip]
-url: http://www.thomsontelecompartner.com/getfile.php?id=5232
-size: 9544552
-md5sum: 5adf0446de5c07273836751d79f31ffa
-sha1sum: 7a6fe79f23f0b863d8c1ed97e7fc3bf4d65e302c
+[ST2030_SG_v1.64_Release_package.zip]
+url: http://www.thomsonbroadbandpartner.com/getfile.php?id=6040
+size: 8137092
+md5sum: 46e4d1a6fcc9e367de4d2263738a26ed
+sha1sum: f4f24f60a60a38c620987b34f06440cfc92686a3
