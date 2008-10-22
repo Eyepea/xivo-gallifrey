@@ -326,6 +326,15 @@ class User:
         self.outcallerid = res['outcallerid']
         bsfilter = res['bsfilter']
 
+        if self.destunc == '':
+            self.enableunc = 0
+
+        if self.destrna == '':
+            self.enablerna = 0
+
+        if self.destbusy == '':
+            self.enablebusy = 0
+
         self.interface = protocol_intf_and_suffix(cursor, self.protocol, 'user', self.protocolid)[0]
 
         if bsfilter == "boss":
