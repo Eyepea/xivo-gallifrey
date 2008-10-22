@@ -827,6 +827,18 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		&& isset($this->_profileclientlist[$arr['profileclient']]) === false)
 			$arr['profileclient'] = '';
 
+		if(isset($arr['destunc']) === true
+		&& xivo_haslen($arr['destunc']) === false)
+			$arr['enableunc'] = false;
+
+		if(isset($arr['destrna']) === true
+		&& xivo_haslen($arr['destrna']) === false)
+			$arr['enablerna'] = false;
+
+		if(isset($arr['destbusy']) === true
+		&& xivo_haslen($arr['destbusy']) === false)
+			$arr['enablebusy'] = false;
+
 		if(($rs = $this->_userfeatures->chk_values($arr)) === false)
 		{
 			$this->_set_result('ufeatures',$this->_userfeatures->get_filter_result());
