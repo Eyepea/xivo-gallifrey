@@ -153,27 +153,10 @@ class BossSecretaryFilter:
         if self.ringseconds == 0:
             self.ringseconds = ""
 
-        if protocol == "sip":
-            interface = "SIP/" + name
-        elif protocol == "iax":
-            interface = "IAX2/" + name
-        elif protocol == "custom":
-            cursor.query("SELECT ${columns} FROM usercustom "
-                         "WHERE id = %s "
-                         "AND commented = 0 "
-                         "AND category = 'user'",
-                         ('interface',),
-                         (protocolid,))
-            res = cursor.fetchone()
-
-            if not res:
-                agi.dp_break("Database inconsistency: unable to find custom user with usercustom.id %d (name = %r, context = %r)" % (protocolid, name, boss_context))
-
-            interface = res['interface']
-        else:
-            agi.dp_break(agi, "Unknown protocol %r" % protocol)
-
-        self.boss.interface = interface
+        try:
+            self.boss.interface = protocol_intf_and_suffix(cursor, protocol, 'user', protocolid)[0]
+        except (ValueError, LookupError), e:
+            self.agi.dp_break(str(e))
 
         cursor.query("SELECT ${columns} FROM callfiltermember INNER JOIN userfeatures "
                      "ON callfiltermember.typeval = userfeatures.id "
@@ -199,33 +182,21 @@ class BossSecretaryFilter:
             protocol = row['userfeatures.protocol']
             protocolid = row['userfeatures.protocolid']
             name = row['userfeatures.name']
-            secretary = BossSecretaryFilterMember(self.agi, row['callfiltermember.active'], 'secretary', row['userfeatures.id'],
-                                                  row['userfeatures.number'], row['userfeatures.ringseconds'])
+            secretary = BossSecretaryFilterMember(self.agi,
+                                                  row['callfiltermember.active'],
+                                                  'secretary',
+                                                  row['userfeatures.id'],
+                                                  row['userfeatures.number'],
+                                                  row['userfeatures.ringseconds'])
 
             if secretary.active:
                 self.active = True
 
-            if protocol == "sip":
-                interface = "SIP/" + name
-            elif protocol == "iax":
-                interface = "IAX2/" + name
-            elif protocol == "custom":
-                cursor.query("SELECT ${columns} FROM usercustom "
-                             "WHERE id = %s "
-                             "AND commented = 0 "
-                             "AND category = 'user'",
-                             ('interface',),
-                             (protocolid,))
-                res2 = cursor.fetchone()
+            try:
+                secretary.interface = protocol_intf_and_suffix(cursor, protocol, 'user', protocolid)[0]
+            except (ValueError, LookupError), e:
+                self.agi.dp_break(str(e))
 
-                if not res2:
-                    agi.dp_break("Database inconsistency: unable to find custom user with usercustom.id %d (name = %r, context = %r)" % (protocolid, name, boss_context))
-
-                interface = res2['interface']
-            else:
-                agi.dp_break("Unknown protocol %r" % protocol)
-
-            secretary.interface = interface
             self.secretaries.append(secretary)
 
     def __str__(self):
@@ -355,25 +326,7 @@ class User:
         self.outcallerid = res['outcallerid']
         bsfilter = res['bsfilter']
 
-        if self.protocol == "sip":
-            self.interface = "SIP/" + self.name
-        elif self.protocol == "iax":
-            self.interface = "IAX2/" + self.name
-        elif self.protocol == "custom":
-            cursor.query("SELECT ${columns} FROM usercustom "
-                         "WHERE id = %s "
-                         "AND category = 'user' "
-                         "AND commented = 0",
-                         ('interface',),
-                         (self.protocolid,))
-            res = cursor.fetchone()
-
-            if not res:
-                raise LookupError("Database inconsistency: unable to find custom protocol (protocolid: %d)" % self.protocolid)
-
-            self.interface = res['interface']
-        else:
-            raise LookupError("Unknown protocol %r" % self.protocol)
+        self.interface = protocol_intf_and_suffix(cursor, self.protocol, 'user', self.protocolid)[0]
 
         if bsfilter == "boss":
             try:
@@ -766,52 +719,10 @@ class Trunk:
         self.protocol = res['protocol']
         self.protocolid = res['protocolid']
 
-        if self.protocol == "sip":
-            cursor.query("SELECT ${columns} FROM usersip "
-                         "WHERE id = %s "
-                         "AND commented = 0",
-                         ('name',),
-                         (self.protocolid,))
-            res = cursor.fetchone()
-
-            if not res:
-                raise LookupError("Unable to find realtime SIP entry")
-
-            self.interface = "SIP/%s" % res['name']
-            self.intfsuffix = None
-        elif self.protocol == "iax":
-            cursor.query("SELECT ${columns} FROM useriax "
-                         "WHERE id = %s "
-                         "AND commented = 0",
-                         ('name',),
-                         (self.protocolid,))
-            res = cursor.fetchone()
-
-            if not res:
-                raise LookupError("Unable to find realtime IAX entry")
-
-            self.interface = "IAX2/%s" % res['name']
-            self.intfsuffix = None
-        elif self.protocol == "custom":
-            cursor.query("SELECT ${columns} FROM usercustom "
-                         "WHERE id = %s "
-                         "AND category = 'trunk' "
-                         "AND commented = 0",
-                         ('interface', 'intfsuffix'),
-                         (self.protocolid,))
-            res = cursor.fetchone()
-
-            if not res:
-                raise LookupError("Unable to find custom trunk entry")
-
-            self.interface = res['interface']
-
-            # In case the suffix is the integer 0, bool(intfsuffix)
-            # returns False though there is a suffix. Casting it to
-            # a string prevents such an error.
-            self.intfsuffix = str(res['intfsuffix'])
-        else:
-            raise LookupError("Unknown protocol (protocol: %r)" % self.protocol)
+        (self.interface, self.intfsuffix) = protocol_intf_and_suffix(cursor,
+                                                                     self.protocol,
+                                                                     'trunk',
+                                                                     self.protocolid)
 
 
 class HandyNumber:
@@ -1043,20 +954,18 @@ class CallerID:
         self.calleridname = None
         self.calleridnum = None
 
-        if not res:
-            return
+        if res:
+            m = CALLERID_MATCHER(res['callerdisplay'])
 
-        m = CALLERID_MATCHER(res['callerdisplay'])
+            if m:
+                self.mode = res['mode']
+                self.callerdisplay = res['callerdisplay']
+                self.calleridnum = m.group(3)
 
-        if m:
-            self.mode = res['mode']
-            self.callerdisplay = res['callerdisplay']
-            self.calleridnum = m.group(3)
+                self.calleridname = m.group(1)
 
-            self.calleridname = m.group(1)
-
-            if self.calleridname is None:
-                self.calleridname = m.group(2)
+                if self.calleridname is None:
+                    self.calleridname = m.group(2)
 
     def set_caller_id(self, force_rewrite):
         """
@@ -1106,3 +1015,78 @@ class CallerID:
 
             if not force_rewrite:
                 self.agi.set_variable('XIVO_CID_REWRITTEN', 1)
+
+
+class ChanSIP:
+    @staticmethod
+    def get_intf_and_suffix(cursor, category, xid):
+
+        cursor.query("SELECT ${columns} FROM usersip "
+                     "WHERE id = %s "
+                     "AND category = %s "
+                     "AND commented = 0",
+                     ('name',),
+                     (xid, category))
+        res = cursor.fetchone()
+
+        if not res:
+            raise LookupError("Unable to find usersip entry (category: %s, id: %s)" % (category, xid))
+
+        return ("SIP/%s" % res['name'], None)
+
+
+class ChanIAX2:
+    @staticmethod
+    def get_intf_and_suffix(cursor, category, xid):
+
+        cursor.query("SELECT ${columns} FROM useriax "
+                     "WHERE id = %s "
+                     "AND category = %s "
+                     "AND commented = 0",
+                     ('name',),
+                     (xid, category))
+        res = cursor.fetchone()
+
+        if not res:
+            raise LookupError("Unable to find useriax entry (category: %s, id: %s)" % (category, xid))
+
+        return ("IAX2/%s" % res['name'], None)
+
+
+class ChanCustom:
+    @staticmethod
+    def get_intf_and_suffix(cursor, category, xid):
+
+        cursor.query("SELECT ${columns} FROM usercustom "
+                     "WHERE id = %s "
+                     "AND category = %s "
+                     "AND commented = 0",
+                     ('interface', 'intfsuffix'),
+                     (xid, category))
+        res = cursor.fetchone()
+
+        if not res:
+            raise LookupError("Unable to find usercustom entry (category: %s, id: %s)" % (category, xid))
+
+        # In case the suffix is the integer 0, bool(intfsuffix)
+        # returns False though there is a suffix. Casting it to
+        # a string prevents such an error.
+
+        return (res['interface'], str(res['intfsuffix']))
+
+
+CHAN_PROTOCOL = {
+    'sip': ChanSIP,
+    'iax': ChanIAX2,
+    'custom': ChanCustom,
+}
+
+def protocol_intf_and_suffix(cursor, protocol, category, xid):
+    """
+    Lookup by protocol, category, xid and return the interface and interface suffix.
+    On error, raise LookupError, ValueError, or an exception coming from the SQL backend.
+    """
+    if protocol in CHAN_PROTOCOL:
+        return CHAN_PROTOCOL[protocol].get_intf_and_suffix(cursor, category, xid)
+    else:
+        raise ValueError("Unknown protocol %r" % protocol)
