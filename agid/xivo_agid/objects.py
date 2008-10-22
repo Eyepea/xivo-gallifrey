@@ -108,7 +108,6 @@ class BossSecretaryFilter:
         self.context = None
         self.mode = None
         self.callfrom = None
-        self.callerdisplay = None
         self.ringseconds = None
         self.boss = None
         self.secretaries = None
@@ -128,8 +127,8 @@ class BossSecretaryFilter:
                      "AND userfeatures.bsfilter = 'boss' "
                      "AND userfeatures.commented = 0",
                      ('callfilter.id', 'callfilter.bosssecretary',
-                      'callfilter.callfrom', 'callfilter.callerdisplay',
-                      'callfilter.ringseconds', 'callfiltermember.ringseconds',
+                      'callfilter.callfrom', 'callfilter.ringseconds',
+                      'callfiltermember.ringseconds',
                       'userfeatures.id', 'userfeatures.protocol',
                       'userfeatures.protocolid', 'userfeatures.name'),
                      (boss_number, boss_context))
@@ -146,7 +145,6 @@ class BossSecretaryFilter:
         self.context = boss_context
         self.mode = res['callfilter.bosssecretary']
         self.callfrom = res['callfilter.callfrom']
-        self.callerdisplay = res['callfilter.callerdisplay']
         self.ringseconds = res['callfilter.ringseconds']
         self.boss = BossSecretaryFilterMember(self.agi, True, 'boss', res['userfeatures.id'],
                                               boss_number, res['callfiltermember.ringseconds'])
@@ -235,11 +233,10 @@ class BossSecretaryFilter:
                 "Context:       %s\n"
                 "Mode:          %s\n"
                 "Callfrom:      %s\n"
-                "CallerDisplay: %s\n"
                 "RingSeconds:   %s\n"
                 "Boss:\n%s\n"
                 "Secretaries:\n%s"
-                % (self.context, self.mode, self.callfrom, self.callerdisplay,
+                % (self.context, self.mode, self.callfrom,
                    self.ringseconds, self.boss, '\n'.join((str(secretary) for secretary in self.secretaries))))
 
     def agi_str(self):
@@ -277,6 +274,9 @@ class BossSecretaryFilter:
 
     def set_dial_actions(self):
         DialAction(self.agi, self.cursor, "noanswer", "callfilter", self.id).set_variables()
+
+    def set_caller_id(self):
+        CallerID(self.agi, self.cursor, "callfilter", self.id).set_caller_id(force_rewrite=True)
 
 
 class VMBox:

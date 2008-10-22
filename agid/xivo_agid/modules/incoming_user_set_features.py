@@ -78,10 +78,8 @@ def incoming_user_set_features(agi, cursor, args):
                         agi.set_variable('XIVO_CALLFILTER_SECRETARY%d_TIMEOUT' % (index,), secretary.ringseconds)
                         index += 1
 
-            objects.DialAction(agi, cursor, 'noanswer', 'callfilter', ufilter.id).set_variables()
-
-            if ufilter.callerdisplay:
-                agi.set_variable('CALLERID(name)', "%s - %s" % (ufilter.callerdisplay, agi.get_variable("CALLERID(name)")))
+            ufilter.set_dial_actions()
+            ufilter.set_caller_id()
 
             agi.set_variable('XIVO_CALLFILTER_MODE', ufilter.mode)
             agi.set_variable('XIVO_CALLFILTER', '1')
