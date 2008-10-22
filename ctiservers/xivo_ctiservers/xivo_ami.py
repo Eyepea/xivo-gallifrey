@@ -263,7 +263,7 @@ class AMIClass:
                                                              ('Priority', '1'),
                                                              ('Application', application),
                                                              ('Data', data),
-                                                             ('Variable', 'XIVO_ACTIONID=%s' % self.actionid),
+                                                             ('Variable', 'XIVO_ORIGACTIONID=%s' % self.actionid),
                                                              ('Variable', 'XIVO_ORIGAPPLI=%s' % application),
                                                              ('Async', 'true')])
                         return ret
@@ -288,6 +288,8 @@ class AMIClass:
                                                              ('CallerID', '%s<%s>' % (cidnamedst, phonedst)),
                                                              ('Variable', 'XIVO_ORIGSRCNAME=%s' % cidnamesrc),
                                                              ('Variable', 'XIVO_ORIGSRCNUM=%s'  % phonesrc),
+                                                             ('Variable', 'XIVO_ORIGACTIONID=%s' % self.actionid),
+                                                             ('Variable', 'XIVO_ORIGAPPLI=%s' % 'OrigDial'),
                                                              ('Async', 'true')])
                         return ret
                 except self.AMIError, exc:
@@ -312,6 +314,8 @@ class AMIClass:
                                                               ('CallerID', '%s<%s>' % (cidnamedst, phonedst)),
                                                               ('Variable', 'XIVO_ORIGSRCNAME=%s' % cidnamesrc),
                                                               ('Variable', 'XIVO_ORIGSRCNUM=%s'  % phonesrc),
+                                                              ('Variable', 'XIVO_ORIGACTIONID=%s' % self.actionid),
+                                                              ('Variable', 'XIVO_ORIGAPPLI=%s' % 'OrigDial'),
                                                               ('Async', 'true')])
                         return ret
                 except self.AMIError, exc:
@@ -336,6 +340,8 @@ class AMIClass:
                                            # ('CallerID', "%s" %(phonesrc)),
                                            ('CallerID', '%s<%s>' %(cidnamedst, phonedst)),
                                            ('Variable', 'XIVO_ORIGSRCNAME=%s' % cidnamesrc),
+                                           ('Variable', 'XIVO_ORIGACTIONID=%s' % self.actionid),
+                                           ('Variable', 'XIVO_ORIGAPPLI=%s' % 'OrigDial'),
                                            ('Async', 'true')]
                         if 'XIVO_ORIGSRCNUM' not in extravars:
                                 extravars['XIVO_ORIGSRCNUM'] = phonesrc

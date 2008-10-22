@@ -1887,7 +1887,7 @@ class XivoCTICommand(BaseCommand):
                 elif eventname == 'Feature':
                         log.info('AMI %s UserEventFeature %s' % (astid, event))
                         # 'XIVO_CONTEXT', 'CHANNEL', 'Function', 'Status', 'Value'
-                elif eventname == 'TagCall':
+                elif eventname == 'LocalCall':
                         log.info('AMI %s UserEvent %s %s' % (astid, eventname, event))
                 else:
                         log.info('AMI %s untracked UserEvent %s' % (astid, event))
