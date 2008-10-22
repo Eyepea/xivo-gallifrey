@@ -3275,6 +3275,21 @@ class XivoCTICommand(BaseCommand):
                 """
                 # check capas !
                 # fastagi.get_variable('XIVO_INTERFACE') # CHANNEL
+                function = fastagi.env['agi_network_script']
+                if function == 'presence':
+                        argums = fastagi.args
+                        if not argums:
+                                counts = {}
+                                for istate in self.presence.getstates():
+                                        counts[istate] = 0
+                                for iuserinfo in self.ulist_ng.userlist.itervalues():
+                                        if iuserinfo['state'] in self.presence.getstates():
+                                                counts[iuserinfo['state']] += 1
+                                for cname, value in counts.iteritems():
+                                        vname = 'XIVO_PRESENCE_%s' % cname
+                                        fastagi.set_variable(vname, value)
+                elif function != 'xivo_push':
+                        return
                 callednum = fastagi.get_variable('XIVO_DSTNUM')
                 context = fastagi.get_variable('XIVO_CONTEXT')
                 uniqueid = fastagi.get_variable('UNIQUEID')
