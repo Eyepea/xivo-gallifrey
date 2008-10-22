@@ -3285,9 +3285,10 @@ class XivoCTICommand(BaseCommand):
                                 for iuserinfo in self.ulist_ng.userlist.itervalues():
                                         if iuserinfo['state'] in self.presence.getstates():
                                                 counts[iuserinfo['state']] += 1
-                                for cname, value in counts.iteritems():
-                                        vname = 'XIVO_PRESENCE_%s' % cname
-                                        fastagi.set_variable(vname, value)
+                                aststatus = []
+                                for var, val in counts.iteritems():
+                                        aststatus.append('%s:%d' % (var, val))
+                                fastagi.set_variable('XIVO_PRESENCE', ','.join(aststatus))
                 elif function != 'xivo_push':
                         return
                 callednum = fastagi.get_variable('XIVO_DSTNUM')
