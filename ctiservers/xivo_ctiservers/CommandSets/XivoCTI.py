@@ -3297,8 +3297,6 @@ class XivoCTICommand(BaseCommand):
                 # fastagi.get_variable('XIVO_INTERFACE') # CHANNEL
                 function = fastagi.env['agi_network_script']
                 if function == 'presence':
-                        argums = fastagi.args
-
                         counts = {}
                         for istate in self.presence.getstates():
                                 counts[istate] = 0
@@ -3340,6 +3338,12 @@ class XivoCTICommand(BaseCommand):
                                         for chan, chanprops in qentries.iteritems():
                                                 lst.append('%s:%d' % (chan, int(round(time.time() - chanprops.get('updatetime') + chanprops.get('wait')))))
                                         fastagi.set_variable('XIVO_QUEUEENTRIES', ','.join(lst))
+
+                elif function == 'holdtime':
+                        lst = []
+                        for queuename, qprops in self.weblist['queues'][astid].queuelist.iteritems():
+                                lst.append('%s:%s' % (queuename, qprops['stats']['Holdtime']))
+                                fastagi.set_variable('XIVO_HOLDTIME', ','.join(lst))
 
                 elif function != 'xivo_push':
                         return
