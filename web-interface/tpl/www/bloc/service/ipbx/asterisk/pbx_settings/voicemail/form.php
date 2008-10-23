@@ -66,7 +66,16 @@ if(($tz_list = $this->get_var('tz_list')) !== false):
 			      $tz_list);
 endif;
 
-	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_voicemailfeatures_skipcheckpass'),
+	echo	$form->select(array('desc'	=> $this->bbf('fm_voicemail_language'),
+				    'name'	=> 'voicemail[language]',
+				    'labelid'	=> 'voicemail-language',
+				    'key'	=> false,
+				    'empty'	=> true,
+				    'default'	=> $element['voicemail']['language']['default'],
+				    'value'	=> $info['voicemail']['language']),
+			      $element['voicemail']['language']['value']),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_voicemailfeatures_skipcheckpass'),
 				      'name'	=> 'vmfeatures[skipcheckpass]',
 				      'labelid'	=> 'vmfeatures-skipcheckpass',
 				      'default'	=> $element['vmfeatures']['skipcheckpass']['default'],

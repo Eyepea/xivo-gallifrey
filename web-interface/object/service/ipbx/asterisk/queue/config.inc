@@ -127,44 +127,44 @@ $array['element']['category'] = array();
 $array['element']['category']['value'] = array('queue','group');
 
 $array['element']['queue-youarenext'] = array();
-$array['element']['queue-youarenext']['default'] = '';
-$array['element']['queue-youarenext']['null'] = true;
+$array['element']['queue-youarenext']['default'] = 'queue-youarenext';
+$array['element']['queue-youarenext']['setdef'] = true;
 
 $array['element']['queue-thereare'] = array();
-$array['element']['queue-thereare']['default'] = '';
-$array['element']['queue-thereare']['null'] = true;
+$array['element']['queue-thereare']['default'] = 'queue-thereare';
+$array['element']['queue-thereare']['setdef'] = true;
 
 $array['element']['queue-callswaiting'] = array();
-$array['element']['queue-callswaiting']['default'] = '';
-$array['element']['queue-callswaiting']['null'] = true;
+$array['element']['queue-callswaiting']['default'] = 'queue-callswaiting';
+$array['element']['queue-callswaiting']['setdef'] = true;
 
 $array['element']['queue-holdtime'] = array();
-$array['element']['queue-holdtime']['default'] = '';
-$array['element']['queue-holdtime']['null'] = true;
+$array['element']['queue-holdtime']['default'] = 'queue-holdtime';
+$array['element']['queue-holdtime']['setdef'] = true;
 
 $array['element']['queue-minutes'] = array();
-$array['element']['queue-minutes']['default'] = '';
-$array['element']['queue-minutes']['null'] = true;
+$array['element']['queue-minutes']['default'] = 'queue-minutes';
+$array['element']['queue-minutes']['setdef'] = true;
 
 $array['element']['queue-seconds'] = array();
-$array['element']['queue-seconds']['default'] = '';
-$array['element']['queue-seconds']['null'] = true;
+$array['element']['queue-seconds']['default'] = 'queue-seconds';
+$array['element']['queue-seconds']['setdef'] = true;
 
 $array['element']['queue-thankyou'] = array();
-$array['element']['queue-thankyou']['default'] = '';
-$array['element']['queue-thankyou']['null'] = true;
+$array['element']['queue-thankyou']['default'] = 'queue-thankyou';
+$array['element']['queue-thankyou']['setdef'] = true;
 
 $array['element']['queue-lessthan'] = array();
-$array['element']['queue-lessthan']['default'] = '';
-$array['element']['queue-lessthan']['null'] = true;
+$array['element']['queue-lessthan']['default'] = 'queue-less-than';
+$array['element']['queue-lessthan']['setdef'] = true;
 
 $array['element']['queue-reporthold'] = array();
-$array['element']['queue-reporthold']['default'] = '';
-$array['element']['queue-reporthold']['null'] = true;
+$array['element']['queue-reporthold']['default'] = 'queue-reporthold';
+$array['element']['queue-reporthold']['setdef'] = true;
 
 $array['element']['periodic-announce'] = array();
-$array['element']['periodic-announce']['default'] = '';
-$array['element']['periodic-announce']['null'] = true;
+$array['element']['periodic-announce']['default'] = 'queue-periodic-announce';
+$array['element']['periodic-announce']['setdef'] = true;
 
 $array['filter'] = array();
 $array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/i','minlen' => 1,'maxlen' => 128);

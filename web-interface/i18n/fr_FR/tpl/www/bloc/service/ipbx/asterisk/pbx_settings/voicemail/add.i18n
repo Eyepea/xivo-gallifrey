@@ -28,6 +28,9 @@ Créer un contexte
 ; fm_voicemail_tz
 Fuseau horaire :
 
+; fm_voicemail_language
+Langue :
+
 ; fm_voicemailfeatures_skipcheckpass
 Désactiver la vérification du mot de passe :
 

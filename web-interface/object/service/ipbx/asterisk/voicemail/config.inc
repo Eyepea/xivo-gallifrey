@@ -39,6 +39,7 @@ $array['element']['tz']['default'] = '';
 $array['element']['tz']['null'] = true;
 
 $array['element']['language'] = array();
+$array['element']['language']['value'] = array('en','fr');
 $array['element']['language']['default'] = '';
 $array['element']['language']['null'] = true;
 
@@ -136,7 +137,7 @@ $array['filter']['exitcontext'] = array('set' => false,
 				     'callback' => 'xivo_service_asterisk::chk_context',
 				     'callbackparam' => array(array(XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['tz'] = array('set' => false,'chk' => 2,'minlen' => 1,'maxlen' => 80,'regexp' => '/^[a-z0-9_-]+$/i');
-$array['filter']['language'] = array('set' => false,'chk' => 2,'minlen' => 2,'maxlen' => 2,'regexp' => '/^[a-z]{2}$/');
+$array['filter']['language'] = array('set' => false,'chk' => 2,'minlen' => 2,'maxlen' => 2,'key' => array('en','fr'));
 $array['filter']['attach'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['saycid'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['review'] = array('set' => false,'chk' => 2,'bool' => true);
