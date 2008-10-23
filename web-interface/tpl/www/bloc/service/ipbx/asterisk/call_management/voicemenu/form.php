@@ -75,6 +75,8 @@
 			    array('event'	=> 'voicemenuflow'));
 	$this->file_include('bloc/service/ipbx/asterisk/dialaction/voicemenu',
 			    array('event'	=> 'voicemenuflow'));
+	$this->file_include('bloc/service/ipbx/asterisk/dialaction/extension',
+			    array('event'	=> 'voicemenuflow'));
 	$this->file_include('bloc/service/ipbx/asterisk/dialaction/application',
 			    array('event'	=> 'voicemenuflow'));
 
@@ -358,6 +360,8 @@
 	$this->file_include('bloc/service/ipbx/asterisk/dialaction/schedule',
 			    array('event'	=> 'voicemenuevent'));
 	$this->file_include('bloc/service/ipbx/asterisk/dialaction/voicemenu',
+			    array('event'	=> 'voicemenuevent'));
+	$this->file_include('bloc/service/ipbx/asterisk/dialaction/extension',
 			    array('event'	=> 'voicemenuevent'));
 	$this->file_include('bloc/service/ipbx/asterisk/dialaction/application',
 			    array('event'	=> 'voicemenuevent'));

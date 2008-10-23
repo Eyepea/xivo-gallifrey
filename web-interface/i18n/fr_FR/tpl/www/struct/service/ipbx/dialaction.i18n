@@ -70,6 +70,15 @@ Menu vocal
 ; fm_dialaction_voicemenu-actionarg1
 Renvoyez vers :
 
+; fm_dialaction_actiontype-opt-extension
+Extension
+
+; fm_dialaction_extension-actionarg1
+Numéro de téléphone :
+
+; fm_dialaction_extension-actionarg2
+Contexte :
+
 ; fm_dialaction_actiontype-opt-application
 Application
 

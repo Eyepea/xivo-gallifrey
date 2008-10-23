@@ -16,6 +16,7 @@ xivo_ast_defapplication['macro|schedule'] = {displayname: 'GotoSchedule',
 					     identityfunc: 'xivo_ast_defapplication_get_schedule_identity'};
 xivo_ast_defapplication['macro|voicemenu'] = {displayname: 'GotoVoiceMenu',
 					      identityfunc: 'xivo_ast_defapplication_get_voicemenu_identity'};
+xivo_ast_defapplication['macro|extension'] = {displayname: 'CallExten'};
 xivo_ast_defapplication['macro|callbackdisa'] = {displayname: 'CallBackDISA'};
 xivo_ast_defapplication['macro|disa'] = {displayname: 'DISA'};
 xivo_ast_defapplication['macro|directory'] = {displayname: 'Directory'};
@@ -199,6 +200,24 @@ function xivo_ast_defapplication_voicemenu(dialevent,targetid)
 function xivo_ast_defapplication_get_voicemenu_identity(id)
 {
 	return(xivo_fm_get_text_opt_select('it-dialaction-'+dialevent+'-voicemenu-actionarg1',id,true));
+}
+
+function xivo_ast_defapplication_extension(dialevent,targetid)
+{
+	if((actionarg1 = xivo_eid('it-dialaction-'+dialevent+'-extension-actionarg1')) === false
+	|| (actionarg2 = xivo_eid('it-dialaction-'+dialevent+'-extension-actionarg2')) === false)
+		return(false);
+
+	var actionarg1value = xivo_ast_defapplication_sanitize_arg(actionarg1.value);
+	var actionarg2value = xivo_ast_defapplication_sanitize_arg(actionarg2.value);
+
+	if(actionarg1value.length < 1
+	|| actionarg2value.length < 1)
+		return(false);
+
+	var optargs = valargs = new Array(actionarg1value,actionarg2value);
+
+	return(xivo_ast_set_defapplication('macro|extension',targetid,optargs,valargs));
 }
 
 function xivo_ast_defapplication_application(dialevent,targetid)

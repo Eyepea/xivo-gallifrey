@@ -112,6 +112,22 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 		return(false);
 	}
 
+	function chk_dest_extension($actionarg1,$actionarg2)
+	{
+		if(is_scalar($actionarg1) === false
+		|| is_scalar($actionarg2) === false
+		|| preg_match('/^[0-9#\*]{1,40}$/',$actionarg1) !== 1
+		|| xivo_service_asterisk::chk_context($actionarg2) === false)
+			return(false);
+
+		$r = array();
+		$r['action'] = 'extension';
+		$r['actionarg1'] = (string) $actionarg1;
+		$r['actionarg2'] = (string) $actionarg2;
+
+		return($r);
+	}
+
 	function chk_dest_sound($dir,$actionarg1,$actionarg2,$getinfo=false)
 	{
 		if(($sounds = &$this->_sre->get_module('sounds')) === false)

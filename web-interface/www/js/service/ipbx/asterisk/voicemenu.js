@@ -284,6 +284,9 @@ function xivo_ast_voicemenuevent_defapplication(action)
 		case 'schedule':
 			var r = xivo_ast_defapplication_schedule('voicemenuevent',targetid);
 			break;
+		case 'extension':
+			var r = xivo_ast_defapplication_extension('voicemenuevent',targetid);
+			break;
 		case 'application':
 			var r = xivo_ast_defapplication_application('voicemenuevent',targetid);
 			break;

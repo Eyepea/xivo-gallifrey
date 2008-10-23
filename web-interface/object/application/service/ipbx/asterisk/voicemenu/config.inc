@@ -9,6 +9,7 @@ $array['actiontype']['voicemenuflow'] = array('endcall',
 					      'voicemail',
 					      'schedule',
 					      'voicemenu',
+					      'extension',
 					      'application',
 					      'ipbxapplication');
 $array['actiontype']['voicemenuevent'] = array('none',
@@ -20,6 +21,7 @@ $array['actiontype']['voicemenuevent'] = array('none',
 					       'voicemail',
 					       'schedule',
 					       'voicemenu',
+					       'extension',
 					       'application',
 					       'sound');
 
@@ -55,6 +57,7 @@ $array['defapplication']['macro|meetme'] = 'meetme';
 $array['defapplication']['macro|voicemail'] = 'voicemail';
 $array['defapplication']['macro|schedule'] = 'schedule';
 $array['defapplication']['macro|voicemenu'] = 'voicemenu';
+$array['defapplication']['macro|extension'] = 'extension';
 $array['defapplication']['macro|callbackdisa'] = 'callbackdisa';
 $array['defapplication']['macro|disa'] = 'disa';
 $array['defapplication']['macro|directory'] = 'directory';

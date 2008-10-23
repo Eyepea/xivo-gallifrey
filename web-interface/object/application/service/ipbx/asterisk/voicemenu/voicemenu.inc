@@ -231,6 +231,8 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 				return($this->_voicemenu->chk_dest_schedule($actionarg1,null,$disable));
 			case 'voicemenu':
 				return($this->_voicemenu->chk_dest_voicemenu($actionarg1,null,$disable));
+			case 'extension':
+				return($this->_voicemenu->chk_dest_extension($actionarg1,$actionarg2));
 			case 'vmauthenticate':
 				if((bool) $astapp === false)
 					return(false);

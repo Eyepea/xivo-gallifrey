@@ -57,10 +57,8 @@ class xivo_application_service_asterisk_dialaction_abstract extends xivo_applica
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(isset($this->_info[$info[$i]['event']]) === true)
-				continue;
-
-			$this->_info[$info[$i]['event']] = $info[$i];
+			if(isset($this->_info[$info[$i]['event']]) === false)
+				$this->_info[$info[$i]['event']] = $info[$i];
 		}
 
 		$this->_origin = $this->_dialaction->get_origin_list();
@@ -169,6 +167,7 @@ class xivo_application_service_asterisk_dialaction_abstract extends xivo_applica
 		$r['voicemail'] = $arr;
 		$r['schedule'] = $arr;
 		$r['voicemenu'] = $arr;
+		$r['extension'] = $arr;
 		$r['application'] = $arr;
 		$r['sound'] = $arr;
 		$r['custom'] = $arr;
