@@ -226,6 +226,7 @@ CREATE TABLE `dialaction` (
 	       'voicemail',
 	       'schedule',
 	       'voicemenu',
+	       'extension',
 	       'application:callbackdisa',
 	       'application:disa',
 	       'application:directory',
