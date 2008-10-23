@@ -608,11 +608,19 @@ class XivoCTICommand(BaseCommand):
                                         for qname, qq in self.weblist['queues'][astid].queuelist.iteritems():
                                                 qq['stats']['Xivo-Join'] = 0
                                                 qq['stats']['Xivo-Link'] = 0
+                                                qq['stats']['Xivo-Rate'] = -1
                                                 qq['stats']['Xivo-Chat'] = 0
                                                 qq['stats']['Xivo-Wait'] = 0
                                                 if qname in self.stats_queues[astid]:
                                                         qq['stats']['Xivo-Join'] = len(self.stats_queues[astid][qname].get('ENTERQUEUE', []))
                                                         qq['stats']['Xivo-Link'] = len(self.stats_queues[astid][qname].get('CONNECT', []))
+                                                        nj = self.weblist['queues'][astid].queuelist[qname]['stats']['Xivo-Join']
+                                                        nl = self.weblist['queues'][astid].queuelist[qname]['stats']['Xivo-Link']
+                                                        if nj > 0:
+                                                                self.weblist['queues'][astid].queuelist[qname]['stats']['Xivo-Rate'] = (nl * 100) / nj
+                                                        else:
+                                                                self.weblist['queues'][astid].queuelist[qname]['stats']['Xivo-Rate'] = -1
+
                         self.askstatus(astid, self.weblist['phones'][astid].rough_phonelist)
                 # check : agentnumber should be unique
                 return
@@ -1241,6 +1249,12 @@ class XivoCTICommand(BaseCommand):
                                         self.stats_queues[astid][queuename]['CONNECT'].remove(t)
                                 self.stats_queues[astid][queuename]['CONNECT'].append(time_now)
                                 self.weblist['queues'][astid].queuelist[queuename]['stats']['Xivo-Link'] = len(self.stats_queues[astid][queuename]['CONNECT'])
+                                nj = self.weblist['queues'][astid].queuelist[queuename]['stats']['Xivo-Join']
+                                nl = self.weblist['queues'][astid].queuelist[queuename]['stats']['Xivo-Link']
+                                if nj > 0:
+                                        self.weblist['queues'][astid].queuelist[queuename]['stats']['Xivo-Rate'] = (nl * 100) / nj
+                                else:
+                                        self.weblist['queues'][astid].queuelist[queuename]['stats']['Xivo-Rate'] = -1
 
                 phoneid1 = self.__phoneid_from_channel__(astid, chan1)
                 phoneid2 = self.__phoneid_from_channel__(astid, chan2)
@@ -2074,6 +2088,12 @@ class XivoCTICommand(BaseCommand):
                                 self.stats_queues[astid][queue]['ENTERQUEUE'].remove(t)
                         self.stats_queues[astid][queue]['ENTERQUEUE'].append(time_now)
                         self.weblist['queues'][astid].queuelist[queue]['stats']['Xivo-Join'] = len(self.stats_queues[astid][queue]['ENTERQUEUE'])
+                        nj = self.weblist['queues'][astid].queuelist[queue]['stats']['Xivo-Join']
+                        nl = self.weblist['queues'][astid].queuelist[queue]['stats']['Xivo-Link']
+                        if nj > 0:
+                                self.weblist['queues'][astid].queuelist[queue]['stats']['Xivo-Rate'] = (nl * 100) / nj
+                        else:
+                                self.weblist['queues'][astid].queuelist[queue]['stats']['Xivo-Rate'] = -1
 
                 self.__sheet_alert__('incomingqueue', astid, DEFAULTCONTEXT, event)
                 log.info('AMI Join (Queue) %s %s %s %s' % (astid, queue, chan, count))

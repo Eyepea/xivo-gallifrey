@@ -62,7 +62,7 @@ class QueueList(AnyList):
 
         queuelocationprops = ['Paused', 'Status', 'Membership', 'Penalty', 'LastCall', 'CallsTaken']
         queuestats = ['Abandoned', 'Max', 'Completed', 'ServiceLevel', 'Weight', 'Holdtime',
-                      'Xivo-Join', 'Xivo-Link', 'Xivo-Wait', 'Xivo-Chat',
+                      'Xivo-Join', 'Xivo-Link', 'Xivo-Wait', 'Xivo-Chat', 'Xivo-Rate',
                       'Calls']
 
         def queueentry_update(self, queue, channel, position, wait, calleridnum, calleridname):
