@@ -126,6 +126,7 @@ class XivoCTICommand(BaseCommand):
                 self.timeout_login = {}
                 self.parkedcalls = {}
                 self.stats_queues = {}
+                self.globalcount = []
                 
                 # actionid (AMI) indexed hashes
                 self.getvar_requests = {}
@@ -440,15 +441,7 @@ class XivoCTICommand(BaseCommand):
                         repstr = cjson.encode(tosend)
                 elif phase == xivo_commandsets.CMD_LOGIN_CAPAS:
                         capaid = userinfo.get('capaid')
-                        
-                        counts = {}
-                        for istate in self.presence.getstates():
-                                counts[istate] = 0
-                        for iuserinfo in self.ulist_ng.userlist.itervalues():
-                                if iuserinfo['state'] in self.presence.getstates():
-                                        counts[iuserinfo['state']] += 1
-                        cstatus = self.presence.countstatus(counts)
-                        
+                        cstatus = self.presence.countstatus(self.__counts__())
                         tosend = { 'class' : 'login_capas_ok',
                                    'direction' : 'client',
                                    'capafuncs' : self.capas[capaid].tostringlist(self.capas[capaid].all()),
@@ -536,6 +529,9 @@ class XivoCTICommand(BaseCommand):
                                         self.capas[name].setxlets(val.split(','))
                                 elif prop == 'funcs':
                                         self.capas[name].setfuncs(val.split(','))
+                                        if 'globalcount' in self.capas[name].capafuncs:
+                                                if name not in self.globalcount:
+                                                        self.globalcount.append(name)
                                 elif prop == 'maxgui':
                                         self.capas[name].setmaxgui(val)
                                 elif prop == 'appliname':
@@ -3105,13 +3101,7 @@ class XivoCTICommand(BaseCommand):
                         log.warning('(user %s) : state <%s> is not an allowed one => keeping current <%s>'
                                     % (username, state, userinfo['state']))
 
-                counts = {}
-                for istate in self.presence.getstates():
-                        counts[istate] = 0
-                for iuserinfo in self.ulist_ng.userlist.itervalues():
-                        if iuserinfo['state'] in self.presence.getstates():
-                                counts[iuserinfo['state']] += 1
-                cstatus = self.presence.countstatus(counts)
+                cstatus = self.presence.countstatus(self.__counts__())
 
                 tosend = { 'class' : 'presence',
                            'direction' : 'client',
@@ -3288,6 +3278,15 @@ class XivoCTICommand(BaseCommand):
 
                 return fullstatlist
 
+        def __counts__(self):
+                print self.globalcount
+                counts = {}
+                for istate in self.presence.getstates():
+                        counts[istate] = 0
+                for iuserinfo in self.ulist_ng.userlist.itervalues():
+                        if iuserinfo['state'] in self.presence.getstates() and iuserinfo['capaid'] in self.globalcount:
+                                counts[iuserinfo['state']] += 1
+                return counts
 
         def handle_fagi(self, astid, fastagi):
                 """
@@ -3297,14 +3296,8 @@ class XivoCTICommand(BaseCommand):
                 # fastagi.get_variable('XIVO_INTERFACE') # CHANNEL
                 function = fastagi.env['agi_network_script']
                 if function == 'presence':
-                        counts = {}
-                        for istate in self.presence.getstates():
-                                counts[istate] = 0
-                        for iuserinfo in self.ulist_ng.userlist.itervalues():
-                                if iuserinfo['state'] in self.presence.getstates():
-                                        counts[iuserinfo['state']] += 1
                         aststatus = []
-                        for var, val in counts.iteritems():
+                        for var, val in self.__counts__().iteritems():
                                 aststatus.append('%s:%d' % (var, val))
                         fastagi.set_variable('XIVO_PRESENCE', ','.join(aststatus))
                         

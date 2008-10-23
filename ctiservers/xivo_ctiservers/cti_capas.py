@@ -39,7 +39,8 @@ class Capabilities:
                          'nojoinleave',
                          'presence',
                          'database',
-                         'switchboard']
+                         'switchboard',
+                         'globalcount']
         
         allowed_xlets = {'agents' : ['agents'],
                          'agentdetails' : ['agents'],
