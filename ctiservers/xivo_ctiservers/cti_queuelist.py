@@ -25,6 +25,7 @@ __author__    = 'Corentin Le Gall'
 # <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>.
 
 import logging
+import time
 from xivo_ctiservers.cti_anylist import AnyList
 
 log = logging.getLogger('queuelist')
@@ -66,7 +67,11 @@ class QueueList(AnyList):
 
         def queueentry_update(self, queue, channel, position, wait, calleridnum, calleridname):
                 if queue in self.queuelist:
-                        self.queuelist[queue]['channels'][channel] = [position, wait, calleridnum, calleridname]
+                        self.queuelist[queue]['channels'][channel] = { 'position' : position,
+                                                                       'wait' : wait,
+                                                                       'updatetime' : time.time(),
+                                                                       'calleridnum' : calleridnum,
+                                                                       'calleridname' : calleridname }
                 else:
                         log.warning('queueentry_update : no such queue %s' % queue)
                 return
