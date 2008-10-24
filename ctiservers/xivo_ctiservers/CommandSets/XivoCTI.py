@@ -605,12 +605,14 @@ class XivoCTICommand(BaseCommand):
                                         for qname, qq in self.weblist['queues'][astid].queuelist.iteritems():
                                                 qq['stats']['Xivo-Join'] = 0
                                                 qq['stats']['Xivo-Link'] = 0
+                                                qq['stats']['Xivo-Lost'] = 0
                                                 qq['stats']['Xivo-Rate'] = -1
                                                 qq['stats']['Xivo-Chat'] = 0
                                                 qq['stats']['Xivo-Wait'] = 0
                                                 if qname in self.stats_queues[astid]:
                                                         qq['stats']['Xivo-Join'] = len(self.stats_queues[astid][qname].get('ENTERQUEUE', []))
                                                         qq['stats']['Xivo-Link'] = len(self.stats_queues[astid][qname].get('CONNECT', []))
+                                                        qq['stats']['Xivo-Lost'] = len(self.stats_queues[astid][qname].get('ABANDON', []))
                                                         nj = self.weblist['queues'][astid].queuelist[qname]['stats']['Xivo-Join']
                                                         nl = self.weblist['queues'][astid].queuelist[qname]['stats']['Xivo-Link']
                                                         if nj > 0:
@@ -1181,10 +1183,13 @@ class XivoCTICommand(BaseCommand):
                         qdate = int(line[0])
                         qaction = line[4]
                         qname = line[2]
-                        if qdate > time_1ha and qaction in ['ENTERQUEUE', 'CONNECT']:
+                        if qdate > time_1ha and qaction in ['ENTERQUEUE', 'CONNECT', 'ABANDON', 'EXITEMPTY']:
                                 if qname not in self.stats_queues[astid]:
                                         self.stats_queues[astid][qname] = {'ENTERQUEUE' : [],
-                                                                           'CONNECT' : []}
+                                                                           'CONNECT' : [],
+                                                                           'ABANDON' : []}
+                                if qaction == 'EXITEMPTY':
+                                        qaction = 'ABANDON'
                                 self.stats_queues[astid][qname][qaction].append(qdate)
                 qlog.close()
                 return
@@ -1769,8 +1774,27 @@ class XivoCTICommand(BaseCommand):
                 if astid not in self.weblist['queues']:
                         log.warning('ami_queuecallerabandon : no queue list has been defined for %s' % astid)
                         return
+                queue = event.get('Queue')
+                uniqueid = event.get('Uniqueid')
+                log.info('STAT ABANDON %s %s %s' % (astid, queue, uniqueid))
+                if astid in self.stats_queues:
+                        if queue not in self.stats_queues[astid]:
+                                self.stats_queues[astid][queue] = {}
+                        if 'ABANDON' not in self.stats_queues[astid][queue]:
+                                self.stats_queues[astid][queue].update({'ABANDON' : []})
+                        time_now = int(time.time())
+                        time_1ha = time_now - 3600
+                        toremove = []
+                        for t in self.stats_queues[astid][queue]['ABANDON']:
+                                if t < time_1ha:
+                                        toremove.append(t)
+                        for t in toremove:
+                                self.stats_queues[astid][queue]['ABANDON'].remove(t)
+                        self.stats_queues[astid][queue]['ABANDON'].append(time_now)
+                        self.weblist['queues'][astid].queuelist[queue]['stats']['Xivo-Lost'] = len(self.stats_queues[astid][queue]['ABANDON'])
                 # Asterisk 1.4 event
                 # {'Queue': 'qcb_00000', 'OriginalPosition': '1', 'Uniqueid': '1213891256.41', 'Privilege': 'agent,all', 'Position': '1', 'HoldTime': '2', 'Event': 'QueueCallerAbandon'}
+                # it should then go to AMI leave and send the update
                 return
         
         def ami_queueentry(self, astid, event):
