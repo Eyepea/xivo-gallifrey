@@ -81,6 +81,7 @@ class XivoCTICommand(BaseCommand):
         commnames = ['login_id', 'login_pass', 'login_capas',
                      'history', 'directory-search',
                      'featuresget', 'featuresput',
+                     'setguioptions',
                      'phones',
                      'agents',
                      'queues',
@@ -665,6 +666,7 @@ class XivoCTICommand(BaseCommand):
                                         lqlist[queuename] = {'queuename' : queuename,
                                                              'number' : qitem.get('number'),
                                                              'context' : qitem.get('context'),
+                                                             'id' : qitem.get('id'),
                                                              
                                                              'agents' : {},
                                                              'channels' : {},
@@ -2231,6 +2233,18 @@ class XivoCTICommand(BaseCommand):
                                                         self.__presence_action__(astid, self.__agentnum__(userinfo),
                                                                                  icommand.struct.get('availstate'))
                                                         self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm)
+
+                                        elif classcomm == 'setguioptions':
+                                                tosend = { 'class' : 'setguioptions',
+                                                           'direction' : 'client',
+                                                           'payload' : { 'fontsize' : 16,
+                                                                         'fontname' : 'helvetica',
+                                                                         'iconsize' : 32,
+                                                                         'queues-showqueuenames' : False,
+                                                                         'queues-showvqueues' : False }
+                                                           }
+                                                repstr = cjson.encode(tosend).replace(' ', '')
+                                                
                                         elif classcomm == 'message':
                                                 if self.capas[capaid].match_funcs(ucapa, 'messages'):
                                                         self.__send_msg_to_cti_clients__(self.message_srv2clt('%s/%s' % (astid, username),
@@ -2260,7 +2274,7 @@ class XivoCTICommand(BaseCommand):
                                                         tosend = { 'class' : 'callcampaign',
                                                                    'direction' : 'client',
                                                                    'payload' : { 'command' : 'fetchlist',
-                                                                                 'list' : [ '101', "102", "103" ] } }
+                                                                                 'list' : [ '101', '102', '103' ] } }
                                                         repstr = cjson.encode(tosend)
                                                 elif argums[0] == 'startcall':
                                                         exten = argums[1]
@@ -3279,7 +3293,6 @@ class XivoCTICommand(BaseCommand):
                 return fullstatlist
 
         def __counts__(self):
-                print self.globalcount
                 counts = {}
                 for istate in self.presence.getstates():
                         counts[istate] = 0
@@ -3300,7 +3313,7 @@ class XivoCTICommand(BaseCommand):
                         for var, val in self.__counts__().iteritems():
                                 aststatus.append('%s:%d' % (var, val))
                         fastagi.set_variable('XIVO_PRESENCE', ','.join(aststatus))
-                        
+
                 elif function == 'queuestatus':
                         if len(fastagi.args) > 0:
                                 queuename = fastagi.args[0]
@@ -3321,6 +3334,7 @@ class XivoCTICommand(BaseCommand):
                                                         sstatus = 'away'
                                                 lst.append('%s:%s' % (ag, sstatus))
                                         fastagi.set_variable('XIVO_QUEUESTATUS', ','.join(lst))
+                                        fastagi.set_variable('XIVO_QUEUEID', self.weblist['queues'][astid].queuelist[queuename]['id'])
 
                 elif function == 'queueentries':
                         if len(fastagi.args) > 0:
