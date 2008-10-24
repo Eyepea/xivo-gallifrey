@@ -81,7 +81,7 @@ class XivoCTICommand(BaseCommand):
         commnames = ['login_id', 'login_pass', 'login_capas',
                      'history', 'directory-search',
                      'featuresget', 'featuresput',
-                     'setguioptions',
+                     'getguisettings',
                      'phones',
                      'agents',
                      'queues',
@@ -448,6 +448,7 @@ class XivoCTICommand(BaseCommand):
                                    'capafuncs' : self.capas[capaid].tostringlist(self.capas[capaid].all()),
                                    'capaxlets' : self.capas[capaid].capadisps,
                                    'appliname' : self.capas[capaid].appliname,
+                                   'guisettings' : self.capas[capaid].guisettings,
                                    'capapresence' : { 'names'   : self.presence.getdisplaydetails(),
                                                       'state'   : userinfo.get('state'),
                                                       'allowed' : self.presence.allowed(userinfo.get('state')) },
@@ -537,6 +538,8 @@ class XivoCTICommand(BaseCommand):
                                         self.capas[name].setmaxgui(val)
                                 elif prop == 'appliname':
                                         self.capas[name].setappliname(val)
+                                elif prop == 'guisettings':
+                                        self.capas[name].setguisettings(val)
                 return
         
         def set_configs(self, configs):
@@ -2258,14 +2261,10 @@ class XivoCTICommand(BaseCommand):
                                                                                  icommand.struct.get('availstate'))
                                                         self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm)
 
-                                        elif classcomm == 'setguioptions':
-                                                tosend = { 'class' : 'setguioptions',
+                                        elif classcomm == 'getguisettings':
+                                                tosend = { 'class' : 'getguisettings',
                                                            'direction' : 'client',
-                                                           'payload' : { 'fontsize' : 16,
-                                                                         'fontname' : 'helvetica',
-                                                                         'iconsize' : 32,
-                                                                         'queues-showqueuenames' : False,
-                                                                         'queues-showvqueues' : False }
+                                                           'payload' : self.capas[capaid].guisettings
                                                            }
                                                 repstr = cjson.encode(tosend).replace(' ', '')
                                                 

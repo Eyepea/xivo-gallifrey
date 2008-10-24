@@ -24,6 +24,12 @@ __author__    = 'Corentin Le Gall'
 # with this program; if not, you will find one at
 # <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>.
 
+import cjson
+import logging
+import urllib
+
+log = logging.getLogger('capas')
+
 class Capabilities:
         allowed_funcs = ['agents',
                          
@@ -77,6 +83,7 @@ class Capabilities:
                 self.capafuncs = []
                 self.capadisps = []
                 self.appliname = 'Client'
+                self.guisettings = {}
                 self.conngui = 0
                 self.maxgui = -1
                 return
@@ -97,6 +104,16 @@ class Capabilities:
 
         def setappliname(self, appliname):
                 self.appliname = appliname
+                return
+
+        def setguisettings(self, urlsettings):
+                try:
+                        gui = urllib.urlopen(urlsettings)
+                        self.guisettings = cjson.decode(gui.read())
+                        gui.close()
+                except:
+                        log.error('problem when reading guisettings from %s' % urlsettings)
+                        self.guisettings = {}
                 return
 
         # maxgui's
