@@ -87,8 +87,7 @@ class Presence:
                 if status is not None and status in self.details:
                         w = self.details[status]
                         for u, v in self.details.iteritems():
-                                # use 'True' and 'False' instead of True and False because of an error in JsonQt parsing
-                                rep[u] = repr(u in w['allowednexts'] or u == status)
+                                rep[u] = (u in w['allowednexts'] or u == status)
                 return rep
 
         def actions(self, status):
