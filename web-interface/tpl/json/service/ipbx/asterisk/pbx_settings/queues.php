@@ -13,6 +13,7 @@ for($i = 0;$i < $nb;$i++)
 {
 	$ref = &$queues[$i];
 
+	$data['id'] = $ref['qfeatures']['id'];
 	$data['category'] = $ref['queue']['category'];
 	$data['name'] = $ref['queue']['name'];
 	$data['number'] = $ref['qfeatures']['number'];

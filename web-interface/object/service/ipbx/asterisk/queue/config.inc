@@ -123,9 +123,6 @@ $array['element']['timeoutrestart']['value'] = array(0,1);
 $array['element']['timeoutrestart']['default'] = 0;
 $array['element']['timeoutrestart']['set'] = true;
 
-$array['element']['category'] = array();
-$array['element']['category']['value'] = array('queue','group');
-
 $array['element']['queue-youarenext'] = array();
 $array['element']['queue-youarenext']['default'] = 'queue-youarenext';
 $array['element']['queue-youarenext']['setdef'] = true;
@@ -165,6 +162,9 @@ $array['element']['queue-reporthold']['setdef'] = true;
 $array['element']['periodic-announce'] = array();
 $array['element']['periodic-announce']['default'] = 'queue-periodic-announce';
 $array['element']['periodic-announce']['setdef'] = true;
+
+$array['element']['category'] = array();
+$array['element']['category']['value'] = array('queue','group');
 
 $array['filter'] = array();
 $array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/i','minlen' => 1,'maxlen' => 128);
