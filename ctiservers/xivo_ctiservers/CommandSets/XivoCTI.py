@@ -442,7 +442,7 @@ class XivoCTICommand(BaseCommand):
                         repstr = cjson.encode(tosend)
                 elif phase == xivo_commandsets.CMD_LOGIN_CAPAS:
                         capaid = userinfo.get('capaid')
-                        cstatus = self.presence.countstatus(self.__counts__())
+                        cstatus = self.presence.countstatus_ng(self.__counts__())
                         tosend = { 'class' : 'login_capas_ok',
                                    'direction' : 'client',
                                    'capafuncs' : self.capas[capaid].tostringlist(self.capas[capaid].all()),
@@ -3138,7 +3138,7 @@ class XivoCTICommand(BaseCommand):
                         log.warning('(user %s) : state <%s> is not an allowed one => keeping current <%s>'
                                     % (username, state, userinfo['state']))
 
-                cstatus = self.presence.countstatus(self.__counts__())
+                cstatus = self.presence.countstatus_ng(self.__counts__())
 
                 tosend = { 'class' : 'presence',
                            'direction' : 'client',

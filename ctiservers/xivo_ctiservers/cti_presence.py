@@ -82,6 +82,21 @@ class Presence:
                                 nko += count
                 return [nok, nko]
 
+        def countstatus_ng(self, counts):
+                ntot = 0
+                nbyqueue = {}
+                for statename, count in counts.iteritems():
+                        ntot += count 
+                        pactions = self.details[statename]['actions']
+                        for paction in pactions:
+                                params = paction.split('-')
+                                if params[0] == 'queueadd':
+                                        queuename = params[1]
+                                        if queuename not in nbyqueue:
+                                                nbyqueue[queuename] = 0
+                                        nbyqueue[queuename] += count
+                return {'connected' : ntot, 'byqueue' : nbyqueue}
+
         def allowed(self, status):
                 rep = {}
                 if status is not None and status in self.details:
