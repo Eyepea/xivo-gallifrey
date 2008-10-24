@@ -127,27 +127,27 @@ def netif_managed(ifname):
     return True in [ifname.startswith(x) for x in AUTHORIZED_PREFIXES]
 
 
-def ipv4_from_macaddr(macaddr, logexceptfunc=None):
+def ipv4_from_macaddr(macaddr):
     """
     Wrapper for network.ipv4_from_macaddr() that sets:
     * ifname_match_func to netif_managed
     * arping_cmd_list to Pgc['arping_cmd'].strip().split()
     * arping_sleep_us to Pgc['arping_sleep_us']
     """
-    return network.ipv4_from_macaddr(macaddr, logexceptfunc=logexceptfunc,
+    return network.ipv4_from_macaddr(macaddr,
                                      ifname_match_func=netif_managed,
                                      arping_cmd_list=Pgc['arping_cmd'].strip().split(),
                                      arping_sleep_us=Pgc['arping_sleep_us'])
 
 
-def macaddr_from_ipv4(macaddr, logexceptfunc=None):
+def macaddr_from_ipv4(macaddr):
     """
     Wrapper for network.macaddr_from_ipv4() that sets:
     * ifname_match_func to netif_managed
     * arping_cmd_list to Pgc['arping_cmd'].strip().split()
     * arping_sleep_us to Pgc['arping_sleep_us']
     """
-    return network.macaddr_from_ipv4(macaddr, logexceptfunc=logexceptfunc,
+    return network.macaddr_from_ipv4(macaddr,
                                      ifname_match_func=netif_managed,
                                      arping_cmd_list=Pgc['arping_cmd'].strip().split(),
                                      arping_sleep_us=Pgc['arping_sleep_us'])
