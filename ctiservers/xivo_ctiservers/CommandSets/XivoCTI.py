@@ -3332,11 +3332,17 @@ class XivoCTICommand(BaseCommand):
                                                 lst.append('%s:%d' % (chan, int(round(time.time() - chanprops.get('updatetime') + chanprops.get('wait')))))
                                         fastagi.set_variable('XIVO_QUEUEENTRIES', ','.join(lst))
 
-                elif function == 'holdtime':
-                        lst = []
-                        for queuename, qprops in self.weblist['queues'][astid].queuelist.iteritems():
-                                lst.append('%s:%s' % (queuename, qprops['stats']['Holdtime']))
-                                fastagi.set_variable('XIVO_HOLDTIME', ','.join(lst))
+                elif function == 'queueholdtime':
+                        if len(fastagi.args) > 0:
+                                queuename = fastagi.args[0]
+                                if queuename in self.weblist['queues'][astid].queuelist:
+                                        fastagi.set_variable('XIVO_QUEUEHOLDTIME',
+                                                             self.weblist['queues'][astid].queuelist[queuename]['stats']['Holdtime'])
+                        else:
+                                lst = []
+                                for queuename, qprops in self.weblist['queues'][astid].queuelist.iteritems():
+                                        lst.append('%s:%s' % (queuename, qprops['stats']['Holdtime']))
+                                        fastagi.set_variable('XIVO_QUEUEHOLDTIME', ','.join(lst))
 
                 elif function != 'xivo_push':
                         return
