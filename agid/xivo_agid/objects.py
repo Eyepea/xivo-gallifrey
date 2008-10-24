@@ -897,7 +897,7 @@ class Schedule:
             raise LookupError("Unable to find schedule entry (id: %d)" % (xid,))
 
         self.id = xid
-        self.timerange = ','.join((
+        self.timerange = '|'.join((
                 self.forgetimefield(res['timebeg'], res['timeend']),
                 self.forgetimefield(res['daynamebeg'], res['daynameend']),
                 self.forgetimefield(res['daynumbeg'], res['daynumend']),
