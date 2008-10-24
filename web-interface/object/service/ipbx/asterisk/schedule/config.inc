@@ -53,12 +53,12 @@ $array['element']['timeminend']['default'] = '';
 $array['element']['timeminend']['unset'] = true;
 
 $array['element']['daynamebeg'] = array();
-$array['element']['daynamebeg']['value'] = array('sun','mon','tue','wed','thu','fri','sat');
+$array['element']['daynamebeg']['value'] = array('mon','tue','wed','thu','fri','sat','sun');
 $array['element']['daynamebeg']['default'] = '*';
 $array['element']['daynamebeg']['setdef'] = true;
 
 $array['element']['daynameend'] = array();
-$array['element']['daynameend']['value'] = array('sun','mon','tue','wed','thu','fri','sat');
+$array['element']['daynameend']['value'] = array('mon','tue','wed','thu','fri','sat','sun');
 $array['element']['daynameend']['default'] = '';
 $array['element']['daynameend']['null'] = true;
 
@@ -119,8 +119,8 @@ $array['filter']['name'] = array('maxlen' => 128,'regexp' => '/^[a-z0-9_-]+$/i')
 $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context');
 $array['filter']['timebeg'] = array('set' => false,'chk' => 2,'regexp' => '/^(?:(?:[0-1]?[0-9]|2[0-3])\:(?:0?[0-9]|[1-5][0-9])|\*)$/');
 $array['filter']['timeend'] = array('set' => false,'chk' => 2,'regexp' => '/^(?:[0-1]?[0-9]|2[0-3])\:(?:0?[0-9]|[1-5][0-9])$/');
-$array['filter']['daynamebeg'] = array('set' => false,'chk' => 2,'key' => array('sun','mon','tue','wed','thu','fri','sat'));
-$array['filter']['daynameend'] = array('set' => false,'chk' => 2,'key' => array('sun','mon','tue','wed','thu','fri','sat'));
+$array['filter']['daynamebeg'] = array('set' => false,'chk' => 2,'key' => array('mon','tue','wed','thu','fri','sat','sun'));
+$array['filter']['daynameend'] = array('set' => false,'chk' => 2,'key' => array('mon','tue','wed','thu','fri','sat','sun'));
 $array['filter']['daynumbeg'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,31));
 $array['filter']['daynumend'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,31));
 $array['filter']['monthbeg'] = array('set' => false,'chk' => 2,'key' => array('jan',
