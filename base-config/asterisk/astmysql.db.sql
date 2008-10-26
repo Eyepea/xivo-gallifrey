@@ -390,6 +390,7 @@ CREATE TABLE `groupfeatures` (
  `write_caller` tinyint(1) NOT NULL DEFAULT 0,
  `write_calling` tinyint(1) NOT NULL DEFAULT 0,
  `timeout` tinyint(2) unsigned NOT NULL DEFAULT 0,
+ `preprocess_subroutine` varchar(39),
  `deleted` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=ascii;
@@ -419,6 +420,7 @@ CREATE TABLE `incall` (
  `id` int(10) unsigned auto_increment,
  `exten` varchar(40) NOT NULL,
  `context` varchar(39) NOT NULL,
+ `preprocess_subroutine` varchar(39),
  `faxdetectenable` tinyint(1) NOT NULL DEFAULT 0,
  `faxdetecttimeout` tinyint(2) unsigned NOT NULL DEFAULT 4,
  `faxdetectemail` varchar(255) NOT NULL DEFAULT '',
@@ -472,6 +474,7 @@ CREATE TABLE `meetmefeatures` (
  `starmenu` tinyint(1) NOT NULL DEFAULT 0,
  `enableexitcontext` tinyint(1) NOT NULL DEFAULT 0,
  `exitcontext` varchar(39) NOT NULL,
+ `preprocess_subroutine` varchar(39),
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
@@ -691,6 +694,7 @@ CREATE TABLE `queuefeatures` (
  `url` varchar(255) NOT NULL DEFAULT '',
  `announceoverride` varchar(128) NOT NULL DEFAULT '',
  `timeout` smallint(4) unsigned NOT NULL DEFAULT 0,
+ `preprocess_subroutine` varchar(39),
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -1210,8 +1214,9 @@ CREATE TABLE `userfeatures` (
  `destbusy` varchar(128) NOT NULL DEFAULT '',
  `musiconhold` varchar(128) NOT NULL DEFAULT '',
  `outcallerid` varchar(80) NOT NULL DEFAULT '',
- `internal` tinyint(1) NOT NULL DEFAULT 0,
  `bsfilter` enum('no','boss','secretary') NOT NULL DEFAULT 'no',
+ `preprocess_subroutine` varchar(39),
+ `internal` tinyint(1) NOT NULL DEFAULT 0,
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  `description` text NOT NULL,
  PRIMARY KEY(`id`)
@@ -1232,7 +1237,7 @@ CREATE UNIQUE INDEX `userfeatures__uidx__protocol_name` ON `userfeatures`(`proto
 CREATE UNIQUE INDEX `userfeatures__uidx__protocol_protocolid` ON `userfeatures`(`protocol`,`protocolid`);
 
 INSERT INTO `userfeatures` VALUES (1,'sip',1,'Guest','','guest','','xivo-initconfig',NULL,NULL,148378,
-				   30,5,0,'','','',0,0,0,0,0,0,0,0,'',0,'',0,'','','',1,'no',0,'');
+				   30,5,0,'','','',0,0,0,0,0,0,0,0,'',0,'',0,'','','','no',NULL,1,0,'');
 
 
 DROP TABLE IF EXISTS `useriax`;
