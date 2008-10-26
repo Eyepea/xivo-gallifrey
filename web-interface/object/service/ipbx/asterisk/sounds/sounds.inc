@@ -143,10 +143,14 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 			unset($this->_fileoption['extension']);
 
 		if(empty($refextlist) === false)
+		{
+			$this->_fileoption['extensionregexp'] = '(?:'.implode('|',array_map('preg_quote',
+											    $refextlist)).')';
+
 			$this->_fileoption['name'] = '/^['.XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_PATTERN.']'.
 						     XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_LENGTH.
-						     '\.(?:'.implode('|',array_map('preg_quote',
-						     				   $refextlist)).')$/';
+						     '\.'.$this->_fileoption['extensionregexp'].'$/';
+		}
 		else
 			unset($this->_fileoption['extensionlist']);
 
@@ -278,7 +282,7 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 		return($path);
 	}
 
-	function get_dir($name,$getinfo=false)
+	function get_dir($name,$getinfo=false,$search=false)
 	{
 		$name = strval($name);
 
@@ -294,7 +298,7 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 		$r['nb_files'] = 0;
 		$r['defineddir'] = isset($defined_dir[$name]);
 
-		if(($r['files'] = $this->get_list($name,$getinfo)) === false)
+		if(($r['files'] = $this->get_list($name,$getinfo,$search)) === false)
 			return($r);	
 
 		$r['nb_files'] = count($r['files']);
@@ -371,13 +375,22 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function get_list($dir='',$getinfo=false)
+	function get_list($dir='',$getinfo=false,$search=false)
 	{
 		$dir = (string) $dir;
 
 		if(($match_file = $this->_get_option_file_name()) === false)
 			return(false);
-		else if($dir !== '')
+
+		if(xivo_haslen($search) === true
+		&& isset($this->_fileoption['extensionregexp']) === true
+		&& preg_match('/^['.XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_PATTERN.']+$/',
+			      $search) === 1)
+			$match_file = '/^(?:.*'.preg_quote($search).'.*)'.
+				      XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_LENGTH.
+				      '\.'.$this->_fileoption['extensionregexp'].'$/';
+
+		if($dir !== '')
 		{
 			if(($dirs = $this->get_list_dirs()) === false || in_array($dir,$dirs) === false)
 				return(false);
@@ -386,6 +399,7 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 		}
 		else
 			$dir = $this->_sndpath;
+
 
 		$r = xivo_file::read_d($dir,'file',null,$match_file,true);
 

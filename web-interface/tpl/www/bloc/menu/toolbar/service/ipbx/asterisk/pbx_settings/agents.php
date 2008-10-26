@@ -35,7 +35,9 @@ endif;
 					    'empty'	=> $this->bbf('toolbar_fm_group'),
 					    'value'	=> $group),
 				      $this->get_var('agentgroup_list'),
-				      'onchange="this.form[\'act\'].value = this.value == \'\' ? \'list\' : \'listagent\';
+				      'onchange="this.form[\'act\'].value = this.value === \'\'
+				      					    ? \'list\'
+									    : \'listagent\';
 						 return(this.form.submit());"');
 ?>
 	</div>
@@ -52,19 +54,21 @@ endif;
 	    onmouseover="this.style.display = 'block';"
 	    onmouseout="this.style.display = 'none';">	
 		<li><?=$url->href_html($this->bbf('toolbar_adv_menu_add-group'),
-				       'service/ipbx/pbx_settings/agents','act=add');?></li>
+				       'service/ipbx/pbx_settings/agents',
+				       'act=add');?></li>
 		<li><?=$url->href_html($this->bbf('toolbar_adv_menu_add-agent'),
 				       'service/ipbx/pbx_settings/agents',
 				       $param);?></li>
 	</ul>
 </div><?php
 
-	if($act === 'list'):
-		echo	$url->img_html('img/menu/top/toolbar/bt-more.gif',
-				       $this->bbf('toolbar_opt_advanced'),
-				       'border="0"
-				        onmouseover="xivo_eid(\'advanced-menu\').style.display = \'block\';"
-					onmouseout="xivo_eid(\'advanced-menu\').style.display = \'none\';"');
+if($act === 'list'):
+	echo	$url->img_html('img/menu/top/toolbar/bt-more.gif',
+			       $this->bbf('toolbar_opt_advanced'),
+			       'border="0"
+				onmouseover="xivo_eid(\'advanced-menu\').style.display = \'block\';"
+				onmouseout="xivo_eid(\'advanced-menu\').style.display = \'none\';"');
+
 ?>
 <div class="sb-advanced-menu">
 	<ul id="advanced-menu"
@@ -100,12 +104,13 @@ endif;
 	</ul>
 </div><?php
 
-	elseif($act === 'listagent'):
-		echo	$url->img_html('img/menu/top/toolbar/bt-more.gif',
-				       $this->bbf('toolbar_opt_advanced'),
-				       'border="0"
-				        onmouseover="xivo_eid(\'advanced-menu\').style.display = \'block\';"
-					onmouseout="xivo_eid(\'advanced-menu\').style.display = \'none\';"');
+elseif($act === 'listagent'):
+	echo	$url->img_html('img/menu/top/toolbar/bt-more.gif',
+			       $this->bbf('toolbar_opt_advanced'),
+			       'border="0"
+				onmouseover="xivo_eid(\'advanced-menu\').style.display = \'block\';"
+				onmouseout="xivo_eid(\'advanced-menu\').style.display = \'none\';"');
+
 ?>
 <div class="sb-advanced-menu">
 	<ul id="advanced-menu"
@@ -139,6 +144,9 @@ endif;
 			<?=$this->bbf('toolbar_adv_menu_delete');?></a>
 		</li>
 	</ul>
-</div><?php
-	endif;
+</div>
+<?php
+
+endif;
+
 ?>

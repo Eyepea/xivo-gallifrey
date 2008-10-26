@@ -137,7 +137,7 @@ $array['filter']['disposition'] = array('set' => false,'chk' => 2,'key' => array
 					XIVO_SRE_IPBX_AST_CDR_DISPOSITION_FAILED,
 					XIVO_SRE_IPBX_AST_CDR_DISPOSITION_UNKNOWN));
 $array['filter']['dcontext'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context',
-				     'callbackparam' => array(array(
+				     'callbackarg' => array(array(
 					XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION,
 					XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['amaflags'] = array('set' => false,'chk' => 2,'key' => xivo_service_asterisk::get_amaflags_list());

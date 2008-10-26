@@ -48,7 +48,7 @@ $array['filter']['name'] = array('maxlen' => 128,'regexp' => '/^[a-z0-9_-]+$/i')
 $array['filter']['ldapserverid'] = array('cast' => 'ulongint');
 $array['filter']['user'] = array('maxlen' => 255,'regexp' => '/^[a-zA-Z0-9-\._~\!\$&\'\(\)\*\+,;=%]+$/');
 $array['filter']['passwd'] = array('maxlen' => 255,'regexp' => '/^[a-zA-Z0-9-\._~\!\$&\'\(\)\*\+,;=:%]+$/');
-$array['filter']['basedn'] = array('minlen' => 1,'maxlen' => 255,'callback' => 'ldap_explode_dn','callbackparam' => 1);
+$array['filter']['basedn'] = array('minlen' => 1,'maxlen' => 255,'callback' => 'ldap_explode_dn','callbackarg' => 1);
 $array['filter']['filter'] = array('set' => false,'chk' => 2,'maxlen' => 255,'cast' => 'sgraph','notag' => false);
 $array['filter']['attrdisplayname'] = array('minlen' => 1,'maxlen' => 255,'regexp' => '/^(?:(?:[a-zA-Z0-9-]+|[0-9]+(?:\.[0-9]+)*)[,]?)+$/');
 $array['filter']['attrphonenumber'] = array('minlen' => 1,'maxlen' => 255,'regexp' => '/^(?:(?:[a-zA-Z0-9-]+|[0-9]+(?:\.[0-9]+)*)[,]?)+$/');

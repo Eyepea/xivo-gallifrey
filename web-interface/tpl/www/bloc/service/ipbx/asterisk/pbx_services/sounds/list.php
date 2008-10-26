@@ -1,18 +1,27 @@
 <?php
-	$url = &$this->get_module('url');
-	$form = &$this->get_module('form');
-	$dhtml = &$this->get_module('dhtml');
 
-	$pager = $this->get_var('pager');
-	$act = $this->get_var('act');
-	$dir = $this->get_var('dir');
+$url = &$this->get_module('url');
+$form = &$this->get_module('form');
+$dhtml = &$this->get_module('dhtml');
 
-	$page = $url->pager($pager['pages'],
-			    $pager['page'],
-			    $pager['prev'],
-			    $pager['next'],
-			    'service/ipbx/pbx_services/sounds',
-			    array('act' => $act,'dir' => $dir));
+$pager = $this->get_var('pager');
+$act = $this->get_var('act');
+$dir = $this->get_var('dir');
+
+$param = array();
+$param['dir'] = $dir;
+
+if(($search = (string) $this->get_var('search')) !== ''):
+	$param['search'] = $search;
+endif;
+
+$page = $url->pager($pager['pages'],
+		    $pager['page'],
+		    $pager['prev'],
+		    $pager['next'],
+		    'service/ipbx/pbx_services/sounds',
+		    array('act' => $act,$param));
+
 ?>
 <div class="b-list">
 <?php
@@ -21,10 +30,22 @@
 	endif;
 ?>
 <form action="#" name="fm-files-list" method="post" accept-charset="utf-8">
-<?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
-<?=$form->hidden(array('name' => 'act','value' => $act));?>
-<?=$form->hidden(array('name' => 'dir','value' => $dir));?>
-<?=$form->hidden(array('name' => 'page','value' => $pager['page']));?>
+<?php
+	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
+				    'value'	=> XIVO_SESS_ID)),
+
+		$form->hidden(array('name'	=> 'act',
+				    'value'	=> $act)),
+
+		$form->hidden(array('name'	=> 'dir',
+				    'value'	=> $dir)),
+
+		$form->hidden(array('name'	=> 'page',
+				    'value'	=> $pager['page'])),
+
+		$form->hidden(array('name'	=> 'search',
+				    'value'	=> ''));
+?>
 <table cellspacing="0" cellpadding="0" border="0">
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
@@ -54,7 +75,7 @@
 						 'label'	=> false,
 						 'id'		=> 'it-files-'.$i,
 						 'checked'	=> false,
-						 'field' => false));?>
+						 'field'	=> false));?>
 		</td>
 		<td class="txt-left curpointer"
 		    onclick="location.href = xivo_firstchild(this);">
@@ -82,9 +103,9 @@
 							       'border="0"'),
 						'service/ipbx/pbx_services/sounds',
 						array('act'	=> 'delete',
-						      'dir'	=> $dir,
 						      'id'	=> $ref['name'],
-						      'page'	=> $pager['page']),
+						      'page'	=> $pager['page'],
+						      $param),
 						'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',
 						$this->bbf('opt_delete'));
 ?>

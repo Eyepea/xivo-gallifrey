@@ -25,7 +25,7 @@ $array['element']['description']['default'] = '';
 
 $array['filter'] = array();
 $array['filter']['name'] = array('callback' => 'xivo_service_asterisk::chk_context',
-				 'callbackparam' => array(array(
+				 'callbackarg' => array(array(
 				    			XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION,
 							XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['displayname'] = array('cast' => 'sgraph','minlen' => 3,'maxlen' => 128);

@@ -843,12 +843,12 @@ class xivo_filter
 	
 		if(isset($arr['callback']) === true)
 		{
-			if(isset($arr['callbackparam']) === false)
-				$callbackparam = null;
+			if(isset($arr['callbackarg']) === false)
+				$callbackarg = null;
 			else
-				$callbackparam = $arr['callbackparam'];
+				$callbackarg = $arr['callbackarg'];
 
-			if($this->callback($arr['callback'],$value,$callbackparam) === false)
+			if($this->callback($arr['callback'],$value,$callbackarg) === false)
 			{
 				$this->_set_error($key,'callback false');
 				return(false);

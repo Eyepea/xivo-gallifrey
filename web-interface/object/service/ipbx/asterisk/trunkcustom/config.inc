@@ -36,7 +36,7 @@ $array['filter']['name'] = array('regexp' => '/^[a-z0-9_-]+$/i','minlen' => 1,'m
 $array['filter']['context'] = array('set' => false,
 				    'chk' => 2,
 				    'callback' => 'xivo_service_asterisk::chk_context',
-				    'callbackparam' => array(array(
+				    'callbackarg' => array(array(
 				    			XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION,
 							XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['interface'] = array('regexp' => '/^[a-z0-9#\*\.\/_@:\-\$\{\}]+$/i','minlen' => 1,'maxlen' => 128);

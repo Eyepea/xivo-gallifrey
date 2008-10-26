@@ -477,7 +477,7 @@ $array['filter']['checkmwi'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,
 $array['filter']['buggymwi'] = array('bool' => true);
 $array['filter']['regcontext'] = array('set' => false,'chk' => 2,
 				       'callback' => 'xivo_service_asterisk::chk_context',
-				       'callbackparam' => array(array(XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION)));
+				       'callbackarg' => array(array(XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION)));
 $array['filter']['callerid'] = array('maxlen'	=> 80,
 				     'regexp'	=> '/^'.XIVO_SRE_IPBX_AST_REGEXP_CALLERID.'$/u',
 				     'notag'	=> false);
@@ -575,7 +575,7 @@ $array['filter']['jbimpl'] = array('key' => array('fixed','adaptative'));
 $array['filter']['jblog'] = array('bool' => true);
 $array['filter']['context'] = array('set' => false,'chk' => 2,
 				    'callback' => 'xivo_service_asterisk::chk_context',
-				    'callbackparam' => array(array(XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION)));
+				    'callbackarg' => array(array(XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION)));
 $array['filter']['nat'] = array('key' => array('no','yes','never','route'));
 $array['filter']['dtmfmode'] = array('key' => array('rfc2833','inband','info','auto'));
 $array['filter']['qualify'] = array('key' => array('no','yes',500,1000,1500,2000,2500,3000,3500,4000));

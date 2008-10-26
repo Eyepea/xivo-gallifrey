@@ -311,7 +311,7 @@ $array['filter']['md5secret'] = array('set'	=> false,
 $array['filter']['context'] = array('set' => false,
 				    'chk' => 2,
 				    'callback' => 'xivo_service_asterisk::chk_context',
-				    'callbackparam' => array(array(
+				    'callbackarg' => array(array(
 				    			XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION,
 							XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['language'] = array('set' => false,'chk' => 2,'minlen' => 2,'maxlen' => 2,'key' => array('en','fr'));
@@ -365,11 +365,11 @@ $array['filter']['rtpkeepalive'] = array('set' => false,'chk' => 2,'key' => arra
 $array['filter']['deny'] = array('set'			=> false,
 				 'chk'			=> 2,
 				 'callback'		=> 'xivo_filter::chk_ipv4_subnet',
-				 'callbackparam'	=> array(null,XIVO_IPV4_NETMASK_DOTDEC));
+				 'callbackarg'	=> array(null,XIVO_IPV4_NETMASK_DOTDEC));
 $array['filter']['permit'] = array('set'		=> false,
 				   'chk'		=> 2,
 				   'callback'		=> 'xivo_filter::chk_ipv4_subnet',
-				   'callbackparam'	=> array(null,XIVO_IPV4_NETMASK_DOTDEC));
+				   'callbackarg'	=> array(null,XIVO_IPV4_NETMASK_DOTDEC));
 $array['filter']['defaultip'] = array('set' => false,'chk' => 0);
 $array['filter']['callgroup'] = array('set' => false,'chk' => 0);
 $array['filter']['pickupgroup'] = array('set' => false,'chk' => 0);
