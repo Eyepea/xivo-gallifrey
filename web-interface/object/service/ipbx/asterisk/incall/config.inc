@@ -10,6 +10,10 @@ $array['element']['exten']['default'] = '';
 $array['element']['context'] = array();
 $array['element']['context']['default'] = '';
 
+$array['element']['preprocess_subroutine'] = array();
+$array['element']['preprocess_subroutine']['default'] = '';
+$array['element']['preprocess_subroutine']['null'] = true;
+
 $array['element']['faxdetectenable'] = array();
 $array['element']['faxdetectenable']['value'] = array(0,1);
 $array['element']['faxdetectenable']['default'] = 0;
@@ -22,10 +26,6 @@ $array['element']['faxdetecttimeout']['setdef'] = true;
 
 $array['element']['faxdetectemail'] = array();
 $array['element']['faxdetectemail']['default'] = '';
-
-$array['element']['preprocess_subroutine'] = array();
-$array['element']['preprocess_subroutine']['default'] = '';
-$array['element']['preprocess_subroutine']['null'] = true;
 
 $array['element']['commented'] = array();
 $array['element']['commented']['value'] = array(0,1);
