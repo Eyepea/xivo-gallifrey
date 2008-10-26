@@ -88,7 +88,7 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 				  'default'	=> $element['protocol']['custom']['interface']['default'],
 				  'value'	=> $this->get_varra('info',array('protocol','interface')))),
 
-		$form->text(array('desc'	=> $this->bbf('fm_ufeatures_number'),
+		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_number'),
 				  'name'	=> 'ufeatures[number]',
 				  'labelid'	=> 'ufeatures-number',
 				  'size'	=> 15,
@@ -921,11 +921,11 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 				  'size'	=> 15,
 				  'notag'	=> false)),
 
-		$form->select(array('desc'	=> $this->bbf('fm_ufeatures_outcallerid'),
+		$form->select(array('desc'	=> $this->bbf('fm_userfeatures_outcallerid'),
 				    'name'	=> 'ufeatures[outcallerid-type]',
 				    'labelid'	=> 'ufeatures-outcallerid-type',
 				    'key'	=> false,
-				    'bbf'	=> array('paramkey','fm_ufeatures_outcallerid-opt'),
+				    'bbf'	=> array('paramkey','fm_userfeatures_outcallerid-opt'),
 				    'value'	=> ($outcallerid_custom === true ? 'custom' : $outcallerid)),
 			      $element['ufeatures']['outcallerid-type']['value'],
 			      'onchange="xivo_chg_attrib(\'ast_fm_user_outcallerid\',
@@ -944,6 +944,13 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 				      'labelid'	=> 'protocol-sendani',
 				      'default'	=> $element['protocol']['iax']['sendani']['default'],
 				      'checked'	=> $this->get_varra('protocol',array('protocol','sendani')))),
+
+		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_preprocess-subroutine'),
+				  'name'	=> 'ufeatures[preprocess-subroutine]',
+				  'labelid'	=> 'ufeatures-preprocess-subroutine',
+				  'size'	=> 15,
+				  'default'	=> $element['ufeatures']['preprocess_subroutine']['default'],
+				  'value'	=> $info['ufeatures']['preprocess_subroutine'])),
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_insecure'),
 				    'name'	=> 'protocol[insecure]',

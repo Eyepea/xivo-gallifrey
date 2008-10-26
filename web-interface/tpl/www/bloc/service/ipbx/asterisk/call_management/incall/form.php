@@ -58,7 +58,14 @@ endif;
 				  'size'	=> 15,
 				  'notag'	=> false,
 				  'default'	=> $element['callerid']['callerdisplay']['default'],
-				  'value'	=> $callerid['callerdisplay']));
+				  'value'	=> $callerid['callerdisplay'])),
+
+		$form->text(array('desc'	=> $this->bbf('fm_incall_preprocess-subroutine'),
+				  'name'	=> 'incall[preprocess-subroutine]',
+				  'labelid'	=> 'incall-preprocess-subroutine',
+				  'size'	=> 15,
+				  'default'	=> $element['incall']['preprocess_subroutine']['default'],
+				  'value'	=> $this->get_varra('incall','preprocess_subroutine')));
 ?>
 </div>
 

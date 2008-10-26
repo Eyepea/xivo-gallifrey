@@ -31,6 +31,9 @@ Remplacer
 ; fm_callerid_mode-opt(append)
 Suffixer
 
+; fm_incall_preprocess-subroutine
+Sous-routine de prétraitement :
+
 ; fm_incall_faxdetectenable
 Activer la détection :
 

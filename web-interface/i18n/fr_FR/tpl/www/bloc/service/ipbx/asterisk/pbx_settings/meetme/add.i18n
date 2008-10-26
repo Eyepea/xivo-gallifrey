@@ -40,6 +40,9 @@ Créer un contexte
 ; fm_meetmefeatures_musiconhold
 Musique d'attente :
 
+; fm_meetmefeatures_preprocess-subroutine
+Sous-routine de prétraitement :
+
 ; fm_meetmefeatures_poundexit
 Activer la possibilité de sortir avec # :
 

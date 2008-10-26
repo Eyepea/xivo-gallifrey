@@ -6,7 +6,7 @@ $dhtml = &$this->get_module('dhtml');
 $element = $this->get_var('element');
 $event = $this->get_var('event');
 
-echo	'<div id="fd-dialaction-',$event,'-extension-actionarg1" class="b-nodisplay">',
+echo	'<div id="fd-dialaction-',$event,'-extension-actiontype" class="b-nodisplay">',
 	$form->text(array('desc'	=> $this->bbf('fm_dialaction_extension-actionarg1'),
 			  'name'	=> 'dialaction['.$event.'][actionarg1]',
 			  'labelid'	=> 'dialaction-'.$event.'-extension-actionarg1',

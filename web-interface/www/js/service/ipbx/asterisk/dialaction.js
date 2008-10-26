@@ -20,7 +20,7 @@ xivo_dialaction_actiontype['meetme'] = ['actiontype','actionarg1'];
 xivo_dialaction_actiontype['voicemail'] = ['actiontype','actionarg1'];
 xivo_dialaction_actiontype['schedule'] = ['actiontype','actionarg1'];
 xivo_dialaction_actiontype['voicemenu'] = ['actiontype','actionarg1'];
-xivo_dialaction_actiontype['extension'] = ['actionarg1','actionarg2'];
+xivo_dialaction_actiontype['extension'] = ['actiontype','actionarg1','actionarg2'];
 xivo_dialaction_actiontype['application'] = ['action',
 					     'actiontype',
 					     'callbackdisa-actionarg1',

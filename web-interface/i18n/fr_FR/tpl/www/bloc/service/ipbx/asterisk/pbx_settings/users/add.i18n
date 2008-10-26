@@ -43,7 +43,7 @@ Identifiant :
 ; fm_protocol_secret
 Mot de passe :
 
-; fm_ufeatures_number
+; fm_userfeatures_number
 Numéro de téléphone :
 
 ; fm_protocol_interface
@@ -550,17 +550,20 @@ Aucun utilisateur trouvé
 ; fm_protocol_callerid
 Nom d'appel :
 
-; fm_ufeatures_outcallerid
+; fm_userfeatures_outcallerid
 Nom d'appel sortant :
 
-; fm_ufeatures_outcallerid-opt(default)
+; fm_userfeatures_outcallerid-opt(default)
 Défaut
 
-; fm_ufeatures_outcallerid-opt(anonymous)
+; fm_userfeatures_outcallerid-opt(anonymous)
 Anonyme
 
-; fm_ufeatures_outcallerid-opt(custom)
+; fm_userfeatures_outcallerid-opt(custom)
 Personnaliser
+
+; fm_userfeatures_preprocess-subroutine
+Sous-routine de prétraitement :
 
 ; fm_protocol_insecure
 Insécurité :

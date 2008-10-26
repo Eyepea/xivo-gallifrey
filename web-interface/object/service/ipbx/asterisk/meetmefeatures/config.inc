@@ -72,6 +72,10 @@ $array['element']['exitcontext'] = array();
 $array['element']['exitcontext']['default'] = '';
 $array['element']['exitcontext']['setdef'] = true;
 
+$array['element']['preprocess_subroutine'] = array();
+$array['element']['preprocess_subroutine']['default'] = '';
+$array['element']['preprocess_subroutine']['null'] = true;
+
 
 $array['filter'] = array();
 $array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/i','minlen' => 1,'maxlen' => 128);
@@ -90,5 +94,6 @@ $array['filter']['alwayspromptpin'] = array('bool' => true);
 $array['filter']['starmenu'] = array('bool' => true);
 $array['filter']['enableexitcontext'] = array('bool' => true);
 $array['filter']['exitcontext'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context');
+$array['filter']['preprocess_subroutine'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context');
 
 ?>

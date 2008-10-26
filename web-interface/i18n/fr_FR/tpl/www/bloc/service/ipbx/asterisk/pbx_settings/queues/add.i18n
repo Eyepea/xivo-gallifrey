@@ -106,6 +106,9 @@ Remplacer
 ; fm_callerid_mode-opt(append)
 Suffixer
 
+; fm_qfeatures_preprocess-subroutine
+Sous-routine de prétraitement :
+
 ; fm_qfeatures_timeout
 Temps de sonnerie :
 

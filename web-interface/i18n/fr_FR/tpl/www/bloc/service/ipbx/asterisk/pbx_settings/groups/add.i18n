@@ -94,6 +94,9 @@ Remplacer
 ; fm_callerid_mode-opt(append)
 Suffixer
 
+; fm_gfeatures_preprocess-subroutine
+Sous-routine de prétraitement :
+
 ; bt_inuser
 Ajouter un ou plusieurs utilisateurs ->
 

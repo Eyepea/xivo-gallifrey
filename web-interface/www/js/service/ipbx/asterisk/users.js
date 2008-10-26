@@ -83,6 +83,7 @@ var xivo_ast_users_elt_default = {
 	'ufeatures-agentid': {it: true},
 	'ufeatures-outcallerid-type': {it: true},
 	'ufeatures-outcallerid-custom': {it: true},
+	'ufeatures-preprocess-subroutine': {it: true},
 	'ufeatures-description': {it: true},
 
 	'ufeatures-voicemailid': {it: true},

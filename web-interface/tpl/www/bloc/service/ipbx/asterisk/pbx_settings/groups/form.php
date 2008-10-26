@@ -100,7 +100,14 @@ endif;
 				  'size'	=> 15,
 				  'notag'	=> false,
 				  'default'	=> $element['callerid']['callerdisplay']['default'],
-				  'value'	=> $info['callerid']['callerdisplay']));
+				  'value'	=> $info['callerid']['callerdisplay'])),
+
+		$form->text(array('desc'	=> $this->bbf('fm_gfeatures_preprocess-subroutine'),
+				  'name'	=> 'gfeatures[preprocess-subroutine]',
+				  'labelid'	=> 'gfeatures-preprocess-subroutine',
+				  'size'	=> 15,
+				  'default'	=> $element['gfeatures']['preprocess_subroutine']['default'],
+				  'value'	=> $info['gfeatures']['preprocess_subroutine']));
 ?>
 </div>
 

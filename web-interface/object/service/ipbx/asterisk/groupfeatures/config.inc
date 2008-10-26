@@ -32,6 +32,10 @@ $array['element']['timeout'] = array();
 $array['element']['timeout']['value'] = array(0,5,10,15,20,25,30,35,40,45,50,55,60);
 $array['element']['timeout']['default'] = 0;
 
+$array['element']['preprocess_subroutine'] = array();
+$array['element']['preprocess_subroutine']['default'] = '';
+$array['element']['preprocess_subroutine']['null'] = true;
+
 $array['filter'] = array();
 $array['filter']['number'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9\*#]+$/','maxlen' => 40);
 $array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/i','minlen' => 1,'maxlen' => 128);
@@ -41,5 +45,6 @@ $array['filter']['transfer_call'] = array('bool' => true);
 $array['filter']['write_caller'] = array('bool' => true);
 $array['filter']['write_calling'] = array('bool' => true);
 $array['filter']['timeout'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
+$array['filter']['preprocess_subroutine'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context');
 
 ?>

@@ -164,6 +164,10 @@ $array['element']['bsfilter']['value'] = array('no','boss','secretary');
 $array['element']['bsfilter']['default'] = 'no';
 $array['element']['bsfilter']['setdef'] = true;
 
+$array['element']['preprocess_subroutine'] = array();
+$array['element']['preprocess_subroutine']['default'] = '';
+$array['element']['preprocess_subroutine']['null'] = true;
+
 $array['element']['description'] = array();
 $array['element']['description']['default'] = '';
 
@@ -215,8 +219,14 @@ $array['filter']['outcallerid'] = array('set'		=> false,
 					'maxlen'	=> 80,
 					'regexp'	=> '/^'.XIVO_SRE_IPBX_AST_REGEXP_CALLERID.'$/u',
 					'notag'		=> false);
-$array['filter']['internal'] = array('set' => false,'chk' => 0);
 $array['filter']['bsfilter'] = array('set' => false,'chk' => 2,'key' => array('no','boss','secretary'));
+$array['filter']['preprocess_subroutine'] = array('set' => false,
+						  'chk'	=> 2,
+						  'callback' => 'xivo_service_asterisk::chk_context',
+						  'callbackarg' => array(array(
+							XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION,
+							XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
+$array['filter']['internal'] = array('set' => false,'chk' => 0);
 $array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
 
 ?>
