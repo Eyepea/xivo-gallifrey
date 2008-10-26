@@ -1407,6 +1407,8 @@ class XivoCTICommand(BaseCommand):
                                 self.__ami_execute__(astid, params[0], params[1], 'Agent/%s' % anum, params[2])
                         elif params[0] == 'queueremove' and len(params) > 1:
                                 self.__ami_execute__(astid, params[0], params[1], 'Agent/%s' % anum)
+                        elif params[0] == 'queuepause' and len(params) > 2:
+                                self.__ami_execute__(astid, params[0], params[1], 'Agent/%s' % anum, params[2])
                 return
         
         def __ami_execute__(self, *args):
