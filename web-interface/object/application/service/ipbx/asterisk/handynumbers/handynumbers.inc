@@ -74,14 +74,14 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 		$this->_info['extenumbers'] = array();
 		$this->_origin['extenumbers'] = array();
 
-		$extenumbers_where = array();
-		$extenumbers_where['type'] = 'handynumbers';
+		$where = array();
+		$where['type'] = 'handynumbers';
 
 		foreach($this->_info['handynumbers'] as $val)
 		{
-			$extenumbers_where['typeval'] = $val['id'];
+			$where['typeval'] = $val['id'];
 
-			if(($info['extenumbers'] = $this->_extenumbers->get_where($extenumbers_where)) === false
+			if(($info['extenumbers'] = $this->_extenumbers->get_where($where)) === false
 			|| ($info['exten'] = $this->_extensions->get_exten($val['exten'],
 									   XIVO_SRE_IPBX_AST_CONTEXT_HANDYNUMBERS)) === false)
 				continue;

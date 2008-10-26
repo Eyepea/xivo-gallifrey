@@ -852,7 +852,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			else
 				$id = null;
 
-			if($this->_userfeatures->loginclient_exists($rs['loginclient'],$id) === true)
+			if($this->_userfeatures->loginclient_exists($rs['loginclient'],
+								    $rs['context'],
+								    $id) === true)
 			{
 				$this->_set_result('ufeatures',$rs);
 				$this->_set_error('ufeatures','client login exists');
@@ -954,7 +956,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			if(isset($tmp[$qname]) === true
 			|| isset($list[$qname]) === false
 			|| ($chantype = xivo_ak('chantype',$list[$qname],true)) === false
-			|| ($interface = $this->mk_interface($name,$chantype,$context,$number,$protocolname)) === false
+			|| ($interface = $this->mk_interface($name,
+							     $chantype,
+							     $context,
+							     $number,
+							     $protocolname)) === false
 			|| ($typeid = $module->get_primary(array('name' => $qname))) === false)
 				continue;
 

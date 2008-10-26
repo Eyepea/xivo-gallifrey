@@ -370,10 +370,10 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 		else if(is_scalar($name) === false)
 			return(false);
 
-		$extenfeatures_where = array();
-		$extenfeatures_where['name'] = $name;
+		$where = array();
+		$where['name'] = $name;
 
-		$r = $this->_extensions->delete_where($extenfeatures_where);
+		$r = $this->_extensions->delete_where($where);
 
 		if($this->_status === 'delete')
 			$this->_return['extenfeatures'] = $r;

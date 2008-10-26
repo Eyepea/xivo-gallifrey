@@ -633,10 +633,10 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 		else if(xivo_issa('phonebook',$this->_info) === false)
 			return(false);
 
-		$phonebooktype_where = array();
-		$phonebooktype_where['phonebookid'] = $this->_info['phonebook']['id'];
+		$where = array();
+		$where['phonebookid'] = $this->_info['phonebook']['id'];
 
-		$r = $module->delete_where($phonebooktype_where);
+		$r = $module->delete_where($where);
 
 		if($this->_status === 'delete')
 			$this->_return[$typename] = $r;

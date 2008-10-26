@@ -2,10 +2,6 @@
 
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
 
-if(isset($_SERVER['REMOTE_ADDR']) === false
-|| $_SERVER['REMOTE_ADDR'] !== '127.0.0.1')
-	xivo_die('Error/403');
-
 $appagent = &$ipbx->get_application('agent',null,false);
 
 switch($act)

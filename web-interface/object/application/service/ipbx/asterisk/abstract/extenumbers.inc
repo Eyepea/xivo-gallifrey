@@ -44,11 +44,11 @@ class xivo_application_service_asterisk_extenumbers_abstract extends xivo_applic
 		if(xivo_haslen($typeval) === false)
 			return(false);
 
-		$extenumbers_where = array();
-		$extenumbers_where['type'] = $this->_param['type'];
-		$extenumbers_where['typeval'] = $typeval;
+		$where = array();
+		$where['type'] = $this->_param['type'];
+		$where['typeval'] = $typeval;
 
-		if(($this->_info = $this->_extenumbers->get_where($extenumbers_where)) !== false)
+		if(($this->_info = $this->_extenumbers->get_where($where)) !== false)
 			$this->_origin = $this->_extenumbers->get_origin();
 
 		return($this->_info);

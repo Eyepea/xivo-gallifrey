@@ -683,14 +683,14 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		if(xivo_issa('incall',$this->_info) === false)
 			return(false);
 
-		$exten_where = array();
-		$exten_where['exten'] = $this->_info['incall']['exten'];
-		$exten_where['context'] = $this->_info['incall']['context'];
+		$where = array();
+		$where['exten'] = $this->_info['incall']['exten'];
+		$where['context'] = $this->_info['incall']['context'];
 
 		if((bool) $disable === false)
-			$r = $this->_extensions->enable_where($exten_where);
+			$r = $this->_extensions->enable_where($where);
 		else
-			$r = $this->_extensions->disable_where($exten_where);
+			$r = $this->_extensions->disable_where($where);
 
 		if($this->_status === 'enable' || $this->_status === 'disable')
 			$this->_return['exten'] = $r;

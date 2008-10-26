@@ -13,6 +13,7 @@ for($i = 0;$i < $nb;$i++)
 {
 	$ref = &$groups[$i];
 
+	$data['id'] = $ref['gfeatures']['id'];
 	$data['category'] = $ref['queue']['category'];
 	$data['name'] = $ref['queue']['name'];
 	$data['number'] = $ref['gfeatures']['number'];

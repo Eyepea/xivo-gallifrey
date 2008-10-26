@@ -104,11 +104,17 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		return($this->_mk_provisioning_id($protocol));
 	}
 
-	function loginclient_exists($loginclient,$id=null)
+	function loginclient_exists($loginclient,$context,$id=null)
 	{
-		if(xivo_haslen($loginclient) === false)
+		if(xivo_haslen($loginclient) === false
+		|| xivo_haslen($context) === false)
 			return(null);
-		else if(($primary = $this->get_primary(array('loginclient' => $loginclient))) === false
+
+		$arr = array();
+		$arr['loginclient'] = $loginclient;
+		$arr['context'] = $context;
+
+		if(($primary = $this->get_primary($arr)) === false
 		|| (empty($id) === false
 		   && xivo_ulongint($primary) === xivo_ulongint($id)) === true)
 			return(false);
@@ -136,8 +142,8 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 				return(false);
 		}
 
-		if(isset($arr['loginclient']) === true
-		&& $this->loginclient_exists($arr['loginclient'],$id) === true)
+		if(isset($arr['loginclient'],$arr['context']) === true
+		&& $this->loginclient_exists($arr['loginclient'],$arr['context'],$id) === true)
 			return(false);
 
 		return(parent::add($arr,$id));
@@ -160,8 +166,8 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 				return(false);
 		}
 
-		if(isset($arr['loginclient']) === true
-		&& $this->loginclient_exists($arr['loginclient'],$id) === true)
+		if(isset($arr['loginclient'],$arr['context']) === true
+		&& $this->loginclient_exists($arr['loginclient'],$arr['context'],$id) === true)
 			return(false);
 
 		if(isset($arr['protocol']) === true)

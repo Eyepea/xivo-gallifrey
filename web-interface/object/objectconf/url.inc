@@ -49,9 +49,17 @@ $array['service/ipbx/control_system/restart'] = 'service/ipbx/index.php/control_
 $array['service/ipbx/web_services/phonebook/search'] = 'service/ipbx/web_services.php/phonebook/search/';
 $array['service/ipbx/web_services/phonebook/local'] = 'service/ipbx/web_services.php/phonebook/local/';
 $array['service/ipbx/ajs/voicemail'] = 'service/ipbx/ajs.php/voicemail/';
+
+$array['service/ipbx/json/public/pbx_settings/agents'] = 'service/ipbx/json.php/public/pbx_settings/agents/';
+$array['service/ipbx/json/public/pbx_settings/users'] = 'service/ipbx/json.php/public/pbx_settings/users/';
+$array['service/ipbx/json/public/pbx_settings/groups'] = 'service/ipbx/json.php/public/pbx_settings/groups/';
+$array['service/ipbx/json/public/pbx_settings/queues'] = 'service/ipbx/json.php/public/pbx_settings/queues/';
+$array['service/ipbx/json/public/call_management/incall'] = 'service/ipbx/json.php/public/call_management/incall/';
+
 $array['service/ipbx/json/restricted/pbx_settings/agents'] = 'service/ipbx/json.php/restricted/pbx_settings/agents/';
 $array['service/ipbx/json/restricted/pbx_settings/users'] = 'service/ipbx/json.php/restricted/pbx_settings/users/';
 $array['service/ipbx/json/restricted/pbx_settings/groups'] = 'service/ipbx/json.php/restricted/pbx_settings/groups/';
 $array['service/ipbx/json/restricted/pbx_settings/queues'] = 'service/ipbx/json.php/restricted/pbx_settings/queues/';
+$array['service/ipbx/json/restricted/call_management/incall'] = 'service/ipbx/json.php/restricted/call_management/incall/';
 
 ?>

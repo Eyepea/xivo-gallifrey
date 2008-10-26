@@ -537,41 +537,41 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 			return(false);
 		else if(($dialaction = &$this->_service->get_module('dialaction')) !== false)
 		{
-			$dialaction_where = array();
-			$dialaction_where['type'] = 'voicemail';
-			$dialaction_where['typeval'] = $this->_info['voicemail']['uniqueid'];
+			$where = array();
+			$where['type'] = 'voicemail';
+			$where['typeval'] = $this->_info['voicemail']['uniqueid'];
 
-			$dialaction->unlinked_where($dialaction_where);
+			$dialaction->unlinked_where($where);
 		}
 
 		if(($ufeatures = &$this->_service->get_module('userfeatures')) !== false)
 		{
-			$ufeatures_where = array();
-			$ufeatures_where['voicemailid'] = $this->_info['voicemail']['uniqueid'];
+			$where = array();
+			$where['voicemailid'] = $this->_info['voicemail']['uniqueid'];
 
-			$ufeatures->edit_where($ufeatures_where,array('voicemailid' => null));
+			$ufeatures->edit_where($where,array('voicemailid' => null));
 		}
 
 		if((isset($this->_modules['usersip']) === true
 		   && is_object($this->_modules['usersip']) === true) === true
 		|| ($this->_modules['usersip'] = &$this->_service->get_module('usersip')) !== false)
 		{
-			$usersip_where = array();
-			$usersip_where['mailbox'] = $this->_info['voicemail']['mailbox'].
-						    '@'.$this->_info['voicemail']['context'];
+			$where = array();
+			$where['mailbox'] = $this->_info['voicemail']['mailbox'].
+					    '@'.$this->_info['voicemail']['context'];
 
-			$this->_modules['usersip']->edit_where($usersip_where,array('mailbox' => null));
+			$this->_modules['usersip']->edit_where($where,array('mailbox' => null));
 		}
 
 		if((isset($this->_modules['useriax']) === true
 		   && is_object($this->_modules['useriax']) === true) === true
 		|| ($this->_modules['useriax'] = &$this->_service->get_module('useriax')) !== false)
 		{
-			$useriax_where = array();
-			$useriax_where['mailbox'] = $this->_info['voicemail']['mailbox'].
-						    '@'.$this->_info['voicemail']['context'];
+			$where = array();
+			$where['mailbox'] = $this->_info['voicemail']['mailbox'].
+					    '@'.$this->_info['voicemail']['context'];
 
-			$this->_modules['useriax']->edit_where($useriax_where,array('mailbox' => null));
+			$this->_modules['useriax']->edit_where($where,array('mailbox' => null));
 		}
 
 		return(true);
