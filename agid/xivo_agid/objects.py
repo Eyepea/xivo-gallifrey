@@ -293,7 +293,7 @@ class User:
                       'enableautomon', 'callrecord', 'callfilter',
                       'enablednd', 'enableunc', 'destunc', 'enablerna',
                       'destrna', 'enablebusy', 'destbusy', 'musiconhold',
-                      'outcallerid', 'bsfilter'),
+                      'outcallerid', 'bsfilter', 'preprocess_subroutine'),
                      (xid,))
 
         res = cursor.fetchone()
@@ -324,6 +324,7 @@ class User:
         self.destbusy = res['destbusy']
         self.musiconhold = res['musiconhold']
         self.outcallerid = res['outcallerid']
+        self.preprocess_subroutine = res['preprocess_subroutine']
         bsfilter = res['bsfilter']
 
         if self.destunc == '':
@@ -445,8 +446,8 @@ class Group:
         self.cursor = cursor
 
         groupfeatures_columns = ('id', 'number', 'context', 'name',
-                                 'timeout', 'transfer_user',
-                                 'transfer_call', 'write_caller', 'write_calling')
+                                 'timeout', 'transfer_user', 'transfer_call',
+                                 'write_caller', 'write_calling', 'preprocess_subroutine')
         queue_columns = ('musiconhold',)
         columns = ["groupfeatures." + c for c in groupfeatures_columns] + ["queue." + c for c in queue_columns]
 
@@ -488,6 +489,7 @@ class Group:
         self.transfer_call = res['groupfeatures.transfer_call']
         self.write_caller = res['groupfeatures.write_caller']
         self.write_calling = res['groupfeatures.write_calling']
+        self.preprocess_subroutine = res['groupfeatures.preprocess_subroutine']
         self.musiconhold = res['queue.musiconhold']
 
     def set_dial_actions(self):
@@ -507,7 +509,7 @@ class MeetMe:
                    'poundexit', 'quiet', 'record', 'adminmode',
                    'announceusercount', 'announcejoinleave',
                    'alwayspromptpin', 'starmenu', 'enableexitcontext',
-                   'exitcontext')
+                   'exitcontext', 'preprocess_subroutine')
         columns = ["meetmefeatures." + c for c in columns]
 
         if xid:
@@ -563,6 +565,7 @@ class MeetMe:
         self.starmenu = res['meetmefeatures.starmenu']
         self.enableexitcontext = res['meetmefeatures.enableexitcontext']
         self.exitcontext = res['meetmefeatures.exitcontext']
+        self.preprocess_subroutine = res['meetmefeatures.preprocess_subroutine']
 
 
 class Queue:
@@ -575,7 +578,8 @@ class Queue:
                    'retries', 'ring',
                    'transfer_user', 'transfer_call',
                    'write_caller', 'write_calling',
-                   'url', 'announceoverride', 'timeout')
+                   'url', 'announceoverride', 'timeout',
+                   'preprocess_subroutine')
         columns = ["queuefeatures." + c for c in columns]
 
         if xid:
@@ -621,6 +625,7 @@ class Queue:
         self.url = res['queuefeatures.url']
         self.announceoverride = res['queuefeatures.announceoverride']
         self.timeout = res['queuefeatures.timeout']
+        self.preprocess_subroutine = res['queuefeatures.preprocess_subroutine']
 
     def set_dial_actions(self):
         for event in ('noanswer', 'congestion', 'busy', 'chanunavail'):
@@ -774,7 +779,7 @@ class DID:
         self.agi = agi
         self.cursor = cursor
 
-        columns = ('id', 'exten', 'context',
+        columns = ('id', 'exten', 'context', 'preprocess_subroutine',
                    'faxdetectenable', 'faxdetecttimeout', 'faxdetectemail')
 
         if xid:
@@ -801,6 +806,7 @@ class DID:
         self.id = res['id']
         self.exten = res['exten']
         self.context = res['context']
+        self.preprocess_subroutine = res['preprocess_subroutine']
         self.faxdetectenable = int(bool(res['faxdetectenable']))
         self.faxdetecttimeout = res['faxdetecttimeout']
         self.faxdetectemail = res['faxdetectemail']
