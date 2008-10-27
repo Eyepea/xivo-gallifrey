@@ -204,10 +204,77 @@ def zip_extract_all(label, zipfile_path):
 
 	return zip_path
 
+def tar_extract_all(label, tarfile_path):
+	"""Extract the content of tarfile_path into tmp_path/label and
+	return this path. This function completely removes the destination
+	directory before extracting files. label is used as a unique
+	identifier and usually contains the firmware name as a prefix.
+	"""
+
+	tar_path = os.path.join(tmp_path, label)
+	shutil.rmtree(tar_path, True)
+	os.mkdir(tar_path)
+
+	try:
+		result = subprocess.call(['tar', 'xf', tarfile_path], cwd = tar_path, close_fds = True)
+		fix_permissions(tar_path)
+
+		if result:
+			die("tar extraction failed")
+	except OSError, e:
+		die("tar extraction failed: %s" % e)
+
+	return tar_path
+
+def tgz_extract_all(label, tgzfile_path):
+	"""Extract the content of tgzfile_path into tmp_path/label and
+	return this path. This function completely removes the destination
+	directory before extracting files. label is used as a unique
+	identifier and usually contains the firmware name as a prefix.
+	"""
+
+	tgz_path = os.path.join(tmp_path, label)
+	shutil.rmtree(tgz_path, True)
+	os.mkdir(tgz_path)
+
+	try:
+		result = subprocess.call(['tar', 'xzf', tgzfile_path], cwd = tgz_path, close_fds = True)
+		fix_permissions(tgz_path)
+
+		if result:
+			die("tgz extraction failed")
+	except OSError, e:
+		die("tgz extraction failed: %s" % e)
+
+	return tgz_path
+
+def tbz2_extract_all(label, tbz2file_path):
+	"""Extract the content of tbz2file_path into tmp_path/label and
+	return this path. This function completely removes the destination
+	directory before extracting files. label is used as a unique
+	identifier and usually contains the firmware name as a prefix.
+	"""
+
+	tbz2_path = os.path.join(tmp_path, label)
+	shutil.rmtree(tbz2_path, True)
+	os.mkdir(tbz2_path)
+
+	try:
+		result = subprocess.call(['tar', 'xjf', tbz2file_path], cwd = tbz2_path, close_fds = True)
+		fix_permissions(tbz2_path)
+
+		if result:
+			die("tbz2 extraction failed")
+	except OSError, e:
+		die("tbz2 extraction failed: %s" % e)
+
+	return tbz2_path
+
 config = ConfigParser.RawConfigParser()
 fp = open(CONFIG_FILE)
 config.readfp(fp)
 tftp_path = config.get(CONFIG_SECTION_GENERAL, "tftp_path")
+kfw_path = config.get(CONFIG_SECTION_GENERAL, "kfw_path")
 tmp_path = config.get(CONFIG_SECTION_GENERAL, "tmp_path")
 firmwares_db_path = config.get(CONFIG_SECTION_GENERAL, "firmwares_db_path")
 fp.close()
@@ -225,6 +292,7 @@ import linksys
 import polycom
 import snom
 import thomson
+import digium
 
 fw_names = config.sections()
 
