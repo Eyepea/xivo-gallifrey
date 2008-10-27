@@ -19,32 +19,32 @@ __license__ = """
 
 import os
 import shutil
-import fetchfw
+from xivo_fetchfw import fetchfw
 
 def snom_install(firmware):
-	assert len(firmware.remote_files) == 1
-	fw_dst_dir = os.path.join(fetchfw.tftp_path, "Snom", "Firmware")
-	fw_dst_path = os.path.join(fw_dst_dir, firmware.remote_files[0].filename)
+    assert len(firmware.remote_files) == 1
+    fw_dst_dir = os.path.join(fetchfw.tftp_path, "Snom", "Firmware")
+    fw_dst_path = os.path.join(fw_dst_dir, firmware.remote_files[0].filename)
 
-	try:
-		os.makedirs(fw_dst_dir)
-	except OSError:
-		pass
+    try:
+        os.makedirs(fw_dst_dir)
+    except OSError:
+        pass # XXX: catching every OSError is not appropriate
 
-	shutil.copy2(firmware.remote_files[0].path, fw_dst_path)
+    shutil.copy2(firmware.remote_files[0].path, fw_dst_path)
 
 fetchfw.register_install_fn("Snom", None, snom_install)
 
 def snom_m3_install(firmware):
-	fw_dst_dir = os.path.join(fetchfw.tftp_path, "Snom", "Firmware")
+    fw_dst_dir = os.path.join(fetchfw.tftp_path, "Snom", "Firmware")
 
-	try:
-		os.makedirs(fw_dst_dir)
-	except OSError:
-		pass
+    try:
+        os.makedirs(fw_dst_dir)
+    except OSError:
+        pass # XXX: catching every OSError is not appropriate
 
-	for file in firmware.remote_files:
-		fw_dst_path = os.path.join(fw_dst_dir, file.filename)
-		shutil.copy2(file.path, fw_dst_path)
+    for xfile in firmware.remote_files:
+        fw_dst_path = os.path.join(fw_dst_dir, xfile.filename)
+        shutil.copy2(xfile.path, fw_dst_path)
 
 fetchfw.register_install_fn("Snom", "m3", snom_m3_install)

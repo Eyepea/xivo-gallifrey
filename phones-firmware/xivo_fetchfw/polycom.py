@@ -19,68 +19,68 @@ __license__ = """
 
 import os
 import shutil
-import fetchfw
+from xivo_fetchfw import fetchfw
 
-app_files = [
-	"2201-06642-001.sip.ld",
-	"2345-11300-010.sip.ld",
-	"2345-11402-001.sip.ld",
-	"2345-11500-030.sip.ld",
-	"2345-11500-040.sip.ld",
-	"2345-11600-001.sip.ld",
-	"2345-11605-001.sip.ld",
-	"2345-12200-001.sip.ld",
-	"2345-12200-002.sip.ld",
-	"2345-12200-004.sip.ld",
-	"2345-12200-005.sip.ld",
-	"2345-12500-001.sip.ld",
-	"2345-12560-001.sip.ld",
-	"2345-12600-001.sip.ld",
-	"sip.ld",
-	"sip.ver",
-	"SoundPointIPWelcome.wav"
+APP_FILES = [
+    "2201-06642-001.sip.ld",
+    "2345-11300-010.sip.ld",
+    "2345-11402-001.sip.ld",
+    "2345-11500-030.sip.ld",
+    "2345-11500-040.sip.ld",
+    "2345-11600-001.sip.ld",
+    "2345-11605-001.sip.ld",
+    "2345-12200-001.sip.ld",
+    "2345-12200-002.sip.ld",
+    "2345-12200-004.sip.ld",
+    "2345-12200-005.sip.ld",
+    "2345-12500-001.sip.ld",
+    "2345-12560-001.sip.ld",
+    "2345-12600-001.sip.ld",
+    "sip.ld",
+    "sip.ver",
+    "SoundPointIPWelcome.wav"
 ]
 
-def polycom_install_400(firmware, file):
-	zip_path = fetchfw.zip_extract_all("polycom_fw", file.path)
-	fw_dst_dir = os.path.join(fetchfw.tftp_path, "Polycom")
+def polycom_install_400(firmware, xfile):
+    zip_path = fetchfw.zip_extract_all("polycom_fw", xfile.path)
+    fw_dst_dir = os.path.join(fetchfw.tftp_path, "Polycom")
 
-	try:
-		os.makedirs(fw_dst_dir)
-	except OSError:
-		pass
+    try:
+        os.makedirs(fw_dst_dir)
+    except OSError:
+        pass # XXX: catching every OSError is not appropriate
 
-	for fw_file in os.listdir(zip_path):
-		fw_src_path = os.path.join(zip_path, fw_file)
-		fw_dst_path = os.path.join(fw_dst_dir, fw_file)
-		shutil.copy2(fw_src_path, fw_dst_path)
+    for fw_file in os.listdir(zip_path):
+        fw_src_path = os.path.join(zip_path, fw_file)
+        fw_dst_path = os.path.join(fw_dst_dir, fw_file)
+        shutil.copy2(fw_src_path, fw_dst_path)
 
-def polycom_install_app_222(firmware, file):
-	zip_path = fetchfw.zip_extract_all("polycom_app", file.path)
-	fw_dst_dir = os.path.join(fetchfw.tftp_path, "Polycom")
+def polycom_install_app_222(firmware, xfile):
+    zip_path = fetchfw.zip_extract_all("polycom_app", xfile.path)
+    fw_dst_dir = os.path.join(fetchfw.tftp_path, "Polycom")
 
-	try:
-		os.makedirs(fw_dst_dir)
-	except OSError:
-		pass
+    try:
+        os.makedirs(fw_dst_dir)
+    except OSError:
+        pass # XXX: catching every OSError is not appropriate
 
-	for fw_file in app_files:
-		fw_src_path = os.path.join(zip_path, fw_file)
-		fw_dst_path = os.path.join(fw_dst_dir, fw_file)
-		shutil.copy2(fw_src_path, fw_dst_path)
+    for fw_file in APP_FILES:
+        fw_src_path = os.path.join(zip_path, fw_file)
+        fw_dst_path = os.path.join(fw_dst_dir, fw_file)
+        shutil.copy2(fw_src_path, fw_dst_path)
 
-	fw_src_path = os.path.join(zip_path, "SoundPointIPLocalization")
-	fw_dst_path = os.path.join(fw_dst_dir, "SoundPointIPLocalization")
-	shutil.rmtree(fw_dst_path, True)
-	shutil.copytree(fw_src_path, fw_dst_path)
+    fw_src_path = os.path.join(zip_path, "SoundPointIPLocalization")
+    fw_dst_path = os.path.join(fw_dst_dir, "SoundPointIPLocalization")
+    shutil.rmtree(fw_dst_path, True)
+    shutil.copytree(fw_src_path, fw_dst_path)
 
 def polycom_install(firmware):
-	for file in firmware.remote_files:
-		if file.filename == "BootRom_4_0_0_release_sig.zip":
-			polycom_install_400(firmware, file)
-		elif file.filename == "spip_ssip_2_2_2_release_sig.zip":
-			polycom_install_app_222(firmware, file)
-		else:
-			fetchfw.die("unsupported file for Polycom firmware")
+    for xfile in firmware.remote_files:
+        if xfile.filename == "BootRom_4_0_0_release_sig.zip":
+            polycom_install_400(firmware, xfile)
+        elif xfile.filename == "spip_ssip_2_2_2_release_sig.zip":
+            polycom_install_app_222(firmware, xfile)
+        else:
+            fetchfw.die("unsupported file for Polycom firmware")
 
 fetchfw.register_install_fn("Polycom", None, polycom_install)

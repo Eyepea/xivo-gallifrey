@@ -19,17 +19,16 @@ __license__ = """
 
 import os
 import shutil
-import fetchfw
+from xivo_fetchfw import fetchfw
 
 def digium_install(firmware):
-        file = firmware.remote_files[0]
-	tgz_path = fetchfw.tgz_extract_all("digium_fw", file.path)
-	fw_dst_dir = fetchfw.kfw_path
+    xfile = firmware.remote_files[0]
+    tgz_path = fetchfw.tgz_extract_all("digium_fw", xfile.path)
+    fw_dst_dir = fetchfw.kfw_path
 
-	for fw_file in os.listdir(tgz_path):
-		fw_src_path = os.path.join(tgz_path, fw_file)
-		fw_dst_path = os.path.join(fw_dst_dir, fw_file)
-		shutil.copy2(fw_src_path, fw_dst_path)
+    for fw_file in os.listdir(tgz_path):
+        fw_src_path = os.path.join(tgz_path, fw_file)
+        fw_dst_path = os.path.join(fw_dst_dir, fw_file)
+        shutil.copy2(fw_src_path, fw_dst_path)
 
 fetchfw.register_install_fn("Digium", None, digium_install)
-
