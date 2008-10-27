@@ -61,7 +61,7 @@ endif;
 				  'value'	=> $callerid['callerdisplay'])),
 
 		$form->text(array('desc'	=> $this->bbf('fm_incall_preprocess-subroutine'),
-				  'name'	=> 'incall[preprocess-subroutine]',
+				  'name'	=> 'incall[preprocess_subroutine]',
 				  'labelid'	=> 'incall-preprocess-subroutine',
 				  'size'	=> 15,
 				  'default'	=> $element['incall']['preprocess_subroutine']['default'],

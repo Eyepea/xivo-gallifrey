@@ -103,7 +103,7 @@ endif;
 				  'value'	=> $info['callerid']['callerdisplay'])),
 
 		$form->text(array('desc'	=> $this->bbf('fm_gfeatures_preprocess-subroutine'),
-				  'name'	=> 'gfeatures[preprocess-subroutine]',
+				  'name'	=> 'gfeatures[preprocess_subroutine]',
 				  'labelid'	=> 'gfeatures-preprocess-subroutine',
 				  'size'	=> 15,
 				  'default'	=> $element['gfeatures']['preprocess_subroutine']['default'],

@@ -79,7 +79,7 @@ if($moh_list !== false):
 endif;
 
 	echo	$form->text(array('desc'	=> $this->bbf('fm_meetmefeatures_preprocess-subroutine'),
-				  'name'	=> 'mfeatures[preprocess-subroutine]',
+				  'name'	=> 'mfeatures[preprocess_subroutine]',
 				  'labelid'	=> 'mfeatures-preprocess-subroutine',
 				  'size'	=> 15,
 				  'default'	=> $element['mfeatures']['preprocess_subroutine']['default'],

@@ -946,7 +946,7 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 				      'checked'	=> $this->get_varra('protocol',array('protocol','sendani')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_preprocess-subroutine'),
-				  'name'	=> 'ufeatures[preprocess-subroutine]',
+				  'name'	=> 'ufeatures[preprocess_subroutine]',
 				  'labelid'	=> 'ufeatures-preprocess-subroutine',
 				  'size'	=> 15,
 				  'default'	=> $element['ufeatures']['preprocess_subroutine']['default'],
