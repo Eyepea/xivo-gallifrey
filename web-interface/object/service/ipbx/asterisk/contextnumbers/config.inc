@@ -18,7 +18,7 @@ $array['element']['numberend'] = array();
 $array['element']['numberend']['default'] = '';
 
 $array['element']['didlength'] = array();
-$array['element']['didlength']['value'] = array(1,2,3,4,5,6,7,8,9,10);
+$array['element']['didlength']['value'] = range(1,20);
 $array['element']['didlength']['default'] = 0;
 $array['element']['didlength']['setdef'] = true;
 
@@ -31,6 +31,6 @@ $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_co
 $array['filter']['type'] = array('key' => array('user','group','queue','meetme','incall'));
 $array['filter']['numberbeg'] = array('maxlen' => 16,'cast' => 'digit');
 $array['filter']['numberend'] = array('set' => false,'chk' => 2,'maxlen' => 16,'cast' => 'digit');
-$array['filter']['didlength'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,10));
+$array['filter']['didlength'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,20));
 
 ?>
