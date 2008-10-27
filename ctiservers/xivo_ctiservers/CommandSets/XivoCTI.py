@@ -634,16 +634,19 @@ class XivoCTICommand(BaseCommand):
         def getagentslist_json(self, dlist):
                 lalist = {}
                 for aitem in dlist:
-                        if not aitem.get('commented'):
-                                aid = aitem.get('id')
-                                lalist[aid] = {'firstname' : aitem.get('firstname'),
-                                               'lastname' :  aitem.get('lastname'),
-                                               'number' :    aitem.get('number'),
-                                               'password' :  aitem.get('passwd'),
-                                               'context' :   aitem.get('context'),
-                                               
-                                               'queues' : {},
-                                               'stats' : {}}
+                        try:
+                                if not aitem.get('commented'):
+                                        aid = aitem.get('id')
+                                        lalist[aid] = {'firstname' : aitem.get('firstname'),
+                                                       'lastname' :  aitem.get('lastname'),
+                                                       'number' :    aitem.get('number'),
+                                                       'password' :  aitem.get('passwd'),
+                                                       'context' :   aitem.get('context'),
+                                                       
+                                                       'queues' : {},
+                                                       'stats' : {}}
+                        except Exception, exc:
+                                log.error('--- exception --- (getagentslist_json) : %s : %s' % (aitem, exc))
                 return lalist
         
         def getqueueslist(self, dlist):
@@ -666,16 +669,19 @@ class XivoCTICommand(BaseCommand):
                                 lqlist[vq.get('name')] = vq.get('contents')
                 else:
                         for qitem in dlist:
-                                if not qitem.get('commented'):
-                                        queuename = qitem.get('name')
-                                        lqlist[queuename] = {'queuename' : queuename,
-                                                             'number' : qitem.get('number'),
-                                                             'context' : qitem.get('context'),
-                                                             'id' : qitem.get('id'),
-                                                             
-                                                             'agents' : {},
-                                                             'channels' : {},
-                                                             'stats' : {}}
+                                try:
+                                        if not qitem.get('commented'):
+                                                queuename = qitem.get('name')
+                                                lqlist[queuename] = {'queuename' : queuename,
+                                                                     'number' : qitem.get('number'),
+                                                                     'context' : qitem.get('context'),
+                                                                     'id' : qitem.get('id'),
+                                                                     
+                                                                     'agents' : {},
+                                                                     'channels' : {},
+                                                                     'stats' : {}}
+                                except Exception, exc:
+                                        log.error('--- exception --- (getqueueslist_json) : %s : %s' % (qitem, exc))
                 return lqlist
         
         # fields set at startup by reading informations
@@ -705,29 +711,32 @@ class XivoCTICommand(BaseCommand):
         def getuserslist_json(self, dlist):
                 lulist = {}
                 for uitem in dlist:
-                        if uitem.get('enableclient'):
-                                uid = '%s@%s' % (uitem.get('loginclient'), uitem.get('context'))
-                                lulist[uid] = {'user' : uitem.get('loginclient'),
-                                               'company' : uitem.get('context'),
-                                               'password' : uitem.get('passwdclient'),
-                                               'capaids' : uitem.get('profileclient').split(','),
-                                               'fullname' : uitem.get('fullname'),
-                                               'astid' : 'xivo', # XXX
-                                               'techlist' : '.'.join([uitem.get('protocol'), uitem.get('context'),
-                                                                      uitem.get('name'), uitem.get('number')]),
-                                               'context' : uitem.get('context'),
-                                               'phonenum' : uitem.get('number'),
-                                               'xivo_userid' : uitem.get('id'),
-                                               'enablevoicemail' : uitem.get('enablevoicemail'),
-                                               
-                                               'state'    : 'xivo_unknown',
-                                               'mwi-waiting' : '0',
-                                               'mwi-old' : '0',
-                                               'mwi-new' : '0'}
-                                if uitem.get('agentid') is not None:
-                                        lulist[uid]['agentnum'] = uitem.get('agentid')
-                                else:
-                                        lulist[uid]['agentnum'] = ''
+                        try:
+                                if uitem.get('enableclient'):
+                                        uid = '%s@%s' % (uitem.get('loginclient'), uitem.get('context'))
+                                        lulist[uid] = {'user' : uitem.get('loginclient'),
+                                                       'company' : uitem.get('context'),
+                                                       'password' : uitem.get('passwdclient'),
+                                                       'capaids' : uitem.get('profileclient').split(','),
+                                                       'fullname' : uitem.get('fullname'),
+                                                       'astid' : 'xivo', # XXX
+                                                       'techlist' : '.'.join([uitem.get('protocol'), uitem.get('context'),
+                                                                              uitem.get('name'), uitem.get('number')]),
+                                                       'context' : uitem.get('context'),
+                                                       'phonenum' : uitem.get('number'),
+                                                       'xivo_userid' : uitem.get('id'),
+                                                       'enablevoicemail' : uitem.get('enablevoicemail'),
+                                                       
+                                                       'state'    : 'xivo_unknown',
+                                                       'mwi-waiting' : '0',
+                                                       'mwi-old' : '0',
+                                                       'mwi-new' : '0'}
+                                        if uitem.get('agentid') is not None:
+                                                lulist[uid]['agentnum'] = uitem.get('agentid')
+                                        else:
+                                                lulist[uid]['agentnum'] = ''
+                        except Exception, exc:
+                                log.error('--- exception --- (getuserslist_json) : %s : %s' % (uitem, exc))
                 return lulist
         
         def getuserslist_compat(self, dlist):
