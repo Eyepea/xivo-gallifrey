@@ -39,13 +39,13 @@ from xivo import system
 from xivo import xys
 from xivo import udev
 from xivo import shvar
+from xivo import MacIpResolver
 
 
 log = logging.getLogger("xivo.xivo_config") # pylint: disable-msg=C0103
 
 
-# SYSCONF_DIR = "/etc/pf-xivo/sysconf"
-SYSCONF_DIR = "/home/xilun/xivo/people/xilun"
+SYSCONF_DIR = "/etc/pf-xivo/sysconf"
 
 STORE_BASE = os.path.join(SYSCONF_DIR, "store")
 
@@ -79,6 +79,7 @@ ProvGeneralConf = {
     'connect_ipv4':             "127.0.0.1",
     'connect_port':             8666,
 
+    'use_dhcpd_leases':         0,
     'scan_ifaces_prefix':       "eth",
     'arping_cmd':               "sudo /usr/sbin/arping",
     'arping_sleep_us':          150000,
@@ -129,28 +130,36 @@ def netif_managed(ifname):
 
 def ipv4_from_macaddr(macaddr):
     """
-    Wrapper for network.ipv4_from_macaddr() that sets:
+    When using dhcpd.leases; wrapper for MacIpResolver.ipv4_from_macaddr().
+    Else; wrapper for network.ipv4_from_macaddr() that sets:
     * ifname_match_func to netif_managed
     * arping_cmd_list to Pgc['arping_cmd'].strip().split()
     * arping_sleep_us to Pgc['arping_sleep_us']
     """
-    return network.ipv4_from_macaddr(macaddr,
-                                     ifname_match_func=netif_managed,
-                                     arping_cmd_list=Pgc['arping_cmd'].strip().split(),
-                                     arping_sleep_us=Pgc['arping_sleep_us'])
+    if Pgc['use_dhcpd_leases']:
+        return MacIpResolver.ipv4_from_macaddr(macaddr)
+    else:
+        return network.ipv4_from_macaddr(macaddr,
+                                         ifname_match_func=netif_managed,
+                                         arping_cmd_list=Pgc['arping_cmd'].strip().split(),
+                                         arping_sleep_us=Pgc['arping_sleep_us'])
 
 
-def macaddr_from_ipv4(macaddr):
+def macaddr_from_ipv4(ipv4):
     """
-    Wrapper for network.macaddr_from_ipv4() that sets:
+    When using dhcpd.leases; wrapper for MacIpResolver.macaddr_from_ipv4().
+    Else; wrapper for network.macaddr_from_ipv4() that sets:
     * ifname_match_func to netif_managed
     * arping_cmd_list to Pgc['arping_cmd'].strip().split()
     * arping_sleep_us to Pgc['arping_sleep_us']
     """
-    return network.macaddr_from_ipv4(macaddr,
-                                     ifname_match_func=netif_managed,
-                                     arping_cmd_list=Pgc['arping_cmd'].strip().split(),
-                                     arping_sleep_us=Pgc['arping_sleep_us'])
+    if Pgc['use_dhcpd_leases']:
+        return MacIpResolver.macaddr_from_ipv4(ipv4)
+    else:
+        return network.macaddr_from_ipv4(ipv4,
+                                         ifname_match_func=netif_managed,
+                                         arping_cmd_list=Pgc['arping_cmd'].strip().split(),
+                                         arping_sleep_us=Pgc['arping_sleep_us'])
 
 
 # States for linesubst()

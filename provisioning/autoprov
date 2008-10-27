@@ -51,7 +51,7 @@ def help_screen():
 -c <conffile>   Use <conffile> instead of %s
 -p <pidfile>    Use <pidfile> instead of %s
 -h              Display this help screen and exit
-""" % (sys.argv[0], `CONFIG_FILE`, `PIDFILE`)
+""" % (sys.argv[0], repr(CONFIG_FILE), repr(PIDFILE))
     sys.exit(1)
 
 from getopt import getopt, GetoptError
@@ -81,7 +81,7 @@ from xivo import daemonize
 
 from xivo.xivo_helpers import speed_dial_key_extension
 
-log = logging.getLogger('autoprov')
+log = logging.getLogger('autoprov') # pylint: disable-msg=C0103
 
 def replace_keys(dico, repl_dico):
     "return dict(((repl_dico[k],v) for (k,v) in dico.iteritems()))"
@@ -586,9 +586,16 @@ def lock_and_userdel(ctx, iduserfeatures):
 def clean_at_startup(ctx):
     "Put back every non guest orphan phones in GUEST state at startup."
     orphans = ctx.dbinfos.find_orphan_phones()
+    if not orphans:
+        return
     for phone in orphans:
         log.info("clean_at_startup(): about to remove orphan %r at startup", phone)
-        lock_and_userdel(ctx, phone['iduserfeatures'])
+        try:
+            lock_and_userdel(ctx, phone['iduserfeatures'])
+        except Exception:
+            log.exception("unexpected exception catched in clean_at_startup")
+            log.error("fall back: simply deleting phone with macaddr %r from the DB", phone['macaddr'])
+            ctx.dbinfos.delete_phone_by_macaddr(phone['macaddr'])
 
 class ProvHttpHandler(BaseHTTPRequestHandler):
     """
