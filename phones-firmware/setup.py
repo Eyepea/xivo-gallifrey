@@ -12,8 +12,8 @@ setup(name='xivo_fetchfw',
       url='http://xivo.fr/',
       packages=['xivo_fetchfw'],
       data_files=[
-		  ('/etc/pf-xivo', ['etc/fetchfw.conf']),
-		  ('/usr/sbin', ['sbin/xivo_fetchfw']),
-		  ('/usr/share/pf-xivo-phones-firmware', ['data/firmwares.db']),
-		 ],
+                  ('/etc/pf-xivo', ['etc/fetchfw.conf']),
+                  ('/usr/sbin', ['sbin/xivo_fetchfw']),
+                  ('/usr/share/pf-xivo-phones-firmware', ['data/firmwares.db']),
+                 ],
      )
