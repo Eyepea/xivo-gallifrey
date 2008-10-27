@@ -63,6 +63,9 @@ def incoming_queue_set_features(agi, cursor, args):
     agi.set_variable('XIVO_QUEUEURL', queue.url)
     agi.set_variable('XIVO_QUEUEANNOUNCEOVERRIDE', queue.announceoverride)
 
+    if queue.preprocess_subroutine:
+        agi.set_variable('XIVO_QUEUEPREPROCESS_SUBROUTINE', queue.preprocess_subroutine)
+
     if queue.timeout:
         agi.set_variable('XIVO_QUEUETIMEOUT', queue.timeout)
 
