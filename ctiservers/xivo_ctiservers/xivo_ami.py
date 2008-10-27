@@ -85,7 +85,7 @@ class AMIClass:
                         self.fd.flush()
                         ret = True
                 except Exception, exc:
-                        log.error('--- exception --- (action %s) %s' % (action, str(exc)))
+                        log.error('--- exception --- (action %s) %s' % (action, exc))
                         ret = False
                 if ret == False:
                         if loopnum == 0:
@@ -569,9 +569,15 @@ class AMIList:
                 return self.rami.keys()
 
         def remove(self, astid):
-                fd = self.ami[astid].fd
-                del self.ami[astid]
-                del self.rami[fd]
+                if astid in self.ami:
+                        fd = self.ami[astid].fd
+                        del self.ami[astid]
+                        if fd in self.rami:
+                                del self.rami[fd]
+                        else:
+                                log.warning('(remove) %s : fd %s not in self.rami' % (astid, fd))
+                else:
+                        log.warning('(remove) astid %s not in self.ami' % astid)
 
         def astid(self, sock):
                 return self.rami.get(sock)

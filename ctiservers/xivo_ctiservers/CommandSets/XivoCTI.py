@@ -686,7 +686,7 @@ class XivoCTICommand(BaseCommand):
                 return lqlist
         
         # fields set at startup by reading informations
-        userfields = ['user', 'company', 'astid', 'password', 'fullname', 'capaids', 'context', 'phonenum', 'techlist', 'agentnum', 'xivo_userid']
+        userfields = ['user', 'company', 'astid', 'password', 'fullname', 'capaids', 'context', 'phonenum', 'techlist', 'agentid', 'xivo_userid']
         def getuserslist(self, dlist):
                 lulist = {}
                 for c, d in dlist.iteritems():
@@ -697,7 +697,7 @@ class XivoCTICommand(BaseCommand):
                                              'capaids'  : d[2].split(','),
                                              'fullname' : d[3] + ' ' + d[4],
                                              'astid'    : d[5],
-                                             'agentnum' : d[9],
+                                             'agentid' : d[9],
                                              'techlist' : d[7],
                                              'context'  : d[8],
                                              'phonenum' : d[6],
@@ -733,9 +733,9 @@ class XivoCTICommand(BaseCommand):
                                                        'mwi-old' : '0',
                                                        'mwi-new' : '0'}
                                         if uitem.get('agentid') is not None:
-                                                lulist[uid]['agentnum'] = uitem.get('agentid')
+                                                lulist[uid]['agentid'] = uitem.get('agentid')
                                         else:
-                                                lulist[uid]['agentnum'] = ''
+                                                lulist[uid]['agentid'] = ''
                         except Exception, exc:
                                 log.error('--- exception --- (getuserslist_json) : %s : %s' % (uitem, exc))
                 return lulist
@@ -753,7 +753,7 @@ class XivoCTICommand(BaseCommand):
                                                      'capaids'  : ['default'],
                                                      'fullname' : d[8] + ' ' + d[9],
                                                      'astid'    : 'xivo',
-                                                     'agentnum' : '',
+                                                     'agentid' : '',
                                                      'techlist' : d[0].upper() + '/' + d[4],
                                                      'context'  : d[10],
                                                      'phonenum' : d[4],
@@ -957,9 +957,9 @@ class XivoCTICommand(BaseCommand):
                                 itemdir['xivo-agentid'] = dst
                                 itemdir['xivo-uniqueid'] = event.get('Uniqueid1')
 
-                                ag_id = self.__find_agentid_by_agentnum__(astid, dst)
+                                agent_id = self.__find_agentid_by_agentnum__(astid, dst)
                                 for uinfo in self.ulist_ng.userlist.itervalues():
-                                        if uinfo.get('agentnum') == ag_id:
+                                        if uinfo.get('agentid') == agent_id:
                                                 userinfos.append(uinfo)
                                 
                         elif where == 'agi':
@@ -1022,11 +1022,11 @@ class XivoCTICommand(BaseCommand):
                                 queue = event.get('Queue')
                                 
                                 # find who are the queue members
-                                for agentname, status in self.weblist['queues'][astid].queuelist[queue]['agents'].iteritems():
+                                for agent_channel, status in self.weblist['queues'][astid].queuelist[queue]['agents'].iteritems():
                                         if status.get('Paused') == '0':
-                                                ag_id = self.__find_agentid_by_agentnum__(astid, agentname[6:])
+                                                agent_id = self.__find_agentid_by_agentnum__(astid, agent_channel[6:])
                                                 for uinfo in self.ulist_ng.userlist.itervalues():
-                                                        if uinfo.get('agentnum') == ag_id:
+                                                        if uinfo.get('agentid') == agent_id:
                                                                 userinfos.append(uinfo)
                                 print 'ALERT %s %s (%s) uid=%s %s %s queue=(%s %s %s)' % (astid, where, time.asctime(), uid, clid, chan,
                                                                                           queue, event.get('Position'), event.get('Count'))
@@ -1143,6 +1143,16 @@ class XivoCTICommand(BaseCommand):
                                 break
                 return uinfo
 
+        def __userinfo_from_agentphonenum__(self, astid, phoneid):
+                uinfo = None
+                if phoneid is not None:
+                        phonenum = phoneid.split('.')[3]
+                        for v, vv in self.ulist_ng.userlist.iteritems():
+                                if astid == vv['astid'] and 'agentphonenum' in vv and phonenum == vv['agentphonenum']:
+                                        uinfo = vv
+                                        break
+                return uinfo
+
         def __fill_uniqueids__(self, astid, uid1, uid2, chan1, chan2, where):
                 if uid1 in self.uniqueids[astid] and chan1 == self.uniqueids[astid][uid1]['channel']:
                         self.uniqueids[astid][uid1].update({where : chan2,
@@ -1243,8 +1253,8 @@ class XivoCTICommand(BaseCommand):
 
         def __agentnum__(self, userinfo):
                 astid = userinfo.get('astid')
-                if 'agentnum' in userinfo and userinfo['agentnum']:
-                        agent_id = userinfo['agentnum']
+                if 'agentid' in userinfo and userinfo['agentid']:
+                        agent_id = userinfo['agentid']
                         if astid in self.weblist['agents'] and agent_id in self.weblist['agents'][astid].agentlist:
                                 return self.weblist['agents'][astid].agentlist[agent_id].get('number')
                 # return an empty string instead of None because of parsing issue in JsonQt
@@ -1292,9 +1302,12 @@ class XivoCTICommand(BaseCommand):
                 phoneid2 = self.__phoneid_from_channel__(astid, chan2)
                 uinfo1 = self.__userinfo_from_phoneid__(astid, phoneid1)
                 uinfo2 = self.__userinfo_from_phoneid__(astid, phoneid2)
+                uinfo1_ag = self.__userinfo_from_agentphonenum__(astid, phoneid1)
+                uinfo2_ag = self.__userinfo_from_agentphonenum__(astid, phoneid2)
+                
                 log.info('(phone) LINK %s phone=%s callerid=%s user=%s' % (astid, phoneid1, clid1, uinfo1))
                 log.info('(phone) LINK %s phone=%s callerid=%s user=%s' % (astid, phoneid2, clid2, uinfo2))
-
+                
                 if 'context' in self.uniqueids[astid][uid1]:
                         self.__sheet_alert__('link', astid, self.uniqueids[astid][uid1]['context'], event, {})
 
@@ -1303,13 +1316,13 @@ class XivoCTICommand(BaseCommand):
                         self.__send_msg_to_cti_clients__(msg)
                         
                         # 'onlineincoming' for the agent
-                        anum = chan2[6:]
-                        ag_id = self.__find_agentid_by_agentnum__(astid, anum)
+                        agent_number = chan2[6:]
+                        agent_id = self.__find_agentid_by_agentnum__(astid, agent_number)
                         for uinfo in self.ulist_ng.userlist.itervalues():
-                                if uinfo.get('agentnum') == ag_id:
+                                if uinfo.get('agentid') == agent_id:
                                         status = 'onlineincoming'
                                         self.__update_availstate__(uinfo, status)
-                                        self.__presence_action__(astid, anum, status)
+                                        self.__presence_action__(astid, agent_number, status)
                         
                         # To identify which queue a call comes from, we match a previous AMI Leave event,
                         # that involved the same channel as the one catched here.
@@ -1324,6 +1337,15 @@ class XivoCTICommand(BaseCommand):
                         status = 'onlineoutgoing'
                         self.__update_availstate__(uinfo1, status)
                         ag = self.__agentnum__(uinfo1)
+                        if ag:
+                                self.__presence_action__(astid, ag, status)
+                                msg = self.__build_agupdate__(['phonelink', astid, 'Agent/%s' % ag])
+                                self.__send_msg_to_cti_clients__(msg)
+
+                if uinfo1_ag and uinfo1_ag != uinfo1:
+                        status = 'onlineoutgoing'
+                        self.__update_availstate__(uinfo1_ag, status)
+                        ag = self.__agentnum__(uinfo1_ag)
                         if ag:
                                 self.__presence_action__(astid, ag, status)
                                 msg = self.__build_agupdate__(['phonelink', astid, 'Agent/%s' % ag])
@@ -1352,6 +1374,9 @@ class XivoCTICommand(BaseCommand):
                 phoneid2 = self.__phoneid_from_channel__(astid, chan2)
                 uinfo1 = self.__userinfo_from_phoneid__(astid, phoneid1)
                 uinfo2 = self.__userinfo_from_phoneid__(astid, phoneid2)
+                uinfo1_ag = self.__userinfo_from_agentphonenum__(astid, phoneid1)
+                uinfo2_ag = self.__userinfo_from_agentphonenum__(astid, phoneid2)
+                
                 log.info('(phone) UNLINK %s phone=%s callerid=%s user=%s' % (astid, phoneid1, clid1, uinfo1))
                 log.info('(phone) UNLINK %s phone=%s callerid=%s user=%s' % (astid, phoneid2, clid2, uinfo2))
                 
@@ -1398,9 +1423,9 @@ class XivoCTICommand(BaseCommand):
                 if 'context' in self.uniqueids[astid][uid1]:
                         self.__sheet_alert__('unlink', astid, self.uniqueids[astid][uid1]['context'], event, {})
                 if chan2.startswith('Agent/'):
-                        ag_id = self.__find_agentid_by_agentnum__(astid, chan2[6:])
+                        agent_id = self.__find_agentid_by_agentnum__(astid, chan2[6:])
                         for uinfo in self.ulist_ng.userlist.itervalues():
-                                if uinfo.get('agentnum') == ag_id:
+                                if uinfo.get('agentid') == agent_id:
                                         self.__update_availstate__(uinfo, 'postcall')
                                         anum = self.__agentnum__(uinfo)
                                         self.__presence_action__(astid, anum, 'postcall')
@@ -1412,7 +1437,10 @@ class XivoCTICommand(BaseCommand):
                                 extraevent = {'xivo_queuename' : qname}
                                 self.__sheet_alert__('agentunlinked', astid, DEFAULTCONTEXT, event, extraevent)
 
-                for uinfo in [uinfo1, uinfo2]:
+                lstinfos = [uinfo1, uinfo2]
+                if uinfo1_ag not in lstinfos:
+                        lstinfos.append(uinfo1_ag)
+                for uinfo in lstinfos:
                         if uinfo:
                                 status = 'postcall'
                                 self.__update_availstate__(uinfo, status)
@@ -1421,7 +1449,7 @@ class XivoCTICommand(BaseCommand):
                                         self.__presence_action__(astid, ag, status)
                                         msg = self.__build_agupdate__(['phoneunlink', astid, 'Agent/%s' % ag])
                                         self.__send_msg_to_cti_clients__(msg)
-
+                                        
                 self.weblist['phones'][astid].handle_ami_event_unlink(chan1, chan2, clid1, clid2)
                 return
 
@@ -1539,12 +1567,16 @@ class XivoCTICommand(BaseCommand):
                              'Unable to remove interface from queue: No such queue',
                              'Unable to remove interface: Not there'] :
                         if actionid in self.ami_requests:
-                                log.warning('AMI %s Response=Error : (tracked) %s %s' % (astid, event, self.ami_requests[actionid]))
+                                log.warning('AMI %s Response=Error : %s %s' % (astid, event, self.ami_requests[actionid]))
                                 del self.ami_requests[actionid]
                         else:
-                                log.warning('AMI %s Response=Error : (tracked) %s' % (astid, event))
+                                log.warning('AMI %s Response=Error : %s' % (astid, event))
                 else:
-                        log.warning('AMI %s Response=Error : untracked message (%s) <%s>' % (astid, actionid, msg))
+                        if actionid in self.ami_requests:
+                                log.warning('AMI %s Response=Error : (unknown message) %s %s' % (astid, event, self.ami_requests[actionid]))
+                                del self.ami_requests[actionid]
+                        else:
+                                log.warning('AMI %s Response=Error : (unknown message) %s' % (astid, event))
                 return
 
         def amiresponse_mailboxcount(self, astid, event):
@@ -2416,18 +2448,18 @@ class XivoCTICommand(BaseCommand):
                                                 # issued by one user when he requests the status for one given agent
                                                 if self.capas[capaid].match_funcs(ucapa, 'agents'):
                                                         astid = icommand.struct.get('astid')
-                                                        agname = icommand.struct.get('agentid') # agname = userinfo.get('agentnum')
-                                                        agid = 'Agent/%s' % agname
+                                                        agent_number = icommand.struct.get('agentid') # agent_number = userinfo.get('agentnum')
+                                                        agent_channel = 'Agent/%s' % agent_number
                                                         
-                                                        if astid in self.weblist['queues'] and astid in self.agents_list and agname in self.agents_list[astid]:
-                                                                agprop = self.agents_list[astid][agname]
-                                                                # lookup the logged in/out status of agent agname and sends it back to the requester
+                                                        if astid in self.weblist['queues'] and astid in self.agents_list and agent_number in self.agents_list[astid]:
+                                                                agprop = self.agents_list[astid][agent_number]
+                                                                # lookup the logged in/out status of agent agent_number and sends it back to the requester
                                                                 tosend = { 'class' : 'agent-status',
                                                                            'direction' : 'client',
                                                                            'astid' : astid,
-                                                                           'agentnum' : agname,
+                                                                           'agentnum' : agent_number,
                                                                            'payload' : {'properties' : agprop,
-                                                                                        'queues' : self.weblist['queues'][astid].get_queues_byagent(agid)}
+                                                                                        'queues' : self.weblist['queues'][astid].get_queues_byagent(agent_channel)}
                                                                            }
                                                                 repstr = cjson.encode(tosend)
                                 else:
@@ -2506,16 +2538,16 @@ class XivoCTICommand(BaseCommand):
 
         def __find_agentid_by_agentnum__(self, astid, anum):
                 if astid in self.weblist['agents']:
-                        for ag_id, ag_val in self.weblist['agents'][astid].agentlist.iteritems():
+                        for agent_id, ag_val in self.weblist['agents'][astid].agentlist.iteritems():
                                 if 'number' in ag_val and ag_val['number'] == anum:
-                                        return ag_id
+                                        return agent_id
                 return None
 
         def __find_channel_byagent__(self, astid, anum):
                 chans = []
-                agid = self.__find_agentid_by_agentnum__(astid, anum)
+                agent_id = self.__find_agentid_by_agentnum__(astid, anum)
                 for ui in self.ulist_ng.userlist.itervalues():
-                        if 'agentnum' in ui and ui.get('agentnum') == agid and ui.get('astid') == astid:
+                        if 'agentid' in ui and ui.get('agentid') == agent_id and ui.get('astid') == astid:
                                 techref = ui.get('techlist').split(',')[0]
                                 for v, vv in self.uniqueids[astid].iteritems():
                                         if 'channel' in vv:
@@ -2526,7 +2558,7 @@ class XivoCTICommand(BaseCommand):
         def __agent__(self, userinfo, commandargs):
                 myastid = None
                 myagentnum = None
-                if 'agentnum' in userinfo:
+                if 'agentid' in userinfo:
                         myastid = userinfo['astid']
                         myagentnum = self.__agentnum__(userinfo)
 
@@ -2589,9 +2621,9 @@ class XivoCTICommand(BaseCommand):
                                 astid = commandargs[1]
                                 anum = commandargs[2]
                                 uinfo = None
-                                agid = self.__find_agentid_by_agentnum__(astid, anum)
+                                agent_id = self.__find_agentid_by_agentnum__(astid, anum)
                                 for uinfo_iter in self.ulist_ng.userlist.itervalues():
-                                        if 'agentnum' in uinfo_iter and uinfo_iter.get('agentnum') == agid and uinfo_iter.get('astid') == astid:
+                                        if 'agentid' in uinfo_iter and uinfo_iter.get('agentid') == agent_id and uinfo_iter.get('astid') == astid:
                                                 uinfo = uinfo_iter
                                                 break
                         else:
@@ -2672,7 +2704,7 @@ class XivoCTICommand(BaseCommand):
                 astid = uinfo.get('astid')
                 # if phonenum is None:
                 # phonenum = userinfo.get('phonenum')
-                if 'agentnum' in uinfo and 'agentphonenum' in uinfo and astid is not None:
+                if 'agentid' in uinfo and 'agentphonenum' in uinfo and astid is not None:
                         agentnum = self.__agentnum__(uinfo)
                         agentphonenum = uinfo['agentphonenum']
                         if agentnum and agentphonenum:
@@ -2688,7 +2720,7 @@ class XivoCTICommand(BaseCommand):
                 if uinfo is None:
                         return
                 astid = uinfo.get('astid')
-                if 'agentnum' in uinfo and astid is not None:
+                if 'agentid' in uinfo and astid is not None:
                         agentnum = self.__agentnum__(uinfo)
                         if 'agentphonenum' in uinfo:
                                 agentphonenum = uinfo['agentphonenum']
@@ -2776,11 +2808,11 @@ class XivoCTICommand(BaseCommand):
                                 for astid, aglist in self.agents_list.iteritems():
                                         if astid in self.weblist['queues']:
                                                 newlst = {}
-                                                for agname, agprop in aglist.iteritems():
-                                                        agid = 'Agent/%s' % agname
-                                                        newlst[agname] = { 'properties' : agprop,
-                                                                           'queues' : self.weblist['queues'][astid].get_queues_byagent(agid)
-                                                                           }
+                                                for agent_number, agprop in aglist.iteritems():
+                                                        agent_channel = 'Agent/%s' % agent_number
+                                                        newlst[agent_number] = { 'properties' : agprop,
+                                                                                 'queues' : self.weblist['queues'][astid].get_queues_byagent(agent_channel)
+                                                                                 }
                                                 fullstat.append({ 'astid' : astid,
                                                                   'newlist' : newlst })
                 elif ccomm == 'queues':
