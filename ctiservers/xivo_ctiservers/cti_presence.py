@@ -33,12 +33,11 @@ class Presence:
                 if config is not  None:
                         for stateid, stateprops in config.iteritems():
                                 splitprops = stateprops.split(',')
-                                if len(splitprops) > 4:
+                                if len(splitprops) > 3:
                                         longname = splitprops[0]
                                         allowednext = splitprops[1]
                                         action = splitprops[2]
                                         color = splitprops[3]
-                                        available = splitprops[4]
                                         
                                         if len(allowednext) > 0:
                                                 allowednexts = allowednext.split(':')
@@ -51,8 +50,7 @@ class Presence:
 
                                         self.details.update( { stateid :
                                                                { 'allowednexts' : allowednexts,
-                                                                 'actions' : actions,
-                                                                 'available' : available}
+                                                                 'actions' : actions}
                                                                } )
                                         self.displaydetails[stateid] = {'longname' : longname,
                                                                         'color' : color}
@@ -73,16 +71,6 @@ class Presence:
                 return self.defaultstate
 
         def countstatus(self, counts):
-                nok = 0
-                nko = 0
-                for statename, count in counts.iteritems():
-                        if self.details[statename]['available'] == 'ok':
-                                nok += count
-                        elif self.details[statename]['available'] == 'ko':
-                                nko += count
-                return [nok, nko]
-
-        def countstatus_ng(self, counts):
                 ntot = 0
                 nbyqueue = {}
                 for statename, count in counts.iteritems():
