@@ -18,7 +18,6 @@ __license__ = """
 """
 
 import os
-import os.path
 import shutil
 import fetchfw
 
