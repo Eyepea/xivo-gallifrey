@@ -566,7 +566,8 @@ class XivoCTICommand(BaseCommand):
                                 self.agents_list[astid][agent]['phonenum'] = ''
                                 self.agents_list[astid][agent]['name'] = vv['firstname'] + ' ' + vv['lastname']
                                 self.agents_list[astid][agent]['loggedintime'] = '0'
-                                self.agents_list[astid][agent]['recorded'] = '0'
+                                self.agents_list[astid][agent]['recorded'] = False
+                                self.agents_list[astid][agent]['link'] = False
                 return
         
         def set_vqueuelist(self, astid, urllist_vqueues):
@@ -859,7 +860,22 @@ class XivoCTICommand(BaseCommand):
                                 'callmissed', # see GG (in order to tell a user that he missed a call)
                                 'localphonecalled', 'outgoing']
 
-
+        def __build_xmlqtui__(self, sheetkind, actionopt, inputvars):
+                linestosend = []
+                whichitem = actionopt.get(sheetkind)
+                if whichitem is not None and len(whichitem) > 0:
+                        for k, v in self.lconf.read_section('sheet_qtui', whichitem).iteritems():
+                                try:
+                                        r = urllib.urlopen(v)
+                                        t = r.read().replace('\n', '')
+                                        r.close()
+                                except Exception, exc:
+                                        log.error('--- exception --- __build_xmlqtui__ %s %s : %s' % (sheetkind, whichitem, exc))
+                                        t = None
+                                if t is not None:
+                                        linestosend.append('<%s name="%s"><![CDATA[%s]]></%s>' % (sheetkind, k, t, sheetkind))
+                return linestosend
+        
         def __build_xmlsheet__(self, sheetkind, actionopt, inputvars):
                 linestosend = []
                 whichitem = actionopt.get(sheetkind)
@@ -1053,6 +1069,7 @@ class XivoCTICommand(BaseCommand):
                         if 'xivo-uniqueid' in itemdir:
                                 linestosend.append('<internal name="sessionid"><![CDATA[%s]]></internal>'
                                                    % itemdir['xivo-uniqueid'])
+                        linestosend.extend(self.__build_xmlqtui__('sheet_qtui', actionopt, itemdir))
                         linestosend.extend(self.__build_xmlsheet__('action_info', actionopt, itemdir))
                         linestosend.extend(self.__build_xmlsheet__('sheet_info', actionopt, itemdir))
                         linestosend.extend(self.__build_xmlsheet__('systray_info', actionopt, itemdir))
@@ -1309,14 +1326,14 @@ class XivoCTICommand(BaseCommand):
                         ag = self.__agentnum__(uinfo1)
                         if ag:
                                 self.__presence_action__(astid, ag, status)
-                                msg = self.__build_agupdate__(['phoneunlink', astid, 'Agent/%s' % ag])
+                                msg = self.__build_agupdate__(['phonelink', astid, 'Agent/%s' % ag])
                                 self.__send_msg_to_cti_clients__(msg)
 
                 if uinfo2:
                         status = 'onlineincoming'
                         self.__update_availstate__(uinfo2, status)
                         # self.__presence_action__(astid, ag, status)
-                        # msg = self.__build_agupdate__(['phoneunlink', astid, 'Agent/%s' % ag])
+                        # msg = self.__build_agupdate__(['phonelink', astid, 'Agent/%s' % ag])
                         # self.__send_msg_to_cti_clients__(msg)
 
                 self.weblist['phones'][astid].handle_ami_event_link(chan1, chan2, clid1, clid2)
@@ -1517,6 +1534,7 @@ class XivoCTICommand(BaseCommand):
                 elif msg in ['No such channel',
                              'No such agent',
                              'Member not dynamic',
+                             'Interface not found',
                              'Unable to add interface: Already there',
                              'Unable to remove interface from queue: No such queue',
                              'Unable to remove interface: Not there'] :
@@ -1771,7 +1789,8 @@ class XivoCTICommand(BaseCommand):
                         self.agents_list[astid][agent]['phonenum'] = linchan
                         self.agents_list[astid][agent]['name'] = event.get('Name')
                         self.agents_list[astid][agent]['loggedintime'] = event.get('LoggedInTime')
-                        self.agents_list[astid][agent]['recorded'] = '0'
+                        self.agents_list[astid][agent]['recorded'] = False
+                        self.agents_list[astid][agent]['link'] = False
                 return
 
         def ami_agentscomplete(self, astid, event):
@@ -1861,6 +1880,16 @@ class XivoCTICommand(BaseCommand):
                            'function' : 'update',
                            'direction' : 'client',
                            'payload' : arrgs }
+                #### XXX replace payload by astid & co + @ client
+                if len(arrgs) > 2:
+                        action = arrgs[0]
+                        astid = arrgs[1]
+                        agentid = arrgs[2]
+                        if agentid.startswith('Agent/'):
+                                if action == 'phonelink' or action == 'agentlink':
+                                        self.agents_list[astid][agentid[6:]]['link'] = True
+                                elif action == 'phoneunlink' or action == 'agentunlink':
+                                        self.agents_list[astid][agentid[6:]]['link'] = False
                 return cjson.encode(tosend)
         
         def ami_queuememberstatus(self, astid, event):
@@ -2577,7 +2606,7 @@ class XivoCTICommand(BaseCommand):
                                 channels = self.__find_channel_byagent__(astid, anum)
                                 for channel in channels:
                                         self.__ami_execute__(astid, 'monitor', channel, 'cti-%s-%s' % (datestring, anum))
-                                        self.agents_list[astid][anum]['recorded'] = '1'
+                                        self.agents_list[astid][anum]['recorded'] = True
                                         log.info('started monitor on %s %s (agent %s)' % (astid, channel, anum))
                                         tosend = { 'class' : 'agentrecord',
                                                    'direction' : 'client',
@@ -2589,7 +2618,7 @@ class XivoCTICommand(BaseCommand):
                                 channels = self.__find_channel_byagent__(astid, anum)
                                 for channel in channels:
                                         self.__ami_execute__(astid, 'stopmonitor', channel)
-                                        self.agents_list[astid][anum]['recorded'] = '0'
+                                        self.agents_list[astid][anum]['recorded'] = False
                                         log.info('stopped monitor on %s %s (agent %s)' % (astid, channel, anum))
                                         tosend = { 'class' : 'agentrecord',
                                                    'direction' : 'client',
