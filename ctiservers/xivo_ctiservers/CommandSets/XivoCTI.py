@@ -713,7 +713,7 @@ class XivoCTICommand(BaseCommand):
                 lulist = {}
                 for uitem in dlist:
                         try:
-                                if uitem.get('enableclient'):
+                                if uitem.get('enableclient') and uitem.get('loginclient'):
                                         uid = '%s@%s' % (uitem.get('loginclient'), uitem.get('context'))
                                         lulist[uid] = {'user' : uitem.get('loginclient'),
                                                        'company' : uitem.get('context'),
