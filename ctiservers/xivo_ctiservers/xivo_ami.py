@@ -366,10 +366,11 @@ class AMIClass:
                         return False
 
         # \brief Logs in an Agent
-        def agentcallbacklogin(self, agentnum, extension):
+        def agentcallbacklogin(self, agentnum, extension, ackcall = 'false'):
                 try:
                         ret = self.sendcommand('AgentCallbackLogin', [('Agent', agentnum),
-                                                                      ('Exten', extension)])
+                                                                      ('Exten', extension),
+                                                                      ('AckCall' , ackcall)])
                         return ret
                 except self.AMIError, exc:
                         return False

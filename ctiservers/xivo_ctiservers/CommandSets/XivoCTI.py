@@ -2544,7 +2544,7 @@ class XivoCTICommand(BaseCommand):
                 chans = []
                 agent_id = self.__find_agentid_by_agentnum__(astid, agent_number)
                 for uinfo in self.ulist_ng.userlist.itervalues():
-                        if 'agentid' in uinfo and ui.get('agentid') == agent_id and uinfo.get('astid') == astid:
+                        if 'agentid' in uinfo and uinfo.get('agentid') == agent_id and uinfo.get('astid') == astid:
                                 techref = uinfo.get('techlist').split(',')[0]
                                 for v, vv in self.uniqueids[astid].iteritems():
                                         if 'channel' in vv:
@@ -3396,6 +3396,7 @@ class XivoCTICommand(BaseCommand):
 
                 return fullstatlist
 
+
         def __counts__(self):
                 counts = {}
                 for istate in self.presence.getstates():
@@ -3405,9 +3406,10 @@ class XivoCTICommand(BaseCommand):
                                 counts[iuserinfo['state']] += 1
                 return counts
 
+
         def handle_fagi(self, astid, fastagi):
                 """
-                Previously known as 'xivo_push'
+                Events coming from Fast AGI.
                 """
                 # check capas !
                 # fastagi.get_variable('XIVO_INTERFACE') # CHANNEL
@@ -3417,7 +3419,8 @@ class XivoCTICommand(BaseCommand):
                         for var, val in self.__counts__().iteritems():
                                 aststatus.append('%s:%d' % (var, val))
                         fastagi.set_variable('XIVO_PRESENCE', ','.join(aststatus))
-
+                        return
+                
                 elif function == 'queuestatus':
                         if len(fastagi.args) > 0:
                                 queuename = fastagi.args[0]
@@ -3439,7 +3442,8 @@ class XivoCTICommand(BaseCommand):
                                                 lst.append('%s:%s' % (ag, sstatus))
                                         fastagi.set_variable('XIVO_QUEUESTATUS', ','.join(lst))
                                         fastagi.set_variable('XIVO_QUEUEID', self.weblist['queues'][astid].queuelist[queuename]['id'])
-
+                        return
+                
                 elif function == 'queueentries':
                         if len(fastagi.args) > 0:
                                 queuename = fastagi.args[0]
@@ -3449,7 +3453,8 @@ class XivoCTICommand(BaseCommand):
                                         for chan, chanprops in qentries.iteritems():
                                                 lst.append('%s:%d' % (chan, int(round(time.time() - chanprops.get('updatetime') + chanprops.get('wait')))))
                                         fastagi.set_variable('XIVO_QUEUEENTRIES', ','.join(lst))
-
+                        return
+                
                 elif function == 'queueholdtime':
                         if len(fastagi.args) > 0:
                                 queuename = fastagi.args[0]
@@ -3461,9 +3466,12 @@ class XivoCTICommand(BaseCommand):
                                 for queuename, qprops in self.weblist['queues'][astid].queuelist.iteritems():
                                         lst.append('%s:%s' % (queuename, qprops['stats']['Holdtime']))
                                         fastagi.set_variable('XIVO_QUEUEHOLDTIME', ','.join(lst))
-
-                elif function != 'xivo_push':
                         return
+                
+                elif function != 'xivo_push':
+                        log.info('handle_fagi : unknown function %s' % function)
+                        return
+                
                 callednum = fastagi.get_variable('XIVO_DSTNUM')
                 context = fastagi.get_variable('XIVO_CONTEXT')
                 uniqueid = fastagi.get_variable('UNIQUEID')
