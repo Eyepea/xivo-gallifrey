@@ -66,7 +66,8 @@ REQUIRED_CLIENT_VERSION = 4440
 __revision__ = __version__.split()[1]
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 HISTSEPAR = ';'
-DEFAULTCONTEXT = 'default'
+DEFAULT_CONTEXT = 'default'
+AGENT_NO_PHONENUM = 'N.A.'
 AMI_ORIGINATE = 'originate'
 MONITORDIR = '/var/spool/asterisk/monitor'
 
@@ -638,11 +639,13 @@ class XivoCTICommand(BaseCommand):
                         try:
                                 if not aitem.get('commented'):
                                         aid = aitem.get('id')
-                                        lalist[aid] = {'firstname' : aitem.get('firstname'),
-                                                       'lastname' :  aitem.get('lastname'),
-                                                       'number' :    aitem.get('number'),
-                                                       'password' :  aitem.get('passwd'),
-                                                       'context' :   aitem.get('context'),
+                                        lalist[aid] = {'firstname' :  aitem.get('firstname'),
+                                                       'lastname' :   aitem.get('lastname'),
+                                                       'number' :     aitem.get('number'),
+                                                       'password' :   aitem.get('passwd'),
+                                                       'context' :    aitem.get('context'),
+                                                       'ackcall' :    aitem.get('ackcall'),
+                                                       'wrapuptime' : aitem.get('wrapuptime'),
                                                        
                                                        'queues' : {},
                                                        'stats' : {}}
@@ -1251,7 +1254,6 @@ class XivoCTICommand(BaseCommand):
                         agent_id = userinfo['agentid']
                         if astid in self.weblist['agents'] and agent_id in self.weblist['agents'][astid].agentlist:
                                 return self.weblist['agents'][astid].agentlist[agent_id].get('number')
-                # return an empty string instead of None because of parsing issue in JsonQt
                 return ''
 
         def ami_link(self, astid, event):
@@ -1323,7 +1325,7 @@ class XivoCTICommand(BaseCommand):
                                 qname = self.queues_channels_list[astid][chan1]
                                 ## del self.queues_channels_list[astid][chan1]
                                 extraevent = {'xivo_queuename' : qname}
-                                self.__sheet_alert__('agentlinked', astid, DEFAULTCONTEXT, event, extraevent)
+                                self.__sheet_alert__('agentlinked', astid, DEFAULT_CONTEXT, event, extraevent)
 
                 if uinfo1:
                         status = 'onlineoutgoing'
@@ -1430,7 +1432,7 @@ class XivoCTICommand(BaseCommand):
                                 qname = self.queues_channels_list[astid][chan1]
                                 del self.queues_channels_list[astid][chan1]
                                 extraevent = {'xivo_queuename' : qname}
-                                self.__sheet_alert__('agentunlinked', astid, DEFAULTCONTEXT, event, extraevent)
+                                self.__sheet_alert__('agentunlinked', astid, DEFAULT_CONTEXT, event, extraevent)
 
                 lstinfos = [uinfo1, uinfo2]
                 if uinfo1_ag not in lstinfos:
@@ -1762,24 +1764,38 @@ class XivoCTICommand(BaseCommand):
 
         def ami_agentcallbacklogin(self, astid, event):
                 agent = event.get('Agent')
-                loginchan = event.get('Loginchan')
+                loginchan_split = event.get('Loginchan').split('@')
+                phonenum = loginchan_split[0]
+                if len(loginchan_split) > 1:
+                        context = loginchan_split[1]
+                else:
+                        context = DEFAULT_CONTEXT
+                
                 if astid in self.agents_list and agent in self.agents_list[astid]:
                         self.agents_list[astid][agent]['status'] = 'AGENT_IDLE'
-                        self.agents_list[astid][agent]['phonenum'] = event.get('Loginchan')
-                msg = self.__build_agupdate__(['agentlogin', astid, 'Agent/%s' % agent, loginchan])
+                        self.agents_list[astid][agent]['phonenum'] = phonenum
+                        self.agents_list[astid][agent]['context'] = context
+                msg = self.__build_agupdate__(['agentlogin', astid, 'Agent/%s' % agent, phonenum])
                 print 'ami_agentcallbacklogin', msg
                 self.__send_msg_to_cti_clients__(msg)
                 return
 
         def ami_agentcallbacklogoff(self, astid, event):
                 agent = event.get('Agent')
-                loginchan = event.get('Loginchan')
-                if loginchan == 'n/a':
-                        loginchan = ''
+                loginchan_split = event.get('Loginchan').split('@')
+                phonenum = loginchan_split[0]
+                if len(loginchan_split) > 1:
+                        context = loginchan_split[1]
+                else:
+                        context = DEFAULT_CONTEXT
+                if phonenum == 'n/a':
+                        phonenum = AGENT_NO_PHONENUM
+                
                 if astid in self.agents_list and agent in self.agents_list[astid]:
                         self.agents_list[astid][agent]['status'] = 'AGENT_LOGGEDOFF'
-                        self.agents_list[astid][agent]['phonenum'] = loginchan
-                msg = self.__build_agupdate__(['agentlogout', astid, 'Agent/%s' % agent, loginchan])
+                        self.agents_list[astid][agent]['phonenum'] = phonenum
+                        self.agents_list[astid][agent]['context'] = context
+                msg = self.__build_agupdate__(['agentlogout', astid, 'Agent/%s' % agent, phonenum])
                 print 'ami_agentcallbacklogoff', msg
                 self.__send_msg_to_cti_clients__(msg)
                 return
@@ -1804,18 +1820,25 @@ class XivoCTICommand(BaseCommand):
         
         def ami_agents(self, astid, event):
                 agent = event.get('Agent')
-                # TalkingTo ?
                 if astid not in self.agents_list:
                         self.agents_list[astid] = {}
                 if agent not in self.agents_list[astid]:
-                        linchan = event.get('LoggedInChan')
-                        if linchan == 'n/a':
-                                linchan = ''
+                        loginchan_split = event.get('LoggedInChan').split('@')
+                        phonenum = loginchan_split[0]
+                        if len(loginchan_split) > 1:
+                                context = loginchan_split[1]
+                        else:
+                                context = DEFAULT_CONTEXT
+                        if phonenum == 'n/a':
+                                phonenum = AGENT_NO_PHONENUM
+                        
                         self.agents_list[astid][agent] = {}
                         self.agents_list[astid][agent]['status'] = event.get('Status')
-                        self.agents_list[astid][agent]['phonenum'] = linchan
+                        self.agents_list[astid][agent]['phonenum'] = phonenum
+                        self.agents_list[astid][agent]['context'] = context
                         self.agents_list[astid][agent]['name'] = event.get('Name')
                         self.agents_list[astid][agent]['loggedintime'] = event.get('LoggedInTime')
+                        self.agents_list[astid][agent]['talkingto'] = event.get('TalkingTo')
                         self.agents_list[astid][agent]['recorded'] = False
                         self.agents_list[astid][agent]['link'] = False
                 return
@@ -1920,7 +1943,7 @@ class XivoCTICommand(BaseCommand):
                 return cjson.encode(tosend)
         
         def ami_queuememberstatus(self, astid, event):
-                print 'AMI_QUEUEMEMBERSTATUS', event
+                # print 'AMI_QUEUEMEMBERSTATUS', event
                 if astid not in self.weblist['queues']:
                         log.warning('ami_queuememberstatus : no queue list has been defined for %s' % astid)
                         return
@@ -1994,7 +2017,7 @@ class XivoCTICommand(BaseCommand):
                 eventname = event.get('UserEvent')
                 if eventname == 'DID':
                         self.__sheet_alert__('incomingdid', astid,
-                                             event.get('XIVO_CONTEXT', DEFAULTCONTEXT),
+                                             event.get('XIVO_CONTEXT', DEFAULT_CONTEXT),
                                              event)
                 elif eventname == 'Feature':
                         log.info('AMI %s UserEventFeature %s' % (astid, event))
@@ -2038,7 +2061,7 @@ class XivoCTICommand(BaseCommand):
 
         def ami_faxreceived(self, astid, event):
                 log.info('%s : %s' % (astid, event))
-                self.__sheet_alert__('faxreceived', astid, DEFAULTCONTEXT, event)
+                self.__sheet_alert__('faxreceived', astid, DEFAULT_CONTEXT, event)
                 return
 
         def ami_meetmejoin(self, astid, event):
@@ -2189,7 +2212,7 @@ class XivoCTICommand(BaseCommand):
                         else:
                                 self.weblist['queues'][astid].queuelist[queue]['stats']['Xivo-Rate'] = -1
 
-                self.__sheet_alert__('incomingqueue', astid, DEFAULTCONTEXT, event)
+                self.__sheet_alert__('incomingqueue', astid, DEFAULT_CONTEXT, event)
                 log.info('AMI Join (Queue) %s %s %s %s' % (astid, queue, chan, count))
                 self.weblist['queues'][astid].queueentry_update(queue, chan, position, 0,
                                                                 clid, clidname)
@@ -2715,7 +2738,11 @@ class XivoCTICommand(BaseCommand):
                         agentnum = self.__agentnum__(uinfo)
                         agentphonenum = uinfo['agentphonenum']
                         if agentnum and agentphonenum:
-                                self.__ami_execute__(astid, 'agentcallbacklogin', agentnum, agentphonenum)
+                                agprops = self.weblist['agents'][astid].agentlist[uinfo['agentid']]
+                                wrapuptime = agprops.get('wrapuptime')
+                                self.__ami_execute__(astid, 'agentcallbacklogin',
+                                                     agentnum, agentphonenum,
+                                                     agprops.get('context'), agprops.get('ackcall'))
                                 # chan_agent.c:2318 callback_deprecated: AgentCallbackLogin is deprecated and will be removed in a future release.
                                 # chan_agent.c:2319 callback_deprecated: See doc/queues-with-callback-members.txt for an example of how to achieve
                                 # chan_agent.c:2320 callback_deprecated: the same functionality using only dialplan logic.
@@ -3412,8 +3439,12 @@ class XivoCTICommand(BaseCommand):
                 Events coming from Fast AGI.
                 """
                 # check capas !
-                # fastagi.get_variable('XIVO_INTERFACE') # CHANNEL
+                context = fastagi.get_variable('XIVO_CONTEXT')
+                uniqueid = fastagi.get_variable('UNIQUEID')
+                channel = fastagi.get_variable('CHANNEL')
                 function = fastagi.env['agi_network_script']
+                log.info('handle_fagi %s : context=%s uid=%s chan=%s (%s)' % (astid, context, uniqueid, channel, function))
+                
                 if function == 'presence':
                         aststatus = []
                         for var, val in self.__counts__().iteritems():
@@ -3469,18 +3500,15 @@ class XivoCTICommand(BaseCommand):
                         return
                 
                 elif function != 'xivo_push':
-                        log.info('handle_fagi : unknown function %s' % function)
+                        log.warning('handle_fagi %s : unknown function %s' % (astid, function))
                         return
                 
                 callednum = fastagi.get_variable('XIVO_DSTNUM')
-                context = fastagi.get_variable('XIVO_CONTEXT')
-                uniqueid = fastagi.get_variable('UNIQUEID')
-                channel = fastagi.get_variable('CHANNEL')
                 calleridnum  = fastagi.env['agi_callerid']
                 calleridname = fastagi.env['agi_calleridname']
-
+                
                 log.info('handle_fagi : %s : context=%s %s %s <%s>' % (astid, context, callednum, calleridnum, calleridname))
-
+                
                 extraevent = {'caller_num' : calleridnum,
                               'called_num' : callednum,
                               'uniqueid' : uniqueid,
