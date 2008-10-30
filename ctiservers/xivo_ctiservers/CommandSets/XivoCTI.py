@@ -644,7 +644,7 @@ class XivoCTICommand(BaseCommand):
                                                        'number' :     aitem.get('number'),
                                                        'password' :   aitem.get('passwd'),
                                                        'context' :    aitem.get('context'),
-                                                       'ackcall' :    aitem.get('ackcall'),
+                                                       'ackcall' :    (aitem.get('ackcall') == 'yes'),
                                                        'wrapuptime' : aitem.get('wrapuptime'),
                                                        
                                                        'queues' : {},
@@ -1943,9 +1943,9 @@ class XivoCTICommand(BaseCommand):
                 tosend = { 'class' : 'agents',
                            'function' : 'update',
                            'direction' : 'client',
-                           ## 'action' : action,
-                           ## 'astid' : astid,
-                           ## 'agent_channel' : agent_channel,
+                           'action' : action,
+                           'astid' : astid,
+                           'agent_channel' : agent_channel,
                            'payload' : arrgs }
                 return cjson.encode(tosend)
         
