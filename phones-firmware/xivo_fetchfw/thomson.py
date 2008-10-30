@@ -22,13 +22,13 @@ import shutil
 import fetchfw
 
 fw_files = {
-        'ST2022': {
-                '1.63': "v2022SG.080728.3.63.2.zz"
-        },
+    'ST2022': {
+        '1.63': "v2022SG.080728.3.63.2.zz"
+    },
 
-        'ST2030': {
-                '1.64': "v2030SG.080924.1.64.2.zz"
-        }
+    'ST2030': {
+        '1.64': "v2030SG.080924.1.64.2.zz"
+    }
 }
 
 def thomson_install(firmware):
