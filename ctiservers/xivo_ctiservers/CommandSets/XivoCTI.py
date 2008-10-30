@@ -768,6 +768,8 @@ class XivoCTICommand(BaseCommand):
                                                      'mwi-new' : '0'}
                 return lulist
 
+        def agents(self):
+                return self.agents_list
         def users(self):
                 return self.ulist_ng.users()
         def connected_users(self):
@@ -1454,13 +1456,13 @@ class XivoCTICommand(BaseCommand):
                 presenceactions = self.presence.actions(status)
                 for paction in presenceactions:
                         params = paction.split('-')
-                        if params[0] == 'queueadd' and len(params) > 2:
+                        if params[0] == 'queueadd' and len(params) > 2 and anum:
                                 self.__ami_execute__(astid, params[0], params[1], 'Agent/%s' % anum, params[2])
-                        elif params[0] == 'queueremove' and len(params) > 1:
+                        elif params[0] == 'queueremove' and len(params) > 1 and anum:
                                 self.__ami_execute__(astid, params[0], params[1], 'Agent/%s' % anum)
-                        elif params[0] == 'queuepause' and len(params) > 1:
+                        elif params[0] == 'queuepause' and len(params) > 1 and anum:
                                 self.__ami_execute__(astid, 'queuepause', params[1], 'Agent/%s' % anum, 'true')
-                        elif params[0] == 'queueunpause' and len(params) > 1:
+                        elif params[0] == 'queueunpause' and len(params) > 1 and anum:
                                 self.__ami_execute__(astid, 'queuepause', params[1], 'Agent/%s' % anum, 'false')
                 return
         
@@ -1926,20 +1928,25 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def __build_agupdate__(self, arrgs):
+                if len(arrgs) < 3:
+                        return
+                action = arrgs[0]
+                astid = arrgs[1]
+                agent_channel = arrgs[2]
+                
+                if agent_channel.startswith('Agent/'):
+                        if action == 'phonelink' or action == 'agentlink':
+                                self.agents_list[astid][agent_channel[6:]]['link'] = True
+                        elif action == 'phoneunlink' or action == 'agentunlink':
+                                self.agents_list[astid][agent_channel[6:]]['link'] = False
+                
                 tosend = { 'class' : 'agents',
                            'function' : 'update',
                            'direction' : 'client',
+                           ## 'action' : action,
+                           ## 'astid' : astid,
+                           ## 'agent_channel' : agent_channel,
                            'payload' : arrgs }
-                #### XXX replace payload by astid & co + @ client
-                if len(arrgs) > 2:
-                        action = arrgs[0]
-                        astid = arrgs[1]
-                        agentid = arrgs[2]
-                        if agentid.startswith('Agent/'):
-                                if action == 'phonelink' or action == 'agentlink':
-                                        self.agents_list[astid][agentid[6:]]['link'] = True
-                                elif action == 'phoneunlink' or action == 'agentunlink':
-                                        self.agents_list[astid][agentid[6:]]['link'] = False
                 return cjson.encode(tosend)
         
         def ami_queuememberstatus(self, astid, event):
@@ -2602,7 +2609,7 @@ class XivoCTICommand(BaseCommand):
                                 else:
                                         astid = myastid
                                         anum = myagentnum
-                                if astid is not None and anum is not None:
+                                if astid is not None and anum:
                                         for queuename in queuenames:
                                                 self.__ami_execute__(astid, 'queueremove', queuename, 'Agent/%s' % anum)
                 elif subcommand == 'join':
@@ -2619,7 +2626,7 @@ class XivoCTICommand(BaseCommand):
                                         astid = myastid
                                         anum = myagentnum
                                         spause = 'false' # unpauses by default for user-requests
-                                if astid is not None and anum is not None:
+                                if astid is not None and anum:
                                         for queuename in queuenames:
                                                 self.__ami_execute__(astid, 'queueadd', queuename, 'Agent/%s' % anum, spause)
                 elif subcommand == 'pause':
@@ -2631,7 +2638,7 @@ class XivoCTICommand(BaseCommand):
                                 else:
                                         astid = myastid
                                         anum = myagentnum
-                                if astid is not None and anum is not None:
+                                if astid is not None and anum:
                                         for queuename in queuenames:
                                                 self.__ami_execute__(astid, 'queuepause', queuename, 'Agent/%s' % anum, 'true')
                 elif subcommand == 'unpause':
@@ -2643,7 +2650,7 @@ class XivoCTICommand(BaseCommand):
                                 else:
                                         astid = myastid
                                         anum = myagentnum
-                                if astid is not None and anum is not None:
+                                if astid is not None and anum:
                                         for queuename in queuenames:
                                                 self.__ami_execute__(astid, 'queuepause', queuename, 'Agent/%s' % anum, 'false')
                 elif subcommand in ['login', 'logout', 'record', 'stoprecord', 'getfile', 'getfilelist', 'listen']:

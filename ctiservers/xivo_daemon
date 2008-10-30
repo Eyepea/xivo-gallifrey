@@ -277,7 +277,15 @@ def manage_info_connections(connid, msg, sep):
                                         try:
                                                 connid.sendall('%s %s\n' % (user.encode('latin1'), info))
                                         except Exception, exc:
-                                                log.error('--- exception --- INFO show_users : %s' % exc)
+                                                log.error('--- exception --- INFO %s : %s' % (usefulmsg, exc))
+                        elif usefulmsg == 'show_agents':
+                                for astid, agents in commandclass.agents().iteritems():
+                                        try:
+                                                connid.sendall('agents for %s\n' % astid)
+                                                for ag, agp in agents.iteritems():
+                                                        connid.sendall('%s %s\n' % (ag, agp))
+                                        except Exception, exc:
+                                                log.error('--- exception --- INFO %s : %s' % (usefulmsg, exc))
                         elif usefulmsg == 'show_logged_ip':
                                 for user, info in commandclass.connected_users().iteritems():
                                         if 'connection' in info['login']:
