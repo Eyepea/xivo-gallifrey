@@ -19,7 +19,7 @@ __license__ = """
 
 import os
 import shutil
-from xivo_fetchfw import fetchfw
+import fetchfw
 
 def digium_install(firmware):
     xfile = firmware.remote_files[0]

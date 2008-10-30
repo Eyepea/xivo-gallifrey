@@ -19,7 +19,7 @@ __license__ = """
 
 import os
 import shutil
-from xivo_fetchfw import fetchfw
+import fetchfw
 
 def aastra_install_langs(firmware, xfile):
     label = "%s_%s" % ("aastra", "langs")

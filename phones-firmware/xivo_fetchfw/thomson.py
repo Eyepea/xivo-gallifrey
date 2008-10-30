@@ -19,7 +19,7 @@ __license__ = """
 
 import os
 import shutil
-from xivo_fetchfw import fetchfw
+import fetchfw
 
 fw_files = {
         'ST2022': {

@@ -20,8 +20,7 @@ __license__ = """
 """
 
 import optparse
-
-from xivo_fetchfw import fetchfw
+import fetchfw
 
 def list_brands():
     for brand in sorted(fetchfw.brands):

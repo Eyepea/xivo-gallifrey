@@ -19,7 +19,7 @@ __license__ = """
 
 import os
 import shutil
-from xivo_fetchfw import fetchfw
+import fetchfw
 
 def snom_install(firmware):
     assert len(firmware.remote_files) == 1

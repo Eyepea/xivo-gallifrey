@@ -286,12 +286,12 @@ try:
 except OSError:
     pass # XXX: catching every OSError is not appropriate
 
-from xivo_fetchfw import aastra         # pylint: disable-msg=W0611
-from xivo_fetchfw import linksys        # pylint: disable-msg=W0611
-from xivo_fetchfw import polycom        # pylint: disable-msg=W0611
-from xivo_fetchfw import snom           # pylint: disable-msg=W0611
-from xivo_fetchfw import thomson        # pylint: disable-msg=W0611
-from xivo_fetchfw import digium         # pylint: disable-msg=W0611
+import aastra         # pylint: disable-msg=W0611
+import linksys        # pylint: disable-msg=W0611
+import polycom        # pylint: disable-msg=W0611
+import snom           # pylint: disable-msg=W0611
+import thomson        # pylint: disable-msg=W0611
+import digium         # pylint: disable-msg=W0611
 
 fw_names = config.sections()
 

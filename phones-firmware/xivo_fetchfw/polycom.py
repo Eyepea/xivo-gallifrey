@@ -19,7 +19,7 @@ __license__ = """
 
 import os
 import shutil
-from xivo_fetchfw import fetchfw
+import fetchfw
 
 APP_FILES = [
     "2201-06642-001.sip.ld",
