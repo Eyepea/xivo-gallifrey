@@ -31,68 +31,48 @@ log = logging.getLogger('userlist')
 
 class UserList(AnyList):
         def __init__(self, newurls = []):
+                self.anylist_properties = { 'keywords' : ['capaids', 'password', 'fullname',
+                                                          'agentid', 'techlist', 'phonenum'],
+                                            'name' : 'users',
+                                            'action' : 'getuserslist',
+                                            'urloptions' : (0, 11, True) }
                 AnyList.__init__(self, newurls)
-                self.userlist = {}
                 return
-
-        def update(self):
-                if len(self.requested_list) > 0:
-                        for url, urllist in self.requested_list.iteritems():
-                                gl = urllist.getlist(0, 11, True)
-                                if gl != 2 and len(urllist.list) == 0:
-                                        # fallback to 'phones'-style definition
-                                        gl = urllist.getlist(1, 12, False)
-                                        newuserlist = self.commandclass.getuserslist_compat(urllist.list)
-                                else:
-                                        if gl == 1:
-                                                newuserlist = self.commandclass.getuserslist(urllist.list)
-                                        elif gl == 2:
-                                                newuserlist = self.commandclass.getuserslist_json(urllist.jsonreply)
-                                nnew = 0
-                                for a, b in newuserlist.iteritems():
-                                        if a not in self.userlist:
-                                                nnew += 1
-                                                self.userlist[a] = b
-                                        else:
-                                                for keyw in ['capaids', 'password', 'fullname',
-                                                             'agentid', 'techlist', 'phonenum']:
-                                                        self.userlist[a][keyw] = b[keyw]
-                                if nnew > 0:
-                                        log.info('%d new users read from %s' % (nnew, url))
-                else:
-                        newuserlist = self.commandclass.getuserslist()
-                        for a, b in newuserlist.iteritems():
-                                if a not in self.userlist:
-                                        self.userlist[a] = b
+        
+        def update_noinput(self):
+                newuserlist = self.commandclass.getuserslist()
+                for a, b in newuserlist.iteritems():
+                        if a not in self.keeplist:
+                                self.keeplist[a] = b
                 return
 
         def finduser(self, username):
-                if username in self.userlist:
-                        return self.userlist.get(username)
+                if username in self.keeplist:
+                        return self.keeplist.get(username)
                 else:
                         return None
 
         def users(self):
-                return self.userlist
+                return self.keeplist
 
         def connected_users(self):
                 lst = {}
-                for username, userinfo in self.userlist.iteritems():
+                for username, userinfo in self.keeplist.iteritems():
                         if 'login' in userinfo:
                                 lst[username] = userinfo
                 return lst
 
         def adduser(self, inparams):
                 username = inparams['user']
-                if self.userlist.has_key(username):
+                if self.keeplist.has_key(username):
                         # updates
                         pass
                 else:
-                        self.userlist[username] = {}
+                        self.keeplist[username] = {}
                         for f in self.commandclass.userfields:
-                                self.userlist[username][f] = inparams[f]
+                                self.keeplist[username][f] = inparams[f]
                 return
 
         def deluser(self, username):
-                if self.userlist.has_key(username):
-                        self.userlist.pop(username)
+                if self.keeplist.has_key(username):
+                        self.keeplist.pop(username)

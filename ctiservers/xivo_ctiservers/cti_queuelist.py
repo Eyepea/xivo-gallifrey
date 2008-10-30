@@ -32,42 +32,21 @@ log = logging.getLogger('queuelist')
 
 class QueueList(AnyList):
         def __init__(self, newurls = [], virtual = False):
+                self.anylist_properties = {'keywords' : ['number', 'context'],
+                                           'name' : 'queues',
+                                           'action' : 'getqueueslist',
+                                           'urloptions' : (1, 5, True)}
                 AnyList.__init__(self, newurls)
-                self.queuelist = {}
-                self.virtual = virtual
                 return
         
-        def update(self):
-                lstadd = []
-                lstdel = []
-                oldqueuelist = self.queuelist
-                newqueuelist = {}
-                for url, urllist in self.requested_list.iteritems():
-                        gl = urllist.getlist(1, 5, True)
-                        if gl == 1:
-                                newqueuelist.update(self.commandclass.getqueueslist(urllist.list))
-                        elif gl == 2:
-                                newqueuelist.update(self.commandclass.getqueueslist_json(urllist.jsonreply, self.virtual))
-                for a, b in newqueuelist.iteritems():
-                        if a not in oldqueuelist:
-                                self.queuelist[a] = b
-                                lstadd.append(a)
-                for a, b in oldqueuelist.iteritems():
-                        if a not in newqueuelist:
-                                lstdel.append(a)
-                for a in lstdel:
-                        del self.queuelist[a]
-                return { 'add' : lstadd,
-                         'del' : lstdel }
-
         queuelocationprops = ['Paused', 'Status', 'Membership', 'Penalty', 'LastCall', 'CallsTaken']
         queuestats = ['Abandoned', 'Max', 'Completed', 'ServiceLevel', 'Weight', 'Holdtime',
                       'Xivo-Join', 'Xivo-Link', 'Xivo-Lost', 'Xivo-Wait', 'Xivo-Chat', 'Xivo-Rate',
                       'Calls']
 
         def queueentry_update(self, queue, channel, position, wait, calleridnum, calleridname):
-                if queue in self.queuelist:
-                        self.queuelist[queue]['channels'][channel] = { 'position' : position,
+                if queue in self.keeplist:
+                        self.keeplist[queue]['channels'][channel] = { 'position' : position,
                                                                        'wait' : wait,
                                                                        'updatetime' : time.time(),
                                                                        'calleridnum' : calleridnum,
@@ -77,59 +56,59 @@ class QueueList(AnyList):
                 return
         
         def queueentry_remove(self, queue, channel):
-                if queue in self.queuelist:
-                        if channel in self.queuelist[queue]['channels']:
-                                del self.queuelist[queue]['channels'][channel]
+                if queue in self.keeplist:
+                        if channel in self.keeplist[queue]['channels']:
+                                del self.keeplist[queue]['channels'][channel]
                 else:
                         log.warning('queueentry_remove : no such queue %s' % queue)
                 return
         
         def queuememberupdate(self, queue, location, event):
-                if queue in self.queuelist:
-                        if location not in self.queuelist[queue]['agents']:
-                                self.queuelist[queue]['agents'][location] = {}
+                if queue in self.keeplist:
+                        if location not in self.keeplist[queue]['agents']:
+                                self.keeplist[queue]['agents'][location] = {}
                         for prop in self.queuelocationprops:
                                 if prop in event:
-                                        self.queuelist[queue]['agents'][location][prop] = event.get(prop)
+                                        self.keeplist[queue]['agents'][location][prop] = event.get(prop)
                 else:
                         log.warning('queuememberupdate : no such queue %s' % queue)
                 return
         
         def queuememberremove(self, queue, location):
-                if queue in self.queuelist:
-                        if location in self.queuelist[queue]['agents']:
-                                del self.queuelist[queue]['agents'][location]
+                if queue in self.keeplist:
+                        if location in self.keeplist[queue]['agents']:
+                                del self.keeplist[queue]['agents'][location]
                 else:
                         log.warning('queuememberremove : no such queue %s' % queue)
                 return
 
         def update_queuestats(self, queue, event):
-                if queue in self.queuelist:
+                if queue in self.keeplist:
                         for statfield in self.queuestats:
                                 if statfield in event:
-                                        self.queuelist[queue]['stats'][statfield] = event.get(statfield)
+                                        self.keeplist[queue]['stats'][statfield] = event.get(statfield)
                 else:
                         log.warning('update_queuestats : no such queue %s' % queue)
                 return
 
         def get_queues(self):
-                return self.queuelist.keys()
+                return self.keeplist.keys()
 
         def get_queuestats(self, queuename):
                 lst = {}
-                if queuename in self.queuelist:
-                        lst[queuename] = self.queuelist[queuename]['stats']
+                if queuename in self.keeplist:
+                        lst[queuename] = self.keeplist[queuename]['stats']
                 return lst
         
         def get_queuestats_long(self):
                 lst = {}
-                for queuename, queueprops in self.queuelist.iteritems():
+                for queuename, queueprops in self.keeplist.iteritems():
                         lst[queuename] = queueprops['stats']
                 return lst
         
         def get_queues_byagent(self, agid):
                 queuelist = []
-                for qref, ql in self.queuelist.iteritems():
+                for qref, ql in self.keeplist.iteritems():
                         lst = [qref]
                         if agid in ql['agents']:
                                 agprop = ql['agents'][agid]
@@ -139,7 +118,7 @@ class QueueList(AnyList):
                 return queuelist
         
         def findqueue(self, queuename):
-                if queuename in self.queuelist:
-                        return self.queuelist.get(queuename)
+                if queuename in self.keeplist:
+                        return self.keeplist.get(queuename)
                 else:
                         return None

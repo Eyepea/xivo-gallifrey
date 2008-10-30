@@ -78,11 +78,13 @@ class BaseCommand:
                 return
         def users(self):
                 return {}
+        def agents(self):
+                return {}
         def connected_users(self):
                 return {}
         def getqueueslist(self, qlist):
                 return {}
-        def getqueueslist_json(self, qlist, virtual):
+        def getagentslist(self, qlist):
                 return {}
         
         def set_ctilog(self, ctilog):

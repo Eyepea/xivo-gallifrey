@@ -24,15 +24,53 @@ __author__    = 'Corentin Le Gall'
 # with this program; if not, you will find one at
 # <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>.
 
+import logging
 import cti_urllist
 
+log = logging.getLogger('anylist')
+
 class AnyList:
-        def __init__(self, newurls = []):
+        def __init__(self, newurls):
                 self.commandclass = None
                 self.requested_list = {}
+                self.keeplist = {}
                 self.__clean_urls__()
                 self.__add_urls__(newurls)
                 return
+        
+        def update(self):
+                lstadd = []
+                lstdel = []
+                oldlist = self.keeplist
+                newlist = {}
+                for url, urllist in self.requested_list.iteritems():
+                        gl = urllist.getlist(* self.anylist_properties['urloptions'])
+                        if gl == 2:
+                                tmplist = getattr(self.commandclass, self.anylist_properties['action'])(urllist.jsonreply)
+                                newlist.update(tmplist)
+                for a, b in newlist.iteritems():
+                        if a not in oldlist:
+                                self.keeplist[a] = b
+                                lstadd.append(a)
+                        else:
+                                for keyw in self.anylist_properties['keywords']:
+                                        if keyw in b:
+                                                self.keeplist[a][keyw] = b[keyw]
+                for a, b in oldlist.iteritems():
+                        if a not in newlist:
+                                lstdel.append(a)
+                for a in lstdel:
+                        del self.keeplist[a]
+                if len(lstadd) > 0:
+                        log.info('%d new %s from %s' % (len(lstadd),
+                                                        self.anylist_properties['name'],
+                                                        self.requested_list.keys()))
+                if len(lstdel) > 0:
+                        log.info('%d old %s from %s' % (len(lstdel),
+                                                        self.anylist_properties['name'],
+                                                        self.requested_list.keys()))
+                return { 'add' : lstadd,
+                         'del' : lstdel }
         
         def setcommandclass(self, commandclass):
                 self.commandclass = commandclass
@@ -48,7 +86,7 @@ class AnyList:
                                 self.requested_list[url] = cti_urllist.UrlList(url)
                 return
         
-        def setandupdate(self, newurls = []):
+        def setandupdate(self, newurls):
                 self.__add_urls__(newurls)
                 if len(self.requested_list) == 0:
                         return
