@@ -51,33 +51,6 @@ def channel_splitter(channel):
                 sp.pop()
         return "-".join(sp)
 
-def readphonelist(phone_list):
-        phonelist = {}
-        for l, v in phone_list.iteritems():
-                try:
-                        # line is protocol | username | password | rightflag |
-                        #         phone number | initialized | disabled(=1) | callerid |
-                        #         firstname | lastname | context | enable_hint
-                        [sso_tech, sso_phoneid, sso_passwd, sso_cti_allowed,
-                         sso_phonenum, isinitialized, sso_l6,
-                         fullname, firstname, lastname, sso_context, enable_hint] = v
-                        if sso_phonenum not in ['', 'number']:
-                                uniqueref = '.'.join([sso_tech, sso_context, sso_phoneid, sso_phonenum])
-                                phonelist[uniqueref] = { 'number' : sso_phonenum,
-                                                         'phoneid' : sso_phoneid,
-                                                         'context' : sso_context,
-                                                         'tech' : sso_tech,
-                                                         'initialized' : bool(int(isinitialized)),
-                                                         'enable_hint' : bool(int(enable_hint)) }
-                except Exception, exc:
-                        log.error('--- exception --- a problem occured when building phone list : %s' % exc)
-                        # return phonelist
-        if len(phonelist) > 0:
-                log.debug('found %d ids in phone list' % len(phonelist))
-
-        return phonelist
-
-
 ## \class PhoneList
 # \brief Properties of the lines of a given Asterisk
 class PhoneList:
@@ -91,8 +64,6 @@ class PhoneList:
         def __init__(self, url):
                 self.normal = {}
                 self.star10 = []
-                self.rough_phonelist = {}
-                self.phlist = cti_urllist.UrlList(url[0])
                 return
 
         def setcommandclass(self, commandclass):
@@ -200,50 +171,15 @@ class PhoneList:
                 self.normal_channel_hangup(chan, "ami-eh0")
 
         def update(self):
-                try:
-                        u = self.phlist.getlist(1, 12)
-                        if u == 1:
-                                newphlist = readphonelist(self.phlist.list)
-                        elif u == 2:
-                                newphlist = {}
-                                for jr in self.phlist.jsonreply:
-                                        idx = '.'.join([jr.get('protocol'), jr.get('context'), jr.get('name'), jr.get('number')])
-                                        newphlist[idx] = {'number' : jr.get('number'),
-                                                          'tech' : jr.get('protocol'),
-                                                          'context': jr.get('context'),
-                                                          'enable_hint': jr.get('enablehint'),
-                                                          'initialized': jr.get('initialized'),
-                                                          'phoneid': jr.get('name')
-                                                          }
-                        if newphlist is not None:
-                                self.rough_phonelist = newphlist
-                        sipnumlistnew = dict.fromkeys(self.rough_phonelist.keys())
-                except Exception, exc:
-                        log.error('--- exception --- : get_phonelist_fromurl failed : %s' % exc)
-                        self.rough_phonelist = {}
-                        
-                sipnumlistold = dict.fromkeys(filter(lambda j: self.normal[j].towatch, self.normal))
-                lstadd = []
-                lstdel = []
-                for snl in sipnumlistold:
-                        if snl not in sipnumlistnew:
-                                lstdel.append(snl)
-                                del self.normal[snl]
-                for snl in sipnumlistnew:
-                        if snl not in sipnumlistold:
-                                self.normal[snl] = LineProp(self.rough_phonelist[snl]['tech'],
-                                                            self.rough_phonelist[snl]['phoneid'],
-                                                            self.rough_phonelist[snl]['number'],
-                                                            self.rough_phonelist[snl]['context'],
-                                                            'Timeout',
-                                                            True)
-                                # replaced previous 'BefSubs' initial status here : avoids flooding of Timeout's
-                                # when many phones are added at once
-                                
-                                lstadd.append(snl)
-                return { 'del' : lstdel,
-                         'add' : lstadd }
-
+                self.normal[snl] = LineProp(self.rough_phonelist[snl]['tech'],
+                                            self.rough_phonelist[snl]['phoneid'],
+                                            self.rough_phonelist[snl]['number'],
+                                            self.rough_phonelist[snl]['context'],
+                                            'Timeout',
+                                            True)
+                # replaced previous 'BefSubs' initial status here : avoids flooding of Timeout's
+                # when many phones are added at once
+                return
 
 ## \class LineProp
 # \brief Properties of a phone line. It might contain many channels.

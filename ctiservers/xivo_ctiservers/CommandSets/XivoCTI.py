@@ -50,9 +50,9 @@ from xivo_ctiservers import cti_userlist
 from xivo_ctiservers import cti_urllist
 from xivo_ctiservers import cti_agentlist
 from xivo_ctiservers import cti_queuelist
+from xivo_ctiservers import cti_phonelist
 from xivo_ctiservers import xivo_commandsets
 from xivo_ctiservers import xivo_ldap
-from xivo_ctiservers import xivo_phones
 from xivo_ctiservers.xivo_commandsets import BaseCommand
 from xivo import anysql
 from xivo.BackSQL import backmysql
@@ -552,7 +552,7 @@ class XivoCTICommand(BaseCommand):
                         self.uniqueids[astid] = {}
                 if astid not in self.parkedcalls:
                         self.parkedcalls[astid] = {}
-                self.weblist['phones'][astid] = xivo_phones.PhoneList(urllist_phones)
+                self.weblist['phones'][astid] = cti_phonelist.PhoneList(urllist_phones)
                 self.weblist['phones'][astid].setcommandclass(self)
                 return
         
@@ -575,7 +575,7 @@ class XivoCTICommand(BaseCommand):
                 self.weblist['vqueues'][astid] = cti_queuelist.QueueList(urllist_vqueues, True)
                 self.weblist['vqueues'][astid].setcommandclass(self)
                 return
-                
+        
         def set_queuelist(self, astid, urllist_queues):
                 self.weblist['queues'][astid] = cti_queuelist.QueueList(urllist_queues)
                 self.weblist['queues'][astid].setcommandclass(self)
@@ -625,7 +625,7 @@ class XivoCTICommand(BaseCommand):
                                                         else:
                                                                 self.weblist['queues'][astid].keeplist[qname]['stats']['Xivo-Rate'] = -1
 
-                        self.askstatus(astid, self.weblist['phones'][astid].rough_phonelist)
+                        self.askstatus(astid, self.weblist['phones'][astid].keeplist)
                 # check : agentnumber should be unique
                 return
 
@@ -633,9 +633,9 @@ class XivoCTICommand(BaseCommand):
                 self.ulist_ng.setandupdate(urls)
                 return
 
-        def getagentslist(self, dlist):
+        def getagentslist(self, alist):
                 lalist = {}
-                for aitem in dlist:
+                for aitem in alist:
                         try:
                                 if not aitem.get('commented'):
                                         aid = aitem.get('id')
@@ -650,9 +650,25 @@ class XivoCTICommand(BaseCommand):
                                                        'queues' : {},
                                                        'stats' : {}}
                         except Exception, exc:
-                                log.error('--- exception --- (getagentslist_json) : %s : %s' % (aitem, exc))
+                                log.error('--- exception --- (getagentslist) : %s : %s' % (aitem, exc))
                 return lalist
-        
+
+        def getphoneslist(self, plist):
+                lplist = {}
+                for pitem in plist:
+                        try:
+                                idx = '.'.join([pitem.get('protocol'), pitem.get('context'), pitem.get('name'), pitem.get('number')])
+                                lplist[idx] = { 'number' : pitem.get('number'),
+                                                'tech' : pitem.get('protocol'),
+                                                'context': pitem.get('context'),
+                                                'enable_hint': pitem.get('enablehint'),
+                                                'initialized': pitem.get('initialized'),
+                                                'phoneid': pitem.get('name')
+                                                }
+                        except Exception, exc:
+                                log.error('--- exception --- (getphoneslist) : %s : %s' % (pitem, exc))
+                return lplist
+
         def getqueueslist(self, dlist):
                 lqlist = {}
                 for qitem in dlist:
@@ -668,7 +684,7 @@ class XivoCTICommand(BaseCommand):
                                                              'channels' : {},
                                                              'stats' : {}}
                         except Exception, exc:
-                                log.error('--- exception --- (getqueueslist_json) : %s : %s' % (qitem, exc))
+                                log.error('--- exception --- (getqueueslist) : %s : %s' % (qitem, exc))
                 return lqlist
         
         # fields set at startup by reading informations
@@ -701,7 +717,7 @@ class XivoCTICommand(BaseCommand):
                                         else:
                                                 lulist[uid]['agentid'] = ''
                         except Exception, exc:
-                                log.error('--- exception --- (getuserslist_json) : %s : %s' % (uitem, exc))
+                                log.error('--- exception --- (getuserslist) : %s : %s' % (uitem, exc))
                 return lulist
         
         def agents(self):
@@ -1063,7 +1079,7 @@ class XivoCTICommand(BaseCommand):
                         tech = 'iax2'
                         phoneid = channel[5:].split('-')[0]
                 if tech is not None and phoneid is not None:
-                        for phoneref, b in self.weblist['phones'][astid].rough_phonelist.iteritems():
+                        for phoneref, b in self.weblist['phones'][astid].keeplist.iteritems():
                                 if b['tech'] == tech and b['phoneid'] == phoneid:
                                         ret = phoneref
                 # give also : userid ...
@@ -1548,7 +1564,7 @@ class XivoCTICommand(BaseCommand):
                 if hint:
                         phoneref = '.'.join([hint.split('/')[0].lower(), context,
                                              hint.split('/')[1], exten])
-                        if phoneref in self.weblist['phones'][astid].rough_phonelist:
+                        if phoneref in self.weblist['phones'][astid].keeplist:
                                 print '(phone)', 'RESPES', astid, phoneref, status, self.sippresence.get(status)
                                 pass
                 else:
@@ -1570,7 +1586,7 @@ class XivoCTICommand(BaseCommand):
                 exten   = event.get('Exten')
                 status  = event.get('Status')
                 context = event.get('Context')
-                for phoneref, b in self.weblist['phones'][astid].rough_phonelist.iteritems():
+                for phoneref, b in self.weblist['phones'][astid].keeplist.iteritems():
                         if b['number'] == exten and b['context'] == context:
                                 print '(phone)', 'EXTSTS', astid, phoneref, status, self.sippresence.get(status)
                                 # treatsall(phone event)
@@ -2774,11 +2790,11 @@ class XivoCTICommand(BaseCommand):
                         fullstat = {}
                         for astid, iplist in self.weblist['phones'].iteritems():
                                 fullstat[astid] = []
-                                for idx, pidx in iplist.normal.iteritems():
-                                        if pidx.towatch:
-                                                phoneinfo = { 'statusbase' : pidx.build_basestatus(),
-                                                              'statusextended' : pidx.build_fullstatlist() }
-                                                fullstat[astid].append(phoneinfo)
+                                for idx, pidx in iplist.keeplist.iteritems():
+                                        print astid, idx, pidx
+                                        phoneinfo = { 'statusbase' : pidx.build_basestatus(),
+                                                      'statusextended' : pidx.build_fullstatlist() }
+                                        fullstat[astid].append(phoneinfo)
                 elif ccomm == 'agents':
                         fullstat = []
                         if self.capas[capaid].match_funcs(ucapa, 'agents'):
@@ -3183,7 +3199,7 @@ class XivoCTICommand(BaseCommand):
                 if 'login' in userinfo and 'sessiontimestamp' in userinfo.get('login'):
                         userinfo['login']['sessiontimestamp'] = time.time()
 
-                if state in self.presence.getstates():
+                if state == 'xivo_unknown' or state in self.presence.getstates():
                         userinfo['state'] = state
                 else:
                         log.warning('(user %s) : state <%s> is not an allowed one => keeping current <%s>'
