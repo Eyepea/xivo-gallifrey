@@ -195,7 +195,9 @@ class xivo_application_service_asterisk_agent extends xivo_application_asterisk_
 			$info['afeatures'] = &$rs[$i];
 
 			if(($info['agent'] = $this->_agent->get_agent($info['afeatures']['agentid'],
-								      $disable)) !== false)
+								      $disable)) !== false
+			&& ($info['agentoptions'] = $this->_agentoptions->get_agentoptions(
+							($info['agent']['var_metric']-1))) !== false)
 				$r[$info['afeatures']['id']] = $info;
 		}
 
