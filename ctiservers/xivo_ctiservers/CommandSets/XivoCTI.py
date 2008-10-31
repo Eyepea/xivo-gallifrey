@@ -62,7 +62,7 @@ log = logging.getLogger('xivocti')
 
 XIVOVERSION_NUM = '0.4'
 XIVOVERSION_NAME = 'k-9'
-REQUIRED_CLIENT_VERSION = 4440
+REQUIRED_CLIENT_VERSION = 4560
 __revision__ = __version__.split()[1]
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 HISTSEPAR = ';'
@@ -697,12 +697,13 @@ class XivoCTICommand(BaseCommand):
                                                        'context' : uitem.get('context'),
                                                        'phonenum' : uitem.get('number'),
                                                        'xivo_userid' : uitem.get('id'),
-                                                       'enablevoicemail' : uitem.get('enablevoicemail'),
                                                        
-                                                       'state'    : 'xivo_unknown',
-                                                       'mwi-waiting' : '0',
-                                                       'mwi-old' : '0',
-                                                       'mwi-new' : '0'}
+                                                       'state'    : 'xivo_unknown'
+                                                       }
+                                        if uitem.get('enablevoicemail'):
+                                                lulist[uid]['mwi'] = ['0', '0', '0']
+                                        else:
+                                                lulist[uid]['mwi'] = []
                                         if uitem.get('agentid') is not None:
                                                 lulist[uid]['agentid'] = uitem.get('agentid')
                                         else:
@@ -1536,25 +1537,26 @@ class XivoCTICommand(BaseCommand):
                 [exten, context] = event.get('Mailbox').split('@')
                 for userinfo in self.ulist_ng.keeplist.itervalues():
                         if 'phonenum' in userinfo and userinfo.get('phonenum') == exten and userinfo.get('astid') == astid:
-                                userinfo['mwi-new'] = event.get('NewMessages')
-                                userinfo['mwi-old'] = event.get('OldMessages')
+                                if userinfo['mwi']:
+                                        userinfo['mwi'][1] = event.get('OldMessages')
+                                        userinfo['mwi'][2] = event.get('NewMessages')
                 return
 
         def amiresponse_mailboxstatus(self, astid, event):
                 [exten, context] = event.get('Mailbox').split('@')
                 for userinfo in self.ulist_ng.keeplist.itervalues():
                         if 'phonenum' in userinfo and userinfo.get('phonenum') == exten and userinfo.get('astid') == astid:
-                                userinfo['mwi-waiting'] = event.get('Waiting')
-                                tosend = { 'class' : 'users',
-                                           'function' : 'update',
-                                           'direction' : 'client',
-                                           'user' : [userinfo.get('company'),
-                                                     userinfo.get('user')],
-                                           'subclass' : 'mwi',
-                                           'payload' : [userinfo.get('mwi-waiting'),
-                                                        userinfo.get('mwi-old'),
-                                                        userinfo.get('mwi-new')] }
-                                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                                if userinfo['mwi']:
+                                        userinfo['mwi'][0] = event.get('Waiting')
+                                        tosend = { 'class' : 'users',
+                                                   'function' : 'update',
+                                                   'direction' : 'client',
+                                                   'user' : [userinfo.get('company'),
+                                                             userinfo.get('user')],
+                                                   'subclass' : 'mwi',
+                                                   'payload' : userinfo.get('mwi')
+                                                   }
+                                        self.__send_msg_to_cti_clients__(cjson.encode(tosend))
                 return
 
         def amiresponse_extensionstatus(self, astid, event):
@@ -2724,21 +2726,21 @@ class XivoCTICommand(BaseCommand):
                 if ccomm == 'users':
                         # XXX define capas ?
                         uinfo = userinfo
-                        fullstat = [uinfo.get('user'),
-                                    uinfo.get('company'),
-                                    uinfo.get('fullname'),
-                                    uinfo.get('state'),
-                                    str(1),
-                                    uinfo.get('astid'),
-                                    uinfo.get('context'),
-                                    uinfo.get('phonenum'),
-                                    uinfo.get('techlist'),
-                                    self.__agentnum__(uinfo),
-                                    uinfo.get('mwi-waiting'),
-                                    uinfo.get('mwi-old'),
-                                    uinfo.get('mwi-new')]
+                        fullstat = []
+                        fullstat.append([uinfo.get('user'),
+                                         uinfo.get('company'),
+                                         uinfo.get('fullname'),
+                                         uinfo.get('state'),
+                                         str(1),
+                                         uinfo.get('astid'),
+                                         uinfo.get('context'),
+                                         uinfo.get('phonenum'),
+                                         uinfo.get('techlist'),
+                                         self.__agentnum__(uinfo),
+                                         uinfo.get('mwi')
+                                         ])
                         for uinfo in self.ulist_ng.keeplist.itervalues():
-                                fullstat.extend([uinfo.get('user'),
+                                fullstat.append([uinfo.get('user'),
                                                  uinfo.get('company'),
                                                  uinfo.get('fullname'),
                                                  uinfo.get('state'),
@@ -2748,10 +2750,8 @@ class XivoCTICommand(BaseCommand):
                                                  uinfo.get('phonenum'),
                                                  uinfo.get('techlist'),
                                                  self.__agentnum__(uinfo),
-                                                 uinfo.get('mwi-waiting'),
-                                                 uinfo.get('mwi-old'),
-                                                 uinfo.get('mwi-new')])
-                                
+                                                 uinfo.get('mwi')
+                                                 ])
                 elif ccomm == 'phones':
                         # XXX define capas ?
                         fullstat = {}
