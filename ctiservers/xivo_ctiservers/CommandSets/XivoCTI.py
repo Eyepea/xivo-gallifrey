@@ -2709,8 +2709,9 @@ class XivoCTICommand(BaseCommand):
                         agentnum = self.__agentnum__(uinfo)
                         if 'agentphonenum' in uinfo:
                                 agentphonenum = uinfo['agentphonenum']
-                                self.__ami_execute__(astid, 'setvar', 'AGENTBYCALLERID_%s' % agentphonenum, '')
-                                # del uinfo['agentphonenum']
+                                if agentphonenum:
+                                        self.__ami_execute__(astid, 'setvar', 'AGENTBYCALLERID_%s' % agentphonenum, '')
+                                        # del uinfo['agentphonenum']
                         if len(agentnum) > 0:
                                 self.__ami_execute__(astid, 'agentlogoff', agentnum)
                                 self.__fill_user_ctilog__(uinfo, 'agent_logout')
