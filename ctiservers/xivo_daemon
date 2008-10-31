@@ -268,8 +268,13 @@ def manage_info_connections(connid, msg, sep):
                                 reply = 'infos=' \
                                         'xivo_version=%s;' \
                                         'server_version=%s;' \
+                                        'commandset=%s;' \
+                                        'commandset_version=%s;' \
                                         'uptime=%d s' \
-                                        % (XIVOVERSION, __revision__, time_uptime)
+                                        % (XIVOVERSION, __revision__,
+                                           commandclass.xdname,
+                                           commandclass.version(),
+                                           time_uptime)
                                 connid.sendall(reply + '\n')
                                 # connid.sendall('server capabilities = %s\n' % (','.join()))
                         elif usefulmsg == 'show_users':
@@ -283,6 +288,14 @@ def manage_info_connections(connid, msg, sep):
                                         try:
                                                 connid.sendall('agents for %s\n' % astid)
                                                 for ag, agp in agents.iteritems():
+                                                        connid.sendall('%s %s\n' % (ag, agp))
+                                        except Exception, exc:
+                                                log.error('--- exception --- INFO %s : %s' % (usefulmsg, exc))
+                        elif usefulmsg == 'show_queues':
+                                for astid, queues in commandclass.queues().iteritems():
+                                        try:
+                                                connid.sendall('queues for %s\n' % astid)
+                                                for ag, agp in queues.keeplist.iteritems():
                                                         connid.sendall('%s %s\n' % (ag, agp))
                                         except Exception, exc:
                                                 log.error('--- exception --- INFO %s : %s' % (usefulmsg, exc))
@@ -573,10 +586,10 @@ while True: # loops over the reloads
 
         time_start = time.time()
         if nreload == 0:
-                log.info('# STARTING XIVO Daemon %s (pid %d) / svn %s # (0/3) Starting'
+                log.info('# STARTING XIVO Daemon %s (pid %d) / svn:%s # (0/3) Starting'
                           % (XIVOVERSION, os.getpid(), __revision__))
         else:
-                log.info('# STARTING XIVO Daemon %s (pid %d) / svn %s # (0/3) Reloading (%d)'
+                log.info('# STARTING XIVO Daemon %s (pid %d) / svn:%s # (0/3) Reloading (%d)'
                           % (XIVOVERSION, os.getpid(), __revision__, nreload))
         nreload += 1
         
@@ -637,9 +650,9 @@ while True: # loops over the reloads
                 commandclass = xivo_commandsets.BaseCommand()
                 xdname = commandclass.xdname
                 log.warning('# STARTING %s : no such commandset <%s>' % (xdname, commandset))
-
-        log.info('# STARTING %s / %d' % (xdname, nreload))
-
+                
+        log.info('# STARTING %s / svn:%s / %d' % (xdname, commandclass.version(), nreload))
+        
         update_readconf()
         commandclass.set_userlist_urls(userlists)
         commandclass.set_contextlist(directorylist)
@@ -935,14 +948,13 @@ while True: # loops over the reloads
                                                                         userinfo = userinfo_by_requester.get(sel_i)
                                                                         commandclass.manage_logout(userinfo, 'end')
                                                                         del userinfo_by_requester[sel_i]
-                                                if kind in ['CTI', 'INFO'] and lmsg > 0:
-                                                        continue
-                                                sel_i.close()
-                                                fdlist_full.remove(sel_i)
-                                                del fdlist_established[sel_i]
-                                                if requester in commandclass.transfers_ref:
-                                                        commandclass.transfer_endbuf(requester)
-                                                log.info('TCP socket closed on %s (%s)' % (requester, kind))
+                                                if kind not in ['CTI', 'INFO'] or lmsg == 0:
+                                                        sel_i.close()
+                                                        fdlist_full.remove(sel_i)
+                                                        del fdlist_established[sel_i]
+                                                        if requester in commandclass.transfers_ref:
+                                                                commandclass.transfer_endbuf(requester)
+                                                        log.info('TCP socket closed on %s (%s)' % (requester, kind))
                                         except Exception, exc:
                                                 log.error('--- exception [%s] %s --- %s' % (kind, sel_i, exc))
                                                 try:

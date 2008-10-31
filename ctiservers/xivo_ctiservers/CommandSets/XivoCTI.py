@@ -716,14 +716,21 @@ class XivoCTICommand(BaseCommand):
                                 log.error('--- exception --- (getuserslist) : %s : %s' % (uitem, exc))
                 return lulist
         
+        def version(self):
+                return __revision__
+        
         def agents(self):
                 return self.agents_list
+        
+        def queues(self):
+                return self.weblist['queues']
+        
         def users(self):
                 return self.ulist_ng.users()
+        
         def connected_users(self):
                 return self.ulist_ng.connected_users()
-
-
+        
         def askstatus(self, astid, npl):
                 for a, b in npl.iteritems():
                         self.__ami_execute__(astid, 'sendextensionstate', b['number'], b['context'])
@@ -1850,7 +1857,7 @@ class XivoCTICommand(BaseCommand):
                 position = event.get('Position')
                 wait = int(event.get('Wait'))
                 channel = event.get('Channel')
-
+                
                 calleridnum = None
                 calleridname = None
                 for v, vv in self.uniqueids[astid].iteritems():

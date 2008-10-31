@@ -73,12 +73,16 @@ class BaseCommand:
         def set_cticonfig(self, cticonfig):
                 return
 
+        def version(self):
+                return 'NOVERSION'
         userfields = []
         def getuserslist(self):
                 return
         def users(self):
                 return {}
         def agents(self):
+                return {}
+        def queues(self):
                 return {}
         def connected_users(self):
                 return {}
