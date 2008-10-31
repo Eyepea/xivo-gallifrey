@@ -417,6 +417,9 @@ class XivoCTICommand(BaseCommand):
 
         def loginko(self, loginparams, errorstring, connid):
                 log.warning('user can not connect (%s) : sending %s' % (loginparams, errorstring))
+                if connid in self.timeout_login:
+                        self.timeout_login[connid].cancel()
+                        del self.timeout_login[connid]
                 tosend = { 'class' : 'loginko',
                            'direction' : 'client',
                            'errorstring' : errorstring }
