@@ -1221,6 +1221,7 @@ class XivoCTICommand(BaseCommand):
                                 self.stats_queues[astid][queuename][fieldname].remove(t)
                 if fname:
                         self.stats_queues[astid][queuename][fname].append(time_now)
+                        log.info('__update_queue_stats__ for %s %s %s' % (astid, queuename, fname))
                 self.weblist['queues'][astid].keeplist[queuename]['stats']['Xivo-Join'] = len(self.stats_queues[astid][queuename]['ENTERQUEUE'])
                 self.weblist['queues'][astid].keeplist[queuename]['stats']['Xivo-Link'] = len(self.stats_queues[astid][queuename]['CONNECT'])
                 self.weblist['queues'][astid].keeplist[queuename]['stats']['Xivo-Lost'] = len(self.stats_queues[astid][queuename]['ABANDON'])
@@ -1230,6 +1231,8 @@ class XivoCTICommand(BaseCommand):
                         self.weblist['queues'][astid].keeplist[queuename]['stats']['Xivo-Rate'] = (nl * 100) / nj
                 else:
                         self.weblist['queues'][astid].keeplist[queuename]['stats']['Xivo-Rate'] = -1
+                log.info('__update_queue_stats__ %s %s : %s' % (astid, queuename,
+                                                                self.weblist['queues'][astid].keeplist[queuename]['stats']))
                 return
         
         
@@ -1309,7 +1312,10 @@ class XivoCTICommand(BaseCommand):
                         # msg = self.__build_agupdate__(['phonelink', astid, 'Agent/%s' % ag])
                         # self.__send_msg_to_cti_clients__(msg)
 
-                self.weblist['phones'][astid].handle_ami_event_link(chan1, chan2, clid1, clid2)
+                try:
+                        self.weblist['phones'][astid].handle_ami_event_link(chan1, chan2, clid1, clid2)
+                except Exception, exc:
+                        pass
                 return
 
         def ami_unlink(self, astid, event):
@@ -1404,7 +1410,10 @@ class XivoCTICommand(BaseCommand):
                                         msg = self.__build_agupdate__(['phoneunlink', astid, 'Agent/%s' % ag])
                                         self.__send_msg_to_cti_clients__(msg)
                                         
-                self.weblist['phones'][astid].handle_ami_event_unlink(chan1, chan2, clid1, clid2)
+                try:
+                        self.weblist['phones'][astid].handle_ami_event_unlink(chan1, chan2, clid1, clid2)
+                except Exception, exc:
+                        pass
                 return
 
         def __presence_action__(self, astid, anum, status):
@@ -1439,7 +1448,10 @@ class XivoCTICommand(BaseCommand):
                 if 'context' in self.uniqueids[astid][uid]:
                         self.__sheet_alert__('hangup', astid, self.uniqueids[astid][uid]['context'], event)
 
-                self.weblist['phones'][astid].handle_ami_event_hangup(chan, cause)
+                try:
+                        self.weblist['phones'][astid].handle_ami_event_hangup(chan, cause)
+                except Exception, exc:
+                        pass
                 if chan in self.chans_incomingqueue or chan in self.chans_incomingdid:
                         print 'HANGUP : (%s) %s uid=%s %s' % (time.asctime(), astid, uid, chan)
                         if chan in self.chans_incomingqueue:
