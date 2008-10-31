@@ -614,16 +614,7 @@ class XivoCTICommand(BaseCommand):
                                                 qq['stats']['Xivo-Rate'] = -1
                                                 qq['stats']['Xivo-Chat'] = 0
                                                 qq['stats']['Xivo-Wait'] = 0
-                                                if qname in self.stats_queues[astid]:
-                                                        qq['stats']['Xivo-Join'] = len(self.stats_queues[astid][qname].get('ENTERQUEUE', []))
-                                                        qq['stats']['Xivo-Link'] = len(self.stats_queues[astid][qname].get('CONNECT', []))
-                                                        qq['stats']['Xivo-Lost'] = len(self.stats_queues[astid][qname].get('ABANDON', []))
-                                                        nj = self.weblist['queues'][astid].keeplist[qname]['stats']['Xivo-Join']
-                                                        nl = self.weblist['queues'][astid].keeplist[qname]['stats']['Xivo-Link']
-                                                        if nj > 0:
-                                                                self.weblist['queues'][astid].keeplist[qname]['stats']['Xivo-Rate'] = (nl * 100) / nj
-                                                        else:
-                                                                self.weblist['queues'][astid].keeplist[qname]['stats']['Xivo-Rate'] = -1
+                                                self.__update_queue_stats__(astid, qname)
 
                         self.askstatus(astid, self.weblist['phones'][astid].keeplist)
                 # check : agentnumber should be unique
@@ -1210,6 +1201,37 @@ class XivoCTICommand(BaseCommand):
                                 return self.weblist['agents'][astid].keeplist[agent_id].get('number')
                 return ''
 
+        
+        def __update_queue_stats__(self, astid, queuename, fname = None):
+                if astid not in self.stats_queues:
+                        return
+                if queuename not in self.stats_queues[astid]:
+                        self.stats_queues[astid][queuename] = {'ENTERQUEUE' : [],
+                                                               'CONNECT' : [],
+                                                               'ABANDON' : []}
+                time_now = int(time.time())
+                time_1ha = time_now - 3600
+                for fieldname in ['ENTERQUEUE', 'CONNECT', 'ABANDON']:
+                        toremove = []
+                        for t in self.stats_queues[astid][queuename][fieldname]:
+                                if t < time_1ha:
+                                        toremove.append(t)
+                        for t in toremove:
+                                self.stats_queues[astid][queuename][fieldname].remove(t)
+                if fname:
+                        self.stats_queues[astid][queuename][fname].append(time_now)
+                self.weblist['queues'][astid].keeplist[queuename]['stats']['Xivo-Join'] = len(self.stats_queues[astid][queuename]['ENTERQUEUE'])
+                self.weblist['queues'][astid].keeplist[queuename]['stats']['Xivo-Link'] = len(self.stats_queues[astid][queuename]['CONNECT'])
+                self.weblist['queues'][astid].keeplist[queuename]['stats']['Xivo-Lost'] = len(self.stats_queues[astid][queuename]['ABANDON'])
+                nj = self.weblist['queues'][astid].keeplist[queuename]['stats']['Xivo-Join']
+                nl = self.weblist['queues'][astid].keeplist[queuename]['stats']['Xivo-Link']
+                if nj > 0:
+                        self.weblist['queues'][astid].keeplist[queuename]['stats']['Xivo-Rate'] = (nl * 100) / nj
+                else:
+                        self.weblist['queues'][astid].keeplist[queuename]['stats']['Xivo-Rate'] = -1
+                return
+        
+        
         def ami_link(self, astid, event):
                 chan1 = event.get('Channel1')
                 chan2 = event.get('Channel2')
@@ -1226,28 +1248,8 @@ class XivoCTICommand(BaseCommand):
                 if uid1info['link'].startswith('Agent/') and 'join' in uid1info:
                         queuename = uid1info['join'].get('queue')
                         log.info('STAT LINK %s %s %s' % (astid, queuename, uid1info['link']))
-                        if astid in self.stats_queues:
-                                if queuename not in self.stats_queues[astid]:
-                                        self.stats_queues[astid][queuename] = {}
-                                if 'CONNECT' not in self.stats_queues[astid][queuename]:
-                                        self.stats_queues[astid][queuename].update({'CONNECT' : []})
-                                time_now = int(time.time())
-                                time_1ha = time_now - 3600
-                                toremove = []
-                                for t in self.stats_queues[astid][queuename]['CONNECT']:
-                                        if t < time_1ha:
-                                                toremove.append(t)
-                                for t in toremove:
-                                        self.stats_queues[astid][queuename]['CONNECT'].remove(t)
-                                self.stats_queues[astid][queuename]['CONNECT'].append(time_now)
-                                self.weblist['queues'][astid].keeplist[queuename]['stats']['Xivo-Link'] = len(self.stats_queues[astid][queuename]['CONNECT'])
-                                nj = self.weblist['queues'][astid].keeplist[queuename]['stats']['Xivo-Join']
-                                nl = self.weblist['queues'][astid].keeplist[queuename]['stats']['Xivo-Link']
-                                if nj > 0:
-                                        self.weblist['queues'][astid].keeplist[queuename]['stats']['Xivo-Rate'] = (nl * 100) / nj
-                                else:
-                                        self.weblist['queues'][astid].keeplist[queuename]['stats']['Xivo-Rate'] = -1
-
+                        self.__update_queue_stats__(astid, queuename, 'CONNECT')
+                        
                 phoneid1 = self.__phoneid_from_channel__(astid, chan1)
                 phoneid2 = self.__phoneid_from_channel__(astid, chan2)
                 uinfo1 = self.__userinfo_from_phoneid__(astid, phoneid1)
@@ -1816,21 +1818,7 @@ class XivoCTICommand(BaseCommand):
                 queue = event.get('Queue')
                 uniqueid = event.get('Uniqueid')
                 log.info('STAT ABANDON %s %s %s' % (astid, queue, uniqueid))
-                if astid in self.stats_queues:
-                        if queue not in self.stats_queues[astid]:
-                                self.stats_queues[astid][queue] = {}
-                        if 'ABANDON' not in self.stats_queues[astid][queue]:
-                                self.stats_queues[astid][queue].update({'ABANDON' : []})
-                        time_now = int(time.time())
-                        time_1ha = time_now - 3600
-                        toremove = []
-                        for t in self.stats_queues[astid][queue]['ABANDON']:
-                                if t < time_1ha:
-                                        toremove.append(t)
-                        for t in toremove:
-                                self.stats_queues[astid][queue]['ABANDON'].remove(t)
-                        self.stats_queues[astid][queue]['ABANDON'].append(time_now)
-                        self.weblist['queues'][astid].keeplist[queue]['stats']['Xivo-Lost'] = len(self.stats_queues[astid][queue]['ABANDON'])
+                self.__update_queue_stats__(astid, queue, 'ABANDON')
                 # Asterisk 1.4 event
                 # {'Queue': 'qcb_00000', 'OriginalPosition': '1', 'Uniqueid': '1213891256.41', 'Privilege': 'agent,all', 'Position': '1', 'HoldTime': '2', 'Event': 'QueueCallerAbandon'}
                 # it should then go to AMI leave and send the update
@@ -2149,28 +2137,7 @@ class XivoCTICommand(BaseCommand):
                         self.uniqueids[astid][uniqueid]['join'] = {'queue' : queue,
                                                                    'time' : time.time()}
                 log.info('STAT JOIN %s %s %s %s' % (astid, queue, chan, uniqueid))
-                if astid in self.stats_queues:
-                        if queue not in self.stats_queues[astid]:
-                                self.stats_queues[astid][queue] = {}
-                        if 'ENTERQUEUE' not in self.stats_queues[astid][queue]:
-                                self.stats_queues[astid][queue].update({'ENTERQUEUE' : []})
-                        time_now = int(time.time())
-                        time_1ha = time_now - 3600
-                        toremove = []
-                        for t in self.stats_queues[astid][queue]['ENTERQUEUE']:
-                                if t < time_1ha:
-                                        toremove.append(t)
-                        for t in toremove:
-                                self.stats_queues[astid][queue]['ENTERQUEUE'].remove(t)
-                        self.stats_queues[astid][queue]['ENTERQUEUE'].append(time_now)
-                        self.weblist['queues'][astid].keeplist[queue]['stats']['Xivo-Join'] = len(self.stats_queues[astid][queue]['ENTERQUEUE'])
-                        nj = self.weblist['queues'][astid].keeplist[queue]['stats']['Xivo-Join']
-                        nl = self.weblist['queues'][astid].keeplist[queue]['stats']['Xivo-Link']
-                        if nj > 0:
-                                self.weblist['queues'][astid].keeplist[queue]['stats']['Xivo-Rate'] = (nl * 100) / nj
-                        else:
-                                self.weblist['queues'][astid].keeplist[queue]['stats']['Xivo-Rate'] = -1
-
+                self.__update_queue_stats__(astid, queue, 'ENTERQUEUE')
                 self.__sheet_alert__('incomingqueue', astid, DEFAULT_CONTEXT, event)
                 log.info('AMI Join (Queue) %s %s %s %s' % (astid, queue, chan, count))
                 self.weblist['queues'][astid].queueentry_update(queue, chan, position, 0,
