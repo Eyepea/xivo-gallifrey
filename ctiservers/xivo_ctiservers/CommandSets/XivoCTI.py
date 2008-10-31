@@ -338,8 +338,9 @@ class XivoCTICommand(BaseCommand):
                 #if userinfo.has_key('init'):
                 #       if not userinfo['init']:
                 #              return 'uninit_phone'
+
+                ## if time.time() - userinfo['login'].get('sessiontimestamp') < self.xivoclient_session_timeout:
                 if userinfo.has_key('login') and userinfo['login'].has_key('sessiontimestamp'):
-                        if time.time() - userinfo['login'].get('sessiontimestamp') < self.xivoclient_session_timeout:
                                 log.warning('user %s already connected from %s'
                                           % (userinfo['user'], userinfo['login']['connection'].getpeername()))
                                 if 'lastconnwins' in userinfo:
@@ -2767,13 +2768,16 @@ class XivoCTICommand(BaseCommand):
                 elif ccomm == 'phones':
                         # XXX define capas ?
                         fullstat = {}
-                        for astid, iplist in self.weblist['phones'].iteritems():
-                                fullstat[astid] = []
-                                for idx, pidx in iplist.keeplist.iteritems():
-                                        print astid, idx, pidx
-                                        phoneinfo = { 'statusbase' : pidx.build_basestatus(),
-                                                      'statusextended' : pidx.build_fullstatlist() }
-                                        fullstat[astid].append(phoneinfo)
+                        try:
+                                for astid, iplist in self.weblist['phones'].iteritems():
+                                        fullstat[astid] = []
+                                        for idx, pidx in iplist.keeplist.iteritems():
+                                                print astid, idx, pidx
+                                                phoneinfo = { 'statusbase' : pidx.build_basestatus(),
+                                                              'statusextended' : pidx.build_fullstatlist() }
+                                                fullstat[astid].append(phoneinfo)
+                        except Exception, exc:
+                                pass
                 elif ccomm == 'agents':
                         fullstat = []
                         if self.capas[capaid].match_funcs(ucapa, 'agents'):
