@@ -209,6 +209,26 @@ def fix_permissions(path):
             os.chmod(os.path.join(root, name), file_mode)
 
 
+def _common_extract_all(label, file_path, start_of_cmd, kind):
+    """
+    internal
+    """
+    archive_path = os.path.join(TMP_PATH, label)
+    shutil.rmtree(archive_path, True)
+    os.mkdir(archive_path)
+    
+    try:
+        result = subprocess.call(start_of_cmd + [file_path], cwd=archive_path, close_fds=True)
+        fix_permissions(archive_path)
+        
+        if result:
+            die(kind + " extraction failed")
+    except OSError, e:
+        die(kind + " extraction failed: %s" % e)
+    
+    return archive_path
+
+
 def zip_extract_all(label, zipfile_path):
     """
     Extract the content of zipfile_path into TMP_PATH/label and
@@ -216,20 +236,7 @@ def zip_extract_all(label, zipfile_path):
     directory before extracting files.  label is used as a unique
     identifier and usually contains the firmware name as a prefix.
     """
-    zip_path = os.path.join(TMP_PATH, label)
-    shutil.rmtree(zip_path, True)
-    os.mkdir(zip_path)
-    
-    try:
-        result = subprocess.call(['unzip', '-q', zipfile_path], cwd = zip_path, close_fds = True)
-        fix_permissions(zip_path)
-
-        if result:
-            die("zip extraction failed")
-    except OSError, e:
-        die("zip extraction failed: %s" % e)
-    
-    return zip_path
+    return _common_extract_all(label, zipfile_path, ['unzip', '-q'], "zip")
 
 
 def tar_extract_all(label, tarfile_path):
@@ -239,20 +246,7 @@ def tar_extract_all(label, tarfile_path):
     directory before extracting files.  label is used as a unique
     identifier and usually contains the firmware name as a prefix.
     """
-    tar_path = os.path.join(TMP_PATH, label)
-    shutil.rmtree(tar_path, True)
-    os.mkdir(tar_path)
-    
-    try:
-        result = subprocess.call(['tar', 'xf', tarfile_path], cwd = tar_path, close_fds = True)
-        fix_permissions(tar_path)
-
-        if result:
-            die("tar extraction failed")
-    except OSError, e:
-        die("tar extraction failed: %s" % e)
-    
-    return tar_path
+    return _common_extract_all(label, tarfile_path, ['tar', 'xf'], "tar")
 
 
 def tgz_extract_all(label, tgzfile_path):
@@ -262,20 +256,7 @@ def tgz_extract_all(label, tgzfile_path):
     directory before extracting files.  label is used as a unique
     identifier and usually contains the firmware name as a prefix.
     """
-    tgz_path = os.path.join(TMP_PATH, label)
-    shutil.rmtree(tgz_path, True)
-    os.mkdir(tgz_path)
-    
-    try:
-        result = subprocess.call(['tar', 'xzf', tgzfile_path], cwd = tgz_path, close_fds = True)
-        fix_permissions(tgz_path)
-
-        if result:
-            die("tgz extraction failed")
-    except OSError, e:
-        die("tgz extraction failed: %s" % e)
-    
-    return tgz_path
+    return _common_extract_all(label, tgzfile_path, ['tar', 'xzf'], "tgz")
 
 
 def tbz2_extract_all(label, tbz2file_path):
@@ -285,20 +266,7 @@ def tbz2_extract_all(label, tbz2file_path):
     directory before extracting files.  label is used as a unique
     identifier and usually contains the firmware name as a prefix.
     """
-    tbz2_path = os.path.join(TMP_PATH, label)
-    shutil.rmtree(tbz2_path, True)
-    os.mkdir(tbz2_path)
-    
-    try:
-        result = subprocess.call(['tar', 'xjf', tbz2file_path], cwd = tbz2_path, close_fds = True)
-        fix_permissions(tbz2_path)
-
-        if result:
-            die("tbz2 extraction failed")
-    except OSError, e:
-        die("tbz2 extraction failed: %s" % e)
-    
-    return tbz2_path
+    return _common_extract_all(label, tbz2file_path, ['tar', 'xjf'], "tbz2")
 
 
 def _init():
