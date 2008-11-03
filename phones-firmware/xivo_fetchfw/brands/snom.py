@@ -1,4 +1,4 @@
-__version__ = "$Revision$ $Date$"
+__version__ = "$Revision: 4539 $ $Date: 2008-10-30 12:45:18 +0100 (Thu, 30 Oct 2008) $"
 __license__ = """
     Copyright (C) 2008  Proformatique
 
@@ -19,32 +19,34 @@ __license__ = """
 
 import os
 import shutil
-import fetchfw
+from xivo_fetchfw import fetchfw
+
 
 def snom_install(firmware):
     assert len(firmware.remote_files) == 1
-    fw_dst_dir = os.path.join(fetchfw.tftp_path, "Snom", "Firmware")
+    fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, "Snom", "Firmware")
     fw_dst_path = os.path.join(fw_dst_dir, firmware.remote_files[0].filename)
-
+    
     try:
         os.makedirs(fw_dst_dir)
     except OSError:
         pass # XXX: catching every OSError is not appropriate
-
+    
     shutil.copy2(firmware.remote_files[0].path, fw_dst_path)
 
-fetchfw.register_install_fn("Snom", None, snom_install)
 
 def snom_m3_install(firmware):
-    fw_dst_dir = os.path.join(fetchfw.tftp_path, "Snom", "Firmware")
-
+    fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, "Snom", "Firmware")
+    
     try:
         os.makedirs(fw_dst_dir)
     except OSError:
         pass # XXX: catching every OSError is not appropriate
-
+    
     for xfile in firmware.remote_files:
         fw_dst_path = os.path.join(fw_dst_dir, xfile.filename)
         shutil.copy2(xfile.path, fw_dst_path)
 
+
+fetchfw.register_install_fn("Snom", None, snom_install)
 fetchfw.register_install_fn("Snom", "m3", snom_m3_install)

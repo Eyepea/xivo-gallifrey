@@ -22,30 +22,32 @@ __license__ = """
 import optparse
 from xivo_fetchfw import fetchfw
 
+fetchfw.load()
+
 def list_brands():
-    for brand in sorted(fetchfw.brands):
+    for brand in sorted(fetchfw.BRANDS):
         print brand
 
 def list_models(brand):
-    if brand not in fetchfw.brands:
+    if brand not in fetchfw.BRANDS:
         fetchfw.die("brand %s not found" % brand)
 
-    for model in sorted(fetchfw.brands[brand]):
+    for model in sorted(fetchfw.BRANDS[brand]):
         print model
 
 def list_versions(brand, model):
-    if model not in fetchfw.brands[brand]:
+    if model not in fetchfw.BRANDS[brand]:
         fetchfw.die("model %s not found in brand %s" % (model, brand))
 
-    for version in sorted(fetchfw.brands[brand][model]):
-        firmware = fetchfw.brands[brand][model][version]
+    for version in sorted(fetchfw.BRANDS[brand][model]):
+        firmware = fetchfw.BRANDS[brand][model][version]
         print "%-20s %s" % (firmware.name, firmware.description)
 
 def install_firmware(fw_name):
-    if fw_name not in fetchfw.firmwares:
+    if fw_name not in fetchfw.FIRMWARES:
         fetchfw.die("firmware %s not found" % fw_name)
 
-    firmware = fetchfw.firmwares[fw_name]
+    firmware = fetchfw.FIRMWARES[fw_name]
     firmware.install()
 
 parser = optparse.OptionParser()
@@ -66,8 +68,8 @@ if options.search:
         fetchfw.die("conflicting options -s and -i provided")
 
     if options.list_all:
-        for brand in sorted(fetchfw.brands):
-            for model in sorted(fetchfw.brands[brand]):
+        for brand in sorted(fetchfw.BRANDS):
+            for model in sorted(fetchfw.BRANDS[brand]):
                 list_versions(brand, model)
     else:
         if options.brand:
@@ -81,7 +83,7 @@ elif options.install:
     fw_name = options.install
 
     if fw_name == "all":
-        fw_names = sorted(fetchfw.firmwares.keys())
+        fw_names = sorted(fetchfw.FIRMWARES.iterkeys())
     else:
         fw_names = [fw_name]
 

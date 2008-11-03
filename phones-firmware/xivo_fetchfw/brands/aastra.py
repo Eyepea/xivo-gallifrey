@@ -1,4 +1,4 @@
-__version__ = "$Revision$ $Date$"
+__version__ = "$Revision: 4539 $ $Date: 2008-10-30 12:45:18 +0100 (Thu, 30 Oct 2008) $"
 __license__ = """
     Copyright (C) 2008  Proformatique
 
@@ -19,33 +19,35 @@ __license__ = """
 
 import os
 import shutil
-import fetchfw
+from xivo_fetchfw import fetchfw
+
 
 def aastra_install_langs(firmware, xfile):
     label = "%s_%s" % ("aastra", "langs")
     zip_path = fetchfw.zip_extract_all(label, xfile.path)
-    fw_dst_dir = os.path.join(fetchfw.tftp_path, "Aastra")
-
+    fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, "Aastra")
+    
     try:
         os.makedirs(fw_dst_dir)
     except OSError:
         pass # XXX: catching every OSError is not appropriate
-
+    
     for fw_file in os.listdir(zip_path):
         fw_src_path = os.path.join(zip_path, fw_file)
         fw_dst_path = os.path.join(fw_dst_dir, fw_file)
         shutil.copy2(fw_src_path, fw_dst_path)
 
+
 def aastra_install_fw(firmware, xfile):
     zip_path = fetchfw.zip_extract_all(firmware.name, xfile.path)
     fw_src_path = os.path.join(zip_path, "%s.st" % firmware.model)
-    fw_dst_dir = os.path.join(fetchfw.tftp_path, "Aastra")
-
+    fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, "Aastra")
+    
     try:
         os.makedirs(fw_dst_dir)
     except OSError:
         pass # XXX: catching every OSError is not appropriate
-
+    
     shutil.copy2(fw_src_path, fw_dst_dir)
 
 
@@ -55,5 +57,6 @@ def aastra_install(firmware):
             aastra_install_langs(firmware, xfile)
         else:
             aastra_install_fw(firmware, xfile)
+
 
 fetchfw.register_install_fn("Aastra", None, aastra_install)

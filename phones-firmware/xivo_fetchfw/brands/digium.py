@@ -1,4 +1,4 @@
-__version__ = "$Revision$ $Date$"
+__version__ = "$Revision: 4545 $ $Date: 2008-10-30 16:47:09 +0100 (Thu, 30 Oct 2008) $"
 __license__ = """
     Copyright (C) 2008  Proformatique
 
@@ -19,21 +19,18 @@ __license__ = """
 
 import os
 import shutil
-import fetchfw
+from xivo_fetchfw import fetchfw
 
-def linksys_install(firmware):
-    assert len(firmware.remote_files) == 1
-    zip_path = fetchfw.zip_extract_all(firmware.name, firmware.remote_files[0].path)
-    fw_file = "%s.bin" % firmware.remote_files[0].filename.rsplit('.')[0]
-    fw_src_path = os.path.join(zip_path, fw_file)
-    fw_dst_dir = os.path.join(fetchfw.tftp_path, "Linksys", "firmware")
-    fw_dst_path = os.path.join(fw_dst_dir, fw_file)
 
-    try:
-        os.makedirs(fw_dst_dir)
-    except OSError:
-        pass # XXX: catching every OSError is not appropriate
+def digium_install(firmware):
+    xfile = firmware.remote_files[0]
+    tgz_path = fetchfw.tgz_extract_all("digium_fw", xfile.path)
+    fw_dst_dir = fetchfw.KFW_PATH
+    
+    for fw_file in os.listdir(tgz_path):
+        fw_src_path = os.path.join(tgz_path, fw_file)
+        fw_dst_path = os.path.join(fw_dst_dir, fw_file)
+        shutil.copy2(fw_src_path, fw_dst_path)
 
-    shutil.copy2(fw_src_path, fw_dst_path)
 
-fetchfw.register_install_fn("Linksys", None, linksys_install)
+fetchfw.register_install_fn("Digium", None, digium_install)

@@ -10,7 +10,7 @@ setup(name='xivo_fetchfw',
       author='Proformatique',
       author_email='technique@proformatique.com',
       url='http://xivo.fr/',
-      packages=['xivo_fetchfw'],
+      packages=['xivo_fetchfw', 'xivo_fetchfw.brands'],
       data_files=[
                   ('/etc/pf-xivo', ['etc/fetchfw.conf']),
                   ('/usr/sbin', ['sbin/xivo_fetchfw']),
