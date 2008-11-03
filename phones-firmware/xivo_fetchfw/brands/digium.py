@@ -1,4 +1,4 @@
-__version__ = "$Revision: 4545 $ $Date: 2008-10-30 16:47:09 +0100 (Thu, 30 Oct 2008) $"
+__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2008  Proformatique
 
