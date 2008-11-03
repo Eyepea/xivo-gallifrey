@@ -78,7 +78,6 @@ class XivoCTICommand(BaseCommand):
 
         fullstat_heavies = {}
         queues_channels_list = {}
-        agents_list = {}
         commnames = ['login_id', 'login_pass', 'login_capas',
                      'history', 'directory-search',
                      'featuresget', 'featuresput',
@@ -563,16 +562,6 @@ class XivoCTICommand(BaseCommand):
         def set_agentlist(self, astid, urllist_agents):
                 self.weblist['agents'][astid] = cti_agentlist.AgentList(urllist_agents)
                 self.weblist['agents'][astid].setcommandclass(self)
-                for v, vv in self.weblist['agents'][astid].keeplist:
-                        agent = vv['number']
-                        if agent not in self.agents_list[astid]:
-                                self.agents_list[astid][agent] = {}
-                                self.agents_list[astid][agent]['status'] = 'AGENT_LOGGEDOFF'
-                                self.agents_list[astid][agent]['phonenum'] = ''
-                                self.agents_list[astid][agent]['name'] = vv['firstname'] + ' ' + vv['lastname']
-                                self.agents_list[astid][agent]['loggedintime'] = '0'
-                                self.agents_list[astid][agent]['recorded'] = False
-                                self.agents_list[astid][agent]['link'] = False
                 return
         
         def set_vqueuelist(self, astid, urllist_vqueues):
@@ -722,7 +711,7 @@ class XivoCTICommand(BaseCommand):
                 return __revision__
         
         def agents(self):
-                return self.agents_list
+                return self.weblist['agents']
         
         def queues(self):
                 return self.weblist['queues']
@@ -1754,10 +1743,11 @@ class XivoCTICommand(BaseCommand):
                 else:
                         context = DEFAULT_CONTEXT
                 
-                if astid in self.agents_list and agent in self.agents_list[astid]:
-                        self.agents_list[astid][agent]['status'] = 'AGENT_IDLE'
-                        self.agents_list[astid][agent]['phonenum'] = phonenum
-                        self.agents_list[astid][agent]['context'] = context
+                if astid in self.weblist['agents']:
+                        agent_id = self.weblist['agents'][astid].reverse_index.get(agent)
+                        self.weblist['agents'][astid].keeplist[agent_id]['stats'].update({'status': 'AGENT_IDLE',
+                                                                                          'phonenum' : phonenum,
+                                                                                          'context' : context})
                 msg = self.__build_agupdate__(['agentlogin', astid, 'Agent/%s' % agent, phonenum])
                 print 'ami_agentcallbacklogin', msg
                 self.__send_msg_to_cti_clients__(msg)
@@ -1774,10 +1764,11 @@ class XivoCTICommand(BaseCommand):
                 if phonenum == 'n/a':
                         phonenum = AGENT_NO_PHONENUM
                 
-                if astid in self.agents_list and agent in self.agents_list[astid]:
-                        self.agents_list[astid][agent]['status'] = 'AGENT_LOGGEDOFF'
-                        self.agents_list[astid][agent]['phonenum'] = phonenum
-                        self.agents_list[astid][agent]['context'] = context
+                if astid in self.weblist['agents']:
+                        agent_id = self.weblist['agents'][astid].reverse_index.get(agent)
+                        self.weblist['agents'][astid].keeplist[agent_id]['stats'].update({'status': 'AGENT_LOGGEDOFF',
+                                                                                          'phonenum' : phonenum,
+                                                                                          'context' : context})
                 msg = self.__build_agupdate__(['agentlogout', astid, 'Agent/%s' % agent, phonenum])
                 print 'ami_agentcallbacklogoff', msg
                 self.__send_msg_to_cti_clients__(msg)
@@ -1803,9 +1794,7 @@ class XivoCTICommand(BaseCommand):
         
         def ami_agents(self, astid, event):
                 agent = event.get('Agent')
-                if astid not in self.agents_list:
-                        self.agents_list[astid] = {}
-                if agent not in self.agents_list[astid]:
+                if astid in self.weblist['agents']:
                         loginchan_split = event.get('LoggedInChan').split('@')
                         phonenum = loginchan_split[0]
                         if len(loginchan_split) > 1:
@@ -1814,23 +1803,23 @@ class XivoCTICommand(BaseCommand):
                                 context = DEFAULT_CONTEXT
                         if phonenum == 'n/a':
                                 phonenum = AGENT_NO_PHONENUM
-                        
-                        self.agents_list[astid][agent] = {}
-                        self.agents_list[astid][agent]['status'] = event.get('Status')
-                        self.agents_list[astid][agent]['phonenum'] = phonenum
-                        self.agents_list[astid][agent]['context'] = context
-                        self.agents_list[astid][agent]['name'] = event.get('Name')
-                        self.agents_list[astid][agent]['loggedintime'] = event.get('LoggedInTime')
-                        self.agents_list[astid][agent]['talkingto'] = event.get('TalkingTo')
-                        self.agents_list[astid][agent]['recorded'] = False
-                        self.agents_list[astid][agent]['link'] = False
+                        agent_id = self.weblist['agents'][astid].reverse_index.get(agent)
+                        if agent_id:
+                                self.weblist['agents'][astid].keeplist[agent_id]['stats'].update( { 'status' : event.get('Status'),
+                                                                                                    'phonenum' : phonenum,
+                                                                                                    'context' : context,
+                                                                                                    'name' : event.get('Name'),
+                                                                                                    'loggedintime' : event.get('LoggedInTime'),
+                                                                                                    'talkingto' : event.get('TalkingTo'),
+                                                                                                    'recorded' : False,
+                                                                                                    'link' : False
+                                                                                                    } )
+                        else:
+                                log.warning('I received some statuses for an agent <%s> while the XIVO config does not seem to know it' % agent)
                 return
 
         def ami_agentscomplete(self, astid, event):
                 print 'AMI AgentsComplete', astid, event
-                if astid in self.agents_list:
-                        for aname, aargs in self.agents_list[astid].iteritems():
-                                print ' (a) ', aname, aargs
                 return
 
         # XIVO-WEBI: beg-data
@@ -1902,10 +1891,12 @@ class XivoCTICommand(BaseCommand):
                 agent_channel = arrgs[2]
                 
                 if agent_channel.startswith('Agent/'):
+                        agent = agent_channel[6:]
+                        agent_id = self.weblist['agents'][astid].reverse_index.get(agent)
                         if action == 'phonelink' or action == 'agentlink':
-                                self.agents_list[astid][agent_channel[6:]]['link'] = True
+                                self.weblist['agents'][astid].keeplist[agent_id]['stats'].update({'link' : True})
                         elif action == 'phoneunlink' or action == 'agentunlink':
-                                self.agents_list[astid][agent_channel[6:]]['link'] = False
+                                self.weblist['agents'][astid].keeplist[agent_id]['stats'].update({'link' : False})
                 
                 tosend = { 'class' : 'agents',
                            'function' : 'update',
@@ -2421,10 +2412,10 @@ class XivoCTICommand(BaseCommand):
                                                         astid = icommand.struct.get('astid')
                                                         agent_number = icommand.struct.get('agentid') # agent_number = userinfo.get('agentnum')
                                                         agent_channel = 'Agent/%s' % agent_number
-                                                        
-                                                        if astid in self.weblist['queues'] and astid in self.agents_list and agent_number in self.agents_list[astid]:
-                                                                agprop = self.agents_list[astid][agent_number]
+                                                        if astid in self.weblist['queues'] and astid in self.weblist['agents']:
                                                                 # lookup the logged in/out status of agent agent_number and sends it back to the requester
+                                                                agent_id = self.weblist['agents'][astid].reverse_index.get(agent_number)
+                                                                agprop = self.weblist['agents'][astid].keeplist[agent_id]['stats']
                                                                 tosend = { 'class' : 'agent-status',
                                                                            'direction' : 'client',
                                                                            'astid' : astid,
@@ -2506,26 +2497,23 @@ class XivoCTICommand(BaseCommand):
                         return cjsonenc
                 else:
                         return None
+                
 
-
-
+        
         def __find_agentid_by_agentnum__(self, astid, agent_number):
+                agent_id = None
                 if astid in self.weblist['agents']:
-                        for agent_id, ag_val in self.weblist['agents'][astid].keeplist.iteritems():
-                                if 'number' in ag_val and ag_val['number'] == agent_number:
-                                        return agent_id
-                return None
+                        agent_id = self.weblist['agents'][astid].reverse_index.get(agent_number)
+                return agent_id
         
         def __find_channel_by_agentnum__(self, astid, agent_number):
                 chans = []
-                agent_id = self.__find_agentid_by_agentnum__(astid, agent_number)
-                for uinfo in self.ulist_ng.keeplist.itervalues():
-                        if 'agentid' in uinfo and uinfo.get('agentid') == agent_id and uinfo.get('astid') == astid:
-                                techref = uinfo.get('techlist').split(',')[0]
-                                for v, vv in self.uniqueids[astid].iteritems():
-                                        if 'channel' in vv:
-                                                if techref == self.__phoneid_from_channel__(astid, vv['channel']):
-                                                        chans.append(vv['channel'])
+                for uinfo in self.__find_userinfos_by_agentnum__(astid, agent_number):
+                        techref = uinfo.get('techlist').split(',')[0]
+                        for v, vv in self.uniqueids[astid].iteritems():
+                                if 'channel' in vv:
+                                        if techref == self.__phoneid_from_channel__(astid, vv['channel']):
+                                                chans.append(vv['channel'])
                 return chans
         
         def __find_userinfos_by_agentnum__(self, astid, agent_number):
@@ -2621,7 +2609,8 @@ class XivoCTICommand(BaseCommand):
                                 channels = self.__find_channel_by_agentnum__(astid, anum)
                                 for channel in channels:
                                         self.__ami_execute__(astid, 'monitor', channel, 'cti-%s-%s' % (datestring, anum))
-                                        self.agents_list[astid][anum]['recorded'] = True
+                                        agent_id = self.weblist['agents'][astid].reverse_index.get(anum)
+                                        self.weblist['agents'][astid].keeplist[agent_id]['stats'].update({'recorded' : True})
                                         log.info('started monitor on %s %s (agent %s)' % (astid, channel, anum))
                                         tosend = { 'class' : 'agentrecord',
                                                    'direction' : 'client',
@@ -2633,7 +2622,8 @@ class XivoCTICommand(BaseCommand):
                                 channels = self.__find_channel_by_agentnum__(astid, anum)
                                 for channel in channels:
                                         self.__ami_execute__(astid, 'stopmonitor', channel)
-                                        self.agents_list[astid][anum]['recorded'] = False
+                                        agent_id = self.weblist['agents'][astid].reverse_index.get(anum)
+                                        self.weblist['agents'][astid].keeplist[agent_id]['stats'].update({'recorded' : False})
                                         log.info('stopped monitor on %s %s (agent %s)' % (astid, channel, anum))
                                         tosend = { 'class' : 'agentrecord',
                                                    'direction' : 'client',
@@ -2714,7 +2704,7 @@ class XivoCTICommand(BaseCommand):
                                 if agentphonenum:
                                         self.__ami_execute__(astid, 'setvar', 'AGENTBYCALLERID_%s' % agentphonenum, '')
                                         # del uinfo['agentphonenum']
-                        if len(agentnum) > 0:
+                        if agentnum:
                                 self.__ami_execute__(astid, 'agentlogoff', agentnum)
                                 self.__fill_user_ctilog__(uinfo, 'agent_logout')
                 return
@@ -2794,12 +2784,13 @@ class XivoCTICommand(BaseCommand):
                 elif ccomm == 'agents':
                         fullstat = []
                         if self.capas[capaid].match_funcs(ucapa, 'agents'):
-                                for astid, aglist in self.agents_list.iteritems():
+                                for astid, aglist in self.weblist['agents'].iteritems():
                                         if astid in self.weblist['queues']:
                                                 newlst = {}
-                                                for agent_number, agprop in aglist.iteritems():
+                                                for agent_id, agprop in aglist.keeplist.iteritems():
+                                                        agent_number = agprop['number']
                                                         agent_channel = 'Agent/%s' % agent_number
-                                                        newlst[agent_number] = { 'properties' : agprop,
+                                                        newlst[agent_number] = { 'properties' : agprop['stats'],
                                                                                  'queues' : self.weblist['queues'][astid].get_queues_byagent(agent_channel)
                                                                                  }
                                                 fullstat.append({ 'astid' : astid,

@@ -287,7 +287,7 @@ def manage_info_connections(connid, msg, sep):
                                 for astid, agents in commandclass.agents().iteritems():
                                         try:
                                                 connid.sendall('agents for %s\n' % astid)
-                                                for ag, agp in agents.iteritems():
+                                                for ag, agp in agents.keeplist.iteritems():
                                                         connid.sendall('%s %s\n' % (ag, agp))
                                         except Exception, exc:
                                                 log.error('--- exception --- INFO %s : %s' % (usefulmsg, exc))
