@@ -27,3 +27,4 @@ apptest_sleep
 pf_fastagi_args.patch
 
 pickup_issue5014-1.4
+pf_manager_dtmf.patch

@@ -1,0 +1,90 @@
+2008-11-03  Corentin Le Gall <clegall@proformatique.com>
+
+	pf_manager_dtmf.patch
+	$Revision$
+	$Date$
+	DTMF manager events (backport from Asterisk 1.6 for 1.4)
+
+	XIVO needs these Asterisk 1.6 events, in order to filter out
+        some ill-timed Unlink/Link events.
+
+Index: asterisk-1.4.22/main/manager.c
+===================================================================
+--- asterisk-1.4.22.orig/main/manager.c	2008-11-03 17:29:16.000000000 +0100
++++ asterisk-1.4.22/main/manager.c	2008-11-03 17:30:05.000000000 +0100
+@@ -127,6 +127,7 @@
+ 	{ EVENT_FLAG_AGENT, "agent" },
+ 	{ EVENT_FLAG_USER, "user" },
+ 	{ EVENT_FLAG_CONFIG, "config" },
++	{ EVENT_FLAG_DTMF, "dtmf" },
+ 	{ -1, "all" },
+ 	{ 0, "none" },
+ };
+Index: asterisk-1.4.22/include/asterisk/manager.h
+===================================================================
+--- asterisk-1.4.22.orig/include/asterisk/manager.h	2008-11-03 17:29:35.000000000 +0100
++++ asterisk-1.4.22/include/asterisk/manager.h	2008-11-03 17:30:17.000000000 +0100
+@@ -55,6 +55,7 @@
+ #define EVENT_FLAG_AGENT		(1 << 5) /* Ability to read/set agent info */
+ #define EVENT_FLAG_USER                 (1 << 6) /* Ability to read/set user info */
+ #define EVENT_FLAG_CONFIG		(1 << 7) /* Ability to modify configurations */
++#define EVENT_FLAG_DTMF  		(1 << 8) /* Ability to read DTMF events */
+ 
+ /* Export manager structures */
+ #define AST_MAX_MANHEADERS 128
+Index: asterisk-1.4.22/main/channel.c
+===================================================================
+--- asterisk-1.4.22.orig/main/channel.c	2008-11-03 17:29:13.000000000 +0100
++++ asterisk-1.4.22/main/channel.c	2008-11-03 17:30:30.000000000 +0100
+@@ -1911,6 +1911,19 @@
+ 	return 0; /* Time is up */
+ }
+ 
++static void send_dtmf_event(const struct ast_channel *chan, const char *direction, const char digit, const char *begin, const char *end)
++{
++	manager_event(EVENT_FLAG_DTMF,
++                      "DTMF",
++                      "Channel: %s\r\n"
++                      "Uniqueid: %s\r\n"
++                      "Digit: %c\r\n"
++                      "Direction: %s\r\n"
++                      "Begin: %s\r\n"
++                      "End: %s\r\n",
++                      chan->name, chan->uniqueid, digit, direction, begin, end);
++}
++
+ static void ast_read_generator_actions(struct ast_channel *chan, struct ast_frame *f)
+ {
+ 	if (chan->generatordata &&  !ast_internal_timing_enabled(chan)) {
+@@ -2145,6 +2158,7 @@
+ 			}
+ 			break;
+ 		case AST_FRAME_DTMF_END:
++			send_dtmf_event(chan, "Received", f->subclass, "No", "Yes");
+ 			ast_log(LOG_DTMF, "DTMF end '%c' received on %s, duration %ld ms\n", f->subclass, chan->name, f->len);
+ 			/* Queue it up if DTMF is deffered, or if DTMF emulation is forced.
+ 			 * However, only let emulation be forced if the other end cares about BEGIN frames */
+@@ -2223,6 +2237,7 @@
+ 			}
+ 			break;
+ 		case AST_FRAME_DTMF_BEGIN:
++			send_dtmf_event(chan, "Received", f->subclass, "Yes", "No");
+ 			ast_log(LOG_DTMF, "DTMF begin '%c' received on %s\n", f->subclass, chan->name);
+ 			if ( ast_test_flag(chan, AST_FLAG_DEFER_DTMF | AST_FLAG_END_DTMF_ONLY | AST_FLAG_EMULATE_DTMF) || 
+ 			    (!ast_tvzero(chan->dtmf_tv) && 
+@@ -2670,6 +2685,7 @@
+ 			if (old_frame != fr)
+ 				f = fr;
+ 		}
++		send_dtmf_event(chan, "Sent", fr->subclass, "Yes", "No");
+ 		ast_clear_flag(chan, AST_FLAG_BLOCKING);
+ 		ast_channel_unlock(chan);
+ 		res = ast_senddigit_begin(chan, fr->subclass);
+@@ -2683,6 +2699,7 @@
+ 			if (old_frame != fr)
+ 				f = fr;
+ 		}
++		send_dtmf_event(chan, "Sent", fr->subclass, "No", "Yes");
+ 		ast_clear_flag(chan, AST_FLAG_BLOCKING);
+ 		ast_channel_unlock(chan);
+ 		res = ast_senddigit_end(chan, fr->subclass, fr->len);
