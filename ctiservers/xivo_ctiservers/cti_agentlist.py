@@ -31,10 +31,20 @@ log = logging.getLogger('agentlist')
 
 class AgentList(AnyList):
         def __init__(self, newurls = []):
-                self.anylist_properties = {'keywords' : ['firstname', 'lastname', 'number', 'passwd',
+                self.anylist_properties = {'keywords' : ['firstname', 'lastname', 'number', 'password',
                                                          'context', 'ackcall', 'wrapuptime'],
                                            'name' : 'agents',
                                            'action' : 'getagentslist',
                                            'urloptions' : (1, 4, True)}
                 AnyList.__init__(self, newurls)
                 return
+
+        def update(self):
+                ret = AnyList.update(self)
+                self.reverse_index = {}
+                for idx, ag in self.keeplist.iteritems():
+                        if ag['number'] not in self.reverse_index:
+                                self.reverse_index[ag['number']] = idx
+                        else:
+                                log.warning('2 agents have the same number')
+                return ret

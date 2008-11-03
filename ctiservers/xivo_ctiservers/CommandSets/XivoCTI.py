@@ -600,26 +600,28 @@ class XivoCTICommand(BaseCommand):
                 # self.plist_ng.update()
                 for astid, plist in self.weblist['phones'].iteritems():
                         for itemname in ['agents', 'queues', 'vqueues', 'phones']:
-                                updatestatus = self.weblist[itemname][astid].update()
-                                for function in ['del', 'add']:
-                                        if updatestatus[function]:
-                                                log.info('%s %s %s : %s' % (astid, itemname, function, updatestatus[function]))
-                                                tosend = { 'class' : itemname,
-                                                           'function' : function,
-                                                           'direction' : 'client',
-                                                           'astid' : astid,
-                                                           'deltalist' : updatestatus[function] }
-                                                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
-                                if itemname == 'queues':
-                                        for qname, qq in self.weblist['queues'][astid].keeplist.iteritems():
-                                                qq['stats']['Xivo-Join'] = 0
-                                                qq['stats']['Xivo-Link'] = 0
-                                                qq['stats']['Xivo-Lost'] = 0
-                                                qq['stats']['Xivo-Rate'] = -1
-                                                qq['stats']['Xivo-Chat'] = 0
-                                                qq['stats']['Xivo-Wait'] = 0
-                                                self.__update_queue_stats__(astid, qname)
-
+                                try:
+                                        updatestatus = self.weblist[itemname][astid].update()
+                                        for function in ['del', 'add']:
+                                                if updatestatus[function]:
+                                                        log.info('%s %s %s : %s' % (astid, itemname, function, updatestatus[function]))
+                                                        tosend = { 'class' : itemname,
+                                                                   'function' : function,
+                                                                   'direction' : 'client',
+                                                                   'astid' : astid,
+                                                                   'deltalist' : updatestatus[function] }
+                                                        self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                                        if itemname == 'queues':
+                                                for qname, qq in self.weblist['queues'][astid].keeplist.iteritems():
+                                                        qq['stats']['Xivo-Join'] = 0
+                                                        qq['stats']['Xivo-Link'] = 0
+                                                        qq['stats']['Xivo-Lost'] = 0
+                                                        qq['stats']['Xivo-Rate'] = -1
+                                                        qq['stats']['Xivo-Chat'] = 0
+                                                        qq['stats']['Xivo-Wait'] = 0
+                                                        self.__update_queue_stats__(astid, qname)
+                                except Exception, exc:
+                                        log.error('--- exception --- (updates) : %s : %s' % (itemname, exc))
                         self.askstatus(astid, self.weblist['phones'][astid].keeplist)
                 # check : agentnumber should be unique
                 return
