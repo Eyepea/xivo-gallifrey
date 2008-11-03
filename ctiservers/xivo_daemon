@@ -430,6 +430,7 @@ evfunction_to_method_name = {
         'Hangup':               'ami_hangup',
         'Join':                 'ami_join',
         'Leave':                'ami_leave',
+        'DTMF':                 'ami_dtmf',
         'PeerStatus':           'ami_peerstatus',
         'Agentlogin':           'ami_agentlogin',
         'Agentlogoff':          'ami_agentlogoff',

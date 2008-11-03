@@ -128,6 +128,7 @@ class XivoCTICommand(BaseCommand):
                 self.parkedcalls = {}
                 self.stats_queues = {}
                 self.globalcount = []
+                self.ignore_dtmf = {}
                 
                 # actionid (AMI) indexed hashes
                 self.getvar_requests = {}
@@ -555,6 +556,8 @@ class XivoCTICommand(BaseCommand):
                         self.uniqueids[astid] = {}
                 if astid not in self.parkedcalls:
                         self.parkedcalls[astid] = {}
+                if astid not in self.ignore_dtmf:
+                        self.ignore_dtmf[astid] = {}
                 self.weblist['phones'][astid] = cti_phonelist.PhoneList(urllist_phones)
                 self.weblist['phones'][astid].setcommandclass(self)
                 return
@@ -1237,6 +1240,20 @@ class XivoCTICommand(BaseCommand):
                                                                 self.weblist['queues'][astid].keeplist[queuename]['stats']))
                 return
         
+
+        def __ignore_dtmf__(self, astid, uid, where):
+                ret = False
+                if uid in self.ignore_dtmf[astid]:
+                        tnow = time.time()
+                        t0 = self.ignore_dtmf[astid][uid]['xivo-timestamp']
+                        dt = tnow - t0
+                        # allow 1s between each unlink/link event
+                        if dt < 1:
+                                # print 'ignore', where, dt
+                                self.ignore_dtmf[astid][uid]['xivo-timestamp'] = tnow
+                                ret = True
+                return ret
+        
         
         def ami_link(self, astid, event):
                 chan1 = event.get('Channel1')
@@ -1245,6 +1262,10 @@ class XivoCTICommand(BaseCommand):
                 clid2 = event.get('CallerID2')
                 uid1 = event.get('Uniqueid1')
                 uid2 = event.get('Uniqueid2')
+                if self.__ignore_dtmf__(astid, uid1, 'link'):
+                        return
+                if self.__ignore_dtmf__(astid, uid2, 'link'):
+                        return
                 self.__fill_uniqueids__(astid, uid1, uid2, chan1, chan2, 'link')
                 uid1info = self.uniqueids[astid][uid1]
                 
@@ -1327,6 +1348,10 @@ class XivoCTICommand(BaseCommand):
                 clid2 = event.get('CallerID2')
                 uid1 = event.get('Uniqueid1')
                 uid2 = event.get('Uniqueid2')
+                if self.__ignore_dtmf__(astid, uid1, 'unlink'):
+                        return
+                if self.__ignore_dtmf__(astid, uid2, 'unlink'):
+                        return
                 self.__fill_uniqueids__(astid, uid1, uid2, chan1, chan2, 'unlink')
                 uid1info = self.uniqueids[astid][uid1]
                 phoneid1 = self.__phoneid_from_channel__(astid, chan1)
@@ -1438,10 +1463,24 @@ class XivoCTICommand(BaseCommand):
                         self.ami_requests[actionid] = args
                         return actionid
                 
+        def ami_dtmf(self, astid, event):
+                digit = event.get('Digit')
+                direction = event.get('Direction')
+                channel = event.get('Channel')
+                uid = event.get('Uniqueid')
+                begin = (event.get('Begin') == 'Yes')
+                if direction == 'Received':
+                        log.info('ami_dtmf %s <%s> %s %s %s %s' % (astid, digit, channel, uid, begin, time.time()))
+                        event['xivo-timestamp'] = time.time()
+                        self.ignore_dtmf[astid][uid] = event
+                return
+        
         def ami_hangup(self, astid, event):
                 chan  = event.get('Channel')
                 uid = event.get('Uniqueid')
                 cause = event.get('Cause-txt')
+                if uid in self.ignore_dtmf[astid]:
+                        del self.ignore_dtmf[astid][uid]
                 if uid in self.uniqueids[astid] and chan == self.uniqueids[astid][uid]['channel']:
                         self.uniqueids[astid][uid].update({'hangup' : chan,
                                                            'time-hangup' : time.time()})
