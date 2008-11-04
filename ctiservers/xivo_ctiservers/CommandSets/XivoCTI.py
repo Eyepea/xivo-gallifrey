@@ -1873,6 +1873,10 @@ class XivoCTICommand(BaseCommand):
                         return
                 queue = event.get('Queue')
                 uniqueid = event.get('Uniqueid')
+                if queue not in self.weblist['queues'][astid].keeplist:
+                        log.warning('ami_queuecallerabandon : %s : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        return
+                
                 log.info('STAT ABANDON %s %s %s' % (astid, queue, uniqueid))
                 self.__update_queue_stats__(astid, queue, 'ABANDON')
                 # Asterisk 1.4 event
@@ -1888,6 +1892,9 @@ class XivoCTICommand(BaseCommand):
                 position = event.get('Position')
                 wait = int(event.get('Wait'))
                 channel = event.get('Channel')
+                if queue not in self.weblist['queues'][astid].keeplist:
+                        log.warning('ami_queueentry : %s : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        return
                 
                 calleridnum = None
                 calleridname = None
@@ -1907,6 +1914,10 @@ class XivoCTICommand(BaseCommand):
                 queue = event.get('Queue')
                 location = event.get('Location')
                 paused = event.get('Paused')
+                if queue not in self.weblist['queues'][astid].keeplist:
+                        log.warning('ami_queuememberadded : %s : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        return
+                
                 self.weblist['queues'][astid].queuememberupdate(queue, location, event)
                 msg = self.__build_agupdate__(['joinqueue', astid, location, queue, paused])
                 self.__send_msg_to_cti_clients__(msg)
@@ -1918,6 +1929,10 @@ class XivoCTICommand(BaseCommand):
                         return
                 queue = event.get('Queue')
                 location = event.get('Location')
+                if queue not in self.weblist['queues'][astid].keeplist:
+                        log.warning('ami_queuememberremoved : %s : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        return
+                
                 self.weblist['queues'][astid].queuememberremove(queue, location)
                 msg = self.__build_agupdate__(['leavequeue', astid, location, queue])
                 self.__send_msg_to_cti_clients__(msg)
@@ -2181,7 +2196,7 @@ class XivoCTICommand(BaseCommand):
 
         def ami_join(self, astid, event):
                 if astid not in self.weblist['queues']:
-                        log.warning('ami_join : no queue list has been defined for %s' % astid)
+                        log.warning('ami_join : %s : no queue list has been defined' % astid)
                         return
                 # print 'AMI Join (Queue)', event
                 chan  = event.get('Channel')
@@ -2191,6 +2206,10 @@ class XivoCTICommand(BaseCommand):
                 count = event.get('Count')
                 position = event.get('Position')
                 uniqueid = event.get('Uniqueid')
+                if queue not in self.weblist['queues'][astid].keeplist:
+                        log.warning('ami_join : %s : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        return
+                
                 if uniqueid in self.uniqueids[astid]:
                         self.uniqueids[astid][uniqueid]['join'] = {'queue' : queue,
                                                                    'time' : time.time()}
@@ -2219,6 +2238,10 @@ class XivoCTICommand(BaseCommand):
                 chan  = event.get('Channel')
                 queue = event.get('Queue')
                 count = event.get('Count')
+                if queue not in self.weblist['queues'][astid].keeplist:
+                        log.warning('ami_leave : %s : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        return
+                
                 log.info('AMI Leave (Queue) %s %s %s' % (queue, chan, count))
                 
                 self.weblist['queues'][astid].queueentry_remove(queue, chan)
