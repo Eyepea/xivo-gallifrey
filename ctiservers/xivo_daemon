@@ -203,39 +203,39 @@ def manage_webi_connections(connid, msg, sep):
                 if len(usefulmsg) == 0:
                         break
                 try:
-                                if usefulmsg in ['xivo[userlist,update]',
-                                                 'xivo[agentlist,update]',
-                                                 'xivo[queuelist,update]',
-                                                 'xivo[grouplist,update]']:
-                                        update_userlist[astid] = True
-                                        log.info('%s : WEBI requested %s (%s)' % (astid, usefulmsg, requester))
-                                elif usefulmsg == 'xivo[daemon,reload]':
-                                        askedtoquit = True
-                                        log.info('%s : WEBI requested %s (%s)' % (astid, usefulmsg, requester))
-                                elif usefulmsg == 'xivo[ctiprofilelist,get]':
-                                        log.info('%s : WEBI requested %s (%s)' % (astid, usefulmsg, requester))
-                                        connid.sendall('%s:ID <%s>\n' % (XIVO_CLI_WEBI_HEADER, astid))
-                                        connid.sendall('%s\n' % commandclass.getprofilelist())
-                                        connid.sendall('%s:OK\n' % XIVO_CLI_WEBI_HEADER)
-                                elif astid in amilist.ami and amilist.ami[astid]:
-                                        stripped_usefulmsg = usefulmsg.strip()
-                                        try:
-                                                if stripped_usefulmsg == 'moh reload':
-                                                        commandclass.pre_moh_reload()
-                                                elif stripped_usefulmsg == 'reload':
-                                                        commandclass.pre_reload()
-                                        except Exception, exc:
-                                                log.error('--- exception --- (pre reloads (%s)) : %s' % (stripped_usefulmsg, exc))
+                        if usefulmsg in ['xivo[userlist,update]',
+                                         'xivo[agentlist,update]',
+                                         'xivo[queuelist,update]',
+                                         'xivo[grouplist,update]']:
+                                update_userlist[astid] = True
+                                log.info('%s : WEBI requested %s (%s)' % (astid, usefulmsg, requester))
+                        elif usefulmsg == 'xivo[daemon,reload]':
+                                askedtoquit = True
+                                log.info('%s : WEBI requested %s (%s)' % (astid, usefulmsg, requester))
+                        elif usefulmsg == 'xivo[ctiprofilelist,get]':
+                                log.info('%s : WEBI requested %s (%s)' % (astid, usefulmsg, requester))
+                                connid.sendall('%s:ID <%s>\n' % (XIVO_CLI_WEBI_HEADER, astid))
+                                connid.sendall('%s\n' % commandclass.getprofilelist())
+                                connid.sendall('%s:OK\n' % XIVO_CLI_WEBI_HEADER)
+                        elif astid in amilist.ami and amilist.ami[astid]:
+                                stripped_usefulmsg = usefulmsg.strip()
+                                try:
+                                        if stripped_usefulmsg == 'moh reload':
+                                                commandclass.pre_moh_reload()
+                                        elif stripped_usefulmsg == 'reload':
+                                                commandclass.pre_reload()
+                                except Exception, exc:
+                                        log.error('--- exception --- (pre reloads (%s)) : %s' % (stripped_usefulmsg, exc))
 
-                                        closemenow = False
-                                        try:
-                                                actionid = amilist.execute(astid, 'sendcommand', 'Command', [('Command', stripped_usefulmsg)])
-                                                log.info('%s : WEBI requested a <%s> with actionid %s (%s)' % (astid, stripped_usefulmsg,
+                                closemenow = False
+                                try:
+                                        actionid = amilist.execute(astid, 'sendcommand', 'Command', [('Command', stripped_usefulmsg)])
+                                        log.info('%s : WEBI requested a <%s> with actionid %s (%s)' % (astid, stripped_usefulmsg,
                                                                                                                actionid, connid))
-                                                waiting_actionid[actionid] = connid
-                                        except Exception, exc:
-                                                log.error('--- exception --- (%s) WEBI command exec <%s> : (client %s) : %s'
-                                                          % (astid, stripped_usefulmsg, requester, exc))
+                                        waiting_actionid[actionid] = connid
+                                except Exception, exc:
+                                        log.error('--- exception --- (%s) WEBI command exec <%s> : (client %s) : %s'
+                                                  % (astid, stripped_usefulmsg, requester, exc))
                 except Exception, exc:
                         log.error('--- exception --- (%s) WEBI <%s> : (client %s) : %s'
                                   % (astid, usefulmsg.strip(), requester, exc))
