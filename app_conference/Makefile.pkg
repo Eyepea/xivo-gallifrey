@@ -1,0 +1,20 @@
+#!/usr/bin/make -f
+# -*- mode: makefile; coding: utf-8 -*-
+#
+# $Revision: 4545 $
+# $Date: 2008-10-30 16:47:09 +0100 (Thu, 30 Oct 2008) $
+
+include $(NONO_MK)/autobuild.mk
+
+DEB_PKG = "dahdi-linux"
+
+SRCVER = $(shell cat $(MODULE_PATH)/SOURCE-VERSION)
+TARBALL_NAME = "dahdi-linux_$(SRCVER)+dfsg.orig.tar.gz"
+XIVO_REV = $(SRCVER)+dfsg+pf.$(MAINREV)~svn$(SVNREV)
+
+
+default:
+
+do-tarball::
+	cp $(MODULE_PATH)/tarballs/$(TARBALL_NAME) $(DEB_DESTDIR)/$(DEB_PKG)_$(XIVO_REV).orig.tar.gz
+
