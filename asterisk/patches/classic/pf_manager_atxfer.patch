@@ -1,0 +1,256 @@
+2008-11-04  Corentin Le Gall <clegall@proformatique.com>
+
+	pf_manager_atxfer.patch
+	$Revision$
+	$Date$
+	ATXFER feature (backport from Asterisk 1.6 for 1.4)
+
+        http://bugs.digium.com/view.php?id=10585
+
+Index: asterisk-1.4.22/CREDITS
+===================================================================
+--- asterisk-1.4.22.orig/CREDITS	2008-11-04 17:56:08.000000000 +0100
++++ asterisk-1.4.22/CREDITS	2008-11-04 17:57:00.000000000 +0100
+@@ -152,6 +152,8 @@
+ 
+ Paul Cadach - Bringing chan_h323 up to date, bug fixes, and more!
+ 
++Paolo Ornati - export Attended Transfer feature over Manager Interface
++
+ === OTHER CONTRIBUTIONS ===
+ John Todd - Monkey sounds and associated teletorture prompt
+ Michael Jerris - bug marshaling
+Index: asterisk-1.4.22/include/asterisk/frame.h
+===================================================================
+--- asterisk-1.4.22.orig/include/asterisk/frame.h	2008-11-04 17:35:01.000000000 +0100
++++ asterisk-1.4.22/include/asterisk/frame.h	2008-11-04 17:35:51.000000000 +0100
+@@ -295,6 +295,7 @@
+ 	AST_CONTROL_HOLD = 16,		/*!< Indicate call is placed on hold */
+ 	AST_CONTROL_UNHOLD = 17,	/*!< Indicate call is left from hold */
+ 	AST_CONTROL_VIDUPDATE = 18,	/*!< Indicate video frame update */
++	AST_CONTROL_ATXFERCMD = 19,	/*!< AMI triggered attended transfer */
+ 	AST_CONTROL_SRCUPDATE = 20,     /*!< Indicate source of media has changed */
+ };
+ 
+Index: asterisk-1.4.22/main/manager.c
+===================================================================
+--- asterisk-1.4.22.orig/main/manager.c	2008-11-04 17:35:01.000000000 +0100
++++ asterisk-1.4.22/main/manager.c	2008-11-04 17:37:11.000000000 +0100
+@@ -1721,6 +1721,49 @@
+ 	return 0;
+ }
+ 
++static char mandescr_atxfer[] =
++"Description: do attended transfer.\n"
++"Variables: (Names marked with * are required)\n"
++"	*Channel: transferer Channel\n"
++"	*Exten: Extension to transfer to\n"
++"	Context: Context to transfer to\n"
++"	ActionID: Optional Action id for message matching.\n";
++
++static int action_atxfer(struct mansession *s, const struct message *m)
++{
++	struct ast_channel *c;
++	const char *name = astman_get_header(m, "Channel");
++	const char *exten = astman_get_header(m, "Exten");
++	const char *context = astman_get_header(m, "Context");
++	char *xferto;
++	int len;
++
++	if (ast_strlen_zero(name)) {
++		astman_send_error(s, m, "No channel specified");
++		return 0;
++	}
++	if (ast_strlen_zero(exten)) {
++		astman_send_error(s, m, "No exten specified");
++		return 0;
++	}
++	c = ast_get_channel_by_name_locked(name);
++	if (!c) {
++		astman_send_error(s, m, "No such channel");
++		return 0;
++	}
++	len = asprintf(&xferto, "%s@%s", exten, context);
++	if (len < 0) {
++		astman_send_error(s, m, "Out of memory!");
++		goto cleanup;
++	}
++	ast_queue_control_data(c, AST_CONTROL_ATXFERCMD, xferto, len+1);
++	free(xferto);
++	astman_send_ack(s, m, "Attended transfer started");
++cleanup:
++	ast_channel_unlock(c);
++	return 0;
++}
++
+ static char mandescr_command[] = 
+ "Description: Run a CLI command.\n"
+ "Variables: (Names marked with * are required)\n"
+@@ -2910,6 +2953,7 @@
+ 		ast_manager_register2("GetConfig", EVENT_FLAG_CONFIG, action_getconfig, "Retrieve configuration", mandescr_getconfig);
+ 		ast_manager_register2("UpdateConfig", EVENT_FLAG_CONFIG, action_updateconfig, "Update basic configuration", mandescr_updateconfig);
+ 		ast_manager_register2("Redirect", EVENT_FLAG_CALL, action_redirect, "Redirect (transfer) a call", mandescr_redirect );
++		ast_manager_register2("Atxfer", EVENT_FLAG_CALL, action_atxfer, "Attended transfer", mandescr_atxfer );
+ 		ast_manager_register2("Originate", EVENT_FLAG_CALL, action_originate, "Originate Call", mandescr_originate);
+ 		ast_manager_register2("Command", EVENT_FLAG_COMMAND, action_command, "Execute Asterisk CLI Command", mandescr_command );
+ 		ast_manager_register2("ExtensionState", EVENT_FLAG_CALL, action_extensionstate, "Check Extension Status", mandescr_extensionstate );
+Index: asterisk-1.4.22/res/res_features.c
+===================================================================
+--- asterisk-1.4.22.orig/res/res_features.c	2008-11-04 17:35:01.000000000 +0100
++++ asterisk-1.4.22/res/res_features.c	2008-11-04 17:49:23.000000000 +0100
+@@ -792,11 +792,27 @@
+ 	return 0;
+ }
+ 
+-static int builtin_atxfer(struct ast_channel *chan, struct ast_channel *peer, struct ast_bridge_config *config, char *code, int sense, void *data)
++/*!
++ * \brief Attended transfer implementation
++ * \param chan transfered user
++ * \param peer person transfering call
++ * \param config
++ * \param sense feature options
++ *
++ * \param toExt
++ * \param toCont
++ * This is the actual implementation of attended transfer, it can be activated as a regular feature or through the AMI.
++ * "toExt" is the extension to transfer to (default: ask for it on the transferer channel)
++ * "toCont" is the context to transfer to (default: the one in which the transferer is)
++ *
++ * \return -1 on failure
++*/
++static int do_atxfer(struct ast_channel *chan,struct ast_channel *peer,struct ast_bridge_config *config,int sense,const char *toExt,const char *toCont)
+ {
+ 	struct ast_channel *transferer;
+ 	struct ast_channel *transferee;
+ 	const char *transferer_real_context;
++	const char *transfer_context;
+ 	char xferto[256] = "";
+ 	int res;
+ 	int outstate=0;
+@@ -813,36 +829,43 @@
+ 		ast_log(LOG_DEBUG, "Executing Attended Transfer %s, %s (sense=%d) \n", chan->name, peer->name, sense);
+ 	set_peers(&transferer, &transferee, peer, chan, sense);
+         transferer_real_context = real_ctx(transferer, transferee);
++        transfer_context = S_OR(toCont, transferer_real_context);
++
+ 	/* Start autoservice on chan while we talk to the originator */
+ 	ast_autoservice_start(transferee);
+ 	ast_indicate(transferee, AST_CONTROL_HOLD);
+ 	
+-	/* Transfer */
+-	res = ast_stream_and_wait(transferer, "pbx-transfer", transferer->language, AST_DIGIT_ANY);
+-	if (res < 0) {
+-		finishup(transferee);
+-		return res;
+-	}
+-	if (res > 0) /* If they've typed a digit already, handle it */
+-		xferto[0] = (char) res;
+ 
+-	/* this is specific of atxfer */
+-	res = ast_app_dtget(transferer, transferer_real_context, xferto, sizeof(xferto), 100, transferdigittimeout);
+-        if (res < 0) {  /* hangup, would be 0 for invalid and 1 for valid */
+-                finishup(transferee);
+-                return res;
+-        }
+-	if (res == 0) {
+-		ast_log(LOG_WARNING, "Did not read data.\n");
+-		finishup(transferee);
+-		if (ast_stream_and_wait(transferer, "beeperr", transferer->language, ""))
+-			return -1;
+-		return FEATURE_RETURN_SUCCESS;
++	if (!ast_strlen_zero(toExt)) {
++		ast_copy_string(xferto, toExt, sizeof(xferto));
++	} else {
++		/* Ask for extension to transfer to on the transferer channel */
++		res = ast_stream_and_wait(transferer, "pbx-transfer", transferer->language, AST_DIGIT_ANY);
++		if (res < 0) {
++			finishup(transferee);
++			return res;
++		}
++		if (res > 0) /* If they've typed a digit already, handle it */
++			xferto[0] = (char) res;
++
++		/* this is specific of atxfer */
++		res = ast_app_dtget(transferer, transfer_context, xferto, sizeof(xferto), 100, transferdigittimeout);
++		if (res < 0) {  /* hangup, would be 0 for invalid and 1 for valid */
++			finishup(transferee);
++			return res;
++		}
++		if (res == 0) {
++			ast_log(LOG_WARNING, "Did not read data.\n");
++			finishup(transferee);
++			if (ast_stream_and_wait(transferer, "beeperr", transferer->language, ""))
++				return -1;
++			return FEATURE_RETURN_SUCCESS;
++		}
+ 	}
+ 
+ 	/* valid extension, res == 1 */
+-	if (!ast_exists_extension(transferer, transferer_real_context, xferto, 1, transferer->cid.cid_num)) {
+-		ast_log(LOG_WARNING, "Extension %s does not exist in context %s\n",xferto,transferer_real_context);
++        if (!ast_exists_extension(transferer, transfer_context, xferto, 1, transferer->cid.cid_num)) {
++		ast_log(LOG_WARNING, "Extension %s does not exist in context %s\n",xferto,transfer_context);
+ 		finishup(transferee);
+ 		if (ast_stream_and_wait(transferer, "beeperr", transferer->language, ""))
+ 			return -1;
+@@ -850,7 +873,7 @@
+ 	}
+ 
+ 	l = strlen(xferto);
+-	snprintf(xferto + l, sizeof(xferto) - l, "@%s", transferer_real_context);	/* append context */
++        snprintf(xferto + l, sizeof(xferto) - l, "@%s", transfer_context);	/* append context */
+ 	newchan = ast_feature_request_and_dial(transferer, "Local", ast_best_codec(transferer->nativeformats),
+ 		xferto, atxfernoanswertimeout, &outstate, transferer->cid.cid_num, transferer->cid.cid_name, transferer->language);
+ 
+@@ -962,6 +985,25 @@
+ }
+ 
+ 
++/*!
++ * \brief Attended transfer ()
++ * \param chan
++ * \param peer
++ * \param config
++ * \param code
++ * \param sense
++ * \param data
++ * Get extension to transfer to, if you cannot generate channel (or find extension)
++ * return to host channel. After called channel answered wait for hangup of transferer,
++ * bridge call between transfer peer (taking them off hold) to attended transfer channel.
++ * \return -1 means what failure/success both?
++*/
++static int builtin_atxfer(struct ast_channel *chan, struct ast_channel *peer, struct ast_bridge_config *config, char *code, int sense, void *data)
++{
++	return do_atxfer(chan, peer, config, sense, NULL, NULL);
++}
++
++
+ /* add atxfer and automon as undefined so you can only use em if you configure them */
+ #define FEATURES_COUNT (sizeof(builtin_features) / sizeof(builtin_features[0]))
+ 
+@@ -1394,6 +1436,15 @@
+ 	return chan;
+ }
+ 
++static void cmd_atxfer(struct ast_channel *a, struct ast_channel *b, struct ast_bridge_config *conf, struct ast_channel *who, char *xferto)
++{
++	int sense = (a == who) ? FEATURE_SENSE_CHAN : FEATURE_SENSE_PEER;
++	char *context = strchr(xferto, '@');;
++	if (context)
++		*context++ = '\0';
++	do_atxfer(a, b, conf, sense, xferto, context);
++}
++
+ int ast_bridge_call(struct ast_channel *chan,struct ast_channel *peer,struct ast_bridge_config *config)
+ {
+ 	/* Copy voice back and forth between the two channels.  Give the peer
+@@ -1598,6 +1649,9 @@
+ 						f->datalen - sizeof(struct ast_option_header), 0);
+ 				}
+ 				break;
++			case AST_CONTROL_ATXFERCMD:
++				cmd_atxfer(chan, peer, config, who, f->data);
++				break;
+ 			}
+ 		} else if (f->frametype == AST_FRAME_DTMF_BEGIN) {
+ 			/* eat it */
