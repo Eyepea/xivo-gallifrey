@@ -190,31 +190,33 @@ def manage_webi_connections(connid, msg, sep):
         global askedtoquit
         requester = '%s:%d' % connid.getpeername()
         requester_ip = connid.getpeername()[0]
-
+        closemenow = True
+        
+        if requester_ip not in ip_reverse_webi:
+                connid.sendall('%s:KO <NOT ALLOWED>\n' % XIVO_CLI_WEBI_HEADER)
+                return closemenow
+        astid = ip_reverse_webi[requester_ip]
+        
         multimsg = msg.split(sep)
         for usefulmsgpart in multimsg:
                 usefulmsg = usefulmsgpart.split('\r')[0]
                 if len(usefulmsg) == 0:
                         break
-                if requester_ip in ip_reverse_webi:
-                        try:
-                                astid = ip_reverse_webi[requester_ip]
-                                connid.sendall('%s:ID <%s>\n' % (XIVO_CLI_WEBI_HEADER, astid))
+                try:
                                 if usefulmsg in ['xivo[userlist,update]',
                                                  'xivo[agentlist,update]',
                                                  'xivo[queuelist,update]',
                                                  'xivo[grouplist,update]']:
                                         update_userlist[astid] = True
-                                        connid.sendall('%s:OK\n' % XIVO_CLI_WEBI_HEADER)
-                                        log.info('%s : userlist update request received' % astid)
+                                        log.info('%s : WEBI requested %s (%s)' % (astid, usefulmsg, requester))
                                 elif usefulmsg == 'xivo[daemon,reload]':
                                         askedtoquit = True
-                                        connid.sendall('%s:OK\n' % XIVO_CLI_WEBI_HEADER)
-                                        log.info('%s : daemon reload request received' % astid)
+                                        log.info('%s : WEBI requested %s (%s)' % (astid, usefulmsg, requester))
                                 elif usefulmsg == 'xivo[ctiprofilelist,get]':
+                                        log.info('%s : WEBI requested %s (%s)' % (astid, usefulmsg, requester))
+                                        connid.sendall('%s:ID <%s>\n' % (XIVO_CLI_WEBI_HEADER, astid))
                                         connid.sendall('%s\n' % commandclass.getprofilelist())
                                         connid.sendall('%s:OK\n' % XIVO_CLI_WEBI_HEADER)
-                                        log.info('%s : ctiprofilelist request received' % astid)
                                 elif astid in amilist.ami and amilist.ami[astid]:
                                         stripped_usefulmsg = usefulmsg.strip()
                                         try:
@@ -225,28 +227,20 @@ def manage_webi_connections(connid, msg, sep):
                                         except Exception, exc:
                                                 log.error('--- exception --- (pre reloads (%s)) : %s' % (stripped_usefulmsg, exc))
 
+                                        closemenow = False
                                         try:
-                                                s = amilist.ami[astid].execclicommand(stripped_usefulmsg)
-                                                #actionid = ''.join(random.sample(__alphanums__, 10)) + '-' + hex(int(time.time()))
-                                                #waiting_actionid[actionid] = connid
-                                                #amilist.ami[astid].sendcommand('Command', [('Command', stripped_usefulmsg),
-                                                #('ActionID' , actionid)])
+                                                actionid = amilist.execute(astid, 'sendcommand', 'Command', [('Command', stripped_usefulmsg)])
+                                                log.info('%s : WEBI requested a <%s> with actionid %s (%s)' % (astid, stripped_usefulmsg,
+                                                                                                               actionid, connid))
+                                                waiting_actionid[actionid] = connid
                                         except Exception, exc:
                                                 log.error('--- exception --- (%s) WEBI command exec <%s> : (client %s) : %s'
                                                           % (astid, stripped_usefulmsg, requester, exc))
-                                        try:
-                                                for x in s:
-                                                        connid.sendall(x)
-                                                connid.sendall('%s:OK\n' % XIVO_CLI_WEBI_HEADER)
-                                        except Exception, exc:
-                                                log.error('--- exception --- (%s) WEBI command reply <%s> : (client %s) : %s'
-                                                          % (astid, stripped_usefulmsg, requester, exc))
-                        except Exception, exc:
-                                log.error('--- exception --- (%s) WEBI <%s> : (client %s) : %s'
-                                          % (astid, usefulmsg.strip(), requester, exc))
-                                connid.sendall('%s:KO <Exception : %s>\n' % (XIVO_CLI_WEBI_HEADER, exc))
-                else:
-                        connid.sendall('%s:KO <NOT ALLOWED>\n' % XIVO_CLI_WEBI_HEADER)
+                except Exception, exc:
+                        log.error('--- exception --- (%s) WEBI <%s> : (client %s) : %s'
+                                  % (astid, usefulmsg.strip(), requester, exc))
+                        connid.sendall('%s:KO <Exception : %s>\n' % (XIVO_CLI_WEBI_HEADER, exc))
+        return closemenow
 
 
 ## \brief Deals with requests from the UI clients.
@@ -330,10 +324,11 @@ def manage_tcp_connections(sel_i, msg, kind):
         """
         Dispatches the message's handling according to the connection's kind.
         """
+        closemenow = True
         if kind == 'CTI':
                 manage_cti_connections(sel_i, msg, commandclass.separator)
         elif kind == 'WEBI':
-                manage_webi_connections(sel_i, msg, '\n')
+                closemenow = manage_webi_connections(sel_i, msg, '\n')
         elif kind == 'INFO':
                 manage_info_connections(sel_i, msg, '\n')
         elif kind == 'AGI':
@@ -342,6 +337,7 @@ def manage_tcp_connections(sel_i, msg, kind):
                         sel_i.sendall(agireply)
         else:
                 log.warning('unknown connection kind %s' % kind)
+        return closemenow
 
 
 """
@@ -388,22 +384,28 @@ def handle_ami_event(astid, idata):
                                         if 'ActionID' in this_event:
                                                 actionid = this_event.get('ActionID')
                                                 connreply = waiting_actionid.get(actionid)
-                                                if connreply is not None:
-                                                        connreply.sendall('%s:ID <%s>\n' % (XIVO_CLI_WEBI_HEADER, astid))
-                                                for noc in nocolon:
-                                                        arggs = noc.split('\n')
-                                                        for argg in arggs:
-                                                                if len(argg) > 0 and argg != '--END COMMAND--':
-                                                                        log.info('AMI %s : %s : %s' % (astid, actionid, argg))
+                                                try:
+                                                        if connreply is not None:
+                                                                connreply.sendall('%s:ID <%s>\n' % (XIVO_CLI_WEBI_HEADER, astid))
+                                                        for noc in nocolon:
+                                                                arggs = noc.split('\n')
+                                                                for toremove in ['', '--END COMMAND--']:
+                                                                        while toremove in arggs:
+                                                                                arggs.remove(toremove)
+                                                                if arggs:
+                                                                        log.info('AMI Response %s : %s : %s' % (astid, actionid, arggs))
                                                                         if connreply is not None:
-                                                                                connreply.sendall(argg + '\n')
-                                                if connreply is not None:
-                                                        connreply.sendall('%s:OK\n' % XIVO_CLI_WEBI_HEADER)
-                                                        fdlist_full.remove(connreply)
-                                                        del fdlist_established[connreply]
-                                                        connreply.close()
-                                                        del waiting_actionid[actionid]
-
+                                                                                for argg in arggs:
+                                                                                        connreply.sendall(argg + '\n')
+                                                        if connreply is not None:
+                                                                connreply.sendall('%s:OK\n' % XIVO_CLI_WEBI_HEADER)
+                                                                fdlist_full.remove(connreply)
+                                                                del fdlist_established[connreply]
+                                                                log.info('TCP socket closed on %s (%s)' % ('%s:%d' % connreply.getpeername(), 'WEBI'))
+                                                                connreply.close()
+                                                                del waiting_actionid[actionid]
+                                                except Exception, exc:
+                                                        log.error('--- exception --- %s (command reply to %s, %s) : %s' % (astid, connreply, actionid, exc))
                                 elif response == 'Success':
                                         try:
                                                 commandclass.amiresponse_success(astid, this_event)
@@ -876,7 +878,10 @@ while True: # loops over the reloads
                                                         fdlist_full.remove(sel_i)
                                                 else:
                                                         if astid is not None:
-                                                                handle_ami_event(astid, buf)
+                                                                try:
+                                                                        handle_ami_event(astid, buf)
+                                                                except Exception, exc:
+                                                                        log.error('--- exception --- (handle_ami_event) %s : %s' % (astid, exc))
                                         except Exception, exc:
                                                 log.error('--- exception --- (amilist) %s' % exc)
 
@@ -931,6 +936,7 @@ while True: # loops over the reloads
                                         try:
                                                 kind = fdlist_established[sel_i]
                                                 requester = '%s:%d' % sel_i.getpeername()
+                                                closemenow = False
                                                 try:
                                                         msg = sel_i.recv(BUFSIZE_LARGE, socket.MSG_DONTWAIT)
                                                         lmsg = len(msg)
@@ -939,7 +945,7 @@ while True: # loops over the reloads
                                                         log.error('--- exception --- connection to %s (%s) : %s' % (requester, kind, exc))
                                                 if lmsg > 0:
                                                         try:
-                                                                manage_tcp_connections(sel_i, msg, kind)
+                                                                closemenow = manage_tcp_connections(sel_i, msg, kind)
                                                         except Exception, exc:
                                                                 log.error('--- exception --- handling %s (%s) : %s'
                                                                           % (requester, kind, exc))
@@ -949,7 +955,12 @@ while True: # loops over the reloads
                                                                         userinfo = userinfo_by_requester.get(sel_i)
                                                                         commandclass.manage_logout(userinfo, 'end')
                                                                         del userinfo_by_requester[sel_i]
-                                                if kind not in ['CTI', 'INFO'] or lmsg == 0:
+                                                doclose = False
+                                                if kind == 'WEBI':
+                                                        doclose = closemenow
+                                                elif kind not in ['CTI', 'INFO'] or lmsg == 0:
+                                                        doclose = True
+                                                if doclose:
                                                         sel_i.close()
                                                         fdlist_full.remove(sel_i)
                                                         del fdlist_established[sel_i]
@@ -957,7 +968,7 @@ while True: # loops over the reloads
                                                                 commandclass.transfer_endbuf(requester)
                                                         log.info('TCP socket closed on %s (%s)' % (requester, kind))
                                         except Exception, exc:
-                                                log.error('--- exception [%s] %s --- %s' % (kind, sel_i, exc))
+                                                log.error('--- exception --- [%s] %s --- %s' % (kind, sel_i, exc))
                                                 try:
                                                         fdlist_full.remove(sel_i)
                                                         del fdlist_established[sel_i]

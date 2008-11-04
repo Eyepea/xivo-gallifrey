@@ -730,7 +730,7 @@ class XivoCTICommand(BaseCommand):
                         self.__ami_execute__(astid, 'sendextensionstate', b['number'], b['context'])
                         self.__ami_execute__(astid, 'mailbox', b['number'], b['context'])
                 return
-
+        
         def __callback_timer__(self, what):
                 thisthread = threading.currentThread()
                 tname = thisthread.getName()
@@ -1518,6 +1518,7 @@ class XivoCTICommand(BaseCommand):
                         else:
                                 log.warning('AMI %s Response=Success : event = %s' % (astid, event))
                 elif msg == 'Extension Status':
+                        # this is the reply to 'ExtensionState'
                         self.amiresponse_extensionstatus(astid, event)
                 elif msg == 'Mailbox Message Count':
                         self.amiresponse_mailboxcount(astid, event)
