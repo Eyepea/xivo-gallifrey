@@ -656,11 +656,12 @@ while True: # loops over the reloads
                 
         log.info('# STARTING %s / svn:%s / %d' % (xdname, commandclass.version(), nreload))
         
+        for pres in config_presence.split(','):
+                commandclass.set_presence(pres, cconf.read_section('presence', pres))
         update_readconf()
         commandclass.set_userlist_urls(userlists)
         commandclass.set_contextlist(directorylist)
         commandclass.set_configs(configs)
-        commandclass.set_presence(cconf.read_section('presence', config_presence))
         commandclass.set_ctilog(ctilog)
         
         for ctx in contextlist:

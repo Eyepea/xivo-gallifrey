@@ -129,6 +129,8 @@ class XivoCTICommand(BaseCommand):
                 self.stats_queues = {}
                 self.globalcount = []
                 self.ignore_dtmf = {}
+                self.presence = {}
+                self.presence_sections = {}
                 
                 # actionid (AMI) indexed hashes
                 self.getvar_requests = {}
@@ -383,15 +385,18 @@ class XivoCTICommand(BaseCommand):
                         if 'state' in userinfo:
                                 futurestate = userinfo.get('state')
                                 # only if it was a "defined" state anyway
-                                if futurestate in self.presence.getstates():
+                                if capaid in self.presence and futurestate in self.presence[capaid].getstates():
                                         state = futurestate
 
-                        if state in self.presence.getstates() and state not in ['onlineoutgoing', 'onlineincoming']:
-                                userinfo['state'] = state
+                        if capaid in self.presence:
+                                if state in self.presence[capaid].getstates() and state not in ['onlineoutgoing', 'onlineincoming']:
+                                        userinfo['state'] = state
+                                else:
+                                        log.warning('(user %s) : state <%s> is not an allowed one => <%s>'
+                                                    % (userinfo.get('user'), state, self.presence[capaid].getdefaultstate()))
+                                        userinfo['state'] = self.presence[capaid].getdefaultstate()
                         else:
-                                log.warning('(user %s) : state <%s> is not an allowed one => <%s>'
-                                            % (userinfo.get('user'), state, self.presence.getdefaultstate()))
-                                userinfo['state'] = self.presence.getdefaultstate()
+                                userinfo['state'] = 'xivo_unknown'
 
                         self.capas[capaid].conn_inc()
                 except Exception, exc:
@@ -404,11 +409,11 @@ class XivoCTICommand(BaseCommand):
                         if 'login' in userinfo:
                                 capaid = userinfo.get('capaid')
                                 self.capas[capaid].conn_dec()
-                                del userinfo['capaid']
                                 userinfo['last-version'] = userinfo['login']['version']
                                 del userinfo['login']
                                 userinfo['state'] = 'xivo_unknown'
                                 self.__update_availstate__(userinfo, userinfo.get('state'))
+                                del userinfo['capaid'] # after __update_availstate__
                         else:
                                 log.warning('userinfo does not contain login field : %s' % userinfo)
                 except Exception, exc:
@@ -447,16 +452,24 @@ class XivoCTICommand(BaseCommand):
                         repstr = cjson.encode(tosend)
                 elif phase == xivo_commandsets.CMD_LOGIN_CAPAS:
                         capaid = userinfo.get('capaid')
-                        cstatus = self.presence.countstatus(self.__counts__())
+                        if capaid in self.presence:
+                                cstatus = self.presence[capaid].countstatus(self.__counts__())
+                                allowed = self.presence[capaid].allowed(userinfo.get('state'))
+                                details = self.presence[capaid].getdisplaydetails()
+                        else:
+                                cstatus = {}
+                                allowed = {}
+                                details = {}
+                        
                         tosend = { 'class' : 'login_capas_ok',
                                    'direction' : 'client',
                                    'capafuncs' : self.capas[capaid].tostringlist(self.capas[capaid].all()),
                                    'capaxlets' : self.capas[capaid].capadisps,
                                    'appliname' : self.capas[capaid].appliname,
                                    'guisettings' : self.capas[capaid].guisettings,
-                                   'capapresence' : { 'names'   : self.presence.getdisplaydetails(),
+                                   'capapresence' : { 'names'   : details,
                                                       'state'   : userinfo.get('state'),
-                                                      'allowed' : self.presence.allowed(userinfo.get('state')) },
+                                                      'allowed' : allowed },
                                    'presencecounter' : cstatus
                                    }
                         repstr = cjson.encode(tosend)
@@ -521,8 +534,8 @@ class XivoCTICommand(BaseCommand):
                         self.ctilog_conn.commit()
                 return
         
-        def set_presence(self, config_presence):
-                self.presence = cti_presence.Presence(config_presence)
+        def set_presence(self, pres, config_presence):
+                self.presence_sections[pres] = cti_presence.Presence(config_presence)
                 return
         
         def set_options(self, xivoconf):
@@ -545,6 +558,9 @@ class XivoCTICommand(BaseCommand):
                                         self.capas[name].setappliname(val)
                                 elif prop == 'guisettings':
                                         self.capas[name].setguisettings(val)
+                                elif prop == 'presence':
+                                        if val in self.presence_sections:
+                                                self.presence[name] = self.presence_sections[val]
                 return
         
         def set_configs(self, configs):
@@ -1299,7 +1315,7 @@ class XivoCTICommand(BaseCommand):
                         status = 'onlineincoming'
                         for uinfo in self.__find_userinfos_by_agentnum__(astid, agent_number):
                                 self.__update_availstate__(uinfo, status)
-                                self.__presence_action__(astid, agent_number, status)
+                                self.__presence_action__(astid, agent_number, uinfo.get('capaid'), status)
                         
                         # To identify which queue a call comes from, we match a previous AMI Leave event,
                         # that involved the same channel as the one catched here.
@@ -1315,7 +1331,7 @@ class XivoCTICommand(BaseCommand):
                         self.__update_availstate__(uinfo1, status)
                         ag = self.__agentnum__(uinfo1)
                         if ag:
-                                self.__presence_action__(astid, ag, status)
+                                self.__presence_action__(astid, ag, uinfo1.get('capaid'), status)
                                 msg = self.__build_agupdate__(['phonelink', astid, 'Agent/%s' % ag])
                                 self.__send_msg_to_cti_clients__(msg)
 
@@ -1324,7 +1340,7 @@ class XivoCTICommand(BaseCommand):
                         self.__update_availstate__(uinfo1_ag, status)
                         ag = self.__agentnum__(uinfo1_ag)
                         if ag:
-                                self.__presence_action__(astid, ag, status)
+                                self.__presence_action__(astid, ag, uinfo1_ag.get('capaid'), status)
                                 msg = self.__build_agupdate__(['phonelink', astid, 'Agent/%s' % ag])
                                 self.__send_msg_to_cti_clients__(msg)
 
@@ -1416,7 +1432,7 @@ class XivoCTICommand(BaseCommand):
                         status = 'postcall'
                         for uinfo in self.__find_userinfos_by_agentnum__(astid, agent_number):
                                 self.__update_availstate__(uinfo, status)
-                                self.__presence_action__(astid, agent_number, status)
+                                self.__presence_action__(astid, agent_number, uinfo.get('capaid'), status)
                                 
                         if chan1 in self.queues_channels_list[astid]:
                                 qname = self.queues_channels_list[astid][chan1]
@@ -1433,7 +1449,7 @@ class XivoCTICommand(BaseCommand):
                                 self.__update_availstate__(uinfo, status)
                                 ag = self.__agentnum__(uinfo)
                                 if ag:
-                                        self.__presence_action__(astid, ag, status)
+                                        self.__presence_action__(astid, ag, uinfo.get('capaid'), status)
                                         msg = self.__build_agupdate__(['phoneunlink', astid, 'Agent/%s' % ag])
                                         self.__send_msg_to_cti_clients__(msg)
                                         
@@ -1443,8 +1459,10 @@ class XivoCTICommand(BaseCommand):
                         pass
                 return
 
-        def __presence_action__(self, astid, anum, status):
-                presenceactions = self.presence.actions(status)
+        def __presence_action__(self, astid, anum, capaid, status):
+                if capaid not in self.presence:
+                        return
+                presenceactions = self.presence[capaid].actions(status)
                 for paction in presenceactions:
                         params = paction.split('-')
                         if params[0] == 'queueadd' and len(params) > 2 and anum:
@@ -1971,6 +1989,10 @@ class XivoCTICommand(BaseCommand):
                 queue = event.get('Queue')
                 location = event.get('Location')
                 paused = event.get('Paused')
+                if queue not in self.weblist['queues'][astid].keeplist:
+                        log.warning('ami_queuememberstatus : %s : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        return
+                
                 self.weblist['queues'][astid].queuememberupdate(queue, location, event)
                 msg = self.__build_agupdate__(['queuememberstatus', astid, location, queue, status, paused])
                 self.__send_msg_to_cti_clients__(msg)
@@ -1989,6 +2011,10 @@ class XivoCTICommand(BaseCommand):
                 queue = event.get('Queue')
                 paused = event.get('Paused')
                 location = event.get('Location')
+                if queue not in self.weblist['queues'][astid].keeplist:
+                        log.warning('ami_queuememberpaused : %s : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        return
+                
                 self.weblist['queues'][astid].queuememberupdate(queue, location, event)
                 if location.startswith('Agent/'):
                         if paused == '0':
@@ -2005,6 +2031,10 @@ class XivoCTICommand(BaseCommand):
                         return
                 queue = event.get('Queue')
                 self.weblist['queues'][astid].update_queuestats(queue, event)
+                if queue not in self.weblist['queues'][astid].keeplist:
+                        log.warning('ami_queueparams : %s : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        return
+                
                 tosend = { 'class' : 'queues',
                            'function' : 'sendlist',
                            'direction' : 'client',
@@ -2021,6 +2051,10 @@ class XivoCTICommand(BaseCommand):
                         return
                 queue = event.get('Queue')
                 location = event.get('Location')
+                if queue not in self.weblist['queues'][astid].keeplist:
+                        log.warning('ami_queuemember : %s : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        return
+                
                 self.weblist['queues'][astid].queuememberupdate(queue, location, event)
                 return
 
@@ -2316,7 +2350,7 @@ class XivoCTICommand(BaseCommand):
                         elif icommand.name == 'json':
                                 classcomm = icommand.struct.get('class')
                                 dircomm = icommand.struct.get('direction')
-
+                                
                                 if dircomm is not None and dircomm == 'xivoserver' and classcomm in self.commnames:
                                         log.info('command attempt %s from %s' % (classcomm, username))
                                         if classcomm not in ['keepalive', 'availstate', 'actionfiche']:
@@ -2357,6 +2391,7 @@ class XivoCTICommand(BaseCommand):
                                                         # updates the new status and sends it to other people
                                                         repstr = self.__update_availstate__(userinfo, icommand.struct.get('availstate'))
                                                         self.__presence_action__(astid, self.__agentnum__(userinfo),
+                                                                                 capaid,
                                                                                  icommand.struct.get('availstate'))
                                                         self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm)
 
@@ -3241,7 +3276,8 @@ class XivoCTICommand(BaseCommand):
         def __update_availstate__(self, userinfo, state):
                 company = userinfo['company']
                 username = userinfo['user']
-
+                capaid = userinfo['capaid']
+                
                 if userinfo['state'] == 'xivo_unknown' and state in ['onlineincoming', 'onlineoutgoing', 'postcall']:
                         # we forbid 'asterisk-related' presence events to change the status of unlogged users
                         return None
@@ -3249,20 +3285,25 @@ class XivoCTICommand(BaseCommand):
                 if 'login' in userinfo and 'sessiontimestamp' in userinfo.get('login'):
                         userinfo['login']['sessiontimestamp'] = time.time()
 
-                if state == 'xivo_unknown' or state in self.presence.getstates():
+                if state == 'xivo_unknown' or state in self.presence[capaid].getstates():
                         userinfo['state'] = state
                 else:
                         log.warning('(user %s) : state <%s> is not an allowed one => keeping current <%s>'
                                     % (username, state, userinfo['state']))
 
-                cstatus = self.presence.countstatus(self.__counts__())
+                if capaid in self.presence:
+                        cstatus = self.presence[capaid].countstatus(self.__counts__())
+                        allowed = self.presence[capaid].allowed(userinfo['state'])
+                else:
+                        cstatus = {}
+                        allowed = {}
 
                 tosend = { 'class' : 'presence',
                            'direction' : 'client',
                            'company' : company,
                            'userid' : username,
                            'capapresence' : { 'state' : userinfo['state'],
-                                              'allowed' : self.presence.allowed(userinfo['state']) },
+                                              'allowed' : allowed },
                            'presencecounter' : cstatus
                            }
                 self.__send_msg_to_cti_client__(userinfo, cjson.encode(tosend))
@@ -3435,11 +3476,14 @@ class XivoCTICommand(BaseCommand):
 
         def __counts__(self):
                 counts = {}
-                for istate in self.presence.getstates():
-                        counts[istate] = 0
+                for capaid, cpres in self.presence.iteritems():
+                        for istate in cpres.getstates():
+                                counts[istate] = 0
                 for iuserinfo in self.ulist_ng.keeplist.itervalues():
-                        if iuserinfo['state'] in self.presence.getstates() and iuserinfo['capaid'] in self.globalcount:
-                                counts[iuserinfo['state']] += 1
+                        if iuserinfo.has_key('capaid'):
+                                capaid = iuserinfo['capaid']
+                                if iuserinfo['state'] in self.presence[capaid].getstates() and capaid in self.globalcount:
+                                        counts[iuserinfo['state']] += 1
                 return counts
 
 
