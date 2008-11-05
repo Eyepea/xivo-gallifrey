@@ -1,0 +1,15 @@
+#!/usr/bin/make -f
+# -*- mode: makefile; coding: utf-8 -*-
+#
+# $Revision: 3427 $
+# $Date: 2008-06-27 11:02:54 +0200 (Fri, 27 Jun 2008) $
+
+include $(NONO_MK)/autobuild.mk
+include $(NONO_MK)/autobuild-classic.mk
+
+
+DEB_PKG = "pf-asternic-stats"
+DEB_TB_DEPS=""
+
+default:
+
