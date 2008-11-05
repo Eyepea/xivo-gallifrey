@@ -6,10 +6,10 @@
 
 include $(NONO_MK)/autobuild.mk
 
-DEB_PKG = "app_conference"
+DEB_PKG = "asterisk-app-conference"
 
 SRCVER = $(shell cat $(MODULE_PATH)/SOURCE-VERSION)
-TARBALL_NAME = "asterisk-app-conference_$(SRCVER)+dfsg.orig.tar.gz"
+TARBALL_NAME = "asterisk-app-conference_$(SRCVER).orig.tar.gz"
 XIVO_REV = $(SRCVER)+dfsg+pf.$(MAINREV)~svn$(SVNREV)
 
 
