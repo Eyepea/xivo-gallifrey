@@ -109,6 +109,8 @@ class Capabilities:
         
         def setpresenceid(self, presenceid):
                 self.presenceid = presenceid
+                if self.watchedpresenceid == 'none':
+                        self.watchedpresenceid = presenceid
                 return
         
         def setwatchedpresenceid(self, watchedpresenceid):
@@ -124,7 +126,7 @@ class Capabilities:
                         log.error('problem when reading guisettings from %s' % urlsettings)
                         self.guisettings = {}
                 return
-
+        
         # maxgui's
         def setmaxgui(self, maxgui):
                 self.maxgui = int(maxgui)

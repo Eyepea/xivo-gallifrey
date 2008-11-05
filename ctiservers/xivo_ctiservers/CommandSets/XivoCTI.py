@@ -540,7 +540,7 @@ class XivoCTICommand(BaseCommand):
         def set_options(self, xivoconf, allconf):
                 self.xivoconf = xivoconf
                 for var, val in self.xivoconf.iteritems():
-                        if var.find('-') > 0:
+                        if var.find('-') > 0 and val:
                                 [name, prop] = var.split('-', 1)
                                 if name not in self.capas:
                                         self.capas[name] = cti_capas.Capabilities()
@@ -556,11 +556,11 @@ class XivoCTICommand(BaseCommand):
                                         self.capas[name].setguisettings(val)
                                 elif prop == 'presence':
                                         self.capas[name].setpresenceid(val)
-                                        if val and val not in self.presence_sections:
+                                        if val not in self.presence_sections:
                                                 self.presence_sections[val] = cti_presence.Presence(allconf.read_section('presence', val))
                                 elif prop == 'watchedpresence':
                                         self.capas[name].setwatchedpresenceid(val)
-                                        if val and val not in self.presence_sections:
+                                        if val not in self.presence_sections:
                                                 self.presence_sections[val] = cti_presence.Presence(allconf.read_section('presence', val))
                 return
         
@@ -3293,9 +3293,10 @@ class XivoCTICommand(BaseCommand):
                 else:
                         log.warning('(user %s) : state <%s> is not an allowed one => keeping current <%s>'
                                     % (username, state, userinfo['state']))
-
-                if self.capas[capaid].presenceid in self.presence_sections:
-                        allowed = self.presence_sections[self.capas[capaid].presenceid].allowed(userinfo['state'])
+                        
+                presenceid = self.capas[capaid].presenceid
+                if presenceid in self.presence_sections:
+                        allowed = self.presence_sections[presenceid].allowed(userinfo['state'])
                 else:
                         allowed = {}
                 wpid = self.capas[capaid].watchedpresenceid
