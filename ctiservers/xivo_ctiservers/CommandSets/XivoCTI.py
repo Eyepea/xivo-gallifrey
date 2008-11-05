@@ -412,7 +412,7 @@ class XivoCTICommand(BaseCommand):
                                 del userinfo['login']
                                 userinfo['state'] = 'xivo_unknown'
                                 self.__update_availstate__(userinfo, userinfo.get('state'))
-                                del userinfo['capaid'] # after __update_availstate__
+                                # del userinfo['capaid'] # after __update_availstate__
                         else:
                                 log.warning('userinfo does not contain login field : %s' % userinfo)
                 except Exception, exc:
@@ -1461,21 +1461,26 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def __presence_action__(self, astid, anum, capaid, status):
-                presenceid = self.capas[capaid].presenceid
-                if presenceid not in self.presence_sections:
-                        # useful in order to avoid internal presence keyword states to occur (postcall, incomingcall, ...)
-                        return
-                presenceactions = self.presence_sections[presenceid].actions(status)
-                for paction in presenceactions:
-                        params = paction.split('-')
-                        if params[0] == 'queueadd' and len(params) > 2 and anum:
-                                self.__ami_execute__(astid, params[0], params[1], 'Agent/%s' % anum, params[2])
-                        elif params[0] == 'queueremove' and len(params) > 1 and anum:
-                                self.__ami_execute__(astid, params[0], params[1], 'Agent/%s' % anum)
-                        elif params[0] == 'queuepause' and len(params) > 1 and anum:
-                                self.__ami_execute__(astid, 'queuepause', params[1], 'Agent/%s' % anum, 'true')
-                        elif params[0] == 'queueunpause' and len(params) > 1 and anum:
-                                self.__ami_execute__(astid, 'queuepause', params[1], 'Agent/%s' % anum, 'false')
+                try:
+                        if capaid not in self.capas:
+                                return
+                        presenceid = self.capas[capaid].presenceid
+                        if presenceid not in self.presence_sections:
+                                # useful in order to avoid internal presence keyword states to occur (postcall, incomingcall, ...)
+                                return
+                        presenceactions = self.presence_sections[presenceid].actions(status)
+                        for paction in presenceactions:
+                                params = paction.split('-')
+                                if params[0] == 'queueadd' and len(params) > 2 and anum:
+                                        self.__ami_execute__(astid, params[0], params[1], 'Agent/%s' % anum, params[2])
+                                elif params[0] == 'queueremove' and len(params) > 1 and anum:
+                                        self.__ami_execute__(astid, params[0], params[1], 'Agent/%s' % anum)
+                                elif params[0] == 'queuepause' and len(params) > 1 and anum:
+                                        self.__ami_execute__(astid, 'queuepause', params[1], 'Agent/%s' % anum, 'true')
+                                elif params[0] == 'queueunpause' and len(params) > 1 and anum:
+                                        self.__ami_execute__(astid, 'queuepause', params[1], 'Agent/%s' % anum, 'false')
+                except Exception, exc:
+                        log.error('--- exception --- (__presence_action__) %s %s %s %s : %s' % (astid, anum, capaid, status, exc))
                 return
         
         def __ami_execute__(self, *args):
@@ -3279,7 +3284,7 @@ class XivoCTICommand(BaseCommand):
         def __update_availstate__(self, userinfo, state):
                 company = userinfo['company']
                 username = userinfo['user']
-                capaid = userinfo['capaid']
+                capaid = userinfo.get('capaid')
                 
                 if userinfo['state'] == 'xivo_unknown' and state in ['onlineincoming', 'onlineoutgoing', 'postcall']:
                         # we forbid 'asterisk-related' presence events to change the status of unlogged users
@@ -3287,33 +3292,34 @@ class XivoCTICommand(BaseCommand):
                 
                 if 'login' in userinfo and 'sessiontimestamp' in userinfo.get('login'):
                         userinfo['login']['sessiontimestamp'] = time.time()
-
-                if state == 'xivo_unknown' or state in self.presence_sections[self.capas[capaid].presenceid].getstates():
-                        userinfo['state'] = state
-                else:
-                        log.warning('(user %s) : state <%s> is not an allowed one => keeping current <%s>'
-                                    % (username, state, userinfo['state']))
                         
-                presenceid = self.capas[capaid].presenceid
-                if presenceid in self.presence_sections:
-                        allowed = self.presence_sections[presenceid].allowed(userinfo['state'])
+                if capaid:
+                        if state == 'xivo_unknown' or state in self.presence_sections[self.capas[capaid].presenceid].getstates():
+                                userinfo['state'] = state
+                        else:
+                                log.warning('(user %s) : state <%s> is not an allowed one => keeping current <%s>'
+                                            % (username, state, userinfo['state']))
                 else:
-                        allowed = {}
-                wpid = self.capas[capaid].watchedpresenceid
-                if wpid in self.presence_sections:
-                        cstatus = self.presence_sections[wpid].countstatus(self.__counts__(wpid))
-                else:
-                        cstatus = {}
+                        userinfo['state'] = 'xivo_unknown'
 
-                tosend = { 'class' : 'presence',
-                           'direction' : 'client',
-                           'company' : company,
-                           'userid' : username,
-                           'capapresence' : { 'state' : userinfo['state'],
-                                              'allowed' : allowed },
-                           'presencecounter' : cstatus
-                           }
-                self.__send_msg_to_cti_client__(userinfo, cjson.encode(tosend))
+                cstatus = {}
+                if capaid:
+                        allowed = {}
+                        presenceid = self.capas[capaid].presenceid
+                        if presenceid in self.presence_sections:
+                                allowed = self.presence_sections[presenceid].allowed(userinfo['state'])
+                        wpid = self.capas[capaid].watchedpresenceid
+                        if wpid in self.presence_sections:
+                                cstatus = self.presence_sections[wpid].countstatus(self.__counts__(wpid))
+                        tosend = { 'class' : 'presence',
+                                   'direction' : 'client',
+                                   'company' : company,
+                                   'userid' : username,
+                                   'capapresence' : { 'state' : userinfo['state'],
+                                                      'allowed' : allowed },
+                                   'presencecounter' : cstatus
+                                   }
+                        self.__send_msg_to_cti_client__(userinfo, cjson.encode(tosend))
                 
                 tosend = { 'class' : 'presence',
                            'direction' : 'client',
