@@ -68,7 +68,7 @@ class BaseCommand:
         # inits / updates
         def extrasock(self, extraconn):
                 return
-        def set_options(self, xivoconf):
+        def set_options(self, xivoconf, allconf):
                 return
         def set_cticonfig(self, cticonfig):
                 return
@@ -92,8 +92,6 @@ class BaseCommand:
                 return {}
         
         def set_ctilog(self, ctilog):
-                return
-        def set_presence(self, config_presence):
                 return
         def set_configs(self, configs):
                 return

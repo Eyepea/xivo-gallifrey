@@ -45,8 +45,7 @@ class Capabilities:
                          'nojoinleave',
                          'presence',
                          'database',
-                         'switchboard',
-                         'globalcount']
+                         'switchboard']
         
         allowed_xlets = {'agents' : ['agents'],
                          'agentdetails' : ['agents'],
@@ -86,6 +85,8 @@ class Capabilities:
                 self.guisettings = {}
                 self.conngui = 0
                 self.maxgui = -1
+                self.presenceid = 'none'
+                self.watchedpresenceid = 'none'
                 return
 
         def setfuncs(self, capalist):
@@ -101,11 +102,19 @@ class Capabilities:
                                         self.capadisps.append(capa)
                                 self.setfuncs(self.allowed_xlets[detail[0]])
                 return
-
+        
         def setappliname(self, appliname):
                 self.appliname = appliname
                 return
-
+        
+        def setpresenceid(self, presenceid):
+                self.presenceid = presenceid
+                return
+        
+        def setwatchedpresenceid(self, watchedpresenceid):
+                self.watchedpresenceid = watchedpresenceid
+                return
+        
         def setguisettings(self, urlsettings):
                 try:
                         gui = urllib.urlopen(urlsettings)

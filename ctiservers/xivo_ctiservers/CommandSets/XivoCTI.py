@@ -127,9 +127,7 @@ class XivoCTICommand(BaseCommand):
                 self.timeout_login = {}
                 self.parkedcalls = {}
                 self.stats_queues = {}
-                self.globalcount = []
                 self.ignore_dtmf = {}
-                self.presence = {}
                 self.presence_sections = {}
                 
                 # actionid (AMI) indexed hashes
@@ -382,19 +380,20 @@ class XivoCTICommand(BaseCommand):
 
                         # we first check if 'state' has already been set for this customer, in which case
                         # the CTI clients will be sent back this previous state
+                        presenceid = self.capas[capaid].presenceid
                         if 'state' in userinfo:
                                 futurestate = userinfo.get('state')
                                 # only if it was a "defined" state anyway
-                                if capaid in self.presence and futurestate in self.presence[capaid].getstates():
+                                if presenceid in self.presence_sections and futurestate in self.presence_sections[presenceid].getstates():
                                         state = futurestate
 
-                        if capaid in self.presence:
-                                if state in self.presence[capaid].getstates() and state not in ['onlineoutgoing', 'onlineincoming']:
+                        if presenceid in self.presence_sections:
+                                if state in self.presence_sections[presenceid].getstates() and state not in ['onlineoutgoing', 'onlineincoming']:
                                         userinfo['state'] = state
                                 else:
                                         log.warning('(user %s) : state <%s> is not an allowed one => <%s>'
-                                                    % (userinfo.get('user'), state, self.presence[capaid].getdefaultstate()))
-                                        userinfo['state'] = self.presence[capaid].getdefaultstate()
+                                                    % (userinfo.get('user'), state, self.presence_sections[presenceid].getdefaultstate()))
+                                        userinfo['state'] = self.presence_sections[presenceid].getdefaultstate()
                         else:
                                 userinfo['state'] = 'xivo_unknown'
 
@@ -452,14 +451,18 @@ class XivoCTICommand(BaseCommand):
                         repstr = cjson.encode(tosend)
                 elif phase == xivo_commandsets.CMD_LOGIN_CAPAS:
                         capaid = userinfo.get('capaid')
-                        if capaid in self.presence:
-                                cstatus = self.presence[capaid].countstatus(self.__counts__())
-                                allowed = self.presence[capaid].allowed(userinfo.get('state'))
-                                details = self.presence[capaid].getdisplaydetails()
+                        presenceid = self.capas[capaid].presenceid
+                        if presenceid in self.presence_sections:
+                                allowed = self.presence_sections[presenceid].allowed(userinfo.get('state'))
+                                details = self.presence_sections[presenceid].getdisplaydetails()
                         else:
-                                cstatus = {}
                                 allowed = {}
                                 details = {}
+                        wpid = self.capas[capaid].watchedpresenceid
+                        if wpid in self.presence_sections:
+                                cstatus = self.presence_sections[wpid].countstatus(self.__counts__(wpid))
+                        else:
+                                cstatus = {}
                         
                         tosend = { 'class' : 'login_capas_ok',
                                    'direction' : 'client',
@@ -534,11 +537,7 @@ class XivoCTICommand(BaseCommand):
                         self.ctilog_conn.commit()
                 return
         
-        def set_presence(self, pres, config_presence):
-                self.presence_sections[pres] = cti_presence.Presence(config_presence)
-                return
-        
-        def set_options(self, xivoconf):
+        def set_options(self, xivoconf, allconf):
                 self.xivoconf = xivoconf
                 for var, val in self.xivoconf.iteritems():
                         if var.find('-') > 0:
@@ -549,9 +548,6 @@ class XivoCTICommand(BaseCommand):
                                         self.capas[name].setxlets(val.split(','))
                                 elif prop == 'funcs':
                                         self.capas[name].setfuncs(val.split(','))
-                                        if 'globalcount' in self.capas[name].capafuncs:
-                                                if name not in self.globalcount:
-                                                        self.globalcount.append(name)
                                 elif prop == 'maxgui':
                                         self.capas[name].setmaxgui(val)
                                 elif prop == 'appliname':
@@ -559,8 +555,13 @@ class XivoCTICommand(BaseCommand):
                                 elif prop == 'guisettings':
                                         self.capas[name].setguisettings(val)
                                 elif prop == 'presence':
-                                        if val in self.presence_sections:
-                                                self.presence[name] = self.presence_sections[val]
+                                        self.capas[name].setpresenceid(val)
+                                        if val and val not in self.presence_sections:
+                                                self.presence_sections[val] = cti_presence.Presence(allconf.read_section('presence', val))
+                                elif prop == 'watchedpresence':
+                                        self.capas[name].setwatchedpresenceid(val)
+                                        if val and val not in self.presence_sections:
+                                                self.presence_sections[val] = cti_presence.Presence(allconf.read_section('presence', val))
                 return
         
         def set_configs(self, configs):
@@ -1460,9 +1461,11 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def __presence_action__(self, astid, anum, capaid, status):
-                if capaid not in self.presence:
+                presenceid = self.capas[capaid].presenceid
+                if presenceid not in self.presence_sections:
+                        # useful in order to avoid internal presence keyword states to occur (postcall, incomingcall, ...)
                         return
-                presenceactions = self.presence[capaid].actions(status)
+                presenceactions = self.presence_sections[presenceid].actions(status)
                 for paction in presenceactions:
                         params = paction.split('-')
                         if params[0] == 'queueadd' and len(params) > 2 and anum:
@@ -3285,18 +3288,21 @@ class XivoCTICommand(BaseCommand):
                 if 'login' in userinfo and 'sessiontimestamp' in userinfo.get('login'):
                         userinfo['login']['sessiontimestamp'] = time.time()
 
-                if state == 'xivo_unknown' or state in self.presence[capaid].getstates():
+                if state == 'xivo_unknown' or state in self.presence_sections[self.capas[capaid].presenceid].getstates():
                         userinfo['state'] = state
                 else:
                         log.warning('(user %s) : state <%s> is not an allowed one => keeping current <%s>'
                                     % (username, state, userinfo['state']))
 
-                if capaid in self.presence:
-                        cstatus = self.presence[capaid].countstatus(self.__counts__())
-                        allowed = self.presence[capaid].allowed(userinfo['state'])
+                if self.capas[capaid].presenceid in self.presence_sections:
+                        allowed = self.presence_sections[self.capas[capaid].presenceid].allowed(userinfo['state'])
+                else:
+                        allowed = {}
+                wpid = self.capas[capaid].watchedpresenceid
+                if wpid in self.presence_sections:
+                        cstatus = self.presence_sections[wpid].countstatus(self.__counts__(wpid))
                 else:
                         cstatus = {}
-                        allowed = {}
 
                 tosend = { 'class' : 'presence',
                            'direction' : 'client',
@@ -3474,16 +3480,18 @@ class XivoCTICommand(BaseCommand):
                 return fullstatlist
 
 
-        def __counts__(self):
+        def __counts__(self, presenceid):
                 counts = {}
-                for capaid, cpres in self.presence.iteritems():
-                        for istate in cpres.getstates():
-                                counts[istate] = 0
+                if presenceid not in self.presence_sections:
+                        return counts
+                for istate in self.presence_sections[presenceid].getstates():
+                        counts[istate] = 0
                 for iuserinfo in self.ulist_ng.keeplist.itervalues():
                         if iuserinfo.has_key('capaid'):
                                 capaid = iuserinfo['capaid']
-                                if iuserinfo['state'] in self.presence[capaid].getstates() and capaid in self.globalcount:
-                                        counts[iuserinfo['state']] += 1
+                                if self.capas[capaid].presenceid == presenceid:
+                                        if iuserinfo['state'] in self.presence_sections[presenceid].getstates():
+                                                counts[iuserinfo['state']] += 1
                 return counts
 
 
@@ -3499,10 +3507,12 @@ class XivoCTICommand(BaseCommand):
                 log.info('handle_fagi %s : context=%s uid=%s chan=%s (%s)' % (astid, context, uniqueid, channel, function))
                 
                 if function == 'presence':
-                        aststatus = []
-                        for var, val in self.__counts__().iteritems():
-                                aststatus.append('%s:%d' % (var, val))
-                        fastagi.set_variable('XIVO_PRESENCE', ','.join(aststatus))
+                        if len(fastagi.args) > 0:
+                                presenceid = fastagi.args[0]
+                                aststatus = []
+                                for var, val in self.__counts__(presenceid).iteritems():
+                                        aststatus.append('%s:%d' % (var, val))
+                                fastagi.set_variable('XIVO_PRESENCE', ','.join(aststatus))
                         return
                 
                 elif function == 'queuestatus':

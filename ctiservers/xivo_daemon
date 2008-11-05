@@ -512,7 +512,7 @@ def update_readconf():
         lconf = cti_config.Config(XIVOCONFFILE)
 
         commandclass.set_cticonfig(lconf)
-        commandclass.set_options(cconf.read_section('commandset', commandset))
+        commandclass.set_options(cconf.read_section('commandset', commandset), cconf)
         return
 
 
@@ -604,7 +604,6 @@ while True: # loops over the reloads
         asterisklist = []
         contextlist = []
         userlists = []
-        config_presence = None
         ctilog = None
         
         userinfo_by_requester = {}
@@ -637,8 +636,6 @@ while True: # loops over the reloads
                 contextlist = xivoconf_general['contextlist'].split(',')
         if 'userlists' in xivoconf_general:
                 userlists = xivoconf_general['userlists'].split(',')
-        if 'presence' in xivoconf_general:
-                config_presence = xivoconf_general['presence']
         if 'ctilog' in xivoconf_general:
                 ctilog = xivoconf_general['ctilog']
 
@@ -656,8 +653,6 @@ while True: # loops over the reloads
                 
         log.info('# STARTING %s / svn:%s / %d' % (xdname, commandclass.version(), nreload))
         
-        for pres in config_presence.split(','):
-                commandclass.set_presence(pres, cconf.read_section('presence', pres))
         update_readconf()
         commandclass.set_userlist_urls(userlists)
         commandclass.set_contextlist(directorylist)
