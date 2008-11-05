@@ -1,0 +1,23 @@
+2008-11-05  Corentin Le Gall <clegall@proformatique.com>
+
+	pf_ackcall_not_always.patch
+	$Revision$
+	$Date$
+
+	Correct a misuse of strcasecmp() for ackcall option.
+        A report has been submitted here :
+        http://bugs.digium.com/view.php?id=13841
+
+Index: asterisk-1.4.22/channels/chan_agent.c
+===================================================================
+--- asterisk-1.4.22.orig/channels/chan_agent.c	2008-11-05 17:40:22.000000000 +0100
++++ asterisk-1.4.22/channels/chan_agent.c	2008-11-05 17:40:56.000000000 +0100
+@@ -2453,7 +2453,7 @@
+ 				p->wrapuptime = 0;
+ 		}
+ 
+-		if (strcasecmp(ackcall_s, "always"))
++		if (strcasecmp(ackcall_s, "always") == 0)
+ 			p->ackcall = 2;
+ 		else if (ast_true(ackcall_s))
+ 			p->ackcall = 1;
