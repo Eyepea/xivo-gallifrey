@@ -412,6 +412,7 @@ class XivoCTICommand(BaseCommand):
                                 del userinfo['login']
                                 userinfo['state'] = 'xivo_unknown'
                                 self.__update_availstate__(userinfo, userinfo.get('state'))
+                                # do not remove 'capaid' in order to keep track of it
                                 # del userinfo['capaid'] # after __update_availstate__
                         else:
                                 log.warning('userinfo does not contain login field : %s' % userinfo)
@@ -715,6 +716,9 @@ class XivoCTICommand(BaseCommand):
                                                        
                                                        'state'    : 'xivo_unknown'
                                                        }
+                                        # set a default capaid value for users with only one capaid (most common case)
+                                        if len(lulist[uid]['capaids']) == 1:
+                                                lulist[uid]['capaid'] = lulist[uid]['capaids'][0]
                                         if uitem.get('enablevoicemail'):
                                                 lulist[uid]['mwi'] = ['0', '0', '0']
                                         else:
