@@ -17,7 +17,7 @@
     along with Asternic call center stats.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-require_once("config.php");
+require_once("/etc/pf-asternic-stats/config.php"/g);
 include("sesvars.php");
 ?>
 <!-- http://devnull.tagsoup.com/quirksmode -->

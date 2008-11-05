@@ -23,7 +23,7 @@ $begintime = $time;
 $inuse      = Array();
 $dict_queue = Array();
 
-require("config_realtime.php");
+require("/etc/pf-asternic-stats/config_realtime.php");
 require("php-asmanager.php");
 require("realtime_functions.php");
 if(isset($_SESSION['QSTATS']['hideloggedoff'])) {

@@ -16,7 +16,7 @@
     along with Asternic call center stats.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-require_once("config.php");
+require_once("/etc/pf-asternic-stats/config.php"/g);
 require_once("sesvars.php");
 
 $start_today = date('Y-m-d 00:00:00');
