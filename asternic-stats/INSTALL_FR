@@ -1,0 +1,23 @@
+INSTALLATION
+----------
+
+1) Décompresser l'archive (vous l'avez déjà fait)
+
+2) Copier /html au bon endroit à la racine de votre serveur web
+
+3) Créer une nouvelle base de donnée:
+
+#> mysqladmin create qstat
+
+4) Créer les tables venant du fichier /sql/qstat.sql:
+
+#> mysql qstat < ./sql/qstat.sql
+
+5) Editer le fichier /html/config.php et metter votre utilisateur et password de votre base,
+   vous pouvez aussi selectionner le langage
+
+6) Editer le fichier /html/config_realtime.php pour configurer la connexion sur l'asterisk manager
+   l'hôte, l'utilisateur et le password
+
+7) Editer le fichier /parselog/config.php pour définir l'adresse et
+   le nom du fichier queue_log pour Asterisk et l'utilisateur et password de la base
