@@ -302,7 +302,7 @@ def load():
     # Load every brand module
     # Each register itself using register_install_fn()
     for brand_name in brand_modules.__all__:
-        __import__('xivo_fetchfw.brands.' + brand_name, fromlist=[brand_name])
+        __import__('xivo_fetchfw.brands.' + brand_name, globals(), {}, [brand_name])
     
     for fw_name in config.sections():
         if not config.has_option(fw_name, 'brand'):
