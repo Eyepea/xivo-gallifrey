@@ -2,5 +2,5 @@ DEST_PATH=tarballs
 BASE_URL="http://kent.dl.sourceforge.net/sourceforge/appconference"
 TARBALL_PREFIX="appconference-"
 SRC_DIR_PREFIX="appconference-"
-PKG_NAME="app_conference"
+PKG_NAME="asterisk-app-conference"
 DFSG_EXCLUDE_PATTERNS=
