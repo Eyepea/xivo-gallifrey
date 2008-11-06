@@ -306,7 +306,7 @@ class XivoCTICommand(BaseCommand):
                         state = loginparams.get('state')
                         capaid = loginparams.get('capaid')
                         subscribe = loginparams.get('subscribe')
-                        lastconnwins = (loginparams.get('lastconnwins') == 'true')
+                        lastconnwins = loginparams.get('lastconnwins')
                         
                         iserr = self.__check_capa_connection__(userinfo, capaid)
                         if iserr is not None:
@@ -602,7 +602,7 @@ class XivoCTICommand(BaseCommand):
         def getprofilelist(self):
                 ret = {}
                 for capaid in self.capas.keys():
-                        ret[capaid] = self.capas[capaid].appliname
+                        ret[capaid] = self.capas[capaid].appliname.decode('utf8')
                 return cjson.encode(ret)
         
         def updates(self):
