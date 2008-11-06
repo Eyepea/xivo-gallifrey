@@ -16,7 +16,7 @@
     along with Asternic call center stats.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-require_once("/etc/pf-asternic-stats/config.php"/g);
+require_once("/etc/pf-asternic-stats/config.php");
 require_once("sesvars.php");
 
 function flushSession() {

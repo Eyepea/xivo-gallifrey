@@ -17,7 +17,7 @@
     along with Asternic call center stats.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-require_once("/etc/pf-asternic-stats/parselog_config.php"/g);
+require_once("/etc/pf-asternic-stats/parselog_config.php");
 
 if($argv[1]=="purge") {
   echo "Purging tables...\n";
