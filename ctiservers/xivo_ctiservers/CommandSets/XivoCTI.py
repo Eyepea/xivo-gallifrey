@@ -357,7 +357,7 @@ class XivoCTICommand(BaseCommand):
         def __check_capa_connection__(self, userinfo, capaid):
                 if capaid in self.capas and capaid in userinfo.get('capaids'):
                         if self.capas[capaid].toomuchusers():
-                                return 'toomuchusers:%s' % self.capas[capaid].maxgui()
+                                return 'toomuchusers:%s' % self.capas[capaid].getmaxgui()
                 else:
                         return 'capaid_undefined'
                 return None
@@ -670,7 +670,9 @@ class XivoCTICommand(BaseCommand):
                                                 'context': pitem.get('context'),
                                                 'enable_hint': pitem.get('enablehint'),
                                                 'initialized': pitem.get('initialized'),
-                                                'phoneid': pitem.get('name')
+                                                'phoneid': pitem.get('name'),
+                                                
+                                                'comms' : {}
                                                 }
                         except Exception, exc:
                                 log.error('--- exception --- (getphoneslist) : %s : %s' % (pitem, exc))
@@ -708,8 +710,8 @@ class XivoCTICommand(BaseCommand):
                                                        'capaids' : uitem.get('profileclient').split(','),
                                                        'fullname' : uitem.get('fullname'),
                                                        'astid' : 'xivo', # XXX
-                                                       'techlist' : '.'.join([uitem.get('protocol'), uitem.get('context'),
-                                                                              uitem.get('name'), uitem.get('number')]),
+                                                       'techlist' : ['.'.join([uitem.get('protocol'), uitem.get('context'),
+                                                                               uitem.get('name'), uitem.get('number')])],
                                                        'context' : uitem.get('context'),
                                                        'phonenum' : uitem.get('number'),
                                                        'xivo_userid' : uitem.get('id'),
@@ -739,6 +741,9 @@ class XivoCTICommand(BaseCommand):
         
         def queues(self):
                 return self.weblist['queues']
+        
+        def phones(self):
+                return self.weblist['phones']
         
         def users(self):
                 return self.ulist_ng.users()
@@ -1107,7 +1112,7 @@ class XivoCTICommand(BaseCommand):
         def __userinfo_from_phoneid__(self, astid, phoneid):
                 uinfo = None
                 for v, vv in self.ulist_ng.keeplist.iteritems():
-                        if phoneid in vv['techlist'].split(',') and astid == vv['astid']:
+                        if phoneid in vv['techlist'] and astid == vv['astid']:
                                 uinfo = vv
                                 break
                 return uinfo
@@ -1157,6 +1162,18 @@ class XivoCTICommand(BaseCommand):
                                                      'company' : uinfodst.get('company'),
                                                      'phone' : phoneiddst }
                                         })
+                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                
+                # update a phone status
+                self.weblist['phones'][astid].ami_dial(phoneidsrc, phoneiddst,
+                                                       uidsrc, uiddst,
+                                                       self.uniqueids[astid][uidsrc],
+                                                       self.uniqueids[astid][uiddst])
+                tosend = self.weblist['phones'][astid].status(phoneidsrc)
+                tosend['astid'] = astid
+                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                tosend = self.weblist['phones'][astid].status(phoneiddst)
+                tosend['astid'] = astid
                 self.__send_msg_to_cti_clients__(cjson.encode(tosend))
                 # self.weblist['phones'][astid].handle_ami_event_dial(src, dst, clid, clidn)
                 # - add channel inside each + relation
@@ -1509,6 +1526,7 @@ class XivoCTICommand(BaseCommand):
                 chan  = event.get('Channel')
                 uid = event.get('Uniqueid')
                 cause = event.get('Cause-txt')
+                phoneid = self.__phoneid_from_channel__(astid, chan)
                 if uid in self.ignore_dtmf[astid]:
                         del self.ignore_dtmf[astid][uid]
                 if uid in self.uniqueids[astid] and chan == self.uniqueids[astid][uid]['channel']:
@@ -1519,10 +1537,11 @@ class XivoCTICommand(BaseCommand):
                 if 'context' in self.uniqueids[astid][uid]:
                         self.__sheet_alert__('hangup', astid, self.uniqueids[astid][uid]['context'], event)
 
-                try:
-                        self.weblist['phones'][astid].handle_ami_event_hangup(chan, cause)
-                except Exception, exc:
-                        pass
+                self.weblist['phones'][astid].ami_hangup(phoneid, uid)
+                tosend = self.weblist['phones'][astid].status(phoneid)
+                tosend['astid'] = astid
+                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+
                 if chan in self.chans_incomingqueue or chan in self.chans_incomingdid:
                         print 'HANGUP : (%s) %s uid=%s %s' % (time.asctime(), astid, uid, chan)
                         if chan in self.chans_incomingqueue:
@@ -2554,7 +2573,7 @@ class XivoCTICommand(BaseCommand):
                 [company, userid] = requester_id.split('/')
                 userinfo = self.ulist_ng.finduser(userid + '@' + company)
                 astid = userinfo.get('astid')
-                termlist = userinfo.get('techlist').split(',')
+                termlist = userinfo.get('techlist')
                 reply = []
                 for termin in termlist:
                         [techno, ctx, phoneid, exten] = termin.split('.')
@@ -2619,7 +2638,7 @@ class XivoCTICommand(BaseCommand):
         def __find_channel_by_agentnum__(self, astid, agent_number):
                 chans = []
                 for uinfo in self.__find_userinfos_by_agentnum__(astid, agent_number):
-                        techref = uinfo.get('techlist').split(',')[0]
+                        techref = uinfo.get('techlist')[0]
                         for v, vv in self.uniqueids[astid].iteritems():
                                 if 'channel' in vv:
                                         if techref == self.__phoneid_from_channel__(astid, vv['channel']):
@@ -2883,14 +2902,9 @@ class XivoCTICommand(BaseCommand):
                         fullstat = {}
                         try:
                                 for astid, iplist in self.weblist['phones'].iteritems():
-                                        fullstat[astid] = []
-                                        for idx, pidx in iplist.keeplist.iteritems():
-                                                print astid, idx, pidx
-                                                phoneinfo = { 'statusbase' : pidx.build_basestatus(),
-                                                              'statusextended' : pidx.build_fullstatlist() }
-                                                fullstat[astid].append(phoneinfo)
+                                        fullstat[astid] = iplist.keeplist
                         except Exception, exc:
-                                pass
+                                log.error('--- exception --- (phones) %s' % exc)
                 elif ccomm == 'agents':
                         fullstat = []
                         if self.capas[capaid].match_funcs(ucapa, 'agents'):

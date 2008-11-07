@@ -293,6 +293,14 @@ def manage_info_connections(connid, msg, sep):
                                                         connid.sendall('%s %s\n' % (ag, agp))
                                         except Exception, exc:
                                                 log.error('--- exception --- INFO %s : %s' % (usefulmsg, exc))
+                        elif usefulmsg == 'show_phones':
+                                for astid, phones in commandclass.phones().iteritems():
+                                        try:
+                                                connid.sendall('phones for %s\n' % astid)
+                                                for ag, agp in phones.keeplist.iteritems():
+                                                        connid.sendall('%s %s\n' % (ag, agp))
+                                        except Exception, exc:
+                                                log.error('--- exception --- INFO %s : %s' % (usefulmsg, exc))
                         elif usefulmsg == 'show_logged_ip':
                                 for user, info in commandclass.connected_users().iteritems():
                                         if 'connection' in info['login']:

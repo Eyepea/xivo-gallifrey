@@ -132,7 +132,7 @@ class Capabilities:
                 self.maxgui = int(maxgui)
                 return
 
-        def maxgui(self):
+        def getmaxgui(self):
                 if self.maxgui == -1:
                         return 'infinite'
                 else:
