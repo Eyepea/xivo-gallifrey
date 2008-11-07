@@ -37,8 +37,48 @@ class PhoneList(AnyList):
                                             'urloptions' : (1, 12, False) }
                 AnyList.__init__(self, newurls)
                 return
-
+        
         def ami_dial(self, phoneidsrc, phoneiddst, uidsrc, uiddst, puidsrc, puiddst):
+                if phoneidsrc in self.keeplist:
+                        if uidsrc in self.keeplist[phoneidsrc]['comms']:
+                                pass
+                        else:
+                                infos = {'thischannel' : puidsrc.get('channel'),
+                                         'peerchannel' : puidsrc.get('dial'),
+                                         'status' : 'calling',
+                                         'time-dial' : puidsrc.get('time-dial'),
+                                         'calleridname' : puidsrc.get('calleridname'),
+                                         'calleridnum' : puidsrc.get('calleridnum')
+                                         }
+                                self.keeplist[phoneidsrc]['comms'][uidsrc] = infos
+                if phoneiddst in self.keeplist:
+                        if uiddst in self.keeplist[phoneiddst]['comms']:
+                                pass
+                        else:
+                                infos = {'thischannel' : puiddst.get('channel'),
+                                         'peerchannel' : puiddst.get('dial'),
+                                         'status' : 'ringing',
+                                         'time-dial' : puiddst.get('time-dial'),
+                                         'calleridname' : puidsrc.get('calleridname'),
+                                         'calleridnum' : puidsrc.get('calleridnum')
+                                         }
+                                self.keeplist[phoneiddst]['comms'][uiddst] = infos
+                return
+        
+        def ami_link(self, phoneidsrc, phoneiddst, uidsrc, uiddst, puidsrc, puiddst):
+                if phoneidsrc in self.keeplist:
+                        if uidsrc in self.keeplist[phoneidsrc]['comms']:
+                                pass
+                        else:
+                                self.keeplist[phoneidsrc]['comms'][uidsrc] = puidsrc
+                if phoneiddst in self.keeplist:
+                        if uiddst in self.keeplist[phoneiddst]['comms']:
+                                pass
+                        else:
+                                self.keeplist[phoneiddst]['comms'][uiddst] = puiddst
+                return
+        
+        def ami_unlink(self, phoneidsrc, phoneiddst, uidsrc, uiddst, puidsrc, puiddst):
                 if phoneidsrc in self.keeplist:
                         if uidsrc in self.keeplist[phoneidsrc]['comms']:
                                 pass
@@ -53,9 +93,14 @@ class PhoneList(AnyList):
         
         def ami_hangup(self, phoneid, uid):
                 if phoneid in self.keeplist and uid in self.keeplist[phoneid]['comms']:
+                        self.keeplist[phoneid]['comms'][uid]['status'] = 'hangup'
+                return
+        
+        def clear(self, phoneid, uid):
+                if phoneid in self.keeplist and uid in self.keeplist[phoneid]['comms']:
                         del self.keeplist[phoneid]['comms'][uid]
                 return
-
+        
         def status(self, phoneid):
                 tosend = {}
                 if phoneid in self.keeplist:

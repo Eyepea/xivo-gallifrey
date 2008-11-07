@@ -770,18 +770,15 @@ class XivoCTICommand(BaseCommand):
                 """
                 Send a banner at login time
                 """
-                tosend = {'class' : 'banner',
-                          'contents' : 'XIVO CTI Server Version %s(%s) svn:%s' % (XIVOVERSION_NUM, XIVOVERSION_NAME,
-                                                                                  __revision__)
-                          }
-                connid.sendall(cjson.encode(tosend) + '\n')
+                connid.sendall('XIVO CTI Server Version %s(%s) svn:%s\n' % (XIVOVERSION_NUM, XIVOVERSION_NAME,
+                                                                            __revision__))
                 self.timeout_login[connid] = threading.Timer(5, self.__callback_timer__, ('login',))
                 self.timeout_login[connid].start()
                 return
 
         def checkqueue(self):
                 buf = os.read(self.queued_threads_pipe[0], 1024)
-                log.warning('checkqueue : read buf = %s' % buf)
+                log.info('checkqueue : read buf = %s, tqueue size = %d' % (buf, self.tqueue.qsize()))
                 todisconn = []
                 while self.tqueue.qsize() > 0:
                         thisthread = self.tqueue.get()
@@ -810,7 +807,7 @@ class XivoCTICommand(BaseCommand):
                                   % (exc, exc.__class__, userinfo))
                         if userinfo not in self.disconnlist:
                                 self.disconnlist.append(userinfo)
-                                os.write(self.queued_threads_pipe[1], 'uinfo\n')
+                                os.write(self.queued_threads_pipe[1], 'uinfo')
                 return
 
         def __send_msg_to_cti_clients__(self, strupdate):
@@ -1164,7 +1161,8 @@ class XivoCTICommand(BaseCommand):
                                         })
                 self.__send_msg_to_cti_clients__(cjson.encode(tosend))
                 
-                # update a phone status
+                
+                # update the phones statuses
                 self.weblist['phones'][astid].ami_dial(phoneidsrc, phoneiddst,
                                                        uidsrc, uiddst,
                                                        self.uniqueids[astid][uidsrc],
@@ -1175,9 +1173,7 @@ class XivoCTICommand(BaseCommand):
                 tosend = self.weblist['phones'][astid].status(phoneiddst)
                 tosend['astid'] = astid
                 self.__send_msg_to_cti_clients__(cjson.encode(tosend))
-                # self.weblist['phones'][astid].handle_ami_event_dial(src, dst, clid, clidn)
-                # - add channel inside each + relation
-                # - fill channel list
+                
                 return
 
 
@@ -1325,6 +1321,18 @@ class XivoCTICommand(BaseCommand):
                 log.info('(phone) LINK %s phone=%s callerid=%s user=%s' % (astid, phoneid1, clid1, uinfo1))
                 log.info('(phone) LINK %s phone=%s callerid=%s user=%s' % (astid, phoneid2, clid2, uinfo2))
                 
+                # update the phones statuses
+                self.weblist['phones'][astid].ami_link(phoneid1, phoneid2,
+                                                       uid1, uid2,
+                                                       self.uniqueids[astid][uid1],
+                                                       self.uniqueids[astid][uid2])
+                tosend = self.weblist['phones'][astid].status(phoneid1)
+                tosend['astid'] = astid
+                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                tosend = self.weblist['phones'][astid].status(phoneid2)
+                tosend['astid'] = astid
+                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                
                 if 'context' in self.uniqueids[astid][uid1]:
                         self.__sheet_alert__('link', astid, self.uniqueids[astid][uid1]['context'], event, {})
 
@@ -1401,6 +1409,18 @@ class XivoCTICommand(BaseCommand):
                 
                 log.info('(phone) UNLINK %s phone=%s callerid=%s user=%s' % (astid, phoneid1, clid1, uinfo1))
                 log.info('(phone) UNLINK %s phone=%s callerid=%s user=%s' % (astid, phoneid2, clid2, uinfo2))
+                
+                # update the phones statuses
+                self.weblist['phones'][astid].ami_unlink(phoneid1, phoneid2,
+                                                         uid1, uid2,
+                                                         self.uniqueids[astid][uid1],
+                                                         self.uniqueids[astid][uid2])
+                tosend = self.weblist['phones'][astid].status(phoneid1)
+                tosend['astid'] = astid
+                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                tosend = self.weblist['phones'][astid].status(phoneid2)
+                tosend['astid'] = astid
+                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
                 
                 if uid1info['link'].startswith('Agent/') and 'join' in uid1info:
                         queuename = uid1info['join'].get('queue')
@@ -1541,6 +1561,7 @@ class XivoCTICommand(BaseCommand):
                 tosend = self.weblist['phones'][astid].status(phoneid)
                 tosend['astid'] = astid
                 self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                self.weblist['phones'][astid].clear(phoneid, uid)
 
                 if chan in self.chans_incomingqueue or chan in self.chans_incomingdid:
                         print 'HANGUP : (%s) %s uid=%s %s' % (time.asctime(), astid, uid, chan)
