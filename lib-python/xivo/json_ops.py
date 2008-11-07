@@ -2,6 +2,9 @@
 
 Copyright (C) 2008  Proformatique
 
+TODO:
+- describe the relational operators
+- describe the format of a JSON change tree
 """
 
 __version__ = "$Revision$ $Date$"
@@ -205,3 +208,11 @@ def relate_conj(ops, tree1, tree2):
         compile_conj(ops)(tree1, tree2)
     """
     return _compare_conj(map(_parse_one, ops), tree1, tree2)
+
+
+def modify(orig, change):
+    """
+    @orig is a native representation of a JSON tree.
+    @change is a JSON tree describing changes.
+    """
+    pass
