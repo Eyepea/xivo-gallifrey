@@ -75,6 +75,7 @@ class Capabilities:
                          'mylocaldir' : [],
                          'callcampaign' : [],
                          'xletproto' : [],
+                         'xletweb' : [],
                          'tabber' : [],
                          'video' : []}
 
