@@ -1,5 +1,5 @@
 <ThomsonLanguageTable>
-    <ProductName>ST2030(S)</ProductName>
+    <ProductName>ST2022(S)</ProductName>
     <Country>English</Country>
     <Charset>Latin-1</Charset>
     <ThomsonDisplayString>
@@ -430,7 +430,6 @@
                 <PS_Str_Alarm>Alarm Clock</PS_Str_Alarm>
                 <PS_Str_Contrast>Contrast</PS_Str_Contrast>
                 <PS_Str_PIN>PIN Setting</PS_Str_PIN>
-                <PS_Str_Shortcut>Shortcut</PS_Str_Shortcut>
                 <PS_Str_MK>Memory Key</PS_Str_MK>
                 <PS_Str_INFO>Information</PS_Str_INFO>
             </PS_Str>
@@ -549,6 +548,7 @@
             <login_Str_PSW>Enter your PWD</login_Str_PSW>
             <login_Str_NoService>Impossible to login.</login_Str_NoService>
             <login_Str_InUse>Account in use.</login_Str_InUse>
+            <login_Str_WrongUser>Wrong Account.</login_Str_WrongUser>
         </login_Str>
 
         <ACD>
@@ -581,8 +581,8 @@
         <SK_AutoAnswer>AutoAn</SK_AutoAnswer>
         <SK_Away>Away</SK_Away>
         <SK_Back>Back</SK_Back>
-        <SK_Barge-In>BargIn</SK_Barge-In>
-        <SK_CallLog>CalLog</SK_CallLog>
+        <SK_Barge>BargeIn</SK_Barge>
+        <SK_CallLog>CallLog</SK_CallLog>
         <SK_Cancel>Cancel</SK_Cancel>
         <SK_CallBack>CBack</SK_CallBack>
         <SK_CallBlock>CBlock</SK_CallBlock>
@@ -597,10 +597,11 @@
         <SK_Delete>Delete</SK_Delete>
         <SK_Detail>Detail</SK_Detail>
         <SK_Dial>Dial</SK_Dial>
+        <SK_Dmail>Dmail</SK_Dmail>
         <SK_DoNotDisturb>DNDst</SK_DoNotDisturb>
-        <SK_Down>Down</SK_Down>
+        <K_Down>Down</K_Down>
         <SK_Dialsubscriber>Dsub</SK_Dialsubscriber>
-        <SK_EndCall>EndCal</SK_EndCall>
+        <SK_EndCall>EndCall</SK_EndCall>
         <SK_Edit>Edit</SK_Edit>
         <SK_Enter>Enter</SK_Enter>
         <SK_Exit>Exit</SK_Exit>
@@ -613,7 +614,7 @@
         <SK_Mail>Mail</SK_Mail>
         <SK_Modify>Modify</SK_Modify>
         <SK_MissedCall>MsCall</SK_MissedCall>
-        <SK_NewCall>NewCal</SK_NewCall>
+        <SK_NewCall>NewCall</SK_NewCall>
         <SK_OFF>OFF</SK_OFF>
         <SK_OK>OK</SK_OK>
         <SK_ON>ON</SK_ON>
@@ -634,11 +635,15 @@
         <SK_Save>Save</SK_Save>
         <SK_Search>Search</SK_Search>
         <SK_Select>Select</SK_Select>
+        <SK_Service>Service</SK_Service>
         <SK_Stop>Stop</SK_Stop>
         <SK_Transfer>Transf</SK_Transfer>
         <SK_Transfer2MailServer>TrMail</SK_Transfer2MailServer>
         <SK_UnHold>UnHold</SK_UnHold>
         <SK_Up>Up</SK_Up>
         <SK_View>View</SK_View>
+        <SK_Right>  --&gt;</SK_Right>
+        <SK_Previous>  &lt;&lt;&lt;</SK_Previous>
+        <SK_Next>  &gt;&gt;&gt;</SK_Next>
     </ThomsonSoftKey>
 </ThomsonLanguageTable>

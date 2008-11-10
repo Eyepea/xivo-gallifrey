@@ -1,0 +1,13 @@
+[application]
+fw_filename=Thomson/binary/v2030SG.081010.1.65.1.zz
+
+[config]
+telcfg=Thomson/TelConf2030SG_v1.65.1.txt
+common_config=Thomson/ST2030S_common_v1.65-200811100000.txt
+
+melodies=Thomson/Melodies.txt
+system_melodies=Thomson/Sys_Ringtones.txt
+call_waiting_tone=Thomson/Bellcore_CW.txt
+
+tone_table=Thomson/ToneTbl_1.65.1.zz
+language_table=Thomson/LangTbl_1.65.1.zz
