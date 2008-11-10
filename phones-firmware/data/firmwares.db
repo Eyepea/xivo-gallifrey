@@ -344,31 +344,31 @@ size: 979068
 md5sum: 1a4966ec9c0c48c8bbc7ca440ba4ae7e
 sha1sum: f3bd2fd9872096a07c5ae17eacede68072681e64
 
-# Thomson ST2022 3.63
-[thst2022_163]
+# Thomson ST2022 3.65
+[thst2022_365]
 brand: Thomson
 model: ST2022
-version: 1.63
-files: ST2022_SG_v3.63_Release_Package.zip
+version: 3.65
+files: ST2022_SG_v3.65_Release_Package.zip
 
-[ST2022_SG_v3.63_Release_Package.zip]
-url: http://www.thomsonbroadbandpartner.com/getfile.php?id=5234
-size: 7973318
-md5sum: c898557f53dc6efdbe166f4a4f031caf
-sha1sum: 474ebddff5e6306f858518e7bd6037ae0b939b39
+[ST2022_SG_v3.65_Release_Package.zip]
+url: http://www.thomsonbroadbandpartner.com/getfile.php?id=6457
+size: 7769854
+md5sum: 904e2455606f4424b6decdaae1a14370
+sha1sum: 905a5440b89c39833bd5e5bb04d5618963a60d02
 
-# Thomson ST2030 1.64
-[thst2030_164]
+# Thomson ST2030 1.65
+[thst2030_165]
 brand: Thomson
 model: ST2030
-version: 1.64
-files: ST2030_SG_v1.64_Release_package.zip
+version: 1.65
+files: ST2030_SG_v1.65_Release_package.zip
 
-[ST2030_SG_v1.64_Release_package.zip]
-url: http://www.thomsonbroadbandpartner.com/getfile.php?id=6386
-size: 7977876
-md5sum: 457d4daa82ffc51865c91bea18ef7120
-sha1sum: 07a4211924fbc2c0649eb98df13c70e5af9fd964
+[ST2030_SG_v1.65_Release_package.zip]
+url: http://www.thomsonbroadbandpartner.com/getfile.php?id=6456
+size: 7799154
+md5sum: e36944b7522382aae5f3a24ef11229b1
+sha1sum: 451cf0aa2e1b2368703e089352c7581e84437e79
 
 ###
 ### Cards Firmwares starting from here ###
