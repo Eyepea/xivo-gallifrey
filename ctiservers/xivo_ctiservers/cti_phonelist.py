@@ -46,7 +46,7 @@ class PhoneList(AnyList):
                                 infos = {'thischannel' : puidsrc.get('channel'),
                                          'peerchannel' : puidsrc.get('dial'),
                                          'status' : 'calling',
-                                         'time-dial' : puidsrc.get('time-dial'),
+                                         'time-dial' : 0,
                                          'calleridname' : puidsrc.get('calleridname'),
                                          'calleridnum' : puidsrc.get('calleridnum')
                                          }
@@ -58,7 +58,7 @@ class PhoneList(AnyList):
                                 infos = {'thischannel' : puiddst.get('channel'),
                                          'peerchannel' : puiddst.get('dial'),
                                          'status' : 'ringing',
-                                         'time-dial' : puiddst.get('time-dial'),
+                                         'time-dial' : 0,
                                          'calleridname' : puidsrc.get('calleridname'),
                                          'calleridnum' : puidsrc.get('calleridnum')
                                          }
@@ -68,27 +68,31 @@ class PhoneList(AnyList):
         def ami_link(self, phoneidsrc, phoneiddst, uidsrc, uiddst, puidsrc, puiddst):
                 if phoneidsrc in self.keeplist:
                         if uidsrc in self.keeplist[phoneidsrc]['comms']:
-                                pass
-                        else:
-                                self.keeplist[phoneidsrc]['comms'][uidsrc] = puidsrc
+                                infos = {'status' : 'linked-caller',
+                                         'time-link' : 0
+                                         }
+                                self.keeplist[phoneidsrc]['comms'][uidsrc].update(infos)
                 if phoneiddst in self.keeplist:
                         if uiddst in self.keeplist[phoneiddst]['comms']:
-                                pass
-                        else:
-                                self.keeplist[phoneiddst]['comms'][uiddst] = puiddst
+                                infos = {'status' : 'linked-called',
+                                         'time-link' : 0
+                                         }
+                                self.keeplist[phoneiddst]['comms'][uiddst].update(infos)
                 return
         
         def ami_unlink(self, phoneidsrc, phoneiddst, uidsrc, uiddst, puidsrc, puiddst):
                 if phoneidsrc in self.keeplist:
                         if uidsrc in self.keeplist[phoneidsrc]['comms']:
-                                pass
-                        else:
-                                self.keeplist[phoneidsrc]['comms'][uidsrc] = puidsrc
+                                infos = {'status' : 'unlinked-caller',
+                                         'time-link' : 0
+                                         }
+                                self.keeplist[phoneidsrc]['comms'][uidsrc].update(infos)
                 if phoneiddst in self.keeplist:
                         if uiddst in self.keeplist[phoneiddst]['comms']:
-                                pass
-                        else:
-                                self.keeplist[phoneiddst]['comms'][uiddst] = puiddst
+                                infos = {'status' : 'unlinked-called',
+                                         'time-link' : 0
+                                         }
+                                self.keeplist[phoneiddst]['comms'][uiddst].update(infos)
                 return
         
         def ami_hangup(self, phoneid, uid):
