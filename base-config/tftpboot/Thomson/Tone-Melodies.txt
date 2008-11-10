@@ -10,3 +10,4 @@ PinkPanter:d=16,o=5,b=80:e,f,4p,g,g#,4p,e,f,32p,g,g#,32p,c#6,c6,32p,e,f,32p,c6,4
 TubularBells:d=4,o=5,b=285:c,f,c,g,c,d#,f,c,g#,c,a#,c,g,g#,c,g,c,f,c,g,c,d#,f,c,g#,c,a#,c,g,g#,c,g,c,f,c,g,c,d#,f,c,g#,c,a#,c,g,g#,c,g,c,f,c,g,c,d#,f,c,g#,c,a#,c,g,g#,c,g
 Walkyries:d=4,o=5,b=160:a,32e,8a,c6,8p,a,8p,c6,32a,8c6,e6,8p,c6,8p,e6,32c6,8e6,g6,8p,g,8p,c6,32g,8c6,2e6,p
 YellowSubmarine:d=16,o=5,b=125:8a#,8b,2c#6,8a#,8g#,8a#,2f#,8a#,8a#,8g#,8f#,2d#,8a#,8a#,1g#,4c#6,4c#6,4c#6,8c#6,8d#6,8g#,8g#,8g#,8g#,2g#,8g#,8g#,4g#,2g#,8f#,8f#,8f#,8f#,2f#,4c#6,4c#6,4c#6,8c#6,8d#6,8g#,8g#,8g#,8g#,2g#,8g#,8g#,4g#,2g#,8f#,8f#
+internal:d=16,o=5,b=100:c,c,c,8f.,a,p,c,c,c,8f.,a,4p,f,f,e,e,d,d,8c,p,c,c,c,8e.,g,p,c,c,c,8e.,g,4p,c6,d6,c,a,g,8f
