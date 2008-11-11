@@ -19,10 +19,10 @@ NameVirtualHost *:443
 NameVirtualHost *:8667
 
 <VirtualHost *:8667>
-	DocumentRoot /tftpboot/Snom
+	DocumentRoot /tftpboot/
 
-	ErrorLog /var/log/apache2/xivo_error_snom.log
-	CustomLog /var/log/apache2/xivo_access_snom.log combined
+	ErrorLog /var/log/apache2/xivo_error_provi_http.log
+	CustomLog /var/log/apache2/xivo_access_provi_http.log combined
 
 	<Directory />
 		Options FollowSymLinks
