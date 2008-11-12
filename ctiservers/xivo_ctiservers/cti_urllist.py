@@ -36,6 +36,7 @@ class UrlList:
         def __init__(self, url):
                 self.list = {}
                 self.url = url
+                self.trueurl = url.split('?')
                 self.urlmd5 = ''
                 return
 
@@ -46,7 +47,7 @@ class UrlList:
                         if self.url is not None:
                                 kind = self.url.split(':')[0]
                                 if kind == 'file' or kind == self.url:
-                                        f = urllib.urlopen(self.url)
+                                        f = urllib.urlopen(self.trueurl[0])
                                         contenttype = f.headers.getheaders('Content-Type')
                                         contenttype = ['application/json']
                                 elif kind in ['mysql', 'sqlite', 'ldap']:
@@ -76,7 +77,17 @@ class UrlList:
                         self.listmd5 = md5.md5(fulltable).hexdigest()
                         if contenttype == ['application/json']:
                                 self.jsonreply = cjson.decode(fulltable)
+                                try:
+                                        if len(self.trueurl) > 1:
+                                                [var, val] = self.trueurl[1].split('=')
+                                                for k in self.jsonreply:
+                                                        k[var] = val
+                                except Exception, exc:
+                                        log.error('--- exception --- (UrlList) trying to enforce setting %s %s' % (self.url, exc))
                                 ret = 2
+                        elif contenttype == ['text/html; charset=UTF-8']:
+                                if fulltable == 'XIVO-WEBI: Error/403':
+                                        log.warning('unauthorized connection (403) to %s' % self.url)
                         else:
                                 csvreader = csv.reader(mytab, delimiter = '|')
                                 # builds the users list

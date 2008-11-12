@@ -46,16 +46,18 @@ class UserList(AnyList):
                         if a not in self.keeplist:
                                 self.keeplist[a] = b
                 return
-
-        def finduser(self, username):
-                if username in self.keeplist:
-                        return self.keeplist.get(username)
-                else:
-                        return None
-
+        
+        def finduser(self, userid, company):
+                uinfo = None
+                for userinfo in self.keeplist.itervalues():
+                        if userinfo['user'] == userid and userinfo['company'] == company:
+                                uinfo = userinfo
+                                break
+                return uinfo
+        
         def users(self):
                 return self.keeplist
-
+        
         def connected_users(self):
                 lst = {}
                 for username, userinfo in self.keeplist.iteritems():

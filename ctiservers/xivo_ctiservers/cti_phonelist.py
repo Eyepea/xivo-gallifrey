@@ -100,6 +100,11 @@ class PhoneList(AnyList):
                         self.keeplist[phoneid]['comms'][uid]['status'] = 'hangup'
                 return
         
+        def ami_extstatus(self, phoneid, status):
+                if phoneid in self.keeplist:
+                        self.keeplist[phoneid]['hintstatus'] = status
+                return
+        
         def clear(self, phoneid, uid):
                 if phoneid in self.keeplist and uid in self.keeplist[phoneid]['comms']:
                         del self.keeplist[phoneid]['comms'][uid]
