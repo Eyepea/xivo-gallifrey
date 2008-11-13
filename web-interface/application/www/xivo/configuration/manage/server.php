@@ -59,9 +59,9 @@ switch($act)
 			$ipbx = &$_SRE->get('ipbx');
 			$serverfeatures = &$ipbx->get_module('serverfeatures');
 
-			$where_serverfeatures = array();
-			$where_serverfeatures['serverid'] = $id;
-			$serverfeatures->delete_where($where_serverfeatures);
+			$where = array();
+			$where['serverid'] = $id;
+			$serverfeatures->delete_where($where);
 		}
 
 		$_QRY->go($_HTML->url('xivo/configuration/manage/server'),$param);
@@ -75,7 +75,7 @@ switch($act)
 		$ipbx = &$_SRE->get('ipbx');
 		$serverfeatures = &$ipbx->get_module('serverfeatures');
 
-		$where_serverfeatures = array();
+		$where = array();
 
 		$nb = count($values);
 
@@ -84,8 +84,8 @@ switch($act)
 			if(($id = intval($values[$i])) > 0
 			&& $_SVR->delete($id) !== false)
 			{
-				$where_serverfeatures['serverid'] = $id;
-				$serverfeatures->delete_where($where_serverfeatures);
+				$where['serverid'] = $id;
+				$serverfeatures->delete_where($where);
 			}
 		}
 

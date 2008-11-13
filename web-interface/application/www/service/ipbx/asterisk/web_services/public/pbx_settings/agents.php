@@ -1,10 +1,8 @@
 <?php
 
-$act = isset($_QR['act']) === true ? $_QR['act'] : '';
-
 $appagent = &$ipbx->get_application('agent',null,false);
 
-switch($act)
+switch($_QRY->get_qs('act'))
 {
 	case 'list':
 	default:
@@ -12,8 +10,8 @@ switch($act)
 			xivo_die('no-data');
 
 		$_HTML->set_var('agents',$agents);
+		$_HTML->set_var('sum',$_QRY->get_qs('sum'));
+		$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/pbx_settings/agents');
 }
-
-$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/pbx_settings/agents');
 
 ?>

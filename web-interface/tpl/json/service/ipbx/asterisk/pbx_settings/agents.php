@@ -41,7 +41,7 @@ for($i = 0;$i < $nb;$i++)
 if(($list = xivo_json::encode($list)) === false)
 	xivo_die('Error/500');
 
-if(isset($_QR['sum']) === true && $_QR['sum'] === md5($list))
+if($this->get_var('sum') === md5($list))
 	xivo_die('no-update');
 
 header(xivo_json::get_header());

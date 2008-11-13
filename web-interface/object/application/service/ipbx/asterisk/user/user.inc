@@ -2253,78 +2253,90 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			return(false);
 		}
 
-		$appincall = &$this->_service->get_application('incall');
-
-		$incall['dialaction']['answer'] = $incall['dialaction'] = $incall = array();
-
-		$is_object_agentfeatures = is_object($this->_agentfeatures);
-
-		$r = true;
-
 		for($i = 0;$i < $nb;$i++)
-		{
-			$ref = &$data[$i];
-
-			if(xivo_issa('voicemail',$ref) === true
-			&& empty($ref['voicemail']) === false
-			&& xivo_haslen($ref['voicemail'],'mailbox') === true)
-				$ref['ufeatures']['enablevoicemail'] = true;
-			else
-				unset($ref['voicemail']);
-
-			$issa_protocol = xivo_issa('protocol',$ref);
-			$issa_ufeatures = xivo_issa('ufeatures',$ref);
-
-			if($issa_protocol === true
-			&& $issa_ufeatures === true
-			&& xivo_haslen($ref['protocol'],'callerid') === false)
-			{
-				$ref['protocol']['callerid'] = '';
-
-				if(xivo_haslen($ref['ufeatures'],'firstname') === true)
-					$ref['protocol']['callerid'] = $ref['ufeatures']['firstname'].' ';
-
-				if(xivo_haslen($ref['ufeatures'],'lastname') === true)
-					$ref['protocol']['callerid'] .= $ref['ufeatures']['lastname'];
-				
-				trim($ref['protocol']['callerid']);
-			}
-
-			if($issa_ufeatures === true
-			&& xivo_haslen($ref['ufeatures'],'agentnumber') === true
-			&& $is_object_agentfeatures === true
-			&& ($agentid = $this->_agentfeatures->get_primary(
-							array('number' => $ref['ufeatures']['agentnumber']))) !== false)
-				$ref['ufeatures']['agentid'] = $agentid;
-
-			unset($ref['ufeatures']['agentnumber']);
-
-			if(xivo_issa('protocol',$ref) === false
-			|| isset($ref['protocol']['protocol']) === false
-			|| $this->set_add($ref,$ref['protocol']['protocol']) === false
-			|| $this->add() === false)
-				$r = false;
-			else if(xivo_issa('incall',$ref) === true
-			&& xivo_haslen($ref['incall'],'exten') === true)
-			{
-				$incall['incall'] = $ref['incall'];
-				$incall['dialaction']['answer']['actiontype'] = 'user';
-				$incall['dialaction']['answer']['actionarg1'] = $this->get_return('userfeatures');
-
-				if(xivo_haslen($ref['incall'],'ringseconds') === true)
-					$incall['dialaction']['answer']['actionarg2'] = $ref['incall']['ringseconds'];
-				else
-					$incall['dialaction']['answer']['actionarg2'] = '';
-
-				unset($incall['incall']['ringseconds']);
-
-				if($appincall->set_add($incall) === false
-				|| $appincall->add() === false)
-					$r = false;
-			}
-		}
+			$this->_import($data[$i]);
 
 		xivo_file::rm($file->info['tmp_name']);
+	}
+
+	function import_json()
+	{
+		$_QRY = &xivo_gct::get('xivo_query');
+
+		if(xivo::load_class('xivo_json') === false
+		|| ($data = xivo_json::decode($_QRY->get_input(),true)) === false)
+			return(false);
+
+		return($this->_import($data));
+	}
+
+	function _import($arr)
+	{
+		$r = true;
+
+		$appincall = &$this->_service->get_application('incall');
+		
+		$incall = array();
+		$incall['dialaction'] = array();
+		$incall['dialaction']['answer'] = array();
+
+		if(xivo_issa('voicemail',$arr) === true
+		&& empty($arr['voicemail']) === false
+		&& xivo_haslen($arr['voicemail'],'mailbox') === true)
+			$arr['ufeatures']['enablevoicemail'] = true;
+		else
+			unset($arr['voicemail']);
+
+		$issa_protocol = xivo_issa('protocol',$arr);
+		$issa_ufeatures = xivo_issa('ufeatures',$arr);
+
+		if($issa_protocol === true
+		&& $issa_ufeatures === true
+		&& xivo_haslen($arr['protocol'],'callerid') === false)
+		{
+			$arr['protocol']['callerid'] = '';
+
+			if(xivo_haslen($arr['ufeatures'],'firstname') === true)
+				$arr['protocol']['callerid'] = $arr['ufeatures']['firstname'].' ';
+
+			if(xivo_haslen($arr['ufeatures'],'lastname') === true)
+				$arr['protocol']['callerid'] .= $arr['ufeatures']['lastname'];
+			
+			trim($arr['protocol']['callerid']);
+		}
+
+		if($issa_ufeatures === true
+		&& xivo_haslen($arr['ufeatures'],'agentnumber') === true
+		&& is_object($this->_agentfeatures) === true
+		&& ($agentid = $this->_agentfeatures->get_primary(
+						array('number' => $arr['ufeatures']['agentnumber']))) !== false)
+			$arr['ufeatures']['agentid'] = $agentid;
+
+		unset($arr['ufeatures']['agentnumber']);
+
+		if(xivo_issa('protocol',$arr) === false
+		|| isset($arr['protocol']['protocol']) === false
+		|| $this->set_add($arr,$arr['protocol']['protocol']) === false
+		|| $this->add() === false)
+			$r = false;
+		else if(xivo_issa('incall',$arr) === true
+		&& xivo_haslen($arr['incall'],'exten') === true)
+		{
+			$incall['incall'] = $arr['incall'];
+			$incall['dialaction']['answer']['actiontype'] = 'user';
+			$incall['dialaction']['answer']['actionarg1'] = $this->get_return('userfeatures');
+
+			if(xivo_haslen($arr['incall'],'ringseconds') === true)
+				$incall['dialaction']['answer']['actionarg2'] = $arr['incall']['ringseconds'];
+			else
+				$incall['dialaction']['answer']['actionarg2'] = '';
+
+			unset($incall['incall']['ringseconds']);
+
+			if($appincall->set_add($incall) === false
+			|| $appincall->add() === false)
+				$r = false;
+		}
 
 		return($r);
 	}

@@ -21,7 +21,8 @@ class xivo_user
 		if(isset($_SESSION['_USR']) === false)
 			$_SESSION['_USR'] = (object) null;
 
-		if(isset($_SESSION['_USR']->_type) === false || xivo_user::chk_type($_SESSION['_USR']->_type) === false)
+		if(isset($_SESSION['_USR']->_type) === false
+		|| xivo_user::chk_type($_SESSION['_USR']->_type) === false)
 			$_SESSION['_USR']->_type = 0;
 
 		$meta = xivo_user::type_to_meta($_SESSION['_USR']->_type);
@@ -47,7 +48,9 @@ class xivo_user
 	{
 		static $ini = null;
 
-		if($ini === null && ($ini = xivo::load_init(XIVO_PATH_CONF.XIVO_SEP_DIR.'user.ini')) === false)
+		$path = XIVO_PATH_CONF.XIVO_SEP_DIR.'user.ini';
+
+		if($ini === null && ($ini = xivo::load_init($path)) === false)
 			trigger_error('User ini file not found or unreadable',E_USER_ERROR);
 		
 		return(($ref = &$ini));
@@ -65,7 +68,8 @@ class xivo_user
 
 	function is_valid()
 	{
-		if(isset($_SESSION['_USR'],$_SESSION['_USR']->_valid) === true && $_SESSION['_USR']->_valid === true)
+		if(isset($_SESSION['_USR'],$_SESSION['_USR']->_valid) === true
+		&& $_SESSION['_USR']->_valid === true)
 			return(true);
 
 		return(false);
@@ -88,7 +92,8 @@ class xivo_user
 	{
 		$cfg = xivo_gat::get('user');
 
-		if(($r = isset($cfg['type'][$type])) === true && (bool) $real === true)
+		if(($r = isset($cfg['type'][$type])) === true
+		&& (bool) $real === true)
 			return(($type > 0));
 
 		return($r);
@@ -107,7 +112,8 @@ class xivo_user
 	{
 		$cfg = xivo_gat::get('user');
 
-		if(xivo_user::chk_type($type,$real) === true && isset($cfg['type'][$type]['meta']) === true)
+		if(xivo_user::chk_type($type,$real) === true
+		&& isset($cfg['type'][$type]['meta']) === true)
 			return($cfg['type'][$type]['meta']);
 
 		return(false);
@@ -192,13 +198,24 @@ class xivo_user
 		if(isset($_SESSION['_ACL']) === false
 		|| xivo_user::is_valid() === false
 		|| xivo_issa('tree',$_SESSION['_ACL']) === false
-		|| isset($_SESSION['_ACL']['user']) === false)
+		|| isset($_SESSION['_ACL']['user'],
+			 $_SESSION['_ACL']['user_section']) === false
+		|| is_scalar($section) === false)
 			return(false);
-			
+
 		$section = trim(preg_replace('@/+@','/',$section),'/');
 
 		$tree = $_SESSION['_ACL']['tree'];
 		$user = $_SESSION['_ACL']['user'];
+		$user_section = &$_SESSION['_ACL']['user_section'];
+
+		if(is_array($user_section) === false)
+			$user_section = array();
+		else if(isset($user_section[$section]) === true)
+			return((bool) $user_section[$section]);
+
+		$user_section[$section] = false;
+		$r = &$user_section[$section];
 
 		if($user === true)
 			$r = true;
@@ -216,9 +233,15 @@ class xivo_user
 			$grp = $user;
 
 			if(xivo_issa($k,$tree) === false)
-				return(false);
+				return(($r = false));
 			else if($r === false && is_bool(($user = xivo_ak($k,$user,true))) === true)
-				return($user);
+			{
+				if(isset($tree[$k]['value']) === true
+				&& (bool) $tree[$k]['value'] === false)
+					return(($r = false));
+
+				return(($r = $user));
+			}
 			else if(isset($tree[$k]['child']) === true)
 				$tree = &$tree[$k]['child'];
 		}

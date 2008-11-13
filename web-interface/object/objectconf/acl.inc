@@ -46,9 +46,6 @@ $array['tree']['service']['ipbx']['system_management'] = array();
 $array['tree']['service']['ipbx']['system_management']['configfiles'] = true;
 $array['tree']['service']['ipbx']['system_management']['context'] = true;
 $array['tree']['service']['ipbx']['system_management']['ldapfilter'] = true;
-#$array['tree']['service']['ipbx']['system_management']['isdncard'] = true;
-#$array['tree']['service']['ipbx']['system_management']['modules'] = true;
-#$array['tree']['service']['ipbx']['system_management']['manager'] = true;
 
 $array['tree']['service']['ipbx']['control_system'] = array();
 $array['tree']['service']['ipbx']['control_system']['reload'] = true;

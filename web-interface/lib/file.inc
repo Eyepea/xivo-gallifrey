@@ -419,22 +419,19 @@ class xivo_file
 	{
 		static $pathcache = array();
 
-		if(is_file($file) === true)
+		if(is_file($file) === false)
+			return(false);
+		else if(($mode = intval($mode)) === 0)
+			return($file);
+		else if(isset($pathcache[$file]) === false)
 		{
-			if(($mode = intval($mode)) === 0)
-				return($file);
-			else if(isset($pathcache[$file]) === false)
-			{
-				if($mode !== 2)
-					$pathcache[$file] = xivo_file::abspath($file);
-				else
-					$pathcache[$file] = realpath($file);
-			}
-
-			return($pathcache[$file]);
+			if($mode !== 2)
+				$pathcache[$file] = xivo_file::abspath($file);
+			else
+				$pathcache[$file] = realpath($file);
 		}
 
-		return(false);
+		return($pathcache[$file]);
 	}
 
 	function is_f_r($file,$mode=1)
@@ -500,22 +497,19 @@ class xivo_file
 		if((bool) $dirname === true)
 			$dir = dirname($dir);
 
-		if(is_dir($dir) === true)
-		{
-			if(($mode = intval($mode)) === 0)
+		if(is_dir($dir) === false)
+			return(false);
+		else if(($mode = intval($mode)) === 0)
 				return($dir);
-			else if(isset($pathcache[$dir]) === false)
-			{
-				if($mode !== 2)
-					$pathcache[$dir] = xivo_file::abspath($dir);
-				else
-					$pathcache[$dir] = realpath($dir);
-			}
-
-			return($pathcache[$dir]);
+		else if(isset($pathcache[$dir]) === false)
+		{
+			if($mode !== 2)
+				$pathcache[$dir] = xivo_file::abspath($dir);
+			else
+				$pathcache[$dir] = realpath($dir);
 		}
 
-		return(false);
+		return($pathcache[$dir]);
 	}
 
 	function is_d_r($dir,$dirname=false,$mode=1)

@@ -628,14 +628,14 @@ function xivo_sprint_r(&$a,$t=false)
 {
 	ob_start();
 	print_r($a);
-	return(((bool) $t === false ? ob_end_clean() : nl2br(ob_end_clean())));
+	return(((bool) $t === false ? ob_get_clean() : nl2br(ob_get_clean())));
 }
 
 function xivo_svar_dump(&$a,$t=false)
 {
 	ob_start();
 	var_dump($a);
-	return(((bool) $t === false ? ob_end_clean() : nl2br(ob_end_clean())));
+	return(((bool) $t === false ? ob_get_clean() : nl2br(ob_get_clean())));
 }
 
 function xivo_msg($msg='')

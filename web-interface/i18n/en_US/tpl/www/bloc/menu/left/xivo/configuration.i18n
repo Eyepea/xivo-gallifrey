@@ -7,11 +7,11 @@ Management
 ; mn_left_manage-user
 Users
 
+; mn_left_manage-entity
+Entities
+
 ; mn_left_manage-server
 Servers
 
 ; mn_left_manage-ldapserver
 LDAP Servers
-
-; mn_left_manage-entity
-Entities

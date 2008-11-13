@@ -1,10 +1,8 @@
 <?php
 
-$act = isset($_QR['act']) === true ? $_QR['act'] : '';
-
 $appqueue = &$ipbx->get_application('queue',null,false);
 
-switch($act)
+switch($_QRY->get_qs('act'))
 {
 	case 'list':
 	default:
@@ -12,8 +10,8 @@ switch($act)
 			xivo_die('no-data');
 
 		$_HTML->set_var('queues',$queues);
+		$_HTML->set_var('sum',$_QRY->get_qs('sum'));
+		$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/pbx_settings/queues');
 }
-
-$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/pbx_settings/queues');
 
 ?>

@@ -78,7 +78,8 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 
 		if(($active = xivo_user::chk_active()) !== null)
 			return($active);
-		else if($this->call_auth('chk',array($_SESSION['_USR']->_login,$_SESSION['_USR']->_pass)) === false)
+		else if($this->call_auth('chk',array($_SESSION['_USR']->_login,
+						     $_SESSION['_USR']->_pass)) === false)
 			return(false);
 
 		$_SESSION['_USR']->_time = gmmktime();
@@ -88,8 +89,10 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 
 	function _chk_update()
 	{
-		if(isset($_SESSION['_USR']->id,$_SESSION['_USR']->dupdate) === true
-		&& $this->_dso->chk_update($_SESSION['_USR']->id,$_SESSION['_USR']->dupdate) === true)
+		if(isset($_SESSION['_USR']->id,
+			 $_SESSION['_USR']->dupdate) === true
+		&& $this->_dso->chk_update($_SESSION['_USR']->id,
+					   $_SESSION['_USR']->dupdate) === true)
 			$this->load_by_id($_SESSION['_USR']->id);
 	}
 
@@ -123,7 +126,8 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 		
 		$infos = array();
 
-		if(($type = $this->call_auth('chk',array($login,$pass))) !== false && xivo_user::chk_type($type,true) === true)
+		if(($type = $this->call_auth('chk',array($login,$pass))) !== false
+		&& xivo_user::chk_type($type,true) === true)
 		{
 			if(($data = $this->get_by_login_pass($login,$pass)) === false)
 			{

@@ -42,9 +42,8 @@ class xivo_file_csv
 	{
 		if(is_array($arr) === false)
 			return($this->_get_data($data));
-		else
-			return(false);
-			//return($this->_get_data_array_ref($data,$arr));
+
+		return(false);
 	}
 
 	function _get_file_data()

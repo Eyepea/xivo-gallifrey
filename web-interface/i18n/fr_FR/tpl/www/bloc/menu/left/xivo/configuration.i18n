@@ -7,11 +7,14 @@ Gestion
 ; mn_left_manage-user
 Utilisateurs
 
+; mn_left_manage-entity
+Entités
+
+; mn_left_manage-webservice
+Services Web
+
 ; mn_left_manage-server
 Serveurs
 
 ; mn_left_manage-ldapserver
 Serveurs LDAP
-
-; mn_left_manage-entity
-Entités

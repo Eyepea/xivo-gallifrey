@@ -9,7 +9,8 @@ $param['act'] = 'list';
 switch($act)
 {
 	case 'edit':
-		if(isset($_QR['id']) === false || ($info = $_USR->get($_QR['id'])) === false)
+		if(isset($_QR['id']) === false
+		|| ($info = $_USR->get($_QR['id'])) === false)
 			$_QRY->go($_HTML->url('xivo/configuration/manage/user'),$param);
 
 		if(isset($_QR['fm_send']) === true
@@ -24,7 +25,8 @@ switch($act)
 		$_HTML->set_var('info',$info);
 		break;
 	case 'acl':
-		if(isset($_QR['id']) === false || ($info = $_USR->get($_QR['id'])) === false
+		if(isset($_QR['id']) === false
+		|| ($info = $_USR->get($_QR['id'])) === false
 		|| xivo_user::chk_authorize('admin',$info['meta']) === false)
 			$_QRY->go($_HTML->url('xivo/configuration/manage/user'),$param);
 

@@ -11,10 +11,11 @@ class xivo_query
 	var $orig	= array('request' => array(),'qstring' => array());
 	var $raw	= array();
 	var $uraw	= array();
-	//var $_raw	= array();
 	var $qot	= array();
 	var $uqot	= array();
 	var $uqo	= array();
+	var $qraw	= array();
+	var $input	= null;
 	var $_separator	= array('in' => '&','out' => '&');
 	var $_mquotes	= false;
 
@@ -60,9 +61,13 @@ class xivo_query
 		$data = $this->_orig[$type];
 
 		if(($mode & XIVO_QUERY_MODE_RAW) !== 0)
-			$r = &$this->_filter($data,$mode,($this->_mquotes === true ? true : null));	// remove spaces and is unquoted
+			$r = &$this->_filter($data,
+					     $mode,
+					     ($this->_mquotes === true ? true : null));		// remove spaces and is unquoted
 		else
-			$r = &$this->_filter($data,$mode,($this->_mquotes === false ? false : null));	// remove spaces and is quoted
+			$r = &$this->_filter($data,
+					     $mode,
+					     ($this->_mquotes === false ? false : null));	// remove spaces and is quoted
 
 		return(($ref = &$r));
 	}
@@ -110,6 +115,21 @@ class xivo_query
 		$this->raw[$name] = &$this->_filter($this->_orig['request'][$name],XIVO_QUERY_MODE_RAW,$quote);
 
 		return($this->raw[$name]);
+	}
+
+	function get_qs($name)
+	{
+		if(isset($this->qraw[$name]) === true)
+			return($this->qraw[$name]);
+
+		if(isset($this->_orig['qstring'][$name]) === false)
+			return(null);
+
+		$quote = $this->_mquotes === true ? true : null;
+
+		$this->qraw[$name] = &$this->_filter($this->_orig['qstring'][$name],XIVO_QUERY_MODE_RAW,$quote);
+
+		return($this->qraw[$name]);
 	}
 
 	function get_uqr($name)
@@ -192,6 +212,14 @@ class xivo_query
 		return(null);
 	}
 
+	function get_input()
+	{
+		if($this->input === null)
+			$this->input = file_get_contents('php://input');
+
+		return($this->input);
+	}
+
 	function &request_meth_raw()
 	{
 		return(($ref = &$this->query_string('request',XIVO_QUERY_MODE_RAW)));
@@ -271,7 +299,9 @@ class xivo_query
 		$search = array('@/+@','@^/@','@/$@');
 		$replace = array('/','','');
 
-		if(is_array($arr) === false || empty($arr) === true || isset($_SERVER['PATH_INFO']) === false)
+		if(is_array($arr) === false
+		|| empty($arr) === true
+		|| isset($_SERVER['PATH_INFO']) === false)
 			return($r);
 
 		$path_info = preg_replace($search,$replace,$_SERVER['PATH_INFO']);
