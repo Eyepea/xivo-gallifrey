@@ -646,7 +646,7 @@ while True: # loops over the reloads
                 userlists = xivoconf_general['userlists'].split(',')
         if 'ctilog' in xivoconf_general:
                 ctilog = xivoconf_general['ctilog']
-
+        
         queued_threads_pipe = os.pipe()
         amilist = xivo_ami.AMIList()
         if commandset in xivo_commandsets.CommandClasses:

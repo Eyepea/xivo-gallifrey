@@ -130,6 +130,7 @@ class XivoCTICommand(BaseCommand):
                 self.stats_queues = {}
                 self.ignore_dtmf = {}
                 self.presence_sections = {}
+                self.display_hints = {}
                 
                 # actionid (AMI) indexed hashes
                 self.getvar_requests = {}
@@ -565,6 +566,11 @@ class XivoCTICommand(BaseCommand):
                                         self.capas[name].setwatchedpresenceid(val)
                                         if val not in self.presence_sections:
                                                 self.presence_sections[val] = cti_presence.Presence(allconf.read_section('presence', val))
+                for v, vv in allconf.read_section('phonehints', 'phonehints').iteritems():
+                        vvv = vv.split(',')
+                        if len(vvv) > 1:
+                                self.display_hints[v] = { 'longname' : vvv[0],
+                                                          'color' : vvv[1] }
                 return
         
         def set_configs(self, configs):
@@ -580,6 +586,7 @@ class XivoCTICommand(BaseCommand):
                         self.ignore_dtmf[astid] = {}
                 self.weblist['phones'][astid] = cti_phonelist.PhoneList(urllist_phones)
                 self.weblist['phones'][astid].setcommandclass(self)
+                self.weblist['phones'][astid].setdisplayhints(self.display_hints)
                 return
         
         def set_agentlist(self, astid, urllist_agents):
