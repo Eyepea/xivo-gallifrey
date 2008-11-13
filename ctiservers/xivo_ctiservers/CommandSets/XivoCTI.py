@@ -2922,10 +2922,13 @@ class XivoCTICommand(BaseCommand):
                                                 'stateid' : 'xivo_unknown'}
                                 if icapaid and icapaid in self.capas:
                                         presenceid = self.capas[uinfo.get('capaid')].presenceid
-                                        if uinfo.get('state') in self.presence_sections[presenceid].displaydetails:
-                                                statedetails = self.presence_sections[presenceid].displaydetails[uinfo.get('state')]
+                                        if presenceid in self.presence_sections:
+                                                if uinfo.get('state') in self.presence_sections[presenceid].displaydetails:
+                                                        statedetails = self.presence_sections[presenceid].displaydetails[uinfo.get('state')]
+                                                else:
+                                                        log.warning('%s not in details for %s' % (uinfo.get('state'), presenceid))
                                         else:
-                                                log.warning('%s not in details for %s' % (uinfo.get('state'), presenceid))
+                                                log.warning('%s not in presence_sections' % presenceid)
                                 else:
                                         log.warning('%s not in capas' % icapaid)
                                 fullstat.append([uinfo.get('user'),
