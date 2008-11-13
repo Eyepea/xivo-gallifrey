@@ -62,7 +62,7 @@ log = logging.getLogger('xivocti')
 
 XIVOVERSION_NUM = '0.4'
 XIVOVERSION_NAME = 'k-9'
-REQUIRED_CLIENT_VERSION = 4659
+REQUIRED_CLIENT_VERSION = 4661
 __revision__ = __version__.split()[1]
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 HISTSEPAR = ';'
@@ -707,13 +707,14 @@ class XivoCTICommand(BaseCommand):
                         try:
                                 # if uitem.get('enableclient') and uitem.get('loginclient'):
                                 if True:
-                                        uid = uitem.get('id')
+                                        astid = uitem.get('astid', 'xivo')
+                                        uid = astid + '/' + uitem.get('id')
                                         lulist[uid] = {'user' : uitem.get('loginclient'),
                                                        'company' : uitem.get('context'),
                                                        'password' : uitem.get('passwdclient'),
                                                        'capaids' : uitem.get('profileclient').split(','),
                                                        'fullname' : uitem.get('fullname'),
-                                                       'astid' : uitem.get('astid', 'xivo'),
+                                                       'astid' : astid,
                                                        'techlist' : ['.'.join([uitem.get('protocol'), uitem.get('context'),
                                                                                uitem.get('name'), uitem.get('number')])],
                                                        'context' : uitem.get('context'),
@@ -1690,14 +1691,16 @@ class XivoCTICommand(BaseCommand):
                 return
 
 
-        sippresence = { '-1' : 'Fail',
-                        '0'  : 'Ready',
-                        '1'  : 'InUse', # Calling OR Online
-                        '2'  : 'Busy',
-                        '4'  : 'Unavailable',
-                        '8'  : 'Ringing',
-                        '16' : 'OnHold' }
-
+        sippresence = {
+                '-2' : 'Removed',
+                '-1' : 'Deactivated',
+                '0'  : 'Ready',
+                '1'  : 'InUse', # Calling OR Online
+                '2'  : 'Busy',
+                '4'  : 'Unavailable',
+                '8'  : 'Ringing',
+                '16' : 'OnHold' }
+        
         def amiresponse_extensionstatus(self, astid, event):
                 # 90 seconds are needed to retrieve ~ 9000 phone statuses from an asterisk (on daemon startup)
                 status  = event.get('Status')
@@ -2590,10 +2593,10 @@ class XivoCTICommand(BaseCommand):
                                 else:
                                         log.warning('unallowed json event %s' % icommand.struct)
 
-                except Exception, exc:
-                        log.error('--- exception --- (manage_cticommand) %s %s %s : %s'
-                                  % (icommand.name, icommand.args, userinfo.get('login').get('connection'), exc))
-
+                except Exception:
+                        log.exception('--- exception --- (manage_cticommand) %s %s %s /'
+                                      % (icommand.name, icommand.args, userinfo.get('login').get('connection')))
+                        
                 if repstr is not None: # might be useful to reply sth different if there is a capa problem for instance, a bad syntaxed command
                         try:
                                 userinfo.get('login').get('connection').sendall(repstr + '\n')

@@ -100,9 +100,32 @@ class PhoneList(AnyList):
                         self.keeplist[phoneid]['comms'][uid]['status'] = 'hangup'
                 return
         
+        display_hints = {
+                '-2' : {'color' : 'black',
+                        'longname' : 'Inexistant'},
+                '-1' : {'color' : 'black',
+                        'longname' : 'Desactive'},
+                '0' : {'color' : 'green',
+                       'longname' : 'Disponible'},
+                '1' : {'color' : 'red',
+                       'longname' : 'En ligne OU Appelle'},
+                '2' : {'color' : 'red',
+                       'longname' : 'Occupe'},
+                '4' : {'color' : 'white',
+                       'longname' : 'Indisponible'},
+                '8' : {'color' : 'blue',
+                       'longname' : 'Sonne'},
+                '9' : {'color' : 'red',
+                       'longname' : '(En ligne OU Appelle) ET Sonne'},
+                '16' : {'color' : 'yellow',
+                        'longname' : 'OnHold'}
+                }
+        
         def ami_extstatus(self, phoneid, status):
                 if phoneid in self.keeplist:
-                        self.keeplist[phoneid]['hintstatus'] = status
+                        if status not in self.display_hints:
+                                status = '-2'
+                        self.keeplist[phoneid]['hintstatus'] = self.display_hints.get(status)
                 return
         
         def clear(self, phoneid, uid):
