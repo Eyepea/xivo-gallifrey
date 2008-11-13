@@ -53,7 +53,8 @@ class Presence:
                                                                  'actions' : actions}
                                                                } )
                                         self.displaydetails[stateid] = {'longname' : longname,
-                                                                        'color' : color}
+                                                                        'color' : color,
+                                                                        'stateid' : stateid}
                                         self.states.append(stateid)
                 # to add : actions associated with status : change queue / remove or pause from queue
                 return

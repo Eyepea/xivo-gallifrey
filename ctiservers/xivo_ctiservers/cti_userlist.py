@@ -47,13 +47,19 @@ class UserList(AnyList):
                                 self.keeplist[a] = b
                 return
         
-        def finduser(self, userid, company):
-                uinfo = None
-                for userinfo in self.keeplist.itervalues():
-                        if userinfo['user'] == userid and userinfo['company'] == company:
-                                uinfo = userinfo
-                                break
-                return uinfo
+        def finduser(self, userid, company = None):
+                if company:
+                        uinfo = None
+                        for userinfo in self.keeplist.itervalues():
+                                if userinfo['user'] == userid and userinfo['company'] == company:
+                                        uinfo = userinfo
+                                        break
+                        return uinfo
+                else:
+                        if username in self.keeplist:
+                                return self.keeplist.get(username)
+                        else:
+                                return None
         
         def users(self):
                 return self.keeplist

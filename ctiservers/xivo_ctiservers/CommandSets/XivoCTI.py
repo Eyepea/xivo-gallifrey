@@ -62,7 +62,7 @@ log = logging.getLogger('xivocti')
 
 XIVOVERSION_NUM = '0.4'
 XIVOVERSION_NAME = 'k-9'
-REQUIRED_CLIENT_VERSION = 4656
+REQUIRED_CLIENT_VERSION = 4659
 __revision__ = __version__.split()[1]
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 HISTSEPAR = ';'
@@ -70,6 +70,7 @@ DEFAULT_CONTEXT = 'default'
 AGENT_NO_PHONENUM = 'N.A.'
 AMI_ORIGINATE = 'originate'
 MONITORDIR = '/var/spool/asterisk/monitor'
+PRESENCE_UNKNOWN = 'Inconnu'
 
 class XivoCTICommand(BaseCommand):
 
@@ -2905,11 +2906,22 @@ class XivoCTICommand(BaseCommand):
                         # XXX define capas ?
                         fullstat = []
                         for uinfo in self.ulist_ng.keeplist.itervalues():
+                                icapaid = uinfo.get('capaid')
+                                statedetails = {'color' : 'grey',
+                                                'longname' : PRESENCE_UNKNOWN,
+                                                'stateid' : 'xivo_unknown'}
+                                if icapaid and icapaid in self.capas:
+                                        presenceid = self.capas[uinfo.get('capaid')].presenceid
+                                        if uinfo.get('state') in self.presence_sections[presenceid].displaydetails:
+                                                statedetails = self.presence_sections[presenceid].displaydetails[uinfo.get('state')]
+                                        else:
+                                                log.warning('%s not in details for %s' % (uinfo.get('state'), presenceid))
+                                else:
+                                        log.warning('%s not in capas' % icapaid)
                                 fullstat.append([uinfo.get('user'),
                                                  uinfo.get('company'),
                                                  uinfo.get('fullname'),
-                                                 uinfo.get('state'),
-                                                 str(1), # add/del/update (new fullname)/other ...
+                                                 statedetails,
                                                  uinfo.get('astid'),
                                                  uinfo.get('context'),
                                                  uinfo.get('phonenum'),
@@ -3342,21 +3354,27 @@ class XivoCTICommand(BaseCommand):
                         userinfo['state'] = 'xivo_unknown'
 
                 cstatus = {}
-                if capaid:
+                statedetails = {'color' : 'grey',
+                                'longname' : PRESENCE_UNKNOWN,
+                                'stateid' : 'xivo_unknown'}
+                if capaid and capaid in self.capas:
                         allowed = {}
                         presenceid = self.capas[capaid].presenceid
                         if presenceid in self.presence_sections:
                                 allowed = self.presence_sections[presenceid].allowed(userinfo['state'])
+                                if userinfo['state'] in self.presence_sections[presenceid].displaydetails:
+                                        statedetails = self.presence_sections[presenceid].displaydetails[userinfo['state']]
                         wpid = self.capas[capaid].watchedpresenceid
                         if wpid in self.presence_sections:
                                 cstatus = self.presence_sections[wpid].countstatus(self.__counts__(wpid))
+                                
                         tosend = { 'class' : 'presence',
                                    'direction' : 'client',
                                    'company' : company,
                                    'userid' : username,
                                    'xivo_userid' : xivo_userid,
                                    'astid' : astid,
-                                   'capapresence' : { 'state' : userinfo['state'],
+                                   'capapresence' : { 'state' : statedetails,
                                                       'allowed' : allowed },
                                    'presencecounter' : cstatus
                                    }
@@ -3366,7 +3384,9 @@ class XivoCTICommand(BaseCommand):
                            'direction' : 'client',
                            'company' : company,
                            'userid' : username,
-                           'capapresence' : { 'state' : userinfo['state'] },
+                           'xivo_userid' : xivo_userid,
+                           'astid' : astid,
+                           'capapresence' : { 'state' : statedetails },
                            'presencecounter' : cstatus
                            }
                 self.__send_msg_to_cti_clients_except__(userinfo, cjson.encode(tosend))
