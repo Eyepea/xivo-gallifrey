@@ -92,7 +92,7 @@ class UrlList:
                                         log.warning('unauthorized connection (403) to %s' % self.url)
                                 elif fulltable == 'XIVO-WEBI: no-update':
                                         self.urlmd5 = savemd5
-                                        log.info('received no-update from WEBI')
+                                        log.info('%s : received no-update from WEBI' % self.url)
                                         ret = 2
                         else:
                                 csvreader = csv.reader(mytab, delimiter = '|')

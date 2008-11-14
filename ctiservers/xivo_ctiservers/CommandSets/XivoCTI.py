@@ -51,6 +51,7 @@ from xivo_ctiservers import cti_urllist
 from xivo_ctiservers import cti_agentlist
 from xivo_ctiservers import cti_queuelist
 from xivo_ctiservers import cti_phonelist
+from xivo_ctiservers import cti_meetmelist
 from xivo_ctiservers import xivo_commandsets
 from xivo_ctiservers import xivo_ldap
 from xivo_ctiservers.xivo_commandsets import BaseCommand
@@ -109,7 +110,8 @@ class XivoCTICommand(BaseCommand):
                 self.weblist = { 'agents' : {},
                                  'queues' : {},
                                  'vqueues' : {},
-                                 'phones' : {} }
+                                 'phones' : {},
+                                 'meetme' : {} }
                 # self.plist_ng = cti_phonelist.PhoneList()
                 # self.plist_ng.setcommandclass(self)
                 self.uniqueids = {}
@@ -604,6 +606,11 @@ class XivoCTICommand(BaseCommand):
                 self.weblist['queues'][astid].setcommandclass(self)
                 return
         
+        def set_meetmelist(self, astid, urllist_meetme):
+                self.weblist['meetme'][astid] = cti_meetmelist.MeetmeList(urllist_meetme)
+                self.weblist['meetme'][astid].setcommandclass(self)
+                return
+        
         def set_contextlist(self, ctxlist):
                 self.ctxlist = ctxlist
                 return
@@ -618,7 +625,7 @@ class XivoCTICommand(BaseCommand):
                 u_update = self.ulist_ng.update()
                 # self.plist_ng.update()
                 for astid, plist in self.weblist['phones'].iteritems():
-                        for itemname in ['agents', 'queues', 'vqueues', 'phones']:
+                        for itemname in ['agents', 'queues', 'vqueues', 'phones', 'meetme']:
                                 try:
                                         updatestatus = self.weblist[itemname][astid].update()
                                         for function in ['del', 'add']:
@@ -639,8 +646,8 @@ class XivoCTICommand(BaseCommand):
                                                         qq['stats']['Xivo-Chat'] = 0
                                                         qq['stats']['Xivo-Wait'] = 0
                                                         self.__update_queue_stats__(astid, qname)
-                                except Exception, exc:
-                                        log.error('--- exception --- (updates) : %s : %s' % (itemname, exc))
+                                except Exception:
+                                        log.exception('--- exception --- (updates : %s)' % itemname)
                         self.askstatus(astid, self.weblist['phones'][astid].keeplist)
                 # check : agentnumber should be unique
                 return
@@ -687,6 +694,21 @@ class XivoCTICommand(BaseCommand):
                         except Exception, exc:
                                 log.error('--- exception --- (getphoneslist) : %s : %s' % (pitem, exc))
                 return lplist
+
+        def getmeetmelist(self, mlist):
+                lmlist = {}
+                for mitem in mlist:
+                        try:
+                                if not mitem.get('commented'):
+                                        lmlist[mitem.get('id')] = { 'number' : mitem.get('number'),
+                                                                    'name' : mitem.get('name'),
+                                                                    'context' : mitem.get('context'),
+                                                                    'pin' : mitem.get('pin'),
+                                                                    'admin-pin' : mitem.get('admin-pin')
+                                                                    }
+                        except Exception:
+                                log.error('--- exception --- (getmeetmelist : %s)' % mitem)
+                return lmlist
 
         def getqueueslist(self, dlist):
                 lqlist = {}

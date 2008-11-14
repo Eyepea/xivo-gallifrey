@@ -95,14 +95,20 @@ class BaseCommand:
                 return
         def set_configs(self, configs):
                 return
-        def set_phonelist(self, astid, urllist_phones):
+        
+        def set_phonelist(self, astid, urllist):
                 return
-        def set_agentlist(self, astid, urllist_agents):
+        def set_agentlist(self, astid, urllist):
                 return
-        def set_queuelist(self, astid, urllist_queues):
+        def set_queuelist(self, astid, urllist):
                 return
-        def set_vqueuelist(self, astid, urllist_vqueues):
+        def set_vqueuelist(self, astid, urllist):
                 return
+        def set_meetmelist(self, astid, urllist):
+                return
+        def set_voicemaillist(self, astid, urllist):
+                return
+        
         def set_userlist_urls(self, urls):
                 return
         def set_userlist(self, ulist):

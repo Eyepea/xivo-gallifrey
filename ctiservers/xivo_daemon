@@ -690,10 +690,7 @@ while True: # loops over the reloads
                 xivoconf_asterisk = cconf.read_section('ipbx', astid)
                 if len(xivoconf_asterisk) > 0:
                         localaddr = '127.0.0.1'
-                        urllist_phones = []
-                        urllist_queues = []
-                        urllist_vqueues = []
-                        urllist_agents = []
+                        urllist = {}
                         ipaddress = '127.0.0.1'
                         ipaddress_webi = '127.0.0.1'
                         ami_port = 5038
@@ -709,14 +706,12 @@ while True: # loops over the reloads
                         
                         if 'localaddr' in xivoconf_asterisk:
                                 localaddr = xivoconf_asterisk['localaddr']
-                        if 'urllist_phones' in xivoconf_asterisk:
-                                urllist_phones = xivoconf_asterisk['urllist_phones'].split(',')
-                        if 'urllist_queues' in xivoconf_asterisk:
-                                urllist_queues = xivoconf_asterisk['urllist_queues'].split(',')
-                        if 'urllist_vqueues' in xivoconf_asterisk:
-                                urllist_vqueues = xivoconf_asterisk['urllist_vqueues'].split(',')
-                        if 'urllist_agents' in xivoconf_asterisk:
-                                urllist_agents = xivoconf_asterisk['urllist_agents'].split(',')
+                        for listname in ['phones', 'queues', 'vqueues', 'agents', 'meetme', 'voicemail']:
+                                fieldname = 'urllist_%s' % listname
+                                if fieldname in xivoconf_asterisk:
+                                        urllist[listname] = xivoconf_asterisk[fieldname].split(',')
+                                else:
+                                        urllist[listname] = []
                         if 'url_queuelog' in xivoconf_asterisk:
                                 url_queuelog = xivoconf_asterisk['url_queuelog']
                         if 'ipaddress' in xivoconf_asterisk:
@@ -762,10 +757,12 @@ while True: # loops over the reloads
                                                                     linkestablished,
                                                                     aoriginate)
                         
-                        commandclass.set_phonelist(astid, urllist_phones)
-                        commandclass.set_agentlist(astid, urllist_agents)
-                        commandclass.set_queuelist(astid, urllist_queues)
-                        commandclass.set_vqueuelist(astid, urllist_vqueues)
+                        commandclass.set_phonelist(astid, urllist['phones'])
+                        commandclass.set_agentlist(astid, urllist['agents'])
+                        commandclass.set_queuelist(astid, urllist['queues'])
+                        commandclass.set_vqueuelist(astid, urllist['vqueues'])
+                        commandclass.set_meetmelist(astid, urllist['meetme'])
+                        commandclass.set_voicemaillist(astid, urllist['voicemail'])
                         commandclass.read_queuelog(astid, url_queuelog)
                         
                         if ipaddress not in ip_reverse_sht:
