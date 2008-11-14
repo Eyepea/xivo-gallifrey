@@ -61,8 +61,8 @@ $end_month_ts -= 86400;
 $end_month = date('Y-m-d',$end_month_ts);
 
 // Get informations from XiVO in JSON
-$xivo_user = get_xivo_json_info("https://127.0.0.1/service/ipbx/json.php/restricted/pbx_settings/users");
-$xivo_agent = get_xivo_json_info("https://127.0.0.1/service/ipbx/json.php/restricted/pbx_settings/agents");
+$xivo_user = get_xivo_json_info("https://127.0.0.1/service/ipbx/json.php/private/pbx_settings/users");
+$xivo_agent = get_xivo_json_info("https://127.0.0.1/service/ipbx/json.php/private/pbx_settings/agents");
 
 $query = "SELECT queue FROM qname ORDER BY queue";
 $res = consulta_db($query,0,0);

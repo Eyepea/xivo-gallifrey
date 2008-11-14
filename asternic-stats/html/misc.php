@@ -51,8 +51,8 @@ function get_xivo_json_info($xivo_url) {
 
 function populate_agents($agents_array) {
 	// Get informations from XiVO in JSON
-	$xivo_user = get_xivo_json_info("https://127.0.0.1/service/ipbx/json.php/restricted/pbx_settings/users");
-	$xivo_agent = get_xivo_json_info("https://127.0.0.1/service/ipbx/json.php/restricted/pbx_settings/agents");
+	$xivo_user = get_xivo_json_info("https://127.0.0.1/service/ipbx/json.php/private/pbx_settings/users");
+	$xivo_agent = get_xivo_json_info("https://127.0.0.1/service/ipbx/json.php/private/pbx_settings/agents");
 
 	$agent = array();
 
