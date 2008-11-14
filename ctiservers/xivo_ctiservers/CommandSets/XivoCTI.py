@@ -70,7 +70,7 @@ DEFAULT_CONTEXT = 'default'
 AGENT_NO_PHONENUM = 'N.A.'
 AMI_ORIGINATE = 'originate'
 MONITORDIR = '/var/spool/asterisk/monitor'
-PRESENCE_UNKNOWN = 'Inconnu'
+PRESENCE_UNKNOWN = 'Absent'
 
 class XivoCTICommand(BaseCommand):
 
@@ -725,6 +725,7 @@ class XivoCTICommand(BaseCommand):
                                                        'techlist' : ['.'.join([uitem.get('protocol'), uitem.get('context'),
                                                                                uitem.get('name'), uitem.get('number')])],
                                                        'context' : uitem.get('context'),
+                                                       'phoneid' : uitem.get('name'),
                                                        'phonenum' : uitem.get('number'),
                                                        'xivo_userid' : uitem.get('id'),
                                                        
@@ -2982,16 +2983,18 @@ class XivoCTICommand(BaseCommand):
 
         # \brief Builds the features_get reply.
         def __build_features_get__(self, userid):
-                [company, user] = userid.split('/')
-                userinfo = self.ulist_ng.finduser(user, company)
+                userinfo = self.ulist_ng.keeplist[userid]
+                user = userinfo.get('user')
                 astid = userinfo.get('astid')
+                company = userinfo.get('company')
                 context = userinfo.get('context')
                 srcnum = userinfo.get('phonenum')
+                phoneid = userinfo.get('phoneid')
                 repstr = ''
 
                 cursor = self.configs[astid].userfeatures_db_conn.cursor()
-                params = [srcnum, context]
-                query = 'SELECT ${columns} FROM userfeatures WHERE number = %s AND context = %s'
+                params = [srcnum, phoneid, context]
+                query = 'SELECT ${columns} FROM userfeatures WHERE number = %s AND name = %s AND context = %s'
 
                 for key in ['enablevoicemail', 'callrecord', 'callfilter', 'enablednd']:
                         try:
@@ -3042,14 +3045,16 @@ class XivoCTICommand(BaseCommand):
 
         # \brief Builds the features_put reply.
         def __build_features_put__(self, userid, key, value):
-                [company, user] = userid.split('/')
-                userinfo = self.ulist_ng.finduser(user, company)
+                userinfo = self.ulist_ng.keeplist[userid]
+                user = userinfo.get('user')
                 astid = userinfo.get('astid')
+                company = userinfo.get('company')
                 context = userinfo.get('context')
                 srcnum = userinfo.get('phonenum')
+                phoneid = userinfo.get('phoneid')
                 try:
-                        query = 'UPDATE userfeatures SET ' + key + ' = %s WHERE number = %s AND context = %s'
-                        params = [value, srcnum, context]
+                        query = 'UPDATE userfeatures SET ' + key + ' = %s WHERE number = %s AND name = %s AND context = %s'
+                        params = [value, srcnum, phoneid, context]
                         cursor = self.configs[astid].userfeatures_db_conn.cursor()
                         cursor.query(query, parameters = params)
                         self.configs[astid].userfeatures_db_conn.commit()

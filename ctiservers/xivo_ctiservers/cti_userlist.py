@@ -32,7 +32,7 @@ log = logging.getLogger('userlist')
 class UserList(AnyList):
         def __init__(self, newurls = []):
                 self.anylist_properties = { 'keywords' : ['capaids', 'password', 'fullname',
-                                                          'agentid', 'techlist', 'phonenum',
+                                                          'agentid', 'techlist', 'phoneid', 'phonenum',
                                                           'context', 'mwi'],
                                             'name' : 'users',
                                             'action' : 'getuserslist',
