@@ -117,7 +117,7 @@ class xivo_application_service_asterisk_dialaction_abstract extends xivo_applica
 				$infotmp['action'] = $infotmp['actiontype'];
 
 			if($infotmp['actiontype'] === 'sound' && xivo_issa('actionarg2',$infotmp) === true)
-				$infotmp['actionarg2'] = implode('',$infotmp['actionarg2']);
+				$infotmp['actionarg2'] = xivo_implode('',$infotmp['actionarg2']);
 
 			if(($rs = $this->_dialaction->chk_values($infotmp)) !== false
 			&& isset($reslist[$rs['event']]) === false)

@@ -1008,6 +1008,26 @@ function xivo_replacef($search,$replace,$subject)
 	return($r);
 }
 
+function xivo_implode($glue,$pieces)
+{
+	if(is_scalar($glue) === false)
+		return(false);
+	else if(is_scalar($pieces) === true)
+		return((string) $pieces);
+	else if(is_array($pieces) === false || is_object($pieces) === false)
+		return(false);
+
+	$pieces = (array) $pieces;
+
+	foreach($pieces as $key => $value)
+	{
+		if(is_scalar($value) === false)
+			unset($pieces[$key]);
+	}
+
+	return(implode((string) $glue,$pieces));
+}
+
 function xivo_is_max_digit($min,$max,$equal=false)
 {
 	if(xivo_digit($min) === false || xivo_digit($max) === false)

@@ -595,7 +595,7 @@ class xivo_file
 		$flags = xivo_uint($flags);
 
 		if(is_array($data) === true || is_object($data) === true)
-			$data = implode('',(array) $data);
+			$data = xivo_implode('',$data);
 
 		if(is_scalar($data) === false)
 			return(false);

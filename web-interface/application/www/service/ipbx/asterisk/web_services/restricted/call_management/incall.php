@@ -1,11 +1,16 @@
 <?php
 
-$appincall = &$ipbx->get_application('incall',null,false);
-
 switch($_QRY->get_qs('act'))
 {
+	case 'add':
+		$appincall = &$ipbx->get_application('incall');
+		$appincall->import_json();
+		die();
+		break;
 	case 'list':
 	default:
+		$appincall = &$ipbx->get_application('incall',null,false);
+
 		if(($incall = $appincall->get_incalls_list()) === false)
 			xivo_die('no-data');
 

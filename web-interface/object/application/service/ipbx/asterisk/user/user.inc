@@ -2264,7 +2264,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$_QRY = &xivo_gct::get('xivo_query');
 
 		if(xivo::load_class('xivo_json') === false
-		|| ($data = xivo_json::decode($_QRY->get_input(),true)) === false)
+		|| ($data = xivo_json::decode($_QRY->get_input(),true)) === false
+		|| is_array($data) === false)
 			return(false);
 
 		return($this->_import($data));
@@ -2272,8 +2273,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function _import($arr)
 	{
-		$r = true;
-
 		$appincall = &$this->_service->get_application('incall');
 		
 		$incall = array();
@@ -2318,7 +2317,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| isset($arr['protocol']['protocol']) === false
 		|| $this->set_add($arr,$arr['protocol']['protocol']) === false
 		|| $this->add() === false)
-			$r = false;
+			return(false);
 		else if(xivo_issa('incall',$arr) === true
 		&& xivo_haslen($arr['incall'],'exten') === true)
 		{
@@ -2335,10 +2334,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 			if($appincall->set_add($incall) === false
 			|| $appincall->add() === false)
-				$r = false;
+				return(false);
 		}
 
-		return($r);
+		return(true);
 	}
 }
 

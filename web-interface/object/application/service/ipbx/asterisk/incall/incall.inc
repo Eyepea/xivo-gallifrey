@@ -727,6 +727,38 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 		return(true);
 	}
+
+	function import_json()
+	{
+		$_QRY = &xivo_gct::get('xivo_query');
+
+		if(xivo::load_class('xivo_json') === false
+		|| ($data = xivo_json::decode($_QRY->get_input(),true)) === false
+		|| xivo_issa('incall',$data) === false
+		|| xivo_haslen($data['incall'],'exten') === false)
+			return(false);
+
+		$data['dialaction'] = array();
+		$data['dialaction']['answer'] = array();
+		
+		if(isset($data['incall']['destination']) === true)
+			$data['dialaction']['answer']['actiontype'] = $data['incall']['destination'];
+
+		if(isset($data['incall']['action']) === true)
+			$data['dialaction']['answer']['action'] = $data['incall']['action'];
+
+		if(isset($data['incall']['arg1']) === true)
+			$data['dialaction']['answer']['actionarg1'] = $data['incall']['arg1'];
+
+		if(isset($data['incall']['arg2']) === true)
+			$data['dialaction']['answer']['actionarg2'] = $data['incall']['arg2'];
+
+		if($this->set_add($data) === false
+		|| $this->add() === false)
+			return(false);
+
+		return(true);
+	}
 }
 
 ?>
