@@ -175,103 +175,138 @@ size: 3783070
 md5sum: bb9512cf8ba07a78b12a94b4f153396d
 sha1sum: 86171bd8d65497e594b79a03188acbe51b4e32e9
 
-# Polycom SoundPoint IP 300 4.0.0
-[pcspip300_400]
+# Polycom SoundPoint IP 300 3.1.1
+[pcspip300_311]
 brand: Polycom
 model: SoundPoint IP 300
-version: 4.0.0
-files: BootRom_4_0_0_release_sig.zip spip_ssip_2_2_2_release_sig.zip
+version: 3.1.1
+files: spip_ssip_BootROM_4_1_2_release_sig.zip spip_ssip_3_1_1_release_sig.zip
 
-# Polycom SoundPoint IP 301 4.0.0
-[pcspip301_400]
+# Polycom SoundPoint IP 301 3.1.1
+[pcspip301_311]
 brand: Polycom
 model: SoundPoint IP 301
-version: 4.0.0
-files: BootRom_4_0_0_release_sig.zip spip_ssip_2_2_2_release_sig.zip
+version: 3.1.1
+files: spip_ssip_BootROM_4_1_2_release_sig.zip spip_ssip_3_1_1_release_sig.zip
 
-# Polycom SoundPoint IP 320 4.0.0
-[pcspip320_400]
+# Polycom SoundPoint IP 320 3.1.1
+[pcspip320_311]
 brand: Polycom
 model: SoundPoint IP 320
-version: 4.0.0
-files: BootRom_4_0_0_release_sig.zip spip_ssip_2_2_2_release_sig.zip
+version: 3.1.1
+files: spip_ssip_BootROM_4_1_2_release_sig.zip spip_ssip_3_1_1_release_sig.zip
 
-# Polycom SoundPoint IP 330 4.0.0
-[pcspip330_400]
+# Polycom SoundPoint IP 330 3.1.1
+[pcspip330_311]
 brand: Polycom
 model: SoundPoint IP 330
-version: 4.0.0
-files: BootRom_4_0_0_release_sig.zip spip_ssip_2_2_2_release_sig.zip
+version: 3.1.1
+files: spip_ssip_BootROM_4_1_2_release_sig.zip spip_ssip_3_1_1_release_sig.zip
 
-# Polycom SoundPoint IP 430 4.0.0
-[pcspip430_400]
+# Polycom SoundPoint IP 430 3.1.1
+[pcspip430_311]
 brand: Polycom
 model: SoundPoint IP 430
-version: 4.0.0
-files: BootRom_4_0_0_release_sig.zip spip_ssip_2_2_2_release_sig.zip
+version: 3.1.1
+files: spip_ssip_BootROM_4_1_2_release_sig.zip spip_ssip_3_1_1_release_sig.zip
 
-# Polycom SoundPoint IP 500 4.0.0
-[pcspip500_400]
+# Polycom SoundPoint IP 450 3.1.1
+[pcspip450_311]
+brand: Polycom
+model: SoundPoint IP 450
+version: 3.1.1
+files: spip_ssip_BootROM_4_1_2_release_sig.zip spip_ssip_3_1_1_release_sig.zip
+
+# Polycom SoundPoint IP 500 3.1.1
+[pcspip500_311]
 brand: Polycom
 model: SoundPoint IP 500
-version: 4.0.0
-files: BootRom_4_0_0_release_sig.zip spip_ssip_2_2_2_release_sig.zip
+version: 3.1.1
+files: spip_ssip_BootROM_4_1_2_release_sig.zip spip_ssip_3_1_1_release_sig.zip
 
-# Polycom SoundPoint IP 501 4.0.0
-[pcspip501_400]
+# Polycom SoundPoint IP 501 3.1.1
+[pcspip501_311]
 brand: Polycom
 model: SoundPoint IP 501
-version: 4.0.0
-files: BootRom_4_0_0_release_sig.zip spip_ssip_2_2_2_release_sig.zip
+version: 3.1.1
+files: spip_ssip_BootROM_4_1_2_release_sig.zip spip_ssip_3_1_1_release_sig.zip
 
-# Polycom SoundPoint IP 550 4.0.0
-[pcspip550_400]
+# Polycom SoundPoint IP 550 3.1.1
+[pcspip550_311]
 brand: Polycom
 model: SoundPoint IP 550
-version: 4.0.0
-files: BootRom_4_0_0_release_sig.zip spip_ssip_2_2_2_release_sig.zip
+version: 3.1.1
+files: spip_ssip_BootROM_4_1_2_release_sig.zip spip_ssip_3_1_1_release_sig.zip
 
-# Polycom SoundPoint IP 600 4.0.0
-[pcspip600_400]
+# Polycom SoundPoint IP 560 3.1.1
+[pcspip560_311]
+brand: Polycom
+model: SoundPoint IP 560
+version: 3.1.1
+files: spip_ssip_BootROM_4_1_2_release_sig.zip spip_ssip_3_1_1_release_sig.zip
+
+# Polycom SoundPoint IP 600 3.1.1
+[pcspip600_311]
 brand: Polycom
 model: SoundPoint IP 600
-version: 4.0.0
-files: BootRom_4_0_0_release_sig.zip spip_ssip_2_2_2_release_sig.zip
+version: 3.1.1
+files: spip_ssip_BootROM_4_1_2_release_sig.zip spip_ssip_3_1_1_release_sig.zip
 
-# Polycom SoundPoint IP 601 4.0.0
-[pcspip601_400]
+# Polycom SoundPoint IP 601 3.1.1
+[pcspip601_311]
 brand: Polycom
 model: SoundPoint IP 601
-version: 4.0.0
-files: BootRom_4_0_0_release_sig.zip spip_ssip_2_2_2_release_sig.zip
+version: 3.1.1
+files: spip_ssip_BootROM_4_1_2_release_sig.zip spip_ssip_3_1_1_release_sig.zip
 
-# Polycom SoundPoint IP 650 4.0.0
-[pcspip650_400]
+# Polycom SoundPoint IP 650 3.1.1
+[pcspip650_311]
 brand: Polycom
 model: SoundPoint IP 650
-version: 4.0.0
-files: BootRom_4_0_0_release_sig.zip spip_ssip_2_2_2_release_sig.zip
+version: 3.1.1
+files: spip_ssip_BootROM_4_1_2_release_sig.zip spip_ssip_3_1_1_release_sig.zip
+
+# Polycom SoundPoint IP 670 3.1.1
+[pcspip670_311]
+brand: Polycom
+model: SoundPoint IP 670
+version: 3.1.1
+files: spip_ssip_BootROM_4_1_2_release_sig.zip spip_ssip_3_1_1_release_sig.zip
 
 # Polycom SoundStation IP 4000 SIP
-[pcssip4000sip_400]
+[pcssip4000sip_311]
 brand: Polycom
 model: SoundStation IP 4000 SIP
-version: 4.0.0
-files: BootRom_4_0_0_release_sig.zip spip_ssip_2_2_2_release_sig.zip
+version: 3.1.1
+files: spip_ssip_BootROM_4_1_2_release_sig.zip spip_ssip_3_1_1_release_sig.zip
+
+# Polycom SoundStation IP 6000 SIP
+[pcssip6000sip_311]
+brand: Polycom
+model: SoundStation IP 6000 SIP
+version: 3.1.1
+files: spip_ssip_BootROM_4_1_2_release_sig.zip spip_ssip_3_1_1_release_sig.zip
+
+# Polycom SoundStation IP 7000 SIP
+[pcssip7000sip_311]
+brand: Polycom
+model: SoundStation IP 7000 SIP
+version: 3.1.1
+files: spip_ssip_BootROM_4_1_2_release_sig.zip spip_ssip_3_1_1_release_sig.zip
 
 # Common files for Polycom phones
 
-[BootRom_4_0_0_release_sig.zip]
-url: http://downloads.polycom.com/voice/voip/sp_ss_bootrom/BootRom_4_0_0_release_sig.zip
-size: 12734818
-md5sum: 83dd438a374094186a79b756c6860a96
-sha1sum: 29d1a387901c84e44a0751799e0f3b0f4d074580
+[spip_ssip_BootROM_4_1_2_release_sig.zip]
+url: http://downloads.polycom.com/voice/voip/sp_ss_bootrom/spip_ssip_BootROM_4_1_2_release_sig.zip
+size: 24567235
+md5sum: 430dcfc588a73461341569f8c8fe69ae
+sha1sum: 6d8ed2160a3c8c61b092d8dba9d1fe31f4c33c2e
 
-[spip_ssip_2_2_2_release_sig.zip]
-url: http://downloads.polycom.com/voice/voip/sp_ss_sip/spip_ssip_2_2_2_release_sig.zip
-size: 44091381
-md5sum: d53f1ae15b33d3f8d69753f78b50000d
-sha1sum: eae5ef7fa0879815e2296fb92c9d9270a49bbb58
+[spip_ssip_3_1_1_release_sig.zip]
+url: http://downloads.polycom.com/voice/voip/sp_ss_sip/spip_ssip_3_1_1_release_sig.zip
+size: 100247868
+md5sum: 2e22be473a5b33fd4248e550e4ef41d9
+sha1sum: 985efb8aa405f8edc119617dd23caa982e75684b
 
 # Snom 300 7.3.7
 [sn300_737]

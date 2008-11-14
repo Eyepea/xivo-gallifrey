@@ -34,16 +34,20 @@ APP_FILES = [
     "2345-12200-002.sip.ld",
     "2345-12200-004.sip.ld",
     "2345-12200-005.sip.ld",
+    "2345-12450-001.sip.ld",
     "2345-12500-001.sip.ld",
     "2345-12560-001.sip.ld",
     "2345-12600-001.sip.ld",
-    "sip.ld",
+    "2345-12670-001.sip.ld",
+    "3111-15600-001.sip.ld",
+    "3111-40000-001.sip.ld",
+    "sip.ld"
     "sip.ver",
     "SoundPointIPWelcome.wav"
 ]
 
 
-def polycom_install_400(firmware, xfile):
+def polycom_install_412(firmware, xfile):
     zip_path = fetchfw.zip_extract_all("polycom_fw", xfile.path)
     fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, "Polycom")
     
@@ -58,7 +62,7 @@ def polycom_install_400(firmware, xfile):
         shutil.copy2(fw_src_path, fw_dst_path)
 
 
-def polycom_install_app_222(firmware, xfile):
+def polycom_install_app_311(firmware, xfile):
     zip_path = fetchfw.zip_extract_all("polycom_app", xfile.path)
     fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, "Polycom")
     
@@ -80,10 +84,10 @@ def polycom_install_app_222(firmware, xfile):
 
 def polycom_install(firmware):
     for xfile in firmware.remote_files:
-        if xfile.filename == "BootRom_4_0_0_release_sig.zip":
-            polycom_install_400(firmware, xfile)
-        elif xfile.filename == "spip_ssip_2_2_2_release_sig.zip":
-            polycom_install_app_222(firmware, xfile)
+        if xfile.filename == "spip_ssip_BootROM_4_1_2_release_sig.zip":
+            polycom_install_412(firmware, xfile)
+        elif xfile.filename == "spip_ssip_3_1_1_release_sig.zip":
+            polycom_install_app_311(firmware, xfile)
         else:
             fetchfw.die("unsupported file for Polycom firmware")
 
