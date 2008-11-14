@@ -2589,15 +2589,18 @@ class XivoCTICommand(BaseCommand):
                                                         if astid in self.weblist['queues'] and astid in self.weblist['agents']:
                                                                 # lookup the logged in/out status of agent agent_number and sends it back to the requester
                                                                 agent_id = self.weblist['agents'][astid].reverse_index.get(agent_number)
-                                                                agprop = self.weblist['agents'][astid].keeplist[agent_id]['stats']
-                                                                tosend = { 'class' : 'agent-status',
-                                                                           'direction' : 'client',
-                                                                           'astid' : astid,
-                                                                           'agentnum' : agent_number,
-                                                                           'payload' : {'properties' : agprop,
-                                                                                        'queues' : self.weblist['queues'][astid].get_queues_byagent(agent_channel)}
-                                                                           }
-                                                                repstr = cjson.encode(tosend)
+                                                                if agent_id in self.weblist['agents'][astid].keeplist:
+                                                                        agprop = self.weblist['agents'][astid].keeplist[agent_id]['stats']
+                                                                        tosend = { 'class' : 'agent-status',
+                                                                                   'direction' : 'client',
+                                                                                   'astid' : astid,
+                                                                                   'agentnum' : agent_number,
+                                                                                   'payload' : {'properties' : agprop,
+                                                                                                'queues' : self.weblist['queues'][astid].get_queues_byagent(agent_channel)}
+                                                                                   }
+                                                                        repstr = cjson.encode(tosend)
+                                                                else:
+                                                                        log.warning('%s : agent_id <%s> not in agent list' % (astid, agent_id))
                                 else:
                                         log.warning('unallowed json event %s' % icommand.struct)
 
@@ -2990,8 +2993,8 @@ class XivoCTICommand(BaseCommand):
                 context = userinfo.get('context')
                 srcnum = userinfo.get('phonenum')
                 phoneid = userinfo.get('phoneid')
-                repstr = ''
-
+                repstr = {}
+                
                 cursor = self.configs[astid].userfeatures_db_conn.cursor()
                 params = [srcnum, phoneid, context]
                 query = 'SELECT ${columns} FROM userfeatures WHERE number = %s AND name = %s AND context = %s'
@@ -3002,16 +3005,9 @@ class XivoCTICommand(BaseCommand):
                                 cursor.query(query, columns, params)
                                 results = cursor.fetchall()
                                 if len(results) > 0:
-                                        repstr += "%s;%s:;" % (key, str(results[0][0]))
-                        except Exception, exc:
-                                log.error('--- exception --- features_get(bool) id=%s key=%s : %s'
-                                          % (userid, key, exc))
-                                tosend = { 'class' : 'features',
-                                           'function' : 'get',
-                                           'direction' : 'client',
-                                           'payload' : [ userid, 'KO' ] }
-                                return cjson.encode(tosend)
-
+                                        repstr[key] = {'enabled' : bool(results[0][0])}
+                        except Exception:
+                                log.exception('--- exception --- features_get(bool) id=%s key=%s' % (userid, key))
                 for key in ['unc', 'busy', 'rna']:
                         try:
                                 columns = ('enable' + key,)
@@ -3023,26 +3019,18 @@ class XivoCTICommand(BaseCommand):
                                 resdest = cursor.fetchall()
 
                                 if len(resenable) > 0 and len(resdest) > 0:
-                                        repstr += '%s;%s:%s;' % (key, str(resenable[0][0]), str(resdest[0][0]))
-
-                        except Exception, exc:
-                                log.error('--- exception --- features_get(str) id=%s key=%s : %s'
-                                          % (userid, key, exc))
-                                tosend = { 'class' : 'features',
-                                           'function' : 'get',
-                                           'direction' : 'client',
-                                           'payload' : [ userid, 'KO' ] }
-                                return cjson.encode(tosend)
-
-                if len(repstr) == 0:
-                        repstr = 'KO'
+                                        repstr[key] = { 'enabled' : bool(resenable[0][0]),
+                                                        'number' : resdest[0][0] }
+                        except Exception:
+                                log.exception('--- exception --- features_get(str) id=%s key=%s' % (userid, key))
                 tosend = { 'class' : 'features',
                            'function' : 'get',
                            'direction' : 'client',
-                           'payload' : [ userid, repstr ] }
+                           'userid' : userid,
+                           'payload' : repstr }
                 return cjson.encode(tosend)
-
-
+        
+        
         # \brief Builds the features_put reply.
         def __build_features_put__(self, userid, key, value):
                 userinfo = self.ulist_ng.keeplist[userid]
