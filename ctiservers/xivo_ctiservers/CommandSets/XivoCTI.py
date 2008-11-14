@@ -2150,8 +2150,17 @@ class XivoCTICommand(BaseCommand):
                                              event.get('XIVO_CONTEXT', DEFAULT_CONTEXT),
                                              event)
                 elif eventname == 'Feature':
-                        log.info('AMI %s UserEventFeature %s' % (astid, event))
-                        # 'XIVO_CONTEXT', 'CHANNEL', 'Function', 'Status', 'Value'
+                        log.info('AMI %s UserEvent %s %s' % (astid, eventname, event))
+                        repstr[event.get('Function')] = { 'enabled' : bool(int(event.get('Status'))),
+                                                          'number' : event.get('Value') }
+                        userid = '%s/%s' % (astid, event.get('XIVO_USERID'))
+                        tosend = { 'class' : 'features',
+                                   'function' : 'update',
+                                   'direction' : 'client',
+                                   'userid' : userid,
+                                   'payload' : repstr }
+                        self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                        
                 elif eventname == 'LocalCall':
                         log.info('AMI %s UserEvent %s %s' % (astid, eventname, event))
                         uniqueid = event.get('UNIQUEID')
