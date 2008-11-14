@@ -1014,7 +1014,7 @@ function xivo_implode($glue,$pieces)
 		return(false);
 	else if(is_scalar($pieces) === true)
 		return((string) $pieces);
-	else if(is_array($pieces) === false || is_object($pieces) === false)
+	else if(is_array($pieces) === false && is_object($pieces) === false)
 		return(false);
 
 	$pieces = (array) $pieces;
