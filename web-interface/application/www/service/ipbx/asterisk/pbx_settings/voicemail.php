@@ -120,7 +120,7 @@ switch($act)
 		$prevpage = $page - 1;
 		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
 
-		$appvoicemail = &$ipbx->get_application('voicemail');
+		$appvoicemail = &$ipbx->get_application('voicemail',null,false);
 
 		$order = array();
 		$order['fullname'] = SORT_ASC;
