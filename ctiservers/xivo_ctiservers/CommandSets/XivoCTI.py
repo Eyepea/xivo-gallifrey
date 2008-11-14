@@ -2151,8 +2151,8 @@ class XivoCTICommand(BaseCommand):
                                              event)
                 elif eventname == 'Feature':
                         log.info('AMI %s UserEvent %s %s' % (astid, eventname, event))
-                        repstr[event.get('Function')] = { 'enabled' : bool(int(event.get('Status'))),
-                                                          'number' : event.get('Value') }
+                        repstr = { event.get('Function') : { 'enabled' : bool(int(event.get('Status'))),
+                                                             'number' : event.get('Value') } }
                         userid = '%s/%s' % (astid, event.get('XIVO_USERID'))
                         tosend = { 'class' : 'features',
                                    'function' : 'update',
