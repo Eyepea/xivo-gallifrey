@@ -2676,8 +2676,7 @@ class XivoCTICommand(BaseCommand):
 
 
         def __build_history_string__(self, requester_id, nlines, kind):
-                [company, userid] = requester_id.split('/')
-                userinfo = self.ulist_ng.finduser(userid, company)
+                userinfo = self.ulist_ng.keeplist[requester_id]
                 astid = userinfo.get('astid')
                 termlist = userinfo.get('techlist')
                 reply = []
