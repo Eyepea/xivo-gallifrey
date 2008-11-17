@@ -2475,18 +2475,23 @@ class XivoCTICommand(BaseCommand):
                                                 function = icommand.struct.get('function')
                                                 argums = icommand.struct.get('functionargs')
                                                 if self.capas[capaid].match_funcs(ucapa, 'conference'):
-                                                        if function == 'record':
-                                                                print function, argums
-                                                        elif function in ['kick', 'mute', 'unmute']:
-                                                                astid = argums[0]
+                                                        if function == 'record' and len(argums) > 3:
+                                                                castid = argums[0]
+                                                                room = argums[1]
+                                                                channel = argums[3]
+                                                                datestring = time.strftime('%Y%m%d%H%M%S', time.localtime())
+                                                                self.__ami_execute__(castid, 'monitor', channel, 'cti-meetme-%s-%s' % (room, datestring))
+                                                                # self.__ami_execute__(castid, 'stopmonitor', channel)
+                                                        elif function in ['kick', 'mute', 'unmute'] and len(argums) > 2:
+                                                                castid = argums[0]
                                                                 room = argums[1]
                                                                 num = argums[2]
-                                                                self.__ami_execute__(astid, 'sendcommand',
+                                                                self.__ami_execute__(castid, 'sendcommand',
                                                                                      'Command', [('Command', 'meetme %s %s %s' % (function, room, num))])
                                                         elif function == 'getlist':
                                                                 fullstat = {}
-                                                                for astid, v in self.weblist['meetme'].iteritems():
-                                                                        fullstat[astid] = v.keeplist
+                                                                for iastid, v in self.weblist['meetme'].iteritems():
+                                                                        fullstat[iastid] = v.keeplist
                                                                 tosend = { 'class' : 'meetme',
                                                                            'function' : 'sendlist',
                                                                            'direction' : 'client',
@@ -2838,7 +2843,7 @@ class XivoCTICommand(BaseCommand):
                                 datestring = time.strftime('%Y%m%d%H%M%S', time.localtime())
                                 channels = self.__find_channel_by_agentnum__(astid, anum)
                                 for channel in channels:
-                                        self.__ami_execute__(astid, 'monitor', channel, 'cti-%s-%s' % (datestring, anum))
+                                        self.__ami_execute__(astid, 'monitor', channel, 'cti-agent-%s-%s' % (datestring, anum))
                                         agent_id = self.weblist['agents'][astid].reverse_index.get(anum)
                                         self.weblist['agents'][astid].keeplist[agent_id]['stats'].update({'recorded' : True})
                                         log.info('started monitor on %s %s (agent %s)' % (astid, channel, anum))
@@ -2877,7 +2882,7 @@ class XivoCTICommand(BaseCommand):
                                 lst = os.listdir(MONITORDIR)
                                 monitoredfiles = []
                                 for monitoredfile in lst:
-                                        if monitoredfile.startswith('cti-') and monitoredfile.endswith('%s.wav' % anum):
+                                        if monitoredfile.startswith('cti-agent-') and monitoredfile.endswith('%s.wav' % anum):
                                                 monitoredfiles.append(monitoredfile)
                                 tosend = { 'class' : 'filelist',
                                            'direction' : 'client',
