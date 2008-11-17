@@ -2197,6 +2197,7 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def ami_faxsent(self, astid, event):
+                log.info('%s : %s' % (astid, event))
                 filename = event.get('FileName')
                 if filename and os.path.isfile(filename):
                         os.unlink(filename)
@@ -2210,7 +2211,7 @@ class XivoCTICommand(BaseCommand):
                         tosend = { 'class' : 'faxprogress',
                                    'direction' : 'client',
                                    'status' : 'ko',
-                                   'reason' : event.get('PhaseEStatus') }
+                                   'reason' : event.get('PhaseEString') }
                 repstr = cjson.encode(tosend)
 
                 # 'FileName': '/var/spool/asterisk/fax/astfaxsend-q6yZAKTJvU-0x48be7930.tif'
