@@ -1,4 +1,7 @@
 
+# Used for stats/monitoring
+ExtendedStatus On
+
 NameVirtualHost *:443
 
 <VirtualHost *:443>
@@ -37,6 +40,8 @@ NameVirtualHost *:80
 	RewriteCond %{HTTPS} off
 	# XXX Snom phones don't work with SSL
 	RewriteCond %{HTTP_USER_AGENT} !snom3[026]0-
+	# Used for stats/monitoring
+	RewriteRule ^/server-status$ - [S=1]
 	RewriteRule .* https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
 	<Location />
@@ -45,6 +50,14 @@ NameVirtualHost *:80
 
 	<Location /service/ipbx/web_services.php/phonebook/search>
 		Allow from all
+	</Location>
+
+	# Used for stats/monitoring
+	<Location /server-status>
+		SetHandler server-status
+		Order deny,allow
+		Deny from all
+		Allow from 127.0.0.1
 	</Location>
 
 	Include "/usr/share/pf-xivo-web-interface/apache.conf"
