@@ -69,7 +69,7 @@ class xivo_service
 				$init['general']['datastorage'] = false;
 
 			if($init['general']['datastorage'] === false)
-				trigger_error('Invalid datastorage in '.$name.' ini file',E_USER_ERROR);
+				trigger_error('Invalid datastorage in '.$name.' init file',E_USER_ERROR);
 		}
 
 		return($this->_set($name,new $cname($init)));

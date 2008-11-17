@@ -15,6 +15,15 @@ switch($act)
 
 		$result = $error = null;
 
+		$contextinc = array();
+		$contextinc['slt'] = array();
+
+		$contextincorder = array();
+		$contextincorder['displayname'] = SORT_ASC;
+		$contextincorder['name'] = SORT_ASC;
+
+		$contextinc['list'] = $appcontext->get_contexts_except(null,$contextincorder,null,true);
+
 		if(isset($_QR['fm_send']) === true && xivo_issa('context',$_QR) === true)
 		{
 			if(xivo_issa('contextnumbers',$_QR) === true
@@ -23,7 +32,7 @@ switch($act)
 			{
 				if(xivo_issa('user',$_QR['contextnumbers']) === true
 				&& ($_QR['contextnumbers']['user'] = xivo_group_array('numberbeg',
-										       $_QR['contextnumbers']['user'])) === false)
+										      $_QR['contextnumbers']['user'])) === false)
 					unset($_QR['contextnumbers']['user']);
 
 				if(xivo_issa('group',$_QR['contextnumbers']) === true
@@ -38,12 +47,12 @@ switch($act)
 
 				if(xivo_issa('meetme',$_QR['contextnumbers']) === true
 				&& ($_QR['contextnumbers']['meetme'] = xivo_group_array('numberbeg',
-										       $_QR['contextnumbers']['meetme'])) === false)
+											$_QR['contextnumbers']['meetme'])) === false)
 					unset($_QR['contextnumbers']['meetme']);
 
 				if(xivo_issa('incall',$_QR['contextnumbers']) === true
 				&& ($_QR['contextnumbers']['incall'] = xivo_group_array('numberbeg',
-										       $_QR['contextnumbers']['incall'])) === false)
+											$_QR['contextnumbers']['incall'])) === false)
 					unset($_QR['contextnumbers']['incall']);
 			}
 			else
@@ -59,9 +68,24 @@ switch($act)
 				$_QRY->go($_HTML->url('service/ipbx/system_management/context'),$param);
 		}
 
+		if($contextinc['list'] !== false && xivo_issa('contextinclude',$result) === true)
+		{
+			xivo::load_class('xivo_sort');
+			$contextincsort = new xivo_sort(array('key' => 'priority'));
+			usort($result['contextinclude'],array(&$contextincsort,'num_usort'));
+
+			$contextinc['slt'] = xivo_array_intersect_key($result['contextinclude'],
+								      $contextinc['list'],
+								      'include');
+			
+			if($contextinc['slt'] !== false)
+				$contextinc['list'] = xivo_array_diff_key($contextinc['list'],$contextinc['slt']);
+		}
+
 		$_HTML->set_var('info',$result);
 		$_HTML->set_var('error',$error);
 		$_HTML->set_var('element',$appcontext->get_elements());
+		$_HTML->set_var('contextinc',$contextinc);
 		$_HTML->set_var('entities',$appcontext->get_entities_list(null,array('displayname' => SORT_ASC)));
 
 		$dhtml = &$_HTML->get_module('dhtml');
@@ -77,6 +101,18 @@ switch($act)
 		$result = $error = null;
 		$return = &$info;
 
+		$contextinc = array();
+		$contextinc['slt'] = array();
+
+		$contextincorder = array();
+		$contextincorder['displayname'] = SORT_ASC;
+		$contextincorder['name'] = SORT_ASC;
+
+		$contextinc['list'] = $appcontext->get_contexts_except($info['context']['name'],
+								       $contextincorder,
+								       null,
+								       true);
+
 		if(isset($_QR['fm_send']) === true && xivo_issa('context',$_QR) === true)
 		{
 			$return = &$result;
@@ -87,7 +123,7 @@ switch($act)
 			{
 				if(xivo_issa('user',$_QR['contextnumbers']) === true
 				&& ($_QR['contextnumbers']['user'] = xivo_group_array('numberbeg',
-										       $_QR['contextnumbers']['user'])) === false)
+										      $_QR['contextnumbers']['user'])) === false)
 					unset($_QR['contextnumbers']['user']);
 
 				if(xivo_issa('group',$_QR['contextnumbers']) === true
@@ -102,12 +138,12 @@ switch($act)
 
 				if(xivo_issa('meetme',$_QR['contextnumbers']) === true
 				&& ($_QR['contextnumbers']['meetme'] = xivo_group_array('numberbeg',
-										       $_QR['contextnumbers']['meetme'])) === false)
+											$_QR['contextnumbers']['meetme'])) === false)
 					unset($_QR['contextnumbers']['meetme']);
 
 				if(xivo_issa('incall',$_QR['contextnumbers']) === true
 				&& ($_QR['contextnumbers']['incall'] = xivo_group_array('numberbeg',
-										       $_QR['contextnumbers']['incall'])) === false)
+											$_QR['contextnumbers']['incall'])) === false)
 					unset($_QR['contextnumbers']['incall']);
 			}
 			else
@@ -123,10 +159,25 @@ switch($act)
 				$_QRY->go($_HTML->url('service/ipbx/system_management/context'),$param);
 		}
 
+		if($contextinc['list'] !== false && xivo_issa('contextinclude',$return) === true)
+		{
+			xivo::load_class('xivo_sort');
+			$contextincsort = new xivo_sort(array('key' => 'priority'));
+			usort($return['contextinclude'],array(&$contextincsort,'num_usort'));
+
+			$contextinc['slt'] = xivo_array_intersect_key($return['contextinclude'],
+								      $contextinc['list'],
+								      'include');
+			
+			if($contextinc['slt'] !== false)
+				$contextinc['list'] = xivo_array_diff_key($contextinc['list'],$contextinc['slt']);
+		}
+
 		$_HTML->set_var('id',$info['context']['name']);
 		$_HTML->set_var('info',$return);
 		$_HTML->set_var('error',$error);
 		$_HTML->set_var('element',$appcontext->get_elements());
+		$_HTML->set_var('contextinc',$contextinc);
 		$_HTML->set_var('entities',$appcontext->get_entities_list(null,array('displayname' => SORT_ASC)));
 
 		$dhtml = &$_HTML->get_module('dhtml');

@@ -182,74 +182,74 @@ class blop
 		define('XIVO_URL',$url);
 	}
 
-	function _cfg_ini_locale($a=null)
+	function _cfg_ini_locale($locale=null)
 	{
-		if(is_array($a) === false)
-			$a = $this->_conf['xivo']['sys']['locale'];
+		if(is_array($locale) === false)
+			$locale = $this->_conf['xivo']['sys']['locale'];
 
-		if(isset($a['language']) === false)
-			$a['language'] = $this->_conf['xivo']['sys']['language'];
+		if(isset($locale['language']) === false)
+			$locale['language'] = $this->_conf['xivo']['sys']['language'];
 
-		define('XIVO_LC_LANGUAGE',(string) $a['language']);
+		define('XIVO_LC_LANGUAGE',(string) $locale['language']);
 
-		if(isset($a['territory']) === false)
-			$a['territory'] = $this->_conf['xivo']['sys']['territory'];
+		if(isset($locale['territory']) === false)
+			$locale['territory'] = $this->_conf['xivo']['sys']['territory'];
 
-		define('XIVO_LC_TERRITORY',(string) $a['territory']);
+		define('XIVO_LC_TERRITORY',(string) $locale['territory']);
 
-		if(isset($a['charset']) === false)
-			$a['charset'] = $this->_conf['xivo']['sys']['charset'];
+		if(isset($locale['charset']) === false)
+			$locale['charset'] = $this->_conf['xivo']['sys']['charset'];
 
-		define('XIVO_LC_CHARSET',(string) $a['charset']);
+		define('XIVO_LC_CHARSET',(string) $locale['charset']);
 
 		define('XIVO_LC_LABEL',setlocale(LC_ALL,0));
 	}
 
-	function _cfg_ini_session($a=null)
+	function _cfg_ini_session($session=null)
 	{
-		if(is_array($a) === false)
-			$a = $this->_conf['xivo']['sys']['session'];
+		if(is_array($session) === false)
+			$session = $this->_conf['xivo']['sys']['session'];
 
-		if(isset($a['name']) === false)
-			$a['name'] = $this->_conf['xivo']['sys']['session']['name'];
+		if(isset($session['name']) === false)
+			$session['name'] = $this->_conf['xivo']['sys']['session']['name'];
 
-		define('XIVO_SESS_NAME',(string) $a['name']);
+		define('XIVO_SESS_NAME',(string) $session['name']);
 
-		if(isset($a['time']) === false)
-			$a['time'] = $this->_conf['xivo']['sys']['session']['time'];
+		if(isset($session['time']) === false)
+			$session['time'] = $this->_conf['xivo']['sys']['session']['time'];
 
-		define('XIVO_SESS_TIME',xivo_uint($a['time']));
+		define('XIVO_SESS_TIME',xivo_uint($session['time']));
 
-		if(isset($a['path']) === false)
-			$a['path'] = $this->_conf['xivo']['sys']['session']['path'];
+		if(isset($session['path']) === false)
+			$session['path'] = $this->_conf['xivo']['sys']['session']['path'];
 
-		define('XIVO_SESS_PATH',(string) $a['path']);
+		define('XIVO_SESS_PATH',(string) $session['path']);
 	}
 
-	function _cfg_ini_error($a=null)
+	function _cfg_ini_error($error=null)
 	{
 		if(xivo_issa('error',$this->_conf['xivo']['sys']) === false)
 			$this->_conf['xivo']['sys']['error'] = array();
 
-		if(is_array($a) === false)
+		if(is_array($error) === false)
 			return(null);
-		else if(isset($a['level']) === true)
-			$this->_conf['xivo']['sys']['error']['level'] = (string) $a['level'];
+		else if(isset($error['level']) === true)
+			$this->_conf['xivo']['sys']['error']['level'] = (string) $error['level'];
 
-		if(isset($a['report_type']) === true)
-			$this->_conf['xivo']['sys']['error']['report_type'] = (string) $a['report_type'];
+		if(isset($error['report_type']) === true)
+			$this->_conf['xivo']['sys']['error']['report_type'] = (string) $error['report_type'];
 
-		if(isset($a['report_mode']) === true)
-			$this->_conf['xivo']['sys']['error']['report_mode'] = (string) $a['report_mode'];
+		if(isset($error['report_mode']) === true)
+			$this->_conf['xivo']['sys']['error']['report_mode'] = (string) $error['report_mode'];
 
-		if(isset($a['report_func']) === true)
-			$this->_conf['xivo']['sys']['error']['report_func'] = (string) $a['report_func'];
+		if(isset($error['report_func']) === true)
+			$this->_conf['xivo']['sys']['error']['report_func'] = (string) $error['report_func'];
 
-		if(isset($a['email']) === true)
-			$this->_conf['xivo']['sys']['error']['email'] = (string) $a['email'];
+		if(isset($error['email']) === true)
+			$this->_conf['xivo']['sys']['error']['email'] = (string) $error['email'];
 
-		if(isset($a['file']) === true)
-			$this->_conf['xivo']['sys']['error']['file'] = (string) $a['file'];
+		if(isset($error['file']) === true)
+			$this->_conf['xivo']['sys']['error']['file'] = (string) $error['file'];
 	}
 
 	function _cfg_infos_extension()
@@ -279,84 +279,87 @@ class blop
 		define('XIVO_EXT_SUF',$suffix);
 	}
 
-	function _cfg_ini_datastorage($a)
+	function _cfg_ini_datastorage($dso)
 	{
 		if(xivo_issa('datastorage',$this->_conf['xivo']['sys']) === false)
 			$this->_conf['xivo']['sys']['datastorage'] = array();
 
-		if(is_array($a) === false)
-			die('ERR: Invalid datastorage configuration in XIVO ini file');
-		else if(isset($a['type']) === false)
-			die('ERR: Missing datastorage "type" configuration in XIVO ini file');
-
 		blop::load_class('xivo_datastorage');
 
-		if(xivo_datastorage::is_valid($a['type']) === false)
-			die('ERR: Invalid datastorage "type" configuration in XIVO ini file');
-		else if(xivo_datastorage::chk_extension_loaded($a['type'],true) === false)
-			die('ERR: Datastorage '.$a['type'].' extension is not loaded');
-		else if(($dso = &xivo_gct::set_get(xivo_datastorage::factory($a['type'],$a),'XIVO_DSO')) === false)
-			die('ERR: Datastorage class '.$a['type'].' does not exist');
+		if(is_string($dso) === true)
+			$dso = xivo_datastorage::set_param_from_uri($dso);
+
+		if(is_array($dso) === false)
+			die('ERR: Invalid datastorage configuration in init file');
+		else if(isset($dso['type']) === false)
+			die('ERR: Missing datastorage "type" configuration in init file');
+
+		if(xivo_datastorage::is_valid($dso['type']) === false)
+			die('ERR: Invalid datastorage "type" configuration in init file');
+		else if(xivo_datastorage::chk_extension_loaded($dso['type'],true) === false)
+			die('ERR: Datastorage '.$dso['type'].' extension is not loaded');
+		else if(($dso = &xivo_gct::set_get(xivo_datastorage::factory($dso['type'],$dso),'XIVO_DSO')) === false)
+			die('ERR: Datastorage class '.$dso['type'].' does not exist');
 
 		define('XIVO_DSO_TYPE',$dso->get_type());
 
-		$this->_conf['xivo']['sys']['datastorage']['type'] = $a['type'];
-		$this->_conf['xivo']['sys']['datastorage']['param'] = $a;
+		$this->_conf['xivo']['sys']['datastorage']['type'] = $dso['type'];
+		$this->_conf['xivo']['sys']['datastorage']['param'] = $dso;
 	}
 
-	function _cfg_ini_template($a)
+	function _cfg_ini_template($template)
 	{
-		if(is_array($a) === false || empty($a) === true)
-			die('ERR: Invalid template configuration in XIVO ini file');
+		if(is_array($template) === false || empty($template) === true)
+			die('ERR: Invalid template configuration in init file');
 
 		$def_script_path = $def_application_path = $def_tpl_path = false;
 
-		if(isset($a['script_path']) === true
-		&& ($def_script_path = xivo_file::is_d_r($a['script_path'])) === false)
-			die('ERR: Missing or invalid script_path for template configuration in XIVO ini file');
+		if(isset($template['script_path']) === true
+		&& ($def_script_path = xivo_file::is_d_r($template['script_path'])) === false)
+			die('ERR: Missing or invalid script_path for template configuration in init file');
 
-		if(isset($a['application_path']) === true
-		&& ($def_application_path = xivo_file::is_d_r($a['application_path'])) === false)
-			die('ERR: Missing or invalid application_path for template configuration in XIVO ini file');
+		if(isset($template['application_path']) === true
+		&& ($def_application_path = xivo_file::is_d_r($template['application_path'])) === false)
+			die('ERR: Missing or invalid application_path for template configuration in init file');
 
-		if(isset($a['tpl_path']) === true
-		&& ($def_tpl_path = xivo_file::is_d_r($a['tpl_path'])) === false)
-			die('ERR: Missing or invalid tpl_path for template configuration in XIVO ini file');
+		if(isset($template['tpl_path']) === true
+		&& ($def_tpl_path = xivo_file::is_d_r($template['tpl_path'])) === false)
+			die('ERR: Missing or invalid tpl_path for template configuration in init file');
 
-		unset($a['script_path'],$a['application_path'],$a['tpl_path']);	
+		unset($template['script_path'],$template['application_path'],$template['tpl_path']);	
 
-		if(empty($a) === true)
-			die('ERR: Invalid template configuration in XIVO ini file');
+		if(empty($template) === true)
+			die('ERR: Invalid template configuration in init file');
 
-		foreach($a as $k => $v)
+		foreach($template as $key => $value)
 		{
-			if(is_array($v) === false)
-				die('ERR: Missing information in '.$k.' for template configuration in XIVO ini file');
-			else if(isset($v['script_path']) === true && ($script_path = xivo_file::is_d_r($v['script_path'])) !== false)
-				$this->_conf['tpl'][$k]['script_path'] = $script_path;
+			if(is_array($value) === false)
+				die('ERR: Missing information in '.$key.' for template configuration in init file');
+			else if(isset($value['script_path']) === true && ($script_path = xivo_file::is_d_r($value['script_path'])) !== false)
+				$this->_conf['tpl'][$key]['script_path'] = $script_path;
 			else if($def_script_path !== false)
-				$this->_conf['tpl'][$k]['script_path'] = $def_script_path;
+				$this->_conf['tpl'][$key]['script_path'] = $def_script_path;
 			else
-				die('ERR: Missing or invalid script_path in '.$k.' for template configuration in XIVO ini file');
+				die('ERR: Missing or invalid script_path in '.$key.' for template configuration in init file');
 
-			if(isset($v['application_path']) === true && ($application_path = xivo_file::is_d_r($v['application_path'])) !== false)
-				$this->_conf['tpl'][$k]['application_path'] = $application_path;
+			if(isset($value['application_path']) === true && ($application_path = xivo_file::is_d_r($value['application_path'])) !== false)
+				$this->_conf['tpl'][$key]['application_path'] = $application_path;
 			else if($def_application_path !== false)
-				$this->_conf['tpl'][$k]['application_path'] = $def_application_path;
+				$this->_conf['tpl'][$key]['application_path'] = $def_application_path;
 			else
-				die('ERR: Missing or invalid application_path in '.$k.' for template configuration in XIVO ini file');
+				die('ERR: Missing or invalid application_path in '.$key.' for template configuration in init file');
 
-			if(isset($v['tpl_path']) === true && ($tpl_path = xivo_file::is_d_r($v['tpl_path'])) !== false)
-				$this->_conf['tpl'][$k]['tpl_path'] = $tpl_path;
+			if(isset($value['tpl_path']) === true && ($tpl_path = xivo_file::is_d_r($value['tpl_path'])) !== false)
+				$this->_conf['tpl'][$key]['tpl_path'] = $tpl_path;
 			else if($def_tpl_path !== false)
-				$this->_conf['tpl'][$k]['tpl_path'] = $def_tpl_path;
+				$this->_conf['tpl'][$key]['tpl_path'] = $def_tpl_path;
 			else
-				die('ERR: Missing or invalid tpl_path in '.$k.' for template configuration in XIVO ini file');
+				die('ERR: Missing or invalid tpl_path in '.$key.' for template configuration in init file');
 
-			if(isset($v['script_root']) === true)
-				$this->_conf['tpl'][$k]['script_root'] = rtrim($v['script_root'],XIVO_SEP_DIR);
+			if(isset($value['script_root']) === true)
+				$this->_conf['tpl'][$key]['script_root'] = rtrim($value['script_root'],XIVO_SEP_DIR);
 			else
-				$this->_conf['tpl'][$k]['script_root'] = '';
+				$this->_conf['tpl'][$key]['script_root'] = '';
 		}
 	}
 

@@ -29,7 +29,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		$this->_dso->set_param('filename',$this->_filename);
 
 		if($this->_chk_mohpath() === false)
-			trigger_error('Invalid or missing music on hold path in '.$this->_sre->get_type().' ini file',E_USER_ERROR);
+			trigger_error('Invalid or missing music on hold path in '.$this->_sre->get_type().' init file',E_USER_ERROR);
 
 		$this->_load_config();
 

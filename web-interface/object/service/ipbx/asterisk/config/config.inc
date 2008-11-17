@@ -192,6 +192,9 @@ $array['module']['cdr']['datastorage']['custom'] = true;
 $array['module']['context'] = array();
 $array['module']['context']['datastorage'] = true;
 
+$array['module']['contextinclude'] = array();
+$array['module']['contextinclude']['datastorage'] = true;
+
 $array['module']['contextmember'] = array();
 $array['module']['contextmember']['datastorage'] = true;
 

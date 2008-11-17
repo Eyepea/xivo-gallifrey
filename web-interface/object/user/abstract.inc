@@ -288,47 +288,21 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 
 	function _load_acl()
 	{
-		$dir = XIVO_PATH_OBJECT.XIVO_SEP_DIR.'user';
-
-		if(xivo::load_class('xivo_user_acl',$dir,'acl',false) === false)
+		if(xivo::load_class('xivo_user_acl',
+				    XIVO_PATH_OBJECT.XIVO_SEP_DIR.'user',
+				    'acl',
+				    false) === false)
 			trigger_error('Failed to load user acl',E_USER_ERROR);
 
 		$this->_acl = new xivo_user_acl($this->_dso,$this->_param['factory']);
 	}
 
-	function call_acl($func,$args=null)
+	function get_acl()
 	{
-		$func = (string) $func;
-		$acl_func = 'acl_'.$func;
+		if(is_object($this->_acl) === false)
+			$this->_load_acl();
 
-		if(is_object($this->_acl) === false
-		&& ($this->_acl = $this->_load_acl($this->_dso,$this->_param['factory'])) === false)
-		{
-			trigger_error('Failed to load user acl in '.__CLASS__,E_USER_ERROR);
-			return(false);
-		}
-		else if(is_object($this->_acl) === false)
-		{
-			trigger_error('Invalid user acl object',E_USER_ERROR);
-			return(false);
-		}
-		else if(is_callable(array(&$this->_acl,$func)) === false)
-		{
-			trigger_error('Invalid user acl method',E_USER_ERROR);
-			return(false);
-		}
-		else if(method_exists($this,$acl_func) === false)
-			$acl = &$this->_acl;
-		else
-		{
-			$acl = &$this;
-			$func = $acl_func;
-		}
-
-		if($args === null)
-			return(call_user_func(array($acl,$func)));
-
-		return(call_user_func_array(array($acl,$func),(array) $args));
+		return($this->_acl);
 	}
 
 	function load_authent()
@@ -342,7 +316,7 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 
 		if(isset($authent['type']) === false)
 		{
-			trigger_error('Missing type user authentication in user ini file',E_USER_ERROR);
+			trigger_error('Missing type user authentication in user init file',E_USER_ERROR);
 			return(false);
 		}
 

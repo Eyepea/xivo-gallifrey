@@ -406,10 +406,10 @@ class xivo_service_abstract
 		}
 
 		if($custom === false && $gendatastorage === false)
-			trigger_error('Missing general datastorage in '.$this->_type.' ini file',E_USER_ERROR);
+			trigger_error('Missing general datastorage in '.$this->_type.' init file',E_USER_ERROR);
 
 		if($ini === false && $gendatastorage === false)
-			trigger_error('Invalid or missing '.$name.' datastorage in '.$this->_type.' ini file',E_USER_ERROR);
+			trigger_error('Invalid or missing '.$name.' datastorage in '.$this->_type.' init file',E_USER_ERROR);
 
 		if($ini !== false && isset($ini['datastorage']) === true)
 		{
@@ -423,9 +423,9 @@ class xivo_service_abstract
 		}
 
 		if($datastorage === false)
-			trigger_error('Invalid or missing '.$name.' datastorage in '.$this->_type.' ini file',E_USER_ERROR);
+			trigger_error('Invalid or missing '.$name.' datastorage in '.$this->_type.' init file',E_USER_ERROR);
 		else if(isset($datastorage['type']) === false)
-			trigger_error('Missing datastorage type in '.$this->_type.' ini file for '.$name,E_USER_ERROR);
+			trigger_error('Missing datastorage type in '.$this->_type.' init file for '.$name,E_USER_ERROR);
 		else if(xivo_datastorage::is_valid($datastorage['type']) === false)
 			trigger_error('Invalid datastorage '.$datastorage['type'].' for '.$name,E_USER_ERROR);
 

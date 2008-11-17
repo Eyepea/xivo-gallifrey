@@ -38,6 +38,10 @@ $array['context'] = array();
 $array['context']['table'] = 'context';
 $array['context']['primary'] = array('name' => '');
 
+$array['contextinclude'] = array();
+$array['contextinclude']['table'] = 'contextinclude';
+$array['contextinclude']['primary'] = array('context' => '','include' => '');
+
 $array['contextmember'] = array();
 $array['contextmember']['table'] = 'contextmember';
 $array['contextmember']['primary'] = array('context' => '','type' => '','typeval' => '','varname' => '');

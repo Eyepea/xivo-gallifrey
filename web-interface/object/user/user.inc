@@ -41,7 +41,7 @@ class xivo_user_user extends xivo_user_abstract
 
 		if(isset($authent['type']) === false)
 		{
-			trigger_error('Missing authentication type in user ini file',E_USER_ERROR);
+			trigger_error('Missing authentication type in user init file',E_USER_ERROR);
 			return(false);
 		}
 

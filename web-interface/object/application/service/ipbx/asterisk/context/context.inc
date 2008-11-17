@@ -9,6 +9,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 	var $_contextnumbers	= false;
 	var $_contextnummember	= false;
 	var $_contextmember	= false;
+	var $_contextinclude	= false;
 	var $_entity		= null;
 	var $_modules		= array();
 
@@ -24,7 +25,8 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		if(($this->_context = &$this->_service->get_module('context')) === false
 		|| ($this->_contextnumbers = &$this->_service->get_module('contextnumbers')) === false
 		|| ($this->_contextnummember = &$this->_service->get_module('contextnummember')) === false
-		|| ($this->_contextmember = &$this->_service->get_module('contextmember')) === false)
+		|| ($this->_contextmember = &$this->_service->get_module('contextmember')) === false
+		|| ($this->_contextinclude = &$this->_service->get_module('contextinclude')) === false)
 			return(false);
 
 		return(true);
@@ -40,6 +42,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		$this->_origin['context'] = $this->_context->get_origin();
 
 		$this->_get_contextnumbers();
+		$this->_get_contextinclude();
 
 		$this->_info['deletable'] = $this->_get_contextnummember() === false;
 
@@ -89,6 +92,26 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		return($this->_info['contextmember']);
 	}
 
+	function _get_contextinclude()
+	{
+		$order = array();
+		$order['priority'] = SORT_ASC;
+		$order['include'] = SORT_ASC;
+
+		$this->_origin['contextinclude'] = false;
+
+		if(($this->_info['contextinclude'] = $this->_contextinclude->get_all_where(
+								array('context' => $this->_info['context']['name']),
+								null,
+								true,
+								$order)) === false)
+			return(false);
+
+		$this->_origin['contextinclude'] = $this->_contextinclude->get_origin_list();
+
+		return($this->_info['contextinclude']);
+	}
+
 	function get_elements()
 	{
 		$r = array();
@@ -96,6 +119,11 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		$r['contextnumbers'] = $this->_contextnumbers->get_element();
 
 		return($r);
+	}
+
+	function get_contexts_except($name=null,$order=null,$limit=null,$assoc=false)
+	{
+		return($this->_context->get_all_except($name,$order,$limit,$assoc));
 	}
 
 	function get_contexts_list($disable=null,$order=null,$limit=null,$assoc=false)
@@ -186,22 +214,27 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 		$this->set_context($arr['context']);
 
-		if((string) $this->get_result_var('context','entity') === ''
+		$name = (string) $this->get_result_var('context','name');
+		$entity = (string) $this->get_result_var('context','entity');
+
+		if($entity === ''
 		&& ($action === 'add'
 		   || (isset($this->_info['deletable']) === true 
 		      && $this->_info['deletable'] === true)) === true)
+		{
+			if(xivo_issa('contextinclude',$arr) === true)
+				$this->set_contextinclude($name,$arr['contextinclude']);
 			return(($this->get_errnb() < 1));
-
-		$name = (string) $this->get_result_var('context','name');
+		}
 
 		if(xivo_issa('contextnumbers',$arr) === true)
-		{
-			$arr['contextnumbers']['context'] = $name;
-			$this->set_contextnumbers($arr['contextnumbers']);
-		}
+			$this->set_contextnumbers($name,$arr['contextnumbers']);
 
 		$this->set_contextnummember($action,$name);
 		$this->set_contextmember($action,$name);
+
+		if(xivo_issa('contextinclude',$arr) === true)
+			$this->set_contextinclude($name,$arr['contextinclude']);
 
 		return(($this->get_errnb() < 1));
 	}
@@ -229,28 +262,26 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		return(true);
 	}
 
-	function set_contextnumbers($arr)
+	function set_contextnumbers($context,$arr)
 	{
-		if(is_array($arr) === false)
-		{
-			$this->_set_result('contextnumbers',null);
-			$this->_set_error('contextnumbers','invalid data');
-			return(false);
-		}
-		else if(isset($arr['context']) === false)
+		if(xivo_haslen($context) === false)
 		{
 			$this->_set_result('contextnumbers',false);
 			$this->_set_error('contextnumbers','wrong context');
 			return(false);
 		}
+		else if(is_array($arr) === false)
+		{
+			$this->_set_result('contextnumbers',null);
+			$this->_set_error('contextnumbers','invalid data');
+			return(false);
+		}
 
 		$info = $infotmp = $tmp = array();
-		$info['context'] = $arr['context'];
+		$info['context'] = $context;
 		$info['numberbeg'] = '';
 		$info['numberend'] = '';
 		$info['didlength'] = '';
-
-		unset($arr['context']);
 
 		$reslist = $errlist = $incr = array();
 		$nberr = 0;
@@ -470,6 +501,49 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		return(false);
 	}
 
+	function set_contextinclude($context,$arr)
+	{
+		if(xivo_haslen($context) === false)
+		{
+			$this->_set_result('contextinclude',false);
+			$this->_set_error('contextinclude','wrong context');
+			return(false);
+		}
+		else if(is_array($arr) === false)
+		{
+			$this->_set_result('contextinclude',null);
+			$this->_set_error('contextinclude','invalid data');
+			return(false);
+		}
+		else if(empty($arr) === true)
+			return(null);
+
+		$reslist = array();
+
+		$info = array();
+		$info['context'] = $context;
+		$info['priority'] = 0;
+
+		foreach($arr as $value)
+		{
+			if($this->_contextinclude->chk_value('include',$value) !== false
+			&& isset($reslist[$value]) === false)
+			{
+				$info['include'] = $value;
+				$reslist[$value] = $info;
+				$info['priority']++;
+			}
+		}
+
+		if(empty($reslist) === false)
+		{
+			$this->_set_result('contextinclude',$reslist);
+			return(true);
+		}
+
+		return(false);
+	}
+
 	function add()
 	{
 		$r = true;
@@ -480,7 +554,8 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 		if($this->get_errnb() > 0
 		|| $this->add_context() === false
-		|| ($contextnumbers = $this->add_contextnumbers()) === false)
+		|| ($contextnumbers = $this->add_contextnumbers()) === false
+		|| $this->add_contextinclude() === false)
 		{
 			if($contextnumbers !== null)
 				$this->_reverse_add();
@@ -534,6 +609,29 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		return(true);
 	}
 
+	function add_contextinclude()
+	{
+		if(($rs = $this->get_result('contextinclude')) === null)
+			return(null);
+		else if(is_array($rs) === false || empty($rs) === true)
+			return(false);
+
+		$this->_return['contextinclude'] = array();
+
+		foreach($rs as $value)
+		{
+			if($this->_contextinclude->add($value) === false)
+				return(false);
+			else
+				$this->_return['contextinclude'][] = $value;
+		}
+
+		if(isset($this->_return['contextinclude'][0]) === false)
+			return(($this->_return['contextinclude'] = false));
+
+		return(true);
+	}
+
 	function _reverse_add()
 	{
 		if($this->get_errnb() > 0
@@ -562,6 +660,16 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 							$this->_contextnumbers->delete_where($contextnumbersval);
 					}
 					break;
+				case 'contextinclude':
+					if(is_array($val) === false)
+						continue;
+
+					foreach($val as $contextincludeval)
+					{
+						unset($contextincludeval['priority']);
+						$this->_contextinclude->delete_where($contextincludeval);
+					}
+					break;
 			}
 		}
 
@@ -579,7 +687,9 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		|| $this->edit_context() === false
 		|| $this->edit_contextnumbers() === false
 		|| $this->edit_contextnummember() === false
-		|| $this->edit_contextmember() === false)
+		|| $this->edit_contextmember() === false
+		|| $this->edit_contextinclude_name() === false
+		|| $this->edit_contextinclude() === false)
 		{
 			$r = false;
 			$this->_reverse_edit();
@@ -705,7 +815,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 		$this->_return['contextmember'] = array();
 
-		if($this->_contextmember->edit_where(array('context' => $this->_info['context']['name']),
+		if($this->_contextmember->edit_where(array('context' => $context),
 						     array('context' => $newcontext),
 						     null,
 						     null,
@@ -749,6 +859,51 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 			return(false);
 
 		return($this->_return['contextmember']);
+	}
+
+	function edit_contextinclude_name()
+	{
+		if(xivo_issa('context',$this->_info) === false
+		|| ($newcontext = (string) $this->get_result_var('context','name')) === '')
+			return(false);
+		else if($this->_contextinclude->edit_where(array('include' => $this->_info['context']['name']),
+							   array('include' => $newcontext),
+							   null,
+							   null,
+							   false) !== false)
+			$this->_return['contextincludename']['_context'] = $newcontext;
+		else
+			return(($this->_return['contextincludename'] = false));
+
+		return(true);
+	}
+	
+	function edit_contextinclude()
+	{
+		if(xivo_issa('contextinclude',$this->_info) === false)
+			return($this->add_contextinclude());
+
+		$this->_return['contextinclude'] = $this->delete_contextinclude();
+
+		if(($rs = $this->get_result('contextinclude')) === null)
+			return(null);
+		else if($rs === false || empty($rs) === true)
+			return(false);
+			
+		$this->_return['contextinclude'] = array();
+
+		foreach($rs as $value)
+		{
+			if($this->_contextinclude->add($value) === false)
+				return(false);
+			else
+				$this->_return['contextinclude'][] = $value;
+		}
+
+		if(isset($this->_return['contextinclude'][0]) === false)
+			return(($this->_return['contextinclude'] = false));
+
+		return(true);
 	}
 
 	function _update_context_contextnummember($name,$context,$newcontext)
@@ -1163,8 +1318,11 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 					$newcontext = $this->_origin['contextnummember'][0]['context'];
 
-					$this->_contextnummember->edit_where($where,array('context' => $newcontext),
-									     null,null,false);
+					$this->_contextnummember->edit_where($where,
+									     array('context' => $newcontext),
+									     null,
+									     null,
+									     false);
 
 					$this->_update_extensions_contextnummember($context,$newcontext);
 					$this->_update_extenumbers_contextnummember($context,$newcontext);
@@ -1202,8 +1360,11 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 					$newcontext = $this->_origin['contextmember'][0]['context'];
 
-					$this->_contextmember->edit_where($where,array('context' => $newcontext),
-									  null,null,false);
+					$this->_contextmember->edit_where($where,
+									  array('context' => $newcontext),
+									  null,
+									  null,
+									  false);
 
 					if(isset($val['agent']) === true)
 						$this->_update_agent_contextmember($context,$newcontext);
@@ -1249,7 +1410,44 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 					if(isset($val['voicemail']) === true)
 						$this->_update_voicemail_contextmember($context,$newcontext,$val['voicemail']);
-					break;					   
+					break;
+				case 'contextincludename':
+					if(is_array($val) === false
+					|| isset($val['_context']) === false)
+						continue;
+
+					$context = $val['_context'];
+
+					$where = array('context' => $context);
+
+					if(isset($this->_origin['contextinclude']) === false
+					|| xivo_issa(0,$this->_origin['contextinclude']) === false)
+					{
+						$this->_contextmember->delete_where($where);
+						continue;
+					}
+
+					$newcontext = $this->_origin['contextinclude'][0]['context'];
+
+					$this->_contextinclude->edit_where($where,
+									   array('context' => $newcontext),
+									   null,
+									   null,
+									   false);
+					break;
+				case 'contextinclude':
+					if(is_array($val) === true)
+					{
+						foreach($val as $contextincludeval)
+						{
+							unset($contextincludeval['priority']);
+							$this->_contextinclude->delete_where($contextincludeval);
+						}
+					}
+
+					if(isset($this->_origin['contextinclude']) === true)
+						$this->_contextinclude->add_origin_list($this->_origin['contextinclude']);
+					break;
 			}
 		}
 
@@ -1269,7 +1467,8 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		$this->_return = array();
 
 		if($this->delete_context() === false
-		|| $this->delete_contextnumbers() === false)
+		|| $this->delete_contextnumbers() === false
+		|| $this->delete_contextinclude() === false)
 		{
 			$r = false;
 			$this->_reverse_delete();
@@ -1308,6 +1507,22 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		return($r);
 	}
 
+	function delete_contextinclude()
+	{
+		if(xivo_issa('context',$this->_info) === false)
+			return(false);
+
+		$r = $this->_contextinclude->delete_where(array('context' => $this->_info['context']['name']));
+
+		if($this->_status === 'delete')
+			$this->_return['contextinclude'] = $r;
+
+		if($r !== false && $this->_status === 'delete')
+			$this->_contextinclude->delete_where(array('include' => $this->_info['context']['name']));
+
+		return($r);
+	}
+
 	function _reverse_delete()
 	{
 		if($this->get_errnb() > 0
@@ -1331,6 +1546,10 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 				case 'contextnumbers':
 					if(isset($this->_origin['contextnumbers']) === true)
 						$this->_contextnumbers->add_origin_list($this->_origin['contextnumbers']);
+					break;
+				case 'contextinclude':
+					if(isset($this->_origin['contextinclude']) === true)
+						$this->_contextinclude->add_origin_list($this->_origin['contextinclude']);
 					break;
 			}
 		}

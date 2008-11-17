@@ -30,15 +30,17 @@ switch($act)
 		|| xivo_user::chk_authorize('admin',$info['meta']) === false)
 			$_QRY->go($_HTML->url('xivo/configuration/manage/user'),$param);
 
+		$useracl = $_USR->get_acl();
+
 		if(isset($_QR['fm_send']) === true)
 		{
-			$_USR->call_acl('edit',array($_QR));
+			$useracl->edit($_QR);
 			$_QRY->go($_HTML->url('xivo/configuration/manage/user'),$param);
 		}
-		else if(($user_tree = $_USR->call_acl('get_user',array($info['id']))) !== false)
+		else if(($tree = $useracl->get_user($info['id'])) !== false)
 		{
 			$_HTML->set_var('info',$info);
-			$_HTML->set_var('tree',$user_tree);
+			$_HTML->set_var('tree',$tree);
 		}
 		else $_QRY->go($_HTML->url('xivo/configuration/manage/user'),$param);
 		break;

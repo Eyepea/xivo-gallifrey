@@ -18,7 +18,7 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 		$this->_sre = &$sre;
 
 		if($this->_chk_sndpath() === false)
-			trigger_error('Invalid or missing sounds path in '.$this->_sre->get_type().' ini file',E_USER_ERROR);
+			trigger_error('Invalid or missing sounds path in '.$this->_sre->get_type().' init file',E_USER_ERROR);
 
 		$this->_load_config();
 

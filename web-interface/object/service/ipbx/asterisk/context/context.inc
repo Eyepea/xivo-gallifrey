@@ -54,6 +54,25 @@ class xivo_service_asterisk_context extends xivo_service_asterisk_abstract
 
 		return(parent::edit($id,$arr));
 	}
+
+	function get_all_except($name=null,$order=null,$limit=null,$assoc=false)
+	{
+		if(xivo_haslen($name) === false)
+			return($this->get_all(null,true,$order,$limit,$assoc));
+
+		$name = strtolower($name);
+
+		if(isset($this->_origin_list) === true)
+			$this->_origin_list = false;
+
+		if(($list = $this->_dso->get_all_except($name,$order,$limit)) === false
+		|| isset($list[0]) === false)
+			return(false);
+		else if(isset($this->_origin_list) === true)
+			$this->_origin_list = $list;
+
+		return($this->_mk_list_assoc_prepare($list,$assoc,true));
+	}
 }
 
 ?>
