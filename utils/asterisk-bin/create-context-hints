@@ -38,102 +38,115 @@ for (context,) in res:
 
 
 cursor.query("SELECT ${columns} FROM context "
-	     "WHERE commented = 0 "
-	     "ORDER BY name DESC",
-	     ('name',))
+             "WHERE commented = 0 "
+             "ORDER BY name DESC",
+             ('name',))
 res = cursor.fetchall()
 
 if not res:
-	# No context time to exit
-	sys.exit()
+    # No context time to exit
+    sys.exit()
 
 # /!\ Do not change the path before asking everybody in the office /!\
 config = OrderedConf.OrderedRawConf(filename=CONFIG_CONTEXT_TEMPLATE)
 
 if config.has_conflicting_section_names():
-	raise ValueError, CONFIG_CONTEXT_TEMPLATE + " has conflicting section names"
+    raise ValueError, CONFIG_CONTEXT_TEMPLATE + " has conflicting section names"
 
 if not config.has_section('template'):
-	raise ValueError, "Template section doesn't exist"
+    raise ValueError, "Template section doesn't exist"
 
 for (context,) in res:
-	print "[" + context + "]"
+    print "[" + context + "]"
 
-	# Maybe a relation exists between hints and realtime TODO check
-	cursor.query("SELECT ${columns} FROM userfeatures "
-		     "WHERE context = %s "
-		     "AND IFNULL(number,'') != '' "
-		     "AND internal = 0 "
-		     "AND enablehint = 1",
-		     ('number', 'protocol', 'name'),
-		     (context,))
-        res2 = cursor.fetchall()
+    # Maybe a relation exists between hints and realtime TODO check
+    cursor.query("SELECT ${columns} FROM userfeatures "
+                 "WHERE context = %s "
+                 "AND IFNULL(number,'') != '' "
+                 "AND internal = 0 "
+                 "AND enablehint = 1",
+             ('number', 'protocol', 'name'),
+             (context,))
+    res2 = cursor.fetchall()
 
-        for e in res2:
-                if e[0] and e[1] and e[2]:
+    for e in res2:
+        if e[0] and e[1] and e[2]:
+            e[1] = e[1].upper()
 
-			e[1] = e[1].upper()
-			if e[1] == "IAX":
-				e[1] = "IAX2";
+            if e[1] == "IAX":
+                e[1] = "IAX2"
 
-                        print "exten = " + str(e[0]) + ",hint," + str(e[1]) + "/" + str(e[2])
+            print "exten = %s,hint,%s/%s" % (e[0], e[1], e[2])
 
-	cursor.query("SELECT ${columns} FROM userfeatures "
-		     "INNER JOIN phonefunckey "
-		     "ON userfeatures.context = %s "
-		     "AND userfeatures.id = phonefunckey.iduserfeatures "
-		     "AND phonefunckey.typeextenumbers IS NULL "
-		     "AND phonefunckey.typevalextenumbers IS NULL "
-		     "AND phonefunckey.typeextenumbersright IN ('user', 'group', 'queue', 'meetme') "
-		     "AND phonefunckey.supervision = 1 "
-		     "LEFT OUTER JOIN extenumbers "
-		     "ON phonefunckey.typeextenumbersright = extenumbers.type "
-		     "AND phonefunckey.typevalextenumbersright = extenumbers.typeval "
-		     "WHERE IFNULL(userfeatures.number,'') != ''",
-		     ('extenumbers.exten', 'extenumbers.type'),
-		     (context,))
-	res2 = cursor.fetchall()
+    cursor.query("SELECT ${columns} FROM userfeatures "
+                 "INNER JOIN phonefunckey "
+                 "ON userfeatures.context = %s "
+                 "AND userfeatures.id = phonefunckey.iduserfeatures "
+                 "AND phonefunckey.typeextenumbers IS NULL "
+                 "AND phonefunckey.typevalextenumbers IS NULL "
+                 "AND phonefunckey.typeextenumbersright IN ('user', 'group', 'queue', 'meetme') "
+                 "AND phonefunckey.supervision = 1 "
+                 "LEFT OUTER JOIN extenumbers "
+                 "ON phonefunckey.typeextenumbersright = extenumbers.type "
+                 "AND phonefunckey.typevalextenumbersright = extenumbers.typeval "
+                 "WHERE IFNULL(userfeatures.number,'') != ''",
+                 ('extenumbers.exten', 'extenumbers.type'),
+                 (context,))
+    res2 = cursor.fetchall()
 
-	by_type = {}
-	for row in res2:
-		xtype = row['extenumbers.type']
-		exten = xivo_helpers.speed_dial_key_extension(None, row['extenumbers.exten'], None)
-		the_set = by_type.setdefault(xtype, set())
-		the_set.add(exten)
+    by_type = {}
+    for row in res2:
+        xtype = row['extenumbers.type']
+        exten = xivo_helpers.speed_dial_key_extension(None, row['extenumbers.exten'], None)
+        the_set = by_type.setdefault(xtype, set())
+        the_set.add(exten)
 
-	for xtype, exten_set in by_type.iteritems():
-		for exten in exten_set:
-			print "exten = %s,hint,%s:%s" % (exten, xtype, exten)
+    for xtype, exten_set in by_type.iteritems():
+        for exten in exten_set:
+            print "exten = %s,hint,%s:%s" % (exten, xtype, exten)
 
-	# Ewww. The following query is a closure of one in provisioning/autoprov
-	cursor.query("SELECT ${columns} FROM userfeatures INNER JOIN phonefunckey "
-		     "ON userfeatures.context = %s "
-		     "AND userfeatures.id = phonefunckey.iduserfeatures "
-		     "AND phonefunckey.typeextenumbers = 'extenfeatures' "
-		     "AND phonefunckey.typevalextenumbers = 'bsfilter' "
-		     "AND phonefunckey.typeextenumbersright = 'user' "
-		     "AND phonefunckey.supervision = 1 "
-		     "LEFT OUTER JOIN extenumbers AS extenumleft "
-		     "ON extenumleft.type = 'extenfeatures' "
-		     "AND extenumleft.typeval = 'bsfilter' "
-		     "LEFT OUTER JOIN extenumbers AS extenumright "
-		     "ON phonefunckey.typeextenumbersright = extenumright.type "
-		     "AND phonefunckey.typevalextenumbersright = extenumright.typeval "
-		     "WHERE IFNULL(userfeatures.number,'') != ''",
-		     ('extenumleft.exten', 'phonefunckey.exten', 'extenumright.exten', 'userfeatures.number'),
-		     (context,))
-	res2 = cursor.fetchall()
-	extens = set(xivo_helpers.speed_dial_key_extension(row['extenumleft.exten'], row['extenumright.exten'],
-							   row['phonefunckey.exten'], row['userfeatures.number'], True)
-		     for row in res2)
+    # Ewww. The following query is a closure of one in provisioning/autoprov
+    cursor.query("SELECT ${columns} FROM userfeatures INNER JOIN phonefunckey "
+                 "ON userfeatures.context = %s "
+                 "AND userfeatures.id = phonefunckey.iduserfeatures "
+                 "AND phonefunckey.typeextenumbers = 'extenfeatures' "
+                 "AND phonefunckey.typevalextenumbers = 'bsfilter' "
+                 "AND phonefunckey.typeextenumbersright = 'user' "
+                 "AND phonefunckey.supervision = 1 "
+                 "LEFT OUTER JOIN extenumbers AS extenumleft "
+                 "ON extenumleft.type = 'extenfeatures' "
+                 "AND extenumleft.typeval = 'bsfilter' "
+                 "LEFT OUTER JOIN extenumbers AS extenumright "
+                 "ON phonefunckey.typeextenumbersright = extenumright.type "
+                 "AND phonefunckey.typevalextenumbersright = extenumright.typeval "
+                 "WHERE IFNULL(userfeatures.number,'') != ''",
+                 ('extenumleft.exten', 'phonefunckey.exten', 'extenumright.exten', 'userfeatures.number'),
+                 (context,))
+    res2 = cursor.fetchall()
+    extens = set(xivo_helpers.speed_dial_key_extension(row['extenumleft.exten'],
+                                                       row['extenumright.exten'],
+                                                       row['phonefunckey.exten'],
+                                                       row['userfeatures.number'],
+                                                       True)
+             for row in res2)
 
-	for exten in extens:
-		print "exten = " + exten + ",hint,Custom:" + exten
+    for exten in extens:
+        print "exten = %s,hint,Custom:%s" % (exten, exten)
 
-	if config.has_section(context):
-		section_name = context
-	else:
-		section_name = 'template'
+    cursor.query("SELECT ${columns} FROM contextinclude "
+                 "WHERE context = %s "
+                 "ORDER BY priority ASC",
+                 ('include',),
+                 (context,))
+    res2 = cursor.fetchall()
 
-	for option in config.iter_options(section_name):
-		print option.get_name() + ' = ' + option.get_value().replace('%%CONTEXT%%',context)
+    for row in res2:
+        print "include = %s" % row['include']
+
+    if config.has_section(context):
+        section_name = context
+    else:
+        section_name = 'template'
+
+    for option in config.iter_options(section_name):
+        print "%s = %s" % (option.get_name(), option.get_value().replace('%%CONTEXT%%', context))
