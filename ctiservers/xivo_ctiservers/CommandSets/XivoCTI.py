@@ -125,7 +125,6 @@ class XivoCTICommand(BaseCommand):
                 self.ldapids = {}
                 self.chans_incomingqueue = []
                 self.chans_incomingdid = []
-                self.meetme = {}
                 self.tqueue = Queue.Queue()
                 self.timeout_login = {}
                 self.parkedcalls = {}
@@ -704,7 +703,9 @@ class XivoCTICommand(BaseCommand):
                                                                     'name' : mitem.get('name'),
                                                                     'context' : mitem.get('context'),
                                                                     'pin' : mitem.get('pin'),
-                                                                    'admin-pin' : mitem.get('admin-pin')
+                                                                    'admin-pin' : mitem.get('admin-pin'),
+
+                                                                    'channels' : []
                                                                     }
                         except Exception:
                                 log.error('--- exception --- (getmeetmelist : %s)' % mitem)
@@ -2211,7 +2212,8 @@ class XivoCTICommand(BaseCommand):
                         tosend = { 'class' : 'faxprogress',
                                    'direction' : 'client',
                                    'status' : 'ko',
-                                   'reason' : event.get('PhaseEString') }
+                                   'reason' : '%s (code %s)' % (event.get('PhaseEString'),
+                                                                event.get('PhaseEStatus')) }
                 repstr = cjson.encode(tosend)
 
                 # 'FileName': '/var/spool/asterisk/fax/astfaxsend-q6yZAKTJvU-0x48be7930.tif'
@@ -2231,16 +2233,16 @@ class XivoCTICommand(BaseCommand):
                 channel = event.get('Channel')
                 num = event.get('Usernum')
                 
-                if astid not in self.meetme:
-                        self.meetme[astid] = {}
-                if meetmenum not in self.meetme[astid]:
-                        self.meetme[astid][meetmenum] = []
-                if channel not in self.meetme[astid][meetmenum]:
-                        self.meetme[astid][meetmenum].append(channel)
+                for idx, v in self.weblist['meetme'][astid].keeplist.iteritems():
+                        if v['number'] == meetmenum:
+                                break
+                if channel not in v['channels']:
+                        v['channels'].append(channel)
                         tosend = { 'class' : 'meetme',
                                    'direction' : 'client',
+                                   'function' : 'update',
                                    'payload' : [ 'join', astid, meetmenum, num, channel,
-                                                 str(len(self.meetme[astid][meetmenum])) ]
+                                                 str(len(v['channels'])) ]
                                    }
                         self.__send_msg_to_cti_clients__(cjson.encode(tosend))
                 else:
@@ -2252,22 +2254,28 @@ class XivoCTICommand(BaseCommand):
                 channel = event.get('Channel')
                 num = event.get('Usernum')
                 
-                if astid not in self.meetme:
-                        self.meetme[astid] = {}
-                if meetmenum not in self.meetme[astid]:
-                        self.meetme[astid][meetmenum] = []
-                if channel in self.meetme[astid][meetmenum]:
-                        self.meetme[astid][meetmenum].remove(channel)
+                for idx, v in self.weblist['meetme'][astid].keeplist.iteritems():
+                        if v['number'] == meetmenum:
+                                break
+                if channel in v['channels']:
+                        v['channels'].remove(channel)
                         tosend = { 'class' : 'meetme',
                                    'direction' : 'client',
+                                   'function' : 'update',
                                    'payload' : [ 'leave', astid, meetmenum, num, channel,
-                                                 str(len(self.meetme[astid][meetmenum])) ]
+                                                 str(len(v['channels'])) ]
                                    }
                         self.__send_msg_to_cti_clients__(cjson.encode(tosend))
                 else:
                         log.warning('%s : channel %s not in meetme %s' % (astid, channel, meetmenum))
                 return
-
+        
+        def ami_meetmemute(self, astid, event):
+                log.info('%s : %s' % (astid, event))
+                # {'Status': 'on', 'Usernum': '1', 'Meetme': '199', 'Uniqueid': '1226942053.778', 'Privilege': 'call,all', 'Event': 'MeetmeMute', 'Channel': 'SIP/103-081eefa8'}
+                # {'Status': 'off', 'Usernum': '1', 'Meetme': '199', 'Uniqueid': '1226942053.778', 'Privilege': 'call,all', 'Event': 'MeetmeMute', 'Channel': 'SIP/103-081eefa8'}
+                return
+        
         def ami_status(self, astid, event):
                 state = event.get('State')
                 if state == 'Up':
@@ -2464,14 +2472,27 @@ class XivoCTICommand(BaseCommand):
                                         if classcomm not in ['keepalive', 'availstate', 'actionfiche']:
                                                 self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm)
                                         if classcomm == 'meetme':
-                                                argums = icommand.struct.get('command')
+                                                function = icommand.struct.get('function')
+                                                argums = icommand.struct.get('functionargs')
                                                 if self.capas[capaid].match_funcs(ucapa, 'conference'):
-                                                        if argums[0] == 'kick':
-                                                                astid = argums[1]
-                                                                room = argums[2]
-                                                                num = argums[3]
+                                                        if function == 'record':
+                                                                print function, argums
+                                                        elif function in ['kick', 'mute', 'unmute']:
+                                                                astid = argums[0]
+                                                                room = argums[1]
+                                                                num = argums[2]
                                                                 self.__ami_execute__(astid, 'sendcommand',
-                                                                                     'Command', [('Command', 'meetme kick %s %s' % (room, num))])
+                                                                                     'Command', [('Command', 'meetme %s %s %s' % (function, room, num))])
+                                                        elif function == 'getlist':
+                                                                fullstat = {}
+                                                                for astid, v in self.weblist['meetme'].iteritems():
+                                                                        fullstat[astid] = v.keeplist
+                                                                tosend = { 'class' : 'meetme',
+                                                                           'function' : 'sendlist',
+                                                                           'direction' : 'client',
+                                                                           'payload' : fullstat }
+                                                                repstr = cjson.encode(tosend)
+                                                                
                                         elif classcomm == 'history':
                                                 if self.capas[capaid].match_funcs(ucapa, 'history'):
                                                         repstr = self.__build_history_string__(icommand.struct.get('peer'),

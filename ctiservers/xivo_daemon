@@ -464,6 +464,7 @@ evfunction_to_method_name = {
         'FaxReceived':          'ami_faxreceived',
         'MeetmeJoin':           'ami_meetmejoin',               # when a member joins a conference
         'MeetmeLeave':          'ami_meetmeleave',              # when a member leaves a conference
+        'MeetmeMute':           'ami_meetmemute',               # when a member leaves a conference
         'ExtensionStatus':      'ami_extensionstatus',
         'OriginateSuccess':     'ami_originatesuccess',
         'AOriginateSuccess':    'ami_aoriginatesuccess',

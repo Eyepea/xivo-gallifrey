@@ -256,6 +256,8 @@ class BaseCommand:
                 return
         def ami_meetmeleave(self, astid, event):
                 return
+        def ami_meetmemute(self, astid, event):
+                return
         def ami_status(self, astid, event):
                 return
 
