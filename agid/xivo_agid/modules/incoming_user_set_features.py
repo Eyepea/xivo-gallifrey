@@ -25,7 +25,6 @@ from xivo_agid import objects
 def incoming_user_set_features(agi, cursor, args):
     userid = agi.get_variable('XIVO_USERID')
     dstid = agi.get_variable('XIVO_DSTID')
-    context = agi.get_variable('XIVO_CONTEXT')
     zone = agi.get_variable('XIVO_CALLORIGIN')
     bypass_filter = agi.get_variable('XIVO_CALLFILTER_BYPASS')
 
@@ -132,7 +131,7 @@ def incoming_user_set_features(agi, cursor, args):
         if user.enableunc:
             agi.set_variable('XIVO_FWD_USER_UNC_ACTION', 'extension')
             agi.set_variable('XIVO_FWD_USER_UNC_ACTIONARG1', user.destunc)
-            agi.set_variable('XIVO_FWD_USER_UNC_ACTIONARG2', context)
+            agi.set_variable('XIVO_FWD_USER_UNC_ACTIONARG2', user.context)
     else:
         agi.set_variable('XIVO_ENABLEUNC', 0)
 
@@ -142,7 +141,7 @@ def incoming_user_set_features(agi, cursor, args):
         if user.enablebusy:
             agi.set_variable('XIVO_FWD_USER_BUSY_ACTION', 'extension')
             agi.set_variable('XIVO_FWD_USER_BUSY_ACTIONARG1', user.destbusy)
-            agi.set_variable('XIVO_FWD_USER_BUSY_ACTIONARG2', context)
+            agi.set_variable('XIVO_FWD_USER_BUSY_ACTIONARG2', user.context)
         else:
             objects.DialAction(agi, cursor, 'busy', 'user', user.id).set_variables()
     else:
@@ -154,7 +153,7 @@ def incoming_user_set_features(agi, cursor, args):
         if user.enablerna:
             agi.set_variable('XIVO_FWD_USER_NOANSWER_ACTION', 'extension')
             agi.set_variable('XIVO_FWD_USER_NOANSWER_ACTIONARG1', user.destrna)
-            agi.set_variable('XIVO_FWD_USER_NOANSWER_ACTIONARG2', context)
+            agi.set_variable('XIVO_FWD_USER_NOANSWER_ACTIONARG2', user.context)
         else:
             objects.DialAction(agi, cursor, 'noanswer', 'user', user.id).set_variables()
     else:
