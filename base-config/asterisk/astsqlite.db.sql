@@ -159,6 +159,19 @@ CREATE INDEX context__idx__entity ON context(entity);
 CREATE INDEX context__idx__commented ON context(commented);
 
 
+DROP TABLE contextinclude;
+CREATE TABLE contextinclude (
+ context varchar(39) NOT NULL,
+ include varchar(39) NOT NULL,
+ priority tinyint unsigned NOT NULL DEFAULT 0,
+ PRIMARY KEY(context,include)
+);
+
+CREATE INDEX contextinclude__idx__context ON contextinclude(context);
+CREATE INDEX contextinclude__idx__include ON contextinclude(include);
+CREATE INDEX contextinclude__idx__priority ON contextinclude(priority);
+
+
 DROP TABLE contextnummember;
 CREATE TABLE contextnummember (
  context varchar(39) NOT NULL,
