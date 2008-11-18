@@ -67,11 +67,15 @@ REQUIRED_CLIENT_VERSION = 4661
 __revision__ = __version__.split()[1]
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 HISTSEPAR = ';'
-DEFAULT_CONTEXT = 'default'
-AGENT_NO_PHONENUM = 'N.A.'
 AMI_ORIGINATE = 'originate'
 MONITORDIR = '/var/spool/asterisk/monitor'
+
+# some default values to display
+CONTEXT_UNKNOWN = 'undefined_context'
+AGENT_NO_PHONENUM = 'N.A.'
 PRESENCE_UNKNOWN = 'Absent'
+CALLERID_UNKNOWN_NUM = 'Inconnu'
+CALLERID_UNKNOWN_NAME = 'Inconnu'
 
 class XivoCTICommand(BaseCommand):
 
@@ -922,6 +926,7 @@ class XivoCTICommand(BaseCommand):
                 # - popup or not
                 # - actions ?
                 # - dispatch to one given person / all / subscribed ones
+                calleridsolved = None
                 if where in self.sheet_actions:
                         userinfos = []
                         actionopt = self.sheet_actions.get(where)
@@ -929,7 +934,7 @@ class XivoCTICommand(BaseCommand):
                         if whoms is None or whoms == '':
                                 log.warning('__sheet_alert__ (%s) : whom field for %s action has not been defined'
                                           % (astid, where))
-                                return
+                                return calleridsolved
 
                         linestosend = ['<?xml version="1.0" encoding="utf-8"?>',
                                        '<profile sessionid="sessid">',
@@ -1051,23 +1056,26 @@ class XivoCTICommand(BaseCommand):
                         dirlist = actionopt.get('directories')
                         if 'xivo-tomatch-callerid' in itemdir:
                                 callingnum = itemdir['xivo-tomatch-callerid']
+                                log.info('xivo-tomatch-callerid : looking for %s' % callingnum)
                                 if dirlist is not None:
                                         for dirname in dirlist.split(','):
                                                 if context in self.ctxlist.ctxlist and dirname in self.ctxlist.ctxlist[context]:
                                                         dirdef = self.ctxlist.ctxlist[context][dirname]
                                                         try:
-                                                                y = self.__build_customers_bydirdef__(dirname, callingnum, dirdef)
+                                                                y = self.__build_customers_bydirdef__(dirname, callingnum, dirdef, True)
                                                         except Exception, exc:
                                                                 log.error('--- exception --- (xivo-tomatch-callerid : %s, %s) : %s'
                                                                           % (dirname, context, exc))
                                                                 y = []
-                                                        if len(y) > 0:
+                                                        if y:
                                                                 for g, gg in y[0].iteritems():
                                                                         itemdir[g] = gg
                                 if callingnum[:2] == '00':
                                         internatprefix = callingnum[2:6]
+                                if 'db-fullname' in itemdir:
+                                        calleridsolved = itemdir['db-fullname']
                         # print where, itemdir
-
+                        
                         # 3/4
                         # build XML items from daemon-config + filled-in items
                         if 'xivo-channel' in itemdir:
@@ -1119,7 +1127,7 @@ class XivoCTICommand(BaseCommand):
                                 else:
                                         log.warning('__sheet_alert__ (%s) : unknown destination <%s> in <%s>'
                                                   % (astid, whom, where))
-                return
+                return calleridsolved
 
 
 
@@ -1390,7 +1398,7 @@ class XivoCTICommand(BaseCommand):
                                 qname = self.queues_channels_list[astid][chan1]
                                 ## del self.queues_channels_list[astid][chan1]
                                 extraevent = {'xivo_queuename' : qname}
-                                self.__sheet_alert__('agentlinked', astid, DEFAULT_CONTEXT, event, extraevent)
+                                self.__sheet_alert__('agentlinked', astid, CONTEXT_UNKNOWN, event, extraevent)
 
                 if uinfo1:
                         status = 'onlineoutgoing'
@@ -1516,7 +1524,7 @@ class XivoCTICommand(BaseCommand):
                                 qname = self.queues_channels_list[astid][chan1]
                                 del self.queues_channels_list[astid][chan1]
                                 extraevent = {'xivo_queuename' : qname}
-                                self.__sheet_alert__('agentunlinked', astid, DEFAULT_CONTEXT, event, extraevent)
+                                self.__sheet_alert__('agentunlinked', astid, CONTEXT_UNKNOWN, event, extraevent)
 
                 lstinfos = [uinfo1, uinfo2]
                 if uinfo1_ag not in lstinfos:
@@ -1898,7 +1906,7 @@ class XivoCTICommand(BaseCommand):
                 if len(loginchan_split) > 1:
                         context = loginchan_split[1]
                 else:
-                        context = DEFAULT_CONTEXT
+                        context = CONTEXT_UNKNOWN
                 
                 if astid in self.weblist['agents']:
                         agent_id = self.weblist['agents'][astid].reverse_index.get(agent)
@@ -1917,7 +1925,7 @@ class XivoCTICommand(BaseCommand):
                 if len(loginchan_split) > 1:
                         context = loginchan_split[1]
                 else:
-                        context = DEFAULT_CONTEXT
+                        context = CONTEXT_UNKNOWN
                 if phonenum == 'n/a':
                         phonenum = AGENT_NO_PHONENUM
                 
@@ -1957,7 +1965,7 @@ class XivoCTICommand(BaseCommand):
                         if len(loginchan_split) > 1:
                                 context = loginchan_split[1]
                         else:
-                                context = DEFAULT_CONTEXT
+                                context = CONTEXT_UNKNOWN
                         if phonenum == 'n/a':
                                 phonenum = AGENT_NO_PHONENUM
                         agent_id = self.weblist['agents'][astid].reverse_index.get(agent)
@@ -2170,7 +2178,7 @@ class XivoCTICommand(BaseCommand):
                 eventname = event.get('UserEvent')
                 if eventname == 'DID':
                         self.__sheet_alert__('incomingdid', astid,
-                                             event.get('XIVO_CONTEXT', DEFAULT_CONTEXT),
+                                             event.get('XIVO_REAL_CONTEXT', CONTEXT_UNKNOWN),
                                              event)
                 elif eventname == 'Feature':
                         log.info('AMI %s UserEvent %s %s' % (astid, eventname, event))
@@ -2225,7 +2233,7 @@ class XivoCTICommand(BaseCommand):
 
         def ami_faxreceived(self, astid, event):
                 log.info('%s : %s' % (astid, event))
-                self.__sheet_alert__('faxreceived', astid, DEFAULT_CONTEXT, event)
+                self.__sheet_alert__('faxreceived', astid, CONTEXT_UNKNOWN, event)
                 return
 
         def ami_meetmejoin(self, astid, event):
@@ -2365,7 +2373,7 @@ class XivoCTICommand(BaseCommand):
                                                                    'time' : time.time()}
                 log.info('STAT JOIN %s %s %s %s' % (astid, queue, chan, uniqueid))
                 self.__update_queue_stats__(astid, queue, 'ENTERQUEUE')
-                self.__sheet_alert__('incomingqueue', astid, DEFAULT_CONTEXT, event)
+                self.__sheet_alert__('incomingqueue', astid, CONTEXT_UNKNOWN, event)
                 log.info('AMI Join (Queue) %s %s %s %s' % (astid, queue, chan, count))
                 self.weblist['queues'][astid].queueentry_update(queue, chan, position, 0,
                                                                 clid, clidname)
@@ -3465,7 +3473,7 @@ class XivoCTICommand(BaseCommand):
                 if ctx in self.ctxlist.ctxlist:
                         for dirsec, dirdef in self.ctxlist.ctxlist[ctx].iteritems():
                                 try:
-                                        y = self.__build_customers_bydirdef__(dirsec, searchpattern, dirdef)
+                                        y = self.__build_customers_bydirdef__(dirsec, searchpattern, dirdef, False)
                                         fulllist.extend(y)
                                 except Exception, exc:
                                         log.error('--- exception --- __build_customers__ (%s) : %s' % (dirsec, exc))
@@ -3495,7 +3503,7 @@ class XivoCTICommand(BaseCommand):
                 return cjson.encode(tosend)
 
 
-        def __build_customers_bydirdef__(self, dirname, searchpattern, z):
+        def __build_customers_bydirdef__(self, dirname, searchpattern, z, reversedir):
                 fullstatlist = []
 
                 if searchpattern == '':
@@ -3557,27 +3565,37 @@ class XivoCTICommand(BaseCommand):
                                 log.warning('WARNING : %s contains only one line (the header one)' % z.uri)
 
                 elif dbkind == 'http':
-                        f = urllib.urlopen('%s%s' % (z.uri, searchpattern))
-                        delimit = ':'
-                        n = 0
-                        for line in f:
+                        if not reversedir:
+                                fulluri = '%s/?%s=%s' % (z.uri, ''.join(z.match_direct), searchpattern)
+                                f = urllib.urlopen(fulluri)
+                                delimit = ':'
+                                n = 0
+                                for line in f:
+                                        if n == 0:
+                                                header = line
+                                                headerfields = header.strip().split(delimit)
+                                        else:
+                                                ll = line.strip()
+                                                t = ll.split(delimit)
+                                                futureline = {'xivo-dir' : z.name}
+                                                for keyw, dbkeys in z.fkeys.iteritems():
+                                                        for dbkey in dbkeys:
+                                                                idx = headerfields.index(dbkey)
+                                                                futureline[keyw] = t[idx]
+                                                fullstatlist.append(futureline)
+                                        n += 1
+                                f.close()
                                 if n == 0:
-                                        header = line
-                                        headerfields = header.strip().split(delimit)
+                                        log.warning('WARNING : %s is empty' % z.uri)
+                                # we don't warn about "only one line" here since the filter has probably already been applied
+                        else:
+                                fulluri = '%s/?%s=%s' % (z.uri, ''.join(z.match_reverse), searchpattern)
+                                f = urllib.urlopen(fulluri)
+                                fsl = f.read()
+                                if fsl:
+                                        fullstatlist = [{'xivo-dir' : z.name, 'db-fullname' : fsl}]
                                 else:
-                                        ll = line.strip()
-                                        t = ll.split(delimit)
-                                        futureline = {'xivo-dir' : z.name}
-                                        for keyw, dbkeys in z.fkeys.iteritems():
-                                                for dbkey in dbkeys:
-                                                        idx = headerfields.index(dbkey)
-                                                        futureline[keyw] = t[idx]
-                                        fullstatlist.append(futureline)
-                                n += 1
-                        if n == 0:
-                                log.warning('WARNING : %s is empty' % z.uri)
-                        # we don't warn about "only one line" here since the filter has probably already been applied
-
+                                        fullstatlist = []
                 elif dbkind != '':
                         if searchpattern == '*':
                                 whereline = ''
@@ -3632,7 +3650,7 @@ class XivoCTICommand(BaseCommand):
                 Events coming from Fast AGI.
                 """
                 # check capas !
-                context = fastagi.get_variable('XIVO_CONTEXT')
+                context = fastagi.get_variable('XIVO_REAL_CONTEXT')
                 uniqueid = fastagi.get_variable('UNIQUEID')
                 channel = fastagi.get_variable('CHANNEL')
                 function = fastagi.env['agi_network_script']
@@ -3695,36 +3713,37 @@ class XivoCTICommand(BaseCommand):
                         return
                 
                 elif function != 'xivo_push':
-                        log.warning('handle_fagi %s : unknown function %s' % (astid, function))
+                        log.warning('handle_fagi %s :  unknown function %s' % (astid, function))
                         return
                 
                 callednum = fastagi.get_variable('XIVO_DSTNUM')
                 calleridnum  = fastagi.env['agi_callerid']
                 calleridname = fastagi.env['agi_calleridname']
                 
-                log.info('handle_fagi : %s : context=%s %s %s <%s>' % (astid, context, callednum, calleridnum, calleridname))
+                log.info('handle_fagi %s :  (agi variables) agi_callerid=%s agi_calleridname="%s" (callednum is %s)'
+                         % (astid, calleridnum, calleridname, callednum))
                 
                 extraevent = {'caller_num' : calleridnum,
                               'called_num' : callednum,
                               'uniqueid' : uniqueid,
                               'channel' : channel}
                 clientstate = 'available'
-                calleridsolved = calleridname
-
-                self.__sheet_alert__('agi', astid, context, {}, extraevent)
-
-                if calleridnum == 'unknown':
-                        # to set according to os.getenv('LANG') or os.getenv('LANGUAGE') later on ?
-                        calleridnum = 'Inconnu'
-                if calleridname == 'unknown':
-                        calleridname = ''
-
-                calleridtoset = '"%s"<%s>' %(calleridsolved, calleridnum)
-                # if calleridsolved not found
-                # calleridtoset = '"%s"<%s>' %(calleridname, calleridnum)
-                log.info('handle_fagi : %s : the CallerId will be set to %s' % (astid, calleridtoset))
+                
+                calleridsolved = self.__sheet_alert__('agi', astid, context, {}, extraevent)
+                log.info('handle_fagi %s :  calleridsolved="%s"' % (astid, calleridsolved))
+                if calleridsolved:
+                        calleridname = calleridsolved
+                
+                # to set according to os.getenv('LANG') or os.getenv('LANGUAGE') later on ?
+                if calleridnum in ['', 'unknown']:
+                        calleridnum = CALLERID_UNKNOWN_NUM
+                if calleridname in ['', 'unknown']:
+                        calleridname = CALLERID_UNKNOWN_NAME
+                
+                calleridtoset = '"%s"<%s>' % (calleridname, calleridnum)
+                log.info('handle_fagi %s :  the callerid will be set to %s' % (astid, calleridtoset))
                 fastagi.set_callerid(calleridtoset)
-
+                
 ##                if clientstate == 'available' or clientstate == 'nopresence':
 ##                        fastagi.set_variable('XIVO_AIMSTATUS', 0)
 ##                elif clientstate == 'away':
