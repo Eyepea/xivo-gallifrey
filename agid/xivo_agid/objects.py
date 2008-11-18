@@ -831,7 +831,6 @@ class Outcall:
             cursor.query("SELECT ${columns} FROM outcall "
                          "WHERE id = %s "
                          "AND commented = 0",
-                         ('exten', 'context'),
                          columns,
                          (xid,))
         elif exten and context:
