@@ -26,6 +26,7 @@ def incoming_did_set_features(agi, cursor, args):
 
     did = objects.DID(agi, cursor, exten = exten_pattern, context = context)
 
+    agi.set_variable('XIVO_REAL_CONTEXT', did.context)
     agi.set_variable('XIVO_FAXDETECT_ENABLE', did.faxdetectenable)
     agi.set_variable('XIVO_FAXDETECT_TIMEOUT', did.faxdetecttimeout)
     agi.set_variable('XIVO_FAXDETECT_EMAIL', did.faxdetectemail)

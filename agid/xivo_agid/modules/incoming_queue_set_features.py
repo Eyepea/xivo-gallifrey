@@ -58,6 +58,7 @@ def incoming_queue_set_features(agi, cursor, args):
     if queue.write_calling:
         options += "W"
 
+    agi.set_variable('XIVO_REAL_CONTEXT', queue.context)
     agi.set_variable('XIVO_QUEUENAME', queue.name)
     agi.set_variable('XIVO_QUEUEOPTIONS', options)
     agi.set_variable('XIVO_QUEUEURL', queue.url)
