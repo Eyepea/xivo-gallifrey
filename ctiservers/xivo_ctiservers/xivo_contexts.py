@@ -93,9 +93,9 @@ class Contexts:
                                 keyword = field.split('_')[1]
                                 fkeys['db-%s' % keyword] = xivoconf_local[field].split(',')
                         elif field == 'match_direct':
-                                z.setDirectMatch(xivoconf_local[field].split(','))
+                                z.setDirectMatch(str(xivoconf_local[field]).split(','))
                         elif field == 'match_reverse':
-                                z.setReverseMatch(xivoconf_local[field].split(','))
+                                z.setReverseMatch(str(xivoconf_local[field]).split(','))
                         elif field == 'name':
                                 z.setName(xivoconf_local[field])
 

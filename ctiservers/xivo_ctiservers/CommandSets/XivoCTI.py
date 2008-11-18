@@ -509,13 +509,15 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def set_ctilog(self, ctilog):
+                self.ctilog_conn = None
+                self.ctilog_cursor = None
                 if ctilog is not None:
-                        self.ctilog_conn = anysql.connect_by_uri(ctilog)
-                        self.ctilog_cursor = self.ctilog_conn.cursor()
-                        self.__fill_ctilog__('daemon start', __revision__)
-                else:
-                        self.ctilog_conn = None
-                        self.ctilog_cursor = None
+                        try:
+                                self.ctilog_conn = anysql.connect_by_uri(str(ctilog))
+                                self.ctilog_cursor = self.ctilog_conn.cursor()
+                                self.__fill_ctilog__('daemon start', __revision__)
+                        except Exception:
+                                log.exception('--- exception --- (set_ctilog)')
                 return
         
         def __fill_ctilog__(self, what, options = ''):
@@ -527,8 +529,8 @@ class XivoCTICommand(BaseCommand):
                                                          "VALUES (%s, NULL, NULL, NULL, %s, %s)",
                                                          columns,
                                                          (datetime, what, options))
-                        except Exception, exc:
-                                log.error('--- exception --- (__fill_ctilog__) %s' % exc)
+                        except Exception:
+                                log.exception('--- exception --- (__fill_ctilog__)')
                         self.ctilog_conn.commit()
                 return
         
@@ -541,8 +543,8 @@ class XivoCTICommand(BaseCommand):
                                                          "VALUES (%s, %s, %s, %s, %s, %s)",
                                                          columns,
                                                          (datetime, uinfo.get('user'), uinfo.get('company'), uinfo.get('state'), what, options))
-                        except Exception, exc:
-                                log.error('--- exception --- (__fill_user_ctilog__) %s' % exc)
+                        except Exception:
+                                log.exception('--- exception --- (__fill_user_ctilog__)')
                         self.ctilog_conn.commit()
                 return
         
@@ -621,7 +623,7 @@ class XivoCTICommand(BaseCommand):
         def getprofilelist(self):
                 ret = {}
                 for capaid in self.capas.keys():
-                        ret[capaid] = self.capas[capaid].appliname.decode('utf8')
+                        ret[capaid] = self.capas[capaid].appliname
                 return cjson.encode(ret)
         
         def updates(self):
@@ -1098,11 +1100,11 @@ class XivoCTICommand(BaseCommand):
                                 tosend = { 'class' : 'sheet',
                                            'compressed' : 'anything',
                                            'direction' : 'client',
-                                           'payload' : base64.b64encode((chr(0) * 4) + zlib.compress(''.join(linestosend))) }
+                                           'payload' : base64.b64encode((chr(0) * 4) + zlib.compress(''.join(linestosend).encode('utf8'))) }
                         else:
                                 tosend = { 'class' : 'sheet',
                                            'direction' : 'client',
-                                           'payload' : base64.b64encode(''.join(linestosend)) }
+                                           'payload' : base64.b64encode(''.join(linestosend).encode('utf8')) }
                         fulllines = cjson.encode(tosend)
                         
                         # print '---------', where, whoms, fulllines
@@ -3487,7 +3489,7 @@ class XivoCTICommand(BaseCommand):
                                 [title, type, defaultval, format] = self.ctxlist.displays[ctx][k].split('|')
                                 basestr = format
                                 for k, v in itemdir.iteritems():
-                                        basestr = basestr.replace('{%s}' % k, v)
+                                        basestr = basestr.replace('{%s}' % k, v.decode('utf8'))
                                 myitems.append(basestr)
                         mylines.append(';'.join(myitems))
 
@@ -3527,7 +3529,7 @@ class XivoCTICommand(BaseCommand):
                                         if ldapid.l is not None:
                                                 self.ldapids[z.uri] = ldapid
                                 if ldapid.l is not None:
-                                        results = ldapid.getldap("(|%s)" % ''.join(selectline),
+                                        results = ldapid.getldap('(|%s)' % ''.join(selectline),
                                                                  z.match_direct)
                                 if results is not None:
                                         for result in results:
@@ -3537,8 +3539,8 @@ class XivoCTICommand(BaseCommand):
                                                                 if dbkey in result[1]:
                                                                         futureline[keyw] = result[1][dbkey][0]
                                                 fullstatlist.append(futureline)
-                        except Exception, exc:
-                                log.error('--- exception --- ldaprequest (directory) : %s' % exc)
+                        except Exception:
+                                log.exception('--- exception --- ldaprequest (directory)')
 
                 elif dbkind == 'file':
                         f = urllib.urlopen(z.uri)
@@ -3591,7 +3593,7 @@ class XivoCTICommand(BaseCommand):
                         else:
                                 fulluri = '%s/?%s=%s' % (z.uri, ''.join(z.match_reverse), searchpattern)
                                 f = urllib.urlopen(fulluri)
-                                fsl = f.read()
+                                fsl = f.read().strip()
                                 if fsl:
                                         fullstatlist = [{'xivo-dir' : z.name, 'db-fullname' : fsl}]
                                 else:

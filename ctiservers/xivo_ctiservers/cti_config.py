@@ -59,9 +59,10 @@ class Config:
                 if self.kind == 'file':
                         try:
                                 if sectionname in self.xivoconf.sections():
-                                        v = dict(self.xivoconf.items(sectionname))
-                        except Exception, exc:
-                                log.error('--- exception --- kind=%s section=%s : %s' % (self.kind, sectionname, exc))
+                                        for tk, tv in dict(self.xivoconf.items(sectionname)).iteritems():
+                                                v[tk] = tv.decode('utf8')
+                        except Exception:
+                                log.exception('--- exception --- kind=%s section=%s' % (self.kind, sectionname))
                 elif self.kind == 'sql':
                         try:
                                 if type == 'commandset':
@@ -98,6 +99,6 @@ class Config:
                                         for zz in z:
                                                 [catname, var_name, var_val] = zz
                                                 v[var_name] = var_val
-                        except Exception, exc:
-                                log.error('--- exception --- kind=%s type=%s section=%s : %s' % (self.kind, type, sectionname, exc))
+                        except Exception:
+                                log.exception('--- exception --- kind=%s type=%s section=%s' % (self.kind, type, sectionname))
                 return v

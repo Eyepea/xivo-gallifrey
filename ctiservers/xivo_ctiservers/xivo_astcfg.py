@@ -25,7 +25,9 @@ __author__    = 'Corentin Le Gall'
 # <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>.
 
 from xivo import anysql
-from xivo_log import *
+import logging
+
+log = logging.getLogger('astconfig')
 
 ## \class AsteriskConfig
 # \brief Properties of an Asterisk server
@@ -86,14 +88,15 @@ class AsteriskConfig:
                 self.userfeatures_db_conn = None
                 try:
                         if userfeatures_db_uri is not None:
-                                self.userfeatures_db_conn = anysql.connect_by_uri(userfeatures_db_uri)
-                except Exception, exc:
-                        pass
+                                self.userfeatures_db_conn = anysql.connect_by_uri(str(userfeatures_db_uri))
+                except Exception:
+                        log.exception('--- exception --- (init userfeatures_db_conn for %s)' % astid)
                 
                 if cdr_db_uri == userfeatures_db_uri:
                         self.cdr_db_conn = self.userfeatures_db_conn
                 else:
+                        self.cdr_db_conn = None
                         try:
-                                self.cdr_db_conn = anysql.connect_by_uri(cdr_db_uri)
-                        except Exception, exc:
-                                self.cdr_db_conn = None
+                                self.cdr_db_conn = anysql.connect_by_uri(str(cdr_db_uri))
+                        except Exception:
+                                log.exception('--- exception --- (init cdr_db_conn for %s)' % astid)

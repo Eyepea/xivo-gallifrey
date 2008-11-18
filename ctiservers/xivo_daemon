@@ -918,7 +918,7 @@ while True: # loops over the reloads
                                                         fagi = fastagi.FastAGI(mfr, mfw)
                                                         commandclass.handle_fagi(astid, fagi)
                                                 except Exception:
-                                                        log.exception('--- exception --- fastagi')
+                                                        log.exception('--- exception --- (fastagi) %s' % astid)
                                                 mfr.close()
                                                 mfw.close()
                                                 conn.close()
