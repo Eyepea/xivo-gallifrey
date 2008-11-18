@@ -888,8 +888,8 @@ class XivoCTICommand(BaseCommand):
                                         r = urllib.urlopen(v)
                                         t = r.read()
                                         r.close()
-                                except Exception, exc:
-                                        log.error('--- exception --- __build_xmlqtui__ %s %s : %s' % (sheetkind, whichitem, exc))
+                                except Exception:
+                                        log.exception('--- exception --- __build_xmlqtui__ %s %s' % (sheetkind, whichitem))
                                         t = None
                                 if t is not None:
                                         linestosend.append('<%s name="%s"><![CDATA[%s]]></%s>' % (sheetkind, k, t, sheetkind))
@@ -906,15 +906,15 @@ class XivoCTICommand(BaseCommand):
                                                 [title, type, defaultval, format] = v.split('|')
                                                 basestr = format
                                                 for kk, vv in inputvars.iteritems():
-                                                        basestr = basestr.replace('{%s}' % kk, vv)
+                                                        basestr = basestr.replace('{%s}' % kk, vv.decode('utf8'))
                                                 basestr = re.sub('{[a-z\-]*}', defaultval, basestr)
                                                 linestosend.append('<%s order="%s" name="%s" type="%s"><![CDATA[%s]]></%s>'
                                                                    % (sheetkind, k, title, type, basestr, sheetkind))
                                         else:
                                                 log.warning('__build_xmlsheet__ wrong number of fields in definition for %s %s %s'
                                                           % (sheetkind, whichitem, k))
-                                except Exception, exc:
-                                        log.error('--- exception --- __build_xmlsheet__ %s %s : %s' % (sheetkind, whichitem, exc))
+                                except Exception:
+                                        log.exception('--- exception --- (__build_xmlsheet__) %s %s' % (sheetkind, whichitem))
                 return linestosend
 
 
@@ -3732,6 +3732,7 @@ class XivoCTICommand(BaseCommand):
                 clientstate = 'available'
                 
                 calleridsolved = self.__sheet_alert__('agi', astid, context, {}, extraevent)
+                
                 log.info('handle_fagi %s :   calleridsolved="%s"' % (astid, calleridsolved))
                 if calleridname in ['', 'unknown'] and calleridsolved:
                         calleridname = calleridsolved
