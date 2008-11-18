@@ -3179,7 +3179,7 @@ class XivoCTICommand(BaseCommand):
                                                     'fullname' : 'intercept',
                                                     'context' : 'parkedcalls'}
                                 else:
-                                        dstuinfo = self.ulist_ng.finduser(whodst.split('/')[1], whodst.split('/')[0])
+                                        dstuinfo = self.ulist_ng.keeplist[whodst]
                                 if dstuinfo is not None:
                                         exten_dst = dstuinfo.get('phonenum')
                                         cidname_dst = dstuinfo.get('fullname')
@@ -3196,8 +3196,8 @@ class XivoCTICommand(BaseCommand):
                                         ret = self.__ami_execute__(astid_src, AMI_ORIGINATE,
                                                                    proto_src, phonenum_src, cidname_src,
                                                                    exten_dst, cidname_dst,  context_dst)
-                        except Exception, exc:
-                                log.error('--- exception --- unable to originate ... %s' % exc)
+                        except Exception:
+                                log.exception('--- exception --- unable to originate')
                         if ret:
                                 ret_message = 'originate OK'
                         else:
@@ -3713,14 +3713,14 @@ class XivoCTICommand(BaseCommand):
                         return
                 
                 elif function != 'xivo_push':
-                        log.warning('handle_fagi %s :  unknown function %s' % (astid, function))
+                        log.warning('handle_fagi %s :   unknown function %s' % (astid, function))
                         return
                 
                 callednum = fastagi.get_variable('XIVO_DSTNUM')
                 calleridnum  = fastagi.env['agi_callerid']
                 calleridname = fastagi.env['agi_calleridname']
                 
-                log.info('handle_fagi %s :  (agi variables) agi_callerid=%s agi_calleridname="%s" (callednum is %s)'
+                log.info('handle_fagi %s :   (agi variables) agi_callerid=%s agi_calleridname="%s" (callednum is %s)'
                          % (astid, calleridnum, calleridname, callednum))
                 
                 extraevent = {'caller_num' : calleridnum,
@@ -3730,7 +3730,7 @@ class XivoCTICommand(BaseCommand):
                 clientstate = 'available'
                 
                 calleridsolved = self.__sheet_alert__('agi', astid, context, {}, extraevent)
-                log.info('handle_fagi %s :  calleridsolved="%s"' % (astid, calleridsolved))
+                log.info('handle_fagi %s :   calleridsolved="%s"' % (astid, calleridsolved))
                 if calleridsolved:
                         calleridname = calleridsolved
                 
@@ -3741,7 +3741,7 @@ class XivoCTICommand(BaseCommand):
                         calleridname = CALLERID_UNKNOWN_NAME
                 
                 calleridtoset = '"%s"<%s>' % (calleridname, calleridnum)
-                log.info('handle_fagi %s :  the callerid will be set to %s' % (astid, calleridtoset))
+                log.info('handle_fagi %s :   the callerid will be set to %s' % (astid, calleridtoset))
                 fastagi.set_callerid(calleridtoset)
                 
 ##                if clientstate == 'available' or clientstate == 'nopresence':

@@ -77,15 +77,20 @@ class AMIClass:
                 try:
                         self.fd.write('Action: %s\r\n' % action)
                         for (name, value) in args:
-                                self.fd.write('%s: %s\r\n' % (name, value))
+                                try:
+                                        towrite = '%s: %s\r\n' % (name, value)
+                                        self.fd.write(towrite)
+                                except Exception:
+                                        log.exception('--- exception --- (sendcommand %s : %s = %s (%r))'
+                                                      % (action, name, value, value))
                         if self.actionid:
                                 self.fd.write('ActionId: %s\r\n' % self.actionid)
                                 self.actionid = None
                         self.fd.write('\r\n')
                         self.fd.flush()
                         ret = True
-                except Exception, exc:
-                        log.error('--- exception --- (action %s) %s' % (action, exc))
+                except Exception:
+                        log.exception('--- exception --- (action %s)' % action)
                         ret = False
                 if ret == False:
                         if loopnum == 0:
