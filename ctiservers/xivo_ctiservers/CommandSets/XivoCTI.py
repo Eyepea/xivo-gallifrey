@@ -3731,7 +3731,7 @@ class XivoCTICommand(BaseCommand):
                 
                 calleridsolved = self.__sheet_alert__('agi', astid, context, {}, extraevent)
                 log.info('handle_fagi %s :   calleridsolved="%s"' % (astid, calleridsolved))
-                if calleridsolved:
+                if calleridname in ['', 'unknown'] and calleridsolved:
                         calleridname = calleridsolved
                 
                 # to set according to os.getenv('LANG') or os.getenv('LANGUAGE') later on ?
