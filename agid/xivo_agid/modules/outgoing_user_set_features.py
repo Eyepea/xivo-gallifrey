@@ -24,15 +24,19 @@ from xivo_agid import objects
 
 def outgoing_user_set_features(agi, cursor, args):
     userid = agi.get_variable('XIVO_USERID')
+    dstid = agi.get_variable('XIVO_DSTID')
     dstnum = agi.get_variable('XIVO_DSTNUM')
     context = agi.get_variable('XIVO_CONTEXT')
-    exten_pattern = agi.get_variable('XIVO_EXTENPATTERN')
 
     # FIXME: this is only for the callrecord feature, which is likely to change
     srcnum = agi.get_variable('XIVO_SRCNUM')
 
     feature_list = objects.FeatureList(agi, cursor)
-    outcall = objects.Outcall(agi, cursor, feature_list, exten=exten_pattern, context=context)
+
+    try:
+        outcall = objects.Outcall(agi, cursor, feature_list, int(dstid))
+    except (ValueError, LookupError), e:
+        agi.dp_break(str(e))
 
     orig_dstnum = dstnum
     callerid = None
