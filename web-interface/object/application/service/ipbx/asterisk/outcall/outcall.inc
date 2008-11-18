@@ -44,7 +44,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 		if(($this->_info['outcall'] = $this->_outcall->get($id,$disable)) === false
 		|| ($this->_info['extenumbers'] = $this->_get_extenumbers($this->_info['outcall']['id'])) === false
-		|| $this->_get_exten() === false)
+		|| $this->_get_outcallmacro() === false)
 			return(false);
 
 		$this->_origin['outcall'] = $this->_outcall->get_origin();
@@ -74,17 +74,17 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		return($this->_info['outcalltrunk']);
 	}
 
-	function _get_exten()
+	function _get_outcallmacro()
 	{
-		$this->_info['exten'] = false;
-		$this->_origin['exten'] = false;
+		$this->_info['outcallmacro'] = false;
+		$this->_origin['outcallmacro'] = false;
 
-		if(($this->_info['exten'] = $this->_extensions->get_exten($this->_info['outcall']['exten'],
-									  $this->_info['outcall']['context'],
-									  'macro')) !== false)
-			$this->_origin['exten'] = $this->_extensions->get_origin();
+		if(($this->_info['outcallmacro'] = $this->_extensions->get_exten($this->_info['outcall']['exten'],
+										 $this->_info['outcall']['context'],
+										 'macro')) !== false)
+			$this->_origin['outcallmacro'] = $this->_extensions->get_origin();
 
-		return($this->_info['exten']);
+		return($this->_info['outcallmacro']);
 	}
 
 	function get_elements()
@@ -107,11 +107,11 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		return($rs);
 	}
 
-	function _mk_exten_appdata($exten)
+	function _mk_outcallmacro_appdata($outcallid)
 	{
 		$arr = array();
 		$arr['appdata'][0] = XIVO_SRE_IPBX_AST_OUTCALL_MACRO;
-		$arr['appdata'][1] = $this->_service->clean_extension($exten);
+		$arr['appdata'][1] = xivo_ulongint($outcallid);
 
 		return($arr);
 	}
@@ -142,8 +142,11 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		$number = (string) $this->get_result_var('outcall','exten');
 		$context = (string) $this->get_result_var('outcall','context');
 
-		if(($rsexten = $this->set_macro($action,'exten',$number,$this->_mk_exten_appdata($number),$context)) !== false)
-			$this->_set_result('exten',$rsexten);
+		if(($rsoutcallmacro = $this->chk_macro('outcallmacro',
+						       $number,
+						       $this->_mk_outcallmacro_appdata(0),
+						       $context)) !== false)
+			$this->_set_result('outcallmacro',$rsoutcallmacro);
 
 		$this->set_extenumbers($action,$number,$context);
 
@@ -179,6 +182,23 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		}
 
 		$this->_set_result('outcall',$rs);
+
+		return(true);
+	}
+
+	function _set_outcallmacro($action,$outcallid)
+	{
+		if(($outcallid = xivo_ulongint($outcallid)) === 0
+		|| ($rs = $this->get_result('outcallmacro')) === null
+		|| $rs === false
+		|| ($rsmacro = $this->set_macro($action,
+						'outcallmacro',
+						$rs['exten'],
+						$this->_mk_outcallmacro_appdata($outcallid),
+						$rs['context'])) === false)
+			return(false);
+
+		$this->_set_result('outcallmacro',$rsmacro);
 
 		return(true);
 	}
@@ -248,7 +268,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		if($this->get_errnb() > 0
 		|| ($outcallid = $this->add_outcall()) === false
 		|| $this->add_extenumbers($outcallid) === false
-		|| $this->add_macro('exten') === false
+		|| $this->add_outcallmacro($outcallid) === false
 		|| $this->add_outcalltrunk($outcallid) === false
 		|| $this->add_rightcall($outcallid) === false
 		|| $this->add_contextmember($outcallid) === false)
@@ -270,6 +290,14 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 			return(false);
 
 		return(($this->_return['outcall'] = $this->_outcall->add($rs)));
+	}
+
+	function add_outcallmacro($outcallid)
+	{
+		if($this->_set_outcallmacro('add',$outcallid) !== true)
+			return(false);
+
+		return(parent::add_macro('outcallmacro'));
 	}
 
 	function add_outcalltrunk($outcallid)
@@ -325,7 +353,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 				case 'outcall':
 					$this->_outcall->delete($outcallid);
 					break;
-				case 'exten':
+				case 'outcallmacro':
 					$this->_extensions->delete_exten($val);
 					break;
 				case 'extenumbers':
@@ -356,7 +384,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		if($this->get_errnb() > 0
 		|| $this->edit_outcall() === false
 		|| $this->edit_extenumbers() === false
-		|| $this->edit_macro('exten') === false
+		|| $this->edit_outcallmacro() === false
 		|| $this->edit_outcalltrunk() === false
 		|| $this->edit_rightcall() === false
 		|| $this->edit_contextmember() === false)
@@ -380,6 +408,15 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		$rs['commented'] = $this->_info['outcall']['commented'];
 
 		return(($this->_return['outcall'] = $this->_outcall->edit($this->_info['outcall']['id'],$rs)));
+	}
+
+	function edit_outcallmacro()
+	{
+		if(xivo_issa('outcall',$this->_info) === false
+		|| $this->_set_outcallmacro('edit',$this->_info['outcall']['id']) !== true)
+			return(false);
+
+		return(parent::edit_macro('outcallmacro'));
 	}
 
 	function edit_outcalltrunk()
@@ -430,6 +467,16 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 					else
 						$this->_outcall->edit_origin($this->_origin['outcall']);
 					break;
+				case 'extenumbers':
+					$this->_extenumbers->reverse_edit($this->_status);
+					break;
+				case 'outcallmacro':
+					if(isset($this->_origin['outcallmacro']) === false
+					|| $this->_origin['outcallmacro'] === false)
+						$this->delete_macro('outcallmacro');
+					else
+						$this->_extensions->edit_origin($this->_origin['outcallmacro']);
+					break;
 				case 'outcalltrunk':
 					$this->delete_outcalltrunk();
 
@@ -439,16 +486,6 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 					break;
 				case 'rightcall':
 					$this->_rightcall->reverse_edit($this->_status);
-					break;
-				case 'exten':
-					if(isset($this->_origin['exten']) === false
-					|| $this->_origin['exten'] === false)
-						$this->delete_macro('exten');
-					else
-						$this->_extensions->edit_origin($this->_origin['exten']);
-					break;
-				case 'extenumbers':
-					$this->_extenumbers->reverse_edit($this->_status);
 					break;
 				case 'contextmember':
 					$this->_contextmember->reverse_edit($this->_status);
@@ -468,7 +505,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 		if($this->delete_outcall() === false
 		|| $this->delete_extenumbers() === false
-		|| $this->delete_macro('exten') === false
+		|| $this->delete_macro('outcallmacro') === false
 		|| $this->delete_outcalltrunk() === false
 		|| $this->delete_rightcall() === false
 		|| $this->delete_contextmember() === false)
@@ -529,10 +566,10 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 					&& $this->_origin['outcall'] !== false)
 						$this->_outcall->add_origin($this->_origin['outcall']);
 					break;
-				case 'exten':
-					if(isset($this->_origin['exten']) === true
-					&& $this->_origin['exten'] !== false)
-						$this->_extensions->add_origin($this->_origin['exten']);
+				case 'outcallmacro':
+					if(isset($this->_origin['outcallmacro']) === true
+					&& $this->_origin['outcallmacro'] !== false)
+						$this->_extensions->add_origin($this->_origin['outcallmacro']);
 					break;
 				case 'extenumbers':
 					if(isset($this->_origin['extenumbers']) === true
@@ -563,7 +600,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		$this->_return = array();
 
 		if($this->enable_outcall() === false
-		|| $this->enable_exten() === false)
+		|| $this->enable_outcallmacro() === false)
 		{
 			$r = false;
 			$this->_reverse_enable_disable();
@@ -581,7 +618,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		$this->_return = array();
 
 		if($this->disable_outcall() === false
-		|| $this->disable_exten() === false)
+		|| $this->disable_outcallmacro() === false)
 		{
 			$r = false;
 			$this->_reverse_enable_disable();
@@ -617,17 +654,17 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		return($r);
 	}
 
-	function enable_exten()
+	function enable_outcallmacro()
 	{
-		return($this->_enable_disable_exten(false));
+		return($this->_enable_disable_outcallmacro(false));
 	}
 
-	function disable_exten()
+	function disable_outcallmacro()
 	{
-		return($this->_enable_disable_exten(true));
+		return($this->_enable_disable_outcallmacro(true));
 	}
 
-	function _enable_disable_exten($disable=false)
+	function _enable_disable_outcallmacro($disable=false)
 	{
 		if(xivo_issa('outcall',$this->_info) === false)
 			return(false);
@@ -642,7 +679,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 			$r = $this->_extensions->disable_where($where);
 
 		if($this->_status === 'enable' || $this->_status === 'disable')
-			$this->_return['exten'] = $r;
+			$this->_return['outcallmacro'] = $r;
 
 		return($r);
 	}
@@ -668,8 +705,8 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 				case 'outcall':
 					$this->_enable_disable_outcall($disable);
 					break;
-				case 'exten':
-					$this->_enable_disable_exten($disable);
+				case 'outcallmacro':
+					$this->_enable_disable_outcallmacro($disable);
 					break;
 			}
 		}
