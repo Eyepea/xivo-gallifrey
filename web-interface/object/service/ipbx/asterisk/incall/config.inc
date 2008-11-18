@@ -34,7 +34,7 @@ $array['element']['commented']['set'] = true;
 
 
 $array['filter'] = array();
-$array['filter']['exten'] = array('maxlen' => 40,'regexp' => '/^[_]?[0-9NXZ\*#\-\[\]]+[\.\!]?$/');
+$array['filter']['exten'] = array('maxlen' => 40,'regexp' => '/^_?[0-9NXZ\*#\-\[\]]+[\.\!]?$/');
 $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context');
 $array['filter']['preprocess_subroutine'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context');
 $array['filter']['faxdetectenable'] = array('bool' => true);

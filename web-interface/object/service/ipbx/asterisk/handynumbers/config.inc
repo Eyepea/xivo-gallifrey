@@ -19,7 +19,7 @@ $array['element']['commented']['default'] = 0;
 $array['element']['commented']['set'] = true;
 
 $array['filter'] = array();
-$array['filter']['exten'] = array('maxlen' => 40,'regexp' => '/^[_]?[0-9NXZ\*#\-\[\]]+[\.\!]?$/');
+$array['filter']['exten'] = array('maxlen' => 40,'regexp' => '/^_?\+?[0-9NXZ\*#\-\[\]]+[\.\!]?$/');
 $array['filter']['trunkfeaturesid'] = array('cast' => 'ulongint');
 $array['filter']['type'] = array('key' => array('emergency','special'));
 $array['filter']['commented'] = array('bool' => true);

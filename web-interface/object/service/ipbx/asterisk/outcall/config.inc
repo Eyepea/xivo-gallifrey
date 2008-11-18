@@ -16,7 +16,7 @@ $array['element']['externprefix'] = array();
 $array['element']['externprefix']['default'] = '';
 
 $array['element']['stripnum'] = array();
-$array['element']['stripnum']['value'] = array(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20);
+$array['element']['stripnum']['value'] = range(0,20);
 $array['element']['stripnum']['default'] = 0;
 $array['element']['stripnum']['setdef'] = true;
 
@@ -67,12 +67,12 @@ $array['element']['commented']['set'] = true;
 
 $array['filter'] = array();
 $array['filter']['name'] = array('maxlen' => 128,'regexp' => '/^[a-z0-9_-]+$/i');
-$array['filter']['exten'] = array('maxlen' => 40,'regexp' => '/^[_]?[0-9NXZ\*#\-\[\]]+[\.\!]?$/');
+$array['filter']['exten'] = array('maxlen' => 40,'regexp' => '/^_?\+?[0-9NXZ\*#\-\[\]]+[\.\!]?$/');
 $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context');
-$array['filter']['externprefix'] = array('set' => false,'chk' => 2,'maxlen' => 20,'regexp' => '/^[0-9#\*]+$/');
+$array['filter']['externprefix'] = array('set' => false,'chk' => 2,'maxlen' => 20,'regexp' => '/^(?:\+|\+?[0-9#\*]+)$/');
 $array['filter']['stripnum'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,20));
 $array['filter']['mode'] = array('set' => false,'chk' => 2,'key' => array('wizard','extension'));
-$array['filter']['prefix'] = array('set' => false,'chk' => 2,'maxlen' => 20,'regexp' => '/^[0-9#\*]+$/');
+$array['filter']['prefix'] = array('set' => false,'chk' => 2,'maxlen' => 20,'regexp' => '/^(?:\+|\+?[0-9#\*]+)$/');
 $array['filter']['numlen'] = array('set' => false,'chk' => 2,'key' => array('*',1,2,3,4,5,6,7,8,9,
 									    10,11,12,13,14,15,16,17,18,19,20,
 					     				    21,22,23,24,25,26,27,28,29,30,

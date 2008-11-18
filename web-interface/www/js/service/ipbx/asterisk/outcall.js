@@ -55,7 +55,7 @@ function xivo_wizard_exten(prefix,numlen,result)
 	|| xivo_is_undef(objres.value) == true)
 		return(false);
 
-	if(objpre.value.match(/^[0-9#\*]*$/) == null)
+	if(objpre.value.match(/^\+?[0-9#\*]*$/) == null)
 		objpre.value = '';
 	else
 		objres.value = objpre.value;
@@ -92,7 +92,7 @@ function xivo_exten_wizard(prefix,numlen,result)
 
 	objres.value = xivo_substr(objres.value,0,40);
 
-	if((match = objres.value.match(/^[0-9\*]*/)) == null)
+	if((match = objres.value.match(/^\+?[0-9\*]*/)) == null)
 		objpre.value = '';
 	else
 		objpre.value = match[0];
