@@ -36,7 +36,7 @@ import string
 import time
 
 __alphanums__ = string.uppercase + string.lowercase + string.digits
-__dialallowed__ = '[0-9*#]'
+__dialallowed__ = '[0-9*#+]'
 
 log = logging.getLogger('xivo_ami')
 
