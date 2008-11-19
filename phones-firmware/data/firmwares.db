@@ -127,13 +127,13 @@ sha1sum: a16f33a7a20e6424762ec843fa546d603422ded4
 brand: Linksys
 model: SPA3102
 version: 5.1.7
-files: spa3102-5-1-7.bin
+files: spa3102-5-1-7.zip
 
-[spa3102-5-1-7.bin]
+[spa3102-5-1-7.zip]
 url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%2Fzip&blobheadervalue2=inline%3B+filename%3Dspa3102-5.1.7.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193768671799&ssbinary=true&lid=6139069263B06
-size: 1000440
-md5sum: 3e42940f19b1552b22e7f43e56307653
-sha1sum: b344c15993ff5d094bc3c528f2775f3ccdad9de8
+size: 2033784
+md5sum: b3d65bc5ab21991c169fb33c054d666a
+sha1sum: af66b4ed914ada3ecdd6b64a3378316be8f34ba3
 
 # Linksys SPA8000 6.1.3
 [lsspa8000_613]
