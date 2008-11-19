@@ -103,7 +103,7 @@ model: SPA942
 version: 6.3.1a
 files: spa942-6-3-1a.bin
 
-[spa942-6-1-3a.bin]
+[spa942-6-3-1a.bin]
 url: ftp://ftp.linksys.com/downloads/NA/firmware/spa942-6-1-3a.zip
 size: 954178
 md5sum: 98d3660cc54b9b76a2d78ef0bf168d16
