@@ -118,9 +118,9 @@ files: spa962-6-1-3a.bin
 
 [spa962-6-1-3a.bin]
 url: ftp://ftp.linksys.com/downloads/NA/firmware/spa962-6-1-3a.zip
-size: 1116850
-md5sum: c0e4973a2e939c6b6437e40e1f54e101
-sha1sum: 8dda6f869fdd113f41e8daddcfd9911338fb3880
+size: 4000656
+md5sum: e5afb0a72cda89051f46d12dccdc0890
+sha1sum: a16f33a7a20e6424762ec843fa546d603422ded4
 
 # Linksys SPA3102
 [lsspa3102_517]
