@@ -96,70 +96,44 @@ size: 1548720
 md5sum: b6c99b91bbb1625d088b4f3a90794522
 sha1sum: fe3616d709599763fd27fc5afebd1c8f71a95b9c
 
-# Linksys SPA942 5.1.18
-[lsspa942_5118]
+# Linksys SPA942 6.3.1a
+[lsspa942_631a]
 brand: Linksys
 model: SPA942
-version: 5.1.18
-files: spa942-5-1-18.zip
+version: 6.3.1a
+files: spa942-6-3-1a.bin
 
-[spa942-5-1-18.zip]
-url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%2Fzip&blobheadervalue2=inline%3B+filename%3DSPA942_fw-v5.1.18.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193773807108&ssbinary=true&lid=2669427625B12
-size: 1746585
-md5sum: 7ae6a75e0fcd0c5845c073d81c66a11d
-sha1sum: b7e78d76bfb8c3e284ea54cc53ef9146c6aab430
+[spa942-6.1.3a.bin]
+url: ftp://ftp.linksys.com/downloads/NA/firmware/spa942-6-1-3a.zip
+size: 954178
+md5sum: 98d3660cc54b9b76a2d78ef0bf168d16
+sha1sum: 7df717a38ac1fe0c0c319e5af496d9506b755620
 
-# Linksys SPA942 5.2.5
-[lsspa942_525]
-brand: Linksys
-model: SPA942
-version: 5.2.5
-files: spa942-5-2-5.zip
-
-[spa942-5-2-5.zip]
-url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%2Fzip&blobheadervalue2=inline%3B+filename%3Dspa942-5.2.5.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193774016542&ssbinary=true&lid=0860927625B10
-size: 1781834
-md5sum: 66e49205ae82f4f63549d041346c5f0b
-sha1sum: 56a298586301c0a80dc32750a146b1cad6f03d37
-
-# Linksys SPA942 5.2.8
-[lsspa942_528]
-brand: Linksys
-model: SPA942
-version: 5.2.8
-files: spa942-5-2-8.bin
-
-[spa942-5-2-8.bin]
-url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%2Fzip&blobheadervalue2=inline%3B+filename%3DSPA942-5-2-8.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193787330702&ssbinary=true&lid=4542256524B20
-size: 2710028
-md5sum: 504c677c87b69c4490492fbdf9b52104
-sha1sum: c61950672320dd075f786c83d8c700a042c3cb53
-
-# Linksys SPA962 5.1.18(SC)
-[lsspa962_5118sc]
+# Linksys SPA962 6.3.1a
+[lsspa962_631a]
 brand: Linksys
 model: SPA962
-version: 5.1.18(SC)
-files: spa962-5-1-18sc.zip
+version: 6.3.1a
+files: spa962-6.3.1a.bin
 
-[spa962-5-1-18sc.zip]
-url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%2Fzip&blobheadervalue2=inline%3B+filename%3DSPA962-5.1.18_fw.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193770222498&ssbinary=true&lid=6407828244B12
-size: 2110861
-md5sum: 41475e98d79987b026ab19d771a6770d
-sha1sum: e851fd7cde46f786b586e7c69130cde047c7c9e0
+[spa962-6-1-3a.bin]
+url: ftp://ftp.linksys.com/downloads/NA/firmware/spa962-6-1-3a.zip
+size: 1116850
+md5sum: c0e4973a2e939c6b6437e40e1f54e101
+sha1sum: 8dda6f869fdd113f41e8daddcfd9911338fb3880
 
-# Linksys SPA962 5.2.8(SC)
-[lsspa962_528sc]
+# Linksys SPA3102
+[lsspa3102_517]
 brand: Linksys
-model: SPA962
-version: 5.2.8(SC)
-files: spa962-5-2-8sc.bin
+model: SPA3102
+version: 5.1.7
+files: spa3102-5-1-7.bin
 
-[spa962-5-2-8sc.bin]
-url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%2Fzip&blobheadervalue2=inline%3B+filename%3DSPA962_V5.2.8SC_fw.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193783376348&ssbinary=true&lid=7299228244B10
-size: 3254976
-md5sum: f2d221ea1dd5f1a3fdcd7e3853b1e333
-sha1sum: 657c0ad44396edae0ec10d4b8e743fa0cc641cc1
+[spa3102-5-1-7.bin]
+url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%2Fzip&blobheadervalue2=inline%3B+filename%3Dspa3102-5.1.7.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193768671799&ssbinary=true&lid=6139069263B06
+size: 1000440
+md5sum: 3e42940f19b1552b22e7f43e56307653
+sha1sum: b344c15993ff5d094bc3c528f2775f3ccdad9de8
 
 # Linksys SPA8000 6.1.3
 [lsspa8000_613]
