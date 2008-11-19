@@ -162,8 +162,8 @@ class XivoCTICommand(BaseCommand):
                                 cmd.type = xivo_commandsets.CMD_LOGIN_CAPAS
                         elif cmd.struct.get('class') == 'filetransfer':
                                 cmd.type = xivo_commandsets.CMD_TRANSFER
-                except Exception, exc:
-                        log.error('--- exception --- parsing json for <%s> : %s' % (linein, exc))
+                except Exception:
+                        log.exception('--- exception --- parsing json for <%s>' % linein)
                         cmd.struct = {}
                 return cmd
         
@@ -404,8 +404,8 @@ class XivoCTICommand(BaseCommand):
                                 userinfo['state'] = 'xivo_unknown'
 
                         self.capas[capaid].conn_inc()
-                except Exception, exc:
-                        log.error("--- exception --- connect_user %s : %s" % (userinfo, exc))
+                except Exception:
+                        log.exception('--- exception --- connect_user %s' % userinfo)
 
 
         def __disconnect_user__(self, userinfo):
@@ -422,8 +422,8 @@ class XivoCTICommand(BaseCommand):
                                 # del userinfo['capaid'] # after __update_availstate__
                         else:
                                 log.warning('userinfo does not contain login field : %s' % userinfo)
-                except Exception, exc:
-                        log.error("--- exception --- disconnect_user %s : %s" % (userinfo, exc))
+                except Exception:
+                        log.exception('--- exception --- disconnect_user %s' % userinfo)
 
 
         def loginko(self, loginparams, errorstring, connid):
@@ -2713,10 +2713,10 @@ class XivoCTICommand(BaseCommand):
                                         else:   # display callerid for incoming calls
                                                 ry2 = HISTSEPAR.join([x[1].replace('"', ''), 'IN', termin])
                                                 
-                                        reply.append(HISTSEPAR.join([ry1, ry2]))
-                        except Exception, exc:
-                                log.error('--- exception --- error : history : (client %s, termin %s) : %s'
-                                          % (requester_id, termin, exc))
+                                        reply.append(HISTSEPAR.join([ry1, ry2]).decode('utf8'))
+                        except Exception:
+                                log.exception('--- exception --- history : (client %s, termin %s)'
+                                              % (requester_id, termin))
 
                 if len(reply) > 0:
                         # sha1sum = sha.sha(''.join(reply)).hexdigest()
@@ -3722,8 +3722,8 @@ class XivoCTICommand(BaseCommand):
                 calleridnum  = fastagi.env['agi_callerid']
                 calleridname = fastagi.env['agi_calleridname']
                 
-                log.info('handle_fagi %s :   (agi variables) agi_callerid=%s agi_calleridname="%s" (callednum is %s)'
-                         % (astid, calleridnum, calleridname, callednum))
+                td = 'handle_fagi %s :   (agi variables) agi_callerid=%s agi_calleridname="%s" (callednum is %s)' % (astid, calleridnum, calleridname.decode('utf8'), callednum)
+                log.info(td.encode('utf8'))
                 
                 extraevent = {'caller_num' : calleridnum,
                               'called_num' : callednum,
@@ -3732,10 +3732,11 @@ class XivoCTICommand(BaseCommand):
                 clientstate = 'available'
                 
                 calleridsolved = self.__sheet_alert__('agi', astid, context, {}, extraevent)
-                
-                log.info('handle_fagi %s :   calleridsolved="%s"' % (astid, calleridsolved))
-                if calleridname in ['', 'unknown'] and calleridsolved:
-                        calleridname = calleridsolved
+                if calleridsolved:
+                        td = 'handle_fagi %s :   calleridsolved="%s"' % (astid, calleridsolved.decode('utf8'))
+                        log.info(td.encode('utf8'))
+                        if calleridname in ['', 'unknown']:
+                                calleridname = calleridsolved
                 
                 # to set according to os.getenv('LANG') or os.getenv('LANGUAGE') later on ?
                 if calleridnum in ['', 'unknown']:
@@ -3744,7 +3745,8 @@ class XivoCTICommand(BaseCommand):
                         calleridname = CALLERID_UNKNOWN_NAME
                 
                 calleridtoset = '"%s"<%s>' % (calleridname, calleridnum)
-                log.info('handle_fagi %s :   the callerid will be set to %s' % (astid, calleridtoset))
+                td = 'handle_fagi %s :   the callerid will be set to %s' % (astid, calleridtoset.decode('utf8'))
+                log.info(td.encode('utf8'))
                 fastagi.set_callerid(calleridtoset)
                 
 ##                if clientstate == 'available' or clientstate == 'nopresence':
