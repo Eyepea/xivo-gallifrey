@@ -114,7 +114,7 @@ sha1sum: 7df717a38ac1fe0c0c319e5af496d9506b755620
 brand: Linksys
 model: SPA962
 version: 6.3.1a
-files: spa962-6.3.1a.bin
+files: spa962-6-1-3a.bin
 
 [spa962-6-1-3a.bin]
 url: ftp://ftp.linksys.com/downloads/NA/firmware/spa962-6-1-3a.zip
