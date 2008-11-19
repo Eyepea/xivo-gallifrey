@@ -203,7 +203,7 @@ class Linksys(PhoneVendorMixin):
 
     @classmethod
     def get_dhcp_classes_and_sub(cls, addresses):
-        for model, identifier in cls.LINKSYS_MODELS:
+        for model, identifier in cls.LINKSYS_MODELS.iteritems():
             for line in (
                 'class "Linksys%s" {\n' % model.upper(),
                 '    match if option vendor-class-identifier = "LINKSYS %s";\n' % identifier,
