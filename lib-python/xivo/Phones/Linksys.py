@@ -1,6 +1,6 @@
 """Support for Linksys phones for XIVO Configuration
 
-Linksys SPA901, SPA921, SPA922, SPA941, SPA942, SPA962 and PAP2T are supported.
+Linksys SPA901, SPA921, SPA922, SPA941, SPA942, SPA962, SPA3102 and PAP2T are supported.
 
 Copyright (C) 2007, 2008  Proformatique
 
@@ -38,8 +38,17 @@ log = logging.getLogger("xivo.Phones.Linksys") # pylint: disable-msg=C0103
 
 class Linksys(PhoneVendorMixin):
 
-    LINKSYS_SPA_MODELS = ('901', '921', '922', '941', '942', '962')
-    LINKSYS_PAP_MACADDR_PREFIX = ('1:00:18:f8', '1:00:1c:10', '1:00:1e:e5', '1:00:1d:7e')
+    LINKSYS_MODELS = {'spa901':     'SPA-901',
+                      'spa921':     'SPA-921',
+                      'spa922':     'SPA-922',
+                      'spa941':     'SPA-941',
+                      'spa942':     'SPA-942',
+                      'spa962':     'SPA-962',
+                      'spa3102':    'SPA-3102',
+                      'pap2t':      'PAP2T'}
+
+    LINKSYS_MACADDR_PREFIX = ('1:00:0e:08', '1:00:18:f8', '1:00:1c:10', '1:00:1e:e5', '1:00:1d:7e')
+
     LINKSYS_COMMON_HTTP_USER = "admin"
     LINKSYS_COMMON_HTTP_PASS = "adminpass"
 
@@ -53,7 +62,7 @@ class Linksys(PhoneVendorMixin):
 
     def __init__(self, phone):
         PhoneVendorMixin.__init__(self, phone)
-        if (self.phone['model'] not in ["spa" + x for x in self.LINKSYS_SPA_MODELS]) and (self.phone['model'] != "pap2t"):
+        if self.phone['model'] not in self.LINKSYS_MODELS:
             raise ValueError, "Unknown Linksys model %r" % self.phone['model']
 
     def __action(self, command, user, passwd):
@@ -163,7 +172,7 @@ class Linksys(PhoneVendorMixin):
     @classmethod
     def get_phones(cls):
         "Report supported phone models for this vendor."
-        return tuple([("spa" + x, "SPA" + x) for x in cls.LINKSYS_SPA_MODELS]) + (("pap2t", "PAP2T"),)
+        return tuple([(x, x.upper()) for x in cls.LINKSYS_MODELS.iterkeys()])
 
     # Entry points for the AGI
 
@@ -194,22 +203,22 @@ class Linksys(PhoneVendorMixin):
 
     @classmethod
     def get_dhcp_classes_and_sub(cls, addresses):
-        for model_number in cls.LINKSYS_SPA_MODELS:
+        for model, identifier in cls.LINKSYS_MODELS:
             for line in (
-                'class "LinksysSPA%s" {\n' % model_number,
-                '    match if option vendor-class-identifier = "LINKSYS SPA-%s";\n' % model_number,
-                '    log("boot Linksys SPA-%s");\n' % model_number,
+                'class "Linksys%s" {\n' % model.upper(),
+                '    match if option vendor-class-identifier = "LINKSYS %s";\n' % identifier,
+                '    log("boot Linksys %s");\n' % identifier,
                 '    option tftp-server-name "%s";\n' % addresses['bootServer'],
-                '    option bootfile-name "Linksys/spa%s.cfg";\n' % model_number,
+                '    option bootfile-name "Linksys/%s.cfg";\n' % model,
                 '    next-server %s;\n' % addresses['bootServer'],
                 '}\n',
                 '\n'):
                 yield line
 
-        for macaddr_prefix in cls.LINKSYS_PAP_MACADDR_PREFIX:
+        for macaddr_prefix in cls.LINKSYS_MACADDR_PREFIX:
             for line in (
                 'subclass "phone-mac-address-prefix" %s {\n' % macaddr_prefix,
-                '    log("class Linksys PAP prefix %s");\n' % macaddr_prefix,
+                '    log("class Linksys prefix %s");\n' % macaddr_prefix,
                 '    option tftp-server-name "%s";\n' % addresses['bootServer'],
                 '}\n',
                 '\n'):
@@ -217,5 +226,5 @@ class Linksys(PhoneVendorMixin):
 
     @classmethod
     def get_dhcp_pool_lines(cls):
-        for model_number in cls.LINKSYS_SPA_MODELS:
-            yield '        allow members of "LinksysSPA%s";\n' % model_number
+        for model in cls.LINKSYS_MODELS.iterkeys():
+            yield '        allow members of "Linksys%s";\n' % model.upper()
