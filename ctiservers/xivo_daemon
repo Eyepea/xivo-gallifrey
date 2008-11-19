@@ -512,8 +512,8 @@ def handle_ami_function(astid, evfunction, this_event):
                         getattr(commandclass, evfunction_to_method_name[evfunction])(astid, this_event)
                 else:
                         log.warning('AMI %s ... this event (%s) is not tracked' % (astid, evfunction))
-        except Exception, exc:
-                log.error('--- exception --- AMI %s / %s : event %s : %s' % (astid, evfunction, this_event, exc))
+        except Exception:
+                log.exception('--- exception --- AMI %s / %s : event %s' % (astid, evfunction, this_event))
 
 
 def update_readconf():
