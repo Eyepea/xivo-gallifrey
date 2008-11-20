@@ -96,27 +96,27 @@ size: 1548720
 md5sum: b6c99b91bbb1625d088b4f3a90794522
 sha1sum: fe3616d709599763fd27fc5afebd1c8f71a95b9c
 
-# Linksys SPA942 6.3.1a
-[lsspa942_631a]
+# Linksys SPA942 6.1.3a
+[lsspa942_613a]
 brand: Linksys
 model: SPA942
-version: 6.3.1a
-files: spa942-6-3-1a.bin
+version: 6.1.3a
+files: spa942-6-1-3a.zip
 
-[spa942-6-3-1a.bin]
+[spa942-6-1-3a.zip]
 url: ftp://ftp.linksys.com/downloads/NA/firmware/spa942-6-1-3a.zip
-size: 954178
-md5sum: 98d3660cc54b9b76a2d78ef0bf168d16
-sha1sum: 7df717a38ac1fe0c0c319e5af496d9506b755620
+size: 3513620
+md5sum: 30e05d16a9b47ab68c5bdda39b1ec2aa
+sha1sum: b260aff0ff8311f328c35d06528f5f865b9a5367
 
-# Linksys SPA962 6.3.1a
-[lsspa962_631a]
+# Linksys SPA962 6.1.3a
+[lsspa962_613a]
 brand: Linksys
 model: SPA962
-version: 6.3.1a
-files: spa962-6-1-3a.bin
+version: 6.1.3a
+files: spa962-6-1-3a.zip
 
-[spa962-6-1-3a.bin]
+[spa962-6-1-3a.zip]
 url: ftp://ftp.linksys.com/downloads/NA/firmware/spa962-6-1-3a.zip
 size: 4000656
 md5sum: e5afb0a72cda89051f46d12dccdc0890
@@ -140,9 +140,9 @@ sha1sum: af66b4ed914ada3ecdd6b64a3378316be8f34ba3
 brand: Linksys
 model: SPA8000
 version: 6.1.3
-files: spa8000-6-1-3.bin
+files: spa8000-6-1-3.zip
 
-[spa8000-6-1-3.bin]
+[spa8000-6-1-3.zip]
 url: ftp://ftp.linksys.com/downloads/NA/firmware/SPA8000_v6.1.3_fw.zip
 size: 3783070
 md5sum: bb9512cf8ba07a78b12a94b4f153396d
