@@ -888,8 +888,8 @@ class XivoCTICommand(BaseCommand):
                                         r = urllib.urlopen(v)
                                         t = r.read()
                                         r.close()
-                                except Exception:
-                                        log.exception('--- exception --- __build_xmlqtui__ %s %s' % (sheetkind, whichitem))
+                                except Exception, exc: # conscious limited exception output ("No such file or directory")
+                                        log.error('--- exception --- __build_xmlqtui__ %s %s %s' % (sheetkind, whichitem, exc))
                                         t = None
                                 if t is not None:
                                         linestosend.append('<%s name="%s"><![CDATA[%s]]></%s>' % (sheetkind, k, t, sheetkind))
@@ -2635,8 +2635,10 @@ class XivoCTICommand(BaseCommand):
                                                         repstr = cjson.encode(tosend)
                                                 elif argums[0] == 'startcall':
                                                         exten = argums[1]
-                                                        self.__originate_or_transfer__(userinfo,
-                                                                                       [AMI_ORIGINATE, 'user:special:me', 'ext:%s' % exten])
+                                                        self.__originate_or_transfer__(AMI_ORIGINATE,
+                                                                                       userinfo,
+                                                                                       'user:special:me',
+                                                                                       'ext:%s' % exten)
                                                         tosend = { 'class' : 'callcampaign',
                                                                    'direction' : 'client',
                                                                    'payload' : { 'command' : 'callstarted',
@@ -2652,34 +2654,24 @@ class XivoCTICommand(BaseCommand):
                                                         # '{'class':"callcampaign","direction":"client","command":"callnext","list":["%s"]}' % icommand.args[1])
                                         elif classcomm in ['originate', 'transfer', 'atxfer']:
                                                 if self.capas[capaid].match_funcs(ucapa, 'dial'):
-                                                        repstr = self.__originate_or_transfer__(userinfo,
-                                                                                                [classcomm,
-                                                                                                 icommand.struct.get('source'),
-                                                                                                 icommand.struct.get('destination')])
-
-                                        elif classcomm == 'hangup':
+                                                        repstr = self.__originate_or_transfer__(classcomm,
+                                                                                                userinfo,
+                                                                                                icommand.struct.get('source'),
+                                                                                                icommand.struct.get('destination'))
+                                        elif classcomm in ['hangup', 'simplehangup']:
                                                 if self.capas[capaid].match_funcs(ucapa, 'dial'):
                                                         repstr = self.__hangup__(userinfo,
-                                                                                 icommand.struct.get('astid'),
-                                                                                 icommand.struct.get('channel'),
-                                                                                 True)
-
-                                        elif classcomm == 'simplehangup':
-                                                if self.capas[capaid].match_funcs(ucapa, 'dial'):
-                                                        repstr = self.__hangup__(userinfo,
-                                                                                 icommand.struct.get('astid'),
-                                                                                 icommand.struct.get('channel'),
-                                                                                 False)
-
+                                                                                 icommand.struct.get('source'),
+                                                                                 (classcomm == 'hangup'))
                                         elif classcomm == 'pickup':
                                                 if self.capas[capaid].match_funcs(ucapa, 'dial'):
                                                         # on Thomson, it picks up the last received call
-                                                        self.__ami_execute__(icommand.struct.get('astid'),
+                                                        self.__ami_execute__(userinfo.get('astid'),
                                                                              'sendcommand',
                                                                              'Command',
                                                                              [('Command',
-                                                                               'sip notify event-talk %s' % icommand.struct.get('phonenum'))])
-
+                                                                               'sip notify event-talk %s'
+                                                                               % userinfo.get('phonenum'))])
                                         elif classcomm == 'actionfiche':
                                                 log.info('%s : %s' % (classcomm, icommand.struct))
                                                 actionid = icommand.struct.get('buttonaction')[1]
@@ -2729,7 +2721,7 @@ class XivoCTICommand(BaseCommand):
                                         log.warning('unallowed json event %s' % icommand.struct)
 
                 except Exception:
-                        log.exception('--- exception --- (manage_cticommand) %s %s %s /'
+                        log.exception('--- exception --- (manage_cticommand) %s %s %s'
                                       % (icommand.name, icommand.args, userinfo.get('login').get('connection')))
                         
                 if repstr is not None: # might be useful to reply sth different if there is a capa problem for instance, a bad syntaxed command
@@ -3184,37 +3176,30 @@ class XivoCTICommand(BaseCommand):
 
 
         # \brief Originates / transfers.
-        def __originate_or_transfer__(self, userinfo, commargs):
-                log.info('%s %s' % (userinfo, commargs))
-                if len(commargs) != 3:
-                        return
-                [commname, src, dst] = commargs
+        def __originate_or_transfer__(self, commname, userinfo, src, dst):
+                log.info('%s %s %s %s' % (commname, userinfo, src, dst))
                 srcsplit = src.split(':', 1)
                 dstsplit = dst.split(':', 1)
-
+                
                 if commname == 'originate' and len(srcsplit) == 2 and len(dstsplit) == 2:
                         [typesrc, whosrc] = srcsplit
                         [typedst, whodst] = dstsplit
-
+                        
                         # others than 'user:special:me' should only be allowed to switchboard-like users
                         if typesrc == 'user':
                                 if whosrc == 'special:me':
                                         srcuinfo = userinfo
                                 else:
-                                        srcuinfo = self.ulist_ng.finduser(whosrc.split('/')[1], whosrc.split('/')[0])
+                                        srcuinfo = self.ulist_ng.keeplist.get(whosrc)
                                 if srcuinfo is not None:
                                         astid_src = srcuinfo.get('astid')
                                         context_src = srcuinfo.get('context')
                                         proto_src = 'SIP'
                                         # 'local' might break the XIVO_ORIGSRCNUM mechanism (trick for thomson)
                                         # XXX (+ dialplan) since 'SIP' is not the solution either
-                                        
                                         phonenum_src = srcuinfo.get('phonenum')
                                         # if termlist empty + agentphonenum not empty => call this one
                                         cidname_src = srcuinfo.get('fullname')
-                                        
-                        elif typesrc == 'term':
-                                pass
                         else:
                                 log.warning('unknown typesrc <%s>' % typesrc)
 
@@ -3232,23 +3217,16 @@ class XivoCTICommand(BaseCommand):
                         elif typedst == 'user':
                                 if whodst == 'special:me':
                                         dstuinfo = userinfo
-                                elif whodst == 'special:intercept':
-                                        dstuinfo = {'phonenum' : '*8',
-                                                    'fullname' : 'intercept',
-                                                    'context' : 'parkedcalls'}
                                 else:
                                         dstuinfo = self.ulist_ng.keeplist[whodst]
                                 if dstuinfo is not None:
+                                        astid_dst = dstuinfo.get('astid')
                                         exten_dst = dstuinfo.get('phonenum')
                                         cidname_dst = dstuinfo.get('fullname')
                                         context_dst = dstuinfo.get('context')
-                        elif typedst == 'term':
-                                pass
                         else:
                                 log.warning('unknown typedst <%s>' % typedst)
 
-
-                        ret = False
                         try:
                                 if len(exten_dst) > 0:
                                         ret = self.__ami_execute__(astid_src, AMI_ORIGINATE,
@@ -3256,18 +3234,18 @@ class XivoCTICommand(BaseCommand):
                                                                    exten_dst, cidname_dst,  context_dst)
                         except Exception:
                                 log.exception('--- exception --- unable to originate')
-                        if ret:
-                                ret_message = 'originate OK'
-                        else:
-                                ret_message = 'originate KO'
+
                 elif commname in ['transfer', 'atxfer']:
                         [typesrc, whosrc] = srcsplit
                         [typedst, whodst] = dstsplit
-
+                        
                         if typesrc == 'chan':
                                 if whosrc.startswith('special:me:'):
                                         srcuinfo = userinfo
                                         chan_src = whosrc[len('special:me:'):]
+                                else:
+                                        [uid, chan_src] = whosrc.split(':')
+                                        srcuinfo = self.ulist_ng.keeplist[uid]
                                 if srcuinfo is not None:
                                         astid_src = srcuinfo.get('astid')
                                         context_src = srcuinfo.get('context')
@@ -3275,13 +3253,27 @@ class XivoCTICommand(BaseCommand):
                                         phonenum_src = srcuinfo.get('phonenum')
                                         # if termlist empty + agentphonenum not empty => call this one
                                         cidname_src = srcuinfo.get('fullname')
-
+                        else:
+                                log.warning('unknown typesrc %s for %s' % (typesrc, commname))
+                        
                         if typedst == 'ext':
                                 if whodst == 'special:parkthecall':
                                         exten_dst = self.configs[astid_src].parkingnumber
                                 else:
                                         exten_dst = whodst
-
+                        elif typedst == 'user':
+                                if whodst == 'special:me':
+                                        dstuinfo = userinfo
+                                else:
+                                        dstuinfo = self.ulist_ng.keeplist[whodst]
+                                if dstuinfo is not None:
+                                        astid_dst = dstuinfo.get('astid')
+                                        exten_dst = dstuinfo.get('phonenum')
+                                        cidname_dst = dstuinfo.get('fullname')
+                                        context_dst = dstuinfo.get('context')
+                        else:
+                                log.warning('unknown typedst %s for %s' % (typedst, commname))
+                                
                         print astid_src, commname, chan_src, exten_dst, context_src
                         ret = False
                         try:
@@ -3291,136 +3283,36 @@ class XivoCTICommand(BaseCommand):
                                                                    exten_dst, context_src)
                         except Exception, exc:
                                 log.error('--- exception --- unable to %s ... %s' % (commname, exc))
-                        if ret:
-                                ret_message = '%s OK' % commname
-                        else:
-                                ret_message = '%s KO' % commname
                 else:
                         log.warning('unallowed command %s' % commargs)
-
-
-        # \brief Originates / transfers.
-        def __originate_or_transfer_old__(self, requester, l):
-         src_split = l[1].split("/")
-         dst_split = l[2].split("/")
-         ret_message = 'originate_or_transfer KO from %s' % requester
-
-         if len(src_split) == 5:
-                [dummyp, astid_src, context_src, proto_src, userid_src] = src_split
-         elif len(src_split) == 6:
-                [dummyp, astid_src, context_src, proto_src, userid_src, dummy_exten_src] = src_split
-
-         if len(dst_split) == 6:
-                [p_or_a, astid_dst, context_dst, proto_dst, userid_dst, exten_dst] = dst_split
-##                if p_or_a == 'a': find userid_dst => agentnum => phone num
-         else:
-                [dummyp, astid_dst, context_dst, proto_dst, userid_dst, exten_dst] = src_split
-                exten_dst = l[2]
-         if astid_src in self.configs and astid_src == astid_dst:
-                if exten_dst == 'special:parkthecall':
-                        exten_dst = self.configs[astid_dst].parkingnumber
-                if astid_src in self.weblist['phones']:
-                        if l[0] == 'originate':
-                                log.info("%s is attempting an ORIGINATE : %s" % (requester, str(l)))
-                                if astid_dst != '':
-                                        sipcid_src = "SIP/%s" % userid_src
-                                        sipcid_dst = "SIP/%s" % userid_dst
-                                        cidname_src = userid_src
-                                        cidname_dst = userid_dst
-                                        if sipcid_src in self.weblist['phones'][astid_src].normal:
-                                                cidname_src = '%s %s' %(self.weblist['phones'][astid_src].normal[sipcid_src].calleridfirst,
-                                                                        self.weblist['phones'][astid_src].normal[sipcid_src].calleridlast)
-                                        if sipcid_dst in self.weblist['phones'][astid_dst].normal:
-                                                cidname_dst = '%s %s' %(self.weblist['phones'][astid_dst].normal[sipcid_dst].calleridfirst,
-                                                                        self.weblist['phones'][astid_dst].normal[sipcid_dst].calleridlast)
-                                        ret = self.__ami_execute__(astid_src, 'originate',
-                                                                   proto_src, userid_src, cidname_src,
-                                                                   exten_dst, cidname_dst, context_dst)
-                                else:
-                                        ret = False
-                                if ret:
-                                        ret_message = 'originate OK (%s) %s %s' %(astid_src, l[1], l[2])
-                                else:
-                                        ret_message = 'originate KO (%s) %s %s' %(astid_src, l[1], l[2])
-                        elif l[0] == 'transfer':
-                                log.info("%s is attempting a TRANSFER : %s" %(requester, str(l)))
-                                phonesrc, phonesrcchan = split_from_ui(l[1])
-                                if phonesrc == phonesrcchan:
-                                        ret_message = 'transfer KO : %s not a channel' % phonesrcchan
-                                else:
-                                        if phonesrc in self.weblist['phones'][astid_src].normal:
-                                                channellist = self.weblist['phones'][astid_src].normal[phonesrc].chann
-                                                nopens = len(channellist)
-                                                if nopens == 0:
-                                                        ret_message = 'transfer KO : no channel opened on %s' % phonesrc
-                                                else:
-                                                        tchan = channellist[phonesrcchan].channel_peer
-                                                        ret = self.__ami_execute__(astid_src, 'transfer',
-                                                                                   tchan, exten_dst, context_dst)
-                                                        if ret:
-                                                                ret_message = 'transfer OK (%s) %s %s' %(astid_src, l[1], l[2])
-                                                        else:
-                                                                ret_message = 'transfer KO (%s) %s %s' %(astid_src, l[1], l[2])
-                        elif l[0] == 'atxfer':
-                                log.info("%s is attempting an ATXFER : %s" %(requester, str(l)))
-                                phonesrc, phonesrcchan = split_from_ui(l[1])
-                                if phonesrc == phonesrcchan:
-                                        ret_message = 'atxfer KO : %s not a channel' % phonesrcchan
-                                else:
-                                        if phonesrc in self.weblist['phones'][astid_src].normal:
-                                                channellist = self.weblist['phones'][astid_src].normal[phonesrc].chann
-                                                nopens = len(channellist)
-                                                if nopens == 0:
-                                                        ret_message = 'atxfer KO : no channel opened on %s' % phonesrc
-                                                else:
-                                                        tchan = channellist[phonesrcchan].channel_peer
-                                                        ret = self.__ami_execute__(astid_src, 'atxfer',
-                                                                                   tchan, exten_dst, context_dst)
-                                                        if ret:
-                                                                ret_message = 'atxfer OK (%s) %s %s' %(astid_src, l[1], l[2])
-                                                        else:
-                                                                ret_message = 'atxfer KO (%s) %s %s' %(astid_src, l[1], l[2])
-                                        else:
-                                                log.warning("%s not in my phone list" % phonesrc)
-         else:
-                ret_message = 'originate or transfer KO : asterisk id mismatch (%s %s)' %(astid_src, astid_dst)
-         return self.dmessage_srv2clt(ret_message)
-
-
-
+                return
+        
+        
         # \brief Hangs up.
-        def __hangup__(self, uinfo, astid, chan, peer_hangup):
-                print '__hangup__', uinfo, astid, chan, peer_hangup
-                username = uinfo.get('fullname')
-                ret_message = 'hangup KO from %s' % username
+        def __hangup__(self, userinfo, source, peer_hangup):
+                [typesrc, whosrc] = source.split(':', 1)
+                if typesrc != 'chan':
+                        return
+                [userid, channel] = whosrc.split(':', 1)
+                uinfo = self.ulist_ng.keeplist.get(userid)
+                astid = uinfo.get('astid')
                 if astid in self.configs:
-                        log.info("%s is attempting a HANGUP : %s" % (username, chan))
-                        channel = chan
-                        phone = chan.split('-')[0]
-                        if phone in self.weblist['phones'][astid].normal:
-                                if channel in self.weblist['phones'][astid].normal[phone].chann:
-                                        if peer_hangup:
-                                                channel_peer = self.weblist['phones'][astid].normal[phone].chann[channel].channel_peer
-                                                log.info("UI action : %s : hanging up <%s> and <%s>"
-                                                          %(astid , channel, channel_peer))
-                                        else:
-                                                channel_peer = ''
-                                                log.info("UI action : %s : hanging up <%s>"
-                                                          %(astid , channel))
-                                        ret = self.__ami_execute__(astid, 'hangup', channel, channel_peer)
-                                        if ret > 0:
-                                                ret_message = 'hangup OK (%d) <%s>' %(ret, chan)
-                                        else:
-                                                ret_message = 'hangup KO : socket request failed'
-                                else:
-                                        ret_message = 'hangup KO : no such channel <%s>' % channel
-                        else:
-                                ret_message = 'hangup KO : no such phone <%s>' % phone
+                        channel_peer = ''
+                        log.info('a HANGUP is attempted for %s on %s channel=%s' % (uinfo.get('fullname'), astid, channel))
+                        phoneid = uinfo.get('techlist')[0]
+                        if phoneid in self.weblist['phones'][astid].keeplist:
+                                phonedetails = self.weblist['phones'][astid].keeplist[phoneid]
+                                for c, v in phonedetails['comms'].iteritems():
+                                        if v['thischannel'] == channel:
+                                                if peer_hangup:
+                                                        channel_peer = v['peerchannel']
+                        ret = self.__ami_execute__(astid, 'hangup', channel, channel_peer)
+                        # ret to be checked on other replies
                 else:
                         ret_message = 'hangup KO : no such asterisk id <%s>' % astid
-                return self.dmessage_srv2clt(ret_message)
-
-
+                return
+        
+        
         # \brief Function that fetches the call history from a database
         # \param cfg the asterisk's config
         # \param techno technology (SIP/IAX/ZAP/etc...)
@@ -3468,6 +3360,8 @@ class XivoCTICommand(BaseCommand):
                 
                 if userinfo['state'] == 'xivo_unknown' and state in ['onlineincoming', 'onlineoutgoing', 'postcall']:
                         # we forbid 'asterisk-related' presence events to change the status of unlogged users
+                        return None
+                if not state:
                         return None
                 
                 if 'login' in userinfo and 'sessiontimestamp' in userinfo.get('login'):
