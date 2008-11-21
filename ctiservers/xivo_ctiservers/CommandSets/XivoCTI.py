@@ -1859,7 +1859,7 @@ class XivoCTICommand(BaseCommand):
                 tosend = { 'class' : 'parkcall',
                            'direction' : 'client',
                            'payload' : { 'status' : 'parkedcall',
-                                         'args' : [astid, channel, cfrom, exten, timeout]}}
+                                         'args' : [astid, channel, exten, cfrom, timeout]}}
                 self.__send_msg_to_cti_clients__(cjson.encode(tosend))
                 return
         
@@ -1870,7 +1870,7 @@ class XivoCTICommand(BaseCommand):
                 tosend = { 'class' : 'parkcall',
                            'direction' : 'client',
                            'payload' : { 'status' : 'unparkedcall',
-                                         'args' : [astid, channel, cfrom, exten]}}
+                                         'args' : [astid, channel, exten, cfrom]}}
                 self.__send_msg_to_cti_clients__(cjson.encode(tosend))
                 return
         
