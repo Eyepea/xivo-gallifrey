@@ -28,7 +28,7 @@ import cjson
 import csv
 import logging
 import md5
-import urllib
+import urllib2
 
 log = logging.getLogger('urllist')
 
@@ -42,20 +42,21 @@ class UrlList:
 
         def getlist(self, index, length, header = False):
                 self.list = {}
-                contenttype = None
+                http_contenttype = None
+                http_code = 200
                 try:
                         if self.url is not None:
                                 kind = self.url.split(':')[0]
                                 if kind == 'file' or kind == self.url:
-                                        f = urllib.urlopen(self.trueurl[0])
-                                        contenttype = f.headers.getheaders('Content-Type')
-                                        contenttype = ['application/json']
+                                        f = urllib2.urlopen(self.trueurl[0])
+                                        http_contenttype = ['application/json']
                                 elif kind in ['mysql', 'sqlite', 'ldap']:
                                         log.warning('URL kind %s not supported yet' % kind)
                                 elif kind in ['http', 'https']:
                                         request = '%s?sum=%s' % (self.url, self.urlmd5)
-                                        f = urllib.urlopen(request)
-                                        contenttype = f.headers.getheaders('Content-Type')
+                                        f = urllib2.urlopen(request)
+                                        http_contenttype = f.headers.getheaders('Content-Type')
+                                        http_code = f.code
                                 else:
                                         log.warning('URL kind %s not supported' % kind)
                                         return -1
@@ -76,7 +77,7 @@ class UrlList:
                         fulltable = ''.join(mytab)
                         savemd5 = self.urlmd5
                         self.listmd5 = md5.md5(fulltable).hexdigest()
-                        if contenttype == ['application/json']:
+                        if http_code == 200 and http_contenttype == ['application/json']:
                                 self.jsonreply = cjson.decode(fulltable)
                                 try:
                                         if len(self.trueurl) > 1:
@@ -87,13 +88,28 @@ class UrlList:
                                 except Exception, exc:
                                         log.error('--- exception --- (UrlList) trying to enforce setting %s %s' % (self.url, exc))
                                 ret = 2
-                        elif contenttype == ['text/html; charset=UTF-8']:
-                                if fulltable == 'XIVO-WEBI: Error/403':
-                                        log.warning('unauthorized connection (403) to %s' % self.url)
-                                elif fulltable == 'XIVO-WEBI: no-update':
+                        elif http_contenttype == ['text/html; charset=UTF-8']:
+                                if http_code == 403:
+                                        log.warning('%s : Forbidden (403)' % self.url)
+                                elif http_code == 401:
+                                        log.warning('%s : Unauthorized (401)' % self.url)
+                                elif http_code == 404:
+                                        log.warning('%s : Not Found (404)' % self.url)
+                                elif http_code == 500:
+                                        log.warning('%s : Internal Error (500)' % self.url)
+                                elif http_code == 304:
                                         self.urlmd5 = savemd5
-                                        log.info('%s : received no-update from WEBI' % self.url)
+                                        log.info('%s : received no-update (304) from WEBI' % self.url)
                                         ret = 2
+                                elif http_code == 204:
+                                        log.info('%s : received no-data (204) from WEBI' % self.url)
+                                elif http_code == 200: # XXX temporary compatibility
+                                        if fulltable == 'XIVO-WEBI: no-update':
+                                                self.urlmd5 = savemd5
+                                                log.info('%s : received no-update from WEBI' % self.url)
+                                                ret = 2
+                                else:
+                                        log.warning('%s : unknown code (%d)' % (self.url, http_code))
                         else:
                                 csvreader = csv.reader(mytab, delimiter = '|')
                                 # builds the users list

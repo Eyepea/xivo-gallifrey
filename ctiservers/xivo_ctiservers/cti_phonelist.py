@@ -111,9 +111,25 @@ class PhoneList(AnyList):
                         self.keeplist[phoneid]['hintstatus'] = self.display_hints.get(status)
                 return
         
+        def ami_parkedcall(self, phoneid, uid, ctuid):
+                if phoneid in self.keeplist:
+                        if uid not in self.keeplist[phoneid]['comms']:
+                                infos = {'status' : 'linked-caller',
+                                         'calleridnum' : ctuid.get('parkexten'),
+                                         'calleridname' : 'parked call',
+                                         'time-link' : 0
+                                         }
+                                self.keeplist[phoneid]['comms'][uid] = infos
+                return
+        
         def clear(self, phoneid, uid):
-                if phoneid in self.keeplist and uid in self.keeplist[phoneid]['comms']:
-                        del self.keeplist[phoneid]['comms'][uid]
+                if phoneid in self.keeplist:
+                        if uid in self.keeplist[phoneid]['comms']:
+                                del self.keeplist[phoneid]['comms'][uid]
+                        else:
+                                log.warning('%s : uid %s not in comms list' % (phoneid, uid))
+                else:
+                        log.warning('%s not in phonelist' % phoneid)
                 return
         
         def status(self, phoneid):

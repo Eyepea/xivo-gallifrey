@@ -275,47 +275,55 @@ def manage_info_connections(connid, msg, sep):
                                 for user, info in commandclass.users().iteritems():
                                         try:
                                                 connid.sendall('%s %s\n' % (user.encode('latin1'), info))
-                                        except Exception, exc:
-                                                log.error('--- exception --- INFO %s : %s' % (usefulmsg, exc))
+                                        except Exception:
+                                                log.exception('--- exception --- INFO %s' % usefulmsg)
                         elif usefulmsg == 'show_agents':
                                 for astid, agents in commandclass.agents().iteritems():
                                         try:
                                                 connid.sendall('agents for %s\n' % astid)
                                                 for ag, agp in agents.keeplist.iteritems():
                                                         connid.sendall('%s %s\n' % (ag, agp))
-                                        except Exception, exc:
-                                                log.error('--- exception --- INFO %s : %s' % (usefulmsg, exc))
+                                        except Exception:
+                                                log.exception('--- exception --- INFO %s' % usefulmsg)
                         elif usefulmsg == 'show_queues':
                                 for astid, queues in commandclass.queues().iteritems():
                                         try:
                                                 connid.sendall('queues for %s\n' % astid)
                                                 for ag, agp in queues.keeplist.iteritems():
                                                         connid.sendall('%s %s\n' % (ag, agp))
-                                        except Exception, exc:
-                                                log.error('--- exception --- INFO %s : %s' % (usefulmsg, exc))
+                                        except Exception:
+                                                log.exception('--- exception --- INFO %s' % usefulmsg)
                         elif usefulmsg == 'show_phones':
                                 for astid, phones in commandclass.phones().iteritems():
                                         try:
                                                 connid.sendall('phones for %s\n' % astid)
                                                 for ag, agp in phones.keeplist.iteritems():
                                                         connid.sendall('%s %s\n' % (ag, agp))
-                                        except Exception, exc:
-                                                log.error('--- exception --- INFO %s : %s' % (usefulmsg, exc))
+                                        except Exception:
+                                                log.exception('--- exception --- INFO %s' % usefulmsg)
+                        elif usefulmsg == 'show_uniqueids':
+                                for astid, uids in commandclass.uniqueids.iteritems():
+                                        try:
+                                                connid.sendall('uniqueids for %s\n' % astid)
+                                                for ag, agp in uids.iteritems():
+                                                        connid.sendall('%s %s\n' % (ag, agp))
+                                        except Exception:
+                                                log.exception('--- exception --- INFO %s' % usefulmsg)
                         elif usefulmsg == 'show_logged_ip':
                                 for user, info in commandclass.connected_users().iteritems():
                                         if 'connection' in info['login']:
                                                 try:
                                                         [ipaddr, ipport] = info['login']['connection'].getpeername()
-                                                except Exception, exc:
-                                                        log.error('--- exception --- INFO show_logged_ip : %s' % exc)
+                                                except Exception:
+                                                        log.exception('--- exception --- INFO %s' % usefulmsg)
                                                         [ipaddr, ipport] = ['err_addr', 'err_port']
                                                 connid.sendall('user %s : ip:port = %s:%s\n' % (user.encode('latin1'), ipaddr, ipport))
                         elif usefulmsg == 'show_logged':
                                 for user, info in commandclass.connected_users().iteritems():
                                         try:
                                                 connid.sendall('%s %s\n' % (user.encode('latin1'), info))
-                                        except Exception, exc:
-                                                log.error('--- exception --- INFO show_logged : %s' % exc)
+                                        except Exception:
+                                                log.exception('--- exception --- INFO %s' % usefulmsg)
                         elif usefulmsg == 'show_ami':
                                 for astid, ami in amilist.ami.iteritems():
                                         connid.sendall('commands : %s : %s\n' % (astid, ami))
@@ -324,9 +332,9 @@ def manage_info_connections(connid, msg, sep):
                         else:
                                 pass
                         connid.sendall('XIVO-INFO:OK\n')
-                except Exception, exc:
-                        log.error('--- exception --- INFO connection [%s] : KO when sending to %s : %s'
-                                  % (usefulmsg, requester, exc))
+                except Exception:
+                        log.exception('--- exception --- INFO connection [%s] : KO when sending to %s'
+                                      % (usefulmsg, requester))
 
 def manage_tcp_connections(sel_i, msg, kind):
         """

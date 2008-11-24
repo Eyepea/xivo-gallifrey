@@ -84,6 +84,11 @@ class BaseCommand:
                 return {}
         def queues(self):
                 return {}
+        def phones(self):
+                return {}
+        def uniqueids(self):
+                return {}
+        
         def connected_users(self):
                 return {}
         def getqueueslist(self, qlist):
