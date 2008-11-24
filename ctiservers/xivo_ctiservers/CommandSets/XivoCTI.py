@@ -1144,9 +1144,9 @@ class XivoCTICommand(BaseCommand):
                 if channel.startswith('SIP/'):
                         tech = 'sip'
                         phoneid = channel[4:].split('-')[0]
-                elif channel.startswith('AsyncGoto/SIP/'):
-                        tech = 'sip'
-                        phoneid = channel[14:].split('-')[0]
+##                elif channel.startswith('AsyncGoto/SIP/'):
+##                        tech = 'sip'
+##                        phoneid = channel[14:].split('-')[0]
                 elif channel.startswith('IAX2/'):
                         tech = 'iax2'
                         phoneid = channel[5:].split('-')[0]
@@ -1856,6 +1856,7 @@ class XivoCTICommand(BaseCommand):
                 timeout = event.get('Timeout')
                 for uid, ctuid in self.uniqueids[astid].iteritems():
                         if ctuid['channel'] == channel:
+                                ctuid['parkexten-callback'] = exten
                                 phoneid = self.__phoneid_from_channel__(astid, channel)
                                 self.weblist['phones'][astid].ami_parkedcall(phoneid, uid, ctuid)
                                 tosend = self.weblist['phones'][astid].status(phoneid)
@@ -1873,7 +1874,17 @@ class XivoCTICommand(BaseCommand):
                 channel = event.get('Channel')
                 cfrom   = event.get('From')
                 exten   = event.get('Exten')
-                # print astid, event
+                phoneidsrc = self.__phoneid_from_channel__(astid, cfrom)
+                uinfo = self.__userinfo_from_phoneid__(astid, phoneidsrc)
+                phoneiddst = self.__phoneid_from_channel__(astid, channel)
+                for uid, ctuid in self.uniqueids[astid].iteritems():
+                        if ctuid['channel'] == cfrom:
+                                ctuid['parkexten-callback'] = event.get('CallerID')
+                                self.weblist['phones'][astid].ami_unparkedcall(phoneidsrc, uid, ctuid)
+                        elif ctuid['channel'] == channel:
+                                ctuid['parkexten-callback'] = uinfo.get('phonenum')
+                                self.weblist['phones'][astid].ami_unparkedcall(phoneiddst, uid, ctuid)
+                # a subsequent 'link' AMI event should make the new status transmitted
                 tosend = { 'class' : 'parkcall',
                            'direction' : 'client',
                            'payload' : { 'status' : 'unparkedcall',
@@ -1884,22 +1895,22 @@ class XivoCTICommand(BaseCommand):
         def ami_parkedcallgiveup(self, astid, event):
                 channel = event.get('Channel')
                 exten   = event.get('Exten')
-                # print astid, event
                 tosend = { 'class' : 'parkcall',
                            'direction' : 'client',
                            'payload' : { 'status' : 'parkedcallgiveup',
-                                         'args' : [astid, channel, exten]}}
+                                         'args' : [astid, channel, exten] } }
                 self.__send_msg_to_cti_clients__(cjson.encode(tosend))
                 return
         
         def ami_parkedcalltimeout(self, astid, event):
                 channel = event.get('Channel')
                 exten   = event.get('Exten')
-                # print astid, event
+                # XXX it seems that the called back peer is not the good one
+                # ('From' field given at parkedcall time)
                 tosend = { 'class' : 'parkcall',
                            'direction' : 'client',
                            'payload' : { 'status' : 'parkedcalltimeout',
-                                         'args' : [astid, channel, exten]}}
+                                         'args' : [astid, channel, exten] } }
                 self.__send_msg_to_cti_clients__(cjson.encode(tosend))
                 return
         
@@ -2257,7 +2268,7 @@ class XivoCTICommand(BaseCommand):
                         if v['number'] == meetmenum:
                                 meetmeref = v
                                 break
-
+                        
                 if meetmeref is None:
                         log.warning('%s : meetmejoin : unable to find room %s' % (astid, meetmenum))
                         return
@@ -3176,7 +3187,7 @@ class XivoCTICommand(BaseCommand):
                                    'function' : 'put',
                                    'direction' : 'client',
                                    'payload' : [ userid, 'OK', key, value ] }
-                        log.info('__build_features_put__ : %s' % params)
+                        log.info('__build_features_put__ : %s : %s => %s' % (params, key, value))
                 except Exception, exc:
                         log.error('--- exception --- features_put id=%s %s %s : %s'
                                   % (userid, key, value, exc))
@@ -3271,6 +3282,12 @@ class XivoCTICommand(BaseCommand):
                         if typedst == 'ext':
                                 if whodst == 'special:parkthecall':
                                         exten_dst = self.configs[astid_src].parkingnumber
+                                        for uid, vuid in self.uniqueids[astid_src].iteritems():
+                                                if 'dial' in vuid and vuid['dial'] == chan_src and 'channel' in vuid:
+                                                        nchan = vuid['channel']
+                                                if 'link' in vuid and vuid['link'] == chan_src and 'channel' in vuid:
+                                                        nchan = vuid['channel']
+                                        chan_src = nchan
                                 else:
                                         exten_dst = whodst
                         elif typedst == 'user':
@@ -3299,7 +3316,6 @@ class XivoCTICommand(BaseCommand):
                         log.warning('unallowed command %s' % commargs)
                 return
         
-        
         # \brief Hangs up.
         def __hangup__(self, userinfo, source, peer_hangup):
                 [typesrc, whosrc] = source.split(':', 1)
@@ -3316,7 +3332,7 @@ class XivoCTICommand(BaseCommand):
                                 phonedetails = self.weblist['phones'][astid].keeplist[phoneid]
                                 for c, v in phonedetails['comms'].iteritems():
                                         if v['thischannel'] == channel:
-                                                if peer_hangup:
+                                                if peer_hangup and 'peerchannel' in v:
                                                         channel_peer = v['peerchannel']
                         ret = self.__ami_execute__(astid, 'hangup', channel, channel_peer)
                         # ret to be checked on other replies
