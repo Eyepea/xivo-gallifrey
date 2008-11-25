@@ -1,0 +1,248 @@
+2008-11-25  Corentin Le Gall <clegall@proformatique.com>
+
+	pf_manager_misc.patch
+	$Revision: 4582 $
+	$Date: 2008-11-03 19:06:47 +0100 (lun, 03 nov 2008) $
+        Miscellaneous addenda in Manager Events
+        - backport of MeetMeList Manager Command
+        - added Data contents to the Dial event
+        - added Application Name and Data to the Status event
+
+Index: asterisk-1.4.22/apps/app_dial.c
+===================================================================
+--- asterisk-1.4.22.orig/apps/app_dial.c	2008-11-25 14:05:26.000000000 +0100
++++ asterisk-1.4.22/apps/app_dial.c	2008-11-25 14:14:44.000000000 +0100
+@@ -387,16 +387,21 @@
+ static void senddialevent(struct ast_channel *src, struct ast_channel *dst)
+ {
+ 	/* XXX do we need also CallerIDnum ? */
+-	manager_event(EVENT_FLAG_CALL, "Dial", 
+-			   "Source: %s\r\n"
+-			   "Destination: %s\r\n"
+-			   "CallerID: %s\r\n"
+-			   "CallerIDName: %s\r\n"
+-			   "SrcUniqueID: %s\r\n"
+-			   "DestUniqueID: %s\r\n",
+-			   src->name, dst->name, S_OR(src->cid.cid_num, "<unknown>"),
+-			   S_OR(src->cid.cid_name, "<unknown>"), src->uniqueid,
+-			   dst->uniqueid);
++	manager_event(EVENT_FLAG_CALL, "Dial",
++                      "Source: %s\r\n"
++                      "Destination: %s\r\n"
++                      "Data: %s\r\n"
++                      "CallerID: %s\r\n"
++                      "CallerIDName: %s\r\n"
++                      "SrcUniqueID: %s\r\n"
++                      "DestUniqueID: %s\r\n",
++                      src->name,
++                      dst->name,
++                      src->data ? src->data : "",
++                      S_OR(src->cid.cid_num, "<unknown>"),
++                      S_OR(src->cid.cid_name, "<unknown>"),
++                      src->uniqueid,
++                      dst->uniqueid);
+ }
+ 
+ static struct ast_channel *wait_for_answer(struct ast_channel *in, struct dial_localuser *outgoing, int *to, struct ast_flags *peerflags, int *sentringing, char *status, size_t statussize, int busystart, int nochanstart, int congestionstart, int priority_jump, int *result)
+Index: asterisk-1.4.22/apps/app_meetme.c
+===================================================================
+--- asterisk-1.4.22.orig/apps/app_meetme.c	2008-11-25 14:05:26.000000000 +0100
++++ asterisk-1.4.22/apps/app_meetme.c	2008-11-25 14:12:01.000000000 +0100
+@@ -3019,6 +3019,81 @@
+ 	return meetmemute(s, m, 0);
+ }
+ 
++static char mandescr_meetmelist[] =
++"Description: Lists all users in a particular MeetMe conference.\n"
++"MeetmeList will follow as separate events, followed by a final event called\n"
++"MeetmeListComplete.\n"
++"Variables:\n"
++"    *ActionId: <id>\n"
++"    *Conference: <confno>\n";
++
++static int action_meetmelist(struct mansession *s, const struct message *m)
++{
++	const char *actionid = astman_get_header(m, "ActionID");
++	const char *conference = astman_get_header(m, "Conference");
++	char idText[80] = "";
++	struct ast_conference *cnf;
++	struct ast_conf_user *user;
++	int total = 0;
++
++	if (!ast_strlen_zero(actionid))
++		snprintf(idText, sizeof(idText), "ActionID: %s\r\n", actionid);
++
++	if (AST_LIST_EMPTY(&confs)) {
++		astman_send_error(s, m, "No active conferences.");
++		return 0;
++	}
++
++	astman_send_ack(s, m, "Meetme user list will follow");
++
++	/* Find the right conference */
++	AST_LIST_LOCK(&confs);
++	AST_LIST_TRAVERSE(&confs, cnf, list) {
++		/* If we ask for one particular, and this isn't it, skip it */
++		if (!ast_strlen_zero(conference) && strcmp(cnf->confno, conference))
++			continue;
++
++		/* Show all the users */
++		AST_LIST_TRAVERSE(&cnf->userlist, user, list) {
++			total++;
++			astman_append(s,
++			"Event: MeetmeList\r\n"
++			"%s"
++			"Conference: %s\r\n"
++			"UserNumber: %d\r\n"
++			"CallerIDNum: %s\r\n"
++			"CallerIDName: %s\r\n"
++			"Channel: %s\r\n"
++			"Admin: %s\r\n"
++			"Role: %s\r\n"
++			"MarkedUser: %s\r\n"
++			"Muted: %s\r\n"
++			"Talking: %s\r\n"
++			"\r\n",
++			idText,
++			cnf->confno,
++			user->user_no,
++			S_OR(user->chan->cid.cid_num, "<unknown>"),
++			S_OR(user->chan->cid.cid_name, "<no name>"),
++			user->chan->name,
++			user->userflags & CONFFLAG_ADMIN ? "Yes" : "No",
++			user->userflags & CONFFLAG_MONITOR ? "Listen only" : user->userflags & CONFFLAG_TALKER ? "Talk only" : "Talk and listen",
++			user->userflags & CONFFLAG_MARKEDUSER ? "Yes" : "No",
++			user->adminflags & ADMINFLAG_MUTED ? "By admin" : user->adminflags & ADMINFLAG_SELFMUTED ? "By self" : "No",
++			user->talking > 0 ? "Yes" : user->talking == 0 ? "No" : "Not monitored"); 
++		}
++	}
++	AST_LIST_UNLOCK(&confs);
++	/* Send final confirmation */
++	astman_append(s,
++	"Event: MeetmeListComplete\r\n"
++	"EventList: Complete\r\n"
++	"ListItems: %d\r\n"
++	"%s"
++	"\r\n", total, idText);
++	return 0;
++}
++
+ static void *recordthread(void *args)
+ {
+ 	struct ast_conference *cnf = args;
+@@ -4840,6 +4915,7 @@
+ 	ast_cli_unregister_multiple(cli_meetme, ARRAY_LEN(cli_meetme));
+ 	res = ast_manager_unregister("MeetmeMute");
+ 	res |= ast_manager_unregister("MeetmeUnmute");
++	res |= ast_manager_unregister("MeetmeList");
+ 	res |= ast_unregister_application(app3);
+ 	res |= ast_unregister_application(app2);
+ 	res |= ast_unregister_application(app);
+@@ -4867,6 +4943,8 @@
+ 				    action_meetmemute, "Mute a Meetme user");
+ 	res |= ast_manager_register("MeetmeUnmute", EVENT_FLAG_CALL, 
+ 				    action_meetmeunmute, "Unmute a Meetme user");
++	res |= ast_manager_register2("MeetmeList", EVENT_FLAG_CALL, 
++                                     action_meetmelist, "List participants in a conference", mandescr_meetmelist);
+ 	res |= ast_register_application(app3, admin_exec, synopsis3, descrip3);
+ 	res |= ast_register_application(app2, count_exec, synopsis2, descrip2);
+ 	res |= ast_register_application(app, conf_exec, synopsis, descrip);
+Index: asterisk-1.4.22/main/manager.c
+===================================================================
+--- asterisk-1.4.22.orig/main/manager.c	2008-11-25 14:05:26.000000000 +0100
++++ asterisk-1.4.22/main/manager.c	2008-11-25 14:10:23.000000000 +0100
+@@ -1555,49 +1555,53 @@
+ 				elapsed_seconds = now.tv_sec - c->cdr->start.tv_sec;
+ 			}
+ 			astman_append(s,
+-			"Event: Status\r\n"
+-			"Privilege: Call\r\n"
+-			"Channel: %s\r\n"
+-			"CallerID: %s\r\n"		/* This parameter is deprecated and will be removed post-1.4 */
+-			"CallerIDNum: %s\r\n"
+-			"CallerIDName: %s\r\n"
+-			"Account: %s\r\n"
+-			"State: %s\r\n"
+-			"Context: %s\r\n"
+-			"Extension: %s\r\n"
+-			"Priority: %d\r\n"
+-			"Seconds: %ld\r\n"
+-			"%s"
+-			"Uniqueid: %s\r\n"
+-			"%s"
+-			"\r\n",
+-			c->name, 
+-			S_OR(c->cid.cid_num, "<unknown>"), 
+-			S_OR(c->cid.cid_num, "<unknown>"), 
+-			S_OR(c->cid.cid_name, "<unknown>"), 
+-			c->accountcode,
+-			ast_state2str(c->_state), c->context,
+-			c->exten, c->priority, (long)elapsed_seconds, bridge, c->uniqueid, idText);
++                                      "Event: Status\r\n"
++                                      "Privilege: Call\r\n"
++                                      "Channel: %s\r\n"
++                                      "Application: %s\r\n"
++                                      "AppData: %s\r\n"
++                                      "CallerIDNum: %s\r\n"
++                                      "CallerIDName: %s\r\n"
++                                      "Account: %s\r\n"
++                                      "State: %s\r\n"
++                                      "Context: %s\r\n"
++                                      "Extension: %s\r\n"
++                                      "Priority: %d\r\n"
++                                      "Seconds: %ld\r\n"
++                                      "%s"
++                                      "Uniqueid: %s\r\n"
++                                      "%s"
++                                      "\r\n",
++                                      c->name,
++                                      c->appl ? c->appl : "",
++                                      c->data ? c->data : "",
++                                      S_OR(c->cid.cid_num, "<unknown>"),
++                                      S_OR(c->cid.cid_name, "<unknown>"),
++                                      c->accountcode,
++                                      ast_state2str(c->_state), c->context,
++                                      c->exten, c->priority, (long)elapsed_seconds, bridge, c->uniqueid, idText);
+ 		} else {
+ 			astman_append(s,
+-			"Event: Status\r\n"
+-			"Privilege: Call\r\n"
+-			"Channel: %s\r\n"
+-			"CallerID: %s\r\n"		/* This parameter is deprecated and will be removed post-1.4 */
+-			"CallerIDNum: %s\r\n"
+-			"CallerIDName: %s\r\n"
+-			"Account: %s\r\n"
+-			"State: %s\r\n"
+-			"%s"
+-			"Uniqueid: %s\r\n"
+-			"%s"
+-			"\r\n",
+-			c->name, 
+-			S_OR(c->cid.cid_num, "<unknown>"), 
+-			S_OR(c->cid.cid_num, "<unknown>"), 
+-			S_OR(c->cid.cid_name, "<unknown>"), 
+-			c->accountcode,
+-			ast_state2str(c->_state), bridge, c->uniqueid, idText);
++                                      "Event: Status\r\n"
++                                      "Privilege: Call\r\n"
++                                      "Channel: %s\r\n"
++                                      "Application: %s\r\n"
++                                      "AppData: %s\r\n"
++                                      "CallerIDNum: %s\r\n"
++                                      "CallerIDName: %s\r\n"
++                                      "Account: %s\r\n"
++                                      "State: %s\r\n"
++                                      "%s"
++                                      "Uniqueid: %s\r\n"
++                                      "%s"
++                                      "\r\n",
++                                      c->name,
++                                      c->appl ? c->appl : "",
++                                      c->data ? c->data : "",
++                                      S_OR(c->cid.cid_num, "<unknown>"),
++                                      S_OR(c->cid.cid_name, "<unknown>"),
++                                      c->accountcode,
++                                      ast_state2str(c->_state), bridge, c->uniqueid, idText);
+ 		}
+ 		ast_channel_unlock(c);
+ 		if (!all)

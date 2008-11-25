@@ -31,3 +31,4 @@ pf_manager_dtmf.patch
 pf_manager_atxfer.patch
 pf_ackcall_not_always.patch
 iax2_issue13645-1.4
+pf_manager_misc.patch
