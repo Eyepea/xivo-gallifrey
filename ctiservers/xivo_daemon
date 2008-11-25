@@ -456,6 +456,7 @@ evfunction_to_method_name = {
         'Agentcallbacklogoff':  'ami_agentcallbacklogoff',
         'AgentCalled':          'ami_agentcalled',
         'AgentComplete':        'ami_agentcomplete',
+        'AgentsComplete':       'ami_agentscomplete',
         'AgentConnect':         'ami_agentconnect',
         'AgentDump':            'ami_agentdump',
         'Agents':               'ami_agents',
@@ -472,7 +473,9 @@ evfunction_to_method_name = {
         'FaxReceived':          'ami_faxreceived',
         'MeetmeJoin':           'ami_meetmejoin',               # when a member joins a conference
         'MeetmeLeave':          'ami_meetmeleave',              # when a member leaves a conference
-        'MeetmeMute':           'ami_meetmemute',               # when a member leaves a conference
+        'MeetmeMute':           'ami_meetmemute',               # when a member is (un)muted
+        'MeetmeList':           'ami_meetmelist',
+        'MeetmeListComplete':   'ami_meetmelistcomplete',
         'ExtensionStatus':      'ami_extensionstatus',
         'OriginateSuccess':     'ami_originatesuccess',
         'AOriginateSuccess':    'ami_aoriginatesuccess',
@@ -496,7 +499,6 @@ evfunction_to_method_name = {
         'QueueCallerAbandon':   'ami_queuecallerabandon',       # (1.4)
         'Status':               'ami_status',
         'StatusComplete':       'ami_statuscomplete',
-        'AgentsComplete':       'ami_agentscomplete',
 }
 
 

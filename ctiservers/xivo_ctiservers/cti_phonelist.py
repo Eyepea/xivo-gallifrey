@@ -113,11 +113,13 @@ class PhoneList(AnyList):
         
         def ami_parkedcall(self, phoneid, uid, ctuid):
                 if phoneid in self.keeplist:
+                        infos = {'status' : 'linked-caller',
+                                 'time-link' : 0
+                                 }
                         if uid in self.keeplist[phoneid]['comms']:
-                                infos = {'status' : 'linked-caller',
-                                         'time-link' : 0
-                                         }
                                 self.keeplist[phoneid]['comms'][uid].update(infos)
+                        else:
+                                self.keeplist[phoneid]['comms'][uid] = infos
                 return
         
         def ami_unparkedcall(self, phoneid, uid, ctuid):

@@ -136,7 +136,11 @@ class AMIClass:
         def sendparkedcalls(self):
                 ret = self.sendcommand('ParkedCalls', [])
                 return ret
-
+        
+        def sendmeetmelist(self):
+                ret = self.sendcommand('MeetMeList', [])
+                return ret
+        
         # \brief For debug.
         def printresponse_forever(self):
                 while True:
@@ -255,12 +259,24 @@ class AMIClass:
                                 ret = self.sendcommand('Setvar', [('Channel', chan),
                                                                   ('Variable', var),
                                                                   ('Value', val)])
+                except self.AMIError, exc:
+                        ret = False
+                except Exception, exc:
+                        ret = False
+                return ret
+        
+        # Asterisk >= 1.4
+        def park(self, channel, channel_timeout):
+                try:
+                        ret = self.sendcommand('Park', [('Channel', channel),
+                                                        ('Channel2', channel_timeout)])
                         return ret
                 except self.AMIError, exc:
-                        return False
+                        ret = False
                 except Exception, exc:
-                        return False
-
+                        ret = False
+                return ret
+        
         def origapplication(self, application, data, phoneproto, phonesrc, context):
                 try:
                         ret = self.sendcommand('Originate', [('Channel', phoneproto + '/' + phonesrc),
@@ -557,6 +573,7 @@ class AMIList:
                         amicl.sendcommand('Command', [('Command', 'show version'),
                                                       ('ActionID' , ''.join(random.sample(__alphanums__, 10)) + "-" + hex(int(time.time())))])
                         # sendparkedcalls before sendstatus, so that parked calls can be identified later
+                        amicl.sendmeetmelist()
                         amicl.sendparkedcalls()
                         amicl.sendstatus()
                         amicl.sendagents()

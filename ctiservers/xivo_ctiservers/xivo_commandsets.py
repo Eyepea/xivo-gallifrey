@@ -263,9 +263,13 @@ class BaseCommand:
                 return
         def ami_meetmemute(self, astid, event):
                 return
+        def ami_meetmelist(self, astid, event):
+                return
+        def ami_meetmelistcomplete(self, astid, event):
+                return
         def ami_status(self, astid, event):
                 return
-
+        
         def ami_queueentry(self, astid, event):
                 return
         def ami_queuemember(self, astid, event):
