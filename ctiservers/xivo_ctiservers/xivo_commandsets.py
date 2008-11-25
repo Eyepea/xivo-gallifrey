@@ -27,6 +27,8 @@ __author__    = 'Corentin Le Gall'
 """
 Base class for miscellaneous Command Sets
 """
+import logging
+log = logging.getLogger('commandset')
 
 CMD_OTHER = 1 << 0
 CMD_LOGIN_ID = 1 << 1
@@ -232,9 +234,7 @@ class BaseCommand:
                 return
         def ami_parkedcalltimeout(self, astid, event):
                 return
-        def ami_parkedcallscomplete(self, astid, event):
-                return
-
+        
         # Agents' AMI Events
         def ami_agentlogin(self, astid, event):
                 return
@@ -245,8 +245,6 @@ class BaseCommand:
         def ami_agentcallbacklogoff(self, astid, event):
                 return
         def ami_agentcalled(self, astid, event):
-                return
-        def ami_agentcomplete(self, astid, event):
                 return
         def ami_agentdump(self, astid, event):
                 return
@@ -264,8 +262,6 @@ class BaseCommand:
         def ami_meetmemute(self, astid, event):
                 return
         def ami_meetmelist(self, astid, event):
-                return
-        def ami_meetmelistcomplete(self, astid, event):
                 return
         def ami_status(self, astid, event):
                 return
@@ -286,10 +282,7 @@ class BaseCommand:
                 return
         def ami_queuecallerabandon(self, astid, event):
                 return
-        def ami_queuestatuscomplete(self, astid, event):
-                print 'AMI %s QueueStatusComplete' % astid
-                return
-
+        
         def ami_join(self, astid, event):
                 return
         def ami_leave(self, astid, event):
@@ -307,14 +300,26 @@ class BaseCommand:
                 return
         def ami_newchannel(self, astid, event):
                 return
+        
+        def ami_agentcomplete(self, astid, event):
+                # log.info('%s : %s' % (astid, event))
+                return
+        def ami_meetmelistcomplete(self, astid, event):
+                # log.info('%s : %s' % (astid, event))
+                return
+        def ami_queuestatuscomplete(self, astid, event):
+                # log.info('%s : %s' % (astid, event))
+                return
         def ami_statuscomplete(self, astid, event):
-                print 'AMI %s StatusComplete' % astid
+                # log.info('%s : %s' % (astid, event))
                 return
-
+        def ami_parkedcallscomplete(self, astid, event):
+                # log.info('%s : %s' % (astid, event))
+                return
         def ami_agentscomplete(self, astid, event):
-                print 'AMI %s AgentsComplete' % astid
+                # log.info('%s : %s' % (astid, event))
                 return
-
+        
         def amiresponse_success(self, astid, event):
                 return
         def amiresponse_error(self, astid, event):

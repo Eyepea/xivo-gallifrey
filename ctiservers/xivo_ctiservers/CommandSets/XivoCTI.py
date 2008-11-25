@@ -1865,10 +1865,6 @@ class XivoCTICommand(BaseCommand):
                                                    'time-newchannel' : time.time()}
                 return
         
-        def ami_parkedcallscomplete(self, astid, event):
-                # log.info('ami_parkedcallscomplete %s : %s' % (astid, event))
-                return
-        
         def ami_parkedcall(self, astid, event):
                 channel = event.get('Channel')
                 cfrom   = event.get('From')
@@ -1936,7 +1932,7 @@ class XivoCTICommand(BaseCommand):
                 channel = event.get('Channel')
                 exten   = event.get('Exten')
                 uid     = event.get('Uniqueid')
-                log.info('%s PARKEDCALLTIMEOUT %s %s' % (astid, uid, channel, exten))
+                log.info('%s PARKEDCALLTIMEOUT %s %s %s' % (astid, uid, channel, exten))
                 tosend = { 'class' : 'parkcall',
                            'direction' : 'client',
                            'payload' : { 'status' : 'parkedcalltimeout',
@@ -1994,14 +1990,6 @@ class XivoCTICommand(BaseCommand):
         def ami_agentcalled(self, astid, event):
                 log.info('ami_agentcalled %s : %s' % (astid, event))
                 # {'Extension': 's', 'CallerID': 'unknown', 'Priority': '2', 'ChannelCalling': 'IAX2/test-13', 'Context': 'macro-incoming_queue_call', 'CallerIDName': 'Comm. ', 'AgentCalled': 'iax2/192.168.0.120/101'}
-                return
-        
-        def ami_agentcomplete(self, astid, event):
-                # log.info('ami_agentcomplete %s : %s' % (astid, event))
-                return
-        
-        def ami_agentscomplete(self, astid, event):
-                # log.info('ami_agentscomplete %s : %s' % (astid, event))
                 return
         
         def ami_agentdump(self, astid, event):
@@ -2388,31 +2376,62 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def ami_meetmelist(self, astid, event):
-                confnum = event.get('Conference')
+                meetmenum = event.get('Conference')
                 channel = event.get('Channel')
                 usernum = event.get('UserNumber')
+                
+                meetmeref = None
+                for idx, v in self.weblist['meetme'][astid].keeplist.iteritems():
+                        if v['number'] == meetmenum:
+                                meetmeref = v
+                                break
+                
+                if meetmeref is None:
+                        log.warning('%s : meetmelist : unable to find room %s' % (astid, meetmenum))
+                        return
+                
+                if channel not in meetmeref['channels']:
+                        meetmeref['channels'].append(channel)
+                else:
+                        log.warning('%s : channel %s already in meetme %s' % (astid, channel, meetmenum))
+                
                 # {'Talking': 'Not monitored', 'Admin': 'No', 'CallerIDNum': '103', 'Muted': 'No', 'MarkedUser': 'No', 'Role': 'Talk and listen', 'CallerIDName': 'User3'}
-                log.info('ami_meetmelist %s : %s %s %s' % (astid, confnum, channel, usernum))
-                return
-        
-        def ami_meetmelistcomplete(self, astid, event):
-                # log.info('ami_meetmelistcomplete %s : %s' % (astid, event))
                 return
         
         def ami_status(self, astid, event):
                 state = event.get('State')
                 appliname = event.get('Application')
+                uniqueid = event.get('Uniqueid')
+                channel = event.get('Channel')
+                if uniqueid not in self.uniqueids[astid]:
+                        self.uniqueids[astid][uniqueid] = { 'channel' : channel,
+                                                            'application' : appliname }
+                else:
+                        log.warning('%s : uid %s already in uniqueids list' % (astid, uniqueid))
+                        return
+                
+                if appliname == 'VoiceMailMain':
+                        return
+                elif appliname == 'MeetMe':
+                        return
+                elif appliname == 'Playback':
+                        # context.startswith('macro-phonestatus'):
+                        # *10
+                        return
+                elif appliname == 'Parked Call':
+                        if channel in self.parkedcalls[astid]:
+                                log.info('%s %s : parked call : %s %s' % (astid, channel, self.parkedcalls[astid][channel], event))
+                        return
+                
                 if state == 'Up':
                         link = event.get('Link')
-                        channel = event.get('Channel')
-                        uniqueid = event.get('Uniqueid')
                         
                         seconds = event.get('Seconds')
                         priority = event.get('Priority')
                         context = event.get('Context')
                         extension = event.get('Extension')
                         print 'ami_status', astid, state, uniqueid, channel, link, '/', priority, context, extension, seconds
-                        self.uniqueids[astid][uniqueid] = {'channel' : channel, 'link' : link}
+                        self.uniqueids[astid][uniqueid].update({'link' : link})
                         
                         phoneid = self.__phoneid_from_channel__(astid, channel)
                         if phoneid in self.weblist['phones'][astid].keeplist:
@@ -2426,21 +2445,8 @@ class XivoCTICommand(BaseCommand):
                                                                                                                'thischannel' : channel,
                                                                                                                'peerchannel' : link,
                                                                                                                'time-link' : 0 }
-                        if link is None:
-                                if channel in self.parkedcalls[astid]:
-                                        log.info('-- this is a parked call %s' % self.parkedcalls[astid][channel])
-                                        print event
                         if context is not None:
-                                if context == 'macro-meetme':
-                                        actionid = self.amilist.execute(astid, 'getvar', channel, 'XIVO_MEETMENUMBER')
-                                        self.getvar_requests[actionid] = {'channel' : channel, 'variable' : 'XIVO_MEETMENUMBER'}
-                                elif context.startswith('macro-phonestatus'):
-                                        # *10
-                                        pass
-                                elif context == 'macro-voicemsg':
-                                        # *98
-                                        pass
-                                elif context == 'macro-user':
+                                if context == 'macro-user':
                                         # ami_status xivo-obelisk Up 1222872105.4001 SIP/fpotiquet-085d8238 IAX2/asteriskisdn-11652 / None None None None
                                         # ami_status xivo-obelisk Up 1222872013.3986 IAX2/asteriskisdn-11652 SIP/fpotiquet-085d8238 / 31 macro-user s 178
                                         pass
@@ -2460,30 +2466,25 @@ class XivoCTICommand(BaseCommand):
                                 elif context == 'macro-voicemenu':
                                         pass
                 elif state == 'Ring': # Caller
-                        uniqueid = event.get('Uniqueid')
-                        channel = event.get('Channel')
-                        
                         seconds = event.get('Seconds')
                         context = event.get('Context')
                         extension = event.get('Extension')
                         print 'ami_status', astid, state, uniqueid, channel, seconds, context, extension
-                        self.uniqueids[astid][uniqueid] = {'channel' : channel}
                 elif state == 'Ringing': # Callee
-                        uniqueid = event.get('Uniqueid')
-                        channel = event.get('Channel')
                         print 'ami_status', astid, state, uniqueid, channel
-                        self.uniqueids[astid][uniqueid] = {'channel' : channel}
                         # ami_status noxivo-clg Ringing 1227551513.1501 SIP/102-081ce708
                         # ami_status noxivo-clg Ring 1227551513.1500 SIP/103-b6b12cc8 2 default 102
                 elif state == 'Rsrvd':
-                        uniqueid = event.get('Uniqueid')
-                        channel = event.get('Channel')
                         # Zap/pseudo-xxx is here when there is a meetme going on
                         print 'ami_status', astid, state, uniqueid, channel
                 else:
                         print 'ami_status', astid, event
                 return
-
+        
+        def ami_statuscomplete(self, astid, event):
+                log.info('%s : %s' % (astid, self.uniqueids[astid]))
+                return
+        
         def ami_join(self, astid, event):
                 if astid not in self.weblist['queues']:
                         log.warning('ami_join : %s : no queue list has been defined' % astid)
