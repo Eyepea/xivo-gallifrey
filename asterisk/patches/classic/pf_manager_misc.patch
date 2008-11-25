@@ -7,11 +7,12 @@
         - backport of MeetMeList Manager Command
         - added Data contents to the Dial event
         - added Application Name and Data to the Status event
+        - added Uniqueid information to the ParkedCall events
 
 Index: asterisk-1.4.22/apps/app_dial.c
 ===================================================================
---- asterisk-1.4.22.orig/apps/app_dial.c	2008-11-25 14:05:26.000000000 +0100
-+++ asterisk-1.4.22/apps/app_dial.c	2008-11-25 14:14:44.000000000 +0100
+--- asterisk-1.4.22.orig/apps/app_dial.c	2008-08-06 01:13:20.000000000 +0200
++++ asterisk-1.4.22/apps/app_dial.c	2008-11-25 14:56:18.000000000 +0100
 @@ -387,16 +387,21 @@
  static void senddialevent(struct ast_channel *src, struct ast_channel *dst)
  {
@@ -46,8 +47,8 @@ Index: asterisk-1.4.22/apps/app_dial.c
  static struct ast_channel *wait_for_answer(struct ast_channel *in, struct dial_localuser *outgoing, int *to, struct ast_flags *peerflags, int *sentringing, char *status, size_t statussize, int busystart, int nochanstart, int congestionstart, int priority_jump, int *result)
 Index: asterisk-1.4.22/apps/app_meetme.c
 ===================================================================
---- asterisk-1.4.22.orig/apps/app_meetme.c	2008-11-25 14:05:26.000000000 +0100
-+++ asterisk-1.4.22/apps/app_meetme.c	2008-11-25 14:12:01.000000000 +0100
+--- asterisk-1.4.22.orig/apps/app_meetme.c	2008-08-13 22:42:33.000000000 +0200
++++ asterisk-1.4.22/apps/app_meetme.c	2008-11-25 16:34:50.000000000 +0100
 @@ -3019,6 +3019,81 @@
  	return meetmemute(s, m, 0);
  }
@@ -113,17 +114,17 @@ Index: asterisk-1.4.22/apps/app_meetme.c
 +			user->userflags & CONFFLAG_MONITOR ? "Listen only" : user->userflags & CONFFLAG_TALKER ? "Talk only" : "Talk and listen",
 +			user->userflags & CONFFLAG_MARKEDUSER ? "Yes" : "No",
 +			user->adminflags & ADMINFLAG_MUTED ? "By admin" : user->adminflags & ADMINFLAG_SELFMUTED ? "By self" : "No",
-+			user->talking > 0 ? "Yes" : user->talking == 0 ? "No" : "Not monitored"); 
++			user->talking > 0 ? "Yes" : user->talking == 0 ? "No" : "Not monitored");
 +		}
 +	}
 +	AST_LIST_UNLOCK(&confs);
 +	/* Send final confirmation */
 +	astman_append(s,
-+	"Event: MeetmeListComplete\r\n"
-+	"EventList: Complete\r\n"
-+	"ListItems: %d\r\n"
-+	"%s"
-+	"\r\n", total, idText);
++                      "Event: MeetmeListComplete\r\n"
++                      "EventList: Complete\r\n"
++                      "ListItems: %d\r\n"
++                      "%s"
++                      "\r\n", total, idText);
 +	return 0;
 +}
 +
@@ -138,19 +139,25 @@ Index: asterisk-1.4.22/apps/app_meetme.c
  	res |= ast_unregister_application(app3);
  	res |= ast_unregister_application(app2);
  	res |= ast_unregister_application(app);
-@@ -4867,6 +4943,8 @@
+@@ -4863,10 +4939,12 @@
+ 	res |= load_config(0);
+ 
+ 	ast_cli_register_multiple(cli_meetme, ARRAY_LEN(cli_meetme));
+-	res |= ast_manager_register("MeetmeMute", EVENT_FLAG_CALL, 
++	res |= ast_manager_register("MeetmeMute", EVENT_FLAG_CALL,
  				    action_meetmemute, "Mute a Meetme user");
- 	res |= ast_manager_register("MeetmeUnmute", EVENT_FLAG_CALL, 
+-	res |= ast_manager_register("MeetmeUnmute", EVENT_FLAG_CALL, 
++	res |= ast_manager_register("MeetmeUnmute", EVENT_FLAG_CALL,
  				    action_meetmeunmute, "Unmute a Meetme user");
-+	res |= ast_manager_register2("MeetmeList", EVENT_FLAG_CALL, 
++	res |= ast_manager_register2("MeetmeList", EVENT_FLAG_CALL,
 +                                     action_meetmelist, "List participants in a conference", mandescr_meetmelist);
  	res |= ast_register_application(app3, admin_exec, synopsis3, descrip3);
  	res |= ast_register_application(app2, count_exec, synopsis2, descrip2);
  	res |= ast_register_application(app, conf_exec, synopsis, descrip);
 Index: asterisk-1.4.22/main/manager.c
 ===================================================================
---- asterisk-1.4.22.orig/main/manager.c	2008-11-25 14:05:26.000000000 +0100
-+++ asterisk-1.4.22/main/manager.c	2008-11-25 14:10:23.000000000 +0100
+--- asterisk-1.4.22.orig/main/manager.c	2008-11-25 14:56:18.000000000 +0100
++++ asterisk-1.4.22/main/manager.c	2008-11-25 14:56:18.000000000 +0100
 @@ -1555,49 +1555,53 @@
  				elapsed_seconds = now.tv_sec - c->cdr->start.tv_sec;
  			}
@@ -246,3 +253,96 @@ Index: asterisk-1.4.22/main/manager.c
  		}
  		ast_channel_unlock(c);
  		if (!all)
+Index: asterisk-1.4.22/res/res_features.c
+===================================================================
+--- asterisk-1.4.22.orig/res/res_features.c	2008-11-25 16:38:44.000000000 +0100
++++ asterisk-1.4.22/res/res_features.c	2008-11-25 16:39:44.000000000 +0100
+@@ -426,17 +426,21 @@
+ 		ast_verbose(VERBOSE_PREFIX_2 "Parked %s on %d@%s. Will timeout back to extension [%s] %s, %d in %d seconds\n", pu->chan->name, pu->parkingnum, parking_con, pu->context, pu->exten, pu->priority, (pu->parkingtime/1000));
+ 
+ 	manager_event(EVENT_FLAG_CALL, "ParkedCall",
+-		"Exten: %s\r\n"
+-		"Channel: %s\r\n"
+-		"From: %s\r\n"
+-		"Timeout: %ld\r\n"
+-		"CallerID: %s\r\n"
+-		"CallerIDName: %s\r\n",
+-		pu->parkingexten, pu->chan->name, peer ? peer->name : "",
+-		(long)pu->start.tv_sec + (long)(pu->parkingtime/1000) - (long)time(NULL),
+-		S_OR(pu->chan->cid.cid_num, "<unknown>"),
+-		S_OR(pu->chan->cid.cid_name, "<unknown>")
+-		);
++                      "Exten: %s\r\n"
++                      "Channel: %s\r\n"
++                      "Uniqueid: %s\r\n"
++                      "From: %s\r\n"
++                      "Timeout: %ld\r\n"
++                      "CallerID: %s\r\n"
++                      "CallerIDName: %s\r\n",
++                      pu->parkingexten,
++                      pu->chan->name,
++                      pu->chan->uniqueid,
++                      peer ? peer->name : "",
++                      (long)pu->start.tv_sec + (long)(pu->parkingtime/1000) - (long)time(NULL),
++                      S_OR(pu->chan->cid.cid_num, "<unknown>"),
++                      S_OR(pu->chan->cid.cid_name, "<unknown>")
++                      );
+ 
+ 	if (peer && adsipark && ast_adsi_available(peer)) {
+ 		adsi_announce_park(peer, pu->parkingexten);	/* Only supports parking numbers */
+@@ -1773,15 +1777,17 @@
+ static void post_manager_event(const char *s, char *parkingexten, struct ast_channel *chan)
+ {
+ 	manager_event(EVENT_FLAG_CALL, s,
+-		"Exten: %s\r\n"
+-		"Channel: %s\r\n"
+-		"CallerID: %s\r\n"
+-		"CallerIDName: %s\r\n\r\n",
+-		parkingexten, 
+-		chan->name,
+-		S_OR(chan->cid.cid_num, "<unknown>"),
+-		S_OR(chan->cid.cid_name, "<unknown>")
+-		);
++                      "Exten: %s\r\n"
++                      "Channel: %s\r\n"
++                      "Uniqueid: %s\r\n"
++                      "CallerID: %s\r\n"
++                      "CallerIDName: %s\r\n\r\n",
++                      parkingexten,
++                      chan->name,
++                      chan->uniqueid,
++                      S_OR(chan->cid.cid_num, "<unknown>"),
++                      S_OR(chan->cid.cid_name, "<unknown>")
++                      );
+ }
+ 
+ /*! \brief Take care of parked calls and unpark them if needed */
+@@ -2058,15 +2064,19 @@
+ 			ast_log(LOG_WARNING, "Whoa, no parking context?\n");
+ 
+ 		manager_event(EVENT_FLAG_CALL, "UnParkedCall",
+-			"Exten: %s\r\n"
+-			"Channel: %s\r\n"
+-			"From: %s\r\n"
+-			"CallerID: %s\r\n"
+-			"CallerIDName: %s\r\n",
+-			pu->parkingexten, pu->chan->name, chan->name,
+-			S_OR(pu->chan->cid.cid_num, "<unknown>"),
+-			S_OR(pu->chan->cid.cid_name, "<unknown>")
+-			);
++                              "Exten: %s\r\n"
++                              "Channel: %s\r\n"
++                              "Uniqueid: %s\r\n"
++                              "From: %s\r\n"
++                              "CallerID: %s\r\n"
++                              "CallerIDName: %s\r\n",
++                              pu->parkingexten,
++                              pu->chan->name,
++                              pu->chan->uniqueid,
++                              chan->name,
++                              S_OR(pu->chan->cid.cid_num, "<unknown>"),
++                              S_OR(pu->chan->cid.cid_name, "<unknown>")
++                              );
+ 
+ 		free(pu);
+ 	}
