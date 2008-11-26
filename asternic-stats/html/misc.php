@@ -30,6 +30,20 @@ function debug($array) {
 	print '</pre>';
 }
 
+function print_human_hour($sec) {
+	$sec = calc_duration(false,false,$sec);
+
+	$res = '';
+	if($sec['h'] != 0)
+		$res .= $sec['h'] . 'h ';
+	if($sec['m'] != 0)
+		$res .= $sec['m'] . 'm ';
+	if($sec['s'] != 0)
+		$res .= $sec['s'] . 's';
+	
+	return $res;
+}
+
 function draw_bar($values,$width,$height,$divid,$stack) {
 	print "<img src=\"pie.php?$values&width=$width&height=$height\" alt=\"Graph\">";
 }
@@ -41,7 +55,6 @@ function get_xivo_json_info($xivo_url) {
 	    while (!feof($datafile)) {
 	       $buffer .= fgets($datafile, 4096);
 	    } 
-	    fclose($dataFile);
 	  } else {
 	    die( "fopen failed!" ) ;
 	  }
@@ -51,8 +64,8 @@ function get_xivo_json_info($xivo_url) {
 
 function populate_agents($agents_array) {
 	// Get informations from XiVO in JSON
-	$xivo_user = get_xivo_json_info("https://127.0.0.1/service/ipbx/json.php/private/pbx_settings/users");
-	$xivo_agent = get_xivo_json_info("https://127.0.0.1/service/ipbx/json.php/private/pbx_settings/agents");
+	$xivo_user = get_xivo_json_info("https://127.0.0.1/service/ipbx/json.php/restricted/pbx_settings/users");
+	$xivo_agent = get_xivo_json_info("https://127.0.0.1/service/ipbx/json.php/restricted/pbx_settings/agents");
 
 	$agent = array();
 

@@ -33,6 +33,7 @@ $midb = conecta_db($dbhost,$dbname,$dbuser,$dbpass);
 $self = $_SERVER['PHP_SELF'];
 
 $DB_DEBUG = false; 
+$HAS_REALTIME = false;
 
 session_start();
 session_register("QSTATS");

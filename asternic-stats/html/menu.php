@@ -27,14 +27,16 @@ $menu[] = $lang["$language"]['menu_home'];
 $menu[] = $lang["$language"]['menu_answered'];
 $menu[] = $lang["$language"]['menu_unanswered'];
 $menu[] = $lang["$language"]['menu_distribution'];
-$menu[] = $lang["$language"]['menu_realtime'];
+if($HAS_REALTIME === true)
+	$menu[] = $lang["$language"]['menu_realtime'];
 $menu[] = $lang["$language"]['menu_cti'];
 
 $link[] = "index.php";
 $link[] = "answered.php";
 $link[] = "unanswered.php";
 $link[] = "distribution.php";
-$link[] = "realtime.php";
+if($HAS_REALTIME === true)
+	$link[] = "realtime.php";
 $link[] = "cti.php";
 
 $anchor = Array();
