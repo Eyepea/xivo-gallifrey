@@ -5,6 +5,7 @@
 	$Date: 2008-11-03 19:06:47 +0100 (lun, 03 nov 2008) $
         Miscellaneous addenda in Manager Events
         - backport of MeetMeList Manager Command
+        - added misc paramters to MeetMeJoin event
         - added Data contents to the Dial event
         - added Application Name and Data to the Status event
         - added Uniqueid information to the ParkedCall events
@@ -48,8 +49,8 @@ Index: asterisk-1.4.22/apps/app_dial.c
 Index: asterisk-1.4.22/apps/app_meetme.c
 ===================================================================
 --- asterisk-1.4.22.orig/apps/app_meetme.c	2008-08-13 22:42:33.000000000 +0200
-+++ asterisk-1.4.22/apps/app_meetme.c	2008-11-26 15:53:38.000000000 +0100
-@@ -1696,11 +1696,20 @@
++++ asterisk-1.4.22/apps/app_meetme.c	2008-11-26 16:11:00.000000000 +0100
+@@ -1696,11 +1696,21 @@
  
  	if (!sent_event) {
  		manager_event(EVENT_FLAG_CALL, "MeetmeJoin", 
@@ -62,20 +63,21 @@ Index: asterisk-1.4.22/apps/app_meetme.c
 +                              "Uniqueid: %s\r\n"
 +                              "Meetme: %s\r\n"
 +                              "PseudoChan: %s\r\n"
-+                              "Admin: %d\r\n"
++                              "Admin: %s\r\n"
 +                              "Usernum: %d\r\n"
 +                              "CallerIDnum: %s\r\n"
 +                              "CallerIDname: %s\r\n",
-+			      chan->name, chan->uniqueid, conf->confno,
++			      chan->name, chan->uniqueid,
++                              conf->confno,
 +                              conf->chan->name,
-+                              user->userflags & CONFFLAG_ADMIN,
++                              user->userflags & CONFFLAG_ADMIN ? "Yes" : "No",
 +                              user->user_no,
 +                              S_OR(user->chan->cid.cid_num, "<unknown>"),
 +                              S_OR(user->chan->cid.cid_name, "<unknown>"));
  		sent_event = 1;
  	}
  
-@@ -3019,6 +3028,81 @@
+@@ -3019,6 +3029,83 @@
  	return meetmemute(s, m, 0);
  }
  
@@ -117,30 +119,32 @@ Index: asterisk-1.4.22/apps/app_meetme.c
 +		AST_LIST_TRAVERSE(&cnf->userlist, user, list) {
 +			total++;
 +			astman_append(s,
-+			"Event: MeetmeList\r\n"
-+			"%s"
-+			"Conference: %s\r\n"
-+			"UserNumber: %d\r\n"
-+			"CallerIDNum: %s\r\n"
-+			"CallerIDName: %s\r\n"
-+			"Channel: %s\r\n"
-+			"Admin: %s\r\n"
-+			"Role: %s\r\n"
-+			"MarkedUser: %s\r\n"
-+			"Muted: %s\r\n"
-+			"Talking: %s\r\n"
-+			"\r\n",
-+			idText,
-+			cnf->confno,
-+			user->user_no,
-+			S_OR(user->chan->cid.cid_num, "<unknown>"),
-+			S_OR(user->chan->cid.cid_name, "<no name>"),
-+			user->chan->name,
-+			user->userflags & CONFFLAG_ADMIN ? "Yes" : "No",
-+			user->userflags & CONFFLAG_MONITOR ? "Listen only" : user->userflags & CONFFLAG_TALKER ? "Talk only" : "Talk and listen",
-+			user->userflags & CONFFLAG_MARKEDUSER ? "Yes" : "No",
-+			user->adminflags & ADMINFLAG_MUTED ? "By admin" : user->adminflags & ADMINFLAG_SELFMUTED ? "By self" : "No",
-+			user->talking > 0 ? "Yes" : user->talking == 0 ? "No" : "Not monitored");
++                                      "Event: MeetmeList\r\n"
++                                      "%s"
++                                      "Conference: %s\r\n"
++                                      "PseudoChan: %s\r\n"
++                                      "UserNumber: %d\r\n"
++                                      "CallerIDNum: %s\r\n"
++                                      "CallerIDName: %s\r\n"
++                                      "Channel: %s\r\n"
++                                      "Admin: %s\r\n"
++                                      "Role: %s\r\n"
++                                      "MarkedUser: %s\r\n"
++                                      "Muted: %s\r\n"
++                                      "Talking: %s\r\n"
++                                      "\r\n",
++                                      idText,
++                                      cnf->confno,
++                                      cnf->chan->name,
++                                      user->user_no,
++                                      S_OR(user->chan->cid.cid_num, "<unknown>"),
++                                      S_OR(user->chan->cid.cid_name, "<no name>"),
++                                      user->chan->name,
++                                      user->userflags & CONFFLAG_ADMIN ? "Yes" : "No",
++                                      user->userflags & CONFFLAG_MONITOR ? "Listen only" : user->userflags & CONFFLAG_TALKER ? "Talk only" : "Talk and listen",
++                                      user->userflags & CONFFLAG_MARKEDUSER ? "Yes" : "No",
++                                      user->adminflags & ADMINFLAG_MUTED ? "By admin" : user->adminflags & ADMINFLAG_SELFMUTED ? "By self" : "No",
++                                      user->talking > 0 ? "Yes" : user->talking == 0 ? "No" : "Not monitored");
 +		}
 +	}
 +	AST_LIST_UNLOCK(&confs);
@@ -157,7 +161,7 @@ Index: asterisk-1.4.22/apps/app_meetme.c
  static void *recordthread(void *args)
  {
  	struct ast_conference *cnf = args;
-@@ -4840,6 +4924,7 @@
+@@ -4840,6 +4927,7 @@
  	ast_cli_unregister_multiple(cli_meetme, ARRAY_LEN(cli_meetme));
  	res = ast_manager_unregister("MeetmeMute");
  	res |= ast_manager_unregister("MeetmeUnmute");
@@ -165,7 +169,7 @@ Index: asterisk-1.4.22/apps/app_meetme.c
  	res |= ast_unregister_application(app3);
  	res |= ast_unregister_application(app2);
  	res |= ast_unregister_application(app);
-@@ -4863,10 +4948,12 @@
+@@ -4863,10 +4951,12 @@
  	res |= load_config(0);
  
  	ast_cli_register_multiple(cli_meetme, ARRAY_LEN(cli_meetme));
