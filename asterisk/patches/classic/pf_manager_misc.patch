@@ -48,8 +48,34 @@ Index: asterisk-1.4.22/apps/app_dial.c
 Index: asterisk-1.4.22/apps/app_meetme.c
 ===================================================================
 --- asterisk-1.4.22.orig/apps/app_meetme.c	2008-08-13 22:42:33.000000000 +0200
-+++ asterisk-1.4.22/apps/app_meetme.c	2008-11-25 16:34:50.000000000 +0100
-@@ -3019,6 +3019,81 @@
++++ asterisk-1.4.22/apps/app_meetme.c	2008-11-26 15:53:38.000000000 +0100
+@@ -1696,11 +1696,20 @@
+ 
+ 	if (!sent_event) {
+ 		manager_event(EVENT_FLAG_CALL, "MeetmeJoin", 
+-			      "Channel: %s\r\n"
+-			      "Uniqueid: %s\r\n"
+-			      "Meetme: %s\r\n"
+-			      "Usernum: %d\r\n",
+-			      chan->name, chan->uniqueid, conf->confno, user->user_no);
++                              "Channel: %s\r\n"
++                              "Uniqueid: %s\r\n"
++                              "Meetme: %s\r\n"
++                              "PseudoChan: %s\r\n"
++                              "Admin: %d\r\n"
++                              "Usernum: %d\r\n"
++                              "CallerIDnum: %s\r\n"
++                              "CallerIDname: %s\r\n",
++			      chan->name, chan->uniqueid, conf->confno,
++                              conf->chan->name,
++                              user->userflags & CONFFLAG_ADMIN,
++                              user->user_no,
++                              S_OR(user->chan->cid.cid_num, "<unknown>"),
++                              S_OR(user->chan->cid.cid_name, "<unknown>"));
+ 		sent_event = 1;
+ 	}
+ 
+@@ -3019,6 +3028,81 @@
  	return meetmemute(s, m, 0);
  }
  
@@ -131,7 +157,7 @@ Index: asterisk-1.4.22/apps/app_meetme.c
  static void *recordthread(void *args)
  {
  	struct ast_conference *cnf = args;
-@@ -4840,6 +4915,7 @@
+@@ -4840,6 +4924,7 @@
  	ast_cli_unregister_multiple(cli_meetme, ARRAY_LEN(cli_meetme));
  	res = ast_manager_unregister("MeetmeMute");
  	res |= ast_manager_unregister("MeetmeUnmute");
@@ -139,7 +165,7 @@ Index: asterisk-1.4.22/apps/app_meetme.c
  	res |= ast_unregister_application(app3);
  	res |= ast_unregister_application(app2);
  	res |= ast_unregister_application(app);
-@@ -4863,10 +4939,12 @@
+@@ -4863,10 +4948,12 @@
  	res |= load_config(0);
  
  	ast_cli_register_multiple(cli_meetme, ARRAY_LEN(cli_meetme));
