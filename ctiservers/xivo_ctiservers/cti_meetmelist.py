@@ -38,3 +38,20 @@ class MeetmeList(AnyList):
                                            'urloptions' : (1, 5, True)}
                 AnyList.__init__(self, newurls)
                 return
+        
+        def update(self):
+                ret = AnyList.update(self)
+                self.reverse_index = {}
+                for idx, ag in self.keeplist.iteritems():
+                        if ag['number'] not in self.reverse_index:
+                                self.reverse_index[ag['number']] = idx
+                        else:
+                                log.warning('2 meetme have the same number')
+                return ret
+        
+        def byroomnum(self, roomnum):
+                meetmeref = None
+                meetme_id = self.reverse_index.get(roomnum)
+                if meetme_id:
+                        meetmeref = self.keeplist.get(meetme_id)
+                return meetmeref

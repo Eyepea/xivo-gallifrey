@@ -474,6 +474,7 @@ evfunction_to_method_name = {
         'MeetmeJoin':           'ami_meetmejoin',               # when a member joins a conference
         'MeetmeLeave':          'ami_meetmeleave',              # when a member leaves a conference
         'MeetmeMute':           'ami_meetmemute',               # when a member is (un)muted
+        'MeetmeTalking':        'ami_meetmetalking',
         'MeetmeList':           'ami_meetmelist',
         'MeetmeListComplete':   'ami_meetmelistcomplete',
         'ExtensionStatus':      'ami_extensionstatus',

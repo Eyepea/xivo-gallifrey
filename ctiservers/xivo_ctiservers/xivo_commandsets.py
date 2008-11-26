@@ -252,17 +252,21 @@ class BaseCommand:
                 return
         def ami_agents(self, astid, event):
                 return
-
+        
         def ami_userevent(self, astid, event):
                 return
+        
         def ami_meetmejoin(self, astid, event):
                 return
         def ami_meetmeleave(self, astid, event):
                 return
         def ami_meetmemute(self, astid, event):
                 return
+        def ami_meetmetalking(self, astid, event):
+                return
         def ami_meetmelist(self, astid, event):
                 return
+        
         def ami_status(self, astid, event):
                 return
         
