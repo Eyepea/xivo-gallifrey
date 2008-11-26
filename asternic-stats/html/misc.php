@@ -55,6 +55,7 @@ function get_xivo_json_info($xivo_url) {
 	    while (!feof($datafile)) {
 	       $buffer .= fgets($datafile, 4096);
 	    } 
+	    fclose($datafile);
 	  } else {
 	    die( "fopen failed!" ) ;
 	  }
