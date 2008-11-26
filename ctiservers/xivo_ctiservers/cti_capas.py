@@ -48,6 +48,7 @@ class Capabilities:
                          'switchboard']
         
         allowed_xlets = {'agents' : ['agents'],
+                         'agentsnext' : ['agents'],
                          'agentdetails' : ['agents'],
                          'queues' : ['agents'],
                          'queuedetails' : ['agents'],
