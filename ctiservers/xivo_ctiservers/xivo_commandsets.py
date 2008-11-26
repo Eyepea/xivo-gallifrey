@@ -88,6 +88,8 @@ class BaseCommand:
                 return {}
         def phones(self):
                 return {}
+        def meetme(self):
+                return {}
         def uniqueids(self):
                 return {}
         

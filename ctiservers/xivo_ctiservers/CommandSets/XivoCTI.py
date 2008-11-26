@@ -788,6 +788,9 @@ class XivoCTICommand(BaseCommand):
         def phones(self):
                 return self.weblist['phones']
         
+        def meetme(self):
+                return self.weblist['meetme']
+        
         def uniqueids(self):
                 return self.uniqueids
         
@@ -2155,7 +2158,7 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def ami_queuememberpaused(self, astid, event):
-                print 'AMI_QUEUEMEMBERPAUSED', event
+                # print 'AMI_QUEUEMEMBERPAUSED', event
                 if astid not in self.weblist['queues']:
                         log.warning('ami_queuememberpaused : no queue list has been defined for %s' % astid)
                         return
@@ -2400,7 +2403,7 @@ class XivoCTICommand(BaseCommand):
                         uinfo = self.__userinfo_from_phoneid__(astid, phoneid)
                         userid = '%s/%s' % (uinfo.get('astid'), uinfo.get('xivo_userid'))
                         if isadmin:
-                                meetmeref['adminid'] = uinfo.get('userid')
+                                meetmeref['adminid'] = userid
                         meetmeref['channels'][channel] = { 'usernum' : usernum,
                                                            'mutestatus' : mutestatus,
                                                            'recordstatus' : recordstatus,
@@ -2557,7 +2560,8 @@ class XivoCTICommand(BaseCommand):
                 if astid not in self.weblist['queues']:
                         log.warning('ami_leave : no queue list has been defined for %s' % astid)
                         return
-                # print 'AMI Leave (Queue)', event
+                # print 'AMI Leave (Queue)', astid, event
+                # if needed, a 'reason' field could be convenient to catch here
                 chan  = event.get('Channel')
                 queue = event.get('Queue')
                 count = event.get('Count')

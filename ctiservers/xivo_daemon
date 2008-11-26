@@ -293,6 +293,14 @@ def manage_info_connections(connid, msg, sep):
                                                         connid.sendall('%s %s\n' % (ag, agp))
                                         except Exception:
                                                 log.exception('--- exception --- INFO %s' % usefulmsg)
+                        elif usefulmsg == 'show_meetme':
+                                for astid, meetme in commandclass.meetme().iteritems():
+                                        try:
+                                                connid.sendall('meetme for %s\n' % astid)
+                                                for ag, agp in meetme.keeplist.iteritems():
+                                                        connid.sendall('%s %s\n' % (ag, agp))
+                                        except Exception:
+                                                log.exception('--- exception --- INFO %s' % usefulmsg)
                         elif usefulmsg == 'show_phones':
                                 for astid, phones in commandclass.phones().iteritems():
                                         try:
