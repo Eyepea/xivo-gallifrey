@@ -227,6 +227,7 @@ $cover_pdf.= $lang["$language"]['agent_logoff'].": ".$logoff."\n";
 				<THEAD>
 				<TR>
 					<TH><?=$lang["$language"]['date']?></TH>
+					<TH>Taux de décroche</TH>
 					<TH>Présenté</TH>
 					<TH><?=$lang["$language"]['answered']?></TH>
 					<TH><?=$lang["$language"]['percent_answered']?></TH>
@@ -278,9 +279,11 @@ $cover_pdf.= $lang["$language"]['agent_logoff'].": ".$logoff."\n";
 					$linea_pdf = array($key,$ans_by_day["$key"],"$percent_ans ".$lang["$language"]['percent'],$unans_by_day["$key"],"$percent_unans ".$lang["$language"]['percent'],$average_call_duration_print,number_format($average_hold_duration,0),$login_by_day["$key"],$logout_by_day["$key"]);
 
 					$total = $ans_by_day["$key"]+$unans_by_day["$key"];
+					$taux_decroche = round($ans_by_day["$key"]/$total*100);
 
 					echo "<TR $odd>\n";
 					echo "<TD>$key</TD>\n";
+					echo "<TD>$taux_decroche %</TD>\n";
 					echo "<TD>$total</TD>\n";
 					echo "<TD>".$ans_by_day["$key"]."</TD>\n";
 					echo "<TD>$percent_ans ".$lang["$language"]['percent']."</TD>\n";
@@ -319,6 +322,7 @@ $cover_pdf.= $lang["$language"]['agent_logoff'].": ".$logoff."\n";
 				<THEAD>
 				<TR>
                     <TH><?=$lang["$language"]['hour']?></TH>
+		    <TH>Taux de décroche</TH>
                     <TH>Présenté</TH>
                     <TH><?=$lang["$language"]['answered']?></TH>
                     <TH><?=$lang["$language"]['percent_answered']?></TH>
@@ -380,9 +384,11 @@ $cover_pdf.= $lang["$language"]['agent_logoff'].": ".$logoff."\n";
 					$linea_pdf = array($key,$ans_by_hour["$key"],"$percent_ans ".$lang["$language"]['percent'],$unans_by_hour["$key"],"$percent_unans ".$lang["$language"]['percent'],number_format($average_call_duration,0),number_format($average_hold_duration,0),$login_by_hour["$key"],$logout_by_hour["$key"]);
 
 					$total = $ans_by_hour["$key"]+$unans_by_hour["$key"];
+					$taux_decroche = round($ans_by_hour["$key"]/$total*100);
 
 					echo "<TR $odd>\n";
 					echo "<TD>$key</TD>\n";
+					echo "<TD>$taux_decroche %</TD>\n";
 					echo "<TD>$total</TD>\n";
 					echo "<TD>".$ans_by_hour["$key"]."</TD>\n";
 					echo "<TD>$percent_ans".$lang["$language"]['percent']."</TD>\n";
@@ -462,6 +468,7 @@ $cover_pdf.= $lang["$language"]['agent_logoff'].": ".$logoff."\n";
 				<THEAD>
 				<TR>
                     <TH><?=$lang["$language"]['day']?></TH>
+		    <TH>Taux de décroche</TH>
 		    <TH>Présenté</TH>
                     <TH><?=$lang["$language"]['answered']?></TH>
                     <TH><?=$lang["$language"]['percent_answered']?></TH>
@@ -530,9 +537,12 @@ $cover_pdf.= $lang["$language"]['agent_logoff'].": ".$logoff."\n";
 					$linea_pdf = array($dayp["$key"],$ans_by_dw["$key"],"$percent_ans ".$lang["$language"]['percent'],$unans_by_dw["$key"],"$percent_unans ".$lang["$language"]['percent'],number_format($average_call_duration,0),number_format($average_hold_duration,0),$login_by_dw["$key"],$logout_by_dw["$key"]);
 
 					$total = $ans_by_dw["$key"]+$unans_by_dw["$key"];
+					$taux_decroche = round($ans_by_dw["$key"]/$total*100);
+					$tt += $taux_decroche;
 					
 					echo "<TR $odd>\n";
 					echo "<TD>".$dayp["$key"]."</TD>\n";
+					echo "<TD>$taux_decroche %</TD>\n";
 					echo "<TD>$total</TD>";
 					echo "<TD>".$ans_by_dw["$key"]."</TD>\n";
 					echo "<TD>$percent_ans".$lang["$language"]['percent']."</TD>\n";
@@ -555,7 +565,6 @@ $cover_pdf.= $lang["$language"]['agent_logoff'].": ".$logoff."\n";
 				$query_time.="title=".$lang["$language"]['avg_call_time_by_day']."$graphcolor";
 				$query_hold.="title=".$lang["$language"]['avg_hold_time_by_day']."$graphcolor";
 				?>
-			echo "</TR>";
 			</TBODY>
 			</TABLE>
 			<?
