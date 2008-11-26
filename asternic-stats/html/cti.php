@@ -28,7 +28,7 @@ if ($agent != "''") {
 
 $data = array();
 
-$db = sqlite_open('/var/lib/pf-xivo-cti-server/sqlite/xivo.db', 0666, $sqliteerror) or die ('Error DB : $sqliteerror');
+$db = sqlite_open('/var/lib/pf-xivo-cti-server/sqlite/xivo.db', 0666, $sqliteerror) or die ('Error DB : ' . $sqliteerror);
 
 $nb = count($agent);
 $agentlist = '';
@@ -46,13 +46,11 @@ if($agentlist !== '')
 else
 	die('Error no agent found !');
 
-
 $query = sqlite_query($db,'SELECT * FROM ctilog WHERE action IN(\'cti_login\',\'cti_logout\',\'cticommand:availstate\') '.
 			  'AND eventdate >= \''.$start.'\' AND eventdate <= \''.$end.'\' '.
 			  'AND loginclient IN('.$agentlist.')'.
 			  'ORDER BY loginclient ASC, eventdate ASC');
 $res_login_logout_time = sqlite_fetch_all($query);
-
 
 $query = sqlite_query($db,'SELECT * FROM ctilog WHERE action = \'cticommand:actionfiche\' '.
 			  'AND eventdate >= \''.$start.'\' AND eventdate <= \''.$end.'\' '.
@@ -184,54 +182,89 @@ onload = function() { content.focus() }
 </THEAD>
 </TABLE>
 
+<br><br>
 
 <TABLE width='99%' cellpadding=1 cellspacing=1 border=0 class='sortable' id='table2'>
 <CAPTION>
 	Stats pour XiVO client
 </CAPTION>
 
+<THEAD>
+<TR>
+<TH>Utilisateurs</TH>
+
+
 <?
 
+$header = array();
 foreach($data as $k => $v)
 {
-	echo "<THEAD>";
-	echo "<TR>";
-	echo "<TH>$k</TH>";
-	echo "<TH>Temps en secondes</TH>";
-	echo "<TH>Nombre de fois</TH>";
-	echo "</TR>";
-	echo "</THEAD>";
 
 	foreach($v as $q => $z)
 	{
-		if(is_array($z))
+		if(is_array($z) === false)
+			continue;
+
+		foreach($z as $m => $n)
 		{
-			foreach($z as $m => $n)
+			if($m !== 'xivo_unknown')
 			{
-				if($m !== 'xivo_unknown')
-				{
-					echo "<TR $odd>\n";
-					echo "<TD><b>$m</b></TD>\n";
-					echo "<TD>" . $n['total'] . "</TD>\n";
-					echo "<TD>" . $n['cnt'] . "</TD>\n";
-					echo "</TR>\n";
+				if(!in_array($m, $header)) {
+					echo "<TH colspan=2>$m</TH>";
+					$header[] = $m;
 				}
 			}
 		}
-		else
+	}
+
+}
+
+?>
+
+<TH colspan=2>Total</TH>
+</TR>
+</THEAD>
+
+<?
+
+$count_header = count($header);
+foreach($data as $k => $v)
+{
+	echo "<TR>";
+	echo "<TD>$k</TD>";
+	$c = 0;
+	foreach($v as $q => $z)
+	{
+		if(is_array($z) === false)
+			continue;
+
+		foreach($z as $m => $n)
 		{
-			echo "<TR $odd>\n";
-			echo "<TD>$q</TD>\n";
-			echo "<TD>$z</TD>\n";
-			echo "</TR>\n";
+			if($m !== 'xivo_unknown')
+			{
+				echo "<TD style='text-align: right'>" . print_human_hour($n['total']) . "</TD>\n";
+				echo "<TD style='text-align: right'>" . $n['cnt'] . "</TD>\n";
+				$c = $c+1;
+			}
 		}
 	}
 
+	$header_diff = $count_header-$c;
+	for($h=0;$h<$header_diff;$h++)
+		echo "<TD></TD><TD></TD>";
+	echo "<TD style='text-align: right'>" . print_human_hour($v['total']) . "</TD>";
+	echo "<TD style='text-align: right'>" . $v['cnt'] . "</TD>";
+	echo "</TR>";
 }
 ?>
 
 </TABLE>
 
+<br>
+
+<? print_exports($header_pdf,$data_pdf,$width_pdf,$title_pdf,$cover_pdf); ?>
+
+<br><br>
 
 <TABLE width='99%' cellpadding=1 cellspacing=1 border=0 class='sortable' id='table2'>
 <CAPTION>
@@ -255,6 +288,10 @@ foreach($res_event_stats as $stats)
 
 </TBODY>
 </TABLE>
+
+<br>
+
+<? print_exports($header_pdf,$data_pdf,$width_pdf,$title_pdf,$cover_pdf); ?>
 
 </div>
 </div>
