@@ -63,8 +63,8 @@ class UrlList:
                         else:
                                 log.warning('No URL has been defined')
                                 return -1
-                except Exception, exc:
-                        log.error("--- exception --- (UrlList) unable to open URL %s : %s" %(self.url, str(exc)))
+                except Exception:
+                        log.exception('--- exception --- (UrlList) unable to open URL %s' % self.url)
                         return -1
 
                 ret = -1
@@ -85,8 +85,8 @@ class UrlList:
                                                 for k in self.jsonreply:
                                                         k[var] = val
                                         self.urlmd5 = self.listmd5
-                                except Exception, exc:
-                                        log.error('--- exception --- (UrlList) trying to enforce setting %s %s' % (self.url, exc))
+                                except Exception:
+                                        log.exception('--- exception --- (UrlList) trying to enforce setting %s' % self.url)
                                 ret = 2
                         elif http_contenttype == ['text/html; charset=UTF-8']:
                                 if http_code == 403:
@@ -130,7 +130,7 @@ class UrlList:
                                                 # log.warning('unallowed line length %d' % len(line))
                                                 pass
                                 ret = 1
-                except Exception, exc:
-                        log.error('--- exception --- (UrlList) problem occured when retrieving list for %s : %s' % (self.url, exc))
+                except Exception:
+                        log.exception('--- exception --- (UrlList) problem occured when retrieving list for %s' % self.url)
                         ret = -1
                 return ret

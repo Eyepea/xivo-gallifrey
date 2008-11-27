@@ -85,8 +85,8 @@ class Fax:
                                                         self.reference)
                                         if ret:
                                                 reply = 'queued;'
-                                except Exception, exc:
-                                        log.error('--- exception --- (fax handler - AMI) : %s' %(str(exc)))
+                                except Exception:
+                                        log.exception('--- exception --- (fax handler - AMI)')
                         else:
                                 reply = 'ko;exists-pathspool'
                                 log.info('directory %s does not exist - could not send fax'

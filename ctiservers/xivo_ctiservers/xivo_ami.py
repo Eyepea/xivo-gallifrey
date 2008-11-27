@@ -102,8 +102,8 @@ class AMIClass:
                                         if self:
                                                 # "retrying AMI command=<%s> args=<%s>" % (action, str(args)))
                                                 self.sendcommand(action, args, 1)
-                                except Exception, exc:
-                                        # log.error("--- exception --- AMI not connected (action=%s args=%s) : %s" %(action, str(args), str(exc)))
+                                except Exception:
+                                        # log.exception("--- exception --- AMI not connected (action=%s args=%s)" %(action, args))
                                         pass
                         else:
                                 log.warning('warning : 2 attempts have failed for AMI command (%s)' % action)
@@ -203,9 +203,9 @@ class AMIClass:
                                                         ('Secret', self.password),
                                                         ('Events', 'off')])
                         return ret
-                except self.AMIError, exc:
+                except self.AMIError:
                         return False
-                except Exception, exc:
+                except Exception:
                         return False
 
         # \brief Executes a CLI command.
@@ -232,9 +232,9 @@ class AMIClass:
                         self.sendcommand('Hangup',
                                          [('Channel', channel)])
                         ret += 1
-                except self.AMIError, exc:
+                except self.AMIError:
                         pass
-                except Exception, exc:
+                except Exception:
                         pass
 
                 if channel_peer != "":
@@ -618,8 +618,8 @@ class AMIList:
                                         actionid = ''.join(random.sample(__alphanums__, 10))
                                         conn_ami.setactionid(actionid)
                                         ret = getattr(conn_ami, command)(*args)
-                                except Exception, exc:
-                                        log.error('--- exception --- AMI command %s on <%s> : %s' % (command, astid, exc))
+                                except Exception:
+                                        log.exception('--- exception --- AMI command %s on <%s>' % (command, astid))
                 else:
                         log.warning('ami (command %s) : %s not in list - wait for the next update ?'
                                     % (command, astid))

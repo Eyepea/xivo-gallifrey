@@ -175,9 +175,8 @@ class XivoCTICommand(BaseCommand):
                         self.__fill_ctilog__('daemon stop', mode)
                 else:
                         tosend = { 'class' : 'serverdown',
-                                   'direction' : 'client',
                                    'mode' : mode }
-                        conn.sendall(cjson.encode(tosend) + '\n')
+                        conn.sendall(self.__cjson_encode__(tosend) + '\n')
                 return
         
         def transfer_addbuf(self, req, buf):
@@ -196,18 +195,16 @@ class XivoCTICommand(BaseCommand):
                         self.transfers_ref[requester] = fileid
                         self.transfers_buf[requester] = []
                         tosend = { 'class' : 'fileref',
-                                   'direction' : 'client',
                                    'fileid' : fileid }
-                        connid.sendall(cjson.encode(tosend) + '\n')
+                        connid.sendall(self.__cjson_encode__(tosend) + '\n')
                 else:
                         if fileid in self.filestodownload:
                                 fname = self.filestodownload[fileid]
                                 data = urllib.urlopen('file:%s' % fname).read()
                                 tosend = { 'class' : 'fileref',
-                                           'direction' : 'client',
                                            'filename' : fname,
                                            'payload' : base64.b64encode(data) }
-                                connid.sendall(cjson.encode(tosend) + '\n')
+                                connid.sendall(self.__cjson_encode__(tosend) + '\n')
                                 del self.filestodownload[fileid]
                         else:
                                 log.warning('fileid %s does not exist' % fileid)
@@ -225,10 +222,9 @@ class XivoCTICommand(BaseCommand):
                                                                 self.configs[astid].faxcallerid,
                                                                 self.amilist.ami[astid])
                                 tosend = { 'class' : 'faxprogress',
-                                           'direction' : 'client',
                                            'status' : reply.split(';')[0],
                                            'reason' : reply.split(';')[1] }
-                                self.__send_msg_to_cti_client__(uinfo, cjson.encode(tosend))
+                                self.__send_msg_to_cti_client__(uinfo, self.__cjson_encode__(tosend))
                                 del self.transfers_ref[req]
                                 del self.transfers_buf[req]
                 return
@@ -432,30 +428,26 @@ class XivoCTICommand(BaseCommand):
                         self.timeout_login[connid].cancel()
                         del self.timeout_login[connid]
                 tosend = { 'class' : 'loginko',
-                           'direction' : 'client',
                            'errorstring' : errorstring }
-                connid.sendall('%s\n' % cjson.encode(tosend))
+                connid.sendall('%s\n' % self.__cjson_encode__(tosend))
                 return
 
         def telldisconn(self, connid):
-                tosend = { 'class' : 'disconn',
-                           'direction' : 'client' }
-                connid.sendall('%s\n' % cjson.encode(tosend))
+                tosend = { 'class' : 'disconn' }
+                connid.sendall('%s\n' % self.__cjson_encode__(tosend))
                 return
 
         def loginok(self, loginparams, userinfo, connid, phase):
                 if phase == xivo_commandsets.CMD_LOGIN_ID:
                         tosend = { 'class' : 'login_id_ok',
-                                   'direction' : 'client',
                                    'xivoversion' : XIVOVERSION_NUM,
                                    'version' : __revision__,
                                    'sessionid' : userinfo['prelogin']['sessionid'] }
-                        repstr = cjson.encode(tosend)
+                        repstr = self.__cjson_encode__(tosend)
                 elif phase == xivo_commandsets.CMD_LOGIN_PASS:
                         tosend = { 'class' : 'login_pass_ok',
-                                   'direction' : 'client',
                                    'capalist' : userinfo.get('capaids') }
-                        repstr = cjson.encode(tosend)
+                        repstr = self.__cjson_encode__(tosend)
                 elif phase == xivo_commandsets.CMD_LOGIN_CAPAS:
                         capaid = userinfo.get('capaid')
                         presenceid = self.capas[capaid].presenceid
@@ -472,7 +464,6 @@ class XivoCTICommand(BaseCommand):
                                 cstatus = {}
                         
                         tosend = { 'class' : 'login_capas_ok',
-                                   'direction' : 'client',
                                    'astid' : userinfo.get('astid'),
                                    'xivo_userid' : userinfo.get('xivo_userid'),
                                    'capafuncs' : self.capas[capaid].tostringlist(self.capas[capaid].all()),
@@ -484,7 +475,7 @@ class XivoCTICommand(BaseCommand):
                                                       'allowed' : allowed },
                                    'presencecounter' : cstatus
                                    }
-                        repstr = cjson.encode(tosend)
+                        repstr = self.__cjson_encode__(tosend)
                         # if 'features' in capa_user:
                         # repstr += ';capas_features:%s' %(','.join(configs[astid].capafeatures))
                         if connid in self.timeout_login:
@@ -498,7 +489,12 @@ class XivoCTICommand(BaseCommand):
                         self.__update_availstate__(userinfo, userinfo.get('state'))
                 
                 return
-
+        
+        def __cjson_encode__(self, object):
+                object['direction'] = 'client'
+                object['timenow'] = time.time()
+                return cjson.encode(object)
+        
         def set_cticonfig(self, lconf):
                 self.lconf = lconf
 
@@ -624,7 +620,7 @@ class XivoCTICommand(BaseCommand):
                 ret = {}
                 for capaid in self.capas.keys():
                         ret[capaid] = self.capas[capaid].appliname
-                return cjson.encode(ret)
+                return self.__cjson_encode__(ret)
         
         def updates(self):
                 u_update = self.ulist_ng.update()
@@ -638,10 +634,9 @@ class XivoCTICommand(BaseCommand):
                                                         log.info('%s %s %s : %s' % (astid, itemname, function, updatestatus[function]))
                                                         tosend = { 'class' : itemname,
                                                                    'function' : function,
-                                                                   'direction' : 'client',
                                                                    'astid' : astid,
                                                                    'deltalist' : updatestatus[function] }
-                                                        self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                                                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                                         if itemname == 'queues':
                                                 for qname, qq in self.weblist['queues'][astid].keeplist.iteritems():
                                                         qq['stats']['Xivo-Join'] = 0
@@ -677,8 +672,8 @@ class XivoCTICommand(BaseCommand):
                                                        
                                                        'queues' : {},
                                                        'stats' : {}}
-                        except Exception, exc:
-                                log.error('--- exception --- (getagentslist) : %s : %s' % (aitem, exc))
+                        except Exception:
+                                log.exception('--- exception --- (getagentslist) : %s' % aitem)
                 return lalist
 
         def getphoneslist(self, plist):
@@ -696,8 +691,8 @@ class XivoCTICommand(BaseCommand):
                                                 'hintstatus' : 'none',
                                                 'comms' : {}
                                                 }
-                        except Exception, exc:
-                                log.error('--- exception --- (getphoneslist) : %s : %s' % (pitem, exc))
+                        except Exception:
+                                log.exception('--- exception --- (getphoneslist : %s)' % pitem)
                 return lplist
 
         def getmeetmelist(self, mlist):
@@ -715,7 +710,7 @@ class XivoCTICommand(BaseCommand):
                                                                     'channels' : {}
                                                                     }
                         except Exception:
-                                log.error('--- exception --- (getmeetmelist : %s)' % mitem)
+                                log.exception('--- exception --- (getmeetmelist : %s)' % mitem)
                 return lmlist
 
         def getqueueslist(self, dlist):
@@ -732,8 +727,8 @@ class XivoCTICommand(BaseCommand):
                                                              'agents' : {},
                                                              'channels' : {},
                                                              'stats' : {}}
-                        except Exception, exc:
-                                log.error('--- exception --- (getqueueslist) : %s : %s' % (qitem, exc))
+                        except Exception:
+                                log.exception('--- exception --- (getqueueslist : %s)' % qitem)
                 return lqlist
         
         # fields set at startup by reading informations
@@ -772,8 +767,8 @@ class XivoCTICommand(BaseCommand):
                                                 lulist[uid]['agentid'] = uitem.get('agentid')
                                         else:
                                                 lulist[uid]['agentid'] = ''
-                        except Exception, exc:
-                                log.error('--- exception --- (getuserslist) : %s : %s' % (uitem, exc))
+                        except Exception:
+                                log.exception('--- exception --- (getuserslist : %s)' % uitem)
                 return lulist
         
         def version(self):
@@ -851,9 +846,8 @@ class XivoCTICommand(BaseCommand):
                         if userinfo is not None and 'login' in userinfo and 'connection' in userinfo.get('login'):
                                 mysock = userinfo.get('login')['connection']
                                 mysock.sendall(strupdate + '\n', socket.MSG_WAITALL)
-                except Exception, exc:
-                        log.error('--- exception --- (__send_msg_to_cti_client__) : %s (%s) userinfo = %s'
-                                  % (exc, exc.__class__, userinfo))
+                except Exception:
+                        log.exception('--- exception --- (__send_msg_to_cti_client__) userinfo = %s' % userinfo)
                         if userinfo not in self.disconnlist:
                                 self.disconnlist.append(userinfo)
                                 os.write(self.queued_threads_pipe[1], 'uinfo')
@@ -864,8 +858,8 @@ class XivoCTICommand(BaseCommand):
                         if strupdate is not None:
                                 for userinfo in self.ulist_ng.keeplist.itervalues():
                                         self.__send_msg_to_cti_client__(userinfo, strupdate)
-                except Exception, exc:
-                        log.warning('--- exception --- (__send_msg_to_cti_clients__) : %s' % exc)
+                except Exception:
+                        log.exception('--- exception --- (__send_msg_to_cti_clients__)')
                 return
 
         def __send_msg_to_cti_clients_except__(self, uinfos, strupdate):
@@ -874,10 +868,10 @@ class XivoCTICommand(BaseCommand):
                                 for userinfo in self.ulist_ng.keeplist.itervalues():
                                         if userinfo not in uinfos:
                                                 self.__send_msg_to_cti_client__(userinfo, strupdate)
-                except Exception, exc:
-                        log.warning('--- exception --- (__send_msg_to_cti_clients__) : %s' % exc)
+                except Exception:
+                        log.exception('--- exception --- (__send_msg_to_cti_clients_except__) userinfo = %s' % userinfo)
                 return
-
+        
 
         sheet_allowed_events = ['incomingqueue', 'incomingdid',
                                 'agentcalled', 'agentlinked', 'agentunlinked',
@@ -896,7 +890,7 @@ class XivoCTICommand(BaseCommand):
                                         t = r.read()
                                         r.close()
                                 except Exception, exc: # conscious limited exception output ("No such file or directory")
-                                        log.error('--- exception --- __build_xmlqtui__ %s %s %s' % (sheetkind, whichitem, exc))
+                                        log.error('--- exception --- __build_xmlqtui__ %s %s : %s' % (sheetkind, whichitem, exc))
                                         t = None
                                 if t is not None:
                                         linestosend.append('<%s name="%s"><![CDATA[%s]]></%s>' % (sheetkind, k, t, sheetkind))
@@ -1072,9 +1066,9 @@ class XivoCTICommand(BaseCommand):
                                                         dirdef = self.ctxlist.ctxlist[context][dirname]
                                                         try:
                                                                 y = self.__build_customers_bydirdef__(dirname, callingnum, dirdef, True)
-                                                        except Exception, exc:
-                                                                log.error('--- exception --- (xivo-tomatch-callerid : %s, %s) : %s'
-                                                                          % (dirname, context, exc))
+                                                        except Exception:
+                                                                log.exception('--- exception --- (xivo-tomatch-callerid : %s, %s)'
+                                                                              % (dirname, context))
                                                                 y = []
                                                         if y:
                                                                 for g, gg in y[0].iteritems():
@@ -1106,13 +1100,11 @@ class XivoCTICommand(BaseCommand):
                         if dozip:
                                 tosend = { 'class' : 'sheet',
                                            'compressed' : 'anything',
-                                           'direction' : 'client',
                                            'payload' : base64.b64encode((chr(0) * 4) + zlib.compress(''.join(linestosend).encode('utf8'))) }
                         else:
                                 tosend = { 'class' : 'sheet',
-                                           'direction' : 'client',
                                            'payload' : base64.b64encode(''.join(linestosend).encode('utf8')) }
-                        fulllines = cjson.encode(tosend)
+                        fulllines = self.__cjson_encode__(tosend)
                         
                         # print '---------', where, whoms, fulllines
                         
@@ -1210,7 +1202,6 @@ class XivoCTICommand(BaseCommand):
                 uinfodst = self.__userinfo_from_phoneid__(astid, phoneiddst)
                 self.__fill_uniqueids__(astid, uidsrc, uiddst, src, dst, 'dial')
                 tosend = { 'class' : 'call',
-                           'direction' : 'client',
                            'action' : 'dial' }
                 if uinfosrc:
                         tosend.update({ 'caller' : { 'userid' : uinfosrc.get('user'),
@@ -1222,7 +1213,7 @@ class XivoCTICommand(BaseCommand):
                                                      'company' : uinfodst.get('company'),
                                                      'phone' : phoneiddst }
                                         })
-                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 
                 
                 # update the phones statuses
@@ -1232,10 +1223,10 @@ class XivoCTICommand(BaseCommand):
                                                        self.uniqueids[astid][uiddst])
                 tosend = self.weblist['phones'][astid].status(phoneidsrc)
                 tosend['astid'] = astid
-                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 tosend = self.weblist['phones'][astid].status(phoneiddst)
                 tosend['astid'] = astid
-                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 
                 return
         
@@ -1377,10 +1368,10 @@ class XivoCTICommand(BaseCommand):
                                                        self.uniqueids[astid][uid2])
                 tosend = self.weblist['phones'][astid].status(phoneid1)
                 tosend['astid'] = astid
-                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 tosend = self.weblist['phones'][astid].status(phoneid2)
                 tosend['astid'] = astid
-                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 
                 if 'context' in self.uniqueids[astid][uid1]:
                         self.__sheet_alert__('link', astid, self.uniqueids[astid][uid1]['context'], event, {})
@@ -1467,10 +1458,10 @@ class XivoCTICommand(BaseCommand):
                                                          self.uniqueids[astid][uid2])
                 tosend = self.weblist['phones'][astid].status(phoneid1)
                 tosend['astid'] = astid
-                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 tosend = self.weblist['phones'][astid].status(phoneid2)
                 tosend['astid'] = astid
-                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 
                 if 'link' in uid1info:
                     if uid1info['link'].startswith('Agent/') and 'join' in uid1info:
@@ -1506,12 +1497,11 @@ class XivoCTICommand(BaseCommand):
 
                                 tosend = { 'class' : 'queues',
                                            'function' : 'sendlist',
-                                           'direction' : 'client',
                                            'payload' : [ { 'astid' : astid,
                                                            'queuestats' : self.weblist['queues'][astid].get_queuestats(queuename),
                                                            'vqueues' : self.weblist['vqueues'][astid].keeplist
                                                            } ] }
-                                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 else:
                         log.warning('%s unlink : link not in %s' % (astid, uid1info))
                         
@@ -1573,8 +1563,8 @@ class XivoCTICommand(BaseCommand):
                                         self.__ami_execute__(astid, 'queuepause', params[1], 'Agent/%s' % anum, 'true')
                                 elif params[0] == 'queueunpause' and len(params) > 1 and anum:
                                         self.__ami_execute__(astid, 'queuepause', params[1], 'Agent/%s' % anum, 'false')
-                except Exception, exc:
-                        log.error('--- exception --- (__presence_action__) %s %s %s %s : %s' % (astid, anum, capaid, status, exc))
+                except Exception:
+                        log.exception('--- exception --- (__presence_action__) %s %s %s %s' % (astid, anum, capaid, status))
                 return
         
         def __ami_execute__(self, *args):
@@ -1618,7 +1608,7 @@ class XivoCTICommand(BaseCommand):
                 self.weblist['phones'][astid].ami_hangup(phoneid, uid)
                 tosend = self.weblist['phones'][astid].status(phoneid)
                 tosend['astid'] = astid
-                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 self.weblist['phones'][astid].clear(phoneid, uid)
 
                 if chan in self.chans_incomingqueue or chan in self.chans_incomingdid:
@@ -1690,10 +1680,9 @@ class XivoCTICommand(BaseCommand):
                                 log.warning('AMI %s : fax not sent %s %s %s %s'
                                             % (astid, faxid.size, faxid.number, faxid.hide, faxid.uinfo))
                                 tosend = { 'class' : 'faxprogress',
-                                           'direction' : 'client',
                                            'status' : 'ko',
                                            'reason' : 'orig' }
-                                self.__send_msg_to_cti_client__(faxid.uinfo, cjson.encode(tosend))
+                                self.__send_msg_to_cti_client__(faxid.uinfo, self.__cjson_encode__(tosend))
                                 del self.faxes[actionid]
                         else:
                                 log.warning('AMI %s Response=Error : (%s) <%s>' % (astid, actionid, msg))
@@ -1739,13 +1728,12 @@ class XivoCTICommand(BaseCommand):
                                         userinfo['mwi'][0] = event.get('Waiting')
                                         tosend = { 'class' : 'users',
                                                    'function' : 'update',
-                                                   'direction' : 'client',
                                                    'user' : [userinfo.get('astid'),
                                                              userinfo.get('xivo_userid')],
                                                    'subclass' : 'mwi',
                                                    'payload' : userinfo.get('mwi')
                                                    }
-                                        self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 return
 
 
@@ -1772,7 +1760,7 @@ class XivoCTICommand(BaseCommand):
                                 self.weblist['phones'][astid].ami_extstatus(phoneref, status)
                                 tosend = self.weblist['phones'][astid].status(phoneref)
                                 tosend['astid'] = astid
-                                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 else:
                         log.warning('%s : undefined hint for %s@%s' % (astid, exten, context))
                 return
@@ -1791,7 +1779,7 @@ class XivoCTICommand(BaseCommand):
                                 self.weblist['phones'][astid].ami_extstatus(phoneref, status)
                                 tosend = self.weblist['phones'][astid].status(phoneref)
                                 tosend['astid'] = astid
-                                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 return
 
 
@@ -1840,6 +1828,7 @@ class XivoCTICommand(BaseCommand):
 
         def ami_newcallerid(self, astid, event):
                 uniqueid = event.get('Uniqueid')
+                # event.get('CID-CallingPres') # 0 (Presentation Allowed, Not Screened)
                 if astid in self.uniqueids and uniqueid in self.uniqueids[astid]:
                         self.uniqueids[astid][uniqueid].update({'calleridname' : event.get('CallerIDName'),
                                                                 'calleridnum'  : event.get('CallerID')})
@@ -1887,13 +1876,12 @@ class XivoCTICommand(BaseCommand):
                         self.weblist['phones'][astid].ami_parkedcall(phoneid, uid, ctuid)
                         tosend = self.weblist['phones'][astid].status(phoneid)
                         tosend['astid'] = astid
-                        self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 self.parkedcalls[astid][channel] = event
                 tosend = { 'class' : 'parkcall',
-                           'direction' : 'client',
                            'payload' : { 'status' : 'parkedcall',
                                          'args' : [astid, channel, exten, cfrom, timeout]}}
-                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 return
         
         def ami_unparkedcall(self, astid, event):
@@ -1917,10 +1905,9 @@ class XivoCTICommand(BaseCommand):
                         self.weblist['phones'][astid].ami_unparkedcall(phoneiddst, uid, ctuid)
                 # a subsequent 'link' AMI event should make the new status transmitted
                 tosend = { 'class' : 'parkcall',
-                           'direction' : 'client',
                            'payload' : { 'status' : 'unparkedcall',
                                          'args' : [astid, channel, exten, cfrom]}}
-                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 return
         
         def ami_parkedcallgiveup(self, astid, event):
@@ -1929,10 +1916,9 @@ class XivoCTICommand(BaseCommand):
                 uid     = event.get('Uniqueid')
                 log.info('%s PARKEDCALLGIVEUP %s %s %s' % (astid, uid, channel, exten))
                 tosend = { 'class' : 'parkcall',
-                           'direction' : 'client',
                            'payload' : { 'status' : 'parkedcallgiveup',
                                          'args' : [astid, channel, exten] } }
-                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 return
         
         def ami_parkedcalltimeout(self, astid, event):
@@ -1941,10 +1927,9 @@ class XivoCTICommand(BaseCommand):
                 uid     = event.get('Uniqueid')
                 log.info('%s PARKEDCALLTIMEOUT %s %s %s' % (astid, uid, channel, exten))
                 tosend = { 'class' : 'parkcall',
-                           'direction' : 'client',
                            'payload' : { 'status' : 'parkedcalltimeout',
                                          'args' : [astid, channel, exten] } }
-                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 return
         
         def ami_agentlogin(self, astid, event):
@@ -2127,12 +2112,11 @@ class XivoCTICommand(BaseCommand):
                 
                 tosend = { 'class' : 'agents',
                            'function' : 'update',
-                           'direction' : 'client',
                            'action' : action,
                            'astid' : astid,
                            'agent_channel' : agent_channel,
                            'payload' : arrgs }
-                return cjson.encode(tosend)
+                return self.__cjson_encode__(tosend)
         
         def ami_queuememberstatus(self, astid, event):
                 # print 'AMI_QUEUEMEMBERSTATUS', event
@@ -2191,12 +2175,11 @@ class XivoCTICommand(BaseCommand):
                 
                 tosend = { 'class' : 'queues',
                            'function' : 'sendlist',
-                           'direction' : 'client',
                            'payload' : [ { 'astid' : astid,
                                            'queuestats' : self.weblist['queues'][astid].get_queuestats(queue),
                                            'vqueues' : self.weblist['vqueues'][astid].keeplist
                                            } ] }
-                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 return
 
         def ami_queuemember(self, astid, event):
@@ -2234,10 +2217,9 @@ class XivoCTICommand(BaseCommand):
                         userid = '%s/%s' % (astid, event.get('XIVO_USERID'))
                         tosend = { 'class' : 'features',
                                    'function' : 'update',
-                                   'direction' : 'client',
                                    'userid' : userid,
                                    'payload' : repstr }
-                        self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                         
                 elif eventname == 'LocalCall':
                         log.info('AMI %s UserEvent %s %s' % (astid, eventname, event))
@@ -2261,20 +2243,18 @@ class XivoCTICommand(BaseCommand):
 
                 if event.get('PhaseEStatus') == '0':
                         tosend = { 'class' : 'faxprogress',
-                                   'direction' : 'client',
                                    'status' : 'ok' }
                 else:
                         tosend = { 'class' : 'faxprogress',
-                                   'direction' : 'client',
                                    'status' : 'ko',
                                    'reason' : '%s (code %s)' % (event.get('PhaseEString'),
                                                                 event.get('PhaseEStatus')) }
-                repstr = cjson.encode(tosend)
+                repstr = self.__cjson_encode__(tosend)
 
                 # 'FileName': '/var/spool/asterisk/fax/astfaxsend-q6yZAKTJvU-0x48be7930.tif'
                 faxid = filename[len('/var/spool/asterisk/fax/astfaxsend-'):-4]
                 if faxid in self.faxes:
-                        self.__send_msg_to_cti_client__(self.faxes[faxid].uinfo, cjson.encode(tosend))
+                        self.__send_msg_to_cti_client__(self.faxes[faxid].uinfo, self.__cjson_encode__(tosend))
                         del self.faxes[faxid]
                 return
 
@@ -2304,13 +2284,11 @@ class XivoCTICommand(BaseCommand):
                         meetmeref['channels'][channel] = { 'usernum' : usernum,
                                                            'mutestatus' : 'off',
                                                            'recordstatus' : 'off',
-                                                           'time_now' : time.time(),
-                                                           'time_spent' : 0,
+                                                           'time_start' : time.time(),
                                                            'userid' : userid,
                                                            'fullname' : uinfo.get('fullname'),
                                                            'phonenum' : uinfo.get('phonenum') }
                         tosend = { 'class' : 'meetme',
-                                   'direction' : 'client',
                                    'function' : 'update',
                                    'payload' : { 'action' : 'join',
                                                  'astid' : astid,
@@ -2320,7 +2298,7 @@ class XivoCTICommand(BaseCommand):
                                                  'channel' : channel,
                                                  'details' : meetmeref['channels'][channel] }
                                    }
-                        self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 else:
                         log.warning('%s : channel %s already in meetme %s' % (astid, channel, meetmenum))
                 return
@@ -2337,7 +2315,6 @@ class XivoCTICommand(BaseCommand):
                 
                 if channel in meetmeref['channels']:
                         tosend = { 'class' : 'meetme',
-                                   'direction' : 'client',
                                    'function' : 'update',
                                    'payload' : { 'action' : 'leave',
                                                  'astid' : astid,
@@ -2346,7 +2323,7 @@ class XivoCTICommand(BaseCommand):
                                                  'details' : meetmeref['channels'][channel] }
                                    }
                         del meetmeref['channels'][channel]
-                        self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 else:
                         log.warning('%s : channel %s not in meetme %s' % (astid, channel, meetmenum))
                 return
@@ -2365,7 +2342,6 @@ class XivoCTICommand(BaseCommand):
                 if channel in meetmeref['channels']:
                         meetmeref['channels'][channel]['mutestatus'] = mutestatus
                         tosend = { 'class' : 'meetme',
-                                   'direction' : 'client',
                                    'function' : 'update',
                                    'payload' : { 'action' : 'mutestatus',
                                                  'astid' : astid,
@@ -2373,7 +2349,7 @@ class XivoCTICommand(BaseCommand):
                                                  'channel' : channel,
                                                  'details' : meetmeref['channels'][channel] }
                                    }
-                        self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 else:
                         log.warning('%s : channel %s not in meetme %s' % (astid, channel, meetmenum))
                 return
@@ -2413,13 +2389,13 @@ class XivoCTICommand(BaseCommand):
                 else:
                         log.warning('%s : channel %s already in meetme %s' % (astid, channel, meetmenum))
                 
-                # {'Talking': 'Not monitored', 'Admin': 'No', 'CallerIDNum': '103', 'Muted': 'No', 'MarkedUser': 'No', 'Role': 'Talk and listen', 'CallerIDName': 'User3'}
+                # {'Talking': 'Not monitored', 'Admin': 'No', 'CallerIDNum': '103', MarkedUser': 'No', 'Role': 'Talk and listen', 'CallerIDName': 'User3'}
                 return
         
         def ami_status(self, astid, event):
                 state = event.get('State')
                 appliname = event.get('Application')
-                applidata = event.get('AppData')
+                applidata = event.get('AppData').split('|')
                 uniqueid = event.get('Uniqueid')
                 channel = event.get('Channel')
                 if uniqueid not in self.uniqueids[astid]:
@@ -2437,19 +2413,18 @@ class XivoCTICommand(BaseCommand):
                         # however knowing how much time has been spent might be useful here
                         meetmenum = event.get('AppData')
                         channel = event.get('Channel')
-                        seconds = event.get('Seconds')
+                        seconds = int(event.get('Seconds'))
                         meetmeref = self.weblist['meetme'][astid].byroomnum(meetmenum)
                         if meetmeref is not None:
                                 if channel in meetmeref['channels']:
-                                        meetmeref['channels'][channel]['time_now'] = time.time()
-                                        meetmeref['channels'][channel]['time_spent'] = int(seconds)
+                                        meetmeref['channels'][channel]['time_start'] = time.time() - seconds
                         return
                 elif appliname == 'Playback':
                         log.info('%s ami_status : %s %s' % (astid, appliname, applidata))
                         # context.startswith('macro-phonestatus'):
                         # *10
                         return
-                elif appliname in ['Queue', 'VoiceMailMain']:
+                elif appliname in ['Queue', 'VoiceMailMain', 'AgentLogin']:
                         log.info('%s ami_status : %s %s' % (astid, appliname, applidata))
                         return
                 elif appliname == '':
@@ -2549,9 +2524,8 @@ class XivoCTICommand(BaseCommand):
                 self.weblist['queues'][astid].update_queuestats(queue, event)
                 tosend = { 'class' : 'queues',
                            'function' : 'update',
-                           'direction' : 'client',
                            'payload' : [astid, queue, count] }
-                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 self.__ami_execute__(astid, 'sendqueuestatus', queue)
                 self.__send_msg_to_cti_clients__(self.__build_queue_status__(astid, queue))
                 return
@@ -2576,9 +2550,8 @@ class XivoCTICommand(BaseCommand):
                 self.weblist['queues'][astid].update_queuestats(queue, event)
                 tosend = { 'class' : 'queues',
                            'function' : 'update',
-                           'direction' : 'client',
                            'payload' : [astid, queue, count] }
-                self.__send_msg_to_cti_clients__(cjson.encode(tosend))
+                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 
                 if astid not in self.queues_channels_list:
                         self.queues_channels_list[astid] = {}
@@ -2607,9 +2580,8 @@ class XivoCTICommand(BaseCommand):
 
         def message_srv2clt(self, sender, message):
                 tosend = { 'class' : 'message',
-                           'direction' : 'client',
                            'payload' : [sender, message] }
-                return cjson.encode(tosend)
+                return self.__cjson_encode__(tosend)
 
         def dmessage_srv2clt(self, message):
                 return self.message_srv2clt('daemon-announce', message)
@@ -2620,10 +2592,9 @@ class XivoCTICommand(BaseCommand):
                 if function in ['update', 'noupdate']:
                         tosend = { 'class' : 'phones',
                                    'function' : function,
-                                   'direction' : 'client',
                                    'statusbase' : statusbase,
                                    'statusextended' : statusextended }
-                        strupdate = cjson.encode(tosend)
+                        strupdate = self.__cjson_encode__(tosend)
                         self.__send_msg_to_cti_clients__(strupdate)
                 return
 
@@ -2694,9 +2665,8 @@ class XivoCTICommand(BaseCommand):
                                                                         fullstat[iastid] = v.keeplist
                                                                 tosend = { 'class' : 'meetme',
                                                                            'function' : 'sendlist',
-                                                                           'direction' : 'client',
                                                                            'payload' : fullstat }
-                                                                repstr = cjson.encode(tosend)
+                                                                repstr = self.__cjson_encode__(tosend)
                                                                 
                                         elif classcomm == 'history':
                                                 if self.capas[capaid].match_funcs(ucapa, 'history'):
@@ -2715,10 +2685,9 @@ class XivoCTICommand(BaseCommand):
                                                                              icommand.struct.get('hide'))
                                                         self.faxes[newfax.reference] = newfax
                                                         tosend = { 'class' : 'faxsend',
-                                                                   'direction' : 'client',
                                                                    'tdirection' : 'upload',
                                                                    'fileid' : newfax.reference }
-                                                        repstr = cjson.encode(tosend)
+                                                        repstr = self.__cjson_encode__(tosend)
                                                         
                                         elif classcomm == 'availstate':
                                                 if self.capas[capaid].match_funcs(ucapa, 'presence'):
@@ -2731,10 +2700,9 @@ class XivoCTICommand(BaseCommand):
 
                                         elif classcomm == 'getguisettings':
                                                 tosend = { 'class' : 'getguisettings',
-                                                           'direction' : 'client',
                                                            'payload' : self.capas[capaid].guisettings
                                                            }
-                                                repstr = cjson.encode(tosend)
+                                                repstr = self.__cjson_encode__(tosend)
                                                 
                                         elif classcomm == 'message':
                                                 if self.capas[capaid].match_funcs(ucapa, 'messages'):
@@ -2764,10 +2732,9 @@ class XivoCTICommand(BaseCommand):
                                                 argums = icommand.struct.get('command')
                                                 if argums[0] == 'fetchlist':
                                                         tosend = { 'class' : 'callcampaign',
-                                                                   'direction' : 'client',
                                                                    'payload' : { 'command' : 'fetchlist',
                                                                                  'list' : [ '101', '102', '103' ] } }
-                                                        repstr = cjson.encode(tosend)
+                                                        repstr = self.__cjson_encode__(tosend)
                                                 elif argums[0] == 'startcall':
                                                         exten = argums[1]
                                                         self.__originate_or_transfer__(AMI_ORIGINATE,
@@ -2775,18 +2742,16 @@ class XivoCTICommand(BaseCommand):
                                                                                        'user:special:me',
                                                                                        'ext:%s' % exten)
                                                         tosend = { 'class' : 'callcampaign',
-                                                                   'direction' : 'client',
                                                                    'payload' : { 'command' : 'callstarted',
                                                                                  'number' : exten } }
-                                                        repstr = cjson.encode(tosend)
+                                                        repstr = self.__cjson_encode__(tosend)
                                                 elif argums[0] == 'stopcall':
                                                         tosend = { 'class' : 'callcampaign',
-                                                                   'direction' : 'client',
                                                                    'payload' : { 'command' : 'callstopped',
                                                                                  'number' : argums[1] } }
-                                                        repstr = cjson.encode(tosend)
+                                                        repstr = self.__cjson_encode__(tosend)
                                                         # self.__send_msg_to_cti_client__(userinfo,
-                                                        # '{'class':"callcampaign","direction":"client","command":"callnext","list":["%s"]}' % icommand.args[1])
+                                                        # '{'class':"callcampaign","command":"callnext","list":["%s"]}' % icommand.args[1])
                                         elif classcomm in ['originate', 'transfer', 'atxfer']:
                                                 if self.capas[capaid].match_funcs(ucapa, 'dial'):
                                                         repstr = self.__originate_or_transfer__(classcomm,
@@ -2843,13 +2808,12 @@ class XivoCTICommand(BaseCommand):
                                                                 if agent_id in self.weblist['agents'][astid].keeplist:
                                                                         agprop = self.weblist['agents'][astid].keeplist[agent_id]['stats']
                                                                         tosend = { 'class' : 'agent-status',
-                                                                                   'direction' : 'client',
                                                                                    'astid' : astid,
                                                                                    'agentnum' : agent_number,
                                                                                    'payload' : {'properties' : agprop,
                                                                                                 'queues' : self.weblist['queues'][astid].get_queues_byagent(agent_channel)}
                                                                                    }
-                                                                        repstr = cjson.encode(tosend)
+                                                                        repstr = self.__cjson_encode__(tosend)
                                                                 else:
                                                                         log.warning('%s : agent_id <%s> not in agent list' % (astid, agent_id))
                                 else:
@@ -2862,9 +2826,9 @@ class XivoCTICommand(BaseCommand):
                 if repstr is not None: # might be useful to reply sth different if there is a capa problem for instance, a bad syntaxed command
                         try:
                                 userinfo.get('login').get('connection').sendall(repstr + '\n')
-                        except Exception, exc:
-                                log.error('--- exception --- (sendall) attempt to send <%s ...> (%d chars) failed : %s'
-                                          % (repstr[:40], len(repstr), exc))
+                        except Exception:
+                                log.exception('--- exception --- (sendall) attempt to send <%s ...> (%d chars) failed'
+                                              % (repstr[:40], len(repstr)))
                 return ret
 
 
@@ -2904,9 +2868,8 @@ class XivoCTICommand(BaseCommand):
                 if len(reply) > 0:
                         # sha1sum = sha.sha(''.join(reply)).hexdigest()
                         tosend = { 'class' : 'history',
-                                   'direction' : 'client',
                                    'payload' : reply}
-                        return cjson.encode(tosend)
+                        return self.__cjson_encode__(tosend)
                 else:
                         return
 
@@ -2914,12 +2877,11 @@ class XivoCTICommand(BaseCommand):
         def __build_queue_status__(self, astid, qname):
                 if astid in self.weblist['queues'] and qname in self.weblist['queues'][astid].keeplist:
                         tosend = { 'class' : 'queue-status',
-                                   'direction' : 'client',
                                    'astid' : astid,
                                    'queuename' : qname,
                                    'payload' : { 'agents' : self.weblist['queues'][astid].keeplist[qname]['agents'],
                                                  'entries' : self.weblist['queues'][astid].keeplist[qname]['channels'] } }
-                        cjsonenc = cjson.encode(tosend)
+                        cjsonenc = self.__cjson_encode__(tosend)
                         log.info('__build_queue_status__ : %s' % cjsonenc)
                         return cjsonenc
                 else:
@@ -3040,10 +3002,9 @@ class XivoCTICommand(BaseCommand):
                                         self.weblist['agents'][astid].keeplist[agent_id]['stats'].update({'recorded' : True})
                                         log.info('started monitor on %s %s (agent %s)' % (astid, channel, anum))
                                         tosend = { 'class' : 'agentrecord',
-                                                   'direction' : 'client',
                                                    'agentnum' : anum,
                                                    'status' : 'started' }
-                                        return cjson.encode(tosend)
+                                        return self.__cjson_encode__(tosend)
 
                         elif subcommand == 'stoprecord':
                                 channels = self.__find_channel_by_agentnum__(astid, anum)
@@ -3053,10 +3014,9 @@ class XivoCTICommand(BaseCommand):
                                         self.weblist['agents'][astid].keeplist[agent_id]['stats'].update({'recorded' : False})
                                         log.info('stopped monitor on %s %s (agent %s)' % (astid, channel, anum))
                                         tosend = { 'class' : 'agentrecord',
-                                                   'direction' : 'client',
                                                    'agentnum' : anum,
                                                    'status' : 'stopped' }
-                                        return cjson.encode(tosend)
+                                        return self.__cjson_encode__(tosend)
 
                         elif subcommand == 'listen':
                                 channels = self.__find_channel_by_agentnum__(astid, anum)
@@ -3077,19 +3037,17 @@ class XivoCTICommand(BaseCommand):
                                         if monitoredfile.startswith('cti-agent-') and monitoredfile.endswith('%s.wav' % anum):
                                                 monitoredfiles.append(monitoredfile)
                                 tosend = { 'class' : 'filelist',
-                                           'direction' : 'client',
                                            'filelist' : monitoredfiles }
-                                return cjson.encode(tosend)
+                                return self.__cjson_encode__(tosend)
                         
                         elif subcommand == 'getfile':
                                 filename = '%s/%s' % (MONITORDIR, commandargs[3])
                                 fileid = ''.join(random.sample(__alphanums__, 10))
                                 self.filestodownload[fileid] = filename
                                 tosend = { 'class' : 'faxsend',
-                                           'direction' : 'client',
                                            'tdirection' : 'download',
                                            'fileid' : fileid }
-                                return cjson.encode(tosend)
+                                return self.__cjson_encode__(tosend)
 
                 elif subcommand == 'lists':
                         pass
@@ -3159,8 +3117,8 @@ class XivoCTICommand(BaseCommand):
                                                 self.logout_all_agents()
                                 else:
                                         log.info('(%2d h %2d min) => no action' % (thour, tmin))
-                except Exception, exc:
-                        log.error('--- exception --- (regular update) : %s' % exc)
+                except Exception:
+                        log.exception('--- exception --- (regular update)')
 
 
         def __getlist__(self, userinfo, ccomm):
@@ -3203,8 +3161,8 @@ class XivoCTICommand(BaseCommand):
                         try:
                                 for astid, iplist in self.weblist['phones'].iteritems():
                                         fullstat[astid] = iplist.keeplist
-                        except Exception, exc:
-                                log.error('--- exception --- (phones) %s' % exc)
+                        except Exception:
+                                log.exception('--- exception --- (phones)')
                 elif ccomm == 'agents':
                         fullstat = []
                         if self.capas[capaid].match_funcs(ucapa, 'agents'):
@@ -3229,9 +3187,8 @@ class XivoCTICommand(BaseCommand):
                                                           })
                 tosend = { 'class' : ccomm,
                            'function' : 'sendlist',
-                           'direction' : 'client',
                            'payload' : fullstat }
-                return cjson.encode(tosend)
+                return self.__cjson_encode__(tosend)
 
 
         # \brief Builds the features_get reply.
@@ -3275,10 +3232,9 @@ class XivoCTICommand(BaseCommand):
                                 log.exception('--- exception --- features_get(str) id=%s key=%s' % (userid, key))
                 tosend = { 'class' : 'features',
                            'function' : 'get',
-                           'direction' : 'client',
                            'userid' : userid,
                            'payload' : repstr }
-                return cjson.encode(tosend)
+                return self.__cjson_encode__(tosend)
         
         
         # \brief Builds the features_put reply.
@@ -3298,17 +3254,14 @@ class XivoCTICommand(BaseCommand):
                         self.configs[astid].userfeatures_db_conn.commit()
                         tosend = { 'class' : 'features',
                                    'function' : 'put',
-                                   'direction' : 'client',
                                    'payload' : [ userid, 'OK', key, value ] }
                         log.info('__build_features_put__ : %s : %s => %s' % (params, key, value))
-                except Exception, exc:
-                        log.error('--- exception --- features_put id=%s %s %s : %s'
-                                  % (userid, key, value, exc))
+                except Exception:
+                        log.exception('--- exception --- features_put id=%s %s %s' % (userid, key, value))
                         tosend = { 'class' : 'features',
                                    'function' : 'put',
-                                   'direction' : 'client',
                                    'payload' : [ userid, 'KO' ] }
-                return cjson.encode(tosend)
+                return self.__cjson_encode__(tosend)
 
 
         # \brief Originates / transfers.
@@ -3421,8 +3374,8 @@ class XivoCTICommand(BaseCommand):
                                                 ret = self.__ami_execute__(astid_src, commname,
                                                                            chan_src,
                                                                            exten_dst, context_src)
-                        except Exception, exc:
-                                log.error('--- exception --- unable to %s ... %s' % (commname, exc))
+                        except Exception:
+                                log.exception('--- exception --- unable to %s' % commname)
                 else:
                         log.warning('unallowed command %s' % commargs)
                 return
@@ -3484,9 +3437,8 @@ class XivoCTICommand(BaseCommand):
                                                      columns,
                                                      (likestring,))
                                 results = cursor.fetchall()
-                        except Exception, exc:
-                                log.error('--- exception --- %s : Connection to DataBase failed in History request : %s'
-                                          % (cfg.astid, exc))
+                        except Exception:
+                                log.exception('--- exception --- %s : Connection to DataBase failed in History request' % cfg.astid)
                 return results
 
 
@@ -3502,6 +3454,9 @@ class XivoCTICommand(BaseCommand):
                         return None
                 if not state:
                         return None
+                
+                ## XXX ## if state in ['onlineincoming', 'onlineoutgoing', 'postcall']:
+                ## XXX ## self.__fill_user_ctilog__(userinfo, 'phonestatus', state)
                 
                 if 'login' in userinfo and 'sessiontimestamp' in userinfo.get('login'):
                         userinfo['login']['sessiontimestamp'] = time.time()
@@ -3531,7 +3486,6 @@ class XivoCTICommand(BaseCommand):
                                 cstatus = self.presence_sections[wpid].countstatus(self.__counts__(wpid))
                                 
                         tosend = { 'class' : 'presence',
-                                   'direction' : 'client',
                                    'company' : company,
                                    'userid' : username,
                                    'xivo_userid' : xivo_userid,
@@ -3540,10 +3494,9 @@ class XivoCTICommand(BaseCommand):
                                                       'allowed' : allowed },
                                    'presencecounter' : cstatus
                                    }
-                        self.__send_msg_to_cti_client__(userinfo, cjson.encode(tosend))
+                        self.__send_msg_to_cti_client__(userinfo, self.__cjson_encode__(tosend))
                 
                 tosend = { 'class' : 'presence',
-                           'direction' : 'client',
                            'company' : company,
                            'userid' : username,
                            'xivo_userid' : xivo_userid,
@@ -3551,7 +3504,7 @@ class XivoCTICommand(BaseCommand):
                            'capapresence' : { 'state' : statedetails },
                            'presencecounter' : cstatus
                            }
-                self.__send_msg_to_cti_clients_except__([userinfo], cjson.encode(tosend))
+                self.__send_msg_to_cti_clients_except__([userinfo], self.__cjson_encode__(tosend))
                 return None
 
 
@@ -3566,8 +3519,8 @@ class XivoCTICommand(BaseCommand):
                                 try:
                                         y = self.__build_customers_bydirdef__(dirsec, searchpattern, dirdef, False)
                                         fulllist.extend(y)
-                                except Exception, exc:
-                                        log.error('--- exception --- __build_customers__ (%s) : %s' % (dirsec, exc))
+                                except Exception:
+                                        log.exception('--- exception --- __build_customers__ (%s)' % dirsec)
                 else:
                         log.warning('there has been no section defined for context %s : can not proceed directory search' % ctx)
 
@@ -3589,9 +3542,8 @@ class XivoCTICommand(BaseCommand):
 ##                        fullstat_body.append(fsl)
 ##                return fullstat_body
                 tosend = { 'class' : 'directory',
-                           'direction' : 'client',
                            'payload' : ';'.join(self.ctxlist.display_header[ctx]) + ';' + ';'.join(mylines) }
-                return cjson.encode(tosend)
+                return self.__cjson_encode__(tosend)
 
 
         def __build_customers_bydirdef__(self, dirname, searchpattern, z, reversedir):
@@ -3712,8 +3664,8 @@ class XivoCTICommand(BaseCommand):
                                                                 n = z.match_direct.index(dbkey)
                                                                 futureline[keyw] = result[n]
                                         fullstatlist.append(futureline)
-                        except Exception, exc:
-                                log.error('--- exception --- sqlrequest : %s' % exc)
+                        except Exception:
+                                log.exception('--- exception --- sqlrequest')
                 else:
                         log.warning('no database method defined - please fill the uri field of the directory <%s> definition' % dirname)
 
