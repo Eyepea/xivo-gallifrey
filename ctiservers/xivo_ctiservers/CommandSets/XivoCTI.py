@@ -491,8 +491,9 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def __cjson_encode__(self, object):
-                object['direction'] = 'client'
-                object['timenow'] = time.time()
+                if 'class' in object:
+                        object['direction'] = 'client'
+                        object['timenow'] = time.time()
                 return cjson.encode(object)
         
         def set_cticonfig(self, lconf):
@@ -520,9 +521,9 @@ class XivoCTICommand(BaseCommand):
                 if self.ctilog_conn is not None and self.ctilog_cursor is not None:
                         try:
                                 datetime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-                                columns = ('eventdate', 'loginclient', 'company', 'status', 'action', 'arguments')
+                                columns = ('eventdate', 'loginclient', 'company', 'status', 'action', 'arguments', 'callduration')
                                 self.ctilog_cursor.query("INSERT INTO ctilog (${columns}) "
-                                                         "VALUES (%s, NULL, NULL, NULL, %s, %s)",
+                                                         "VALUES (%s, NULL, NULL, NULL, %s, %s, NULL)",
                                                          columns,
                                                          (datetime, what, options))
                         except Exception:
@@ -530,15 +531,16 @@ class XivoCTICommand(BaseCommand):
                         self.ctilog_conn.commit()
                 return
         
-        def __fill_user_ctilog__(self, uinfo, what, options = ''):
+        def __fill_user_ctilog__(self, uinfo, what, options = '', callduration = None):
                 if self.ctilog_conn is not None and self.ctilog_cursor is not None:
                         try:
                                 datetime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-                                columns = ('eventdate', 'loginclient', 'company', 'status', 'action', 'arguments')
+                                columns = ('eventdate', 'loginclient', 'company', 'status', 'action', 'arguments', 'callduration')
                                 self.ctilog_cursor.query("INSERT INTO ctilog (${columns}) "
-                                                         "VALUES (%s, %s, %s, %s, %s, %s)",
+                                                         "VALUES (%s, %s, %s, %s, %s, %s, %s)",
                                                          columns,
-                                                         (datetime, uinfo.get('user'), uinfo.get('company'), uinfo.get('state'), what, options))
+                                                         (datetime, uinfo.get('user'), uinfo.get('company'), uinfo.get('state'),
+                                                          what, options, callduration))
                         except Exception:
                                 log.exception('--- exception --- (__fill_user_ctilog__)')
                         self.ctilog_conn.commit()
@@ -620,7 +622,7 @@ class XivoCTICommand(BaseCommand):
                 ret = {}
                 for capaid in self.capas.keys():
                         ret[capaid] = self.capas[capaid].appliname
-                return self.__cjson_encode__(ret)
+                return cjson.encode(ret)
         
         def updates(self):
                 u_update = self.ulist_ng.update()
@@ -1093,7 +1095,7 @@ class XivoCTICommand(BaseCommand):
                         linestosend.extend(self.__build_xmlsheet__('systray_info', actionopt, itemdir))
                         linestosend.append('<internal name="kind"><![CDATA[%s]]></internal>' % where)
                         linestosend.append('</user></profile>')
-
+                        
                         # print ''.join(linestosend)
                         
                         dozip = True
@@ -1192,7 +1194,7 @@ class XivoCTICommand(BaseCommand):
                 clidn   = event.get('CallerIDName')
                 uidsrc  = event.get('SrcUniqueID')
                 uiddst  = event.get('DestUniqueID')
-                data    = event.get('Data')
+                data    = event.get('Data').split('|')
                 # actionid = self.amilist.execute(astid, 'getvar', src, 'XIVO_DSTNUM')
                 # self.getvar_requests[actionid] = {'channel' : src, 'variable' : 'XIVO_DSTNUM'}
                 
@@ -1201,21 +1203,8 @@ class XivoCTICommand(BaseCommand):
                 uinfosrc = self.__userinfo_from_phoneid__(astid, phoneidsrc)
                 uinfodst = self.__userinfo_from_phoneid__(astid, phoneiddst)
                 self.__fill_uniqueids__(astid, uidsrc, uiddst, src, dst, 'dial')
-                tosend = { 'class' : 'call',
-                           'action' : 'dial' }
-                if uinfosrc:
-                        tosend.update({ 'caller' : { 'userid' : uinfosrc.get('user'),
-                                                     'company' : uinfosrc.get('company'),
-                                                     'phone' : phoneidsrc }
-                                        })
-                if uinfodst:
-                        tosend.update({ 'called' : { 'userid' : uinfodst.get('user'),
-                                                     'company' : uinfodst.get('company'),
-                                                     'phone' : phoneiddst }
-                                        })
-                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 
-                
+                # print astid, event
                 # update the phones statuses
                 self.weblist['phones'][astid].ami_dial(phoneidsrc, phoneiddst,
                                                        uidsrc, uiddst,
@@ -2773,12 +2762,18 @@ class XivoCTICommand(BaseCommand):
                                                                                'sip notify event-talk %s'
                                                                                % userinfo.get('phonenum'))])
                                         elif classcomm == 'actionfiche':
-                                                log.info('%s : %s' % (classcomm, icommand.struct))
-                                                actionid = icommand.struct.get('buttonaction')[1]
-                                                self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm, icommand.struct.get('buttonaction')[0])
-                                                if actionid in self.uniqueids[astid]:
-                                                        log.info('%s : %s' % (classcomm, self.uniqueids[astid][actionid]))
-                                                        
+                                                infos = icommand.struct.get('infos')
+                                                if infos:
+                                                        actionid = infos.get('sessionid')
+                                                        timestamps = infos.get('timestamps')
+                                                        log.info('%s : %s %s' % (classcomm, actionid, timestamps))
+                                                        dtime = None
+                                                        if 'agentlinked' in timestamps and 'agentunlinked' in timestamps:
+                                                                dtime = timestamps['agentunlinked'] - timestamps['agentlinked']
+                                                        self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm, infos.get('buttonname'), dtime)
+                                                        if actionid in self.uniqueids[astid]:
+                                                                log.info('%s : %s' % (classcomm, self.uniqueids[astid][actionid]))
+                                                                
                                         elif classcomm in ['phones', 'users', 'agents', 'queues']:
                                                 function = icommand.struct.get('function')
                                                 if function == 'getlist':
@@ -3454,9 +3449,6 @@ class XivoCTICommand(BaseCommand):
                         return None
                 if not state:
                         return None
-                
-                ## XXX ## if state in ['onlineincoming', 'onlineoutgoing', 'postcall']:
-                ## XXX ## self.__fill_user_ctilog__(userinfo, 'phonestatus', state)
                 
                 if 'login' in userinfo and 'sessiontimestamp' in userinfo.get('login'):
                         userinfo['login']['sessiontimestamp'] = time.time()

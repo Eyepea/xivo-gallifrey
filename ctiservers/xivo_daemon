@@ -173,9 +173,9 @@ def manage_cti_connections(connid, msg, sep):
                                         else:
                                                 log.warning('unlogged %s is attempting a %s (TCP) : %s'
                                                             % (requester, command.name, command.args))
-                        except Exception, exc:
-                                log.error('--- exception --- CTI connection when managing [%s] for %s : %s'
-                                          % (command.name, requester, exc))
+                        except Exception:
+                                log.exception('--- exception --- CTI connection when managing [%s] for %s'
+                                              % (command.name, requester))
                 else:
                         connid.sendall('Unknown Command <%s>\n' % command.name)
 
@@ -224,14 +224,14 @@ def manage_webi_connections(connid, msg, sep):
                                                 commandclass.pre_moh_reload()
                                         elif stripped_usefulmsg == 'reload':
                                                 commandclass.pre_reload()
-                                except Exception, exc:
-                                        log.error('--- exception --- (pre reloads (%s)) : %s' % (stripped_usefulmsg, exc))
-
+                                except Exception:
+                                        log.exception('--- exception --- (pre reloads (%s))' % stripped_usefulmsg)
+                                        
                                 closemenow = False
                                 try:
                                         actionid = amilist.execute(astid, 'sendcommand', 'Command', [('Command', stripped_usefulmsg)])
                                         log.info('%s : WEBI requested a <%s> with actionid %s (%s)' % (astid, stripped_usefulmsg,
-                                                                                                               actionid, connid))
+                                                                                                       actionid, connid))
                                         waiting_actionid[actionid] = connid
                                 except Exception, exc:
                                         log.error('--- exception --- (%s) WEBI command exec <%s> : (client %s) : %s'
@@ -428,18 +428,18 @@ def handle_ami_event(astid, idata):
                                                                 log.info('TCP socket closed on %s (%s)' % ('%s:%d' % connreply.getpeername(), 'WEBI'))
                                                                 connreply.close()
                                                                 del waiting_actionid[actionid]
-                                                except Exception, exc:
-                                                        log.error('--- exception --- %s (command reply to %s, %s) : %s' % (astid, connreply, actionid, exc))
+                                                except Exception:
+                                                        log.exception('--- exception --- %s (command reply to %s, %s)' % (astid, connreply, actionid))
                                 elif response == 'Success':
                                         try:
                                                 commandclass.amiresponse_success(astid, this_event)
-                                        except Exception, exc:
-                                                log.error('%s amiresponse_success (%s) : %s' % (astid, this_event, exc))
+                                        except Exception:
+                                                log.exception('--- exception --- %s amiresponse_success (%s)' % (astid, this_event))
                                 elif response == 'Error':
                                         try:
                                                 commandclass.amiresponse_error(astid, this_event)
-                                        except Exception, exc:
-                                                log.error('%s amiresponse_error (%s) : %s' % (astid, this_event, exc))
+                                        except Exception:
+                                                log.exception('--- exception --- %s amiresponse_error (%s)' % (astid, this_event))
                                 else:
                                         log.warning('AMI %s Response=%s (untracked) : %s' % (astid, response, this_event))
                         elif len(this_event) > 0:
@@ -560,8 +560,8 @@ def update_amisocks(astid):
                 for fd in amilist.fdlist():
                         if fd not in fdlist_full:
                                 fdlist_full.append(fd)
-        except Exception, exc:
-                log.error('--- exception --- %s (update_amisocks) : %s' % (astid, exc))
+        except Exception:
+                log.exception('--- exception --- %s (update_amisocks)' % astid)
 
 
 ## \brief Handler for catching signals (in the main thread)
@@ -652,8 +652,8 @@ while True: # loops over the reloads
                         if len(bind_and_port) > 1:
                                 try:
                                         incoming_tcp_ports.append('%d:%s:%s' % (int(bind_and_port[1]), func, bind_and_port[0]))
-                                except Exception, exc:
-                                        log.error('--- exception --- %s definition : %s' % (fieldname, exc))
+                                except Exception:
+                                        log.exception('--- exception --- %s definition' % fieldname)
         if 'extraconn' in xivoconf_general:
                 extraconn = xivoconf_general['extraconn']
         if 'updates_period' in xivoconf_general:
@@ -814,14 +814,13 @@ while True: # loops over the reloads
                         update_userlist[astid] = False
                         lastrequest_time[astid] = time.time()
                         update_amisocks(astid)
-                except Exception, exc:
-                        log.error('--- exception --- %s : failed while setting lists and sockets : %s'
-                                  % (astid, exc))
+                except Exception:
+                        log.exception('--- exception --- %s : failed while setting lists and sockets' % astid)
         try:
                 commandclass.updates() # users' update, ...
-        except Exception, exc:
-                log.error('--- exception --- commandclass.updates() : %s' % exc)
-
+        except Exception:
+                log.exception('--- exception --- commandclass.updates()')
+                
         log.info('# STARTING %s # (2/2) listening sockets (CTI, WEBI, (F)AGI, INFO)' % xdname)
         # opens the listening socket for incoming (CTI, WEBI, (F)AGI, INFO) connections
         for portkind in incoming_tcp_ports:
@@ -901,18 +900,18 @@ while True: # loops over the reloads
                                                         if astid is not None:
                                                                 try:
                                                                         handle_ami_event(astid, buf)
-                                                                except Exception, exc:
-                                                                        log.error('--- exception --- (handle_ami_event) %s : %s' % (astid, exc))
-                                        except Exception, exc:
-                                                log.error('--- exception --- (amilist) %s' % exc)
+                                                                except Exception:
+                                                                        log.exception('--- exception --- (handle_ami_event) %s' % astid)
+                                        except Exception:
+                                                log.exception('--- exception --- (amilist)')
 
                                 # other 'outgoing' connections
                                 elif sel_i == outsock:
                                         try:
                                                 msg = sel_i.recv(BUFSIZE_LARGE, socket.MSG_DONTWAIT)
-                                        except Exception, exc:
+                                        except Exception:
+                                                log.exception('--- exception --- outsock')
                                                 msg = ''
-                                                log.error('--- exception --- outsock : %s' % exc)
                                         if len(msg) == 0:
                                                 sel_i.close()
                                                 fdlist_full.remove(sel_i)
@@ -961,15 +960,14 @@ while True: # loops over the reloads
                                                 try:
                                                         msg = sel_i.recv(BUFSIZE_LARGE, socket.MSG_DONTWAIT)
                                                         lmsg = len(msg)
-                                                except Exception, exc:
+                                                except Exception:
+                                                        log.exception('--- exception --- connection to %s (%s)' % (requester, kind))
                                                         lmsg = 0
-                                                        log.error('--- exception --- connection to %s (%s) : %s' % (requester, kind, exc))
                                                 if lmsg > 0:
                                                         try:
                                                                 closemenow = manage_tcp_connections(sel_i, msg, kind)
-                                                        except Exception, exc:
-                                                                log.error('--- exception --- handling %s (%s) : %s'
-                                                                          % (requester, kind, exc))
+                                                        except Exception:
+                                                                log.exception('--- exception --- handling %s (%s)' % (requester, kind))
                                                 else:
                                                         if kind == 'CTI':
                                                                 if sel_i in userinfo_by_requester:
@@ -988,8 +986,8 @@ while True: # loops over the reloads
                                                         if requester in commandclass.transfers_ref:
                                                                 commandclass.transfer_endbuf(requester)
                                                         log.info('TCP socket closed on %s (%s)' % (requester, kind))
-                                        except Exception, exc:
-                                                log.error('--- exception --- [%s] %s --- %s' % (kind, sel_i, exc))
+                                        except Exception:
+                                                log.exception('--- exception --- [%s] %s' % (kind, sel_i))
                                                 try:
                                                         fdlist_full.remove(sel_i)
                                                         del fdlist_established[sel_i]
@@ -1001,8 +999,8 @@ while True: # loops over the reloads
                                                                 del userinfo_by_requester[sel_i]
                                                         else:
                                                                 log.warning('could not find a match for socket %s' % sel_i)
-                                                except Exception, exc2:
-                                                        log.error('--- exception (2) [CTI, WEBI, AGI, INFO] --- %s' % exc2)
+                                                except Exception:
+                                                        log.exception('--- exception (2) [CTI, WEBI, AGI, INFO]')
 
                                 # local pipe fd
                                 elif queued_threads_pipe[0] == sel_i:
@@ -1033,8 +1031,8 @@ while True: # loops over the reloads
                                                                         fdlist_full.remove(connid)
                                                                         del fdlist_established[connid]
                                                                         connid.close()
-                                        except Exception, exc:
-                                                log.error('--- exception --- [queued threads] : %s' % exc)
+                                        except Exception:
+                                                log.exception('--- exception --- [queued threads]')
 
 
                                 for astid in configs:
@@ -1051,21 +1049,20 @@ while True: # loops over the reloads
                                                         update_readconf()
                                                         commandclass.regular_update()
                                                         update_userlist[astid] = False
-                                                except Exception, exc:
-                                                        log.error('--- exception --- %s : failed while updating lists and sockets (computed timeout) : %s'
-                                                                  % (astid, exc))
+                                                except Exception:
+                                                        log.exception('--- exception --- %s : failed while updating lists and sockets (computed timeout)' % astid)
                                                 try:
                                                         commandclass.updates() # users' update, ...
-                                                except Exception, exc:
-                                                        log.error('--- exception --- commandclass.updates() (computed timeout) : %s' % exc)
+                                                except Exception:
+                                                        log.exception('--- exception --- commandclass.updates() (computed timeout)')
 
                 else: # when nothing happens on the sockets, we fall here sooner or later
                         log.info('[%s] updates (select timeout) %s'
                                   % (xdname, time.asctime()))
                         try:
                                 commandclass.updates() # users' update, ...
-                        except Exception, exc:
-                                log.error('--- exception --- commandclass.updates() (select timeout) : %s' % exc)
+                        except Exception:
+                                log.exception('--- exception --- commandclass.updates() (select timeout)')
                         for astid in configs:
                                 lastrequest_time[astid] = time.time()
                                 try:
@@ -1076,8 +1073,7 @@ while True: # loops over the reloads
                                         update_amisocks(astid)
                                         update_readconf()
                                         commandclass.regular_update()
-                                except Exception, exc:
-                                        log.error('--- exception --- %s : failed while updating lists and sockets (select timeout) : %s'
-                                                  % (astid, exc))
-
+                                except Exception:
+                                        log.exception('--- exception --- %s : failed while updating lists and sockets (select timeout)' % astid)
+                                        
         log.info('after askedtoquit loop (%s)' % askedtoquit)
