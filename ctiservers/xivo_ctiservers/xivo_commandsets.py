@@ -214,6 +214,13 @@ class BaseCommand:
                 return
         def ami_hangup(self, astid, event):
                 return
+        def ami_hold(self, astid, event):
+                return
+        def ami_unhold(self, astid, event):
+                return
+        def ami_transfer(self, astid, event):
+                return
+        
         def ami_aoriginatesuccess(self, astid, event):
                 return
         def ami_originatesuccess(self, astid, event):

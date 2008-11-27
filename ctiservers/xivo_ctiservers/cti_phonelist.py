@@ -47,8 +47,8 @@ class PhoneList(AnyList):
                                          'peerchannel' : puidsrc.get('dial'),
                                          'status' : 'calling',
                                          'time-dial' : 0,
-                                         'calleridname' : puidsrc.get('calleridname'),
-                                         'calleridnum' : puidsrc.get('calleridnum')
+                                         #'calleridname' : puidsrc.get('calleridname'),
+                                         'calleridnum' : puidsrc.get('extension')
                                          }
                                 self.keeplist[phoneidsrc]['comms'][uidsrc] = infos
                 if phoneiddst in self.keeplist:

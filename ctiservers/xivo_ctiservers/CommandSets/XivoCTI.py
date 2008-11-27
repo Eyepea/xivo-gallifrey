@@ -1317,6 +1317,22 @@ class XivoCTICommand(BaseCommand):
                 return ret
         
         
+        def ami_hold(self, astid, event):
+                # print astid, event
+                return
+        
+        def ami_unhold(self, astid, event):
+                # print astid, event
+                return
+        
+        def ami_transfer(self, astid, event):
+                log.info('%s ami_transfer : %s' % (astid, event))
+                # - not there when direct transfer without answering
+                # - direct transfer 103->102(answers)->101 {'TargetUniqueid': '1227807187.0', 'SIP-Callid': '327d79462a2f95db105177207486706c@192.168.0.122', 'TransferType': 'Blind', 'TransferContext': 'default', 'TargetChannel': 'SIP/103-081f9010', 'TransferMethod': 'SIP', 'TransferExten': '101', 'Uniqueid': '1227807187.1', 'Privilege': 'call,all', 'Event': 'Transfer', 'Channel': 'SIP/102-081fcf88'}
+                # - indirect transfer 103->102(answers)->101 {'TargetUniqueid': '1227807607.25', 'SIP-Callid': '217af1e1509d79e443a3827152343bf3@192.168.0.122', 'TransferType': 'Attended', 'TargetChannel': 'SIP/102-08208720', 'TransferMethod': 'SIP', 'Uniqueid': '1227807556.24', 'Privilege': 'call,all', 'Event': 'Transfer', 'Channel': 'SIP/102-081fce78'}
+                return
+        
+        
         def ami_link(self, astid, event):
                 chan1 = event.get('Channel1')
                 chan2 = event.get('Channel2')
@@ -1822,13 +1838,14 @@ class XivoCTICommand(BaseCommand):
                         self.uniqueids[astid][uniqueid].update({'calleridname' : event.get('CallerIDName'),
                                                                 'calleridnum'  : event.get('CallerID')})
                 return
-
+        
         def ami_newexten(self, astid, event):
                 application = event.get('Application')
                 uniqueid = event.get('Uniqueid')
                 if uniqueid in self.uniqueids[astid]:
                         if application == 'Dial':
                                 self.uniqueids[astid][uniqueid]['context'] = event.get('Context')
+                                self.uniqueids[astid][uniqueid]['extension'] = event.get('Extension')
                                 self.uniqueids[astid][uniqueid]['time-newexten-dial'] = time.time()
                         elif application == 'Macro':
                                 log.info('newexten Macro : %s %s %s %s %s' % (astid, uniqueid,
