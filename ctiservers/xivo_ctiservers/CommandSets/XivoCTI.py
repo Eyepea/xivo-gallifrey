@@ -361,7 +361,7 @@ class XivoCTICommand(BaseCommand):
                         if self.capas[capaid].toomuchusers():
                                 return 'toomuchusers:%s' % self.capas[capaid].getmaxgui()
                 else:
-                        return 'capaid_undefined'
+                        return 'capaid_undefined:%s' % capaid
                 return None
 
 
