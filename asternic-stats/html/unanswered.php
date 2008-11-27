@@ -86,7 +86,7 @@ if($abandoned > 0) {
 } else {
 	$abandon_average_hold = 0;
 }
-$abandon_average_hold = number_format($abandon_average_hold,0);
+$abandon_average_hold = seconds2minutes($abandon_average_hold);
 
 if($abandoned > 0) {
 	$abandon_average_start = round($abandon_start_pos / $abandoned);
@@ -162,7 +162,7 @@ $end_parts   = split(" ", $end);
 	            </TR>
                 <TR>
                   <TD><?=$lang["$language"]['avg_wait_before_dis']?>:</TD>
-                  <TD><?=$abandon_average_hold?> <?=$lang["$language"]['secs']?></TD>
+                  <TD><?=$abandon_average_hold?> <?=$lang["$language"]['minutes']?></TD>
                 </TR>
 		        <TR>
                   <TD><?=$lang["$language"]['avg_queue_pos_at_dis']?>:</TD>

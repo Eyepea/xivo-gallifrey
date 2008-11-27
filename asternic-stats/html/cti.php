@@ -17,6 +17,7 @@
     along with Asternic call center stats.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+
 require_once("/etc/pf-asternic-stats/config.php");
 include("sesvars.php");
 
@@ -29,6 +30,8 @@ if ($agent != "''") {
 $data = array();
 
 $db = sqlite_open('/var/lib/pf-xivo-cti-server/sqlite/xivo.db', 0666, $sqliteerror) or die ('Error DB : ' . $sqliteerror);
+
+
 
 $nb = count($agent);
 $agentlist = '';
@@ -55,7 +58,6 @@ $res_login_logout_time = sqlite_fetch_all($query);
 $query = sqlite_query($db,'SELECT * FROM ctilog WHERE action = \'cticommand:actionfiche\' '.
 			  'AND eventdate >= \''.$start.'\' AND eventdate <= \''.$end.'\' '.
 			  'ORDER BY loginclient ASC, eventdate ASC');
-
 $res_event_stats = sqlite_fetch_all($query);
 
 $loginclient = false;
@@ -173,7 +175,7 @@ onload = function() { content.focus() }
 <CAPTION>Informations des clients XiVO</CAPTION>
 <TBODY>
 <TR>
-	<TD>Nombre total de clients loggué :</TD>
+	<TD>Nombre total de client loggué :</TD>
 	<TD><?=$res_total_login?></TD>
 </TR>
 	<TD>Nombre total de client déloggué :</TD>
@@ -243,7 +245,7 @@ foreach($data as $k => $v)
 			if($m !== 'xivo_unknown')
 			{
 				echo "<TD style='text-align: right'>" . print_human_hour($n['total']) . "</TD>\n";
-				echo "<TD style='text-align: right'>" . $n['cnt'] . "</TD>\n";
+				echo "<TD style='text-align: right'>" . print_human_hour($n['cnt']) . "</TD>\n";
 				$c = $c+1;
 			}
 		}
@@ -253,7 +255,7 @@ foreach($data as $k => $v)
 	for($h=0;$h<$header_diff;$h++)
 		echo "<TD></TD><TD></TD>";
 	echo "<TD style='text-align: right'>" . print_human_hour($v['total']) . "</TD>";
-	echo "<TD style='text-align: right'>" . $v['cnt'] . "</TD>";
+	echo "<TD style='text-align: right'>" . print_human_hour($n['cnt']) . "</TD>";
 	echo "</TR>";
 }
 ?>
@@ -266,7 +268,7 @@ foreach($data as $k => $v)
 
 <br><br>
 
-<TABLE width='99%' cellpadding=1 cellspacing=1 border=0 class='sortable' id='table2'>
+<!--TABLE width='99%' cellpadding=1 cellspacing=1 border=0 class='sortable' id='table2'>
 <CAPTION>
 	Donnée post appel
 </CAPTION>
@@ -289,9 +291,192 @@ foreach($res_event_stats as $stats)
 </TBODY>
 </TABLE>
 
-<br>
+<br-->
 
+<?php
+/***********************************************************************
+ * ADD BY CEDRIC
+*/
+
+function Sdump($var, $title = null) {
+
+	echo '<pre style="border: 1px solid gray; padding: 5px; text-align: left;">';
+	
+	if (!is_null($title)):
+	
+		echo '<h3>', htmlspecialchars($title), '</h3>';
+	
+	endif;
+	
+	ob_start();
+	
+	var_dump($var);
+	
+	echo htmlspecialchars(preg_replace("/\]\=\>\n(\s+)/m", '] => ', ob_get_clean()));
+	
+	echo '</pre>';
+
+}
+
+
+$lscalltype = array();
+$countallcalltype = array();
+
+for($nbStatus=1;$nbStatus<6;$nbStatus++)
+{
+	$lscalltype['XIVO_CALL_STATUS-'.$nbStatus] = 'XIVO_CALL_STATUS-'.$nbStatus; 
+	$countallcalltype['XIVO_CALL_STATUS-'.$nbStatus] = 0;
+}
+
+$callinfos = array();
+$userlist = array();
+$totalcallduration = array();
+$countAllCallTypeUser = array();
+
+foreach ($res_event_stats as $stats)
+{
+	$stats = array_merge($stats, array('callduration' => rand(180, 1080)));
+	$userlist[$stats['loginclient']][$lscalltype[$stats['arguments']]]['countcalltype']++;
+	$userlist[$stats['loginclient']][$lscalltype[$stats['arguments']]]['callduration'] = $stats['callduration'];
+	$countallcalltype[$lscalltype[$stats['arguments']]]++;
+	$countAllCallTypeUser[$stats['loginclient']]++;		
+	ksort($userlist[$stats['loginclient']]);
+}
+
+?>
+
+<TABLE width='99%' cellpadding=1 cellspacing=1 border=0 class='sortable' id='table2'>
+<CAPTION>
+	Données
+</CAPTION>
+
+<THEAD>
+<TR>
+<TH>Utilisateurs</TH>
+<?php
+
+foreach($countallcalltype as $calltype => $value)
+{
+	echo "<TH>$calltype</TH>\n";
+}
+
+?>
+<TH>Total</TH>
+</TR>
+</THEAD>
+
+<TBODY>
+<?php
+
+foreach($userlist as $user => $value)
+{
+	echo "<TR $odd>\n";
+	echo "<TD>". $user ."</TD>\n";
+
+foreach($value as $type => $data)
+{
+	$prc = round(($data['countcalltype']/$countAllCallTypeUser[$user])*100, 2);
+	echo "<TD>".$data['countcalltype']." - ".seconds2minutes($data['callduration']/count($data['countcalltype']))."min - ".$prc."%</TD>\n";
+	$totalcallduration[$user] += $data['callduration'];
+	$totalcallduration[$type] += $data['callduration'];
+}
+
+	echo "<TD style='font-weight:bold'>".$countAllCallTypeUser[$user]." - ".seconds2minutes($totalcallduration[$user]/count($lscalltype))."min</TD>\n";
+	echo "</TR>\n";
+	$totalallcallduration += $totalcallduration[$user];
+}
+
+?>
+
+<TR style="font-weight:bold">
+<?php
+
+	echo "<TD>Nb Agent: ". count($userlist) ."</TD>\n";
+foreach($countallcalltype as $calltype => $value)
+{
+	$prc = round(($value/array_sum($countallcalltype))*100, 2);
+	echo "<TD>$value - ".seconds2minutes($totalcallduration[$calltype]/count($userlist))."min - ".$prc."%</TD>\n";
+}
+	echo "<TD>".array_sum($countallcalltype)." - ".seconds2minutes($totalallcallduration/count($lscalltype)/count($userlist)) ."min</TD>\n";
+
+?>
+</TR>
+</TBODY>
+</TABLE>
+<?php
+/***********************************************************************
+*/
+?>
+<br>
 <? print_exports($header_pdf,$data_pdf,$width_pdf,$title_pdf,$cover_pdf); ?>
+
+<br><br>
+<TABLE width='99%' cellpadding=1 cellspacing=1 border=0>
+<CAPTION>
+	Graphiques
+</CAPTION>
+
+<TR align=center>
+<TD>
+<?
+$tmp=array();
+$i=1;
+foreach($countallcalltype as $calltype => $value)
+{
+	array_push($tmp, "var$i=".substr($calltype,-8 ,8)."&amp;val$i=$value");
+	$i++;
+}
+?>
+	<div id="chart1">
+	<embed type="application/x-shockwave-flash" src="bar.swf" id="barchart" name="barchart" bgcolor="#336699" quality="high" wmode="transparent" flashvars="<? echo implode ('&amp;', $tmp); ?>&amp;title=Nombre d'appels répondu par status&amp;bgcolor=0xF0ffff&amp;bgcolorchart=0xdfedf3&amp;fade1=ff6600&amp;fade2=ff6314&amp;colorbase=0xfff3b3&amp;reverse=1" width="359" height="217">
+	</div>
+</TD>
+<TD>
+<?
+$tmp=array();
+$i=1;
+foreach($userlist as $user => $value)
+{
+	array_push($tmp, "var$i=".$user."&amp;val$i=$countAllCallTypeUser[$user]");
+	$i++;
+}
+?>
+	<div id="chart2">
+	<embed type="application/x-shockwave-flash" src="bar.swf" id="barchart" name="barchart" bgcolor="#336699" quality="high" wmode="transparent" flashvars="<? echo implode ('&amp;', $tmp); ?>&amp;title=Nombre d'appels répondu par agent&amp;bgcolor=0xF0ffff&amp;bgcolorchart=0xdfedf3&amp;fade1=ff6600&amp;fade2=ff6314&amp;colorbase=0xfff3b3&amp;reverse=1" width="359" height="217">
+	</div>
+</TD>
+</TR>
+<TR align=center>
+<TD>
+<?
+$tmp=array();
+$i=1;
+foreach($countallcalltype as $calltype => $value)
+{
+	array_push($tmp, "var$i=".substr($calltype,-8 ,8)."&amp;val$i=".$totalcallduration[$calltype]/count($userlist));
+	$i++;
+}
+?>
+	<div id="chart3">
+	<embed type="application/x-shockwave-flash" src="bar.swf" id="barchart" name="barchart" bgcolor="#336699" quality="high" wmode="transparent" flashvars="<? echo implode ('&amp;', $tmp); ?>&amp;title=Temps moyen par type&amp;bgcolor=0xF0ffff&amp;bgcolorchart=0xdfedf3&amp;fade1=ff6600&amp;fade2=ff6314&amp;colorbase=0xfff3b3&amp;reverse=1" width="359" height="217">
+	</div>
+</TD>
+<TD>
+<?
+$tmp=array();
+$i=1;
+foreach($userlist as $user => $value)
+{
+	array_push($tmp, "var$i=".$user."&amp;val$i=".$totalcallduration[$user]/count($lscalltype));
+	$i++;
+}
+?>
+	<div id="chart4">
+	<embed type="application/x-shockwave-flash" src="bar.swf" id="barchart" name="barchart" bgcolor="#336699" quality="high" wmode="transparent" flashvars="<? echo implode ('&amp;', $tmp); ?>&amp;title=Temps moyen par agent&amp;bgcolor=0xF0ffff&amp;bgcolorchart=0xdfedf3&amp;fade1=ff6600&amp;fade2=ff6314&amp;colorbase=0xfff3b3&amp;reverse=1" width="359" height="217">
+	</div>
+</TD>
+</TR>
+</TABLE>
 
 </div>
 </div>
