@@ -2400,7 +2400,7 @@ class XivoCTICommand(BaseCommand):
                 elif appliname == 'MeetMe':
                         # this case should have already been handled by the MeetMeList request
                         # however knowing how much time has been spent might be useful here
-                        meetmenum = event.get('AppData')
+                        meetmenum = applidata[0]
                         channel = event.get('Channel')
                         seconds = int(event.get('Seconds'))
                         meetmeref = self.weblist['meetme'][astid].byroomnum(meetmenum)
@@ -2413,7 +2413,7 @@ class XivoCTICommand(BaseCommand):
                         # context.startswith('macro-phonestatus'):
                         # *10
                         return
-                elif appliname in ['Queue', 'VoiceMailMain', 'AgentLogin']:
+                elif appliname in ['Queue', 'AppQueue', 'BackGround', 'VoiceMailMain', 'AgentLogin']:
                         log.info('%s ami_status : %s %s' % (astid, appliname, applidata))
                         return
                 elif appliname == '':
