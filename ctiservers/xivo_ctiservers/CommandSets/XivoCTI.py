@@ -1141,6 +1141,8 @@ class XivoCTICommand(BaseCommand):
                 ret = None
                 tech = None
                 phoneid = None
+                if channel not in self.channels[astid]:
+                        log.warning('%s __phoneid_from_channel__ : channel %s not found' % (astid, channel))
                 # special cases : AsyncGoto/IAX2/asteriskisdn-13622<ZOMBIE>
                 if channel.startswith('SIP/'):
                         tech = 'sip'
@@ -2287,7 +2289,6 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def ami_meetmejoin(self, astid, event):
-                print astid, event
                 meetmenum = event.get('Meetme')
                 channel = event.get('Channel')
                 usernum = event.get('Usernum')
@@ -2607,12 +2608,14 @@ class XivoCTICommand(BaseCommand):
                 
                 if uid in self.uniqueids[astid] and oldname == self.uniqueids[astid][uid]['channel']:
                         self.uniqueids[astid][uid] = {'channel' : newname}
+                        del self.channels[astid][oldname]
+                        self.channels[astid][newname] = uid
                         log.info('AMI Rename %s %s %s %s (success)' % (astid, uid, oldname, newname))
                 else:
                         log.info('AMI Rename %s %s %s %s (failure)' % (astid, uid, oldname, newname))
                 return
         # END of AMI events
-
+        
         def message_srv2clt(self, sender, message):
                 tosend = { 'class' : 'message',
                            'payload' : [sender, message] }
