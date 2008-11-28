@@ -13,7 +13,7 @@ CREATE TABLE `ctilog` (
  `status` varchar(32),
  `action` varchar(32),
  `arguments` varchar(255) NOT NULL,
- `callduration` int(10) unsigned DEFAULT 0
+ `callduration` int(10) unsigned
 );
 
 CREATE INDEX `ctilog__idx__eventdate` ON `ctilog`(`eventdate`);
