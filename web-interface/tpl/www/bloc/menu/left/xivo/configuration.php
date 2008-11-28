@@ -14,7 +14,8 @@ $url = &$this->get_module('url');
 			<dt><?=$this->bbf('mn_left_ti_manage');?></dt>
 			<dd id="mn-manage--user">
 				<?=$url->href_html($this->bbf('mn_left_manage-user'),
-						   'xivo/configuration/manage/user','act=list');?>
+						   'xivo/configuration/manage/user',
+						   'act=list');?>
 			</dd>
 			<dd id="mn-manage--entity">
 				<?=$url->href_html($this->bbf('mn_left_manage-entity'),
@@ -26,15 +27,15 @@ $url = &$this->get_module('url');
 						   'xivo/configuration/manage/server',
 						   'act=list');?>
 			</dd>
-			<dd id="mn-manage--webservice">
-				<?=$url->href_html($this->bbf('mn_left_manage-webservice'),
-						   'xivo/configuration/manage/webservice',
-						   'act=list');?>
-			</dd>
 			<dd id="mn-manage--ldapserver">
 				<?=$url->href_html($this->bbf('mn_left_manage-ldapserver'),
 							      'xivo/configuration/manage/ldapserver',
 							      'act=list');?>
+			</dd>
+			<dd id="mn-manage--accesswebservice">
+				<?=$url->href_html($this->bbf('mn_left_manage-accesswebservice'),
+						   'xivo/configuration/manage/accesswebservice',
+						   'act=list');?>
 			</dd>
 		</dl>
 	</dd>

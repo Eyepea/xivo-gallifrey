@@ -21,17 +21,20 @@ class xivo_tracerror
 		if(($this->_conf = xivo_gat::load_get('tracerror',XIVO_PATH_LIBCONF)) === false)
 			die('Failed to load tracerror Array');
 
-		if(isset($param['level']) === true && ($param['level'] = $this->_chk_level($param['level'])) !== false)
+		if(isset($param['level']) === true
+		&& ($param['level'] = $this->_chk_level($param['level'])) !== false)
 			$this->_param['level'] = $param['level'];
 		else
 			$this->_param['level'] = XIVO_TE_ERR_ALL;
 
-		if(isset($param['report_type']) === true && ($param['report_type'] = $this->_chk_report_type($param['report_type'])) !== false)
+		if(isset($param['report_type']) === true
+		&& ($param['report_type'] = $this->_chk_report_type($param['report_type'])) !== false)
 			$this->_param['report_type'] = (int) $param['report_type'];
 		else
 			$this->_param['report_type'] = XIVO_TE_RTYPE_LOG;
 
-		if(isset($param['report_mode']) === true && $this->_chk_report_mode($param['report_mode']) === true)
+		if(isset($param['report_mode']) === true
+		&& $this->_chk_report_mode($param['report_mode']) === true)
 			$this->_param['report_mode'] = (int) $param['report_mode'];
 		else
 			$this->_param['report_mode'] = XIVO_TE_RMODE_REALTIME;
@@ -46,7 +49,8 @@ class xivo_tracerror
 		else
 			$this->_param['email'] = false;
 
-		if(isset($param['file']) === true && ($param['file'] = $this->_chk_file($param['file'])) !== false)
+		if(isset($param['file']) === true
+		&& ($param['file'] = $this->_chk_file($param['file'])) !== false)
 			$this->_param['file'] = $param['file'];
 		else if(($param['file'] = $this->_chk_file(ini_get('error_log'))) !== false)
 			$this->_param['file'] = $param['file'];
@@ -57,13 +61,6 @@ class xivo_tracerror
 			ini_set('display_errors',true);
 
 		ini_set('error_reporting',$this->_param['level']);
-	}
-
-	function set_param($name,$value)
-	{
-		$name = (string) $name;
-
-		$this->_param[$name] = $value;	
 	}
 
 	function get_param($name)

@@ -39,7 +39,12 @@ switch($tpl_space)
 		$_HTML = &new xivo_tpl($_CF['tpl']['json'],array('json','url','dhtml'),$_URL);
 
 		if(xivo::load_class('xivo_json') === false)
-			xivo_die('Error/500');
+		{
+			xivo::load_class('xivo_http');
+			$http = new xivo_http();
+			$http->set_status(500);
+			$http->send(true);
+		}
 		break;	
 	default:
 		xivo_die('Invalid TPL SPACE');

@@ -3,9 +3,9 @@
 $url = &$this->get_module('url');
 
 $userstat = $this->get_var('userstat');
+$entitystat = $this->get_var('entitystat');
 $serverstat = $this->get_var('serverstat');
 $ldapserverstat = $this->get_var('ldapserverstat');
-$entitystat = $this->get_var('entitystat');
 
 ?>
 <div id="index" class="b-infos">
@@ -30,22 +30,22 @@ $entitystat = $this->get_var('entitystat');
 					<td class="td-right"><?=$userstat['total']?></td>
 				</tr>
 				<tr class="l-infos-2on2">
+					<td class="td-left txt-left"><?=$this->bbf('stats_type-entity');?></td>
+					<td class="td-center"><?=$entitystat['enable']?></td>
+					<td class="td-center"><?=$entitystat['disable']?></td>
+					<td class="td-right"><?=$entitystat['total']?></td>
+				</tr>
+				<tr class="l-infos-1on2">
 					<td class="td-left txt-left"><?=$this->bbf('stats_type-server');?></td>
 					<td class="td-center"><?=$serverstat['enable']?></td>
 					<td class="td-center"><?=$serverstat['disable']?></td>
 					<td class="td-right"><?=$serverstat['total']?></td>
 				</tr>
-				<tr class="l-infos-1on2">
+				<tr class="l-infos-2on2">
 					<td class="td-left txt-left"><?=$this->bbf('stats_type-ldapserver');?></td>
 					<td class="td-center"><?=$ldapserverstat['enable']?></td>
 					<td class="td-center"><?=$ldapserverstat['disable']?></td>
 					<td class="td-right"><?=$ldapserverstat['total']?></td>
-				</tr>
-				<tr class="l-infos-2on2">
-					<td class="td-left txt-left"><?=$this->bbf('stats_type-entity');?></td>
-					<td class="td-center"><?=$entitystat['enable']?></td>
-					<td class="td-center"><?=$entitystat['disable']?></td>
-					<td class="td-right"><?=$entitystat['total']?></td>
 				</tr>
 			</table>
 		</div>

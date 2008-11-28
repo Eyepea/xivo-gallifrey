@@ -497,7 +497,9 @@ class xivo_tpl_form extends xivo_tpl_module
 		$v['value'] = 1;
 		$v['size'] = false;
 		$v['type'] = 'checkbox';
-		$v['class'] = 'it-checkbox';
+
+		if(isset($v['class']) === false)
+			$v['class'] = 'it-checkbox';
 
 		$this->_set_param($v);
 
@@ -530,7 +532,9 @@ class xivo_tpl_form extends xivo_tpl_module
 		$v['value'] = 1;
 		$v['size'] = false;
 		$v['type'] = 'radio';
-		$v['class'] = 'it-radio';
+
+		if(isset($v['class']) === false)
+			$v['class'] = 'it-radio';
 
 		$this->_set_param($v);
 

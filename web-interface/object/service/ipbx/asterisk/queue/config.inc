@@ -100,13 +100,15 @@ $array['element']['leavewhenempty']['setdef'] = true;
 
 $array['element']['eventwhencalled'] = array();
 $array['element']['eventwhencalled']['value'] = array(0,1);
-$array['element']['eventwhencalled']['default'] = 0;
+$array['element']['eventwhencalled']['default'] = 1;
 $array['element']['eventwhencalled']['set'] = true;
+$array['element']['eventwhencalled']['forcedef'] = true;
 
 $array['element']['eventmemberstatus'] = array();
 $array['element']['eventmemberstatus']['value'] = array(0,1);
-$array['element']['eventmemberstatus']['default'] = 0;
+$array['element']['eventmemberstatus']['default'] = 1;
 $array['element']['eventmemberstatus']['set'] = true;
+$array['element']['eventmemberstatus']['forcedef'] = true;
 
 $array['element']['reportholdtime'] = array();
 $array['element']['reportholdtime']['value'] = array(0,1);

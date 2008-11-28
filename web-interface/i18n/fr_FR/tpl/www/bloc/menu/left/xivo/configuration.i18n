@@ -10,11 +10,11 @@ Utilisateurs
 ; mn_left_manage-entity
 Entités
 
-; mn_left_manage-webservice
-Services Web
-
 ; mn_left_manage-server
-Serveurs
+Serveurs XIVO
 
 ; mn_left_manage-ldapserver
 Serveurs LDAP
+
+; mn_left_manage-accesswebservice
+Accès aux services Web

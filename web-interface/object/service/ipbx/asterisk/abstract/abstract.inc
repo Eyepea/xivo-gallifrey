@@ -1,6 +1,6 @@
 <?php
 
-require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'abstract'.XIVO_SEP_DIR.'libdatastorage.inc');
+require_once(xivo_file::joinpath(XIVO_PATH_OBJECT,'abstract','libdatastorage.inc'));
 
 class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 {
@@ -17,13 +17,12 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 		if(empty($this->_conf) === false)
 			return(null);
 
-		$dir = array();
-		$dir[] = XIVO_PATH_OBJECT;
-		$dir[] = 'service';
-		$dir[] = 'ipbx';
-		$dir[] = 'asterisk';
-		$dir[] = $this->_name;
-		$dir[] = 'config';
+		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,
+					   'service',
+					   'ipbx',
+					   'asterisk',
+					   $this->_name,
+					   'config');
 
 		if(($this->_conf = xivo_gat::get_file($dir)) === false)
 			$this->_conf = array();

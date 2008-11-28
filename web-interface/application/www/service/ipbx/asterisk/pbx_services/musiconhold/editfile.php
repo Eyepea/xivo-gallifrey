@@ -26,8 +26,8 @@ do
 	|| ($info['filename'] = $musiconhold->chk_value('filename',$info['filename'])) === false)
 		break;
 
-	$filename = $info['file']['dirname'].XIVO_SEP_DIR.$info['file']['filename'];
-	$newfilename = $info['category'].XIVO_SEP_DIR.$info['filename'];
+	$filename = xivo_file::joinpath($info['file']['dirname'],$info['file']['filename']);
+	$newfilename = xivo_file::joinpath($info['category'],$info['filename']);
 
 	if($musiconhold->edit_file($filename,$newfilename) === true)
 		$_QRY->go($_HTML->url('service/ipbx/pbx_services/musiconhold'),$param);

@@ -865,7 +865,7 @@ function xivo_calc_duration($beg,$end,$diff=false,$unset=false)
 
 	if((bool) $unset === false)
 		return($r);
-	
+
 	unset($r['beg'],$r['end'],$r['diff']);
 
 	if($r['d'] === (float) 0)

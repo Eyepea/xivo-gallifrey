@@ -62,13 +62,6 @@ class xivo_socket
 			$this->open();
 	}
 
-	function set_param($name,$value)
-	{
-		$name = (string) $name;
-
-		$this->_param[$name] = $value;	
-	}
-
 	function get_param($name)
 	{
 		$name = (string) $name;

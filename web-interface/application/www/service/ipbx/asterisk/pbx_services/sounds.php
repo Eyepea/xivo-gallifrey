@@ -79,7 +79,7 @@ switch($act)
 		}
 		else
 		{
-			$filename = $info['dirname'].XIVO_SEP_DIR.$fileuploaded['name'];
+			$filename = xivo_file::joinpath($info['dirname'],$fileuploaded['name']);
 
 			if($sounds->add($filename,$fileuploaded['tmp_name']) === true)
 			{
@@ -116,8 +116,8 @@ switch($act)
 			if(($info['dirname'] = $sounds->chk_value('dirname',$info['dirname'])) !== false
 			&& ($info['filename'] = $sounds->chk_value('filename',$info['filename'])) !== false)
 			{
-				$filename = $info['file']['dirname'].XIVO_SEP_DIR.$info['file']['filename'];
-				$newfilename = $info['dirname'].XIVO_SEP_DIR.$info['filename'];
+				$filename = xivo_file::joinpath($info['file']['dirname'],$info['file']['filename']);
+				$newfilename = xivo_file::joinpath($info['dirname'],$info['filename']);
 
 				if($sounds->edit($filename,$newfilename) === true)
 				{
@@ -144,7 +144,7 @@ switch($act)
 		if(isset($_QR['id']) === false || ($info['file'] = $sounds->get($_QR['id'],$info['directory']['dirname'])) === false)
 			$_QRY->go($_HTML->url('service/ipbx/pbx_services/sounds'),$param);
 
-		$file = $info['directory']['dirname'].XIVO_SEP_DIR.$info['file']['filename'];
+		$file = xivo_file::joinpath($info['directory']['dirname'],$info['file']['filename']);
 
 		$sounds->delete($file);
 
@@ -169,7 +169,7 @@ switch($act)
 			if(($info['file'] = $sounds->get(strval($values[$i]),$info['directory']['dirname'])) === false)
 				continue;
 
-			$file = $info['directory']['dirname'].XIVO_SEP_DIR.$info['file']['filename'];
+			$file = xivo_file::joinpath($info['directory']['dirname'],$info['file']['filename']);
 
 			$sounds->delete($file);
 		}

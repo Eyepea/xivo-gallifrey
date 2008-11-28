@@ -384,6 +384,13 @@ class xivo_file
 		return((is_readable($file) === true && is_writeable($file) === true && is_executable($file) === true));
 	}
 
+	function joinpath()
+	{
+		$arr = func_get_args();
+
+		return(xivo_implode(XIVO_SEP_DIR,$arr));
+	}
+
 	function abspath($str)
 	{
 		$str = (string) $str;

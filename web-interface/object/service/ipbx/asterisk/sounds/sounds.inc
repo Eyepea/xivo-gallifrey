@@ -188,7 +188,7 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 		else if((bool) $exists === false)
 			return(true);
 
-		return(xivo_file::is_f($this->_sndpath.XIVO_SEP_DIR.$dir.XIVO_SEP_DIR.$name));
+		return(xivo_file::is_f(xivo_file::joinpath($this->_sndpath,$dir,$name)));
 	}
 
 	function get($name,$dir)

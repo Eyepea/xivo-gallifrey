@@ -45,8 +45,8 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 
 		if(is_object($this->_appxivoserver) === false
 		&& ($this->_appxivoserver = $this->_service->get_application('serverfeatures',
-									    array('feature'	=> 'phonebook',
-									    	  'type'	=> 'xivo'))) === false)
+									     array('feature'	=> 'phonebook',
+									    	   'type'	=> 'xivo'))) === false)
 			return(false);
 
 		return(true);
@@ -56,14 +56,14 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 	{
 		if(is_object($this->_appldapfilter) === false
 		&& ($this->_appldapfilter = $this->_service->get_application('serverfeatures',
-									    array('feature'	=> 'phonebook',
-									    	  'type'	=> 'ldap'))) === false)
+									     array('feature'	=> 'phonebook',
+									    	   'type'	=> 'ldap'))) === false)
 			return(false);
 
 		return(true);
 	}
 
-	function chk_host_access($ip)
+	function chk_host_access($host)
 	{
 		if(($rs = $this->_accessfeatures->get_all_where(array('feature' => 'phonebook'),false)) === false
 		|| ($nb = count($rs)) === 0)
@@ -71,7 +71,7 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(xivo_filter::chk_ipv4_in_lhost($ip,$rs[$i]['host']) === true)
+			if(xivo_filter::chk_ipv4_in_lhost($host,$rs[$i]['host']) === true)
 				return($rs[$i]);
 		}
 

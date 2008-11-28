@@ -66,7 +66,7 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 				return($data);
 		}
 
-		if(xivo_haslen($data['exten']) === true)
+		if(xivo_haslen($data['exten']) === true || $data['type'] === '')
 		{
 			$data['type'] = 'custom';
 			$data['custom'] = $data['typeval'] = $data['exten'];

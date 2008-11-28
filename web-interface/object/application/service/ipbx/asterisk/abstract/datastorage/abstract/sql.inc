@@ -1,6 +1,6 @@
 <?php
 
-require_once(XIVO_PATH_LIB.XIVO_SEP_DIR.'datastorage'.XIVO_SEP_DIR.'helper'.XIVO_SEP_DIR.'abstract.inc');
+require_once(xivo_file::joinpath(XIVO_PATH_LIB,'datastorage','helper','abstract.inc'));
 
 class xivo_application_service_asterisk_abstract_sql extends xivo_datastorage_helper_abstract
 {

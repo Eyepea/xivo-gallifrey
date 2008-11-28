@@ -1,0 +1,20 @@
+#r-xivo-configuration #index #xivo-stats {float: left;width: 50%;padding-bottom: 10px;}
+#r-xivo-configuration #index #xivo-stats table {margin: 10px auto 0px;width: 95%;}
+#r-xivo-configuration #index #xivo-stats th {padding-left: 5px;padding-right: 5px;}
+#r-xivo-configuration #index #xivo-stats a {text-decoration: underline;color: #0063bf;}
+#r-xivo-configuration #index #xivo-stats a:hover {text-decoration: none;}
+#r-xivo-configuration #index #xivo-logo {float: left;width: 50%;padding: 10px 0px;text-align: center;}
+#r-xivo-configuration #index #xivo-logo ul {margin-top: 10px}
+
+#b-content #r-xivo-configuration #sr-accesswebservice.b-list th.col-action {width: 75px;}
+
+#r-xivo-configuration #acl table {border: 0px solid #999;border-bottom-width: 1px;}
+#r-xivo-configuration #acl table th {background-image: url(../../img/content/top/bg-1.gif);background-color: #fff;width: 745px;padding: 1px 0px;border: 1px solid #999;border-bottom-width: 0px;}
+#r-xivo-configuration #acl table input {margin: 1px 2px 0px;}
+#r-xivo-configuration #acl .acl-category div {width: 745px;float: left;background-color: #fee6c1;border: 1px solid #999;border-bottom-width: 0px;padding-top: 2px;}
+#r-xivo-configuration #acl .acl-category h4 {float: left;width: 720px;}
+#r-xivo-configuration #acl .acl-category span {display: block;float: left;width: 20px;}
+#r-xivo-configuration #acl .acl-category .fm-desc  {display: inline;float: none;text-align: left;width: auto;}
+#r-xivo-configuration #acl .acl-category table {display: none;clear: both;width: 100%;border: 1px solid #999;border-bottom-width: 0px;background-color: #d7e9fb;}
+#r-xivo-configuration #acl .acl-category table td {width: 240px;padding: 2px;vertical-align: top;}
+#r-xivo-configuration #acl .acl-category .acl-func {max-width: 238px;border: none;margin: 2px 0px;background-color: #d7e9fb;}

@@ -16,8 +16,8 @@ switch($act)
 		if(isset($_QR['fm_send']) === true
 		&& $_USR->edit($info['meta'],$_QR) !== false)
 		{
-			if(xivo_ulongint($_USR->get_info('id')) === xivo_ulongint($_QR['id']))
-				$_USR->load_by_id($_QR['id']);
+			if(xivo_ulongint($_USR->get_info('id')) === xivo_ulongint($info['id']))
+				$_USR->load_by_id($info['id']);
 
 			$_QRY->go($_HTML->url('xivo/configuration/manage/user'),$param);
 		}
@@ -30,14 +30,14 @@ switch($act)
 		|| xivo_user::chk_authorize('admin',$info['meta']) === false)
 			$_QRY->go($_HTML->url('xivo/configuration/manage/user'),$param);
 
-		$useracl = $_USR->get_acl();
+		$user_acl = $_USR->get_acl();
 
 		if(isset($_QR['fm_send']) === true)
 		{
-			$useracl->edit($_QR);
+			$user_acl->edit($_QR);
 			$_QRY->go($_HTML->url('xivo/configuration/manage/user'),$param);
 		}
-		else if(($tree = $useracl->get_user($info['id'])) !== false)
+		else if(($tree = $user_acl->get_user($info['id'])) !== false)
 		{
 			$_HTML->set_var('info',$info);
 			$_HTML->set_var('tree',$tree);

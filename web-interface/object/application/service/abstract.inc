@@ -1,6 +1,6 @@
 <?php
 
-require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'application'.XIVO_SEP_DIR.'abstract.inc');
+require_once(xivo_file::joinpath(XIVO_PATH_OBJECT,'application','abstract.inc'));
 
 class xivo_application_service_abstract extends xivo_application_abstract
 {
@@ -10,7 +10,12 @@ class xivo_application_service_abstract extends xivo_application_abstract
 
 		$file = $abstract.'.inc';
 
-		$dir = array(XIVO_PATH_OBJECT,'application','service',$this->_service_type,$this->_service_name,'abstract');
+		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,
+					   'application',
+					   'service',
+					   $this->_service_type,
+					   $this->_service_name,
+					   'abstract');
 
 		$class = 'xivo_application_service_'.$this->_service_name.'_'.$abstract.'_abstract';
 

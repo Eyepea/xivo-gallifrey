@@ -73,7 +73,11 @@ if($nb > 0):
 
 		$fkdata['ex'] = false;
 		$fkdata['type'] = $ref['type'];
-		$fkdata[$ref['type']] = $ref[$ref['type']];
+
+		if(isset($ref[$ref['type']]) === true):
+			$fkdata[$ref['type']] = $ref[$ref['type']];
+		endif;
+
 		$fkdata['incr'] = $i;
 
 		$this->set_var('fkdata',$fkdata);

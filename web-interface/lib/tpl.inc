@@ -132,7 +132,7 @@ class xivo_tpl
 
 		$file = $module.'.inc';
 
-		$dir = XIVO_PATH_LIB.XIVO_SEP_DIR.'tpl'.XIVO_SEP_DIR.'module';
+		$dir = xivo_file::joinpath(XIVO_PATH_LIB,'tpl','module');
 		$class = 'xivo_tpl_'.$module;
 
 		if(xivo_file::load_file($file,$dir,true) === false || class_exists($class) === false)
@@ -350,7 +350,7 @@ class xivo_tpl
 		if($page{0} === XIVO_SEP_DIR)
 			$page .= '.'.$ext;
 		else
-			$page = XIVO_SEP_DIR.'struct'.XIVO_SEP_DIR.'page'.XIVO_SEP_DIR.$page.'.'.$ext;
+			$page = xivo_file::joinpath(XIVO_SEP_DIR.'struct','page',$page.'.'.$ext);
 
 		$path = $this->get_option('tpl_path').$page;
 

@@ -285,7 +285,8 @@ endif;
 				      'name'	=> 'callevents',
 				      'labelid'	=> 'callevents',
 				      'checked'	=> $this->get_varra('info',array('callevents','var_val')),
-				      'default'	=> $element['callevents']['default'])),
+				      'default'	=> $element['callevents']['default']),
+				      'disabled="disabled"'),
 
 		$form->select(array('desc'	=> $this->bbf('fm_tos-sip'),
 				    'name'	=> 'tos_sip',

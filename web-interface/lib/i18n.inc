@@ -517,7 +517,7 @@ class xivo_i18n
 			$this->_file['language'] = XIVO_I18N_BABELFISH_LANGUAGE;
 		}
 
-		$filei18n = XIVO_PATH_I18N.XIVO_SEP_DIR.$this->_file['locale'].XIVO_SEP_DIR.$this->_file['path'];
+		$filei18n = xivo_file::joinpath(XIVO_PATH_I18N,$this->_file['locale'],$this->_file['path']);
 
 		if(($this->_file['filei18n'] = xivo_file::is_f_r($filei18n)) === false)
 			return(($this->_file = false));

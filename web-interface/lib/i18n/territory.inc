@@ -7,7 +7,7 @@ class xivo_i18n_territory
 
 	function xivo_i18n_territory()
 	{
-		$dir = XIVO_PATH_LIB.XIVO_SEP_DIR.'i18n'.XIVO_SEP_DIR.'territories';
+		$dir = xivo_file::joinpath(XIVO_PATH_LIB,'i18n','territories');
 
 		if(($this->_conf = xivo_gat::load_get('territories',$dir)) === false)
 			trigger_error('Failed to load territories listing',E_USER_ERROR);

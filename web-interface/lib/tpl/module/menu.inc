@@ -1,6 +1,6 @@
 <?php
 
-require_once(XIVO_PATH_LIB.XIVO_SEP_DIR.'tpl'.XIVO_SEP_DIR.'module.inc');
+require_once(xivo_file::joinpath(XIVO_PATH_LIB,'tpl','module.inc'));
 
 class xivo_tpl_menu extends xivo_tpl_module
 {
@@ -44,7 +44,7 @@ class xivo_tpl_menu extends xivo_tpl_module
 		if($ext === '')
 			$ext = XIVO_TPL_FILE_EXT;
 
-		$file = 'bloc'.XIVO_SEP_DIR.'menu'.XIVO_SEP_DIR.ltrim($file,XIVO_SEP_DIR).'.'.$ext;
+		$file = xivo_file::joinpath('bloc','menu',ltrim($file,XIVO_SEP_DIR).'.'.$ext);
 
 		if(xivo_file::is_f_r($this->get_option('tpl_path').XIVO_SEP_DIR.$file) !== false)
 			$this->set_file('menu_'.$where,$file);

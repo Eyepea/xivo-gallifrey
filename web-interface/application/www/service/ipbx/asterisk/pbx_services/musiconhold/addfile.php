@@ -14,7 +14,7 @@ if(isset($_QR['fm_send'],$_QR['category']) === false
 }
 else
 {
-	$filename = $info['category'].XIVO_SEP_DIR.$fileuploaded['name'];
+	$filename = xivo_file::joinpath($info['category'],$fileuploaded['name']);
 
 	if($musiconhold->add_file($filename,$fileuploaded['tmp_name']) === true)
 	{

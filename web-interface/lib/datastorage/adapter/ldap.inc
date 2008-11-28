@@ -1,6 +1,6 @@
 <?php
 
-require_once(XIVO_PATH_LIB.XIVO_SEP_DIR.'datastorage'.XIVO_SEP_DIR.'adapter'.XIVO_SEP_DIR.'abstract'.XIVO_SEP_DIR.'abstract.inc');
+require_once(xivo_file::joinpath(XIVO_PATH_LIB,'datastorage','adapter','abstract','abstract.inc'));
 
 if(defined('LDAP_SCOPE_BASE') === false)
 	define('LDAP_SCOPE_BASE',0);

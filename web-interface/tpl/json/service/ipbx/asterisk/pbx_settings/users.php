@@ -1,10 +1,18 @@
 <?php
 
-if(($data = xivo_json::encode($this->get_var('users'))) === false)
-	xivo_die('Error/500');
+xivo::load_class('xivo_http');
+$http = new xivo_http();
 
-if($this->get_var('sum') === md5($data))
-	xivo_die('no-update');
+if(($data = xivo_json::encode($this->get_var('users'))) === false)
+{
+	$http->set_status(500);
+	$http->send(true);
+}
+else if($this->get_var('sum') === md5($data))
+{
+	$http->set_status(304);
+	$http->send(true);
+}
 
 header(xivo_json::get_header());
 die($data);

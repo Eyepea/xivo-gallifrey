@@ -1,0 +1,17 @@
+; col_name
+Nom
+
+; col_login
+Pseudo
+
+; col_password
+Mot de passe
+
+; col_host
+Hôte
+
+; no_accesswebservice
+Aucun accès aux services Web trouvé
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer cet accès aux services Web ?

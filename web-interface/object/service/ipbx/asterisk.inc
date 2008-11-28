@@ -1,6 +1,6 @@
 <?php
 
-require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'service'.XIVO_SEP_DIR.'abstract.inc');
+require_once(xivo_file::joinpath(XIVO_PATH_OBJECT,'service','abstract.inc'));
 
 class xivo_service_asterisk extends xivo_service_abstract
 {
@@ -45,7 +45,12 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 	function _load_identity_class($name)
 	{
-		$dir = array(XIVO_PATH_OBJECT,'service',$this->_type,$this->_name,$name);
+		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,
+					   'service',
+					   $this->_type,
+					   $this->_name,
+					   $name);
+
 		$class = 'xivo_service_'.$this->_name.'_'.$name.'_identity';
 
 		if(xivo_file::load_file('identity.inc',$dir,true) === false
@@ -97,22 +102,21 @@ class xivo_service_asterisk extends xivo_service_abstract
 	{
 		$file = $name.'.inc';
 
-		$dir = array(XIVO_PATH_OBJECT,
-			     'service',
-			     $this->_type,
-			     $this->_name);
+		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,
+					   'service',
+					   $this->_type,
+					   $this->_name);
 
 		$class = 'xivo_service_'.$this->_name.'_realstatic';
 
-		$dirapi = $dir;
-		$dirapi[] = $name;
+		$dirapi = $dir.XIVO_SEP_DIR.$name;
 		$classapi = $class.'_'.$name;
 		
 		if(xivo_file::load_file($file,$dirapi,true) !== false && class_exists($classapi) === true)
 			return($classapi);
 
 		$file = 'realstatic.inc';
-		$dir[] = 'realstatic';
+		$dir .= XIVO_SEP_DIR.'realstatic';
 
 		if(xivo_file::load_file($file,$dir,true) !== false && class_exists($class) === true)
 			return($class);
@@ -173,13 +177,13 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		$file = $application.'.inc';
 
-		$dir = array(XIVO_PATH_OBJECT,
-			     'application',
-			     'service',
-			     $this->_type,
-			     $this->_name,
-			     'realstatic',
-			     $application);
+		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,
+					   'application',
+					   'service',
+					   $this->_type,
+					   $this->_name,
+					   'realstatic',
+					   $application);
 
 		$class = 'xivo_application_service_'.$this->_name.'_realstatic_'.$application;
 
@@ -356,7 +360,8 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		foreach($modules as $v)
 		{
-			if(($module = &$this->get_module($v)) !== false && ($list = $module->get_element()) !== false)
+			if(($module = &$this->get_module($v)) !== false
+			&& ($list = $module->get_element()) !== false)
 				$r[$v] = &$list;
 		}
 
@@ -381,7 +386,8 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		foreach($protocols as $k => $v)
 		{
-			if(isset($v['module']) === false || ($element = $this->get_element($v['module'])) === false)
+			if(isset($v['module']) === false 
+			|| ($element = $this->get_element($v['module'])) === false)
 				continue;
 			else if($module === true)
 				$r[$k] = $element;
@@ -415,7 +421,8 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		$protocol = strtolower(strval($protocol));
 
-		if($this->chk_protocol($protocol) === true && $this->chk_channel($protocol) === true)
+		if($this->chk_protocol($protocol) === true
+		&& $this->chk_channel($protocol) === true)
 			$r = true;
 
 		return($r);

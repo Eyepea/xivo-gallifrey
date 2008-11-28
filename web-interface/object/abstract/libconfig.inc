@@ -10,10 +10,7 @@ class xivo_libconfig_abstract
 			return(false);
 		else if(empty($this->_conf) === false)
 			return(null);
-
-		$dir = $dir.XIVO_SEP_DIR.'config';
-
-		if(($this->_conf = xivo_gat::get_file($dir)) !== false)
+		else if(($this->_conf = xivo_gat::get_file($dir.XIVO_SEP_DIR.'config')) !== false)
 			return(true);
 
 		return(false);

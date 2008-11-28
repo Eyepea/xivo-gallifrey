@@ -113,8 +113,9 @@ $array['element']['recordhistory']['set'] = true;
 
 $array['element']['callevents'] = array();
 $array['element']['callevents']['value'] = array('no','yes');
-$array['element']['callevents']['default'] = 'no';
+$array['element']['callevents']['default'] = 'yes';
 $array['element']['callevents']['set'] = true;
+$array['element']['callevents']['forcedef'] = true;
 
 $array['element']['tos_sip'] = array();
 $array['element']['tos_sip']['value'] = array('CS0','CS1','CS2','CS3','CS4','CS5','CS6','CS7',

@@ -1,6 +1,6 @@
 <?php
 
-require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'abstract'.XIVO_SEP_DIR.'libconfig.inc');
+require_once(xivo_file::joinpath(XIVO_PATH_OBJECT,'abstract','libconfig.inc'));
 
 class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 {

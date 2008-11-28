@@ -40,6 +40,12 @@ Action
 ; opt_modify
 Modifier
 
+; opt_acl
+Droits d'accès
+
+; opt_browse
+Parcourir
+
 ; opt_delete
 Supprimer
 

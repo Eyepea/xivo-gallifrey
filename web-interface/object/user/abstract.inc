@@ -1,6 +1,6 @@
 <?php
 
-require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'abstract'.XIVO_SEP_DIR.'libdatastorage.inc');
+require_once(xivo_file::joinpath(XIVO_PATH_OBJECT,'abstract','libdatastorage.inc'));
 
 class xivo_user_abstract extends xivo_libdatastorage_abstract
 {
@@ -257,7 +257,7 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 		$dso = &xivo_gct::get('XIVO_DSO');
 		$type = $dso->get_type();
 		$name = 'xivo_user_'.$type;
-		$dir = XIVO_PATH_OBJECT.XIVO_SEP_DIR.'user'.XIVO_SEP_DIR.'datastorage';
+		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,'user','datastorage');
 
 		if(xivo::load_class($name,$dir,$type,false) === false)
 		{
@@ -277,7 +277,10 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 	{
 		if(xivo_user::chk_meta($user) === false
 		|| ($meta = xivo_user::type_to_meta($this->_info['_type'])) === false
-		|| ($filter = xivo::load_array(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'user'.XIVO_SEP_DIR.'filter'.XIVO_SEP_DIR.$meta.'.inc')) === false
+		|| ($filter = xivo::load_array(xivo_file::joinpath(XIVO_PATH_OBJECT,
+								   'user',
+								   'filter',
+								   $meta.'.inc'))) === false
 		|| xivo::load_class('xivo_filter') === false
 		|| xivo_issa($user,$filter) === false
 		|| xivo_issa($name,$filter[$user]) === false)
@@ -288,19 +291,20 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 
 	function _load_acl()
 	{
-		if(xivo::load_class('xivo_user_acl',
-				    XIVO_PATH_OBJECT.XIVO_SEP_DIR.'user',
-				    'acl',
-				    false) === false)
-			trigger_error('Failed to load user acl',E_USER_ERROR);
+		if(is_object($this->_acl) === true)
+			return(true);
+		else if(xivo::load_class('xivo_user_acl',
+					 XIVO_PATH_OBJECT.XIVO_SEP_DIR.'user',
+					 'acl',
+					 false) === false)
+			trigger_error('Failed to load user ACL',E_USER_ERROR);
 
 		$this->_acl = new xivo_user_acl($this->_dso,$this->_param['factory']);
 	}
 
 	function get_acl()
 	{
-		if(is_object($this->_acl) === false)
-			$this->_load_acl();
+		$this->_load_acl();
 
 		return($this->_acl);
 	}
@@ -328,7 +332,7 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 		$dso = &xivo_gct::get('XIVO_DSO');
 		$type = $dso->get_type();
 		$name = 'xivo_authent_'.$type;
-		$dir = XIVO_PATH_OBJECT.XIVO_SEP_DIR.'user'.XIVO_SEP_DIR.'authent';
+		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,'user','authent');
 
 		if(xivo::load_class($name,$dir,$type,false) === false)
 		{

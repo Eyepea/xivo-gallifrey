@@ -1,6 +1,6 @@
 <?php
 
-require_once(XIVO_PATH_LIB.XIVO_SEP_DIR.'tpl'.XIVO_SEP_DIR.'module.inc');
+require_once(xivo_file::joinpath(XIVO_PATH_LIB,'tpl','module.inc'));
 
 class xivo_tpl_json extends xivo_tpl_module
 {

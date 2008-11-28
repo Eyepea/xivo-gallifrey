@@ -1,23 +1,31 @@
 <?php
 
+xivo::load_class('xivo_entity',XIVO_PATH_OBJECT,null,false);
+$_ETT = new xivo_entity();
+
 xivo::load_class('xivo_server',XIVO_PATH_OBJECT,null,false);
 $_SVR = new xivo_server();
 
 xivo::load_class('xivo_ldapserver',XIVO_PATH_OBJECT,null,false);
 $_LDAPSVR = new xivo_ldapserver();
 
-xivo::load_class('xivo_entity',XIVO_PATH_OBJECT,null,false);
-$_ETT = new xivo_entity();
-
-$userstat = $serverstat = $ldapserver = $entitystat = array();
-$userstat['enable'] = $serverstat['enable'] = $ldapserverstat['enable'] = $entitystat['enable'] = 0;
-$userstat['disable'] = $serverstat['disable'] = $ldapserverstat['disable'] = $entitystat['disable'] = 0;
+$userstat = $entitystat = $serverstat = $ldapserver = array();
+$userstat['enable'] = $entitystat['enable'] = $serverstat['enable'] = $ldapserverstat['enable'] =  0;
+$userstat['disable'] = $entitystat['disable'] = $serverstat['disable'] = $ldapserverstat['disable'] = 0;
 
 if(($enableuser = $_USR->get_nb(null,true)) !== false)
 	$userstat['enable'] = $enableuser;
 
 if(($disableuser = $_USR->get_nb(null,false)) !== false)
 	$userstat['disable'] = $disableuser;
+
+if(($enableentity = $_ETT->get_nb(null,false)) !== false)
+	$entitystat['enable'] = $enableentity;
+
+if(($disableentity = $_ETT->get_nb(null,true)) !== false)
+	$entitystat['disable'] = $disableentity;
+
+$entitystat['total'] = $entitystat['enable'] + $entitystat['disable'];
 
 $userstat['total'] = $userstat['enable'] + $userstat['disable'];
 
@@ -37,18 +45,10 @@ if(($disableldapserver = $_LDAPSVR->get_nb(null,true)) !== false)
 
 $ldapserverstat['total'] = $ldapserverstat['enable'] + $ldapserverstat['disable'];
 
-if(($enableentity = $_ETT->get_nb(null,false)) !== false)
-	$entitystat['enable'] = $enableentity;
-
-if(($disableentity = $_ETT->get_nb(null,true)) !== false)
-	$entitystat['disable'] = $disableentity;
-
-$entitystat['total'] = $entitystat['enable'] + $entitystat['disable'];
-
 $_HTML->set_var('userstat',$userstat);
+$_HTML->set_var('entitystat',$entitystat);
 $_HTML->set_var('serverstat',$serverstat);
 $_HTML->set_var('ldapserverstat',$ldapserverstat);
-$_HTML->set_var('entitystat',$entitystat);
 
 $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

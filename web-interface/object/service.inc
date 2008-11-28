@@ -56,7 +56,7 @@ class xivo_service
 		if(isset($init['general']['version']) === true && is_string($init['general']['version']) === true)
 			$sess_ini['general']['version'] = $init['general']['version'];
 
-		$dir = XIVO_PATH_OBJECT.XIVO_SEP_DIR.'service'.XIVO_SEP_DIR.$name;
+		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,'service',$name);
 
 		if(xivo::load_class($cname,$dir,$sname,false) === false)
 			trigger_error('Failed to load '.$name.' '.$sname.' service',E_USER_ERROR);

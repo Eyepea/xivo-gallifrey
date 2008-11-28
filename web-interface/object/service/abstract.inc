@@ -41,7 +41,11 @@ class xivo_service_abstract
 
 		$file = $module.'.inc';
 
-		$dir = array(XIVO_PATH_OBJECT,'service',$this->_type,$this->_name,$module);
+		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,
+					   'service',
+					   $this->_type,
+					   $this->_name,
+					   $module);
 
 		$class = 'xivo_service_'.$this->_name.'_'.$module;
 
@@ -57,7 +61,12 @@ class xivo_service_abstract
 
 		$file = $application.'.inc';
 
-		$dir = array(XIVO_PATH_OBJECT,'application','service',$this->_type,$this->_name,$application);
+		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,
+					   'application',
+					   'service',
+					   $this->_type,
+					   $this->_name,
+					   $application);
 
 		$class = 'xivo_application_service_'.$this->_name.'_'.$application;
 
@@ -74,7 +83,13 @@ class xivo_service_abstract
 
 		$file = $name.'.inc';
 
-		$dir = array(XIVO_PATH_OBJECT,'application','service',$this->_type,$this->_name,$type,$name);
+		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,
+					   'application',
+					   'service',
+					   $this->_type,
+					   $this->_name,
+					   $type,
+					   $name);
 
 		$class = 'xivo_application_service_'.$this->_name.'_'.$type.'_'.$name;
 
@@ -88,13 +103,12 @@ class xivo_service_abstract
 	{
 		if(empty($this->_conf) === false)
 			return(null);
-	
-		$dir = array();
-		$dir[] = XIVO_PATH_OBJECT;
-		$dir[] = 'service';
-		$dir[] = $this->_type;
-		$dir[] = $this->_name;
-		$dir[] = 'config';
+
+		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,
+					   'service',
+					   $this->_type,
+					   $this->_name,
+					   'config');
 
 		if(($this->_conf = xivo_gat::load_get('config',$dir,$this->_name)) === false)
 			trigger_error('Failed to load '.$this->_name.' configuration',E_USER_ERROR);
@@ -105,14 +119,13 @@ class xivo_service_abstract
 		if(isset($this->_dsoconf[$type]) === true)
 			return(true);
 
-		$dir = array();
-		$dir[] = XIVO_PATH_OBJECT;
-		$dir[] = 'service';
-		$dir[] = $this->_type;
-		$dir[] = $this->_name;
-		$dir[] = 'config';
-		$dir[] = 'datastorage';
-		$dir[] = $type;
+		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,
+					   'service',
+					   $this->_type,
+					   $this->_name,
+					   'config',
+					   'datastorage',
+					   $type);
 
 		if(($this->_dsoconf[$type] = xivo_gat::get_file($dir)) === false)
 			return(false);
@@ -288,14 +301,13 @@ class xivo_service_abstract
 
 		$dsotype = $dso->get_type();
 
-		$dir = array();
-		$dir[] = XIVO_PATH_OBJECT;
-		$dir[] = 'application';
-		$dir[] = 'service';
-		$dir[] = $this->_type;
-		$dir[] = $this->_name;
-		$dir[] = $name;
-		$dir[] = 'datastorage';
+		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,
+					   'application',
+					   'service',
+					   $this->_type,
+					   $this->_name,
+					   $name,
+					   'datastorage');
 
 		$appdso = $this->_load_dso_application_class($name,$dir,$dsotype,$dso);
 
@@ -329,15 +341,14 @@ class xivo_service_abstract
 
 		$dsotype = $dso->get_type();
 
-		$dir = array();
-		$dir[] = XIVO_PATH_OBJECT;
-		$dir[] = 'application';
-		$dir[] = 'service';
-		$dir[] = $this->_type;
-		$dir[] = $this->_name;
-		$dir[] = $type;
-		$dir[] = $name;
-		$dir[] = 'datastorage';
+		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,
+					   'application',
+					   'service',
+					   $this->_type,
+					   $this->_name,
+					   $type,
+					   $name,
+					   'datastorage');
 
 		$appdso = $this->_load_dso_application_class($name,$dir,$dsotype,$dso,false,false,$type);
 
@@ -431,13 +442,12 @@ class xivo_service_abstract
 
 		$type = $datastorage['type'];
 
-		$dir = array();
-		$dir[] = XIVO_PATH_OBJECT;
-		$dir[] = 'service';
-		$dir[] = $this->_type;
-		$dir[] = $this->_name;
-		$dir[] = $name;
-		$dir[] = 'datastorage';
+		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,
+					   'service',
+					   $this->_type,
+					   $this->_name,
+					   $name,
+					   'datastorage');
 
 		$dso = $this->_load_dso_class($name,$type,$dir,$custom,$datastorage,$datastoragemod);
 
@@ -469,7 +479,8 @@ class xivo_service_abstract
 
 		$class = 'xivo_service_'.$this->_name.'_'.$name.'_'.$metatype;
 
-		if(empty($param) === true && ($param = $this->get_dso_config_by_name($metatype,$name)) === false)
+		if(empty($param) === true
+		&& ($param = $this->get_dso_config_by_name($metatype,$name)) === false)
 			$param = array();
 
 		if(is_array($datastoragemod) === true)

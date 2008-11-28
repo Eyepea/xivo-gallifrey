@@ -645,13 +645,15 @@ endif;
 				      'name'	=> 'queue[eventwhencalled]',
 				      'labelid'	=> 'queue-eventwhencalled',
 				      'default'	=> $element['queue']['eventwhencalled']['default'],
-				      'checked'	=> $info['queue']['eventwhencalled'])),
+				      'checked'	=> $info['queue']['eventwhencalled']),
+				      'disabled="disabled"'),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_queue_eventmemberstatus'),
 				      'name'	=> 'queue[eventmemberstatus]',
 				      'labelid'	=> 'queue-eventmemberstatus',
 				      'default'	=> $element['queue']['eventmemberstatus']['default'],
-				      'checked'	=> $info['queue']['eventmemberstatus'])),
+				      'checked'	=> $info['queue']['eventmemberstatus']),
+				      'disabled="disabled"'),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_queue_reportholdtime'),
 				      'name'	=> 'queue[reportholdtime]',

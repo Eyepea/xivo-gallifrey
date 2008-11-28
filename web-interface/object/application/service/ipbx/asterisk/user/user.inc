@@ -2267,6 +2267,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| ($data = xivo_json::decode($_QRY->get_input(),true)) === false
 		|| is_array($data) === false)
 			return(false);
+		else if(xivo_issa('userfeatures',$data) === true)
+			$data['ufeatures'] = $data['userfeatures'];
 
 		return($this->_import($data));
 	}
@@ -2274,7 +2276,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	function _import($arr)
 	{
 		$appincall = &$this->_service->get_application('incall');
-		
+
+		$issa_protocol = xivo_issa('protocol',$arr);
+		$issa_ufeatures = xivo_issa('ufeatures',$arr);
+
 		$incall = array();
 		$incall['dialaction'] = array();
 		$incall['dialaction']['answer'] = array();
@@ -2282,12 +2287,12 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if(xivo_issa('voicemail',$arr) === true
 		&& empty($arr['voicemail']) === false
 		&& xivo_haslen($arr['voicemail'],'mailbox') === true)
-			$arr['ufeatures']['enablevoicemail'] = true;
+		{
+			if($issa_ufeatures === true)
+				$arr['ufeatures']['enablevoicemail'] = true;
+		}
 		else
 			unset($arr['voicemail']);
-
-		$issa_protocol = xivo_issa('protocol',$arr);
-		$issa_ufeatures = xivo_issa('ufeatures',$arr);
 
 		if($issa_protocol === true
 		&& $issa_ufeatures === true

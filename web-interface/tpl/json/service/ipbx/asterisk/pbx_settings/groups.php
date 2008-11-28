@@ -1,11 +1,20 @@
 <?php
 
+xivo::load_class('xivo_http');
+$http = new xivo_http();
+
 $groups = $this->get_var('groups');
 
 if(is_array($groups) === false)
-	xivo_die('Error/500');
+{
+	$http->set_status(500);
+	$http->send(true);
+}
 else if(($nb = count($groups)) === 0)
-	xivo_die('no-data');
+{
+	$http->set_status(204);
+	$http->send(true);
+}
 
 $data = $list = array();
 
@@ -24,10 +33,15 @@ for($i = 0;$i < $nb;$i++)
 }
 
 if(($list = xivo_json::encode($list)) === false)
-	xivo_die('Error/500');
-
-if($this->get_var('sum') === md5($list))
-	xivo_die('no-update');
+{
+	$http->set_status(500);
+	$http->send(true);
+}
+else if($this->get_var('sum') === md5($list))
+{
+	$http->set_status(304);
+	$http->send(true);
+}
 
 header(xivo_json::get_header());
 die($list);

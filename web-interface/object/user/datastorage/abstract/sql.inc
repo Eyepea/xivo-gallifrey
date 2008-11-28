@@ -54,11 +54,9 @@ class xivo_user_abstract_sql extends xivo_datastorage_helper_table
 		if(($id = xivo_ulongint($id)) === 0 || is_array($obj) === false)
 			return(false);
 
-		$r = $this->_dso->update($this->_table,
-					 array('obj' => serialize($obj)),
-					 array('id' => $id));
-
-		return($r);
+		return($this->_dso->update($this->_table,
+					   array('obj' => serialize($obj)),
+					   array('id' => $id)));
 	}
 
 	function _get_obj($id)

@@ -1,6 +1,6 @@
 <?php
 
-require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'user'.XIVO_SEP_DIR.'abstract.inc');
+require_once(xivo_file::joinpath(XIVO_PATH_OBJECT,'user','abstract.inc'));
 
 class xivo_user_root extends xivo_user_abstract
 {

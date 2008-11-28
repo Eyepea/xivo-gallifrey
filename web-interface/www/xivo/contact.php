@@ -8,6 +8,9 @@ if($_USR->mk_active() === false)
 $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 
+$dhtml = &$_HTML->get_module('dhtml');
+$dhtml->set_css('css/xivo/contact.css');
+
 $_HTML->set_struct('xivo/contact');
 $_HTML->display('simple');
 

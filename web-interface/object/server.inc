@@ -1,6 +1,6 @@
 <?php
 
-require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'abstract'.XIVO_SEP_DIR.'libdatastorage.inc');
+require_once(xivo_file::joinpath(XIVO_PATH_OBJECT,'abstract','libdatastorage.inc'));
 
 class xivo_server extends xivo_libdatastorage_abstract
 {
@@ -60,8 +60,7 @@ class xivo_server extends xivo_libdatastorage_abstract
 		$dso = &xivo_gct::get('XIVO_DSO');
 		$type = $dso->get_type();
 		$class = 'xivo_server_'.$type;
-
-		$dir = XIVO_PATH_OBJECT.XIVO_SEP_DIR.'server'.XIVO_SEP_DIR.'datastorage';
+		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,'server','datastorage');
 
 		if(xivo::load_class($class,$dir,$type,false) === false)
 		{

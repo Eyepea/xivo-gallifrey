@@ -153,11 +153,13 @@ class xivo_user
 		return(false);
 	}
 
-	function chk_acl($cat='',$func='',$section='')
+	function chk_acl($category='',$subcategory='',$section='')
 	{
-		$section = (string) $section;
-		$cat = $cat === true ? true : (string) $cat;
-		$func = (string) $func;
+		if($category !== true)
+			$category = strval($category);
+
+		$subcategory = strval($subcategory);
+		$section = strval($section);
 
 		if($section === '')
 		{
@@ -177,17 +179,17 @@ class xivo_user
 				$section = substr($section,0,$pos);
 		}
 
-		if($cat === true)
+		if($category === true)
 		{
 			if(isset($_SERVER['PATH_INFO']) === true)
 				$section .= $_SERVER['PATH_INFO'];
 		}
-		else if($cat !== '')
+		else if($category !== '')
 		{
-			$section .= '/'.$cat;
+			$section .= '/'.$category;
 
-			if($func !== '')
-				$section .= '/'.$func;
+			if($subcategory !== '')
+				$section .= '/'.$subcategory;
 		}
 
 		return(xivo_user::chk_acl_section($section));
@@ -229,25 +231,25 @@ class xivo_user
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			$k = &$arr[$i];
+			$key = &$arr[$i];
 			$grp = $user;
 
-			if(xivo_issa($k,$tree) === false)
+			if(xivo_issa($key,$tree) === false)
 				return(($r = false));
-			else if($r === false && is_bool(($user = xivo_ak($k,$user,true))) === true)
+			else if($r === false && is_bool(($user = xivo_ak($key,$user,true))) === true)
 			{
-				if(isset($tree[$k]['value']) === true
-				&& (bool) $tree[$k]['value'] === false)
+				if(isset($tree[$key]['value']) === true
+				&& (bool) $tree[$key]['value'] === false)
 					return(($r = false));
 
 				return(($r = $user));
 			}
-			else if(isset($tree[$k]['child']) === true)
-				$tree = &$tree[$k]['child'];
+			else if(isset($tree[$key]['child']) === true)
+				$tree = &$tree[$key]['child'];
 		}
 
-		if($r === false)
-			$r = xivo_ak($k,$grp,true) !== false;
+		if($r === false && isset($key,$grp) === tre)
+			$r = xivo_ak($key,$grp,true) !== false;
 
 		return($r);
 	}

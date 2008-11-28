@@ -200,7 +200,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		else if((bool) $exists === false)
 			return(true);
 
-		return(xivo_file::is_f($this->_mohpath.XIVO_SEP_DIR.$dir.XIVO_SEP_DIR.$name));
+		return(xivo_file::is_f(xivo_file::joinpath($this->_mohpath,$dir,$name)));
 	}
 
 	function get_category($id,$disable=null)

@@ -1,6 +1,6 @@
 <?php
 
-require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'application'.XIVO_SEP_DIR.'service'.XIVO_SEP_DIR.'abstract.inc');
+require_once(xivo_file::joinpath(XIVO_PATH_OBJECT,'application','service','abstract.inc'));
 
 class xivo_application_asterisk_abstract extends xivo_application_service_abstract
 {

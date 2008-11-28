@@ -1,6 +1,6 @@
 <?php
 
-require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'abstract'.XIVO_SEP_DIR.'libconfig.inc');
+require_once(xivo_file::joinpath(XIVO_PATH_OBJECT,'abstract','libconfig.inc'));
 
 class xivo_application_abstract extends xivo_libconfig_abstract
 {
@@ -18,7 +18,10 @@ class xivo_application_abstract extends xivo_libconfig_abstract
 
 		$file = $abstract.'.inc';
 
-		$dir = array(XIVO_PATH_OBJECT,'application',$this->_application_name,'abstract');
+		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,
+					   'application',
+					   $this->_application_name,
+					   'abstract');
 
 		$class = 'xivo_application_'.$this->_application_name.'_'.$abstract.'_abstract';
 

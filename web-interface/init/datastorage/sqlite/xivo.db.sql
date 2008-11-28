@@ -1,5 +1,25 @@
 BEGIN TRANSACTION;
 
+DROP TABLE accesswebservice;
+CREATE TABLE accesswebservice (
+ id integer unsigned,
+ name varchar(64) NOT NULL DEFAULT '',
+ login varchar(64),
+ passwd varchar(64),
+ host varchar(255),
+ obj longblob NOT NULL,
+ disable tinyint(1) NOT NULL DEFAULT 0,
+ description text NOT NULL,
+ PRIMARY KEY(id)
+);
+
+CREATE INDEX accesswebservice__idx__login ON accesswebservice(login);
+CREATE INDEX accesswebservice__idx__passwd ON accesswebservice(passwd);
+CREATE INDEX accesswebservice__idx__host ON accesswebservice(host);
+CREATE INDEX accesswebservice__idx__disable ON accesswebservice(disable);
+CREATE UNIQUE INDEX accesswebservice__uidx__name ON accesswebservice(name);
+
+
 DROP TABLE entity;
 CREATE TABLE entity (
  id integer unsigned,

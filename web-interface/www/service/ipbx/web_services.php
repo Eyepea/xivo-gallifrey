@@ -9,7 +9,12 @@ $ipbx = &$_SRE->get('ipbx');
 $application = $_HTML->get_application('service/ipbx/'.$ipbx->get_name().'/web_services/',2);
 
 if($application === false)
-	xivo_die('Error/404');
+{
+	xivo::load_class('xivo_http');
+	$http = new xivo_http();
+	$http->set_status(404);
+	$http->send(true);
+}
 
 die(include($application));
 

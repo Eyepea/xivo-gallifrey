@@ -21,15 +21,14 @@ class xivo_application_service_asterisk_realstatic
 
 		$file = $name.'.inc';
 
-		$dir = array();
-		$dir[] = XIVO_PATH_OBJECT;
-		$dir[] = 'application';
-		$dir[] = 'service';
-		$dir[] = 'ipbx';
-		$dir[] = 'asterisk';
-		$dir[] = 'realstatic';
-		$dir[] = $this->_name;
-		$dir[] = $name;
+		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,
+					   'application',
+					   'service',
+					   'ipbx',
+					   'asterisk',
+					   'realstatic',
+					   $this->_name,
+					   $name);
 
 		$class = 'xivo_application_service_asterisk_realstatic_'.$this->_name.'_'.$name;
 

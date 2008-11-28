@@ -1,6 +1,6 @@
 <?php
 
-require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'abstract'.XIVO_SEP_DIR.'acl.inc');
+require_once(xivo_file::joinpath(XIVO_PATH_OBJECT,'abstract','acl.inc'));
 
 class xivo_user_acl extends xivo_acl_abstract
 {
@@ -13,11 +13,11 @@ class xivo_user_acl extends xivo_acl_abstract
 		if(defined('XIVO_USER_ACL_PATH') === true)
 			$path = XIVO_USER_ACL_PATH;
 		else
-			$path = XIVO_PATH_OBJECTCONF;
+			$path = XIVO_PATH_OBJECTCONF.XIVO_SEP_DIR.'acl';
 
-		if(($this->_conf = xivo_gat::load_get('acl',$path)) === false
+		if(($this->_conf = xivo_gat::load_get('user',$path,'xivo_user_acl')) === false
 		|| isset($this->_conf['tree']) === false)
-			trigger_error('Failed to load user Array',E_USER_ERROR);
+			trigger_error('Failed to load user ACL Array',E_USER_ERROR);
 
 		if(is_object($dso) === false)
 			trigger_error('Invalid datastorage in '.__CLASS__,E_USER_ERROR);
