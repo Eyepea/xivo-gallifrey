@@ -173,10 +173,10 @@ onload = function() { content.focus() }
 <CAPTION>Informations des clients XiVO</CAPTION>
 <TBODY>
 <TR>
-	<TD>Nombre total de client loggué :</TD>
+	<TD>Nombre total de clients loggués :</TD>
 	<TD><?=$res_total_login?></TD>
 </TR>
-	<TD>Nombre total de client déloggué :</TD>
+	<TD>Nombre total de clients déloggués :</TD>
 	<TD><?=$res_total_logout?></TD>
 </TR>
 </THEAD>
@@ -427,7 +427,7 @@ foreach($countallcalltype as $calltype => $value)
 }
 ?>
 	<div id="chart1">
-	<embed type="application/x-shockwave-flash" src="bar.swf" id="barchart" name="barchart" bgcolor="#336699" quality="high" wmode="transparent" flashvars="<? echo implode ('&amp;', $tmp); ?>&amp;title=Nombre d'appels répondu par status&amp;bgcolor=0xF0ffff&amp;bgcolorchart=0xdfedf3&amp;fade1=ff6600&amp;fade2=ff6314&amp;colorbase=0xfff3b3&amp;reverse=1" width="359" height="217">
+	<embed type="application/x-shockwave-flash" src="bar.swf" id="barchart" name="barchart" bgcolor="#336699" quality="high" wmode="transparent" flashvars="<? echo implode ('&amp;', $tmp); ?>&amp;title=Nombre d'appels répondus par statut&amp;bgcolor=0xF0ffff&amp;bgcolorchart=0xdfedf3&amp;fade1=ff6600&amp;fade2=ff6314&amp;colorbase=0xfff3b3&amp;reverse=1" width="359" height="217">
 	</div>
 </TD>
 <TD>
@@ -441,7 +441,7 @@ foreach($userlist as $user => $value)
 }
 ?>
 	<div id="chart2">
-	<embed type="application/x-shockwave-flash" src="bar.swf" id="barchart" name="barchart" bgcolor="#336699" quality="high" wmode="transparent" flashvars="<? echo implode ('&amp;', $tmp); ?>&amp;title=Nombre d'appels répondu par agent&amp;bgcolor=0xF0ffff&amp;bgcolorchart=0xdfedf3&amp;fade1=ff6600&amp;fade2=ff6314&amp;colorbase=0xfff3b3&amp;reverse=1" width="359" height="217">
+	<embed type="application/x-shockwave-flash" src="bar.swf" id="barchart" name="barchart" bgcolor="#336699" quality="high" wmode="transparent" flashvars="<? echo implode ('&amp;', $tmp); ?>&amp;title=Nombre d'appels répondus par agent&amp;bgcolor=0xF0ffff&amp;bgcolorchart=0xdfedf3&amp;fade1=ff6600&amp;fade2=ff6314&amp;colorbase=0xfff3b3&amp;reverse=1" width="359" height="217">
 	</div>
 </TD>
 </TR>
