@@ -612,22 +612,22 @@ CREATE TABLE queue (
  announce varchar(128),
  context varchar(39),
  timeout tinyint unsigned DEFAULT 0,
- 'monitor-type' varchar(10),
- 'monitor-format' varchar(128),
- 'queue-youarenext' varchar(128),
- 'queue-thereare' varchar(128),
- 'queue-callswaiting' varchar(128),
- 'queue-holdtime' varchar(128),
- 'queue-minutes' varchar(128),
- 'queue-seconds' varchar(128),
- 'queue-lessthan' varchar(128),
- 'queue-thankyou' varchar(128),
- 'queue-reporthold' varchar(128),
- 'periodic-announce' varchar(128),
- 'announce-frequency' integer unsigned,
- 'periodic-announce-frequency' integer unsigned,
- 'announce-round-seconds' tinyint unsigned,
- 'announce-holdtime' varchar(4),
+ "monitor-type" varchar(10),
+ "monitor-format" varchar(128),
+ "queue-youarenext" varchar(128),
+ "queue-thereare" varchar(128),
+ "queue-callswaiting" varchar(128),
+ "queue-holdtime" varchar(128),
+ "queue-minutes" varchar(128),
+ "queue-seconds" varchar(128),
+ "queue-lessthan" varchar(128),
+ "queue-thankyou" varchar(128),
+ "queue-reporthold" varchar(128),
+ "periodic-announce" varchar(128),
+ "announce-frequency" integer unsigned,
+ "periodic-announce-frequency" integer unsigned,
+ "announce-round-seconds" tinyint unsigned,
+ "announce-holdtime" varchar(4),
  retry tinyint unsigned,
  wrapuptime tinyint unsigned,
  maxlen integer unsigned,
@@ -680,7 +680,7 @@ CREATE TABLE queuemember (
  queue_name varchar(128) NOT NULL,
  interface varchar(128) NOT NULL,
  penalty tinyint unsigned NOT NULL DEFAULT 0,
- 'call-limit' tinyint unsigned NOT NULL DEFAULT 0,
+ "call-limit" tinyint unsigned NOT NULL DEFAULT 0,
  commented tinyint(1) NOT NULL DEFAULT 0,
  usertype varchar(5) NOT NULL,
  userid integer unsigned NOT NULL,
@@ -854,6 +854,7 @@ INSERT INTO staticiax VALUES (NULL,0,0,1,'iax.conf','general','mohsuggest',NULL)
 INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','encryption','no');
 INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','maxauthreq',3);
 INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','codecpriority','host');
+INSERT INTO staticiax VALUES (NULL,0,0,1,'iax.conf','general','disallow',NULL);
 INSERT INTO staticiax VALUES (NULL,0,0,1,'iax.conf','general','allow',NULL);
 INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','rtcachefriends','yes');
 INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','rtupdate','yes');
@@ -951,7 +952,7 @@ INSERT INTO staticsip VALUES (NULL,0,0,1,'sip.conf','general','fromdomain',NULL)
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','sipdebug','no');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','dumphistory','no');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','recordhistory','no');
-INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','callevents','no');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','callevents','yes');
 INSERT INTO staticsip VALUES (NULL,0,0,1,'sip.conf','general','tos_sip',NULL);
 INSERT INTO staticsip VALUES (NULL,0,0,1,'sip.conf','general','tos_audio',NULL);
 INSERT INTO staticsip VALUES (NULL,0,0,1,'sip.conf','general','tos_video',NULL);
@@ -1275,7 +1276,7 @@ CREATE TABLE usersip (
  mailbox varchar(80),
  subscribemwi tinyint(1) NOT NULL DEFAULT 1,
  buggymwi tinyint(1),
- 'call-limit' tinyint unsigned NOT NULL DEFAULT 0,
+ "call-limit" tinyint unsigned NOT NULL DEFAULT 0,
  callerid varchar(160),
  fullname varchar(80),
  cid_number varchar(80),

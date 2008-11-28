@@ -916,6 +916,7 @@ INSERT INTO `staticiax` VALUES (NULL,0,0,1,'iax.conf','general','mohsuggest',NUL
 INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','encryption','no');
 INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','maxauthreq',3);
 INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','codecpriority','host');
+INSERT INTO `staticiax` VALUES (NULL,0,0,1,'iax.conf','general','disallow',NULL);
 INSERT INTO `staticiax` VALUES (NULL,0,0,1,'iax.conf','general','allow',NULL);
 INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','rtcachefriends','yes');
 INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','rtupdate','yes');
@@ -1013,7 +1014,7 @@ INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','fromdomain',NUL
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','sipdebug','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','dumphistory','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','recordhistory','no');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','callevents','no');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','callevents','yes');
 INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','tos_sip',NULL);
 INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','tos_audio',NULL);
 INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','tos_video',NULL);
