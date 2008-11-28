@@ -1653,9 +1653,14 @@ class XivoCTICommand(BaseCommand):
                                 if actionid in self.getvar_requests:
                                         variable = event.get('Variable')
                                         value = event.get('Value')
+                                        channel = self.getvar_requests[actionid]['channel']
                                         if variable is not None and value is not None:
-                                                log.info('AMI %s Response=Success (%s) : %s = %s (%s)'
-                                                         % (astid, actionid, variable, value, self.getvar_requests[actionid]['channel']))
+                                                if variable == 'MONITORED':
+                                                        if value == 'true':
+                                                                log.info('%s %s channel MONITORED' % (astid, channel))
+                                                else:
+                                                        log.info('AMI %s Response=Success (%s) : %s = %s (%s)'
+                                                                 % (astid, actionid, variable, value, channel))
                                         del self.getvar_requests[actionid]
                         else:
                                 log.warning('AMI %s Response=Success : event = %s' % (astid, event))
@@ -2433,6 +2438,10 @@ class XivoCTICommand(BaseCommand):
                 applidata = event.get('AppData').split('|')
                 uniqueid = event.get('Uniqueid')
                 channel = event.get('Channel')
+                
+                actionid = self.amilist.execute(astid, 'getvar', channel, 'MONITORED')
+                self.getvar_requests[actionid] = {'channel' : channel, 'variable' : 'MONITORED'}
+                
                 if uniqueid not in self.uniqueids[astid]:
                         self.uniqueids[astid][uniqueid] = { 'channel' : channel,
                                                             'application' : appliname }
