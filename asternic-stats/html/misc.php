@@ -34,6 +34,8 @@ function print_human_hour($sec) {
 	$sec = calc_duration(false,false,$sec);
 
 	$res = '';
+	if($sec['d'] != 0)
+		$res .= $sec['d'] . 'j ';
 	if($sec['h'] != 0)
 		$res .= $sec['h'] . 'h ';
 	if($sec['m'] != 0)
@@ -201,9 +203,9 @@ function print_exports($header_pdf,$data_pdf,$width_pdf,$title_pdf,$cover_pdf) {
 		echo "<input type='hidden' name='width' value='".$width_serial."' />\n";
 		echo "<input type='hidden' name='title' value='".$title_serial."' />\n";
 		echo "<input type='hidden' name='cover' value='".$cover_serial."' />\n";
-		echo "<input type=image name='pdf' src='images/pdf.gif' ";
-		tooltip($lang["$language"]['pdfhelp'],200);
-		echo ">\n";
+		#echo "<input type=image name='pdf' src='images/pdf.gif' ";
+		#tooltip($lang["$language"]['pdfhelp'],200);
+		#echo ">\n";
 		echo "<input type=image name='csv' src='images/excel.gif' "; 
 		tooltip($lang["$language"]['csvhelp'],200);
 		echo ">\n";

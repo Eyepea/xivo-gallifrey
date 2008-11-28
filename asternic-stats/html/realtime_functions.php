@@ -223,5 +223,4 @@ function agent_name($channel) {
     }
     return $channel;
 }
-
 ?>

@@ -17,9 +17,10 @@
 */
 
 require_once("/etc/pf-asternic-stats/config.php");
-require('fpdf.php');
+//require('fpdf.php');
+require('ufpdf.php');
 
-class PDF extends FPDF
+class PDF extends UFPDF
 {
 
 function Footer()

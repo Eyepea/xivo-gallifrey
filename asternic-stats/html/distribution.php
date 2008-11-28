@@ -18,6 +18,28 @@
 
 require_once("/etc/pf-asternic-stats/config.php");
 include("sesvars.php");
+
+
+function Sdump($var, $title = null) {
+
+	echo '<pre style="border: 1px solid gray; padding: 5px; text-align: left;">';
+	
+	if (!is_null($title)):
+	
+		echo '<h3>', htmlspecialchars($title), '</h3>';
+	
+	endif;
+	
+	ob_start();
+	
+	var_dump($var);
+	
+	echo htmlspecialchars(preg_replace("/\]\=\>\n(\s+)/m", '] => ', ob_get_clean()));
+	
+	echo '</pre>';
+
+}
+
 ?>
 <!-- http://devnull.tagsoup.com/quirksmode -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -74,6 +96,9 @@ $login_by_dw    = Array();
 
 $res = consulta_db($query,$DB_DEBUG,$DB_MUERE);
 
+$answered = 0;
+$unanswered = 0;
+
 if(db_num_rows($res)>0) {
 
 	while($row=db_fetch_row($res)) {
@@ -123,14 +148,9 @@ if(db_num_rows($res)>0) {
 	$total_calls = $answered + $unanswered;
 	$dias  = array_unique($dias);
 	$horas = array_unique($horas);
-    asort($dias);
+    	asort($dias);
 	asort($horas);
-} else {
- 	// No rows returned
-	$answered = 0;
-	$unanswered = 0;
 }
-
 
 $start_parts = split(" ", $start);
 $end_parts   = split(" ", $end);
@@ -191,7 +211,7 @@ $cover_pdf.= $lang["$language"]['agent_logoff'].": ".$logoff."\n";
                 </TR>
                 <TR>
                   <TD><?=$lang["$language"]['number_totals']?>:</TD>
-                  <TD><?=(($answered+$unanswered))?> <?=$lang["$language"]['calls']?></TD>
+                  <TD><?=$total_calls?> <?=$lang["$language"]['calls']?></TD>
                 </TR>
 		        <TR>
                   <TD><?=$lang["$language"]['agent_login']?>:</TD>
@@ -241,8 +261,8 @@ $cover_pdf.= $lang["$language"]['agent_logoff'].": ".$logoff."\n";
 				</THEAD>
 				<TBODY>
 				<?
-				$header_pdf=array($lang["$language"]['date'],$lang["$language"]['answered'],$lang["$language"]['percent_answered'],$lang["$language"]['unanswered'],$lang["$language"]['percent_unanswered'],$lang["$language"]['avg_calltime'],$lang["$language"]['avg_holdtime'],$lang["$language"]['login'],$lang["$language"]['logoff']);
-				$width_pdf=array(25,23,23,23,23,25,25,20,20);
+				$header_pdf=array($lang["$language"]['date'], 'Taux de décroche', 'Présenté', $lang["$language"]['answered'],$lang["$language"]['percent_answered'],$lang["$language"]['unanswered'],$lang["$language"]['percent_unanswered'],$lang["$language"]['avg_calltime'],$lang["$language"]['avg_holdtime'],$lang["$language"]['login'],$lang["$language"]['logoff']);
+				$width_pdf=array(25,25,25,23,23,23,23,25,25,20,20);
 				$title_pdf=$lang["$language"]['call_distrib_day'];
 
 				$count=1;
@@ -276,10 +296,11 @@ $cover_pdf.= $lang["$language"]['agent_logoff'].": ".$logoff."\n";
 					$percent_unans = number_format($percent_unans,2);
 					$average_call_duration_print = seconds2minutes($average_call_duration);
 					if($key<>"") {
-					$linea_pdf = array($key,$ans_by_day["$key"],"$percent_ans ".$lang["$language"]['percent'],$unans_by_day["$key"],"$percent_unans ".$lang["$language"]['percent'],$average_call_duration_print,number_format($average_hold_duration,0),$login_by_day["$key"],$logout_by_day["$key"]);
 
 					$total = $ans_by_day["$key"]+$unans_by_day["$key"];
 					$taux_decroche = round($ans_by_day["$key"]/$total*100);
+
+					$linea_pdf = array($key, $taux_decroche.'%', $total,$ans_by_day["$key"],"$percent_ans ".$lang["$language"]['percent'],$unans_by_day["$key"],"$percent_unans ".$lang["$language"]['percent'],$average_call_duration_print,number_format($average_hold_duration,0),$login_by_day["$key"],$logout_by_day["$key"]);
 
 					echo "<TR $odd>\n";
 					echo "<TD>$key</TD>\n";
@@ -337,8 +358,8 @@ $cover_pdf.= $lang["$language"]['agent_logoff'].": ".$logoff."\n";
 				<TBODY>
 				<?
 
-				$header_pdf=array($lang["$language"]['hour'],$lang["$language"]['answered'],$lang["$language"]['percent_answered'],$lang["$language"]['unanswered'],$lang["$language"]['percent_unanswered'],$lang["$language"]['avg_calltime'],$lang["$language"]['avg_holdtime'],$lang["$language"]['login'],$lang["$language"]['logoff']);
-				$width_pdf=array(25,23,23,23,23,25,25,20,20);
+				$header_pdf=array($lang["$language"]['hour'], 'Taux de décroche', 'Présent', $lang["$language"]['answered'],$lang["$language"]['percent_answered'],$lang["$language"]['unanswered'],$lang["$language"]['percent_unanswered'],$lang["$language"]['avg_calltime'],$lang["$language"]['avg_holdtime'],$lang["$language"]['login'],$lang["$language"]['logoff']);
+				$width_pdf=array(25,25,25,23,23,23,23,25,25,20,20);
 				$title_pdf=$lang["$language"]['call_distrib_hour'];
 				$data_pdf = array();
 
@@ -381,10 +402,10 @@ $cover_pdf.= $lang["$language"]['agent_logoff'].": ".$logoff."\n";
 					    $logout_by_hour["$key"]=0;
                     }
 
-					$linea_pdf = array($key,$ans_by_hour["$key"],"$percent_ans ".$lang["$language"]['percent'],$unans_by_hour["$key"],"$percent_unans ".$lang["$language"]['percent'],number_format($average_call_duration,0),number_format($average_hold_duration,0),$login_by_hour["$key"],$logout_by_hour["$key"]);
-
 					$total = $ans_by_hour["$key"]+$unans_by_hour["$key"];
 					$taux_decroche = round($ans_by_hour["$key"]/$total*100);
+
+					$linea_pdf = array($key, $taux_decroche.'%', $total, $ans_by_hour["$key"],"$percent_ans ".$lang["$language"]['percent'],$unans_by_hour["$key"],"$percent_unans ".$lang["$language"]['percent'],number_format($average_call_duration,0),number_format($average_hold_duration,0),$login_by_hour["$key"],$logout_by_hour["$key"]);
 
 					echo "<TR $odd>\n";
 					echo "<TD>$key</TD>\n";
@@ -406,12 +427,36 @@ $cover_pdf.= $lang["$language"]['agent_logoff'].": ".$logoff."\n";
 					$query_time.="var$gkey=$key&val$gkey=".intval($average_call_duration)."&";
 					$query_hold.="var$gkey=$key&val$gkey=".intval($average_hold_duration)."&";
 					$data_pdf[]=$linea_pdf;
+					
+					#CEDRIC
+					$total_presente += $total; 
+					$total_ans_by_hour += $ans_by_hour[$key];
+					$total_unans_by_hour += $unans_by_hour["$key"];
+					$total_average_call_duration += $average_call_duration;
+					$total_average_hold_duration += $average_hold_duration;
+					$total_login += $login_by_hour["$key"];
+					$total_logout += $logout_by_hour["$key"];
+
 				}
 				$query_ans.="title=".$lang["$language"]['answ_by_hour']."$graphcolor";
 				$query_unans.="title=".$lang["$language"]['unansw_by_hour']."$graphcolor";
-				$query_time.="title=".$lang["$language"]['avg_call_time_by_hr']."$graphcolor";
-				$query_hold.="title=".$lang["$language"]['avg_hold_time_by_hr']."$graphcolor";
-				$query_comb.="title=".$lang["$language"]['anws_unanws_by_hour']."$graphcolorstack&tagA=".$lang["$language"]['answered_calls']."&tagB=".$lang["$language"]['unanswered_calls'];
+				$query_time.="title=".addslashes($lang["$language"]['avg_call_time_by_hr'])."$graphcolor";
+				$query_hold.="title=".addslashes($lang["$language"]['avg_hold_time_by_hr'])."$graphcolor";
+				$query_comb.="title=".addslashes($lang["$language"]['anws_unanws_by_hour'])."$graphcolorstack&tagA=".$lang["$language"]['answered_calls']."&tagB=".$lang["$language"]['unanswered_calls'];
+
+					echo "<TR style='font-weight:bold'>\n";
+					echo "<TD>Moy.</TD>\n";
+					echo "<TD>&nbsp;</TD>\n";
+					echo "<TD><span style='float:right'>$total_presente</span>".round($total_presente/24, 2)."</TD>\n";
+					echo "<TD><span style='float:right'>$total_ans_by_hour</span>".round($total_ans_by_hour/24, 2)."</TD>\n";
+					echo "<TD>&nbsp;</TD>\n";
+					echo "<TD><span style='float:right'>$total_unans_by_hour</span>".round($total_unans_by_hour/24, 2)."</TD>\n";
+					echo "<TD>&nbsp;</TD>\n";
+					echo "<TD><span style='float:right'>".seconds2minutes($total_average_call_duration)."min</span>".seconds2minutes($total_average_call_duration/24)."min</TD>\n";
+					echo "<TD><span style='float:right'>".seconds2minutes($total_average_hold_duration)."min</span>".seconds2minutes($total_average_hold_duration/24)."min</TD>\n";
+					echo "<TD><span style='float:right'>$total_login</span>".round($total_login/24, 2)."</TD>\n";
+					echo "<TD><span style='float:right'>$total_logout</span>".round($total_logout/24, 2)."</TD>\n";
+					echo "</TR>\n";
 				?>
 			</TBODY>
 			</TABLE>
@@ -559,12 +604,44 @@ $cover_pdf.= $lang["$language"]['agent_logoff'].": ".$logoff."\n";
 					$query_time.="var$gkey=".$dayp["$key"]."&val$gkey=".intval($average_call_duration)."&";
 					$query_hold.="var$gkey=".$dayp["$key"]."&val$gkey=".intval($average_hold_duration)."&";
 					$data_pdf[]=$linea_pdf;
+					#CEDRIC
+					$total_presente += $total;
+					$total_answered += $ans_by_dw[$key];
+					$total_unanswered += $unans_by_dw[$key];
+					$total_average_call_duration += $average_call_duration;
+					$total_average_hold_duration += $average_hold_duration;
+					$total_login += $login_by_dw[$key];
+					$total_logout += $logout_by_dw[$key];
 				}
-				$query_ans.="title=".$lang["$language"]['answ_by_day']."$graphcolor";
-				$query_unans.="title=".$lang["$language"]['unansw_by_day']."$graphcolor";
-				$query_time.="title=".$lang["$language"]['avg_call_time_by_day']."$graphcolor";
-				$query_hold.="title=".$lang["$language"]['avg_hold_time_by_day']."$graphcolor";
+				$query_ans.="title=".addslashes($lang["$language"]['answ_by_day'])."$graphcolor";
+				$query_unans.="title=".addslashes($lang["$language"]['unansw_by_day'])."$graphcolor";
+				$query_time.="title=".addslashes($lang["$language"]['avg_call_time_by_day'])."$graphcolor";
+				$query_hold.="title=".addslashes($lang["$language"]['avg_hold_time_by_day'])."$graphcolor";
+				#CEDRIC
 				?>
+				<TR style='font-weight:bold;'>
+				<?
+					$moy_presente = round($total_presente/7, 2);
+					$moy_answered = round($total_answered/7, 2);
+					$moy_unanswered = round($total_unanswered/7, 2);
+					$moy_average_call_duration = round($total_average_call_duration/7, 2);
+					$moy_average_hold_duration = round($total_average_hold_duration/7, 2);
+					$moy_login = round($total_login/7, 2);
+					$moy_logout = round($total_logout/7, 2);
+
+					echo "<TD>TOTAL</TD>\n";
+					echo "<TD>&nbsp;</TD>\n";
+					echo "<TD><span style='float:right;'>$total_presente</span> $moy_presente</TD>";
+					echo "<TD><span style='float:right;'>$total_answered</span> $moy_answered</TD>\n";
+					echo "<TD>&nbsp;</TD>\n";
+					echo "<TD><span style='float:right;'>$total_unanswered</span> $moy_unanswered</TD>\n";
+					echo "<TD>&nbsp;</TD>\n";
+					echo "<TD><span style='float:right;'>".seconds2minutes($total_average_call_duration)."min</span>".seconds2minutes($moy_average_call_duration)."min</TD>\n";
+					echo "<TD><span style='float:right;'>".seconds2minutes($total_average_hold_duration)."min</span>".seconds2minutes($moy_average_hold_duration)."min</TD>\n";
+					echo "<TD><span style='float:right;'>$total_login</span> $moy_login</TD>\n";
+					echo "<TD><span style='float:right;'>$total_logout</span> $moy_logout</TD>\n";
+				?>
+				</TR>
 			</TBODY>
 			</TABLE>
 			<?

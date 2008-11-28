@@ -31,8 +31,6 @@ $data = array();
 
 $db = sqlite_open('/var/lib/pf-xivo-cti-server/sqlite/xivo.db', 0666, $sqliteerror) or die ('Error DB : ' . $sqliteerror);
 
-
-
 $nb = count($agent);
 $agentlist = '';
 
@@ -170,7 +168,7 @@ onload = function() { content.focus() }
 <div id="main">
 <div id="contents">
 
-<TABLE width='99%' cellpadding=3 cellspacing=3 border=0>
+<!--TABLE width='99%' cellpadding=3 cellspacing=3 border=0>
 <THEAD>
 <CAPTION>Informations des clients XiVO</CAPTION>
 <TBODY>
@@ -182,9 +180,7 @@ onload = function() { content.focus() }
 	<TD><?=$res_total_logout?></TD>
 </TR>
 </THEAD>
-</TABLE>
-
-<br><br>
+</TABLE!-->
 
 <TABLE width='99%' cellpadding=1 cellspacing=1 border=0 class='sortable' id='table2'>
 <CAPTION>
@@ -199,6 +195,19 @@ onload = function() { content.focus() }
 <?
 
 $header = array();
+$translation = array(
+			'postcall'	=>	'Post Appel',
+			'onlineincoming'	=>	'En Ligne appel entrant',
+			'available'	=>	'Disponible',	
+			'away'		=>	'Absent',
+			'backoffice'	=>	'Back Office',
+			'pause'		=>	'Pause',
+			'fastpickup'	=>	'Décroche rapide',			
+			'berightback'	=>	'Bientôt de retour',
+			'donotdisturb'	=>	'Ne pas déranger',
+			'outtolunch'	=>	'Parti manger',
+			'onlineoutgoing'	=>	'En ligne appel sortant',	
+);
 foreach($data as $k => $v)
 {
 
@@ -212,15 +221,20 @@ foreach($data as $k => $v)
 			if($m !== 'xivo_unknown')
 			{
 				if(!in_array($m, $header)) {
-					echo "<TH colspan=2>$m</TH>";
+					# CEDRIC
+					#echo "<TH colspan=2>$m</TH>";
 					$header[] = $m;
+					if (array_key_exists($m, $translation)) {
+						echo "<TH colspan=2>".$translation[$m]."</TH>";
+					} else {
+						echo "<TH colspan=2>$m</TH>";
+					}
 				}
 			}
 		}
 	}
 
 }
-
 ?>
 
 <TH colspan=2>Total</TH>
@@ -245,17 +259,19 @@ foreach($data as $k => $v)
 			if($m !== 'xivo_unknown')
 			{
 				echo "<TD style='text-align: right'>" . print_human_hour($n['total']) . "</TD>\n";
-				echo "<TD style='text-align: right'>" . print_human_hour($n['cnt']) . "</TD>\n";
+				echo "<TD style='text-align: right'>" . $n['cnt'] . "</TD>\n";
 				$c = $c+1;
+				$total_cnt[$k] += $n['cnt'];
+				$total_h[$k] += $n['total'];
 			}
 		}
 	}
-
+	#CEDRIC
 	$header_diff = $count_header-$c;
 	for($h=0;$h<$header_diff;$h++)
 		echo "<TD></TD><TD></TD>";
-	echo "<TD style='text-align: right'>" . print_human_hour($v['total']) . "</TD>";
-	echo "<TD style='text-align: right'>" . print_human_hour($n['cnt']) . "</TD>";
+	echo "<TD style='text-align: right'>" . print_human_hour($total_h[$k]) . "</TD>";
+	echo "<TD style='text-align: right'>" . $total_cnt[$k] . "</TD>";
 	echo "</TR>";
 }
 ?>
@@ -298,34 +314,17 @@ foreach($res_event_stats as $stats)
  * ADD BY CEDRIC
 */
 
-function Sdump($var, $title = null) {
 
-	echo '<pre style="border: 1px solid gray; padding: 5px; text-align: left;">';
-	
-	if (!is_null($title)):
-	
-		echo '<h3>', htmlspecialchars($title), '</h3>';
-	
-	endif;
-	
-	ob_start();
-	
-	var_dump($var);
-	
-	echo htmlspecialchars(preg_replace("/\]\=\>\n(\s+)/m", '] => ', ob_get_clean()));
-	
-	echo '</pre>';
-
-}
-
-
-$lscalltype = array();
+$lscalltype = array(	'XIVO_CALL_STATUS-1' => 'Partenaire', 
+			'XIVO_CALL_STATUS-2' => 'Client', 
+			'XIVO_CALL_STATUS-3' => 'Prospect Infos', 
+			'XIVO_CALL_STATUS-4' => 'Prospect Accueil', 
+			'XIVO_CALL_STATUS-5' => 'Hors Cible'
+		);
 $countallcalltype = array();
-
-for($nbStatus=1;$nbStatus<6;$nbStatus++)
-{
-	$lscalltype['XIVO_CALL_STATUS-'.$nbStatus] = 'XIVO_CALL_STATUS-'.$nbStatus; 
-	$countallcalltype['XIVO_CALL_STATUS-'.$nbStatus] = 0;
+foreach($lscalltype as $calltype => $name)
+{ 
+	$countallcalltype[$calltype] = 0;
 }
 
 $callinfos = array();
@@ -336,9 +335,9 @@ $countAllCallTypeUser = array();
 foreach ($res_event_stats as $stats)
 {
 	$stats = array_merge($stats, array('callduration' => rand(180, 1080)));
-	$userlist[$stats['loginclient']][$lscalltype[$stats['arguments']]]['countcalltype']++;
-	$userlist[$stats['loginclient']][$lscalltype[$stats['arguments']]]['callduration'] = $stats['callduration'];
-	$countallcalltype[$lscalltype[$stats['arguments']]]++;
+	$userlist[$stats['loginclient']][$stats['arguments']]['countcalltype']++;
+	$userlist[$stats['loginclient']][$stats['arguments']]['callduration'] = $stats['callduration'];
+	$countallcalltype[$stats['arguments']]++;
 	$countAllCallTypeUser[$stats['loginclient']]++;		
 	ksort($userlist[$stats['loginclient']]);
 }
@@ -355,9 +354,9 @@ foreach ($res_event_stats as $stats)
 <TH>Utilisateurs</TH>
 <?php
 
-foreach($countallcalltype as $calltype => $value)
+foreach($lscalltype as $calltype => $name)
 {
-	echo "<TH>$calltype</TH>\n";
+	echo "<TH>$name</TH>\n";
 }
 
 ?>
@@ -376,12 +375,12 @@ foreach($userlist as $user => $value)
 foreach($value as $type => $data)
 {
 	$prc = round(($data['countcalltype']/$countAllCallTypeUser[$user])*100, 2);
-	echo "<TD>".$data['countcalltype']." - ".seconds2minutes($data['callduration']/count($data['countcalltype']))."min - ".$prc."%</TD>\n";
+	echo "<TD><span style='float:right'>".$prc."%</span>".$data['countcalltype']." - ".print_human_hour($data['callduration']/count($data['countcalltype']))."</TD>\n";
 	$totalcallduration[$user] += $data['callduration'];
 	$totalcallduration[$type] += $data['callduration'];
 }
 
-	echo "<TD style='font-weight:bold'>".$countAllCallTypeUser[$user]." - ".seconds2minutes($totalcallduration[$user]/count($lscalltype))."min</TD>\n";
+	echo "<TD style='font-weight:bold'><span style='float:right'>".print_human_hour($totalcallduration[$user]/count($lscalltype))."</span>".$countAllCallTypeUser[$user]."</TD>\n";
 	echo "</TR>\n";
 	$totalallcallduration += $totalcallduration[$user];
 }
@@ -392,12 +391,12 @@ foreach($value as $type => $data)
 <?php
 
 	echo "<TD>Nb Agent: ". count($userlist) ."</TD>\n";
-foreach($countallcalltype as $calltype => $value)
+foreach($lscalltype as $calltype => $name)
 {
-	$prc = round(($value/array_sum($countallcalltype))*100, 2);
-	echo "<TD>$value - ".seconds2minutes($totalcallduration[$calltype]/count($userlist))."min - ".$prc."%</TD>\n";
+	$prc = round(($countallcalltype[$calltype]/array_sum($countallcalltype))*100, 2);
+	echo "<TD><span style='float:right'>".$prc."%</span>$countallcalltype[$calltype] - ".print_human_hour(round($totalcallduration[$calltype]/count($userlist)))."</TD>\n";
 }
-	echo "<TD>".array_sum($countallcalltype)." - ".seconds2minutes($totalallcallduration/count($lscalltype)/count($userlist)) ."min</TD>\n";
+	echo "<TD><span style='float:right'>".print_human_hour(round($totalallcallduration/count($lscalltype)/count($userlist))) ."</span>".array_sum($countallcalltype)."</TD>\n";
 
 ?>
 </TR>

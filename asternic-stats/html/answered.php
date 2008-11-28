@@ -337,11 +337,12 @@ $cover_pdf.= $lang["$language"]['avg_holdtime'].": ".$average_hold." ".$lang["$l
                 $query2 = "";
                 if($total_calls2>0) {
                 foreach($total_calls2 as $agent=>$val) {
+			$aa = populate_agents(array($agent)); 
                     $contavar = $contador +1;
                     $cual = $contador % 2;
                     if($cual>0) { $odd = " class='odd' "; } else { $odd = ""; }
-                    $query1 .= "val$contavar=".$total_time2["$agent"]."&var$contavar=$agent&";
-                    $query2 .= "val$contavar=".$val."&var$contavar=$agent&";
+                    $query1 .= "val$contavar=".$total_time2["$agent"]."&var$contavar=".$aa[0][1]."&";
+                    $query2 .= "val$contavar=".$val."&var$contavar=".$aa[0][1]."&";
 
                     $time_print = seconds2minutes($total_time2["$agent"]);
                     $avg_time = $total_time2["$agent"] / $val;
@@ -350,7 +351,7 @@ $cover_pdf.= $lang["$language"]['avg_holdtime'].": ".$average_hold." ".$lang["$l
                     $avg_print = seconds2minutes($avg_time);
 
                     echo "<TR $odd>\n";
-                    echo "<TD>$agent</TD>\n";
+                    echo "<TD>".$aa[0][1]."</TD>\n";
                     echo "<TD>$val</TD>\n";
                     if($grandtotal_calls > 0) {
                        $percentage_calls = $val * 100 / $grandtotal_calls;
@@ -376,13 +377,13 @@ $cover_pdf.= $lang["$language"]['avg_holdtime'].": ".$average_hold." ".$lang["$l
                     echo "<TD>$avg_hold ".$lang["$language"]['secs']."</TD>\n";
                     echo "</TR>\n";
 
-                    $linea_pdf = array($agent,$val,"$percentage_calls ".$lang["$language"]['percent'],$total_time2["$agent"],"$percentage_time ".$lang["$language"]['percent'],"$avg_time ".$lang["$language"]['secs'],$total_hold2["$agent"]." ".$lang["$language"]['secs'], "$avg_hold ".$lang["$language"]['secs']);
+                    $linea_pdf = array($aa[0][1],$val,"$percentage_calls ".$lang["$language"]['percent'],$total_time2["$agent"],"$percentage_time ".$lang["$language"]['percent'],"$avg_time ".$lang["$language"]['secs'],$total_hold2["$agent"]." ".$lang["$language"]['secs'], "$avg_hold ".$lang["$language"]['secs']);
                        $data_pdf[]=$linea_pdf;
                     $contador++;
                 }
                 
-                $query1.="title=".$lang["$language"]['total_time_agent']."$graphcolor";
-                $query2.="title=".$lang["$language"]['no_calls_agent']."$graphcolor";
+                $query1.="title=".addslashes($lang["$language"]['total_time_agent'])."$graphcolor";
+                $query2.="title=".addslashes($lang["$language"]['no_calls_agent'])."$graphcolor";
                 }
                 ?>
             </TBODY>
@@ -391,7 +392,6 @@ $cover_pdf.= $lang["$language"]['avg_holdtime'].": ".$average_hold." ".$lang["$l
                 print_exports($header_pdf,$data_pdf,$width_pdf,$title_pdf,$cover_pdf);
                 }
             ?>
-
         <BR>    
             <?
             if($total_calls2>0) {
@@ -401,7 +401,7 @@ $cover_pdf.= $lang["$language"]['avg_holdtime'].": ".$average_hold." ".$lang["$l
                 echo "<TABLE width='99%' cellpadding=3 cellspacing=3 border=0>\n";
                 echo "<THEAD>\n";
                 echo "<TR><TD align=center bgcolor='#fffdf3' width='100%'>\n";
-                //draw_bar($query1,364,220,"chart1",0);
+                #draw_bar($query1,364,220,"chart1",0);
                 swf_bar($query1,364,220,"chart1",0);
                 echo "</TD><TD align=center bgcolor='#fffdf3' width='100%'>\n";
                 //draw_bar($query2,364,220,"chart2",0);
@@ -456,7 +456,7 @@ $cover_pdf.= $lang["$language"]['avg_holdtime'].": ".$average_hold." ".$lang["$l
                     $percent = 0;
                     }
                     $percent=number_format($percent,2);
-                    if($countrow==0) { $delta = ""; }
+                    //if($countrow==0) { $delta = ""; }
                     echo "<TD>$partial_total ".$lang["$language"]['calls']."</TD>\n";
                     echo "<TD>$delta</TD>\n";
                     echo "<TD>$percent ".$lang["$language"]['percent']."</TD>\n";
