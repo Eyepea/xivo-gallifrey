@@ -119,6 +119,7 @@ class XivoCTICommand(BaseCommand):
                 # self.plist_ng = cti_phonelist.PhoneList()
                 # self.plist_ng.setcommandclass(self)
                 self.uniqueids = {}
+                self.channels = {}
                 self.transfers_buf = {}
                 self.transfers_ref = {}
                 self.filestodownload = {}
@@ -585,6 +586,8 @@ class XivoCTICommand(BaseCommand):
         def set_phonelist(self, astid, urllist_phones):
                 if astid not in self.uniqueids:
                         self.uniqueids[astid] = {}
+                if astid not in self.channels:
+                        self.channels[astid] = {}
                 if astid not in self.parkedcalls:
                         self.parkedcalls[astid] = {}
                 if astid not in self.ignore_dtmf:
@@ -1636,8 +1639,10 @@ class XivoCTICommand(BaseCommand):
                                 self.chans_incomingdid.remove(chan)
                 if astid in self.uniqueids and uid in self.uniqueids[astid]:
                         del self.uniqueids[astid][uid]
+                if astid in self.channels and chan in self.channels[astid]:
+                        del self.channels[astid][chan]
                 return
-
+        
         def amiresponse_success(self, astid, event):
                 msg = event.get('Message')
                 actionid = event.get('ActionID')
@@ -1869,12 +1874,12 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def ami_newchannel(self, astid, event):
-                # print astid, event
                 channel = event.get('Channel')
                 uniqueid = event.get('Uniqueid')
                 state = event.get('State')
-                self.uniqueids[astid][uniqueid] = {'channel' : channel,
-                                                   'time-newchannel' : time.time()}
+                self.uniqueids[astid][uniqueid] = { 'channel' : channel,
+                                                    'time-newchannel' : time.time() }
+                self.channels[astid][channel] = uniqueid
                 if state == 'Rsrvd':
                         self.uniqueids[astid][uniqueid]['state'] = state
                 return
@@ -2282,11 +2287,14 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def ami_meetmejoin(self, astid, event):
+                print astid, event
                 meetmenum = event.get('Meetme')
                 channel = event.get('Channel')
                 usernum = event.get('Usernum')
                 isadmin = (event.get('Admin') == 'Yes')
                 pseudochan = event.get('PseudoChan')
+                calleridnum = event.get('CallerIDnum')
+                calleridname = event.get('CallerIDname').decode('utf8')
                 
                 meetmeref = self.weblist['meetme'][astid].byroomnum(meetmenum)
                 if meetmeref is None:
@@ -2296,7 +2304,10 @@ class XivoCTICommand(BaseCommand):
                 if channel not in meetmeref['channels']:
                         phoneid = self.__phoneid_from_channel__(astid, channel)
                         uinfo = self.__userinfo_from_phoneid__(astid, phoneid)
-                        userid = '%s/%s' % (uinfo.get('astid'), uinfo.get('xivo_userid'))
+                        if uinfo:
+                                userid = '%s/%s' % (uinfo.get('astid'), uinfo.get('xivo_userid'))
+                        else:
+                                userid = ''
                         if isadmin:
                                 meetmeref['adminid'] = userid
                         meetmeref['channels'][channel] = { 'usernum' : usernum,
@@ -2304,8 +2315,8 @@ class XivoCTICommand(BaseCommand):
                                                            'recordstatus' : 'off',
                                                            'time_start' : time.time(),
                                                            'userid' : userid,
-                                                           'fullname' : uinfo.get('fullname'),
-                                                           'phonenum' : uinfo.get('phonenum') }
+                                                           'fullname' : calleridname,
+                                                           'phonenum' : calleridnum }
                         tosend = { 'class' : 'meetme',
                                    'function' : 'update',
                                    'payload' : { 'action' : 'join',
@@ -2320,7 +2331,7 @@ class XivoCTICommand(BaseCommand):
                 else:
                         log.warning('%s : channel %s already in meetme %s' % (astid, channel, meetmenum))
                 return
-
+        
         def ami_meetmeleave(self, astid, event):
                 meetmenum = event.get('Meetme')
                 channel = event.get('Channel')
@@ -2386,6 +2397,8 @@ class XivoCTICommand(BaseCommand):
                 recordstatus = 'off' # XXX how do I actually know that ?
                 isadmin = (event.get('Admin') == 'Yes')
                 pseudochan = event.get('PseudoChan')
+                calleridnum = event.get('CallerIDNum')
+                calleridname = event.get('CallerIDName').decode('utf8')
                 
                 meetmeref = self.weblist['meetme'][astid].byroomnum(meetmenum)
                 if meetmeref is None:
@@ -2395,19 +2408,22 @@ class XivoCTICommand(BaseCommand):
                 if channel not in meetmeref['channels']:
                         phoneid = self.__phoneid_from_channel__(astid, channel)
                         uinfo = self.__userinfo_from_phoneid__(astid, phoneid)
-                        userid = '%s/%s' % (uinfo.get('astid'), uinfo.get('xivo_userid'))
+                        if uinfo:
+                                userid = '%s/%s' % (uinfo.get('astid'), uinfo.get('xivo_userid'))
+                        else:
+                                userid = ''
                         if isadmin:
                                 meetmeref['adminid'] = userid
                         meetmeref['channels'][channel] = { 'usernum' : usernum,
                                                            'mutestatus' : mutestatus,
                                                            'recordstatus' : recordstatus,
                                                            'userid' : userid,
-                                                           'fullname' : uinfo.get('fullname'),
-                                                           'phonenum' : uinfo.get('phonenum') }
+                                                           'fullname' : calleridname,
+                                                           'phonenum' : calleridnum }
                 else:
                         log.warning('%s : channel %s already in meetme %s' % (astid, channel, meetmenum))
                 
-                # {'Talking': 'Not monitored', 'Admin': 'No', 'CallerIDNum': '103', MarkedUser': 'No', 'Role': 'Talk and listen', 'CallerIDName': 'User3'}
+                # {'Talking': 'Not monitored', 'Admin': 'No', 'MarkedUser': 'No', 'Role': 'Talk and listen'}
                 return
         
         def ami_status(self, astid, event):
@@ -2419,6 +2435,7 @@ class XivoCTICommand(BaseCommand):
                 if uniqueid not in self.uniqueids[astid]:
                         self.uniqueids[astid][uniqueid] = { 'channel' : channel,
                                                             'application' : appliname }
+                        self.channels[astid][channel] = uniqueid
                 else:
                         log.warning('%s : uid %s already in uniqueids list' % (astid, uniqueid))
                         return
