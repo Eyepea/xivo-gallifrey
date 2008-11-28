@@ -453,6 +453,8 @@ evfunction_to_method_name = {
         'Dial':                 'ami_dial',
         'Link':                 'ami_link',
         'Unlink':               'ami_unlink',
+        'Bridge':               'ami_bridge',
+        'Masquerade':           'ami_masquerade',
         'Hangup':               'ami_hangup',
         'Join':                 'ami_join',
         'Leave':                'ami_leave',

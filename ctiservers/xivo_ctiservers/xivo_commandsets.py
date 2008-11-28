@@ -220,6 +220,10 @@ class BaseCommand:
                 return
         def ami_transfer(self, astid, event):
                 return
+        def ami_bridge(self, astid, event):
+                return
+        def ami_masquerade(self, astid, event):
+                return
         
         def ami_aoriginatesuccess(self, astid, event):
                 return

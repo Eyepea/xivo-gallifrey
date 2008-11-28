@@ -1318,11 +1318,24 @@ class XivoCTICommand(BaseCommand):
         
         
         def ami_hold(self, astid, event):
-                # print astid, event
+                log.info('%s ami_hold : %s' % (astid, event))
                 return
         
         def ami_unhold(self, astid, event):
-                # print astid, event
+                log.info('%s ami_unhold : %s' % (astid, event))
+                return
+        
+        def ami_bridge(self, astid, event):
+                log.info('%s ami_bridge : %s' % (astid, event))
+                return
+        
+        def ami_masquerade(self, astid, event):
+                log.info('%s ami_masquerade : %s' % (astid, event))
+                # - indirect transfer 103->101(answers)->102
+                # {'Original': 'SIP/101-0820abe0', 'Clone': 'SIP/103-081fd3e0', 'OriginalState': 'Up', 'CloneState': 'Up', 'Privilege': 'call,all', 'Event': 'Masquerade'}
+                # Rename  1227863857.10 SIP/103-081fd3e0 SIP/103-081fd3e0<MASQ>
+                # Rename  1227863873.12 SIP/101-0820abe0 SIP/103-081fd3e0
+                # Rename  1227863857.10 SIP/103-081fd3e0<MASQ> SIP/101-0820abe0<ZOMBIE>
                 return
         
         def ami_transfer(self, astid, event):
@@ -1331,7 +1344,6 @@ class XivoCTICommand(BaseCommand):
                 # - direct transfer 103->102(answers)->101 {'TargetUniqueid': '1227807187.0', 'SIP-Callid': '327d79462a2f95db105177207486706c@192.168.0.122', 'TransferType': 'Blind', 'TransferContext': 'default', 'TargetChannel': 'SIP/103-081f9010', 'TransferMethod': 'SIP', 'TransferExten': '101', 'Uniqueid': '1227807187.1', 'Privilege': 'call,all', 'Event': 'Transfer', 'Channel': 'SIP/102-081fcf88'}
                 # - indirect transfer 103->102(answers)->101 {'TargetUniqueid': '1227807607.25', 'SIP-Callid': '217af1e1509d79e443a3827152343bf3@192.168.0.122', 'TransferType': 'Attended', 'TargetChannel': 'SIP/102-08208720', 'TransferMethod': 'SIP', 'Uniqueid': '1227807556.24', 'Privilege': 'call,all', 'Event': 'Transfer', 'Channel': 'SIP/102-081fce78'}
                 return
-        
         
         def ami_link(self, astid, event):
                 chan1 = event.get('Channel1')
