@@ -83,19 +83,19 @@ class LeaseEntry(object):
         """
         Called when a 'starts' statement is read from the leases file.
         """
-        self._set_attr_time("starts", s)
+        self._set_attr_time('starts', s)
     
     def set_ends(self, s):
         """
         Called when an 'ends' statement is read from the leases file.
         """
-        self._set_attr_time("ends", s)
+        self._set_attr_time('ends', s)
     
     def set_tstp(self, s):
         """
         Called when a 'tstp' statement is read from the leases file.
         """
-        self._set_attr_time("tstp", s)
+        self._set_attr_time('tstp', s)
     
     def set_binding_state(self, s):
         """
@@ -182,8 +182,8 @@ def load(filename):
                         macaddr_to_rm = by_ipv4[current.ipv4].macaddr
                         del by_ipv4[current.ipv4]
                         del by_macaddr[macaddr_to_rm]
-                    if is_mac_address_valid(getattr(current, "macaddr", '')) \
-                    and getattr(current, "binding_state", None) != 'free':
+                    if is_mac_address_valid(getattr(current, 'macaddr', "")) \
+                    and getattr(current, 'binding_state', None) != 'free':
                         if current.macaddr in by_macaddr:
                             ipv4_to_rm = by_macaddr[current.macaddr].ipv4
                             del by_ipv4[ipv4_to_rm]
