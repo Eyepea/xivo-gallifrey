@@ -5,7 +5,7 @@ CREATE DATABASE IF NOT EXISTS `xivo` DEFAULT CHARACTER SET utf8;
 
 USE `xivo`;
 
-DROP TABLE `accesswebservice`;
+DROP TABLE IF EXISTS `accesswebservice`;
 CREATE TABLE `accesswebservice` (
  `id` int(10) unsigned auto_increment,
  `name` varchar(64) NOT NULL DEFAULT '',
