@@ -120,6 +120,8 @@ cp -a "${ASTSQLITE_DB}" "${ASTSQLITE_BACKUP_DIR}/${ASTSQLITE_DB_FILENAME}-k-9"
 
 echo "Performing upgrade..."
 
+echo " \      oo"
+
 ASTSQLITE_FILE_TMP=`mktemp`
 ASTSQLITE_UPGRADE_TMP=`mktemp`
 ASTSQLITE_DROP_TABLE_TMP=`mktemp`
@@ -150,7 +152,11 @@ cat "${ASTSQLITE_SCRIPTS_DIR}/fix/context.sql" >> "${ASTSQLITE_UPGRADE_TMP}"
 
 echo 'COMMIT;' >> "${ASTSQLITE_UPGRADE_TMP}"
 
+echo "  \____|\mm"
+
 sqlite "${ASTSQLITE_DB}" < "${ASTSQLITE_UPGRADE_TMP}" |sed "${SED_SUPPRESS_ERROR}"
+
+echo "  //_//\ \_\\"
 
 ASTSQLITE_DIALACTION_FIX=(`sqlite "${ASTSQLITE_DB}" < "${ASTSQLITE_SCRIPTS_DIR}/fix/dialaction-actionargs.sql"`)
 
@@ -203,9 +209,13 @@ done
 
 echo 'COMMIT;' >> "${ASTSQLITE_SCHEMA_TMP}"
 
+echo " /K-9/  \/_/"
+
 sqlite "${ASTSQLITE_DB}" < "${ASTSQLITE_SCHEMA_TMP}" |sed "${SED_SUPPRESS_ERROR}"
 sqlite "${ASTSQLITE_DB}" < "${ASTSQLITE_DROP_TABLE_TMP}" |sed "${SED_SUPPRESS_ERROR}"
 sqlite "${ASTSQLITE_DB}" < "${ASTSQLITE_SCRIPTS_DIR}/fix/contextnumbers.sql"
+
+echo "/___/_____\\"
 
 ASTSQLITE_USER_CLIENT_FIX=(`sqlite "${ASTSQLITE_DB}" < "${ASTSQLITE_SCRIPTS_DIR}/fix/userfeatures-client.sql"`)
 
@@ -231,5 +241,7 @@ rm -f	"${ASTSQLITE_FILE_TMP}" \
 	"${ASTSQLITE_DROP_TABLE_TMP}" \
 	"${ASTSQLITE_SCHEMA_TMP}" \
 	"${ASTSQLITE_USERCLIENT_TMP}"
+
+echo "-----------"
 
 echo "done !"
