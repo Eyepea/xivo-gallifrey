@@ -25,9 +25,8 @@ __license__ = """
 
 import time
 
-# TOOD: validate mac addresses
 from xivo.network import is_ipv4_address_valid, normalize_ipv4_address, \
-                         normalize_mac_address
+                         is_mac_address_valid, normalize_mac_address
 
 
 DHCPD_LEASES_FILENAME = "/var/lib/dhcp3/dhcpd.leases"
@@ -183,7 +182,8 @@ def load(filename):
                         macaddr_to_rm = by_ipv4[current.ipv4].macaddr
                         del by_ipv4[current.ipv4]
                         del by_macaddr[macaddr_to_rm]
-                    if hasattr(current, "macaddr"): # TODO validation
+                    if is_mac_address_valid(getattr(current, "macaddr", '')) \
+                    and getattr(current, "binding_state", None) != 'free':
                         if current.macaddr in by_macaddr:
                             ipv4_to_rm = by_macaddr[current.macaddr].ipv4
                             del by_ipv4[ipv4_to_rm]
@@ -191,7 +191,7 @@ def load(filename):
                         by_ipv4[current.ipv4] = current
                         by_macaddr[current.macaddr] = current
                     else:
-                        pass # log that this lease entry is useless for us if without a mac address
+                        pass # log that this lease entry is useless for us if without a mac address or binding state is free
                     del current
                     state = NOWHERE
                 else:
@@ -219,6 +219,8 @@ def ipv4_from_macaddr(macaddr):
     """
     Given @macaddr, returns the @ipv4 or None if unknown / lookup failed, etc.
     """
+    if not is_mac_address_valid(macaddr):
+        return None
     macaddr = normalize_mac_address(macaddr).lower()
     by_macaddr = load(DHCPD_LEASES_FILENAME)[1]
     if macaddr not in by_macaddr:
