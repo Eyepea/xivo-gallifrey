@@ -21,7 +21,7 @@ if($this->get_var('act') === 'list'):
 <div class="sb-advanced-menu">
 	<ul id="advanced-menu"
 	    onmouseover="this.style.display = 'block';"
-	    onmouseout="this.style.display = 'none';">	
+	    onmouseout="this.style.display = 'none';">
 		<li>
 			<a href="#"
 			   onclick="xivo_fm['fm-voicemenu-list']['act'].value = 'enables';

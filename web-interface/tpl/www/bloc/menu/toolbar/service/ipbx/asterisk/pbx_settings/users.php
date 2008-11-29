@@ -54,7 +54,7 @@ endif;
 				      $this->get_var('contexts'),
 				      'style="margin-left: 20px;"
 				       onchange="this.form[\'search\'].value = \'\';
-						 this.form.submit()"');
+						 this.form.submit();"');
 ?>
 	</div>
 </form>
@@ -62,7 +62,7 @@ endif;
 	echo	$url->img_html('img/menu/top/toolbar/bt-add.gif',
 			       $this->bbf('toolbar_opt_add'),
 			       'border="0"
-			        onmouseover="xivo_eid(\'add-menu\').style.display = \'block\';"
+				onmouseover="xivo_eid(\'add-menu\').style.display = \'block\';"
 				onmouseout="xivo_eid(\'add-menu\').style.display = \'none\';"');
 ?>
 <div class="sb-advanced-menu">
@@ -89,26 +89,26 @@ if($act === 'list'):
 <div class="sb-advanced-menu">
 	<ul id="advanced-menu"
 	    onmouseover="this.style.display = 'block';"
-	    onmouseout="this.style.display = 'none';">	
+	    onmouseout="this.style.display = 'none';">
 		<li>
 			<a href="#"
 			   onclick="xivo_fm['fm-users-list']['act'].value = 'enables';
 				    <?=$searchjs,$contextjs?>
 				    xivo_fm['fm-users-list'].submit();">
-			<?=$this->bbf('toolbar_adv_menu_enable');?></a>
+				<?=$this->bbf('toolbar_adv_menu_enable');?></a>
 		</li>
 		<li>
 			<a href="#"
 			   onclick="xivo_fm['fm-users-list']['act'].value = 'disables';
 				    <?=$searchjs,$contextjs?>
 				    xivo_fm['fm-users-list'].submit();">
-			<?=$this->bbf('toolbar_adv_menu_disable');?></a>
+				<?=$this->bbf('toolbar_adv_menu_disable');?></a>
 		</li>
 		<li>
 			<a href="#"
 			   onclick="xivo_fm_checked_all('fm-users-list','users[]');
 				    return(false);">
-			<?=$this->bbf('toolbar_adv_menu_select-all');?></a>
+				<?=$this->bbf('toolbar_adv_menu_select-all');?></a>
 		</li>
 		<li>
 			<a href="#"
@@ -118,7 +118,7 @@ if($act === 'list'):
 				    return(confirm('<?=$dhtml->escape($this->bbf('toolbar_adv_menu_delete_confirm'));?>')
 			    		   ? xivo_fm['fm-users-list'].submit()
 					   : xivo_fm['fm-users-list']['act'] = this.tmp);">
-			<?=$this->bbf('toolbar_adv_menu_delete');?></a>
+				<?=$this->bbf('toolbar_adv_menu_delete');?></a>
 		</li>
 	</ul>
 </div>

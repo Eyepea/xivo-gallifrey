@@ -12,7 +12,7 @@ $info = $this->get_var('info');
 		<span class="span-right">&nbsp;</span>
 	</h3>
 	<div class="sb-content">
-<form action="#" enctype="multipart/form-data" method="post" accept-charset="utf-8">
+		<form action="#" enctype="multipart/form-data" method="post" accept-charset="utf-8">
 <?php
 	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
 				    'value'	=> XIVO_SESS_ID)),
@@ -43,7 +43,7 @@ $info = $this->get_var('info');
 				    'id'	=> 'it-submit',
 				    'value'	=> $this->bbf('fm_bt-save')));
 ?>
-</form>
+		</form>
 	</div>
 	<div class="sb-foot xspan">
 		<span class="span-left">&nbsp;</span>

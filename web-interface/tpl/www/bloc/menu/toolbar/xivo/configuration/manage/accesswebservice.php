@@ -15,13 +15,13 @@ if($this->get_var('act') === 'list'):
 	echo	$url->img_html('img/menu/top/toolbar/bt-more.gif',
 			       $this->bbf('toolbar_opt_advanced'),
 			       'border="0"
-			       onmouseover="xivo_eid(\'advanced-menu\').style.display = \'block\';"
-			       onmouseout="xivo_eid(\'advanced-menu\').style.display = \'none\';"');
+				onmouseover="xivo_eid(\'advanced-menu\').style.display = \'block\';"
+				onmouseout="xivo_eid(\'advanced-menu\').style.display = \'none\';"');
 ?>
 <div class="sb-advanced-menu">
 	<ul id="advanced-menu"
 	    onmouseover="this.style.display = 'block';"
-	    onmouseout="this.style.display = 'none';">	
+	    onmouseout="this.style.display = 'none';">
 		<li>
 			<a href="#"
 			   onclick="xivo_fm['fm-accesswebservice-list']['act'].value = 'enables';
