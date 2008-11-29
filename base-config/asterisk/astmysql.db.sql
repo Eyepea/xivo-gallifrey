@@ -814,7 +814,7 @@ CREATE TABLE `schedule` (
 		 'sep',
 		 'oct',
 		 'nov',
-		 'dec') NOT NULL DEFAULT '*',
+		 'dec'),
  `publicholiday` tinyint(1) NOT NULL DEFAULT 0,
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
@@ -1243,7 +1243,7 @@ CREATE INDEX `userfeatures__idx__context` ON `userfeatures`(`context`);
 CREATE INDEX `userfeatures__idx__voicemailid` ON `userfeatures`(`voicemailid`);
 CREATE INDEX `userfeatures__idx__agentid` ON `userfeatures`(`agentid`);
 CREATE INDEX `userfeatures__idx__provisioningid` ON `userfeatures`(`provisioningid`);
-CREATE INDEX `userfeatures__idx__loginclient` ON `userfeatures`(`logiclient`);
+CREATE INDEX `userfeatures__idx__loginclient` ON `userfeatures`(`loginclient`);
 CREATE INDEX `userfeatures__idx__musiconhold` ON `userfeatures`(`musiconhold`);
 CREATE INDEX `userfeatures__idx__internal` ON `userfeatures`(`internal`);
 CREATE INDEX `userfeatures__idx__commented` ON `userfeatures`(`commented`);
