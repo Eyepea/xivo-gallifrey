@@ -19,27 +19,6 @@
 require_once("/etc/pf-asternic-stats/config.php");
 include("sesvars.php");
 
-
-function Sdump($var, $title = null) {
-
-	echo '<pre style="border: 1px solid gray; padding: 5px; text-align: left;">';
-	
-	if (!is_null($title)):
-	
-		echo '<h3>', htmlspecialchars($title), '</h3>';
-	
-	endif;
-	
-	ob_start();
-	
-	var_dump($var);
-	
-	echo htmlspecialchars(preg_replace("/\]\=\>\n(\s+)/m", '] => ', ob_get_clean()));
-	
-	echo '</pre>';
-
-}
-
 ?>
 <!-- http://devnull.tagsoup.com/quirksmode -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">

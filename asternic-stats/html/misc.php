@@ -15,7 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with Asternic call center stats.  If not, see <http://www.gnu.org/licenses/>.
 */
-
+error_reporting(0);
 
 function return_timestamp($date_string)
 {
@@ -30,6 +30,26 @@ function debug($array) {
 	print '</pre>';
 }
 
+function Sdump($var, $title = null) {
+
+	echo '<pre style="border: 1px solid gray; padding: 5px; text-align: left;">';
+	
+	if (!is_null($title)):
+	
+		echo '<h3>', htmlspecialchars($title), '</h3>';
+	
+	endif;
+	
+	ob_start();
+	
+	var_dump($var);
+	
+	echo htmlspecialchars(preg_replace("/\]\=\>\n(\s+)/m", '] => ', ob_get_clean()));
+	
+	echo '</pre>';
+
+}
+
 function print_human_hour($sec) {
 	$sec = calc_duration(false,false,$sec);
 
@@ -41,7 +61,7 @@ function print_human_hour($sec) {
 	if($sec['m'] != 0)
 		$res .= $sec['m'] . 'm ';
 	if($sec['s'] != 0)
-		$res .= $sec['s'] . 's';
+		$res .= round($sec['s'], 2) . 's';
 	
 	return $res;
 }

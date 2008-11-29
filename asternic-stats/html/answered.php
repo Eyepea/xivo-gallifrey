@@ -142,15 +142,15 @@ if($total_calls > 0) {
     ksort($answer);
     $average_hold     = $total_hold     / $total_calls;
     $average_duration = $total_duration / $total_calls;
-    $average_hold     = number_format($average_hold     , 2);
-    $average_duration = number_format($average_duration , 2);
+    $average_hold     = print_human_hour($average_hold);
+    $average_duration = print_human_hour($average_duration);
 } else {
     // There were no calls
     $average_hold = 0;
     $average_duration = 0;
 }
 
-$total_duration_print = seconds2minutes($total_duration);
+$total_duration_print = print_human_hour($total_duration);
 // TRANSFERS
 $query = "SELECT ag.agent AS agent, qs.info1 AS info1,  qs.info2 AS info2 ";
 $query.= "FROM  queue_stats AS qs, qevent AS ac, qagent as ag, qname As q WHERE qs.qevent = ac.event_id ";
@@ -236,9 +236,9 @@ $cover_pdf.= $lang["$language"]['start'].": ".$start_parts[0]."\n";
 $cover_pdf.= $lang["$language"]['end'].": ".$end_parts[0]."\n";
 $cover_pdf.= $lang["$language"]['period'].": ".$period." ".$lang["$language"]['days']."\n\n";
 $cover_pdf.= $lang["$language"]['answered_calls'].": ".$total_calls." ".$lang["$language"]['calls']."\n";
-$cover_pdf.= $lang["$language"]['avg_calltime'].": ".$average_duration." ".$lang["$language"]['secs']."\n";
-$cover_pdf.= $lang["$language"]['total'].": ".$total_duration_print." ".$lang["$language"]['minutes']."\n";
-$cover_pdf.= $lang["$language"]['avg_holdtime'].": ".$average_hold." ".$lang["$language"]['secs']."\n";
+$cover_pdf.= $lang["$language"]['avg_calltime'].": ".$average_duration."\n";
+$cover_pdf.= $lang["$language"]['total'].": ".$total_duration_print."\n";
+$cover_pdf.= $lang["$language"]['avg_holdtime'].": ".$average_hold."\n";
 
 ?>
 <body>
@@ -288,15 +288,15 @@ $cover_pdf.= $lang["$language"]['avg_holdtime'].": ".$average_hold." ".$lang["$l
                 </TR>
                 <TR>
                   <TD><?=$lang["$language"]['avg_calltime']?>:</TD>
-                  <TD><?=$average_duration?> <?=$lang["$language"]['secs']?></TD>
+                  <TD><?=$average_duration?></TD>
                 </TR>
                 <TR>
                   <TD><?=$lang["$language"]['total']?> <?=$lang["$language"]['calltime']?>:</TD>
-                  <TD><?=$total_duration_print?> <?=$lang["$language"]['minutes']?></TD>
+                  <TD><?=$total_duration_print?></TD>
                 </TR>
                 <TR>
                   <TD><?=$lang["$language"]['avg_holdtime']?>:</TD>
-                  <TD><?=$average_hold?> <?=$lang["$language"]['secs']?></TD>
+                  <TD><?=$average_hold?></TD>
                 </TR>
                 </TBODY>
               </TABLE>
@@ -309,7 +309,8 @@ $cover_pdf.= $lang["$language"]['avg_holdtime'].": ".$average_hold." ".$lang["$l
         <a name='1'></a>
         <TABLE width='99%' cellpadding=3 cellspacing=3 border=0 class='sortable' id='table1' >
         <CAPTION>
-        <a href='#0'><img src='images/go-up.png' border=0 class='icon' width=16 height=16 <? 
+        <a href='#0'><img src='images/go-up.png' border=0 class='icon' width=16 height=16 
+	<? 
         tooltip($lang["$language"]['gotop'],200);
         ?> ></a>&nbsp;&nbsp;
         <?=$lang["$language"]['answered_calls_by_agent']?>
@@ -324,6 +325,7 @@ $cover_pdf.= $lang["$language"]['avg_holdtime'].": ".$average_hold." ".$lang["$l
                   <TH><?=$lang["$language"]['avg']?> <?=$lang["$language"]['calltime']?></TH>
                   <TH><?=$lang["$language"]['holdtime']?></TH>
                   <TH><?=$lang["$language"]['avg']?> <?=$lang["$language"]['holdtime']?></TH>
+                  <TH>Nb appels traités/h</TH>
             </TR>
             </THEAD>
             <TBODY>
@@ -337,22 +339,22 @@ $cover_pdf.= $lang["$language"]['avg_holdtime'].": ".$average_hold." ".$lang["$l
                 $query2 = "";
                 if($total_calls2>0) {
                 foreach($total_calls2 as $agent=>$val) {
-			$aa = populate_agents(array($agent)); 
+		    $aa = populate_agents(array($agent)); 
                     $contavar = $contador +1;
                     $cual = $contador % 2;
                     if($cual>0) { $odd = " class='odd' "; } else { $odd = ""; }
                     $query1 .= "val$contavar=".$total_time2["$agent"]."&var$contavar=".$aa[0][1]."&";
                     $query2 .= "val$contavar=".$val."&var$contavar=".$aa[0][1]."&";
 
-                    $time_print = seconds2minutes($total_time2["$agent"]);
+                    $time_print = print_human_hour($total_time2["$agent"]);
                     $avg_time = $total_time2["$agent"] / $val;
                     $avg_time = number_format($avg_time,2);
-
-                    $avg_print = seconds2minutes($avg_time);
+                    $avg_print = print_human_hour($avg_time);
 
                     echo "<TR $odd>\n";
                     echo "<TD>".$aa[0][1]."</TD>\n";
                     echo "<TD>$val</TD>\n";
+
                     if($grandtotal_calls > 0) {
                        $percentage_calls = $val * 100 / $grandtotal_calls;
                     } else {
@@ -361,7 +363,7 @@ $cover_pdf.= $lang["$language"]['avg_holdtime'].": ".$average_hold." ".$lang["$l
                     $percentage_calls = number_format($percentage_calls,2);
                     echo "<TD>$percentage_calls ".$lang["$language"]['percent']."</TD>\n";
 //                    echo "<TD>".$total_time2["$agent"]." ".$lang["$language"]['secs']."</TD>\n";
-                    echo "<TD>$time_print ".$lang["$language"]['minutes']."</TD>\n";
+                    echo "<TD>$time_print </TD>\n";
                     if($grandtotal_time > 0) {
                        $percentage_time = $total_time2["$agent"] * 100 / $grandtotal_time;
                     } else {
@@ -370,11 +372,87 @@ $cover_pdf.= $lang["$language"]['avg_holdtime'].": ".$average_hold." ".$lang["$l
                     $percentage_time = number_format($percentage_time,2);
                     echo "<TD>$percentage_time ".$lang["$language"]['percent']."</TD>\n";
                     //echo "<TD>$avg_time ".$lang["$language"]['secs']."</TD>\n";
-                    echo "<TD>$avg_print ".$lang["$language"]['minutes']."</TD>\n";
-                    echo "<TD>".$total_hold2["$agent"]." ".$lang["$language"]['secs']."</TD>\n";
+                    echo "<TD>$avg_print</TD>\n";
+                    echo "<TD>".print_human_hour($total_hold2["$agent"])."</TD>\n";
                     $avg_hold = $total_hold2["$agent"] / $val;
                     $avg_hold = number_format($avg_hold,2);
-                    echo "<TD>$avg_hold ".$lang["$language"]['secs']."</TD>\n";
+                    echo "<TD>".print_human_hour($avg_hold)."</TD>\n";
+################################################################################
+
+$db = sqlite_open('/var/lib/pf-xivo-cti-server/sqlite/xivo.db', 0666, $sqliteerror) or die ('Error DB : ' . $sqliteerror);
+
+$query = sqlite_query($db,'SELECT * FROM ctilog WHERE action IN(\'cti_login\',\'cti_logout\',\'cticommand:availstate\') '.
+			  'AND eventdate >= \''.$start.'\' AND eventdate <= \''.$end.'\' '.
+			  'AND loginclient = \''.$aa[0][3].'\' '.
+			  'ORDER BY loginclient ASC, eventdate ASC');
+$res_login_logout_time = sqlite_fetch_all($query);
+
+$data = array();
+$tmp = array();
+
+$nb = count($res_login_logout_time);
+$nbminus1 = $nb-1;
+
+$datenow = mktime();
+
+for ($llt=0;$llt<$nb;$llt++)
+{
+	$ref = &$res_login_logout_time[$llt];
+
+	if(isset($data[$ref['loginclient']]) === false)
+		$data[$ref['loginclient']] = array('total'	=> 0,
+						   'cnt'	=> 0,
+						   'cti_login'	=> 0,
+						   'cti_logout'	=> 0);
+
+	if(isset($tmp[$ref['loginclient']]) === false)
+		$tmp[$ref['loginclient']] = array();
+
+	$reftmp = &$tmp[$ref['loginclient']];
+
+	if(isset($reftmp['laststate']) === true
+	&& $ref['status'] !== $reftmp['laststate'])
+	{
+		$calc = calc_duration(strtotime($reftmp['lastdate']),strtotime($ref['eventdate']));
+
+		if($reftmp['laststate'] !== 'xivo_unknown')
+			$data[$ref['loginclient']]['total'] += $calc['diff'];
+	}
+
+	if($ref['action'] === 'cti_login' || $ref['action'] === 'cti_logout')
+		$data[$ref['loginclient']][$ref['action']]++;
+
+	if($ref['status'] !== 'xivo_unknown')
+		$data[$ref['loginclient']]['cnt']++;
+
+	$tmp[$ref['loginclient']]['lastdate'] = $ref['eventdate'];
+	$tmp[$ref['loginclient']]['laststate'] = $ref['status'];
+
+	if($loginclient !== false && $loginclient !== $ref['loginclient'])
+		$consolid = true;
+	else if($llt === $nbminus1)
+	{
+		$consolid = true;
+		$loginclient = $ref['loginclient'];
+	}
+	else
+		$consolid = false;
+
+	if($consolid === true)
+	{
+		$calc = calc_duration(strtotime($tmp[$loginclient]['lastdate']),$datenow);
+
+		if($tmp[$loginclient]['laststate'] !== 'xivo_unknown')
+			$data[$loginclient]['total'] += $calc['diff'];
+	}
+
+	$loginclient = $ref['loginclient'];
+}
+
+        echo "<TD>".round($val/($data[$aa[0][3]]['total']/60/60),2)." appels traités/h</TD>\n";
+
+sqlite_close($db);
+################################################################################
                     echo "</TR>\n";
 
                     $linea_pdf = array($aa[0][1],$val,"$percentage_calls ".$lang["$language"]['percent'],$total_time2["$agent"],"$percentage_time ".$lang["$language"]['percent'],"$avg_time ".$lang["$language"]['secs'],$total_hold2["$agent"]." ".$lang["$language"]['secs'], "$avg_hold ".$lang["$language"]['secs']);
@@ -447,14 +525,15 @@ $cover_pdf.= $lang["$language"]['avg_holdtime'].": ".$average_hold." ".$lang["$l
                     if($cual>0) { $odd = " class='odd' "; } else { $odd = ""; }
                     echo "<TR $odd>\n";
                     echo "<TD>".$lang["$language"]['within']."$key ".$lang["$language"]['secs']."</TD>\n";
-                    $delta = $val;
-                    if($delta > 0) { $delta = "+".$delta;}
+                    $delta = $val;                   
+		    if($delta > 0) { $delta = "+".$delta;}
                     $partial_total += $val;
                     if($total_y_transfer > 0) {
-                    $percent=$partial_total*100/$total_y_transfer;
+                    	$percent=$partial_total*100/count($answer);
                     } else {
-                    $percent = 0;
+                    	$percent = 0;
                     }
+                    $percent=$partial_total*100/array_sum($answer);
                     $percent=number_format($percent,2);
                     //if($countrow==0) { $delta = ""; }
                     echo "<TD>$partial_total ".$lang["$language"]['calls']."</TD>\n";

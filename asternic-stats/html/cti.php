@@ -168,20 +168,6 @@ onload = function() { content.focus() }
 <div id="main">
 <div id="contents">
 
-<!--TABLE width='99%' cellpadding=3 cellspacing=3 border=0>
-<THEAD>
-<CAPTION>Informations des clients XiVO</CAPTION>
-<TBODY>
-<TR>
-	<TD>Nombre total de clients loggués :</TD>
-	<TD><?=$res_total_login?></TD>
-</TR>
-	<TD>Nombre total de clients déloggués :</TD>
-	<TD><?=$res_total_logout?></TD>
-</TR>
-</THEAD>
-</TABLE!-->
-
 <TABLE width='99%' cellpadding=1 cellspacing=1 border=0 class='sortable' id='table2'>
 <CAPTION>
 	Stats pour XiVO client
@@ -235,6 +221,7 @@ foreach($data as $k => $v)
 	}
 
 }
+
 ?>
 
 <TH colspan=2>Total</TH>
@@ -243,9 +230,16 @@ foreach($data as $k => $v)
 
 <?
 
+$header_pdf=array('Utilisateurs');
+$header_pdf = array_merge($header_pdf, $translation); 
+array_push($header_pdf, 'Total');
+$width_pdf=array();
+$title_pdf='Stats pour XiVO client';
+
 $count_header = count($header);
 foreach($data as $k => $v)
 {
+	$linea_pdf = array($k);
 	echo "<TR>";
 	echo "<TD>$k</TD>";
 	$c = 0;
@@ -259,20 +253,26 @@ foreach($data as $k => $v)
 			if($m !== 'xivo_unknown')
 			{
 				echo "<TD style='text-align: right'>" . print_human_hour($n['total']) . "</TD>\n";
-				echo "<TD style='text-align: right'>" . $n['cnt'] . "</TD>\n";
+				echo "<TD style='text-align: right'>(" . $n['cnt'] . ")</TD>\n";
 				$c = $c+1;
 				$total_cnt[$k] += $n['cnt'];
 				$total_h[$k] += $n['total'];
+				array_push($linea_pdf, print_human_hour($n['total']) . '  (' . $n['cnt'].')');
 			}
 		}
 	}
 	#CEDRIC
 	$header_diff = $count_header-$c;
 	for($h=0;$h<$header_diff;$h++)
+	{
 		echo "<TD></TD><TD></TD>";
+		array_push($linea_pdf, '');
+	}
 	echo "<TD style='text-align: right'>" . print_human_hour($total_h[$k]) . "</TD>";
-	echo "<TD style='text-align: right'>" . $total_cnt[$k] . "</TD>";
+	echo "<TD style='text-align: right'>(" . $total_cnt[$k] . ")</TD>";
 	echo "</TR>";
+	array_push($linea_pdf, print_human_hour($total_h[$k]) . '   (' . $total_cnt[$k].')');
+	$data_pdf[]=$linea_pdf;
 }
 ?>
 
@@ -281,7 +281,7 @@ foreach($data as $k => $v)
 <br>
 
 <? print_exports($header_pdf,$data_pdf,$width_pdf,$title_pdf,$cover_pdf); ?>
-
+<? unset($header_pdf); unset($data_pdf); ?>
 <br><br>
 
 <!--TABLE width='99%' cellpadding=1 cellspacing=1 border=0 class='sortable' id='table2'>
@@ -310,10 +310,6 @@ foreach($res_event_stats as $stats)
 <br-->
 
 <?php
-/***********************************************************************
- * ADD BY CEDRIC
-*/
-
 
 $lscalltype = array(	'XIVO_CALL_STATUS-1' => 'Partenaire', 
 			'XIVO_CALL_STATUS-2' => 'Client', 
@@ -334,7 +330,6 @@ $countAllCallTypeUser = array();
 
 foreach ($res_event_stats as $stats)
 {
-	$stats = array_merge($stats, array('callduration' => rand(180, 1080)));
 	$userlist[$stats['loginclient']][$stats['arguments']]['countcalltype']++;
 	$userlist[$stats['loginclient']][$stats['arguments']]['callduration'] = $stats['callduration'];
 	$countallcalltype[$stats['arguments']]++;
@@ -346,7 +341,7 @@ foreach ($res_event_stats as $stats)
 
 <TABLE width='99%' cellpadding=1 cellspacing=1 border=0 class='sortable' id='table2'>
 <CAPTION>
-	Données
+	Données Post Apppel
 </CAPTION>
 
 <THEAD>
@@ -367,52 +362,62 @@ foreach($lscalltype as $calltype => $name)
 <TBODY>
 <?php
 
+$header_pdf=array('Utilisateurs');
+$header_pdf = array_merge($header_pdf, $lscalltype); 
+array_push($header_pdf, 'Total');
+$width_pdf=array();
+$title_pdf='Données Post Apppel';
+
 foreach($userlist as $user => $value)
 {
+	$linea_pdf = array($user);
 	echo "<TR $odd>\n";
 	echo "<TD>". $user ."</TD>\n";
 
-foreach($value as $type => $data)
-{
-	$prc = round(($data['countcalltype']/$countAllCallTypeUser[$user])*100, 2);
-	echo "<TD><span style='float:right'>".$prc."%</span>".$data['countcalltype']." - ".print_human_hour($data['callduration']/count($data['countcalltype']))."</TD>\n";
-	$totalcallduration[$user] += $data['callduration'];
-	$totalcallduration[$type] += $data['callduration'];
-}
+	foreach($value as $type => $data)
+	{
+		$prc = round(($data['countcalltype']/$countAllCallTypeUser[$user])*100, 2);
+		echo "<TD><span style='float:right'>".$prc."%</span>".$data['countcalltype']." - ".print_human_hour($data['callduration']/count($data['countcalltype']))."</TD>\n";
+		$totalcallduration[$user] += $data['callduration'];
+		$totalcallduration[$type] += $data['callduration'];
+		array_push($linea_pdf, $data['countcalltype']." - ".print_human_hour($data['callduration']/count($data['countcalltype'])) . '  (' . $prc.'%)');
+	}
 
 	echo "<TD style='font-weight:bold'><span style='float:right'>".print_human_hour($totalcallduration[$user]/count($lscalltype))."</span>".$countAllCallTypeUser[$user]."</TD>\n";
 	echo "</TR>\n";
 	$totalallcallduration += $totalcallduration[$user];
+	array_push($linea_pdf, $countAllCallTypeUser[$user] . '   (' . print_human_hour($totalcallduration[$user]/count($lscalltype)).')');
+	$data_pdf[]=$linea_pdf;
 }
 
 ?>
 
 <TR style="font-weight:bold">
 <?php
-
+	$linea_pdf = array("Nb Agent: ". count($userlist));
 	echo "<TD>Nb Agent: ". count($userlist) ."</TD>\n";
 foreach($lscalltype as $calltype => $name)
 {
 	$prc = round(($countallcalltype[$calltype]/array_sum($countallcalltype))*100, 2);
 	echo "<TD><span style='float:right'>".$prc."%</span>$countallcalltype[$calltype] - ".print_human_hour(round($totalcallduration[$calltype]/count($userlist)))."</TD>\n";
+	array_push($linea_pdf, $countallcalltype[$calltype] . " - ".print_human_hour(round($totalcallduration[$calltype]/count($userlist))) . '  (' . $prc.'%)');
 }
 	echo "<TD><span style='float:right'>".print_human_hour(round($totalallcallduration/count($lscalltype)/count($userlist))) ."</span>".array_sum($countallcalltype)."</TD>\n";
+	array_push($linea_pdf, array_sum($countallcalltype) . '   (' . print_human_hour(round($totalallcallduration/count($lscalltype)/count($userlist))).')');
+	$data_pdf[]=$linea_pdf;
 
 ?>
 </TR>
 </TBODY>
 </TABLE>
-<?php
-/***********************************************************************
-*/
-?>
+
 <br>
 <? print_exports($header_pdf,$data_pdf,$width_pdf,$title_pdf,$cover_pdf); ?>
 
 <br><br>
 <TABLE width='99%' cellpadding=1 cellspacing=1 border=0>
 <CAPTION>
-	Graphiques
+	Graphiques Post Appel
 </CAPTION>
 
 <TR align=center>
@@ -420,14 +425,14 @@ foreach($lscalltype as $calltype => $name)
 <?
 $tmp=array();
 $i=1;
-foreach($countallcalltype as $calltype => $value)
+foreach($lscalltype as $calltype => $value)
 {
-	array_push($tmp, "var$i=".substr($calltype,-8 ,8)."&amp;val$i=$value");
+	array_push($tmp, "var$i=".$value."&amp;val$i=$countallcalltype[$calltype]");
 	$i++;
 }
 ?>
 	<div id="chart1">
-	<embed type="application/x-shockwave-flash" src="bar.swf" id="barchart" name="barchart" bgcolor="#336699" quality="high" wmode="transparent" flashvars="<? echo implode ('&amp;', $tmp); ?>&amp;title=Nombre d'appels répondus par statut&amp;bgcolor=0xF0ffff&amp;bgcolorchart=0xdfedf3&amp;fade1=ff6600&amp;fade2=ff6314&amp;colorbase=0xfff3b3&amp;reverse=1" width="359" height="217">
+	<embed type="application/x-shockwave-flash" src="bar.swf" id="barchart" name="barchart" bgcolor="#336699" quality="high" wmode="transparent" flashvars="<? echo implode ('&amp;', $tmp); ?>&amp;title=Nombre d'appels répondus par status&amp;bgcolor=0xF0ffff&amp;bgcolorchart=0xdfedf3&amp;fade1=ff6600&amp;fade2=ff6314&amp;colorbase=0xfff3b3&amp;reverse=1" width="359" height="217">
 	</div>
 </TD>
 <TD>
@@ -450,9 +455,9 @@ foreach($userlist as $user => $value)
 <?
 $tmp=array();
 $i=1;
-foreach($countallcalltype as $calltype => $value)
+foreach($lscalltype as $calltype => $value)
 {
-	array_push($tmp, "var$i=".substr($calltype,-8 ,8)."&amp;val$i=".$totalcallduration[$calltype]/count($userlist));
+	array_push($tmp, "var$i=".$value."&amp;val$i=".$totalcallduration[$calltype]/count($userlist));
 	$i++;
 }
 ?>
