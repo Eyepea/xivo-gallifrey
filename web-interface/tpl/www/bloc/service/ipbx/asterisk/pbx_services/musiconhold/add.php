@@ -20,7 +20,7 @@ $element = $this->get_var('element');
 				    'value'	=> 1)),
 
 		$form->hidden(array('name'	=> 'act',
-				    'value'	=> 'add'));
+				    'value'	=> 'add')),
 
 		$form->text(array('desc'	=> $this->bbf('fm_category'),
 				  'name'	=> 'category',
