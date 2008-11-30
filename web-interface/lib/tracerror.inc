@@ -18,7 +18,7 @@ class xivo_tracerror
 	{
 		$param = (array) $param;
 
-		if(($this->_conf = xivo_gat::load_get('tracerror',XIVO_PATH_LIBCONF)) === false)
+		if(($this->_conf = xivo_gat::get_file(XIVO_PATH_LIBCONF.XIVO_SEP_DIR.'tracerror')) === false)
 			die('Failed to load tracerror Array');
 
 		if(isset($param['level']) === true

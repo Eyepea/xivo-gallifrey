@@ -37,7 +37,7 @@ switch($act)
 			$user_acl->edit($_QR);
 			$_QRY->go($_HTML->url('xivo/configuration/manage/user'),$param);
 		}
-		else if(($tree = $user_acl->get_user($info['id'])) !== false)
+		else if(($tree = $user_acl->get_access_tree($info['id'])) !== false)
 		{
 			$_HTML->set_var('info',$info);
 			$_HTML->set_var('tree',$tree);

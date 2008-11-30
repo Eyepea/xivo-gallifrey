@@ -7,11 +7,12 @@ class xivo_i18n_locale
 
 	function xivo_i18n_locale()
 	{
-		$dir = xivo_file::joinpath(XIVO_PATH_LIB,'i18n','locales');
+		$file = xivo_file::joinpath(XIVO_PATH_LIB,'i18n','locales','locales');
 
-		if(($this->_conf = xivo_gat::load_get('locales',$dir)) === false)
+		if(($this->_conf = xivo_gat::get_file($file)) === false)
 			trigger_error('Failed to load locales listing',E_USER_ERROR);
 	}
+
 	function set_attrib($name,$value)
 	{
 		$name = (string) $name;

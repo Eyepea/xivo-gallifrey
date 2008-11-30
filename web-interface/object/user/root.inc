@@ -24,21 +24,6 @@ class xivo_user_root extends xivo_user_abstract
 
 		$this->_load_acl();
 	}
-/*
-	function add($umeta,$arr)
-	{
-		$r = false;
-
-		if(xivo_user::chk_meta($umeta) === false || ($meta = xivo_user::type_to_meta($this->_info['_type'])) === false)
-			return($r);
-
-		if(($filter = xivo::load_array(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'user'.XIVO_SEP_DIR.'filter'.XIVO_SEP_DIR.$meta.'.inc')) === false)
-			return($r);
-
-		if(xivo::load_class('xivo_filter') === false || xivo_issa($umeta,$filter) === false)
-			return($r);
-	}
-*/
 
 	function edit($meta,$arr)
 	{

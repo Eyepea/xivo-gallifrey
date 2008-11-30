@@ -12,7 +12,7 @@ if(isset($access) === false)
 else if($access === false)
 {
 	$http->set_status(403);
-	$this->send(true);
+	$http->send(true);
 }
 
 ?>

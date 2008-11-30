@@ -13,6 +13,11 @@ class xivo_acl_abstract
 		$this->_acl_tree = $arr;
 	}
 
+	function get()
+	{
+		return(null);
+	}
+
 	function get_full_tree()
 	{
 		if(isset($this->_full_tree) === false)
@@ -94,6 +99,33 @@ class xivo_acl_abstract
 			}
 			else
 				$tree[$k]['value'] = (bool) $v;
+		}
+
+		return($tree);
+	}
+
+	function get_access_tree($id)
+	{
+		if(($info = $this->get($id)) === null)
+			return(false);
+
+		return($this->_mk_access_tree($this->get_full_tree(),$info));
+	}
+
+	function _mk_access_tree($tree,$reference)
+	{
+		if(is_array($tree) === false || empty($tree) === true)
+			return($tree);
+
+		reset($tree);
+
+		while(list($key) = each($tree))
+		{
+			$ref = &$tree[$key];
+			$ref['access'] = $this->has_access($ref['path'],$reference);
+
+			if(isset($ref['child']) === true)
+				$ref['child'] = $this->_mk_access_tree($ref['child'],$reference);
 		}
 
 		return($tree);
@@ -200,6 +232,55 @@ class xivo_acl_abstract
 		}
 
 		return($section);
+	}
+
+	function _chk_section($section,$id)
+	{
+		if(is_scalar($section) === false
+		|| xivo_ulongint($id) === false)
+			return(false);
+
+		$section = trim(preg_replace('@/+@','/',$section),'/');
+
+		$tree = $this->get_full_tree();
+		$info = $this->get($id);
+
+		$r = false;
+
+		if($info === true)
+			$r = true;
+		else if(is_array($info) === true)
+			$r = false;
+		else
+			return(false);
+
+		$arr = explode('/',$section);
+		$nb = count($arr);
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$key = &$arr[$i];
+			$grp = $info;
+
+			if(xivo_issa($key,$tree) === false)
+				return(false);
+			else if($r === false
+			&& is_bool(($info = xivo_ak($key,$info,true))) === true)
+			{
+				if(isset($tree[$key]['value']) === true
+				&& (bool) $tree[$key]['value'] === false)
+					return(false);
+
+				return($info);
+			}
+			else if(isset($tree[$key]['child']) === true)
+				$tree = &$tree[$key]['child'];
+		}
+
+		if($r === false && isset($key,$grp) === true)
+			$r = xivo_ak($key,$grp,true) !== false;
+
+		return($r);
 	}
 }
 

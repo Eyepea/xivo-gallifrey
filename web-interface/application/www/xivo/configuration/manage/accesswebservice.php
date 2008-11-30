@@ -77,7 +77,7 @@ switch($act)
 			$webservice_acl->edit($_QR);
 			$_QRY->go($_HTML->url('xivo/configuration/manage/accesswebservice'),$param);
 		}
-		else if(($tree = $webservice_acl->get_webservice_tree($info['id'])) !== false)
+		else if(($tree = $webservice_acl->get_access_tree($info['id'])) !== false)
 		{
 			$_HTML->set_var('info',$info);
 			$_HTML->set_var('tree',$tree);

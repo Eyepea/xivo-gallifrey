@@ -16,7 +16,7 @@ class blop
 
 	function blop()
 	{
-		if(($this->_conf['xivo'] = xivo_gat::load_get('blop',XIVO_PATH_LIBCONF)) === false)
+		if(($this->_conf['xivo'] = xivo_gat::get_file(XIVO_PATH_LIBCONF.DIRECTORY_SEPARATOR.'blop')) === false)
 			die('ERR: Failed to load BLOP Array');
 		else if(($this->_conf['datastorage'] = xivo_gat::load_get('datastorage',XIVO_PATH_LIBCONF)) === false)
 			die('ERR: Failed to load datastorage Array');
@@ -33,9 +33,6 @@ class blop
 		$this->_cfg_sapi();
 		$this->_cfg_url();
 		$this->_cfg_infos_extension();
-
-		xivo::load_class('xivo_gateclass');
-		xivo::load_class('xivo_gatearray');
 	}
 
 	function _set_error()
@@ -511,20 +508,7 @@ class blop
 
 	function load_array($file,$once=true)
 	{
-		if(is_array($file) === true)
-			$file = implode(XIVO_SEP_DIR,$file);
-
-		if(($file = xivo_file::is_f_r($file)) === false)
-			return(false);
-		else if((bool) $once === true)
-			require_once($file);
-		else
-			require($file);
-
-		if(isset($array) === true && is_array($array) === true)
-			$r = &$array;
-
-		return($r);
+		return(xivo_gat::get_file($file,$once));
 	}
 }
 

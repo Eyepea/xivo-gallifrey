@@ -277,10 +277,10 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 	{
 		if(xivo_user::chk_meta($user) === false
 		|| ($meta = xivo_user::type_to_meta($this->_info['_type'])) === false
-		|| ($filter = xivo::load_array(xivo_file::joinpath(XIVO_PATH_OBJECT,
-								   'user',
-								   'filter',
-								   $meta.'.inc'))) === false
+		|| ($filter = xivo_gat::get_file(xivo_file::joinpath(XIVO_PATH_OBJECT,
+								     'user',
+								     'filter',
+								     $meta))) === false
 		|| xivo::load_class('xivo_filter') === false
 		|| xivo_issa($user,$filter) === false
 		|| xivo_issa($name,$filter[$user]) === false)

@@ -155,42 +155,9 @@ class xivo_user
 
 	function chk_acl($category='',$subcategory='',$section='')
 	{
-		if($category !== true)
-			$category = strval($category);
+		xivo::load_class('xivo_user_acl',XIVO_PATH_OBJECT.XIVO_SEP_DIR.'user','acl');
 
-		$subcategory = strval($subcategory);
-		$section = strval($section);
-
-		if($section === '')
-		{
-			if(defined('XIVO_SCRIPT_ROOT') === true)
-				$script_root = XIVO_SCRIPT_ROOT;
-			else
-				$script_root = '';
-
-			if(($len = strlen($script_root)) === 0)
-				$section = $_SERVER['SCRIPT_NAME'];
-			else if(strncmp($script_root,$_SERVER['SCRIPT_NAME'],$len) === 0)
-				$section = substr($_SERVER['SCRIPT_NAME'],$len);
-			else
-				return(false);
-
-			if(($pos = strrpos($section,'/')) !== false)
-				$section = substr($section,0,$pos);
-		}
-
-		if($category === true)
-		{
-			if(isset($_SERVER['PATH_INFO']) === true)
-				$section .= $_SERVER['PATH_INFO'];
-		}
-		else if($category !== '')
-		{
-			$section .= '/'.$category;
-
-			if($subcategory !== '')
-				$section .= '/'.$subcategory;
-		}
+		$section = xivo_user_acl::get_section($category,$subcategory,$section);
 
 		return(xivo_user::chk_acl_section($section));
 	}

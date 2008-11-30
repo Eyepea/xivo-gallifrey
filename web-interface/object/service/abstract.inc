@@ -104,13 +104,14 @@ class xivo_service_abstract
 		if(empty($this->_conf) === false)
 			return(null);
 
-		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,
+		$file = xivo_file::joinpath(XIVO_PATH_OBJECT,
 					   'service',
 					   $this->_type,
 					   $this->_name,
+					   'config',
 					   'config');
 
-		if(($this->_conf = xivo_gat::load_get('config',$dir,$this->_name)) === false)
+		if(($this->_conf = xivo_gat::get_file($file)) === false)
 			trigger_error('Failed to load '.$this->_name.' configuration',E_USER_ERROR);
 	}
 

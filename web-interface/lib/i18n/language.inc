@@ -7,9 +7,9 @@ class xivo_i18n_language
 
 	function xivo_i18n_language()
 	{
-		$dir = xivo_file::joinpath(XIVO_PATH_LIB,'i18n','languages');
+		$file = xivo_file::joinpath(XIVO_PATH_LIB,'i18n','languages','languages');
 
-		if(($this->_conf = xivo_gat::load_get('languages',$dir)) === false)
+		if(($this->_conf = xivo_gat::get_file($file)) === false)
 			trigger_error('Failed to load languages listing',E_USER_ERROR);
 	}
 

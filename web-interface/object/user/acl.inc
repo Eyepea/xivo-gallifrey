@@ -10,12 +10,12 @@ class xivo_user_acl extends xivo_acl_abstract
 
 	function xivo_user_acl(&$dso,$factory=true)
 	{
-		if(defined('XIVO_USER_ACL_PATH') === true)
-			$path = XIVO_USER_ACL_PATH;
+		if(defined('XIVO_USER_ACL_FILE') === true)
+			$path = XIVO_USER_ACL_FILE;
 		else
-			$path = XIVO_PATH_OBJECTCONF.XIVO_SEP_DIR.'acl';
+			$path = xivo_file::joinpath(XIVO_PATH_OBJECTCONF,'acl','user');
 
-		if(($this->_conf = xivo_gat::load_get('user',$path,'xivo_user_acl')) === false
+		if(($this->_conf = xivo_gat::get_file($path)) === false
 		|| isset($this->_conf['tree']) === false)
 			trigger_error('Failed to load user ACL Array',E_USER_ERROR);
 
@@ -69,7 +69,7 @@ class xivo_user_acl extends xivo_acl_abstract
 
 		if(isset($_SESSION['_ACL']['hash']) === false || $hash !== $_SESSION['_ACL']['hash'])
 		{
-			if(($tree = $this->get_full_tree()) === false)
+			if(($tree = parent::get_full_tree()) === false)
 				trigger_error('Invalid tree array in acl',E_USER_ERROR);
 			else
 			{
@@ -79,7 +79,7 @@ class xivo_user_acl extends xivo_acl_abstract
 		}
 	}
 
-	function get_tree()
+	function get_full_tree()
 	{
 		if(is_array($_SESSION['_ACL']) === false
 		|| isset($_SESSION['_ACL']['tree']) === false)
@@ -108,33 +108,6 @@ class xivo_user_acl extends xivo_acl_abstract
 			$arr['tree'] = array();
 
 		return($this->_dso->acl_edit($arr['id'],$this->build_tree_by_path($arr['tree'])));
-	}
-
-	function get_user($id)
-	{
-		if(($user = $this->get($id)) === null)
-			return(false);
-
-		return($this->_mk_user_tree($this->get_tree(),$user));
-	}
-
-	function _mk_user_tree($tree,$user)
-	{
-		if(is_array($tree) === false || empty($tree) === true)
-			return($tree);
-
-		reset($tree);
-
-		while(list($key) = each($tree))
-		{
-			$ref = &$tree[$key];
-			$ref['access'] = $this->has_access($ref['path'],$user);
-
-			if(isset($ref['child']) === true)
-				$ref['child'] = $this->_mk_user_tree($ref['child'],$user);
-		}
-
-		return($tree);
 	}
 }
 

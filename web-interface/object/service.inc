@@ -8,7 +8,7 @@ class xivo_service
 
 	function xivo_service($ini)
 	{
-		if(($this->_conf = xivo_gat::load_get('service',XIVO_PATH_OBJECTCONF)) === false)
+		if(($this->_conf = xivo_gat::get_file(XIVO_PATH_OBJECTCONF.XIVO_SEP_DIR.'service')) === false)
 			trigger_error('Failed to load service Array',E_USER_ERROR);	
 		else if(is_array($ini) === false || empty($ini) === true)
 			trigger_error('Invalid parameter in '.__CLASS__,E_USER_ERROR);

@@ -7,9 +7,9 @@ class xivo_i18n_timezone
 
 	function xivo_i18n_timezone()
 	{
-		$dir = xivo_file::joinpath(XIVO_PATH_LIB,'i18n','timezones');
+		$file = xivo_file::joinpath(XIVO_PATH_LIB,'i18n','timezones','timezones');
 
-		if(($this->_conf = xivo_gat::load_get('timezones',$dir)) === false)
+		if(($this->_conf = xivo_gat::get_file($file)) === false)
 			trigger_error('Failed to load timezones listing',E_USER_ERROR);
 	}
 
