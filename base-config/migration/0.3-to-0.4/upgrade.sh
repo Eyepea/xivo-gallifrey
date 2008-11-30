@@ -75,7 +75,7 @@ fi
 
 if [ ! -e "${ASTSQLITE_BACKUP_DIR}" ];
 then
-	mkdir -p "${ASTSQLITE_BACKUP_DIR}"	
+	mkdir -p "${ASTSQLITE_BACKUP_DIR}"
 fi
 
 if [ ! -w "${ASTSQLITE_BACKUP_DIR}" ];
@@ -108,7 +108,7 @@ then
 	exit 1
 fi
 
-echo "Backup old Asterisk datastorage"
+echo "Backup old Asterisk Database"
 
 if [ -e "${ASTSQLITE_BACKUP_DIR}/${ASTSQLITE_DB_FILENAME}-k-9" ];
 then
