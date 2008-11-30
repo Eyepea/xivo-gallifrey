@@ -215,7 +215,7 @@ class xivo_user
 				$tree = &$tree[$key]['child'];
 		}
 
-		if($r === false && isset($key,$grp) === tre)
+		if($r === false && isset($key,$grp) === true)
 			$r = xivo_ak($key,$grp,true) !== false;
 
 		return($r);
