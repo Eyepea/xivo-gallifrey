@@ -120,7 +120,7 @@ print $linea."\r\n";
 foreach($data as $valor) {
 	$linea="";
 	foreach($valor as $subvalor) {
-		$linea.="\"$subvalor\",";
+		$linea.="\"$subvalor\";";
 	}
 	$linea=substr($linea,0,-1);
 	print $linea."\r\n";

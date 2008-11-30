@@ -330,8 +330,8 @@ $cover_pdf.= $lang["$language"]['avg_holdtime'].": ".$average_hold."\n";
             </THEAD>
             <TBODY>
                 <?
-                $header_pdf=array($lang["$language"]['agent'],$lang["$language"]['Calls'],$lang["$language"]['percent'],$lang["$language"]['calltime'],$lang["$language"]['percent'],$lang["$language"]['avg'],$lang["$language"]['holdtime'],$lang["$language"]['avg']);
-                $width_pdf=array(25,23,23,23,23,25,25,20);
+                $header_pdf=array($lang["$language"]['agent'],$lang["$language"]['Calls'],$lang["$language"]['percent'],$lang["$language"]['calltime'],$lang["$language"]['percent'],$lang["$language"]['avg'],$lang["$language"]['holdtime'],$lang["$language"]['avg'], 'Nb appels traites/h');
+                $width_pdf=array(25,23,23,23,23,25,25,20,20);
                 $title_pdf=$lang["$language"]['answered_calls_by_agent'];
 
                 $contador=0;
@@ -455,7 +455,7 @@ sqlite_close($db);
 ################################################################################
                     echo "</TR>\n";
 
-                    $linea_pdf = array($aa[0][1],$val,"$percentage_calls ".$lang["$language"]['percent'],$total_time2["$agent"],"$percentage_time ".$lang["$language"]['percent'],"$avg_time ".$lang["$language"]['secs'],$total_hold2["$agent"]." ".$lang["$language"]['secs'], "$avg_hold ".$lang["$language"]['secs']);
+                    $linea_pdf = array($aa[0][1],$val,"$percentage_calls ".$lang["$language"]['percent'],$total_time2["$agent"],"$percentage_time ".$lang["$language"]['percent'],"$avg_time ".$lang["$language"]['secs'],$total_hold2["$agent"]." ".$lang["$language"]['secs'], "$avg_hold ".$lang["$language"]['secs'], round($val/($data[$aa[0][3]]['total']/60/60),2)." appels traites");
                        $data_pdf[]=$linea_pdf;
                     $contador++;
                 }
