@@ -1228,6 +1228,7 @@ CREATE TABLE `userfeatures` (
  `destbusy` varchar(128) NOT NULL DEFAULT '',
  `musiconhold` varchar(128) NOT NULL DEFAULT '',
  `outcallerid` varchar(80) NOT NULL DEFAULT '',
+ `mobilephonenumber` varchar(128) NOT NULL DEFAULT '',
  `bsfilter` enum('no','boss','secretary') NOT NULL DEFAULT 'no',
  `preprocess_subroutine` varchar(39),
  `internal` tinyint(1) NOT NULL DEFAULT 0,
@@ -1251,7 +1252,7 @@ CREATE UNIQUE INDEX `userfeatures__uidx__protocol_name` ON `userfeatures`(`proto
 CREATE UNIQUE INDEX `userfeatures__uidx__protocol_protocolid` ON `userfeatures`(`protocol`,`protocolid`);
 
 INSERT INTO `userfeatures` VALUES (1,'sip',1,'Guest','','guest','','xivo-initconfig',NULL,NULL,148378,
-				   30,5,0,'','','',0,0,0,0,0,0,0,0,'',0,'',0,'','','','no',NULL,1,0,'');
+				   30,5,0,'','','',0,0,0,0,0,0,0,0,'',0,'',0,'','','','','no',NULL,1,0,'');
 
 
 DROP TABLE IF EXISTS `useriax`;
