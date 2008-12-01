@@ -32,6 +32,12 @@ import urllib2
 
 log = logging.getLogger('urllist')
 
+class DefaultErrorHandler(urllib2.HTTPDefaultErrorHandler):
+        def http_error_default(self, req, fp, code, msg, headers):
+                result = urllib2.HTTPError(req.get_full_url(), code, msg, headers, fp)
+                result.status = code
+                return result
+        
 class UrlList:
         def __init__(self, url):
                 self.list = {}
@@ -54,7 +60,9 @@ class UrlList:
                                         log.warning('URL kind %s not supported yet' % kind)
                                 elif kind in ['http', 'https']:
                                         request = '%s?sum=%s' % (self.url, self.urlmd5)
-                                        f = urllib2.urlopen(request)
+                                        urequest = urllib2.Request(request)
+                                        opener = urllib2.build_opener(DefaultErrorHandler)
+                                        f = opener.open(urequest)
                                         http_contenttype = f.headers.getheaders('Content-Type')
                                         http_code = f.code
                                 else:
@@ -88,7 +96,7 @@ class UrlList:
                                 except Exception:
                                         log.exception('--- exception --- (UrlList) trying to enforce setting %s' % self.url)
                                 ret = 2
-                        elif http_contenttype == ['text/html; charset=UTF-8']:
+                        elif http_contenttype == [] or http_contenttype == ['text/html; charset=UTF-8']:
                                 if http_code == 403:
                                         log.warning('%s : Forbidden (403)' % self.url)
                                 elif http_code == 401:
