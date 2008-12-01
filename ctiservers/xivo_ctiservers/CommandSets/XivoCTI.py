@@ -63,7 +63,7 @@ log = logging.getLogger('xivocti')
 
 XIVOVERSION_NUM = '0.4'
 XIVOVERSION_NAME = 'k-9'
-REQUIRED_CLIENT_VERSION = 4661
+REQUIRED_CLIENT_VERSION = 4831
 __revision__ = __version__.split()[1]
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 HISTSEPAR = ';'
@@ -1399,7 +1399,7 @@ class XivoCTICommand(BaseCommand):
                         self.__sheet_alert__('link', astid, self.uniqueids[astid][uid1]['context'], event, {})
 
                 if chan2.startswith('Agent/'):
-                        msg = self.__build_agupdate__(['agentlink', astid, chan2])
+                        msg = self.__build_agupdate__('agentlink', astid, chan2)
                         self.__send_msg_to_cti_clients__(msg)
                         
                         # 'onlineincoming' for the agent
@@ -1424,7 +1424,7 @@ class XivoCTICommand(BaseCommand):
                         ag = self.__agentnum__(uinfo1)
                         if ag:
                                 self.__presence_action__(astid, ag, uinfo1.get('capaid'), status)
-                                msg = self.__build_agupdate__(['phonelink', astid, 'Agent/%s' % ag])
+                                msg = self.__build_agupdate__('phonelink', astid, 'Agent/%s' % ag)
                                 self.__send_msg_to_cti_clients__(msg)
 
                 if uinfo1_ag and uinfo1_ag != uinfo1:
@@ -1433,14 +1433,14 @@ class XivoCTICommand(BaseCommand):
                         ag = self.__agentnum__(uinfo1_ag)
                         if ag:
                                 self.__presence_action__(astid, ag, uinfo1_ag.get('capaid'), status)
-                                msg = self.__build_agupdate__(['phonelink', astid, 'Agent/%s' % ag])
+                                msg = self.__build_agupdate__('phonelink', astid, 'Agent/%s' % ag)
                                 self.__send_msg_to_cti_clients__(msg)
 
                 if uinfo2:
                         status = 'onlineincoming'
                         self.__update_availstate__(uinfo2, status)
                         # self.__presence_action__(astid, ag, status)
-                        # msg = self.__build_agupdate__(['phonelink', astid, 'Agent/%s' % ag])
+                        # msg = self.__build_agupdate__('phonelink', astid, 'Agent/%s' % ag)
                         # self.__send_msg_to_cti_clients__(msg)
 
                 try:
@@ -1531,7 +1531,7 @@ class XivoCTICommand(BaseCommand):
                         self.__sheet_alert__('unlink', astid, self.uniqueids[astid][uid1]['context'], event, {})
 
                 if chan2.startswith('Agent/'):
-                        msg = self.__build_agupdate__(['agentunlink', astid, chan2])
+                        msg = self.__build_agupdate__('agentunlink', astid, chan2)
                         self.__send_msg_to_cti_clients__(msg)
                         
                         # 'postcall' for the agent
@@ -1557,7 +1557,7 @@ class XivoCTICommand(BaseCommand):
                                 ag = self.__agentnum__(uinfo)
                                 if ag:
                                         self.__presence_action__(astid, ag, uinfo.get('capaid'), status)
-                                        msg = self.__build_agupdate__(['phoneunlink', astid, 'Agent/%s' % ag])
+                                        msg = self.__build_agupdate__('phoneunlink', astid, 'Agent/%s' % ag)
                                         self.__send_msg_to_cti_clients__(msg)
                                         
                 try:
@@ -1983,7 +1983,7 @@ class XivoCTICommand(BaseCommand):
                         self.weblist['agents'][astid].keeplist[agent_id]['stats'].update({'status': 'AGENT_IDLE',
                                                                                           'phonenum' : phonenum,
                                                                                           'context' : context})
-                msg = self.__build_agupdate__(['agentlogin', astid, 'Agent/%s' % agent, phonenum])
+                msg = self.__build_agupdate__('agentlogin', astid, 'Agent/%s' % agent, {'phonenum' : phonenum})
                 print 'ami_agentcallbacklogin', msg
                 self.__send_msg_to_cti_clients__(msg)
                 return
@@ -2004,7 +2004,7 @@ class XivoCTICommand(BaseCommand):
                         self.weblist['agents'][astid].keeplist[agent_id]['stats'].update({'status': 'AGENT_LOGGEDOFF',
                                                                                           'phonenum' : phonenum,
                                                                                           'context' : context})
-                msg = self.__build_agupdate__(['agentlogout', astid, 'Agent/%s' % agent, phonenum])
+                msg = self.__build_agupdate__('agentlogout', astid, 'Agent/%s' % agent, {'phonenum' : phonenum})
                 print 'ami_agentcallbacklogoff', msg
                 self.__send_msg_to_cti_clients__(msg)
                 return
@@ -2106,7 +2106,7 @@ class XivoCTICommand(BaseCommand):
                         return
                 
                 self.weblist['queues'][astid].queuememberupdate(queue, location, event)
-                msg = self.__build_agupdate__(['joinqueue', astid, location, queue, paused])
+                msg = self.__build_agupdate__('joinqueue', astid, location, {'queuename' : queue, 'pausedstatus' : paused})
                 self.__send_msg_to_cti_clients__(msg)
                 return
         
@@ -2121,17 +2121,11 @@ class XivoCTICommand(BaseCommand):
                         return
                 
                 self.weblist['queues'][astid].queuememberremove(queue, location)
-                msg = self.__build_agupdate__(['leavequeue', astid, location, queue])
+                msg = self.__build_agupdate__('leavequeue', astid, location, {'queuename' : queue})
                 self.__send_msg_to_cti_clients__(msg)
                 return
         
-        def __build_agupdate__(self, arrgs):
-                if len(arrgs) < 3:
-                        return
-                action = arrgs[0]
-                astid = arrgs[1]
-                agent_channel = arrgs[2]
-                
+        def __build_agupdate__(self, action, astid, agent_channel, supp_args = None):
                 if agent_channel.startswith('Agent/'):
                         agent = agent_channel[6:]
                         agent_id = self.weblist['agents'][astid].reverse_index.get(agent)
@@ -2139,12 +2133,14 @@ class XivoCTICommand(BaseCommand):
                                 self.weblist['agents'][astid].keeplist[agent_id]['stats'].update({'link' : True})
                         elif action == 'phoneunlink' or action == 'agentunlink':
                                 self.weblist['agents'][astid].keeplist[agent_id]['stats'].update({'link' : False})
-                
+
+                arrgs = { 'action' : action,
+                          'astid' : astid,
+                          'agent_channel' : agent_channel }
+                if supp_args:
+                        arrgs.update(supp_args)
                 tosend = { 'class' : 'agents',
                            'function' : 'update',
-                           'action' : action,
-                           'astid' : astid,
-                           'agent_channel' : agent_channel,
                            'payload' : arrgs }
                 return self.__cjson_encode__(tosend)
         
@@ -2162,7 +2158,9 @@ class XivoCTICommand(BaseCommand):
                         return
                 
                 self.weblist['queues'][astid].queuememberupdate(queue, location, event)
-                msg = self.__build_agupdate__(['queuememberstatus', astid, location, queue, status, paused])
+                msg = self.__build_agupdate__('queuememberstatus', astid, location, { 'queuename' : queue,
+                                                                                      'joinedstatus' : status,
+                                                                                      'pausedstatus' : paused } )
                 self.__send_msg_to_cti_clients__(msg)
                 
                 # status = 3 => ringing
@@ -2186,10 +2184,10 @@ class XivoCTICommand(BaseCommand):
                 self.weblist['queues'][astid].queuememberupdate(queue, location, event)
                 if location.startswith('Agent/'):
                         if paused == '0':
-                                msg = self.__build_agupdate__(['unpaused', astid, location, queue])
+                                msg = self.__build_agupdate__('unpaused', astid, location, {'queuename' : queue})
                                 self.__send_msg_to_cti_clients__(msg)
                         else:
-                                msg = self.__build_agupdate__(['paused', astid, location, queue])
+                                msg = self.__build_agupdate__('paused', astid, location, {'queuename' : queue})
                                 self.__send_msg_to_cti_clients__(msg)
                 return
 
