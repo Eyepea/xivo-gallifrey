@@ -381,6 +381,13 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 				      'default'	=> $element['ufeatures']['enablednd']['default'],
 				      'checked'	=> $info['ufeatures']['enablednd'])),
 
+		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_mobilephonenumber'),
+				  'name'	=> 'ufeatures[mobilephonenumber]',
+				  'labelid'	=> 'ufeatures-mobilephonenumber',
+				  'size'	=> 15,
+				  'default'	=> $element['ufeatures']['mobilephonenumber']['default'],
+				  'value'	=> $info['ufeatures']['mobilephonenumber'])),
+
 		$form->select(array('desc'	=> $this->bbf('fm_userfeatures_bsfilter'),
 				    'name'	=> 'ufeatures[bsfilter]',
 				    'labelid'	=> 'ufeatures-bsfilter',

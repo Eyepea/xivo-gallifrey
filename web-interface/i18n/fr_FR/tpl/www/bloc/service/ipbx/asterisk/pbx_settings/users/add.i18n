@@ -175,6 +175,9 @@ Filtrage d'appel :
 ; fm_userfeatures_enablednd
 Ne pas déranger :
 
+; fm_userfeatures_mobilephonenumber
+Numéro de téléphone mobile :
+
 ; fm_userfeatures_bsfilter
 Filtrage Patron - Secrétaire :
 
