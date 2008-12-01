@@ -757,6 +757,7 @@ class XivoCTICommand(BaseCommand):
                                                        'context' : uitem.get('context'),
                                                        'phoneid' : uitem.get('name'),
                                                        'phonenum' : uitem.get('number'),
+                                                       'mobilenum' : uitem.get('mobilephonenumber'),
                                                        'xivo_userid' : uitem.get('id'),
                                                        
                                                        'state'    : 'xivo_unknown'
@@ -3211,7 +3212,7 @@ class XivoCTICommand(BaseCommand):
                                         log.warning('%s not in capas' % icapaid)
                                 
                                 senduinfo = {}
-                                for kw in ['user', 'company', 'fullname', 'astid', 'context', 'phonenum',
+                                for kw in ['user', 'company', 'fullname', 'astid', 'context', 'phonenum', 'mobilenum',
                                            'techlist', 'mwi', 'xivo_userid']:
                                         senduinfo[kw] = uinfo.get(kw)
                                 senduinfo['statedetails'] = statedetails
