@@ -63,7 +63,7 @@ log = logging.getLogger('xivocti')
 
 XIVOVERSION_NUM = '0.4'
 XIVOVERSION_NAME = 'k-9'
-REQUIRED_CLIENT_VERSION = 4831
+REQUIRED_CLIENT_VERSION = 4833
 __revision__ = __version__.split()[1]
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 HISTSEPAR = ';'
@@ -692,7 +692,7 @@ class XivoCTICommand(BaseCommand):
                                                 'enable_hint': pitem.get('enablehint'),
                                                 'initialized': pitem.get('initialized'),
                                                 'phoneid': pitem.get('name'),
-
+                                                
                                                 'hintstatus' : 'none',
                                                 'comms' : {}
                                                 }
@@ -1910,7 +1910,11 @@ class XivoCTICommand(BaseCommand):
                 self.parkedcalls[astid][channel] = event
                 tosend = { 'class' : 'parkcall',
                            'payload' : { 'status' : 'parkedcall',
-                                         'args' : [astid, channel, exten, cfrom, timeout]}}
+                                         'astid' : astid,
+                                         'channel' : channel,
+                                         'exten' : exten,
+                                         'fromchannel' : cfrom,
+                                         'timeout' : timeout } }
                 self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 return
         
@@ -1936,7 +1940,10 @@ class XivoCTICommand(BaseCommand):
                 # a subsequent 'link' AMI event should make the new status transmitted
                 tosend = { 'class' : 'parkcall',
                            'payload' : { 'status' : 'unparkedcall',
-                                         'args' : [astid, channel, exten, cfrom]}}
+                                         'astid' : astid,
+                                         'channel' : channel,
+                                         'fromchannel' : cfrom,
+                                         'exten' : exten } }
                 self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 return
         
@@ -1947,7 +1954,9 @@ class XivoCTICommand(BaseCommand):
                 log.info('%s PARKEDCALLGIVEUP %s %s %s' % (astid, uid, channel, exten))
                 tosend = { 'class' : 'parkcall',
                            'payload' : { 'status' : 'parkedcallgiveup',
-                                         'args' : [astid, channel, exten] } }
+                                         'astid' : astid,
+                                         'channel' : channel,
+                                         'exten' : exten } }
                 self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 return
         
@@ -1958,7 +1967,9 @@ class XivoCTICommand(BaseCommand):
                 log.info('%s PARKEDCALLTIMEOUT %s %s %s' % (astid, uid, channel, exten))
                 tosend = { 'class' : 'parkcall',
                            'payload' : { 'status' : 'parkedcalltimeout',
-                                         'args' : [astid, channel, exten] } }
+                                         'astid' : astid,
+                                         'channel' : channel,
+                                         'exten' : exten } }
                 self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 return
         
@@ -2567,7 +2578,9 @@ class XivoCTICommand(BaseCommand):
                 self.weblist['queues'][astid].update_queuestats(queue, event)
                 tosend = { 'class' : 'queues',
                            'function' : 'update',
-                           'payload' : [astid, queue, count] }
+                           'payload' : { 'astid' : astid,
+                                         'queuename' : queue,
+                                         'count' : count } }
                 self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 self.__ami_execute__(astid, 'sendqueuestatus', queue)
                 self.__send_msg_to_cti_clients__(self.__build_queue_status__(astid, queue))
@@ -2593,7 +2606,9 @@ class XivoCTICommand(BaseCommand):
                 self.weblist['queues'][astid].update_queuestats(queue, event)
                 tosend = { 'class' : 'queues',
                            'function' : 'update',
-                           'payload' : [astid, queue, count] }
+                           'payload' : { 'astid' : astid,
+                                         'queuename' : queue,
+                                         'count' : count } }
                 self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 
                 if astid not in self.queues_channels_list:
@@ -2861,8 +2876,9 @@ class XivoCTICommand(BaseCommand):
                                                                         tosend = { 'class' : 'agent-status',
                                                                                    'astid' : astid,
                                                                                    'agentnum' : agent_number,
-                                                                                   'payload' : {'properties' : agprop,
-                                                                                                'queues' : self.weblist['queues'][astid].get_queues_byagent(agent_channel)}
+                                                                                   'payload' : { 'properties' : agprop,
+                                                                                                 'queues' : self.weblist['queues'][astid].get_queues_byagent(agent_channel)
+                                                                                                 }
                                                                                    }
                                                                         repstr = self.__cjson_encode__(tosend)
                                                                 else:
@@ -2894,37 +2910,36 @@ class XivoCTICommand(BaseCommand):
                         try:
                                 hist = self.__update_history_call__(self.configs[astid], techno, phoneid, nlines, kind)
                                 for x in hist:
+                                        ritem = { 'x1' : x[1].replace('"', ''),
+                                                  'x11' : x[11],
+                                                  'duration' : x[10] }
                                         try:
-                                                ry1 = HISTSEPAR.join([x[0].isoformat(),
-                                                                      x[1].replace('"', ''),
-                                                                      str(x[10]),
-                                                                      x[11]])
+                                                ritem['ts'] = x[0].isoformat()
                                         except:
-                                                ry1 = HISTSEPAR.join([x[0],
-                                                                      x[1].replace('"', ''),
-                                                                      str(x[10]),
-                                                                      x[11]])
+                                                ritem['ts'] = x[0]
+                                        ritem['termin'] = termin
                                         if kind == '0':
+                                                ritem['direction'] = 'OUT'
                                                 num = x[3].replace('"', '')
                                                 cidname = num
-                                                ry2 = HISTSEPAR.join([cidname, 'OUT', termin])
+                                                ritem['fullname'] = cidname
                                         else:   # display callerid for incoming calls
-                                                ry2 = HISTSEPAR.join([x[1].replace('"', ''), 'IN', termin])
-                                                
-                                        reply.append(HISTSEPAR.join([ry1, ry2]).decode('utf8'))
+                                                ritem['direction'] = 'IN'
+                                                ritem['fullname'] = x[1].replace('"', '').decode('utf8')
+                                        reply.append(ritem)
                         except Exception:
                                 log.exception('--- exception --- history : (client %s, termin %s)'
                                               % (requester_id, termin))
-
+                                
                 if len(reply) > 0:
                         # sha1sum = sha.sha(''.join(reply)).hexdigest()
                         tosend = { 'class' : 'history',
-                                   'payload' : reply}
+                                   'payload' : reply }
                         return self.__cjson_encode__(tosend)
                 else:
                         return
-
-
+                
+                
         def __build_queue_status__(self, astid, qname):
                 if astid in self.weblist['queues'] and qname in self.weblist['queues'][astid].keeplist:
                         tosend = { 'class' : 'queue-status',
@@ -3194,18 +3209,15 @@ class XivoCTICommand(BaseCommand):
                                                 log.warning('%s not in presence_sections' % presenceid)
                                 else:
                                         log.warning('%s not in capas' % icapaid)
-                                fullstat.append([uinfo.get('user'),
-                                                 uinfo.get('company'),
-                                                 uinfo.get('fullname'),
-                                                 statedetails,
-                                                 uinfo.get('astid'),
-                                                 uinfo.get('context'),
-                                                 uinfo.get('phonenum'),
-                                                 uinfo.get('techlist'),
-                                                 self.__agentnum__(uinfo),
-                                                 uinfo.get('mwi'),
-                                                 uinfo.get('xivo_userid')
-                                                 ])
+                                
+                                senduinfo = {}
+                                for kw in ['user', 'company', 'fullname', 'astid', 'context', 'phonenum',
+                                           'techlist', 'mwi', 'xivo_userid']:
+                                        senduinfo[kw] = uinfo.get(kw)
+                                senduinfo['statedetails'] = statedetails
+                                senduinfo['agentnum'] = self.__agentnum__(uinfo)
+                                fullstat.append(senduinfo)
+                                
                 elif ccomm == 'phones':
                         # XXX define capas ?
                         fullstat = {}

@@ -107,14 +107,14 @@ class QueueList(AnyList):
                 return lst
         
         def get_queues_byagent(self, agid):
-                queuelist = []
+                queuelist = {}
                 for qref, ql in self.keeplist.iteritems():
-                        lst = [qref]
+                        lst = {}
                         if agid in ql['agents']:
                                 agprop = ql['agents'][agid]
                                 for v in self.queuelocationprops:
-                                        lst.append(agprop[v])
-                        queuelist.append(lst)
+                                        lst[v] = agprop[v]
+                        queuelist[qref] = lst
                 return queuelist
         
         def findqueue(self, queuename):
