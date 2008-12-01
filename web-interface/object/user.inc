@@ -155,7 +155,7 @@ class xivo_user
 
 	function chk_acl($category='',$subcategory='',$section='')
 	{
-		xivo::load_class('xivo_user_acl',XIVO_PATH_OBJECT.XIVO_SEP_DIR.'user','acl');
+		xivo::load_class('xivo_user_acl',XIVO_PATH_OBJECT.XIVO_SEP_DIR.'user','acl',false);
 
 		$section = xivo_user_acl::get_section($category,$subcategory,$section);
 
