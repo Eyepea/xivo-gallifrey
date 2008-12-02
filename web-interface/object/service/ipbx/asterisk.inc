@@ -662,7 +662,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 			&& substr($calleridname,-1) === '"')
 				$calleridname = substr($calleridname,1,-1);
 
-			$calleridname = '"'.str_replace('"','\"',$calleridname).'"';
+			$calleridname = '"'.str_replace('"','\"',str_replace('\"','"',$calleridname)).'"';
 		}
 
 		if(preg_match('/^[0-9\*#]{1,40}$/',$calleridnum) === 1)

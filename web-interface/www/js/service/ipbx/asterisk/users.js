@@ -433,15 +433,12 @@ function xivo_ast_cpy_user_name()
 	var callerid = xivo_eid('it-protocol-callerid').value;
 	var phonenumber = xivo_eid('it-ufeatures-number').value;
 
-	if(xivo_is_undef(phonenumber) === false)
-		phonenumber = '<'+phonenumber+'>';
+	if(xivo_is_undef(callerid) === true || callerid.length === 0)
+		callerid = '';
 	else
-		phonenumber = '';
+		callerid = callerid.replace(/^(?:"(.+)"|([^"]+))\s*<[^<]*>$/,'\$1');
 
-	if(xivo_is_undef(callerid) === true
-	|| callerid === name
-	|| callerid.length === 0
-	|| callerid === phonenumber)
+	if(callerid.length === 0 || callerid === name)
 		xivo_ast_fm_cpy_user_name['protocol-callerid'] = true;
 	else
 		xivo_ast_fm_cpy_user_name['protocol-callerid'] = false;
