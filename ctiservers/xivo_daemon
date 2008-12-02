@@ -453,12 +453,12 @@ evfunction_to_method_name = {
         'Dial':                 'ami_dial',
         'Link':                 'ami_link',
         'Unlink':               'ami_unlink',
-        'Bridge':               'ami_bridge',
-        'Masquerade':           'ami_masquerade',
+        'Bridge':               'ami_bridge',                   # (1.6) Seems to replace partly Link/Unlink events
+        'Masquerade':           'ami_masquerade',               # (1.6 backported) for indirect transfers & intercepts
         'Hangup':               'ami_hangup',
         'Join':                 'ami_join',
         'Leave':                'ami_leave',
-        'DTMF':                 'ami_dtmf',
+        'DTMF':                 'ami_dtmf',                     # (1.6 backported)
         'PeerStatus':           'ami_peerstatus',
         'Agentlogin':           'ami_agentlogin',
         'Agentlogoff':          'ami_agentlogoff',
@@ -489,7 +489,7 @@ evfunction_to_method_name = {
         'MeetmeTalking':        'ami_meetmetalking',
         'MeetmeList':           'ami_meetmelist',
         'MeetmeListComplete':   'ami_meetmelistcomplete',
-        'Transfer':             'ami_transfer',
+        'Transfer':             'ami_transfer',                 # (1.6 backported)
         'ExtensionStatus':      'ami_extensionstatus',
         'OriginateSuccess':     'ami_originatesuccess',
         'AOriginateSuccess':    'ami_aoriginatesuccess',
@@ -599,7 +599,7 @@ def sighandler_reload(signum, frame):
 
 logging.basicConfig(level=logging.INFO)
 sysloghandler = SysLogHandler("/dev/log", SysLogHandler.LOG_DAEMON)
-sysloghandler.setFormatter(logging.Formatter("%s[%%(process)d] (%%(name)s): %%(message)s" % DAEMONNAME))
+sysloghandler.setFormatter(logging.Formatter("%s[%%(process)d] (%%(levelname)s) (%%(name)s): %%(message)s" % DAEMONNAME))
 logging.getLogger('').addHandler(sysloghandler)
 log = logging.getLogger('main')
 
@@ -1015,7 +1015,7 @@ while True: # loops over the reloads
                                                         if actionname == 'disconnlist-user':
                                                                 disconnlist = actionarg
                                                                 for userinfo in disconnlist:
-                                                                        log.error('checkqueue return : will disconnect %s' % userinfo)
+                                                                        log.warning('checkqueue return : will disconnect %s' % userinfo)
                                                                         if 'login' in userinfo and 'connection' in userinfo.get('login'):
                                                                                 connid = userinfo.get('login')['connection']
                                                                                 if connid in fdlist_full and connid in fdlist_established:

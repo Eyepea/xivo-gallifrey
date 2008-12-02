@@ -1182,7 +1182,7 @@ class XivoCTICommand(BaseCommand):
                                         uinfo = vv
                                         break
                 return uinfo
-
+        
         def __fill_uniqueids__(self, astid, uid1, uid2, chan1, chan2, where):
                 if uid1 in self.uniqueids[astid] and chan1 == self.uniqueids[astid][uid1]['channel']:
                         self.uniqueids[astid][uid1].update({where : chan2,
@@ -1857,8 +1857,10 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def ami_newcallerid(self, astid, event):
+                # print astid, event
                 uniqueid = event.get('Uniqueid')
                 # event.get('CID-CallingPres') # 0 (Presentation Allowed, Not Screened)
+                # warning : the second such event comes After the Dial
                 if astid in self.uniqueids and uniqueid in self.uniqueids[astid]:
                         self.uniqueids[astid][uniqueid].update({'calleridname' : event.get('CallerIDName'),
                                                                 'calleridnum'  : event.get('CallerID')})
@@ -3234,11 +3236,15 @@ class XivoCTICommand(BaseCommand):
                                         if astid in self.weblist['queues']:
                                                 newlst = {}
                                                 for agent_id, agprop in aglist.keeplist.iteritems():
-                                                        agent_number = agprop['number']
-                                                        agent_channel = 'Agent/%s' % agent_number
-                                                        newlst[agent_number] = { 'properties' : agprop['stats'],
-                                                                                 'queues' : self.weblist['queues'][astid].get_queues_byagent(agent_channel)
-                                                                                 }
+                                                        try:
+                                                                agent_number = agprop['number']
+                                                                agent_channel = 'Agent/%s' % agent_number
+                                                                newlst[agent_number] = { 'properties' : agprop['stats'],
+                                                                                         'queues' : self.weblist['queues'][astid].get_queues_byagent(agent_channel)
+                                                                                         }
+                                                        except Exception:
+                                                                log.exception('--- exception --- (sendlist) comm=%s astid=%s agent_id=%s'
+                                                                              % (ccomm, astid, agent_id))
                                                 fullstat.append({ 'astid' : astid,
                                                                   'newlist' : newlst })
                 elif ccomm == 'queues':

@@ -124,8 +124,8 @@ class Capabilities:
                         gui = urllib.urlopen(urlsettings)
                         self.guisettings = cjson.decode(gui.read())
                         gui.close()
-                except:
-                        log.error('problem when reading guisettings from %s' % urlsettings)
+                except Exception:
+                        log.exception('problem when reading guisettings from %s' % urlsettings)
                         self.guisettings = {}
                 return
         

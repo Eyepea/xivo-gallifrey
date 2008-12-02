@@ -113,7 +113,11 @@ class QueueList(AnyList):
                         if agid in ql['agents']:
                                 agprop = ql['agents'][agid]
                                 for v in self.queuelocationprops:
-                                        lst[v] = agprop[v]
+                                        if v in agprop:
+                                                lst[v] = agprop[v]
+                                        else:
+                                                log.warning('get_queues_byagent : no property %s in agent %s in queue %s'
+                                                            % (v, agid, qref))
                         queuelist[qref] = lst
                 return queuelist
         
