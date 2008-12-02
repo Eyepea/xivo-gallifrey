@@ -73,7 +73,7 @@ def initconfig(agi, cursor, args): # pylint: disable-msg=W0613
     code = args[1]
     ua = args[2]
     isinalan = 1
-    
+
     # Get Sip User, IPv4 and Mac Address
     user_ipv4 = user_ipv4_from_sip_uri(sip_uri)
     if not user_ipv4:
@@ -99,7 +99,7 @@ def initconfig(agi, cursor, args): # pylint: disable-msg=W0613
         send_error(agi, "Badly formed provisioning code", "privacy-incorrect")
         return
     code = int(code)
-    
+
     command = {
         'mode':     'authoritative',
         'vendor':   phone_vendor,

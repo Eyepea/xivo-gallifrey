@@ -231,7 +231,7 @@ class Handler:
 
     def handle(self, agi, cursor, args):
         self.lock.acquire_read()
-        try: 
+        try:
             self.handle_fn(agi, cursor, args)
         finally:
             self.lock.release()
