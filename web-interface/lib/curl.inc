@@ -616,7 +616,7 @@ class xivo_curl
 			$r = false;
 		else if(isset($r[$name]) === true)
 			$r = &$r[$name];
-		
+
 		return($r);
 	}
 }

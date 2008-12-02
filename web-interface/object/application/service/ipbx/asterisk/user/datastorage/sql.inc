@@ -107,7 +107,7 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_servic
 			if($type === 0)
 				$this->_dso->orwherecontain('context',$value,true,$this->_table['userfeatures']);
 		}
-		
+
 		$this->_dso->aggregate_where();
 
 		$this->_dso->where($this->_table['usersip'].'.id IS NOT NULL');
@@ -257,7 +257,7 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_servic
 			$this->_dso->andjoinwhere($this->_table['usercustom'],
 						  $this->_table['userfeatures'].'.protocol = '.$this->_table['usercustom'].'.protocol');
 		}
-		
+
 		$this->_dso->aggregate_where();
 
 		if($use_sip === true)

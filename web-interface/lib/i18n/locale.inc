@@ -17,7 +17,7 @@ class xivo_i18n_locale
 	{
 		$name = (string) $name;
 
-		$this->_attrib[$name] = $value;	
+		$this->_attrib[$name] = $value;
 	}
 
 	function get_attrib($name)

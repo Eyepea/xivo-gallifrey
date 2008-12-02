@@ -80,7 +80,7 @@ Toujours
 Activer la possibilité de raccrocher avec * :
 
 ; fm_agentoptions_autologoff
-Temps de sonnerie avant déconnexion : 
+Temps de sonnerie avant déconnexion :
 
 ; fm_agentoptions_autologoff-opt(0)
 Illimité

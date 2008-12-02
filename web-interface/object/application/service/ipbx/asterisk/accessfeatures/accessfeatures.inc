@@ -64,7 +64,7 @@ class xivo_application_service_asterisk_accessfeatures extends xivo_application_
 
 		$info = array();
 		$info['feature'] = $this->_param['feature'];
-		
+
 		$tmp = array();
 
 		for($i = $j = $k = 0;$i < $nb;$i++)

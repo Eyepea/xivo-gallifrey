@@ -232,7 +232,7 @@ Fichier son d'un transfert échoué :
 ; fm_generalfeatures_xferfailsound-opt-default
 Défaut
 
-; fm_generalfeatures_pickupexten 
+; fm_generalfeatures_pickupexten
 Interception de groupe :
 
 ; fm_success-save

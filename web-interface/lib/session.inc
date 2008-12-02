@@ -25,7 +25,7 @@ class xivo_session
 				array(&$this->_dso,'write'),
 				array(&$this->_dso,'destroy'),
 				array(&$this->_dso,'gc'));
-			
+
 			register_shutdown_function(array(&$this->_dso,'write_close'));
 		}
 
@@ -82,5 +82,5 @@ class xivo_session
 		return($this->_dso->get_attrib($name));
 	}
 }
-	
+
 ?>

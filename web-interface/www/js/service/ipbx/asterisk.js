@@ -106,7 +106,7 @@ function xivo_chk_exten_pattern(value)
 
 	if(value.charAt(0) === '_')
 		value = xivo_substr(value,1);
-	
+
 	if(value.match(/^[0-9NXZ\*#\-\[\]]+[\.\!]?$/) === null)
 		return(false);
 

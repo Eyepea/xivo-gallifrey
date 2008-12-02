@@ -68,7 +68,7 @@ endif;
 <div class="sb-advanced-menu">
 	<ul id="add-menu"
 	    onmouseover="this.style.display = 'block';"
-	    onmouseout="this.style.display = 'none';">	
+	    onmouseout="this.style.display = 'none';">
 		<li><?=$url->href_html($this->bbf('toolbar_add_menu_add'),
 				       'service/ipbx/pbx_settings/users',
 				       'act=add');?></li>

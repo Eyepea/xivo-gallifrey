@@ -24,7 +24,7 @@ class xivo_service_asterisk_trunksip extends xivo_service_asterisk_abstract
 		$this->_load_config();
 		$this->_identity = &$this->_sre->get_identity($this->_name);
 	}
-	
+
 	function _prepare($data)
 	{
 		$this->_identity->_prepare_identity($data);

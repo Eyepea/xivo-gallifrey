@@ -53,7 +53,7 @@ class xivo_user_acl extends xivo_acl_abstract
 			$_SESSION['_ACL']['group'] = $this->_conf['group'];
 
 		if(($user = $this->get(xivo_user::get_info('id'))) === null)
-			trigger_error('Missing or invalid user array in acl',E_USER_ERROR); 
+			trigger_error('Missing or invalid user array in acl',E_USER_ERROR);
 		else
 		{
 			$_SESSION['_ACL']['user'] = $user;

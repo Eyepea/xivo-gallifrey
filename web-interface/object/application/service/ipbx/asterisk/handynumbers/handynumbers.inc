@@ -159,7 +159,7 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 				$errlist[$j++] = $this->_handynumbers->get_filter_error();
 				continue;
 			}
-			
+
 			$result = $this->_handynumbers->get_filter_result();
 			$reslist[$j++] = $result;
 
@@ -248,7 +248,7 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 			if($handynumbersid !== null)
 				$this->_reverse_save();
 		}
-		
+
 		$this->_status = '';
 
 		return($r);

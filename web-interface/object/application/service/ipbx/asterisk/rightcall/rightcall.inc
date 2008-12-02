@@ -246,7 +246,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 
 		if(($nb = count($list)) === 0)
 			return(null);
-		
+
 		$info = array();
 		$info['rightcallid'] = 0;
 		$info['type'] = $type;
@@ -306,7 +306,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 				$this->_set_error('rightcallexten','wrong extension');
 				continue;
 			}
-			
+
 			$extenhash = sha1($exten);
 			$info['exten'] = $list[$i];
 
@@ -619,7 +619,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 			return($this->_return['rightcallexten']);
 		else if($rs === false)
 			return(false);
-	
+
 		$this->_return['rightcallexten'] = array();
 
 		$nb = count($rs);

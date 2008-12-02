@@ -22,7 +22,7 @@ class xivo_service_asterisk_agentfeatures_identity
 			 $arr['number'],
 			 $arr['context']) === false)
 			return(false);
-		
+
 		$this->_prepare_identity($arr);
 
 		return($arr['identity']);

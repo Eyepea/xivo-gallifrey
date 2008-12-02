@@ -94,7 +94,7 @@ class xivo_tpl_url extends xivo_tpl_module
 		$nb = xivo_uint($nb);
 		$page = xivo_uint($page,1);
 		$sep = $sep === null ? '&amp;' : (string) $sep;
-	
+
 		if($nb < 2)
 			return($r);
 

@@ -114,7 +114,7 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 			$r = false;
 		else
 			ksort($r);
-			
+
 		$this->_list = $r;
 
 		return($r);

@@ -34,7 +34,7 @@ switch($act)
 			else
 				$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
 		}
-		
+
 		if(xivo_issa('incall',$result) === false || empty($result['incall']) === true)
 			$result['incall'] = null;
 

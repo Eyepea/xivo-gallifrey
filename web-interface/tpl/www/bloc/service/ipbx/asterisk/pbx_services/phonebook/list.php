@@ -12,7 +12,7 @@ $param = array();
 if(($search = (string) $this->get_var('search')) !== ''):
 	$param['search'] = $search;
 else:
-	$param = null;	
+	$param = null;
 endif;
 
 $page = $url->pager($pager['pages'],

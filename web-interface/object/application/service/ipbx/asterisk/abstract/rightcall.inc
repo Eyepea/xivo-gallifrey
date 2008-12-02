@@ -11,7 +11,7 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 	function xivo_application_service_asterisk_rightcall_abstract(&$service,$param=array())
 	{
 		$this->xivo_application_service_asterisk_abstract(&$service);
-		
+
 		if(($this->_rightcall = &$this->_service->get_module('rightcall')) === false
 		|| ($this->_rightcallmember = &$this->_service->get_module('rightcallmember')) === false)
 			return(false);
@@ -73,7 +73,7 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 		$info['rightcallid'] = 0;
 		$info['type'] = $this->_param['type'];
 		$info['typeval'] = 0;
-		
+
 		$tmp = $reslist = array();
 
 		for($i = 0;$i < $nb;$i++)

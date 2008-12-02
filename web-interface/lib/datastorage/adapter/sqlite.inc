@@ -148,7 +148,7 @@ class xivo_datastorage_adapter_sqlite extends xivo_datastorage_adapter_abstract_
 
 		if(isset($this->_param['short_column_names']) === true)
 			$this->set_pragma('short_column_names',$this->_param['short_column_names']);
-		
+
 		if(isset($this->_param['timeout']) === true)
 			$this->timeout($this->_param['timeout']);
 
@@ -273,7 +273,7 @@ class xivo_datastorage_adapter_sqlite extends xivo_datastorage_adapter_abstract_
 			return($val);
 		else if(xivo_haslen($this->_fix_leftjoin_column) === false)
 			return($val);
-			
+
 		return(sprintf('SUBSTR(%s,0,0)||%s',$this->_fix_leftjoin_column,$val));
 	}
 

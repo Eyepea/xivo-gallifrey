@@ -140,7 +140,7 @@ class xivo_application_service_asterisk_ldapfilter extends xivo_application_aste
 			return(false);
 
 		$this->set_ldapfilter($arr['ldapfilter']);
-	
+
 		return(($this->get_errnb() < 1));
 	}
 

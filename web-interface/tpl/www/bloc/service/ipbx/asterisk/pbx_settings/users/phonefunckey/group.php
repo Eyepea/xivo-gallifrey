@@ -32,7 +32,7 @@ else:
 	$selectoptattr = ' onfocus="xivo_fm_set_onfocus(this);"'.
 			 ' onblur="xivo_fm_set_onblur(this);"'.
 			 ' style="display: none;"';
-			
+
 	$hrefstyle = 'id="fd-phonefunckey-group-typeval" style="display: none;"';
 endif;
 

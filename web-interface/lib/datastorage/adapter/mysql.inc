@@ -77,7 +77,7 @@ class xivo_datastorage_adapter_mysql extends xivo_datastorage_adapter_abstract_s
 		&& preg_match('/^[a-zA-Z0-9-]+$/',$param['charset']) === 1)
 			$this->_param['charset'] = strtolower(str_replace('-','',$param['charset']));
 
-		$this->_escape = (bool) function_exists('mysql_real_escape_string'); 
+		$this->_escape = (bool) function_exists('mysql_real_escape_string');
 
 		if($open === true && $this->open() !== false)
 			$this->select_db();
@@ -232,7 +232,7 @@ class xivo_datastorage_adapter_mysql extends xivo_datastorage_adapter_abstract_s
 	function close()
 	{
 		$r = null;
-	
+
 		if(is_resource($this->_link) === true)
 			$r = mysql_close($this->_link);
 
@@ -310,7 +310,7 @@ class xivo_datastorage_adapter_mysql extends xivo_datastorage_adapter_abstract_s
 			$column = 'CONVERT_TZ('.$func.'('.$column.',\'%Y-%m-%d %H:%i:%s\'),@@session.time_zone,\'+00:00\')';
 		else if($time === 'localtime')
 			$column = 'CONVERT_TZ('.$func.'('.$column.',\'%Y-%m-%d %H:%i:%s\'),\'+00:00\',@@session.time_zone)';
-		
+
 		if($type === 'unix')
 			$column = 'UNIX_TIMESTAMP('.$column.')';
 

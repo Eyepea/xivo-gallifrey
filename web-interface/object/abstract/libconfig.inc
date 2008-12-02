@@ -43,7 +43,7 @@ class xivo_libconfig_abstract
 	{
 		$key = (string) $key;
 
-		if(isset($this->_conf) === false 
+		if(isset($this->_conf) === false
 		|| xivo_issa('option',$this->_conf) === false
 		|| isset($this->_conf['option'][$key]) === false)
 			return(false);
@@ -192,7 +192,7 @@ class xivo_libconfig_abstract
 		$key = (string) $key;
 
 		if(isset($this->_conf) === false
-		|| xivo_issa('element',$this->_conf) === false 
+		|| xivo_issa('element',$this->_conf) === false
 		|| xivo_issa($key,$this->_conf['element']) === false
 		|| isset($this->_conf['element'][$key]['unset']) === false)
 			return(false);
@@ -218,7 +218,7 @@ class xivo_libconfig_abstract
 		$key = (string) $key;
 
 		if(isset($this->_conf) === false
-		|| xivo_issa('element',$this->_conf) === false 
+		|| xivo_issa('element',$this->_conf) === false
 		|| xivo_issa($key,$this->_conf['element']) === false
 		|| isset($this->_conf['element'][$key]['multi']) === false)
 			return(false);
@@ -302,13 +302,13 @@ class xivo_libconfig_abstract
 
 		if((bool) $empty === false && empty($r) === true)
 			return(false);
-			
+
 		return($r);
 	}
 
 	function chk_value($key,$value)
 	{
-		if(isset($this->_filter) === false 
+		if(isset($this->_filter) === false
 		|| ($this->_filter === false && $this->_load_filter() === false) === true)
 			return(false);
 		else if($this->_chk_exists_cfg('filter',$key) === false)
@@ -334,7 +334,7 @@ class xivo_libconfig_abstract
 	function set_chk_value($key,$value,$valid=false)
 	{
 		$r = '';
-		
+
 		if(($val = $this->chk_value($key,$value)) !== false)
 		{
 			if(($setval = $this->_set_value($key,$val)) !== false)

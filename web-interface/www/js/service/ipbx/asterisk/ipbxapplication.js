@@ -68,7 +68,7 @@ function xivo_ast_application_answer()
 
 	if(xivo_is_uint(delayvalue) === true)
 		args.push(delayvalue);
-	
+
 	return(xivo_fm_select_add_ast_application('answer',args));
 }
 
@@ -92,10 +92,10 @@ function xivo_ast_application_authenticate()
 
 	if(option_a.checked == true)
 		options += 'a';
-	
+
 	if(option_j.checked == true)
 		options += 'j';
-	
+
 	switch(passwordinterpreter.value)
 	{
 		case 'astdb':
@@ -136,10 +136,10 @@ function xivo_ast_application_background()
 
 	if(option_s.checked == true)
 		options += 's';
-	
+
 	if(option_n.checked == true)
 		options += 'n';
-	
+
 	if(option_m.checked == true)
 		options += 'm';
 
@@ -191,7 +191,7 @@ function xivo_ast_application_goto()
 	args.push(xivo_ast_application_sanitize_arg(context.value));
 	args.push(xivo_ast_application_sanitize_arg(exten.value));
 	args.push(priorityvalue);
-	
+
 	return(xivo_fm_select_add_ast_application('goto',args));
 }
 
@@ -353,10 +353,10 @@ function xivo_ast_application_playback()
 
 	if(option_skip.checked == true)
 		options += 'skip';
-	
+
 	if(option_noanswer.checked == true)
 		options += 'noanswer';
-	
+
 	if(option_j.checked == true)
 		options += 'j';
 
@@ -550,7 +550,7 @@ function xivo_ast_application_wait()
 	if((seconds = xivo_eid('it-ipbxapplication-wait-seconds')) === false
 	|| xivo_is_ufloat(seconds.value) === false)
 		return(false);
-	
+
 	var args = new Array(seconds.value);
 
 	return(xivo_fm_select_add_ast_application('wait',args));
@@ -562,7 +562,7 @@ function xivo_ast_application_waitexten()
 	|| (option_m = xivo_eid('it-ipbxapplication-waitexten-m')) === false
 	|| (seconds.value.length > 0 && xivo_is_ufloat(seconds.value) === false) === true)
 		return(false);
-	
+
 	if((musiconhold = xivo_eid('it-ipbxapplication-waitexten-musiconhold')) !== false)
 		var musiconholdvalue = xivo_ast_application_sanitize_arg(musiconhold.value);
 	else
@@ -586,7 +586,7 @@ function xivo_ast_application_waitforring()
 	if((timeout = xivo_eid('it-ipbxapplication-waitforring-timeout')) === false
 	|| xivo_is_ufloat(timeout.value) === false)
 		return(false);
-	
+
 	var args = new Array(timeout.value);
 
 	return(xivo_fm_select_add_ast_application('waitforring',args));
@@ -597,7 +597,7 @@ function xivo_ast_application_waitmusiconhold()
 	if((delay = xivo_eid('it-ipbxapplication-waitmusiconhold-delay')) === false
 	|| xivo_is_ufloat(delay.value) === false)
 		return(false);
-	
+
 	var args = new Array(delay.value);
 
 	return(xivo_fm_select_add_ast_application('waitmusiconhold',args));

@@ -55,7 +55,7 @@ class xivo_filter
 
 	function get_error()
 	{
-		return($this->_error);	
+		return($this->_error);
 	}
 
 	function get_errnb()
@@ -231,7 +231,7 @@ class xivo_filter
 		{
 			if(($pos = strrpos($ip,'/')) === false)
 				return(false);
-		
+
 			$mask = substr($ip,$pos+1);
 			$ip = substr($ip,0,$pos);
 		}
@@ -475,7 +475,7 @@ class xivo_filter
 		}
 		else
 			$type = 'method';
-		
+
 		if($type === 'method')
 		{
 			if(is_callable($func[0],$func[1]) === false)
@@ -526,7 +526,7 @@ class xivo_filter
 			if(in_array($value[$i],$arr) === true)
 				return(false);
 		}
-		
+
 		return(true);
 	}
 
@@ -554,7 +554,7 @@ class xivo_filter
 			else
 				$uniqval[$value[$i]] = 1;
 		}
-		
+
 		return(true);
 	}
 
@@ -623,7 +623,7 @@ class xivo_filter
 			$arr = &$this->_content[$key];
 
 			$set = isset($arr['set']) === false ? true : (bool) $arr['set'];
-	
+
 			if($set === false && $value === null)
 				return($value);
 		}
@@ -792,7 +792,7 @@ class xivo_filter
 			$value = xivo_notag($value);
 		else if(isset($arr['notagscript']) === true)
 			$value = xivo_notagscript($value);
-	
+
 		$len = strlen($value);
 
 		if($chk === 0 && $len > 0)
@@ -800,19 +800,19 @@ class xivo_filter
 			$this->_set_error($key,'no empty');
 			return(false);
 		}
-	
+
 		if($chk === 1 && $len === 0)
 		{
 			$this->_set_error($key,'empty');
 			return(false);
 		}
-	
+
 		if($chk === 2 && $len === 0)
 		{
 			$this->_set_result($key);
 			return('');
 		}
-	
+
 		if(isset($arr['cast']) === true && $len > 0)
 		{
 			if($this->chk_cast($arr['cast'],$value) === false)
@@ -821,13 +821,13 @@ class xivo_filter
 				return(false);
 			}
 		}
-	
+
 		if(isset($arr['minlen']) === true && $this->chk_minlen($arr['minlen'],$value) === false)
 		{
 			$this->_set_error($key,'minimum length');
 			return(false);
 		}
-	
+
 		if(isset($arr['maxlen']) === true && $this->chk_maxlen($arr['maxlen'],$value) === false)
 		{
 			$this->_set_error($key,'maximum length');
@@ -840,7 +840,7 @@ class xivo_filter
 			$this->_set_error($key,'between false');
 			return(false);
 		}
-	
+
 		if(isset($arr['callback']) === true)
 		{
 			if(isset($arr['callbackarg']) === false)
@@ -860,7 +860,7 @@ class xivo_filter
 			$this->_set_error($key,'regexp false');
 			return(false);
 		}
-	
+
 		return($value);
 	}
 
@@ -881,7 +881,7 @@ class xivo_filter
 			$value = xivo_notag($value);
 		else if(isset($arr['notagscript']) === true)
 			$value = xivo_notagscript($value);
-	
+
 		return($value);
 	}
 
@@ -889,16 +889,16 @@ class xivo_filter
 	{
 		$arr = (array) $arr;
 		$v = (array) $v;
-	
+
 		if((bool) $set === false && isset($v[$key]) === false)
 		{
 			if(array_key_exists($key,$v) === true)
 				$this->_set_result($key,null);
 			return(true);
 		}
-	
+
 		$set = isset($arr['set']) === false ? true : (bool) $arr['set'];
-	
+
 		if($set === true)
 		{
 			if(isset($v[$key]) === false && isset($arr['bool']) === true)
@@ -911,9 +911,9 @@ class xivo_filter
 			$this->_set_result($key);
 			return(true);
 		}
-	
+
 		$val = &$v[$key];
-	
+
 		if(isset($arr['egal'],$v[$arr['egal']]) === true)
 		{
 			if($v[$arr['egal']] !== $val)
@@ -926,7 +926,7 @@ class xivo_filter
 				return(false);
 
 		$this->_set_result($key,$val);
-	
+
 		return(true);
 	}
 }

@@ -125,7 +125,7 @@ function xivo_fm_set_disable_submit_onenter(form)
 
 	for(var i = 0;i < len;i++)
 	{
-		if((tag[i].type === 'text' 
+		if((tag[i].type === 'text'
 		   || tag[i].type === 'file'
 		   || tag[i].type === 'password'
 		   || tag[i].type === 'checkbox'
@@ -160,7 +160,7 @@ function xivo_fm_move_selected(from,to)
 
 		to.options[to.options.length] = new Option(from.options[i].text,from.options[i].value);
 		to.options[to.options.length-1].selected = true;
-		from.options[i--] = null;	
+		from.options[i--] = null;
 		len--;
 	}
 
@@ -216,7 +216,7 @@ function xivo_fm_unshift_opt_select(from,text,value)
 	for(var i = 0;i < len;i++)
 		noptions[i] = from.options[i];
 
-	len = noptions.length;	
+	len = noptions.length;
 
 	from.options[0] = new Option(text,value);
 
@@ -321,7 +321,7 @@ function xivo_fm_order_selected(from,order,num)
 
 		from.options[selected+1] = new Option(stext,soption.value);
 		from.options[selected] = new Option(ntext,noption.value);
-		
+
 		xivo_fm_select(from.id,false);
 
 		from.options[selected+1].selected = true;
@@ -394,7 +394,7 @@ function xivo_fm_select_delete_entry(id,num)
 	|| (obj.type != 'select-multiple'
 	   && obj.type != 'select-one') == true)
 		return(false);
-	
+
 	var len = obj.options.length;
 
 	if(Boolean(num) === false)
@@ -412,7 +412,7 @@ function xivo_fm_select_delete_entry(id,num)
 	{
 		if(obj.options[i].selected == true)
 		{
-			obj.options[i--] = null;	
+			obj.options[i--] = null;
 			len--;
 			continue;
 		}
@@ -737,7 +737,7 @@ function xivo_fm_enable_disable_field(form,name,disable,exform,exformtag)
 		if(xivo_is_undef(ref.item) == true
 		|| xivo_is_undef(ref.length) == true)
 			return(false);
-		
+
 		var nb = ref.length;
 
 		for(var i = 0;i < nb;i++)

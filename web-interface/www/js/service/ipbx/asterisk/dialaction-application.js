@@ -53,7 +53,7 @@ function xivo_ast_defapplication_user(dialevent,targetid)
 	|| xivo_is_undef(userarg1.options[userarg1.selectedIndex]) === true
 	|| (userarg2 = xivo_eid('it-dialaction-'+dialevent+'-user-actionarg2')) === false)
 		return(false);
-	
+
 	var optargs = new Array('\''+userarg1.options[userarg1.selectedIndex].text+'\'');
 	var valargs = new Array(userarg1.value);
 
@@ -291,10 +291,10 @@ function xivo_ast_defapplication_sound(dialevent,targetid)
 
 	if(option_skip.checked == true)
 		options += 'skip';
-	
+
 	if(option_noanswer.checked == true)
 		options += 'noanswer';
-	
+
 	if(option_j.checked == true)
 		options += 'j';
 

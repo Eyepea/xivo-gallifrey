@@ -67,7 +67,7 @@ switch($act)
 			$user['slt'] = xivo_array_intersect_key($result['user'],
 								$user['list'],
 								'userid');
-			
+
 			if($user['slt'] !== false)
 			{
 				$user['list'] = xivo_array_diff_key($user['list'],$user['slt']);
@@ -82,7 +82,7 @@ switch($act)
 			$agentgroup['slt'] = xivo_array_intersect_key($result['agentgroup'],
 								      $agentgroup['list'],
 								      'userid');
-			
+
 			if($agentgroup['slt'] !== false)
 			{
 				$agentgroupsort = new xivo_sort(array('browse'	=> 'agentgroup',
@@ -98,7 +98,7 @@ switch($act)
 			$agent['slt'] = xivo_array_intersect_key($result['agent'],
 								 $agent['list'],
 								 'userid');
-			
+
 			if($agent['slt'] !== false)
 			{
 				$agentsort = new xivo_sort(array('browse'	=> 'afeatures',
@@ -199,7 +199,7 @@ switch($act)
 			$user['slt'] = xivo_array_intersect_key($return['user'],
 								$user['list'],
 								'userid');
-			
+
 			if($user['slt'] !== false)
 			{
 				$user['list'] = xivo_array_diff_key($user['list'],$user['slt']);
@@ -214,7 +214,7 @@ switch($act)
 			$agentgroup['slt'] = xivo_array_intersect_key($return['agentgroup'],
 								      $agentgroup['list'],
 								      'userid');
-			
+
 			if($agentgroup['slt'] !== false)
 			{
 				$agentgroupsort = new xivo_sort(array('browse'	=> 'agentgroup',
@@ -230,7 +230,7 @@ switch($act)
 			$agent['slt'] = xivo_array_intersect_key($return['agent'],
 								 $agent['list'],
 								 'userid');
-			
+
 			if($agent['slt'] !== false)
 			{
 				$agentsort = new xivo_sort(array('browse'	=> 'afeatures',

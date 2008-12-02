@@ -60,7 +60,7 @@ $array['element']['xferfailsound']['null'] = true;
 
 $array['element']['pickupexten'] = array();
 $array['element']['pickupexten']['default'] = '*8';
- 
+
 
 $array['filter'] = array();
 $array['filter']['parkext'] = array('regexp' => '/^[0-9\*#]+$/','minlen' => 1,'maxlen' => 40);

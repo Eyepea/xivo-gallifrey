@@ -17,7 +17,7 @@ class xivo_service_asterisk_voicemenu_identity
 		if(is_array($arr) === false
 		|| isset($arr['name'],$arr['context']) === false)
 			return(false);
-		
+
 		if(isset($arr['number']) === false)
 			$arr['number'] = '';
 

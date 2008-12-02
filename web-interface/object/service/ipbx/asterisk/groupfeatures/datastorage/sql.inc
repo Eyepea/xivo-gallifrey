@@ -40,7 +40,7 @@ class xivo_service_asterisk_groupfeatures_sql extends xivo_service_asterisk_abst
 		$this->_dso->new_select($this->_table,'*');
 
 		$arr = array();
-	
+
 		if(isset($this->_forcecolumn) === true)
 			$arr = $this->_forcecolumn;
 

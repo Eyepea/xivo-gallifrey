@@ -216,7 +216,7 @@ function xivo_ast_chg_trunk_type(trunktype)
 {
 	if(xivo_is_undef(xivo_ast_trunk_type_elt[trunktype]) === true)
 		return(false);
-	
+
 	if(xivo_is_undef(xivo_ast_fm_trunks[trunktype]) === true)
 		xivo_ast_build_trunk_type_array(trunktype);
 

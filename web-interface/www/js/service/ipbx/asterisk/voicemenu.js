@@ -238,7 +238,7 @@ function xivo_ast_voicemenuevent_defapplication(action)
 
 	if((target = xivo_eid(targetid)) === false)
 		return(false);
-	
+
 	switch(action)
 	{
 		case 'none':
@@ -261,7 +261,7 @@ function xivo_ast_voicemenuevent_defapplication(action)
 
 			return(r);
 		case 'endcall':
-			var r = xivo_ast_defapplication_endcall('voicemenuevent',targetid);	
+			var r = xivo_ast_defapplication_endcall('voicemenuevent',targetid);
 			break;
 		case 'user':
 			var r = xivo_ast_defapplication_user('voicemenuevent',targetid);
@@ -325,7 +325,7 @@ function xivo_ast_voicemenu_onload()
 
 	if(xivo_is_undef(xivo_fm['fm-voicemenu']) === false)
 		xivo_fm_set_disable_submit_onenter(xivo_fm['fm-voicemenu']);
-	
+
 	xivo_ast_dialaction_onload();
 	xivo_ast_voicemenu_flow_display();
 	xivo_ast_voicemenu_event_display();

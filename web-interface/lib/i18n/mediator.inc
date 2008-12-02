@@ -51,7 +51,7 @@ class xivo_i18n_mediator
 	{
 		$name = (string) $name;
 
-		$this->_attrib[$name] = $value;	
+		$this->_attrib[$name] = $value;
 	}
 
 	function get_attrib($name)
@@ -388,7 +388,7 @@ class xivo_i18n_mediator
 
 		if(($lang = $this->chk_language($lang)) !== false
 		&& ($locale = $this->_mediator['language']->exists_default($lang)) !== false)
-			$r = $this->_mediator['locale']->get_territory($locale);	
+			$r = $this->_mediator['locale']->get_territory($locale);
 
 		return($r);
 	}

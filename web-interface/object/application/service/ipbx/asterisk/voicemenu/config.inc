@@ -45,8 +45,8 @@ $array['voicemenuevent']['value'] = array('0',
 					  'i',
 					  'h');
 $array['voicemenuevent']['default'] = '0';
-                                          
-$array['defapplication'] = array();       
+
+$array['defapplication'] = array();
 $array['defapplication']['macro|endcall|hangup'] = 'hangup';
 $array['defapplication']['macro|endcall|busy'] = 'busy';
 $array['defapplication']['macro|endcall|congestion'] = 'congestion';

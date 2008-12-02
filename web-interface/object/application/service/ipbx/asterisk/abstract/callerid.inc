@@ -10,7 +10,7 @@ class xivo_application_service_asterisk_callerid_abstract extends xivo_applicati
 	function xivo_application_service_asterisk_callerid_abstract(&$service,$param=array())
 	{
 		$this->xivo_application_service_asterisk_abstract(&$service);
-		
+
 		if(($this->_callerid = &$this->_service->get_module('callerid')) === false)
 			return(false);
 

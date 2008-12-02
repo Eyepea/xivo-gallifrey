@@ -11,7 +11,7 @@ class xivo_application_service_asterisk_contextmember_abstract extends xivo_appl
 	function xivo_application_service_asterisk_contextmember_abstract(&$service,$param=array())
 	{
 		$this->xivo_application_service_asterisk_abstract(&$service);
-		
+
 		if(($this->_context = &$this->_service->get_module('context')) === false
 		|| ($this->_contextmember = &$this->_service->get_module('contextmember')) === false)
 			return(false);
@@ -76,7 +76,7 @@ class xivo_application_service_asterisk_contextmember_abstract extends xivo_appl
 
 		$info = array();
 		$info['type'] = $this->_param['type'];
-		
+
 		$tmp = $reslist = $errlist = array();
 
 		for($i = 0;$i < $nb;$i++)

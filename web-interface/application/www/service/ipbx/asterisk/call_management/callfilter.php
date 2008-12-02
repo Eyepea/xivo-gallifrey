@@ -96,7 +96,7 @@ switch($act)
 
 		if(xivo_issa('callfiltermember',$return) === true)
 			$callfiltermember = &$return['callfiltermember'];
-		
+
 		if($secretary['list'] !== false && xivo_issa('secretary',$callfiltermember) === true)
 		{
 			xivo::load_class('xivo_sort');

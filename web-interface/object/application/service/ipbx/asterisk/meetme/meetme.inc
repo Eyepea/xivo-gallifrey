@@ -100,7 +100,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 			$this->_cnt = $this->_meetmefeatures->get_cnt();
 			return(false);
 		}
-		
+
 		$this->_cnt = $this->_meetmefeatures->get_cnt();
 
 		$r = $info = array();
@@ -160,7 +160,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		$arr['mfeatures']['number'] = $number;
 
 		$this->set_meetmefeatures($arr['mfeatures']);
-	
+
 		$context = (string) $this->get_result_var('mfeatures','context');
 
 		if(($rsmeetmemacro = $this->chk_macro('meetmemacro',

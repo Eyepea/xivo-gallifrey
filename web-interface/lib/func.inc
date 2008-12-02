@@ -4,7 +4,7 @@ function xivo_get_memory($value,$name=true)
 {
 	$get_name = strtolower($value);
 
-	if((bool) $name === true 
+	if((bool) $name === true
 	&& ($get_name === 'memory_limit'
 	   || $get_name === 'post_max_size'
 	   || $get_name === 'upload_max_filesize') === true)
@@ -66,7 +66,7 @@ function xivo_haslen($val,$key=null)
 	is_array($val) === true
 	&& isset($val[$key]) === true)
 		$val = $val[$key];
-	
+
 	if(is_scalar($val) === false)
 		return(false);
 
@@ -142,7 +142,7 @@ function xivo_ufloat($str,$def=0,$t=false,$strval=false)
 		$str = 0;
 	else if((bool) $strval === true)
 		$str = str_replace(',','.',$str);
-	
+
 	return($str);
 }
 
@@ -335,7 +335,7 @@ function xivo_trunc(&$str,$nb=0,$end='',$chr=null,$trim=false)
 	$nb = (int) $nb;
 	$end = (string) $end;
 	$chr = $chr === null ? ' ' : (string) $chr;
-	
+
 	if($nb > 0 && mb_strlen($r) > $nb && ($sub = mb_substr($r,0,$nb)) !== '')
 	{
 		$r = $sub;
@@ -534,7 +534,7 @@ function xivo_array_diff_key($arr1,$arr2)
 
 	for($i = 0;$i < $nb;$i++)
 		$r[$diff[$i]] = $arr1[$diff[$i]];
-	
+
 	return($r);
 }
 
@@ -740,7 +740,7 @@ function xivo_malert($subject='',$msg='',$to='')
 		$h .= 'To: '.$mail.' <'.$mail.'>'."\n";
 
 	$h .= 'From: XIVO <xivo@xivo>'."\n";
-	$h .= 'X-Mailer: XIVO'."\n"; 
+	$h .= 'X-Mailer: XIVO'."\n";
 	$h .= 'X-Priority: 1 (Highest)'."\n";
 
 	mb_send_mail($mail,$subject,$msg,$h);
@@ -1004,7 +1004,7 @@ function xivo_replacef($search,$replace,$subject)
 		else
 			$r .= $split[$i];
 	}
-	
+
 	return($r);
 }
 

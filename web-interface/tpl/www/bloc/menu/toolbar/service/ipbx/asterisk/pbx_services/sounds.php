@@ -77,7 +77,7 @@ endif;
 <div class="sb-advanced-menu">
 	<ul id="add-menu"
 	    onmouseover="this.style.display = 'block';"
-	    onmouseout="this.style.display = 'none';">	
+	    onmouseout="this.style.display = 'none';">
 		<li><?=$url->href_html($this->bbf('toolbar_adv_menu_add-directory'),
 				       'service/ipbx/pbx_services/sounds',
 				       'act=adddir');?></li>
@@ -97,7 +97,7 @@ if($act === 'list'):
 <div class="sb-advanced-menu">
 	<ul id="advanced-menu"
 	    onmouseover="this.style.display = 'block';"
-	    onmouseout="this.style.display = 'none';">	
+	    onmouseout="this.style.display = 'none';">
 		<li>
 			<a href="#"
 			   onclick="xivo_fm_checked_all('fm-files-list','files[]');

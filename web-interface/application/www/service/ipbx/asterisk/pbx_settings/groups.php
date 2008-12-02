@@ -53,7 +53,7 @@ switch($act)
 		if($user['list'] !== false && xivo_ak('user',$result) === true)
 		{
 			$user['slt'] = xivo_array_intersect_key($result['user'],$user['list'],'userid');
-			
+
 			if($user['slt'] !== false)
 			{
 				$user['list'] = xivo_array_diff_key($user['list'],$user['slt']);
@@ -150,7 +150,7 @@ switch($act)
 		if($user['list'] !== false && xivo_ak('user',$return) === true)
 		{
 			$user['slt'] = xivo_array_intersect_key($return['user'],$user['list'],'userid');
-			
+
 			if($user['slt'] !== false)
 			{
 				$user['list'] = xivo_array_diff_key($user['list'],$user['slt']);

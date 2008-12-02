@@ -17,7 +17,7 @@ class xivo_service_asterisk_trunkcustom_identity
 		if(is_array($arr) === false
 		|| isset($arr['name'],$arr['interface']) === false)
 			return(false);
-		
+
 		if(isset($arr['intfsuffix']) === false)
 			$arr['intfsuffix'] = '';
 

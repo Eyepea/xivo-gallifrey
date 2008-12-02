@@ -9,7 +9,7 @@ class xivo_service
 	function xivo_service($ini)
 	{
 		if(($this->_conf = xivo_gat::get_file(XIVO_PATH_OBJECTCONF.XIVO_SEP_DIR.'service')) === false)
-			trigger_error('Failed to load service Array',E_USER_ERROR);	
+			trigger_error('Failed to load service Array',E_USER_ERROR);
 		else if(is_array($ini) === false || empty($ini) === true)
 			trigger_error('Invalid parameter in '.__CLASS__,E_USER_ERROR);
 
@@ -79,9 +79,9 @@ class xivo_service
 	{
 		$service = (string) $service;
 		$module = (string) $module;
-	
+
 		if(($class = &$this->get($service)) === false)
-			trigger_error('Service not found or installed',E_USER_ERROR);	
+			trigger_error('Service not found or installed',E_USER_ERROR);
 
 		return(($ref = &$class->get_module($module)));
 	}

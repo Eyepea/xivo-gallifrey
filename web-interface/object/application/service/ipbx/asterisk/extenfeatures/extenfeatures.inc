@@ -28,7 +28,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 	{
 		$this->_info = $this->_origin = array();
 
-		$this->_get_extenfeatures($name); 
+		$this->_get_extenfeatures($name);
 		$this->_get_extenumbers($name);
 
 		return($this->_info);
@@ -100,7 +100,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 			return(strtr($appdata,$vars));
 		else if(is_array($appdata) === false)
 			return($appdata);
-		
+
 		$nb = count($appdata);
 
 		for($i = 0;$i < $nb;$i++)

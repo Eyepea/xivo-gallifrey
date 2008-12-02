@@ -86,7 +86,7 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 			return(false);
 
 		$useragent = strtolower($_SERVER['HTTP_USER_AGENT']);
-		
+
 		foreach($this->_conf['vendor'] as $key => $val)
 		{
 			if(strpos($useragent,$val) !== false)
@@ -154,7 +154,7 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 			return(false);
 
 		$option = &$this->_conf['xivoserver']['option'];
-		
+
 		$r = array();
 
 		for($i = 0;$i < $nb;$i++)
@@ -297,7 +297,7 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 				$cnt = count($ldapfilter['attrdisplayname']);
 
 				$dso->andwherenotnull($ldapfilter['attrdisplayname'][0]);
-			
+
 				for($j = 1;$j < $cnt;$j++)
 					$dso->orwherenotnull($ldapfilter['attrdisplayname'][$j]);
 
@@ -306,7 +306,7 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 				$cnt = count($ldapfilter['attrphonenumber']);
 
 				$dso->andwherenotnull($ldapfilter['attrphonenumber'][0]);
-			
+
 				for($j = 1;$j < $cnt;$j++)
 					$dso->orwherenotnull($ldapfilter['attrphonenumber'][$j]);
 

@@ -142,8 +142,8 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 			else
 				$info['phonebook'] = $rs[$i];
 
-			$info['phonebookaddress'] = $this->_phonebookaddress->get_all_type_by_phonebook($info['phonebook']['id']); 
-			$info['phonebooknumber'] = $this->_phonebooknumber->get_all_type_by_phonebook($info['phonebook']['id']); 
+			$info['phonebookaddress'] = $this->_phonebookaddress->get_all_type_by_phonebook($info['phonebook']['id']);
+			$info['phonebooknumber'] = $this->_phonebooknumber->get_all_type_by_phonebook($info['phonebook']['id']);
 			$r[$info['phonebook']['id']] = $info;
 		}
 
@@ -305,7 +305,7 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 		}
 
 		$this->_set_result($typename,$reslist);
-		
+
 		return(true);
 	}
 

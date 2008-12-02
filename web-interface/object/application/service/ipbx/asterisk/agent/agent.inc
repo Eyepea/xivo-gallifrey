@@ -522,7 +522,7 @@ class xivo_application_service_asterisk_agent extends xivo_application_asterisk_
 		|| ($rs = $this->get_result('queuemember')) === null
 		|| $rs === false)
 			return($rs);
-		
+
 		$ret = $this->_return['queuemember'] = array();
 
 		$nb = count($rs);

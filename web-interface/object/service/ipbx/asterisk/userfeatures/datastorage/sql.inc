@@ -95,7 +95,7 @@ class xivo_service_asterisk_userfeatures_sql extends xivo_service_asterisk_abstr
 		$this->_dso->new_select($this->_table,'*');
 
 		$arr = array();
-	
+
 		if(isset($this->_forcecolumn) === true)
 			$arr = $this->_forcecolumn;
 
@@ -147,7 +147,7 @@ class xivo_service_asterisk_userfeatures_sql extends xivo_service_asterisk_abstr
 		$this->_dso->limit($limit);
 
 		$r = $this->_dso->select_all();
-	
+
 		$this->_dso->reset_group();
 		$this->_dso->reset_order();
 		$this->_dso->reset_limit();

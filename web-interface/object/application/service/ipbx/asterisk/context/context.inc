@@ -145,7 +145,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		{
 			$info['context'] = $rs[$i];
 
-			if(xivo_haslen($info['context']['entity']) === false 
+			if(xivo_haslen($info['context']['entity']) === false
 			|| is_object($this->_entity) === false
 			|| ($info['entity'] = $this->_entity->get_where(
 			   					array('name' => $info['context']['entity']))) === false)
@@ -219,7 +219,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 		if($entity === ''
 		&& ($action === 'add'
-		   || (isset($this->_info['deletable']) === true 
+		   || (isset($this->_info['deletable']) === true
 		      && $this->_info['deletable'] === true)) === true)
 		{
 			if(xivo_issa('contextinclude',$arr) === true)
@@ -366,7 +366,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 				{
 					$nb--;
 					$err = $this->_contextnumbers->get_filter_error();
-					
+
 					if(isset($err['type']) === false && isset($err['context']) === false)
 					{
 						$errlist[$key][$i] = $err;
@@ -877,7 +877,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 		return(true);
 	}
-	
+
 	function edit_contextinclude()
 	{
 		if(xivo_issa('contextinclude',$this->_info) === false)
@@ -889,7 +889,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 			return(null);
 		else if($rs === false || empty($rs) === true)
 			return(false);
-			
+
 		$this->_return['contextinclude'] = array();
 
 		foreach($rs as $value)

@@ -10,7 +10,7 @@ class xivo_file_csv
 	function parse($data,$length=0,$delimiter=null,$enclosure=null,$isfile=true,$arr=null)
 	{
 		$this->_length = $this->_chk_length($length);
-		
+
 		if(($delimiter = $this->_chk_delimiter($delimiter)) === false
 		|| ($enclosure = $this->_chk_enclosure($enclosure)) === false)
 			return(false);

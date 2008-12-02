@@ -3,7 +3,7 @@
 class xivo_application_service_asterisk_realstatic
 {
 	var $_service	= null;
-	
+
 	function xivo_application_service_asterisk_realstatic(&$service)
 	{
 		if(xivo_instanceof($service,'xivo_service_asterisk') === false)
@@ -46,7 +46,7 @@ class xivo_application_service_asterisk_realstatic
 			return(false);
 		else if(isset($this->_module[$name]) === true && is_object($this->_module[$name]) === true)
 			return(true);
-		
+
 		if(($class = $this->_load_module_class($name)) === false)
 		{
 			trigger_error('RealStatic Application\'s module '.$name.' does not exist',E_USER_ERROR);

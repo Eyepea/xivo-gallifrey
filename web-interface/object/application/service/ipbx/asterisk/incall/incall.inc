@@ -148,7 +148,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 			$identity = array();
 			$identity['exten'] = $ref['exten'];
 			$identity['context'] = $ref['context'];
-			
+
 			$ref['destination'] = $ref['action'];
 			$ref['identity'] = $this->_incall->mk_identity($identity);
 			$ref['commented'] = (bool) $ref['commented'];
@@ -271,7 +271,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 			return(false);
 
 		$this->set_incall($arr['incall']);
-	
+
 		$number = (string) $this->get_result_var('incall','exten');
 		$context = (string) $this->get_result_var('incall','context');
 
@@ -740,7 +740,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 		$data['dialaction'] = array();
 		$data['dialaction']['answer'] = array();
-		
+
 		if(isset($data['incall']['destination']) === true)
 			$data['dialaction']['answer']['actiontype'] = $data['incall']['destination'];
 

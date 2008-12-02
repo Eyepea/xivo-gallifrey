@@ -17,7 +17,7 @@ class xivo_datastorage_helper_abstract
 	{
 		$name = (string) $name;
 
-		$this->_param[$name] = $value;	
+		$this->_param[$name] = $value;
 
 		return(true);
 	}

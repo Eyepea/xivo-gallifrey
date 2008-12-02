@@ -115,7 +115,7 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 					}
 					else
 						$refext = array_merge($extension,$refext);
-					
+
 					$refextlist = array_merge($extension,$refextlist);
 				}
 				else if($setmime === true)
@@ -299,7 +299,7 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 		$r['defineddir'] = isset($defined_dir[$name]);
 
 		if(($r['files'] = $this->get_list($name,$getinfo,$search)) === false)
-			return($r);	
+			return($r);
 
 		$r['nb_files'] = count($r['files']);
 
@@ -315,7 +315,7 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 		if(($match_dir = $this->_get_option_dir_name()) === false
 		|| preg_match($match_dir,$name) !== 1
 		|| xivo_file::is_d_rwx($this->_sndpath) === false
-		|| xivo_file::is_d($dir) !== false) 
+		|| xivo_file::is_d($dir) !== false)
 			return(false);
 
 		return(mkdir($dir));

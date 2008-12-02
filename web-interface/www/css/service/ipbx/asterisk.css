@@ -20,7 +20,7 @@
 #s-asterisk #sr-cdr .sb-list table .cdr-infos dt {padding-right: 2px;display: inline;font-weight: bold;}
 #s-asterisk #sr-cdr .sb-list table .cdr-infos dd {display: inline;}
 #s-asterisk #sr-cdr #cal-dbeg {margin: 2px 0px 0px 220px;position: absolute;}
-#s-asterisk #sr-cdr #cal-dend {margin: 2px 0px 0px 415px;position: absolute;} 
+#s-asterisk #sr-cdr #cal-dend {margin: 2px 0px 0px 415px;position: absolute;}
 #s-asterisk #sr-queues #create-agent {margin-top: 15px;}
 #s-asterisk #sr-schedule .sb-list {width: auto;}
 #s-asterisk #sr-schedule .sb-list table {margin: 5px auto;width: 450px;}

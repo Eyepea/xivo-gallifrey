@@ -689,7 +689,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				$callgroup = implode(',',$callgroup);
 			else
 				$callgroup = '';
-			
+
 			$this->_set_result_var('protocol','callgroup',$callgroup);
 		}
 
@@ -977,7 +977,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			else
 			{
 				$rs['gfeaturesid'] = $typeid;
-				$callgroup[] = $typeid;		
+				$callgroup[] = $typeid;
 			}
 
 			$tmp[$qname] = 1;
@@ -1079,7 +1079,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$this->_set_error('phonefunckey',$errlist);
 			return(false);
 		}
-		
+
 		return(true);
 	}
 
@@ -1213,7 +1213,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		$val = array();
 		$val['setvar'] = 'XIVO_USERID='.$ufeaturesid;
-		
+
 		return($protocol->edit($protocolid,$val));
 	}
 
@@ -1253,7 +1253,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if(($rs = $this->get_result($key)) === null || $rs === false)
 			return($rs);
-		
+
 		$ret = $this->_return[$key] = array();
 
 		$nb = count($rs);
@@ -1661,7 +1661,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if(($rs = $this->get_result($key)) === null || $rs === false)
 			return($rs);
-	
+
 		$ret = $this->_return[$key] = array();
 
 		$nb = count($rs);
@@ -1739,7 +1739,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if(($rs = $this->get_result('phonefunckey')) === null || $rs === false)
 			return($rs);
-	
+
 		$context = $this->get_result_var('ufeatures','context');
 		$bsfilter = $this->get_result_var('ufeatures','bsfilter');
 
@@ -2305,7 +2305,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 			if(xivo_haslen($arr['ufeatures'],'lastname') === true)
 				$arr['protocol']['callerid'] .= $arr['ufeatures']['lastname'];
-			
+
 			trim($arr['protocol']['callerid']);
 		}
 

@@ -143,7 +143,7 @@ class xivo_application_service_asterisk_realstatic_agents_agent extends xivo_app
 
 		$this->_return[$this->_name] = array();
 		$this->_return[$this->_name]['var_metric'] = $rs['var_metric'];
-		
+
 		if(($this->_return[$this->_name]['id'] = $this->_realstatic->add($rs)) === false)
 			$this->_return[$this->_name] = false;
 

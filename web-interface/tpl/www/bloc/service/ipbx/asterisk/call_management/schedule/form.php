@@ -88,7 +88,7 @@ echo	$form->checkbox(array('desc'	=> $this->bbf('fm_schedule_publicholiday'),
 						    'default'	=> $element['schedule']['timeminend']['default'],
 						    'value'	=> $info['schedule']['timeminend']),
 						    $element['schedule']['timeminend']['value']);
-?> 
+?>
 		</td>
 	</tr>
 	<tr>

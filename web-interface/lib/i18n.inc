@@ -213,7 +213,7 @@ class xivo_i18n
 						{
 							if(isset($value[0]) === false)
 								$value[0] = false;
-						
+
 							if(isset($value[1]) === false)
 								$value[1] = false;
 						}
@@ -246,7 +246,7 @@ class xivo_i18n
 				switch($name)
 				{
 					case 'language':
-						$r = $mediator->get_language_info($value);	
+						$r = $mediator->get_language_info($value);
 						break;
 					case 'territory':
 						$r = $mediator->get_territory_info($value);
@@ -372,7 +372,7 @@ class xivo_i18n
 
 	function babelfish($name,$value=array(),$namespace='_empty_')
 	{
-		return(xivo_i18n::bfish('translate',$namespace,$value,$name));	
+		return(xivo_i18n::bfish('translate',$namespace,$value,$name));
 	}
 
 	function bfish($func,$namespace,$value,$name='')
@@ -613,7 +613,7 @@ class xivo_i18n
 
 			while(list($key) = each($ref['load']))
 				$this->_load_file($key,$ref['finfo']['namespace']);
-				
+
 			$this->_file = $_file;
 		}
 
@@ -710,7 +710,7 @@ class xivo_i18n
 							$_load[$this->_file['filename']] = 1;
 
 						$this->_copy = $_copy;
-						$this->_load = $_load; 
+						$this->_load = $_load;
 						$this->_file = $_file;
 					}
 					else if(preg_match('/^;[\t ]*([a-zA-Z0-9-_]+)(\(.*\))?$/',$line,$match) === 1)

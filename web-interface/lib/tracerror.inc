@@ -43,7 +43,7 @@ class xivo_tracerror
 			$this->_param['report_func'] = (int) $param['report_func'];
 		else
 			$this->_param['report_func'] = 1;
-		
+
 		if(isset($param['email']) === true && ($param['email'] = $this->_chk_email($param['email'])) !== false)
 			$this->_param['email'] = $param['email'];
 		else
@@ -191,7 +191,7 @@ class xivo_tracerror
 
 		if($this->_chk_report_mode($report_mode) === false)
 			$report_mode = $this->_param['report_mode'];
-		
+
 		if($report_type === XIVO_TE_RTYPE_NONE)
 			return(false);
 
@@ -201,7 +201,7 @@ class xivo_tracerror
 		{
 			return($this->display($msg,XIVO_TE_ERR_TRAC,$report_type,$context,$this->_param['report_mode']));
 		}
-		
+
 		return($this->display($msg,XIVO_TE_ERR_TRAC,XIVO_TE_RTYPE_SCREEN,$context,XIVO_TE_RMODE_DELAYED));
 	}
 
@@ -273,7 +273,7 @@ class xivo_tracerror
 
 				if(isset($this->_delayed_content[$level]) === false)
 					$this->_delayed_content[$level] = array();
-					
+
 				if($this->_sapi === 'default')
 					$this->_delayed_content[$level][] = '<tr><td style="color: '.$tocolor.'">'.$tolabel.' - '.$tocontext.'</td>'.
 									   '<td>'.$tomsg.'</td></tr>'."\n";

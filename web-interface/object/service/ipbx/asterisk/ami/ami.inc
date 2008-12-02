@@ -44,7 +44,7 @@ class xivo_service_asterisk_ami extends xivo_service_asterisk_abstract
 						   'sndtimeo',
 						   $this->_conf['socket']['sndtimeo']);
 		}
-		
+
 		if(xivo_issa('rcvtimeo',$this->_conf['socket']) === true)
 		{
 			$this->_socket->set_option(null,
@@ -82,7 +82,7 @@ class xivo_service_asterisk_ami extends xivo_service_asterisk_abstract
 
 		if(($nb = count($recv)) === 0)
 			return(false);
-		
+
 		$r = array();
 
 		for($i = 0;$i < $nb;$i++)

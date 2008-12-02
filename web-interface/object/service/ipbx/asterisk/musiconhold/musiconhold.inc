@@ -120,7 +120,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 					}
 					else
 						$refext = array_merge($extension,$refext);
-					
+
 					$refextlist = array_merge($extension,$refextlist);
 				}
 				else if($setmime === true)
@@ -377,7 +377,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		$r['nb_files'] = 0;
 
 		if(($r['files'] = $this->get_list_files($name)) === false)
-			return($r);	
+			return($r);
 
 		$r['nb_files'] = count($r['files']);
 
@@ -390,7 +390,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 
 		if(($match_dir = $this->_get_option_dir_name()) === false
 		|| preg_match($match_dir,$name) !== 1
-		|| xivo_file::is_d_rwx($this->_mohpath) === false) 
+		|| xivo_file::is_d_rwx($this->_mohpath) === false)
 			return(false);
 		else if(xivo_file::is_d($dir) === false)
 			$r = mkdir($dir);
@@ -480,7 +480,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 	{
 		if(($list = $this->_prepare_get_all_where($arr,$disable)) === false)
 			return(false);
-		
+
 		$nb = count($list);
 
 		$r = array();

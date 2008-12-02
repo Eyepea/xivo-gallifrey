@@ -132,7 +132,7 @@ class xivo_datastorage
 			return(false);
 
 		$datastorage = &xivo_gat::get('datastorage');
-	
+
 		if((bool) $load === true)
 			blop::load_extension($datastorage[$type]['extension']);
 

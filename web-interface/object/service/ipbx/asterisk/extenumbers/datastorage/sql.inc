@@ -55,7 +55,7 @@ class xivo_service_asterisk_extenumbers_sql extends xivo_service_asterisk_abstra
 		if(($this->_cnt = $this->_dso->select_count()) === false
 		|| isset($r[0]) === false)
 			$r = false;
-		
+
 		return($r);
 	}
 }

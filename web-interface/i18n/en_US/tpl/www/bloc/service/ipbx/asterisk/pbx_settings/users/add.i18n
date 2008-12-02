@@ -28,7 +28,7 @@ Codecs
 ; smenu_rightcalls
 Call permissions
 
-; fm_userfeatures_firstname 
+; fm_userfeatures_firstname
 First name:
 
 ; fm_userfeatures_lastname
@@ -125,7 +125,7 @@ Enable voicemail:
 Enable call transfer:
 
 ; fm_userfeatures_enableautomon
-Enable online call recording: 
+Enable online call recording:
 
 ; fm_userfeatures_callrecord
 Call recording:
@@ -312,7 +312,7 @@ Model:
 
 ; fm_autoprov_macaddr
 MAC Address:
- 
+
 ; col_phonefunckey-fknum
 Key
 

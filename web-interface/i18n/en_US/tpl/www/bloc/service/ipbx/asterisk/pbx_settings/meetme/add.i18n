@@ -35,7 +35,7 @@ All
 Context:
 
 ; create_context
-Create a context 
+Create a context
 
 ; fm_meetmefeatures_musiconhold
 On-Hold Music:
@@ -52,7 +52,7 @@ Recording:
 ; fm_meetmefeatures_adminmode
 Administrator mode:
 
-; fm_meetmefeatures_announceusercount 
+; fm_meetmefeatures_announceusercount
 Announce number of participants:
 
 ; fm_meetmefeatures_announcejoinleave

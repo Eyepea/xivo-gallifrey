@@ -157,7 +157,7 @@ Autorise l'appelant à enregistrer l'appel :
 ; fm_queue_announce
 Annonce au décrochage du membre :
 
-; fm_queue_context 
+; fm_queue_context
 Contexte de sortie :
 
 ; fm_queue_servicelevel
@@ -193,7 +193,7 @@ Désactivé
 ; fm_queue_wrapuptime-opt
 %s secondes
 
-; fm_queue_maxlen 
+; fm_queue_maxlen
 Nombre de personnes autorisées à attendre :
 
 ; fm_queue_announce-frequency

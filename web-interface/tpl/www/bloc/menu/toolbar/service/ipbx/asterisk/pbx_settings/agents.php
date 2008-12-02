@@ -3,7 +3,7 @@
 $form = &$this->get_module('form');
 $url = &$this->get_module('url');
 $dhtml = &$this->get_module('dhtml');
-	
+
 $act = $this->get_var('act');
 $group = $this->get_var('group');
 
@@ -52,7 +52,7 @@ endif;
 <div class="sb-advanced-menu">
 	<ul id="add-menu"
 	    onmouseover="this.style.display = 'block';"
-	    onmouseout="this.style.display = 'none';">	
+	    onmouseout="this.style.display = 'none';">
 		<li><?=$url->href_html($this->bbf('toolbar_adv_menu_add-group'),
 				       'service/ipbx/pbx_settings/agents',
 				       'act=add');?></li>
@@ -73,7 +73,7 @@ if($act === 'list'):
 <div class="sb-advanced-menu">
 	<ul id="advanced-menu"
 	    onmouseover="this.style.display = 'block';"
-	    onmouseout="this.style.display = 'none';">	
+	    onmouseout="this.style.display = 'none';">
 		<li>
 			<a href="#"
 			   onclick="xivo_fm['fm-agentgroups-list']['act'].value = 'enables';
@@ -115,7 +115,7 @@ elseif($act === 'listagent'):
 <div class="sb-advanced-menu">
 	<ul id="advanced-menu"
 	    onmouseover="this.style.display = 'block';"
-	    onmouseout="this.style.display = 'none';">	
+	    onmouseout="this.style.display = 'none';">
 		<li>
 			<a href="#"
 			   onclick="xivo_fm['fm-agents-list']['act'].value = 'enableagents';

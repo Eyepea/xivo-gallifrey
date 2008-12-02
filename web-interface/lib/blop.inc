@@ -265,7 +265,7 @@ class blop
 				if($suffix === '')
 					$suffix = 'so';
 		}
-	
+
 		if($this->_conf['xivo']['ini']['safe_mode'] === true
 		|| $this->_conf['xivo']['ini']['enable_dl'] === false)
 			define('XIVO_EXT_ENABLE',false);
@@ -323,7 +323,7 @@ class blop
 		&& ($def_tpl_path = xivo_file::is_d_r($template['tpl_path'])) === false)
 			die('ERR: Missing or invalid tpl_path for template configuration in init file');
 
-		unset($template['script_path'],$template['application_path'],$template['tpl_path']);	
+		unset($template['script_path'],$template['application_path'],$template['tpl_path']);
 
 		if(empty($template) === true)
 			die('ERR: Invalid template configuration in init file');

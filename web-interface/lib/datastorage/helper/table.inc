@@ -48,7 +48,7 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 		else if(isset($this->_forcecolumn) === true)
 			$this->_forcecolumn = $this->_mk_forcecolumn($this->_forcecolumn);
 	}
-	
+
 	function _mk_key($list,$next=false)
 	{
 		if(xivo_haslen($list) === true)
@@ -205,7 +205,7 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 		}
 
 		$this->_dso->new_select($this->_table,$column);
-	
+
 		if(isset($this->_forcecolumn) === true)
 			$arr = array_merge($arr,$this->_forcecolumn);
 
@@ -251,7 +251,7 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 
 	function chk_unique($arr,$primary=null)
 	{
-		if(isset($this->_unique) === false 
+		if(isset($this->_unique) === false
 		|| is_array($this->_unique) === false
 		|| empty($this->_unique) === true)
 			return(null);
@@ -375,7 +375,7 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 		$this->_dso->new_select($this->_table,$column);
 
 		$arr = array();
-	
+
 		if(isset($this->_forcecolumn) === true)
 			$arr = $this->_forcecolumn;
 
@@ -418,7 +418,7 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 		}
 
 		$this->_dso->new_select($this->_table,$column);
-	
+
 		if(isset($this->_forcecolumn) === true)
 			$arr = array_merge($arr,$this->_forcecolumn);
 

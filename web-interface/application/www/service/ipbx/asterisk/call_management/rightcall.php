@@ -62,7 +62,7 @@ switch($act)
 		if($rcalluser['list'] !== false && xivo_ak('rightcalluser',$result) === true)
 		{
 			$rcalluser['slt'] = xivo_array_intersect_key($result['rightcalluser'],$rcalluser['list'],'typeval');
-			
+
 			if($rcalluser['slt'] !== false)
 			{
 				$rcalluser['list'] = xivo_array_diff_key($rcalluser['list'],$rcalluser['slt']);
@@ -75,7 +75,7 @@ switch($act)
 		if($rcallgroup['list'] !== false && xivo_ak('rightcallgroup',$result) === true)
 		{
 			$rcallgroup['slt'] = xivo_array_intersect_key($result['rightcallgroup'],$rcallgroup['list'],'typeval');
-			
+
 			if($rcallgroup['slt'] !== false)
 			{
 				$rcallgroup['list'] = xivo_array_diff_key($rcallgroup['list'],$rcallgroup['slt']);
@@ -88,11 +88,11 @@ switch($act)
 		if($rcallincall['list'] !== false && xivo_ak('rightcallincall',$result) === true)
 		{
 			$rcallincall['slt'] = xivo_array_intersect_key($result['rightcallincall'],$rcallincall['list'],'typeval');
-			
+
 			if($rcallincall['slt'] !== false)
 			{
 				$rcallincall['list'] = xivo_array_diff_key($rcallincall['list'],$rcallincall['slt']);
-				
+
 				$incallsort = new xivo_sort(array('browse' => 'incall','key' => 'exten'));
 				uasort($rcallincall['slt'],array(&$incallsort,'str_usort'));
 			}
@@ -101,11 +101,11 @@ switch($act)
 		if($rcalloutcall['list'] !== false && xivo_ak('rightcalloutcall',$result) === true)
 		{
 			$rcalloutcall['slt'] = xivo_array_intersect_key($result['rightcalloutcall'],$rcalloutcall['list'],'typeval');
-			
+
 			if($rcalloutcall['slt'] !== false)
 			{
 				$rcalloutcall['list'] = xivo_array_diff_key($rcalloutcall['list'],$rcalloutcall['slt']);
-				
+
 				$outcallsort = new xivo_sort(array('browse' => 'outcall','key' => 'name'));
 				uasort($rcalloutcall['slt'],array(&$outcallsort,'str_usort'));
 			}
@@ -201,11 +201,11 @@ switch($act)
 		if($rcallgroup['list'] !== false && xivo_ak('rightcallgroup',$return) === true)
 		{
 			$rcallgroup['slt'] = xivo_array_intersect_key($return['rightcallgroup'],$rcallgroup['list'],'typeval');
-			
+
 			if($rcallgroup['slt'] !== false)
 			{
 				$rcallgroup['list'] = xivo_array_diff_key($rcallgroup['list'],$rcallgroup['slt']);
-		
+
 				$groupsort = new xivo_sort(array('browse' => 'gfeatures','key' => 'name'));
 				uasort($rcallgroup['slt'],array(&$groupsort,'str_usort'));
 			}
@@ -214,7 +214,7 @@ switch($act)
 		if($rcallincall['list'] !== false && xivo_ak('rightcallincall',$return) === true)
 		{
 			$rcallincall['slt'] = xivo_array_intersect_key($return['rightcallincall'],$rcallincall['list'],'typeval');
-			
+
 			if($rcallincall['slt'] !== false)
 			{
 				$rcallincall['list'] = xivo_array_diff_key($rcallincall['list'],$rcallincall['slt']);
@@ -227,7 +227,7 @@ switch($act)
 		if($rcalloutcall['list'] !== false && xivo_ak('rightcalloutcall',$return) === true)
 		{
 			$rcalloutcall['slt'] = xivo_array_intersect_key($return['rightcalloutcall'],$rcalloutcall['list'],'typeval');
-			
+
 			if($rcalloutcall['slt'] !== false)
 			{
 				$rcalloutcall['list'] = xivo_array_diff_key($rcalloutcall['list'],$rcalloutcall['slt']);

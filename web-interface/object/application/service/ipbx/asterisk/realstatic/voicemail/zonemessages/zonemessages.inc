@@ -283,7 +283,7 @@ class xivo_application_service_asterisk_realstatic_voicemail_zonemessages extend
 			return(true);
 
 		$msg = substr($str,$offset2+1);
-		
+
 		return($this->_chk_letter_format($msg));
 	}
 

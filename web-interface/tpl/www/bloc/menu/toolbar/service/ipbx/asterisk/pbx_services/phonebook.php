@@ -3,7 +3,7 @@
 $form = &$this->get_module('form');
 $url = &$this->get_module('url');
 $dhtml = &$this->get_module('dhtml');
-	
+
 $act = $this->get_var('act');
 
 if(($search = (string) $this->get_var('search')) === ''):
@@ -52,7 +52,7 @@ endif;
 <div class="sb-advanced-menu">
 	<ul id="add-menu"
 	    onmouseover="this.style.display = 'block';"
-	    onmouseout="this.style.display = 'none';">	
+	    onmouseout="this.style.display = 'none';">
 		<li><?=$url->href_html($this->bbf('toolbar_add_menu_add'),'service/ipbx/pbx_services/phonebook','act=add');?></li>
 		<li><?=$url->href_html($this->bbf('toolbar_add_menu_import-file'),'service/ipbx/pbx_services/phonebook','act=import');?></li>
 	</ul>

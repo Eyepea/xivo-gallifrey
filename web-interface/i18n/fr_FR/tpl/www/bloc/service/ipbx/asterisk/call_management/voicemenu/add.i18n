@@ -271,7 +271,7 @@ Ne pas jouer de beep avant l'enregistrement :
 ; fm_ipbxapplication_record-s
 Enregistrer si le canal a décroché :
 
-; fm_ipbxapplication_record-t 
+; fm_ipbxapplication_record-t
 Utiliser * au lieu de # pour indiquer la fin de l'enregistrement :
 
 ; fm_ipbxapplication_background-filename
@@ -301,7 +301,7 @@ Jouer le fichier si le canal a décroché :
 ; fm_ipbxapplication_playback-noanswer
 Ne pas décrocher le canal avant la lecture du fichier :
 
-; fm_ipbxapplication_playback-j 
+; fm_ipbxapplication_playback-j
 Utiliser la méthode n+101 :
 
 ; fm_ipbxapplication_digittimeout-timeout

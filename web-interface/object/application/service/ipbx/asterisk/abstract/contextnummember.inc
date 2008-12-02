@@ -12,7 +12,7 @@ class xivo_application_service_asterisk_contextnummember_abstract extends xivo_a
 	function xivo_application_service_asterisk_contextnummember_abstract(&$service,$param=array())
 	{
 		$this->xivo_application_service_asterisk_abstract(&$service);
-		
+
 		if(($this->_context = &$this->_service->get_module('context')) === false
 		|| ($this->_contextnumbers = &$this->_service->get_module('contextnumbers')) === false
 		|| ($this->_contextnummember = &$this->_service->get_module('contextnummember')) === false)

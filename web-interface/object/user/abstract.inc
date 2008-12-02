@@ -123,7 +123,7 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 	function load_by_authent($login,$pass,$lang='')
 	{
 		$r = false;
-		
+
 		$infos = array();
 
 		if(($type = $this->call_auth('chk',array($login,$pass))) !== false
@@ -192,7 +192,7 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 		$lang = $territo = false;
 
 		if(isset($this->_info['language']) === true)
-			$lang = $this->_info['language']; 
+			$lang = $this->_info['language'];
 
 		if(isset($this->_info['territory']) === true)
 			$territo = $this->_info['territory'];

@@ -10,7 +10,7 @@ class xivo_application_service_asterisk_extenumbers_abstract extends xivo_applic
 	function xivo_application_service_asterisk_extenumbers_abstract(&$service,$param=array())
 	{
 		$this->xivo_application_service_asterisk_abstract(&$service);
-		
+
 		if(($this->_extenumbers = &$this->_service->get_module('extenumbers')) === false)
 			return(false);
 

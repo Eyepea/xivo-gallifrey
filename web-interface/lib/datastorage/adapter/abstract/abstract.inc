@@ -24,7 +24,7 @@ class xivo_datastorage_adapter_abstract
 	{
 		$name = (string) $name;
 
-		$this->_param[$name] = $value;	
+		$this->_param[$name] = $value;
 	}
 
 	function get_param($name)
@@ -98,7 +98,7 @@ class xivo_datastorage_adapter_abstract
 
 	function escape_string($str)
 	{
-		return((string) $str);	
+		return((string) $str);
 	}
 
 	function reset_all()

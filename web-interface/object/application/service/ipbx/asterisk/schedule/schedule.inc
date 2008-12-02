@@ -116,7 +116,7 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 			$schedule['publicholiday'] = $ref['publicholiday'];
 			$schedule['commented'] = $ref['commented'];
 
-			$ref = array_merge($ref,$this->_schedule->_prepare($schedule)); 
+			$ref = array_merge($ref,$this->_schedule->_prepare($schedule));
 
 			$ref['destination'] = $ref['action'];
 			$ref['commented'] = (bool) $ref['commented'];

@@ -96,7 +96,7 @@ class xivo_application_service_asterisk_trunk_sql extends xivo_application_servi
 			$this->_dso->andjoinwhere($this->_table['trunkcustom'],
 						  $this->_table['trunkfeatures'].'.protocol = '.$this->_table['trunkcustom'].'.protocol');
 		}
-		
+
 		$this->_dso->aggregate_where();
 
 		if($use_sip === true)

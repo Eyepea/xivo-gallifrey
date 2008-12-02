@@ -329,7 +329,7 @@ Activer le T38 (RTP) :
 Activer le T38 (TCP) :
 
 ; fm_t38pt-usertpsource
-Utiliser l'adresse IP source comme destination pour le T38 : 
+Utiliser l'adresse IP source comme destination pour le T38 :
 
 ; fm_jbenable
 Activer le Jitter Buffer :

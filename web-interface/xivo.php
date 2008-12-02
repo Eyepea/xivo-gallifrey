@@ -45,7 +45,7 @@ switch($tpl_space)
 			$http->set_status(500);
 			$http->send(true);
 		}
-		break;	
+		break;
 	default:
 		xivo_die('Invalid TPL SPACE');
 }

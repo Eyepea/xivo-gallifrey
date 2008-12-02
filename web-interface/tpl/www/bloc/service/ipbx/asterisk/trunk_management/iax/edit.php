@@ -13,7 +13,7 @@ $form = &$this->get_module('form');
 <?php
 	$this->file_include('bloc/service/ipbx/asterisk/trunk_management/iax/submenu');
 ?>
-	
+
 	<div class="sb-content">
 		<form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-codec');">
 <?php

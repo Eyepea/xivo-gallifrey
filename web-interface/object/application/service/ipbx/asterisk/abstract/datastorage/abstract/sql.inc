@@ -17,7 +17,7 @@ class xivo_application_service_asterisk_abstract_sql extends xivo_datastorage_he
 
 		$this->_dsoconf = &$dsoconf;
 
-		$this->_set_table();	
+		$this->_set_table();
 	}
 
 	function _set_table()
@@ -33,7 +33,7 @@ class xivo_application_service_asterisk_abstract_sql extends xivo_datastorage_he
 			if($this->_get_table($key) === false)
 				trigger_error('Invalid or missing Datastorage table '.$key,E_USER_ERROR);
 		}
-		
+
 		return(true);
 	}
 

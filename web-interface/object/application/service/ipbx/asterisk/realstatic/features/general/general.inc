@@ -85,7 +85,7 @@ class xivo_application_service_asterisk_realstatic_features_general extends xivo
 
 	function set($arr)
 	{
-		parent::set($arr); 
+		parent::set($arr);
 
 		if(is_array($arr) === false || isset($arr['var_name']) === false)
 			return(false);

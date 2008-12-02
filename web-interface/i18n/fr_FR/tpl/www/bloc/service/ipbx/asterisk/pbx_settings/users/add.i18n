@@ -31,7 +31,7 @@ Droits d'appels
 ; smenu_t38
 T38
 
-; fm_userfeatures_firstname 
+; fm_userfeatures_firstname
 Prénom :
 
 ; fm_userfeatures_lastname
@@ -656,7 +656,7 @@ Désactivé
 %s
 
 ; fm_protocol_adsi
-Activer le support de l'ADSI : 
+Activer le support de l'ADSI :
 
 ; fm_protocol_amaflags
 Drapeau de facturation :
@@ -689,4 +689,4 @@ Activer le T38 (RTP) :
 Activer le T38 (TCP) :
 
 ; fm_protocol_t38pt-usertpsource
-Utiliser l'adresse IP source comme destination pour le T38 : 
+Utiliser l'adresse IP source comme destination pour le T38 :

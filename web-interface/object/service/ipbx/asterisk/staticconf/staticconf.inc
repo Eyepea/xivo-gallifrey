@@ -231,7 +231,7 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 		if(empty($arr) === true)
 			return(false);
 
-		foreach($arr as $key => $val)	
+		foreach($arr as $key => $val)
 		{
 			$where['var_name'] = $key;
 
@@ -292,7 +292,7 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 	function replace_val_by_name($name,$val)
 	{
 		$arr = array('var_val' => $val);
-	
+
 		return($this->replace_by_name($name,$arr));
 	}
 
@@ -411,7 +411,7 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 	{
 		if(($list = $this->_prepare_get_all_where($arr,$disable)) === false)
 			return(false);
-		
+
 		$nb = count($list);
 
 		$r = array();

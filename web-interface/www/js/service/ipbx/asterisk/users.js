@@ -486,7 +486,7 @@ function xivo_ast_chg_user_protocol(protocol)
 {
 	if(xivo_is_undef(xivo_ast_user_protocol_elt[protocol]) === true)
 		return(false);
-	
+
 	xivo_ast_user_protocol = protocol;
 
 	if(xivo_is_undef(xivo_ast_fm_users[xivo_ast_user_protocol]) === true)
@@ -537,7 +537,7 @@ function xivo_ast_user_ingroup()
 function xivo_ast_user_outgroup()
 {
 	xivo_fm_move_selected('it-group','it-grouplist');
-	
+
 	if((grouplist = xivo_eid('it-grouplist')) === false || (len = grouplist.length) < 1)
 		return(false);
 

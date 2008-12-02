@@ -50,7 +50,7 @@ endif;
 <div class="sb-advanced-menu">
 	<ul id="add-menu"
 	    onmouseover="this.style.display = 'block';"
-	    onmouseout="this.style.display = 'none';">	
+	    onmouseout="this.style.display = 'none';">
 		<li><?=$url->href_html($this->bbf('toolbar_adv_menu_add-category'),
 				       'service/ipbx/pbx_services/musiconhold',
 				       'act=add');?></li>

@@ -170,7 +170,7 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 
 			if(isset($orig[$key]) === true)
 				return($orig[$key]);
-			
+
 			return(false);
 		}
 		else if($type !== 'add' && $this->_dso->is_multi_primary() === true)

@@ -22,7 +22,7 @@ class xivo_service_asterisk_usercustom extends xivo_service_asterisk_abstract
 
 		$this->_load_config();
 	}
-	
+
 	function _prepare($data)
 	{
 		$data['initialized'] = true;

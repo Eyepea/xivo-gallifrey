@@ -33,7 +33,7 @@ class xivo_acl_abstract
 		$pathlist = array_values((array) $pathlist);
 
 		$nb = count($pathlist);
-		
+
 		for($i = 0;$i < $nb;$i++)
 		{
 			if(($arr_path = $this->_chk_path($pathlist[$i],$this->_acl_tree)) === false)
@@ -86,7 +86,7 @@ class xivo_acl_abstract
 
 			$tree[$k]['name'] = $k;
 			$tree[$k]['id'] = ($id !== '' ? $id.'-' : '').$k;
-			$tree[$k]['path'] = ($path !== '' ? $path.'/' : '').$k; 
+			$tree[$k]['path'] = ($path !== '' ? $path.'/' : '').$k;
 			$tree[$k]['level'] = $level;
 
 			if($parent !== false)
@@ -158,7 +158,7 @@ class xivo_acl_abstract
 
 		if(xivo_ak($k,$grp,true) !== false)
 			return(true);
-			
+
 		return(false);
 	}
 

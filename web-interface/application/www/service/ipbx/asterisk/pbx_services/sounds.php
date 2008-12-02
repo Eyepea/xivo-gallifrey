@@ -209,7 +209,7 @@ switch($act)
 			$total = count($dirs);
 			xivo::load_class('xivo_sort');
 			$sort = new xivo_sort(array('key' => 'name'));
-			usort($dirs,array(&$sort,'str_usort'));	
+			usort($dirs,array(&$sort,'str_usort'));
 		}
 
 		$_HTML->set_var('pager',xivo_calc_page($page,20,$total));

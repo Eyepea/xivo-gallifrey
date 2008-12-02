@@ -18,7 +18,7 @@ ob_start();
 
 echo	'"',str_replace('"','""',$this->bbf('fm_dbeg')),'";',
 	'"',str_replace('"','""',$info['dbeg']),'"',"\n";
-	
+
 if($info['dend'] !== '')
 {
 	echo	'"',str_replace('"','""',$this->bbf('fm_dend')),'";',
@@ -123,7 +123,7 @@ echo	'"',str_replace('"','""',$this->bbf('col_calldate')),'";',
 
 for($i = 0;$i < $nb;$i++)
 {
-	$ref = &$result[$i];	
+	$ref = &$result[$i];
 
 	if($ref['channel'] === XIVO_SRE_IPBX_AST_CHAN_UNKNOWN)
 		$ref['channel'] = $this->bbf('entry_channel-unknown');

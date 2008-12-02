@@ -310,9 +310,9 @@ $array['module']['voicemenu'] = array();
 $array['module']['voicemenu']['datastorage'] = true;
 
 $array['protocol'] = array();
-$array['protocol'][XIVO_SRE_IPBX_AST_PROTO_SIP] = array('module' => 'usersip'); 
-$array['protocol'][XIVO_SRE_IPBX_AST_PROTO_IAX] = array('module' => 'useriax'); 
-$array['protocol'][XIVO_SRE_IPBX_AST_PROTO_CUSTOM] = array('module' => 'usercustom'); 
+$array['protocol'][XIVO_SRE_IPBX_AST_PROTO_SIP] = array('module' => 'usersip');
+$array['protocol'][XIVO_SRE_IPBX_AST_PROTO_IAX] = array('module' => 'useriax');
+$array['protocol'][XIVO_SRE_IPBX_AST_PROTO_CUSTOM] = array('module' => 'usercustom');
 
 $array['channel'] = array();
 $array['channel']['sip'] = XIVO_SRE_IPBX_AST_CHAN_SIP;

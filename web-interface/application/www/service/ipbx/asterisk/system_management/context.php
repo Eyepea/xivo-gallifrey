@@ -57,7 +57,7 @@ switch($act)
 			}
 			else
 				unset($_QR['contextnumbers']);
-				
+
 			if($appcontext->set_add($_QR) === false
 			|| $appcontext->add() === false)
 			{
@@ -77,7 +77,7 @@ switch($act)
 			$contextinc['slt'] = xivo_array_intersect_key($result['contextinclude'],
 								      $contextinc['list'],
 								      'include');
-			
+
 			if($contextinc['slt'] !== false)
 				$contextinc['list'] = xivo_array_diff_key($contextinc['list'],$contextinc['slt']);
 		}
@@ -168,7 +168,7 @@ switch($act)
 			$contextinc['slt'] = xivo_array_intersect_key($return['contextinclude'],
 								      $contextinc['list'],
 								      'include');
-			
+
 			if($contextinc['slt'] !== false)
 				$contextinc['list'] = xivo_array_diff_key($contextinc['list'],$contextinc['slt']);
 		}

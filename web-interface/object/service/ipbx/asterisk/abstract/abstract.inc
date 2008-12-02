@@ -46,7 +46,7 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 			case 'busy':
 			case 'congestion':
 				$r['action'] = $action;
-				
+
 				if(($actionarg1 = xivo_ufloat($actionarg1)) !== 0)
 					$r['actionarg1'] = $actionarg1;
 				return($r);
@@ -181,7 +181,7 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 					$disable,
 					$chknumber,
 					$chkcontext,
-					$context));	
+					$context));
 	}
 
 	function chk_dest_group($actionarg1,$actionarg2='',$id=null,$disable=null,$chknumber=false,$chkcontext=false,$context=null)

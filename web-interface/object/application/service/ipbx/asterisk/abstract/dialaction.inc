@@ -11,7 +11,7 @@ class xivo_application_service_asterisk_dialaction_abstract extends xivo_applica
 	function xivo_application_service_asterisk_dialaction_abstract(&$service,$param=array())
 	{
 		$this->xivo_application_service_asterisk_abstract(&$service);
-		
+
 		if(($this->_dialaction = &$this->_service->get_module('dialaction')) === false)
 			return(false);
 

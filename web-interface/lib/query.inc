@@ -53,7 +53,7 @@ class xivo_query
 	function &query_string($type='request',$mode=0)
 	{
 		$r = array();
-		
+
 		$type = (string) $type;
 		$mode = xivo_uint($mode);
 
@@ -136,7 +136,7 @@ class xivo_query
 	{
 		if(isset($this->uraw[$name]) === true)
 			return($this->uraw[$name]);
-	
+
 		if(isset($this->_orig['request'][$name]) === false)
 			return(null);
 
@@ -344,7 +344,7 @@ class xivo_query
 
 		if($match[0][1] > 0)
 			$r = substr($str,0,$match[0][1]);
-		
+
 		for($i = 0;$i < $nb;$i++)
 		{
 			$r .= urlencode($match[$i][0]);

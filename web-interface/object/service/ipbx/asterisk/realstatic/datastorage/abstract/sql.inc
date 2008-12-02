@@ -5,7 +5,7 @@ xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.i
 class xivo_service_asterisk_realstatic_abstract_sql extends xivo_service_asterisk_abstract_sql
 {
 	var $_forcecolumn	= array();
- 
+
 	function get_all_by_var_metric($id,$disable=null)
 	{
 		if(($id = xivo_ulongint($id)) === 0)

@@ -210,7 +210,7 @@ class xivo_tpl
 
 			return($this->_var[$name][$keys]);
 		}
-		
+
 		$keys = array_values((array) $keys);
 
 		if(xivo_issa($name,$this->_var) === false || ($nb = count($keys)) === 0)
@@ -245,14 +245,14 @@ class xivo_tpl
 			$this->_file[$name][] = $value;
 		else
 			$this->_file[$name] = array($this->_file[$name],$value);
-	
+
 		return(true);
 	}
 
 	function get_file($name)
 	{
 		$name = (string) $name;
-	
+
 		if(isset($this->_file[$name]) === false)
 			return(null);
 		else if(is_array($this->_file[$name]) === true)
@@ -359,13 +359,13 @@ class xivo_tpl
 
 		if(xivo_file::is_f_r($path) === false)
 			return(false);
-		
+
 		$this->set_file('display',$path);
 
 		$this->load_i18n_file($page);
 
 		unset($page,$path);
-	
+
 		if($this->get_option('overload_i18n') === true)
 		{
 			ob_start();
@@ -384,7 +384,7 @@ class xivo_tpl
 		}
 
 		ob_start();
-		
+
 		if(xivo_file::is_f_r($this->get_option('tpl_path').XIVO_SEP_DIR.'prepend.'.$ext) !== false)
 			include($this->get_option('tpl_path').XIVO_SEP_DIR.'prepend.'.$ext);
 
@@ -495,7 +495,7 @@ class xivo_tpl
 		$this->set_option('api_section_info',$section);
 
 		$dir = XIVO_SEP_DIR.trim($section.XIVO_SEP_DIR.$path,XIVO_SEP_DIR).'.'.$ext;
-		
+
 		return(xivo_file::is_f_r($this->get_option('application_path').$dir));
 	}
 }

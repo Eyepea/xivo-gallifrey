@@ -86,7 +86,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		if(($val{0} === '\'' && $lastchar === '\'') === true
 		|| ($val{0} === '"' && $lastchar === '"') === true)
 			return(true);
-		
+
 		return(false);
 	}
 
@@ -257,7 +257,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		if(isset($this->_jointype[$keytype]) === false)
 			$this->_jointype[$keytype] = array();
 
-		$this->_jointype[$keytype][$table] = 1;	
+		$this->_jointype[$keytype][$table] = 1;
 
 		return($this->_mk_column($table,$column));
 	}
@@ -846,7 +846,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 	{
 		$column = trim($column);
 		$table = trim($table);
-	
+
 		if($column === '')
 			return(false);
 		else if($table === '')
@@ -917,7 +917,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		$beg = trim($beg);
 		$end = trim($end);
 		$table = trim($table);
-	
+
 		if(isset($beg{0},$end{0}) === false)
 			return(false);
 		else if($table === '')
@@ -1270,7 +1270,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		if($ref === '')
 			$ref = $time;
 		else
-			$ref .= ((bool) $and === true ? ' AND ' : ' OR ').$time; 
+			$ref .= ((bool) $and === true ? ' AND ' : ' OR ').$time;
 
 		return(true);
 	}
@@ -1289,7 +1289,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 			$r = $expr_dbeg.' = '.$this->escape($dbeg);
 		else
 			$r = $expr_dbeg.' BETWEEN '.$this->escape($dbeg).' AND '.$this->escape($dend);
-		
+
 		return($r);
 	}
 

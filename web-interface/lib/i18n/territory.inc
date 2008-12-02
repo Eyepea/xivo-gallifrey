@@ -17,7 +17,7 @@ class xivo_i18n_territory
 	{
 		$name = (string) $name;
 
-		$this->_attrib[$name] = $value;	
+		$this->_attrib[$name] = $value;
 	}
 
 	function get_attrib($name)
@@ -62,14 +62,14 @@ class xivo_i18n_territory
 
 		return(key($this->_conf[$territo]['tz']));
 	}
-	
+
 	function get_timezone_list($territo)
 	{
 		if(($territo = $this->is_valid($territo)) === false
 		|| xivo_issa('tz',$this->_conf[$territo]) === false)
 			return(false);
 
-		return($this->_conf[$territo]['tz']);	
+		return($this->_conf[$territo]['tz']);
 	}
 
 	function exists_default($territo)
@@ -77,7 +77,7 @@ class xivo_i18n_territory
 		if(($territo = $this->is_valid($territo)) === false)
 			return(false);
 
-		return(xivo_ak('default',$this->_conf[$territo],true));	
+		return(xivo_ak('default',$this->_conf[$territo],true));
 	}
 
 	function get_list()

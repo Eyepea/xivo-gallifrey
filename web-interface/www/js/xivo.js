@@ -103,7 +103,7 @@ function xivo_etag(tag,obj,nb)
 
 	if(xivo_is_undef(obj.getElementsByTagName(tag)[nb]) == true)
 		return(false);
-		
+
 	return(obj.getElementsByTagName(tag)[nb]);
 }
 
@@ -113,7 +113,7 @@ function xivo_ename(name,obj,nb)
 		return(false);
 	else if(xivo_is_undef(obj) == true)
 		obj = document;
-	
+
 	if(xivo_is_object(obj) == false
 	|| xivo_is_undef(obj.getElementsByName) == true)
 		return(false);
@@ -124,7 +124,7 @@ function xivo_ename(name,obj,nb)
 
 	if(xivo_is_undef(obj.getElementsByName(name)[nb]) == true)
 		return(false);
-		
+
 	return(obj.getElementsByName(name)[nb]);
 }
 
@@ -209,7 +209,7 @@ function xivo_trunc(str,nb,end,chr)
 	nb = Number(nb);
 	end = String(end);
 	chr = chr === null || xivo_is_undef(chr) === true ? ' ' : String(chr);
-	
+
 	if(nb < 1 || nb > r.length || (sub = xivo_substr(r,0,nb)) === '')
 		return(r);
 
@@ -536,7 +536,7 @@ function xivo_chk_host(value)
 	|| value.length < 4
 	|| value.length > 255)
 		return(false);
-	
+
 	if(value.match(/^[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,4}$/i) === null)
 		return(false);
 
@@ -619,7 +619,7 @@ function xivo_strcasecmp(str1,str2,len)
 
 	str1 = str1.toString().toLowerCase();
 	str2 = str2.toString().toLowerCase();
- 
+
 	if(xivo_is_uint(len) === true)
 		str1 = str1.substring(0,len);
 

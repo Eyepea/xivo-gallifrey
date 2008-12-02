@@ -138,7 +138,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 			return(false);
 
 		$this->set_outcall($arr['outcall']);
-	
+
 		$number = (string) $this->get_result_var('outcall','exten');
 		$context = (string) $this->get_result_var('outcall','context');
 

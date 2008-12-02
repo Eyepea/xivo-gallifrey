@@ -323,7 +323,7 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 		if(empty($arr) === true)
 			return(false);
 
-		foreach($arr as $key => $val)	
+		foreach($arr as $key => $val)
 		{
 			$where['var_name'] = $key;
 
@@ -451,7 +451,7 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 	{
 		if(($list = $this->_prepare_get_all_where($arr,$disable)) === false)
 			return(false);
-		
+
 		$nb = count($list);
 
 		$r = array();
@@ -480,7 +480,7 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 							  true,
 							  array('id' => SORT_ASC))) === false)
 			return(false);
-		
+
 		$nb = count($list);
 
 		$r = array();

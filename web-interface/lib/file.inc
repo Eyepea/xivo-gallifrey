@@ -49,7 +49,7 @@ class xivo_file
 			return(false);
 
 		$pinfo = pathinfo($file);
-		
+
 		$info = array();
 		$info['path'] = $file;
 		$info['dir'] = $pinfo['dirname'];
@@ -216,7 +216,7 @@ class xivo_file
 				return(false);
 
 			$ext = strtolower(substr($this->info['name'],$pos + 1));
-			
+
 			if(isset($param['extension'][0]) === true)
 			{
 				if(in_array($ext,$param['extension']) === false)
@@ -253,7 +253,7 @@ class xivo_file
 			trigger_error('memory_limit php.ini directive shoud be less than post_max_size php.ini directive',E_USER_ERROR);
 
 		$r = false;
-	
+
 		switch($_FILES[$name]['error'])
 		{
 			case UPLOAD_ERR_OK:
@@ -287,7 +287,7 @@ class xivo_file
 	function load_file($file,$dir='',$once=false,$verif=true)
 	{
 		$path = '';
-		
+
 		if(preg_match('/^[a-z0-9\-_.]+$/i',$file) !== 1)
 			return(false);
 		else if(is_array($dir) === true)
@@ -486,7 +486,7 @@ class xivo_file
 		if(xivo_file::is_wx($file) === true)
 			return(xivo_file::is_f($file,$mode));
 
-		return(false);	
+		return(false);
 	}
 
 	function is_f_rwx($file,$mode=1)
@@ -494,7 +494,7 @@ class xivo_file
 		if(xivo_file::is_rwx($file) === true)
 			return(xivo_file::is_f($file,$mode));
 
-		return(false);	
+		return(false);
 	}
 
 	function is_d($dir,$dirname=false,$mode=1)
@@ -608,7 +608,7 @@ class xivo_file
 			return(false);
 
 		$dir = dirname($filename);
-		
+
 		if(xivo_file::is_d_rwx($dir) === false)
 			return(false);
 		else if(($flags & FILE_APPEND) !== 0)

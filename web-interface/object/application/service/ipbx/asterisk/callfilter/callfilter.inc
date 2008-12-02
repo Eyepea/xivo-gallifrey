@@ -85,7 +85,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 	{
 		$this->_info['callfilteruser'] = false;
 		$this->_origin['callfilteruser'] = false;
-		
+
 		if(($rs = $this->_dso->get_all_callfiltermember_user($this->_param['type'],
 								     $this->_info['callfilter']['id'])) === false
 		|| ($nb = $this->_dso->get_cnt()) === 0)
@@ -202,7 +202,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 			$rs[$i] = $this->_userfeatures->_prepare($rs[$i]);
 
 		return($rs);
-	}	
+	}
 
 	function get_secretary_users($disable=null,$assoc=false)
 	{
@@ -324,7 +324,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 			return(false);
 
 		$this->set_callfilter($arr['callfilter']);
-	
+
 		switch($this->_param['type'])
 		{
 			case 'bosssecretary':
@@ -428,7 +428,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 		}
 
 		$info['typeval'] = $boss['id'];
-		
+
 		if(isset($list['boss']['ringseconds']) === true)
 			$info['ringseconds'] = $list['boss']['ringseconds'];
 
@@ -551,7 +551,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 
 		$this->_return['callfiltermember'] = array();
 
-		$where = array(); 
+		$where = array();
 		$where['type'] = $rs['boss']['type'];
 		$where['typeval'] = $rs['boss']['typeval'];
 		$where['bstype'] = $rs['boss']['bstype'];
@@ -686,7 +686,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 
 		$this->_return['callfiltermember'] = array();
 
-		$where = array(); 
+		$where = array();
 		$where['type'] = $rs['boss']['type'];
 		$where['typeval'] = $rs['boss']['typeval'];
 		$where['bstype'] = $rs['boss']['bstype'];
@@ -726,7 +726,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 				if($secretary[$k]['type'] === $ref['type']
 				&& (string) $secretary[$k]['typeval'] === (string) $ref['typeval'])
 				{
-					$ref['active'] = $secretary[$k]['active'];	
+					$ref['active'] = $secretary[$k]['active'];
 					$cid = $secretary[$k]['id'];
 				}
 			}

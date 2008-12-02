@@ -46,7 +46,7 @@ class xivo_tpl_form extends xivo_tpl_module
 
 		if(isset($v['name']) === true)
 			$this->_param['name'] = xivo_htmlsc($v['name']);
-			
+
 		if(isset($v['type']) === true)
 			$this->_param['type'] = (string) $v['type'];
 
@@ -97,7 +97,7 @@ class xivo_tpl_form extends xivo_tpl_module
 			$ref_ogrp = &$v['optgroup'];
 
 			$this->_param['optgroup'] = array();
-			
+
 			if(isset($ref_ogrp['key']) === true)
 				$this->_param['optgroup']['key'] = $ref_ogrp['key'];
 			else
@@ -629,7 +629,7 @@ class xivo_tpl_form extends xivo_tpl_module
 			$this->_render = '<span class="fm-desc clearboth">'.
 					 $this->_mk_label((string) $this->_param['desc']).
 					 '</span>'.
-					 $this->_render;	
+					 $this->_render;
 			$this->_param['label'] = false;
 			return(null);
 		}
@@ -734,7 +734,7 @@ class xivo_tpl_form extends xivo_tpl_module
 		if(is_bool($key) === false
 		&& is_array($arr) === true
 		&& isset($arr[$key]) === true
-		&& is_scalar($arr[$key]) === true)		
+		&& is_scalar($arr[$key]) === true)
 			return(true);
 
 		return(false);

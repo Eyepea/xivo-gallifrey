@@ -46,7 +46,7 @@ class xivo_service_asterisk_dialaction extends xivo_service_asterisk_abstract
 		$data['custom'] = $arr;
 
 		$exp = explode(':',$data['action'],2);
-		
+
 		if(isset($data[$exp[0]]) === true)
 		{
 			if(isset($exp[1]) === false)
@@ -104,7 +104,7 @@ class xivo_service_asterisk_dialaction extends xivo_service_asterisk_abstract
 		else if(isset($arr['action']) === true
 		&& $arr['action'] === 'none')
 			$arr['actionarg1'] = $arr['actionarg2'] = '';
-		
+
 		if(is_array($id) === true && isset($id['event']) === true)
 			$id['event'] = strval($id['event']);
 

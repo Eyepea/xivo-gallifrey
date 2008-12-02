@@ -42,7 +42,7 @@ class xivo_application_service_asterisk_phonebook_sql extends xivo_application_s
 		$this->_dso->new_group('id',$this->_table['phonebook']);
 		$this->_dso->new_order($order,null,$this->_table['phonebook']);
 		$this->_dso->limit($limit);
-	
+
 		$r = $this->_dso->select_all();
 
 		$this->_dso->reset_group();

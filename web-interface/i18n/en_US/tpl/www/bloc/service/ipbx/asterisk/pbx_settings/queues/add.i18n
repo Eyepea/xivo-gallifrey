@@ -142,7 +142,7 @@ On-Hold Music:
 ; fm_queue_announce
 Announce when a member picks up the call:
 
-; fm_queue_context 
+; fm_queue_context
 Exit context:
 
 ; fm_queue_servicelevel
@@ -178,7 +178,7 @@ Disabled
 ; fm_queue_wrapuptime-opt
 %s seconds
 
-; fm_queue_maxlen 
+; fm_queue_maxlen
 Maximum number of people allowed to wait:
 
 ; fm_queue_announce-frequency

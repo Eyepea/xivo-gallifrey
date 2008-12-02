@@ -213,7 +213,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 
 		return(LDAP_SCOPE_SUBTREE);
 	}
-	
+
 	function set_debug($debug=0)
 	{
 		$this->_debug = xivo_uint($debug);
@@ -283,7 +283,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 
 		return(false);
 	}
-	
+
 	function search($basedn,$scope=LDAP_SCOPE_SUBTREE,$filter='',$attrib='',$attrsonly=0,$sizelimit=0,$timelimit=0,$deref=0)
 	{
 		$scope = $this->_set_scope($scope);
@@ -419,7 +419,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 			if(is_array($val) === true
 			&& $this->clean_result($val,false,true) === false)
 				unset($result[$key]);
-			else if(is_int($key) === true 
+			else if(is_int($key) === true
 			&& xivo_issa($val,$result) === true)
 				unset($result[$key]);
 			else if($recursive === false && is_int($key) === true)
@@ -455,7 +455,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 	function close()
 	{
 		$r = null;
-	
+
 		if(is_resource($this->_link) === true)
 			$r = ldap_close($this->_link);
 
@@ -667,7 +667,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 			else
 				$r .= $this->_where;
 		}
-		
+
 		if($r === '')
 			$r = null;
 
@@ -790,7 +790,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 		}
 		else
 			$this->_aggwherelast = $this->_where;
-			
+
 		$this->_where = '';
 	}
 
@@ -1075,7 +1075,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 				&& is_array($ref[$key]) === true
 				&& isset($ref[$key][0]) === true)
 					$rs[$key][$i] = &$ref[$key][0];
-				else 
+				else
 					$rs[$key][$i] = '';
 			}
 		}

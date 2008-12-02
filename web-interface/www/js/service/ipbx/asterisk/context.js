@@ -9,7 +9,7 @@ function xivo_context_entity_enable_add(type,table)
 	return(xivo_table_list('contextnumbers-'+type,table));
 }
 
-function xivo_context_entity_status(form,disable) 
+function xivo_context_entity_status(form,disable)
 {
 	var arr = new Array();
 	arr['user'] = new Array('numberbeg','numberend');

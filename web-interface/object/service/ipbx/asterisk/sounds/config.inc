@@ -33,7 +33,7 @@ $array['option']['file']['extension'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_MP3] = true
 
 $array['filter'] = array();
 $array['filter']['filename'] = array('regexp' => '/^['.XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_PATTERN.']'.
-						 XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_LENGTH.'\.[a-zA-Z0-9]{2,5}$/','minlen' => 4,'maxlen' => 56); 
-$array['filter']['dirname'] = array('regexp' => '/^[a-z0-9_-]+$/i','minlen' => 1,'maxlen' => 50); 
+						 XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_LENGTH.'\.[a-zA-Z0-9]{2,5}$/','minlen' => 4,'maxlen' => 56);
+$array['filter']['dirname'] = array('regexp' => '/^[a-z0-9_-]+$/i','minlen' => 1,'maxlen' => 50);
 
 ?>

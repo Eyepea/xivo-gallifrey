@@ -101,7 +101,7 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			$where['name'] = $ref[$i]['queue_name'];			
+			$where['name'] = $ref[$i]['queue_name'];
 
 			if(($id = $qfeatures->get_primary($where)) !== false)
 				$ref[$i]['qfeaturesid'] = $id;
@@ -134,7 +134,7 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 			$this->_cnt = $this->_agentgroup->get_cnt();
 			return(false);
 		}
-		
+
 		$this->_cnt = $this->_agentgroup->get_cnt();
 
 		$agentfeatures = &$this->_service->get_module('agentfeatures');

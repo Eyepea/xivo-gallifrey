@@ -63,7 +63,7 @@ class xivo_accesswebservice extends xivo_libdatastorage_abstract
 			$id = $this->chk_user_access($_SERVER['PHP_AUTH_USER'],
 						     $_SERVER['PHP_AUTH_PW'],
 						     $host);
-		else 
+		else
 			$id = $this->chk_host_access($host);
 
 		if($id === false)

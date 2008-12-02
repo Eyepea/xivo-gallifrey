@@ -206,7 +206,7 @@ Disabled
 RTP Keepalive:
 
 ; fm_rtpkeepalive-opt0
-Disabled 
+Disabled
 
 ; fm_rtpkeepalive-opt
 %s seconds

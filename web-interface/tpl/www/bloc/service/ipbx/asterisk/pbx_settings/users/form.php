@@ -58,7 +58,7 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 			    'onchange="xivo_ast_chg_user_name();"
 			     onfocus="xivo_ast_cpy_user_name(); xivo_fm_set_onfocus(this);"
 			     onblur="xivo_ast_chg_user_name(); xivo_fm_set_onblur(this);"'),
-		
+
 		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_lastname'),
 				  'name'	=> 'ufeatures[lastname]',
 				  'labelid'	=> 'ufeatures-lastname',

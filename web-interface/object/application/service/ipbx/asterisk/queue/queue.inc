@@ -292,7 +292,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 		if(xivo_issa('callerid',$arr) === true)
 			$this->set_callerid($arr['callerid']);
-	
+
 		return(($this->get_errnb() < 1));
 	}
 
@@ -506,7 +506,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 				if($interface === false)
 					continue;
-					
+
 				$info['interface'] = $interface['interface'];
 				$info['channel'] = $interface['channel'];
 			}

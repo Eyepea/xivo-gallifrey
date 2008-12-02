@@ -379,7 +379,7 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 				$this->_return[$this->_name] = false;
 			else
 				$this->_return[$this->_name] = $rs['var_name'];
-				
+
 			return($r);
 		}
 		else if(is_array($rs) === false || isset($rs[0],$rs[0]['var_name']) === false)
@@ -518,7 +518,7 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 
 		if(is_array($origin) === false)
 			return(false);
-			
+
 		return($this->_realstatic->add_origin($origin));
 	}
 
@@ -530,7 +530,7 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 
 		if(is_array($origin) === false)
 			return(false);
-			
+
 		return($this->_realstatic->edit_origin($origin));
 	}
 

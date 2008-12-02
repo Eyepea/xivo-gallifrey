@@ -195,10 +195,10 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 
 		if(isset($arr['commented']) === true)
 			$r['commented'] = $arr['commented'];
-		
+
 		if(isset($arr['priority']) === true)
 			$r['priority'] = xivo_uint($arr['priority']);
-		
+
 		return($this->chk_values($r,true,false,false));
 	}
 
@@ -564,7 +564,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 				$r[$ref['name']]['commented'] = $ref['commented'];
 				$r[$ref['name']]['line'] = array();
 			}
-		
+
 			$r[$ref['name']]['line'][$ref['priority']] = $ref;
 		}
 

@@ -34,7 +34,7 @@ function xivo_calendar_calc(d)
 	for(i = 0;i < 42;i++)
 	{
 		d.setDate(dateb + i);
-		
+
 		r['cal'][i] = new Array();
 
 		r['cal'][i]['year'] = d.getFullYear();
@@ -55,7 +55,7 @@ function xivo_calendar_html(disid,inid,str)
 {
 	if(xivo_is_undef(xivo_date_month) == true
 	|| xivo_is_undef(xivo_date_day) == true
-	|| xivo_is_array(xivo_date_month) == false 
+	|| xivo_is_array(xivo_date_month) == false
 	|| xivo_is_array(xivo_date_day) == false
 	|| xivo_eid(disid) == false
 	|| xivo_eid(inid) == false)
@@ -125,7 +125,7 @@ function xivo_calendar_html(disid,inid,str)
 	var valnext = next.getFullYear()+'-'+xivo_leadzero(next.getMonth()+1);
 
 	var onclick = 'xivo_calendar_prevnext(\''+disid+'\',\''+inid+'\',\''+valprev+'\'); return(false);';
-	
+
 	r += '<span class="cal-prev"><a href="#" onclick="'+onclick+'">&laquo;<\/a><\/span>';
 
 	onclick = 'xivo_calendar_select(\''+disid+'\',\''+inid+'\',\''+arr['slt']['year']+'-'+xivo_leadzero(arr['slt']['realmonth'])+'\');';

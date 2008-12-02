@@ -52,7 +52,7 @@ class xivo_user
 
 		if($ini === null && ($ini = xivo::load_init($path)) === false)
 			trigger_error('User init file not found or unreadable',E_USER_ERROR);
-		
+
 		return(($ref = &$ini));
 	}
 

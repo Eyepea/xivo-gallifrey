@@ -146,7 +146,7 @@ class xivo_application_service_asterisk_callfilter_sql extends xivo_application_
 		$this->_dso->new_select($this->_table['userfeatures']);
 		$this->_dso->leftjoin($this->_table['callfiltermember'],
 				      $this->_table['userfeatures'].'.id = '.$this->_table['callfiltermember'].'.typeval');
-		
+
 		$this->_dso->where(array('bsfilter' => 'boss','internal' => 0));
 		$this->_dso->joinwhere($this->_table['callfiltermember'],array('bstype' => 'boss','type' => 'user'));
 		$this->_dso->andwherenot('IFNULL('.$this->_table['userfeatures'].'.number,\'\') = \'\'');

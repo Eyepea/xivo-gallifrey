@@ -114,7 +114,7 @@ class xivo_application_service_asterisk_serverfeatures extends xivo_application_
 			return(null);
 
 		$info = $this->_param;
-		
+
 		$tmp = array();
 
 		for($i = $j = $k = 0;$i < $nb;$i++)

@@ -17,7 +17,7 @@ class xivo_i18n_language
 	{
 		$name = (string) $name;
 
-		$this->_attrib[$name] = $value;	
+		$this->_attrib[$name] = $value;
 	}
 
 	function get_attrib($name)
@@ -64,7 +64,7 @@ class xivo_i18n_language
 		if(($lang = $this->is_valid($lang)) === false)
 			return(false);
 
-		return(xivo_ak('default',$this->_conf[$lang],true));	
+		return(xivo_ak('default',$this->_conf[$lang],true));
 	}
 
 	function get_list()
