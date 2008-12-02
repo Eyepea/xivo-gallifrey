@@ -72,7 +72,7 @@ class UrlList:
                                 log.warning('No URL has been defined')
                                 return -1
                 except Exception:
-                        log.exception('--- exception --- (UrlList) unable to open URL %s' % self.url)
+                        log.exception('(UrlList) unable to open URL %s' % self.url)
                         return -1
 
                 ret = -1
@@ -94,7 +94,7 @@ class UrlList:
                                                         k[var] = val
                                         self.urlmd5 = self.listmd5
                                 except Exception:
-                                        log.exception('--- exception --- (UrlList) trying to enforce setting %s' % self.url)
+                                        log.exception('(UrlList) trying to enforce setting %s' % self.url)
                                 ret = 2
                         elif http_contenttype == [] or http_contenttype == ['text/html; charset=UTF-8']:
                                 if http_code == 403:
@@ -139,6 +139,6 @@ class UrlList:
                                                 pass
                                 ret = 1
                 except Exception:
-                        log.exception('--- exception --- (UrlList) problem occured when retrieving list for %s' % self.url)
+                        log.exception('(UrlList) problem occured when retrieving list for %s' % self.url)
                         ret = -1
                 return ret

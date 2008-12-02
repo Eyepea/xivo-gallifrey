@@ -81,7 +81,7 @@ class AMIClass:
                                         towrite = '%s: %s\r\n' % (name, value)
                                         self.fd.write(towrite)
                                 except Exception:
-                                        log.exception('--- exception --- (sendcommand %s : %s = %s (%r))'
+                                        log.exception('(sendcommand %s : %s = %s (%r))'
                                                       % (action, name, value, value))
                         if self.actionid:
                                 self.fd.write('ActionId: %s\r\n' % self.actionid)
@@ -90,7 +90,7 @@ class AMIClass:
                         self.fd.flush()
                         ret = True
                 except Exception:
-                        log.exception('--- exception --- (action %s)' % action)
+                        log.exception('(action %s)' % action)
                         ret = False
                 if ret == False:
                         if loopnum == 0:
@@ -103,7 +103,7 @@ class AMIClass:
                                                 # "retrying AMI command=<%s> args=<%s>" % (action, str(args)))
                                                 self.sendcommand(action, args, 1)
                                 except Exception:
-                                        # log.exception("--- exception --- AMI not connected (action=%s args=%s)" %(action, args))
+                                        # log.exception("AMI not connected (action=%s args=%s)" %(action, args))
                                         pass
                         else:
                                 log.warning('warning : 2 attempts have failed for AMI command (%s)' % action)
@@ -619,7 +619,7 @@ class AMIList:
                                         conn_ami.setactionid(actionid)
                                         ret = getattr(conn_ami, command)(*args)
                                 except Exception:
-                                        log.exception('--- exception --- AMI command %s on <%s>' % (command, astid))
+                                        log.exception('AMI command %s on <%s>' % (command, astid))
                 else:
                         log.warning('ami (command %s) : %s not in list - wait for the next update ?'
                                     % (command, astid))

@@ -164,7 +164,7 @@ class XivoCTICommand(BaseCommand):
                         elif cmd.struct.get('class') == 'filetransfer':
                                 cmd.type = xivo_commandsets.CMD_TRANSFER
                 except Exception:
-                        log.exception('--- exception --- parsing json for <%s>' % linein)
+                        log.exception('parsing json for <%s>' % linein)
                         cmd.struct = {}
                 return cmd
         
@@ -402,7 +402,7 @@ class XivoCTICommand(BaseCommand):
 
                         self.capas[capaid].conn_inc()
                 except Exception:
-                        log.exception('--- exception --- connect_user %s' % userinfo)
+                        log.exception('connect_user %s' % userinfo)
 
 
         def __disconnect_user__(self, userinfo):
@@ -420,7 +420,7 @@ class XivoCTICommand(BaseCommand):
                         else:
                                 log.warning('userinfo does not contain login field : %s' % userinfo)
                 except Exception:
-                        log.exception('--- exception --- disconnect_user %s' % userinfo)
+                        log.exception('disconnect_user %s' % userinfo)
 
 
         def loginko(self, loginparams, errorstring, connid):
@@ -515,7 +515,7 @@ class XivoCTICommand(BaseCommand):
                                 self.ctilog_cursor = self.ctilog_conn.cursor()
                                 self.__fill_ctilog__('daemon start', __revision__)
                         except Exception:
-                                log.exception('--- exception --- (set_ctilog)')
+                                log.exception('(set_ctilog)')
                 return
         
         def __fill_ctilog__(self, what, options = ''):
@@ -528,7 +528,7 @@ class XivoCTICommand(BaseCommand):
                                                          columns,
                                                          (datetime, what, options))
                         except Exception:
-                                log.exception('--- exception --- (__fill_ctilog__)')
+                                log.exception('(__fill_ctilog__)')
                         self.ctilog_conn.commit()
                 return
         
@@ -543,7 +543,7 @@ class XivoCTICommand(BaseCommand):
                                                          (datetime, uinfo.get('user'), uinfo.get('company'), uinfo.get('state'),
                                                           what, options, callduration))
                         except Exception:
-                                log.exception('--- exception --- (__fill_user_ctilog__)')
+                                log.exception('(__fill_user_ctilog__)')
                         self.ctilog_conn.commit()
                 return
         
@@ -652,7 +652,7 @@ class XivoCTICommand(BaseCommand):
                                                         qq['stats']['Xivo-Wait'] = 0
                                                         self.__update_queue_stats__(astid, qname)
                                 except Exception:
-                                        log.exception('--- exception --- (updates : %s)' % itemname)
+                                        log.exception('(updates : %s)' % itemname)
                         self.askstatus(astid, self.weblist['phones'][astid].keeplist)
                 # check : agentnumber should be unique
                 return
@@ -678,7 +678,7 @@ class XivoCTICommand(BaseCommand):
                                                        'queues' : {},
                                                        'stats' : {}}
                         except Exception:
-                                log.exception('--- exception --- (getagentslist) : %s' % aitem)
+                                log.exception('(getagentslist) : %s' % aitem)
                 return lalist
 
         def getphoneslist(self, plist):
@@ -697,7 +697,7 @@ class XivoCTICommand(BaseCommand):
                                                 'comms' : {}
                                                 }
                         except Exception:
-                                log.exception('--- exception --- (getphoneslist : %s)' % pitem)
+                                log.exception('(getphoneslist : %s)' % pitem)
                 return lplist
 
         def getmeetmelist(self, mlist):
@@ -715,7 +715,7 @@ class XivoCTICommand(BaseCommand):
                                                                     'channels' : {}
                                                                     }
                         except Exception:
-                                log.exception('--- exception --- (getmeetmelist : %s)' % mitem)
+                                log.exception('(getmeetmelist : %s)' % mitem)
                 return lmlist
 
         def getqueueslist(self, dlist):
@@ -733,7 +733,7 @@ class XivoCTICommand(BaseCommand):
                                                              'channels' : {},
                                                              'stats' : {}}
                         except Exception:
-                                log.exception('--- exception --- (getqueueslist : %s)' % qitem)
+                                log.exception('(getqueueslist : %s)' % qitem)
                 return lqlist
         
         # fields set at startup by reading informations
@@ -774,7 +774,7 @@ class XivoCTICommand(BaseCommand):
                                         else:
                                                 lulist[uid]['agentid'] = ''
                         except Exception:
-                                log.exception('--- exception --- (getuserslist : %s)' % uitem)
+                                log.exception('(getuserslist : %s)' % uitem)
                 return lulist
         
         def version(self):
@@ -853,7 +853,7 @@ class XivoCTICommand(BaseCommand):
                                 mysock = userinfo.get('login')['connection']
                                 mysock.sendall(strupdate + '\n', socket.MSG_WAITALL)
                 except Exception:
-                        log.exception('--- exception --- (__send_msg_to_cti_client__) userinfo = %s' % userinfo)
+                        log.exception('(__send_msg_to_cti_client__) userinfo = %s' % userinfo)
                         if userinfo not in self.disconnlist:
                                 self.disconnlist.append(userinfo)
                                 os.write(self.queued_threads_pipe[1], 'uinfo')
@@ -865,7 +865,7 @@ class XivoCTICommand(BaseCommand):
                                 for userinfo in self.ulist_ng.keeplist.itervalues():
                                         self.__send_msg_to_cti_client__(userinfo, strupdate)
                 except Exception:
-                        log.exception('--- exception --- (__send_msg_to_cti_clients__)')
+                        log.exception('(__send_msg_to_cti_clients__)')
                 return
 
         def __send_msg_to_cti_clients_except__(self, uinfos, strupdate):
@@ -875,7 +875,7 @@ class XivoCTICommand(BaseCommand):
                                         if userinfo not in uinfos:
                                                 self.__send_msg_to_cti_client__(userinfo, strupdate)
                 except Exception:
-                        log.exception('--- exception --- (__send_msg_to_cti_clients_except__) userinfo = %s' % userinfo)
+                        log.exception('(__send_msg_to_cti_clients_except__) userinfo = %s' % userinfo)
                 return
         
 
@@ -896,7 +896,7 @@ class XivoCTICommand(BaseCommand):
                                         t = r.read()
                                         r.close()
                                 except Exception, exc: # conscious limited exception output ("No such file or directory")
-                                        log.error('--- exception --- __build_xmlqtui__ %s %s : %s' % (sheetkind, whichitem, exc))
+                                        log.error('__build_xmlqtui__ %s %s : %s' % (sheetkind, whichitem, exc))
                                         t = None
                                 if t is not None:
                                         linestosend.append('<%s name="%s"><![CDATA[%s]]></%s>' % (sheetkind, k, t, sheetkind))
@@ -921,7 +921,7 @@ class XivoCTICommand(BaseCommand):
                                                 log.warning('__build_xmlsheet__ wrong number of fields in definition for %s %s %s'
                                                           % (sheetkind, whichitem, k))
                                 except Exception:
-                                        log.exception('--- exception --- (__build_xmlsheet__) %s %s' % (sheetkind, whichitem))
+                                        log.exception('(__build_xmlsheet__) %s %s' % (sheetkind, whichitem))
                 return linestosend
 
 
@@ -1073,7 +1073,7 @@ class XivoCTICommand(BaseCommand):
                                                         try:
                                                                 y = self.__build_customers_bydirdef__(dirname, callingnum, dirdef, True)
                                                         except Exception:
-                                                                log.exception('--- exception --- (xivo-tomatch-callerid : %s, %s)'
+                                                                log.exception('(xivo-tomatch-callerid : %s, %s)'
                                                                               % (dirname, context))
                                                                 y = []
                                                         if y:
@@ -1587,7 +1587,7 @@ class XivoCTICommand(BaseCommand):
                                 elif params[0] == 'queueunpause' and len(params) > 1 and anum:
                                         self.__ami_execute__(astid, 'queuepause', params[1], 'Agent/%s' % anum, 'false')
                 except Exception:
-                        log.exception('--- exception --- (__presence_action__) %s %s %s %s' % (astid, anum, capaid, status))
+                        log.exception('(__presence_action__) %s %s %s %s' % (astid, anum, capaid, status))
                 return
         
         def __ami_execute__(self, *args):
@@ -2890,14 +2890,14 @@ class XivoCTICommand(BaseCommand):
                                         log.warning('unallowed json event %s' % icommand.struct)
 
                 except Exception:
-                        log.exception('--- exception --- (manage_cticommand) %s %s %s'
+                        log.exception('(manage_cticommand) %s %s %s'
                                       % (icommand.name, icommand.args, userinfo.get('login').get('connection')))
                         
                 if repstr is not None: # might be useful to reply sth different if there is a capa problem for instance, a bad syntaxed command
                         try:
                                 userinfo.get('login').get('connection').sendall(repstr + '\n')
                         except Exception:
-                                log.exception('--- exception --- (sendall) attempt to send <%s ...> (%d chars) failed'
+                                log.exception('(sendall) attempt to send <%s ...> (%d chars) failed'
                                               % (repstr[:40], len(repstr)))
                 return ret
 
@@ -2931,7 +2931,7 @@ class XivoCTICommand(BaseCommand):
                                                 ritem['fullname'] = x[1].replace('"', '').decode('utf8')
                                         reply.append(ritem)
                         except Exception:
-                                log.exception('--- exception --- history : (client %s, termin %s)'
+                                log.exception('history : (client %s, termin %s)'
                                               % (requester_id, termin))
                                 
                 if len(reply) > 0:
@@ -3187,7 +3187,7 @@ class XivoCTICommand(BaseCommand):
                                 else:
                                         log.info('(%2d h %2d min) => no action' % (thour, tmin))
                 except Exception:
-                        log.exception('--- exception --- (regular update)')
+                        log.exception('(regular update)')
 
 
         def __getlist__(self, userinfo, ccomm):
@@ -3228,7 +3228,7 @@ class XivoCTICommand(BaseCommand):
                                 for astid, iplist in self.weblist['phones'].iteritems():
                                         fullstat[astid] = iplist.keeplist
                         except Exception:
-                                log.exception('--- exception --- (phones)')
+                                log.exception('(phones)')
                 elif ccomm == 'agents':
                         fullstat = []
                         if self.capas[capaid].match_funcs(ucapa, 'agents'):
@@ -3243,7 +3243,7 @@ class XivoCTICommand(BaseCommand):
                                                                                          'queues' : self.weblist['queues'][astid].get_queues_byagent(agent_channel)
                                                                                          }
                                                         except Exception:
-                                                                log.exception('--- exception --- (sendlist) comm=%s astid=%s agent_id=%s'
+                                                                log.exception('(sendlist) comm=%s astid=%s agent_id=%s'
                                                                               % (ccomm, astid, agent_id))
                                                 fullstat.append({ 'astid' : astid,
                                                                   'newlist' : newlst })
@@ -3284,7 +3284,7 @@ class XivoCTICommand(BaseCommand):
                                 if len(results) > 0:
                                         repstr[key] = {'enabled' : bool(results[0][0])}
                         except Exception:
-                                log.exception('--- exception --- features_get(bool) id=%s key=%s' % (userid, key))
+                                log.exception('features_get(bool) id=%s key=%s' % (userid, key))
                 for key in ['unc', 'busy', 'rna']:
                         try:
                                 columns = ('enable' + key,)
@@ -3299,7 +3299,7 @@ class XivoCTICommand(BaseCommand):
                                         repstr[key] = { 'enabled' : bool(resenable[0][0]),
                                                         'number' : resdest[0][0] }
                         except Exception:
-                                log.exception('--- exception --- features_get(str) id=%s key=%s' % (userid, key))
+                                log.exception('features_get(str) id=%s key=%s' % (userid, key))
                 tosend = { 'class' : 'features',
                            'function' : 'get',
                            'userid' : userid,
@@ -3327,7 +3327,7 @@ class XivoCTICommand(BaseCommand):
                                    'payload' : [ userid, 'OK', key, value ] }
                         log.info('__build_features_put__ : %s : %s => %s' % (params, key, value))
                 except Exception:
-                        log.exception('--- exception --- features_put id=%s %s %s' % (userid, key, value))
+                        log.exception('features_put id=%s %s %s' % (userid, key, value))
                         tosend = { 'class' : 'features',
                                    'function' : 'put',
                                    'payload' : [ userid, 'KO' ] }
@@ -3389,7 +3389,7 @@ class XivoCTICommand(BaseCommand):
                                                                    proto_src, phonenum_src, cidname_src,
                                                                    exten_dst, cidname_dst,  context_dst)
                         except Exception:
-                                log.exception('--- exception --- unable to originate')
+                                log.exception('unable to originate')
 
                 elif commname in ['transfer', 'atxfer']:
                         [typesrc, whosrc] = srcsplit
@@ -3445,7 +3445,7 @@ class XivoCTICommand(BaseCommand):
                                                                            chan_src,
                                                                            exten_dst, context_src)
                         except Exception:
-                                log.exception('--- exception --- unable to %s' % commname)
+                                log.exception('unable to %s' % commname)
                 else:
                         log.warning('unallowed command %s' % commargs)
                 return
@@ -3508,7 +3508,7 @@ class XivoCTICommand(BaseCommand):
                                                      (likestring,))
                                 results = cursor.fetchall()
                         except Exception:
-                                log.exception('--- exception --- %s : Connection to DataBase failed in History request' % cfg.astid)
+                                log.exception('%s : Connection to DataBase failed in History request' % cfg.astid)
                 return results
 
 
@@ -3587,7 +3587,7 @@ class XivoCTICommand(BaseCommand):
                                         y = self.__build_customers_bydirdef__(dirsec, searchpattern, dirdef, False)
                                         fulllist.extend(y)
                                 except Exception:
-                                        log.exception('--- exception --- __build_customers__ (%s)' % dirsec)
+                                        log.exception('__build_customers__ (%s)' % dirsec)
                 else:
                         log.warning('there has been no section defined for context %s : can not proceed directory search' % ctx)
 
@@ -3648,7 +3648,7 @@ class XivoCTICommand(BaseCommand):
                                                                         futureline[keyw] = result[1][dbkey][0]
                                                 fullstatlist.append(futureline)
                         except Exception:
-                                log.exception('--- exception --- ldaprequest (directory)')
+                                log.exception('ldaprequest (directory)')
 
                 elif dbkind == 'file':
                         f = urllib.urlopen(z.uri)
@@ -3732,7 +3732,7 @@ class XivoCTICommand(BaseCommand):
                                                                 futureline[keyw] = result[n]
                                         fullstatlist.append(futureline)
                         except Exception:
-                                log.exception('--- exception --- sqlrequest')
+                                log.exception('sqlrequest')
                 else:
                         log.warning('no database method defined - please fill the uri field of the directory <%s> definition' % dirname)
 

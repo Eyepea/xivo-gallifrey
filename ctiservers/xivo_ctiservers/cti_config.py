@@ -62,7 +62,7 @@ class Config:
                                         for tk, tv in dict(self.xivoconf.items(sectionname)).iteritems():
                                                 v[tk] = tv.decode('utf8')
                         except Exception:
-                                log.exception('--- exception --- kind=%s section=%s' % (self.kind, sectionname))
+                                log.exception('kind=%s section=%s' % (self.kind, sectionname))
                 elif self.kind == 'sql':
                         try:
                                 if type == 'commandset':
@@ -100,5 +100,5 @@ class Config:
                                                 [catname, var_name, var_val] = zz
                                                 v[var_name] = var_val
                         except Exception:
-                                log.exception('--- exception --- kind=%s type=%s section=%s' % (self.kind, type, sectionname))
+                                log.exception('kind=%s type=%s section=%s' % (self.kind, type, sectionname))
                 return v

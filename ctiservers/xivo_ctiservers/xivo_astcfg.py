@@ -90,7 +90,7 @@ class AsteriskConfig:
                         if userfeatures_db_uri is not None:
                                 self.userfeatures_db_conn = anysql.connect_by_uri(str(userfeatures_db_uri))
                 except Exception:
-                        log.exception('--- exception --- (init userfeatures_db_conn for %s)' % astid)
+                        log.exception('(init userfeatures_db_conn for %s)' % astid)
                 
                 if cdr_db_uri == userfeatures_db_uri:
                         self.cdr_db_conn = self.userfeatures_db_conn
@@ -99,4 +99,4 @@ class AsteriskConfig:
                         try:
                                 self.cdr_db_conn = anysql.connect_by_uri(str(cdr_db_uri))
                         except Exception:
-                                log.exception('--- exception --- (init cdr_db_conn for %s)' % astid)
+                                log.exception('(init cdr_db_conn for %s)' % astid)

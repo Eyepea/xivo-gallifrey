@@ -82,8 +82,8 @@ def get_ldap_infos(cid, ctxinfos):
                 ldapid = xivo_ldap.xivo_ldap(ctxinfos.uri)
                 result = ldapid.getldap("(|%s)" % (''.join(str_cidm)),
                                         ctxinfos.sheet_matching_fields)
-        except Exception, exc:
-                log.error('Connection to LDAP <%s> failed : %s' % (ctxinfos.uri, str(exc)))
+        except Exception:
+                log.exception('Connection to LDAP <%s> failed' % ctxinfos.uri)
                 return reply_by_field
 
         if len(result) > 0:
@@ -94,8 +94,8 @@ def get_ldap_infos(cid, ctxinfos):
                                         if dbname in result[0][1] and field_value is "":
                                                 field_value = result[0][1][dbname][0]
                                         reply_by_field[dispname] = field_value
-                except Exception, exc:
-                        log.error('--- exception --- in LDAP : %s' %(str(exc)))
+                except Exception:
+                        log.exception('in LDAP')
         else:
                 log.warning('No callerid in LDAP <%s> for <%s>' %(ctxinfos.uri, cid))
 	return reply_by_field
@@ -125,8 +125,8 @@ def get_sql_infos(cid, ctxinfos):
                              None)
                 results = [cursor.fetchone()] # vs. fetchall() if needed
                 conn.close()
-	except Exception, exc:
-                log.error('--- exception --- Connection to SQL <%s> failed : %s' % (ctxinfos.uri, str(exc)))
+	except Exception:
+                log.exception('Connection to SQL <%s> failed' % ctxinfos.uri)
                 return reply_by_field
 
         if results[0] is not None:
@@ -142,8 +142,8 @@ def get_sql_infos(cid, ctxinfos):
                                         if dbname in xx and field_value is "":
                                                 field_value = xx[dbname]
                                         reply_by_field[dispname] = field_value
-                except Exception, exc:
-                        log.error('--- exception --- in anysql : %s' %(str(exc)))
+                except Exception:
+                        log.exception('in anysql : %s')
 
 	return reply_by_field
 
@@ -166,8 +166,8 @@ def get_csv_infos(cid, ctxinfos):
                                 for idx in str_cidm:
                                         if callerid_match(items[idx], cid):
                                                 results.append(items)
-	except Exception, exc:
-                log.error('Connection to URL <%s> failed : %s' % (ctxinfos.uri, str(exc)))
+	except Exception:
+                log.exception('Connection to URL <%s> failed' % ctxinfos.uri)
                 return reply_by_field
 
         if len(results) > 0:
@@ -178,8 +178,8 @@ def get_csv_infos(cid, ctxinfos):
                                         if dbname in csv.keys and field_value is '':
                                                 field_value = results[0][csv.index(dbname)]
                                         reply_by_field[dispname] = field_value.strip('"')
-                except Exception, exc:
-                        log.error('--- exception --- in anysql : %s' %(str(exc)))
+                except Exception:
+                        log.exception('in anysql')
 
 	return reply_by_field
 
@@ -241,24 +241,24 @@ def retrieve_callerid_data(callerid, ctxinfos, xdconfig, localdir):
                                 for n, v in nfields.iteritems():
                                         fields[n] = v
                                 log.info('fields = %s' % str(fields))
-                        except Exception, exc:
-                                log.error('--- exception --- (in %s) %s' % (databasekind, str(exc)))
+                        except Exception:
+                                log.exception('(in %s)' % databasekind)
                 elif databasekind == 'file' or databasekind == 'http':
                         try:
                                 nfields = get_csv_infos(callerid, ctxinfos)
                                 for n, v in nfields.iteritems():
                                         fields[n] = v
                                 log.info('fields = %s' % str(fields))
-                        except Exception, exc:
-                                log.error('--- exception --- (in %s) %s' % (databasekind, str(exc)))
+                        except Exception:
+                                log.exception('(in %s)' % databasekind)
                 else:
                         try:
                                 nfields = get_sql_infos(callerid, ctxinfos)
                                 for n, v in nfields.iteritems():
                                         fields[n] = v
                                 log.info('fields = %s' % str(fields))
-                        except Exception, exc:
-                                log.error('--- exception --- (in %s) %s' % (databasekind, str(exc)))
+                        except Exception:
+                                log.exception('(in %s)' % databasekind)
         else:
                 log.warning('WARNING - The db_uri of the context has not been defined')
 
@@ -284,8 +284,8 @@ def retrieve_callerid_data(callerid, ctxinfos, xdconfig, localdir):
         try:
                 fields_formatted = make_fields(fitems, fformats, fields, localdir)
                 log.info('fields_formatted = %s' % str(fields_formatted))
-        except Exception, exc:
-                log.error('--- exception --- when calling make_fields : %s' % str(exc))
+        except Exception:
+                log.exception('when calling make_fields')
 
         return [fields, fields_formatted]
 
