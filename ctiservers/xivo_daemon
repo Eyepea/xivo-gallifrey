@@ -566,7 +566,7 @@ def update_amisocks(astid):
                         if fd not in fdlist_full:
                                 fdlist_full.append(fd)
         except Exception:
-                log.exception('%s (update_amisocks)' % astid)
+                log.exception('%s (update_amisocks) %s:%d' % (astid, configs[astid].remoteaddr, configs[astid].ami_port))
 
 
 ## \brief Handler for catching signals (in the main thread)
