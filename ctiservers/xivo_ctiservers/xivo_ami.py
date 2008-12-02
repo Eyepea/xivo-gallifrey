@@ -71,7 +71,7 @@ class AMIClass:
                         self.fd = s.makefile('rw', 0)
                         s.close()
                 except Exception:
-                        log.exception('connection to AMI at %s' % self.address)
+                        log.exception('connection to AMI at %s:%d' % self.address)
                 return
         
         # \brief Sending any AMI command.
