@@ -431,7 +431,6 @@ function xivo_ast_cpy_user_name()
 		name += name.length === 0 ? lastname : ' '+lastname;
 
 	var callerid = xivo_eid('it-protocol-callerid').value;
-	var phonenumber = xivo_eid('it-ufeatures-number').value;
 
 	if(xivo_is_undef(callerid) === true || callerid.length === 0)
 		callerid = '';
