@@ -1,0 +1,62 @@
+#
+# /etc/dahdi/genconf_parameters
+#
+# This file contains parameters that affect the
+# dahdi_genconf configurator generator.
+#
+# Syntax:
+# 	* A comment from '#' to end of line
+# 	* Blank lines ignored
+# 	* Whitespace at end of line trimmed
+# 	* Single valued items:
+# 	     key <whitespaces...> value
+# 	* List valued items:
+# 	     key
+# 	     <whitespaces...>value1
+# 	     <whitespaces...>value2
+# 	     ...
+#
+
+#base_exten		4000
+#fxs_immediate		no
+fxs_default_start	ks
+lc_country		fr
+
+context_lines		from-extern
+context_phones		default
+#context_input		astbank-input
+#context_output		astbank-output
+
+#group_phones		0
+#group_lines		5
+
+#brint_overlap
+#bri_sig_style		bri_ptmp
+
+# The echo canceller to use. If you have a hardware echo canceller, just 
+# leave it be, as this one won't be used anyway.
+#
+# The default is mg2, but it may change in the future. E.g: a packager
+# that bundles a better echo canceller may set it as the default, or
+# dahdi_genconf will scan for the "best" echo canceller.
+#
+#echo_can		hpec
+#echo_can		oslec
+#echo_can		none  # to aboid echo cancellers altogether
+
+# bri_hardhdlc: If this parameter is set to 'yes', in the entries for
+# BRI cards 'hardhdlc' will be used instead of 'dchan' (an alias for
+# 'fcshdlc').
+#
+#bri_hardhdlc		yes
+
+# For MFC/R2 Support
+#pri_connection_type	R2
+#r2_idle_bits		1101
+
+# pri_types contains a list of settings:
+# Currently the only setting is for TE or NT (the default is TE)
+#
+#pri_termtype
+#	SPAN/2		NT
+#	SPAN/4		NT
