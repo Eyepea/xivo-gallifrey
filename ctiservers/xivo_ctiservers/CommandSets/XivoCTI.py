@@ -1646,7 +1646,7 @@ class XivoCTICommand(BaseCommand):
                         del self.channels[astid][chan]
                 return
         
-        def amiresponse_success(self, astid, event):
+        def amiresponse_success(self, astid, event, nocolon):
                 msg = event.get('Message')
                 actionid = event.get('ActionID')
                 if msg is None:
@@ -1672,11 +1672,12 @@ class XivoCTICommand(BaseCommand):
                         self.amiresponse_mailboxcount(astid, event)
                 elif msg == 'Mailbox Status':
                         self.amiresponse_mailboxstatus(astid, event)
+                elif msg == 'Authentication accepted':
+                        log.info('%s : %s %s' % (astid, msg, nocolon))
                 elif msg in ['Channel status will follow',
                              'Parked calls will follow',
                              'Agents will follow',
                              'Queue status will follow',
-                             'Authentication accepted',
                              'Variable Set',
                              'Attended transfer started',
                              'Channel Hungup',
@@ -1701,7 +1702,7 @@ class XivoCTICommand(BaseCommand):
                         log.warning('AMI %s Response=Success : untracked message (%s) <%s>' % (astid, actionid, msg))
                 return
 
-        def amiresponse_error(self, astid, event):
+        def amiresponse_error(self, astid, event, nocolon):
                 msg = event.get('Message')
                 actionid = event.get('ActionID')
                 if msg == 'Originate failed':

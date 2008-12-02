@@ -337,11 +337,11 @@ class BaseCommand:
                 # log.info('%s : %s' % (astid, event))
                 return
         
-        def amiresponse_success(self, astid, event):
+        def amiresponse_success(self, astid, event, nocolon):
                 return
-        def amiresponse_error(self, astid, event):
+        def amiresponse_error(self, astid, event, nocolon):
                 return
-
+        
         # QueueMemberStatus ExtensionStatus
         #                 0                  AST_DEVICE_UNKNOWN
         #                 1               0  AST_DEVICE_NOT_INUSE  /  libre

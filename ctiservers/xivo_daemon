@@ -432,14 +432,14 @@ def handle_ami_event(astid, idata):
                                                         log.exception('%s (command reply to %s, %s)' % (astid, connreply, actionid))
                                 elif response == 'Success':
                                         try:
-                                                commandclass.amiresponse_success(astid, this_event)
+                                                commandclass.amiresponse_success(astid, this_event, nocolon)
                                         except Exception:
-                                                log.exception('%s amiresponse_success (%s)' % (astid, this_event))
+                                                log.exception('%s amiresponse_success (%s) (%s)' % (astid, this_event, nocolon))
                                 elif response == 'Error':
                                         try:
-                                                commandclass.amiresponse_error(astid, this_event)
+                                                commandclass.amiresponse_error(astid, this_event, nocolon)
                                         except Exception:
-                                                log.exception('%s amiresponse_error (%s)' % (astid, this_event))
+                                                log.exception('%s amiresponse_error (%s) (%s)' % (astid, this_event, nocolon))
                                 else:
                                         log.warning('AMI %s Response=%s (untracked) : %s' % (astid, response, this_event))
                         elif len(this_event) > 0:

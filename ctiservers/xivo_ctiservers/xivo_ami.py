@@ -64,13 +64,16 @@ class AMIClass:
 
         # \brief Connection to a socket.
         def connect(self):
-                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                s.connect(self.address)
-                s.settimeout(30)
-                self.fd = s.makefile('rw', 0)
-                s.close()
-                str = self.fd.readline()
-                #print str,
+                try:
+                        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                        s.connect(self.address)
+                        s.settimeout(30)
+                        self.fd = s.makefile('rw', 0)
+                        s.close()
+                except Exception:
+                        log.exception('connection to AMI at %s' % self.address)
+                return
+        
         # \brief Sending any AMI command.
         def sendcommand(self, action, args, loopnum = 0):
                 ret = False
