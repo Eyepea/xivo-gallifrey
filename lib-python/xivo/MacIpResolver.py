@@ -183,7 +183,7 @@ def load(filename):
                         del by_ipv4[current.ipv4]
                         del by_macaddr[macaddr_to_rm]
                     if is_mac_address_valid(getattr(current, 'macaddr', "")) \
-                    and getattr(current, 'binding_state', None) != 'free':
+                    and getattr(current, 'binding_state', None) == 'active':
                         if current.macaddr in by_macaddr:
                             ipv4_to_rm = by_macaddr[current.macaddr].ipv4
                             del by_ipv4[ipv4_to_rm]
@@ -191,7 +191,8 @@ def load(filename):
                         by_ipv4[current.ipv4] = current
                         by_macaddr[current.macaddr] = current
                     else:
-                        pass # log that this lease entry is useless for us if without a mac address or binding state is free
+                        # log that this lease entry is useless for us if without a mac address or binding state isn't active
+                        pass
                     del current
                     state = NOWHERE
                 else:
