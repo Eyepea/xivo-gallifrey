@@ -294,30 +294,33 @@ class AMIClass:
                         return False
 
         # \brief Originates a call from a phone towards another.
-        def originate(self, phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext):
+        def originate(self, phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext, extravars = {}, timeout = 3600):
                 # originate a call btw src and dst
                 # src will ring first, and dst will ring when src responds
                 ph = re.sub(__dialallowed__, '', phonedst)
                 if len(ph) > 0:
                         return False
                 try:
-                        ret = self.sendcommand('Originate', [('Channel', phoneproto + '/' + phonesrc),
-                                                             ('Exten', phonedst),
-                                                             ('Context', locext),
-                                                             ('Priority', '1'),
-                                                             # ('CallerID', '%s<%s>' % (cidnamesrc, phonesrc)),
-                                                             ('CallerID', '"%s"<%s>' % (cidnamedst, phonedst)),
-                                                             ('Variable', 'XIVO_ORIGSRCNAME=%s' % cidnamesrc),
-                                                             ('Variable', 'XIVO_ORIGSRCNUM=%s'  % phonesrc),
-                                                             ('Variable', 'XIVO_ORIGACTIONID=%s' % self.actionid),
-                                                             ('Variable', 'XIVO_ORIGAPPLI=%s' % 'OrigDial'),
-                                                             ('Async', 'true')])
+                        command_details = [('Channel', phoneproto + '/' + phonesrc),
+                                           ('Exten', phonedst),
+                                           ('Context', locext),
+                                           ('Priority', '1'),
+                                           ('Timeout', str(timeout * 1000)),
+                                           ('CallerID', '"%s"<%s>' % (cidnamedst, phonedst)),
+                                           ('Variable', 'XIVO_ORIGSRCNAME=%s' % cidnamesrc),
+                                           ('Variable', 'XIVO_ORIGSRCNUM=%s'  % phonesrc),
+                                           ('Variable', 'XIVO_ORIGACTIONID=%s' % self.actionid),
+                                           ('Variable', 'XIVO_ORIGAPPLI=%s' % 'OrigDial'),
+                                           ('Async', 'true')]
+                        for var, val in extravars.iteritems():
+                                command_details.append(('Variable', '%s=%s'  % (var, val)))
+                        ret = self.sendcommand('Originate', command_details)
                         return ret
                 except self.AMIError, exc:
                         return False
                 except Exception, exc:
                         return False
-
+                
         # \brief Originates a call from a phone towards another.
         def aoriginate(self, phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext):
                 # originate a call btw src and dst
@@ -327,23 +330,23 @@ class AMIClass:
                         return False
                 try:
                         #print self.aorgcmd, phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext
-                        ret = self.sendcommand(self.aorgcmd, [('Channel', phoneproto + '/' + phonesrc),
-                                                              ('Exten', phonedst),
-                                                              ('Context', locext),
-                                                              ('Priority', '1'),
-                                                              # ('CallerID', '%s<%s>' % (cidnamesrc, phonesrc)),
-                                                              ('CallerID', '"%s"<%s>' % (cidnamedst, phonedst)),
-                                                              ('Variable', 'XIVO_ORIGSRCNAME=%s' % cidnamesrc),
-                                                              ('Variable', 'XIVO_ORIGSRCNUM=%s'  % phonesrc),
-                                                              ('Variable', 'XIVO_ORIGACTIONID=%s' % self.actionid),
-                                                              ('Variable', 'XIVO_ORIGAPPLI=%s' % 'OrigDial'),
-                                                              ('Async', 'true')])
+                        command_details = [('Channel', phoneproto + '/' + phonesrc),
+                                           ('Exten', phonedst),
+                                           ('Context', locext),
+                                           ('Priority', '1'),
+                                           ('CallerID', '"%s"<%s>' % (cidnamedst, phonedst)),
+                                           ('Variable', 'XIVO_ORIGSRCNAME=%s' % cidnamesrc),
+                                           ('Variable', 'XIVO_ORIGSRCNUM=%s'  % phonesrc),
+                                           ('Variable', 'XIVO_ORIGACTIONID=%s' % self.actionid),
+                                           ('Variable', 'XIVO_ORIGAPPLI=%s' % 'OrigDial'),
+                                           ('Async', 'true')]
+                        ret = self.sendcommand(self.aorgcmd, command_details)
                         return ret
                 except self.AMIError, exc:
                         return False
                 except Exception, exc:
                         return False
-
+                
         # \brief Originates a call from a phone towards another.
         def aoriginate_var(self, phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext, extravars, timeout):
                 # originate a call btw src and dst
@@ -358,7 +361,6 @@ class AMIClass:
                                            ('Context', locext),
                                            ('Priority', '1'),
                                            ('Timeout', str(timeout * 1000)),
-                                           # ('CallerID', "%s" %(phonesrc)),
                                            ('CallerID', '"%s"<%s>' %(cidnamedst, phonedst)),
                                            ('Variable', 'XIVO_ORIGSRCNAME=%s' % cidnamesrc),
                                            ('Variable', 'XIVO_ORIGACTIONID=%s' % self.actionid),

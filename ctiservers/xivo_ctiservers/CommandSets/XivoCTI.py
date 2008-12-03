@@ -2876,11 +2876,13 @@ class XivoCTICommand(BaseCommand):
                                                                 # lookup the logged in/out status of agent agent_number and sends it back to the requester
                                                                 agent_id = self.weblist['agents'][astid].reverse_index.get(agent_number)
                                                                 if agent_id in self.weblist['agents'][astid].keeplist:
-                                                                        agprop = self.weblist['agents'][astid].keeplist[agent_id]['stats']
+                                                                        agprop = self.weblist['agents'][astid].keeplist[agent_id]
                                                                         tosend = { 'class' : 'agent-status',
                                                                                    'astid' : astid,
                                                                                    'agentnum' : agent_number,
-                                                                                   'payload' : { 'properties' : agprop,
+                                                                                   'payload' : { 'properties' : agprop['stats'],
+                                                                                                 'firstname' : agprop['firstname'],
+                                                                                                 'lastname' : agprop['lastname'],
                                                                                                  'queues' : self.weblist['queues'][astid].get_queues_byagent(agent_channel)
                                                                                                  }
                                                                                    }
@@ -3241,6 +3243,8 @@ class XivoCTICommand(BaseCommand):
                                                                 agent_number = agprop['number']
                                                                 agent_channel = 'Agent/%s' % agent_number
                                                                 newlst[agent_number] = { 'properties' : agprop['stats'],
+                                                                                         'firstname' : agprop['firstname'],
+                                                                                         'lastname' : agprop['lastname'],
                                                                                          'queues' : self.weblist['queues'][astid].get_queues_byagent(agent_channel)
                                                                                          }
                                                         except Exception:
@@ -3354,10 +3358,11 @@ class XivoCTICommand(BaseCommand):
                                 if srcuinfo is not None:
                                         astid_src = srcuinfo.get('astid')
                                         context_src = srcuinfo.get('context')
-                                        proto_src = 'SIP'
-                                        # 'local' might break the XIVO_ORIGSRCNUM mechanism (trick for thomson)
-                                        # XXX (+ dialplan) since 'SIP' is not the solution either
-                                        phonenum_src = srcuinfo.get('phonenum')
+                                        techdetails = srcuinfo.get('techlist')[0]
+                                        proto_src = techdetails.split('.')[0]
+                                        # XXXX 'local' might break the XIVO_ORIGSRCNUM mechanism (trick for thomson)
+                                        phonenum_src = techdetails.split('.')[2]
+                                        ### srcuinfo.get('phonenum')
                                         # if termlist empty + agentphonenum not empty => call this one
                                         cidname_src = srcuinfo.get('fullname')
                         else:
@@ -3383,12 +3388,13 @@ class XivoCTICommand(BaseCommand):
                                         context_dst = dstuinfo.get('context')
                         else:
                                 log.warning('unknown typedst <%s>' % typedst)
-
+                                
                         try:
                                 if len(exten_dst) > 0:
                                         ret = self.__ami_execute__(astid_src, AMI_ORIGINATE,
                                                                    proto_src, phonenum_src, cidname_src,
-                                                                   exten_dst, cidname_dst,  context_dst)
+                                                                   exten_dst, cidname_dst,  context_dst,
+                                                                   {'XIVO_USERID' : userinfo.get('xivo_userid')})
                         except Exception:
                                 log.exception('unable to originate')
 
