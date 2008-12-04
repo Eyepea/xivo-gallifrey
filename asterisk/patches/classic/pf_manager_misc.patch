@@ -1,8 +1,8 @@
 2008-11-25  Corentin Le Gall <clegall@proformatique.com>
 
 	pf_manager_misc.patch
-	$Revision: 4582 $
-	$Date: 2008-11-03 19:06:47 +0100 (lun, 03 nov 2008) $
+	$Revision$
+	$Date$
         Miscellaneous addenda in Manager Events
         - backport of "MeetMeList" Manager Command from 1.6 branch
         - backport of "Transfer" and "Masquerade" Manager Events from 1.6 branch
