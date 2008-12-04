@@ -18,9 +18,11 @@ $array['element']['fullname']['default'] = '';
 
 $array['element']['email'] = array();
 $array['element']['email']['default'] = '';
+$array['element']['email']['null'] = true;
 
 $array['element']['pager'] = array();
 $array['element']['pager']['default'] = '';
+$array['element']['pager']['null'] = true;
 
 $array['element']['dialout'] = array();
 $array['element']['dialout']['default'] = '';
