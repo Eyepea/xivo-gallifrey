@@ -213,7 +213,7 @@ def daemonize():
         if pid > 0:
             os._exit(0) # pylint: disable-msg=W0212
     except OSError, e:
-        log.exception("first fork() failed: %d (%s)", e.errno, e.strerror)
+        log.exception("second fork() failed: %d (%s)", e.errno, e.strerror)
         sys.exit(1)
     
     try:
