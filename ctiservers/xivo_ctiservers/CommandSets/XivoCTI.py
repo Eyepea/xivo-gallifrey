@@ -944,7 +944,8 @@ class XivoCTICommand(BaseCommand):
                                 log.warning('__sheet_alert__ (%s) : whom field for %s action has not been defined'
                                           % (astid, where))
                                 return calleridsolved
-
+                        log.info('__SHEET_ALERT__ %s %s %s' % (astid, where, whoms))
+                        
                         linestosend = ['<?xml version="1.0" encoding="utf-8"?>',
                                        '<profile sessionid="sessid">',
                                        '<user>']

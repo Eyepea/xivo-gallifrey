@@ -56,8 +56,8 @@ class UserList(AnyList):
                                         break
                         return uinfo
                 else:
-                        if username in self.keeplist:
-                                return self.keeplist.get(username)
+                        if userid in self.keeplist:
+                                return self.keeplist.get(userid)
                         else:
                                 return None
         
