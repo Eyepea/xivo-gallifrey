@@ -66,7 +66,7 @@ def _user_set_call_rights(agi, cursor, args):
                  "INNER JOIN queue "
                  "ON queue.name = queuemember.queue_name "
                  "WHERE groupfeatures.deleted = 0 "
-                 "AND queuemember.userid = %d "
+                 "AND queuemember.userid = %s "
                  "AND queuemember.usertype = 'user' "
                  "AND queuemember.category = 'group' "
                  "AND queuemember.commented = 0 "

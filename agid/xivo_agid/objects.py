@@ -403,7 +403,7 @@ class User:
         self.cursor.query("UPDATE userfeatures "
                           "SET enable%s = %%d, "
                           "    dest%s = %%s "
-                          "WHERE id = %%d" % (feature, feature),
+                          "WHERE id = %%s" % (feature, feature),
                           parameters = (enabled, dest, self.id))
 
         if self.cursor.rowcount != 1:
@@ -431,7 +431,7 @@ class User:
 
         self.cursor.query("UPDATE userfeatures "
                           "SET %s = %%d "
-                          "WHERE id = %%d" % feature,
+                          "WHERE id = %%s" % feature,
                           parameters = (enabled, self.id))
 
         if self.cursor.rowcount != 1:
