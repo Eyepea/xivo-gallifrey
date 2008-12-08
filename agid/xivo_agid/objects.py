@@ -401,7 +401,7 @@ class User:
             raise ValueError("invalid feature")
 
         self.cursor.query("UPDATE userfeatures "
-                          "SET enable%s = %%d, "
+                          "SET enable%s = %%s, "
                           "    dest%s = %%s "
                           "WHERE id = %%s" % (feature, feature),
                           parameters = (enabled, dest, self.id))
@@ -430,7 +430,7 @@ class User:
             raise ValueError("invalid feature")
 
         self.cursor.query("UPDATE userfeatures "
-                          "SET %s = %%d "
+                          "SET %s = %%s "
                           "WHERE id = %%s" % feature,
                           parameters = (enabled, self.id))
 
