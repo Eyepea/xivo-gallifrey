@@ -95,21 +95,26 @@ function populate_agents($agents_array) {
 	$c = count($agents_array);
 
 	for ($a=0;$a<$c;$a++) {
-	  $agents_array[$a] = str_replace('\'', '', $agents_array[$a]);
-          list($type, $num) = split('/', $agents_array[$a]);
-          if ($type === 'Agent' && ctype_digit($num)) {
-                if ($r = array_search_recursive($num, 'number', $xivo_agent)) {
-                        $t = array_search_recursive($r->id, 'agentid', $xivo_user);
-                        $agent[] = array($agents_array[$a],$r->firstname . ' ' . $r->lastname,$r->id,$t->loginclient);
-                }
-                else
-                        $agent[] = array($agents_array[$a], $agents_array[$a]);
-          } else
-		$agent[] = array($agents_array[$a], $agents_array[$a]);
+		$agents_array[$a] = str_replace('\'', '', $agents_array[$a]);
+		list($type, $num) = split('/', $agents_array[$a]);
+
+		if ($type === 'Agent'
+		&& ctype_digit($num)
+		&& ($r = array_search_recursive($num, 'number', $xivo_agent))) {
+			$t = array_search_recursive($r->id, 'agentid', $xivo_user);
+			$agent[] = array('interface'	=> $agents_array[$a],
+					 'fullname'	=> $r->firstname . ' ' . $r->lastname,
+					 'agentid'	=> $r->id,
+					 'loginclient'	=> $t->loginclient);
+		} else {
+			$agent[] = array('interface'	=> $agents_array[$a],
+					 'fullname'	=> $agents_array[$a],
+					 'loginclient'	=> '',
+					 'agentid'	=> 0);
+		}
 	}
 
 	return $agent;
-
 }
 
 function array_search_recursive($text, $find, $array) {

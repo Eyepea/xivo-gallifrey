@@ -78,9 +78,9 @@ if ($agent != "''") {
 
 foreach ($xivo_agent as $agents)
 {
-	$agentes[] = array('Agent/'.$agents->number, $agents->firstname.' '.$agents->lastname);
+	$agentes[] = array('interface'		=> 'Agent/'.$agents->number,
+			   'fullname'		=> $agents->firstname.' '.$agents->lastname);
 }
-
 
 ?>
 <!-- http://devnull.tagsoup.com/quirksmode -->
@@ -355,7 +355,7 @@ onload = function() { content.focus() }
 	{
 		foreach($agent as $g)
 		{
-			if($agentel[0] === $g[0])
+			if($agentel['interface'] === $g['interface'])
 				unset($agentes[$agentkey]);
 		}
 	}
@@ -369,8 +369,7 @@ onload = function() { content.focus() }
 		<?	
 
 	foreach($agentes as $agentel) {
-			if(!in_array($agentel[0], $g[0]))
-   				echo "<option value=\"'$agentel[0]'\">$agentel[1]</option>\n";
+   		echo '<option value="',$agentel['interface'],'">',$agentel['fullname'],'</option>',"\n";
 	}
 	?>
     </select>
@@ -389,7 +388,7 @@ onload = function() { content.focus() }
 		<?
 		if(is_array($agent)) {
 			foreach($items_agente as $agentel) {
-				echo "<option value=\"'$agentel[0]'\">$agentel[1]</option>\n";
+				echo '<option value="',$agentel['interface'],'">',$agentel['fullname'],'</option>',"\n";
 			}
 		}
 		?>

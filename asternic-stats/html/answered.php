@@ -343,8 +343,8 @@ $cover_pdf.= $lang["$language"]['avg_holdtime'].": ".$average_hold."\n";
                     $contavar = $contador +1;
                     $cual = $contador % 2;
                     if($cual>0) { $odd = " class='odd' "; } else { $odd = ""; }
-                    $query1 .= "val$contavar=".$total_time2["$agent"]."&var$contavar=".$aa[0][1]."&";
-                    $query2 .= "val$contavar=".$val."&var$contavar=".$aa[0][1]."&";
+                    $query1 .= "val$contavar=".$total_time2["$agent"]."&var$contavar=".$aa[0]['fullname']."&";
+                    $query2 .= "val$contavar=".$val."&var$contavar=".$aa[0]['fullname']."&";
 
                     $time_print = print_human_hour($total_time2["$agent"]);
                     $avg_time = $total_time2["$agent"] / $val;
@@ -352,7 +352,7 @@ $cover_pdf.= $lang["$language"]['avg_holdtime'].": ".$average_hold."\n";
                     $avg_print = print_human_hour($avg_time);
 
                     echo "<TR $odd>\n";
-                    echo "<TD>".$aa[0][1]."</TD>\n";
+                    echo "<TD>".$aa[0]['fullname']."</TD>\n";
                     echo "<TD>$val</TD>\n";
 
                     if($grandtotal_calls > 0) {
@@ -383,7 +383,7 @@ $db = sqlite_open('/var/lib/pf-xivo-cti-server/sqlite/xivo.db', 0666, $sqliteerr
 
 $query = sqlite_query($db,'SELECT * FROM ctilog WHERE action IN(\'cti_login\',\'cti_logout\',\'cticommand:availstate\') '.
 			  'AND eventdate >= \''.$start.'\' AND eventdate <= \''.$end.'\' '.
-			  'AND loginclient = \''.$aa[0][3].'\' '.
+			  'AND loginclient = \''.$aa[0]['loginclient'].'\' '.
 			  'ORDER BY loginclient ASC, eventdate ASC');
 $res_login_logout_time = sqlite_fetch_all($query);
 
@@ -449,13 +449,13 @@ for ($llt=0;$llt<$nb;$llt++)
 	$loginclient = $ref['loginclient'];
 }
 
-        echo "<TD>".round($val/($data[$aa[0][3]]['total']/60/60),2)." appels traités/h</TD>\n";
+        echo "<TD>".round($val/($data[$aa[0]['loginclient']]['total']/60/60),2)." appels traités/h</TD>\n";
 
 sqlite_close($db);
 ################################################################################
                     echo "</TR>\n";
 
-                    $linea_pdf = array($aa[0][1],$val,"$percentage_calls ".$lang["$language"]['percent'],$total_time2["$agent"],"$percentage_time ".$lang["$language"]['percent'],"$avg_time ".$lang["$language"]['secs'],$total_hold2["$agent"]." ".$lang["$language"]['secs'], "$avg_hold ".$lang["$language"]['secs'], round($val/($data[$aa[0][3]]['total']/60/60),2)." appels traites");
+                    $linea_pdf = array($aa[0]['fullname'],$val,"$percentage_calls ".$lang["$language"]['percent'],$total_time2["$agent"],"$percentage_time ".$lang["$language"]['percent'],"$avg_time ".$lang["$language"]['secs'],$total_hold2["$agent"]." ".$lang["$language"]['secs'], "$avg_hold ".$lang["$language"]['secs'], round($val/($data[$aa[0]['loginclient']]['total']/60/60),2)." appels traites");
                        $data_pdf[]=$linea_pdf;
                     $contador++;
                 }

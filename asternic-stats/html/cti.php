@@ -26,6 +26,8 @@ if ($agent != "''") {
         unset($agent);
         $agent = populate_agents($agents);
 }
+else
+	$agent = array();
 
 $data = array();
 
@@ -34,12 +36,9 @@ $db = sqlite_open('/var/lib/pf-xivo-cti-server/sqlite/xivo.db', 0666, $sqliteerr
 $nb = count($agent);
 $agentlist = '';
 
-if(is_array($agent))
-{
-  for($i = 0;$i < $nb;$i++) {
-	if ($agent[$i][3] !== '')
-		$agentlist .= ',\''.$agent[$i][3].'\'';
-	}
+for($i = 0;$i < $nb;$i++) {
+	if ($agent[$i]['loginclient'] !== '')
+		$agentlist .= ',\''.$agent[$i]['loginclient'].'\'';
 }
 
 if($agentlist !== '')
@@ -49,12 +48,13 @@ else
 
 $query = sqlite_query($db,'SELECT * FROM ctilog WHERE action IN(\'cti_login\',\'cti_logout\',\'cticommand:availstate\') '.
 			  'AND eventdate >= \''.$start.'\' AND eventdate <= \''.$end.'\' '.
-			  'AND loginclient IN('.$agentlist.')'.
+			  'AND loginclient IN('.$agentlist.') '.
 			  'ORDER BY loginclient ASC, eventdate ASC');
 $res_login_logout_time = sqlite_fetch_all($query);
 
 $query = sqlite_query($db,'SELECT * FROM ctilog WHERE action = \'cticommand:actionfiche\' '.
-			  'AND eventdate >= \''.$start.'\' AND eventdate <= \''.$end.'\' '.
+			  'AND eventdate >= \''.$start.'\' AND eventdate <= \''.$end.'\' '. # AND arguments != \'answer\' '.
+			  'AND loginclient IN('.$agentlist.') '.
 			  'ORDER BY loginclient ASC, eventdate ASC');
 $res_event_stats = sqlite_fetch_all($query);
 
@@ -65,6 +65,8 @@ $nb = count($res_login_logout_time);
 $nbminus1 = $nb-1;
 
 $datenow = mktime();
+
+$agent_fullname = array();
 
 for ($llt=0;$llt<$nb;$llt++)
 {
@@ -126,6 +128,18 @@ for ($llt=0;$llt<$nb;$llt++)
 
 		if($tmp[$loginclient]['laststate'] !== 'xivo_unknown')
 			$data[$loginclient]['total'] += $calc['diff'];
+	}
+
+	if(isset($agent_fullname[$ref['loginclient']]) === false)
+	{
+		foreach($agent as $value)
+		{
+			if($ref['loginclient'] === $value['loginclient'])
+			{
+				$agent_fullname[$ref['loginclient']] = $value['fullname'];
+				break;
+			}
+		}
 	}
 
 	$loginclient = $ref['loginclient'];
@@ -204,18 +218,16 @@ foreach($data as $k => $v)
 
 		foreach($z as $m => $n)
 		{
-			if($m !== 'xivo_unknown')
-			{
-				if(!in_array($m, $header)) {
-					# CEDRIC
-					#echo "<TH colspan=2>$m</TH>";
-					$header[] = $m;
-					if (array_key_exists($m, $translation)) {
-						echo "<TH colspan=2>".$translation[$m]."</TH>";
-					} else {
-						echo "<TH colspan=2>$m</TH>";
-					}
-				}
+			if($m === 'xivo_unknown' || in_array($m, $header))
+				continue;
+
+			# CEDRIC
+			#echo "<TH colspan=2>$m</TH>";
+			$header[] = $m;
+			if (array_key_exists($m, $translation)) {
+				echo "<TH colspan=2>".$translation[$m]."</TH>";
+			} else {
+				echo "<TH colspan=2>$m</TH>";
 			}
 		}
 	}
@@ -241,7 +253,7 @@ foreach($data as $k => $v)
 {
 	$linea_pdf = array($k);
 	echo "<TR>";
-	echo "<TD>$k</TD>";
+	echo "<TD>$agent_fullname[$k]</TD>";
 	$c = 0;
 	foreach($v as $q => $z)
 	{
@@ -330,11 +342,37 @@ $countAllCallTypeUser = array();
 
 foreach ($res_event_stats as $stats)
 {
+
+	if ($stats['arguments'] == 'answer' 
+	or $stats['arguments'] == 'hangup'): continue; endif;
+	if (!isset($userlist[$stats['loginclient']])):	
+	foreach($lscalltype as $calltype => $name)
+	{
+	        $userlist[$stats['loginclient']][$calltype] = array(
+								'countcalltype' => 0,
+								'callduration' => 0
+								);
+	}
+	endif;
 	$userlist[$stats['loginclient']][$stats['arguments']]['countcalltype']++;
 	$userlist[$stats['loginclient']][$stats['arguments']]['callduration'] = $stats['callduration'];
 	$countallcalltype[$stats['arguments']]++;
 	$countAllCallTypeUser[$stats['loginclient']]++;		
 	ksort($userlist[$stats['loginclient']]);
+
+	if(isset($agent_fullname[$stats['loginclient']]) === true)
+		continue;
+	else
+	{
+		foreach($agent as $value)
+		{
+			if($stats['loginclient'] === $value['loginclient'])
+			{
+				$agent_fullname[$stats['loginclient']] = $value['fullname'];
+				break;
+			}
+		}
+	}
 }
 
 ?>
@@ -372,10 +410,13 @@ foreach($userlist as $user => $value)
 {
 	$linea_pdf = array($user);
 	echo "<TR $odd>\n";
-	echo "<TD>". $user ."</TD>\n";
-
+	echo "<TD>". $agent_fullname[$user] ."</TD>\n";
+	
+	#if (!in_array($value) continue;
+	
 	foreach($value as $type => $data)
 	{
+		
 		$prc = round(($data['countcalltype']/$countAllCallTypeUser[$user])*100, 2);
 		echo "<TD><span style='float:right'>".$prc."%</span>".$data['countcalltype']." - ".print_human_hour($data['callduration']/count($data['countcalltype']))."</TD>\n";
 		$totalcallduration[$user] += $data['callduration'];
