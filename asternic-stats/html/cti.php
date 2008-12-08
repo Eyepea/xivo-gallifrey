@@ -379,7 +379,7 @@ foreach ($res_event_stats as $stats)
 
 <TABLE width='99%' cellpadding=1 cellspacing=1 border=0 class='sortable' id='table2'>
 <CAPTION>
-	Données Post Apppel
+	Données Post Appel
 </CAPTION>
 
 <THEAD>
@@ -404,7 +404,7 @@ $header_pdf=array('Utilisateurs');
 $header_pdf = array_merge($header_pdf, $lscalltype); 
 array_push($header_pdf, 'Total');
 $width_pdf=array();
-$title_pdf='Données Post Apppel';
+$title_pdf='Données Post Appel';
 
 foreach($userlist as $user => $value)
 {
