@@ -52,7 +52,7 @@ INSERT INTO tmp_useriax (
 SELECT
 	useriax.id,
 	useriax.name,
-	useriax.type,
+	'friend',
 	useriax.username,
 	useriax.secret,
 	'',
