@@ -70,7 +70,7 @@ INSERT INTO tmp_usersip (
 SELECT
 	usersip.id,
 	usersip.name,
-	'friend',
+	usersip.type,
 	usersip.username,
 	usersip.secret,
 	'',
@@ -134,7 +134,7 @@ SELECT
 	IFNULL(usersip.regseconds,0),
 	NULL,
 	'sip',
-	'user',
+	'trunk',
 	usersip.commented
 FROM usersip
 WHERE usersip.category = 'trunk';
