@@ -2003,7 +2003,7 @@ class XivoCTICommand(BaseCommand):
                 print 'ami_agentcallbacklogin', msg
                 self.__send_msg_to_cti_clients__(msg)
                 return
-
+        
         def ami_agentcallbacklogoff(self, astid, event):
                 agent = event.get('Agent')
                 loginchan_split = event.get('Loginchan').split('@')
@@ -2024,9 +2024,10 @@ class XivoCTICommand(BaseCommand):
                 print 'ami_agentcallbacklogoff', msg
                 self.__send_msg_to_cti_clients__(msg)
                 return
-
+        
         def ami_agentcalled(self, astid, event):
                 log.info('ami_agentcalled %s : %s' % (astid, event))
+                # {'Extension': '6678', 'CallerID': '102', 'CallerIDName': 'User2', 'Priority': '2', 'ChannelCalling': 'SIP/102-b6c070e0', 'Context': 'default', 'AgentName': 'permmember', 'Privilege': 'agent,all', 'Event': 'AgentCalled', 'AgentCalled': 'SIP/103'}
                 # {'Extension': 's', 'CallerID': 'unknown', 'Priority': '2', 'ChannelCalling': 'IAX2/test-13', 'Context': 'macro-incoming_queue_call', 'CallerIDName': 'Comm. ', 'AgentCalled': 'iax2/192.168.0.120/101'}
                 return
         
@@ -2036,6 +2037,7 @@ class XivoCTICommand(BaseCommand):
         
         def ami_agentconnect(self, astid, event):
                 log.info('ami_agentconnect %s : %s' % (astid, event))
+                # {'BridgedChannel': '1228753144.217', 'Member': 'SIP/103', 'MemberName': 'permmember', 'Queue': 'martinique', 'Uniqueid': '1228753144.216', 'Privilege': 'agent,all', 'Holdtime': '4', 'Event': 'AgentConnect', 'Channel': 'SIP/103-081d7358'}
                 # {'Member': 'SIP/108', 'Queue': 'commercial', 'Uniqueid': '1215006134.1166', 'Privilege': 'agent,all', 'Holdtime': '9', 'Event': 'AgentConnect', 'Channel': 'SIP/108-08190098'}
                 return
         
@@ -2064,7 +2066,7 @@ class XivoCTICommand(BaseCommand):
                         else:
                                 log.warning('I received some statuses for an agent <%s> while the XIVO config does not seem to know it' % agent)
                 return
-
+        
         # XIVO-WEBI: beg-data
         # "category"|"name"|"number"|"context"|"commented"
         # "queue"|"callcenter"|"330"|"proformatique"|"0"
@@ -2184,7 +2186,7 @@ class XivoCTICommand(BaseCommand):
                 # 5 is received when unavailable members of a queue are attempted to be joined ... use agentcallbacklogoff to detect exit instead
                 # + Link
                 return
-
+        
         def ami_queuememberpaused(self, astid, event):
                 # print 'AMI_QUEUEMEMBERPAUSED', event
                 if astid not in self.weblist['queues']:
@@ -2206,7 +2208,7 @@ class XivoCTICommand(BaseCommand):
                                 msg = self.__build_agupdate__('paused', astid, location, {'queuename' : queue})
                                 self.__send_msg_to_cti_clients__(msg)
                 return
-
+        
         def ami_queueparams(self, astid, event):
                 if astid not in self.weblist['queues']:
                         log.warning('ami_queueparams : no queue list has been defined for %s' % astid)
@@ -2225,7 +2227,7 @@ class XivoCTICommand(BaseCommand):
                                            } ] }
                 self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 return
-
+        
         def ami_queuemember(self, astid, event):
                 if astid not in self.weblist['queues']:
                         log.warning('ami_queuemember : no queue list has been defined for %s' % astid)
@@ -2247,7 +2249,7 @@ class XivoCTICommand(BaseCommand):
                 for qname in self.weblist['queues'][astid].get_queues():
                         self.__ami_execute__(astid, 'sendcommand', 'Command', [('Command', 'show queue %s' % qname)])
                 return
-
+        
         def ami_userevent(self, astid, event):
                 eventname = event.get('UserEvent')
                 if eventname == 'DID':
@@ -3122,6 +3124,16 @@ class XivoCTICommand(BaseCommand):
                                            'fileid' : fileid }
                                 return self.__cjson_encode__(tosend)
 
+                elif subcommand == 'transfer':
+                        astid = commandargs[1]
+                        agentid = commandargs[2]
+                        qname = commandargs[3]
+                        for chan, vchan in self.weblist['queues'][astid].keeplist[qname]['channels'].iteritems():
+                                uinfo = self.__find_userinfos_by_agentnum__(astid, agentid)
+                                self.__ami_execute__(astid, 'transfer',
+                                                     chan,
+                                                     uinfo.get('agentphonenum'), uinfo.get('context'))
+                                break
                 elif subcommand == 'lists':
                         pass
                 else:
