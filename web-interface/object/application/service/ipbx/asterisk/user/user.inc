@@ -2290,6 +2290,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		{
 			if($issa_ufeatures === true)
 				$arr['ufeatures']['enablevoicemail'] = true;
+
+			if($issa_protocol === true && isset($arr['protocol']['subscribemwi']) === false)
+				$arr['protocol']['subscribemwi'] = true;
 		}
 		else
 			unset($arr['voicemail']);
@@ -2318,7 +2321,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		unset($arr['ufeatures']['agentnumber']);
 
-		if(xivo_issa('protocol',$arr) === false
+		if($issa_protocol === false
 		|| isset($arr['protocol']['protocol']) === false
 		|| $this->set_add($arr,$arr['protocol']['protocol']) === false
 		|| $this->add() === false)

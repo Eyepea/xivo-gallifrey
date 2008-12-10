@@ -216,7 +216,7 @@ $array['filter']['enablebusy'] = array('bool' => true);
 $array['filter']['destbusy'] = array('set' => false,'chk' => 2,'regexp' => '/^\+?[0-9\*#]+$/','maxlen' => 128);
 $array['filter']['enableunc'] = array('bool' => true);
 $array['filter']['destunc'] = array('set' => false,'chk' => 2,'regexp' => '/^\+?[0-9\*#]+$/','maxlen' => 128);
-$array['filter']['musiconhold'] = array('set' => false,'chk' => 1,'cast' => 'sgraph','maxlen' => 20);
+$array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 20);
 $array['filter']['outcallerid'] = array('set'		=> false,
 					'chk'		=> 2,
 					'maxlen'	=> 80,

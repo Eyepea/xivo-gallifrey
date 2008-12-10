@@ -335,13 +335,13 @@ endif;
 				      'name'	=> 'protocol[sendani]',
 				      'labelid'	=> 'protocol-sendani',
 				      'default'	=> $element['protocol']['sendani']['default'],
-				      'checked'	=> $this->get_varra('protocol',array('protocol','sendani')))),
+				      'checked'	=> $this->get_varra('info',array('protocol','sendani')))),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_protocol_trunk'),
 				      'name'	=> 'protocol[trunk]',
 				      'labelid'	=> 'protocol-trunk',
 				      'default'	=> $element['protocol']['trunk']['default'],
-				      'checked'	=> $this->get_varra('protocol',array('protocol','trunk')))),
+				      'checked'	=> $this->get_varra('info',array('protocol','trunk')))),
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_transfer'),
 				    'name'	=> 'protocol[transfer]',

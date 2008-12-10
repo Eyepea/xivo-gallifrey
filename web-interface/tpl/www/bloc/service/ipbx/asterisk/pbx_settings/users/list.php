@@ -69,10 +69,10 @@ $page = $url->pager($pager['pages'],
 
 			$ref = &$list[$i];
 
-			if($ref['initialized'] === false):
-				$icon = 'unavailable';
-			elseif($ref['commented'] === true):
+			if($ref['commented'] === true):
 				$icon = 'disable';
+			elseif($ref['initialized'] === false):
+				$icon = 'unavailable';
 			else:
 				$icon = 'enable';
 			endif;
