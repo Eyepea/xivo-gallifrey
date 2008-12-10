@@ -146,6 +146,7 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 					    'name'	=> 'ufeatures[musiconhold]',
 					    'labelid'	=> 'ufeatures-musiconhold',
 					    'key'	=> 'category',
+					    'empty'	=> true,
 					    'invalid'	=> ($this->get_var('act') === 'edit'),
 					    'default'	=> $element['ufeatures']['musiconhold']['default'],
 					    'value'	=> $info['ufeatures']['musiconhold']),
@@ -250,7 +251,7 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 				      'name'	=> 'protocol[subscribemwi]',
 				      'labelid'	=> 'protocol-subscribemwi',
 				      'default'	=> $element['protocol']['sip']['subscribemwi']['default'],
-				      'checked'	=> $this->get_varra('protocol',array('protocol','subscribemwi')))),
+				      'checked'	=> $this->get_varra('info',array('protocol','subscribemwi')))),
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_buggymwi'),
 				    'name'	=> 'protocol[buggymwi]',
@@ -950,7 +951,7 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 				      'name'	=> 'protocol[sendani]',
 				      'labelid'	=> 'protocol-sendani',
 				      'default'	=> $element['protocol']['iax']['sendani']['default'],
-				      'checked'	=> $this->get_varra('protocol',array('protocol','sendani')))),
+				      'checked'	=> $this->get_varra('info',array('protocol','sendani')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_preprocess-subroutine'),
 				  'name'	=> 'ufeatures[preprocess_subroutine]',
