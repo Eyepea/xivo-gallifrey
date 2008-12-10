@@ -61,7 +61,7 @@ function print_human_hour($sec) {
 	if($sec['m'] != 0)
 		$res .= $sec['m'] . 'm ';
 	if($sec['s'] != 0)
-		$res .= round($sec['s'], 2) . 's';
+		$res .= round($sec['s'], 0) . 's';
 	
 	return $res;
 }

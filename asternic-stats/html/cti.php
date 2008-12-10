@@ -379,7 +379,7 @@ foreach ($res_event_stats as $stats)
 
 <TABLE width='99%' cellpadding=1 cellspacing=1 border=0 class='sortable' id='table2'>
 <CAPTION>
-	Données Post Appel
+	Données par type d'appel
 </CAPTION>
 
 <THEAD>
@@ -389,7 +389,7 @@ foreach ($res_event_stats as $stats)
 
 foreach($lscalltype as $calltype => $name)
 {
-	echo "<TH>$name</TH>\n";
+	echo "<TH colspan=3>$name</TH>\n";
 }
 
 ?>
@@ -404,7 +404,7 @@ $header_pdf=array('Utilisateurs');
 $header_pdf = array_merge($header_pdf, $lscalltype); 
 array_push($header_pdf, 'Total');
 $width_pdf=array();
-$title_pdf='Données Post Appel';
+$title_pdf='Données par type d\'appel';
 
 foreach($userlist as $user => $value)
 {
@@ -412,17 +412,27 @@ foreach($userlist as $user => $value)
 	echo "<TR $odd>\n";
 	echo "<TD>". $agent_fullname[$user] ."</TD>\n";
 	
-	#if (!in_array($value) continue;
-	
+	$userProcess = $user;
+
 	foreach($value as $type => $data)
-	{
+	{		
 		
+		if ($user == $userProcess && $data['countcalltype'] > 0) {
+			$actifUser[$type]++; 
+		}
+
 		$prc = round(($data['countcalltype']/$countAllCallTypeUser[$user])*100, 2);
-		echo "<TD><span style='float:right'>".$prc."%</span>".$data['countcalltype']." - ".print_human_hour($data['callduration']/count($data['countcalltype']))."</TD>\n";
+		echo "
+		<td>".$data['countcalltype']."</td> 
+		<td>".print_human_hour($data['callduration']/count($data['countcalltype']))."</td>
+		<td>".$prc."%</td>
+		\n";
 		$totalcallduration[$user] += $data['callduration'];
 		$totalcallduration[$type] += $data['callduration'];
+		
 		array_push($linea_pdf, $data['countcalltype']." - ".print_human_hour($data['callduration']/count($data['countcalltype'])) . '  (' . $prc.'%)');
 	}
+
 
 	echo "<TD style='font-weight:bold'><span style='float:right'>".print_human_hour($totalcallduration[$user]/count($lscalltype))."</span>".$countAllCallTypeUser[$user]."</TD>\n";
 	echo "</TR>\n";
@@ -430,21 +440,50 @@ foreach($userlist as $user => $value)
 	array_push($linea_pdf, $countAllCallTypeUser[$user] . '   (' . print_human_hour($totalcallduration[$user]/count($lscalltype)).')');
 	$data_pdf[]=$linea_pdf;
 }
-
 ?>
+<TR style="font-weight:bold">
+<?php
+        $linea_pdf = array("Total appels:");
+        echo "<TD>Total appels:</TD>\n";
+	foreach($lscalltype as $calltype => $name)
+	{
+	echo "<TD colspan=3>".$countallcalltype[$calltype]."</TD>";
+        array_push($linea_pdf, $countallcalltype[$calltype]);
+	}
+        echo "<TD>".array_sum($countallcalltype)."</TD>\n";
+        array_push($linea_pdf, array_sum($countallcalltype));
+        $data_pdf[]=$linea_pdf;
+?>
+</TR>
 
 <TR style="font-weight:bold">
 <?php
-	$linea_pdf = array("Nb Agent: ". count($userlist));
-	echo "<TD>Nb Agent: ". count($userlist) ."</TD>\n";
-foreach($lscalltype as $calltype => $name)
-{
+
+        $linea_pdf = array("Moy. temps d'appels:");
+	echo "<TD>Moy. temps d'appels:</TD>\n";
+	foreach($lscalltype as $calltype => $name)
+	{
+	        echo "<TD colspan=3>".print_human_hour(round($totalcallduration[$calltype]/$actifUser[$calltype]))."</TD>";
+	        array_push($linea_pdf, print_human_hour(round($totalcallduration[$calltype]/$actifUser[$calltype])));
+        }
+        echo "<TD>".print_human_hour(round($totalallcallduration/count($lscalltype)/count($userlist)))."</TD>\n";
+        array_push($linea_pdf, print_human_hour(round($totalallcallduration/count($lscalltype)/count($userlist))));
+        $data_pdf[]=$linea_pdf;
+?>
+</TR>
+
+<TR style="font-weight:bold">
+<?php
+	$linea_pdf = array('Pourcentage d\'appels:');
+	echo "<TD>Pourcentage d'appels: </TD>\n";
+	foreach($lscalltype as $calltype => $name)
+	{
 	$prc = round(($countallcalltype[$calltype]/array_sum($countallcalltype))*100, 2);
-	echo "<TD><span style='float:right'>".$prc."%</span>$countallcalltype[$calltype] - ".print_human_hour(round($totalcallduration[$calltype]/count($userlist)))."</TD>\n";
-	array_push($linea_pdf, $countallcalltype[$calltype] . " - ".print_human_hour(round($totalcallduration[$calltype]/count($userlist))) . '  (' . $prc.'%)');
-}
-	echo "<TD><span style='float:right'>".print_human_hour(round($totalallcallduration/count($lscalltype)/count($userlist))) ."</span>".array_sum($countallcalltype)."</TD>\n";
-	array_push($linea_pdf, array_sum($countallcalltype) . '   (' . print_human_hour(round($totalallcallduration/count($lscalltype)/count($userlist))).')');
+	echo "<TD colspan=3>".$prc."%</TD>\n";
+	array_push($linea_pdf, $prc.'%');
+	}
+	echo "<TD>100%</TD>\n";
+	array_push($linea_pdf, '100%');
 	$data_pdf[]=$linea_pdf;
 
 ?>
@@ -458,7 +497,7 @@ foreach($lscalltype as $calltype => $name)
 <br><br>
 <TABLE width='99%' cellpadding=1 cellspacing=1 border=0>
 <CAPTION>
-	Graphiques Post Appel
+	Graphiques par type d'appel
 </CAPTION>
 
 <TR align=center>

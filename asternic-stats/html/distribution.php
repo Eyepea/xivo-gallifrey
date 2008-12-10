@@ -424,17 +424,31 @@ $cover_pdf.= $lang["$language"]['agent_logoff'].": ".$logoff."\n";
 				$query_comb.="title=".addslashes($lang["$language"]['anws_unanws_by_hour'])."$graphcolorstack&tagA=".$lang["$language"]['answered_calls']."&tagB=".$lang["$language"]['unanswered_calls'];
 
 					echo "<TR style='font-weight:bold'>\n";
-					echo "<TD>Moy. / Total</TD>\n";
+					echo "<TD>Moy. </TD>\n";
+					echo "<TD>&nbsp;</TD>\n";
+					echo "<TD>".round($total_presente/24, 2)."</TD>\n";
+                                        echo "<TD>".round($total_ans_by_hour/24, 2)."</TD>\n";
+                                        echo "<TD>&nbsp;</TD>\n";
+                                        echo "<TD>".round($total_unans_by_hour/24, 2)."</TD>\n";
+                                        echo "<TD>&nbsp;</TD>\n";
+                                        echo "<TD>".print_human_hour($total_average_call_duration/24)."</TD>\n";
+                                        echo "<TD>".print_human_hour($total_average_hold_duration/24)."</TD>\n";
+                                        echo "<TD>".round($total_login/24, 2)."</TD>\n";
+                                        echo "<TD>".round($total_logout/24, 2)."</TD>\n";
+                                        echo "</TR>\n";
+
+					echo "<TR style='font-weight:bold'>\n";
+					echo "<TD>Total</TD>\n";
 					echo "<TD>100%</TD>\n";
-					echo "<TD><span style='float:right'>$total_presente</span>".round($total_presente/24, 2)."</TD>\n";
-					echo "<TD><span style='float:right'>$total_ans_by_hour</span>".round($total_ans_by_hour/24, 2)."</TD>\n";
+					echo "<TD>$total_presente</TD>\n";
+					echo "<TD>$total_ans_by_hour</TD>\n";
 					echo "<TD>100%</TD>\n";
-					echo "<TD><span style='float:right'>$total_unans_by_hour</span>".round($total_unans_by_hour/24, 2)."</TD>\n";
+					echo "<TD>$total_unans_by_hour</TD>\n";
 					echo "<TD>100%</TD>\n";
-					echo "<TD><span style='float:right'>".print_human_hour($total_average_call_duration)."</span>".print_human_hour($total_average_call_duration/24)."</TD>\n";
-					echo "<TD><span style='float:right'>".print_human_hour($total_average_hold_duration)."</span>".print_human_hour($total_average_hold_duration/24)."</TD>\n";
-					echo "<TD><span style='float:right'>$total_login</span>".round($total_login/24, 2)."</TD>\n";
-					echo "<TD><span style='float:right'>$total_logout</span>".round($total_logout/24, 2)."</TD>\n";
+					echo "<TD>".print_human_hour($total_average_call_duration)."</TD>\n";
+					echo "<TD>".print_human_hour($total_average_hold_duration)."</TD>\n";
+					echo "<TD>$total_login</TD>\n";
+					echo "<TD>$total_logout</TD>\n";
 					echo "</TR>\n";
 					$linea_pdf = array('Moy. / Total', 
 									'100%', 
