@@ -469,6 +469,7 @@ class XivoCTICommand(BaseCommand):
                                    'xivo_userid' : userinfo.get('xivo_userid'),
                                    'capafuncs' : self.capas[capaid].tostringlist(self.capas[capaid].all()),
                                    'capaxlets' : self.capas[capaid].capadisps,
+                                   'capaservices' : self.capas[capaid].capaservices,
                                    'appliname' : self.capas[capaid].appliname,
                                    'guisettings' : self.capas[capaid].guisettings,
                                    'capapresence' : { 'names'   : details,
@@ -564,6 +565,8 @@ class XivoCTICommand(BaseCommand):
                                         self.capas[name].setappliname(val)
                                 elif prop == 'guisettings':
                                         self.capas[name].setguisettings(val)
+                                elif prop == 'services':
+                                        self.capas[name].setservices(val.split(','))
                                 elif prop == 'presence':
                                         self.capas[name].setpresenceid(val)
                                         if val not in self.presence_sections:
@@ -1359,7 +1362,7 @@ class XivoCTICommand(BaseCommand):
                 clid2 = event.get('CallerID2')
                 uid1 = event.get('Uniqueid1')
                 uid2 = event.get('Uniqueid2')
-                # print astid, event
+                # log.info('%s AMI_LINK : %s' % (astid, event))
                 if self.__ignore_dtmf__(astid, uid1, 'link'):
                         return
                 if self.__ignore_dtmf__(astid, uid2, 'link'):
@@ -2060,7 +2063,7 @@ class XivoCTICommand(BaseCommand):
                                                                                                     'name' : event.get('Name'),
                                                                                                     'loggedintime' : event.get('LoggedInTime'),
                                                                                                     'talkingto' : event.get('TalkingTo'),
-                                                                                                    'recorded' : False,
+                                                                                                    'xivo-recorded' : False,
                                                                                                     'link' : False
                                                                                                     } )
                         else:
@@ -3074,7 +3077,7 @@ class XivoCTICommand(BaseCommand):
                                 for channel in channels:
                                         self.__ami_execute__(astid, 'monitor', channel, 'cti-agent-%s-%s' % (datestring, anum))
                                         agent_id = self.weblist['agents'][astid].reverse_index.get(anum)
-                                        self.weblist['agents'][astid].keeplist[agent_id]['stats'].update({'recorded' : True})
+                                        self.weblist['agents'][astid].keeplist[agent_id]['stats'].update({'xivo-recorded' : True})
                                         log.info('started monitor on %s %s (agent %s)' % (astid, channel, anum))
                                         tosend = { 'class' : 'agentrecord',
                                                    'agentnum' : anum,
@@ -3086,7 +3089,7 @@ class XivoCTICommand(BaseCommand):
                                 for channel in channels:
                                         self.__ami_execute__(astid, 'stopmonitor', channel)
                                         agent_id = self.weblist['agents'][astid].reverse_index.get(anum)
-                                        self.weblist['agents'][astid].keeplist[agent_id]['stats'].update({'recorded' : False})
+                                        self.weblist['agents'][astid].keeplist[agent_id]['stats'].update({'xivo-recorded' : False})
                                         log.info('stopped monitor on %s %s (agent %s)' % (astid, channel, anum))
                                         tosend = { 'class' : 'agentrecord',
                                                    'agentnum' : anum,
