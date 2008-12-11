@@ -335,6 +335,33 @@ def manage_info_connections(connid, msg, sep):
                         elif usefulmsg == 'show_ami':
                                 for astid, ami in amilist.ami.iteritems():
                                         connid.sendall('commands : %s : %s\n' % (astid, ami))
+                        elif usefulmsg.startswith('kick'):
+                                aargs = usefulmsg.split()
+                                try:
+                                        if len(aargs) > 1:
+                                                kickuser = aargs[1]
+                                                if kickuser in commandclass.connected_users():
+                                                        uinfo = commandclass.connected_users()[kickuser]
+                                                        if 'login' in uinfo and 'connection' in uinfo.get('login'):
+                                                                cid = uinfo.get('login')['connection']
+                                                                if cid in fdlist_full and cid in fdlist_established:
+                                                                        fdlist_full.remove(cid)
+                                                                        del fdlist_established[cid]
+                                                                        cid.close()
+                                                                        commandclass.manage_logout(uinfo, 'admin')
+                                                                        del userinfo_by_requester[cid]
+                                                                        connid.sendall('kicked %s\n' % kickuser)
+                                                                else:
+                                                                        connid.sendall('did not kick %s (socket id not in daemon refs)\n' % kickuser)
+                                                        else:
+                                                                connid.sendall('did not kick %s (no connection attributes for the user)\n' % kickuser)
+                                                else:
+                                                        connid.sendall('did not kick %s (user not found)\n' % kickuser)
+                                        else:
+                                                connid.sendall('nobody to kick\n')
+                                except Exception:
+                                        log.exception('INFO %s' % usefulmsg)
+                                        connid.sendall('(exception when trying to kick - see server log)\n')
                         elif usefulmsg.startswith('%s:' % commandset):
                                 commandclass.cliaction(connid, usefulmsg)
                         else:
