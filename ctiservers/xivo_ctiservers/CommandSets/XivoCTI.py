@@ -380,7 +380,7 @@ class XivoCTICommand(BaseCommand):
                         # a given user, however it might breed problems if the previously logged-in process
                         # tries to reconnect ... unless we send something asking to Kill the process
                         userinfo['lastconnwins'] = lastconnwins
-
+                        
                         # we first check if 'state' has already been set for this customer, in which case
                         # the CTI clients will be sent back this previous state
                         presenceid = self.capas[capaid].presenceid
@@ -1413,7 +1413,7 @@ class XivoCTICommand(BaseCommand):
                         for uinfo in self.__find_userinfos_by_agentnum__(astid, agent_number):
                                 self.__update_availstate__(uinfo, status)
                                 self.__presence_action__(astid, agent_number, uinfo.get('capaid'), status)
-                        
+                                
                         # To identify which queue a call comes from, we match a previous AMI Leave event,
                         # that involved the same channel as the one catched here.
                         # Any less-tricky-method is welcome, though.
@@ -1422,32 +1422,37 @@ class XivoCTICommand(BaseCommand):
                                 ## del self.queues_channels_list[astid][chan1]
                                 extraevent = {'xivo_queuename' : qname}
                                 self.__sheet_alert__('agentlinked', astid, CONTEXT_UNKNOWN, event, extraevent)
-
+                                
                 if uinfo1:
                         status = 'onlineoutgoing'
                         self.__update_availstate__(uinfo1, status)
                         ag = self.__agentnum__(uinfo1)
                         if ag:
                                 self.__presence_action__(astid, ag, uinfo1.get('capaid'), status)
-                                msg = self.__build_agupdate__('phonelink', astid, 'Agent/%s' % ag)
+                                msg = self.__build_agupdate__('phonelink', astid, 'Agent/%s' % ag,
+                                                              {'dir' : 'out', 'outcall' : uid1info.get('OUTCALL'), 'did' : uid1info.get('DID')})
                                 self.__send_msg_to_cti_clients__(msg)
-
+                                
+                # define the agent related to the phonenumber
                 if uinfo1_ag and uinfo1_ag != uinfo1:
                         status = 'onlineoutgoing'
                         self.__update_availstate__(uinfo1_ag, status)
                         ag = self.__agentnum__(uinfo1_ag)
                         if ag:
                                 self.__presence_action__(astid, ag, uinfo1_ag.get('capaid'), status)
-                                msg = self.__build_agupdate__('phonelink', astid, 'Agent/%s' % ag)
+                                msg = self.__build_agupdate__('phonelink', astid, 'Agent/%s' % ag,
+                                                              {'dir' : 'out', 'outcall' : uid1info.get('OUTCALL'), 'did' : uid1info.get('DID')})
                                 self.__send_msg_to_cti_clients__(msg)
-
-                if uinfo2:
+                                
+                if uinfo2 and uinfo2 not in [uinfo1, uinfo1_ag]:
                         status = 'onlineincoming'
                         self.__update_availstate__(uinfo2, status)
-                        # self.__presence_action__(astid, ag, status)
-                        # msg = self.__build_agupdate__('phonelink', astid, 'Agent/%s' % ag)
-                        # self.__send_msg_to_cti_clients__(msg)
-
+                        ag = self.__agentnum__(uinfo2)
+                        if ag:
+                                self.__presence_action__(astid, ag, uinfo2.get('capaid'), status)
+                                msg = self.__build_agupdate__('phonelink', astid, 'Agent/%s' % ag,
+                                                              {'dir' : 'in', 'outcall' : uid1info.get('OUTCALL'), 'did' : uid1info.get('DID')})
+                                self.__send_msg_to_cti_clients__(msg)
                 try:
                         self.weblist['phones'][astid].handle_ami_event_link(chan1, chan2, clid1, clid2)
                 except Exception, exc:
@@ -2030,8 +2035,16 @@ class XivoCTICommand(BaseCommand):
         
         def ami_agentcalled(self, astid, event):
                 log.info('ami_agentcalled %s : %s' % (astid, event))
+                agent_channel = event.get('AgentCalled')
+                if agent_channel.startswith('Agent/'):
+                        agent_number = agent_channel[6:]
+                        if astid in self.weblist['agents']:
+                                agent_id = self.weblist['agents'][astid].reverse_index.get(agent_number)
+                                # self.weblist['agents'][astid].keeplist[agent_id]['stats'] # XXX : count calls ++
+                                
                 # {'Extension': '6678', 'CallerID': '102', 'CallerIDName': 'User2', 'Priority': '2', 'ChannelCalling': 'SIP/102-b6c070e0', 'Context': 'default', 'AgentName': 'permmember', 'Privilege': 'agent,all', 'Event': 'AgentCalled', 'AgentCalled': 'SIP/103'}
                 # {'Extension': 's', 'CallerID': 'unknown', 'Priority': '2', 'ChannelCalling': 'IAX2/test-13', 'Context': 'macro-incoming_queue_call', 'CallerIDName': 'Comm. ', 'AgentCalled': 'iax2/192.168.0.120/101'}
+                # {'Extension': '6678', 'CallerID': '102', 'CallerIDName': 'User2', 'Priority': '2', 'ChannelCalling': 'SIP/102-081cd460', 'Context': 'default', 'AgentName': 'Agent/6101', 'Privilege': 'agent,all', 'Event': 'AgentCalled', 'AgentCalled': 'Agent/6101'}
                 return
         
         def ami_agentdump(self, astid, event):
@@ -2150,11 +2163,11 @@ class XivoCTICommand(BaseCommand):
                 if agent_channel.startswith('Agent/'):
                         agent = agent_channel[6:]
                         agent_id = self.weblist['agents'][astid].reverse_index.get(agent)
-                        if action == 'phonelink' or action == 'agentlink':
-                                self.weblist['agents'][astid].keeplist[agent_id]['stats'].update({'link' : True})
-                        elif action == 'phoneunlink' or action == 'agentunlink':
-                                self.weblist['agents'][astid].keeplist[agent_id]['stats'].update({'link' : False})
-
+                        if action in ['phonelink', 'agentlink']:
+                                self.weblist['agents'][astid].keeplist[agent_id]['stats'].update({'link' : action})
+                        elif action in ['phoneunlink', 'agentunlink']:
+                                self.weblist['agents'][astid].keeplist[agent_id]['stats'].update({'link' : action})
+                                
                 arrgs = { 'action' : action,
                           'astid' : astid,
                           'agent_channel' : agent_channel }
@@ -2178,6 +2191,13 @@ class XivoCTICommand(BaseCommand):
                         log.warning('ami_queuememberstatus : %s : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
                         return
                 
+                if location.startswith('Agent/'):
+                        agent_channel = location
+                        agent_number = agent_channel[6:]
+                        if astid in self.weblist['agents']:
+                                agent_id = self.weblist['agents'][astid].reverse_index.get(agent_number)
+                                # XXX
+                                
                 self.weblist['queues'][astid].queuememberupdate(queue, location, event)
                 msg = self.__build_agupdate__('queuememberstatus', astid, location, { 'queuename' : queue,
                                                                                       'joinedstatus' : status,
@@ -2256,9 +2276,23 @@ class XivoCTICommand(BaseCommand):
         def ami_userevent(self, astid, event):
                 eventname = event.get('UserEvent')
                 if eventname == 'DID':
+                        uniqueid = event.get('UNIQUEID')
+                        if uniqueid in self.uniqueids[astid]:
+                                log.info('AMI %s UserEvent %s %s' % (astid, eventname, self.uniqueids[astid][uniqueid]))
+                                self.uniqueids[astid][uniqueid]['DID'] = True
                         self.__sheet_alert__('incomingdid', astid,
                                              event.get('XIVO_REAL_CONTEXT', CONTEXT_UNKNOWN),
                                              event)
+                        
+                elif eventname == 'OUTCALL':
+                        uniqueid = event.get('UNIQUEID')
+                        if uniqueid in self.uniqueids[astid]:
+                                log.info('AMI %s UserEvent %s %s' % (astid, eventname, self.uniqueids[astid][uniqueid]))
+                                self.uniqueids[astid][uniqueid]['OUTCALL'] = True
+                        self.__sheet_alert__('outcall', astid,
+                                             event.get('XIVO_CONTEXT', CONTEXT_UNKNOWN),
+                                             event)
+                        
                 elif eventname == 'Feature':
                         log.info('AMI %s UserEvent %s %s' % (astid, eventname, event))
                         repstr = { event.get('Function') : { 'enabled' : bool(int(event.get('Status'))),
