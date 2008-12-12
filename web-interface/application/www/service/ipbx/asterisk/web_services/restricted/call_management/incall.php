@@ -11,8 +11,11 @@ switch($_QRY->get_qs('act'))
 {
 	case 'add':
 		$appincall = &$ipbx->get_application('incall');
-		$appincall->import_json();
-		die();
+		$status = $appincall->import_json() === true ? 201 : 400;
+
+		$http = new xivo_http();
+		$http->set_status($status);
+		$http->send(true);
 		break;
 	case 'list':
 	default:

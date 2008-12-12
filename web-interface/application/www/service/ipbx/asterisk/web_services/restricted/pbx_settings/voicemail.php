@@ -7,12 +7,20 @@ $access = $_AWS->chk_http_access('pbx_settings','voicemail');
 
 include(dirname(__FILE__).'/../restricted.php');
 
-$appvoicemail = &$ipbx->get_application('voicemail',null,false);
-
 switch($_QRY->get_qs('act'))
 {
+	case 'add':
+		$appvoicemail = &$ipbx->get_application('voicemail');
+		$status = $appvoicemail->import_json() === true ? 201 : 400;
+
+		$http = new xivo_http();
+		$http->set_status($status);
+		$http->send(true);
+		break;
 	case 'list':
 	default:
+		$appvoicemail = &$ipbx->get_application('voicemail',null,false);
+
 		if(($voicemail = $appvoicemail->get_voicemail_list()) === false)
 		{
 			xivo::load_class('xivo_http');
