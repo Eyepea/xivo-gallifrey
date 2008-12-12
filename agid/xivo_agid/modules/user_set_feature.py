@@ -40,9 +40,16 @@ def user_set_feature(agi, cursor, args):
         except IndexError:
             arg = None
 
-        user.set_feature(feature, enabled, arg)
+        try:
+            user.set_feature(feature, enabled, arg)
+        except DBUpdateException, e:
+            agi.verbose(str(e))
+
     elif feature in ("vm", "dnd", "callrecord", "callfilter"):
-        enabled = user.toggle_feature(feature)
+        try:
+            enabled = user.toggle_feature(feature)
+        except DBUpdateException, e:
+            agi.verbose(str(e))
 
         if feature == "vm":
             agi.set_variable('XIVO_VMENABLED', user.enablevoicemail)

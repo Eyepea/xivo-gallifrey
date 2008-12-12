@@ -28,6 +28,9 @@ def fwdundoall(agi, cursor, args):
     except (ValueError, LookupError), e:
         agi.dp_break(str(e))
 
-    user.reset()
+    try:
+        user.reset()
+    except DBUpdateException, e:
+        agi.verbose(str(e))
 
 agid.register(fwdundoall)
