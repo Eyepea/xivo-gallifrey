@@ -33,13 +33,17 @@ from xivo.xivo_config import PhoneVendorMixin
 
 class Polycom(PhoneVendorMixin):
 
-    POLYCOM_MODELS = (('spip_320','SPIP320'),
-    		      ('spip_330','SPIP330'),
-    		      ('spip_430','SPIP430'),
+    POLYCOM_MODELS = (('spip_301','SPIP301'),
+                      ('spip_320','SPIP320'),
+                      ('spip_330','SPIP330'),
+                      ('spip_430','SPIP430'),
                       ('spip_450','SPIP450'),
+                      ('spip_500','SPIP500'),
                       ('spip_501','SPIP501'),
                       ('spip_550','SPIP550'),
                       ('spip_560','SPIP560'),
+                      ('spip_600','SPIP600'),
+                      ('spip_601','SPIP601'),
                       ('spip_650','SPIP650'),
                       ('spip_670','SPIP670'),
                       ('ssip_4000','SSIP4000'),
