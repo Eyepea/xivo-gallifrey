@@ -26,15 +26,10 @@ __license__ = """
 """
 
 import os
-import socket
+import urllib
 
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
-
-SIP_PORT = 5060
-AMI_PORT = 5038
-AMI_USER = 'xivouser'
-AMI_PASS = 'xivouser'
 
 class Polycom(PhoneVendorMixin):
 
@@ -57,100 +52,28 @@ class Polycom(PhoneVendorMixin):
 
     def __init__(self, phone):
         PhoneVendorMixin.__init__(self, phone)
-        if self.phone['model'] not in self.POLYCOM_MODELS:
+        if self.phone['model'] not in [x[0] for x in self.POLYCOM_MODELS]:
             raise ValueError, "Unknown Polycom model %r" % self.phone['model']
 
-    def __retrieve_peerinfo(self):
-        peerinfo = None
-        phoneip = self.phone['ipv4']
+    def __action(self, command, user, passwd):
 
-        # TODO: get ride of this AMI communication if possible
+        params = urllib.urlencode({'reg.1.server.1.address': "%s " % self.ASTERISK_IPV4})
 
-        amisock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        amisock.settimeout(float(self.TELNET_TO_S))
-        amisock.connect(("127.0.0.1", AMI_PORT))
-        actioncommand = ( "Action: login\r\n"
-                          "Username: %s\r\n"
-                          "Secret: %s\r\n"
-                          "Events: off\r\n"
-                          "\r\n"
-                          "Action: SIPpeers\r\n"
-                          "\r\n" ) \
-                        % (AMI_USER, AMI_PASS)
-        amisock.send(actioncommand)
-
-        fullmsg = ''
-        iquit = False
-        ipaddressmatch = 'IPaddress: %s' % phoneip
-
-        # finds the IP address matching phoneip among the peers
-        while True:
-            msg = amisock.recv(8192)
-            if len(msg) > 0:
-                fullmsg += msg
-                events = fullmsg.split("\r\n\r\n")
-                fullmsg = events.pop()
-                for ev in events:
-                    lines = ev.split("\r\n")
-                    if ipaddressmatch in lines:
-                        for myline in lines:
-                            if myline.startswith("ObjectName: "):
-                                peerinfo = myline.split(": ")
-                                iquit = True
-                    if "Event: PeerlistComplete" in lines:
-                        iquit = True
-                    if iquit:
-                        break
-                if iquit:
-                    break
-            else:
-                break
-        amisock.close()
-        return peerinfo
-
-    def __sendsipnotify(self):
-        phoneip = self.phone['ipv4']
-        myip = self.ASTERISK_IPV4
-
-        peerinfo = None
-        try:
-            peerinfo = self.__retrieve_peerinfo()
-        except Exception: # XXX: don't catch ALL exceptions
-            pass
-
-        if peerinfo is not None and len(peerinfo) > 1:
-            sip_number = peerinfo[1]
-        else:
-            sip_number = 'guest'
-
-        sip_message = ( "NOTIFY sip:%s@%s:%d SIP/2.0\r\n"
-                        "Via: SIP/2.0/UDP %s\r\n"
-                        "From: <sip:%s@%s>\r\n"
-                        "To: <sip:%s@%s>\r\n"
-                        "Event: check-sync\r\n"
-                        "Call-ID: callid-reboot@%s\r\n"
-                        "CSeq: 1300 NOTIFY\r\n"
-                        "Contact: <sip:%s@%s>\r\n"
-                        "Content-Length: 0\r\n" ) \
-                      % (sip_number, phoneip, SIP_PORT,
-                         myip,
-                         sip_number, myip,
-                         sip_number, phoneip,
-                         myip,
-                         sip_number, myip)
-        sipsocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sipsocket.sendto(sip_message, (phoneip, SIP_PORT))
+        try: # XXX: also check return values?
+            urllib.urlopen("http://%s:%s@%s/form-submit" % (user, passwd, self.phone['ipv4']), params)
+        except IOError, e:
+            log.exception(e)
 
     def do_reboot(self):
         "Entry point to send the reboot command to the phone."
-        self.__sendsipnotify()
+        self.__action('reboot', self.POLYCOM_COMMON_HTTP_USER, self.POLYCOM_COMMON_HTTP_PASS)
 
     def do_reinit(self):
         """
         Entry point to send the (possibly post) reinit command to
         the phone.
         """
-        self.__sendsipnotify()
+        self.__action('reboot', self.POLYCOM_COMMON_HTTP_USER, self.POLYCOM_COMMON_HTTP_PASS)
 
     def __generate(self, provinfo):
         template_file = open(os.path.join(self.TEMPLATES_DIR, "polycom-phone.cfg"))
