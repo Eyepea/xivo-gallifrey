@@ -1422,37 +1422,41 @@ class XivoCTICommand(BaseCommand):
                                 ## del self.queues_channels_list[astid][chan1]
                                 extraevent = {'xivo_queuename' : qname}
                                 self.__sheet_alert__('agentlinked', astid, CONTEXT_UNKNOWN, event, extraevent)
-                                
-                if uinfo1:
-                        status = 'onlineoutgoing'
-                        self.__update_availstate__(uinfo1, status)
-                        ag = self.__agentnum__(uinfo1)
-                        if ag:
-                                self.__presence_action__(astid, ag, uinfo1.get('capaid'), status)
-                                msg = self.__build_agupdate__('phonelink', astid, 'Agent/%s' % ag,
-                                                              {'dir' : 'out', 'outcall' : uid1info.get('OUTCALL'), 'did' : uid1info.get('DID')})
-                                self.__send_msg_to_cti_clients__(msg)
-                                
-                # define the agent related to the phonenumber
-                if uinfo1_ag and uinfo1_ag != uinfo1:
-                        status = 'onlineoutgoing'
-                        self.__update_availstate__(uinfo1_ag, status)
-                        ag = self.__agentnum__(uinfo1_ag)
-                        if ag:
-                                self.__presence_action__(astid, ag, uinfo1_ag.get('capaid'), status)
-                                msg = self.__build_agupdate__('phonelink', astid, 'Agent/%s' % ag,
-                                                              {'dir' : 'out', 'outcall' : uid1info.get('OUTCALL'), 'did' : uid1info.get('DID')})
-                                self.__send_msg_to_cti_clients__(msg)
-                                
-                if uinfo2 and uinfo2 not in [uinfo1, uinfo1_ag]:
-                        status = 'onlineincoming'
-                        self.__update_availstate__(uinfo2, status)
-                        ag = self.__agentnum__(uinfo2)
-                        if ag:
-                                self.__presence_action__(astid, ag, uinfo2.get('capaid'), status)
-                                msg = self.__build_agupdate__('phonelink', astid, 'Agent/%s' % ag,
-                                                              {'dir' : 'in', 'outcall' : uid1info.get('OUTCALL'), 'did' : uid1info.get('DID')})
-                                self.__send_msg_to_cti_clients__(msg)
+
+                # outgoing channel
+                lstinfos1 = [uinfo1]
+                if uinfo1_ag not in lstinfos1:
+                        lstinfos1.append(uinfo1_ag) # agent related to the phonenumber
+                for uinfo in lstinfos1:
+                        if uinfo:
+                                status = 'onlineoutgoing'
+                                self.__update_availstate__(uinfo, status)
+                                ag = self.__agentnum__(uinfo)
+                                if ag:
+                                        self.__presence_action__(astid, ag, uinfo.get('capaid'), status)
+                                        msg = self.__build_agupdate__('phonelink', astid, 'Agent/%s' % ag,
+                                                                      { 'dir' : status,
+                                                                        'outcall' : uid1info.get('OUTCALL'),
+                                                                        'did' : uid1info.get('DID') })
+                                        self.__send_msg_to_cti_clients__(msg)
+
+                # incoming channel
+                lstinfos2 = [uinfo2]
+                if uinfo2_ag not in lstinfos2:
+                        lstinfos2.append(uinfo2_ag) # agent related to the phonenumber
+                for uinfo in lstinfos2:
+                        if uinfo:
+                                status = 'onlineincoming'
+                                self.__update_availstate__(uinfo, status)
+                                ag = self.__agentnum__(uinfo)
+                                if ag:
+                                        self.__presence_action__(astid, ag, uinfo.get('capaid'), status)
+                                        msg = self.__build_agupdate__('phonelink', astid, 'Agent/%s' % ag,
+                                                                      { 'dir' : status,
+                                                                        'outcall' : uid1info.get('OUTCALL'),
+                                                                        'did' : uid1info.get('DID') })
+                                        self.__send_msg_to_cti_clients__(msg)
+                                        
                 try:
                         self.weblist['phones'][astid].handle_ami_event_link(chan1, chan2, clid1, clid2)
                 except Exception, exc:
@@ -1560,6 +1564,8 @@ class XivoCTICommand(BaseCommand):
                 lstinfos = [uinfo1, uinfo2]
                 if uinfo1_ag not in lstinfos:
                         lstinfos.append(uinfo1_ag)
+                if uinfo2_ag not in lstinfos:
+                        lstinfos.append(uinfo2_ag)
                 for uinfo in lstinfos:
                         if uinfo:
                                 status = 'postcall'
@@ -1569,7 +1575,6 @@ class XivoCTICommand(BaseCommand):
                                         self.__presence_action__(astid, ag, uinfo.get('capaid'), status)
                                         msg = self.__build_agupdate__('phoneunlink', astid, 'Agent/%s' % ag)
                                         self.__send_msg_to_cti_clients__(msg)
-                                        
                 try:
                         self.weblist['phones'][astid].handle_ami_event_unlink(chan1, chan2, clid1, clid2)
                 except Exception, exc:
@@ -2721,7 +2726,7 @@ class XivoCTICommand(BaseCommand):
                                 dircomm = icommand.struct.get('direction')
                                 
                                 if dircomm is not None and dircomm == 'xivoserver' and classcomm in self.commnames:
-                                        log.info('command attempt %s from %s' % (classcomm, username))
+                                        log.info('command attempt %s from %s : %s' % (classcomm, username, icommand.struct))
                                         if classcomm not in ['keepalive', 'availstate', 'actionfiche']:
                                                 self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm)
                                         if classcomm == 'meetme':
@@ -2801,7 +2806,7 @@ class XivoCTICommand(BaseCommand):
                                                                                  capaid,
                                                                                  icommand.struct.get('availstate'))
                                                         self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm)
-
+                                                        
                                         elif classcomm == 'getguisettings':
                                                 tosend = { 'class' : 'getguisettings',
                                                            'payload' : self.capas[capaid].guisettings
@@ -2818,7 +2823,7 @@ class XivoCTICommand(BaseCommand):
 ##                                        if username in userlist[astid]:
 ##                                                userlist[astid][username]['monit'] = icommand.args
                                                         repstr = self.__build_features_get__(icommand.struct.get('userid'))
-
+                                                        
                                         elif classcomm == 'featuresput':
                                                 if self.capas[capaid].match_funcs(ucapa, 'features'):
                                                         log.info('%s %s' % (classcomm, icommand.struct))
@@ -3598,6 +3603,7 @@ class XivoCTICommand(BaseCommand):
                 statedetails = {'color' : 'grey',
                                 'longname' : PRESENCE_UNKNOWN,
                                 'stateid' : 'xivo_unknown'}
+                
                 if capaid and capaid in self.capas:
                         allowed = {}
                         presenceid = self.capas[capaid].presenceid
