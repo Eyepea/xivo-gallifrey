@@ -41,8 +41,10 @@ APP_FILES = [
     "2345-12670-001.sip.ld",
     "3111-15600-001.sip.ld",
     "3111-40000-001.sip.ld",
+    "phone1.cfg",
     "sip.ld",
     "sip.ver",
+    "sip.cfg",
     "SoundPointIPWelcome.wav"
 ]
 
