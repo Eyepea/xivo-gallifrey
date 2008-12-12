@@ -50,7 +50,7 @@ class Polycom(PhoneVendorMixin):
                       ('spip_6000','SSIP6000'),
                       ('spip_7000','SSIP7000'))
 
-    POLYCOM_SS_MODELS = ('ssip_4000', 'ssip_6000', 'ssip_7000')
+    POLYCOM_SSIP_MODELS = ('ssip_4000', 'ssip_6000', 'ssip_7000')
 
     POLYCOM_COMMON_HTTP_USER = "Polycom"
     POLYCOM_COMMON_HTTP_PASS = "456"
@@ -65,7 +65,7 @@ class Polycom(PhoneVendorMixin):
 
     def __init__(self, phone):
         PhoneVendorMixin.__init__(self, phone)
-        if self.phone['model'] not in self.POLYCOM_SS_MODELS \
+        if self.phone['model'] not in self.POLYCOM_SSIP_MODELS \
         and self.phone['model'] not in [x[0] for x in self.POLYCOM_MODELS]:
             raise ValueError, "Unknown Polycom model %r" % self.phone['model']
 
