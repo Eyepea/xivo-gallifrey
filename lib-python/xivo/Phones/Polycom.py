@@ -38,6 +38,12 @@ AMI_PASS = 'xivouser'
 
 class Polycom(PhoneVendorMixin):
 
+    POLYCOM_MODELS = (('spip_430','SPIP430'),
+                      ('spip_650','SPIP650'),
+                      ('ssip_4000','SSIP4000'),
+                      ('ssip_6000','SSIP6000'),
+                      ('ssip_7000','SSIP7000'))
+
     POLYCOM_COMMON_HTTP_USER = "Polycom"
     POLYCOM_COMMON_HTTP_PASS = "456"
 
@@ -51,8 +57,7 @@ class Polycom(PhoneVendorMixin):
 
     def __init__(self, phone):
         PhoneVendorMixin.__init__(self, phone)
-        if self.phone['model'] != 'spip_430' and \
-           self.phone['model'] != 'spip_650':
+        if self.phone['model'] not in self.POLYCOM_MODELS:
             raise ValueError, "Unknown Polycom model %r" % self.phone['model']
 
     def __retrieve_peerinfo(self):
@@ -207,7 +212,7 @@ class Polycom(PhoneVendorMixin):
     @classmethod
     def get_phones(cls):
         "Report supported phone models for this vendor."
-        return (('spip_430', 'SPIP430'), ('spip_650', 'SPIP650'))
+        return cls.POLYCOM_MODELS
 
     # Entry points for the AGI
 
