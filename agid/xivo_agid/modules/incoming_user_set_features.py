@@ -171,4 +171,7 @@ def incoming_user_set_features(agi, cursor, args):
     if user.musiconhold:
         agi.set_variable('CHANNEL(musicclass)', user.musiconhold)
 
+    if user.preprocess_subroutine:
+        agi.set_variable('XIVO_USERPREPROCESS_SUBROUTINE', user.preprocess_subroutine)
+
 agid.register(incoming_user_set_features)

@@ -31,6 +31,9 @@ def incoming_did_set_features(agi, cursor, args):
     agi.set_variable('XIVO_FAXDETECT_TIMEOUT', did.faxdetecttimeout)
     agi.set_variable('XIVO_FAXDETECT_EMAIL', did.faxdetectemail)
 
+    if did.preprocess_subroutine:
+        agi.set_variable('XIVO_DIDPREPROCESS_SUBROUTINE', did.preprocess_subroutine)
+
     did.set_dial_actions()
     did.set_caller_id()
 

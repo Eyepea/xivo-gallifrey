@@ -50,6 +50,9 @@ def incoming_group_set_features(agi, cursor, args):
     agi.set_variable('XIVO_GROUPNAME', group.name)
     agi.set_variable('XIVO_GROUPOPTIONS', options)
 
+    if group.preprocess_subroutine:
+        agi.set_variable('XIVO_GROUPPREPROCESS_SUBROUTINE', group.preprocess_subroutine)
+
     if group.timeout:
         agi.set_variable('XIVO_GROUPTIMEOUT', group.timeout)
 

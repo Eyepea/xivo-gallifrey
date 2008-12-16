@@ -74,4 +74,7 @@ def incoming_meetme_set_features(agi, cursor, args):
     agi.set_variable('XIVO_MEETMENUMBER', meetme.number)
     agi.set_variable('XIVO_MEETMEOPTIONS', options)
 
+    if meetme.preprocess_subroutine:
+        agi.set_variable('XIVO_MEETMEPREPROCESS_SUBROUTINE', meetme.preprocess_subroutine)
+
 agid.register(incoming_meetme_set_features)
