@@ -1240,21 +1240,43 @@ class XivoCTICommand(BaseCommand):
                 csvreader = csv.reader(qlog, delimiter = '|')
                 time_now = int(time.time())
                 time_1ha = time_now - 3600
+                
+                last_agent = {}
+                laststart = 0
+                
                 for line in csvreader:
                         qdate = int(line[0])
                         qaction = line[4]
                         qname = line[2]
-                        if qdate > time_1ha and qaction in ['ENTERQUEUE', 'CONNECT', 'ABANDON', 'EXITEMPTY']:
-                                if qname not in self.stats_queues[astid]:
-                                        self.stats_queues[astid][qname] = {'ENTERQUEUE' : [],
-                                                                           'CONNECT' : [],
-                                                                           'ABANDON' : []}
-                                if qaction == 'EXITEMPTY':
-                                        qaction = 'ABANDON'
-                                self.stats_queues[astid][qname][qaction].append(qdate)
+                        if qaction in ['ENTERQUEUE', 'CONNECT', 'ABANDON', 'EXITEMPTY']:
+                                if qdate > time_1ha:
+                                        if qname not in self.stats_queues[astid]:
+                                                self.stats_queues[astid][qname] = { 'ENTERQUEUE' : [],
+                                                                                    'CONNECT' : [],
+                                                                                    'ABANDON' : [] }
+                                        if qaction == 'EXITEMPTY':
+                                                qaction = 'ABANDON'
+                                        self.stats_queues[astid][qname][qaction].append(qdate)
+                        if qaction == 'QUEUESTART':
+                                laststart = qdate
+                        if qaction in ['AGENTLOGIN', 'UNPAUSE', 'PAUSE', 'AGENTCALLBACKLOGIN', 'AGENTCALLBACKLOGOFF', 'AGENTLOGOFF', 'ADDMEMBER', 'REMOVEMEMBER']:
+                                if qaction == 'AGENTCALLBACKLOGIN':
+                                        agentid = 'Agent/' + line[3]
+                                else:
+                                        agentid = line[3]
+                                if agentid.startswith('Agent/') and len(agentid) > 6:
+                                        if agentid not in last_agent:
+                                                last_agent[agentid] = {}
+                                        last_agent[agentid][qaction] = qdate
                 qlog.close()
+                for aid, v in last_agent.iteritems():
+                        print astid, laststart, aid, v
+                # COMPLETEAGENT : end of successful call
+                # CONFIGRELOAD, QUEUESTART
+                # RINGNOANSWER
+                # COMPLETECALLER : ?
                 return
-
+        
         def __clidlist_from_event__(self, chan1, chan2, clid1, clid2):
                 # XXXX backport from autoescape, to be checked/improved/fixed
                 LOCALNUMSIZE = 3
