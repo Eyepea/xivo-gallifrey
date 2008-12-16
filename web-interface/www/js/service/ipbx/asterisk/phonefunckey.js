@@ -13,8 +13,8 @@ xivo_phonefunckey_type['custom'] = 1;
 
 function xivo_build_phonefunckey_array(id)
 {
-	if(xivo_is_undef(xivo_fm_phonefunckey[id]) == false
-	&& xivo_is_array(xivo_fm_phonefunckey[id]) == true)
+	if(xivo_is_undef(xivo_fm_phonefunckey[id]) === false
+	&& xivo_is_array(xivo_fm_phonefunckey[id]) === true)
 		return(true);
 
 	xivo_fm_phonefunckey[id] = new Array();
@@ -34,7 +34,7 @@ function xivo_build_phonefunckey_array(id)
 
 		key = 'it-phonefunckey-supervision-'+id;
 		xivo_elt_phonefunckey[id][key] = new Array();
-		xivo_elt_phonefunckey[id][key]['property'] = {disabled: true, className: 'it-disabled'};
+		xivo_elt_phonefunckey[id][key]['property'] = {className: 'it-disabled'};
 		xivo_elt_phonefunckey[id]['links']['link'][i++] = new Array(key,0,1);
 
 		key = 'it-phonefunckey-'+property+'-typeval-'+id;
@@ -53,11 +53,11 @@ function xivo_build_phonefunckey_array(id)
 		xivo_fm_phonefunckey[id][property][keyit]['style'] = {display: 'inline'};
 		xivo_fm_phonefunckey[id][property][keyit]['property'] = {disabled: false, className: 'it-enabled'};
 
-		if(property == 'user'
-		|| property == 'bosssecretary')
+		if(property === 'user'
+		|| property === 'bosssecretary')
 		{
 			keyit = 'it-phonefunckey-supervision-'+id;
-			xivo_fm_phonefunckey[id][property][keyit]['property'] = {disabled: false, className: 'it-enabled'};
+			xivo_fm_phonefunckey[id][property][keyit]['property'] = {className: 'it-enabled'};
 		}
 
 		xivo_attrib_register('fm_phonefunckey-'+id+'-'+property,xivo_fm_phonefunckey[id][property]);
@@ -66,9 +66,9 @@ function xivo_build_phonefunckey_array(id)
 
 function xivo_chgphonefunckey(type)
 {
-	if(xivo_is_undef(type.value) == true
-	|| (xivo_is_undef(type.disabled) == false && type.disabled == true) === true
-	|| (rs = type.id.match(/-(\d+)$/)) == null)
+	if(xivo_is_undef(type.value) === true
+	|| (xivo_is_undef(type.disabled) === false && type.disabled === true) === true
+	|| (rs = type.id.match(/-(\d+)$/)) === null)
 		return(false);
 
 	xivo_build_phonefunckey_array(rs[1]);
@@ -78,13 +78,13 @@ function xivo_chgphonefunckey(type)
 
 function xivo_phonefunckey_onload()
 {
-	if(xivo_is_undef(xivo_tlist['phonefunckey']) == true
-	|| xivo_is_undef(xivo_tlist['phonefunckey']['cnt']) == true)
+	if(xivo_is_undef(xivo_tlist['phonefunckey']) === true
+	|| xivo_is_undef(xivo_tlist['phonefunckey']['cnt']) === true)
 		return(false);
 
 	for(var i = 0;i < xivo_tlist['phonefunckey']['cnt'];i++)
 	{
-		if((eid = xivo_eid('it-phonefunckey-type-'+i)) != false)
+		if((eid = xivo_eid('it-phonefunckey-type-'+i)) !== false)
 			xivo_chgphonefunckey(eid);
 	}
 }
