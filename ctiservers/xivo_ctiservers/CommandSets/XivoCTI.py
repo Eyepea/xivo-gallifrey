@@ -455,9 +455,11 @@ class XivoCTICommand(BaseCommand):
                         if presenceid in self.presence_sections:
                                 allowed = self.presence_sections[presenceid].allowed(userinfo.get('state'))
                                 details = self.presence_sections[presenceid].getdisplaydetails()
+                                statedetails = self.presence_sections[presenceid].displaydetails[userinfo.get('state')]
                         else:
                                 allowed = {}
                                 details = {}
+                                statedetails = {}
                         wpid = self.capas[capaid].watchedpresenceid
                         if wpid in self.presence_sections:
                                 cstatus = self.presence_sections[wpid].countstatus(self.__counts__(wpid))
@@ -473,7 +475,7 @@ class XivoCTICommand(BaseCommand):
                                    'appliname' : self.capas[capaid].appliname,
                                    'guisettings' : self.capas[capaid].guisettings,
                                    'capapresence' : { 'names'   : details,
-                                                      'state'   : userinfo.get('state'),
+                                                      'state'   : statedetails,
                                                       'allowed' : allowed },
                                    'presencecounter' : cstatus
                                    }
