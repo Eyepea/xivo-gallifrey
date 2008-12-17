@@ -2250,10 +2250,11 @@ class XivoCTICommand(BaseCommand):
                         agent = agent_channel[6:]
                         agent_id = self.weblist['agents'][astid].reverse_index.get(agent)
                         if action in ['phonelink', 'agentlink']:
-                                self.weblist['agents'][astid].keeplist[agent_id]['stats'].update({'link' : action})
+                                self.weblist['agents'][astid].keeplist[agent_id]['stats'].update({'link' : action,
+                                                                                                  'Xivo-StateTime' : time.time()})
                         elif action in ['phoneunlink', 'agentunlink']:
-                                self.weblist['agents'][astid].keeplist[agent_id]['stats'].update({'link' : action})
-                                
+                                self.weblist['agents'][astid].keeplist[agent_id]['stats'].update({'link' : action,
+                                                                                                  'Xivo-StateTime' : time.time()})
                 arrgs = { 'action' : action,
                           'astid' : astid,
                           'agent_channel' : agent_channel }
