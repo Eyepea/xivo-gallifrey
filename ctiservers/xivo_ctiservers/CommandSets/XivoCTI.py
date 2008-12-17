@@ -134,6 +134,8 @@ class XivoCTICommand(BaseCommand):
                 self.timeout_login = {}
                 self.parkedcalls = {}
                 self.stats_queues = {}
+                self.last_agents = {}
+                self.last_queues = {}
                 self.ignore_dtmf = {}
                 self.presence_sections = {}
                 self.display_hints = {}
@@ -622,6 +624,11 @@ class XivoCTICommand(BaseCommand):
                 self.weblist['meetme'][astid].setcommandclass(self)
                 return
         
+        def set_voicemaillist(self, astid, urllist_voicemail):
+##                self.weblist['voicemail'][astid] = cti_voicemaillist.VoiceMailList(urllist_voicemail)
+##                self.weblist['voicemail'][astid].setcommandclass(self)
+                return
+        
         def set_contextlist(self, ctxlist):
                 self.ctxlist = ctxlist
                 return
@@ -771,6 +778,7 @@ class XivoCTICommand(BaseCommand):
                                         if len(lulist[uid]['capaids']) == 1:
                                                 lulist[uid]['capaid'] = lulist[uid]['capaids'][0]
                                         if uitem.get('enablevoicemail'):
+                                                # print uitem.get('voicemailid')
                                                 lulist[uid]['mwi'] = ['0', '0', '0']
                                         else:
                                                 lulist[uid]['mwi'] = []
@@ -1234,6 +1242,10 @@ class XivoCTICommand(BaseCommand):
         def read_queuelog(self, astid, url_queuelog):
                 if astid not in self.stats_queues:
                         self.stats_queues[astid] = {}
+                if astid not in self.last_agents:
+                        self.last_agents[astid] = {}
+                if astid not in self.last_queues:
+                        self.last_queues[astid] = {}
                 if url_queuelog is None:
                         return
                 qlog = urllib.urlopen(url_queuelog)
@@ -1241,11 +1253,17 @@ class XivoCTICommand(BaseCommand):
                 time_now = int(time.time())
                 time_1ha = time_now - 3600
                 
-                last_agent = {}
-                laststart = 0
+                last_start = 0
                 
+                qolddate = 0
                 for line in csvreader:
-                        qdate = int(line[0])
+                        if qolddate == int(line[0]):
+                                ic += 1
+                        else:
+                                ic = 1
+                        qdate = float('%s.%06d' % (line[0], ic))
+                        qolddate = int(line[0])
+                        
                         qaction = line[4]
                         qname = line[2]
                         if qaction in ['ENTERQUEUE', 'CONNECT', 'ABANDON', 'EXITEMPTY']:
@@ -1256,21 +1274,60 @@ class XivoCTICommand(BaseCommand):
                                                                                     'ABANDON' : [] }
                                         if qaction == 'EXITEMPTY':
                                                 qaction = 'ABANDON'
-                                        self.stats_queues[astid][qname][qaction].append(qdate)
+                                        self.stats_queues[astid][qname][qaction].append(int(qdate))
                         if qaction == 'QUEUESTART':
-                                laststart = qdate
-                        if qaction in ['AGENTLOGIN', 'UNPAUSE', 'PAUSE', 'AGENTCALLBACKLOGIN', 'AGENTCALLBACKLOGOFF', 'AGENTLOGOFF', 'ADDMEMBER', 'REMOVEMEMBER']:
+                                last_start = qdate
+                        if qaction in ['AGENTLOGIN', 'AGENTCALLBACKLOGIN', 'AGENTLOGOFF', 'AGENTCALLBACKLOGOFF']:
                                 if qaction == 'AGENTCALLBACKLOGIN':
                                         agentid = 'Agent/' + line[3]
                                 else:
                                         agentid = line[3]
                                 if agentid.startswith('Agent/') and len(agentid) > 6:
-                                        if agentid not in last_agent:
-                                                last_agent[agentid] = {}
-                                        last_agent[agentid][qaction] = qdate
+                                        if agentid not in self.last_agents[astid]:
+                                                self.last_agents[astid][agentid] = {}
+                                        self.last_agents[astid][agentid][qaction] = qdate
+                        if qaction in ['UNPAUSE', 'PAUSE', 'ADDMEMBER', 'REMOVEMEMBER']:
+                                agentid = line[3]
+                                if agentid.startswith('Agent/') and len(agentid) > 6:
+                                        if qname not in self.last_queues[astid]:
+                                                self.last_queues[astid][qname] = {}
+                                        if agentid not in self.last_queues[astid][qname]:
+                                                self.last_queues[astid][qname][agentid] = {}
+                                        self.last_queues[astid][qname][agentid][qaction] = qdate
                 qlog.close()
-                for aid, v in last_agent.iteritems():
-                        print astid, laststart, aid, v
+                for aid, v in self.last_agents[astid].iteritems():
+                        toremove = []
+                        for act, adate in v.iteritems():
+                                if adate < last_start:
+                                        toremove.append(act)
+                        for tr in toremove:
+                                del v[tr]
+                        if v:
+                                if 'AGENTCALLBACKLOGOFF' in v and 'AGENTCALLBACKLOGIN' in v:
+                                        if v['AGENTCALLBACKLOGOFF'] < v['AGENTCALLBACKLOGIN']:
+                                                del v['AGENTCALLBACKLOGOFF']
+                                        else:
+                                                del v['AGENTCALLBACKLOGIN']
+                for qid, vv in self.last_queues[astid].iteritems():
+                        for aid, v in vv.iteritems():
+                                toremove = []
+                                for act, adate in v.iteritems():
+                                        if adate < last_start:
+                                                toremove.append(act)
+                                for tr in toremove:
+                                        del v[tr]
+                                if v:
+                                        if 'PAUSE' in v and 'UNPAUSE' in v:
+                                                if v['PAUSE'] < v['UNPAUSE']:
+                                                        del v['PAUSE']
+                                                else:
+                                                        del v['UNPAUSE']
+                                        if 'ADDMEMBER' in v and 'REMOVEMEMBER' in v:
+                                                if v['ADDMEMBER'] < v['REMOVEMEMBER']:
+                                                        del v['ADDMEMBER']
+                                                else:
+                                                        del v['REMOVEMEMBER']
+                                                        
                 # COMPLETEAGENT : end of successful call
                 # CONFIGRELOAD, QUEUESTART
                 # RINGNOANSWER
@@ -1294,7 +1351,7 @@ class XivoCTICommand(BaseCommand):
                         if len(num2) == LOCALNUMSIZE and num2 not in clidlist:
                                 clidlist.append(num2)
                 return clidlist
-
+        
         def __agentnum__(self, userinfo):
                 astid = userinfo.get('astid')
                 if 'agentid' in userinfo and userinfo['agentid']:
@@ -1308,9 +1365,9 @@ class XivoCTICommand(BaseCommand):
                 if astid not in self.stats_queues:
                         return
                 if queuename not in self.stats_queues[astid]:
-                        self.stats_queues[astid][queuename] = {'ENTERQUEUE' : [],
-                                                               'CONNECT' : [],
-                                                               'ABANDON' : []}
+                        self.stats_queues[astid][queuename] = { 'ENTERQUEUE' : [],
+                                                                'CONNECT' : [],
+                                                                'ABANDON' : [] }
                 time_now = int(time.time())
                 time_1ha = time_now - 3600
                 for fieldname in ['ENTERQUEUE', 'CONNECT', 'ABANDON']:
@@ -2251,6 +2308,7 @@ class XivoCTICommand(BaseCommand):
                         log.warning('ami_queuememberpaused : %s : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
                         return
                 
+                event['Xivo-StateTime'] = time.time()
                 self.weblist['queues'][astid].queuememberupdate(queue, location, event)
                 if location.startswith('Agent/'):
                         if paused == '0':
@@ -2300,6 +2358,19 @@ class XivoCTICommand(BaseCommand):
                 # log.info('ami_queuestatuscomplete %s : %s' % (astid, event))
                 for qname in self.weblist['queues'][astid].get_queues():
                         self.__ami_execute__(astid, 'sendcommand', 'Command', [('Command', 'show queue %s' % qname)])
+
+                for aid, v in self.last_agents[astid].iteritems():
+                        if v:
+                                print astid, aid, v
+                for qid, vv in self.last_queues[astid].iteritems():
+                        for aid, v in vv.iteritems():
+                                if v:
+                                        if qid in self.weblist['queues'][astid].keeplist and aid in self.weblist['queues'][astid].keeplist[qid]['agents']:
+                                                qastatus = self.weblist['queues'][astid].keeplist[qid]['agents'][aid]
+                                                if qastatus.get('Paused') == '1':
+                                                        if 'PAUSE' in v:
+                                                                qpausetime = int(v['PAUSE'])
+                                                                qastatus['Xivo-StateTime'] = qpausetime
                 return
         
         def ami_userevent(self, astid, event):
@@ -3343,8 +3414,8 @@ class XivoCTICommand(BaseCommand):
                            'function' : 'sendlist',
                            'payload' : fullstat }
                 return self.__cjson_encode__(tosend)
-
-
+        
+        
         # \brief Builds the features_get reply.
         def __build_features_get__(self, userid):
                 userinfo = self.ulist_ng.keeplist[userid]
