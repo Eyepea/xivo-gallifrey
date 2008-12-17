@@ -14,7 +14,7 @@
 Index: asterisk-1.4.22/apps/app_dial.c
 ===================================================================
 --- asterisk-1.4.22.orig/apps/app_dial.c	2008-08-06 01:13:20.000000000 +0200
-+++ asterisk-1.4.22/apps/app_dial.c	2008-11-28 09:57:51.000000000 +0100
++++ asterisk-1.4.22/apps/app_dial.c	2008-11-28 12:29:47.000000000 +0100
 @@ -387,16 +387,21 @@
  static void senddialevent(struct ast_channel *src, struct ast_channel *dst)
  {
@@ -50,7 +50,7 @@ Index: asterisk-1.4.22/apps/app_dial.c
 Index: asterisk-1.4.22/apps/app_meetme.c
 ===================================================================
 --- asterisk-1.4.22.orig/apps/app_meetme.c	2008-08-13 22:42:33.000000000 +0200
-+++ asterisk-1.4.22/apps/app_meetme.c	2008-11-28 09:57:51.000000000 +0100
++++ asterisk-1.4.22/apps/app_meetme.c	2008-11-28 12:29:47.000000000 +0100
 @@ -1696,11 +1696,21 @@
  
  	if (!sent_event) {
@@ -187,8 +187,8 @@ Index: asterisk-1.4.22/apps/app_meetme.c
  	res |= ast_register_application(app, conf_exec, synopsis, descrip);
 Index: asterisk-1.4.22/main/manager.c
 ===================================================================
---- asterisk-1.4.22.orig/main/manager.c	2008-11-28 09:57:51.000000000 +0100
-+++ asterisk-1.4.22/main/manager.c	2008-11-28 09:57:51.000000000 +0100
+--- asterisk-1.4.22.orig/main/manager.c	2008-11-28 12:29:47.000000000 +0100
++++ asterisk-1.4.22/main/manager.c	2008-11-28 12:29:47.000000000 +0100
 @@ -1555,49 +1555,53 @@
  				elapsed_seconds = now.tv_sec - c->cdr->start.tv_sec;
  			}
@@ -286,8 +286,8 @@ Index: asterisk-1.4.22/main/manager.c
  		if (!all)
 Index: asterisk-1.4.22/res/res_features.c
 ===================================================================
---- asterisk-1.4.22.orig/res/res_features.c	2008-11-28 09:57:51.000000000 +0100
-+++ asterisk-1.4.22/res/res_features.c	2008-11-28 09:57:51.000000000 +0100
+--- asterisk-1.4.22.orig/res/res_features.c	2008-11-28 12:29:47.000000000 +0100
++++ asterisk-1.4.22/res/res_features.c	2008-11-28 12:29:47.000000000 +0100
 @@ -426,17 +426,23 @@
  		ast_verbose(VERBOSE_PREFIX_2 "Parked %s on %d@%s. Will timeout back to extension [%s] %s, %d in %d seconds\n", pu->chan->name, pu->parkingnum, parking_con, pu->context, pu->exten, pu->priority, (pu->parkingtime/1000));
  
@@ -383,8 +383,8 @@ Index: asterisk-1.4.22/res/res_features.c
  	}
 Index: asterisk-1.4.22/channels/chan_sip.c
 ===================================================================
---- asterisk-1.4.22.orig/channels/chan_sip.c	2008-11-28 09:57:51.000000000 +0100
-+++ asterisk-1.4.22/channels/chan_sip.c	2008-11-28 09:57:51.000000000 +0100
+--- asterisk-1.4.22.orig/channels/chan_sip.c	2008-11-28 12:29:47.000000000 +0100
++++ asterisk-1.4.22/channels/chan_sip.c	2008-12-17 19:36:25.000000000 +0100
 @@ -14798,6 +14798,19 @@
  	ast_set_flag(&transferer->flags[0], SIP_DEFER_BYE_ON_TRANSFER);	/* Delay hangup */
  
@@ -453,14 +453,12 @@ Index: asterisk-1.4.22/channels/chan_sip.c
  			ast_log(LOG_DEBUG, "%s transfer succeeded. Telling transferer.\n", p->refer->attendedtransfer? "Attended" : "Blind");
 Index: asterisk-1.4.22/main/channel.c
 ===================================================================
---- asterisk-1.4.22.orig/main/channel.c	2008-11-28 10:21:29.000000000 +0100
-+++ asterisk-1.4.22/main/channel.c	2008-11-28 10:22:16.000000000 +0100
-@@ -3423,7 +3423,15 @@
- 	if (option_debug > 3)
+--- asterisk-1.4.22.orig/main/channel.c	2008-11-28 12:29:47.000000000 +0100
++++ asterisk-1.4.22/main/channel.c	2008-12-17 19:37:45.000000000 +0100
+@@ -3424,6 +3424,14 @@
  		ast_log(LOG_DEBUG, "Actually Masquerading %s(%d) into the structure of %s(%d)\n",
  			clone->name, clone->_state, original->name, original->_state);
--
-+        
+ 
 +	manager_event(EVENT_FLAG_CALL, "Masquerade",
 +                      "Clone: %s\r\n"
 +                      "CloneState: %s\r\n"
@@ -468,7 +466,35 @@ Index: asterisk-1.4.22/main/channel.c
 +                      "OriginalState: %s\r\n",
 +                      clone->name, ast_state2str(clone->_state),
 +                      original->name, ast_state2str(original->_state));
-+        
++
  	/* XXX This is a seriously wacked out operation.  We're essentially putting the guts of
  	   the clone channel into the original channel.  Start by killing off the original
  	   channel's backend.   I'm not sure we're going to keep this function, because
+Index: asterisk-1.4.22/apps/app_queue.c
+===================================================================
+--- asterisk-1.4.22.orig/apps/app_queue.c	2008-12-17 19:38:22.000000000 +0100
++++ asterisk-1.4.22/apps/app_queue.c	2008-12-17 19:35:18.000000000 +0100
+@@ -1895,6 +1895,7 @@
+ 	} else if (qe->parent->eventwhencalled) {
+ 		char vars[2048];
+ 
++		ast_queue_log(qe->parent->name, qe->chan->uniqueid, tmp->member->membername, "AGENTCALLED", "%ld|", (long)time(NULL) - qe->start);
+ 		manager_event(EVENT_FLAG_AGENT,
+                               "AgentCalled",
+                               "AgentCalled: %s\r\n"
+@@ -1902,6 +1903,7 @@
+                               "ChannelCalling: %s\r\n"
+                               "CallerID: %s\r\n"
+                               "CallerIDName: %s\r\n"
++                              "Queue: %s\r\n"
+                               "Context: %s\r\n"
+                               "Extension: %s\r\n"
+                               "Uniqueid: %s\r\n"
+@@ -1910,6 +1912,7 @@
+                               tmp->interface, tmp->member->membername, qe->chan->name,
+                               tmp->chan->cid.cid_num ? tmp->chan->cid.cid_num : "unknown",
+                               tmp->chan->cid.cid_name ? tmp->chan->cid.cid_name : "unknown",
++                              qe->parent->name,
+                               qe->chan->context,
+                               qe->chan->exten,
+                               qe->chan->uniqueid,
