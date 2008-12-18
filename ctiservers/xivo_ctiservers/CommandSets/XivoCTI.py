@@ -3231,6 +3231,23 @@ class XivoCTICommand(BaseCommand):
                                 if astid is not None and anum:
                                         for queuename in queuenames:
                                                 self.__ami_execute__(astid, 'queuepause', queuename, 'Agent/%s' % anum, 'false')
+                                                
+                elif subcommand == 'pause_all':
+                        astid = myastid
+                        agent_channel = 'Agent/%s' % myagentnum
+                        for qname, qv in self.weblist['queues'][astid].keeplist.iteritems():
+                                for achan, astatus in qv['agents'].iteritems():
+                                        if achan == agent_channel and astatus.get('Paused') == '0':
+                                                self.__ami_execute__(astid, 'queuepause', qname, agent_channel, 'true')
+                                                
+                elif subcommand == 'unpause_all':
+                        astid = myastid
+                        agent_channel = 'Agent/%s' % myagentnum
+                        for qname, qv in self.weblist['queues'][astid].keeplist.iteritems():
+                                for achan, astatus in qv['agents'].iteritems():
+                                        if achan == agent_channel and astatus.get('Paused') == '1':
+                                                self.__ami_execute__(astid, 'queuepause', qname, agent_channel, 'false')
+                                                
                 elif subcommand in ['login', 'logout', 'record', 'stoprecord', 'getfile', 'getfilelist', 'listen']:
                         if len(commandargs) > 2:
                                 astid = commandargs[1]
