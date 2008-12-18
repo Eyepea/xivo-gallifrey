@@ -1485,9 +1485,6 @@ class XivoCTICommand(BaseCommand):
                         self.__sheet_alert__('link', astid, self.uniqueids[astid][uid1]['context'], event, {})
 
                 if chan2.startswith('Agent/'):
-                        msg = self.__build_agupdate__('agentlink', astid, chan2)
-                        self.__send_msg_to_cti_clients__(msg)
-                        
                         # 'onlineincoming' for the agent
                         agent_number = chan2[6:]
                         status = 'onlineincoming'
@@ -1498,12 +1495,16 @@ class XivoCTICommand(BaseCommand):
                         # To identify which queue a call comes from, we match a previous AMI Leave event,
                         # that involved the same channel as the one catched here.
                         # Any less-tricky-method is welcome, though.
+                        qname = None
                         if chan1 in self.queues_channels_list[astid]:
                                 qname = self.queues_channels_list[astid][chan1]
                                 ## del self.queues_channels_list[astid][chan1]
                                 extraevent = {'xivo_queuename' : qname}
                                 self.__sheet_alert__('agentlinked', astid, CONTEXT_UNKNOWN, event, extraevent)
-
+                                
+                        msg = self.__build_agupdate__('agentlink', astid, chan2, { 'queuename' : qname })
+                        self.__send_msg_to_cti_clients__(msg)
+                        
                 # outgoing channel
                 lstinfos1 = [uinfo1]
                 if uinfo1_ag not in lstinfos1:
@@ -1953,7 +1954,7 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def ami_newcallerid(self, astid, event):
-                # print astid, event
+                # log.info('%s ami_newcallerid : %s' % (astid, event))
                 uniqueid = event.get('Uniqueid')
                 # event.get('CID-CallingPres') # 0 (Presentation Allowed, Not Screened)
                 # warning : the second such event comes After the Dial
@@ -1971,15 +1972,16 @@ class XivoCTICommand(BaseCommand):
                                 self.uniqueids[astid][uniqueid]['extension'] = event.get('Extension')
                                 self.uniqueids[astid][uniqueid]['time-newexten-dial'] = time.time()
                         elif application == 'Macro':
-                                log.info('%s newexten Macro : %s %s %s %s' % (astid, uniqueid,
+                                log.info('%s ami_newexten Macro : %s %s %s %s' % (astid, uniqueid,
                                                                               event.get('Context'), event.get('AppData'), event.get('Extension')))
                         elif application == 'Park':
-                                log.info('%s newexten Park : %s %s %s' % (astid, uniqueid, event.get('Context'), event.get('Extension')))
+                                log.info('%s ami_newexten Park : %s %s %s' % (astid, uniqueid, event.get('Context'), event.get('Extension')))
                                 self.uniqueids[astid][uniqueid]['parkexten'] = event.get('Extension')
                 self.__sheet_alert__('outgoing', astid, event.get('Context'), event)
                 return
         
         def ami_newchannel(self, astid, event):
+                # log.info('%s ami_newchannel : %s' % (astid, event))
                 channel = event.get('Channel')
                 uniqueid = event.get('Uniqueid')
                 state = event.get('State')
@@ -2784,7 +2786,7 @@ class XivoCTICommand(BaseCommand):
                         log.warning('%s ami_leave : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
                         return
                 
-                log.info('%s AMI Leave (Queue) %s %s %s' % (astid, queue, chan, count))
+                log.info('%s AMI Leave (Queue) %s %s %s' % (astid, queue, chan, event))
                 
                 self.weblist['queues'][astid].queueentry_remove(queue, chan)
                 event['Calls'] = count
