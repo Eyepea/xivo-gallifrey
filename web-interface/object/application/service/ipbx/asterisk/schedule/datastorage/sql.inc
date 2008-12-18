@@ -23,6 +23,10 @@ class xivo_application_service_asterisk_schedule_sql extends xivo_application_se
 				       null,
 				       array('linked','action','actionarg1','actionarg2'));
 
+		$this->_dso->joinwhere($this->_table['dialaction'],
+				       $this->_table['dialaction'].'.event = %s',
+				       'inschedule');
+
 		$this->_dso->leftjoin($this->_table['userfeatures'],
 				      $this->_table['dialaction'].'.actionarg1 = '.$this->_table['userfeatures'].'.id',
 				      null,
