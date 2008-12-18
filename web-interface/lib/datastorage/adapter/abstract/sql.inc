@@ -1677,23 +1677,21 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 
 		if(xivo_haslen($query) === false)
 		{
-			$column = trim($column);
-			$table = trim($table);
-
 			$tabledot = '';
 
-			if($table !== '')
+			$colobj = is_object($column);
+
+			if(($column = $this->_get_scalar($column,true)) === '' || $column === '*')
+				$column = '*';
+
+			if(($table = trim($table)) !== '')
 			{
 				if(isset($this->_table[$table]) === false)
 					return(false);
 
-				$tabledot = $this->quote_identifier($table).'.';
+				if($colobj === false || $column === '*')
+					$tabledot = $this->quote_identifier($table).'.';
 			}
-
-			if($column === '' || $column === '*')
-				$column = '*';
-			else
-				$column = $this->quote_identifier($column);
 
 			if(($from = $this->get_from()) === null)
 				return(false);
