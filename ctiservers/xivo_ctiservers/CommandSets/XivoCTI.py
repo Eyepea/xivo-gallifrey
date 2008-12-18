@@ -954,10 +954,10 @@ class XivoCTICommand(BaseCommand):
                         actionopt = self.sheet_actions.get(where)
                         whoms = actionopt.get('whom')
                         if whoms is None or whoms == '':
-                                log.warning('__sheet_alert__ (%s) : whom field for %s action has not been defined'
-                                          % (astid, where))
+                                log.warning('%s __sheet_alert__ : whom field for %s action has not been defined'
+                                            % (astid, where))
                                 return calleridsolved
-                        log.info('__SHEET_ALERT__ %s %s %s' % (astid, where, whoms))
+                        log.info('%s __SHEET_ALERT__ %s %s' % (astid, where, whoms))
                         
                         linestosend = ['<?xml version="1.0" encoding="utf-8"?>',
                                        '<profile sessionid="sessid">',
@@ -1079,7 +1079,7 @@ class XivoCTICommand(BaseCommand):
                         dirlist = actionopt.get('directories')
                         if 'xivo-tomatch-callerid' in itemdir:
                                 callingnum = itemdir['xivo-tomatch-callerid']
-                                log.info('xivo-tomatch-callerid : looking for %s' % callingnum)
+                                log.info('%s xivo-tomatch-callerid : looking for %s' % (astid, callingnum))
                                 if dirlist is not None:
                                         for dirname in dirlist.split(','):
                                                 if context in self.ctxlist.ctxlist and dirname in self.ctxlist.ctxlist[context]:
@@ -1379,7 +1379,7 @@ class XivoCTICommand(BaseCommand):
                                 self.stats_queues[astid][queuename][fieldname].remove(t)
                 if fname:
                         self.stats_queues[astid][queuename][fname].append(time_now)
-                        log.info('__update_queue_stats__ for %s %s %s' % (astid, queuename, fname))
+                        log.info('%s __update_queue_stats__ for %s %s' % (astid, queuename, fname))
                 self.weblist['queues'][astid].keeplist[queuename]['stats']['Xivo-Join'] = len(self.stats_queues[astid][queuename]['ENTERQUEUE'])
                 self.weblist['queues'][astid].keeplist[queuename]['stats']['Xivo-Link'] = len(self.stats_queues[astid][queuename]['CONNECT'])
                 self.weblist['queues'][astid].keeplist[queuename]['stats']['Xivo-Lost'] = len(self.stats_queues[astid][queuename]['ABANDON'])
@@ -1456,7 +1456,7 @@ class XivoCTICommand(BaseCommand):
                 
                 if uid1info['link'].startswith('Agent/') and 'join' in uid1info:
                         queuename = uid1info['join'].get('queue')
-                        log.info('STAT LINK %s %s %s' % (astid, queuename, uid1info['link']))
+                        log.info('%s STAT LINK %s %s' % (astid, queuename, uid1info['link']))
                         self.__update_queue_stats__(astid, queuename, 'CONNECT')
                         
                 phoneid1 = self.__phoneid_from_channel__(astid, chan1)
@@ -1586,7 +1586,7 @@ class XivoCTICommand(BaseCommand):
                         clength = {'Xivo-Wait' : uid1info['time-link'] - uid1info['time-newchannel'],
                                    'Xivo-Chat' : uid1info['time-unlink'] - uid1info['time-link']
                                    }
-                        log.info('STAT UNLINK %s %s %s' % (astid, queuename, clength))
+                        log.info('%s STAT UNLINK %s %s' % (astid, queuename, clength))
                         if astid in self.stats_queues:
                                 if queuename not in self.stats_queues[astid]:
                                         self.stats_queues[astid][queuename] = {}
@@ -1698,7 +1698,7 @@ class XivoCTICommand(BaseCommand):
                 uid = event.get('Uniqueid')
                 begin = (event.get('Begin') == 'Yes')
                 if direction == 'Received':
-                        log.info('ami_dtmf %s <%s> %s %s %s %s' % (astid, digit, channel, uid, begin, time.time()))
+                        log.info('%s ami_dtmf <%s> %s %s %s %s' % (astid, digit, channel, uid, begin, time.time()))
                         event['xivo-timestamp'] = time.time()
                         self.ignore_dtmf[astid][uid] = event
                 return
@@ -1755,11 +1755,11 @@ class XivoCTICommand(BaseCommand):
                                                         if value == 'true':
                                                                 log.info('%s %s channel MONITORED' % (astid, channel))
                                                 else:
-                                                        log.info('AMI %s Response=Success (%s) : %s = %s (%s)'
+                                                        log.info('%s AMI Response=Success (%s) : %s = %s (%s)'
                                                                  % (astid, actionid, variable, value, channel))
                                         del self.getvar_requests[actionid]
                         else:
-                                log.warning('AMI %s Response=Success : event = %s' % (astid, event))
+                                log.warning('%s AMI Response=Success : event = %s' % (astid, event))
                 elif msg == 'Extension Status':
                         # this is the reply to 'ExtensionState'
                         self.amiresponse_extensionstatus(astid, event)
@@ -1789,12 +1789,12 @@ class XivoCTICommand(BaseCommand):
                              'Agent logged out',
                              'Agent logged in']:
                         if actionid in self.ami_requests:
-                                # log.info('AMI %s Response=Success : (tracked) %s %s' % (astid, event, self.ami_requests[actionid]))
+                                # log.info('%s AMI Response=Success : (tracked) %s %s' % (astid, event, self.ami_requests[actionid]))
                                 del self.ami_requests[actionid]
                         else:
-                                log.info('AMI %s Response=Success : (tracked) %s' % (astid, event))
+                                log.info('%s AMI Response=Success : (tracked) %s' % (astid, event))
                 else:
-                        log.warning('AMI %s Response=Success : untracked message (%s) <%s>' % (astid, actionid, msg))
+                        log.warning('%s AMI Response=Success : untracked message (%s) <%s>' % (astid, actionid, msg))
                 return
 
         def amiresponse_error(self, astid, event, nocolon):
@@ -1803,7 +1803,7 @@ class XivoCTICommand(BaseCommand):
                 if msg == 'Originate failed':
                         if actionid in self.faxes:
                                 faxid = self.faxes[actionid]
-                                log.warning('AMI %s : fax not sent %s %s %s %s'
+                                log.warning('%s AMI : fax not sent %s %s %s %s'
                                             % (astid, faxid.size, faxid.number, faxid.hide, faxid.uinfo))
                                 tosend = { 'class' : 'faxprogress',
                                            'status' : 'ko',
@@ -1811,11 +1811,11 @@ class XivoCTICommand(BaseCommand):
                                 self.__send_msg_to_cti_client__(faxid.uinfo, self.__cjson_encode__(tosend))
                                 del self.faxes[actionid]
                         else:
-                                log.warning('AMI %s Response=Error : (%s) <%s>' % (astid, actionid, msg))
+                                log.warning('%s AMI Response=Error : (%s) <%s>' % (astid, actionid, msg))
                 elif msg == 'Authentication failed':
-                        log.warning('AMI %s : Not allowed to connect to this Manager Interface' % astid)
+                        log.warning('%s AMI : Not allowed to connect to this Manager Interface' % astid)
                 elif msg == 'Invalid/unknown command':
-                        log.warning('AMI %s : Invalid/unknown command : %s' % (astid, event))
+                        log.warning('%s AMI : Invalid/unknown command : %s' % (astid, event))
                 elif msg in ['No such channel',
                              'No such agent',
                              'Member not dynamic',
@@ -1825,16 +1825,16 @@ class XivoCTICommand(BaseCommand):
                              'Unable to remove interface from queue: No such queue',
                              'Unable to remove interface: Not there'] :
                         if actionid in self.ami_requests:
-                                log.warning('AMI %s Response=Error : %s %s' % (astid, event, self.ami_requests[actionid]))
+                                log.warning('%s AMI Response=Error : %s %s' % (astid, event, self.ami_requests[actionid]))
                                 del self.ami_requests[actionid]
                         else:
-                                log.warning('AMI %s Response=Error : %s' % (astid, event))
+                                log.warning('%s AMI Response=Error : %s' % (astid, event))
                 else:
                         if actionid in self.ami_requests:
-                                log.warning('AMI %s Response=Error : (unknown message) %s %s' % (astid, event, self.ami_requests[actionid]))
+                                log.warning('%s AMI Response=Error : (unknown message) %s %s' % (astid, event, self.ami_requests[actionid]))
                                 del self.ami_requests[actionid]
                         else:
-                                log.warning('AMI %s Response=Error : (unknown message) %s' % (astid, event))
+                                log.warning('%s AMI Response=Error : (unknown message) %s' % (astid, event))
                 return
 
         def amiresponse_mailboxcount(self, astid, event):
@@ -1914,7 +1914,7 @@ class XivoCTICommand(BaseCommand):
                 This is an Asterisk 1.4 event.
                 A few variables are available, however most of them seem useless in the realtime case.
                 """
-                log.info('ami_channelreload %s : %s' % (astid, event))
+                log.info('%s ami_channelreload : %s' % (astid, event))
                 return
 
         def ami_aoriginatesuccess(self, astid, event):
@@ -1927,7 +1927,7 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def ami_originateresponse(self, astid, event):
-                log.info('ami_originateresponse %s : %s' % (astid, event))
+                log.info('%s ami_originateresponse : %s' % (astid, event))
                 uniqueid = event.get('Uniqueid')
                 actionid = event.get('ActionID')
                 if uniqueid in self.uniqueids[astid]:
@@ -1949,7 +1949,7 @@ class XivoCTICommand(BaseCommand):
         def ami_newstate(self, astid, event):
                 # print '(phone)', astid, self.__phoneid_from_channel__(astid, event.get('Channel')), event.get('State')
                 # uniqueid = event.get('Uniqueid')
-                # log.info('STAT NEWS %s %s %s %s %s' % (astid, time.time(), uniqueid, event.get('Channel'), event.get('State')))
+                # log.info('%s STAT NEWS %s %s %s %s' % (astid, time.time(), uniqueid, event.get('Channel'), event.get('State')))
                 return
 
         def ami_newcallerid(self, astid, event):
@@ -1971,10 +1971,10 @@ class XivoCTICommand(BaseCommand):
                                 self.uniqueids[astid][uniqueid]['extension'] = event.get('Extension')
                                 self.uniqueids[astid][uniqueid]['time-newexten-dial'] = time.time()
                         elif application == 'Macro':
-                                log.info('newexten Macro : %s %s %s %s %s' % (astid, uniqueid,
+                                log.info('%s newexten Macro : %s %s %s %s' % (astid, uniqueid,
                                                                               event.get('Context'), event.get('AppData'), event.get('Extension')))
                         elif application == 'Park':
-                                log.info('newexten Park : %s %s %s %s' % (astid, uniqueid, event.get('Context'), event.get('Extension')))
+                                log.info('%s newexten Park : %s %s %s' % (astid, uniqueid, event.get('Context'), event.get('Extension')))
                                 self.uniqueids[astid][uniqueid]['parkexten'] = event.get('Extension')
                 self.__sheet_alert__('outgoing', astid, event.get('Context'), event)
                 return
@@ -2122,7 +2122,7 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def ami_agentcalled(self, astid, event):
-                log.info('ami_agentcalled %s : %s' % (astid, event))
+                log.info('%s ami_agentcalled : %s' % (astid, event))
                 agent_channel = event.get('AgentCalled')
                 if agent_channel.startswith('Agent/'):
                         agent_number = agent_channel[6:]
@@ -2143,11 +2143,11 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def ami_agentdump(self, astid, event):
-                log.info('ami_agentdump %s : %s' % (astid, event))
+                log.info('%s ami_agentdump : %s' % (astid, event))
                 return
         
         def ami_agentconnect(self, astid, event):
-                log.info('ami_agentconnect %s : %s' % (astid, event))
+                log.info('%s ami_agentconnect : %s' % (astid, event))
                 agent_channel = event.get('Member')
                 if agent_channel.startswith('Agent/'):
                         agent_number = agent_channel[6:]
@@ -2201,7 +2201,8 @@ class XivoCTICommand(BaseCommand):
                                                                                                     'link' : False
                                                                                                     } )
                         else:
-                                log.warning('I received some statuses for an agent <%s> while the XIVO config does not seem to know it' % agent_number)
+                                log.warning('%s : received statuses for <%s> unknown by XIVO'
+                                            % (astid, agent_number))
                 return
         
         # XIVO-WEBI: beg-data
@@ -2211,15 +2212,15 @@ class XivoCTICommand(BaseCommand):
         # XIVO-WEBI: end-data
         def ami_queuecallerabandon(self, astid, event):
                 if astid not in self.weblist['queues']:
-                        log.warning('ami_queuecallerabandon : no queue list has been defined for %s' % astid)
+                        log.warning('%s ami_queuecallerabandon : no queue list has been defined' % astid)
                         return
                 queue = event.get('Queue')
                 uniqueid = event.get('Uniqueid')
                 if queue not in self.weblist['queues'][astid].keeplist:
-                        log.warning('ami_queuecallerabandon : %s : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        log.warning('%s ami_queuecallerabandon : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
                         return
                 
-                log.info('STAT ABANDON %s %s %s' % (astid, queue, uniqueid))
+                log.info('%s STAT ABANDON %s %s' % (astid, queue, uniqueid))
                 self.__update_queue_stats__(astid, queue, 'ABANDON')
                 # Asterisk 1.4 event
                 # {'Queue': 'qcb_00000', 'OriginalPosition': '1', 'Uniqueid': '1213891256.41', 'Privilege': 'agent,all', 'Position': '1', 'HoldTime': '2', 'Event': 'QueueCallerAbandon'}
@@ -2228,14 +2229,14 @@ class XivoCTICommand(BaseCommand):
         
         def ami_queueentry(self, astid, event):
                 if astid not in self.weblist['queues']:
-                        log.warning('ami_queueentry : no queue list has been defined for %s' % astid)
+                        log.warning('%s ami_queueentry : no queue list has been defined' % astid)
                         return
                 queue = event.get('Queue')
                 position = event.get('Position')
                 wait = int(event.get('Wait'))
                 channel = event.get('Channel')
                 if queue not in self.weblist['queues'][astid].keeplist:
-                        log.warning('ami_queueentry : %s : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        log.warning('%s ami_queueentry : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
                         return
                 
                 calleridnum = None
@@ -2251,13 +2252,13 @@ class XivoCTICommand(BaseCommand):
         
         def ami_queuememberadded(self, astid, event):
                 if astid not in self.weblist['queues']:
-                        log.warning('ami_queuememberadded : no queue list has been defined for %s' % astid)
+                        log.warning('%s ami_queuememberadded : no queue list has been defined' % astid)
                         return
                 queue = event.get('Queue')
                 location = event.get('Location')
                 paused = event.get('Paused')
                 if queue not in self.weblist['queues'][astid].keeplist:
-                        log.warning('ami_queuememberadded : %s : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        log.warning('%s ami_queuememberadded : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
                         return
                 
                 self.weblist['queues'][astid].queuememberupdate(queue, location, event)
@@ -2267,12 +2268,12 @@ class XivoCTICommand(BaseCommand):
         
         def ami_queuememberremoved(self, astid, event):
                 if astid not in self.weblist['queues']:
-                        log.warning('ami_queuememberremoved : no queue list has been defined for %s' % astid)
+                        log.warning('%s ami_queuememberremoved : no queue list has been defined' % astid)
                         return
                 queue = event.get('Queue')
                 location = event.get('Location')
                 if queue not in self.weblist['queues'][astid].keeplist:
-                        log.warning('ami_queuememberremoved : %s : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        log.warning('%s ami_queuememberremoved : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
                         return
                 
                 self.weblist['queues'][astid].queuememberremove(queue, location)
@@ -2298,19 +2299,20 @@ class XivoCTICommand(BaseCommand):
                 tosend = { 'class' : 'agents',
                            'function' : 'update',
                            'payload' : arrgs }
-                return self.__cjson_encode__(tosend)
+                jsec = self.__cjson_encode__(tosend)
+                return jsec
         
         def ami_queuememberstatus(self, astid, event):
                 # print 'AMI_QUEUEMEMBERSTATUS', event
                 if astid not in self.weblist['queues']:
-                        log.warning('ami_queuememberstatus : no queue list has been defined for %s' % astid)
+                        log.warning('%s ami_queuememberstatus : no queue list has been defined' % astid)
                         return
                 status = event.get('Status')
                 queue = event.get('Queue')
                 location = event.get('Location')
                 paused = event.get('Paused')
                 if queue not in self.weblist['queues'][astid].keeplist:
-                        log.warning('ami_queuememberstatus : %s : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        log.warning('%s ami_queuememberstatus : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
                         return
                 
                 if location.startswith('Agent/'):
@@ -2335,13 +2337,13 @@ class XivoCTICommand(BaseCommand):
         def ami_queuememberpaused(self, astid, event):
                 # print 'AMI_QUEUEMEMBERPAUSED', event
                 if astid not in self.weblist['queues']:
-                        log.warning('ami_queuememberpaused : no queue list has been defined for %s' % astid)
+                        log.warning('%s ami_queuememberpaused : no queue list has been defined' % astid)
                         return
                 queue = event.get('Queue')
                 paused = event.get('Paused')
                 location = event.get('Location')
                 if queue not in self.weblist['queues'][astid].keeplist:
-                        log.warning('ami_queuememberpaused : %s : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        log.warning('%s ami_queuememberpaused : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
                         return
                 
                 event['Xivo-StateTime'] = time.time()
@@ -2357,12 +2359,12 @@ class XivoCTICommand(BaseCommand):
         
         def ami_queueparams(self, astid, event):
                 if astid not in self.weblist['queues']:
-                        log.warning('ami_queueparams : no queue list has been defined for %s' % astid)
+                        log.warning('%s ami_queueparams : no queue list has been defined' % astid)
                         return
                 queue = event.get('Queue')
                 self.weblist['queues'][astid].update_queuestats(queue, event)
                 if queue not in self.weblist['queues'][astid].keeplist:
-                        log.warning('ami_queueparams : %s : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        log.warning('%s ami_queueparams : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
                         return
                 
                 tosend = { 'class' : 'queues',
@@ -2376,12 +2378,12 @@ class XivoCTICommand(BaseCommand):
         
         def ami_queuemember(self, astid, event):
                 if astid not in self.weblist['queues']:
-                        log.warning('ami_queuemember : no queue list has been defined for %s' % astid)
+                        log.warning('%s ami_queuemember : no queue list has been defined' % astid)
                         return
                 queue = event.get('Queue')
                 location = event.get('Location')
                 if queue not in self.weblist['queues'][astid].keeplist:
-                        log.warning('ami_queuemember : %s : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        log.warning('%s ami_queuemember : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
                         return
                 
                 self.weblist['queues'][astid].queuememberupdate(queue, location, event)
@@ -2389,9 +2391,9 @@ class XivoCTICommand(BaseCommand):
         
         def ami_queuestatuscomplete(self, astid, event):
                 if astid not in self.weblist['queues']:
-                        log.warning('ami_queuestatuscomplete : no queue list has been defined for %s' % astid)
+                        log.warning('%s ami_queuestatuscomplete : no queue list has been defined' % astid)
                         return
-                # log.info('ami_queuestatuscomplete %s : %s' % (astid, event))
+                # log.info('%s ami_queuestatuscomplete : %s' % (astid, event))
                 for qname in self.weblist['queues'][astid].get_queues():
                         self.__ami_execute__(astid, 'sendcommand', 'Command', [('Command', 'show queue %s' % qname)])
 
@@ -2414,7 +2416,7 @@ class XivoCTICommand(BaseCommand):
                 if eventname == 'DID':
                         uniqueid = event.get('UNIQUEID')
                         if uniqueid in self.uniqueids[astid]:
-                                log.info('AMI %s UserEvent %s %s' % (astid, eventname, self.uniqueids[astid][uniqueid]))
+                                log.info('%s AMI UserEvent %s %s' % (astid, eventname, self.uniqueids[astid][uniqueid]))
                                 self.uniqueids[astid][uniqueid]['DID'] = True
                         self.__sheet_alert__('incomingdid', astid,
                                              event.get('XIVO_REAL_CONTEXT', CONTEXT_UNKNOWN),
@@ -2423,14 +2425,14 @@ class XivoCTICommand(BaseCommand):
                 elif eventname == 'OUTCALL':
                         uniqueid = event.get('UNIQUEID')
                         if uniqueid in self.uniqueids[astid]:
-                                log.info('AMI %s UserEvent %s %s' % (astid, eventname, self.uniqueids[astid][uniqueid]))
+                                log.info('%s AMI UserEvent %s %s' % (astid, eventname, self.uniqueids[astid][uniqueid]))
                                 self.uniqueids[astid][uniqueid]['OUTCALL'] = True
                         self.__sheet_alert__('outcall', astid,
                                              event.get('XIVO_CONTEXT', CONTEXT_UNKNOWN),
                                              event)
                         
                 elif eventname == 'Feature':
-                        log.info('AMI %s UserEvent %s %s' % (astid, eventname, event))
+                        log.info('%s AMI UserEvent %s %s' % (astid, eventname, event))
                         repstr = { event.get('Function') : { 'enabled' : bool(int(event.get('Status'))),
                                                              'number' : event.get('Value') } }
                         userid = '%s/%s' % (astid, event.get('XIVO_USERID'))
@@ -2441,7 +2443,7 @@ class XivoCTICommand(BaseCommand):
                         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                         
                 elif eventname == 'LocalCall':
-                        log.info('AMI %s UserEvent %s %s' % (astid, eventname, event))
+                        log.info('%s AMI UserEvent %s %s' % (astid, eventname, event))
                         uniqueid = event.get('UNIQUEID')
                         appli = event.get('XIVO_ORIGAPPLI')
                         actionid = event.get('XIVO_ORIGACTIONID')
@@ -2450,7 +2452,7 @@ class XivoCTICommand(BaseCommand):
                                         self.uniqueids[astid][uniqueid].update({'time-chanspy' : time.time(),
                                                                                 'actionid' : actionid})
                 else:
-                        log.info('AMI %s untracked UserEvent %s' % (astid, event))
+                        log.info('%s AMI untracked UserEvent %s' % (astid, event))
                 return
 
         def ami_faxsent(self, astid, event):
@@ -2677,7 +2679,9 @@ class XivoCTICommand(BaseCommand):
                         priority = event.get('Priority')
                         context = event.get('Context')
                         extension = event.get('Extension')
-                        print 'ami_status', astid, state, uniqueid, channel, link, '/', priority, context, extension, seconds
+                        log.info('%s ami_status %s %s %s %s / %s %s %s %s' % (astid,
+                                                                              state, uniqueid, channel, link,
+                                                                              priority, context, extension, seconds))
                         self.uniqueids[astid][uniqueid].update({'link' : link})
                         
                         phoneid = self.__phoneid_from_channel__(astid, channel)
@@ -2716,9 +2720,10 @@ class XivoCTICommand(BaseCommand):
                         seconds = event.get('Seconds')
                         context = event.get('Context')
                         extension = event.get('Extension')
-                        print 'ami_status', astid, state, uniqueid, channel, seconds, context, extension
+                        log.info('%s ami_status %s %s %s %s %s %s' % (astid,
+                                                                      state, uniqueid, channel, context, extension, seconds))
                 elif state == 'Ringing': # Callee
-                        print 'ami_status', astid, state, uniqueid, channel
+                        log.info('%s ami_status %s %s %s' % (astid, state, uniqueid, channel))
                         # ami_status noxivo-clg Ringing 1227551513.1501 SIP/102-081ce708
                         # ami_status noxivo-clg Ring 1227551513.1500 SIP/103-b6b12cc8 2 default 102
                 else:
@@ -2731,7 +2736,7 @@ class XivoCTICommand(BaseCommand):
         
         def ami_join(self, astid, event):
                 if astid not in self.weblist['queues']:
-                        log.warning('ami_join : %s : no queue list has been defined' % astid)
+                        log.warning('%s ami_join : no queue list has been defined' % astid)
                         return
                 # print 'AMI Join (Queue)', event
                 chan  = event.get('Channel')
@@ -2742,16 +2747,16 @@ class XivoCTICommand(BaseCommand):
                 position = event.get('Position')
                 uniqueid = event.get('Uniqueid')
                 if queue not in self.weblist['queues'][astid].keeplist:
-                        log.warning('ami_join : %s : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        log.warning('%s ami_join : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
                         return
                 
                 if uniqueid in self.uniqueids[astid]:
                         self.uniqueids[astid][uniqueid]['join'] = {'queue' : queue,
                                                                    'time' : time.time()}
-                log.info('STAT JOIN %s %s %s %s' % (astid, queue, chan, uniqueid))
+                log.info('%s STAT JOIN %s %s %s' % (astid, queue, chan, uniqueid))
                 self.__update_queue_stats__(astid, queue, 'ENTERQUEUE')
                 self.__sheet_alert__('incomingqueue', astid, CONTEXT_UNKNOWN, event)
-                log.info('AMI Join (Queue) %s %s %s %s' % (astid, queue, chan, count))
+                log.info('%s AMI Join (Queue) %s %s %s' % (astid, queue, chan, count))
                 self.weblist['queues'][astid].queueentry_update(queue, chan, position, 0,
                                                                 clid, clidname)
                 event['Calls'] = count
@@ -2768,7 +2773,7 @@ class XivoCTICommand(BaseCommand):
         
         def ami_leave(self, astid, event):
                 if astid not in self.weblist['queues']:
-                        log.warning('ami_leave : no queue list has been defined for %s' % astid)
+                        log.warning('%s ami_leave : no queue list has been defined' % astid)
                         return
                 # print 'AMI Leave (Queue)', astid, event
                 # if needed, a 'reason' field could be convenient to catch here
@@ -2776,10 +2781,10 @@ class XivoCTICommand(BaseCommand):
                 queue = event.get('Queue')
                 count = event.get('Count')
                 if queue not in self.weblist['queues'][astid].keeplist:
-                        log.warning('ami_leave : %s : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        log.warning('%s ami_leave : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
                         return
                 
-                log.info('AMI Leave (Queue) %s %s %s' % (queue, chan, count))
+                log.info('%s AMI Leave (Queue) %s %s %s' % (astid, queue, chan, count))
                 
                 self.weblist['queues'][astid].queueentry_remove(queue, chan)
                 event['Calls'] = count
@@ -2812,9 +2817,9 @@ class XivoCTICommand(BaseCommand):
                         self.uniqueids[astid][uid] = {'channel' : newname}
                         del self.channels[astid][oldname]
                         self.channels[astid][newname] = uid
-                        log.info('AMI Rename %s %s %s %s (success)' % (astid, uid, oldname, newname))
+                        log.info('%s AMI Rename %s %s %s (success)' % (astid, uid, oldname, newname))
                 else:
-                        log.info('AMI Rename %s %s %s %s (failure)' % (astid, uid, oldname, newname))
+                        log.info('%s AMI Rename %s %s %s (failure)' % (astid, uid, oldname, newname))
                 return
         # END of AMI events
         
@@ -3130,7 +3135,7 @@ class XivoCTICommand(BaseCommand):
                                    'payload' : { 'agents' : self.weblist['queues'][astid].keeplist[qname]['agents'],
                                                  'entries' : self.weblist['queues'][astid].keeplist[qname]['channels'] } }
                         cjsonenc = self.__cjson_encode__(tosend)
-                        log.info('__build_queue_status__ : %s' % cjsonenc)
+                        log.info('%s __build_queue_status__ : %s' % (astid, cjsonenc))
                         return cjsonenc
                 else:
                         return None
@@ -3653,7 +3658,7 @@ class XivoCTICommand(BaseCommand):
                 astid = uinfo.get('astid')
                 if astid in self.configs:
                         channel_peer = ''
-                        log.info('a HANGUP is attempted for %s on %s channel=%s' % (uinfo.get('fullname'), astid, channel))
+                        log.info('%s a HANGUP is attempted for %s on channel %s' % (astid, uinfo.get('fullname'), channel))
                         phoneid = uinfo.get('techlist')[0]
                         if phoneid in self.weblist['phones'][astid].keeplist:
                                 phonedetails = self.weblist['phones'][astid].keeplist[phoneid]
