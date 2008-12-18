@@ -46,6 +46,7 @@ def incoming_group_set_features(agi, cursor, args):
     if not group.musiconhold:
         options += "r"
 
+    agi.set_variable('XIVO_REAL_NUMBER', group.number)
     agi.set_variable('XIVO_REAL_CONTEXT', group.context)
     agi.set_variable('XIVO_GROUPNAME', group.name)
     agi.set_variable('XIVO_GROUPOPTIONS', options)

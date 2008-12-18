@@ -47,6 +47,7 @@ def incoming_user_set_features(agi, cursor, args):
     except (ValueError, LookupError), e:
         agi.dp_break(str(e))
 
+    agi.set_variable('XIVO_REAL_NUMBER', user.number)
     agi.set_variable('XIVO_REAL_CONTEXT', user.context)
 
     ufilter = user.filter
