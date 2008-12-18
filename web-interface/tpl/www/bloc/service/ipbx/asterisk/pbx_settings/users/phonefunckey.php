@@ -138,11 +138,10 @@ endif;
 	<tbody id="ex-phonefunckey">
 	<tr class="fm-field">
 <?php
-
-$this->set_var('typeelem',$typeelem);
-$this->set_var('fknumelem',$fknumelem);
-$this->set_var('fkdata',array('ex' => true));
-$this->set_var('supelem',$supelem);
+	$this->set_var('typeelem',$typeelem);
+	$this->set_var('fknumelem',$fknumelem);
+	$this->set_var('fkdata',array('ex' => true));
+	$this->set_var('supelem',$supelem);
 
 	echo	'<td class="td-left txt-center">';
 
