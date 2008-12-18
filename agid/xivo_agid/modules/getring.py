@@ -26,8 +26,8 @@ CONFIG_FILE = "/etc/asterisk/xivo_ring.conf"
 config = None
 
 def getring(agi, cursor, args):
-    dstnum = agi.get_variable('XIVO_DSTNUM')
-    context = agi.get_variable('XIVO_CONTEXT')
+    dstnum = agi.get_variable('XIVO_REAL_NUMBER')
+    context = agi.get_variable('XIVO_REAL_CONTEXT')
     callorigin = agi.get_variable('XIVO_CALLORIGIN')
 
     try:
