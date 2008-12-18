@@ -1,17 +1,19 @@
 <?php
-	$url = &$this->get_module('url');
-	$form = &$this->get_module('form');
-	$dhtml = &$this->get_module('dhtml');
 
-	$pager = $this->get_var('pager');
-	$act = $this->get_var('act');
+$url = &$this->get_module('url');
+$form = &$this->get_module('form');
+$dhtml = &$this->get_module('dhtml');
 
-	$page = $url->pager($pager['pages'],
-			    $pager['page'],
-			    $pager['prev'],
-			    $pager['next'],
-			    'service/ipbx/call_management/schedule',
-			    array('act' => $act));
+$pager = $this->get_var('pager');
+$act = $this->get_var('act');
+
+$page = $url->pager($pager['pages'],
+		    $pager['page'],
+		    $pager['prev'],
+		    $pager['next'],
+		    'service/ipbx/call_management/schedule',
+		    array('act' => $act));
+
 ?>
 <div class="b-list">
 <?php
@@ -126,13 +128,13 @@
 						 'label'	=> false,
 						 'id'		=> 'it-schedules-'.$i,
 						 'checked'	=> false,
-						 'field' => false));?>
+						 'field'	=> false));?>
 		</td>
 		<td class="txt-left">
 			<label for="it-schedules-<?=$i?>" id="lb-schedules-<?=$i?>">
 <?php
 				echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),
-					xivo_trunc($ref['name'],20,'...',false);
+					xivo_trunc($ref['name'],15,'...',false);
 ?>
 			</label>
 		</td>
@@ -140,7 +142,7 @@
 		<td><?=$ref['dayname']?></td>
 		<td><?=$ref['daynum']?></td>
 		<td><?=$ref['month']?></td>
-		<td><?=xivo_htmlen(xivo_trunc($destination,25,'...',false));?></td>
+		<td><?=xivo_htmlen(xivo_trunc($destination,15,'...',false));?></td>
 		<td><?=$this->bbf('schedule_publicholiday-'.$ref['publicholiday']);?></td>
 		<td class="td-right" colspan="2">
 <?php
