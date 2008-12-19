@@ -116,7 +116,7 @@ class QueueList(AnyList):
                                         if v in agprop:
                                                 lst[v] = agprop[v]
                                         else:
-                                                log.warning('get_queues_byagent : no property %s in agent %s in queue %s'
+                                                log.warning('get_queues_byagent : no property %s for agent %s in queue %s'
                                                             % (v, agid, qref))
                         queuelist[qref] = lst
                 return queuelist

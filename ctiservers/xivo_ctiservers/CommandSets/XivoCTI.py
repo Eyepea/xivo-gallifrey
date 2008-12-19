@@ -2082,6 +2082,7 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def ami_agentcallbacklogin(self, astid, event):
+                # log.info('%s ami_agentcallbacklogin : %s' % (astid, event))
                 agent = event.get('Agent')
                 loginchan_split = event.get('Loginchan').split('@')
                 phonenum = loginchan_split[0]
@@ -2102,6 +2103,7 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def ami_agentcallbacklogoff(self, astid, event):
+                # log.info('%s ami_agentcallbacklogoff : %s' % (astid, event))
                 agent = event.get('Agent')
                 loginchan_split = event.get('Loginchan').split('@')
                 phonenum = loginchan_split[0]
@@ -2114,11 +2116,16 @@ class XivoCTICommand(BaseCommand):
                 
                 if astid in self.weblist['agents']:
                         agent_id = self.weblist['agents'][astid].reverse_index.get(agent)
-                        self.weblist['agents'][astid].keeplist[agent_id]['stats'].update({'status': 'AGENT_LOGGEDOFF',
-                                                                                          'phonenum' : phonenum,
-                                                                                          'context' : context})
-                        del self.weblist['agents'][astid].keeplist[agent_id]['stats']['Xivo-ReceivedCalls']
-                        del self.weblist['agents'][astid].keeplist[agent_id]['stats']['Xivo-LostCalls']
+                        agstats = self.weblist['agents'][astid].keeplist[agent_id]['stats']
+                        agstats.update({'status': 'AGENT_LOGGEDOFF',
+                                        'phonenum' : phonenum,
+                                        'context' : context})
+                        # it looks like such events are sent even when the agent is not logged in,
+                        # as replies to agentlogoff
+                        if 'Xivo-ReceivedCalls' in agstats:
+                                del agstats['Xivo-ReceivedCalls']
+                        if 'Xivo-LostCalls' in agstats:
+                                del agstats['Xivo-LostCalls']
                         msg = self.__build_agupdate__('agentlogout', astid, 'Agent/%s' % agent, {'phonenum' : phonenum})
                         self.__send_msg_to_cti_clients__(msg)
                 return
@@ -2407,6 +2414,7 @@ class XivoCTICommand(BaseCommand):
                                 if v:
                                         if qid in self.weblist['queues'][astid].keeplist and aid in self.weblist['queues'][astid].keeplist[qid]['agents']:
                                                 qastatus = self.weblist['queues'][astid].keeplist[qid]['agents'][aid]
+                                                qastatus['Xivo-StateTime'] = -1
                                                 if qastatus.get('Paused') == '1':
                                                         if 'PAUSE' in v:
                                                                 qpausetime = int(v['PAUSE'])
@@ -3353,6 +3361,7 @@ class XivoCTICommand(BaseCommand):
                                 self.__ami_execute__(astid, 'agentcallbacklogin',
                                                      agentnum, agentphonenum,
                                                      agprops.get('context'), agprops.get('ackcall'))
+                                ## self.__agent__(uinfo, ['unpause_all'])
                                 # chan_agent.c:2318 callback_deprecated: AgentCallbackLogin is deprecated and will be removed in a future release.
                                 # chan_agent.c:2319 callback_deprecated: See doc/queues-with-callback-members.txt for an example of how to achieve
                                 # chan_agent.c:2320 callback_deprecated: the same functionality using only dialplan logic.
@@ -3372,6 +3381,7 @@ class XivoCTICommand(BaseCommand):
                                         self.__ami_execute__(astid, 'setvar', 'AGENTBYCALLERID_%s' % agentphonenum, '')
                                         # del uinfo['agentphonenum']
                         if agentnum:
+                                ## self.__agent__(uinfo, ['pause_all'])
                                 self.__ami_execute__(astid, 'agentlogoff', agentnum)
                                 self.__fill_user_ctilog__(uinfo, 'agent_logout')
                 return

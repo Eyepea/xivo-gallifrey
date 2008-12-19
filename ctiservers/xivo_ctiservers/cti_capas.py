@@ -42,7 +42,6 @@ class Capabilities:
                          'history',
                          'messages',
                          
-                         'nojoinleave',
                          'presence',
                          'database',
                          'switchboard']
