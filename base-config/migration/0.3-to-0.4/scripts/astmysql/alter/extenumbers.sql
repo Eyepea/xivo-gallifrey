@@ -1,0 +1,11 @@
+ALTER TABLE `extenumbers` MODIFY COLUMN `type` enum('extenfeatures',
+						    'featuremap',
+						    'generalfeatures',
+						    'group',
+						    'handynumbers',
+						    'incall',
+						    'meetme',
+						    'outcall',
+						    'queue',
+						    'user',
+						    'voicemenu') NOT NULL;
