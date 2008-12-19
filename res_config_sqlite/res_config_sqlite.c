@@ -1339,6 +1339,7 @@ realtime_multi_handler(const char *database, const char *table, va_list ap)
           ast_config_destroy(cfg);
           free(params);
           free(vals);
+          free(initfield);
           return NULL;
   }
 
