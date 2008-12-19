@@ -34,15 +34,6 @@ AND var_name IN('dropcount',
 		'jittershrinkrate',
 		'mailboxdetail');
 
-DELETE FROM tmp_staticiax
-WHERE filename = 'iax.conf'
-AND category = 'general'
-AND var_name NOT IN('iaxthreadcount',
-		    'iaxmaxthreadcount',
-		    'adsi',
-		    'mohinterpret',
-		    'mohsuggest');
-
 INSERT INTO generaliax (
 	id,
 	cat_metric,

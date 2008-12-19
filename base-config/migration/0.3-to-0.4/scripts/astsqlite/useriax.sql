@@ -97,8 +97,8 @@ SELECT
 	NULL,
 	IFNULL(useriax.ipaddr,''),
 	IFNULL(useriax.regseconds,0),
-	useriax.protocol,
-	useriax.category,
+	'iax',
+	'user',
 	useriax.commented
 FROM useriax
 WHERE useriax.category = 'user';

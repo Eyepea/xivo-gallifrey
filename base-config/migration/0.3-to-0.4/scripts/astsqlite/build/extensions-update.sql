@@ -18,7 +18,8 @@ FROM
 	groupfeatures
 WHERE
 	extensions.exten = groupfeatures.number
-	AND extensions.context = groupfeatures.context;
+	AND extensions.context = groupfeatures.context
+	AND NOT groupfeatures.deleted;
 
 SELECT
 	'UPDATE extensions

@@ -47,7 +47,7 @@ SELECT
 	tmp_meetmefeatures.context,
 	'meetme',
 	tmp_meetmefeatures.id,
-	IFNULL(tmp_meetmefeatures.number,'')
+	tmp_meetmefeatures.number,
 FROM tmp_meetmefeatures;
 
 INSERT INTO tmp_contextmember (
@@ -61,4 +61,4 @@ SELECT
 	tmp_meetmefeatures.id,
 	'exitcontext'
 FROM tmp_meetmefeatures
-WHERE NULLIF(exitcontext,'') IS NOT NULL;
+WHERE exitcontext != '';

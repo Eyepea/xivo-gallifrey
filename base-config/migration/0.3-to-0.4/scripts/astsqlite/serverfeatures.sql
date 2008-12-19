@@ -8,6 +8,6 @@ SELECT
 	serverfeatures.id,
 	serverfeatures.serverid,
 	'phonebook',
-	serverfeatures.type,
+	'xivo',
 	serverfeatures.commented
 FROM serverfeatures;
