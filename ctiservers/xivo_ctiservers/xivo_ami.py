@@ -572,7 +572,7 @@ class AMIList:
                         amicl.login()
 
                         log.info('%s AMI : OPENED' % astid)
-                        amicl.sendcommand('Command', [('Command', 'show version'),
+                        amicl.sendcommand('Command', [('Command', 'core show version'),
                                                       ('ActionID' , ''.join(random.sample(__alphanums__, 10)) + "-" + hex(int(time.time())))])
                         # sendparkedcalls before sendstatus, so that parked calls can be identified later
                         amicl.sendmeetmelist()
