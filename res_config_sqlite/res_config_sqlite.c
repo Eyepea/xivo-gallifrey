@@ -1291,8 +1291,7 @@ add_rt_multi_cfg_entry(void *arg, int argc, char **argv, char **columnNames)
 static struct ast_config *
 realtime_multi_handler(const char *database, const char *table, va_list ap)
 {
-  char *query, *errormsg, *op, *tmp_str, *initfield;
-  char *tmp_params0;
+  char *query, *errormsg, *op, *tmp_str, *tmp_params0, *initfield;
   struct rt_multi_cfg_entry_args args;
   const char **params, **vals;
   struct ast_config *cfg;
@@ -1378,8 +1377,11 @@ realtime_multi_handler(const char *database, const char *table, va_list ap)
       free(params);
       free(vals);
       free(initfield);
+      free(tmp_params0);
       return NULL;
     }
+
+  free(tmp_params0);
 
   if (params_count > 1)
     {
