@@ -1291,7 +1291,7 @@ add_rt_multi_cfg_entry(void *arg, int argc, char **argv, char **columnNames)
 static struct ast_config *
 realtime_multi_handler(const char *database, const char *table, va_list ap)
 {
-  char *query, *errormsg, *op, *tmp_str, *tmp_params0, *initfield;
+  char *query, *errormsg, *op, *tmp_str, *initfield;
   struct rt_multi_cfg_entry_args args;
   const char **params, **vals;
   struct ast_config *cfg;
@@ -1331,17 +1331,6 @@ realtime_multi_handler(const char *database, const char *table, va_list ap)
       return NULL;
     }
 
-  tmp_params0 = strdup(params[0]);
-
-  if (tmp_params0 == NULL) {
-          ast_log(LOG_WARNING, "Unable to allocate tmp_params0\n");
-          ast_config_destroy(cfg);
-          free(params);
-          free(vals);
-          free(initfield);
-          return NULL;
-  }
-
   tmp_str = strchr(initfield, ' ');
 
   if (tmp_str != NULL)
@@ -1355,7 +1344,7 @@ realtime_multi_handler(const char *database, const char *table, va_list ap)
    */
   if (strcmp(vals[0], "\\_%") == 0) {
           if (strcmp(params[0], "exten LIKE") == 0) {
-                  tmp_params0 = "SUBSTR(exten,0,1)";
+                  params[0] = "SUBSTR(exten,0,1)";
                   op = " =";
                   tmp_str = "_";
           } else
@@ -1368,7 +1357,7 @@ realtime_multi_handler(const char *database, const char *table, va_list ap)
 #define QUERY "SELECT * FROM '%q' WHERE commented = 0 AND %q%s '%q'"
 /* @endcond */
 
-  query = sqlite_mprintf(QUERY, table, tmp_params0, op, tmp_str);
+  query = sqlite_mprintf(QUERY, table, params[0], op, tmp_str);
 
   if (query == NULL)
     {
@@ -1377,11 +1366,8 @@ realtime_multi_handler(const char *database, const char *table, va_list ap)
       free(params);
       free(vals);
       free(initfield);
-      free(tmp_params0);
       return NULL;
     }
-
-  free(tmp_params0);
 
   if (params_count > 1)
     {
