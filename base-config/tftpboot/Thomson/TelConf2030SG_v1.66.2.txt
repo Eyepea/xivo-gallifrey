@@ -285,7 +285,7 @@ set coding 0 usage              data  off
 ;
 ;set coding 0 vif                640
 set coding 0 encap              rtp
-set coding 0 vad                on
+set coding 0 vad                off
 set coding 0 vad_thresh         32767
 ;set coding 0 min_delay              20
 ;set coding 0 nom_delay          	30
@@ -326,7 +326,7 @@ set coding 1 usage              data  off
 ;
 ;set coding 1 vif                640
 set coding 1 encap              rtp
-set coding 1 vad                on
+set coding 1 vad                off
 set coding 1 vad_thresh         32767
 ;set coding 1 min_delay              20
 ;set coding 1 nom_delay          	30
@@ -366,7 +366,7 @@ set coding 2 usage                   modem off
 set coding 2 usage                   data off
 ;set coding 2 vif                     80
 set coding 2 encap                   rtp
-set coding 2 vad                     on
+set coding 2 vad                     off
 set coding 2 vad_thresh              32767
 ;set coding 2 min_delay               20
 ;set coding 2 nom_delay               30
@@ -408,7 +408,7 @@ set coding 3 usage modem              off
 set coding 3 usage data               off
 ;set coding 3 vif                      192
 set coding 3 encap                    rtp
-set coding 3 vad                      on
+set coding 3 vad                      off
 set coding 3 vad_thresh               32767
 ;set coding 3 min_delay                60
 ;set coding 3 nom_delay                90
