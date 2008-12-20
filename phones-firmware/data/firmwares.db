@@ -363,9 +363,9 @@ sha1sum: 905a5440b89c39833bd5e5bb04d5618963a60d02
 brand: Thomson
 model: ST2030
 version: 1.66
-files: ST2030_SG_v1[1].66_Release_package.zip
+files: ST2030_SG_v1.66_Release_package.zip
 
-[ST2030_SG_v1[1].66_Release_package.zip]
+[ST2030_SG_v1.66_Release_package.zip]
 url: http://www.thomsonbroadbandpartner.com/getfile.php?id=6466
 size: 8248076
 md5sum: b2cba25db65d5c7036e759e4646130a7
