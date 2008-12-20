@@ -14,7 +14,7 @@ XIVOSQLITE_FILE="${XIVOSQLITE_SCRIPTS_DIR}/schema.sql"
 
 SED_SUPPRESS_ERROR="/^DROP TABLE /{N; /\nSQL error: no such table:/d}"
 
-if ! ask_yn_question "Would you like to upgrade XIVO Web Interface SQLite Database ?";
+if ! ask_yn_question "Would you like to upgrade XIVO Web Interface SQLite Database?";
 then
 	exit 0
 fi
