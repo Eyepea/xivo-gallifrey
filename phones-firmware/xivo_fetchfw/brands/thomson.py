@@ -41,7 +41,10 @@ def thomson_install(firmware):
     
     assert len(firmware.remote_files) == 1
     zip_path = fetchfw.zip_extract_all(firmware.name, firmware.remote_files[0].path)
-    fw_src_path = os.path.join(zip_path, "Binary", fw_file)
+    if firmware.model == 'ST2030' and firmware.version == '1.66':
+        fw_src_path = os.path.join(zip_path, "ST2030_SG_v1[1].66_Release_package", "Binary", fw_file)
+    else:
+        fw_src_path = os.path.join(zip_path, "Binary", fw_file)
     fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, "Thomson", "binary")
     fw_dst_path = os.path.join(fw_dst_dir, fw_file)
     
