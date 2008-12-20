@@ -358,18 +358,18 @@ size: 7769854
 md5sum: 904e2455606f4424b6decdaae1a14370
 sha1sum: 905a5440b89c39833bd5e5bb04d5618963a60d02
 
-# Thomson ST2030 1.65
-[thst2030_165]
+# Thomson ST2030 1.66
+[thst2030_166]
 brand: Thomson
 model: ST2030
-version: 1.65
-files: ST2030_SG_v1.65_Release_package.zip
+version: 1.66
+files: ST2030_SG_v1[1].66_Release_package.zip
 
-[ST2030_SG_v1.65_Release_package.zip]
-url: http://www.thomsonbroadbandpartner.com/getfile.php?id=6456
-size: 7799154
-md5sum: e36944b7522382aae5f3a24ef11229b1
-sha1sum: 451cf0aa2e1b2368703e089352c7581e84437e79
+[ST2030_SG_v1[1].66_Release_package.zip]
+url: http://www.thomsonbroadbandpartner.com/getfile.php?id=6466
+size: 8248076
+md5sum: b2cba25db65d5c7036e759e4646130a7
+sha1sum: f4b370fd70a8ba4de56d0779909ab103b856efba
 
 ###
 ### Cards Firmwares starting from here ###
