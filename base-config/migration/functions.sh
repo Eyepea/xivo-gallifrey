@@ -14,6 +14,6 @@ ask_yn_question()
 		then
 			return 1;
 		fi
-		echo "Don't tell ya life, reply using 'y' or 'n' "'!'
+		echo "Don't tell ya life, reply using 'y' or 'n'"'!'
 	done
 }

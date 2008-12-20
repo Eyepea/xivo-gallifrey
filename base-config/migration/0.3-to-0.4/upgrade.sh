@@ -42,7 +42,7 @@ SQL_TABLES_RENAME=(
 	meetme
 	uservoicemail)
 
-if ! ask_yn_question "Would you like to upgrade Asterisk SQLite Database ?";
+if ! ask_yn_question "Would you like to upgrade Asterisk SQLite Database?";
 then
 	exit 0
 fi
