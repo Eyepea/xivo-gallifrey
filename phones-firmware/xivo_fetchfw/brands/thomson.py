@@ -24,35 +24,31 @@ from xivo_fetchfw import fetchfw
 
 FW_FILES = {
     'ST2022': {
-        '3.65': "v2022SG.081010.3.65.1.zz"
+        '3.65': os.path.join("Binary", "v2022SG.081010.3.65.1.zz")
     },
-    
+
     'ST2030': {
-        '1.66': "v2030SG.081210.1.66.2.zz"
+        '1.66': os.path.join("ST2030_SG_v1[1].66_Release_package", "Binary", "v2030SG.081210.1.66.2.zz")
     }
 }
 
 
 def thomson_install(firmware):
     try:
-        fw_file = FW_FILES[firmware.model][firmware.version]
+        fw_src_path = FW_FILES[firmware.model][firmware.version]
     except KeyError:
         fetchfw.die("unsupported model/version (%s/%s)" % (firmware.model, firmware.version))
-    
+
     assert len(firmware.remote_files) == 1
     zip_path = fetchfw.zip_extract_all(firmware.name, firmware.remote_files[0].path)
-    if firmware.model == 'ST2030' and firmware.version == '1.66':
-        fw_src_path = os.path.join(zip_path, "ST2030_SG_v1[1].66_Release_package", "Binary", fw_file)
-    else:
-        fw_src_path = os.path.join(zip_path, "Binary", fw_file)
     fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, "Thomson", "binary")
-    fw_dst_path = os.path.join(fw_dst_dir, fw_file)
-    
+    fw_dst_path = os.path.join(fw_dst_dir, os.path.basename(fw_src_path))
+
     try:
         os.makedirs(fw_dst_dir)
     except OSError:
         pass # XXX: catching every OSError is not appropriate
-    
+
     shutil.copy2(fw_src_path, fw_dst_path)
 
 
