@@ -74,8 +74,9 @@ class Polycom(PhoneVendorMixin):
         params = urllib.urlencode({'reg.1.server.1.address': "%s " % self.ASTERISK_IPV4})
 
         try: # XXX: also check return values?
-            urllib.urlopen("http://%s:%s@%s/form-submit" % (user, passwd, self.phone['ipv4']), params)
-        except IOError, e:
+            request = urllib.urlopen("http://%s:%s@%s/form-submit" % (user, passwd, self.phone['ipv4']), params)
+            request.close()
+        except (IOError, AttributeError), e:
             log.exception(e)
 
     def do_reboot(self):
