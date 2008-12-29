@@ -112,7 +112,7 @@ SET
 	`t38pt_usertpsource` = NULL,
 	`rtptimeout` = NULLIF(`rtptimeout`,''),
 	`rtpholdtimeout` = NULLIF(`rtpholdtimeout`,''),
-	`rtpkeepalive = NULL,
+	`rtpkeepalive` = NULL,
 	`deny` = NULLIF(`deny`,''),
 	`permit` = NULLIF(`permit`,''),
 	`defaultip` = NULLIF(`defaultip`,''),
