@@ -293,7 +293,7 @@ class User:
                       'enableautomon', 'callrecord', 'callfilter',
                       'enablednd', 'enableunc', 'destunc', 'enablerna',
                       'destrna', 'enablebusy', 'destbusy', 'musiconhold',
-                      'outcallerid', 'bsfilter', 'preprocess_subroutine','mobilephonenumber'),
+                      'outcallerid', 'bsfilter', 'preprocess_subroutine', 'mobilephonenumber'),
                      (xid,))
 
         res = cursor.fetchone()
