@@ -175,4 +175,7 @@ def incoming_user_set_features(agi, cursor, args):
     if user.preprocess_subroutine:
         agi.set_variable('XIVO_USERPREPROCESS_SUBROUTINE', user.preprocess_subroutine)
 
+    if user.mobilephonenumber:
+        agi.set_variable('XIVO_MOBILEPHONENUMBER', user.mobilephonenumber)
+
 agid.register(incoming_user_set_features)

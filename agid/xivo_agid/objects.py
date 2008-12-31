@@ -293,7 +293,7 @@ class User:
                       'enableautomon', 'callrecord', 'callfilter',
                       'enablednd', 'enableunc', 'destunc', 'enablerna',
                       'destrna', 'enablebusy', 'destbusy', 'musiconhold',
-                      'outcallerid', 'bsfilter', 'preprocess_subroutine'),
+                      'outcallerid', 'bsfilter', 'preprocess_subroutine','mobilephonenumber'),
                      (xid,))
 
         res = cursor.fetchone()
@@ -325,6 +325,7 @@ class User:
         self.musiconhold = res['musiconhold']
         self.outcallerid = res['outcallerid']
         self.preprocess_subroutine = res['preprocess_subroutine']
+        self.mobilephonenumber = res['mobilephonenumber']
         bsfilter = res['bsfilter']
 
         if self.destunc == '':
