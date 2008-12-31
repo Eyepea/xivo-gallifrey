@@ -28,7 +28,7 @@ SET `loginclient` = IFNULL((
 WHERE `enableclient` AND NOT `internal`;
 
 UPDATE `userfeatures`
-SET `loginclient` = IFNULL((
+SET `passwdclient` = IFNULL((
 	SELECT IF(LENGTH(IFNULL(`voicemail`.`password`,'')) < 4,'0000',`voicemail`.`password`)
 	FROM `voicemail`
 	WHERE `userfeatures`.`voicemailid` = `voicemail`.`uniqueid`),'')
