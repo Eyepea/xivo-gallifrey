@@ -33,3 +33,13 @@ SET `passwdclient` = IFNULL((
 	FROM `voicemail`
 	WHERE `userfeatures`.`voicemailid` = `voicemail`.`uniqueid`),'')
 WHERE `enableclient` AND NOT `internal`;
+
+UPDATE `userfeatures`
+	INNER JOIN `userfeatures` AS `ufeatures`
+	ON `userfeatures`.`loginclient` = `ufeatures`.`loginclient`
+	AND `userfeatures`.`id` != `ufeatures`.`id`
+SET
+	`userfeatures`.`enableclient` = 0,
+	`userfeatures`.`loginclient` = '',
+	`userfeatures`.`passwdclient` = ''
+WHERE NOT `userfeatures`.`internal` AND `userfeatures`.`loginclient` != '';
