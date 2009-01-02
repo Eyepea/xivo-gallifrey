@@ -18,6 +18,10 @@ SELECT
 	usercustom.category
 FROM usercustom;
 
+UPDATE tmp_usercustom
+SET interface = 'dahdi/'||SUBSTR(interface,5,LENGTH(interface))
+WHERE interface LIKE 'zap/%';
+
 INSERT INTO tmp_contextmember (
 	context,
 	type,

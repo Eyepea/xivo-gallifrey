@@ -124,6 +124,7 @@ echo " \      oo"
 
 ASTSQLITE_FILE_TMP=`mktemp`
 ASTSQLITE_UPGRADE_TMP=`mktemp`
+ASTSQLITE_DIALACTION_TMP=`mktemp`
 ASTSQLITE_DROP_TABLE_TMP=`mktemp`
 ASTSQLITE_SCHEMA_TMP=`mktemp`
 ASTSQLITE_USERCLIENT_TMP=`mktemp`
@@ -158,6 +159,8 @@ sqlite "${ASTSQLITE_DB}" < "${ASTSQLITE_UPGRADE_TMP}" |sed "${SED_SUPPRESS_ERROR
 
 echo "  //_//\ \_\\"
 
+echo 'BEGIN TRANSACTION;' > "${ASTSQLITE_DIALACTION_TMP}"
+
 ASTSQLITE_DIALACTION_FIX=(`sqlite "${ASTSQLITE_DB}" < "${ASTSQLITE_SCRIPTS_DIR}/fix/dialaction-actionargs.sql"`)
 
 for ACTIONARGS in "${ASTSQLITE_DIALACTION_FIX[@]}";
@@ -168,8 +171,24 @@ do
 	echo	"UPDATE tmp_dialaction
 		 SET actionarg1 = '${ACTIONARG1}', actionarg2 = '${ACTIONARG2}'
 		 WHERE action IN('application:callbackdisa','application:disa')
-		 AND actionarg1 = '${ACTIONARGS}';" >> "${ASTSQLITE_UPGRADE_TMP}"
+		 AND actionarg1 = '${ACTIONARGS}';" >> "${ASTSQLITE_DIALACTION_TMP}"
 done
+
+ASTSQLITE_DIALACTION_FIX=(`sqlite "${ASTSQLITE_DB}" < "${ASTSQLITE_SCRIPTS_DIR}/fix/dialaction-actionsep.sql"`)
+
+for ACTIONSEP in "${ASTSQLITE_DIALACTION_FIX[@]}";
+do
+	ACTIONARG1=`echo ${ACTIONARGS}|sed 's/,/|/g'`
+
+	echo	"UPDATE tmp_dialaction
+		 SET actionarg1 = '${ACTIONARG1}'
+		 WHERE action = 'custom'
+		 AND actionarg1 = '${ACTIONSEP}';" >> "${ASTSQLITE_DIALACTION_TMP}"
+done
+
+echo 'COMMIT;' >> "${ASTSQLITE_DIALACTION_TMP}"
+
+sqlite "${ASTSQLITE_DB}" < "${ASTSQLITE_DIALACTION_TMP}" |sed "${SED_SUPPRESS_ERROR}"
 
 echo 'BEGIN TRANSACTION;' > "${ASTSQLITE_SCHEMA_TMP}"
 
@@ -238,6 +257,7 @@ sqlite "${ASTSQLITE_DB}" < "${ASTSQLITE_USERCLIENT_TMP}"
 
 rm -f	"${ASTSQLITE_FILE_TMP}" \
 	"${ASTSQLITE_UPGRADE_TMP}" \
+	"${ASTSQLITE_DIALACTION_TMP}" \
 	"${ASTSQLITE_DROP_TABLE_TMP}" \
 	"${ASTSQLITE_SCHEMA_TMP}" \
 	"${ASTSQLITE_USERCLIENT_TMP}"
