@@ -178,7 +178,7 @@ ASTSQLITE_DIALACTION_FIX=(`sqlite "${ASTSQLITE_DB}" < "${ASTSQLITE_SCRIPTS_DIR}/
 
 for ACTIONSEP in "${ASTSQLITE_DIALACTION_FIX[@]}";
 do
-	ACTIONARG1=`echo ${ACTIONARGS}|sed 's/,/|/g'`
+	ACTIONARG1=`echo ${ACTIONSEP}|sed 's/,/|/g'`
 
 	echo	"UPDATE tmp_dialaction
 		 SET actionarg1 = '${ACTIONARG1}'
