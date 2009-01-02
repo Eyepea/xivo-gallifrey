@@ -238,7 +238,7 @@ echo "/___/_____\\"
 
 ASTSQLITE_USER_CLIENT_FIX=(`sqlite "${ASTSQLITE_DB}" < "${ASTSQLITE_SCRIPTS_DIR}/fix/userfeatures-client.sql"`)
 
-echo 'BEGIN TRANSACTION;' >> "${ASTSQLITE_USERCLIENT_TMP}"
+echo 'BEGIN TRANSACTION;' > "${ASTSQLITE_USERCLIENT_TMP}"
 
 for CLIENT_FIELDS in "${ASTSQLITE_USER_CLIENT_FIX[@]}";
 do
@@ -250,6 +250,14 @@ do
 		 SET loginclient = '${LOGINCLIENT}', passwdclient = '${PASSWDCLIENT}'
 		 WHERE id = '${USERFEATURESID}';" >> "${ASTSQLITE_USERCLIENT_TMP}"
 done
+
+echo 'COMMIT;' >> "${ASTSQLITE_USERCLIENT_TMP}"
+
+sqlite "${ASTSQLITE_DB}" < "${ASTSQLITE_USERCLIENT_TMP}"
+
+echo 'BEGIN TRANSACTION;' > "${ASTSQLITE_USERCLIENT_TMP}"
+
+sqlite "${ASTSQLITE_DB}" < "${ASTSQLITE_SCRIPTS_DIR}/fix/userfeatures-client-update.sql" >> "${ASTSQLITE_USERCLIENT_TMP}"
 
 echo 'COMMIT;' >> "${ASTSQLITE_USERCLIENT_TMP}"
 
