@@ -47,7 +47,7 @@ SELECT
 	tmp_meetmefeatures.context,
 	'meetme',
 	tmp_meetmefeatures.id,
-	tmp_meetmefeatures.number,
+	tmp_meetmefeatures.number
 FROM tmp_meetmefeatures;
 
 INSERT INTO tmp_contextmember (
