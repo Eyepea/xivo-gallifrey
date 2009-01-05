@@ -4078,7 +4078,7 @@ class XivoCTICommand(BaseCommand):
                 if calleridnum in ['', 'unknown']:
                         calleridnum = CALLERID_UNKNOWN_NUM
                 if calleridname in ['', 'unknown']:
-                        calleridname = CALLERID_UNKNOWN_NAME
+                        calleridname = calleridnum
                 
                 calleridtoset = '"%s"<%s>' % (calleridname, calleridnum)
                 td = 'handle_fagi %s :   the callerid will be set to %s' % (astid, calleridtoset.decode('utf8'))
