@@ -261,7 +261,7 @@ class VMBox:
 
         cursor.query("SELECT ${columns} FROM voicemail "
                      "INNER JOIN voicemailfeatures "
-                     "ON voicemail.uniqueid = voicemailfeatures.id "
+                     "ON voicemail.uniqueid = voicemailfeatures.voicemailid "
                      "WHERE voicemail.uniqueid = %s "
                      "AND voicemail.commented = 0",
                      columns,
