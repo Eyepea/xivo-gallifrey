@@ -203,10 +203,14 @@ def fix_permissions(path):
     
     for root, dirs, files, in os.walk(path):
         for name in dirs:
-            os.chmod(os.path.join(root, name), dir_mode)
+            filename = os.path.join(root, name)
+            if os.path.exists(filename):
+                os.chmod(filename, dir_mode)
 
         for name in files:
-            os.chmod(os.path.join(root, name), file_mode)
+            filename = os.path.join(root, name)
+            if os.path.exists(filename):
+                os.chmod(filename, file_mode)
 
 
 def _common_extract_all(label, file_path, start_of_cmd, kind):
@@ -219,8 +223,9 @@ def _common_extract_all(label, file_path, start_of_cmd, kind):
     
     try:
         result = subprocess.call(start_of_cmd + [file_path], cwd=archive_path, close_fds=True)
+
         fix_permissions(archive_path)
-        
+
         if result:
             die(kind + " extraction failed")
     except OSError, e:
