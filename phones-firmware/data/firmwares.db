@@ -423,3 +423,110 @@ size: 41376
 md5sum: e1c7231d6225ac999cb18f4e858f66b6
 sha1sum: fd470e7aec0db62e3750aa4819ff03b70c6e9977
 
+[aft_a101d]
+brand: Sangoma
+model: AFT A101D
+version: 34
+files: A101dm_0040_V34.BIN
+
+[A101dm_0040_V34.BIN]
+url: ftp://ftp.sangoma.com/firmware/A101dm_0040_V34.BIN
+size: 212392
+md5sum: 4367ff7f110087bfe8f41545d2200fd4
+sha1sum: a80f05da2ba81cf2944ffef682ad0b5d51739f27
+
+[aft_a102d]
+brand: Sangoma
+model: AFT A102D
+version: 33
+files: A102dm_0040_V33.BIN
+
+[A102dm_0040_V33.BIN]
+url: ftp://ftp.sangoma.com/firmware/A102dm_0040_V33.BIN
+size: 212392
+md5sum: 87735cd6dac1b019cbbbdcdaf948531b
+sha1sum: a09d50ef018e526e25154694b1b3255879853ee1
+
+[aft_a104d]
+brand: Sangoma
+model: AFT A104D
+version: 26
+files: A104d_0100_V26.BIN
+
+[A104d_0100_V26.BIN]
+url: ftp://ftp.sangoma.com/firmware/A104d_0100_V26.BIN
+size: 402936
+md5sum: ea86577472f787e56d6be510032f8dd5
+sha1sum: baa79916fa3098f0b03084a7a3bc8909e7e1eaa4
+
+[aft_a108d]
+brand: Sangoma
+model: AFT A108D
+version: 35
+files: A108dm_0100_V35.BIN
+
+[A108dm_0100_V35.BIN]
+url: ftp://ftp.sangoma.com/firmware/A108dm_0100_V35.BIN
+size: 402936
+md5sum: 43d2044f89662ddd16b9363995afc423
+sha1sum: bc310f3f310ed3f399107ca837b394e4ebab614b
+
+[aft_a200]
+brand: Sangoma
+model: AFT A200
+version: 11
+files: A200_0040_V11.BIN
+
+[A200_0040_V11.BIN]
+url: ftp://ftp.sangoma.com/firmware/A200_0040_V11.BIN
+size: 212392
+md5sum: 13287a623974a6aafc218f1dd03eff61
+sha1sum: 78028e235177cdc4e941cb4ea743150f2bb82a0b
+
+[aft_a400]
+brand: Sangoma
+model: AFT A400
+version: 11
+files: A400_0040_V11.BIN
+
+[A400_0040_V11.BIN]
+url: ftp://ftp.sangoma.com/firmware/A400_0040_V11.BIN
+size: 212392
+md5sum: 7940790760b2ea02ecb797f0cbd223b3
+sha1sum: 2df9a41b96b2381002db677886cdc03509e8705f
+
+[aft_a500d]
+brand: Sangoma
+model: AFT A500D
+version: 32
+files: A500_0040_V32.BIN
+
+[A500_0040_V32.BIN]
+url: ftp://ftp.sangoma.com/firmware/A500_0040_V32.BIN
+size: 212392
+md5sum: ece8a9d4599719b1bcc4d988c77060c4
+sha1sum: 3e2d7ec503d6ed920ccf7bb13f08025592cb45cb
+
+[aft_a14x]
+brand: Sangoma
+model: AFT A14X
+version: 6
+files: A140_0100_V06.BIN
+
+[A140_0100_V06.BIN]
+url: ftp://ftp.sangoma.com/firmware/A140_0100_V06.BIN
+size: 402936
+md5sum: 583d06fcadaf2a6c9d086fb4aa033f17
+sha1sum: da52d7aa7fe51a8a0aaca702148e2f2dbb324850
+
+[aft_echocan]
+brand: Sangoma
+model: Echo Canceller for all cards
+version: 3.3.15
+files: wanpipe-3.3.15.tgz
+
+[wanpipe-3.3.15.tgz]
+url: ftp://ftp.sangoma.com/linux/current_wanpipe/wanpipe-3.3.15.tgz
+size: 12891379
+md5sum: bc5f5416cb3e303e776b5e6a3ee54851
+sha1sum: 131bf260e727e232f547c3107ce4de6a23cc3936
