@@ -80,6 +80,10 @@ SELECT
 	userfeatures.description
 FROM userfeatures;
 
+UPDATE tmp_userfeatures 
+SET name = 'dahdi/'||SUBSTR(name,5,LENGTH(name)) 
+WHERE name LIKE 'zap/%' AND protocol = 'custom'; 
+
 INSERT INTO tmp_contextnummember (
 	context,
 	type,

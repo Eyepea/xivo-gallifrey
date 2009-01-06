@@ -1,4 +1,8 @@
 UPDATE `userfeatures`
+SET `name` = REPLACE(`name`,'zap/','dahdi/')
+WHERE `name` LIKE 'zap/%' AND `protocol` = 'custom';
+
+UPDATE `userfeatures`
 SET `voicemailid` = (
 	SELECT `voicemail`.`uniqueid`
 	FROM `usersip`, `voicemail`
