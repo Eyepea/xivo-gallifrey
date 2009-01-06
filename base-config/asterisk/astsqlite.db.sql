@@ -858,7 +858,7 @@ INSERT INTO staticiax VALUES (NULL,0,0,1,'iax.conf','general','disallow',NULL);
 INSERT INTO staticiax VALUES (NULL,0,0,1,'iax.conf','general','allow',NULL);
 INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','rtcachefriends','yes');
 INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','rtupdate','yes');
-INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','rtignoreregexpire','no');
+INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','rtignoreregexpire','yes');
 INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','rtautoclear','no');
 INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','pingtime',20);
 INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','lagrqtime',10);
@@ -1013,7 +1013,7 @@ INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','canreinvite','yes
 INSERT INTO staticsip VALUES (NULL,0,0,1,'sip.conf','general','insecure','no');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','rtcachefriends','yes');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','rtupdate','yes');
-INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','ignoreregexpire','no');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','ignoreregexpire','yes');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','rtsavesysname','no');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','rtautoclear','no');
 INSERT INTO staticsip VALUES (NULL,0,0,1,'sip.conf','general','subscribecontext',NULL);
