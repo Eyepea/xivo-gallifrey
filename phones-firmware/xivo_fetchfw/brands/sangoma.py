@@ -22,7 +22,7 @@ import shutil
 from xivo_fetchfw import fetchfw
 
 SANGOMA_FW_PATH = "/etc/wanpipe/firmware"
-SANGOMA_ECHOCAN_SUBPATH = "wan_ec"
+SANGOMA_ECHOCAN_PATH = "/etc/wanpipe/wan_ec"
 
 def sangoma_install(firmware):
     xfile = firmware.remote_files[0]
@@ -37,10 +37,9 @@ def sangoma_install(firmware):
 def sangoma_echocan_install(firmware):
     xfile = firmware.remote_files[0]
     tgz_path = fetchfw.tgz_extract_all("sangoma_echocan", xfile.path)
-    dst_path = os.path.join(SANGOMA_FW_PATH, SANGOMA_ECHOCAN_SUBPATH)
     
     try:
-        os.makedirs(dst_path)
+        os.makedirs(SANGOMA_ECHOCAN_PATH)
     except OSError:
         pass # XXX: catching every OSError is not appropriate
     
@@ -48,7 +47,7 @@ def sangoma_echocan_install(firmware):
         for fw_file in files:
             if fw_file[-4:] == ".ima":
                 fw_src_path = os.path.join(tgz_path, root, fw_file)
-                shutil.copy2(fw_src_path, dst_path)
+                shutil.copy2(fw_src_path, SANGOMA_ECHOCAN_PATH)
 
 
 fetchfw.register_install_fn("Sangoma", 'Echo Canceller for all cards', sangoma_echocan_install)
