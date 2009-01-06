@@ -24,6 +24,12 @@ WHERE filename = 'sip.conf'
 AND category = 'general'
 AND var_name = 'callevents';
 
+UPDATE generalsip
+SET var_val = 'yes', commented = 0
+WHERE filename = 'sip.conf'
+AND category = 'general'
+AND var_name = 'ignoreregexpire';
+
 DELETE FROM generalsip
 WHERE filename = 'sip.conf'
 AND category = 'general'

@@ -37,6 +37,12 @@ AND `category` = 'general'
 AND `var_name` = 'maxauthreq'
 AND var_val = 3;
 
+UPDATE `staticiax`
+SET `var_val` = 'yes', `commented` = 0
+WHERE `filename` = 'iax.conf'
+AND `category` = 'general'
+AND `var_name` = 'rtignoreregexpire';
+
 DELETE FROM `staticiax`
 WHERE `filename` = 'iax.conf'
 AND `category` = 'general'

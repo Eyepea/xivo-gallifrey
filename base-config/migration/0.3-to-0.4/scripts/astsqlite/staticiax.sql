@@ -25,6 +25,12 @@ AND category = 'general'
 AND var_name = 'maxauthreq'
 AND var_val = 3;
 
+UPDATE generaliax
+SET var_val = 'yes', commented = 0
+WHERE filename = 'iax.conf'
+AND category = 'general'
+AND var_name = 'rtignoreregexpire';
+
 DELETE FROM generaliax
 WHERE filename = 'iax.conf'
 AND category = 'general'
