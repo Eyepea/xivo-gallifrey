@@ -78,7 +78,8 @@ if($moh_list !== false):
 				    'labelid'	=> 'queue-musiconhold',
 				    'key'	=> 'category',
 				    'empty'	=> true,
-				    'default'	=> $element['queue']['musiconhold']['default'],
+				    'invalid'	=> ($this->get_var('act') === 'edit'),
+				    'default'	=> ($this->get_var('act') === 'add' ? $element['queue']['musiconhold']['default'] : null),
 				    'value'	=> $info['queue']['musiconhold']),
 			      $moh_list);
 endif;

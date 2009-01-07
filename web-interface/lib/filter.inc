@@ -210,7 +210,7 @@ class xivo_filter
 		$r['ipsubnet'] = $ipsub;
 		$r['mask'] = $mask;
 		$r['subnet'] = $sub;
-		$r['netmask'] = ((1<<$mask)-1)<<(32-$mask);
+		$r['netmask'] = (0xffffffff>>(32-$mask))<<(32-$mask);
 		$r['wildcard'] =~ $r['netmask'];
 		$r['network'] = ip2long($ipsub);
 		$r['broadcast'] = $r['network'] | $r['wildcard'];

@@ -73,7 +73,8 @@ if($moh_list !== false):
 				    'labelid'	=> 'mfeatures-musiconhold',
 				    'key'	=> 'category',
 				    'empty'	=> true,
-				    'default'	=> $element['mfeatures']['musiconhold']['default'],
+				    'invalid'	=> ($this->get_var('act') === 'edit'),
+				    'default'	=> ($this->get_var('act') === 'add' ? $element['mfeatures']['musiconhold']['default'] : null),
 				    'value'	=> $info['mfeatures']['musiconhold']),
 			      $moh_list);
 endif;

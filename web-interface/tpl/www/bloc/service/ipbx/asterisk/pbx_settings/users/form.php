@@ -148,7 +148,7 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 					    'key'	=> 'category',
 					    'empty'	=> true,
 					    'invalid'	=> ($this->get_var('act') === 'edit'),
-					    'default'	=> $element['ufeatures']['musiconhold']['default'],
+					    'default'	=> ($this->get_var('act') === 'add' ? $element['ufeatures']['musiconhold']['default'] : null),
 					    'value'	=> $info['ufeatures']['musiconhold']),
 				      $moh_list);
 	endif;
