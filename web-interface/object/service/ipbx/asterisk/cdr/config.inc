@@ -149,7 +149,7 @@ $array['filter']['clid'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','m
 $array['filter']['clidformat'] = array('key' => array('exact','begin','contain','end'));
 $array['filter']['accountcode'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 20);
 $array['filter']['accountcodeformat'] = array('key' => array('exact','begin','contain','end'));
-$array['filter']['userfield'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 255);
+$array['filter']['userfield'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-zA-Z0-9-\._~\!\$&\'\[\]\*\+;=:%@]+$/','maxlen' => 255);
 $array['filter']['userfieldformat'] = array('key' => array('exact','begin','contain','end'));
 $array['filter']['dubeg'] = array('set' => false,'chk' => 2,'cast' => 'uint','maxlen' => 5);
 $array['filter']['duend'] = array('set' => false,'chk' => 2,'cast' => 'uint','maxlen' => 5);
