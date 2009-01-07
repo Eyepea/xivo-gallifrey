@@ -49,7 +49,7 @@ def thomson_install(firmware):
     except OSError:
         pass # XXX: catching every OSError is not appropriate
 
-    shutil.copy2(fw_src_path, fw_dst_path)
+    shutil.copy2(os.path.join(zip_path, fw_src_path), fw_dst_path)
 
 
 fetchfw.register_install_fn("Thomson", None, thomson_install)
