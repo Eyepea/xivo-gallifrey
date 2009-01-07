@@ -18,7 +18,7 @@ SET `voicemailid` = (
 	WHERE `useriax`.`mailbox` = CONCAT(`voicemail`.`mailbox`,'@',`voicemail`.`context`)
 	AND `userfeatures`.`protocol` = 'iax'
 	AND `userfeatures`.`protocolid` = `useriax`.`id`)
-WHERE NOT `internal`;
+WHERE NOT `internal` AND `voicemailid` IS NULL;
 
 UPDATE `userfeatures`
 SET `loginclient` = IFNULL((
