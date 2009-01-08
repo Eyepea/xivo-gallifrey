@@ -1006,8 +1006,13 @@ class CallerID:
             calleridname = self.agi.get_variable('CALLERID(name)')
             calleridnum = self.agi.get_variable('CALLERID(num)')
 
+            if self.calleridnum is not None:
+                calleridnum = self.calleridnum
+            elif calleridnum in (None, ''):
+                calleridnum = 'unknown'
+
             if calleridname in (None, '', '""'):
-                calleridname = 'unknown'
+                calleridname = calleridnum
             elif calleridname[0] == '"' and calleridname[-1] == '"':
                 calleridname = calleridname[1:-1]
 
@@ -1019,11 +1024,6 @@ class CallerID:
                 name = "%s - %s" % (calleridname, self.calleridname)
             else:
                 raise RuntimeError("Unknown callerid mode: %r" % self.mode)
-
-            if self.calleridnum is not None:
-                calleridnum = self.calleridnum
-            elif calleridnum in (None, ''):
-                calleridnum = 'unknown'
 
             self.agi.appexec('SetCallerPres', 'allowed')
             self.agi.set_variable('CALLERID(all)', '"%s" <%s>' % (name, calleridnum))
