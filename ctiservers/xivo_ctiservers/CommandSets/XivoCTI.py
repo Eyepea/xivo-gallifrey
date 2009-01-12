@@ -898,7 +898,7 @@ class XivoCTICommand(BaseCommand):
                                 'faxreceived',
                                 'callmissed', # see GG (in order to tell a user that he missed a call)
                                 'localphonecalled', 'outgoing']
-
+        
         def __build_xmlqtui__(self, sheetkind, actionopt, inputvars):
                 linestosend = []
                 whichitem = actionopt.get(sheetkind)
@@ -1257,43 +1257,44 @@ class XivoCTICommand(BaseCommand):
                 
                 qolddate = 0
                 for line in csvreader:
-                        if qolddate == int(line[0]):
-                                ic += 1
-                        else:
-                                ic = 1
-                        qdate = float('%s.%06d' % (line[0], ic))
-                        qolddate = int(line[0])
-                        
-                        qaction = line[4]
-                        qname = line[2]
-                        if qaction in ['ENTERQUEUE', 'CONNECT', 'ABANDON', 'EXITEMPTY']:
-                                if qdate > time_1ha:
-                                        if qname not in self.stats_queues[astid]:
-                                                self.stats_queues[astid][qname] = { 'ENTERQUEUE' : [],
-                                                                                    'CONNECT' : [],
-                                                                                    'ABANDON' : [] }
-                                        if qaction == 'EXITEMPTY':
-                                                qaction = 'ABANDON'
-                                        self.stats_queues[astid][qname][qaction].append(int(qdate))
-                        if qaction == 'QUEUESTART':
-                                last_start = qdate
-                        if qaction in ['AGENTLOGIN', 'AGENTCALLBACKLOGIN', 'AGENTLOGOFF', 'AGENTCALLBACKLOGOFF']:
-                                if qaction == 'AGENTCALLBACKLOGIN':
-                                        agent_channel = 'Agent/' + line[3]
+                        if len(line) > 3:
+                                if qolddate == int(line[0]):
+                                        ic += 1
                                 else:
+                                        ic = 1
+                                qdate = float('%s.%06d' % (line[0], ic))
+                                qolddate = int(line[0])
+                                
+                                qaction = line[4]
+                                qname = line[2]
+                                if qaction in ['ENTERQUEUE', 'CONNECT', 'ABANDON', 'EXITEMPTY']:
+                                        if qdate > time_1ha:
+                                                if qname not in self.stats_queues[astid]:
+                                                        self.stats_queues[astid][qname] = { 'ENTERQUEUE' : [],
+                                                                                            'CONNECT' : [],
+                                                                                            'ABANDON' : [] }
+                                                if qaction == 'EXITEMPTY':
+                                                        qaction = 'ABANDON'
+                                                self.stats_queues[astid][qname][qaction].append(int(qdate))
+                                if qaction == 'QUEUESTART':
+                                        last_start = qdate
+                                if qaction in ['AGENTLOGIN', 'AGENTCALLBACKLOGIN', 'AGENTLOGOFF', 'AGENTCALLBACKLOGOFF']:
+                                        if qaction == 'AGENTCALLBACKLOGIN':
+                                                agent_channel = 'Agent/' + line[3]
+                                        else:
+                                                agent_channel = line[3]
+                                        if agent_channel.startswith('Agent/') and len(agent_channel) > 6:
+                                                if agent_channel not in self.last_agents[astid]:
+                                                        self.last_agents[astid][agent_channel] = {}
+                                                self.last_agents[astid][agent_channel][qaction] = qdate
+                                if qaction in ['UNPAUSE', 'PAUSE', 'ADDMEMBER', 'REMOVEMEMBER', 'AGENTCALLED', 'CONNECT']:
                                         agent_channel = line[3]
-                                if agent_channel.startswith('Agent/') and len(agent_channel) > 6:
-                                        if agent_channel not in self.last_agents[astid]:
-                                                self.last_agents[astid][agent_channel] = {}
-                                        self.last_agents[astid][agent_channel][qaction] = qdate
-                        if qaction in ['UNPAUSE', 'PAUSE', 'ADDMEMBER', 'REMOVEMEMBER', 'AGENTCALLED', 'CONNECT']:
-                                agent_channel = line[3]
-                                if agent_channel.startswith('Agent/') and len(agent_channel) > 6:
-                                        if qname not in self.last_queues[astid]:
-                                                self.last_queues[astid][qname] = {}
-                                        if agent_channel not in self.last_queues[astid][qname]:
-                                                self.last_queues[astid][qname][agent_channel] = {}
-                                        self.last_queues[astid][qname][agent_channel][qaction] = qdate
+                                        if agent_channel.startswith('Agent/') and len(agent_channel) > 6:
+                                                if qname not in self.last_queues[astid]:
+                                                        self.last_queues[astid][qname] = {}
+                                                if agent_channel not in self.last_queues[astid][qname]:
+                                                        self.last_queues[astid][qname][agent_channel] = {}
+                                                self.last_queues[astid][qname][agent_channel][qaction] = qdate
                 qlog.close()
                 for aid, v in self.last_agents[astid].iteritems():
                         toremove = []
@@ -2271,6 +2272,7 @@ class XivoCTICommand(BaseCommand):
                         return
                 
                 self.weblist['queues'][astid].queuememberupdate(queue, location, event)
+                self.__peragent_queue_summary__(astid, location)
                 msg = self.__build_agupdate__('joinqueue', astid, location, {'queuename' : queue, 'pausedstatus' : paused})
                 self.__send_msg_to_cti_clients__(msg)
                 return
@@ -2286,6 +2288,7 @@ class XivoCTICommand(BaseCommand):
                         return
                 
                 self.weblist['queues'][astid].queuememberremove(queue, location)
+                self.__peragent_queue_summary__(astid, location)
                 msg = self.__build_agupdate__('leavequeue', astid, location, {'queuename' : queue})
                 self.__send_msg_to_cti_clients__(msg)
                 return
@@ -2332,6 +2335,7 @@ class XivoCTICommand(BaseCommand):
                                 # XXX
                                 
                 self.weblist['queues'][astid].queuememberupdate(queue, location, event)
+                self.__peragent_queue_summary__(astid, location)
                 msg = self.__build_agupdate__('queuememberstatus', astid, location, { 'queuename' : queue,
                                                                                       'joinedstatus' : status,
                                                                                       'pausedstatus' : paused } )
@@ -2341,6 +2345,26 @@ class XivoCTICommand(BaseCommand):
                 # status = 1 => do not ring anymore => the one who has not gone to '1' among the '3's is the one who answered ...
                 # 5 is received when unavailable members of a queue are attempted to be joined ... use agentcallbacklogoff to detect exit instead
                 # + Link
+                return
+        
+        def __peragent_queue_summary__(self, astid, agent_channel):
+                try:
+                        nj = 0
+                        np = 0
+                        for qname, qv in self.weblist['queues'][astid].keeplist.iteritems():
+                                for achan, astatus in qv['agents'].iteritems():
+                                        if achan == agent_channel:
+                                                nj += 1
+                                                if astatus.get('Paused') == '1':
+                                                        np += 1
+                        agent_number = agent_channel[6:]
+                        agent_id = self.weblist['agents'][astid].reverse_index.get(agent_number)
+                        self.weblist['agents'][astid].keeplist[agent_id]['stats']['Xivo-NJoined'] = nj
+                        self.weblist['agents'][astid].keeplist[agent_id]['stats']['Xivo-NPaused'] = np
+                        msg = self.__build_agupdate__('queuesummary', astid, agent_channel, {'njoined' : nj, 'npaused' : np})
+                        self.__send_msg_to_cti_clients__(msg)
+                except Exception:
+                        log.exception('(__peragent_queue_summary__) %s %s' % (astid, agent_channel))
                 return
         
         def ami_queuememberpaused(self, astid, event):
@@ -2357,7 +2381,9 @@ class XivoCTICommand(BaseCommand):
                 
                 event['Xivo-StateTime'] = time.time()
                 self.weblist['queues'][astid].queuememberupdate(queue, location, event)
+                
                 if location.startswith('Agent/'):
+                        self.__peragent_queue_summary__(astid, location)
                         if paused == '0':
                                 msg = self.__build_agupdate__('unpaused', astid, location, {'queuename' : queue})
                                 self.__send_msg_to_cti_clients__(msg)
