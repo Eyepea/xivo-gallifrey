@@ -3509,7 +3509,9 @@ class XivoCTICommand(BaseCommand):
                 tosend = { 'class' : ccomm,
                            'function' : 'sendlist',
                            'payload' : fullstat }
-                return self.__cjson_encode__(tosend)
+                tsencoded = self.__cjson_encode__(tosend)
+                log.info('__getlist__ : sendlist size is %d for %s' % (len(tsencoded), ccomm))
+                return tsencoded
         
         
         # \brief Builds the features_get reply.
