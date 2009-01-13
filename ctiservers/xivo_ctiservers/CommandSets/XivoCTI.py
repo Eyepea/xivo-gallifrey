@@ -332,7 +332,7 @@ class XivoCTICommand(BaseCommand):
         def manage_logout(self, userinfo, when):
                 log.info('logout (%s) %s'
                           % (when, userinfo))
-                userinfo['logouttime-ascii-last'] = time.asctime()
+                userinfo['last-logouttime-ascii'] = time.asctime()
                 self.__logout_agent__(userinfo)
                 self.__disconnect_user__(userinfo)
                 self.__fill_user_ctilog__(userinfo, 'cti_logout')
@@ -500,7 +500,10 @@ class XivoCTICommand(BaseCommand):
                 if 'class' in object:
                         object['direction'] = 'client'
                         object['timenow'] = time.time()
-                return cjson.encode(object)
+                oencoded = cjson.encode(object)
+                # if 'class' in object:
+                # log.info('__cjson_encode__ : %s %d' % (object['class'], len(oencoded)))
+                return oencoded
         
         def set_cticonfig(self, lconf):
                 self.lconf = lconf
@@ -510,7 +513,7 @@ class XivoCTICommand(BaseCommand):
                         if where in self.sheet_allowed_events and len(sheetaction) > 0:
                                 self.sheet_actions[where] = lconf.read_section('sheet_action', sheetaction)
                 return
-
+        
         def set_ctilog(self, ctilog):
                 self.ctilog_conn = None
                 self.ctilog_cursor = None
@@ -866,7 +869,7 @@ class XivoCTICommand(BaseCommand):
                                 mysock = userinfo.get('login')['connection']
                                 mysock.sendall(strupdate + '\n', socket.MSG_WAITALL)
                 except Exception:
-                        log.exception('(__send_msg_to_cti_client__) userinfo = %s' % userinfo)
+                        log.exception('(__send_msg_to_cti_client__) userinfo(id) = %s' % userinfo.get('xivo_userid'))
                         if userinfo not in self.disconnlist:
                                 self.disconnlist.append(userinfo)
                                 os.write(self.queued_threads_pipe[1], 'uinfo')
@@ -888,7 +891,7 @@ class XivoCTICommand(BaseCommand):
                                         if userinfo not in uinfos:
                                                 self.__send_msg_to_cti_client__(userinfo, strupdate)
                 except Exception:
-                        log.exception('(__send_msg_to_cti_clients_except__) userinfo = %s' % userinfo)
+                        log.exception('(__send_msg_to_cti_clients_except__) userinfo(id) = %s' % userinfo.get('xivo_userid'))
                 return
         
 
@@ -1360,7 +1363,6 @@ class XivoCTICommand(BaseCommand):
                         if astid in self.weblist['agents'] and agent_id in self.weblist['agents'][astid].keeplist:
                                 return self.weblist['agents'][astid].keeplist[agent_id].get('number')
                 return ''
-
         
         def __update_queue_stats__(self, astid, queuename, fname = None):
                 if astid not in self.stats_queues:
@@ -1394,7 +1396,6 @@ class XivoCTICommand(BaseCommand):
                 # self.weblist['queues'][astid].keeplist[queuename]['stats']))
                 return
         
-
         def __ignore_dtmf__(self, astid, uid, where):
                 ret = False
                 if uid in self.ignore_dtmf[astid]:
@@ -1407,7 +1408,6 @@ class XivoCTICommand(BaseCommand):
                                 self.ignore_dtmf[astid][uid]['xivo-timestamp'] = tnow
                                 ret = True
                 return ret
-        
         
         def ami_hold(self, astid, event):
                 log.info('%s ami_hold : %s' % (astid, event))
@@ -2357,12 +2357,13 @@ class XivoCTICommand(BaseCommand):
                                                 nj += 1
                                                 if astatus.get('Paused') == '1':
                                                         np += 1
-                        agent_number = agent_channel[6:]
-                        agent_id = self.weblist['agents'][astid].reverse_index.get(agent_number)
-                        self.weblist['agents'][astid].keeplist[agent_id]['stats']['Xivo-NJoined'] = nj
-                        self.weblist['agents'][astid].keeplist[agent_id]['stats']['Xivo-NPaused'] = np
-                        msg = self.__build_agupdate__('queuesummary', astid, agent_channel, {'njoined' : nj, 'npaused' : np})
-                        self.__send_msg_to_cti_clients__(msg)
+                        if agent_channel.startswith('Agent/'):
+                                agent_number = agent_channel[6:]
+                                agent_id = self.weblist['agents'][astid].reverse_index.get(agent_number)
+                                self.weblist['agents'][astid].keeplist[agent_id]['stats']['Xivo-NJoined'] = nj
+                                self.weblist['agents'][astid].keeplist[agent_id]['stats']['Xivo-NPaused'] = np
+                                msg = self.__build_agupdate__('queuesummary', astid, agent_channel, {'njoined' : nj, 'npaused' : np})
+                                self.__send_msg_to_cti_clients__(msg)
                 except Exception:
                         log.exception('(__peragent_queue_summary__) %s %s' % (astid, agent_channel))
                 return
@@ -2430,8 +2431,7 @@ class XivoCTICommand(BaseCommand):
                         return
                 # log.info('%s ami_queuestatuscomplete : %s' % (astid, event))
                 for qname in self.weblist['queues'][astid].get_queues():
-                        self.__ami_execute__(astid, 'sendcommand', 'Command', [('Command', 'show queue %s' % qname)])
-
+                        self.__ami_execute__(astid, 'sendcommand', 'Command', [('Command', 'queue show %s' % qname)])
                 for aid, v in self.last_agents[astid].iteritems():
                         if v:
                                 print astid, aid, v
@@ -3171,7 +3171,7 @@ class XivoCTICommand(BaseCommand):
                                    'payload' : { 'agents' : self.weblist['queues'][astid].keeplist[qname]['agents'],
                                                  'entries' : self.weblist['queues'][astid].keeplist[qname]['channels'] } }
                         cjsonenc = self.__cjson_encode__(tosend)
-                        log.info('%s __build_queue_status__ : %s' % (astid, cjsonenc))
+                        log.info('%s __build_queue_status__ (%s) %d %s' % (astid, qname, len(cjsonenc), cjsonenc))
                         return cjsonenc
                 else:
                         return None
@@ -3903,7 +3903,7 @@ class XivoCTICommand(BaseCommand):
                                                 fullstatlist.append(futureline)
                         except Exception:
                                 log.exception('ldaprequest (directory)')
-
+                
                 elif dbkind == 'file':
                         f = urllib.urlopen(z.uri)
                         delimit = ':'
