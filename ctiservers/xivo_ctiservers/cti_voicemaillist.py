@@ -1,7 +1,7 @@
 # XIVO Daemon
 
-__version__   = '$Revision: 4782 $'
-__date__      = '$Date: 2008-11-26 18:00:31 +0100 (mer, 26 nov 2008) $'
+__version__   = '$Revision$'
+__date__      = '$Date$'
 __copyright__ = 'Copyright (C) 2007, 2008, Proformatique'
 __author__    = 'Corentin Le Gall'
 
