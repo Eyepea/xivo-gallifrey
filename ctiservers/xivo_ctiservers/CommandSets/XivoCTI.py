@@ -52,6 +52,7 @@ from xivo_ctiservers import cti_agentlist
 from xivo_ctiservers import cti_queuelist
 from xivo_ctiservers import cti_phonelist
 from xivo_ctiservers import cti_meetmelist
+from xivo_ctiservers import cti_voicemaillist
 from xivo_ctiservers import xivo_commandsets
 from xivo_ctiservers import xivo_ldap
 from xivo_ctiservers.xivo_commandsets import BaseCommand
@@ -115,7 +116,8 @@ class XivoCTICommand(BaseCommand):
                                  'queues' : {},
                                  'vqueues' : {},
                                  'phones' : {},
-                                 'meetme' : {} }
+                                 'meetme' : {},
+                                 'voicemail' : {} }
                 # self.plist_ng = cti_phonelist.PhoneList()
                 # self.plist_ng.setcommandclass(self)
                 self.uniqueids = {}
@@ -629,8 +631,8 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def set_voicemaillist(self, astid, urllist_voicemail):
-##                self.weblist['voicemail'][astid] = cti_voicemaillist.VoiceMailList(urllist_voicemail)
-##                self.weblist['voicemail'][astid].setcommandclass(self)
+                self.weblist['voicemail'][astid] = cti_voicemaillist.VoiceMailList(urllist_voicemail)
+                self.weblist['voicemail'][astid].setcommandclass(self)
                 return
         
         def set_contextlist(self, ctxlist):
@@ -647,7 +649,7 @@ class XivoCTICommand(BaseCommand):
                 u_update = self.ulist_ng.update()
                 # self.plist_ng.update()
                 for astid, plist in self.weblist['phones'].iteritems():
-                        for itemname in ['agents', 'queues', 'vqueues', 'phones', 'meetme']:
+                        for itemname in ['agents', 'queues', 'vqueues', 'phones', 'meetme', 'voicemail']:
                                 try:
                                         updatestatus = self.weblist[itemname][astid].update()
                                         for function in ['del', 'add']:
@@ -734,6 +736,21 @@ class XivoCTICommand(BaseCommand):
                                 log.exception('(getmeetmelist : %s)' % mitem)
                 return lmlist
 
+        def getvoicemaillist(self, vlist):
+                lvlist = {}
+                for vitem in vlist:
+                        try:
+                                if not vitem.get('commented'):
+                                        lvlist[vitem.get('id')] = { 'mailbox' : vitem.get('mailbox'),
+                                                                    'context' : vitem.get('context'),
+                                                                    'fullname' : vitem.get('fullname'),
+                                                                    'password' : vitem.get('password'),
+                                                                    'email' : vitem.get('email')
+                                                                    }
+                        except Exception:
+                                log.exception('(getvoicemaillist : %s)' % vitem)
+                return lvlist
+
         def getqueueslist(self, dlist):
                 lqlist = {}
                 for qitem in dlist:
@@ -781,8 +798,8 @@ class XivoCTICommand(BaseCommand):
                                         # set a default capaid value for users with only one capaid (most common case)
                                         if len(lulist[uid]['capaids']) == 1:
                                                 lulist[uid]['capaid'] = lulist[uid]['capaids'][0]
-                                        if uitem.get('enablevoicemail'):
-                                                # print uitem.get('voicemailid')
+                                        if uitem.get('enablevoicemail') and uitem.get('voicemailid'):
+                                                lulist[uid]['voicemailid'] = uitem.get('voicemailid')
                                                 lulist[uid]['mwi'] = ['0', '0', '0']
                                         else:
                                                 lulist[uid]['mwi'] = []
@@ -1841,18 +1858,20 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def amiresponse_mailboxcount(self, astid, event):
-                [exten, context] = event.get('Mailbox').split('@')
+                mailbox = event.get('Mailbox')
+                voicemailid = self.weblist['voicemail'][astid].reverse_index.get(mailbox)
                 for userinfo in self.ulist_ng.keeplist.itervalues():
-                        if 'phonenum' in userinfo and userinfo.get('phonenum') == exten and userinfo.get('astid') == astid:
+                        if 'voicemailid' in userinfo and userinfo.get('voicemailid') == voicemailid and userinfo.get('astid') == astid:
                                 if userinfo['mwi']:
                                         userinfo['mwi'][1] = event.get('OldMessages')
                                         userinfo['mwi'][2] = event.get('NewMessages')
                 return
 
         def amiresponse_mailboxstatus(self, astid, event):
-                [exten, context] = event.get('Mailbox').split('@')
+                mailbox = event.get('Mailbox')
+                voicemailid = self.weblist['voicemail'][astid].reverse_index.get(mailbox)
                 for userinfo in self.ulist_ng.keeplist.itervalues():
-                        if 'phonenum' in userinfo and userinfo.get('phonenum') == exten and userinfo.get('astid') == astid:
+                        if 'voicemailid' in userinfo and userinfo.get('voicemailid') == voicemailid and userinfo.get('astid') == astid:
                                 if userinfo['mwi']:
                                         userinfo['mwi'][0] = event.get('Waiting')
                                         tosend = { 'class' : 'users',
@@ -1864,7 +1883,6 @@ class XivoCTICommand(BaseCommand):
                                                    }
                                         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 return
-
 
         sippresence = {
                 '-2' : 'Removed',

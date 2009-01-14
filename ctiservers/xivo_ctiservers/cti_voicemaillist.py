@@ -1,7 +1,7 @@
 # XIVO Daemon
 
-__version__   = '$Revision$'
-__date__      = '$Date$'
+__version__   = '$Revision: 4782 $'
+__date__      = '$Date: 2008-11-26 18:00:31 +0100 (mer, 26 nov 2008) $'
 __copyright__ = 'Copyright (C) 2007, 2008, Proformatique'
 __author__    = 'Corentin Le Gall'
 
@@ -27,31 +27,25 @@ __author__    = 'Corentin Le Gall'
 import logging
 from xivo_ctiservers.cti_anylist import AnyList
 
-log = logging.getLogger('meetmelist')
+log = logging.getLogger('voicemaillist')
 
-class MeetmeList(AnyList):
+class VoiceMailList(AnyList):
         def __init__(self, newurls = []):
-                self.anylist_properties = {'keywords' : ['number', 'name', 'context',
-                                                         'pin', 'admin-pin'],
-                                           'name' : 'meetme',
-                                           'action' : 'getmeetmelist',
+                self.anylist_properties = {'keywords' : ['mailbox', 'context', 'fullname',
+                                                         'password', 'email'],
+                                           'name' : 'voicemail',
+                                           'action' : 'getvoicemaillist',
                                            'urloptions' : (1, 5, True)}
                 AnyList.__init__(self, newurls)
                 return
-        
+
         def update(self):
                 ret = AnyList.update(self)
                 self.reverse_index = {}
                 for idx, ag in self.keeplist.iteritems():
-                        if ag['number'] not in self.reverse_index:
-                                self.reverse_index[ag['number']] = idx
+                        rev = '%s@%s' % (ag['mailbox'], ag['context'])
+                        if rev not in self.reverse_index:
+                                self.reverse_index[rev] = idx
                         else:
-                                log.warning('2 meetme have the same number')
+                                log.warning('2 voicemails have the same mailbox@context')
                 return ret
-        
-        def byroomnum(self, roomnum):
-                meetmeref = None
-                meetme_id = self.reverse_index.get(roomnum)
-                if meetme_id:
-                        meetmeref = self.keeplist.get(meetme_id)
-                return meetmeref
