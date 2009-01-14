@@ -226,7 +226,7 @@ class AMIClass:
                 return resp
 
         # \brief Hangs up a Channel.
-        def hangup(self, channel, channel_peer):
+        def hangup(self, channel, channel_peer = None):
                 ret = 0
                 try:
                         self.sendcommand('Hangup',
@@ -236,8 +236,8 @@ class AMIClass:
                         pass
                 except Exception:
                         pass
-
-                if channel_peer != "":
+                
+                if channel_peer:
                         try:
                                 self.sendcommand('Hangup',
                                                  [('Channel', channel_peer)])
@@ -246,7 +246,6 @@ class AMIClass:
                                 pass
                         except Exception, exc:
                                 pass
-                
                 return ret
 
 

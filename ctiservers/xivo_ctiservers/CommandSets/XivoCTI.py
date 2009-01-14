@@ -139,6 +139,7 @@ class XivoCTICommand(BaseCommand):
                 self.ignore_dtmf = {}
                 self.presence_sections = {}
                 self.display_hints = {}
+                self.origapplication = {}
                 
                 # actionid (AMI) indexed hashes
                 self.getvar_requests = {}
@@ -1935,7 +1936,10 @@ class XivoCTICommand(BaseCommand):
                 if uniqueid in self.uniqueids[astid]:
                         self.uniqueids[astid][uniqueid].update({'time-originateresponse' : time.time(),
                                                                 'actionid' : actionid})
-                # {'Uniqueid': '1213955764.88', 'CallerID': '6101', 'Exten': '6101', 'CallerIDNum': '6101', 'Response': 'Success', 'Reason': '4', 'Context': 'ctx-callbooster-agentlogin', 'CallerIDName': 'operateur', 'Privilege': 'call,all', 'Event': 'OriginateResponse', 'Channel': 'SIP/102-081f6730'}
+                        if actionid in self.origapplication:
+                                self.uniqueids[astid][uniqueid].update(self.origapplication[actionid])
+                                del self.origapplication[actionid]
+                # {'Uniqueid': '1213955764.88', 'CallerID': '6101', 'Exten': '6101', 'CallerIDNum': '6101', 'Response': 'Success', 'Reason': '4', 'Context': 'ctx-xx-agentlogin', 'CallerIDName': 'operateur', 'Privilege': 'call,all', 'Event': 'OriginateResponse', 'Channel': 'SIP/102-081f6730'}
                 return
         
         def ami_messagewaiting(self, astid, event):
@@ -1947,13 +1951,13 @@ class XivoCTICommand(BaseCommand):
                 [exten, context] = event.get('Mailbox').split('@')
                 self.__ami_execute__(astid, 'mailbox', exten, context)
                 return
-
+        
         def ami_newstate(self, astid, event):
                 # print '(phone)', astid, self.__phoneid_from_channel__(astid, event.get('Channel')), event.get('State')
                 # uniqueid = event.get('Uniqueid')
                 # log.info('%s STAT NEWS %s %s %s %s' % (astid, time.time(), uniqueid, event.get('Channel'), event.get('State')))
                 return
-
+        
         def ami_newcallerid(self, astid, event):
                 # log.info('%s ami_newcallerid : %s' % (astid, event))
                 uniqueid = event.get('Uniqueid')
@@ -2850,7 +2854,7 @@ class XivoCTICommand(BaseCommand):
                 # INFO:xivocti:AMI Rename asterisk-clg 1222936526.527 SIP/103-081fce98<MASQ> SIP/102-081d0ff8<ZOMBIE> (success)
                 
                 if uid in self.uniqueids[astid] and oldname == self.uniqueids[astid][uid]['channel']:
-                        self.uniqueids[astid][uid] = {'channel' : newname}
+                        self.uniqueids[astid][uid]['channel'] = newname
                         del self.channels[astid][oldname]
                         self.channels[astid][newname] = uid
                         log.info('%s AMI Rename %s %s %s (success)' % (astid, uid, oldname, newname))
@@ -3202,8 +3206,6 @@ class XivoCTICommand(BaseCommand):
                                 userinfos.append(uinfo)
                 return userinfos
         
-        
-        
         def __agent__(self, userinfo, commandargs):
                 myastid = None
                 myagentnum = None
@@ -3282,7 +3284,10 @@ class XivoCTICommand(BaseCommand):
                                         if achan == agent_channel and astatus.get('Paused') == '1':
                                                 self.__ami_execute__(astid, 'queuepause', qname, agent_channel, 'false')
                                                 
-                elif subcommand in ['login', 'logout', 'record', 'stoprecord', 'getfile', 'getfilelist', 'listen']:
+                elif subcommand in ['login', 'logout',
+                                    'record', 'stoprecord',
+                                    'listen', 'stoplisten',
+                                    'getfile', 'getfilelist']:
                         if len(commandargs) > 2:
                                 astid = commandargs[1]
                                 anum = commandargs[2]
@@ -3294,7 +3299,7 @@ class XivoCTICommand(BaseCommand):
                                                 break
                         else:
                                 uinfo = userinfo
-
+                        
                         if subcommand == 'login':
                                 self.__login_agent__(uinfo)
                         elif subcommand == 'logout':
@@ -3335,7 +3340,16 @@ class XivoCTICommand(BaseCommand):
                                                                    userinfo.get('phonenum'),
                                                                    userinfo.get('context'))
                                         log.info('started listening on %s %s (agent %s) aid = %s' % (astid, channel, anum, aid))
-
+                                        self.origapplication[aid] = { 'origapplication' : 'ChanSpy',
+                                                                      'origapplication-data' : { 'spied-channel' : channel } }
+                        elif subcommand == 'stoplisten':
+                                channels = self.__find_channel_by_agentnum__(astid, anum)
+                                for channel in channels:
+                                        for uid, vv in self.uniqueids[astid].iteritems():
+                                                if 'origapplication' in vv and vv['origapplication'] == 'ChanSpy':
+                                                        if channel == vv['origapplication-data']['spied-channel']:
+                                                                self.__ami_execute__(astid, 'hangup', vv['channel'])
+                                        log.info('stopped listening on %s %s (agent %s)' % (astid, channel, anum))
                         elif subcommand == 'getfilelist':
                                 lst = os.listdir(MONITORDIR)
                                 monitoredfiles = []
