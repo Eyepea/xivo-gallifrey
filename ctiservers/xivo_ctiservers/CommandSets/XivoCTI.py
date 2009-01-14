@@ -1382,6 +1382,14 @@ class XivoCTICommand(BaseCommand):
                                 return self.weblist['agents'][astid].keeplist[agent_id].get('number')
                 return ''
         
+        def __voicemailnum__(self, userinfo):
+                astid = userinfo.get('astid')
+                if 'voicemailid' in userinfo and userinfo['voicemailid']:
+                        voicemail_id = userinfo['voicemailid']
+                        if astid in self.weblist['voicemail'] and voicemail_id in self.weblist['voicemail'][astid].keeplist:
+                                return self.weblist['voicemail'][astid].keeplist[voicemail_id].get('mailbox')
+                return ''
+        
         def __update_queue_stats__(self, astid, queuename, fname = None):
                 if astid not in self.stats_queues:
                         return
@@ -3500,6 +3508,7 @@ class XivoCTICommand(BaseCommand):
                                         senduinfo[kw] = uinfo.get(kw)
                                 senduinfo['statedetails'] = statedetails
                                 senduinfo['agentnum'] = self.__agentnum__(uinfo)
+                                senduinfo['voicemailnum'] = self.__voicemailnum__(uinfo)
                                 fullstat.append(senduinfo)
                                 
                 elif ccomm == 'phones':
