@@ -1,0 +1,48 @@
+2009-01-15  Adrien DELLE CAVE <decryptus@proformatique.com>
+
+	pf_sip_callid_domain_for_mwi.patch
+	$Revision$
+	$Date$
+
+	Correct a misuse of strcasecmp for SIP Notification.
+	Reported and fixed in http://bugs.digium.com/view.php?id=12560
+
+	Replaced phone domain by Asterisk domain in Call-ID of the MWI subscription.
+	Special fix for Thomson ST2030S.
+
+Index: asterisk-1.4.22/channels/chan_sip.c
+===================================================================
+--- asterisk-1.4.22.orig/channels/chan_sip.c	2009-01-14 22:18:00.000000000 +0100
++++ asterisk-1.4.22.orig/channels/chan_sip.c	2009-01-14 19:01:43.000000000 +0100
+@@ -7097,7 +7097,7 @@
+ 
+ 	if (sipmethod == SIP_NOTIFY && !ast_strlen_zero(p->theirtag)) { 
+ 		/* If this is a NOTIFY, use the From: tag in the subscribe (RFC 3265) */
+-		snprintf(to, sizeof(to), "<%s%s>;tag=%s", (strncasecmp(p->uri, "sip:", 4) ? "" : "sip:"), p->uri, p->theirtag);
++		snprintf(to, sizeof(to), "<%s%s>;tag=%s", (!strncasecmp(p->uri, "sip:", 4) ? "" : "sip:"), p->uri, p->theirtag);
+ 	} else if (p->options && p->options->vxml_url) {
+ 		/* If there is a VXML URL append it to the SIP URL */
+ 		snprintf(to, sizeof(to), "<%s>;%s", p->uri, p->options->vxml_url);
+@@ -16117,6 +16117,22 @@
+ 	if (peer->mwipvt) {
+ 		/* Base message on subscription */
+ 		p = peer->mwipvt;
++
++		/* call-id@domain */
++		char callid[32 + 1 + AST_MAX_EXTENSION];
++		/* domain:port */
++		char host[AST_MAX_EXTENSION + 1 + 5];
++		char *stringp;
++
++		ast_copy_string(callid, p->callid, sizeof(callid));
++		stringp = callid;
++
++		if (strsep(&stringp, "@")) {
++			ast_copy_string(host, S_OR(p->fromdomain, ast_inet_ntoa(p->ourip)), sizeof(host));
++			stringp = host;
++			strsep(&stringp, ":");
++			ast_string_field_build(p, callid, "%s@%s", callid, host);
++		}
+ 	} else {
+ 		/* Build temporary dialog for this message */
+ 		if (!(p = sip_alloc(NULL, NULL, 0, SIP_NOTIFY))) 
