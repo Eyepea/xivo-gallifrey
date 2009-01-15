@@ -62,10 +62,9 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		$this->_get_contextnumbers();
 		$this->_get_contextinclude();
 
-		$this->_info['deletable'] = $this->_get_contextnummember() === false;
-
-		if($this->_get_contextmember() !== false && $this->_info['deletable'] === true)
-			$this->_info['deletable'] = false;
+		$this->_info['deletablenumber'] = $this->_get_contextnummember() === false;
+		$this->_info['deletablemember'] = $this->_get_contextmember() === false;
+		$this->_info['deletable'] = $this->_info['deletablenumber'] === true && $this->_info['deletablemember'] === true;
 
 		return($this->_info);
 	}
@@ -465,8 +464,8 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		}
 		else if(empty($reslist) === true)
 		{
-			if(isset($this->_info['deletable']) === true
-			&& $this->_info['deletable'] === true)
+			if(isset($this->_info['deletablenumber']) === true
+			&& $this->_info['deletablenumber'] === true)
 				return(null);
 			else
 			{
@@ -737,8 +736,8 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 	function edit_contextnumbers()
 	{
-		if(isset($this->_info['deletable']) === true
-		&& $this->_info['deletable'] === true)
+		if(isset($this->_info['deletablenumber']) === true
+		&& $this->_info['deletablenumber'] === true)
 			$deletable = true;
 		else
 			$deletable = false;
