@@ -3,7 +3,7 @@ __license__ = """
     Copyright (C) 2004 Karl Putland 
     Upstream Original Author: Karl Putland <kputland@users.sourceforge.net>
 
-    Copyright (C) 2007, 2008, 2009  Proformatique
+    Copyright (C) 2007, 2008, 2009  Proformatique <technique@proformatique.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
