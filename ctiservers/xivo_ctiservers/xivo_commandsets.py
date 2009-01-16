@@ -56,7 +56,7 @@ class BaseCommand:
                 return
         def clear_disconnlist(self):
                 return
-
+        
         def reset(self, mode, conn = None):
                 return
         def transfer_addbuf(self, req, buf):
@@ -73,7 +73,7 @@ class BaseCommand:
                 return
         def set_cticonfig(self, cticonfig):
                 return
-
+        
         def version(self):
                 return 'NOVERSION'
         userfields = []
@@ -85,6 +85,8 @@ class BaseCommand:
                 return {}
         def queues(self):
                 return {}
+        def groups(self):
+                return {}
         def phones(self):
                 return {}
         def meetme(self):
@@ -95,6 +97,8 @@ class BaseCommand:
         def connected_users(self):
                 return {}
         def getqueueslist(self, qlist):
+                return {}
+        def getgroupslist(self, qlist):
                 return {}
         def getagentslist(self, qlist):
                 return {}
@@ -109,6 +113,8 @@ class BaseCommand:
         def set_agentlist(self, astid, urllist):
                 return
         def set_queuelist(self, astid, urllist):
+                return
+        def set_grouplist(self, astid, urllist):
                 return
         def set_vqueuelist(self, astid, urllist):
                 return
