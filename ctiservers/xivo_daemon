@@ -293,6 +293,14 @@ def manage_info_connections(connid, msg, sep):
                                                         connid.sendall('%s %s\n' % (ag, agp))
                                         except Exception:
                                                 log.exception('INFO %s' % usefulmsg)
+                        elif usefulmsg == 'show_groups':
+                                for astid, groups in commandclass.groups().iteritems():
+                                        try:
+                                                connid.sendall('groups for %s\n' % astid)
+                                                for ag, agp in groups.keeplist.iteritems():
+                                                        connid.sendall('%s %s\n' % (ag, agp))
+                                        except Exception:
+                                                log.exception('INFO %s' % usefulmsg)
                         elif usefulmsg == 'show_meetme':
                                 for astid, meetme in commandclass.meetme().iteritems():
                                         try:
@@ -758,7 +766,7 @@ while True: # loops over the reloads
                         
                         if 'localaddr' in xivoconf_asterisk:
                                 localaddr = xivoconf_asterisk['localaddr']
-                        for listname in ['phones', 'queues', 'vqueues', 'agents', 'meetme', 'voicemail']:
+                        for listname in ['phones', 'queues', 'groups', 'vqueues', 'agents', 'meetme', 'voicemail']:
                                 fieldname = 'urllist_%s' % listname
                                 if fieldname in xivoconf_asterisk:
                                         urllist[listname] = xivoconf_asterisk[fieldname].split(',')
@@ -812,6 +820,7 @@ while True: # loops over the reloads
                         commandclass.set_phonelist(astid, urllist['phones'])
                         commandclass.set_agentlist(astid, urllist['agents'])
                         commandclass.set_queuelist(astid, urllist['queues'])
+                        commandclass.set_grouplist(astid, urllist['groups'])
                         commandclass.set_vqueuelist(astid, urllist['vqueues'])
                         commandclass.set_meetmelist(astid, urllist['meetme'])
                         commandclass.set_voicemaillist(astid, urllist['voicemail'])
