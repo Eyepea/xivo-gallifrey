@@ -149,7 +149,7 @@ class Linksys(PhoneVendorMixin):
             else:
                 blf = ""
 
-            fk_config_lines.append("<Unit_%d_Key_%d>fnc=sd+cp%s;sub=%s@%s:nme=%s</Unit_%d_Key_%d>"
+            fk_config_lines.append('<Unit_%d_Key_%d ua="na">fnc=sd+cp%s;sub=%s@%s:nme=%s</Unit_%d_Key_%d>'
                                    % (unit, key, blf, exten, cls.ASTERISK_IPV4, exten, unit, key))
         return "\n".join(fk_config_lines)
 
