@@ -139,9 +139,10 @@ class Linksys(PhoneVendorMixin):
         for key in sorted_keys:
             exten, supervise = funckey[key]
 
-            key = (int(key) % 32) + 1
+            key = (int(key) % 32)
 
-            if key == 1:
+            if key == 0:
+                key = 32
                 unit += 1
 
             if supervise:

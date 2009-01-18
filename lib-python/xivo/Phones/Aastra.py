@@ -112,16 +112,41 @@ class Aastra(PhoneVendorMixin):
             log.exception("error when trying to call curl")
 
     @staticmethod
-    def __format_function_keys(funckey):
+    def __format_function_keys(funckey, model):
         sorted_keys = funckey.keys()
         sorted_keys.sort()
         fk_config_lines = []
+        unit = 1
         for key in sorted_keys:
             exten, supervise = funckey[key] # pylint: disable-msg=W0612
-            fk_config_lines.append("softkey%01d type: blf" % int(key))
-            fk_config_lines.append("softkey%01d label: %s" % (int(key), exten))
-            fk_config_lines.append("softkey%01d value: %s" % (int(key), exten))
-            fk_config_lines.append("softkey%01d line: 1" % int(key))
+
+            key = int(key)
+
+            if key <= 6:
+                if model == '57i':
+                    keytype = "topsoft"
+                else:
+                    keytype = "prg"
+            elif key > 12:
+                key = (key - 12) % 60
+
+                if key == 0:
+                    key = 60
+                    unit += 1
+
+                keytype = "expmod%d " % unit
+            else:
+                keytype = "soft"
+
+            if supervise:
+                type = "blf"
+            else:
+                type = "speeddial"
+
+            fk_config_lines.append("%skey%d type: %s" % (keytype, key, type))
+            fk_config_lines.append("%skey%d label: %s" % (keytype, key, exten))
+            fk_config_lines.append("%skey%d value: %s" % (keytype, key, exten))
+            fk_config_lines.append("%skey%d line: 1" % (keytype, key))
         return "\n".join(fk_config_lines)
 
     def do_reinit(self):
@@ -149,7 +174,7 @@ class Aastra(PhoneVendorMixin):
         cfg_filename = tmp_filename[:-4]
 
         function_keys_config_lines = \
-                self.__format_function_keys(provinfo['funckey'])
+                self.__format_function_keys(provinfo['funckey'], model)
 
         txt = xivo_config.txtsubst(template_lines,
                 { 'user_display_name': provinfo['name'],
