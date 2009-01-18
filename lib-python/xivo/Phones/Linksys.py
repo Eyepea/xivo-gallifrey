@@ -135,16 +135,22 @@ class Linksys(PhoneVendorMixin):
         sorted_keys = funckey.keys()
         sorted_keys.sort()
         fk_config_lines = []
+        unit = 1
         for key in sorted_keys:
             exten, supervise = funckey[key]
+
+            key = (int(key) % 32) + 1
+
+            if key == 1:
+                unit += 1
 
             if supervise:
                 blf = "+blf"
             else:
                 blf = ""
 
-            fk_config_lines.append("<Unit_1_Key_%01d>fnc=sd+cp%s;sub=%s@%s:nme=%s</Unit_1_Key_%01d>"
-                                   % (int(key), blf, exten, cls.ASTERISK_IPV4, exten, int(key)))
+            fk_config_lines.append("<Unit_%d_Key_%d>fnc=sd+cp%s;sub=%s@%s:nme=%s</Unit_%d_Key_%d>"
+                                   % (unit, key, blf, exten, cls.ASTERISK_IPV4, exten, unit, key))
         return "\n".join(fk_config_lines)
 
     def do_autoprov(self, provinfo):
