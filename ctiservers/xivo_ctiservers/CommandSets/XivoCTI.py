@@ -1348,6 +1348,9 @@ class XivoCTICommand(BaseCommand):
                                                 if agent_channel not in self.last_agents[astid]:
                                                         self.last_agents[astid][agent_channel] = {}
                                                 self.last_agents[astid][agent_channel][qaction] = qdate
+                                        else:
+                                                # XXX sip@queue
+                                                pass
                                 if qaction in ['UNPAUSE', 'PAUSE', 'ADDMEMBER', 'REMOVEMEMBER', 'AGENTCALLED', 'CONNECT']:
                                         agent_channel = line[3]
                                         if agent_channel.startswith('Agent/') and len(agent_channel) > 6:
@@ -1356,6 +1359,9 @@ class XivoCTICommand(BaseCommand):
                                                 if agent_channel not in self.last_queues[astid][qname]:
                                                         self.last_queues[astid][qname][agent_channel] = {}
                                                 self.last_queues[astid][qname][agent_channel][qaction] = qdate
+                                        else:
+                                                # XXX sip@queue
+                                                pass
                 qlog.close()
                 for aid, v in self.last_agents[astid].iteritems():
                         toremove = []
@@ -2204,6 +2210,19 @@ class XivoCTICommand(BaseCommand):
         
         def ami_agentcalled(self, astid, event):
                 log.info('%s ami_agentcalled : %s' % (astid, event))
+                
+                queue = event.get('Queue')
+                context = event.get('Context')
+                
+                # XXX define actions to perform according to queue or group
+                if queue in self.weblist['queues'][astid].keeplist:
+                        pass
+                elif queue in self.weblist['groups'][astid].keeplist:
+                        pass
+                else:
+                        log.warning('%s ami_agentcalled : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        return
+                
                 agent_channel = event.get('AgentCalled')
                 if agent_channel.startswith('Agent/'):
                         agent_number = agent_channel[6:]
@@ -2217,7 +2236,10 @@ class XivoCTICommand(BaseCommand):
                                                                        'lost' : self.weblist['agents'][astid].keeplist[agent_id]['stats']['Xivo-LostCalls']})
                                         self.__send_msg_to_cti_clients__(msg)
                                 # self.weblist['agents'][astid].keeplist[agent_id]['stats'] # XXX : count calls ++
-                                
+                else:
+                        # XXX sip@queue
+                        pass
+                
                 # {'Extension': '6678', 'CallerID': '102', 'CallerIDName': 'User2', 'Priority': '2', 'ChannelCalling': 'SIP/102-b6c070e0', 'Context': 'default', 'AgentName': 'permmember', 'Privilege': 'agent,all', 'Event': 'AgentCalled', 'AgentCalled': 'SIP/103'}
                 # {'Extension': 's', 'CallerID': 'unknown', 'Priority': '2', 'ChannelCalling': 'IAX2/test-13', 'Context': 'macro-incoming_queue_call', 'CallerIDName': 'Comm. ', 'AgentCalled': 'iax2/192.168.0.120/101'}
                 # {'Extension': '6678', 'CallerID': '102', 'CallerIDName': 'User2', 'Priority': '2', 'ChannelCalling': 'SIP/102-081cd460', 'Context': 'default', 'AgentName': 'Agent/6101', 'Privilege': 'agent,all', 'Event': 'AgentCalled', 'AgentCalled': 'Agent/6101'}
@@ -2239,6 +2261,9 @@ class XivoCTICommand(BaseCommand):
                                         msg = self.__build_agupdate__('agentconnect', astid, agent_channel,
                                                                       {'lost' : self.weblist['agents'][astid].keeplist[agent_id]['stats']['Xivo-LostCalls']})
                                         self.__send_msg_to_cti_clients__(msg)
+                else:
+                        # XXX sip@queue
+                        pass
                 # {'BridgedChannel': '1228753144.217', 'Member': 'SIP/103', 'MemberName': 'permmember', 'Queue': 'martinique', 'Uniqueid': '1228753144.216', 'Privilege': 'agent,all', 'Holdtime': '4', 'Event': 'AgentConnect', 'Channel': 'SIP/103-081d7358'}
                 # {'Member': 'SIP/108', 'Queue': 'commercial', 'Uniqueid': '1215006134.1166', 'Privilege': 'agent,all', 'Holdtime': '9', 'Event': 'AgentConnect', 'Channel': 'SIP/108-08190098'}
                 return
@@ -2386,6 +2411,10 @@ class XivoCTICommand(BaseCommand):
                         elif action in ['phoneunlink', 'agentunlink']:
                                 self.weblist['agents'][astid].keeplist[agent_id]['stats'].update({'link' : action,
                                                                                                   'Xivo-StateTime' : time.time()})
+                else:
+                        # XXX sip@queue
+                        pass
+                
                 arrgs = { 'action' : action,
                           'astid' : astid,
                           'agent_channel' : agent_channel }
@@ -2406,12 +2435,6 @@ class XivoCTICommand(BaseCommand):
                 queue = event.get('Queue')
                 location = event.get('Location')
                 paused = event.get('Paused')
-                if queue not in self.weblist['queues'][astid].keeplist:
-                        if queue in self.weblist['groups'][astid].keeplist:
-                                log.warning('%s ami_queuememberstatus : %s is a group' % (astid, queue))
-                        else:
-                                log.warning('%s ami_queuememberstatus : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
-                        return
                 
                 if location.startswith('Agent/'):
                         agent_channel = location
@@ -2419,14 +2442,28 @@ class XivoCTICommand(BaseCommand):
                         if astid in self.weblist['agents']:
                                 agent_id = self.weblist['agents'][astid].reverse_index.get(agent_number)
                                 # XXX
-                                
-                self.weblist['queues'][astid].queuememberupdate(queue, location, event)
-                self.__peragent_queue_summary__(astid, location)
-                msg = self.__build_agupdate__('queuememberstatus', astid, location, { 'queuename' : queue,
-                                                                                      'joinedstatus' : status,
-                                                                                      'pausedstatus' : paused } )
-                self.__send_msg_to_cti_clients__(msg)
-                
+                else:
+                        # XXX sip@queue
+                        pass
+                        
+                if queue in self.weblist['queues'][astid].keeplist:
+                        self.weblist['queues'][astid].queuememberupdate(queue, location, event)
+                        self.__peragent_queue_summary__(astid, location)
+                        msg = self.__build_agupdate__('queuememberstatus', astid, location, { 'queuename' : queue,
+                                                                                              'joinedstatus' : status,
+                                                                                              'pausedstatus' : paused } )
+                        self.__send_msg_to_cti_clients__(msg)
+                elif queue in self.weblist['groups'][astid].keeplist:
+                        self.weblist['groups'][astid].groupmemberupdate(queue, location, event)
+                        # self.__peragent_group_summary__(astid, location)
+                        msg = self.__build_agupdate__('groupmemberstatus', astid, location, { 'groupname' : queue,
+                                                                                              'joinedstatus' : status,
+                                                                                              'pausedstatus' : paused } )
+                        self.__send_msg_to_cti_clients__(msg)
+                        # self.weblist['groups'][astid].keeplist[queue]['agents'].keys()
+                else:
+                        log.warning('%s ami_queuememberstatus : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        
                 # status = 3 => ringing
                 # status = 1 => do not ring anymore => the one who has not gone to '1' among the '3's is the one who answered ...
                 # 5 is received when unavailable members of a queue are attempted to be joined ... use agentcallbacklogoff to detect exit instead
@@ -2450,27 +2487,31 @@ class XivoCTICommand(BaseCommand):
                                 self.weblist['agents'][astid].keeplist[agent_id]['stats']['Xivo-NPaused'] = np
                                 msg = self.__build_agupdate__('queuesummary', astid, agent_channel, {'njoined' : nj, 'npaused' : np})
                                 self.__send_msg_to_cti_clients__(msg)
+                        else:
+                                # XXX sip@queue
+                                pass
                 except Exception:
                         log.exception('(__peragent_queue_summary__) %s %s' % (astid, agent_channel))
                 return
         
         def ami_queuememberpaused(self, astid, event):
-                # print 'AMI_QUEUEMEMBERPAUSED', event
+                # log.info('%s ami_queuememberpaused : %s' % (astid, event))
                 if astid not in self.weblist['queues']:
                         log.warning('%s ami_queuememberpaused : no queue list has been defined' % astid)
                         return
                 queue = event.get('Queue')
                 paused = event.get('Paused')
                 location = event.get('Location')
-                if queue not in self.weblist['queues'][astid].keeplist:
-                        if queue in self.weblist['groups'][astid].keeplist:
-                                log.warning('%s ami_queuememberpaused : %s is a group' % (astid, queue))
-                        else:
-                                log.warning('%s ami_queuememberpaused : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
-                        return
                 
                 event['Xivo-StateTime'] = time.time()
-                self.weblist['queues'][astid].queuememberupdate(queue, location, event)
+                
+                if queue in self.weblist['queues'][astid].keeplist:
+                        self.weblist['queues'][astid].queuememberupdate(queue, location, event)
+                elif queue in self.weblist['groups'][astid].keeplist:
+                        self.weblist['groups'][astid].groupmemberupdate(queue, location, event)
+                else:
+                        log.warning('%s ami_queuememberpaused : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        return
                 
                 if location.startswith('Agent/'):
                         self.__peragent_queue_summary__(astid, location)
@@ -2480,51 +2521,58 @@ class XivoCTICommand(BaseCommand):
                         else:
                                 msg = self.__build_agupdate__('paused', astid, location, {'queuename' : queue})
                                 self.__send_msg_to_cti_clients__(msg)
+                else:
+                        # XXX sip@queue
+                        pass
                 return
         
         def ami_queueparams(self, astid, event):
+                # log.info('%s ami_queueparams : %s' % (astid, event))
                 if astid not in self.weblist['queues']:
                         log.warning('%s ami_queueparams : no queue list has been defined' % astid)
                         return
                 queue = event.get('Queue')
-                self.weblist['queues'][astid].update_queuestats(queue, event)
-                if queue not in self.weblist['queues'][astid].keeplist:
-                        if queue in self.weblist['groups'][astid].keeplist:
-                                log.warning('%s ami_queueparams : %s is a group' % (astid, queue))
-                        else:
-                                log.warning('%s ami_queueparams : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
-                        return
-                
-                tosend = { 'class' : 'queues',
-                           'function' : 'sendlist',
-                           'payload' : [ { 'astid' : astid,
-                                           'queuestats' : self.weblist['queues'][astid].get_queuestats(queue),
-                                           'vqueues' : self.weblist['vqueues'][astid].keeplist
-                                           } ] }
-                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
+                if queue in self.weblist['queues'][astid].keeplist:
+                        self.weblist['queues'][astid].update_queuestats(queue, event)
+                        tosend = { 'class' : 'queues',
+                                   'function' : 'sendlist',
+                                   'payload' : [ { 'astid' : astid,
+                                                   'queuestats' : self.weblist['queues'][astid].get_queuestats(queue),
+                                                   'vqueues' : self.weblist['vqueues'][astid].keeplist
+                                                   } ] }
+                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
+                elif queue in self.weblist['groups'][astid].keeplist:
+                        self.weblist['groups'][astid].update_groupstats(queue, event)
+                        tosend = { 'class' : 'groups',
+                                   'function' : 'sendlist',
+                                   'payload' : [ { 'astid' : astid,
+                                                   'groupstats' : self.weblist['groups'][astid].get_groupstats(queue)
+                                                   } ] }
+                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
+                else:
+                        log.warning('%s ami_queueparams : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
                 return
         
         def ami_queuemember(self, astid, event):
+                # log.info('%s ami_queuemember : %s' % (astid, event))
                 if astid not in self.weblist['queues']:
                         log.warning('%s ami_queuemember : no queue list has been defined' % astid)
                         return
                 queue = event.get('Queue')
                 location = event.get('Location')
-                if queue not in self.weblist['queues'][astid].keeplist:
-                        if queue in self.weblist['groups'][astid].keeplist:
-                                log.warning('%s ami_queuemember : %s is a group' % (astid, queue))
-                        else:
-                                log.warning('%s ami_queuemember : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
-                        return
-                
-                self.weblist['queues'][astid].queuememberupdate(queue, location, event)
+                if queue in self.weblist['queues'][astid].keeplist:
+                        self.weblist['queues'][astid].queuememberupdate(queue, location, event)
+                elif queue in self.weblist['groups'][astid].keeplist:
+                        self.weblist['groups'][astid].groupmemberupdate(queue, location, event)
+                else:
+                        log.warning('%s ami_queuemember : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
                 return
         
         def ami_queuestatuscomplete(self, astid, event):
+                # log.info('%s ami_queuestatuscomplete : %s' % (astid, event))
                 if astid not in self.weblist['queues']:
                         log.warning('%s ami_queuestatuscomplete : no queue list has been defined' % astid)
                         return
-                # log.info('%s ami_queuestatuscomplete : %s' % (astid, event))
                 for qname in self.weblist['queues'][astid].get_queues():
                         self.__ami_execute__(astid, 'sendcommand', 'Command', [('Command', 'queue show %s' % qname)])
                 for aid, v in self.last_agents[astid].iteritems():
