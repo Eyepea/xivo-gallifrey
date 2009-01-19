@@ -1002,10 +1002,12 @@ class XivoCTICommand(BaseCommand):
                         userinfos = []
                         actionopt = self.sheet_actions.get(where)
                         whoms = actionopt.get('whom')
+                        capaids = None
                         if 'capaids' in actionopt:
-                                capaids = actionopt['capaids'].split(',')
-                        else:
-                                capaids = []
+                                if actionopt['capaids']:
+                                        capaids = actionopt['capaids'].split(',')
+                                else:
+                                        capaids = []
                         if whoms is None or whoms == '':
                                 log.warning('%s __sheet_alert__ : whom field for %s action has not been defined'
                                             % (astid, where))
@@ -1189,19 +1191,21 @@ class XivoCTICommand(BaseCommand):
                         for whom in whoms.split(','):
                                 if whom == 'dest':
                                         for uinfo in userinfos:
-                                                if uinfo.get('capaid') in capaids:
+                                                if capaids is None or uinfo.get('capaid') in capaids:
                                                         self.__send_msg_to_cti_client__(uinfo, fulllines)
                                 elif whom == 'subscribe':
                                         for uinfo in self.ulist_ng.keeplist.itervalues():
-                                                if 'subscribe' in uinfo and uinfo.get('capaid') in capaids:
-                                                        self.__send_msg_to_cti_client__(uinfo, fulllines)
+                                                if capaids is None or uinfo.get('capaid') in capaids:
+                                                        if 'subscribe' in uinfo:
+                                                                self.__send_msg_to_cti_client__(uinfo, fulllines)
                                 elif whom == 'all':
                                         for uinfo in self.ulist_ng.keeplist.itervalues():
-                                                if astid == uinfo.get('astid') and uinfo.get('capaid') in capaids:
-                                                        self.__send_msg_to_cti_client__(uinfo, fulllines)
+                                                if astid == uinfo.get('astid'):
+                                                        if capaids is None or uinfo.get('capaid') in capaids:
+                                                                self.__send_msg_to_cti_client__(uinfo, fulllines)
                                 elif whom == 'reallyall':
                                         for uinfo in self.ulist_ng.keeplist.itervalues():
-                                                if uinfo.get('capaid') in capaids:
+                                                if capaids is None or uinfo.get('capaid') in capaids:
                                                         self.__send_msg_to_cti_client__(uinfo, fulllines)
                                 else:
                                         log.warning('__sheet_alert__ (%s) : unknown destination <%s> in <%s>'
