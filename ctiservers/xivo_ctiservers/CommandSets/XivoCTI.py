@@ -795,7 +795,8 @@ class XivoCTICommand(BaseCommand):
                 return lqlist
         
         # fields set at startup by reading informations
-        userfields = ['user', 'company', 'astid', 'password', 'fullname', 'capaids', 'context', 'phonenum', 'techlist', 'agentid', 'xivo_userid']
+        userfields = ['user', 'company', 'astid', 'password', 'fullname',
+                      'capaids', 'context', 'phonenum', 'techlist', 'agentid', 'xivo_userid']
         def getuserslist(self, dlist):
                 lulist = {}
                 for uitem in dlist:
@@ -985,8 +986,7 @@ class XivoCTICommand(BaseCommand):
                                 except Exception:
                                         log.exception('(__build_xmlsheet__) %s %s' % (sheetkind, whichitem))
                 return linestosend
-
-
+        
         def __sheet_alert__(self, where, astid, context, event, extraevent = {}):
                 # fields to display :
                 # - internal asterisk/xivo : caller, callee, queue name, sda
@@ -1002,6 +1002,10 @@ class XivoCTICommand(BaseCommand):
                         userinfos = []
                         actionopt = self.sheet_actions.get(where)
                         whoms = actionopt.get('whom')
+                        if 'capaids' in actionopt:
+                                capaids = actionopt['capaids'].split(',')
+                        else:
+                                capaids = []
                         if whoms is None or whoms == '':
                                 log.warning('%s __sheet_alert__ : whom field for %s action has not been defined'
                                             % (astid, where))
@@ -1184,24 +1188,25 @@ class XivoCTICommand(BaseCommand):
                         # send the payload to the appropriate people
                         for whom in whoms.split(','):
                                 if whom == 'dest':
-                                        for userinfo in userinfos:
-                                                self.__send_msg_to_cti_client__(userinfo, fulllines)
+                                        for uinfo in userinfos:
+                                                if uinfo.get('capaid') in capaids:
+                                                        self.__send_msg_to_cti_client__(uinfo, fulllines)
                                 elif whom == 'subscribe':
                                         for uinfo in self.ulist_ng.keeplist.itervalues():
-                                                if 'subscribe' in uinfo:
+                                                if 'subscribe' in uinfo and uinfo.get('capaid') in capaids:
                                                         self.__send_msg_to_cti_client__(uinfo, fulllines)
                                 elif whom == 'all':
                                         for uinfo in self.ulist_ng.keeplist.itervalues():
-                                                if astid == uinfo.get('astid'):
+                                                if astid == uinfo.get('astid') and uinfo.get('capaid') in capaids:
                                                         self.__send_msg_to_cti_client__(uinfo, fulllines)
                                 elif whom == 'reallyall':
                                         for uinfo in self.ulist_ng.keeplist.itervalues():
-                                                self.__send_msg_to_cti_client__(uinfo, fulllines)
+                                                if uinfo.get('capaid') in capaids:
+                                                        self.__send_msg_to_cti_client__(uinfo, fulllines)
                                 else:
                                         log.warning('__sheet_alert__ (%s) : unknown destination <%s> in <%s>'
-                                                  % (astid, whom, where))
+                                                    % (astid, whom, where))
                 return calleridsolved
-
 
 
         def __phoneid_from_channel__(self, astid, channel):
@@ -3617,6 +3622,7 @@ class XivoCTICommand(BaseCommand):
                         if self.capas[capaid].match_funcs(ucapa, 'agents'):
                                 for astid, qlist in self.weblist['queues'].iteritems():
                                         fullstat.append({ 'astid' : astid,
+                                                          'queueprops' : qlist.get_queueprops_long(),
                                                           'queuestats' : qlist.get_queuestats_long(),
                                                           'vqueues' : self.weblist['vqueues'][astid].keeplist
                                                           })

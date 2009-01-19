@@ -80,7 +80,7 @@ class QueueList(AnyList):
                 else:
                         log.warning('queuememberremove : no such queue %s' % queue)
                 return
-
+        
         def update_queuestats(self, queue, event):
                 if queue in self.keeplist:
                         for statfield in self.queuestats:
@@ -89,10 +89,10 @@ class QueueList(AnyList):
                 else:
                         log.warning('update_queuestats : no such queue %s' % queue)
                 return
-
+        
         def get_queues(self):
                 return self.keeplist.keys()
-
+        
         def get_queuestats(self, queuename):
                 lst = {}
                 if queuename in self.keeplist:
@@ -103,6 +103,12 @@ class QueueList(AnyList):
                 lst = {}
                 for queuename, queueprops in self.keeplist.iteritems():
                         lst[queuename] = queueprops['stats']
+                return lst
+        
+        def get_queueprops_long(self):
+                lst = {}
+                for queuename, queueprops in self.keeplist.iteritems():
+                        lst[queuename] = queueprops['context']
                 return lst
         
         def get_queues_byagent(self, agid):
