@@ -480,7 +480,7 @@ class XivoCTICommand(BaseCommand):
                                    'capaxlets' : self.capas[capaid].capadisps,
                                    'capaservices' : self.capas[capaid].capaservices,
                                    'appliname' : self.capas[capaid].appliname,
-                                   'guisettings' : self.capas[capaid].guisettings,
+                                   'guisettings' : self.capas[capaid].getguisettings(),
                                    'capapresence' : { 'names'   : details,
                                                       'state'   : statedetails,
                                                       'allowed' : allowed },
@@ -3073,7 +3073,7 @@ class XivoCTICommand(BaseCommand):
                                                         
                                         elif classcomm == 'getguisettings':
                                                 tosend = { 'class' : 'getguisettings',
-                                                           'payload' : self.capas[capaid].guisettings
+                                                           'payload' : self.capas[capaid].getguisettings()
                                                            }
                                                 repstr = self.__cjson_encode__(tosend)
                                                 

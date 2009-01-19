@@ -122,14 +122,18 @@ class Capabilities:
                 self.watchedpresenceid = watchedpresenceid
                 return
         
-        def setguisettings(self, urlsettings):
+        def getguisettings(self):
                 try:
-                        gui = urllib.urlopen(urlsettings)
-                        self.guisettings = cjson.decode(gui.read())
+                        gui = urllib.urlopen(self.guiurl)
+                        guisettings = cjson.decode(gui.read())
                         gui.close()
                 except Exception:
-                        log.exception('problem when reading guisettings from %s' % urlsettings)
-                        self.guisettings = {}
+                        log.exception('problem when reading guisettings from %s' % self.guiurl)
+                        guisettings = {}
+                return guisettings
+        
+        def setguisettings(self, urlsettings):
+                self.guiurl = urlsettings
                 return
         
         # maxgui's
