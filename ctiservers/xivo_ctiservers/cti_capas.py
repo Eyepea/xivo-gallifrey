@@ -88,13 +88,15 @@ class Capabilities:
                 self.maxgui = -1
                 self.presenceid = 'none'
                 self.watchedpresenceid = 'none'
+                self.guiurl = None
                 return
-
+        
         def setfuncs(self, capalist):
                 for capa in capalist:
                         if capa in self.allowed_funcs and capa not in self.capafuncs:
                                 self.capafuncs.append(capa)
-
+                return
+        
         def setxlets(self, capalist):
                 for capa in capalist:
                         detail = capa.split('-')
@@ -123,13 +125,14 @@ class Capabilities:
                 return
         
         def getguisettings(self):
-                try:
-                        gui = urllib.urlopen(self.guiurl)
-                        guisettings = cjson.decode(gui.read())
-                        gui.close()
-                except Exception:
-                        log.exception('problem when reading guisettings from %s' % self.guiurl)
-                        guisettings = {}
+                guisettings = {}
+                if self.guiurl is not None:
+                        try:
+                                gui = urllib.urlopen(self.guiurl)
+                                guisettings = cjson.decode(gui.read())
+                                gui.close()
+                        except Exception:
+                                log.exception('problem when reading guisettings from %s' % self.guiurl)
                 return guisettings
         
         def setguisettings(self, urlsettings):
@@ -140,7 +143,7 @@ class Capabilities:
         def setmaxgui(self, maxgui):
                 self.maxgui = int(maxgui)
                 return
-
+        
         def getmaxgui(self):
                 if self.maxgui == -1:
                         return 'infinite'
