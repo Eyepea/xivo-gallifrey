@@ -116,8 +116,6 @@ class BaseCommand:
                 return
         def set_grouplist(self, astid, urllist):
                 return
-        def set_vqueuelist(self, astid, urllist):
-                return
         def set_meetmelist(self, astid, urllist):
                 return
         def set_voicemaillist(self, astid, urllist):

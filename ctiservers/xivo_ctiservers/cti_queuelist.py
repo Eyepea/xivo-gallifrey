@@ -123,6 +123,7 @@ class QueueList(AnyList):
                                         else:
                                                 log.warning('get_queues_byagent : no property %s for agent %s in queue %s'
                                                             % (v, agid, qref))
+                        lst['context'] = ql['context']
                         queuelist[qref] = lst
                 return queuelist
         

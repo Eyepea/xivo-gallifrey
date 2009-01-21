@@ -765,7 +765,7 @@ while True: # loops over the reloads
                         
                         if 'localaddr' in xivoconf_asterisk:
                                 localaddr = xivoconf_asterisk['localaddr']
-                        for listname in ['phones', 'queues', 'groups', 'vqueues', 'agents', 'meetme', 'voicemail']:
+                        for listname in ['phones', 'queues', 'groups', 'agents', 'meetme', 'voicemail', 'incomingcalls']:
                                 fieldname = 'urllist_%s' % listname
                                 if fieldname in xivoconf_asterisk:
                                         urllist[listname] = xivoconf_asterisk[fieldname].split(',')
@@ -820,7 +820,6 @@ while True: # loops over the reloads
                         commandclass.set_agentlist(astid, urllist['agents'])
                         commandclass.set_queuelist(astid, urllist['queues'])
                         commandclass.set_grouplist(astid, urllist['groups'])
-                        commandclass.set_vqueuelist(astid, urllist['vqueues'])
                         commandclass.set_meetmelist(astid, urllist['meetme'])
                         commandclass.set_voicemaillist(astid, urllist['voicemail'])
                         commandclass.read_queuelog(astid, url_queuelog)
