@@ -1,12 +1,12 @@
 """Read-Only List Proxy that only allows calls to state-preserving methods
 
-Copyright (C) 2007, 2008  Proformatique
+Copyright (C) 2007-2009  Proformatique
 
 """
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2007, 2008  Proformatique
+    Copyright (C) 2007-2009  Proformatique
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public

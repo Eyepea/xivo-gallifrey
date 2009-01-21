@@ -2,13 +2,13 @@
 
 Linksys SPA901, SPA921, SPA922, SPA941, SPA942, SPA962, SPA3102 and PAP2T are supported.
 
-Copyright (C) 2007, 2008  Proformatique
+Copyright (C) 2007-2009  Proformatique
 
 """
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2007, 2008  Proformatique
+    Copyright (C) 2007-2009  Proformatique
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public

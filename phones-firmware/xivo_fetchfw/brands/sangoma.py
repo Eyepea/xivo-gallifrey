@@ -1,6 +1,6 @@
 __version__ = "$Revision: 4580 $ $Date: 2008-11-03 18:26:20 +0100 (Mon, 03 Nov 2008) $"
 __license__ = """
-    Copyright (C) 2008  Proformatique <technique@proformatique.com>
+    Copyright (C) 2008-2009  Proformatique <technique@proformatique.com>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

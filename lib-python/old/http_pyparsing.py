@@ -1,6 +1,6 @@
 """HTTP Related Parsing using pyparsing
 
-Copyright (C) 2007, 2008  Proformatique
+Copyright (C) 2007-2009  Proformatique
 
 WARNING: This parser is _extremely_ slow, you can expect it to consume up to about
          1 million CPU cycles per output field. Use with care or optimize it!
@@ -9,7 +9,7 @@ WARNING: This parser is _extremely_ slow, you can expect it to consume up to abo
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2007, 2008  Proformatique
+    Copyright (C) 2007-2009  Proformatique
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public

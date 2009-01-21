@@ -1,6 +1,6 @@
 """Dictionary wrapper that exposes an attribute interface
 
-Copyright (C) 2007, 2008  Proformatique
+Copyright (C) 2007-2009  Proformatique
 
 Simply assigning __dict__ won't work because Python internally access the
 base __builtin__.dict instance, so if this approach was chosen any behavioral
@@ -31,7 +31,7 @@ known in advance
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2007, 2008  Proformatique
+    Copyright (C) 2007-2009  Proformatique
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public

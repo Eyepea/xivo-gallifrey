@@ -1,6 +1,6 @@
 """Lazy List Slicer that let us get multiple sliced views of the very same array
 
-Copyright (C) 2007, 2008  Proformatique
+Copyright (C) 2007-2009  Proformatique
 
 Some fondamental concepts in functional programming are pattern matching, lists
 comprehension and lazy evaluation. When trying to apply simultaneously all these
@@ -166,7 +166,7 @@ be usable in more cases :D
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2007, 2008  Proformatique
+    Copyright (C) 2007-2009  Proformatique
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
