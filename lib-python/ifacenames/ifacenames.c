@@ -82,7 +82,7 @@ static void version(void)
 
 	printf(
 "%s revision %d\n"
-"Copyright (C) 2008  Proformatique\n"
+"Copyright (C) 2008-2009  Proformatique\n"
 "\n"
 "This program is free software: you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
