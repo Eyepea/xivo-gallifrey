@@ -1,6 +1,6 @@
 /*
     ifacenames - get logical interface names from /etc/network/interfaces
-    Copyright (C) 2008  Proformatique
+    Copyright (C) 2008-2009  Proformatique
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

@@ -3,6 +3,10 @@ __license__ = """
     Copyright (C) 2004 Karl Putland 
     Upstream Original Author: Karl Putland <kputland@users.sourceforge.net>
 
+    This was downloaded here: http://sourceforge.net/projects/pyst/
+
+    AGItb module confirmed PSF and the rest LGPL by Matthew Nicholson <mnicholson@digium.com>
+
     Copyright (C) 2007, 2008, 2009  Proformatique <technique@proformatique.com>
 
     This library is free software; you can redistribute it and/or
