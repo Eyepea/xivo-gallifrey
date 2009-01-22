@@ -12,8 +12,8 @@
 
 Index: asterisk-1.4.22/channels/chan_sip.c
 ===================================================================
---- asterisk-1.4.22.orig/channels/chan_sip.c	2009-01-14 22:18:00.000000000 +0100
-+++ asterisk-1.4.22.orig/channels/chan_sip.c	2009-01-14 19:01:43.000000000 +0100
+--- asterisk-1.4.22.orig/channels/chan_sip.c	2009-01-22 19:19:01.000000000 +0100
++++ asterisk-1.4.22/channels/chan_sip.c	2009-01-22 19:19:04.000000000 +0100
 @@ -7097,7 +7097,7 @@
  
  	if (sipmethod == SIP_NOTIFY && !ast_strlen_zero(p->theirtag)) { 

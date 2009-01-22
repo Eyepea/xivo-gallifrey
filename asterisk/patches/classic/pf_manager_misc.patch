@@ -14,7 +14,7 @@
 Index: asterisk-1.4.22/apps/app_dial.c
 ===================================================================
 --- asterisk-1.4.22.orig/apps/app_dial.c	2008-08-06 01:13:20.000000000 +0200
-+++ asterisk-1.4.22/apps/app_dial.c	2008-12-18 10:51:53.000000000 +0100
++++ asterisk-1.4.22/apps/app_dial.c	2009-01-22 18:06:58.000000000 +0100
 @@ -387,16 +387,21 @@
  static void senddialevent(struct ast_channel *src, struct ast_channel *dst)
  {
@@ -50,7 +50,7 @@ Index: asterisk-1.4.22/apps/app_dial.c
 Index: asterisk-1.4.22/apps/app_meetme.c
 ===================================================================
 --- asterisk-1.4.22.orig/apps/app_meetme.c	2008-08-13 22:42:33.000000000 +0200
-+++ asterisk-1.4.22/apps/app_meetme.c	2008-12-18 10:51:53.000000000 +0100
++++ asterisk-1.4.22/apps/app_meetme.c	2009-01-22 18:06:58.000000000 +0100
 @@ -1696,11 +1696,21 @@
  
  	if (!sent_event) {
@@ -187,8 +187,8 @@ Index: asterisk-1.4.22/apps/app_meetme.c
  	res |= ast_register_application(app, conf_exec, synopsis, descrip);
 Index: asterisk-1.4.22/main/manager.c
 ===================================================================
---- asterisk-1.4.22.orig/main/manager.c	2008-12-18 10:51:53.000000000 +0100
-+++ asterisk-1.4.22/main/manager.c	2008-12-18 10:51:53.000000000 +0100
+--- asterisk-1.4.22.orig/main/manager.c	2009-01-22 18:06:58.000000000 +0100
++++ asterisk-1.4.22/main/manager.c	2009-01-22 18:06:58.000000000 +0100
 @@ -1555,49 +1555,53 @@
  				elapsed_seconds = now.tv_sec - c->cdr->start.tv_sec;
  			}
@@ -286,8 +286,8 @@ Index: asterisk-1.4.22/main/manager.c
  		if (!all)
 Index: asterisk-1.4.22/res/res_features.c
 ===================================================================
---- asterisk-1.4.22.orig/res/res_features.c	2008-12-18 10:51:53.000000000 +0100
-+++ asterisk-1.4.22/res/res_features.c	2008-12-18 10:51:53.000000000 +0100
+--- asterisk-1.4.22.orig/res/res_features.c	2009-01-22 18:06:58.000000000 +0100
++++ asterisk-1.4.22/res/res_features.c	2009-01-22 18:06:58.000000000 +0100
 @@ -426,17 +426,23 @@
  		ast_verbose(VERBOSE_PREFIX_2 "Parked %s on %d@%s. Will timeout back to extension [%s] %s, %d in %d seconds\n", pu->chan->name, pu->parkingnum, parking_con, pu->context, pu->exten, pu->priority, (pu->parkingtime/1000));
  
@@ -383,8 +383,8 @@ Index: asterisk-1.4.22/res/res_features.c
  	}
 Index: asterisk-1.4.22/channels/chan_sip.c
 ===================================================================
---- asterisk-1.4.22.orig/channels/chan_sip.c	2008-12-18 10:51:53.000000000 +0100
-+++ asterisk-1.4.22/channels/chan_sip.c	2008-12-18 10:54:55.000000000 +0100
+--- asterisk-1.4.22.orig/channels/chan_sip.c	2009-01-22 18:06:58.000000000 +0100
++++ asterisk-1.4.22/channels/chan_sip.c	2009-01-22 19:18:53.000000000 +0100
 @@ -14798,6 +14798,19 @@
  	ast_set_flag(&transferer->flags[0], SIP_DEFER_BYE_ON_TRANSFER);	/* Delay hangup */
  
@@ -453,8 +453,8 @@ Index: asterisk-1.4.22/channels/chan_sip.c
  			ast_log(LOG_DEBUG, "%s transfer succeeded. Telling transferer.\n", p->refer->attendedtransfer? "Attended" : "Blind");
 Index: asterisk-1.4.22/main/channel.c
 ===================================================================
---- asterisk-1.4.22.orig/main/channel.c	2008-12-18 10:51:53.000000000 +0100
-+++ asterisk-1.4.22/main/channel.c	2008-12-18 10:51:53.000000000 +0100
+--- asterisk-1.4.22.orig/main/channel.c	2009-01-22 18:06:58.000000000 +0100
++++ asterisk-1.4.22/main/channel.c	2009-01-22 18:06:58.000000000 +0100
 @@ -3424,6 +3424,14 @@
  		ast_log(LOG_DEBUG, "Actually Masquerading %s(%d) into the structure of %s(%d)\n",
  			clone->name, clone->_state, original->name, original->_state);
@@ -472,9 +472,66 @@ Index: asterisk-1.4.22/main/channel.c
  	   channel's backend.   I'm not sure we're going to keep this function, because
 Index: asterisk-1.4.22/apps/app_queue.c
 ===================================================================
---- asterisk-1.4.22.orig/apps/app_queue.c	2008-12-18 10:58:39.000000000 +0100
-+++ asterisk-1.4.22/apps/app_queue.c	2008-12-18 11:01:49.000000000 +0100
-@@ -1895,21 +1895,26 @@
+--- asterisk-1.4.22.orig/apps/app_queue.c	2008-08-29 19:34:17.000000000 +0200
++++ asterisk-1.4.22/apps/app_queue.c	2009-01-22 19:12:19.000000000 +0100
+@@ -606,17 +606,20 @@
+ 				}
+ 
+ 				manager_event(EVENT_FLAG_AGENT, "QueueMemberStatus",
+-					"Queue: %s\r\n"
+-					"Location: %s\r\n"
+-					"MemberName: %s\r\n"
+-					"Membership: %s\r\n"
+-					"Penalty: %d\r\n"
+-					"CallsTaken: %d\r\n"
+-					"LastCall: %d\r\n"
+-					"Status: %d\r\n"
+-					"Paused: %d\r\n",
+-					q->name, cur->interface, cur->membername, cur->dynamic ? "dynamic" : cur->realtime ? "realtime" : "static",
+-					cur->penalty, cur->calls, (int)cur->lastcall, cur->status, cur->paused);
++                                              "Queue: %s\r\n"
++                                              "QueueContext: %s\r\n"
++                                              "Location: %s\r\n"
++                                              "MemberName: %s\r\n"
++                                              "Membership: %s\r\n"
++                                              "Penalty: %d\r\n"
++                                              "CallsTaken: %d\r\n"
++                                              "LastCall: %d\r\n"
++                                              "Status: %d\r\n"
++                                              "Paused: %d\r\n",
++                                              q->name, q->context, cur->interface, cur->membername,
++                                              cur->dynamic ? "dynamic" : cur->realtime ? "realtime" : "static",
++                                              cur->penalty, cur->calls, (int)cur->lastcall,
++                                              cur->status, cur->paused);
+ 			}
+ 			ao2_ref(cur, -1);
+ 		}
+@@ -1456,11 +1459,19 @@
+ 		q->count++;
+ 		res = 0;
+ 		manager_event(EVENT_FLAG_CALL, "Join",
+-			"Channel: %s\r\nCallerID: %s\r\nCallerIDName: %s\r\nQueue: %s\r\nPosition: %d\r\nCount: %d\r\nUniqueid: %s\r\n",
+-			qe->chan->name,
+-			S_OR(qe->chan->cid.cid_num, "unknown"), /* XXX somewhere else it is <unknown> */
+-			S_OR(qe->chan->cid.cid_name, "unknown"),
+-			q->name, qe->pos, q->count, qe->chan->uniqueid );
++                              "Channel: %s\r\n"
++                              "CallerID: %s\r\n"
++                              "CallerIDName: %s\r\n"
++                              "Queue: %s\r\n"
++                              "QueueContext: %s\r\n"
++                              "Position: %d\r\n"
++                              "Count: %d\r\n"
++                              "Uniqueid: %s\r\n",
++                              qe->chan->name,
++                              S_OR(qe->chan->cid.cid_num, "unknown"), /* XXX somewhere else it is <unknown> */
++                              S_OR(qe->chan->cid.cid_name, "unknown"),
++                              q->name, q->context,
++                              qe->pos, q->count, qe->chan->uniqueid );
+ 		if (option_debug)
+ 			ast_log(LOG_DEBUG, "Queue '%s' Join, Channel '%s', Position '%d'\n", q->name, qe->chan->name, qe->pos );
+ 	}
+@@ -1895,21 +1906,28 @@
  	} else if (qe->parent->eventwhencalled) {
  		char vars[2048];
  
@@ -501,6 +558,7 @@ Index: asterisk-1.4.22/apps/app_queue.c
 +                              "CallerID: %s\r\n"
 +                              "CallerIDName: %s\r\n"
 +                              "Queue: %s\r\n"
++                              "QueueContext: %s\r\n"
 +                              "Context: %s\r\n"
 +                              "Extension: %s\r\n"
 +                              "Priority: %d\r\n"
@@ -509,6 +567,7 @@ Index: asterisk-1.4.22/apps/app_queue.c
 +                              tmp->chan->cid.cid_num ? tmp->chan->cid.cid_num : "unknown",
 +                              tmp->chan->cid.cid_name ? tmp->chan->cid.cid_name : "unknown",
 +                              qe->parent->name,
++                              qe->parent->context,
 +                              qe->chan->context,
 +                              qe->chan->exten,
 +                              qe->chan->priority,
@@ -516,3 +575,110 @@ Index: asterisk-1.4.22/apps/app_queue.c
  		if (option_verbose > 2)
  			ast_verbose(VERBOSE_PREFIX_3 "Called %s\n", tmp->interface);
  	}
+@@ -3301,10 +3319,12 @@
+ 			}
+ 			q->membercount--;
+ 			manager_event(EVENT_FLAG_AGENT, "QueueMemberRemoved",
+-				"Queue: %s\r\n"
+-				"Location: %s\r\n"
+-				"MemberName: %s\r\n",
+-				q->name, mem->interface, mem->membername);
++                                      "Queue: %s\r\n"
++                                      "QueueContext: %s\r\n"
++                                      "Location: %s\r\n"
++                                      "MemberName: %s\r\n",
++                                      q->name, q->context,
++                                      mem->interface, mem->membername);
+ 			ao2_unlink(q->members, mem);
+ 			ao2_ref(mem, -1);
+ 
+@@ -3349,19 +3369,20 @@
+ 			ao2_link(q->members, new_member);
+ 			q->membercount++;
+ 			manager_event(EVENT_FLAG_AGENT, "QueueMemberAdded",
+-				"Queue: %s\r\n"
+-				"Location: %s\r\n"
+-				"MemberName: %s\r\n"
+-				"Membership: %s\r\n"
+-				"Penalty: %d\r\n"
+-				"CallsTaken: %d\r\n"
+-				"LastCall: %d\r\n"
+-				"Status: %d\r\n"
+-				"Paused: %d\r\n",
+-				q->name, new_member->interface, new_member->membername,
+-				"dynamic",
+-				new_member->penalty, new_member->calls, (int) new_member->lastcall,
+-				new_member->status, new_member->paused);
++                                      "Queue: %s\r\n"
++                                      "QueueContext: %s\r\n"
++                                      "Location: %s\r\n"
++                                      "MemberName: %s\r\n"
++                                      "Membership: %s\r\n"
++                                      "Penalty: %d\r\n"
++                                      "CallsTaken: %d\r\n"
++                                      "LastCall: %d\r\n"
++                                      "Status: %d\r\n"
++                                      "Paused: %d\r\n",
++                                      q->name, q->context, new_member->interface, new_member->membername,
++                                      "dynamic",
++                                      new_member->penalty, new_member->calls, (int) new_member->lastcall,
++                                      new_member->status, new_member->paused);
+ 			
+ 			ao2_ref(new_member, -1);
+ 			new_member = NULL;
+@@ -3413,11 +3434,13 @@
+ 				ast_queue_log(q->name, "NONE", mem->membername, (paused ? "PAUSE" : "UNPAUSE"), "%s", "");
+ 
+ 				manager_event(EVENT_FLAG_AGENT, "QueueMemberPaused",
+-					"Queue: %s\r\n"
+-					"Location: %s\r\n"
+-					"MemberName: %s\r\n"
+-					"Paused: %d\r\n",
+-						q->name, mem->interface, mem->membername, paused);
++                                              "Queue: %s\r\n"
++                                              "QueueContext: %s\r\n"
++                                              "Location: %s\r\n"
++                                              "MemberName: %s\r\n"
++                                              "Paused: %d\r\n",
++                                              q->name, q->context,
++                                              mem->interface, mem->membername, paused);
+ 				ao2_ref(mem, -1);
+ 			}
+ 		}
+@@ -4675,19 +4698,23 @@
+ 			while ((mem = ao2_iterator_next(&mem_iter))) {
+ 				if (ast_strlen_zero(memberfilter) || !strcmp(mem->interface, memberfilter)) {
+ 					astman_append(s, "Event: QueueMember\r\n"
+-						"Queue: %s\r\n"
+-						"Name: %s\r\n"
+-						"Location: %s\r\n"
+-						"Membership: %s\r\n"
+-						"Penalty: %d\r\n"
+-						"CallsTaken: %d\r\n"
+-						"LastCall: %d\r\n"
+-						"Status: %d\r\n"
+-						"Paused: %d\r\n"
+-						"%s"
+-						"\r\n",
+-						q->name, mem->membername, mem->interface, mem->dynamic ? "dynamic" : "static",
+-						mem->penalty, mem->calls, (int)mem->lastcall, mem->status, mem->paused, idText);
++                                                      "Queue: %s\r\n"
++                                                      "QueueContext: %s\r\n"
++                                                      "Name: %s\r\n"
++                                                      "Location: %s\r\n"
++                                                      "Membership: %s\r\n"
++                                                      "Penalty: %d\r\n"
++                                                      "CallsTaken: %d\r\n"
++                                                      "LastCall: %d\r\n"
++                                                      "Status: %d\r\n"
++                                                      "Paused: %d\r\n"
++                                                      "%s"
++                                                      "\r\n",
++                                                      q->name, q->context,
++                                                      mem->membername, mem->interface,
++                                                      mem->dynamic ? "dynamic" : "static",
++                                                      mem->penalty, mem->calls,
++                                                      (int)mem->lastcall, mem->status, mem->paused, idText);
+ 				}
+ 				ao2_ref(mem, -1);
+ 			}
