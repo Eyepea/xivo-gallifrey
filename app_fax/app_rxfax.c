@@ -131,6 +131,7 @@ static void phase_e_handler(t30_state_t *s, void *user_data, int result)
 	manager_event(EVENT_FLAG_CALL,
 		"FaxReceived",
 		"Channel: %s\r\n"
+		"Context: %s\r\n"
 		"Exten: %s\r\n"
 		"CallerID: %s\r\n"
 		"RemoteStationID: %s\r\n"
@@ -142,6 +143,7 @@ static void phase_e_handler(t30_state_t *s, void *user_data, int result)
 		"PhaseEStatus: %d\r\n"
 		"PhaseEString: %s\r\n",
 		chan->name,
+		chan->context,
 		chan->exten,
 		S_OR(chan->cid.cid_num, ""),
 		far_ident,
