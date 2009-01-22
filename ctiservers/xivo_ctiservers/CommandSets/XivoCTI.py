@@ -2203,13 +2203,14 @@ class XivoCTICommand(BaseCommand):
         def ami_agentcalled(self, astid, event):
                 # log.info('%s ami_agentcalled : %s' % (astid, event))
                 queue = event.get('Queue')
+                queuecontext = event.get('QueueContext', CONTEXT_UNKNOWN)
                 context = event.get('Context')
                 agent_channel = event.get('AgentCalled')
                 
                 if queue in self.weblist['queues'][astid].keeplist:
-                        qcontext = self.weblist['queues'][astid].keeplist[queue]['context']
+                        pass
                 elif queue in self.weblist['groups'][astid].keeplist:
-                        qcontext = self.weblist['groups'][astid].keeplist[queue]['context']
+                        pass
                 else:
                         log.warning('%s ami_agentcalled : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
                         return
@@ -2232,7 +2233,7 @@ class XivoCTICommand(BaseCommand):
                         for uinfo in self.ulist_ng.keeplist.itervalues():
                                 if uinfo.get('astid') == astid:
                                         exten = uinfo.get('phonenum')
-                                        phoneref = '.'.join([agent_channel.split('/')[0].lower(), qcontext,
+                                        phoneref = '.'.join([agent_channel.split('/')[0].lower(), queuecontext,
                                                              agent_channel.split('/')[1], exten])
                                         if phoneref in uinfo.get('techlist'):
                                                 td = '%s ami_agentcalled (phone) %s %s %s' % (astid, queue, agent_channel, uinfo.get('fullname'))
@@ -2430,11 +2431,11 @@ class XivoCTICommand(BaseCommand):
                         return
                 status = event.get('Status')
                 queue = event.get('Queue')
+                queuecontext = event.get('QueueContext', CONTEXT_UNKNOWN)
                 location = event.get('Location')
                 paused = event.get('Paused')
                 
                 if queue in self.weblist['queues'][astid].keeplist:
-                        qcontext = self.weblist['queues'][astid].keeplist[queue]['context']
                         self.weblist['queues'][astid].queuememberupdate(queue, location, event)
                         self.__peragent_queue_summary__(astid, location)
                         msg = self.__build_agupdate__('queuememberstatus', astid, location, { 'queuename' : queue,
@@ -2442,7 +2443,6 @@ class XivoCTICommand(BaseCommand):
                                                                                               'pausedstatus' : paused } )
                         self.__send_msg_to_cti_clients__(msg)
                 elif queue in self.weblist['groups'][astid].keeplist:
-                        qcontext = self.weblist['groups'][astid].keeplist[queue]['context']
                         self.weblist['groups'][astid].groupmemberupdate(queue, location, event)
                         # self.__peragent_group_summary__(astid, location)
                         msg = self.__build_agupdate__('groupmemberstatus', astid, location, { 'groupname' : queue,
@@ -2463,7 +2463,7 @@ class XivoCTICommand(BaseCommand):
                         for uinfo in self.ulist_ng.keeplist.itervalues():
                                 if uinfo.get('astid') == astid:
                                         exten = uinfo.get('phonenum')
-                                        phoneref = '.'.join([location.split('/')[0].lower(), qcontext,
+                                        phoneref = '.'.join([location.split('/')[0].lower(), queuecontext,
                                                              location.split('/')[1], exten])
                                         if phoneref in uinfo.get('techlist'):
                                                 td = '%s ami_queuememberstatus : (%s %s %s) %s' % (astid, status, queue, location, uinfo.get('fullname'))
@@ -2562,18 +2562,10 @@ class XivoCTICommand(BaseCommand):
                         log.warning('%s ami_queuemember : no queue list has been defined' % astid)
                         return
                 queue = event.get('Queue')
-                
-                # set the context from queue definition ... could be read from AMI event however : to patch XXX
-                # see also other such occurences
-                if queue in self.weblist['queues'][astid].keeplist:
-                        qcontext = self.weblist['queues'][astid].keeplist[queue]['context']
-                elif queue in self.weblist['groups'][astid].keeplist:
-                        qcontext = self.weblist['groups'][astid].keeplist[queue]['context']
-                else:
-                        log.warning('%s ami_queuemember : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
-                        return
+                queuecontext = event.get('QueueContext', CONTEXT_UNKNOWN)
                 
                 location = event.get('Location')
+                nlocation = None
                 if location.startswith('Agent/'):
                         nlocation = location
                 else:
@@ -2581,15 +2573,18 @@ class XivoCTICommand(BaseCommand):
                         for uinfo in self.ulist_ng.keeplist.itervalues():
                                 if uinfo.get('astid') == astid:
                                         exten = uinfo.get('phonenum')
-                                        phoneref = '.'.join([location.split('/')[0].lower(), qcontext,
+                                        phoneref = '.'.join([location.split('/')[0].lower(), queuecontext,
                                                              location.split('/')[1], exten])
                                         if phoneref in uinfo.get('techlist'):
                                                 nlocation = phoneref
-                                                
+                if not nlocation:
+                        return
                 if queue in self.weblist['queues'][astid].keeplist:
                         self.weblist['queues'][astid].queuememberupdate(queue, nlocation, event)
                 elif queue in self.weblist['groups'][astid].keeplist:
                         self.weblist['groups'][astid].groupmemberupdate(queue, nlocation, event)
+                else:
+                        log.warning('%s ami_queuemember : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
                 return
         
         def ami_queuestatuscomplete(self, astid, event):
@@ -2684,7 +2679,8 @@ class XivoCTICommand(BaseCommand):
 
         def ami_faxreceived(self, astid, event):
                 log.info('%s : %s' % (astid, event))
-                self.__sheet_alert__('faxreceived', astid, CONTEXT_UNKNOWN, event)
+                context = event.get('Context', CONTEXT_UNKNOWN)
+                self.__sheet_alert__('faxreceived', astid, context, event)
                 return
 
         def ami_meetmejoin(self, astid, event):
@@ -2941,11 +2937,12 @@ class XivoCTICommand(BaseCommand):
                 if astid not in self.weblist['queues']:
                         log.warning('%s ami_join : no queue list has been defined' % astid)
                         return
-                # print 'AMI Join (Queue)', event
+                # log.info('%s ami_join : %s' % (astid, event))
                 chan  = event.get('Channel')
                 clid  = event.get('CallerID')
                 clidname = event.get('CallerIDName')
                 queue = event.get('Queue')
+                queuecontext = event.get('QueueContext', CONTEXT_UNKNOWN)
                 count = event.get('Count')
                 position = event.get('Position')
                 uniqueid = event.get('Uniqueid')
@@ -2961,7 +2958,7 @@ class XivoCTICommand(BaseCommand):
                                                                    'time' : time.time()}
                 log.info('%s STAT JOIN %s %s %s' % (astid, queue, chan, uniqueid))
                 self.__update_queue_stats__(astid, queue, 'ENTERQUEUE')
-                self.__sheet_alert__('incomingqueue', astid, CONTEXT_UNKNOWN, event)
+                self.__sheet_alert__('incomingqueue', astid, queuecontext, event)
                 log.info('%s AMI Join (Queue) %s %s %s' % (astid, queue, chan, count))
                 self.weblist['queues'][astid].queueentry_update(queue, chan, position, 0,
                                                                 clid, clidname)
