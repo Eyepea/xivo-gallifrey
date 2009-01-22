@@ -2215,10 +2215,10 @@ class XivoCTICommand(BaseCommand):
                         log.warning('%s ami_agentcalled : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
                         return
                 
-                log.info('%s ami_agentcalled : %s %s %s' % (astid, queue, context, agent_channel))
                 if agent_channel.startswith('Agent/'):
                         agent_number = agent_channel[6:]
                         if astid in self.weblist['agents']:
+                                log.info('%s ami_agentcalled (agent) %s %s' % (astid, queue, agent_channel))
                                 agent_id = self.weblist['agents'][astid].reverse_index.get(agent_number)
                                 if 'Xivo-ReceivedCalls' in self.weblist['agents'][astid].keeplist[agent_id]['stats']:
                                         self.weblist['agents'][astid].keeplist[agent_id]['stats']['Xivo-ReceivedCalls'] += 1
@@ -2236,7 +2236,7 @@ class XivoCTICommand(BaseCommand):
                                         phoneref = '.'.join([agent_channel.split('/')[0].lower(), qcontext,
                                                              agent_channel.split('/')[1], exten])
                                         if phoneref in uinfo.get('techlist'):
-                                                td = '%s ami_agentcalled : (%s) %s %s' % (astid, queue, agent_channel, uinfo.get('fullname'))
+                                                td = '%s ami_agentcalled (phone) %s %s %s' % (astid, queue, agent_channel, uinfo.get('fullname'))
                                                 log.info(td.encode('utf8'))
                                                 
                 # {'Extension': 's', 'CallerID': 'unknown', 'Priority': '2', 'ChannelCalling': 'IAX2/test-13', 'Context': 'macro-incoming_queue_call', 'CallerIDName': 'Comm. ', 'AgentCalled': 'iax2/192.168.0.120/101'}

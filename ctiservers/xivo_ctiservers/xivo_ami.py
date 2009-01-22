@@ -568,30 +568,39 @@ class AMIList:
                         amicl = AMIClass(address, loginname, password, True)
                         amicl.connect()
                         amicl.login()
-
+                        
                         log.info('%s AMI : OPENED' % astid)
                         amicl.sendcommand('Command', [('Command', 'core show version'),
                                                       ('ActionID' , ''.join(random.sample(__alphanums__, 10)) + "-" + hex(int(time.time())))])
+                        
+                        self.ami[astid] = amicl
+                        self.rami[amicl.fd] = astid
+                        self.request_initvalues(astid)
+                else:
+                        log.info('%s AMI : already connected %s'
+                                 % (astid, self.ami[astid]))
+                        self.request_initvalues(astid)
+                return
+        
+        def request_initvalues(self, astid):
+                if astid in self.ami:
+                        amicl = self.ami[astid]
+                        
                         # sendparkedcalls before sendstatus, so that parked calls can be identified later
                         amicl.sendmeetmelist()
                         amicl.sendparkedcalls()
                         amicl.sendstatus()
                         amicl.sendagents()
                         amicl.sendqueuestatus()
-                        
-                        self.ami[astid] = amicl
-                        self.rami[amicl.fd] = astid
-                else:
-                        log.info('%s AMI : already connected %s'
-                                 % (astid, self.ami[astid]))
                 return
-
+        
         def set_aoriginate(self, astid, aoriginatecmd):
                 self.ami[astid].set_aoriginate(aoriginatecmd)
-
+                return
+        
         def fdlist(self):
                 return self.rami.keys()
-
+        
         def remove(self, astid):
                 if astid in self.ami:
                         fd = self.ami[astid].fd
