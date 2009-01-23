@@ -587,11 +587,12 @@ class AMIList:
                         amicl = self.ami[astid]
                         
                         # sendparkedcalls before sendstatus, so that parked calls can be identified later
-                        amicl.sendmeetmelist()
+                        # sendmeetmelist after sendstatus
                         amicl.sendparkedcalls()
                         amicl.sendstatus()
                         amicl.sendagents()
                         amicl.sendqueuestatus()
+                        amicl.sendmeetmelist()
                 return
         
         def set_aoriginate(self, astid, aoriginatecmd):

@@ -38,90 +38,97 @@ class GroupList(AnyList):
                 AnyList.__init__(self, newurls)
                 return
         
-        grouplocationprops = ['Paused', 'Status', 'Membership', 'Penalty', 'LastCall', 'CallsTaken', 'Xivo-StateTime']
-        groupstats = ['Abandoned', 'Max', 'Completed', 'ServiceLevel', 'Weight', 'Holdtime',
+        queuelocationprops = ['Paused', 'Status', 'Membership', 'Penalty', 'LastCall', 'CallsTaken', 'Xivo-StateTime']
+        queuestats = ['Abandoned', 'Max', 'Completed', 'ServiceLevel', 'Weight', 'Holdtime',
                       'Xivo-Join', 'Xivo-Link', 'Xivo-Lost', 'Xivo-Wait', 'Xivo-Chat', 'Xivo-Rate',
                       'Calls']
         
-        def groupentry_update(self, group, channel, position, wait, calleridnum, calleridname):
-                if group in self.keeplist:
-                        self.keeplist[group]['channels'][channel] = { 'position' : position,
+        def queueentry_update(self, queue, channel, position, wait, calleridnum, calleridname):
+                if queue in self.keeplist:
+                        self.keeplist[queue]['channels'][channel] = { 'position' : position,
                                                                        'wait' : wait,
                                                                        'updatetime' : time.time(),
                                                                        'calleridnum' : calleridnum,
                                                                        'calleridname' : calleridname }
                 else:
-                        log.warning('groupentry_update : no such group %s' % group)
+                        log.warning('queueentry_update : no such queue %s' % queue)
                 return
         
-        def groupentry_remove(self, group, channel):
-                if group in self.keeplist:
-                        if channel in self.keeplist[group]['channels']:
-                                del self.keeplist[group]['channels'][channel]
+        def queueentry_remove(self, queue, channel):
+                if queue in self.keeplist:
+                        if channel in self.keeplist[queue]['channels']:
+                                del self.keeplist[queue]['channels'][channel]
                 else:
-                        log.warning('groupentry_remove : no such group %s' % group)
+                        log.warning('queueentry_remove : no such queue %s' % queue)
                 return
         
-        def groupmemberupdate(self, group, location, event):
-                if group in self.keeplist:
-                        if location not in self.keeplist[group]['agents']:
-                                self.keeplist[group]['agents'][location] = {}
-                        for prop in self.grouplocationprops:
+        def queuememberupdate(self, queue, location, event):
+                if queue in self.keeplist:
+                        if location not in self.keeplist[queue]['agents']:
+                                self.keeplist[queue]['agents'][location] = {}
+                        for prop in self.queuelocationprops:
                                 if prop in event:
-                                        self.keeplist[group]['agents'][location][prop] = event.get(prop)
+                                        self.keeplist[queue]['agents'][location][prop] = event.get(prop)
                 else:
-                        log.warning('groupmemberupdate : no such group %s' % group)
+                        log.warning('queuememberupdate : no such queue %s' % queue)
                 return
         
-        def groupmemberremove(self, group, location):
-                if group in self.keeplist:
-                        if location in self.keeplist[group]['agents']:
-                                del self.keeplist[group]['agents'][location]
+        def queuememberremove(self, queue, location):
+                if queue in self.keeplist:
+                        if location in self.keeplist[queue]['agents']:
+                                del self.keeplist[queue]['agents'][location]
                 else:
-                        log.warning('groupmemberremove : no such group %s' % group)
+                        log.warning('queuememberremove : no such queue %s' % queue)
                 return
-
-        def update_groupstats(self, group, event):
-                if group in self.keeplist:
-                        for statfield in self.groupstats:
+        
+        def update_queuestats(self, queue, event):
+                if queue in self.keeplist:
+                        for statfield in self.queuestats:
                                 if statfield in event:
-                                        self.keeplist[group]['stats'][statfield] = event.get(statfield)
+                                        self.keeplist[queue]['stats'][statfield] = event.get(statfield)
                 else:
-                        log.warning('update_groupstats : no such group %s' % group)
+                        log.warning('update_queuestats : no such queue %s' % queue)
                 return
-
-        def get_groups(self):
+        
+        def get_queues(self):
                 return self.keeplist.keys()
-
-        def get_groupstats(self, groupname):
+        
+        def get_queuestats(self, queuename):
                 lst = {}
-                if groupname in self.keeplist:
-                        lst[groupname] = self.keeplist[groupname]['stats']
+                if queuename in self.keeplist:
+                        lst[queuename] = self.keeplist[queuename]['stats']
                 return lst
         
-        def get_groupstats_long(self):
+        def get_queuestats_long(self):
                 lst = {}
-                for groupname, groupprops in self.keeplist.iteritems():
-                        lst[groupname] = groupprops['stats']
+                for queuename, queueprops in self.keeplist.iteritems():
+                        lst[queuename] = queueprops['stats']
                 return lst
         
-        def get_groups_byagent(self, agid):
-                grouplist = {}
+        def get_queueprops_long(self):
+                lst = {}
+                for queuename, queueprops in self.keeplist.iteritems():
+                        lst[queuename] = queueprops['context']
+                return lst
+        
+        def get_queues_byagent(self, agid):
+                queuelist = {}
                 for qref, ql in self.keeplist.iteritems():
                         lst = {}
                         if agid in ql['agents']:
                                 agprop = ql['agents'][agid]
-                                for v in self.grouplocationprops:
+                                for v in self.queuelocationprops:
                                         if v in agprop:
                                                 lst[v] = agprop[v]
                                         else:
-                                                log.warning('get_groups_byagent : no property %s for agent %s in group %s'
+                                                log.warning('get_queues_byagent : no property %s for agent %s in queue %s'
                                                             % (v, agid, qref))
-                        grouplist[qref] = lst
-                return grouplist
+                        lst['context'] = ql['context']
+                        queuelist[qref] = lst
+                return queuelist
         
-        def findgroup(self, groupname):
-                if groupname in self.keeplist:
-                        return self.keeplist.get(groupname)
+        def findqueue(self, queuename):
+                if queuename in self.keeplist:
+                        return self.keeplist.get(queuename)
                 else:
                         return None
