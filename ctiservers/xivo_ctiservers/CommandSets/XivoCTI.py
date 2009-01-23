@@ -3585,11 +3585,12 @@ class XivoCTICommand(BaseCommand):
                         agentid = commandargs[2]
                         qname = commandargs[3]
                         for chan, vchan in self.weblist['queues'][astid].keeplist[qname]['channels'].iteritems():
-                                uinfo = self.__find_userinfos_by_agentnum__(astid, agentid)
-                                self.__ami_execute__(astid, 'transfer',
-                                                     chan,
-                                                     uinfo.get('agentphonenum'), uinfo.get('context'))
-                                break
+                                uinfos = self.__find_userinfos_by_agentnum__(astid, agentid)
+                                if uinfos:
+                                        self.__ami_execute__(astid, 'transfer',
+                                                             chan,
+                                                             uinfos[0].get('agentphonenum'), uinfos[0].get('context'))
+                                        break
                 elif subcommand == 'lists':
                         pass
                 else:
