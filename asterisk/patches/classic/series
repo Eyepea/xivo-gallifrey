@@ -33,6 +33,3 @@ pf_ackcall_not_always.patch
 iax2_issue13645-1.4
 pf_manager_misc.patch
 asterisk-sipbg-sscanf
-
-# for chan_sip
-pf_sip_callid_domain_for_mwi.patch
