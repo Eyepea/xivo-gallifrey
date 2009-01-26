@@ -29,7 +29,7 @@ Index: asterisk-1.4.23.1/channels/chan_misdn.c
  {
  	int chan_offset = 0;
  	int tmp_port = misdn_cfg_get_next_port(0);
-++	char newname[255];
++	char newname[255];
  	for (; tmp_port > 0; tmp_port = misdn_cfg_get_next_port(tmp_port)) {
  		if (tmp_port == port)
  			break;
