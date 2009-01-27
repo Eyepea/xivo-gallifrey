@@ -1163,6 +1163,9 @@ class XivoCTICommand(BaseCommand):
                         if 'xivo-uniqueid' in itemdir:
                                 linestosend.append('<internal name="sessionid"><![CDATA[%s]]></internal>'
                                                    % itemdir['xivo-uniqueid'])
+                        if 'xivo-astid' in itemdir:
+                                linestosend.append('<internal name="astid"><![CDATA[%s]]></internal>'
+                                                   % itemdir['xivo-astid'])
                         linestosend.extend(self.__build_xmlqtui__('sheet_qtui', actionopt, itemdir))
                         linestosend.extend(self.__build_xmlsheet__('action_info', actionopt, itemdir))
                         linestosend.extend(self.__build_xmlsheet__('sheet_info', actionopt, itemdir))
@@ -3265,28 +3268,31 @@ class XivoCTICommand(BaseCommand):
                                                 infos = icommand.struct.get('infos')
                                                 if infos:
                                                         actionid = infos.get('sessionid')
+                                                        channel = infos.get('channel')
+                                                        locastid = infos.get('astid')
+                                                        
                                                         timestamps = infos.get('timestamps')
-                                                        log.info('%s : %s %s' % (classcomm, actionid, timestamps))
+                                                        log.info('%s %s : %s %s' % (locastid, classcomm, actionid, timestamps))
                                                         dtime = None
                                                         if 'agentlinked' in timestamps and 'agentunlinked' in timestamps:
                                                                 dtime = timestamps['agentunlinked'] - timestamps['agentlinked']
                                                         self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm, infos.get('buttonname'), dtime)
-                                                        for iastid in self.uniqueids.keys():
-                                                                if actionid in self.uniqueids[iastid]:
-                                                                        if 'buttonname' in infos:
-                                                                                button = infos.get('buttonname')
-                                                                                channel = infos.get('channel')
-                                                                                log.info('%s : button=%s channel=%s %s' % (classcomm,
-                                                                                                                           button,
-                                                                                                                           channel,
-                                                                                                                           self.uniqueids[iastid][actionid]))
-                                                                                if button == 'answer':
-                                                                                        self.__ami_execute__(iastid, 'transfer',
-                                                                                                             channel,
-                                                                                                             userinfo.get('phonenum'),
-                                                                                                             userinfo.get('context'))
-                                                                        else:
-                                                                                log.info('%s : %s' % (classcomm, self.uniqueids[iastid][actionid]))
+                                                        if locastid in self.uniqueids and actionid in self.uniqueids[locastid]:
+                                                                if 'buttonname' in infos:
+                                                                        buttonname = infos.get('buttonname')
+                                                                        log.info('%s : buttonname=%s channel=%s %s' % (classcomm,
+                                                                                                                       buttonname,
+                                                                                                                       channel,
+                                                                                                                       self.uniqueids[locastid][actionid]))
+                                                                        if buttonname == 'answer':
+                                                                                self.__ami_execute__(locastid, 'transfer',
+                                                                                                     channel,
+                                                                                                     userinfo.get('phonenum'),
+                                                                                                     userinfo.get('context'))
+                                                                        elif buttonname == 'hangup':
+                                                                                pass
+                                                                else:
+                                                                        log.info('%s : %s' % (classcomm, self.uniqueids[locastid][actionid]))
                                         elif classcomm in ['phones', 'users', 'agents', 'queues', 'groups']:
                                                 function = icommand.struct.get('function')
                                                 if function == 'getlist':
