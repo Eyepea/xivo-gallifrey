@@ -911,7 +911,8 @@ class XivoCTICommand(BaseCommand):
                                 mysock = userinfo.get('login')['connection']
                                 mysock.sendall(strupdate + '\n', socket.MSG_WAITALL)
                 except Exception:
-                        log.exception('(__send_msg_to_cti_client__) userinfo(id) = %s' % userinfo.get('xivo_userid'))
+                        log.exception('(__send_msg_to_cti_client__ log 1/2)')
+                        log.exception('(__send_msg_to_cti_client__ log 2/2) userinfo(id) = %s' % userinfo.get('xivo_userid'))
                         if userinfo not in self.disconnlist:
                                 self.disconnlist.append(userinfo)
                                 os.write(self.queued_threads_pipe[1], 'uinfo')
@@ -3270,9 +3271,22 @@ class XivoCTICommand(BaseCommand):
                                                         if 'agentlinked' in timestamps and 'agentunlinked' in timestamps:
                                                                 dtime = timestamps['agentunlinked'] - timestamps['agentlinked']
                                                         self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm, infos.get('buttonname'), dtime)
-                                                        if actionid in self.uniqueids[astid]:
-                                                                log.info('%s : %s' % (classcomm, self.uniqueids[astid][actionid]))
-                                                                
+                                                        for iastid in self.uniqueids.keys():
+                                                                if actionid in self.uniqueids[iastid]:
+                                                                        if 'buttonname' in infos:
+                                                                                button = infos.get('buttonname')
+                                                                                channel = infos.get('channel')
+                                                                                log.info('%s : button=%s channel=%s %s' % (classcomm,
+                                                                                                                           button,
+                                                                                                                           channel,
+                                                                                                                           self.uniqueids[iastid][actionid]))
+                                                                                if button == 'answer':
+                                                                                        self.__ami_execute__(iastid, 'transfer',
+                                                                                                             channel,
+                                                                                                             userinfo.get('phonenum'),
+                                                                                                             userinfo.get('context'))
+                                                                        else:
+                                                                                log.info('%s : %s' % (classcomm, self.uniqueids[iastid][actionid]))
                                         elif classcomm in ['phones', 'users', 'agents', 'queues', 'groups']:
                                                 function = icommand.struct.get('function')
                                                 if function == 'getlist':
