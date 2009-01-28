@@ -113,7 +113,6 @@ PIDFILE = '/var/run/%s.pid' % DAEMONNAME
 BUFSIZE_LARGE = 8192
 BUFSIZE_ANY = 512
 
-socket.setdefaulttimeout(2)
 XIVO_CLI_WEBI_HEADER = 'XIVO-CLI-WEBI'
 XIVOVERSION = '0.4'
 
@@ -664,10 +663,7 @@ while True: # loops over the reloads
         nreload += 1
         
         # global default definitions
-        commandset = 'xivocti'
         incoming_tcp_ports = []
-        extraconn = ''
-        updates_period = 60
         asterisklist = []
         contextlist = []
         userlists = []
@@ -675,13 +671,12 @@ while True: # loops over the reloads
         
         userinfo_by_requester = {}
         userinfo_current = {}
-
+        
         cconf = cti_config.Config(XIVOCONFFILE)
         xivoconf_general = cconf.read_section('general', 'general')
-
+        
         # loads the general configuration
-        if 'commandset' in xivoconf_general:
-                commandset = xivoconf_general['commandset']
+        commandset = xivoconf_general.get('commandset', 'xivocti')
         if 'incoming_tcp_ports' in xivoconf_general:
                 incoming_tcp_ports = xivoconf_general['incoming_tcp_ports'].split(',')
         for func in ['CTI', 'WEBI', 'FAGI', 'INFO']:
@@ -693,18 +688,18 @@ while True: # loops over the reloads
                                         incoming_tcp_ports.append('%d:%s:%s' % (int(bind_and_port[1]), func, bind_and_port[0]))
                                 except Exception:
                                         log.exception('%s definition' % fieldname)
-        if 'extraconn' in xivoconf_general:
-                extraconn = xivoconf_general['extraconn']
-        if 'updates_period' in xivoconf_general:
-                updates_period = int(xivoconf_general['updates_period'])
+        extraconn = xivoconf_general.get('extraconn', '')
+        updates_period = int(xivoconf_general.get('updates_period', '60'))
+        ctilog = xivoconf_general.get('ctilog')
+        socktimeout = xivoconf_general.get('sockettimeout', '2')
         if 'asterisklist' in xivoconf_general:
                 asterisklist = xivoconf_general['asterisklist'].split(',')
         if 'contextlist' in xivoconf_general:
                 contextlist = xivoconf_general['contextlist'].split(',')
         if 'userlists' in xivoconf_general:
                 userlists = xivoconf_general['userlists'].split(',')
-        if 'ctilog' in xivoconf_general:
-                ctilog = xivoconf_general['ctilog']
+        
+        socket.setdefaulttimeout(int(socktimeout))
         
         queued_threads_pipe = os.pipe()
         amilist = xivo_ami.AMIList()
