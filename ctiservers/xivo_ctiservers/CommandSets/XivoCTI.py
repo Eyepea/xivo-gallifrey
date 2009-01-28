@@ -273,8 +273,7 @@ class XivoCTICommand(BaseCommand):
                                                 'cticlientos' : whatsmyos,
                                                 'version' : svnversion,
                                                 'sessionid' : ''.join(random.sample(__alphanums__, 10))}
-                        return userinfo
-
+                        
                 elif phase == xivo_commandsets.CMD_LOGIN_PASS:
                         # user authentication
                         missings = []
@@ -296,8 +295,7 @@ class XivoCTICommand(BaseCommand):
                         iserr = self.__check_user_connection__(userinfo)
                         if iserr is not None:
                                 return iserr
-                        return userinfo
-
+                        
                 elif phase == xivo_commandsets.CMD_LOGIN_CAPAS:
                         missings = []
                         for argum in ['state', 'capaid', 'lastconnwins', 'loginkind']:
@@ -330,19 +328,20 @@ class XivoCTICommand(BaseCommand):
                                         self.__login_agent__(userinfo)
                         if subscribe is not None:
                                 userinfo['subscribe'] = 0
-                        return userinfo
-
-
+                else:
+                        userinfo = None
+                return userinfo
+        
         def manage_logout(self, userinfo, when):
-                log.info('logout (%s) %s'
-                          % (when, userinfo))
+                log.info('logout (%s) userinfo(astid)=%s userinfo(id)=%s'
+                         % (when, userinfo.get('astid'), userinfo.get('xivo_userid')))
                 userinfo['last-logouttime-ascii'] = time.asctime()
                 self.__logout_agent__(userinfo)
                 self.__disconnect_user__(userinfo)
                 self.__fill_user_ctilog__(userinfo, 'cti_logout')
                 return
-
-
+        
+        
         def __check_user_connection__(self, userinfo):
                 #if userinfo.has_key('init'):
                 #       if not userinfo['init']:
@@ -918,7 +917,8 @@ class XivoCTICommand(BaseCommand):
                                 mysock = userinfo.get('login')['connection']
                                 mysock.sendall(strupdate + '\n', socket.MSG_WAITALL)
                 except Exception:
-                        log.exception('(__send_msg_to_cti_client__) userinfo(id) = %s' % userinfo.get('xivo_userid'))
+                        log.exception('(__send_msg_to_cti_client__) userinfo(astid)=%s userinfo(id)=%s'
+                                      % (userinfo.get('astid'), userinfo.get('xivo_userid')))
                         if userinfo not in self.disconnlist:
                                 self.disconnlist.append(userinfo)
                                 os.write(self.queued_threads_pipe[1], 'uinfo')
@@ -4278,11 +4278,15 @@ class XivoCTICommand(BaseCommand):
                 Events coming from Fast AGI.
                 """
                 # check capas !
-                context = fastagi.get_variable('XIVO_REAL_CONTEXT')
-                uniqueid = fastagi.get_variable('UNIQUEID')
-                channel = fastagi.get_variable('CHANNEL')
-                function = fastagi.env['agi_network_script']
-                log.info('handle_fagi %s : context=%s uid=%s chan=%s (%s)' % (astid, context, uniqueid, channel, function))
+                try:
+                        context = fastagi.get_variable('XIVO_REAL_CONTEXT')
+                        uniqueid = fastagi.get_variable('UNIQUEID')
+                        channel = fastagi.get_variable('CHANNEL')
+                        function = fastagi.env['agi_network_script']
+                        log.info('handle_fagi %s : context=%s uid=%s chan=%s (%s)' % (astid, context, uniqueid, channel, function))
+                except Exception:
+                        log.exception('(handle_fagi astid=%s)' % astid)
+                        return
                 
                 if function == 'presence':
                         if len(fastagi.args) > 0:
