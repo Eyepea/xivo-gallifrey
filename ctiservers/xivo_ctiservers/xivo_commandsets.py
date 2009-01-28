@@ -138,7 +138,9 @@ class BaseCommand:
         # connection
         def connected(self, connid):
                 return
-
+        def disconnected(self, connid):
+                return
+        
         # login
         def required_login_params(self):
                 return

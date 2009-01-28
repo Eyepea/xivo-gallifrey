@@ -1025,6 +1025,8 @@ while True: # loops over the reloads
                                                         if requester in commandclass.transfers_ref:
                                                                 commandclass.transfer_endbuf(requester)
                                                         log.info('TCP socket closed on %s (%s)' % (requester, kind))
+                                                        if kind == 'CTI':
+                                                                commandclass.disconnected(conn)
                                         except Exception:
                                                 log.exception('[%s] %s' % (kind, sel_i))
                                                 try:

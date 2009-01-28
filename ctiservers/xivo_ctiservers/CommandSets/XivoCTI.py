@@ -883,7 +883,14 @@ class XivoCTICommand(BaseCommand):
                 self.timeout_login[connid] = threading.Timer(5, self.__callback_timer__, ('login',))
                 self.timeout_login[connid].start()
                 return
-
+        
+        def disconnected(self, connid):
+                if connid in self.timeout_login:
+                        self.timeout_login[connid].cancel()
+                        del self.timeout_login[connid]
+                return
+        
+        
         def checkqueue(self):
                 buf = os.read(self.queued_threads_pipe[0], 1024)
                 log.info('checkqueue : read buf = %s, tqueue size = %d' % (buf, self.tqueue.qsize()))
@@ -911,8 +918,7 @@ class XivoCTICommand(BaseCommand):
                                 mysock = userinfo.get('login')['connection']
                                 mysock.sendall(strupdate + '\n', socket.MSG_WAITALL)
                 except Exception:
-                        log.exception('(__send_msg_to_cti_client__ log 1/2)')
-                        log.exception('(__send_msg_to_cti_client__ log 2/2) userinfo(id) = %s' % userinfo.get('xivo_userid'))
+                        log.exception('(__send_msg_to_cti_client__) userinfo(id) = %s' % userinfo.get('xivo_userid'))
                         if userinfo not in self.disconnlist:
                                 self.disconnlist.append(userinfo)
                                 os.write(self.queued_threads_pipe[1], 'uinfo')
