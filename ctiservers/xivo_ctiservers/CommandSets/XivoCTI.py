@@ -4271,8 +4271,7 @@ class XivoCTICommand(BaseCommand):
                                                 if iuserinfo['state'] in self.presence_sections[presenceid].getstates():
                                                         counts[iuserinfo['state']] += 1
                 return counts
-
-
+        
         def handle_fagi(self, astid, fastagi):
                 """
                 Events coming from Fast AGI.
@@ -4285,67 +4284,79 @@ class XivoCTICommand(BaseCommand):
                         function = fastagi.env['agi_network_script']
                         log.info('handle_fagi %s : context=%s uid=%s chan=%s (%s)' % (astid, context, uniqueid, channel, function))
                 except Exception:
-                        log.exception('(handle_fagi astid=%s)' % astid)
+                        log.exception('handle_fagi %s' % astid)
                         return
                 
                 if function == 'presence':
-                        if len(fastagi.args) > 0:
-                                presenceid = fastagi.args[0]
-                                aststatus = []
-                                for var, val in self.__counts__(presenceid).iteritems():
-                                        aststatus.append('%s:%d' % (var, val))
-                                fastagi.set_variable('XIVO_PRESENCE', ','.join(aststatus))
+                        try:
+                                if len(fastagi.args) > 0:
+                                        presenceid = fastagi.args[0]
+                                        aststatus = []
+                                        for var, val in self.__counts__(presenceid).iteritems():
+                                                aststatus.append('%s:%d' % (var, val))
+                                        fastagi.set_variable('XIVO_PRESENCE', ','.join(aststatus))
+                        except Exception:
+                                log.exception('handle_fagi %s %s : %s %s' % (astid, function, astid, fastagi.args))
                         return
                 
                 elif function == 'queuestatus':
-                        if len(fastagi.args) > 0:
-                                queuename = fastagi.args[0]
-                                if queuename in self.weblist['queues'][astid].keeplist:
-                                        qprops = self.weblist['queues'][astid].keeplist[queuename]['agents']
-                                        lst = []
-                                        for ag, agc in qprops.iteritems():
-                                                sstatus = 'unknown'
-                                                status = agc.get('Status')
-                                                if status == '1':
-                                                        if agc.get('Paused') == '1':
-                                                                sstatus = 'paused'
-                                                        else:
-                                                                sstatus = 'available'
-                                                elif status == '3':
-                                                        sstatus = 'busy'
-                                                elif status == '5':
-                                                        sstatus = 'away'
-                                                lst.append('%s:%s' % (ag, sstatus))
-                                        fastagi.set_variable('XIVO_QUEUESTATUS', ','.join(lst))
-                                        fastagi.set_variable('XIVO_QUEUEID', self.weblist['queues'][astid].keeplist[queuename]['id'])
+                        try:
+                                if len(fastagi.args) > 0:
+                                        queuename = fastagi.args[0]
+                                        if queuename in self.weblist['queues'][astid].keeplist:
+                                                qprops = self.weblist['queues'][astid].keeplist[queuename]['agents']
+                                                lst = []
+                                                for ag, agc in qprops.iteritems():
+                                                        sstatus = 'unknown'
+                                                        status = agc.get('Status')
+                                                        if status == '1':
+                                                                if agc.get('Paused') == '1':
+                                                                        sstatus = 'paused'
+                                                                else:
+                                                                        sstatus = 'available'
+                                                        elif status == '3':
+                                                                sstatus = 'busy'
+                                                        elif status == '5':
+                                                                sstatus = 'away'
+                                                        lst.append('%s:%s' % (ag, sstatus))
+                                                fastagi.set_variable('XIVO_QUEUESTATUS', ','.join(lst))
+                                                fastagi.set_variable('XIVO_QUEUEID', self.weblist['queues'][astid].keeplist[queuename]['id'])
+                        except Exception:
+                                log.exception('handle_fagi %s %s : %s %s' % (astid, function, astid, fastagi.args))
                         return
                 
                 elif function == 'queueentries':
-                        if len(fastagi.args) > 0:
-                                queuename = fastagi.args[0]
-                                if queuename in self.weblist['queues'][astid].keeplist:
-                                        qentries = self.weblist['queues'][astid].keeplist[queuename]['channels']
-                                        lst = []
-                                        for chan, chanprops in qentries.iteritems():
-                                                lst.append('%s:%d' % (chan, int(round(time.time() - chanprops.get('updatetime') + chanprops.get('wait')))))
-                                        fastagi.set_variable('XIVO_QUEUEENTRIES', ','.join(lst))
+                        try:
+                                if len(fastagi.args) > 0:
+                                        queuename = fastagi.args[0]
+                                        if queuename in self.weblist['queues'][astid].keeplist:
+                                                qentries = self.weblist['queues'][astid].keeplist[queuename]['channels']
+                                                lst = []
+                                                for chan, chanprops in qentries.iteritems():
+                                                        lst.append('%s:%d' % (chan, int(round(time.time() - chanprops.get('updatetime') + chanprops.get('wait')))))
+                                                fastagi.set_variable('XIVO_QUEUEENTRIES', ','.join(lst))
+                        except Exception:
+                                log.exception('handle_fagi %s %s : %s %s' % (astid, function, astid, fastagi.args))
                         return
                 
                 elif function == 'queueholdtime':
-                        if len(fastagi.args) > 0:
-                                queuename = fastagi.args[0]
-                                if queuename in self.weblist['queues'][astid].keeplist:
-                                        fastagi.set_variable('XIVO_QUEUEHOLDTIME',
-                                                             self.weblist['queues'][astid].keeplist[queuename]['stats']['Holdtime'])
-                        else:
-                                lst = []
-                                for queuename, qprops in self.weblist['queues'][astid].keeplist.iteritems():
-                                        lst.append('%s:%s' % (queuename, qprops['stats']['Holdtime']))
-                                        fastagi.set_variable('XIVO_QUEUEHOLDTIME', ','.join(lst))
+                        try:
+                                if len(fastagi.args) > 0:
+                                        queuename = fastagi.args[0]
+                                        if queuename in self.weblist['queues'][astid].keeplist:
+                                                fastagi.set_variable('XIVO_QUEUEHOLDTIME',
+                                                                     self.weblist['queues'][astid].keeplist[queuename]['stats']['Holdtime'])
+                                else:
+                                        lst = []
+                                        for queuename, qprops in self.weblist['queues'][astid].keeplist.iteritems():
+                                                lst.append('%s:%s' % (queuename, qprops['stats']['Holdtime']))
+                                                fastagi.set_variable('XIVO_QUEUEHOLDTIME', ','.join(lst))
+                        except Exception:
+                                log.exception('handle_fagi %s %s : %s %s' % (astid, function, astid, fastagi.args))
                         return
                 
                 elif function != 'xivo_push':
-                        log.warning('handle_fagi %s :   unknown function %s' % (astid, function))
+                        log.warning('handle_fagi %s %s : unknown function' % (astid, function))
                         return
                 
                 callednum = fastagi.get_variable('XIVO_DSTNUM')
