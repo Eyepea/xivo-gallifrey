@@ -52,7 +52,7 @@ def aastra_install_fw(firmware, xfile):
 
 def aastra_install(firmware):
     for xfile in firmware.remote_files:
-        if xfile.filename.find("LangPacks") != -1:
+        if xfile.filename.startswith('Lang'):
             aastra_install_langs(firmware, xfile)
         else:
             aastra_install_fw(firmware, xfile)
