@@ -619,7 +619,7 @@ endif;
 		$form->text(array('desc'	=> $this->bbf('fm_queue_maxlen'),
 				  'name'	=> 'queue[maxlen]',
 				  'labelid'	=> 'queue-maxlen',
-				  'size'	=> 15,
+				  'size'	=> 5,
 				  'default'	=> $element['queue']['maxlen']['default'],
 				  'value'	=> $info['queue']['maxlen'])),
 
