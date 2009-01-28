@@ -30,3 +30,5 @@ pickup_issue5014-1.4
 pf_manager_dtmf.patch
 pf_manager_atxfer.patch
 pf_manager_misc.patch
+
+pickup_issue14206-1.4.23
