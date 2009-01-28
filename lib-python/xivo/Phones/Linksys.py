@@ -28,6 +28,7 @@ __license__ = """
 import os
 import logging
 import subprocess
+import math
 
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
@@ -135,15 +136,17 @@ class Linksys(PhoneVendorMixin):
         sorted_keys = funckey.keys()
         sorted_keys.sort()
         fk_config_lines = []
-        unit = 1
         for key in sorted_keys:
             exten, supervise = funckey[key]
+
+            key = int(key)
+            unit = int(math.ceil(math.modf(key)[1] / 32))
+            key = key % 32
 
             key = (int(key) % 32)
 
             if key == 0:
                 key = 32
-                unit += 1
 
             if supervise:
                 blf = "+blf"

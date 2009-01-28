@@ -28,6 +28,7 @@ __license__ = """
 import os
 import logging
 import subprocess
+import math
 
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
@@ -128,11 +129,12 @@ class Aastra(PhoneVendorMixin):
                 else:
                     keytype = "prg"
             elif key > 12:
-                key = (key - 12) % 60
+                key = key - 12
+                unit = int(math.ceil(math.modf(key)[1] / 60))
+                key = key % 60
 
                 if key == 0:
                     key = 60
-                    unit += 1
 
                 keytype = "expmod%d " % unit
             else:
