@@ -341,7 +341,16 @@ def manage_info_connections(connid, msg, sep):
                         elif usefulmsg == 'show_ami':
                                 for astid, ami in amilist.ami.iteritems():
                                         connid.sendall('commands : %s : %s\n' % (astid, ami))
-                        elif usefulmsg.startswith('kick'):
+                        elif usefulmsg.startswith('ami '):
+                                amicmd = usefulmsg.split()[1:]
+                                if amicmd:
+                                        connid.sendall('ami request %s\n' % amicmd)
+                                        if len(amicmd) > 1:
+                                                astid = amicmd[0]
+                                                cmd = amicmd[1]
+                                                cmdargs = amicmd[2:]
+                                                amilist.execute(astid, cmd, *cmdargs)
+                        elif usefulmsg.startswith('kick '):
                                 aargs = usefulmsg.split()
                                 try:
                                         if len(aargs) > 1:

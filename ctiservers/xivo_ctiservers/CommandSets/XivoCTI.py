@@ -4197,24 +4197,27 @@ class XivoCTICommand(BaseCommand):
                 elif dbkind == 'http':
                         if not reversedir:
                                 fulluri = '%s/?%s=%s' % (z.uri, ''.join(z.match_direct), searchpattern)
-                                f = urllib.urlopen(fulluri)
                                 delimit = ':'
                                 n = 0
-                                for line in f:
-                                        if n == 0:
-                                                header = line
-                                                headerfields = header.strip().split(delimit)
-                                        else:
-                                                ll = line.strip()
-                                                t = ll.split(delimit)
-                                                futureline = {'xivo-dir' : z.name}
-                                                for keyw, dbkeys in z.fkeys.iteritems():
-                                                        for dbkey in dbkeys:
-                                                                idx = headerfields.index(dbkey)
-                                                                futureline[keyw] = t[idx]
-                                                fullstatlist.append(futureline)
-                                        n += 1
-                                f.close()
+                                try:
+                                        f = urllib.urlopen(fulluri)
+                                        for line in f:
+                                                if n == 0:
+                                                        header = line
+                                                        headerfields = header.strip().split(delimit)
+                                                else:
+                                                        ll = line.strip()
+                                                        t = ll.split(delimit)
+                                                        futureline = {'xivo-dir' : z.name}
+                                                        for keyw, dbkeys in z.fkeys.iteritems():
+                                                                for dbkey in dbkeys:
+                                                                        idx = headerfields.index(dbkey)
+                                                                        futureline[keyw] = t[idx]
+                                                        fullstatlist.append(futureline)
+                                                n += 1
+                                        f.close()
+                                except Exception:
+                                        log.exception('__build_customers_bydirdef__ (http)')
                                 if n == 0:
                                         log.warning('WARNING : %s is empty' % z.uri)
                                 # we don't warn about "only one line" here since the filter has probably already been applied
