@@ -913,17 +913,19 @@ class XivoCTICommand(BaseCommand):
 
         def __send_msg_to_cti_client__(self, userinfo, strupdate):
                 try:
+                        t0 = time.time()
                         if userinfo is not None and 'login' in userinfo and 'connection' in userinfo.get('login'):
                                 mysock = userinfo.get('login')['connection']
                                 mysock.sendall(strupdate + '\n', socket.MSG_WAITALL)
                 except Exception:
-                        log.exception('(__send_msg_to_cti_client__) userinfo(astid)=%s userinfo(id)=%s'
-                                      % (userinfo.get('astid'), userinfo.get('xivo_userid')))
+                        t1 = time.time()
+                        log.exception('(__send_msg_to_cti_client__) userinfo(astid)=%s userinfo(id)=%s len=%d timespent=%f'
+                                      % (userinfo.get('astid'), userinfo.get('xivo_userid'), len(strupdate), (t1 - t0)))
                         if userinfo not in self.disconnlist:
                                 self.disconnlist.append(userinfo)
                                 os.write(self.queued_threads_pipe[1], 'uinfo')
                 return
-
+        
         def __send_msg_to_cti_clients__(self, strupdate):
                 try:
                         if strupdate is not None:
@@ -932,7 +934,7 @@ class XivoCTICommand(BaseCommand):
                 except Exception:
                         log.exception('(__send_msg_to_cti_clients__)')
                 return
-
+        
         def __send_msg_to_cti_clients_except__(self, uinfos, strupdate):
                 try:
                         if strupdate is not None:

@@ -699,7 +699,7 @@ while True: # loops over the reloads
         if 'userlists' in xivoconf_general:
                 userlists = xivoconf_general['userlists'].split(',')
         
-        socket.setdefaulttimeout(int(socktimeout))
+        socket.setdefaulttimeout(float(socktimeout))
         
         queued_threads_pipe = os.pipe()
         amilist = xivo_ami.AMIList()
@@ -984,7 +984,7 @@ while True: # loops over the reloads
                                                 # conn.settimeout(2)
                                                 fdlist_full.append(conn)
                                                 fdlist_established[conn] = kind
-
+                                                
                                 # incoming TCP connections (CTI, WEBI, AGI, INFO)
                                 elif sel_i in fdlist_established:
                                         try:
