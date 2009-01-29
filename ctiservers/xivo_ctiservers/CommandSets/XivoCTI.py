@@ -2321,7 +2321,7 @@ class XivoCTICommand(BaseCommand):
                                                                                                     'loggedintime' : event.get('LoggedInTime'),
                                                                                                     'talkingto' : event.get('TalkingTo'),
                                                                                                     'xivo-recorded' : False,
-                                                                                                    'link' : False
+                                                                                                    'link' : 'phoneunlink'
                                                                                                     } )
                         else:
                                 log.warning('%s : received statuses for <%s> unknown by XIVO'
