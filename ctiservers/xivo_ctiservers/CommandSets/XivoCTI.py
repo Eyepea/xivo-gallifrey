@@ -1493,11 +1493,19 @@ class XivoCTICommand(BaseCommand):
                 return ret
         
         def ami_hold(self, astid, event):
-                log.info('%s ami_hold : %s' % (astid, event))
+                # log.info('%s ami_hold : %s' % (astid, event))
+                uid = event.get('Uniqueid')
+                channel = event.get('Channel')
+                if uid in self.uniqueids[astid]:
+                        log.info('%s ami_hold : holder:%s %s holded:%s' % (astid, channel, uid, self.uniqueids[astid][uid].get('link')))
                 return
         
         def ami_unhold(self, astid, event):
-                log.info('%s ami_unhold : %s' % (astid, event))
+                # log.info('%s ami_unhold : %s' % (astid, event))
+                uid = event.get('Uniqueid')
+                channel = event.get('Channel')
+                if uid in self.uniqueids[astid]:
+                        log.info('%s ami_unhold : holder:%s %s holded:%s' % (astid, channel, uid, self.uniqueids[astid][uid].get('link')))
                 return
         
         def ami_bridge(self, astid, event):
@@ -1505,19 +1513,37 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def ami_masquerade(self, astid, event):
-                log.info('%s ami_masquerade : %s' % (astid, event))
-                # - indirect transfer 103->101(answers)->102
-                # {'Original': 'SIP/101-0820abe0', 'Clone': 'SIP/103-081fd3e0', 'OriginalState': 'Up', 'CloneState': 'Up', 'Privilege': 'call,all', 'Event': 'Masquerade'}
-                # Rename  1227863857.10 SIP/103-081fd3e0 SIP/103-081fd3e0<MASQ>
-                # Rename  1227863873.12 SIP/101-0820abe0 SIP/103-081fd3e0
-                # Rename  1227863857.10 SIP/103-081fd3e0<MASQ> SIP/101-0820abe0<ZOMBIE>
+                originalstate = event.get('OriginalState')
+                clonestate = event.get('CloneState')
+                # always implies Rename's ?
+                if originalstate == 'Ringing' and clonestate == 'Down':
+                        # interception
+                        log.info('%s ami_masquerade : probably %s has catched a call for %s' % (astid, event.get('Clone'), event.get('Original')))
+                elif originalstate == 'Up' and clonestate == 'Up':
+                        # transfer
+                        log.info('%s ami_masquerade : probably the other channel of %s is being transferred to %s'
+                                 % (astid, event.get('Original'), event.get('Clone')))
+                else:
+                        log.info('%s ami_masquerade : %s' % (astid, event))
                 return
         
         def ami_transfer(self, astid, event):
-                log.info('%s ami_transfer : %s' % (astid, event))
+                if event.get('TransferType') == 'Blind':
+                        tcontext = event.get('TransferContext')
+                        texten = event.get('TransferExten') # transferred-to extension
+                        log.info('%s ami_transfer : Blind    TargetChannel=%s Exten=%s Context=%s' % (astid, event.get('TargetChannel'), texten, tcontext))
+                        # uniqueid > target uniqueid (actually, same timestamp and .idcall++)
+                        # channel = intermediate's incoming
+                        # target channel = caller
+                elif event.get('TransferType') == 'Attended':
+                        log.info('%s ami_transfer : Attended TargetChannel=%s' % (astid, event.get('TargetChannel')))
+                        # target uniqueid > uniqueid
+                        # channel = intermediate's incoming
+                        # target channel = intermediate's outgoing
+                else:
+                        log.info('%s ami_transfer : %s' % (astid, event))
+                # SIP-Callid, TransferMethod
                 # - not there when direct transfer without answering
-                # - direct transfer 103->102(answers)->101 {'TargetUniqueid': '1227807187.0', 'SIP-Callid': '327d79462a2f95db105177207486706c@192.168.0.122', 'TransferType': 'Blind', 'TransferContext': 'default', 'TargetChannel': 'SIP/103-081f9010', 'TransferMethod': 'SIP', 'TransferExten': '101', 'Uniqueid': '1227807187.1', 'Privilege': 'call,all', 'Event': 'Transfer', 'Channel': 'SIP/102-081fcf88'}
-                # - indirect transfer 103->102(answers)->101 {'TargetUniqueid': '1227807607.25', 'SIP-Callid': '217af1e1509d79e443a3827152343bf3@192.168.0.122', 'TransferType': 'Attended', 'TargetChannel': 'SIP/102-08208720', 'TransferMethod': 'SIP', 'Uniqueid': '1227807556.24', 'Privilege': 'call,all', 'Event': 'Transfer', 'Channel': 'SIP/102-081fce78'}
                 return
         
         def ami_link(self, astid, event):
