@@ -94,10 +94,38 @@ class PhoneList(AnyList):
                                 self.keeplist[phoneiddst]['comms'][uiddst].update(infos)
                 return
         
-        def ami_hangup(self, phoneid, uid):
-                if phoneid in self.keeplist and uid in self.keeplist[phoneid]['comms']:
-                        self.keeplist[phoneid]['comms'][uid]['status'] = 'hangup'
+        def ami_rename(self, oldphoneid, newphoneid, oldname, newname, uid):
+                for phoneid, v in self.keeplist.iteritems():
+                        for k, kk in v['comms'].iteritems():
+                                if kk['thischannel'] == oldname:
+                                        kk['thischannel'] = newname
+                                if kk['peerchannel'] == oldname:
+                                        kk['peerchannel'] = newname
+                if oldphoneid != newphoneid:
+                        if uid in self.keeplist[oldphoneid]['comms'] and uid not in self.keeplist[newphoneid]['comms']:
+                                self.keeplist[newphoneid]['comms'][uid] = self.keeplist[oldphoneid]['comms'][uid]
+                                # self.keeplist[oldphoneid]['comms'][uid]['status'] = 'hangup'
+                                del self.keeplist[oldphoneid]['comms'][uid]
+                                log.info('%s moved from %s to %s' % (uid, oldphoneid, newphoneid))
                 return
+        
+        def ami_hangup(self, uid):
+                phoneidlist = []
+                for phoneid, phoneprops in self.keeplist.iteritems():
+                        if uid in phoneprops['comms']:
+                                phoneprops['comms'][uid]['status'] = 'hangup'
+                                if phoneid not in phoneidlist:
+                                        phoneidlist.append(phoneid)
+                return phoneidlist
+        
+        def clear(self, uid):
+                phoneidlist = []
+                for phoneid, phoneprops in self.keeplist.iteritems():
+                        if uid in phoneprops['comms']:
+                                del phoneprops['comms'][uid]
+                                if phoneid not in phoneidlist:
+                                        phoneidlist.append(phoneid)
+                return phoneidlist
         
         def setdisplayhints(self, dh):
                 self.display_hints = dh
@@ -139,16 +167,6 @@ class PhoneList(AnyList):
                                          'calleridnum' : ctuid['parkexten-callback']
                                          }
                                 self.keeplist[phoneid]['comms'][uid] = infos
-                return
-        
-        def clear(self, phoneid, uid):
-                if phoneid in self.keeplist:
-                        if uid in self.keeplist[phoneid]['comms']:
-                                del self.keeplist[phoneid]['comms'][uid]
-                        else:
-                                log.warning('%s : uid %s not in comms list' % (phoneid, uid))
-                else:
-                        log.warning('%s not in phonelist' % phoneid)
                 return
         
         def status(self, phoneid):

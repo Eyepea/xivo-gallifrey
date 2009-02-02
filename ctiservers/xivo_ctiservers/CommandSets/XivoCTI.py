@@ -143,6 +143,7 @@ class XivoCTICommand(BaseCommand):
                 self.presence_sections = {}
                 self.display_hints = {}
                 self.origapplication = {}
+                self.attended_targetchannels = {}
                 
                 # actionid (AMI) indexed hashes
                 self.getvar_requests = {}
@@ -1281,7 +1282,7 @@ class XivoCTICommand(BaseCommand):
                 src     = event.get('Source')
                 dst     = event.get('Destination')
                 clid    = event.get('CallerID')
-                clidn   = event.get('CallerIDName')
+                clidn   = event.get('CallerIDName').decode('utf8')
                 uidsrc  = event.get('SrcUniqueID')
                 uiddst  = event.get('DestUniqueID')
                 data    = event.get('Data').split('|')
@@ -1505,7 +1506,7 @@ class XivoCTICommand(BaseCommand):
                 uid = event.get('Uniqueid')
                 channel = event.get('Channel')
                 if uid in self.uniqueids[astid]:
-                        log.info('%s ami_unhold : holder:%s %s holded:%s' % (astid, channel, uid, self.uniqueids[astid][uid].get('link')))
+                        log.info('%s ami_unhold : unholder:%s %s unholded:%s' % (astid, channel, uid, self.uniqueids[astid][uid].get('link')))
                 return
         
         def ami_bridge(self, astid, event):
@@ -1515,28 +1516,59 @@ class XivoCTICommand(BaseCommand):
         def ami_masquerade(self, astid, event):
                 originalstate = event.get('OriginalState')
                 clonestate = event.get('CloneState')
+                originalchannel = event.get('Original')
+                clonechannel = event.get('Clone')
+                
                 # always implies Rename's ?
                 if originalstate == 'Ringing' and clonestate == 'Down':
                         # interception
-                        log.info('%s ami_masquerade : probably %s has catched a call for %s' % (astid, event.get('Clone'), event.get('Original')))
+                        log.info('%s ami_masquerade : probably %s has catched a call for %s'
+                                 % (astid, clonechannel, originalchannel))
+                        # elif originalstate == 'Ringing' and clonestate == 'Up':
+                        # # probably interception also ... XXX
+                        # pass
                 elif originalstate == 'Up' and clonestate == 'Up':
-                        # transfer
-                        log.info('%s ami_masquerade : probably the other channel of %s is being transferred to %s'
-                                 % (astid, event.get('Original'), event.get('Clone')))
+                        if astid in self.attended_targetchannels and originalchannel in self.attended_targetchannels[astid]:
+                                # transfer
+                                log.info('%s ami_masquerade : probably the other channel of %s is being transferred to %s (%s)'
+                                         % (astid, originalchannel, clonechannel, self.attended_targetchannels[astid][originalchannel]))
+                                del self.attended_targetchannels[astid][originalchannel]
+                        else:
+                                log.info('%s ami_masquerade : probably agent relation %s %s (Up+Up but no transfer)'
+                                         % (astid, originalchannel, clonechannel))
+                        # elif originalstate == 'Ring' and clonestate == 'Up':
+                        # # probably transfer also ... XXX
+                        # pass
+                        # elif originalstate == 'Down' and clonestate == 'Up':
+                        # # {'Original': 'Parked/SIP/104-0822f658', 'Clone': 'SIP/104-0822f658', 'OriginalState': 'Down', 'CloneState': 'Up' }
+                        # pass
+                        # elif originalstate == 'Ringing' and clonestate == 'Up':
+                        # # {'Original': 'SIP/fpotiquet-08203d00', 'Clone': 'SIP/118-081daba8', 'OriginalState': 'Ringing', 'CloneState': 'Up' }
+                        # pass
                 else:
                         log.info('%s ami_masquerade : %s' % (astid, event))
                 return
         
         def ami_transfer(self, astid, event):
+                targetchannel = event.get('TargetChannel')
+                uniqueid = event.get('Uniqueid')
+                targetuniqueid = event.get('TargetUniqueid')
                 if event.get('TransferType') == 'Blind':
                         tcontext = event.get('TransferContext')
                         texten = event.get('TransferExten') # transferred-to extension
-                        log.info('%s ami_transfer : Blind    TargetChannel=%s Exten=%s Context=%s' % (astid, event.get('TargetChannel'), texten, tcontext))
+                        log.info('%s ami_transfer : Blind    TargetChannel=%s Exten=%s Context=%s' % (astid, targetchannel, texten, tcontext))
                         # uniqueid > target uniqueid (actually, same timestamp and .idcall++)
                         # channel = intermediate's incoming
                         # target channel = caller
                 elif event.get('TransferType') == 'Attended':
-                        log.info('%s ami_transfer : Attended TargetChannel=%s' % (astid, event.get('TargetChannel')))
+                        if astid not in self.attended_targetchannels:
+                                self.attended_targetchannels[astid] = {}
+                        self.attended_targetchannels[astid][targetchannel] = event
+                        log.info('%s ami_transfer : Attended /  TargetChannel = %s' % (astid, targetchannel))
+                        if uniqueid in self.uniqueids[astid]:
+                                log.info('%s ami_transfer : Attended /       Uniqueid : %s' % (astid, self.uniqueids[astid][uniqueid]))
+                        if targetuniqueid in self.uniqueids[astid]:
+                                log.info('%s ami_transfer : Attended / TargetUniqueid : %s' % (astid, self.uniqueids[astid][targetuniqueid]))
                         # target uniqueid > uniqueid
                         # channel = intermediate's incoming
                         # target channel = intermediate's outgoing
@@ -1833,25 +1865,31 @@ class XivoCTICommand(BaseCommand):
                                 self.__sheet_alert__('hangup', astid, self.uniqueids[astid][uid]['context'], event)
                 else:
                         log.warning('%s HANGUP : uid %s has not been filled' % (astid, uid))
-
+                
                 phoneid = self.__phoneid_from_channel__(astid, chan)
                 log.info('%s HANGUP : %s %s %s %s' % (astid, uid, chan, phoneid, self.uniqueids[astid][uid]))
-                self.weblist['phones'][astid].ami_hangup(phoneid, uid)
-                tosend = self.weblist['phones'][astid].status(phoneid)
-                tosend['astid'] = astid
-                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
-                self.weblist['phones'][astid].clear(phoneid, uid)
-
+                phidlist_hup = self.weblist['phones'][astid].ami_hangup(uid)
+                for pp in phidlist_hup:
+                        tosend = self.weblist['phones'][astid].status(pp)
+                        tosend['astid'] = astid
+                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
+                phidlist_clear = self.weblist['phones'][astid].clear(uid)
+                log.info('%s HANGUP : uid=%s cleared phones = %s' % (astid, uid, phidlist_clear))
+                
                 if chan in self.chans_incomingqueue or chan in self.chans_incomingdid:
-                        print 'HANGUP : (%s) %s uid=%s %s' % (time.asctime(), astid, uid, chan)
+                        log.info('%s HANGUP (incoming queue/did) %s uid=%s %s' % (astid, time.asctime(), uid, chan))
                         if chan in self.chans_incomingqueue:
                                 self.chans_incomingqueue.remove(chan)
                         if chan in self.chans_incomingdid:
                                 self.chans_incomingdid.remove(chan)
                 if astid in self.uniqueids and uid in self.uniqueids[astid]:
                         del self.uniqueids[astid][uid]
+                else:
+                        log.warning('%s HANGUP : uniqueid %s not there (anymore?)' % (astid, uid))
                 if astid in self.channels and chan in self.channels[astid]:
                         del self.channels[astid][chan]
+                else:
+                        log.warning('%s HANGUP : channel %s not there (anymore?)' % (astid, chan))
                 return
         
         def amiresponse_success(self, astid, event, nocolon):
@@ -2071,10 +2109,11 @@ class XivoCTICommand(BaseCommand):
         def ami_newcallerid(self, astid, event):
                 # log.info('%s ami_newcallerid : %s' % (astid, event))
                 uniqueid = event.get('Uniqueid')
+                # log.info('%s ---------- %s ------------' % (astid, uniqueid))
                 # event.get('CID-CallingPres') # 0 (Presentation Allowed, Not Screened)
                 # warning : the second such event comes After the Dial
                 if astid in self.uniqueids and uniqueid in self.uniqueids[astid]:
-                        self.uniqueids[astid][uniqueid].update({'calleridname' : event.get('CallerIDName'),
+                        self.uniqueids[astid][uniqueid].update({'calleridname' : event.get('CallerIDName').decode('utf8'),
                                                                 'calleridnum'  : event.get('CallerID')})
                 return
         
@@ -2525,8 +2564,12 @@ class XivoCTICommand(BaseCommand):
                                                 td = '%s ami_queuememberstatus : (%s %s %s) %s' % (astid, status, queue, location, uinfo.get('fullname'))
                                                 log.info(td.encode('utf8'))
                 # status = 3 => ringing
+                # 2
                 # status = 1 => do not ring anymore => the one who has not gone to '1' among the '3's is the one who answered ...
+                # 4
                 # 5 is received when unavailable members of a queue are attempted to be joined ... use agentcallbacklogoff to detect exit instead
+                # 6
+                # 7
                 # + Link
                 return
         
@@ -3010,7 +3053,7 @@ class XivoCTICommand(BaseCommand):
                 # log.info('%s ami_join : %s' % (astid, event))
                 chan  = event.get('Channel')
                 clid  = event.get('CallerID')
-                clidname = event.get('CallerIDName')
+                clidname = event.get('CallerIDName').decode('utf8')
                 queue = event.get('Queue')
                 count = event.get('Count')
                 position = event.get('Position')
@@ -3089,10 +3132,13 @@ class XivoCTICommand(BaseCommand):
                 oldname = event.get('Oldname')
                 newname = event.get('Newname')
                 uid = event.get('Uniqueid')
+                
                 # when 103 intercepts the call from 101 to 102 :
                 # INFO:xivocti:AMI Rename asterisk-clg 1222936526.527 SIP/103-081fce98 SIP/103-081fce98<MASQ> (success)
                 # INFO:xivocti:AMI Rename asterisk-clg 1222936525.526 SIP/102-081d0ff8 SIP/103-081fce98 (success)
                 # INFO:xivocti:AMI Rename asterisk-clg 1222936526.527 SIP/103-081fce98<MASQ> SIP/102-081d0ff8<ZOMBIE> (success)
+                
+                oldphoneid = self.__phoneid_from_channel__(astid, oldname)
                 
                 if uid in self.uniqueids[astid] and oldname == self.uniqueids[astid][uid]['channel']:
                         self.uniqueids[astid][uid]['channel'] = newname
@@ -3101,6 +3147,16 @@ class XivoCTICommand(BaseCommand):
                         log.info('%s AMI Rename %s %s %s (success)' % (astid, uid, oldname, newname))
                 else:
                         log.info('%s AMI Rename %s %s %s (failure)' % (astid, uid, oldname, newname))
+                        
+                newphoneid = self.__phoneid_from_channel__(astid, newname)
+                self.weblist['phones'][astid].ami_rename(oldphoneid, newphoneid, oldname, newname, uid)
+                tosend = self.weblist['phones'][astid].status(oldphoneid)
+                tosend['astid'] = astid
+                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
+                if newphoneid != oldphoneid:
+                        tosend = self.weblist['phones'][astid].status(newphoneid)
+                        tosend['astid'] = astid
+                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 return
         # END of AMI events
         
@@ -3432,7 +3488,7 @@ class XivoCTICommand(BaseCommand):
                                    'payload' : { 'agents' : self.weblist['queues'][astid].keeplist[qname]['agents'],
                                                  'entries' : self.weblist['queues'][astid].keeplist[qname]['channels'] } }
                         cjsonenc = self.__cjson_encode__(tosend)
-                        log.info('%s __build_queue_status__ (%s) %d %s' % (astid, qname, len(cjsonenc), cjsonenc))
+                        log.info('%s __build_queue_status__ (%s) length=%d %s' % (astid, qname, len(cjsonenc), cjsonenc))
                         ret = cjsonenc
                 return ret
         
@@ -3466,7 +3522,7 @@ class XivoCTICommand(BaseCommand):
                 if 'agentid' in userinfo:
                         myastid = userinfo['astid']
                         myagentnum = self.__agentnum__(userinfo)
-
+                        
                 subcommand = commandargs[0]
                 if subcommand == 'leave':
                         if len(commandargs) > 1:
@@ -3593,7 +3649,7 @@ class XivoCTICommand(BaseCommand):
                                                    'agentnum' : anum,
                                                    'status' : 'stopped' }
                                         return self.__cjson_encode__(tosend)
-
+                                
                         elif subcommand == 'listen':
                                 channels = self.__find_channel_by_agentnum__(astid, anum)
                                 for channel in channels:
@@ -3633,7 +3689,7 @@ class XivoCTICommand(BaseCommand):
                                            'tdirection' : 'download',
                                            'fileid' : fileid }
                                 return self.__cjson_encode__(tosend)
-
+                        
                 elif subcommand == 'transfer':
                         astid = commandargs[1]
                         agentid = commandargs[2]
