@@ -769,7 +769,7 @@ while True: # loops over the reloads
                         
                         if 'localaddr' in xivoconf_asterisk:
                                 localaddr = xivoconf_asterisk['localaddr']
-                        for listname in ['phones', 'queues', 'groups', 'agents', 'meetme', 'voicemail', 'incomingcalls']:
+                        for listname in commandclass.weblist.keys():
                                 fieldname = 'urllist_%s' % listname
                                 if fieldname in xivoconf_asterisk:
                                         urllist[listname] = xivoconf_asterisk[fieldname].split(',')
@@ -820,12 +820,8 @@ while True: # loops over the reloads
                                                                     linkestablished,
                                                                     aoriginate)
                         
-                        commandclass.set_phonelist(astid, urllist['phones'])
-                        commandclass.set_agentlist(astid, urllist['agents'])
-                        commandclass.set_queuelist(astid, urllist['queues'])
-                        commandclass.set_grouplist(astid, urllist['groups'])
-                        commandclass.set_meetmelist(astid, urllist['meetme'])
-                        commandclass.set_voicemaillist(astid, urllist['voicemail'])
+                        for ilist in commandclass.weblist.keys():
+                                commandclass.set_urllist(astid, ilist, urllist[ilist])
                         commandclass.read_queuelog(astid, url_queuelog)
                         
                         if ipaddress not in ip_reverse_sht:
@@ -839,7 +835,7 @@ while True: # loops over the reloads
                                 log.warning('WARNING - IP address (WEBI) already exists for asterisk <%s> - can not set it for <%s>'
                                           % (ip_reverse_webi[ipaddress_webi], astid))
                         save_for_next_packet_events[astid] = ''
-
+                        
         outsock = commandclass.extrasock(extraconn)
 
         fdlist_full = []

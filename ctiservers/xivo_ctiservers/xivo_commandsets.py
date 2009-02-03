@@ -48,6 +48,7 @@ class BaseCommand:
         
         def __init__(self):
                 self.transfers_ref = {}
+                self.weblist = {}
                 return
         
         def handle_outsock(self, astid, msg):
@@ -108,17 +109,7 @@ class BaseCommand:
         def set_configs(self, configs):
                 return
         
-        def set_phonelist(self, astid, urllist):
-                return
-        def set_agentlist(self, astid, urllist):
-                return
-        def set_queuelist(self, astid, urllist):
-                return
-        def set_grouplist(self, astid, urllist):
-                return
-        def set_meetmelist(self, astid, urllist):
-                return
-        def set_voicemaillist(self, astid, urllist):
+        def set_urllist(self, astid, listname, urllist):
                 return
         
         def set_userlist_urls(self, urls):

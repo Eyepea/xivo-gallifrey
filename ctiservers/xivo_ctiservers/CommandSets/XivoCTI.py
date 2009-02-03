@@ -47,12 +47,16 @@ from xivo_ctiservers import cti_fax
 from xivo_ctiservers import cti_presence
 from xivo_ctiservers import cti_userlist
 from xivo_ctiservers import cti_urllist
+
 from xivo_ctiservers import cti_agentlist
 from xivo_ctiservers import cti_queuelist
 from xivo_ctiservers import cti_grouplist
 from xivo_ctiservers import cti_phonelist
 from xivo_ctiservers import cti_meetmelist
 from xivo_ctiservers import cti_voicemaillist
+from xivo_ctiservers import cti_incomingcalllist
+from xivo_ctiservers import cti_trunklist
+
 from xivo_ctiservers import xivo_commandsets
 from xivo_ctiservers import xivo_ldap
 from xivo_ctiservers.xivo_commandsets import BaseCommand
@@ -118,7 +122,18 @@ class XivoCTICommand(BaseCommand):
                                  'groups' : {},
                                  'phones' : {},
                                  'meetme' : {},
+                                 'incomingcalls' : {},
+                                 'trunks' : {},
                                  'voicemail' : {} }
+                self.weblistprops = {'agents' : {'classfile' : cti_agentlist, 'classname' : 'AgentList'},
+                                     'queues' : {'classfile' : cti_queuelist, 'classname' : 'QueueList'},
+                                     'groups' : {'classfile' : cti_grouplist, 'classname' : 'GroupList'},
+                                     'phones' : {'classfile' : cti_phonelist, 'classname' : 'PhoneList'},
+                                     'meetme' : {'classfile' : cti_meetmelist, 'classname' : 'MeetmeList'},
+                                     'incomingcalls' : {'classfile' : cti_incomingcalllist, 'classname' : 'IncomingCallList'},
+                                     'trunks' : {'classfile' : cti_trunklist, 'classname' : 'TrunkList'},
+                                     'voicemail' : {'classfile' : cti_voicemaillist, 'classname' : 'VoiceMailList'}
+                                     }
                 # self.plist_ng = cti_phonelist.PhoneList()
                 # self.plist_ng.setcommandclass(self)
                 self.uniqueids = {}
@@ -597,43 +612,25 @@ class XivoCTICommand(BaseCommand):
                 self.configs = configs
                 return
         
-        def set_phonelist(self, astid, urllist_phones):
-                if astid not in self.uniqueids:
-                        self.uniqueids[astid] = {}
-                if astid not in self.channels:
-                        self.channels[astid] = {}
-                if astid not in self.parkedcalls:
-                        self.parkedcalls[astid] = {}
-                if astid not in self.ignore_dtmf:
-                        self.ignore_dtmf[astid] = {}
-                self.weblist['phones'][astid] = cti_phonelist.PhoneList(urllist_phones)
-                self.weblist['phones'][astid].setcommandclass(self)
-                self.weblist['phones'][astid].setdisplayhints(self.display_hints)
-                return
-        
-        def set_agentlist(self, astid, urllist_agents):
-                self.weblist['agents'][astid] = cti_agentlist.AgentList(urllist_agents)
-                self.weblist['agents'][astid].setcommandclass(self)
-                return
-        
-        def set_queuelist(self, astid, urllist_queues):
-                self.weblist['queues'][astid] = cti_queuelist.QueueList(urllist_queues)
-                self.weblist['queues'][astid].setcommandclass(self)
-                return
-        
-        def set_grouplist(self, astid, urllist_groups):
-                self.weblist['groups'][astid] = cti_grouplist.GroupList(urllist_groups)
-                self.weblist['groups'][astid].setcommandclass(self)
-                return
-        
-        def set_meetmelist(self, astid, urllist_meetme):
-                self.weblist['meetme'][astid] = cti_meetmelist.MeetmeList(urllist_meetme)
-                self.weblist['meetme'][astid].setcommandclass(self)
-                return
-        
-        def set_voicemaillist(self, astid, urllist_voicemail):
-                self.weblist['voicemail'][astid] = cti_voicemaillist.VoiceMailList(urllist_voicemail)
-                self.weblist['voicemail'][astid].setcommandclass(self)
+        def set_urllist(self, astid, listname, urllist):
+                if listname == 'phones':
+                        # XXX
+                        if astid not in self.uniqueids:
+                                self.uniqueids[astid] = {}
+                        if astid not in self.channels:
+                                self.channels[astid] = {}
+                        if astid not in self.parkedcalls:
+                                self.parkedcalls[astid] = {}
+                        if astid not in self.ignore_dtmf:
+                                self.ignore_dtmf[astid] = {}
+                if listname in self.weblistprops:
+                        cf = self.weblistprops[listname]['classfile']
+                        cn = self.weblistprops[listname]['classname']
+                        self.weblist[listname][astid] = getattr(cf, cn)(urllist)
+                        self.weblist[listname][astid].setcommandclass(self)
+                if listname == 'phones':
+                        # XXX
+                        self.weblist['phones'][astid].setdisplayhints(self.display_hints)
                 return
         
         def set_contextlist(self, ctxlist):
@@ -650,7 +647,7 @@ class XivoCTICommand(BaseCommand):
                 u_update = self.ulist_ng.update()
                 # self.plist_ng.update()
                 for astid, plist in self.weblist['phones'].iteritems():
-                        for itemname in ['agents', 'queues', 'groups', 'phones', 'meetme', 'voicemail']:
+                        for itemname in self.weblist.keys():
                                 try:
                                         updatestatus = self.weblist[itemname][astid].update()
                                         for function in ['del', 'add']:
@@ -679,7 +676,19 @@ class XivoCTICommand(BaseCommand):
         def set_userlist_urls(self, urls):
                 self.ulist_ng.setandupdate(urls)
                 return
-
+        
+        def getincomingcalllist(self, iclist):
+                return {}
+        
+        def gettrunklist(self, tlist):
+                for titem in tlist:
+                        try:
+                                if not titem.get('commented'):
+                                        print titem
+                        except Exception:
+                                log.exception('(gettrunklist) : %s' % titem)
+                return {}
+        
         def getagentslist(self, alist):
                 lalist = {}
                 for aitem in alist:
@@ -700,7 +709,7 @@ class XivoCTICommand(BaseCommand):
                         except Exception:
                                 log.exception('(getagentslist) : %s' % aitem)
                 return lalist
-
+        
         def getphoneslist(self, plist):
                 lplist = {}
                 for pitem in plist:
@@ -1857,7 +1866,9 @@ class XivoCTICommand(BaseCommand):
                 # 16 - Normal Clearing
                 # 17 - User busy (see Orig #5)
                 # 18 - No user responding (see Orig #1)
-                # 19 - User alerting, no answer (see Orig #8)
+                # 19 - User alerting, no answer (see Orig #8, Orig #3, Orig #1 (soft hup))
+                # 21 - Call rejected (attempting *8 when noone to pickup)
+                # 27 - Destination out of order
                 # 34 - Circuit/channel congestion
                 
                 if uid in self.ignore_dtmf[astid]:
@@ -2097,6 +2108,7 @@ class XivoCTICommand(BaseCommand):
                 log.info('%s ami_originateresponse : %s' % (astid, event))
                 uniqueid = event.get('Uniqueid')
                 actionid = event.get('ActionID')
+                # 'Exten', 'Context', 'Channel', 'CallerID', 'CallerIDNum', 'CallerIDName'
                 if uniqueid in self.uniqueids[astid]:
                         self.uniqueids[astid][uniqueid].update({'time-originateresponse' : time.time(),
                                                                 'actionid' : actionid})
@@ -2106,12 +2118,12 @@ class XivoCTICommand(BaseCommand):
                 # Response = Success <=> Reason = '4'
                 # Response = Failure <=>
                 # Response =             Reason = '0' : (unable to request channel, phone might be unreachable)
-                # Response =             Reason = '1' : (phone 'reachable' according to asterisk, but actually not reachable <-> Hangup #18)
+                # Response =             Reason = '1' : (phone 'reachable' according to asterisk, but actually not reachable <-> Hangup #18
+                #                                        soft hangup <-> Hangup #19)
                 # Response =             Reason = '3' : timeout (phone did not answer)
                 # Response =             Reason = '5' : busy (when xferring the originated phone, or all lines used (Hangup #17))
                 # Response =             Reason = '8' : congestion (call rejected <-> Hangup #19)
-                # for '5' and '8' reasons, Uniqueid might not be undefined ('<null>') ... (see aoriginate vs. originate)
-                # {'CallerID': '6101', 'Exten': '6101', 'CallerIDNum': '6101', ', 'Context': 'ctx-xx-agentlogin', 'CallerIDName': 'operateur', 'Channel': 'SIP/102-081f6730'}
+                # for '5' and '8' reasons, Uniqueid might not be undefined ('<null>') ... (see aoriginate vs. originate, src channel Agent/ vs. SIP/)
                 return
         
         def ami_messagewaiting(self, astid, event):
