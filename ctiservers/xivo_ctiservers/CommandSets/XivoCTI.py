@@ -1859,7 +1859,7 @@ class XivoCTICommand(BaseCommand):
                                                            'time-hangup' : time.time()})
                         # for v, vv in self.uniqueids[astid][uid].iteritems():
                         # print astid, uid, v, vv
-
+                        
                 if uid in self.uniqueids[astid]:
                         if 'context' in self.uniqueids[astid][uid]:
                                 self.__sheet_alert__('hangup', astid, self.uniqueids[astid][uid]['context'], event)
@@ -1867,14 +1867,14 @@ class XivoCTICommand(BaseCommand):
                         log.warning('%s HANGUP : uid %s has not been filled' % (astid, uid))
                 
                 phoneid = self.__phoneid_from_channel__(astid, chan)
-                log.info('%s HANGUP : %s %s %s %s' % (astid, uid, chan, phoneid, self.uniqueids[astid][uid]))
+                log.info('%s HANGUP (%s %s) %s %s' % (astid, uid, chan, phoneid, self.uniqueids[astid][uid]))
                 phidlist_hup = self.weblist['phones'][astid].ami_hangup(uid)
                 for pp in phidlist_hup:
                         tosend = self.weblist['phones'][astid].status(pp)
                         tosend['astid'] = astid
                         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 phidlist_clear = self.weblist['phones'][astid].clear(uid)
-                log.info('%s HANGUP : uid=%s cleared phones = %s' % (astid, uid, phidlist_clear))
+                log.info('%s HANGUP (%s %s) cleared phones = %s' % (astid, uid, chan, phidlist_clear))
                 
                 if chan in self.chans_incomingqueue or chan in self.chans_incomingdid:
                         log.info('%s HANGUP (incoming queue/did) %s uid=%s %s' % (astid, time.asctime(), uid, chan))
@@ -1882,6 +1882,7 @@ class XivoCTICommand(BaseCommand):
                                 self.chans_incomingqueue.remove(chan)
                         if chan in self.chans_incomingdid:
                                 self.chans_incomingdid.remove(chan)
+                
                 if astid in self.uniqueids and uid in self.uniqueids[astid]:
                         del self.uniqueids[astid][uid]
                 else:
