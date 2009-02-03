@@ -1096,8 +1096,8 @@ class XivoCTICommand(BaseCommand):
                                 clid = event.get('XIVO_SRCNUM')
                                 did  = event.get('XIVO_EXTENPATTERN')
                                 
-                                print 'ALERT %s %s (%s) uid=%s %s %s did=%s' % (astid, where, time.asctime(),
-                                                                                uid, clid, chan, did)
+                                log.info('%s __SHEET_ALERT__ %s (%s) uid=%s callerid=%s %s did=%s'
+                                         % (astid, where, time.asctime(), uid, clid, chan, did))
                                 self.chans_incomingdid.append(chan)
                                 
                                 itemdir['xivo-channel'] = chan
@@ -1107,9 +1107,9 @@ class XivoCTICommand(BaseCommand):
                                 if len(clid) > 7 and clid != '<unknown>':
                                         itemdir['xivo-tomatch-callerid'] = clid
                                 linestosend.append('<internal name="uniqueid"><![CDATA[%s]]></internal>' % uid)
-
+                                
                                 # userinfos.append() : users matching the SDA ?
-
+                                
                                 # interception :
                                 # self.__ami_execute__(astid, 'transfer', chan, shortphonenum, 'default')
                                 
@@ -1851,7 +1851,15 @@ class XivoCTICommand(BaseCommand):
         def ami_hangup(self, astid, event):
                 chan  = event.get('Channel')
                 uid = event.get('Uniqueid')
-                cause = event.get('Cause-txt')
+                cause = event.get('Cause')
+                causetxt = event.get('Cause-txt')
+                #  0 - Unknown
+                # 16 - Normal Clearing
+                # 17 - User busy (see Orig #5)
+                # 18 - No user responding (see Orig #1)
+                # 19 - User alerting, no answer (see Orig #8)
+                # 34 - Circuit/channel congestion
+                
                 if uid in self.ignore_dtmf[astid]:
                         del self.ignore_dtmf[astid][uid]
                 if uid in self.uniqueids[astid] and chan == self.uniqueids[astid][uid]['channel']:
@@ -1867,7 +1875,7 @@ class XivoCTICommand(BaseCommand):
                         log.warning('%s HANGUP : uid %s has not been filled' % (astid, uid))
                 
                 phoneid = self.__phoneid_from_channel__(astid, chan)
-                log.info('%s HANGUP (%s %s) %s %s' % (astid, uid, chan, phoneid, self.uniqueids[astid][uid]))
+                log.info('%s HANGUP (%s %s cause=<%s>) %s %s' % (astid, uid, chan, causetxt, phoneid, self.uniqueids[astid][uid]))
                 phidlist_hup = self.weblist['phones'][astid].ami_hangup(uid)
                 for pp in phidlist_hup:
                         tosend = self.weblist['phones'][astid].status(pp)
@@ -1930,6 +1938,7 @@ class XivoCTICommand(BaseCommand):
                              'Channel Hungup',
                              'Park successful',
                              'Meetme user list will follow',
+                             'AOriginate successfully queued',
                              'Originate successfully queued',
                              'Redirect successful',
                              'Started monitoring channel',
@@ -2070,10 +2079,16 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def ami_aoriginatesuccess(self, astid, event):
+                event['Response'] = 'Success'
+                self.ami_originateresponse(astid, event)
                 return
-        def ami_originatesuccess(self, astid, event):
-                return
+        
         def ami_aoriginatefailure(self, astid, event):
+                event['Response'] = 'Failure'
+                self.ami_originateresponse(astid, event)
+                return
+        
+        def ami_originatesuccess(self, astid, event):
                 return
         def ami_originatefailure(self, astid, event):
                 return
@@ -2088,7 +2103,15 @@ class XivoCTICommand(BaseCommand):
                         if actionid in self.origapplication:
                                 self.uniqueids[astid][uniqueid].update(self.origapplication[actionid])
                                 del self.origapplication[actionid]
-                # {'Uniqueid': '1213955764.88', 'CallerID': '6101', 'Exten': '6101', 'CallerIDNum': '6101', 'Response': 'Success', 'Reason': '4', 'Context': 'ctx-xx-agentlogin', 'CallerIDName': 'operateur', 'Privilege': 'call,all', 'Event': 'OriginateResponse', 'Channel': 'SIP/102-081f6730'}
+                # Response = Success <=> Reason = '4'
+                # Response = Failure <=>
+                # Response =             Reason = '0' : (unable to request channel, phone might be unreachable)
+                # Response =             Reason = '1' : (phone 'reachable' according to asterisk, but actually not reachable <-> Hangup #18)
+                # Response =             Reason = '3' : timeout (phone did not answer)
+                # Response =             Reason = '5' : busy (when xferring the originated phone, or all lines used (Hangup #17))
+                # Response =             Reason = '8' : congestion (call rejected <-> Hangup #19)
+                # for '5' and '8' reasons, Uniqueid might not be undefined ('<null>') ... (see aoriginate vs. originate)
+                # {'CallerID': '6101', 'Exten': '6101', 'CallerIDNum': '6101', ', 'Context': 'ctx-xx-agentlogin', 'CallerIDName': 'operateur', 'Channel': 'SIP/102-081f6730'}
                 return
         
         def ami_messagewaiting(self, astid, event):
@@ -2128,7 +2151,9 @@ class XivoCTICommand(BaseCommand):
                                 self.uniqueids[astid][uniqueid]['time-newexten-dial'] = time.time()
                         elif application == 'Macro':
                                 log.info('%s ami_newexten Macro : %s %s %s %s' % (astid, uniqueid,
-                                                                              event.get('Context'), event.get('AppData'), event.get('Extension')))
+                                                                                  event.get('Context'),
+                                                                                  event.get('AppData'),
+                                                                                  event.get('Extension')))
                         elif application == 'Park':
                                 log.info('%s ami_newexten Park : %s %s %s' % (astid, uniqueid, event.get('Context'), event.get('Extension')))
                                 self.uniqueids[astid][uniqueid]['parkexten'] = event.get('Extension')
@@ -3134,11 +3159,6 @@ class XivoCTICommand(BaseCommand):
                 newname = event.get('Newname')
                 uid = event.get('Uniqueid')
                 
-                # when 103 intercepts the call from 101 to 102 :
-                # INFO:xivocti:AMI Rename asterisk-clg 1222936526.527 SIP/103-081fce98 SIP/103-081fce98<MASQ> (success)
-                # INFO:xivocti:AMI Rename asterisk-clg 1222936525.526 SIP/102-081d0ff8 SIP/103-081fce98 (success)
-                # INFO:xivocti:AMI Rename asterisk-clg 1222936526.527 SIP/103-081fce98<MASQ> SIP/102-081d0ff8<ZOMBIE> (success)
-                
                 oldphoneid = self.__phoneid_from_channel__(astid, oldname)
                 
                 if uid in self.uniqueids[astid] and oldname == self.uniqueids[astid][uid]['channel']:
@@ -3992,7 +4012,7 @@ class XivoCTICommand(BaseCommand):
                                                                    {'XIVO_USERID' : userinfo.get('xivo_userid')})
                         except Exception:
                                 log.exception('unable to originate')
-
+                                
                 elif commname in ['transfer', 'atxfer']:
                         [typesrc, whosrc] = srcsplit
                         [typedst, whodst] = dstsplit

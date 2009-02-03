@@ -104,7 +104,6 @@ class PhoneList(AnyList):
                 if oldphoneid != newphoneid:
                         if uid in self.keeplist[oldphoneid]['comms'] and uid not in self.keeplist[newphoneid]['comms']:
                                 self.keeplist[newphoneid]['comms'][uid] = self.keeplist[oldphoneid]['comms'][uid]
-                                # self.keeplist[oldphoneid]['comms'][uid]['status'] = 'hangup'
                                 del self.keeplist[oldphoneid]['comms'][uid]
                                 log.info('%s moved from %s to %s' % (uid, oldphoneid, newphoneid))
                 return

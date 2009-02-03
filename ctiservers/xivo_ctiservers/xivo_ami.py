@@ -241,9 +241,9 @@ class AMIClass:
                                 self.sendcommand('Hangup',
                                                  [('Channel', channel_peer)])
                                 ret += 2
-                        except self.AMIError, exc:
+                        except self.AMIError:
                                 pass
-                        except Exception, exc:
+                        except Exception:
                                 pass
                 return ret
 
@@ -257,9 +257,9 @@ class AMIClass:
                                 ret = self.sendcommand('Setvar', [('Channel', chan),
                                                                   ('Variable', var),
                                                                   ('Value', val)])
-                except self.AMIError, exc:
+                except self.AMIError:
                         ret = False
-                except Exception, exc:
+                except Exception:
                         ret = False
                 return ret
         
@@ -269,9 +269,9 @@ class AMIClass:
                         ret = self.sendcommand('Park', [('Channel', channel),
                                                         ('Channel2', channel_timeout)])
                         return ret
-                except self.AMIError, exc:
+                except self.AMIError:
                         ret = False
-                except Exception, exc:
+                except Exception:
                         ret = False
                 return ret
         
@@ -286,9 +286,9 @@ class AMIClass:
                                                              ('Variable', 'XIVO_ORIGAPPLI=%s' % application),
                                                              ('Async', 'true')])
                         return ret
-                except self.AMIError, exc:
+                except self.AMIError:
                         return False
-                except Exception, exc:
+                except Exception:
                         return False
 
         # \brief Originates a call from a phone towards another.
@@ -314,13 +314,13 @@ class AMIClass:
                                 command_details.append(('Variable', '%s=%s'  % (var, val)))
                         ret = self.sendcommand('Originate', command_details)
                         return ret
-                except self.AMIError, exc:
+                except self.AMIError:
                         return False
-                except Exception, exc:
+                except Exception:
                         return False
                 
         # \brief Originates a call from a phone towards another.
-        def aoriginate(self, phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext):
+        def aoriginate(self, phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext, extravars = {}):
                 # originate a call btw src and dst
                 # src will ring first, and dst will ring when src responds
                 ph = re.sub(__dialallowed__, '', phonedst)
@@ -338,11 +338,13 @@ class AMIClass:
                                            ('Variable', 'XIVO_ORIGACTIONID=%s' % self.actionid),
                                            ('Variable', 'XIVO_ORIGAPPLI=%s' % 'OrigDial'),
                                            ('Async', 'true')]
+                        for var, val in extravars.iteritems():
+                                command_details.append(('Variable', '%s=%s'  % (var, val)))
                         ret = self.sendcommand(self.aorgcmd, command_details)
                         return ret
-                except self.AMIError, exc:
+                except self.AMIError:
                         return False
-                except Exception, exc:
+                except Exception:
                         return False
                 
         # \brief Originates a call from a phone towards another.
@@ -370,9 +372,9 @@ class AMIClass:
                                 command_details.append(('Variable', '%s=%s'  % (var, val)))
                         ret = self.sendcommand(self.aorgcmd, command_details)
                         return ret
-                except self.AMIError, exc:
+                except self.AMIError:
                         return False
-                except Exception, exc:
+                except Exception:
                         return False
 
         # \brief Requests the Extension Statuses
@@ -381,9 +383,9 @@ class AMIClass:
                         ret = self.sendcommand('ExtensionState', [('Exten', extension),
                                                                   ('Context', context)])
                         return ret
-                except self.AMIError, exc:
+                except self.AMIError:
                         return False
-                except Exception, exc:
+                except Exception:
                         return False
 
         # \brief Logs in an Agent
@@ -394,9 +396,9 @@ class AMIClass:
                                                                       ('Exten', extension),
                                                                       ('AckCall' , ackcall)])
                         return ret
-                except self.AMIError, exc:
+                except self.AMIError:
                         return False
-                except Exception, exc:
+                except Exception:
                         return False
 
         # \brief Logs off an Agent
@@ -404,9 +406,9 @@ class AMIClass:
                 try:
                         ret = self.sendcommand('AgentLogoff', [('Agent', agentnum)])
                         return ret
-                except self.AMIError, exc:
+                except self.AMIError:
                         return False
-                except Exception, exc:
+                except Exception:
                         return False
 
         # \brief Adds a Queue
@@ -417,9 +419,9 @@ class AMIClass:
                                                             ('Penalty', '1'),
                                                             ('Paused', paused)])
                         return ret
-                except self.AMIError, exc:
+                except self.AMIError:
                         return False
-                except Exception, exc:
+                except Exception:
                         return False
 
         # \brief Removes a Queue
@@ -428,9 +430,9 @@ class AMIClass:
                         ret = self.sendcommand('QueueRemove', [('Queue', queuename),
                                                                ('Interface', interface)])
                         return ret
-                except self.AMIError, exc:
+                except self.AMIError:
                         return False
-                except Exception, exc:
+                except Exception:
                         return False
 
         # \brief (Un)Pauses a Queue
@@ -439,9 +441,9 @@ class AMIClass:
                         ret = self.sendcommand('QueuePause', [('Queue', queuename),
                                                               ('Interface', interface),
                                                               ('Paused', paused)])
-                except self.AMIError, exc:
+                except self.AMIError:
                         ret = False
-                except Exception, exc:
+                except Exception:
                         ret = False
                 return ret
 
@@ -451,9 +453,9 @@ class AMIClass:
                         ret1 = self.sendcommand('MailboxCount', [('Mailbox', '%s@%s' % (phone, context))])
                         ret2 = self.sendcommand('MailboxStatus', [('Mailbox', '%s@%s' % (phone, context))])
                         ret = ret1 and ret2
-                except self.AMIError, exc:
+                except self.AMIError:
                         ret = False
-                except Exception, exc:
+                except Exception:
                         ret = False
                 return ret
 
@@ -464,9 +466,9 @@ class AMIClass:
                                                [('Channel', channel),
                                                 ('File', filename),
                                                 ('Mix', 'true')])
-                except self.AMIError, exc:
+                except self.AMIError:
                         ret = False
-                except Exception, exc:
+                except Exception:
                         ret = False
                 return ret
         
@@ -475,9 +477,9 @@ class AMIClass:
                 try:
                         ret = self.sendcommand('StopMonitor',
                                                [('Channel', channel)])
-                except self.AMIError, exc:
+                except self.AMIError:
                         ret = False
-                except Exception, exc:
+                except Exception:
                         ret = False
                 return ret
 
@@ -486,9 +488,9 @@ class AMIClass:
                 try:
                         ret = self.sendcommand('Getvar', [('Channel', channel),
                                                           ('Variable', varname)])
-                except self.AMIError, exc:
+                except self.AMIError:
                         ret = False
-                except Exception, exc:
+                except Exception:
                         ret = False
                 return ret
 
@@ -504,9 +506,9 @@ class AMIClass:
                                            ('Priority', '1')]
                         ret = self.sendcommand('Redirect', command_details)
                         return ret
-                except self.AMIError, exc:
+                except self.AMIError:
                         return False
-                except Exception, exc:
+                except Exception:
                         return False
 
         # \brief Atxfer a channel towards a new extension.
@@ -520,9 +522,9 @@ class AMIClass:
                                                           ('Context', context),
                                                           ('Priority', '1')])
                         return ret
-                except self.AMIError, exc:
+                except self.AMIError:
                         return False
-                except Exception, exc:
+                except Exception:
                         return False
 
         def txfax(self, faxdir, faxid, userid, callerid, number, context, reference):
@@ -539,13 +541,13 @@ class AMIClass:
                                                              ('ActionID', reference),
                                                              ('Priority', '1')])
                         return ret
-                except self.AMIError, exc:
+                except self.AMIError:
                         return False
-                except socket.timeout, exc:
+                except socket.timeout:
                         return False
-                except socket, exc:
+                except socket:
                         return False
-                except Exception, exc:
+                except Exception:
                         return False
 
 class AMIList:
