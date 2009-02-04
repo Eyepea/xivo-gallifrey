@@ -275,44 +275,15 @@ def manage_info_connections(connid, msg, sep):
                                                 connid.sendall('%s %s\n' % (user.encode('latin1'), info))
                                         except Exception:
                                                 log.exception('INFO %s' % usefulmsg)
-                        elif usefulmsg == 'show_agents':
-                                for astid, agents in commandclass.agents().iteritems():
+                        elif usefulmsg in ['show_phones', 'show_trunks',
+                                           'show_queues', 'show_groups', 'show_agents',
+                                           'show_meetme', 'show_voicemail']:
+                                itemname = usefulmsg[5:]
+                                for astid, itm in commandclass.getdetails(itemname).iteritems():
                                         try:
-                                                connid.sendall('agents for %s\n' % astid)
-                                                for ag, agp in agents.keeplist.iteritems():
-                                                        connid.sendall('%s %s\n' % (ag, agp))
-                                        except Exception:
-                                                log.exception('INFO %s' % usefulmsg)
-                        elif usefulmsg == 'show_queues':
-                                for astid, queues in commandclass.queues().iteritems():
-                                        try:
-                                                connid.sendall('queues for %s\n' % astid)
-                                                for ag, agp in queues.keeplist.iteritems():
-                                                        connid.sendall('%s %s\n' % (ag, agp))
-                                        except Exception:
-                                                log.exception('INFO %s' % usefulmsg)
-                        elif usefulmsg == 'show_groups':
-                                for astid, groups in commandclass.groups().iteritems():
-                                        try:
-                                                connid.sendall('groups for %s\n' % astid)
-                                                for ag, agp in groups.keeplist.iteritems():
-                                                        connid.sendall('%s %s\n' % (ag, agp))
-                                        except Exception:
-                                                log.exception('INFO %s' % usefulmsg)
-                        elif usefulmsg == 'show_meetme':
-                                for astid, meetme in commandclass.meetme().iteritems():
-                                        try:
-                                                connid.sendall('meetme for %s\n' % astid)
-                                                for ag, agp in meetme.keeplist.iteritems():
-                                                        connid.sendall('%s %s\n' % (ag, agp))
-                                        except Exception:
-                                                log.exception('INFO %s' % usefulmsg)
-                        elif usefulmsg == 'show_phones':
-                                for astid, phones in commandclass.phones().iteritems():
-                                        try:
-                                                connid.sendall('phones for %s\n' % astid)
-                                                for ag, agp in phones.keeplist.iteritems():
-                                                        connid.sendall('%s %s\n' % (ag, agp))
+                                                connid.sendall('%s for %s\n' % (itemname, astid))
+                                                for id, idv in itm.keeplist.iteritems():
+                                                        connid.sendall('%s %s\n' % (id, idv))
                                         except Exception:
                                                 log.exception('INFO %s' % usefulmsg)
                         elif usefulmsg == 'show_uniqueids':

@@ -31,6 +31,7 @@ log = logging.getLogger('incomingcalllist')
 class IncomingCallList(AnyList):
         def __init__(self, newurls = []):
                 self.anylist_properties = {'keywords' : ['exten', 'context', 'action',
+                                                         'destidentity',
                                                          'userfirstname', 'userlastname',
                                                          'usernumber', 'usercontext', 'username'],
                                            'name' : 'incomingcall',

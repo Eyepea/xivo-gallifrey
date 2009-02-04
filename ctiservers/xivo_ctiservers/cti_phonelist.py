@@ -101,7 +101,7 @@ class PhoneList(AnyList):
                                         kk['thischannel'] = newname
                                 if kk['peerchannel'] == oldname:
                                         kk['peerchannel'] = newname
-                if oldphoneid != newphoneid:
+                if oldphoneid and newphoneid and oldphoneid != newphoneid:
                         if uid in self.keeplist[oldphoneid]['comms'] and uid not in self.keeplist[newphoneid]['comms']:
                                 self.keeplist[newphoneid]['comms'][uid] = self.keeplist[oldphoneid]['comms'][uid]
                                 del self.keeplist[oldphoneid]['comms'][uid]

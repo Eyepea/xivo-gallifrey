@@ -78,25 +78,17 @@ class BaseCommand:
         def version(self):
                 return 'NOVERSION'
         userfields = []
-        def getuserslist(self):
-                return
         def users(self):
                 return {}
-        def agents(self):
-                return {}
-        def queues(self):
-                return {}
-        def groups(self):
-                return {}
-        def phones(self):
-                return {}
-        def meetme(self):
+        def getdetails(self, itemname):
                 return {}
         def uniqueids(self):
                 return {}
-        
         def connected_users(self):
                 return {}
+        
+        def getuserslist(self):
+                return
         def getqueueslist(self, qlist):
                 return {}
         def getgroupslist(self, qlist):
