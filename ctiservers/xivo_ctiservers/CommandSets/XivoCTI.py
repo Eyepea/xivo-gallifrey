@@ -1287,8 +1287,7 @@ class XivoCTICommand(BaseCommand):
                 if tech is not None and trunkid is not None:
                         for tref, tv in self.weblist['trunks'][astid].keeplist.iteritems():
                                 if tv['tech'] == tech and tv['name'] == trunkid:
-                                        log.info('%s trunk : %s => %s %s => %s %s'
-                                                 % (astid, channel, tech, trunkid, tref, tv))
+                                        # log.info('%s trunk : %s => %s %s => %s %s' % (astid, channel, tech, trunkid, tref, tv))
                                         ret = tref
                 return ret
         
@@ -1684,10 +1683,16 @@ class XivoCTICommand(BaseCommand):
                 uinfo1_ag = self.__userinfo_from_agentphonenum__(astid, phoneid1)
                 uinfo2_ag = self.__userinfo_from_agentphonenum__(astid, phoneid2)
                 
+                duinfo1 = None
+                duinfo2 = None
+                if uinfo1:
+                        duinfo1 = '%s/%s' % (uinfo1.get('astid'), uinfo1.get('xivo_userid'))
+                if uinfo2:
+                        duinfo2 = '%s/%s' % (uinfo2.get('astid'), uinfo2.get('xivo_userid'))
                 log.info('%s LINK %s %s callerid=%s (phone trunk)=(%s %s) user=%s'
-                         % (astid, uid1, chan1, clid1, phoneid1, trunkid1, uinfo1))
+                         % (astid, uid1, chan1, clid1, phoneid1, trunkid1, duinfo1))
                 log.info('%s LINK %s %s callerid=%s (phone trunk)=(%s %s) user=%s'
-                         % (astid, uid2, chan2, clid2, phoneid2, trunkid2, uinfo2))
+                         % (astid, uid2, chan2, clid2, phoneid2, trunkid2, duinfo2))
                 
                 # update the phones statuses
                 self.weblist['phones'][astid].ami_link(phoneid1, phoneid2,
@@ -1789,10 +1794,16 @@ class XivoCTICommand(BaseCommand):
                 uinfo1_ag = self.__userinfo_from_agentphonenum__(astid, phoneid1)
                 uinfo2_ag = self.__userinfo_from_agentphonenum__(astid, phoneid2)
                 
+                duinfo1 = None
+                duinfo2 = None
+                if uinfo1:
+                        duinfo1 = '%s/%s' % (uinfo1.get('astid'), uinfo1.get('xivo_userid'))
+                if uinfo2:
+                        duinfo2 = '%s/%s' % (uinfo2.get('astid'), uinfo2.get('xivo_userid'))
                 log.info('%s UNLINK %s %s callerid=%s (phone trunk)=(%s %s) user=%s'
-                         % (astid, uid1, chan1, clid1, phoneid1, trunkid1, uinfo1))
+                         % (astid, uid1, chan1, clid1, phoneid1, trunkid1, duinfo1))
                 log.info('%s UNLINK %s %s callerid=%s (phone trunk)=(%s %s) user=%s'
-                         % (astid, uid2, chan2, clid2, phoneid2, trunkid2, uinfo2))
+                         % (astid, uid2, chan2, clid2, phoneid2, trunkid2, duinfo2))
                 
                 # update the phones statuses
                 self.weblist['phones'][astid].ami_unlink(phoneid1, phoneid2,
@@ -1960,7 +1971,7 @@ class XivoCTICommand(BaseCommand):
                 phoneid = self.__phoneid_from_channel__(astid, chan)
                 trunkid = self.__trunkid_from_channel__(astid, chan)
                 
-                log.info('%s HANGUP (%s %s cause=<%s>) (phone, trunk)=(%s %s) %s'
+                log.info('%s HANGUP (%s %s cause=<%s>) (phone trunk)=(%s %s) %s'
                          % (astid, uid, chan, causetxt, phoneid, trunkid, self.uniqueids[astid][uid]))
                 
                 phidlist_hup = self.weblist['phones'][astid].ami_hangup(uid)
@@ -2050,7 +2061,7 @@ class XivoCTICommand(BaseCommand):
                 else:
                         log.warning('%s AMI Response=Success : untracked message (%s) <%s>' % (astid, actionid, msg))
                 return
-
+        
         def amiresponse_error(self, astid, event, nocolon):
                 msg = event.get('Message')
                 actionid = event.get('ActionID')
@@ -2090,7 +2101,7 @@ class XivoCTICommand(BaseCommand):
                         else:
                                 log.warning('%s AMI Response=Error : (unknown message) %s' % (astid, event))
                 return
-
+        
         def amiresponse_mailboxcount(self, astid, event):
                 mailbox = event.get('Mailbox')
                 voicemailid = self.weblist['voicemail'][astid].reverse_index.get(mailbox)
@@ -2100,7 +2111,7 @@ class XivoCTICommand(BaseCommand):
                                         userinfo['mwi'][1] = event.get('OldMessages')
                                         userinfo['mwi'][2] = event.get('NewMessages')
                 return
-
+        
         def amiresponse_mailboxstatus(self, astid, event):
                 mailbox = event.get('Mailbox')
                 voicemailid = self.weblist['voicemail'][astid].reverse_index.get(mailbox)

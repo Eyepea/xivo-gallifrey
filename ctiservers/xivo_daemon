@@ -536,21 +536,21 @@ def handle_ami_function(astid, evfunction, this_event):
         """
         try:
                 if evfunction == 'Reload':
-                        log.warning('AMI:Reload: %s : %s' % (astid, this_event))
+                        log.warning('%s AMI:Reload %s' % (astid, this_event))
                         commandclass.ami_reload(astid, this_event)
                 elif evfunction == 'Shutdown':
                         shutdown = this_event.get('Shutdown')
                         restart  = this_event.get('Restart')
-                        log.warning('AMI:Shutdown: %s (how=%s restart=%s)' % (astid, shutdown, restart))
+                        log.warning('%s AMI:Shutdown (how=%s restart=%s)' % (astid, shutdown, restart))
                         commandclass.ami_shutdown(astid, this_event)
                 elif evfunction.startswith('UserEvent'):
                         commandclass.ami_userevent(astid, this_event)
                 elif (evfunction in evfunction_to_method_name):
                         getattr(commandclass, evfunction_to_method_name[evfunction])(astid, this_event)
                 else:
-                        log.warning('AMI %s ... this event (%s) is not tracked' % (astid, evfunction))
+                        log.warning('%s AMI ... this event (%s) is not tracked : %s' % (astid, evfunction, this_event))
         except Exception:
-                log.exception('AMI %s / %s : event %s' % (astid, evfunction, this_event))
+                log.exception('%s AMI / %s : event %s' % (astid, evfunction, this_event))
 
 
 def update_readconf():
