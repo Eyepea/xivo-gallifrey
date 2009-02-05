@@ -6,15 +6,17 @@
         Miscellaneous addenda in Manager Events
         - backport of "MeetMeList" Manager Command from 1.6 branch
         - backport of "Transfer" and "Masquerade" Manager Events from 1.6 branch
-        - added misc paramters to MeetMeJoin event
+        - added misc parameters to MeetMeJoin event
         - added Data contents to the Dial event
         - added Application Name and Data to the Status event
-        - added Uniqueid information to the ParkedCall events
+        - added Uniqueid information to the ParkedCall and QueueEntry events
+        - added a HangupRequest event to know which side ends a call
+        - added a Reason information to the Leave event
 
 Index: asterisk-1.4.23.1/apps/app_dial.c
 ===================================================================
---- asterisk-1.4.23.1.orig/apps/app_dial.c	2009-01-26 14:43:09.000000000 +0100
-+++ asterisk-1.4.23.1/apps/app_dial.c	2009-01-26 14:43:22.000000000 +0100
+--- asterisk-1.4.23.1.orig/apps/app_dial.c	2009-02-05 15:57:18.000000000 +0100
++++ asterisk-1.4.23.1/apps/app_dial.c	2009-02-05 15:57:23.000000000 +0100
 @@ -395,16 +395,21 @@
  static void senddialevent(struct ast_channel *src, struct ast_channel *dst)
  {
@@ -49,8 +51,8 @@ Index: asterisk-1.4.23.1/apps/app_dial.c
  static struct ast_channel *wait_for_answer(struct ast_channel *in, struct dial_localuser *outgoing, int *to, struct ast_flags *peerflags, int *sentringing, char *status, size_t statussize, int busystart, int nochanstart, int congestionstart, int priority_jump, int *result)
 Index: asterisk-1.4.23.1/apps/app_meetme.c
 ===================================================================
---- asterisk-1.4.23.1.orig/apps/app_meetme.c	2009-01-26 14:43:09.000000000 +0100
-+++ asterisk-1.4.23.1/apps/app_meetme.c	2009-01-26 14:43:22.000000000 +0100
+--- asterisk-1.4.23.1.orig/apps/app_meetme.c	2009-02-05 15:57:18.000000000 +0100
++++ asterisk-1.4.23.1/apps/app_meetme.c	2009-02-05 15:57:23.000000000 +0100
 @@ -1830,11 +1830,21 @@
  
  	if (!sent_event) {
@@ -187,8 +189,8 @@ Index: asterisk-1.4.23.1/apps/app_meetme.c
  	res |= ast_register_application(app, conf_exec, synopsis, descrip);
 Index: asterisk-1.4.23.1/main/manager.c
 ===================================================================
---- asterisk-1.4.23.1.orig/main/manager.c	2009-01-26 14:43:18.000000000 +0100
-+++ asterisk-1.4.23.1/main/manager.c	2009-01-26 14:43:22.000000000 +0100
+--- asterisk-1.4.23.1.orig/main/manager.c	2009-02-05 15:57:18.000000000 +0100
++++ asterisk-1.4.23.1/main/manager.c	2009-02-05 15:57:23.000000000 +0100
 @@ -1564,49 +1564,53 @@
  				elapsed_seconds = now.tv_sec - c->cdr->start.tv_sec;
  			}
@@ -286,8 +288,8 @@ Index: asterisk-1.4.23.1/main/manager.c
  		if (!all)
 Index: asterisk-1.4.23.1/res/res_features.c
 ===================================================================
---- asterisk-1.4.23.1.orig/res/res_features.c	2009-01-26 14:43:18.000000000 +0100
-+++ asterisk-1.4.23.1/res/res_features.c	2009-01-26 14:43:22.000000000 +0100
+--- asterisk-1.4.23.1.orig/res/res_features.c	2009-02-05 15:57:18.000000000 +0100
++++ asterisk-1.4.23.1/res/res_features.c	2009-02-05 15:57:23.000000000 +0100
 @@ -424,17 +424,23 @@
  		ast_verbose(VERBOSE_PREFIX_2 "Parked %s on %d@%s. Will timeout back to extension [%s] %s, %d in %d seconds\n", pu->chan->name, pu->parkingnum, parking_con, pu->context, pu->exten, pu->priority, (pu->parkingtime/1000));
  
@@ -383,8 +385,8 @@ Index: asterisk-1.4.23.1/res/res_features.c
  	}
 Index: asterisk-1.4.23.1/channels/chan_sip.c
 ===================================================================
---- asterisk-1.4.23.1.orig/channels/chan_sip.c	2009-01-26 14:43:09.000000000 +0100
-+++ asterisk-1.4.23.1/channels/chan_sip.c	2009-01-26 14:43:23.000000000 +0100
+--- asterisk-1.4.23.1.orig/channels/chan_sip.c	2009-02-05 15:57:18.000000000 +0100
++++ asterisk-1.4.23.1/channels/chan_sip.c	2009-02-05 15:57:23.000000000 +0100
 @@ -14904,6 +14904,19 @@
  	ast_set_flag(&transferer->flags[0], SIP_DEFER_BYE_ON_TRANSFER);	/* Delay hangup */
  
@@ -453,9 +455,21 @@ Index: asterisk-1.4.23.1/channels/chan_sip.c
  			ast_log(LOG_DEBUG, "%s transfer succeeded. Telling transferer.\n", p->refer->attendedtransfer? "Attended" : "Blind");
 Index: asterisk-1.4.23.1/main/channel.c
 ===================================================================
---- asterisk-1.4.23.1.orig/main/channel.c	2009-01-26 14:43:17.000000000 +0100
-+++ asterisk-1.4.23.1/main/channel.c	2009-01-26 14:43:23.000000000 +0100
-@@ -3541,6 +3541,14 @@
+--- asterisk-1.4.23.1.orig/main/channel.c	2009-02-05 15:57:18.000000000 +0100
++++ asterisk-1.4.23.1/main/channel.c	2009-02-05 16:10:31.000000000 +0100
+@@ -978,6 +978,11 @@
+ 		chan->_softhangup |= AST_SOFTHANGUP_DEV;
+ 		ast_channel_unlock(chan);
+ 	}
++	manager_event(EVENT_FLAG_CALL, "HangupRequest",
++                      "Channel: %s\r\n"
++                      "Uniqueid: %s\r\n",
++                      chan->name,
++                      chan->uniqueid);
+ 	return ast_queue_frame(chan, &f);
+ }
+ 
+@@ -3541,6 +3546,14 @@
  		ast_log(LOG_DEBUG, "Actually Masquerading %s(%d) into the structure of %s(%d)\n",
  			clone->name, clone->_state, original->name, original->_state);
  
@@ -472,8 +486,8 @@ Index: asterisk-1.4.23.1/main/channel.c
  	   channel's backend.   I'm not sure we're going to keep this function, because
 Index: asterisk-1.4.23.1/apps/app_queue.c
 ===================================================================
---- asterisk-1.4.23.1.orig/apps/app_queue.c	2009-01-26 14:43:09.000000000 +0100
-+++ asterisk-1.4.23.1/apps/app_queue.c	2009-01-26 14:43:23.000000000 +0100
+--- asterisk-1.4.23.1.orig/apps/app_queue.c	2009-02-05 15:57:18.000000000 +0100
++++ asterisk-1.4.23.1/apps/app_queue.c	2009-02-05 16:03:49.000000000 +0100
 @@ -616,17 +616,20 @@
  				}
  
@@ -531,7 +545,35 @@ Index: asterisk-1.4.23.1/apps/app_queue.c
  		if (option_debug)
  			ast_log(LOG_DEBUG, "Queue '%s' Join, Channel '%s', Position '%d'\n", q->name, qe->chan->name, qe->pos );
  	}
-@@ -1908,21 +1919,28 @@
+@@ -1653,7 +1664,7 @@
+ }
+ 
+ 
+-static void leave_queue(struct queue_ent *qe)
++static void leave_queue(struct queue_ent *qe, int reason)
+ {
+ 	struct call_queue *q;
+ 	struct queue_ent *cur, *prev = NULL;
+@@ -1670,8 +1681,16 @@
+ 
+ 			/* Take us out of the queue */
+ 			manager_event(EVENT_FLAG_CALL, "Leave",
+-				"Channel: %s\r\nQueue: %s\r\nCount: %d\r\nUniqueid: %s\r\n",
+-				qe->chan->name, q->name,  q->count, qe->chan->uniqueid);
++                                      "Channel: %s\r\n"
++                                      "Queue: %s\r\n"
++                                      "Count: %d\r\n"
++                                      "Reason: %d\r\n"
++                                      "Uniqueid: %s\r\n",
++                                      qe->chan->name,
++                                      q->name,
++                                      q->count,
++                                      reason,
++                                      qe->chan->uniqueid);
+ 			if (option_debug)
+ 				ast_log(LOG_DEBUG, "Queue '%s' Leave, Channel '%s'\n", q->name, qe->chan->name );
+ 			/* Take us out of the queue */
+@@ -1908,21 +1927,28 @@
  	} else if (qe->parent->eventwhencalled) {
  		char vars[2048];
  
@@ -575,7 +617,34 @@ Index: asterisk-1.4.23.1/apps/app_queue.c
  		if (option_verbose > 2)
  			ast_verbose(VERBOSE_PREFIX_3 "Called %s\n", tmp->interface);
  	}
-@@ -3323,10 +3341,12 @@
+@@ -2450,7 +2476,7 @@
+ 		if (qe->parent->leavewhenempty && (stat == QUEUE_NO_MEMBERS)) {
+ 			*reason = QUEUE_LEAVEEMPTY;
+ 			ast_queue_log(qe->parent->name, qe->chan->uniqueid, "NONE", "EXITEMPTY", "%d|%d|%ld", qe->pos, qe->opos, (long)time(NULL) - qe->start);
+-			leave_queue(qe);
++			leave_queue(qe, *reason);
+ 			break;
+ 		}
+ 
+@@ -2458,7 +2484,7 @@
+ 		if ((qe->parent->leavewhenempty == QUEUE_EMPTY_STRICT) && (stat == QUEUE_NO_REACHABLE_MEMBERS)) {
+ 			*reason = QUEUE_LEAVEUNAVAIL;
+ 			ast_queue_log(qe->parent->name, qe->chan->uniqueid, "NONE", "EXITEMPTY", "%d|%d|%ld", qe->pos, qe->opos, (long)time(NULL) - qe->start);
+-			leave_queue(qe);
++			leave_queue(qe, *reason);
+ 			break;
+ 		}
+ 
+@@ -3119,7 +3145,7 @@
+ 			}
+ 		}
+ 		/* Drop out of the queue at this point, to prepare for next caller */
+-		leave_queue(qe);			
++		leave_queue(qe, -1);
+ 		if (!ast_strlen_zero(url) && ast_channel_supports_html(peer)) {
+ 			if (option_debug)
+ 				ast_log(LOG_DEBUG, "app_queue: sendurl=%s.\n", url);
+@@ -3323,10 +3349,12 @@
  			}
  			q->membercount--;
  			manager_event(EVENT_FLAG_AGENT, "QueueMemberRemoved",
@@ -592,7 +661,7 @@ Index: asterisk-1.4.23.1/apps/app_queue.c
  			ao2_unlink(q->members, mem);
  			ao2_ref(mem, -1);
  
-@@ -3371,19 +3391,20 @@
+@@ -3371,19 +3399,20 @@
  			ao2_link(q->members, new_member);
  			q->membercount++;
  			manager_event(EVENT_FLAG_AGENT, "QueueMemberAdded",
@@ -626,7 +695,7 @@ Index: asterisk-1.4.23.1/apps/app_queue.c
  			
  			ao2_ref(new_member, -1);
  			new_member = NULL;
-@@ -3435,11 +3456,13 @@
+@@ -3435,11 +3464,13 @@
  				ast_queue_log(q->name, "NONE", mem->membername, (paused ? "PAUSE" : "UNPAUSE"), "%s", "");
  
  				manager_event(EVENT_FLAG_AGENT, "QueueMemberPaused",
@@ -645,7 +714,16 @@ Index: asterisk-1.4.23.1/apps/app_queue.c
  				ao2_ref(mem, -1);
  			}
  		}
-@@ -4697,19 +4720,23 @@
+@@ -4092,7 +4123,7 @@
+ 			}			
+ 			ast_stopstream(chan);
+ 		}
+-		leave_queue(&qe);
++		leave_queue(&qe, reason);
+ 		if (reason != QUEUE_UNKNOWN)
+ 			set_queue_result(chan, reason);
+ 	} else {
+@@ -4697,19 +4728,23 @@
  			while ((mem = ao2_iterator_next(&mem_iter))) {
  				if (ast_strlen_zero(memberfilter) || !strcmp(mem->interface, memberfilter)) {
  					astman_append(s, "Event: QueueMember\r\n"
@@ -682,3 +760,37 @@ Index: asterisk-1.4.23.1/apps/app_queue.c
  				}
  				ao2_ref(mem, -1);
  			}
+@@ -4717,18 +4752,21 @@
+ 			pos = 1;
+ 			for (qe = q->head; qe; qe = qe->next) {
+ 				astman_append(s, "Event: QueueEntry\r\n"
+-					"Queue: %s\r\n"
+-					"Position: %d\r\n"
+-					"Channel: %s\r\n"
+-					"CallerID: %s\r\n"
+-					"CallerIDName: %s\r\n"
+-					"Wait: %ld\r\n"
+-					"%s"
+-					"\r\n",
+-					q->name, pos++, qe->chan->name,
+-					S_OR(qe->chan->cid.cid_num, "unknown"),
+-					S_OR(qe->chan->cid.cid_name, "unknown"),
+-					(long) (now - qe->start), idText);
++                                              "Queue: %s\r\n"
++                                              "Position: %d\r\n"
++                                              "Channel: %s\r\n"
++                                              "Uniqueid: %s\r\n"
++                                              "CallerID: %s\r\n"
++                                              "CallerIDName: %s\r\n"
++                                              "Wait: %ld\r\n"
++                                              "%s"
++                                              "\r\n",
++                                              q->name, pos++,
++                                              qe->chan->name,
++                                              qe->chan->uniqueid,
++                                              S_OR(qe->chan->cid.cid_num, "unknown"),
++                                              S_OR(qe->chan->cid.cid_name, "unknown"),
++                                              (long) (now - qe->start), idText);
+ 			}
+ 		}
+ 		ast_mutex_unlock(&q->lock);
