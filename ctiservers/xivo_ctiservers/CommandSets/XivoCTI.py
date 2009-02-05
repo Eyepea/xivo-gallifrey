@@ -2066,6 +2066,8 @@ class XivoCTICommand(BaseCommand):
                         if actionid in self.ami_requests:
                                 # log.info('%s AMI Response=Success : (tracked) %s %s' % (astid, event, self.ami_requests[actionid]))
                                 del self.ami_requests[actionid]
+                        elif actionid == '00':
+                                log.debug('%s AMI Response=Success : %s (init)' % (astid, event))
                         else:
                                 log.info('%s AMI Response=Success : (tracked) %s' % (astid, event))
                 else:
@@ -2103,6 +2105,8 @@ class XivoCTICommand(BaseCommand):
                         if actionid in self.ami_requests:
                                 log.warning('%s AMI Response=Error : %s %s' % (astid, event, self.ami_requests[actionid]))
                                 del self.ami_requests[actionid]
+                        elif actionid == '00':
+                                log.debug('%s AMI Response=Error : %s (init)' % (astid, event))
                         else:
                                 log.warning('%s AMI Response=Error : %s' % (astid, event))
                 else:
@@ -2514,7 +2518,7 @@ class XivoCTICommand(BaseCommand):
                                 if agent_channel in self.last_agents[astid]:
                                         if 'AGENTCALLBACKLOGIN' in self.last_agents[astid][agent_channel] \
                                                and 'AGENTCALLBACKLOGOFF' not in self.last_agents[astid][agent_channel]:
-                                                print 'AG', self.last_agents[astid][agent_channel]
+                                                log.info('%s ami_agents %s %s' % (astid, agent_channel, self.last_agents[astid][agent_channel]))
                                                 for z, zz in self.last_queues[astid].iteritems():
                                                         if agent_channel in zz and zz[agent_channel]:
                                                                 if 'AGENTCALLED' in zz[agent_channel]:
@@ -3937,6 +3941,7 @@ class XivoCTICommand(BaseCommand):
                         # XXX define capas ?
                         fullstat = []
                         for uinfo in self.ulist_ng.keeplist.itervalues():
+                                duinfo = '%s/%s' % (uinfo.get('astid'), uinfo.get('xivo_userid'))
                                 icapaid = uinfo.get('capaid')
                                 statedetails = {'color' : 'grey',
                                                 'longname' : PRESENCE_UNKNOWN,
@@ -3947,11 +3952,14 @@ class XivoCTICommand(BaseCommand):
                                                 if uinfo.get('state') in self.presence_sections[presenceid].displaydetails:
                                                         statedetails = self.presence_sections[presenceid].displaydetails[uinfo.get('state')]
                                                 else:
-                                                        log.warning('%s not in details for %s' % (uinfo.get('state'), presenceid))
+                                                        log.warning('%s : %s not in details for %s'
+                                                                    % (duinfo, uinfo.get('state'), presenceid))
                                         else:
-                                                log.warning('%s not in presence_sections' % presenceid)
+                                                log.warning('%s : %s not in presence_sections'
+                                                            % (duinfo, presenceid))
                                 else:
-                                        log.warning('%s not in capas' % icapaid)
+                                        log.warning('%s : capaid=%s not in capas'
+                                                    % (duinfo, icapaid))
                                 
                                 senduinfo = {}
                                 for kw in ['user', 'company', 'fullname', 'astid', 'context', 'phonenum', 'mobilenum',

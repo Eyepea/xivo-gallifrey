@@ -586,15 +586,20 @@ class AMIList:
         
         def request_initvalues(self, astid):
                 if astid in self.ami:
-                        amicl = self.ami[astid]
+                        conn_ami = self.ami.get(astid)
                         
                         # sendparkedcalls before sendstatus, so that parked calls can be identified later
                         # sendmeetmelist after sendstatus
-                        amicl.sendparkedcalls()
-                        amicl.sendstatus()
-                        amicl.sendagents()
-                        amicl.sendqueuestatus()
-                        amicl.sendmeetmelist()
+                        conn_ami.setactionid('00')
+                        conn_ami.sendparkedcalls()
+                        conn_ami.setactionid('00')
+                        conn_ami.sendstatus()
+                        conn_ami.setactionid('00')
+                        conn_ami.sendagents()
+                        conn_ami.setactionid('00')
+                        conn_ami.sendqueuestatus()
+                        conn_ami.setactionid('00')
+                        conn_ami.sendmeetmelist()
                 return
         
         def set_aoriginate(self, astid, aoriginatecmd):
