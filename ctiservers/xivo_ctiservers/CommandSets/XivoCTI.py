@@ -4407,7 +4407,7 @@ class XivoCTICommand(BaseCommand):
                 
                 elif dbkind == 'file':
                         f = urllib.urlopen(z.uri)
-                        delimit = ':'
+                        delimit = ';' # make it configurable ?
                         n = 0
                         for line in f:
                                 if n == 0:
@@ -4432,7 +4432,7 @@ class XivoCTICommand(BaseCommand):
                 elif dbkind == 'http':
                         if not reversedir:
                                 fulluri = '%s/?%s=%s' % (z.uri, ''.join(z.match_direct), searchpattern)
-                                delimit = ':'
+                                delimit = ';' # make it configurable ?
                                 n = 0
                                 try:
                                         f = urllib.urlopen(fulluri)
