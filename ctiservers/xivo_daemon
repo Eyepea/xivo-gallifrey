@@ -469,6 +469,7 @@ evfunction_to_method_name = {
         'Bridge':               'ami_bridge',                   # (1.6) Seems to replace partly Link/Unlink events
         'Masquerade':           'ami_masquerade',               # (1.6 backported) for indirect transfers & intercepts
         'Hangup':               'ami_hangup',
+        'HangupRequest':        'ami_hanguprequest',            # (xivo) to know who 'ordered' the hangup
         'Join':                 'ami_join',
         'Leave':                'ami_leave',
         'DTMF':                 'ami_dtmf',                     # (1.6 backported)
@@ -535,6 +536,8 @@ def handle_ami_function(astid, evfunction, this_event):
         It roughly only dispatches them to the relevant commandset's methods.
         """
         try:
+                if 'Privilege' in this_event:
+                        this_event.pop('Privilege')
                 if evfunction == 'Reload':
                         log.warning('%s AMI:Reload %s' % (astid, this_event))
                         commandclass.ami_reload(astid, this_event)
@@ -999,6 +1002,7 @@ while True: # loops over the reloads
                                                         if kind == 'CTI':
                                                                 commandclass.disconnected(conn)
                                         except Exception:
+                                                # socket.error : exc.args[0]
                                                 log.exception('[%s] %s' % (kind, sel_i))
                                                 try:
                                                         fdlist_full.remove(sel_i)

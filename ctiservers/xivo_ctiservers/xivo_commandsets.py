@@ -156,23 +156,16 @@ class BaseCommand:
                 return
         def handle_fagi(self, astid, msg):
                 return
-
+        
         def phones_update(self, function, args):
                 return
-
+        
         def cliaction(self, connid, command):
                 return
-
+        
         def askstatus(self, astid, npl):
                 return
-
-##        def update_srv2clt(self, phoneinfo):
-##                return None
-##        def message_srv2clt(self, sender, message):
-##                return None
-        def dmessage_srv2clt(self, message):
-                return None
-
+        
         # Methods to handle Asterisk AMI events
         def ami_channelreload(self, astid, event):
                 return
@@ -201,6 +194,8 @@ class BaseCommand:
         def ami_unlink(self, astid, event):
                 return
         def ami_hangup(self, astid, event):
+                return
+        def ami_hanguprequest(self, astid, event):
                 return
         def ami_hold(self, astid, event):
                 return

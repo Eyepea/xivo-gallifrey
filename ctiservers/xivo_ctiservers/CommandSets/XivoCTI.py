@@ -82,6 +82,11 @@ PRESENCE_UNKNOWN = 'Absent'
 CALLERID_UNKNOWN_NUM = 'Inconnu'
 CALLERID_UNKNOWN_NAME = 'Inconnu'
 
+rename_phph = [False, False, True, True]
+rename_trtr = [True, True, False, False]
+rename_phtr = [False, True, True, False]
+rename_trph = [True, False, False, True]
+
 class XivoCTICommand(BaseCommand):
 
         xdname = 'XIVO Daemon'
@@ -2005,6 +2010,10 @@ class XivoCTICommand(BaseCommand):
                         log.warning('%s HANGUP : channel %s not there (anymore?)' % (astid, chan))
                 return
         
+        def ami_hanguprequest(self, astid, event):
+                log.info('%s ami_hanguprequest : %s' % (astid, event))
+                return
+        
         def amiresponse_success(self, astid, event, nocolon):
                 msg = event.get('Message')
                 actionid = event.get('ActionID')
@@ -2458,7 +2467,7 @@ class XivoCTICommand(BaseCommand):
                                                 log.info(td.encode('utf8'))
                                                 
                 # {'Extension': 's', 'CallerID': 'unknown', 'Priority': '2', 'ChannelCalling': 'IAX2/test-13', 'Context': 'macro-incoming_queue_call', 'CallerIDName': 'Comm. ', 'AgentCalled': 'iax2/192.168.0.120/101'}
-                # {'Extension': '6678', 'CallerID': '102', 'CallerIDName': 'User2', 'Priority': '2', 'ChannelCalling': 'SIP/102-081cd460', 'Context': 'default', 'AgentName': 'Agent/6101', 'Privilege': 'agent,all', 'Event': 'AgentCalled', 'AgentCalled': 'Agent/6101'}
+                # {'Extension': '6678', 'CallerID': '102', 'CallerIDName': 'User2', 'Priority': '2', 'ChannelCalling': 'SIP/102-081cd460', 'Context': 'default', 'AgentName': 'Agent/6101', 'Event': 'AgentCalled', 'AgentCalled': 'Agent/6101'}
                 return
         
         def ami_agentdump(self, astid, event):
@@ -2479,8 +2488,8 @@ class XivoCTICommand(BaseCommand):
                                         self.__send_msg_to_cti_clients__(msg)
                 else:
                         log.warning('%s sip@queue (ami_agentconnect) %s' % (astid, event))
-                # {'BridgedChannel': '1228753144.217', 'Member': 'SIP/103', 'MemberName': 'permmember', 'Queue': 'martinique', 'Uniqueid': '1228753144.216', 'Privilege': 'agent,all', 'Holdtime': '4', 'Event': 'AgentConnect', 'Channel': 'SIP/103-081d7358'}
-                # {'Member': 'SIP/108', 'Queue': 'commercial', 'Uniqueid': '1215006134.1166', 'Privilege': 'agent,all', 'Holdtime': '9', 'Event': 'AgentConnect', 'Channel': 'SIP/108-08190098'}
+                # {'BridgedChannel': '1228753144.217', 'Member': 'SIP/103', 'MemberName': 'permmember', 'Queue': 'martinique', 'Uniqueid': '1228753144.216', 'Holdtime': '4', 'Event': 'AgentConnect', 'Channel': 'SIP/103-081d7358'}
+                # {'Member': 'SIP/108', 'Queue': 'commercial', 'Uniqueid': '1215006134.1166', 'Holdtime': '9', 'Event': 'AgentConnect', 'Channel': 'SIP/108-08190098'}
                 return
         
         def ami_agents(self, astid, event):
@@ -2548,7 +2557,7 @@ class XivoCTICommand(BaseCommand):
                 log.info('%s STAT ABANDON %s %s' % (astid, queue, uniqueid))
                 self.__update_queue_stats__(astid, queue, queueorgroup, 'ABANDON')
                 # Asterisk 1.4 event
-                # {'Queue': 'qcb_00000', 'OriginalPosition': '1', 'Uniqueid': '1213891256.41', 'Privilege': 'agent,all', 'Position': '1', 'HoldTime': '2', 'Event': 'QueueCallerAbandon'}
+                # {'Queue': 'qcb_00000', 'OriginalPosition': '1', 'Uniqueid': '1213891256.41', 'Position': '1', 'HoldTime': '2', 'Event': 'QueueCallerAbandon'}
                 # it should then go to AMI leave and send the update
                 return
         
@@ -2560,6 +2569,7 @@ class XivoCTICommand(BaseCommand):
                 position = event.get('Position')
                 wait = int(event.get('Wait'))
                 channel = event.get('Channel')
+                uniqueid = event.get('Uniqueid')
                 if queue in self.weblist['queues'][astid].keeplist:
                         queueorgroup = 'queues'
                 elif queue in self.weblist['groups'][astid].keeplist:
@@ -2570,8 +2580,9 @@ class XivoCTICommand(BaseCommand):
                 
                 calleridnum = None
                 calleridname = None
-                for v, vv in self.uniqueids[astid].iteritems(): ## XXX
-                        if 'channel' in vv and vv['channel'] == channel:
+                if uniqueid in self.uniqueids[astid]:
+                        vv = self.uniqueids[astid][uniqueid]
+                        if vv['channel'] == channel:
                                 calleridnum = vv.get('calleridnum')
                                 calleridname = vv.get('calleridname')
                 # print 'AMI QueueEntry', astid, queue, position, wait, channel, event
@@ -3238,10 +3249,13 @@ class XivoCTICommand(BaseCommand):
                         log.warning('%s ami_leave : no queue list has been defined' % astid)
                         return
                 # print 'AMI Leave (Queue)', astid, event
-                # if needed, a 'reason' field could be convenient to catch here
                 chan  = event.get('Channel')
                 queue = event.get('Queue')
                 count = event.get('Count')
+                reason = event.get('Reason')
+                # -1 unknown (among which agent reached)
+                # 0 unknown (among which caller abandon)
+                # 1 timeout, 2 joinempty, 3 leaveempty, 6 full
                 if queue in self.weblist['queues'][astid].keeplist:
                         queueorgroup = 'queues'
                 elif queue in self.weblist['groups'][astid].keeplist:
@@ -3251,7 +3265,7 @@ class XivoCTICommand(BaseCommand):
                         return
                 
                 queuecontext = self.weblist[queueorgroup][astid].keeplist[queue]['context']
-                log.info('%s AMI Leave (Queue) %s %s %s' % (astid, queue, chan, event))
+                log.info('%s AMI Leave (Queue) %s %s %s %s' % (astid, queue, chan, reason, event))
                 
                 self.weblist[queueorgroup][astid].queueentry_remove(queue, chan)
                 event['Calls'] = count
@@ -3290,23 +3304,22 @@ class XivoCTICommand(BaseCommand):
                 newphoneid = self.__phoneid_from_channel__(astid, newname)
                 newtrunkid = self.__trunkid_from_channel__(astid, newname)
                 
-                log.info('%s AMI Rename ids %s %s %s %s' % (astid, oldphoneid, newphoneid, oldtrunkid, newtrunkid))
-                self.weblist['phones'][astid].ami_rename(oldphoneid, newphoneid, oldname, newname, uid)
-                self.weblist['trunks'][astid].ami_rename(oldtrunkid, newtrunkid, oldname, newname, uid)
-                # XXX : renaming between trunk and phone channels
-                
+                rr = [oldphoneid is None, newphoneid is None, oldtrunkid is None, newtrunkid is None]
+                if rr == rename_phph:
+                        self.weblist['phones'][astid].ami_rename(oldphoneid, newphoneid, oldname, newname, uid)
+                elif rr == rename_trtr:
+                        self.weblist['trunks'][astid].ami_rename(oldtrunkid, newtrunkid, oldname, newname, uid)
+                elif rr == rename_phtr:
+                        log.info('%s AMI Rename phone-to-trunk %s %s XXX' % (astid, oldphoneid, newtrunkid))
+                elif rr == rename_trph:
+                        log.info('%s AMI Rename trunk-to-phone %s %s XXX' % (astid, oldtrunkid, newphoneid))
+                else:
+                        log.warning('%s AMI Rename : unknown configuration : %s %s %s %s'
+                                    % (astid, oldphoneid, newphoneid, oldtrunkid, newtrunkid))
+                        
                 self.__update_phones_trunks__(astid, oldphoneid, newphoneid, oldtrunkid, newtrunkid, 'ami_rename')
                 return
         # END of AMI events
-        
-        def message_srv2clt(self, sender, message):
-                tosend = { 'class' : 'message',
-                           'payload' : [sender, message] }
-                return self.__cjson_encode__(tosend)
-
-        def dmessage_srv2clt(self, message):
-                return self.message_srv2clt('daemon-announce', message)
-        
         
         def phones_update(self, function, statusbase, statusextended):
                 strupdate = ''
@@ -3427,9 +3440,11 @@ class XivoCTICommand(BaseCommand):
                                                 
                                         elif classcomm == 'message':
                                                 if self.capas[capaid].match_funcs(ucapa, 'messages'):
-                                                        self.__send_msg_to_cti_clients__(self.message_srv2clt('%s/%s' % (astid, username),
-                                                                                                              '<%s>' % icommand.struct.get('message')))
-
+                                                        tosend = { 'class' : 'message',
+                                                                   'payload' : ['%s/%s' % (astid, username),
+                                                                                '<%s>' % icommand.struct.get('message')] }
+                                                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
+                                                        
                                         elif classcomm == 'featuresget':
                                                 if self.capas[capaid].match_funcs(ucapa, 'features'):
 ##                                        if username in userlist[astid]:
@@ -3869,7 +3884,7 @@ class XivoCTICommand(BaseCommand):
                                 self.__ami_execute__(astid, 'setvar', 'AGENTBYCALLERID_%s' % agentphonenum, agentnum)
                                 self.__fill_user_ctilog__(uinfo, 'agent_login')
                 return
-
+        
         def __logout_agent__(self, uinfo):
                 if uinfo is None:
                         return
@@ -3886,8 +3901,7 @@ class XivoCTICommand(BaseCommand):
                                 self.__ami_execute__(astid, 'agentlogoff', agentnum)
                                 self.__fill_user_ctilog__(uinfo, 'agent_logout')
                 return
-
-
+        
         def logout_all_agents(self):
                 for userinfo in self.ulist_ng.keeplist.itervalues():
                         self.__logout_agent__(userinfo)
