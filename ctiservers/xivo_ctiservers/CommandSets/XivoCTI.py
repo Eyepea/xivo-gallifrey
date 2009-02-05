@@ -2570,7 +2570,7 @@ class XivoCTICommand(BaseCommand):
                 
                 calleridnum = None
                 calleridname = None
-                for v, vv in self.uniqueids[astid].iteritems():
+                for v, vv in self.uniqueids[astid].iteritems(): ## XXX
                         if 'channel' in vv and vv['channel'] == channel:
                                 calleridnum = vv.get('calleridnum')
                                 calleridname = vv.get('calleridname')
@@ -3641,7 +3641,7 @@ class XivoCTICommand(BaseCommand):
                 chans = []
                 for uinfo in self.__find_userinfos_by_agentnum__(astid, agent_number):
                         techref = uinfo.get('techlist')[0]
-                        for v, vv in self.uniqueids[astid].iteritems():
+                        for v, vv in self.uniqueids[astid].iteritems(): ## XXX
                                 if 'channel' in vv:
                                         if techref == self.__phoneid_from_channel__(astid, vv['channel']):
                                                 chans.append(vv['channel'])
@@ -4356,10 +4356,10 @@ class XivoCTICommand(BaseCommand):
 
         def __build_customers_bydirdef__(self, dirname, searchpattern, z, reversedir):
                 fullstatlist = []
-
+                
                 if searchpattern == '':
                         return []
-
+                
                 dbkind = z.uri.split(':')[0]
                 if dbkind in ['ldap', 'ldaps']:
                         selectline = []
@@ -4450,7 +4450,7 @@ class XivoCTICommand(BaseCommand):
                                         fullstatlist = [{'xivo-dir' : z.name, 'db-fullname' : fsl}]
                                 else:
                                         fullstatlist = []
-                elif dbkind != '':
+                elif dbkind in ['sqlite', 'mysql']:
                         if searchpattern == '*':
                                 whereline = ''
                         else:
@@ -4458,11 +4458,11 @@ class XivoCTICommand(BaseCommand):
                                 for fname in z.match_direct:
                                         wl.append("%s REGEXP '%s'" %(fname, searchpattern))
                                 whereline = 'WHERE ' + ' OR '.join(wl)
-
                         try:
-                                conn = anysql.connect_by_uri(z.uri)
+                                conn = anysql.connect_by_uri(str(z.uri))
                                 cursor = conn.cursor()
-                                cursor.query("SELECT ${columns} FROM " + z.sqltable + " " + whereline,
+                                sqlrequest = 'SELECT ${columns} FROM %s %s' % (z.sqltable, whereline)
+                                cursor.query(sqlrequest,
                                              tuple(z.match_direct),
                                              None)
                                 results = cursor.fetchall()
@@ -4476,13 +4476,13 @@ class XivoCTICommand(BaseCommand):
                                                                 futureline[keyw] = result[n]
                                         fullstatlist.append(futureline)
                         except Exception:
-                                log.exception('sqlrequest')
+                                log.exception('sqlrequest for %s' % z.uri)
                 else:
-                        log.warning('no database method defined - please fill the uri field of the directory <%s> definition' % dirname)
-
+                        log.warning('wrong or no database method defined (%s) - please fill the uri field of the directory <%s> definition'
+                                    % (dbkind, dirname))
+                        
                 return fullstatlist
-
-
+        
         def __counts__(self, presenceid):
                 counts = {}
                 if presenceid not in self.presence_sections:
