@@ -429,12 +429,12 @@ class AMIClass:
                 try:
                         ret = self.sendcommand('QueueRemove', [('Queue', queuename),
                                                                ('Interface', interface)])
-                        return ret
                 except self.AMIError:
-                        return False
+                        ret = False
                 except Exception:
-                        return False
-
+                        ret = False
+                return ret
+        
         # \brief (Un)Pauses a Queue
         def queuepause(self, queuename, interface, paused):
                 try:
@@ -446,7 +446,7 @@ class AMIClass:
                 except Exception:
                         ret = False
                 return ret
-
+        
         # \brief Requests the Mailbox informations
         def mailbox(self, phone, context):
                 try:
@@ -458,7 +458,7 @@ class AMIClass:
                 except Exception:
                         ret = False
                 return ret
-
+        
         # \brief Starts monitoring a channel
         def monitor(self, channel, filename):
                 try:
@@ -482,7 +482,7 @@ class AMIClass:
                 except Exception:
                         ret = False
                 return ret
-
+        
         # \brief Retrieves the value of Variable in a Channel
         def getvar(self, channel, varname):
                 try:

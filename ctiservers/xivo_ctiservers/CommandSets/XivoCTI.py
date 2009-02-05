@@ -677,7 +677,7 @@ class XivoCTICommand(BaseCommand):
                         self.askstatus(astid, self.weblist['phones'][astid].keeplist)
                 # check : agentnumber should be unique
                 return
-
+        
         def set_userlist_urls(self, urls):
                 self.ulist_ng.setandupdate(urls)
                 return
@@ -889,8 +889,9 @@ class XivoCTICommand(BaseCommand):
         
         def askstatus(self, astid, npl):
                 for a, b in npl.iteritems():
-                        self.__ami_execute__(astid, 'sendextensionstate', b['number'], b['context'])
-                        self.__ami_execute__(astid, 'mailbox', b['number'], b['context'])
+                        if b['tech'] != 'custom':
+                                self.__ami_execute__(astid, 'sendextensionstate', b['number'], b['context'])
+                                self.__ami_execute__(astid, 'mailbox', b['number'], b['context'])
                 return
         
         def __callback_timer__(self, what):
@@ -2093,6 +2094,7 @@ class XivoCTICommand(BaseCommand):
                 elif msg in ['No such channel',
                              'No such agent',
                              'Member not dynamic',
+                             'Extension not specified',
                              'Interface not found',
                              'No active conferences.',
                              'Unable to add interface: Already there',
