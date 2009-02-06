@@ -129,7 +129,39 @@ class TrunkList(AnyList):
                         if uid in self.keeplist[oldtrunkid]['comms'] and uid not in self.keeplist[newtrunkid]['comms']:
                                 self.keeplist[newtrunkid]['comms'][uid] = self.keeplist[oldtrunkid]['comms'][uid]
                                 del self.keeplist[oldtrunkid]['comms'][uid]
-                                log.info('%s moved from %s to %s' % (uid, oldtrunkid, newtrunkid))
+                        else:
+                                log.warning('(ami_rename) %s : could not move from %s to %s' % (uid, oldtrunkid, newtrunkid))
+                return
+        
+        def ami_rename_tophone(self, oldtrunkid, oldname, newname, uid):
+                tomove = None
+                for trunkid, v in self.keeplist.iteritems():
+                        for k, kk in v['comms'].iteritems():
+                                if kk['thischannel'] == oldname:
+                                        kk['thischannel'] = newname
+                                if kk['peerchannel'] == oldname:
+                                        kk['peerchannel'] = newname
+                if uid in self.keeplist[oldtrunkid]['comms']:
+                        tomove = self.keeplist[oldtrunkid]['comms'][uid]
+                        # do not remove the reference at once, because, the client side needs to
+                        # know that the uid has been hanged-up
+                        # del self.keeplist[oldtrunkid]['comms'][uid]
+                        self.keeplist[oldtrunkid]['comms'][uid]['status'] = 'hangup'
+                else:
+                        log.warning('(ami_rename_tophone) %s : could not remove %s' % (uid, oldtrunkid))
+                return tomove
+        
+        def ami_rename_fromphone(self, newtrunkid, oldname, newname, uid, tomove):
+                for trunkid, v in self.keeplist.iteritems():
+                        for k, kk in v['comms'].iteritems():
+                                if kk['thischannel'] == oldname:
+                                        kk['thischannel'] = newname
+                                if kk['peerchannel'] == oldname:
+                                        kk['peerchannel'] = newname
+                if tomove and uid not in self.keeplist[newtrunkid]['comms']:
+                        self.keeplist[newtrunkid]['comms'][uid] = tomove
+                else:
+                        log.warning('(ami_rename_fromphone) %s : could not set %s' % (uid, newtrunkid))
                 return
         
         def status(self, trunkid):

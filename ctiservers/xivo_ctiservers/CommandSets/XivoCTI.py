@@ -2885,8 +2885,9 @@ class XivoCTICommand(BaseCommand):
                                 if vv['exten'] == didnumber:
                                         log.info('%s ami_userevent %s' % (astid, vv))
                         # actions involving didnumber/callerid on channel could be carried out here
-                        # if callerid == 'xxx' and didnumber == 'yyy':
-                        # self.__ami_execute__(astid, 'transfer', channel, 'zzz', 'default')
+                        did_takeovers = {}
+                        if callerid in did_takeovers and didnumber in did_takeovers[callerid]:
+                                self.__ami_execute__(astid, 'transfer', channel, did_takeovers[callerid][didnumber], 'default')
                         
                         self.__sheet_alert__('incomingdid', astid,
                                              event.get('XIVO_REAL_CONTEXT', CONTEXT_UNKNOWN),
@@ -3318,9 +3319,11 @@ class XivoCTICommand(BaseCommand):
                 elif rr == rename_trtr:
                         self.weblist['trunks'][astid].ami_rename(oldtrunkid, newtrunkid, oldname, newname, uid)
                 elif rr == rename_phtr:
-                        log.info('%s AMI Rename phone-to-trunk %s %s XXX' % (astid, oldphoneid, newtrunkid))
+                        tomove = self.weblist['phones'][astid].ami_rename_totrunk(oldphoneid, oldname, newname, uid)
+                        self.weblist['trunks'][astid].ami_rename_fromphone(newtrunkid, oldname, newname, uid, tomove)
                 elif rr == rename_trph:
-                        log.info('%s AMI Rename trunk-to-phone %s %s XXX' % (astid, oldtrunkid, newphoneid))
+                        tomove = self.weblist['trunks'][astid].ami_rename_tophone(oldtrunkid, oldname, newname, uid)
+                        self.weblist['phones'][astid].ami_rename_fromtrunk(newphoneid, oldname, newname, uid, tomove)
                 else:
                         log.warning('%s AMI Rename : unknown configuration : %s %s %s %s'
                                     % (astid, oldphoneid, newphoneid, oldtrunkid, newtrunkid))
