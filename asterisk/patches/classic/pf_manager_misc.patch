@@ -52,8 +52,8 @@ Index: asterisk-1.4.23.1/apps/app_dial.c
 Index: asterisk-1.4.23.1/apps/app_meetme.c
 ===================================================================
 --- asterisk-1.4.23.1.orig/apps/app_meetme.c	2009-02-05 15:57:18.000000000 +0100
-+++ asterisk-1.4.23.1/apps/app_meetme.c	2009-02-05 15:57:23.000000000 +0100
-@@ -1830,11 +1830,21 @@
++++ asterisk-1.4.23.1/apps/app_meetme.c	2009-02-06 15:58:10.000000000 +0100
+@@ -1830,11 +1830,22 @@
  
  	if (!sent_event) {
  		manager_event(EVENT_FLAG_CALL, "MeetmeJoin", 
@@ -70,7 +70,8 @@ Index: asterisk-1.4.23.1/apps/app_meetme.c
 +                              "Usernum: %d\r\n"
 +                              "CallerIDnum: %s\r\n"
 +                              "CallerIDname: %s\r\n",
-+			      chan->name, chan->uniqueid,
++                              chan->name,
++                              chan->uniqueid,
 +                              conf->confno,
 +                              conf->chan->name,
 +                              user->userflags & CONFFLAG_ADMIN ? "Yes" : "No",
@@ -80,7 +81,18 @@ Index: asterisk-1.4.23.1/apps/app_meetme.c
  		sent_event = 1;
  	}
  
-@@ -3156,6 +3166,83 @@
+@@ -2434,7 +2445,9 @@
+ 				      "CallerIDnum: %s\r\n"
+ 				      "CallerIDname: %s\r\n"
+ 				      "Duration: %ld\r\n",
+-				      chan->name, chan->uniqueid, conf->confno, 
++                                      chan->name,
++                                      chan->uniqueid,
++                                      conf->confno,
+ 				      user->user_no,
+ 				      S_OR(user->chan->cid.cid_num, "<unknown>"),
+ 				      S_OR(user->chan->cid.cid_name, "<unknown>"),
+@@ -3156,6 +3169,85 @@
  	return meetmemute(s, m, 0);
  }
  
@@ -130,6 +142,7 @@ Index: asterisk-1.4.23.1/apps/app_meetme.c
 +                                      "CallerIDNum: %s\r\n"
 +                                      "CallerIDName: %s\r\n"
 +                                      "Channel: %s\r\n"
++                                      "Uniqueid: %s\r\n"
 +                                      "Admin: %s\r\n"
 +                                      "Role: %s\r\n"
 +                                      "MarkedUser: %s\r\n"
@@ -143,6 +156,7 @@ Index: asterisk-1.4.23.1/apps/app_meetme.c
 +                                      S_OR(user->chan->cid.cid_num, "<unknown>"),
 +                                      S_OR(user->chan->cid.cid_name, "<no name>"),
 +                                      user->chan->name,
++                                      user->chan->uniqueid,
 +                                      user->userflags & CONFFLAG_ADMIN ? "Yes" : "No",
 +                                      user->userflags & CONFFLAG_MONITOR ? "Listen only" : user->userflags & CONFFLAG_TALKER ? "Talk only" : "Talk and listen",
 +                                      user->userflags & CONFFLAG_MARKEDUSER ? "Yes" : "No",
@@ -164,7 +178,7 @@ Index: asterisk-1.4.23.1/apps/app_meetme.c
  static void *recordthread(void *args)
  {
  	struct ast_conference *cnf = args;
-@@ -4983,6 +5070,7 @@
+@@ -4983,6 +5075,7 @@
  	ast_cli_unregister_multiple(cli_meetme, ARRAY_LEN(cli_meetme));
  	res = ast_manager_unregister("MeetmeMute");
  	res |= ast_manager_unregister("MeetmeUnmute");
@@ -172,7 +186,7 @@ Index: asterisk-1.4.23.1/apps/app_meetme.c
  	res |= ast_unregister_application(app3);
  	res |= ast_unregister_application(app2);
  	res |= ast_unregister_application(app);
-@@ -5006,10 +5094,12 @@
+@@ -5006,10 +5099,12 @@
  	res |= load_config(0);
  
  	ast_cli_register_multiple(cli_meetme, ARRAY_LEN(cli_meetme));
@@ -456,7 +470,7 @@ Index: asterisk-1.4.23.1/channels/chan_sip.c
 Index: asterisk-1.4.23.1/main/channel.c
 ===================================================================
 --- asterisk-1.4.23.1.orig/main/channel.c	2009-02-05 15:57:18.000000000 +0100
-+++ asterisk-1.4.23.1/main/channel.c	2009-02-05 16:10:31.000000000 +0100
++++ asterisk-1.4.23.1/main/channel.c	2009-02-06 15:57:58.000000000 +0100
 @@ -978,6 +978,11 @@
  		chan->_softhangup |= AST_SOFTHANGUP_DEV;
  		ast_channel_unlock(chan);
