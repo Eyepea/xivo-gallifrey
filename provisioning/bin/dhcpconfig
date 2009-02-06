@@ -1,0 +1,148 @@
+#!/usr/bin/python
+"""Provisioning DHCP for XIVO
+"""
+# TODO WARNING: can be used only if the caller is of a SIP tech
+
+__version__ = "$Revision$ $Date$"
+__license__ = """
+    Copyright (C) 2009  Proformatique <technique@proformatique.com>
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+CONFIG_FILE         = '/etc/pf-xivo/provisioning.conf' # can be overridden by cmd line param
+GETOPT_SHORTOPTS    = 'c:h'
+SYSLOG_NAME         = 'xivo_dhcp_provisioning'
+
+import sys
+
+def help_screen():
+    print >> sys.stderr, \
+"""Syntax:
+%s [-c <conffile>] [-h] <user_agent> <ipv4> <mac_address> [<timeout>]
+
+-c <conffile>   Use <conffile> instead of %s
+-h              Display this help screen and exit
+""" % (sys.argv[0], `CONFIG_FILE`)
+    sys.exit(1)
+
+from getopt import getopt, GetoptError
+def config_path():
+    global CONFIG_FILE
+    try:
+        opts, args = getopt(sys.argv[1:], GETOPT_SHORTOPTS)
+    except GetoptError, x:
+        print >> sys.stderr, x
+        help_screen()
+    sys.argv[1:] = args # strip options for legacy code behind
+    for k, v in opts: # DO NOT MERGE THE TWO LOOPS
+        if k == '-h':
+            help_screen()
+    for k, v in opts:
+        if k == '-c':
+            CONFIG_FILE = v
+config_path()
+
+import socket
+import httplib
+import logging
+from logging.handlers import SysLogHandler
+
+from xivo import network
+from xivo import xivo_config
+from xivo.xivo_config import ProvGeneralConf as Pgc
+from xivo.Phones import *
+
+sysloghandler = SysLogHandler("/dev/log", SysLogHandler.LOG_DAEMON)
+sysloghandler.setFormatter(logging.Formatter("%s[%%(process)d]: %%(message)s" % SYSLOG_NAME))
+root_logger = logging.getLogger('')
+root_logger.addHandler(sysloghandler)
+root_logger.setLevel(logging.DEBUG) # XXX
+
+def main():
+    xlen = len(sys.argv)
+
+    if xlen < 4:
+        root_logger.error("Too few arguments")
+        sys.exit(1)
+
+    ua = sys.argv[1]
+    ipv4 = sys.argv[2]
+    macaddr = sys.argv[3]
+    isinalan = "1"
+    provcode = "-1"
+    timeout = Pgc['http_request_to_s']
+
+    if xlen > 4:
+        if isinstance(sys.argv[4], (float, int)):
+            timeout = sys.argv[4]
+        elif isinstance(sys.argv[4], basestring) and sys.argv[4].isdigit():
+            timeout = sys.argv[4]
+
+    if not network.is_ipv4_address_valid(ipv4):
+        root_logger.error("Invalid IPv4: %r" % ipv4)
+        sys.exit(1)
+
+    if not network.is_mac_address_valid(macaddr):
+        root_logger.error("Invalid Mac Address. (macaddr: %r, ipv4: %r)" % (macaddr, ipv4)) 
+        sys.exit(1)
+
+    macaddr = network.normalize_mac_address(macaddr)
+
+    # Get Phone description (if we are able to handle this vendor...)
+    phone_desc = xivo_config.phone_desc_by_ua(ua)
+    if not phone_desc:
+        root_logger.error("Unknown UA %r" % ua)
+        sys.exit(1)
+
+    command = "\r\n".join(
+              ["mode=authoritative",
+               "actions=no",
+               "proto=sip",
+               "provcode=%s"        % provcode,
+               "vendor=%s"          % phone_desc[0],
+               "model=%s"           % phone_desc[1],
+               "macaddr=%s"         % macaddr,
+               "ipv4=%s"            % ipv4,
+               "isinalan=%s\r\n"    % isinalan])
+
+    try:
+        socket.setdefaulttimeout(float(timeout))
+        conn = httplib.HTTPConnection(Pgc['connect_ipv4'] + ':' + str(Pgc['connect_port']))
+        conn.request("POST", "/prov", command, {"Content-Type": "text/plain; charset=UTF-8"})
+        response = conn.getresponse()
+        response.read() # eat every data sent by the provisioning server
+        conn.close()
+        reason = response.reason
+        status = response.status
+    except socket.timeout, xcept:
+        reason = str(xcept)
+
+        if timeout != Pgc['http_request_to_s']:
+            status = 408
+        else:
+            status = 500
+    except Exception, xcept:
+        reason = str(xcept)
+        status = 500
+
+    if status not in (200, 408):
+        root_logger.error("Provisioning DHCP failure: %s" % reason)
+        sys.exit(1)
+
+if __name__ == '__main__':
+    xivo_config.LoadConfig(CONFIG_FILE)
+    xivo_config.phone_classes_setup()
+    
+    main()
