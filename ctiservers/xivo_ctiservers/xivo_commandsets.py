@@ -179,6 +179,8 @@ class BaseCommand:
                 return
         def ami_alarmclear(self, astid, event):
                 return
+        def ami_dndstate(self, astid, event):
+                return
         def ami_cdr(self, astid, event):
                 return
 	def ami_faxsent(self, astid, event):

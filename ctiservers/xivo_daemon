@@ -490,6 +490,7 @@ evfunction_to_method_name = {
         'ParkedCallTimeOut':    'ami_parkedcalltimeout',
         'ParkedCallGiveUp':     'ami_parkedcallgiveup',
         'ParkedCallsComplete':  'ami_parkedcallscomplete',
+        'DNDState':             'ami_dndstate',
         'Cdr':                  'ami_cdr',
         'Hold':                 'ami_hold',
         'Unhold':               'ami_unhold',

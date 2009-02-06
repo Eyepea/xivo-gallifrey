@@ -3327,6 +3327,19 @@ class XivoCTICommand(BaseCommand):
                         
                 self.__update_phones_trunks__(astid, oldphoneid, newphoneid, oldtrunkid, newtrunkid, 'ami_rename')
                 return
+        
+        def ami_alarm(self, astid, event):
+                log.info('%s ami_alarm : %s' % (astid, event))
+                return
+        
+        def ami_alarmclear(self, astid, event):
+                log.info('%s ami_alarmclear : %s' % (astid, event))
+                return
+        
+        def ami_dndstate(self, astid, event):
+                log.info('%s ami_dndstate : %s' % (astid, event))
+                return
+        
         # END of AMI events
         
         def phones_update(self, function, statusbase, statusextended):
