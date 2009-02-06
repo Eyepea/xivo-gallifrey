@@ -206,8 +206,6 @@ class SiemensHTMLParser(HTMLParser):
 
     def reset(self):
         HTMLParser.reset(self)
-        self.searchtag = None
-        self.searchattrs = None
         self.result = []
 
 
