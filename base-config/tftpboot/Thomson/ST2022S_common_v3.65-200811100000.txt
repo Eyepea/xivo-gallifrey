@@ -21,8 +21,6 @@ DoNotDisturb_Year=0
 Suppress-DomainName-Flag=1
 Hide_Phone_Number_Display=0
 HideMissedCall=0
-Key_Echo=1
-LCDvoltLevel=0
 LanguageType=1
 LocalMusicOnHold=1
 ManualLog=0
@@ -30,13 +28,10 @@ OptionVisible=0000
 PasswordString=0000
 PhoneLock=0
 Pick_up_call=1
-RINGER_Flag=0
 RingToneMP1=0
 RingToneMP2=0
 RingToneMP3=0
 RingToneMP4=0
-Shortcut_one=0
-Shortcut_two=0
 TimeFlag=1
 Transfer_to_voice_mail=1
 
@@ -52,20 +47,12 @@ MaskWan=0.0.0.0
 TelnetSrv=1
 VLAN=0
 WanModFlag=1
-PersistentVLANfromDHCP=0
 
 
 [sip]
 CallBlockType=0
-CallParkType=0
 CF_Address1=
 CFNA_Time1=30
-CodecPriority_G711mu=2
-CodecPriority_G711a=1
-CodecPriority_G729=3
-CodecPriority_G723=4
-CF_domain=
-CF_port=0
 ConnectReuseFlg=0
 ConnectReuseFlgMP1=0
 ConnectReuseFlgMP2=0
@@ -132,9 +119,8 @@ RegisterFrequencyBK3=600
 RegisterFrequencyBK4=600
 REQ_RUI_with_port=1
 RFC2833=0
-RFC2833_rtp_pltype=97
+RFC2833_rtp_pltype=96
 RFC3262=0
-RFC3323=0
 RandomCSeqFlag=0
 RandomRTPPortFlag=0
 ServiceDomainMP1=
@@ -149,7 +135,6 @@ SessionExpire=1800
 SessionExpireMin=100
 SessionMethod=0
 SessionRefresher=0
-sip_port=5060
 sip_portMP1=5060
 sip_portMP2=5060
 sip_portMP3=5060
@@ -191,15 +176,7 @@ sw_tr_vmail_address2=
 sw_tr_vmail_address3=
 sw_tr_vmail_address4=
 sw_tr_vmail_flag=0
-sw_park_srv_addr0=
 TEL1Number=guest
-TEL2Number=
-TEL3Number=
-TEL4Number=
-TEL01Use=1
-TEL02Use=0
-TEL03Use=0
-TEL04Use=0
 TransportFlgMP1=0
 TransportFlgMP2=0
 TransportFlgMP3=0
@@ -259,10 +236,6 @@ AutoprovisionTFTPServer=
 AutoprovisionTimeDays=0
 Autoprovisionstarttime=00:00
 AutoprovisionTimeSpan=0
-AutoprovisionConfigname=
-AutoprovisionMelodyFilename=
-AutoprovisionSysMelodyFilename=
-AutoprovisionCwtMelodyFilename=
 
 
 [qos]
@@ -272,7 +245,6 @@ TOS=160
 VLANid1=1
 VLANid2=1
 VLANTag1=6
-VLANTag2=6
 VLANTagdata=6
 
 
