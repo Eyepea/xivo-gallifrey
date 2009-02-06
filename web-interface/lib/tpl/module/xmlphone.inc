@@ -54,9 +54,9 @@ class xivo_tpl_xmlphone extends xivo_tpl_module
 
 		switch($vendor)
 		{
-			case 'thomson':
-			case 'snom':
 			case 'aastra':
+			case 'snom':
+			case 'thomson':
 				return($vendor);
 		}
 
@@ -79,15 +79,6 @@ class xivo_tpl_xmlphone extends xivo_tpl_module
 				$this->_escape = false;
 				$this->_utf8 = false;
 				break;
-			case 'thomson':
-				$this->_tag['menu'] = 'ThomsonPhoneMenu';
-				$this->_tag['directory'] = 'ThomsonPhoneBook';
-				$this->_tag['input'] = '';
-				$this->_argseparator = '&amp;';
-				$this->_cdata = true;
-				$this->_escape = false;
-				$this->_utf8 = false;
-				break;
 			case 'snom':
 				$this->_tag['menu'] = 'SnomIPPhoneMenu';
 				$this->_tag['directory'] = 'SnomIPPhoneDirectory';
@@ -96,6 +87,15 @@ class xivo_tpl_xmlphone extends xivo_tpl_module
 				$this->_cdata = false;
 				$this->_escape = false;
 				$this->_utf8 = true;
+				break;
+			case 'thomson':
+				$this->_tag['menu'] = 'ThomsonPhoneMenu';
+				$this->_tag['directory'] = 'ThomsonPhoneBook';
+				$this->_tag['input'] = '';
+				$this->_argseparator = '&amp;';
+				$this->_cdata = true;
+				$this->_escape = false;
+				$this->_utf8 = false;
 				break;
 			default:
 				return(false);

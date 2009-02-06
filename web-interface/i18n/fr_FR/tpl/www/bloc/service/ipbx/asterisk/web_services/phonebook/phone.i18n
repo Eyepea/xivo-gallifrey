@@ -4,6 +4,9 @@ Recherche XIVO
 ; phone_search-prompt
 Nom ou numéro :
 
+; phone_search-submit
+Rechercher
+
 ; phone_noentries
 Aucune entrée
 

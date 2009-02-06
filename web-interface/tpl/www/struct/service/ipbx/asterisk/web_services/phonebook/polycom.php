@@ -18,17 +18,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$array = array();
-$array['xivoserver'] = array();
-$array['xivoserver']['option'] = array();
-$array['xivoserver']['option']['ssl_verifypeer'] = false;
-
-$array['ldapfilter'] = array();
-
-$array['vendor'] = array();
-$array['vendor']['aastra'] = 'aastra';
-$array['vendor']['polycom'] = 'polycom';
-$array['vendor']['snom'] = 'snom';
-$array['vendor']['thomson'] = 'thomson';
-
 ?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<title><?=xivo_htmlsc($this->bbf('phone_search-title'));?></title>
+	</head>
+	<body>
+<?php
+	$this->file_include($this->get_var('path').'/polycom/'.$this->get_var('act'));
+?>
+	</body>
+</html>

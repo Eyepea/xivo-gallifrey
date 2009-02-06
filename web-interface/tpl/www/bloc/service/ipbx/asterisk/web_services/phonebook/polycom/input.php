@@ -18,17 +18,23 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$array = array();
-$array['xivoserver'] = array();
-$array['xivoserver']['option'] = array();
-$array['xivoserver']['option']['ssl_verifypeer'] = false;
-
-$array['ldapfilter'] = array();
-
-$array['vendor'] = array();
-$array['vendor']['aastra'] = 'aastra';
-$array['vendor']['polycom'] = 'polycom';
-$array['vendor']['snom'] = 'snom';
-$array['vendor']['thomson'] = 'thomson';
+$form = &$this->get_module('form');
 
 ?>
+<form	action="<?=$this->url('service/ipbx/web_services/phonebook/search',true);?>"
+	method="get"
+	accept-charset="utf-8">
+<?php
+	echo	$form->text(array('desc'	=> xivo_htmlsc($this->bbf('phone_search-prompt')),
+				  'name'	=> 'name',
+				  'id'		=> 'it-name',
+				  'size'	=> 15,
+				  'field'	=> false,
+				  'default'	=> '')),
+
+		$form->submit(array('name'	=> 'submit',
+				    'id'	=> 'it-submit',
+				    'value'	=> $this->bbf('phone_search-submit'),
+				    'field'	=> false));
+?>
+</form>

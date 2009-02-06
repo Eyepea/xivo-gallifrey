@@ -34,17 +34,23 @@ if($vendor === false && ($vendor = $phonebook->get_vendor_from_useragent()) === 
 
 $path = '/bloc/service/ipbx/'.$ipbx->get_name().'/web_services/phonebook';
 
+if($vendor !== 'polycom')
+	$displaypath = $path.'/phone';
+else
+	$displaypath = '/struct/service/ipbx/'.$ipbx->get_name().'/web_services/phonebook/polycom';
+
 $_HTML->set_var('path',$path);
 $_HTML->set_var('vendor',$vendor);
 
 if(isset($_QR['name']) === false || xivo_haslen($_QR['name']) === false)
 {
-	if($vendor === 'snom' || $vendor === 'aastra')
+	if($vendor === 'aastra' || $vendor === 'polycom' || $vendor === 'snom')
 		$_HTML->set_var('act','input');
 	else
 		$_HTML->set_var('act','directory');
 
-	$_HTML->display($path.'/phone');
+	$_HTML->display($displaypath);
+
 	die();
 }
 
@@ -70,7 +76,7 @@ if(($nb = count($rs)) === 0 || $nb <= 16)
 	$_HTML->set_var('list',$rs);
 	$_HTML->set_var('prevpos',0);
 	$_HTML->set_var('act','directory');
-	$_HTML->display($path.'/phone');
+	$_HTML->display($displaypath);
 	die();
 }
 
@@ -136,7 +142,7 @@ $_HTML->set_var('maxnode',$maxnode);
 $_HTML->set_var('pos',$beg);
 $_HTML->set_var('prevpos',$prevpos);
 $_HTML->set_var('name',$_QR['name']);
-$_HTML->display($path.'/phone');
+$_HTML->display($displaypath);
 die();
 
 ?>

@@ -26,8 +26,6 @@ if(($vendor = $directory = $xmlphone->get_vendor()) === false)
 
 header($xmlphone->get_header_contenttype());
 
-$param = array();
-
 switch($vendor)
 {
 	case 'thomson':
@@ -36,7 +34,6 @@ switch($vendor)
 		break;
 }
 
-$this->file_include($this->get_var('path').'/'.$directory.'/'.$this->get_var('act'),
-		    $param);
+$this->file_include($this->get_var('path').'/'.$directory.'/'.$this->get_var('act'));
 
 ?>
