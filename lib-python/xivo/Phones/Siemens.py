@@ -369,7 +369,7 @@ class Siemens(PhoneVendorMixin):
         for macaddr_prefix in cls.SIEMENS_MACADDR_PREFIX:
             for line in (
                 'subclass "phone-mac-address-prefix" %s {\n' % macaddr_prefix,
-                '    if not exists(vendor-class-identifier) {\n',
+                '    if not exists vendor-class-identifier {\n',
                 '        log("class Siemens prefix %s");\n' % macaddr_prefix,
                 '    }\n',
                 '}\n',
