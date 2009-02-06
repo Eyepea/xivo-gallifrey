@@ -360,7 +360,7 @@ class Siemens(PhoneVendorMixin):
                 '    execute("/usr/share/pf-xivo-provisioning/bin/dhcpconfig",\n',
                 '            "%s",\n' % model,
                 '            binary-to-ascii(10, 8, ".", leased-address),\n',
-                '            binary-to-ascii(16, 8, ":", suffix(hardware, 1)),\n',
+                '            binary-to-ascii(16, 8, ":", suffix(hardware, 6)),\n',
                 '            20);\n',
                 '}\n',
                 '\n'):
