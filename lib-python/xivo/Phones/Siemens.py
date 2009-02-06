@@ -147,6 +147,15 @@ class SiemensHTTP:
         if os.access(phone_file, os.R_OK):
             rcp.readfp(open(phone_file))
 
+        if rcp.has_option('miscellaneous', 'user_firmware_url') \
+        and rcp.has_option('miscellaneous', 'user_firmware_filename'):
+            rcp.set('miscellaneous',
+                    'user_firmware_url',
+                    "%s/%s" % (rcp.get('miscellaneous', 'user_firmware_url').rstrip('/'),
+                               rcp.get('miscellaneous', 'user_firmware_filename').lstrip('/')))
+
+            rcp.remove_option('miscellaneous', 'user_firmware_filename')
+
         if not self._prepare_ip_configuration(rcp):
             rcp.set('ip_configuration', 'ip_address_type', 1)
 
