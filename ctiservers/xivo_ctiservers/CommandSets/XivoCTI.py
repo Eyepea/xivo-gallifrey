@@ -2954,7 +2954,7 @@ class XivoCTICommand(BaseCommand):
                 context = event.get('Context', CONTEXT_UNKNOWN)
                 self.__sheet_alert__('faxreceived', astid, context, event)
                 return
-
+        
         def ami_meetmejoin(self, astid, event):
                 meetmenum = event.get('Meetme')
                 channel = event.get('Channel')
@@ -2985,6 +2985,7 @@ class XivoCTICommand(BaseCommand):
                                                            'userid' : userid,
                                                            'fullname' : calleridname,
                                                            'phonenum' : calleridnum }
+                        log.info('%s ami_meetmejoin : channel %s added to meetme %s' % (astid, channel, meetmenum))
                         tosend = { 'class' : 'meetme',
                                    'function' : 'update',
                                    'payload' : { 'action' : 'join',
@@ -3020,6 +3021,7 @@ class XivoCTICommand(BaseCommand):
                                                  'details' : meetmeref['channels'][channel] }
                                    }
                         del meetmeref['channels'][channel]
+                        log.info('%s ami_meetmeleave : channel %s removed from meetme %s' % (astid, channel, meetmenum))
                         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 else:
                         log.warning('%s ami_meetmeleave : channel %s not in meetme %s' % (astid, channel, meetmenum))
