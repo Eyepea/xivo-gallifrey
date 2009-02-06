@@ -255,6 +255,7 @@ def manage_info_connections(connid, msg, sep):
                 if len(usefulmsg) == 0:
                         break
                 try:
+                        retstr = 'OK'
                         if usefulmsg == 'show_infos':
                                 time_uptime = int(time.time() - time_start)
                                 reply = 'infos=' \
@@ -351,8 +352,8 @@ def manage_info_connections(connid, msg, sep):
                         elif usefulmsg.startswith('%s:' % commandset):
                                 commandclass.cliaction(connid, usefulmsg)
                         else:
-                                pass
-                        connid.sendall('XIVO-INFO:OK\n')
+                                retstr = 'KO'
+                        connid.sendall('XIVO-INFO:%s\n' % retstr)
                 except Exception:
                         log.exception('INFO connection [%s] : KO when sending to %s'
                                       % (usefulmsg, requester))

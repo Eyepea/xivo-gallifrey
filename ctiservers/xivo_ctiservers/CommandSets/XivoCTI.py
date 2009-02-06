@@ -4498,7 +4498,8 @@ class XivoCTICommand(BaseCommand):
                         else:
                                 wl = []
                                 for fname in z.match_direct:
-                                        wl.append("%s REGEXP '%s'" %(fname, searchpattern))
+                                        # wl.append("%s REGEXP '%s'" %(fname, searchpattern)) # not in 'sqlite'
+                                        wl.append("%s LIKE '%%%s%%'" % (fname, searchpattern))
                                 whereline = 'WHERE ' + ' OR '.join(wl)
                         try:
                                 conn = anysql.connect_by_uri(str(z.uri))
