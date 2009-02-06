@@ -270,9 +270,9 @@ sha1sum: 6d8ed2160a3c8c61b092d8dba9d1fe31f4c33c2e
 
 [spip_ssip_3_1_2_release_sig_split.zip]
 url: http://downloads.polycom.com/voice/voip/sp_ss_sip/spip_ssip_3_1_2_release_sig_split.zip
-size: 62129573
-md5sum: 2a2dd46432b210a88663297e532a6527
-sha1sum: 3f4de6f91055d2f1221264d3c6430356701d1159
+size: 62129600
+md5sum: d154f07357522977501e667dcb3e9c5a
+sha1sum: f9ea485e66c1676daac32225c72ae1b7fb934ddb
 
 # Snom 300 7.3.7
 [sn300_737]
