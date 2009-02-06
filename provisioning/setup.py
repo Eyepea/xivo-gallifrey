@@ -38,7 +38,7 @@ setup(name='xivo_provisioning',
             ]),
             ('/etc/pf-xivo', ['etc/pf-xivo/provisioning.conf']),
             ('/usr/sbin', ['autoprov']),
-            ('/usr/share/asterisk/agi-bin/', ['initconfig']),
-            ('/usr/share/pf-xivo-provisioning/bin', ['dhcpconfig'])
+            ('/usr/share/asterisk/agi-bin', ['bin/initconfig']),
+            ('/usr/share/pf-xivo-provisioning/bin', ['bin/dhcpconfig'])
          ],
      )
