@@ -41,15 +41,32 @@ APP_FILES = [
     "3111-15600-001.sip.ld",
     "3111-40000-001.sip.ld",
     "phone1.cfg",
-    "sip.ld",
     "sip.ver",
     "sip.cfg",
-    "SoundPointIPWelcome.wav"
+    "SoundPointIPWelcome.wav",
+    "Beach256x116.jpg",
+    "BeachEM.jpg",
+    "Beach.jpg",
+    "Jellyfish256x116.jpg",
+    "JellyfishEM.jpg",
+    "Jellyfish.jpg",
+    "Leaf256x116.jpg",
+    "LeafEM.jpg",
+    "Leaf.jpg",
+    "Mountain256x116.jpg",
+    "MountainEM.jpg",
+    "Mountain.jpg",
+    "Palm256x116.jpg",
+    "PalmEM.jpg",
+    "Palm.jpg",
+    "Sailboat256x116.jpg",
+    "SailboatEM.jpg",
+    "Sailboat.jpg"
 ]
 
 
-def polycom_install_412(firmware, xfile):
-    zip_path = fetchfw.zip_extract_all("polycom_fw", xfile.path)
+def polycom_install_bootrom(xfile):
+    zip_path = fetchfw.zip_extract_all("polycom_bootrom", xfile.path)
     fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, "Polycom")
     
     try:
@@ -63,7 +80,7 @@ def polycom_install_412(firmware, xfile):
         shutil.copy2(fw_src_path, fw_dst_path)
 
 
-def polycom_install_app_311(firmware, xfile):
+def polycom_install_app(xfile):
     zip_path = fetchfw.zip_extract_all("polycom_app", xfile.path)
     fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, "Polycom")
     
@@ -85,12 +102,10 @@ def polycom_install_app_311(firmware, xfile):
 
 def polycom_install(firmware):
     for xfile in firmware.remote_files:
-        if xfile.filename == "spip_ssip_BootROM_4_1_2_release_sig.zip":
-            polycom_install_412(firmware, xfile)
-        elif xfile.filename == "spip_ssip_3_1_1_release_sig.zip":
-            polycom_install_app_311(firmware, xfile)
+        if xfile.filename.startswith("spip_ssip_BootROM"):
+            polycom_install_bootrom(xfile)
         else:
-            fetchfw.die("unsupported file for Polycom firmware")
+            polycom_install_app(xfile)
 
 
 fetchfw.register_install_fn("Polycom", None, polycom_install)
