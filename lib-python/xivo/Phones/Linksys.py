@@ -157,13 +157,6 @@ class Linksys(PhoneVendorMixin):
                                    % (unit, key, blf, exten, cls.ASTERISK_IPV4, exten, unit, key))
         return "\n".join(fk_config_lines)
 
-    def do_autoprov(self, provinfo):
-        """
-        Entry point to generate the provisioned configuration for
-        this phone.
-        """
-        self.__generate(provinfo)
-
     def do_reinitprov(self):
         """
         Entry point to generate the reinitialized (GUEST)
@@ -176,6 +169,13 @@ class Linksys(PhoneVendorMixin):
                   'passwd': "guest",
                   'funckey': {},
                 })
+
+    def do_autoprov(self, provinfo):
+        """
+        Entry point to generate the provisioned configuration for
+        this phone.
+        """
+        self.__generate(provinfo)
 
     # Introspection entry points
 
