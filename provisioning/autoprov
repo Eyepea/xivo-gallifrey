@@ -69,7 +69,7 @@ from xivo.ThreadingHTTPServer import ThreadingHTTPServer
 from xivo import xivo_config
 from xivo.xivo_config import ProvGeneralConf as Pgc
 from xivo import network
-from xivo.Phones import * # pylint: disable-msg=W0614
+from xivo.Phones import * # pylint: disable-msg=W0401
 
 from xivo.moresynchro import RWLock
 from xivo.moresynchro import ListLock
@@ -465,6 +465,21 @@ def __provisioning(mode, ctx, phone):
         log.error("__provisioning(): Empty model or vendor or isinalan in phone %r", phone)
         raise BadRequest, "Empty model or vendor or isinalan in phone %r" % phone
 
+    # For example from DHCP, we don't know the provcode and the iduserfeatures
+    # but there is the mac address so we try to find the iduserfeatures
+    # with the mac address.
+    # If we don't find the iduserfeatures the phone will be reinitialized.
+    # XXX If the actions isn't "no" the phone would reboot (loop ?!).
+    if "provcode" in phone and "macaddr" in phone and phone["provcode"] == "-1":
+        phonedesc = ctx.dbinfos.phone_by_macaddr(phone["macaddr"])
+
+        del(phone["provcode"])
+
+        if phonedesc is not None:
+            phone["iduserfeatures"] = str(phonedesc["iduserfeatures"])
+        else:
+            phone["iduserfeatures"] = "0"
+
     if "provcode" in phone and phone["provcode"] != "0" and \
        not xivo_config.well_formed_provcode(phone["provcode"]):
         log.error("__provisioning(): Invalid provcode %s", phone["provcode"])
@@ -723,7 +738,7 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
     def posted_userdeleted_infos(self):
         "Used in 'userdeleted' mode"
         userinfo = {}
-        self.save_posted_vars(userinfo, ("iduserfeatures","actions"))
+        self.save_posted_vars(userinfo, ("iduserfeatures", "actions"))
         return userinfo
 
     def log_message(self, fmt, *args):
