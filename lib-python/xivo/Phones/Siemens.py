@@ -26,6 +26,7 @@ __license__ = """
 """
 
 import os
+import sha
 import logging
 import urllib2
 
@@ -95,7 +96,7 @@ class SiemensHTTP:
     @staticmethod
     def _prepare_ip_configuration(rcp):
         if not rcp.has_option('ip_configuration', 'ip_address_type') \
-        or rcp.getint('ip_configuration', 'ip_address_type') != 0:
+        or rcp.get('ip_configuration', 'ip_address_type') != '0':
             return
 
         options = (('ip_address', False, network.is_ipv4_address_valid),
@@ -130,22 +131,7 @@ class SiemensHTTP:
         return True
 
     def provi(self, ipv4, model, macaddr):
-        model = model.lower()
-        macaddr = macaddr.lower().replace(":", "")
-
-        common_file = os.path.join(self.common_dir, model + ".ini")
-        phone_file = os.path.join(self.common_dir, model + "-" + macaddr + ".ini")
-
-        if not os.access(common_file, os.R_OK):
-            raise IOError, "'%s' isn't a file or isn't readable" % common_file
-
-        self.login(ipv4)
-
-        rcp = RawConfigParser()
-        rcp.readfp(open(common_file))
-
-        if os.access(phone_file, os.R_OK):
-            rcp.readfp(open(phone_file))
+        rcp = Siemens.get_config(self.common_dir, model, macaddr)
 
         if rcp.has_option('miscellaneous', 'user_firmware_url') \
         and rcp.has_option('miscellaneous', 'user_firmware_filename'):
@@ -158,6 +144,8 @@ class SiemensHTTP:
 
         if not self._prepare_ip_configuration(rcp):
             rcp.set('ip_configuration', 'ip_address_type', 1)
+
+        self.login(ipv4)
 
         for value in self.SECTION_PAGE:
             xlen = len(value)
@@ -239,6 +227,25 @@ class Siemens(PhoneVendorMixin):
         if self.phone['model'].upper() not in self.SIEMENS_MODELS:
             raise ValueError, "Unknown Siemens model %r" % self.phone['model']
 
+    @staticmethod
+    def get_config(common_dir, model, macaddr):
+        model = model.lower()
+        macaddr = macaddr.lower().replace(":", "")
+
+        common_file = os.path.join(common_dir, model + ".ini")
+        phone_file = os.path.join(common_dir, model + "-" + macaddr + ".ini")
+
+        if not os.access(common_file, os.R_OK):
+            raise IOError, "'%s' isn't a file or isn't readable" % common_file
+
+        rcp = RawConfigParser()
+        rcp.readfp(open(common_file))
+
+        if os.access(phone_file, os.R_OK):
+            rcp.readfp(open(phone_file))
+
+        return rcp
+
     def __action(self, command, common_dir, common_pin):
         http = SiemensHTTP(common_dir, common_pin)
         html = SiemensHTMLParser('input', [('name', 'use_G729_B'), ('checked', 'checked')])
@@ -271,11 +278,11 @@ class Siemens(PhoneVendorMixin):
         Entry point to send the (possibly post) reinit command to
         the phone.
         """
-        self.__action("reboot", self.SIEMENS_COMMON_DIR, self.SIEMENS_COMMON_PIN)
+        self.__action('reboot', self.SIEMENS_COMMON_DIR, self.SIEMENS_COMMON_PIN)
 
     def do_reboot(self):
         "Entry point to send the reboot command to the phone."
-        self.__action("reboot", self.SIEMENS_COMMON_DIR, self.SIEMENS_COMMON_PIN)
+        self.__action('reboot', self.SIEMENS_COMMON_DIR, self.SIEMENS_COMMON_PIN)
 
     def __generate(self, provinfo):
         """
@@ -294,6 +301,7 @@ class Siemens(PhoneVendorMixin):
                   'user_phone_ident':   provinfo['ident'],
                   'user_phone_number':  provinfo['number'],
                   'user_phone_passwd':  provinfo['passwd'],
+                  'config_sha1sum':     provinfo['sha1sum'],
                   'asterisk_ipv4':      self.ASTERISK_IPV4,
                   'ntp_server_ipv4':    self.NTP_SERVER_IPV4,
                 },
@@ -302,6 +310,29 @@ class Siemens(PhoneVendorMixin):
         tmp_file.writelines(txt)
         tmp_file.close()
         os.rename(tmp_filename, cfg_filename)
+
+    def __verify_need_provi(self):
+        rcp = Siemens.get_config(self.SIEMENS_COMMON_DIR, self.phone['model'], self.phone['macaddr'])
+
+        sha1sum = None
+
+        if rcp.has_option('miscellaneous', 'config_sha1sum'):
+            sha1sum = rcp.get('miscellaneous', 'config_sha1sum')
+            if sha1sum == '0':
+                return
+
+            rcp.remove_option('miscellaneous', 'config_sha1sum')
+
+        tmp = os.tmpfile()
+        rcp.write(tmp)
+        tmp.seek(0)
+        new_sha1sum = sha.new(tmp.read()).hexdigest()
+        tmp.close()
+
+        if sha1sum == new_sha1sum:
+            return
+
+        return new_sha1sum
 
     def __provi(self):
         http = SiemensHTTP(self.SIEMENS_COMMON_DIR, self.SIEMENS_COMMON_PIN)
@@ -312,11 +343,17 @@ class Siemens(PhoneVendorMixin):
         Entry point to generate the reinitialized (GUEST)
         configuration for this phone.
         """
+        sha1sum = self.__verify_need_provi()
+
+        if not sha1sum:
+            return
+
         self.__generate(
-                { 'name':   "guest",
-                  'ident':  "guest",
-                  'number': "guest",
-                  'passwd': "guest",
+                { 'name':       "guest",
+                  'ident':      "guest",
+                  'number':     "guest",
+                  'passwd':     "guest",
+                  'sha1sum':    sha1sum,
                 })
         self.__provi()
 
@@ -325,6 +362,13 @@ class Siemens(PhoneVendorMixin):
         Entry point to generate the provisioned configuration for
         this phone.
         """
+        sha1sum = self.__verify_need_provi()
+
+        if not sha1sum:
+            return
+
+        provinfo['sha1sum'] = sha1sum
+
         self.__generate(provinfo)
         self.__provi()
 
