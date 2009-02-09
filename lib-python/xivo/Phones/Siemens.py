@@ -43,7 +43,7 @@ from xivo.xivo_config import PhoneVendorMixin
 log = logging.getLogger("xivo.Phones.Siemens") # pylint: disable-msg=C0103
 
 class SiemensHTTP:
-    
+
     SECTION_PAGE = (('account0', 'settings_telephony_voip.html', (('id', 0), ('go_profile', 0), ('account_id', 0))),
                     ('account1', 'settings_telephony_voip.html', (('id', 1), ('go_profile', 0), ('account_id', 1))),
                     ('account2', 'settings_telephony_voip.html', (('id', 2), ('go_profile', 0), ('account_id', 2))),
@@ -173,7 +173,7 @@ class SiemensHTTP:
             raise LookupError("Not logged in (ip: '%s')" % ipv4)
 
         request.close()
- 
+
     def logout(self, ipv4):
         request = self.request(ipv4, 'logout.html')
         request.close()
@@ -311,16 +311,22 @@ class Siemens(PhoneVendorMixin):
         tmp_file.close()
         os.rename(tmp_filename, cfg_filename)
 
-    def __verify_need_provi(self):
+    def __get_config_sha1sum(self):
         rcp = Siemens.get_config(self.SIEMENS_COMMON_DIR, self.phone['model'], self.phone['macaddr'])
-
-        sha1sum = None
 
         if rcp.has_option('miscellaneous', 'config_sha1sum'):
             sha1sum = rcp.get('miscellaneous', 'config_sha1sum')
-            if sha1sum == '0':
-                return
+        else:
+            sha1sum = '1'
 
+        return sha1sum
+
+    def __verify_need_provi(self, sha1sum):
+        rcp = Siemens.get_config(self.SIEMENS_COMMON_DIR, self.phone['model'], self.phone['macaddr'])
+
+        if sha1sum == '0':
+            return
+        elif rcp.has_option('miscellaneous', 'config_sha1sum'):
             rcp.remove_option('miscellaneous', 'config_sha1sum')
 
         tmp = os.tmpfile()
@@ -343,18 +349,25 @@ class Siemens(PhoneVendorMixin):
         Entry point to generate the reinitialized (GUEST)
         configuration for this phone.
         """
-        sha1sum = self.__verify_need_provi()
+        provinfo = {'name':     'guest',
+                    'ident':    'guest',
+                    'number':   'guest',
+                    'passwd':   'guest',
+                    'sha1sum':  self.__get_config_sha1sum()}
+
+        if provinfo['sha1sum'] == '0':
+            return
+
+        self.__generate(provinfo)
+
+        sha1sum = self.__verify_need_provi(provinfo['sha1sum'])
 
         if not sha1sum:
             return
 
-        self.__generate(
-                { 'name':       "guest",
-                  'ident':      "guest",
-                  'number':     "guest",
-                  'passwd':     "guest",
-                  'sha1sum':    sha1sum,
-                })
+        provinfo['sha1sum'] = sha1sum
+
+        self.__generate(provinfo)
         self.__provi()
 
     def do_autoprov(self, provinfo):
@@ -362,7 +375,14 @@ class Siemens(PhoneVendorMixin):
         Entry point to generate the provisioned configuration for
         this phone.
         """
-        sha1sum = self.__verify_need_provi()
+        provinfo['sha1sum'] = self.__get_config_sha1sum()
+
+        if provinfo['sha1sum'] == '0':
+            return
+
+        self.__generate(provinfo)
+
+        sha1sum = self.__verify_need_provi(provinfo['sha1sum'])
 
         if not sha1sum:
             return
