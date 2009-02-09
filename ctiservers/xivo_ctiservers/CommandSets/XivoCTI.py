@@ -1076,18 +1076,20 @@ class XivoCTICommand(BaseCommand):
                                 itemdir['xivo-faxstatus'] = event.get('PhaseEString')
                                 
                         elif where in ['agentlinked', 'agentunlinked']:
-                                dst = event.get('Channel2')[6:]
-                                src = event.get('CallerID1')
+                                dstnum = event.get('Channel2')[6:]
                                 chan = event.get('Channel1')
                                 queuename = extraevent.get('xivo_queuename')
                                 
                                 itemdir['xivo-channel'] = chan
                                 itemdir['xivo-queuename'] = queuename
-                                itemdir['xivo-callerid'] = src
-                                itemdir['xivo-agentnumber'] = dst
+                                itemdir['xivo-callerid'] = event.get('CallerID1')
+                                itemdir['xivo-calleridname'] = event.get('CallerIDName1').decode('utf8')
+                                itemdir['xivo-calledid'] = event.get('CallerID2')
+                                itemdir['xivo-calledidname'] = event.get('CallerIDName2').decode('utf8')
+                                itemdir['xivo-agentnumber'] = dstnum
                                 itemdir['xivo-uniqueid'] = event.get('Uniqueid1')
                                 
-                                userinfos.extend(self.__find_userinfos_by_agentnum__(astid, dst))
+                                userinfos.extend(self.__find_userinfos_by_agentnum__(astid, dstnum))
                                 
                         elif where == 'agi':
                                 r_caller = extraevent.get('caller_num')
@@ -1108,7 +1110,9 @@ class XivoCTICommand(BaseCommand):
                                 itemdir['xivo-channelpeer'] = event.get('Channel2')
                                 itemdir['xivo-uniqueid'] = event.get('Uniqueid1')
                                 itemdir['xivo-callerid'] = event.get('CallerID1')
+                                itemdir['xivo-calleridname'] = event.get('CallerIDName1').decode('utf8')
                                 itemdir['xivo-calledid'] = event.get('CallerID2')
+                                itemdir['xivo-calledidname'] = event.get('CallerIDName2').decode('utf8')
                                 for uinfo in self.ulist_ng.keeplist.itervalues():
                                         if uinfo.get('astid') == astid and uinfo.get('phonenum') == itemdir['xivo-calledid']:
                                                 userinfos.append(uinfo)
@@ -1770,11 +1774,6 @@ class XivoCTICommand(BaseCommand):
                                                                         'outcall' : uid1info.get('OUTCALL'),
                                                                         'did' : uid1info.get('DID') })
                                         self.__send_msg_to_cti_clients__(msg)
-                                        
-                try:
-                        self.weblist['phones'][astid].handle_ami_event_link(chan1, chan2, clid1, clid2)
-                except Exception, exc:
-                        pass
                 return
 
         def ami_unlink(self, astid, event):
@@ -1784,7 +1783,7 @@ class XivoCTICommand(BaseCommand):
                 clid2 = event.get('CallerID2')
                 uid1 = event.get('Uniqueid1')
                 uid2 = event.get('Uniqueid2')
-                # print astid, event
+                # log.info('%s AMI_UNLINK : %s' % (astid, event))
                 if self.__ignore_dtmf__(astid, uid1, 'unlink'):
                         return
                 if self.__ignore_dtmf__(astid, uid2, 'unlink'):
@@ -1899,10 +1898,6 @@ class XivoCTICommand(BaseCommand):
                                         self.__presence_action__(astid, ag, uinfo.get('capaid'), status)
                                         msg = self.__build_agupdate__('phoneunlink', astid, 'Agent/%s' % ag)
                                         self.__send_msg_to_cti_clients__(msg)
-                try:
-                        self.weblist['phones'][astid].handle_ami_event_unlink(chan1, chan2, clid1, clid2)
-                except Exception, exc:
-                        pass
                 return
 
         def __presence_action__(self, astid, anum, capaid, status):
