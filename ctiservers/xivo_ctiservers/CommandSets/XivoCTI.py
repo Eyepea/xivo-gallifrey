@@ -769,7 +769,7 @@ class XivoCTICommand(BaseCommand):
                                                                     'admin-pin' : mitem.get('admin-pin'),
 
                                                                     'adminid' : None,
-                                                                    'channels' : {}
+                                                                    'uniqueids' : {}
                                                                     }
                         except Exception:
                                 log.exception('(getmeetmelist : %s)' % mitem)
@@ -1171,7 +1171,7 @@ class XivoCTICommand(BaseCommand):
                                 itemdir['xivo-callerid'] = clid
                                 if len(clid) > 7 and clid != '<unknown>':
                                         itemdir['xivo-tomatch-callerid'] = clid
-
+                                        
                         # 2/4
                         # call a database for xivo-callerid matching (or another pattern to set somewhere)
                         dirlist = actionopt.get('directories')
@@ -2927,7 +2927,7 @@ class XivoCTICommand(BaseCommand):
                 if filename and os.path.isfile(filename):
                         os.unlink(filename)
                         log.info('faxsent event handler : removed %s' % filename)
-
+                        
                 if event.get('PhaseEStatus') == '0':
                         tosend = { 'class' : 'faxprogress',
                                    'status' : 'ok' }
@@ -2937,7 +2937,7 @@ class XivoCTICommand(BaseCommand):
                                    'reason' : '%s (code %s)' % (event.get('PhaseEString'),
                                                                 event.get('PhaseEStatus')) }
                 repstr = self.__cjson_encode__(tosend)
-
+                
                 # 'FileName': '/var/spool/asterisk/fax/astfaxsend-q6yZAKTJvU-0x48be7930.tif'
                 faxid = filename[len('/var/spool/asterisk/fax/astfaxsend-'):-4]
                 if faxid in self.faxes:
@@ -2954,6 +2954,7 @@ class XivoCTICommand(BaseCommand):
         def ami_meetmejoin(self, astid, event):
                 meetmenum = event.get('Meetme')
                 channel = event.get('Channel')
+                uniqueid = event.get('Uniqueid')
                 usernum = event.get('Usernum')
                 isadmin = (event.get('Admin') == 'Yes')
                 pseudochan = event.get('PseudoChan')
@@ -2965,7 +2966,7 @@ class XivoCTICommand(BaseCommand):
                         log.warning('%s ami_meetmejoin : unable to find room %s' % (astid, meetmenum))
                         return
                 
-                if channel not in meetmeref['channels']:
+                if uniqueid not in meetmeref['uniqueids']:
                         phoneid = self.__phoneid_from_channel__(astid, channel)
                         uinfo = self.__userinfo_from_phoneid__(astid, phoneid)
                         if uinfo:
@@ -2974,14 +2975,15 @@ class XivoCTICommand(BaseCommand):
                                 userid = ''
                         if isadmin:
                                 meetmeref['adminid'] = userid
-                        meetmeref['channels'][channel] = { 'usernum' : usernum,
-                                                           'mutestatus' : 'off',
-                                                           'recordstatus' : 'off',
-                                                           'time_start' : time.time(),
-                                                           'userid' : userid,
-                                                           'fullname' : calleridname,
-                                                           'phonenum' : calleridnum }
-                        log.info('%s ami_meetmejoin : channel %s added to meetme %s' % (astid, channel, meetmenum))
+                        meetmeref['uniqueids'][uniqueid] = { 'usernum' : usernum,
+                                                             'mutestatus' : 'off',
+                                                             'recordstatus' : 'off',
+                                                             'time_start' : time.time(),
+                                                             'userid' : userid,
+                                                             'fullname' : calleridname,
+                                                             'phonenum' : calleridnum }
+                        log.info('%s ami_meetmejoin : (%s) channel %s added to meetme %s'
+                                 % (astid, uniqueid, channel, meetmenum))
                         tosend = { 'class' : 'meetme',
                                    'function' : 'update',
                                    'payload' : { 'action' : 'join',
@@ -2989,17 +2991,19 @@ class XivoCTICommand(BaseCommand):
                                                  'roomnum' : meetmenum,
                                                  'roomname' : meetmeref['name'],
                                                  'adminid' : meetmeref['adminid'],
-                                                 'channel' : channel,
-                                                 'details' : meetmeref['channels'][channel] }
+                                                 'uniqueid' : uniqueid,
+                                                 'details' : meetmeref['uniqueids'][uniqueid] }
                                    }
                         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 else:
-                        log.warning('%s ami_meetmejoin : channel %s already in meetme %s' % (astid, channel, meetmenum))
+                        log.warning('%s ami_meetmejoin : (%s) channel %s already in meetme %s'
+                                    % (astid, uniqueid, channel, meetmenum))
                 return
         
         def ami_meetmeleave(self, astid, event):
                 meetmenum = event.get('Meetme')
                 channel = event.get('Channel')
+                uniqueid = event.get('Uniqueid')
                 usernum = event.get('Usernum')
                 
                 meetmeref = self.weblist['meetme'][astid].byroomnum(meetmenum)
@@ -3007,46 +3011,50 @@ class XivoCTICommand(BaseCommand):
                         log.warning('%s ami_meetmeleave : unable to find room %s' % (astid, meetmenum))
                         return
                 
-                if channel in meetmeref['channels']:
+                if uniqueid in meetmeref['uniqueids']:
                         tosend = { 'class' : 'meetme',
                                    'function' : 'update',
                                    'payload' : { 'action' : 'leave',
                                                  'astid' : astid,
                                                  'roomnum' : meetmenum,
-                                                 'channel' : channel,
-                                                 'details' : meetmeref['channels'][channel] }
+                                                 'uniqueid' : uniqueid,
+                                                 'details' : meetmeref['uniqueids'][uniqueid] }
                                    }
-                        del meetmeref['channels'][channel]
-                        log.info('%s ami_meetmeleave : channel %s removed from meetme %s' % (astid, channel, meetmenum))
                         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
+                        del meetmeref['uniqueids'][uniqueid]
+                        log.info('%s ami_meetmeleave : (%s) channel %s removed from meetme %s'
+                                 % (astid, uniqueid, channel, meetmenum))
                 else:
-                        log.warning('%s ami_meetmeleave : channel %s not in meetme %s' % (astid, channel, meetmenum))
+                        log.warning('%s ami_meetmeleave : (%s) channel %s not in meetme %s'
+                                    % (astid, uniqueid, channel, meetmenum))
                 return
         
         def ami_meetmemute(self, astid, event):
                 meetmenum = event.get('Meetme')
                 channel = event.get('Channel')
+                uniqueid = event.get('Uniqueid')
                 usernum = event.get('Usernum')
                 
                 meetmeref = self.weblist['meetme'][astid].byroomnum(meetmenum)
                 if meetmeref is None:
-                        log.warning('%s : meetmemute : unable to find room %s' % (astid, meetmenum))
+                        log.warning('%s ami_meetmemute : unable to find room %s' % (astid, meetmenum))
                         return
-
+                
                 mutestatus = event.get('Status')
-                if channel in meetmeref['channels']:
-                        meetmeref['channels'][channel]['mutestatus'] = mutestatus
+                if uniqueid in meetmeref['uniqueids']:
+                        meetmeref['uniqueids'][uniqueid]['mutestatus'] = mutestatus
                         tosend = { 'class' : 'meetme',
                                    'function' : 'update',
                                    'payload' : { 'action' : 'mutestatus',
                                                  'astid' : astid,
                                                  'roomnum' : meetmenum,
-                                                 'channel' : channel,
-                                                 'details' : meetmeref['channels'][channel] }
+                                                 'uniqueid' : uniqueid,
+                                                 'details' : meetmeref['uniqueids'][uniqueid] }
                                    }
                         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 else:
-                        log.warning('%s : channel %s not in meetme %s' % (astid, channel, meetmenum))
+                        log.warning('%s ami_meetmemute : (%s) channel %s not in meetme %s'
+                                    % (astid, uniqueid, channel, meetmenum))
                 return
         
         def ami_meetmetalking(self, astid, event):
@@ -3056,6 +3064,7 @@ class XivoCTICommand(BaseCommand):
         def ami_meetmelist(self, astid, event):
                 meetmenum = event.get('Conference')
                 channel = event.get('Channel')
+                uniqueid = event.get('Uniqueid')
                 usernum = event.get('UserNumber')
                 mutestatus = 'off'
                 if event.get('Muted') in ['Yes', 'By admin']:
@@ -3068,10 +3077,10 @@ class XivoCTICommand(BaseCommand):
                 
                 meetmeref = self.weblist['meetme'][astid].byroomnum(meetmenum)
                 if meetmeref is None:
-                        log.warning('%s : meetmelist : unable to find room %s' % (astid, meetmenum))
+                        log.warning('%s ami_meetmelist : unable to find room %s' % (astid, meetmenum))
                         return
                 
-                if channel not in meetmeref['channels']:
+                if uniqueid not in meetmeref['uniqueids']:
                         phoneid = self.__phoneid_from_channel__(astid, channel)
                         uinfo = self.__userinfo_from_phoneid__(astid, phoneid)
                         if uinfo:
@@ -3080,14 +3089,15 @@ class XivoCTICommand(BaseCommand):
                                 userid = ''
                         if isadmin:
                                 meetmeref['adminid'] = userid
-                        meetmeref['channels'][channel] = { 'usernum' : usernum,
-                                                           'mutestatus' : mutestatus,
-                                                           'recordstatus' : recordstatus,
-                                                           'userid' : userid,
-                                                           'fullname' : calleridname,
-                                                           'phonenum' : calleridnum }
+                        meetmeref['uniqueids'][uniqueid] = { 'usernum' : usernum,
+                                                             'mutestatus' : mutestatus,
+                                                             'recordstatus' : recordstatus,
+                                                             'userid' : userid,
+                                                             'fullname' : calleridname,
+                                                             'phonenum' : calleridnum }
                 else:
-                        log.warning('%s : channel %s already in meetme %s' % (astid, channel, meetmenum))
+                        log.warning('%s ami_meetmelist : (%s) channel %s already in meetme %s'
+                                    % (astid, uniqueid, channel, meetmenum))
                 
                 # {'Talking': 'Not monitored', 'Admin': 'No', 'MarkedUser': 'No', 'Role': 'Talk and listen'}
                 return
@@ -3118,12 +3128,11 @@ class XivoCTICommand(BaseCommand):
                         # this case should have already been handled by the MeetMeList request
                         # however knowing how much time has been spent might be useful here
                         meetmenum = applidata[0]
-                        channel = event.get('Channel')
                         seconds = int(event.get('Seconds'))
                         meetmeref = self.weblist['meetme'][astid].byroomnum(meetmenum)
                         if meetmeref is not None:
-                                if channel in meetmeref['channels']:
-                                        meetmeref['channels'][channel]['time_start'] = time.time() - seconds
+                                if uniqueid in meetmeref['uniqueids']:
+                                        meetmeref['uniqueids'][uniqueid]['time_start'] = time.time() - seconds
                         return
                 elif appliname == 'Playback':
                         log.info('%s ami_status : %s %s' % (astid, appliname, applidata))
@@ -3380,38 +3389,52 @@ class XivoCTICommand(BaseCommand):
                                                         if function == 'record' and len(argums) > 3:
                                                                 castid = argums[0]
                                                                 meetmenum = argums[1]
-                                                                channel = argums[3]
-                                                                
-                                                                meetmeref = self.weblist['meetme'][castid].byroomnum(meetmenum)
-                                                                if meetmeref is not None and channel in meetmeref['channels']:
-                                                                        userid = '%s/%s' % (userinfo.get('astid'), userinfo.get('xivo_userid'))
-                                                                        if userid == meetmeref['adminid']:
-                                                                                datestring = time.strftime('%Y%m%d%H%M%S', time.localtime())
-                                                                                meetmeref['channels'][channel]['recordstatus'] = 'on'
-                                                                                self.__ami_execute__(castid, 'monitor', channel, 'cti-meetme-%s-%s' % (meetmenum, datestring))
+                                                                uniqueid = argums[3]
+                                                                if castid in self.uniqueids and uniqueid in self.uniqueids[castid]:
+                                                                        channel = self.uniqueids[castid][uniqueid]['channel']
+                                                                        meetmeref = self.weblist['meetme'][castid].byroomnum(meetmenum)
+                                                                        if meetmeref is not None and uniqueid in meetmeref['uniqueids']:
+                                                                                userid = '%s/%s' % (userinfo.get('astid'), userinfo.get('xivo_userid'))
+                                                                                if userid == meetmeref['adminid']:
+                                                                                        datestring = time.strftime('%Y%m%d%H%M%S', time.localtime())
+                                                                                        meetmeref['uniqueids'][uniqueid]['recordstatus'] = 'on'
+                                                                                        self.__ami_execute__(castid, 'monitor', channel,
+                                                                                                             'cti-meetme-%s-%s' % (meetmenum, datestring))
+                                                                else:
+                                                                        log.warning('(%s) either astid %s or uniqueid %s is unknown'
+                                                                                    % (function, castid, uniqueid))
                                                         elif function == 'unrecord' and len(argums) > 3:
                                                                 castid = argums[0]
                                                                 meetmenum = argums[1]
-                                                                channel = argums[3]
-                                                                
-                                                                meetmeref = self.weblist['meetme'][castid].byroomnum(meetmenum)
-                                                                if meetmeref is not None and channel in meetmeref['channels']:
-                                                                        userid = '%s/%s' % (userinfo.get('astid'), userinfo.get('xivo_userid'))
-                                                                        if userid == meetmeref['adminid']:
-                                                                                meetmeref['channels'][channel]['recordstatus'] = 'off'
-                                                                                self.__ami_execute__(castid, 'stopmonitor', channel)
+                                                                uniqueid = argums[3]
+                                                                if castid in self.uniqueids and uniqueid in self.uniqueids[castid]:
+                                                                        channel = self.uniqueids[castid][uniqueid]['channel']
+                                                                        meetmeref = self.weblist['meetme'][castid].byroomnum(meetmenum)
+                                                                        if meetmeref is not None and uniqueid in meetmeref['uniqueids']:
+                                                                                userid = '%s/%s' % (userinfo.get('astid'), userinfo.get('xivo_userid'))
+                                                                                if userid == meetmeref['adminid']:
+                                                                                        meetmeref['uniqueids'][uniqueid]['recordstatus'] = 'off'
+                                                                                        self.__ami_execute__(castid, 'stopmonitor', channel)
+                                                                else:
+                                                                        log.warning('(%s) either astid %s or uniqueid %s is unknown'
+                                                                                    % (function, castid, uniqueid))
                                                         elif function in ['kick', 'mute', 'unmute'] and len(argums) > 2:
                                                                 castid = argums[0]
                                                                 meetmenum = argums[1]
                                                                 usernum = argums[2]
-                                                                channel = argums[3]
-                                                                
-                                                                meetmeref = self.weblist['meetme'][castid].byroomnum(meetmenum)
-                                                                if meetmeref is not None and channel in meetmeref['channels']:
-                                                                        userid = '%s/%s' % (userinfo.get('astid'), userinfo.get('xivo_userid'))
-                                                                        if userid == meetmeref['adminid'] or userid == meetmeref['channels'][channel]['userid']:
-                                                                                self.__ami_execute__(castid, 'sendcommand',
-                                                                                                     'Command', [('Command', 'meetme %s %s %s' % (function, meetmenum, usernum))])
+                                                                uniqueid = argums[3]
+                                                                if castid in self.uniqueids and uniqueid in self.uniqueids[castid]:
+                                                                        channel = self.uniqueids[castid][uniqueid]['channel']
+                                                                        meetmeref = self.weblist['meetme'][castid].byroomnum(meetmenum)
+                                                                        if meetmeref is not None and uniqueid in meetmeref['uniqueids']:
+                                                                                userid = '%s/%s' % (userinfo.get('astid'), userinfo.get('xivo_userid'))
+                                                                                if userid == meetmeref['adminid'] or userid == meetmeref['uniqueids'][uniqueid]['userid']:
+                                                                                        self.__ami_execute__(castid, 'sendcommand',
+                                                                                                             'Command', [('Command', 'meetme %s %s %s'
+                                                                                                                          % (function, meetmenum, usernum))])
+                                                                else:
+                                                                        log.warning('(%s) either astid %s or uniqueid %s is unknown'
+                                                                                    % (function, castid, uniqueid))
                                                         elif function == 'getlist':
                                                                 fullstat = {}
                                                                 for iastid, v in self.weblist['meetme'].iteritems():

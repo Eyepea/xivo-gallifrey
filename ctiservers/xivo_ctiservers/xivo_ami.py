@@ -588,10 +588,12 @@ class AMIList:
                 if astid in self.ami:
                         conn_ami = self.ami.get(astid)
                         
-                        # sendparkedcalls before sendstatus, so that parked calls can be identified later
-                        # sendmeetmelist after sendstatus
+                        # sendparkedcalls before sendstatus : parked calls can be identified later
+                        # sendmeetmelist before sendstatus : to fill the times spent for various conf rooms
                         conn_ami.setactionid('00')
                         conn_ami.sendparkedcalls()
+                        conn_ami.setactionid('00')
+                        conn_ami.sendmeetmelist()
                         conn_ami.setactionid('00')
                         conn_ami.sendstatus()
                         conn_ami.setactionid('00')
@@ -599,7 +601,6 @@ class AMIList:
                         conn_ami.setactionid('00')
                         conn_ami.sendqueuestatus()
                         conn_ami.setactionid('00')
-                        conn_ami.sendmeetmelist()
                 return
         
         def set_aoriginate(self, astid, aoriginatecmd):
