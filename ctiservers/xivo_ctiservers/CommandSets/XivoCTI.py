@@ -1783,6 +1783,7 @@ class XivoCTICommand(BaseCommand):
                 clid2 = event.get('CallerID2')
                 uid1 = event.get('Uniqueid1')
                 uid2 = event.get('Uniqueid2')
+                where = event.get('Where')
                 # log.info('%s AMI_UNLINK : %s' % (astid, event))
                 if self.__ignore_dtmf__(astid, uid1, 'unlink'):
                         return
@@ -1805,8 +1806,8 @@ class XivoCTICommand(BaseCommand):
                         duinfo1 = '%s/%s' % (uinfo1.get('astid'), uinfo1.get('xivo_userid'))
                 if uinfo2:
                         duinfo2 = '%s/%s' % (uinfo2.get('astid'), uinfo2.get('xivo_userid'))
-                log.info('%s UNLINK %s %s callerid=%s (phone trunk)=(%s %s) user=%s'
-                         % (astid, uid1, chan1, clid1, phoneid1, trunkid1, duinfo1))
+                log.info('%s UNLINK %s %s callerid=%s (phone trunk)=(%s %s) user=%s (%s)'
+                         % (astid, uid1, chan1, clid1, phoneid1, trunkid1, duinfo1, where))
                 log.info('%s UNLINK %s %s callerid=%s (phone trunk)=(%s %s) user=%s'
                          % (astid, uid2, chan2, clid2, phoneid2, trunkid2, duinfo2))
                 
@@ -2587,7 +2588,7 @@ class XivoCTICommand(BaseCommand):
                                 calleridnum = vv.get('calleridnum')
                                 calleridname = vv.get('calleridname')
                 # print 'AMI QueueEntry', astid, queue, position, wait, channel, event
-                self.weblist[queueorgroup][astid].queueentry_update(queue, channel, position, wait, calleridnum, calleridname)
+                self.weblist[queueorgroup][astid].queueentry_update(queue, channel, position, time.time() - wait, calleridnum, calleridname)
                 self.__send_msg_to_cti_clients__(self.__build_queue_status__(astid, queue))
                 return
         
@@ -3243,7 +3244,7 @@ class XivoCTICommand(BaseCommand):
                 self.__update_queue_stats__(astid, queue, queueorgroup, 'ENTERQUEUE')
                 self.__sheet_alert__('incoming' + queueorgroup[:-1], astid, queuecontext, event)
                 log.info('%s AMI Join (Queue) %s %s %s' % (astid, queue, chan, count))
-                self.weblist[queueorgroup][astid].queueentry_update(queue, chan, position, 0,
+                self.weblist[queueorgroup][astid].queueentry_update(queue, chan, position, time.time(),
                                                                     clid, clidname)
                 event['Calls'] = count
                 self.weblist[queueorgroup][astid].update_queuestats(queue, event)
@@ -3642,7 +3643,7 @@ class XivoCTICommand(BaseCommand):
                 reply = []
                 for termin in termlist:
                         [techno, ctx, phoneid, exten] = termin.split('.')
-                        print '__build_history_string__', requester_id, nlines, kind, techno, phoneid
+                        # print '__build_history_string__', requester_id, nlines, kind, techno, phoneid
                         try:
                                 hist = self.__update_history_call__(self.configs[astid], techno, phoneid, nlines, kind)
                                 for x in hist:
@@ -4620,7 +4621,7 @@ class XivoCTICommand(BaseCommand):
                                                 qentries = self.weblist['queues'][astid].keeplist[queuename]['channels']
                                                 lst = []
                                                 for chan, chanprops in qentries.iteritems():
-                                                        lst.append('%s:%d' % (chan, int(round(time.time() - chanprops.get('updatetime') + chanprops.get('wait')))))
+                                                        lst.append('%s:%d' % (chan, int(round(time.time() - chanprops.get('entrytime')))))
                                                 fastagi.set_variable('XIVO_QUEUEENTRIES', ','.join(lst))
                         except Exception:
                                 log.exception('handle_fagi %s %s : %s %s' % (astid, function, astid, fastagi.args))

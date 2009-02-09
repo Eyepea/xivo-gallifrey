@@ -43,13 +43,12 @@ class GroupList(AnyList):
                       'Xivo-Join', 'Xivo-Link', 'Xivo-Lost', 'Xivo-Wait', 'Xivo-Chat', 'Xivo-Rate',
                       'Calls']
         
-        def queueentry_update(self, queue, channel, position, wait, calleridnum, calleridname):
+        def queueentry_update(self, queue, channel, position, entrytime, calleridnum, calleridname):
                 if queue in self.keeplist:
                         self.keeplist[queue]['channels'][channel] = { 'position' : position,
-                                                                       'wait' : wait,
-                                                                       'updatetime' : time.time(),
-                                                                       'calleridnum' : calleridnum,
-                                                                       'calleridname' : calleridname }
+                                                                      'entrytime' : entrytime,
+                                                                      'calleridnum' : calleridnum,
+                                                                      'calleridname' : calleridname }
                 else:
                         log.warning('queueentry_update : no such queue %s' % queue)
                 return
