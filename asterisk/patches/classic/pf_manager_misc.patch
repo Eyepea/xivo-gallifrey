@@ -470,7 +470,7 @@ Index: asterisk-1.4.23.1/channels/chan_sip.c
 Index: asterisk-1.4.23.1/main/channel.c
 ===================================================================
 --- asterisk-1.4.23.1.orig/main/channel.c	2009-02-05 15:57:18.000000000 +0100
-+++ asterisk-1.4.23.1/main/channel.c	2009-02-06 15:57:58.000000000 +0100
++++ asterisk-1.4.23.1/main/channel.c	2009-02-09 10:48:14.000000000 +0100
 @@ -978,6 +978,11 @@
  		chan->_softhangup |= AST_SOFTHANGUP_DEV;
  		ast_channel_unlock(chan);
@@ -498,6 +498,85 @@ Index: asterisk-1.4.23.1/main/channel.c
  	/* XXX This is a seriously wacked out operation.  We're essentially putting the guts of
  	   the clone channel into the original channel.  Start by killing off the original
  	   channel's backend.   I'm not sure we're going to keep this function, because
+@@ -4115,8 +4128,15 @@
+ 		      "Uniqueid1: %s\r\n"
+ 		      "Uniqueid2: %s\r\n"
+ 		      "CallerID1: %s\r\n"
+-		      "CallerID2: %s\r\n",
+-		      c0->name, c1->name, c0->uniqueid, c1->uniqueid, c0->cid.cid_num, c1->cid.cid_num);
++                      "CallerIDName1: %s\r\n"
++		      "CallerID2: %s\r\n"
++		      "CallerIDName2: %s\r\n",
++		      c0->name, c1->name,
++                      c0->uniqueid, c1->uniqueid,
++                      S_OR(c0->cid.cid_num, "<unknown>"),
++                      S_OR(c0->cid.cid_name, "<unknown>"),
++                      S_OR(c1->cid.cid_num, "<unknown>"),
++                      S_OR(c1->cid.cid_name, "<unknown>"));
+ 
+ 	o0nativeformats = c0->nativeformats;
+ 	o1nativeformats = c1->nativeformats;
+@@ -4240,9 +4260,17 @@
+ 					      "Channel2: %s\r\n"
+ 					      "Uniqueid1: %s\r\n"
+ 					      "Uniqueid2: %s\r\n"
++                                              "Where: loop\r\n"
+ 					      "CallerID1: %s\r\n"
+-					      "CallerID2: %s\r\n",
+-					      c0->name, c1->name, c0->uniqueid, c1->uniqueid, c0->cid.cid_num, c1->cid.cid_num);
++                                              "CallerIDName1: %s\r\n"
++					      "CallerID2: %s\r\n"
++                                              "CallerIDName2: %s\r\n",
++					      c0->name, c1->name,
++                                              c0->uniqueid, c1->uniqueid,
++                                              S_OR(c0->cid.cid_num, "<unknown>"),
++                                              S_OR(c0->cid.cid_name, "<unknown>"),
++                                              S_OR(c1->cid.cid_num, "<unknown>"),
++                                              S_OR(c1->cid.cid_name, "<unknown>"));
+ 				if (option_debug)
+ 					ast_log(LOG_DEBUG, "Returning from native bridge, channels: %s, %s\n", c0->name, c1->name);
+ 
+@@ -4285,9 +4313,17 @@
+ 					      "Channel2: %s\r\n"
+ 					      "Uniqueid1: %s\r\n"
+ 					      "Uniqueid2: %s\r\n"
++                                              "Where: incompatible\r\n"
+ 					      "CallerID1: %s\r\n"
+-					      "CallerID2: %s\r\n",
+-					      c0->name, c1->name, c0->uniqueid, c1->uniqueid, c0->cid.cid_num, c1->cid.cid_num);
++                                              "CallerIDName1: %s\r\n"
++					      "CallerID2: %s\r\n"
++                                              "CallerIDName2: %s\r\n",
++					      c0->name, c1->name,
++                                              c0->uniqueid, c1->uniqueid,
++                                              S_OR(c0->cid.cid_num, "<unknown>"),
++                                              S_OR(c0->cid.cid_name, "<unknown>"),
++                                              S_OR(c1->cid.cid_num, "<unknown>"),
++                                              S_OR(c1->cid.cid_name, "<unknown>"));
+ 				return AST_BRIDGE_FAILED;
+ 			}
+ 			o0nativeformats = c0->nativeformats;
+@@ -4320,9 +4356,17 @@
+ 		      "Channel2: %s\r\n"
+ 		      "Uniqueid1: %s\r\n"
+ 		      "Uniqueid2: %s\r\n"
+-		      "CallerID1: %s\r\n"
+-		      "CallerID2: %s\r\n",
+-		      c0->name, c1->name, c0->uniqueid, c1->uniqueid, c0->cid.cid_num, c1->cid.cid_num);
++                      "Where: loopisover\r\n"
++                      "CallerID1: %s\r\n"
++                      "CallerIDName1: %s\r\n"
++                      "CallerID2: %s\r\n"
++                      "CallerIDName2: %s\r\n",
++                      c0->name, c1->name,
++                      c0->uniqueid, c1->uniqueid,
++                      S_OR(c0->cid.cid_num, "<unknown>"),
++                      S_OR(c0->cid.cid_name, "<unknown>"),
++                      S_OR(c1->cid.cid_num, "<unknown>"),
++                      S_OR(c1->cid.cid_name, "<unknown>"));
+ 	if (option_debug)
+ 		ast_log(LOG_DEBUG, "Bridge stops bridging channels %s and %s\n", c0->name, c1->name);
+ 
 Index: asterisk-1.4.23.1/apps/app_queue.c
 ===================================================================
 --- asterisk-1.4.23.1.orig/apps/app_queue.c	2009-02-05 15:57:18.000000000 +0100

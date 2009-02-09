@@ -1,7 +1,7 @@
 Index: asterisk-1.4.23.1/main/channel.c
 ===================================================================
---- asterisk-1.4.23.1.orig/main/channel.c	2009-02-06 15:55:59.000000000 +0100
-+++ asterisk-1.4.23.1/main/channel.c	2009-02-06 15:57:49.000000000 +0100
+--- asterisk-1.4.23.1.orig/main/channel.c	2009-02-09 10:48:14.000000000 +0100
++++ asterisk-1.4.23.1/main/channel.c	2009-02-09 10:48:19.000000000 +0100
 @@ -3713,7 +3713,7 @@
  	/* XXX What about blocking, softhangup, blocker, and lock and blockproc? XXX */
  	/* Application and data remain the same */
