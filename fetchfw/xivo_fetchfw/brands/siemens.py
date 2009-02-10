@@ -23,7 +23,7 @@ from xivo_fetchfw import fetchfw
 
 def siemens_install(firmware):
     xfile = firmware.remote_files[0]
-    fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, "Siemens", firmware.model.lower())
+    fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, 'Siemens', 'firmware', firmware.model.lower())
 
     try:
         os.makedirs(fw_dst_dir)
@@ -33,4 +33,4 @@ def siemens_install(firmware):
     shutil.copy2(xfile.path, fw_dst_dir)
 
 
-fetchfw.register_install_fn("Siemens", None, siemens_install)
+fetchfw.register_install_fn('Siemens', None, siemens_install)
