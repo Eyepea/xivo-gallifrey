@@ -118,16 +118,24 @@ def main():
         return_exit("Unknown UA %s" % `ua`)
     phone_vendor = phone_desc[0]
     phone_model = phone_desc[1]
+    phone_firmware = phone_desc[2]
 
     if code == 'init':
         code = '0'
     if not xivo_config.well_formed_provcode(code):
         return_exit("Badly formed provisioning code", "privacy-incorrect")
 
-    command = ("mode=authoritative\r\nvendor=%s\r\nmodel=%s\r\n" +
-               "macaddr=%s\r\nipv4=%s\r\nprovcode=%s\r\nactions=yes\r\n" +
-               "proto=sip\r\nisinalan=%s\r\n") % (phone_vendor, phone_model,
-                                                  macaddr, ipv4, code, isinalan)
+    command = "\r\n".join(
+              ["mode=authoritative",
+               "actions=yes",
+               "proto=sip",
+               "provcode=%s"        % code,
+               "vendor=%s"          % phone_vendor,
+               "model=%s"           % phone_model,
+               "firmware=%s"        % phone_firmware,
+               "macaddr=%s"         % macaddr,
+               "ipv4=%s"            % ipv4,
+               "isinalan=%s\r\n"    % isinalan])
 
     try:
         socket.setdefaulttimeout(float(Pgc['http_request_to_s']))
