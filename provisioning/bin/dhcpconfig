@@ -22,7 +22,10 @@ __license__ = """
 """
 
 CONFIG_FILE         = '/etc/pf-xivo/provisioning.conf' # can be overridden by cmd line param
-GETOPT_SHORTOPTS    = 'c:h'
+TIMEOUT             = None
+UPGRADE_FW          = False
+
+GETOPT_SHORTOPTS    = 'c:h:t:u'
 SYSLOG_NAME         = 'xivo_dhcp_provisioning'
 
 import sys
@@ -30,16 +33,18 @@ import sys
 def help_screen():
     print >> sys.stderr, \
 """Syntax:
-%s [-c <conffile>] [-h] <user_agent> <ipv4> <mac_address> [<timeout>]
+%s [-c <conffile>] [-t <timeout>] [-u] [-h] <user_agent> <ipv4> <mac_address>
 
 -c <conffile>   Use <conffile> instead of %s
+-t              Request timeout
+-u              Upgrade Firmware
 -h              Display this help screen and exit
 """ % (sys.argv[0], `CONFIG_FILE`)
     sys.exit(1)
 
 from getopt import getopt, GetoptError
 def config_path():
-    global CONFIG_FILE
+    global CONFIG_FILE, TIMEOUT, UPGRADE_FW
     try:
         opts, args = getopt(sys.argv[1:], GETOPT_SHORTOPTS)
     except GetoptError, x:
@@ -52,6 +57,12 @@ def config_path():
     for k, v in opts:
         if k == '-c':
             CONFIG_FILE = v
+        elif k == '-t':
+            TIMEOUT = v
+        elif k == '-u':
+            UPGRADE_FW = True
+
+
 config_path()
 
 import socket
@@ -81,14 +92,11 @@ def main():
     ipv4 = sys.argv[2]
     macaddr = sys.argv[3]
     isinalan = "1"
-    provcode = "-1"
-    timeout = Pgc['http_request_to_s']
 
-    if xlen > 4:
-        if isinstance(sys.argv[4], (float, int)):
-            timeout = sys.argv[4]
-        elif isinstance(sys.argv[4], basestring) and sys.argv[4].isdigit():
-            timeout = sys.argv[4]
+    if isinstance(TIMEOUT, basestring) and TIMEOUT.isdigit():
+        timeout = TIMEOUT
+    else:
+        timeout = Pgc['http_request_to_s']
 
     if not network.is_ipv4_address_valid(ipv4):
         root_logger.error("Invalid IPv4: %r" % ipv4)
@@ -106,13 +114,22 @@ def main():
         root_logger.error("Unknown UA %r" % ua)
         sys.exit(1)
 
+    phone_vendor = phone_desc[0]
+    phone_model = phone_desc[1]
+    phone_firmware = phone_desc[2]
+
+    if not UPGRADE_FW:
+        mode = 'bootdhcp'
+    else:
+        mode = 'upgradefw'
+
     command = "\r\n".join(
-              ["mode=authoritative",
+              ["mode=%s"            % mode,
                "actions=no",
                "proto=sip",
-               "provcode=%s"        % provcode,
-               "vendor=%s"          % phone_desc[0],
-               "model=%s"           % phone_desc[1],
+               "vendor=%s"          % phone_vendor,
+               "model=%s"           % phone_model,
+               "firmware=%s"        % phone_firmware,
                "macaddr=%s"         % macaddr,
                "ipv4=%s"            % ipv4,
                "isinalan=%s\r\n"    % isinalan])
