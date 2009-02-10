@@ -465,21 +465,6 @@ def __provisioning(mode, ctx, phone):
         log.error("__provisioning(): Empty model or vendor or isinalan in phone %r", phone)
         raise BadRequest, "Empty model or vendor or isinalan in phone %r" % phone
 
-    # For example from DHCP, we don't know the provcode and the iduserfeatures
-    # but there is the mac address so we try to find the iduserfeatures
-    # with the mac address.
-    # If we don't find the iduserfeatures the phone will be reinitialized.
-    # XXX If the actions isn't "no" the phone would reboot (loop ?!).
-    if "provcode" in phone and "macaddr" in phone and phone["provcode"] == "-1":
-        phonedesc = ctx.dbinfos.phone_by_macaddr(phone["macaddr"])
-
-        del(phone["provcode"])
-
-        if phonedesc is not None:
-            phone["iduserfeatures"] = str(phonedesc["iduserfeatures"])
-        else:
-            phone["iduserfeatures"] = "0"
-
     if "provcode" in phone and phone["provcode"] != "0" and \
        not xivo_config.well_formed_provcode(phone["provcode"]):
         log.error("__provisioning(): Invalid provcode %s", phone["provcode"])
@@ -506,7 +491,10 @@ def __provisioning(mode, ctx, phone):
         if "provcode" in phone and phone["provcode"] == "0":
             phone["iduserfeatures"] = "0"
 
-        if "iduserfeatures" in phone and phone["iduserfeatures"] == "0":
+        if mode == "upgradefw":
+            log.info("__provisioning(): upgrading firmware for phone %r", phone)
+            prov_inst.action_upgradefw()
+        elif "iduserfeatures" in phone and phone["iduserfeatures"] == "0":
             log.info("__provisioning(): reinitializing provisioning to GUEST for phone %r", phone)
             prov_inst.generate_reinitprov()
             __save_phone(ctx, phone, None)
@@ -562,6 +550,23 @@ def __userdeleted(ctx, iduserfeatures):
     finally:
         ctx.userlocks.release(iduserfeatures)
 
+def __bootdhcp(ctx, phone):
+    log.info("__bootdhcp(): handling dhcp of phone %s", phone['macaddr'])
+    phone['mode'] = 'authoritative'
+    phone['actions'] = 'no'
+    phonedesc = ctx.dbinfos.phone_by_macaddr(phone['macaddr'])
+    if phonedesc:
+        phone['iduserfeatures'] = str(phonedesc['iduserfeatures'])
+    else:
+        phone['iduserfeatures'] = '0'
+    __provisioning('bootdhcp', ctx, phone)
+
+def __upgradefw(ctx, phone):
+    log.info("__upgradefw(): handling firmware upgrade of phone %s", phone["macaddr"])
+    phone['mode'] = 'authoritative'
+    phone['actions'] = 'no'
+    __provisioning('upgradefw', ctx, phone)
+
 
 # Safe locking API for provisioning and related stuffs
 
@@ -593,6 +598,26 @@ def lock_and_userdel(ctx, iduserfeatures):
     finally:
         ctx.rwlock.release()
         log.debug("Leaving lock_and_userdel %s", iduserfeatures)
+
+def lock_and_bootdhcp(ctx, phone):
+    log.debug("Entering lock_and_bootdhcp %s", phone["macaddr"])
+    if not ctx.rwlock.acquire_read(Pgc['excl_del_lock_to_s']):
+        raise ConflictError, "Could not acquire the global lock in shared mode"
+    try:
+        __bootdhcp(ctx, phone)
+    finally:
+        ctx.rwlock.release()
+        log.debug("Leaving lock_and_bootdhcp for Mac Address %s", phone["macaddr"])
+
+def lock_and_upgradefw(ctx, phone):
+    log.debug("Entering lock_and_upgradefw %s", phone["macaddr"])
+    if not ctx.rwlock.acquire_read(Pgc['excl_del_lock_to_s']):
+        raise ConflictError, "Could not acquire the global lock in shared mode"
+    try:
+        __upgradefw(ctx, phone)
+    finally:
+        ctx.rwlock.release()
+        log.debug("Leaving lock_and_upgradefw %s", phone["macaddr"])
 
 def clean_at_startup(ctx):
     "Put back every non guest orphan phones in GUEST state at startup."
@@ -718,6 +743,12 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
             self.save_posted_vars(phone, ("iduserfeatures",))
         except MissingParam:
             self.save_posted_vars(phone, ("provcode",))
+    def save_firmware(self, phone):
+        """
+        Save optionally 'firmware' in phone from self.posted.
+        """
+        if "firmware" in self.posted:
+            phone["firmware"] = self.posted["firmware"]
 
     def posted_infos(self, *thetuple):
         """
@@ -728,6 +759,7 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
         self.save_posted_vars(phone, thetuple)
         self.save_iduserfeatures_or_provcode(phone)
         self.save_macaddr_ipv4(phone)
+        self.save_firmware(phone)
         return phone
     def posted_phone_infos(self):
         "Used in 'authoritative' mode"
@@ -740,6 +772,19 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
         userinfo = {}
         self.save_posted_vars(userinfo, ("iduserfeatures", "actions"))
         return userinfo
+    def posted_bootdhcp_infos(self):
+        "Used in 'bootdhcp' mode"
+        phone = {}
+        self.save_posted_vars(phone, ("proto", "vendor", "model", "actions", "isinalan"))
+        self.save_macaddr_ipv4(phone)
+        self.save_firmware(phone)
+        return phone
+    def posted_upgradefw_infos(self):
+        "Used in 'upgradefw' mode"
+        phone = {}
+        self.save_posted_vars(phone, ("proto", "vendor", "model", "firmware", "actions", "isinalan"))
+        self.save_macaddr_ipv4(phone)
+        return phone
 
     def log_message(self, fmt, *args):
         "Override default logging method."
@@ -776,6 +821,14 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
                 log.info("handle_prov(): user deletion")
                 userinfo = self.posted_userdeleted_infos()
                 lock_and_userdel(self.my_ctx, userinfo['iduserfeatures'])
+            elif self.posted["mode"] == "bootdhcp":
+                log.info("handle_prov(): boot from dhcp")
+                phone = self.posted_phone_infos()
+                lock_and_bootdhcp(self.posted['mode'], self.my_ctx, phone)
+            elif self.posted["mode"] == "upgradefw":
+                log.info("handle_prov(): firmware upgrade")
+                phone = self.posted_upgradefw_infos()
+                lock_and_upgradefw(self.posted['mode'], self.my_ctx, phone)
             else:
                 log.error("handle_prov(): Unknown mode %s", self.posted["mode"])
                 raise BadRequest, "Unknown mode %s" % self.posted["mode"]
