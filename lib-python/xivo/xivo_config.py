@@ -336,7 +336,20 @@ class PhoneVendorMixin(object):
         log.info("Sending REBOOT command to phone %s", self.phone['macaddr'])
         self.do_reboot()
         log.debug("Sent REBOOT command to phone %s", self.phone['macaddr'])
-    
+
+    def action_upgradefw(self):
+        """
+        This function upgrade the phone firmware.
+        """
+        log.info("Sending UPGRADE FIRMWARE command. (phone: '%s', vendor: '%s')", self.phone['macaddr'], self.phone['vendor'])
+
+        if hasattr(self, 'do_upgradefw'):
+            self.do_upgradefw()
+        else:
+            log.error("Missing UPGRADE FIRMWARE command. (phone: '%s', vendor: '%s')", self.phone['macaddr'], self.phone['vendor'])
+            return
+        log.debug("Sent UPGRADE FIRMWARE command. (phone: '%s', vendor: '%s')", self.phone['macaddr'])
+
     def generate_reinitprov(self):
         """
         This function put the configuration for the phone back in guest
