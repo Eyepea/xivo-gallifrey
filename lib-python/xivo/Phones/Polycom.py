@@ -26,6 +26,7 @@ __license__ = """
 """
 
 import os
+import socket
 import urllib
 
 from xivo import xivo_config
@@ -61,6 +62,7 @@ class Polycom(PhoneVendorMixin):
     def setup(cls, config):
         "Configuration of class attributes"
         PhoneVendorMixin.setup(config)
+        socket.setdefaulttimeout(float(cls.CURL_TO_S))
         cls.POLYCOM_COMMON_DIR = os.path.join(cls.TFTPROOT, "Polycom/")
 
     def __init__(self, phone):
@@ -70,7 +72,6 @@ class Polycom(PhoneVendorMixin):
             raise ValueError, "Unknown Polycom model %r" % self.phone['model']
 
     def __action(self, command, user, passwd):
-
         params = urllib.urlencode({'reg.1.server.1.address': "%s " % self.ASTERISK_IPV4})
 
         try: # XXX: also check return values?
