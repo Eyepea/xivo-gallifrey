@@ -169,6 +169,8 @@ class XivoCTICommand(BaseCommand):
                 self.getvar_requests = {}
                 self.ami_requests = {}
                 
+                self.logintimeout = 5
+                
                 return
         
         def get_list_commands(self):
@@ -529,9 +531,13 @@ class XivoCTICommand(BaseCommand):
                 # log.info('__cjson_encode__ : %s %d' % (object['class'], len(oencoded)))
                 return oencoded
         
+        def set_logintimeout(self, logintimeout):
+                self.logintimeout = logintimeout
+                return
+        
         def set_cticonfig(self, lconf):
                 self.lconf = lconf
-
+                
                 self.sheet_actions = {}
                 for where, sheetaction in lconf.read_section('sheet_events', 'sheet_events').iteritems():
                         if where in self.sheet_allowed_events and len(sheetaction) > 0:
@@ -902,14 +908,14 @@ class XivoCTICommand(BaseCommand):
                 self.tqueue.put(thisthread)
                 os.write(self.queued_threads_pipe[1], what)
                 return
-
+        
         def connected(self, connid):
                 """
                 Send a banner at login time
                 """
                 connid.sendall('XIVO CTI Server Version %s(%s) svn:%s\n' % (XIVOVERSION_NUM, XIVOVERSION_NAME,
                                                                             __revision__))
-                self.timeout_login[connid] = threading.Timer(5, self.__callback_timer__, ('login',))
+                self.timeout_login[connid] = threading.Timer(self.logintimeout, self.__callback_timer__, ('login',))
                 self.timeout_login[connid].start()
                 return
         
@@ -3220,7 +3226,7 @@ class XivoCTICommand(BaseCommand):
                         return
                 # log.info('%s ami_join : %s' % (astid, event))
                 chan  = event.get('Channel')
-                clid  = event.get('CallerID')
+                clidnum  = event.get('CallerID')
                 clidname = event.get('CallerIDName').decode('utf8')
                 queue = event.get('Queue')
                 count = event.get('Count')
@@ -3240,12 +3246,14 @@ class XivoCTICommand(BaseCommand):
                         self.uniqueids[astid][uniqueid]['join'] = {'queuename' : queue,
                                                                    'queueorgroup' : queueorgroup,
                                                                    'time' : time.time()}
+                        self.uniqueids[astid][uniqueid]['calleridnum'] = clidnum
+                        self.uniqueids[astid][uniqueid]['calleridname'] = clidname
                 log.info('%s STAT JOIN %s %s %s' % (astid, queue, chan, uniqueid))
                 self.__update_queue_stats__(astid, queue, queueorgroup, 'ENTERQUEUE')
                 self.__sheet_alert__('incoming' + queueorgroup[:-1], astid, queuecontext, event)
                 log.info('%s AMI Join (Queue) %s %s %s' % (astid, queue, chan, count))
                 self.weblist[queueorgroup][astid].queueentry_update(queue, chan, position, time.time(),
-                                                                    clid, clidname)
+                                                                    clidnum, clidname)
                 event['Calls'] = count
                 self.weblist[queueorgroup][astid].update_queuestats(queue, event)
                 tosend = { 'class' : queueorgroup,
@@ -3634,8 +3642,7 @@ class XivoCTICommand(BaseCommand):
                                 log.exception('(sendall) attempt to send <%s ...> (%d chars) failed'
                                               % (repstr[:40], len(repstr)))
                 return ret
-
-
+        
         def __build_history_string__(self, requester_id, nlines, kind):
                 userinfo = self.ulist_ng.keeplist[requester_id]
                 astid = userinfo.get('astid')
@@ -3988,13 +3995,13 @@ class XivoCTICommand(BaseCommand):
                                         if presenceid in self.presence_sections:
                                                 if uinfo.get('state') in self.presence_sections[presenceid].displaydetails:
                                                         statedetails = self.presence_sections[presenceid].displaydetails[uinfo.get('state')]
-                                                else:
+                                                elif uinfo.get('state') != 'xivo_unknown':
                                                         log.warning('%s : %s not in details for %s'
                                                                     % (duinfo, uinfo.get('state'), presenceid))
                                         else:
                                                 log.warning('%s : %s not in presence_sections'
                                                             % (duinfo, presenceid))
-                                else:
+                                elif icapaid:
                                         log.warning('%s : capaid=%s not in capas'
                                                     % (duinfo, icapaid))
                                 
@@ -4566,11 +4573,12 @@ class XivoCTICommand(BaseCommand):
                 """
                 # check capas !
                 try:
+                        function = fastagi.env['agi_network_script']
                         context = fastagi.get_variable('XIVO_REAL_CONTEXT')
                         uniqueid = fastagi.get_variable('UNIQUEID')
                         channel = fastagi.get_variable('CHANNEL')
-                        function = fastagi.env['agi_network_script']
-                        log.info('handle_fagi %s : context=%s uid=%s chan=%s (%s)' % (astid, context, uniqueid, channel, function))
+                        log.info('handle_fagi %s : (%s) context=%s uid=%s chan=%s'
+                                 % (astid, function, context, uniqueid, channel))
                 except Exception:
                         log.exception('handle_fagi %s' % astid)
                         return

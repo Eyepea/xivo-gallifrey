@@ -67,6 +67,8 @@ class BaseCommand:
         def transfer_endbuf(self, req):
                 return
         
+        def set_logintimeout(self, logintimeout):
+                return
         # inits / updates
         def extrasock(self, extraconn):
                 return
