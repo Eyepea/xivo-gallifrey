@@ -331,7 +331,7 @@ class PhoneVendorMixin(object):
         generate_autoprov() method.
         """
         if self.phone["actions"] == "no": # distant provisioning with actions disabled
-            log.info("Skipping REBOOT action for phone %s" % self.phone['macaddr'])
+            log.info("Skipping REBOOT action for phone %s", self.phone['macaddr'])
             return
         log.info("Sending REBOOT command to phone %s", self.phone['macaddr'])
         self.do_reboot()
@@ -348,7 +348,7 @@ class PhoneVendorMixin(object):
         else:
             log.error("Missing UPGRADE FIRMWARE command. (phone: '%s', vendor: '%s')", self.phone['macaddr'], self.phone['vendor'])
             return
-        log.debug("Sent UPGRADE FIRMWARE command. (phone: '%s', vendor: '%s')", self.phone['macaddr'])
+        log.debug("Sent UPGRADE FIRMWARE command. (phone: '%s', vendor: '%s')", self.phone['macaddr'], self.phone['vendor'])
 
     def generate_reinitprov(self):
         """
