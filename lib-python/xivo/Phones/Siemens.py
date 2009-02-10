@@ -28,8 +28,10 @@ __license__ = """
 import os
 import sha
 import logging
+import socket
 import urllib2
 
+from distutils import version
 from HTMLParser import HTMLParser
 from ConfigParser import RawConfigParser
 from urllib import urlencode
@@ -38,7 +40,6 @@ from cookielib import CookieJar
 from xivo import network
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
-
 
 log = logging.getLogger("xivo.Phones.Siemens") # pylint: disable-msg=C0103
 
@@ -66,6 +67,7 @@ class SiemensHTTP:
         self.opener         = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cj))
 
     def request(self, ipv4, page, params=None):
+        "Send a HTTP request to phone."
         if not isinstance(page, basestring):
             raise ValueError, "Invalid argument page: '%r'" % page
 
@@ -81,6 +83,7 @@ class SiemensHTTP:
 
     @staticmethod
     def set_ip_configuration_option(rcp, option, value):
+        "Set IP configuration for network options."
         value = network.parse_ipv4(value)
 
         rcp.set('ip_configuration', "%s_1" % option, "%03d" % value[0])
@@ -90,11 +93,13 @@ class SiemensHTTP:
 
     @staticmethod
     def is_ipv4_netmask_valid(netmask):
+        "Verify if it is a valid netmask."
         return network.is_ipv4_address_valid(netmask) \
         and network.plausible_netmask(network.parse_ipv4(netmask))
 
     @staticmethod
     def _prepare_ip_configuration(rcp):
+        "Prepare and verify ip configuration for network options."
         if not rcp.has_option('ip_configuration', 'ip_address_type') \
         or rcp.get('ip_configuration', 'ip_address_type') != '0':
             return
@@ -108,10 +113,10 @@ class SiemensHTTP:
         for opt in options:
             if not rcp.has_option('ip_configuration', opt[0]):
                 if not opt[1]:
-                    log.error("Missing parameter %s in section ip_configuration." % opt[0])
+                    log.error("Missing parameter %s in section ip_configuration.", opt[0])
                     return opt[1]
                 else:
-                    log.info("Missing parameter %s in section ip_configuration." % opt[0])
+                    log.info("Missing parameter %s in section ip_configuration.", opt[0])
                     continue
 
             value = rcp.get('ip_configuration', opt[0])
@@ -120,7 +125,7 @@ class SiemensHTTP:
             if opt[1] and len(value) == 0:
                 value = "0.0.0.0"
             elif not opt[2](value):
-                log.error("Invalid parameter %s in section ip_configuration." % opt[0])
+                log.error("Invalid parameter %s in section ip_configuration.", opt[0])
                 if not opt[1]:
                     return opt[1]
                 else:
@@ -131,6 +136,7 @@ class SiemensHTTP:
         return True
 
     def provi(self, ipv4, model, macaddr):
+        "Provisioning from web-interface."
         rcp = Siemens.get_config(self.common_dir, model, macaddr)
 
         if rcp.has_option('miscellaneous', 'user_firmware_url') \
@@ -164,17 +170,19 @@ class SiemensHTTP:
         self.logout(ipv4)
 
     def login(self, ipv4):
+        "Login from web-interface."
         params  = { 'language': 1,
                     'password': self.common_pin}
         request = self.request(ipv4, 'login.html', params)
 
         if "/login.html" in request.headers.getheaders('ETag'):
             request.close()
-            raise LookupError("Not logged in (ip: '%s')" % ipv4)
+            raise LookupError, "Not logged in (ip: '%s')" % ipv4
 
         request.close()
 
     def logout(self, ipv4):
+        "Logout from web-interface."
         request = self.request(ipv4, 'logout.html')
         request.close()
         self.cj.clear_session_cookies()
@@ -214,12 +222,15 @@ class Siemens(PhoneVendorMixin):
 
     SIEMENS_COMMON_PIN = '0000'
 
+    SIEMENS_FIRMWARE = '021400000000'
+
     SIEMENS_COMMON_DIR = None
 
     @classmethod
     def setup(cls, config):
         "Configuration of class attributes"
         PhoneVendorMixin.setup(config)
+        socket.setdefaulttimeout(float(cls.CURL_TO_S))
         cls.SIEMENS_COMMON_DIR = os.path.join(cls.TFTPROOT, "Siemens/")
 
     def __init__(self, phone):
@@ -229,6 +240,7 @@ class Siemens(PhoneVendorMixin):
 
     @staticmethod
     def get_config(common_dir, model, macaddr):
+        "Get phone configuration."
         model = model.lower()
         macaddr = macaddr.lower().replace(":", "")
 
@@ -260,7 +272,7 @@ class Siemens(PhoneVendorMixin):
         http.logout(self.phone['ipv4'])
 
         if len(html.result) != 1:
-            raise LookupError("Unable to %s the phone. (ip: %s)" % (command, self.phone['ipv4']))
+            raise LookupError, "Unable to %s the phone. (ip: %s)" % (command, self.phone['ipv4'])
 
         for k, v in html.result[0][1]:
             if k == 'value':
@@ -278,11 +290,86 @@ class Siemens(PhoneVendorMixin):
         Entry point to send the (possibly post) reinit command to
         the phone.
         """
-        self.__action('reboot', self.SIEMENS_COMMON_DIR, self.SIEMENS_COMMON_PIN)
+        if not self.do_upgradefw(False):
+            self.__action('reboot', self.SIEMENS_COMMON_DIR, self.SIEMENS_COMMON_PIN)
 
     def do_reboot(self):
         "Entry point to send the reboot command to the phone."
-        self.__action('reboot', self.SIEMENS_COMMON_DIR, self.SIEMENS_COMMON_PIN)
+        if not self.do_upgradefw(False):
+            self.__action('reboot', self.SIEMENS_COMMON_DIR, self.SIEMENS_COMMON_PIN)
+
+    def do_upgradefw(self, force=True):
+        "Entry point to send the firmware upgrade command to the phone."
+        if not self.phone['firmware'] or self.phone['firmware'] == 'unknown':
+            return
+
+        rcp = Siemens.get_config(self.SIEMENS_COMMON_DIR, self.phone['model'], self.phone['macaddr'])
+
+        if not force:
+            if not rcp.has_option('miscellaneous', 'automatic_update') \
+            or rcp.get('miscellaneous', 'automatic_update') == '0':
+                return
+
+        if not isinstance(self.phone['firmware'], basestring):
+            raise ValueError, "Invalid firmware version: '%r'" % self.phone['firmware']
+
+        fwver = version.LooseVersion(self.phone['firmware'])
+        ver = version.LooseVersion(self.SIEMENS_FIRMWARE)
+
+        if ver <= fwver:
+            return
+
+        params = {'execute_fw_download' : '1'}
+
+        if rcp.has_option('miscellaneous', 'user_firmware_url') \
+        and rcp.has_option('miscellaneous', 'user_firmware_filename'):
+            params['user_firmware_url'] = "%s/%s" % (rcp.get('miscellaneous', 'user_firmware_url').rstrip('/'),
+                                                     rcp.get('miscellaneous', 'user_firmware_filename').lstrip('/'))
+        elif rcp.has_option('miscellaneous', 'data_server'):
+            params['data_server'] = rcp.get('miscellaneous', 'data_server')
+        else:
+            log.info("Unable to find a firmware update server")
+            return
+
+        http = SiemensHTTP(self.SIEMENS_COMMON_DIR, self.SIEMENS_COMMON_PIN)
+        http.login(self.phone['ipv4'])
+        request = http.request(self.phone['ipv4'], 'settings_admin_special.html', params)
+        if "/status.html" not in request.headers.getheaders('ETag'):
+            log.info("Unable to upgrade: settings_admin_special.html")
+            request.close()
+            http.logout(self.phone['ipv4'])
+            return
+
+        request.close()
+
+        request = http.request(self.phone['ipv4'], 'status.html')
+        if "/status.html" not in request.headers.getheaders('ETag'):
+            log.info("Unable to upgrade: status.html")
+            request.close()
+            http.logout(self.phone['ipv4'])
+            return
+
+        request.close()
+
+        try:
+            request = http.request(self.phone['ipv4'], 'executefwdownload.html')
+        except urllib2.HTTPError, e:
+            log.exception(str(e))
+            request.close()
+            http.logout(self.phone['ipv4'])
+            return
+
+        request.close()
+
+        if "/logout.html" not in request.headers.getheaders('ETag'):
+            log.info("Unable to upgrade: executefwdownload.html")
+            request.close()
+            http.logout(self.phone['ipv4'])
+            return
+
+        request.close()
+
+        return True
 
     def __generate(self, provinfo):
         """
@@ -312,6 +399,7 @@ class Siemens(PhoneVendorMixin):
         os.rename(tmp_filename, cfg_filename)
 
     def __get_config_sha1sum(self):
+        "Get sha1sum value from configuration."
         rcp = Siemens.get_config(self.SIEMENS_COMMON_DIR, self.phone['model'], self.phone['macaddr'])
 
         if rcp.has_option('miscellaneous', 'config_sha1sum'):
@@ -322,6 +410,7 @@ class Siemens(PhoneVendorMixin):
         return sha1sum
 
     def __verify_need_provi(self, sha1sum):
+        "Verify if the configuration changed before do a provisioning."
         rcp = Siemens.get_config(self.SIEMENS_COMMON_DIR, self.phone['model'], self.phone['macaddr'])
 
         if sha1sum == '0':
@@ -341,6 +430,7 @@ class Siemens(PhoneVendorMixin):
         return new_sha1sum
 
     def __provi(self):
+        "Provisioning the phone."
         http = SiemensHTTP(self.SIEMENS_COMMON_DIR, self.SIEMENS_COMMON_PIN)
         http.provi(self.phone['ipv4'], self.phone['model'], self.phone['macaddr'])
 
@@ -431,10 +521,11 @@ class Siemens(PhoneVendorMixin):
                 '    match if substring(option vendor-class-identifier, 0, %d) = "%s";\n' % (len(model), model),
                 '    log("boot Siemens %s");\n' % model,
                 '    execute("/usr/share/pf-xivo-provisioning/bin/dhcpconfig",\n',
+                '            "-t20",\n',
+                '            "-u",\n',
                 '            "%s",\n' % model,
                 '            binary-to-ascii(10, 8, ".", leased-address),\n',
-                '            binary-to-ascii(16, 8, ":", suffix(hardware, 6)),\n',
-                '            20);\n',
+                '            binary-to-ascii(16, 8, ":", suffix(hardware, 6)));\n',
                 '}\n',
                 '\n'):
                 yield line
@@ -443,6 +534,12 @@ class Siemens(PhoneVendorMixin):
             for line in (
                 'subclass "phone-mac-address-prefix" %s {\n' % macaddr_prefix,
                 '    if not exists vendor-class-identifier {\n',
+                '    execute("/usr/share/pf-xivo-provisioning/bin/dhcpconfig",\n',
+                '            "-t20",\n',
+                '            "-u",\n',
+                '            "S675IP",\n', # TODO: Try to determine phone model.
+                '            binary-to-ascii(10, 8, ".", leased-address),\n',
+                '            binary-to-ascii(16, 8, ":", suffix(hardware, 6)));\n',
                 '        log("class Siemens prefix %s");\n' % macaddr_prefix,
                 '    }\n',
                 '}\n',
