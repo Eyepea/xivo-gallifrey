@@ -824,11 +824,11 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
             elif self.posted["mode"] == "bootdhcp":
                 log.info("handle_prov(): boot from dhcp")
                 phone = self.posted_bootdhcp_infos()
-                lock_and_bootdhcp(self.posted['mode'], self.my_ctx, phone)
+                lock_and_bootdhcp(self.my_ctx, phone)
             elif self.posted["mode"] == "upgradefw":
                 log.info("handle_prov(): firmware upgrade")
                 phone = self.posted_upgradefw_infos()
-                lock_and_upgradefw(self.posted['mode'], self.my_ctx, phone)
+                lock_and_upgradefw(self.my_ctx, phone)
             else:
                 log.error("handle_prov(): Unknown mode %s", self.posted["mode"])
                 raise BadRequest, "Unknown mode %s" % self.posted["mode"]
