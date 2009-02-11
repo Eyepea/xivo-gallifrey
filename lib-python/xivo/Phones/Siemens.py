@@ -70,8 +70,6 @@ class SiemensHTTP:
 
         if params is not None:
             params = urlencode(params)
-        else:
-            params = None
 
         url = "http://%s/%s" % (ipv4, page)
 
@@ -490,7 +488,6 @@ class Siemens(PhoneVendorMixin):
                 '    log("boot Siemens %s");\n' % model,
                 '    execute("/usr/share/pf-xivo-provisioning/bin/dhcpconfig",\n',
                 '            "-t20",\n',
-                '            "-u",\n',
                 '            "%s",\n' % model,
                 '            binary-to-ascii(10, 8, ".", leased-address),\n',
                 '            binary-to-ascii(16, 8, ":", suffix(hardware, 6)));\n',
