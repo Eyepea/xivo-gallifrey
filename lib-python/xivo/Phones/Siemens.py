@@ -57,7 +57,7 @@ class SiemensHTTP:
                     ('handsets', 'settings_telephony_tdt.html', ()),
                     ('miscellaneous', 'settings_admin_special.html', ()),
                     ('ip_configuration', 'settings_lan.html', ()),
-                    ('audio', 'settings_telephony_audio.html'), ())
+                    ('audio', 'settings_telephony_audio.html', ()))
 
     def __init__(self, common_dir, common_pin):
         self.common_dir     = common_dir
