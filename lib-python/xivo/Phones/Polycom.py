@@ -26,11 +26,13 @@ __license__ = """
 """
 
 import os
-import socket
+import logging
 import urllib
 
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
+
+log = logging.getLogger("xivo.Phones.Polycom") # pylint: disable-msg=C0103
 
 class Polycom(PhoneVendorMixin):
 
@@ -62,7 +64,6 @@ class Polycom(PhoneVendorMixin):
     def setup(cls, config):
         "Configuration of class attributes"
         PhoneVendorMixin.setup(config)
-        socket.setdefaulttimeout(float(cls.CURL_TO_S))
         cls.POLYCOM_COMMON_DIR = os.path.join(cls.TFTPROOT, "Polycom/")
 
     def __init__(self, phone):
