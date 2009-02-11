@@ -823,7 +823,7 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
                 lock_and_userdel(self.my_ctx, userinfo['iduserfeatures'])
             elif self.posted["mode"] == "bootdhcp":
                 log.info("handle_prov(): boot from dhcp")
-                phone = self.posted_phone_infos()
+                phone = self.posted_bootdhcp_infos()
                 lock_and_bootdhcp(self.posted['mode'], self.my_ctx, phone)
             elif self.posted["mode"] == "upgradefw":
                 log.info("handle_prov(): firmware upgrade")
