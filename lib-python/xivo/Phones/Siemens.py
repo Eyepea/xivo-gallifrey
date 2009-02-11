@@ -446,6 +446,7 @@ class Siemens(PhoneVendorMixin):
         Entry point to generate the provisioned configuration for
         this phone.
         """
+        provinfo['sha1sum'] = self.__get_config_sha1sum()
         self.__action_prov(provinfo)
 
     # Introspection entry points
