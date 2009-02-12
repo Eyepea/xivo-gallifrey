@@ -33,6 +33,7 @@ import urllib2
 from distutils import version
 from HTMLParser import HTMLParser
 from ConfigParser import RawConfigParser
+from httplib import BadStatusLine
 from urllib import urlencode
 from cookielib import CookieJar
 from time import sleep
@@ -73,6 +74,8 @@ class SiemensHTTP:
             params = urlencode(params)
 
         url = "http://%s/%s" % (ipv4, page)
+
+        log.info("HTTP Request: %r", url)
 
         return self.opener.open(urllib2.Request(url, params))
 
@@ -237,8 +240,10 @@ class Siemens(PhoneVendorMixin):
         rcp = RawConfigParser()
         rcp.readfp(open(os.path.join(common_dir, common_file)))
 
+        phone_file = os.path.join(common_dir, phone_file)
+
         if os.access(phone_file, os.R_OK):
-            rcp.readfp(open(os.path.join(common_dir, phone_file)))
+            rcp.readfp(open(phone_file))
 
         return rcp
 
@@ -333,7 +338,11 @@ class Siemens(PhoneVendorMixin):
                 else:
                     request.close()
 
-                request = http.request(self.phone['ipv4'], 'status.html')
+                try:
+                    request = http.request(self.phone['ipv4'], 'status.html')
+                except BadStatusLine:
+                    pass
+
                 if "/status.html" not in request.headers.getheaders('ETag'):
                     raise LookupError, "Unable to upgrade: status.html (ip: %s)" % self.phone['ipv4']
                 else:
@@ -418,8 +427,9 @@ class Siemens(PhoneVendorMixin):
 
     def __provi(self):
         "Provisioning the phone."
-        http = SiemensHTTP(self.SIEMENS_COMMON_DIR, self.SIEMENS_COMMON_PIN)
-        http.provi(self.phone['ipv4'], self.phone['model'], self.phone['macaddr'])
+        if 'ipv4' in self.phone:
+            http = SiemensHTTP(self.SIEMENS_COMMON_DIR, self.SIEMENS_COMMON_PIN)
+            http.provi(self.phone['ipv4'], self.phone['model'], self.phone['macaddr'])
 
     def __action_prov(self, provinfo):
         if provinfo['sha1sum'] == '0':
@@ -429,7 +439,7 @@ class Siemens(PhoneVendorMixin):
                                   Siemens.get_config_filename(self.phone['model'],
                                                               self.phone['macaddr'])[1])
 
-        if not os.access(phone_file, os.F_OK):
+        if not os.access(phone_file, os.F_OK) and 'ipv4' in self.phone:
             sleep(30)
             http = SiemensHTTP(self.SIEMENS_COMMON_DIR, self.SIEMENS_COMMON_PIN)
             request = http.request(self.phone['ipv4'], 'login.html')
