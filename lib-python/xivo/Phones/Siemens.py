@@ -35,6 +35,7 @@ from HTMLParser import HTMLParser
 from ConfigParser import RawConfigParser
 from urllib import urlencode
 from cookielib import CookieJar
+from time import sleep
 
 from xivo import network
 from xivo import xivo_config
@@ -230,19 +231,24 @@ class Siemens(PhoneVendorMixin):
     @staticmethod
     def get_config(common_dir, model, macaddr):
         "Get phone configuration."
-        model = model.lower()
-        macaddr = macaddr.lower().replace(":", "")
 
-        common_file = os.path.join(common_dir, model + ".ini")
-        phone_file = os.path.join(common_dir, model + "-" + macaddr + ".ini")
+        common_file, phone_file = Siemens.get_config_filename(model, macaddr)
 
         rcp = RawConfigParser()
-        rcp.readfp(open(common_file))
+        rcp.readfp(open(os.path.join(common_dir, common_file)))
 
         if os.access(phone_file, os.R_OK):
-            rcp.readfp(open(phone_file))
+            rcp.readfp(open(os.path.join(common_dir, phone_file)))
 
         return rcp
+
+    @staticmethod
+    def get_config_filename(model, macaddr):
+        "Get configuration filename."
+        model = model.lower()
+        macaddr = macaddr.lower().replace(':', '')
+
+        return ("%s.ini" % model, "%s-%s.ini" % (model, macaddr))
 
     def __action(self, command, common_dir, common_pin):
         http = SiemensHTTP(common_dir, common_pin)
@@ -356,11 +362,11 @@ class Siemens(PhoneVendorMixin):
         Entry point to generate the provisioned configuration for
         this phone.
         """
-        model = self.phone['model'].lower()
-        macaddr = self.phone['macaddr'].lower().replace(":", "")
-        template_file = open(os.path.join(self.TEMPLATES_DIR, "siemens-" + model + ".ini"))
+        common_file, phone_file = Siemens.get_config_filename(self.phone['model'], self.phone['macaddr'])
+
+        template_file = open(os.path.join(self.TEMPLATES_DIR, "siemens-%s" % common_file))
         template_lines = template_file.readlines()
-        tmp_filename = os.path.join(self.SIEMENS_COMMON_DIR, model + "-" + macaddr + ".ini.tmp")
+        tmp_filename = os.path.join(self.SIEMENS_COMMON_DIR, "%s.tmp" % phone_file)
         cfg_filename = tmp_filename[:-4]
 
         txt = xivo_config.txtsubst(template_lines,
@@ -391,11 +397,12 @@ class Siemens(PhoneVendorMixin):
 
     def __verify_need_provi(self, sha1sum):
         "Verify if the configuration changed before do a provisioning."
-        rcp = Siemens.get_config(self.SIEMENS_COMMON_DIR, self.phone['model'], self.phone['macaddr'])
-
         if sha1sum == '0':
             return
-        elif rcp.has_option('miscellaneous', 'config_sha1sum'):
+
+        rcp = Siemens.get_config(self.SIEMENS_COMMON_DIR, self.phone['model'], self.phone['macaddr'])
+
+        if rcp.has_option('miscellaneous', 'config_sha1sum'):
             rcp.remove_option('miscellaneous', 'config_sha1sum')
 
         tmp = os.tmpfile()
@@ -417,6 +424,16 @@ class Siemens(PhoneVendorMixin):
     def __action_prov(self, provinfo):
         if provinfo['sha1sum'] == '0':
             return
+
+        phone_file = os.path.join(self.SIEMENS_COMMON_DIR,
+                                  Siemens.get_config_filename(self.phone['model'],
+                                                              self.phone['macaddr'])[0])
+
+        if not os.access(phone_file, os.F_OK):
+            sleep(30)
+            http = SiemensHTTP(self.SIEMENS_COMMON_DIR, self.SIEMENS_COMMON_PIN)
+            request = http.request(self.phone['ipv4'], 'login.html')
+            request.close()
 
         self.__generate(provinfo)
 
@@ -501,8 +518,6 @@ class Siemens(PhoneVendorMixin):
                 'subclass "phone-mac-address-prefix" %s {\n' % macaddr_prefix,
                 '    if not exists vendor-class-identifier {\n',
                 '    execute("/usr/share/pf-xivo-provisioning/bin/dhcpconfig",\n',
-                '            "-t20",\n',
-                '            "-u",\n',
                 '            "S675IP",\n', # TODO: Try to determine phone model.
                 '            binary-to-ascii(10, 8, ".", leased-address),\n',
                 '            binary-to-ascii(16, 8, ":", suffix(hardware, 6)));\n',
