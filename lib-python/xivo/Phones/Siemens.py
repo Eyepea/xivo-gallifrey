@@ -427,7 +427,7 @@ class Siemens(PhoneVendorMixin):
 
         phone_file = os.path.join(self.SIEMENS_COMMON_DIR,
                                   Siemens.get_config_filename(self.phone['model'],
-                                                              self.phone['macaddr'])[0])
+                                                              self.phone['macaddr'])[1])
 
         if not os.access(phone_file, os.F_OK):
             sleep(30)
