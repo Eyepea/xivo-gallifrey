@@ -356,14 +356,13 @@ class XivoCTICommand(BaseCommand):
                 return userinfo
         
         def manage_logout(self, userinfo, when):
-                log.info('logout (%s) userinfo(astid)=%s userinfo(id)=%s'
+                log.info('logout (%s) userinfo(astid/xivo_userid)=%s/%s'
                          % (when, userinfo.get('astid'), userinfo.get('xivo_userid')))
                 userinfo['last-logouttime-ascii'] = time.asctime()
                 self.__logout_agent__(userinfo)
                 self.__disconnect_user__(userinfo)
                 self.__fill_user_ctilog__(userinfo, 'cti_logout')
                 return
-        
         
         def __check_user_connection__(self, userinfo):
                 #if userinfo.has_key('init'):
@@ -516,7 +515,7 @@ class XivoCTICommand(BaseCommand):
                         self.__fill_user_ctilog__(userinfo, 'cti_login', '%s:%d' % connid.getpeername())
                         # we could also log : client's OS & version
                 connid.sendall(repstr + '\n')
-
+                
                 if phase == xivo_commandsets.CMD_LOGIN_CAPAS:
                         self.__update_availstate__(userinfo, userinfo.get('state'))
                 
@@ -955,7 +954,7 @@ class XivoCTICommand(BaseCommand):
                                 mysock.sendall(strupdate + '\n', socket.MSG_WAITALL)
                 except Exception:
                         t1 = time.time()
-                        log.exception('(__send_msg_to_cti_client__) userinfo(astid)=%s userinfo(id)=%s len=%d timespent=%f'
+                        log.exception('(__send_msg_to_cti_client__) userinfo(astid/xivo_userid)=%s/%s len=%d timespent=%f'
                                       % (userinfo.get('astid'), userinfo.get('xivo_userid'), len(strupdate), (t1 - t0)))
                         if userinfo not in self.disconnlist:
                                 self.disconnlist.append(userinfo)
@@ -978,7 +977,8 @@ class XivoCTICommand(BaseCommand):
                                         if userinfo not in uinfos:
                                                 self.__send_msg_to_cti_client__(userinfo, strupdate)
                 except Exception:
-                        log.exception('(__send_msg_to_cti_clients_except__) userinfo(id) = %s' % userinfo.get('xivo_userid'))
+                        log.exception('(__send_msg_to_cti_clients_except__) userinfo(astid/xivo_userid) = %s/%s'
+                                      % (userinfo.get('astid'), userinfo.get('xivo_userid')))
                 return
         
 
@@ -2906,14 +2906,23 @@ class XivoCTICommand(BaseCommand):
                         
                 elif eventname == 'Feature':
                         log.info('%s AMI UserEvent %s %s' % (astid, eventname, event))
-                        repstr = { event.get('Function') : { 'enabled' : bool(int(event.get('Status'))),
-                                                             'number' : event.get('Value') } }
-                        userid = '%s/%s' % (astid, event.get('XIVO_USERID'))
-                        tosend = { 'class' : 'features',
-                                   'function' : 'update',
-                                   'userid' : userid,
-                                   'payload' : repstr }
-                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
+                        function = event.get('Function')
+                        if function in ['busy', 'rna', 'unc', 'vm', 'dnd',
+                                        'callrecord', 'callfilter', 'bsfilter']:
+                                repstr = { function : { 'enabled' : bool(int(event.get('Status'))),
+                                                        'number' : event.get('Value') } }
+                                userid = '%s/%s' % (astid, event.get('XIVO_USERID'))
+                                tosend = { 'class' : 'features',
+                                           'function' : 'update',
+                                           'userid' : userid,
+                                           'payload' : repstr }
+                                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
+                        elif function in ['agentstaticlogin', 'agentstaticlogoff', 'agentdynamiclogin']:
+                                # events defined some time ago (r3546), unused yet
+                                pass
+                        else:
+                                log.warning('%s ami_userevent : unknown UserEvent for Feature / %s'
+                                            % (astid, function))
                         
                 elif eventname == 'LocalCall':
                         log.info('%s AMI UserEvent %s %s' % (astid, eventname, event))
@@ -2927,7 +2936,7 @@ class XivoCTICommand(BaseCommand):
                 else:
                         log.info('%s AMI untracked UserEvent %s' % (astid, event))
                 return
-
+        
         def ami_faxsent(self, astid, event):
                 log.info('%s : %s' % (astid, event))
                 filename = event.get('FileName')
