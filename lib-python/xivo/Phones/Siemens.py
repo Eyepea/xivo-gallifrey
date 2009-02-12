@@ -158,7 +158,7 @@ class SiemensHTTP:
         request = self.request(ipv4, 'scripts/settings_telephony_voip_multi.js')
 
         for line in request.readlines():
-            if RE_ACC_GIGASET(line):
+            if self.RE_ACC_GIGASET(line):
                 request.close()
                 request = self.request(ipv4, 'settings_telephony_voip_multi.html', {'account_id': '6'})
                 break
