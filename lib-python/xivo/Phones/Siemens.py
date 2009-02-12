@@ -29,6 +29,7 @@ import os
 import sha
 import logging
 import urllib2
+import re
 
 from distutils import version
 from HTMLParser import HTMLParser
@@ -60,6 +61,8 @@ class SiemensHTTP:
                     ('miscellaneous', 'settings_admin_special.html', ()),
                     ('ip_configuration', 'settings_lan.html', ()),
                     ('audio', 'settings_telephony_audio.html', ()))
+
+    RE_ACC_GIGASET = re.compile('^\s*lines\[6\]\[4\]\s*=\s*2\s*;').match
 
     def __init__(self, common_dir, common_pin):
         self.common_dir     = common_dir
@@ -150,6 +153,17 @@ class SiemensHTTP:
             rcp.set('ip_configuration', 'ip_address_type', 1)
 
         self.login(ipv4)
+
+        # Disable Gigaset account
+        request = self.request(ipv4, 'scripts/settings_telephony_voip_multi.js')
+
+        for line in request.readlines():
+            if RE_ACC_GIGASET(line):
+                request.close()
+                request = self.request(ipv4, 'settings_telephony_voip_multi.html', {'account_id': '6'})
+                break
+
+        request.close()
 
         for section, page, extend in self.SECTION_PAGE:
             if section not in rcp.sections():
@@ -328,6 +342,7 @@ class Siemens(PhoneVendorMixin):
         http = SiemensHTTP(self.SIEMENS_COMMON_DIR, self.SIEMENS_COMMON_PIN)
         http.login(self.phone['ipv4'])
 
+        request = None
         ret = False
 
         try:
@@ -342,27 +357,28 @@ class Siemens(PhoneVendorMixin):
                     request = http.request(self.phone['ipv4'], 'status.html')
                 except BadStatusLine:
                     pass
-
-                if "/status.html" not in request.headers.getheaders('ETag'):
-                    raise LookupError, "Unable to upgrade: status.html (ip: %s)" % self.phone['ipv4']
                 else:
-                    request.close()
+                    if "/status.html" not in request.headers.getheaders('ETag'):
+                        raise LookupError, "Unable to upgrade: status.html (ip: %s)" % self.phone['ipv4']
+                    else:
+                        request.close()
 
                 try:
                     # Only accessible when it is possible to upgrade.
                     request = http.request(self.phone['ipv4'], 'executefwdownload.html')
                 except urllib2.HTTPError:
                     raise LookupError, "Unable to upgrade: not permitted. (ip: %s)" % self.phone['ipv4']
-
-                if "/logout.html" not in request.headers.getheaders('ETag'):
-                    raise LookupError, "Unable to upgrade: executefwdownload.html (ip: %s)" % self.phone['ipv4']
+                except BadStatusLine:
+                    pass
             except LookupError, e:
                 log.exception(str(e))
             else:
                 ret = True
         finally:
-            request.close()
-            http.logout(self.phone['ipv4'])
+            if request:
+                request.close()
+            if not request or "/logout.html" not in request.headers.getheaders('ETag'):
+                http.logout(self.phone['ipv4'])
 
         return ret
 
