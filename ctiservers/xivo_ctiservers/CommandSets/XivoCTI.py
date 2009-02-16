@@ -2613,6 +2613,7 @@ class XivoCTICommand(BaseCommand):
                         log.warning('%s ami_queuememberadded : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
                         return
                 
+                event['Xivo-StateTime'] = time.time()
                 self.weblist[queueorgroup][astid].queuememberupdate(queue, location, event)
                 self.__peragent_queue_summary__(astid, queueorgroup, location)
                 msg = self.__build_agupdate__('joinqueue', astid, location,
@@ -2651,12 +2652,11 @@ class XivoCTICommand(BaseCommand):
                 if agent_channel.startswith('Agent/'):
                         agent = agent_channel[6:]
                         agent_id = self.weblist['agents'][astid].reverse_index.get(agent)
+                        self.weblist['agents'][astid].keeplist[agent_id]['stats'].update({'Xivo-StateTime' : time.time()})
                         if action in ['phonelink', 'agentlink']:
-                                self.weblist['agents'][astid].keeplist[agent_id]['stats'].update({'link' : action,
-                                                                                                  'Xivo-StateTime' : time.time()})
+                                self.weblist['agents'][astid].keeplist[agent_id]['stats'].update({'link' : action})
                         elif action in ['phoneunlink', 'agentunlink']:
-                                self.weblist['agents'][astid].keeplist[agent_id]['stats'].update({'link' : action,
-                                                                                                  'Xivo-StateTime' : time.time()})
+                                self.weblist['agents'][astid].keeplist[agent_id]['stats'].update({'link' : action})
                 else:
                         log.warning('%s sip@queue (__build_agupdate__) %s %s' % (astid, action, agent_channel))
                         
