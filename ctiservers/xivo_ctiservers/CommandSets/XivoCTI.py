@@ -173,6 +173,17 @@ class XivoCTICommand(BaseCommand):
                 
                 return
         
+        def apnoea_tosave(self):
+                # tosave = self.uniqueids
+                tosave = {}
+                return tosave
+        
+        def apnoea_rescue(self, torescue):
+                # self.uniqueids = torescue
+                # read a 'datetime' field in order to decide whether
+                # it is worth to set the data or not
+                return
+        
         def get_list_commands(self):
                 return ['json']
         

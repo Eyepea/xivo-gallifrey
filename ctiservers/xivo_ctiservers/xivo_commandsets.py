@@ -89,6 +89,12 @@ class BaseCommand:
         def connected_users(self):
                 return {}
         
+        # define the structures to be saved and loaded beyond restarts
+        def apnoea_tosave(self):
+                return {}
+        def apnoea_rescue(self, torescue):
+                return
+        
         def getuserslist(self):
                 return
         def getqueueslist(self, qlist):

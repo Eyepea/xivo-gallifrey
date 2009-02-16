@@ -55,6 +55,7 @@ __revision__ = __version__.split()[1]
 # debian.org modules
 import getopt
 import os
+import pickle
 import select
 import signal
 import socket
@@ -637,7 +638,7 @@ xdname = None
 
 while True: # loops over the reloads
         askedtoquit = False
-
+        
         time_start = time.time()
         if nreload == 0:
                 log.info('# STARTING XIVO Daemon %s (pid %d) / svn:%s # (0/3) Starting'
@@ -678,13 +679,14 @@ while True: # loops over the reloads
         ctilog = xivoconf_general.get('ctilog')
         socktimeout = xivoconf_general.get('sockettimeout', '2')
         logintimeout = int(xivoconf_general.get('logintimeout', '5'))
+        apnoeafile = xivoconf_general.get('apnoeafile')
         if 'asterisklist' in xivoconf_general:
                 asterisklist = xivoconf_general['asterisklist'].split(',')
         if 'contextlist' in xivoconf_general:
                 contextlist = xivoconf_general['contextlist'].split(',')
         if 'userlists' in xivoconf_general:
                 userlists = xivoconf_general['userlists'].split(',')
-        
+                
         socket.setdefaulttimeout(float(socktimeout))
         
         queued_threads_pipe = os.pipe()
@@ -708,6 +710,15 @@ while True: # loops over the reloads
         commandclass.set_ctilog(ctilog)
         commandclass.set_logintimeout(logintimeout)
         
+        if apnoeafile:
+                try:
+                        e = open(apnoeafile, 'r')
+                        torescue = pickle.loads(e.read())
+                        e.close()
+                        commandclass.apnoea_rescue(torescue)
+                except:
+                        log.exception('read apnoea file %s' % apnoeafile)
+                        
         for ctx in contextlist:
                 xivoconf_context = cconf.read_section('context', ctx)
                 if len(xivoconf_context) > 0:
@@ -877,6 +888,15 @@ while True: # loops over the reloads
                         print ' current open TCP connections : (OUT) ', outsock
                         print
                         
+                        if askedtoquit and apnoeafile:
+                                try:
+                                        tosave = commandclass.apnoea_tosave()
+                                        e = open(apnoeafile, 'w')
+                                        e.write(pickle.dumps(tosave))
+                                        e.close()
+                                except:
+                                        log.exception('write apnoea file %s' % apnoeafile)
+                                        
                         for s in fdlist_full:
                                 if s in fdlist_established and fdlist_established[s] == 'CTI':
                                         if askedtoquit:
@@ -887,6 +907,7 @@ while True: # loops over the reloads
                                         os.close(s)
                                 else:
                                         s.close()
+                                        
                         if askedtoquit:
                                 commandclass.reset('stop')
                                 for t in filter(lambda x: x.getName() != 'MainThread', threading.enumerate()):
