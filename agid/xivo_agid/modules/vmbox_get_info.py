@@ -28,7 +28,7 @@ def vmbox_get_info(agi, cursor, args):
         agi.dp_break(str(e))
 
     if vmbox.skipcheckpass:
-        agi.set_variable('XIVO_VMOPTIONS', "s")
+        agi.set_variable('XIVO_VMMAIN_OPTIONS', "s")
 
     agi.set_variable('XIVO_MAILBOX', vmbox.mailbox)
     agi.set_variable('XIVO_MAILBOX_CONTEXT', vmbox.context)

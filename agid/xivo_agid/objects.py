@@ -278,27 +278,40 @@ class VMBox:
 
 
 class User:
-    def __init__(self, agi, cursor, xid, feature_list=None):
+    def __init__(self, agi, cursor, xid, feature_list=None, exten=None, context=None):
         self.agi = agi
         self.cursor = cursor
 
-        cursor.query("SELECT ${columns} FROM userfeatures "
-                     "WHERE id = %s "
-                     "AND internal = 0 "
-                     "AND commented = 0",
-                     ('id', 'number', 'context', 'protocol', 'protocolid',
-                      'name', 'ringseconds', 'simultcalls',
-                      'enablevoicemail', 'voicemailid', 'enablexfer',
-                      'enableautomon', 'callrecord', 'callfilter',
-                      'enablednd', 'enableunc', 'destunc', 'enablerna',
-                      'destrna', 'enablebusy', 'destbusy', 'musiconhold',
-                      'outcallerid', 'bsfilter', 'preprocess_subroutine', 'mobilephonenumber'),
-                     (xid,))
+        columns = ('id', 'number', 'context', 'protocol', 'protocolid',
+                   'name', 'ringseconds', 'simultcalls',
+                   'enablevoicemail', 'voicemailid', 'enablexfer',
+                   'enableautomon', 'callrecord', 'callfilter',
+                   'enablednd', 'enableunc', 'destunc', 'enablerna',
+                   'destrna', 'enablebusy', 'destbusy', 'musiconhold',
+                   'outcallerid', 'bsfilter', 'preprocess_subroutine', 'mobilephonenumber')
+
+        if xid:
+                cursor.query("SELECT ${columns} FROM userfeatures "
+                             "WHERE id = %s "
+                             "AND internal = 0 "
+                             "AND commented = 0",
+                             columns,
+                             (xid,))
+        elif exten and context:
+                cursor.query("SELECT ${columns} FROM userfeatures "
+                             "WHERE number = %s "
+                             "AND context = %s "
+                             "AND internal = 0 "
+                             "AND commented = 0",
+                             columns,
+                             (exten, context))
+        else:
+            raise LookupError("id or exten@context must be provided to look up an user entry")
 
         res = cursor.fetchone()
 
         if not res:
-            raise LookupError("Unable to find user (id: %d)" % xid)
+            raise LookupError("Unable to find user entry (id: %s, exten: %s, context: %s)" % (xid, exten, context))
 
         self.id = res['id']
         self.number = res['number']
