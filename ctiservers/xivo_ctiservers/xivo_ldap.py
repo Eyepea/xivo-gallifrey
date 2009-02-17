@@ -38,6 +38,8 @@ log = logging.getLogger('ldap')
 ## \class xivo_ldap
 class xivo_ldap:
         def __init__(self, iuri):
+                self.l = None
+                self.iuri = iuri
                 try:
                         log.info('requested uri = %s' % iuri)
                         ldapf = iuri.split('://')
@@ -61,11 +63,11 @@ class xivo_ldap:
                                 self.l.simple_bind_s(self.user, self.passwd)
                         else:
                                 self.l.simple_bind_s()
-
+                                
                 except ldap.LDAPError:
-			log.exception('__init__ : ldap.LDAPError (%s)' % iuri)
+			log.exception('__init__ : ldap.LDAPError (%s %s)' % (self.l, iuri))
                         self.l = None
-
+                        
         def getldap(self, filter, attrib):
                 try:
                         resultat = self.l.search_s(self.dbname,
@@ -74,8 +76,16 @@ class xivo_ldap:
                                                    attrib)
                         return resultat
                 except ldap.LDAPError:
-                        log.exception('getldap : ldap.LDAPError (%s)' % self.uri)
-                        
+                        log.exception('getldap : ldap.LDAPError (%s %s) retrying to connect' % (self.l, self.uri))
+                        self.__init__(self.iuri)
+                        try:
+                                resultat = self.l.search_s(self.dbname,
+                                                           ldap.SCOPE_SUBTREE,
+                                                           filter,
+                                                           attrib)
+                                return resultat
+                        except ldap.LDAPError:
+                                log.exception('getldap : ldap.LDAPError (%s %s) could not reconnect' % (self.l, self.uri))
 
 class xivo_csv:
         def __init__(self, uri):
@@ -96,7 +106,7 @@ class xivo_csv:
                         f.close()
                         self.opened = True
                 return self.opened
-
+        
         def index(self, key):
                 return self.keys.index(key)
 

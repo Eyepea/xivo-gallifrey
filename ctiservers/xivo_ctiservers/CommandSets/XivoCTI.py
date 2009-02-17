@@ -317,7 +317,7 @@ class XivoCTICommand(BaseCommand):
                         if len(missings) > 0:
                                 log.warning('missing args in loginparams : %s' % ','.join(missings))
                                 return 'missing:%s' % ','.join(missings)
-
+                        
                         if uinfo is not None:
                                 userinfo = uinfo
                         hashedpassword = loginparams.get('hashedpassword')

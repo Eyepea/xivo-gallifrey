@@ -873,10 +873,9 @@ while True: # loops over the reloads
         if outsock is not None:
                 fdlist_full.append(outsock)
         fdlist_full.append(queued_threads_pipe[0])
-
-
-
-
+        
+        
+        
         # Main select() loop - Receive messages
         while not askedtoquit:
                 try:
