@@ -1192,10 +1192,11 @@ class XivoCTICommand(BaseCommand):
                         # 2/4
                         # call a database for xivo-callerid matching (or another pattern to set somewhere)
                         dirlist = actionopt.get('directories')
+                        contextlist = actionopt.get('contexts')
                         if 'xivo-tomatch-callerid' in itemdir:
                                 callingnum = itemdir['xivo-tomatch-callerid']
                                 log.info('%s xivo-tomatch-callerid : looking for %s' % (astid, callingnum))
-                                if dirlist is not None:
+                                if dirlist:
                                         for dirname in dirlist.split(','):
                                                 if context in self.ctxlist.ctxlist and dirname in self.ctxlist.ctxlist[context]:
                                                         dirdef = self.ctxlist.ctxlist[context][dirname]

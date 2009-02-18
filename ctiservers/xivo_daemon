@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2.4
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -594,8 +594,7 @@ def update_amisocks(astid):
 # \return none
 def sighandler(signum, frame):
         global askedtoquit
-        print
-        print '--- signal %s (atq = %s) received : quits' % (signum, askedtoquit)
+        log.warning('(sighandler) signal %s (atq = %s) received : quits' % (signum, askedtoquit))
         for t in filter(lambda x: x.getName() != 'MainThread', threading.enumerate()):
                 print '--- living thread <%s>' % (t.getName())
                 t._Thread__stop()
@@ -608,8 +607,7 @@ def sighandler(signum, frame):
 # \return none
 def sighandler_reload(signum, frame):
         global askedtoquit
-        print
-        print '--- signal %s (atq = %s) received : reloads' % (signum, askedtoquit)
+        log.warning('(sighandler_reload) signal %s (atq = %s) received : reloads' % (signum, askedtoquit))
         askedtoquit = False
 
 # ==============================================================================
@@ -732,11 +730,11 @@ while True: # loops over the reloads
                                 for dr in directories:
                                         xivoconf_dir = cconf.read_section('directory', dr)
                                         directorylist.update(contextname, dr, xivoconf_dir)
-
+                                        
         save_for_next_packet_events = {}
         ip_reverse_webi = {}
         ip_reverse_sht = {}
-
+        
         # loads the configuration for each asterisk
         for astid in asterisklist:
                 xivoconf_asterisk = cconf.read_section('ipbx', astid)
@@ -881,11 +879,11 @@ while True: # loops over the reloads
                 try:
                         [sels_i, sels_o, sels_e] = select.select(fdlist_full, [], [], updates_period)
                 except Exception, exc:
-                        print '(EXCEPTION) after select (%s, %s) : %s' % (askedtoquit, fdlist_full, exc)
-                        print ' current open TCP connections : (CTI, WEBI, (F)AGI, INFO) ', fdlist_established
-                        print ' current open TCP connections : (AMI) ', amilist.fdlist()
-                        print ' current open TCP connections : (OUT) ', outsock
-                        print
+                        log.exception('(select) probably Ctrl-C or daemon stop or daemon restart ...')
+                        log.warning('(select) askedtoquit=%s fdlist_full=%s' % (askedtoquit, fdlist_full))
+                        log.warning('(select) current open TCP connections : (CTI, WEBI, (F)AGI, INFO) %s' % fdlist_established)
+                        log.warning('(select) current open TCP connections : (AMI) %s' % amilist.fdlist())
+                        log.warning('(select) current open TCP connections : (OUT) %s' % outsock)
                         
                         if askedtoquit and apnoeafile:
                                 try:

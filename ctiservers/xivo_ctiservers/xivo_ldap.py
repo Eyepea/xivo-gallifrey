@@ -27,7 +27,6 @@ __author__    = 'Corentin Le Gall'
 LDAP class.
 """
 
-import csv
 import ldap
 import logging
 import sys
@@ -86,35 +85,3 @@ class xivo_ldap:
                                 return resultat
                         except ldap.LDAPError:
                                 log.exception('getldap : ldap.LDAPError (%s %s) could not reconnect' % (self.l, self.uri))
-
-class xivo_csv:
-        def __init__(self, uri):
-                self.uri = uri
-                self.opened = False
-
-        def open(self):
-                if self.uri.find('file:') == 0:
-                        self.path = self.uri[5:]
-                if self.uri.find('file:') == 0 or self.uri.find('http:') == 0:
-                        self.items = []
-                        f = urllib.urlopen(self.uri)
-                        csvreader = csv.reader(f, delimiter = ';')
-                        self.keys = csvreader.next()
-                        for line in csvreader:
-                                if len(line) > 0:
-                                        self.items.append(line)
-                        f.close()
-                        self.opened = True
-                return self.opened
-        
-        def index(self, key):
-                return self.keys.index(key)
-
-        def add(self, listitems):
-                if self.opened:
-                        if listitems not in self.items:
-                                self.items.append(listitems)
-                                linetoadd = ';'.join(listitems)
-                                toadd = open(self.path, 'a')
-                                toadd.write('%s\n' % linetoadd)
-                                toadd.close()

@@ -27,20 +27,6 @@ __author__    = 'Corentin Le Gall'
 Asterisk Contexts.
 """
 
-
-def getboolean(fname, string):
-        if string not in fname:
-                return True
-        else:
-                value = fname.get(string)
-                if value in ['false', '0', 'False']:
-                        return False
-                else:
-                        return True
-
-
-
-
 class Contexts:
         def __init__(self):
                 self.ctxlist = {}
@@ -48,7 +34,7 @@ class Contexts:
                 self.display_header = {}
                 self.display_items = {}
                 return
-
+        
         def setdisplay(self, ctxname, xivoconf_items):
                 if ctxname not in self.displays:
                         self.displays[ctxname] = {}
@@ -61,96 +47,39 @@ class Contexts:
                         [title, type, defaultval, format] = self.displays[ctxname][k].split('|')
                         self.display_header[ctxname].append(title)
                 return
-
+        
         def update(self, ctxname, dirname, xivoconf_local):
-                dir_db_uri = ''
-                dir_db_sqltable = ''
-                dir_db_sheetui = ''
-
-                if 'uri' in xivoconf_local:
-                        dir_db_uri = xivoconf_local['uri']
-                if 'dir_db_sqltable' in xivoconf_local:
-                        dir_db_sqltable = xivoconf_local['dir_db_sqltable']
-                if 'dir_db_sheetui' in xivoconf_local:
-                        dir_db_sheetui = xivoconf_local['dir_db_sheetui']
-
-                z = Context()
-                z.setUri(dir_db_uri)
-                z.setSqlTable(dir_db_sqltable)
-                z.setSheetUi(dir_db_sheetui)
-
-                snames = {}
-                fkeys = {}
-                for field in xivoconf_local:
-                        if field.find('dir_db_sheet') == 0:
-                                ffs = field.split('.')
-                                if len(ffs) == 3:
-                                        if ffs[1] not in snames:
-                                                snames[ffs[1]] = {}
-                                        snames[ffs[1]][ffs[2]] = xivoconf_local[field]
-                        elif field.startswith('field_'):
-                                keyword = field.split('_')[1]
-                                fkeys['db-%s' % keyword] = xivoconf_local[field].split(',')
-                        elif field == 'match_direct':
-                                z.setDirectMatch(str(xivoconf_local[field]).split(','))
-                        elif field == 'match_reverse':
-                                z.setReverseMatch(str(xivoconf_local[field]).split(','))
-                        elif field == 'name':
-                                z.setName(xivoconf_local[field])
-
-                z.setKeys(fkeys)
-
-                sheet_vfields = []
-                sheet_mfields = []
-                for fname in snames.itervalues():
-                        if 'field' in fname and 'match' in fname:
-                                dbnames = fname['match']
-                                if dbnames != '':
-                                        dbnames_list = dbnames.split(',')
-                                        for dbn in dbnames_list:
-                                                if dbn not in sheet_mfields:
-                                                        sheet_mfields.append(dbn)
-                                        sheet_vfields.append([fname['field'], dbnames_list, False])
-
-                z.setSheetValidFields(sheet_vfields)
-                z.setSheetMatchingFields(sheet_mfields)
-
+                z = Directory()
+                z.setProps(xivoconf_local)
+                
                 if ctxname not in self.ctxlist:
                         self.ctxlist[ctxname] = {}
                 self.ctxlist[ctxname][dirname] = z
                 return
 
-
-class Context:
+class Directory:
         def __init__(self):
                 self.uri = ''
                 self.sqltable = ''
-                self.sheetui = ''
                 self.name = '(noname)'
-                self.search_matching_fields = []
-                self.sheet_valid_fields = []
-                self.sheet_matching_fields = []
                 self.match_direct = []
                 self.match_reverse = []
-                self.fkeys = {}
                 return
-
-        def setUri(self, uri):
-                self.uri = uri
-        def setSqlTable(self, sqltable):
-                self.sqltable = sqltable
-        def setSheetUi(self, sheetui):
-                self.sheetui = sheetui
-
-        def setName(self, name):
-                self.name = name
-        def setSheetValidFields(self, vf):
-                self.sheet_valid_fields = vf
-        def setSheetMatchingFields(self, mf):
-                self.sheet_matching_fields = mf
-        def setDirectMatch(self, cidm):
-                self.match_direct = cidm
-        def setReverseMatch(self, cidm):
-                self.match_reverse = cidm
-        def setKeys(self, keys):
-                self.fkeys = keys
+        
+        def setProps(self, xivoconf_local):
+                self.fkeys = {}
+                for field in xivoconf_local:
+                        if field.startswith('field_'):
+                                keyword = field.split('_')[1]
+                                self.fkeys['db-%s' % keyword] = xivoconf_local[field].split(',')
+                        elif field in 'uri':
+                                self.uri = xivoconf_local[field]
+                        elif field == 'name':
+                                self.name = xivoconf_local[field]
+                        elif field == 'dir_db_sqltable':
+                                self.sqltable = xivoconf_local[field]
+                        elif field == 'match_direct':
+                                self.match_direct = str(xivoconf_local[field]).split(',')
+                        elif field == 'match_reverse':
+                                self.match_reverse = str(xivoconf_local[field]).split(',')
+                return
