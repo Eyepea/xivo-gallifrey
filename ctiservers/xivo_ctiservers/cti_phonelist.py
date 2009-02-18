@@ -1,3 +1,4 @@
+# vim: set fileencoding=utf-8 :
 # XIVO Daemon
 
 __version__   = '$Revision$'
@@ -166,8 +167,12 @@ class PhoneList(AnyList):
                 if phoneid in self.keeplist:
                         if status not in self.display_hints:
                                 status = '-2'
-                        self.keeplist[phoneid]['hintstatus'] = self.display_hints.get(status)
-                return
+                        changed = not (self.keeplist[phoneid]['hintstatus'] == self.display_hints.get(status))
+                        #log.debug('ami_extstatus : %s %s => %s' % (changed, self.keeplist[phoneid]['hintstatus'], self.display_hints.get(status)) )
+                        if changed:
+                            self.keeplist[phoneid]['hintstatus'] = self.display_hints.get(status)
+                        return changed
+                return False
         
         def ami_parkedcall(self, phoneid, uid, ctuid):
                 if phoneid in self.keeplist:
