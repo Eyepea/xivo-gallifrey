@@ -1,3 +1,4 @@
+# vim: set fileencoding=utf-8 :
 # XIVO Daemon
 
 __version__   = '$Revision$'
@@ -853,6 +854,7 @@ class XivoCTICommand(BaseCommand):
                                 if True:
                                         astid = uitem.get('astid', 'xivo')
                                         uid = astid + '/' + uitem.get('id')
+                                        log.debug('getuserslist %s : %s' % (uid, uitem))
                                         lulist[uid] = {'user' : uitem.get('loginclient'),
                                                        'company' : uitem.get('context'),
                                                        'password' : uitem.get('passwdclient'),
@@ -874,7 +876,8 @@ class XivoCTICommand(BaseCommand):
                                                 lulist[uid]['capaid'] = lulist[uid]['capaids'][0]
                                         if uitem.get('enablevoicemail') and uitem.get('voicemailid'):
                                                 lulist[uid]['voicemailid'] = uitem.get('voicemailid')
-                                                lulist[uid]['mwi'] = ['0', '0', '0']
+                                                if 'mwi' not in lulist[uid] or len(lulist[uid]['mwi']) < 3:
+                                                    lulist[uid]['mwi'] = ['0', '0', '0']
                                         else:
                                                 lulist[uid]['mwi'] = []
                                         if uitem.get('agentid') is not None:
@@ -905,6 +908,7 @@ class XivoCTICommand(BaseCommand):
         
         def askstatus(self, astid, npl):
                 for a, b in npl.iteritems():
+                        #log.info('askstatus %s %s' %(a, b))
                         if b['tech'] != 'custom':
                                 self.__ami_execute__(astid, 'sendextensionstate', b['number'], b['context'])
                                 self.__ami_execute__(astid, 'mailbox', b['number'], b['context'])
@@ -962,6 +966,7 @@ class XivoCTICommand(BaseCommand):
                         t0 = time.time()
                         if userinfo is not None and 'login' in userinfo and 'connection' in userinfo.get('login'):
                                 mysock = userinfo.get('login')['connection']
+                                # note thomas : A quoi sert le MSG_WAITALL ???
                                 mysock.sendall(strupdate + '\n', socket.MSG_WAITALL)
                 except Exception:
                         t1 = time.time()
@@ -973,6 +978,7 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def __send_msg_to_cti_clients__(self, strupdate):
+                log.debug('__send_msg_to_cti_clients__ %s' % (strupdate))
                 try:
                         if strupdate is not None:
                                 for userinfo in self.ulist_ng.keeplist.itervalues():
@@ -982,6 +988,7 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def __send_msg_to_cti_clients_except__(self, uinfos, strupdate):
+                log.debug('__send_msg_to_cti_clients_except__  !!!!!!!!!!!!!!!!!!!!!!! %s' % (strupdate))
                 try:
                         if strupdate is not None:
                                 for userinfo in self.ulist_ng.keeplist.itervalues():
@@ -2137,6 +2144,7 @@ class XivoCTICommand(BaseCommand):
                 for userinfo in self.ulist_ng.keeplist.itervalues():
                         if 'voicemailid' in userinfo and userinfo.get('voicemailid') == voicemailid and userinfo.get('astid') == astid:
                                 if userinfo['mwi']:
+                                        # TODO : maybe send the infos if they have changed
                                         userinfo['mwi'][1] = event.get('OldMessages')
                                         userinfo['mwi'][2] = event.get('NewMessages')
                 return
@@ -2147,15 +2155,18 @@ class XivoCTICommand(BaseCommand):
                 for userinfo in self.ulist_ng.keeplist.itervalues():
                         if 'voicemailid' in userinfo and userinfo.get('voicemailid') == voicemailid and userinfo.get('astid') == astid:
                                 if userinfo['mwi']:
-                                        userinfo['mwi'][0] = event.get('Waiting')
-                                        tosend = { 'class' : 'users',
-                                                   'function' : 'update',
-                                                   'user' : [userinfo.get('astid'),
-                                                             userinfo.get('xivo_userid')],
-                                                   'subclass' : 'mwi',
-                                                   'payload' : userinfo.get('mwi')
-                                                   }
-                                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
+                                        log.debug('amiresponse_mailboxstatus voicemailid=%s user=%s %s=>%s' % (voicemailid, userinfo.get('xivo_userid'), userinfo['mwi'][0], event.get('Waiting')))
+                                        if userinfo['mwi'][0] != event.get('Waiting'):
+                                            # only send if it has changed
+                                            userinfo['mwi'][0] = event.get('Waiting')
+                                            tosend = { 'class' : 'users',
+                                                       'function' : 'update',
+                                                       'user' : [userinfo.get('astid'),
+                                                                 userinfo.get('xivo_userid')],
+                                                       'subclass' : 'mwi',
+                                                       'payload' : userinfo.get('mwi')
+                                                       }
+                                            self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 return
         
         sippresence = {
@@ -2175,13 +2186,15 @@ class XivoCTICommand(BaseCommand):
                 context = event.get('Context')
                 exten   = event.get('Exten')
                 if hint:
+                        #log.info('amiresponse_extensionstatus hint=%s status=%s' % (hint, status))
                         phoneref = '.'.join([hint.split('/')[0].lower(), context,
                                              hint.split('/')[1], exten])
                         if phoneref in self.weblist['phones'][astid].keeplist:
-                                self.weblist['phones'][astid].ami_extstatus(phoneref, status)
-                                tosend = self.weblist['phones'][astid].status(phoneref)
-                                tosend['astid'] = astid
-                                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
+                                if self.weblist['phones'][astid].ami_extstatus(phoneref, status):
+                                        # only sends information if the status changed
+                                        tosend = self.weblist['phones'][astid].status(phoneref)
+                                        tosend['astid'] = astid
+                                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 else:
                         log.warning('%s : undefined hint for %s' % (astid, event))
                 return
@@ -2196,11 +2209,13 @@ class XivoCTICommand(BaseCommand):
                 status  = event.get('Status')
                 
                 for phoneref, b in self.weblist['phones'][astid].keeplist.iteritems():
+                        #log.info('ami_extensionstatus context=%s status=%s' % (context, status))
                         if b['number'] == exten and b['context'] == context:
-                                self.weblist['phones'][astid].ami_extstatus(phoneref, status)
-                                tosend = self.weblist['phones'][astid].status(phoneref)
-                                tosend['astid'] = astid
-                                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
+                                if self.weblist['phones'][astid].ami_extstatus(phoneref, status):
+                                        # only sends information if the status changed
+                                        tosend = self.weblist['phones'][astid].status(phoneref)
+                                        tosend['astid'] = astid
+                                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 return
         
         def ami_channelreload(self, astid, event):
