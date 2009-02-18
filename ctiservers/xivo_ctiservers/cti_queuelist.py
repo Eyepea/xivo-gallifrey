@@ -1,3 +1,4 @@
+# vim: set fileencoding=utf-8 :
 # XIVO Daemon
 
 __version__   = '$Revision$'
@@ -81,13 +82,16 @@ class QueueList(AnyList):
                 return
         
         def update_queuestats(self, queue, event):
+                changed = False
                 if queue in self.keeplist:
                         for statfield in self.queuestats:
                                 if statfield in event:
-                                        self.keeplist[queue]['stats'][statfield] = event.get(statfield)
+                                        if self.keeplist[queue]['stats'][statfield] != event.get(statfield):
+                                            self.keeplist[queue]['stats'][statfield] = event.get(statfield)
+                                            changed = True
                 else:
                         log.warning('update_queuestats : no such queue %s' % queue)
-                return
+                return changed
         
         def get_queues(self):
                 return self.keeplist.keys()

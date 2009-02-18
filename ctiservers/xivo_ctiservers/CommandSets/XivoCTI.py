@@ -2813,7 +2813,7 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def ami_queueparams(self, astid, event):
-                # log.info('%s ami_queueparams : %s' % (astid, event))
+                log.info('%s ami_queueparams : %s' % (astid, event))
                 if astid not in self.weblist['queues']:
                         log.warning('%s ami_queueparams : no queue list has been defined' % astid)
                         return
@@ -2826,13 +2826,14 @@ class XivoCTICommand(BaseCommand):
                         log.warning('%s ami_queueparams : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
                         return
                 
-                self.weblist[queueorgroup][astid].update_queuestats(queue, event)
-                tosend = { 'class' : queueorgroup,
-                           'function' : 'sendlist',
-                           'payload' : [ { 'astid' : astid,
-                                           'queuestats' : self.weblist[queueorgroup][astid].get_queuestats(queue)
-                                           } ] }
-                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
+                if self.weblist[queueorgroup][astid].update_queuestats(queue, event):
+                        # send an update only if something changed
+                        tosend = { 'class' : queueorgroup,
+                                   'function' : 'sendlist',
+                                   'payload' : [ { 'astid' : astid,
+                                                   'queuestats' : self.weblist[queueorgroup][astid].get_queuestats(queue)
+                                                   } ] }
+                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 return
         
         def ami_queuemember(self, astid, event):
