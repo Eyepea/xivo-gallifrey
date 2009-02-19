@@ -16,14 +16,14 @@ rm -rf tmp
 mkdir tmp
 tar xz -C tmp -f ${DEST_PATH}/${FILENAME}
 
-if [ -e ../../patches ]; then
-  if [ -e ../../patches/classic ]; then
+if [ -e patches ]; then
+  if [ -e patches/classic ]; then
     PATCH_DIR="../../patches/classic"
   else
     PATCH_DIR="../../patches"
   fi
   
-  cd tmp/${PKG_NAME}-${VER}
+  cd tmp/${SRC_DIR_PREFIX}${VER}
   ln -s ${PATCH_DIR} patches
   if [ -e patches/series ]; then
     quilt push -a

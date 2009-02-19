@@ -1,0 +1,263 @@
+diff -Nur appconference-2.0.1.orig/app_conference.h appconference-2.0.1/app_conference.h
+--- appconference-2.0.1.orig/app_conference.h	2008-02-26 18:05:57.000000000 +0200
++++ appconference-2.0.1/app_conference.h	2009-01-28 19:39:45.000000000 +0200
+@@ -54,6 +54,7 @@
+ #include <asterisk/dsp.h>
+ #include <asterisk/translate.h>
+ #include <asterisk/channel.h>
++#include <asterisk/musiconhold.h>
+ #include <asterisk/file.h>
+ //#include <asterisk/channel_pvt.h>
+ #include <asterisk/cli.h>
+diff -Nur appconference-2.0.1.orig/member.c appconference-2.0.1/member.c
+--- appconference-2.0.1.orig/member.c	2008-02-26 18:05:57.000000000 +0200
++++ appconference-2.0.1/member.c	2009-01-28 20:07:55.000000000 +0200
+@@ -31,7 +31,39 @@
+ #include <stdio.h>
+ #include "asterisk/autoconfig.h"
+ #include "member.h"
++int member_play_sound ( const char *channel, const char *file )
++{
++	struct ast_conf_member *play_member;
++	struct ast_conf_soundq *newsound;
++	struct ast_conf_soundq **q;
++
++	play_member = find_member(channel, 1);
++	if(!play_member) {
++		ast_log( LOG_ERROR, "Member %s not found\n", channel) ;
++		return 0;
++	}
++
++	newsound = calloc(1,sizeof(struct ast_conf_soundq));
++	newsound->stream = ast_openstream(play_member->chan, file, play_member->chan->language);
++	if(!newsound->stream) { 
++		free(newsound);
++		ast_mutex_unlock(&play_member->lock);
++		ast_log( LOG_ERROR, "Sound file %s not found\n", file ) ;
++	}
++	play_member->chan->stream = NULL;
++
++	ast_copy_string(newsound->name, file, sizeof(newsound->name));
++
++	// append sound to the end of the list.
++	for(q=&play_member->soundq; *q; q = &((*q)->next)) ;;
+ 
++	*q = newsound;
++
++	ast_mutex_unlock(&play_member->lock);
++
++	ast_log( LOG_NOTICE, "Playing conference message %s\n", file ) ;
++	return 1;
++}
+ 
+ // process an incoming frame.  Returns 0 normally, 1 if hangup was received.
+ static int process_incoming(struct ast_conf_member *member, struct ast_conference *conf, struct ast_frame *f)
+@@ -42,6 +74,14 @@
+ 	// In Asterisk 1.4 AST_FRAME_DTMF is equivalent to AST_FRAME_DTMF_END
+ 	if (f->frametype == AST_FRAME_DTMF)
+ 	{
++		if (666 == 666) {
++			if (f->subclass == '#') 
++			{
++				ast_mutex_lock( &member->lock );
++				member->transfer_flag = 1;
++				ast_mutex_unlock( &member->lock );
++			}
++		}
+ 		if (member->dtmf_switch)
+ 		{
+ 			ast_mutex_lock( &member->lock ) ;
+@@ -558,6 +598,15 @@
+ 	return kick;
+ }
+ 
++static int member_checktransfer( struct ast_conf_member *member )
++{
++	int transfer;
++	ast_mutex_lock( &member->lock ) ;
++	transfer = member->transfer_flag;
++	ast_mutex_unlock( &member->lock ) ;
++	return transfer;
++}
++
+ //
+ // main member thread function
+ //
+@@ -613,7 +662,6 @@
+ #if 0
+ 	ast_log( AST_CONF_DEBUG, "CHANNEL INFO, CHANNEL => %s, DNID => %s, CALLER_ID => %s, ANI => %s\n",
+ 		chan->name, chan->dnid, chan->callerid, chan->ani ) ;
+-
+ 	ast_log( AST_CONF_DEBUG, "CHANNEL CODECS, CHANNEL => %s, NATIVE => %d, READ => %d, WRITE => %d\n",
+ 		chan->name, chan->nativeformats, member->read_format, member->write_format ) ;
+ #endif
+@@ -677,7 +725,6 @@
+ 	} else
+ 		member->callername = NULL;
+ 
+-
+ 	//
+ 	// process loop for new member ( this runs in it's own thread )
+ 	//
+@@ -687,11 +734,46 @@
+ 	// timer timestamps
+ 	struct timeval base, curr ;
+ 	base = ast_tvnow();
++	
+ 
+ 	// tell conference_exec we're ready for frames
+ 	member->ready_for_outgoing = 1 ;
++	int my_count = 0;
+ 	while ( 42 == 42 )
+ 	{
++		if ( my_count != conf->membercount ) 
++		{
++			my_count = conf->membercount;
++			
++			if ( my_count == 1 ) 
++			{
++				if ( member->sound_notify ) 
++				{
++					if( !ast_streamfile(member->chan, "conf-onlyperson", member->chan->language) ) 
++					{
++						ast_waitstream( member->chan, "" );
++					}
++				}
++
++				if ( member->moh ) 
++				{
++					ast_moh_start( member->chan, "default", NULL );
++				}
++			}
++
++			if ( my_count > 1 && member->moh ) {
++				if ( member->sound_notify )
++				{
++					member_play_sound ( member->channel_name, "beep" ) ;
++				}
++
++				if ( member->moh )
++				{
++					ast_moh_stop( member->chan );
++				}
++			}
++		}
++
+ 		// make sure we have a channel to process
+ 		if ( chan == NULL )
+ 		{
+@@ -747,6 +829,28 @@
+ 
+ 		if (member_checkkick(member)) break;
+ 
++		if (member_checktransfer(member)) 
++		{
++			char *transfer_extension = pbx_builtin_getvar_helper( member->chan, "CONF_TRANSFER_EXT" ) ;
++
++			if (transfer_extension == NULL ) 
++			{
++				ast_log ( LOG_WARNING, "Conference transfer extension not defined\n", transfer_extension ) ;
++			} else {
++				ast_log ( LOG_WARNING, "Transfer Extension : %s\n", transfer_extension);
++				if ( ast_transfer(member->chan, transfer_extension) != 1 ) 
++				{
++					ast_log ( LOG_WARNING, "Cannot transfer conference member to extension '%s'\n", transfer_extension ) ;
++				} else {
++					break;
++				}
++			}
++
++			ast_mutex_lock ( &member->lock ) ;
++			member->transfer_flag = 0;
++			ast_mutex_unlock (&member->lock ) ;
++		}
++
+ 		//-----------------//
+ 		// OUTGOING FRAMES //
+ 		//-----------------//
+@@ -759,6 +863,12 @@
+ 		continue ;
+ 	}
+ 
++
++	if (member->moh) {
++		ast_moh_stop(member->chan);
++		ast_moh_cleanup(member->chan);
++	}
++
+ 	ast_log( AST_CONF_DEBUG, "end member event loop, time_entered => %ld\n", member->time_entered.tv_sec ) ;
+ 
+ 	//
+@@ -777,6 +887,7 @@
+ //	end = ast_tvnow();
+ //	int expected_frames = ( int )( floor( (double)( msecdiff( &end, &start ) / AST_CONF_FRAME_INTERVAL ) ) ) ;
+ //	ast_log( AST_CONF_DEBUG, "expected_frames => %d\n", expected_frames ) ;
++//
+ 
+ 	return 0 ;
+ }
+@@ -1022,6 +1133,7 @@
+ 	// flags
+ 	member->remove_flag = 0 ;
+ 	member->kick_flag = 0;
++	member->transfer_flag = 0 ;
+ 
+ 	// record start time
+ 	// init dropped frame timestamps
+@@ -1120,6 +1232,13 @@
+ 				member->via_telephone = 1;
+ 				break;
+ 
++			case 'n':
++				member->sound_notify = 1;
++				break;
++			case 'm':
++				member->moh = 1;
++				break;
++
+ 			default:
+ 				ast_log( LOG_WARNING, "received invalid flag, chan => %s, flag => %c\n",
+ 					 chan->name, flags[i] );
+@@ -1192,7 +1311,7 @@
+ 	// set member's audio formats, taking dsp preprocessing into account
+ 	// ( chan->nativeformats, AST_FORMAT_SLINEAR, AST_FORMAT_ULAW, AST_FORMAT_GSM )
+ 	member->read_format = ( member->dsp == NULL ) ? chan->nativeformats : AST_FORMAT_SLINEAR ;
+-
++	
+ 	member->write_format = chan->nativeformats;
+ 
+ 	// 1.2 or 1.3+
+diff -Nur appconference-2.0.1.orig/member.h appconference-2.0.1/member.h
+--- appconference-2.0.1.orig/member.h	2008-02-26 18:05:57.000000000 +0200
++++ appconference-2.0.1/member.h	2009-01-28 19:39:45.000000000 +0200
+@@ -213,6 +213,9 @@
+ 	short remove_flag ;
+ 	short kick_flag ;
+ 
++	// flag indicating we should transfer this member
++	short transfer_flag ;
++
+ #if ( SILDET == 2 )
+ 	// pointer to speex preprocessor dsp
+ 	SpeexPreprocessState *dsp ;
+@@ -240,6 +243,9 @@
+ 
+ 	// Pointer to another member that will be driven from this member's audio
+ 	struct ast_conf_member *driven_member;
++
++	int sound_notify:1;
++	int moh:1;
+ } ;
+ 
+ struct conf_member
+@@ -253,6 +259,8 @@
+ //
+ 
+ int member_exec( struct ast_channel* chan, void* data ) ;
++int member_play_sound ( const char *channel, const char *file ) ;
++
+ 
+ struct ast_conf_member* check_active_video( int id, struct ast_conference *conf );
+ 
+
+ 	  	 
