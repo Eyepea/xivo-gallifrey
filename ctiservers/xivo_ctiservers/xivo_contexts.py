@@ -30,6 +30,8 @@ Asterisk Contexts.
 class Contexts:
         def __init__(self):
                 self.ctxlist = {}
+                self.dirlist = {}
+                
                 self.displays = {}
                 self.display_header = {}
                 self.display_items = {}
@@ -53,8 +55,15 @@ class Contexts:
                 z.setProps(xivoconf_local)
                 
                 if ctxname not in self.ctxlist:
-                        self.ctxlist[ctxname] = {}
-                self.ctxlist[ctxname][dirname] = z
+                        self.ctxlist[ctxname] = []
+                self.ctxlist[ctxname].append(dirname)
+                self.dirlist[dirname] = z
+                return
+        
+        def updatedir(self, dirname, xivoconf_local):
+                z = Directory()
+                z.setProps(xivoconf_local)
+                self.dirlist[dirname] = z
                 return
 
 class Directory:

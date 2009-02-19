@@ -1045,6 +1045,27 @@ class XivoCTICommand(BaseCommand):
                                         log.exception('(__build_xmlsheet__) %s %s' % (sheetkind, whichitem))
                 return linestosend
         
+        def findreverse(self, dirlist, number):
+                itemdir = {}
+                if dirlist:
+                        dirs_to_lookup = []
+                        for dirname in dirlist.split(','):
+                                ddef = self.lconf.read_section('directory', dirname)
+                                if ddef:
+                                        dirs_to_lookup.append(dirname)
+                                        self.ctxlist.updatedir(dirname, ddef)
+                        for dirname in dirs_to_lookup:
+                                dirdef = self.ctxlist.dirlist[dirname]
+                                try:
+                                        y = self.__build_customers_bydirdef__(dirname, number, dirdef, True)
+                                except Exception:
+                                        log.exception('(findreverse) %s %s %s' % (dirlist, dirname, number))
+                                        y = []
+                                if y:
+                                        for g, gg in y[0].iteritems():
+                                                itemdir[g] = gg
+                return itemdir
+        
         def __sheet_alert__(self, where, astid, context, event, extraevent = {}):
                 # fields to display :
                 # - internal asterisk/xivo : caller, callee, queue name, sda
@@ -1200,26 +1221,16 @@ class XivoCTICommand(BaseCommand):
                         # call a database for xivo-callerid matching (or another pattern to set somewhere)
                         dirlist = actionopt.get('directories')
                         contextlist = actionopt.get('contexts')
-                        if 'xivo-tomatch-callerid' in itemdir:
-                                callingnum = itemdir['xivo-tomatch-callerid']
-                                log.info('%s xivo-tomatch-callerid : looking for %s' % (astid, callingnum))
-                                if dirlist:
-                                        for dirname in dirlist.split(','):
-                                                if context in self.ctxlist.ctxlist and dirname in self.ctxlist.ctxlist[context]:
-                                                        dirdef = self.ctxlist.ctxlist[context][dirname]
-                                                        try:
-                                                                y = self.__build_customers_bydirdef__(dirname, callingnum, dirdef, True)
-                                                        except Exception:
-                                                                log.exception('(xivo-tomatch-callerid : %s, %s)'
-                                                                              % (dirname, context))
-                                                                y = []
-                                                        if y:
-                                                                for g, gg in y[0].iteritems():
-                                                                        itemdir[g] = gg
-                                if callingnum[:2] == '00':
-                                        internatprefix = callingnum[2:6]
-                                if 'db-fullname' in itemdir:
-                                        calleridsolved = itemdir['db-fullname']
+                        if contextlist and context in contextlist.split(','):
+                                if 'xivo-tomatch-callerid' in itemdir:
+                                        callingnum = itemdir['xivo-tomatch-callerid']
+                                        log.info('%s xivo-tomatch-callerid : looking for %s' % (astid, callingnum))
+                                        idir = self.findreverse(dirlist, callingnum)
+                                        itemdir.update(idir)
+                                        if callingnum[:2] == '00':
+                                                internatprefix = callingnum[2:6]
+                                        if 'db-fullname' in itemdir:
+                                                calleridsolved = itemdir['db-fullname']
                         # print where, itemdir
                         
                         # 3/4
@@ -4428,7 +4439,9 @@ class XivoCTICommand(BaseCommand):
         def __build_customers__(self, ctx, searchpattern):
                 fulllist = []
                 if ctx in self.ctxlist.ctxlist:
-                        for dirsec, dirdef in self.ctxlist.ctxlist[ctx].iteritems():
+                        dirlist = self.ctxlist.ctxlist[ctx]
+                        for dirsec in dirlist:
+                                dirdef = self.ctxlist.dirlist[dirsec]
                                 try:
                                         y = self.__build_customers_bydirdef__(dirsec, searchpattern, dirdef, False)
                                         fulllist.extend(y)

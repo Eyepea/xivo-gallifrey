@@ -95,6 +95,9 @@ class BaseCommand:
         def apnoea_rescue(self, torescue):
                 return
         
+        def findreverse(self, dirlist, number):
+                return
+        
         def getuserslist(self):
                 return
         def getqueueslist(self, qlist):
