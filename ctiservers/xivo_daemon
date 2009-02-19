@@ -571,7 +571,6 @@ def handle_ami_function(astid, evfunction, this_event):
 def update_readconf():
         log.info('reparsing config file(s)')
         lconf = cti_config.Config(XIVOCONFFILE)
-
         commandclass.set_cticonfig(lconf)
         commandclass.set_options(cconf.read_section('commandset', commandset), cconf)
         return

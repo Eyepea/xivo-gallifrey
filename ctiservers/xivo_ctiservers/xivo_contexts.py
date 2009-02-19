@@ -69,6 +69,7 @@ class Contexts:
 class Directory:
         def __init__(self):
                 self.uri = ''
+                self.delimiter = ';'
                 self.sqltable = ''
                 self.name = '(noname)'
                 self.match_direct = []
@@ -85,6 +86,8 @@ class Directory:
                                 self.uri = xivoconf_local[field]
                         elif field == 'name':
                                 self.name = xivoconf_local[field]
+                        elif field == 'delimiter':
+                                self.delimiter = xivoconf_local[field]
                         elif field == 'dir_db_sqltable':
                                 self.sqltable = xivoconf_local[field]
                         elif field == 'match_direct':

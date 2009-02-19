@@ -645,6 +645,8 @@ class XivoCTICommand(BaseCommand):
                                 self.parkedcalls[astid] = {}
                         if astid not in self.ignore_dtmf:
                                 self.ignore_dtmf[astid] = {}
+                        if astid not in self.queues_channels_list:
+                                self.queues_channels_list[astid] = {}
                 if listname in self.weblistprops:
                         cf = self.weblistprops[listname]['classfile']
                         cn = self.weblistprops[listname]['classname']
@@ -1034,7 +1036,10 @@ class XivoCTICommand(BaseCommand):
                                                 [title, type, defaultval, format] = v.split('|')
                                                 basestr = format
                                                 for kk, vv in inputvars.iteritems():
-                                                        basestr = basestr.replace('{%s}' % kk, vv.decode('utf8'))
+                                                        try:
+                                                                basestr = basestr.replace('{%s}' % kk, vv.decode('utf8'))
+                                                        except UnicodeEncodeError:
+                                                                basestr = basestr.replace('{%s}' % kk, vv)
                                                 basestr = re.sub('{[a-z\-]*}', defaultval, basestr)
                                                 linestosend.append('<%s order="%s" name="%s" type="%s"><![CDATA[%s]]></%s>'
                                                                    % (sheetkind, k, title, type, basestr, sheetkind))
@@ -1062,6 +1067,7 @@ class XivoCTICommand(BaseCommand):
                                         log.exception('(findreverse) %s %s %s' % (dirlist, dirname, number))
                                         y = []
                                 if y:
+                                        itemdir['xivo-reverse-nresults'] = len(y)
                                         for g, gg in y[0].iteritems():
                                                 itemdir[g] = gg
                 return itemdir
@@ -3347,8 +3353,6 @@ class XivoCTICommand(BaseCommand):
                                          'count' : count } }
                 self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 
-                if astid not in self.queues_channels_list:
-                        self.queues_channels_list[astid] = {}
                 # always sets the queue information since it might not have been deleted
                 self.queues_channels_list[astid][chan] = queue
                 self.__ami_execute__(astid, 'sendqueuestatus', queue)
@@ -4457,7 +4461,10 @@ class XivoCTICommand(BaseCommand):
                                 [title, type, defaultval, format] = self.ctxlist.displays[ctx][k].split('|')
                                 basestr = format
                                 for k, v in itemdir.iteritems():
-                                        basestr = basestr.replace('{%s}' % k, v.decode('utf8'))
+                                        try:
+                                                basestr = basestr.replace('{%s}' % k, v.decode('utf8'))
+                                        except UnicodeEncodeError:
+                                                basestr = basestr.replace('{%s}' % k, v)
                                 myitems.append(basestr)
                         mylines.append(';'.join(myitems))
 
@@ -4511,16 +4518,28 @@ class XivoCTICommand(BaseCommand):
                 
                 elif dbkind == 'file':
                         f = urllib.urlopen(z.uri)
-                        delimit = ';' # make it configurable ?
                         n = 0
+                        if reversedir:
+                                matchkeywords = z.match_reverse
+                        else:
+                                matchkeywords = z.match_direct
                         for line in f:
                                 if n == 0:
                                         header = line
-                                        headerfields = header.strip().split(delimit)
+                                        headerfields = header.strip().split(z.delimiter)
+                                        revindex = []
+                                        for mr in matchkeywords:
+                                                if mr in headerfields:
+                                                        revindex.append(headerfields.index(mr))
                                 else:
                                         ll = line.strip()
-                                        if ll.lower().find(searchpattern.lower()) >= 0:
-                                                t = ll.split(delimit)
+                                        t = ll.split(z.delimiter)
+                                        matchme = False
+                                        for ri in revindex:
+                                                if t[ri].lower().find(searchpattern.lower()) >= 0:
+                                                        matchme = True
+                                        if matchme:
+                                                # XXX problem when badly set delimiter + index()
                                                 futureline = {'xivo-dir' : z.name}
                                                 for keyw, dbkeys in z.fkeys.iteritems():
                                                         for dbkey in dbkeys:
@@ -4532,22 +4551,22 @@ class XivoCTICommand(BaseCommand):
                                 log.warning('WARNING : %s is empty' % z.uri)
                         elif n == 1:
                                 log.warning('WARNING : %s contains only one line (the header one)' % z.uri)
-
+                                
                 elif dbkind == 'http':
                         if not reversedir:
                                 fulluri = '%s/?%s=%s' % (z.uri, ''.join(z.match_direct), searchpattern)
-                                delimit = ';' # make it configurable ?
                                 n = 0
                                 try:
                                         f = urllib.urlopen(fulluri)
                                         for line in f:
                                                 if n == 0:
                                                         header = line
-                                                        headerfields = header.strip().split(delimit)
+                                                        headerfields = header.strip().split(z.delimiter)
                                                 else:
-                                                        ll = line.strip()
-                                                        t = ll.split(delimit)
+                                                        ll = line.strip().decode('utf8')
+                                                        t = ll.split(z.delimiter)
                                                         futureline = {'xivo-dir' : z.name}
+                                                        # XXX problem when badly set delimiter + index()
                                                         for keyw, dbkeys in z.fkeys.iteritems():
                                                                 for dbkey in dbkeys:
                                                                         idx = headerfields.index(dbkey)
@@ -4556,7 +4575,7 @@ class XivoCTICommand(BaseCommand):
                                                 n += 1
                                         f.close()
                                 except Exception:
-                                        log.exception('__build_customers_bydirdef__ (http)')
+                                        log.exception('__build_customers_bydirdef__ (http) %s' % fulluri)
                                 if n == 0:
                                         log.warning('WARNING : %s is empty' % z.uri)
                                 # we don't warn about "only one line" here since the filter has probably already been applied
