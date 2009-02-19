@@ -84,10 +84,15 @@ class GroupList(AnyList):
         def update_queuestats(self, queue, event):
                 changed = False
                 if queue in self.keeplist:
+                        thisqueuestats = self.keeplist[queue]['stats']
                         for statfield in self.queuestats:
                                 if statfield in event:
-                                        if self.keeplist[queue]['stats'][statfield] != event.get(statfield):
-                                                self.keeplist[queue]['stats'][statfield] = event.get(statfield)
+                                        if statfield in thisqueuestats:
+                                                if thisqueuestats[statfield] != event.get(statfield):
+                                                        thisqueuestats[statfield] = event.get(statfield)
+                                                        changed = True
+                                        else:
+                                                thisqueuestats[statfield] = event.get(statfield)
                                                 changed = True
                 else:
                         log.warning('update_queuestats : no such queue %s' % queue)
