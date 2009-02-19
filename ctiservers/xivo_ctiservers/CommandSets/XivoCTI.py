@@ -94,7 +94,6 @@ class XivoCTICommand(BaseCommand):
         xivoclient_session_timeout = 60 # XXX
 
         fullstat_heavies = {}
-        queues_channels_list = {}
         commnames = ['login_id', 'login_pass', 'login_capas',
                      'history', 'directory-search',
                      'featuresget', 'featuresput',
@@ -142,8 +141,6 @@ class XivoCTICommand(BaseCommand):
                                      }
                 # self.plist_ng = cti_phonelist.PhoneList()
                 # self.plist_ng.setcommandclass(self)
-                self.uniqueids = {}
-                self.channels = {}
                 self.transfers_buf = {}
                 self.transfers_ref = {}
                 self.filestodownload = {}
@@ -152,19 +149,22 @@ class XivoCTICommand(BaseCommand):
                 self.disconnlist = []
                 self.sheet_actions = {}
                 self.ldapids = {}
-                self.chans_incomingqueue = []
-                self.chans_incomingdid = []
                 self.tqueue = Queue.Queue()
                 self.timeout_login = {}
-                self.parkedcalls = {}
                 self.stats_queues = {}
                 self.last_agents = {}
                 self.last_queues = {}
-                self.ignore_dtmf = {}
                 self.presence_sections = {}
                 self.display_hints = {}
                 self.origapplication = {}
+                
+                # astid indexed hashes
                 self.attended_targetchannels = {}
+                self.uniqueids = {}
+                self.channels = {}
+                self.parkedcalls = {}
+                self.ignore_dtmf = {}
+                self.queues_channels_list = {}
                 
                 # actionid (AMI) indexed hashes
                 self.getvar_requests = {}
@@ -637,16 +637,11 @@ class XivoCTICommand(BaseCommand):
         def set_urllist(self, astid, listname, urllist):
                 if listname == 'phones':
                         # XXX
-                        if astid not in self.uniqueids:
-                                self.uniqueids[astid] = {}
-                        if astid not in self.channels:
-                                self.channels[astid] = {}
-                        if astid not in self.parkedcalls:
-                                self.parkedcalls[astid] = {}
-                        if astid not in self.ignore_dtmf:
-                                self.ignore_dtmf[astid] = {}
-                        if astid not in self.queues_channels_list:
-                                self.queues_channels_list[astid] = {}
+                        for astid_hash in [self.uniqueids, self.channels,
+                                           self.queues_channels_list, self.attended_targetchannels,
+                                           self.ignore_dtmf, self.parkedcalls]:
+                                if astid not in astid_hash:
+                                        astid_hash[astid] = {}
                 if listname in self.weblistprops:
                         cf = self.weblistprops[listname]['classfile']
                         cn = self.weblistprops[listname]['classname']
@@ -1067,7 +1062,7 @@ class XivoCTICommand(BaseCommand):
                                         log.exception('(findreverse) %s %s %s' % (dirlist, dirname, number))
                                         y = []
                                 if y:
-                                        itemdir['xivo-reverse-nresults'] = len(y)
+                                        itemdir['xivo-reverse-nresults'] = str(len(y))
                                         for g, gg in y[0].iteritems():
                                                 itemdir[g] = gg
                 return itemdir
@@ -1153,9 +1148,9 @@ class XivoCTICommand(BaseCommand):
                                 itemdir['xivo-tomatch-callerid'] = r_caller
                                 itemdir['xivo-channel'] = extraevent.get('channel')
                                 itemdir['xivo-uniqueid'] = extraevent.get('uniqueid')
-
+                                
                                 linestosend.append('<internal name="called"><![CDATA[%s]]></internal>' % r_called)
-
+                                
                         elif where in ['link', 'unlink']:
                                 itemdir['xivo-channel'] = event.get('Channel1')
                                 itemdir['xivo-channelpeer'] = event.get('Channel2')
@@ -1182,7 +1177,6 @@ class XivoCTICommand(BaseCommand):
                                 
                                 log.info('%s __SHEET_ALERT__ %s (%s) uid=%s callerid=%s %s did=%s'
                                          % (astid, where, time.asctime(), uid, clid, chan, did))
-                                self.chans_incomingdid.append(chan)
                                 
                                 itemdir['xivo-channel'] = chan
                                 itemdir['xivo-uniqueid'] = uid
@@ -1193,9 +1187,6 @@ class XivoCTICommand(BaseCommand):
                                 linestosend.append('<internal name="uniqueid"><![CDATA[%s]]></internal>' % uid)
                                 
                                 # userinfos.append() : users matching the SDA ?
-                                
-                                # interception :
-                                # self.__ami_execute__(astid, 'transfer', chan, shortphonenum, 'default')
                                 
                         elif where in ['incomingqueue', 'incominggroup']:
                                 queueorgroup = where[8:] + 's'
@@ -1214,7 +1205,6 @@ class XivoCTICommand(BaseCommand):
                                                                                                         queue, event.get('Position'),
                                                                                                         event.get('Count'),
                                                                                                         len(userinfos)))
-                                self.chans_incomingqueue.append(chan)
                                 
                                 itemdir['xivo-channel'] = chan
                                 itemdir['xivo-uniqueid'] = uid
@@ -1685,8 +1675,6 @@ class XivoCTICommand(BaseCommand):
                         # channel = intermediate's incoming
                         # target channel = caller
                 elif event.get('TransferType') == 'Attended':
-                        if astid not in self.attended_targetchannels:
-                                self.attended_targetchannels[astid] = {}
                         self.attended_targetchannels[astid][targetchannel] = event
                         log.info('%s ami_transfer : Attended /  TargetChannel = %s' % (astid, targetchannel))
                         if uniqueid in self.uniqueids[astid]:
@@ -2031,13 +2019,6 @@ class XivoCTICommand(BaseCommand):
                 phidlist_clear = self.weblist['phones'][astid].clear(uid)
                 tridlist_clear = self.weblist['trunks'][astid].clear(uid)
                 log.info('%s HANGUP (%s %s) cleared phones and trunks = %s %s' % (astid, uid, chan, phidlist_clear, tridlist_clear))
-                
-                if chan in self.chans_incomingqueue or chan in self.chans_incomingdid:
-                        log.info('%s HANGUP (incoming queue/did) %s uid=%s %s' % (astid, time.asctime(), uid, chan))
-                        if chan in self.chans_incomingqueue:
-                                self.chans_incomingqueue.remove(chan)
-                        if chan in self.chans_incomingdid:
-                                self.chans_incomingdid.remove(chan)
                 
                 if astid in self.uniqueids and uid in self.uniqueids[astid]:
                         del self.uniqueids[astid][uid]
@@ -2923,6 +2904,7 @@ class XivoCTICommand(BaseCommand):
                         callerid = event.get('XIVO_SRCNUM')
                         didnumber = event.get('XIVO_EXTENPATTERN')
                         channel = event.get('CHANNEL')
+                        context = event.get('XIVO_REAL_CONTEXT')
                         
                         if uniqueid in self.uniqueids[astid]:
                                 log.info('%s AMI UserEvent %s %s' % (astid, eventname, self.uniqueids[astid][uniqueid]))
@@ -2934,11 +2916,20 @@ class XivoCTICommand(BaseCommand):
                         # actions involving didnumber/callerid on channel could be carried out here
                         did_takeovers = {}
                         if callerid in did_takeovers and didnumber in did_takeovers[callerid]:
-                                self.__ami_execute__(astid, 'transfer', channel, did_takeovers[callerid][didnumber], 'default')
+                                self.__ami_execute__(astid, 'transfer', channel, did_takeovers[callerid][didnumber], context)
+                                
+                        self.__sheet_alert__('incomingdid', astid, context, CONTEXT_UNKNOWN), event)
                         
-                        self.__sheet_alert__('incomingdid', astid,
-                                             event.get('XIVO_REAL_CONTEXT', CONTEXT_UNKNOWN),
-                                             event)
+                elif eventname == 'Lookup':
+                        uniqueid = event.get('UNIQUEID')
+                        callerid = event.get('XIVO_SRCNUM')
+                        channel = event.get('CHANNEL')
+                        context = event.get('XIVO_REAL_CONTEXT')
+                        if uniqueid in self.uniqueids[astid]:
+                                log.info('%s AMI UserEvent %s %s' % (astid, eventname, self.uniqueids[astid][uniqueid]))
+                        # XXX
+                        # do a reverse search on callerid here, and fill a struct with caller properties
+                        # + can be retrieved later on with an AGI request, for instance
                         
                 elif eventname == 'OUTCALL':
                         uniqueid = event.get('UNIQUEID')
@@ -4718,6 +4709,12 @@ class XivoCTICommand(BaseCommand):
                                                 fastagi.set_variable('XIVO_QUEUEHOLDTIME', ','.join(lst))
                         except Exception:
                                 log.exception('handle_fagi %s %s : %s %s' % (astid, function, astid, fastagi.args))
+                        return
+                
+                elif function == 'callerdetails':
+                        # astid, channel
+                        # fastagi.set_variable('XIVO_CTI_CALLERIDNAME', x)
+                        # fastagi.set_variable('XIVO_CTI_INFO', y)
                         return
                 
                 elif function != 'xivo_push':
