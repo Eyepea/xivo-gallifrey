@@ -69,7 +69,7 @@ log = logging.getLogger('xivocti')
 
 XIVOVERSION_NUM = '0.4'
 XIVOVERSION_NAME = 'k-9'
-REQUIRED_CLIENT_VERSION = 4833
+REQUIRED_CLIENT_VERSION = 5401
 __revision__ = __version__.split()[1]
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 HISTSEPAR = ';'
