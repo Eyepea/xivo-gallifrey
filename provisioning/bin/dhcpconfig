@@ -23,9 +23,11 @@ __license__ = """
 
 CONFIG_FILE         = '/etc/pf-xivo/provisioning.conf' # can be overridden by cmd line param
 TIMEOUT             = None
+WAIT                = None
+FORK_PROCESS        = False
 UPGRADE_FW          = False
 
-GETOPT_SHORTOPTS    = 'c:h:t:u'
+GETOPT_SHORTOPTS    = 'c:t:w:ufh'
 SYSLOG_NAME         = 'xivo_dhcp_provisioning'
 
 import sys
@@ -33,18 +35,20 @@ import sys
 def help_screen():
     print >> sys.stderr, \
 """Syntax:
-%s [-c <conffile>] [-t <timeout>] [-u] [-h] <user_agent> <ipv4> <mac_address>
+%s [-c <conffile>] [-t <seconds>] [-w <seconds>] [-u] [-f] [-h] <user_agent> <ipv4> <mac_address>
 
 -c <conffile>   Use <conffile> instead of %s
--t              Request timeout
--u              Upgrade Firmware
+-t <seconds>    Request timeout
+-w <seconds>    Waiting time before send provisioning
+-u              Upgrade firmware
+-f              Fork process
 -h              Display this help screen and exit
 """ % (sys.argv[0], `CONFIG_FILE`)
     sys.exit(1)
 
 from getopt import getopt, GetoptError
 def config_path():
-    global CONFIG_FILE, TIMEOUT, UPGRADE_FW
+    global OPTIONS, CONFIG_FILE, TIMEOUT, WAIT, UPGRADE_FW, FORK_PROCESS
     try:
         opts, args = getopt(sys.argv[1:], GETOPT_SHORTOPTS)
     except GetoptError, x:
@@ -59,8 +63,12 @@ def config_path():
             CONFIG_FILE = v
         elif k == '-t':
             TIMEOUT = v
+        elif k == '-w':
+            WAIT = v
         elif k == '-u':
             UPGRADE_FW = True
+        elif k == '-f':
+            FORK_PROCESS = True
 
 
 config_path()
@@ -68,10 +76,13 @@ config_path()
 import socket
 import httplib
 import logging
+import subprocess
+from time import sleep
 from logging.handlers import SysLogHandler
 
 from xivo import network
 from xivo import xivo_config
+from xivo import daemonize
 from xivo.xivo_config import ProvGeneralConf as Pgc
 from xivo.Phones import *
 
@@ -87,6 +98,9 @@ def main():
     if xlen < 4:
         root_logger.error("Too few arguments")
         sys.exit(1)
+
+    if FORK_PROCESS:
+        daemonize.daemonize()
 
     ua = sys.argv[1]
     ipv4 = sys.argv[2]
@@ -118,6 +132,9 @@ def main():
     phone_model = phone_desc[1]
     phone_firmware = phone_desc[2]
 
+    if isinstance(WAIT, basestring) and WAIT.isdigit():
+        sleep(int(WAIT))
+
     if not UPGRADE_FW:
         mode = 'bootdhcp'
     else:
@@ -143,18 +160,11 @@ def main():
         conn.close()
         reason = response.reason
         status = response.status
-    except socket.timeout, xcept:
-        reason = str(xcept)
-
-        if timeout != Pgc['http_request_to_s']:
-            status = 408
-        else:
-            status = 500
     except Exception, xcept:
         reason = str(xcept)
         status = 500
 
-    if status not in (200, 408):
+    if status != 200:
         root_logger.error("Provisioning DHCP failure: %s" % reason)
         sys.exit(1)
 
