@@ -1095,10 +1095,8 @@ class XivoCTICommand(BaseCommand):
                         log.info('%s __SHEET_ALERT__ %s %s' % (astid, where, whoms))
                         
                         linestosend = ['<?xml version="1.0" encoding="utf-8"?>',
-                                       '<profile sessionid="sessid">',
+                                       '<profile>',
                                        '<user>']
-                        # XXX : sessid => uniqueid, in order to update (did => queue => ... hangup ...)
-                        linestosend.append('<internal name="datetime"><![CDATA[%s]]></internal>' % time.asctime())
                         itemdir = {'xivo-where' : where,
                                    'xivo-astid' : astid,
                                    'xivo-context' : context,
@@ -1184,8 +1182,6 @@ class XivoCTICommand(BaseCommand):
                                 itemdir['xivo-callerid'] = clid
                                 if len(clid) > 7 and clid != '<unknown>':
                                         itemdir['xivo-tomatch-callerid'] = clid
-                                linestosend.append('<internal name="uniqueid"><![CDATA[%s]]></internal>' % uid)
-                                
                                 # userinfos.append() : users matching the SDA ?
                                 
                         elif where in ['incomingqueue', 'incominggroup']:
@@ -1234,7 +1230,7 @@ class XivoCTICommand(BaseCommand):
                                 linestosend.append('<internal name="channel"><![CDATA[%s]]></internal>'
                                                    % itemdir['xivo-channel'])
                         if 'xivo-uniqueid' in itemdir:
-                                linestosend.append('<internal name="sessionid"><![CDATA[%s]]></internal>'
+                                linestosend.append('<internal name="uniqueid"><![CDATA[%s]]></internal>'
                                                    % itemdir['xivo-uniqueid'])
                         if 'xivo-astid' in itemdir:
                                 linestosend.append('<internal name="astid"><![CDATA[%s]]></internal>'
@@ -3608,7 +3604,7 @@ class XivoCTICommand(BaseCommand):
                                         elif classcomm == 'actionfiche':
                                                 infos = icommand.struct.get('infos')
                                                 if infos:
-                                                        actionid = infos.get('sessionid')
+                                                        actionid = infos.get('uniqueid')
                                                         channel = infos.get('channel')
                                                         locastid = infos.get('astid')
                                                         
