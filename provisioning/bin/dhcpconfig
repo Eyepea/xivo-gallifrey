@@ -37,18 +37,18 @@ def help_screen():
 """Syntax:
 %s [-c <conffile>] [-t <seconds>] [-w <seconds>] [-u] [-f] [-h] <user_agent> <ipv4> <mac_address>
 
--c <conffile>   Use <conffile> instead of %s
+-c <conffile>   Use <conffile> instead of %r
 -t <seconds>    Request timeout
 -w <seconds>    Waiting time before send provisioning
 -u              Upgrade firmware
 -f              Fork process
 -h              Display this help screen and exit
-""" % (sys.argv[0], `CONFIG_FILE`)
+""" % (sys.argv[0], CONFIG_FILE)
     sys.exit(1)
 
 from getopt import getopt, GetoptError
 def config_path():
-    global OPTIONS, CONFIG_FILE, TIMEOUT, WAIT, UPGRADE_FW, FORK_PROCESS
+    global CONFIG_FILE, TIMEOUT, WAIT, UPGRADE_FW, FORK_PROCESS
     try:
         opts, args = getopt(sys.argv[1:], GETOPT_SHORTOPTS)
     except GetoptError, x:
@@ -76,7 +76,6 @@ config_path()
 import socket
 import httplib
 import logging
-import subprocess
 from time import sleep
 from logging.handlers import SysLogHandler
 
@@ -84,7 +83,7 @@ from xivo import network
 from xivo import xivo_config
 from xivo import daemonize
 from xivo.xivo_config import ProvGeneralConf as Pgc
-from xivo.Phones import *
+from xivo import all_phones # pylint: disable-msg=W0611
 
 sysloghandler = SysLogHandler("/dev/log", SysLogHandler.LOG_DAEMON)
 sysloghandler.setFormatter(logging.Formatter("%s[%%(process)d]: %%(message)s" % SYSLOG_NAME))
@@ -107,7 +106,7 @@ def main():
     macaddr = sys.argv[3]
     isinalan = "1"
 
-    if isinstance(TIMEOUT, basestring) and TIMEOUT.isdigit():
+    if TIMEOUT and TIMEOUT.isdigit():
         timeout = TIMEOUT
     else:
         timeout = Pgc['http_request_to_s']
@@ -132,7 +131,7 @@ def main():
     phone_model = phone_desc[1]
     phone_firmware = phone_desc[2]
 
-    if isinstance(WAIT, basestring) and WAIT.isdigit():
+    if WAIT and WAIT.isdigit():
         sleep(int(WAIT))
 
     if not UPGRADE_FW:

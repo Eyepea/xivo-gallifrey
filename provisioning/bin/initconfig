@@ -32,9 +32,9 @@ def help_screen():
 """Syntax:
 %s [-c <conffile>] [-h] <sip_uri> <provisioning_code> <user_agent>
 
--c <conffile>   Use <conffile> instead of %s
+-c <conffile>   Use <conffile> instead of %r
 -h              Display this help screen and exit
-""" % (sys.argv[0], `CONFIG_FILE`)
+""" % (sys.argv[0], CONFIG_FILE)
     sys.exit(1)
 
 from getopt import getopt, GetoptError
@@ -61,7 +61,7 @@ from logging.handlers import SysLogHandler
 
 from xivo import xivo_config
 from xivo.xivo_config import ProvGeneralConf as Pgc
-from xivo.Phones import *
+from xivo import all_phones # pylint: disable-msg=W0611
 
 from xivo import agi
 from xivo import agitb
@@ -115,7 +115,7 @@ def main():
     # Get Phone description (if we are able to handle this vendor...)
     phone_desc = xivo_config.phone_desc_by_ua(ua) # XXX, agitb.handler)
     if not phone_desc:
-        return_exit("Unknown UA %s" % `ua`)
+        return_exit("Unknown UA %r" % (ua,))
     phone_vendor = phone_desc[0]
     phone_model = phone_desc[1]
     phone_firmware = phone_desc[2]

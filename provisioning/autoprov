@@ -69,7 +69,7 @@ from xivo.ThreadingHTTPServer import ThreadingHTTPServer
 from xivo import xivo_config
 from xivo.xivo_config import ProvGeneralConf as Pgc
 from xivo import network
-from xivo.Phones import * # pylint: disable-msg=W0401
+from xivo import all_phones # pylint: disable-msg=W0611
 
 from xivo.moresynchro import RWLock
 from xivo.moresynchro import ListLock

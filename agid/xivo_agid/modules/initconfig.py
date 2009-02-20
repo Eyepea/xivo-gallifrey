@@ -34,7 +34,7 @@ import sys
 
 from xivo import xivo_config
 from xivo.xivo_config import ProvGeneralConf as Pgc
-from xivo.Phones import *
+from xivo import all_phones # pylint: disable-msg=W0611
 from xivo import agitb
 
 from xivo_agid import agid
