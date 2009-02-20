@@ -1205,7 +1205,6 @@ class XivoCTICommand(BaseCommand):
                                                                                                         queue, event.get('Position'),
                                                                                                         event.get('Count'),
                                                                                                         len(userinfos)))
-                                
                                 itemdir['xivo-channel'] = chan
                                 itemdir['xivo-uniqueid'] = uid
                                 itemdir['xivo-queuename'] = queue
@@ -2302,8 +2301,12 @@ class XivoCTICommand(BaseCommand):
                                                                                   event.get('AppData'),
                                                                                   event.get('Extension')))
                         elif application == 'Park':
-                                log.info('%s ami_newexten Park : %s %s %s' % (astid, uniqueid, event.get('Context'), event.get('Extension')))
+                                log.info('%s ami_newexten %s : %s %s %s'
+                                         % (astid, application, uniqueid, event.get('Context'), event.get('Extension')))
                                 self.uniqueids[astid][uniqueid]['parkexten'] = event.get('Extension')
+                        elif application == 'WaitMusicOnHold':
+                                log.info('%s ami_newexten %s : %s %s %s %s'
+                                         % (astid, application, uniqueid, event.get('AppData'), event.get('Context'), event.get('Extension')))
                 self.__sheet_alert__('outgoing', astid, event.get('Context'), event)
                 return
         
@@ -2904,7 +2907,7 @@ class XivoCTICommand(BaseCommand):
                         callerid = event.get('XIVO_SRCNUM')
                         didnumber = event.get('XIVO_EXTENPATTERN')
                         channel = event.get('CHANNEL')
-                        context = event.get('XIVO_REAL_CONTEXT')
+                        context = event.get('XIVO_REAL_CONTEXT', CONTEXT_UNKNOWN)
                         
                         if uniqueid in self.uniqueids[astid]:
                                 log.info('%s AMI UserEvent %s %s' % (astid, eventname, self.uniqueids[astid][uniqueid]))
@@ -2918,7 +2921,7 @@ class XivoCTICommand(BaseCommand):
                         if callerid in did_takeovers and didnumber in did_takeovers[callerid]:
                                 self.__ami_execute__(astid, 'transfer', channel, did_takeovers[callerid][didnumber], context)
                                 
-                        self.__sheet_alert__('incomingdid', astid, context, CONTEXT_UNKNOWN), event)
+                        self.__sheet_alert__('incomingdid', astid, context, event)
                         
                 elif eventname == 'Lookup':
                         uniqueid = event.get('UNIQUEID')
@@ -2933,12 +2936,12 @@ class XivoCTICommand(BaseCommand):
                         
                 elif eventname == 'OUTCALL':
                         uniqueid = event.get('UNIQUEID')
+                        context = event.get('XIVO_CONTEXT', CONTEXT_UNKNOWN)
+                        
                         if uniqueid in self.uniqueids[astid]:
                                 log.info('%s AMI UserEvent %s %s' % (astid, eventname, self.uniqueids[astid][uniqueid]))
                                 self.uniqueids[astid][uniqueid]['OUTCALL'] = True
-                        self.__sheet_alert__('outcall', astid,
-                                             event.get('XIVO_CONTEXT', CONTEXT_UNKNOWN),
-                                             event)
+                        self.__sheet_alert__('outcall', astid, context, event)
                         
                 elif eventname == 'Feature':
                         log.info('%s AMI UserEvent %s %s' % (astid, eventname, event))
