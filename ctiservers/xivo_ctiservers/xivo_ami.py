@@ -223,11 +223,12 @@ class AMIClass:
                                 break
                         resp.append(str)
                 return resp
-
+        
         # \brief Hangs up a Channel.
         def hangup(self, channel, channel_peer = None):
                 ret = 0
                 try:
+                        log.info('hanging up %s as requested' % channel)
                         self.sendcommand('Hangup',
                                          [('Channel', channel)])
                         ret += 1
@@ -238,6 +239,7 @@ class AMIClass:
                 
                 if channel_peer:
                         try:
+                                log.info('hanging up %s as requested' % channel_peer)
                                 self.sendcommand('Hangup',
                                                  [('Channel', channel_peer)])
                                 ret += 2
@@ -246,8 +248,7 @@ class AMIClass:
                         except Exception:
                                 pass
                 return ret
-
-
+        
         def setvar(self, var, val, chan = None):
                 try:
                         if chan is None:
