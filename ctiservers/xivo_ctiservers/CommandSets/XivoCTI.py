@@ -2273,7 +2273,7 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def ami_newcallerid(self, astid, event):
-                # log.info('%s ami_newcallerid : %s' % (astid, event))
+                log.info('%s ami_newcallerid : %s' % (astid, event))
                 uniqueid = event.get('Uniqueid')
                 # log.info('%s ---------- %s ------------' % (astid, uniqueid))
                 # event.get('CID-CallingPres') # 0 (Presentation Allowed, Not Screened)
@@ -3396,6 +3396,10 @@ class XivoCTICommand(BaseCommand):
         
         def ami_dndstate(self, astid, event):
                 log.info('%s ami_dndstate : %s' % (astid, event))
+                return
+        
+        def ami_cdr(self, astid, event):
+                log.info('%s ami_cdr : %s' % (astid, event))
                 return
         
         # END of AMI events
@@ -4714,6 +4718,10 @@ class XivoCTICommand(BaseCommand):
                         # astid, channel
                         # fastagi.set_variable('XIVO_CTI_CALLERIDNAME', x)
                         # fastagi.set_variable('XIVO_CTI_INFO', y)
+                        return
+                
+                elif function == 'didcallerid':
+                        log.info('%s DIDCALLERID %s' % (astid, fastagi.env))
                         return
                 
                 elif function != 'xivo_push':

@@ -15,8 +15,8 @@
 
 Index: asterisk-1.4.23.1/apps/app_dial.c
 ===================================================================
---- asterisk-1.4.23.1.orig/apps/app_dial.c	2009-02-05 15:57:18.000000000 +0100
-+++ asterisk-1.4.23.1/apps/app_dial.c	2009-02-05 15:57:23.000000000 +0100
+--- asterisk-1.4.23.1.orig/apps/app_dial.c	2008-12-19 23:30:32.000000000 +0100
++++ asterisk-1.4.23.1/apps/app_dial.c	2009-02-23 11:38:03.000000000 +0100
 @@ -395,16 +395,21 @@
  static void senddialevent(struct ast_channel *src, struct ast_channel *dst)
  {
@@ -51,8 +51,8 @@ Index: asterisk-1.4.23.1/apps/app_dial.c
  static struct ast_channel *wait_for_answer(struct ast_channel *in, struct dial_localuser *outgoing, int *to, struct ast_flags *peerflags, int *sentringing, char *status, size_t statussize, int busystart, int nochanstart, int congestionstart, int priority_jump, int *result)
 Index: asterisk-1.4.23.1/apps/app_meetme.c
 ===================================================================
---- asterisk-1.4.23.1.orig/apps/app_meetme.c	2009-02-05 15:57:18.000000000 +0100
-+++ asterisk-1.4.23.1/apps/app_meetme.c	2009-02-06 15:58:10.000000000 +0100
+--- asterisk-1.4.23.1.orig/apps/app_meetme.c	2008-12-19 20:48:00.000000000 +0100
++++ asterisk-1.4.23.1/apps/app_meetme.c	2009-02-23 11:38:03.000000000 +0100
 @@ -1830,11 +1830,22 @@
  
  	if (!sent_event) {
@@ -203,8 +203,8 @@ Index: asterisk-1.4.23.1/apps/app_meetme.c
  	res |= ast_register_application(app, conf_exec, synopsis, descrip);
 Index: asterisk-1.4.23.1/main/manager.c
 ===================================================================
---- asterisk-1.4.23.1.orig/main/manager.c	2009-02-05 15:57:18.000000000 +0100
-+++ asterisk-1.4.23.1/main/manager.c	2009-02-05 15:57:23.000000000 +0100
+--- asterisk-1.4.23.1.orig/main/manager.c	2009-02-23 11:38:03.000000000 +0100
++++ asterisk-1.4.23.1/main/manager.c	2009-02-23 11:38:03.000000000 +0100
 @@ -1564,49 +1564,53 @@
  				elapsed_seconds = now.tv_sec - c->cdr->start.tv_sec;
  			}
@@ -302,8 +302,8 @@ Index: asterisk-1.4.23.1/main/manager.c
  		if (!all)
 Index: asterisk-1.4.23.1/res/res_features.c
 ===================================================================
---- asterisk-1.4.23.1.orig/res/res_features.c	2009-02-05 15:57:18.000000000 +0100
-+++ asterisk-1.4.23.1/res/res_features.c	2009-02-05 15:57:23.000000000 +0100
+--- asterisk-1.4.23.1.orig/res/res_features.c	2009-02-23 11:38:03.000000000 +0100
++++ asterisk-1.4.23.1/res/res_features.c	2009-02-23 11:38:03.000000000 +0100
 @@ -424,17 +424,23 @@
  		ast_verbose(VERBOSE_PREFIX_2 "Parked %s on %d@%s. Will timeout back to extension [%s] %s, %d in %d seconds\n", pu->chan->name, pu->parkingnum, parking_con, pu->context, pu->exten, pu->priority, (pu->parkingtime/1000));
  
@@ -399,8 +399,8 @@ Index: asterisk-1.4.23.1/res/res_features.c
  	}
 Index: asterisk-1.4.23.1/channels/chan_sip.c
 ===================================================================
---- asterisk-1.4.23.1.orig/channels/chan_sip.c	2009-02-05 15:57:18.000000000 +0100
-+++ asterisk-1.4.23.1/channels/chan_sip.c	2009-02-05 15:57:23.000000000 +0100
+--- asterisk-1.4.23.1.orig/channels/chan_sip.c	2009-02-23 11:38:03.000000000 +0100
++++ asterisk-1.4.23.1/channels/chan_sip.c	2009-02-23 11:38:03.000000000 +0100
 @@ -14904,6 +14904,19 @@
  	ast_set_flag(&transferer->flags[0], SIP_DEFER_BYE_ON_TRANSFER);	/* Delay hangup */
  
@@ -469,8 +469,8 @@ Index: asterisk-1.4.23.1/channels/chan_sip.c
  			ast_log(LOG_DEBUG, "%s transfer succeeded. Telling transferer.\n", p->refer->attendedtransfer? "Attended" : "Blind");
 Index: asterisk-1.4.23.1/main/channel.c
 ===================================================================
---- asterisk-1.4.23.1.orig/main/channel.c	2009-02-05 15:57:18.000000000 +0100
-+++ asterisk-1.4.23.1/main/channel.c	2009-02-09 10:48:14.000000000 +0100
+--- asterisk-1.4.23.1.orig/main/channel.c	2009-02-23 11:38:03.000000000 +0100
++++ asterisk-1.4.23.1/main/channel.c	2009-02-23 13:06:53.000000000 +0100
 @@ -978,6 +978,11 @@
  		chan->_softhangup |= AST_SOFTHANGUP_DEV;
  		ast_channel_unlock(chan);
@@ -498,7 +498,50 @@ Index: asterisk-1.4.23.1/main/channel.c
  	/* XXX This is a seriously wacked out operation.  We're essentially putting the guts of
  	   the clone channel into the original channel.  Start by killing off the original
  	   channel's backend.   I'm not sure we're going to keep this function, because
-@@ -4115,8 +4128,15 @@
+@@ -3813,18 +3826,30 @@
+ 		chan->cid.cid_ani = ast_strdup(ani);
+ 	}
+ 	manager_event(EVENT_FLAG_CALL, "Newcallerid",
+-				"Channel: %s\r\n"
+-				"CallerID: %s\r\n"
+-				"CallerIDName: %s\r\n"
+-				"Uniqueid: %s\r\n"
+-				"CID-CallingPres: %d (%s)\r\n",
+-				chan->name,
+-				S_OR(chan->cid.cid_num, "<Unknown>"),
+-				S_OR(chan->cid.cid_name, "<Unknown>"),
+-				chan->uniqueid,
+-				chan->cid.cid_pres,
+-				ast_describe_caller_presentation(chan->cid.cid_pres)
+-				);
++                      "Channel: %s\r\n"
++                      "CallerID: %s\r\n"
++                      "CallerIDName: %s\r\n"
++                      "ANI: %s\r\n"
++                      "DNID: %s\r\n"
++                      "RDNIS: %s\r\n"
++                      "Uniqueid: %s\r\n"
++                      "ANI2: %d\r\n"
++                      "TON: %d\r\n"
++                      "TNS: %d\r\n"
++                      "CID-CallingPres: %d (%s)\r\n",
++                      chan->name,
++                      S_OR(chan->cid.cid_num, "<Unknown>"),
++                      S_OR(chan->cid.cid_name, "<Unknown>"),
++                      S_OR(chan->cid.cid_ani, "<Unknown>"),
++                      S_OR(chan->cid.cid_dnid, "<Unknown>"),
++                      S_OR(chan->cid.cid_rdnis, "<Unknown>"),
++                      chan->uniqueid,
++                      chan->cid.cid_ani2,
++                      chan->cid.cid_ton,
++                      chan->cid.cid_tns,
++                      chan->cid.cid_pres,
++                      ast_describe_caller_presentation(chan->cid.cid_pres)
++                      );
+ 	
+ 	ast_channel_unlock(chan);
+ }
+@@ -4115,8 +4140,15 @@
  		      "Uniqueid1: %s\r\n"
  		      "Uniqueid2: %s\r\n"
  		      "CallerID1: %s\r\n"
@@ -516,7 +559,7 @@ Index: asterisk-1.4.23.1/main/channel.c
  
  	o0nativeformats = c0->nativeformats;
  	o1nativeformats = c1->nativeformats;
-@@ -4240,9 +4260,17 @@
+@@ -4240,9 +4272,17 @@
  					      "Channel2: %s\r\n"
  					      "Uniqueid1: %s\r\n"
  					      "Uniqueid2: %s\r\n"
@@ -536,7 +579,7 @@ Index: asterisk-1.4.23.1/main/channel.c
  				if (option_debug)
  					ast_log(LOG_DEBUG, "Returning from native bridge, channels: %s, %s\n", c0->name, c1->name);
  
-@@ -4285,9 +4313,17 @@
+@@ -4285,9 +4325,17 @@
  					      "Channel2: %s\r\n"
  					      "Uniqueid1: %s\r\n"
  					      "Uniqueid2: %s\r\n"
@@ -556,7 +599,7 @@ Index: asterisk-1.4.23.1/main/channel.c
  				return AST_BRIDGE_FAILED;
  			}
  			o0nativeformats = c0->nativeformats;
-@@ -4320,9 +4356,17 @@
+@@ -4320,9 +4368,17 @@
  		      "Channel2: %s\r\n"
  		      "Uniqueid1: %s\r\n"
  		      "Uniqueid2: %s\r\n"
@@ -579,8 +622,8 @@ Index: asterisk-1.4.23.1/main/channel.c
  
 Index: asterisk-1.4.23.1/apps/app_queue.c
 ===================================================================
---- asterisk-1.4.23.1.orig/apps/app_queue.c	2009-02-05 15:57:18.000000000 +0100
-+++ asterisk-1.4.23.1/apps/app_queue.c	2009-02-05 16:03:49.000000000 +0100
+--- asterisk-1.4.23.1.orig/apps/app_queue.c	2009-01-15 01:11:01.000000000 +0100
++++ asterisk-1.4.23.1/apps/app_queue.c	2009-02-23 11:38:03.000000000 +0100
 @@ -616,17 +616,20 @@
  				}
  
@@ -887,3 +930,15 @@ Index: asterisk-1.4.23.1/apps/app_queue.c
  			}
  		}
  		ast_mutex_unlock(&q->lock);
+Index: asterisk-1.4.23.1/res/res_agi.c
+===================================================================
+--- asterisk-1.4.23.1.orig/res/res_agi.c	2009-02-23 13:07:51.000000000 +0100
++++ asterisk-1.4.23.1/res/res_agi.c	2009-02-23 14:42:32.000000000 +0100
+@@ -388,6 +388,7 @@
+ 	/* ANI/DNIS */
+ 	fdprintf(fd, "agi_callerid: %s\n", S_OR(chan->cid.cid_num, "unknown"));
+ 	fdprintf(fd, "agi_calleridname: %s\n", S_OR(chan->cid.cid_name, "unknown"));
++	fdprintf(fd, "agi_calleridani: %s\n", S_OR(chan->cid.cid_ani, "unknown"));
+ 	fdprintf(fd, "agi_callingpres: %d\n", chan->cid.cid_pres);
+ 	fdprintf(fd, "agi_callingani2: %d\n", chan->cid.cid_ani2);
+ 	fdprintf(fd, "agi_callington: %d\n", chan->cid.cid_ton);
