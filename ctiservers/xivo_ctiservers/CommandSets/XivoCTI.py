@@ -441,12 +441,15 @@ class XivoCTICommand(BaseCommand):
                                         userinfo['state'] = self.presence_sections[presenceid].getdefaultstate()
                         else:
                                 userinfo['state'] = 'xivo_unknown'
-
+                        
+                        self.__presence_action__(userinfo['astid'], self.__agentnum__(userinfo), userinfo, userinfo['state'])
+                        
                         self.capas[capaid].conn_inc()
                 except Exception:
                         log.exception('connect_user %s' % userinfo)
-
-
+                return
+        
+        
         def __disconnect_user__(self, userinfo):
                 try:
                         # state is unchanged
@@ -2354,6 +2357,9 @@ class XivoCTICommand(BaseCommand):
                         elif application == 'WaitMusicOnHold':
                                 log.info('%s ami_newexten %s : %s %s %s %s'
                                          % (astid, application, uniqueid, event.get('AppData'), event.get('Context'), event.get('Extension')))
+                        # elif application == 'Queue': # to know how much seconds were requested
+                        # log.info('%s ami_newexten %s : %s %s'
+                        # % (astid, application, uniqueid, event.get('AppData').split('|')))
                 self.__sheet_alert__('outgoing', astid, event.get('Context'), event)
                 return
         
@@ -4834,19 +4840,6 @@ class XivoCTICommand(BaseCommand):
                 td = 'handle_fagi %s :   the callerid will be set to %s' % (astid, calleridtoset.decode('utf8'))
                 log.info(td.encode('utf8'))
                 fastagi.set_callerid(calleridtoset)
-                
-##                if clientstate == 'available' or clientstate == 'nopresence':
-##                        fastagi.set_variable('XIVO_AIMSTATUS', 0)
-##                elif clientstate == 'away':
-##                        fastagi.set_variable('XIVO_AIMSTATUS', 1)
-##                elif clientstate == 'donotdisturb':
-##                        fastagi.set_variable('XIVO_AIMSTATUS', 2)
-##                elif clientstate == 'outtolunch':
-##                        fastagi.set_variable('XIVO_AIMSTATUS', 3)
-##                elif clientstate == 'berightback':
-##                        fastagi.set_variable('XIVO_AIMSTATUS', 4)
-##                else:
-##                        print "Unknown user's availability status : <%s>" % clientstate
                 return
 
 
