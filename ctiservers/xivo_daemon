@@ -686,6 +686,7 @@ while True: # loops over the reloads
         socktimeout = xivoconf_general.get('sockettimeout', '2')
         logintimeout = int(xivoconf_general.get('logintimeout', '5'))
         apnoeafile = xivoconf_general.get('apnoeafile')
+        prefixfile = xivoconf_general.get('prefixfile')
         if 'asterisklist' in xivoconf_general:
                 asterisklist = xivoconf_general['asterisklist'].split(',')
         if 'contextlist' in xivoconf_general:
@@ -724,7 +725,9 @@ while True: # loops over the reloads
                         commandclass.apnoea_rescue(torescue)
                 except:
                         log.exception('read apnoea file %s' % apnoeafile)
-                        
+        if prefixfile:
+                commandclass.read_internatprefixes(prefixfile)
+                
         for ctx in contextlist:
                 xivoconf_context = cconf.read_section('context', ctx)
                 if len(xivoconf_context) > 0:
@@ -832,7 +835,7 @@ while True: # loops over the reloads
                         save_for_next_packet_events[astid] = ''
                         
         outsock = commandclass.extrasock(extraconn)
-
+        
         fdlist_full = []
         fdlist_established = {}
         fdlist_listen_cti = {}

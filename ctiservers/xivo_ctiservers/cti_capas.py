@@ -77,7 +77,7 @@ class Capabilities:
                          'xletweb' : [],
                          'tabber' : [],
                          'video' : []}
-
+        
         def __init__(self):
                 self.capafuncs = []
                 self.capadisps = []

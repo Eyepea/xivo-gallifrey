@@ -151,14 +151,17 @@ class XivoCTICommand(BaseCommand):
                 self.ldapids = {}
                 self.tqueue = Queue.Queue()
                 self.timeout_login = {}
-                self.stats_queues = {}
-                self.last_agents = {}
-                self.last_queues = {}
                 self.presence_sections = {}
+                self.interprefix = {}
+                
+                # (todo) astid indexed hashes
                 self.display_hints = {}
                 self.origapplication = {}
                 
                 # astid indexed hashes
+                self.stats_queues = {}
+                self.last_agents = {}
+                self.last_queues = {}
                 self.attended_targetchannels = {}
                 self.uniqueids = {}
                 self.channels = {}
@@ -273,7 +276,7 @@ class XivoCTICommand(BaseCommand):
         
         def get_login_params(self, command, astid, connid):
                 return command.struct
-
+        
         def manage_login(self, loginparams, phase, uinfo):
                 if phase == xivo_commandsets.CMD_LOGIN_ID:
                         missings = []
@@ -1067,6 +1070,25 @@ class XivoCTICommand(BaseCommand):
                                                 itemdir[g] = gg
                 return itemdir
         
+        def findcountry(self, numtolookup):
+                nchars = 4
+                notfound = True
+                notfinished = True
+                pf = '(unknown)'
+                country = '(unknown)'
+                while notfound and notfinished:
+                        pf = numtolookup[:nchars]
+                        if pf in self.interprefix:
+                                notfound = False
+                                country = self.interprefix[pf]
+                                break
+                        nchars = nchars - 1
+                        if nchars == 0:
+                                notfinished = False
+                                pf = '(unknown)'
+                                break
+                return [pf, country]
+        
         def __sheet_alert__(self, where, astid, context, event, extraevent = {}):
                 # fields to display :
                 # - internal asterisk/xivo : caller, callee, queue name, sda
@@ -1413,6 +1435,14 @@ class XivoCTICommand(BaseCommand):
                         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 return
         
+        def read_internatprefixes(self, internatprefixfile):
+                pref = urllib.urlopen(internatprefixfile)
+                csvreader = csv.reader(pref, delimiter = ';')
+                self.interprefix = {}
+                for line in csvreader:
+                        if len(line) > 1:
+                                self.interprefix[line[0]] = line[1].decode('utf8')
+                return
         
         def read_queuelog(self, astid, url_queuelog):
                 if astid not in self.stats_queues:
@@ -1750,7 +1780,7 @@ class XivoCTICommand(BaseCommand):
                         status = 'onlineincoming'
                         for uinfo in self.__find_userinfos_by_agentnum__(astid, agent_number):
                                 self.__update_availstate__(uinfo, status)
-                                self.__presence_action__(astid, agent_number, uinfo.get('capaid'), status)
+                                self.__presence_action__(astid, agent_number, uinfo, status)
                                 
                         # To identify which queue a call comes from, we match a previous AMI Leave event,
                         # that involved the same channel as the one catched here.
@@ -1776,7 +1806,7 @@ class XivoCTICommand(BaseCommand):
                                 self.__update_availstate__(uinfo, status)
                                 ag = self.__agentnum__(uinfo)
                                 if ag:
-                                        self.__presence_action__(astid, ag, uinfo.get('capaid'), status)
+                                        self.__presence_action__(astid, ag, uinfo, status)
                                         msg = self.__build_agupdate__('phonelink', astid, 'Agent/%s' % ag,
                                                                       { 'dir' : status,
                                                                         'outcall' : uid1info.get('OUTCALL'),
@@ -1793,7 +1823,7 @@ class XivoCTICommand(BaseCommand):
                                 self.__update_availstate__(uinfo, status)
                                 ag = self.__agentnum__(uinfo)
                                 if ag:
-                                        self.__presence_action__(astid, ag, uinfo.get('capaid'), status)
+                                        self.__presence_action__(astid, ag, uinfo, status)
                                         msg = self.__build_agupdate__('phonelink', astid, 'Agent/%s' % ag,
                                                                       { 'dir' : status,
                                                                         'outcall' : uid1info.get('OUTCALL'),
@@ -1902,7 +1932,7 @@ class XivoCTICommand(BaseCommand):
                         status = 'postcall'
                         for uinfo in self.__find_userinfos_by_agentnum__(astid, agent_number):
                                 self.__update_availstate__(uinfo, status)
-                                self.__presence_action__(astid, agent_number, uinfo.get('capaid'), status)
+                                self.__presence_action__(astid, agent_number, uinfo, status)
                                 
                         if chan1 in self.queues_channels_list[astid]:
                                 qname = self.queues_channels_list[astid][chan1]
@@ -1921,12 +1951,13 @@ class XivoCTICommand(BaseCommand):
                                 self.__update_availstate__(uinfo, status)
                                 ag = self.__agentnum__(uinfo)
                                 if ag:
-                                        self.__presence_action__(astid, ag, uinfo.get('capaid'), status)
+                                        self.__presence_action__(astid, ag, uinfo, status)
                                         msg = self.__build_agupdate__('phoneunlink', astid, 'Agent/%s' % ag)
                                         self.__send_msg_to_cti_clients__(msg)
                 return
-
-        def __presence_action__(self, astid, anum, capaid, status):
+        
+        def __presence_action__(self, astid, anum, userinfo, status):
+                capaid = userinfo.get('capaid')
                 try:
                         if capaid not in self.capas:
                                 return
@@ -1945,6 +1976,13 @@ class XivoCTICommand(BaseCommand):
                                         self.__ami_execute__(astid, 'queuepause', params[1], 'Agent/%s' % anum, 'true')
                                 elif params[0] == 'queueunpause' and len(params) > 1 and anum:
                                         self.__ami_execute__(astid, 'queuepause', params[1], 'Agent/%s' % anum, 'false')
+                                        
+                                # features-related actions
+                                elif params[0] in ['enablevoicemail', 'callrecord', 'callfilter', 'enablednd'] and len(params) > 1:
+                                        rep = self.__build_features_put__(userinfo.get('astid') + '/' + userinfo.get('xivo_userid'),
+                                                                          params[0],
+                                                                          params[1])
+                                        self.__send_msg_to_cti_client__(userinfo, rep)
                 except Exception:
                         log.exception('(__presence_action__) %s %s %s %s' % (astid, anum, capaid, status))
                 return
@@ -2281,6 +2319,19 @@ class XivoCTICommand(BaseCommand):
                 if astid in self.uniqueids and uniqueid in self.uniqueids[astid]:
                         self.uniqueids[astid][uniqueid].update({'calleridname' : event.get('CallerIDName').decode('utf8'),
                                                                 'calleridnum'  : event.get('CallerID')})
+                
+                # the AGI is a far better place than here, however this remains useful
+                # for remote asterisk monitoring ... to be improved
+                ton = event.get('TON')
+                numtolookup = None
+                if ton == '16':
+                        numtolookup = event.get('CallerID')
+                elif ton == '17':
+                        numtolookup = event.get('CallerID')[2:]
+                if numtolookup:
+                        [pf, country] = self.findcountry(numtolookup)
+                        td = '%s ami_newcallerid : foreign number %s : %s => %s' % (astid, numtolookup, pf, country)
+                        log.info(td.encode('utf8'))
                 return
         
         def ami_newexten(self, astid, event):
@@ -3006,7 +3057,7 @@ class XivoCTICommand(BaseCommand):
                         self.__send_msg_to_cti_client__(self.faxes[faxid].uinfo, self.__cjson_encode__(tosend))
                         del self.faxes[faxid]
                 return
-
+        
         def ami_faxreceived(self, astid, event):
                 log.info('%s : %s' % (astid, event))
                 context = event.get('Context', CONTEXT_UNKNOWN)
@@ -3536,7 +3587,7 @@ class XivoCTICommand(BaseCommand):
                                                         # updates the new status and sends it to other people
                                                         repstr = self.__update_availstate__(userinfo, icommand.struct.get('availstate'))
                                                         self.__presence_action__(astid, self.__agentnum__(userinfo),
-                                                                                 capaid,
+                                                                                 userinfo,
                                                                                  icommand.struct.get('availstate'))
                                                         self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm)
                                                         
@@ -3571,7 +3622,7 @@ class XivoCTICommand(BaseCommand):
                                                                                                   'dest' + icommand.struct.get('function')[6:],
                                                                                                   icommand.struct.get('destination'))
                                                                 self.__send_msg_to_cti_client__(userinfo, rep)
-
+                                                                
                                         elif classcomm == 'callcampaign':
                                                 argums = icommand.struct.get('command')
                                                 if argums[0] == 'fetchlist':
@@ -3654,14 +3705,14 @@ class XivoCTICommand(BaseCommand):
                                                 argums = icommand.struct.get('command')
                                                 if self.capas[capaid].match_funcs(ucapa, 'agents'):
                                                         repstr = self.__agent__(userinfo, argums)
-
+                                                        
                                         elif classcomm == 'queue-status':
                                                 # issued towards a user when he wants to monitor a new queue
                                                 if self.capas[capaid].match_funcs(ucapa, 'agents'):
                                                         astid = icommand.struct.get('astid')
                                                         qname = icommand.struct.get('queuename')
                                                         repstr = self.__build_queue_status__(astid, qname)
-
+                                                        
                                         elif classcomm == 'agent-status':
                                                 # issued by one user when he requests the status for one given agent
                                                 if self.capas[capaid].match_funcs(ucapa, 'agents'):
@@ -4185,18 +4236,18 @@ class XivoCTICommand(BaseCommand):
                         cursor = self.configs[astid].userfeatures_db_conn.cursor()
                         cursor.query(query, parameters = params)
                         self.configs[astid].userfeatures_db_conn.commit()
-                        tosend = { 'class' : 'features',
-                                   'function' : 'put',
-                                   'payload' : [ userid, 'OK', key, value ] }
+                        repstr = { key : { 'enabled' : bool(int(value)) } }
                         log.info('__build_features_put__ : %s : %s => %s' % (params, key, value))
                 except Exception:
+                        repstr = {}
                         log.exception('features_put id=%s %s %s' % (userid, key, value))
-                        tosend = { 'class' : 'features',
-                                   'function' : 'put',
-                                   'payload' : [ userid, 'KO' ] }
+                tosend = { 'class' : 'features',
+                           'function' : 'put',
+                           'userid' : userid,
+                           'payload' : repstr }
                 return self.__cjson_encode__(tosend)
-
-
+        
+        
         # \brief Originates / transfers.
         def __originate_or_transfer__(self, commname, userinfo, src, dst):
                 log.info('%s %s %s %s' % (commname, userinfo, src, dst))
@@ -4733,9 +4784,20 @@ class XivoCTICommand(BaseCommand):
                 
                 elif function == 'didcallerid':
                         log.info('%s DIDCALLERID %s' % (astid, fastagi.env))
-                        # agi_callington : 0, 16 (internat), 17 (internat ?), 32 (06, 09), 33 (02, 04), 65 (3 chiffres), 255 (unknown), -1?
+                        # agi_callington : 0, 16 (internat ?), 17 (00 + internat ?), 32 (06, 09), 33 (02, 04), 65 (3 chiffres), 255 (unknown), -1?
                         # agi_callingpres : 0, 1, 3, 35, 67, -1?
                         # agi_rdnis : when transferred from another initial destination ?
+                        if 'agi_callington' in fastagi.env:
+                                ton = fastagi.env['agi_callington']
+                                numtolookup = None
+                                if ton == '16':
+                                        numtolookup = fastagi.env['agi_callerid']
+                                elif ton == '17':
+                                        numtolookup = fastagi.env['agi_callerid'][2:]
+                                if numtolookup:
+                                        [pf, country] = self.findcountry(numtolookup)
+                                        td = '%s DIDCALLERID foreign number %s : %s => %s' % (astid, numtolookup, pf, country)
+                                        log.info(td.encode('utf8'))
                         return
                 
                 elif function != 'xivo_push':
