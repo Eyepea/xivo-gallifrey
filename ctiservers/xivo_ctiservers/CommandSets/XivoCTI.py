@@ -2920,8 +2920,16 @@ class XivoCTICommand(BaseCommand):
                         self.__sheet_alert__('incomingdid', astid, context, event)
                         
                 elif eventname == 'Custom':
-                        pass
-                
+                        uniqueid = event.get('UNIQUEID')
+                        callerid = event.get('XIVO_SRCNUM')
+                        channel = event.get('CHANNEL')
+                        context = event.get('XIVO_REAL_CONTEXT', CONTEXT_UNKNOWN)
+                        # XXX
+                        # event in order to send a custom sheet almost anywhere in the dialplan
+                        # TBD : define different kinds + define the destinations for each
+                        # and later : define any other sheet event as a special case of this one (?)
+                        # self.__sheet_alert__('custom', astid, context, event)
+                        
                 elif eventname == 'Lookup':
                         uniqueid = event.get('UNIQUEID')
                         callerid = event.get('XIVO_SRCNUM')
@@ -4726,7 +4734,8 @@ class XivoCTICommand(BaseCommand):
                 elif function == 'didcallerid':
                         log.info('%s DIDCALLERID %s' % (astid, fastagi.env))
                         # agi_callington : 0, 16 (internat), 17 (internat ?), 32 (06, 09), 33 (02, 04), 65 (3 chiffres), 255 (unknown), -1?
-                        # agi_callingpres : 0, 1, 3, 67, -1?
+                        # agi_callingpres : 0, 1, 3, 35, 67, -1?
+                        # agi_rdnis : when transferred from another initial destination ?
                         return
                 
                 elif function != 'xivo_push':
