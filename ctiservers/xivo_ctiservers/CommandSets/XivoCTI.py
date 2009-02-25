@@ -1983,9 +1983,13 @@ class XivoCTICommand(BaseCommand):
                                 # features-related actions
                                 elif params[0] in ['enablevoicemail', 'callrecord', 'callfilter', 'enablednd',
                                                    'enableunc', 'enablebusy', 'enablerna'] and len(params) > 1:
+                                        if params[1] == 'false':
+                                                booltonum = '0'
+                                        else:
+                                                booltonum = '1'
                                         rep = self.__build_features_put__(userinfo.get('astid') + '/' + userinfo.get('xivo_userid'),
                                                                           params[0],
-                                                                          params[1])
+                                                                          booltonum)
                                         self.__send_msg_to_cti_client__(userinfo, rep)
                 except Exception:
                         log.exception('(__presence_action__) %s %s %s %s' % (astid, anum, capaid, status))
