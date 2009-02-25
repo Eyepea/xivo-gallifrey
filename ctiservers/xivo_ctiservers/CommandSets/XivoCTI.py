@@ -1438,12 +1438,15 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def read_internatprefixes(self, internatprefixfile):
-                pref = urllib.urlopen(internatprefixfile)
-                csvreader = csv.reader(pref, delimiter = ';')
-                self.interprefix = {}
-                for line in csvreader:
-                        if len(line) > 1:
-                                self.interprefix[line[0]] = line[1].decode('utf8')
+                try:
+                        pref = urllib.urlopen(internatprefixfile)
+                        csvreader = csv.reader(pref, delimiter = ';')
+                        self.interprefix = {}
+                        for line in csvreader:
+                                if len(line) > 1:
+                                        self.interprefix[line[0]] = line[1].decode('utf8')
+                except:
+                        log.exception('problem when reading from %s' % internatprefixfile)
                 return
         
         def read_queuelog(self, astid, url_queuelog):
@@ -2196,7 +2199,8 @@ class XivoCTICommand(BaseCommand):
                 for userinfo in self.ulist_ng.keeplist.itervalues():
                         if 'voicemailid' in userinfo and userinfo.get('voicemailid') == voicemailid and userinfo.get('astid') == astid:
                                 if userinfo['mwi']:
-                                        log.debug('amiresponse_mailboxstatus voicemailid=%s user=%s %s=>%s' % (voicemailid, userinfo.get('xivo_userid'), userinfo['mwi'][0], event.get('Waiting')))
+                                        log.debug('amiresponse_mailboxstatus voicemailid=%s user=%s %s=>%s'
+                                                  % (voicemailid, userinfo.get('xivo_userid'), userinfo['mwi'][0], event.get('Waiting')))
                                         if userinfo['mwi'][0] != event.get('Waiting'):
                                             # only send if it has changed
                                             userinfo['mwi'][0] = event.get('Waiting')
