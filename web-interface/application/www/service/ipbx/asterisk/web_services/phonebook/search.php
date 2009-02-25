@@ -71,7 +71,12 @@ if(($rsx = $phonebook->get_phonebook_search_from_xivoserver($url,false)) !== fal
 if(($rsl = $phonebook->get_phonebook_search_from_ldapfilter($_QR['name'],false)) !== false)
 	$rs = array_merge($rs,$rsl);
 
-if(($nb = count($rs)) === 0 || $nb <= 16)
+if($vendor === 'thomson')
+	$nbbypage = 8;
+else
+	$nbbypage = 16;
+
+if(($nb = count($rs)) === 0 || $nb <= $nbbypage)
 {
 	$_HTML->set_var('list',$rs);
 	$_HTML->set_var('prevpos',0);
@@ -80,7 +85,7 @@ if(($nb = count($rs)) === 0 || $nb <= 16)
 	die();
 }
 
-$maxnode = (int) floor(log($nb,16));
+$maxnode = (int) floor(log($nb,$nbbypage));
 
 if($node === 0 || $node > $maxnode)
 {
@@ -91,23 +96,23 @@ if($node === 0 || $node > $maxnode)
 }
 else
 {
-	$prevpos = pow(16,floor($node + 1));
+	$prevpos = pow($nbbypage,floor($node + 1));
 
 	if($directory === true)
-		$end = 16;
+		$end = $nbbypage;
 	else
 		$end = $pos + $prevpos;
 
-	if($pos > $nb || ($pos % 16) !== 0)
+	if($pos > $nb || ($pos % $nbbypage) !== 0)
 	{
 		$beg = 0;
-		$end = $directory === true ? 16 : $prevpos;
+		$end = $directory === true ? $nbbypage : $prevpos;
 	}
 	else
 		$beg = $pos;
 }
 
-$cnt = pow(16,floor($node));
+$cnt = pow($nbbypage,floor($node));
 
 xivo::load_class('xivo::sort');
 $sort = new xivo_sort(array('key' => 'identity'));
@@ -115,7 +120,7 @@ usort($rs,array(&$sort,'str_usort'));
 
 if($directory === true)
 {
-	$_HTML->set_var('list',array_slice($rs,$beg,16));
+	$_HTML->set_var('list',array_slice($rs,$beg,$nbbypage));
 	$_HTML->set_var('act','directory');
 }
 else
