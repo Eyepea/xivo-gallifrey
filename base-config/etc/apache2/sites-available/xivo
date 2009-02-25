@@ -37,17 +37,34 @@ NameVirtualHost *:80
 
 <VirtualHost *:80>
 	RewriteEngine On
+
+	# Used for Aastra phones first provisioning
+	RewriteCond %{HTTP_USER_AGENT} !^Aastra5[1357]i
+	RewriteRule ^/provisioning/Aastra/ - [L,R=403]
+
+	RewriteCond %{HTTP_USER_AGENT} ^Aastra5([1357])i
+	RewriteRule ^/(5[1357]i\.st)$ /provisioning/Aastra/$1 [PT,L]
+
 	RewriteCond %{HTTPS} off
 	# XXX Snom phones don't work with SSL
 	RewriteCond %{HTTP_USER_AGENT} !snom3[026]0-
+	# Used for Aastra phones provisioning
+	RewriteCond %{REQUEST_URI} !^/provisioning/Aastra/
 	# Used for stats/monitoring
-	RewriteRule ^/server-status$ - [S=1]
+	RewriteCond %{REQUEST_URI} !^/server-status$
 	RewriteRule .* https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
 	<Location />
 		Deny from all
 	</Location>
 
+	# Used for Aastra phones provisioning
+	Alias /provisioning/Aastra/ /tftpboot/Aastra/
+	<Location /provisioning/Aastra/>
+		Allow from all
+	</Location>
+
+	# Used for Snom phones
 	<Location /service/ipbx/web_services.php/phonebook/search>
 		Allow from all
 	</Location>
