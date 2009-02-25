@@ -406,8 +406,8 @@ class XivoCTICommand(BaseCommand):
                 else:
                         return 'capaid_undefined:%s' % capaid
                 return None
-
-
+        
+        
         def __connect_user__(self, userinfo, state, capaid, lastconnwins):
                 try:
                         userinfo['capaid'] = capaid
@@ -442,13 +442,12 @@ class XivoCTICommand(BaseCommand):
                         else:
                                 userinfo['state'] = 'xivo_unknown'
                         
-                        self.__presence_action__(userinfo['astid'], self.__agentnum__(userinfo), userinfo, userinfo['state'])
+                        self.__presence_action__(userinfo['astid'], self.__agentnum__(userinfo), userinfo)
                         
                         self.capas[capaid].conn_inc()
                 except Exception:
                         log.exception('connect_user %s' % userinfo)
                 return
-        
         
         def __disconnect_user__(self, userinfo):
                 try:
@@ -466,8 +465,8 @@ class XivoCTICommand(BaseCommand):
                                 log.warning('userinfo does not contain login field : %s' % userinfo)
                 except Exception:
                         log.exception('disconnect_user %s' % userinfo)
-
-
+                return
+        
         def loginko(self, loginparams, errorstring, connid):
                 log.warning('user can not connect (%s) : sending %s' % (loginparams, errorstring))
                 if connid in self.timeout_login:
@@ -477,12 +476,12 @@ class XivoCTICommand(BaseCommand):
                            'errorstring' : errorstring }
                 connid.sendall('%s\n' % self.__cjson_encode__(tosend))
                 return
-
+        
         def telldisconn(self, connid):
                 tosend = { 'class' : 'disconn' }
                 connid.sendall('%s\n' % self.__cjson_encode__(tosend))
                 return
-
+        
         def loginok(self, loginparams, userinfo, connid, phase):
                 if phase == xivo_commandsets.CMD_LOGIN_ID:
                         tosend = { 'class' : 'login_id_ok',
@@ -1783,7 +1782,7 @@ class XivoCTICommand(BaseCommand):
                         status = 'onlineincoming'
                         for uinfo in self.__find_userinfos_by_agentnum__(astid, agent_number):
                                 self.__update_availstate__(uinfo, status)
-                                self.__presence_action__(astid, agent_number, uinfo, status)
+                                self.__presence_action__(astid, agent_number, uinfo)
                                 
                         # To identify which queue a call comes from, we match a previous AMI Leave event,
                         # that involved the same channel as the one catched here.
@@ -1809,7 +1808,7 @@ class XivoCTICommand(BaseCommand):
                                 self.__update_availstate__(uinfo, status)
                                 ag = self.__agentnum__(uinfo)
                                 if ag:
-                                        self.__presence_action__(astid, ag, uinfo, status)
+                                        self.__presence_action__(astid, ag, uinfo)
                                         msg = self.__build_agupdate__('phonelink', astid, 'Agent/%s' % ag,
                                                                       { 'dir' : status,
                                                                         'outcall' : uid1info.get('OUTCALL'),
@@ -1826,7 +1825,7 @@ class XivoCTICommand(BaseCommand):
                                 self.__update_availstate__(uinfo, status)
                                 ag = self.__agentnum__(uinfo)
                                 if ag:
-                                        self.__presence_action__(astid, ag, uinfo, status)
+                                        self.__presence_action__(astid, ag, uinfo)
                                         msg = self.__build_agupdate__('phonelink', astid, 'Agent/%s' % ag,
                                                                       { 'dir' : status,
                                                                         'outcall' : uid1info.get('OUTCALL'),
@@ -1935,7 +1934,7 @@ class XivoCTICommand(BaseCommand):
                         status = 'postcall'
                         for uinfo in self.__find_userinfos_by_agentnum__(astid, agent_number):
                                 self.__update_availstate__(uinfo, status)
-                                self.__presence_action__(astid, agent_number, uinfo, status)
+                                self.__presence_action__(astid, agent_number, uinfo)
                                 
                         if chan1 in self.queues_channels_list[astid]:
                                 qname = self.queues_channels_list[astid][chan1]
@@ -1954,13 +1953,14 @@ class XivoCTICommand(BaseCommand):
                                 self.__update_availstate__(uinfo, status)
                                 ag = self.__agentnum__(uinfo)
                                 if ag:
-                                        self.__presence_action__(astid, ag, uinfo, status)
+                                        self.__presence_action__(astid, ag, uinfo)
                                         msg = self.__build_agupdate__('phoneunlink', astid, 'Agent/%s' % ag)
                                         self.__send_msg_to_cti_clients__(msg)
                 return
         
-        def __presence_action__(self, astid, anum, userinfo, status):
+        def __presence_action__(self, astid, anum, userinfo):
                 capaid = userinfo.get('capaid')
+                status = userinfo.get('state')
                 try:
                         if capaid not in self.capas:
                                 return
@@ -1981,7 +1981,8 @@ class XivoCTICommand(BaseCommand):
                                         self.__ami_execute__(astid, 'queuepause', params[1], 'Agent/%s' % anum, 'false')
                                         
                                 # features-related actions
-                                elif params[0] in ['enablevoicemail', 'callrecord', 'callfilter', 'enablednd'] and len(params) > 1:
+                                elif params[0] in ['enablevoicemail', 'callrecord', 'callfilter', 'enablednd',
+                                                   'enableunc', 'enablebusy', 'enablerna'] and len(params) > 1:
                                         rep = self.__build_features_put__(userinfo.get('astid') + '/' + userinfo.get('xivo_userid'),
                                                                           params[0],
                                                                           params[1])
@@ -1995,7 +1996,7 @@ class XivoCTICommand(BaseCommand):
                 if actionid is not None:
                         self.ami_requests[actionid] = args
                         return actionid
-                
+        
         def ami_dtmf(self, astid, event):
                 digit = event.get('Digit')
                 direction = event.get('Direction')
@@ -2014,11 +2015,13 @@ class XivoCTICommand(BaseCommand):
                 cause = event.get('Cause')
                 causetxt = event.get('Cause-txt')
                 #  0 - Unknown
+                #  3 - No route to destination
                 # 16 - Normal Clearing
                 # 17 - User busy (see Orig #5)
                 # 18 - No user responding (see Orig #1)
                 # 19 - User alerting, no answer (see Orig #8, Orig #3, Orig #1 (soft hup))
                 # 21 - Call rejected (attempting *8 when noone to pickup)
+                # 24 - "lost" Call suspended
                 # 27 - Destination out of order
                 # 34 - Circuit/channel congestion
                 
@@ -3592,9 +3595,7 @@ class XivoCTICommand(BaseCommand):
                                                 if self.capas[capaid].match_funcs(ucapa, 'presence'):
                                                         # updates the new status and sends it to other people
                                                         repstr = self.__update_availstate__(userinfo, icommand.struct.get('availstate'))
-                                                        self.__presence_action__(astid, self.__agentnum__(userinfo),
-                                                                                 userinfo,
-                                                                                 icommand.struct.get('availstate'))
+                                                        self.__presence_action__(astid, self.__agentnum__(userinfo), userinfo)
                                                         self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm)
                                                         
                                         elif classcomm == 'getguisettings':
@@ -3621,14 +3622,10 @@ class XivoCTICommand(BaseCommand):
                                                         log.info('%s %s' % (classcomm, icommand.struct))
                                                         rep = self.__build_features_put__(icommand.struct.get('userid'),
                                                                                           icommand.struct.get('function'),
-                                                                                          icommand.struct.get('value'))
+                                                                                          icommand.struct.get('value'),
+                                                                                          icommand.struct.get('destination'))
                                                         self.__send_msg_to_cti_client__(userinfo, rep)
-                                                        if 'destination' in icommand.struct:
-                                                                rep = self.__build_features_put__(icommand.struct.get('userid'),
-                                                                                                  'dest' + icommand.struct.get('function')[6:],
-                                                                                                  icommand.struct.get('destination'))
-                                                                self.__send_msg_to_cti_client__(userinfo, rep)
-                                                                
+                                                        
                                         elif classcomm == 'callcampaign':
                                                 argums = icommand.struct.get('command')
                                                 if argums[0] == 'fetchlist':
@@ -4195,7 +4192,7 @@ class XivoCTICommand(BaseCommand):
                 cursor = self.configs[astid].userfeatures_db_conn.cursor()
                 params = [srcnum, phoneid, context]
                 query = 'SELECT ${columns} FROM userfeatures WHERE number = %s AND name = %s AND context = %s'
-
+                
                 for key in ['enablevoicemail', 'callrecord', 'callfilter', 'enablednd']:
                         try:
                                 columns = (key,)
@@ -4203,6 +4200,9 @@ class XivoCTICommand(BaseCommand):
                                 results = cursor.fetchall()
                                 if len(results) > 0:
                                         repstr[key] = {'enabled' : bool(results[0][0])}
+                                else:
+                                        log.warning('%s __build_features_get__ : nobody matches (%s %s)'
+                                                    % (astid, key, params))
                         except Exception:
                                 log.exception('features_get(bool) id=%s key=%s' % (userid, key))
                 for key in ['unc', 'busy', 'rna']:
@@ -4218,6 +4218,9 @@ class XivoCTICommand(BaseCommand):
                                 if len(resenable) > 0 and len(resdest) > 0:
                                         repstr[key] = { 'enabled' : bool(resenable[0][0]),
                                                         'number' : resdest[0][0] }
+                                else:
+                                        log.warning('%s __build_features_get__ : nobody matches (%s %s)'
+                                                    % (astid, key, params))
                         except Exception:
                                 log.exception('features_get(str) id=%s key=%s' % (userid, key))
                 tosend = { 'class' : 'features',
@@ -4228,7 +4231,7 @@ class XivoCTICommand(BaseCommand):
         
         
         # \brief Builds the features_put reply.
-        def __build_features_put__(self, userid, key, value):
+        def __build_features_put__(self, userid, key, value, destination = None):
                 userinfo = self.ulist_ng.keeplist[userid]
                 user = userinfo.get('user')
                 astid = userinfo.get('astid')
@@ -4243,7 +4246,14 @@ class XivoCTICommand(BaseCommand):
                         cursor.query(query, parameters = params)
                         self.configs[astid].userfeatures_db_conn.commit()
                         repstr = { key : { 'enabled' : bool(int(value)) } }
-                        log.info('__build_features_put__ : %s : %s => %s' % (params, key, value))
+                        if destination:
+                                query = 'UPDATE userfeatures SET ' + 'dest' + key[6:] + ' = %s WHERE number = %s AND name = %s AND context = %s'
+                                params = [destination, srcnum, phoneid, context]
+                                cursor = self.configs[astid].userfeatures_db_conn.cursor()
+                                cursor.query(query, parameters = params)
+                                self.configs[astid].userfeatures_db_conn.commit()
+                                repstr[key]['number'] = destination
+                        # log.info('__build_features_put__ : %s : %s => %s' % (params, key, value))
                 except Exception:
                         repstr = {}
                         log.exception('features_put id=%s %s %s' % (userid, key, value))
@@ -4496,8 +4506,8 @@ class XivoCTICommand(BaseCommand):
                            }
                 self.__send_msg_to_cti_clients_except__([userinfo], self.__cjson_encode__(tosend))
                 return None
-
-
+        
+        
         # \brief Builds the full list of customers in order to send them to the requesting client.
         # This should be done after a command called "customers".
         # \return a string containing the full customers list
@@ -4841,6 +4851,5 @@ class XivoCTICommand(BaseCommand):
                 log.info(td.encode('utf8'))
                 fastagi.set_callerid(calleridtoset)
                 return
-
 
 xivo_commandsets.CommandClasses['xivocti'] = XivoCTICommand
