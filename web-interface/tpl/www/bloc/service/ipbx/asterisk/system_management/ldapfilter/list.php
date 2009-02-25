@@ -64,9 +64,11 @@
 
 			$ref = &$list[$i];
 
+			$securitylayer = '-';
+
 			if(is_array($ref['ldapserver']) === false):
 				$icon = 'unavailable';
-				$host = $port = $securitylayer = '-';
+				$host = $port = '-';
 			else:
 				if($ref['ldapfilter']['commented'] === true):
 					$icon = 'disable';
@@ -76,7 +78,9 @@
 
 				$host = $ref['ldapserver']['host'];
 				$port = $ref['ldapserver']['port'];
-				$securitylayer = $this->bbf('securitylayer_'.$ref['ldapserver']['securitylayer']);
+
+				if(xivo_haslen($ref['ldapserver']['securitylayer']) === true)
+					$securitylayer = $this->bbf('securitylayer_'.$ref['ldapserver']['securitylayer']);
 			endif;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
