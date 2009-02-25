@@ -39,7 +39,8 @@ log = logging.getLogger("xivo.Phones.Aastra") # pylint: disable-msg=C0103
 
 class Aastra(PhoneVendorMixin):
 
-    AASTRA_MODELS = ('51i', '53i', '55i', '57i')
+    AASTRA_MODELS           = ('51i', '53i', '55i', '57i')
+    AASTRA_MACADDR_PREFIX   = ('1:00:08:5d',)
     AASTRA_COMMON_HTTP_USER = 'admin'
     AASTRA_COMMON_HTTP_PASS = '22222'
 
@@ -141,11 +142,11 @@ class Aastra(PhoneVendorMixin):
                 keytype = "soft"
 
             if supervise:
-                type = "blf"
+                xtype = "blf"
             else:
-                type = "speeddial"
+                xtype = "speeddial"
 
-            fk_config_lines.append("%skey%d type: %s" % (keytype, key, type))
+            fk_config_lines.append("%skey%d type: %s" % (keytype, key, xtype))
             fk_config_lines.append("%skey%d label: %s" % (keytype, key, exten))
             fk_config_lines.append("%skey%d value: %s" % (keytype, key, exten))
             fk_config_lines.append("%skey%d line: 1" % (keytype, key))
@@ -251,8 +252,19 @@ class Aastra(PhoneVendorMixin):
                 '    match if option vendor-class-identifier = "AastraIPPhone%s";\n' % model,
                 '    log("boot Aastra %s");\n' % model,
                 '    option tftp-server-name "%s";\n' % addresses['bootServer'],
-                '    option bootfile-name "aastra.cfg";\n',
                 '    next-server %s;\n' % addresses['bootServer'],
+                '}\n',
+                '\n'):
+                yield line
+
+        for macaddr_prefix in cls.AASTRA_MACADDR_PREFIX:
+            for line in (
+                'subclass "phone-mac-address-prefix" %s {\n' % macaddr_prefix,
+                '    if not exists vendor-class-identifier {\n',
+                '        log("class Aastra prefix %s");\n' % macaddr_prefix,
+                '        option tftp-server-name "http://%s/provisioning/Aastra/";\n' % addresses['bootServer'],
+                '        next-server %s;\n' % addresses['bootServer'],
+                '    }\n',
                 '}\n',
                 '\n'):
                 yield line

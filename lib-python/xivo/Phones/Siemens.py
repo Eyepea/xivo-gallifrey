@@ -35,7 +35,6 @@ from time import sleep
 from distutils import version
 from HTMLParser import HTMLParser
 from ConfigParser import RawConfigParser
-from httplib import BadStatusLine
 from urllib import urlencode
 from cookielib import CookieJar
 
@@ -153,30 +152,30 @@ class SiemensHTTP:
             rcp.set('ip_configuration', 'ip_address_type', 1)
 
         try:
-             self.login(ipv4)
+            self.login(ipv4)
  
-             # Disable Gigaset account
-             request = self.request(ipv4, 'scripts/settings_telephony_voip_multi.js')
+            # Disable Gigaset account
+            request = self.request(ipv4, 'scripts/settings_telephony_voip_multi.js')
  
-             for line in request.readlines():
-                 if self.RE_ACC_GIGASET(line):
-                     request.close()
-                     request = self.request(ipv4, 'settings_telephony_voip_multi.html', {'account_id': '6'})
-                     break
+            for line in request.readlines():
+                if self.RE_ACC_GIGASET(line):
+                    request.close()
+                    request = self.request(ipv4, 'settings_telephony_voip_multi.html', {'account_id': '6'})
+                    break
  
-             request.close()
+            request.close()
  
-             for section, page, extend in self.SECTION_PAGE:
-                 if section not in rcp.sections():
-                     continue
+            for section, page, extend in self.SECTION_PAGE:
+                if section not in rcp.sections():
+                    continue
  
-                 args = rcp.items(section)
-                 args.extend(extend)
- 
-                 request = self.request(ipv4, page, args)
-                 request.close()
+                args = rcp.items(section)
+                args.extend(extend)
+
+                request = self.request(ipv4, page, args)
+                request.close()
         finally:
-           self.logout(ipv4)
+            self.logout(ipv4)
 
     def login(self, ipv4):
         "Login from web-interface."
@@ -226,13 +225,10 @@ class SiemensHTMLParser(HTMLParser):
 
 class Siemens(PhoneVendorMixin):
 
-    SIEMENS_MODELS = ('S675IP',)
-
-    SIEMENS_MACADDR_PREFIX = ('1:00:01:e3', '1:00:13:a9')
-
-    SIEMENS_COMMON_PIN = '0000'
-
-    SIEMENS_FIRMWARE = '021400000000'
+    SIEMENS_MODELS          = ('S675IP',)
+    SIEMENS_MACADDR_PREFIX  = ('1:00:01:e3', '1:00:13:a9')
+    SIEMENS_COMMON_PIN      = '0000'
+    SIEMENS_FIRMWARE        = '021400000000'
 
     SIEMENS_COMMON_DIR = None
 
@@ -382,7 +378,7 @@ class Siemens(PhoneVendorMixin):
                     request.read()
                 except urllib2.HTTPError:
                     raise LookupError, "Unable to upgrade: not permitted. (ip: %s)" % self.phone['ipv4']
-            except Exception, e:
+            except Exception, e: # pylint: disable-msg=W0703
                 log.exception(str(e))
             else:
                 ret = True
@@ -559,6 +555,7 @@ class Siemens(PhoneVendorMixin):
             for line in (
                 'subclass "phone-mac-address-prefix" %s {\n' % macaddr_prefix,
                 '    if not exists vendor-class-identifier {\n',
+                '        log("class Siemens prefix %s");\n' % macaddr_prefix,
                 '        execute("/usr/share/pf-xivo-provisioning/bin/dhcpconfig",\n',
                 '                "-w30",\n',
                 '                "-f",\n',
@@ -566,7 +563,6 @@ class Siemens(PhoneVendorMixin):
                 '                "S675IP",\n', # TODO: Try to determine phone model.
                 '                binary-to-ascii(10, 8, ".", leased-address),\n',
                 '                binary-to-ascii(16, 8, ":", suffix(hardware, 6)));\n',
-                '        log("class Siemens prefix %s");\n' % macaddr_prefix,
                 '    }\n',
                 '}\n',
                 '\n'):
