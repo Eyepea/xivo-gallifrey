@@ -207,6 +207,7 @@ class SQLBackEnd:
             'simultcalls': number of simultaneous calls (multiline)
             'number': extension number
             'proto': protocol
+            'enablevm': enable voicemail
             'funckey': mapping where keys are function key number
                  and values a tuple (exten, supervise).
                  .exten is the extension to speed dial/supervise
@@ -218,16 +219,17 @@ class SQLBackEnd:
         if proto != TECH_SIP:
             raise ValueError, "proto must be 'sip' for now"
         mapping = {
-            UF_TABLE+".firstname":      'firstname',
-            UF_TABLE+".lastname":       'lastname',
-            SIP_TABLE+".name":          'ident',
-            SIP_TABLE+".secret":        'passwd',
-            SIP_TABLE+".dtmfmode":      'dtmfmode',
-            UF_TABLE+".simultcalls":    'simultcalls',
-            UF_TABLE+".number":         'number',
-            UF_TABLE+".id":             'iduserfeatures',
-            UF_TABLE+".provisioningid": 'provcode',
-            UF_TABLE+".protocol":       'proto',
+            UF_TABLE+".firstname":          'firstname',
+            UF_TABLE+".lastname":           'lastname',
+            SIP_TABLE+".name":              'ident',
+            SIP_TABLE+".secret":            'passwd',
+            SIP_TABLE+".dtmfmode":          'dtmfmode',
+            UF_TABLE+".simultcalls":        'simultcalls',
+            UF_TABLE+".number":             'number',
+            UF_TABLE+".id":                 'iduserfeatures',
+            UF_TABLE+".provisioningid":     'provcode',
+            UF_TABLE+".protocol":           'proto',
+            UF_TABLE+".enablevoicemail":    'enablevm',
         }
         confdico = self.sql_select_one(
             ("SELECT ${columns} "
