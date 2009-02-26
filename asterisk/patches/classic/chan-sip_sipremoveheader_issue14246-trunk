@@ -1,0 +1,94 @@
+Index: asterisk-1.4.23.1/channels/chan_sip.c
+===================================================================
+--- asterisk-1.4.23.1.orig/channels/chan_sip.c	2009-02-26 11:16:54.000000000 +0100
++++ asterisk-1.4.23.1/channels/chan_sip.c	2009-02-26 11:16:54.000000000 +0100
+@@ -1427,6 +1427,7 @@
+ static int function_sipchaninfo_read(struct ast_channel *chan, char *cmd, char *data, char *buf, size_t len);
+ static int sip_dtmfmode(struct ast_channel *chan, void *data);
+ static int sip_addheader(struct ast_channel *chan, void *data);
++static int sip_removeheader(struct ast_channel *chan, void *data);
+ static int sip_do_reload(enum channelreloadreason reason);
+ static int sip_reload(int fd, int argc, char *argv[]);
+ static int acf_channel_read(struct ast_channel *chan, char *funcname, char *preparse, char *buf, size_t buflen);
+@@ -18525,6 +18526,26 @@
+ "Adding the wrong headers may jeopardize the SIP dialog.\n"
+ "Always returns 0\n";
+ 
++static char *app_sipremoveheader = "SIPRemoveHeader";
++static char *synopsis_sipremoveheader = "Remove SIP headers previously added with SIPAddHeader";
++
++static char *descrip_sipremoveheader = ""
++"  SIPRemoveHeader()\n"
++"SIPRemoveHeader() allows you to remove headers which were previously \n"
++"added with SIPAddHeader(). If no parameter is supplied, all previously \n"
++"added headers will be removed. If a parameter is supplied, only the matching \n"
++"headers will be removed.\n\n"
++"For example you have added these 2 headers:\n"
++"  SIPAddHeader(P-Asserted-Identity: sip:foo@bar);\n"
++"  SIPAddHeader(P-Preferred-Identity: sip:bar@foo);\n\n"
++"  // remove all headers\n"
++"  SIPRemoveHeader();\n\n"
++"  // remove all P- headers\n"
++"  SIPRemoveHeader(P-);\n\n"
++"  // remove only the PAI header (note the : at the end)\n"
++"  SIPRemoveHeader(P-Asserted-Identity:);\n\n"
++"Always returns 0\n";
++
+ 
+ /*! \brief Set the DTMFmode for an outbound SIP call (application) */
+ static int sip_dtmfmode(struct ast_channel *chan, void *data)
+@@ -18615,6 +18636,38 @@
+ 	return 0;
+ }
+ 
++/*! \brief Remove SIP headers added previously with SipAddHeader application */
++static int sip_removeheader(struct ast_channel *chan, void *data)
++{
++	struct ast_var_t *newvariable;
++	struct varshead *headp;
++	int removeall = 0;
++	char *inbuf = (char *) data;
++	
++	if (ast_strlen_zero(inbuf)) {
++		removeall = 1;
++	}
++	ast_channel_lock(chan);
++
++	headp=&chan->varshead;
++	AST_LIST_TRAVERSE_SAFE_BEGIN (headp, newvariable, entries) {
++		if (strncasecmp(ast_var_name(newvariable), "SIPADDHEADER", strlen("SIPADDHEADER")) == 0) {
++			if (removeall || (!strncasecmp(ast_var_value(newvariable),inbuf,strlen(inbuf)))) {
++				if (sipdebug)
++					ast_log(LOG_DEBUG,"removing SIP Header \"%s\" as %s\n", 
++						ast_var_value(newvariable), 
++						ast_var_name(newvariable));
++				AST_LIST_REMOVE_CURRENT(headp, entries);
++				ast_var_delete(newvariable);
++			}
++		}
++	}
++	AST_LIST_TRAVERSE_SAFE_END;
++
++	ast_channel_unlock(chan);
++	return 0;
++}
++
+ /*! \brief Transfer call before connect with a 302 redirect
+ \note	Called by the transfer() dialplan application through the sip_transfer()
+ 	pbx interface function if the call is in ringing state 
+@@ -18925,6 +18978,7 @@
+ 	/* Register dialplan applications */
+ 	ast_register_application(app_dtmfmode, sip_dtmfmode, synopsis_dtmfmode, descrip_dtmfmode);
+ 	ast_register_application(app_sipaddheader, sip_addheader, synopsis_sipaddheader, descrip_sipaddheader);
++	ast_register_application(app_sipremoveheader, sip_removeheader, synopsis_sipremoveheader, descrip_sipremoveheader);
+ 
+ 	/* Register dialplan functions */
+ 	ast_custom_function_register(&sip_header_function);
+@@ -18964,6 +19018,7 @@
+ 	/* Unregister dial plan applications */
+ 	ast_unregister_application(app_dtmfmode);
+ 	ast_unregister_application(app_sipaddheader);
++	ast_unregister_application(app_sipremoveheader);
+ 
+ 	/* Unregister CLI commands */
+ 	ast_cli_unregister_multiple(cli_sip, sizeof(cli_sip) / sizeof(struct ast_cli_entry));
