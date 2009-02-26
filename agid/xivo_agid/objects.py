@@ -278,7 +278,7 @@ class VMBox:
 
 
 class User:
-    def __init__(self, agi, cursor, xid, feature_list=None, exten=None, context=None):
+    def __init__(self, agi, cursor, xid=None, feature_list=None, exten=None, context=None):
         self.agi = agi
         self.cursor = cursor
 
