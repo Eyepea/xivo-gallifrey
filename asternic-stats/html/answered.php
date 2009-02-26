@@ -49,7 +49,15 @@ onload = function() { content.focus() }
 <![endif]-->
 </head>
 <?
+/*
+$tmp = explode(',', $agent);
+$tmp2 = array();
+foreach ($tmp as $res) {
+        array_push($tmp2, '\''.$res.'\'');
+}       
 
+$agent = implode(',', $tmp2);
+*/
 $graphcolor2 = "&bgcolor=0xF0ffff&bgcolorchart=0xdfedf3&fade1=0xff6600&fade2=0x528252&colorbase=0xfff3b3&reverse=1";
 $graphcolor  = "&bgcolor=0xF0ffff&bgcolorchart=0xdfedf3&fade1=0xff6600&fade2=0xff6600&colorbase=0xfff3b3&reverse=1";
 // This query shows the hangup cause, how many calls an
@@ -68,7 +76,6 @@ while($row=db_fetch_row($res)) {
   $hangup_cause["$row[1]"]=$row[0];
   $total_hangup+=$row[0];
 }
-
 
 $query = "SELECT qs.datetime AS datetime, q.queue AS qname, ag.agent AS qagent, "; 
 $query.= "ac.event AS qevent, qs.info1 AS info1, qs.info2 AS info2,  qs.info3 AS info3 ";

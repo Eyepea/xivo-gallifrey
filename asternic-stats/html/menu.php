@@ -61,9 +61,9 @@ if(basename($self)=="answered.php") {
 	$anchor[]=$lang["$language"]['menu_cti'];
 }
 
-
 for($a=0;$a<count($menu);$a++)
 {
+
     if(basename($self)==$link[$a]) {
 		echo "<li><span>".$menu[$a]."</span></li>\n";
 		if(count($anchor)>0 && $a=$b) {
@@ -78,8 +78,8 @@ for($a=0;$a<count($menu);$a++)
 	
 	} else {
 		if(isset($_SESSION['QSTATS']['start'])) {
-		echo "<li><a href='".$link["$a"]."'>".$menu["$a"]."</a></li>\n";
-	}
+			echo "<li><a href='".$link[$a]."'>".$menu[$a]."</a></li>\n";
+		}
     }
 }
 

@@ -32,7 +32,7 @@ if(isset($_POST['List_Queue'])) {
 if(isset($_POST['List_Agent'])) {
     $agent="";
 	foreach($_POST['List_Agent'] as $valor) {
-		$agent.=stripslashes($valor).",";
+		$agent.='\''.stripslashes($valor)."',";
 	}
 	$agent=substr($agent,0,-1);
     $_SESSION['QSTATS']['agent']=$agent;

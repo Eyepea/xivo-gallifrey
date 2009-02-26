@@ -17,7 +17,6 @@
     along with Asternic call center stats.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 require_once("/etc/pf-asternic-stats/config.php");
 include("sesvars.php");
 
@@ -31,32 +30,80 @@ else
 
 $data = array();
 
-$db = sqlite_open('/var/lib/pf-xivo-cti-server/sqlite/xivo.db', 0666, $sqliteerror) or die ('Error DB : ' . $sqliteerror);
-
 $nb = count($agent);
 $agentlist = '';
 
 for($i = 0;$i < $nb;$i++) {
-	if ($agent[$i]['loginclient'] !== '')
-		$agentlist .= ',\''.$agent[$i]['loginclient'].'\'';
+        if ($agent[$i]['loginclient'] !== '')
+               $agentlist .= ',\''.$agent[$i]['loginclient'].'\'';
 }
 
 if($agentlist !== '')
-	$agentlist = substr($agentlist,1);
+        $agentlist = substr($agentlist,1);
 else
-	die('Error no agent found !');
+       die('Error no agent found !');
 
-$query = sqlite_query($db,'SELECT * FROM ctilog WHERE action IN(\'cti_login\',\'cti_logout\',\'cticommand:availstate\') '.
+###################################################################################################
+############################# SQLITE #########
+if ($cti_db_config == 'sqlite') {
+
+	$db = sqlite_open('/var/lib/pf-xivo-cti-server/sqlite/xivo.db', 0666, $sqliteerror) or die ('Error DB : ' . $sqliteerror);
+
+	$query = sqlite_query($db,'SELECT * FROM ctilog WHERE action IN(\'cti_login\',\'cti_logout\',\'cticommand:availstate\') '.
+                      'AND eventdate >= \''.$start.'\' AND eventdate <= \''.$end.'\' '.
+                      'AND loginclient IN('.$agentlist.') '.
+                      'ORDER BY loginclient ASC, eventdate ASC');
+	$res_login_logout_time = sqlite_fetch_all($query);
+
+
+	$query = sqlite_query($db,'SELECT * FROM ctilog WHERE action = \'cticommand:actionfiche\' '.
+                      'AND eventdate >= \''.$start.'\' AND eventdate <= \''.$end.'\' '. # AND arguments != \'answer\' '.
+                      'AND loginclient IN('.$agentlist.') '.
+                      'ORDER BY loginclient ASC, eventdate ASC');
+	$res_event_stats = sqlite_fetch_all($query);
+
+} elseif ($cti_db_config == 'mysql') {
+
+	$mysqlconnect = mysql_connect("localhost", "xivo", "proformatique") or die("connect impossible : " . mysql_error());
+
+	$db = mysql_select_db('xivo', $mysqlconnect);
+	if (!$db) {
+   		die ('connect bdd impossible : ' . mysql_error());
+	}
+
+	$query = mysql_query('SELECT * FROM ctilog WHERE action IN(\'cti_login\',\'cti_logout\',\'cticommand:availstate\') '.
 			  'AND eventdate >= \''.$start.'\' AND eventdate <= \''.$end.'\' '.
 			  'AND loginclient IN('.$agentlist.') '.
 			  'ORDER BY loginclient ASC, eventdate ASC');
-$res_login_logout_time = sqlite_fetch_all($query);
 
-$query = sqlite_query($db,'SELECT * FROM ctilog WHERE action = \'cticommand:actionfiche\' '.
+	$tmp = array();
+
+	while ($row = mysql_fetch_assoc($query)) {
+		array_push($tmp, $row);
+	}
+
+	$res_login_logout_time = $tmp;
+
+	mysql_free_result($query);
+
+	$query = mysql_query('SELECT * FROM ctilog WHERE action = \'cticommand:actionfiche\' '.
 			  'AND eventdate >= \''.$start.'\' AND eventdate <= \''.$end.'\' '. # AND arguments != \'answer\' '.
 			  'AND loginclient IN('.$agentlist.') '.
 			  'ORDER BY loginclient ASC, eventdate ASC');
-$res_event_stats = sqlite_fetch_all($query);
+
+	$tmp = array();
+
+	while ($row = mysql_fetch_assoc($query)) {
+        	array_push($tmp, $row);
+	}
+
+	$res_event_stats = $tmp;
+
+	mysql_free_result($query);
+
+} else {
+	die('Aucun type de DB choisi.');
+}
 
 $loginclient = false;
 $tmp = array();
@@ -145,7 +192,7 @@ for ($llt=0;$llt<$nb;$llt++)
 	$loginclient = $ref['loginclient'];
 }
 
-sqlite_close($db);
+mysql_close($mysqlconnect);
 
 
 ?>
