@@ -62,6 +62,7 @@ if ($cti_db_config == 'sqlite') {
                       'ORDER BY loginclient ASC, eventdate ASC');
 	$res_event_stats = sqlite_fetch_all($query);
 
+	sqlite_close($db);
 } elseif ($cti_db_config == 'mysql') {
 
 	$mysqlconnect = mysql_connect("localhost", "xivo", "proformatique") or die("connect impossible : " . mysql_error());
@@ -101,6 +102,7 @@ if ($cti_db_config == 'sqlite') {
 
 	mysql_free_result($query);
 
+	mysql_close($mysqlconnect);
 } else {
 	die('Aucun type de DB choisi.');
 }
@@ -191,8 +193,6 @@ for ($llt=0;$llt<$nb;$llt++)
 
 	$loginclient = $ref['loginclient'];
 }
-
-mysql_close($mysqlconnect);
 
 
 ?>
