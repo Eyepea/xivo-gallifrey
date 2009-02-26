@@ -167,7 +167,7 @@ Activer les transferts :
 Activer l'enregistrement à la volée :
 
 ; fm_userfeatures_callrecord
-Enregistrement d'appel :
+Activer l'enregistrement d'appel entrant :
 
 ; fm_userfeatures_callfilter
 Filtrage d'appel :
