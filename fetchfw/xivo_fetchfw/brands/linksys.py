@@ -31,9 +31,9 @@ def linksys_install_spa9x2_langs(xfile):
         pass # XXX: catching every OSError is not appropriate
 
     for fw_file in os.listdir(zip_path):
-        fw_file = "%s.xml" % fw_file.rsplit('.', 1)[0].rsplit('_', 1)[0]
         fw_src_path = os.path.join(zip_path, fw_file)
-        fw_dst_path = os.path.join(fw_dst_dir, fw_file)
+        fw_dst_file = "%s.xml" % fw_file.rsplit('.', 1)[0].rsplit('_', 1)[0]
+        fw_dst_path = os.path.join(fw_dst_dir, fw_dst_file)
         shutil.copy2(fw_src_path, fw_dst_path)
 
 
