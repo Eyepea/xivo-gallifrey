@@ -25,6 +25,8 @@ $dbname = 'stats';
 $dbuser = 'stats';
 $dbpass = 'stats';
 
+$cti_db_config = 'mysql';
+
 $language = "fr";
 
 require_once("lang/$language.php");
