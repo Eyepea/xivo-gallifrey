@@ -22,10 +22,24 @@ from xivo_agid import objects
 def vmbox_get_info(agi, cursor, args):
     vmboxid = agi.get_variable('XIVO_VMBOXID')
 
-    try:
-        vmbox = objects.VMBox(agi, cursor, int(vmboxid))
-    except (ValueError, LookupError), e:
-        agi.dp_break(str(e))
+    xlen = len(args)
+
+    if xlen > 0:
+        try:
+            if xlen == 1:
+                userid = int(agi.get_variable('XIVO_USERID'))
+                context = objects.User(agi, cursor, xid=userid).context
+            else:
+                context = args[1]
+
+            vmbox = objects.VMBox(agi, cursor, mailbox=args[0], context=context)
+        except (ValueError, LookupError), e:
+            agi.dp_break(str(e))
+    else:
+        try:
+            vmbox = objects.VMBox(agi, cursor, int(vmboxid))
+        except (ValueError, LookupError), e:
+            agi.dp_break(str(e))
 
     if vmbox.skipcheckpass:
         agi.set_variable('XIVO_VMMAIN_OPTIONS', "s")

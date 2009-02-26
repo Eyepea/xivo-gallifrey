@@ -250,7 +250,7 @@ class BossSecretaryFilter:
 
 
 class VMBox:
-    def __init__(self, agi, cursor, xid):
+    def __init__(self, agi, cursor, xid=None, mailbox=None, context=None):
         self.agi = agi
         self.cursor = cursor
 
@@ -258,13 +258,26 @@ class VMBox:
         vmf_columns = ('skipcheckpass',)
         columns = ["voicemail." + c for c in vm_columns] + ["voicemailfeatures." + c for c in vmf_columns]
 
-        cursor.query("SELECT ${columns} FROM voicemail "
-                     "INNER JOIN voicemailfeatures "
-                     "ON voicemail.uniqueid = voicemailfeatures.voicemailid "
-                     "WHERE voicemail.uniqueid = %s "
-                     "AND voicemail.commented = 0",
-                     columns,
-                     (xid,))
+        if xid:
+            cursor.query("SELECT ${columns} FROM voicemail "
+                         "INNER JOIN voicemailfeatures "
+                         "ON voicemail.uniqueid = voicemailfeatures.voicemailid "
+                         "WHERE voicemail.uniqueid = %s "
+                         "AND voicemail.commented = 0",
+                         columns,
+                         (xid,))
+        elif mailbox and context:
+            cursor.query("SELECT ${columns} FROM voicemail "
+                         "INNER JOIN voicemailfeatures "
+                         "ON voicemail.uniqueid = voicemailfeatures.voicemailid "
+                         "WHERE voicemail.mailbox = %s "
+                         "AND voicemail.context = %s "
+                         "AND voicemail.commented = 0",
+                         columns,
+                         (mailbox, context))
+        else:
+            raise LookupError("id or mailbox@context must be provided to look up a voicemail entry")
+
         res = cursor.fetchone()
 
         if not res:
