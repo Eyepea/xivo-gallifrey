@@ -22,6 +22,7 @@ from xivo_fetchfw import fetchfw
 
 
 def siemens_install(firmware):
+    assert len(firmware.remote_files) == 1
     xfile = firmware.remote_files[0]
     fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, 'Siemens', 'firmware', firmware.model.lower())
 

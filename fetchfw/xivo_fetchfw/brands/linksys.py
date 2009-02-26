@@ -21,12 +21,27 @@ import shutil
 from xivo_fetchfw import fetchfw
 
 
-def linksys_install(firmware):
-    assert len(firmware.remote_files) == 1
-    zip_path = fetchfw.zip_extract_all(firmware.name, firmware.remote_files[0].path)
-    fw_file = "%s.bin" % firmware.remote_files[0].filename.rsplit('.')[0]
+def linksys_install_spa9x2_langs(xfile):
+    zip_path = fetchfw.zip_extract_all('linksys_langs', xfile.path)
+    fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, 'Linksys', 'language', 'spa9X2')
+
+    try:
+        os.makedirs(fw_dst_dir)
+    except OSError:
+        pass # XXX: catching every OSError is not appropriate
+
+    for fw_file in os.listdir(zip_path):
+        fw_file = "%s.xml" % fw_file.rsplit('.', 1)[0].rsplit('_', 1)[0]
+        fw_src_path = os.path.join(zip_path, fw_file)
+        fw_dst_path = os.path.join(fw_dst_dir, fw_file)
+        shutil.copy2(fw_src_path, fw_dst_path)
+
+
+def linksys_install_fw(firmware, xfile):
+    zip_path = fetchfw.zip_extract_all(firmware.name, xfile.path)
+    fw_file = "%s.bin" % xfile.filename.rsplit('.')[0]
     fw_src_path = os.path.join(zip_path, fw_file)
-    fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, "Linksys", "firmware")
+    fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, 'Linksys', 'firmware')
     fw_dst_path = os.path.join(fw_dst_dir, fw_file)
     
     try:
@@ -37,4 +52,12 @@ def linksys_install(firmware):
     shutil.copy2(fw_src_path, fw_dst_path)
 
 
-fetchfw.register_install_fn("Linksys", None, linksys_install)
+def linksys_install(firmware):
+    for xfile in firmware.remote_files:
+        if xfile.filename.startswith('SPA9X2_Dictionaries'):
+            linksys_install_spa9x2_langs(xfile)
+        else:
+            linksys_install_fw(firmware, xfile)
+
+
+fetchfw.register_install_fn('Linksys', None, linksys_install)

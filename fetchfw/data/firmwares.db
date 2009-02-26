@@ -148,6 +148,13 @@ size: 3783070
 md5sum: bb9512cf8ba07a78b12a94b4f153396d
 sha1sum: 86171bd8d65497e594b79a03188acbe51b4e32e9
 
+# Languages files for Linksys SPA9X2 phones 6.1.5
+[SPA9X2_Dictionaries_v615.zip]
+url: https://www.myciscocommunity.com/servlet/JiveServlet/downloadBody/2845-102-1-4613/SPA9X2_Dictionaries_v615.zip
+size: 215186
+md5sum: 9576e77de9bc58753da1cbc62d77e109
+sha1sum: 5b4fcb2d822b2eea6743fa873894d54ed4ba713f
+
 # Polycom SoundPoint IP 301 3.1.2
 [pcspip301_312]
 brand: Polycom
