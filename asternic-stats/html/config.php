@@ -25,7 +25,7 @@ $dbname = 'stats';
 $dbuser = 'stats';
 $dbpass = 'stats';
 
-$cti_db_config = 'mysql';
+$cti_db_config = 'sqlite';
 
 $language = "fr";
 
