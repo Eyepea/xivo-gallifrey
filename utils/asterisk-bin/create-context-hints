@@ -25,6 +25,19 @@ from xivo import xivo_helpers
 
 cursor = xivo_helpers.db_connect().cursor()
 
+cursor.query("SELECT ${columns} FROM extensions "
+             "WHERE commented = 0 "
+             "AND name = %s "
+             "AND context = %s",
+             ('exten',),
+             ('voicemsg', 'xivo-features'))
+res = cursor.fetchone()
+
+if res:
+    vmexten = res['exten']
+else:
+    vmexten = None
+
 cursor.query("SELECT ${columns} FROM voicemenu "
              "WHERE commented = 0 "
              "ORDER BY name DESC",
@@ -60,11 +73,16 @@ for (context,) in res:
 
     # Maybe a relation exists between hints and realtime TODO check
     cursor.query("SELECT ${columns} FROM userfeatures "
-                 "WHERE context = %s "
-                 "AND IFNULL(number,'') != '' "
-                 "AND internal = 0 "
-                 "AND enablehint = 1",
-             ('number', 'protocol', 'name'),
+                 "LEFT JOIN voicemail "
+                 "ON userfeatures.voicemailid = voicemail.uniqueid "
+                 "AND userfeatures.enablevoicemail = 1 "
+                 "AND voicemail.commented = 0 "
+                 "WHERE userfeatures.context = %s "
+                 "AND IFNULL(userfeatures.number,'') != '' "
+                 "AND userfeatures.internal = 0 "
+                 "AND userfeatures.enablehint = 1",
+             ('userfeatures.number', 'userfeatures.protocol',
+              'userfeatures.name', 'voicemail.uniqueid'),
              (context,))
     res2 = cursor.fetchall()
 
@@ -76,6 +94,9 @@ for (context,) in res:
                 e[1] = "IAX2"
 
             print "exten = %s,hint,%s/%s" % (e[0], e[1], e[2])
+
+        if vmexten and e[3]:
+            print "exten = %s%s,hint,%s/%s" % (vmexten, e[0], e[1], e[2])
 
     cursor.query("SELECT ${columns} FROM userfeatures "
                  "INNER JOIN phonefunckey "
@@ -149,3 +170,9 @@ for (context,) in res:
 
     for option in config.iter_options(section_name):
         print "%s = %s" % (option.get_name(), option.get_value().replace('%%CONTEXT%%', context))
+
+if vmexten:
+    print "[xivo-features]"
+    print "exten = _%s.,1,AGI(agi://${XIVO_AGID_IP}/user_get_vmbox,${EXTEN:%d})" % (vmexten, len(vmexten))
+    print "exten = _%s.,n,VoiceMailMain(${XIVO_MAILBOX}@${XIVO_MAILBOX_CONTEXT}|${XIVO_VMMAIN_OPTIONS})" % vmexten
+    print "exten = _%s.,n,Hangup()" % vmexten
