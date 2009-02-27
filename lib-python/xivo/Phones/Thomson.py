@@ -235,7 +235,7 @@ class Thomson(PhoneVendorMixin):
                   'ident':          "guest",
                   'number':         "guest",
                   'passwd':         "guest",
-                  'subscribe_wmi':  "0",
+                  'subscribewmi':   "0",
                   'simultcalls':    "10",
                   'funckey': {},
                 })
