@@ -178,13 +178,14 @@ class Thomson(PhoneVendorMixin):
                 self.__format_function_keys(provinfo['funckey'])
 
         txt = xivo_config.txtsubst(txt_template_lines,
-                { 'user_display_name': provinfo['name'],
+                { 'user_display_name':  provinfo['name'],
 # THOMSON BUG #1
 # provinfo['number'] is volontarily not set in "TEL1Number" because Thomson
 # phones authentify with their telnumber.. :/
-                  'user_phone_ident':  provinfo['ident'],
-                  'user_phone_number': provinfo['number'],
-                  'user_phone_passwd': provinfo['passwd'],
+                  'user_phone_ident':   provinfo['ident'],
+                  'user_phone_number':  provinfo['number'],
+                  'user_phone_passwd':  provinfo['passwd'],
+                  'user_subscribe_mwi': provinfo['subscribemwi'],
                   'simultcalls': multilines,
                   # <WARNING: THIS FIELD MUST STAY IN LOWER CASE IN THE TEMPLATE AND MAC SPECIFIC FILE>
                   'config_sn': self.__generate_timestamp(),
@@ -230,11 +231,12 @@ class Thomson(PhoneVendorMixin):
         configuration for this phone.
         """
         self.__generate(
-                { 'name': "guest",
-                  'ident': "guest",
-                  'number': "guest",
-                  'passwd': "guest",
-                  'simultcalls': "10",
+                { 'name':           "guest",
+                  'ident':          "guest",
+                  'number':         "guest",
+                  'passwd':         "guest",
+                  'subscribe_wmi'   "0",
+                  'simultcalls':    "10",
                   'funckey': {},
                 })
 

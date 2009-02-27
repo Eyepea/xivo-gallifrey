@@ -121,6 +121,7 @@ class Linksys(PhoneVendorMixin):
                   'user_phone_ident':   provinfo['ident'],
                   'user_phone_number':  provinfo['number'],
                   'user_phone_passwd':  provinfo['passwd'],
+                  'user_subscribe_mwi': provinfo['subscribemwi'],
                   'asterisk_ipv4' :     self.ASTERISK_IPV4,
                   'ntp_server_ipv4' :   self.NTP_SERVER_IPV4,
                   'function_keys': function_keys_config_lines,
@@ -163,11 +164,12 @@ class Linksys(PhoneVendorMixin):
         configuration for this phone.
         """
         self.__generate(
-                { 'name':   "guest",
-                  'ident':  "guest",
-                  'number': "guest",
-                  'passwd': "guest",
-                  'funckey': {},
+                { 'name':           "guest",
+                  'ident':          "guest",
+                  'number':         "guest",
+                  'passwd':         "guest",
+                  'subscribemwi':   "0",
+                  'funckey':        {},
                 })
 
     def do_autoprov(self, provinfo):

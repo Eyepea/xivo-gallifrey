@@ -106,6 +106,7 @@ class Polycom(PhoneVendorMixin):
                   'user_phone_ident':   provinfo['ident'],
                   'user_phone_number':  provinfo['number'],
                   'user_phone_passwd':  provinfo['passwd'],
+                  'user_subscribe_mwi': provinfo['subscribemwi'],
                   'asterisk_ipv4':      self.ASTERISK_IPV4,
                   'ntp_server_ipv4':    self.NTP_SERVER_IPV4,
                 },
@@ -122,10 +123,11 @@ class Polycom(PhoneVendorMixin):
         configuration for this phone.
         """
         self.__generate(
-                { 'name':   "guest",
-                  'ident':  "guest",
-                  'number': "guest",
-                  'passwd': "guest",
+                { 'name':           "guest",
+                  'ident':          "guest",
+                  'number':         "guest",
+                  'passwd':         "guest",
+                  'subscribemwi':   "0",
                 })
 
     def do_autoprov(self, provinfo):
