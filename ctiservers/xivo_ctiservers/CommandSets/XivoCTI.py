@@ -2230,7 +2230,7 @@ class XivoCTICommand(BaseCommand):
                 hint    = event.get('Hint')
                 context = event.get('Context')
                 exten   = event.get('Exten')
-                if hint:
+                if hint and hint.find('/') > 0:
                         #log.info('amiresponse_extensionstatus hint=%s status=%s' % (hint, status))
                         phoneref = '.'.join([hint.split('/')[0].lower(), context,
                                              hint.split('/')[1], exten])
@@ -2242,6 +2242,9 @@ class XivoCTICommand(BaseCommand):
                                         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 else:
                         log.warning('%s : undefined hint for %s' % (astid, event))
+                        # {'Status': '4', 'Hint': 'user:218', 'Exten': '218', 'ActionID': 'pPKvoLQ97b', 'Context': 'default', ''})
+                        # {'Status': '-1', 'Hint': '', 'Exten': '205', 'ActionID': 'MfW1kqRV3j', 'Context': 'default', ''}
+                        # user: @ CLI
                 return
         
         def ami_extensionstatus(self, astid, event):
