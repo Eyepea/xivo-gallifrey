@@ -185,11 +185,12 @@ class Thomson(PhoneVendorMixin):
                   'user_phone_ident':   provinfo['ident'],
                   'user_phone_number':  provinfo['number'],
                   'user_phone_passwd':  provinfo['passwd'],
-                  'simultcalls': multilines,
+                  'user_vmail_addr':    provinfo['vmail_addr'],
+                  'simultcalls':        multilines,
                   # <WARNING: THIS FIELD MUST STAY IN LOWER CASE IN THE TEMPLATE AND MAC SPECIFIC FILE>
-                  'config_sn': self.__generate_timestamp(),
+                  'config_sn':          self.__generate_timestamp(),
                   # </WARNING>
-                  'function_keys': function_keys_config_lines,
+                  'function_keys':      function_keys_config_lines,
                 },
                 txt_filename)
         tmp_file = open(tmp_filename, 'w')
@@ -235,6 +236,7 @@ class Thomson(PhoneVendorMixin):
                   'number':         "guest",
                   'passwd':         "guest",
                   'simultcalls':    "10",
+                  'vmail_addr':     "",
                   'funckey':        {},
                 })
 
@@ -243,6 +245,11 @@ class Thomson(PhoneVendorMixin):
         Entry point to generate the provisioned configuration for
         this phone.
         """
+        if bool(int(provinfo.get('vmenable', 0))):
+            provinfo['vmail_addr'] = self.ASTERISK_IPV4
+        else:
+            provinfo['vmail_addr'] = ""
+
         self.__generate(provinfo)
 
     # Introspection entry points

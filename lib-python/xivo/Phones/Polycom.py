@@ -106,6 +106,7 @@ class Polycom(PhoneVendorMixin):
                   'user_phone_ident':   provinfo['ident'],
                   'user_phone_number':  provinfo['number'],
                   'user_phone_passwd':  provinfo['passwd'],
+                  'user_vmail_addr':    provinfo['vmailaddr'],
                   'asterisk_ipv4':      self.ASTERISK_IPV4,
                   'ntp_server_ipv4':    self.NTP_SERVER_IPV4,
                 },
@@ -122,10 +123,11 @@ class Polycom(PhoneVendorMixin):
         configuration for this phone.
         """
         self.__generate(
-                { 'name':   "guest",
-                  'ident':  "guest",
-                  'number': "guest",
-                  'passwd': "guest",
+                { 'name':       "guest",
+                  'ident':      "guest",
+                  'number':     "guest",
+                  'passwd':     "guest",
+                  'vmailaddr':  "",
                 })
 
     def do_autoprov(self, provinfo):
@@ -133,6 +135,11 @@ class Polycom(PhoneVendorMixin):
         Entry point to generate the provisioned configuration for
         this phone.
         """
+        if bool(int(provinfo.get('vmenable', 0))):
+            provinfo['vmailaddr'] = "%s@%s" % (provinfo['ident'], self.ASTERISK_IPV4)
+        else:
+            provinfo['vmailaddr'] = ""
+
         self.__generate(provinfo)
 
     # Introspection entry points
