@@ -1,0 +1,40 @@
+2009-02-27  Adrien DELLE CAVE <decryptus@proformatique.com>
+
+	pf_sip_mwi_for_thomson_st2030s.patch
+	$Revision$
+	$Date$
+
+	Correct a misuse of strcasecmp for SIP Notification.
+
+	Replaced phone domain by Asterisk domain in Call-ID of the MWI subscription.
+	Special fix for Thomson ST2030S.
+
+Index: asterisk-1.4.23.1/channels/chan_sip.c
+===================================================================
+--- asterisk-1.4.23.1.orig/channels/chan_sip.c	2009-02-27 21:29:04.000000000 +0100
++++ asterisk-1.4.23.1/channels/chan_sip.c	2009-02-27 21:29:08.000000000 +0100
+@@ -16311,6 +16311,24 @@
+ 	if (peer->mwipvt) {
+ 		/* Base message on subscription */
+ 		p = peer->mwipvt;
++
++		if (!strncmp(peer->useragent, "THOMSON ST2030 ", 14) && 
++		    strstr(peer->useragent, " fw1.66 ")) {
++			/* call-id@domain */
++			char callid[32 + 1 + AST_MAX_EXTENSION];
++			char host[AST_MAX_EXTENSION];
++			char *stringp;
++
++			ast_copy_string(callid, p->callid, sizeof(callid));
++			stringp = callid;
++
++			if (strsep(&stringp, "@")) {
++				ast_copy_string(host, S_OR(p->fromdomain, ast_inet_ntoa(p->ourip)), sizeof(host));
++				stringp = host;
++				strsep(&stringp, ":");
++				ast_string_field_build(p, callid, "%s@%s", callid, host);
++			}
++		}
+ 	} else {
+ 		/* Build temporary dialog for this message */
+ 		if (!(p = sip_alloc(NULL, NULL, 0, SIP_NOTIFY))) 

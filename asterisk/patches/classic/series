@@ -35,3 +35,5 @@ pickup_issue14206-1.4.23
 
 # patch for 1.4.22 but only pushed in trunk
 chan-sip_sipremoveheader_issue14246-trunk
+
+pf_sip_mwi_for_thomson_st2030s.patch
