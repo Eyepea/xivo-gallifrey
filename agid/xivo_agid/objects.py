@@ -296,11 +296,12 @@ class User:
         self.cursor = cursor
 
         columns = ('id', 'number', 'context', 'protocol', 'protocolid',
-                   'name', 'ringseconds', 'simultcalls',
-                   'enablevoicemail', 'voicemailid', 'enablexfer',
-                   'enableautomon', 'callrecord', 'callfilter',
-                   'enablednd', 'enableunc', 'destunc', 'enablerna',
-                   'destrna', 'enablebusy', 'destbusy', 'musiconhold',
+                   'firstname', 'lastname', 'name',
+                   'ringseconds', 'simultcalls', 'enablevoicemail',
+                   'voicemailid', 'enablexfer', 'enableautomon',
+                   'callrecord', 'callfilter', 'enablednd',
+                   'enableunc', 'destunc', 'enablerna', 'destrna',
+                   'enablebusy', 'destbusy', 'musiconhold',
                    'outcallerid', 'bsfilter', 'preprocess_subroutine', 'mobilephonenumber')
 
         if xid:
