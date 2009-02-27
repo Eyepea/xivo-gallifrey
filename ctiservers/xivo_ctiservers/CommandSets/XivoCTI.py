@@ -2357,7 +2357,7 @@ class XivoCTICommand(BaseCommand):
                 if uniqueid in self.uniqueids[astid]:
                         if application == 'Dial':
                                 self.uniqueids[astid][uniqueid]['context'] = event.get('Context')
-                                self.uniqueids[astid][uniqueid]['extension'] = event.get('Extension')
+                                #self.uniqueids[astid][uniqueid]['extension'] = event.get('Extension')
                                 self.uniqueids[astid][uniqueid]['time-newexten-dial'] = time.time()
                         elif application == 'Macro':
                                 log.info('%s ami_newexten Macro : %s %s %s %s' % (astid, uniqueid,
@@ -2374,6 +2374,9 @@ class XivoCTICommand(BaseCommand):
                         # elif application == 'Queue': # to know how much seconds were requested
                         # log.info('%s ami_newexten %s : %s %s'
                         # % (astid, application, uniqueid, event.get('AppData').split('|')))
+                        # set extension only if numeric
+                        if event.get('Extension').isdigit():
+                            self.uniqueids[astid][uniqueid]['extension'] = event.get('Extension')
                 self.__sheet_alert__('outgoing', astid, event.get('Context'), event)
                 return
         
@@ -3242,13 +3245,17 @@ class XivoCTICommand(BaseCommand):
                 applidata = event.get('AppData').split('|')
                 uniqueid = event.get('Uniqueid')
                 channel = event.get('Channel')
+                calleridnum = event.get('CallerIDNum')
+                calleridname = event.get('CallerIDName').decode('utf8')
                 
                 actionid = self.amilist.execute(astid, 'getvar', channel, 'MONITORED')
                 self.getvar_requests[actionid] = {'channel' : channel, 'variable' : 'MONITORED'}
                 
                 if uniqueid not in self.uniqueids[astid]:
                         self.uniqueids[astid][uniqueid] = { 'channel' : channel,
-                                                            'application' : appliname }
+                                                            'application' : appliname,
+                                                            'calleridname' : calleridname,
+                                                            'calleridnum' : calleridnum }
                         self.channels[astid][channel] = uniqueid
                 else:
                         log.warning('%s : uid %s already in uniqueids list' % (astid, uniqueid))
@@ -3291,23 +3298,36 @@ class XivoCTICommand(BaseCommand):
                         priority = event.get('Priority')
                         context = event.get('Context')
                         extension = event.get('Extension')
-                        log.info('%s ami_status %s %s %s %s / %s %s %s %s' % (astid,
-                                                                              state, uniqueid, channel, link,
-                                                                              priority, context, extension, seconds))
+                        log.info('%s ami_status %s %s %s %s / %s %s %s %s / %s %s'
+                                 % (astid,
+                                    state, uniqueid, channel, link,
+                                    priority, context, extension, seconds,
+                                    calleridnum, calleridname))
                         self.uniqueids[astid][uniqueid].update({'link' : link})
-                        
-                        phoneid = self.__phoneid_from_channel__(astid, channel)
-                        if phoneid in self.weblist['phones'][astid].keeplist:
+
+#                        phoneid = self.__phoneid_from_channel__(astid, channel)
+#                        if phoneid in self.weblist['phones'][astid].keeplist:
+#                                if seconds is None:
+#                                        status = 'linked-called'
+#                                else:
+#                                        status = 'linked-caller'
+#                                self.weblist['phones'][astid].keeplist[phoneid]['comms'][uniqueid] = { 'status' : status,
+#                                                                                                       'thischannel' : channel,
+#                                                                                                       'peerchannel' : link,
+#                                                                                                       'time-link' : 0 }
+                        #inversed stuff
+                        otherphoneid = self.__phoneid_from_channel__(astid, link)
+                        if otherphoneid in self.weblist['phones'][astid].keeplist:
                                 if seconds is None:
-                                        self.weblist['phones'][astid].keeplist[phoneid]['comms'][uniqueid] = { 'status' : 'linked-called',
-                                                                                                               'thischannel' : channel,
-                                                                                                               'peerchannel' : link,
-                                                                                                               'time-link' : 0 }
+                                        status = 'linked-caller'
                                 else:
-                                        self.weblist['phones'][astid].keeplist[phoneid]['comms'][uniqueid] = { 'status' : 'linked-caller',
-                                                                                                               'thischannel' : channel,
-                                                                                                               'peerchannel' : link,
-                                                                                                               'time-link' : 0 }
+                                        status = 'linked-called'
+                                self.weblist['phones'][astid].keeplist[otherphoneid]['comms'][uniqueid] = { 'status' : status,
+                                                                                                       'thischannel' : link,
+                                                                                                       'peerchannel' : channel,
+                                                                                                       'time-link' : 0,
+                                                                                                       'calleridnum' : calleridnum,
+                                                                                                       'calleridname' : calleridname }
                         if context is not None:
                                 if context == 'macro-user':
                                         # ami_status xivo-obelisk Up 1222872105.4001 SIP/fpotiquet-085d8238 IAX2/asteriskisdn-11652 / None None None None
