@@ -185,7 +185,7 @@ class Thomson(PhoneVendorMixin):
                   'user_phone_ident':   provinfo['ident'],
                   'user_phone_number':  provinfo['number'],
                   'user_phone_passwd':  provinfo['passwd'],
-                  'user_vmail_addr':    provinfo['vmail_addr'],
+                  'user_vmail_addr':    provinfo['vmailaddr'],
                   'simultcalls':        multilines,
                   # <WARNING: THIS FIELD MUST STAY IN LOWER CASE IN THE TEMPLATE AND MAC SPECIFIC FILE>
                   'config_sn':          self.__generate_timestamp(),
@@ -236,7 +236,7 @@ class Thomson(PhoneVendorMixin):
                   'number':         "guest",
                   'passwd':         "guest",
                   'simultcalls':    "10",
-                  'vmail_addr':     "",
+                  'vmailaddr':      "",
                   'funckey':        {},
                 })
 
@@ -246,9 +246,9 @@ class Thomson(PhoneVendorMixin):
         this phone.
         """
         if bool(int(provinfo.get('vmenable', 0))):
-            provinfo['vmail_addr'] = self.ASTERISK_IPV4
+            provinfo['vmailaddr'] = self.ASTERISK_IPV4
         else:
-            provinfo['vmail_addr'] = ""
+            provinfo['vmailaddr'] = ""
 
         self.__generate(provinfo)
 

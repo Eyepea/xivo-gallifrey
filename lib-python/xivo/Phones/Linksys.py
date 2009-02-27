@@ -121,7 +121,7 @@ class Linksys(PhoneVendorMixin):
                   'user_phone_ident':   provinfo['ident'],
                   'user_phone_number':  provinfo['number'],
                   'user_phone_passwd':  provinfo['passwd'],
-                  'user_vmail_addr':    provinfo['vmail_addr'],
+                  'user_vmail_addr':    provinfo['vmailaddr'],
                   'asterisk_ipv4' :     self.ASTERISK_IPV4,
                   'ntp_server_ipv4' :   self.NTP_SERVER_IPV4,
                   'function_keys':      function_keys_config_lines,
@@ -168,7 +168,7 @@ class Linksys(PhoneVendorMixin):
                   'ident':      "guest",
                   'number':     "guest",
                   'passwd':     "guest",
-                  'vmail_addr': "",
+                  'vmailaddr':  "",
                   'funckey':    {},
                 })
 
