@@ -13,27 +13,21 @@ Index: asterisk-1.4.23.1/channels/chan_sip.c
 ===================================================================
 --- asterisk-1.4.23.1.orig/channels/chan_sip.c	2009-02-27 21:29:04.000000000 +0100
 +++ asterisk-1.4.23.1/channels/chan_sip.c	2009-02-27 21:29:08.000000000 +0100
-@@ -16311,6 +16311,24 @@
+@@ -16311,6 +16311,18 @@
  	if (peer->mwipvt) {
  		/* Base message on subscription */
  		p = peer->mwipvt;
 +
-+		if (!strncmp(peer->useragent, "THOMSON ST2030 ", 14) && 
++		if (!strncmp(peer->useragent, "THOMSON ST2030 ", 15) && 
 +		    strstr(peer->useragent, " fw1.66 ")) {
-+			/* call-id@domain */
-+			char callid[32 + 1 + AST_MAX_EXTENSION];
-+			char host[AST_MAX_EXTENSION];
++			/* call-id@workaround.proformatique.com */
++			char callid[AST_MAX_EXTENSION + 1 + 28];
 +			char *stringp;
 +
 +			ast_copy_string(callid, p->callid, sizeof(callid));
 +			stringp = callid;
-+
-+			if (strsep(&stringp, "@")) {
-+				ast_copy_string(host, S_OR(p->fromdomain, ast_inet_ntoa(p->ourip)), sizeof(host));
-+				stringp = host;
-+				strsep(&stringp, ":");
-+				ast_string_field_build(p, callid, "%s@%s", callid, host);
-+			}
++			strsep(&stringp, "@");
++			ast_string_field_build(p, callid, "%s@workaround.proformatique.com", callid);
 +		}
  	} else {
  		/* Build temporary dialog for this message */
