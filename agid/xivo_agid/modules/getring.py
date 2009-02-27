@@ -37,6 +37,9 @@ def getring(agi, cursor, args):
         agi.set_variable('XIVO_PHONETYPE', phonetype)
         agi.verbose("Using ring tone %s" % (ringtype,))
     except ConfigParser.NoOptionError:
+        ringtype = agi.get_variable('XIVO_RINGTYPE')
+        if ringtype:
+                agi.set_variable('XIVO_RINGTYPE', "")
         agi.verbose("Using the native phone ring tone")
 
 def setup(cursor):
