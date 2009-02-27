@@ -71,18 +71,20 @@ if not config.has_section('template'):
 for (context,) in res:
     print "[" + context + "]"
 
+    user_hint = []
+
     # Maybe a relation exists between hints and realtime TODO check
     cursor.query("SELECT ${columns} FROM userfeatures "
                  "LEFT JOIN voicemail "
                  "ON userfeatures.voicemailid = voicemail.uniqueid "
-                 "AND userfeatures.enablevoicemail = 1 "
                  "AND voicemail.commented = 0 "
                  "WHERE userfeatures.context = %s "
                  "AND IFNULL(userfeatures.number,'') != '' "
                  "AND userfeatures.internal = 0 "
                  "AND userfeatures.enablehint = 1",
              ('userfeatures.number', 'userfeatures.protocol',
-              'userfeatures.name', 'voicemail.uniqueid'),
+              'userfeatures.name', 'userfeatures.enablevoicemail',
+              'voicemail.uniqueid'),
              (context,))
     res2 = cursor.fetchall()
 
@@ -93,10 +95,12 @@ for (context,) in res:
             if e[1] == "IAX":
                 e[1] = "IAX2"
 
+            user_hint.append(e[0])
+
             print "exten = %s,hint,%s/%s" % (e[0], e[1], e[2])
 
-        if vmexten and e[3]:
-            print "exten = %s%s,hint,%s/%s" % (vmexten, e[0], e[1], e[2])
+            if vmexten and int(e[3]) and e[4]:
+                print "exten = %s%s,hint,%s/%s" % (vmexten, e[0], e[1], e[2])
 
     cursor.query("SELECT ${columns} FROM userfeatures "
                  "INNER JOIN phonefunckey "
@@ -109,9 +113,11 @@ for (context,) in res:
                  "LEFT OUTER JOIN extenumbers "
                  "ON phonefunckey.typeextenumbersright = extenumbers.type "
                  "AND phonefunckey.typevalextenumbersright = extenumbers.typeval "
-                 "WHERE IFNULL(userfeatures.number,'') != ''",
+                 "WHERE IFNULL(userfeatures.number,'') != '' "
+                 "AND (phonefunckey.typeextenumbersright != 'user' "
+                      "OR extenumbers.exten NOT IN (" + ", ".join(["%s"] * len(user_hint)) + "))",
                  ('extenumbers.exten', 'extenumbers.type'),
-                 (context,))
+                 [context] + user_hint)
     res2 = cursor.fetchall()
 
     by_type = {}
