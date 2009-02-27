@@ -332,6 +332,8 @@ class User:
         self.context = res['context']
         self.protocol = res['protocol']
         self.protocolid = res['protocolid']
+        self.firstname = res['firstname']
+        self.lastname = res['lastname']
         self.name = res['name']
         self.ringseconds = int(res['ringseconds'])
         self.simultcalls = res['simultcalls']
