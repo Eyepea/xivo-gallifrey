@@ -219,7 +219,7 @@ def linesubst(line, variables):
                     log.warning("Unknown variable %r detected, will just be replaced by an empty string", curvar)
                 else:
                     log.debug("Substitution of {{%s}} by %r", curvar, variables[curvar])
-                    out += str(variables[curvar])
+                    out += variables[curvar]
                 curvar = ''
                 st = NORM
             elif c == '\\':

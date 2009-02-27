@@ -184,7 +184,6 @@ class Aastra(PhoneVendorMixin):
                   'user_phone_ident':   provinfo['ident'],
                   'user_phone_number':  provinfo['number'],
                   'user_phone_passwd':  provinfo['passwd'],
-                  'user_subscribe_mwi': provinfo['subscribemwi'],
                   'function_keys': function_keys_config_lines,
                 },
                 cfg_filename)
@@ -206,12 +205,11 @@ class Aastra(PhoneVendorMixin):
         configuration for this phone.
         """
         self.__generate(
-                { 'name':           "guest",
-                  'ident':          "guest",
-                  'number':         "guest",
-                  'passwd':         "guest",
-                  'subscribemwi':   "0",
-                  'funckey':        {},
+                { 'name':       "guest",
+                  'ident':      "guest",
+                  'number':     "guest",
+                  'passwd':     "guest",
+                  'funckey':    {},
                 })
 
     # Introspection entry points

@@ -185,7 +185,6 @@ class Thomson(PhoneVendorMixin):
                   'user_phone_ident':   provinfo['ident'],
                   'user_phone_number':  provinfo['number'],
                   'user_phone_passwd':  provinfo['passwd'],
-                  'user_subscribe_mwi': provinfo['subscribemwi'],
                   'simultcalls': multilines,
                   # <WARNING: THIS FIELD MUST STAY IN LOWER CASE IN THE TEMPLATE AND MAC SPECIFIC FILE>
                   'config_sn': self.__generate_timestamp(),
@@ -235,9 +234,8 @@ class Thomson(PhoneVendorMixin):
                   'ident':          "guest",
                   'number':         "guest",
                   'passwd':         "guest",
-                  'subscribemwi':   "0",
                   'simultcalls':    "10",
-                  'funckey': {},
+                  'funckey':        {},
                 })
 
     def do_autoprov(self, provinfo):
