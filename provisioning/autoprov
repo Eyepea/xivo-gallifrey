@@ -207,7 +207,6 @@ class SQLBackEnd:
             'simultcalls': number of simultaneous calls (multiline)
             'number': extension number
             'proto': protocol
-            'subscribemwi': mwi subscription
             'funckey': mapping where keys are function key number
                  and values a tuple (exten, supervise).
                  .exten is the extension to speed dial/supervise
@@ -224,7 +223,6 @@ class SQLBackEnd:
             SIP_TABLE+".name":           'ident',
             SIP_TABLE+".secret":         'passwd',
             SIP_TABLE+".dtmfmode":       'dtmfmode',
-            SIP_TABLE+".subscribemwi":   'subscribemwi',
             UF_TABLE+".simultcalls":     'simultcalls',
             UF_TABLE+".number":          'number',
             UF_TABLE+".id":              'iduserfeatures',
