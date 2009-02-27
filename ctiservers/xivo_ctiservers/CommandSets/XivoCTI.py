@@ -4809,6 +4809,16 @@ class XivoCTICommand(BaseCommand):
                 elif function == 'didcallerid':
                         log.info('%s DIDCALLERID %s' % (astid, fastagi.env))
                         # agi_callington : 0, 16 (internat ?), 17 (00 + internat ?), 32 (06, 09), 33 (02, 04), 65 (3 chiffres), 255 (unknown), -1?
+                        # 00, (10, 11) (), (20, 21) (National Number), 41, ff
+                        # TON:
+                        #  Unknown Number Type (0)
+                        #  International Number (1)
+                        #  National Number (2)
+                        #  Network Specific Number (3)
+                        #  Subscriber Number (4)
+                        # NPI:
+                        #  Unknown Number Plan (0)
+                        #  ISDN/Telephony Numbering Plan (E.164/E.163) (1)
                         # agi_callingpres : 0, 1, 3, 35, 67, -1?
                         # agi_rdnis : when transferred from another initial destination ?
                         if 'agi_callington' in fastagi.env:
