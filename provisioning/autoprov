@@ -224,12 +224,12 @@ class SQLBackEnd:
             SIP_TABLE+".name":           'ident',
             SIP_TABLE+".secret":         'passwd',
             SIP_TABLE+".dtmfmode":       'dtmfmode',
+            SIP_TABLE+".subscribemwi":   'subscribemwi',
             UF_TABLE+".simultcalls":     'simultcalls',
             UF_TABLE+".number":          'number',
             UF_TABLE+".id":              'iduserfeatures',
             UF_TABLE+".provisioningid":  'provcode',
             UF_TABLE+".protocol":        'proto',
-            UF_TABLE+".subscribemwi":    'subscribemwi',
         }
         confdico = self.sql_select_one(
             ("SELECT ${columns} "
