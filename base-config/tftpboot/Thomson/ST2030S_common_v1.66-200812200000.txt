@@ -249,7 +249,7 @@ VoiceTxGain=-3
 VoiceRxGain=-3
 VoiceTxGain5=-6
 VoiceRxGain5=-6
-VoiceMailAddr=192.168.0.254
+VoiceMailAddr=
 VoiceMailTelNum=*98
 VoiceMailPort=5060
 

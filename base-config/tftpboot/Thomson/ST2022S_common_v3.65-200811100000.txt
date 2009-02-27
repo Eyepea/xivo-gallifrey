@@ -190,7 +190,7 @@ UnRegister_priorFlgMP1=1
 UnRegister_priorFlgMP2=1
 UnRegister_priorFlgMP3=1
 UnRegister_priorFlgMP4=1
-VoiceMailAddr=192.168.0.254
+VoiceMailAddr=
 VoiceMailTelNum=*98
 VoiceMailPort=5060
 
