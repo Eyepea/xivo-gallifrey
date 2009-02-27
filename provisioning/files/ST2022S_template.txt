@@ -3,6 +3,9 @@ DisplayName1={{user_display_name}}
 TEL1Number={{user_phone_ident}}
 regid1={{user_phone_ident}}
 regpwd1={{user_phone_passwd}}
+DisplayNumFlag1=1
+DisplayNum1={{user_phone_number}}
+subscribe_event={{user_subscribe_mwi}}
 
 [sys]
 config_sn={{config_sn}}
