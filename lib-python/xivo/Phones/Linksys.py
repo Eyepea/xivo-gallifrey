@@ -178,7 +178,7 @@ class Linksys(PhoneVendorMixin):
         this phone.
         """
         if bool(int(provinfo.get('vmenable', 0))):
-            provinfo['vmailaddr'] = "%s@%s" % (provinfo['ident'], self.ASTERISK_IPV4)
+            provinfo['vmailaddr'] = "%s@%s" % (provinfo['number'], self.ASTERISK_IPV4)
         else:
             provinfo['vmailaddr'] = ""
 
