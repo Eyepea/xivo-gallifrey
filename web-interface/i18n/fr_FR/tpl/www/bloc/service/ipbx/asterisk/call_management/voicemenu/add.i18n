@@ -272,7 +272,7 @@ Ne pas décrocher le canal :
 Ne pas jouer de beep avant l'enregistrement :
 
 ; fm_ipbxapplication_record-s
-Enregistrer si le canal a décroché :
+Enregistrer si le canal est décroché :
 
 ; fm_ipbxapplication_record-t
 Utiliser * au lieu de # pour indiquer la fin de l'enregistrement :
@@ -281,7 +281,7 @@ Utiliser * au lieu de # pour indiquer la fin de l'enregistrement :
 Fichier son joué :
 
 ; fm_ipbxapplication_background-s
-Jouer le fichier si le canal a décroché :
+Jouer le fichier si le canal est décroché :
 
 ; fm_ipbxapplication_background-n
 Ne pas décrocher le canal avant la lecture du fichier :
@@ -299,7 +299,7 @@ Contexte de sortie :
 Nom du fichier :
 
 ; fm_ipbxapplication_playback-skip
-Jouer le fichier si le canal a décroché :
+Jouer le fichier si le canal est décroché :
 
 ; fm_ipbxapplication_playback-noanswer
 Ne pas décrocher le canal avant la lecture du fichier :
@@ -323,13 +323,13 @@ Nom du fichier joué :
 Nombre maximum de chiffres composées :
 
 ; fm_ipbxapplication_read-s
-Ne rien faire si le canal n'a pas décroché :
+Ne rien faire si le canal n'est pas décroché :
 
 ; fm_ipbxapplication_read-i
 Jouer le fichier comme une indication de tonalité :
 
 ; fm_ipbxapplication_read-n
-Lire les chiffres même si le canal n'a pas décroché :
+Lecture des chiffres même si le canal n'est pas décroché :
 
 ; fm_ipbxapplication_read-attempts
 Nombre de tentatives :

@@ -107,7 +107,7 @@ Application :
 Nom du fichier :
 
 ; fm_dialaction_sound-actionarg2-skip
-Jouer le fichier si le canal a décroché :
+Jouer le fichier si le canal est décroché :
 
 ; fm_dialaction_sound-actionarg2-noanswer
 Ne pas décrocher le canal avant la lecture du fichier :
