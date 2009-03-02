@@ -300,6 +300,26 @@ $array['ipbxapplication']['responsetimeout']['arg']['timeout'] = array();
 $array['ipbxapplication']['responsetimeout']['arg']['timeout']['default'] = '';
 
 // VARIABLE
+$array['ipbxapplication']['read'] = array();
+$array['ipbxapplication']['read']['category'] = 'variable';
+$array['ipbxapplication']['read']['arg'] = array();
+$array['ipbxapplication']['read']['arg']['variable'] = array();
+$array['ipbxapplication']['read']['arg']['variable']['default'] = '';
+$array['ipbxapplication']['read']['arg']['filename'] = array();
+$array['ipbxapplication']['read']['arg']['filename']['default'] = '';
+$array['ipbxapplication']['read']['arg']['maxdigits'] = array();
+$array['ipbxapplication']['read']['arg']['maxdigits']['default'] = '';
+$array['ipbxapplication']['read']['arg']['s'] = array();
+$array['ipbxapplication']['read']['arg']['s']['default'] = 0;
+$array['ipbxapplication']['read']['arg']['i'] = array();
+$array['ipbxapplication']['read']['arg']['i']['default'] = 0;
+$array['ipbxapplication']['read']['arg']['n'] = array();
+$array['ipbxapplication']['read']['arg']['n']['default'] = 0;
+$array['ipbxapplication']['read']['arg']['attempts'] = array();
+$array['ipbxapplication']['read']['arg']['attempts']['default'] = '';
+$array['ipbxapplication']['read']['arg']['timeout'] = array();
+$array['ipbxapplication']['read']['arg']['timeout']['default'] = '';
+
 $array['ipbxapplication']['set'] = array();
 $array['ipbxapplication']['set']['category'] = 'variable';
 $array['ipbxapplication']['set']['arg'] = array();

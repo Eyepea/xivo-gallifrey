@@ -34,6 +34,7 @@ xivo_ast_application['noop'] = {displayname: 'NoOp'};
 xivo_ast_application['playback'] = {displayname: 'Playback'};
 xivo_ast_application['record'] = {displayname: 'Record'};
 xivo_ast_application['responsetimeout'] = {displayname: 'ResponseTimeout'};
+xivo_ast_application['read'] = {displayname: 'Read'};
 xivo_ast_application['set'] = {displayname: 'Set'};
 xivo_ast_application['setcallerid'] = {displayname: 'SetCallerID'};
 xivo_ast_application['setcidname'] = {displayname: 'SetCIDName'};
@@ -382,6 +383,72 @@ function xivo_ast_application_playback()
 		args.push(options);
 
 	return(xivo_fm_select_add_ast_application('playback',args));
+}
+
+function xivo_ast_application_read()
+{
+	if((variable = xivo_eid('it-ipbxapplication-read-variable')) === false
+	|| (filename = xivo_eid('it-ipbxapplication-read-filename')) === false
+	|| (maxdigits = xivo_eid('it-ipbxapplication-read-maxdigits')) === false
+	|| (option_s = xivo_eid('it-ipbxapplication-read-s')) === false
+	|| (option_i = xivo_eid('it-ipbxapplication-read-i')) === false
+	|| (option_n = xivo_eid('it-ipbxapplication-read-n')) === false
+	|| (attempts = xivo_eid('it-ipbxapplication-read-attempts')) === false
+	|| (timeout = xivo_eid('it-ipbxapplication-read-timeout')) === false
+	|| (maxdigits.value.length > 0 && xivo_is_uint(maxdigits.value) === false) === true
+	|| (attempts.value.length > 0 && xivo_is_uint(attempts.value) === false) === true
+	|| (timeout.value.length > 0 && xivo_is_uint(timeout.value) === false) === true)
+		return(false);
+
+	var variablevalue = xivo_ast_application_sanitize_arg(variable.value);
+	var filenamevalue = xivo_ast_application_sanitize_arg(filename.value);
+
+	if(variablevalue.length < 1)
+		return(false);
+
+	var args = new Array(variablevalue);
+
+	var options = '';
+
+	if(option_s.checked == true)
+		options += 's';
+
+	if(option_i.checked == true)
+		options += 'i';
+
+	if(option_n.checked == true)
+		options += 'n';
+
+	if(timeout.value.length > 0)
+	{
+		args.push(filename.value);
+		args.push(maxdigits.value);
+		args.push(options);
+		args.push(attempts.value);
+		args.push(timeout.value);
+	}
+	else if(attempts.value.length > 0)
+	{
+		args.push(filename.value);
+		args.push(maxdigits.value);
+		args.push(options);
+		args.push(attempts.value);
+	}
+	else if(options.length > 0)
+	{
+		args.push(filename.value);
+		args.push(maxdigits.value);
+		args.push(options);
+	}
+	else if(maxdigits.value.length > 0)
+	{
+		args.push(filename.value);
+		args.push(maxdigits.value);
+	}
+	else if(filename.value.length > 0)
+		args.push(filename.value);
+
+	return(xivo_fm_select_add_ast_application('read',args));
 }
 
 function xivo_ast_application_record()

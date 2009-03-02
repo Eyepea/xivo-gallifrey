@@ -109,6 +109,9 @@ ResponseTimeout
 ; fm_ipbxapplications-optgroup-variable
 Variable
 
+; fm_ipbxapplications-opt-read
+Read
+
 ; fm_ipbxapplications-opt-set
 Set
 
@@ -309,6 +312,30 @@ Temps en seconde(s) :
 
 ; fm_ipbxapplication_responsetimeout-timeout
 Temps en seconde(s) :
+
+; fm_ipbxapplication_read-variable
+Nom de la variable :
+
+; fm_ipbxapplication_read-filename
+Nom du fichier joué :
+
+; fm_ipbxapplication_read-maxdigits
+Nombre maximum de chiffres composées :
+
+; fm_ipbxapplication_read-s
+Ne rien faire si le canal n'a pas décroché :
+
+; fm_ipbxapplication_read-i
+Jouer le fichier comme une indication de tonalité :
+
+; fm_ipbxapplication_read-n
+Lire les chiffres même si le canal n'a pas décroché :
+
+; fm_ipbxapplication_read-attempts
+Nombre de tentatives :
+
+; fm_ipbxapplication_read-timeout
+Délai d'attente en seconde(s) :
 
 ; fm_ipbxapplication_set-name
 Nom de la variable :

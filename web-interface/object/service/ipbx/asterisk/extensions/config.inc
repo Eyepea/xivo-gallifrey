@@ -289,6 +289,30 @@ $array['app']['playback']['arg'][1] = array('set'	=> false,
 					    'chk'	=> 2,
 					    'ustr'	=> array('skip','noanswer','j'));
 
+$array['app']['read'] = array();
+$array['app']['read']['displayname'] = 'Read';
+$array['app']['read']['arg'] = array();
+$array['app']['read']['arg'][0] = array('minlen'	=> 1,
+					'regexp'	=> '/^'.XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN_CONTEXT.'$/');
+$array['app']['read']['arg'][1] = array('set'		=> false,
+					'chk'		=> 2,
+					'notag'		=> false,
+					'cast'		=> 'sgraph',
+					'regexp'	=> '/^[^\|,]+$/');
+$array['app']['read']['arg'][2] = array('set'		=> false,
+					'chk'		=> 2,
+					'cast'		=> 'uint',
+					'between'	=> array(0,255));
+$array['app']['read']['arg'][3] = array('set'		=> false,
+					'chk'		=> 2,
+					'uchar'		=> array('s','i','n'));
+$array['app']['read']['arg'][4] = array('set'		=> false,
+					'chk'		=> 2,
+					'cast'		=> 'uint');
+$array['app']['read']['arg'][5] = array('set'		=> false,
+					'chk'		=> 2,
+					'cast'		=> 'uint');
+
 $array['app']['record'] = array();
 $array['app']['record']['displayname'] = 'Record';
 $array['app']['record']['appdata'] = 'recordings/%s|%s|%s|%s';

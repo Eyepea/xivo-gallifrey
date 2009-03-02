@@ -18,14 +18,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-	$form = &$this->get_module('form');
-	$url = &$this->get_module('url');
+$form = &$this->get_module('form');
+$url = &$this->get_module('url');
 
-	$info = $this->get_var('info');
-	$error = $this->get_var('error');
-	$element = $this->get_var('element');
-	$ipbxapplications = $this->get_var('ipbxapplications');
-	$context_list = $this->get_var('context_list');
+$info = $this->get_var('info');
+$error = $this->get_var('error');
+$element = $this->get_var('element');
+$ipbxapplications = $this->get_var('ipbxapplications');
+$context_list = $this->get_var('context_list');
+
 ?>
 <div id="sb-part-first">
 <?php
@@ -191,6 +192,11 @@
 	if(isset($ipbxapplications['responsetimeout']) === true):
 		$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/responsetimeout',
 				    array('apparg_responsetimeout'	=> $ipbxapplications['responsetimeout']['arg']));
+	endif;
+
+	if(isset($ipbxapplications['read']) === true):
+		$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/read',
+				    array('apparg_read'			=> $ipbxapplications['read']['arg']));
 	endif;
 
 	if(isset($ipbxapplications['set']) === true):
