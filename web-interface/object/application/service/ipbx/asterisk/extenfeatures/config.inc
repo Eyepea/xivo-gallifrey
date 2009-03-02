@@ -87,7 +87,7 @@ $array['exten']['incallfilter']['appdata'] = 'incallfilter';
 
 $array['exten']['pickup'] = array();
 $array['exten']['pickup']['app'] = 'Pickup';
-$array['exten']['pickup']['appdata'] = '${EXTEN:$<EXTNUMLEN>}';
+$array['exten']['pickup']['appdata'] = '${EXTEN:$<EXTNUMLEN>}%${CONTEXT}@PICKUPMARK';
 
 $array['exten']['agentstaticlogin'] = array();
 $array['exten']['agentstaticlogin']['app'] = 'Macro';

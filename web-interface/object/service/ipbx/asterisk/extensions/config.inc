@@ -271,6 +271,11 @@ $array['app']['pickup']['displayname'] = 'Pickup';
 $array['app']['pickup']['arg'] = array();
 $array['app']['pickup']['arg'][0] = array('minlen'	=> 1,
 					  'regexp'	=> '/^'.XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN_EXTEN.
+							   '(?:(?:%'.
+							   XIVO_SRE_IPBX_AST_REGEXP_CONTEXT.
+							   '|%?(?:[a-zA-Z0-9_-]*'.
+							   XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN.
+							   '[a-zA-Z0-9_-]*)+)?)?'.
 							   '(?:'.XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN_ATCONTEXT.')?$/');
 
 $array['app']['playback'] = array();
