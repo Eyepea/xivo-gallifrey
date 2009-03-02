@@ -320,7 +320,7 @@ Nom de la variable :
 Nom du fichier joué :
 
 ; fm_ipbxapplication_read-maxdigits
-Nombre maximum de chiffres composées :
+Nombre maximum de chiffres composés :
 
 ; fm_ipbxapplication_read-s
 Ne rien faire si le canal n'est pas décroché :
