@@ -21,7 +21,7 @@ Index: asterisk-1.4.23.1/channels/chan_sip.c
 +		if (!strncmp(peer->useragent, "THOMSON ST2030 ", 15) && 
 +		    strstr(peer->useragent, " fw1.66 ")) {
 +			/* call-id@workaround.proformatique.com */
-+			char callid[AST_MAX_EXTENSION + 1 + 28];
++			char callid[64];
 +			char *stringp;
 +
 +			ast_copy_string(callid, p->callid, sizeof(callid));
