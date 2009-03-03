@@ -71,8 +71,6 @@ if not config.has_section('template'):
 for (context,) in res:
     print "[" + context + "]"
 
-    user_hint = []
-
     # Maybe a relation exists between hints and realtime TODO check
     cursor.query("SELECT ${columns} FROM userfeatures "
                  "LEFT JOIN voicemail "
@@ -95,8 +93,6 @@ for (context,) in res:
             if e[1] == "IAX":
                 e[1] = "IAX2"
 
-            user_hint.append(e[0])
-
             print "exten = %s,hint,%s/%s" % (e[0], e[1], e[2])
 
             if vmexten and int(e[3]) and e[4]:
@@ -113,11 +109,9 @@ for (context,) in res:
                  "LEFT OUTER JOIN extenumbers "
                  "ON phonefunckey.typeextenumbersright = extenumbers.type "
                  "AND phonefunckey.typevalextenumbersright = extenumbers.typeval "
-                 "WHERE IFNULL(userfeatures.number,'') != '' "
-                 "AND (phonefunckey.typeextenumbersright != 'user' "
-                      "OR extenumbers.exten NOT IN (" + ", ".join(["%s"] * len(user_hint)) + "))",
+                 "WHERE IFNULL(userfeatures.number,'') != '' ",
                  ('extenumbers.exten', 'extenumbers.type'),
-                 [context] + user_hint)
+                 context)
     res2 = cursor.fetchall()
 
     by_type = {}
