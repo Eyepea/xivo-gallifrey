@@ -38,8 +38,10 @@ import re
 import socket
 import sha
 import string
+import sys
 import threading
 import time
+import types
 import urllib
 import zlib
 import Queue
@@ -154,9 +156,7 @@ class XivoCTICommand(BaseCommand):
                 self.presence_sections = {}
                 self.interprefix = {}
                 
-                # (todo) astid indexed hashes
                 self.display_hints = {}
-                self.origapplication = {}
                 
                 # astid indexed hashes
                 self.stats_queues = {}
@@ -168,6 +168,7 @@ class XivoCTICommand(BaseCommand):
                 self.parkedcalls = {}
                 self.ignore_dtmf = {}
                 self.queues_channels_list = {}
+                self.origapplication = {}
                 
                 # actionid (AMI) indexed hashes
                 self.getvar_requests = {}
@@ -431,7 +432,7 @@ class XivoCTICommand(BaseCommand):
                                 # only if it was a "defined" state anyway
                                 if presenceid in self.presence_sections and futurestate in self.presence_sections[presenceid].getstates():
                                         state = futurestate
-
+                                        
                         if presenceid in self.presence_sections:
                                 if state in self.presence_sections[presenceid].getstates() and state not in ['onlineoutgoing', 'onlineincoming']:
                                         userinfo['state'] = state
@@ -644,7 +645,7 @@ class XivoCTICommand(BaseCommand):
                         # XXX
                         for astid_hash in [self.uniqueids, self.channels,
                                            self.queues_channels_list, self.attended_targetchannels,
-                                           self.ignore_dtmf, self.parkedcalls]:
+                                           self.ignore_dtmf, self.parkedcalls, self.origapplication]:
                                 if astid not in astid_hash:
                                         astid_hash[astid] = {}
                 if listname in self.weblistprops:
@@ -667,7 +668,22 @@ class XivoCTICommand(BaseCommand):
                         ret[capaid] = self.capas[capaid].appliname
                 return cjson.encode(ret)
         
+        def getmem(self, where = None):
+                try:
+                        pid = os.getpid()
+                        t = open('/proc/%s/stat' % pid, 'r')
+                        u = t.read().strip().split()
+                        t.close()
+                        td = int(u[22])
+                        if where:
+                                log.info('memory (%s) %d bytes' % (where, td))
+                except:
+                        log.exception('getmem')
+                        td = 0
+                return td
+        
         def updates(self):
+                m1 = self.getmem()
                 u_update = self.ulist_ng.update()
                 # self.plist_ng.update()
                 for astid, plist in self.weblist['phones'].iteritems():
@@ -694,6 +710,8 @@ class XivoCTICommand(BaseCommand):
                                 except Exception:
                                         log.exception('(updates : %s)' % itemname)
                         self.askstatus(astid, self.weblist['phones'][astid].keeplist)
+                m2 = self.getmem()
+                log.info('memory before/after updates : %d %d delta=%d' % (m1, m2, m2-m1))
                 # check : agentnumber should be unique
                 return
         
@@ -2244,7 +2262,7 @@ class XivoCTICommand(BaseCommand):
                         log.warning('%s : undefined hint for %s' % (astid, event))
                         # {'Status': '4', 'Hint': 'user:218', 'Exten': '218', 'ActionID': 'pPKvoLQ97b', 'Context': 'default', ''})
                         # {'Status': '-1', 'Hint': '', 'Exten': '205', 'ActionID': 'MfW1kqRV3j', 'Context': 'default', ''}
-                        # user: @ CLI
+                        # {'Status': '0', 'Hint': 'Custom:user:105', 'Exten': '105', 'ActionID': 'RBx7j3NSwI', 'Context': 'default'}
                 return
         
         def ami_extensionstatus(self, astid, event):
@@ -2297,9 +2315,9 @@ class XivoCTICommand(BaseCommand):
                 if uniqueid in self.uniqueids[astid]:
                         self.uniqueids[astid][uniqueid].update({'time-originateresponse' : time.time(),
                                                                 'actionid' : actionid})
-                        if actionid in self.origapplication:
-                                self.uniqueids[astid][uniqueid].update(self.origapplication[actionid])
-                                del self.origapplication[actionid]
+                        if actionid in self.origapplication[astid]:
+                                self.uniqueids[astid][uniqueid].update(self.origapplication[astid][actionid])
+                                del self.origapplication[astid][actionid]
                 # Response = Success <=> Reason = '4'
                 # Response = Failure <=>
                 # Response =             Reason = '0' : (unable to request channel, phone might be unreachable)
@@ -2977,7 +2995,7 @@ class XivoCTICommand(BaseCommand):
                         callerid = event.get('XIVO_SRCNUM')
                         didnumber = event.get('XIVO_EXTENPATTERN')
                         channel = event.get('CHANNEL')
-                        context = event.get('XIVO_REAL_CONTEXT', CONTEXT_UNKNOWN)
+                        context = event.get('XIVO_REAL_CONTEXT', CONTEXT_UNKNOWN) # or XIVO_CONTEXT ?
                         
                         if uniqueid in self.uniqueids[astid]:
                                 log.info('%s AMI UserEvent %s %s' % (astid, eventname, self.uniqueids[astid][uniqueid]))
@@ -2987,10 +3005,13 @@ class XivoCTICommand(BaseCommand):
                                 if vv['exten'] == didnumber:
                                         log.info('%s ami_userevent %s' % (astid, vv))
                         # actions involving didnumber/callerid on channel could be carried out here
+                        # did_takeovers = { '<incoming_callerid>' : { '<sda>' : {'number' : '<localnum>', 'context' : '<context>'} } }
                         did_takeovers = {}
                         if callerid in did_takeovers and didnumber in did_takeovers[callerid]:
-                                self.__ami_execute__(astid, 'transfer', channel, did_takeovers[callerid][didnumber], context)
-                                
+                                destdetails = did_takeovers[callerid][didnumber]
+                                self.__ami_execute__(astid, 'transfer', channel,
+                                                     destdetails.get('number'),
+                                                     destdetails.get('context'))
                         self.__sheet_alert__('incomingdid', astid, context, event)
                         
                 elif eventname == 'Custom':
@@ -4007,8 +4028,8 @@ class XivoCTICommand(BaseCommand):
                                                                    userinfo.get('phonenum'),
                                                                    userinfo.get('context'))
                                         log.info('started listening on %s %s (agent %s) aid = %s' % (astid, channel, anum, aid))
-                                        self.origapplication[aid] = { 'origapplication' : 'ChanSpy',
-                                                                      'origapplication-data' : { 'spied-channel' : channel } }
+                                        self.origapplication[astid][aid] = { 'origapplication' : 'ChanSpy',
+                                                                             'origapplication-data' : { 'spied-channel' : channel } }
                         elif subcommand == 'stoplisten':
                                 channels = self.__find_channel_by_agentnum__(astid, anum)
                                 for channel in channels:
@@ -4098,8 +4119,8 @@ class XivoCTICommand(BaseCommand):
                 for userinfo in self.ulist_ng.keeplist.itervalues():
                         self.__logout_agent__(userinfo)
                 return
-
-
+        
+        
         def regular_update(self):
                 """
                 Define here the tasks one would like to complete on a regular basis.
@@ -4118,8 +4139,9 @@ class XivoCTICommand(BaseCommand):
                                         log.info('(%2d h %2d min) => no action' % (thour, tmin))
                 except Exception:
                         log.exception('(regular update)')
-
-
+                return
+        
+        
         def __getlist__(self, userinfo, ccomm):
                 capaid = userinfo.get('capaid')
                 ucapa = self.capas[capaid].all()
@@ -4831,8 +4853,11 @@ class XivoCTICommand(BaseCommand):
                 
                 elif function == 'didcallerid':
                         log.info('%s DIDCALLERID %s' % (astid, fastagi.env))
-                        # agi_callington : 0, 16 (internat ?), 17 (00 + internat ?), 32 (06, 09), 33 (02, 04), 65 (3 chiffres), 255 (unknown), -1?
-                        # 00, (10, 11) (), (20, 21) (National Number), 41, ff
+                        # agi_callington : 0x10, 0x11 : 16 (internat ?), 17 (00 + internat ?)
+                        #                  0x20, 0x21 : 32 (06, 09), 33 (02, 04)
+                        #                  0x41       : 65 (3 chiffres)
+                        #                  0xff       : 255 (unknown @ IAX2 ?), -1 (unknown @ Zap ?)
+                        #                  0 ?
                         # TON:
                         #  Unknown Number Type (0)
                         #  International Number (1)

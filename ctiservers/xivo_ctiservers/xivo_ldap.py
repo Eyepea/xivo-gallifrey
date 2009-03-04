@@ -64,7 +64,7 @@ class xivo_ldap:
                                 self.l.simple_bind_s()
                                 
                 except ldap.LDAPError:
-			log.exception('__init__ : ldap.LDAPError (%s %s)' % (self.l, iuri))
+                        log.exception('__init__ : ldap.LDAPError (%s %s)' % (self.l, iuri))
                         self.l = None
                         
         def getldap(self, filter, attrib):

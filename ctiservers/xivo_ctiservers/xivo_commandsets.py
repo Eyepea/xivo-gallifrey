@@ -66,6 +66,8 @@ class BaseCommand:
                 return
         def transfer_endbuf(self, req):
                 return
+        def getmem(self):
+                return 0
         
         def set_logintimeout(self, logintimeout):
                 return
