@@ -149,10 +149,11 @@ class XivoCTICommand(BaseCommand):
                 self.faxes = {}
                 self.queued_threads_pipe = queued_threads_pipe
                 self.disconnlist = []
+                self.timerthreads_agentlogoff_retry = {}
+                self.timerthreads_login_timeout = {}
                 self.sheet_actions = {}
                 self.ldapids = {}
                 self.tqueue = Queue.Queue()
-                self.timeout_login = {}
                 self.presence_sections = {}
                 self.interprefix = {}
                 
@@ -234,9 +235,9 @@ class XivoCTICommand(BaseCommand):
                 fileid = commandstruct.get('fileid')
                 tdir = commandstruct.get('tdirection')
                 
-                if connid in self.timeout_login:
-                        self.timeout_login[connid].cancel()
-                        del self.timeout_login[connid]
+                if connid in self.timerthreads_login_timeout:
+                        self.timerthreads_login_timeout[connid].cancel()
+                        del self.timerthreads_login_timeout[connid]
                 if tdir == 'upload':
                         self.transfers_ref[requester] = fileid
                         self.transfers_buf[requester] = []
@@ -470,9 +471,9 @@ class XivoCTICommand(BaseCommand):
         
         def loginko(self, loginparams, errorstring, connid):
                 log.warning('user can not connect (%s) : sending %s' % (loginparams, errorstring))
-                if connid in self.timeout_login:
-                        self.timeout_login[connid].cancel()
-                        del self.timeout_login[connid]
+                if connid in self.timerthreads_login_timeout:
+                        self.timerthreads_login_timeout[connid].cancel()
+                        del self.timerthreads_login_timeout[connid]
                 tosend = { 'class' : 'loginko',
                            'errorstring' : errorstring }
                 connid.sendall('%s\n' % self.__cjson_encode__(tosend))
@@ -527,9 +528,9 @@ class XivoCTICommand(BaseCommand):
                         repstr = self.__cjson_encode__(tosend)
                         # if 'features' in capa_user:
                         # repstr += ';capas_features:%s' %(','.join(configs[astid].capafeatures))
-                        if connid in self.timeout_login:
-                                self.timeout_login[connid].cancel()
-                                del self.timeout_login[connid]
+                        if connid in self.timerthreads_login_timeout:
+                                self.timerthreads_login_timeout[connid].cancel()
+                                del self.timerthreads_login_timeout[connid]
                         self.__fill_user_ctilog__(userinfo, 'cti_login', '%s:%d' % connid.getpeername())
                         # we could also log : client's OS & version
                 connid.sendall(repstr + '\n')
@@ -949,14 +950,14 @@ class XivoCTICommand(BaseCommand):
                 """
                 connid.sendall('XIVO CTI Server Version %s(%s) svn:%s\n' % (XIVOVERSION_NUM, XIVOVERSION_NAME,
                                                                             __revision__))
-                self.timeout_login[connid] = threading.Timer(self.logintimeout, self.__callback_timer__, ('login',))
-                self.timeout_login[connid].start()
+                self.timerthreads_login_timeout[connid] = threading.Timer(self.logintimeout, self.__callback_timer__, ('login',))
+                self.timerthreads_login_timeout[connid].start()
                 return
         
         def disconnected(self, connid):
-                if connid in self.timeout_login:
-                        self.timeout_login[connid].cancel()
-                        del self.timeout_login[connid]
+                if connid in self.timerthreads_login_timeout:
+                        self.timerthreads_login_timeout[connid].cancel()
+                        del self.timerthreads_login_timeout[connid]
                 return
         
         
@@ -968,19 +969,31 @@ class XivoCTICommand(BaseCommand):
                         thisthread = self.tqueue.get()
                         tname = thisthread.getName()
                         if tname.startswith('login'):
-                                for connid, conntimerthread in self.timeout_login.iteritems():
+                                for connid, conntimerthread in self.timerthreads_login_timeout.iteritems():
                                         if conntimerthread == thisthread:
                                                 todisconn.append(connid)
+                        elif tname.startswith('agentlogoff'):
+                                if thisthread in self.timerthreads_agentlogoff_retry:
+                                        properties = self.timerthreads_agentlogoff_retry[thisthread]
+                                        astid = properties.get('astid')
+                                        agentnum = properties.get('agentnum')
+                                        agentid = self.weblist['agents'][astid].reverse_index.get(agentnum)
+                                        status = self.weblist['agents'][astid].keeplist[agentid]['stats']['status']
+                                        if status != 'AGENT_LOGGEDOFF':
+                                                self.__ami_execute__(astid, 'agentlogoff', agentnum)
+                                        del self.timerthreads_agentlogoff_retry[thisthread]
+                                        del thisthread
+                        else:
+                                log.warning('checkqueue : unknown action for %s' % tname)
                 for connid in todisconn:
-                        del self.timeout_login[connid]
+                        del self.timerthreads_login_timeout[connid]
                 return { 'disconnlist-user' : self.disconnlist,
                          'disconnlist-tcp'  : todisconn }
-
+        
         def clear_disconnlist(self):
                 self.disconnlist = []
                 return
-
-
+        
         def __send_msg_to_cti_client__(self, userinfo, strupdate):
                 try:
                         t0 = time.time()
@@ -1146,7 +1159,10 @@ class XivoCTICommand(BaseCommand):
                                    'xivo-date' : time.strftime('%Y-%m-%d', time.localtime())}
                         if actionopt.get('focus') == 'no':
                                 linestosend.append('<internal name="nofocus"></internal>')
-
+                        linestosend.append('<internal name="astid"><![CDATA[%s]]></internal>' % astid)
+                        linestosend.append('<internal name="context"><![CDATA[%s]]></internal>' % context)
+                        linestosend.append('<internal name="kind"><![CDATA[%s]]></internal>' % where)
+                        
                         # 1/4
                         # fill a dict with the appropriate values + set the concerned users' list
                         if where == 'outgoing':
@@ -1188,8 +1204,6 @@ class XivoCTICommand(BaseCommand):
                                 itemdir['xivo-tomatch-callerid'] = r_caller
                                 itemdir['xivo-channel'] = extraevent.get('channel')
                                 itemdir['xivo-uniqueid'] = extraevent.get('uniqueid')
-                                
-                                linestosend.append('<internal name="called"><![CDATA[%s]]></internal>' % r_called)
                                 
                         elif where in ['link', 'unlink']:
                                 itemdir['xivo-channel'] = event.get('Channel1')
@@ -1274,14 +1288,10 @@ class XivoCTICommand(BaseCommand):
                         if 'xivo-uniqueid' in itemdir:
                                 linestosend.append('<internal name="uniqueid"><![CDATA[%s]]></internal>'
                                                    % itemdir['xivo-uniqueid'])
-                        if 'xivo-astid' in itemdir:
-                                linestosend.append('<internal name="astid"><![CDATA[%s]]></internal>'
-                                                   % itemdir['xivo-astid'])
                         linestosend.extend(self.__build_xmlqtui__('sheet_qtui', actionopt, itemdir))
                         linestosend.extend(self.__build_xmlsheet__('action_info', actionopt, itemdir))
                         linestosend.extend(self.__build_xmlsheet__('sheet_info', actionopt, itemdir))
                         linestosend.extend(self.__build_xmlsheet__('systray_info', actionopt, itemdir))
-                        linestosend.append('<internal name="kind"><![CDATA[%s]]></internal>' % where)
                         linestosend.append('</user></profile>')
                         
                         # print ''.join(linestosend)
@@ -1777,9 +1787,9 @@ class XivoCTICommand(BaseCommand):
                         duinfo1 = '%s/%s' % (uinfo1.get('astid'), uinfo1.get('xivo_userid'))
                 if uinfo2:
                         duinfo2 = '%s/%s' % (uinfo2.get('astid'), uinfo2.get('xivo_userid'))
-                log.info('%s LINK %s %s callerid=%s (phone trunk)=(%s %s) user=%s'
+                log.info('%s LINK1 %s %s callerid=%s (phone trunk)=(%s %s) user=%s'
                          % (astid, uid1, chan1, clid1, phoneid1, trunkid1, duinfo1))
-                log.info('%s LINK %s %s callerid=%s (phone trunk)=(%s %s) user=%s'
+                log.info('%s LINK2 %s %s callerid=%s (phone trunk)=(%s %s) user=%s'
                          % (astid, uid2, chan2, clid2, phoneid2, trunkid2, duinfo2))
                 
                 # update the phones statuses
@@ -1884,9 +1894,9 @@ class XivoCTICommand(BaseCommand):
                         duinfo1 = '%s/%s' % (uinfo1.get('astid'), uinfo1.get('xivo_userid'))
                 if uinfo2:
                         duinfo2 = '%s/%s' % (uinfo2.get('astid'), uinfo2.get('xivo_userid'))
-                log.info('%s UNLINK %s %s callerid=%s (phone trunk)=(%s %s) user=%s (%s)'
+                log.info('%s UNLINK1 %s %s callerid=%s (phone trunk)=(%s %s) user=%s (%s)'
                          % (astid, uid1, chan1, clid1, phoneid1, trunkid1, duinfo1, where))
-                log.info('%s UNLINK %s %s callerid=%s (phone trunk)=(%s %s) user=%s'
+                log.info('%s UNLINK2 %s %s callerid=%s (phone trunk)=(%s %s) user=%s'
                          % (astid, uid2, chan2, clid2, phoneid2, trunkid2, duinfo2))
                 
                 # update the phones statuses
@@ -1962,7 +1972,7 @@ class XivoCTICommand(BaseCommand):
                                 del self.queues_channels_list[astid][chan1]
                                 extraevent = {'xivo_queuename' : qname}
                                 self.__sheet_alert__('agentunlinked', astid, CONTEXT_UNKNOWN, event, extraevent)
-
+                                
                 lstinfos = [uinfo1, uinfo2]
                 if uinfo1_ag not in lstinfos:
                         lstinfos.append(uinfo1_ag)
@@ -2048,6 +2058,7 @@ class XivoCTICommand(BaseCommand):
                 # 21 - Call rejected (attempting *8 when noone to pickup)
                 # 24 - "lost" Call suspended
                 # 27 - Destination out of order
+                # 28 - Invalid number format (incomplete number)
                 # 34 - Circuit/channel congestion
                 
                 if uid in self.ignore_dtmf[astid]:
@@ -4112,6 +4123,10 @@ class XivoCTICommand(BaseCommand):
                         if agentnum:
                                 ## self.__agent__(uinfo, ['pause_all'])
                                 self.__ami_execute__(astid, 'agentlogoff', agentnum)
+                                agentlogoff_retry = threading.Timer(0.1, self.__callback_timer__, ('agentlogoff',))
+                                agentlogoff_retry.start()
+                                self.timerthreads_agentlogoff_retry[agentlogoff_retry] = {'astid' : astid,
+                                                                                          'agentnum' : agentnum}
                                 self.__fill_user_ctilog__(uinfo, 'agent_logout')
                 return
         
@@ -4119,7 +4134,6 @@ class XivoCTICommand(BaseCommand):
                 for userinfo in self.ulist_ng.keeplist.itervalues():
                         self.__logout_agent__(userinfo)
                 return
-        
         
         def regular_update(self):
                 """
@@ -4602,8 +4616,8 @@ class XivoCTICommand(BaseCommand):
                 tosend = { 'class' : 'directory',
                            'payload' : ';'.join(self.ctxlist.display_header[ctx]) + ';' + ';'.join(mylines) }
                 return self.__cjson_encode__(tosend)
-
-
+        
+        
         def __build_customers_bydirdef__(self, dirname, searchpattern, z, reversedir):
                 fullstatlist = []
                 
