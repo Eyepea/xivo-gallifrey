@@ -1320,12 +1320,17 @@ class XivoCTICommand(BaseCommand):
                                                 if capaids is None or uinfo.get('capaid') in capaids:
                                                         if 'subscribe' in uinfo:
                                                                 self.__send_msg_to_cti_client__(uinfo, fulllines)
-                                elif whom == 'all':
+                                elif whom == 'all-astid-context':
+                                        for uinfo in self.ulist_ng.keeplist.itervalues():
+                                                if astid == uinfo.get('astid') and context == uinfo.get('context'):
+                                                        if capaids is None or uinfo.get('capaid') in capaids:
+                                                                self.__send_msg_to_cti_client__(uinfo, fulllines)
+                                elif whom == 'all-astid':
                                         for uinfo in self.ulist_ng.keeplist.itervalues():
                                                 if astid == uinfo.get('astid'):
                                                         if capaids is None or uinfo.get('capaid') in capaids:
                                                                 self.__send_msg_to_cti_client__(uinfo, fulllines)
-                                elif whom == 'reallyall':
+                                elif whom == 'all':
                                         for uinfo in self.ulist_ng.keeplist.itervalues():
                                                 if capaids is None or uinfo.get('capaid') in capaids:
                                                         self.__send_msg_to_cti_client__(uinfo, fulllines)
@@ -1333,7 +1338,6 @@ class XivoCTICommand(BaseCommand):
                                         log.warning('__sheet_alert__ (%s) : unknown destination <%s> in <%s>'
                                                     % (astid, whom, where))
                 return calleridsolved
-        
         
         def __phoneid_from_channel__(self, astid, channel):
                 ret = None
