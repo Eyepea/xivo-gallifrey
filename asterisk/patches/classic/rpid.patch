@@ -1,8 +1,8 @@
 2009-03-06  Corentin Le Gall <clegall@proformatique.com>
 
 	pf_manager_dtmf.patch
-	$Revision: 5190 $
-	$Date: 2009-01-26 14:58:10 +0100 (Mon, 26 Jan 2009) $
+	$Revision$
+	$Date$
         RPID management
 
         http://bugs.digium.com/view.php?id=8824
@@ -1998,7 +1998,7 @@ Index: asterisk-1.4.23.1/funcs/func_connectedline.c
 +
 +#include "asterisk.h"
 +
-+ASTERISK_FILE_VERSION(__FILE__, "$Revision: 00001 $")
++ASTERISK_FILE_VERSION(__FILE__, "$Revision$")
 +
 +#include <stdlib.h>
 +#include <stdio.h>
