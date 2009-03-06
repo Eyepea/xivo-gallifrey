@@ -25,7 +25,6 @@ from xivo_agid import call_rights
 def _user_set_call_rights(agi, cursor, args):
     userid = agi.get_variable('XIVO_USERID')
     dstnum = agi.get_variable('XIVO_DSTNUM')
-    context = agi.get_variable('XIVO_CONTEXT')
     outcallid = agi.get_variable('XIVO_OUTCALLID')
 
     cursor.query("SELECT ${columns} FROM rightcallexten",
@@ -90,7 +89,6 @@ def _user_set_call_rights(agi, cursor, args):
         call_rights.apply_rules(agi, res)
 
     if outcallid:
-        contextinclude = Context(agi, cursor, context).include
         cursor.query("SELECT ${columns} FROM rightcall "
                      "INNER JOIN rightcallmember "
                      "ON rightcall.id = rightcallmember.rightcallid "
@@ -99,10 +97,9 @@ def _user_set_call_rights(agi, cursor, args):
                      "WHERE rightcall.id IN " + rightcallids + " "
                      "AND rightcallmember.type = 'outcall' "
                      "AND outcall.id = %s "
-                     "AND outcall.context IN (" + ", ".join(["%s"] * len(contextinclude)) + ") "
                      "AND rightcall.commented = 0",
                      (call_rights.RIGHTCALL_AUTHORIZATION_COLNAME, call_rights.RIGHTCALL_PASSWD_COLNAME),
-                     [outcallid] + contextinclude)
+                     outcallid)
         res = cursor.fetchall()
         call_rights.apply_rules(agi, res)
 
