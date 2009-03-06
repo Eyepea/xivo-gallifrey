@@ -57,15 +57,17 @@ class AMIClass:
                 self.i = 1
                 self.aorgcmd = 'AOriginate'
                 self.actionid = None
-
+                return
+        
         def set_aoriginate(self, aoriginatecmd):
                 self.aorgcmd = aoriginatecmd
-
+                return
+        
         # \brief Connection to a socket.
         def connect(self):
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.connect(self.address)
-                s.settimeout(30)
+                s.settimeout(2)
                 self.fd = s.makefile('rw', 0)
                 s.close()
                 return
@@ -74,22 +76,25 @@ class AMIClass:
         def sendcommand(self, action, args, loopnum = 0):
                 ret = False
                 try:
-                        self.fd.write('Action: %s\r\n' % action)
+                        t0 = time.time()
+                        towritefields = ['Action: %s' % action]
                         for (name, value) in args:
                                 try:
-                                        towrite = '%s: %s\r\n' % (name, value)
-                                        self.fd.write(towrite)
+                                        towritefields.append('%s: %s' % (name, value))
                                 except Exception:
-                                        log.exception('(sendcommand %s : %s = %s (%r))'
+                                        log.exception('(sendcommand build %s : %s = %s (%r))'
                                                       % (action, name, value, value))
                         if self.actionid:
-                                self.fd.write('ActionId: %s\r\n' % self.actionid)
+                                towritefields.append('ActionId: %s' % self.actionid)
                                 self.actionid = None
-                        self.fd.write('\r\n')
+                        towritefields.append('\r\n')
+                        
+                        self.fd.write('\r\n'.join(towritefields))
                         self.fd.flush()
                         ret = True
                 except Exception:
-                        log.exception('(action %s)' % action)
+                        t1 = time.time()
+                        log.exception('(sendcommand %s timespent=%f)' % (action, (t1 - t0)))
                         ret = False
                 if ret == False:
                         if loopnum == 0:
