@@ -26,7 +26,7 @@ def _user_set_call_rights(agi, cursor, args):
     userid = agi.get_variable('XIVO_USERID')
     dstnum = agi.get_variable('XIVO_DSTNUM')
     context = agi.get_variable('XIVO_CONTEXT')
-    exten_pattern = agi.get_variable('XIVO_EXTENPATTERN')
+    outcallid = agi.get_variable('XIVO_OUTCALLID')
 
     cursor.query("SELECT ${columns} FROM rightcallexten",
                  ('rightcallid', 'exten'))
@@ -89,20 +89,20 @@ def _user_set_call_rights(agi, cursor, args):
         res = cursor.fetchall()
         call_rights.apply_rules(agi, res)
 
-    if exten_pattern:
+    if outcallid:
+        contextinclude = Context(agi, cursor, context).include
         cursor.query("SELECT ${columns} FROM rightcall "
                      "INNER JOIN rightcallmember "
                      "ON rightcall.id = rightcallmember.rightcallid "
-                     "INNER JOIN extenumbers "
-                     "ON rightcallmember.typeval = extenumbers.typeval "
+                     "INNER JOIN outcall "
+                     "ON rightcallmember.typeval = outcall.id "
                      "WHERE rightcall.id IN " + rightcallids + " "
                      "AND rightcallmember.type = 'outcall' "
-                     "AND extenumbers.exten = %s "
-                     "AND extenumbers.context = %s "
-                     "AND extenumbers.type = 'outcall' "
+                     "AND outcall.id = %s "
+                     "AND outcall.context IN (" + ", ".join(["%s"] * len(contextinclude)) + ") "
                      "AND rightcall.commented = 0",
                      (call_rights.RIGHTCALL_AUTHORIZATION_COLNAME, call_rights.RIGHTCALL_PASSWD_COLNAME),
-                     (exten_pattern, context))
+                     [outcallid] + contextinclude)
         res = cursor.fetchall()
         call_rights.apply_rules(agi, res)
 

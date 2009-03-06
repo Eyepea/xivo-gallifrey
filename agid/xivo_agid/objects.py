@@ -111,6 +111,14 @@ class BossSecretaryFilter:
         self.boss = None
         self.secretaries = None
 
+        contextinclude = Context(agi, cursor, boss_context).include
+
+        columns = ('callfilter.id', 'callfilter.bosssecretary',
+                   'callfilter.callfrom', 'callfilter.ringseconds',
+                   'callfiltermember.ringseconds',
+                   'userfeatures.id', 'userfeatures.protocol',
+                   'userfeatures.protocolid', 'userfeatures.name')
+
         cursor.query("SELECT ${columns} FROM callfilter "
                      "INNER JOIN callfiltermember "
                      "ON callfilter.id = callfiltermember.callfilterid "
@@ -121,16 +129,12 @@ class BossSecretaryFilter:
                      "AND callfiltermember.type = 'user' "
                      "AND callfiltermember.bstype = 'boss' "
                      "AND userfeatures.number = %s "
-                     "AND userfeatures.context = %s "
+                     "AND userfeatures.context IN (" + ", ".join(["%s"] * len(contextinclude)) + ") "
                      "AND userfeatures.internal = 0 "
                      "AND userfeatures.bsfilter = 'boss' "
                      "AND userfeatures.commented = 0",
-                     ('callfilter.id', 'callfilter.bosssecretary',
-                      'callfilter.callfrom', 'callfilter.ringseconds',
-                      'callfiltermember.ringseconds',
-                      'userfeatures.id', 'userfeatures.protocol',
-                      'userfeatures.protocolid', 'userfeatures.name'),
-                     (boss_number, boss_context))
+                     columns,
+                     [boss_number] + contextinclude)
         res = cursor.fetchone()
 
         if not res:
@@ -157,21 +161,23 @@ class BossSecretaryFilter:
         except (ValueError, LookupError), e:
             self.agi.dp_break(str(e))
 
+        columns = ('callfiltermember.active', 'userfeatures.id', 'userfeatures.protocol',
+                   'userfeatures.protocolid', 'userfeatures.name', 'userfeatures.number',
+                   'userfeatures.ringseconds')
+
         cursor.query("SELECT ${columns} FROM callfiltermember INNER JOIN userfeatures "
                      "ON callfiltermember.typeval = userfeatures.id "
                      "WHERE callfiltermember.callfilterid = %s "
                      "AND callfiltermember.type = 'user' "
                      "AND callfiltermember.bstype = 'secretary' "
                      "AND IFNULL(userfeatures.number,'') != '' "
-                     "AND userfeatures.context = %s "
+                     "AND userfeatures.context IN (" + ", ".join(["%s"] * len(contextinclude)) + ") "
                      "AND userfeatures.internal = 0 "
                      "AND userfeatures.bsfilter = 'secretary' "
                      "AND userfeatures.commented = 0 "
                      "ORDER BY priority ASC",
-                     ('callfiltermember.active', 'userfeatures.id', 'userfeatures.protocol',
-                      'userfeatures.protocolid', 'userfeatures.name', 'userfeatures.number',
-                      'userfeatures.ringseconds'),
-                     (self.id, boss_context))
+                     columns,
+                     [self.id] + contextinclude)
         res = cursor.fetchall()
 
         if not res:
@@ -267,14 +273,15 @@ class VMBox:
                          columns,
                          (xid,))
         elif mailbox and context:
+            contextinclude = Context(agi, cursor, context).include
             cursor.query("SELECT ${columns} FROM voicemail "
                          "INNER JOIN voicemailfeatures "
                          "ON voicemail.uniqueid = voicemailfeatures.voicemailid "
                          "WHERE voicemail.mailbox = %s "
-                         "AND voicemail.context = %s "
+                         "AND voicemail.context IN (" + ", ".join(["%s"] * len(contextinclude)) + ") "
                          "AND voicemail.commented = 0",
                          columns,
-                         (mailbox, context))
+                         [mailbox] + contextinclude)
         else:
             raise LookupError("id or mailbox@context must be provided to look up a voicemail entry")
 
@@ -312,13 +319,14 @@ class User:
                              columns,
                              (xid,))
         elif exten and context:
+                contextinclude = Context(agi, cursor, context).include
                 cursor.query("SELECT ${columns} FROM userfeatures "
                              "WHERE number = %s "
-                             "AND context = %s "
+                             "AND context IN (" + ", ".join(["%s"] * len(contextinclude)) + ") "
                              "AND internal = 0 "
                              "AND commented = 0",
                              columns,
-                             (exten, context))
+                             [exten] + context)
         else:
             raise LookupError("id or exten@context must be provided to look up an user entry")
 
@@ -491,16 +499,17 @@ class Group:
                          columns,
                          (xid,))
         elif number and context:
+            contextinclude = Context(agi, cursor, context).include
             cursor.query("SELECT ${columns} FROM groupfeatures "
                          "INNER JOIN queue "
                          "ON groupfeatures.name = queue.name "
                          "WHERE groupfeatures.number = %s "
-                         "AND groupfeatures.context = %s "
+                         "AND groupfeatures.context IN (" + ", ".join(["%s"] * len(contextinclude)) + ") "
                          "AND groupfeatures.deleted = 0 "
                          "AND queue.category = 'group' "
                          "AND queue.commented = 0",
                          columns,
-                         (number, context))
+                         [number] + contextinclude)
         else:
             raise LookupError("id or number@context must be provided to look up a group")
 
@@ -550,14 +559,15 @@ class MeetMe:
                          columns,
                          (xid,))
         elif number and context:
+            contextinclude = Context(agi, cursor, context).include
             cursor.query("SELECT ${columns} FROM meetmefeatures "
                          "INNER JOIN staticmeetme "
                          "ON meetmefeatures.meetmeid = staticmeetme.id "
                          "WHERE meetmefeatures.number = %s "
-                         "AND meetmefeatures.context = %s "
+                         "AND meetmefeatures.context IN (" + ", ".join(["%s"] * len(contextinclude)) + ") "
                          "AND staticmeetme.commented = 0",
                          columns,
-                         (number, context))
+                         [number] + contextinclude)
         else:
             raise LookupError("id or number@context must be provided to look up a conference room")
 
@@ -621,15 +631,16 @@ class Queue:
                          columns,
                          (xid,))
         elif number and context:
+            contextinclude = Context(agi, cursor, context).include
             cursor.query("SELECT ${columns} FROM queuefeatures "
                          "INNER JOIN queue "
                          "ON queuefeatures.name = queue.name "
                          "WHERE queuefeatures.number = %s "
-                         "AND queuefeatures.context = %s "
+                         "AND queuefeatures.context IN (" + ", ".join(["%s"] * len(contextinclude)) + ") "
                          "AND queue.commented = 0 "
                          "AND queue.category = 'queue'",
                          columns,
-                         (number, context))
+                         [number] + contextinclude)
         else:
             raise LookupError("id or number@context must be provided to look up a queue")
 
@@ -818,12 +829,13 @@ class DID:
                          columns,
                          (xid,))
         elif exten and context:
+            contextinclude = Context(agi, cursor, context).include
             cursor.query("SELECT ${columns} FROM incall "
                          "WHERE exten = %s "
-                         "AND context = %s "
+                         "AND context IN (" + ", ".join(["%s"] * len(contextinclude)) + ") "
                          "AND commented = 0",
                          columns,
-                         (exten, context))
+                         [exten] + contextinclude)
         else:
             raise LookupError("id or exten@context must be provided to look up a DID entry")
 
@@ -863,12 +875,13 @@ class Outcall:
                          columns,
                          (xid,))
         elif exten and context:
+            contextinclude = Context(agi, cursor, context).include
             cursor.query("SELECT ${columns} FROM outcall "
                          "WHERE exten = %s "
-                         "AND context = %s "
+                         "AND context IN (" + ", ".join(["%s"] * len(contextinclude)) + ") "
                          "AND commented = 0",
                          columns,
-                         (exten, context))
+                         [exten] + contextinclude)
         else:
             raise LookupError("id or exten@context must be provided to look up an outcall entry")
 
@@ -973,6 +986,43 @@ class VoiceMenu:
         self.id = xid
         self.name = res['name']
         self.context = res['context']
+
+
+class Context:
+    # TODO: Recursive inclusion
+    def __init__(self, agi, cursor, context):
+        self.agi = agi
+        self.cursor = cursor
+
+        columns = ('context.name', 'context.displayname',
+                   'context.entity', 'contextinclude.include')
+
+        cursor.query("SELECT ${columns} FROM context "
+                     "LEFT JOIN contextinclude "
+                     "ON context.name = contextinclude.context "
+                     "LEFT JOIN context AS contextinc "
+                     "ON contextinclude.include = contextinc.name "
+                     "AND context.commented = contextinc.commented "
+                     "WHERE context.name = %s "
+                     "AND context.commented = 0 "
+                     "AND (contextinclude.include IS NULL "
+                          "OR contextinc.name IS NOT NULL) "
+                     "ORDER BY contextinclude.priority ASC",
+                     columns,
+                     (context,))
+        res = cursor.fetchall()
+
+        if not res:
+            raise LookupError("Unable to find context entry (name: %s)" % (context,))
+
+        self.name = res[0]['context.name']
+        self.displayname = res[0]['context.displayname']
+        self.entity = res[0]['context.entity']
+        self.include = [self.name]
+
+        for row in res:
+            if row['contextinclude.include']:
+                self.include.append(row['contextinclude.include'])
 
 
 CALLERID_MATCHER = re.compile('^(?:"(.+)"|([a-zA-Z0-9\-\.\!%\*_\+`\'\~]+)) ?(?:<([0-9\*#]+)>)?$').match

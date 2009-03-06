@@ -39,6 +39,7 @@ def _did_set_call_rights(agi, cursor, args):
         call_rights.allow(agi)
 
     rightcallids = '(' + ','.join((str(el) for el in rightcallidset)) + ')'
+    contextinclude = Context(agi, cursor, context).include
     cursor.query("SELECT ${columns} FROM rightcall "
                  "INNER JOIN rightcallmember "
                  "ON rightcall.id = rightcallmember.rightcallid "
@@ -47,11 +48,11 @@ def _did_set_call_rights(agi, cursor, args):
                  "WHERE rightcall.id IN " + rightcallids + " "
                  "AND rightcallmember.type = 'incall' "
                  "AND extenumbers.exten = %s "
-                 "AND extenumbers.context = %s "
+                 "AND extenumbers.context IN (" + ", ".join(["%s"] * len(contextinclude)) + ") "
                  "AND extenumbers.type = 'incall' "
                  "AND rightcall.commented = 0",
                  (call_rights.RIGHTCALL_AUTHORIZATION_COLNAME, call_rights.RIGHTCALL_PASSWD_COLNAME),
-                 (exten_pattern, context))
+                 [exten_pattern] + contextinclude)
     res = cursor.fetchall()
     call_rights.apply_rules(agi, res)
     call_rights.allow(agi)

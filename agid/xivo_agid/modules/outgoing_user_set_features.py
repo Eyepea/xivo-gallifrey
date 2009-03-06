@@ -92,6 +92,8 @@ def outgoing_user_set_features(agi, cursor, args):
     if outcall.hangupringtime:
         agi.set_variable('XIVO_HANGUPRINGTIME', outcall.hangupringtime)
 
+    agi.set_variable('XIVO_OUTCALLID', outcall.id)
+    agi.set_variable('XIVO_CONTEXT', outcall.context)
     agi.set_variable('XIVO_CALLOPTIONS', options)
 
 agid.register(outgoing_user_set_features)
