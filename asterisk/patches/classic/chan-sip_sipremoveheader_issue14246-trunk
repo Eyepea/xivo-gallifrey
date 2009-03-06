@@ -1,7 +1,7 @@
 Index: asterisk-1.4.23.1/channels/chan_sip.c
 ===================================================================
---- asterisk-1.4.23.1.orig/channels/chan_sip.c	2009-02-26 11:16:54.000000000 +0100
-+++ asterisk-1.4.23.1/channels/chan_sip.c	2009-02-26 11:16:54.000000000 +0100
+--- asterisk-1.4.23.1.orig/channels/chan_sip.c	2009-02-27 11:35:13.000000000 +0100
++++ asterisk-1.4.23.1/channels/chan_sip.c	2009-02-27 11:35:13.000000000 +0100
 @@ -1427,6 +1427,7 @@
  static int function_sipchaninfo_read(struct ast_channel *chan, char *cmd, char *data, char *buf, size_t len);
  static int sip_dtmfmode(struct ast_channel *chan, void *data);

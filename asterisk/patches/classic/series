@@ -42,3 +42,4 @@ pf_sip_mwi_for_thomson_st2030s.patch
 voicemail_duration_issue14406
 h_extension_regression_issue14122
 
+# rpid.patch
