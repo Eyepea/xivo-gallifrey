@@ -154,7 +154,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		if($rs === false || ($nb = count($rs)) === 0)
 			return(false);
 
-		$r = array();
+		$r = $identity = array();
 
 		for($i = 0;$i < $nb;$i++)
 		{
@@ -163,7 +163,6 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 			$ref = &$r[$rs[$i]['id']];
 			$ref['exten'] = $this->_service->display_extension($ref['exten']);
 
-			$identity = array();
 			$identity['exten'] = $ref['exten'];
 			$identity['context'] = $ref['context'];
 

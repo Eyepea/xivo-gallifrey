@@ -22,6 +22,7 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_voicemail extends xivo_application_asterisk_abstract
 {
+	var $_dso		= null;
 	var $_voicemail		= false;
 	var $_voicemailfeatures	= false;
 	var $_contextmember	= false;
@@ -30,9 +31,14 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 	var $_contextlist	= array();
 	var $_modules		= array();
 
-	function xivo_application_service_asterisk_voicemail(&$service,$param=null,$components=true)
+	function xivo_application_service_asterisk_voicemail(&$service,&$dso,$param=null,$components=true)
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
+
+		if(is_object($dso) === false)
+			trigger_error('Invalid Datastorage object',E_USER_ERROR);
+
+		$this->_dso = &$dso;
 
 		if(($this->_vmfeatures = &$this->_service->get_module('voicemailfeatures')) === false
 		|| ($this->_voicemail = &$this->_service->get_module('voicemail')) === false)
@@ -122,13 +128,63 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 		return($r);
 	}
 
+	function get_voicemail_search($search,$disable=null,$order=null,$limit=null,$assoc=false)
+	{
+		return($this->_get_voicemail('search',$disable,$search,$order,$limit,$assoc));
+	}
+
 	function get_voicemail_list($disable=null,$order=null,$limit=null,$assoc=false)
 	{
-		if(($rs = $this->_voicemail->get_all($disable,true,$order,$limit,$assoc)) !== false
-		&& empty($rs) === true)
-			$rs = false;
+		return($this->_get_voicemail('list',$disable,null,$order,$limit,$assoc));
+	}
 
-		$this->_cnt = $this->_voicemail->get_cnt();
+	function _get_voicemail($action,$disable=null,$search='',$order=null,$limit=null,$assoc=false)
+	{
+		$action = (string) $action;
+		$search = strval($search);
+
+		$rs = false;
+
+		switch($action)
+		{
+			case 'search':
+				$rs = $this->_dso->search($search,$disable,$order,$limit);
+
+				$this->_cnt = $this->_dso->get_cnt();
+
+				if($rs === false || ($nb = count($rs)) === 0)
+					return(false);
+
+				$r = $identity = array();
+
+				for($i = 0;$i < $nb;$i++)
+				{
+					$r[$rs[$i]['uniqueid']] = $rs[$i];
+
+					$ref = &$r[$rs[$i]['uniqueid']];
+
+					$identity['mailbox'] = $ref['mailbox'];
+					$identity['fullname'] = $ref['fullname'];
+					$identity['context'] = $ref['context'];
+
+					$ref['identity'] = $this->_voicemail->mk_identity($identity);
+					$ref['commented'] = (bool) $ref['commented'];
+				}
+
+				if(empty($r) === true)
+					return(false);
+				else if((bool) $assoc === false)
+					return(array_values($r));
+
+				return($r);
+			case 'list':
+			default:
+				if(($rs = $this->_voicemail->get_all($disable,true,$order,$limit,$assoc)) !== false
+				&& empty($rs) === true)
+					$rs = false;
+
+				$this->_cnt = $this->_voicemail->get_cnt();
+		}
 
 		return($rs);
 	}

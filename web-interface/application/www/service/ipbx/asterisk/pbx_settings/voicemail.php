@@ -20,11 +20,15 @@
 
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
 $page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
+$search = isset($_QR['search']) === true ? strval($_QR['search']) : '';
 
 $info = array();
 
 $param = array();
 $param['act'] = 'list';
+
+if($search !== '')
+	$param['search'] = $search;
 
 switch($act)
 {
@@ -147,7 +151,11 @@ switch($act)
 		$limit[0] = $prevpage * $nbbypage;
 		$limit[1] = $nbbypage;
 
-		$list = $appvoicemail->get_voicemail_list(null,$order,$limit);
+		if($search !== '')
+			$list = $appvoicemail->get_voicemail_search($search,null,$order,$limit);
+		else
+			$list = $appvoicemail->get_voicemail_list(null,$order,$limit);
+
 		$total = $appvoicemail->get_cnt();
 
 		if($list === false && $total > 0 && $prevpage > 0)
@@ -158,6 +166,7 @@ switch($act)
 
 		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
 		$_HTML->set_var('list',$list);
+		$_HTML->set_var('search',$search);
 }
 
 $menu = &$_HTML->get_module('menu');

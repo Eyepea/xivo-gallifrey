@@ -22,8 +22,6 @@ $form = &$this->get_module('form');
 $url = &$this->get_module('url');
 $dhtml = &$this->get_module('dhtml');
 
-$act = $this->get_var('act');
-
 if(($search = (string) $this->get_var('search')) === ''):
 	$search = $this->bbf('toolbar_fm_search');
 	$searchjs = '';
@@ -70,7 +68,7 @@ endif;
 				null,
 				$this->bbf('toolbar_opt_add'));
 
-if($act === 'list'):
+if($this->get_var('act') === 'list'):
 	echo	$url->img_html('img/menu/top/toolbar/bt-more.gif',
 			       $this->bbf('toolbar_opt_advanced'),
 			       'border="0"

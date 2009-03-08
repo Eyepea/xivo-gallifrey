@@ -18,19 +18,25 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-	$url = &$this->get_module('url');
-	$form = &$this->get_module('form');
-	$dhtml = &$this->get_module('dhtml');
+$url = &$this->get_module('url');
+$form = &$this->get_module('form');
+$dhtml = &$this->get_module('dhtml');
 
-	$pager = $this->get_var('pager');
-	$act = $this->get_var('act');
+$pager = $this->get_var('pager');
+$act = $this->get_var('act');
 
-	$page = $url->pager($pager['pages'],
-			    $pager['page'],
-			    $pager['prev'],
-			    $pager['next'],
-			    'service/ipbx/pbx_settings/voicemail',
-			    array('act' => $act));
+$param = array();
+
+if(($search = (string) $this->get_var('search')) !== ''):
+	$param['search'] = $search;
+endif;
+
+$page = $url->pager($pager['pages'],
+		    $pager['page'],
+		    $pager['prev'],
+		    $pager['next'],
+		    'service/ipbx/pbx_settings/voicemail',
+		    array('act' => $act,$param));
 ?>
 <div class="b-list">
 <?php
@@ -39,9 +45,19 @@
 	endif;
 ?>
 <form action="#" name="fm-voicemail-list" method="post" accept-charset="utf-8">
-<?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
-<?=$form->hidden(array('name' => 'act','value' => $act));?>
-<?=$form->hidden(array('name' => 'page','value' => $pager['page']));?>
+<?php
+	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
+				    'value'	=> XIVO_SESS_ID)),
+
+		$form->hidden(array('name'	=> 'act',
+				    'value'	=> $act)),
+
+		$form->hidden(array('name'	=> 'page',
+				    'value'	=> $pager['page'])),
+
+		$form->hidden(array('name'	=> 'search',
+				    'value'	=> ''));
+?>
 <table cellspacing="0" cellpadding="0" border="0">
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
@@ -106,7 +122,8 @@
 					'service/ipbx/pbx_settings/voicemail',
 					array('act'	=> 'delete',
 					      'id'	=> $ref['uniqueid'],
-					      'page'	=> $pager['page']),
+					      'page'	=> $pager['page'],
+					      $param),
 					'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',
 					$this->bbf('opt_delete'));
 ?>

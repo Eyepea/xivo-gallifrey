@@ -18,16 +18,55 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+$form = &$this->get_module('form');
 $url = &$this->get_module('url');
 $dhtml = &$this->get_module('dhtml');
 
-echo	$url->href_html($url->img_html('img/menu/top/toolbar/bt-add.gif',
-				       $this->bbf('toolbar_opt_add'),
-				       'border="0"'),
-			'service/ipbx/pbx_settings/voicemail',
-			'act=add',
-			null,
-			$this->bbf('toolbar_opt_add'));
+if(($search = (string) $this->get_var('search')) === ''):
+	$search = $this->bbf('toolbar_fm_search');
+	$searchjs = '';
+else:
+	$searchjs = ' xivo_fm[\'fm-voicemail-list\'][\'search\'].value = \''.$dhtml->escape($search).'\';';
+endif;
+
+?>
+<form action="#" method="post" accept-charset="utf-8">
+<?php
+	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
+				    'value'	=> XIVO_SESS_ID)),
+
+		$form->hidden(array('name'	=> 'act',
+				    'value'	=> 'list'));
+?>
+	<div class="fm-field">
+<?php
+		echo	$form->text(array('name'	=> 'search',
+					  'id'		=> 'it-search',
+					  'size'	=> 20,
+					  'field'	=> false,
+					  'value'	=> $search,
+					  'default'	=> $this->bbf('toolbar_fm_search')),
+				    'onfocus="this.value = this.value === \''.$dhtml->escape($this->bbf('toolbar_fm_search')).'\'
+							   ? \'\'
+							   : this.value;
+					      xivo_fm_set_onfocus(this);"'),
+
+			$form->image(array('name'	=> 'submit',
+					   'id'		=> 'it-subsearch',
+					   'src'	=> $url->img('img/menu/top/toolbar/bt-search.gif'),
+					   'field'	=> false,
+					   'alt'	=> $this->bbf('toolbar_fm_search')));
+?>
+	</div>
+</form>
+<?php
+	echo	$url->href_html($url->img_html('img/menu/top/toolbar/bt-add.gif',
+					       $this->bbf('toolbar_opt_add'),
+					       'border="0"'),
+				'service/ipbx/pbx_settings/voicemail',
+				'act=add',
+				null,
+				$this->bbf('toolbar_opt_add'));
 
 if($this->get_var('act') === 'list'):
 	echo	$url->img_html('img/menu/top/toolbar/bt-more.gif',
@@ -43,12 +82,14 @@ if($this->get_var('act') === 'list'):
 		<li>
 			<a href="#"
 			   onclick="xivo_fm['fm-voicemail-list']['act'].value = 'enables';
+				    <?=$searchjs?>
 				    xivo_fm['fm-voicemail-list'].submit();">
 				<?=$this->bbf('toolbar_adv_menu_enable');?></a>
 		</li>
 		<li>
 			<a href="#"
 			   onclick="xivo_fm['fm-voicemail-list']['act'].value = 'disables';
+				    <?=$searchjs?>
 				    xivo_fm['fm-voicemail-list'].submit();">
 				<?=$this->bbf('toolbar_adv_menu_disable');?></a>
 		</li>
@@ -62,6 +103,7 @@ if($this->get_var('act') === 'list'):
 			<a href="#"
 			   onclick="this.tmp = xivo_fm['fm-voicemail-list']['act'].value;
 				    xivo_fm['fm-voicemail-list']['act'].value = 'deletes';
+				    <?=$searchjs?>
 				    return(confirm('<?=$dhtml->escape($this->bbf('toolbar_adv_menu_delete_confirm'));?>')
 					   ? xivo_fm['fm-voicemail-list'].submit()
 					   : xivo_fm['fm-voicemail-list']['act'] = this.tmp);">
