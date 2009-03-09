@@ -72,7 +72,7 @@ def incoming_queue_set_features(agi, cursor, args):
 
     queue.set_dial_actions()
 
-    if referer == ("queue:%s" % queue.id):
+    if referer == ("queue:%s" % queue.id) or referer.startswith("voicemenu:"):
         queue.set_caller_id()
 
 agid.register(incoming_queue_set_features)

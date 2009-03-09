@@ -58,7 +58,7 @@ def incoming_group_set_features(agi, cursor, args):
 
     group.set_dial_actions()
 
-    if referer == ("group:%s" % group.id):
+    if referer == ("group:%s" % group.id) or referer.startswith("voicemenu:"):
         group.set_caller_id()
 
 agid.register(incoming_group_set_features)
