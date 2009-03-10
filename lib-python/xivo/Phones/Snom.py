@@ -129,10 +129,10 @@ class Snom(PhoneVendorMixin):
         Entry point to generate the provisioned configuration for
         this phone.
         """
-	try:
+       try:
             template_file = open(self.SNOM_SPEC_DIR + self.phone['macaddr'].replace(":", "") + "-template.cfg")
-	except IOError, (errno, strerr):
-	    log.debug("Get commom template because no phone template : " + errno + " " + strerr)
+        except IOError, (errno, strerr):
+            log.debug("Get commom template because no phone template : " + errno + " " + strerr)
             template_file = open(self.SNOM_SPEC_TEMPLATE)
         template_lines = template_file.readlines()
         template_file.close()
