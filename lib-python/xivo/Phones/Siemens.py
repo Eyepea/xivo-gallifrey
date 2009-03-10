@@ -396,8 +396,11 @@ class Siemens(PhoneVendorMixin):
         this phone.
         """
         common_file, phone_file = Siemens.get_config_filename(self.phone['model'], self.phone['macaddr'])
-
-        template_file = open(os.path.join(self.TEMPLATES_DIR, "siemens-%s" % common_file))
+	try:
+       	    template_file = open(os.path.join(self.SIEMENS_COMMON_DIR, self.phone['macaddr'] + "-template.cfg"))
+	except IOError, (errno, strerr):
+	    log.debug("Get commom template because no phone template : " + errno + " " + strerr)
+            template_file = open(os.path.join(self.TEMPLATES_DIR, "siemens-%s" % common_file))
         template_lines = template_file.readlines()
         tmp_filename = os.path.join(self.SIEMENS_COMMON_DIR, "%s.tmp" % phone_file)
         cfg_filename = tmp_filename[:-4]

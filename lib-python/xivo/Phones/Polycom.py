@@ -93,11 +93,15 @@ class Polycom(PhoneVendorMixin):
         self.__action('reboot', self.POLYCOM_COMMON_HTTP_USER, self.POLYCOM_COMMON_HTTP_PASS)
 
     def __generate(self, provinfo):
-        template_file = open(os.path.join(self.TEMPLATES_DIR, "polycom-phone.cfg"))
+        macaddr = self.phone['macaddr'].replace(":", "").lower()
+	try:
+            template_file = open(os.path.join(self.POLYCOM_COMMON_DIR, macaddr + "-template.cfg"))
+	except IOError, (errno, strerr):
+            log.debug("Get commom template because no phone template : " + errno + " " + strerr)
+            template_file = open(os.path.join(self.TEMPLATES_DIR, "polycom-phone.cfg"))
         template_lines = template_file.readlines()
         template_file.close()
 
-        macaddr = self.phone['macaddr'].replace(":", "").lower()
         tmp_filename = os.path.join(self.POLYCOM_COMMON_DIR, macaddr + "-phone.cfg.tmp")
         cfg_filename = tmp_filename[:-4]
 

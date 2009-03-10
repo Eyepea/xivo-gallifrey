@@ -165,11 +165,16 @@ class Thomson(PhoneVendorMixin):
         return "\n".join(fk_config_lines)
 
     def __generate(self, provinfo):
+        macaddr = self.phone['macaddr'].replace(":", "")
+	model = self.phone['model'].upper()
+        try:
+            txt_template_file = open(self.TFTPROOT + macaddr + '-template.cfg')
+        except IOError, (errno, strerr):
+            log.debug("Get commom template because no phone template : " + errno + " " + strerr)
+            txt_template_file = open(self.THOMSON_SPEC_TXT_TEMPLATE + self.phone['model'].upper() + "_template.txt")
         txt_template_file = open(self.THOMSON_SPEC_TXT_TEMPLATE + self.phone['model'].upper() + "_template.txt")
         txt_template_lines = txt_template_file.readlines()
         txt_template_file.close()
-        macaddr = self.phone['macaddr'].replace(":", "")
-        model = self.phone['model'].upper()
         tmp_filename = self.THOMSON_SPEC_TXT_BASENAME + model + "_" + macaddr + ".txt.tmp"
         txt_filename = tmp_filename[:-4]
 

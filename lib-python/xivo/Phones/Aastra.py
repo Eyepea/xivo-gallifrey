@@ -170,7 +170,11 @@ class Aastra(PhoneVendorMixin):
         """
         model = self.phone['model']
         macaddr = self.phone['macaddr'].upper().replace(":", "")
-        template_file = open(os.path.join(self.TEMPLATES_DIR, "aastra-" + model + ".cfg"))
+	try:
+	    template_file = open(os.path.join(self.AASTRA_COMMON_DIR, macaddr + "-template.cfg")
+	except IOError, (errno, strerr):
+	    log.debug("Get commom template because no phone template : " + errno + " " + strerr)
+            template_file = open(os.path.join(self.TEMPLATES_DIR, "aastra-" + model + ".cfg"))
         template_lines = template_file.readlines()
         template_file.close()
         tmp_filename = os.path.join(self.AASTRA_COMMON_DIR, macaddr + '.cfg.tmp')

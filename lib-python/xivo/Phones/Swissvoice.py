@@ -112,6 +112,7 @@ class Swissvoice(PhoneVendorMixin):
         configuration for this phone.
         """
         macaddr = self.phone['macaddr'].lower().replace(":", "")
+	cfg_filename = os.path.join(self.SWISSVOICE_SPEC_DIR, macaddr + "_ip10.cfg")
         cfg_filename = os.path.join(self.SWISSVOICE_SPEC_DIR, macaddr + "_ip10.cfg")
         inf_filename = os.path.join(self.SWISSVOICE_SPEC_DIR, "..", macaddr + "_ip10.inf")
         try:
@@ -128,7 +129,12 @@ class Swissvoice(PhoneVendorMixin):
         Entry point to generate the provisioned configuration for
         this phone.
         """
-        cfg_template_file = open(self.SWISSVOICE_SPEC_CFG_TEMPLATE)
+	macaddr = self.phone['macaddr'].lower().replace(":", "")
+	try:
+            cfg_template_file = open(self.SWISSVOICE_SPEC_DIR +  macaddr + "-template.cfg")
+	except IOError, (errno, strerr):
+	    log.debug("Get commom template because no phone template : " + errno + " " + strerr)
+            cfg_template_file = open(self.SWISSVOICE_SPEC_CFG_TEMPLATE)
         cfg_template_lines = cfg_template_file.readlines()
         cfg_template_file.close()
         inf_template_file = open(self.SWISSVOICE_SPEC_INF_TEMPLATE)
