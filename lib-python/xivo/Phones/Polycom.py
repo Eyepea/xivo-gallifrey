@@ -94,9 +94,9 @@ class Polycom(PhoneVendorMixin):
 
     def __generate(self, provinfo):
         macaddr = self.phone['macaddr'].replace(":", "").lower()
-	try:
+        try:
             template_file = open(os.path.join(self.POLYCOM_COMMON_DIR, macaddr + "-template.cfg"))
-	except IOError, (errno, strerr):
+        except IOError, (errno, strerr):
             log.debug("Get commom template because no phone template : " + errno + " " + strerr)
             template_file = open(os.path.join(self.TEMPLATES_DIR, "polycom-phone.cfg"))
         template_lines = template_file.readlines()
