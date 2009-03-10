@@ -118,7 +118,10 @@ class Snom(PhoneVendorMixin):
         Entry point to generate the reinitialized (GUEST)
         configuration for this phone.
         """
-        htm_filename = os.path.join(self.SNOM_SPEC_DIR, "snom" + self.phone['model'] + "-" + self.phone['macaddr'].replace(":", "") + ".htm")
+        model = self.phone['model']
+        macaddr = self.phone['macaddr'].upper().replace(":", "")
+
+        htm_filename = os.path.join(self.SNOM_SPEC_DIR, "snom" + model + "-" + macaddr + ".htm")
         try:
             os.unlink(htm_filename)
         except OSError:
@@ -129,14 +132,18 @@ class Snom(PhoneVendorMixin):
         Entry point to generate the provisioned configuration for
         this phone.
         """
+        model = self.phone['model']
+        macaddr = self.phone['macaddr'].upper().replace(":", "")
+
         try:
-            template_file = open(self.SNOM_SPEC_DIR + self.phone['macaddr'].replace(":", "") + "-template.cfg")
-        except IOError, (errno, strerr):
-            log.debug("Get commom template because no phone template : " + errno + " " + strerr)
+            template_file = open(os.path.join(self.SNOM_SPEC_DIR, macaddr + "-template.cfg"))
+        except IOError, (errno, errstr):
+            log.debug("Use common template because there isn't phone template. (errno: %s, errstr: %s)", errno, errstr)
             template_file = open(self.SNOM_SPEC_TEMPLATE)
+
         template_lines = template_file.readlines()
         template_file.close()
-        tmp_filename = os.path.join(self.SNOM_SPEC_DIR, "snom" + self.phone['model'] + "-" + self.phone['macaddr'].replace(":", "") + ".htm.tmp")
+        tmp_filename = os.path.join(self.SNOM_SPEC_DIR, "snom" + model + "-" + macaddr + ".htm.tmp")
         htm_filename = tmp_filename[:-4]
 
         function_keys_config_lines = \

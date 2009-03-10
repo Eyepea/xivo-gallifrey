@@ -107,11 +107,13 @@ class Linksys(PhoneVendorMixin):
         """
         model = self.phone['model']
         macaddr = self.phone['macaddr'].lower().replace(":", "")
-	try:
+
+        try:
             template_file = open(os.path.join(self.LINKSYS_COMMON_DIR, macaddr + "-template.cfg"))
-	except IOError, (errno, strerr):
-	    log.debug("Get commom template because no phone template : " + errno + " " + strerr)
+        except IOError, (errno, errstr):
+            log.debug("Use common template because there isn't phone template. (errno: %s, errstr: %s)", errno, errstr)
             template_file = open(os.path.join(self.TEMPLATES_DIR, "linksys-" + model + ".cfg"))
+
         template_lines = template_file.readlines()
         template_file.close()
         tmp_filename = os.path.join(self.LINKSYS_COMMON_DIR, model + "-" + macaddr + ".cfg.tmp")

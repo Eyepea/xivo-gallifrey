@@ -112,7 +112,6 @@ class Swissvoice(PhoneVendorMixin):
         configuration for this phone.
         """
         macaddr = self.phone['macaddr'].lower().replace(":", "")
-	cfg_filename = os.path.join(self.SWISSVOICE_SPEC_DIR, macaddr + "_ip10.cfg")
         cfg_filename = os.path.join(self.SWISSVOICE_SPEC_DIR, macaddr + "_ip10.cfg")
         inf_filename = os.path.join(self.SWISSVOICE_SPEC_DIR, "..", macaddr + "_ip10.inf")
         try:
@@ -129,19 +128,19 @@ class Swissvoice(PhoneVendorMixin):
         Entry point to generate the provisioned configuration for
         this phone.
         """
-	macaddr = self.phone['macaddr'].lower().replace(":", "")
-	try:
-            cfg_template_file = open(self.SWISSVOICE_SPEC_DIR +  macaddr + "-template.cfg")
-	except IOError, (errno, strerr):
-	    log.debug("Get commom template because no phone template : " + errno + " " + strerr)
+        macaddr = self.phone['macaddr'].lower().replace(":", "")
+
+        try:
+            cfg_template_file = open(os.path.join(self.SWISSVOICE_SPEC_DIR, macaddr + "-template.cfg"))
+        except IOError, (errno, errstr):
+            log.debug("Use common template because there isn't phone template. (errno: %s, errstr: %s)", errno, errstr)
             cfg_template_file = open(self.SWISSVOICE_SPEC_CFG_TEMPLATE)
+
         cfg_template_lines = cfg_template_file.readlines()
         cfg_template_file.close()
         inf_template_file = open(self.SWISSVOICE_SPEC_INF_TEMPLATE)
         inf_template_lines = inf_template_file.readlines()
         inf_template_file.close()
-
-        macaddr = self.phone['macaddr'].lower().replace(":", "")
 
         cfg_tmp_filename = os.path.join(self.SWISSVOICE_SPEC_DIR, macaddr + "_ip10.cfg.tmp")
         inf_tmp_filename = os.path.join(self.SWISSVOICE_SPEC_DIR, "..", macaddr + "_ip10.inf.tmp")
@@ -149,7 +148,7 @@ class Swissvoice(PhoneVendorMixin):
         inf_filename = inf_tmp_filename[:-4]
 
         dtmf_swissvoice = "off"
-        dtmf_config     = provinfo["dtmfmode"]
+        dtmf_config     = provinfo['dtmfmode']
         if dtmf_config == "rfc2833":
             dtmf_swissvoice = "on inb"
         elif dtmf_config == "inband":

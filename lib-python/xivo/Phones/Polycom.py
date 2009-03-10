@@ -36,22 +36,22 @@ log = logging.getLogger("xivo.Phones.Polycom") # pylint: disable-msg=C0103
 
 class Polycom(PhoneVendorMixin):
 
-    POLYCOM_MODELS = (('spip_301','SPIP301'),
-                      ('spip_320','SPIP320'),
-                      ('spip_330','SPIP330'),
-                      ('spip_430','SPIP430'),
-                      ('spip_450','SPIP450'),
-                      ('spip_500','SPIP500'),
-                      ('spip_501','SPIP501'),
-                      ('spip_550','SPIP550'),
-                      ('spip_560','SPIP560'),
-                      ('spip_600','SPIP600'),
-                      ('spip_601','SPIP601'),
-                      ('spip_650','SPIP650'),
-                      ('spip_670','SPIP670'),
-                      ('spip_4000','SSIP4000'),
-                      ('spip_6000','SSIP6000'),
-                      ('spip_7000','SSIP7000'))
+    POLYCOM_MODELS = (('spip_301', 'SPIP301'),
+                      ('spip_320', 'SPIP320'),
+                      ('spip_330', 'SPIP330'),
+                      ('spip_430', 'SPIP430'),
+                      ('spip_450', 'SPIP450'),
+                      ('spip_500', 'SPIP500'),
+                      ('spip_501', 'SPIP501'),
+                      ('spip_550', 'SPIP550'),
+                      ('spip_560', 'SPIP560'),
+                      ('spip_600', 'SPIP600'),
+                      ('spip_601', 'SPIP601'),
+                      ('spip_650', 'SPIP650'),
+                      ('spip_670', 'SPIP670'),
+                      ('spip_4000', 'SSIP4000'),
+                      ('spip_6000', 'SSIP6000'),
+                      ('spip_7000', 'SSIP7000'))
 
     POLYCOM_SSIP_MODELS = ('ssip_4000', 'ssip_6000', 'ssip_7000')
 
@@ -94,11 +94,13 @@ class Polycom(PhoneVendorMixin):
 
     def __generate(self, provinfo):
         macaddr = self.phone['macaddr'].replace(":", "").lower()
+
         try:
             template_file = open(os.path.join(self.POLYCOM_COMMON_DIR, macaddr + "-template.cfg"))
-        except IOError, (errno, strerr):
-            log.debug("Get commom template because no phone template : " + errno + " " + strerr)
+        except IOError, (errno, errstr):
+            log.debug("Use common template because there isn't phone template. (errno: %s, errstr: %s)", errno, errstr)
             template_file = open(os.path.join(self.TEMPLATES_DIR, "polycom-phone.cfg"))
+
         template_lines = template_file.readlines()
         template_file.close()
 
