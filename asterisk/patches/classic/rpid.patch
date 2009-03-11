@@ -1822,7 +1822,7 @@ Index: asterisk-1.4.23.1/channels/chan_sip.c
  			/* ignore means "don't do anything with it" but still have to 
  			   respond appropriately  */
  			ignore = TRUE;
-@@ -17031,6 +17154,9 @@
+@@ -17033,6 +17156,9 @@
  	} else if (!strcasecmp(v->name, "t38pt_usertpsource")) {
  		ast_set_flag(&mask[1], SIP_PAGE2_UDPTL_DESTINATION);
  		ast_set2_flag(&flags[1], ast_true(v->value), SIP_PAGE2_UDPTL_DESTINATION);
