@@ -39,14 +39,14 @@ log = logging.getLogger("xivo.Phones.Linksys") # pylint: disable-msg=C0103
 
 class Linksys(PhoneVendorMixin):
 
-    LINKSYS_MODELS = (('spa901','SPA-901'),
-                      ('spa921','SPA-921'),
-                      ('spa922','SPA-922'),
-                      ('spa941','SPA-941'),
-                      ('spa942','SPA-942'),
-                      ('spa962','SPA-962'),
-                      ('spa3102','SPA-3102'),
-                      ('pap2t','PAP2T'))
+    LINKSYS_MODELS = (('spa901', 'SPA-901'),
+                      ('spa921', 'SPA-921'),
+                      ('spa922', 'SPA-922'),
+                      ('spa941', 'SPA-941'),
+                      ('spa942', 'SPA-942'),
+                      ('spa962', 'SPA-962'),
+                      ('spa3102', 'SPA-3102'),
+                      ('pap2t', 'PAP2T'))
 
     LINKSYS_MACADDR_PREFIX = ('1:00:0e:08', '1:00:18:f8', '1:00:1c:10', '1:00:1e:e5', '1:00:1d:7e')
 
@@ -106,13 +106,20 @@ class Linksys(PhoneVendorMixin):
         this phone.
         """
         model = self.phone['model']
-        macaddr = self.phone['macaddr'].lower().replace(":", "")
+        macaddr = self.phone['macaddr'].replace(":", "").lower()
 
         try:
-            template_file = open(os.path.join(self.LINKSYS_COMMON_DIR, macaddr + "-template.cfg"))
+            template_specific_path = os.path.join(self.LINKSYS_COMMON_DIR, macaddr + "-template.cfg")
+            log.debug("Trying phone specific template %r", template_specific_path)
+            template_file = open(template_specific_path)
         except IOError, (errno, errstr):
-            log.debug("Use common template because there isn't phone template. (errno: %s, errstr: %s)", errno, errstr)
-            template_file = open(os.path.join(self.TEMPLATES_DIR, "linksys-" + model + ".cfg"))
+            template_common_path = os.path.join(self.TEMPLATES_DIR, "linksys-" + model + ".cfg")
+            log.debug("Could not open phone specific template %r (errno: %r, errstr: %r). Using common template %r",
+                      template_specific_path,
+                      errno,
+                      errstr,
+                      template_common_path)
+            template_file = open(template_common_path)
 
         template_lines = template_file.readlines()
         template_file.close()

@@ -265,7 +265,7 @@ class Siemens(PhoneVendorMixin):
     def get_config_filename(model, macaddr):
         "Get configuration filename."
         model = model.lower()
-        macaddr = macaddr.lower().replace(':', '')
+        macaddr = macaddr.replace(':', '').lower()
 
         return ("%s.ini" % model, "%s-%s.ini" % (model, macaddr))
 
@@ -398,11 +398,18 @@ class Siemens(PhoneVendorMixin):
         common_file, phone_file = Siemens.get_config_filename(self.phone['model'], self.phone['macaddr'])
 
         try:
-            template_file = open(os.path.join(self.SIEMENS_COMMON_DIR,
-                                              phone_file.split('-', 1)[1][:-4] + "-template.cfg"))
+            template_specific_path = os.path.join(self.SIEMENS_COMMON_DIR,
+                                                  phone_file.split('-', 1)[1][:-4] + "-template.cfg")
+            log.debug("Trying phone specific template %r", template_specific_path)
+            template_file = open(template_specific_path)
         except IOError, (errno, errstr):
-            log.debug("Use common template because there isn't phone template. (errno: %s, errstr: %s)", errno, errstr)
-            template_file = open(os.path.join(self.TEMPLATES_DIR, "siemens-%s" % common_file))
+            template_common_path = os.path.join(self.TEMPLATES_DIR, "siemens-%s" % common_file)
+            log.debug("Could not open phone specific template %r (errno: %r, errstr: %r). Using common template %r",
+                      template_specific_path,
+                      errno,
+                      errstr,
+                      template_common_path)
+            template_file = open(template_common_path)
 
         template_lines = template_file.readlines()
         tmp_filename = os.path.join(self.SIEMENS_COMMON_DIR, "%s.tmp" % phone_file)

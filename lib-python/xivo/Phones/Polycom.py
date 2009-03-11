@@ -96,10 +96,17 @@ class Polycom(PhoneVendorMixin):
         macaddr = self.phone['macaddr'].replace(":", "").lower()
 
         try:
-            template_file = open(os.path.join(self.POLYCOM_COMMON_DIR, macaddr + "-template.cfg"))
+            template_specific_path = os.path.join(self.POLYCOM_COMMON_DIR, macaddr + "-template.cfg")
+            log.debug("Trying phone specific template %r", template_specific_path)
+            template_file = open(template_specific_path)
         except IOError, (errno, errstr):
-            log.debug("Use common template because there isn't phone template. (errno: %s, errstr: %s)", errno, errstr)
-            template_file = open(os.path.join(self.TEMPLATES_DIR, "polycom-phone.cfg"))
+            template_common_path = os.path.join(self.TEMPLATES_DIR, "polycom-phone.cfg")
+            log.debug("Could not open phone specific template %r (errno: %r, errstr: %r). Using common template %r",
+                      template_specific_path,
+                      errno,
+                      errstr,
+                      template_common_path)
+            template_file = open(template_common_path)
 
         template_lines = template_file.readlines()
         template_file.close()

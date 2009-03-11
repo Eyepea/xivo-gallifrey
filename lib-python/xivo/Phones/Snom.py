@@ -119,7 +119,7 @@ class Snom(PhoneVendorMixin):
         configuration for this phone.
         """
         model = self.phone['model']
-        macaddr = self.phone['macaddr'].upper().replace(":", "")
+        macaddr = self.phone['macaddr'].replace(":", "").upper()
 
         htm_filename = os.path.join(self.SNOM_SPEC_DIR, "snom" + model + "-" + macaddr + ".htm")
         try:
@@ -133,12 +133,18 @@ class Snom(PhoneVendorMixin):
         this phone.
         """
         model = self.phone['model']
-        macaddr = self.phone['macaddr'].upper().replace(":", "")
+        macaddr = self.phone['macaddr'].replace(":", "").upper()
 
         try:
-            template_file = open(os.path.join(self.SNOM_SPEC_DIR, macaddr + "-template.cfg"))
+            template_specific_path = os.path.join(self.SNOM_SPEC_DIR, macaddr + "-template.cfg")
+            log.debug("Trying phone specific template %r", template_specific_path)
+            template_file = open(template_specific_path)
         except IOError, (errno, errstr):
-            log.debug("Use common template because there isn't phone template. (errno: %s, errstr: %s)", errno, errstr)
+            log.debug("Could not open phone specific template %r (errno: %r, errstr: %r). Using common template %r",
+                      template_specific_path,
+                      errno,
+                      errstr,
+                      self.SNOM_SPEC_TEMPLATE)
             template_file = open(self.SNOM_SPEC_TEMPLATE)
 
         template_lines = template_file.readlines()

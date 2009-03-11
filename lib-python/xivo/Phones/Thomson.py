@@ -102,6 +102,9 @@ class TimeoutingTelnet(telnetlib.Telnet):
 
 class Thomson(PhoneVendorMixin):
 
+    THOMSON_MODELS = (('2022s', 'ST2022S'),
+                      ('2030s', 'ST2030S'))
+
     THOMSON_USER = "admin"          # XXX
     THOMSON_PASSWD = "superpass"    # XXX
 
@@ -121,8 +124,7 @@ class Thomson(PhoneVendorMixin):
 
     def __init__(self, phone):
         PhoneVendorMixin.__init__(self, phone)
-        if self.phone['model'] != "2022s" and \
-           self.phone['model'] != "2030s":
+        if self.phone['model'] not in [x[0] for x in self.THOMSON_MODELS]:
             raise ValueError, "Unknown Thomson model %r" % self.phone['model']
 
     @staticmethod
@@ -166,13 +168,20 @@ class Thomson(PhoneVendorMixin):
 
     def __generate(self, provinfo):
         model = self.phone['model'].upper()
-        macaddr = self.phone['macaddr'].replace(":", "")
+        macaddr = self.phone['macaddr'].replace(":", "").upper()
 
         try:
-            txt_template_file = open(os.path.join(self.THOMSON_COMMON_DIR, macaddr + "-template.cfg"))
+            txt_template_specific_path = os.path.join(self.THOMSON_COMMON_DIR, macaddr + "-template.cfg")
+            log.debug("Trying phone specific template %r", txt_template_specific_path)
+            txt_template_file = open(txt_template_specific_path)
         except IOError, (errno, errstr):
-            log.debug("Use common template because there isn't phone template. (errno: %s, errstr: %s)", errno, errstr)
-            txt_template_file = open(self.THOMSON_SPEC_TXT_TEMPLATE + model + "_template.txt")
+            txt_template_common_path = open(self.THOMSON_SPEC_TXT_TEMPLATE + model + "_template.txt")
+            log.debug("Could not open phone specific template %r (errno: %r, errstr: %r). Using common template %r",
+                      txt_template_specific_path,
+                      errno,
+                      errstr,
+                      txt_template_common_path)
+            txt_template_file = open(txt_template_common_path)
 
         txt_template_lines = txt_template_file.readlines()
         txt_template_file.close()
@@ -263,7 +272,7 @@ class Thomson(PhoneVendorMixin):
     @classmethod
     def get_phones(cls):
         "Report supported phone models for this vendor."
-        return (("2022s", "2022S"), ("2030s", "2030S"))
+        return tuple([(x[0], x[0].upper()) for x in cls.THOMSON_MODELS])
 
     # Entry points for the AGI
 
@@ -291,24 +300,18 @@ class Thomson(PhoneVendorMixin):
 
     @classmethod
     def get_dhcp_classes_and_sub(cls, addresses):
-        for line in (
-            'class "ThomsonST2022S" {\n',
-            '    match if option user-class = "Thomson ST2022S";\n',
-            '    log("class ThomsonST2022S");\n',
-            '    next-server %s;\n' % addresses['bootServer'],
-            '    option bootfile-name "Thomson/ST2022S";\n',
-            '}\n',
-            '\n',
-            'class "ThomsonST2030S" {\n',
-            '    match if option user-class = "Thomson ST2030S";\n',
-            '    log("class ThomsonST2030S");\n',
-            '    next-server %s;\n' % addresses['bootServer'],
-            '    option bootfile-name "Thomson/ST2030S";\n',
-            '}\n',
-            '\n'):
-            yield line
+        for x in cls.THOMSON_MODELS:
+            for line in (
+                'class "Thomson%s" {\n' % x[1],
+                '    match if option user-class = "Thomson %s";\n' % x[1],
+                '    log("boot Thomson%s");\n' % x[1],
+                '    option bootfile-name "Thomson/%s";\n' % x[1],
+                '    option tftp-server-name "%s";\n' % addresses['bootServer'],
+                '}\n',
+                '\n'):
+                yield line
 
     @classmethod
     def get_dhcp_pool_lines(cls):
-        yield '        allow members of "ThomsonST2022S";\n'
-        yield '        allow members of "ThomsonST2030S";\n'
+        for x in cls.THOMSON_MODELS:
+            yield '        allow members of "Thomson%s";\n' % x[1]

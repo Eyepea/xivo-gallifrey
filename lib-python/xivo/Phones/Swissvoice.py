@@ -111,7 +111,7 @@ class Swissvoice(PhoneVendorMixin):
         Entry point to generate the reinitialized (GUEST)
         configuration for this phone.
         """
-        macaddr = self.phone['macaddr'].lower().replace(":", "")
+        macaddr = self.phone['macaddr'].replace(":", "").lower()
         cfg_filename = os.path.join(self.SWISSVOICE_SPEC_DIR, macaddr + "_ip10.cfg")
         inf_filename = os.path.join(self.SWISSVOICE_SPEC_DIR, "..", macaddr + "_ip10.inf")
         try:
@@ -128,12 +128,18 @@ class Swissvoice(PhoneVendorMixin):
         Entry point to generate the provisioned configuration for
         this phone.
         """
-        macaddr = self.phone['macaddr'].lower().replace(":", "")
+        macaddr = self.phone['macaddr'].replace(":", "").lower()
 
         try:
-            cfg_template_file = open(os.path.join(self.SWISSVOICE_SPEC_DIR, macaddr + "-template.cfg"))
+            cfg_template_specific_path = os.path.join(self.SWISSVOICE_SPEC_DIR, macaddr + "-template.cfg")
+            log.debug("Trying phone specific template %r", cfg_template_specific_path)
+            cfg_template_file = open(cfg_template_specific_path)
         except IOError, (errno, errstr):
-            log.debug("Use common template because there isn't phone template. (errno: %s, errstr: %s)", errno, errstr)
+            log.debug("Could not open phone specific template %r (errno: %r, errstr: %r). Using common template %r",
+                      cfg_template_specific_path,
+                      errno,
+                      errstr,
+                      self.SWISSVOICE_SPEC_CFG_TEMPLATE)
             cfg_template_file = open(self.SWISSVOICE_SPEC_CFG_TEMPLATE)
 
         cfg_template_lines = cfg_template_file.readlines()
