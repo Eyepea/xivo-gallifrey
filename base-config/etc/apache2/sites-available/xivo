@@ -1,7 +1,3 @@
-
-# Used for stats/monitoring
-ExtendedStatus On
-
 NameVirtualHost *:443
 
 <VirtualHost *:443>
@@ -16,6 +12,7 @@ NameVirtualHost *:443
 	SSLVerifyClient none
 
 	Include "/usr/share/pf-xivo-web-interface/apache.conf"
+	Include "/etc/apache2/pf-sites/"
 </VirtualHost>
 
 
@@ -67,14 +64,6 @@ NameVirtualHost *:80
 	# Used for Snom phones
 	<Location /service/ipbx/web_services.php/phonebook/search>
 		Allow from all
-	</Location>
-
-	# Used for stats/monitoring
-	<Location /server-status>
-		SetHandler server-status
-		Order deny,allow
-		Deny from all
-		Allow from 127.0.0.1
 	</Location>
 
 	Include "/usr/share/pf-xivo-web-interface/apache.conf"
