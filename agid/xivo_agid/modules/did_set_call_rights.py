@@ -19,6 +19,7 @@ __license__ = """
 """
 
 from xivo_agid import agid
+from xivo_agid import objects
 from xivo_agid import call_rights
 
 def _did_set_call_rights(agi, cursor, args):
@@ -39,7 +40,7 @@ def _did_set_call_rights(agi, cursor, args):
         call_rights.allow(agi)
 
     rightcallids = '(' + ','.join((str(el) for el in rightcallidset)) + ')'
-    contextinclude = Context(agi, cursor, context).include
+    contextinclude = objects.Context(agi, cursor, context).include
     cursor.query("SELECT ${columns} FROM rightcall "
                  "INNER JOIN rightcallmember "
                  "ON rightcall.id = rightcallmember.rightcallid "
