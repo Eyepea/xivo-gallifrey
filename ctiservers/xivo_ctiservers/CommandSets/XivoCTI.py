@@ -1276,8 +1276,12 @@ class XivoCTICommand(BaseCommand):
                                         itemdir.update(idir)
                                         if callingnum[:2] == '00':
                                                 internatprefix = callingnum[2:6]
+                                        # TODO : make the db-XXX to calleridsolved configurable
                                         if 'db-fullname' in itemdir:
                                                 calleridsolved = itemdir['db-fullname']
+                                        else:
+                                                if 'db-firstname' in itemdir and 'db-lastname' in itemdir:
+                                                        calleridsolved = itemdir['db-firstname'] + ' ' + itemdir['db-lastname']
                         # print where, itemdir
                         
                         # 3/4
@@ -1320,20 +1324,27 @@ class XivoCTICommand(BaseCommand):
                                                 if capaids is None or uinfo.get('capaid') in capaids:
                                                         if 'subscribe' in uinfo:
                                                                 self.__send_msg_to_cti_client__(uinfo, fulllines)
-                                elif whom == 'all-astid-context':
+                                                                
+                                elif whom == 'all-astid-context': # match asterisks and contexts
                                         for uinfo in self.ulist_ng.keeplist.itervalues():
                                                 if astid == uinfo.get('astid') and context == uinfo.get('context'):
                                                         if capaids is None or uinfo.get('capaid') in capaids:
                                                                 self.__send_msg_to_cti_client__(uinfo, fulllines)
-                                elif whom == 'all-astid':
+                                elif whom == 'all-context': # accross asterisks + match contexts
+                                        for uinfo in self.ulist_ng.keeplist.itervalues():
+                                                if context == uinfo.get('context'):
+                                                        if capaids is None or uinfo.get('capaid') in capaids:
+                                                                self.__send_msg_to_cti_client__(uinfo, fulllines)
+                                elif whom == 'all-astid': # accross contexts + match asterisks
                                         for uinfo in self.ulist_ng.keeplist.itervalues():
                                                 if astid == uinfo.get('astid'):
                                                         if capaids is None or uinfo.get('capaid') in capaids:
                                                                 self.__send_msg_to_cti_client__(uinfo, fulllines)
-                                elif whom == 'all':
+                                elif whom == 'all': # accross asterisks and contexts
                                         for uinfo in self.ulist_ng.keeplist.itervalues():
                                                 if capaids is None or uinfo.get('capaid') in capaids:
                                                         self.__send_msg_to_cti_client__(uinfo, fulllines)
+                                                        
                                 else:
                                         log.warning('__sheet_alert__ (%s) : unknown destination <%s> in <%s>'
                                                     % (astid, whom, where))
@@ -2082,8 +2093,8 @@ class XivoCTICommand(BaseCommand):
                 phoneid = self.__phoneid_from_channel__(astid, chan)
                 trunkid = self.__trunkid_from_channel__(astid, chan)
                 
-                log.info('%s HANGUP (%s %s cause=<%s>) (phone trunk)=(%s %s) %s'
-                         % (astid, uid, chan, causetxt, phoneid, trunkid, self.uniqueids[astid][uid]))
+                log.info('%s HANGUP (%s %s cause=%s (%s)) (phone trunk)=(%s %s) %s'
+                         % (astid, uid, chan, cause, causetxt, phoneid, trunkid, self.uniqueids[astid][uid]))
                 
                 phidlist_hup = self.weblist['phones'][astid].ami_hangup(uid)
                 tridlist_hup = self.weblist['trunks'][astid].ami_hangup(uid)
@@ -2381,7 +2392,7 @@ class XivoCTICommand(BaseCommand):
                 if numtolookup:
                         [pf, country] = self.findcountry(numtolookup)
                         td = '%s ami_newcallerid : foreign number %s : %s => %s' % (astid, numtolookup, pf, country)
-                        log.info(td.encode('utf8'))
+                        # log.info(td.encode('utf8'))
                 return
         
         def ami_newexten(self, astid, event):
@@ -2790,7 +2801,8 @@ class XivoCTICommand(BaseCommand):
                                 self.weblist['agents'][astid].keeplist[agent_id]['stats'].update({'link' : action})
                 else:
                         log.warning('%s sip@queue (__build_agupdate__) %s %s' % (astid, action, agent_channel))
-                        
+                        return
+                
                 arrgs = { 'action' : action,
                           'astid' : astid,
                           'agent_channel' : agent_channel }
@@ -4858,7 +4870,7 @@ class XivoCTICommand(BaseCommand):
                                         lst = []
                                         for queuename, qprops in self.weblist['queues'][astid].keeplist.iteritems():
                                                 lst.append('%s:%s' % (queuename, qprops['stats']['Holdtime']))
-                                                fastagi.set_variable('XIVO_QUEUEHOLDTIME', ','.join(lst))
+                                        fastagi.set_variable('XIVO_QUEUEHOLDTIME', ','.join(lst))
                         except Exception:
                                 log.exception('handle_fagi %s %s : %s %s' % (astid, function, astid, fastagi.args))
                         return
