@@ -694,6 +694,7 @@ class XivoCTICommand(BaseCommand):
                                         for function in ['del', 'add']:
                                                 if updatestatus[function]:
                                                         log.info('%s %s %s : %s' % (astid, itemname, function, updatestatus[function]))
+                                                        # TODO: do one deltalist per context and send them only to that context ?
                                                         tosend = { 'class' : itemname,
                                                                    'function' : function,
                                                                    'astid' : astid,
@@ -1010,12 +1011,14 @@ class XivoCTICommand(BaseCommand):
                                 os.write(self.queued_threads_pipe[1], 'uinfo')
                 return
         
-        def __send_msg_to_cti_clients__(self, strupdate):
-                log.debug('__send_msg_to_cti_clients__ %s' % (strupdate))
+        def __send_msg_to_cti_clients__(self, strupdate, context=None):
+                log.debug('__send_msg_to_cti_clients__ context=%s %s' % (context, strupdate))
                 try:
                         if strupdate is not None:
                                 for userinfo in self.ulist_ng.keeplist.itervalues():
-                                        self.__send_msg_to_cti_client__(userinfo, strupdate)
+                                        # check if the user should receive this message depending on the context
+                                        if context==None or context==userinfo['context']:
+                                                self.__send_msg_to_cti_client__(userinfo, strupdate)
                 except Exception:
                         log.exception('(__send_msg_to_cti_clients__)')
                 return
@@ -1473,10 +1476,12 @@ class XivoCTICommand(BaseCommand):
                 for phid in phoneids:
                         tosend = self.weblist['phones'][astid].status(phid)
                         tosend['astid'] = astid
-                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
+                        context = phid.split('.')[1]
+                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), context)
                 for trid in trunkids:
                         tosend = self.weblist['trunks'][astid].status(trid)
                         tosend['astid'] = astid
+                        #TODO : add context ?
                         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 return
         
@@ -2101,10 +2106,13 @@ class XivoCTICommand(BaseCommand):
                 for pp in phidlist_hup:
                         tosend = self.weblist['phones'][astid].status(pp)
                         tosend['astid'] = astid
-                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
+                        context = tosend['phoneid'].split('.')[1]
+                        log.debug('   HUP phones context=%s tosend=%s' % (context, tosend))
+                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), context)
                 for pp in tridlist_hup:
                         tosend = self.weblist['trunks'][astid].status(pp)
                         tosend['astid'] = astid
+                        log.debug('   HUP trunks tosend=%s' % (tosend))
                         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 phidlist_clear = self.weblist['phones'][astid].clear(uid)
                 tridlist_clear = self.weblist['trunks'][astid].clear(uid)
@@ -2275,7 +2283,7 @@ class XivoCTICommand(BaseCommand):
                 context = event.get('Context')
                 exten   = event.get('Exten')
                 if hint and hint.find('/') > 0:
-                        #log.info('amiresponse_extensionstatus hint=%s status=%s' % (hint, status))
+                        log.info('amiresponse_extensionstatus context=%s hint=%s status=%s' % (context, hint, status))
                         phoneref = '.'.join([hint.split('/')[0].lower(), context,
                                              hint.split('/')[1], exten])
                         if phoneref in self.weblist['phones'][astid].keeplist:
@@ -2283,7 +2291,7 @@ class XivoCTICommand(BaseCommand):
                                         # only sends information if the status changed
                                         tosend = self.weblist['phones'][astid].status(phoneref)
                                         tosend['astid'] = astid
-                                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
+                                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), context)
                 else:
                         log.warning('%s : undefined hint for %s' % (astid, event))
                         # {'Status': '4', 'Hint': 'user:218', 'Exten': '218', 'ActionID': 'pPKvoLQ97b', 'Context': 'default', ''})
@@ -2301,13 +2309,13 @@ class XivoCTICommand(BaseCommand):
                 status  = event.get('Status')
                 
                 for phoneref, b in self.weblist['phones'][astid].keeplist.iteritems():
-                        #log.info('ami_extensionstatus context=%s status=%s' % (context, status))
                         if b['number'] == exten and b['context'] == context:
+                                log.info('ami_extensionstatus exten=%s context=%s status=%s' % (exten, context, status))
                                 if self.weblist['phones'][astid].ami_extstatus(phoneref, status):
                                         # only sends information if the status changed
                                         tosend = self.weblist['phones'][astid].status(phoneref)
                                         tosend['astid'] = astid
-                                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
+                                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), context)
                 return
         
         def ami_channelreload(self, astid, event):
@@ -2443,7 +2451,7 @@ class XivoCTICommand(BaseCommand):
                 timeout = event.get('Timeout')
                 uid     = event.get('Uniqueid')
                 uidfrom = event.get('UniqueidFrom')
-                log.info('%s PARKEDCALL %s %s %s %s' % (astid, uidfrom, uid, cfrom, channel))
+                log.info('%s PARKEDCALL %s %s %s %s %s' % (astid, uidfrom, uid, cfrom, channel, exten))
                 if uid in self.uniqueids[astid]:
                         ctuid = self.uniqueids[astid][uid]
                         ctuid['parkexten-callback'] = exten
@@ -2451,8 +2459,10 @@ class XivoCTICommand(BaseCommand):
                         self.weblist['phones'][astid].ami_parkedcall(phoneid, uid, ctuid)
                         tosend = self.weblist['phones'][astid].status(phoneid)
                         tosend['astid'] = astid
+                        # TODO check context ???
                         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend))
                 self.parkedcalls[astid][channel] = event
+                # TODO check context ???
                 tosend = { 'class' : 'parkcall',
                            'payload' : { 'status' : 'parkedcall',
                                          'astid' : astid,
@@ -2469,7 +2479,7 @@ class XivoCTICommand(BaseCommand):
                 exten   = event.get('Exten')
                 uid     = event.get('Uniqueid')
                 uidfrom = event.get('UniqueidFrom')
-                log.info('%s UNPARKEDCALL %s %s %s %s' % (astid, uidfrom, uid, cfrom, channel))
+                log.info('%s UNPARKEDCALL %s %s %s %s %s' % (astid, uidfrom, uid, cfrom, channel, exten))
                 phoneidsrc = self.__phoneid_from_channel__(astid, cfrom)
                 uinfo = self.__userinfo_from_phoneid__(astid, phoneidsrc)
                 phoneiddst = self.__phoneid_from_channel__(astid, channel)
@@ -3555,6 +3565,7 @@ class XivoCTICommand(BaseCommand):
         # END of AMI events
         
         def phones_update(self, function, statusbase, statusextended):
+                log.debug('phones_update() %s,%s,%s' % (function, statusbase, statusextended))
                 strupdate = ''
                 if function in ['update', 'noupdate']:
                         tosend = { 'class' : 'phones',
@@ -3781,7 +3792,7 @@ class XivoCTICommand(BaseCommand):
                                         elif classcomm in ['phones', 'users', 'agents', 'queues', 'groups']:
                                                 function = icommand.struct.get('function')
                                                 if function == 'getlist':
-                                                        repstr = self.__getlist__(userinfo, classcomm)
+                                                        repstr = self.__getlist__(userinfo, classcomm, context)
                                                         
                                         elif classcomm == 'agent':
                                                 argums = icommand.struct.get('command')
@@ -4172,7 +4183,7 @@ class XivoCTICommand(BaseCommand):
                 return
         
         
-        def __getlist__(self, userinfo, ccomm):
+        def __getlist__(self, userinfo, ccomm, context=None):
                 capaid = userinfo.get('capaid')
                 ucapa = self.capas[capaid].all()
                 if ccomm == 'users':
@@ -4206,10 +4217,12 @@ class XivoCTICommand(BaseCommand):
                                 senduinfo['statedetails'] = statedetails
                                 senduinfo['agentnum'] = self.__agentnum__(uinfo)
                                 senduinfo['voicemailnum'] = self.__voicemailnum__(uinfo)
-                                fullstat.append(senduinfo)
+                                if context == None or context == senduinfo['context']:
+                                        fullstat.append(senduinfo)
                                 
                 elif ccomm == 'phones':
                         # XXX define capas ?
+                        # TODO : filter by context
                         fullstat = {}
                         try:
                                 for astid, iplist in self.weblist['phones'].iteritems():
@@ -4226,18 +4239,20 @@ class XivoCTICommand(BaseCommand):
                                                         try:
                                                                 agent_number = agprop['number']
                                                                 agent_channel = 'Agent/%s' % agent_number
-                                                                newlst[agent_number] = { 'properties' : agprop['stats'],
-                                                                                         'firstname' : agprop['firstname'],
-                                                                                         'lastname' : agprop['lastname'],
-                                                                                         'context' : agprop['context'],
-                                                                                         'queues' : self.weblist['queues'][astid].get_queues_byagent(agent_channel)
-                                                                                         }
+                                                                if context == None or context == agprop['context']:
+                                                                        newlst[agent_number] = { 'properties' : agprop['stats'],
+                                                                                                 'firstname' : agprop['firstname'],
+                                                                                                 'lastname' : agprop['lastname'],
+                                                                                                 'context' : agprop['context'],
+                                                                                                 'queues' : self.weblist['queues'][astid].get_queues_byagent(agent_channel)
+                                                                                                 }
                                                         except Exception:
                                                                 log.exception('(sendlist) comm=%s astid=%s agent_id=%s'
                                                                               % (ccomm, astid, agent_id))
                                                 fullstat.append({ 'astid' : astid,
                                                                   'newlist' : newlst })
                 elif ccomm == 'queues':
+                        # TODO : filter by context
                         fullstat = []
                         if self.capas[capaid].match_funcs(ucapa, 'agents'):
                                 for astid, qlist in self.weblist['queues'].iteritems():
@@ -4246,6 +4261,7 @@ class XivoCTICommand(BaseCommand):
                                                           'queuestats' : qlist.get_queuestats_long()
                                                           })
                 elif ccomm == 'groups':
+                        # TODO : filter by context
                         fullstat = []
                         if self.capas[capaid].match_funcs(ucapa, 'agents'):
                                 for astid, qlist in self.weblist['groups'].iteritems():
