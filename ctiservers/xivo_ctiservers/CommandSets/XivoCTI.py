@@ -3306,6 +3306,7 @@ class XivoCTICommand(BaseCommand):
                 calleridnum = event.get('CallerIDNum')
                 calleridname = event.get('CallerIDName').decode('utf8')
                 
+                # warning : channel empty when appliname is 'VoiceMail'
                 actionid = self.amilist.execute(astid, 'getvar', channel, 'MONITORED')
                 self.getvar_requests[actionid] = {'channel' : channel, 'variable' : 'MONITORED'}
                 
@@ -3337,7 +3338,7 @@ class XivoCTICommand(BaseCommand):
                         # context.startswith('macro-phonestatus'):
                         # *10
                         return
-                elif appliname in ['Queue', 'AppQueue', 'BackGround', 'VoiceMailMain', 'AgentLogin']:
+                elif appliname in ['Queue', 'AppQueue', 'BackGround', 'VoiceMail', 'VoiceMailMain', 'AgentLogin']:
                         log.info('%s ami_status : %s %s' % (astid, appliname, applidata))
                         return
                 elif appliname == '':
@@ -3352,6 +3353,7 @@ class XivoCTICommand(BaseCommand):
                 if state == 'Up':
                         link = event.get('Link')
                         
+                        # warning : very rarely, link seems to be None here
                         seconds = event.get('Seconds')
                         priority = event.get('Priority')
                         context = event.get('Context')
@@ -3362,7 +3364,7 @@ class XivoCTICommand(BaseCommand):
                                     priority, context, extension, seconds,
                                     calleridnum, calleridname))
                         self.uniqueids[astid][uniqueid].update({'link' : link})
-
+                        
 #                        phoneid = self.__phoneid_from_channel__(astid, channel)
 #                        if phoneid in self.weblist['phones'][astid].keeplist:
 #                                if seconds is None:
@@ -3811,8 +3813,9 @@ class XivoCTICommand(BaseCommand):
                                                 if self.capas[capaid].match_funcs(ucapa, 'agents'):
                                                         astid = icommand.struct.get('astid')
                                                         agent_number = icommand.struct.get('agentid') # agent_number = userinfo.get('agentnum')
-                                                        agent_channel = 'Agent/%s' % agent_number
-                                                        if astid in self.weblist['queues'] and astid in self.weblist['agents']:
+                                                        if agent_number:
+                                                            agent_channel = 'Agent/%s' % agent_number
+                                                            if astid in self.weblist['queues'] and astid in self.weblist['agents']:
                                                                 # lookup the logged in/out status of agent agent_number and sends it back to the requester
                                                                 agent_id = self.weblist['agents'][astid].reverse_index.get(agent_number)
                                                                 if agent_id in self.weblist['agents'][astid].keeplist:

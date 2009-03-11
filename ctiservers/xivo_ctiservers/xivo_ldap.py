@@ -63,8 +63,8 @@ class xivo_ldap:
                         else:
                                 self.l.simple_bind_s()
                                 
-                except ldap.LDAPError:
-                        log.exception('__init__ : ldap.LDAPError (%s %s)' % (self.l, iuri))
+                except ldap.LDAPError, exc:
+                        log.exception('__init__ : ldap.LDAPError (%s %s %s)' % (self.l, iuri, exc))
                         self.l = None
                         
         def getldap(self, filter, attrib):
@@ -74,8 +74,9 @@ class xivo_ldap:
                                                    filter,
                                                    attrib)
                         return resultat
-                except ldap.LDAPError:
-                        log.exception('getldap : ldap.LDAPError (%s %s) retrying to connect' % (self.l, self.uri))
+                except ldap.LDAPError, exc1:
+                        # display exc1 since sometimes the error stack looks too long for the logfile
+                        log.exception('getldap : ldap.LDAPError (%s %s %s) retrying to connect' % (self.l, self.uri, exc1))
                         self.__init__(self.iuri)
                         try:
                                 resultat = self.l.search_s(self.dbname,
@@ -83,5 +84,5 @@ class xivo_ldap:
                                                            filter,
                                                            attrib)
                                 return resultat
-                        except ldap.LDAPError:
-                                log.exception('getldap : ldap.LDAPError (%s %s) could not reconnect' % (self.l, self.uri))
+                        except ldap.LDAPError, exc2:
+                                log.exception('getldap : ldap.LDAPError (%s %s %s) could not reconnect' % (self.l, self.uri, exc2))
