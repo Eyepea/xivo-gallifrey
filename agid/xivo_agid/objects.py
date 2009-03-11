@@ -326,7 +326,7 @@ class User:
                              "AND internal = 0 "
                              "AND commented = 0",
                              columns,
-                             [exten] + context)
+                             [exten] + contextinclude)
         else:
             raise LookupError("id or exten@context must be provided to look up an user entry")
 
