@@ -1204,6 +1204,7 @@ class XivoCTICommand(BaseCommand):
                                                 userinfos.append(uinfo)
                                 itemdir['xivo-callerid'] = r_caller
                                 itemdir['xivo-calledid'] = r_called
+                                itemdir['xivo-calleridname'] = extraevent.get('caller_name')
                                 itemdir['xivo-tomatch-callerid'] = r_caller
                                 itemdir['xivo-channel'] = extraevent.get('channel')
                                 itemdir['xivo-uniqueid'] = extraevent.get('uniqueid')
@@ -4943,6 +4944,7 @@ class XivoCTICommand(BaseCommand):
                 log.info(td.encode('utf8'))
                 
                 extraevent = {'caller_num' : calleridnum,
+                              'caller_name' : calleridname,
                               'called_num' : callednum,
                               'uniqueid' : uniqueid,
                               'channel' : channel}
