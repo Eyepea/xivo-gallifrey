@@ -96,18 +96,21 @@ class PhoneList(AnyList):
                 return
         
         def ami_rename(self, oldphoneid, newphoneid, oldname, newname, uid):
+                # rename channels
                 for phoneid, v in self.keeplist.iteritems():
                         for k, kk in v['comms'].iteritems():
-                                if kk['thischannel'] == oldname:
+                                if kk.get('thischannel') == oldname:
                                         kk['thischannel'] = newname
-                                if kk['peerchannel'] == oldname:
+                                if kk.get('peerchannel') == oldname:
                                         kk['peerchannel'] = newname
+                # move channels from one phone to another
                 if oldphoneid and newphoneid and oldphoneid != newphoneid:
                         if uid in self.keeplist[oldphoneid]['comms'] and uid not in self.keeplist[newphoneid]['comms']:
                                 self.keeplist[newphoneid]['comms'][uid] = self.keeplist[oldphoneid]['comms'][uid]
                                 del self.keeplist[oldphoneid]['comms'][uid]
                         else:
                                 log.warning('(ami_rename) %s : could not move from %s to %s' % (uid, oldphoneid, newphoneid))
+                                #log.warning('(ami_rename) %s : %s ---- %s' % (uid, self.keeplist[oldphoneid]['comms'], self.keeplist[oldphoneid]['comms']))
                 return
         
         def ami_rename_totrunk(self, oldphoneid, oldname, newname, uid):
