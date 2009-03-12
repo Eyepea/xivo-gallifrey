@@ -1265,6 +1265,7 @@ class XivoCTICommand(BaseCommand):
                                 itemdir['xivo-uniqueid'] = uid
                                 itemdir['xivo-queuename'] = queue
                                 itemdir['xivo-callerid'] = clid
+                                itemdir['xivo-calleridname'] = event.get('CallerIDName').decode('utf8')
                                 if len(clid) > 7 and clid != '<unknown>':
                                         itemdir['xivo-tomatch-callerid'] = clid
                                         
