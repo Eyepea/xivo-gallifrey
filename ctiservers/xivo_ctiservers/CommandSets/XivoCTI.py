@@ -2435,7 +2435,7 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def ami_newchannel(self, astid, event):
-                # log.info('%s ami_newchannel : %s' % (astid, event))
+                log.info('%s ami_newchannel : %s' % (astid, event))
                 channel = event.get('Channel')
                 uniqueid = event.get('Uniqueid')
                 state = event.get('State')
@@ -2444,6 +2444,9 @@ class XivoCTICommand(BaseCommand):
                 self.channels[astid][channel] = uniqueid
                 if state == 'Rsrvd':
                         self.uniqueids[astid][uniqueid]['state'] = state
+                phoneid = self.__phoneid_from_channel__(astid, channel)
+                if phoneid:
+                    self.weblist['phones'][astid].ami_newchannel(phoneid, uniqueid, channel)
                 return
         
         def ami_parkedcall(self, astid, event):
@@ -2627,6 +2630,7 @@ class XivoCTICommand(BaseCommand):
                                         phoneref = '.'.join([agent_channel.split('/')[0].lower(), queuecontext,
                                                              agent_channel.split('/')[1], exten])
                                         if phoneref in uinfo.get('techlist'):
+                                                self.weblist['phones'][astid].updatepeerchan(phoneref, event.get('ChannelCalling'))
                                                 td = '%s ami_agentcalled (phone) %s %s %s' % (astid, queue, agent_channel, uinfo.get('fullname'))
                                                 log.info(td.encode('utf8'))
                                                 

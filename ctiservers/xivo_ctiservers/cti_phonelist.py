@@ -38,31 +38,41 @@ class PhoneList(AnyList):
                 AnyList.__init__(self, newurls)
                 return
         
+        def __createorupdate_comm__(self, phoneid, commid, infos):
+                if commid in self.keeplist[phoneid]['comms']:
+                    self.keeplist[phoneid]['comms'][commid].update(infos)
+                else:
+                    self.keeplist[phoneid]['comms'][commid] = infos
+
+        def updatepeerchan(self, phoneid, peerchan):
+                log.debug('phone::updatepeerchan %s %s' % (phoneid, peerchan))
+                # we are gessing which "comm" because there is only one !
+                if len(self.keeplist[phoneid]['comms'].keys()) == 1:
+                        commid = self.keeplist[phoneid]['comms'].keys()[0]
+                        self.__createorupdate_comm__(phoneid, commid, {'peerchannel' : peerchan})
+
+        def ami_newchannel(self, phoneid, uid, channel):
+                self.__createorupdate_comm__(phoneid, uid, {'thischannel':channel})
+
         def ami_dial(self, phoneidsrc, phoneiddst, uidsrc, uiddst, puidsrc, puiddst):
                 if phoneidsrc in self.keeplist:
-                        if uidsrc in self.keeplist[phoneidsrc]['comms']:
-                                pass
-                        else:
-                                infos = {'thischannel' : puidsrc.get('channel'),
-                                         'peerchannel' : puidsrc.get('dial'),
-                                         'status' : 'calling',
-                                         'time-dial' : 0,
-                                         #'calleridname' : puidsrc.get('calleridname'),
-                                         'calleridnum' : puidsrc.get('extension')
-                                         }
-                                self.keeplist[phoneidsrc]['comms'][uidsrc] = infos
+                        infos = {'thischannel' : puidsrc.get('channel'),
+                                 'peerchannel' : puidsrc.get('dial'),
+                                 'status' : 'calling',
+                                 'time-dial' : 0,
+                                 #'calleridname' : puidsrc.get('calleridname'),
+                                 'calleridnum' : puidsrc.get('extension')
+                                 }
+                        self.__createorupdate_comm__(phoneidsrc, uidsrc, infos)
                 if phoneiddst in self.keeplist:
-                        if uiddst in self.keeplist[phoneiddst]['comms']:
-                                pass
-                        else:
-                                infos = {'thischannel' : puiddst.get('channel'),
-                                         'peerchannel' : puiddst.get('dial'),
-                                         'status' : 'ringing',
-                                         'time-dial' : 0,
-                                         'calleridname' : puidsrc.get('calleridname'),
-                                         'calleridnum' : puidsrc.get('calleridnum')
-                                         }
-                                self.keeplist[phoneiddst]['comms'][uiddst] = infos
+                        infos = {'thischannel' : puiddst.get('channel'),
+                                 'peerchannel' : puiddst.get('dial'),
+                                 'status' : 'ringing',
+                                 'time-dial' : 0,
+                                 'calleridname' : puidsrc.get('calleridname'),
+                                 'calleridnum' : puidsrc.get('calleridnum')
+                                 }
+                        self.__createorupdate_comm__(phoneiddst, uiddst, infos)
                 return
         
         def ami_link(self, phoneidsrc, phoneiddst, uidsrc, uiddst, puidsrc, puiddst):
@@ -183,10 +193,7 @@ class PhoneList(AnyList):
                                  'time-link' : 0,
                                  'calleridnum' : 'Parqué'
                                  }
-                        if uid in self.keeplist[phoneid]['comms']:
-                                self.keeplist[phoneid]['comms'][uid].update(infos)
-                        else:
-                                self.keeplist[phoneid]['comms'][uid] = infos
+                        self.__createorupdate_comm__(phoneid, uid, infos)
                 return
         
         def ami_unparkedcall(self, phoneid, uid, ctuid):
