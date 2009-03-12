@@ -46,21 +46,19 @@ def in_callerid(agi, cursor, args):
         if section.has_option('strip'):
             str_strip = section.get('strip')
 
-            try:
+            if str_strip.is_digit():
                 strip = int(str_strip)
-            except ValueError:
-                strip = 0
 
-            if strip > 0:
-                callerid_num = callerid_num[strip:]
-                agi.set_variable('CALLERID(num)', callerid_num)
+                if strip > 0:
+                    callerid_num = callerid_num[strip:]
 
         if section.has_option('add'):
             add = section.get('add')
 
             if add:
                 callerid_num = add + callerid_num
-                agi.set_variable("CALLERID(num)", callerid_num)
+
+        agi.set_variable('CALLERID(all)', '"" <%s>' % callerid_num)
 
         return
 
