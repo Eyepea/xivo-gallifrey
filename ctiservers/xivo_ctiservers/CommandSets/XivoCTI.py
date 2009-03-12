@@ -2489,10 +2489,12 @@ class XivoCTICommand(BaseCommand):
                 if uidfrom in self.uniqueids[astid]:
                         ctuid = self.uniqueids[astid][uidfrom]
                         ctuid['parkexten-callback'] = event.get('CallerID')
+                        ctuid['peerchannel'] = channel
                         self.weblist['phones'][astid].ami_unparkedcall(phoneidsrc, uidfrom, ctuid)
                 if uid in self.uniqueids[astid]:
                         ctuid = self.uniqueids[astid][uid]
                         ctuid['parkexten-callback'] = uinfo.get('phonenum')
+                        ctuid['peerchannel'] = cfrom
                         self.weblist['phones'][astid].ami_unparkedcall(phoneiddst, uid, ctuid)
                 # a subsequent 'link' AMI event should make the new status transmitted
                 tosend = { 'class' : 'parkcall',

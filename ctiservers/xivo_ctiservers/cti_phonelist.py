@@ -191,9 +191,12 @@ class PhoneList(AnyList):
         
         def ami_unparkedcall(self, phoneid, uid, ctuid):
                 if phoneid in self.keeplist:
+                        log.debug('phone::ami_unparkedcall %s %s %s' % (phoneid, uid, ctuid))
                         if uid in self.keeplist[phoneid]['comms']:
                                 # parked channel
                                 infos = {'status' : 'linked-called',
+                                         'thischannel' : ctuid['channel'],
+                                         'peerchannel' : ctuid['peerchannel'],
                                          'time-link' : 0,
                                          'calleridnum' : ctuid['parkexten-callback']
                                          }
@@ -202,6 +205,7 @@ class PhoneList(AnyList):
                                 # cfrom
                                 infos = {'status' : 'linked-caller',
                                          'thischannel' : ctuid['channel'],
+                                         'peerchannel' : ctuid['peerchannel'],
                                          'time-link' : 0,
                                          'calleridnum' : ctuid['parkexten-callback']
                                          }
