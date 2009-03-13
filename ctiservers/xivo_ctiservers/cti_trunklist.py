@@ -1,3 +1,4 @@
+# vim: set fileencoding=utf-8 :
 # XIVO Daemon
 
 __version__   = '$Revision$'
@@ -24,6 +25,7 @@ __author__    = 'Corentin Le Gall'
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+import time
 from xivo_ctiservers.cti_anylist import AnyList
 
 log = logging.getLogger('trunklist')
@@ -52,6 +54,7 @@ class TrunkList(AnyList):
                                          'peerchannel' : puidsrc.get('dial'),
                                          'status' : 'calling',
                                          'time-dial' : 0,
+                                         'timestamp-dial' : time.time(),
                                          #'calleridname' : puidsrc.get('calleridname'),
                                          'calleridnum' : puidsrc.get('extension')
                                          }
@@ -64,6 +67,7 @@ class TrunkList(AnyList):
                                          'peerchannel' : puiddst.get('dial'),
                                          'status' : 'ringing',
                                          'time-dial' : 0,
+                                         'timestamp-dial' : time.time(),
                                          'calleridname' : puidsrc.get('calleridname'),
                                          'calleridnum' : puidsrc.get('calleridnum')
                                          }
@@ -74,13 +78,15 @@ class TrunkList(AnyList):
                 if trunkidsrc in self.keeplist:
                         if uidsrc in self.keeplist[trunkidsrc]['comms']:
                                 infos = {'status' : 'linked-caller',
-                                         'time-link' : 0
+                                         'time-link' : 0,
+                                         'timestamp-link' : time.time()
                                          }
                                 self.keeplist[trunkidsrc]['comms'][uidsrc].update(infos)
                 if trunkiddst in self.keeplist:
                         if uiddst in self.keeplist[trunkiddst]['comms']:
                                 infos = {'status' : 'linked-called',
-                                         'time-link' : 0
+                                         'time-link' : 0,
+                                         'timestamp-link' : time.time()
                                          }
                                 self.keeplist[trunkiddst]['comms'][uiddst].update(infos)
                 return
@@ -89,13 +95,15 @@ class TrunkList(AnyList):
                 if trunkidsrc in self.keeplist:
                         if uidsrc in self.keeplist[trunkidsrc]['comms']:
                                 infos = {'status' : 'unlinked-caller',
-                                         'time-link' : 0
+                                         'time-link' : 0,
+                                         'timestamp-link' : time.time()
                                          }
                                 self.keeplist[trunkidsrc]['comms'][uidsrc].update(infos)
                 if trunkiddst in self.keeplist:
                         if uiddst in self.keeplist[trunkiddst]['comms']:
                                 infos = {'status' : 'unlinked-called',
-                                         'time-link' : 0
+                                         'time-link' : 0,
+                                         'timestamp-link' : time.time()
                                          }
                                 self.keeplist[trunkiddst]['comms'][uiddst].update(infos)
                 return

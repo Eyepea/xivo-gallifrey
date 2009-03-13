@@ -3323,7 +3323,7 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def ami_status(self, astid, event):
-                # log.info('%s ami_status : %s' % (astid, event))
+                log.info('%s ami_status : %s' % (astid, event))
                 state = event.get('State')
                 appliname = event.get('Application')
                 applidata = event.get('AppData').split('|')
@@ -3408,10 +3408,12 @@ class XivoCTICommand(BaseCommand):
                                         status = 'linked-caller'
                                 else:
                                         status = 'linked-called'
+                                ts = int(uniqueid.split('.')[0])
                                 self.weblist['phones'][astid].keeplist[otherphoneid]['comms'][uniqueid] = { 'status' : status,
                                                                                                        'thischannel' : link,
                                                                                                        'peerchannel' : channel,
-                                                                                                       'time-link' : 0,
+                                                                                                       'time-link' : time.time() - ts,
+                                                                                                       'timestamp-link' : ts,
                                                                                                        'calleridnum' : calleridnum,
                                                                                                        'calleridname' : calleridname }
                         if context is not None:

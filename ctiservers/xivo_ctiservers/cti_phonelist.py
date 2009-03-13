@@ -70,6 +70,7 @@ class PhoneList(AnyList):
                                  'peerchannel' : puidsrc.get('dial'),
                                  'status' : 'calling',
                                  'time-dial' : 0,
+                                 'timestamp-dial' : time.time(),
                                  #'calleridname' : puidsrc.get('calleridname'),
                                  'calleridnum' : puidsrc.get('extension')
                                  }
@@ -79,6 +80,7 @@ class PhoneList(AnyList):
                                  'peerchannel' : puiddst.get('dial'),
                                  'status' : 'ringing',
                                  'time-dial' : 0,
+                                 'timestamp-dial' : time.time(),
                                  'calleridname' : puidsrc.get('calleridname'),
                                  'calleridnum' : puidsrc.get('calleridnum')
                                  }
@@ -116,13 +118,15 @@ class PhoneList(AnyList):
                 if phoneidsrc in self.keeplist:
                         if uidsrc in self.keeplist[phoneidsrc]['comms']:
                                 infos = {'status' : 'unlinked-caller',
-                                         'time-link' : 0
+                                         'time-link' : 0,
+                                         'timestamp-link' : time.time(),
                                          }
                                 self.keeplist[phoneidsrc]['comms'][uidsrc].update(infos)
                 if phoneiddst in self.keeplist:
                         if uiddst in self.keeplist[phoneiddst]['comms']:
                                 infos = {'status' : 'unlinked-called',
-                                         'time-link' : 0
+                                         'time-link' : 0,
+                                         'timestamp-link' : time.time(),
                                          }
                                 self.keeplist[phoneiddst]['comms'][uiddst].update(infos)
                 return
@@ -211,8 +215,10 @@ class PhoneList(AnyList):
         
         def ami_parkedcall(self, phoneid, uid, ctuid):
                 if phoneid in self.keeplist:
+                        # write "parque" in unicode !
                         infos = {'status' : 'linked-caller',
                                  'time-link' : 0,
+                                 'timestamp-link' : time.time(),
                                  'calleridnum' : 'Parqué'
                                  }
                         self.__createorupdate_comm__(phoneid, uid, infos)
@@ -226,7 +232,8 @@ class PhoneList(AnyList):
                                 infos = {'status' : 'linked-called',
                                          'thischannel' : ctuid['channel'],
                                          'peerchannel' : ctuid['peerchannel'],
-                                         'time-link' : 0
+                                         'time-link' : 0,
+                                         'timestamp-link' : time.time(),
                                          #'calleridnum' : ctuid['parkexten-callback']
                                          }
                                 self.keeplist[phoneid]['comms'][uid].update(infos)
@@ -235,7 +242,8 @@ class PhoneList(AnyList):
                                 infos = {'status' : 'linked-caller',
                                          'thischannel' : ctuid['channel'],
                                          'peerchannel' : ctuid['peerchannel'],
-                                         'time-link' : 0
+                                         'time-link' : 0,
+                                         'timestamp-link' : time.time(),
                                          #'calleridnum' : ctuid['parkexten-callback']
                                          }
                                 self.keeplist[phoneid]['comms'][uid] = infos
