@@ -29,6 +29,8 @@ import os
 import logging
 import urllib
 
+from xml.sax.saxutils import escape
+
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
 
@@ -115,11 +117,11 @@ class Polycom(PhoneVendorMixin):
         cfg_filename = tmp_filename[:-4]
 
         txt_phone = xivo_config.txtsubst(template_lines,
-                { 'user_display_name':  provinfo['name'],
-                  'user_phone_ident':   provinfo['ident'],
-                  'user_phone_number':  provinfo['number'],
-                  'user_phone_passwd':  provinfo['passwd'],
-                  'user_vmail_addr':    provinfo['vmailaddr'],
+                { 'user_display_name':  escape(provinfo['name']),
+                  'user_phone_ident':   escape(provinfo['ident']),
+                  'user_phone_number':  escape(provinfo['number']),
+                  'user_phone_passwd':  escape(provinfo['passwd']),
+                  'user_vmail_addr':    escape(provinfo['vmailaddr']),
                   'asterisk_ipv4':      self.ASTERISK_IPV4,
                   'ntp_server_ipv4':    self.NTP_SERVER_IPV4,
                 },

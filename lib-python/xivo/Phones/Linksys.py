@@ -30,6 +30,8 @@ import logging
 import subprocess
 import math
 
+from xml.sax.saxutils import escape
+
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
 
@@ -65,6 +67,10 @@ class Linksys(PhoneVendorMixin):
         PhoneVendorMixin.__init__(self, phone)
         if self.phone['model'] not in [x[0] for x in self.LINKSYS_MODELS]:
             raise ValueError, "Unknown Linksys model %r" % self.phone['model']
+
+    @staticmethod
+    def xml_escape(data):
+        return escape(data, {"'": '&apos;', '"': '&quot;'})
 
     def __action(self, command, user, passwd):
         cnx_to = max_to = max(1, self.CURL_TO_S / 2)
@@ -130,11 +136,11 @@ class Linksys(PhoneVendorMixin):
                 self.__format_function_keys(provinfo['funckey'])
 
         txt = xivo_config.txtsubst(template_lines,
-                { 'user_display_name':  provinfo['name'],
-                  'user_phone_ident':   provinfo['ident'],
-                  'user_phone_number':  provinfo['number'],
-                  'user_phone_passwd':  provinfo['passwd'],
-                  'user_vmail_addr':    provinfo['vmailaddr'],
+                { 'user_display_name':  self.xml_escape(provinfo['name']),
+                  'user_phone_ident':   self.xml_escape(provinfo['ident']),
+                  'user_phone_number':  self.xml_escape(provinfo['number']),
+                  'user_phone_passwd':  self.xml_escape(provinfo['passwd']),
+                  'user_vmail_addr':    self.xml_escape(provinfo['vmailaddr']),
                   'asterisk_ipv4' :     self.ASTERISK_IPV4,
                   'ntp_server_ipv4' :   self.NTP_SERVER_IPV4,
                   'function_keys':      function_keys_config_lines,
