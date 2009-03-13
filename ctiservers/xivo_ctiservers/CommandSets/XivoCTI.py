@@ -1779,6 +1779,8 @@ class XivoCTICommand(BaseCommand):
                 chan2 = event.get('Channel2')
                 clid1 = event.get('CallerID1')
                 clid2 = event.get('CallerID2')
+                clidname1 = event.get('CallerIDName1').decode('utf8')
+                clidname2 = event.get('CallerIDName2').decode('utf8')
                 uid1 = event.get('Uniqueid1')
                 uid2 = event.get('Uniqueid2')
                 # log.info('%s AMI_LINK : %s' % (astid, event))
@@ -1822,7 +1824,9 @@ class XivoCTICommand(BaseCommand):
                 self.weblist['phones'][astid].ami_link(phoneid1, phoneid2,
                                                        uid1, uid2,
                                                        self.uniqueids[astid][uid1],
-                                                       self.uniqueids[astid][uid2])
+                                                       self.uniqueids[astid][uid2],
+                                                       clid1, clid2,
+                                                       clidname1, clidname2)
                 self.weblist['trunks'][astid].ami_link(trunkid1, trunkid2,
                                                        uid1, uid2,
                                                        self.uniqueids[astid][uid1],
@@ -2380,9 +2384,18 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def ami_newstate(self, astid, event):
-                # print '(phone)', astid, self.__phoneid_from_channel__(astid, event.get('Channel')), event.get('State')
-                # uniqueid = event.get('Uniqueid')
                 # log.info('%s STAT NEWS %s %s %s %s' % (astid, time.time(), uniqueid, event.get('Channel'), event.get('State')))
+                channel = event.get('Channel')
+                state = event.get('State')
+                uid = event.get('Uniqueid')
+                phoneid = self.__phoneid_from_channel__(astid, channel)
+                state_table = {'Ringing': 'ringing',
+                               'Ring': 'calling'}
+#                               'Up', 'Down'
+                if phoneid:
+                    status = state_table.get(state)
+                    if status is not None:
+                        self.weblist['phones'][astid].ami_newstate(phoneid, uid, channel, status)
                 return
         
         def ami_newcallerid(self, astid, event):
@@ -2448,6 +2461,7 @@ class XivoCTICommand(BaseCommand):
                 self.channels[astid][channel] = uniqueid
                 if state == 'Rsrvd':
                         self.uniqueids[astid][uniqueid]['state'] = state
+                # create "comm" in phone list if needed.
                 phoneid = self.__phoneid_from_channel__(astid, channel)
                 if phoneid:
                     self.weblist['phones'][astid].ami_newchannel(phoneid, uniqueid, channel)
