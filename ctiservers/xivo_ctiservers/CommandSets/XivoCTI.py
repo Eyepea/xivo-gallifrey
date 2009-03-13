@@ -531,8 +531,12 @@ class XivoCTICommand(BaseCommand):
                         if connid in self.timerthreads_login_timeout:
                                 self.timerthreads_login_timeout[connid].cancel()
                                 del self.timerthreads_login_timeout[connid]
-                        self.__fill_user_ctilog__(userinfo, 'cti_login', '%s:%d' % connid.getpeername())
-                        # we could also log : client's OS & version
+                        self.__fill_user_ctilog__(userinfo, 'cti_login',
+                                                  'ip=%s,port=%d,version=%s,os=%s'
+                                                  % (connid.getpeername()[0],
+                                                     connid.getpeername()[1],
+                                                     userinfo.get('login').get('version'),
+                                                     userinfo.get('login').get('cticlientos')))
                 connid.sendall(repstr + '\n')
                 
                 if phase == xivo_commandsets.CMD_LOGIN_CAPAS:
