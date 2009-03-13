@@ -1,0 +1,21 @@
+2009-03-13  Adrien DELLE CAVE <decryptus@proformatique.com>
+
+	pf_macro_loop_verbose.patch
+	$Revision$
+	$Date$
+
+	Added Macro() arguments information in log if there is a possible infinite loop.
+
+Index: asterisk-1.4.23.1/apps/app_macro.c
+===================================================================
+--- asterisk-1.4.23.1.orig/apps/app_macro.c	2009-03-13 18:03:34.000000000 +0100
++++ asterisk-1.4.23.1/apps/app_macro.c		2009-03-13 18:03:38.000000000 +0100
+@@ -228,7 +228,7 @@
+ 		sscanf(inhangupc, "%d", &inhangup);
+ 
+ 	if (depth >= maxdepth) {
+-		ast_log(LOG_ERROR, "Macro():  possible infinite loop detected.  Returning early.\n");
++		ast_log(LOG_ERROR, "Macro(%s): possible infinite loop detected. Returning early.\n", data);
+ 		ast_module_user_remove(u);
+ 		return 0;
+ 	}

@@ -33,6 +33,8 @@ pf_manager_misc.patch
 
 pickup_issue14206-1.4.23
 
+pf_macro_loop_verbose.patch
+
 # patch for 1.4.22 but only pushed in trunk
 chan-sip_sipremoveheader_issue14246-trunk
 
