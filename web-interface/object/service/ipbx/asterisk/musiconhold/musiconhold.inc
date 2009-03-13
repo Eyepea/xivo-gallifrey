@@ -483,7 +483,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		{
 			$val['category'] = $key;
 
-			if(($val['mode'] === 'custom' && $val['directory'] === '') === true
+			if(($val['mode'] === 'custom' && xivo_haslen($val,'directory') === false) === true
 			|| $this->_chk_dir($key,true) !== false)
 				$r[] = $val;
 		}

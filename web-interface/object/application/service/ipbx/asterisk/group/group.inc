@@ -231,7 +231,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 
 		$this->set_groupfeatures($arr['gfeatures']);
 
-		$name = $this->get_result_var('gfeatures','name');
+		$name = strtolower($this->get_result_var('gfeatures','name'));
 		$number = (string) $this->get_result_var('gfeatures','number');
 		$context = (string) $this->get_result_var('gfeatures','context');
 

@@ -273,7 +273,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 		$this->set_queuefeatures($arr['qfeatures']);
 
-		$name = $this->get_result_var('qfeatures','name');
+		$name = strtolower($this->get_result_var('qfeatures','name'));
 		$number = (string) $this->get_result_var('qfeatures','number');
 		$context = (string) $this->get_result_var('qfeatures','context');
 

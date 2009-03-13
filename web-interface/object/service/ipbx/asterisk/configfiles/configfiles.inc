@@ -49,23 +49,19 @@ class xivo_service_asterisk_configfiles extends xivo_service_asterisk_abstract
 
 	function _chk_file($name)
 	{
-		$r = false;
-
 		$name = strval($name);
 
 		if(preg_match('/^[a-zA-Z0-9_-]+\.conf$/',$name) === 1)
-			$r = xivo_file::is_f_rw($this->_cfgpath.XIVO_SEP_DIR.$name);
+			return(xivo_file::is_f_rw($this->_cfgpath.XIVO_SEP_DIR.$name));
 
-		return($r);
+		return(false);
 	}
 
 	function get($name)
 	{
-		$r = false;
-
 		if(($file = $this->_chk_file($name)) === false
 		|| ($content = file_get_contents($file)) === false)
-			return($r);
+			return(false);
 
 		$r = array();
 		$r['name'] = $name;
@@ -77,14 +73,10 @@ class xivo_service_asterisk_configfiles extends xivo_service_asterisk_abstract
 
 	function edit($name,$contents)
 	{
-		$r = false;
-
-		$contents = xivo_eol($contents);
-
 		if(($file = $this->_chk_file($name)) !== false)
-			$r = xivo_file::put_contents($file,$contents);
+			return(xivo_file::put_contents($file,xivo_eol($contents)));
 
-		return($r);
+		return(false);
 	}
 
 	function get_list()
@@ -92,7 +84,7 @@ class xivo_service_asterisk_configfiles extends xivo_service_asterisk_abstract
 		$r = xivo_file::read_d($this->_cfgpath,'file','rw','/^[a-zA-Z0-9_-]+\.conf$/',true);
 
 		if($r !== false && isset($r[0]) === false)
-			$r = false;
+			return(false);
 
 		return($r);
 	}
