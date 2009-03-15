@@ -56,6 +56,14 @@ class xivo_service_asterisk_ami extends xivo_service_asterisk_abstract
 		xivo::load_class('xivo_socket');
 		$this->_socket = new xivo_socket($this->_conf['socket']);
 
+		return(true);
+	}
+
+	function _set_options()
+	{
+		if($this->_socket->is_open() === false)
+			return(false);
+
 		if(xivo_issa('sndtimeo',$this->_conf['socket']) === true)
 		{
 			$this->_socket->set_option(null,
@@ -77,12 +85,9 @@ class xivo_service_asterisk_ami extends xivo_service_asterisk_abstract
 	{
 		$cmd = trim($cmd);
 
-		if(xivo_is_sgraph($cmd) === false)
-			return(false);
-
-		$this->_load_socket();
-
-		if($this->_socket->is_open() === false)
+		if(xivo_is_sgraph($cmd) === false
+		|| $this->_load_socket() === false
+		|| $this->_set_options() === false)
 			return(false);
 		else if(($r = $this->_socket->write($cmd)) !== false && (bool) $read === true)
 			$r = $this->_parse_cti_recv($this->_socket->read_binary());
