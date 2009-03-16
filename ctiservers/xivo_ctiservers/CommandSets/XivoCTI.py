@@ -2452,7 +2452,7 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def ami_newchannel(self, astid, event):
-                log.info('%s ami_newchannel : %s' % (astid, event))
+                # log.info('%s ami_newchannel : %s' % (astid, event))
                 channel = event.get('Channel')
                 uniqueid = event.get('Uniqueid')
                 state = event.get('State')

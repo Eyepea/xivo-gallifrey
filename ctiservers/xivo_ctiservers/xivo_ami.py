@@ -67,8 +67,10 @@ class AMIClass:
         def connect(self):
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.connect(self.address)
-                s.settimeout(2)
-                self.fd = s.makefile('rw', 0)
+                s.settimeout(30)
+                self.fileobj = s.makefile('rw', 0)
+                self.fd = self.fileobj.fileno()
+                log.info('AMI connection properties : %s %s %s' % (self.address, self.fileobj, self.fd))
                 s.close()
                 return
         
@@ -86,19 +88,18 @@ class AMIClass:
                                                       % (action, name, value, value))
                         if self.actionid:
                                 towritefields.append('ActionId: %s' % self.actionid)
-                                self.actionid = None
                         towritefields.append('\r\n')
                         
-                        self.fd.write('\r\n'.join(towritefields))
-                        self.fd.flush()
+                        self.fileobj.write('\r\n'.join(towritefields))
+                        self.fileobj.flush()
                         ret = True
                 except Exception:
                         t1 = time.time()
-                        log.exception('(sendcommand %s timespent=%f)' % (action, (t1 - t0)))
+                        log.exception('(sendcommand (%s %s %s) timespent=%f)' % (action, self.actionid, self.fd, (t1 - t0)))
                         ret = False
                 if ret == False:
                         if loopnum == 0:
-                                log.warning('second attempt for AMI command (%s)' % action)
+                                log.warning('second attempt for AMI command (%s %s %s)' % (action, self.actionid, self.fd))
                                 # tries to reconnect
                                 try:
                                         self.connect()
@@ -110,7 +111,9 @@ class AMIClass:
                                         # log.exception("AMI not connected (action=%s args=%s)" %(action, args))
                                         pass
                         else:
-                                log.warning('warning : 2 attempts have failed for AMI command (%s)' % action)
+                                log.warning('warning : 2 attempts have failed for AMI command (%s %s %s)' % (action, self.actionid, self.fd))
+                if self.actionid:
+                        self.actionid = None
                 return ret
         def setactionid(self, actionid):
                 self.actionid = actionid
@@ -148,14 +151,14 @@ class AMIClass:
         # \brief For debug.
         def printresponse_forever(self):
                 while True:
-                        str = self.fd.readline()
+                        str = self.fileobj.readline()
                         self.i = self.i + 1
         # \brief Reads a part of a reply.
         def readresponsechunk(self):
                 start = True
                 list = []
                 while True:
-                        str = self.fd.readline()
+                        str = self.fileobj.readline()
                         #print "--------------", self.i, len(str), str,
                         self.i = self.i + 1
                         if start and str == '\r\n': continue
@@ -219,9 +222,9 @@ class AMIClass:
                                  [('Command', command)])
                 resp = []
                 for i in (1, 2):
-                        str = self.fd.readline()
+                        str = self.fileobj.readline()
                 while True:
-                        str = self.fd.readline()
+                        str = self.fileobj.readline()
                         #print self.i, len(str), str,
                         self.i = self.i + 1
                         if str == '\r\n' or str == '' or str == '--END COMMAND--\r\n':
@@ -583,7 +586,7 @@ class AMIList:
                                                       ('ActionID' , ''.join(random.sample(__alphanums__, 10)) + "-" + hex(int(time.time())))])
                         
                         self.ami[astid] = amicl
-                        self.rami[amicl.fd] = astid
+                        self.rami[amicl.fileobj] = astid
                         self.request_initvalues(astid)
                 else:
                         log.info('%s AMI : already connected %s'
@@ -619,7 +622,7 @@ class AMIList:
         
         def remove(self, astid):
                 if astid in self.ami:
-                        fd = self.ami[astid].fd
+                        fd = self.ami[astid].fileobj
                         del self.ami[astid]
                         if fd in self.rami:
                                 del self.rami[fd]
