@@ -93,6 +93,12 @@ class AMIClass:
                         self.fileobj.write('\r\n'.join(towritefields))
                         self.fileobj.flush()
                         ret = True
+                except UnicodeEncodeError:
+                        log.exception('(sendcommand UnicodeEncodeError (%s %s %s))' % (towritefields, self.actionid, self.fd))
+                        ret = True
+                except UnicodeDecodeError:
+                        log.exception('(sendcommand UnicodeDecodeError (%s %s %s))' % (action, self.actionid, self.fd))
+                        ret = True
                 except Exception:
                         t1 = time.time()
                         log.exception('(sendcommand (%s %s %s) timespent=%f)' % (action, self.actionid, self.fd, (t1 - t0)))
