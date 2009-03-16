@@ -46,7 +46,7 @@ def in_callerid(agi, cursor, args):
         if section.has_option('strip'):
             str_strip = section.get('strip')
 
-            if str_strip.is_digit():
+            if str_strip.isdigit():
                 strip = int(str_strip)
 
                 if strip > 0:
