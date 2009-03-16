@@ -1,0 +1,31 @@
+#!/bin/sh
+#
+# Warns admins when a call lasts too much
+#
+
+[ -e /etc/pf-config/common.conf ] && . /etc/pf-config/common.conf
+
+if [ -z "${MAX_CALL_DURATION}" ]; then
+  exit 0
+fi
+
+CHANNELS_TO_PUNISH=$(
+  asterisk -r -n -x "core show channels concise" | ( while read INFO; do
+    DURATION=$(echo "${INFO}" | cut -d\! -f 11)
+    MINUTES=$(( ${DURATION} / 60 ))
+    if [ ${MINUTES} -gt ${MAX_CALL_DURATION} ]; then
+      CHAN=$(echo "${INFO}" | cut -d\! -f 1)
+      echo "$CHAN (${MINUTES})"
+    fi
+  done )
+)
+
+if [ -n "${CHANNELS_TO_PUNISH}" ]; then
+  SUBJECT="XIVO Alert"
+  MSG="Les canaux téléphoniques suivants sont anormalement longs:\n(sensibilité réglée à ${MAX_CALL_DURATION} minutes)\n(la durée des appels est entre parenthèse en minute)\n${CHANNELS_TO_PUNISH}"
+  if [ -n "${ALERT_EMAILS}" ]; then
+    echo -e "${MSG}" | mutt -s "${SUBJECT}" ${ALERT_EMAILS}
+  fi
+  logger -t "${SUBJECT}" "$(echo -e "${MSG}" | tr "\n" " ")"
+fi
+

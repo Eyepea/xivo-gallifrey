@@ -1,0 +1,50 @@
+#!/bin/sh
+#
+# Watch DAHDI ports status in monit
+#
+
+if [ ! -d /proc/dahdi ]; then
+	# nothing to check
+	exit 0
+fi
+
+DAHDI_MONITOR_PORTS="all"
+[ -e /etc/pf-config/common.conf ] && . /etc/pf-config/common.conf
+
+DAHDI_PORT_DIR=/proc/dahdi
+RESULT_DIR=/var/lib/pf-monitoring-monit
+
+MONIT_CONF_DIR=/etc/monit/conf.d
+
+# DAHDI ports
+if [ "${DAHDI_MONITOR_PORTS}" = "all" ]; then
+	DAHDI_MONITOR_PORTS=$(/bin/ls -1 /proc/dahdi/)
+fi
+
+# create munin config
+if [ "$1" = "configure" ]; then
+  rm -f ${MONIT_CONF_DIR}/dahdi_port_* ${RESULT_DIR}/dahdi_port_*
+  if [ -n "${DAHDI_MONITOR_PORTS}" ]; then
+    for PORT in ${DAHDI_MONITOR_PORTS}; do
+      PORT_NAME=$(cat ${DAHDI_PORT_DIR}/${PORT} | grep "Span" | cut -d\  -f3 | tr -c "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" "_")
+      CONFIG_NAME=dahdi_port_${PORT}
+      CONFIG_FILE=${MONIT_CONF_DIR}/${CONFIG_NAME}
+      RESULT_FILE=${RESULT_DIR}/${CONFIG_NAME}
+      echo "check file ${PORT_NAME} with path ${RESULT_FILE}" >${CONFIG_FILE}
+    done
+  fi
+  exit 0
+fi
+
+# check
+if [ -n "${DAHDI_MONITOR_PORTS}" ]; then
+  for PORT in ${DAHDI_MONITOR_PORTS}; do
+    RESULT_FILE=${RESULT_DIR}/dahdi_port_${PORT}
+    if grep -q "RED" ${DAHDI_PORT_DIR}/${PORT}; then
+    	rm -f ${RESULT_FILE}
+    else
+    	touch ${RESULT_FILE}
+    fi
+  done
+fi
+
