@@ -420,6 +420,7 @@ class AMIClass:
         # \brief Adds a Queue
         def queueadd(self, queuename, interface, paused):
                 try:
+                        # it looks like not specifying Paused is the same as setting it to false
                         ret = self.sendcommand('QueueAdd', [('Queue', queuename),
                                                             ('Interface', interface),
                                                             ('Penalty', '1'),

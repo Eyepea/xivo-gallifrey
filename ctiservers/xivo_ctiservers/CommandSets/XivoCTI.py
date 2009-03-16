@@ -2623,7 +2623,7 @@ class XivoCTICommand(BaseCommand):
                 elif queue in self.weblist['groups'][astid].keeplist:
                         queueorgroup = 'groups'
                 else:
-                        log.warning('%s ami_agentcalled : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        self.__queuemismatch__(astid, queue, 'ami_agentcalled')
                         return
                 
                 queuecontext = self.weblist[queueorgroup][astid].keeplist[queue]['context']
@@ -2721,11 +2721,11 @@ class XivoCTICommand(BaseCommand):
                                             % (astid, agent_number))
                 return
         
-        # XIVO-WEBI: beg-data
-        # "category"|"name"|"number"|"context"|"commented"
-        # "queue"|"callcenter"|"330"|"proformatique"|"0"
-        # ""|""|""|""|"0"
-        # XIVO-WEBI: end-data
+        def __queuemismatch__(self, astid, queuename, origin):
+                log.warning('%s %s : no such queue (or group) %s (probably mismatch asterisk/xivo)' % (astid, origin, queuename))
+                # XXX todo : show queue 'queuename' to clean
+                return
+        
         def ami_queuecallerabandon(self, astid, event):
                 if astid not in self.weblist['queues']:
                         log.warning('%s ami_queuecallerabandon : no queue list has been defined' % astid)
@@ -2737,7 +2737,7 @@ class XivoCTICommand(BaseCommand):
                 elif queue in self.weblist['groups'][astid].keeplist:
                         queueorgroup = 'groups'
                 else:
-                        log.warning('%s ami_queuecallerabandon : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        self.__queuemismatch__(astid, queue, 'ami_queuecallerabandon')
                         return
                 
                 log.info('%s STAT ABANDON %s %s' % (astid, queue, uniqueid))
@@ -2761,7 +2761,7 @@ class XivoCTICommand(BaseCommand):
                 elif queue in self.weblist['groups'][astid].keeplist:
                         queueorgroup = 'groups'
                 else:
-                        log.warning('%s ami_queueentry : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        self.__queuemismatch__(astid, queue, 'ami_queueentry')
                         return
                 
                 calleridnum = None
@@ -2788,7 +2788,7 @@ class XivoCTICommand(BaseCommand):
                 elif queue in self.weblist['groups'][astid].keeplist:
                         queueorgroup = 'groups'
                 else:
-                        log.warning('%s ami_queuememberadded : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        self.__queuemismatch__(astid, queue, 'ami_queuememberadded')
                         return
                 
                 event['Xivo-StateTime'] = time.time()
@@ -2812,7 +2812,7 @@ class XivoCTICommand(BaseCommand):
                 elif queue in self.weblist['groups'][astid].keeplist:
                         queueorgroup = 'groups'
                 else:
-                        log.warning('%s ami_queuememberremoved : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        self.__queuemismatch__(astid, queue, 'ami_queuememberremoved')
                         return
                 
                 self.weblist[queueorgroup][astid].queuememberremove(queue, location)
@@ -2865,7 +2865,7 @@ class XivoCTICommand(BaseCommand):
                 elif queue in self.weblist['groups'][astid].keeplist:
                         queueorgroup = 'groups'
                 else:
-                        log.warning('%s ami_queuememberstatus : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        self.__queuemismatch__(astid, queue, 'ami_queuememberstatus')
                         return
                 
                 queuecontext = self.weblist[queueorgroup][astid].keeplist[queue]['context']
@@ -2944,7 +2944,7 @@ class XivoCTICommand(BaseCommand):
                 elif queue in self.weblist['groups'][astid].keeplist:
                         queueorgroup = 'groups'
                 else:
-                        log.warning('%s ami_queuememberpaused : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        self.__queuemismatch__(astid, queue, 'ami_queuememberpaused')
                         return
                 
                 self.weblist[queueorgroup][astid].queuememberupdate(queue, location, event)
@@ -2975,7 +2975,7 @@ class XivoCTICommand(BaseCommand):
                 elif queue in self.weblist['groups'][astid].keeplist:
                         queueorgroup = 'groups'
                 else:
-                        log.warning('%s ami_queueparams : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        self.__queuemismatch__(astid, queue, 'ami_queueparams')
                         return
                 
                 if self.weblist[queueorgroup][astid].update_queuestats(queue, event):
@@ -2999,7 +2999,7 @@ class XivoCTICommand(BaseCommand):
                 elif queue in self.weblist['groups'][astid].keeplist:
                         queueorgroup = 'groups'
                 else:
-                        log.warning('%s ami_queuemember : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        self.__queuemismatch__(astid, queue, 'ami_queuemember')
                         return
                 
                 queuecontext = self.weblist[queueorgroup][astid].keeplist[queue]['context']
@@ -3446,6 +3446,8 @@ class XivoCTICommand(BaseCommand):
                         log.info('%s ami_status %s %s %s' % (astid, state, uniqueid, channel))
                         # ami_status noxivo-clg Ringing 1227551513.1501 SIP/102-081ce708
                         # ami_status noxivo-clg Ring 1227551513.1500 SIP/103-b6b12cc8 2 default 102
+                elif state == 'Dialing': # ???
+                        log.info('%s ami_status %s %s %s' % (astid, state, uniqueid, channel))
                 else:
                         log.warning('%s ami_status : unknown state %s' % (astid, event))
                 return
@@ -3472,7 +3474,7 @@ class XivoCTICommand(BaseCommand):
                 elif queue in self.weblist['groups'][astid].keeplist:
                         queueorgroup = 'groups'
                 else:
-                        log.warning('%s ami_join : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        self.__queuemismatch__(astid, queue, 'ami_join')
                         return
                 
                 queuecontext = self.weblist[queueorgroup][astid].keeplist[queue]['context']
@@ -3517,7 +3519,7 @@ class XivoCTICommand(BaseCommand):
                 elif queue in self.weblist['groups'][astid].keeplist:
                         queueorgroup = 'groups'
                 else:
-                        log.warning('%s ami_leave : no such queue %s (probably mismatch asterisk/xivo)' % (astid, queue))
+                        self.__queuemismatch__(astid, queue, 'ami_leave')
                         return
                 
                 queuecontext = self.weblist[queueorgroup][astid].keeplist[queue]['context']
@@ -4441,6 +4443,17 @@ class XivoCTICommand(BaseCommand):
                                         exten_dst = dstuinfo.get('phonenum')
                                         cidname_dst = dstuinfo.get('fullname')
                                         context_dst = dstuinfo.get('context')
+                        elif typedst == 'voicemail':
+                                if whodst == 'special:me':
+                                        dstuinfo = userinfo
+                                else:
+                                        dstuinfo = self.ulist_ng.keeplist[whodst]
+                                # if dstuinfo is not None:
+                                # astid_dst = dstuinfo.get('astid')
+                                # exten_dst = dstuinfo.get('phonenum')
+                                # cidname_dst = dstuinfo.get('fullname')
+                                # context_dst = dstuinfo.get('context')
+                                # transfer + Application ?
                         else:
                                 log.warning('unknown typedst <%s>' % typedst)
                                 
