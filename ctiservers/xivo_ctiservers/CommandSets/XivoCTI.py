@@ -2293,7 +2293,7 @@ class XivoCTICommand(BaseCommand):
                 context = event.get('Context')
                 exten   = event.get('Exten')
                 if hint and hint.find('/') > 0:
-                        log.info('amiresponse_extensionstatus context=%s hint=%s status=%s' % (context, hint, status))
+                        #log.info('amiresponse_extensionstatus context=%s hint=%s status=%s' % (context, hint, status))
                         phoneref = '.'.join([hint.split('/')[0].lower(), context,
                                              hint.split('/')[1], exten])
                         if phoneref in self.weblist['phones'][astid].keeplist:
@@ -2320,7 +2320,7 @@ class XivoCTICommand(BaseCommand):
                 
                 for phoneref, b in self.weblist['phones'][astid].keeplist.iteritems():
                         if b['number'] == exten and b['context'] == context:
-                                log.info('ami_extensionstatus exten=%s context=%s status=%s' % (exten, context, status))
+                                #log.info('ami_extensionstatus exten=%s context=%s status=%s' % (exten, context, status))
                                 if self.weblist['phones'][astid].ami_extstatus(phoneref, status):
                                         # only sends information if the status changed
                                         tosend = self.weblist['phones'][astid].status(phoneref)
