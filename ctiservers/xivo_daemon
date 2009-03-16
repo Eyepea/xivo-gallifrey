@@ -312,14 +312,30 @@ def manage_info_connections(connid, msg, sep):
                                         except Exception:
                                                 log.exception('INFO %s' % usefulmsg)
                         elif usefulmsg.startswith('reverse '):
-                                aargs = usefulmsg.split()
-                                if len(aargs) > 2:
-                                        dirnames = aargs[1]
-                                        numbers = aargs[2:]
+                                command_args = usefulmsg.split()
+                                if len(command_args) > 2:
+                                        dirnames = command_args[1]
+                                        numbers = command_args[2:]
                                         for number in numbers:
                                                 reverses = commandclass.findreverse(dirnames, number)
                                                 for number, rep in reverses.iteritems():
                                                         connid.sendall('%s %s\n' % (number, rep))
+                        elif usefulmsg.startswith('disc '):
+                                command_args = usefulmsg.split()
+                                if len(command_args) > 2:
+                                        ipdef = tuple([command_args[1], int(command_args[2])])
+                                        socktoremove = None
+                                        for sockid in fdlist_established.keys():
+                                                if ipdef == sockid.getpeername():
+                                                        socktoremove = sockid
+                                        if socktoremove:
+                                                connid.sendall('disconnecting %s (%s)\n'
+                                                               % (socktoremove.getpeername(), fdlist_established[socktoremove]))
+                                                socktoremove.close()
+                                                fdlist_full.remove(socktoremove)
+                                                del fdlist_established[socktoremove]
+                                        else:
+                                                connid.sendall('nobody disconnected\n')
                         elif usefulmsg == 'show_ami':
                                 for astid, ami in amilist.ami.iteritems():
                                         connid.sendall('commands : %s : %s\n' % (astid, ami))
@@ -333,10 +349,10 @@ def manage_info_connections(connid, msg, sep):
                                                 cmdargs = amicmd[2:]
                                                 amilist.execute(astid, cmd, *cmdargs)
                         elif usefulmsg.startswith('kick '):
-                                aargs = usefulmsg.split()
+                                command_args = usefulmsg.split()
                                 try:
-                                        if len(aargs) > 1:
-                                                kickuser = aargs[1]
+                                        if len(command_args) > 1:
+                                                kickuser = command_args[1]
                                                 if kickuser in commandclass.connected_users():
                                                         uinfo = commandclass.connected_users()[kickuser]
                                                         if 'login' in uinfo and 'connection' in uinfo.get('login'):
