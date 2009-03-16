@@ -175,7 +175,11 @@ class SiemensHTTP:
                 request = self.request(ipv4, page, args)
                 request.close()
         finally:
-            self.logout(ipv4)
+            try:
+                self.logout(ipv4)
+            except Exception, e: # pylint: disable-msg=W0703
+                log.exception(str(e))
+                pass
 
     def login(self, ipv4):
         "Login from web-interface."
@@ -495,7 +499,14 @@ class Siemens(PhoneVendorMixin):
         provinfo['sha1sum'] = sha1sum
 
         self.__generate(provinfo)
-        self.__provi()
+
+        try:
+            self.__provi()
+        except Exception, e: # pylint: disable-msg=W0703
+            log.exception(str(e))
+            log.debug("Trying to force provisioning on next reboot.")
+            provinfo['sha1sum'] = '1'
+            self.__generate(provinfo)
 
     def do_reinitprov(self):
         """
