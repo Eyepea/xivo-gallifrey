@@ -770,6 +770,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			if($vmaction === 'add')
 				$arr['voicemail']['context'] = $context;
 
+			if(isset($arr['voicemail']['deletevoicemail']) === false)
+				$arr['voicemail']['deletevoicemail'] = 0;
+
 			$this->_set_result_var('protocol','mailbox',$arr['voicemail']['mailbox'].'@'.$context);
 
 			if(xivo_issa('vmfeatures',$arr) === true)
