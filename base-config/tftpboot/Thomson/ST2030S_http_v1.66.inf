@@ -3,7 +3,7 @@ fwurl=http://192.168.0.254:8667/Thomson/binary/v2030SG.081210.1.66.2.zz
 
 [config]
 telcfg=http://192.168.0.254:8667/Thomson/TelConf2030SG_v1.66.2.txt
-common_config=http://192.168.0.254:8667/Thomson/ST2030S_common_v1.66-200812200000.txt
+common_config=http://192.168.0.254:8667/Thomson/ST2030S_common_v1.66-200903170000.txt
 config=http://192.168.0.254:8667/
 
 melodies=http://192.168.0.254:8667/Thomson/Tone-Melodies.txt
