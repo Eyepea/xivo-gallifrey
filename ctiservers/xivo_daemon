@@ -65,9 +65,11 @@ import threading
 import time
 import logging
 from logging.handlers import SysLogHandler
+import Queue
 
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 waiting_actionid = {}
+waiting_actionid_timer = {}
 dumpami = False
 
 try:
@@ -232,6 +234,8 @@ def manage_webi_connections(connid, msg, sep):
                                         log.info('%s : WEBI requested a <%s> with actionid %s (%s)' % (astid, stripped_usefulmsg,
                                                                                                        actionid, connid))
                                         waiting_actionid[actionid] = connid
+                                        waiting_actionid_timer[actionid] = threading.Timer(5, callback_timer_main, ('webirequest', actionid))
+                                        waiting_actionid_timer[actionid].start()
                                 except Exception, exc:
                                         log.error('(%s) WEBI command exec <%s> : (client %s) : %s'
                                                   % (astid, stripped_usefulmsg, requester, exc))
@@ -470,6 +474,8 @@ def handle_ami_event(astid, idata):
                                                                 log.info('TCP socket closed on %s (%s)' % ('%s:%d' % connreply.getpeername(), 'WEBI'))
                                                                 connreply.close()
                                                                 del waiting_actionid[actionid]
+                                                                waiting_actionid_timer[actionid].cancel()
+                                                                del waiting_actionid_timer[actionid]
                                                 except Exception:
                                                         log.exception('%s (command reply to %s, %s)' % (astid, connreply, actionid))
                                 elif response == 'Success':
@@ -616,7 +622,45 @@ def update_amisocks(astid):
                 amilist.set_aoriginate(astid, configs[astid].aoriginate)
         except Exception:
                 log.exception('%s (update_amisocks) %s:%d' % (astid, configs[astid].remoteaddr, configs[astid].ami_port))
+        return
 
+tqueue = Queue.Queue()
+
+def callback_timer_main(*args):
+        global tqueue
+        thisthread = threading.currentThread()
+        tname = thisthread.getName()
+        log.info('callback_timer_main (timer finished at %s) %s %s' % (time.asctime(), tname, args))
+        thisthread.setName(tname + '-' + '-'.join(args))
+        tqueue.put(thisthread)
+        os.write(pipe_queued_threads_main[1], tname)
+        return
+
+def checkqueue_main():
+        buf = os.read(pipe_queued_threads_main[0], 1024)
+        log.info('checkqueue_main : read buf = %s, tqueue size = %d' % (buf, tqueue.qsize()))
+        while tqueue.qsize() > 0:
+                thisthread = tqueue.get()
+                action = thisthread.args[0]
+                if action == 'ipbxup':
+                        # check whether the AMI is already connected,
+                        # and connects if needed
+                        astid = thisthread.args[1]
+                        update_amisocks(astid)
+                elif action == 'webirequest':
+                        # checks whether the given actionid is still ongoing and closes
+                        # the related WEBI request then
+                        actionid = thisthread.args[1]
+                        if actionid in waiting_actionid and actionid in waiting_actionid_timer:
+                                conn_to_close = waiting_actionid[actionid]
+                                del fdlist_established[conn_to_close]
+                                conn_to_close.close()
+                                del waiting_actionid[actionid]
+                                del waiting_actionid_timer[actionid]
+                                log.info('closing the WEBI connection %s for the request %s' % (conn_to_close, actionid))
+                        else:
+                                log.warning('the actionid %s has gone' % actionid)
+        return
 
 ## \brief Handler for catching signals (in the main thread)
 # \param signum signal number
@@ -732,12 +776,13 @@ while True: # loops over the reloads
                 
         socket.setdefaulttimeout(float(socktimeout))
         
-        queued_threads_pipe = os.pipe()
+        pipe_queued_threads_commandclass = os.pipe()
+        pipe_queued_threads_main = os.pipe()
         amilist = xivo_ami.AMIList()
         if commandset in xivo_commandsets.CommandClasses:
                 commandclass = xivo_commandsets.CommandClasses[commandset](amilist,
                                                                            incoming_tcp_ports,
-                                                                           queued_threads_pipe)
+                                                                           pipe_queued_threads_commandclass)
                 xdname = commandclass.xdname
         else:
                 commandclass = xivo_commandsets.BaseCommand()
@@ -934,7 +979,10 @@ while True: # loops over the reloads
         # Main select() loop - Receive messages
         while not askedtoquit:
                 try:
-                        fdlist_full = fdlist_listen_cti.keys() + fdlist_udp_cti.keys() + [queued_threads_pipe[0]] + fdlist_established.keys() + amilist.fdlist()
+                        fdlist_full = fdlist_listen_cti.keys() + fdlist_udp_cti.keys() + fdlist_established.keys()
+                        fdlist_full.extend(amilist.fdlist())
+                        fdlist_full.append(pipe_queued_threads_commandclass[0])
+                        fdlist_full.append(pipe_queued_threads_main[0])
                         if outsock is not None:
                                 fdlist_full.append(outsock)
                         [sels_i, sels_o, sels_e] = select.select(fdlist_full, [], [], updates_period)
@@ -1023,6 +1071,10 @@ while True: # loops over the reloads
                                                 else:
                                                         astid = 'xivo'
                                                 log.info('UDP %s <%s> %s => %s' % (kind, data.strip(), sockparams, astid))
+                                                if astid in configs:
+                                                        # scheduling astid's AMI reconnection
+                                                        k = threading.Timer(2, callback_timer_main, ('ipbxup', astid))
+                                                        k.start()
                                         else:
                                                 log.warning('unknown kind %s received' % kind)
                                                 
@@ -1109,7 +1161,7 @@ while True: # loops over the reloads
                                                         log.exception('[%s] (2nd exception)' % kind)
 
                                 # local pipe fd
-                                elif queued_threads_pipe[0] == sel_i:
+                                elif pipe_queued_threads_commandclass[0] == sel_i:
                                         try:
                                                 actionqueue = commandclass.checkqueue()
                                                 for actionname, actionarg in actionqueue.iteritems():
@@ -1136,9 +1188,14 @@ while True: # loops over the reloads
                                                                         del fdlist_established[connid]
                                                                         connid.close()
                                         except Exception:
-                                                log.exception('[queued threads]')
-
-
+                                                log.exception('[pipe_queued_threads_commandclass]')
+                                                
+                                elif pipe_queued_threads_main[0] == sel_i:
+                                        try:
+                                                checkqueue_main()
+                                        except Exception:
+                                                log.exception('[pipe_queued_threads_main]')
+                                                
                                 for astid in configs:
                                         if (time.time() - lastrequest_time[astid]) > updates_period or update_userlist[astid]:
                                                 lastrequest_time[astid] = time.time()

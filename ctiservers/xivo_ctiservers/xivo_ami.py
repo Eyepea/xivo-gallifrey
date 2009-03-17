@@ -96,6 +96,9 @@ class AMIClass:
                                 towritefields.append('ActionId: %s' % self.actionid)
                         towritefields.append('\r\n')
                         
+                        # if random.randint(0, 5) == 0 and loopnum == 0:
+                        # ret = False
+                        # else:
                         self.fileobj.write('\r\n'.join(towritefields))
                         self.fileobj.flush()
                         ret = True
