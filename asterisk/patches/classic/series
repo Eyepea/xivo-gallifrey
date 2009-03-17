@@ -31,17 +31,11 @@ pf_manager_dtmf.patch
 pf_manager_atxfer.patch
 pf_manager_misc.patch
 
-pickup_issue14206-1.4.23
-
 pf_macro_loop_verbose.patch
 
 # patch for 1.4.22 but only pushed in trunk
 chan-sip_sipremoveheader_issue14246-trunk
 
 pf_sip_mwi_for_thomson_st2030s.patch
-
-# should be in 1.4.24
-voicemail_duration_issue14406
-h_extension_regression_issue14122
 
 rpid.patch
