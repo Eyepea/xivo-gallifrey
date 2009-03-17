@@ -10,7 +10,7 @@
 Index: asterisk-1.4.24/CREDITS
 ===================================================================
 --- asterisk-1.4.24.orig/CREDITS	2006-10-16 15:59:51.000000000 +0200
-+++ asterisk-1.4.24/CREDITS	2009-03-17 12:05:18.000000000 +0100
++++ asterisk-1.4.24/CREDITS	2009-03-17 14:00:40.000000000 +0100
 @@ -152,6 +152,8 @@
  
  Paul Cadach - Bringing chan_h323 up to date, bug fixes, and more!
@@ -23,7 +23,7 @@ Index: asterisk-1.4.24/CREDITS
 Index: asterisk-1.4.24/include/asterisk/frame.h
 ===================================================================
 --- asterisk-1.4.24.orig/include/asterisk/frame.h	2009-03-05 19:22:16.000000000 +0100
-+++ asterisk-1.4.24/include/asterisk/frame.h	2009-03-17 12:05:18.000000000 +0100
++++ asterisk-1.4.24/include/asterisk/frame.h	2009-03-17 14:00:47.000000000 +0100
 @@ -301,6 +301,7 @@
  	AST_CONTROL_HOLD = 16,		/*!< Indicate call is placed on hold */
  	AST_CONTROL_UNHOLD = 17,	/*!< Indicate call is left from hold */
@@ -34,8 +34,8 @@ Index: asterisk-1.4.24/include/asterisk/frame.h
  
 Index: asterisk-1.4.24/main/manager.c
 ===================================================================
---- asterisk-1.4.24.orig/main/manager.c	2009-03-17 12:05:08.000000000 +0100
-+++ asterisk-1.4.24/main/manager.c	2009-03-17 12:05:18.000000000 +0100
+--- asterisk-1.4.24.orig/main/manager.c	2009-03-17 14:00:40.000000000 +0100
++++ asterisk-1.4.24/main/manager.c	2009-03-17 14:01:16.000000000 +0100
 @@ -1741,6 +1741,49 @@
  	return 0;
  }
@@ -97,7 +97,7 @@ Index: asterisk-1.4.24/main/manager.c
 Index: asterisk-1.4.24/res/res_features.c
 ===================================================================
 --- asterisk-1.4.24.orig/res/res_features.c	2009-03-03 19:27:09.000000000 +0100
-+++ asterisk-1.4.24/res/res_features.c	2009-03-17 12:10:07.000000000 +0100
++++ asterisk-1.4.24/res/res_features.c	2009-03-17 14:45:54.000000000 +0100
 @@ -886,11 +886,27 @@
  	return 0;
  }
@@ -192,7 +192,12 @@ Index: asterisk-1.4.24/res/res_features.c
  		finishup(transferee);
  		if (ast_stream_and_wait(transferer, "beeperr", transferer->language, ""))
  			return -1;
-@@ -951,7 +974,7 @@
+@@ -947,11 +970,11 @@
+ 	 * the different variables for handling this properly with a builtin_atxfer */
+ 	if (!strcmp(xferto, ast_parking_ext())) {
+ 		finishup(transferee);
+-		return builtin_parkcall(chan, peer, config, code, sense, data);
++		return builtin_parkcall(chan, peer, config, NULL, sense, NULL);
  	}
  
  	l = strlen(xferto);
