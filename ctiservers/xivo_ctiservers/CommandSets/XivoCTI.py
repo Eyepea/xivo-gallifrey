@@ -4929,10 +4929,14 @@ class XivoCTICommand(BaseCommand):
                                 else:
                                         lst = []
                                         for queuename, qprops in self.weblist['queues'][astid].keeplist.iteritems():
-                                                lst.append('%s:%s' % (queuename, qprops['stats']['Holdtime']))
+                                                if 'Holdtime' in qprops['queuestats']:
+                                                        lst.append('%s:%s' % (queuename, qprops['queuestats']['Holdtime']))
+                                                else:
+                                                        log.warning('handle_fagi %s %s : no Holdtime defined in queuestats for %s'
+                                                                    % (astid, function, queuename))
                                         fastagi.set_variable('XIVO_QUEUEHOLDTIME', ','.join(lst))
                         except Exception:
-                                log.exception('handle_fagi %s %s : %s %s' % (astid, function, astid, fastagi.args))
+                                log.exception('handle_fagi %s %s : %s' % (astid, function, fastagi.args))
                         return
                 
                 elif function == 'callerdetails':

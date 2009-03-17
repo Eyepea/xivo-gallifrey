@@ -49,7 +49,8 @@ class AMIClass:
                     return self.msg
 
         # \brief Class initialization.
-        def __init__(self, address, loginname, password, events):
+        def __init__(self, astid, address, loginname, password, events):
+                self.astid     = astid
                 self.address   = address
                 self.loginname = loginname
                 self.password  = password
@@ -57,6 +58,7 @@ class AMIClass:
                 self.i = 1
                 self.aorgcmd = 'AOriginate'
                 self.actionid = None
+                self.fileobj = None
                 return
         
         def set_aoriginate(self, aoriginatecmd):
@@ -72,6 +74,10 @@ class AMIClass:
                 self.fd = self.fileobj.fileno()
                 log.info('AMI connection properties : %s %s %s' % (self.address, self.fileobj, self.fd))
                 s.close()
+                return
+        
+        def setlistref(self, amilist):
+                self.amilist = amilist
                 return
         
         # \brief Sending any AMI command.
@@ -99,31 +105,41 @@ class AMIClass:
                 except UnicodeDecodeError:
                         log.exception('(sendcommand UnicodeDecodeError (%s %s %s))' % (action, self.actionid, self.fd))
                         ret = True
+                except socket.timeout:
+                        t1 = time.time()
+                        log.exception('(sendcommand timeout (%s %s %s) timespent=%f)' % (action, self.actionid, self.fd, (t1 - t0)))
+                        ret = False
                 except Exception:
                         t1 = time.time()
-                        log.exception('(sendcommand (%s %s %s) timespent=%f)' % (action, self.actionid, self.fd, (t1 - t0)))
+                        log.exception('(sendcommand other (%s %s %s) timespent=%f)' % (action, self.actionid, self.fd, (t1 - t0)))
                         ret = False
                 if ret == False:
                         if loopnum == 0:
                                 log.warning('second attempt for AMI command (%s %s %s)' % (action, self.actionid, self.fd))
                                 # tries to reconnect
                                 try:
+                                        self.fileobj.close()
+                                        
                                         self.connect()
                                         self.login()
+                                        self.amilist.updaterefs(self)
                                         if self:
                                                 # "retrying AMI command=<%s> args=<%s>" % (action, str(args)))
                                                 self.sendcommand(action, args, 1)
+                                        else:
+                                                log.warning('self is undefined %s' % self)
                                 except Exception:
-                                        # log.exception("AMI not connected (action=%s args=%s)" %(action, args))
-                                        pass
+                                        log.exception("reconnection (%s %s %s)" % (action, self.actionid, self.fd))
                         else:
-                                log.warning('warning : 2 attempts have failed for AMI command (%s %s %s)' % (action, self.actionid, self.fd))
+                                log.warning('2 attempts have failed for AMI command (%s %s %s)' % (action, self.actionid, self.fd))
                 if self.actionid:
                         self.actionid = None
                 return ret
+        
         def setactionid(self, actionid):
                 self.actionid = actionid
                 return
+        
         # \brief Requesting a Status.
         def sendstatus(self):
                 ret = self.sendcommand('Status', [])
@@ -220,7 +236,7 @@ class AMIClass:
                         return False
                 except Exception:
                         return False
-
+                
         # \brief Executes a CLI command.
         def execclicommand(self, command):
                 # special procession for cli commands.
@@ -572,7 +588,7 @@ class AMIList:
                 self.ami = {}
                 self.rami = {}
                 return
-
+        
         def setconfig(self, astid, address, loginname, password):
                 self.config[astid] = [address, loginname, password]
                 return
@@ -583,21 +599,31 @@ class AMIList:
                         self.ami[astid] = None
                 if self.ami[astid] is None:
                         log.info('%s AMI : attempting to connect' % astid)
-                        amicl = AMIClass(address, loginname, password, True)
+                        amicl = AMIClass(astid, address, loginname, password, True)
+                        amicl.setlistref(self)
                         amicl.connect()
                         amicl.login()
                         
-                        log.info('%s AMI : OPENED' % astid)
-                        amicl.sendcommand('Command', [('Command', 'core show version'),
-                                                      ('ActionID' , ''.join(random.sample(__alphanums__, 10)) + "-" + hex(int(time.time())))])
-                        
-                        self.ami[astid] = amicl
-                        self.rami[amicl.fileobj] = astid
+                        self.updaterefs(amicl)
+                        amicl.sendcommand('Command',
+                                          [('Command',
+                                            'core show version'),
+                                           ('ActionID' ,
+                                            '%s-%s' % (''.join(random.sample(__alphanums__, 10)),
+                                                       hex(int(time.time()))))])
                         self.request_initvalues(astid)
                 else:
                         log.info('%s AMI : already connected %s'
                                  % (astid, self.ami[astid]))
                         self.request_initvalues(astid)
+                return
+        
+        def updaterefs(self, amiclass):
+                log.info('%s AMI : (re)connect/update %s %s' % (amiclass.astid, amiclass.fileobj, amiclass))
+                self.ami[amiclass.astid] = amiclass
+                self.rami.clear()
+                for astid, amiclass in self.ami.iteritems():
+                        self.rami[amiclass.fileobj] = astid
                 return
         
         def request_initvalues(self, astid):
@@ -636,10 +662,11 @@ class AMIList:
                                 log.warning('(remove) %s : fd %s not in self.rami' % (astid, fd))
                 else:
                         log.warning('(remove) astid %s not in self.ami' % astid)
-
+                return
+        
         def astid(self, sock):
                 return self.rami.get(sock)
-
+        
         def execute(self, astid, command, *args):
                 actionid = None
                 if astid in self.ami:
