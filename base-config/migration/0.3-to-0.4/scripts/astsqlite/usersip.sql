@@ -66,6 +66,7 @@ INSERT INTO tmp_usersip (
 	ipaddr,
 	regseconds,
 	regserver,
+	lastms,
 	protocol,
 	category,
 	commented)
@@ -135,6 +136,7 @@ SELECT
 	IFNULL(usersip.ipaddr,''),
 	IFNULL(usersip.regseconds,0),
 	NULL,
+	'',
 	'sip',
 	'user',
 	usersip.commented

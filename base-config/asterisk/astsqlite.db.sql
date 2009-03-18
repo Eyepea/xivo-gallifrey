@@ -1035,6 +1035,7 @@ INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','ignoreregexpire',
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','rtsavesysname','no');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','rtautoclear','no');
 INSERT INTO staticsip VALUES (NULL,0,0,1,'sip.conf','general','subscribecontext',NULL);
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','assertedidentity','no');
 
 
 DROP TABLE staticvoicemail;
@@ -1344,6 +1345,7 @@ CREATE TABLE usersip (
  ipaddr varchar(255) NOT NULL DEFAULT '',
  regseconds integer unsigned NOT NULL DEFAULT 0,
  regserver varchar(20),
+ lastms varchar(15) NOT NULL DEFAULT '',
  protocol char(3) NOT NULL DEFAULT 'sip',
  category varchar(5) NOT NULL,
  commented tinyint(1) NOT NULL DEFAULT 0,
@@ -1356,6 +1358,7 @@ CREATE INDEX usersip__idx__category ON usersip(category);
 CREATE INDEX usersip__idx__commented ON usersip(commented);
 CREATE INDEX usersip__idx__host_port ON usersip(host,port);
 CREATE INDEX usersip__idx__ipaddr_port ON usersip(ipaddr,port);
+CREATE INDEX usersip__idx__lastms ON usersip(lastms);
 CREATE UNIQUE INDEX usersip__uidx__name ON usersip(name);
 
 INSERT INTO usersip VALUES (1,'guest','friend','guest','guest','','xivo-initconfig',NULL,
@@ -1363,7 +1366,7 @@ INSERT INTO usersip VALUES (1,'guest','friend','guest','guest','','xivo-initconf
 			    NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
 			    NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
 			    NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'XIVO_USERID=1',
-			    'dynamic',NULL,NULL,NULL,NULL,NULL,NULL,'',0,NULL,'sip','user',0);
+			    'dynamic',NULL,NULL,NULL,NULL,NULL,NULL,'',0,NULL,'','sip','user',0);
 
 
 DROP TABLE voicemail;
