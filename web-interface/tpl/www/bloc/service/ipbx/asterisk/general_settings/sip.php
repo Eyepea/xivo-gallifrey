@@ -856,6 +856,12 @@ endif;
 				      'checked'	=> $this->get_varra('info',array('sendrpid','var_val')),
 				      'default'	=> $element['sendrpid']['default'])),
 
+		$form->checkbox(array('desc'	=> $this->bbf('fm_assertedidentity'),
+				      'name'	=> 'assertedidentity',
+				      'labelid'	=> 'assertedidentity',
+				      'checked'	=> $this->get_varra('info',array('assertedidentity','var_val')),
+				      'default'	=> $element['assertedidentity']['default'])),
+
 		$form->select(array('desc'	=> $this->bbf('fm_canreinvite'),
 				    'name'	=> 'canreinvite',
 				    'labelid'	=> 'canreinvite',

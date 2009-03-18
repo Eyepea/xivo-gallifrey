@@ -429,6 +429,11 @@ $array['element']['sendrpid']['value'] = array('no','yes');
 $array['element']['sendrpid']['default'] = 'no';
 $array['element']['sendrpid']['set'] = true;
 
+$array['element']['assertedidentity'] = array();
+$array['element']['assertedidentity']['value'] = array('no','yes');
+$array['element']['assertedidentity']['default'] = 'no';
+$array['element']['assertedidentity']['set'] = true;
+
 $array['element']['canreinvite'] = array();
 $array['element']['canreinvite']['value'] = array('no'			=> 'no',
 						  'yes'			=> 'yes',
@@ -606,6 +611,7 @@ $array['filter']['mohsuggest'] = array('set' => false,'chk' => 2,'maxlen' => 20)
 $array['filter']['vmexten'] = array('regexp' => '/^[0-9#\*]+$/','maxlen' => 40);
 $array['filter']['trustrpid'] = array('bool' => true);
 $array['filter']['sendrpid'] = array('bool' => true);
+$array['filter']['assertedidentity'] = array('bool' => true);
 $array['filter']['canreinvite'] = array('key' => array('no','yes','update','nonat','update,nonat'));
 $array['filter']['insecure'] = array('key' => array('no','port','invite','port,invite'));
 $array['filter']['rtcachefriends'] = array('bool' => true);

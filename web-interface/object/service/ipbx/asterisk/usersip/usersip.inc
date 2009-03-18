@@ -95,6 +95,7 @@ class xivo_service_asterisk_usersip extends xivo_service_asterisk_abstract
 		$arr['ipaddr'] = '';
 		$arr['regseconds'] = 0;
 		$arr['regserver'] = null;
+		$arr['lastms'] = '';
 		$arr['protocol'] = XIVO_SRE_IPBX_AST_PROTO_SIP;
 		$arr['category'] = 'user';
 
@@ -129,7 +130,8 @@ class xivo_service_asterisk_usersip extends xivo_service_asterisk_abstract
 		      $arr['callingpres'],
 		      $arr['ipaddr'],
 		      $arr['regseconds'],
-		      $arr['regserver']);
+		      $arr['regserver'],
+		      $arr['lastms']);
 
 		$arr['type'] = 'friend';
 		$arr['subscribecontext'] = null;

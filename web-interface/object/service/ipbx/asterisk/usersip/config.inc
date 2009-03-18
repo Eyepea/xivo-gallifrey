@@ -311,6 +311,9 @@ $array['element']['regseconds']['unset'] = true;
 $array['element']['regserver'] = array();
 $array['element']['regserver']['unset'] = true;
 
+$array['element']['lastms'] = array();
+$array['element']['lastms']['unset'] = true;
+
 $array['element']['protocol'] = array();
 $array['element']['protocol']['default'] = XIVO_SRE_IPBX_AST_PROTO_SIP;
 $array['element']['protocol']['forcedef'] = true;
@@ -415,6 +418,7 @@ $array['filter']['callingpres'] = array('set' => false,'chk' => 0);
 $array['filter']['ipaddr'] = array('set' => false,'chk' => 0);
 $array['filter']['regseconds'] = array('set' => false,'chk' => 0);
 $array['filter']['regserver'] = array('set' => false,'chk' => 0);
+$array['filter']['lastms'] = array('set' => false,'chk' => 0);
 $array['filter']['protocol'] = array('set' => false);
 $array['filter']['category'] = array('set' => false);
 
