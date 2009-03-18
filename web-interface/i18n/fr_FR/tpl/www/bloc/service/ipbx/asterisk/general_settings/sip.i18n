@@ -448,6 +448,9 @@ Faire confiance au Remote-Party-ID :
 ; fm_sendrpid
 Envoyer le Remote-Party-ID :
 
+; fm_assertedidentity
+Présentation du nom de l'appelé :
+
 ; fm_canreinvite
 Invite :
 
