@@ -449,7 +449,7 @@ Faire confiance au Remote-Party-ID :
 Envoyer le Remote-Party-ID :
 
 ; fm_assertedidentity
-Présentation du nom de l'appelé :
+Envoyer le P-Asserted-Identity :
 
 ; fm_canreinvite
 Invite :
