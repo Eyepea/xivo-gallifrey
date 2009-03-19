@@ -35,7 +35,7 @@ def getring(agi, cursor, args):
         agi.set_variable('XIVO_RINGTYPE', "")
         return
 
-    if CONFIG_PARSER.has_option('number', dstnum_context):
+    if len(dstnum) > 0 and CONFIG_PARSER.has_option('number', dstnum_context):
         phonetype = CONFIG_PARSER.get('number', dstnum_context)
 
     try:
