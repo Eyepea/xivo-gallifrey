@@ -20,33 +20,41 @@ import ConfigParser
 
 from xivo_agid import agid
 
-CONFIG_FILE = "/etc/asterisk/xivo_ring.conf"
-
-config = None
+CONFIG_FILE     = "/etc/asterisk/xivo_ring.conf"
+CONFIG_PARSER   = None
 
 def getring(agi, cursor, args):
-    dstnum = agi.get_variable('XIVO_REAL_NUMBER')
-    context = agi.get_variable('XIVO_REAL_CONTEXT')
-    callorigin = agi.get_variable('XIVO_CALLORIGIN')
+    dstnum          = agi.get_variable('XIVO_REAL_NUMBER')
+    context         = agi.get_variable('XIVO_REAL_CONTEXT')
+    callorigin      = agi.get_variable('XIVO_CALLORIGIN')
+    # TODO: maybe replace number@context with user id in conf file ?
+    dstnum_context  = "%s@%s" % (dstnum, context)
+    phonetype       = None
+
+    if CONFIG_PARSER.has_option('number', "!%s" % dstnum_context):
+        agi.set_variable('XIVO_RINGTYPE', "")
+        return
+
+    if CONFIG_PARSER.has_option('number', dstnum_context):
+        phonetype = CONFIG_PARSER.get('number', dstnum_context)
 
     try:
-        # TODO: maybe replace number@context with user id in conf file ?
-        phonetype = config.get('number', "%s@%s" % (dstnum, context))
-        ringtype = config.get(phonetype, callorigin)
+        if phonetype is None:
+            phonetype = CONFIG_PARSER.get('number', "@%s" % context)
+        ringtype = CONFIG_PARSER.get(phonetype, callorigin)
+    except ConfigParser.NoOptionError:
+        agi.set_variable('XIVO_RINGTYPE', "")
+        agi.verbose("Using the native phone ring tone")
+    else:
         agi.set_variable('XIVO_RINGTYPE', ringtype)
         agi.set_variable('XIVO_PHONETYPE', phonetype)
         agi.verbose("Using ring tone %s" % (ringtype,))
-    except ConfigParser.NoOptionError:
-        ringtype = agi.get_variable('XIVO_RINGTYPE')
-        if ringtype:
-                agi.set_variable('XIVO_RINGTYPE', "")
-        agi.verbose("Using the native phone ring tone")
 
 def setup(cursor):
-    global config
+    global CONFIG_PARSER
 
     # This module is often called, keep this object alive.
-    config = ConfigParser.RawConfigParser()
-    config.readfp(open(CONFIG_FILE))
+    CONFIG_PARSER = ConfigParser.RawConfigParser()
+    CONFIG_PARSER.readfp(open(CONFIG_FILE))
 
 agid.register(getring, setup)
