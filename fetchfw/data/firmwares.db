@@ -365,31 +365,31 @@ size: 979068
 md5sum: 1a4966ec9c0c48c8bbc7ca440ba4ae7e
 sha1sum: f3bd2fd9872096a07c5ae17eacede68072681e64
 
-# Thomson ST2022 3.65
-[thst2022_365]
+# Thomson ST2022 4.67
+[thst2022_467]
 brand: Thomson
 model: ST2022
-version: 3.65
-files: ST2022_SG_v3.65_Release_Package.zip
+version: 4.67
+files: ST2022_SG_v4.67_Release_Package.zip
 
-[ST2022_SG_v3.65_Release_Package.zip]
-url: http://www.xivo.fr/download/firmware/ST2022_SG_v3.65_Release_Package.zip
-size: 1584488
-md5sum: a9e106fae7c9ddb1c6e5cadf3dba33b5
-sha1sum: a4a06136aa324546864ec2e25cd4016eb44d0182
+[ST2022_SG_v4.67_Release_Package.zip]
+url: http://www.thomsonbroadbandpartner.com/getfile.php?id=6596
+size: 12132822
+md5sum: 864a81c6d3e755ffa46a01de0f57f4cf
+sha1sum: 1ab13b4407d2c2027eb7cc686796f3b56e0b2da9
 
-# Thomson ST2030 1.66
-[thst2030_166]
+# Thomson ST2030 2.67
+[thst2030_267]
 brand: Thomson
 model: ST2030
-version: 1.66
-files: ST2030_SG_v1.66_Release_package.zip
+version: 2.67
+files: ST2030_SG_v2.67_Release_package.zip
 
-[ST2030_SG_v1.66_Release_package.zip]
-url: http://www.xivo.fr/download/firmware/ST2030_SG_v1.66_Release_package.zip
-size: 8248076
-md5sum: b2cba25db65d5c7036e759e4646130a7
-sha1sum: f4b370fd70a8ba4de56d0779909ab103b856efba
+[ST2030_SG_v2.67_Release_package.zip]
+url: http://www.thomsonbroadbandpartner.com/getfile.php?id=6555
+size: 12494659
+md5sum: 014ba51938ea585dac1acda5acff4b52
+sha1sum: 7d254ec971f5b84baee7bd9d4b4b12526b4e61c1
 
 ###
 ### Cards Firmwares starting from here ###
