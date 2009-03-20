@@ -246,7 +246,7 @@
     </OFF-ON-Dial-Tone>
 
     <Call-Waiting-Tone>
-        <Num-of-Element>3</Num-of-Element>
+        <Num-of-Element>2</Num-of-Element>
         <Tone-Element-1>
             <Num-of-Tones>1</Num-of-Tones>
             <Freq-1>440</Freq-1>
@@ -256,13 +256,8 @@
 
         <Tone-Element-2>
             <Num-of-Tones>0</Num-of-Tones>
-            <Duration>5000</Duration>
+            <Duration>10000</Duration>
         </Tone-Element-2>
-
-        <Tone-Element-3>
-            <Num-of-Tones>0</Num-of-Tones>
-            <Duration>5000</Duration>
-        </Tone-Element-3>
 
     </Call-Waiting-Tone>
 

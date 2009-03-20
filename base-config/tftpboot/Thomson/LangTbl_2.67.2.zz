@@ -159,6 +159,18 @@
             <APS_TTbl_not_Found>Tone Table Not Found</APS_TTbl_not_Found>
             <APS_TTbl_Tx_Error>Tone Table Tx Error</APS_TTbl_Tx_Error>
             <APS_Corrupted_TTbl>Corrupted Tone Table</APS_Corrupted_TTbl>
+            <APS_SIPS_Wrong_CERT>SIPS Cert Wrong</APS_SIPS_Wrong_CERT>
+            <APS_SIPS_CERT_not_Found>SIPS Cert Not Found</APS_SIPS_CERT_not_Found>
+            <APS_SIPS_CERT_Tx_Error>SIPS Cert Tx Error</APS_SIPS_CERT_Tx_Error>
+            <APS_SIPS_Corrupted_CERT>SIPS Cert Corrupted</APS_SIPS_Corrupted_CERT>
+            <APS_SIPS_Wrong_PKEY>SIPS Key Wrong</APS_SIPS_Wrong_PKEY>
+            <APS_SIPS_PKEY_not_Found>SIPS Key Not Found</APS_SIPS_PKEY_not_Found>
+            <APS_SIPS_PKEY_Tx_Error>SIPS Key Tx Error</APS_SIPS_PKEY_Tx_Error>
+            <APS_SIPS_Corrupted_PKEY>SIPS Key Corrupted</APS_SIPS_Corrupted_PKEY>
+            <APS_SIPS_Wrong_CALIST>SIPS CA Wrong</APS_SIPS_Wrong_CALIST>
+            <APS_SIPS_CALIST_not_F>SIPS CA Not Found</APS_SIPS_CALIST_not_F>
+            <APS_SIPS_CALIST_Tx_Error>SIPS CA Tx Error</APS_SIPS_CALIST_Tx_Error>
+            <APS_SIPS_Corrupted_CALST>SIPS CA Corrupted</APS_SIPS_Corrupted_CALST>
             <APS_Wrong_CConf>Wrong Com Config</APS_Wrong_CConf>
             <APS_Wrong_Spcf_Conf>Wrong Spe Config</APS_Wrong_Spcf_Conf>
             <APS_CConf_not_Found>Com Config Not Found</APS_CConf_not_Found>
@@ -170,6 +182,19 @@
             <APS_Contact_Admin>Please contact admin</APS_Contact_Admin>
             <APS_Unknown_Error>Unknown Error!</APS_Unknown_Error>
             <APS_Custom_OK>Customization OK!</APS_Custom_OK>
+            <APS_AES_Decrypt_error>Decrypt file error</APS_AES_Decrypt_error>
+            <APS_HTTPS_Wrong_CERT>HTTPS Cert Wrong</APS_HTTPS_Wrong_CERT>
+            <APS_HTTPS_CERT_not_Found>HTTPS Cert Not Found</APS_HTTPS_CERT_not_Found>
+            <APS_HTTPS_CERT_Tx_Error>HTTPS Cert Tx Error</APS_HTTPS_CERT_Tx_Error>
+            <APS_HTTPS_Corrupted_CERT>HTTPS Cert Corrupted</APS_HTTPS_Corrupted_CERT>
+            <APS_HTTPS_Wrong_PKEY>HTTPS Key Wrong</APS_HTTPS_Wrong_PKEY>
+            <APS_HTTPS_PKEY_not_Found>HTTPS Key Not Found</APS_HTTPS_PKEY_not_Found>
+            <APS_HTTPS_PKEY_Tx_Error>HTTPS Key Tx Error</APS_HTTPS_PKEY_Tx_Error>
+            <APS_HTTPS_Corrupted_PKEY>HTTPS Key Corrupted</APS_HTTPS_Corrupted_PKEY>
+            <APS_HTTPS_Wrong_CALIST>HTTPS CA Wrong</APS_HTTPS_Wrong_CALIST>
+            <APS_HTTPS_CALIST_not_F>HTTPS CA Not Found</APS_HTTPS_CALIST_not_F>
+            <APS_HTTPS_CALIST_Tx_Error>HTTPS CA Tx Error</APS_HTTPS_CALIST_Tx_Error>
+            <APS_HTTPS_Corrupted_CALST>HTTPS CA Corrupted</APS_HTTPS_Corrupted_CALST>
         </AutoProvisionString>
 
         <FastService>
