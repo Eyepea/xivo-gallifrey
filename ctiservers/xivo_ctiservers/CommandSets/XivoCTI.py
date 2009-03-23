@@ -3462,7 +3462,9 @@ class XivoCTICommand(BaseCommand):
                         # context.startswith('macro-phonestatus'):
                         # *10
                         return
-                elif appliname in ['Queue', 'AppQueue', 'BackGround', 'VoiceMail', 'VoiceMailMain', 'AgentLogin']:
+                elif appliname in ['Queue', 'AppQueue', 'BackGround',
+                                   'VoiceMail', 'VoiceMailMain',
+                                   'AgentLogin', 'Transferred Call', 'RetryDial']:
                         log.info('%s ami_status : %s %s' % (astid, appliname, applidata))
                         return
                 elif appliname == '':
@@ -3870,7 +3872,8 @@ class XivoCTICommand(BaseCommand):
                                                 if self.capas[capaid].match_funcs(ucapa, 'dial'):
                                                         repstr = self.__hangup__(userinfo,
                                                                                  icommand.struct.get('source'),
-                                                                                 (classcomm == 'hangup'))
+                                                                                 False)
+                                                        # (classcomm == 'hangup'))
                                         elif classcomm == 'pickup':
                                                 if self.capas[capaid].match_funcs(ucapa, 'dial'):
                                                         # on Thomson, it picks up the last received call
@@ -4564,11 +4567,14 @@ class XivoCTICommand(BaseCommand):
                 if typesrc != 'chan':
                         return
                 [userid, channel] = whosrc.split(':', 1)
+                if not channel:
+                        log.warning('channel undefined for %s' % source)
+                        return
                 uinfo = self.ulist_ng.keeplist.get(userid)
                 astid = uinfo.get('astid')
                 if astid in self.configs:
                         channel_peer = ''
-                        log.info('%s a HANGUP is attempted for %s on channel %s' % (astid, uinfo.get('fullname'), channel))
+                        log.info('%s : a HANGUP is attempted for %s on channel %s' % (astid, uinfo.get('fullname'), channel))
                         phoneid = uinfo.get('techlist')[0]
                         if phoneid in self.weblist['phones'][astid].keeplist:
                                 phonedetails = self.weblist['phones'][astid].keeplist[phoneid]

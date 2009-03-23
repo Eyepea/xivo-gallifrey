@@ -261,7 +261,7 @@ class AMIClass:
         def hangup(self, channel, channel_peer = None):
                 ret = 0
                 try:
-                        log.info('hanging up %s as requested' % channel)
+                        log.info('%s : hanging up %s as requested' % (self.astid, channel))
                         self.sendcommand('Hangup',
                                          [('Channel', channel)])
                         ret += 1
@@ -272,7 +272,7 @@ class AMIClass:
                 
                 if channel_peer:
                         try:
-                                log.info('hanging up %s as requested' % channel_peer)
+                                log.info('%s : hanging up %s (peer) as requested' % (self.astid, channel_peer))
                                 self.sendcommand('Hangup',
                                                  [('Channel', channel_peer)])
                                 ret += 2
