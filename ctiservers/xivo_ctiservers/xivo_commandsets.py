@@ -113,6 +113,8 @@ class BaseCommand:
                 return
         def set_configs(self, configs):
                 return
+        def set_partings(self, parting_astid_context):
+                return
         
         def set_urllist(self, astid, listname, urllist):
                 return

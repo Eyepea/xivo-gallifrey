@@ -64,7 +64,7 @@ class Capabilities:
                          'fax' : ['fax'],
                          'features' : ['features'],
                          'history' : ['history'],
-                         'identity' : [],     # might need 'agents'
+                         'identity' : ['dial'],     # might need 'agents'
                          'search' : ['dial'], # might need 'agents'
                          
                          'messages' : [],

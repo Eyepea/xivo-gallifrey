@@ -72,7 +72,7 @@ class Fax:
                         reply = 'ko;filetype'
                         log.warning('fax : the file received is a <%s> one : format not supported' % brieffile)
                         ret = -1
-
+                        
                 if ret == 0:
                         if os.path.exists(PATH_SPOOL_ASTERISK_FAX):
                                 try:

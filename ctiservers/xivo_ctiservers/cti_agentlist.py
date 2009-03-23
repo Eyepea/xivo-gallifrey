@@ -37,7 +37,9 @@ class AgentList(AnyList):
                                            'urloptions' : (1, 4, True)}
                 AnyList.__init__(self, newurls)
                 return
-
+        
+        queuelocationprops = ['Paused', 'Status', 'Membership', 'Penalty', 'LastCall', 'CallsTaken', 'Xivo-StateTime']
+        
         def update(self):
                 ret = AnyList.update(self)
                 self.reverse_index = {}
@@ -47,3 +49,47 @@ class AgentList(AnyList):
                         else:
                                 log.warning('2 agents have the same number')
                 return ret
+        
+        def queuememberupdate(self, queuename, queueorgroup, agentnumber, event):
+                qorg = '%s_by_agent' % queueorgroup
+                if agentnumber in self.reverse_index:
+                        idx = self.reverse_index[agentnumber]
+                        if idx in self.keeplist:
+                                if queuename not in self.keeplist[idx][qorg]:
+                                        self.keeplist[idx][qorg][queuename] = {}
+                                for prop in self.queuelocationprops:
+                                        if prop in event:
+                                                self.keeplist[idx][qorg][queuename][prop] = event.get(prop)
+                return
+        
+        def queuememberadded(self, queuename, queueorgroup, agentnumber, event):
+                qorg = '%s_by_agent' % queueorgroup
+                if agentnumber in self.reverse_index:
+                        idx = self.reverse_index[agentnumber]
+                        if idx in self.keeplist:
+                                if queuename not in self.keeplist[idx][qorg]:
+                                        self.keeplist[idx][qorg][queuename] = {}
+                                        for prop in self.queuelocationprops:
+                                                if prop in event:
+                                                        self.keeplist[idx][qorg][queuename][prop] = event.get(prop)
+                                else:
+                                        log.warning('queuememberadded : %s already there' % queuename)
+                return
+        
+        def queuememberremoved(self, queuename, queueorgroup, agentnumber, event):
+                qorg = '%s_by_agent' % queueorgroup
+                if agentnumber in self.reverse_index:
+                        idx = self.reverse_index[agentnumber]
+                        if idx in self.keeplist:
+                                if queuename in self.keeplist[idx][qorg]:
+                                        del self.keeplist[idx][qorg][queuename]
+                                else:
+                                        log.warning('queuememberremoved : %s not there' % queuename)
+                return
+        
+        def byagentnumber(self, agentnumber):
+                if agentnumber in self.reverse_index:
+                        idx = self.reverse_index[agentnumber]
+                        if idx in self.keeplist:
+                                return self.keeplist[idx]
+                return

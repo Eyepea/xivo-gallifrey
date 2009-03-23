@@ -43,7 +43,8 @@ class PhoneList(AnyList):
                 comms = self.keeplist[phoneid]['comms']
                 if commid in self.keeplist[phoneid]['comms']:
                     if infos.has_key('calleridnum') and comms[commid].get('calleridnum') != infos.get('calleridnum'):
-                        log.debug('  __createorupdate_comm__ changed calleridnum[%s %s] %s => %s' % (commid, comms[commid].get('thischannel'), comms[commid].get('calleridnum'), infos.get('calleridnum')))
+                        log.debug('  __createorupdate_comm__ changed calleridnum[%s %s] %s => %s'
+                                  % (commid, comms[commid].get('thischannel'), comms[commid].get('calleridnum'), infos.get('calleridnum')))
                     self.keeplist[phoneid]['comms'][commid].update(infos)
                 else:
                     if infos.has_key('calleridnum'):

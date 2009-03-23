@@ -633,7 +633,7 @@ def callback_timer_main(*args):
         log.info('callback_timer_main (timer finished at %s) %s %s' % (time.asctime(), tname, args))
         thisthread.setName(tname + '-' + '-'.join(args))
         tqueue.put(thisthread)
-        os.write(pipe_queued_threads_main[1], tname)
+        os.write(pipe_queued_threads_main[1], thisthread.getName())
         return
 
 def checkqueue_main():
@@ -767,6 +767,7 @@ while True: # loops over the reloads
         logintimeout = int(xivoconf_general.get('logintimeout', '5'))
         apnoeafile = xivoconf_general.get('apnoeafile')
         prefixfile = xivoconf_general.get('prefixfile')
+        parting_astid_context = xivoconf_general.get('parting_astid_context')
         if 'asterisklist' in xivoconf_general:
                 asterisklist = xivoconf_general['asterisklist'].split(',')
         if 'contextlist' in xivoconf_general:
@@ -808,6 +809,8 @@ while True: # loops over the reloads
                         log.exception('read apnoea file %s' % apnoeafile)
         if prefixfile:
                 commandclass.read_internatprefixes(prefixfile)
+        if parting_astid_context:
+                commandclass.set_partings(parting_astid_context)
                 
         for ctx in contextlist:
                 xivoconf_context = cconf.read_section('context', ctx)

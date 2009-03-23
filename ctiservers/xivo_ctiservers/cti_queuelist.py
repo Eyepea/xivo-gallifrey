@@ -44,6 +44,24 @@ class QueueList(AnyList):
                       'Xivo-Join', 'Xivo-Link', 'Xivo-Lost', 'Xivo-Wait', 'Xivo-Chat', 'Xivo-Rate',
                       'Calls']
         
+        def hasqueue(self, queuename):
+                return self.keeplist.has_key(queuename)
+        
+        def getcontext(self, queuename):
+                return self.keeplist[queuename]['context']
+        
+        def fillstats(self, queuename, statin):
+                self.keeplist[queuename]['queuestats']['Xivo-Join'] = len(statin['ENTERQUEUE'])
+                self.keeplist[queuename]['queuestats']['Xivo-Link'] = len(statin['CONNECT'])
+                self.keeplist[queuename]['queuestats']['Xivo-Lost'] = len(statin['ABANDON'])
+                nj = self.keeplist[queuename]['queuestats']['Xivo-Join']
+                nl = self.keeplist[queuename]['queuestats']['Xivo-Link']
+                if nj > 0:
+                        self.keeplist[queuename]['queuestats']['Xivo-Rate'] = (nl * 100) / nj
+                else:
+                        self.keeplist[queuename]['queuestats']['Xivo-Rate'] = -1
+                return
+        
         def queueentry_update(self, queue, channel, position, entrytime, calleridnum, calleridname):
                 if queue in self.keeplist:
                         self.keeplist[queue]['channels'][channel] = { 'position' : position,
@@ -63,28 +81,39 @@ class QueueList(AnyList):
                 return
         
         def queuememberupdate(self, queue, location, event):
+                changed = False
                 if queue in self.keeplist:
-                        if location not in self.keeplist[queue]['agents']:
-                                self.keeplist[queue]['agents'][location] = {}
+                        if location not in self.keeplist[queue]['agents_in_queue']:
+                                self.keeplist[queue]['agents_in_queue'][location] = {}
+                                changed = True
+                        thisqueuelocation = self.keeplist[queue]['agents_in_queue'][location]
                         for prop in self.queuelocationprops:
                                 if prop in event:
-                                        self.keeplist[queue]['agents'][location][prop] = event.get(prop)
+                                        if prop in thisqueuelocation:
+                                                if thisqueuelocation[prop] != event.get(prop):
+                                                        thisqueuelocation[prop] = event.get(prop)
+                                                        changed = True
+                                        else:
+                                                thisqueuelocation[prop] = event.get(prop)
+                                                changed = True
                 else:
                         log.warning('queuememberupdate : no such queue %s' % queue)
-                return
+                return changed
         
         def queuememberremove(self, queue, location):
+                changed = False
                 if queue in self.keeplist:
-                        if location in self.keeplist[queue]['agents']:
-                                del self.keeplist[queue]['agents'][location]
+                        if location in self.keeplist[queue]['agents_in_queue']:
+                                del self.keeplist[queue]['agents_in_queue'][location]
+                                changed = True
                 else:
                         log.warning('queuememberremove : no such queue %s' % queue)
-                return
+                return changed
         
         def update_queuestats(self, queue, event):
                 changed = False
                 if queue in self.keeplist:
-                        thisqueuestats = self.keeplist[queue]['stats']
+                        thisqueuestats = self.keeplist[queue]['queuestats']
                         for statfield in self.queuestats:
                                 if statfield in event:
                                         if statfield in thisqueuestats:
@@ -104,13 +133,13 @@ class QueueList(AnyList):
         def get_queuestats(self, queuename):
                 lst = {}
                 if queuename in self.keeplist:
-                        lst[queuename] = self.keeplist[queuename]['stats']
+                        lst[queuename] = self.keeplist[queuename]['queuestats']
                 return lst
         
         def get_queuestats_long(self):
                 lst = {}
                 for queuename, queueprops in self.keeplist.iteritems():
-                        lst[queuename] = queueprops['stats']
+                        lst[queuename] = queueprops['queuestats']
                 return lst
         
         def get_queueprops_long(self):
@@ -123,8 +152,8 @@ class QueueList(AnyList):
                 queuelist = {}
                 for qref, ql in self.keeplist.iteritems():
                         lst = {}
-                        if agid in ql['agents']:
-                                agprop = ql['agents'][agid]
+                        if agid in ql['agents_in_queue']:
+                                agprop = ql['agents_in_queue'][agid]
                                 for v in self.queuelocationprops:
                                         if v in agprop:
                                                 lst[v] = agprop[v]

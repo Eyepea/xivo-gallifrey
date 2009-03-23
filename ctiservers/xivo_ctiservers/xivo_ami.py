@@ -72,7 +72,7 @@ class AMIClass:
                 s.settimeout(30)
                 self.fileobj = s.makefile('rw', 0)
                 self.fd = self.fileobj.fileno()
-                log.info('AMI connection properties : %s %s %s' % (self.address, self.fileobj, self.fd))
+                log.info('%s AMI connection properties : %s %s %s' % (self.astid, self.address, self.fileobj, self.fd))
                 s.close()
                 return
         
