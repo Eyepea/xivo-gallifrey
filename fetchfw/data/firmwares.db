@@ -109,18 +109,18 @@ size: 3513620
 md5sum: 30e05d16a9b47ab68c5bdda39b1ec2aa
 sha1sum: b260aff0ff8311f328c35d06528f5f865b9a5367
 
-# Linksys SPA962 6.1.3a
-[lsspa962_613a]
+# Linksys SPA962 6.1.5a
+[lsspa962_615a]
 brand: Linksys
 model: SPA962
-version: 6.1.3a
-files: SPA9X2_Dictionaries_v615.zip spa962-6-1-3a.zip
+version: 6.1.5a
+files: SPA9X2_Dictionaries_v615.zip spa962-6-1-5a.zip
 
-[spa962-6-1-3a.zip]
-url: ftp://ftp.linksys.com/downloads/NA/firmware/spa962-6-1-3a.zip
-size: 4000656
-md5sum: e5afb0a72cda89051f46d12dccdc0890
-sha1sum: a16f33a7a20e6424762ec843fa546d603422ded4
+[spa962-6-1-5a.zip]
+url: http://www.xivo.fr/download/firmware/Linksys/spa962-6-1-5a.zip
+size: 2355809
+md5sum: b8d6009cb7b2ce079c082575d55bd9e1
+sha1sum: 5ef25e1c891832a6e87813ce1e534f1034688b06
 
 # Linksys SPA3102
 [lsspa3102_517]
