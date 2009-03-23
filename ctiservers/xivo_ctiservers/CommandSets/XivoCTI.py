@@ -2130,15 +2130,22 @@ class XivoCTICommand(BaseCommand):
                 
                 if uid in self.ignore_dtmf[astid]:
                         del self.ignore_dtmf[astid][uid]
-                if uid in self.uniqueids[astid] and chan == self.uniqueids[astid][uid]['channel']:
-                        self.uniqueids[astid][uid].update({'hangup' : chan,
-                                                           'time-hangup' : time.time()})
-                        # for v, vv in self.uniqueids[astid][uid].iteritems():
-                        # print astid, uid, v, vv
                         
                 if uid in self.uniqueids[astid]:
-                        if 'context' in self.uniqueids[astid][uid]:
-                                self.__sheet_alert__('hangup', astid, self.uniqueids[astid][uid]['context'], event)
+                        vv = self.uniqueids[astid][uid]
+                        if chan == vv['channel']:
+                                vv.update({'hangup' : chan,
+                                           'time-hangup' : time.time()})
+                        if 'origapplication' in vv and vv['origapplication'] == 'ChanSpy':
+                                agent_id = vv['origapplication-data']['spied-agentid']
+                                tosend = { 'class' : 'agentlisten',
+                                           'astid' : astid,
+                                           'agentid' : agent_id,
+                                           'status' : 'stopped' }
+                                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid,
+                                                                 self.weblist['agents'][astid].keeplist[agent_id].get('context'))
+                        if 'context' in vv:
+                                self.__sheet_alert__('hangup', astid, vv['context'], event)
                 else:
                         log.warning('%s HANGUP : uid %s has not been filled' % (astid, uid))
                         
@@ -2395,13 +2402,24 @@ class XivoCTICommand(BaseCommand):
                 log.info('%s ami_originateresponse : %s' % (astid, event))
                 uniqueid = event.get('Uniqueid')
                 actionid = event.get('ActionID')
+                reason = event.get('Reason')
                 # 'Exten', 'Context', 'Channel', 'CallerID', 'CallerIDNum', 'CallerIDName'
                 if uniqueid in self.uniqueids[astid]:
                         self.uniqueids[astid][uniqueid].update({'time-originateresponse' : time.time(),
                                                                 'actionid' : actionid})
                         if actionid in self.origapplication[astid]:
                                 self.uniqueids[astid][uniqueid].update(self.origapplication[astid][actionid])
+                                
+                                if self.origapplication[astid][actionid]['origapplication'] == 'ChanSpy' and reason == '4':
+                                        agent_id = self.origapplication[astid][actionid]['origapplication-data']['spied-agentid']
+                                        tosend = { 'class' : 'agentlisten',
+                                                   'astid' : astid,
+                                                   'agentid' : agent_id,
+                                                   'status' : 'started' }
+                                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid,
+                                                                         self.weblist['agents'][astid].keeplist[agent_id].get('context'))
                                 del self.origapplication[astid][actionid]
+                                
                 # Response = Success <=> Reason = '4'
                 # Response = Failure <=>
                 # Response =             Reason = '0' : (unable to request channel, phone might be unreachable)
@@ -4130,13 +4148,8 @@ class XivoCTICommand(BaseCommand):
                                                                    userinfo.get('context'))
                                         log.info('started listening on %s %s (agent %s) aid = %s' % (astid, channel, anum, aid))
                                         self.origapplication[astid][aid] = { 'origapplication' : 'ChanSpy',
-                                                                             'origapplication-data' : { 'spied-channel' : channel } }
-                                        tosend = { 'class' : 'agentlisten',
-                                                   'astid' : astid,
-                                                   'agentid' : agent_id,
-                                                   'status' : 'started' }
-                                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid,
-                                                                         self.weblist['agents'][astid].keeplist[agent_id].get('context'))
+                                                                             'origapplication-data' : { 'spied-channel' : channel,
+                                                                                                        'spied-agentid' : agent_id } }
                         elif subcommand == 'stoplisten':
                                 agent_id = self.weblist['agents'][astid].reverse_index.get(anum)
                                 channels = self.__find_channel_by_agentnum__(astid, anum)
@@ -4146,12 +4159,7 @@ class XivoCTICommand(BaseCommand):
                                                         if channel == vv['origapplication-data']['spied-channel']:
                                                                 self.__ami_execute__(astid, 'hangup', vv['channel'])
                                         log.info('stopped listening on %s %s (agent %s)' % (astid, channel, anum))
-                                        tosend = { 'class' : 'agentlisten',
-                                                   'astid' : astid,
-                                                   'agentid' : agent_id,
-                                                   'status' : 'started' }
-                                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid,
-                                                                         self.weblist['agents'][astid].keeplist[agent_id].get('context'))
+                                        
                         elif subcommand == 'getfilelist':
                                 lst = os.listdir(MONITORDIR)
                                 monitoredfiles = []

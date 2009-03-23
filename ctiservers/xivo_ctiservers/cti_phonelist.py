@@ -154,9 +154,9 @@ class PhoneList(AnyList):
                 tomove = None
                 for phoneid, v in self.keeplist.iteritems():
                         for k, kk in v['comms'].iteritems():
-                                if kk['thischannel'] == oldname:
+                                if kk.get('thischannel') == oldname:
                                         kk['thischannel'] = newname
-                                if kk['peerchannel'] == oldname:
+                                if kk.get('peerchannel') == oldname:
                                         kk['peerchannel'] = newname
                 if uid in self.keeplist[oldphoneid]['comms']:
                         tomove = self.keeplist[oldphoneid]['comms'][uid]
@@ -171,9 +171,9 @@ class PhoneList(AnyList):
         def ami_rename_fromtrunk(self, newphoneid, oldname, newname, uid, tomove):
                 for phoneid, v in self.keeplist.iteritems():
                         for k, kk in v['comms'].iteritems():
-                                if kk['thischannel'] == oldname:
+                                if kk.get('thischannel') == oldname:
                                         kk['thischannel'] = newname
-                                if kk['peerchannel'] == oldname:
+                                if kk.get('peerchannel') == oldname:
                                         kk['peerchannel'] = newname
                 if tomove and uid not in self.keeplist[newphoneid]['comms']:
                         self.keeplist[newphoneid]['comms'][uid] = tomove

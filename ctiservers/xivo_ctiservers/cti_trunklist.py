@@ -129,9 +129,9 @@ class TrunkList(AnyList):
         def ami_rename(self, oldtrunkid, newtrunkid, oldname, newname, uid):
                 for trunkid, v in self.keeplist.iteritems():
                         for k, kk in v['comms'].iteritems():
-                                if kk['thischannel'] == oldname:
+                                if kk.get('thischannel') == oldname:
                                         kk['thischannel'] = newname
-                                if kk['peerchannel'] == oldname:
+                                if kk.get('peerchannel') == oldname:
                                         kk['peerchannel'] = newname
                 if oldtrunkid and newtrunkid and oldtrunkid != newtrunkid:
                         if uid in self.keeplist[oldtrunkid]['comms'] and uid not in self.keeplist[newtrunkid]['comms']:
@@ -145,9 +145,9 @@ class TrunkList(AnyList):
                 tomove = None
                 for trunkid, v in self.keeplist.iteritems():
                         for k, kk in v['comms'].iteritems():
-                                if kk['thischannel'] == oldname:
+                                if kk.get('thischannel') == oldname:
                                         kk['thischannel'] = newname
-                                if kk['peerchannel'] == oldname:
+                                if kk.get('peerchannel') == oldname:
                                         kk['peerchannel'] = newname
                 if uid in self.keeplist[oldtrunkid]['comms']:
                         tomove = self.keeplist[oldtrunkid]['comms'][uid]
@@ -162,9 +162,9 @@ class TrunkList(AnyList):
         def ami_rename_fromphone(self, newtrunkid, oldname, newname, uid, tomove):
                 for trunkid, v in self.keeplist.iteritems():
                         for k, kk in v['comms'].iteritems():
-                                if kk['thischannel'] == oldname:
+                                if kk.get('thischannel') == oldname:
                                         kk['thischannel'] = newname
-                                if kk['peerchannel'] == oldname:
+                                if kk.get('peerchannel') == oldname:
                                         kk['peerchannel'] = newname
                 if tomove and uid not in self.keeplist[newtrunkid]['comms']:
                         self.keeplist[newtrunkid]['comms'][uid] = tomove
