@@ -44,6 +44,22 @@ function xivo_get_memory($value,$name=true)
 	return($r);
 }
 
+function xivo_size_iec($size)
+{
+	$arr = array('Bytes',
+		     'KiB',
+		     'MiB',
+		     'GiB',
+		     'TiB');
+
+	$size = floatval($size);
+
+	for($c = 0;$size >= 1024 && $c < 4;$c++)
+		$size /= 1024;
+
+	return(array(str_replace(',','.',$size),$arr[$c]));
+}
+
 function xivo_bool($bool)
 {
 	$bool = strtolower(strval($bool));

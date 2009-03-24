@@ -263,6 +263,14 @@ $dhtml = &$this->get_module('dhtml');
 	if(xivo_user::chk_acl('system_management') === true):
 		echo	'<dl><dt>',$this->bbf('mn_left_ti_systemmanagement'),'</dt>';
 
+		if(xivo_user::chk_acl('system_management','backupfiles') === true):
+			echo	'<dd id="mn-system-management--backupfiles">',
+				$url->href_html($this->bbf('mn_left_systemmanagement-backupfiles'),
+				'service/ipbx/system_management/backupfiles',
+				'act=list'),
+				'</dd>';
+		endif;
+
 		if(xivo_user::chk_acl('system_management','configfiles') === true):
 			echo	'<dd id="mn-system-management--configfiles">',
 				$url->href_html($this->bbf('mn_left_systemmanagement-configfiles'),

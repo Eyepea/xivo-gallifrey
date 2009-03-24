@@ -1,5 +1,11 @@
 ; col_file
 Fichier
 
+; col_size
+Taille
+
+; col_date
+Date
+
 ; no_file
 Aucun fichier trouvé

@@ -1,0 +1,17 @@
+; size_iec_Bytes(0)
+0,00 octet 
+
+; size_iec_Bytes
+%.2f octets
+
+; size_iec_KiB
+%.2f Kio
+
+; size_iec_MiB
+%.2f Mio
+
+; size_iec_GiB
+%s Gio
+
+; size_iec_TiB
+%s Tio

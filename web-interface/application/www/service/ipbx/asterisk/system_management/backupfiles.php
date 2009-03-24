@@ -24,33 +24,32 @@ $page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
 $param = array();
 $param['act'] = 'list';
 
-$configfiles = &$ipbx->get_module('configfiles');
+$backupfiles = &$ipbx->get_module('backupfiles');
 
 switch($act)
 {
-	case 'edit':
-		if(isset($_QR['id']) === false || ($info = $configfiles->get($_QR['id'])) === false)
-			$_QRY->go($_HTML->url('service/ipbx/system_management/configfiles'),$param);
+	case 'download':
+		$param['page'] = $page;
 
-		if(isset($_QR['fm_send'],$_QR['content']) === true)
-		{
-			if($configfiles->edit($info['name'],$_QRY->get_uqr('content')) !== false)
-				$_QRY->go($_HTML->url('service/ipbx/system_management/configfiles'),$param);
+		if(isset($_QR['id']) === false || ($info = $backupfiles->get($_QR['id'])) === false)
+			$_QRY->go($_HTML->url('service/ipbx/system_management/backupfiles'),$param);
 
-			$info['content'] = $_QR['content'];
-		}
+		$file = new xivo_file();
 
-		$_HTML->set_var('info',$info);
+		if(($file->download($info['file'])) === false)
+			$_QRY->go($_HTML->url('service/ipbx/system_management/backupfiles'),$param);
+
+		die();
 		break;
 	default:
 		$act = 'list';
 		$total = 0;
 
-		if(($files = $configfiles->get_list()) !== false)
+		if(($files = $backupfiles->get_list()) !== false)
 		{
 			$total = count($files);
 			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort();
+			$sort = new xivo_sort(array('key' => 'name'));
 			usort($files,array(&$sort,'strnat_usort'));
 		}
 
@@ -64,7 +63,7 @@ $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 
-$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/system_management/configfiles/'.$act);
+$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/system_management/backupfiles/'.$act);
 $_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
 $_HTML->display('index');
 

@@ -33,7 +33,7 @@ if(($list_cats = $musiconhold->get_all_by_category()) !== false)
 {
 	xivo::load_class('xivo_sort');
 	$sort = new xivo_sort(array('key' => 'category'));
-	usort($list_cats,array(&$sort,'str_usort'));
+	usort($list_cats,array(&$sort,'strnat_usort'));
 }
 
 $_HTML->set_var('list_cats',$list_cats);

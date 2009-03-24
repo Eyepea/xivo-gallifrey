@@ -2,7 +2,7 @@
 
 #
 # XiVO Web-Interface
-# Copyright (C) 2006-2009  Proformatique <technique@proformatique.com>
+# Copyright (C) 2009  Proformatique <technique@proformatique.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,30 +20,30 @@
 
 xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
-class xivo_service_asterisk_configfiles extends xivo_service_asterisk_abstract
+class xivo_service_asterisk_backupfiles extends xivo_service_asterisk_abstract
 {
-	var $_name	= 'configfiles';
+	var $_name	= 'backupfiles';
 	var $_filter	= false;
-	var $_cfgpath	= '';
+	var $_bakpath	= '';
 
-	function xivo_service_asterisk_configfiles(&$sre)
+	function xivo_service_asterisk_backupfiles(&$sre)
 	{
 		if(is_object($sre) === false)
 			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
 
 		$this->_sre = &$sre;
 
-		if($this->_chk_cfgpath() === false)
+		if($this->_chk_bakpath() === false)
 			trigger_error('Invalid or missing configuration path in '.$this->_sre->get_type().' init file',E_USER_ERROR);
 
 		$this->_load_config();
 	}
 
-	function _chk_cfgpath()
+	function _chk_bakpath()
 	{
 		if(xivo_issa($this->_name,$this->_sre->_ini) === false
 		|| isset($this->_sre->_ini[$this->_name]['path']) === false
-		|| ($this->_cfgpath = xivo_file::is_d_rwx($this->_sre->_ini[$this->_name]['path'])) === false)
+		|| ($this->_bakpath = xivo_file::is_d_r($this->_sre->_ini[$this->_name]['path'])) === false)
 			return(false);
 	}
 
@@ -51,22 +51,20 @@ class xivo_service_asterisk_configfiles extends xivo_service_asterisk_abstract
 	{
 		$name = basename(strval($name));
 
-		if(preg_match('/^[a-zA-Z0-9_-]+\.conf$/',$name) === 1)
-			return(xivo_file::is_f_rw($this->_cfgpath.XIVO_SEP_DIR.$name));
+		if(preg_match('/^[a-zA-Z0-9_\-\.]+\.(?:tgz|\d+)$/',$name) === 1)
+			return(xivo_file::is_f_r($this->_bakpath.XIVO_SEP_DIR.$name));
 
 		return(false);
 	}
 
 	function get($name)
 	{
-		if(($file = $this->_chk_file($name)) === false
-		|| ($content = file_get_contents($file)) === false)
+		if(($file = $this->_chk_file($name)) === false)
 			return(false);
 
 		$r = array();
 		$r['name'] = $name;
 		$r['file'] = $file;
-		$r['content'] = &$content;
 
 		return($r);
 	}
@@ -81,7 +79,7 @@ class xivo_service_asterisk_configfiles extends xivo_service_asterisk_abstract
 
 	function get_list()
 	{
-		$r = xivo_file::read_d($this->_cfgpath,'file',(FILE_R_OK | FILE_W_OK),'/^[a-zA-Z0-9_-]+\.conf$/',true);
+		$r = xivo_file::read_d($this->_bakpath,'file',FILE_R_OK,'/^[a-zA-Z0-9_\-\.]+\.(?:tgz|\d+)$/',false,true);
 
 		if($r !== false && isset($r[0]) === false)
 			return(false);

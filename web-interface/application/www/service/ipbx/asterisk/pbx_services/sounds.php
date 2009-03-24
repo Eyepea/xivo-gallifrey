@@ -32,7 +32,7 @@ if(($list_dirs = $sounds->get_list_dirs()) !== false)
 {
 	xivo::load_class('xivo_sort');
 	$sort = new xivo_sort();
-	usort($list_dirs,array(&$sort,'str_usort'));
+	usort($list_dirs,array(&$sort,'strnat_usort'));
 }
 
 switch($act)
@@ -227,7 +227,7 @@ switch($act)
 			$total = count($dirs);
 			xivo::load_class('xivo_sort');
 			$sort = new xivo_sort(array('key' => 'name'));
-			usort($dirs,array(&$sort,'str_usort'));
+			usort($dirs,array(&$sort,'strnat_usort'));
 		}
 
 		$_HTML->set_var('pager',xivo_calc_page($page,20,$total));
@@ -246,7 +246,7 @@ switch($act)
 			$total = count($dirs);
 			xivo::load_class('xivo_sort');
 			$sort = new xivo_sort(array('key' => 'dirname'));
-			usort($dirs,array(&$sort,'str_usort'));
+			usort($dirs,array(&$sort,'strnat_usort'));
 		}
 
 		$_HTML->set_var('pager',xivo_calc_page($page,20,$total));

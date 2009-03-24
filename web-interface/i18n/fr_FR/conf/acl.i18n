@@ -106,6 +106,9 @@ Carnet d'adresses
 ; acl_service-ipbx-system_management
 Configuration IPBX
 
+; acl_service-ipbx-system_management-backupfiles
+Fichiers de sauvegarde
+
 ; acl_service-ipbx-system_management-configfiles
 Fichiers de configuration
 

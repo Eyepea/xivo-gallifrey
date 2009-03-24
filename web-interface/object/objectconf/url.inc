@@ -60,6 +60,7 @@ $array['service/ipbx/pbx_services/musiconhold'] = 'service/ipbx/index.php/pbx_se
 $array['service/ipbx/pbx_services/extenfeatures'] = 'service/ipbx/index.php/pbx_services/extenfeatures/';
 $array['service/ipbx/pbx_services/handynumbers'] = 'service/ipbx/index.php/pbx_services/handynumbers/';
 $array['service/ipbx/pbx_services/phonebook'] = 'service/ipbx/index.php/pbx_services/phonebook/';
+$array['service/ipbx/system_management/backupfiles'] = 'service/ipbx/index.php/system_management/backupfiles/';
 $array['service/ipbx/system_management/configfiles'] = 'service/ipbx/index.php/system_management/configfiles/';
 $array['service/ipbx/system_management/context'] = 'service/ipbx/index.php/system_management/context/';
 $array['service/ipbx/system_management/ldapfilter'] = 'service/ipbx/index.php/system_management/ldapfilter/';

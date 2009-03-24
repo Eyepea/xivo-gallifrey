@@ -191,6 +191,9 @@ $array['module']['ami']['datastorage'] = false;
 $array['module']['autoprov'] = array();
 $array['module']['autoprov']['datastorage'] = true;
 
+$array['module']['backupfiles'] = array();
+$array['module']['backupfiles']['datastorage'] = false;
+
 $array['module']['callerid'] = array();
 $array['module']['callerid']['datastorage'] = true;
 

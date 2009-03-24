@@ -30,6 +30,11 @@ if(defined('FILE_USE_INCLUDE_PATH') === false)
 if(defined('FILE_APPEND') === false)
 	define('FILE_APPEND',8);
 
+define('FILE_F_OK',0);
+define('FILE_X_OK',1);
+define('FILE_W_OK',2);
+define('FILE_R_OK',4);
+
 class xivo_file
 {
 	var $_finfo	= null;
@@ -99,11 +104,12 @@ class xivo_file
 		header('Pragma: no-cache');
 		header('Expires: 0');
 		header('Last-Modified: '.date('D, d M Y H:i:s',$this->info['mtime']).' '.strftime('%Z'));
-		header('Cache-Control: must-revalidate');
+		header('Cache-Control: no-cache, must-revalidate');
+		header('Content-Transfer-Encoding: binary');
 		header('Content-Type: '.$this->info['mime']);
 		header('Content-Length: '.$this->info['size']);
-		header('Content-Disposition: attachment; filename='.$this->info['name']);
-		print file_get_contents($this->info['path']);
+		header('Content-Disposition: attachment; filename="'.$this->info['name'].'"');
+		readfile($this->info['path']);
 	}
 
 	function get_finfo_info($file='')
@@ -657,33 +663,19 @@ class xivo_file
 		return($r);
 	}
 
-	function read_d($dir,$type='',$mode='',$match='',$dirwmode=false)
+	function read_d($dir,$type='',$mode=0,$match='',$dirwriteable=false,$stat=false)
 	{
-		$dir = (string) $dir;
 		$type = (string) $type;
-		$mode = (string) $mode;
 		$match = (string) $match;
+		$stat = (bool) $stat;
 
 		if(($dir = xivo_file::is_d_rx($dir)) === false
 		|| ($open = opendir($dir)) === false
-		|| ((bool) $dirwmode === true && xivo_file::is_w($dir) === false) === true)
+		|| ((bool) $dirwriteable === true && xivo_file::is_w($dir) === false) === true)
 			return(false);
 
 		if($type !== 'file' && $type !== 'dir')
 			$type = '';
-
-		$nmode = '';
-
-		if(strpos($mode,'r') !== false)
-			$nmode .= 'r';
-
-		if(strpos($mode,'w') !== false)
-			$nmode .= 'w';
-
-		if(strpos($mode,'x') !== false)
-			$nmode .= 'x';
-
-		$mode = $nmode;
 
 		$r = array();
 
@@ -696,37 +688,12 @@ class xivo_file
 
 			$file = $dir.XIVO_SEP_DIR.$name;
 
-			switch($mode)
-			{
-				case 'r':
-					if(xivo_file::is_r($file) === false)
-						continue 2;
-					break;
-				case 'w':
-					if(xivo_file::is_w($file) === false)
-						continue 2;
-					break;
-				case 'x':
-					if(xivo_file::is_x($file) === false)
-						continue 2;
-					break;
-				case 'rw':
-					if(xivo_file::is_rw($file) === false)
-						continue 2;
-					break;
-				case 'rx':
-					if(xivo_file::is_rx($file) === false)
-						continue 2;
-					break;
-				case 'wx':
-					if(xivo_file::is_wx($file) === false)
-						continue 2;
-					break;
-				case 'rwx':
-					if(xivo_file::is_rwx($file) === false)
-						continue 2;
-					break;
-			}
+			if(($mode & FILE_R_OK) !== 0 && xivo_file::is_r($file) === false)
+				continue;
+			else if(($mode & FILE_W_OK) !== 0 && xivo_file::is_w($file) === false)
+				continue;
+			else if(($mode & FILE_X_OK) !== 0 && xivo_file::is_x($file) === false)
+				continue;
 
 			switch($type)
 			{
@@ -740,7 +707,12 @@ class xivo_file
 					break;
 			}
 
-			$r[] = $name;
+			if($stat === false)
+				$r[] = $name;
+			else
+				$r[] = array('name'	=> $name,
+					     'stat'	=> stat($file),
+					     'path'	=> $dir);
 		}
 
 		closedir($open);

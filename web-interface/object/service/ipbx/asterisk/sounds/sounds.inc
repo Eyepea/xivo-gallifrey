@@ -419,7 +419,7 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 			$dir = $this->_sndpath;
 
 
-		$r = xivo_file::read_d($dir,'file',null,$match_file,true);
+		$r = xivo_file::read_d($dir,'file',0,$match_file,true);
 
 		if($r !== false && isset($r[0]) === false)
 			$r = false;
@@ -456,7 +456,7 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 		if(($match_dir = $this->_get_option_dir_name('match_dir')) === false)
 			return(false);
 
-		$r = xivo_file::read_d($this->_sndpath,'dir','rwx',$match_dir,true);
+		$r = xivo_file::read_d($this->_sndpath,'dir',(FILE_R_OK | FILE_W_OK | FILE_X_OK),$match_dir,true);
 
 		if($r !== false && isset($r[0]) === false)
 			$r = false;

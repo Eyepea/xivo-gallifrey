@@ -97,6 +97,9 @@ Carnet d'adresses
 ; mn_left_ti_systemmanagement
 Configuration IPBX
 
+; mn_left_systemmanagement-backupfiles
+Fichiers de sauvegarde
+
 ; mn_left_systemmanagement-configfiles
 Fichiers de configuration
 
