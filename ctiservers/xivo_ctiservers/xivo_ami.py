@@ -532,7 +532,7 @@ class AMIClass:
         # \brief Transfers a channel towards a new extension.
         def transfer(self, channel, extension, context):
                 ph = re.sub(__dialallowed__, '', extension)
-                if len(ph) > 0:
+                if len(ph) > 0 and extension != 's':
                         return False
                 try:
                         command_details = [('Channel', channel),

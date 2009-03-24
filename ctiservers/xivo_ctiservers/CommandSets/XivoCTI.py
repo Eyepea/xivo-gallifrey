@@ -4479,17 +4479,6 @@ class XivoCTICommand(BaseCommand):
                                         exten_dst = dstuinfo.get('phonenum')
                                         cidname_dst = dstuinfo.get('fullname')
                                         context_dst = dstuinfo.get('context')
-                        elif typedst == 'voicemail':
-                                if whodst == 'special:me':
-                                        dstuinfo = userinfo
-                                else:
-                                        dstuinfo = self.ulist_ng.keeplist[whodst]
-                                # if dstuinfo is not None:
-                                # astid_dst = dstuinfo.get('astid')
-                                # exten_dst = dstuinfo.get('phonenum')
-                                # cidname_dst = dstuinfo.get('fullname')
-                                # context_dst = dstuinfo.get('context')
-                                # transfer + Application ?
                         else:
                                 log.warning('unknown typedst <%s>' % typedst)
                                 
@@ -4542,6 +4531,26 @@ class XivoCTICommand(BaseCommand):
                                         exten_dst = dstuinfo.get('phonenum')
                                         cidname_dst = dstuinfo.get('fullname')
                                         context_dst = dstuinfo.get('context')
+                        elif typedst == 'voicemail':
+                                if whodst == 'special:me':
+                                        dstuinfo = userinfo
+                                else:
+                                        dstuinfo = self.ulist_ng.keeplist[whodst]
+                                        
+                                if dstuinfo.get('voicemailid'):
+                                        voicemail_id = dstuinfo['voicemailid']
+                                        if astid_src in self.weblist['voicemail'] and voicemail_id in self.weblist['voicemail'][astid_src].keeplist:
+                                                mailbox = self.weblist['voicemail'][astid_src].keeplist[voicemail_id].get('mailbox')
+                                                context = self.weblist['voicemail'][astid_src].keeplist[voicemail_id].get('context')
+                                                self.__ami_execute__(astid_src, 'setvar', 'XIVO_MAILBOX', mailbox, chan_src)
+                                                self.__ami_execute__(astid_src, 'setvar', 'XIVO_MAILBOX_CONTEXT', context, chan_src)
+                                                
+                                                exten_dst = 's'
+                                                context_src = 'macro-ctivoicemail'
+                                        else:
+                                                log.warning('missing voicemail definition for %s %s' % (astid_src, voicemail_id))
+                                else:
+                                        log.warning('no voicemail allowed or defined for %s' % dstuinfo)
                         else:
                                 log.warning('unknown typedst %s for %s' % (typedst, commname))
                                 
