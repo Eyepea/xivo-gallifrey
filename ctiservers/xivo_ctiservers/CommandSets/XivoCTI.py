@@ -3429,6 +3429,7 @@ class XivoCTICommand(BaseCommand):
                 channel = event.get('Channel')
                 calleridnum = event.get('CallerIDNum')
                 calleridname = event.get('CallerIDName').decode('utf8')
+                log.debug('%s ami_status : %s %s %s %s %s' % (astid, uniqueid, channel, appliname, calleridnum, calleridname))
                 
                 # warning : channel empty when appliname is 'VoiceMail'
                 actionid = self.amilist.execute(astid, 'getvar', channel, 'MONITORED')
@@ -3441,7 +3442,10 @@ class XivoCTICommand(BaseCommand):
                                                             'calleridnum' : calleridnum }
                         self.channels[astid][channel] = uniqueid
                 else:
-                        log.warning('%s : uid %s already in uniqueids list' % (astid, uniqueid))
+                        log.warning('%s : uid %s already in uniqueids list, updating callerid' % (astid, uniqueid))
+                        log.debug('%s : uid %s = %s' % (astid, uniqueid, self.uniqueids[astid][uniqueid]))
+                        self.uniqueids[astid][uniqueid].update({ 'calleridname' : calleridname, 'calleridnum' : calleridnum })
+                        log.debug('%s : uid %s = %s' % (astid, uniqueid, self.uniqueids[astid][uniqueid]))
                         return
                 
                 if appliname in ['Parked Call']:
@@ -3781,7 +3785,8 @@ class XivoCTICommand(BaseCommand):
                                                 if self.capas[capaid].match_funcs(ucapa, 'history'):
                                                         repstr = self.__build_history_string__(icommand.struct.get('peer'),
                                                                                                icommand.struct.get('size'),
-                                                                                               icommand.struct.get('mode'))
+                                                                                               icommand.struct.get('mode'),
+                                                                                               icommand.struct.get('morerecentthan'))
                                         elif classcomm == 'directory-search':
                                                 if self.capas[capaid].match_funcs(ucapa, 'directory'):
                                                         repstr = self.__build_customers__(context, icommand.struct.get('pattern'))
@@ -3936,7 +3941,7 @@ class XivoCTICommand(BaseCommand):
                                               % (repstr[:40], len(repstr)))
                 return ret
         
-        def __build_history_string__(self, requester_id, nlines, kind):
+        def __build_history_string__(self, requester_id, nlines, kind, morerecentthan):
                 userinfo = self.ulist_ng.keeplist[requester_id]
                 astid = userinfo.get('astid')
                 termlist = userinfo.get('techlist')
@@ -3945,7 +3950,7 @@ class XivoCTICommand(BaseCommand):
                         [techno, ctx, phoneid, exten] = termin.split('.')
                         # print '__build_history_string__', requester_id, nlines, kind, techno, phoneid
                         try:
-                                hist = self.__update_history_call__(self.configs[astid], techno, phoneid, nlines, kind)
+                                hist = self.__update_history_call__(self.configs[astid], techno, phoneid, nlines, kind, morerecentthan)
                                 for x in hist:
                                         ritem = { 'x1' : x[1].replace('"', ''),
                                                   'x11' : x[11],
@@ -4521,6 +4526,8 @@ class XivoCTICommand(BaseCommand):
                                                 if 'link' in vuid and vuid['link'] == chan_src and 'channel' in vuid:
                                                         nchan = vuid['channel']
                                         chan_park = nchan
+                                        #exten_dst = '700'   # cheat code !
+                                        #chan_src = nchan    # cheat code !
                         elif typedst == 'user':
                                 if whodst == 'special:me':
                                         dstuinfo = userinfo
@@ -4550,6 +4557,7 @@ class XivoCTICommand(BaseCommand):
                         # print astid_src, commname, chan_src, exten_dst, context_src
                         ret = False
                         try:
+                                # cheat code !
                                 if whodst == 'special:parkthecall':
                                         ret = self.__ami_execute__(astid_src, 'park', chan_park, chan_src)
                                 else:
@@ -4597,7 +4605,7 @@ class XivoCTICommand(BaseCommand):
         # \param phoneid phone id
         # \param nlines the number of lines to fetch for the given phone
         # \param kind kind of list (ingoing, outgoing, missed calls)
-        def __update_history_call__(self, cfg, techno, phoneid, nlines, kind):
+        def __update_history_call__(self, cfg, techno, phoneid, nlines, kind, morerecentthan=None):
                 results = []
                 if cfg.cdr_db_conn is None:
                         log.warning('%s : no CDR uri defined for this asterisk - see cdr_db_uri parameter' % cfg.astid)
@@ -4609,17 +4617,21 @@ class XivoCTICommand(BaseCommand):
                                            'accountcode', 'uniqueid', 'userfield')
                                 likestring = '%s/%s-%%' %(techno, phoneid)
                                 orderbycalldate = "ORDER BY calldate DESC LIMIT %s" % nlines
+                                datecond = ''
+                                if morerecentthan is not None:
+                                    log.debug('morerecentthan = %s' % (morerecentthan))
+                                    datecond = " AND calldate > '%s' " % (morerecentthan)
                                 
                                 if kind == "0": # outgoing calls (all)
-                                        cursor.query("SELECT ${columns} FROM cdr WHERE channel LIKE %s " + orderbycalldate,
+                                        cursor.query("SELECT ${columns} FROM cdr WHERE channel LIKE %s " + datecond + orderbycalldate,
                                                      columns,
                                                      (likestring,))
                                 elif kind == "1": # incoming calls (answered)
-                                        cursor.query("SELECT ${columns} FROM cdr WHERE disposition='ANSWERED' AND dstchannel LIKE %s " + orderbycalldate,
+                                        cursor.query("SELECT ${columns} FROM cdr WHERE disposition='ANSWERED' AND dstchannel LIKE %s " + datecond + orderbycalldate,
                                                      columns,
                                                      (likestring,))
                                 else: # missed calls (received but not answered)
-                                        cursor.query("SELECT ${columns} FROM cdr WHERE disposition!='ANSWERED' AND dstchannel LIKE %s " + orderbycalldate,
+                                        cursor.query("SELECT ${columns} FROM cdr WHERE disposition!='ANSWERED' AND dstchannel LIKE %s " + datecond + orderbycalldate,
                                                      columns,
                                                      (likestring,))
                                 results = cursor.fetchall()
