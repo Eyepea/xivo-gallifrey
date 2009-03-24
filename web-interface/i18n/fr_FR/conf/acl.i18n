@@ -121,6 +121,9 @@ Filtres LDAP
 ; acl_service-ipbx-control_system
 Système de contrôle
 
+; acl_service-ipbx-control_system-logfiles
+Journaux d'événements
+
 ; acl_service-ipbx-control_system-reload
 Recharger IPBX
 

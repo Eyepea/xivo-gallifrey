@@ -301,6 +301,14 @@ $dhtml = &$this->get_module('dhtml');
 	if(xivo_user::chk_acl('control_system') === true):
 		echo	'<dl><dt>',$this->bbf('mn_left_ti_controlsystem'),'</dt>';
 
+		if(xivo_user::chk_acl('control_system','logfiles') === true):
+			echo	'<dd id="mn-control-system--logfiles">',
+				$url->href_html($this->bbf('mn_left_controlsystem-logfiles'),
+						'service/ipbx/control_system/logfiles',
+						'act=list'),
+						'</dd>';
+		endif;
+
 		if(xivo_user::chk_acl('control_system','reload') === true):
 			echo	'<dd id="mn-control-system--reload">',
 				$url->href_html($this->bbf('mn_left_controlsystem-ipbxreload',

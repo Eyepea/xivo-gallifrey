@@ -67,6 +67,7 @@ $array['tree']['service']['ipbx']['system_management']['context'] = true;
 $array['tree']['service']['ipbx']['system_management']['ldapfilter'] = true;
 
 $array['tree']['service']['ipbx']['control_system'] = array();
+$array['tree']['service']['ipbx']['control_system']['logfiles'] = true;
 $array['tree']['service']['ipbx']['control_system']['reload'] = true;
 $array['tree']['service']['ipbx']['control_system']['restart'] = true;
 

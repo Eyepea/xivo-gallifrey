@@ -246,6 +246,9 @@ $array['module']['incall']['datastorage'] = true;
 $array['module']['ldapfilter'] = array();
 $array['module']['ldapfilter']['datastorage'] = true;
 
+$array['module']['logfiles'] = array();
+$array['module']['logfiles']['datastorage'] = false;
+
 $array['module']['meetmefeatures'] = array();
 $array['module']['meetmefeatures']['datastorage'] = true;
 

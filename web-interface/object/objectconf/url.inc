@@ -64,6 +64,7 @@ $array['service/ipbx/system_management/backupfiles'] = 'service/ipbx/index.php/s
 $array['service/ipbx/system_management/configfiles'] = 'service/ipbx/index.php/system_management/configfiles/';
 $array['service/ipbx/system_management/context'] = 'service/ipbx/index.php/system_management/context/';
 $array['service/ipbx/system_management/ldapfilter'] = 'service/ipbx/index.php/system_management/ldapfilter/';
+$array['service/ipbx/control_system/logfiles'] = 'service/ipbx/index.php/control_system/logfiles/';
 $array['service/ipbx/control_system/reload'] = 'service/ipbx/index.php/control_system/reload/';
 $array['service/ipbx/control_system/restart'] = 'service/ipbx/index.php/control_system/restart/';
 $array['service/ipbx/web_services/phonebook/search'] = 'service/ipbx/web_services.php/phonebook/search/';

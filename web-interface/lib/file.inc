@@ -73,6 +73,9 @@ class xivo_file
 
 		$pinfo = pathinfo($file);
 
+		if(isset($pinfo['extension']) === false)
+			$pinfo['extension'] = '';
+
 		$info = array();
 		$info['path'] = $file;
 		$info['dir'] = $pinfo['dirname'];

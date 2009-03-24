@@ -112,6 +112,9 @@ Filtres LDAP
 ; mn_left_ti_controlsystem
 Système de contrôle
 
+; mn_left_controlsystem-logfiles
+Journaux d'événements
+
 ; mn_left_controlsystem-ipbxreload(unknown)
 Recharger
 
