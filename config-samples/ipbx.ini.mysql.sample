@@ -11,6 +11,9 @@ port = 5004
 host = 127.0.0.1
 port = 8666
 
+[backupfiles]
+path = /var/backups/pf-xivo
+
 [configfiles]
 path = /etc/asterisk
 
