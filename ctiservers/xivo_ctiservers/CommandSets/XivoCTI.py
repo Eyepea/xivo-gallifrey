@@ -4539,16 +4539,9 @@ class XivoCTICommand(BaseCommand):
                                         
                                 if dstuinfo.get('voicemailid'):
                                         voicemail_id = dstuinfo['voicemailid']
-                                        if astid_src in self.weblist['voicemail'] and voicemail_id in self.weblist['voicemail'][astid_src].keeplist:
-                                                mailbox = self.weblist['voicemail'][astid_src].keeplist[voicemail_id].get('mailbox')
-                                                context = self.weblist['voicemail'][astid_src].keeplist[voicemail_id].get('context')
-                                                self.__ami_execute__(astid_src, 'setvar', 'XIVO_MAILBOX', mailbox, chan_src)
-                                                self.__ami_execute__(astid_src, 'setvar', 'XIVO_MAILBOX_CONTEXT', context, chan_src)
-                                                
-                                                exten_dst = 's'
-                                                context_src = 'macro-ctivoicemail'
-                                        else:
-                                                log.warning('missing voicemail definition for %s %s' % (astid_src, voicemail_id))
+                                        self.__ami_execute__(astid_src, 'setvar', 'XIVO_VMBOXID', voicemail_id, chan_src)
+                                        exten_dst = 's'
+                                        context_src = 'macro-voicemail'
                                 else:
                                         log.warning('no voicemail allowed or defined for %s' % dstuinfo)
                         else:
