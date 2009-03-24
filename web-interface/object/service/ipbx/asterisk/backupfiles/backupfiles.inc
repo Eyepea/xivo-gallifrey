@@ -69,14 +69,6 @@ class xivo_service_asterisk_backupfiles extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function edit($name,$contents)
-	{
-		if(($file = $this->_chk_file($name)) !== false)
-			return(xivo_file::put_contents($file,xivo_eol($contents)));
-
-		return(false);
-	}
-
 	function get_list()
 	{
 		$r = xivo_file::read_d($this->_bakpath,'file',FILE_R_OK,'/^[a-zA-Z0-9_\-\.]+\.(?:tgz|\d+)$/',false,true);
