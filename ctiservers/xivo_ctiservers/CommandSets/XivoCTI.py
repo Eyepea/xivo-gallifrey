@@ -3303,6 +3303,10 @@ class XivoCTICommand(BaseCommand):
                 
                 if uniqueid not in meetmeref['uniqueids']:
                         phoneid = self.__phoneid_from_channel__(astid, channel)
+                        if phoneid:
+                                self.weblist['phones'][astid].ami_meetmejoin(phoneid, uniqueid, meetmenum)
+                                self.__update_phones_trunks__(astid, phoneid, None, None, None, 'ami_meetmejoin')
+
                         uinfo = self.__userinfo_from_phoneid__(astid, phoneid)
                         if uinfo:
                                 userid = '%s/%s' % (uinfo.get('astid'), uinfo.get('xivo_userid'))
