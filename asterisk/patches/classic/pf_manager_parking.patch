@@ -7,9 +7,9 @@
 
 Index: asterisk-1.4.24/res/res_features.c
 ===================================================================
---- asterisk-1.4.24.orig/res/res_features.c	2009-03-25 14:08:44.000000000 +0100
-+++ asterisk-1.4.24/res/res_features.c	2009-03-25 14:10:16.000000000 +0100
-@@ -599,7 +599,7 @@
+--- asterisk-1.4.24.orig/res/res_features.c	2009-03-25 15:31:19.000000000 +0100
++++ asterisk-1.4.24/res/res_features.c	2009-03-25 15:31:21.000000000 +0100
+@@ -607,7 +607,7 @@
  	}
  
  	if (!play_announcement || !orig_chan_name) {
