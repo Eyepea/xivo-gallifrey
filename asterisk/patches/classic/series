@@ -39,3 +39,4 @@ chan-sip_sipremoveheader_issue14246-trunk
 pf_sip_mwi_for_thomson_st2030s.patch
 
 passerted_issue8824.patch
+pf_manager_parking.patch
