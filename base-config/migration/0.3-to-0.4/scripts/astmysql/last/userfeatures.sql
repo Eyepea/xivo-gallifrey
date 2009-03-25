@@ -39,11 +39,16 @@ SET `passwdclient` = IFNULL((
 WHERE `enableclient` AND NOT `internal`;
 
 UPDATE `userfeatures`
+SET `profileclient` = 'client'
+WHERE `enableclient` AND NOT `internal`;
+
+UPDATE `userfeatures`
 	INNER JOIN `userfeatures` AS `ufeatures`
 	ON `userfeatures`.`loginclient` = `ufeatures`.`loginclient`
 	AND `userfeatures`.`id` != `ufeatures`.`id`
 SET
 	`userfeatures`.`enableclient` = 0,
 	`userfeatures`.`loginclient` = '',
-	`userfeatures`.`passwdclient` = ''
+	`userfeatures`.`passwdclient` = '',
+	`userfeatures`.`profileclient` = ''
 WHERE NOT `userfeatures`.`internal` AND `userfeatures`.`loginclient` != '';

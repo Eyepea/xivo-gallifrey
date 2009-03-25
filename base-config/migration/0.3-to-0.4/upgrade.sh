@@ -265,7 +265,7 @@ do
 	PASSWDCLIENT=`echo ${CLIENT_FIELDS}|cut -d\| -f3`
 
 	echo	"UPDATE userfeatures
-		 SET loginclient = '${LOGINCLIENT}', passwdclient = '${PASSWDCLIENT}'
+		 SET loginclient = '${LOGINCLIENT}', passwdclient = '${PASSWDCLIENT}', profileclient = 'client'
 		 WHERE id = '${USERFEATURESID}';" >> "${ASTSQLITE_USERCLIENT_TMP}"
 done
 
