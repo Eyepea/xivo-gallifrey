@@ -2754,6 +2754,7 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def ami_agents(self, astid, event):
+                log.info('%s ami_agents : %s' % (astid, event))
                 agent_number = event.get('Agent')
                 if astid in self.weblist['agents']:
                         loginchan_split = event.get('LoggedInChan').split('@')
@@ -3952,9 +3953,9 @@ class XivoCTICommand(BaseCommand):
                         try:
                                 hist = self.__update_history_call__(self.configs[astid], techno, phoneid, nlines, kind, morerecentthan)
                                 for x in hist:
-                                        ritem = { 'x1' : x[1].replace('"', ''),
-                                                  'x11' : x[11],
-                                                  'duration' : x[10] }
+                                        ritem = { 'duration' : x[10] }
+                                        # 'x1' : x[1].replace('"', '')
+                                        # 'x11' : x[11]
                                         try:
                                                 ritem['ts'] = x[0].isoformat()
                                         except:
