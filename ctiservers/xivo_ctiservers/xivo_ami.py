@@ -1,3 +1,4 @@
+# vim: set fileencoding=utf-8 :
 # XIVO Daemon
 
 __version__   = '$Revision$'
@@ -99,7 +100,10 @@ class AMIClass:
                         # if random.randint(0, 5) == 0 and loopnum == 0:
                         # ret = False
                         # else:
-                        self.fileobj.write('\r\n'.join(towritefields))
+                        str = '\r\n'.join(towritefields)
+                        if isinstance(str, unicode):
+                            str = str.encode('utf8')
+                        self.fileobj.write(str)
                         self.fileobj.flush()
                         ret = True
                 except UnicodeEncodeError:
