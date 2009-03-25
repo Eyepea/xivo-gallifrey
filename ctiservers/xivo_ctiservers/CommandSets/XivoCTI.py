@@ -69,8 +69,8 @@ from xivo.BackSQL import backsqlite
 
 log = logging.getLogger('xivocti')
 
-XIVOVERSION_NUM = '0.4'
-XIVOVERSION_NAME = 'k-9'
+XIVOVERSION_NUM = '1.0'
+XIVOVERSION_NAME = 'dalek'
 REQUIRED_CLIENT_VERSION = 5680
 __revision__ = __version__.split()[1]
 __alphanums__ = string.uppercase + string.lowercase + string.digits
@@ -294,7 +294,7 @@ class XivoCTICommand(BaseCommand):
                         # trivial checks (version, client kind) dealing with the software used
                         xivoversion = loginparams.get('xivoversion')
                         if xivoversion != XIVOVERSION_NUM:
-                                return 'xivoversion_client:%s;%d' % (xivoversion, XIVOVERSION_NUM)
+                                return 'xivoversion_client:%s;%s' % (xivoversion, XIVOVERSION_NUM)
                         svnversion = loginparams.get('version')
                         ident = loginparams.get('ident')
                         if len(ident.split('@')) == 2:
@@ -2763,7 +2763,7 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def ami_agents(self, astid, event):
-                log.info('%s ami_agents : %s' % (astid, event))
+                # log.info('%s ami_agents : %s' % (astid, event))
                 agent_number = event.get('Agent')
                 if astid in self.weblist['agents']:
                         loginchan_split = event.get('LoggedInChan').split('@')
@@ -3072,7 +3072,7 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def ami_queueparams(self, astid, event):
-                log.info('%s ami_queueparams : %s' % (astid, event))
+                # log.info('%s ami_queueparams : %s' % (astid, event))
                 if astid not in self.weblist['queues']:
                         log.warning('%s ami_queueparams : no queue list has been defined' % astid)
                         return
@@ -3087,6 +3087,7 @@ class XivoCTICommand(BaseCommand):
                 
                 if self.weblist[queueorgroup][astid].update_queuestats(queue, event):
                         # send an update only if something changed
+                        log.info('%s ami_queueparams : %s' % (astid, event))
                         tosend = { 'class' : queueorgroup,
                                    'function' : 'sendlist',
                                    'payload' : { astid : { queue : self.weblist[queueorgroup][astid].keeplist[queue] } }
