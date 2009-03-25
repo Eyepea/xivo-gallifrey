@@ -1,7 +1,7 @@
 [general]
 name = asterisk
 label = Asterisk
-datastorage = "mysql://asterisk:proformatique@localhost/asterisk"
+datastorage = "mysql://asterisk:proformatique@localhost/asterisk?charset=utf8"
 
 [ami]
 bindaddr = 127.0.0.1
