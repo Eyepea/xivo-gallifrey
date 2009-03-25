@@ -92,7 +92,7 @@ rename_trph = [True, False, False, True]
 
 class XivoCTICommand(BaseCommand):
 
-        xdname = 'XIVO Daemon'
+        xdname = 'XiVO Daemon'
         xivoclient_session_timeout = 60 # XXX
 
         fullstat_heavies = {}
@@ -966,7 +966,7 @@ class XivoCTICommand(BaseCommand):
                 """
                 Send a banner at login time
                 """
-                connid.sendall('XIVO CTI Server Version %s(%s) svn:%s\n' % (XIVOVERSION_NUM, XIVOVERSION_NAME,
+                connid.sendall('XiVO CTI Server Version %s(%s) svn:%s\n' % (XIVOVERSION_NUM, XIVOVERSION_NAME,
                                                                             __revision__))
                 self.timerthreads_login_timeout[connid] = threading.Timer(self.logintimeout, self.__callback_timer__, ('login',))
                 self.timerthreads_login_timeout[connid].start()
@@ -2681,7 +2681,7 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def ami_agentcalled(self, astid, event):
-                # log.info('%s ami_agentcalled : %s' % (astid, event))
+                log.info('%s ami_agentcalled : %s' % (astid, event))
                 queue = event.get('Queue')
                 context = event.get('Context')
                 agent_channel = event.get('AgentCalled')
@@ -2765,6 +2765,10 @@ class XivoCTICommand(BaseCommand):
                                 context = CONTEXT_UNKNOWN
                         if phonenum == 'n/a':
                                 phonenum = AGENT_NO_PHONENUM
+                        # AGENT_ONCALL => LoggedInChan is SIP/102-094c67c8, LoggedInTime and TalkingTo are defined
+                        # AGENT_LOGGEDOFF => LoggedInChan is 'n/a'
+                        # AGENT_IDLE + really idle => LoggedInChan is 102@default, LoggedInTime is defined
+                        # AGENT_IDLE + being called => LoggedInChan is Local/102@default-6417,1, LoggedInTime is defined
                         agent_id = self.weblist['agents'][astid].reverse_index.get(agent_number)
                         agent_channel = 'Agent/%s' % agent_number
                         # We don't use the 'Name' field since it is already given by XIVO properties
@@ -2782,24 +2786,26 @@ class XivoCTICommand(BaseCommand):
                                                                 if 'CONNECT' in zz[agent_channel]:
                                                                         ngot += 1
                                 nlost = nreceived - ngot
-                                self.weblist['agents'][astid].keeplist[agent_id]['agentstats'].update( { 'status' : event.get('Status'),
-                                                                                                         'agent_phone_number' : phonenum,
-                                                                                                         'agent_phone_context' : context,
-                                                                                                         'loggedintime' : event.get('LoggedInTime'),
-                                                                                                         'talkingto' : event.get('TalkingTo'),
-                                                                                                         
-                                                                                                         'Xivo-ReceivedCalls' : nreceived,
-                                                                                                         'Xivo-LostCalls' : nlost,
-                                                                                                         
-                                                                                                         'Xivo-Status-Recorded' : False,
-                                                                                                         'Xivo-Status-Link' : {}
-                                                                                                         } )
+                                thisagentstats = self.weblist['agents'][astid].keeplist[agent_id]['agentstats']
+                                thisagentstats.update( { 'status' : event.get('Status'),
+                                                         'agent_phone_number' : phonenum,
+                                                         'agent_phone_context' : context,
+                                                         'loggedintime' : event.get('LoggedInTime'),
+                                                         'talkingto' : event.get('TalkingTo'),
+                                                         
+                                                         'Xivo-ReceivedCalls' : nreceived,
+                                                         'Xivo-LostCalls' : nlost
+                                                         } )
+                                if 'Xivo-Status-Recorded' not in thisagentstats:
+                                        thisagentstats['Xivo-Status-Recorded'] = False
+                                if 'Xivo-Status-Link' not in thisagentstats:
+                                        thisagentstats['Xivo-Status-Link'] = {}
                         else:
-                                log.warning('%s : received statuses for agent <%s> unknown by XIVO' % (astid, agent_number))
+                                log.warning('%s : received statuses for agent <%s> unknown by XiVO' % (astid, agent_number))
                 return
         
         def __queuemismatch__(self, astid, queuename, origin):
-                log.warning('%s %s : no such queue (or group) %s (probably mismatch asterisk/xivo)' % (astid, origin, queuename))
+                log.warning('%s %s : no such queue (or group) %s (probably mismatch asterisk/XiVO)' % (astid, origin, queuename))
                 # XXX todo : show queue 'queuename' to clean
                 return
         
