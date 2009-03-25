@@ -10,18 +10,16 @@ MYSQL_CMD="${MYSQL_BIN} --defaults-extra-file=${MYSQL_CNF_FILE}"
 
 ### Config Setup
 
-MYSQL_AST_STRING="mysql://asterisk:proformatique@localhost/asterisk"
-MYSQL_AST_STRING_DAEMON="${MYSQL_AST_STRING}?charset=utf8"
-MYSQL_XIVO_STRING="mysql://xivo:proformatique@localhost/xivo"
-MYSQL_XIVO_STRING_DAEMON="${MYSQL_XIVO_STRING}?charset=utf8"
+MYSQL_AST_STRING="mysql://asterisk:proformatique@localhost/asterisk?charset=utf8"
+MYSQL_XIVO_STRING="mysql://xivo:proformatique@localhost/xivo?charset=utf8"
 
 sed -i -r "s#^(datastorage *= *\"?)sqlite:/[^\"]+(\")?\$#\1${MYSQL_AST_STRING}\2#" /etc/pf-xivo/web-interface/ipbx.ini
 sed -i -r "s#^(datastorage *= *\"?)sqlite:/[^\"]+(\")?\$#\1${MYSQL_XIVO_STRING}\2#" /etc/pf-xivo/web-interface/xivo.ini
 sed -i -r "s#^(database_uri *= *\"?)sqlite:/[^\"]+(\")?\$#\1${MYSQL_AST_STRING}\2#" /etc/pf-xivo/provisioning.conf
 # deactivated until pf-asternic-stats is ready for MySQL support
-#sed -i -r "s#^(ctilog *= *\"?)sqlite:/[^\"]+(\")?\$#\1${MYSQL_XIVO_STRING_DAEMON}\2#" /etc/asterisk/xivo_daemon.conf
-sed -i -r "s#^(cdr_db_uri *= *\"?)sqlite:/[^\"]+(\")?\$#\1${MYSQL_AST_STRING_DAEMON}\2#" /etc/asterisk/xivo_daemon.conf
-sed -i -r "s#^(userfeatures_db_uri *= *\"?)sqlite:/[^\"]+(\")?\$#\1${MYSQL_AST_STRING_DAEMON}\2#" /etc/asterisk/xivo_daemon.conf
+#sed -i -r "s#^(ctilog *= *\"?)sqlite:/[^\"]+(\")?\$#\1${MYSQL_XIVO_STRING}\2#" /etc/asterisk/xivo_daemon.conf
+sed -i -r "s#^(cdr_db_uri *= *\"?)sqlite:/[^\"]+(\")?\$#\1${MYSQL_AST_STRING}\2#" /etc/asterisk/xivo_daemon.conf
+sed -i -r "s#^(userfeatures_db_uri *= *\"?)sqlite:/[^\"]+(\")?\$#\1${MYSQL_AST_STRING}\2#" /etc/asterisk/xivo_daemon.conf
 sed -i -r "s#^(db_uri *= *\"?)sqlite:/[^\"]+(\")?\$#\1${MYSQL_AST_STRING}\2#" /etc/pf-xivo/agid.conf
 
 sed -i -r 's/^pre(load +=> +res_config_sqlite.so)/no\1/' /etc/asterisk/modules.conf
