@@ -2531,8 +2531,13 @@ class XivoCTICommand(BaseCommand):
                 exten   = event.get('Exten')
                 timeout = event.get('Timeout')
                 uid     = event.get('Uniqueid')
-                uidfrom = event.get('UniqueidFrom')
-                log.info('%s PARKEDCALL %s %s %s %s %s' % (astid, uidfrom, uid, cfrom, channel, exten))
+                uidfrom = event.get('UniqueidFrom') or event.get('FromUniqueid')
+                calleridnum = event.get('CallerID')
+                calleridname = event.get('CallerIDName').decode('utf8')
+                fromcalleridnum = event.get('FromCallerIDNum')
+                fromcalleridname = event.get('FromCallerIDName')
+                
+                log.info('%s PARKEDCALL %s %s %s %s %s %s %s' % (astid, uidfrom, uid, cfrom, channel, exten, calleridnum, calleridname))
                 if uid in self.uniqueids[astid]:
                         ctuid = self.uniqueids[astid][uid]
                         ctuid['parkexten-callback'] = exten
@@ -2550,7 +2555,11 @@ class XivoCTICommand(BaseCommand):
                                          'channel' : channel,
                                          'exten' : exten,
                                          'fromchannel' : cfrom,
-                                         'timeout' : timeout } }
+                                         'timeout' : timeout,
+                                         'calleridnum' : calleridnum,
+                                         'calleridname' : calleridname,
+                                         'fromcalleridnum' : fromcalleridnum,
+                                         'fromcalleridname' : fromcalleridname } }
                 self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid)
                 return
         
