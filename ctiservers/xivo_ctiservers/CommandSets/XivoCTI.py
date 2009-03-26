@@ -2797,14 +2797,19 @@ class XivoCTICommand(BaseCommand):
                                 nlost = nreceived - ngot
                                 thisagentstats = self.weblist['agents'][astid].keeplist[agent_id]['agentstats']
                                 thisagentstats.update( { 'status' : event.get('Status'),
-                                                         'agent_phone_number' : phonenum,
-                                                         'agent_phone_context' : context,
                                                          'loggedintime' : event.get('LoggedInTime'),
                                                          'talkingto' : event.get('TalkingTo'),
                                                          
                                                          'Xivo-ReceivedCalls' : nreceived,
                                                          'Xivo-LostCalls' : nlost
                                                          } )
+                                # to avoid the displayed values to be changed from 102@defaut to Local/102@default-6417,1
+                                # or SIP/102-094c67c8, during the updates ... only sets the values when starting
+                                if 'agent_phone_number' not in thisagentstats:
+                                        thisagentstats['agent_phone_number'] = phonenum
+                                if 'agent_phone_context' not in thisagentstats:
+                                        thisagentstats['agent_phone_context'] = context
+                                
                                 if 'Xivo-Status-Recorded' not in thisagentstats:
                                         thisagentstats['Xivo-Status-Recorded'] = False
                                 if 'Xivo-Status-Link' not in thisagentstats:
