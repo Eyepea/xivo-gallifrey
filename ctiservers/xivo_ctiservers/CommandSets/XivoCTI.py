@@ -948,9 +948,11 @@ class XivoCTICommand(BaseCommand):
         def askstatus(self, astid, npl):
                 for a, b in npl.iteritems():
                         #log.info('askstatus %s %s' %(a, b))
-                        if b['tech'] != 'custom':
+                        if b['tech'] != 'custom' and b['number']:
                                 self.__ami_execute__(astid, 'sendextensionstate', b['number'], b['context'])
                                 self.__ami_execute__(astid, 'mailbox', b['number'], b['context'])
+                        else:
+                                log.warning('%s askstatus : not enough data for %s' % (astid, b))
                 return
         
         def __callback_timer__(self, what):
@@ -2059,6 +2061,7 @@ class XivoCTICommand(BaseCommand):
         def __presence_action__(self, astid, anum, userinfo):
                 capaid = userinfo.get('capaid')
                 status = userinfo.get('state')
+                agent_channel = 'Agent/%s' % anum
                 try:
                         if capaid not in self.capas:
                                 return
@@ -2070,14 +2073,25 @@ class XivoCTICommand(BaseCommand):
                         for paction in presenceactions:
                                 params = paction.split('-')
                                 if params[0] == 'queueadd' and len(params) > 2 and anum:
-                                        self.__ami_execute__(astid, params[0], params[1], 'Agent/%s' % anum, params[2])
+                                        self.__ami_execute__(astid, params[0], params[1], agent_channel, params[2])
                                 elif params[0] == 'queueremove' and len(params) > 1 and anum:
-                                        self.__ami_execute__(astid, params[0], params[1], 'Agent/%s' % anum)
+                                        self.__ami_execute__(astid, params[0], params[1], agent_channel)
                                 elif params[0] == 'queuepause' and len(params) > 1 and anum:
-                                        self.__ami_execute__(astid, 'queuepause', params[1], 'Agent/%s' % anum, 'true')
+                                        self.__ami_execute__(astid, 'queuepause', params[1], agent_channel, 'true')
                                 elif params[0] == 'queueunpause' and len(params) > 1 and anum:
-                                        self.__ami_execute__(astid, 'queuepause', params[1], 'Agent/%s' % anum, 'false')
-                                        
+                                        self.__ami_execute__(astid, 'queuepause', params[1], agent_channel, 'false')
+                                elif params[0] == 'queuepause_all' and anum:
+                                        agent_id = self.__find_agentid_by_agentnum__(astid, anum)
+                                        if agent_id and agent_id in self.weblist['agents'][astid].keeplist:
+                                                for qname, qv in self.weblist['agents'][astid].keeplist[agent_id]['queues_by_agent'].iteritems():
+                                                        if qv.get('Paused') == '0':
+                                                                self.__ami_execute__(astid, 'queuepause', qname, agent_channel, 'true')
+                                elif params[0] == 'queueunpause_all' and anum:
+                                        agent_id = self.__find_agentid_by_agentnum__(astid, anum)
+                                        if agent_id and agent_id in self.weblist['agents'][astid].keeplist:
+                                                for qname, qv in self.weblist['agents'][astid].keeplist[agent_id]['queues_by_agent'].iteritems():
+                                                        if qv.get('Paused') == '1':
+                                                                self.__ami_execute__(astid, 'queuepause', qname, agent_channel, 'false')
                                 # features-related actions
                                 elif params[0] in ['enablevoicemail', 'callrecord', 'callfilter', 'enablednd',
                                                    'enableunc', 'enablebusy', 'enablerna'] and len(params) > 1:
@@ -2253,8 +2267,9 @@ class XivoCTICommand(BaseCommand):
                 if msg == 'Originate failed':
                         if actionid in self.faxes:
                                 faxid = self.faxes[actionid]
-                                log.warning('%s AMI : fax not sent %s %s %s %s'
-                                            % (astid, faxid.size, faxid.number, faxid.hide, faxid.uinfo))
+                                log.warning('%s AMI : fax not sent %s %s %s %s/%s'
+                                            % (astid, faxid.size, faxid.number, faxid.hide,
+                                               faxid.uinfo.get('astid'), faxid.uinfo.get('xivo_userid')))
                                 tosend = { 'class' : 'faxprogress',
                                            'status' : 'ko',
                                            'reason' : 'orig' }
@@ -4333,8 +4348,9 @@ class XivoCTICommand(BaseCommand):
                                                         log.warning('%s : %s not in details for %s'
                                                                     % (duinfo, uinfo.get('state'), presenceid))
                                         else:
-                                                log.warning('%s : %s not in presence_sections'
-                                                            % (duinfo, presenceid))
+                                                if presenceid != 'none':
+                                                        log.warning('%s : presenceid=%s not in presence_sections'
+                                                                    % (duinfo, presenceid))
                                 elif icapaid:
                                         log.warning('%s : capaid=%s not in capas'
                                                     % (duinfo, icapaid))
