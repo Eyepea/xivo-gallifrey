@@ -41,6 +41,10 @@ $array['element']['modact']['value'] = array('guest','prov');
 $array['element']['modact']['default'] = '';
 $array['element']['modact']['unset'] = true;
 
+$array['element']['from'] = array();
+$array['element']['from']['default'] = 'webi';
+$array['element']['from']['forcedef'] = true;
+
 $array['element']['macaddr'] = array();
 $array['element']['macaddr']['default'] = '';
 
@@ -58,7 +62,8 @@ $array['element']['iduserfeatures']['default'] = '';
 
 $array['filter'] = array();
 $array['filter']['modact'] = array('key' => array('guest','prov'));
-$array['filter']['macaddr'] = array('minlen' => 11,'maxlen' => 17,'regexp' => '/^([A-F0-9]{2}:){5}([A-F0-9]{2})$/');
+$array['filter']['from'] = array('set' => false);
+$array['filter']['macaddr'] = array('minlen' => 11,'maxlen' => 17,'regexp' => '/^(?:[A-F0-9]{2}:){5}(?:[A-F0-9]{2})$/');
 $array['filter']['vendor'] = array('maxlen' => 16,'regexp' => '/^[a-z0-9\-_]+$/');
 $array['filter']['model'] = array('maxlen' => 16,'regexp' => '/^[a-z0-9\-_]+$/');
 $array['filter']['proto'] = array('key' => array('sip'));

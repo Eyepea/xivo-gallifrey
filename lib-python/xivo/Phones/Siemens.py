@@ -493,12 +493,11 @@ class Siemens(PhoneVendorMixin):
 
         sha1sum = self.__verify_need_provi(provinfo['sha1sum'])
 
-        if not sha1sum:
+        if sha1sum:
+            provinfo['sha1sum'] = sha1sum
+            self.__generate(provinfo)
+        elif self.phone.get('from') == 'dhcp':
             return
-
-        provinfo['sha1sum'] = sha1sum
-
-        self.__generate(provinfo)
 
         try:
             self.__provi()

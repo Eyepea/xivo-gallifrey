@@ -765,26 +765,26 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
         return phone
     def posted_phone_infos(self):
         "Used in 'authoritative' mode"
-        return self.posted_infos("proto", "vendor", "model", "actions", "isinalan")
+        return self.posted_infos("from", "proto", "vendor", "model", "actions", "isinalan")
     def posted_light_infos(self):
         "Used in 'notification' mode"
-        return self.posted_infos("proto", "actions")
+        return self.posted_infos("from", "proto", "actions")
     def posted_userdeleted_infos(self):
         "Used in 'userdeleted' mode"
         userinfo = {}
-        self.save_posted_vars(userinfo, ("iduserfeatures", "actions"))
+        self.save_posted_vars(userinfo, ("from", "iduserfeatures", "actions"))
         return userinfo
     def posted_bootdhcp_infos(self):
         "Used in 'bootdhcp' mode"
         phone = {}
-        self.save_posted_vars(phone, ("proto", "vendor", "model", "actions", "isinalan"))
+        self.save_posted_vars(phone, ("from", "proto", "vendor", "model", "actions", "isinalan"))
         self.save_macaddr_ipv4(phone)
         self.save_firmware(phone)
         return phone
     def posted_upgradefw_infos(self):
         "Used in 'upgradefw' mode"
         phone = {}
-        self.save_posted_vars(phone, ("proto", "vendor", "model", "firmware", "actions", "isinalan"))
+        self.save_posted_vars(phone, ("from", "proto", "vendor", "model", "firmware", "actions", "isinalan"))
         self.save_macaddr_ipv4(phone)
         return phone
 

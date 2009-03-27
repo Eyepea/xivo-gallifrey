@@ -127,6 +127,7 @@ def main():
 
     command = "\r\n".join(
               ["mode=authoritative",
+               "from=ipbx",
                "actions=yes",
                "proto=sip",
                "provcode=%s"        % code,

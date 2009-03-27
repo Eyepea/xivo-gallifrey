@@ -141,6 +141,7 @@ def main():
 
     command = "\r\n".join(
               ["mode=%s"            % mode,
+               "from=dhcp",
                "actions=no",
                "proto=sip",
                "vendor=%s"          % phone_vendor,
