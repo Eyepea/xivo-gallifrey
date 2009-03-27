@@ -498,7 +498,10 @@ class XivoCTICommand(BaseCommand):
                                    'capalist' : userinfo.get('capaids') }
                         repstr = self.__cjson_encode__(tosend)
                 elif phase == xivo_commandsets.CMD_LOGIN_CAPAS:
+                        astid = userinfo.get('astid')
+                        context = userinfo.get('context')
                         capaid = userinfo.get('capaid')
+                        
                         presenceid = self.capas[capaid].presenceid
                         if presenceid in self.presence_sections:
                                 allowed = self.presence_sections[presenceid].allowed(userinfo.get('state'))
@@ -510,12 +513,12 @@ class XivoCTICommand(BaseCommand):
                                 statedetails = {}
                         wpid = self.capas[capaid].watchedpresenceid
                         if wpid in self.presence_sections:
-                                cstatus = self.presence_sections[wpid].countstatus(self.__counts__(wpid))
+                                cstatus = self.presence_sections[wpid].countstatus(self.__counts__(astid, context, wpid))
                         else:
                                 cstatus = {}
                         
                         tosend = { 'class' : 'login_capas_ok',
-                                   'astid' : userinfo.get('astid'),
+                                   'astid' : astid,
                                    'xivo_userid' : userinfo.get('xivo_userid'),
                                    'capafuncs' : self.capas[capaid].tostringlist(self.capas[capaid].all()),
                                    'capaxlets' : self.capas[capaid].capadisps,
@@ -1052,19 +1055,21 @@ class XivoCTICommand(BaseCommand):
                         log.exception('(__send_msg_to_cti_clients__)')
                 return
         
-        def __send_msg_to_cti_clients_except__(self, uinfos, strupdate):
-                log.debug('__send_msg_to_cti_clients_except__  !!!!!!!!!!!!!!!!!!!!!!! %s' % (strupdate))
+        def __send_msg_to_cti_clients_except__(self, uinfos, strupdate, astid, context = None):
+                log.debug('__send_msg_to_cti_clients_except__ astid=%s context=%s %s' % (astid, context, strupdate))
                 try:
                         if strupdate is not None:
                                 for userinfo in self.ulist_ng.keeplist.itervalues():
                                         if userinfo not in uinfos:
-                                                self.__send_msg_to_cti_client__(userinfo, strupdate)
+                                                # check if the user should receive this message depending on astid and context
+                                                if self.__check_astid_context__(userinfo, astid, context):
+                                                        self.__send_msg_to_cti_client__(userinfo, strupdate)
                 except Exception:
                         log.exception('(__send_msg_to_cti_clients_except__) userinfo(astid/xivo_userid) = %s/%s'
                                       % (userinfo.get('astid'), userinfo.get('xivo_userid')))
                 return
         
-
+        
         sheet_allowed_events = ['incomingqueue', 'incominggroup', 'incomingdid',
                                 'agentcalled', 'agentlinked', 'agentunlinked',
                                 'agi', 'link', 'unlink', 'hangup',
@@ -4712,7 +4717,8 @@ class XivoCTICommand(BaseCommand):
                 company = userinfo['company']
                 username = userinfo['user']
                 xivo_userid = userinfo['xivo_userid']
-                astid = userinfo['astid']
+                astid = userinfo.get('astid')
+                context = userinfo.get('context')
                 capaid = userinfo.get('capaid')
                 
                 if userinfo['state'] == 'xivo_unknown' and state in ['onlineincoming', 'onlineoutgoing', 'postcall']:
@@ -4747,7 +4753,7 @@ class XivoCTICommand(BaseCommand):
                                         statedetails = self.presence_sections[presenceid].displaydetails[userinfo['state']]
                         wpid = self.capas[capaid].watchedpresenceid
                         if wpid in self.presence_sections:
-                                cstatus = self.presence_sections[wpid].countstatus(self.__counts__(wpid))
+                                cstatus = self.presence_sections[wpid].countstatus(self.__counts__(astid, context, wpid))
                                 
                         tosend = { 'class' : 'presence',
                                    'company' : company,
@@ -4768,7 +4774,7 @@ class XivoCTICommand(BaseCommand):
                            'capapresence' : { 'state' : statedetails },
                            'presencecounter' : cstatus
                            }
-                self.__send_msg_to_cti_clients_except__([userinfo], self.__cjson_encode__(tosend))
+                self.__send_msg_to_cti_clients_except__([userinfo], self.__cjson_encode__(tosend), astid, context)
                 return None
         
         
@@ -4957,7 +4963,7 @@ class XivoCTICommand(BaseCommand):
                         
                 return fullstatlist
         
-        def __counts__(self, presenceid):
+        def __counts__(self, astid, context, presenceid):
                 # input : presenceid, i.e. 'presence-xivo', 'presence-agent', ...
                 # output : number of userinfo's in each presenceid's presence state, like :
                 # {'available': 0, 'onlineoutgoing': 0, 'fastpickup': 0, 'postcall': 0, 'backoffice': 0, 'onlineincoming': 0}
@@ -4968,7 +4974,8 @@ class XivoCTICommand(BaseCommand):
                 for istate in self.presence_sections[presenceid].getstates():
                         counts[istate] = 0
                 for iuserinfo in self.ulist_ng.keeplist.itervalues():
-                        if iuserinfo.has_key('capaid'):
+                        rightastidcontext = (astid == iuserinfo.get('astid') and context == iuserinfo.get('context'))
+                        if rightastidcontext and iuserinfo.has_key('capaid'):
                                 capaid = iuserinfo['capaid']
                                 if capaid in self.capas:
                                         if self.capas[capaid].presenceid == presenceid:
@@ -4997,7 +5004,7 @@ class XivoCTICommand(BaseCommand):
                                 if len(fastagi.args) > 0:
                                         presenceid = fastagi.args[0]
                                         aststatus = []
-                                        for var, val in self.__counts__(presenceid).iteritems():
+                                        for var, val in self.__counts__(astid, context, presenceid).iteritems():
                                                 aststatus.append('%s:%d' % (var, val))
                                         fastagi.set_variable('XIVO_PRESENCE', ','.join(aststatus))
                         except Exception:
