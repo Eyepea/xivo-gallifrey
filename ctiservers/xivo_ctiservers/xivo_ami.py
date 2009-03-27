@@ -224,6 +224,7 @@ class AMIClass:
                         if chunk['Event'] == check:
                                 break
                 return resp
+        
         # \brief Logins to the AMI.
         def login(self):
                 try:

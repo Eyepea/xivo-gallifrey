@@ -39,7 +39,8 @@ class QueueList(AnyList):
                 AnyList.__init__(self, newurls)
                 return
         
-        queuelocationprops = ['Paused', 'Status', 'Membership', 'Penalty', 'LastCall', 'CallsTaken', 'Xivo-StateTime']
+        queuelocationprops = ['Paused', 'Status', 'Membership', 'Penalty', 'LastCall', 'CallsTaken',
+                              'Xivo-QueueMember-StateTime']
         queuestats = ['Abandoned', 'Max', 'Completed', 'ServiceLevel', 'Weight', 'Holdtime',
                       'Xivo-Join', 'Xivo-Link', 'Xivo-Lost', 'Xivo-Wait', 'Xivo-Chat', 'Xivo-Rate',
                       'Calls']
@@ -96,6 +97,9 @@ class QueueList(AnyList):
                                         else:
                                                 thisqueuelocation[prop] = event.get(prop)
                                                 changed = True
+                        if 'Xivo-StateTime' not in thisqueuelocation:
+                                thisqueuelocation['Xivo-StateTime'] = time.time()
+                                changed = True
                 else:
                         log.warning('queuememberupdate : no such queue %s' % queue)
                 return changed

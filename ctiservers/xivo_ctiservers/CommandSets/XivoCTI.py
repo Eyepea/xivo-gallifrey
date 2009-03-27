@@ -1872,9 +1872,9 @@ class XivoCTICommand(BaseCommand):
                                 
                         agent_id = uinfo.get('agentid')
                         thisagent = self.weblist['agents'][astid].keeplist[agent_id]
-                        thisagent['agentstats'].update({'Xivo-StateTime' : time.time()})
-                        thisagent['agentstats'].update({'Xivo-Status-Link' : { 'linkmode' : 'agentlink',
-                                                                               'linkqueue' : qname } })
+                        thisagent['agentstats'].update({'Xivo-Agent-StateTime' : time.time()})
+                        thisagent['agentstats'].update({'Xivo-Agent-Status-Link' : { 'linkmode' : 'agentlink',
+                                                                                     'linkqueue' : qname } })
                         tosend = { 'class' : 'agents',
                                    'function' : 'sendlist',
                                    'payload' : { astid : { agent_id : thisagent } }
@@ -1895,11 +1895,11 @@ class XivoCTICommand(BaseCommand):
                                 if ag:
                                         self.__presence_action__(astid, ag, uinfo)
                                         thisagent = self.weblist['agents'][astid].keeplist[agent_id]
-                                        thisagent['agentstats'].update({'Xivo-StateTime' : time.time()})
-                                        thisagent['agentstats'].update({'Xivo-Status-Link' : { 'linkmode' : 'phonelink',
-                                                                                               'dir' : status,
-                                                                                               'outcall' : uid1info.get('OUTCALL'),
-                                                                                               'did' : uid1info.get('DID') } })
+                                        thisagent['agentstats'].update({'Xivo-Agent-StateTime' : time.time()})
+                                        thisagent['agentstats'].update({'Xivo-Agent-Status-Link' : { 'linkmode' : 'phonelink',
+                                                                                                     'dir' : status,
+                                                                                                     'outcall' : uid1info.get('OUTCALL'),
+                                                                                                     'did' : uid1info.get('DID') } })
                                         tosend = { 'class' : 'agents',
                                                    'function' : 'sendlist',
                                                    'payload' : { astid : { agent_id : thisagent } }
@@ -1920,11 +1920,11 @@ class XivoCTICommand(BaseCommand):
                                 if ag:
                                         self.__presence_action__(astid, ag, uinfo)
                                         thisagent = self.weblist['agents'][astid].keeplist[agent_id]
-                                        thisagent['agentstats'].update({'Xivo-StateTime' : time.time()})
-                                        thisagent['agentstats'].update({'Xivo-Status-Link' : { 'linkmode' : 'phonelink',
-                                                                                               'dir' : status,
-                                                                                               'outcall' : uid1info.get('OUTCALL'),
-                                                                                               'did' : uid1info.get('DID') } })
+                                        thisagent['agentstats'].update({'Xivo-Agent-StateTime' : time.time()})
+                                        thisagent['agentstats'].update({'Xivo-Agent-Status-Link' : { 'linkmode' : 'phonelink',
+                                                                                                     'dir' : status,
+                                                                                                     'outcall' : uid1info.get('OUTCALL'),
+                                                                                                     'did' : uid1info.get('DID') } })
                                         tosend = { 'class' : 'agents',
                                                    'function' : 'sendlist',
                                                    'payload' : { astid : { agent_id : thisagent } }
@@ -2040,8 +2040,8 @@ class XivoCTICommand(BaseCommand):
                         agent_number = chan2[6:]
                         agent_id = self.weblist['agents'][astid].reverse_index.get(agent_number)
                         thisagent = self.weblist['agents'][astid].keeplist[agent_id]
-                        thisagent['agentstats'].update({'Xivo-StateTime' : time.time()})
-                        thisagent['agentstats'].update({'Xivo-Status-Link' : {} })
+                        thisagent['agentstats'].update({'Xivo-Agent-StateTime' : time.time()})
+                        thisagent['agentstats'].update({'Xivo-Agent-Status-Link' : {} })
                         tosend = { 'class' : 'agents',
                                    'function' : 'sendlist',
                                    'payload' : { astid : { agent_id : thisagent } }
@@ -2075,8 +2075,8 @@ class XivoCTICommand(BaseCommand):
                                 if ag:
                                         self.__presence_action__(astid, ag, uinfo)
                                         thisagent = self.weblist['agents'][astid].keeplist[agent_id]
-                                        thisagent['agentstats'].update({'Xivo-StateTime' : time.time()})
-                                        thisagent['agentstats'].update({'Xivo-Status-Link' : {} })
+                                        thisagent['agentstats'].update({'Xivo-Agent-StateTime' : time.time()})
+                                        thisagent['agentstats'].update({'Xivo-Agent-Status-Link' : {} })
                                         tosend = { 'class' : 'agents',
                                                    'function' : 'sendlist',
                                                    'payload' : { astid : { agent_id : thisagent } }
@@ -2866,10 +2866,10 @@ class XivoCTICommand(BaseCommand):
                                 if 'agent_phone_context' not in thisagentstats:
                                         thisagentstats['agent_phone_context'] = context
                                 
-                                if 'Xivo-Status-Recorded' not in thisagentstats:
-                                        thisagentstats['Xivo-Status-Recorded'] = False
-                                if 'Xivo-Status-Link' not in thisagentstats:
-                                        thisagentstats['Xivo-Status-Link'] = {}
+                                if 'Xivo-Agent-Status-Recorded' not in thisagentstats:
+                                        thisagentstats['Xivo-Agent-Status-Recorded'] = False
+                                if 'Xivo-Agent-Status-Link' not in thisagentstats:
+                                        thisagentstats['Xivo-Agent-Status-Link'] = {}
                                 for xivofield in ['Xivo-NQJoined', 'Xivo-NQPaused', 'Xivo-NGJoined', 'Xivo-NGPaused']:
                                         if xivofield not in thisagentstats:
                                                 thisagentstats[xivofield] = 0
@@ -2952,7 +2952,7 @@ class XivoCTICommand(BaseCommand):
                         self.__queuemismatch__(astid, queue, 'ami_queuememberadded')
                         return
                 
-                event['Xivo-StateTime'] = time.time()
+                event['Xivo-QueueMember-StateTime'] = time.time()
                 if self.weblist[queueorgroup][astid].queuememberupdate(queue, location, event):
                         tosend = { 'class' : queueorgroup,
                                    'function' : 'sendlist',
@@ -3116,7 +3116,7 @@ class XivoCTICommand(BaseCommand):
                         self.__queuemismatch__(astid, queue, 'ami_queuememberpaused')
                         return
                 
-                event['Xivo-StateTime'] = time.time()
+                event['Xivo-QueueMember-StateTime'] = time.time()
                 if self.weblist[queueorgroup][astid].queuememberupdate(queue, location, event):
                         tosend = { 'class' : queueorgroup,
                                    'function' : 'sendlist',
@@ -3226,11 +3226,11 @@ class XivoCTICommand(BaseCommand):
                                 if v:
                                         if qid in self.weblist['queues'][astid].keeplist and aid in self.weblist['queues'][astid].keeplist[qid]['agents_in_queue']:
                                                 qastatus = self.weblist['queues'][astid].keeplist[qid]['agents_in_queue'][aid]
-                                                qastatus['Xivo-StateTime'] = -1
+                                                qastatus['Xivo-QueueMember-StateTime'] = -1
                                                 if qastatus.get('Paused') == '1':
                                                         if 'PAUSE' in v:
                                                                 qpausetime = int(v['PAUSE'])
-                                                                qastatus['Xivo-StateTime'] = qpausetime
+                                                                qastatus['Xivo-QueueMember-StateTime'] = qpausetime
                 return
         
         def ami_userevent(self, astid, event):
@@ -4211,7 +4211,7 @@ class XivoCTICommand(BaseCommand):
                                 channels = self.__find_channel_by_agentnum__(astid, anum)
                                 for channel in channels:
                                         self.__ami_execute__(astid, 'monitor', channel, 'cti-agent-%s-%s' % (datestring, anum))
-                                        self.weblist['agents'][astid].keeplist[agent_id]['agentstats'].update({'Xivo-Status-Recorded' : True})
+                                        self.weblist['agents'][astid].keeplist[agent_id]['agentstats'].update({'Xivo-Agent-Status-Recorded' : True})
                                         log.info('started monitor on %s %s (agent %s)' % (astid, channel, anum))
                                         tosend = { 'class' : 'agentrecord',
                                                    'astid' : astid,
@@ -4227,7 +4227,7 @@ class XivoCTICommand(BaseCommand):
                                 channels = self.__find_channel_by_agentnum__(astid, anum)
                                 for channel in channels:
                                         self.__ami_execute__(astid, 'stopmonitor', channel)
-                                        self.weblist['agents'][astid].keeplist[agent_id]['agentstats'].update({'Xivo-Status-Recorded' : False})
+                                        self.weblist['agents'][astid].keeplist[agent_id]['agentstats'].update({'Xivo-Agent-Status-Recorded' : False})
                                         log.info('stopped monitor on %s %s (agent %s)' % (astid, channel, anum))
                                         tosend = { 'class' : 'agentrecord',
                                                    'astid' : astid,

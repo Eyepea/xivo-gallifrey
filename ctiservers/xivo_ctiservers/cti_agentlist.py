@@ -24,6 +24,7 @@ __author__    = 'Corentin Le Gall'
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+import time
 from xivo_ctiservers.cti_anylist import AnyList
 
 log = logging.getLogger('agentlist')
@@ -38,7 +39,8 @@ class AgentList(AnyList):
                 AnyList.__init__(self, newurls)
                 return
         
-        queuelocationprops = ['Paused', 'Status', 'Membership', 'Penalty', 'LastCall', 'CallsTaken', 'Xivo-StateTime']
+        queuelocationprops = ['Paused', 'Status', 'Membership', 'Penalty', 'LastCall', 'CallsTaken',
+                              'Xivo-QueueMember-StateTime']
         
         def update(self):
                 ret = AnyList.update(self)
@@ -69,6 +71,9 @@ class AgentList(AnyList):
                                                 else:
                                                         thisagentqueueprops[prop] = event.get(prop)
                                                         changed = True
+                                if 'Xivo-QueueMember-StateTime' not in thisagentqueueprops:
+                                        thisagentqueueprops['Xivo-QueueMember-StateTime'] = time.time()
+                                        changed = True
                 return changed
         
         def queuememberadded(self, queuename, queueorgroup, agentnumber, event):
