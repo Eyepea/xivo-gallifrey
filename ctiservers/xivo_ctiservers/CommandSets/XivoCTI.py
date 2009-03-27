@@ -3824,7 +3824,7 @@ class XivoCTICommand(BaseCommand):
                                                                         meetmeref = self.weblist['meetme'][castid].byroomnum(meetmenum)
                                                                         if meetmeref is not None and uniqueid in meetmeref['uniqueids']:
                                                                                 if userid == meetmeref['adminid']:
-                                                                                        datestring = time.strftime('%Y%m%d%H%M%S', time.localtime())
+                                                                                        datestring = time.strftime('%Y%m%d-%H%M%S', time.localtime())
                                                                                         meetmeref['uniqueids'][uniqueid]['recordstatus'] = 'on'
                                                                                         self.__ami_execute__(castid, 'monitor', channel,
                                                                                                              'cti-meetme-%s-%s' % (meetmenum, datestring))
@@ -4206,7 +4206,7 @@ class XivoCTICommand(BaseCommand):
                         elif subcommand == 'logout':
                                 self.__logout_agent__(uinfo)
                         elif subcommand == 'record':
-                                datestring = time.strftime('%Y%m%d%H%M%S', time.localtime())
+                                datestring = time.strftime('%Y%m%d-%H%M%S', time.localtime())
                                 agent_id = self.weblist['agents'][astid].reverse_index.get(anum)
                                 channels = self.__find_channel_by_agentnum__(astid, anum)
                                 for channel in channels:
@@ -4266,6 +4266,7 @@ class XivoCTICommand(BaseCommand):
                                 for monitoredfile in lst:
                                         if monitoredfile.startswith('cti-agent-') and monitoredfile.endswith('%s.wav' % anum):
                                                 monitoredfiles.append(monitoredfile)
+                                monitoredfiles.sort()
                                 tosend = { 'class' : 'filelist',
                                            'filelist' : monitoredfiles }
                                 return self.__cjson_encode__(tosend)
