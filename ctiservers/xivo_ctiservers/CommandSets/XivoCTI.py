@@ -2071,7 +2071,7 @@ class XivoCTICommand(BaseCommand):
                                 return
                         presenceactions = self.presence_sections[presenceid].actions(status)
                         for paction in presenceactions:
-                                params = paction.split('-')
+                                params = paction.split('|')
                                 if params[0] == 'queueadd' and len(params) > 2 and anum:
                                         self.__ami_execute__(astid, params[0], params[1], agent_channel, params[2])
                                 elif params[0] == 'queueremove' and len(params) > 1 and anum:
