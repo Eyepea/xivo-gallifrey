@@ -57,34 +57,24 @@ class Presence:
                                         self.states.append(stateid)
                 # to add : actions associated with status : change queue / remove or pause from queue
                 return
-
+        
         def getstates(self):
                 return self.states
-
+        
         def getdisplaydetails(self):
                 return self.displaydetails
-
+        
         def getcolors(self):
                 return self.colors
-
+        
         def getdefaultstate(self):
                 return self.defaultstate
-
+        
         def countstatus(self, counts):
                 ntot = 0
-                nbyqueue = {}
                 for statename, count in counts.iteritems():
                         ntot += count
-                        if statename in self.details:
-                                pactions = self.details[statename]['actions']
-                                for paction in pactions:
-                                        params = paction.split('-')
-                                        if params[0] == 'queueadd':
-                                                queuename = params[1]
-                                                if queuename not in nbyqueue:
-                                                        nbyqueue[queuename] = 0
-                                                nbyqueue[queuename] += count
-                return {'connected' : ntot, 'byqueue' : nbyqueue}
+                return {'connected' : ntot }
         
         def allowed(self, status):
                 rep = {}
