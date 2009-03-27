@@ -3018,14 +3018,14 @@ class XivoCTICommand(BaseCommand):
                 self.__peragent_queue_summary__(astid, queueorgroup, location, 'ami_queuememberstatus')
                 if location.startswith('Agent/'):
                         if astid in self.weblist['agents']:
-                                self.weblist['agents'][astid].queuememberupdate(queue, queueorgroup, location[6:], event)
-                                agent_id = self.weblist['agents'][astid].reverse_index.get(location[6:])
-                                tosend = { 'class' : 'agents',
-                                           'function' : 'sendlist',
-                                           'payload' : { astid : { agent_id : self.weblist['agents'][astid].keeplist[agent_id] } }
-                                           }
-                                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid,
-                                                                 self.weblist['agents'][astid].keeplist[agent_id].get('context'))
+                                if self.weblist['agents'][astid].queuememberupdate(queue, queueorgroup, location[6:], event):
+                                        agent_id = self.weblist['agents'][astid].reverse_index.get(location[6:])
+                                        tosend = { 'class' : 'agents',
+                                                   'function' : 'sendlist',
+                                                   'payload' : { astid : { agent_id : self.weblist['agents'][astid].keeplist[agent_id] } }
+                                                   }
+                                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid,
+                                                                         self.weblist['agents'][astid].keeplist[agent_id].get('context'))
                 else:
                         # sip@queue
                         for uinfo in self.ulist_ng.keeplist.itervalues():
@@ -3102,14 +3102,14 @@ class XivoCTICommand(BaseCommand):
                 self.__peragent_queue_summary__(astid, queueorgroup, location, 'ami_queuememberpaused')
                 if location.startswith('Agent/'):
                         if astid in self.weblist['agents']:
-                                self.weblist['agents'][astid].queuememberupdate(queue, queueorgroup, location[6:], event)
-                                agent_id = self.weblist['agents'][astid].reverse_index.get(location[6:])
-                                tosend = { 'class' : 'agents',
-                                           'function' : 'sendlist',
-                                           'payload' : { astid : { agent_id : self.weblist['agents'][astid].keeplist[agent_id] } }
-                                           }
-                                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid,
-                                                                 self.weblist['agents'][astid].keeplist[agent_id].get('context'))
+                                if self.weblist['agents'][astid].queuememberupdate(queue, queueorgroup, location[6:], event):
+                                        agent_id = self.weblist['agents'][astid].reverse_index.get(location[6:])
+                                        tosend = { 'class' : 'agents',
+                                                   'function' : 'sendlist',
+                                                   'payload' : { astid : { agent_id : self.weblist['agents'][astid].keeplist[agent_id] } }
+                                                   }
+                                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid,
+                                                                         self.weblist['agents'][astid].keeplist[agent_id].get('context'))
                 else:
                         log.warning('%s sip@queue (ami_queuememberpaused) %s' % (astid, event))
                 return
@@ -3159,14 +3159,14 @@ class XivoCTICommand(BaseCommand):
                         self.weblist[queueorgroup][astid].queuememberupdate(queue, location, event)
                         self.__peragent_queue_summary__(astid, queueorgroup, location, 'ami_queuemember')
                         if astid in self.weblist['agents']:
-                                self.weblist['agents'][astid].queuememberupdate(queue, queueorgroup, location[6:], event)
-                                agent_id = self.weblist['agents'][astid].reverse_index.get(location[6:])
-                                tosend = { 'class' : 'agents',
-                                           'function' : 'sendlist',
-                                           'payload' : { astid : { agent_id : self.weblist['agents'][astid].keeplist[agent_id] } }
-                                           }
-                                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid,
-                                                                 self.weblist['agents'][astid].keeplist[agent_id].get('context'))
+                                if self.weblist['agents'][astid].queuememberupdate(queue, queueorgroup, location[6:], event):
+                                        agent_id = self.weblist['agents'][astid].reverse_index.get(location[6:])
+                                        tosend = { 'class' : 'agents',
+                                                   'function' : 'sendlist',
+                                                   'payload' : { astid : { agent_id : self.weblist['agents'][astid].keeplist[agent_id] } }
+                                                   }
+                                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid,
+                                                                         self.weblist['agents'][astid].keeplist[agent_id].get('context'))
                 else:
                         # sip@queue
                         nlocations = self.__nlocations__(astid, location, queuecontext)

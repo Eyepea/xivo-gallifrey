@@ -51,16 +51,25 @@ class AgentList(AnyList):
                 return ret
         
         def queuememberupdate(self, queuename, queueorgroup, agentnumber, event):
+                changed = False
                 qorg = '%s_by_agent' % queueorgroup
                 if agentnumber in self.reverse_index:
                         idx = self.reverse_index[agentnumber]
                         if idx in self.keeplist:
                                 if queuename not in self.keeplist[idx][qorg]:
                                         self.keeplist[idx][qorg][queuename] = {}
+                                        changed = True
+                                thisagentqueueprops = self.keeplist[idx][qorg][queuename]
                                 for prop in self.queuelocationprops:
                                         if prop in event:
-                                                self.keeplist[idx][qorg][queuename][prop] = event.get(prop)
-                return
+                                                if prop in thisagentqueueprops:
+                                                        if thisagentqueueprops[prop] != event.get(prop):
+                                                                thisagentqueueprops[prop] = event.get(prop)
+                                                                changed = True
+                                                else:
+                                                        thisagentqueueprops[prop] = event.get(prop)
+                                                        changed = True
+                return changed
         
         def queuememberadded(self, queuename, queueorgroup, agentnumber, event):
                 qorg = '%s_by_agent' % queueorgroup
