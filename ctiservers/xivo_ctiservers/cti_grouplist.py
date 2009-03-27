@@ -97,8 +97,8 @@ class GroupList(AnyList):
                                         else:
                                                 thisqueuelocation[prop] = event.get(prop)
                                                 changed = True
-                        if 'Xivo-StateTime' not in thisqueuelocation:
-                                thisqueuelocation['Xivo-StateTime'] = time.time()
+                        if 'Xivo-QueueMember-StateTime' not in thisqueuelocation:
+                                thisqueuelocation['Xivo-QueueMember-StateTime'] = time.time()
                                 changed = True
                 else:
                         log.warning('queuememberupdate : no such queue %s' % queue)
