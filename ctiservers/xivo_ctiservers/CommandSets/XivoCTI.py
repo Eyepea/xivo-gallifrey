@@ -169,6 +169,7 @@ class XivoCTICommand(BaseCommand):
                 self.ignore_dtmf = {}
                 self.queues_channels_list = {}
                 self.origapplication = {}
+                self.events_link = {}
                 
                 # actionid (AMI) indexed hashes
                 self.getvar_requests = {}
@@ -665,7 +666,8 @@ class XivoCTICommand(BaseCommand):
                         # XXX
                         for astid_hash in [self.uniqueids, self.channels,
                                            self.queues_channels_list, self.attended_targetchannels,
-                                           self.ignore_dtmf, self.parkedcalls, self.origapplication]:
+                                           self.ignore_dtmf, self.parkedcalls, self.origapplication,
+                                           self.events_link]:
                                 if astid not in astid_hash:
                                         astid_hash[astid] = {}
                 if listname in self.weblistprops:
@@ -1789,7 +1791,14 @@ class XivoCTICommand(BaseCommand):
                 clidname2 = event.get('CallerIDName2').decode('utf8')
                 uid1 = event.get('Uniqueid1')
                 uid2 = event.get('Uniqueid2')
-                # log.info('%s AMI_LINK : %s' % (astid, event))
+                
+                if uid1 not in self.events_link[astid]:
+                        self.events_link[astid][uid1] = time.time()
+                else:
+                        log.warning('%s ignoring a Link event that already occured : %s' % (astid, event))
+                        return
+                log.info('%s AMI_LINK : %s' % (astid, event))
+                
                 if self.__ignore_dtmf__(astid, uid1, 'link'):
                         return
                 if self.__ignore_dtmf__(astid, uid2, 'link'):
@@ -1933,6 +1942,17 @@ class XivoCTICommand(BaseCommand):
                 uid2 = event.get('Uniqueid2')
                 where = event.get('Where')
                 # log.info('%s AMI_UNLINK : %s' % (astid, event))
+                if uid1 not in self.events_link[astid]:
+                        log.warning('%s ignoring an Unlink event (Link never happened or identifier already deleted) : %s' % (astid, event))
+                        return
+                else:
+                        timenow = time.time()
+                        deltat = timenow - self.events_link[astid][uid1]
+                        log.warning('%s : deltat=%s event=%s' % (astid, deltat, event))
+                        if deltat < 0.1:
+                                return
+                        else:
+                                del self.events_link[astid][uid1]
                 if self.__ignore_dtmf__(astid, uid1, 'unlink'):
                         return
                 if self.__ignore_dtmf__(astid, uid2, 'unlink'):
@@ -3563,7 +3583,7 @@ class XivoCTICommand(BaseCommand):
                                     priority, context, extension, seconds,
                                     calleridnum, calleridname))
                         self.uniqueids[astid][uniqueid].update({'link' : link})
-                        
+                        self.events_link[astid][uniqueid] = time.time()
 #                        phoneid = self.__phoneid_from_channel__(astid, channel)
 #                        if phoneid in self.weblist['phones'][astid].keeplist:
 #                                if seconds is None:
