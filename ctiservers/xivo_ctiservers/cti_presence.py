@@ -85,7 +85,7 @@ class Presence:
                                                         nbyqueue[queuename] = 0
                                                 nbyqueue[queuename] += count
                 return {'connected' : ntot, 'byqueue' : nbyqueue}
-
+        
         def allowed(self, status):
                 rep = {}
                 if status is not None and status in self.details:
@@ -93,7 +93,7 @@ class Presence:
                         for u, v in self.details.iteritems():
                                 rep[u] = (u in w['allowednexts'] or u == status)
                 return rep
-
+        
         def actions(self, status):
                 if status is not None and status in self.details:
                         w = self.details[status]

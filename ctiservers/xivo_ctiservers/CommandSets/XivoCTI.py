@@ -2150,6 +2150,8 @@ class XivoCTICommand(BaseCommand):
                         if chan == vv['channel']:
                                 vv.update({'hangup' : chan,
                                            'time-hangup' : time.time()})
+                        if 'context' in vv:
+                                self.__sheet_alert__('hangup', astid, vv['context'], event)
                         if 'origapplication' in vv and vv['origapplication'] == 'ChanSpy':
                                 agent_id = vv['origapplication-data']['spied-agentid']
                                 tosend = { 'class' : 'agentlisten',
@@ -2158,8 +2160,17 @@ class XivoCTICommand(BaseCommand):
                                            'status' : 'stopped' }
                                 self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid,
                                                                  self.weblist['agents'][astid].keeplist[agent_id].get('context'))
-                        if 'context' in vv:
-                                self.__sheet_alert__('hangup', astid, vv['context'], event)
+                                del vv['origapplication']
+                                del vv['origapplication-data']
+                        if 'recorded' in vv:
+                                agent_id = vv['recorded']
+                                tosend = { 'class' : 'agentrecord',
+                                           'astid' : astid,
+                                           'agentid' : agent_id,
+                                           'status' : 'stopped' }
+                                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid,
+                                                                 self.weblist['agents'][astid].keeplist[agent_id].get('context'))
+                                del vv['recorded']
                 else:
                         log.warning('%s HANGUP : uid %s has not been filled' % (astid, uid))
                         
@@ -4181,6 +4192,9 @@ class XivoCTICommand(BaseCommand):
                                                    'status' : 'started' }
                                         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid,
                                                                          self.weblist['agents'][astid].keeplist[agent_id].get('context'))
+                                        if channel in self.channels[astid]:
+                                                uniqueid = self.channels[astid][channel]
+                                                self.uniqueids[astid][uniqueid].update({'recorded' : agent_id})
                         elif subcommand == 'stoprecord':
                                 agent_id = self.weblist['agents'][astid].reverse_index.get(anum)
                                 channels = self.__find_channel_by_agentnum__(astid, anum)
@@ -4716,7 +4730,7 @@ class XivoCTICommand(BaseCommand):
                                             % (username, state, userinfo['state']))
                 else:
                         userinfo['state'] = 'xivo_unknown'
-
+                        
                 cstatus = {}
                 statedetails = {'color' : 'grey',
                                 'longname' : PRESENCE_UNKNOWN,
@@ -4942,6 +4956,10 @@ class XivoCTICommand(BaseCommand):
                 return fullstatlist
         
         def __counts__(self, presenceid):
+                # input : presenceid, i.e. 'presence-xivo', 'presence-agent', ...
+                # output : number of userinfo's in each presenceid's presence state, like :
+                # {'available': 0, 'onlineoutgoing': 0, 'fastpickup': 0, 'postcall': 0, 'backoffice': 0, 'onlineincoming': 0}
+                
                 counts = {}
                 if presenceid not in self.presence_sections:
                         return counts
