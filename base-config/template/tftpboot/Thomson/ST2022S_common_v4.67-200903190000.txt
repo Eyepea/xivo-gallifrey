@@ -46,7 +46,7 @@ MaskWan=255.255.255.0
 PersistentVLANfromDHCP=0
 TelnetTime=240
 TelnetSrv=1
-VLAN=0
+VLAN=#VLAN#
 WanModFlag=1
 
 
@@ -439,7 +439,7 @@ Decryption_Key=Th0mson2$8s8@9z!
 DSCP1=46
 DSCP2=40
 TOS=160
-VLANid1=1
+VLANid1=#VLAN_ID#
 VLANid2=1
 VLANTag1=6
 VLANTagdata=6
