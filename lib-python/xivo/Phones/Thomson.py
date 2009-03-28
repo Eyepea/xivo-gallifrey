@@ -207,7 +207,9 @@ class Thomson(PhoneVendorMixin):
                   # </WARNING>
                   'function_keys':      function_keys_config_lines,
                 },
-                txt_filename)
+                txt_filename,
+                'utf8')
+
         tmp_file = open(tmp_filename, 'w')
         tmp_file.writelines(txt)
         tmp_file.close()

@@ -164,7 +164,9 @@ class Snom(PhoneVendorMixin):
                   'http_pass':          self.SNOM_COMMON_HTTP_PASS,
                   'function_keys':      function_keys_config_lines,
                 },
-                htm_filename)
+                htm_filename,
+                'utf8')
+
         tmp_file = open(tmp_filename, 'w')
         tmp_file.writelines(txt)
         tmp_file.close()

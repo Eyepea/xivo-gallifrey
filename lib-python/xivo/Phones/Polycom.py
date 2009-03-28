@@ -116,7 +116,7 @@ class Polycom(PhoneVendorMixin):
         tmp_filename = os.path.join(self.POLYCOM_COMMON_DIR, macaddr + "-phone.cfg.tmp")
         cfg_filename = tmp_filename[:-4]
 
-        txt_phone = xivo_config.txtsubst(template_lines,
+        txt = xivo_config.txtsubst(template_lines,
                 { 'user_display_name':  escape(provinfo['name']),
                   'user_phone_ident':   escape(provinfo['ident']),
                   'user_phone_number':  escape(provinfo['number']),
@@ -125,10 +125,11 @@ class Polycom(PhoneVendorMixin):
                   'asterisk_ipv4':      self.ASTERISK_IPV4,
                   'ntp_server_ipv4':    self.NTP_SERVER_IPV4,
                 },
-                cfg_filename)
+                cfg_filename,
+                'utf8')
 
         tmp_file = open(tmp_filename, "w")
-        tmp_file.writelines(txt_phone)
+        tmp_file.writelines(txt)
         tmp_file.close()
         os.rename(tmp_filename, cfg_filename)
 

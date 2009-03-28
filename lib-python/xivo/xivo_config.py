@@ -234,7 +234,7 @@ def linesubst(line, variables):
     return out
 
 
-def txtsubst(lines, variables, target_file=None):
+def txtsubst(lines, variables, target_file=None, charset=None):
     """
     Log that target_file is going to be generated, and calculate its
     content by applying the linesubst() transformation with the given
@@ -242,6 +242,9 @@ def txtsubst(lines, variables, target_file=None):
     """
     if target_file:
         log.info("In process of generating file %r", target_file)
+
+    if charset:
+        return [linesubst(line, variables).encode(charset) for line in lines]
     return [linesubst(line, variables) for line in lines]
 
 

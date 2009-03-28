@@ -199,7 +199,9 @@ class Aastra(PhoneVendorMixin):
                   'user_phone_passwd':  provinfo['passwd'],
                   'function_keys': function_keys_config_lines,
                 },
-                cfg_filename)
+                cfg_filename,
+                'utf8')
+
         tmp_file = open(tmp_filename, 'w')
         tmp_file.writelines(txt)
         tmp_file.close()

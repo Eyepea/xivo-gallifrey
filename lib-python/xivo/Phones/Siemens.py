@@ -428,7 +428,9 @@ class Siemens(PhoneVendorMixin):
                   'asterisk_ipv4':      self.ASTERISK_IPV4,
                   'ntp_server_ipv4':    self.NTP_SERVER_IPV4,
                 },
-                cfg_filename)
+                cfg_filename,
+                'utf8')
+
         tmp_file = open(tmp_filename, 'w')
         tmp_file.writelines(txt)
         tmp_file.close()

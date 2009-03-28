@@ -56,6 +56,12 @@ class Swissvoice(PhoneVendorMixin):
     SWISSVOICE_SPEC_INF_TEMPLATE = None
     SWISSVOICE_SPEC_CFG_TEMPLATE = None
 
+    SWISSVOICE_DTMF = {
+        'rfc2833':  "on inb",
+        'inband':   "off",
+        'info':     "on oob"
+    }
+
     @classmethod
     def setup(cls, config):
         "Configuration of class attributes"
@@ -153,15 +159,6 @@ class Swissvoice(PhoneVendorMixin):
         cfg_filename = cfg_tmp_filename[:-4]
         inf_filename = inf_tmp_filename[:-4]
 
-        dtmf_swissvoice = "off"
-        dtmf_config     = provinfo['dtmfmode']
-        if dtmf_config == "rfc2833":
-            dtmf_swissvoice = "on inb"
-        elif dtmf_config == "inband":
-            dtmf_swissvoice = "off"
-        elif dtmf_config == "info":
-            dtmf_swissvoice = "on oob"
-
         txt = xivo_config.txtsubst(cfg_template_lines,
                 { 'user_display_name':  provinfo['name'],
                   'user_phone_ident':   provinfo['ident'],
@@ -169,11 +166,13 @@ class Swissvoice(PhoneVendorMixin):
                   'user_phone_passwd':  provinfo['passwd'],
                   'http_user':          self.SWISSVOICE_COMMON_HTTP_USER,
                   'http_pass':          self.SWISSVOICE_COMMON_HTTP_PASS,
-                  'dtmfmode':           dtmf_swissvoice,
+                  'dtmfmode':           self.SWISSVOICE_DTMF.get(provinfo['dtmfmode'], "off"),
                   'asterisk_ipv4' :     self.ASTERISK_IPV4,
                   'ntp_server_ipv4' :   self.NTP_SERVER_IPV4,
                 },
-                cfg_filename)
+                cfg_filename,
+                'utf8')
+
         tmp_file = open(cfg_tmp_filename, 'w')
         tmp_file.writelines(txt)
         tmp_file.close()
@@ -181,7 +180,9 @@ class Swissvoice(PhoneVendorMixin):
 
         txt = xivo_config.txtsubst(inf_template_lines,
                 { 'macaddr': macaddr },
-                inf_filename)
+                inf_filename,
+                'utf8')
+
         tmp_file = open(inf_tmp_filename, 'w')
         tmp_file.writelines(txt)
         tmp_file.close()
