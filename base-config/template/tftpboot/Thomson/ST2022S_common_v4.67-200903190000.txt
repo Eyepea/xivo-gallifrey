@@ -393,7 +393,7 @@ PSettingURLdl=
 PSettingURLul=
 RCallLogFlg=0
 RCallLogURL=
-Phonebook1_url=https://#XIVO_IP#/service/ipbx/web_services.php/phonebook/search/?name=#SEARCH
+Phonebook1_url=http://#XIVO_IP#/service/ipbx/web_services.php/phonebook/search/?name=#SEARCH
 Phonebook2_url=
 Phonebook3_url=
 Phonebook4_url=

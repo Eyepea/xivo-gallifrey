@@ -45,6 +45,10 @@ NameVirtualHost *:80
 	RewriteCond %{HTTPS} off
 	# XXX Snom phones don't work with SSL
 	RewriteCond %{HTTP_USER_AGENT} !snom3[026]0-
+	# XXX Thomson phones ST2030 with 2.xx and without SSL certificate
+	RewriteCond %{HTTP_USER_AGENT} !^THOMSON\ ST2030\ hw[0-9]\ fw2\.
+	# XXX Thomson phones ST2022 with 4.xx and without SSL certificate
+	RewriteCond %{HTTP_USER_AGENT} !^THOMSON\ ST2022\ hw[0-9]\ fw4\.
 	# Used for Aastra phones provisioning
 	RewriteCond %{REQUEST_URI} !^/provisioning/Aastra/
 	# Used for stats/monitoring
