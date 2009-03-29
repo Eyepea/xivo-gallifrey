@@ -75,7 +75,6 @@ class xivo_service_asterisk_useriax extends xivo_service_asterisk_abstract
 		$arr['transfer'] = null;
 		$arr['timezone'] = null;
 		$arr['mohinterpret'] = null;
-		$arr['mohsuggest'] = null;
 		$arr['defaultip'] = null;
 		$arr['sourceaddress'] = null;
 		$arr['port'] = null;
@@ -109,7 +108,6 @@ class xivo_service_asterisk_useriax extends xivo_service_asterisk_abstract
 		      $arr['transfer'],
 		      $arr['timezone'],
 		      $arr['mohinterpret'],
-		      $arr['mohsuggest'],
 		      $arr['defaultip'],
 		      $arr['sourceaddress'],
 		      $arr['port'],

@@ -687,9 +687,14 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$number = (string) $this->get_result_var('ufeatures','number');
 		$protocolname = (string) $this->get_result_var('ufeatures','protocol');
 		$simultcalls = (int) $this->get_result_var('ufeatures','simultcalls');
+		$musiconhold = (string) $this->get_result_var('ufeatures','musiconhold');
 
 		if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_SIP)
 			$this->_set_result_var('protocol','call-limit',(2 * $simultcalls));
+
+		if($this->_protocolname !== XIVO_SRE_IPBX_AST_PROTO_CUSTOM
+		&& xivo_haslen($musiconhold) === true)
+			$this->_set_result_var('protocol','mohsuggest',$musiconhold);
 
 		if(xivo_issa('group',$arr) === true
 		&& xivo_issa('group-select',$arr) === true

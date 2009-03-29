@@ -178,7 +178,8 @@ $array['element']['mohinterpret'] = array();
 $array['element']['mohinterpret']['unset'] = true;
 
 $array['element']['mohsuggest'] = array();
-$array['element']['mohsuggest']['unset'] = true;
+$array['element']['mohsuggest']['default'] = '';
+$array['element']['mohsuggest']['null'] = true;
 
 $array['element']['deny'] = array();
 $array['element']['deny']['default'] = '';
@@ -309,7 +310,7 @@ $array['filter']['timezone'] = array('set' => false,'chk' => 0);
 $array['filter']['disallow'] = array('set' => false,'chk' => 2,'key' => array('all'));
 $array['filter']['allow'] = array('set' => false,'chk' => 2,'uvalue' => xivo_service_asterisk::get_codecs_list());
 $array['filter']['mohinterpret'] = array('set' => false,'chk' => 0);
-$array['filter']['mohsuggest'] = array('set' => false,'chk' => 0);
+$array['filter']['mohsuggest'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 20);
 $array['filter']['deny'] = array('set'			=> false,
 				 'chk'			=> 2,
 				 'callback'		=> 'xivo_filter::chk_ipv4_subnet',
