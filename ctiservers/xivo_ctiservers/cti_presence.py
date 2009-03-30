@@ -46,7 +46,7 @@ class Presence:
                                                 actions = action.split(':')
                                         else:
                                                 actions = []
-
+                                                
                                         self.details.update( { stateid :
                                                                { 'allowednexts' : allowednexts,
                                                                  'actions' : actions}

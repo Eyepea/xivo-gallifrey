@@ -1021,12 +1021,14 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def __send_msg_to_cti_client__(self, userinfo, strupdate):
+                wassent = False
                 try:
                         t0 = time.time()
                         if userinfo is not None and 'login' in userinfo and 'connection' in userinfo.get('login'):
                                 mysock = userinfo.get('login')['connection']
                                 # note thomas : A quoi sert le MSG_WAITALL ???
                                 mysock.sendall(strupdate + '\n', socket.MSG_WAITALL)
+                                wassent = True
                 except Exception:
                         t1 = time.time()
                         log.exception('(__send_msg_to_cti_client__) userinfo(astid/xivo_userid)=%s/%s len=%d timespent=%f'
@@ -1034,7 +1036,7 @@ class XivoCTICommand(BaseCommand):
                         if userinfo not in self.disconnlist:
                                 self.disconnlist.append(userinfo)
                                 os.write(self.queued_threads_pipe[1], 'uinfo')
-                return
+                return wassent
         
         def __check_astid_context__(self, userinfo, astid, context = None):
                 mycond_astid = True
@@ -1275,7 +1277,7 @@ class XivoCTICommand(BaseCommand):
                                 clid = event.get('XIVO_SRCNUM')
                                 did  = event.get('XIVO_EXTENPATTERN')
                                 
-                                log.info('%s __SHEET_ALERT__ %s (%s) uid=%s callerid=%s %s did=%s'
+                                log.info('%s __sheet_alert__ (did) %s (%s) uid=%s callerid=%s %s did=%s'
                                          % (astid, where, time.asctime(), uid, clid, chan, did))
                                 
                                 itemdir['xivo-channel'] = chan
@@ -1363,9 +1365,14 @@ class XivoCTICommand(BaseCommand):
                         # send the payload to the appropriate people
                         for whom in whoms.split(','):
                                 if whom == 'dest':
+                                        lstsent = []
                                         for uinfo in userinfos:
                                                 if capaids is None or uinfo.get('capaid') in capaids:
-                                                        self.__send_msg_to_cti_client__(uinfo, fulllines)
+                                                        if self.__send_msg_to_cti_client__(uinfo, fulllines):
+                                                                userid = '%s/%s' % (uinfo.get('astid'), uinfo.get('xivo_userid'))
+                                                                lstsent.append(userid)
+                                        if lstsent:
+                                                log.info('(dest mode) sheet sent to %s' % lstsent)
                                 elif whom == 'subscribe':
                                         for uinfo in self.ulist_ng.keeplist.itervalues():
                                                 if capaids is None or uinfo.get('capaid') in capaids:
