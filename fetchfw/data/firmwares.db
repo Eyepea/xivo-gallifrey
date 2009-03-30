@@ -117,7 +117,7 @@ version: 6.1.5a
 files: SPA9X2_Dictionaries_v615.zip spa962-6-1-5a.zip
 
 [spa962-6-1-5a.zip]
-url: http://www.xivo.fr/download/firmware/Linksys/spa962-6-1-5a.zip
+url: http://downloads.xivo.fr/firmware/Linksys/spa962-6-1-5a.zip
 size: 2355809
 md5sum: b8d6009cb7b2ce079c082575d55bd9e1
 sha1sum: 5ef25e1c891832a6e87813ce1e534f1034688b06
