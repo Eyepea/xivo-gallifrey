@@ -1,0 +1,58 @@
+#!/bin/bash
+
+BASE_TEMPLATE_DIR=/usr/share/pf-xivo-base-config/templates
+
+. /etc/pf-xivo/common.conf
+
+
+if [ -z "${XIVO_IP}" -o -z "${XIVO_NETMASK}" ]; then
+  echo "ERROR: Network badly configured"
+  exit 1
+fi
+
+XIVO_BROADCAST=$(ipcalc -n ${XIVO_IP}/${XIVO_NETMASK} | grep "Broadcast:" | awk '{print $2}')
+XIVO_SUBNET=$(ipcalc -n ${XIVO_IP}/${XIVO_NETMASK} | grep "Network:" | awk '{print $2}' | cut -d/ -f1)
+
+if [ -n "${XIVO_VOIP_VLAN_ID}" ]; then
+  XIVO_HAS_VOIP_VLAN=1
+else
+  XIVO_HAS_VOIP_VLAN=0
+fi
+
+
+TEMPLATE_VARS="XIVO_IP XIVO_NETMASK XIVO_BROADCAST XIVO_SUBNET XIVO_VOIP_VLAN_ID XIVO_DHCP_POOL XIVO_HAS_VOIP_VLAN"
+
+generate_file()
+{
+  FILE=$1
+
+  for VAR in ${TEMPLATE_VARS}; do
+    VALUE="${!VAR}"
+    sed -i "s/#${VAR}#/${VALUE}/g" ${FILE}
+  done
+}
+
+apply_template_to_file()
+{
+  TEMPLATE_FILE=$1
+  RESULT_FILE=$2
+
+  cp -a ${TEMPLATE_FILE} ${RESULT_FILE}
+  generate_file ${RESULT_FILE}
+}
+
+apply_template_to_dir()
+{
+  TEMPLATE_DIR=$1
+  RESULT_DIR=$2
+
+  cp -a ${TEMPLATE_DIR}/* ${RESULT_DIR}
+  # files not in template dir are ignored
+  FILE_LIST=$(cd ${TEMPLATE_DIR}; find ${RESULT_DIR} -type f -print)
+  for F in ${FILE_LIST}; do
+    generate_file ${RESULT_DIR}/${F}
+  done
+}
+
+apply_template_to_dir ${BASE_TEMPLATE_DIR} /
+
