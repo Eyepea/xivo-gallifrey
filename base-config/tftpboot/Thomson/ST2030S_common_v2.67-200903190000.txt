@@ -647,7 +647,7 @@ VLANTagdata=6
 NtpDaylight=1
 NTPFlag=1
 NtpIP=192.168.0.254
-NtpMode=0
+NtpMode=1
 NtpSyncTime=1
 NtpZoneNum=23
 
