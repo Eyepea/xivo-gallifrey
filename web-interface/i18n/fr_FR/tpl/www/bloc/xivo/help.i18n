@@ -1,14 +1,8 @@
 ; title_content_name
 Aide
 
-; info_download_xivo-switchboard
-Téléchargez XIVO SwitchBoard à l'adresse suivante :
-
 ; info_download_xivo-client
 Téléchargez XIVO Client à l'adresse suivante :
 
-; download_soft_url_xivo-switchboard
-http://%s/download/xivo_cti_client/
-
 ; download_soft_url_xivo-client
-http://%s/download/xivo_cti_client/
+http://downloads.%s/xivo_cti_client/

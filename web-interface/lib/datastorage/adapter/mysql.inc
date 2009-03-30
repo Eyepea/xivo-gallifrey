@@ -174,7 +174,7 @@ class xivo_datastorage_adapter_mysql extends xivo_datastorage_adapter_abstract_s
 		$r = false;
 
 		if(is_resource($this->_link) === false
-		|| ($r = mysql_select_db($this->_param['db'], $this->_link)) === false)
+		|| ($r = mysql_select_db($this->_param['db'],$this->_link)) === false)
 			$this->halt('Can\'t select database: '.$this->_param['db']);
 
 		return($r);
