@@ -3202,9 +3202,13 @@ class XivoCTICommand(BaseCommand):
                 if location.startswith('Agent/'):
                         if self.weblist['agents'][astid].queuememberupdate(queue, queueorgroup, location[6:], event):
                                 self.__peragent_queue_summary__(astid, queueorgroup, agent_id, 'ami_queuememberpaused')
+                                qorg = '%s_by_agent' % queueorgroup
                                 tosend = { 'class' : 'agents',
-                                           'function' : 'sendlist',
-                                           'payload' : { astid : { agent_id : thisagent } }
+                                           'function' : 'update',
+                                           'payload' : { astid :
+                                                         { agent_id :
+                                                           { 'agentstats' : thisagent['agentstats'],
+                                                             qorg : { queue : thisagent[qorg][queue] } } } }
                                            }
                                 self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_member)
                 else:
