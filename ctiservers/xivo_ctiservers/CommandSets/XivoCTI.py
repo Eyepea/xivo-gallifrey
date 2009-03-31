@@ -2982,8 +2982,12 @@ class XivoCTICommand(BaseCommand):
                 event['Xivo-QueueMember-StateTime'] = time.time()
                 if self.weblist[queueorgroup][astid].queuememberupdate(queue, location, event):
                         tosend = { 'class' : queueorgroup,
-                                   'function' : 'sendlist',
-                                   'payload' : { astid : { queue : self.weblist[queueorgroup][astid].keeplist[queue] } }
+                                   'function' : 'update',
+                                   'payload' : { astid :
+                                                 { queue :
+                                                   { 'agents_in_queue' :
+                                                     { location : self.weblist[queueorgroup][astid].keeplist[queue]['agents_in_queue'][location]
+                                                       } } } }
                                    }
                         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_queue)
                         
@@ -3079,6 +3083,14 @@ class XivoCTICommand(BaseCommand):
                         return
                 
                 if self.weblist[queueorgroup][astid].queuememberupdate(queue, location, event):
+##                        tosend = { 'class' : queueorgroup,
+##                                   'function' : 'sendlist',
+##                                   'payload' : { astid :
+##                                                 { queue :
+##                                                   { 'agents_in_queue' :
+##                                                     { location : self.weblist[queueorgroup][astid].keeplist[queue]['agents_in_queue'][location]
+##                                                       } } } }
+##                                   }
                         tosend = { 'class' : queueorgroup,
                                    'function' : 'sendlist',
                                    'payload' : { astid : { queue : self.weblist[queueorgroup][astid].keeplist[queue] } }
@@ -3178,8 +3190,12 @@ class XivoCTICommand(BaseCommand):
                 event['Xivo-QueueMember-StateTime'] = time.time()
                 if self.weblist[queueorgroup][astid].queuememberupdate(queue, location, event):
                         tosend = { 'class' : queueorgroup,
-                                   'function' : 'sendlist',
-                                   'payload' : { astid : { queue : self.weblist[queueorgroup][astid].keeplist[queue] } }
+                                   'function' : 'update',
+                                   'payload' : { astid :
+                                                 { queue :
+                                                   { 'agents_in_queue' :
+                                                     { location : self.weblist[queueorgroup][astid].keeplist[queue]['agents_in_queue'][location]
+                                                       } } } }
                                    }
                         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_queue)
                         
