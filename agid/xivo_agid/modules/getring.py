@@ -24,12 +24,17 @@ CONFIG_FILE     = "/etc/asterisk/xivo_ring.conf"
 CONFIG_PARSER   = None
 
 def getring(agi, cursor, args):
-    dstnum          = agi.get_variable('XIVO_REAL_NUMBER')
-    context         = agi.get_variable('XIVO_REAL_CONTEXT')
-    callorigin      = agi.get_variable('XIVO_CALLORIGIN')
+    dstnum              = agi.get_variable('XIVO_REAL_NUMBER')
+    context             = agi.get_variable('XIVO_REAL_CONTEXT')
+    origin              = agi.get_variable('XIVO_CALLORIGIN')
+    referer             = agi.get_variable('XIVO_FWD_REFERER').split(':', 1)[0]
+    forwarded           = agi.get_variable('XIVO_CALLFORWARDED')
     # TODO: maybe replace number@context with user id in conf file ?
-    dstnum_context  = "%s@%s" % (dstnum, context)
-    section         = None
+    dstnum_context      = "%s@%s" % (dstnum, context)
+    referer_origin      = "%s@%s" % (referer, origin)
+    origin_fwd          = "%s&forwarded" % origin
+    referer_origin_fwd  = "%s&forwarded" % referer_origin
+    section             = None
 
     if CONFIG_PARSER.has_option('number', "!%s" % dstnum_context):
         agi.set_variable('XIVO_RINGTYPE', "")
@@ -45,7 +50,17 @@ def getring(agi, cursor, args):
         if section == 'number':
             raise ValueError("Invalid section name")
 
-        ringtype = CONFIG_PARSER.get(section, callorigin)
+        if forwarded == '1' and CONFIG_PARSER.has_option(section, referer_origin_fwd):
+            ringtype = CONFIG_PARSER.get(section, referer_origin_fwd)
+        elif CONFIG_PARSER.has_option(section, referer_origin):
+            ringtype = CONFIG_PARSER.get(section, referer_origin)
+        elif forwarded == '1' and CONFIG_PARSER.has_option(section, origin_fwd):
+            ringtype = CONFIG_PARSER.get(section, origin_fwd)
+        elif forwarded == '1' and CONFIG_PARSER.has_option(section, 'forward'):
+            ringtype = CONFIG_PARSER.get(section, 'forward')
+        else:
+            ringtype = CONFIG_PARSER.get(section, origin)
+
         phonetype = CONFIG_PARSER.get(section, 'phonetype')
     except (ConfigParser.NoOptionError, ValueError):
         agi.set_variable('XIVO_RINGTYPE', "")
