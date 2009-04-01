@@ -3955,7 +3955,9 @@ class XivoCTICommand(BaseCommand):
                                                                            'function' : 'sendlist',
                                                                            'payload' : fullstat }
                                                                 repstr = self.__cjson_encode__(tosend)
-                                                                
+                                                else:
+                                                        log.debug('capability conference not matched')
+         
                                         elif classcomm == 'history':
                                                 if self.capas[capaid].match_funcs(ucapa, 'history'):
                                                         repstr = self.__build_history_string__(icommand.struct.get('peer'),
