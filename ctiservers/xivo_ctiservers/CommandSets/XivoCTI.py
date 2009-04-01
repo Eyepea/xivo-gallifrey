@@ -1024,16 +1024,19 @@ class XivoCTICommand(BaseCommand):
                 wassent = False
                 try:
                         t0 = time.time()
-                        if userinfo is not None and 'login' in userinfo and 'connection' in userinfo.get('login'):
-                                mysock = userinfo.get('login')['connection']
-                                # note thomas : A quoi sert le MSG_WAITALL ???
-                                mysock.sendall(strupdate + '\n', socket.MSG_WAITALL)
-                                wassent = True
+                        if userinfo and 'login' in userinfo and 'connection' in userinfo['login']:
+                                if 'todisc' not in userinfo['login']:
+                                        mysock = userinfo['login']['connection']
+                                        # note thomas : A quoi sert le MSG_WAITALL ???
+                                        mysock.sendall(strupdate + '\n', socket.MSG_WAITALL)
+                                        wassent = True
                 except Exception:
                         t1 = time.time()
                         log.exception('(__send_msg_to_cti_client__) userinfo(astid/xivo_userid)=%s/%s len=%d timespent=%f'
                                       % (userinfo.get('astid'), userinfo.get('xivo_userid'), len(strupdate), (t1 - t0)))
                         if userinfo not in self.disconnlist:
+                                if userinfo and 'login' in userinfo:
+                                        userinfo['login']['todisc'] = True
                                 self.disconnlist.append(userinfo)
                                 os.write(self.queued_threads_pipe[1], 'uinfo')
                 return wassent

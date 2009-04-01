@@ -1170,20 +1170,22 @@ while True: # loops over the reloads
                                                 for actionname, actionarg in actionqueue.iteritems():
                                                         if actionname == 'disconnlist-user':
                                                                 disconnlist = actionarg
-                                                                for userinfo in disconnlist:
-                                                                        log.warning('checkqueue return : will disconnect %s' % userinfo)
-                                                                        if 'login' in userinfo and 'connection' in userinfo.get('login'):
-                                                                                connid = userinfo.get('login')['connection']
-                                                                                if connid in fdlist_established:
-                                                                                        del fdlist_established[connid]
+                                                                if disconnlist:
+                                                                        log.warning('checkqueue return : should disconnect %d users' % len(disconnlist))
+                                                                        for userinfo in disconnlist:
+                                                                                log.warning('checkqueue return : will disconnect %s' % userinfo)
+                                                                                if 'login' in userinfo and 'connection' in userinfo.get('login'):
+                                                                                        connid = userinfo.get('login')['connection']
+                                                                                        if connid in fdlist_established:
+                                                                                                del fdlist_established[connid]
+                                                                                        else:
+                                                                                                log.warning('connid %s no more in fdlists' % connid)
+                                                                                        connid.close()
+                                                                                        commandclass.manage_logout(userinfo, 'pipe')
+                                                                                        del userinfo_by_requester[connid]
                                                                                 else:
-                                                                                        log.warning('connid %s no more in fdlists' % connid)
-                                                                                connid.close()
-                                                                                commandclass.manage_logout(userinfo, 'pipe')
-                                                                                del userinfo_by_requester[connid]
-                                                                        else:
-                                                                                log.warning('WARNING - no login/connection field present in userinfo')
-                                                                commandclass.clear_disconnlist()
+                                                                                        log.warning('WARNING - no login/connection field present in userinfo')
+                                                                        commandclass.clear_disconnlist()
                                                         elif actionname == 'disconnlist-tcp':
                                                                 disconnlist = actionarg
                                                                 for connid in disconnlist:
