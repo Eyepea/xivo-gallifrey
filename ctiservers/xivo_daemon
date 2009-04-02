@@ -114,6 +114,7 @@ from xivo_ctiservers.CommandSets import *
 from xivo_ctiservers.xivo_commandsets import ctidaemonize as daemonize
 
 PIDFILE = '/var/run/%s.pid' % DAEMONNAME
+#PIDFILE = '%s.pid' % DAEMONNAME
 # TODO: command line parameter
 
 BUFSIZE_LARGE = 8192
@@ -151,7 +152,7 @@ def manage_cti_connections(connid, msg, sep):
                                         loginparams = commandclass.get_login_params(command, asterisklist[0], connid)
                                         # log.info('LOGIN(%s) %s : params %s' % (command.type, requester, loginparams))
                                         uinfo = commandclass.manage_login(loginparams, command.type, userinfo_current.get(connid))
-                                        # log.info('LOGIN(%s) %s : uinfo  %s' % (command.type, requester, uinfo))
+                                        # log.info('LOGIN(%s) %s : uinfo  %s' % (command.type, requester, uinfo))
                                         
                                         if uinfo.__class__.__name__ == 'str':
                                                 commandclass.loginko(loginparams, uinfo, connid)
@@ -1038,7 +1039,16 @@ while True: # loops over the reloads
                                         # t._Thread__stop() # does not work in reload case (vs. stop case)
                                 continue
                 for sel_o in sels_o:
-                        sel_o.process_sending()
+                        try:
+                            sel_o.process_sending()
+                        except ClientConnection.CloseException:
+                            if sel_o in userinfo_by_requester:
+                                    userinfo = userinfo_by_requester.get(sel_o)
+                                    commandclass.manage_logout(userinfo, 'end')
+                                    del userinfo_by_requester[sel_o]
+                            del fdlist_established[sel_o]
+                            log.info('TCP socket closed on %s' % (sel_o.getpeername()))
+                            commandclass.disconnected(sel_o)
                 if sels_i:
                         for sel_i in sels_i:
                                 # these AMI connections are used in order to manage AMI commands and events
@@ -1176,7 +1186,7 @@ while True: # loops over the reloads
                                                                 commandclass.transfer_endbuf(requester)
                                                         log.info('TCP socket closed on %s (%s)' % (requester, kind))
                                                         if kind == 'CTI':
-                                                                commandclass.disconnected(conn)
+                                                                commandclass.disconnected(sel_i)
                                         except Exception:
                                                 # socket.error : exc.args[0]
                                                 log.exception('[%s] %s' % (kind, sel_i))
