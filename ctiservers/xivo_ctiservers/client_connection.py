@@ -23,7 +23,7 @@ class ClientConnection:
         return self.socket.fileno()
 
     def getpeername(self):
-        return self.socket.getpeername()
+        return self.address
 
     # close socket
     def close(self):
