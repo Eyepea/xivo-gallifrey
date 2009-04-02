@@ -81,11 +81,12 @@ except:
 
 # XIVO lib-python modules initialization
 XIVOCONFFILE            = '/etc/asterisk/%s.conf' % DAEMONNAME
-GETOPT_SHORTOPTS        = 'dc:'
-GETOPT_LONGOPTS         = ["debug", "config="]
+PIDFILE                 = '/var/run/%s.pid' % DAEMONNAME
+GETOPT_SHORTOPTS        = 'dc:p:'
+GETOPT_LONGOPTS         = ["debug", "config=", "pidfile="]
 debug_mode = False
 def config_path():
-        global XIVOCONFFILE, debug_mode
+        global XIVOCONFFILE, PIDFILE, debug_mode
         for opt, arg in getopt.getopt(
                 sys.argv[1:],
                 GETOPT_SHORTOPTS,
@@ -95,6 +96,8 @@ def config_path():
                         XIVOCONFFILE = arg
                 elif opt == "-d":
                         debug_mode = True
+                elif opt=="-p":
+                        PIDFILE = arg
 config_path()
 
 # XIVO lib-python modules imports
@@ -112,10 +115,6 @@ from xivo_ctiservers import cti_config
 from xivo_ctiservers import xivo_commandsets
 from xivo_ctiservers.CommandSets import *
 from xivo_ctiservers.xivo_commandsets import ctidaemonize as daemonize
-
-PIDFILE = '/var/run/%s.pid' % DAEMONNAME
-#PIDFILE = '%s.pid' % DAEMONNAME
-# TODO: command line parameter
 
 BUFSIZE_LARGE = 8192
 BUFSIZE_ANY = 512
