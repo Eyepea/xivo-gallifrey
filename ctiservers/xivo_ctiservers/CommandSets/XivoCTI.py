@@ -1031,8 +1031,7 @@ class XivoCTICommand(BaseCommand):
                         if userinfo and 'login' in userinfo and 'connection' in userinfo['login']:
                                 if 'todisc' not in userinfo['login']:
                                         mysock = userinfo['login']['connection']
-                                        # note thomas : A quoi sert le MSG_WAITALL ???
-                                        mysock.sendall(strupdate + '\n', socket.MSG_WAITALL)
+                                        mysock.sendall(strupdate + '\n')
                                         wassent = True
                 except Exception:
                         t1 = time.time()
