@@ -154,6 +154,7 @@ def manage_cti_connections(connid, msg, sep):
                                         if uinfo.__class__.__name__ == 'str':
                                                 commandclass.loginko(loginparams, uinfo, connid)
                                                 del fdlist_established[connid]
+                                                log.info('TCP socket closed(loginko) on %s (%s)' % ('%s:%d' % connid.getpeername(), 'CTI'))
                                                 connid.close()
                                         else:
                                                 if command.type == xivo_commandsets.CMD_LOGIN_CAPAS:
@@ -1190,6 +1191,8 @@ while True: # loops over the reloads
                                                                 disconnlist = actionarg
                                                                 for connid in disconnlist:
                                                                         commandclass.telldisconn(connid)
+                                                                        log.info('TCP socket closed(disconnlist) on %s (%s)'
+                                                                                 % ('%s:%d' % connid.getpeername(), fdlist_established[connid]))
                                                                         del fdlist_established[connid]
                                                                         connid.close()
                                         except Exception:

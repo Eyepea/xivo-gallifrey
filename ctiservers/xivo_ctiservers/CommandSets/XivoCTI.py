@@ -111,6 +111,7 @@ class XivoCTICommand(BaseCommand):
                      'filetransfer',
                      'database',
                      'meetme',
+                     'endinit',
                      'message',
                      'actionfiche',
                      'availstate',
@@ -975,9 +976,12 @@ class XivoCTICommand(BaseCommand):
                 """
                 Send a banner at login time
                 """
+                requester = '%s:%d' % connid.getpeername()
                 connid.sendall('XiVO CTI Server Version %s(%s) svn:%s\n' % (XIVOVERSION_NUM, XIVOVERSION_NAME,
                                                                             __revision__))
-                self.timerthreads_login_timeout[connid] = threading.Timer(self.logintimeout, self.__callback_timer__, ('login',))
+                self.timerthreads_login_timeout[connid] = threading.Timer(self.logintimeout,
+                                                                          self.__callback_timer__,
+                                                                          ('login(%s)' % requester,))
                 self.timerthreads_login_timeout[connid].start()
                 return
         
@@ -1032,13 +1036,14 @@ class XivoCTICommand(BaseCommand):
                                         wassent = True
                 except Exception:
                         t1 = time.time()
-                        log.exception('(__send_msg_to_cti_client__) userinfo(astid/xivo_userid)=%s/%s len=%d timespent=%f'
-                                      % (userinfo.get('astid'), userinfo.get('xivo_userid'), len(strupdate), (t1 - t0)))
+                        dispuserid = '%s/%s' % (userinfo.get('astid'), userinfo.get('xivo_userid'))
+                        log.exception('(__send_msg_to_cti_client__) userinfo(astid/xivo_userid)=%s len=%d timespent=%f'
+                                      % (dispuserid, len(strupdate), (t1 - t0)))
                         if userinfo not in self.disconnlist:
                                 if userinfo and 'login' in userinfo:
                                         userinfo['login']['todisc'] = True
                                 self.disconnlist.append(userinfo)
-                                os.write(self.queued_threads_pipe[1], 'uinfo')
+                                os.write(self.queued_threads_pipe[1], 'uinfo(%s)' % dispuserid)
                 return wassent
         
         def __check_astid_context__(self, userinfo, astid, context = None):
@@ -3987,6 +3992,10 @@ class XivoCTICommand(BaseCommand):
                                                                    'fileid' : newfax.reference }
                                                         repstr = self.__cjson_encode__(tosend)
                                                         
+                                        elif classcomm == 'endinit':
+                                                tosend = { 'class' : 'endinit' }
+                                                repstr = self.__cjson_encode__(tosend)
+                                                
                                         elif classcomm == 'availstate':
                                                 if self.capas[capaid].match_funcs(ucapa, 'presence'):
                                                         # updates the new status and sends it to other people
@@ -5108,7 +5117,7 @@ class XivoCTICommand(BaseCommand):
                         log.info('handle_fagi %s : (%s) context=%s uid=%s chan=%s'
                                  % (astid, function, context, uniqueid, channel))
                 except Exception:
-                        log.exception('handle_fagi %s' % astid)
+                        log.exception('%s handle_fagi %s' % (astid, fastagi.env))
                         return
                 
                 if function == 'presence':
