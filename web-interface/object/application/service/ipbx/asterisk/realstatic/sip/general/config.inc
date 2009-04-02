@@ -608,7 +608,7 @@ $array['filter']['progressinband'] = array('key' => array('no','yes','never'));
 $array['filter']['language'] = array('key' => array('en','fr'));
 $array['filter']['mohinterpret'] = array('set' => false,'chk' => 2,'maxlen' => 20);
 $array['filter']['mohsuggest'] = array('set' => false,'chk' => 2,'maxlen' => 20);
-$array['filter']['vmexten'] = array('regexp' => '/^[0-9#\*]+$/','maxlen' => 40);
+$array['filter']['vmexten'] = array('regexp' => '/^[0-9\*]+$/','maxlen' => 40);
 $array['filter']['trustrpid'] = array('bool' => true);
 $array['filter']['sendrpid'] = array('bool' => true);
 $array['filter']['assertedidentity'] = array('bool' => true);
