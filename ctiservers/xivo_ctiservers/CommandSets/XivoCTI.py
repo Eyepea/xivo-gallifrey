@@ -213,6 +213,9 @@ class XivoCTICommand(BaseCommand):
                                 cmd.type = xivo_commandsets.CMD_LOGIN_CAPAS
                         elif cmd.struct.get('class') == 'filetransfer':
                                 cmd.type = xivo_commandsets.CMD_TRANSFER
+                except cjson.DecodeError:
+                        log.warning('<%s> does not look like JSON' % linein)
+                        cmd.struct = {}
                 except Exception:
                         log.exception('parsing json for <%s>' % linein)
                         cmd.struct = {}
