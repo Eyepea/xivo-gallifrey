@@ -52,6 +52,9 @@ class ClientConnection:
                 if _errno == errno.EAGAIN:
                     self.sendqueue.appendleft(data) # try next time !
                     return
+                elif _errno in [errno.EPIPE, errno.ECONNRESET, errno.ENOTCONN]:
+                    self.socket.close()
+                    raise self.CloseException
                 else:
                     raise socket.error(_errno, string)
         return
