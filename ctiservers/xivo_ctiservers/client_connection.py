@@ -97,6 +97,9 @@ class ClientConnection:
         except socket.error, (_errno, string):
             if _errno != errno.EAGAIN: # really an error
                 raise socket.error(_errno, string)
+            elif _errno in [errno.EPIPE, errno.ECONNRESET, errno.ENOTCONN, errno.ETIMEDOUT]:
+                self.socket.close()
+                raise self.CloseException
         return
 
     # return a line if available or None
@@ -107,7 +110,5 @@ class ClientConnection:
             ret = self.readbuff[0:k+1]
             self.readbuff = self.readbuff[k+1:]
             return ret
-        except:            
+        except:
             return None
-
-

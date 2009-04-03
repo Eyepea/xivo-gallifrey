@@ -1141,7 +1141,7 @@ while True: # loops over the reloads
                                                 requester = '%s:%d' % sel_i.getpeername()
                                                 if isinstance(sel_i, ClientConnection):
                                                     try:
-                                                        while True:
+                                                        while sel_i in fdlist_established.keys():
                                                             line = sel_i.readline()
                                                             if line is None:
                                                                 break
@@ -1231,13 +1231,18 @@ while True: # loops over the reloads
                                                                         commandclass.clear_disconnlist()
                                                         elif actionname == 'disconnlist-tcp':
                                                                 disconnlist = actionarg
-                                                                for connid in disconnlist:
-                                                                        commandclass.telldisconn(connid)
-                                                                        log.info('TCP socket %s closed(disconnlist) on %s'
-                                                                                 % (fdlist_established[connid],
-                                                                                    '%s:%d' % connid.getpeername()))
-                                                                        del fdlist_established[connid]
-                                                                        connid.close()
+                                                                if disconnlist:
+                                                                        log.warning('checkqueue return : should disconnect %d connections' % len(disconnlist))
+                                                                        for connid in disconnlist:
+                                                                                try:
+                                                                                        commandclass.telldisconn(connid)
+                                                                                except Exception:
+                                                                                        log.exception('disconnlist-tcp')
+                                                                                log.info('TCP socket %s closed(disconnlist) on %s'
+                                                                                         % (fdlist_established[connid],
+                                                                                            '%s:%d' % connid.getpeername()))
+                                                                                del fdlist_established[connid]
+                                                                                connid.close()
                                         except Exception:
                                                 log.exception('[pipe_queued_threads_commandclass]')
                                                 

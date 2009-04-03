@@ -4039,7 +4039,7 @@ class XivoCTICommand(BaseCommand):
                                                         
                                         elif classcomm == 'logout':
                                                 stopper = icommand.struct.get('stopper')
-                                                log.info('logout request from %s : stopper=%s' % (classcomm, userid, stopper))
+                                                log.info('logout request from %s : stopper=%s' % (userid, stopper))
                                                 
                                         elif classcomm == 'callcampaign':
                                                 argums = icommand.struct.get('command')
