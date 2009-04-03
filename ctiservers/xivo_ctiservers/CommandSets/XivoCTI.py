@@ -1579,7 +1579,16 @@ class XivoCTICommand(BaseCommand):
                 last_start = 0
                 
                 qolddate = 0
-                for line in csvreader:
+                linenum = 0
+                while True:
+                        try:
+                                linenum += 1
+                                line = csvreader.next()
+                        except StopIteration:
+                                break
+                        except Exception:
+                                log.exception('%s read_queuelog (line %d) %s' % (astid, linenum, url_queuelog))
+                                line = []
                         if len(line) > 3:
                                 if qolddate == int(line[0]):
                                         ic += 1

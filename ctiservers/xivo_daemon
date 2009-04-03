@@ -909,7 +909,10 @@ while True: # loops over the reloads
                         
                         for ilist in commandclass.weblist.keys():
                                 commandclass.set_urllist(astid, ilist, urllist[ilist])
+                        t1 = time.time()
                         commandclass.read_queuelog(astid, url_queuelog)
+                        t2 = time.time()
+                        log.info('%s spent %f seconds to read queuelog file' % (astid, t2 - t1))
                         
                         if ipaddress not in ip_reverse_sht:
                                 ip_reverse_sht[ipaddress] = astid
