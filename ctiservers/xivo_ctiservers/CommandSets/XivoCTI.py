@@ -107,6 +107,7 @@ class XivoCTICommand(BaseCommand):
                      'groups',
                      'users',
                      'callcampaign',
+                     'logout',
                      'faxsend',
                      'filetransfer',
                      'database',
@@ -700,9 +701,11 @@ class XivoCTICommand(BaseCommand):
                         t = open('/proc/%s/stat' % pid, 'r')
                         u = t.read().strip().split()
                         t.close()
+                        # utime = int(u[13])
+                        # ktime = int(u[14])
                         td = int(u[22])
                         if where:
-                                log.info('memory (%s) %d bytes' % (where, td))
+                                log.info('(%s) memory %d bytes' % (where, td))
                 except:
                         log.exception('getmem')
                         td = 0
@@ -3903,7 +3906,7 @@ class XivoCTICommand(BaseCommand):
                                 dircomm = icommand.struct.get('direction')
                                 
                                 if dircomm is not None and dircomm == 'xivoserver' and classcomm in self.commnames:
-                                        if classcomm not in ['keepalive', 'logclienterror']:
+                                        if classcomm not in ['keepalive', 'logclienterror', 'logout']:
                                                 log.info('command attempt %s from %s : %s' % (classcomm, username, icommand.struct))
                                         if classcomm not in ['keepalive', 'logclienterror', 'availstate', 'actionfiche']:
                                                 self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm)
@@ -4034,6 +4037,10 @@ class XivoCTICommand(BaseCommand):
                                                                                           icommand.struct.get('destination'))
                                                         self.__send_msg_to_cti_client__(userinfo, rep)
                                                         
+                                        elif classcomm == 'logout':
+                                                stopper = icommand.struct.get('stopper')
+                                                log.info('logout request from %s : stopper=%s' % (classcomm, userid, stopper))
+                                                
                                         elif classcomm == 'callcampaign':
                                                 argums = icommand.struct.get('command')
                                                 if argums[0] == 'fetchlist':

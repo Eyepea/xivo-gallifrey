@@ -151,12 +151,13 @@ def manage_cti_connections(connid, msg, sep):
                                         loginparams = commandclass.get_login_params(command, asterisklist[0], connid)
                                         # log.info('LOGIN(%s) %s : params %s' % (command.type, requester, loginparams))
                                         uinfo = commandclass.manage_login(loginparams, command.type, userinfo_current.get(connid))
-                                        # log.info('LOGIN(%s) %s : uinfo  %s' % (command.type, requester, uinfo))
+                                        # log.info('LOGIN(%s) %s : uinfo  %s' % (command.type, requester, uinfo))
                                         
                                         if uinfo.__class__.__name__ == 'str':
                                                 commandclass.loginko(loginparams, uinfo, connid)
+                                                log.info('TCP socket %s closed(loginko) on %s' % (fdlist_established[connid],
+                                                                                                  '%s:%d' % connid.getpeername()))
                                                 del fdlist_established[connid]
-                                                log.info('TCP socket closed(loginko) on %s (%s)' % ('%s:%d' % connid.getpeername(), 'CTI'))
                                                 connid.close()
                                         else:
                                                 if command.type == xivo_commandsets.CMD_LOGIN_CAPAS:
@@ -473,8 +474,9 @@ def handle_ami_event(astid, idata):
                                                                                         connreply.sendall(argg + '\n')
                                                         if connreply is not None:
                                                                 connreply.sendall('%s:OK\n' % XIVO_CLI_WEBI_HEADER)
+                                                                log.info('TCP socket %s closed(actionid) on %s' % (fdlist_established[connreply],
+                                                                                                                   '%s:%d' % connreply.getpeername()))
                                                                 del fdlist_established[connreply]
-                                                                log.info('TCP socket closed on %s (%s)' % ('%s:%d' % connreply.getpeername(), 'WEBI'))
                                                                 connreply.close()
                                                                 del waiting_actionid[actionid]
                                                                 waiting_actionid_timer[actionid].cancel()
@@ -992,9 +994,9 @@ while True: # loops over the reloads
                         if outsock is not None:
                                 fdlist_full.append(outsock)
                         writefds = []
-                        for conn, kind in fdlist_established.iteritems():
-                                if kind == 'CTI' and conn.need_sending():
-                                        writefds.append(conn)
+                        for iconn, kind in fdlist_established.iteritems():
+                                if kind == 'CTI' and iconn.need_sending():
+                                        writefds.append(iconn)
                         [sels_i, sels_o, sels_e] = select.select(fdlist_full, writefds, [], updates_period)
                 except Exception, exc:
                         log.exception('(select) probably Ctrl-C or daemon stop or daemon restart ...')
@@ -1045,8 +1047,9 @@ while True: # loops over the reloads
                                     userinfo = userinfo_by_requester.get(sel_o)
                                     commandclass.manage_logout(userinfo, 'end')
                                     del userinfo_by_requester[sel_o]
+                            log.info('TCP socket %s closed(sending) on %s' % (fdlist_established[sel_o],
+                                                                              sel_o.getpeername()))
                             del fdlist_established[sel_o]
-                            log.info('TCP socket closed on %s' % (sel_o.getpeername()))
                             commandclass.disconnected(sel_o)
                 if sels_i:
                         for sel_i in sels_i:
@@ -1102,15 +1105,15 @@ while True: # loops over the reloads
                                 # the new TCP connections (CTI, WEBI, (F)AGI, INFO) are catched here
                                 elif sel_i in fdlist_listen_cti:
                                         [kind, nmax] = fdlist_listen_cti[sel_i].split(':')
-                                        [conn, sockparams] = sel_i.accept()
+                                        [connc, sockparams] = sel_i.accept()
                                         if kind == 'FAGI':
                                                 if sockparams[0] in ip_reverse_sht:
                                                         astid = ip_reverse_sht.get(sockparams[0])
                                                 else:
                                                         astid = 'xivo'
-                                                log.info('TCP FAGI socket opened on %s:%d => %s' % (sockparams[0], sockparams[1], astid))
-                                                mfr = conn.makefile('rb', -1)
-                                                mfw = conn.makefile('wb', 0)
+                                                log.info('TCP socket FAGI opened on %s:%d => %s' % (sockparams[0], sockparams[1], astid))
+                                                mfr = connc.makefile('rb', -1)
+                                                mfw = connc.makefile('wb', 0)
                                                 try:
                                                         fagi = fastagi.FastAGI(mfr, mfw)
                                                         commandclass.handle_fagi(astid, fagi)
@@ -1118,17 +1121,18 @@ while True: # loops over the reloads
                                                         log.exception('(fastagi) %s' % astid)
                                                 mfr.close()
                                                 mfw.close()
-                                                conn.close()
-                                                log.info('TCP FAGI socket closed on %s:%d' % (sockparams[0], sockparams[1]))
+                                                connc.close()
+                                                log.info('TCP socket FAGI closed on %s:%d' % (sockparams[0], sockparams[1]))
                                         else:
-                                                log.info('TCP socket opened on %s:%d (%s)' % (sockparams[0], sockparams[1], kind))
+                                                log.info('TCP socket %s opened on %s:%d' % (kind,
+                                                                                            sockparams[0], sockparams[1]))
                                                 if kind == 'CTI':
-                                                        conn = ClientConnection(conn, sockparams)
-                                                        commandclass.connected(conn)
+                                                        connc = ClientConnection(connc, sockparams)
+                                                        commandclass.connected(connc)
                                                 # appending the opened socket to the ones watched
-                                                # conn.setblocking(0)
-                                                # conn.settimeout(2)
-                                                fdlist_established[conn] = kind
+                                                # connc.setblocking(0)
+                                                # connc.settimeout(2)
+                                                fdlist_established[connc] = kind
                                                 
                                 # incoming TCP connections (CTI, WEBI, AGI, INFO)
                                 elif sel_i in fdlist_established:
@@ -1150,10 +1154,10 @@ while True: # loops over the reloads
                                                                 del userinfo_by_requester[sel_i]
                                                         del fdlist_established[sel_i]
                                                         if requester in commandclass.transfers_ref:
-                                                            commandclass.transfer_endbuf(requester)
-                                                        log.info('TCP socket closed on %s (%s)' % (requester, kind))
+                                                                commandclass.transfer_endbuf(requester)
+                                                        log.info('TCP socket %s closed(A) on %s' % (kind, requester))
                                                         if kind == 'CTI':
-                                                            commandclass.disconnected(conn)
+                                                                commandclass.disconnected(sel_i)
                                                 else:
                                                     closemenow = False
                                                     try:
@@ -1183,9 +1187,9 @@ while True: # loops over the reloads
                                                         del fdlist_established[sel_i]
                                                         if requester in commandclass.transfers_ref:
                                                                 commandclass.transfer_endbuf(requester)
-                                                        log.info('TCP socket closed on %s (%s)' % (requester, kind))
+                                                        log.info('TCP socket %s closed(B) on %s' % (kind, requester))
                                                         if kind == 'CTI':
-                                                                commandclass.disconnected(sel_i)
+                                                                 commandclass.disconnected(sel_i)
                                         except Exception:
                                                 # socket.error : exc.args[0]
                                                 log.exception('[%s] %s' % (kind, sel_i))
@@ -1229,8 +1233,9 @@ while True: # loops over the reloads
                                                                 disconnlist = actionarg
                                                                 for connid in disconnlist:
                                                                         commandclass.telldisconn(connid)
-                                                                        log.info('TCP socket closed(disconnlist) on %s (%s)'
-                                                                                 % ('%s:%d' % connid.getpeername(), fdlist_established[connid]))
+                                                                        log.info('TCP socket %s closed(disconnlist) on %s'
+                                                                                 % (fdlist_established[connid],
+                                                                                    '%s:%d' % connid.getpeername()))
                                                                         del fdlist_established[connid]
                                                                         connid.close()
                                         except Exception:
