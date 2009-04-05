@@ -120,7 +120,7 @@ BUFSIZE_LARGE = 8192
 BUFSIZE_ANY = 512
 
 XIVO_CLI_WEBI_HEADER = 'XIVO-CLI-WEBI'
-XIVOVERSION = '0.4'
+XIVOVERSION = '1.0'
 
 ## \brief Deals with requests from the UI clients.
 # \param connid connection identifier
@@ -267,7 +267,7 @@ def manage_info_connections(connid, msg, sep):
                 try:
                         retstr = 'OK'
                         if usefulmsg == 'show_infos':
-                                time_uptime = int(time.time() - time_start)
+                                time_uptime = int(time.time() - time.mktime(time_start))
                                 reply = 'infos=' \
                                         'xivo_version=%s;' \
                                         'server_version=%s;' \
@@ -718,7 +718,7 @@ xdname = None
 while True: # loops over the reloads
         askedtoquit = False
         
-        time_start = time.time()
+        time_start = time.localtime()
         if nreload == 0:
                 log.info('# STARTING XIVO Daemon %s (pid %d) / svn:%s # (0/3) Starting'
                           % (XIVOVERSION, os.getpid(), __revision__))
@@ -1030,6 +1030,10 @@ while True: # loops over the reloads
                                         
                         if askedtoquit:
                                 commandclass.reset('stop')
+                                time_uptime = int(time.time() - time.mktime(time_start))
+                                log.info('# STOPPING XIVO Daemon %s (pid %d) / svn:%s # uptime %d s (since %s)'
+                                         % (XIVOVERSION, os.getpid(), __revision__,
+                                            time_uptime, time.localtime(time_start)))
                                 for t in filter(lambda x: x.getName() != 'MainThread', threading.enumerate()):
                                         print '--- (stop) killing thread <%s>' % t.getName()
                                         t._Thread__stop()
