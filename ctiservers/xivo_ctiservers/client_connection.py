@@ -76,6 +76,8 @@ class ClientConnection:
                 elif _errno in [errno.EPIPE, errno.ECONNRESET, errno.ENOTCONN, errno.ETIMEDOUT]:
                     self.socket.close()
                     raise self.CloseException
+                elif _errno == errno.EBADF:
+                    raise self.CloseException
                 else:
                     raise socket.error(_errno, string)
         return
@@ -95,11 +97,13 @@ class ClientConnection:
                 self.socket.close()
                 raise self.CloseException
         except socket.error, (_errno, string):
-            if _errno != errno.EAGAIN: # really an error
-                raise socket.error(_errno, string)
-            elif _errno in [errno.EPIPE, errno.ECONNRESET, errno.ENOTCONN, errno.ETIMEDOUT]:
+            if _errno in [errno.EPIPE, errno.ECONNRESET, errno.ENOTCONN, errno.ETIMEDOUT]:
                 self.socket.close()
                 raise self.CloseException
+            elif _errno == errno.EBADF:
+                raise self.CloseException
+            elif _errno != errno.EAGAIN: # really an error
+                raise socket.error(_errno, string)
         return
 
     # return a line if available or None
