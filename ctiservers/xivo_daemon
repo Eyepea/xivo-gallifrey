@@ -1033,7 +1033,7 @@ while True: # loops over the reloads
                                 time_uptime = int(time.time() - time.mktime(time_start))
                                 log.info('# STOPPING XIVO Daemon %s (pid %d) / svn:%s # uptime %d s (since %s)'
                                          % (XIVOVERSION, os.getpid(), __revision__,
-                                            time_uptime, time.localtime(time_start)))
+                                            time_uptime, time.asctime(time_start)))
                                 for t in filter(lambda x: x.getName() != 'MainThread', threading.enumerate()):
                                         print '--- (stop) killing thread <%s>' % t.getName()
                                         t._Thread__stop()
@@ -1218,25 +1218,8 @@ while True: # loops over the reloads
                                         try:
                                                 actionqueue = commandclass.checkqueue()
                                                 for actionname, actionarg in actionqueue.iteritems():
-                                                        if actionname == 'disconnlist-user':
-                                                                disconnlist = actionarg
-                                                                if disconnlist:
-                                                                        log.warning('checkqueue return : should disconnect %d users' % len(disconnlist))
-                                                                        for userinfo in disconnlist:
-                                                                                log.warning('checkqueue return : will disconnect %s' % userinfo)
-                                                                                if 'login' in userinfo and 'connection' in userinfo.get('login'):
-                                                                                        connid = userinfo.get('login')['connection']
-                                                                                        if connid in fdlist_established:
-                                                                                                del fdlist_established[connid]
-                                                                                        else:
-                                                                                                log.warning('connid %s no more in fdlists' % connid)
-                                                                                        connid.close()
-                                                                                        commandclass.manage_logout(userinfo, 'pipe')
-                                                                                        del userinfo_by_requester[connid]
-                                                                                else:
-                                                                                        log.warning('WARNING - no login/connection field present in userinfo')
-                                                                        commandclass.clear_disconnlist()
-                                                        elif actionname == 'disconnlist-tcp':
+                                                        if actionname == 'disconnlist-tcp':
+                                                                # disconnect when timeout after first connection
                                                                 disconnlist = actionarg
                                                                 if disconnlist:
                                                                         log.warning('checkqueue return : should disconnect %d connections' % len(disconnlist))
@@ -1259,6 +1242,27 @@ while True: # loops over the reloads
                                         except Exception:
                                                 log.exception('[pipe_queued_threads_main]')
                                                 
+                                try:
+                                        userdiscolist = commandclass.disconnlist
+                                        if userdiscolist:
+                                                log.warning('commandclass.disconnlist : should disconnect %d users' % len(userdiscolist))
+                                                for userinfo in userdiscolist:
+                                                        log.warning('checkqueue return : will disconnect %s' % userinfo)
+                                                        if 'login' in userinfo and 'connection' in userinfo.get('login'):
+                                                                connid = userinfo.get('login')['connection']
+                                                                if connid in fdlist_established:
+                                                                        del fdlist_established[connid]
+                                                                else:
+                                                                        log.warning('connid %s no more in fdlists' % connid)
+                                                                # connid.close()
+                                                                commandclass.manage_logout(userinfo, 'pipe')
+                                                                del userinfo_by_requester[connid]
+                                                        else:
+                                                                log.warning('WARNING - no login/connection field present in userinfo')
+                                        commandclass.clear_disconnlist()
+                                except Exception:
+                                        log.exception('userdiscolist')
+                                        
                                 for astid in configs:
                                         if (time.time() - lastrequest_time[astid]) > updates_period or update_userlist[astid]:
                                                 lastrequest_time[astid] = time.time()
@@ -1277,7 +1281,7 @@ while True: # loops over the reloads
                                                         commandclass.updates() # users' update, ...
                                                 except Exception:
                                                         log.exception('commandclass.updates() (computed timeout)')
-
+                                                        
                 else: # when nothing happens on the sockets, we fall here sooner or later
                         log.info('[%s] updates (select timeout) %s'
                                   % (xdname, time.asctime()))

@@ -290,6 +290,11 @@ class XivoCTICommand(BaseCommand):
         def manage_login(self, loginparams, phase, uinfo):
                 if phase == xivo_commandsets.CMD_LOGIN_ID:
                         missings = []
+                        # warns that the former session did not exit correctly (on a given computer)
+                        if 'lastlogout-stopper' in loginparams and 'lastlogout-datetime' in loginparams:
+                                if not loginparams['lastlogout-stopper'] or not loginparams['lastlogout-datetime']:
+                                        log.warning('lastlogout stopper=%s datetime=%s'
+                                                    % (loginparams['lastlogout-stopper'], loginparams['lastlogout-datetime']))
                         for argum in ['company', 'userid', 'ident', 'xivoversion', 'version']:
                                 if argum not in loginparams:
                                         missings.append(argum)
@@ -1023,8 +1028,7 @@ class XivoCTICommand(BaseCommand):
                                 log.warning('checkqueue : unknown action for %s' % tname)
                 for connid in todisconn:
                         del self.timerthreads_login_timeout[connid]
-                return { 'disconnlist-user' : self.disconnlist,
-                         'disconnlist-tcp'  : todisconn }
+                return { 'disconnlist-tcp'  : todisconn }
         
         def clear_disconnlist(self):
                 self.disconnlist = []
@@ -1048,7 +1052,7 @@ class XivoCTICommand(BaseCommand):
                                 if userinfo and 'login' in userinfo:
                                         userinfo['login']['todisc'] = True
                                 self.disconnlist.append(userinfo)
-                                os.write(self.queued_threads_pipe[1], 'uinfo(%s)' % dispuserid)
+                                # os.write(self.queued_threads_pipe[1], 'uinfo(%s)' % dispuserid)
                 return wassent
         
         def __check_astid_context__(self, userinfo, astid, context = None):
@@ -3448,6 +3452,10 @@ class XivoCTICommand(BaseCommand):
                                    'reason' : '%s (code %s)' % (event.get('PhaseEString'),
                                                                 event.get('PhaseEStatus')) }
                 repstr = self.__cjson_encode__(tosend)
+                # reminder
+                # 22 Invalid response after sending a page
+                # 50 Disconnected after permitted retries
+                # 51 The call dropped prematurely
                 
                 # 'FileName': '/var/spool/asterisk/fax/astfaxsend-q6yZAKTJvU-0x48be7930.tif'
                 faxid = filename[len('/var/spool/asterisk/fax/astfaxsend-'):-4]
