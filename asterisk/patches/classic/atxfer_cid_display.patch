@@ -1,0 +1,104 @@
+Index: asterisk-1.4.24/res/res_features.c
+===================================================================
+--- asterisk-1.4.24.orig/res/res_features.c	2009-04-08 16:28:10.000000000 +0200
++++ asterisk-1.4.24/res/res_features.c	2009-04-08 16:28:38.000000000 +0200
+@@ -989,6 +989,7 @@
+ 		return builtin_parkcall(chan, peer, config, NULL, sense, NULL);
+ 	}
+ 
++    ast_log(LOG_DEBUG, "do_atxfer transferer(%s,%s) transferee(%s,%s)\n", transferer->cid.cid_num, transferer->cid.cid_name, transferee->cid.cid_num, transferee->cid.cid_name);//thomas
+ 	l = strlen(xferto);
+         snprintf(xferto + l, sizeof(xferto) - l, "@%s", transfer_context);	/* append context */
+ 	newchan = ast_feature_request_and_dial(transferer, "Local", ast_best_codec(transferer->nativeformats),
+@@ -1002,6 +1003,7 @@
+ 			return -1;
+ 		return FEATURE_RETURN_SUCCESS;
+ 	}
++    ast_log(LOG_DEBUG, "do_atxfer newchan=%s\n", newchan->name);
+ 
+ 	if (check_compat(transferer, newchan)) {
+ 		/* we do mean transferee here, NOT transferer */
+@@ -1012,6 +1014,7 @@
+ 	ast_set_flag(&(bconfig.features_caller), AST_FEATURE_DISCONNECT);
+ 	ast_set_flag(&(bconfig.features_callee), AST_FEATURE_DISCONNECT);
+ 	res = ast_bridge_call(transferer, newchan, &bconfig);
++    ast_log(LOG_DEBUG, "do_atxfer ast_bridge_call(%s, %s, ...) returned %d\n", transferer->name, newchan->name, res);
+ 	if (newchan->_softhangup || !transferer->_softhangup) {
+ 		ast_hangup(newchan);
+ 		if (ast_stream_and_wait(transferer, xfersound, transferer->language, ""))
+@@ -1096,9 +1099,36 @@
+ 		tobj->bconfig.end_bridge_callback_data_fixup(&tobj->bconfig, tobj->peer, tobj->chan);
+ 	}
+ 
++    ast_log(LOG_DEBUG, "do_atxfer playing transfer sound on newchan=%s\n", newchan->name);
+ 	if (ast_stream_and_wait(newchan, xfersound, newchan->language, ""))
+ 		ast_log(LOG_WARNING, "Failed to play transfer sound!\n");
++
++    ast_log(LOG_DEBUG, "do_atxfer newchan=%s cid=(%s,%s,0x%02x) lid=(%s,%s,0x%02x)\n", tobj->chan->name,
++            tobj->chan->cid.cid_num, tobj->chan->cid.cid_name, tobj->chan->cid.cid_pres,
++            tobj->chan->lid.lid_num, tobj->chan->lid.lid_name, tobj->chan->lid.lid_pres);
++    ast_log(LOG_DEBUG, "do_atxfer xferchan=%s cid=(%s,%s,0x%02x) lid=(%s,%s,0x%02x)\n", tobj->peer->name,
++            tobj->peer->cid.cid_num, tobj->peer->cid.cid_name, tobj->peer->cid.cid_pres,
++            tobj->peer->lid.lid_num, tobj->peer->lid.lid_name, tobj->peer->lid.lid_pres);
++
++    // display correct caller ids at both end
++    ast_connectedline_update(newchan, xferchan->cid.cid_num, xferchan->cid.cid_name, xferchan->cid.cid_pres);
++    ast_connectedline_update(xferchan, newchan->cid.cid_num, newchan->cid.cid_name, newchan->cid.cid_pres);
++
++    ast_log(LOG_DEBUG, "do_atxfer calling ast_bridge_call_thread_launch(%s, %s)\n", tobj->chan->name, tobj->peer->name);
++    ast_log(LOG_DEBUG, "do_atxfer chan1=%s cid=(%s,%s,0x%02x) lid=(%s,%s,0x%02x)\n", tobj->chan->name,
++            tobj->chan->cid.cid_num, tobj->chan->cid.cid_name, tobj->chan->cid.cid_pres,
++            tobj->chan->lid.lid_num, tobj->chan->lid.lid_name, tobj->chan->lid.lid_pres);
++    ast_log(LOG_DEBUG, "do_atxfer chan2=%s cid=(%s,%s,0x%02x) lid=(%s,%s,0x%02x)\n", tobj->peer->name,
++            tobj->peer->cid.cid_num, tobj->peer->cid.cid_name, tobj->peer->cid.cid_pres,
++            tobj->peer->lid.lid_num, tobj->peer->lid.lid_name, tobj->peer->lid.lid_pres);
+ 	ast_bridge_call_thread_launch(tobj);
++    ast_log(LOG_DEBUG, "do_atxfer ast_bridge_call_thread_launch() returned\n");
++
++//    ast_connectedline_update(newchan, xferchan->cid.cid_num, "TOTO A"/*xferchan->cid.cid_name*/, xferchan->cid.cid_pres);// affiche sur destinataire final
++//    ast_queue_connectedline_update(newchan, xferchan->cid.cid_num, "TOTO B"/*xferchan->cid.cid_name*/, xferchan->cid.cid_pres); // affiche sur appelant initial
++//    ast_connectedline_update(xferchan, newchan->cid.cid_num, "TOTO C"/*newchan->cid.cid_name*/, newchan->cid.cid_pres);// affiche sur appelant initial
++    //ast_queue_connectedline_update(xferchan, newchan->cid.cid_num, "TOTO D"/*newchan->cid.cid_name*/, newchan->cid.cid_pres); // affiche sur destinataire final
++
+ 	return -1;	/* XXX meaning the channel is bridged ? */
+ }
+ 
+@@ -1405,12 +1435,20 @@
+ 	struct ast_channel *active_channel;
+ 	int res = 0, ready = 0;
+ 	
++    ast_log(LOG_DEBUG, "ast_feature_request_and_dial type=%s cid_num=%s cid_name=%s\n", type, cid_num, cid_name);// thomas
+ 	if ((chan = ast_request(type, format, data, &cause))) {
+ 		ast_set_callerid(chan, cid_num, cid_name, cid_num);
++        ast_channel_lock(chan);
++        chan->lid.lid_num = ast_strdup(cid_num);
++        chan->lid.lid_name = ast_strdup(cid_name);
++        chan->lid.lid_ani = ast_strdup(cid_num);
++        //chan->lid.lid_pres = 3;
++        ast_channel_unlock(chan);
+ 		ast_string_field_set(chan, language, language);
+ 		ast_channel_inherit_variables(caller, chan);	
+ 		pbx_builtin_setvar_helper(chan, "TRANSFERERNAME", caller->name);
+ 			
++        ast_log(LOG_DEBUG, "ast_feature_request_and_dial ast_call(%s, %s, %d)\n", chan->name, (const char *)data, timeout);// thomas
+ 		if (!ast_call(chan, data, timeout)) {
+ 			struct timeval started;
+ 			int x, len = 0;
+@@ -1480,6 +1518,7 @@
+ 							ready=1;
+ 							break;
+ 						} else if (f->subclass != -1) {
++                            // Thomas : Do something with AST_CONTROL_CONNECTEDLINE
+ 							ast_log(LOG_NOTICE, "Don't know what to do about control frame: %d\n", f->subclass);
+ 						}
+ 						/* else who cares */
+@@ -1549,6 +1588,9 @@
+ 	if (outstate)
+ 		*outstate = state;
+ 
++    ast_log(LOG_DEBUG, "ast_feature_request_and_dial end state=%d chan=%s(%s,%s) caller=%s(%s,%s)\n",
++            state, chan?chan->name:"NULL", chan?chan->cid.cid_num:"", chan?chan->cid.cid_name:"",
++            caller->name, caller->cid.cid_num, caller->cid.cid_name);//thomas
+ 	return chan;
+ }
+ 
