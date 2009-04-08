@@ -1,7 +1,7 @@
 2009-04-08  Thomas BERNARD <tbernard@proformatique.com>
 
     atxfer_cid_display.patch
-    $Revision : $
+    $Revision$
     $Date$
 
     Fix some callerid displaying during ATXFER.
