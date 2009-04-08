@@ -233,7 +233,7 @@ class PhoneList(AnyList):
                         infos = {'status' : 'linked-caller',
                                  'time-link' : 0,
                                  'timestamp-link' : time.time(),
-                                 'calleridnum' : 'Parqué'
+                                 'calleridnum' : '<parked>'
                                  }
                         self.__createorupdate_comm__(phoneid, uid, infos)
                 return
