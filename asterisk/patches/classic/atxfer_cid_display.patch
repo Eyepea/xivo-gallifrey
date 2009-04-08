@@ -1,3 +1,11 @@
+2009-04-08  Thomas BERNARD <tbernard@proformatique.com>
+
+    atxfer_cid_display.patch
+    $Revision : $
+    $Date$
+
+    Fix some callerid displaying during ATXFER.
+
 Index: asterisk-1.4.24/res/res_features.c
 ===================================================================
 --- asterisk-1.4.24.orig/res/res_features.c	2009-04-08 16:28:10.000000000 +0200
