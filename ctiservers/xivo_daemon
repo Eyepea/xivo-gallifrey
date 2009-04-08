@@ -990,6 +990,14 @@ while True: # loops over the reloads
         # Main select() loop - Receive messages
         while not askedtoquit:
                 try:
+			fdtodel = []
+			for cn in fdlist_established.keys():
+				if isinstance(cn, ClientConnection) and cn.isClosed:
+                                        fdtodel.append(cn)
+			if fdtodel:
+				log.warning('there are fd to delete : %s' % fdtodel)
+				for cn in fdtodel:
+					del fdlist_established[cn]
                         fdlist_full = fdlist_listen_cti.keys() + fdlist_udp_cti.keys() + fdlist_established.keys()
                         fdlist_full.extend(amilist.fdlist())
                         fdlist_full.append(pipe_queued_threads_commandclass[0])
@@ -1046,7 +1054,8 @@ while True: # loops over the reloads
                                         print '--- (reload) the thread <%s> remains' % t.getName()
                                         # t._Thread__stop() # does not work in reload case (vs. stop case)
                                 continue
-                for sel_o in sels_o:
+                try:
+                    for sel_o in sels_o:
                         try:
                             sel_o.process_sending()
                         except ClientConnection.CloseException:
@@ -1056,9 +1065,10 @@ while True: # loops over the reloads
                                     del userinfo_by_requester[sel_o]
                             log.info('TCP socket %s closed(sending) on %s' % (fdlist_established[sel_o],
                                                                               sel_o.getpeername()))
-                            del fdlist_established[sel_o]
+                            if sel_o in fdlist_established:
+                                    del fdlist_established[sel_o]
                             commandclass.disconnected(sel_o)
-                if sels_i:
+                    if sels_i:
                         for sel_i in sels_i:
                                 # these AMI connections are used in order to manage AMI commands and events
                                 if sel_i in amilist.fdlist():
@@ -1148,7 +1158,7 @@ while True: # loops over the reloads
                                                 requester = '%s:%d' % sel_i.getpeername()
                                                 if isinstance(sel_i, ClientConnection):
                                                     try:
-                                                        while sel_i in fdlist_established.keys():
+                                                        while True:
                                                             line = sel_i.readline()
                                                             if line is None:
                                                                 break
@@ -1159,7 +1169,8 @@ while True: # loops over the reloads
                                                                 userinfo = userinfo_by_requester.get(sel_i)
                                                                 commandclass.manage_logout(userinfo, 'end')
                                                                 del userinfo_by_requester[sel_i]
-                                                        del fdlist_established[sel_i]
+                                                        if sel_i in fdlist_established:
+                                                                del fdlist_established[sel_i]
                                                         if requester in commandclass.transfers_ref:
                                                                 commandclass.transfer_endbuf(requester)
                                                         log.info('TCP socket %s closed(A) on %s' % (kind, requester))
@@ -1191,7 +1202,8 @@ while True: # loops over the reloads
                                                         doclose = True
                                                     if doclose:
                                                         sel_i.close()
-                                                        del fdlist_established[sel_i]
+                                                        if sel_i in fdlist_established:
+                                                                del fdlist_established[sel_i]
                                                         if requester in commandclass.transfers_ref:
                                                                 commandclass.transfer_endbuf(requester)
                                                         log.info('TCP socket %s closed(B) on %s' % (kind, requester))
@@ -1282,7 +1294,7 @@ while True: # loops over the reloads
                                                 except Exception:
                                                         log.exception('commandclass.updates() (computed timeout)')
                                                         
-                else: # when nothing happens on the sockets, we fall here sooner or later
+                    else: # when nothing happens on the sockets, we fall here sooner or later
                         log.info('[%s] updates (select timeout) %s'
                                   % (xdname, time.asctime()))
                         try:
@@ -1299,5 +1311,6 @@ while True: # loops over the reloads
                                         commandclass.regular_update()
                                 except Exception:
                                         log.exception('%s : failed while updating lists and sockets (select timeout)' % astid)
-                                        
+                except Exception:
+                        log.exception('main loop')
         log.info('after askedtoquit loop (%s)' % askedtoquit)

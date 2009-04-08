@@ -37,6 +37,7 @@ class ClientConnection:
         self.socket.setblocking(0)
         self.sendqueue = deque()
         self.readbuff = ''
+        self.isClosed = False
         return
 
     # usefull for select
@@ -48,6 +49,7 @@ class ClientConnection:
 
     # close socket
     def close(self):
+        self.isClosed = True
         return self.socket.close()
 
     # send data
@@ -73,10 +75,11 @@ class ClientConnection:
                 if _errno == errno.EAGAIN:
                     self.sendqueue.appendleft(data) # try next time !
                     return
-                elif _errno in [errno.EPIPE, errno.ECONNRESET, errno.ENOTCONN, errno.ETIMEDOUT]:
+                elif _errno in [errno.EPIPE, errno.ECONNRESET, errno.ENOTCONN, errno.ETIMEDOUT, errno.EHOSTUNREACH]:
+                    self.isClosed = True
                     self.socket.close()
                     raise self.CloseException
-                elif _errno == errno.EBADF:
+                elif _errno in [errno.EBADF]:
                     raise self.CloseException
                 else:
                     raise socket.error(_errno, string)
@@ -94,13 +97,15 @@ class ClientConnection:
                 self.readbuff += s
             else:
                 # remote host closed the connection
+                self.isClosed = True
                 self.socket.close()
                 raise self.CloseException
         except socket.error, (_errno, string):
-            if _errno in [errno.EPIPE, errno.ECONNRESET, errno.ENOTCONN, errno.ETIMEDOUT]:
+            if _errno in [errno.EPIPE, errno.ECONNRESET, errno.ENOTCONN, errno.ETIMEDOUT, errno.EHOSTUNREACH]:
+                self.isClosed = True
                 self.socket.close()
                 raise self.CloseException
-            elif _errno == errno.EBADF:
+            elif _errno in [errno.EBADF]:
                 raise self.CloseException
             elif _errno != errno.EAGAIN: # really an error
                 raise socket.error(_errno, string)

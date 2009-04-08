@@ -377,8 +377,8 @@ class XivoCTICommand(BaseCommand):
                         loginkind = loginparams.get('loginkind')
                         if loginkind == 'agent':
                                 userinfo['agentphonenum'] = loginparams.get('phonenumber')
-                                if loginparams.get('agentlogin'):
-                                        self.__login_agent__(userinfo)
+                                # if loginparams.get('agentlogin'):
+                                # self.__login_agent__(userinfo)
                         if subscribe is not None:
                                 userinfo['subscribe'] = 0
                 else:
@@ -975,12 +975,15 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def __callback_timer__(self, what):
-                thisthread = threading.currentThread()
-                tname = thisthread.getName()
-                log.info('__callback_timer__ (timer finished at %s) %s %s' % (time.asctime(), tname, what))
-                thisthread.setName('%s-%s' % (what, tname))
-                self.tqueue.put(thisthread)
-                os.write(self.queued_threads_pipe[1], what)
+                try:
+                        thisthread = threading.currentThread()
+                        tname = thisthread.getName()
+                        log.info('__callback_timer__ (timer finished at %s) %s %s' % (time.asctime(), tname, what))
+                        thisthread.setName('%s-%s' % (what, tname))
+                        self.tqueue.put(thisthread)
+                        os.write(self.queued_threads_pipe[1], what)
+                except Exception:
+                        log.exception('__callback_timer__ %s' % what)
                 return
         
         def connected(self, connid):
