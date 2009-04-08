@@ -5,6 +5,19 @@ BASE_TEMPLATE_DIR=/usr/share/pf-xivo-base-config/templates
 . /etc/pf-xivo/common.conf
 
 
+# TODO:
+#  - test if XIVO_HAS_VOIP_VLAN == 0
+#  - handle date in 'common' and serial increase for phone configs (special hooks by directory ?)
+#  - handle service restart
+#  - handle configs/services groups, to regenerate and restart partial
+#  - split XIVO_HAS_VOIP_VLAN: is yes/no Linksys and 0/1 for the rest
+#
+# DHCP specific: include an extra file and manage only the VoIP subnet
+#
+# XIVO_IFACE: provisioning, and DHCP default for listening interface (and extra ?)
+#
+
+
 if [ -z "${XIVO_IP}" -o -z "${XIVO_NETMASK}" ]; then
   echo "ERROR: Network badly configured"
   exit 1
