@@ -3936,9 +3936,9 @@ class XivoCTICommand(BaseCommand):
                                 dircomm = icommand.struct.get('direction')
                                 
                                 if dircomm is not None and dircomm == 'xivoserver' and classcomm in self.commnames:
-                                        if classcomm not in ['keepalive', 'logclienterror', 'logout']:
+                                        if classcomm not in ['keepalive', 'logclienterror', 'history', 'logout']:
                                                 log.info('command attempt %s from %s : %s' % (classcomm, username, icommand.struct))
-                                        if classcomm not in ['keepalive', 'logclienterror', 'availstate', 'actionfiche']:
+                                        if classcomm not in ['keepalive', 'logclienterror', 'history', 'availstate', 'actionfiche']:
                                                 self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm)
                                         if classcomm == 'meetme':
                                                 function = icommand.struct.get('function')
