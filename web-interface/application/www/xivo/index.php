@@ -6,12 +6,16 @@ if(isset($_QR['service'],$_QR['action']) === true)
 {
 	switch($_QR['action'])
 	{
-		case 'restart':
-			$monitoring->restart_service($_QR['service']);
+		case 'start':
+			$monitoring->start_service($_QR['service']);
 			$_QRY->go($_HTML->url('xivo'));
 			break;
 		case 'stop':
 			$monitoring->stop_service($_QR['service']);
+			$_QRY->go($_HTML->url('xivo'));
+			break;
+		case 'restart':
+			$monitoring->restart_service($_QR['service']);
 			$_QRY->go($_HTML->url('xivo'));
 			break;
 		default:
