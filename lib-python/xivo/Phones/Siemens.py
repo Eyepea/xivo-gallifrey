@@ -470,19 +470,19 @@ class Siemens(PhoneVendorMixin):
 
     def __provi(self):
         "Provisioning the phone."
-        if 'ipv4' in self.phone:
+        if self.phone.get('ipv4'):
             http = SiemensHTTP(self.SIEMENS_COMMON_DIR, self.SIEMENS_COMMON_PIN)
             http.provi(self.phone['ipv4'], self.phone['model'], self.phone['macaddr'])
 
     def __action_prov(self, provinfo):
-        if provinfo['sha1sum'] == '0':
+        if provinfo['sha1sum'] == '0' or not self.phone.get('ipv4'):
             return
 
         phone_file = os.path.join(self.SIEMENS_COMMON_DIR,
                                   Siemens.get_config_filename(self.phone['model'],
                                                               self.phone['macaddr'])[1])
 
-        if not os.access(phone_file, os.F_OK) and 'ipv4' in self.phone:
+        if not os.access(phone_file, os.F_OK):
             http = SiemensHTTP(self.SIEMENS_COMMON_DIR, self.SIEMENS_COMMON_PIN)
             try:
                 request = http.request(self.phone['ipv4'], 'login.html')
