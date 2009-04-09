@@ -90,6 +90,8 @@ rename_trtr = [True, True, False, False]
 rename_phtr = [False, True, True, False]
 rename_trph = [True, False, False, True]
 
+save_memused = -1
+
 class XivoCTICommand(BaseCommand):
 
         xdname = 'XiVO Daemon'
@@ -717,6 +719,7 @@ class XivoCTICommand(BaseCommand):
                 return td
         
         def updates(self):
+                global save_memused
                 m1 = self.getmem()
                 u_update = self.ulist_ng.update()
                 # self.plist_ng.update()
@@ -746,7 +749,9 @@ class XivoCTICommand(BaseCommand):
                                         log.exception('(updates : %s)' % itemname)
                         self.askstatus(astid, self.weblist['phones'][astid].keeplist)
                 m2 = self.getmem()
-                log.info('memory before/after updates : %d %d delta=%d' % (m1, m2, m2-m1))
+                if m1 != save_memused:
+                    log.info('memory before/after updates : %d %d delta=%d (was %d)' % (m1, m2, m2-m1, save_memused))
+                    save_memused = m2
                 # check : agentnumber should be unique
                 return
         
@@ -3644,7 +3649,7 @@ class XivoCTICommand(BaseCommand):
                 channel = event.get('Channel')
                 calleridnum = event.get('CallerIDNum')
                 calleridname = event.get('CallerIDName').decode('utf8')
-                log.debug('%s ami_status : %s %s %s %s %s' % (astid, uniqueid, channel, appliname, calleridnum, calleridname))
+                log.debug('%s ami_status : %s, %s, %s, %s, %s, %s' % (astid, uniqueid, channel, appliname, calleridnum, calleridname, state))
                 
                 # warning : channel empty when appliname is 'VoiceMail'
                 actionid = self.amilist.execute(astid, 'getvar', channel, 'MONITORED')
