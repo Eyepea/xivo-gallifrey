@@ -90,8 +90,6 @@ rename_trtr = [True, True, False, False]
 rename_phtr = [False, True, True, False]
 rename_trph = [True, False, False, True]
 
-save_memused = -1
-
 class XivoCTICommand(BaseCommand):
 
         xdname = 'XiVO Daemon'
@@ -180,6 +178,7 @@ class XivoCTICommand(BaseCommand):
                 self.ami_requests = {}
                 
                 self.logintimeout = 5
+                self.save_memused = 0
                 
                 self.parting_astid = False
                 self.parting_context = False
@@ -719,8 +718,6 @@ class XivoCTICommand(BaseCommand):
                 return td
         
         def updates(self):
-                global save_memused
-                m1 = self.getmem()
                 u_update = self.ulist_ng.update()
                 # self.plist_ng.update()
                 for astid, plist in self.weblist['phones'].iteritems():
@@ -748,10 +745,11 @@ class XivoCTICommand(BaseCommand):
                                 except Exception:
                                         log.exception('(updates : %s)' % itemname)
                         self.askstatus(astid, self.weblist['phones'][astid].keeplist)
+                        
                 m2 = self.getmem()
-                if m1 != save_memused:
-                    log.info('memory before/after updates : %d %d delta=%d (was %d)' % (m1, m2, m2-m1, save_memused))
-                    save_memused = m2
+                if m2 != self.save_memused:
+                    log.info('memory before/after updates : %d %d delta=%d' % (self.save_memused, m2, m2 - self.save_memused))
+                    self.save_memused = m2
                 # check : agentnumber should be unique
                 return
         
