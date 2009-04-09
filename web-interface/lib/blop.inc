@@ -25,6 +25,19 @@ define('XIVO_PATH_LIBCONF',XIVO_PATH_LIB.DIRECTORY_SEPARATOR.'libconf');
 require_once(XIVO_PATH_LIBCONF.DIRECTORY_SEPARATOR.'define.inc');
 require_once(XIVO_PATH_LIB.DIRECTORY_SEPARATOR.'func.inc');
 require_once(XIVO_PATH_LIB.DIRECTORY_SEPARATOR.'file.inc');
+require_once(XIVO_PATH_LIB.DIRECTORY_SEPARATOR.'sysinfo.inc');
+
+define('XIVO_OS_NAME',xivo_sysinfo::os_name());
+define('XIVO_OS_META',xivo_sysinfo::os_meta());
+define('XIVO_PHP_VER',xivo_sysinfo::php_version());
+define('XIVO_SEP_ARG_IN',xivo_sysinfo::argin_separator());
+define('XIVO_SEP_ARG_OUT',xivo_sysinfo::argout_separator());
+define('XIVO_SEP_DIR',xivo_sysinfo::directory_separator());
+define('XIVO_SEP_PATH',xivo_sysinfo::path_separator());
+define('XIVO_EOL',xivo_sysinfo::eol());
+define('XIVO_SAPI_NAME',xivo_sysinfo::sapi_name());
+define('XIVO_SAPI_MODE',xivo_sysinfo::sapi_mode());
+
 require_once(XIVO_PATH_LIB.DIRECTORY_SEPARATOR.'gateclass.inc');
 require_once(XIVO_PATH_LIB.DIRECTORY_SEPARATOR.'gatearray.inc');
 
@@ -34,21 +47,16 @@ class blop
 
 	function blop()
 	{
-		if(($this->_conf['xivo'] = xivo_gat::get_file(XIVO_PATH_LIBCONF.DIRECTORY_SEPARATOR.'blop')) === false)
+		if(($this->_conf['blop'] = xivo_gat::get_file(XIVO_PATH_LIBCONF.DIRECTORY_SEPARATOR.'blop')) === false)
 			die('ERR: Failed to load BLOP Array');
 		else if(($this->_conf['datastorage'] = xivo_gat::load_get('datastorage',XIVO_PATH_LIBCONF)) === false)
 			die('ERR: Failed to load datastorage Array');
 		else if(function_exists('version_compare') === false
-		|| version_compare(PHP_VERSION,$this->_conf['xivo']['sys']['php_version']['min'],'<') === true
-		|| version_compare(PHP_VERSION,$this->_conf['xivo']['sys']['php_version']['max'],'>=') === true)
+		|| version_compare(PHP_VERSION,XIVO_PHP_VER_MIN,'<') === true
+		|| version_compare(PHP_VERSION,XIVO_PHP_VER_MAX,'>=') === true)
 			die('ERR: Please update your PHP');
 
-		$this->_cfg_os();
-		$this->_cfg_php_version();
 		$this->_cfg_ini_get();
-		$this->_cfg_separator();
-		$this->_cfg_eol();
-		$this->_cfg_sapi();
 		$this->_cfg_url();
 		$this->_cfg_infos_extension();
 	}
@@ -56,7 +64,7 @@ class blop
 	function _set_error()
 	{
 		xivo::load_class('xivo_tracerror');
-		$_ERR = &xivo_gct::set_get(new xivo_tracerror($this->_conf['xivo']['sys']['error']));
+		$_ERR = &xivo_gct::set_get(new xivo_tracerror($this->_conf['blop']['ini']['error']));
 		set_error_handler(array(&$_ERR,'report_e_err'));
 	}
 
@@ -79,32 +87,35 @@ class blop
 		xivo_gct::set(new xivo_i18n());
 	}
 
-	function _cfg_os()
+	function _cfg_url()
 	{
-		$sys = strtolower(substr(PHP_OS,0,3));
+		$url = $scheme = '';
 
-		$this->_conf['xivo']['sys']['os'] = array();
-		$this->_conf['xivo']['sys']['os']['name'] = PHP_OS;
-		$this->_conf['xivo']['sys']['os']['meta'] = $sys;
+		if(isset($_SERVER['SERVER_ADDR'],$_SERVER['SERVER_PORT']) === true)
+		{
+			$url = $_SERVER['SERVER_ADDR'].':'.$_SERVER['SERVER_PORT'];
 
-		define('XIVO_OS_NAME',PHP_OS);
-		define('XIVO_OS_META',$sys);
-	}
+			if(isset($_SERVER['HTTP_HOST']) === true)
+			{
+				$scheme = 'http';
+				if(isset($_SERVER['HTTPS']) === true
+				&& (bool) $_SERVER['HTTPS'] === true)
+					$scheme .= 's';
 
-	function _cfg_php_version()
-	{
-		$this->_conf['xivo']['sys']['php_version']['ver'] = PHP_VERSION;
+				$url = $scheme.'://'.$url;
+			}
+		}
 
-		define('XIVO_PHP_VER',$this->_conf['xivo']['sys']['php_version']['ver']);
+		define('XIVO_URL',$url);
 	}
 
 	function _cfg_ini_get()
 	{
-		$this->_conf['xivo']['ini']['safe_mode'] = (bool) ini_get('safe_mode');
-		$this->_conf['xivo']['ini']['enable_dl'] = (bool) ini_get('enable_dl');
-		$this->_conf['xivo']['ini']['file_uploads'] = (bool) ini_get('file_uploads');
+		define('XIVO_PHP_SAFE',(bool) ini_get('safe_mode'));
 
-		define('XIVO_PHP_SAFE',$this->_conf['xivo']['ini']['safe_mode']);
+		$this->_conf['blop']['ini']['safe_mode'] = XIVO_PHP_SAFE;
+		$this->_conf['blop']['ini']['enable_dl'] = (bool) ini_get('enable_dl');
+		$this->_conf['blop']['ini']['file_uploads'] = (bool) ini_get('file_uploads');
 	}
 
 	function _cfg_ini_set()
@@ -130,90 +141,23 @@ class blop
 		}
 	}
 
-	function _cfg_separator()
-	{
-		if(($sep = ini_get('arg_separator.input')) !== false && $sep !== '' && $sep !== '&amp;')
-			$this->_conf['xivo']['sys']['separator']['arg_in'] = $sep;
-
-		if(($sep = ini_get('arg_separator.ouput')) !== false && $sep !== '' && $sep !== '&amp;')
-			$this->_conf['xivo']['sys']['separator']['arg_out'] = $sep;
-
-		$this->_conf['xivo']['sys']['separator']['dir'] = DIRECTORY_SEPARATOR;
-		$this->_conf['xivo']['sys']['separator']['path'] = PATH_SEPARATOR;
-
-		define('XIVO_SEP_ARG_IN',$this->_conf['xivo']['sys']['separator']['arg_in']);
-		define('XIVO_SEP_ARG_OUT',$this->_conf['xivo']['sys']['separator']['arg_out']);
-
-		define('XIVO_SEP_DIR',$this->_conf['xivo']['sys']['separator']['dir']);
-		define('XIVO_SEP_PATH',$this->_conf['xivo']['sys']['separator']['path']);
-	}
-
-	function _cfg_eol()
-	{
-		$this->_conf['xivo']['sys']['eol'] = PHP_EOL;
-
-		define('XIVO_EOL',$this->_conf['xivo']['sys']['eol']);
-
-		return(XIVO_EOL);
-	}
-
-	function _cfg_sapi()
-	{
-		$this->_conf['xivo']['sys']['sapi'] = array();
-		$this->_conf['xivo']['sys']['sapi']['name'] = PHP_SAPI;
-
-		switch(PHP_SAPI)
-		{
-			case 'cli':
-				$this->_conf['xivo']['sys']['sapi']['mode'] = 'cli';
-				break;
-			default:
-				$this->_conf['xivo']['sys']['sapi']['mode'] = 'default';
-		}
-
-		define('XIVO_SAPI_NAME',$this->_conf['xivo']['sys']['sapi']['name']);
-		define('XIVO_SAPI_MODE',$this->_conf['xivo']['sys']['sapi']['mode']);
-	}
-
-	function _cfg_url()
-	{
-		$url = $scheme = '';
-
-		if(isset($_SERVER['SERVER_ADDR'],$_SERVER['SERVER_PORT']) === true)
-		{
-			$url = $_SERVER['SERVER_ADDR'].':'.$_SERVER['SERVER_PORT'];
-
-			if(isset($_SERVER['HTTP_HOST']) === true)
-			{
-				$scheme = 'http';
-				if(isset($_SERVER['HTTPS']) === true
-				&& (bool) $_SERVER['HTTPS'] === true)
-					$scheme .= 's';
-
-				$url = $scheme.'://'.$url;
-			}
-		}
-
-		define('XIVO_URL',$url);
-	}
-
 	function _cfg_ini_locale($locale=null)
 	{
 		if(is_array($locale) === false)
-			$locale = $this->_conf['xivo']['sys']['locale'];
+			$locale = $this->_conf['blop']['ini']['locale'];
 
 		if(isset($locale['language']) === false)
-			$locale['language'] = $this->_conf['xivo']['sys']['language'];
+			$locale['language'] = $this->_conf['blop']['ini']['language'];
 
 		define('XIVO_LC_LANGUAGE',(string) $locale['language']);
 
 		if(isset($locale['territory']) === false)
-			$locale['territory'] = $this->_conf['xivo']['sys']['territory'];
+			$locale['territory'] = $this->_conf['blop']['ini']['territory'];
 
 		define('XIVO_LC_TERRITORY',(string) $locale['territory']);
 
 		if(isset($locale['charset']) === false)
-			$locale['charset'] = $this->_conf['xivo']['sys']['charset'];
+			$locale['charset'] = $this->_conf['blop']['ini']['charset'];
 
 		define('XIVO_LC_CHARSET',(string) $locale['charset']);
 
@@ -223,48 +167,48 @@ class blop
 	function _cfg_ini_session($session=null)
 	{
 		if(is_array($session) === false)
-			$session = $this->_conf['xivo']['sys']['session'];
+			$session = $this->_conf['blop']['ini']['session'];
 
 		if(isset($session['name']) === false)
-			$session['name'] = $this->_conf['xivo']['sys']['session']['name'];
+			$session['name'] = $this->_conf['blop']['ini']['session']['name'];
 
 		define('XIVO_SESS_NAME',(string) $session['name']);
 
 		if(isset($session['time']) === false)
-			$session['time'] = $this->_conf['xivo']['sys']['session']['time'];
+			$session['time'] = $this->_conf['blop']['ini']['session']['time'];
 
 		define('XIVO_SESS_TIME',xivo_uint($session['time']));
 
 		if(isset($session['path']) === false)
-			$session['path'] = $this->_conf['xivo']['sys']['session']['path'];
+			$session['path'] = $this->_conf['blop']['ini']['session']['path'];
 
 		define('XIVO_SESS_PATH',(string) $session['path']);
 	}
 
 	function _cfg_ini_error($error=null)
 	{
-		if(xivo_issa('error',$this->_conf['xivo']['sys']) === false)
-			$this->_conf['xivo']['sys']['error'] = array();
+		if(xivo_issa('error',$this->_conf['blop']['ini']) === false)
+			$this->_conf['blop']['ini']['error'] = array();
 
 		if(is_array($error) === false)
 			return(null);
 		else if(isset($error['level']) === true)
-			$this->_conf['xivo']['sys']['error']['level'] = (string) $error['level'];
+			$this->_conf['blop']['ini']['error']['level'] = (string) $error['level'];
 
 		if(isset($error['report_type']) === true)
-			$this->_conf['xivo']['sys']['error']['report_type'] = (string) $error['report_type'];
+			$this->_conf['blop']['ini']['error']['report_type'] = (string) $error['report_type'];
 
 		if(isset($error['report_mode']) === true)
-			$this->_conf['xivo']['sys']['error']['report_mode'] = (string) $error['report_mode'];
+			$this->_conf['blop']['ini']['error']['report_mode'] = (string) $error['report_mode'];
 
 		if(isset($error['report_func']) === true)
-			$this->_conf['xivo']['sys']['error']['report_func'] = (string) $error['report_func'];
+			$this->_conf['blop']['ini']['error']['report_func'] = (string) $error['report_func'];
 
 		if(isset($error['email']) === true)
-			$this->_conf['xivo']['sys']['error']['email'] = (string) $error['email'];
+			$this->_conf['blop']['ini']['error']['email'] = (string) $error['email'];
 
 		if(isset($error['file']) === true)
-			$this->_conf['xivo']['sys']['error']['file'] = (string) $error['file'];
+			$this->_conf['blop']['ini']['error']['file'] = (string) $error['file'];
 	}
 
 	function _cfg_infos_extension()
@@ -284,8 +228,8 @@ class blop
 					$suffix = 'so';
 		}
 
-		if($this->_conf['xivo']['ini']['safe_mode'] === true
-		|| $this->_conf['xivo']['ini']['enable_dl'] === false)
+		if($this->_conf['blop']['ini']['safe_mode'] === true
+		|| $this->_conf['blop']['ini']['enable_dl'] === false)
 			define('XIVO_EXT_ENABLE',false);
 		else
 			define('XIVO_EXT_ENABLE',true);
@@ -296,8 +240,8 @@ class blop
 
 	function _cfg_ini_datastorage($dso)
 	{
-		if(xivo_issa('datastorage',$this->_conf['xivo']['sys']) === false)
-			$this->_conf['xivo']['sys']['datastorage'] = array();
+		if(xivo_issa('datastorage',$this->_conf['blop']['ini']) === false)
+			$this->_conf['blop']['ini']['datastorage'] = array();
 
 		blop::load_class('xivo_datastorage');
 
@@ -318,8 +262,8 @@ class blop
 
 		define('XIVO_DSO_TYPE',$dso->get_type());
 
-		$this->_conf['xivo']['sys']['datastorage']['type'] = $dso['type'];
-		$this->_conf['xivo']['sys']['datastorage']['param'] = $dso;
+		$this->_conf['blop']['ini']['datastorage']['type'] = $dso['type'];
+		$this->_conf['blop']['ini']['datastorage']['param'] = $dso;
 	}
 
 	function _cfg_ini_template($template)
@@ -372,7 +316,7 @@ class blop
 				die('ERR: Missing or invalid tpl_path in '.$key.' for template configuration in init file');
 
 			if(isset($value['script_root']) === true)
-				$this->_conf['tpl'][$key]['script_root'] = rtrim($value['script_root'],XIVO_SEP_DIR);
+				$this->_conf['tpl'][$key]['script_root'] = rtrim($value['script_root'],DIRECTORY_SEPARATOR);
 			else
 				$this->_conf['tpl'][$key]['script_root'] = '';
 		}
@@ -398,7 +342,7 @@ class blop
 
 		$file = XIVO_EXT_PRE.$ext.'.'.XIVO_EXT_SUF;
 
-		$path = ini_get('extension_dir').XIVO_SEP_DIR.$file;
+		$path = ini_get('extension_dir').DIRECTORY_SEPARATOR.$file;
 
 		if(xivo_file::is_f_r($path) === false)
 			return(false);
@@ -413,7 +357,7 @@ class blop
 	       	$class = (string) $class;
 
 		if(is_array($dir) === true)
-			$dir = implode(XIVO_SEP_DIR,$dir);
+			$dir = implode(DIRECTORY_SEPARATOR,$dir);
 		else
 			$dir = (string) $dir;
 
@@ -422,15 +366,15 @@ class blop
 		if(class_exists($class) === true)
 			return(true);
 
-		$path = str_replace('::',XIVO_SEP_DIR,$class);
-		$dir = str_replace('::',XIVO_SEP_DIR,$dir);
+		$path = str_replace('::',DIRECTORY_SEPARATOR,$class);
+		$dir = str_replace('::',DIRECTORY_SEPARATOR,$dir);
 
 		if($file === '' && $dir === '' && $path !== $class)
 		{
 			$class = str_replace('::','_',$class);
 
-			if(substr($path,0,5) === 'xivo'.XIVO_SEP_DIR)
-				$dir = XIVO_PATH_LIB.XIVO_SEP_DIR.dirname(substr($path,5));
+			if(substr($path,0,5) === 'xivo'.DIRECTORY_SEPARATOR)
+				$dir = XIVO_PATH_LIB.DIRECTORY_SEPARATOR.dirname(substr($path,5));
 			else
 				$dir = dirname($path);
 
@@ -438,15 +382,15 @@ class blop
 		}
 		else if($dir === '' && $path !== $class)
 		{
-			$dir = XIVO_PATH_LIB.XIVO_SEP_DIR.dirname($path);
+			$dir = XIVO_PATH_LIB.DIRECTORY_SEPARATOR.dirname($path);
 			$file .= '.inc';
 		}
 		else if(substr($class,0,5) === 'xivo_')
 		{
 			if((bool) $lib === true)
-				$dir = rtrim(XIVO_PATH_LIB.XIVO_SEP_DIR.ltrim($dir,XIVO_SEP_DIR),XIVO_SEP_DIR.'.');
+				$dir = rtrim(XIVO_PATH_LIB.DIRECTORY_SEPARATOR.ltrim($dir,DIRECTORY_SEPARATOR),DIRECTORY_SEPARATOR.'.');
 			else
-				$dir = rtrim($dir,XIVO_SEP_DIR.'.');
+				$dir = rtrim($dir,DIRECTORY_SEPARATOR.'.');
 
 			if($file === '')
 				$file = substr($class,5).'.inc';

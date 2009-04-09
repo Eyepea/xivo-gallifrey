@@ -32,12 +32,18 @@ $this->file_include('bloc/menu/top/user/loginbox');
 			<span class="span-left">&nbsp;</span>
 			<span class="span-center"><?=$this->bbf('mn_top_services');?></span>
 			<span class="span-right">&nbsp;</span>
-			<ul>
-				<li>
-					<?=$url->href_html($this->bbf('mn_sub_top_services_ipbx'),
-							   'service/ipbx');?>
-				</li>
-			</ul>
+			<div class="stab">
+				<ul>
+					<li>
+						<?=$url->href_html($this->bbf('mn_sub_top_services_ipbx'),
+								   'service/ipbx');?>
+					</li>
+					<li>
+						<?=$url->href_html($this->bbf('mn_sub_top_services_monitoring'),
+								   'xivo');?>
+					</li>
+				</ul>
+			</div>
 		</li>
 		<li onmouseout="this.className='moo';"
 		    onmouseover="this.className='mov';">

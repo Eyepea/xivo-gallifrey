@@ -986,7 +986,7 @@ function xivo_form_success(str)
 		str = str.replace(/\|/g,'\\|');
 		str = str.replace(/:/g,'\\:');
 
-		var property = {className: 'c-green', innerHTML: str};
+		var property = {className: 'fm-txt-success', innerHTML: str};
 	}
 
 	xivo_chg_property_attrib(xivo_eid('tooltips'),property);

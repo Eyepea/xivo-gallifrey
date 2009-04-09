@@ -69,3 +69,6 @@ Sauvegarder
 
 ; fm_bt-select
 Sélectionner
+
+; number_percent
+%.2f %%

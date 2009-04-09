@@ -431,7 +431,7 @@ class xivo_filter
 			case 'float':
 			case 'double':
 				$value = str_replace(',','.',strval($value));
-				$cast = str_replace(',','.',floatval($value));
+				$cast = xivo_strfloat($value);
 				break;
 			case 'string':
 				$cast = strval($value);

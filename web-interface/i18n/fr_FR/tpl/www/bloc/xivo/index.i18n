@@ -1,5 +1,110 @@
-; info_soft_label
-Logiciel :
+; title_content_name
+Informations système
 
-; info_soft_version
-Version :
+; sysinfos_system
+Système
+
+; sysinfos_servername
+Nom
+
+; sysinfos_os
+Système d'exploitation
+
+; sysinfos_kernel
+Version du noyau
+
+; sysinfos_ipaddr
+Adresse IP
+
+; sysinfos_dnsaddr
+Adresse DNS
+
+; sysinfos_uptime
+Durée de fonctionnement
+
+; sysinfos_uptime-duration
+%s jour(s) %02d:%02d:%02d
+
+; sysinfos_loadaverage
+Moyenne de la charge système
+
+; sysinfos_memory
+Mémoire
+
+; sysinfos_col_type
+Type
+
+; sysinfos_col_percent
+Pourcentage
+
+; sysinfos_col_free
+Libre
+
+; sysinfos_col_used
+Utilisée
+
+; sysinfos_col_total
+Total
+
+; sysinfos_physical-memory
+Mémoire physique
+
+; sysinfos_swap-partition
+Partition swap
+
+; sysinfos_network
+Réseau
+
+; sysinfos_col_interface
+Interface
+
+; sysinfos_col_receive
+Reçu
+
+; sysinfos_col_transmit
+Envoyé
+
+; sysinfos_col_error
+Erreur
+
+; sysinfos_col_drop
+Perdu
+
+; sysinfos_no-netinfo
+Aucune interface réseau trouvée
+
+; sysinfos_mon_grpundef
+Autres services
+
+; sysinfos_mon_telephony
+Téléphonie
+
+; sysinfos_col_process
+Processus
+
+; sysinfos_col_status
+Statut
+
+; sysinfos_col_uptime
+Durée
+
+; sysinfos_col_cpu
+Processeur
+
+; sysinfos_col_memory
+Mémoire
+
+; sysinfos_col_action
+Action
+
+; sysinfos_status-opt(notrunning)
+Arrêté
+
+; sysinfos_status-opt(initializing)
+Initialisation
+
+; sysinfos_status-opt(running)
+Démarré
+
+; sysinfos_status-opt
+Non surveillé

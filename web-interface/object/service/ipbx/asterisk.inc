@@ -339,8 +339,6 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 	function chk_protocol($name)
 	{
-		$name = strval($name);
-
 		return($this->_chk_exists_cfg('protocol',strval($name)));
 	}
 

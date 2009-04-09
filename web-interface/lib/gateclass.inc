@@ -75,12 +75,7 @@ class xivo_gateclass
 
 	function is_valid($name)
 	{
-		$name = (string) $name;
-
-		if(isset($this->_class[$name]) === true && is_object($this->_class[$name]) === true)
-			return(true);
-
-		return(false);
+		return((isset($this->_class[$name]) === true && is_object($this->_class[$name]) === true));
 	}
 }
 

@@ -63,7 +63,8 @@ $tree = &$tree['service'];
 
 			if(isset($v['child']) === true):
 				$this->file_include('bloc/xivo/configuration/manage/acl/tree',
-						    array('tree'	=> $v['child']));
+						    array('tree'	=> $v['child'],
+						    	  'parent'	=> null));
 			endif;
 		endforeach;
 	endif;

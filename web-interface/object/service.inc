@@ -90,7 +90,12 @@ class xivo_service
 				trigger_error('Invalid datastorage in '.$name.' init file',E_USER_ERROR);
 		}
 
-		return($this->_set($name,new $cname($init)));
+		$instance = new $cname($init);
+
+		if(method_exists($instance,'__instance') === true)
+			return($this->_set($name,$instance->__instance()));
+
+		return($this->_set($name,$instance));
 	}
 
 	function &get_module($service,$module)
@@ -122,10 +127,12 @@ class xivo_service
 
 	function &get($name)
 	{
-		if($this->_load_service($name) === false)
-			return(false);
+		$r = false;
 
-		return(($ref = &xivo_gct::get(XIVO_SRE_CLASS_PRE.$name)));
+		if($this->_load_service($name) !== false)
+			$r = &xivo_gct::get(XIVO_SRE_CLASS_PRE.$name);
+
+		return(($ref = &$r));
 	}
 
 	function &_set_get($name,&$obj)

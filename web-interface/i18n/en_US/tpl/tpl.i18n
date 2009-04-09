@@ -56,4 +56,7 @@ Add
 Save
 
 ; fm_bt-select
-Sélect
+Select
+
+; number_percent
+%.2f %%

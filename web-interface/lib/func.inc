@@ -50,14 +50,39 @@ function xivo_size_iec($size)
 		     'KiB',
 		     'MiB',
 		     'GiB',
-		     'TiB');
+		     'TiB',
+		     'PiB',
+		     'EiB',
+		     'ZiB',
+		     'YiB');
 
 	$size = floatval($size);
 
-	for($c = 0;$size >= 1024 && $c < 4;$c++)
+	for($c = 0;$size >= 1024 && $c < 8;$c++)
 		$size /= 1024;
 
-	return(array(str_replace(',','.',$size),$arr[$c]));
+	return(array(xivo_strfloat($size),$arr[$c]));
+}
+
+function xivo_size_si_to_byte($from,$size)
+{
+	$from = strtoupper(strval($from));
+	$size = floatval($size);
+
+	$arr = array('B',
+		     'KB',
+		     'MB',
+		     'GB',
+		     'TB',
+		     'PB',
+		     'EB',
+		     'ZB',
+		     'YB');
+
+	if(($pos = array_search($from,$arr,true)) === false)
+		return(false);
+
+	return(xivo_strfloat($size *= pow(1000,$pos)));
 }
 
 function xivo_bool($bool)
@@ -107,6 +132,14 @@ function xivo_haslen($val,$key=null)
 	$val = (string) $val;
 
 	return(isset($val{0}));
+}
+
+function xivo_strfloat($val)
+{
+	if(is_float($val) === true)
+		return(str_replace(',','.',$val));
+
+	return(strval($val));
 }
 
 function xivo_digit($str=0,$def=null,$t=false)
@@ -173,9 +206,9 @@ function xivo_ufloat($str,$def=0,$t=false,$strval=false)
 		$str = (bool) $t === false ? $def : xivo_ufloat($def);
 
 	if((string) $str === '0')
-		$str = 0;
+		return(0);
 	else if((bool) $strval === true)
-		$str = str_replace(',','.',$str);
+		return(xivo_strfloat($str));
 
 	return($str);
 }
@@ -820,11 +853,11 @@ function xivo_calc_time($from,$time,$format,$valzero=true)
 
 	if(strpos($format,'%d') !== false)
 	{
-		if(($r['d'] = floor($time / 8640000000)) === (float) 0
+		if(($r['d'] = floor($time / 86400000000)) === (float) 0
 		&& $valzero === false)
 			unset($r['d']);
 		else
-			$time -= $r['d'] * 8640000000;
+			$time -= $r['d'] * 86400000000;
 	}
 
 	if(strpos($format,'%H') !== false)

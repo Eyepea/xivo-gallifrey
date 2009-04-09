@@ -35,6 +35,7 @@ class xivo extends blop
 			die('ERR: Failed to load user Array');
 
 		$this->blop();
+		$this->_conf['xivo'] = $this->_conf['blop'];
 
 		$this->_init_cfg();
 		$this->_set_error();
@@ -86,7 +87,7 @@ class xivo extends blop
 	function _set_service()
 	{
 		xivo::load_class('xivo_service',XIVO_PATH_OBJECT,null,false);
-		xivo_gct::set_get(new xivo_service($this->_conf['xivo']['sys']['service']));
+		xivo_gct::set_get(new xivo_service($this->_conf['xivo']['ini']['service']));
 	}
 
 	function _set_user()
@@ -100,7 +101,7 @@ class xivo extends blop
 		if(is_array($service) === false)
 			die('ERR: Invalid service configuration in XIVO init file');
 
-		$this->_conf['xivo']['sys']['service'] = $service;
+		$this->_conf['xivo']['ini']['service'] = $service;
 	}
 }
 

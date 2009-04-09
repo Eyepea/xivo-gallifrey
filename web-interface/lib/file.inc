@@ -87,7 +87,7 @@ class xivo_file
 		else
 			$info['filename'] = $info['name'];
 
-		$info['pathnoext'] = $pinfo['dirname'].XIVO_SEP_DIR.$info['filename'];
+		$info['pathnoext'] = $pinfo['dirname'].DIRECTORY_SEPARATOR.$info['filename'];
 		$info['mime'] = xivo_file::get_mime($info['path']);
 		$info['charset'] = xivo_file::get_charset($info['path']);
 		$info['mtime'] = filemtime($info['path']);
@@ -322,7 +322,7 @@ class xivo_file
 			if(isset($dir[0]) === false)
 				return(false);
 
-			$dir = implode($dir,XIVO_SEP_DIR);
+			$dir = implode($dir,DIRECTORY_SEPARATOR);
 		}
 
 		$dir = (string) $dir;
@@ -333,7 +333,7 @@ class xivo_file
 			$verif = false;
 		}
 		else if(is_readable($dir) === true && is_dir($dir) === true)
-			$path = rtrim($dir,XIVO_SEP_DIR).XIVO_SEP_DIR.$file;
+			$path = rtrim($dir,DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.$file;
 		else
 			return(false);
 
@@ -364,7 +364,7 @@ class xivo_file
 		if(isset($arr[0]) === false)
 			return(false);
 
-		$path = implode($arr,XIVO_SEP_DIR);
+		$path = implode($arr,DIRECTORY_SEPARATOR);
 
 		if(($path = xivo_file::is_f_r($path)) === false
 		|| ((bool) $includable === true
@@ -415,7 +415,7 @@ class xivo_file
 	{
 		$arr = func_get_args();
 
-		return(xivo_implode(XIVO_SEP_DIR,$arr));
+		return(xivo_implode(DIRECTORY_SEPARATOR,$arr));
 	}
 
 	function abspath($str)
@@ -424,10 +424,10 @@ class xivo_file
 
 		if(isset($str{0}) === false)
 			return(false);
-		else if(strpos($str,XIVO_SEP_DIR) !== 0)
-			$str = getcwd().XIVO_SEP_DIR.$str;
+		else if(strpos($str,DIRECTORY_SEPARATOR) !== 0)
+			$str = getcwd().DIRECTORY_SEPARATOR.$str;
 
-		$lstr = preg_split('@'.preg_quote(XIVO_SEP_DIR).'+@',$str,-1,PREG_SPLIT_NO_EMPTY);
+		$lstr = preg_split('@'.preg_quote(DIRECTORY_SEPARATOR).'+@',$str,-1,PREG_SPLIT_NO_EMPTY);
 
 		if(($nb = count($lstr)) === 0)
 			return($str);
@@ -446,7 +446,7 @@ class xivo_file
 				array_pop($r);
 		}
 
-		return(XIVO_SEP_DIR.implode(XIVO_SEP_DIR,$r));
+		return(DIRECTORY_SEPARATOR.implode(DIRECTORY_SEPARATOR,$r));
 	}
 
 	function is_f($file,$mode=1)
@@ -689,7 +689,7 @@ class xivo_file
 			else if($match !== '' && preg_match($match,$name) !== 1)
 				continue;
 
-			$file = $dir.XIVO_SEP_DIR.$name;
+			$file = $dir.DIRECTORY_SEPARATOR.$name;
 
 			if(($mode & FILE_R_OK) !== 0 && xivo_file::is_r($file) === false)
 				continue;
@@ -745,7 +745,7 @@ class xivo_file
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			$path = $dir.XIVO_SEP_DIR.$list[$i];
+			$path = $dir.DIRECTORY_SEPARATOR.$list[$i];
 
 			if(xivo_file::is_f($path) !== false)
 			{

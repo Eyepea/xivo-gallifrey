@@ -18,9 +18,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-?>
-<?php
-
 class xivo_uri
 {
 	var $_encode	= array();

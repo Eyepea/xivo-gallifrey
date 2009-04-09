@@ -46,7 +46,7 @@ pre {text-align: left;}
 #bc-head {width: 970px;margin: 0px 15px;}
 #bc-main {width: 970px;margin: 0px 15px;padding-top: 20px;}
 * html #bc-main {float: none;}
-#bc-foot h5 {border: 1px solid #82b550;border-top-width: 0px;}
+#bc-foot h5 {border: 1px solid #5dbc00;border-top-width: 0px;}
 
 #bc-foot h6 {text-align: center;color: #999;font-size: 7pt;margin-top: 10px;}
 
@@ -68,6 +68,7 @@ pre {text-align: left;}
 
 .c-green {color: #5dbc00;}
 .c-red {color: #bc0000;}
+.c-orange {color: #ff9d03;}
 
 #b-content {width: 760px;}
 #b-lmenu {width: 200px;float: left;margin-left: 2px;}
@@ -100,7 +101,6 @@ pre {text-align: left;}
 .fm-field p {padding-bottom: 2px;}
 .fm-description {text-align: center;width: 100%;}
 
-
 .tooltips-over:hover {color: #ff9d03;}
 .tooltips-info {position: absolute;margin-top: 13px;display: none;padding: 5px;border: 1px solid #697e92;background-color: #e8eeff;}
 
@@ -126,6 +126,9 @@ pre {text-align: left;}
 
 .fm-multilist .slt-outlist select optgroup {border: 0px dashed #999;border-bottom-width: 1px;padding: 2px;}
 .fm-multilist .slt-outlist select optgroup option {padding: 0px;border-bottom-width: 0px;}
+
+.fm-txt-success {color: #5dbc00;}
+.fm-txt-error {color: #e8eeff;}
 
 .txt-left {text-align: left;}
 .txt-center {text-align: center;}
@@ -164,13 +167,12 @@ pre {text-align: left;}
 #b-tmenu .nav .mov .span-right {background-image: url(../img/menu/top/bt-r-1.gif);}
 #b-tmenu .nav .mov ul {display: block;}
 
-#b-tmenu .nav ul ul {clear: both;position: relative;width: auto;margin: 0px 1px;display: none;}
-#b-tmenu .nav li li {float: none;position: absolute;min-width: 91%;margin: 0px 1px;height: 14px;text-align: center; padding: 1px 2px 0px;background-image: url(../img/menu/top/bt-smn-bg.gif); color: #fff; font-weight: bold;border: 1px solid #057ab1;}
+#b-tmenu .nav .stab {position: relative;margin: 22px 0px 0px 2px;}
+#b-tmenu .nav ul ul {clear: both;position: absolute;min-width: 96%;width: auto;display: none;border: 1px solid #057ab1;border-bottom-width: 0px;}
+#b-tmenu .nav li li {float: none;margin: 0px;text-align: center; padding: 1px 2px 0px;background-image: url(../img/menu/top/bt-smn-bg.gif); color: #fff; font-weight: bold;border: 0px solid #057ab1;border-bottom-width: 1px;}
 #b-tmenu .nav li li a {font-size: 8pt;display: block;}
 
 #b-tmenu #tooltips {margin-left: 103px;text-align: center;height: 32px;padding-top: 4px;font-weight: bold;}
-#b-tmenu #tooltips .fm-success {color: #82b550;}
-#b-tmenu #tooltips .fm-error {color: #e8eeff;}
 
 #b-tmenu #toolbar {height: 19px;text-align: right;background-image: url(../img/menu/top/toolbar/bg.gif); background-repeat: repeat-x;padding-right: 50px;}
 #b-tmenu #toolbar .sb-advanced-menu {position: absolute;width: 970px;}
@@ -232,6 +234,7 @@ pre {text-align: left;}
 #b-content .b-list .sb-content .td-left {padding-left: 10px;border: 1px solid #9e9e9e;border-right-width: 0px;border-top-width: 0px;}
 #b-content .b-list .sb-content .td-right {padding-right: 10px;border: 1px solid #9e9e9e;border-left-width: 0px;border-top-width: 0px;}
 #b-content .b-list .sb-content .td-single {border: 1px solid #9e9e9e;border-top-width: 0px;}
+#b-content .b-list .sb-content .td-noborder {border: 0px solid #9e9e9e;}
 
 #b-content .b-list form .sb-content td label {cursor: pointer;}
 
@@ -267,6 +270,7 @@ pre {text-align: left;}
 #b-content .sb-list .td-noleftright {border-right-width: 0px;border-left-width: 0px;}
 #b-content .sb-list .td-single {border: 1px solid #999;border-top-width: 0px;}
 #b-content .sb-list .td-singlenotop {border: 1px solid #999;}
+#b-content .sb-list .l-subth td {background-color: #ddd; font-weight: bold;}
 #b-content .sb-list .l-infos-1on2 td {background-color: #eee;}
 #b-content .sb-list .l-infos-2on2 td {background-color: #e3e5fc;}
 #b-content .sb-list .l-infos-3on2 td {background-color: #ddd;}
@@ -307,6 +311,11 @@ pre {text-align: left;}
 #b-content fieldset {border: 1px solid #055a82;border-style: dashed;}
 #b-content fieldset legend {color: #f96101;font-weight: bold;padding: 0px 5px 5px;}
 
+#b-content div .gauge {width: 104px;padding: 2px;border-right-width: 0px;}
+#b-content div .gauge div {background-color: #49c4ff;width: 100px;height: 10px;border:1px solid #000;font-size:1pt;}
+#b-content div .gauge div div {background-color: #055a82;width: 0px;border:0px solid #000;}
+#b-content div .gaugepercent {width: 50px;border-left-width: 0px;}
+
 #bpc-simple .b-infos {width: 966px;}
 #bpc-simple .sb-top .span-center, #bpc-simple .sb-foot .span-center {width: 946px;}
 
@@ -315,6 +324,18 @@ pre {text-align: left;}
 #r-login .b-field {padding: 50px 0px;background-image: url(../img/xivo/bg-login.gif);background-position: right center;background-repeat: no-repeat;}
 #r-login .b-field .fm-desc {display: inline;float: none;text-align: left;width: auto;}
 #r-login .sb-top .span-center, #r-login .sb-foot .span-center {width: 400px;}
+
+#r-home #sysinfo {float: left;width: 45%;padding-bottom: 10px;}
+#r-home #sysinfo table {width: 100%;padding-right: 5px;}
+#r-home #meminfo {float: left;width: 55%;}
+#r-home #meminfo table {width: 100%;padding-left: 5px;padding-bottom: 10px;}
+#r-home #netinfo {float: left;width: 55%;}
+#r-home #netinfo table {width: 100%;padding-left: 5px;padding-bottom: 10px;}
+#r-home .monit-group table {width: 100%;padding-bottom: 10px;}
+#r-home .monit-status-notrunning {color: #bc0000;}
+#r-home .monit-status-initializing {color: #1772ce;}
+#r-home .monit-status-running {color: #5dbc00;}
+#r-home .monit-status-notmonitored {color: #f96101;}
 
 .xivo-calendar {max-width: 140px;border: 1px solid #9e9e9e;text-align: center;background-image: url(../img/menu/left/s-bg.gif);background-repeat: repeat-x;background-position: left top;margin: 0px 0px 0px auto;}
 .xivo-calendar .cal-prev {text-align: right;float: left;width: 8px;padding: 0px 6px 0px 2px;}

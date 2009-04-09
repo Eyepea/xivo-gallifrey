@@ -71,6 +71,12 @@ $array['tree']['service']['ipbx']['control_system']['logfiles'] = true;
 $array['tree']['service']['ipbx']['control_system']['reload'] = true;
 $array['tree']['service']['ipbx']['control_system']['restart'] = true;
 
+$array['tree']['service']['monitoring'] = array();
+$array['tree']['service']['monitoring']['control_system'] = array();
+$array['tree']['service']['monitoring']['control_system']['start'] = true;
+$array['tree']['service']['monitoring']['control_system']['stop'] = true;
+$array['tree']['service']['monitoring']['control_system']['restart'] = true;
+
 
 $array['group'] = array();
 $array['group']['visitor'] = false;

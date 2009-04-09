@@ -2,7 +2,7 @@
 
 #
 # XiVO Web-Interface
-# Copyright (C) 2006-2009  Proformatique <technique@proformatique.com>
+# Copyright (C) 2009  Proformatique <technique@proformatique.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,16 +18,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once('xivo.php');
-
-if($_USR->mk_active() === false)
-	$_QRY->go($_HTML->url('xivo/logoff'));
-
-$application = $_HTML->get_application('xivo/index',0);
-
-if($application === false)
-	$_QRY->go($_HTML->url('xivo/logoff'));
-
-die(include($application));
+$array = array();
 
 ?>

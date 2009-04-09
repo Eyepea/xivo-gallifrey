@@ -439,7 +439,7 @@ class xivo_i18n
 
 				if(empty($value) === false)
 				{
-					$value = array_map('strval',array_filter($value,'is_scalar'));
+					$value = array_map('xivo_strfloat',array_filter($value,'is_scalar'));
 					$name_args = $name.'('.implode('|',$value).')';
 
 					if(isset($babelfish[$namespace][$name_args]) === true)

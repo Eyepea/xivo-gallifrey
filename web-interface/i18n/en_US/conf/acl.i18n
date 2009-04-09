@@ -132,3 +132,18 @@ Reload IPBX
 
 ; acl_service-ipbx-control_system-restart
 Restart IPBX
+
+; acl_service-monitoring
+Monitoring
+
+; acl_service-monitoring-control_system
+Control
+
+; acl_service-monitoring-control_system-start
+Start
+
+; acl_service-monitoring-control_system-stop
+Stop
+
+; acl_service-monitoring-control_system-restart
+Restart

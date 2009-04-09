@@ -129,3 +129,18 @@ Recharger IPBX
 
 ; acl_service-ipbx-control_system-restart
 Redémarrer IPBX
+
+; acl_service-monitoring
+Monitoring
+
+; acl_service-monitoring-control_system
+Système de contrôle
+
+; acl_service-monitoring-control_system-start
+Démarrer
+
+; acl_service-monitoring-control_system-stop
+Arrêter
+
+; acl_service-monitoring-control_system-restart
+Redémarrer
