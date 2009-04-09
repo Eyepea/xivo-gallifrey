@@ -60,17 +60,23 @@ class Fax:
                 log.info('size = %s, number = %s, hide = %s' % (self.size, self.number, self.hide))
                 if self.hide != '0':
                         callerid = 'anonymous'
-
+                        
                 reply = 'ko;unknown'
                 comm = commands.getoutput('file -b %s' % tmpfilepath)
                 brieffile = ' '.join(comm.split()[0:2])
                 if brieffile == 'PDF document,':
-                        log.info('fax : the file received is a PDF one : converting to TIF(F)')
+                        pdf2fax_command = '%s -o %s %s' % (PDF2FAX, faxfilepath, tmpfilepath)
+                        log.info('fax (ref %s) PDF to TIF(F) : %s' % (self.reference, pdf2fax_command))
                         reply = 'ko;convert-pdftif'
-                        ret = os.system("%s -o %s %s" % (PDF2FAX, faxfilepath, tmpfilepath))
+                        ret = os.system(pdf2fax_command)
+                        if ret >= 0:
+                                log.info('fax (ref %s) PDF to TIF(F) returned : %s' % (self.reference, ret))
+                                ret = ret % 256
+                        else:
+                                log.info('fax (ref %s) PDF to TIF(F) failed : %s' % (self.reference, ret))
                 else:
                         reply = 'ko;filetype'
-                        log.warning('fax : the file received is a <%s> one : format not supported' % brieffile)
+                        log.warning('fax (ref %s) the file received is a <%s> one : format not supported' % (self.reference, brieffile))
                         ret = -1
                         
                 if ret == 0:
@@ -88,13 +94,13 @@ class Fax:
                                         log.exception('(fax handler - AMI)')
                         else:
                                 reply = 'ko;exists-pathspool'
-                                log.info('directory %s does not exist - could not send fax'
-                                         % PATH_SPOOL_ASTERISK_FAX)
-
+                                log.warning('directory %s does not exist - could not send fax ref %s'
+                                            % (PATH_SPOOL_ASTERISK_FAX, self.reference))
+                                
                 # BUGFIX: myconn is undefined
                 # filename is actually an identifier.
                 # faxclients[filename] = myconn
-
+                
                 os.unlink(tmpfilepath)
-                log.info("faxhandler : removed %s" % tmpfilepath)
+                log.info('fax (ref %s) removed %s (reply will be %s)' % (self.reference, tmpfilepath, reply))
                 return reply
