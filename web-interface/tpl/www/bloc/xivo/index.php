@@ -28,14 +28,14 @@ $grpundef = $this->get_var('grpundef');
 $memtotal = xivo_size_iec($meminfo['memtotal']);
 $memfree = xivo_size_iec($meminfo['memfree']);
 $memused = xivo_size_iec($meminfo['memused']);
-$mempercent = ($memused[0] / $memtotal[0] * 100);
+$mempercent = ($meminfo['memused'] / $meminfo['memtotal'] * 100);
 
 $swaptotal = xivo_size_iec($meminfo['swaptotal']);
 $swapfree = xivo_size_iec($meminfo['swapfree']);
 $swapused = xivo_size_iec($meminfo['swapused']);
-$swappercent = ($swapused[0] / $swaptotal[0] * 100);
+$swappercent = ($meminfo['swapused'] / $meminfo['swaptotal'] * 100);
 
-$this->set_var('memtotal',$memtotal[0]);
+$this->set_var('memtotal',$meminfo['memtotal']);
 
 if(xivo_issa('system',$sysinfo) === true
 && xivo_issa('load',$sysinfo['system']) === true):

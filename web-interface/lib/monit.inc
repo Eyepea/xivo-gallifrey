@@ -105,6 +105,7 @@ class xivo_monit
 	function is_startable_service($name)
 	{
 		if(isset($this->_service[$name]) === false
+		|| $this->_service[$name]['type'] !== 3
 		|| $this->_service[$name]['monitor'] === 2)
 			return(false);
 		else if($this->_service[$name]['monitor'] === 1
@@ -120,7 +121,8 @@ class xivo_monit
 
 	function is_stoppable_service($name)
 	{
-		if(isset($this->_service[$name]) === false)
+		if(isset($this->_service[$name]) === false
+		|| $this->_service[$name]['type'] !== 3)
 			return(false);
 		else if($this->_service[$name]['monitor'] === 1
 		&& $this->_service[$name]['status'] !== 0)
@@ -136,6 +138,7 @@ class xivo_monit
 	function is_restartable_service($name)
 	{
 		if(isset($this->_service[$name]) === false
+		|| $this->_service[$name]['type'] !== 3
 		|| $this->_service[$name]['monitor'] === 2)
 			return(false);
 		else if($this->_service[$name]['monitor'] === 1

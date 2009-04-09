@@ -26,21 +26,25 @@ if(is_array($grpdata) === true && ($nb = count($grpdata)) > 0):
 		for($i = 0;$i < $nb;$i++):
 			$ref = &$grpdata[$i];
 
+			$mempx = 0;
+			$uptime = $cpupcent = $mempcent = $mempcent = $memsize = $nummempcent = '-';
+
 			if($ref['monitor'] === 1 && $ref['status'] === 0):
 				$status = 'running';
-				$uptime = $this->bbf('sysinfos_uptime-duration',
-						     xivo_calc_time('second',
-								    $ref['uptime'],
-								    '%d%H%M%s'));
-				$cpupcent = $this->bbf('number_percent',$ref['cpu']['percenttotal']);
-				$mem = xivo_size_iec(xivo_size_si_to_byte('KB',$ref['memory']['kilobytetotal']));
-				$mempcent = ($mem[0] / $memtotal * 100);
-				$memsize = $this->bbf('size_iec_'.$mem[1],$mem[0]);
-				$nummempcent = $this->bbf('number_percent',$mempcent);
-			else:
-				$uptime = $cpupcent = $mempcent = $mempcent = $memsize = $nummempcent = '-';
-				$mempx = 0;
 
+				if($ref['type'] === 3):
+					$uptime = $this->bbf('sysinfos_uptime-duration',
+							     xivo_calc_time('second',
+									    $ref['uptime'],
+									    '%d%H%M%s'));
+					$cpupcent = $this->bbf('number_percent',$ref['cpu']['percenttotal']);
+					$membyte = xivo_size_si_to_byte('KB',$ref['memory']['kilobytetotal']);
+					$mem = xivo_size_iec($membyte);
+					$mempcent = ($membyte / $memtotal * 100);
+					$memsize = $this->bbf('size_iec_'.$mem[1],$mem[0]);
+					$nummempcent = $this->bbf('number_percent',$mempcent);
+				endif;
+			else:
 				if($ref['monitor'] === 1):
 					$status = 'notrunning';
 				elseif($ref['monitor'] === 2):
