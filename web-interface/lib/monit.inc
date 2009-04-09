@@ -167,7 +167,7 @@ class xivo_monit
 
 	function stop_service($name)
 	{
-		if($this->is_stopable_service($name) === true)
+		if($this->is_stoppable_service($name) === true)
 			return($this->_manage_service($name,'stop'));
 
 		return(false);
