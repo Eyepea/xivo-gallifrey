@@ -2612,6 +2612,10 @@ class XivoCTICommand(BaseCommand):
                 if channel == 'Substitution/voicemail':
                         # this kind of channel 1) seems useless for us 2) never hangups
                         return
+                if channel == '':
+                        # we keep a log, just in case
+                        log.warning('%s empty channel name in event %s' % (astid, event))
+                        return
                 self.uniqueids[astid][uniqueid] = { 'channel' : channel,
                                                     'time-newchannel' : time.time() }
                 self.channels[astid][channel] = uniqueid
