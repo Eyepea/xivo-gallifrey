@@ -281,18 +281,18 @@ size: 62129600
 md5sum: d154f07357522977501e667dcb3e9c5a
 sha1sum: f9ea485e66c1676daac32225c72ae1b7fb934ddb
 
-# Siemens S675IP 021400000000
-[siemens_s675ip_02140]
+# Siemens S675IP 021840000000
+[siemens_s675ip_02184]
 brand: Siemens
 model: S675IP
-version: 140
-files: chagall140_02.bin
+version: 184
+files: chagall184_02.bin
 
-[chagall140_02.bin]
-url: http://gigaset.siemens.com/chagall/2/chagall140_02.bin
+[chagall184_02.bin]
+url: http://gigaset.siemens.com/chagall/2/chagall184_02.bin
 size: 1835008
-md5sum: 53897a584273f4dae4e0149279efaef2
-sha1sum: e5b696c1e9e33cb45d6a7866940de87da6bb243a
+md5sum: 6f783b369177db50edb45fae12c45379
+sha1sum: 8410951a167e928f39f5eeae70d64524bbe3234b
 
 # Snom 300 7.3.7
 [sn300_737]
