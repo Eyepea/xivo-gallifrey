@@ -2609,6 +2609,9 @@ class XivoCTICommand(BaseCommand):
                 channel = event.get('Channel')
                 uniqueid = event.get('Uniqueid')
                 state = event.get('State')
+                if channel == 'Substitution/voicemail':
+                        # this kind of channel 1) seems useless for us 2) never hangups
+                        return
                 self.uniqueids[astid][uniqueid] = { 'channel' : channel,
                                                     'time-newchannel' : time.time() }
                 self.channels[astid][channel] = uniqueid
@@ -2617,7 +2620,7 @@ class XivoCTICommand(BaseCommand):
                 # create "comm" in phone list if needed.
                 phoneid = self.__phoneid_from_channel__(astid, channel)
                 if phoneid:
-                    self.weblist['phones'][astid].ami_newchannel(phoneid, uniqueid, channel)
+                        self.weblist['phones'][astid].ami_newchannel(phoneid, uniqueid, channel)
                 return
         
         def ami_parkedcall(self, astid, event):
