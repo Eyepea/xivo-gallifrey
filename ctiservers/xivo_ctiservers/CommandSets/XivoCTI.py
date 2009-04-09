@@ -301,7 +301,7 @@ class XivoCTICommand(BaseCommand):
                         if len(missings) > 0:
                                 log.warning('missing args in loginparams : %s' % ','.join(missings))
                                 return 'missing:%s' % ','.join(missings)
-
+                        
                         # trivial checks (version, client kind) dealing with the software used
                         xivoversion = loginparams.get('xivoversion')
                         if xivoversion != XIVOVERSION_NUM:
@@ -4001,6 +4001,16 @@ class XivoCTICommand(BaseCommand):
                                                 if self.capas[capaid].match_funcs(ucapa, 'directory'):
                                                         repstr = self.__build_customers__(context, icommand.struct.get('pattern'))
                                                         
+                                        elif classcomm == 'keepalive':
+                                                nbytes = icommand.struct.get('rate-bytes')
+                                                nmsec = icommand.struct.get('rate-msec')
+                                                if nbytes > 0:
+                                                        if nmsec > 0:
+                                                                rate = float(nbytes) / nmsec
+                                                                log.info('keepalive from client %s (%d/%d = %.1f bytes/ms)' % (userid, nbytes, nmsec, rate))
+                                                        else:
+                                                                log.info('keepalive from client %s (%d/0 > %.1f bytes/ms)' % (userid, nbytes, float(nbytes)))
+                                                                
                                         elif classcomm == 'logclienterror':
                                                 log.warning('shouldNotOccur from client %s : %s : %s'
                                                             % (userid, icommand.struct.get('classmethod'), icommand.struct.get('message')))
