@@ -182,6 +182,8 @@ class XivoCTICommand(BaseCommand):
                 
                 self.parting_astid = False
                 self.parting_context = False
+
+                self.localchans = {}
                 self.required_client_version = REQUIRED_CLIENT_VERSION
                 
                 return
@@ -1494,11 +1496,17 @@ class XivoCTICommand(BaseCommand):
                 return uinfo
         
         def __fill_uniqueids__(self, astid, uid1, uid2, chan1, chan2, where):
-                if uid1 in self.uniqueids[astid] and chan1 == self.uniqueids[astid][uid1]['channel']:
+                if uid1 in self.uniqueids[astid]:
+                    (tmpchan, tmpuid) = self.__translate_local_channel_uid__(self.uniqueids[astid][uid1]['channel'], uid1)
+                    if chan1 == tmpchan:
                         self.uniqueids[astid][uid1].update({where : chan2,
+                                                            'channel' : chan1,
                                                             'time-%s' % where : time.time()})
-                if uid2 in self.uniqueids[astid] and chan2 == self.uniqueids[astid][uid2]['channel']:
+                if uid2 in self.uniqueids[astid]:
+                    (tmpchan, tmpuid) = self.__translate_local_channel_uid__(self.uniqueids[astid][uid2]['channel'], uid2)
+                    if chan2 == tmpchan:
                         self.uniqueids[astid][uid2].update({where : chan1,
+                                                            'channel' : chan2,
                                                             'time-%s' % where : time.time()})
                 return
         
@@ -1513,6 +1521,7 @@ class XivoCTICommand(BaseCommand):
                 data    = event.get('Data', 'NOXIVO-DATA').split('|')
                 # actionid = self.amilist.execute(astid, 'getvar', src, 'XIVO_DSTNUM')
                 # self.getvar_requests[actionid] = {'channel' : src, 'variable' : 'XIVO_DSTNUM'}
+                self.__link_local_channels__(src, uidsrc, dst, uiddst)
                 
                 phoneidsrc = self.__phoneid_from_channel__(astid, src)
                 phoneiddst = self.__phoneid_from_channel__(astid, dst)
@@ -1839,13 +1848,20 @@ class XivoCTICommand(BaseCommand):
                 clidname2 = event.get('CallerIDName2', 'NOXIVO-CID2').decode('utf8')
                 uid1 = event.get('Uniqueid1')
                 uid2 = event.get('Uniqueid2')
-                
+
+                log.info('%s AMI_LINK : %s' % (astid, event))
                 if uid1 not in self.events_link[astid]:
                         self.events_link[astid][uid1] = time.time()
                 else:
                         log.warning('%s ignoring a Link event that already occured : %s' % (astid, event))
+                        log.debug('%s events_link : %s' % (astid, self.events_link[astid]))
                         return
-                log.info('%s AMI_LINK : %s' % (astid, event))
+
+                # translate Local/xxx,1 channels
+                self.__link_local_channels__(chan1, uid1, chan2, uid2)
+
+                (chan1, _uid1) = self.__translate_local_channel_uid__(chan1, uid1)
+                (chan2, _uid2) = self.__translate_local_channel_uid__(chan2, uid2)
                 
                 if self.__ignore_dtmf__(astid, uid1, 'link'):
                         return
@@ -1989,7 +2005,7 @@ class XivoCTICommand(BaseCommand):
                 uid1 = event.get('Uniqueid1')
                 uid2 = event.get('Uniqueid2')
                 where = event.get('Where')
-                # log.info('%s AMI_UNLINK : %s' % (astid, event))
+                log.info('%s AMI_UNLINK : %s' % (astid, event))
                 if uid1 not in self.events_link[astid]:
                         log.warning('%s ignoring an Unlink event (Link never happened or identifier already deleted) : %s' % (astid, event))
                         return
@@ -2001,6 +2017,10 @@ class XivoCTICommand(BaseCommand):
                                 return
                         else:
                                 del self.events_link[astid][uid1]
+
+                (chan1, _uid1) = self.__translate_local_channel_uid__(chan1, uid1)
+                (chan2, _uid2) = self.__translate_local_channel_uid__(chan2, uid2)
+
                 if self.__ignore_dtmf__(astid, uid1, 'unlink'):
                         return
                 if self.__ignore_dtmf__(astid, uid2, 'unlink'):
@@ -3869,6 +3889,7 @@ class XivoCTICommand(BaseCommand):
                 oldname = event.get('Oldname')
                 newname = event.get('Newname')
                 uid = event.get('Uniqueid')
+                (oldname, _uid) = self.__translate_local_channel_uid__(oldname, uid)
                 
                 oldphoneid = self.__phoneid_from_channel__(astid, oldname)
                 oldtrunkid = self.__trunkid_from_channel__(astid, oldname)
@@ -5316,5 +5337,33 @@ class XivoCTICommand(BaseCommand):
                 log.info(td.encode('utf8'))
                 fastagi.set_callerid(calleridtoset)
                 return
+
+        def __link_local_channels__(self, chan1, uid1, chan2, uid2):
+                # TODO : use astid !
+                if chan1.startswith('Local/') and not chan2.startswith('Local/'):
+                    localchan = chan1
+                    otherchan = (chan2, uid2)
+                elif not chan1.startswith('Local/') and chan2.startswith('Local/'):
+                    otherchan = (chan1, uid1)
+                    localchan = chan2
+                else:
+                    return
+                log.debug('__link_local_channels__ %s => %s' % (localchan, otherchan))
+                if localchan in self.localchans:
+                    log.debug('__link_local_channels__ %s already known : %s' % (localchan, self.localchans[localchan]))
+                self.localchans[localchan] = otherchan
+
+        def __translate_local_channel_uid__(self, chan, uid):
+                # TODO : use astid !
+                chan = chan.replace('<ZOMBIE>', '')
+                if not chan.startswith('Local/'):# or chan.endswith('<ZOMBIE>'):
+                    return (chan, uid)
+                t = chan.split(',')
+                friendchan = '%s,%d' % (t[0], 3-int(t[1]))
+                if self.localchans.has_key(friendchan):
+                    log.debug('__translate_local_channel_uid__ %s => %s' % ((chan, uid), self.localchans[friendchan]))
+                    return self.localchans[friendchan]
+                else:
+                    return (chan, uid)
 
 xivo_commandsets.CommandClasses['xivocti'] = XivoCTICommand
