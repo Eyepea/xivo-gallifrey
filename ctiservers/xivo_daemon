@@ -401,7 +401,7 @@ def manage_tcp_connections(sel_i, msg, kind):
         """
         closemenow = True
         if kind == 'CTI':
-                manage_cti_connections(sel_i, msg, commandclass.separator)
+                manage_cti_connections(sel_i, msg, commandclass.ctiseparator)
         elif kind == 'WEBI':
                 closemenow = manage_webi_connections(sel_i, msg, '\n')
         elif kind == 'INFO':
@@ -888,9 +888,9 @@ while True: # loops over the reloads
                                 realm = xivoconf_asterisk['realm']
                         if 'aoriginate' in xivoconf_asterisk:
                                 aoriginate = xivoconf_asterisk['aoriginate']
-
+                                
                         capafeatures = []
-
+                        
                         configs[astid] = xivo_astcfg.AsteriskConfig(astid,
                                                                     localaddr,
                                                                     ipaddress,
@@ -1144,7 +1144,7 @@ while True: # loops over the reloads
                                                 log.info('TCP socket %s opened on %s:%d' % (kind,
                                                                                             sockparams[0], sockparams[1]))
                                                 if kind == 'CTI':
-                                                        connc = ClientConnection(connc, sockparams)
+                                                        connc = ClientConnection(connc, sockparams, commandclass.ctiseparator)
                                                         commandclass.connected(connc)
                                                 # appending the opened socket to the ones watched
                                                 # connc.setblocking(0)

@@ -43,7 +43,7 @@ class Command:
 
 class BaseCommand:
         
-        separator = '\n'
+        ctiseparator = '\n'
         xdname = 'XIVO Base'
         
         def __init__(self):

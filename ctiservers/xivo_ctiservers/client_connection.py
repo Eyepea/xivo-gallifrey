@@ -31,13 +31,14 @@ class ClientConnection:
     class CloseException(Exception):
         pass
 
-    def __init__(self, socket, address=None):
+    def __init__(self, socket, address=None, sep = '\n'):
         self.socket = socket
         self.address = address
         self.socket.setblocking(0)
         self.sendqueue = deque()
         self.readbuff = ''
         self.isClosed = False
+        self.separator = sep
         return
 
     # usefull for select
@@ -115,7 +116,7 @@ class ClientConnection:
     def readline(self):
         self.recv()
         try:
-            k = self.readbuff.index('\n')
+            k = self.readbuff.index(self.separator)
             ret = self.readbuff[0:k+1]
             self.readbuff = self.readbuff[k+1:]
             return ret

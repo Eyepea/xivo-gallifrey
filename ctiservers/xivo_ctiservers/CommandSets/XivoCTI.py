@@ -94,7 +94,7 @@ class XivoCTICommand(BaseCommand):
 
         xdname = 'XiVO Daemon'
         xivoclient_session_timeout = 60 # XXX
-
+        
         fullstat_heavies = {}
         commnames = ['login_id', 'login_pass', 'login_capas',
                      'history', 'directory-search',
