@@ -182,6 +182,7 @@ class XivoCTICommand(BaseCommand):
                 
                 self.parting_astid = False
                 self.parting_context = False
+                self.required_client_version = REQUIRED_CLIENT_VERSION
                 
                 return
         
@@ -316,8 +317,8 @@ class XivoCTICommand(BaseCommand):
                                         return 'wrong_os_identifier:%s' % whatsmyos
                         else:
                                 return 'wrong_client_os_identifier:%s' % ident
-                        if (not svnversion.isdigit()) or int(svnversion) < REQUIRED_CLIENT_VERSION:
-                                return 'version_client:%s;%d' % (svnversion, REQUIRED_CLIENT_VERSION)
+                        if (not svnversion.isdigit()) or int(svnversion) < self.required_client_version:
+                                return 'version_client:%s;%d' % (svnversion, self.required_client_version)
                         
                         # user match
                         userinfo = self.ulist_ng.finduser(loginparams.get('userid'), loginparams.get('company'))
@@ -387,7 +388,7 @@ class XivoCTICommand(BaseCommand):
                 return userinfo
         
         def manage_logout(self, userinfo, when):
-                log.info('logout (%s) userinfo(astid/xivo_userid)=%s/%s'
+                log.info('logout (%s) user:%s/%s'
                          % (when, userinfo.get('astid'), userinfo.get('xivo_userid')))
                 userinfo['last-logouttime-ascii'] = time.asctime()
                 self.__logout_agent__(userinfo)
@@ -666,6 +667,8 @@ class XivoCTICommand(BaseCommand):
                         if len(vvv) > 1:
                                 self.display_hints[v] = { 'longname' : vvv[0],
                                                           'color' : vvv[1] }
+                if 'required_client_version' in self.xivoconf:
+                        self.required_client_version = int(self.xivoconf['required_client_version'])
                 return
         
         def set_configs(self, configs):
@@ -748,7 +751,7 @@ class XivoCTICommand(BaseCommand):
                         
                 m2 = self.getmem()
                 if m2 != self.save_memused:
-                    log.info('memory before/after updates : %d %d delta=%d' % (self.save_memused, m2, m2 - self.save_memused))
+                    log.info('memory = %10d ; delta = %10d' % (m2, m2 - self.save_memused))
                     self.save_memused = m2
                 # check : agentnumber should be unique
                 return
@@ -3775,7 +3778,7 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def ami_statuscomplete(self, astid, event):
-                log.info('%s ami_statuscomplete : %s' % (astid, self.uniqueids[astid]))
+                log.info('%s ami_statuscomplete : %d %s' % (astid, len(self.uniqueids[astid]), self.uniqueids[astid]))
                 return
         
         def ami_join(self, astid, event):
@@ -3937,7 +3940,7 @@ class XivoCTICommand(BaseCommand):
                                 
                                 if dircomm is not None and dircomm == 'xivoserver' and classcomm in self.commnames:
                                         if classcomm not in ['keepalive', 'logclienterror', 'history', 'logout']:
-                                                log.info('command attempt %s from %s : %s' % (classcomm, username, icommand.struct))
+                                                log.info('command attempt %s from user:%s : %s' % (classcomm, username, icommand.struct))
                                         if classcomm not in ['keepalive', 'logclienterror', 'history', 'availstate', 'actionfiche']:
                                                 self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm)
                                         if classcomm == 'meetme':
@@ -4000,7 +4003,7 @@ class XivoCTICommand(BaseCommand):
                                                                 repstr = self.__cjson_encode__(tosend)
                                                 else:
                                                         log.debug('capability conference not matched')
-         
+                                                        
                                         elif classcomm == 'history':
                                                 if self.capas[capaid].match_funcs(ucapa, 'history'):
                                                         repstr = self.__build_history_string__(icommand.struct.get('peer'),
@@ -4017,12 +4020,12 @@ class XivoCTICommand(BaseCommand):
                                                 if nbytes > 0:
                                                         if nmsec > 0:
                                                                 rate = float(nbytes) / nmsec
-                                                                log.info('keepalive from client %s (%d/%d = %.1f bytes/ms)' % (userid, nbytes, nmsec, rate))
+                                                                log.info('keepalive from user:%s (%d/%d = %.1f bytes/ms)' % (userid, nbytes, nmsec, rate))
                                                         else:
-                                                                log.info('keepalive from client %s (%d/0 > %.1f bytes/ms)' % (userid, nbytes, float(nbytes)))
+                                                                log.info('keepalive from user:%s (%d/0 > %.1f bytes/ms)' % (userid, nbytes, float(nbytes)))
                                                                 
                                         elif classcomm == 'logclienterror':
-                                                log.warning('shouldNotOccur from client %s : %s : %s'
+                                                log.warning('shouldNotOccur from user:%s : %s : %s'
                                                             % (userid, icommand.struct.get('classmethod'), icommand.struct.get('message')))
                                                 
                                         elif classcomm == 'faxsend':
@@ -4079,7 +4082,7 @@ class XivoCTICommand(BaseCommand):
                                                         
                                         elif classcomm == 'logout':
                                                 stopper = icommand.struct.get('stopper')
-                                                log.info('logout request from %s : stopper=%s' % (userid, stopper))
+                                                log.info('logout request from user:%s : stopper=%s' % (userid, stopper))
                                                 
                                         elif classcomm == 'callcampaign':
                                                 argums = icommand.struct.get('command')
@@ -4515,7 +4518,6 @@ class XivoCTICommand(BaseCommand):
                 except Exception:
                         log.exception('(regular update)')
                 return
-        
         
         def __getlist__(self, userinfo, ccomm, context=None):
                 capaid = userinfo.get('capaid')
