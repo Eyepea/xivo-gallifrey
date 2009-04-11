@@ -28,20 +28,30 @@ $grpundef = $this->get_var('grpundef');
 $memtotal = xivo_size_iec($meminfo['memtotal']);
 $memfree = xivo_size_iec($meminfo['memfree']);
 $memused = xivo_size_iec($meminfo['memused']);
-$mempercent = ($meminfo['memused'] / $meminfo['memtotal'] * 100);
+
+if($meminfo['memtotal'] > 0):
+	$mempercent = ($meminfo['memused'] / $meminfo['memtotal'] * 100);
+else:
+	$mempercent = 0;
+endif;
 
 $swaptotal = xivo_size_iec($meminfo['swaptotal']);
 $swapfree = xivo_size_iec($meminfo['swapfree']);
 $swapused = xivo_size_iec($meminfo['swapused']);
-$swappercent = ($meminfo['swapused'] / $meminfo['swaptotal'] * 100);
+
+if($meminfo['swaptotal'] > 0):
+	$swappercent = ($meminfo['swapused'] / $meminfo['swaptotal'] * 100);
+else:
+	$swappercent = 0;
+endif;
 
 $this->set_var('memtotal',$meminfo['memtotal']);
 
 if(xivo_issa('system',$sysinfo) === true
 && xivo_issa('load',$sysinfo['system']) === true):
-	$load = $sysinfo['system']['load'];
+	$load = vsprintf('%.2f %.2f %.2f',$sysinfo['system']['load']);
 else:
-	$load = array(0,0,0);
+	$load = '-';
 endif;
 
 ?>
@@ -86,7 +96,7 @@ endif;
 				</tr>
 				<tr class="l-infos-1on2">
 					<td class="td-left txt-left"><?=$this->bbf('sysinfos_loadaverage');?></td>
-					<td class="td-right txt-right"><?vprintf('%.2f %.2f %.2f',$load);?></td>
+					<td class="td-right txt-right"><?=$load?></td>
 				</tr>
 			</table>
 		</div>

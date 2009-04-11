@@ -28,18 +28,6 @@ Enregistrement d'appel à la volée :
 ; fm_featuremap_disconnect
 Raccrocher :
 
-; fm_extenfeatures_enable-enablevm
-Active la messagerie vocale :
-
-; fm_extenfeatures_enablevm
-Extension :
-
-; fm_extenfeatures_enable-voicemsg
-Consulter la messagerie vocale :
-
-; fm_extenfeatures_voicemsg
-Extension :
-
 ; fm_extenfeatures_enable-recsnd
 Enregistrement sonore :
 
@@ -70,10 +58,55 @@ Filtrage d'appel entrant :
 ; fm_extenfeatures_incallfilter
 Extension :
 
+; fm_generalfeatures_pickupexten
+Interception de groupe :
+
 ; fm_extenfeatures_enable-pickup
 Interception d'appel :
 
 ; fm_extenfeatures_pickup
+Extension :
+
+; fm_extenfeatures_enable-calllistening
+Ecouter les appels en cours :
+
+; fm_extenfeatures_calllistening
+Extension :
+
+; fm_extenfeatures_enable-directoryaccess
+Accéder à l'annuaire :
+
+; fm_extenfeatures_directoryaccess
+Extension :
+
+; fm_extenfeatures_enable-bsfilter
+Filtrage Patron - Secrétaire :
+
+; fm_extenfeatures_bsfilter
+Extension :
+
+; fm_extenfeatures_enable-guestprov
+Initialisation d'un téléphone :
+
+; fm_extenfeatures_guestprov
+Extension :
+
+; fm_extenfeatures_enable-enablevm
+Active la messagerie vocale :
+
+; fm_extenfeatures_enablevm
+Extension :
+
+; fm_extenfeatures_enable-voicemsg
+Consulter la messagerie vocale :
+
+; fm_extenfeatures_voicemsg
+Extension :
+
+; fm_extenfeatures_enable-vmdelete
+Supprimer les messages de la boîte vocale :
+
+; fm_extenfeatures_vmdelete
 Extension :
 
 ; fm_extenfeatures_enable-fwdundoall
@@ -134,30 +167,6 @@ Extension :
 Connecter un agent dynamique :
 
 ; fm_extenfeatures_agentdynamiclogin
-Extension :
-
-; fm_extenfeatures_enable-calllistening
-Ecouter les appels en cours :
-
-; fm_extenfeatures_calllistening
-Extension :
-
-; fm_extenfeatures_enable-vmdelete
-Supprimer les messages de la boîte vocale :
-
-; fm_extenfeatures_vmdelete
-Extension :
-
-; fm_extenfeatures_enable-directoryaccess
-Accéder à l'annuaire :
-
-; fm_extenfeatures_directoryaccess
-Extension :
-
-; fm_extenfeatures_enable-bsfilter
-Filtrage Patron - Secrétaire :
-
-; fm_extenfeatures_bsfilter
 Extension :
 
 ; fm_generalfeatures_parkext
@@ -231,9 +240,6 @@ Fichier son d'un transfert échoué :
 
 ; fm_generalfeatures_xferfailsound-opt-default
 Défaut
-
-; fm_generalfeatures_pickupexten
-Interception de groupe :
 
 ; fm_success-save
 Extensions sauvegardées avec succès

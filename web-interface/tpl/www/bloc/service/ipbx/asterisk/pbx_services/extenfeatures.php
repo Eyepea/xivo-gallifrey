@@ -313,6 +313,20 @@ if(isset($error_js[0]) === true)
 			      'onchange="xivo_exten_pattern(\'it-extenfeatures-bsfilter\',this.value);"');
 ?>
 		</div>
+<?php
+	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_extenfeatures_enable-guestprov'),
+				      'name'	=> 'extenfeatures[guestprov][enable]',
+				      'labelid'	=> 'extenfeatures-enable-guestprov',
+				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('guestprov','commented')) === false))),
+
+		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures_guestprov'),
+				  'name'	=> 'extenfeatures[guestprov][exten]',
+				  'labelid'	=> 'extenfeatures-guestprov',
+				  'size'	=> 15,
+				  'value'	=> $this->get_varra('extenfeatures',array('guestprov','exten')),
+				  'default'	=> $element['extenfeatures']['guestprov']['default'],
+				  'invalid'	=> isset($invalid['extenfeatures']['guestprov'])));
+?>
 	</div>
 
 	<div id="sb-part-voicemail" class="b-nodisplay">

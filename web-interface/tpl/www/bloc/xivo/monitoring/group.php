@@ -27,7 +27,7 @@ if(is_array($grpdata) === true && ($nb = count($grpdata)) > 0):
 			$ref = &$grpdata[$i];
 
 			$mempx = 0;
-			$uptime = $cpupcent = $mempcent = $mempcent = $memsize = $nummempcent = '-';
+			$uptime = $cpupcent = $mempcent = $memsize = $mempcent = $nummempcent = '-';
 
 			if($ref['monitor'] === 1 && $ref['status'] === 0):
 				$status = 'running';
@@ -40,8 +40,14 @@ if(is_array($grpdata) === true && ($nb = count($grpdata)) > 0):
 					$cpupcent = $this->bbf('number_percent',$ref['cpu']['percenttotal']);
 					$membyte = xivo_size_si_to_byte('KB',$ref['memory']['kilobytetotal']);
 					$mem = xivo_size_iec($membyte);
-					$mempcent = ($membyte / $memtotal * 100);
 					$memsize = $this->bbf('size_iec_'.$mem[1],$mem[0]);
+
+					if($memtotal > 0):
+						$mempcent = ($membyte / $memtotal * 100);
+					else:
+						$mempcent = 0;
+					endif;
+
 					$nummempcent = $this->bbf('number_percent',$mempcent);
 				endif;
 			else:

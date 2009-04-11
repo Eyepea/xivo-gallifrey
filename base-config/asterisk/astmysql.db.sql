@@ -308,6 +308,7 @@ INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*20',1,'Macro','fwdundo
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*23',1,'Macro','fwdundobusy','fwdundobusy');
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*22',1,'Macro','fwdundorna','fwdundorna');
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*21',1,'Macro','fwdundounc','fwdundounc');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*48378',1,'Macro','guestprov','guestprov');
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*27',1,'Macro','incallfilter','incallfilter');
 INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','*26',1,'Macro','incallrec','incallrec');
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*10',1,'Macro','phonestatus','phonestatus');
@@ -365,6 +366,7 @@ INSERT INTO `extenumbers` VALUES (NULL,'*20','934aca632679075488681be0e9904cf910
 INSERT INTO `extenumbers` VALUES (NULL,'*23','572a822ffb7c680bd0f92cfde0b64530bd362696','','extenfeatures','fwdundobusy');
 INSERT INTO `extenumbers` VALUES (NULL,'*22','724827dabea7a207bfef4d948984a2e4da9de3ab','','extenfeatures','fwdundorna');
 INSERT INTO `extenumbers` VALUES (NULL,'*21','8fa35a886d3149c94d23ba4e69c041c1fe6468b9','','extenfeatures','fwdundounc');
+INSERT INTO `extenumbers` VALUES (NULL,'*48378','e27276ceefcc71a5d2def28c9b59a6410959eb43','','extenfeatures','guestprov');
 INSERT INTO `extenumbers` VALUES (NULL,'*27','663b9615ba92c21f80acac52d60b28a8d1fb1c58','','extenfeatures','incallfilter');
 INSERT INTO `extenumbers` VALUES (NULL,'*26','f8aeb70618cc87f1143c7dff23cdc0d3d0a48a0c','','extenfeatures','incallrec');
 INSERT INTO `extenumbers` VALUES (NULL,'*10','eecefbd85899915e6fc2ff5a8ea44c2c83597cd6','','extenfeatures','phonestatus');

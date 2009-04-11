@@ -443,9 +443,13 @@ class xivo_i18n
 					$name_args = $name.'('.implode('|',$value).')';
 
 					if(isset($babelfish[$namespace][$name_args]) === true)
-						return($babelfish[$namespace][$name_args]);
+						return(vsprintf(xivo_printf_escape($babelfish[$namespace][$name_args],
+										   count($value)),
+								$value));
 					else if(isset($babelfish['_empty_'][$name_args]) === true)
-						return($babelfish['_empty_'][$name_args]);
+						return(vsprintf(xivo_printf_escape($babelfish['_empty_'][$name_args],
+										   count($value)),
+								$value));
 				}
 
 				if(isset($babelfish[$namespace][$name]) === false)
