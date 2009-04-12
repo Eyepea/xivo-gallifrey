@@ -7,7 +7,7 @@ USE `xivo`;
 
 DROP TABLE IF EXISTS `ctilog`;
 CREATE TABLE `ctilog` (
- `eventdate` datetime DEFAULT 0,
+ `eventdate` timestamp DEFAULT 0,
  `loginclient` varchar(64),
  `company` varchar(64),
  `status` varchar(32),
