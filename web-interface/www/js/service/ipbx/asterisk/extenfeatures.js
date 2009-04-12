@@ -30,6 +30,8 @@ xivo_list_elt_extenfeatures['it-extenfeatures-enable-guestprov'] = new Array('it
 xivo_list_elt_extenfeatures['it-extenfeatures-enable-enablevm'] = new Array('it-extenfeatures-enablevm');
 xivo_list_elt_extenfeatures['it-extenfeatures-enable-voicemsg'] = new Array('it-extenfeatures-voicemsg');
 xivo_list_elt_extenfeatures['it-extenfeatures-enable-vmdelete'] = new Array('it-extenfeatures-vmdelete');
+xivo_list_elt_extenfeatures['it-extenfeatures-enable-vmbox'] = new Array('it-extenfeatures-vmbox','it-extenfeatures-list-vmbox');
+xivo_list_elt_extenfeatures['it-extenfeatures-enable-vmuser'] = new Array('it-extenfeatures-vmuser','it-extenfeatures-list-vmuser');
 xivo_list_elt_extenfeatures['it-extenfeatures-enable-fwdundoall'] = new Array('it-extenfeatures-fwdundoall');
 xivo_list_elt_extenfeatures['it-extenfeatures-enable-fwdundorna'] = new Array('it-extenfeatures-fwdundorna');
 xivo_list_elt_extenfeatures['it-extenfeatures-enable-fwdundobusy'] = new Array('it-extenfeatures-fwdundobusy');
@@ -45,39 +47,47 @@ function xivo_extenfeatures_onload()
 {
 	for(property in xivo_list_elt_extenfeatures)
 	{
-		if(xivo_eid(property) == false)
+		if(xivo_eid(property) === false)
 			continue;
 
 		xivo_fm_readonly(xivo_list_elt_extenfeatures[property],xivo_eid(property).checked);
 		xivo_eid(property).onchange = function () { xivo_fm_readonly(xivo_list_elt_extenfeatures[this.id],this.checked); }
 	}
 
-	if((elt = xivo_eid('it-extenfeatures-pickup')) != false
-	&& (eltlist = xivo_eid('it-extenfeatures-list-pickup')) != false)
+	if((elt = xivo_eid('it-extenfeatures-pickup')) !== false
+	&& (eltlist = xivo_eid('it-extenfeatures-list-pickup')) !== false)
 		eltlist.value = xivo_get_exten_buffer('X',elt.value);
 
-	if((elt = xivo_eid('it-extenfeatures-bsfilter')) != false
-	&& (eltlist = xivo_eid('it-extenfeatures-list-bsfilter')) != false)
+	if((elt = xivo_eid('it-extenfeatures-bsfilter')) !== false
+	&& (eltlist = xivo_eid('it-extenfeatures-list-bsfilter')) !== false)
 		eltlist.value = xivo_get_exten_buffer('X',elt.value);
 
-	if((elt = xivo_eid('it-extenfeatures-fwdrna')) != false
-	&& (eltlist = xivo_eid('it-extenfeatures-list-fwdrna')) != false)
+	if((elt = xivo_eid('it-extenfeatures-vmbox')) !== false
+	&& (eltlist = xivo_eid('it-extenfeatures-list-vmbox')) !== false)
 		eltlist.value = xivo_get_exten_buffer('X',elt.value);
 
-	if((elt = xivo_eid('it-extenfeatures-fwdbusy')) != false
-	&& (eltlist = xivo_eid('it-extenfeatures-list-fwdbusy')) != false)
+	if((elt = xivo_eid('it-extenfeatures-vmuser')) !== false
+	&& (eltlist = xivo_eid('it-extenfeatures-list-vmuser')) !== false)
 		eltlist.value = xivo_get_exten_buffer('X',elt.value);
 
-	if((elt = xivo_eid('it-extenfeatures-fwdunc')) != false
-	&& (eltlist = xivo_eid('it-extenfeatures-list-fwdunc')) != false)
+	if((elt = xivo_eid('it-extenfeatures-fwdrna')) !== false
+	&& (eltlist = xivo_eid('it-extenfeatures-list-fwdrna')) !== false)
 		eltlist.value = xivo_get_exten_buffer('X',elt.value);
 
-	if((elt = xivo_eid('it-extenfeatures-agentstaticlogin')) != false
-	&& (eltlist = xivo_eid('it-extenfeatures-list-agentstaticlogin')) != false)
+	if((elt = xivo_eid('it-extenfeatures-fwdbusy')) !== false
+	&& (eltlist = xivo_eid('it-extenfeatures-list-fwdbusy')) !== false)
 		eltlist.value = xivo_get_exten_buffer('X',elt.value);
 
-	if((elt = xivo_eid('it-extenfeatures-agentstaticlogoff')) != false
-	&& (eltlist = xivo_eid('it-extenfeatures-list-agentstaticlogoff')) != false)
+	if((elt = xivo_eid('it-extenfeatures-fwdunc')) !== false
+	&& (eltlist = xivo_eid('it-extenfeatures-list-fwdunc')) !== false)
+		eltlist.value = xivo_get_exten_buffer('X',elt.value);
+
+	if((elt = xivo_eid('it-extenfeatures-agentstaticlogin')) !== false
+	&& (eltlist = xivo_eid('it-extenfeatures-list-agentstaticlogin')) !== false)
+		eltlist.value = xivo_get_exten_buffer('X',elt.value);
+
+	if((elt = xivo_eid('it-extenfeatures-agentstaticlogoff')) !== false
+	&& (eltlist = xivo_eid('it-extenfeatures-list-agentstaticlogoff')) !== false)
 		eltlist.value = xivo_get_exten_buffer('X',elt.value);
 }
 

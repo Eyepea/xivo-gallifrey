@@ -104,9 +104,21 @@ Consulter la messagerie vocale :
 Extension :
 
 ; fm_extenfeatures_enable-vmdelete
-Supprimer les messages de la boîte vocale :
+Supprimer les messages de la messagerie vocale :
 
 ; fm_extenfeatures_vmdelete
+Extension :
+
+; fm_extenfeatures_enable-vmbox
+Accès à la messagerie vocale :
+
+; fm_extenfeatures_vmbox
+Extension :
+
+; fm_extenfeatures_enable-vmuser
+Accès à la messagerie vocale d'un utilisateur :
+
+; fm_extenfeatures_vmuser
 Extension :
 
 ; fm_extenfeatures_enable-fwdundoall

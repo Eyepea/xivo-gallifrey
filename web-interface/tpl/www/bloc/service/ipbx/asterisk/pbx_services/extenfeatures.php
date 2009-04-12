@@ -368,8 +368,60 @@ if(isset($error_js[0]) === true)
 				  'size'	=> 15,
 				  'value'	=> $this->get_varra('extenfeatures',array('vmdelete','exten')),
 				  'default'	=> $element['extenfeatures']['vmdelete']['default'],
-				  'invalid'	=> isset($invalid['extenfeatures']['vmdelete'])));
+				  'invalid'	=> isset($invalid['extenfeatures']['vmdelete']))),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_extenfeatures_enable-vmbox'),
+				      'name'	=> 'extenfeatures[vmbox][enable]',
+				      'labelid'	=> 'extenfeatures-enable-vmbox',
+				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('vmbox','commented')) === false)));
 ?>
+		<div class="fm-field">
+<?php
+	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures_vmbox'),
+				  'name'	=> 'extenfeatures[vmbox][exten]',
+				  'field'	=> false,
+				  'labelid'	=> 'extenfeatures-vmbox',
+				  'size'	=> 15,
+				  'value'	=> $this->get_varra('extenfeatures',array('vmbox','exten')),
+				  'default'	=> $element['extenfeatures']['vmbox']['default'],
+				  'invalid'	=> isset($invalid['extenfeatures']['vmbox']))),
+
+		$form->select(array('field'	=> false,
+				    'name'	=> 'extenfeatures[list-vmbox]',
+				    'labelid'	=> 'extenfeatures-list-vmbox',
+				    'key'	=> false,
+				    'empty'	=> true),
+			      array('*',range(3,11)),
+			      'onchange="xivo_exten_pattern(\'it-extenfeatures-vmbox\',this.value);"');
+?>
+		</div>
+<?php
+	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_extenfeatures_enable-vmuser'),
+				      'name'	=> 'extenfeatures[vmuser][enable]',
+				      'labelid'	=> 'extenfeatures-enable-vmuser',
+				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('vmuser','commented')) === false)));
+?>
+
+		<div class="fm-field">
+<?php
+	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures_vmuser'),
+				  'name'	=> 'extenfeatures[vmuser][exten]',
+				  'field'	=> false,
+				  'labelid'	=> 'extenfeatures-vmuser',
+				  'size'	=> 15,
+				  'value'	=> $this->get_varra('extenfeatures',array('vmuser','exten')),
+				  'default'	=> $element['extenfeatures']['vmuser']['default'],
+				  'invalid'	=> isset($invalid['extenfeatures']['vmuser']))),
+
+		$form->select(array('field'	=> false,
+				    'name'	=> 'extenfeatures[list-vmuser]',
+				    'labelid'	=> 'extenfeatures-list-vmuser',
+				    'key'	=> false,
+				    'empty'	=> true),
+			      array('*',range(3,11)),
+			      'onchange="xivo_exten_pattern(\'it-extenfeatures-vmuser\',this.value);"');
+?>
+		</div>
 	</div>
 
 	<div id="sb-part-forward" class="b-nodisplay">

@@ -119,9 +119,21 @@ $array['exten']['recsnd']['appdata'] = array();
 $array['exten']['recsnd']['appdata'][0] = 'recsnd';
 $array['exten']['recsnd']['appdata'][1] = 'wav';
 
+$array['exten']['vmbox'] = array();
+$array['exten']['vmbox']['app'] = 'Macro';
+$array['exten']['vmbox']['appdata'] = array();
+$array['exten']['vmbox']['appdata'][0] = 'vmbox';
+$array['exten']['vmbox']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
+
 $array['exten']['vmdelete'] = array();
 $array['exten']['vmdelete']['app'] = 'Macro';
 $array['exten']['vmdelete']['appdata'] = 'vmdelete';
+
+$array['exten']['vmuser'] = array();
+$array['exten']['vmuser']['app'] = 'Macro';
+$array['exten']['vmuser']['appdata'] = array();
+$array['exten']['vmuser']['appdata'][0] = 'vmuser';
+$array['exten']['vmuser']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['exten']['voicemsg'] = array();
 $array['exten']['voicemsg']['app'] = 'Macro';
@@ -192,8 +204,14 @@ $array['element']['pickup']['default'] = '*8.';
 $array['element']['recsnd'] = array();
 $array['element']['recsnd']['default'] = '*9';
 
+$array['element']['vmbox'] = array();
+$array['element']['vmbox']['default'] = '*6.';
+
 $array['element']['vmdelete'] = array();
 $array['element']['vmdelete']['default'] = '*35';
+
+$array['element']['vmuser'] = array();
+$array['element']['vmuser']['default'] = '*7.';
 
 $array['element']['voicemsg'] = array();
 $array['element']['voicemsg']['default'] = '*98';
@@ -220,7 +238,9 @@ $array['filter']['incallrec'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '
 $array['filter']['phonestatus'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
 $array['filter']['pickup'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['recsnd'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
+$array['filter']['vmbox'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['vmdelete'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
+$array['filter']['vmuser'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['voicemsg'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*]+$/');
 
 ?>
