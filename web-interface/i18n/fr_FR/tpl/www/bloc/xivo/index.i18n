@@ -97,6 +97,24 @@ Mémoire
 ; sysinfos_col_action
 Action
 
+; sysinfos_opt_start
+Démarrer
+
+; sysinfos_opt_start_confirm
+Etes-vous certain de vouloir démarrer %s ?
+
+; sysinfos_opt_restart
+Redémarrer
+
+; sysinfos_opt_restart_confirm
+Etes-vous certain de vouloir redémarrer %s ?
+
+; sysinfos_opt_stop
+Arrêter
+
+; sysinfos_opt_stop_confirm
+Etes-vous certain de vouloir arrêter %s ?
+
 ; sysinfos_status-opt(notrunning)
 Arrêté
 

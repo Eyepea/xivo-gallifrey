@@ -1,6 +1,7 @@
 <?php
 
 $url = &$this->get_module('url');
+$dhtml = &$this->get_module('dhtml');
 
 $grpname = $this->get_var('group_name');
 $grpdata = $this->get_var($grpname);
@@ -76,26 +77,41 @@ if(is_array($grpdata) === true && ($nb = count($grpdata)) > 0):
 
 			if($ref['startable'] === true && xivo_user::chk_acl('control_system','start','service/monitoring') === true):
 				$actionable = true;
-				echo	$url->href_html($this->bbf('sysinfos_start'),
+				echo	$url->href_html($url->img_html('img/site/button/start.gif',
+								       $this->bbf('sysinfos_opt_start'),
+								       'border="0"'),
 							'xivo',
 							array('service'	=> $ref['name'],
-							      'action'	=> 'start')),"\n";
-			endif;
-
-			if($ref['stoppable'] === true && xivo_user::chk_acl('control_system','stop','service/monitoring') === true):
-				$actionable = true;
-				echo	$url->href_html($this->bbf('sysinfos_stop'),
-							'xivo',
-							array('service'	=> $ref['name'],
-							      'action'	=> 'stop')),"\n";
+							      'action'	=> 'start'),
+							'onclick="return(confirm(\''.$dhtml->escape($this->bbf('sysinfos_opt_start_confirm',
+												    $ref['name'])).'\'));"',
+							$this->bbf('sysinfos_opt_start')),"\n";
 			endif;
 
 			if($ref['restartable'] === true && xivo_user::chk_acl('control_system','restart','service/monitoring') === true):
 				$actionable = true;
-				echo	$url->href_html($this->bbf('sysinfos_restart'),
+				echo	$url->href_html($url->img_html('img/site/button/restart.gif',
+								       $this->bbf('sysinfos_opt_restart'),
+								       'border="0"'),
 							'xivo',
 							array('service'	=> $ref['name'],
-							      'action'	=> 'restart')),"\n";
+							      'action'	=> 'restart'),
+							'onclick="return(confirm(\''.$dhtml->escape($this->bbf('sysinfos_opt_restart_confirm',
+													       $ref['name'])).'\'));"',
+							$this->bbf('sysinfos_opt_restart')),"\n";
+			endif;
+
+			if($ref['stoppable'] === true && xivo_user::chk_acl('control_system','stop','service/monitoring') === true):
+				$actionable = true;
+				echo	$url->href_html($url->img_html('img/site/button/stop.gif',
+								       $this->bbf('sysinfos_opt_stop'),
+								       'border="0"'),
+							'xivo',
+							array('service'	=> $ref['name'],
+							      'action'	=> 'stop'),
+							'onclick="return(confirm(\''.$dhtml->escape($this->bbf('sysinfos_opt_stop_confirm',
+													       $ref['name'])).'\'));"',
+							$this->bbf('sysinfos_opt_stop')),"\n";
 			endif;
 
 			if($actionable === false):
