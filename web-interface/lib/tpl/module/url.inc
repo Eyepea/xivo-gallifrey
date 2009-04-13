@@ -29,25 +29,25 @@ class xivo_tpl_url extends xivo_tpl_module
 		$this->_tpl = &$tpl;
 	}
 
-	function href($url='',$param='',$absolute=false,$sep=null,$sid=true,$internal=true,$pre='',$key='')
+	function href($url='',$param='',$absolute=false,$sep=null,$sid=true,$internal=true)
 	{
 		$url = $this->url($url,$absolute,$internal);
 
 		if(isset($url{0}) === true && $url{0} === '#')
 			return($url);
 
-		$url .= $this->_mk_param($param,$sep,$sid,$pre,$key);
+		$url .= $this->_mk_param($param,$sep,$sid);
 
 		return($url);
 	}
 
-	function _mk_param($param='',$sep=null,$sid=true,$pre='',$key='')
+	function _mk_param($param='',$sep=null,$sid=true)
 	{
 		$sid = (bool) $sid;
 		$sep = $sep === null ? '&amp;' : (string) $sep;
 
 		if(is_array($param) === true)
-			$param = xivo_query::mk_query_str($param,$pre,$key,$sep);
+			$param = xivo_query::mk_query_str($param,$sep);
 		else
 			$param = (string) $param;
 
@@ -59,9 +59,9 @@ class xivo_tpl_url extends xivo_tpl_module
 		return('');
 	}
 
-	function href_html($content,$url='',$param='',$opt='',$title=null,$absolute=false,$sep='&amp;',$sid=true,$internal=true,$pre='',$key='')
+	function href_html($content,$url='',$param='',$opt='',$title=null,$absolute=false,$sep='&amp;',$sid=true,$internal=true)
 	{
-		$url = $this->href($url,$param,$absolute,$sep,$sid,$internal,$pre,$key);
+		$url = $this->href($url,$param,$absolute,$sep,$sid,$internal);
 
 		return($this->_mk_href_html($content,$url,$opt,$title));
 	}
@@ -105,7 +105,7 @@ class xivo_tpl_url extends xivo_tpl_module
 		return('<img src="'.$url.'"'.(isset($opt{0}) === true ? ' '.$opt : '').' alt="'.trim(xivo_alttitle($alt)).'" />');
 	}
 
-	function pager($nb,$page,$prev=false,$next=false,$url='',$param='',$opt='',$absolute=false,$sep=null,$sid=true,$internal=true,$pre='',$key='')
+	function pager($nb,$page,$prev=false,$next=false,$url='',$param='',$opt='',$absolute=false,$sep=null,$sid=true,$internal=true)
 	{
 		$r = '';
 
@@ -142,7 +142,7 @@ class xivo_tpl_url extends xivo_tpl_module
 			ksort($a);
 		}
 
-		if(($param = $this->_mk_param($param,$sep,$sid,$pre,$key)) === '')
+		if(($param = $this->_mk_param($param,$sep,$sid)) === '')
 			$param = '?';
 		else
 			$param .= $sep;
@@ -150,7 +150,10 @@ class xivo_tpl_url extends xivo_tpl_module
 		$url = $this->url($url,$absolute,$internal).$param.'page=';
 
 		if((bool) $prev === true)
-			$r .= $this->_mk_href_html($this->bbf('page_previous'),$url.($page - 1),$opt,$this->bbf('page_previous')).' - ';
+			$r .= $this->_mk_href_html($this->bbf('page_previous'),
+						   $url.($page - 1),
+						   $opt,
+						   $this->bbf('page_previous')).' - ';
 
 		reset($a);
 

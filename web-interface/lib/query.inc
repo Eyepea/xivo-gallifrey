@@ -243,9 +243,9 @@ class xivo_query
 		return(($ref = &$this->query_string('request',XIVO_QUERY_MODE_RAW)));
 	}
 
-	function request_meth_raw_str($pre='',$key='',$sep='')
+	function request_meth_raw_str($sep='')
 	{
-		return($this->mk_query_str($this->request_meth_raw(),$pre,$key,$sep));
+		return($this->mk_query_str($this->request_meth_raw(),$sep));
 	}
 
 	function &request_meth_uraw()
@@ -253,9 +253,9 @@ class xivo_query
 		return(($ref = &$this->query_string('request',XIVO_QUERY_MODE_URAW)));
 	}
 
-	function request_meth_uraw_str($pre='',$key='',$sep='')
+	function request_meth_uraw_str($sep='')
 	{
-		return($this->mk_query_str($this->request_meth_uraw(),$pre,$key,$sep));
+		return($this->mk_query_str($this->request_meth_uraw(),$sep));
 	}
 
 	function &request_meth_qot()
@@ -263,9 +263,9 @@ class xivo_query
 		return(($ref = &$this->query_string('request',XIVO_QUERY_MODE_QOT)));
 	}
 
-	function request_meth_qot_str($pre='',$key='',$sep='')
+	function request_meth_qot_str($sep='')
 	{
-		return($this->mk_query_str($this->request_meth_qot(),$pre,$key,$sep));
+		return($this->mk_query_str($this->request_meth_qot(),$sep));
 	}
 
 	function &request_orig()
@@ -273,9 +273,9 @@ class xivo_query
 		return(($ref = &$this->_orig['request']));
 	}
 
-	function request_orig_str($pre='',$key='',$sep='')
+	function request_orig_str($sep='')
 	{
-		return($this->mk_query_str($this->_orig['request'],$pre,$key,$sep));
+		return($this->mk_query_str($this->_orig['request'],$sep));
 	}
 
 	function &qstring_raw()
@@ -283,9 +283,9 @@ class xivo_query
 		return(($ref = &$this->query_string('qstring',XIVO_QUERY_MODE_RAW)));
 	}
 
-	function qstring_raw_str($pre='',$key='',$sep='')
+	function qstring_raw_str($sep='')
 	{
-		return($this->mk_query_str($this->qstring_raw(),$pre,$key,$sep));
+		return($this->mk_query_str($this->qstring_raw(),$sep));
 	}
 
 	function &qstring_qot()
@@ -293,9 +293,9 @@ class xivo_query
 		return(($ref = $this->query_string('qstring',XIVO_QUERY_MODE_QOT)));
 	}
 
-	function qstring_qot_str($pre='',$key='',$sep='')
+	function qstring_qot_str($sep='')
 	{
-		return($this->mk_query_str($this->qstring_qot(),$pre,$key,$sep));
+		return($this->mk_query_str($this->qstring_qot(),$sep));
 	}
 
 	function qstring_orig()
@@ -384,12 +384,10 @@ class xivo_query
 		return($r);
 	}
 
-	function mk_query_str($a,$pre='',$key='',$sep='')
+	function mk_query_str($a,$sep='')
 	{
 		$r = '';
 		$a = (array) $a;
-		$pre = (string) $pre;
-		$key = (string) $key;
 		$sep = (string) $sep;
 
 		if($sep === '')
@@ -407,15 +405,10 @@ class xivo_query
 
 		foreach($a as $k => $v)
 		{
-			$tmp = $pre !== '' && is_int($k) === true ? $pre.$k : $k;
-
-			if($key !== '')
-				$tmp = $key.'['.$tmp.']';
-
 			if(is_array($v) === true || is_object($v) === true)
-				$r[] = xivo_query::mk_query_str($v,null,null,$sep);
+				$r[] = xivo_query::mk_query_str($v,$sep);
 			else if(($val = xivo_query::encode_query($v,'val')) !== '')
-				$r[] = xivo_query::encode_query($tmp,'key').'='.$val;
+				$r[] = xivo_query::encode_query($k,'key').'='.$val;
 		}
 
 		return(implode($sep,$r));
