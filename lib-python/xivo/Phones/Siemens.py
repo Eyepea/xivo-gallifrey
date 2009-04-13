@@ -229,7 +229,7 @@ class SiemensHTMLParser(HTMLParser):
 
 class Siemens(PhoneVendorMixin):
 
-    SIEMENS_MODELS          = ('S675IP',)
+    SIEMENS_MODELS          = ('C470IP', 'S675IP')
     SIEMENS_MACADDR_PREFIX  = ('1:00:01:e3', '1:00:13:a9')
     SIEMENS_COMMON_PIN      = '0000'
     SIEMENS_FIRMWARE        = '021840000000'

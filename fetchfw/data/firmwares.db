@@ -281,6 +281,19 @@ size: 62129600
 md5sum: d154f07357522977501e667dcb3e9c5a
 sha1sum: f9ea485e66c1676daac32225c72ae1b7fb934ddb
 
+# Siemens C470IP 021840000000
+[siemens_c470ip_02184]
+brand: Siemens
+model: C470IP
+version: 184
+files: chagall184_02.bin
+
+[chagall184_02.bin]
+url: http://gigaset.siemens.com/chagall/2/chagall184_02.bin
+size: 1835008
+md5sum: 6f783b369177db50edb45fae12c45379
+sha1sum: 8410951a167e928f39f5eeae70d64524bbe3234b
+
 # Siemens S675IP 021840000000
 [siemens_s675ip_02184]
 brand: Siemens
