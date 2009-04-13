@@ -544,15 +544,15 @@ class Siemens(PhoneVendorMixin):
         or return None if we don't deal with this kind of Agent.
         """
         # S675IP  021400000000
-
-        ua_splitted = ua.split("  ", 1)
+        # C470IP021840000000
 
         for x in cls.SIEMENS_MODELS:
-            if x == ua_splitted[0]:
-                if len(ua_splitted) == 2:
-                    fw = ua_splitted[1].strip()
-                else:
+            if ua.startswith(x):
+                fw = ua[len(x):].strip()
+
+                if len(fw) == 0:
                     fw = 'unknown'
+
                 return ('siemens', x.lower(), fw)
 
         return None
