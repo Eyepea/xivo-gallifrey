@@ -37,8 +37,14 @@ Voicemail
 ; stats_status-initialized
 Initialized
 
+; stats_calls-active(0)
+No active call
+
+; stats_calls-active(1)
+Active call: %s
+
 ; stats_calls-active
-Active Call(s): %s
+Active calls: %s
 
 ; info_service_label
 Software:

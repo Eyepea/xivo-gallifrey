@@ -37,8 +37,14 @@ Messagerie vocale
 ; stats_status-initialized
 Initialisé
 
+; stats_calls-active(0)
+Aucun appel en cours
+
+; stats_calls-active(1)
+Appel en cours : %s
+
 ; stats_calls-active
-Appel(s) actif(s) : %s
+Appels en cours : %s
 
 ; info_service_label
 Logiciel :
