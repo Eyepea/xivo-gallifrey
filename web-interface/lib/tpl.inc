@@ -452,7 +452,7 @@ class xivo_tpl
 		return($r);
 	}
 
-	function url($url='',$absolute=false)
+	function url($url='',$absolute=false,$internal=true)
 	{
 		$r = '';
 
@@ -460,7 +460,7 @@ class xivo_tpl
 
 		if(isset($url{0}) === false)
 			return($r);
-		else if($url{0} === '#')
+		else if($url{0} === '#' || (bool) $internal === false)
 			return($url);
 		else if(isset($this->_url[$url]) === true)
 			$url = $this->_url[$url];

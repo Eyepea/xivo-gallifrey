@@ -18,6 +18,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+$url = &$this->get_module('url');
+
+$support_url = $this->bbf('support_url_xivo',XIVO_SOFT_URL);
 $client_url = $this->bbf('download_soft_url_xivo-client',XIVO_SOFT_URL);
 
 ?>
@@ -29,8 +32,26 @@ $client_url = $this->bbf('download_soft_url_xivo-client',XIVO_SOFT_URL);
 	</h3>
 	<div class="sb-content">
 		<dl>
+			<dt><?=$this->bbf('info_support_xivo');?></dt>
+			<dd><?=$url->href_html($support_url,
+					       $support_url,
+					       null,
+					       'target="_blank"',
+					       null,
+					       false,
+					       null,
+					       false,
+					       false);?>
 			<dt><?=$this->bbf('info_download_xivo-client');?></dt>
-			<dd><?='<a href="',$client_url,'" title="',XIVO_SOFT_LABEL,'" target="_blank">',$client_url,'</a>'?></dd>
+			<dd><?=$url->href_html($client_url,
+					       $client_url,
+					       null,
+					       'target="_blank"',
+					       null,
+					       false,
+					       null,
+					       false,
+					       false);?>
 		</dl>
 	</div>
 	<div class="sb-foot xspan">

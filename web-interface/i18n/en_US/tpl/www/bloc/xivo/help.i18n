@@ -1,6 +1,12 @@
 ; title_content_name
 Help
 
+; info_support_xivo
+XIVO support at the following address:
+
+; support_url_xivo
+http://wiki.%s
+
 ; info_download_xivo-client
 Download XIVO Client at the following address:
 
