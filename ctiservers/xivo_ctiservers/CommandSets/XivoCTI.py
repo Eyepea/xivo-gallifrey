@@ -2382,7 +2382,7 @@ class XivoCTICommand(BaseCommand):
                 if msg == 'Originate failed':
                         if actionid in self.faxes:
                                 faxid = self.faxes[actionid]
-                                log.warning('%s AMI : fax not sent %s %s %s %s/%s'
+                                log.warning('%s AMI : fax not sent size=%s dest=%s hide=%s %s/%s'
                                             % (astid, faxid.size, faxid.number, faxid.hide,
                                                faxid.uinfo.get('astid'), faxid.uinfo.get('xivo_userid')))
                                 tosend = { 'class' : 'faxprogress',

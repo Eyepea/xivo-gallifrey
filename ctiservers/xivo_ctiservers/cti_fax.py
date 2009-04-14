@@ -23,6 +23,7 @@ __author__    = 'Corentin Le Gall'
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import base64
 import commands
 import logging
 import os
@@ -49,15 +50,17 @@ class Fax:
                 self.hide = hide
                 self.uinfo = uinfo
                 return
-
-        def sendfax(self, buffer, callerid, ami):
+        
+        def sendfax(self, b64buffer, callerid, ami):
                 filename = 'astfaxsend-' + self.reference
                 tmpfilepath = PATH_SPOOL_ASTERISK_TMP + '/' + filename
                 faxfilepath = PATH_SPOOL_ASTERISK_FAX + '/' + filename + '.tif'
+                buffer = base64.b64decode(b64buffer.strip())
                 z = open(tmpfilepath, 'w')
                 z.write(buffer)
                 z.close()
-                log.info('size = %s, number = %s, hide = %s' % (self.size, self.number, self.hide))
+                log.info('size = %s (%d), number = %s, hide = %s'
+                         % (self.size, len(buffer), self.number, self.hide))
                 if self.hide != '0':
                         callerid = 'anonymous'
                         
@@ -69,11 +72,8 @@ class Fax:
                         log.info('fax (ref %s) PDF to TIF(F) : %s' % (self.reference, pdf2fax_command))
                         reply = 'ko;convert-pdftif'
                         ret = os.system(pdf2fax_command)
-                        if ret >= 0:
-                                log.info('fax (ref %s) PDF to TIF(F) returned : %s' % (self.reference, ret))
-                                ret = ret % 256
-                        else:
-                                log.info('fax (ref %s) PDF to TIF(F) failed : %s' % (self.reference, ret))
+                        if ret != 0:
+                                log.warning('fax (ref %s) PDF to TIF(F) returned : %s' % (self.reference, ret))
                 else:
                         reply = 'ko;filetype'
                         log.warning('fax (ref %s) the file received is a <%s> one : format not supported' % (self.reference, brieffile))
