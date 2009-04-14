@@ -182,7 +182,7 @@ class XivoCTICommand(BaseCommand):
                 
                 self.parting_astid = False
                 self.parting_context = False
-
+                
                 self.localchans = {}
                 self.required_client_version = REQUIRED_CLIENT_VERSION
                 
@@ -723,8 +723,7 @@ class XivoCTICommand(BaseCommand):
                 return td
         
         def updates(self):
-                u_update = self.ulist_ng.update()
-                # self.plist_ng.update()
+                self.ulist_ng.update()
                 for astid, plist in self.weblist['phones'].iteritems():
                         for itemname in self.weblist.keys():
                                 try:
@@ -2358,13 +2357,16 @@ class XivoCTICommand(BaseCommand):
                              'Agent logged in']:
                         if actionid in self.ami_requests:
                                 # log.info('%s AMI Response=Success : (tracked) %s %s' % (astid, event, self.ami_requests[actionid]))
-                                del self.ami_requests[actionid]
+                                pass
                         elif actionid == '00':
                                 log.debug('%s AMI Response=Success : %s (init)' % (astid, event))
                         else:
                                 log.info('%s AMI Response=Success : (tracked) %s' % (astid, event))
                 else:
                         log.warning('%s AMI Response=Success : untracked message (%s) <%s>' % (astid, actionid, msg))
+                        
+                if actionid in self.ami_requests:
+                        del self.ami_requests[actionid]
                 return
         
         def amiresponse_error(self, astid, event, nocolon):
@@ -2398,7 +2400,6 @@ class XivoCTICommand(BaseCommand):
                              'Unable to remove interface: Not there'] :
                         if actionid in self.ami_requests:
                                 log.warning('%s AMI Response=Error : %s %s' % (astid, event, self.ami_requests[actionid]))
-                                del self.ami_requests[actionid]
                         elif actionid == '00':
                                 log.debug('%s AMI Response=Error : %s (init)' % (astid, event))
                         else:
@@ -2406,9 +2407,11 @@ class XivoCTICommand(BaseCommand):
                 else:
                         if actionid in self.ami_requests:
                                 log.warning('%s AMI Response=Error : (unknown message) %s %s' % (astid, event, self.ami_requests[actionid]))
-                                del self.ami_requests[actionid]
                         else:
                                 log.warning('%s AMI Response=Error : (unknown message) %s' % (astid, event))
+                                
+                if actionid in self.ami_requests:
+                        del self.ami_requests[actionid]
                 return
         
         def amiresponse_mailboxcount(self, astid, event):
