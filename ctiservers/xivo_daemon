@@ -309,6 +309,14 @@ def manage_info_connections(connid, msg, sep):
                                                         connid.sendall('%s %s\n' % (ag, agp))
                                         except Exception:
                                                 log.exception('INFO %s' % usefulmsg)
+                        elif usefulmsg == 'show_amirequests':
+                                for astid, ars in commandclass.amirequests.iteritems():
+                                        try:
+                                                connid.sendall('amirequests for %s\n' % astid)
+                                                for ag, agp in ars.iteritems():
+                                                        connid.sendall('%s %s\n' % (ag, agp))
+                                        except Exception:
+                                                log.exception('INFO %s' % usefulmsg)
                         elif usefulmsg == 'show_logged_ip':
                                 for user, info in commandclass.connected_users().iteritems():
                                         if 'connection' in info['login']:

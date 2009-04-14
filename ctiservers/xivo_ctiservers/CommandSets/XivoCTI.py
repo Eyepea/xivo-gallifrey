@@ -173,7 +173,7 @@ class XivoCTICommand(BaseCommand):
                 self.origapplication = {}
                 self.events_link = {}
                 # astid + actionid (AMI) indexed hashes
-                self.ami_requests = {}
+                self.amirequests = {}
                 self.getvar_requests = {}
                 
                 self.logintimeout = 5
@@ -682,7 +682,7 @@ class XivoCTICommand(BaseCommand):
                         for astid_hash in [self.uniqueids, self.channels,
                                            self.queues_channels_list, self.attended_targetchannels,
                                            self.ignore_dtmf, self.parkedcalls, self.origapplication,
-                                           self.ami_requests, self.getvar_requests,
+                                           self.amirequests, self.getvar_requests,
                                            self.events_link]:
                                 if astid not in astid_hash:
                                         astid_hash[astid] = {}
@@ -2204,7 +2204,7 @@ class XivoCTICommand(BaseCommand):
         def __ami_execute__(self, astid, *args):
                 actionid = self.amilist.execute(astid, *args)
                 if actionid is not None:
-                        self.ami_requests[astid][actionid] = args
+                        self.amirequests[astid][actionid] = args
                         return actionid
         
         def ami_dtmf(self, astid, event):
@@ -2355,8 +2355,8 @@ class XivoCTICommand(BaseCommand):
                              'Interface unpaused successfully',
                              'Agent logged out',
                              'Agent logged in']:
-                        if actionid in self.ami_requests[astid]:
-                                # log.info('%s AMI Response=Success : (tracked) %s %s' % (astid, event, self.ami_requests[astid][actionid]))
+                        if actionid in self.amirequests[astid]:
+                                # log.info('%s AMI Response=Success : (tracked) %s %s' % (astid, event, self.amirequests[astid][actionid]))
                                 pass
                         elif actionid == '00':
                                 log.debug('%s AMI Response=Success : %s (init)' % (astid, event))
@@ -2365,8 +2365,8 @@ class XivoCTICommand(BaseCommand):
                 else:
                         log.warning('%s AMI Response=Success : untracked message (%s) <%s>' % (astid, actionid, msg))
                         
-                if actionid in self.ami_requests[astid]:
-                        del self.ami_requests[astid][actionid]
+                if actionid in self.amirequests[astid]:
+                        del self.amirequests[astid][actionid]
                 return
         
         def amiresponse_error(self, astid, event, nocolon):
@@ -2398,20 +2398,20 @@ class XivoCTICommand(BaseCommand):
                              'Unable to add interface: Already there',
                              'Unable to remove interface from queue: No such queue',
                              'Unable to remove interface: Not there'] :
-                        if actionid in self.ami_requests[astid]:
-                                log.warning('%s AMI Response=Error : %s %s' % (astid, event, self.ami_requests[astid][actionid]))
+                        if actionid in self.amirequests[astid]:
+                                log.warning('%s AMI Response=Error : %s %s' % (astid, event, self.amirequests[astid][actionid]))
                         elif actionid == '00':
                                 log.debug('%s AMI Response=Error : %s (init)' % (astid, event))
                         else:
                                 log.warning('%s AMI Response=Error : %s' % (astid, event))
                 else:
-                        if actionid in self.ami_requests[astid]:
-                                log.warning('%s AMI Response=Error : (unknown message) %s %s' % (astid, event, self.ami_requests[astid][actionid]))
+                        if actionid in self.amirequests[astid]:
+                                log.warning('%s AMI Response=Error : (unknown message) %s %s' % (astid, event, self.amirequests[astid][actionid]))
                         else:
                                 log.warning('%s AMI Response=Error : (unknown message) %s' % (astid, event))
                                 
-                if actionid in self.ami_requests[astid]:
-                        del self.ami_requests[astid][actionid]
+                if actionid in self.amirequests[astid]:
+                        del self.amirequests[astid][actionid]
                 return
         
         def amiresponse_mailboxcount(self, astid, event):
@@ -3371,7 +3371,11 @@ class XivoCTICommand(BaseCommand):
                         log.warning('%s ami_queuestatuscomplete : no queue list has been defined' % astid)
                         return
                 for qname in self.weblist['queues'][astid].get_queues():
-                        self.__ami_execute__(astid, 'sendcommand', 'Command', [('Command', 'queue show %s' % qname)])
+                        actionid = self.__ami_execute__(astid, 'sendcommand', 'Command', [('Command', 'queue show %s' % qname)])
+                        # the AMI reply to the "queue show" command is tricky so that it is like it was never answered
+                        # clean self.amirequests anyway
+                        if actionid in self.amirequests[astid]:
+                                del self.amirequests[astid][actionid]
                         
                 for aid, v in self.last_agents[astid].iteritems():
                         if v:
@@ -3807,7 +3811,7 @@ class XivoCTICommand(BaseCommand):
         def ami_statuscomplete(self, astid, event):
                 log.info('%s ami_statuscomplete : %d %d %d' % (astid,
                                                                len(self.uniqueids[astid]),
-                                                               len(self.ami_requests[astid]),
+                                                               len(self.amirequests[astid]),
                                                                len(self.getvar_requests[astid])))
                 return
         
