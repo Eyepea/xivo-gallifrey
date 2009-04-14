@@ -439,7 +439,7 @@ def handle_ami_event(astid, idata):
         if astid not in configs:
                 log.info('%s : no such asterisk Id' % astid)
                 return
-
+        
         full_idata = save_for_next_packet_events[astid] + idata
         evlist = full_idata.split('\r\n\r\n')
         save_for_next_packet_events[astid] = evlist.pop()
@@ -491,6 +491,10 @@ def handle_ami_event(astid, idata):
                                                                 del waiting_actionid_timer[actionid]
                                                 except Exception:
                                                         log.exception('%s (command reply to %s, %s)' % (astid, connreply, actionid))
+                                        try:
+                                                commandclass.amiresponse_follows(astid, this_event, nocolon)
+                                        except Exception:
+                                                log.exception('%s amiresponse_follows (%s) (%s)' % (astid, this_event, nocolon))
                                 elif response == 'Success':
                                         try:
                                                 commandclass.amiresponse_success(astid, this_event, nocolon)

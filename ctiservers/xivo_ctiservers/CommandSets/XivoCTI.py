@@ -2307,6 +2307,13 @@ class XivoCTICommand(BaseCommand):
                 log.info('%s ami_hanguprequest : %s' % (astid, event))
                 return
         
+        def amiresponse_follows(self, astid, event, nocolon):
+                actionid = event.get('ActionID')
+                # log.info('%s amiresponse_follows : %s %s' % (astid, event, nocolon))
+                if actionid in self.amirequests[astid]:
+                        del self.amirequests[astid][actionid]
+                return
+        
         def amiresponse_success(self, astid, event, nocolon):
                 msg = event.get('Message')
                 actionid = event.get('ActionID')
@@ -3371,11 +3378,7 @@ class XivoCTICommand(BaseCommand):
                         log.warning('%s ami_queuestatuscomplete : no queue list has been defined' % astid)
                         return
                 for qname in self.weblist['queues'][astid].get_queues():
-                        actionid = self.__ami_execute__(astid, 'sendcommand', 'Command', [('Command', 'queue show %s' % qname)])
-                        # the AMI reply to the "queue show" command is tricky so that it is like it was never answered
-                        # clean self.amirequests anyway
-                        if actionid in self.amirequests[astid]:
-                                del self.amirequests[astid][actionid]
+                        self.__ami_execute__(astid, 'sendcommand', 'Command', [('Command', 'queue show %s' % qname)])
                         
                 for aid, v in self.last_agents[astid].iteritems():
                         if v:

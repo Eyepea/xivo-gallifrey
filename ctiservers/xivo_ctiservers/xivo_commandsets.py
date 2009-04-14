@@ -339,6 +339,8 @@ class BaseCommand:
                 # log.info('%s : %s' % (astid, event))
                 return
         
+        def amiresponse_follows(self, astid, event, nocolon):
+                return
         def amiresponse_success(self, astid, event, nocolon):
                 return
         def amiresponse_error(self, astid, event, nocolon):
