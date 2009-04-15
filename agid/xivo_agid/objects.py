@@ -312,34 +312,34 @@ class User:
                    'outcallerid', 'bsfilter', 'preprocess_subroutine', 'mobilephonenumber')
 
         if xid:
-                cursor.query("SELECT ${columns} FROM userfeatures "
-                             "WHERE id = %s "
-                             "AND internal = 0 "
-                             "AND commented = 0",
-                             columns,
-                             (xid,))
+            cursor.query("SELECT ${columns} FROM userfeatures "
+                         "WHERE id = %s "
+                         "AND internal = 0 "
+                         "AND commented = 0",
+                         columns,
+                         (xid,))
         elif exten and context:
-                contextinclude = Context(agi, cursor, context).include
-                cursor.query("SELECT ${columns} FROM userfeatures "
-                             "WHERE number = %s "
-                             "AND context IN (" + ", ".join(["%s"] * len(contextinclude)) + ") "
-                             "AND internal = 0 "
-                             "AND commented = 0",
-                             columns,
-                             [exten] + contextinclude)
+            contextinclude = Context(agi, cursor, context).include
+            cursor.query("SELECT ${columns} FROM userfeatures "
+                         "WHERE number = %s "
+                         "AND context IN (" + ", ".join(["%s"] * len(contextinclude)) + ") "
+                         "AND internal = 0 "
+                         "AND commented = 0",
+                         columns,
+                         [exten] + contextinclude)
         elif name and protocol:
-                protocol = protocol.lower()
+            protocol = protocol.lower()
 
-                if protocol == 'iax2':
-                        protocol = 'iax'
+            if protocol == 'iax2':
+                    protocol = 'iax'
 
-                cursor.query("SELECT ${columns} FROM userfeatures "
-                             "WHERE name = %s "
-                             "AND protocol = %s "
-                             "AND internal = 0 "
-                             "AND commented = 0",
-                             columns,
-                             (name, protocol))
+            cursor.query("SELECT ${columns} FROM userfeatures "
+                         "WHERE name = %s "
+                         "AND protocol = %s "
+                         "AND internal = 0 "
+                         "AND commented = 0",
+                         columns,
+                         (name, protocol))
         else:
             raise LookupError("id or exten@context must be provided to look up an user entry")
 
