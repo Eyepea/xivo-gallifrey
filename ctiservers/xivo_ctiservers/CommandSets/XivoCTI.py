@@ -101,6 +101,7 @@ class XivoCTICommand(BaseCommand):
                      'featuresget', 'featuresput',
                      'getguisettings',
                      'logclienterror',
+                     'powerevent',
                      'phones',
                      'agents', 'agent',
                      'queues',
@@ -3831,10 +3832,7 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def ami_statuscomplete(self, astid, event):
-                log.info('%s ami_statuscomplete : %d %d %d' % (astid,
-                                                               len(self.uniqueids[astid]),
-                                                               len(self.amirequests[astid]),
-                                                               len(self.getvar_requests[astid])))
+                log.info('%s ami_statuscomplete')
                 return
         
         def ami_join(self, astid, event):
