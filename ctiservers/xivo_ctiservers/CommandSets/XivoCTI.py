@@ -2255,6 +2255,9 @@ class XivoCTICommand(BaseCommand):
                 if uid in self.ignore_dtmf[astid]:
                         del self.ignore_dtmf[astid][uid]
                         
+                if chan in self.queues_channels_list[astid]:
+                        del self.queues_channels_list[astid][chan]
+                        
                 if uid in self.uniqueids[astid]:
                         vv = self.uniqueids[astid][uid]
                         if chan == vv['channel']:
