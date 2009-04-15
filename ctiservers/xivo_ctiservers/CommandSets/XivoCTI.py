@@ -118,6 +118,20 @@ class XivoCTICommand(BaseCommand):
                      'availstate',
                      'keepalive',
                      'originate', 'transfer', 'atxfer', 'hangup', 'simplehangup', 'pickup']
+        astid_vars = ['stats_queues',
+                      'last_agents',
+                      'last_queues',
+                      'attended_targetchannels',
+                      'uniqueids',
+                      'channels',
+                      'parkedcalls',
+                      'ignore_dtmf',
+                      'queues_channels_list',
+                      'origapplication',
+                      'events_link',
+                      'localchans',
+                      'amirequests',
+                      'getvar_requests']
         
         def __init__(self, amilist, ctiports, queued_threads_pipe):
 		BaseCommand.__init__(self)

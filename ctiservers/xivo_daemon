@@ -302,7 +302,6 @@ def manage_info_connections(connid, msg, sep):
                                         except Exception:
                                                 log.exception('INFO %s' % usefulmsg)
                         elif usefulmsg.startswith('show_var '):
-                                # uniqueids, channels, parkedcalls, ignore_dtmf, amirequests, ...
                                 command_args = usefulmsg.split()
                                 if len(command_args) > 2:
                                         astid = command_args[1]
@@ -310,11 +309,31 @@ def manage_info_connections(connid, msg, sep):
                                         if hasattr(commandclass, varname):
                                                 tvar = getattr(commandclass, varname)
                                                 if astid in tvar:
-                                                        connid.sendall('%s for %s\n' % (varname, astid))
+                                                        connid.sendall('%s on %s\n' % (varname, astid))
                                                         for ag, agp in tvar[astid].iteritems():
                                                                 connid.sendall('%s %s\n' % (ag, agp))
+                                                else:
+                                                        connid.sendall('no such astid %s\n' % astid)
                                         else:
                                                 connid.sendall('no such variable %s\n' % varname)
+                                else:
+                                        connid.sendall('first argument : astid value\n')
+                                        connid.sendall('second argument : one of %s\n' % commandclass.astid_vars)
+                        elif usefulmsg.startswith('show_varsizes '):
+                                command_args = usefulmsg.split()
+                                if len(command_args) > 1:
+                                        astid = command_args[1]
+                                        for varname in commandclass.astid_vars:
+                                                if hasattr(commandclass, varname):
+                                                        tvar = getattr(commandclass, varname)
+                                                        if astid in tvar:
+                                                                connid.sendall('%s on %s: %d\n' % (varname, astid, len(tvar[astid])))
+                                                        else:
+                                                                connid.sendall('no such astid %s\n' % astid)
+                                                else:
+                                                        connid.sendall('no such variable %s\n' % varname)
+                                else:
+                                        connid.sendall('argument : astid value\n')
                         elif usefulmsg == 'show_logged_ip':
                                 for user, info in commandclass.connected_users().iteritems():
                                         if 'connection' in info['login']:
