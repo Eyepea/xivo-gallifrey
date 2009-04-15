@@ -1,0 +1,78 @@
+2009-04-15  Adrien DELLE CAVE <decryptus@proformatique.com>
+
+	pf_magic_pickupmark.patch
+	$Revision$
+	$Date$
+
+	Added possibility to do a magic pickup with PICKUPMARK.
+	PICKUPMARK variable can contains multiple extensions separated by an '&'.
+
+Index: asterisk-1.4.24/channels/chan_sip.c
+===================================================================
+--- asterisk-1.4.24.orig/channels/chan_sip.c	2009-04-15 19:15:17.000000000 +0200
++++ asterisk-1.4.24/channels/chan_sip.c		2009-04-15 19:15:11.000000000 +0200
+@@ -14434,7 +14434,10 @@
+ 		return -1;
+ 	}
+ 
+-	snprintf(argument, length, "%s@%s", extension, context);
++	if (!ast_strlen_zero(context))
++		snprintf(argument, length, "%s@%s", extension, context);
++	else
++		snprintf(argument, length - 1, "%s", extension);
+ 
+ 	/* There is no point in capturing the return value since pickup_exec
+ 	   doesn't return anything meaningful unless the passed data is an empty
+@@ -14614,8 +14617,16 @@
+ 					error = 1;
+ 				} else {
+ 					ast_log(LOG_NOTICE, "Trying to pick up %s@%s\n", subscription->exten, subscription->context);
+-					pickup->exten   = ast_strdup(subscription->exten);
+-					pickup->context = ast_strdup(subscription->context);
++
++					char tmp[255];
++					snprintf(tmp, sizeof(tmp), "%s%%%s@PICKUPMARK&%s@%s",
++								   p->exten,
++								   p->context,
++								   p->exten,
++								   p->context);
++
++					pickup->exten   = ast_strdup(tmp);
++					pickup->context = ast_strdup("");
+ 					ast_mutex_unlock(&subscription->lock);
+ 					if (subscription->owner) {
+ 						ast_channel_unlock(subscription->owner);
+Index: asterisk-1.4.24/apps/app_directed_pickup.c
+===================================================================
+--- asterisk-1.4.24.orig/apps/app_directed_pickup.c	2009-04-15 19:06:28.000000000 +0200
++++ asterisk-1.4.24/apps/app_directed_pickup.c		2009-04-15 19:17:07.000000000 +0200
+@@ -117,15 +117,24 @@
+ {
+ 	int res = -1;
+ 	const char *tmp = NULL;
++	char *pmarktmp = NULL;
++	char *exten = NULL;
+ 	struct ast_channel *target = NULL;
+ 
+ 	while ((target = ast_channel_walk_locked(target))) {
+-		if ((tmp = pbx_builtin_getvar_helper(target, PICKUPMARK)) &&
+-		    !strcasecmp(tmp, mark) &&
+-		    can_pickup(target)) {
+-			res = pickup_do(chan, target);
++		if (!(tmp = pbx_builtin_getvar_helper(target, PICKUPMARK)) || ast_strlen_zero(tmp)) {
+ 			ast_channel_unlock(target);
+-			break;
++			continue;
++		}
++
++		pmarktmp = ast_strdupa(tmp);
++
++		while ((exten = strsep(&pmarktmp, "&"))) {
++			if (!strcasecmp(exten, mark) && can_pickup(target)) {
++				res = pickup_do(chan, target);
++				ast_channel_unlock(target);
++				return res;
++			}
+ 		}
+ 		ast_channel_unlock(target);
+ 	}

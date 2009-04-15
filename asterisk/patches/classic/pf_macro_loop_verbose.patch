@@ -15,7 +15,7 @@ Index: asterisk-1.4.24/apps/app_macro.c
  
  	if (depth >= maxdepth) {
 -		ast_log(LOG_ERROR, "Macro():  possible infinite loop detected.  Returning early.\n");
-+		ast_log(LOG_ERROR, "Macro(%s): possible infinite loop detected. Returning early.\n", data);
++		ast_log(LOG_ERROR, "Macro(%s): possible infinite loop detected. Returning early.\n", (char *)data);
  		ast_module_user_remove(u);
  		return 0;
  	}
