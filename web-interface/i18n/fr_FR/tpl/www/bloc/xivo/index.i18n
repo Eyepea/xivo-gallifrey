@@ -28,6 +28,9 @@ Durée de fonctionnement
 ; sysinfos_loadaverage
 Moyenne de la charge système
 
+; sysinfos_cpu
+Processeur
+
 ; sysinfos_memory
 Mémoire
 
@@ -36,6 +39,15 @@ Type
 
 ; sysinfos_col_percent
 Pourcentage
+
+; sysinfos_col_user
+Utilisateur
+
+; sysinfos_col_system
+Système
+
+; sysinfos_col_wait
+Attente
 
 ; sysinfos_col_free
 Libre

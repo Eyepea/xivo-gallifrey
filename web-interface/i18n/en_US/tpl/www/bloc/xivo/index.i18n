@@ -28,6 +28,9 @@ Uptime
 ; sysinfos_loadaverage
 Load average
 
+; sysinfos_cpu
+CPU
+
 ; sysinfos_memory
 Memory
 
@@ -36,6 +39,15 @@ Type
 
 ; sysinfos_col_percent
 Percent
+
+; sysinfos_col_user
+User
+
+; sysinfos_col_system
+System
+
+; sysinfos_col_wait
+Wait
 
 ; sysinfos_col_free
 Free

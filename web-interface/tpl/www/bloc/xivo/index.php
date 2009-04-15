@@ -47,11 +47,21 @@ endif;
 
 $this->set_var('memtotal',$meminfo['memtotal']);
 
-if(xivo_issa('system',$sysinfo) === true
-&& xivo_issa('load',$sysinfo['system']) === true):
-	$load = vsprintf('%.2f %.2f %.2f',$sysinfo['system']['load']);
-else:
-	$load = '-';
+$cputotalpercent = 0;
+$load = $cputotal = $cpuuser = $cpusystem = $cpuwait = '-';
+
+if(xivo_issa('system',$sysinfo) === true):
+	if(xivo_issa('load',$sysinfo['system']) === true):
+		$load = vsprintf('%.2f %.2f %.2f',$sysinfo['system']['load']);
+	endif;
+
+	if(xivo_issa('cpu',$sysinfo['system']) === true):
+		$cputotalpercent = array_sum($sysinfo['system']['cpu']);
+		$cputotal = $this->bbf('number_percent',$cputotalpercent);
+		$cpuuser = $this->bbf('number_percent',$sysinfo['system']['cpu']['user']);
+		$cpusystem = $this->bbf('number_percent',$sysinfo['system']['cpu']['system']);
+		$cpuwait = $this->bbf('number_percent',$sysinfo['system']['cpu']['wait']);
+	endif;
 endif;
 
 ?>
@@ -97,6 +107,28 @@ endif;
 				<tr class="l-infos-1on2">
 					<td class="td-left txt-left"><?=$this->bbf('sysinfos_loadaverage');?></td>
 					<td class="td-right txt-right"><?=$load?></td>
+				</tr>
+			</table>
+		</div>
+		<div id="cpuinfo">
+			<table border="0" cellpadding="0" cellspacing="0">
+				<tr class="sb-top">
+					<th colspan="5" class="th-left th-right"><?=$this->bbf('sysinfos_cpu');?></th>
+				</tr>
+				<tr class="l-subth">
+					<td colspan="2"><?=$this->bbf('sysinfos_col_percent');?></td>
+					<td><?=$this->bbf('sysinfos_col_user');?></td>
+					<td><?=$this->bbf('sysinfos_col_system');?></td>
+					<td class="td-right"><?=$this->bbf('sysinfos_col_wait');?></td>
+				</tr>
+				<tr class="l-infos-1on2">
+					<td class="gauge">
+						<div><div style="width: <?=round($cputotalpercent);?>px;">&nbsp;</div></div>
+					</td>
+					<td class="gaugepercent txt-right"><?=$cputotal?></td>
+					<td class="txt-right"><?=$cpuuser?></td>
+					<td class="txt-right"><?=$cpusystem?></td>
+					<td class="td-right txt-right"><?=$cpuwait?></td>
 				</tr>
 			</table>
 		</div>
