@@ -32,10 +32,10 @@ Index: asterisk-1.4.24/channels/chan_sip.c
 +
 +					char tmp[255];
 +					snprintf(tmp, sizeof(tmp), "%s%%%s@PICKUPMARK&%s@%s",
-+								   p->exten,
-+								   p->context,
-+								   p->exten,
-+								   p->context);
++								   subscription->exten,
++								   subscription->context,
++								   subscription->exten,
++								   subscription->context);
 +
 +					pickup->exten   = ast_strdup(tmp);
 +					pickup->context = ast_strdup("");
