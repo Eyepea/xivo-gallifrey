@@ -164,7 +164,7 @@ class XivoCTICommand(BaseCommand):
                 self.stats_queues = {}
                 self.last_agents = {}
                 self.last_queues = {}
-                self.attended_targetchannels = {}
+                self.attended_targetchannels = {} # leaks
                 self.uniqueids = {}
                 self.channels = {}
                 self.parkedcalls = {}
@@ -172,6 +172,7 @@ class XivoCTICommand(BaseCommand):
                 self.queues_channels_list = {}
                 self.origapplication = {}
                 self.events_link = {}
+                self.localchans = {} # leaks
                 # astid + actionid (AMI) indexed hashes
                 self.amirequests = {}
                 self.getvar_requests = {}
@@ -182,7 +183,6 @@ class XivoCTICommand(BaseCommand):
                 self.parting_astid = False
                 self.parting_context = False
                 
-                self.localchans = {}
                 self.required_client_version = REQUIRED_CLIENT_VERSION
                 
                 return
@@ -384,6 +384,8 @@ class XivoCTICommand(BaseCommand):
                                 # self.__login_agent__(userinfo)
                         if subscribe is not None:
                                 userinfo['subscribe'] = 0
+                        if 'keepalive' in loginparams and 'login' in userinfo:
+                                userinfo['login']['keepalive'] = loginparams['keepalive']
                 else:
                         userinfo = None
                 return userinfo
@@ -683,7 +685,7 @@ class XivoCTICommand(BaseCommand):
                                            self.queues_channels_list, self.attended_targetchannels,
                                            self.ignore_dtmf, self.parkedcalls, self.origapplication,
                                            self.amirequests, self.getvar_requests,
-                                           self.events_link]:
+                                           self.events_link, self.localchans]:
                                 if astid not in astid_hash:
                                         astid_hash[astid] = {}
                 if listname in self.weblistprops:
@@ -1496,13 +1498,13 @@ class XivoCTICommand(BaseCommand):
         
         def __fill_uniqueids__(self, astid, uid1, uid2, chan1, chan2, where):
                 if uid1 in self.uniqueids[astid]:
-                    (tmpchan, tmpuid) = self.__translate_local_channel_uid__(self.uniqueids[astid][uid1]['channel'], uid1)
+                    (tmpchan, tmpuid) = self.__translate_local_channel_uid__(astid, self.uniqueids[astid][uid1]['channel'], uid1)
                     if chan1 == tmpchan:
                         self.uniqueids[astid][uid1].update({where : chan2,
                                                             'channel' : chan1,
                                                             'time-%s' % where : time.time()})
                 if uid2 in self.uniqueids[astid]:
-                    (tmpchan, tmpuid) = self.__translate_local_channel_uid__(self.uniqueids[astid][uid2]['channel'], uid2)
+                    (tmpchan, tmpuid) = self.__translate_local_channel_uid__(astid, self.uniqueids[astid][uid2]['channel'], uid2)
                     if chan2 == tmpchan:
                         self.uniqueids[astid][uid2].update({where : chan1,
                                                             'channel' : chan2,
@@ -1520,7 +1522,7 @@ class XivoCTICommand(BaseCommand):
                 data    = event.get('Data', 'NOXIVO-DATA').split('|')
                 # actionid = self.amilist.execute(astid, 'getvar', src, 'XIVO_DSTNUM')
                 # self.getvar_requests[astid][actionid] = {'channel' : src, 'variable' : 'XIVO_DSTNUM'}
-                self.__link_local_channels__(src, uidsrc, dst, uiddst)
+                self.__link_local_channels__(astid, src, uidsrc, dst, uiddst)
                 
                 phoneidsrc = self.__phoneid_from_channel__(astid, src)
                 phoneiddst = self.__phoneid_from_channel__(astid, dst)
@@ -1847,7 +1849,7 @@ class XivoCTICommand(BaseCommand):
                 clidname2 = event.get('CallerIDName2', 'NOXIVO-CID2').decode('utf8')
                 uid1 = event.get('Uniqueid1')
                 uid2 = event.get('Uniqueid2')
-
+                
                 log.info('%s AMI_LINK : %s' % (astid, event))
                 if uid1 not in self.events_link[astid]:
                         self.events_link[astid][uid1] = time.time()
@@ -1855,12 +1857,12 @@ class XivoCTICommand(BaseCommand):
                         log.warning('%s ignoring a Link event that already occured : %s' % (astid, event))
                         log.debug('%s events_link : %s' % (astid, self.events_link[astid]))
                         return
-
+                
                 # translate Local/xxx,1 channels
-                self.__link_local_channels__(chan1, uid1, chan2, uid2)
-
-                (chan1, _uid1) = self.__translate_local_channel_uid__(chan1, uid1)
-                (chan2, _uid2) = self.__translate_local_channel_uid__(chan2, uid2)
+                self.__link_local_channels__(astid, chan1, uid1, chan2, uid2)
+                
+                (chan1, _uid1) = self.__translate_local_channel_uid__(astid, chan1, uid1)
+                (chan2, _uid2) = self.__translate_local_channel_uid__(astid, chan2, uid2)
                 
                 if self.__ignore_dtmf__(astid, uid1, 'link'):
                         return
@@ -2017,8 +2019,8 @@ class XivoCTICommand(BaseCommand):
                         else:
                                 del self.events_link[astid][uid1]
 
-                (chan1, _uid1) = self.__translate_local_channel_uid__(chan1, uid1)
-                (chan2, _uid2) = self.__translate_local_channel_uid__(chan2, uid2)
+                (chan1, _uid1) = self.__translate_local_channel_uid__(astid, chan1, uid1)
+                (chan2, _uid2) = self.__translate_local_channel_uid__(astid, chan2, uid2)
 
                 if self.__ignore_dtmf__(astid, uid1, 'unlink'):
                         return
@@ -3906,7 +3908,7 @@ class XivoCTICommand(BaseCommand):
                 oldname = event.get('Oldname')
                 newname = event.get('Newname')
                 uid = event.get('Uniqueid')
-                (oldname, _uid) = self.__translate_local_channel_uid__(oldname, uid)
+                (oldname, _uid) = self.__translate_local_channel_uid__(astid, oldname, uid)
                 
                 oldphoneid = self.__phoneid_from_channel__(astid, oldname)
                 oldtrunkid = self.__trunkid_from_channel__(astid, oldname)
@@ -5355,8 +5357,8 @@ class XivoCTICommand(BaseCommand):
                 fastagi.set_callerid(calleridtoset)
                 return
 
-        def __link_local_channels__(self, chan1, uid1, chan2, uid2):
-                #Â TODO : use astid !
+        def __link_local_channels__(self, astid, chan1, uid1, chan2, uid2):
+                # TODO : use astid !
                 if chan1.startswith('Local/') and not chan2.startswith('Local/'):
                     localchan = chan1
                     otherchan = (chan2, uid2)
@@ -5366,20 +5368,20 @@ class XivoCTICommand(BaseCommand):
                 else:
                     return
                 log.debug('__link_local_channels__ %s => %s' % (localchan, otherchan))
-                if localchan in self.localchans:
-                    log.debug('__link_local_channels__ %s already known : %s' % (localchan, self.localchans[localchan]))
-                self.localchans[localchan] = otherchan
+                if localchan in self.localchans[astid]:
+                    log.debug('__link_local_channels__ %s already known : %s' % (localchan, self.localchans[astid][localchan]))
+                self.localchans[astid][localchan] = otherchan
 
-        def __translate_local_channel_uid__(self, chan, uid):
-                #Â TODO : use astid !
+        def __translate_local_channel_uid__(self, astid, chan, uid):
+                # TODO : use astid !
                 chan = chan.replace('<ZOMBIE>', '')
                 if not chan.startswith('Local/'):# or chan.endswith('<ZOMBIE>'):
                     return (chan, uid)
                 t = chan.split(',')
                 friendchan = '%s,%d' % (t[0], 3-int(t[1]))
-                if self.localchans.has_key(friendchan):
-                    log.debug('__translate_local_channel_uid__ %s => %s' % ((chan, uid), self.localchans[friendchan]))
-                    return self.localchans[friendchan]
+                if self.localchans[astid].has_key(friendchan):
+                    log.debug('__translate_local_channel_uid__ %s => %s' % ((chan, uid), self.localchans[astid][friendchan]))
+                    return self.localchans[astid][friendchan]
                 else:
                     return (chan, uid)
 

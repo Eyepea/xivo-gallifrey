@@ -179,8 +179,8 @@ def manage_cti_connections(connid, msg, sep):
                                                 log.warning('unlogged %s is attempting a %s (TCP) : %s'
                                                             % (requester, command.name, command.args))
                         except Exception:
-                                log.exception('CTI connection when managing [%s] for %s'
-                                              % (command.name, requester))
+                                log.exception('CTI connection when managing [%s, %s] for %s'
+                                              % (command.name, command.type, requester))
                 else:
                         connid.sendall('Unknown Command <%s>\n' % command.name)
 
@@ -301,22 +301,20 @@ def manage_info_connections(connid, msg, sep):
                                                         connid.sendall('%s %s\n' % (id, idv))
                                         except Exception:
                                                 log.exception('INFO %s' % usefulmsg)
-                        elif usefulmsg == 'show_uniqueids':
-                                for astid, uids in commandclass.uniqueids.iteritems():
-                                        try:
-                                                connid.sendall('uniqueids for %s\n' % astid)
-                                                for ag, agp in uids.iteritems():
-                                                        connid.sendall('%s %s\n' % (ag, agp))
-                                        except Exception:
-                                                log.exception('INFO %s' % usefulmsg)
-                        elif usefulmsg == 'show_amirequests':
-                                for astid, ars in commandclass.amirequests.iteritems():
-                                        try:
-                                                connid.sendall('amirequests for %s\n' % astid)
-                                                for ag, agp in ars.iteritems():
-                                                        connid.sendall('%s %s\n' % (ag, agp))
-                                        except Exception:
-                                                log.exception('INFO %s' % usefulmsg)
+                        elif usefulmsg.startswith('show_var '):
+                                # uniqueids, channels, parkedcalls, ignore_dtmf, amirequests, ...
+                                command_args = usefulmsg.split()
+                                if len(command_args) > 2:
+                                        astid = command_args[1]
+                                        varname = command_args[2]
+                                        if hasattr(commandclass, varname):
+                                                tvar = getattr(commandclass, varname)
+                                                if astid in tvar:
+                                                        connid.sendall('%s for %s\n' % (varname, astid))
+                                                        for ag, agp in tvar[astid].iteritems():
+                                                                connid.sendall('%s %s\n' % (ag, agp))
+                                        else:
+                                                connid.sendall('no such variable %s\n' % varname)
                         elif usefulmsg == 'show_logged_ip':
                                 for user, info in commandclass.connected_users().iteritems():
                                         if 'connection' in info['login']:

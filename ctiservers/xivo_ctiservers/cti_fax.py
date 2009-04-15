@@ -71,9 +71,11 @@ class Fax:
                         pdf2fax_command = '%s -o %s %s' % (PDF2FAX, faxfilepath, tmpfilepath)
                         log.info('fax (ref %s) PDF to TIF(F) : %s' % (self.reference, pdf2fax_command))
                         reply = 'ko;convert-pdftif'
-                        ret = os.system(pdf2fax_command)
+                        sysret = os.system(pdf2fax_command)
+                        ret = os.WEXITSTATUS(sysret)
                         if ret != 0:
-                                log.warning('fax (ref %s) PDF to TIF(F) returned : %s' % (self.reference, ret))
+                                log.warning('fax (ref %s) PDF to TIF(F) returned : %s (exitstatus = %s, stopsignal = %s)'
+                                            % (self.reference, sysret, ret, os.WSTOPSIG(sysret)))
                 else:
                         reply = 'ko;filetype'
                         log.warning('fax (ref %s) the file received is a <%s> one : format not supported' % (self.reference, brieffile))
