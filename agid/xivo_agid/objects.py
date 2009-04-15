@@ -331,7 +331,7 @@ class User:
             protocol = protocol.lower()
 
             if protocol == 'iax2':
-                    protocol = 'iax'
+                protocol = 'iax'
 
             cursor.query("SELECT ${columns} FROM userfeatures "
                          "WHERE name = %s "
