@@ -298,7 +298,7 @@ class VMBox:
 
 
 class User:
-    def __init__(self, agi, cursor, xid=None, feature_list=None, exten=None, context=None):
+    def __init__(self, agi, cursor, xid=None, feature_list=None, exten=None, context=None, name=None, protocol=None):
         self.agi = agi
         self.cursor = cursor
 
@@ -327,6 +327,19 @@ class User:
                              "AND commented = 0",
                              columns,
                              [exten] + contextinclude)
+        elif name and protocol:
+                protocol = protocol.lower()
+
+                if protocol == 'iax2':
+                        protocol = 'iax'
+
+                cursor.query("SELECT ${columns} FROM userfeatures "
+                             "WHERE name = %s "
+                             "AND protocol = %s "
+                             "AND internal = 0 "
+                             "AND commented = 0",
+                             columns,
+                             (name, protocol))
         else:
             raise LookupError("id or exten@context must be provided to look up an user entry")
 
