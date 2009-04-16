@@ -1,0 +1,1 @@
+invoke-rc.d dhcp3-server restart

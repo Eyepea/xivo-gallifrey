@@ -1,17 +1,17 @@
 ## Network options
 inet_protocols = all
 inet_interfaces = all
-myhostname = xivo.lan.proformatique.com
 myorigin = /etc/mailname
-mydestination = #XIVO_HOSTNAME#.#XIVO_DOMAIN#, localhost.#XIVO_DOMAIN#, localhost
+mydestination = ${myhostname}, localhost.localdomain, localhost
 mynetworks =	127.0.0.0/8
 		[::1/128]
 
 relayhost = #XIVO_SMTP_RELAYHOST#
+smtp_fallback_relay = #XIVO_SMTP_FALLBACK_RELAYHOST#
 
 alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
-#canonical_maps = hash:$config_directory/canonical
+#canonical_maps = hash:${config_directory}/canonical
 
 ## Security options
 # (you can test any directive by prepending warn_if_reject)
@@ -39,13 +39,13 @@ smtpd_etrn_restrictions =
         reject
 smtpd_data_restrictions =
         reject_multi_recipient_bounce
-smtpd_authorized_verp_clients = $mynetworks
+smtpd_authorized_verp_clients = ${mynetworks}
 smtpd_delay_open_until_valid_rcpt = yes
 disable_vrfy_command = yes
 strict_rfc821_envelopes = yes
 strict_mime_encoding_domain = yes
 biff = no
-#header_checks = regexp:$config_directory/header_checks
+#header_checks = regexp:${config_directory}/header_checks
 smtpd_delay_reject = yes
 
 ## Limits
@@ -76,7 +76,7 @@ max_idle = 30s
 
 ## Misc
 recipient_delimiter = +
-#append_at_myorigin = no
+append_at_myorigin = yes
 append_dot_mydomain = no
 
 readme_directory = /usr/share/doc/postfix

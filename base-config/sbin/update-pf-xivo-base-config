@@ -1,39 +1,53 @@
 #!/bin/bash
 
 BASE_TEMPLATE_DIR=/usr/share/pf-xivo-base-config/templates
+CUSTOM_TEMPLATE_DIR=/etc/pf-xivo/custom-templates
 
 . /etc/pf-xivo/common.conf
 
 
 # TODO:
-#  - test if XIVO_HAS_VOIP_VLAN == 0
 #  - handle date in 'common' and serial increase for phone configs (special hooks by directory ?)
-#  - handle service restart
-#  - handle configs/services groups, to regenerate and restart partial
-#  - split XIVO_HAS_VOIP_VLAN: is yes/no Linksys and 0/1 for the rest
+#  - handle service restart (if config changed only)
 #
 # DHCP specific: include an extra file and manage only the VoIP subnet
 #
-# XIVO_IFACE: provisioning, and DHCP default for listening interface (and extra ?)
-#
 
 
-if [ -z "${XIVO_IP}" -o -z "${XIVO_NETMASK}" ]; then
-  echo "ERROR: Network badly configured"
+if [ -z "${XIVO_NET4_CIDR}" ]; then
+  echo "ERROR: Network badly configured" >&2
   exit 1
 fi
 
-XIVO_BROADCAST=$(ipcalc -n ${XIVO_IP}/${XIVO_NETMASK} | grep "Broadcast:" | awk '{print $2}')
-XIVO_SUBNET=$(ipcalc -n ${XIVO_IP}/${XIVO_NETMASK} | grep "Network:" | awk '{print $2}' | cut -d/ -f1)
+XIVO_NET4_IP=$(ipcalc -n ${XIVO_NET4_CIDR} | grep "Address:" | awk '{print $2}')
+XIVO_NET4_NETMASK=$(ipcalc -n ${XIVO_NET4_CIDR} | grep "Netmask:" | awk '{print $2}')
+XIVO_NET4_BROADCAST=$(ipcalc -n ${XIVO_NET4_CIDR} | grep "Broadcast:" | awk '{print $2}')
+XIVO_NET4_SUBNET=$(ipcalc -n ${XIVO_NET4_CIDR} | grep "Network:" | awk '{print $2}' | cut -d/ -f1)
 
-if [ -n "${XIVO_VOIP_VLAN_ID}" ]; then
-  XIVO_HAS_VOIP_VLAN=1
+if [ -n "${XIVO_VOIP_VLAN_ID}" -o "${XIVO_VOIP_VLAN_ID}" = "0" ]; then
+  XIVO_HAS_VOIP_VLAN_10=1
+  XIVO_HAS_VOIP_VLAN_yn="yes"
 else
-  XIVO_HAS_VOIP_VLAN=0
+  XIVO_HAS_VOIP_VLAN_10=0
+  XIVO_HAS_VOIP_VLAN_yn="no"
+fi
+
+if [ -z "${XIVO_SMTP_ORIGIN}" ]; then
+  XIVO_SMTP_ORIGIN="${XIVO_HOSTNAME}.${XIVO_DOMAIN}"
+fi
+
+XIVO_NAMESERVER_LIST=
+if [ -n "${XIVO_NAMESERVERS}" ]; then
+  for NS in ${XIVO_NAMESERVERS}; do
+    XIVO_NAMESERVER_LIST="${XIVO_NAMESERVER_LIST}nameserver ${NS}\n"
+  done
+else
+  echo "ERROR: no nameservers defined" >&2
+  exit 1
 fi
 
 
-TEMPLATE_VARS="XIVO_IP XIVO_NETMASK XIVO_BROADCAST XIVO_SUBNET XIVO_VOIP_VLAN_ID XIVO_DHCP_POOL XIVO_HAS_VOIP_VLAN"
+TEMPLATE_VARS=$(compgen -v XIVO_)
 
 generate_file()
 {
@@ -41,31 +55,90 @@ generate_file()
 
   for VAR in ${TEMPLATE_VARS}; do
     VALUE="${!VAR}"
-    sed -i "s/#${VAR}#/${VALUE}/g" ${FILE}
+    sed -i "s#\#${VAR}\##${VALUE}#g" ${FILE}
   done
 }
 
 apply_template_to_file()
 {
-  TEMPLATE_FILE=$1
+  SUBFILE=$1
   RESULT_FILE=$2
 
-  cp -a ${TEMPLATE_FILE} ${RESULT_FILE}
+  cp -a ${BASE_TEMPLATE_FILE} ${RESULT_FILE}
   generate_file ${RESULT_FILE}
 }
 
 apply_template_to_dir()
 {
-  TEMPLATE_DIR=$1
+  SUBDIR=$1
   RESULT_DIR=$2
 
-  cp -a ${TEMPLATE_DIR}/* ${RESULT_DIR}
-  # files not in template dir are ignored
-  FILE_LIST=$(cd ${TEMPLATE_DIR}; find ${RESULT_DIR} -type f -print)
+  cp -a ${BASE_TEMPLATE_DIR}/${SUBDIR}/* ${RESULT_DIR}
+  if [ -d ${CUSTOM_TEMPLATE_DIR}/${SUBDIR} ]; then
+    cp -a ${CUSTOM_TEMPLATE_DIR}/${SUBDIR}/* ${RESULT_DIR}
+  fi
+  FILE_LIST=$(find ${RESULT_DIR} -type f -print)
   for F in ${FILE_LIST}; do
     generate_file ${RESULT_DIR}/${F}
   done
 }
 
-apply_template_to_dir ${BASE_TEMPLATE_DIR} /
+apply_template_to()
+{
+  RESULT_DIR=$1
+  CONFIG_NAME=$2
+
+  mkdir -p ${RESULT_DIR}
+
+  if [ -e ${BASE_TEMPLATE_DIR}/${CONFIG_NAME} ]; then
+    cp -a ${BASE_TEMPLATE_DIR}/${CONFIG_NAME} ${RESULT_DIR}
+  fi
+  if [ -e ${CUSTOM_TEMPLATE_DIR}/${CONFIG_NAME} ]; then
+    cp -a ${CUSTOM_TEMPLATE_DIR}/${CONFIG_NAME} ${RESULT_DIR}
+  fi
+
+  FILE_LIST=$(find ${RESULT_DIR}/${CONFIG_NAME} -type f -print)
+  for F in ${FILE_LIST}; do
+    generate_file ${F}
+  done
+}
+
+check_diff()
+{
+  RESULT_DIR=$1
+  CONFIG_NAME=$2
+
+  FILE_LIST=$(cd ${RESULT_DIR}/${CONFIG_NAME}; find . -type f -printf "%P\n")
+  for F in ${FILE_LIST}; do
+    if ! diff ${RESULT_DIR}/${CONFIG_NAME}/${F} /${F}; then
+      return 1
+    fi
+  done
+
+  return 0
+}
+
+do_restart()
+{
+  CONFIG_NAME=$2
+
+  if [ -f ${CUSTOM_TEMPLATE_DIR}/${CONFIG_NAME}.restart ]; then
+    ${CUSTOM_TEMPLATE_DIR}/${CONFIG_NAME}.restart
+  elif [ -f ${BASE_TEMPLATE_DIR}/${CONFIG_NAME}.restart ]; then
+    ${BASE_TEMPLATE_DIR}/${CONFIG_NAME}.restart
+  fi
+}
+
+BASE_RESULT_DIR=$(mktemp -d)
+
+LIST1=$(cd ${BASE_TEMPLATE_DIR}; find . -mindepth 1 -maxdepth 1 -type d -printf "%P\n")
+LIST2=$(cd ${CUSTOM_TEMPLATE_DIR}; find . -mindepth 1 -maxdepth 1 -type d -printf "%P\n")
+LIST=$(echo ${LIST1} ${LIST2} | sort | uniq)
+
+for P in ${LIST}; do
+  apply_template_to ${BASE_RESULT_DIR} ${P}
+  if ! check_diff ${BASE_RESULT_DIR} ${P}; then
+    do_restart ${P}
+  fi
+done
 
