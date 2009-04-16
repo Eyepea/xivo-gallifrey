@@ -1087,13 +1087,14 @@ while True: # loops over the reloads
                     for sel_o in sels_o:
                         try:
                             sel_o.process_sending()
-                        except ClientConnection.CloseException:
+                        except ClientConnection.CloseException, cexc:
                             if sel_o in userinfo_by_requester:
                                     userinfo = userinfo_by_requester.get(sel_o)
-                                    commandclass.manage_logout(userinfo, 'end')
+                                    commandclass.manage_logout(userinfo, 'end_sending')
                                     del userinfo_by_requester[sel_o]
-                            log.info('TCP socket %s closed(sending) on %s' % (fdlist_established[sel_o],
-                                                                              sel_o.getpeername()))
+                            log.info('TCP socket %s closed(sending %s) on %s' % (fdlist_established[sel_o],
+                                                                                 cexc,
+                                                                                 sel_o.getpeername()))
                             if sel_o in fdlist_established:
                                     del fdlist_established[sel_o]
                             commandclass.disconnected(sel_o)
@@ -1192,17 +1193,17 @@ while True: # loops over the reloads
                                                             if line is None:
                                                                 break
                                                             manage_tcp_connections(sel_i, line, kind)
-                                                    except ClientConnection.CloseException:
+                                                    except ClientConnection.CloseException, cexc:
                                                         if kind == 'CTI':
                                                             if sel_i in userinfo_by_requester:
                                                                 userinfo = userinfo_by_requester.get(sel_i)
-                                                                commandclass.manage_logout(userinfo, 'end')
+                                                                commandclass.manage_logout(userinfo, 'end_receiving')
                                                                 del userinfo_by_requester[sel_i]
                                                         if sel_i in fdlist_established:
                                                                 del fdlist_established[sel_i]
                                                         if requester in commandclass.transfers_ref:
                                                                 commandclass.transfer_endbuf(requester)
-                                                        log.info('TCP socket %s closed(A) on %s' % (kind, requester))
+                                                        log.info('TCP socket %s closed(A %s) on %s' % (kind, cexc, requester))
                                                         if kind == 'CTI':
                                                                 commandclass.disconnected(sel_i)
                                                 else:
@@ -1222,7 +1223,7 @@ while True: # loops over the reloads
                                                         if kind == 'CTI':
                                                                 if sel_i in userinfo_by_requester:
                                                                         userinfo = userinfo_by_requester.get(sel_i)
-                                                                        commandclass.manage_logout(userinfo, 'end')
+                                                                        commandclass.manage_logout(userinfo, 'end_receiving')
                                                                         del userinfo_by_requester[sel_i]
                                                     doclose = False
                                                     if kind == 'WEBI':

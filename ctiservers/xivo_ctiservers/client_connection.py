@@ -29,8 +29,9 @@ from collections import deque
 
 class ClientConnection:
     class CloseException(Exception):
-        pass
-
+        def __init__(self, errno = None):
+            self.args = errno
+    
     def __init__(self, socket, address=None, sep = '\n'):
         self.socket = socket
         self.address = address
@@ -79,9 +80,9 @@ class ClientConnection:
                 elif _errno in [errno.EPIPE, errno.ECONNRESET, errno.ENOTCONN, errno.ETIMEDOUT, errno.EHOSTUNREACH]:
                     self.isClosed = True
                     self.socket.close()
-                    raise self.CloseException
+                    raise self.CloseException(_errno)
                 elif _errno in [errno.EBADF]:
-                    raise self.CloseException
+                    raise self.CloseException(_errno)
                 else:
                     raise socket.error(_errno, string)
         return
@@ -100,14 +101,14 @@ class ClientConnection:
                 # remote host closed the connection
                 self.isClosed = True
                 self.socket.close()
-                raise self.CloseException
+                raise self.CloseException()
         except socket.error, (_errno, string):
             if _errno in [errno.EPIPE, errno.ECONNRESET, errno.ENOTCONN, errno.ETIMEDOUT, errno.EHOSTUNREACH]:
                 self.isClosed = True
                 self.socket.close()
-                raise self.CloseException
+                raise self.CloseException(_errno)
             elif _errno in [errno.EBADF]:
-                raise self.CloseException
+                raise self.CloseException(_errno)
             elif _errno != errno.EAGAIN: # really an error
                 raise socket.error(_errno, string)
         return
