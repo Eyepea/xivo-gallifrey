@@ -2330,6 +2330,8 @@ class XivoCTICommand(BaseCommand):
         def amiresponse_follows(self, astid, event, nocolon):
                 actionid = event.get('ActionID')
                 # log.info('%s amiresponse_follows : %s %s' % (astid, event, nocolon))
+                if actionid in self.getvar_requests[astid]:
+                        del self.getvar_requests[astid][actionid]
                 if actionid in self.amirequests[astid]:
                         del self.amirequests[astid][actionid]
                 return
@@ -2350,7 +2352,6 @@ class XivoCTICommand(BaseCommand):
                                                 else:
                                                         log.info('%s AMI Response=Success (%s) : %s = %s (%s)'
                                                                  % (astid, actionid, variable, value, channel))
-                                        del self.getvar_requests[astid][actionid]
                         else:
                                 log.warning('%s AMI Response=Success : event = %s' % (astid, event))
                 elif msg == 'Extension Status':
@@ -2392,6 +2393,8 @@ class XivoCTICommand(BaseCommand):
                 else:
                         log.warning('%s AMI Response=Success : untracked message (%s) <%s>' % (astid, actionid, msg))
                         
+                if actionid in self.getvar_requests[astid]:
+                        del self.getvar_requests[astid][actionid]
                 if actionid in self.amirequests[astid]:
                         del self.amirequests[astid][actionid]
                 return
@@ -2437,6 +2440,8 @@ class XivoCTICommand(BaseCommand):
                         else:
                                 log.warning('%s AMI Response=Error : (unknown message) %s' % (astid, event))
                                 
+                if actionid in self.getvar_requests[astid]:
+                        del self.getvar_requests[astid][actionid]
                 if actionid in self.amirequests[astid]:
                         del self.amirequests[astid][actionid]
                 return
@@ -3832,7 +3837,7 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def ami_statuscomplete(self, astid, event):
-                log.info('%s ami_statuscomplete')
+                log.info('%s ami_statuscomplete' % astid)
                 return
         
         def ami_join(self, astid, event):
