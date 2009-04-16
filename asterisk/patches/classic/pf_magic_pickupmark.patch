@@ -23,22 +23,24 @@ Index: asterisk-1.4.24/channels/chan_sip.c
  
  	/* There is no point in capturing the return value since pickup_exec
  	   doesn't return anything meaningful unless the passed data is an empty
-@@ -14614,8 +14617,16 @@
+@@ -14614,8 +14617,18 @@
  					error = 1;
  				} else {
  					ast_log(LOG_NOTICE, "Trying to pick up %s@%s\n", subscription->exten, subscription->context);
 -					pickup->exten   = ast_strdup(subscription->exten);
 -					pickup->context = ast_strdup(subscription->context);
 +
-+					char tmp[255];
-+					snprintf(tmp, sizeof(tmp), "%s%%%s@PICKUPMARK&%s@%s",
-+								   subscription->exten,
-+								   subscription->context,
-+								   subscription->exten,
-+								   subscription->context);
++					if(ast_asprintf(&pickup->exten,
++							"%s%%%s@PICKUPMARK&%s@%s",
++							subscription->exten,
++							subscription->context,
++							subscription->exten,
++							subscription->context) < 0) {
++						pickup->exten = NULL;
++					}
 +
-+					pickup->exten   = ast_strdup(tmp);
 +					pickup->context = ast_strdup("");
++
  					ast_mutex_unlock(&subscription->lock);
  					if (subscription->owner) {
  						ast_channel_unlock(subscription->owner);
@@ -46,9 +48,12 @@ Index: asterisk-1.4.24/apps/app_directed_pickup.c
 ===================================================================
 --- asterisk-1.4.24.orig/apps/app_directed_pickup.c	2009-04-15 19:06:28.000000000 +0200
 +++ asterisk-1.4.24/apps/app_directed_pickup.c		2009-04-15 19:17:07.000000000 +0200
-@@ -117,15 +117,24 @@
+@@ -115,22 +115,33 @@
+ /* Attempt to pick up specified mark */
+ static int pickup_by_mark(struct ast_channel *chan, char *mark)
  {
- 	int res = -1;
+-	int res = -1;
++	int res;
  	const char *tmp = NULL;
 +	char *pmarktmp = NULL;
 +	char *exten = NULL;
@@ -63,16 +68,24 @@ Index: asterisk-1.4.24/apps/app_directed_pickup.c
  			ast_channel_unlock(target);
 -			break;
 +			continue;
-+		}
+ 		}
 +
-+		pmarktmp = ast_strdupa(tmp);
++		pmarktmp = ast_strdup(tmp);
 +
 +		while ((exten = strsep(&pmarktmp, "&"))) {
 +			if (!strcasecmp(exten, mark) && can_pickup(target)) {
 +				res = pickup_do(chan, target);
++				ast_free(pmarktmp);
 +				ast_channel_unlock(target);
 +				return res;
 +			}
- 		}
++		}
++		ast_free(pmarktmp);
  		ast_channel_unlock(target);
  	}
+ 
+-	return res;
++	return -1;
+ }
+ 
+ /* Main application entry point */
