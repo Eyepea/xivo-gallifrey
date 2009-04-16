@@ -93,7 +93,6 @@ rename_trph = [True, False, False, True]
 class XivoCTICommand(BaseCommand):
 
         xdname = 'XiVO Daemon'
-        xivoclient_session_timeout = 60 # XXX
         
         fullstat_heavies = {}
         commnames = ['login_id', 'login_pass', 'login_capas',
@@ -399,8 +398,6 @@ class XivoCTICommand(BaseCommand):
                                 # self.__login_agent__(userinfo)
                         if subscribe is not None:
                                 userinfo['subscribe'] = 0
-                        if 'keepalive' in loginparams and 'login' in userinfo:
-                                userinfo['login']['keepalive'] = loginparams['keepalive']
                 else:
                         userinfo = None
                 return userinfo
@@ -408,32 +405,26 @@ class XivoCTICommand(BaseCommand):
         def manage_logout(self, userinfo, when):
                 log.info('logout (%s) user:%s/%s'
                          % (when, userinfo.get('astid'), userinfo.get('xivo_userid')))
-                userinfo['last-logouttime-ascii'] = time.asctime()
+                userinfo['last-logouttimestamp'] = time.time()
                 self.__logout_agent__(userinfo)
                 self.__disconnect_user__(userinfo)
                 self.__fill_user_ctilog__(userinfo, 'cti_logout')
                 return
         
+        
         def __check_user_connection__(self, userinfo):
-                #if userinfo.has_key('init'):
-                #       if not userinfo['init']:
-                #              return 'uninit_phone'
-
-                ## if time.time() - userinfo['login'].get('sessiontimestamp') < self.xivoclient_session_timeout:
                 if userinfo.has_key('login') and userinfo['login'].has_key('sessiontimestamp'):
-                                log.warning('user %s already connected from %s'
-                                          % (userinfo['user'], userinfo['login']['connection'].getpeername()))
-                                if 'lastconnwins' in userinfo:
-                                        if userinfo['lastconnwins']:
-                                                # one should then disconnect the already connected instance
-                                                pass
-                                        else:
-                                                return 'already_connected:%s:%d' % userinfo['login']['connection'].getpeername()
-                                else:
-                                        return 'already_connected:%s:%d' % userinfo['login']['connection'].getpeername()
+                        dt = time.time() - userinfo['login']['sessiontimestamp']
+                        log.warning('user %s already connected from %s (%.1f s)'
+                                    % (userinfo['user'], userinfo['login']['connection'].getpeername(), dt))
+                        # if userinfo not in self.disconnlist:
+                        # if userinfo and 'login' in userinfo:
+                        # userinfo['login']['todisc'] = True
+                        # self.disconnlist.append(userinfo)
+                        return 'already_connected:%s:%d' % userinfo['login']['connection'].getpeername()
                 return None
-
-
+        
+        
         def __check_capa_connection__(self, userinfo, capaid):
                 if capaid in self.capas and capaid in userinfo.get('capaids'):
                         if self.capas[capaid].toomuchusers():
@@ -447,9 +438,7 @@ class XivoCTICommand(BaseCommand):
                 try:
                         userinfo['capaid'] = capaid
                         userinfo['login'] = {}
-                        userinfo['login']['sessiontimestamp'] = time.time()
-                        userinfo['login']['logintimestamp'] = time.time()
-                        userinfo['login']['logintime-ascii'] = time.asctime()
+                        userinfo['login']['sessiontimestamp'] = userinfo['login']['logintimestamp'] = time.time()
                         for v, vv in userinfo['prelogin'].iteritems():
                                 userinfo['login'][v] = vv
                         del userinfo['prelogin']
@@ -2253,9 +2242,10 @@ class XivoCTICommand(BaseCommand):
                 # 28 - Invalid number format (incomplete number)
                 # 34 - Circuit/channel congestion
                 
+                if chan in self.parkedcalls[astid]:
+                        del self.parkedcalls[astid][chan]
                 if uid in self.ignore_dtmf[astid]:
                         del self.ignore_dtmf[astid][uid]
-                        
                 if chan in self.queues_channels_list[astid]:
                         del self.queues_channels_list[astid][chan]
                         
@@ -3999,8 +3989,11 @@ class XivoCTICommand(BaseCommand):
                                 dircomm = icommand.struct.get('direction')
                                 
                                 if dircomm is not None and dircomm == 'xivoserver' and classcomm in self.commnames:
+                                        if 'login' in userinfo and 'sessiontimestamp' in userinfo.get('login'):
+                                                userinfo['login']['sessiontimestamp'] = time.time()
+                                                
                                         if classcomm not in ['keepalive', 'logclienterror', 'history', 'logout']:
-                                                log.info('command attempt %s from user:%s : %s' % (classcomm, username, icommand.struct))
+                                                log.info('command attempt %s from user:%s : %s' % (classcomm, userid, icommand.struct))
                                         if classcomm not in ['keepalive', 'logclienterror', 'history', 'availstate', 'actionfiche']:
                                                 self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm)
                                         if classcomm == 'meetme':
@@ -4070,6 +4063,7 @@ class XivoCTICommand(BaseCommand):
                                                                                                icommand.struct.get('size'),
                                                                                                icommand.struct.get('mode'),
                                                                                                icommand.struct.get('morerecentthan'))
+                                                        
                                         elif classcomm == 'directory-search':
                                                 if self.capas[capaid].match_funcs(ucapa, 'directory'):
                                                         repstr = self.__build_customers__(context, icommand.struct.get('pattern'))
@@ -4077,12 +4071,15 @@ class XivoCTICommand(BaseCommand):
                                         elif classcomm == 'keepalive':
                                                 nbytes = icommand.struct.get('rate-bytes')
                                                 nmsec = icommand.struct.get('rate-msec')
+                                                nsamples = icommand.struct.get('rate-samples')
                                                 if nbytes > 0:
                                                         if nmsec > 0:
                                                                 rate = float(nbytes) / nmsec
-                                                                log.info('keepalive from user:%s (%d/%d = %.1f bytes/ms)' % (userid, nbytes, nmsec, rate))
+                                                                log.info('keepalive from user:%s (%d %d/%d = %.1f bytes/ms)'
+                                                                         % (userid, nsamples, nbytes, nmsec, rate))
                                                         else:
-                                                                log.info('keepalive from user:%s (%d/0 > %.1f bytes/ms)' % (userid, nbytes, float(nbytes)))
+                                                                log.info('keepalive from user:%s (%d %d/0 > %.1f bytes/ms)'
+                                                                         % (userid, nsamples, nbytes, float(nbytes)))
                                                                 
                                         elif classcomm == 'logclienterror':
                                                 log.warning('shouldNotOccur from user:%s : %s : %s'
@@ -4959,9 +4956,6 @@ class XivoCTICommand(BaseCommand):
                 if not state:
                         return None
                 
-                if 'login' in userinfo and 'sessiontimestamp' in userinfo.get('login'):
-                        userinfo['login']['sessiontimestamp'] = time.time()
-                        
                 if capaid:
                         if state == 'xivo_unknown' or state in self.presence_sections[self.capas[capaid].presenceid].getstates():
                                 userinfo['state'] = state
@@ -5027,7 +5021,7 @@ class XivoCTICommand(BaseCommand):
                                         log.exception('__build_customers__ (%s)' % dirsec)
                 else:
                         log.warning('there has been no section defined for context %s : can not proceed directory search' % ctx)
-
+                        
                 mylines = []
                 for itemdir in fulllist:
                         myitems = []
@@ -5041,7 +5035,7 @@ class XivoCTICommand(BaseCommand):
                                                 basestr = basestr.replace('{%s}' % k, v)
                                 myitems.append(basestr)
                         mylines.append(';'.join(myitems))
-
+                        
                 mylines.sort()
 ##                uniq = {}
 ##                fullstat_body = []

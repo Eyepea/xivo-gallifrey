@@ -135,7 +135,7 @@ def manage_cti_connections(connid, msg, sep):
         if requester in commandclass.transfers_ref:
                 commandclass.transfer_addbuf(requester, msg)
                 return
-
+        
         multimsg = msg.split(sep)
         for usefulmsgpart in multimsg:
                 usefulmsg = usefulmsgpart.split('\r')[0]
@@ -1295,9 +1295,10 @@ while True: # loops over the reloads
                                                                         del fdlist_established[connid]
                                                                 else:
                                                                         log.warning('connid %s no more in fdlists' % connid)
-                                                                # connid.close()
                                                                 commandclass.manage_logout(userinfo, 'pipe')
                                                                 del userinfo_by_requester[connid]
+                                                                if not connid.isClosed:
+                                                                        connid.close()
                                                         else:
                                                                 log.warning('WARNING - no login/connection field present in userinfo')
                                         commandclass.clear_disconnlist()
