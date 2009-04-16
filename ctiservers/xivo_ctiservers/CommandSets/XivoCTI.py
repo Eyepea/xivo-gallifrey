@@ -2888,7 +2888,19 @@ class XivoCTICommand(BaseCommand):
                                         phoneref = '.'.join([agent_channel.split('/')[0].lower(), queuecontext,
                                                              agent_channel.split('/')[1], exten])
                                         if phoneref in uinfo.get('techlist'):
-                                                self.weblist['phones'][astid].updatepeerchan(phoneref, event.get('ChannelCalling'))
+                                                peerchan = event.get('ChannelCalling')
+                                                uid = self.channels[astid].get(peerchan)
+                                                infos = {'peerchannel': peerchan,
+                                                         'status': 'ringing',
+                                                         'timestamp-dial': time.time()}
+                                                if uid is not None and uid in self.uniqueids[astid]:
+                                                        infos['calleridnum'] = self.uniqueids[astid][uid].get('calleridnum')
+                                                        infos['calleridname'] = self.uniqueids[astid][uid].get('calleridname')
+                                                # it wont work if the phone a several calls
+                                                self.weblist['phones'][astid].updatechan(phoneref, infos)
+                                                tosend = self.weblist['phones'][astid].status(phoneref)
+                                                tosend['astid'] = astid
+                                                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
                                                 td = '%s ami_agentcalled (phone) %s %s %s' % (astid, queue, agent_channel, uinfo.get('fullname'))
                                                 log.info(td.encode('utf8'))
                                                 

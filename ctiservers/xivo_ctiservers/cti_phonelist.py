@@ -51,12 +51,12 @@ class PhoneList(AnyList):
                         log.debug('  __createorupdate_comm__ new calleridnum[%s %s] : %s' % (commid, infos.get('thischannel'), infos.get('calleridnum')))
                     self.keeplist[phoneid]['comms'][commid] = infos
 
-        def updatepeerchan(self, phoneid, peerchan):
-                log.debug('phone::updatepeerchan %s %s' % (phoneid, peerchan))
+        def updatechan(self, phoneid, infos):
+                log.debug('phone::updatechan %s %s' % (phoneid, infos))
                 # we are gessing which "comm" because there is only one !
                 if len(self.keeplist[phoneid]['comms'].keys()) == 1:
                         commid = self.keeplist[phoneid]['comms'].keys()[0]
-                        self.__createorupdate_comm__(phoneid, commid, {'peerchannel' : peerchan})
+                        self.__createorupdate_comm__(phoneid, commid, infos)
 
         def ami_newchannel(self, phoneid, uid, channel):
                 # we could store the "callerid" in order to use it later.
@@ -100,13 +100,13 @@ class PhoneList(AnyList):
                         if cliddst is not None:# and not self.keeplist[phoneidsrc]['comms'][uidsrc].has_key('calleridnum'):
                             infos['calleridnum'] = cliddst
                         if uidsrc in self.keeplist[phoneidsrc]['comms']:
-                                #self.keeplist[phoneidsrc]['comms'][uidsrc].update(infos)
                                 self.__createorupdate_comm__(phoneidsrc, uidsrc, infos)
                         else:
                                 infos['thischannel'] = puidsrc['channel']
                                 infos['peerchannel'] = puidsrc['link']
                                 self.__createorupdate_comm__(phoneidsrc, uidsrc, infos)
                                 log.debug('phonelist::ami_link %s not found (src)' % (uidsrc))
+                        log.debug('phonelist::ami_link gruik %s %s' % (phoneidsrc, self.keeplist[phoneidsrc]['comms']))
                 infos = {'time-link' : 0,
                          'timestamp-link' : time.time()
                          }
@@ -117,15 +117,13 @@ class PhoneList(AnyList):
                         if clidsrc is not None:# and not self.keeplist[phoneiddst]['comms'][uiddst].has_key('calleridnum'):
                             infos['calleridnum'] = clidsrc
                         if uiddst in self.keeplist[phoneiddst]['comms']:
-                                #self.keeplist[phoneiddst]['comms'][uiddst].update(infos)
                                 self.__createorupdate_comm__(phoneiddst, uiddst, infos)
                         else:
                                 infos['thischannel'] = puiddst['channel']
                                 infos['peerchannel'] = puiddst['link']
-                                #infos['calleridname'] = puiddst['calleridname']
-                                #infos['calleridnum'] = puiddst['calleridnum']
                                 self.__createorupdate_comm__(phoneiddst, uiddst, infos)
                                 log.debug('phonelist::ami_link %s not found (dst)' % (uiddst))
+                        log.debug('phonelist::ami_link gruik %s %s' % (phoneiddst, self.keeplist[phoneiddst]['comms']))
                 return
         
         def ami_unlink(self, phoneidsrc, phoneiddst, uidsrc, uiddst, puidsrc, puiddst):
@@ -220,10 +218,12 @@ class PhoneList(AnyList):
                 if phoneid in self.keeplist:
                         if status not in self.display_hints:
                                 status = '-2'
-                        changed = not (self.keeplist[phoneid]['hintstatus'] == self.display_hints.get(status))
+                        #changed = not (self.keeplist[phoneid]['hintstatus'] == self.display_hints.get(status))
+                        changed = not isinstance(self.keeplist[phoneid]['hintstatus'], dict) or not (self.keeplist[phoneid]['hintstatus'].get('code') == status)
                         #log.debug('ami_extstatus : %s %s => %s' % (changed, self.keeplist[phoneid]['hintstatus'], self.display_hints.get(status)) )
                         if changed:
                             self.keeplist[phoneid]['hintstatus'] = self.display_hints.get(status)
+                            self.keeplist[phoneid]['hintstatus']['code'] = status
                         return changed
                 return False
         
