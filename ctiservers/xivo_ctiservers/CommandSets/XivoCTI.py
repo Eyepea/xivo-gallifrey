@@ -2248,6 +2248,8 @@ class XivoCTICommand(BaseCommand):
                         del self.ignore_dtmf[astid][uid]
                 if chan in self.queues_channels_list[astid]:
                         del self.queues_channels_list[astid][chan]
+
+                self.__remove_local_channel__(astid, chan)
                         
                 if uid in self.uniqueids[astid]:
                         vv = self.uniqueids[astid][uid]
@@ -3932,6 +3934,10 @@ class XivoCTICommand(BaseCommand):
                 uid = event.get('Uniqueid')
                 (oldname, _uid) = self.__translate_local_channel_uid__(astid, oldname, uid)
                 
+                if oldname == newname:
+                        log.info('%s AMI Rename : nothing to do %s => %s' % (astid, oldname, newname))
+                        return
+
                 oldphoneid = self.__phoneid_from_channel__(astid, oldname)
                 oldtrunkid = self.__trunkid_from_channel__(astid, oldname)
                 
@@ -5384,7 +5390,6 @@ class XivoCTICommand(BaseCommand):
                 return
 
         def __link_local_channels__(self, astid, chan1, uid1, chan2, uid2):
-                # TODO : use astid !
                 if chan1.startswith('Local/') and not chan2.startswith('Local/'):
                     localchan = chan1
                     otherchan = (chan2, uid2)
@@ -5399,7 +5404,6 @@ class XivoCTICommand(BaseCommand):
                 self.localchans[astid][localchan] = otherchan
 
         def __translate_local_channel_uid__(self, astid, chan, uid):
-                # TODO : use astid !
                 chan = chan.replace('<ZOMBIE>', '')
                 if not chan.startswith('Local/'):# or chan.endswith('<ZOMBIE>'):
                     return (chan, uid)
@@ -5410,5 +5414,12 @@ class XivoCTICommand(BaseCommand):
                     return self.localchans[astid][friendchan]
                 else:
                     return (chan, uid)
+   
+        def __remove_local_channel__(self, astid, chan):
+                chan = chan.replace('<ZOMBIE>', '')
+                if not chan.startswith('Local/'):
+                    return
+                if chan in self.localchans[astid]:
+                    del self.localchans[astid][chan]
 
 xivo_commandsets.CommandClasses['xivocti'] = XivoCTICommand
