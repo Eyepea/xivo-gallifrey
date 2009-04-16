@@ -153,7 +153,7 @@ def manage_cti_connections(connid, msg, sep):
                                         uinfo = commandclass.manage_login(loginparams, command.type, userinfo_current.get(connid))
                                         # log.info('LOGIN(%s) %s : uinfo  %s' % (command.type, requester, uinfo))
                                         
-                                        if uinfo.__class__.__name__ == 'str':
+                                        if isinstance(uinfo, str):
                                                 commandclass.loginko(loginparams, uinfo, connid)
                                                 log.info('TCP socket %s closed(loginko) on %s' % (fdlist_established[connid],
                                                                                                   '%s:%d' % connid.getpeername()))
@@ -1060,7 +1060,7 @@ while True: # loops over the reloads
                                                 commandclass.reset('stop', s)
                                         else:
                                                 commandclass.reset('reload', s)
-                                if s.__class__.__name__ == 'int':
+                                if isinstance(s, int):
                                         os.close(s)
                                 else:
                                         s.close()
