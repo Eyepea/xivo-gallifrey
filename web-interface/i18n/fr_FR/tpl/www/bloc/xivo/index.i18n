@@ -127,14 +127,26 @@ Arrêter
 ; sysinfos_opt_stop_confirm
 Etes-vous certain de vouloir arrêter %s ?
 
-; sysinfos_status-opt(notrunning)
-Arrêté
+; sysinfos_state-opt(accessible)
+Accessible
 
-; sysinfos_status-opt(initializing)
-Initialisation
+; sysinfos_state-opt(online)
+En ligne
 
-; sysinfos_status-opt(running)
+; sysinfos_state-opt(running)
 Démarré
 
-; sysinfos_status-opt
+; sysinfos_state-opt(notaccessible)
+Inaccessible
+
+; sysinfos_state-opt(notonline)
+Hors ligne
+
+; sysinfos_state-opt(notrunning)
+Arrêté
+
+; sysinfos_state-opt(initializing)
+Initialisation
+
+; sysinfos_state-opt
 Non surveillé

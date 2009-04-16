@@ -29,6 +29,23 @@ class xivo_monit
 	var $_monit	= false;
 	var $_service	= array();
 	var $_group	= array();
+	var $_status	= array('accessible',
+				'accessible',
+				'accessible',
+				'running',
+				'online',
+				'running',
+				'accessible');
+	var $_types	= array('Device',
+				'Directory',
+				'File',
+				'Process',
+				'Remote Host',
+				'System',
+				'Fifo');
+	var $_monitor	= array('notmonitored',
+				'monitored',
+				'initializing');
 
 	function xivo_monit($conf=null)
 	{
@@ -102,6 +119,32 @@ class xivo_monit
 		return($r);
 	}
 
+	function is_monitorable($name)
+	{
+		if(isset($this->_service[$name]) === false
+		|| $this->_service[$name]['monitor'] !== 0)
+			return(false);
+		else if(xivo_issa('monitorable',$this->_conf) === true
+		&& isset($this->_conf['monitorable'][$name]) === true
+		&& (bool) $this->_conf['monitorable'][$name] === false)
+			return(false);
+
+		return(true);
+	}
+
+	function is_unmonitorable($name)
+	{
+		if(isset($this->_service[$name]) === false
+		|| $this->_service[$name]['monitor'] === 0)
+			return(false);
+		else if(xivo_issa('unmonitorable',$this->_conf) === true
+		&& isset($this->_conf['unmonitorable'][$name]) === true
+		&& (bool) $this->_conf['unmonitorable'][$name] === false)
+			return(false);
+
+		return(true);
+	}
+
 	function is_startable_service($name)
 	{
 		if(isset($this->_service[$name]) === false
@@ -152,6 +195,22 @@ class xivo_monit
 		return(true);
 	}
 
+	function enable_monitor($name)
+	{
+		if($this->is_monitorable($name) === true)
+			return($this->_manage_service($name,'monitor'));
+
+		return(false);
+	}
+
+	function disable_monitor($name)
+	{
+		if($this->is_unmonitorable($name) === true)
+			return($this->_manage_service($name,'unmonitor'));
+
+		return(false);
+	}
+
 	function start_service($name)
 	{
 		if($this->is_restartable_service($name) === true)
@@ -172,6 +231,35 @@ class xivo_monit
 	{
 		if($this->is_stoppable_service($name) === true)
 			return($this->_manage_service($name,'stop'));
+
+		return(false);
+	}
+
+	function get_typename($type)
+	{
+		if(isset($this->_types[$type]) === true)
+			return($this->_types[$type]);
+
+		return(false);
+	}
+
+	function get_statusname($status,$type)
+	{
+		if((bool) $status === true)
+			$r = 'not';
+		else
+			$r = '';
+
+		if(isset($this->_status[$type]) === true)
+			return($r.$this->_status[$type]);
+
+		return(false);
+	}
+
+	function get_monitorname($monitor)
+	{
+		if(isset($this->_monitor[$monitor]) === true)
+			return($this->_monitor[$monitor]);
 
 		return(false);
 	}
@@ -202,17 +290,28 @@ class xivo_monit
 
 		for($i = 0;$i < $nb;$i++)
 		{
+			if(($typename = $this->get_typename($infos['service'][$i]['type'])) === false
+			|| ($monitorname = $this->get_monitorname($infos['service'][$i]['monitor'])) === false)
+				continue;
+
 			$name = $infos['service'][$i]['name'];
 
 			$this->_service[$name] = $infos['service'][$i];
 			$ref = &$this->_service[$name];
+			$ref['typename'] = $typename;
+			$ref['monitorname'] = $monitorname;
 
-			if($name === 'SYSTEM')
-				continue;
+			if($ref['monitor'] === 1)
+				$ref['state'] = $this->get_statusname($ref['status'],$ref['type']);
+			else
+				$ref['state'] = $monitorname;
 
 			$ref['startable'] = $this->is_startable_service($name);
 			$ref['stoppable'] = $this->is_stoppable_service($name);
 			$ref['restartable'] = $this->is_restartable_service($name);
+
+			if($ref['type'] === 5)
+				continue;
 
 			if(xivo_issa('service',$this->_conf) === true
 			&& isset($this->_conf['service'][$name]) === true

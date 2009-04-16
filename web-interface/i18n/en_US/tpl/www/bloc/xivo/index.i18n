@@ -109,14 +109,26 @@ Memory
 ; sysinfos_col_action
 Action
 
-; sysinfos_status-opt(notrunning)
-Not running
+; sysinfos_state-opt(accessible)
+Accessible
 
-; sysinfos_status-opt(initializing)
-Initializing
+; sysinfos_state-opt(online)
+Online
 
-; sysinfos_status-opt(running)
+; sysinfos_state-opt(running)
 Running
 
-; sysinfos_status-opt
-Not monitored
+; sysinfos_state-opt(notaccessible)
+Unaccessible
+
+; sysinfos_state-opt(notonline)
+Offline
+
+; sysinfos_state-opt(notrunning)
+Not running
+
+; sysinfos_state-opt(initializing)
+Initializing
+
+; sysinfos_state-opt
+Unmonitored

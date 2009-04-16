@@ -335,10 +335,14 @@ pre {text-align: left;}
 #r-home #netinfo table {width: 100%;padding-left: 5px;padding-bottom: 10px;}
 #r-home .monit-group table {width: 100%;padding-bottom: 10px;}
 #r-home .monit-group td img {vertical-align: bottom;}
-#r-home .monit-status-notrunning {color: #bc0000;}
-#r-home .monit-status-initializing {color: #1772ce;}
-#r-home .monit-status-running {color: #5dbc00;}
-#r-home .monit-status-notmonitored {color: #f96101;}
+#r-home .monit-state-notaccessible {color: #bc0000;}
+#r-home .monit-state-notonline {color: #bc0000;}
+#r-home .monit-state-notrunning {color: #bc0000;}
+#r-home .monit-state-accessible {color: #5dbc00;}
+#r-home .monit-state-online {color: #5dbc00;}
+#r-home .monit-state-running {color: #5dbc00;}
+#r-home .monit-state-initializing {color: #1772ce;}
+#r-home .monit-state-notmonitored {color: #f96101;}
 
 .xivo-calendar {max-width: 140px;border: 1px solid #9e9e9e;text-align: center;background-image: url(../img/menu/left/s-bg.gif);background-repeat: repeat-x;background-position: left top;margin: 0px 0px 0px auto;}
 .xivo-calendar .cal-prev {text-align: right;float: left;width: 8px;padding: 0px 6px 0px 2px;}

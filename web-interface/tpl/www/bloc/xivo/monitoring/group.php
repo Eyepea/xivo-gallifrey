@@ -30,40 +30,28 @@ if(is_array($grpdata) === true && ($nb = count($grpdata)) > 0):
 			$mempx = 0;
 			$uptime = $cpupcent = $mempcent = $memsize = $mempcent = $nummempcent = '-';
 
-			if($ref['monitor'] === 1 && $ref['status'] === 0):
-				$status = 'running';
+			if($ref['state'] === 'running' && $ref['type'] === 3):
+				$uptime = $this->bbf('sysinfos_uptime-duration',
+						     xivo_calc_time('second',
+								    $ref['uptime'],
+								    '%d%H%M%s'));
+				$cpupcent = $this->bbf('number_percent',$ref['cpu']['percenttotal']);
+				$membyte = xivo_size_si_to_byte('KB',$ref['memory']['kilobytetotal']);
+				$mem = xivo_size_iec($membyte);
+				$memsize = $this->bbf('size_iec_'.$mem[1],$mem[0]);
 
-				if($ref['type'] === 3):
-					$uptime = $this->bbf('sysinfos_uptime-duration',
-							     xivo_calc_time('second',
-									    $ref['uptime'],
-									    '%d%H%M%s'));
-					$cpupcent = $this->bbf('number_percent',$ref['cpu']['percenttotal']);
-					$membyte = xivo_size_si_to_byte('KB',$ref['memory']['kilobytetotal']);
-					$mem = xivo_size_iec($membyte);
-					$memsize = $this->bbf('size_iec_'.$mem[1],$mem[0]);
-
-					if($memtotal > 0):
-						$mempcent = ($membyte / $memtotal * 100);
-					else:
-						$mempcent = 0;
-					endif;
-
-					$nummempcent = $this->bbf('number_percent',$mempcent);
-				endif;
-			else:
-				if($ref['monitor'] === 1):
-					$status = 'notrunning';
-				elseif($ref['monitor'] === 2):
-					$status = 'initializing';
+				if($memtotal > 0):
+					$mempcent = ($membyte / $memtotal * 100);
 				else:
-					$status = 'notmonitored';
+					$mempcent = 0;
 				endif;
+
+				$nummempcent = $this->bbf('number_percent',$mempcent);
 			endif;
 ?>
 			<tr class="l-infos-<?=(($i % 2) + 1)?>on2">
 				<td><?=xivo_trunc(xivo_htmlen($ref['name']),20,'...',false);?></td>
-				<td class="monit-status-<?=$status?>"><b><?=$this->bbf('sysinfos_status-opt',$status);?></b></td>
+				<td class="monit-state-<?=$ref['state']?>"><b><?=$this->bbf('sysinfos_state-opt',$ref['state']);?></b></td>
 				<td class="txt-right"><?=$uptime?></td>
 				<td class="txt-right"><?=$cpupcent?></td>
 				<td class="gauge">
