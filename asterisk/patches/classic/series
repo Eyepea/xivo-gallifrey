@@ -44,4 +44,5 @@ pf_manager_parking.patch
 pf_chan_dahdi_pripreferred.patch
 atxfer_cid_display.patch
 
+agentcalled_event
 pf_magic_pickupmark.patch
