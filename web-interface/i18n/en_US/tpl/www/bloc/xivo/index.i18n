@@ -132,3 +132,15 @@ Initializing
 
 ; sysinfos_state-opt
 Unmonitored
+
+; sysinfos_state-opt(invalid)
+Invalid type
+
+; sysinfos_state-opt(exec)
+Execution failed
+
+; sysinfos_state-opt(changed)
+Changed
+
+; sysinfos_state-opt
+Non surveillé

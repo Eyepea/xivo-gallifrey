@@ -148,5 +148,14 @@ Arrêté
 ; sysinfos_state-opt(initializing)
 Initialisation
 
+; sysinfos_state-opt(invalid)
+Invalide
+
+; sysinfos_state-opt(exec)
+Echec de l'exécution
+
+; sysinfos_state-opt(changed)
+Changé
+
 ; sysinfos_state-opt
 Non surveillé

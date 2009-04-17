@@ -46,6 +46,25 @@ class xivo_monit
 	var $_monitor	= array('notmonitored',
 				'monitored',
 				'initializing');
+	var $_events	= array(0x00		=> 'noevent',
+				0x01		=> 'checksum',
+				0x02		=> 'resource',
+				0x04		=> 'timeout',
+				0x08		=> 'timestamp',
+				0x10		=> 'size',
+				0x20		=> 'connection',
+				0x40		=> 'permission',
+				0x80		=> 'uid',
+				0x100		=> 'gid',
+				0x200		=> 'noexist',
+				0x400		=> 'invalid',
+				0x800		=> 'data',
+				0x1000		=> 'exec',
+				0x2000		=> 'changed',
+				0x4000		=> 'icmp',
+				0x8000		=> 'match',
+				0x10000		=> 'instance',
+				0xFFFFFFFF	=> 'all');
 
 	function xivo_monit($conf=null)
 	{
@@ -245,13 +264,23 @@ class xivo_monit
 
 	function get_statusname($status,$type)
 	{
-		if((bool) $status === true)
-			$r = 'not';
-		else
-			$r = '';
+		$name = $not = '';
 
-		if(isset($this->_status[$type]) === true)
-			return($r.$this->_status[$type]);
+		if((bool) $status === true)
+		{
+			ksort($this->_events);
+
+			foreach($this->_events as $key => $value)
+			{
+				if(($status & $key) !== 0)
+					return($value);
+			}
+
+			$not = 'not';
+		}
+
+		if($name === '' && isset($this->_status[$type]) === true)
+			return($not.$this->_status[$type]);
 
 		return(false);
 	}
