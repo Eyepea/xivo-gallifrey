@@ -244,7 +244,7 @@ def txtsubst(lines, variables, target_file=None, charset=None):
         log.info("In process of generating file %r", target_file)
 
     if charset:
-        return [linesubst(line, variables).encode(charset) for line in lines]
+        return [linesubst(line, variables).encode(charset) for line in lines if isinstance(line, unicode)]
     return [linesubst(line, variables) for line in lines]
 
 
