@@ -243,9 +243,17 @@ def txtsubst(lines, variables, target_file=None, charset=None):
     if target_file:
         log.info("In process of generating file %r", target_file)
 
-    if charset:
-        return [linesubst(line, variables).encode(charset) for line in lines if isinstance(line, unicode)]
-    return [linesubst(line, variables) for line in lines]
+    if not charset:
+        return [linesubst(line, variables) for line in lines]
+
+    ret = []
+    for line in lines:
+        linesub = linesubst(line, variables)
+        if isinstance(line, unicode):
+            ret.append(linesub.encode(charset))
+        else:
+            ret.append(linesub)
+    return ret
 
 
 ID_CHR = ''.join(map(chr, xrange(0, 256)))
