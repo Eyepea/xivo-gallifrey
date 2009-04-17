@@ -51,11 +51,12 @@ class PhoneList(AnyList):
                         log.debug('  __createorupdate_comm__ new calleridnum[%s %s] : %s' % (commid, infos.get('thischannel'), infos.get('calleridnum')))
                     self.keeplist[phoneid]['comms'][commid] = infos
 
-        def updatechan(self, phoneid, infos):
+        def updatechan(self, phoneid, infos, commid=None):
                 log.debug('phone::updatechan %s %s' % (phoneid, infos))
                 # we are gessing which "comm" because there is only one !
-                if len(self.keeplist[phoneid]['comms'].keys()) == 1:
+                if commid is None and len(self.keeplist[phoneid]['comms'].keys()) == 1:
                         commid = self.keeplist[phoneid]['comms'].keys()[0]
+                if commid is not None:
                         self.__createorupdate_comm__(phoneid, commid, infos)
 
         def ami_newchannel(self, phoneid, uid, channel):
