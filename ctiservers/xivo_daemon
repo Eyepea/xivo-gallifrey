@@ -499,8 +499,8 @@ def handle_ami_event(astid, idata):
                                                                                         connreply.sendall(argg + '\n')
                                                         if connreply is not None:
                                                                 connreply.sendall('%s:OK\n' % XIVO_CLI_WEBI_HEADER)
-                                                                log.info('TCP socket %s closed(actionid) on %s' % (fdlist_established[connreply],
-                                                                                                                   '%s:%d' % connreply.getpeername()))
+                                                                log.info('TCP socket %s closed(actionid-ok) on %s' % (fdlist_established[connreply],
+                                                                                                                      '%s:%d' % connreply.getpeername()))
                                                                 del fdlist_established[connreply]
                                                                 connreply.close()
                                                                 del waiting_actionid[actionid]
@@ -518,6 +518,22 @@ def handle_ami_event(astid, idata):
                                         except Exception:
                                                 log.exception('%s amiresponse_success (%s) (%s)' % (astid, this_event, nocolon))
                                 elif response == 'Error':
+                                        if 'ActionID' in this_event:
+                                                actionid = this_event.get('ActionID')
+                                                connreply = waiting_actionid.get(actionid)
+                                                try:
+                                                        if connreply is not None:
+                                                                connreply.sendall('%s:ID <%s>\n' % (XIVO_CLI_WEBI_HEADER, astid))
+                                                                connreply.sendall('%s:KO\n' % XIVO_CLI_WEBI_HEADER)
+                                                                log.info('TCP socket %s closed(actionid-ko) on %s' % (fdlist_established[connreply],
+                                                                                                                      '%s:%d' % connreply.getpeername()))
+                                                                del fdlist_established[connreply]
+                                                                connreply.close()
+                                                                del waiting_actionid[actionid]
+                                                                waiting_actionid_timer[actionid].cancel()
+                                                                del waiting_actionid_timer[actionid]
+                                                except Exception:
+                                                        log.exception('%s (command reply to %s, %s)' % (astid, connreply, actionid))
                                         try:
                                                 commandclass.amiresponse_error(astid, this_event, nocolon)
                                         except Exception:

@@ -2413,6 +2413,7 @@ class XivoCTICommand(BaseCommand):
                         log.warning('%s AMI : Invalid/unknown command : %s' % (astid, event))
                 elif msg in ['No such channel',
                              'No such agent',
+                             'Permission denied',
                              'Member not dynamic',
                              'Extension not specified',
                              'Interface not found',
