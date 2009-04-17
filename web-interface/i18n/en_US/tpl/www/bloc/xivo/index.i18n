@@ -130,9 +130,6 @@ Not running
 ; sysinfos_state-opt(initializing)
 Initializing
 
-; sysinfos_state-opt
-Unmonitored
-
 ; sysinfos_state-opt(invalid)
 Invalid type
 
@@ -143,4 +140,4 @@ Execution failed
 Changed
 
 ; sysinfos_state-opt
-Non surveillé
+Unmonitored
