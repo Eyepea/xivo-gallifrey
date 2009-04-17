@@ -1,4 +1,9 @@
 #!/bin/bash
+#
+# This script is a temporary and ugly solution to generate
+# a proper XiVO configuration, until the real subsystem for
+# this task is finished.
+#
 
 BASE_TEMPLATE_DIR=/usr/share/pf-xivo-base-config/templates
 CUSTOM_TEMPLATE_DIR=/etc/pf-xivo/custom-templates
@@ -7,10 +12,7 @@ CUSTOM_TEMPLATE_DIR=/etc/pf-xivo/custom-templates
 
 
 # TODO:
-#  - handle date in 'common' and serial increase for phone configs (special hooks by directory ?)
-#  - handle service restart (if config changed only)
-#
-# DHCP specific: include an extra file and manage only the VoIP subnet
+#  - check if unresolved variables remains in generated files
 #
 
 
@@ -51,7 +53,7 @@ TEMPLATE_VARS=$(compgen -v XIVO_)
 
 generate_file()
 {
-  FILE=$1
+  local FILE=$1
 
   for VAR in ${TEMPLATE_VARS}; do
     VALUE="${!VAR}"
@@ -61,32 +63,30 @@ generate_file()
 
 apply_template_to_file()
 {
-  SUBFILE=$1
-  RESULT_FILE=$2
+  local RESULT_DIR=$1
+  local FILE_SUBPATH=$2
+  local RESULT_FILE=$3
 
-  cp -a ${BASE_TEMPLATE_FILE} ${RESULT_FILE}
+  if [ -z "${RESULT_FILE}" ]; then
+    RESULT_FILE=${RESULT_DIR}/${FILE_SUBPATH}
+  fi
+
+  mkdir -p $(basedir ${RESULT_FILE})
+
+  if [ -e ${BASE_TEMPLATE_DIR}/${FILE_SUBPATH} ]; then
+    cp -a ${BASE_TEMPLATE_DIR}/${FILE_SUBPATH} ${RESULT_FILE}
+  fi
+  if [ -e ${CUSTOM_TEMPLATE_DIR}/${FILE_SUBPATH} ]; then
+    cp -a ${CUSTOM_TEMPLATE_DIR}/${FILE_SUBPATH} ${RESULT_FILE}
+  fi
+
   generate_file ${RESULT_FILE}
 }
 
-apply_template_to_dir()
+apply_template_to_module()
 {
-  SUBDIR=$1
-  RESULT_DIR=$2
-
-  cp -a ${BASE_TEMPLATE_DIR}/${SUBDIR}/* ${RESULT_DIR}
-  if [ -d ${CUSTOM_TEMPLATE_DIR}/${SUBDIR} ]; then
-    cp -a ${CUSTOM_TEMPLATE_DIR}/${SUBDIR}/* ${RESULT_DIR}
-  fi
-  FILE_LIST=$(find ${RESULT_DIR} -type f -print)
-  for F in ${FILE_LIST}; do
-    generate_file ${RESULT_DIR}/${F}
-  done
-}
-
-apply_template_to()
-{
-  RESULT_DIR=$1
-  CONFIG_NAME=$2
+  local RESULT_DIR=$1
+  local CONFIG_NAME=$2
 
   mkdir -p ${RESULT_DIR}
 
@@ -105,10 +105,10 @@ apply_template_to()
 
 check_diff()
 {
-  RESULT_DIR=$1
-  CONFIG_NAME=$2
+  local RESULT_DIR=$1
+  local CONFIG_NAME=$2
 
-  FILE_LIST=$(cd ${RESULT_DIR}/${CONFIG_NAME}; find . -type f -printf "%P\n")
+  local FILE_LIST=$(cd ${RESULT_DIR}/${CONFIG_NAME}; find . -type f -printf "%P\n")
   for F in ${FILE_LIST}; do
     if ! diff ${RESULT_DIR}/${CONFIG_NAME}/${F} /${F}; then
       return 1
@@ -118,9 +118,14 @@ check_diff()
   return 0
 }
 
+do_apply()
+{
+  # TODO
+}
+
 do_restart()
 {
-  CONFIG_NAME=$2
+  local CONFIG_NAME=$2
 
   if [ -f ${CUSTOM_TEMPLATE_DIR}/${CONFIG_NAME}.restart ]; then
     ${CUSTOM_TEMPLATE_DIR}/${CONFIG_NAME}.restart
@@ -129,6 +134,7 @@ do_restart()
   fi
 }
 
+
 BASE_RESULT_DIR=$(mktemp -d)
 
 LIST1=$(cd ${BASE_TEMPLATE_DIR}; find . -mindepth 1 -maxdepth 1 -type d -printf "%P\n")
@@ -136,9 +142,52 @@ LIST2=$(cd ${CUSTOM_TEMPLATE_DIR}; find . -mindepth 1 -maxdepth 1 -type d -print
 LIST=$(echo ${LIST1} ${LIST2} | sort | uniq)
 
 for P in ${LIST}; do
-  apply_template_to ${BASE_RESULT_DIR} ${P}
+  if [ -f ${BASE_TEMPLATE_DIR}/${P}.skip -o -f ${CUSTOM_TEMPLATE_DIR}/${P}.skip ]; then
+    next
+  fi
+
+  apply_template_to_module ${BASE_RESULT_DIR} ${P}
   if ! check_diff ${BASE_RESULT_DIR} ${P}; then
+    do_apply ${BASE_RESULT_DIR} ${P}
     do_restart ${P}
   fi
+done
+
+
+#### This part is especially ugly, DO NOT read please ###
+
+# Thomson horrible serial stuff
+
+INF_LIST=$(cd ${BASE_TEMPLATE_DIR}/tftpboot-thomson; find . -mindepth 1 -type f -name "*.inf" -printf "%P\n")
+for P in ${LIST}; do
+  T_P=tftpboot-thomson/${P}
+  R_P=/tftpboot/${P}
+
+  DATE=$(date +%Y%m%d)
+  if [ -f ${R_P} ]; then
+    # find and increment serial
+    OLD_SERIAL=$(grep -E "^[^#][ \t]+common_config[ \t]+=.*$" /${R_P} | sed 's#^.*-(\d+)\.txt$#\1#')
+    OLD_DATE=${OLD_SERIAL:0:8}
+    if [ "${OLD_DATE}" = "${DATE}" ]; then
+      OLD_CHANGE_NUM=${OLD_SERIAL:8:4}
+      # increment and pad with "0"
+      NEW_CHANGE_NUM=$(printf "%04d" $((${OLD_CHANGE_NUM} + 1))
+      SERIAL="${OLD_DATE}${NEW_CHANGE_NUM}"
+    else
+      SERIAL="${DATE}0000"
+    fi
+  else
+    SERIAL="${DATE}0000"
+  fi
+  TEMPLATE_VARS="${TEMPLATE_VARS} SERIAL"
+
+  apply_template_to_file ${BASE_RESULT_DIR} ${T_P} ${R_P}
+  INCLUDE_FILE=$(grep -E "^[^#].*#SERIAL#.*$" ${BASE_RESULT_DIR}/${T_P} | sed 's#^.*/([^/]+)$#\1#')
+  INCLUDE_PATH=$(basedir ${T_P})/${INCLUDE_FILE}
+  NEW_INCLUDE_FILE=$(echo ${INCLUDE_FILE} | sed "s/#SERIAL#/${SERIAL}/")
+  NEW_INCLUDE_PATH=$(basedir ${R_P})/${NEW_INCLUDE_FILE}
+  apply_template_to_file ${BASE_RESULT_DIR} ${INCLUDE_PATH} ${NEW_INCLUDE_PATH}
+
+  # TODO: call do_apply
 done
 
