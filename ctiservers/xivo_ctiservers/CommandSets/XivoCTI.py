@@ -2701,7 +2701,7 @@ class XivoCTICommand(BaseCommand):
                         ctuid = self.uniqueids[astid][uid]
                         ctuid['parkexten-callback'] = exten
                         phoneid = self.__phoneid_from_channel__(astid, channel)
-                        self.weblist['phones'][astid].ami_parkedcall(phoneid, uid, ctuid)
+                        self.weblist['phones'][astid].ami_parkedcall(phoneid, uid, ctuid, exten)
                         tosend = self.weblist['phones'][astid].status(phoneid)
                         tosend['astid'] = astid
                         # TODO check context ???

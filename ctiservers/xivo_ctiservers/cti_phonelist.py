@@ -227,13 +227,14 @@ class PhoneList(AnyList):
                         return changed
                 return False
         
-        def ami_parkedcall(self, phoneid, uid, ctuid):
+        def ami_parkedcall(self, phoneid, uid, ctuid, exten):
                 if phoneid in self.keeplist:
                         # write "parque" in unicode !
                         infos = {'status' : 'linked-caller',
                                  'time-link' : 0,
                                  'timestamp-link' : time.time(),
-                                 'calleridnum' : '<parked>'
+                                 'calleridnum' : exten,
+                                 'calleridname' : '<parked>'
                                  }
                         self.__createorupdate_comm__(phoneid, uid, infos)
                 return
