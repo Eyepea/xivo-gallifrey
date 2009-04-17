@@ -1535,6 +1535,9 @@ class XivoCTICommand(BaseCommand):
                 # uinfosrc = self.__userinfo_from_phoneid__(astid, phoneidsrc)
                 # uinfodst = self.__userinfo_from_phoneid__(astid, phoneiddst)
                 self.__fill_uniqueids__(astid, uidsrc, uiddst, src, dst, 'dial')
+                self.uniqueids[astid][uidsrc]['calleridnum'] = clid
+                self.uniqueids[astid][uidsrc]['calleridname'] = clidn
+                #log.debug('%s ami_dial src=%s event=%s' % (astid, self.uniqueids[astid][uidsrc], event))
                 
                 # print astid, event
                 # update the phones statuses
