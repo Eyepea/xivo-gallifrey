@@ -55,10 +55,10 @@ WanModFlag=1
 
 [sip]
 ACD=0
-AuthMessageServer=#XIVO_IP#
+AuthMessageServer=#XIVO_NET4_IP#
 KeppAliveDest=0.0.0.0
 KeepAliveTimer=0
-AuthNotifyCheckSync=#XIVO_IP#
+AuthNotifyCheckSync=#XIVO_NET4_IP#
 CallBlockType=0
 CF_Address1=
 CFNA_Time1=30
@@ -150,7 +150,7 @@ ProfileName2=Profile 2
 ProfileName3=Profile 3
 ProfileName4=Profile 4
 PrivacyFlag1=4
-ProxyServerMP1=#XIVO_IP#
+ProxyServerMP1=#XIVO_NET4_IP#
 ProxyServerMP2=
 ProxyServerMP3=
 ProxyServerMP4=
@@ -167,7 +167,7 @@ regpwd1=guest
 regpwd2=
 regpwd3=
 regpwd4=
-RegisterServerMP1=#XIVO_IP#
+RegisterServerMP1=#XIVO_NET4_IP#
 RegisterServerMP2=
 RegisterServerMP3=
 RegisterServerMP4=
@@ -260,7 +260,7 @@ sw_tr_vmail_address2=
 sw_tr_vmail_address3=
 sw_tr_vmail_address4=
 sw_tr_vmail_flag=0
-sw_park_srv_addr0=700@#XIVO_IP#
+sw_park_srv_addr0=700@#XIVO_NET4_IP#
 sip_instance_id=0
 SFOnSC=
 SFOffSC=
@@ -393,7 +393,7 @@ PSettingURLdl=
 PSettingURLul=
 RCallLogFlg=0
 RCallLogURL=
-Phonebook1_url=http://#XIVO_IP#/service/ipbx/web_services.php/phonebook/search/?name=#SEARCH
+Phonebook1_url=http://#XIVO_NET4_IP#/service/ipbx/web_services.php/phonebook/search/?name=#SEARCH
 Phonebook2_url=
 Phonebook3_url=
 Phonebook4_url=
@@ -451,7 +451,7 @@ VLANTagdata=6
 [ntp]
 NtpDaylight=1
 NTPFlag=1
-NtpIP=#XIVO_IP#
+NtpIP=#XIVO_NET4_IP#
 NtpMode=0
 NtpSyncTime=1
 NtpZoneNum=23
