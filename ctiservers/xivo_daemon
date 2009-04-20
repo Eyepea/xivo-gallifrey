@@ -101,7 +101,6 @@ def config_path():
 config_path()
 
 # XIVO lib-python modules imports
-from xivo import agitb
 from xivo import anysql
 from xivo.BackSQL import backmysql
 from xivo.BackSQL import backsqlite
@@ -465,11 +464,19 @@ def handle_ami_event(astid, idata):
                 this_event = {}
                 nocolon = []
                 for myline in evt.split('\r\n'):
-                        myfieldvalue = myline.split(': ', 1)
-                        if len(myfieldvalue) == 2:
-                                this_event[myfieldvalue[0]] = myfieldvalue[1]
+                        if myline.find('\n') < 0:
+                                myfieldvalue = myline.split(': ', 1)
+                                if len(myfieldvalue) == 2:
+                                        this_event[myfieldvalue[0]] = myfieldvalue[1]
+                                else:
+                                        if myline.startswith('Asterisk Call Manager'):
+                                                log.info('%s : %s' % (astid, myline))
+                                        else:
+                                                log.warning('%s unable to parse %s' % (astid, myline))
                         else:
                                 nocolon.append(myline)
+                if len(nocolon) > 1:
+                        log.warning('%s nocolon is %s' % (astid, nocolon))
                 evfunction = this_event.get('Event')
                 # log.info('%s AMI(all)  %s  : %s' % (astid, evfunction, this_event))
                 if evfunction is not None:
@@ -493,8 +500,8 @@ def handle_ami_event(astid, idata):
                                                                         while toremove in arggs:
                                                                                 arggs.remove(toremove)
                                                                 if arggs:
-                                                                        log.info('%s AMI Response : %s : %s' % (astid, actionid, arggs))
                                                                         if connreply is not None:
+                                                                                log.info('%s AMI Response : %s : %s' % (astid, actionid, arggs))
                                                                                 for argg in arggs:
                                                                                         connreply.sendall(argg + '\n')
                                                         if connreply is not None:
@@ -1133,7 +1140,7 @@ while True: # loops over the reloads
                                                                         log.exception('(handle_ami_event) %s' % astid)
                                         except Exception:
                                                 log.exception('(amilist)')
-
+                                                
                                 # other 'outgoing' connections
                                 elif sel_i == outsock:
                                         try:

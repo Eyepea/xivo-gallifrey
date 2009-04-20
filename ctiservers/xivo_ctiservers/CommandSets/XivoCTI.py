@@ -339,8 +339,7 @@ class XivoCTICommand(BaseCommand):
                         userinfo = self.ulist_ng.finduser(loginparams.get('userid'), loginparams.get('company'))
                         if userinfo == None:
                                 return 'user_not_found'
-                        userinfo['prelogin'] = {'cticlienttype' : whoami,
-                                                'cticlientos' : whatsmyos,
+                        userinfo['prelogin'] = {'cticlientos' : whatsmyos,
                                                 'version' : svnversion,
                                                 'sessionid' : ''.join(random.sample(__alphanums__, 10))}
                         
@@ -4795,7 +4794,7 @@ class XivoCTICommand(BaseCommand):
                                 # this string will appear on the caller's phone, before he calls someone
                                 # for internal calls, one could solve the name of the called person,
                                 # but it could be misleading with an incoming call from the given person
-                                cidname_dst = 'direct number'
+                                cidname_dst = whodst
                                 exten_dst = whodst
                         elif typedst == 'user':
                                 if whodst == 'special:me':
@@ -5371,7 +5370,6 @@ class XivoCTICommand(BaseCommand):
                               'called_num' : callednum,
                               'uniqueid' : uniqueid,
                               'channel' : channel}
-                clientstate = 'available'
                 
                 calleridsolved = self.__sheet_alert__('agi', astid, context, {}, extraevent)
                 if calleridsolved:

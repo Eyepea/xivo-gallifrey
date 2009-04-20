@@ -42,7 +42,7 @@ class ClientConnection:
         self.separator = sep
         return
 
-    # usefull for select
+    # useful for select
     def fileno(self):
         return self.socket.fileno()
 
