@@ -37,6 +37,7 @@ import time
 
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 __dialallowed__ = '[0-9*#+]'
+__specialextensions__ = ['s', 'BUSY']
 
 log = logging.getLogger('xivo_ami')
 
@@ -329,13 +330,13 @@ class AMIClass:
                         return False
                 except Exception:
                         return False
-
+                
         # \brief Originates a call from a phone towards another.
         def originate(self, phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext, extravars = {}, timeout = 3600):
                 # originate a call btw src and dst
                 # src will ring first, and dst will ring when src responds
                 ph = re.sub(__dialallowed__, '', phonedst)
-                if len(ph) > 0:
+                if len(ph) > 0 and phonedst not in __specialextensions__:
                         return False
                 try:
                         command_details = [('Channel', phoneproto + '/' + phonesrc),
@@ -363,7 +364,7 @@ class AMIClass:
                 # originate a call btw src and dst
                 # src will ring first, and dst will ring when src responds
                 ph = re.sub(__dialallowed__, '', phonedst)
-                if len(ph) > 0:
+                if len(ph) > 0 and phonedst not in __specialextensions__:
                         return False
                 try:
                         #print self.aorgcmd, phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext
@@ -391,7 +392,7 @@ class AMIClass:
                 # originate a call btw src and dst
                 # src will ring first, and dst will ring when src responds
                 ph = re.sub(__dialallowed__, '', phonedst)
-                if len(ph) > 0:
+                if len(ph) > 0 and phonedst not in __specialextensions__:
                         return False
                 try:
                         #print self.aorgcmd, phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext
@@ -537,7 +538,7 @@ class AMIClass:
         # \brief Transfers a channel towards a new extension.
         def transfer(self, channel, extension, context):
                 ph = re.sub(__dialallowed__, '', extension)
-                if len(ph) > 0 and extension != 's':
+                if len(ph) > 0 and extension not in __specialextensions__:
                         return False
                 try:
                         command_details = [('Channel', channel),
@@ -554,7 +555,7 @@ class AMIClass:
         # \brief Atxfer a channel towards a new extension.
         def atxfer(self, channel, extension, context):
                 ph = re.sub(__dialallowed__, '', extension)
-                if len(ph) > 0:
+                if len(ph) > 0 and extension not in __specialextensions__:
                         return False
                 try:
                         ret = self.sendcommand('Atxfer', [('Channel', channel),

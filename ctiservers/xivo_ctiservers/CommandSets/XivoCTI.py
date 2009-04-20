@@ -4209,32 +4209,38 @@ class XivoCTICommand(BaseCommand):
                                         elif classcomm == 'actionfiche':
                                                 infos = icommand.struct.get('infos')
                                                 if infos:
-                                                        actionid = infos.get('uniqueid')
+                                                        uniqueid = infos.get('uniqueid')
                                                         channel = infos.get('channel')
                                                         locastid = infos.get('astid')
                                                         
                                                         timestamps = infos.get('timestamps')
-                                                        log.info('%s %s : %s %s' % (locastid, classcomm, actionid, timestamps))
+                                                        log.info('%s %s : %s %s' % (locastid, classcomm, uniqueid, timestamps))
                                                         dtime = None
                                                         if 'agentlinked' in timestamps and 'agentunlinked' in timestamps:
                                                                 dtime = timestamps['agentunlinked'] - timestamps['agentlinked']
                                                         self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm, infos.get('buttonname'), dtime)
-                                                        if locastid in self.uniqueids and actionid in self.uniqueids[locastid]:
+                                                        if locastid in self.uniqueids and uniqueid in self.uniqueids[locastid]:
                                                                 if 'buttonname' in infos:
                                                                         buttonname = infos.get('buttonname')
-                                                                        log.info('%s : buttonname=%s channel=%s %s' % (classcomm,
-                                                                                                                       buttonname,
-                                                                                                                       channel,
-                                                                                                                       self.uniqueids[locastid][actionid]))
+                                                                        log.info('%s : buttonname=%s astid=%s channel=%s %s' % (classcomm,
+                                                                                                                                buttonname,
+                                                                                                                                locastid,
+                                                                                                                                channel,
+                                                                                                                                self.uniqueids[locastid][uniqueid]))
                                                                         if buttonname == 'answer':
                                                                                 self.__ami_execute__(locastid, 'transfer',
                                                                                                      channel,
                                                                                                      userinfo.get('phonenum'),
                                                                                                      userinfo.get('context'))
                                                                         elif buttonname == 'hangup':
-                                                                                pass
+                                                                                self.__ami_execute__(locastid, 'hangup', channel)
+                                                                        elif buttonname == 'refuse':
+                                                                                self.__ami_execute__(locastid, 'transfer',
+                                                                                                     channel,
+                                                                                                     'BUSY',
+                                                                                                     userinfo.get('context'))
                                                                 else:
-                                                                        log.info('%s : %s' % (classcomm, self.uniqueids[locastid][actionid]))
+                                                                        log.info('%s : %s' % (classcomm, self.uniqueids[locastid][uniqueid]))
                                         elif classcomm in ['phones', 'users', 'agents', 'queues', 'groups']:
                                                 function = icommand.struct.get('function')
                                                 if function == 'getlist':
@@ -4246,7 +4252,7 @@ class XivoCTICommand(BaseCommand):
                                                         repstr = self.__agent__(userinfo, argums)
                                 else:
                                         log.warning('unallowed json event %s' % icommand.struct)
-
+                                        
                 except Exception:
                         log.exception('(manage_cticommand) %s %s %s'
                                       % (icommand.name, icommand.args, userinfo.get('login').get('connection')))
@@ -5389,7 +5395,7 @@ class XivoCTICommand(BaseCommand):
                 log.info(td.encode('utf8'))
                 fastagi.set_callerid(calleridtoset)
                 return
-
+        
         def __link_local_channels__(self, astid, chan1, uid1, chan2, uid2, clid1, clidn1, clid2, clidn2):
                 if chan1.startswith('Local/') and not chan2.startswith('Local/'):
                     localchan = chan1
@@ -5406,7 +5412,7 @@ class XivoCTICommand(BaseCommand):
                     if self.localchans[astid][localchan][2] is None:
                         self.localchans[astid][localchan] = otherchan
                 self.localchans[astid][localchan] = otherchan
-
+                
         def __translate_local_channel_uid__(self, astid, chan, uid, clid=None, clidn=None):
                 chan = chan.replace('<ZOMBIE>', '')
                 if not chan.startswith('Local/'):# or chan.endswith('<ZOMBIE>'):
@@ -5422,7 +5428,7 @@ class XivoCTICommand(BaseCommand):
                     if _clidn is not None:
                         clidn = _clidn
                 return (chan, uid, clid, clidn)
-   
+        
         def __remove_local_channel__(self, astid, chan):
                 chan = chan.replace('<ZOMBIE>', '')
                 if not chan.startswith('Local/'):
