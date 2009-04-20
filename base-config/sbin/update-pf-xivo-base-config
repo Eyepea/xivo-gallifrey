@@ -11,10 +11,7 @@ CUSTOM_TEMPLATE_DIR=/etc/pf-xivo/custom-templates
 . /etc/pf-xivo/common.conf
 
 
-# TODO:
-#  - check if unresolved variables remains in generated files
-#
-
+#### Set and check general variables ####
 
 if [ -z "${XIVO_NET4_CIDR}" ]; then
   echo "ERROR: Network badly configured" >&2
@@ -48,8 +45,11 @@ else
   exit 1
 fi
 
-
+# list all variables with the good prefix
 TEMPLATE_VARS=$(compgen -v XIVO_)
+
+
+#### functions used for templating ####
 
 generate_file()
 {
@@ -120,12 +120,28 @@ check_diff()
 
 do_apply()
 {
-  # TODO
+  local RESULT_DIR=$1
+  local CONFIG_NAME=$2
+  local SYSTEM_DIR=$3
+
+  local RESULT_SUBDIR=${RESULT_DIR}/${CONFIG_NAME}
+  # if SYSTEM_DIR is empty, install into /
+
+  if grep -qEr "#[A-Z0-9_]+#" ${RESULT_SUBDIR}; then
+    echo "ERROR: generation from template '${CONFIG_NAME}' failed (all variables could not be expanded)" >&2
+    return 1
+  fi
+
+  if [ -z "${DEBUG}" ]; then
+    cp -a ${RESULT_SUBDIR}/* ${SYSTEM_DIR}/
+  else
+    echo "DEBUG: would copy  ${RESULT_SUBDIR}/* into ${SYSTEM_DIR}/"
+  fi
 }
 
 do_restart()
 {
-  local CONFIG_NAME=$2
+  local CONFIG_NAME=$1
 
   if [ -f ${CUSTOM_TEMPLATE_DIR}/${CONFIG_NAME}.restart ]; then
     ${CUSTOM_TEMPLATE_DIR}/${CONFIG_NAME}.restart
@@ -134,6 +150,8 @@ do_restart()
   fi
 }
 
+
+#### Apply template for each "configuration module" ####
 
 BASE_RESULT_DIR=$(mktemp -d)
 
@@ -154,7 +172,7 @@ for P in ${LIST}; do
 done
 
 
-#### This part is especially ugly, DO NOT read please ###
+#### This part is especially ugly, DO NOT read please ####
 
 # Thomson horrible serial stuff
 
@@ -171,7 +189,7 @@ for P in ${LIST}; do
     if [ "${OLD_DATE}" = "${DATE}" ]; then
       OLD_CHANGE_NUM=${OLD_SERIAL:8:4}
       # increment and pad with "0"
-      NEW_CHANGE_NUM=$(printf "%04d" $((${OLD_CHANGE_NUM} + 1))
+      NEW_CHANGE_NUM=$(printf "%04d" $((${OLD_CHANGE_NUM} + 1)))
       SERIAL="${OLD_DATE}${NEW_CHANGE_NUM}"
     else
       SERIAL="${DATE}0000"
@@ -181,13 +199,21 @@ for P in ${LIST}; do
   fi
   TEMPLATE_VARS="${TEMPLATE_VARS} SERIAL"
 
-  apply_template_to_file ${BASE_RESULT_DIR} ${T_P} ${R_P}
+  apply_template_to_file ${BASE_RESULT_DIR} ${T_P} ${BASE_RESULT_DIR}/${R_P}
   INCLUDE_FILE=$(grep -E "^[^#].*#SERIAL#.*$" ${BASE_RESULT_DIR}/${T_P} | sed 's#^.*/([^/]+)$#\1#')
-  INCLUDE_PATH=$(basedir ${T_P})/${INCLUDE_FILE}
+  INCLUDE_PATH=${T_P}/${INCLUDE_FILE}
   NEW_INCLUDE_FILE=$(echo ${INCLUDE_FILE} | sed "s/#SERIAL#/${SERIAL}/")
-  NEW_INCLUDE_PATH=$(basedir ${R_P})/${NEW_INCLUDE_FILE}
-  apply_template_to_file ${BASE_RESULT_DIR} ${INCLUDE_PATH} ${NEW_INCLUDE_PATH}
-
-  # TODO: call do_apply
+  NEW_INCLUDE_PATH=${T_P}/${NEW_INCLUDE_FILE}
+  apply_template_to_file ${BASE_RESULT_DIR} ${INCLUDE_PATH} ${BASE_RESULT_DIR}/${NEW_INCLUDE_PATH}
+  rm ${BASE_RESULT_DIR}/${INCLUDE_FILE}
 done
+do_apply ${BASE_RESULT_DIR} tftpboot-thomson /tftpboot
+
+
+#### cleanup ####
+
+if [ -z "${DEBUG}" ]; then
+  rm -rf ${BASE_RESULT_DIR}
+  echo "DEBUG: generated files can be found here: ${BASE_RESULT_DIR}"
+fi
 
