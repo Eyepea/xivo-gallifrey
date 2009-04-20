@@ -71,7 +71,7 @@ apply_template_to_file()
     RESULT_FILE=${RESULT_DIR}/${FILE_SUBPATH}
   fi
 
-  mkdir -p $(basedir ${RESULT_FILE})
+  mkdir -p $(dirname ${RESULT_FILE})
 
   if [ -e ${BASE_TEMPLATE_DIR}/${FILE_SUBPATH} ]; then
     cp -a ${BASE_TEMPLATE_DIR}/${FILE_SUBPATH} ${RESULT_FILE}
@@ -143,10 +143,11 @@ do_restart()
 {
   local CONFIG_NAME=$1
 
+  local SCRIPT
   if [ -f ${CUSTOM_TEMPLATE_DIR}/${CONFIG_NAME}.restart ]; then
-    ${CUSTOM_TEMPLATE_DIR}/${CONFIG_NAME}.restart
+    SCRIPT=${CUSTOM_TEMPLATE_DIR}/${CONFIG_NAME}.restart
   elif [ -f ${BASE_TEMPLATE_DIR}/${CONFIG_NAME}.restart ]; then
-    ${BASE_TEMPLATE_DIR}/${CONFIG_NAME}.restart
+    SCRIPT=${BASE_TEMPLATE_DIR}/${CONFIG_NAME}.restart
   fi
 }
 
@@ -176,10 +177,10 @@ done
 
 # Thomson horrible serial stuff
 
-INF_LIST=$(cd ${BASE_TEMPLATE_DIR}/tftpboot-thomson; find . -mindepth 1 -type f -name "*.inf" -printf "%P\n")
+INF_LIST=$(cd ${BASE_TEMPLATE_DIR}/phones-config-thomson;n find . -mindepth 1 -type f -name "*.inf" -printf "%P\n")
 for P in ${LIST}; do
-  T_P=tftpboot-thomson/${P}
-  R_P=/tftpboot/${P}
+  T_P=tftpboot/${P}
+  R_P=/${T_P}
 
   DATE=$(date +%Y%m%d)
   if [ -f ${R_P} ]; then
@@ -207,7 +208,7 @@ for P in ${LIST}; do
   apply_template_to_file ${BASE_RESULT_DIR} ${INCLUDE_PATH} ${BASE_RESULT_DIR}/${NEW_INCLUDE_PATH}
   rm ${BASE_RESULT_DIR}/${INCLUDE_FILE}
 done
-do_apply ${BASE_RESULT_DIR} tftpboot-thomson /tftpboot
+do_apply ${BASE_RESULT_DIR} phones-config-thomson
 
 
 #### cleanup ####
