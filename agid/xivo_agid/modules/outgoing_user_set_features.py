@@ -25,7 +25,6 @@ def outgoing_user_set_features(agi, cursor, args):
     userid = agi.get_variable('XIVO_USERID')
     dstid = agi.get_variable('XIVO_DSTID')
     dstnum = agi.get_variable('XIVO_DSTNUM')
-    context = agi.get_variable('XIVO_CONTEXT')
 
     # FIXME: this is only for the callrecord feature, which is likely to change
     srcnum = agi.get_variable('XIVO_SRCNUM')
@@ -52,7 +51,6 @@ def outgoing_user_set_features(agi, cursor, args):
         try:
             user = objects.User(agi, cursor, int(userid), feature_list)
 
-            # TODO: Rethink all the caller id stuff.
             callerid = user.outcallerid
 
             if user.enableautomon:
@@ -63,11 +61,8 @@ def outgoing_user_set_features(agi, cursor, args):
         except (ValueError, LookupError):
             pass
 
-    # TODO: Rethink all the caller id stuff.
-    if outcall.setcallerid:
+    if callerid in (None, '', 'default') and outcall.setcallerid:
         callerid = outcall.callerid
-    elif callerid == 'default':
-        callerid = None
 
     for i, trunk in enumerate(outcall.trunks):
         agi.set_variable('XIVO_INTERFACE%d' % i, trunk.interface)
@@ -77,10 +72,10 @@ def outgoing_user_set_features(agi, cursor, args):
         agi.set_variable('XIVO_TRUNKEXTEN%d' % i, dstnum)
 
         if trunk.intfsuffix:
-            agi.set_variable('XIVO_TRUNKSUFFIX%d' % i, "/" + trunk.intfsuffix)
+            agi.set_variable('XIVO_TRUNKSUFFIX%d' % i, trunk.intfsuffix)
 
     if callerid:
-        agi.set_variable('CALLERID(all)', callerid)
+        objects.CallerID.set(agi, callerid)
 
         if callerid == 'anonymous':
             agi.appexec('SetCallerPres', 'prohib')

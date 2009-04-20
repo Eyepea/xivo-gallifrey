@@ -117,7 +117,7 @@ class BossSecretaryFilter:
                    'callfilter.callfrom', 'callfilter.ringseconds',
                    'callfiltermember.ringseconds',
                    'userfeatures.id', 'userfeatures.protocol',
-                   'userfeatures.protocolid', 'userfeatures.name')
+                   'userfeatures.protocolid')
 
         cursor.query("SELECT ${columns} FROM callfilter "
                      "INNER JOIN callfiltermember "
@@ -142,7 +142,6 @@ class BossSecretaryFilter:
 
         protocol = res['userfeatures.protocol']
         protocolid = res['userfeatures.protocolid']
-        name = res['userfeatures.name']
 
         self.id = res['callfilter.id']
         self.context = boss_context
@@ -162,7 +161,7 @@ class BossSecretaryFilter:
             self.agi.dp_break(str(e))
 
         columns = ('callfiltermember.active', 'userfeatures.id', 'userfeatures.protocol',
-                   'userfeatures.protocolid', 'userfeatures.name', 'userfeatures.number',
+                   'userfeatures.protocolid', 'userfeatures.number',
                    'userfeatures.ringseconds')
 
         cursor.query("SELECT ${columns} FROM callfiltermember INNER JOIN userfeatures "
@@ -186,7 +185,6 @@ class BossSecretaryFilter:
         for row in res:
             protocol = row['userfeatures.protocol']
             protocolid = row['userfeatures.protocolid']
-            name = row['userfeatures.name']
             secretary = BossSecretaryFilterMember(self.agi,
                                                   row['callfiltermember.active'],
                                                   'secretary',
@@ -251,8 +249,8 @@ class BossSecretaryFilter:
     def set_dial_actions(self):
         DialAction(self.agi, self.cursor, "noanswer", "callfilter", self.id).set_variables()
 
-    def set_caller_id(self):
-        CallerID(self.agi, self.cursor, "callfilter", self.id).set_caller_id(force_rewrite=True)
+    def rewrite_cid(self):
+        CallerID(self.agi, self.cursor, "callfilter", self.id).rewrite(force_rewrite=True)
 
 
 class VMBox:
@@ -547,8 +545,8 @@ class Group:
         for event in ('noanswer', 'congestion', 'busy', 'chanunavail'):
             DialAction(self.agi, self.cursor, event, "group", self.id).set_variables()
 
-    def set_caller_id(self):
-        CallerID(self.agi, self.cursor, "group", self.id).set_caller_id(force_rewrite=False)
+    def rewrite_cid(self):
+        CallerID(self.agi, self.cursor, "group", self.id).rewrite(force_rewrite=False)
 
 
 class MeetMe:
@@ -684,8 +682,8 @@ class Queue:
         for event in ('noanswer', 'congestion', 'busy', 'chanunavail'):
             DialAction(self.agi, self.cursor, event, "queue", self.id).set_variables()
 
-    def set_caller_id(self):
-        CallerID(self.agi, self.cursor, "queue", self.id).set_caller_id(force_rewrite=False)
+    def rewrite_cid(self):
+        CallerID(self.agi, self.cursor, "queue", self.id).rewrite(force_rewrite=False)
 
 
 class Agent:
@@ -868,8 +866,8 @@ class DID:
     def set_dial_actions(self):
         DialAction(self.agi, self.cursor, "answer", "incall", self.id).set_variables()
 
-    def set_caller_id(self):
-        CallerID(self.agi, self.cursor, "incall", self.id).set_caller_id(force_rewrite=True)
+    def rewrite_cid(self):
+        CallerID(self.agi, self.cursor, "incall", self.id).rewrite(force_rewrite=True)
 
 
 class Outcall:
@@ -939,6 +937,16 @@ class Outcall:
 
 
 class Schedule:
+    @staticmethod
+    def forgetimefield(start, end):
+        if start == '*':
+            return '*'
+        else:
+            if end in (None, ''):
+                return '%s' % (start,)
+            else:
+                return '%s-%s' % (start, end)
+
     def __init__(self, agi, cursor, xid):
         self.agi = agi
         self.cursor = cursor
@@ -963,16 +971,6 @@ class Schedule:
                 self.forgetimefield(res['daynumbeg'], res['daynumend']),
                 self.forgetimefield(res['monthbeg'], res['monthend'])
         ))
-
-    @staticmethod
-    def forgetimefield(start, end):
-        if start == '*':
-            return '*'
-        else:
-            if end in (None, ''):
-                return '%s' % (start,)
-            else:
-                return '%s-%s' % (start, end)
 
     def set_dial_actions(self):
         DialAction(self.agi, self.cursor, "inschedule", "schedule", self.id).set_variables()
@@ -1039,8 +1037,46 @@ class Context:
 
 
 CALLERID_MATCHER = re.compile('^(?:"(.+)"|([a-zA-Z0-9\-\.\!%\*_\+`\'\~]+)) ?(?:<([0-9\*#]+)>)?$').match
+CALLERIDNUM_MATCHER = re.compile('^[0-9\*#]+$').match
 
 class CallerID:
+    @staticmethod
+    def parse(callerid):
+        m = CALLERID_MATCHER(callerid)
+
+        if not m:
+            return
+
+        calleridname = m.group(1)
+        calleridnum = m.group(3)
+
+        if calleridname is None:
+            calleridname = m.group(2)
+
+            if calleridnum is None and CALLERIDNUM_MATCHER(calleridname):
+                calleridnum = m.group(2)
+
+        return (calleridname, calleridnum)
+
+    @staticmethod
+    def set(agi, callerid):
+        cid_parsed = CallerID.parse(callerid)
+
+        if not cid_parsed:
+            return
+
+        calleridname, calleridnum = cid_parsed
+
+        if calleridname is None and calleridnum is not None:
+            calleridname = calleridnum
+
+        if calleridname is not None and calleridnum is None:
+            agi.set_variable('CALLERID(name)', calleridname)
+        else:
+            agi.set_variable('CALLERID(all)', '"%s" <%s>' % (calleridname, calleridnum))
+
+        return True
+
     def __init__(self, agi, cursor, xtype, typeval):
         self.agi = agi
         self.cursor = cursor
@@ -1061,19 +1097,14 @@ class CallerID:
         self.calleridnum = None
 
         if res:
-            m = CALLERID_MATCHER(res['callerdisplay'])
+            cid_parsed = self.parse(res['callerdisplay'])
 
-            if m:
+            if cid_parsed:
                 self.mode = res['mode']
                 self.callerdisplay = res['callerdisplay']
-                self.calleridnum = m.group(3)
+                self.calleridname, self.calleridnum = cid_parsed
 
-                self.calleridname = m.group(1)
-
-                if self.calleridname is None:
-                    self.calleridname = m.group(2)
-
-    def set_caller_id(self, force_rewrite):
+    def rewrite(self, force_rewrite):
         """
         Set/Modify the caller ID if needed and allowed and create
         the XIVO_CID_REWRITTEN channel variable in some cases.

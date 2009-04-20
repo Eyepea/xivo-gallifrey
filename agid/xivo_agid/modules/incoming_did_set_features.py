@@ -35,6 +35,6 @@ def incoming_did_set_features(agi, cursor, args):
         agi.set_variable('XIVO_DIDPREPROCESS_SUBROUTINE', did.preprocess_subroutine)
 
     did.set_dial_actions()
-    did.set_caller_id()
+    did.rewrite_cid()
 
 agid.register(incoming_did_set_features)
