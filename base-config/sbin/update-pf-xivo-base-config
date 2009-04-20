@@ -110,7 +110,7 @@ check_diff()
 
   local FILE_LIST=$(cd ${RESULT_DIR}/${CONFIG_NAME}; find . -type f -printf "%P\n")
   for F in ${FILE_LIST}; do
-    if ! diff ${RESULT_DIR}/${CONFIG_NAME}/${F} /${F}; then
+    if ! diff ${RESULT_DIR}/${CONFIG_NAME}/${F} /${F} >/dev/null; then
       return 1
     fi
   done
@@ -149,6 +149,12 @@ do_restart()
   elif [ -f ${BASE_TEMPLATE_DIR}/${CONFIG_NAME}.restart ]; then
     SCRIPT=${BASE_TEMPLATE_DIR}/${CONFIG_NAME}.restart
   fi
+
+  if [ -z "${DEBUG}" ]; then
+    ${SCRIPT}
+  else
+    echo "DEBUG: would run: ${SCRIPT}"
+  fi
 }
 
 
@@ -162,7 +168,7 @@ LIST=$(echo ${LIST1} ${LIST2} | sort | uniq)
 
 for P in ${LIST}; do
   if [ -f ${BASE_TEMPLATE_DIR}/${P}.skip -o -f ${CUSTOM_TEMPLATE_DIR}/${P}.skip ]; then
-    next
+    continue
   fi
 
   apply_template_to_module ${BASE_RESULT_DIR} ${P}
@@ -215,6 +221,7 @@ do_apply ${BASE_RESULT_DIR} phones-config-thomson
 
 if [ -z "${DEBUG}" ]; then
   rm -rf ${BASE_RESULT_DIR}
+else
   echo "DEBUG: generated files can be found here: ${BASE_RESULT_DIR}"
 fi
 
