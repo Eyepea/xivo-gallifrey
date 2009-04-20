@@ -775,7 +775,13 @@ class XivoCTICommand(BaseCommand):
                                         liclist[icid] = { 'exten' : icitem.get('exten'),
                                                           'context' : icitem.get('context'),
                                                           'destidentity' : icitem.get('destidentity'),
-                                                          'action' : icitem.get('action')
+                                                          'action' : icitem.get('action'),
+                                                          'usercontext' : icitem.get('usercontext'),
+                                                          'groupcontext' : icitem.get('groupcontext'),
+                                                          'queuecontext' : icitem.get('queuecontext'),
+                                                          'meetmecontext' : icitem.get('meetmecontext'),
+                                                          'voicemenucontext' : icitem.get('voicemenucontext'),
+                                                          'voicemailcontext' : icitem.get('voicemailcontext')
                                                           }
                         except Exception:
                                 log.exception('(getincomingcalllist) : %s' % icitem)
@@ -1302,7 +1308,7 @@ class XivoCTICommand(BaseCommand):
                                 itemdir['xivo-channel'] = event.get('Channel')
                                 itemdir['xivo-uniqueid'] = event.get('Uniqueid')
                                 # find which userinfo's to contact ...
-
+                                
                         elif where == 'incomingdid':
                                 chan = event.get('CHANNEL', '')
                                 uid = event.get('UNIQUEID', '')
@@ -3441,7 +3447,14 @@ class XivoCTICommand(BaseCommand):
                                 
                         for v, vv in self.weblist['incomingcalls'][astid].keeplist.iteritems():
                                 if vv['exten'] == didnumber:
+                                        for ctxpart in ['usercontext', 'groupcontext', 'queuecontext',
+                                                        'meetmecontext',
+                                                        'voicemailcontext', 'voicemenucontext']:
+                                                if vv.get(ctxpart):
+                                                        context = vv.get(ctxpart)
+                                                        break
                                         log.info('%s ami_userevent %s' % (astid, vv))
+                                        break
                         # actions involving didnumber/callerid on channel could be carried out here
                         # did_takeovers = { '<incoming_callerid>' : { '<sda>' : {'number' : '<localnum>', 'context' : '<context>'} } }
                         did_takeovers = {}
@@ -3858,7 +3871,7 @@ class XivoCTICommand(BaseCommand):
                 count = event.get('Count')
                 position = event.get('Position')
                 uniqueid = event.get('Uniqueid')
-
+                
                 if self.weblist['queues'][astid].hasqueue(queue):
                         queueorgroup = 'queues'
                 elif self.weblist['groups'][astid].hasqueue(queue):
@@ -4791,6 +4804,7 @@ class XivoCTICommand(BaseCommand):
                                         ### srcuinfo.get('phonenum')
                                         # if termlist empty + agentphonenum not empty => call this one
                                         cidname_src = srcuinfo.get('fullname')
+                        # 'agent:', 'queue:', 'group:' ?
                         else:
                                 log.warning('unknown typesrc <%s>' % typesrc)
                                 
@@ -4802,6 +4816,7 @@ class XivoCTICommand(BaseCommand):
                                 # but it could be misleading with an incoming call from the given person
                                 cidname_dst = whodst
                                 exten_dst = whodst
+                        # 'agent:', 'queue:', 'group:' ?
                         elif typedst == 'user':
                                 if whodst == 'special:me':
                                         dstuinfo = userinfo
@@ -5360,6 +5375,28 @@ class XivoCTICommand(BaseCommand):
                                         log.info(td.encode('utf8'))
                         return
                 
+                elif function == 'updatecallerid':
+                        # to be used within the dialplan, instead of xivo_push ... WIP
+                        
+                        ##
+                        if calleridsolved:
+                                td = 'handle_fagi %s :   calleridsolved="%s"' % (astid, calleridsolved.decode('utf8'))
+                                log.info(td.encode('utf8'))
+                                if calleridname in ['', 'unknown']:
+                                        calleridname = calleridsolved
+                        
+                        # to set according to os.getenv('LANG') or os.getenv('LANGUAGE') later on ?
+                        if calleridnum in ['', 'unknown']:
+                                calleridnum = CALLERID_UNKNOWN_NUM
+                        if calleridname in ['', 'unknown']:
+                                calleridname = calleridnum
+                        
+                        calleridtoset = '"%s"<%s>' % (calleridname, calleridnum)
+                        td = 'handle_fagi %s :   the callerid will be set to %s' % (astid, calleridtoset.decode('utf8'))
+                        log.info(td.encode('utf8'))
+                        fastagi.set_callerid(calleridtoset)
+                        return
+                
                 elif function != 'xivo_push':
                         log.warning('handle_fagi %s %s : unknown function' % (astid, function))
                         return
@@ -5371,11 +5408,11 @@ class XivoCTICommand(BaseCommand):
                 td = 'handle_fagi %s :   (agi variables) agi_callerid=%s agi_calleridname="%s" (callednum is %s)' % (astid, calleridnum, calleridname.decode('utf8'), callednum)
                 log.info(td.encode('utf8'))
                 
-                extraevent = {'caller_num' : calleridnum,
-                              'caller_name' : calleridname,
-                              'called_num' : callednum,
-                              'uniqueid' : uniqueid,
-                              'channel' : channel}
+                extraevent = { 'caller_num' : calleridnum,
+                               'caller_name' : calleridname,
+                               'called_num' : callednum,
+                               'uniqueid' : uniqueid,
+                               'channel' : channel }
                 
                 calleridsolved = self.__sheet_alert__('agi', astid, context, {}, extraevent)
                 if calleridsolved:
