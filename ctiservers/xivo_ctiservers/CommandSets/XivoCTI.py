@@ -985,11 +985,14 @@ class XivoCTICommand(BaseCommand):
         def askstatus(self, astid, npl):
                 for a, b in npl.iteritems():
                         #log.info('askstatus %s %s' %(a, b))
-                        if b['tech'] != 'custom' and b['number']:
-                                self.__ami_execute__(astid, 'sendextensionstate', b['number'], b['context'])
-                                self.__ami_execute__(astid, 'mailbox', b['number'], b['context'])
+                        if b['tech'] != 'custom':
+                                if b['number']:
+                                        self.__ami_execute__(astid, 'sendextensionstate', b['number'], b['context'])
+                                        self.__ami_execute__(astid, 'mailbox', b['number'], b['context'])
+                                else:
+                                        log.warning('%s askstatus : not enough data for %s' % (astid, b))
                         else:
-                                log.warning('%s askstatus : not enough data for %s' % (astid, b))
+                                log.warning('%s askstatus : custom tech not managed %s' % (astid, b))
                 return
         
         def __callback_timer__(self, what):
@@ -2256,9 +2259,9 @@ class XivoCTICommand(BaseCommand):
                         del self.ignore_dtmf[astid][uid]
                 if chan in self.queues_channels_list[astid]:
                         del self.queues_channels_list[astid][chan]
-
-                self.__remove_local_channel__(astid, chan)
                         
+                self.__remove_local_channel__(astid, chan)
+                
                 if uid in self.uniqueids[astid]:
                         vv = self.uniqueids[astid][uid]
                         if chan == vv['channel']:
@@ -2496,22 +2499,27 @@ class XivoCTICommand(BaseCommand):
                 hint    = event.get('Hint')
                 context = event.get('Context')
                 exten   = event.get('Exten')
-                if hint and hint.find('/') > 0:
-                        #log.info('amiresponse_extensionstatus context=%s hint=%s status=%s' % (context, hint, status))
-                        phoneref = '.'.join([hint.split('/')[0].lower(), context,
-                                             hint.split('/')[1], exten])
-                        if phoneref in self.weblist['phones'][astid].keeplist:
-                                if self.weblist['phones'][astid].ami_extstatus(phoneref, status):
-                                        # only sends information if the status changed
-                                        tosend = self.weblist['phones'][astid].status(phoneref)
-                                        tosend['astid'] = astid
-                                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
+                if hint:
+                        if hint.find('/') > 0:
+                                # log.info('amiresponse_extensionstatus context=%s hint=%s status=%s' % (context, hint, status))
+                                proto = hint.split('/')[0].lower()
+                                phoneref = '.'.join([proto, context, hint.split('/')[1], exten])
+                                if phoneref in self.weblist['phones'][astid].keeplist:
+                                        if self.weblist['phones'][astid].ami_extstatus(phoneref, status):
+                                                # only sends information if the status changed
+                                                tosend = self.weblist['phones'][astid].status(phoneref)
+                                                tosend['astid'] = astid
+                                                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
+                        elif hint.startswith('user:'):
+                                log.warning('%s : user:xxx hint (phone %s not watched but present) : %s' % (astid, exten, event))
+                                # {'Status': '4', 'Hint': 'user:218', 'Exten': '218', 'ActionID': 'pPKvoLQ97b', 'Context': 'default', ''})
+                        else:
+                                log.warning('%s : undefined hint : %s' % (astid, event))
+                                # {'Status': '0', 'Hint': 'Custom:user:105', 'Exten': '105', 'ActionID': 'RBx7j3NSwI', 'Context': 'default'}
                 else:
-                        log.warning('%s : undefined hint for %s' % (astid, event))
-                        # pass
-                        # {'Status': '4', 'Hint': 'user:218', 'Exten': '218', 'ActionID': 'pPKvoLQ97b', 'Context': 'default', ''})
+                        event.pop('Hint')
+                        log.warning('%s : empty hint (watched or not, the phone %s is not present) : %s' % (astid, exten, event))
                         # {'Status': '-1', 'Hint': '', 'Exten': '205', 'ActionID': 'MfW1kqRV3j', 'Context': 'default', ''}
-                        # {'Status': '0', 'Hint': 'Custom:user:105', 'Exten': '105', 'ActionID': 'RBx7j3NSwI', 'Context': 'default'}
                 return
         
         def ami_extensionstatus(self, astid, event):

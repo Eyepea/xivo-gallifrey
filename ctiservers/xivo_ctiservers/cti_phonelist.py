@@ -50,7 +50,7 @@ class PhoneList(AnyList):
                     if infos.has_key('calleridnum'):
                         log.debug('  __createorupdate_comm__ new calleridnum[%s %s] : %s' % (commid, infos.get('thischannel'), infos.get('calleridnum')))
                     self.keeplist[phoneid]['comms'][commid] = infos
-
+                    
         def updatechan(self, phoneid, infos, commid=None):
                 log.debug('phone::updatechan %s %s' % (phoneid, infos))
                 # we are gessing which "comm" because there is only one !
@@ -58,14 +58,14 @@ class PhoneList(AnyList):
                         commid = self.keeplist[phoneid]['comms'].keys()[0]
                 if commid is not None:
                         self.__createorupdate_comm__(phoneid, commid, infos)
-
+                        
         def ami_newchannel(self, phoneid, uid, channel):
                 # we could store the "callerid" in order to use it later.
                 self.__createorupdate_comm__(phoneid, uid, {'thischannel':channel, 'calleridname':'<unknown>'})
-
+                
         def ami_newstate(self, phoneid, uid, channel, status):
                 self.__createorupdate_comm__(phoneid, uid, {'status' : status})
-
+                
         def ami_dial(self, phoneidsrc, phoneiddst, uidsrc, uiddst, puidsrc, puiddst):
                 if phoneidsrc in self.keeplist:
                         infos = {'thischannel' : puidsrc.get('channel'),
@@ -90,7 +90,8 @@ class PhoneList(AnyList):
                 return
         
         def ami_link(self, phoneidsrc, phoneiddst, uidsrc, uiddst, puidsrc, puiddst, clidsrc, cliddst, clidnamesrc, clidnamedst):
-                log.debug('phonelist::ami_link(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)' % (phoneidsrc, phoneiddst, uidsrc, uiddst, puidsrc, puiddst, clidsrc, cliddst, clidnamesrc, clidnamedst))
+                log.debug('phonelist::ami_link(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+                          % (phoneidsrc, phoneiddst, uidsrc, uiddst, puidsrc, puiddst, clidsrc, cliddst, clidnamesrc, clidnamedst))
                 infos = {'time-link' : 0,
                          'timestamp-link' : time.time()
                          }

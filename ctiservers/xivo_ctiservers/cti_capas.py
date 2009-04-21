@@ -45,7 +45,8 @@ class Capabilities:
                          'database',
                          'switchboard']
         
-        allowed_xlets = {'agents' : ['agents'],
+        allowed_xlets = {'void' : [],
+                         'agents' : ['agents'],
                          'agentsnext' : ['agents'],
                          'agentdetails' : ['agents'],
                          'queues' : ['agents'],
@@ -80,7 +81,7 @@ class Capabilities:
         
         def __init__(self):
                 self.capafuncs = []
-                self.capadisps = []
+                self.capadisps = ['void-grid-0']
                 self.capaservices = []
                 self.appliname = 'Client'
                 self.guisettings = {}
@@ -100,6 +101,8 @@ class Capabilities:
         def setxlets(self, capalist):
                 for capa in capalist:
                         detail = capa.split('-')
+                        if len(detail) > 2 and detail[1] == 'grid' and detail[2] == '0' and 'void-grid-0' in self.capadisps:
+                                self.capadisps.remove('void-grid-0')
                         if detail[0] in self.allowed_xlets.keys():
                                 if capa not in self.capadisps:
                                         self.capadisps.append(capa)
