@@ -4484,20 +4484,21 @@ class XivoCTICommand(BaseCommand):
                                         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid,
                                                                          self.weblist['agents'][astid].keeplist[agent_id].get('context'))
                         elif subcommand == 'listen':
-                                agent_id = self.weblist['agents'][astid].reverse_index.get(anum)
-                                channels = self.__find_channel_by_agentnum__(astid, anum)
-                                for channel in channels:
-                                        aid = self.__ami_execute__(astid,
-                                                                   'origapplication',
-                                                                   'ChanSpy',
-                                                                   '%s|q' % channel,
-                                                                   'Local',
-                                                                   userinfo.get('phonenum'),
-                                                                   userinfo.get('context'))
-                                        log.info('started listening on %s %s (agent %s) aid = %s' % (astid, channel, anum, aid))
-                                        self.origapplication[astid][aid] = { 'origapplication' : 'ChanSpy',
-                                                                             'origapplication-data' : { 'spied-channel' : channel,
-                                                                                                        'spied-agentid' : agent_id } }
+                                if astid == userinfo.get('astid'):
+                                        agent_id = self.weblist['agents'][astid].reverse_index.get(anum)
+                                        channels = self.__find_channel_by_agentnum__(astid, anum)
+                                        for channel in channels:
+                                                aid = self.__ami_execute__(userinfo.get('astid'),
+                                                                           'origapplication',
+                                                                           'ChanSpy',
+                                                                           '%s|q' % channel,
+                                                                           'Local',
+                                                                           userinfo.get('phonenum'),
+                                                                           userinfo.get('context'))
+                                                log.info('started listening on %s %s (agent %s) aid = %s' % (astid, channel, anum, aid))
+                                                self.origapplication[astid][aid] = { 'origapplication' : 'ChanSpy',
+                                                                                     'origapplication-data' : { 'spied-channel' : channel,
+                                                                                                                'spied-agentid' : agent_id } }
                         elif subcommand == 'stoplisten':
                                 agent_id = self.weblist['agents'][astid].reverse_index.get(anum)
                                 channels = self.__find_channel_by_agentnum__(astid, anum)
