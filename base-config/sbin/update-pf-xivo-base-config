@@ -59,7 +59,11 @@ generate_file()
 
   for VAR in ${TEMPLATE_VARS}; do
     VALUE="${!VAR}"
-    sed -i "s#\#${VAR}\##${VALUE}#g" ${FILE}
+    if ! sed -ri "s#\#${VAR}\##${VALUE}#g" ${FILE}; then
+      echo "Erreur: ${FILE}"
+      echo sed -ri "s#\#${VAR}\##${VALUE}#g" ${FILE}
+      cat ${FILE}
+    fi
   done
 }
 
@@ -67,7 +71,7 @@ apply_template_to_file()
 {
   local RESULT_DIR=$1
   local FILE_SUBPATH=$2
-  local RESULT_FILE=$3
+  RESULT_FILE=$3
 
   if [ -z "${RESULT_FILE}" ]; then
     RESULT_FILE=${RESULT_DIR}/${FILE_SUBPATH}
@@ -185,38 +189,47 @@ done
 #### This part is especially ugly, DO NOT read please ####
 
 # Thomson horrible serial stuff
+# (it is a fake serial, it just need to change to have phones update their configuration)
 
-INF_LIST=$(cd ${BASE_TEMPLATE_DIR}/phones-config-thomson; find . -mindepth 1 -type f -name "*.inf" -printf "%P\n")
-for P in ${INF_LIST}; do
-  DATE=$(date +%Y%m%d)
-  if [ -f /${P} ]; then
-    # find and increment serial
-    OLD_SERIAL=$(grep -E "^[^#][ \t]+common_config[ \t]+=.*$" /${P} | sed -r 's#^.*-(\d+)\.txt$#\1#')
-    OLD_DATE=${OLD_SERIAL:0:8}
-    if [ "${OLD_DATE}" = "${DATE}" ]; then
-      OLD_CHANGE_NUM=${OLD_SERIAL:8:4}
-      # increment and pad with "0"
-      NEW_CHANGE_NUM=$(printf "%04d" $((${OLD_CHANGE_NUM} + 1)))
-      SERIAL="${OLD_DATE}${NEW_CHANGE_NUM}"
-    else
-      SERIAL="${DATE}0000"
-    fi
+SERIAL_FILE=/var/lib/pf-xivo-base-config/phones-config-thomson-SERIAL
+
+DATE=$(date +%Y%m%d)
+if [ -e ${SERIAL_FILE} ]; then
+  OLD_SERIAL=$(cat ${SERIAL_FILE})
+  OLD_DATE=${OLD_SERIAL:0:8}
+  if [ "${OLD_DATE}" = "${DATE}" ]; then
+    OLD_CHANGE_NUM=${OLD_SERIAL:8:4}
+    # increment and pad with "0"
+    NEW_CHANGE_NUM=$(printf "%04d" $((${OLD_CHANGE_NUM} + 1)))
+    SERIAL="${OLD_DATE}${NEW_CHANGE_NUM}"
   else
     SERIAL="${DATE}0000"
   fi
-  TEMPLATE_VARS="${TEMPLATE_VARS}"
+else
+  SERIAL="${DATE}0000"
+fi
+if [ -n "${DEBUG}" ]; then
+  echo "DEBUG: SERIAL=${SERIAL}"
+fi
+echo ${SERIAL} >${SERIAL_FILE}
 
+TEMPLATE_VARS="${TEMPLATE_VARS} SERIAL"
+
+INF_LIST=$(cd ${BASE_TEMPLATE_DIR}/phones-config-thomson; find . -mindepth 1 -type f -name "*.inf" -printf "%P\n")
+for P in ${INF_LIST}; do
   apply_template_to_file ${BASE_RESULT_DIR} phones-config-thomson/${P}
-  INCLUDE_FILE=$(grep -E "^[^#].*#SERIAL#.*$" ${BASE_RESULT_DIR}/phones-config-thomson/${P} | sed -r 's#^.*/([^/]+)$#\1#')
-  INCLUDE_PATH=$(dirname phones-config-thomson/${P})/${INCLUDE_FILE}
-  NEW_INCLUDE_FILE=$(echo ${INCLUDE_FILE} | sed "s/#SERIAL#/${SERIAL}/")
-  NEW_INCLUDE_PATH=phones-config-thomson/$(dirname ${P})/${NEW_INCLUDE_FILE}
-  sed -i "s/#SERIAL#/${SERIAL}/" ${BASE_RESULT_DIR}/phones-config-thomson/${P}
-  apply_template_to_file ${BASE_RESULT_DIR} ${INCLUDE_PATH} ${BASE_RESULT_DIR}/${NEW_INCLUDE_PATH}
+done
+TXT_LIST=$(cd ${BASE_TEMPLATE_DIR}/phones-config-thomson; find . -mindepth 1 -type f -name "*.txt" -printf "%P\n")
+for P in ${TXT_LIST}; do
+  apply_template_to_file ${BASE_RESULT_DIR} phones-config-thomson/${P}
+  NEW_RESULT_FILE=$(echo ${RESULT_FILE} | sed -r "s/#SERIAL#/${SERIAL}/")
+  mv ${RESULT_FILE} ${NEW_RESULT_FILE}
 done
 if do_apply ${BASE_RESULT_DIR} phones-config-thomson; then
   if [ -z "${DEBUG}" ]; then
-    sed -i "s/^config_sn=.*\$/config_sn=${SERIAL}/" /tftpboot/ST*.txt
+    if ls /tftpboot/ST*.txt 2>/dev/null; then
+      sed -ri "s/^config_sn=.*\$/config_sn=${SERIAL}/" /tftpboot/ST*.txt
+    fi
   else
     echo "DEBUG: would update all Thomson phones serials"
   fi
