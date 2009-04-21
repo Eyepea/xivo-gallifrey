@@ -1138,6 +1138,10 @@ class CallerID:
             elif calleridname[0] == '"' and calleridname[-1] == '"':
                 calleridname = calleridname[1:-1]
 
+            if self.mode in ('prepend', 'append') \
+               and self.calleridname == calleridname \
+               and calleridnum == calleridname:
+                name = calleridname
             if self.mode == 'prepend':
                 name = "%s - %s" % (self.calleridname, calleridname)
             elif self.mode == 'overwrite':
