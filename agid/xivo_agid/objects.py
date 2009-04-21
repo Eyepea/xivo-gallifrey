@@ -1142,7 +1142,7 @@ class CallerID:
                and self.calleridname == calleridname \
                and calleridnum == calleridname:
                 name = calleridname
-            if self.mode == 'prepend':
+            elif self.mode == 'prepend':
                 name = "%s - %s" % (self.calleridname, calleridname)
             elif self.mode == 'overwrite':
                 name = self.calleridname
