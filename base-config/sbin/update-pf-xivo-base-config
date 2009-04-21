@@ -116,6 +116,9 @@ check_diff()
 
   local FILE_LIST=$(cd ${RESULT_DIR}/${CONFIG_NAME}; find . -type f -printf "%P\n")
   for F in ${FILE_LIST}; do
+    if [ ! -e /${F} ]; then
+      return 1
+    fi
     if ! diff ${RESULT_DIR}/${CONFIG_NAME}/${F} /${F} >/dev/null; then
       return 1
     fi
