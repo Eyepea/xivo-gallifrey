@@ -140,7 +140,7 @@ do_apply()
 
   if [ -z "${DEBUG}" ]; then
     cp -a ${RESULT_SUBDIR}/* ${SYSTEM_DIR}/
-    echo "'${CONFIG_NAME}' configuration updated."
+    echo "'${CONFIG_NAME}' configuration UPDATED."
   else
     echo "DEBUG: would copy ${RESULT_SUBDIR}/* into ${SYSTEM_DIR}/"
   fi
@@ -171,7 +171,7 @@ BASE_RESULT_DIR=$(mktemp -d)
 
 LIST1=$(cd ${BASE_TEMPLATE_DIR}; find . -mindepth 1 -maxdepth 1 -type d -printf "%P\n")
 LIST2=$(cd ${CUSTOM_TEMPLATE_DIR}; find . -mindepth 1 -maxdepth 1 -type d -printf "%P\n")
-LIST=$(echo ${LIST1} ${LIST2} | sort | uniq)
+LIST=$(echo "${LIST1} ${LIST2}" | sort | uniq)
 
 for P in ${LIST}; do
   if [ -f ${BASE_TEMPLATE_DIR}/${P}.skip -o -f ${CUSTOM_TEMPLATE_DIR}/${P}.skip ]; then
@@ -179,7 +179,9 @@ for P in ${LIST}; do
   fi
 
   apply_template_to_module ${BASE_RESULT_DIR} ${P}
-  if ! check_diff ${BASE_RESULT_DIR} ${P}; then
+  if check_diff ${BASE_RESULT_DIR} ${P}; then
+    echo "'${P}' configuration OK, skipping."
+  else
     do_apply ${BASE_RESULT_DIR} ${P}
     do_restart ${P}
   fi
@@ -209,9 +211,12 @@ else
   SERIAL="${DATE}0000"
 fi
 if [ -n "${DEBUG}" ]; then
+  echo "DEBUG: OLD_SERIAL=${OLD_SERIAL}"
   echo "DEBUG: SERIAL=${SERIAL}"
+  echo "DEBUG: not saving new serial in debug mode"
+else
+  echo ${SERIAL} >${SERIAL_FILE}
 fi
-echo ${SERIAL} >${SERIAL_FILE}
 
 TEMPLATE_VARS="${TEMPLATE_VARS} SERIAL"
 
@@ -220,17 +225,26 @@ for P in ${INF_LIST}; do
   apply_template_to_file ${BASE_RESULT_DIR} phones-config-thomson/${P}
 done
 TXT_LIST=$(cd ${BASE_TEMPLATE_DIR}/phones-config-thomson; find . -mindepth 1 -type f -name "*.txt" -printf "%P\n")
+RM_LIST=
 for P in ${TXT_LIST}; do
   apply_template_to_file ${BASE_RESULT_DIR} phones-config-thomson/${P}
+  if [ -n "${OLD_SERIAL}" ]; then
+    OLD_FILE=$(echo /${P} | sed -r "s/#SERIAL#/${OLD_SERIAL}/")
+    RM_LIST="${RM_LIST} ${OLD_FILE}"
+  fi
   NEW_RESULT_FILE=$(echo ${RESULT_FILE} | sed -r "s/#SERIAL#/${SERIAL}/")
   mv ${RESULT_FILE} ${NEW_RESULT_FILE}
 done
 if do_apply ${BASE_RESULT_DIR} phones-config-thomson; then
   if [ -z "${DEBUG}" ]; then
+    if [ -n "${RM_LIST}" ]; then
+      rm -f ${RM_LIST}
+    fi
     if ls /tftpboot/ST*.txt 2>/dev/null; then
       sed -ri "s/^config_sn=.*\$/config_sn=${SERIAL}/" /tftpboot/ST*.txt
     fi
   else
+    echo "DEBUG: would replace old configuration files: ${RM_LIST}"
     echo "DEBUG: would update all Thomson phones serials"
   fi
 fi
