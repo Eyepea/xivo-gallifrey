@@ -136,7 +136,7 @@ Etes-vous certain de vouloir activer le monitoring de %s ?
 ; sysinfos_opt_unmonitor
 Désactiver le monitoring de %s
 
-; sysinfos_opt_monitor_confirm
+; sysinfos_opt_unmonitor_confirm
 Etes-vous certain de vouloir désactiver le monitoring de %s ?
 
 ; sysinfos_state-opt(accessible)

@@ -136,7 +136,7 @@ Are you sure you want to enable monitoring of %s?
 ; sysinfos_opt_unmonitor
 Disable monitoring of %s
 
-; sysinfos_opt_monitor_confirm
+; sysinfos_opt_unmonitor_confirm
 Are you sure you want to disable monitoring of %s?
 
 ; sysinfos_state-opt(accessible)
