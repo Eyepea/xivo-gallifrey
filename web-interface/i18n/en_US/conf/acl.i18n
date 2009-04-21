@@ -147,3 +147,9 @@ Stop
 
 ; acl_service-monitoring-control_system-restart
 Restart
+
+; acl_service-monitoring-control_system-monitor
+Enable monitoring
+
+; acl_service-monitoring-control_system-unmonitor
+Disable monitoring

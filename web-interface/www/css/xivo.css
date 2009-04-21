@@ -312,7 +312,7 @@ pre {text-align: left;}
 #b-content fieldset legend {color: #f96101;font-weight: bold;padding: 0px 5px 5px;}
 
 #b-content div .gauge {width: 104px;padding: 2px;border-right-width: 0px;}
-#b-content div .gauge div {background-color: #49c4ff;width: 100px;height: 10px;border:1px solid #000;font-size:1pt;}
+#b-content div .gauge div {text-align: left;background-color: #49c4ff;width: 100px;height: 10px;border:1px solid #000;font-size:1pt;}
 #b-content div .gauge div div {background-color: #055a82;width: 0px;border:0px solid #000;}
 #b-content div .gaugepercent {width: 50px;border-left-width: 0px;}
 

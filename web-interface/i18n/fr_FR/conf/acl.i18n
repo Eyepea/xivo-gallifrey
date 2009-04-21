@@ -144,3 +144,9 @@ Arrêter
 
 ; acl_service-monitoring-control_system-restart
 Redémarrer
+
+; acl_service-monitoring-control_system-monitor
+Activer le monitoring
+
+; acl_service-monitoring-control_system-unmonitor
+Désactiver le monitoring

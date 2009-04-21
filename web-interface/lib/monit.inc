@@ -338,6 +338,8 @@ class xivo_monit
 			$ref['startable'] = $this->is_startable_service($name);
 			$ref['stoppable'] = $this->is_stoppable_service($name);
 			$ref['restartable'] = $this->is_restartable_service($name);
+			$ref['monitorable'] = $this->is_monitorable($name);
+			$ref['unmonitorable'] = $this->is_unmonitorable($name);
 
 			if($ref['type'] === 5)
 				continue;

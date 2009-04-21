@@ -18,6 +18,14 @@ if(isset($_QR['service'],$_QR['action']) === true)
 			$monitoring->restart_service($_QR['service']);
 			$_QRY->go($_HTML->url('xivo'));
 			break;
+		case 'monitor':
+			$monitoring->enable_monitor($_QR['service']);
+			$_QRY->go($_HTML->url('xivo'));
+			break;
+		case 'unmonitor':
+			$monitoring->disable_monitor($_QR['service']);
+			$_QRY->go($_HTML->url('xivo'));
+			break;
 		default:
 	}
 }

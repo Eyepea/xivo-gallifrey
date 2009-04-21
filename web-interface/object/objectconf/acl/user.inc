@@ -76,6 +76,8 @@ $array['tree']['service']['monitoring']['control_system'] = array();
 $array['tree']['service']['monitoring']['control_system']['start'] = true;
 $array['tree']['service']['monitoring']['control_system']['stop'] = true;
 $array['tree']['service']['monitoring']['control_system']['restart'] = true;
+$array['tree']['service']['monitoring']['control_system']['monitor'] = true;
+$array['tree']['service']['monitoring']['control_system']['unmonitor'] = true;
 
 
 $array['group'] = array();

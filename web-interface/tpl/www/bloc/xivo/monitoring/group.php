@@ -66,40 +66,74 @@ if(is_array($grpdata) === true && ($nb = count($grpdata)) > 0):
 			if($ref['startable'] === true && xivo_user::chk_acl('control_system','start','service/monitoring') === true):
 				$actionable = true;
 				echo	$url->href_html($url->img_html('img/site/button/start.gif',
-								       $this->bbf('sysinfos_opt_start'),
+								       $this->bbf('sysinfos_opt_start',
+										  $ref['name']),
 								       'border="0"'),
 							'xivo',
 							array('service'	=> $ref['name'],
 							      'action'	=> 'start'),
 							'onclick="return(confirm(\''.$dhtml->escape($this->bbf('sysinfos_opt_start_confirm',
 												    $ref['name'])).'\'));"',
-							$this->bbf('sysinfos_opt_start')),"\n";
+							$this->bbf('sysinfos_opt_start',
+								   $ref['name'])),"\n";
 			endif;
 
 			if($ref['restartable'] === true && xivo_user::chk_acl('control_system','restart','service/monitoring') === true):
 				$actionable = true;
 				echo	$url->href_html($url->img_html('img/site/button/restart.gif',
-								       $this->bbf('sysinfos_opt_restart'),
+								       $this->bbf('sysinfos_opt_restart',
+										  $ref['name']),
 								       'border="0"'),
 							'xivo',
 							array('service'	=> $ref['name'],
 							      'action'	=> 'restart'),
 							'onclick="return(confirm(\''.$dhtml->escape($this->bbf('sysinfos_opt_restart_confirm',
 													       $ref['name'])).'\'));"',
-							$this->bbf('sysinfos_opt_restart')),"\n";
+							$this->bbf('sysinfos_opt_restart',
+								   $ref['name'])),"\n";
 			endif;
 
 			if($ref['stoppable'] === true && xivo_user::chk_acl('control_system','stop','service/monitoring') === true):
 				$actionable = true;
 				echo	$url->href_html($url->img_html('img/site/button/stop.gif',
-								       $this->bbf('sysinfos_opt_stop'),
+								       $this->bbf('sysinfos_opt_stop',
+										  $ref['name']),
 								       'border="0"'),
 							'xivo',
 							array('service'	=> $ref['name'],
 							      'action'	=> 'stop'),
 							'onclick="return(confirm(\''.$dhtml->escape($this->bbf('sysinfos_opt_stop_confirm',
 													       $ref['name'])).'\'));"',
-							$this->bbf('sysinfos_opt_stop')),"\n";
+							$this->bbf('sysinfos_opt_stop',
+								   $ref['name'])),"\n";
+			endif;
+
+			if($ref['monitorable'] === true && xivo_user::chk_acl('control_system','monitor','service/monitoring') === true):
+				$actionable = true;
+				echo	$url->href_html($url->img_html('img/site/button/monitor.gif',
+								       $this->bbf('sysinfos_opt_monitor',
+										  $ref['name']),
+								       'border="0"'),
+							'xivo',
+							array('service'	=> $ref['name'],
+							      'action'	=> 'monitor'),
+							'onclick="return(confirm(\''.$dhtml->escape($this->bbf('sysinfos_opt_monitor_confirm',
+													       $ref['name'])).'\'));"',
+							$this->bbf('sysinfos_opt_monitor',
+								   $ref['name'])),"\n";
+			elseif($ref['unmonitorable'] === true && xivo_user::chk_acl('control_system','unmonitor','service/monitoring') === true):
+				$actionable = true;
+				echo	$url->href_html($url->img_html('img/site/button/unmonitor.gif',
+								       $this->bbf('sysinfos_opt_unmonitor',
+										  $ref['name']),
+								       'border="0"'),
+							'xivo',
+							array('service'	=> $ref['name'],
+							      'action'	=> 'unmonitor'),
+							'onclick="return(confirm(\''.$dhtml->escape($this->bbf('sysinfos_opt_unmonitor_confirm',
+													       $ref['name'])).'\'));"',
+							$this->bbf('sysinfos_opt_unmonitor',
+								   $ref['name'])),"\n";
 			endif;
 
 			if($actionable === false):

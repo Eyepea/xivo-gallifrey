@@ -110,22 +110,34 @@ Mémoire
 Action
 
 ; sysinfos_opt_start
-Démarrer
+Démarrer %s
 
 ; sysinfos_opt_start_confirm
 Etes-vous certain de vouloir démarrer %s ?
 
 ; sysinfos_opt_restart
-Redémarrer
+Redémarrer %s
 
 ; sysinfos_opt_restart_confirm
 Etes-vous certain de vouloir redémarrer %s ?
 
 ; sysinfos_opt_stop
-Arrêter
+Arrêter %s
 
 ; sysinfos_opt_stop_confirm
 Etes-vous certain de vouloir arrêter %s ?
+
+; sysinfos_opt_monitor
+Activer le monitoring de %s
+
+; sysinfos_opt_monitor_confirm
+Etes-vous certain de vouloir activer le monitoring de %s ?
+
+; sysinfos_opt_unmonitor
+Désactiver le monitoring de %s
+
+; sysinfos_opt_monitor_confirm
+Etes-vous certain de vouloir désactiver le monitoring de %s ?
 
 ; sysinfos_state-opt(accessible)
 Accessible

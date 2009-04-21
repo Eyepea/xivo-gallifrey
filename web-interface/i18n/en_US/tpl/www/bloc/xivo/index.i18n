@@ -109,6 +109,36 @@ Memory
 ; sysinfos_col_action
 Action
 
+; sysinfos_opt_start
+Start %s
+
+; sysinfos_opt_start_confirm
+Are you sure you want to start %s?
+
+; sysinfos_opt_restart
+Restart %s
+
+; sysinfos_opt_restart_confirm
+Are you sure you want to restart %s?
+
+; sysinfos_opt_stop
+Stop %s
+
+; sysinfos_opt_stop_confirm
+Are you sure you want to stop %s?
+
+; sysinfos_opt_monitor
+Enable monitoring of %s
+
+; sysinfos_opt_monitor_confirm
+Are you sure you want to enable monitoring of %s?
+
+; sysinfos_opt_unmonitor
+Disable monitoring of %s
+
+; sysinfos_opt_monitor_confirm
+Are you sure you want to disable monitoring of %s?
+
 ; sysinfos_state-opt(accessible)
 Accessible
 
