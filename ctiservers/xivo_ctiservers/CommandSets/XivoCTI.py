@@ -4102,9 +4102,9 @@ class XivoCTICommand(BaseCommand):
                                                         repstr = self.__build_customers__(context, icommand.struct.get('pattern'))
                                                         
                                         elif classcomm == 'keepalive':
-                                                nbytes = icommand.struct.get('rate-bytes')
-                                                nmsec = icommand.struct.get('rate-msec')
-                                                nsamples = icommand.struct.get('rate-samples')
+                                                nbytes = icommand.struct.get('rate-bytes', -1)
+                                                nmsec = icommand.struct.get('rate-msec', -1)
+                                                nsamples = icommand.struct.get('rate-samples', -1)
                                                 if nbytes > 0:
                                                         if nmsec > 0:
                                                                 rate = float(nbytes) / nmsec
