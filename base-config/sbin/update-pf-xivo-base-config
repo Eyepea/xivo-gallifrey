@@ -198,7 +198,7 @@ if [ -e ${SERIAL_FILE} ]; then
   OLD_SERIAL=$(cat ${SERIAL_FILE})
   OLD_DATE=${OLD_SERIAL:0:8}
   if [ "${OLD_DATE}" = "${DATE}" ]; then
-    OLD_CHANGE_NUM=${OLD_SERIAL:8:4}
+    OLD_CHANGE_NUM=$(echo ${OLD_SERIAL:8:4} | sed -r 's/^0+//')
     # increment and pad with "0"
     NEW_CHANGE_NUM=$(printf "%04d" $((${OLD_CHANGE_NUM} + 1)))
     SERIAL="${OLD_DATE}${NEW_CHANGE_NUM}"
