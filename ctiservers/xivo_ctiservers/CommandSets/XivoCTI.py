@@ -2915,7 +2915,7 @@ class XivoCTICommand(BaseCommand):
                                                 if uid is not None and uid in self.uniqueids[astid]:
                                                         infos['calleridnum'] = self.uniqueids[astid][uid].get('calleridnum')
                                                         infos['calleridname'] = self.uniqueids[astid][uid].get('calleridname')
-                                                self.weblist['phones'][astid].updatechan(phoneref, infos, event.get('ChannelCalled'))
+                                                self.weblist['phones'][astid].updatechan(phoneref, infos, self.channels[astid].get(event.get('ChannelCalled')))
                                                 tosend = self.weblist['phones'][astid].status(phoneref)
                                                 tosend['astid'] = astid
                                                 self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
