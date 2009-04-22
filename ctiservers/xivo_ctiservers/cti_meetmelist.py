@@ -53,4 +53,4 @@ class MeetmeList(AnyList):
                 meetme_id = self.reverse_index.get(roomnum)
                 if meetme_id:
                         meetmeref = self.keeplist.get(meetme_id)
-                return meetmeref
+                return (meetmeref, meetme_id)
