@@ -243,7 +243,7 @@ if do_apply ${BASE_RESULT_DIR} phones-config-thomson; then
     if [ -n "${RM_LIST}" ]; then
       rm -f ${RM_LIST}
     fi
-    if ls /tftpboot/ST*.txt 2>/dev/null; then
+    if ls /tftpboot/ST*.txt 2>&1 >/dev/null; then
       sed -ri "s/^config_sn=.*\$/config_sn=${SERIAL}/" /tftpboot/ST*.txt
     fi
   else
