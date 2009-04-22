@@ -2745,7 +2745,10 @@ class XivoCTICommand(BaseCommand):
                 exten   = event.get('Exten')
                 uid     = event.get('Uniqueid')
                 uidfrom = event.get('UniqueidFrom')
+                (channel, _uid, clid, clidname) = self.__translate_local_channel_uid__(astid, channel, uid, None, None)
+                (cfrom, _uid, clid, clidname) = self.__translate_local_channel_uid__(astid, cfrom, uidfrom, None, None)
                 log.info('%s UNPARKEDCALL %s %s %s %s %s' % (astid, uidfrom, uid, cfrom, channel, exten))
+
                 phoneidsrc = self.__phoneid_from_channel__(astid, cfrom)
                 uinfo = self.__userinfo_from_phoneid__(astid, phoneidsrc)
                 phoneiddst = self.__phoneid_from_channel__(astid, channel)
@@ -2757,7 +2760,8 @@ class XivoCTICommand(BaseCommand):
                         self.weblist['phones'][astid].ami_unparkedcall(phoneidsrc, uidfrom, ctuid)
                 if uid in self.uniqueids[astid]:
                         ctuid = self.uniqueids[astid][uid]
-                        ctuid['parkexten-callback'] = uinfo.get('phonenum')
+                        if uinfo is not None:
+                            ctuid['parkexten-callback'] = uinfo.get('phonenum')
                         ctuid['peerchannel'] = cfrom
                         self.weblist['phones'][astid].ami_unparkedcall(phoneiddst, uid, ctuid)
                 # a subsequent 'link' AMI event should make the new status transmitted
