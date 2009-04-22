@@ -35,4 +35,12 @@ $array['tree']['service']['ipbx']['pbx_settings']['voicemail'] = true;
 $array['tree']['service']['ipbx']['call_management'] = array();
 $array['tree']['service']['ipbx']['call_management']['incall'] = true;
 
+$array['tree']['service']['ipbx']['trunk_management'] = array();
+$array['tree']['service']['ipbx']['trunk_management']['sip'] = true;
+$array['tree']['service']['ipbx']['trunk_management']['iax'] = true;
+$array['tree']['service']['ipbx']['trunk_management']['custom'] = true;
+
+$array['tree']['service']['ipbx']['pbx_services'] = array();
+$array['tree']['service']['ipbx']['pbx_services']['phonebook'] = true;
+
 ?>

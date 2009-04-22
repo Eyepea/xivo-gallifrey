@@ -199,7 +199,8 @@ switch($act)
 		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
 
 		$apptrunk = &$ipbx->get_application('trunk',
-						    array('protocol' => XIVO_SRE_IPBX_AST_PROTO_SIP));
+						    array('protocol' => XIVO_SRE_IPBX_AST_PROTO_SIP),
+						    false);
 
 		$order = array();
 		$order['name'] = SORT_ASC;

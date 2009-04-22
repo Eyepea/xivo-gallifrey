@@ -280,6 +280,13 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 			if(($info['trunkfeatures'] = $this->_trunkfeatures->get_where($where)) === false)
 				continue;
 
+			if(is_object($this->_register) === true
+			&& ($registerid = xivo_ulongint($info['trunkfeatures']['registerid'])) !== 0
+			&& ($register = $this->_register->get_register($registerid)) !== false)
+				$info['register'] = $register;
+			else
+				$info['register'] = null;
+
 			$r[$info['trunkfeatures']['id']] = $info;
 		}
 
