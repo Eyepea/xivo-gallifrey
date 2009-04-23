@@ -6,7 +6,7 @@ Index: asterisk-1.4.24/main/channel.c
  	case AST_CONTROL_ANSWER:
  	case AST_CONTROL_HANGUP:
  	case AST_CONTROL_CONNECTEDLINE:
-+        case AST_CONTROL_ATXFERCMD:
++	case AST_CONTROL_ATXFERCMD:
  		return 0;
  
  	case AST_CONTROL_CONGESTION:
@@ -14,7 +14,7 @@ Index: asterisk-1.4.24/main/channel.c
  	case AST_CONTROL_RING:
  	case AST_CONTROL_HOLD:
  	case AST_CONTROL_UNHOLD:
-+        case AST_CONTROL_ATXFERCMD:
++	case AST_CONTROL_ATXFERCMD:
  		/* Nothing left to do for these. */
  		res = 0;
  		break;
