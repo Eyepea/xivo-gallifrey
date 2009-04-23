@@ -118,6 +118,8 @@
 #include <asterisk/options.h>
 #include <asterisk/linkedlists.h>
 
+#define __unused __attribute__((unused))
+
 #define RES_CONFIG_SQLITE_NAME "res_config_sqlite"
 #define RES_CONFIG_SQLITE_DRIVER "sqlite"
 #define RES_CONFIG_SQLITE_APP_DRIVER "SQLITE"
@@ -277,7 +279,7 @@ char * key(void);
  * @param value the value to store in var
  * @return 1 if an allocation error occurred, 0 otherwise
  */
-static int set_var(char **var, char *name, char *value);
+static int set_var(char **var, const char *name, char *value);
 
 /**
  * Load the configuration file.
@@ -677,7 +679,7 @@ static int vm_count;
  */
 static struct ast_config_engine sqlite_engine =
 {
-  .name = RES_CONFIG_SQLITE_DRIVER,
+  .name = RES_CONFIG_SQLITE_DRIVER,	/* WWW [1] */
   .load_func = config_handler,
   .realtime_func = realtime_handler,
   .realtime_multi_func = realtime_multi_handler,
@@ -710,7 +712,7 @@ static struct vm_list_head *vm_list = &vm_list_head;
  */
 static struct ast_cli_entry cli_status_cmd =
 {
-  .cmda = {"show", "sqlite", "status", NULL},
+  .cmda = {"show", "sqlite", "status", NULL},	/* WWW [1] */
   .handler = cli_status,
   .summary = RES_CONFIG_SQLITE_STATUS_SUMMARY,
   .usage = RES_CONFIG_SQLITE_STATUS_USAGE
@@ -746,7 +748,7 @@ static char *sql_create_cdr_table =
 " uniqueid    VARCHAR(32)  NOT NULL DEFAULT '',\n"
 " userfield   VARCHAR(255) NOT NULL DEFAULT '',\n"
 " PRIMARY KEY (id)\n"
-");";
+");";	/* WWW [1] */
 
 /**
  * SQL query format to insert a CDR entry.
@@ -790,7 +792,7 @@ static char *sql_add_cdr_entry =
 "	'%q',"
 "	'%q',"
 "	'%q'"
-");";
+");";	/* WWW [1] */
 
 /**
  * SQL query format to fetch the static configuration of a file.
@@ -801,10 +803,10 @@ static char *sql_get_config_table =
 "SELECT *"
 "	FROM '%q'"
 "	WHERE filename = '%q' AND commented = 0"
-"	ORDER BY cat_metric ASC, var_metric ASC;";
+"	ORDER BY cat_metric ASC, var_metric ASC;";	/* WWW [1] */
 
 static int
-set_var(char **var, char *name, char *value)
+set_var(char **var, const char *name, char *value)
 {
   if (*var != NULL)
     free(*var);
@@ -927,7 +929,7 @@ cdr_handler(struct ast_cdr *cdr)
 }
 
 static int
-add_cfg_entry(void *arg, int argc, char **argv, char **columnNames)
+add_cfg_entry(void *arg, int argc, char **argv, char __unused **columnNames)
 {
   struct cfg_entry_args *args;
   struct ast_variable *var;
@@ -999,8 +1001,9 @@ add_cfg_entry(void *arg, int argc, char **argv, char **columnNames)
 }
 
 static struct ast_config *
-config_handler(const char *database, const char *table, const char *file,
-               struct ast_config *cfg, int withcomments)
+config_handler(const char __unused *database, const char *table,
+               const char *file, struct ast_config *cfg,
+               int __unused withcomments)
 {
   struct cfg_entry_args args;
   char *errormsg;
@@ -1134,9 +1137,11 @@ add_rt_cfg_entry(void *arg, int argc, char **argv, char **columnNames)
 }
 
 static struct ast_variable *
-realtime_handler(const char *database, const char *table, va_list ap)
+realtime_handler(const char __unused *database,
+                 const char *table, va_list ap)
 {
-  char *query, *errormsg, *op, *tmp_str;
+  const char *op;
+  char *query, *errormsg, *tmp_str;
   struct rt_cfg_entry_args args;
   const char **params, **vals;
   size_t params_count;
@@ -1238,7 +1243,7 @@ add_rt_multi_cfg_entry(void *arg, int argc, char **argv, char **columnNames)
   struct ast_category *cat;
   struct ast_variable *var;
   char *cat_name;
-  size_t i;
+  int i;
 
   args = arg;
   cat_name = NULL;
@@ -1288,11 +1293,14 @@ add_rt_multi_cfg_entry(void *arg, int argc, char **argv, char **columnNames)
 }
 
 static struct ast_config *
-realtime_multi_handler(const char *database, const char *table, va_list ap)
+realtime_multi_handler(const char __unused *database, const char *table,
+                       va_list ap)
 {
-  char *query, *errormsg, *op, *tmp_str, *initfield;
+  const char *op;
+  char *query, *errormsg, *tmp_str, *initfield, *initfield_space;
   struct rt_multi_cfg_entry_args args;
   const char **params, **vals;
+  const char *subst_val0;
   struct ast_config *cfg;
   size_t params_count;
   int error;
@@ -1330,10 +1338,9 @@ realtime_multi_handler(const char *database, const char *table, va_list ap)
       return NULL;
     }
 
-  tmp_str = strchr(initfield, ' ');
-
-  if (tmp_str != NULL)
-    *tmp_str = '\0';
+  initfield_space = strchr(initfield, ' ');
+  if (initfield_space != NULL)
+    *initfield_space = '\0';
 
   op = (strchr(params[0], ' ') == NULL) ? " =" : "";
 
@@ -1345,18 +1352,18 @@ realtime_multi_handler(const char *database, const char *table, va_list ap)
           if (strcmp(params[0], "exten LIKE") == 0) {
                   params[0] = "SUBSTR(exten,0,1)";
                   op = " =";
-                  tmp_str = "_";
+                  subst_val0 = "_";
           } else
-                  tmp_str = "_%";
+                  subst_val0 = "_%";
   } else
-          tmp_str = (char *)vals[0];
+          subst_val0 = vals[0];
 
 /* @cond DOXYGEN_CAN_PARSE_THIS */
 #undef QUERY
 #define QUERY "SELECT * FROM '%q' WHERE commented = 0 AND %q%s '%q'"
 /* @endcond */
 
-  query = sqlite_mprintf(QUERY, table, params[0], op, tmp_str);
+  query = sqlite_mprintf(QUERY, table, params[0], op, subst_val0);
 
   if (query == NULL)
     {
@@ -1435,9 +1442,9 @@ realtime_multi_handler(const char *database, const char *table, va_list ap)
 }
 
 static int
-realtime_update_handler(const char *database, const char *table,
-                        const char *keyfield, const char *entity,
-                        va_list ap)
+realtime_update_handler(const char __unused *database,
+                        const char *table, const char *keyfield,
+                        const char *entity, va_list ap)
 {
   char *query, *errormsg, *tmp_str;
   const char **params, **vals;
@@ -1907,7 +1914,7 @@ app_fetch(struct ast_channel *chan, char *data)
 }
 
 static int
-app_clear(struct ast_channel *chan, char *data)
+app_clear(struct ast_channel __unused *chan, char *data)
 {
   int error, vmid;
   char *vmid_str;
@@ -1998,27 +2005,27 @@ app_exec(struct ast_channel *chan, void *data_ptr)
 }
 
 static int
-cli_status(int fd, int argc, char *argv[])
+cli_status(int fd, int __unused argc, char __unused *argv[])
 {
-  ast_cli(fd, "SQLite database path: %s\n", dbfile);
-  ast_cli(fd, "config_table: ");
+  ast_cli(fd, "SQLite database path: %s\n", dbfile);	/* WWW [1] */
+  ast_cli(fd, "config_table: ");			/* WWW [1] */
 
   if (config_table == NULL)
-    ast_cli(fd, "unspecified, must be present in extconfig.conf\n");
+    ast_cli(fd, "unspecified, must be present in extconfig.conf\n");	/* WWW [1] */
 
   else
-    ast_cli(fd, "%s\n", config_table);
+    ast_cli(fd, "%s\n", config_table);			/* WWW [1] */
 
-  ast_cli(fd, "cdr_table: ");
+  ast_cli(fd, "cdr_table: ");				/* WWW [1] */
 
   if (cdr_table == NULL)
-    ast_cli(fd, "unspecified, CDR support disabled\n");
+    ast_cli(fd, "unspecified, CDR support disabled\n");	/* WWW [1] */
 
   else
-    ast_cli(fd, "%s\n", cdr_table);
+    ast_cli(fd, "%s\n", cdr_table);			/* WWW [1] */
 
   ast_cli(fd, "app_enable: %s, SQLITE() application %s\n", app_enable,
-          use_app ? "enabled" : "disabled");
+          use_app ? "enabled" : "disabled");		/* WWW [1] */
 
   if (use_app)
     {
@@ -2029,7 +2036,7 @@ cli_status(int fd, int argc, char *argv[])
       AST_LIST_UNLOCK(vm_list);
 
       ast_cli(fd, "Number of registered SQLite virtual machines : %d\n",
-              vm_count_tmp);
+              vm_count_tmp);				/* WWW [1] */
     }
 
   return RESULT_SUCCESS;
@@ -2161,25 +2168,15 @@ unload_module(void)
   return 0;
 }
 
-char *
-description(void)
-{
-  return RES_CONFIG_SQLITE_DESCRIPTION;
-}
-
-int
-usecount(void)
-{
-  return 0;
-}
-
-char *
-key(void)
-{
-  return ASTERISK_GPL_KEY;
-}
-
-AST_MODULE_INFO(ASTERISK_GPL_KEY, AST_MODFLAG_GLOBAL_SYMBOLS, "Realtime SQLite configuration",
+AST_MODULE_INFO(ASTERISK_GPL_KEY, AST_MODFLAG_GLOBAL_SYMBOLS, "Realtime SQLite configuration",/* WWW [2] */
 		.load = load_module,
 		.unload = unload_module,
 		);
+
+/*
+ * [1]: discards qualifiers from pointer target type
+ *	Compiler warning due to poor Asterisk prototypes
+ *
+ * [2]: 'static' is not at beginning of declaration
+ *      harmless
+ */
