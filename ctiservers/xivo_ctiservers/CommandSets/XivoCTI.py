@@ -4015,6 +4015,18 @@ class XivoCTICommand(BaseCommand):
         def ami_cdr(self, astid, event):
                 log.info('%s ami_cdr : %s' % (astid, event))
                 return
+
+        def ami_atxfer(self, astid, event):
+                log.info('%s ami_atxfer : %s' % (astid, event))
+                chansrc = event.get('SrcChannel');
+                uidsrc = event.get('SrcUniqueid');
+                chandst = event.get('DstChannel');
+                uiddst = event.get('DstUniqueid');
+                phoneid = self.__phoneid_from_channel__(astid, chansrc)
+                if phoneid is not None:
+                    # to be checked
+                    self.weblist['phones'][astid].keeplist[phoneid]['comms'][uidsrc]['atxfer'] = True
+                return
         
         # END of AMI events
         

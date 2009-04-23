@@ -620,6 +620,7 @@ evfunction_to_method_name = {
         'QueueCallerAbandon':   'ami_queuecallerabandon',       # (1.4)
         'Status':               'ami_status',
         'StatusComplete':       'ami_statuscomplete',
+        'Atxfer':               'ami_atxfer',                   #
 }
 
 
@@ -746,6 +747,7 @@ def sighandler_reload(signum, frame):
 # ==============================================================================
 
 logging.basicConfig(level=logging.INFO)
+#logging.basicConfig(level=logging.DEBUG)
 sysloghandler = SysLogHandler('/dev/log', SysLogHandler.LOG_DAEMON)
 formatter = logging.Formatter('%s[%%(process)d] (%%(levelname)s) (%%(name)s): %%(message)s' % DAEMONNAME)
 
