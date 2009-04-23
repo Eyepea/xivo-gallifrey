@@ -72,6 +72,7 @@ class Directory:
                 self.delimiter = ';'
                 self.sqltable = ''
                 self.name = '(noname)'
+                self.display_reverse = '{db-fullname}'
                 self.match_direct = []
                 self.match_reverse = []
                 return
@@ -90,6 +91,8 @@ class Directory:
                                 self.delimiter = xivoconf_local[field]
                         elif field == 'dir_db_sqltable':
                                 self.sqltable = xivoconf_local[field]
+                        elif field == 'display_reverse':
+                                self.display_reverse = xivoconf_local[field]
                         elif field == 'match_direct':
                                 self.match_direct = str(xivoconf_local[field]).split(',')
                         elif field == 'match_reverse':

@@ -265,7 +265,15 @@ def manage_info_connections(connid, msg, sep):
                         break
                 try:
                         retstr = 'OK'
-                        if usefulmsg == 'show_infos':
+                        if usefulmsg == 'help':
+                                helptxt = ['show_infos',
+                                           'show_users',
+                                           'show_varsizes',
+                                           'dumpami enable',
+                                           'dumpami disable']
+                                for helpline in helptxt:
+                                        connid.sendall('%s\n' % helpline)
+                        elif usefulmsg == 'show_infos':
                                 time_uptime = int(time.time() - time.mktime(time_start))
                                 reply = 'infos=' \
                                         'xivo_version=%s;' \

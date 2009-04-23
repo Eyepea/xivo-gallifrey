@@ -410,7 +410,6 @@ class XivoCTICommand(BaseCommand):
                 self.__fill_user_ctilog__(userinfo, 'cti_logout')
                 return
         
-        
         def __check_user_connection__(self, userinfo):
                 if userinfo.has_key('login') and userinfo['login'].has_key('sessiontimestamp'):
                         dt = time.time() - userinfo['login']['sessiontimestamp']
@@ -423,7 +422,6 @@ class XivoCTICommand(BaseCommand):
                         return 'already_connected:%s:%d' % userinfo['login']['connection'].getpeername()
                 return None
         
-        
         def __check_capa_connection__(self, userinfo, capaid):
                 if capaid in self.capas and capaid in userinfo.get('capaids'):
                         if self.capas[capaid].toomuchusers():
@@ -431,7 +429,6 @@ class XivoCTICommand(BaseCommand):
                 else:
                         return 'capaid_undefined:%s' % capaid
                 return None
-        
         
         def __connect_user__(self, userinfo, state, capaid, lastconnwins):
                 try:
@@ -1045,6 +1042,8 @@ class XivoCTICommand(BaseCommand):
                                         agentid = self.weblist['agents'][astid].reverse_index.get(agentnum)
                                         status = self.weblist['agents'][astid].keeplist[agentid]['agentstats']['status']
                                         if status != 'AGENT_LOGGEDOFF':
+                                                log.warning('checkqueue : agent %s on %s was not properly logged off (%s %s)'
+                                                            % (agentnum, astid, tname, status))
                                                 self.__ami_execute__(astid, 'agentlogoff', agentnum)
                                         del self.timerthreads_agentlogoff_retry[thisthread]
                                         del thisthread
@@ -1123,7 +1122,7 @@ class XivoCTICommand(BaseCommand):
         
         sheet_allowed_events = ['incomingqueue', 'incominggroup', 'incomingdid',
                                 'agentcalled', 'agentlinked', 'agentunlinked',
-                                'agi', 'link', 'unlink', 'hangup',
+                                'dial', 'link', 'unlink', 'hangup',
                                 'faxreceived',
                                 'callmissed', # see GG (in order to tell a user that he missed a call)
                                 'localphonecalled', 'outgoing']
@@ -1220,7 +1219,6 @@ class XivoCTICommand(BaseCommand):
                 # - popup or not
                 # - actions ?
                 # - dispatch to one given person / all / subscribed ones
-                calleridsolved = None
                 if where in self.sheet_actions:
                         userinfos = []
                         actionopt = self.sheet_actions.get(where)
@@ -1234,7 +1232,7 @@ class XivoCTICommand(BaseCommand):
                         if whoms is None or whoms == '':
                                 log.warning('%s __sheet_alert__ : whom field for %s action has not been defined'
                                             % (astid, where))
-                                return calleridsolved
+                                return
                         log.info('%s __SHEET_ALERT__ %s %s' % (astid, where, whoms))
                         
                         linestosend = ['<?xml version="1.0" encoding="utf-8"?>',
@@ -1281,16 +1279,13 @@ class XivoCTICommand(BaseCommand):
                                 
                                 userinfos.extend(self.__find_userinfos_by_agentnum__(astid, dstnum))
                                 
-                        elif where == 'agi':
-                                r_caller = extraevent.get('caller_num')
-                                r_called = extraevent.get('called_num')
+                        elif where == 'dial':
                                 for uinfo in self.ulist_ng.keeplist.itervalues():
-                                        if uinfo.get('astid') == astid and uinfo.get('phonenum') == r_called:
+                                        if uinfo.get('astid') == astid and uinfo.get('phonenum') == extraevent.get('called_num'):
                                                 userinfos.append(uinfo)
-                                itemdir['xivo-callerid'] = r_caller
-                                itemdir['xivo-calledid'] = r_called
+                                itemdir['xivo-callerid'] = extraevent.get('caller_num')
+                                itemdir['xivo-calledid'] = extraevent.get('called_num')
                                 itemdir['xivo-calleridname'] = extraevent.get('caller_name')
-                                itemdir['xivo-tomatch-callerid'] = r_caller
                                 itemdir['xivo-channel'] = extraevent.get('channel')
                                 itemdir['xivo-uniqueid'] = extraevent.get('uniqueid')
                                 
@@ -1325,8 +1320,6 @@ class XivoCTICommand(BaseCommand):
                                 itemdir['xivo-uniqueid'] = uid
                                 itemdir['xivo-did'] = did
                                 itemdir['xivo-callerid'] = clid
-                                if len(clid) > 7 and clid != '<unknown>':
-                                        itemdir['xivo-tomatch-callerid'] = clid
                                 # userinfos.append() : users matching the SDA ?
                                 
                         elif where in ['incomingqueue', 'incominggroup']:
@@ -1351,28 +1344,10 @@ class XivoCTICommand(BaseCommand):
                                 itemdir['xivo-queuename'] = queue
                                 itemdir['xivo-callerid'] = clid
                                 itemdir['xivo-calleridname'] = event.get('CallerIDName').decode('utf8')
-                                if len(clid) > 7 and clid != '<unknown>':
-                                        itemdir['xivo-tomatch-callerid'] = clid
-                                        
+                                
                         # 2/4
                         # call a database for xivo-callerid matching (or another pattern to set somewhere)
-                        dirlist = actionopt.get('directories')
-                        contextlist = actionopt.get('contexts')
-                        if contextlist and context in contextlist.split(','):
-                                if 'xivo-tomatch-callerid' in itemdir:
-                                        callingnum = itemdir['xivo-tomatch-callerid']
-                                        log.info('%s xivo-tomatch-callerid : looking for %s' % (astid, callingnum))
-                                        idir = self.findreverse(dirlist, callingnum)
-                                        itemdir.update(idir)
-                                        if callingnum[:2] == '00':
-                                                internatprefix = callingnum[2:6]
-                                        # TODO : make the db-XXX to calleridsolved configurable
-                                        if 'db-fullname' in itemdir:
-                                                calleridsolved = itemdir['db-fullname']
-                                        else:
-                                                if 'db-firstname' in itemdir and 'db-lastname' in itemdir:
-                                                        calleridsolved = itemdir['db-firstname'] + ' ' + itemdir['db-lastname']
-                        # print where, itemdir
+                        # self.getcallerid(astid, channel, ...)
                         
                         # 3/4
                         # build XML items from daemon-config + filled-in items
@@ -1443,7 +1418,68 @@ class XivoCTICommand(BaseCommand):
                                 else:
                                         log.warning('__sheet_alert__ (%s) : unknown destination <%s> in <%s>'
                                                     % (astid, whom, where))
-                return calleridsolved
+                return
+        
+        def __dialplan_fill__(self, dialplan_data):
+                origin = dialplan_data.get('xivo-origin')
+                if origin == 'did':
+                        self.__did__(dialplan_data)
+                elif origin == 'internal':
+                        self.__internal__(dialplan_data)
+                else:
+                        pass
+                log.info('__dialplan_fill__ : %s' % dialplan_data)
+                return
+        
+        def __internal__(self, dialplan_data):
+                astid = dialplan_data.get('xivo-astid')
+                userid = dialplan_data.get('xivo-userid')
+                xuserid = '%s/%s' % (astid, userid)
+                if xuserid in self.ulist_ng.keeplist:
+                        dialplan_data['dbr-display'] = self.ulist_ng.keeplist[xuserid].get('fullname')
+                return
+        
+        def __did__(self, dialplan_data):
+                calleridnum = dialplan_data.get('xivo-calleridnum')
+                calleridton = dialplan_data.get('xivo-calleridton')
+                context = dialplan_data.get('xivo-context')
+                
+                if calleridnum.isdigit(): # reverse only if digits
+                        ctx2dirs = self.lconf.read_section('reversedid', 'reversedid')
+                        dirlist = ctx2dirs.get(context)
+                        if dirlist:
+                                reversedata = self.findreverse(dirlist, calleridnum)
+                                dialplan_data.update(reversedata)
+                                # dialplan_data['xivo-extra'] = {'XIVO_CTI_VIP' : '4', 'XIVO_CTI_SPEC' : 'hello'}
+                                
+                # agi_callington : 0x10, 0x11 : 16 (internat ?), 17 (00 + internat ?)
+                #                  0x20, 0x21 : 32 (06, 09), 33 (02, 04)
+                #                  0x41       : 65 (3 chiffres)
+                #                  0xff       : 255 (unknown @ IAX2 ?), -1 (unknown @ Zap ?)
+                #                  0 ?
+                # TON:
+                #  Unknown Number Type (0)
+                #  International Number (1)
+                #  National Number (2)
+                #  Network Specific Number (3)
+                #  Subscriber Number (4)
+                # NPI:
+                #  Unknown Number Plan (0)
+                #  ISDN/Telephony Numbering Plan (E.164/E.163) (1)
+                # agi_callingpres : 0, 1, 3, 35, 67, -1?
+                # agi_rdnis : when transferred from another initial destination ?
+                
+                if calleridton:
+                        numtolookup = None
+                        if calleridton == '16':
+                                numtolookup = calleridnum
+                        elif calleridton == '17':
+                                numtolookup = calleridnum[2:]
+                        if numtolookup:
+                                [countrycode, countrytext] = self.findcountry(numtolookup)
+                                dialplan_data['db-countrycode'] = countrycode
+                                dialplan_data['db-countrytext'] = countrytext
+                return
         
         def __phoneid_from_channel__(self, astid, channel):
                 ret = None
@@ -1535,6 +1571,14 @@ class XivoCTICommand(BaseCommand):
                 # actionid = self.amilist.execute(astid, 'getvar', src, 'XIVO_DSTNUM')
                 # self.getvar_requests[astid][actionid] = {'channel' : src, 'variable' : 'XIVO_DSTNUM'}
                 self.__link_local_channels__(astid, src, uidsrc, dst, uiddst, clid, clidn, None, None)
+                
+                print astid, event
+##                extraevent = { 'caller_num' : calleridnum,
+##                               'caller_name' : calleridname,
+##                               'called_num' : callednum,
+##                               'uniqueid' : uniqueid,
+##                               'channel' : channel }
+##                self.__sheet_alert__('dial', astid, context, {}, extraevent)
                 
                 phoneidsrc = self.__phoneid_from_channel__(astid, src)
                 phoneiddst = self.__phoneid_from_channel__(astid, dst)
@@ -2634,19 +2678,6 @@ class XivoCTICommand(BaseCommand):
                 if astid in self.uniqueids and uniqueid in self.uniqueids[astid]:
                         self.uniqueids[astid][uniqueid].update({'calleridname' : event.get('CallerIDName').decode('utf8'),
                                                                 'calleridnum'  : event.get('CallerID')})
-                
-                # the AGI is a far better place than here, however this remains useful
-                # for remote asterisk monitoring ... to be improved
-                ton = event.get('TON')
-                numtolookup = None
-                if ton == '16':
-                        numtolookup = event.get('CallerID')
-                elif ton == '17':
-                        numtolookup = event.get('CallerID')[2:]
-                if numtolookup:
-                        [pf, country] = self.findcountry(numtolookup)
-                        td = '%s ami_newcallerid : foreign number %s : %s => %s' % (astid, numtolookup, pf, country)
-                        # log.info(td.encode('utf8'))
                 return
         
         def ami_newexten(self, astid, event):
@@ -2658,10 +2689,11 @@ class XivoCTICommand(BaseCommand):
                                 #self.uniqueids[astid][uniqueid]['extension'] = event.get('Extension')
                                 self.uniqueids[astid][uniqueid]['time-newexten-dial'] = time.time()
                         elif application == 'Macro':
-                                log.info('%s ami_newexten Macro : %s %s %s %s' % (astid, uniqueid,
-                                                                                  event.get('Context'),
-                                                                                  event.get('AppData'),
-                                                                                  event.get('Extension')))
+                                # log.info('%s ami_newexten Macro : %s %s %s %s' % (astid, uniqueid,
+                                # event.get('Context'),
+                                # event.get('AppData'),
+                                # event.get('Extension')))
+                                pass
                         elif application == 'Park':
                                 log.info('%s ami_newexten %s : %s %s %s'
                                          % (astid, application, uniqueid, event.get('Context'), event.get('Extension')))
@@ -3446,17 +3478,30 @@ class XivoCTICommand(BaseCommand):
         
         def ami_userevent(self, astid, event):
                 eventname = event.get('UserEvent')
-                if eventname == 'DID':
+                if eventname == 'MacroDid':
                         uniqueid = event.get('UNIQUEID')
-                        callerid = event.get('XIVO_SRCNUM')
-                        didnumber = event.get('XIVO_EXTENPATTERN')
-                        channel = event.get('CHANNEL')
-                        context = event.get('XIVO_REAL_CONTEXT', CONTEXT_UNKNOWN) # or XIVO_CONTEXT ?
+                        if uniqueid not in self.uniqueids[astid]:
+                                log.warning('%s AMI UserEvent %s undefined %s' % (astid, eventname, uniqueid))
+                                return
                         
-                        if uniqueid in self.uniqueids[astid]:
-                                log.info('%s AMI UserEvent %s %s' % (astid, eventname, self.uniqueids[astid][uniqueid]))
-                                self.uniqueids[astid][uniqueid]['DID'] = True
-                                
+                        calleridnum = event.get('XIVO_SRCNUM')
+                        calleridname = event.get('XIVO_SRCNAME')
+                        calleridton = event.get('XIVO_SRCTON')
+                        calleridrdnis = event.get('XIVO_SRCRDNIS')
+                        didnumber = event.get('XIVO_EXTENPATTERN')
+                        context = None
+                        
+                        log.info('%s AMI UserEvent %s %s %s' % (astid, uniqueid, eventname, self.uniqueids[astid][uniqueid]))
+                        self.uniqueids[astid][uniqueid]['DID'] = True # XXX to merge with xivo-origin
+                        
+                        dialplan_data = { 'xivo-astid' : astid,
+                                          'xivo-origin' : 'did',
+                                          'xivo-calleridnum' : calleridnum,
+                                          'xivo-calleridname' : calleridname,
+                                          'xivo-calleridrdnis' : calleridrdnis,
+                                          'xivo-calleridton' : calleridton
+                                          }
+                        self.uniqueids[astid][uniqueid]['dialplan_data'] = dialplan_data
                         for v, vv in self.weblist['incomingcalls'][astid].keeplist.iteritems():
                                 if vv['exten'] == didnumber:
                                         for ctxpart in ['usercontext', 'groupcontext', 'queuecontext',
@@ -3467,15 +3512,36 @@ class XivoCTICommand(BaseCommand):
                                                         break
                                         log.info('%s ami_userevent %s' % (astid, vv))
                                         break
+                        context = 'default' # XXXX for test ... to remove ...
+                        dialplan_data.update({'xivo-context' : context})
+                        self.__dialplan_fill__(dialplan_data)
+                        
                         # actions involving didnumber/callerid on channel could be carried out here
                         # did_takeovers = { '<incoming_callerid>' : { '<sda>' : {'number' : '<localnum>', 'context' : '<context>'} } }
                         did_takeovers = {}
-                        if callerid in did_takeovers and didnumber in did_takeovers[callerid]:
-                                destdetails = did_takeovers[callerid][didnumber]
+                        if calleridnum in did_takeovers and didnumber in did_takeovers[calleridnum]:
+                                destdetails = did_takeovers[calleridnum][didnumber]
                                 self.__ami_execute__(astid, 'transfer', channel,
                                                      destdetails.get('number'),
                                                      destdetails.get('context'))
-                        self.__sheet_alert__('incomingdid', astid, context, event)
+                        ## XXXX ? self.__sheet_alert__('incomingdid', astid, context, event)
+                        
+                elif eventname in ['MacroUser', 'MacroGroup', 'MacroQueue', 'MacroOutcall', 'MacroMeetme']:
+                        uniqueid = event.get('UNIQUEID')
+                        xivo_userid = event.get('XIVO_USERID')
+                        xivo_dstid = event.get('XIVO_DSTID')
+                        log.info('%s AMI UserEvent %s %s %s %s' % (astid, uniqueid, eventname, xivo_userid, xivo_dstid))
+                        if uniqueid not in self.uniqueids[astid]:
+                                log.warning('%s AMI UserEvent %s undefined %s' % (astid, eventname, uniqueid))
+                                return
+                        
+                        if xivo_userid:
+                                dialplan_data = { 'xivo-astid' : astid,
+                                                  'xivo-origin' : 'internal',
+                                                  'xivo-userid' : xivo_userid
+                                                  }
+                                self.uniqueids[astid][uniqueid]['dialplan_data'] = dialplan_data
+                                self.__dialplan_fill__(dialplan_data)
                         
                 elif eventname == 'Custom':
                         uniqueid = event.get('UNIQUEID')
@@ -3487,17 +3553,6 @@ class XivoCTICommand(BaseCommand):
                         # TBD : define different kinds + define the destinations for each
                         # and later : define any other sheet event as a special case of this one (?)
                         # self.__sheet_alert__('custom', astid, context, event)
-                        
-                elif eventname == 'Lookup':
-                        uniqueid = event.get('UNIQUEID')
-                        callerid = event.get('XIVO_SRCNUM')
-                        channel = event.get('CHANNEL')
-                        context = event.get('XIVO_REAL_CONTEXT')
-                        if uniqueid in self.uniqueids[astid]:
-                                log.info('%s AMI UserEvent %s %s' % (astid, eventname, self.uniqueids[astid][uniqueid]))
-                        # XXX
-                        # do a reverse search on callerid here, and fill a struct with caller properties
-                        # + can be retrieved later on with an AGI request, for instance
                         
                 elif eventname == 'OUTCALL':
                         uniqueid = event.get('UNIQUEID')
@@ -5027,8 +5082,8 @@ class XivoCTICommand(BaseCommand):
                         except Exception:
                                 log.exception('%s : Connection to DataBase failed in History request' % cfg.astid)
                 return results
-
-
+        
+        
         def __update_availstate__(self, userinfo, state):
                 company = userinfo['company']
                 username = userinfo['user']
@@ -5273,7 +5328,17 @@ class XivoCTICommand(BaseCommand):
                 else:
                         log.warning('wrong or no database method defined (%s) - please fill the uri field of the directory <%s> definition'
                                     % (dbkind, dirname))
-                        
+                
+                if reversedir:
+                        display_reverse = z.display_reverse
+                        if fullstatlist:
+                                for k, v in fullstatlist[0].iteritems():
+                                        try:
+                                                display_reverse = display_reverse.replace('{%s}' % k, v.decode('utf8'))
+                                        except UnicodeEncodeError:
+                                                display_reverse = display_reverse.replace('{%s}' % k, v)
+                                e = fullstatlist[0]
+                                e.update({'dbr-display' : display_reverse})
                 return fullstatlist
         
         def __counts__(self, astid, context, presenceid):
@@ -5303,9 +5368,10 @@ class XivoCTICommand(BaseCommand):
                 # check capas !
                 try:
                         function = fastagi.env['agi_network_script']
-                        context = fastagi.get_variable('XIVO_REAL_CONTEXT')
                         uniqueid = fastagi.get_variable('UNIQUEID')
                         channel = fastagi.get_variable('CHANNEL')
+                        
+                        context = fastagi.get_variable('XIVO_REAL_CONTEXT')
                         log.info('handle_fagi %s : (%s) context=%s uid=%s chan=%s'
                                  % (astid, function, context, uniqueid, channel))
                 except Exception:
@@ -5384,49 +5450,27 @@ class XivoCTICommand(BaseCommand):
                                 log.exception('handle_fagi %s %s : %s' % (astid, function, fastagi.args))
                         return
                 
-                elif function == 'callerdetails':
-                        # astid, channel
-                        # fastagi.set_variable('XIVO_CTI_CALLERIDNAME', x)
-                        # fastagi.set_variable('XIVO_CTI_INFO', y)
-                        return
                 
-                elif function == 'didcallerid':
-                        log.info('%s DIDCALLERID %s' % (astid, fastagi.env))
-                        # agi_callington : 0x10, 0x11 : 16 (internat ?), 17 (00 + internat ?)
-                        #                  0x20, 0x21 : 32 (06, 09), 33 (02, 04)
-                        #                  0x41       : 65 (3 chiffres)
-                        #                  0xff       : 255 (unknown @ IAX2 ?), -1 (unknown @ Zap ?)
-                        #                  0 ?
-                        # TON:
-                        #  Unknown Number Type (0)
-                        #  International Number (1)
-                        #  National Number (2)
-                        #  Network Specific Number (3)
-                        #  Subscriber Number (4)
-                        # NPI:
-                        #  Unknown Number Plan (0)
-                        #  ISDN/Telephony Numbering Plan (E.164/E.163) (1)
-                        # agi_callingpres : 0, 1, 3, 35, 67, -1?
-                        # agi_rdnis : when transferred from another initial destination ?
+                elif function == 'callerid_extend':
                         if 'agi_callington' in fastagi.env:
-                                ton = fastagi.env['agi_callington']
-                                numtolookup = None
-                                if ton == '16':
-                                        numtolookup = fastagi.env['agi_callerid']
-                                elif ton == '17':
-                                        numtolookup = fastagi.env['agi_callerid'][2:]
-                                if numtolookup:
-                                        [pf, country] = self.findcountry(numtolookup)
-                                        td = '%s DIDCALLERID foreign number %s : %s => %s' % (astid, numtolookup, pf, country)
-                                        log.info(td.encode('utf8'))
+                                fastagi.set_variable('XIVO_SRCTON', fastagi.env['agi_callington'])
                         return
                 
-                elif function == 'updatecallerid':
-                        # to be used within the dialplan, instead of xivo_push ... WIP
-                        
-                        ##
+                elif function == 'callerid_forphones':
+                        ### XXXX warning it could be that we come here before uniqueid has been received by AMI ...
+                        uniqueiddefs = self.uniqueids[astid][uniqueid]
+                        if uniqueiddefs.has_key('dialplan_data'):
+                                dialplan_data = uniqueiddefs['dialplan_data']
+                                calleridsolved = dialplan_data.get('dbr-display')
+                        else:
+                                log.warning('%s handle_fagi %s no dialplan_data received yet'
+                                            % (astid, function))
+                                calleridsolved = None
+                                
+                        calleridnum  = fastagi.env['agi_callerid']
+                        calleridname = fastagi.env['agi_calleridname']
                         if calleridsolved:
-                                td = 'handle_fagi %s :   calleridsolved="%s"' % (astid, calleridsolved.decode('utf8'))
+                                td = '%s handle_fagi %s : calleridsolved="%s"' % (astid, function, calleridsolved)
                                 log.info(td.encode('utf8'))
                                 if calleridname in ['', 'unknown']:
                                         calleridname = calleridsolved
@@ -5443,40 +5487,22 @@ class XivoCTICommand(BaseCommand):
                         fastagi.set_callerid(calleridtoset)
                         return
                 
-                elif function != 'xivo_push':
-                        log.warning('handle_fagi %s %s : unknown function' % (astid, function))
-                        return
-                
-                callednum = fastagi.get_variable('XIVO_DSTNUM')
-                calleridnum  = fastagi.env['agi_callerid']
-                calleridname = fastagi.env['agi_calleridname']
-                
-                td = 'handle_fagi %s :   (agi variables) agi_callerid=%s agi_calleridname="%s" (callednum is %s)' % (astid, calleridnum, calleridname.decode('utf8'), callednum)
-                log.info(td.encode('utf8'))
-                
-                extraevent = { 'caller_num' : calleridnum,
-                               'caller_name' : calleridname,
-                               'called_num' : callednum,
-                               'uniqueid' : uniqueid,
-                               'channel' : channel }
-                
-                calleridsolved = self.__sheet_alert__('agi', astid, context, {}, extraevent)
-                if calleridsolved:
-                        td = 'handle_fagi %s :   calleridsolved="%s"' % (astid, calleridsolved.decode('utf8'))
-                        log.info(td.encode('utf8'))
-                        if calleridname in ['', 'unknown']:
-                                calleridname = calleridsolved
-                
-                # to set according to os.getenv('LANG') or os.getenv('LANGUAGE') later on ?
-                if calleridnum in ['', 'unknown']:
-                        calleridnum = CALLERID_UNKNOWN_NUM
-                if calleridname in ['', 'unknown']:
-                        calleridname = calleridnum
-                
-                calleridtoset = '"%s"<%s>' % (calleridname, calleridnum)
-                td = 'handle_fagi %s :   the callerid will be set to %s' % (astid, calleridtoset.decode('utf8'))
-                log.info(td.encode('utf8'))
-                fastagi.set_callerid(calleridtoset)
+                elif function == 'caller_data':
+                        ### XXXX warning it could be that we come here before uniqueid has been received by AMI ...
+                        uniqueiddefs = self.uniqueids[astid][uniqueid]
+                        if uniqueiddefs.has_key('dialplan_data'):
+                                dialplan_data = uniqueiddefs['dialplan_data']
+                                if dialplan_data.has_key('xivo-extra'):
+                                        for k, v in dialplan_data['xivo-extra'].iteritems():
+                                                fastagi.set_variable(k, v)
+                                else:
+                                        log.warning('%s handle_fagi %s no extra data' % (astid, function))
+                                        ## XXX fastagi.set_variable(empty)
+                        else:
+                                log.warning('%s handle_fagi %s no dialplan_data received yet' % (astid, function))
+                                ## XXX fastagi.set_variable(not yet)
+                else:
+                        log.warning('%s handle_fagi %s : unknown function' % (astid, function))
                 return
         
         def __link_local_channels__(self, astid, chan1, uid1, chan2, uid2, clid1, clidn1, clid2, clidn2):
