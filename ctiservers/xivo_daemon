@@ -258,6 +258,7 @@ def manage_info_connections(connid, msg, sep):
         primarily aimed at displaying informations first).
         """
         global dumpami
+        global log
         requester = '%s:%d' % connid.getpeername()
         multimsg = msg.replace('\r', '').split(sep)
         for usefulmsg in multimsg:
@@ -291,6 +292,18 @@ def manage_info_connections(connid, msg, sep):
                                 dumpami = True
                         elif usefulmsg == 'dumpami disable':
                                 dumpami = False
+                        elif usefulmsg.startswith('loglevel '):
+                                command_args = usefulmsg.split()
+                                if len(command_args) > 1:
+                                        levelname = command_args[1]
+                                        if levelname == 'error':
+                                                level = logging.ERROR
+                                        else:
+                                                level = logging.INFO
+                                        log.setLevel(level)
+                                        logging.getLogger('xivocti').setLevel(level)
+                                        logging.getLogger('xivo_ami').setLevel(level)
+                                        logging.getLogger('urllist').setLevel(level)
                         elif usefulmsg == 'show_users':
                                 for user, info in commandclass.users().iteritems():
                                         try:

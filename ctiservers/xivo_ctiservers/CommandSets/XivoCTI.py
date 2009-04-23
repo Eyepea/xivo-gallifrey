@@ -1572,7 +1572,6 @@ class XivoCTICommand(BaseCommand):
                 # self.getvar_requests[astid][actionid] = {'channel' : src, 'variable' : 'XIVO_DSTNUM'}
                 self.__link_local_channels__(astid, src, uidsrc, dst, uiddst, clid, clidn, None, None)
                 
-                print astid, event
 ##                extraevent = { 'caller_num' : calleridnum,
 ##                               'caller_name' : calleridname,
 ##                               'called_num' : callednum,
