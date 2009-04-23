@@ -90,13 +90,14 @@ class PhoneList(AnyList):
                 return
         
         def ami_link(self, phoneidsrc, phoneiddst, uidsrc, uiddst, puidsrc, puiddst, clidsrc, cliddst, clidnamesrc, clidnamedst):
-                log.debug('phonelist::ami_link(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+                log.debug(u'phonelist::ami_link(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
                           % (phoneidsrc, phoneiddst, uidsrc, uiddst, puidsrc, puiddst, clidsrc, cliddst, clidnamesrc, clidnamedst))
-                infos = {'time-link' : 0,
-                         'timestamp-link' : time.time()
-                         }
                 if phoneidsrc in self.keeplist:
-                        infos['status'] = 'linked-caller'
+                        infos = {'time-link' : 0,
+                                 'peerchannel' : puidsrc['link'],
+                                 'status' : 'linked-caller',
+                                 'timestamp-link' : time.time()
+                                 }
                         if clidnamedst is not None:# and not self.keeplist[phoneidsrc]['comms'][uidsrc].has_key('calleridname'):
                             infos['calleridname'] = clidnamedst
                         if cliddst is not None:# and not self.keeplist[phoneidsrc]['comms'][uidsrc].has_key('calleridnum'):
@@ -105,15 +106,15 @@ class PhoneList(AnyList):
                                 self.__createorupdate_comm__(phoneidsrc, uidsrc, infos)
                         else:
                                 infos['thischannel'] = puidsrc['channel']
-                                infos['peerchannel'] = puidsrc['link']
                                 self.__createorupdate_comm__(phoneidsrc, uidsrc, infos)
                                 log.debug('phonelist::ami_link %s not found (src)' % (uidsrc))
                         log.debug('phonelist::ami_link gruik %s %s' % (phoneidsrc, self.keeplist[phoneidsrc]['comms']))
-                infos = {'time-link' : 0,
-                         'timestamp-link' : time.time()
-                         }
                 if phoneiddst in self.keeplist:
-                        infos['status'] = 'linked-called'
+                        infos = {'time-link' : 0,
+                                 'peerchannel' : puiddst['link'],
+                                 'status' : 'linked-called',
+                                 'timestamp-link' : time.time()
+                                 }
                         if clidnamesrc is not None:# and not self.keeplist[phoneiddst]['comms'][uiddst].has_key('calleridname'):
                             infos['calleridname'] = clidnamesrc
                         if clidsrc is not None:# and not self.keeplist[phoneiddst]['comms'][uiddst].has_key('calleridnum'):
@@ -122,7 +123,6 @@ class PhoneList(AnyList):
                                 self.__createorupdate_comm__(phoneiddst, uiddst, infos)
                         else:
                                 infos['thischannel'] = puiddst['channel']
-                                infos['peerchannel'] = puiddst['link']
                                 self.__createorupdate_comm__(phoneiddst, uiddst, infos)
                                 log.debug('phonelist::ami_link %s not found (dst)' % (uiddst))
                         log.debug('phonelist::ami_link gruik %s %s' % (phoneiddst, self.keeplist[phoneiddst]['comms']))
