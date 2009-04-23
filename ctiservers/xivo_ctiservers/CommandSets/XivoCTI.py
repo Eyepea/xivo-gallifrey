@@ -3577,6 +3577,7 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def ami_meetmejoin(self, astid, event):
+                #log.debug('%s ami_meetmejoin %s' % (astid, event))
                 meetmenum = event.get('Meetme')
                 channel = event.get('Channel')
                 uniqueid = event.get('Uniqueid')
@@ -4022,10 +4023,15 @@ class XivoCTICommand(BaseCommand):
                 uidsrc = event.get('SrcUniqueid');
                 chandst = event.get('DstChannel');
                 uiddst = event.get('DstUniqueid');
-                phoneid = self.__phoneid_from_channel__(astid, chansrc)
-                if phoneid is not None:
+                phoneidsrc = self.__phoneid_from_channel__(astid, chansrc)
+                if phoneidsrc is not None:
                     # to be checked
-                    self.weblist['phones'][astid].keeplist[phoneid]['comms'][uidsrc]['atxfer'] = True
+                    log.debug('ami_atxfer grrr %s' % self.weblist['phones'][astid].keeplist[phoneidsrc]['comms'])
+                    self.weblist['phones'][astid].keeplist[phoneidsrc]['comms'][uidsrc]['atxfer'] = True
+                #phoneiddst = self.__phoneid_from_channel__(astid, chandst)
+                #if phoneiddst is not None:
+                #    # to be checked
+                #    self.weblist['phones'][astid].keeplist[phoneiddst]['comms'][uiddst]['atxfer'] = True
                 return
         
         # END of AMI events
@@ -4832,9 +4838,16 @@ class XivoCTICommand(BaseCommand):
                                         ### srcuinfo.get('phonenum')
                                         # if termlist empty + agentphonenum not empty => call this one
                                         cidname_src = srcuinfo.get('fullname')
-                        # 'agent:', 'queue:', 'group:' ?
+                        # 'agent:', 'queue:', 'group:', 'meetme:' ?
+                        elif typesrc == 'ext':
+                                context_src = userinfo['context']
+                                astid_src = userinfo['astid']
+                                proto_src = 'local'
+                                phonenum_src = whosrc
+                                cidname_src = whosrc
                         else:
                                 log.warning('unknown typesrc <%s>' % typesrc)
+                                return
                                 
                         # dst
                         if typedst == 'ext':
@@ -4844,7 +4857,7 @@ class XivoCTICommand(BaseCommand):
                                 # but it could be misleading with an incoming call from the given person
                                 cidname_dst = whodst
                                 exten_dst = whodst
-                        # 'agent:', 'queue:', 'group:' ?
+                        # 'agent:', 'queue:', 'group:', 'meetme:' ?
                         elif typedst == 'user':
                                 if whodst == 'special:me':
                                         dstuinfo = userinfo
@@ -4857,7 +4870,12 @@ class XivoCTICommand(BaseCommand):
                                         context_dst = dstuinfo.get('context')
                         else:
                                 log.warning('unknown typedst <%s>' % typedst)
+                                return
                                 
+                        if typesrc == typedst and typedst == 'ext' and len(whosrc) > 8 and len(whodst) > 8:
+                                log.warning('ORIGINATE : Trying to call two external phone numbers (%s and %s). Canceling' % (whosrc, whodst))
+                                return
+
                         try:
                                 if len(exten_dst) > 0:
                                         ret = self.__ami_execute__(astid_src, AMI_ORIGINATE,
