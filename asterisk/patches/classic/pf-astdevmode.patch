@@ -1,0 +1,20 @@
+Index: asterisk-1.4.24/main/channel.c
+===================================================================
+--- asterisk-1.4.24.orig/main/channel.c	2009-04-23 14:35:02.000000000 +0200
++++ asterisk-1.4.24/main/channel.c	2009-04-23 14:35:40.000000000 +0200
+@@ -2518,6 +2518,7 @@
+ 	case AST_CONTROL_ANSWER:
+ 	case AST_CONTROL_HANGUP:
+ 	case AST_CONTROL_CONNECTEDLINE:
++        case AST_CONTROL_ATXFERCMD:
+ 		return 0;
+ 
+ 	case AST_CONTROL_CONGESTION:
+@@ -2610,6 +2611,7 @@
+ 	case AST_CONTROL_RING:
+ 	case AST_CONTROL_HOLD:
+ 	case AST_CONTROL_UNHOLD:
++        case AST_CONTROL_ATXFERCMD:
+ 		/* Nothing left to do for these. */
+ 		res = 0;
+ 		break;
