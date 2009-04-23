@@ -155,131 +155,131 @@ size: 215186
 md5sum: 9576e77de9bc58753da1cbc62d77e109
 sha1sum: 5b4fcb2d822b2eea6743fa873894d54ed4ba713f
 
-# Polycom SoundPoint IP 301 3.1.2
+# Polycom SoundPoint IP 301 3.1.2RevB
 [pcspip301_312]
 brand: Polycom
 model: SoundPoint IP 301
-version: 3.1.2
-files: spip_ssip_BootROM_4_1_2_release_sig.zip spip_ssip_3_1_2_release_sig_split.zip
+version: 3.1.2RevB
+files: spip_ssip_vvx_BootROM_4_1_2RevB_release_sig.zip spip_ssip_vvx_3_1_2RevB_release_sig_split.zip
 
-# Polycom SoundPoint IP 320 3.1.2
+# Polycom SoundPoint IP 320 3.1.2RevB
 [pcspip320_312]
 brand: Polycom
 model: SoundPoint IP 320
-version: 3.1.2
-files: spip_ssip_BootROM_4_1_2_release_sig.zip spip_ssip_3_1_2_release_sig_split.zip
+version: 3.1.2RevB
+files: spip_ssip_vvx_BootROM_4_1_2RevB_release_sig.zip spip_ssip_vvx_3_1_2RevB_release_sig_split.zip
 
-# Polycom SoundPoint IP 330 3.1.2
+# Polycom SoundPoint IP 330 3.1.2RevB
 [pcspip330_312]
 brand: Polycom
 model: SoundPoint IP 330
-version: 3.1.2
-files: spip_ssip_BootROM_4_1_2_release_sig.zip spip_ssip_3_1_2_release_sig_split.zip
+version: 3.1.2RevB
+files: spip_ssip_vvx_BootROM_4_1_2RevB_release_sig.zip spip_ssip_vvx_3_1_2RevB_release_sig_split.zip
 
-# Polycom SoundPoint IP 430 3.1.2
+# Polycom SoundPoint IP 430 3.1.2RevB
 [pcspip430_312]
 brand: Polycom
 model: SoundPoint IP 430
-version: 3.1.2
-files: spip_ssip_BootROM_4_1_2_release_sig.zip spip_ssip_3_1_2_release_sig_split.zip
+version: 3.1.2RevB
+files: spip_ssip_vvx_BootROM_4_1_2RevB_release_sig.zip spip_ssip_vvx_3_1_2RevB_release_sig_split.zip
 
-# Polycom SoundPoint IP 450 3.1.2
+# Polycom SoundPoint IP 450 3.1.2RevB
 [pcspip450_312]
 brand: Polycom
 model: SoundPoint IP 450
-version: 3.1.2
-files: spip_ssip_BootROM_4_1_2_release_sig.zip spip_ssip_3_1_2_release_sig_split.zip
+version: 3.1.2RevB
+files: spip_ssip_vvx_BootROM_4_1_2RevB_release_sig.zip spip_ssip_vvx_3_1_2RevB_release_sig_split.zip
 
-# Polycom SoundPoint IP 500 3.1.2
+# Polycom SoundPoint IP 500 3.1.2RevB
 [pcspip500_312]
 brand: Polycom
 model: SoundPoint IP 500
-version: 3.1.2
-files: spip_ssip_BootROM_4_1_2_release_sig.zip spip_ssip_3_1_2_release_sig_split.zip
+version: 3.1.2RevB
+files: spip_ssip_vvx_BootROM_4_1_2RevB_release_sig.zip spip_ssip_vvx_3_1_2RevB_release_sig_split.zip
 
-# Polycom SoundPoint IP 501 3.1.2
+# Polycom SoundPoint IP 501 3.1.2RevB
 [pcspip501_312]
 brand: Polycom
 model: SoundPoint IP 501
-version: 3.1.2
-files: spip_ssip_BootROM_4_1_2_release_sig.zip spip_ssip_3_1_2_release_sig_split.zip
+version: 3.1.2RevB
+files: spip_ssip_vvx_BootROM_4_1_2RevB_release_sig.zip spip_ssip_vvx_3_1_2RevB_release_sig_split.zip
 
-# Polycom SoundPoint IP 550 3.1.2
+# Polycom SoundPoint IP 550 3.1.2RevB
 [pcspip550_312]
 brand: Polycom
 model: SoundPoint IP 550
-version: 3.1.2
-files: spip_ssip_BootROM_4_1_2_release_sig.zip spip_ssip_3_1_2_release_sig_split.zip
+version: 3.1.2RevB
+files: spip_ssip_vvx_BootROM_4_1_2RevB_release_sig.zip spip_ssip_vvx_3_1_2RevB_release_sig_split.zip
 
-# Polycom SoundPoint IP 560 3.1.2
+# Polycom SoundPoint IP 560 3.1.2RevB
 [pcspip560_312]
 brand: Polycom
 model: SoundPoint IP 560
-version: 3.1.2
-files: spip_ssip_BootROM_4_1_2_release_sig.zip spip_ssip_3_1_2_release_sig_split.zip
+version: 3.1.2RevB
+files: spip_ssip_vvx_BootROM_4_1_2RevB_release_sig.zip spip_ssip_vvx_3_1_2RevB_release_sig_split.zip
 
-# Polycom SoundPoint IP 600 3.1.2
+# Polycom SoundPoint IP 600 3.1.2RevB
 [pcspip600_312]
 brand: Polycom
 model: SoundPoint IP 600
-version: 3.1.2
-files: spip_ssip_BootROM_4_1_2_release_sig.zip spip_ssip_3_1_2_release_sig_split.zip
+version: 3.1.2RevB
+files: spip_ssip_vvx_BootROM_4_1_2RevB_release_sig.zip spip_ssip_vvx_3_1_2RevB_release_sig_split.zip
 
-# Polycom SoundPoint IP 601 3.1.2
+# Polycom SoundPoint IP 601 3.1.2RevB
 [pcspip601_312]
 brand: Polycom
 model: SoundPoint IP 601
-version: 3.1.2
-files: spip_ssip_BootROM_4_1_2_release_sig.zip spip_ssip_3_1_2_release_sig_split.zip
+version: 3.1.2RevB
+files: spip_ssip_vvx_BootROM_4_1_2RevB_release_sig.zip spip_ssip_vvx_3_1_2RevB_release_sig_split.zip
 
-# Polycom SoundPoint IP 650 3.1.2
+# Polycom SoundPoint IP 650 3.1.2RevB
 [pcspip650_312]
 brand: Polycom
 model: SoundPoint IP 650
-version: 3.1.2
-files: spip_ssip_BootROM_4_1_2_release_sig.zip spip_ssip_3_1_2_release_sig_split.zip
+version: 3.1.2RevB
+files: spip_ssip_vvx_BootROM_4_1_2RevB_release_sig.zip spip_ssip_vvx_3_1_2RevB_release_sig_split.zip
 
-# Polycom SoundPoint IP 670 3.1.2
+# Polycom SoundPoint IP 670 3.1.2RevB
 [pcspip670_312]
 brand: Polycom
 model: SoundPoint IP 670
-version: 3.1.2
-files: spip_ssip_BootROM_4_1_2_release_sig.zip spip_ssip_3_1_2_release_sig_split.zip
+version: 3.1.2RevB
+files: spip_ssip_vvx_BootROM_4_1_2RevB_release_sig.zip spip_ssip_vvx_3_1_2RevB_release_sig_split.zip
 
-# Polycom SoundStation IP 4000 SIP
+# Polycom SoundStation IP 4000 SIP 3.1.2RevB
 [pcssip4000sip_312]
 brand: Polycom
 model: SoundStation IP 4000 SIP
-version: 3.1.2
-files: spip_ssip_BootROM_4_1_2_release_sig.zip spip_ssip_3_1_2_release_sig_split.zip
+version: 3.1.2RevB
+files: spip_ssip_vvx_BootROM_4_1_2RevB_release_sig.zip spip_ssip_vvx_3_1_2RevB_release_sig_split.zip
 
-# Polycom SoundStation IP 6000 SIP
+# Polycom SoundStation IP 6000 SIP 3.1.2RevB
 [pcssip6000sip_312]
 brand: Polycom
 model: SoundStation IP 6000 SIP
-version: 3.1.2
-files: spip_ssip_BootROM_4_1_2_release_sig.zip spip_ssip_3_1_2_release_sig_split.zip
+version: 3.1.2RevB
+files: spip_ssip_vvx_BootROM_4_1_2RevB_release_sig.zip spip_ssip_vvx_3_1_2RevB_release_sig_split.zip
 
-# Polycom SoundStation IP 7000 SIP
+# Polycom SoundStation IP 7000 SIP 3.1.2RevB
 [pcssip7000sip_312]
 brand: Polycom
 model: SoundStation IP 7000 SIP
-version: 3.1.2
-files: spip_ssip_BootROM_4_1_2_release_sig.zip spip_ssip_3_1_2_release_sig_split.zip
+version: 3.1.2RevB
+files: spip_ssip_vvx_BootROM_4_1_2RevB_release_sig.zip spip_ssip_vvx_3_1_2RevB_release_sig_split.zip
 
 # Common files for Polycom phones
 
-[spip_ssip_BootROM_4_1_2_release_sig.zip]
-url: http://downloads.polycom.com/voice/voip/sp_ss_bootrom/spip_ssip_BootROM_4_1_2_release_sig.zip
-size: 24567235
-md5sum: 430dcfc588a73461341569f8c8fe69ae
-sha1sum: 6d8ed2160a3c8c61b092d8dba9d1fe31f4c33c2e
+[spip_ssip_vvx_BootROM_4_1_2RevB_release_sig.zip]
+url: http://downloads.polycom.com/voice/voip/sp_ss_bootrom/spip_ssip_vvx_BootROM_4_1_2RevB_release_sig.zip
+size: 29547371
+md5sum: d708541cfd61e1f73d47ac4950c62052
+sha1sum: 95e2e6c27a9d17f12d44ec227142e771e8ca8763
 
-[spip_ssip_3_1_2_release_sig_split.zip]
-url: http://downloads.polycom.com/voice/voip/sp_ss_sip/spip_ssip_3_1_2_release_sig_split.zip
-size: 62129600
-md5sum: d154f07357522977501e667dcb3e9c5a
-sha1sum: f9ea485e66c1676daac32225c72ae1b7fb934ddb
+[spip_ssip_vvx_3_1_2RevB_release_sig_split.zip]
+url: http://downloads.polycom.com/voice/voip/sp_ss_sip/spip_ssip_vvx_3_1_2RevB_release_sig_split.zip
+size: 75649597
+md5sum: 2128b962ff4de71b3332b56294ef5332
+sha1sum: 4a101ba0e5f8a7fdf41c8aa2cc95f29d6920d23a
 
 # Siemens C470IP 021840000000
 [siemens_c470ip_02184]

@@ -38,6 +38,7 @@ APP_FILES = [
     "2345-12560-001.sip.ld",
     "2345-12600-001.sip.ld",
     "2345-12670-001.sip.ld",
+    "2345-17960-001.sip.ld",
     "3111-15600-001.sip.ld",
     "3111-40000-001.sip.ld",
     "phone1.cfg",
@@ -102,7 +103,7 @@ def polycom_install_app(xfile):
 
 def polycom_install(firmware):
     for xfile in firmware.remote_files:
-        if xfile.filename.startswith("spip_ssip_BootROM"):
+        if xfile.filename.lower().find("bootrom") > -1:
             polycom_install_bootrom(xfile)
         else:
             polycom_install_app(xfile)
