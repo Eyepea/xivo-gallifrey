@@ -51,8 +51,9 @@ class ClientConnection:
 
     # close socket
     def close(self):
-        self.isClosed = True
-        return self.socket.close()
+        if not self.isClosed:
+            self.isClosed = True
+            self.socket.close()
 
     # send data
     def send(self, data):
