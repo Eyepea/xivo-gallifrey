@@ -415,11 +415,16 @@ class XivoCTICommand(BaseCommand):
                         dt = time.time() - userinfo['login']['sessiontimestamp']
                         log.warning('user %s already connected from %s (%.1f s)'
                                     % (userinfo['user'], userinfo['login']['connection'].getpeername(), dt))
-                        # if userinfo not in self.disconnlist:
-                        # if userinfo and 'login' in userinfo:
-                        # userinfo['login']['todisc'] = True
-                        # self.disconnlist.append(userinfo)
-                        return 'already_connected:%s:%d' % userinfo['login']['connection'].getpeername()
+                        # TODO : make it configurable.
+                        lastconnectedwins = True
+                        if lastconnectedwins:
+                            # if userinfo not in self.disconnlist:
+                            # if userinfo and 'login' in userinfo:
+                            # userinfo['login']['todisc'] = True
+                            # self.disconnlist.append(userinfo)
+                            self.manage_logout(userinfo, 'newconnection')
+                        else:
+                            return 'already_connected:%s:%d' % userinfo['login']['connection'].getpeername()
                 return None
         
         def __check_capa_connection__(self, userinfo, capaid):
@@ -476,6 +481,8 @@ class XivoCTICommand(BaseCommand):
                                 capaid = userinfo.get('capaid')
                                 self.capas[capaid].conn_dec()
                                 userinfo['last-version'] = userinfo['login']['version']
+                                # TODO : make sure everything is sent before closing the connection ?
+                                userinfo['login']['connection'].close()
                                 del userinfo['login']
                                 userinfo['state'] = 'xivo_unknown'
                                 self.__update_availstate__(userinfo, userinfo.get('state'))
