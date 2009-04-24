@@ -51,7 +51,7 @@ def phonestatus(agi, cursor, args):
         agi.set_variable('XIVO_ENABLEVOICEMAIL', user.enablevoicemail)
 
     if feature_list.incallfilter:
-        agi.set_variable('XIVO_CALLFILTER', user.callfilter)
+        agi.set_variable('XIVO_INCALLFILTER', user.callfilter)
 
     if feature_list.incallrec:
         agi.set_variable('XIVO_CALLRECORD', user.callrecord)

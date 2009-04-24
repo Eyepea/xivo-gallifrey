@@ -85,8 +85,8 @@ def incoming_user_set_features(agi, cursor, args):
             ufilter.set_dial_actions()
             ufilter.rewrite_cid()
 
-            agi.set_variable('XIVO_CALLFILTER_MODE', ufilter.mode)
             agi.set_variable('XIVO_CALLFILTER', '1')
+            agi.set_variable('XIVO_CALLFILTER_MODE', ufilter.mode)
             return
 
     options = ""

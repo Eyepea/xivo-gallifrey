@@ -57,7 +57,7 @@ def user_set_feature(agi, cursor, args):
         elif feature == "callrecord":
             agi.set_variable('XIVO_CALLRECORDENABLED', user.callrecord)
         elif feature == "callfilter":
-            agi.set_variable('XIVO_CALLFILTERENABLED', user.callfilter)
+            agi.set_variable('XIVO_INCALLFILTERENABLED', user.callfilter)
 
     # TODO: rewrite.
     elif feature == "bsfilter":
