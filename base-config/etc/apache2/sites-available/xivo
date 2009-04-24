@@ -35,12 +35,14 @@ NameVirtualHost *:80
 <VirtualHost *:80>
 	RewriteEngine On
 
-	# Used for Aastra phones first provisioning
 	RewriteCond %{HTTP_USER_AGENT} !^Aastra5[1357]i
 	RewriteRule ^/provisioning/Aastra/ - [L,R=403]
 
 	RewriteCond %{HTTP_USER_AGENT} ^Aastra5([1357])i
+	# Used for Aastra phones first provisioning
 	RewriteRule ^/(5[1357]i\.st)$ /provisioning/Aastra/$1 [PT,L]
+	# Used for Aastra phones provisioning
+	RewriteRule ^/provisioning/Aastra/ %{REQUEST_URI} [PT,L]
 
 	RewriteCond %{HTTPS} off
 	# XXX Snom phones don't work with SSL
@@ -49,8 +51,6 @@ NameVirtualHost *:80
 	RewriteCond %{HTTP_USER_AGENT} !^THOMSON\ ST2030\ hw[0-9]\ fw2\.
 	# XXX Thomson phones ST2022 fw4.xx without SSL certificate
 	RewriteCond %{HTTP_USER_AGENT} !^THOMSON\ ST2022\ hw[0-9]\ fw4\.
-	# Used for Aastra phones provisioning
-	RewriteCond %{REQUEST_URI} !^/provisioning/Aastra/
 	# Used for stats/monitoring
 	RewriteCond %{REQUEST_URI} !^/server-status$
 	RewriteRule .* https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
