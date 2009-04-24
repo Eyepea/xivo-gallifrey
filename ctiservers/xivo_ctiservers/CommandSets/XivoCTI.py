@@ -3850,11 +3850,15 @@ class XivoCTICommand(BaseCommand):
                         # context.startswith('macro-phonestatus'):
                         # *10
                         return
-                elif appliname in ['Queue', 'AppQueue', 'BackGround',
+                elif appliname in ['BackGround',
                                    'VoiceMail', 'VoiceMailMain',
                                    'AgentLogin', 'Transferred Call', 'RetryDial']:
                         log.info('%s ami_status : %s %s' % (astid, appliname, applidata))
                         return
+                elif appliname in ['Queue', 'AppQueue']:
+                        log.debug('%s ami_status  %s' % (astid, event))
+                        #if not applidata == '(Outgoing Line)':
+                        #    return
                 elif appliname == '':
                         log.warning('%s ami_status (empty appliname) : %s' % (astid, event))
                         if state == 'Rsrvd':
