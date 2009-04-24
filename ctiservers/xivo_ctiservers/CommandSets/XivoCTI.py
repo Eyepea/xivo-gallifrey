@@ -3798,6 +3798,7 @@ class XivoCTICommand(BaseCommand):
                 channel = event.get('Channel')
                 calleridnum = event.get('CallerIDNum')
                 calleridname = event.get('CallerIDName').decode('utf8')
+                link = event.get('Link')
                 log.debug('%s ami_status : %s, %s, %s, %s, %s, %s' % (astid, uniqueid, channel, appliname, calleridnum, calleridname, state))
                 
                 # warning : channel empty when appliname is 'VoiceMail'
@@ -3829,6 +3830,20 @@ class XivoCTICommand(BaseCommand):
                         if meetmeref is not None:
                                 if uniqueid in meetmeref['uniqueids']:
                                         meetmeref['uniqueids'][uniqueid]['time_start'] = time.time() - seconds
+                        #link = 'dummy'
+                        phoneid = self.__phoneid_from_channel__(astid, channel)
+                        if phoneid in self.weblist['phones'][astid].keeplist:
+                                if seconds is None:
+                                        status = 'linked-called'
+                                else:
+                                        status = 'linked-caller'
+                                self.weblist['phones'][astid].keeplist[phoneid]['comms'][uniqueid] = { 'status' : status,
+                                                                                                       'thischannel' : channel,
+                                                                                                       #'peerchannel' : link,
+                                                                                                       'time-link' : seconds,
+                                                                                                       'timestamp-link' : time.time() - seconds,
+                                                                                                       'calleridnum' : applidata[0],
+                                                                                                       'calleridname' : '<meetme>' }
                         return
                 elif appliname == 'Playback':
                         log.info('%s ami_status : %s %s' % (astid, appliname, applidata))
@@ -3850,8 +3865,6 @@ class XivoCTICommand(BaseCommand):
                         log.warning('%s ami_status : %s %s (untracked)' % (astid, appliname, applidata))
                         
                 if state == 'Up':
-                        link = event.get('Link')
-                        
                         # warning : very rarely, link seems to be None here
                         seconds = event.get('Seconds')
                         priority = event.get('Priority')
@@ -3875,8 +3888,9 @@ class XivoCTICommand(BaseCommand):
 #                                                                                                       'peerchannel' : link,
 #                                                                                                       'time-link' : 0 }
                         #inversed stuff
-                        otherphoneid = self.__phoneid_from_channel__(astid, link)
-                        if otherphoneid in self.weblist['phones'][astid].keeplist:
+                        if link is not None:
+                            otherphoneid = self.__phoneid_from_channel__(astid, link)
+                            if otherphoneid in self.weblist['phones'][astid].keeplist:
                                 if seconds is None:
                                         status = 'linked-caller'
                                 else:
