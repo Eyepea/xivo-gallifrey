@@ -416,7 +416,8 @@ class XivoCTICommand(BaseCommand):
                         log.warning('user %s already connected from %s (%.1f s)'
                                     % (userinfo['user'], userinfo['login']['connection'].getpeername(), dt))
                         # TODO : make it configurable.
-                        lastconnectedwins = True
+                        #lastconnectedwins = True
+                        lastconnectedwins = False
                         if lastconnectedwins:
                             # if userinfo not in self.disconnlist:
                             # if userinfo and 'login' in userinfo:
@@ -482,7 +483,7 @@ class XivoCTICommand(BaseCommand):
                                 self.capas[capaid].conn_dec()
                                 userinfo['last-version'] = userinfo['login']['version']
                                 # TODO : make sure everything is sent before closing the connection ?
-                                userinfo['login']['connection'].close()
+                                #userinfo['login']['connection'].close() # need to do some more
                                 del userinfo['login']
                                 userinfo['state'] = 'xivo_unknown'
                                 self.__update_availstate__(userinfo, userinfo.get('state'))
