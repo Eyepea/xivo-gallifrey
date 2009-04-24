@@ -99,21 +99,21 @@ class ClientConnection:
                 self.readbuff += s
             else:
                 # remote host closed the connection
-                self.isClosed = True
-                self.socket.close()
+                self.close()
                 raise self.CloseException()
         except socket.error, (_errno, string):
             if _errno in [errno.EPIPE, errno.ECONNRESET, errno.ENOTCONN, errno.ETIMEDOUT, errno.EHOSTUNREACH]:
-                self.isClosed = True
-                self.socket.close()
+                self.close()
                 raise self.CloseException(_errno)
             elif _errno in [errno.EBADF]:
+                # already closed !
                 raise self.CloseException(_errno)
             elif _errno != errno.EAGAIN: # really an error
                 raise socket.error(_errno, string)
         return
 
     # return a line if available or None
+    # use the separator to split "lines"
     def readline(self):
         self.recv()
         try:
@@ -123,3 +123,4 @@ class ClientConnection:
             return ret
         except:
             return None
+
