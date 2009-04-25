@@ -1,0 +1,40 @@
+Index: asterisk-1.4.24/channels/chan_sip.c
+===================================================================
+--- asterisk-1.4.24.orig/channels/chan_sip.c	2009-04-25 02:25:57.000000000 +0200
++++ asterisk-1.4.24/channels/chan_sip.c	2009-04-25 02:28:47.000000000 +0200
+@@ -15201,10 +15201,17 @@
+ 		}
+ 
+ 		if (target.chan2) {
+-			/* Tell each of the other channels to whom they are now connected */
+-			ast_connectedline_update(target.chan2, current->chan2->cid.cid_num, current->chan2->cid.cid_name, current->chan2->cid.cid_pres);
+-			ast_connectedline_update(current->chan2, target.chan2->cid.cid_num, target.chan2->cid.cid_name, target.chan2->cid.cid_pres);
++			if (current->chan2) {
++
++				/* TODO : do we need to lock current->chan2 and is it safe (speaking about potential deadlocks...) */
++
++				/* Tell each of the other channels to whom they are now connected */
++				ast_connectedline_update(target.chan2, current->chan2->cid.cid_num, current->chan2->cid.cid_name, current->chan2->cid.cid_pres);
++				ast_connectedline_update(current->chan2, target.chan2->cid.cid_num, target.chan2->cid.cid_name, target.chan2->cid.cid_pres);
++			}
+ 		} else {
++			ast_channel_lock(target.chan1);
++
+ 			/* Notify the first other party that they are connected to someone else assuming that target.chan1
+ 			   has progressed far enough through the dialplan to have it's called party information set. */
+ 			if (current->chan2)
+@@ -15212,12 +15219,12 @@
+ 
+ 			/* We can't indicate to the called channel directly so we force the masquerade to complete
+ 			   and queue and update to be read and passed-through */
+-			ast_channel_lock(target.chan1);
+ 			if (target.chan1->masq)
+ 				ast_do_masquerade(target.chan1);
+-			ast_channel_unlock(target.chan1);
+ 
+ 			ast_queue_connectedline_update(target.chan1, target.chan1->cid.cid_num, target.chan1->cid.cid_name, target.chan1->cid.cid_pres);
++
++			ast_channel_unlock(target.chan1);
+ 		}
+ 	}
+ 	return 1;
