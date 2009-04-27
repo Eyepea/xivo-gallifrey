@@ -10,11 +10,11 @@ DEB_PKG = "asterisk-app-conference"
 
 SRCVER = $(shell cat $(MODULE_PATH)/SOURCE-VERSION)
 TARBALL_NAME = "asterisk-app-conference_$(SRCVER).orig.tar.gz"
-XIVO_REV = $(SRCVER)+pf.$(MAINREV)~svn$(SVNREV)
+UPSTREAM_VER = $(SRCVER)+pf.$(MAINREV)~svn$(SVNREV)
 
 
 default:
 
 do-tarball::
-	cp $(MODULE_PATH)/tarballs/$(TARBALL_NAME) $(DEB_DESTDIR)/$(DEB_PKG)_$(XIVO_REV).orig.tar.gz
+	cp $(MODULE_PATH)/tarballs/$(TARBALL_NAME) $(DEB_DESTDIR)/$(DEB_PKG)_$(UPSTREAM_VER).orig.tar.gz
 
