@@ -300,6 +300,8 @@ def manage_info_connections(connid, msg, sep):
                                                 level = logging.ERROR
                                         else:
                                                 level = logging.INFO
+                                        log.setLevel(logging.INFO)
+                                        log.info('=== setting loglevel to %s (%s) ===' % (levelname, level))
                                         log.setLevel(level)
                                         logging.getLogger('xivocti').setLevel(level)
                                         logging.getLogger('xivo_ami').setLevel(level)

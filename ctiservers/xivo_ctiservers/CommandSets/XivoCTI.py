@@ -2005,6 +2005,9 @@ class XivoCTICommand(BaseCommand):
                         thisagent = self.weblist['agents'][astid].keeplist[agent_id]
                         thisagent['agentstats'].update({'Xivo-Agent-StateTime' : time.time()})
                         thisagent['agentstats'].update({'Xivo-Agent-Status-Link' : { 'linkmode' : 'agentlink',
+                                                                                     'dir' : status,
+                                                                                     'outcall' : uid1info.get('OUTCALL'),
+                                                                                     'did' : uid1info.get('DID'),
                                                                                      'linkqueue' : qname } })
                         tosend = { 'class' : 'agents',
                                    'function' : 'sendlist',
