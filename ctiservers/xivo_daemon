@@ -294,18 +294,29 @@ def manage_info_connections(connid, msg, sep):
                                 dumpami = False
                         elif usefulmsg.startswith('loglevel '):
                                 command_args = usefulmsg.split()
-                                if len(command_args) > 1:
-                                        levelname = command_args[1]
-                                        if levelname == 'error':
-                                                level = logging.ERROR
+                                if len(command_args) > 2:
+                                        action = command_args[1]
+                                        levelname = command_args[2]
+                                        levels = {'debug' : logging.DEBUG,
+                                                  'info' : logging.INFO,
+                                                  'warning' : logging.WARNING,
+                                                  'error' : logging.ERROR}
+                                        if action == 'set':
+                                                if levelname in levels:
+                                                        newlevel = levels[levelname]
+                                                        log.setLevel(logging.INFO)
+                                                        log.info('=== setting loglevel to %s (%s) ===' % (levelname, newlevel))
+                                                        log.setLevel(newlevel)
+                                                        logging.getLogger('xivocti').setLevel(newlevel)
+                                                        logging.getLogger('xivo_ami').setLevel(newlevel)
+                                                        logging.getLogger('urllist').setLevel(newlevel)
+                                                        connid.sendall('loglevel set to %s (%s)\n' % (levelname, newlevel))
+                                                else:
+                                                        connid.sendall('unknown level name <%s> to set\n' % levelname)
+                                        elif action == 'get':
+                                                pass
                                         else:
-                                                level = logging.INFO
-                                        log.setLevel(logging.INFO)
-                                        log.info('=== setting loglevel to %s (%s) ===' % (levelname, level))
-                                        log.setLevel(level)
-                                        logging.getLogger('xivocti').setLevel(level)
-                                        logging.getLogger('xivo_ami').setLevel(level)
-                                        logging.getLogger('urllist').setLevel(level)
+                                                connid.sendall('unknown action <%s> for loglevel : try set or get\n' % action)
                         elif usefulmsg == 'show_users':
                                 for user, info in commandclass.users().iteritems():
                                         try:

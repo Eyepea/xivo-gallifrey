@@ -1288,15 +1288,15 @@ class XivoCTICommand(BaseCommand):
                                 userinfos.extend(self.__find_userinfos_by_agentnum__(astid, dstnum))
                                 
                         elif where == 'dial':
-                                for uinfo in self.ulist_ng.keeplist.itervalues():
-                                        if uinfo.get('astid') == astid and uinfo.get('phonenum') == extraevent.get('called_num'):
-                                                userinfos.append(uinfo)
                                 itemdir['xivo-callerid'] = extraevent.get('caller_num')
                                 itemdir['xivo-calledid'] = extraevent.get('called_num')
                                 itemdir['xivo-calleridname'] = extraevent.get('caller_name')
                                 itemdir['xivo-channel'] = extraevent.get('channel')
                                 itemdir['xivo-uniqueid'] = extraevent.get('uniqueid')
-                                
+                                for uinfo in self.ulist_ng.keeplist.itervalues():
+                                        if uinfo.get('astid') == astid and uinfo.get('phonenum') == itemdir['xivo-calledid']:
+                                                userinfos.append(uinfo)
+                                                
                         elif where in ['link', 'unlink']:
                                 itemdir['xivo-channel'] = event.get('Channel1')
                                 itemdir['xivo-channelpeer'] = event.get('Channel2')
@@ -1308,7 +1308,7 @@ class XivoCTICommand(BaseCommand):
                                 for uinfo in self.ulist_ng.keeplist.itervalues():
                                         if uinfo.get('astid') == astid and uinfo.get('phonenum') == itemdir['xivo-calledid']:
                                                 userinfos.append(uinfo)
-                                
+                                                
                         elif where == 'hangup':
                                 # print where, event
                                 itemdir['xivo-channel'] = event.get('Channel')
@@ -1569,24 +1569,29 @@ class XivoCTICommand(BaseCommand):
         
         # Methods to handle Asterisk AMI events
         def ami_dial(self, astid, event):
+                log.info('%s ami_dial : %s' % (astid, event))
                 src     = event.get('Source')
                 dst     = event.get('Destination')
-                clid    = event.get('CallerID')
-                clidn   = event.get('CallerIDName').decode('utf8')
+                calleridnum = event.get('CallerID')
+                calleridname = event.get('CallerIDName').decode('utf8')
                 uidsrc  = event.get('SrcUniqueID')
                 uiddst  = event.get('DestUniqueID')
                 data    = event.get('Data', 'NOXIVO-DATA').split('|')
                 # actionid = self.amilist.execute(astid, 'getvar', src, 'XIVO_DSTNUM')
                 # self.getvar_requests[astid][actionid] = {'channel' : src, 'variable' : 'XIVO_DSTNUM'}
-                self.__link_local_channels__(astid, src, uidsrc, dst, uiddst, clid, clidn, None, None)
+                self.__link_local_channels__(astid, src, uidsrc, dst, uiddst, calleridnum, calleridname, None, None)
                 
-##                extraevent = { 'caller_num' : calleridnum,
-##                               'caller_name' : calleridname,
-##                               'called_num' : callednum,
-##                               'uniqueid' : uniqueid,
-##                               'channel' : channel }
-##                self.__sheet_alert__('dial', astid, context, {}, extraevent)
-                
+                if data:
+                        if 'context' in self.uniqueids[astid][uidsrc]:
+                                context = self.uniqueids[astid][uidsrc]['context']
+                                callednum = data[0].split('/')[1]
+                                extraevent = { 'caller_num' : calleridnum,
+                                               'caller_name' : calleridname,
+                                               'called_num' : callednum,
+                                               'uniqueid' : uidsrc,
+                                               'channel' : src }
+                                self.__sheet_alert__('dial', astid, context, {}, extraevent)
+                                
                 phoneidsrc = self.__phoneid_from_channel__(astid, src)
                 phoneiddst = self.__phoneid_from_channel__(astid, dst)
                 trunkidsrc = self.__trunkid_from_channel__(astid, src)
@@ -1594,11 +1599,10 @@ class XivoCTICommand(BaseCommand):
                 # uinfosrc = self.__userinfo_from_phoneid__(astid, phoneidsrc)
                 # uinfodst = self.__userinfo_from_phoneid__(astid, phoneiddst)
                 self.__fill_uniqueids__(astid, uidsrc, uiddst, src, dst, 'dial')
-                self.uniqueids[astid][uidsrc]['calleridnum'] = clid
-                self.uniqueids[astid][uidsrc]['calleridname'] = clidn
+                self.uniqueids[astid][uidsrc]['calleridnum'] = calleridnum
+                self.uniqueids[astid][uidsrc]['calleridname'] = calleridname
                 #log.debug('%s ami_dial src=%s event=%s' % (astid, self.uniqueids[astid][uidsrc], event))
                 
-                # print astid, event
                 # update the phones statuses
                 self.weblist['phones'][astid].ami_dial(phoneidsrc, phoneiddst,
                                                        uidsrc, uiddst,
