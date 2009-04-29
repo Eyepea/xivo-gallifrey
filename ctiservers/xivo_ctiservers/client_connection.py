@@ -29,8 +29,8 @@ from collections import deque
 
 class ClientConnection:
     class CloseException(Exception):
-        def __init__(self, errno = None):
-            self.args = errno
+        def __init__(self, errno = -1):
+            self.args = (errno,)
     
     def __init__(self, socket, address=None, sep = '\n'):
         self.socket = socket
@@ -39,6 +39,7 @@ class ClientConnection:
         self.sendqueue = deque()
         self.readbuff = ''
         self.isClosed = False
+        self.toClose = False
         self.separator = sep
         return
 
@@ -79,8 +80,7 @@ class ClientConnection:
                     self.sendqueue.appendleft(data) # try next time !
                     return
                 elif _errno in [errno.EPIPE, errno.ECONNRESET, errno.ENOTCONN, errno.ETIMEDOUT, errno.EHOSTUNREACH]:
-                    self.isClosed = True
-                    self.socket.close()
+                    self.close()
                     raise self.CloseException(_errno)
                 elif _errno in [errno.EBADF]:
                     raise self.CloseException(_errno)
