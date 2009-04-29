@@ -5361,10 +5361,15 @@ class XivoCTICommand(BaseCommand):
                         display_reverse = z.display_reverse
                         if fullstatlist:
                                 for k, v in fullstatlist[0].iteritems():
-                                        try:
-                                                display_reverse = display_reverse.replace('{%s}' % k, v.decode('utf8'))
-                                        except UnicodeEncodeError:
+                                        if isinstance(v, unicode):
+                                                
                                                 display_reverse = display_reverse.replace('{%s}' % k, v)
+                                        elif isinstance(v, str):
+                                                # decoding utf8 data as we know the DB is storing utf8 so some bug may lead this data to come here still utf8 encoded
+                                                # in the future, this code could be removed, once we are sure encoding is properly handled "up there" (in sqlite client)
+                                                display_reverse = display_reverse.replace('{%s}' % k, v.decode('utf8'))
+                                        else:
+                                                log.warning('__build_customers_bydirdef__ %s is neither unicode nor str' % k)
                                 e = fullstatlist[0]
                                 e.update({'dbr-display' : display_reverse})
                 return fullstatlist
