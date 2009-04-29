@@ -163,7 +163,6 @@ class XivoCTICommand(BaseCommand):
                 self.filestodownload = {}
                 self.faxes = {}
                 self.queued_threads_pipe = queued_threads_pipe
-                self.disconnlist = []
                 self.timerthreads_agentlogoff_retry = {}
                 self.timerthreads_login_timeout = {}
                 self.sheet_actions = {}
@@ -416,13 +415,9 @@ class XivoCTICommand(BaseCommand):
                         log.warning('user %s already connected from %s (%.1f s)'
                                     % (userinfo['user'], userinfo['login']['connection'].getpeername(), dt))
                         # TODO : make it configurable.
-                        #lastconnectedwins = True
-                        lastconnectedwins = False
+                        lastconnectedwins = True
+                        #lastconnectedwins = False
                         if lastconnectedwins:
-                            # if userinfo not in self.disconnlist:
-                            # if userinfo and 'login' in userinfo:
-                            # userinfo['login']['todisc'] = True
-                            # self.disconnlist.append(userinfo)
                             self.manage_logout(userinfo, 'newconnection')
                         else:
                             return 'already_connected:%s:%d' % userinfo['login']['connection'].getpeername()
@@ -475,15 +470,18 @@ class XivoCTICommand(BaseCommand):
                         log.exception('connect_user %s' % userinfo)
                 return
         
-        def __disconnect_user__(self, userinfo):
+        def __disconnect_user__(self, userinfo, type='force'):
                 try:
                         # state is unchanged
                         if 'login' in userinfo:
                                 capaid = userinfo.get('capaid')
                                 self.capas[capaid].conn_dec()
                                 userinfo['last-version'] = userinfo['login']['version']
-                                # TODO : make sure everything is sent before closing the connection ?
-                                #userinfo['login']['connection'].close() # need to do some more
+                                # ask the client to disconnect
+                                if not userinfo['login']['connection'].isClosed:
+                                    userinfo['login']['connection'].send(self.__cjson_encode__({'class' : 'disconnect', 'type' : type}) + '\n')
+                                    # make sure everything is sent before closing the connection
+                                    userinfo['login']['connection'].toClose = True
                                 del userinfo['login']
                                 userinfo['state'] = 'xivo_unknown'
                                 self.__update_availstate__(userinfo, userinfo.get('state'))
@@ -1061,29 +1059,27 @@ class XivoCTICommand(BaseCommand):
                         del self.timerthreads_login_timeout[connid]
                 return { 'disconnlist-tcp'  : todisconn }
         
-        def clear_disconnlist(self):
-                self.disconnlist = []
-                return
+#        def clear_disconnlist(self):
+#                self.disconnlist = []
+#                return
         
         def __send_msg_to_cti_client__(self, userinfo, strupdate):
                 wassent = False
                 try:
                         t0 = time.time()
                         if userinfo and 'login' in userinfo and 'connection' in userinfo['login']:
-                                if 'todisc' not in userinfo['login']:
+                                if not userinfo['login']['connection'].toClose:
                                         mysock = userinfo['login']['connection']
                                         mysock.sendall(strupdate + '\n')
                                         wassent = True
-                except Exception:
+                except ClientConnection.CloseException, cexc:
+                        # an error happened on the socket so it should be closed
                         t1 = time.time()
                         dispuserid = '%s/%s' % (userinfo.get('astid'), userinfo.get('xivo_userid'))
-                        log.exception('(__send_msg_to_cti_client__) userinfo(astid/xivo_userid)=%s len=%d timespent=%f'
-                                      % (dispuserid, len(strupdate), (t1 - t0)))
-                        if userinfo not in self.disconnlist:
-                                if userinfo and 'login' in userinfo:
-                                        userinfo['login']['todisc'] = True
-                                self.disconnlist.append(userinfo)
-                                # os.write(self.queued_threads_pipe[1], 'uinfo(%s)' % dispuserid)
+                        log.exception('(__send_msg_to_cti_client__) userinfo(astid/xivo_userid)=%s len=%d timespent=%f cexc=%s'
+                                      % (dispuserid, len(strupdate), (t1 - t0), cexc))
+                        if userinfo and 'login' in userinfo and 'connection' in userinfo['login']:
+                            userinfo['login']['connection'].toClose = True
                 return wassent
         
         def __check_astid_context__(self, userinfo, astid, context = None):

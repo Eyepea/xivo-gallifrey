@@ -137,6 +137,7 @@ def manage_cti_connections(connid, msg, sep):
         
         multimsg = msg.split(sep)
         for usefulmsgpart in multimsg:
+                # remove tailing \r
                 usefulmsg = usefulmsgpart.split('\r')[0]
                 if len(usefulmsg) == 0:
                         break
@@ -1080,12 +1081,18 @@ while True: # loops over the reloads
                 try:
 			fdtodel = []
 			for cn in fdlist_established.keys():
-				if isinstance(cn, ClientConnection) and cn.isClosed:
-                                        fdtodel.append(cn)
+				if isinstance(cn, ClientConnection):
+                                        if cn.isClosed:
+                                                fdtodel.append(cn)
+                                        if cn.toClose and not cn.need_sending():
+                                                cn.close()
+                                                fdtodel.append(cn)
 			if fdtodel:
 				log.warning('there are fd to delete : %s' % fdtodel)
 				for cn in fdtodel:
 					del fdlist_established[cn]
+                                        if cn in userinfo_by_requester:
+                                                del userinfo_by_requester[cn]
                         fdlist_full = fdlist_listen_cti.keys() + fdlist_udp_cti.keys() + fdlist_established.keys()
                         fdlist_full.extend(amilist.fdlist())
                         fdlist_full.append(pipe_queued_threads_commandclass[0])
@@ -1143,6 +1150,7 @@ while True: # loops over the reloads
                                         # t._Thread__stop() # does not work in reload case (vs. stop case)
                                 continue
                 try:
+                    # connexions ready for sending(writing)
                     for sel_o in sels_o:
                         try:
                             sel_o.process_sending()
@@ -1343,28 +1351,6 @@ while True: # loops over the reloads
                                         except Exception:
                                                 log.exception('[pipe_queued_threads_main]')
                                                 
-                                try:
-                                        userdiscolist = commandclass.disconnlist
-                                        if userdiscolist:
-                                                log.warning('commandclass.disconnlist : should disconnect %d users' % len(userdiscolist))
-                                                for userinfo in userdiscolist:
-                                                        log.warning('checkqueue return : will disconnect %s' % userinfo)
-                                                        if 'login' in userinfo and 'connection' in userinfo.get('login'):
-                                                                connid = userinfo.get('login')['connection']
-                                                                if connid in fdlist_established:
-                                                                        del fdlist_established[connid]
-                                                                else:
-                                                                        log.warning('connid %s no more in fdlists' % connid)
-                                                                commandclass.manage_logout(userinfo, 'pipe')
-                                                                del userinfo_by_requester[connid]
-                                                                if not connid.isClosed:
-                                                                        connid.close()
-                                                        else:
-                                                                log.warning('WARNING - no login/connection field present in userinfo')
-                                        commandclass.clear_disconnlist()
-                                except Exception:
-                                        log.exception('userdiscolist')
-                                        
                                 for astid in configs:
                                         if (time.time() - lastrequest_time[astid]) > updates_period or update_userlist[astid]:
                                                 lastrequest_time[astid] = time.time()
@@ -1404,3 +1390,4 @@ while True: # loops over the reloads
                 except Exception:
                         log.exception('main loop')
         log.info('after askedtoquit loop (%s)' % askedtoquit)
+
