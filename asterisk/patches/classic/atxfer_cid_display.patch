@@ -63,11 +63,6 @@ Index: asterisk-1.4.24/res/res_features.c
  	ast_bridge_call_thread_launch(tobj);
 +    ast_log(LOG_DEBUG, "do_atxfer ast_bridge_call_thread_launch() returned\n");
 +
-+//    ast_connectedline_update(newchan, xferchan->cid.cid_num, "TOTO A"/*xferchan->cid.cid_name*/, xferchan->cid.cid_pres);// affiche sur destinataire final
-+//    ast_queue_connectedline_update(newchan, xferchan->cid.cid_num, "TOTO B"/*xferchan->cid.cid_name*/, xferchan->cid.cid_pres); // affiche sur appelant initial
-+//    ast_connectedline_update(xferchan, newchan->cid.cid_num, "TOTO C"/*newchan->cid.cid_name*/, newchan->cid.cid_pres);// affiche sur appelant initial
-+    //ast_queue_connectedline_update(xferchan, newchan->cid.cid_num, "TOTO D"/*newchan->cid.cid_name*/, newchan->cid.cid_pres); // affiche sur destinataire final
-+
  	return -1;	/* XXX meaning the channel is bridged ? */
  }
  
