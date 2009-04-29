@@ -496,6 +496,7 @@ def handle_ami_event(astid, idata):
         save_for_next_packet_events[astid] = evlist.pop()
         
         for evt in evlist:
+                evt = evt.decode('utf8')
                 this_event = {}
                 nocolon = []
                 for myline in evt.split('\r\n'):
@@ -781,6 +782,7 @@ def sighandler_reload(signum, frame):
 # Main Code starts here
 # ==============================================================================
 
+print sys.getdefaultencoding()
 logging.basicConfig(level=logging.INFO)
 #logging.basicConfig(level=logging.DEBUG)
 sysloghandler = SysLogHandler('/dev/log', SysLogHandler.LOG_DAEMON)

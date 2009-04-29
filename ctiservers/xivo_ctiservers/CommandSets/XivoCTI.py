@@ -1275,9 +1275,9 @@ class XivoCTICommand(BaseCommand):
                                 itemdir['xivo-channel'] = chan
                                 itemdir['xivo-queuename'] = queuename
                                 itemdir['xivo-callerid'] = event.get('CallerID1')
-                                itemdir['xivo-calleridname'] = event.get('CallerIDName1', 'NOXIVO-CID1').decode('utf8')
+                                itemdir['xivo-calleridname'] = event.get('CallerIDName1', 'NOXIVO-CID1')
                                 itemdir['xivo-calledid'] = event.get('CallerID2')
-                                itemdir['xivo-calledidname'] = event.get('CallerIDName2', 'NOXIVO-CID2').decode('utf8')
+                                itemdir['xivo-calledidname'] = event.get('CallerIDName2', 'NOXIVO-CID2')
                                 itemdir['xivo-agentnumber'] = dstnum
                                 itemdir['xivo-uniqueid'] = event.get('Uniqueid1')
                                 
@@ -1298,9 +1298,9 @@ class XivoCTICommand(BaseCommand):
                                 itemdir['xivo-channelpeer'] = event.get('Channel2')
                                 itemdir['xivo-uniqueid'] = event.get('Uniqueid1')
                                 itemdir['xivo-callerid'] = event.get('CallerID1')
-                                itemdir['xivo-calleridname'] = event.get('CallerIDName1', 'NOXIVO-CID1').decode('utf8')
+                                itemdir['xivo-calleridname'] = event.get('CallerIDName1', 'NOXIVO-CID1')
                                 itemdir['xivo-calledid'] = event.get('CallerID2')
-                                itemdir['xivo-calledidname'] = event.get('CallerIDName2', 'NOXIVO-CID2').decode('utf8')
+                                itemdir['xivo-calledidname'] = event.get('CallerIDName2', 'NOXIVO-CID2')
                                 for uinfo in self.ulist_ng.keeplist.itervalues():
                                         if uinfo.get('astid') == astid and uinfo.get('phonenum') == itemdir['xivo-calledid']:
                                                 userinfos.append(uinfo)
@@ -1347,7 +1347,7 @@ class XivoCTICommand(BaseCommand):
                                 itemdir['xivo-uniqueid'] = uid
                                 itemdir['xivo-queuename'] = queue
                                 itemdir['xivo-callerid'] = clid
-                                itemdir['xivo-calleridname'] = event.get('CallerIDName').decode('utf8')
+                                itemdir['xivo-calleridname'] = event.get('CallerIDName')
                                 
                         # 2/4
                         # call a database for xivo-callerid matching (or another pattern to set somewhere)
@@ -1569,7 +1569,7 @@ class XivoCTICommand(BaseCommand):
                 src     = event.get('Source')
                 dst     = event.get('Destination')
                 calleridnum = event.get('CallerID')
-                calleridname = event.get('CallerIDName').decode('utf8')
+                calleridname = event.get('CallerIDName')
                 uidsrc  = event.get('SrcUniqueID')
                 uiddst  = event.get('DestUniqueID')
                 data    = event.get('Data', 'NOXIVO-DATA').split('|')
@@ -1911,8 +1911,8 @@ class XivoCTICommand(BaseCommand):
                 chan2 = event.get('Channel2')
                 clid1 = event.get('CallerID1')
                 clid2 = event.get('CallerID2')
-                clidname1 = event.get('CallerIDName1', 'NOXIVO-CID1').decode('utf8')
-                clidname2 = event.get('CallerIDName2', 'NOXIVO-CID2').decode('utf8')
+                clidname1 = event.get('CallerIDName1', 'NOXIVO-CID1')
+                clidname2 = event.get('CallerIDName2', 'NOXIVO-CID2')
                 uid1 = event.get('Uniqueid1')
                 uid2 = event.get('Uniqueid2')
                 
@@ -2686,7 +2686,7 @@ class XivoCTICommand(BaseCommand):
                 # event.get('CID-CallingPres') # 0 (Presentation Allowed, Not Screened)
                 # warning : the second such event comes After the Dial
                 if astid in self.uniqueids and uniqueid in self.uniqueids[astid]:
-                        self.uniqueids[astid][uniqueid].update({'calleridname' : event.get('CallerIDName').decode('utf8'),
+                        self.uniqueids[astid][uniqueid].update({'calleridname' : event.get('CallerIDName'),
                                                                 'calleridnum'  : event.get('CallerID')})
                 return
         
@@ -2751,7 +2751,7 @@ class XivoCTICommand(BaseCommand):
                 uid     = event.get('Uniqueid')
                 uidfrom = event.get('UniqueidFrom') or event.get('FromUniqueid')
                 calleridnum = event.get('CallerID')
-                calleridname = event.get('CallerIDName').decode('utf8')
+                calleridname = event.get('CallerIDName')
                 fromcalleridnum = event.get('FromCallerIDNum')
                 fromcalleridname = event.get('FromCallerIDName')
                 
@@ -3650,7 +3650,7 @@ class XivoCTICommand(BaseCommand):
                 isadmin = (event.get('Admin') == 'Yes')
                 pseudochan = event.get('PseudoChan')
                 calleridnum = event.get('CallerIDnum')
-                calleridname = event.get('CallerIDname').decode('utf8')
+                calleridname = event.get('CallerIDname')
                 
                 (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomnum(meetmenum)
                 if meetmeref is None:
@@ -3771,7 +3771,7 @@ class XivoCTICommand(BaseCommand):
                 isadmin = (event.get('Admin') == 'Yes')
                 pseudochan = event.get('PseudoChan')
                 calleridnum = event.get('CallerIDNum')
-                calleridname = event.get('CallerIDName').decode('utf8')
+                calleridname = event.get('CallerIDName')
                 
                 (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomnum(meetmenum)
                 if meetmeref is None:
@@ -3808,7 +3808,7 @@ class XivoCTICommand(BaseCommand):
                 uniqueid = event.get('Uniqueid')
                 channel = event.get('Channel')
                 calleridnum = event.get('CallerIDNum')
-                calleridname = event.get('CallerIDName').decode('utf8')
+                calleridname = event.get('CallerIDName')
                 link = event.get('Link')
                 log.debug('%s ami_status : %s, %s, %s, %s, %s, %s' % (astid, uniqueid, channel, appliname, calleridnum, calleridname, state))
                 
@@ -3965,7 +3965,7 @@ class XivoCTICommand(BaseCommand):
                 # log.info('%s ami_join : %s' % (astid, event))
                 chan  = event.get('Channel')
                 clidnum  = event.get('CallerID')
-                clidname = event.get('CallerIDName').decode('utf8')
+                clidname = event.get('CallerIDName')
                 queue = event.get('Queue')
                 count = event.get('Count')
                 position = event.get('Position')
