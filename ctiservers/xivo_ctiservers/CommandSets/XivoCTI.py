@@ -5301,7 +5301,9 @@ class XivoCTICommand(BaseCommand):
                                                         header = line
                                                         headerfields = header.strip().split(z.delimiter)
                                                 else:
-                                                        ll = line.strip().decode('utf8')
+                                                        ll = line.strip()
+                                                        if isinstance(ll, str): # dont try to decode unicode string.
+                                                            ll = ll.decode('utf8')
                                                         t = ll.split(z.delimiter)
                                                         futureline = {'xivo-dir' : z.name}
                                                         # XXX problem when badly set delimiter + index()
