@@ -38,7 +38,7 @@ def __dict_from_query(query):
 def connect_by_uri(uri):
     puri = urisup.uri_help_split(uri)
     opts = __dict_from_query(puri[QUERY])
-    con = sqlite.connect(puri[PATH])
+    con = sqlite.connect(puri[PATH], client_encoding='utf8')
     if "timeout_ms" in opts:
         con.db.sqlite_busy_timeout(int(opts["timeout_ms"]))
     return con
