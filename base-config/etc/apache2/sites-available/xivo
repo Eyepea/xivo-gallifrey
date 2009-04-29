@@ -59,6 +59,11 @@ NameVirtualHost *:80
 		Deny from all
 	</Location>
 
+	# Used for stats/monitoring
+	<Location /server-status>
+		Allow from 127.0.0.1
+	</Location>
+
 	# Used for Aastra phones provisioning
 	Alias /provisioning/Aastra/ /tftpboot/Aastra/
 	<Location /provisioning/Aastra/>
