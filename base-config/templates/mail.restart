@@ -1,1 +1,2 @@
+postmap /etc/postfix/canonical
 invoke-rc.d postfix restart

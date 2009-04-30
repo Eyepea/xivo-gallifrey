@@ -11,7 +11,7 @@ smtp_fallback_relay = #XIVO_SMTP_FALLBACK_RELAYHOST#
 
 alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
-#canonical_maps = hash:${config_directory}/canonical
+canonical_maps = hash:${config_directory}/canonical
 
 ## Security options
 # (you can test any directive by prepending warn_if_reject)
