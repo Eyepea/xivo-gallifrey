@@ -782,7 +782,7 @@ def sighandler_reload(signum, frame):
 # Main Code starts here
 # ==============================================================================
 
-print sys.getdefaultencoding()
+# print sys.getdefaultencoding()
 logging.basicConfig(level=logging.INFO)
 #logging.basicConfig(level=logging.DEBUG)
 sysloghandler = SysLogHandler('/dev/log', SysLogHandler.LOG_DAEMON)

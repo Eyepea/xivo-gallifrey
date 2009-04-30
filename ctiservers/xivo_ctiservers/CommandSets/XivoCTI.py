@@ -840,7 +840,7 @@ class XivoCTICommand(BaseCommand):
                                         tid = titem.get('id')
                                         ttlist[tid] = { 'name' :   titem.get('name'),
                                                         'tech' :   titem.get('protocol'),
-                                                        'ip' :     titem.get('ip'),
+                                                        'host' :   titem.get('host'),
                                                         'type' :   titem.get('type'),
                                                         'context': titem.get('context'),
                                                         
