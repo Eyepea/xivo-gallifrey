@@ -257,12 +257,15 @@ class blop
 			die('ERR: Invalid datastorage "type" configuration in init file');
 		else if(xivo_datastorage::chk_extension_loaded($dso['type'],true) === false)
 			die('ERR: Datastorage '.$dso['type'].' extension is not loaded');
-		else if(($dso = &xivo_gct::set_get(xivo_datastorage::factory($dso['type'],$dso),'XIVO_DSO')) === false)
+		else if(($datastorage = &xivo_gct::set_get(
+						xivo_datastorage::factory($dso['type'],
+									  $dso),
+						'XIVO_DSO')) === false)
 			die('ERR: Datastorage class '.$dso['type'].' does not exist');
 
-		define('XIVO_DSO_TYPE',$dso->get_type());
+		define('XIVO_DSO_TYPE',$datastorage->get_type());
 
-		$this->_conf['blop']['ini']['datastorage']['type'] = $dso['type'];
+		$this->_conf['blop']['ini']['datastorage']['type'] = XIVO_DSO_TYPE;
 		$this->_conf['blop']['ini']['datastorage']['param'] = $dso;
 	}
 
