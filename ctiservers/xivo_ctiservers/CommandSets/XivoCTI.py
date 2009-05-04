@@ -1015,8 +1015,9 @@ class XivoCTICommand(BaseCommand):
                 Send a banner at login time
                 """
                 requester = '%s:%d' % connid.getpeername()
-                connid.sendall('XiVO CTI Server Version %s(%s) svn:%s\n' % (XIVOVERSION_NUM, XIVOVERSION_NAME,
-                                                                            __revision__))
+                connid.sendall('XiVO CTI Server Version %s(%s) svn:%s (on %s)\n'
+                               % (XIVOVERSION_NUM, XIVOVERSION_NAME,
+                                  __revision__, ' '.join(os.uname()[:3])))
                 self.timerthreads_login_timeout[connid] = threading.Timer(self.logintimeout,
                                                                           self.__callback_timer__,
                                                                           ('login(%s)' % requester,))
