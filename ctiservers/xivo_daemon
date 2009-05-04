@@ -1354,6 +1354,28 @@ while True: # loops over the reloads
                                         except Exception:
                                                 log.exception('[pipe_queued_threads_main]')
                                                 
+                                try:
+                                        userdiscolist = commandclass.disconnlist
+                                        if userdiscolist:
+                                                log.warning('commandclass.disconnlist : should disconnect %d users' % len(userdiscolist))
+                                                for userinfo in userdiscolist:
+                                                        log.warning('checkqueue return : will disconnect %s' % userinfo)
+                                                        if 'login' in userinfo and 'connection' in userinfo.get('login'):
+                                                                connid = userinfo.get('login')['connection']
+                                                                if connid in fdlist_established:
+                                                                        del fdlist_established[connid]
+                                                                else:
+                                                                        log.warning('connid %s no more in fdlists' % connid)
+                                                                commandclass.manage_logout(userinfo, 'pipe')
+                                                                del userinfo_by_requester[connid]
+                                                                if not connid.isClosed:
+                                                                        connid.close()
+                                                        else:
+                                                                log.warning('WARNING - no login/connection field present in userinfo')
+                                        commandclass.clear_disconnlist()
+                                except Exception:
+                                        log.exception('userdiscolist')
+                                        
                                 for astid in configs:
                                         if (time.time() - lastrequest_time[astid]) > updates_period or update_userlist[astid]:
                                                 lastrequest_time[astid] = time.time()

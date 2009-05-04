@@ -49,6 +49,7 @@ class BaseCommand:
         def __init__(self):
                 self.transfers_ref = {}
                 self.weblist = {}
+                self.disconnlist = []
                 return
         
         def handle_outsock(self, astid, msg):

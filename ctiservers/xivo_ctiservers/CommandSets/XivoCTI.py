@@ -1060,10 +1060,6 @@ class XivoCTICommand(BaseCommand):
                         del self.timerthreads_login_timeout[connid]
                 return { 'disconnlist-tcp'  : todisconn }
         
-#        def clear_disconnlist(self):
-#                self.disconnlist = []
-#                return
-        
         def __send_msg_to_cti_client__(self, userinfo, strupdate):
                 wassent = False
                 try:
