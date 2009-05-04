@@ -5488,57 +5488,69 @@ class XivoCTICommand(BaseCommand):
                 
                 
                 elif function == 'callerid_extend':
-                        if 'agi_callington' in fastagi.env:
-                                fastagi.set_variable('XIVO_SRCTON', fastagi.env['agi_callington'])
-                        return
+                    if 'agi_callington' in fastagi.env:
+                        fastagi.set_variable('XIVO_SRCTON', fastagi.env['agi_callington'])
+                    return
                 
                 elif function == 'callerid_forphones':
-                        ### XXXX warning it could be that we come here before uniqueid has been received by AMI ...
+                    if self.uniqueids[astid].contains(uniqueid):
                         uniqueiddefs = self.uniqueids[astid][uniqueid]
                         if uniqueiddefs.has_key('dialplan_data'):
-                                dialplan_data = uniqueiddefs['dialplan_data']
-                                calleridsolved = dialplan_data.get('dbr-display')
+                            dialplan_data = uniqueiddefs['dialplan_data']
+                            calleridsolved = dialplan_data.get('dbr-display')
                         else:
-                                log.warning('%s handle_fagi %s no dialplan_data received yet'
-                                            % (astid, function))
-                                calleridsolved = None
-                                
-                        calleridnum  = fastagi.env['agi_callerid']
-                        calleridname = fastagi.env['agi_calleridname']
-                        if calleridsolved:
-                                td = '%s handle_fagi %s : calleridsolved="%s"' % (astid, function, calleridsolved)
-                                log.info(td.encode('utf8'))
-                                if calleridname in ['', 'unknown']:
-                                        calleridname = calleridsolved
+                            log.warning('%s handle_fagi %s no dialplan_data received yet'
+                                        % (astid, function))
+                            calleridsolved = None
+                    else:
+                        log.warning('%s handle_fagi %s no such uniqueid received yet : %s %s'
+                                    % (astid, function, uniqueid, channel))
+                        calleridsolved = None
                         
-                        # to set according to os.getenv('LANG') or os.getenv('LANGUAGE') later on ?
-                        if calleridnum in ['', 'unknown']:
-                                calleridnum = CALLERID_UNKNOWN_NUM
-                        if calleridname in ['', 'unknown']:
-                                calleridname = calleridnum
-                        
-                        calleridtoset = '"%s"<%s>' % (calleridname, calleridnum)
-                        td = 'handle_fagi %s :   the callerid will be set to %s' % (astid, calleridtoset.decode('utf8'))
+                    calleridnum  = fastagi.env['agi_callerid']
+                    calleridname = fastagi.env['agi_calleridname']
+                    if calleridsolved:
+                        td = '%s handle_fagi %s : calleridsolved="%s"' % (astid, function, calleridsolved)
                         log.info(td.encode('utf8'))
-                        fastagi.set_callerid(calleridtoset)
-                        return
+                        if calleridname in ['', 'unknown']:
+                            calleridname = calleridsolved
+                            
+                    # to set according to os.getenv('LANG') or os.getenv('LANGUAGE') later on ?
+                    if calleridnum in ['', 'unknown']:
+                        calleridnum = CALLERID_UNKNOWN_NUM
+                    if calleridname in ['', 'unknown']:
+                        calleridname = calleridnum
+                        
+                    calleridtoset = '"%s"<%s>' % (calleridname, calleridnum)
+                    td = 'handle_fagi %s :   the callerid will be set to %s' % (astid, calleridtoset.decode('utf8'))
+                    log.info(td.encode('utf8'))
+                    fastagi.set_callerid(calleridtoset)
+                    return
                 
                 elif function == 'caller_data':
-                        ### XXXX warning it could be that we come here before uniqueid has been received by AMI ...
+                    if self.uniqueids[astid].contains(uniqueid):
                         uniqueiddefs = self.uniqueids[astid][uniqueid]
                         if uniqueiddefs.has_key('dialplan_data'):
-                                dialplan_data = uniqueiddefs['dialplan_data']
-                                if dialplan_data.has_key('xivo-extra'):
-                                        for k, v in dialplan_data['xivo-extra'].iteritems():
-                                                fastagi.set_variable(k, v)
-                                else:
-                                        log.warning('%s handle_fagi %s no extra data' % (astid, function))
-                                        ## XXX fastagi.set_variable(empty)
+                            dialplan_data = uniqueiddefs['dialplan_data']
+                            if dialplan_data.has_key('xivo-extra'):
+                                for k, v in dialplan_data['xivo-extra'].iteritems():
+                                    fastagi.set_variable(k, v)
+                            else:
+                                log.warning('%s handle_fagi %s no extra data'
+                                            % (astid, function))
+                                ## XXX fastagi.set_variable(empty)
                         else:
-                                log.warning('%s handle_fagi %s no dialplan_data received yet' % (astid, function))
-                                ## XXX fastagi.set_variable(not yet)
+                            log.warning('%s handle_fagi %s no dialplan_data received yet'
+                                        % (astid, function))
+                            ## XXX fastagi.set_variable(not yet)
+                    else:
+                        log.warning('%s handle_fagi %s no such uniqueid received yet : %s %s'
+                                    % (astid, function, uniqueid, channel))
+                        ## XXX fastagi.set_variable(not yet (uniqueid))
+                    return
+                
                 else:
-                        log.warning('%s handle_fagi %s : unknown function' % (astid, function))
+                    log.warning('%s handle_fagi %s : unknown function' % (astid, function))
                 return
         
         def __link_local_channels__(self, astid, chan1, uid1, chan2, uid2, clid1, clidn1, clid2, clidn2):
