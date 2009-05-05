@@ -59,6 +59,7 @@ from xivo_ctiservers import cti_meetmelist
 from xivo_ctiservers import cti_voicemaillist
 from xivo_ctiservers import cti_incomingcalllist
 from xivo_ctiservers import cti_trunklist
+from xivo_ctiservers import cti_phonebook
 
 from xivo_ctiservers import xivo_commandsets
 from xivo_ctiservers import xivo_ldap
@@ -146,7 +147,8 @@ class XivoCTICommand(BaseCommand):
                                  'trunks' : {},
                                  'meetme' : {},
                                  'incomingcalls' : {},
-                                 'voicemail' : {} }
+                                 'voicemail' : {},
+                                 'phonebook' : {} }
                 self.weblistprops = {'agents' : {'classfile' : cti_agentlist, 'classname' : 'AgentList'},
                                      'queues' : {'classfile' : cti_queuelist, 'classname' : 'QueueList'},
                                      'groups' : {'classfile' : cti_grouplist, 'classname' : 'GroupList'},
@@ -154,7 +156,8 @@ class XivoCTICommand(BaseCommand):
                                      'trunks' : {'classfile' : cti_trunklist, 'classname' : 'TrunkList'},
                                      'meetme' : {'classfile' : cti_meetmelist, 'classname' : 'MeetmeList'},
                                      'incomingcalls' : {'classfile' : cti_incomingcalllist, 'classname' : 'IncomingCallList'},
-                                     'voicemail' : {'classfile' : cti_voicemaillist, 'classname' : 'VoiceMailList'}
+                                     'voicemail' : {'classfile' : cti_voicemaillist, 'classname' : 'VoiceMailList'},
+                                     'phonebook' : {'classfile' : cti_phonebook, 'classname' : 'PhoneBook'}
                                      }
                 # self.plist_ng = cti_phonelist.PhoneList()
                 # self.plist_ng.setcommandclass(self)
@@ -867,6 +870,23 @@ class XivoCTICommand(BaseCommand):
                         except Exception:
                                 log.exception('(getmeetmelist : %s)' % mitem)
                 return lmlist
+        
+        def getphonebook(self, pbook):
+            pblist = {}
+            for pitem in pbook:
+                pbitem = {}
+                for i1, v1 in pitem.iteritems():
+                    for i2, v2 in v1.iteritems():
+                        if isinstance(v2, dict):
+                            for i3, v3 in v2.iteritems():
+                                idx = '.'.join([i1, i2, i3])
+                                pbitem[idx] = v3
+                        else:
+                            idx = '.'.join([i1, i2])
+                            pbitem[idx] = v2
+                myid = pbitem.get('phonebook.id')
+                pblist[myid] = pbitem
+            return pblist
         
         def getvoicemaillist(self, vlist):
                 lvlist = {}
@@ -5283,10 +5303,27 @@ class XivoCTICommand(BaseCommand):
                                                 fullstatlist.append(futureline)
                                 n += 1
                         if n == 0:
-                                log.warning('WARNING : %s is empty' % z.uri)
+                            log.warning('WARNING : %s is empty' % z.uri)
                         elif n == 1:
-                                log.warning('WARNING : %s contains only one line (the header one)' % z.uri)
-                                
+                            log.warning('WARNING : %s contains only one line (the header one)' % z.uri)
+                            
+                elif dbkind == 'phonebook':
+                    if not reversedir:
+                        for iastid in self.weblist['phonebook'].keys():
+                            for k, v in self.weblist['phonebook'][iastid].keeplist.iteritems():
+                                matchme = False
+                                for tmatch in z.match_direct:
+                                    if v.has_key(tmatch):
+                                        if v[tmatch].lower().find(searchpattern.lower()) >= 0:
+                                            matchme = True
+                                if matchme:
+                                    futureline = {'xivo-dir' : z.name}
+                                    for keyw, dbkeys in z.fkeys.iteritems():
+                                        for dbkey in dbkeys:
+                                            if dbkey in v.keys():
+                                                futureline[keyw] = v[dbkey]
+                                    fullstatlist.append(futureline)
+                                    
                 elif dbkind == 'http':
                         if not reversedir:
                                 fulluri = '%s/?%s=%s' % (z.uri, ''.join(z.match_direct), searchpattern)
@@ -5295,20 +5332,20 @@ class XivoCTICommand(BaseCommand):
                                         f = urllib.urlopen(fulluri)
                                         for line in f:
                                                 if n == 0:
-                                                        header = line
-                                                        headerfields = header.strip().split(z.delimiter)
+                                                    header = line
+                                                    headerfields = header.strip().split(z.delimiter)
                                                 else:
-                                                        ll = line.strip()
-                                                        if isinstance(ll, str): # dont try to decode unicode string.
-                                                            ll = ll.decode('utf8')
-                                                        t = ll.split(z.delimiter)
-                                                        futureline = {'xivo-dir' : z.name}
-                                                        # XXX problem when badly set delimiter + index()
-                                                        for keyw, dbkeys in z.fkeys.iteritems():
-                                                                for dbkey in dbkeys:
-                                                                        idx = headerfields.index(dbkey)
-                                                                        futureline[keyw] = t[idx]
-                                                        fullstatlist.append(futureline)
+                                                    ll = line.strip()
+                                                    if isinstance(ll, str): # dont try to decode unicode string.
+                                                        ll = ll.decode('utf8')
+                                                    t = ll.split(z.delimiter)
+                                                    futureline = {'xivo-dir' : z.name}
+                                                    # XXX problem when badly set delimiter + index()
+                                                    for keyw, dbkeys in z.fkeys.iteritems():
+                                                        for dbkey in dbkeys:
+                                                            idx = headerfields.index(dbkey)
+                                                            futureline[keyw] = t[idx]
+                                                    fullstatlist.append(futureline)
                                                 n += 1
                                         f.close()
                                 except Exception:
@@ -5353,8 +5390,8 @@ class XivoCTICommand(BaseCommand):
                         except Exception:
                                 log.exception('sqlrequest for %s' % z.uri)
                 else:
-                        log.warning('wrong or no database method defined (%s) - please fill the uri field of the directory <%s> definition'
-                                    % (dbkind, dirname))
+                    log.warning('wrong or no database method defined (%s) - please fill the uri field of the directory <%s> definition'
+                                % (dbkind, dirname))
                 
                 if reversedir:
                         display_reverse = z.display_reverse
@@ -5489,7 +5526,7 @@ class XivoCTICommand(BaseCommand):
                     return
                 
                 elif function == 'callerid_forphones':
-                    if self.uniqueids[astid].contains(uniqueid):
+                    if self.uniqueids[astid].has_key(uniqueid):
                         uniqueiddefs = self.uniqueids[astid][uniqueid]
                         if uniqueiddefs.has_key('dialplan_data'):
                             dialplan_data = uniqueiddefs['dialplan_data']
@@ -5524,7 +5561,7 @@ class XivoCTICommand(BaseCommand):
                     return
                 
                 elif function == 'caller_data':
-                    if self.uniqueids[astid].contains(uniqueid):
+                    if self.uniqueids[astid].has_key(uniqueid):
                         uniqueiddefs = self.uniqueids[astid][uniqueid]
                         if uniqueiddefs.has_key('dialplan_data'):
                             dialplan_data = uniqueiddefs['dialplan_data']
