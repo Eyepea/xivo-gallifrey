@@ -1190,26 +1190,26 @@ class XivoCTICommand(BaseCommand):
                 return linestosend
         
         def findreverse(self, dirlist, number):
-                itemdir = {}
-                if dirlist:
-                        dirs_to_lookup = []
-                        for dirname in dirlist.split(','):
-                                ddef = self.lconf.read_section('directory', dirname)
-                                if ddef:
-                                        dirs_to_lookup.append(dirname)
-                                        self.ctxlist.updatedir(dirname, ddef)
-                        for dirname in dirs_to_lookup:
-                                dirdef = self.ctxlist.dirlist[dirname]
-                                try:
-                                        y = self.__build_customers_bydirdef__(dirname, number, dirdef, True)
-                                except Exception:
-                                        log.exception('(findreverse) %s %s %s' % (dirlist, dirname, number))
-                                        y = []
-                                if y:
-                                        itemdir['xivo-reverse-nresults'] = str(len(y))
-                                        for g, gg in y[0].iteritems():
-                                                itemdir[g] = gg
-                return itemdir
+            itemdir = {}
+            if dirlist:
+                dirs_to_lookup = []
+                for dirname in dirlist.split(','):
+                    ddef = self.lconf.read_section('directory', dirname)
+                    if ddef:
+                        dirs_to_lookup.append(dirname)
+                        self.ctxlist.updatedir(dirname, ddef)
+                for dirname in dirs_to_lookup:
+                    dirdef = self.ctxlist.dirlist[dirname]
+                    try:
+                        y = self.__build_customers_bydirdef__(dirname, number, dirdef, True)
+                    except Exception:
+                        log.exception('(findreverse) %s %s %s' % (dirlist, dirname, number))
+                        y = []
+                    if y:
+                        itemdir['xivo-reverse-nresults'] = str(len(y))
+                        for g, gg in y[0].iteritems():
+                            itemdir[g] = gg
+            return itemdir
         
         def findcountry(self, numtolookup):
                 nchars = 4
@@ -1442,23 +1442,23 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def __dialplan_fill__(self, dialplan_data):
-                origin = dialplan_data.get('xivo-origin')
-                if origin == 'did':
-                        self.__did__(dialplan_data)
-                elif origin == 'internal':
-                        self.__internal__(dialplan_data)
-                else:
-                        pass
-                log.info('__dialplan_fill__ : %s' % dialplan_data)
-                return
+            origin = dialplan_data.get('xivo-origin')
+            if origin == 'did':
+                self.__did__(dialplan_data)
+            elif origin == 'internal':
+                self.__internal__(dialplan_data)
+            else:
+                pass
+            log.info('__dialplan_fill__ : %s' % dialplan_data)
+            return
         
         def __internal__(self, dialplan_data):
-                astid = dialplan_data.get('xivo-astid')
-                userid = dialplan_data.get('xivo-userid')
-                xuserid = '%s/%s' % (astid, userid)
-                if xuserid in self.ulist_ng.keeplist:
-                        dialplan_data['dbr-display'] = self.ulist_ng.keeplist[xuserid].get('fullname')
-                return
+            astid = dialplan_data.get('xivo-astid')
+            userid = dialplan_data.get('xivo-userid')
+            xuserid = '%s/%s' % (astid, userid)
+            if xuserid in self.ulist_ng.keeplist:
+                dialplan_data['dbr-display'] = self.ulist_ng.keeplist[xuserid].get('fullname')
+            return
         
         def __did__(self, dialplan_data):
                 calleridnum = dialplan_data.get('xivo-calleridnum')
@@ -1466,13 +1466,13 @@ class XivoCTICommand(BaseCommand):
                 context = dialplan_data.get('xivo-context')
                 
                 if calleridnum.isdigit(): # reverse only if digits
-                        ctx2dirs = self.lconf.read_section('reversedid', 'reversedid')
-                        dirlist = ctx2dirs.get(context)
-                        if dirlist:
-                                reversedata = self.findreverse(dirlist, calleridnum)
-                                dialplan_data.update(reversedata)
-                                # dialplan_data['xivo-extra'] = {'XIVO_CTI_VIP' : '4', 'XIVO_CTI_SPEC' : 'hello'}
-                                
+                    ctx2dirs = self.lconf.read_section('reversedid', 'reversedid')
+                    dirlist = ctx2dirs.get(context)
+                    if dirlist:
+                        reversedata = self.findreverse(dirlist, calleridnum)
+                        dialplan_data.update(reversedata)
+                        # dialplan_data['xivo-extra'] = {'XIVO_CTI_VIP' : '4', 'XIVO_CTI_SPEC' : 'hello'}
+                        
                 # agi_callington : 0x10, 0x11 : 16 (internat ?), 17 (00 + internat ?)
                 #                  0x20, 0x21 : 32 (06, 09), 33 (02, 04)
                 #                  0x41       : 65 (3 chiffres)
@@ -5275,32 +5275,32 @@ class XivoCTICommand(BaseCommand):
                         f = urllib.urlopen(z.uri)
                         n = 0
                         if reversedir:
-                                matchkeywords = z.match_reverse
+                            matchkeywords = z.match_reverse
                         else:
-                                matchkeywords = z.match_direct
+                            matchkeywords = z.match_direct
                         for line in f:
                                 if n == 0:
                                         header = line
                                         headerfields = header.strip().split(z.delimiter)
                                         revindex = []
                                         for mr in matchkeywords:
-                                                if mr in headerfields:
-                                                        revindex.append(headerfields.index(mr))
+                                            if mr in headerfields:
+                                                revindex.append(headerfields.index(mr))
                                 else:
                                         ll = line.strip()
                                         t = ll.split(z.delimiter)
                                         matchme = False
                                         for ri in revindex:
-                                                if t[ri].lower().find(searchpattern.lower()) >= 0:
-                                                        matchme = True
+                                            if t[ri].lower().find(searchpattern.lower()) >= 0:
+                                                matchme = True
                                         if matchme:
-                                                # XXX problem when badly set delimiter + index()
-                                                futureline = {'xivo-dir' : z.name}
-                                                for keyw, dbkeys in z.fkeys.iteritems():
-                                                        for dbkey in dbkeys:
-                                                                idx = headerfields.index(dbkey)
-                                                                futureline[keyw] = t[idx]
-                                                fullstatlist.append(futureline)
+                                            # XXX problem when badly set delimiter + index()
+                                            futureline = {'xivo-dir' : z.name}
+                                            for keyw, dbkeys in z.fkeys.iteritems():
+                                                for dbkey in dbkeys:
+                                                    idx = headerfields.index(dbkey)
+                                                    futureline[keyw] = t[idx]
+                                            fullstatlist.append(futureline)
                                 n += 1
                         if n == 0:
                             log.warning('WARNING : %s is empty' % z.uri)
@@ -5308,46 +5308,48 @@ class XivoCTICommand(BaseCommand):
                             log.warning('WARNING : %s contains only one line (the header one)' % z.uri)
                             
                 elif dbkind == 'phonebook':
-                    if not reversedir:
-                        for iastid in self.weblist['phonebook'].keys():
-                            for k, v in self.weblist['phonebook'][iastid].keeplist.iteritems():
-                                matchme = False
-                                for tmatch in z.match_direct:
-                                    if v.has_key(tmatch):
-                                        if v[tmatch].lower().find(searchpattern.lower()) >= 0:
-                                            matchme = True
-                                if matchme:
-                                    futureline = {'xivo-dir' : z.name}
-                                    for keyw, dbkeys in z.fkeys.iteritems():
-                                        for dbkey in dbkeys:
-                                            if dbkey in v.keys():
-                                                futureline[keyw] = v[dbkey]
-                                    fullstatlist.append(futureline)
-                                    
+                    if reversedir:
+                        matchkeywords = z.match_reverse
+                    else:
+                        matchkeywords = z.match_direct
+                    for iastid in self.weblist['phonebook'].keys():
+                        for k, v in self.weblist['phonebook'][iastid].keeplist.iteritems():
+                            matchme = False
+                            for tmatch in z.match_direct:
+                                if v.has_key(tmatch):
+                                    if v[tmatch].lower().find(searchpattern.lower()) >= 0:
+                                        matchme = True
+                            if matchme:
+                                futureline = {'xivo-dir' : z.name}
+                                for keyw, dbkeys in z.fkeys.iteritems():
+                                    for dbkey in dbkeys:
+                                        if dbkey in v.keys():
+                                            futureline[keyw] = v[dbkey]
+                                fullstatlist.append(futureline)
                 elif dbkind == 'http':
                         if not reversedir:
                                 fulluri = '%s/?%s=%s' % (z.uri, ''.join(z.match_direct), searchpattern)
                                 n = 0
                                 try:
-                                        f = urllib.urlopen(fulluri)
-                                        for line in f:
-                                                if n == 0:
-                                                    header = line
-                                                    headerfields = header.strip().split(z.delimiter)
-                                                else:
-                                                    ll = line.strip()
-                                                    if isinstance(ll, str): # dont try to decode unicode string.
-                                                        ll = ll.decode('utf8')
-                                                    t = ll.split(z.delimiter)
-                                                    futureline = {'xivo-dir' : z.name}
-                                                    # XXX problem when badly set delimiter + index()
-                                                    for keyw, dbkeys in z.fkeys.iteritems():
-                                                        for dbkey in dbkeys:
-                                                            idx = headerfields.index(dbkey)
-                                                            futureline[keyw] = t[idx]
-                                                    fullstatlist.append(futureline)
-                                                n += 1
-                                        f.close()
+                                    f = urllib.urlopen(fulluri)
+                                    for line in f:
+                                        if n == 0:
+                                            header = line
+                                            headerfields = header.strip().split(z.delimiter)
+                                        else:
+                                            ll = line.strip()
+                                            if isinstance(ll, str): # dont try to decode unicode string.
+                                                ll = ll.decode('utf8')
+                                            t = ll.split(z.delimiter)
+                                            futureline = {'xivo-dir' : z.name}
+                                            # XXX problem when badly set delimiter + index()
+                                            for keyw, dbkeys in z.fkeys.iteritems():
+                                                for dbkey in dbkeys:
+                                                    idx = headerfields.index(dbkey)
+                                                    futureline[keyw] = t[idx]
+                                            fullstatlist.append(futureline)
+                                        n += 1
+                                    f.close()
                                 except Exception:
                                         log.exception('__build_customers_bydirdef__ (http) %s' % fulluri)
                                 if n == 0:
@@ -5358,18 +5360,18 @@ class XivoCTICommand(BaseCommand):
                                 f = urllib.urlopen(fulluri)
                                 fsl = f.read().strip()
                                 if fsl:
-                                        fullstatlist = [{'xivo-dir' : z.name, 'db-fullname' : fsl}]
+                                    fullstatlist = [{'xivo-dir' : z.name, 'db-fullname' : fsl}]
                                 else:
-                                        fullstatlist = []
+                                    fullstatlist = []
                 elif dbkind in ['sqlite', 'mysql']:
                         if searchpattern == '*':
-                                whereline = ''
+                            whereline = ''
                         else:
-                                wl = []
-                                for fname in z.match_direct:
-                                        # wl.append("%s REGEXP '%s'" %(fname, searchpattern)) # not in 'sqlite'
-                                        wl.append("%s LIKE '%%%s%%'" % (fname, searchpattern))
-                                whereline = 'WHERE ' + ' OR '.join(wl)
+                            wl = []
+                            for fname in z.match_direct:
+                                # wl.append("%s REGEXP '%s'" %(fname, searchpattern)) # not in 'sqlite'
+                                wl.append("%s LIKE '%%%s%%'" % (fname, searchpattern))
+                            whereline = 'WHERE ' + ' OR '.join(wl)
                         try:
                                 conn = anysql.connect_by_uri(str(z.uri))
                                 cursor = conn.cursor()
@@ -5382,10 +5384,10 @@ class XivoCTICommand(BaseCommand):
                                 for result in results:
                                         futureline = {'xivo-dir' : z.name}
                                         for keyw, dbkeys in z.fkeys.iteritems():
-                                                for dbkey in dbkeys:
-                                                        if dbkey in z.match_direct:
-                                                                n = z.match_direct.index(dbkey)
-                                                                futureline[keyw] = result[n]
+                                            for dbkey in dbkeys:
+                                                if dbkey in z.match_direct:
+                                                    n = z.match_direct.index(dbkey)
+                                                    futureline[keyw] = result[n]
                                         fullstatlist.append(futureline)
                         except Exception:
                                 log.exception('sqlrequest for %s' % z.uri)
@@ -5394,20 +5396,19 @@ class XivoCTICommand(BaseCommand):
                                 % (dbkind, dirname))
                 
                 if reversedir:
-                        display_reverse = z.display_reverse
-                        if fullstatlist:
-                                for k, v in fullstatlist[0].iteritems():
-                                        if isinstance(v, unicode):
-                                                
-                                                display_reverse = display_reverse.replace('{%s}' % k, v)
-                                        elif isinstance(v, str):
-                                                # decoding utf8 data as we know the DB is storing utf8 so some bug may lead this data to come here still utf8 encoded
-                                                # in the future, this code could be removed, once we are sure encoding is properly handled "up there" (in sqlite client)
-                                                display_reverse = display_reverse.replace('{%s}' % k, v.decode('utf8'))
-                                        else:
-                                                log.warning('__build_customers_bydirdef__ %s is neither unicode nor str' % k)
-                                e = fullstatlist[0]
-                                e.update({'dbr-display' : display_reverse})
+                    display_reverse = z.display_reverse
+                    if fullstatlist:
+                        for k, v in fullstatlist[0].iteritems():
+                            if isinstance(v, unicode):
+                                display_reverse = display_reverse.replace('{%s}' % k, v)
+                            elif isinstance(v, str):
+                                # decoding utf8 data as we know the DB is storing utf8 so some bug may lead this data to come here still utf8 encoded
+                                # in the future, this code could be removed, once we are sure encoding is properly handled "up there" (in sqlite client)
+                                display_reverse = display_reverse.replace('{%s}' % k, v.decode('utf8'))
+                            else:
+                                log.warning('__build_customers_bydirdef__ %s is neither unicode nor str' % k)
+                        e = fullstatlist[0]
+                        e.update({'dbr-display' : display_reverse})
                 return fullstatlist
         
         def __counts__(self, astid, context, presenceid):
