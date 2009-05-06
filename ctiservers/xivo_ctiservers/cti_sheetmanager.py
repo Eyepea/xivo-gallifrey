@@ -45,19 +45,32 @@ class SheetManager:
             self.sheet = '' # initial customer sheet
         
         def addentry(self, text):
-            self.entries.append(SheetEntry(self.currentuser, text))
+            self.entries.append(self.SheetEntry(self.currentuser, text))
 
-    def __init__(self):
+    def __init__(self, astid=None):
+        self.astid = astid
         self.sheets = {}
 
     def get_sheet(self, channel):
         return self.sheets.get(channel)
 
     def new_sheet(self, channel):
-        self.sheets[channel] = Sheet(channel)
+        log.debug('new_sheet %s' % (channel))
+        self.sheets[channel] = self.Sheet(channel)
 
     def del_sheet(self, channel):
+        log.debug('del_sheet channel=%s' % (channel))
         del self.sheets[channel]
 
+    def has_sheet(self, channel):
+        log.debug('has_sheet channel=%s channelist=%s' % (channel, self.sheets.keys()))
+        return self.sheets.has_key(channel)
 
+    def update_currentuser(self, channel, user):
+        log.debug('update_currentuser channel=%s user=%s' % (channel, user))
+        self.sheets[channel].currentuser = user
+
+    def addentry(self, channel, text):
+        log.debug('addentry %s "%s"' % (channel, text))
+        self.sheets[channel].addentry(text)
 

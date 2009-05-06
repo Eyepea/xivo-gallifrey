@@ -60,6 +60,7 @@ from xivo_ctiservers import cti_voicemaillist
 from xivo_ctiservers import cti_incomingcalllist
 from xivo_ctiservers import cti_trunklist
 from xivo_ctiservers import cti_phonebook
+from xivo_ctiservers.cti_sheetmanager import SheetManager
 
 from xivo_ctiservers import xivo_commandsets
 from xivo_ctiservers import xivo_ldap
@@ -200,6 +201,9 @@ class XivoCTICommand(BaseCommand):
                 self.parting_context = False
                 
                 self.required_client_version = REQUIRED_CLIENT_VERSION
+
+                # new style
+                self.sheetmanager = {}
                 
                 return
         
@@ -2006,8 +2010,10 @@ class XivoCTICommand(BaseCommand):
                 duinfo2 = None
                 if uinfo1:
                         duinfo1 = '%s/%s' % (uinfo1.get('astid'), uinfo1.get('xivo_userid'))
+                        self.__update_sheet_user__(astid, uinfo1, chan2)
                 if uinfo2:
                         duinfo2 = '%s/%s' % (uinfo2.get('astid'), uinfo2.get('xivo_userid'))
+                        self.__update_sheet_user__(astid, uinfo2, chan1)
                 log.info('%s LINK1 %s %s callerid=%s (phone trunk)=(%s %s) user=%s'
                          % (astid, uid1, chan1, clid1, phoneid1, trunkid1, duinfo1))
                 log.info('%s LINK2 %s %s callerid=%s (phone trunk)=(%s %s) user=%s'
@@ -2354,6 +2360,10 @@ class XivoCTICommand(BaseCommand):
                 # 28 - Invalid number format (incomplete number)
                 # 34 - Circuit/channel congestion
                 
+                if astid in self.sheetmanager and self.sheetmanager[astid].has_sheet(chan):
+                        # TODO close the sheet if it is open on a user screen
+                        self.sheetmanager[astid].del_sheet(chan)
+
                 if chan in self.parkedcalls[astid]:
                         del self.parkedcalls[astid][chan]
                 if uid in self.ignore_dtmf[astid]:
@@ -3581,10 +3591,12 @@ class XivoCTICommand(BaseCommand):
                         did_takeovers = {}
                         if calleridnum in did_takeovers and didnumber in did_takeovers[calleridnum]:
                                 destdetails = did_takeovers[calleridnum][didnumber]
+                                # check channel !
                                 self.__ami_execute__(astid, 'transfer', channel,
                                                      destdetails.get('number'),
                                                      destdetails.get('context'))
                         self.__sheet_alert__('incomingdid', astid, context, event, dialplan_data)
+                        self.__create_new_sheet__(astid, self.uniqueids[astid][uniqueid]['channel'])
                         
                 elif eventname in ['MacroUser', 'MacroGroup', 'MacroQueue', 'MacroOutcall', 'MacroMeetme']:
                         channel = event.get('CHANNEL')
@@ -3659,6 +3671,12 @@ class XivoCTICommand(BaseCommand):
                                 if appli == 'ChanSpy':
                                         self.uniqueids[astid][uniqueid].update({'time-chanspy' : time.time(),
                                                                                 'actionid' : actionid})
+                elif eventname == 'NewSheet':
+                        log.info('%s AMI UserEvent %s %s' % (astid, eventname, event))
+                        # TODO recuperer les parametres (channel)
+                        #channel = 'dummy'
+                        channel = event.get('CHANNEL')
+                        self.__create_new_sheet__(astid, channel)
                 else:
                         log.info('%s AMI untracked UserEvent %s' % (astid, event))
                 return
@@ -4138,6 +4156,17 @@ class XivoCTICommand(BaseCommand):
                                     % (astid, oldphoneid, newphoneid, oldtrunkid, newtrunkid))
                         
                 self.__update_phones_trunks__(astid, oldphoneid, newphoneid, oldtrunkid, newtrunkid, 'ami_rename')
+
+                # for new sheet management
+                if astid in self.sheetmanager and self.sheetmanager[astid].has_sheet(newname) and newtrunkid is not None:
+                    for _uid, t in self.weblist['trunks'][astid].keeplist[newtrunkid]['comms'].iteritems():
+                        if t['thischannel']==newname:
+                            phoneid = self.__phoneid_from_channel__(astid, t['peerchannel'])
+                            if phoneid:
+                                uinfo = self.__userinfo_from_phoneid__(astid, phoneid)
+                                if uinfo:
+                                    self.__update_sheet_user__(astid, uinfo, newname)
+
                 return
         
         def ami_alarm(self, astid, event):
@@ -4435,6 +4464,8 @@ class XivoCTICommand(BaseCommand):
                                                 argums = icommand.struct.get('command')
                                                 if self.capas[capaid].match_funcs(ucapa, 'agents'):
                                                         repstr = self.__agent__(userinfo, argums)
+                                        elif classcomm == 'sheet':
+                                                self.__handle_sheet_command__(userinfo, icommand.struct)
                                 else:
                                         log.warning('unallowed json event %s' % icommand.struct)
                                         
@@ -5673,5 +5704,46 @@ class XivoCTICommand(BaseCommand):
                     return
                 if chan in self.localchans[astid]:
                     del self.localchans[astid][chan]
+
+        def __create_new_sheet__(self, astid, channel):
+                if not self.sheetmanager.has_key(astid):
+                    self.sheetmanager[astid] = SheetManager(astid)
+                self.sheetmanager[astid].new_sheet(channel)
+
+        def __handle_sheet_command__(self, userinfo, command):
+                log.debug('__handle_sheet_command__ user=%s command=%s' % (userinfo, command))
+                astid = userinfo.get('astid')
+                username = userinfo.get('user')
+                function = command.get('function')
+                chan = command.get('sheetchannel')
+                if not astid in self.sheetmanager or not self.sheetmanager[astid].has_sheet(chan):
+                    log.warning('%s __handle_sheet_command__ sheet %s not found' % (astid, chan))
+                    return
+                # TODO check user rights
+                if function=='addentry':
+                    self.sheetmanager[astid].addentry(chan, command.get('text'))
+                # updateentry... ?
+
+        def __update_sheet_user__(self, astid, newuinfo, channel):
+                # update connected user
+                if astid in self.sheetmanager and self.sheetmanager[astid].has_sheet(channel):
+                    newuser = '%s/%s' % (newuinfo.get('astid'), newuinfo.get('xivo_userid'))
+                    log.debug('%s __update_sheet_user__ %s from user %s to %s (%s)' % (astid, channel, self.sheetmanager[astid].get_sheet(channel).currentuser, newuser, newuinfo.get('fullname')))
+                    #log.debug('%s __update_sheet_user__ %s from user %s to %s (%s)' % (astid, channel, self.sheetmanager[astid].get_sheet(channel).currentuser, newuser, newuinfo))
+                    if self.sheetmanager[astid].get_sheet(channel).currentuser is not None:
+                        olduinfo = self.ulist_ng.keeplist[self.sheetmanager[astid].get_sheet(channel).currentuser]
+                        log.debug('%s __update_sheet_user__ olduinfo=%s' % (astid, olduinfo))
+                        tosend = { 'class': 'sheet',
+                                   'function': 'looseproperty',
+                                   'channel': channel,
+                                 }
+                        self.__send_msg_to_cti_client__(olduinfo, self.__cjson_encode__(tosend))
+                    self.sheetmanager[astid].update_currentuser(channel, newuser)
+                    # on informe le nouveau user qu'il a la propriete de la fiche
+                    tosend = { 'class': 'sheet',
+                               'function': 'getproperty',
+                               'channel': channel,
+                             }
+                    self.__send_msg_to_cti_client__(newuinfo, self.__cjson_encode__(tosend))
 
 xivo_commandsets.CommandClasses['xivocti'] = XivoCTICommand
