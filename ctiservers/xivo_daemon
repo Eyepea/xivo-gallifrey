@@ -327,6 +327,7 @@ def manage_info_connections(connid, msg, sep):
                                                 log.exception('INFO %s' % usefulmsg)
                         elif usefulmsg in ['show_phones', 'show_trunks',
                                            'show_queues', 'show_groups', 'show_agents',
+                                           'show_incomingcalls', 'show_phonebook',
                                            'show_meetme', 'show_voicemail']:
                                 itemname = usefulmsg[5:]
                                 for astid, itm in commandclass.getdetails(itemname).iteritems():

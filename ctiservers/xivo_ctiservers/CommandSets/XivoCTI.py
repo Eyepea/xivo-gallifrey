@@ -1190,6 +1190,7 @@ class XivoCTICommand(BaseCommand):
                 return linestosend
         
         def findreverse(self, dirlist, number):
+            log.info('findreverse %s %s' % (dirlist, number))
             itemdir = {}
             if dirlist:
                 dirs_to_lookup = []
@@ -1212,23 +1213,23 @@ class XivoCTICommand(BaseCommand):
             return itemdir
         
         def findcountry(self, numtolookup):
-                nchars = 4
-                notfound = True
-                notfinished = True
-                pf = '(unknown)'
-                country = '(unknown)'
-                while notfound and notfinished:
-                        pf = numtolookup[:nchars]
-                        if pf in self.interprefix:
-                                notfound = False
-                                country = self.interprefix[pf]
-                                break
-                        nchars = nchars - 1
-                        if nchars == 0:
-                                notfinished = False
-                                pf = '(unknown)'
-                                break
-                return [pf, country]
+            nchars = 4
+            notfound = True
+            notfinished = True
+            pf = '(unknown)'
+            country = '(unknown)'
+            while notfound and notfinished:
+                pf = numtolookup[:nchars]
+                if pf in self.interprefix:
+                    notfound = False
+                    country = self.interprefix[pf]
+                    break
+                nchars = nchars - 1
+                if nchars == 0:
+                    notfinished = False
+                    pf = '(unknown)'
+                    break
+            return [pf, country]
         
         def __sheet_alert__(self, where, astid, context, event, extraevent = {}):
                 # fields to display :
@@ -1453,6 +1454,7 @@ class XivoCTICommand(BaseCommand):
             return
         
         def __internal__(self, dialplan_data):
+            log.info('__internal__ %s' % dialplan_data)
             astid = dialplan_data.get('xivo-astid')
             userid = dialplan_data.get('xivo-userid')
             xuserid = '%s/%s' % (astid, userid)
@@ -1461,46 +1463,47 @@ class XivoCTICommand(BaseCommand):
             return
         
         def __did__(self, dialplan_data):
-                calleridnum = dialplan_data.get('xivo-calleridnum')
-                calleridton = dialplan_data.get('xivo-calleridton')
-                context = dialplan_data.get('xivo-context')
-                
-                if calleridnum.isdigit(): # reverse only if digits
-                    ctx2dirs = self.lconf.read_section('reversedid', 'reversedid')
-                    dirlist = ctx2dirs.get(context)
-                    if dirlist:
-                        reversedata = self.findreverse(dirlist, calleridnum)
-                        dialplan_data.update(reversedata)
-                        # dialplan_data['xivo-extra'] = {'XIVO_CTI_VIP' : '4', 'XIVO_CTI_SPEC' : 'hello'}
-                        
-                # agi_callington : 0x10, 0x11 : 16 (internat ?), 17 (00 + internat ?)
-                #                  0x20, 0x21 : 32 (06, 09), 33 (02, 04)
-                #                  0x41       : 65 (3 chiffres)
-                #                  0xff       : 255 (unknown @ IAX2 ?), -1 (unknown @ Zap ?)
-                #                  0 ?
-                # TON:
-                #  Unknown Number Type (0)
-                #  International Number (1)
-                #  National Number (2)
-                #  Network Specific Number (3)
-                #  Subscriber Number (4)
-                # NPI:
-                #  Unknown Number Plan (0)
-                #  ISDN/Telephony Numbering Plan (E.164/E.163) (1)
-                # agi_callingpres : 0, 1, 3, 35, 67, -1?
-                # agi_rdnis : when transferred from another initial destination ?
-                
-                if calleridton:
-                        numtolookup = None
-                        if calleridton == '16':
-                                numtolookup = calleridnum
-                        elif calleridton == '17':
-                                numtolookup = calleridnum[2:]
-                        if numtolookup:
-                                [countrycode, countrytext] = self.findcountry(numtolookup)
-                                dialplan_data['db-countrycode'] = countrycode
-                                dialplan_data['db-countrytext'] = countrytext
-                return
+            log.info('__did__ %s' % dialplan_data)
+            calleridnum = dialplan_data.get('xivo-calleridnum')
+            calleridton = dialplan_data.get('xivo-calleridton')
+            context = dialplan_data.get('xivo-context')
+            
+            if calleridnum.isdigit(): # reverse only if digits
+                ctx2dirs = self.lconf.read_section('reversedid', 'reversedid')
+                dirlist = ctx2dirs.get(context)
+                if dirlist:
+                    reversedata = self.findreverse(dirlist, calleridnum)
+                    dialplan_data.update(reversedata)
+                    # dialplan_data['xivo-extra'] = {'XIVO_CTI_VIP' : '4', 'XIVO_CTI_SPEC' : 'hello'}
+                    
+            # agi_callington : 0x10, 0x11 : 16 (internat ?), 17 (00 + internat ?)
+            #                  0x20, 0x21 : 32 (06, 09), 33 (02, 04)
+            #                  0x41       : 65 (3 chiffres)
+            #                  0xff       : 255 (unknown @ IAX2 ?), -1 (unknown @ Zap ?)
+            #                  0 ?
+            # TON:
+            #  Unknown Number Type (0)
+            #  International Number (1)
+            #  National Number (2)
+            #  Network Specific Number (3)
+            #  Subscriber Number (4)
+            # NPI:
+            #  Unknown Number Plan (0)
+            #  ISDN/Telephony Numbering Plan (E.164/E.163) (1)
+            # agi_callingpres : 0, 1, 3, 35, 67, -1?
+            # agi_rdnis : when transferred from another initial destination ?
+            
+            if calleridton:
+                numtolookup = None
+                if calleridton == '16':
+                    numtolookup = calleridnum
+                elif calleridton == '17':
+                    numtolookup = calleridnum[2:]
+                if numtolookup:
+                    [countrycode, countrytext] = self.findcountry(numtolookup)
+                    dialplan_data['db-countrycode'] = countrycode
+                    dialplan_data['db-countrytext'] = countrytext
+            return
         
         def __phoneid_from_channel__(self, astid, channel):
                 ret = None
@@ -2697,15 +2700,14 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def ami_newcallerid(self, astid, event):
-                log.info('%s ami_newcallerid : %s' % (astid, event))
-                uniqueid = event.get('Uniqueid')
-                # log.info('%s ---------- %s ------------' % (astid, uniqueid))
-                # event.get('CID-CallingPres') # 0 (Presentation Allowed, Not Screened)
-                # warning : the second such event comes After the Dial
-                if astid in self.uniqueids and uniqueid in self.uniqueids[astid]:
-                        self.uniqueids[astid][uniqueid].update({'calleridname' : event.get('CallerIDName'),
-                                                                'calleridnum'  : event.get('CallerID')})
-                return
+            # log.info('%s ami_newcallerid : %s' % (astid, event))
+            uniqueid = event.get('Uniqueid')
+            # event.get('CID-CallingPres') # 0 (Presentation Allowed, Not Screened)
+            # warning : the second such event comes After the Dial
+            if astid in self.uniqueids and uniqueid in self.uniqueids[astid]:
+                self.uniqueids[astid][uniqueid].update({'calleridname' : event.get('CallerIDName'),
+                                                        'calleridnum'  : event.get('CallerID')})
+            return
         
         def ami_newexten(self, astid, event):
                 application = event.get('Application')
@@ -2834,40 +2836,40 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def ami_parkedcallgiveup(self, astid, event):
-                channel = event.get('Channel')
-                exten   = event.get('Exten')
-                uid     = event.get('Uniqueid')
-                log.info('%s PARKEDCALLGIVEUP %s %s %s' % (astid, uid, channel, exten))
-                tosend = { 'class' : 'parkcall',
-                           'payload' : { 'status' : 'parkedcallgiveup',
-                                         'astid' : astid,
-                                         'channel' : channel,
-                                         'exten' : exten } }
-                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid)
-                return
+            channel = event.get('Channel')
+            exten   = event.get('Exten')
+            uid     = event.get('Uniqueid')
+            log.info('%s PARKEDCALLGIVEUP %s %s %s' % (astid, uid, channel, exten))
+            tosend = { 'class' : 'parkcall',
+                       'payload' : { 'status' : 'parkedcallgiveup',
+                                     'astid' : astid,
+                                     'channel' : channel,
+                                     'exten' : exten } }
+            self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid)
+            return
         
         def ami_parkedcalltimeout(self, astid, event):
-                channel = event.get('Channel')
-                exten   = event.get('Exten')
-                uid     = event.get('Uniqueid')
-                log.info('%s PARKEDCALLTIMEOUT %s %s %s' % (astid, uid, channel, exten))
-                tosend = { 'class' : 'parkcall',
-                           'payload' : { 'status' : 'parkedcalltimeout',
-                                         'astid' : astid,
-                                         'channel' : channel,
-                                         'exten' : exten } }
-                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid)
-                return
+            channel = event.get('Channel')
+            exten   = event.get('Exten')
+            uid     = event.get('Uniqueid')
+            log.info('%s PARKEDCALLTIMEOUT %s %s %s' % (astid, uid, channel, exten))
+            tosend = { 'class' : 'parkcall',
+                       'payload' : { 'status' : 'parkedcalltimeout',
+                                     'astid' : astid,
+                                     'channel' : channel,
+                                     'exten' : exten } }
+            self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid)
+            return
         
         def ami_agentlogin(self, astid, event):
-                log.info('%s ami_agentlogin : %s' % (astid, event))
-                # {'Channel': 'SIP/103-08493360', 'Event': 'Agentlogin', 'Agent': '1001', 'Uniqueid': '1238067140.592'}
-                return
+            log.info('%s ami_agentlogin : %s' % (astid, event))
+            # {'Channel': 'SIP/103-08493360', 'Event': 'Agentlogin', 'Agent': '1001', 'Uniqueid': '1238067140.592'}
+            return
         
         def ami_agentlogoff(self, astid, event):
-                log.info('%s ami_agentlogoff : %s' % (astid, event))
-                # {'Uniqueid': '1238067140.592', 'Event': 'Agentlogoff', 'Agent': '1001', 'Logintime': '5'}
-                return
+            log.info('%s ami_agentlogoff : %s' % (astid, event))
+            # {'Uniqueid': '1238067140.592', 'Event': 'Agentlogoff', 'Agent': '1001', 'Logintime': '5'}
+            return
         
         def ami_agentcallbacklogin(self, astid, event):
                 log.info('%s ami_agentcallbacklogin : %s' % (astid, event))
@@ -2990,8 +2992,8 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def ami_agentdump(self, astid, event):
-                log.info('%s ami_agentdump : %s' % (astid, event))
-                return
+            log.info('%s ami_agentdump : %s' % (astid, event))
+            return
         
         def ami_agentconnect(self, astid, event):
                 log.info('%s ami_agentconnect : %s' % (astid, event))
@@ -3075,9 +3077,9 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def __queuemismatch__(self, astid, queuename, origin):
-                log.warning('%s %s : no such queue (or group) %s (probably mismatch asterisk/XiVO)' % (astid, origin, queuename))
-                # XXX todo : show queue 'queuename' to clean
-                return
+            log.warning('%s %s : no such queue (or group) %s (probably mismatch asterisk/XiVO)' % (astid, origin, queuename))
+            # XXX todo : show queue 'queuename' to clean
+            return
         
         def ami_queuecallerabandon(self, astid, event):
                 if astid not in self.weblist['queues']:
@@ -3625,32 +3627,32 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def ami_faxsent(self, astid, event):
-                log.info('%s : %s' % (astid, event))
-                filename = event.get('FileName')
-                if filename and os.path.isfile(filename):
-                        os.unlink(filename)
-                        log.info('faxsent event handler : removed %s' % filename)
-                        
-                if event.get('PhaseEStatus') == '0':
-                        tosend = { 'class' : 'faxprogress',
-                                   'status' : 'ok' }
-                else:
-                        tosend = { 'class' : 'faxprogress',
-                                   'status' : 'ko',
-                                   'reason' : '%s (code %s)' % (event.get('PhaseEString'),
-                                                                event.get('PhaseEStatus')) }
-                repstr = self.__cjson_encode__(tosend)
-                # reminder
-                # 22 Invalid response after sending a page
-                # 50 Disconnected after permitted retries
-                # 51 The call dropped prematurely
+            log.info('%s : %s' % (astid, event))
+            filename = event.get('FileName')
+            if filename and os.path.isfile(filename):
+                os.unlink(filename)
+                log.info('faxsent event handler : removed %s' % filename)
                 
-                # 'FileName': '/var/spool/asterisk/fax/astfaxsend-q6yZAKTJvU-0x48be7930.tif'
-                faxid = filename[len('/var/spool/asterisk/fax/astfaxsend-'):-4]
-                if faxid in self.faxes:
-                        self.__send_msg_to_cti_client__(self.faxes[faxid].uinfo, self.__cjson_encode__(tosend))
-                        del self.faxes[faxid]
-                return
+            if event.get('PhaseEStatus') == '0':
+                tosend = { 'class' : 'faxprogress',
+                           'status' : 'ok' }
+            else:
+                tosend = { 'class' : 'faxprogress',
+                           'status' : 'ko',
+                           'reason' : '%s (code %s)' % (event.get('PhaseEString'),
+                                                        event.get('PhaseEStatus')) }
+            repstr = self.__cjson_encode__(tosend)
+            # spandsp statuses (full list in /usr/include/spandsp/t30.h)
+            # 22 Invalid response after sending a page
+            # 50 Disconnected after permitted retries
+            # 51 The call dropped prematurely
+            
+            # 'FileName': '/var/spool/asterisk/fax/astfaxsend-q6yZAKTJvU-0x48be7930.tif'
+            faxid = filename[len('/var/spool/asterisk/fax/astfaxsend-'):-4]
+            if faxid in self.faxes:
+                self.__send_msg_to_cti_client__(self.faxes[faxid].uinfo, self.__cjson_encode__(tosend))
+                del self.faxes[faxid]
+            return
         
         def ami_faxreceived(self, astid, event):
                 log.info('%s : %s' % (astid, event))
