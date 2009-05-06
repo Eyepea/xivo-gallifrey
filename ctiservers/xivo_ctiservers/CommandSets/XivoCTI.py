@@ -5232,25 +5232,24 @@ class XivoCTICommand(BaseCommand):
 ##                        fullstat_body.append(fsl)
 ##                return fullstat_body
                 tosend = { 'class' : 'directory',
-                           'payload' : ';'.join(self.ctxlist.display_header[ctx]) + ';' + ';'.join(mylines) }
+                           'headers' : self.ctxlist.display_header[ctx],
+                           'resultlist' : mylines }
                 return self.__cjson_encode__(tosend)
-        
         
         def __build_customers_bydirdef__(self, dirname, searchpattern, z, reversedir):
                 fullstatlist = []
                 
                 if searchpattern == '':
-                        return []
+                    return []
                 
                 dbkind = z.uri.split(':')[0]
                 if dbkind in ['ldap', 'ldaps']:
                         selectline = []
                         for fname in z.match_direct:
-                                if searchpattern == '*':
-                                        selectline.append("(%s=*)" % fname)
-                                else:
-                                        selectline.append("(%s=*%s*)" %(fname, searchpattern))
-
+                            if searchpattern == '*':
+                                selectline.append("(%s=*)" % fname)
+                            else:
+                                selectline.append("(%s=*%s*)" %(fname, searchpattern))
                         try:
                                 results = None
                                 if z.uri in self.ldapids:
@@ -5323,7 +5322,7 @@ class XivoCTICommand(BaseCommand):
                                         if v[tmatch].lstrip('0') == searchpattern.lstrip('0'):
                                             matchme = True
                                     else:
-                                        if v[tmatch].lower().find(searchpattern.lower()) >= 0:
+                                        if searchpattern == '*' or v[tmatch].lower().find(searchpattern.lower()) >= 0:
                                             matchme = True
                             if matchme:
                                 futureline = {'xivo-dir' : z.name}
@@ -5332,6 +5331,7 @@ class XivoCTICommand(BaseCommand):
                                         if dbkey in v.keys():
                                             futureline[keyw] = v[dbkey]
                                 fullstatlist.append(futureline)
+                                
                 elif dbkind == 'http':
                         if not reversedir:
                                 fulluri = '%s/?%s=%s' % (z.uri, ''.join(z.match_direct), searchpattern)
@@ -5369,6 +5369,7 @@ class XivoCTICommand(BaseCommand):
                                     fullstatlist = [{'xivo-dir' : z.name, 'db-fullname' : fsl}]
                                 else:
                                     fullstatlist = []
+                                    
                 elif dbkind in ['sqlite', 'mysql']:
                         if searchpattern == '*':
                             whereline = ''
@@ -5378,25 +5379,28 @@ class XivoCTICommand(BaseCommand):
                                 # wl.append("%s REGEXP '%s'" %(fname, searchpattern)) # not in 'sqlite'
                                 wl.append("%s LIKE '%%%s%%'" % (fname, searchpattern))
                             whereline = 'WHERE ' + ' OR '.join(wl)
+                            
+                        results = []
                         try:
-                                conn = anysql.connect_by_uri(str(z.uri))
-                                cursor = conn.cursor()
-                                sqlrequest = 'SELECT ${columns} FROM %s %s' % (z.sqltable, whereline)
-                                cursor.query(sqlrequest,
-                                             tuple(z.match_direct),
-                                             None)
-                                results = cursor.fetchall()
-                                conn.close()
-                                for result in results:
-                                        futureline = {'xivo-dir' : z.name}
-                                        for keyw, dbkeys in z.fkeys.iteritems():
-                                            for dbkey in dbkeys:
-                                                if dbkey in z.match_direct:
-                                                    n = z.match_direct.index(dbkey)
-                                                    futureline[keyw] = result[n]
-                                        fullstatlist.append(futureline)
+                            conn = anysql.connect_by_uri(str(z.uri))
+                            cursor = conn.cursor()
+                            sqlrequest = 'SELECT ${columns} FROM %s %s' % (z.sqltable, whereline)
+                            cursor.query(sqlrequest,
+                                         tuple(z.match_direct),
+                                         None)
+                            results = cursor.fetchall()
+                            conn.close()
                         except Exception:
-                                log.exception('sqlrequest for %s' % z.uri)
+                            log.exception('sqlrequest for %s' % z.uri)
+                            
+                        for result in results:
+                            futureline = {'xivo-dir' : z.name}
+                            for keyw, dbkeys in z.fkeys.iteritems():
+                                for dbkey in dbkeys:
+                                    if dbkey in z.match_direct:
+                                        n = z.match_direct.index(dbkey)
+                                        futureline[keyw] = result[n]
+                            fullstatlist.append(futureline)
                 else:
                     log.warning('wrong or no database method defined (%s) - please fill the uri field of the directory <%s> definition'
                                 % (dbkind, dirname))

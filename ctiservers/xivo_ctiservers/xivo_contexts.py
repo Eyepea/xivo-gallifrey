@@ -44,7 +44,7 @@ class Contexts:
                 self.display_header[ctxname] = []
                 self.display_items[ctxname] = xivoconf_items.keys()
                 self.display_items[ctxname].sort()
-                self.display_header[ctxname] = ['%s' % len(self.display_items[ctxname])]
+                self.display_header[ctxname] = []
                 for k in self.display_items[ctxname]:
                         [title, type, defaultval, format] = self.displays[ctxname][k].split('|')
                         self.display_header[ctxname].append(title)
