@@ -5320,7 +5320,7 @@ class XivoCTICommand(BaseCommand):
                             for tmatch in matchkeywords:
                                 if v.has_key(tmatch):
                                     if reversedir:
-                                        if v[tmatch].lstrip('0') == searchpattern.lstrip('0')
+                                        if v[tmatch].lstrip('0') == searchpattern.lstrip('0'):
                                             matchme = True
                                     else:
                                         if v[tmatch].lower().find(searchpattern.lower()) >= 0:
