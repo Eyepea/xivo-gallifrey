@@ -1280,7 +1280,7 @@ class XivoCTICommand(BaseCommand):
                                         pass
                                 
                         elif where == 'faxreceived':
-                                itemdir['xivo-callerid'] = event.get('CallerID')
+                                itemdir['xivo-calleridnum'] = event.get('CallerID')
                                 itemdir['xivo-faxpages'] = event.get('PagesTransferred')
                                 itemdir['xivo-faxfile'] = event.get('FileName')
                                 itemdir['xivo-faxstatus'] = event.get('PhaseEString')
@@ -1292,9 +1292,9 @@ class XivoCTICommand(BaseCommand):
                                 
                                 itemdir['xivo-channel'] = chan
                                 itemdir['xivo-queuename'] = queuename
-                                itemdir['xivo-callerid'] = event.get('CallerID1')
+                                itemdir['xivo-calleridnum'] = event.get('CallerID1')
                                 itemdir['xivo-calleridname'] = event.get('CallerIDName1', 'NOXIVO-CID1')
-                                itemdir['xivo-calledid'] = event.get('CallerID2')
+                                itemdir['xivo-calledidnum'] = event.get('CallerID2')
                                 itemdir['xivo-calledidname'] = event.get('CallerIDName2', 'NOXIVO-CID2')
                                 itemdir['xivo-agentnumber'] = dstnum
                                 itemdir['xivo-uniqueid'] = event.get('Uniqueid1')
@@ -1302,25 +1302,25 @@ class XivoCTICommand(BaseCommand):
                                 userinfos.extend(self.__find_userinfos_by_agentnum__(astid, dstnum))
                                 
                         elif where == 'dial':
-                                itemdir['xivo-callerid'] = extraevent.get('caller_num')
-                                itemdir['xivo-calledid'] = extraevent.get('called_num')
+                                itemdir['xivo-calleridnum'] = extraevent.get('caller_num')
+                                itemdir['xivo-calledidnum'] = extraevent.get('called_num')
                                 itemdir['xivo-calleridname'] = extraevent.get('caller_name')
                                 itemdir['xivo-channel'] = extraevent.get('channel')
                                 itemdir['xivo-uniqueid'] = extraevent.get('uniqueid')
                                 for uinfo in self.ulist_ng.keeplist.itervalues():
-                                        if uinfo.get('astid') == astid and uinfo.get('phonenum') == itemdir['xivo-calledid']:
+                                        if uinfo.get('astid') == astid and uinfo.get('phonenum') == itemdir['xivo-calledidnum']:
                                                 userinfos.append(uinfo)
                                                 
                         elif where in ['link', 'unlink']:
                                 itemdir['xivo-channel'] = event.get('Channel1')
                                 itemdir['xivo-channelpeer'] = event.get('Channel2')
                                 itemdir['xivo-uniqueid'] = event.get('Uniqueid1')
-                                itemdir['xivo-callerid'] = event.get('CallerID1')
+                                itemdir['xivo-calleridnum'] = event.get('CallerID1')
                                 itemdir['xivo-calleridname'] = event.get('CallerIDName1', 'NOXIVO-CID1')
-                                itemdir['xivo-calledid'] = event.get('CallerID2')
+                                itemdir['xivo-calledidnum'] = event.get('CallerID2')
                                 itemdir['xivo-calledidname'] = event.get('CallerIDName2', 'NOXIVO-CID2')
                                 for uinfo in self.ulist_ng.keeplist.itervalues():
-                                        if uinfo.get('astid') == astid and uinfo.get('phonenum') == itemdir['xivo-calledid']:
+                                        if uinfo.get('astid') == astid and uinfo.get('phonenum') == itemdir['xivo-calledidnum']:
                                                 userinfos.append(uinfo)
                                                 
                         elif where == 'hangup':
@@ -1330,18 +1330,10 @@ class XivoCTICommand(BaseCommand):
                                 # find which userinfo's to contact ...
                                 
                         elif where == 'incomingdid':
-                                chan = event.get('CHANNEL', '')
-                                uid = event.get('UNIQUEID', '')
-                                clid = event.get('XIVO_SRCNUM')
-                                did  = event.get('XIVO_EXTENPATTERN')
-                                
-                                log.info('%s __sheet_alert__ (did) %s (%s) uid=%s callerid=%s %s did=%s'
-                                         % (astid, where, time.asctime(), uid, clid, chan, did))
-                                
-                                itemdir['xivo-channel'] = chan
-                                itemdir['xivo-uniqueid'] = uid
-                                itemdir['xivo-did'] = did
-                                itemdir['xivo-callerid'] = clid
+                            log.info('%s __sheet_alert__ (did) %s (%s) %s'
+                                     % (astid, where, time.asctime(), extraevent))
+                            for fieldname in ['xivo-channel', 'xivo-uniqueid', 'xivo-did', 'xivo-calleridnum']:
+                                itemdir[fieldname] = extraevent[fieldname]
                                 # userinfos.append() : users matching the SDA ?
                                 
                         elif where in ['incomingqueue', 'incominggroup']:
@@ -1364,7 +1356,7 @@ class XivoCTICommand(BaseCommand):
                                 itemdir['xivo-channel'] = chan
                                 itemdir['xivo-uniqueid'] = uid
                                 itemdir['xivo-queuename'] = queue
-                                itemdir['xivo-callerid'] = clid
+                                itemdir['xivo-calleridnum'] = clid
                                 itemdir['xivo-calleridname'] = event.get('CallerIDName')
                                 
                         # 2/4
@@ -3508,6 +3500,7 @@ class XivoCTICommand(BaseCommand):
         def ami_userevent(self, astid, event):
                 eventname = event.get('UserEvent')
                 if eventname == 'MacroDid':
+                        channel = event.get('CHANNEL')
                         uniqueid = event.get('UNIQUEID')
                         if uniqueid not in self.uniqueids[astid]:
                                 log.warning('%s AMI UserEvent %s undefined %s' % (astid, eventname, uniqueid))
@@ -3525,6 +3518,9 @@ class XivoCTICommand(BaseCommand):
                         
                         dialplan_data = { 'xivo-astid' : astid,
                                           'xivo-origin' : 'did',
+                                          'xivo-channel' : channel,
+                                          'xivo-uniqueid' : uniqueid,
+                                          'xivo-did' : didnumber,
                                           'xivo-calleridnum' : calleridnum,
                                           'xivo-calleridname' : calleridname,
                                           'xivo-calleridrdnis' : calleridrdnis,
@@ -3532,16 +3528,16 @@ class XivoCTICommand(BaseCommand):
                                           }
                         self.uniqueids[astid][uniqueid]['dialplan_data'] = dialplan_data
                         for v, vv in self.weblist['incomingcalls'][astid].keeplist.iteritems():
-                                if vv['exten'] == didnumber:
-                                        for ctxpart in ['usercontext', 'groupcontext', 'queuecontext',
-                                                        'meetmecontext',
-                                                        'voicemailcontext', 'voicemenucontext']:
-                                                if vv.get(ctxpart):
-                                                        context = vv.get(ctxpart)
-                                                        break
-                                        log.info('%s ami_userevent %s' % (astid, vv))
+                            if vv['exten'] == didnumber:
+                                for ctxpart in ['usercontext', 'groupcontext', 'queuecontext',
+                                                'meetmecontext',
+                                                'voicemailcontext', 'voicemenucontext']:
+                                    if vv.get(ctxpart):
+                                        context = vv.get(ctxpart)
                                         break
-                        context = 'default' # XXXX for test ... to remove ...
+                                log.info('%s ami_userevent %s' % (astid, vv))
+                                break
+                        
                         dialplan_data.update({'xivo-context' : context})
                         self.__dialplan_fill__(dialplan_data)
                         
@@ -3553,9 +3549,10 @@ class XivoCTICommand(BaseCommand):
                                 self.__ami_execute__(astid, 'transfer', channel,
                                                      destdetails.get('number'),
                                                      destdetails.get('context'))
-                        self.__sheet_alert__('incomingdid', astid, context, event)
+                        self.__sheet_alert__('incomingdid', astid, context, event, dialplan_data)
                         
                 elif eventname in ['MacroUser', 'MacroGroup', 'MacroQueue', 'MacroOutcall', 'MacroMeetme']:
+                        channel = event.get('CHANNEL')
                         uniqueid = event.get('UNIQUEID')
                         xivo_userid = event.get('XIVO_USERID')
                         xivo_dstid = event.get('XIVO_DSTID')
@@ -3567,6 +3564,8 @@ class XivoCTICommand(BaseCommand):
                         if xivo_userid:
                                 dialplan_data = { 'xivo-astid' : astid,
                                                   'xivo-origin' : 'internal',
+                                                  'xivo-channel' : channel,
+                                                  'xivo-uniqueid' : uniqueid,
                                                   'xivo-userid' : xivo_userid
                                                   }
                                 self.uniqueids[astid][uniqueid]['dialplan_data'] = dialplan_data
