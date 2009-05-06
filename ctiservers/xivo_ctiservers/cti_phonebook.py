@@ -30,7 +30,7 @@ log = logging.getLogger('phonebook')
 
 class PhoneBook(AnyList):
         def __init__(self, newurls = []):
-            self.anylist_properties = {'keywords' : ['x'],
+            self.anylist_properties = {'keywords' : ['phonebook.firstname', 'phonebook.lastname', 'phonebook.displayname'],
                                        'name' : 'phonebook',
                                        'action' : 'getphonebook',
                                        'urloptions' : (1, 5, True)}

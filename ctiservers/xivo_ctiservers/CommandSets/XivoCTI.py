@@ -876,14 +876,17 @@ class XivoCTICommand(BaseCommand):
             for pitem in pbook:
                 pbitem = {}
                 for i1, v1 in pitem.iteritems():
-                    for i2, v2 in v1.iteritems():
-                        if isinstance(v2, dict):
-                            for i3, v3 in v2.iteritems():
-                                idx = '.'.join([i1, i2, i3])
-                                pbitem[idx] = v3
-                        else:
-                            idx = '.'.join([i1, i2])
-                            pbitem[idx] = v2
+                    if isinstance(v1, dict):
+                        for i2, v2 in v1.iteritems():
+                            if isinstance(v2, dict):
+                                for i3, v3 in v2.iteritems():
+                                    idx = '.'.join([i1, i2, i3])
+                                    pbitem[idx] = v3
+                            else:
+                                idx = '.'.join([i1, i2])
+                                pbitem[idx] = v2
+                    else:
+                        pbitem[i1] = v1
                 myid = pbitem.get('phonebook.id')
                 pblist[myid] = pbitem
             return pblist
