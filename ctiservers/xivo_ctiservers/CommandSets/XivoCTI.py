@@ -3553,7 +3553,7 @@ class XivoCTICommand(BaseCommand):
                                 self.__ami_execute__(astid, 'transfer', channel,
                                                      destdetails.get('number'),
                                                      destdetails.get('context'))
-                        ## XXXX ? self.__sheet_alert__('incomingdid', astid, context, event)
+                        self.__sheet_alert__('incomingdid', astid, context, event)
                         
                 elif eventname in ['MacroUser', 'MacroGroup', 'MacroQueue', 'MacroOutcall', 'MacroMeetme']:
                         uniqueid = event.get('UNIQUEID')
