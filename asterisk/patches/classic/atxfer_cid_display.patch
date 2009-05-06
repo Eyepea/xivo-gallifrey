@@ -34,7 +34,7 @@ Index: asterisk-1.4.24/res/res_features.c
  	if (newchan->_softhangup || !transferer->_softhangup) {
  		ast_hangup(newchan);
  		if (ast_stream_and_wait(transferer, xfersound, transferer->language, ""))
-@@ -1096,9 +1099,36 @@
+@@ -1096,9 +1099,31 @@
  		tobj->bconfig.end_bridge_callback_data_fixup(&tobj->bconfig, tobj->peer, tobj->chan);
  	}
  
