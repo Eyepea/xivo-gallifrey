@@ -1165,29 +1165,33 @@ class XivoCTICommand(BaseCommand):
                 return linestosend
         
         def __build_xmlsheet__(self, sheetkind, actionopt, inputvars):
-                linestosend = []
-                whichitem = actionopt.get(sheetkind)
-                if whichitem is not None and len(whichitem) > 0:
-                        for k, v in self.lconf.read_section('sheet_action', whichitem).iteritems():
-                                try:
-                                        vsplit = v.split('|')
-                                        if len(vsplit) == 4:
-                                                [title, type, defaultval, format] = v.split('|')
-                                                basestr = format
-                                                for kk, vv in inputvars.iteritems():
-                                                        try:
-                                                                basestr = basestr.replace('{%s}' % kk, vv.decode('utf8'))
-                                                        except UnicodeEncodeError:
-                                                                basestr = basestr.replace('{%s}' % kk, vv)
-                                                basestr = re.sub('{[a-z\-]*}', defaultval, basestr)
-                                                linestosend.append('<%s order="%s" name="%s" type="%s"><![CDATA[%s]]></%s>'
-                                                                   % (sheetkind, k, title, type, basestr, sheetkind))
-                                        else:
-                                                log.warning('__build_xmlsheet__ wrong number of fields in definition for %s %s %s'
-                                                          % (sheetkind, whichitem, k))
-                                except Exception:
-                                        log.exception('(__build_xmlsheet__) %s %s' % (sheetkind, whichitem))
-                return linestosend
+            linestosend = []
+            whichitem = actionopt.get(sheetkind)
+            if whichitem is not None and len(whichitem) > 0:
+                for k, v in self.lconf.read_section('sheet_action', whichitem).iteritems():
+                    try:
+                        vsplit = v.split('|')
+                        if len(vsplit) == 4:
+                            [title, type, defaultval, format] = v.split('|')
+                            basestr = format
+                            for kk, vv in inputvars.iteritems():
+                                if vv is None:
+                                    log.warning('__build_xmlsheet__ %s %s : for the key %s, the value is None'
+                                                % (sheetkind, whichitem, kk))
+                                else:
+                                    try:
+                                        basestr = basestr.replace('{%s}' % kk, vv.decode('utf8'))
+                                    except UnicodeEncodeError:
+                                        basestr = basestr.replace('{%s}' % kk, vv)
+                            basestr = re.sub('{[a-z\-]*}', defaultval, basestr)
+                            linestosend.append('<%s order="%s" name="%s" type="%s"><![CDATA[%s]]></%s>'
+                                               % (sheetkind, k, title, type, basestr, sheetkind))
+                        else:
+                            log.warning('__build_xmlsheet__ wrong number of fields in definition for %s %s %s'
+                                        % (sheetkind, whichitem, k))
+                    except Exception:
+                        log.exception('(__build_xmlsheet__) %s %s' % (sheetkind, whichitem))
+            return linestosend
         
         def findreverse(self, dirlist, number):
             log.info('findreverse %s %s' % (dirlist, number))
@@ -1332,8 +1336,9 @@ class XivoCTICommand(BaseCommand):
                         elif where == 'incomingdid':
                             log.info('%s __sheet_alert__ (did) %s (%s) %s'
                                      % (astid, where, time.asctime(), extraevent))
-                            for fieldname in ['xivo-channel', 'xivo-uniqueid', 'xivo-did', 'xivo-calleridnum']:
-                                itemdir[fieldname] = extraevent[fieldname]
+                            for fieldname in extraevent.keys():
+                                if not itemdir.has_key(fieldname):
+                                    itemdir[fieldname] = extraevent[fieldname]
                                 # userinfos.append() : users matching the SDA ?
                                 
                         elif where in ['incomingqueue', 'incominggroup']:
