@@ -3655,10 +3655,10 @@ class XivoCTICommand(BaseCommand):
             return
         
         def ami_faxreceived(self, astid, event):
-                log.info('%s : %s' % (astid, event))
-                context = event.get('Context', CONTEXT_UNKNOWN)
-                self.__sheet_alert__('faxreceived', astid, context, event)
-                return
+            log.info('%s : %s' % (astid, event))
+            context = event.get('Context', CONTEXT_UNKNOWN)
+            self.__sheet_alert__('faxreceived', astid, context, event)
+            return
         
         def ami_meetmejoin(self, astid, event):
                 #log.debug('%s ami_meetmejoin %s' % (astid, event))
@@ -5317,10 +5317,14 @@ class XivoCTICommand(BaseCommand):
                     for iastid in self.weblist['phonebook'].keys():
                         for k, v in self.weblist['phonebook'][iastid].keeplist.iteritems():
                             matchme = False
-                            for tmatch in z.match_direct:
+                            for tmatch in matchkeywords:
                                 if v.has_key(tmatch):
-                                    if v[tmatch].lower().find(searchpattern.lower()) >= 0:
-                                        matchme = True
+                                    if reversedir:
+                                        if v[tmatch].lstrip('0') == searchpattern.lstrip('0')
+                                            matchme = True
+                                    else:
+                                        if v[tmatch].lower().find(searchpattern.lower()) >= 0:
+                                            matchme = True
                             if matchme:
                                 futureline = {'xivo-dir' : z.name}
                                 for keyw, dbkeys in z.fkeys.iteritems():
