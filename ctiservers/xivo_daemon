@@ -269,11 +269,34 @@ def manage_info_connections(connid, msg, sep):
                 try:
                         retstr = 'OK'
                         if usefulmsg == 'help':
-                                helptxt = ['show_infos',
-                                           'show_users',
-                                           'show_varsizes',
-                                           'dumpami enable',
-                                           'dumpami disable']
+                                helptxt = ['',
+                                           'help               : this help',
+                                           '-- general purpose commands --',
+                                           'show_infos               : gives a few informations about the daemon (version, uptime)',
+                                           '-- informations about misc lists --',
+                                           'show_users               : the users list',
+                                           'show_phones, show_trunks : phones and trunks lists',
+                                           'show_queues, show_groups,',
+                                           'show_agents              : call-center related lists',
+                                           'show_incomingcalls       : did lists',
+                                           'show_meetme              : conference rooms',
+                                           'show_voicemails          : voicemails',
+                                           'show_phonebook           : phonebook contents',
+                                           '-- selective lists --',
+                                           'show_logged              : only the logged users',
+                                           'show_logged_ip           : the human-readable IPs of logged users',
+                                           '-- for debugging purposes --',
+                                           'loglevel set <level>        : changes the syslog output level'
+                                           'show_varsizes <astid>       : gives the number of items of some variables',
+                                           'show_vars <astid> <varname> : outputs the contents of one such variable',
+                                           'dumpami enable     : enables the line-by-line display of AMI events',
+                                           'dumpami disable    : disables it',
+                                           '-- slightly advanced features --',
+                                           'kick <user>                  : disconnects the user <user>',
+                                           'disc <ip> <port>             : closes the socket linked to <ip>:<port> if present',
+                                           'ami <astid> <command> <args> : executes the defined CTI-defined AMI function on <astid>',
+                                           'reverse <dirname> <number>   : lookup the number in the given directory',
+                                           '']
                                 for helpline in helptxt:
                                         connid.sendall('%s\n' % helpline)
                         elif usefulmsg == 'show_infos':
