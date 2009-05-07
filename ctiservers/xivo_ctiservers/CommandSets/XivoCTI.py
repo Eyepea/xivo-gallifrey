@@ -3586,6 +3586,7 @@ class XivoCTICommand(BaseCommand):
                         
                         dialplan_data = { 'xivo-astid' : astid,
                                           'xivo-origin' : 'did',
+                                          'xivo-direction' : 'Entrant', # XXX to be read from a configuration
                                           'xivo-channel' : channel,
                                           'xivo-uniqueid' : uniqueid,
                                           'xivo-did' : didnumber,
@@ -3640,6 +3641,8 @@ class XivoCTICommand(BaseCommand):
                                               'xivo-userid' : xivo_userid,
                                               'xivo-dstid' : xivo_dstid
                                               }
+                            if eventname not in ['MacroOutcall']:
+                                dialplan_data['xivo-direction'] = 'Interne' # XXX to be read from a configuration
                             self.uniqueids[astid][uniqueid]['dialplan_data'] = dialplan_data
                             self.__dialplan_fill_src__(dialplan_data)
                             self.__dialplan_fill_dst__(dialplan_data)
