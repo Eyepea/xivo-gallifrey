@@ -120,7 +120,8 @@ class XivoCTICommand(BaseCommand):
                      'actionfiche',
                      'availstate',
                      'keepalive',
-                     'originate', 'transfer', 'atxfer', 'hangup', 'simplehangup', 'pickup']
+                     'originate', 'transfer', 'atxfer', 'hangup', 'simplehangup', 'pickup',
+                     'sheet']
         astid_vars = ['stats_queues',
                       'last_agents',
                       'last_queues',
@@ -5759,14 +5760,19 @@ class XivoCTICommand(BaseCommand):
                 astid = userinfo.get('astid')
                 username = userinfo.get('user')
                 function = command.get('function')
-                chan = command.get('sheetchannel')
+                chan = command.get('channel')
                 if not astid in self.sheetmanager or not self.sheetmanager[astid].has_sheet(chan):
                     log.warning('%s __handle_sheet_command__ sheet %s not found' % (astid, chan))
                     return
                 # TODO check user rights
                 if function=='addentry':
                     self.sheetmanager[astid].addentry(chan, command.get('text'))
-                # updateentry... ?
+                    tosend = { 'class': 'sheet',
+                               'function': 'entryadded',
+                               'channel': chan,
+                               'entry': self.sheetmanager[astid].get_sheet(chan).entries[-1].todict()
+                             }
+                    self.__send_msg_to_cti_client__(userinfo, self.__cjson_encode__(tosend))
 
         def __update_sheet_user__(self, astid, newuinfo, channel):
                 # update connected user
@@ -5792,6 +5798,14 @@ class XivoCTICommand(BaseCommand):
                                'channel': channel,
                              }
                     self.__send_msg_to_cti_client__(newuinfo, self.__cjson_encode__(tosend))
+                    # afficher les stuff
+                    for entry in self.sheetmanager[astid].get_sheet(channel).entries:
+                        tosend = { 'class': 'sheet',
+                                   'function': 'entryadded',
+                                   'channel': channel,
+                                   'entry': entry.todict()
+                                 }
+                        self.__send_msg_to_cti_client__(newuser, self.__cjson_encode__(tosend))
 
         def __sheet_disconnect__(self, astid, channel):
                 # close the sheet if it is open on a user screen

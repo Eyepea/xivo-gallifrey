@@ -33,10 +33,13 @@ class SheetManager:
     
     class Sheet:
         class SheetEntry:
-            def __init(self, user, text):
+            def __init__(self, user, text):
                 self.time = time.time()
                 self.user = user
                 self.text = text
+
+            def todict(self):
+                return {'time': self.time, 'user': self.user, 'text': self.text}
 
         def __init__(self, channel):
             self.channel = channel
