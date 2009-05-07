@@ -44,6 +44,7 @@ import time
 import types
 import urllib
 import zlib
+import struct
 import Queue
 from xivo_ctiservers import cti_capas
 from xivo_ctiservers import cti_fax
@@ -1242,7 +1243,7 @@ class XivoCTICommand(BaseCommand):
                     break
             return [pf, country]
         
-        def __sheet_alert__(self, where, astid, context, event, extraevent = {}):
+        def __sheet_alert__(self, where, astid, context, event, extraevent = {}, channel = None):
                 # fields to display :
                 # - internal asterisk/xivo : caller, callee, queue name, sda
                 # - custom ext database
@@ -1266,7 +1267,7 @@ class XivoCTICommand(BaseCommand):
                                 log.warning('%s __sheet_alert__ : whom field for %s action has not been defined'
                                             % (astid, where))
                                 return
-                        log.info('%s __sheet_alert__ %s %s %s' % (astid, where, whoms, time.asctime()))
+                        log.info('%s __sheet_alert__ %s %s %s %s' % (astid, where, whoms, time.asctime(), channel))
                         
                         linestosend = ['<?xml version="1.0" encoding="utf-8"?>',
                                        '<profile>',
@@ -1405,14 +1406,16 @@ class XivoCTICommand(BaseCommand):
                                 ulen = len(xmlstring)
                                 # prepend the uncompressed length in big endian
                                 # to the zlib compressed string to meet Qt qUncompress() function expectations
-                                toencode = chr((ulen >> 24)&0xff) + chr((ulen >> 16)&0xff) + chr((ulen >> 8)&0xff) + chr(ulen&0xff) + zlib.compress(xmlstring)
+                                toencode = struct.pack(">I", ulen) + zlib.compress(xmlstring)
                                 tosend = { 'class' : 'sheet',
                                            'function' : 'displaysheet',
+                                           'channel' : channel,
                                            'compressed' : 'anything',
                                            'payload' : base64.b64encode(toencode) }
                         else:
                                 tosend = { 'class' : 'sheet',
                                            'function' : 'displaysheet',
+                                           'channel' : channel,
                                            'payload' : base64.b64encode(xmlstring) }
                         fulllines = self.__cjson_encode__(tosend)
                         
@@ -1668,7 +1671,7 @@ class XivoCTICommand(BaseCommand):
                             self.uniqueids[astid][uidsrc]['dialplan_data']['xivo-dialednum'] = data[0].split('/')[1]
                             if 'context' in self.uniqueids[astid][uidsrc]:
                                 context = self.uniqueids[astid][uidsrc]['context']
-                                self.__sheet_alert__('dial', astid, context, {}, self.uniqueids[astid][uidsrc].get('dialplan_data'))
+                                self.__sheet_alert__('dial', astid, context, {}, self.uniqueids[astid][uidsrc].get('dialplan_data'), src)
                         else:
                             log.warning('%s ami_dial : no dialplan_data defined for %s' % (astid, uidsrc))
                             
@@ -2067,7 +2070,7 @@ class XivoCTICommand(BaseCommand):
                 self.__update_phones_trunks__(astid, phoneid1, phoneid2, trunkid1, trunkid2, 'ami_link')
                 
                 if 'context' in self.uniqueids[astid][uid1]:
-                        self.__sheet_alert__('link', astid, self.uniqueids[astid][uid1]['context'], event, {})
+                        self.__sheet_alert__('link', astid, self.uniqueids[astid][uid1]['context'], event, {}, chan2)
                         
                 if chan2.startswith('Agent/'):
                         # 'onlineincoming' for the agent
@@ -2394,8 +2397,7 @@ class XivoCTICommand(BaseCommand):
                 # 34 - Circuit/channel congestion
                 
                 if astid in self.sheetmanager and self.sheetmanager[astid].has_sheet(chan):
-                        # TODO close the sheet if it is open on a user screen
-                        self.sheetmanager[astid].del_sheet(chan)
+                        self.__sheet_disconnect__(astid, chan)
 
                 if chan in self.parkedcalls[astid]:
                         del self.parkedcalls[astid][chan]
@@ -3630,7 +3632,7 @@ class XivoCTICommand(BaseCommand):
                                 self.__ami_execute__(astid, 'transfer', channel,
                                                      destdetails.get('number'),
                                                      destdetails.get('context'))
-                        self.__sheet_alert__('incomingdid', astid, context, event, dialplan_data)
+                        self.__sheet_alert__('incomingdid', astid, context, event, dialplan_data, channel)
                         self.__create_new_sheet__(astid, self.uniqueids[astid][uniqueid]['channel'])
                         
                 elif eventname in ['MacroUser', 'MacroGroup', 'MacroQueue', 'MacroOutcall', 'MacroMeetme']:
@@ -5771,21 +5773,36 @@ class XivoCTICommand(BaseCommand):
                 if astid in self.sheetmanager and self.sheetmanager[astid].has_sheet(channel):
                     newuser = '%s/%s' % (newuinfo.get('astid'), newuinfo.get('xivo_userid'))
                     log.debug('%s __update_sheet_user__ %s from user %s to %s (%s)' % (astid, channel, self.sheetmanager[astid].get_sheet(channel).currentuser, newuser, newuinfo.get('fullname')))
+                    if self.sheetmanager[astid].get_sheet(channel).currentuser == newuser:
+                        # nothing to update !
+                        return
                     #log.debug('%s __update_sheet_user__ %s from user %s to %s (%s)' % (astid, channel, self.sheetmanager[astid].get_sheet(channel).currentuser, newuser, newuinfo))
                     if self.sheetmanager[astid].get_sheet(channel).currentuser is not None:
                         olduinfo = self.ulist_ng.keeplist[self.sheetmanager[astid].get_sheet(channel).currentuser]
                         log.debug('%s __update_sheet_user__ olduinfo=%s' % (astid, olduinfo))
                         tosend = { 'class': 'sheet',
-                                   'function': 'looseproperty',
+                                   'function': 'looseownership',
                                    'channel': channel,
                                  }
                         self.__send_msg_to_cti_client__(olduinfo, self.__cjson_encode__(tosend))
                     self.sheetmanager[astid].update_currentuser(channel, newuser)
                     # on informe le nouveau user qu'il a la propriete de la fiche
                     tosend = { 'class': 'sheet',
-                               'function': 'getproperty',
+                               'function': 'getownership',
                                'channel': channel,
                              }
                     self.__send_msg_to_cti_client__(newuinfo, self.__cjson_encode__(tosend))
+
+        def __sheet_disconnect__(self, astid, channel):
+                # close the sheet if it is open on a user screen
+                if self.sheetmanager[astid].get_sheet(channel).currentuser is not None:
+                    olduinfo = self.ulist_ng.keeplist[self.sheetmanager[astid].get_sheet(channel).currentuser]
+                    log.debug('%s __update_sheet_user__ olduinfo=%s' % (astid, olduinfo))
+                    tosend = { 'class': 'sheet',
+                               'function': 'looseownership',
+                               'channel': channel,
+                             }
+                    self.__send_msg_to_cti_client__(olduinfo, self.__cjson_encode__(tosend))
+                self.sheetmanager[astid].del_sheet(chan)
 
 xivo_commandsets.CommandClasses['xivocti'] = XivoCTICommand
