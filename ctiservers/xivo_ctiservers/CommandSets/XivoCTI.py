@@ -1316,10 +1316,14 @@ class XivoCTICommand(BaseCommand):
                             for fieldname in extraevent.keys():
                                 if not itemdir.has_key(fieldname):
                                     itemdir[fieldname] = extraevent[fieldname]
+                                    
+                            # define the receiver from the xivo-dstid data
                             if 'xivo-astid' in itemdir and 'xivo-dstid' in itemdir:
                                 xuserid = '%s/%s' % (itemdir['xivo-astid'], itemdir['xivo-dstid'])
                                 if xuserid in self.ulist_ng.keeplist:
                                     userinfos.append(self.ulist_ng.keeplist[xuserid])
+                                    
+                            # define the receiver from the dialed number (dial application, that may follow an other first one)
                             if 'xivo-calledidnum' not in itemdir and 'xivo-dialednum' in itemdir:
                                 for uinfo in self.ulist_ng.keeplist.itervalues():
                                     if uinfo.get('astid') == astid and uinfo.get('phonenum') == itemdir['xivo-dialednum']:
@@ -1366,11 +1370,14 @@ class XivoCTICommand(BaseCommand):
                                                                                                         queue, event.get('Position'),
                                                                                                         event.get('Count'),
                                                                                                         len(userinfos)))
-                                itemdir['xivo-channel'] = chan
-                                itemdir['xivo-uniqueid'] = uid
+                                for fieldname in extraevent.keys():
+                                    if not itemdir.has_key(fieldname):
+                                        itemdir[fieldname] = extraevent[fieldname]
                                 itemdir['xivo-queuename'] = queue
-                                itemdir['xivo-calleridnum'] = clid
-                                itemdir['xivo-calleridname'] = event.get('CallerIDName')
+##                                itemdir['xivo-channel'] = chan
+##                                itemdir['xivo-uniqueid'] = uid
+##                                itemdir['xivo-calleridnum'] = clid
+##                                itemdir['xivo-calleridname'] = event.get('CallerIDName')
                                 
                         # 2/4
                         # call a database for xivo-callerid matching (or another pattern to set somewhere)
@@ -1657,10 +1664,13 @@ class XivoCTICommand(BaseCommand):
                 
                 if data:
                     if uidsrc in self.uniqueids[astid]:
-                        self.uniqueids[astid][uidsrc]['dialplan_data']['xivo-dialednum'] = data[0].split('/')[1]
-                        if 'context' in self.uniqueids[astid][uidsrc]:
-                            context = self.uniqueids[astid][uidsrc]['context']
-                            self.__sheet_alert__('dial', astid, context, {}, self.uniqueids[astid][uidsrc].get('dialplan_data'))
+                        if 'dialplan_data' in self.uniqueids[astid][uidsrc]:
+                            self.uniqueids[astid][uidsrc]['dialplan_data']['xivo-dialednum'] = data[0].split('/')[1]
+                            if 'context' in self.uniqueids[astid][uidsrc]:
+                                context = self.uniqueids[astid][uidsrc]['context']
+                                self.__sheet_alert__('dial', astid, context, {}, self.uniqueids[astid][uidsrc].get('dialplan_data'))
+                        else:
+                            log.warning('%s ami_dial : no dialplan_data defined for %s' % (astid, uidsrc))
                             
                 phoneidsrc = self.__phoneid_from_channel__(astid, src)
                 phoneiddst = self.__phoneid_from_channel__(astid, dst)
@@ -2812,7 +2822,8 @@ class XivoCTICommand(BaseCommand):
                         log.warning('%s empty channel name in event %s' % (astid, event))
                         return
                 self.uniqueids[astid][uniqueid] = { 'channel' : channel,
-                                                    'time-newchannel' : time.time() }
+                                                    'time-newchannel' : time.time(),
+                                                    'dialplan_data' : {} }
                 self.channels[astid][channel] = uniqueid
                 if state == 'Rsrvd':
                         self.uniqueids[astid][uniqueid]['state'] = state
@@ -3629,7 +3640,7 @@ class XivoCTICommand(BaseCommand):
                         xivo_dstid = event.get('XIVO_DSTID')
                         log.info('%s AMI UserEvent %s %s %s %s' % (astid, uniqueid, eventname, xivo_userid, xivo_dstid))
                         if uniqueid not in self.uniqueids[astid]:
-                            log.warning('%s AMI UserEvent %s undefined %s' % (astid, eventname, uniqueid))
+                            log.warning('%s AMI UserEvent %s : uniqueid %s is undefined' % (astid, eventname, uniqueid))
                             return
                         
                         if xivo_userid:
@@ -3646,6 +3657,8 @@ class XivoCTICommand(BaseCommand):
                             self.uniqueids[astid][uniqueid]['dialplan_data'] = dialplan_data
                             self.__dialplan_fill_src__(dialplan_data)
                             self.__dialplan_fill_dst__(dialplan_data)
+                        else:
+                            log.warning('%s AMI UserEvent %s : xivo_userid %s is not set' % (astid, eventname, xivo_userid))
                             
                 elif eventname == 'Custom':
                         uniqueid = event.get('UNIQUEID')
@@ -4081,14 +4094,17 @@ class XivoCTICommand(BaseCommand):
                 
                 queuecontext = self.weblist[queueorgroup][astid].getcontext(queue)
                 if uniqueid in self.uniqueids[astid]:
-                        self.uniqueids[astid][uniqueid]['join'] = {'queuename' : queue,
-                                                                   'queueorgroup' : queueorgroup,
-                                                                   'time' : time.time()}
-                        self.uniqueids[astid][uniqueid]['calleridnum'] = clidnum
-                        self.uniqueids[astid][uniqueid]['calleridname'] = clidname
+                    self.uniqueids[astid][uniqueid]['join'] = {'queuename' : queue,
+                                                               'queueorgroup' : queueorgroup,
+                                                               'time' : time.time()}
+                    self.uniqueids[astid][uniqueid]['calleridnum'] = clidnum
+                    self.uniqueids[astid][uniqueid]['calleridname'] = clidname
+                    ddata = self.uniqueids[astid][uniqueid].get('dialplan_data')
+                else:
+                    ddata = {}
                 log.info('%s STAT JOIN %s %s %s' % (astid, queue, chan, uniqueid))
                 self.__update_queue_stats__(astid, queue, queueorgroup, 'ENTERQUEUE')
-                self.__sheet_alert__('incoming' + queueorgroup[:-1], astid, queuecontext, event)
+                self.__sheet_alert__('incoming' + queueorgroup[:-1], astid, queuecontext, event, ddata)
                 log.info('%s AMI Join (Queue) %s %s %s' % (astid, queue, chan, count))
                 self.weblist[queueorgroup][astid].queueentry_update(queue, chan, position, time.time(),
                                                                     clidnum, clidname)
