@@ -1514,6 +1514,8 @@ class XivoCTICommand(BaseCommand):
                                 if v2.find(pattern) >= 0:
                                     v2 = v2.replace('{internal-%s}' % kk, vv)
                             dialplan_data[nk] = v2
+                    if 'name' in e:
+                        dialplan_data['xivo-dir'] = e.get('name')
                 except Exception:
                     log.exception('__internal__ %s' % xuserid)
             return
