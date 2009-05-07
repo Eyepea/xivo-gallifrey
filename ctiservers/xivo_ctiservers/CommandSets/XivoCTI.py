@@ -1393,13 +1393,20 @@ class XivoCTICommand(BaseCommand):
                         # print ''.join(linestosend)
                         
                         dozip = True
+                        xmlstring = ''.join(linestosend).encode('utf8')
                         if dozip:
+                                ulen = len(xmlstring)
+                                # prepend the uncompressed length in big endian
+                                # to the zlib compressed string to meet Qt qUncompress() function expectations
+                                toencode = chr((ulen >> 24)&0xff) + chr((ulen >> 16)&0xff) + chr((ulen >> 8)&0xff) + chr(ulen&0xff) + zlib.compress(xmlstring)
                                 tosend = { 'class' : 'sheet',
+                                           'function' : 'displaysheet',
                                            'compressed' : 'anything',
-                                           'payload' : base64.b64encode((chr(0) * 4) + zlib.compress(''.join(linestosend).encode('utf8'))) }
+                                           'payload' : base64.b64encode(toencode) }
                         else:
                                 tosend = { 'class' : 'sheet',
-                                           'payload' : base64.b64encode(''.join(linestosend).encode('utf8')) }
+                                           'function' : 'displaysheet',
+                                           'payload' : base64.b64encode(xmlstring) }
                         fulllines = self.__cjson_encode__(tosend)
                         
                         # print '---------', where, whoms, fulllines
