@@ -3658,7 +3658,7 @@ class XivoCTICommand(BaseCommand):
                             self.__dialplan_fill_src__(dialplan_data)
                             self.__dialplan_fill_dst__(dialplan_data)
                         else:
-                            log.warning('%s AMI UserEvent %s : xivo_userid %s is not set' % (astid, eventname, xivo_userid))
+                            log.warning('%s AMI UserEvent %s : xivo_userid is not set' % (astid, eventname))
                             
                 elif eventname == 'Custom':
                         uniqueid = event.get('UNIQUEID')

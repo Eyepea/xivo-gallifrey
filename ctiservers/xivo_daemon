@@ -270,7 +270,7 @@ def manage_info_connections(connid, msg, sep):
                         retstr = 'OK'
                         if usefulmsg == 'help':
                                 helptxt = ['',
-                                           'help               : this help',
+                                           'help                     : this help',
                                            '-- general purpose commands --',
                                            'show_infos               : gives a few informations about the daemon (version, uptime)',
                                            '-- informations about misc lists --',
@@ -286,11 +286,11 @@ def manage_info_connections(connid, msg, sep):
                                            'show_logged              : only the logged users',
                                            'show_logged_ip           : the human-readable IPs of logged users',
                                            '-- for debugging purposes --',
-                                           'loglevel set <level>        : changes the syslog output level'
-                                           'show_varsizes <astid>       : gives the number of items of some variables',
-                                           'show_vars <astid> <varname> : outputs the contents of one such variable',
-                                           'dumpami enable     : enables the line-by-line display of AMI events',
-                                           'dumpami disable    : disables it',
+                                           'loglevel set <level>         : changes the syslog output level',
+                                           'show_varsizes <astid>        : gives the number of items of some variables',
+                                           'show_vars <astid> <varname>  : outputs the contents of one such variable',
+                                           'dumpami enable               : enables the line-by-line display of AMI events',
+                                           'dumpami disable              : disables it',
                                            '-- slightly advanced features --',
                                            'kick <user>                  : disconnects the user <user>',
                                            'disc <ip> <port>             : closes the socket linked to <ip>:<port> if present',
