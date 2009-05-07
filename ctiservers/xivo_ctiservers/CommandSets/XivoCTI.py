@@ -1461,6 +1461,7 @@ class XivoCTICommand(BaseCommand):
                                          % (astid, whom, where, nsent))
                 return
         
+        
         def __dialplan_fill_src__(self, dialplan_data):
             origin = dialplan_data.get('xivo-origin')
             if origin == 'did':
@@ -1495,6 +1496,19 @@ class XivoCTICommand(BaseCommand):
                 dialplan_data['dbr-display'] = self.ulist_ng.keeplist[xuserid].get('fullname')
                 dialplan_data['xivo-calleridnum'] = self.ulist_ng.keeplist[xuserid].get('phonenum')
                 dialplan_data['xivo-calleridname'] = self.ulist_ng.keeplist[xuserid].get('fullname')
+                try:
+                    e = self.lconf.read_section('directory_internal', 'directory_internal')
+                    for k, v in e.iteritems():
+                        if k.startswith('field_'):
+                            nk = 'db-%s' % k[6:]
+                            v2 = v
+                            for kk, vv in self.ulist_ng.keeplist[xuserid].iteritems():
+                                pattern = '{internal-%s}' % kk
+                                if v2.find(pattern) >= 0:
+                                    v2 = v2.replace('{internal-%s}' % kk, vv)
+                            dialplan_data[nk] = v2
+                except Exception:
+                    log.exception('__internal__ %s' % xuserid)
             return
         
         def __did__(self, dialplan_data):
