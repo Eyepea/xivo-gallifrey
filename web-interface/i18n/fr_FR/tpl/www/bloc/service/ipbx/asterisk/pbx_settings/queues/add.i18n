@@ -199,9 +199,6 @@ Nombre de personnes autorisées à attendre :
 ; fm_queue_announce-frequency
 Fréquence d'annonce de position :
 
-; fm_queue_periodic-announce-frequency
-Fréquence d'annonce :
-
 ; fm_queue_announce-frequency-opt(0)
 Désactivée
 
@@ -353,7 +350,10 @@ Durée d'attente d'un appelant :
 Défaut
 
 ; fm_queue_periodic-announce
-Annonce périodique :
+Annonces périodiques :
 
 ; fm_queue_periodic-announce-opt(default)
 Défaut
+
+; fm_queue_periodic-announce-frequency
+Fréquence des annonces périodiques :

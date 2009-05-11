@@ -235,7 +235,10 @@ $array['filter']['queue-seconds'] = array('set' => false,'chk' => 2,'cast' => 's
 $array['filter']['queue-thankyou'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
 $array['filter']['queue-lessthan'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
 $array['filter']['queue-reporthold'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
-$array['filter']['periodic-announce'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
+$array['filter']['periodic-announce'] = array('set'	=> false,
+					      'chk'	=> 2,
+					      'regexp'	=> '/^(?:['.XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_PATTERN.
+					      			    preg_quote(XIVO_SEP_DIR,'/').']{1,79}\|?){1,10}$/');
 $array['filter']['category'] = array('key' => array('queue','group'));
 
 ?>

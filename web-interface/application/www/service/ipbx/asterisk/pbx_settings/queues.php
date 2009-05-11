@@ -33,6 +33,10 @@ switch($act)
 
 		$result = null;
 
+		$pannounce = array();
+		$pannounce['list'] = $appqueue->get_announce();
+		$pannounce['slt'] = array();
+
 		$user = $agentgroup = $agent = array();
 		$user['slt'] = $agentgroup['slt'] = $agent['slt'] = array();
 
@@ -76,6 +80,24 @@ switch($act)
 				$ipbx->discuss('xivo[queuelist,update]');
 				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
 			}
+		}
+
+		if($pannounce['list'] !== false
+		&& xivo_issa('queue',$result) === true
+		&& xivo_ak('periodic-announce',$result['queue']) === true
+		&& empty($result['queue']['periodic-announce']) === false)
+		{
+			if(is_array($result['queue']['periodic-announce']) === false)
+				$pannounce['slt'] = explode('|',$result['queue']['periodic-announce']);
+			else
+				$pannounce['slt'] = $result['queue']['periodic-announce'];
+
+			$pannounce['slt'] = xivo_array_intersect_key(array_flip($pannounce['slt']),
+								     $pannounce['list']);
+
+			if(empty($pannounce['slt']) === false)
+				$pannounce['list'] = xivo_array_diff_key($pannounce['list'],
+									 $pannounce['slt']);
 		}
 
 		xivo::load_class('xivo_sort');
@@ -149,6 +171,7 @@ switch($act)
 		$_HTML->set_var('user',$user);
 		$_HTML->set_var('agentgroup',$agentgroup);
 		$_HTML->set_var('agent',$agent);
+		$_HTML->set_var('pannounce',$pannounce);
 		$_HTML->set_var('destination_list',$appqueue->get_dialaction_destination_list());
 		$_HTML->set_var('moh_list',$appqueue->get_musiconhold());
 		$_HTML->set_var('announce_list',$appqueue->get_announce());
@@ -162,6 +185,10 @@ switch($act)
 
 		$result = null;
 		$return = &$info;
+
+		$pannounce = array();
+		$pannounce['list'] = $appqueue->get_announce();
+		$pannounce['slt'] = array();
 
 		$user = $agentgroup = $agent = array();
 		$user['slt'] = $agentgroup['slt'] = $agent['slt'] = array();
@@ -208,6 +235,24 @@ switch($act)
 				$ipbx->discuss('xivo[queuelist,update]');
 				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
 			}
+		}
+
+		if($pannounce['list'] !== false
+		&& xivo_issa('queue',$return) === true
+		&& xivo_ak('periodic-announce',$return['queue']) === true
+		&& empty($return['queue']['periodic-announce']) === false)
+		{
+			if(is_array($return['queue']['periodic-announce']) === false)
+				$pannounce['slt'] = explode('|',$return['queue']['periodic-announce']);
+			else
+				$pannounce['slt'] = $return['queue']['periodic-announce'];
+
+			$pannounce['slt'] = xivo_array_intersect_key(array_flip($pannounce['slt']),
+								     $pannounce['list']);
+
+			if(empty($pannounce['slt']) === false)
+				$pannounce['list'] = xivo_array_diff_key($pannounce['list'],
+									 $pannounce['slt']);
 		}
 
 		xivo::load_class('xivo_sort');
@@ -282,6 +327,7 @@ switch($act)
 		$_HTML->set_var('user',$user);
 		$_HTML->set_var('agentgroup',$agentgroup);
 		$_HTML->set_var('agent',$agent);
+		$_HTML->set_var('pannounce',$pannounce);
 		$_HTML->set_var('destination_list',$appqueue->get_dialaction_destination_list());
 		$_HTML->set_var('moh_list',$appqueue->get_musiconhold());
 		$_HTML->set_var('announce_list',$appqueue->get_announce());

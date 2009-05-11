@@ -26,6 +26,7 @@ $info = $this->get_var('info');
 $user = $this->get_var('user');
 $agentgroup = $this->get_var('agentgroup');
 $agent = $this->get_var('agent');
+$pannounce = $this->get_var('pannounce');
 $moh_list = $this->get_var('moh_list');
 $announce_list = $this->get_var('announce_list');
 $context_list = $this->get_var('context_list');
@@ -103,15 +104,7 @@ else:
 		'</div>';
 endif;
 
-	echo	$form->select(array('desc'	=> $this->bbf('fm_queue_periodic-announce'),
-				    'name'	=> 'queue[periodic-announce]',
-				    'labelid'	=> 'queue-periodic-announce',
-				    'empty'	=> $this->bbf('fm_queue_periodic-announce-opt(default)'),
-				    'default'	=> $element['queue']['periodic-announce']['default'],
-				    'value'	=> $info['queue']['periodic-announce']),
-				    $announce_list),
-
-		$form->select(array('desc'	=> $this->bbf('fm_callerid_mode'),
+	echo	$form->select(array('desc'	=> $this->bbf('fm_callerid_mode'),
 				    'name'	=> 'callerid[mode]',
 				    'labelid'	=> 'callerid-mode',
 				    'key'	=> false,
@@ -153,19 +146,6 @@ endif;
 				    'default'	=> $element['queue']['announce-frequency']['default'],
 				    'value'	=> $info['queue']['announce-frequency']),
 			      $element['queue']['announce-frequency']['value']),
-
-		$form->select(array('desc'	=> $this->bbf('fm_queue_periodic-announce-frequency'),
-				    'name'	=> 'queue[periodic-announce-frequency]',
-				    'labelid'	=> 'queue-periodic-announce-frequency',
-				    'key'	=> false,
-				    'bbf'	=> 'fm_queue_announce-frequency-opt',
-				    'bbf_opt'	=> array('argmode'	=> 'paramkey',
-				    			 'time'		=> array(
-							 		'from'		=> 'second',
-							 		'format'	=> '%M%s')),
-				    'default'	=> $element['queue']['periodic-announce-frequency']['default'],
-				    'value'	=> $info['queue']['periodic-announce-frequency']),
-			      $element['queue']['periodic-announce-frequency']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_queue_announce-holdtime'),
 				    'name'	=> 'queue[announce-holdtime]',
@@ -256,6 +236,96 @@ endif;
 				    'default'	=> $element['queue']['queue-reporthold']['default'],
 				    'value'	=> $info['queue']['queue-reporthold']),
 			      $announce_list);
+
+	if(empty($announce_list) === false):
+?>
+<div id="pannouncelist" class="fm-field fm-multilist">
+	<p>
+		<label id="lb-pannouncelist" for="it-pannouncelist" onclick="xivo_eid('it-pannouncelist').focus();">
+			<?=$this->bbf('fm_queue_periodic-announce');?>
+		</label>
+	</p>
+	<div class="slt-outlist">
+<?php
+		echo	$form->select(array('name'	=> 'pannouncelist',
+					    'label'	=> false,
+					    'id'	=> 'it-pannouncelist',
+					    'multiple'	=> true,
+					    'size'	=> 5,
+					    'field'	=> false),
+				      $pannounce['list']);
+?>
+	</div>
+
+	<div class="inout-list">
+		<a href="#"
+		   onclick="xivo_fm_move_selected('it-pannouncelist',
+		   				  'it-queue-periodic-announce');
+			    return(xivo_free_focus());"
+		   title="<?=$this->bbf('bt_inpannounce');?>">
+		   	<?=$url->img_html('img/site/button/row-left.gif',
+					  $this->bbf('bt_inpannounce'),
+					  'class="bt-inlist" id="bt-inpannounce" border="0"');?></a><br />
+		<a href="#"
+		   onclick="xivo_fm_move_selected('it-queue-periodic-announce',
+		   				  'it-pannouncelist');
+			    return(xivo_free_focus());"
+		   title="<?=$this->bbf('bt_outpannounce');?>">
+			<?=$url->img_html('img/site/button/row-right.gif',
+					  $this->bbf('bt_outpannounce'),
+					  'class="bt-outlist" id="bt-outpannounce" border="0"');?></a>
+	</div>
+
+	<div class="slt-inlist">
+<?php
+		echo	$form->select(array('name'	=> 'queue[periodic-announce][]',
+					    'label'	=> false,
+					    'id'	=> 'it-queue-periodic-announce',
+					    'multiple'	=> true,
+					    'size'	=> 5,
+					    'field'	=> false),
+				      $pannounce['slt']);
+?>
+		<div class="bt-updown">
+			<a href="#"
+			   onclick="xivo_fm_order_selected('it-queue-periodic-announce',1);
+			   	    return(xivo_free_focus());"
+			   title="<?=$this->bbf('bt_uppannounce');?>">
+			   	<?=$url->img_html('img/site/button/row-up.gif',
+						  $this->bbf('bt_uppannounce'),
+						  'class="bt-uplist" id="bt-uppannounce" border="0"');?></a><br />
+			<a href="#"
+			   onclick="xivo_fm_order_selected('it-queue-periodic-announce',-1);
+			   	    return(xivo_free_focus());"
+			   title="<?=$this->bbf('bt_downpannounce');?>">
+			   	<?=$url->img_html('img/site/button/row-down.gif',
+						  $this->bbf('bt_downpannounce'),
+						  'class="bt-downlist" id="bt-downpannounce" border="0"');?></a>
+		</div>
+	</div>
+</div>
+<div class="clearboth"></div>
+<?php
+	else:
+		echo	$form->select(array('desc'	=> $this->bbf('fm_queue_periodic-announce'),
+					    'name'	=> 'queue[periodic-announce]',
+					    'labelid'	=> 'queue-periodic-announce',
+					    'empty'	=> $this->bbf('fm_queue_periodic-announce-opt(default)'),
+					    'default'	=> $element['queue']['periodic-announce']['default']));
+	endif;
+
+	echo	$form->select(array('desc'	=> $this->bbf('fm_queue_periodic-announce-frequency'),
+				    'name'	=> 'queue[periodic-announce-frequency]',
+				    'labelid'	=> 'queue-periodic-announce-frequency',
+				    'key'	=> false,
+				    'bbf'	=> 'fm_queue_announce-frequency-opt',
+				    'bbf_opt'	=> array('argmode'	=> 'paramkey',
+				    			 'time'		=> array(
+							 		'from'		=> 'second',
+							 		'format'	=> '%M%s')),
+				    'default'	=> $element['queue']['periodic-announce-frequency']['default'],
+				    'value'	=> $info['queue']['periodic-announce-frequency']),
+			      $element['queue']['periodic-announce-frequency']['value']);
 ?>
 </div>
 

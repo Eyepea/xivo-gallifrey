@@ -223,9 +223,6 @@ Disabled
 ; fm_queue_announce-frequency-opt
 %s min. %s sec.
 
-; fm_queue_periodic-announce-frequency
-Announce frequency:
-
 ; fm_queue_periodic-announce-frequency-opt0
 Disabled
 
@@ -392,7 +389,10 @@ The Hold time of a caller:
 Default
 
 ; fm_queue_periodic-announce
-Periodic announce:
+Periodic announces:
 
 ; fm_queue_periodic-announce-opt-default
 Default
+
+; fm_queue_periodic-announce-frequency
+Periodic announces frequency:

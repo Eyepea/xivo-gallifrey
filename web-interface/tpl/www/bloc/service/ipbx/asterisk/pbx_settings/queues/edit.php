@@ -31,7 +31,8 @@ $form = &$this->get_module('form');
 	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/queues/submenu');
 ?>
 	<div class="sb-content">
-		<form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-user');
+		<form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-queue-periodic-announce');
+										xivo_fm_select('it-user');
 										xivo_fm_select('it-agentgroup');
 										xivo_fm_select('it-agent');
 										xivo_fm_select('it-rightcall');">

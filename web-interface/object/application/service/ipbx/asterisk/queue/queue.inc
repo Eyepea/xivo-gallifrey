@@ -409,7 +409,27 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		if(isset($arr['queue-reporthold'],$this->_announce[$arr['queue-reporthold']]) === false)
 			$arr['queue-reporthold'] = '';
 
-		if(isset($arr['periodic-announce'],$this->_announce[$arr['periodic-announce']]) === false)
+		if(isset($arr['periodic-announce']) === false)
+			$arr['periodic-announce'] = '';
+		else if(is_array($arr['periodic-announce']) === true)
+		{
+			$i = 0;
+			$pannounce = '';
+
+			foreach($arr['periodic-announce'] as $value)
+			{
+				if(isset($this->_announce[$value]) === false)
+					continue;
+				else if($i === 10)
+					break;
+
+				$pannounce .= '|'.$value;
+				$i++;
+			}
+
+			$arr['periodic-announce'] = substr($pannounce,1);
+		}
+		else if(isset($this->_announce[$arr['periodic-announce']]) === false)
 			$arr['periodic-announce'] = '';
 
 		return($arr);
