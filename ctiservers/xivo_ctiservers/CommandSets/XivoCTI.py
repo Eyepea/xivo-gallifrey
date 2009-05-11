@@ -973,6 +973,7 @@ class XivoCTICommand(BaseCommand):
                                                        'context' : uitem.get('context'),
                                                        'phoneid' : uitem.get('name'),
                                                        'phonenum' : uitem.get('number'),
+                                                       'simultcalls' : uitem.get('simultcalls'),
                                                        'mobilenum' : uitem.get('mobilephonenumber'),
                                                        'xivo_userid' : uitem.get('id'),
                                                        
