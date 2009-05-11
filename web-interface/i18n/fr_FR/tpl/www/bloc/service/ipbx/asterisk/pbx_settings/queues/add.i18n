@@ -352,6 +352,18 @@ Défaut
 ; fm_queue_periodic-announce
 Annonces périodiques :
 
+; bt_uppannounce
+Monter une ou plusieurs annonces
+
+; bt_downpannounce
+Descendre une ou plusieurs annonces
+
+; bt_inpannounce
+Ajouter une ou plusieurs annonces ->
+
+; bt_outpannounce
+<- Enlever une ou plusieurs annonces
+
 ; fm_queue_periodic-announce-opt(default)
 Défaut
 
