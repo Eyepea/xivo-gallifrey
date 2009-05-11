@@ -294,7 +294,7 @@ def manage_info_connections(connid, msg, sep):
                                            '-- slightly advanced features --',
                                            'kick <user>                  : disconnects the user <user>',
                                            'disc <ip> <port>             : closes the socket linked to <ip>:<port> if present',
-                                           'ami <astid> <command> <args> : executes the defined CTI-defined AMI function on <astid>',
+                                           'ami <astid> <command> <args> : executes the CTI-defined AMI function on <astid>',
                                            'reverse <dirname> <number>   : lookup the number in the given directory',
                                            '']
                                 for helpline in helptxt:

@@ -1748,8 +1748,13 @@ class XivoCTICommand(BaseCommand):
                         self.last_queues[astid] = {}
                 if url_queuelog is None:
                         return
-                qlog = urllib.urlopen(url_queuelog)
-                csvreader = csv.reader(qlog, delimiter = '|')
+                try:
+                    qlog = urllib.urlopen(url_queuelog)
+                    csvreader = csv.reader(qlog, delimiter = '|')
+                except Exception:
+                    log.exception('read_queuelog %s' % url_queuelog)
+                    return
+                
                 time_now = int(time.time())
                 time_1ha = time_now - 3600
                 
@@ -5817,6 +5822,6 @@ class XivoCTICommand(BaseCommand):
                                'channel': channel,
                              }
                     self.__send_msg_to_cti_client__(olduinfo, self.__cjson_encode__(tosend))
-                self.sheetmanager[astid].del_sheet(chan)
+                self.sheetmanager[astid].del_sheet(channel)
 
 xivo_commandsets.CommandClasses['xivocti'] = XivoCTICommand
