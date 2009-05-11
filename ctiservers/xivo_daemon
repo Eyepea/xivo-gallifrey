@@ -810,12 +810,16 @@ def sighandler_reload(signum, frame):
 # print sys.getdefaultencoding()
 logging.basicConfig(level=logging.INFO)
 #logging.basicConfig(level=logging.DEBUG)
-sysloghandler = SysLogHandler('/dev/log', SysLogHandler.LOG_DAEMON)
-formatter = logging.Formatter('%s[%%(process)d] (%%(levelname)s) (%%(name)s): %%(message)s' % LOGDAEMONNAME)
 
-sysloghandler.setFormatter(formatter)
-logging.getLogger('').addHandler(sysloghandler)
 log = logging.getLogger('main')
+
+try:
+    sysloghandler = SysLogHandler('/dev/log', SysLogHandler.LOG_DAEMON)
+    formatter = logging.Formatter('%s[%%(process)d] (%%(levelname)s) (%%(name)s): %%(message)s' % LOGDAEMONNAME)
+    sysloghandler.setFormatter(formatter)
+    logging.getLogger('').addHandler(sysloghandler)
+except Exception:
+    log.exception('sysloghandler')
 
 if not debug_mode:
         daemonize.daemonize()
