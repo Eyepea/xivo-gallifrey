@@ -11,7 +11,15 @@ __license__ = """
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    (at your option) any later version with a Section 7 Additional
+    Permission as follows:
+      This notice constitutes a grant of such permission as is necessary
+      to combine or link this software, or a modified version of it, with
+      the MySQL Client Library, as published by Sun Microsystems and/or
+      MySQL AB, or a derivative work of the MySQL CLient LIbrary, and to
+      copy, modify, and distribute the resulting work. The MySQL Client
+      LIbrary is licensed under version 2 of the GNU General Public
+      License.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
