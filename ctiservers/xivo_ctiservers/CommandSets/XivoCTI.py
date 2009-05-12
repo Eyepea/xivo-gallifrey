@@ -973,7 +973,7 @@ class XivoCTICommand(BaseCommand):
                                                        'context' : uitem.get('context'),
                                                        'phoneid' : uitem.get('name'),
                                                        'phonenum' : uitem.get('number'),
-                                                       'simultcalls' : uitem.get('simultcalls'),
+                                                       'simultcalls' : int(uitem.get('simultcalls')),
                                                        'mobilenum' : uitem.get('mobilephonenumber'),
                                                        'xivo_userid' : uitem.get('id'),
                                                        
@@ -1602,23 +1602,23 @@ class XivoCTICommand(BaseCommand):
                 return ret
         
         def __trunkid_from_channel__(self, astid, channel):
-                ret = None
-                tech = None
-                trunkid = None
-                if channel not in self.channels[astid]:
-                        log.warning('%s __trunkid_from_channel__ : channel %s not found' % (astid, channel))
-                if channel.startswith('SIP/'):
-                        tech = 'sip'
-                        trunkid = channel[4:].split('-')[0]
-                elif channel.startswith('IAX2/'):
-                        tech = 'iax2'
-                        trunkid = channel[5:].split('-')[0]
-                if tech is not None and trunkid is not None:
-                        for tref, tv in self.weblist['trunks'][astid].keeplist.iteritems():
-                                if tv['tech'] == tech and tv['name'] == trunkid:
-                                        # log.info('%s trunk : %s => %s %s => %s %s' % (astid, channel, tech, trunkid, tref, tv))
-                                        ret = tref
-                return ret
+            ret = None
+            tech = None
+            trunkid = None
+            if channel not in self.channels[astid]:
+                log.warning('%s __trunkid_from_channel__ : channel %s not found' % (astid, channel))
+            if channel.startswith('SIP/'):
+                tech = 'sip'
+                trunkid = channel[4:].split('-')[0]
+            elif channel.startswith('IAX2/'):
+                tech = 'iax'
+                trunkid = channel[5:].split('-')[0]
+            if tech is not None and trunkid is not None:
+                for tref, tv in self.weblist['trunks'][astid].keeplist.iteritems():
+                    if tv['tech'] == tech and tv['name'] == trunkid:
+                        # log.info('%s trunk : %s => %s %s => %s %s' % (astid, channel, tech, trunkid, tref, tv))
+                        ret = tref
+            return ret
         
         def __userinfo_from_phoneid__(self, astid, phoneid):
                 uinfo = None
@@ -4921,7 +4921,7 @@ class XivoCTICommand(BaseCommand):
                                                     % (duinfo, icapaid))
                                 
                                 senduinfo = {}
-                                for kw in ['astid', 'user', 'company', 'fullname',
+                                for kw in ['astid', 'user', 'company', 'fullname', 'simultcalls',
                                            'context', 'phonenum', 'mobilenum', 'agentid',
                                            'techlist', 'mwi', 'xivo_userid']:
                                         senduinfo[kw] = uinfo.get(kw)
