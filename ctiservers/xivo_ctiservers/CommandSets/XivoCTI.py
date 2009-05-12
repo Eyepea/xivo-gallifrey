@@ -2105,6 +2105,10 @@ class XivoCTICommand(BaseCommand):
                                                                                      'outcall' : uid1info.get('OUTCALL'),
                                                                                      'did' : uid1info.get('DID'),
                                                                                      'linkqueue' : qname } })
+                        for qval in thisagent['queues_by_agent'].itervalues():
+                            qval['Xivo-QueueMember-StateTime'] = time.time()
+                        for qval in thisagent['groups_by_agent'].itervalues():
+                            qval['Xivo-QueueMember-StateTime'] = time.time()
                         tosend = { 'class' : 'agents',
                                    'function' : 'sendlist',
                                    'payload' : { astid : { agent_id : thisagent } }
@@ -2130,6 +2134,10 @@ class XivoCTICommand(BaseCommand):
                                                                                                      'dir' : status,
                                                                                                      'outcall' : uid1info.get('OUTCALL'),
                                                                                                      'did' : uid1info.get('DID') } })
+                                        for qval in thisagent['queues_by_agent'].itervalues():
+                                            qval['Xivo-QueueMember-StateTime'] = time.time()
+                                        for qval in thisagent['groups_by_agent'].itervalues():
+                                            qval['Xivo-QueueMember-StateTime'] = time.time()
                                         tosend = { 'class' : 'agents',
                                                    'function' : 'sendlist',
                                                    'payload' : { astid : { agent_id : thisagent } }
@@ -2155,6 +2163,10 @@ class XivoCTICommand(BaseCommand):
                                                                                                      'dir' : status,
                                                                                                      'outcall' : uid1info.get('OUTCALL'),
                                                                                                      'did' : uid1info.get('DID') } })
+                                        for qval in thisagent['queues_by_agent'].itervalues():
+                                            qval['Xivo-QueueMember-StateTime'] = time.time()
+                                        for qval in thisagent['groups_by_agent'].itervalues():
+                                            qval['Xivo-QueueMember-StateTime'] = time.time()
                                         tosend = { 'class' : 'agents',
                                                    'function' : 'sendlist',
                                                    'payload' : { astid : { agent_id : thisagent } }
@@ -2173,24 +2185,25 @@ class XivoCTICommand(BaseCommand):
                 where = event.get('Where')
                 log.info('%s AMI_UNLINK : %s' % (astid, event))
                 if uid1 not in self.events_link[astid]:
-                        log.warning('%s ignoring an Unlink event (Link never happened or identifier already deleted) : %s' % (astid, event))
-                        return
+                    log.warning('%s ignoring an Unlink event (Link never happened or identifier already deleted) : %s' % (astid, event))
+                    return
                 else:
-                        timenow = time.time()
-                        deltat = timenow - self.events_link[astid][uid1]
-                        log.warning('%s : deltat=%s event=%s' % (astid, deltat, event))
-                        if deltat < 0.1:
-                                return
-                        else:
-                                del self.events_link[astid][uid1]
-
+                    timenow = time.time()
+                    deltat = timenow - self.events_link[astid][uid1]
+                    log.warning('%s : deltat=%s event=%s' % (astid, deltat, event))
+                    # we actually have many deltat's around 0.006, many around 0.04 and a few around 0.1
+                    if deltat < 0.15:
+                        return
+                    else:
+                        del self.events_link[astid][uid1]
+                        
                 (chan1, _uid1, _clid1, _clidn1) = self.__translate_local_channel_uid__(astid, chan1, uid1)
                 (chan2, _uid2, _clid2, _clidn2) = self.__translate_local_channel_uid__(astid, chan2, uid2)
-
+                
                 if self.__ignore_dtmf__(astid, uid1, 'unlink'):
-                        return
+                    return
                 if self.__ignore_dtmf__(astid, uid2, 'unlink'):
-                        return
+                    return
                 self.__fill_uniqueids__(astid, uid1, uid2, chan1, chan2, 'unlink')
                 uid1info = self.uniqueids[astid][uid1]
                 phoneid1 = self.__phoneid_from_channel__(astid, chan1)
@@ -2205,9 +2218,9 @@ class XivoCTICommand(BaseCommand):
                 duinfo1 = None
                 duinfo2 = None
                 if uinfo1:
-                        duinfo1 = '%s/%s' % (uinfo1.get('astid'), uinfo1.get('xivo_userid'))
+                    duinfo1 = '%s/%s' % (uinfo1.get('astid'), uinfo1.get('xivo_userid'))
                 if uinfo2:
-                        duinfo2 = '%s/%s' % (uinfo2.get('astid'), uinfo2.get('xivo_userid'))
+                    duinfo2 = '%s/%s' % (uinfo2.get('astid'), uinfo2.get('xivo_userid'))
                 log.info('%s UNLINK1 %s %s callerid=%s (phone trunk)=(%s %s) user=%s (%s)'
                          % (astid, uid1, chan1, clid1, phoneid1, trunkid1, duinfo1, where))
                 log.info('%s UNLINK2 %s %s callerid=%s (phone trunk)=(%s %s) user=%s'
@@ -2276,6 +2289,10 @@ class XivoCTICommand(BaseCommand):
                         thisagent = self.weblist['agents'][astid].keeplist[agent_id]
                         thisagent['agentstats'].update({'Xivo-Agent-StateTime' : time.time()})
                         thisagent['agentstats'].update({'Xivo-Agent-Status-Link' : {} })
+                        for qval in thisagent['queues_by_agent'].itervalues():
+                            qval['Xivo-QueueMember-StateTime'] = time.time()
+                        for qval in thisagent['groups_by_agent'].itervalues():
+                            qval['Xivo-QueueMember-StateTime'] = time.time()
                         tosend = { 'class' : 'agents',
                                    'function' : 'sendlist',
                                    'payload' : { astid : { agent_id : thisagent } }
@@ -2311,6 +2328,10 @@ class XivoCTICommand(BaseCommand):
                                         thisagent = self.weblist['agents'][astid].keeplist[agent_id]
                                         thisagent['agentstats'].update({'Xivo-Agent-StateTime' : time.time()})
                                         thisagent['agentstats'].update({'Xivo-Agent-Status-Link' : {} })
+                                        for qval in thisagent['queues_by_agent'].itervalues():
+                                            qval['Xivo-QueueMember-StateTime'] = time.time()
+                                        for qval in thisagent['groups_by_agent'].itervalues():
+                                            qval['Xivo-QueueMember-StateTime'] = time.time()
                                         tosend = { 'class' : 'agents',
                                                    'function' : 'sendlist',
                                                    'payload' : { astid : { agent_id : thisagent } }
