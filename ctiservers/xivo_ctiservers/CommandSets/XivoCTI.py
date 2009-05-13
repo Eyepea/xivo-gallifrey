@@ -5485,10 +5485,20 @@ class XivoCTICommand(BaseCommand):
                                 
                 elif dbkind == 'http':
                         if not reversedir:
-                                fulluri = '%s/?%s=%s' % (z.uri, ''.join(z.match_direct), searchpattern)
+                                fulluri = z.uri
+                                # add an ending slash if needed
+                                if fulluri[8:].find('/') == -1:
+                                    fulluri += '/'
+                                fulluri += '?' + '&'.join([key + '=' + urllib.quote(searchpattern.encode('utf-8')) for key in z.match_direct])
                                 n = 0
                                 try:
                                     f = urllib.urlopen(fulluri)
+                                    # use f.info() to detect charset
+                                    charset = 'utf-8'
+                                    s = f.info().getheader('Content-Type')
+                                    k = s.lower().find('charset=')
+                                    if k >= 0:
+                                        charset = s[k:].split(' ')[0].split('=')[1]                                    
                                     for line in f:
                                         if n == 0:
                                             header = line
@@ -5496,7 +5506,7 @@ class XivoCTICommand(BaseCommand):
                                         else:
                                             ll = line.strip()
                                             if isinstance(ll, str): # dont try to decode unicode string.
-                                                ll = ll.decode('utf8')
+                                                ll = ll.decode(charset)
                                             t = ll.split(z.delimiter)
                                             futureline = {'xivo-dir' : z.name}
                                             # XXX problem when badly set delimiter + index()
@@ -5513,8 +5523,13 @@ class XivoCTICommand(BaseCommand):
                                         log.warning('WARNING : %s is empty' % z.uri)
                                 # we don't warn about "only one line" here since the filter has probably already been applied
                         else:
-                                fulluri = '%s/?%s=%s' % (z.uri, ''.join(z.match_reverse), searchpattern)
+                                fulluri = z.uri
+                                # add an ending slash if needed
+                                if fulluri[8:].find('/') == -1:
+                                    fulluri += '/'
+                                fulluri += '?' + '&'.join([key + '=' + urllib.quote(searchpattern) for key in z.match_reverse])
                                 f = urllib.urlopen(fulluri)
+                                # TODO : use f.info() to detect charset
                                 fsl = f.read().strip()
                                 if fsl:
                                     fullstatlist = [{'xivo-dir' : z.name, 'db-fullname' : fsl}]
@@ -5525,10 +5540,9 @@ class XivoCTICommand(BaseCommand):
                         if searchpattern == '*':
                             whereline = ''
                         else:
-                            wl = []
-                            for fname in z.match_direct:
-                                # wl.append("%s REGEXP '%s'" %(fname, searchpattern)) # not in 'sqlite'
-                                wl.append("%s LIKE '%%%s%%'" % (fname, searchpattern))
+                            # prevent SQL injection and make use of '*' wildcard possible
+                            esc_searchpattern = searchpattern.replace("'", "\\'").replace('%', '\\%').replace('*', '%')
+                            wl = ["%s LIKE '%%%s%%'" % (fname, esc_searchpattern) for fname in z.match_direct]
                             whereline = 'WHERE ' + ' OR '.join(wl)
                             
                         results = []
