@@ -31,13 +31,13 @@ log = logging.getLogger('agentlist')
 
 class AgentList(AnyList):
         def __init__(self, newurls = []):
-                self.anylist_properties = {'keywords' : ['firstname', 'lastname', 'number', 'password',
-                                                         'context', 'ackcall', 'wrapuptime'],
-                                           'name' : 'agents',
-                                           'action' : 'getagentslist',
-                                           'urloptions' : (1, 4, True)}
-                AnyList.__init__(self, newurls)
-                return
+            self.anylist_properties = {'keywords' : ['firstname', 'lastname', 'number', 'password',
+                                                     'context', 'ackcall', 'wrapuptime'],
+                                       'name' : 'agents',
+                                       'action' : 'getagentslist',
+                                       'urloptions' : (1, 4, True)}
+            AnyList.__init__(self, newurls)
+            return
         
         queuelocationprops = ['Paused', 'Status', 'Membership', 'Penalty', 'LastCall', 'CallsTaken',
                               'Xivo-QueueMember-StateTime']

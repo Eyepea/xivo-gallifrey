@@ -1227,6 +1227,9 @@ class XivoCTICommand(BaseCommand):
             return itemdir
         
         def findcountry(self, numtolookup):
+            """
+            Looks up the country code and name according to the prefix database.
+            """
             nchars = 4
             notfound = True
             notfinished = True
@@ -1261,14 +1264,14 @@ class XivoCTICommand(BaseCommand):
                         whoms = actionopt.get('whom')
                         capaids = None
                         if 'capaids' in actionopt:
-                                if actionopt['capaids']:
-                                        capaids = actionopt['capaids'].split(',')
-                                else:
-                                        capaids = []
+                            if actionopt['capaids']:
+                                capaids = actionopt['capaids'].split(',')
+                            else:
+                                capaids = []
                         if whoms is None or whoms == '':
-                                log.warning('%s __sheet_alert__ : whom field for %s action has not been defined'
-                                            % (astid, where))
-                                return
+                            log.warning('%s __sheet_alert__ : whom field for %s action has not been defined'
+                                        % (astid, where))
+                            return
                         log.info('%s __sheet_alert__ %s %s %s %s' % (astid, where, whoms, time.asctime(), channel))
                         
                         linestosend = ['<?xml version="1.0" encoding="utf-8"?>',
@@ -1280,7 +1283,7 @@ class XivoCTICommand(BaseCommand):
                                    'xivo-time' : time.strftime('%H:%M:%S', time.localtime()),
                                    'xivo-date' : time.strftime('%Y-%m-%d', time.localtime())}
                         if actionopt.get('focus') == 'no':
-                                linestosend.append('<internal name="nofocus"></internal>')
+                            linestosend.append('<internal name="nofocus"></internal>')
                         linestosend.append('<internal name="astid"><![CDATA[%s]]></internal>' % astid)
                         linestosend.append('<internal name="context"><![CDATA[%s]]></internal>' % context)
                         linestosend.append('<internal name="kind"><![CDATA[%s]]></internal>' % where)
@@ -1288,17 +1291,17 @@ class XivoCTICommand(BaseCommand):
                         # 1/4
                         # fill a dict with the appropriate values + set the concerned users' list
                         if where == 'outgoing':
-                                exten = event.get('Extension')
-                                application = event.get('Application')
-                                if application == 'Dial' and exten.isdigit():
-                                        pass
-                                
+                            exten = event.get('Extension')
+                            application = event.get('Application')
+                            if application == 'Dial' and exten.isdigit():
+                                pass
+                            
                         elif where == 'faxreceived':
-                                itemdir['xivo-calleridnum'] = event.get('CallerID')
-                                itemdir['xivo-faxpages'] = event.get('PagesTransferred')
-                                itemdir['xivo-faxfile'] = event.get('FileName')
-                                itemdir['xivo-faxstatus'] = event.get('PhaseEString')
-                                
+                            itemdir['xivo-calleridnum'] = event.get('CallerID')
+                            itemdir['xivo-faxpages'] = event.get('PagesTransferred')
+                            itemdir['xivo-faxfile'] = event.get('FileName')
+                            itemdir['xivo-faxstatus'] = event.get('PhaseEString')
+                            
                         elif where in ['agentlinked', 'agentunlinked']:
                                 dstnum = event.get('Channel2')[6:]
                                 chan = event.get('Channel1')
@@ -1405,6 +1408,7 @@ class XivoCTICommand(BaseCommand):
                         dozip = True
                         xmlstring = ''.join(linestosend).encode('utf8')
                         tosend = { 'class' : 'sheet',
+                                   'whom' : whoms,
                                    'function' : 'displaysheet',
                                    'channel' : channel,
                                    'compressed' : dozip
@@ -1430,40 +1434,40 @@ class XivoCTICommand(BaseCommand):
                                     for uinfo in userinfos:
                                         if capaids is None or uinfo.get('capaid') in capaids:
                                             uinfostosend.append(uinfo)
-                                        
+                                            
                                 elif whom == 'subscribe':
                                     for uinfo in self.ulist_ng.keeplist.itervalues():
                                         if capaids is None or uinfo.get('capaid') in capaids:
                                             if 'subscribe' in uinfo:
                                                 uinfostosend.append(uinfo)
-                                                    
+                                                
                                 elif whom == 'all-astid-context': # match asterisks and contexts
                                     for uinfo in self.ulist_ng.keeplist.itervalues():
                                         if astid == uinfo.get('astid') and context == uinfo.get('context'):
                                             if capaids is None or uinfo.get('capaid') in capaids:
                                                 uinfostosend.append(uinfo)
-                                                    
+                                                
                                 elif whom == 'all-context': # accross asterisks + match contexts
                                     for uinfo in self.ulist_ng.keeplist.itervalues():
                                         if context == uinfo.get('context'):
                                             if capaids is None or uinfo.get('capaid') in capaids:
                                                 uinfostosend.append(uinfo)
-                                                    
+                                                
                                 elif whom == 'all-astid': # accross contexts + match asterisks
                                     for uinfo in self.ulist_ng.keeplist.itervalues():
                                         if astid == uinfo.get('astid'):
                                             if capaids is None or uinfo.get('capaid') in capaids:
                                                 uinfostosend.append(uinfo)
-                                                    
+                                                
                                 elif whom == 'all': # accross asterisks and contexts
                                     for uinfo in self.ulist_ng.keeplist.itervalues():
                                         if capaids is None or uinfo.get('capaid') in capaids:
                                             uinfostosend.append(uinfo)
-                                                
+                                            
                                 else:
                                         log.warning('__sheet_alert__ (%s) : unknown destination <%s> in <%s>'
                                                     % (astid, whom, where))
-
+                                        
                                 lstsent = []
                                 for uinfo in uinfostosend:
                                     if self.__send_msg_to_cti_client__(uinfo, fulllines):
@@ -1474,7 +1478,7 @@ class XivoCTICommand(BaseCommand):
                                 if lstsent:
                                     log.info('%s (whom=%s, where=%s) %d sheet(s) sent to %s'
                                              % (astid, whom, where, nsent, lstsent))
-
+                                    
                 return
         
         
@@ -1618,22 +1622,22 @@ class XivoCTICommand(BaseCommand):
             return ret
         
         def __userinfo_from_phoneid__(self, astid, phoneid):
-                uinfo = None
-                for vv in self.ulist_ng.keeplist.itervalues():
-                        if phoneid in vv['techlist'] and astid == vv['astid']:
-                                uinfo = vv
-                                break
-                return uinfo
+            uinfo = None
+            for vv in self.ulist_ng.keeplist.itervalues():
+                if phoneid in vv['techlist'] and astid == vv['astid']:
+                    uinfo = vv
+                    break
+            return uinfo
         
         def __userinfo_from_agentphonenum__(self, astid, phoneid):
-                uinfo = None
-                if phoneid is not None:
-                        phonenum = phoneid.split('.')[3]
-                        for vv in self.ulist_ng.keeplist.itervalues():
-                                if astid == vv['astid'] and 'agentphonenum' in vv and phonenum == vv['agentphonenum']:
-                                        uinfo = vv
-                                        break
-                return uinfo
+            uinfo = None
+            if phoneid is not None:
+                phonenum = phoneid.split('.')[3]
+                for vv in self.ulist_ng.keeplist.itervalues():
+                    if astid == vv['astid'] and 'agentphonenum' in vv and phonenum == vv['agentphonenum']:
+                        uinfo = vv
+                        break
+            return uinfo
         
         def __fill_uniqueids__(self, astid, uid1, uid2, chan1, chan2, where):
                 if uid1 in self.uniqueids[astid]:
@@ -4711,22 +4715,25 @@ class XivoCTICommand(BaseCommand):
                                     'record', 'stoprecord',
                                     'listen', 'stoplisten',
                                     'getfile', 'getfilelist']:
+                        agentphonenum = None
                         if len(commandargs) > 2:
-                                astid = commandargs[1]
-                                anum = commandargs[2]
-                                uinfo = None
-                                agent_id = self.__find_agentid_by_agentnum__(astid, anum)
-                                for uinfo_iter in self.ulist_ng.keeplist.itervalues():
-                                        if 'agentid' in uinfo_iter and uinfo_iter.get('agentid') == agent_id and uinfo_iter.get('astid') == astid:
-                                                uinfo = uinfo_iter
-                                                break
+                            astid = commandargs[1]
+                            anum = commandargs[2]
+                            uinfo = None
+                            agent_id = self.__find_agentid_by_agentnum__(astid, anum)
+                            for uinfo_iter in self.ulist_ng.keeplist.itervalues():
+                                if 'agentid' in uinfo_iter and uinfo_iter.get('agentid') == agent_id and uinfo_iter.get('astid') == astid:
+                                    uinfo = uinfo_iter
+                                    break
+                            if len(commandargs) > 3:
+                                agentphonenum = commandargs[3]
                         else:
-                                uinfo = userinfo
+                            uinfo = userinfo
                         
                         if subcommand == 'login':
-                                self.__login_agent__(uinfo)
+                            self.__login_agent__(uinfo, agentphonenum)
                         elif subcommand == 'logout':
-                                self.__logout_agent__(uinfo)
+                            self.__logout_agent__(uinfo)
                         elif subcommand == 'record':
                                 datestring = time.strftime('%Y%m%d-%H%M%S', time.localtime())
                                 agent_id = self.weblist['agents'][astid].reverse_index.get(anum)
@@ -4821,50 +4828,55 @@ class XivoCTICommand(BaseCommand):
                 return
         
         
-        def __login_agent__(self, uinfo):
+        def __login_agent__(self, uinfo, agphonenum = None):
                 if uinfo is None:
-                        return
+                    return
                 astid = uinfo.get('astid')
                 # if phonenum is None:
                 # phonenum = userinfo.get('phonenum')
+                
+                # override the previously set value
+                if agphonenum:
+                    uinfo['agentphonenum'] = agphonenum
+                    
                 if 'agentid' in uinfo and 'agentphonenum' in uinfo and astid is not None:
-                        agentnum = self.__agentnum__(uinfo)
-                        agentphonenum = uinfo['agentphonenum']
-                        if agentnum and agentphonenum:
-                                agprops = self.weblist['agents'][astid].keeplist[uinfo['agentid']]
-                                wrapuptime = agprops.get('wrapuptime')
-                                self.__ami_execute__(astid, 'agentcallbacklogin',
-                                                     agentnum, agentphonenum,
-                                                     agprops.get('context'), agprops.get('ackcall'))
-                                ## self.__agent__(uinfo, ['unpause_all'])
-                                # chan_agent.c:2318 callback_deprecated: AgentCallbackLogin is deprecated and will be removed in a future release.
-                                # chan_agent.c:2319 callback_deprecated: See doc/queues-with-callback-members.txt for an example of how to achieve
-                                # chan_agent.c:2320 callback_deprecated: the same functionality using only dialplan logic.
-                                self.__ami_execute__(astid, 'setvar', 'AGENTBYCALLERID_%s' % agentphonenum, agentnum)
-                                self.__fill_user_ctilog__(uinfo, 'agent_login')
+                    agentnum = self.__agentnum__(uinfo)
+                    agentphonenum = uinfo['agentphonenum']
+                    if agentnum and agentphonenum:
+                        agprops = self.weblist['agents'][astid].keeplist[uinfo['agentid']]
+                        wrapuptime = agprops.get('wrapuptime')
+                        self.__ami_execute__(astid, 'agentcallbacklogin',
+                                             agentnum, agentphonenum,
+                                             agprops.get('context'), agprops.get('ackcall'))
+                        # self.__agent__(uinfo, ['unpause_all'])
+                        # chan_agent.c:2318 callback_deprecated: AgentCallbackLogin is deprecated and will be removed in a future release.
+                        # chan_agent.c:2319 callback_deprecated: See doc/queues-with-callback-members.txt for an example of how to achieve
+                        # chan_agent.c:2320 callback_deprecated: the same functionality using only dialplan logic.
+                        self.__ami_execute__(astid, 'setvar', 'AGENTBYCALLERID_%s' % agentphonenum, agentnum)
+                        self.__fill_user_ctilog__(uinfo, 'agent_login')
                 return
-        
+            
         def __logout_agent__(self, uinfo):
                 if uinfo is None:
-                        return
+                    return
                 astid = uinfo.get('astid')
                 if 'agentid' in uinfo and astid is not None:
-                        agentnum = self.__agentnum__(uinfo)
-                        if 'agentphonenum' in uinfo:
-                                agentphonenum = uinfo['agentphonenum']
-                                if agentphonenum:
-                                        self.__ami_execute__(astid, 'setvar', 'AGENTBYCALLERID_%s' % agentphonenum, '')
-                                        # del uinfo['agentphonenum']
-                        if agentnum:
-                                ## self.__agent__(uinfo, ['pause_all'])
-                                self.__ami_execute__(astid, 'agentlogoff', agentnum)
-                                agentlogoff_retry = threading.Timer(0.1, self.__callback_timer__, ('agentlogoff',))
-                                agentlogoff_retry.start()
-                                self.timerthreads_agentlogoff_retry[agentlogoff_retry] = {'astid' : astid,
-                                                                                          'agentnumber' : agentnum}
-                                self.__fill_user_ctilog__(uinfo, 'agent_logout')
+                    agentnum = self.__agentnum__(uinfo)
+                    if 'agentphonenum' in uinfo:
+                        agentphonenum = uinfo['agentphonenum']
+                        if agentphonenum:
+                            self.__ami_execute__(astid, 'setvar', 'AGENTBYCALLERID_%s' % agentphonenum, '')
+                            # del uinfo['agentphonenum']
+                    if agentnum:
+                        ## self.__agent__(uinfo, ['pause_all'])
+                        self.__ami_execute__(astid, 'agentlogoff', agentnum)
+                        agentlogoff_retry = threading.Timer(0.1, self.__callback_timer__, ('agentlogoff',))
+                        agentlogoff_retry.start()
+                        self.timerthreads_agentlogoff_retry[agentlogoff_retry] = {'astid' : astid,
+                                                                                  'agentnumber' : agentnum}
+                        self.__fill_user_ctilog__(uinfo, 'agent_logout')
                 return
-        
+            
         def logout_all_agents(self):
                 for userinfo in self.ulist_ng.keeplist.itervalues():
                         self.__logout_agent__(userinfo)
@@ -5775,12 +5787,12 @@ class XivoCTICommand(BaseCommand):
                     return
                 if chan in self.localchans[astid]:
                     del self.localchans[astid][chan]
-
+                    
         def __create_new_sheet__(self, astid, channel):
                 if not self.sheetmanager.has_key(astid):
                     self.sheetmanager[astid] = SheetManager(astid)
                 self.sheetmanager[astid].new_sheet(channel)
-
+                
         def __handle_sheet_command__(self, userinfo, command):
                 log.debug('__handle_sheet_command__ user=%s command=%s' % (userinfo, command))
                 astid = userinfo.get('astid')
@@ -5801,7 +5813,7 @@ class XivoCTICommand(BaseCommand):
                     #self.__send_msg_to_cti_client__(userinfo, self.__cjson_encode__(tosend))
                     for user in self.sheetmanager[astid].get_sheet(chan).viewingusers:
                         self.__send_msg_to_cti_client__(self.ulist_ng.keeplist[user], self.__cjson_encode__(tosend))
-
+                        
         def __update_sheet_user__(self, astid, newuinfo, channel):
                 # update connected user
                 if astid in self.sheetmanager and self.sheetmanager[astid].has_sheet(channel):
@@ -5834,7 +5846,7 @@ class XivoCTICommand(BaseCommand):
                                    'entry': entry.todict()
                                  }
                         self.__send_msg_to_cti_client__(newuser, self.__cjson_encode__(tosend))
-
+                        
         def __sheet_disconnect__(self, astid, channel):
                 # close the sheet if it is open on a user screen
                 if self.sheetmanager[astid].get_sheet(channel).currentuser is not None:
@@ -5846,5 +5858,5 @@ class XivoCTICommand(BaseCommand):
                              }
                     self.__send_msg_to_cti_client__(olduinfo, self.__cjson_encode__(tosend))
                 self.sheetmanager[astid].del_sheet(channel)
-
+                
 xivo_commandsets.CommandClasses['xivocti'] = XivoCTICommand
