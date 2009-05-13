@@ -1,2 +1,2 @@
 127.0.0.1	localhost
-127.0.1.1	#XIVO_HOSTNAME#.#XIVO_DOMAIN#	#XIVO_HOSTNAME#	localhost.localdomain
+127.0.1.1	#XIVO_HOSTNAME#.#XIVO_DOMAIN#	localhost.localdomain	#XIVO_HOSTNAME#
