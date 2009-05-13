@@ -1404,21 +1404,19 @@ class XivoCTICommand(BaseCommand):
                         
                         dozip = True
                         xmlstring = ''.join(linestosend).encode('utf8')
+                        tosend = { 'class' : 'sheet',
+                                   'function' : 'displaysheet',
+                                   'channel' : channel,
+                                   'compressed' : dozip
+                                   }
                         if dozip:
-                                ulen = len(xmlstring)
-                                # prepend the uncompressed length in big endian
-                                # to the zlib compressed string to meet Qt qUncompress() function expectations
-                                toencode = struct.pack(">I", ulen) + zlib.compress(xmlstring)
-                                tosend = { 'class' : 'sheet',
-                                           'function' : 'displaysheet',
-                                           'channel' : channel,
-                                           'compressed' : 'anything',
-                                           'payload' : base64.b64encode(toencode) }
+                            ulen = len(xmlstring)
+                            # prepend the uncompressed length in big endian
+                            # to the zlib compressed string to meet Qt qUncompress() function expectations
+                            toencode = struct.pack(">I", ulen) + zlib.compress(xmlstring)
+                            tosend['payload'] = base64.b64encode(toencode)
                         else:
-                                tosend = { 'class' : 'sheet',
-                                           'function' : 'displaysheet',
-                                           'channel' : channel,
-                                           'payload' : base64.b64encode(xmlstring) }
+                            tosend['payload'] = base64.b64encode(xmlstring)
                         fulllines = self.__cjson_encode__(tosend)
                         
                         # print '---------', where, whoms, fulllines
@@ -2592,9 +2590,9 @@ class XivoCTICommand(BaseCommand):
                         else:
                                 log.warning('%s AMI Response=Error : (%s) <%s>' % (astid, actionid, msg))
                 elif msg == 'Authentication failed':
-                        log.warning('%s AMI : Not allowed to connect to this Manager Interface' % astid)
+                    log.warning('%s AMI : Not allowed to connect to this Manager Interface' % astid)
                 elif msg == 'Invalid/unknown command':
-                        log.warning('%s AMI : Invalid/unknown command : %s' % (astid, event))
+                    log.warning('%s AMI : Invalid/unknown command : %s' % (astid, event))
                 elif msg in ['No such channel',
                              'No such agent',
                              'Permission denied',
@@ -2606,21 +2604,21 @@ class XivoCTICommand(BaseCommand):
                              'Unable to remove interface from queue: No such queue',
                              'Unable to remove interface: Not there'] :
                         if actionid in self.amirequests[astid]:
-                                log.warning('%s AMI Response=Error : %s %s' % (astid, event, self.amirequests[astid][actionid]))
+                            log.warning('%s AMI Response=Error : %s %s' % (astid, event, self.amirequests[astid][actionid]))
                         elif actionid == '00':
-                                log.debug('%s AMI Response=Error : %s (init)' % (astid, event))
+                            log.debug('%s AMI Response=Error : %s (init)' % (astid, event))
                         else:
-                                log.warning('%s AMI Response=Error : %s' % (astid, event))
+                            log.warning('%s AMI Response=Error : %s' % (astid, event))
                 else:
                         if actionid in self.amirequests[astid]:
-                                log.warning('%s AMI Response=Error : (unknown message) %s %s' % (astid, event, self.amirequests[astid][actionid]))
+                            log.warning('%s AMI Response=Error : (unknown message) %s %s' % (astid, event, self.amirequests[astid][actionid]))
                         else:
-                                log.warning('%s AMI Response=Error : (unknown message) %s' % (astid, event))
-                                
+                            log.warning('%s AMI Response=Error : (unknown message) %s' % (astid, event))
+                            
                 if actionid in self.getvar_requests[astid]:
-                        del self.getvar_requests[astid][actionid]
+                    del self.getvar_requests[astid][actionid]
                 if actionid in self.amirequests[astid]:
-                        del self.amirequests[astid][actionid]
+                    del self.amirequests[astid][actionid]
                 return
         
         def amiresponse_mailboxcount(self, astid, event):
@@ -2674,21 +2672,21 @@ class XivoCTICommand(BaseCommand):
                 exten   = event.get('Exten')
                 if hint:
                         if hint.find('/') > 0:
-                                # log.info('amiresponse_extensionstatus context=%s hint=%s status=%s' % (context, hint, status))
-                                proto = hint.split('/')[0].lower()
-                                phoneref = '.'.join([proto, context, hint.split('/')[1], exten])
-                                if phoneref in self.weblist['phones'][astid].keeplist:
-                                        if self.weblist['phones'][astid].ami_extstatus(phoneref, status):
-                                                # only sends information if the status changed
-                                                tosend = self.weblist['phones'][astid].status(phoneref)
-                                                tosend['astid'] = astid
-                                                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
+                            # log.info('amiresponse_extensionstatus context=%s hint=%s status=%s' % (context, hint, status))
+                            proto = hint.split('/')[0].lower()
+                            phoneref = '.'.join([proto, context, hint.split('/')[1], exten])
+                            if phoneref in self.weblist['phones'][astid].keeplist:
+                                if self.weblist['phones'][astid].ami_extstatus(phoneref, status):
+                                    # only sends information if the status changed
+                                    tosend = self.weblist['phones'][astid].status(phoneref)
+                                    tosend['astid'] = astid
+                                    self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
                         elif hint.startswith('user:'):
-                                log.warning('%s : user:xxx hint (phone %s not watched but present) : %s' % (astid, exten, event))
-                                # {'Status': '4', 'Hint': 'user:218', 'Exten': '218', 'ActionID': 'pPKvoLQ97b', 'Context': 'default', ''})
+                            log.warning('%s : user:xxx hint (phone %s not watched but present) : %s' % (astid, exten, event))
+                            # {'Status': '4', 'Hint': 'user:218', 'Exten': '218', 'ActionID': 'pPKvoLQ97b', 'Context': 'default', ''})
                         else:
-                                log.warning('%s : undefined hint : %s' % (astid, event))
-                                # {'Status': '0', 'Hint': 'Custom:user:105', 'Exten': '105', 'ActionID': 'RBx7j3NSwI', 'Context': 'default'}
+                            log.warning('%s : undefined hint : %s' % (astid, event))
+                            # {'Status': '0', 'Hint': 'Custom:user:105', 'Exten': '105', 'ActionID': 'RBx7j3NSwI', 'Context': 'default'}
                 else:
                         event.pop('Hint')
                         log.warning('%s : empty hint (watched or not, the phone %s is not present) : %s' % (astid, exten, event))
@@ -2706,12 +2704,12 @@ class XivoCTICommand(BaseCommand):
                 
                 for phoneref, b in self.weblist['phones'][astid].keeplist.iteritems():
                         if b['number'] == exten and b['context'] == context:
-                                #log.info('ami_extensionstatus exten=%s context=%s status=%s' % (exten, context, status))
-                                if self.weblist['phones'][astid].ami_extstatus(phoneref, status):
-                                        # only sends information if the status changed
-                                        tosend = self.weblist['phones'][astid].status(phoneref)
-                                        tosend['astid'] = astid
-                                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
+                            # log.info('ami_extensionstatus exten=%s context=%s status=%s' % (exten, context, status))
+                            if self.weblist['phones'][astid].ami_extstatus(phoneref, status):
+                                # only sends information if the status changed
+                                tosend = self.weblist['phones'][astid].status(phoneref)
+                                tosend['astid'] = astid
+                                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
                 return
         
         def ami_channelreload(self, astid, event):
