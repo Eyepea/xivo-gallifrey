@@ -1427,57 +1427,56 @@ class XivoCTICommand(BaseCommand):
                         # send the payload to the appropriate people
                         for whom in whoms.split(','):
                                 nsent = 0
+                                uinfostosend = []
                                 if whom == 'dest':
-                                    lstsent = []
                                     for uinfo in userinfos:
                                         if capaids is None or uinfo.get('capaid') in capaids:
-                                            if self.__send_msg_to_cti_client__(uinfo, fulllines):
-                                                nsent += 1
-                                                userid = '%s/%s' % (uinfo.get('astid'), uinfo.get('xivo_userid'))
-                                                lstsent.append(userid)
-                                    if lstsent:
-                                        log.info('%s (whom=%s, where=%s) sheet sent to %s'
-                                                 % (astid, whom, where, lstsent))
+                                            uinfostosend.append(uinfo)
                                         
                                 elif whom == 'subscribe':
                                     for uinfo in self.ulist_ng.keeplist.itervalues():
                                         if capaids is None or uinfo.get('capaid') in capaids:
                                             if 'subscribe' in uinfo:
-                                                if self.__send_msg_to_cti_client__(uinfo, fulllines):
-                                                    nsent += 1
+                                                uinfostosend.append(uinfo)
                                                     
                                 elif whom == 'all-astid-context': # match asterisks and contexts
                                     for uinfo in self.ulist_ng.keeplist.itervalues():
                                         if astid == uinfo.get('astid') and context == uinfo.get('context'):
                                             if capaids is None or uinfo.get('capaid') in capaids:
-                                                if self.__send_msg_to_cti_client__(uinfo, fulllines):
-                                                    nsent += 1
+                                                uinfostosend.append(uinfo)
                                                     
                                 elif whom == 'all-context': # accross asterisks + match contexts
                                     for uinfo in self.ulist_ng.keeplist.itervalues():
                                         if context == uinfo.get('context'):
                                             if capaids is None or uinfo.get('capaid') in capaids:
-                                                if self.__send_msg_to_cti_client__(uinfo, fulllines):
-                                                    nsent += 1
+                                                uinfostosend.append(uinfo)
                                                     
                                 elif whom == 'all-astid': # accross contexts + match asterisks
                                     for uinfo in self.ulist_ng.keeplist.itervalues():
                                         if astid == uinfo.get('astid'):
                                             if capaids is None or uinfo.get('capaid') in capaids:
-                                                if self.__send_msg_to_cti_client__(uinfo, fulllines):
-                                                    nsent += 1
+                                                uinfostosend.append(uinfo)
                                                     
                                 elif whom == 'all': # accross asterisks and contexts
                                     for uinfo in self.ulist_ng.keeplist.itervalues():
                                         if capaids is None or uinfo.get('capaid') in capaids:
-                                            if self.__send_msg_to_cti_client__(uinfo, fulllines):
-                                                nsent += 1
+                                            uinfostosend.append(uinfo)
                                                 
                                 else:
                                         log.warning('__sheet_alert__ (%s) : unknown destination <%s> in <%s>'
                                                     % (astid, whom, where))
-                                log.info('%s (whom=%s, where=%s) %d sheet(s) sent'
-                                         % (astid, whom, where, nsent))
+
+                                lstsent = []
+                                for uinfo in uinfostosend:
+                                    if self.__send_msg_to_cti_client__(uinfo, fulllines):
+                                        nsent += 1
+                                        userid = '%s/%s' % (uinfo.get('astid'), uinfo.get('xivo_userid'))
+                                        lstsent.append(userid)
+                                self.sheetmanager[astid].addviewingusers(channel, lstsent)
+                                if lstsent:
+                                    log.info('%s (whom=%s, where=%s) %d sheet(s) sent to %s'
+                                             % (astid, whom, where, nsent, lstsent))
+
                 return
         
         
@@ -3660,8 +3659,8 @@ class XivoCTICommand(BaseCommand):
                                 self.__ami_execute__(astid, 'transfer', channel,
                                                      destdetails.get('number'),
                                                      destdetails.get('context'))
-                        self.__sheet_alert__('incomingdid', astid, context, event, dialplan_data, channel)
                         self.__create_new_sheet__(astid, self.uniqueids[astid][uniqueid]['channel'])
+                        self.__sheet_alert__('incomingdid', astid, context, event, dialplan_data, channel)
                         
                 elif eventname in ['MacroUser', 'MacroGroup', 'MacroQueue', 'MacroOutcall', 'MacroMeetme']:
                         channel = event.get('CHANNEL')
@@ -5801,7 +5800,9 @@ class XivoCTICommand(BaseCommand):
                                'channel': chan,
                                'entry': self.sheetmanager[astid].get_sheet(chan).entries[-1].todict()
                              }
-                    self.__send_msg_to_cti_client__(userinfo, self.__cjson_encode__(tosend))
+                    #self.__send_msg_to_cti_client__(userinfo, self.__cjson_encode__(tosend))
+                    for user in self.sheetmanager[astid].get_sheet(chan).viewingusers:
+                        self.__send_msg_to_cti_client__(self.ulist_ng.keeplist[user], self.__cjson_encode__(tosend))
 
         def __update_sheet_user__(self, astid, newuinfo, channel):
                 # update connected user

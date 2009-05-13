@@ -45,10 +45,15 @@ class SheetManager:
             self.channel = channel
             self.entries = []
             self.currentuser = None
+            self.viewingusers = []
             self.sheet = '' # initial customer sheet
         
         def addentry(self, text):
             self.entries.append(self.SheetEntry(self.currentuser, text))
+
+        def addviewinguser(self, user):
+            if not user in self.viewingusers:
+                self.viewingusers.append(user)
 
     def __init__(self, astid=None):
         self.astid = astid
@@ -72,8 +77,13 @@ class SheetManager:
     def update_currentuser(self, channel, user):
         log.debug('update_currentuser channel=%s user=%s' % (channel, user))
         self.sheets[channel].currentuser = user
+        self.sheets[channel].addviewinguser(user)
 
     def addentry(self, channel, text):
         log.debug('addentry %s "%s"' % (channel, text))
         self.sheets[channel].addentry(text)
+
+    def addviewingusers(self, channel, users):
+        for user in users:
+            self.sheets[channel].addviewinguser(user)
 
