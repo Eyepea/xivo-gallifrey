@@ -3998,6 +3998,7 @@ class XivoCTICommand(BaseCommand):
                                                                                                        'timestamp-link' : time.time() - seconds,
                                                                                                        'calleridnum' : applidata[0],
                                                                                                        'calleridname' : '<meetme>' }
+                                self.weblist['phones'][astid].setlinenum(phoneid, uniqueid)
                         return
                 elif appliname == 'Playback':
                         log.info('%s ami_status : %s %s' % (astid, appliname, applidata))
@@ -4055,12 +4056,13 @@ class XivoCTICommand(BaseCommand):
                                         status = 'linked-called'
                                 ts = int(uniqueid.split('.')[0])
                                 self.weblist['phones'][astid].keeplist[otherphoneid]['comms'][uniqueid] = { 'status' : status,
-                                                                                                       'thischannel' : link,
-                                                                                                       'peerchannel' : channel,
-                                                                                                       'time-link' : time.time() - ts,
-                                                                                                       'timestamp-link' : ts,
-                                                                                                       'calleridnum' : calleridnum,
-                                                                                                       'calleridname' : calleridname }
+                                                                                                            'thischannel' : link,
+                                                                                                            'peerchannel' : channel,
+                                                                                                            'time-link' : time.time() - ts,
+                                                                                                            'timestamp-link' : ts,
+                                                                                                            'calleridnum' : calleridnum,
+                                                                                                            'calleridname' : calleridname }
+                                self.weblist['phones'][astid].setlinenum(otherphoneid, uniqueid)
                         if context is not None:
                                 if context == 'macro-user':
                                         # ami_status xivo-obelisk Up 1222872105.4001 SIP/fpotiquet-085d8238 IAX2/asteriskisdn-11652 / None None None None
@@ -4242,21 +4244,21 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def ami_alarm(self, astid, event):
-                log.info('%s ami_alarm : %s' % (astid, event))
-                return
+            log.warning('%s ami_alarm : %s' % (astid, event))
+            return
         
         def ami_alarmclear(self, astid, event):
-                log.info('%s ami_alarmclear : %s' % (astid, event))
-                return
+            log.warning('%s ami_alarmclear : %s' % (astid, event))
+            return
         
         def ami_dndstate(self, astid, event):
-                log.info('%s ami_dndstate : %s' % (astid, event))
-                return
+            log.info('%s ami_dndstate : %s' % (astid, event))
+            return
         
         def ami_cdr(self, astid, event):
-                log.info('%s ami_cdr : %s' % (astid, event))
-                return
-
+            log.info('%s ami_cdr : %s' % (astid, event))
+            return
+        
         def ami_atxfer(self, astid, event):
                 log.info('%s ami_atxfer : %s' % (astid, event))
                 chansrc = event.get('SrcChannel');

@@ -50,7 +50,25 @@ class PhoneList(AnyList):
                     if infos.has_key('calleridnum'):
                         log.debug('  __createorupdate_comm__ new calleridnum[%s %s] : %s' % (commid, infos.get('thischannel'), infos.get('calleridnum')))
                     self.keeplist[phoneid]['comms'][commid] = infos
+                    self.setlinenum(phoneid, commid)
                     
+        def setlinenum(self, phoneid, commid):
+            """
+            Define a line number for the phone, according to the currently 'busy'
+            channels/uniqueids.
+            This can not (at the time being, at least) be directly related
+            to the line numbers on the physical phones.
+            """
+            usedlines = []
+            for cid, cinfo in self.keeplist[phoneid]['comms'].iteritems():
+                if 'linenum' in cinfo:
+                    usedlines.append(cinfo.get('linenum'))
+            linenum = 1
+            while (linenum in usedlines):
+                linenum += 1
+            self.keeplist[phoneid]['comms'][commid]['linenum'] = linenum
+            return
+        
         def updatechan(self, phoneid, infos, commid=None):
                 log.debug('phone::updatechan %s %s' % (phoneid, infos))
                 # we are gessing which "comm" because there is only one !
@@ -148,19 +166,20 @@ class PhoneList(AnyList):
         def ami_rename(self, oldphoneid, newphoneid, oldname, newname, uid):
                 # rename channels
                 for phoneid, v in self.keeplist.iteritems():
-                        for k, kk in v['comms'].iteritems():
-                                if kk.get('thischannel') == oldname:
-                                        kk['thischannel'] = newname
-                                if kk.get('peerchannel') == oldname:
-                                        kk['peerchannel'] = newname
+                    for k, kk in v['comms'].iteritems():
+                        if kk.get('thischannel') == oldname:
+                            kk['thischannel'] = newname
+                        if kk.get('peerchannel') == oldname:
+                            kk['peerchannel'] = newname
                 # move channels from one phone to another
                 if oldphoneid and newphoneid and oldphoneid != newphoneid:
-                        if uid in self.keeplist[oldphoneid]['comms'] and uid not in self.keeplist[newphoneid]['comms']:
-                                self.keeplist[newphoneid]['comms'][uid] = self.keeplist[oldphoneid]['comms'][uid]
-                                del self.keeplist[oldphoneid]['comms'][uid]
-                        else:
-                                log.warning('(ami_rename) %s : could not move from %s to %s' % (uid, oldphoneid, newphoneid))
-                                #log.warning('(ami_rename) %s : %s ---- %s' % (uid, self.keeplist[oldphoneid]['comms'], self.keeplist[oldphoneid]['comms']))
+                    if uid in self.keeplist[oldphoneid]['comms'] and uid not in self.keeplist[newphoneid]['comms']:
+                        self.keeplist[newphoneid]['comms'][uid] = self.keeplist[oldphoneid]['comms'][uid]
+                        self.setlinenum(newphoneid, uid)
+                        del self.keeplist[oldphoneid]['comms'][uid]
+                    else:
+                        log.warning('(ami_rename) %s : could not move from %s to %s' % (uid, oldphoneid, newphoneid))
+                        #log.warning('(ami_rename) %s : %s ---- %s' % (uid, self.keeplist[oldphoneid]['comms'], self.keeplist[oldphoneid]['comms']))
                 return
         
         def ami_rename_totrunk(self, oldphoneid, oldname, newname, uid):
@@ -183,43 +202,44 @@ class PhoneList(AnyList):
         
         def ami_rename_fromtrunk(self, newphoneid, oldname, newname, uid, tomove):
                 for phoneid, v in self.keeplist.iteritems():
-                        for k, kk in v['comms'].iteritems():
-                                if kk.get('thischannel') == oldname:
-                                        kk['thischannel'] = newname
-                                if kk.get('peerchannel') == oldname:
-                                        kk['peerchannel'] = newname
+                    for k, kk in v['comms'].iteritems():
+                        if kk.get('thischannel') == oldname:
+                            kk['thischannel'] = newname
+                        if kk.get('peerchannel') == oldname:
+                            kk['peerchannel'] = newname
                 if tomove and uid not in self.keeplist[newphoneid]['comms']:
-                        self.keeplist[newphoneid]['comms'][uid] = tomove
+                    self.keeplist[newphoneid]['comms'][uid] = tomove
+                    self.setlinenum(newphoneid, uid)
                 else:
-                        log.warning('(ami_rename_fromtrunk) %s : could not set %s' % (uid, newphoneid))
+                    log.warning('(ami_rename_fromtrunk) %s : could not set %s' % (uid, newphoneid))
                 return
         
         def ami_hangup(self, uid):
                 phoneidlist = []
                 for phoneid, phoneprops in self.keeplist.iteritems():
-                        if uid in phoneprops['comms']:
-                                phoneprops['comms'][uid]['status'] = 'hangup'
-                                if phoneid not in phoneidlist:
-                                        phoneidlist.append(phoneid)
+                    if uid in phoneprops['comms']:
+                        phoneprops['comms'][uid]['status'] = 'hangup'
+                        if phoneid not in phoneidlist:
+                            phoneidlist.append(phoneid)
                 return phoneidlist
         
         def clear(self, uid):
                 phoneidlist = []
                 for phoneid, phoneprops in self.keeplist.iteritems():
-                        if uid in phoneprops['comms']:
-                                del phoneprops['comms'][uid]
-                                if phoneid not in phoneidlist:
-                                        phoneidlist.append(phoneid)
+                    if uid in phoneprops['comms']:
+                        del phoneprops['comms'][uid]
+                        if phoneid not in phoneidlist:
+                            phoneidlist.append(phoneid)
                 return phoneidlist
         
         def setdisplayhints(self, dh):
-                self.display_hints = dh
-                return
+            self.display_hints = dh
+            return
         
         def ami_extstatus(self, phoneid, status):
                 if phoneid in self.keeplist:
                         if status not in self.display_hints:
-                                status = '-2'
+                            status = '-2'
                         #changed = not (self.keeplist[phoneid]['hintstatus'] == self.display_hints.get(status))
                         changed = not isinstance(self.keeplist[phoneid]['hintstatus'], dict) or not (self.keeplist[phoneid]['hintstatus'].get('code') == status)
                         #log.debug('ami_extstatus : %s %s => %s' % (changed, self.keeplist[phoneid]['hintstatus'], self.display_hints.get(status)) )
@@ -264,25 +284,25 @@ class PhoneList(AnyList):
                                          #'calleridnum' : ctuid['parkexten-callback']
                                          }
                                 self.keeplist[phoneid]['comms'][uid] = infos
+                                self.setlinenum(phoneid, uid)
                 return
         
         def status(self, phoneid):
-                tosend = {}
-                if phoneid in self.keeplist:
-                        tosend = { 'class' : 'phones',
-                                   'direction' : 'client',
-                                   'function' : 'update',
-                                   'phoneid' : phoneid,
-                                   'status' : self.keeplist[phoneid] }
-                return tosend
-
+            tosend = {}
+            if phoneid in self.keeplist:
+                tosend = { 'class' : 'phones',
+                           'direction' : 'client',
+                           'function' : 'update',
+                           'phoneid' : phoneid,
+                           'status' : self.keeplist[phoneid] }
+            return tosend
+        
         def ami_meetmejoin(self, phoneid, uid, meetmenum):
-                if phoneid in self.keeplist:
-                        if uid in self.keeplist[phoneid]['comms']:
-                                infos = { 'timestamp-link' : time.time(),
-                                          'calleridname' : '<meetme>',
-                                          'calleridnum' : meetmenum
-                                         }
-                                self.keeplist[phoneid]['comms'][uid].update(infos)
-
-
+            if phoneid in self.keeplist:
+                if uid in self.keeplist[phoneid]['comms']:
+                    infos = { 'timestamp-link' : time.time(),
+                              'calleridname' : '<meetme>',
+                              'calleridnum' : meetmenum
+                              }
+                    self.keeplist[phoneid]['comms'][uid].update(infos)
+            return
