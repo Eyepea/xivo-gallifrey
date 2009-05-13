@@ -33,13 +33,14 @@ class SheetManager:
     
     class Sheet:
         class SheetEntry:
-            def __init__(self, user, text):
+            def __init__(self, user, type, data):
                 self.time = time.time()
                 self.user = user
-                self.text = text
+                self.type = type
+                self.data = data
 
             def todict(self):
-                return {'time': self.time, 'user': self.user, 'text': self.text}
+                return {'time': self.time, 'user': self.user, 'type': self.type, 'data': self.data}
 
         def __init__(self, channel):
             self.channel = channel
@@ -48,8 +49,8 @@ class SheetManager:
             self.viewingusers = []
             self.sheet = '' # initial customer sheet
         
-        def addentry(self, text):
-            self.entries.append(self.SheetEntry(self.currentuser, text))
+        def addentry(self, type, data):
+            self.entries.append(self.SheetEntry(self.currentuser, type, data))
 
         def addviewinguser(self, user):
             if not user in self.viewingusers:
@@ -79,9 +80,9 @@ class SheetManager:
         self.sheets[channel].currentuser = user
         self.sheets[channel].addviewinguser(user)
 
-    def addentry(self, channel, text):
-        log.debug('addentry %s "%s"' % (channel, text))
-        self.sheets[channel].addentry(text)
+    def addentry(self, channel, type, data):
+        log.debug('addentry %s (%s)"%s"' % (channel, type, data))
+        self.sheets[channel].addentry(type, data)
 
     def addviewingusers(self, channel, users):
         for user in users:

@@ -5818,7 +5818,12 @@ class XivoCTICommand(BaseCommand):
                     return
                 # TODO check user rights
                 if function=='addentry':
-                    self.sheetmanager[astid].addentry(chan, command.get('text'))
+                    type = command.get('type')
+                    data = command.get('data')
+                    if command.has_key('text'):
+                        type = 'text'
+                        data = command.get('text')
+                    self.sheetmanager[astid].addentry(chan, type, data)
                     tosend = { 'class': 'sheet',
                                'function': 'entryadded',
                                'channel': chan,
