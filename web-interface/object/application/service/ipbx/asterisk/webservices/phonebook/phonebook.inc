@@ -400,6 +400,8 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 			if(preg_match_all('/\d+/',$info['phone'],$match) === 0)
 				continue;
 
+			$info['phone'] = implode('',$match[0]);
+
 			$info['identity'] = $info['name'];
 
 			if($info['type'] !== '')
