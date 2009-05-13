@@ -1477,7 +1477,8 @@ class XivoCTICommand(BaseCommand):
                                         nsent += 1
                                         userid = '%s/%s' % (uinfo.get('astid'), uinfo.get('xivo_userid'))
                                         lstsent.append(userid)
-                                self.sheetmanager[astid].addviewingusers(channel, lstsent)
+                                if astid in self.sheetmanager and self.sheetmanager[astid].has_sheet(channel):
+                                    self.sheetmanager[astid].addviewingusers(channel, lstsent)
                                 if lstsent:
                                     log.info('%s (whom=%s, where=%s) %d sheet(s) sent to %s'
                                              % (astid, whom, where, nsent, lstsent))
