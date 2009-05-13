@@ -388,7 +388,16 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 				}
 			}
 
-			if(isset($info['name'],$info['phone']) === false)
+			if(isset($info['name'],$info['phone']) === false
+			|| preg_match_all('/[\+\(\)\d]+/',$info['phone'],$match) === 0)
+				continue;
+
+			$info['phone'] = implode('',$match[0]);
+
+			if(preg_match('/^\+(\d+)\(\d+\)(\d+)$/',$info['phone'],$match) === 1)
+				$info['phone'] = '00'.$match[1].$match[2];
+
+			if(preg_match_all('/\d+/',$info['phone'],$match) === 0)
 				continue;
 
 			$info['identity'] = $info['name'];
