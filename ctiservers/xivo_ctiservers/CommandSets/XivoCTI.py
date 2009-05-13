@@ -968,17 +968,20 @@ class XivoCTICommand(BaseCommand):
                                                        'capaids' : uitem.get('profileclient').split(','),
                                                        'fullname' : uitem.get('fullname'),
                                                        'astid' : astid,
-                                                       'techlist' : ['.'.join([uitem.get('protocol'), uitem.get('context'),
-                                                                               uitem.get('name'), uitem.get('number')])],
                                                        'context' : uitem.get('context'),
-                                                       'phoneid' : uitem.get('name'),
-                                                       'phonenum' : uitem.get('number'),
-                                                       'simultcalls' : int(uitem.get('simultcalls')),
+                                                       'techlist' : [],
                                                        'mobilenum' : uitem.get('mobilephonenumber'),
                                                        'xivo_userid' : uitem.get('id'),
                                                        
                                                        'state'    : 'xivo_unknown'
                                                        }
+                                        if uitem.get('simultcalls'):
+                                            lulist[uid]['simultcalls'] = int(uitem.get('simultcalls'))
+                                        if uitem.get('protocol') and uitem.get('context') and uitem.get('name') and uitem.get('number'):
+                                            lulist[uid]['phoneid'] = uitem.get('name')
+                                            lulist[uid]['phonenum'] = uitem.get('number')
+                                            lulist[uid]['techlist'] = ['.'.join([uitem.get('protocol'), uitem.get('context'),
+                                                                                 uitem.get('name'), uitem.get('number')])]
                                         # set a default capaid value for users with only one capaid (most common case)
                                         if len(lulist[uid]['capaids']) == 1:
                                                 lulist[uid]['capaid'] = lulist[uid]['capaids'][0]
@@ -1303,21 +1306,21 @@ class XivoCTICommand(BaseCommand):
                             itemdir['xivo-faxstatus'] = event.get('PhaseEString')
                             
                         elif where in ['agentlinked', 'agentunlinked']:
-                                dstnum = event.get('Channel2')[6:]
-                                chan = event.get('Channel1')
-                                queuename = extraevent.get('xivo_queuename')
-                                
-                                itemdir['xivo-channel'] = chan
-                                itemdir['xivo-queuename'] = queuename
-                                itemdir['xivo-calleridnum'] = event.get('CallerID1')
-                                itemdir['xivo-calleridname'] = event.get('CallerIDName1', 'NOXIVO-CID1')
-                                itemdir['xivo-calledidnum'] = event.get('CallerID2')
-                                itemdir['xivo-calledidname'] = event.get('CallerIDName2', 'NOXIVO-CID2')
-                                itemdir['xivo-agentnumber'] = dstnum
-                                itemdir['xivo-uniqueid'] = event.get('Uniqueid1')
-                                
-                                userinfos.extend(self.__find_userinfos_by_agentnum__(astid, dstnum))
-                                
+                            dstnum = event.get('Channel2')[6:]
+                            chan = event.get('Channel1')
+                            queuename = extraevent.get('xivo_queuename')
+                            
+                            itemdir['xivo-channel'] = chan
+                            itemdir['xivo-queuename'] = queuename
+                            itemdir['xivo-calleridnum'] = event.get('CallerID1')
+                            itemdir['xivo-calleridname'] = event.get('CallerIDName1', 'NOXIVO-CID1')
+                            itemdir['xivo-calledidnum'] = event.get('CallerID2')
+                            itemdir['xivo-calledidname'] = event.get('CallerIDName2', 'NOXIVO-CID2')
+                            itemdir['xivo-agentnumber'] = dstnum
+                            itemdir['xivo-uniqueid'] = event.get('Uniqueid1')
+                            
+                            userinfos.extend(self.__find_userinfos_by_agentnum__(astid, dstnum))
+                            
                         elif where == 'dial':
                             for fieldname in extraevent.keys():
                                 if not itemdir.has_key(fieldname):
@@ -1332,27 +1335,27 @@ class XivoCTICommand(BaseCommand):
                             # define the receiver from the dialed number (dial application, that may follow an other first one)
                             if 'xivo-calledidnum' not in itemdir and 'xivo-dialednum' in itemdir:
                                 for uinfo in self.ulist_ng.keeplist.itervalues():
-                                    if uinfo.get('astid') == astid and uinfo.get('phonenum') == itemdir['xivo-dialednum']:
+                                    if uinfo.get('astid') == astid and uinfo.has_key('phonenum') and uinfo.get('phonenum') == itemdir['xivo-dialednum']:
                                         userinfos.append(uinfo)
                                         
                         elif where in ['link', 'unlink']:
-                                itemdir['xivo-channel'] = event.get('Channel1')
-                                itemdir['xivo-channelpeer'] = event.get('Channel2')
-                                itemdir['xivo-uniqueid'] = event.get('Uniqueid1')
-                                itemdir['xivo-calleridnum'] = event.get('CallerID1')
-                                itemdir['xivo-calleridname'] = event.get('CallerIDName1', 'NOXIVO-CID1')
-                                itemdir['xivo-calledidnum'] = event.get('CallerID2')
-                                itemdir['xivo-calledidname'] = event.get('CallerIDName2', 'NOXIVO-CID2')
-                                for uinfo in self.ulist_ng.keeplist.itervalues():
-                                        if uinfo.get('astid') == astid and uinfo.get('phonenum') == itemdir['xivo-calledidnum']:
-                                                userinfos.append(uinfo)
-                                                
+                            itemdir['xivo-channel'] = event.get('Channel1')
+                            itemdir['xivo-channelpeer'] = event.get('Channel2')
+                            itemdir['xivo-uniqueid'] = event.get('Uniqueid1')
+                            itemdir['xivo-calleridnum'] = event.get('CallerID1')
+                            itemdir['xivo-calleridname'] = event.get('CallerIDName1', 'NOXIVO-CID1')
+                            itemdir['xivo-calledidnum'] = event.get('CallerID2')
+                            itemdir['xivo-calledidname'] = event.get('CallerIDName2', 'NOXIVO-CID2')
+                            for uinfo in self.ulist_ng.keeplist.itervalues():
+                                if uinfo.get('astid') == astid and uinfo.has_key('phonenum') and uinfo.get('phonenum') == itemdir['xivo-calledidnum']:
+                                    userinfos.append(uinfo)
+                                    
                         elif where == 'hangup':
-                                # print where, event
-                                itemdir['xivo-channel'] = event.get('Channel')
-                                itemdir['xivo-uniqueid'] = event.get('Uniqueid')
-                                # find which userinfo's to contact ...
-                                
+                            # print where, event
+                            itemdir['xivo-channel'] = event.get('Channel')
+                            itemdir['xivo-uniqueid'] = event.get('Uniqueid')
+                            # find which userinfo's to contact ...
+                            
                         elif where == 'incomingdid':
                             for fieldname in extraevent.keys():
                                 if not itemdir.has_key(fieldname):
@@ -3069,26 +3072,26 @@ class XivoCTICommand(BaseCommand):
                 else:
                         # sip@queue
                         for uinfo in self.ulist_ng.keeplist.itervalues():
-                                if uinfo.get('astid') == astid:
-                                        exten = uinfo.get('phonenum')
-                                        phoneref = '.'.join([agent_channel.split('/')[0].lower(), queuecontext,
-                                                             agent_channel.split('/')[1], exten])
-                                        if phoneref in uinfo.get('techlist'):
-                                                peerchan = event.get('ChannelCalling')
-                                                uid = self.channels[astid].get(peerchan)
-                                                infos = {'peerchannel': peerchan,
-                                                         'status': 'ringing',
-                                                         'timestamp-dial': time.time()}
-                                                if uid is not None and uid in self.uniqueids[astid]:
-                                                        infos['calleridnum'] = self.uniqueids[astid][uid].get('calleridnum')
-                                                        infos['calleridname'] = self.uniqueids[astid][uid].get('calleridname')
-                                                self.weblist['phones'][astid].updatechan(phoneref, infos, self.channels[astid].get(event.get('ChannelCalled')))
-                                                tosend = self.weblist['phones'][astid].status(phoneref)
-                                                tosend['astid'] = astid
-                                                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
-                                                td = '%s ami_agentcalled (phone) %s %s %s' % (astid, queue, agent_channel, uinfo.get('fullname'))
-                                                log.info(td.encode('utf8'))
-                                                
+                            if uinfo.get('astid') == astid and uinfo.has_key('phonenum'):
+                                exten = uinfo.get('phonenum')
+                                phoneref = '.'.join([agent_channel.split('/')[0].lower(), queuecontext,
+                                                     agent_channel.split('/')[1], exten])
+                                if phoneref in uinfo.get('techlist'):
+                                    peerchan = event.get('ChannelCalling')
+                                    uid = self.channels[astid].get(peerchan)
+                                    infos = {'peerchannel': peerchan,
+                                             'status': 'ringing',
+                                             'timestamp-dial': time.time()}
+                                    if uid is not None and uid in self.uniqueids[astid]:
+                                        infos['calleridnum'] = self.uniqueids[astid][uid].get('calleridnum')
+                                        infos['calleridname'] = self.uniqueids[astid][uid].get('calleridname')
+                                    self.weblist['phones'][astid].updatechan(phoneref, infos, self.channels[astid].get(event.get('ChannelCalled')))
+                                    tosend = self.weblist['phones'][astid].status(phoneref)
+                                    tosend['astid'] = astid
+                                    self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
+                                    td = '%s ami_agentcalled (phone) %s %s %s' % (astid, queue, agent_channel, uinfo.get('fullname'))
+                                    log.info(td.encode('utf8'))
+                                    
                 # {'Extension': 's', 'CallerID': 'unknown', 'Priority': '2', 'ChannelCalling': 'IAX2/test-13', 'Context': 'macro-incoming_queue_call', 'CallerIDName': 'Comm. ', 'AgentCalled': 'iax2/192.168.0.120/101'}
                 # {'Extension': '6678', 'CallerID': '102', 'CallerIDName': 'User2', 'Priority': '2', 'ChannelCalling': 'SIP/102-081cd460', 'Context': 'default', 'AgentName': 'Agent/6101', 'Event': 'AgentCalled', 'AgentCalled': 'Agent/6101'}
                 return
@@ -3396,13 +3399,13 @@ class XivoCTICommand(BaseCommand):
                 else:
                         # sip@queue
                         for uinfo in self.ulist_ng.keeplist.itervalues():
-                                if uinfo.get('astid') == astid:
-                                        exten = uinfo.get('phonenum')
-                                        phoneref = '.'.join([location.split('/')[0].lower(), context_queue,
-                                                             location.split('/')[1], exten])
-                                        if phoneref in uinfo.get('techlist'):
-                                                td = '%s ami_queuememberstatus : (%s %s %s) %s' % (astid, status, queue, location, uinfo.get('fullname'))
-                                                log.info(td.encode('utf8'))
+                            if uinfo.get('astid') == astid and uinfo.has_key('phonenum'):
+                                exten = uinfo.get('phonenum')
+                                phoneref = '.'.join([location.split('/')[0].lower(), context_queue,
+                                                     location.split('/')[1], exten])
+                                if phoneref in uinfo.get('techlist'):
+                                    td = '%s ami_queuememberstatus : (%s %s %s) %s' % (astid, status, queue, location, uinfo.get('fullname'))
+                                    log.info(td.encode('utf8'))
                 # status = 3 => ringing
                 # 2
                 # status = 1 => do not ring anymore => the one who has not gone to '1' among the '3's is the one who answered ...
@@ -3574,15 +3577,15 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def __nlocations__(self, astid, location, context):
-                nlocations = []
-                for uinfo in self.ulist_ng.keeplist.itervalues():
-                        if uinfo.get('astid') == astid:
-                                exten = uinfo.get('phonenum')
-                                phoneref = '.'.join([location.split('/')[0].lower(), context,
-                                                     location.split('/')[1], exten])
-                                if phoneref in uinfo.get('techlist'):
-                                        nlocations.append(phoneref)
-                return nlocations
+            nlocations = []
+            for uinfo in self.ulist_ng.keeplist.itervalues():
+                if uinfo.get('astid') == astid and uinfo.has_key('phonenum'):
+                    exten = uinfo.get('phonenum')
+                    phoneref = '.'.join([location.split('/')[0].lower(), context,
+                                         location.split('/')[1], exten])
+                    if phoneref in uinfo.get('techlist'):
+                        nlocations.append(phoneref)
+            return nlocations
         
         def ami_queuestatuscomplete(self, astid, event):
                 # log.info('%s ami_queuestatuscomplete : %s' % (astid, event))
