@@ -1251,6 +1251,103 @@ class XivoCTICommand(BaseCommand):
                     break
             return [pf, country]
         
+        def __sheet_construct__(self, where, astid, context, event, extraevent):
+            actionopt = self.sheet_actions.get(where)
+            linestosend = ['<?xml version="1.0" encoding="utf-8"?>',
+                           '<profile>',
+                           '<user>']
+            itemdir = {'xivo-where' : where,
+                       'xivo-astid' : astid,
+                       'xivo-context' : context,
+                       'xivo-time' : time.strftime('%H:%M:%S', time.localtime()),
+                       'xivo-date' : time.strftime('%Y-%m-%d', time.localtime())}
+            if actionopt.get('focus') == 'no':
+                linestosend.append('<internal name="nofocus"></internal>')
+            linestosend.append('<internal name="astid"><![CDATA[%s]]></internal>' % astid)
+            linestosend.append('<internal name="context"><![CDATA[%s]]></internal>' % context)
+            linestosend.append('<internal name="kind"><![CDATA[%s]]></internal>' % where)
+                        
+            # fill a dict with the appropriate values + set the concerned users' list
+            if where == 'outgoing':
+                exten = event.get('Extension')
+                application = event.get('Application')
+                if application == 'Dial' and exten.isdigit():
+                    pass
+                            
+            elif where == 'faxreceived':
+                itemdir['xivo-calleridnum'] = event.get('CallerID')
+                itemdir['xivo-faxpages'] = event.get('PagesTransferred')
+                itemdir['xivo-faxfile'] = event.get('FileName')
+                itemdir['xivo-faxstatus'] = event.get('PhaseEString')
+                
+            elif where in ['agentlinked', 'agentunlinked']:
+                dstnum = event.get('Channel2')[6:]
+                chan = event.get('Channel1')
+                queuename = extraevent.get('xivo_queuename')
+                itemdir['xivo-channel'] = chan
+                itemdir['xivo-queuename'] = queuename
+                itemdir['xivo-calleridnum'] = event.get('CallerID1')
+                itemdir['xivo-calleridname'] = event.get('CallerIDName1', 'NOXIVO-CID1')
+                itemdir['xivo-calledidnum'] = event.get('CallerID2')
+                itemdir['xivo-calledidname'] = event.get('CallerIDName2', 'NOXIVO-CID2')
+                itemdir['xivo-agentnumber'] = dstnum
+                itemdir['xivo-uniqueid'] = event.get('Uniqueid1')
+                            
+            elif where == 'dial':
+                for fieldname in extraevent.keys():
+                    if not itemdir.has_key(fieldname):
+                        itemdir[fieldname] = extraevent[fieldname]
+                                        
+            elif where in ['link', 'unlink']:
+                itemdir['xivo-channel'] = event.get('Channel1')
+                itemdir['xivo-channelpeer'] = event.get('Channel2')
+                itemdir['xivo-uniqueid'] = event.get('Uniqueid1')
+                itemdir['xivo-calleridnum'] = event.get('CallerID1')
+                itemdir['xivo-calleridname'] = event.get('CallerIDName1', 'NOXIVO-CID1')
+                itemdir['xivo-calledidnum'] = event.get('CallerID2')
+                itemdir['xivo-calledidname'] = event.get('CallerIDName2', 'NOXIVO-CID2')
+                                    
+            elif where == 'hangup':
+                # print where, event
+                itemdir['xivo-channel'] = event.get('Channel')
+                itemdir['xivo-uniqueid'] = event.get('Uniqueid')
+                # find which userinfo's to contact ...
+                            
+            elif where == 'incomingdid':
+                for fieldname in extraevent.keys():
+                    if not itemdir.has_key(fieldname):
+                        itemdir[fieldname] = extraevent[fieldname]
+                    # userinfos.append() : users matching the SDA ?
+                                
+            elif where in ['incomingqueue', 'incominggroup']:
+                queueorgroup = where[8:] + 's'
+                clid = event.get('CallerID')
+                chan = event.get('Channel')
+                uid = event.get('Uniqueid')
+                queue = event.get('Queue')
+#                log.info('ALERT %s %s (%s) uid=%s %s %s queue=(%s %s %s) ndest = %d' % (astid, where, time.asctime(),
+#                                                                                        uid, clid, chan,
+#                                                                                        queue, event.get('Position'),
+#                                                                                        event.get('Count'),
+#                                                                                        len(userinfos)))
+                for fieldname in extraevent.keys():
+                    if not itemdir.has_key(fieldname):
+                        itemdir[fieldname] = extraevent[fieldname]
+                itemdir['xivo-queuename'] = queue
+                                
+            if 'xivo-channel' in itemdir:
+                linestosend.append('<internal name="channel"><![CDATA[%s]]></internal>'
+                                   % itemdir['xivo-channel'])
+            if 'xivo-uniqueid' in itemdir:
+                linestosend.append('<internal name="uniqueid"><![CDATA[%s]]></internal>'
+                                   % itemdir['xivo-uniqueid'])
+            linestosend.extend(self.__build_xmlqtui__('sheet_qtui', actionopt, itemdir))
+            linestosend.extend(self.__build_xmlsheet__('action_info', actionopt, itemdir))
+            linestosend.extend(self.__build_xmlsheet__('sheet_info', actionopt, itemdir))
+            linestosend.extend(self.__build_xmlsheet__('systray_info', actionopt, itemdir))
+            linestosend.append('</user></profile>')
+            return linestosend
+
         def __sheet_alert__(self, where, astid, context, event, extraevent = {}, channel = None):
                 # fields to display :
                 # - internal asterisk/xivo : caller, callee, queue name, sda
@@ -1278,135 +1375,35 @@ class XivoCTICommand(BaseCommand):
                             return
                         log.info('%s __sheet_alert__ %s %s %s %s' % (astid, where, whoms, time.asctime(), channel))
                         
-                        linestosend = ['<?xml version="1.0" encoding="utf-8"?>',
-                                       '<profile>',
-                                       '<user>']
-                        itemdir = {'xivo-where' : where,
-                                   'xivo-astid' : astid,
-                                   'xivo-context' : context,
-                                   'xivo-time' : time.strftime('%H:%M:%S', time.localtime()),
-                                   'xivo-date' : time.strftime('%Y-%m-%d', time.localtime())}
-                        if actionopt.get('focus') == 'no':
-                            linestosend.append('<internal name="nofocus"></internal>')
-                        linestosend.append('<internal name="astid"><![CDATA[%s]]></internal>' % astid)
-                        linestosend.append('<internal name="context"><![CDATA[%s]]></internal>' % context)
-                        linestosend.append('<internal name="kind"><![CDATA[%s]]></internal>' % where)
-                        
-                        # 1/4
-                        # fill a dict with the appropriate values + set the concerned users' list
-                        if where == 'outgoing':
-                            exten = event.get('Extension')
-                            application = event.get('Application')
-                            if application == 'Dial' and exten.isdigit():
-                                pass
-                            
-                        elif where == 'faxreceived':
-                            itemdir['xivo-calleridnum'] = event.get('CallerID')
-                            itemdir['xivo-faxpages'] = event.get('PagesTransferred')
-                            itemdir['xivo-faxfile'] = event.get('FileName')
-                            itemdir['xivo-faxstatus'] = event.get('PhaseEString')
-                            
-                        elif where in ['agentlinked', 'agentunlinked']:
-                            dstnum = event.get('Channel2')[6:]
-                            chan = event.get('Channel1')
-                            queuename = extraevent.get('xivo_queuename')
-                            
-                            itemdir['xivo-channel'] = chan
-                            itemdir['xivo-queuename'] = queuename
-                            itemdir['xivo-calleridnum'] = event.get('CallerID1')
-                            itemdir['xivo-calleridname'] = event.get('CallerIDName1', 'NOXIVO-CID1')
-                            itemdir['xivo-calledidnum'] = event.get('CallerID2')
-                            itemdir['xivo-calledidname'] = event.get('CallerIDName2', 'NOXIVO-CID2')
-                            itemdir['xivo-agentnumber'] = dstnum
-                            itemdir['xivo-uniqueid'] = event.get('Uniqueid1')
-                            
+                        # 1) build sheet
+                        linestosend = self.__sheet_construct__(where, astid, context, event, extraevent)
+
+                        # 2) build recipient list
+                        if where in ['agentlinked', 'agentunlinked']:
                             userinfos.extend(self.__find_userinfos_by_agentnum__(astid, dstnum))
-                            
                         elif where == 'dial':
-                            for fieldname in extraevent.keys():
-                                if not itemdir.has_key(fieldname):
-                                    itemdir[fieldname] = extraevent[fieldname]
-                                    
                             # define the receiver from the xivo-dstid data
-                            if 'xivo-astid' in itemdir and 'xivo-dstid' in itemdir:
-                                xuserid = '%s/%s' % (itemdir['xivo-astid'], itemdir['xivo-dstid'])
+                            if 'xivo-dstid' in extraevent:
+                                xuserid = '%s/%s' % (astid, extraevent['xivo-dstid'])
                                 if xuserid in self.ulist_ng.keeplist:
                                     userinfos.append(self.ulist_ng.keeplist[xuserid])
-                                    
                             # define the receiver from the dialed number (dial application, that may follow an other first one)
-                            if 'xivo-calledidnum' not in itemdir and 'xivo-dialednum' in itemdir:
+                            if 'xivo-calledidnum' not in extraevent and 'xivo-dialednum' in extraevent:
                                 for uinfo in self.ulist_ng.keeplist.itervalues():
-                                    if uinfo.get('astid') == astid and uinfo.has_key('phonenum') and uinfo.get('phonenum') == itemdir['xivo-dialednum']:
+                                    if uinfo.get('astid') == astid and uinfo.has_key('phonenum') and uinfo.get('phonenum') == extraevent['xivo-dialednum']:
                                         userinfos.append(uinfo)
-                                        
                         elif where in ['link', 'unlink']:
-                            itemdir['xivo-channel'] = event.get('Channel1')
-                            itemdir['xivo-channelpeer'] = event.get('Channel2')
-                            itemdir['xivo-uniqueid'] = event.get('Uniqueid1')
-                            itemdir['xivo-calleridnum'] = event.get('CallerID1')
-                            itemdir['xivo-calleridname'] = event.get('CallerIDName1', 'NOXIVO-CID1')
-                            itemdir['xivo-calledidnum'] = event.get('CallerID2')
-                            itemdir['xivo-calledidname'] = event.get('CallerIDName2', 'NOXIVO-CID2')
                             for uinfo in self.ulist_ng.keeplist.itervalues():
-                                if uinfo.get('astid') == astid and uinfo.has_key('phonenum') and uinfo.get('phonenum') == itemdir['xivo-calledidnum']:
+                                if uinfo.get('astid') == astid and uinfo.has_key('phonenum') and uinfo.get('phonenum') == event.get('CallerID2'):
                                     userinfos.append(uinfo)
-                                    
-                        elif where == 'hangup':
-                            # print where, event
-                            itemdir['xivo-channel'] = event.get('Channel')
-                            itemdir['xivo-uniqueid'] = event.get('Uniqueid')
-                            # find which userinfo's to contact ...
-                            
-                        elif where == 'incomingdid':
-                            for fieldname in extraevent.keys():
-                                if not itemdir.has_key(fieldname):
-                                    itemdir[fieldname] = extraevent[fieldname]
-                                # userinfos.append() : users matching the SDA ?
-                                
                         elif where in ['incomingqueue', 'incominggroup']:
-                                queueorgroup = where[8:] + 's'
-                                clid = event.get('CallerID')
-                                chan = event.get('Channel')
-                                uid = event.get('Uniqueid')
-                                queue = event.get('Queue')
-                                
-                                # find who are the queue members
-                                for agent_channel, status in self.weblist[queueorgroup][astid].keeplist[queue]['agents_in_queue'].iteritems():
-                                        # XXX sip@queue
-                                        if status.get('Paused') == '0':
-                                                userinfos.extend(self.__find_userinfos_by_agentnum__(astid, agent_channel[6:]))
-                                log.info('ALERT %s %s (%s) uid=%s %s %s queue=(%s %s %s) ndest = %d' % (astid, where, time.asctime(),
-                                                                                                        uid, clid, chan,
-                                                                                                        queue, event.get('Position'),
-                                                                                                        event.get('Count'),
-                                                                                                        len(userinfos)))
-                                for fieldname in extraevent.keys():
-                                    if not itemdir.has_key(fieldname):
-                                        itemdir[fieldname] = extraevent[fieldname]
-                                itemdir['xivo-queuename'] = queue
-##                                itemdir['xivo-channel'] = chan
-##                                itemdir['xivo-uniqueid'] = uid
-##                                itemdir['xivo-calleridnum'] = clid
-##                                itemdir['xivo-calleridname'] = event.get('CallerIDName')
-                                
-                        # 2/4
-                        # call a database for xivo-callerid matching (or another pattern to set somewhere)
-                        # self.getcallerid(astid, channel, ...)
+                            # find who are the queue members
+                            for agent_channel, status in self.weblist[queueorgroup][astid].keeplist[queue]['agents_in_queue'].iteritems():
+                                # XXX sip@queue
+                                if status.get('Paused') == '0':
+                                    userinfos.extend(self.__find_userinfos_by_agentnum__(astid, agent_channel[6:]))
                         
-                        # 3/4
-                        # build XML items from daemon-config + filled-in items
-                        if 'xivo-channel' in itemdir:
-                                linestosend.append('<internal name="channel"><![CDATA[%s]]></internal>'
-                                                   % itemdir['xivo-channel'])
-                        if 'xivo-uniqueid' in itemdir:
-                                linestosend.append('<internal name="uniqueid"><![CDATA[%s]]></internal>'
-                                                   % itemdir['xivo-uniqueid'])
-                        linestosend.extend(self.__build_xmlqtui__('sheet_qtui', actionopt, itemdir))
-                        linestosend.extend(self.__build_xmlsheet__('action_info', actionopt, itemdir))
-                        linestosend.extend(self.__build_xmlsheet__('sheet_info', actionopt, itemdir))
-                        linestosend.extend(self.__build_xmlsheet__('systray_info', actionopt, itemdir))
-                        linestosend.append('</user></profile>')
-                        
+                        # 3) format message and send
                         dozip = True
                         xmlustring = ''.join(linestosend)
                         xmlstring = xmlustring.encode('utf8')
@@ -1429,12 +1426,11 @@ class XivoCTICommand(BaseCommand):
                         
                         # print '---------', where, whoms, fulllines
 
-                        # 3bis : update sheet manager
+                        # 4) update sheet manager
                         if astid in self.sheetmanager and self.sheetmanager[astid].has_sheet(channel):
                             self.sheetmanager[astid].setcustomersheet(channel, xmlustring)
                         
-                        # 4/4
-                        # send the payload to the appropriate people
+                        # 5) send the payload to the appropriate people
                         for whom in whoms.split(','):
                                 nsent = 0
                                 uinfostosend = []
