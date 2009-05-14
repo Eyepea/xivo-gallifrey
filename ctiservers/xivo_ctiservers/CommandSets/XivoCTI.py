@@ -3624,8 +3624,8 @@ class XivoCTICommand(BaseCommand):
                         channel = event.get('CHANNEL')
                         uniqueid = event.get('UNIQUEID')
                         if uniqueid not in self.uniqueids[astid]:
-                                log.warning('%s AMI UserEvent %s undefined %s' % (astid, eventname, uniqueid))
-                                return
+                            log.warning('%s AMI UserEvent %s undefined %s' % (astid, eventname, uniqueid))
+                            return
                         
                         calleridnum = event.get('XIVO_SRCNUM')
                         calleridname = event.get('XIVO_SRCNAME')
@@ -3667,52 +3667,66 @@ class XivoCTICommand(BaseCommand):
                         # did_takeovers = { '<incoming_callerid>' : { '<sda>' : {'number' : '<localnum>', 'context' : '<context>'} } }
                         did_takeovers = {}
                         if calleridnum in did_takeovers and didnumber in did_takeovers[calleridnum]:
-                                destdetails = did_takeovers[calleridnum][didnumber]
-                                # check channel !
-                                self.__ami_execute__(astid, 'transfer', channel,
-                                                     destdetails.get('number'),
-                                                     destdetails.get('context'))
+                            destdetails = did_takeovers[calleridnum][didnumber]
+                            # check channel !
+                            self.__ami_execute__(astid, 'transfer', channel,
+                                                 destdetails.get('number'),
+                                                 destdetails.get('context'))
                         self.__create_new_sheet__(astid, self.uniqueids[astid][uniqueid]['channel'])
                         self.__sheet_alert__('incomingdid', astid, context, event, dialplan_data, channel)
                         
                 elif eventname in ['MacroUser', 'MacroGroup', 'MacroQueue', 'MacroOutcall', 'MacroMeetme']:
-                        channel = event.get('CHANNEL')
-                        uniqueid = event.get('UNIQUEID')
-                        xivo_userid = event.get('XIVO_USERID')
-                        xivo_dstid = event.get('XIVO_DSTID')
-                        log.info('%s AMI UserEvent %s %s %s %s' % (astid, uniqueid, eventname, xivo_userid, xivo_dstid))
-                        if uniqueid not in self.uniqueids[astid]:
-                            log.warning('%s AMI UserEvent %s : uniqueid %s is undefined' % (astid, eventname, uniqueid))
-                            return
+                    channel = event.get('CHANNEL')
+                    uniqueid = event.get('UNIQUEID')
+                    xivo_userid = event.get('XIVO_USERID')
+                    xivo_dstid = event.get('XIVO_DSTID')
+                    log.info('%s AMI UserEvent %s %s %s %s' % (astid, uniqueid, eventname, xivo_userid, xivo_dstid))
+                    if uniqueid not in self.uniqueids[astid]:
+                        log.warning('%s AMI UserEvent %s : uniqueid %s is undefined' % (astid, eventname, uniqueid))
+                        return
+                    
+                    if xivo_userid:
+                        dialplan_data = { 'xivo-astid' : astid,
+                                          'xivo-origin' : 'internal',
+                                          'xivo-userevent' : eventname,
+                                          'xivo-channel' : channel,
+                                          'xivo-uniqueid' : uniqueid,
+                                          'xivo-userid' : xivo_userid,
+                                          'xivo-dstid' : xivo_dstid
+                                          }
+                        if eventname not in ['MacroOutcall']:
+                            dialplan_data['xivo-direction'] = 'Interne' # XXX to be read from a configuration
+                        self.uniqueids[astid][uniqueid]['dialplan_data'] = dialplan_data
+                        self.__dialplan_fill_src__(dialplan_data)
+                        self.__dialplan_fill_dst__(dialplan_data)
+                    else:
+                        log.warning('%s AMI UserEvent %s : xivo_userid is not set' % (astid, eventname))
                         
-                        if xivo_userid:
-                            dialplan_data = { 'xivo-astid' : astid,
-                                              'xivo-origin' : 'internal',
-                                              'xivo-userevent' : eventname,
-                                              'xivo-channel' : channel,
-                                              'xivo-uniqueid' : uniqueid,
-                                              'xivo-userid' : xivo_userid,
-                                              'xivo-dstid' : xivo_dstid
-                                              }
-                            if eventname not in ['MacroOutcall']:
-                                dialplan_data['xivo-direction'] = 'Interne' # XXX to be read from a configuration
-                            self.uniqueids[astid][uniqueid]['dialplan_data'] = dialplan_data
-                            self.__dialplan_fill_src__(dialplan_data)
-                            self.__dialplan_fill_dst__(dialplan_data)
-                        else:
-                            log.warning('%s AMI UserEvent %s : xivo_userid is not set' % (astid, eventname))
-                            
+                elif eventname == 'dialplan2cti':
+                    channel = event.get('CHANNEL')
+                    uniqueid = event.get('UNIQUEID')
+                    cti_varname = event.get('VARIABLE')
+                    dp_value = event.get('VALUE')
+                    log.info('%s AMI UserEvent %s %s %s' % (astid, uniqueid, eventname, channel))
+                    if self.uniqueids.has_key(astid):
+                        if self.uniqueids[astid].has_key(uniqueid):
+                            if self.uniqueids[astid][uniqueid].has_key('dialplan_data'):
+                                dialplan_data = self.uniqueids[astid][uniqueid]['dialplan_data']
+                                dialplan_data['dp-%s' % cti_varname] = dp_value
+                            else:
+                                log.warning('%s AMI UserEvent %s : no dialplan_data field (yet ?)' % (astid, eventname))
+                                
                 elif eventname == 'Custom':
-                        uniqueid = event.get('UNIQUEID')
-                        callerid = event.get('XIVO_SRCNUM')
-                        channel = event.get('CHANNEL')
-                        context = event.get('XIVO_REAL_CONTEXT', CONTEXT_UNKNOWN)
-                        # XXX
-                        # event in order to send a custom sheet almost anywhere in the dialplan
-                        # TBD : define different kinds + define the destinations for each
-                        # and later : define any other sheet event as a special case of this one (?)
-                        # self.__sheet_alert__('custom', astid, context, event)
-                        
+                    uniqueid = event.get('UNIQUEID')
+                    callerid = event.get('XIVO_SRCNUM')
+                    channel = event.get('CHANNEL')
+                    context = event.get('XIVO_REAL_CONTEXT', CONTEXT_UNKNOWN)
+                    # XXX
+                    # event in order to send a custom sheet almost anywhere in the dialplan
+                    # TBD : define different kinds + define the destinations for each
+                    # and later : define any other sheet event as a special case of this one (?)
+                    # self.__sheet_alert__('custom', astid, context, event)
+                    
                 elif eventname == 'OUTCALL':
                         uniqueid = event.get('UNIQUEID')
                         context = event.get('XIVO_CONTEXT', CONTEXT_UNKNOWN)
@@ -5747,17 +5761,23 @@ class XivoCTICommand(BaseCommand):
                     fastagi.set_callerid(calleridtoset)
                     return
                 
-                elif function == 'caller_data':
+                elif function == 'cti2dialplan':
+                    if len(fastagi.args) > 2:
+                        dp_varname = fastagi.args[0]
+                        cti_varname = fastagi.args[1]
+                    else:
+                        log.warning('%s handle_fagi %s not enough arguments : %s'
+                                    % (astid, function, fastagi.args))
+                        return
                     if self.uniqueids[astid].has_key(uniqueid):
                         uniqueiddefs = self.uniqueids[astid][uniqueid]
                         if uniqueiddefs.has_key('dialplan_data'):
                             dialplan_data = uniqueiddefs['dialplan_data']
-                            if dialplan_data.has_key('xivo-extra'):
-                                for k, v in dialplan_data['xivo-extra'].iteritems():
-                                    fastagi.set_variable(k, v)
+                            if dialplan_data.has_key(cti_varname):
+                                fastagi.set_variable(dp_varname, dialplan_data[cti_varname])
                             else:
-                                log.warning('%s handle_fagi %s no extra data'
-                                            % (astid, function))
+                                log.warning('%s handle_fagi %s no such variable %s in dialplan data'
+                                            % (astid, function, cti_varname))
                                 ## XXX fastagi.set_variable(empty)
                         else:
                             log.warning('%s handle_fagi %s no dialplan_data received yet'
