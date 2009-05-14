@@ -1,0 +1,9 @@
+[{
+"id":"9999"
+"enableclient":true
+"context":"default"
+"loginclient":"guest"
+"passwdclient":"guest"
+"profileclient":"client"
+"fullname":"Guest"
+}]
