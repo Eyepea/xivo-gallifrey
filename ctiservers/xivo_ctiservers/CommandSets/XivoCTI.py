@@ -1094,22 +1094,23 @@ class XivoCTICommand(BaseCommand):
                 return { 'disconnlist-tcp'  : todisconn }
         
         def __send_msg_to_cti_client__(self, userinfo, strupdate):
+                """send a string (terminate with a newline character) to a user"""
                 wassent = False
                 try:
-                        t0 = time.time()
-                        if userinfo and 'login' in userinfo and 'connection' in userinfo['login']:
-                                if not userinfo['login']['connection'].toClose:
-                                        mysock = userinfo['login']['connection']
-                                        mysock.sendall(strupdate + '\n')
-                                        wassent = True
+                    t0 = time.time()
+                    if userinfo and 'login' in userinfo and 'connection' in userinfo['login']:
+                        if not userinfo['login']['connection'].toClose:
+                            mysock = userinfo['login']['connection']
+                            mysock.sendall(strupdate + '\n')
+                            wassent = True
                 except ClientConnection.CloseException, cexc:
-                        # an error happened on the socket so it should be closed
-                        t1 = time.time()
-                        dispuserid = '%s/%s' % (userinfo.get('astid'), userinfo.get('xivo_userid'))
-                        log.exception('(__send_msg_to_cti_client__) userinfo(astid/xivo_userid)=%s len=%d timespent=%f cexc=%s'
-                                      % (dispuserid, len(strupdate), (t1 - t0), cexc))
-                        if userinfo and 'login' in userinfo and 'connection' in userinfo['login']:
-                            userinfo['login']['connection'].toClose = True
+                    # an error happened on the socket so it should be closed
+                    t1 = time.time()
+                    dispuserid = '%s/%s' % (userinfo.get('astid'), userinfo.get('xivo_userid'))
+                    log.exception('(__send_msg_to_cti_client__) userinfo(astid/xivo_userid)=%s len=%d timespent=%f cexc=%s'
+                                  % (dispuserid, len(strupdate), (t1 - t0), cexc))
+                    if userinfo and 'login' in userinfo and 'connection' in userinfo['login']:
+                        userinfo['login']['connection'].toClose = True
                 return wassent
         
         def __check_astid_context__(self, userinfo, astid, context = None):
@@ -3780,12 +3781,6 @@ class XivoCTICommand(BaseCommand):
                                 if appli == 'ChanSpy':
                                         self.uniqueids[astid][uniqueid].update({'time-chanspy' : time.time(),
                                                                                 'actionid' : actionid})
-                elif eventname == 'NewSheet':
-                        log.info('%s AMI UserEvent %s %s' % (astid, eventname, event))
-                        # TODO recuperer les parametres (channel)
-                        #channel = 'dummy'
-                        channel = event.get('CHANNEL')
-                        self.__create_new_sheet__(astid, channel)
                 else:
                         log.info('%s AMI untracked UserEvent %s' % (astid, event))
                 return
@@ -5848,11 +5843,14 @@ class XivoCTICommand(BaseCommand):
                     del self.localchans[astid][chan]
                     
         def __create_new_sheet__(self, astid, channel):
+                """create new sheet object if needed"""
                 if not self.sheetmanager.has_key(astid):
                     self.sheetmanager[astid] = SheetManager(astid)
-                self.sheetmanager[astid].new_sheet(channel)
+                if not self.sheetmanager[astid].sheets.has_key(channel):
+                    self.sheetmanager[astid].new_sheet(channel)
                 
         def __handle_sheet_command__(self, userinfo, command):
+                """process sheetcommands from users"""
                 log.debug('__handle_sheet_command__ user=%s command=%s' % (userinfo, command))
                 astid = userinfo.get('astid')
                 username = userinfo.get('user')
@@ -5875,12 +5873,12 @@ class XivoCTICommand(BaseCommand):
                                'channel': chan,
                                'entry': self.sheetmanager[astid].get_sheet(chan).entries[-1].todict()
                              }
-                    #self.__send_msg_to_cti_client__(userinfo, self.__cjson_encode__(tosend))
+                    # send the entry to all users watching the sheet
                     for user in self.sheetmanager[astid].get_sheet(chan).viewingusers:
                         self.__send_msg_to_cti_client__(self.ulist_ng.keeplist[user], self.__cjson_encode__(tosend))
                         
         def __update_sheet_user__(self, astid, newuinfo, channel):
-                # update connected user
+                """update connected user and send sheet to the new user if needed"""
                 if astid in self.sheetmanager and self.sheetmanager[astid].has_sheet(channel):
                     newuser = '%s/%s' % (newuinfo.get('astid'), newuinfo.get('xivo_userid'))
                     log.debug('%s __update_sheet_user__ %s from user %s to %s (%s)' % (astid, channel, self.sheetmanager[astid].get_sheet(channel).currentuser, newuser, newuinfo.get('fullname')))
@@ -5929,7 +5927,7 @@ class XivoCTICommand(BaseCommand):
                         self.__send_msg_to_cti_client__(newuser, self.__cjson_encode__(tosend))
                         
         def __sheet_disconnect__(self, astid, channel):
-                # close the sheet if it is open on a user screen
+                """close the sheet if it is open on a user screen"""
                 if self.sheetmanager[astid].get_sheet(channel).currentuser is not None:
                     olduinfo = self.ulist_ng.keeplist[self.sheetmanager[astid].get_sheet(channel).currentuser]
                     log.debug('%s __sheet_disconnect__ olduser=%s' % (astid, self.sheetmanager[astid].get_sheet(channel).currentuser))
