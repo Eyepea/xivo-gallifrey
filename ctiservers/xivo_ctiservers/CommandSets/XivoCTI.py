@@ -2121,7 +2121,7 @@ class XivoCTICommand(BaseCommand):
                             qname = self.queues_channels_list[astid][chan1]
                             ## del self.queues_channels_list[astid][chan1]
                             extraevent = {'xivo_queuename' : qname}
-                            self.__sheet_alert__('agentlinked', astid, CONTEXT_UNKNOWN, event, extraevent)
+                            self.__sheet_alert__('agentlinked', astid, CONTEXT_UNKNOWN, event, extraevent, chan1)
                             
                         agent_id = uinfo.get('agentid')
                         thisagent = self.weblist['agents'][astid].keeplist[agent_id]
@@ -2307,7 +2307,7 @@ class XivoCTICommand(BaseCommand):
                         log.warning('%s unlink : link not in %s' % (astid, uid1info))
                         
                 if 'context' in self.uniqueids[astid][uid1]:
-                        self.__sheet_alert__('unlink', astid, self.uniqueids[astid][uid1]['context'], event, {})
+                        self.__sheet_alert__('unlink', astid, self.uniqueids[astid][uid1]['context'], event, {}, chan2)
                         
                 if chan2.startswith('Agent/'):
                         agent_number = chan2[6:]
@@ -2336,7 +2336,7 @@ class XivoCTICommand(BaseCommand):
                                 qname = self.queues_channels_list[astid][chan1]
                                 del self.queues_channels_list[astid][chan1]
                                 extraevent = {'xivo_queuename' : qname}
-                                self.__sheet_alert__('agentunlinked', astid, CONTEXT_UNKNOWN, event, extraevent)
+                                self.__sheet_alert__('agentunlinked', astid, CONTEXT_UNKNOWN, event, extraevent, chan1)
                                 
                 lstinfos = [uinfo1, uinfo2]
                 if uinfo1_ag not in lstinfos:
@@ -4171,7 +4171,7 @@ class XivoCTICommand(BaseCommand):
                     ddata = {}
                 log.info('%s STAT JOIN %s %s %s' % (astid, queue, chan, uniqueid))
                 self.__update_queue_stats__(astid, queue, queueorgroup, 'ENTERQUEUE')
-                self.__sheet_alert__('incoming' + queueorgroup[:-1], astid, queuecontext, event, ddata)
+                self.__sheet_alert__('incoming' + queueorgroup[:-1], astid, queuecontext, event, ddata, chan)
                 log.info('%s AMI Join (Queue) %s %s %s' % (astid, queue, chan, count))
                 self.weblist[queueorgroup][astid].queueentry_update(queue, chan, position, time.time(),
                                                                     clidnum, clidname)
@@ -5940,3 +5940,4 @@ class XivoCTICommand(BaseCommand):
                 self.sheetmanager[astid].del_sheet(channel)
                 
 xivo_commandsets.CommandClasses['xivocti'] = XivoCTICommand
+
