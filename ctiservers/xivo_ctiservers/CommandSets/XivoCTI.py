@@ -5871,6 +5871,7 @@ class XivoCTICommand(BaseCommand):
                     self.sheetmanager[astid].addentry(chan, type, data)
                     tosend = { 'class': 'sheet',
                                'function': 'entryadded',
+                               'astid': astid,
                                'channel': chan,
                                'entry': self.sheetmanager[astid].get_sheet(chan).entries[-1].todict()
                              }
@@ -5892,6 +5893,7 @@ class XivoCTICommand(BaseCommand):
                         #log.debug('%s __update_sheet_user__ olduinfo=%s' % (astid, olduinfo))
                         tosend = { 'class': 'sheet',
                                    'function': 'looseownership',
+                                   'astid': astid,
                                    'channel': channel,
                                  }
                         self.__send_msg_to_cti_client__(olduinfo, self.__cjson_encode__(tosend))
@@ -5901,6 +5903,7 @@ class XivoCTICommand(BaseCommand):
                         tosend = { 'class' : 'sheet',
                                    #'whom' : whoms,
                                    'function' : 'displaysheet',
+                                   'astid': astid,
                                    'channel' : channel,
                                    'payload' : base64.b64encode(self.sheetmanager[astid].get_sheet(channel).sheet.encode('utf8'))
                                    }
@@ -5911,6 +5914,7 @@ class XivoCTICommand(BaseCommand):
                     # on informe le nouveau user qu'il a la propriete de la fiche
                     tosend = { 'class': 'sheet',
                                'function': 'getownership',
+                               'astid': astid,
                                'channel': channel,
                              }
                     self.__send_msg_to_cti_client__(newuinfo, self.__cjson_encode__(tosend))
@@ -5918,6 +5922,7 @@ class XivoCTICommand(BaseCommand):
                     for entry in self.sheetmanager[astid].get_sheet(channel).entries:
                         tosend = { 'class': 'sheet',
                                    'function': 'entryadded',
+                                   'astid': astid,
                                    'channel': channel,
                                    'entry': entry.todict()
                                  }
@@ -5930,6 +5935,7 @@ class XivoCTICommand(BaseCommand):
                     log.debug('%s __sheet_disconnect__ olduser=%s' % (astid, self.sheetmanager[astid].get_sheet(channel).currentuser))
                     tosend = { 'class': 'sheet',
                                'function': 'looseownership',
+                               'astid': astid,
                                'channel': channel,
                              }
                     self.__send_msg_to_cti_client__(olduinfo, self.__cjson_encode__(tosend))
