@@ -26,7 +26,6 @@ class xivo_service_asterisk_callfilter extends xivo_service_asterisk_abstract
 	var $_name	= 'callfilter';
 	var $_filter	= false;
 	var $_origin	= false;
-	var $_filter	= false;
 	var $_identity	= false;
 
 	function xivo_service_asterisk_callfilter(&$sre,&$dso)
