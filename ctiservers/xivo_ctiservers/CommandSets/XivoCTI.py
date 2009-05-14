@@ -1932,11 +1932,12 @@ class XivoCTICommand(BaseCommand):
                 self.uniqueids[astid][uid]['time-hold'] = time.time()
                 
                 phoneid = self.__phoneid_from_channel__(astid, channel)
-                self.weblist['phones'][astid].ami_hold(phoneid, uid)
-                tosend = self.weblist['phones'][astid].status(phoneid)
-                tosend['astid'] = astid
-                context = self.weblist['phones'][astid].keeplist[phoneid]['context']
-                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
+                if phoneid:
+                    self.weblist['phones'][astid].ami_hold(phoneid, uid)
+                    tosend = self.weblist['phones'][astid].status(phoneid)
+                    tosend['astid'] = astid
+                    context = self.weblist['phones'][astid].keeplist[phoneid]['context']
+                    self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
             return
         
         def ami_unhold(self, astid, event):
@@ -1949,11 +1950,12 @@ class XivoCTICommand(BaseCommand):
                     del self.uniqueids[astid][uid]['time-hold']
                     
                 phoneid = self.__phoneid_from_channel__(astid, channel)
-                self.weblist['phones'][astid].ami_unhold(phoneid, uid)
-                tosend = self.weblist['phones'][astid].status(phoneid)
-                tosend['astid'] = astid
-                context = self.weblist['phones'][astid].keeplist[phoneid]['context']
-                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
+                if phoneid:
+                    self.weblist['phones'][astid].ami_unhold(phoneid, uid)
+                    tosend = self.weblist['phones'][astid].status(phoneid)
+                    tosend['astid'] = astid
+                    context = self.weblist['phones'][astid].keeplist[phoneid]['context']
+                    self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
             return
         
         def ami_bridge(self, astid, event):
@@ -3007,9 +3009,9 @@ class XivoCTICommand(BaseCommand):
                 loginchan_split = event.get('Loginchan').split('@')
                 phonenum = loginchan_split[0]
                 if len(loginchan_split) > 1:
-                        context = loginchan_split[1]
+                    context = loginchan_split[1]
                 else:
-                        context = CONTEXT_UNKNOWN
+                    context = CONTEXT_UNKNOWN
                 
                 if astid in self.weblist['agents']:
                         agent_id = self.weblist['agents'][astid].reverse_index.get(agent)
