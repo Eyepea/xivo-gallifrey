@@ -1432,58 +1432,58 @@ class XivoCTICommand(BaseCommand):
                         
                         # 5) send the payload to the appropriate people
                         for whom in whoms.split(','):
-                                nsent = 0
-                                uinfostosend = []
-                                if whom == 'dest':
-                                    for uinfo in userinfos:
+                            nsent = 0
+                            uinfostosend = []
+                            if whom == 'dest':
+                                for uinfo in userinfos:
+                                    if capaids is None or uinfo.get('capaid') in capaids:
+                                        uinfostosend.append(uinfo)
+                                            
+                            elif whom == 'subscribe':
+                                for uinfo in self.ulist_ng.keeplist.itervalues():
+                                    if capaids is None or uinfo.get('capaid') in capaids:
+                                        if 'subscribe' in uinfo:
+                                            uinfostosend.append(uinfo)
+                                                
+                            elif whom == 'all-astid-context': # match asterisks and contexts
+                                for uinfo in self.ulist_ng.keeplist.itervalues():
+                                    if astid == uinfo.get('astid') and context == uinfo.get('context'):
                                         if capaids is None or uinfo.get('capaid') in capaids:
                                             uinfostosend.append(uinfo)
-                                            
-                                elif whom == 'subscribe':
-                                    for uinfo in self.ulist_ng.keeplist.itervalues():
-                                        if capaids is None or uinfo.get('capaid') in capaids:
-                                            if 'subscribe' in uinfo:
-                                                uinfostosend.append(uinfo)
                                                 
-                                elif whom == 'all-astid-context': # match asterisks and contexts
-                                    for uinfo in self.ulist_ng.keeplist.itervalues():
-                                        if astid == uinfo.get('astid') and context == uinfo.get('context'):
-                                            if capaids is None or uinfo.get('capaid') in capaids:
-                                                uinfostosend.append(uinfo)
-                                                
-                                elif whom == 'all-context': # accross asterisks + match contexts
-                                    for uinfo in self.ulist_ng.keeplist.itervalues():
-                                        if context == uinfo.get('context'):
-                                            if capaids is None or uinfo.get('capaid') in capaids:
-                                                uinfostosend.append(uinfo)
-                                                
-                                elif whom == 'all-astid': # accross contexts + match asterisks
-                                    for uinfo in self.ulist_ng.keeplist.itervalues():
-                                        if astid == uinfo.get('astid'):
-                                            if capaids is None or uinfo.get('capaid') in capaids:
-                                                uinfostosend.append(uinfo)
-                                                
-                                elif whom == 'all': # accross asterisks and contexts
-                                    for uinfo in self.ulist_ng.keeplist.itervalues():
+                            elif whom == 'all-context': # accross asterisks + match contexts
+                                for uinfo in self.ulist_ng.keeplist.itervalues():
+                                    if context == uinfo.get('context'):
                                         if capaids is None or uinfo.get('capaid') in capaids:
                                             uinfostosend.append(uinfo)
+                                                
+                            elif whom == 'all-astid': # accross contexts + match asterisks
+                                for uinfo in self.ulist_ng.keeplist.itervalues():
+                                    if astid == uinfo.get('astid'):
+                                        if capaids is None or uinfo.get('capaid') in capaids:
+                                            uinfostosend.append(uinfo)
+                                                
+                            elif whom == 'all': # accross asterisks and contexts
+                                for uinfo in self.ulist_ng.keeplist.itervalues():
+                                    if capaids is None or uinfo.get('capaid') in capaids:
+                                        uinfostosend.append(uinfo)
                                             
-                                else:
-                                        log.warning('__sheet_alert__ (%s) : unknown destination <%s> in <%s>'
-                                                    % (astid, whom, where))
-                                # send to clients 
-                                lstsent = []
-                                for uinfo in uinfostosend:
-                                    if self.__send_msg_to_cti_client__(uinfo, jsonmsg):
-                                        nsent += 1
-                                        userid = '%s/%s' % (uinfo.get('astid'), uinfo.get('xivo_userid'))
-                                        lstsent.append(userid)
-                                # mark clients as "viewing users"
-                                if astid in self.sheetmanager and self.sheetmanager[astid].has_sheet(channel):
-                                    self.sheetmanager[astid].addviewingusers(channel, lstsent)
-                                if lstsent:
-                                    log.info('%s (whom=%s, where=%s) %d sheet(s) sent to %s'
-                                             % (astid, whom, where, nsent, lstsent))
+                            else:
+                                log.warning('__sheet_alert__ (%s) : unknown destination <%s> in <%s>'
+                                            % (astid, whom, where))
+                            # send to clients 
+                            lstsent = []
+                            for uinfo in uinfostosend:
+                                if self.__send_msg_to_cti_client__(uinfo, jsonmsg):
+                                    nsent += 1
+                                    userid = '%s/%s' % (uinfo.get('astid'), uinfo.get('xivo_userid'))
+                                    lstsent.append(userid)
+                            # mark clients as "viewing users"
+                            if astid in self.sheetmanager and self.sheetmanager[astid].has_sheet(channel):
+                                self.sheetmanager[astid].addviewingusers(channel, lstsent)
+                            if lstsent:
+                                log.info('%s (whom=%s, where=%s) %d sheet(s) sent to %s'
+                                         % (astid, whom, where, nsent, lstsent))
                                     
                 return
         
