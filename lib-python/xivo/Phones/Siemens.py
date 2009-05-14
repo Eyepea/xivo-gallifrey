@@ -1,6 +1,6 @@
 """Support for Siemens phones for XIVO Configuration
 
-Siemens Gigaset S675IP are supported.
+Siemens Gigaset C470IP and S675IP are supported.
 
 Copyright (C) 2009  Proformatique
 
