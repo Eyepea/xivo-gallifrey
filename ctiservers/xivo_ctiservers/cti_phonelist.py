@@ -214,23 +214,32 @@ class PhoneList(AnyList):
                     log.warning('(ami_rename_fromtrunk) %s : could not set %s' % (uid, newphoneid))
                 return
         
+        def ami_hold(self, phoneid, uid):
+            self.keeplist[phoneid]['comms'][uid]['time-hold'] = time.time()
+            return
+        
+        def ami_unhold(self, phoneid, uid):
+            if 'time-hold' in self.keeplist[phoneid]['comms'][uid]:
+                del self.keeplist[phoneid]['comms'][uid]['time-hold']
+            return
+        
         def ami_hangup(self, uid):
-                phoneidlist = []
-                for phoneid, phoneprops in self.keeplist.iteritems():
-                    if uid in phoneprops['comms']:
-                        phoneprops['comms'][uid]['status'] = 'hangup'
-                        if phoneid not in phoneidlist:
-                            phoneidlist.append(phoneid)
-                return phoneidlist
+            phoneidlist = []
+            for phoneid, phoneprops in self.keeplist.iteritems():
+                if uid in phoneprops['comms']:
+                    phoneprops['comms'][uid]['status'] = 'hangup'
+                    if phoneid not in phoneidlist:
+                        phoneidlist.append(phoneid)
+            return phoneidlist
         
         def clear(self, uid):
-                phoneidlist = []
-                for phoneid, phoneprops in self.keeplist.iteritems():
-                    if uid in phoneprops['comms']:
-                        del phoneprops['comms'][uid]
-                        if phoneid not in phoneidlist:
-                            phoneidlist.append(phoneid)
-                return phoneidlist
+            phoneidlist = []
+            for phoneid, phoneprops in self.keeplist.iteritems():
+                if uid in phoneprops['comms']:
+                    del phoneprops['comms'][uid]
+                    if phoneid not in phoneidlist:
+                        phoneidlist.append(phoneid)
+            return phoneidlist
         
         def setdisplayhints(self, dh):
             self.display_hints = dh

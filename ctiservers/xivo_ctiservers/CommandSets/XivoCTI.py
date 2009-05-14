@@ -1320,11 +1320,10 @@ class XivoCTICommand(BaseCommand):
                     # userinfos.append() : users matching the SDA ?
                                 
             elif where in ['incomingqueue', 'incominggroup']:
-                queueorgroup = where[8:] + 's'
                 clid = event.get('CallerID')
                 chan = event.get('Channel')
                 uid = event.get('Uniqueid')
-                queue = event.get('Queue')
+                queuename = event.get('Queue')
 #                log.info('ALERT %s %s (%s) uid=%s %s %s queue=(%s %s %s) ndest = %d' % (astid, where, time.asctime(),
 #                                                                                        uid, clid, chan,
 #                                                                                        queue, event.get('Position'),
@@ -1333,8 +1332,9 @@ class XivoCTICommand(BaseCommand):
                 for fieldname in extraevent.keys():
                     if not itemdir.has_key(fieldname):
                         itemdir[fieldname] = extraevent[fieldname]
-                itemdir['xivo-queuename'] = queue
-                                
+                itemdir['xivo-queuename'] = queuename
+                itemdir['xivo-queueorgroup'] = where[8:] + 's'
+                
             if 'xivo-channel' in itemdir:
                 linestosend.append('<internal name="channel"><![CDATA[%s]]></internal>'
                                    % itemdir['xivo-channel'])
@@ -1347,7 +1347,7 @@ class XivoCTICommand(BaseCommand):
             linestosend.extend(self.__build_xmlsheet__('systray_info', actionopt, itemdir))
             linestosend.append('</user></profile>')
             return linestosend
-
+        
         def __sheet_alert__(self, where, astid, context, event, extraevent = {}, channel = None):
                 # fields to display :
                 # - internal asterisk/xivo : caller, callee, queue name, sda
@@ -1375,9 +1375,9 @@ class XivoCTICommand(BaseCommand):
                             return
                         log.info('%s __sheet_alert__ %s %s %s %s' % (astid, where, whoms, time.asctime(), channel))
                         
-                        #Â 1) build sheet
+                        # 1) build sheet
                         linestosend = self.__sheet_construct__(where, astid, context, event, extraevent)
-
+                        
                         # 2) build recipient list
                         if where in ['agentlinked', 'agentunlinked']:
                             userinfos.extend(self.__find_userinfos_by_agentnum__(astid, dstnum))
@@ -1397,17 +1397,19 @@ class XivoCTICommand(BaseCommand):
                                 if uinfo.get('astid') == astid and uinfo.has_key('phonenum') and uinfo.get('phonenum') == event.get('CallerID2'):
                                     userinfos.append(uinfo)
                         elif where in ['incomingqueue', 'incominggroup']:
+                            queuename = event.get('Queue')
+                            queueorgroup = where[8:] + 's'
                             # find who are the queue members
-                            for agent_channel, status in self.weblist[queueorgroup][astid].keeplist[queue]['agents_in_queue'].iteritems():
+                            for agent_channel, status in self.weblist[queueorgroup][astid].keeplist[queuename]['agents_in_queue'].iteritems():
                                 # XXX sip@queue
                                 if status.get('Paused') == '0':
                                     userinfos.extend(self.__find_userinfos_by_agentnum__(astid, agent_channel[6:]))
-                        
-                        #Â 3) format message and send
+                                    
+                        # 3) format message and send
                         dozip = True
                         xmlustring = ''.join(linestosend)
                         xmlstring = xmlustring.encode('utf8')
-                        #Â build the json message
+                        # build the json message
                         tosend = { 'class' : 'sheet',
                                    'whom' : whoms,
                                    'function' : 'displaysheet',
@@ -1425,7 +1427,7 @@ class XivoCTICommand(BaseCommand):
                         jsonmsg = self.__cjson_encode__(tosend)
                         
                         # print '---------', where, whoms, fulllines
-
+                        
                         # 4) update sheet manager
                         if astid in self.sheetmanager and self.sheetmanager[astid].has_sheet(channel):
                             self.sheetmanager[astid].setcustomersheet(channel, xmlustring)
@@ -1486,8 +1488,7 @@ class XivoCTICommand(BaseCommand):
                                          % (astid, whom, where, nsent, lstsent))
                                     
                 return
-        
-        
+
         def __dialplan_fill_src__(self, dialplan_data):
             origin = dialplan_data.get('xivo-origin')
             if origin == 'did':
@@ -1907,37 +1908,54 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def __ignore_dtmf__(self, astid, uid, where):
-                ret = False
-                if uid in self.ignore_dtmf[astid]:
-                        tnow = time.time()
-                        t0 = self.ignore_dtmf[astid][uid]['xivo-timestamp']
-                        dt = tnow - t0
-                        # allow 1s between each unlink/link event
-                        if dt < 1:
-                                # print 'ignore', where, dt
-                                self.ignore_dtmf[astid][uid]['xivo-timestamp'] = tnow
-                                ret = True
-                return ret
+            ret = False
+            if uid in self.ignore_dtmf[astid]:
+                tnow = time.time()
+                t0 = self.ignore_dtmf[astid][uid]['xivo-timestamp']
+                dt = tnow - t0
+                # allow 1s between each unlink/link event
+                if dt < 1:
+                    # print 'ignore', where, dt
+                    self.ignore_dtmf[astid][uid]['xivo-timestamp'] = tnow
+                    ret = True
+            return ret
         
         def ami_hold(self, astid, event):
-                # log.info('%s ami_hold : %s' % (astid, event))
-                uid = event.get('Uniqueid')
-                channel = event.get('Channel')
-                if uid in self.uniqueids[astid]:
-                        log.info('%s ami_hold : holder:%s %s holded:%s' % (astid, channel, uid, self.uniqueids[astid][uid].get('link')))
-                return
+            # log.info('%s ami_hold : %s' % (astid, event))
+            uid = event.get('Uniqueid')
+            channel = event.get('Channel')
+            if uid in self.uniqueids[astid]:
+                log.info('%s ami_hold : holder:%s %s holded:%s' % (astid, channel, uid, self.uniqueids[astid][uid].get('link')))
+                self.uniqueids[astid][uid]['time-hold'] = time.time()
+                
+                phoneid = self.__phoneid_from_channel__(astid, channel)
+                self.weblist['phones'][astid].ami_hold(phoneid, uid)
+                tosend = self.weblist['phones'][astid].status(phoneid)
+                tosend['astid'] = astid
+                context = self.weblist['phones'][astid].keeplist[phoneid]['context']
+                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
+            return
         
         def ami_unhold(self, astid, event):
-                # log.info('%s ami_unhold : %s' % (astid, event))
-                uid = event.get('Uniqueid')
-                channel = event.get('Channel')
-                if uid in self.uniqueids[astid]:
-                        log.info('%s ami_unhold : unholder:%s %s unholded:%s' % (astid, channel, uid, self.uniqueids[astid][uid].get('link')))
-                return
+            # log.info('%s ami_unhold : %s' % (astid, event))
+            uid = event.get('Uniqueid')
+            channel = event.get('Channel')
+            if uid in self.uniqueids[astid]:
+                log.info('%s ami_unhold : unholder:%s %s unholded:%s' % (astid, channel, uid, self.uniqueids[astid][uid].get('link')))
+                if 'time-hold' in self.uniqueids[astid][uid]:
+                    del self.uniqueids[astid][uid]['time-hold']
+                    
+                phoneid = self.__phoneid_from_channel__(astid, channel)
+                self.weblist['phones'][astid].ami_unhold(phoneid, uid)
+                tosend = self.weblist['phones'][astid].status(phoneid)
+                tosend['astid'] = astid
+                context = self.weblist['phones'][astid].keeplist[phoneid]['context']
+                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
+            return
         
         def ami_bridge(self, astid, event):
-                log.info('%s ami_bridge : %s' % (astid, event))
-                return
+            log.info('%s ami_bridge : %s' % (astid, event))
+            return
         
         def ami_masquerade(self, astid, event):
                 originalstate = event.get('OriginalState')
@@ -1995,9 +2013,9 @@ class XivoCTICommand(BaseCommand):
                         self.attended_targetchannels[astid][targetchannel] = event
                         log.info('%s ami_transfer : Attended /  TargetChannel = %s' % (astid, targetchannel))
                         if uniqueid in self.uniqueids[astid]:
-                                log.info('%s ami_transfer : Attended /       Uniqueid : %s' % (astid, self.uniqueids[astid][uniqueid]))
+                            log.info('%s ami_transfer : Attended /       Uniqueid : %s' % (astid, self.uniqueids[astid][uniqueid]))
                         if targetuniqueid in self.uniqueids[astid]:
-                                log.info('%s ami_transfer : Attended / TargetUniqueid : %s' % (astid, self.uniqueids[astid][targetuniqueid]))
+                            log.info('%s ami_transfer : Attended / TargetUniqueid : %s' % (astid, self.uniqueids[astid][targetuniqueid]))
                         # target uniqueid > uniqueid
                         # channel = intermediate's incoming
                         # target channel = intermediate's outgoing
@@ -2019,11 +2037,11 @@ class XivoCTICommand(BaseCommand):
                 
                 log.info('%s AMI_LINK : %s' % (astid, event))
                 if uid1 not in self.events_link[astid]:
-                        self.events_link[astid][uid1] = time.time()
+                    self.events_link[astid][uid1] = time.time()
                 else:
-                        log.warning('%s ignoring a Link event that already occured : %s' % (astid, event))
-                        log.debug('%s events_link : %s' % (astid, self.events_link[astid]))
-                        return
+                    log.warning('%s ignoring a Link event that already occured : %s' % (astid, event))
+                    log.debug('%s events_link : %s' % (astid, self.events_link[astid]))
+                    return
                 
                 # translate Local/xxx,1 channels
                 self.__link_local_channels__(astid, chan1, uid1, chan2, uid2, clid1, clidname1, clid2, clidname2)
@@ -2032,21 +2050,21 @@ class XivoCTICommand(BaseCommand):
                 (chan2, _uid2, clid2, clidname2) = self.__translate_local_channel_uid__(astid, chan2, uid2, clid2, clidname2)
                 
                 if self.__ignore_dtmf__(astid, uid1, 'link'):
-                        return
+                    return
                 if self.__ignore_dtmf__(astid, uid2, 'link'):
-                        return
+                    return
                 self.__fill_uniqueids__(astid, uid1, uid2, chan1, chan2, 'link')
                 uid1info = self.uniqueids[astid][uid1]
                 
                 if 'time-chanspy' in uid1info:
-                        return
+                    return
                 
                 if uid1info['link'].startswith('Agent/') and 'join' in uid1info:
-                        queuename = uid1info['join'].get('queuename')
-                        queueorgroup = uid1info['join'].get('queueorgroup')
-                        log.info('%s STAT LINK %s %s' % (astid, queuename, uid1info['link']))
-                        self.__update_queue_stats__(astid, queuename, queueorgroup, 'CONNECT')
-                        
+                    queuename = uid1info['join'].get('queuename')
+                    queueorgroup = uid1info['join'].get('queueorgroup')
+                    log.info('%s STAT LINK %s %s' % (astid, queuename, uid1info['link']))
+                    self.__update_queue_stats__(astid, queuename, queueorgroup, 'CONNECT')
+                    
                 phoneid1 = self.__phoneid_from_channel__(astid, chan1)
                 phoneid2 = self.__phoneid_from_channel__(astid, chan2)
                 trunkid1 = self.__trunkid_from_channel__(astid, chan1)
@@ -2059,11 +2077,11 @@ class XivoCTICommand(BaseCommand):
                 duinfo1 = None
                 duinfo2 = None
                 if uinfo1:
-                        duinfo1 = '%s/%s' % (uinfo1.get('astid'), uinfo1.get('xivo_userid'))
-                        self.__update_sheet_user__(astid, uinfo1, chan2)
+                    duinfo1 = '%s/%s' % (uinfo1.get('astid'), uinfo1.get('xivo_userid'))
+                    self.__update_sheet_user__(astid, uinfo1, chan2)
                 if uinfo2:
-                        duinfo2 = '%s/%s' % (uinfo2.get('astid'), uinfo2.get('xivo_userid'))
-                        self.__update_sheet_user__(astid, uinfo2, chan1)
+                    duinfo2 = '%s/%s' % (uinfo2.get('astid'), uinfo2.get('xivo_userid'))
+                    self.__update_sheet_user__(astid, uinfo2, chan1)
                 log.info('%s LINK1 %s %s callerid=%s (phone trunk)=(%s %s) user=%s'
                          % (astid, uid1, chan1, clid1, phoneid1, trunkid1, duinfo1))
                 log.info('%s LINK2 %s %s callerid=%s (phone trunk)=(%s %s) user=%s'
@@ -2084,26 +2102,26 @@ class XivoCTICommand(BaseCommand):
                 self.__update_phones_trunks__(astid, phoneid1, phoneid2, trunkid1, trunkid2, 'ami_link')
                 
                 if 'context' in self.uniqueids[astid][uid1]:
-                        self.__sheet_alert__('link', astid, self.uniqueids[astid][uid1]['context'], event, {}, chan2)
+                    self.__sheet_alert__('link', astid, self.uniqueids[astid][uid1]['context'], event, {}, chan2)
                         
                 if chan2.startswith('Agent/'):
                         # 'onlineincoming' for the agent
                         agent_number = chan2[6:]
                         status = 'onlineincoming'
                         for uinfo in self.__find_userinfos_by_agentnum__(astid, agent_number):
-                                self.__update_availstate__(uinfo, status)
-                                self.__presence_action__(astid, agent_number, uinfo)
-                                
+                            self.__update_availstate__(uinfo, status)
+                            self.__presence_action__(astid, agent_number, uinfo)
+                            
                         # To identify which queue a call comes from, we match a previous AMI Leave event,
                         # that involved the same channel as the one catched here.
                         # Any less-tricky-method is welcome, though.
                         qname = None
                         if chan1 in self.queues_channels_list[astid]:
-                                qname = self.queues_channels_list[astid][chan1]
-                                ## del self.queues_channels_list[astid][chan1]
-                                extraevent = {'xivo_queuename' : qname}
-                                self.__sheet_alert__('agentlinked', astid, CONTEXT_UNKNOWN, event, extraevent)
-                                
+                            qname = self.queues_channels_list[astid][chan1]
+                            ## del self.queues_channels_list[astid][chan1]
+                            extraevent = {'xivo_queuename' : qname}
+                            self.__sheet_alert__('agentlinked', astid, CONTEXT_UNKNOWN, event, extraevent)
+                            
                         agent_id = uinfo.get('agentid')
                         thisagent = self.weblist['agents'][astid].keeplist[agent_id]
                         thisagent['agentstats'].update({'Xivo-Agent-StateTime' : time.time()})
@@ -2126,7 +2144,7 @@ class XivoCTICommand(BaseCommand):
                 # outgoing channel
                 lstinfos1 = [uinfo1]
                 if uinfo1_ag not in lstinfos1:
-                        lstinfos1.append(uinfo1_ag) # agent related to the phonenumber
+                    lstinfos1.append(uinfo1_ag) # agent related to the phonenumber
                 for uinfo in lstinfos1:
                         if uinfo:
                                 status = 'onlineoutgoing'
@@ -2155,7 +2173,7 @@ class XivoCTICommand(BaseCommand):
                 # incoming channel
                 lstinfos2 = [uinfo2]
                 if uinfo2_ag not in lstinfos2:
-                        lstinfos2.append(uinfo2_ag) # agent related to the phonenumber
+                    lstinfos2.append(uinfo2_ag) # agent related to the phonenumber
                 for uinfo in lstinfos2:
                         if uinfo:
                                 status = 'onlineincoming'
@@ -2481,30 +2499,30 @@ class XivoCTICommand(BaseCommand):
                 phidlist_hup = self.weblist['phones'][astid].ami_hangup(uid)
                 tridlist_hup = self.weblist['trunks'][astid].ami_hangup(uid)
                 for pp in phidlist_hup:
-                        tosend = self.weblist['phones'][astid].status(pp)
-                        tosend['astid'] = astid
-                        context = self.weblist['phones'][astid].keeplist[pp]['context']
-                        log.debug('   HUP phones context=%s tosend=%s' % (context, tosend))
-                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
+                    tosend = self.weblist['phones'][astid].status(pp)
+                    tosend['astid'] = astid
+                    context = self.weblist['phones'][astid].keeplist[pp]['context']
+                    log.debug('   HUP phones context=%s tosend=%s' % (context, tosend))
+                    self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
                 for pp in tridlist_hup:
-                        tosend = self.weblist['trunks'][astid].status(pp)
-                        tosend['astid'] = astid
-                        context = self.weblist['trunks'][astid].keeplist[pp]['context']
-                        # XXX Beware, the trunks' contexts are usually different (from-extern vs. default)
-                        log.debug('   HUP trunks tosend=%s' % (tosend))
-                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
+                    tosend = self.weblist['trunks'][astid].status(pp)
+                    tosend['astid'] = astid
+                    context = self.weblist['trunks'][astid].keeplist[pp]['context']
+                    # XXX Beware, the trunks' contexts are usually different (from-extern vs. default)
+                    log.debug('   HUP trunks tosend=%s' % (tosend))
+                    self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
                 phidlist_clear = self.weblist['phones'][astid].clear(uid)
                 tridlist_clear = self.weblist['trunks'][astid].clear(uid)
                 log.info('%s HANGUP (%s %s) cleared phones and trunks = %s %s' % (astid, uid, chan, phidlist_clear, tridlist_clear))
                 
                 if astid in self.uniqueids and uid in self.uniqueids[astid]:
-                        del self.uniqueids[astid][uid]
+                    del self.uniqueids[astid][uid]
                 else:
-                        log.warning('%s HANGUP : uniqueid %s not there (anymore?)' % (astid, uid))
+                    log.warning('%s HANGUP : uniqueid %s not there (anymore?)' % (astid, uid))
                 if astid in self.channels and chan in self.channels[astid]:
-                        del self.channels[astid][chan]
+                    del self.channels[astid][chan]
                 else:
-                        log.warning('%s HANGUP : channel %s not there (anymore?)' % (astid, chan))
+                    log.warning('%s HANGUP : channel %s not there (anymore?)' % (astid, chan))
                 return
         
         def ami_hanguprequest(self, astid, event):
