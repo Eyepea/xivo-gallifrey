@@ -88,3 +88,7 @@ class SheetManager:
         for user in users:
             self.sheets[channel].addviewinguser(user)
 
+    def setcustomersheet(self, channel, sheet):
+        self.sheets[channel].sheet = sheet
+
+
