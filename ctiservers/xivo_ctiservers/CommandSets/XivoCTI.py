@@ -1376,7 +1376,9 @@ class XivoCTICommand(BaseCommand):
                             return
                         log.info('%s __sheet_alert__ %s %s %s %s' % (astid, where, whoms, time.asctime(), channel))
                         
-                        # 1) build sheet
+                        # 1) build sheet
+                        if channel is not None:
+                            self.__create_new_sheet__(astid, channel)
                         linestosend = self.__sheet_construct__(where, astid, context, event, extraevent)
                         
                         # 2) build recipient list
@@ -3687,7 +3689,7 @@ class XivoCTICommand(BaseCommand):
                             self.__ami_execute__(astid, 'transfer', channel,
                                                  destdetails.get('number'),
                                                  destdetails.get('context'))
-                        self.__create_new_sheet__(astid, self.uniqueids[astid][uniqueid]['channel'])
+                        #self.__create_new_sheet__(astid, self.uniqueids[astid][uniqueid]['channel'])
                         self.__sheet_alert__('incomingdid', astid, context, event, dialplan_data, channel)
                         
                 elif eventname in ['MacroUser', 'MacroGroup', 'MacroQueue', 'MacroOutcall', 'MacroMeetme']:
