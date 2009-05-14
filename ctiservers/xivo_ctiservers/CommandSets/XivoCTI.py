@@ -1261,6 +1261,7 @@ class XivoCTICommand(BaseCommand):
                 # - popup or not
                 # - actions ?
                 # - dispatch to one given person / all / subscribed ones
+                log.debug('%s __sheet_alert__ where=%s channel=%s' % (astid, where, channel))
                 if where in self.sheet_actions:
                         userinfos = []
                         actionopt = self.sheet_actions.get(where)
@@ -1406,10 +1407,10 @@ class XivoCTICommand(BaseCommand):
                         linestosend.extend(self.__build_xmlsheet__('systray_info', actionopt, itemdir))
                         linestosend.append('</user></profile>')
                         
-                        # print ''.join(linestosend)
-                        
                         dozip = True
-                        xmlstring = ''.join(linestosend).encode('utf8')
+                        xmlustring = ''.join(linestosend)
+                        xmlstring = xmlustring.encode('utf8')
+                        # build the json message
                         tosend = { 'class' : 'sheet',
                                    'whom' : whoms,
                                    'function' : 'displaysheet',
@@ -1424,9 +1425,13 @@ class XivoCTICommand(BaseCommand):
                             tosend['payload'] = base64.b64encode(toencode)
                         else:
                             tosend['payload'] = base64.b64encode(xmlstring)
-                        fulllines = self.__cjson_encode__(tosend)
+                        jsonmsg = self.__cjson_encode__(tosend)
                         
                         # print '---------', where, whoms, fulllines
+
+                        # 3bis : update sheet manager
+                        if astid in self.sheetmanager and self.sheetmanager[astid].has_sheet(channel):
+                            self.sheetmanager[astid].setcustomersheet(channel, xmlustring)
                         
                         # 4/4
                         # send the payload to the appropriate people
@@ -1470,13 +1475,14 @@ class XivoCTICommand(BaseCommand):
                                 else:
                                         log.warning('__sheet_alert__ (%s) : unknown destination <%s> in <%s>'
                                                     % (astid, whom, where))
-                                        
+                                # send to clients 
                                 lstsent = []
                                 for uinfo in uinfostosend:
-                                    if self.__send_msg_to_cti_client__(uinfo, fulllines):
+                                    if self.__send_msg_to_cti_client__(uinfo, jsonmsg):
                                         nsent += 1
                                         userid = '%s/%s' % (uinfo.get('astid'), uinfo.get('xivo_userid'))
                                         lstsent.append(userid)
+                                # mark clients as "viewing users"
                                 if astid in self.sheetmanager and self.sheetmanager[astid].has_sheet(channel):
                                     self.sheetmanager[astid].addviewingusers(channel, lstsent)
                                 if lstsent:
@@ -2841,7 +2847,8 @@ class XivoCTICommand(BaseCommand):
                         # set extension only if numeric
                         if event.get('Extension').isdigit():
                             self.uniqueids[astid][uniqueid]['extension'] = event.get('Extension')
-                self.__sheet_alert__('outgoing', astid, event.get('Context'), event)
+                # TODO do not call __sheet_alert__ so often
+                #self.__sheet_alert__('outgoing', astid, event.get('Context'), event)
                 return
         
         def ami_newchannel(self, astid, event):
@@ -5848,12 +5855,24 @@ class XivoCTICommand(BaseCommand):
                     #log.debug('%s __update_sheet_user__ %s from user %s to %s (%s)' % (astid, channel, self.sheetmanager[astid].get_sheet(channel).currentuser, newuser, newuinfo))
                     if self.sheetmanager[astid].get_sheet(channel).currentuser is not None:
                         olduinfo = self.ulist_ng.keeplist[self.sheetmanager[astid].get_sheet(channel).currentuser]
-                        log.debug('%s __update_sheet_user__ olduinfo=%s' % (astid, olduinfo))
+                        #log.debug('%s __update_sheet_user__ olduinfo=%s' % (astid, olduinfo))
                         tosend = { 'class': 'sheet',
                                    'function': 'looseownership',
                                    'channel': channel,
                                  }
                         self.__send_msg_to_cti_client__(olduinfo, self.__cjson_encode__(tosend))
+                    # faut-il tout d'abord envoyer la fiche a l'utilisateur ???
+                    if newuser not in self.sheetmanager[astid].get_sheet(channel).viewingusers:
+                        log.debug('%s __update_sheet_user_ forwarding sheet to new user : %s' % (astid, self.sheetmanager[astid].get_sheet(channel).sheet))
+                        tosend = { 'class' : 'sheet',
+                                   #'whom' : whoms,
+                                   'function' : 'displaysheet',
+                                   'channel' : channel,
+                                   'payload' : base64.b64encode(self.sheetmanager[astid].get_sheet(channel).sheet.encode('utf8'))
+                                   }
+                        jsonmsg = self.__cjson_encode__(tosend)
+                        self.__send_msg_to_cti_client__(newuinfo, self.__cjson_encode__(tosend))
+                    # update current user
                     self.sheetmanager[astid].update_currentuser(channel, newuser)
                     # on informe le nouveau user qu'il a la propriete de la fiche
                     tosend = { 'class': 'sheet',
@@ -5874,7 +5893,7 @@ class XivoCTICommand(BaseCommand):
                 # close the sheet if it is open on a user screen
                 if self.sheetmanager[astid].get_sheet(channel).currentuser is not None:
                     olduinfo = self.ulist_ng.keeplist[self.sheetmanager[astid].get_sheet(channel).currentuser]
-                    log.debug('%s __update_sheet_user__ olduinfo=%s' % (astid, olduinfo))
+                    log.debug('%s __sheet_disconnect__ olduser=%s' % (astid, self.sheetmanager[astid].get_sheet(channel).currentuser))
                     tosend = { 'class': 'sheet',
                                'function': 'looseownership',
                                'channel': channel,
