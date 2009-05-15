@@ -1,6 +1,6 @@
 """Support for Aastra phones for XIVO Configuration
 
-Aastra 51i, 53i, 55i, 57i and 6731i are supported.
+Aastra 6730i, 6731i, 6751i, 6753i, 6755i and 6757i are supported.
 
 Copyright (C) 2008-2009  Proformatique
 
