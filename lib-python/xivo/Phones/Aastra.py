@@ -38,7 +38,7 @@ log = logging.getLogger("xivo.Phones.Aastra") # pylint: disable-msg=C0103
 
 class Aastra(PhoneVendorMixin):
 
-    AASTRA_MODELS           = ('51i', '53i', '55i', '57i', '6731i')
+    AASTRA_MODELS           = ('6751i', '6753i', '6755i', '6757i', '6731i', '6730i')
     AASTRA_MACADDR_PREFIX   = ('1:00:08:5d',)
     AASTRA_COMMON_HTTP_USER = 'admin'
     AASTRA_COMMON_HTTP_PASS = '22222'
