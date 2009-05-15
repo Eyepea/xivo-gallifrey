@@ -12,6 +12,7 @@ VoiceMailTelNum=*98{{user_phone_number}}
 config_sn={{config_sn}}
 Current_Max_Multiline={{simultcalls}}
 Phonebook1_url=http://{{asterisk_ipv4}}/service/ipbx/web_services.php/phonebook/search/?name=#SEARCH&id={{user_phone_ident}}
+Phonebook1_name=Annuaire entreprise
 
 FeatureKeyExt01=L/<sip:>
 FeatureKeyExt02=L/<sip:>
