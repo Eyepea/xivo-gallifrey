@@ -608,7 +608,8 @@ class XivoCTICommand(BaseCommand):
                 
                 self.sheet_actions = {}
                 for where, sheetaction in lconf.read_section('sheet_events', 'sheet_events').iteritems():
-                        if where in self.sheet_allowed_events and len(sheetaction) > 0:
+                    if sheetaction:
+                        if where in self.sheet_allowed_events or where.startswith('custom-'):
                                 self.sheet_actions[where] = lconf.read_section('sheet_action', sheetaction)
                 return
         
@@ -1336,6 +1337,11 @@ class XivoCTICommand(BaseCommand):
                 itemdir['xivo-queuename'] = queuename
                 itemdir['xivo-queueorgroup'] = where[8:] + 's'
                 
+            elif where.startswith('custom-'):
+                for fieldname in extraevent.keys():
+                    if not itemdir.has_key(fieldname):
+                        itemdir[fieldname] = extraevent[fieldname]
+            
             if 'xivo-channel' in itemdir:
                 linestosend.append('<internal name="channel"><![CDATA[%s]]></internal>'
                                    % itemdir['xivo-channel'])
@@ -1407,7 +1413,9 @@ class XivoCTICommand(BaseCommand):
                                 # XXX sip@queue
                                 if status.get('Paused') == '0':
                                     userinfos.extend(self.__find_userinfos_by_agentnum__(astid, agent_channel[6:]))
-                                    
+                        elif where.startswith('custom-'):
+                            pass
+                        
                         # 3) format message and send
                         dozip = True
                         xmlustring = ''.join(linestosend)
@@ -1443,40 +1451,40 @@ class XivoCTICommand(BaseCommand):
                                 for uinfo in userinfos:
                                     if capaids is None or uinfo.get('capaid') in capaids:
                                         uinfostosend.append(uinfo)
-                                            
+                                        
                             elif whom == 'subscribe':
                                 for uinfo in self.ulist_ng.keeplist.itervalues():
                                     if capaids is None or uinfo.get('capaid') in capaids:
                                         if 'subscribe' in uinfo:
                                             uinfostosend.append(uinfo)
-                                                
+                                            
                             elif whom == 'all-astid-context': # match asterisks and contexts
                                 for uinfo in self.ulist_ng.keeplist.itervalues():
                                     if astid == uinfo.get('astid') and context == uinfo.get('context'):
                                         if capaids is None or uinfo.get('capaid') in capaids:
                                             uinfostosend.append(uinfo)
-                                                
+                                            
                             elif whom == 'all-context': # accross asterisks + match contexts
                                 for uinfo in self.ulist_ng.keeplist.itervalues():
                                     if context == uinfo.get('context'):
                                         if capaids is None or uinfo.get('capaid') in capaids:
                                             uinfostosend.append(uinfo)
-                                                
+                                            
                             elif whom == 'all-astid': # accross contexts + match asterisks
                                 for uinfo in self.ulist_ng.keeplist.itervalues():
                                     if astid == uinfo.get('astid'):
                                         if capaids is None or uinfo.get('capaid') in capaids:
                                             uinfostosend.append(uinfo)
-                                                
+                                            
                             elif whom == 'all': # accross asterisks and contexts
                                 for uinfo in self.ulist_ng.keeplist.itervalues():
                                     if capaids is None or uinfo.get('capaid') in capaids:
                                         uinfostosend.append(uinfo)
-                                            
+                                        
                             else:
                                 log.warning('__sheet_alert__ (%s) : unknown destination <%s> in <%s>'
                                             % (astid, whom, where))
-                            # send to clients 
+                            # send to clients
                             lstsent = []
                             for uinfo in uinfostosend:
                                 if self.__send_msg_to_cti_client__(uinfo, jsonmsg):
@@ -1489,7 +1497,6 @@ class XivoCTICommand(BaseCommand):
                             if lstsent:
                                 log.info('%s (whom=%s, where=%s) %d sheet(s) sent to %s'
                                          % (astid, whom, where, nsent, lstsent))
-                                    
                 return
 
         def __dialplan_fill_src__(self, dialplan_data):
@@ -3721,6 +3728,22 @@ class XivoCTICommand(BaseCommand):
                     else:
                         log.warning('%s AMI UserEvent %s : xivo_userid is not set' % (astid, eventname))
                         
+                elif eventname == 'Custom':
+                    customname = event.get('NAME')
+                    channel = event.get('CHANNEL')
+                    uniqueid = event.get('UNIQUEID')
+                    if self.uniqueids.has_key(astid):
+                        if self.uniqueids[astid].has_key(uniqueid):
+                            if self.uniqueids[astid][uniqueid].has_key('dialplan_data'):
+                                dialplan_data = self.uniqueids[astid][uniqueid]['dialplan_data']
+                                if (dialplan_data.has_key('xivo-astid')
+                                    and dialplan_data.has_key('xivo-channel')
+                                    and dialplan_data.has_key('xivo-uniqueid')):
+                                    context = dialplan_data.get('xivo-context', CONTEXT_UNKNOWN)
+                                    self.__sheet_alert__('custom-%s' % customname, astid, context, event, dialplan_data, channel)
+                                else:
+                                    log.warning('%s AMI UserEvent %s : dialplan_data not defined enough %s' % (astid, eventname, dialplan_data))
+                                    
                 elif eventname == 'dialplan2cti':
                     channel = event.get('CHANNEL')
                     uniqueid = event.get('UNIQUEID')
@@ -3735,17 +3758,6 @@ class XivoCTICommand(BaseCommand):
                             else:
                                 log.warning('%s AMI UserEvent %s : no dialplan_data field (yet ?)' % (astid, eventname))
                                 
-                elif eventname == 'Custom':
-                    uniqueid = event.get('UNIQUEID')
-                    callerid = event.get('XIVO_SRCNUM')
-                    channel = event.get('CHANNEL')
-                    context = event.get('XIVO_REAL_CONTEXT', CONTEXT_UNKNOWN)
-                    # XXX
-                    # event in order to send a custom sheet almost anywhere in the dialplan
-                    # TBD : define different kinds + define the destinations for each
-                    # and later : define any other sheet event as a special case of this one (?)
-                    # self.__sheet_alert__('custom', astid, context, event)
-                    
                 elif eventname == 'OUTCALL':
                         uniqueid = event.get('UNIQUEID')
                         context = event.get('XIVO_CONTEXT', CONTEXT_UNKNOWN)

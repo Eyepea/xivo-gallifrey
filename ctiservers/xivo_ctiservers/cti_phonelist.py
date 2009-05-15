@@ -215,12 +215,25 @@ class PhoneList(AnyList):
                 return
         
         def ami_hold(self, phoneid, uid):
-            self.keeplist[phoneid]['comms'][uid]['time-hold'] = time.time()
+            if self.keeplist.has_key(phoneid):
+                if self.keeplist[phoneid]['comms'].has_key(uid):
+                    self.keeplist[phoneid]['comms'][uid]['time-hold'] = time.time()
+                else:
+                    log.warning('ami_hold : no uid %s for phoneid %s' % (uid, phoneid))
+            else:
+                log.warning('ami_hold : no phoneid %s' % phoneid)
             return
         
         def ami_unhold(self, phoneid, uid):
-            if 'time-hold' in self.keeplist[phoneid]['comms'][uid]:
-                del self.keeplist[phoneid]['comms'][uid]['time-hold']
+            if self.keeplist.has_key(phoneid):
+                if self.keeplist[phoneid]['comms'].has_key(uid):
+                    if 'time-hold' in self.keeplist[phoneid]['comms'][uid]:
+                        del self.keeplist[phoneid]['comms'][uid]['time-hold']
+                    self.keeplist[phoneid]['comms'][uid]['time-hold'] = time.time()
+                else:
+                    log.warning('ami_hold : no uid %s for phoneid %s' % (uid, phoneid))
+            else:
+                log.warning('ami_hold : no phoneid %s' % phoneid)
             return
         
         def ami_hangup(self, uid):
