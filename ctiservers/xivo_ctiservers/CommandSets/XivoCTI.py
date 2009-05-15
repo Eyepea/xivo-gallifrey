@@ -1435,6 +1435,7 @@ class XivoCTICommand(BaseCommand):
                                    'whom' : whoms,
                                    'function' : 'displaysheet',
                                    'channel' : channel,
+                                   'astid' : astid,
                                    'compressed' : dozip
                                    }
                         if astid in self.sheetmanager and self.sheetmanager[astid].has_sheet(channel):
