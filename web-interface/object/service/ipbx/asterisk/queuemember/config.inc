@@ -28,13 +28,18 @@ $array['element']['interface']['default'] = '';
 
 $array['element']['penalty'] = array();
 $array['element']['penalty']['default'] = 0;
-$array['element']['penalty']['value'] = array(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20);
+$array['element']['penalty']['value'] = range(0,20);
 $array['element']['penalty']['setdef'] = true;
 
 $array['element']['call-limit'] = array();
 $array['element']['call-limit']['default'] = 0;
-$array['element']['call-limit']['value'] = array(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20);
+$array['element']['call-limit']['value'] = range(0,20);
 $array['element']['call-limit']['setdef'] = true;
+
+$array['element']['paused'] = array();
+$array['element']['paused']['value'] = array(0,1);
+$array['element']['paused']['default'] = 0;
+$array['element']['paused']['set'] = true;
 
 $array['element']['chantype'] = array();
 $array['element']['chantype']['default'] = 'default';
@@ -63,6 +68,7 @@ $array['filter']['queue_name'] = array('regexp' => '/^[a-z0-9_\.-]+$/i','minlen'
 $array['filter']['interface'] = array('regexp' => '/^[a-z0-9#\*\.\/_@:-]+$/i','minlen' => 1,'maxlen' => 128);
 $array['filter']['penalty'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,20));
 $array['filter']['call-limit'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,20));
+$array['filter']['paused'] = array('bool' => true);
 $array['filter']['usertype'] = array('key' => array('user','agent'));
 $array['filter']['userid'] = array('cast' => 'ulongint');
 $array['filter']['channel'] = array('key' => array(
