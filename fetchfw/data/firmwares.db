@@ -1,7 +1,33 @@
-# Aastra 51i 2.5
-[aa51i_25]
+# Aastra 6730i 2.5
+[aa6730i_25]
 brand: Aastra
-model: 51i
+model: 6730i
+version: 2.5
+files: LangPacks_PA-001006-03-REV00_lp_2.5.0_0903.zip 6730i_FC-001240-02-REV00_sr_2.5.0.82_0903.zip
+
+[6730i_FC-001240-02-REV00_sr_2.5.0.82_0903.zip]
+url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-10057BE0/04/6730i_FC-001240-02-REV00_sr_2.5.0.82_0903.zip
+size: 1987836
+md5sum: ec8fb7aab603ffc7391aa45dc5a048b4
+sha1sum: 5893c6110ca3c9ae5ee2ff845207eb085969996a
+
+# Aastra 6731i 2.5
+[aa6731i_25]
+brand: Aastra
+model: 6731i
+version: 2.5
+files: LangPacks_PA-001006-03-REV00_lp_2.5.0_0903.zip 6731i_FC-001224-03-REV00_sr_2.5.0.82_0903.zip
+
+[6731i_FC-001224-03-REV00_sr_2.5.0.82_0903.zip]
+url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-10057BE0/04/6731i_FC-001224-03-REV00_sr_2.5.0.82_0903.zip
+size: 1989602
+md5sum: 31f348da4ec6dccb3edf3b50ba9b0eba
+sha1sum: 51caad349477a56c9ea0aee9c85d5d441abde741
+
+# Aastra 6751i 2.5
+[aa6751i_25]
+brand: Aastra
+model: 6751i
 version: 2.5
 files: LangPacks_PA-001006-03-REV00_lp_2.5.0_0903.zip 6751i_FC-001126-05-REV00_sr_2.5.0.82_0903.zip
 
@@ -11,10 +37,10 @@ size: 1930898
 md5sum: 570dbec72a5847e884ed37c14aca2268
 sha1sum: 0f5aeca1c563cb6e6c460ca3d39660cb0f5c2444
 
-# Aastra 53i 2.5
-[aa53i_25]
+# Aastra 6753i 2.5
+[aa6753i_25]
 brand: Aastra
-model: 53i
+model: 6753i
 version: 2.5
 files: LangPacks_PA-001006-03-REV00_lp_2.5.0_0903.zip 6753i_FC-001086-09-REV00_sr_2.5.0.82_0903.zip
 
@@ -24,10 +50,10 @@ size: 2945542
 md5sum: f3a509176e2fd8e6b98e94713a8cc5c2
 sha1sum: 6abb1564116d79e49ee3572174ccd5391cc72d81
 
-# Aastra 55i 2.5
-[aa55i_25]
+# Aastra 6755i 2.5
+[aa6755i_25]
 brand: Aastra
-model: 55i
+model: 6755i
 version: 2.5
 files: LangPacks_PA-001006-03-REV00_lp_2.5.0_0903.zip 6755i_FC-001087-10-REV00_sr_2.5.0.82_0903.zip
 
@@ -37,10 +63,10 @@ size: 2982244
 md5sum: 10b2d9fac713f118d67e1672ca85b856
 sha1sum: aa1b2f0ed43c2de510d04d98989b20d9652b38e6
 
-# Aastra 57i 2.5
-[aa57i_25]
+# Aastra 6757i 2.5
+[aa6757i_25]
 brand: Aastra
-model: 57i
+model: 6757i
 version: 2.5
 files: LangPacks_PA-001006-03-REV00_lp_2.5.0_0903.zip 6757i_FC-001088-09-REV00_sr_2.5.0.82_0903.zip
 
