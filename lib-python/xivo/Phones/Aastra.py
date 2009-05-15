@@ -38,7 +38,12 @@ log = logging.getLogger("xivo.Phones.Aastra") # pylint: disable-msg=C0103
 
 class Aastra(PhoneVendorMixin):
 
-    AASTRA_MODELS           = ('6751i', '6753i', '6755i', '6757i', '6731i', '6730i')
+    AASTRA_MODELS           = (('6730i', '6730i'),
+                               ('6731i', '6731i'),
+                               ('6751i', '51i'),
+                               ('6753i', '53i'),
+                               ('6755i', '55i'),
+                               ('6757i', '57i'))
     AASTRA_MACADDR_PREFIX   = ('1:00:08:5d',)
     AASTRA_COMMON_HTTP_USER = 'admin'
     AASTRA_COMMON_HTTP_PASS = '22222'
@@ -53,7 +58,8 @@ class Aastra(PhoneVendorMixin):
 
     def __init__(self, phone):
         PhoneVendorMixin.__init__(self, phone)
-        if self.phone['model'] not in self.AASTRA_MODELS:
+        if self.phone['model'] not in [x[0] for x in self.AASTRA_MODELS] \
+                                    + [x[1] for x in self.AASTRA_MODELS]:
             raise ValueError, "Unknown Aastra model %r" % self.phone['model']
 
     def __action(self, user, passwd):
@@ -124,7 +130,7 @@ class Aastra(PhoneVendorMixin):
             key = int(key)
 
             if key <= 6:
-                if model == '57i':
+                if model in ('57i', '6757i'):
                     keytype = "topsoft"
                 else:
                     keytype = "prg"
@@ -231,7 +237,7 @@ class Aastra(PhoneVendorMixin):
     @classmethod
     def get_phones(cls):
         "Report supported phone models for this vendor."
-        return tuple([(x, x) for x in cls.AASTRA_MODELS])
+        return tuple([(x[0], x[0]) for x in cls.AASTRA_MODELS])
 
     # Entry points for the AGI
 
@@ -260,12 +266,18 @@ class Aastra(PhoneVendorMixin):
 
     @classmethod
     def get_dhcp_classes_and_sub(cls, addresses):
-        for model in cls.AASTRA_MODELS:
+        for model, oldmodel in cls.AASTRA_MODELS:
+            yield 'class "Aastra%s" {\n' % model
+
+            if model != oldmodel:
+                yield '    match if (option vendor-class-identifier = "AastraIPPhone%s")\n' % model
+                yield '              or (option vendor-class-identifier = "AastraIPPhone%s");\n' % oldmodel
+            else:
+                yield '    match if option vendor-class-identifier = "AastraIPPhone%s";\n' % model
+
             for line in (
-                'class "Aastra%s" {\n' % model,
-                '    match if option vendor-class-identifier = "AastraIPPhone%s";\n' % model,
                 '    log("boot Aastra %s");\n' % model,
-                '    option tftp-server-name "%s";\n' % addresses['bootServer'],
+                '    option tftp-server-name "http://%s/provisioning/Aastra/";\n' % addresses['bootServer'],
                 '    next-server %s;\n' % addresses['bootServer'],
                 '}\n',
                 '\n'):
@@ -280,10 +292,10 @@ class Aastra(PhoneVendorMixin):
                 '        next-server %s;\n' % addresses['bootServer'],
                 '    }\n',
                 '}\n',
-                '\n'):
+                '\n'    ):
                 yield line
 
     @classmethod
     def get_dhcp_pool_lines(cls):
-        for model in cls.AASTRA_MODELS:
-            yield '        allow members of "Aastra%s";\n' % model
+        for x in cls.AASTRA_MODELS:
+            yield '        allow members of "Aastra%s";\n' % x[0]
