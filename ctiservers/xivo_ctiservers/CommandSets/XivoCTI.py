@@ -1439,7 +1439,7 @@ class XivoCTICommand(BaseCommand):
                                    'compressed' : dozip
                                    }
                         if astid in self.sheetmanager and self.sheetmanager[astid].has_sheet(channel):
-                            tosend['entries'] = [ entry.todict() for entry in self.sheetmanager[astid].get_sheet(chan).entries ]
+                            tosend['entries'] = [ entry.todict() for entry in self.sheetmanager[astid].get_sheet(channel).entries ]
                         if dozip:
                             ulen = len(xmlstring)
                             # prepend the uncompressed length in big endian
