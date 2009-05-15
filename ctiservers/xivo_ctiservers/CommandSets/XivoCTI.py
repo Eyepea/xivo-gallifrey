@@ -317,36 +317,38 @@ class XivoCTICommand(BaseCommand):
                         missings = []
                         # warns that the former session did not exit correctly (on a given computer)
                         if 'lastlogout-stopper' in loginparams and 'lastlogout-datetime' in loginparams:
-                                if not loginparams['lastlogout-stopper'] or not loginparams['lastlogout-datetime']:
-                                        log.warning('lastlogout stopper=%s datetime=%s'
-                                                    % (loginparams['lastlogout-stopper'], loginparams['lastlogout-datetime']))
+                            if not loginparams['lastlogout-stopper'] or not loginparams['lastlogout-datetime']:
+                                log.warning('lastlogout stopper=%s datetime=%s'
+                                            % (loginparams['lastlogout-stopper'], loginparams['lastlogout-datetime']))
                         for argum in ['company', 'userid', 'ident', 'xivoversion', 'version']:
-                                if argum not in loginparams:
-                                        missings.append(argum)
+                            if argum not in loginparams:
+                                missings.append(argum)
                         if len(missings) > 0:
-                                log.warning('missing args in loginparams : %s' % ','.join(missings))
-                                return 'missing:%s' % ','.join(missings)
+                            log.warning('missing args in loginparams : %s' % ','.join(missings))
+                            return 'missing:%s' % ','.join(missings)
                         
                         # trivial checks (version, client kind) dealing with the software used
                         xivoversion = loginparams.get('xivoversion')
                         if xivoversion != XIVOVERSION_NUM:
-                                return 'xivoversion_client:%s;%s' % (xivoversion, XIVOVERSION_NUM)
+                            return 'xivoversion_client:%s;%s' % (xivoversion, XIVOVERSION_NUM)
                         svnversion = loginparams.get('version')
                         ident = loginparams.get('ident')
                         if len(ident.split('@')) == 2:
-                                [whoami, whatsmyos] = ident.split('@')
-                                # return 'wrong_client_identifier:%s' % whoami
-                                if whatsmyos[:3] not in ['X11', 'WIN', 'MAC']:
-                                        return 'wrong_os_identifier:%s' % whatsmyos
+                            [whoami, whatsmyos] = ident.split('@')
+                            # return 'wrong_client_identifier:%s' % whoami
+                            if whatsmyos[:3] not in ['X11', 'WIN', 'MAC']:
+                                return 'wrong_os_identifier:%s' % whatsmyos
                         else:
-                                return 'wrong_client_os_identifier:%s' % ident
+                            return 'wrong_client_os_identifier:%s' % ident
                         if (not svnversion.isdigit()) or int(svnversion) < self.required_client_version:
-                                return 'version_client:%s;%d' % (svnversion, self.required_client_version)
+                            return 'version_client:%s;%d' % (svnversion, self.required_client_version)
                         
                         # user match
-                        userinfo = self.ulist_ng.finduser(loginparams.get('userid'), loginparams.get('company'))
+                        userinfo = None
+                        if loginparams.get('userid'):
+                            userinfo = self.ulist_ng.finduser(loginparams.get('userid'), loginparams.get('company'))
                         if userinfo == None:
-                                return 'user_not_found'
+                            return 'user_not_found'
                         userinfo['prelogin'] = {'cticlientos' : whatsmyos,
                                                 'version' : svnversion,
                                                 'sessionid' : ''.join(random.sample(__alphanums__, 10))}
@@ -5128,30 +5130,30 @@ class XivoCTICommand(BaseCommand):
                         # others than 'user:special:me' should only be allowed to switchboard-like users
                         if typesrc == 'user':
                                 if whosrc == 'special:me':
-                                        srcuinfo = userinfo
+                                    srcuinfo = userinfo
                                 else:
-                                        srcuinfo = self.ulist_ng.keeplist.get(whosrc)
+                                    srcuinfo = self.ulist_ng.keeplist.get(whosrc)
                                 if srcuinfo is not None:
-                                        astid_src = srcuinfo.get('astid')
-                                        context_src = srcuinfo.get('context')
-                                        techdetails = srcuinfo.get('techlist')[0]
-                                        proto_src = techdetails.split('.')[0]
-                                        # XXXX 'local' might break the XIVO_ORIGSRCNUM mechanism (trick for thomson)
-                                        phonenum_src = techdetails.split('.')[2]
-                                        ### srcuinfo.get('phonenum')
-                                        # if termlist empty + agentphonenum not empty => call this one
-                                        cidname_src = srcuinfo.get('fullname')
+                                    astid_src = srcuinfo.get('astid')
+                                    context_src = srcuinfo.get('context')
+                                    techdetails = srcuinfo.get('techlist')[0]
+                                    proto_src = techdetails.split('.')[0]
+                                    # XXXX 'local' might break the XIVO_ORIGSRCNUM mechanism (trick for thomson)
+                                    phonenum_src = techdetails.split('.')[2]
+                                    ### srcuinfo.get('phonenum')
+                                    # if termlist empty + agentphonenum not empty => call this one
+                                    cidname_src = srcuinfo.get('fullname')
                         # 'agent:', 'queue:', 'group:', 'meetme:' ?
                         elif typesrc == 'ext':
-                                context_src = userinfo['context']
-                                astid_src = userinfo['astid']
-                                proto_src = 'local'
-                                phonenum_src = whosrc
-                                cidname_src = whosrc
+                            context_src = userinfo['context']
+                            astid_src = userinfo['astid']
+                            proto_src = 'local'
+                            phonenum_src = whosrc
+                            cidname_src = whosrc
                         else:
-                                log.warning('unknown typesrc <%s>' % typesrc)
-                                return
-                                
+                            log.warning('unknown typesrc <%s>' % typesrc)
+                            return
+                        
                         # dst
                         if typedst == 'ext':
                                 context_dst = context_src
