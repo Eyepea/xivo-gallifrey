@@ -60,7 +60,6 @@ ALTER TABLE `usersip` ADD COLUMN `callingpres` tinyint(1) AFTER `vmexten`;
 ALTER TABLE `usersip` MODIFY COLUMN `ipaddr` varchar(255) NOT NULL DEFAULT '' AFTER `callingpres`;
 ALTER TABLE `usersip` MODIFY COLUMN `regseconds` int(10) unsigned NOT NULL DEFAULT 0 AFTER `ipaddr`;
 ALTER TABLE `usersip` ADD COLUMN `regserver` varchar(20) AFTER `regseconds`;
-ALTER TABLE `usersip` ADD COLUMN `lastms` varchar(15) NOT NULL DEFAULT '' AFTER `regserver`;
 ALTER TABLE `usersip` MODIFY COLUMN `commented` tinyint(1) NOT NULL DEFAULT 0 AFTER `category`;
 ALTER TABLE `usersip` DROP COLUMN `restrictcid`;
 ALTER TABLE `usersip` DROP COLUMN `cancallforward`;
@@ -68,7 +67,6 @@ ALTER TABLE `usersip` DROP COLUMN `cancallforward`;
 CREATE INDEX `usersip__idx__mailbox` ON `usersip`(`mailbox`);
 CREATE INDEX `usersip__idx__host_port` ON `usersip`(`host`,`port`);
 CREATE INDEX `usersip__idx__ipaddr_port` ON `usersip`(`ipaddr`,`port`);
-CREATE INDEX `usersip__idx__lastms` ON `usersip`(`lastms`);
 
 UPDATE `usersip`
 SET
@@ -131,7 +129,6 @@ SET
 	`ipaddr` = IFNULL(`ipaddr`,''),
 	`regseconds` = IFNULL(`regseconds`,0),
 	`regserver` = NULL,
-	`lastms` = '',
 	`protocol` = 'sip',
 	`category` = 'user'
 WHERE category = 'user';
@@ -196,7 +193,6 @@ SET
 	`ipaddr` = IFNULL(`ipaddr`,''),
 	`regseconds` = IFNULL(`regseconds`,0),
 	`regserver` = NULL,
-	`lastms` = '',
 	`protocol` = 'sip',
 	`category` = 'trunk'
 WHERE category = 'trunk';

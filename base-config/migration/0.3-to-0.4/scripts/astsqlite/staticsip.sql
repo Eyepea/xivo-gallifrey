@@ -85,8 +85,7 @@ AND var_name IN('allowsubscribe',
 		'jblog',
 		'mohsuggest',
 		'rtsavesysname',
-		'subscribecontext',
-		'assertedidentity');
+		'subscribecontext');
 
 DELETE FROM tmp_staticsip;
 

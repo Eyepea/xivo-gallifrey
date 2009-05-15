@@ -28,4 +28,3 @@ INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','jblog','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','mohsuggest',NULL);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','rtsavesysname','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','subscribecontext',NULL);
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','assertedidentity','no');
