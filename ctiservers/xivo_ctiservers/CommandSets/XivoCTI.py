@@ -1378,18 +1378,27 @@ class XivoCTICommand(BaseCommand):
                                 capaids = actionopt['capaids'].split(',')
                             else:
                                 capaids = []
-                        if whoms is None or whoms == '':
-                            log.warning('%s __sheet_alert__ : whom field for %s action has not been defined'
-                                        % (astid, where))
-                            return
+                        if whoms is None:
+                            whoms = ''  # dont send to anyone
+                        #if whoms is None or whoms == '':
+                        #    log.warning('%s __sheet_alert__ : whom field for %s action has not been defined'
+                        #                % (astid, where))
+                        #    return
                         log.info('%s __sheet_alert__ %s %s %s %s' % (astid, where, whoms, time.asctime(), channel))
                         
-                        # 1) build sheet
+                        # 1) build sheet     (or we could get it from sheet manager)
                         if channel is not None:
                             self.__create_new_sheet__(astid, channel)
-                        linestosend = self.__sheet_construct__(where, astid, context, event, extraevent)
+                        if False and channel is not None and astid in self.sheetmanager and self.sheetmanager[astid].has_sheet(channel):
+                            xmlustring = self.sheetmanager[astid].sheets[channel].sheet
+                        else:
+                            linestosend = self.__sheet_construct__(where, astid, context, event, extraevent)
+                            xmlustring = ''.join(linestosend)
+                            # 2) update sheet manager
+                            if astid in self.sheetmanager and self.sheetmanager[astid].has_sheet(channel):
+                                self.sheetmanager[astid].setcustomersheet(channel, xmlustring)
                         
-                        # 2) build recipient list
+                        # 3) build recipient list
                         if where in ['agentlinked', 'agentunlinked']:
                             userinfos.extend(self.__find_userinfos_by_agentnum__(astid, dstnum))
                         elif where == 'dial':
@@ -1418,17 +1427,18 @@ class XivoCTICommand(BaseCommand):
                         elif where.startswith('custom-'):
                             pass
                         
-                        # 3) format message and send
+                        # 4) format message and send
                         dozip = True
-                        xmlustring = ''.join(linestosend)
                         xmlstring = xmlustring.encode('utf8')
-                        # build the json message
+                        # build the json message
                         tosend = { 'class' : 'sheet',
                                    'whom' : whoms,
                                    'function' : 'displaysheet',
                                    'channel' : channel,
                                    'compressed' : dozip
                                    }
+                        if astid in self.sheetmanager and self.sheetmanager[astid].has_sheet(channel):
+                            tosend['entries'] = [ entry.todict() for entry in self.sheetmanager[astid].get_sheet(chan).entries ]
                         if dozip:
                             ulen = len(xmlstring)
                             # prepend the uncompressed length in big endian
@@ -1438,12 +1448,6 @@ class XivoCTICommand(BaseCommand):
                         else:
                             tosend['payload'] = base64.b64encode(xmlstring)
                         jsonmsg = self.__cjson_encode__(tosend)
-                        
-                        # print '---------', where, whoms, fulllines
-                        
-                        # 4) update sheet manager
-                        if astid in self.sheetmanager and self.sheetmanager[astid].has_sheet(channel):
-                            self.sheetmanager[astid].setcustomersheet(channel, xmlustring)
                         
                         # 5) send the payload to the appropriate people
                         for whom in whoms.split(','):
