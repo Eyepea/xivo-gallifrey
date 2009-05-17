@@ -1096,7 +1096,7 @@ INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','mohsuggest',NUL
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','vmexten','*98');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','trustrpid','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','sendrpid','no');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','canreinvite','yes');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','canreinvite','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','insecure','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','rtcachefriends','yes');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','rtupdate','yes');

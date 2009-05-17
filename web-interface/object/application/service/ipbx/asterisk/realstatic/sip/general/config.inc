@@ -440,7 +440,7 @@ $array['element']['canreinvite']['value'] = array('no'			=> 'no',
 						  'update'		=> 'update',
 						  'nonat'		=> 'nonat',
 						  'update,nonat'	=> 'update-nonat');
-$array['element']['canreinvite']['default'] = 'yes';
+$array['element']['canreinvite']['default'] = 'no';
 
 $array['element']['insecure'] = array();
 $array['element']['insecure']['value'] = array('no'		=> 'no',
