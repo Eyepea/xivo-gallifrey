@@ -120,7 +120,7 @@ class XivoCTICommand(BaseCommand):
                      'actionfiche',
                      'availstate',
                      'keepalive',
-                     'originate', 'transfer', 'atxfer', 'hangup', 'simplehangup', 'pickup',
+                     'originate', 'transfer', 'atxfer', 'hangup', 'simplehangup', 'pickup', 'refuse',
                      'sheet']
         astid_vars = ['stats_queues',
                       'last_agents',
@@ -4545,27 +4545,20 @@ class XivoCTICommand(BaseCommand):
                                                         repstr = self.__cjson_encode__(tosend)
                                                         # self.__send_msg_to_cti_client__(userinfo,
                                                         # '{'class':"callcampaign","command":"callnext","list":["%s"]}' % icommand.args[1])
+                                                        
                                         elif classcomm in ['originate', 'transfer', 'atxfer']:
-                                                if self.capas[capaid].match_funcs(ucapa, 'dial'):
-                                                        repstr = self.__originate_or_transfer__(classcomm,
-                                                                                                userinfo,
-                                                                                                icommand.struct.get('source'),
-                                                                                                icommand.struct.get('destination'))
-                                        elif classcomm in ['hangup', 'simplehangup']:
-                                                if self.capas[capaid].match_funcs(ucapa, 'dial'):
-                                                        repstr = self.__hangup__(userinfo,
-                                                                                 icommand.struct.get('source'),
-                                                                                 False)
-                                                        # (classcomm == 'hangup'))
-                                        elif classcomm == 'pickup':
                                             if self.capas[capaid].match_funcs(ucapa, 'dial'):
-                                                # on Thomson, it picks up the last received call
-                                                self.__ami_execute__(userinfo.get('astid'),
-                                                                     'sendcommand',
-                                                                     'Command',
-                                                                     [('Command',
-                                                                       'sip notify event-talk %s'
-                                                                       % userinfo.get('phonenum'))])
+                                                repstr = self.__originate_or_transfer__(classcomm,
+                                                                                        userinfo,
+                                                                                        icommand.struct.get('source'),
+                                                                                        icommand.struct.get('destination'))
+                                                
+                                        elif classcomm in ['hangup', 'simplehangup', 'pickup', 'refuse']:
+                                            if self.capas[capaid].match_funcs(ucapa, 'dial'):
+                                                repstr = self.__ipbxaction__(userinfo,
+                                                                             icommand.struct.get('source'),
+                                                                             classcomm)
+                                                
                                         elif classcomm == 'actionfiche':
                                                 infos = icommand.struct.get('infos')
                                                 if infos:
@@ -4579,28 +4572,12 @@ class XivoCTICommand(BaseCommand):
                                                     if 'agentlinked' in timestamps and 'agentunlinked' in timestamps:
                                                         dtime = timestamps['agentunlinked'] - timestamps['agentlinked']
                                                     self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm, infos.get('buttonname'), dtime)
-                                                    if locastid in self.uniqueids and uniqueid in self.uniqueids[locastid]:
-                                                        if 'buttonname' in infos:
-                                                            buttonname = infos.get('buttonname')
-                                                            log.info('%s : buttonname=%s astid=%s channel=%s %s' % (classcomm,
-                                                                                                                    buttonname,
-                                                                                                                    locastid,
-                                                                                                                    channel,
-                                                                                                                    self.uniqueids[locastid][uniqueid]))
-                                                            if buttonname == 'answer':
-                                                                self.__ami_execute__(locastid, 'transfer',
-                                                                                     channel,
-                                                                                     userinfo.get('phonenum'),
-                                                                                     userinfo.get('context'))
-                                                            elif buttonname == 'hangup':
-                                                                self.__ami_execute__(locastid, 'hangup', channel)
-                                                            elif buttonname == 'refuse':
-                                                                self.__ami_execute__(locastid, 'transfer',
-                                                                                     channel,
-                                                                                     'BUSY',
-                                                                                     userinfo.get('context'))
-                                                        else:
-                                                            log.info('%s : %s' % (classcomm, self.uniqueids[locastid][uniqueid]))
+                                                    
+                                                    # if locastid in self.uniqueids and uniqueid in self.uniqueids[locastid]:
+                                                    # if 'buttonname' in infos:
+                                                    # buttonname = infos.get('buttonname')
+                                                    # call to __ipbx__(userinfo, xxx) ?
+                                                    
                                         elif classcomm in ['phones', 'users', 'agents', 'queues', 'groups']:
                                             function = icommand.struct.get('function')
                                             if function == 'getlist':
@@ -4625,7 +4602,7 @@ class XivoCTICommand(BaseCommand):
                                 log.exception('(sendall) attempt to send <%s ...> (%d chars) failed'
                                               % (repstr[:40], len(repstr)))
                 return ret
-        
+            
         def __build_history_string__(self, requester_id, nlines, kind, morerecentthan):
                 userinfo = self.ulist_ng.keeplist[requester_id]
                 astid = userinfo.get('astid')
@@ -5283,31 +5260,38 @@ class XivoCTICommand(BaseCommand):
                         log.warning('unallowed command %s' % commargs)
                 return
         
-        # \brief Hangs up.
-        def __hangup__(self, userinfo, source, peer_hangup):
+        # \brief Action on one channel
+        def __ipbxaction__(self, userinfo, source, actionname):
                 [typesrc, whosrc] = source.split(':', 1)
                 if typesrc != 'chan':
-                        return
+                    return
                 [userid, channel] = whosrc.split(':', 1)
                 if not channel:
-                        log.warning('channel undefined for %s' % source)
-                        return
+                    log.warning('channel undefined for %s' % source)
+                    return
                 uinfo = self.ulist_ng.keeplist.get(userid)
                 astid = uinfo.get('astid')
                 if astid in self.configs:
-                        channel_peer = ''
-                        log.info('%s : a HANGUP is attempted for %s on channel %s' % (astid, uinfo.get('fullname'), channel))
-                        phoneid = uinfo.get('techlist')[0]
-                        if phoneid in self.weblist['phones'][astid].keeplist:
-                                phonedetails = self.weblist['phones'][astid].keeplist[phoneid]
-                                for c, v in phonedetails['comms'].iteritems():
-                                        if v['thischannel'] == channel:
-                                                if peer_hangup and 'peerchannel' in v:
-                                                        channel_peer = v['peerchannel']
-                        ret = self.__ami_execute__(astid, 'hangup', channel, channel_peer)
-                        # ret to be checked on other replies
+                    log.info('%s : a %s is attempted for %s on channel %s' % (astid, actionname, uinfo.get('fullname'), channel))
+                    if actionname in ['hangup', 'simplehangup']:
+                        ret = self.__ami_execute__(astid, 'hangup', channel)
+                    elif actionname == 'pickup':
+                        # on Thomson, it picks up the last received call
+                        ret = self.__ami_execute__(astid,
+                                                   'sendcommand',
+                                                   'Command',
+                                                   [('Command',
+                                                     'sip notify event-talk %s'
+                                                     % uinfo.get('phonenum'))])
+                    elif actionname == 'refuse':
+                        ret = self.__ami_execute__(astid,
+                                                   'transfer',
+                                                   channel,
+                                                   'BUSY',
+                                                   uinfo.get('context'))
+                    # ret to be checked on other replies
                 else:
-                        ret_message = 'hangup KO : no such asterisk id <%s>' % astid
+                    ret_message = '%s KO : no such asterisk id <%s>' % (actionname, astid)
                 return
         
         
@@ -5663,17 +5647,17 @@ class XivoCTICommand(BaseCommand):
                 
                 counts = {}
                 if presenceid not in self.presence_sections:
-                        return counts
+                    return counts
                 for istate in self.presence_sections[presenceid].getstates():
-                        counts[istate] = 0
+                    counts[istate] = 0
                 for iuserinfo in self.ulist_ng.keeplist.itervalues():
-                        rightastidcontext = (astid == iuserinfo.get('astid') and context == iuserinfo.get('context'))
-                        if rightastidcontext and iuserinfo.has_key('capaid'):
-                                capaid = iuserinfo['capaid']
-                                if capaid in self.capas:
-                                        if self.capas[capaid].presenceid == presenceid:
-                                                if iuserinfo['state'] in self.presence_sections[presenceid].getstates():
-                                                        counts[iuserinfo['state']] += 1
+                    rightastidcontext = (astid == iuserinfo.get('astid') and context == iuserinfo.get('context'))
+                    if rightastidcontext and iuserinfo.has_key('capaid'):
+                        capaid = iuserinfo['capaid']
+                        if capaid in self.capas:
+                            if self.capas[capaid].presenceid == presenceid:
+                                if iuserinfo['state'] in self.presence_sections[presenceid].getstates():
+                                    counts[iuserinfo['state']] += 1
                 return counts
         
         def handle_fagi(self, astid, fastagi):
@@ -5682,87 +5666,87 @@ class XivoCTICommand(BaseCommand):
                 """
                 # check capas !
                 try:
-                        function = fastagi.env['agi_network_script']
-                        uniqueid = fastagi.get_variable('UNIQUEID')
-                        channel = fastagi.get_variable('CHANNEL')
-                        
-                        context = fastagi.get_variable('XIVO_REAL_CONTEXT')
-                        log.info('handle_fagi %s : (%s) context=%s uid=%s chan=%s'
-                                 % (astid, function, context, uniqueid, channel))
+                    function = fastagi.env['agi_network_script']
+                    uniqueid = fastagi.get_variable('UNIQUEID')
+                    channel = fastagi.get_variable('CHANNEL')
+                    
+                    context = fastagi.get_variable('XIVO_REAL_CONTEXT')
+                    log.info('handle_fagi %s : (%s) context=%s uid=%s chan=%s'
+                             % (astid, function, context, uniqueid, channel))
                 except Exception:
-                        log.exception('%s handle_fagi %s' % (astid, fastagi.env))
-                        return
+                    log.exception('%s handle_fagi %s' % (astid, fastagi.env))
+                    return
                 
                 if function == 'presence':
                         try:
-                                if len(fastagi.args) > 0:
-                                        presenceid = fastagi.args[0]
-                                        aststatus = []
-                                        for var, val in self.__counts__(astid, context, presenceid).iteritems():
-                                                aststatus.append('%s:%d' % (var, val))
-                                        fastagi.set_variable('XIVO_PRESENCE', ','.join(aststatus))
+                            if len(fastagi.args) > 0:
+                                presenceid = fastagi.args[0]
+                                aststatus = []
+                                for var, val in self.__counts__(astid, context, presenceid).iteritems():
+                                    aststatus.append('%s:%d' % (var, val))
+                                fastagi.set_variable('XIVO_PRESENCE', ','.join(aststatus))
                         except Exception:
-                                log.exception('handle_fagi %s %s : %s %s' % (astid, function, astid, fastagi.args))
+                            log.exception('handle_fagi %s %s : %s %s' % (astid, function, astid, fastagi.args))
                         return
                 
                 elif function == 'queuestatus':
                         try:
-                                if len(fastagi.args) > 0:
-                                        queuename = fastagi.args[0]
-                                        if self.weblist['queues'][astid].hasqueue(queuename):
-                                                qprops = self.weblist['queues'][astid].keeplist[queuename]['agents_in_queue']
-                                                lst = []
-                                                for ag, agc in qprops.iteritems():
-                                                        sstatus = 'unknown'
-                                                        status = agc.get('Status')
-                                                        if status == '1':
-                                                                if agc.get('Paused') == '1':
-                                                                        sstatus = 'paused'
-                                                                else:
-                                                                        sstatus = 'available'
-                                                        elif status == '3':
-                                                                sstatus = 'busy'
-                                                        elif status == '5':
-                                                                sstatus = 'away'
-                                                        lst.append('%s:%s' % (ag, sstatus))
-                                                fastagi.set_variable('XIVO_QUEUESTATUS', ','.join(lst))
-                                                fastagi.set_variable('XIVO_QUEUEID', self.weblist['queues'][astid].keeplist[queuename]['id'])
+                            if len(fastagi.args) > 0:
+                                queuename = fastagi.args[0]
+                                if self.weblist['queues'][astid].hasqueue(queuename):
+                                    qprops = self.weblist['queues'][astid].keeplist[queuename]['agents_in_queue']
+                                    lst = []
+                                    for ag, agc in qprops.iteritems():
+                                        sstatus = 'unknown'
+                                        status = agc.get('Status')
+                                        if status == '1':
+                                            if agc.get('Paused') == '1':
+                                                sstatus = 'paused'
+                                            else:
+                                                sstatus = 'available'
+                                        elif status == '3':
+                                            sstatus = 'busy'
+                                        elif status == '5':
+                                            sstatus = 'away'
+                                        lst.append('%s:%s' % (ag, sstatus))
+                                    fastagi.set_variable('XIVO_QUEUESTATUS', ','.join(lst))
+                                    fastagi.set_variable('XIVO_QUEUEID', self.weblist['queues'][astid].keeplist[queuename]['id'])
                         except Exception:
-                                log.exception('handle_fagi %s %s : %s %s' % (astid, function, astid, fastagi.args))
+                            log.exception('handle_fagi %s %s : %s %s' % (astid, function, astid, fastagi.args))
                         return
                 
                 elif function == 'queueentries':
                         try:
-                                if len(fastagi.args) > 0:
-                                        queuename = fastagi.args[0]
-                                        if self.weblist['queues'][astid].hasqueue(queuename):
-                                                qentries = self.weblist['queues'][astid].keeplist[queuename]['channels']
-                                                lst = []
-                                                for chan, chanprops in qentries.iteritems():
-                                                        lst.append('%s:%d' % (chan, int(round(time.time() - chanprops.get('entrytime')))))
-                                                fastagi.set_variable('XIVO_QUEUEENTRIES', ','.join(lst))
+                            if len(fastagi.args) > 0:
+                                queuename = fastagi.args[0]
+                                if self.weblist['queues'][astid].hasqueue(queuename):
+                                    qentries = self.weblist['queues'][astid].keeplist[queuename]['channels']
+                                    lst = []
+                                    for chan, chanprops in qentries.iteritems():
+                                        lst.append('%s:%d' % (chan, int(round(time.time() - chanprops.get('entrytime')))))
+                                    fastagi.set_variable('XIVO_QUEUEENTRIES', ','.join(lst))
                         except Exception:
-                                log.exception('handle_fagi %s %s : %s %s' % (astid, function, astid, fastagi.args))
+                            log.exception('handle_fagi %s %s : %s %s' % (astid, function, astid, fastagi.args))
                         return
                 
                 elif function == 'queueholdtime':
                         try:
-                                if len(fastagi.args) > 0:
-                                        queuename = fastagi.args[0]
-                                        if self.weblist['queues'][astid].hasqueue(queuename):
-                                                fastagi.set_variable('XIVO_QUEUEHOLDTIME',
-                                                                     self.weblist['queues'][astid].keeplist[queuename]['queuestats']['Holdtime'])
-                                else:
-                                        lst = []
-                                        for queuename, qprops in self.weblist['queues'][astid].keeplist.iteritems():
-                                                if 'Holdtime' in qprops['queuestats']:
-                                                        lst.append('%s:%s' % (queuename, qprops['queuestats']['Holdtime']))
-                                                else:
-                                                        log.warning('handle_fagi %s %s : no Holdtime defined in queuestats for %s'
-                                                                    % (astid, function, queuename))
-                                        fastagi.set_variable('XIVO_QUEUEHOLDTIME', ','.join(lst))
+                            if len(fastagi.args) > 0:
+                                queuename = fastagi.args[0]
+                                if self.weblist['queues'][astid].hasqueue(queuename):
+                                    fastagi.set_variable('XIVO_QUEUEHOLDTIME',
+                                                         self.weblist['queues'][astid].keeplist[queuename]['queuestats']['Holdtime'])
+                            else:
+                                lst = []
+                                for queuename, qprops in self.weblist['queues'][astid].keeplist.iteritems():
+                                    if 'Holdtime' in qprops['queuestats']:
+                                        lst.append('%s:%s' % (queuename, qprops['queuestats']['Holdtime']))
+                                    else:
+                                        log.warning('handle_fagi %s %s : no Holdtime defined in queuestats for %s'
+                                                    % (astid, function, queuename))
+                                fastagi.set_variable('XIVO_QUEUEHOLDTIME', ','.join(lst))
                         except Exception:
-                                log.exception('handle_fagi %s %s : %s' % (astid, function, fastagi.args))
+                            log.exception('handle_fagi %s %s : %s' % (astid, function, fastagi.args))
                         return
                 
                 
