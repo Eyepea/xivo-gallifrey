@@ -259,29 +259,29 @@ class PhoneList(AnyList):
             return
         
         def ami_extstatus(self, phoneid, status):
-                if phoneid in self.keeplist:
-                        if status not in self.display_hints:
-                            status = '-2'
-                        #changed = not (self.keeplist[phoneid]['hintstatus'] == self.display_hints.get(status))
-                        changed = not isinstance(self.keeplist[phoneid]['hintstatus'], dict) or not (self.keeplist[phoneid]['hintstatus'].get('code') == status)
-                        #log.debug('ami_extstatus : %s %s => %s' % (changed, self.keeplist[phoneid]['hintstatus'], self.display_hints.get(status)) )
-                        if changed:
-                            self.keeplist[phoneid]['hintstatus'] = self.display_hints.get(status)
-                            self.keeplist[phoneid]['hintstatus']['code'] = status
-                        return changed
-                return False
+            if phoneid in self.keeplist:
+                if status not in self.display_hints:
+                    status = '-2'
+                #changed = not (self.keeplist[phoneid]['hintstatus'] == self.display_hints.get(status))
+                changed = not isinstance(self.keeplist[phoneid]['hintstatus'], dict) or not (self.keeplist[phoneid]['hintstatus'].get('code') == status)
+                #log.debug('ami_extstatus : %s %s => %s' % (changed, self.keeplist[phoneid]['hintstatus'], self.display_hints.get(status)) )
+                if changed:
+                    self.keeplist[phoneid]['hintstatus'] = self.display_hints.get(status)
+                    self.keeplist[phoneid]['hintstatus']['code'] = status
+                return changed
+            return False
         
         def ami_parkedcall(self, phoneid, uid, ctuid, exten):
-                if phoneid in self.keeplist:
-                        # write "parque" in unicode !
-                        infos = {'status' : 'linked-caller',
-                                 'time-link' : 0,
-                                 'timestamp-link' : time.time(),
-                                 'calleridnum' : exten,
-                                 'calleridname' : '<parked>'
-                                 }
-                        self.__createorupdate_comm__(phoneid, uid, infos)
-                return
+            if phoneid in self.keeplist:
+                # write "parque" in unicode !
+                infos = {'status' : 'linked-caller',
+                         'time-link' : 0,
+                         'timestamp-link' : time.time(),
+                         'calleridnum' : exten,
+                         'calleridname' : '<parked>'
+                         }
+                self.__createorupdate_comm__(phoneid, uid, infos)
+            return
         
         def ami_unparkedcall(self, phoneid, uid, ctuid):
                 if phoneid in self.keeplist:

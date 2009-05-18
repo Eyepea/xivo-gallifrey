@@ -2530,10 +2530,24 @@ class XivoCTICommand(BaseCommand):
                     # XXX Beware, the trunks' contexts are usually different (from-extern vs. default)
                     log.debug('   HUP trunks tosend=%s' % (tosend))
                     self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
+                    
                 phidlist_clear = self.weblist['phones'][astid].clear(uid)
                 tridlist_clear = self.weblist['trunks'][astid].clear(uid)
                 log.info('%s HANGUP (%s %s) cleared phones and trunks = %s %s' % (astid, uid, chan, phidlist_clear, tridlist_clear))
-                
+                for pp in phidlist_clear:
+                    tosend = self.weblist['phones'][astid].status(pp)
+                    tosend['astid'] = astid
+                    context = self.weblist['phones'][astid].keeplist[pp]['context']
+                    log.debug('   CLR phones context=%s tosend=%s' % (context, tosend))
+                    self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
+                for pp in tridlist_clear:
+                    tosend = self.weblist['trunks'][astid].status(pp)
+                    tosend['astid'] = astid
+                    context = self.weblist['trunks'][astid].keeplist[pp]['context']
+                    # XXX Beware, the trunks' contexts are usually different (from-extern vs. default)
+                    log.debug('   CLR trunks tosend=%s' % (tosend))
+                    self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
+                    
                 if astid in self.uniqueids and uid in self.uniqueids[astid]:
                     del self.uniqueids[astid][uid]
                 else:
@@ -2545,36 +2559,36 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def ami_hanguprequest(self, astid, event):
-                log.info('%s ami_hanguprequest : %s' % (astid, event))
-                return
+            log.info('%s ami_hanguprequest : %s' % (astid, event))
+            return
         
         def amiresponse_follows(self, astid, event, nocolon):
-                actionid = event.get('ActionID')
-                # log.info('%s amiresponse_follows : %s %s' % (astid, event, nocolon))
-                if actionid in self.getvar_requests[astid]:
-                        del self.getvar_requests[astid][actionid]
-                if actionid in self.amirequests[astid]:
-                        del self.amirequests[astid][actionid]
-                return
+            actionid = event.get('ActionID')
+            # log.info('%s amiresponse_follows : %s %s' % (astid, event, nocolon))
+            if actionid in self.getvar_requests[astid]:
+                del self.getvar_requests[astid][actionid]
+            if actionid in self.amirequests[astid]:
+                del self.amirequests[astid][actionid]
+            return
         
         def amiresponse_success(self, astid, event, nocolon):
                 msg = event.get('Message')
                 actionid = event.get('ActionID')
                 if msg is None:
-                        if actionid is not None:
-                                if astid in self.getvar_requests and actionid in self.getvar_requests[astid]:
-                                        variable = event.get('Variable')
-                                        value = event.get('Value')
-                                        channel = self.getvar_requests[astid][actionid]['channel']
-                                        if variable is not None and value is not None:
-                                                if variable == 'MONITORED':
-                                                        if value == 'true':
-                                                                log.info('%s %s channel MONITORED' % (astid, channel))
-                                                else:
-                                                        log.info('%s AMI Response=Success (%s) : %s = %s (%s)'
-                                                                 % (astid, actionid, variable, value, channel))
-                        else:
-                                log.warning('%s AMI Response=Success : event = %s' % (astid, event))
+                    if actionid is not None:
+                        if astid in self.getvar_requests and actionid in self.getvar_requests[astid]:
+                            variable = event.get('Variable')
+                            value = event.get('Value')
+                            channel = self.getvar_requests[astid][actionid]['channel']
+                            if variable is not None and value is not None:
+                                if variable == 'MONITORED':
+                                    if value == 'true':
+                                        log.info('%s %s channel MONITORED' % (astid, channel))
+                                else:
+                                    log.info('%s AMI Response=Success (%s) : %s = %s (%s)'
+                                             % (astid, actionid, variable, value, channel))
+                    else:
+                        log.warning('%s AMI Response=Success : event = %s' % (astid, event))
                 elif msg == 'Extension Status':
                         # this is the reply to 'ExtensionState'
                         self.amiresponse_extensionstatus(astid, event)
@@ -2672,11 +2686,11 @@ class XivoCTICommand(BaseCommand):
                 mailbox = event.get('Mailbox')
                 voicemailid = self.weblist['voicemail'][astid].reverse_index.get(mailbox)
                 for userinfo in self.ulist_ng.keeplist.itervalues():
-                        if 'voicemailid' in userinfo and userinfo.get('voicemailid') == voicemailid and userinfo.get('astid') == astid:
-                                if userinfo['mwi']:
-                                        # TODO : maybe send the infos if they have changed
-                                        userinfo['mwi'][1] = event.get('OldMessages')
-                                        userinfo['mwi'][2] = event.get('NewMessages')
+                    if 'voicemailid' in userinfo and userinfo.get('voicemailid') == voicemailid and userinfo.get('astid') == astid:
+                        if userinfo['mwi']:
+                            # TODO : maybe send the infos if they have changed
+                            userinfo['mwi'][1] = event.get('OldMessages')
+                            userinfo['mwi'][2] = event.get('NewMessages')
                 return
         
         def amiresponse_mailboxstatus(self, astid, event):
@@ -2750,13 +2764,13 @@ class XivoCTICommand(BaseCommand):
                 status  = event.get('Status')
                 
                 for phoneref, b in self.weblist['phones'][astid].keeplist.iteritems():
-                        if b['number'] == exten and b['context'] == context:
-                            # log.info('ami_extensionstatus exten=%s context=%s status=%s' % (exten, context, status))
-                            if self.weblist['phones'][astid].ami_extstatus(phoneref, status):
-                                # only sends information if the status changed
-                                tosend = self.weblist['phones'][astid].status(phoneref)
-                                tosend['astid'] = astid
-                                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
+                    if b['number'] == exten and b['context'] == context:
+                        # log.info('ami_extensionstatus exten=%s context=%s status=%s' % (exten, context, status))
+                        if self.weblist['phones'][astid].ami_extstatus(phoneref, status):
+                            # only sends information if the status changed
+                            tosend = self.weblist['phones'][astid].status(phoneref)
+                            tosend['astid'] = astid
+                            self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
                 return
         
         def ami_channelreload(self, astid, event):
