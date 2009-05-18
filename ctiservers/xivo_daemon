@@ -280,7 +280,7 @@ def manage_info_connections(connid, msg, sep):
                                            'show_agents              : call-center related lists',
                                            'show_incomingcalls       : did lists',
                                            'show_meetme              : conference rooms',
-                                           'show_voicemails          : voicemails',
+                                           'show_voicemail           : voicemails',
                                            'show_phonebook           : phonebook contents',
                                            '-- selective lists --',
                                            'show_logged              : only the logged users',

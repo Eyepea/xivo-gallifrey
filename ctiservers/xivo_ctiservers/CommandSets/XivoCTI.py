@@ -1397,9 +1397,10 @@ class XivoCTICommand(BaseCommand):
                             # 2) update sheet manager
                             if astid in self.sheetmanager and self.sheetmanager[astid].has_sheet(channel):
                                 self.sheetmanager[astid].setcustomersheet(channel, xmlustring)
-                        
+                                
                         # 3) build recipient list
                         if where in ['agentlinked', 'agentunlinked']:
+                            dstnum = event.get('Channel2')[6:]
                             userinfos.extend(self.__find_userinfos_by_agentnum__(astid, dstnum))
                         elif where == 'dial':
                             # define the receiver from the xivo-dstid data
@@ -4706,58 +4707,59 @@ class XivoCTICommand(BaseCommand):
                                                 self.__ami_execute__(astid, 'queueadd', queuename, 'Agent/%s' % anum, spause)
                 elif subcommand == 'pause':
                         if len(commandargs) > 1:
-                                queuenames = commandargs[1].split(',')
-                                if len(commandargs) > 3:
-                                        astid = commandargs[2]
-                                        anum = commandargs[3]
-                                else:
-                                        astid = myastid
-                                        anum = myagentnum
-                                if astid is not None and anum:
-                                        for queuename in queuenames:
-                                                self.__ami_execute__(astid, 'queuepause', queuename, 'Agent/%s' % anum, 'true')
+                            queuenames = commandargs[1].split(',')
+                            if len(commandargs) > 3:
+                                astid = commandargs[2]
+                                anum = commandargs[3]
+                            else:
+                                astid = myastid
+                                anum = myagentnum
+                            if astid is not None and anum:
+                                for queuename in queuenames:
+                                    self.__ami_execute__(astid, 'queuepause', queuename, 'Agent/%s' % anum, 'true')
+                                    
                 elif subcommand == 'unpause':
                         if len(commandargs) > 1:
-                                queuenames = commandargs[1].split(',')
-                                if len(commandargs) > 3:
-                                        astid = commandargs[2]
-                                        anum = commandargs[3]
-                                else:
-                                        astid = myastid
-                                        anum = myagentnum
-                                agent_channel = 'Agent/%s' % anum
-                                if astid is not None and anum:
-                                        for queuename in queuenames:
-                                                self.__ami_execute__(astid, 'queuepause', queuename, agent_channel, 'false')
-                                                
+                            queuenames = commandargs[1].split(',')
+                            if len(commandargs) > 3:
+                                astid = commandargs[2]
+                                anum = commandargs[3]
+                            else:
+                                astid = myastid
+                                anum = myagentnum
+                            agent_channel = 'Agent/%s' % anum
+                            if astid is not None and anum:
+                                for queuename in queuenames:
+                                    self.__ami_execute__(astid, 'queuepause', queuename, agent_channel, 'false')
+                                    
                 elif subcommand == 'pause_all':
                         if len(commandargs) > 2:
-                                astid = commandargs[1]
-                                anum = commandargs[2]
+                            astid = commandargs[1]
+                            anum = commandargs[2]
                         else:
-                                astid = myastid
-                                anum = myagentnum
+                            astid = myastid
+                            anum = myagentnum
                         agent_channel = 'Agent/%s' % anum
                         agent_id = self.__find_agentid_by_agentnum__(astid, anum)
                         if agent_id and agent_id in self.weblist['agents'][astid].keeplist:
-                                for qname, qv in self.weblist['agents'][astid].keeplist[agent_id]['queues_by_agent'].iteritems():
-                                        if qv.get('Paused') == '0':
-                                                self.__ami_execute__(astid, 'queuepause', qname, agent_channel, 'true')
-                                                
+                            for qname, qv in self.weblist['agents'][astid].keeplist[agent_id]['queues_by_agent'].iteritems():
+                                if qv.get('Paused') == '0':
+                                    self.__ami_execute__(astid, 'queuepause', qname, agent_channel, 'true')
+                                    
                 elif subcommand == 'unpause_all':
                         if len(commandargs) > 2:
-                                astid = commandargs[1]
-                                anum = commandargs[2]
+                            astid = commandargs[1]
+                            anum = commandargs[2]
                         else:
-                                astid = myastid
-                                anum = myagentnum
+                            astid = myastid
+                            anum = myagentnum
                         agent_channel = 'Agent/%s' % anum
                         agent_id = self.__find_agentid_by_agentnum__(astid, anum)
                         if agent_id and agent_id in self.weblist['agents'][astid].keeplist:
-                                for qname, qv in self.weblist['agents'][astid].keeplist[agent_id]['queues_by_agent'].iteritems():
-                                        if qv.get('Paused') == '1':
-                                                self.__ami_execute__(astid, 'queuepause', qname, agent_channel, 'false')
-                                                
+                            for qname, qv in self.weblist['agents'][astid].keeplist[agent_id]['queues_by_agent'].iteritems():
+                                if qv.get('Paused') == '1':
+                                    self.__ami_execute__(astid, 'queuepause', qname, agent_channel, 'false')
+                                    
                 elif subcommand in ['login', 'logout',
                                     'record', 'stoprecord',
                                     'listen', 'stoplisten',
@@ -4776,28 +4778,31 @@ class XivoCTICommand(BaseCommand):
                                 agentphonenum = commandargs[3]
                         else:
                             uinfo = userinfo
-                        
+                            
                         if subcommand == 'login':
                             self.__login_agent__(uinfo, agentphonenum)
+                            
                         elif subcommand == 'logout':
                             self.__logout_agent__(uinfo)
+                            
                         elif subcommand == 'record':
-                                datestring = time.strftime('%Y%m%d-%H%M%S', time.localtime())
-                                agent_id = self.weblist['agents'][astid].reverse_index.get(anum)
-                                channels = self.__find_channel_by_agentnum__(astid, anum)
-                                for channel in channels:
-                                        self.__ami_execute__(astid, 'monitor', channel, 'cti-agent-%s-%s' % (datestring, anum))
-                                        self.weblist['agents'][astid].keeplist[agent_id]['agentstats'].update({'Xivo-Agent-Status-Recorded' : True})
-                                        log.info('started monitor on %s %s (agent %s)' % (astid, channel, anum))
-                                        tosend = { 'class' : 'agentrecord',
-                                                   'astid' : astid,
-                                                   'agentid' : agent_id,
-                                                   'status' : 'started' }
-                                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid,
-                                                                         self.weblist['agents'][astid].keeplist[agent_id].get('context'))
-                                        if channel in self.channels[astid]:
-                                                uniqueid = self.channels[astid][channel]
-                                                self.uniqueids[astid][uniqueid].update({'recorded' : agent_id})
+                            datestring = time.strftime('%Y%m%d-%H%M%S', time.localtime())
+                            agent_id = self.weblist['agents'][astid].reverse_index.get(anum)
+                            channels = self.__find_channel_by_agentnum__(astid, anum)
+                            for channel in channels:
+                                self.__ami_execute__(astid, 'monitor', channel, 'cti-agent-%s-%s' % (datestring, anum))
+                                self.weblist['agents'][astid].keeplist[agent_id]['agentstats'].update({'Xivo-Agent-Status-Recorded' : True})
+                                log.info('started monitor on %s %s (agent %s)' % (astid, channel, anum))
+                                tosend = { 'class' : 'agentrecord',
+                                           'astid' : astid,
+                                           'agentid' : agent_id,
+                                           'status' : 'started' }
+                                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid,
+                                                                 self.weblist['agents'][astid].keeplist[agent_id].get('context'))
+                                if channel in self.channels[astid]:
+                                    uniqueid = self.channels[astid][channel]
+                                    self.uniqueids[astid][uniqueid].update({'recorded' : agent_id})
+                                    
                         elif subcommand == 'stoprecord':
                                 agent_id = self.weblist['agents'][astid].reverse_index.get(anum)
                                 channels = self.__find_channel_by_agentnum__(astid, anum)
@@ -4811,6 +4816,7 @@ class XivoCTICommand(BaseCommand):
                                                    'status' : 'stopped' }
                                         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid,
                                                                          self.weblist['agents'][astid].keeplist[agent_id].get('context'))
+                                        
                         elif subcommand == 'listen':
                                 if astid == userinfo.get('astid'):
                                         agent_id = self.weblist['agents'][astid].reverse_index.get(anum)
@@ -4827,6 +4833,7 @@ class XivoCTICommand(BaseCommand):
                                                 self.origapplication[astid][aid] = { 'origapplication' : 'ChanSpy',
                                                                                      'origapplication-data' : { 'spied-channel' : channel,
                                                                                                                 'spied-agentid' : agent_id } }
+                                                
                         elif subcommand == 'stoplisten':
                                 agent_id = self.weblist['agents'][astid].reverse_index.get(anum)
                                 channels = self.__find_channel_by_agentnum__(astid, anum)
@@ -5304,35 +5311,35 @@ class XivoCTICommand(BaseCommand):
         def __update_history_call__(self, cfg, techno, phoneid, nlines, kind, morerecentthan=None):
                 results = []
                 if cfg.cdr_db_conn is None:
-                        log.warning('%s : no CDR uri defined for this asterisk - see cdr_db_uri parameter' % cfg.astid)
+                    log.warning('%s : no CDR uri defined for this asterisk - see cdr_db_uri parameter' % cfg.astid)
                 else:
-                        try:
-                                cursor = cfg.cdr_db_conn.cursor()
-                                columns = ('calldate', 'clid', 'src', 'dst', 'dcontext', 'channel', 'dstchannel',
-                                           'lastapp', 'lastdata', 'duration', 'billsec', 'disposition', 'amaflags',
-                                           'accountcode', 'uniqueid', 'userfield')
-                                likestring = '%s/%s-%%' %(techno, phoneid)
-                                orderbycalldate = "ORDER BY calldate DESC LIMIT %s" % nlines
-                                datecond = ''
-                                if morerecentthan is not None:
-                                    log.debug('morerecentthan = %s' % (morerecentthan))
-                                    datecond = " AND calldate > '%s' " % (morerecentthan)
-                                
-                                if kind == "0": # outgoing calls (all)
-                                        cursor.query("SELECT ${columns} FROM cdr WHERE channel LIKE %s " + datecond + orderbycalldate,
-                                                     columns,
-                                                     (likestring,))
-                                elif kind == "1": # incoming calls (answered)
-                                        cursor.query("SELECT ${columns} FROM cdr WHERE disposition='ANSWERED' AND dstchannel LIKE %s " + datecond + orderbycalldate,
-                                                     columns,
-                                                     (likestring,))
-                                else: # missed calls (received but not answered)
-                                        cursor.query("SELECT ${columns} FROM cdr WHERE disposition!='ANSWERED' AND dstchannel LIKE %s " + datecond + orderbycalldate,
-                                                     columns,
-                                                     (likestring,))
-                                results = cursor.fetchall()
-                        except Exception:
-                                log.exception('%s : Connection to DataBase failed in History request' % cfg.astid)
+                    try:
+                        cursor = cfg.cdr_db_conn.cursor()
+                        columns = ('calldate', 'clid', 'src', 'dst', 'dcontext', 'channel', 'dstchannel',
+                                   'lastapp', 'lastdata', 'duration', 'billsec', 'disposition', 'amaflags',
+                                   'accountcode', 'uniqueid', 'userfield')
+                        likestring = '%s/%s-%%' %(techno, phoneid)
+                        orderbycalldate = "ORDER BY calldate DESC LIMIT %s" % nlines
+                        datecond = ''
+                        if morerecentthan is not None:
+                            log.debug('morerecentthan = %s' % (morerecentthan))
+                            datecond = " AND calldate > '%s' " % (morerecentthan)
+                            
+                        if kind == "0": # outgoing calls (all)
+                            cursor.query("SELECT ${columns} FROM cdr WHERE channel LIKE %s " + datecond + orderbycalldate,
+                                         columns,
+                                         (likestring,))
+                        elif kind == "1": # incoming calls (answered)
+                            cursor.query("SELECT ${columns} FROM cdr WHERE disposition='ANSWERED' AND dstchannel LIKE %s " + datecond + orderbycalldate,
+                                         columns,
+                                         (likestring,))
+                        else: # missed calls (received but not answered)
+                            cursor.query("SELECT ${columns} FROM cdr WHERE disposition!='ANSWERED' AND dstchannel LIKE %s " + datecond + orderbycalldate,
+                                         columns,
+                                         (likestring,))
+                            results = cursor.fetchall()
+                    except Exception:
+                        log.exception('%s : Connection to DataBase failed in History request' % cfg.astid)
                 return results
         
         
