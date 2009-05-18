@@ -4332,21 +4332,21 @@ class XivoCTICommand(BaseCommand):
             return
         
         def ami_atxfer(self, astid, event):
-                log.info('%s ami_atxfer : %s' % (astid, event))
-                chansrc = event.get('SrcChannel');
-                uidsrc = event.get('SrcUniqueid');
-                chandst = event.get('DstChannel');
-                uiddst = event.get('DstUniqueid');
-                phoneidsrc = self.__phoneid_from_channel__(astid, chansrc)
-                if phoneidsrc is not None:
-                    # to be checked
-                    log.debug('ami_atxfer grrr %s' % self.weblist['phones'][astid].keeplist[phoneidsrc]['comms'])
-                    self.weblist['phones'][astid].keeplist[phoneidsrc]['comms'][uidsrc]['atxfer'] = True
-                #phoneiddst = self.__phoneid_from_channel__(astid, chandst)
-                #if phoneiddst is not None:
-                #    # to be checked
-                #    self.weblist['phones'][astid].keeplist[phoneiddst]['comms'][uiddst]['atxfer'] = True
-                return
+            log.info('%s ami_atxfer : %s' % (astid, event))
+            chansrc = event.get('SrcChannel');
+            uidsrc = event.get('SrcUniqueid');
+            chandst = event.get('DstChannel');
+            uiddst = event.get('DstUniqueid');
+            phoneidsrc = self.__phoneid_from_channel__(astid, chansrc)
+            if phoneidsrc is not None:
+                # to be checked
+                log.debug('ami_atxfer grrr %s' % self.weblist['phones'][astid].keeplist[phoneidsrc]['comms'])
+                self.weblist['phones'][astid].keeplist[phoneidsrc]['comms'][uidsrc]['atxfer'] = True
+            # phoneiddst = self.__phoneid_from_channel__(astid, chandst)
+            # if phoneiddst is not None:
+            #    # to be checked
+            #    self.weblist['phones'][astid].keeplist[phoneiddst]['comms'][uiddst]['atxfer'] = True
+            return
         
         # END of AMI events
         
@@ -4362,20 +4362,20 @@ class XivoCTICommand(BaseCommand):
                 
                 try:
                         if icommand.name == 'database':
-                                if self.capas[capaid].match_funcs(ucapa, 'database'):
-                                        repstr = database_update(me, icommand.args)
+                            if self.capas[capaid].match_funcs(ucapa, 'database'):
+                                repstr = database_update(me, icommand.args)
                         elif icommand.name == 'json':
                                 classcomm = icommand.struct.get('class')
                                 dircomm = icommand.struct.get('direction')
                                 
                                 if dircomm is not None and dircomm == 'xivoserver' and classcomm in self.commnames:
                                         if 'login' in userinfo and 'sessiontimestamp' in userinfo.get('login'):
-                                                userinfo['login']['sessiontimestamp'] = time.time()
-                                                
+                                            userinfo['login']['sessiontimestamp'] = time.time()
+                                            
                                         if classcomm not in ['keepalive', 'logclienterror', 'history', 'logout']:
-                                                log.info('command attempt %s from user:%s : %s' % (classcomm, userid, icommand.struct))
+                                            log.info('command attempt %s from user:%s : %s' % (classcomm, userid, icommand.struct))
                                         if classcomm not in ['keepalive', 'logclienterror', 'history', 'availstate', 'actionfiche']:
-                                                self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm)
+                                            self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm)
                                         if classcomm == 'meetme':
                                                 function = icommand.struct.get('function')
                                                 argums = icommand.struct.get('functionargs')
@@ -4385,17 +4385,17 @@ class XivoCTICommand(BaseCommand):
                                                                 meetmenum = argums[1]
                                                                 uniqueid = argums[3]
                                                                 if castid in self.uniqueids and uniqueid in self.uniqueids[castid]:
-                                                                        channel = self.uniqueids[castid][uniqueid]['channel']
-                                                                        (meetmeref, meetmeid) = self.weblist['meetme'][castid].byroomnum(meetmenum)
-                                                                        if meetmeref is not None and uniqueid in meetmeref['uniqueids']:
-                                                                                if userid == meetmeref['adminid']:
-                                                                                        datestring = time.strftime('%Y%m%d-%H%M%S', time.localtime())
-                                                                                        meetmeref['uniqueids'][uniqueid]['recordstatus'] = 'on'
-                                                                                        self.__ami_execute__(castid, 'monitor', channel,
-                                                                                                             'cti-meetme-%s-%s' % (meetmenum, datestring))
+                                                                    channel = self.uniqueids[castid][uniqueid]['channel']
+                                                                    (meetmeref, meetmeid) = self.weblist['meetme'][castid].byroomnum(meetmenum)
+                                                                    if meetmeref is not None and uniqueid in meetmeref['uniqueids']:
+                                                                        if userid == meetmeref['adminid']:
+                                                                            datestring = time.strftime('%Y%m%d-%H%M%S', time.localtime())
+                                                                            meetmeref['uniqueids'][uniqueid]['recordstatus'] = 'on'
+                                                                            self.__ami_execute__(castid, 'monitor', channel,
+                                                                                                 'cti-meetme-%s-%s' % (meetmenum, datestring))
                                                                 else:
-                                                                        log.warning('(%s) either astid %s or uniqueid %s is unknown'
-                                                                                    % (function, castid, uniqueid))
+                                                                    log.warning('(%s) either astid %s or uniqueid %s is unknown'
+                                                                                % (function, castid, uniqueid))
                                                         elif function == 'unrecord' and len(argums) > 3:
                                                                 castid = argums[0]
                                                                 meetmenum = argums[1]
@@ -4558,60 +4558,59 @@ class XivoCTICommand(BaseCommand):
                                                                                  False)
                                                         # (classcomm == 'hangup'))
                                         elif classcomm == 'pickup':
-                                                if self.capas[capaid].match_funcs(ucapa, 'dial'):
-                                                        # on Thomson, it picks up the last received call
-                                                        self.__ami_execute__(userinfo.get('astid'),
-                                                                             'sendcommand',
-                                                                             'Command',
-                                                                             [('Command',
-                                                                               'sip notify event-talk %s'
-                                                                               % userinfo.get('phonenum'))])
+                                            if self.capas[capaid].match_funcs(ucapa, 'dial'):
+                                                # on Thomson, it picks up the last received call
+                                                self.__ami_execute__(userinfo.get('astid'),
+                                                                     'sendcommand',
+                                                                     'Command',
+                                                                     [('Command',
+                                                                       'sip notify event-talk %s'
+                                                                       % userinfo.get('phonenum'))])
                                         elif classcomm == 'actionfiche':
                                                 infos = icommand.struct.get('infos')
                                                 if infos:
-                                                        uniqueid = infos.get('uniqueid')
-                                                        channel = infos.get('channel')
-                                                        locastid = infos.get('astid')
-                                                        
-                                                        timestamps = infos.get('timestamps')
-                                                        log.info('%s %s : %s %s' % (locastid, classcomm, uniqueid, timestamps))
-                                                        dtime = None
-                                                        if 'agentlinked' in timestamps and 'agentunlinked' in timestamps:
-                                                                dtime = timestamps['agentunlinked'] - timestamps['agentlinked']
-                                                        self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm, infos.get('buttonname'), dtime)
-                                                        if locastid in self.uniqueids and uniqueid in self.uniqueids[locastid]:
-                                                                if 'buttonname' in infos:
-                                                                        buttonname = infos.get('buttonname')
-                                                                        log.info('%s : buttonname=%s astid=%s channel=%s %s' % (classcomm,
-                                                                                                                                buttonname,
-                                                                                                                                locastid,
-                                                                                                                                channel,
-                                                                                                                                self.uniqueids[locastid][uniqueid]))
-                                                                        if buttonname == 'answer':
-                                                                                self.__ami_execute__(locastid, 'transfer',
-                                                                                                     channel,
-                                                                                                     userinfo.get('phonenum'),
-                                                                                                     userinfo.get('context'))
-                                                                        elif buttonname == 'hangup':
-                                                                                self.__ami_execute__(locastid, 'hangup', channel)
-                                                                        elif buttonname == 'refuse':
-                                                                                self.__ami_execute__(locastid, 'transfer',
-                                                                                                     channel,
-                                                                                                     'BUSY',
-                                                                                                     userinfo.get('context'))
-                                                                else:
-                                                                        log.info('%s : %s' % (classcomm, self.uniqueids[locastid][uniqueid]))
+                                                    uniqueid = infos.get('uniqueid')
+                                                    channel = infos.get('channel')
+                                                    locastid = infos.get('astid')
+                                                    
+                                                    timestamps = infos.get('timestamps')
+                                                    log.info('%s %s : %s %s' % (locastid, classcomm, uniqueid, timestamps))
+                                                    dtime = None
+                                                    if 'agentlinked' in timestamps and 'agentunlinked' in timestamps:
+                                                        dtime = timestamps['agentunlinked'] - timestamps['agentlinked']
+                                                    self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm, infos.get('buttonname'), dtime)
+                                                    if locastid in self.uniqueids and uniqueid in self.uniqueids[locastid]:
+                                                        if 'buttonname' in infos:
+                                                            buttonname = infos.get('buttonname')
+                                                            log.info('%s : buttonname=%s astid=%s channel=%s %s' % (classcomm,
+                                                                                                                    buttonname,
+                                                                                                                    locastid,
+                                                                                                                    channel,
+                                                                                                                    self.uniqueids[locastid][uniqueid]))
+                                                            if buttonname == 'answer':
+                                                                self.__ami_execute__(locastid, 'transfer',
+                                                                                     channel,
+                                                                                     userinfo.get('phonenum'),
+                                                                                     userinfo.get('context'))
+                                                            elif buttonname == 'hangup':
+                                                                self.__ami_execute__(locastid, 'hangup', channel)
+                                                            elif buttonname == 'refuse':
+                                                                self.__ami_execute__(locastid, 'transfer',
+                                                                                     channel,
+                                                                                     'BUSY',
+                                                                                     userinfo.get('context'))
+                                                        else:
+                                                            log.info('%s : %s' % (classcomm, self.uniqueids[locastid][uniqueid]))
                                         elif classcomm in ['phones', 'users', 'agents', 'queues', 'groups']:
-                                                function = icommand.struct.get('function')
-                                                if function == 'getlist':
-                                                        repstr = self.__getlist__(userinfo, classcomm, context)
-                                                        
+                                            function = icommand.struct.get('function')
+                                            if function == 'getlist':
+                                                repstr = self.__getlist__(userinfo, classcomm, context)
                                         elif classcomm == 'agent':
-                                                argums = icommand.struct.get('command')
-                                                if self.capas[capaid].match_funcs(ucapa, 'agents'):
-                                                        repstr = self.__agent__(userinfo, argums)
+                                            argums = icommand.struct.get('command')
+                                            if self.capas[capaid].match_funcs(ucapa, 'agents'):
+                                                repstr = self.__agent__(userinfo, argums)
                                         elif classcomm == 'sheet':
-                                                self.__handle_sheet_command__(userinfo, icommand.struct)
+                                            self.__handle_sheet_command__(userinfo, icommand.struct)
                                 else:
                                         log.warning('unallowed json event %s' % icommand.struct)
                                         
@@ -5927,7 +5926,7 @@ class XivoCTICommand(BaseCommand):
                         olduinfo = self.ulist_ng.keeplist[self.sheetmanager[astid].get_sheet(channel).currentuser]
                         #log.debug('%s __update_sheet_user__ olduinfo=%s' % (astid, olduinfo))
                         tosend = { 'class': 'sheet',
-                                   'function': 'looseownership',
+                                   'function': 'loseownership',
                                    'astid': astid,
                                    'channel': channel,
                                  }
@@ -5969,7 +5968,7 @@ class XivoCTICommand(BaseCommand):
                     olduinfo = self.ulist_ng.keeplist[self.sheetmanager[astid].get_sheet(channel).currentuser]
                     log.debug('%s __sheet_disconnect__ olduser=%s' % (astid, self.sheetmanager[astid].get_sheet(channel).currentuser))
                     tosend = { 'class': 'sheet',
-                               'function': 'looseownership',
+                               'function': 'loseownership',
                                'astid': astid,
                                'channel': channel,
                              }
@@ -5977,4 +5976,3 @@ class XivoCTICommand(BaseCommand):
                 self.sheetmanager[astid].del_sheet(channel)
                 
 xivo_commandsets.CommandClasses['xivocti'] = XivoCTICommand
-
