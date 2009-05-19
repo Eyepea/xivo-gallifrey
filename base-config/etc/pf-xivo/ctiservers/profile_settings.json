@@ -1,0 +1,20 @@
+{
+"fontname":"Lucida Grande",
+"fontsize":13,
+"iconsize":10,
+
+"logagent":false,
+"pauseagent":false,
+"noqueueaction":false,
+"queues-statscolumns":"Xivo-Conn,Xivo-Avail,Xivo-Rate,Xivo-Join,Xivo-Link,Xivo-Lost,Xivo-Chat,Holdtime",
+"queues-shortlegends":false,
+"queues-showqueuenames":true,
+"blinktime":120
+
+"conference-allowrecord":false,
+
+"autochangestate": {
+        "outtolunch": {"delaymsec":10000, "newstate":"donotdisturb"},
+        "berightback": {"delaymsec":60000, "newstate":"available"}
+        }
+}
