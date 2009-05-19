@@ -73,7 +73,7 @@ from xivo.BackSQL import backsqlite
 log = logging.getLogger('xivocti')
 
 XIVOVERSION_NUM = '1.1'
-XIVOVERSION_NAME = 'dalek'
+XIVOVERSION_NAME = 'gallifrey'
 REQUIRED_CLIENT_VERSION = 5680
 __revision__ = __version__.split()[1]
 __alphanums__ = string.uppercase + string.lowercase + string.digits
@@ -1004,22 +1004,22 @@ class XivoCTICommand(BaseCommand):
         
         @staticmethod
         def version():
-                return __revision__
+            return __revision__
         
         def getdetails(self, weblistitem):
-                retv = {}
-                if weblistitem in self.weblist:
-                        retv = self.weblist[weblistitem]
-                return retv
+            retv = {}
+            if weblistitem in self.weblist:
+                retv = self.weblist[weblistitem]
+            return retv
         
         def uniqueids(self):
-                return self.uniqueids
+            return self.uniqueids
         
         def users(self):
-                return self.ulist_ng.users()
+            return self.ulist_ng.users()
         
         def connected_users(self):
-                return self.ulist_ng.connected_users()
+            return self.ulist_ng.connected_users()
         
         def askstatus(self, astid, npl):
                 for a, b in npl.iteritems():
@@ -1061,10 +1061,10 @@ class XivoCTICommand(BaseCommand):
                 return
         
         def disconnected(self, connid):
-                if connid in self.timerthreads_login_timeout:
-                        self.timerthreads_login_timeout[connid].cancel()
-                        del self.timerthreads_login_timeout[connid]
-                return
+            if connid in self.timerthreads_login_timeout:
+                self.timerthreads_login_timeout[connid].cancel()
+                del self.timerthreads_login_timeout[connid]
+            return
         
         def checkqueue(self):
                 buf = os.read(self.queued_threads_pipe[0], 1024)
@@ -1117,19 +1117,19 @@ class XivoCTICommand(BaseCommand):
                 return wassent
         
         def __check_astid_context__(self, userinfo, astid, context = None):
-                mycond_astid = True
-                mycond_context = True
-                if self.parting_astid:
-                        mycond_astid = (astid == userinfo['astid'])
-                if self.parting_context and context is not None:
-                        mycond_context = (context == userinfo['context'])
-                return (mycond_astid and mycond_context)
+            mycond_astid = True
+            mycond_context = True
+            if self.parting_astid:
+                mycond_astid = (astid == userinfo['astid'])
+            if self.parting_context and context is not None:
+                mycond_context = (context == userinfo['context'])
+            return (mycond_astid and mycond_context)
         
         def __check_context__(self, context1, context2):
-                mycond_context = True
-                if self.parting_context:
-                        mycond_context = (context1 == context2)
-                return mycond_context
+            mycond_context = True
+            if self.parting_context:
+                mycond_context = (context1 == context2)
+            return mycond_context
         
         def __send_msg_to_cti_clients__(self, strupdate, astid, context = None):
                 log.debug('__send_msg_to_cti_clients__ astid=%s context=%s %s' % (astid, context, strupdate))
@@ -1166,20 +1166,20 @@ class XivoCTICommand(BaseCommand):
                                 'localphonecalled', 'outgoing']
         
         def __build_xmlqtui__(self, sheetkind, actionopt, inputvars):
-                linestosend = []
-                whichitem = actionopt.get(sheetkind)
-                if whichitem is not None and len(whichitem) > 0:
-                        for k, v in self.lconf.read_section('sheet_qtui', whichitem).iteritems():
-                                try:
-                                        r = urllib.urlopen(v)
-                                        t = r.read()
-                                        r.close()
-                                except Exception, exc: # conscious limited exception output ("No such file or directory")
-                                        log.error('__build_xmlqtui__ %s %s : %s' % (sheetkind, whichitem, exc))
-                                        t = None
-                                if t is not None:
-                                        linestosend.append('<%s name="%s"><![CDATA[%s]]></%s>' % (sheetkind, k, t, sheetkind))
-                return linestosend
+            linestosend = []
+            whichitem = actionopt.get(sheetkind)
+            if whichitem is not None and len(whichitem) > 0:
+                for k, v in self.lconf.read_section('sheet_qtui', whichitem).iteritems():
+                    try:
+                        r = urllib.urlopen(v)
+                        t = r.read().decode('utf8')
+                        r.close()
+                    except Exception, exc: # conscious limited exception output ("No such file or directory")
+                        log.error('__build_xmlqtui__ %s %s : %s' % (sheetkind, whichitem, exc))
+                        t = None
+                    if t is not None:
+                        linestosend.append('<%s name="%s"><![CDATA[%s]]></%s>' % (sheetkind, k, t, sheetkind))
+            return linestosend
         
         def __build_xmlsheet__(self, sheetkind, actionopt, inputvars):
             linestosend = []
