@@ -5337,7 +5337,7 @@ class XivoCTICommand(BaseCommand):
                             cursor.query("SELECT ${columns} FROM cdr WHERE disposition!='ANSWERED' AND dstchannel LIKE %s " + datecond + orderbycalldate,
                                          columns,
                                          (likestring,))
-                            results = cursor.fetchall()
+                        results = cursor.fetchall()
                     except Exception:
                         log.exception('%s : Connection to DataBase failed in History request' % cfg.astid)
                 return results
