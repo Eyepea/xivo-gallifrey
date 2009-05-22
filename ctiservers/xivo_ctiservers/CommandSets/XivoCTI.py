@@ -1455,7 +1455,7 @@ class XivoCTICommand(BaseCommand):
                             pass
                         
                         # 4) format message and send
-                        dozip = True
+                        dozip = bool(int(self.xivoconf.get('zipsheets', '1')))
                         xmlstring = xmlustring.encode('utf8')
                         # build the json message
                         tosend = { 'class' : 'sheet',
