@@ -9,12 +9,17 @@
 "queues-statscolumns":"Xivo-Conn,Xivo-Avail,Xivo-Rate,Xivo-Join,Xivo-Link,Xivo-Lost,Xivo-Chat,Holdtime",
 "queues-shortlegends":false,
 "queues-showqueuenames":true,
-"blinktime":120
+"blinktime":120,
+
+"hidecontext":false,
+"hideastid":false,
 
 "conference-allowrecord":false,
 
 "autochangestate": {
         "outtolunch": {"delaymsec":10000, "newstate":"donotdisturb"},
         "berightback": {"delaymsec":60000, "newstate":"available"}
-        }
+        },
+
+"services" : ["enablevm","incallrec","incallfilter","enablednd","fwdrna","fwdbusy","fwdunc"]
 }
