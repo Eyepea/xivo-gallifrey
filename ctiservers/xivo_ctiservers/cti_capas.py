@@ -82,7 +82,6 @@ class Capabilities:
         def __init__(self):
                 self.capafuncs = []
                 self.capadisps = ['void-grid-0']
-                self.capaservices = []
                 self.appliname = 'Client'
                 self.guisettings = {}
                 self.conngui = 0
@@ -111,10 +110,6 @@ class Capabilities:
         
         def setappliname(self, appliname):
                 self.appliname = appliname
-                return
-        
-        def setservices(self, services):
-                self.capaservices = services
                 return
         
         def setpresenceid(self, presenceid):
