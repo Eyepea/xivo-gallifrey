@@ -268,25 +268,25 @@ class XivoCTICommand(BaseCommand):
                 tdir = commandstruct.get('tdirection')
                 
                 if connid in self.timerthreads_login_timeout:
-                        self.timerthreads_login_timeout[connid].cancel()
-                        del self.timerthreads_login_timeout[connid]
+                    self.timerthreads_login_timeout[connid].cancel()
+                    del self.timerthreads_login_timeout[connid]
                 if tdir == 'upload':
-                        self.transfers_ref[requester] = fileid
-                        self.transfers_buf[requester] = []
-                        tosend = { 'class' : 'fileref',
-                                   'fileid' : fileid }
-                        connid.sendall(self.__cjson_encode__(tosend) + '\n')
+                    self.transfers_ref[requester] = fileid
+                    self.transfers_buf[requester] = []
+                    tosend = { 'class' : 'fileref',
+                               'fileid' : fileid }
+                    connid.sendall(self.__cjson_encode__(tosend) + '\n')
                 else:
                         if fileid in self.filestodownload:
-                                fname = self.filestodownload[fileid]
-                                data = urllib.urlopen('file:%s' % fname).read()
-                                tosend = { 'class' : 'fileref',
-                                           'filename' : fname,
-                                           'payload' : base64.b64encode(data) }
-                                connid.sendall(self.__cjson_encode__(tosend) + '\n')
-                                del self.filestodownload[fileid]
+                            fname = self.filestodownload[fileid]
+                            data = urllib.urlopen('file:%s' % fname).read()
+                            tosend = { 'class' : 'fileref',
+                                       'filename' : fname,
+                                       'payload' : base64.b64encode(data) }
+                            connid.sendall(self.__cjson_encode__(tosend) + '\n')
+                            del self.filestodownload[fileid]
                         else:
-                                log.warning('fileid %s does not exist' % fileid)
+                            log.warning('fileid %s does not exist' % fileid)
                 return
         
         def transfer_endbuf(self, req):
@@ -654,13 +654,43 @@ class XivoCTICommand(BaseCommand):
                         self.ctilog_conn.commit()
                 return
         
+        
+        def __conf2json2dict__(self, structure, keyname):
+            """
+            Meant to ensure that the result is a dict.
+            """
+            ret = {}
+            if not keyname:
+                log.warning('__conf2json2dict__ empty keyname %s' % keyname)
+                return ret
+            urlvalue = structure.get(keyname)
+            if not urlvalue:
+                log.warning('__conf2json2dict__ empty urlvalue %s for keyname %s' % (urlvalue, keyname))
+                return ret
+            try:
+                r = urllib.urlopen(urlvalue)
+                jsonencoded = r.read().decode('utf8')
+                r.close()
+            except Exception:
+                jsonencoded = None
+            if not jsonencoded:
+                log.warning('__conf2json2dict__ jsonencoded is empty for keyname %s and urlvalue %s' % (keyname, urlvalue))
+                return ret
+            try:
+                ret = cjson.decode(jsonencoded)
+            except Exception:
+                log.exception('__conf2json2dict__ json decode %s %s' % (keyname, urlvalue))
+            return ret
+        
+        
         def set_options(self, xivoconf, allconf):
                 self.xivoconf = xivoconf
+                allowedxlets = self.__conf2json2dict__(self.xivoconf, 'allowedxlets')
                 for var, val in self.xivoconf.iteritems():
                         if var.find('-') > 0 and val:
                                 [name, prop] = var.split('-', 1)
                                 if name not in self.capas:
-                                    self.capas[name] = cti_capas.Capabilities()
+                                    self.capas[name] = cti_capas.Capabilities(allowedxlets)
                                 if prop == 'xlets':
                                     self.capas[name].setxlets(val.split(','))
                                 elif prop == 'funcs':

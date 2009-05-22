@@ -45,140 +45,109 @@ class Capabilities:
                          'database',
                          'switchboard']
         
-        allowed_xlets = {'void' : [],
-                         'agents' : ['agents'],
-                         'agentsnext' : ['agents'],
-                         'agentdetails' : ['agents'],
-                         'queues' : ['agents'],
-                         'queuedetails' : ['agents'],
-                         'queueentrydetails' : ['agents'],
-                         
-                         'calls' : ['dial'],
-                         'parking' : ['dial'],
-                         'switchboard' : ['dial'],
-                         
-                         'customerinfo' : ['customerinfo'],
-                         'datetime' : [],
-                         'dial' : ['dial'],
-                         'directory' : ['directory'],
-                         'outlook' : [],
-                         'fax' : ['fax'],
-                         'features' : ['features'],
-                         'history' : ['history'],
-                         'identity' : ['dial'],     # might need 'agents'
-                         'search' : ['dial'], # might need 'agents'
-                         
-                         'messages' : [],
-                         'conference' : ['conference'],
-                         'operator' : ['dial'],
-                         
-                         'mylocaldir' : [],
-                         'callcampaign' : [],
-                         'xletproto' : [],
-                         'xletweb' : [],
-                         'tabber' : [],
-                         'video' : []}
+        allowed_xlets_base = {'void' : {}}
         
-        def __init__(self):
-                self.capafuncs = []
-                self.capadisps = ['void-grid-0']
-                self.appliname = 'Client'
-                self.guisettings = {}
-                self.conngui = 0
-                self.maxgui = -1
-                self.presenceid = 'none'
-                self.watchedpresenceid = 'none'
-                self.guiurl = None
-                return
+        def __init__(self, allowed_xlets):
+            self.capafuncs = []
+            self.capadisps = ['void-grid-0']
+            self.appliname = 'Client'
+            self.guisettings = {}
+            self.conngui = 0
+            self.maxgui = -1
+            self.presenceid = 'none'
+            self.watchedpresenceid = 'none'
+            self.guiurl = None
+            self.allowed_xlets = allowed_xlets
+            self.allowed_xlets.update(self.allowed_xlets_base)
+            return
         
         def setfuncs(self, capalist):
-                for capa in capalist:
-                        if capa in self.allowed_funcs and capa not in self.capafuncs:
-                                self.capafuncs.append(capa)
-                return
+            for capa in capalist:
+                if capa in self.allowed_funcs and capa not in self.capafuncs:
+                    self.capafuncs.append(capa)
+            return
         
         def setxlets(self, capalist):
-                for capa in capalist:
-                        detail = capa.split('-')
-                        if len(detail) > 2 and detail[1] == 'grid' and detail[2] == '0' and 'void-grid-0' in self.capadisps:
-                                self.capadisps.remove('void-grid-0')
-                        if detail[0] in self.allowed_xlets.keys():
-                                if capa not in self.capadisps:
-                                        self.capadisps.append(capa)
-                                self.setfuncs(self.allowed_xlets[detail[0]])
-                return
+            for capa in capalist:
+                detail = capa.split('-')
+                if len(detail) > 2 and detail[1] == 'grid' and detail[2] == '0' and 'void-grid-0' in self.capadisps:
+                    self.capadisps.remove('void-grid-0')
+                if detail[0] in self.allowed_xlets.keys():
+                    if capa not in self.capadisps:
+                        self.capadisps.append(capa)
+                    self.setfuncs(self.allowed_xlets[detail[0]])
+            return
         
         def setappliname(self, appliname):
-                self.appliname = appliname
-                return
+            self.appliname = appliname
+            return
         
         def setpresenceid(self, presenceid):
-                self.presenceid = presenceid
-                if self.watchedpresenceid == 'none':
-                        self.watchedpresenceid = presenceid
-                return
+            self.presenceid = presenceid
+            if self.watchedpresenceid == 'none':
+                self.watchedpresenceid = presenceid
+            return
         
         def setwatchedpresenceid(self, watchedpresenceid):
-                self.watchedpresenceid = watchedpresenceid
-                return
+            self.watchedpresenceid = watchedpresenceid
+            return
         
         def getguisettings(self):
-                guisettings = {}
-                if self.guiurl is not None:
-                        try:
-                                gui = urllib.urlopen(self.guiurl)
-                                guisettings = cjson.decode(gui.read())
-                                gui.close()
-                        except Exception:
-                                log.exception('problem when reading guisettings from %s' % self.guiurl)
-                return guisettings
+            guisettings = {}
+            if self.guiurl is not None:
+                try:
+                    gui = urllib.urlopen(self.guiurl)
+                    guisettings = cjson.decode(gui.read())
+                    gui.close()
+                except Exception:
+                    log.exception('problem when reading guisettings from %s' % self.guiurl)
+            return guisettings
         
         def setguisettings(self, urlsettings):
-                self.guiurl = urlsettings
-                return
+            self.guiurl = urlsettings
+            return
         
         # maxgui's
         def setmaxgui(self, maxgui):
-                self.maxgui = int(maxgui)
-                return
+            self.maxgui = int(maxgui)
+            return
         
         def getmaxgui(self):
-                if self.maxgui == -1:
-                        return 'infinite'
-                else:
-                        return str(self.maxgui)
-
+            ret = 'infinite'
+            if self.maxgui > -1:
+                ret = str(self.maxgui)
+            return ret
+        
         def toomuchusers(self):
-                if self.maxgui == -1 or self.conngui < self.maxgui:
-                        return False
-                else:
-                        return True
-
+            ret = True
+            if self.maxgui == -1 or self.conngui < self.maxgui:
+                ret = False
+            return ret
+        
         def conn_inc(self):
-                self.conngui += 1
-                return
-
+            self.conngui += 1
+            return
+        
         def conn_dec(self):
-                self.conngui -= 1
-                return
-
-
+            self.conngui -= 1
+            return
+        
         def all(self):
-                return (2 ** (len(self.allowed_funcs)) - 1)
-
+            return (2 ** (len(self.allowed_funcs)) - 1)
+        
         def tostringlist(self, capalist_int):
-                lst = []
-                for capa in self.capafuncs:
-                        n = 2 ** self.allowed_funcs.index(capa)
-                        if (n & capalist_int):
-                                lst.append(capa)
-                return lst
-
+            lst = []
+            for capa in self.capafuncs:
+                n = 2 ** self.allowed_funcs.index(capa)
+                if (n & capalist_int):
+                    lst.append(capa)
+            return lst
+        
         def match_funcs(self, ucapas, capa_str):
-                capas = capa_str.split(',')
-                for cap in capas:
-                        if cap in self.capafuncs:
-                                n = 2 ** self.allowed_funcs.index(cap)
-                                if (n & ucapas):
-                                        return True
-                return False
+            capas = capa_str.split(',')
+            for cap in capas:
+                if cap in self.capafuncs:
+                    n = 2 ** self.allowed_funcs.index(cap)
+                    if (n & ucapas):
+                        return True
+            return False
