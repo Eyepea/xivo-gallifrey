@@ -4945,7 +4945,9 @@ class XivoCTICommand(BaseCommand):
                         # chan_agent.c:2318 callback_deprecated: AgentCallbackLogin is deprecated and will be removed in a future release.
                         # chan_agent.c:2319 callback_deprecated: See doc/queues-with-callback-members.txt for an example of how to achieve
                         # chan_agent.c:2320 callback_deprecated: the same functionality using only dialplan logic.
-                        self.__ami_execute__(astid, 'setvar', 'AGENTBYCALLERID_%s' % agentphonenum, agentnum)
+                        userid = uinfo.get('xivo_userid')
+                        if userid:
+                            self.__ami_execute__(astid, 'setvar', 'XIVO_AGENTBYUSERID_%s' % userid, agentnum)
                         self.__fill_user_ctilog__(uinfo, 'agent_login')
                 return
             
@@ -4955,11 +4957,9 @@ class XivoCTICommand(BaseCommand):
                 astid = uinfo.get('astid')
                 if 'agentid' in uinfo and astid is not None:
                     agentnum = self.__agentnum__(uinfo)
-                    if 'agentphonenum' in uinfo:
-                        agentphonenum = uinfo['agentphonenum']
-                        if agentphonenum:
-                            self.__ami_execute__(astid, 'setvar', 'AGENTBYCALLERID_%s' % agentphonenum, '')
-                            # del uinfo['agentphonenum']
+                    userid = uinfo.get('xivo_userid')
+                    if userid:
+                        self.__ami_execute__(astid, 'setvar', 'XIVO_AGENTBYUSERID_%s' % userid, '')
                     if agentnum:
                         ## self.__agent__(uinfo, ['pause_all'])
                         self.__ami_execute__(astid, 'agentlogoff', agentnum)
