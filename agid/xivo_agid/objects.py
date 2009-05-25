@@ -286,7 +286,7 @@ class VMBox:
         res = cursor.fetchone()
 
         if not res:
-            raise LookupError("Unable to find voicemail box (id: %d)" % xid)
+            raise LookupError("Unable to find voicemail box (id: %s, mailbox: %s, context: %s)" % (xid, mailbox, context))
 
         self.id = xid
         self.mailbox = res['voicemail.mailbox']
