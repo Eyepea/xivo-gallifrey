@@ -258,6 +258,9 @@ class Aastra(PhoneVendorMixin):
 
         if len(modelfw[0]) > 0:
             model = modelfw[0].lower()
+            modict = dict([x[1], x[0]] for x in cls.AASTRA_MODELS)
+            model = modict.get(model, model)
+
             if len(modelfw) == 2:
                 fw = modelfw[1]
         return ("aastra", model, fw)
