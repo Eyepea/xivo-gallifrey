@@ -3324,135 +3324,147 @@ class XivoCTICommand(BaseCommand):
         
         def ami_queuememberadded(self, astid, event):
                 if astid not in self.weblist['queues']:
-                        log.warning('%s ami_queuememberadded : no queue list has been defined' % astid)
-                        return
+                    log.warning('%s ami_queuememberadded : no queue list has been defined' % astid)
+                    return
                 queue = event.get('Queue')
                 location = event.get('Location')
                 paused = event.get('Paused')
                 if self.weblist['queues'][astid].hasqueue(queue):
-                        queueorgroup = 'queues'
+                    queueorgroup = 'queues'
                 elif self.weblist['groups'][astid].hasqueue(queue):
-                        queueorgroup = 'groups'
+                    queueorgroup = 'groups'
                 else:
-                        self.__queuemismatch__(astid, queue, 'ami_queuememberadded')
-                        return
+                    self.__queuemismatch__(astid, queue, 'ami_queuememberadded')
+                    return
                 
                 context_queue = self.weblist[queueorgroup][astid].getcontext(queue)
                 if location.startswith('Agent/'):
-                        if self.weblist['agents'].has_key(astid):
-                                agent_id = self.weblist['agents'][astid].reverse_index.get(location[6:])
-                                thisagent = self.weblist['agents'][astid].keeplist[agent_id]
-                                context_member = thisagent.get('context')
+                    if self.weblist['agents'].has_key(astid):
+                        agent_id = self.weblist['agents'][astid].reverse_index.get(location[6:])
+                        if agent_id:
+                            thisagent = self.weblist['agents'][astid].keeplist[agent_id]
+                            context_member = thisagent.get('context')
                         else:
-                                context_member = None
+                            log.warning('%s ami_queuememberadded : no agent_id for location %s' % (astid, location))
+                            context_member = None
+                    else:
+                        context_member = None
                 else:
-                        context_member = context_queue
-                        
+                    context_member = context_queue
+                    
                 if not self.__check_context__(context_member, context_queue):
-                        return
+                    return
                 
                 event['Xivo-QueueMember-StateTime'] = time.time()
                 if self.weblist[queueorgroup][astid].queuememberupdate(queue, location, event):
-                        tosend = { 'class' : queueorgroup,
-                                   'function' : 'update',
-                                   'payload' : { astid :
-                                                 { queue :
-                                                   { 'agents_in_queue' :
-                                                     { location : self.weblist[queueorgroup][astid].keeplist[queue]['agents_in_queue'][location]
-                                                       } } } }
-                                   }
-                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_queue)
-                        
+                    tosend = { 'class' : queueorgroup,
+                               'function' : 'update',
+                               'payload' : { astid :
+                                             { queue :
+                                               { 'agents_in_queue' :
+                                                 { location : self.weblist[queueorgroup][astid].keeplist[queue]['agents_in_queue'][location]
+                                                   } } } }
+                               }
+                    self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_queue)
+                    
                 if location.startswith('Agent/'):
-                        self.weblist['agents'][astid].queuememberadded(queue, queueorgroup, location[6:], event)
-                        self.__peragent_queue_summary__(astid, queueorgroup, agent_id, 'ami_queuememberadded')
-                        tosend = { 'class' : 'agents',
-                                   'function' : 'sendlist',
-                                   'payload' : { astid : { agent_id : thisagent } }
-                                   }
-                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_member)
+                    self.weblist['agents'][astid].queuememberadded(queue, queueorgroup, location[6:], event)
+                    self.__peragent_queue_summary__(astid, queueorgroup, agent_id, 'ami_queuememberadded')
+                    tosend = { 'class' : 'agents',
+                               'function' : 'sendlist',
+                               'payload' : { astid : { agent_id : thisagent } }
+                               }
+                    self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_member)
                 else:
-                        log.warning('%s sip@queue (ami_queuememberadded) %s' % (astid, event))
+                    log.warning('%s sip@queue (ami_queuememberadded) %s' % (astid, event))
                 return
         
         def ami_queuememberremoved(self, astid, event):
                 if astid not in self.weblist['queues']:
-                        log.warning('%s ami_queuememberremoved : no queue list has been defined' % astid)
-                        return
+                    log.warning('%s ami_queuememberremoved : no queue list has been defined' % astid)
+                    return
                 queue = event.get('Queue')
                 location = event.get('Location')
                 if self.weblist['queues'][astid].hasqueue(queue):
-                        queueorgroup = 'queues'
+                    queueorgroup = 'queues'
                 elif self.weblist['groups'][astid].hasqueue(queue):
-                        queueorgroup = 'groups'
+                    queueorgroup = 'groups'
                 else:
-                        self.__queuemismatch__(astid, queue, 'ami_queuememberremoved')
-                        return
+                    self.__queuemismatch__(astid, queue, 'ami_queuememberremoved')
+                    return
                 
                 context_queue = self.weblist[queueorgroup][astid].getcontext(queue)
                 if location.startswith('Agent/'):
-                        if self.weblist['agents'].has_key(astid):
-                                agent_id = self.weblist['agents'][astid].reverse_index.get(location[6:])
-                                thisagent = self.weblist['agents'][astid].keeplist[agent_id]
-                                context_member = thisagent.get('context')
+                    if self.weblist['agents'].has_key(astid):
+                        agent_id = self.weblist['agents'][astid].reverse_index.get(location[6:])
+                        if agent_id:
+                            thisagent = self.weblist['agents'][astid].keeplist[agent_id]
+                            context_member = thisagent.get('context')
                         else:
-                                context_member = None
+                            log.warning('%s ami_queuememberremoved : no agent_id for location %s' % (astid, location))
+                            context_member = None
+                    else:
+                        context_member = None
                 else:
-                        context_member = context_queue
-                        
+                    context_member = context_queue
+                    
                 if not self.__check_context__(context_member, context_queue):
-                        return
+                    return
                 
                 if self.weblist[queueorgroup][astid].queuememberremove(queue, location):
-                        tosend = { 'class' : queueorgroup,
-                                   'function' : 'sendlist',
-                                   'payload' : { astid : { queue : self.weblist[queueorgroup][astid].keeplist[queue] } }
-                                   }
-                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_queue)
-                        
+                    tosend = { 'class' : queueorgroup,
+                               'function' : 'sendlist',
+                               'payload' : { astid : { queue : self.weblist[queueorgroup][astid].keeplist[queue] } }
+                               }
+                    self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_queue)
+                    
                 if location.startswith('Agent/'):
-                        self.weblist['agents'][astid].queuememberremoved(queue, queueorgroup, location[6:], event)
-                        self.__peragent_queue_summary__(astid, queueorgroup, agent_id, 'ami_queuememberremoved')
-                        tosend = { 'class' : 'agents',
-                                   'function' : 'sendlist',
-                                   'payload' : { astid : { agent_id : thisagent } }
-                                   }
-                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_member)
+                    self.weblist['agents'][astid].queuememberremoved(queue, queueorgroup, location[6:], event)
+                    self.__peragent_queue_summary__(astid, queueorgroup, agent_id, 'ami_queuememberremoved')
+                    tosend = { 'class' : 'agents',
+                               'function' : 'sendlist',
+                               'payload' : { astid : { agent_id : thisagent } }
+                               }
+                    self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_member)
                 else:
-                        log.warning('%s sip@queue (ami_queuememberremoved) %s' % (astid, event))
+                    log.warning('%s sip@queue (ami_queuememberremoved) %s' % (astid, event))
                 return
         
         def ami_queuememberstatus(self, astid, event):
                 # log.info('%s ami_queuememberstatus : %s' % (astid, event))
                 if astid not in self.weblist['queues']:
-                        log.warning('%s ami_queuememberstatus : no queue list has been defined' % astid)
-                        return
+                    log.warning('%s ami_queuememberstatus : no queue list has been defined' % astid)
+                    return
                 status = event.get('Status')
                 queue = event.get('Queue')
                 location = event.get('Location')
                 paused = event.get('Paused')
                 
                 if self.weblist['queues'][astid].hasqueue(queue):
-                        queueorgroup = 'queues'
+                    queueorgroup = 'queues'
                 elif self.weblist['groups'][astid].hasqueue(queue):
-                        queueorgroup = 'groups'
+                    queueorgroup = 'groups'
                 else:
-                        self.__queuemismatch__(astid, queue, 'ami_queuememberstatus')
-                        return
+                    self.__queuemismatch__(astid, queue, 'ami_queuememberstatus')
+                    return
                 
                 context_queue = self.weblist[queueorgroup][astid].getcontext(queue)
                 if location.startswith('Agent/'):
-                        if self.weblist['agents'].has_key(astid):
-                                agent_id = self.weblist['agents'][astid].reverse_index.get(location[6:])
-                                thisagent = self.weblist['agents'][astid].keeplist[agent_id]
-                                context_member = thisagent.get('context')
+                    if self.weblist['agents'].has_key(astid):
+                        agent_id = self.weblist['agents'][astid].reverse_index.get(location[6:])
+                        if agent_id:
+                            thisagent = self.weblist['agents'][astid].keeplist[agent_id]
+                            context_member = thisagent.get('context')
                         else:
-                                context_member = None
+                            log.warning('%s ami_queuememberstatus : no agent_id for location %s' % (astid, location))
+                            context_member = None
+                    else:
+                        context_member = None
                 else:
-                        context_member = context_queue
-                        
+                    context_member = context_queue
+                    
                 if not self.__check_context__(context_member, context_queue):
-                        return
+                    return
                 
                 if self.weblist[queueorgroup][astid].queuememberupdate(queue, location, event):
 ##                        tosend = { 'class' : queueorgroup,
@@ -3463,30 +3475,30 @@ class XivoCTICommand(BaseCommand):
 ##                                                     { location : self.weblist[queueorgroup][astid].keeplist[queue]['agents_in_queue'][location]
 ##                                                       } } } }
 ##                                   }
-                        tosend = { 'class' : queueorgroup,
-                                   'function' : 'sendlist',
-                                   'payload' : { astid : { queue : self.weblist[queueorgroup][astid].keeplist[queue] } }
-                                   }
-                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_queue)
-                        
+                    tosend = { 'class' : queueorgroup,
+                               'function' : 'sendlist',
+                               'payload' : { astid : { queue : self.weblist[queueorgroup][astid].keeplist[queue] } }
+                               }
+                    self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_queue)
+                    
                 if location.startswith('Agent/'):
-                        if self.weblist['agents'][astid].queuememberupdate(queue, queueorgroup, location[6:], event):
-                                self.__peragent_queue_summary__(astid, queueorgroup, agent_id, 'ami_queuememberstatus')
-                                tosend = { 'class' : 'agents',
-                                           'function' : 'sendlist',
-                                           'payload' : { astid : { agent_id : thisagent } }
-                                           }
-                                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_member)
+                    if self.weblist['agents'][astid].queuememberupdate(queue, queueorgroup, location[6:], event):
+                        self.__peragent_queue_summary__(astid, queueorgroup, agent_id, 'ami_queuememberstatus')
+                        tosend = { 'class' : 'agents',
+                                   'function' : 'sendlist',
+                                   'payload' : { astid : { agent_id : thisagent } }
+                                   }
+                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_member)
                 else:
-                        # sip@queue
-                        for uinfo in self.ulist_ng.keeplist.itervalues():
-                            if uinfo.get('astid') == astid and uinfo.has_key('phonenum'):
-                                exten = uinfo.get('phonenum')
-                                phoneref = '.'.join([location.split('/')[0].lower(), context_queue,
-                                                     location.split('/')[1], exten])
-                                if phoneref in uinfo.get('techlist'):
-                                    td = '%s ami_queuememberstatus : (%s %s %s) %s' % (astid, status, queue, location, uinfo.get('fullname'))
-                                    log.info(td.encode('utf8'))
+                    # sip@queue
+                    for uinfo in self.ulist_ng.keeplist.itervalues():
+                        if uinfo.get('astid') == astid and uinfo.has_key('phonenum'):
+                            exten = uinfo.get('phonenum')
+                            phoneref = '.'.join([location.split('/')[0].lower(), context_queue,
+                                                 location.split('/')[1], exten])
+                            if phoneref in uinfo.get('techlist'):
+                                td = '%s ami_queuememberstatus : (%s %s %s) %s' % (astid, status, queue, location, uinfo.get('fullname'))
+                                log.info(td.encode('utf8'))
                 # status = 3 => ringing
                 # 2
                 # status = 1 => do not ring anymore => the one who has not gone to '1' among the '3's is the one who answered ...
@@ -3499,162 +3511,170 @@ class XivoCTICommand(BaseCommand):
         
         def __peragent_queue_summary__(self, astid, queueorgroup, agent_id, wherefrom):
                 try:
-                        thisagent = self.weblist['agents'][astid].keeplist[agent_id]
-                        # context_agent = thisagent.get('context')
-                        
-                        if queueorgroup == 'queues':
-                                thisagent['agentstats']['Xivo-NQJoined'] = 0
-                                thisagent['agentstats']['Xivo-NQPaused'] = 0
-                                for qname, astatus in self.weblist['agents'][astid].keeplist[agent_id]['queues_by_agent'].iteritems():
-                                        if qname in self.weblist['queues'][astid].keeplist:
-                                                # context_queue = self.weblist['queues'][astid].keeplist[qname]['context']
-                                                # if context_agent == context_queue:
-                                                if astatus.get('Status') in ['1', '3', '4', '5']:
-                                                        thisagent['agentstats']['Xivo-NQJoined'] += 1
-                                                if astatus.get('Paused') == '1':
-                                                        thisagent['agentstats']['Xivo-NQPaused'] += 1
-                        if queueorgroup == 'groups':
-                                thisagent['agentstats']['Xivo-NGJoined'] = 0
-                                thisagent['agentstats']['Xivo-NGPaused'] = 0
-                                for qname, astatus in self.weblist['agents'][astid].keeplist[agent_id]['groups_by_agent'].iteritems():
-                                        if qname in self.weblist['groups'][astid].keeplist:
-                                                # context_queue = self.weblist['groups'][astid].keeplist[qname]['context']
-                                                # if context_agent == context_queue:
-                                                if astatus.get('Status') in ['1', '3', '4', '5']:
-                                                        thisagent['agentstats']['Xivo-NGJoined'] += 1
-                                                if astatus.get('Paused') == '1':
-                                                        thisagent['agentstats']['Xivo-NGPaused'] += 1
+                    thisagent = self.weblist['agents'][astid].keeplist[agent_id]
+                    # context_agent = thisagent.get('context')
+                    
+                    if queueorgroup == 'queues':
+                        thisagent['agentstats']['Xivo-NQJoined'] = 0
+                        thisagent['agentstats']['Xivo-NQPaused'] = 0
+                        for qname, astatus in self.weblist['agents'][astid].keeplist[agent_id]['queues_by_agent'].iteritems():
+                            if qname in self.weblist['queues'][astid].keeplist:
+                                # context_queue = self.weblist['queues'][astid].keeplist[qname]['context']
+                                # if context_agent == context_queue:
+                                if astatus.get('Status') in ['1', '3', '4', '5']:
+                                    thisagent['agentstats']['Xivo-NQJoined'] += 1
+                                if astatus.get('Paused') == '1':
+                                    thisagent['agentstats']['Xivo-NQPaused'] += 1
+                    if queueorgroup == 'groups':
+                        thisagent['agentstats']['Xivo-NGJoined'] = 0
+                        thisagent['agentstats']['Xivo-NGPaused'] = 0
+                        for qname, astatus in self.weblist['agents'][astid].keeplist[agent_id]['groups_by_agent'].iteritems():
+                            if qname in self.weblist['groups'][astid].keeplist:
+                                # context_queue = self.weblist['groups'][astid].keeplist[qname]['context']
+                                # if context_agent == context_queue:
+                                if astatus.get('Status') in ['1', '3', '4', '5']:
+                                    thisagent['agentstats']['Xivo-NGJoined'] += 1
+                                if astatus.get('Paused') == '1':
+                                    thisagent['agentstats']['Xivo-NGPaused'] += 1
                 except Exception:
-                        log.exception('(__peragent_queue_summary__) %s %s %s' % (astid, agent_id, wherefrom))
+                    log.exception('(__peragent_queue_summary__) %s %s %s' % (astid, agent_id, wherefrom))
                 return
         
         def ami_queuememberpaused(self, astid, event):
                 # log.info('%s ami_queuememberpaused : %s' % (astid, event))
                 if astid not in self.weblist['queues']:
-                        log.warning('%s ami_queuememberpaused : no queue list has been defined' % astid)
-                        return
+                    log.warning('%s ami_queuememberpaused : no queue list has been defined' % astid)
+                    return
                 queue = event.get('Queue')
                 paused = event.get('Paused')
                 location = event.get('Location')
                 
                 if self.weblist['queues'][astid].hasqueue(queue):
-                        queueorgroup = 'queues'
+                    queueorgroup = 'queues'
                 elif self.weblist['groups'][astid].hasqueue(queue):
-                        queueorgroup = 'groups'
+                    queueorgroup = 'groups'
                 else:
-                        self.__queuemismatch__(astid, queue, 'ami_queuememberpaused')
-                        return
+                    self.__queuemismatch__(astid, queue, 'ami_queuememberpaused')
+                    return
                 
                 context_queue = self.weblist[queueorgroup][astid].getcontext(queue)
                 if location.startswith('Agent/'):
-                        if self.weblist['agents'].has_key(astid):
-                                agent_id = self.weblist['agents'][astid].reverse_index.get(location[6:])
-                                thisagent = self.weblist['agents'][astid].keeplist[agent_id]
-                                context_member = thisagent.get('context')
+                    if self.weblist['agents'].has_key(astid):
+                        agent_id = self.weblist['agents'][astid].reverse_index.get(location[6:])
+                        if agent_id:
+                            thisagent = self.weblist['agents'][astid].keeplist[agent_id]
+                            context_member = thisagent.get('context')
                         else:
-                                context_member = None
+                            log.warning('%s ami_queuememberpaused : no agent_id for location %s' % (astid, location))
+                            context_member = None
+                    else:
+                        context_member = None
                 else:
-                        context_member = context_queue
-                        
+                    context_member = context_queue
+                    
                 if not self.__check_context__(context_member, context_queue):
-                        return
+                    return
                 
                 event['Xivo-QueueMember-StateTime'] = time.time()
                 if self.weblist[queueorgroup][astid].queuememberupdate(queue, location, event):
-                        tosend = { 'class' : queueorgroup,
+                    tosend = { 'class' : queueorgroup,
+                               'function' : 'update',
+                               'payload' : { astid :
+                                             { queue :
+                                               { 'agents_in_queue' :
+                                                 { location : self.weblist[queueorgroup][astid].keeplist[queue]['agents_in_queue'][location]
+                                                   } } } }
+                               }
+                    self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_queue)
+                    
+                if location.startswith('Agent/'):
+                    if self.weblist['agents'][astid].queuememberupdate(queue, queueorgroup, location[6:], event):
+                        self.__peragent_queue_summary__(astid, queueorgroup, agent_id, 'ami_queuememberpaused')
+                        qorg = '%s_by_agent' % queueorgroup
+                        tosend = { 'class' : 'agents',
                                    'function' : 'update',
                                    'payload' : { astid :
-                                                 { queue :
-                                                   { 'agents_in_queue' :
-                                                     { location : self.weblist[queueorgroup][astid].keeplist[queue]['agents_in_queue'][location]
-                                                       } } } }
+                                                 { agent_id :
+                                                   { 'agentstats' : thisagent['agentstats'],
+                                                     qorg : { queue : thisagent[qorg][queue] } } } }
                                    }
-                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_queue)
-                        
-                if location.startswith('Agent/'):
-                        if self.weblist['agents'][astid].queuememberupdate(queue, queueorgroup, location[6:], event):
-                                self.__peragent_queue_summary__(astid, queueorgroup, agent_id, 'ami_queuememberpaused')
-                                qorg = '%s_by_agent' % queueorgroup
-                                tosend = { 'class' : 'agents',
-                                           'function' : 'update',
-                                           'payload' : { astid :
-                                                         { agent_id :
-                                                           { 'agentstats' : thisagent['agentstats'],
-                                                             qorg : { queue : thisagent[qorg][queue] } } } }
-                                           }
-                                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_member)
+                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_member)
                 else:
-                        log.warning('%s sip@queue (ami_queuememberpaused) %s' % (astid, event))
+                    log.warning('%s sip@queue (ami_queuememberpaused) %s' % (astid, event))
                 return
         
         def ami_queueparams(self, astid, event):
                 # log.info('%s ami_queueparams : %s' % (astid, event))
                 if astid not in self.weblist['queues']:
-                        log.warning('%s ami_queueparams : no queue list has been defined' % astid)
-                        return
+                    log.warning('%s ami_queueparams : no queue list has been defined' % astid)
+                    return
                 queue = event.get('Queue')
                 if self.weblist['queues'][astid].hasqueue(queue):
-                        queueorgroup = 'queues'
+                    queueorgroup = 'queues'
                 elif self.weblist['groups'][astid].hasqueue(queue):
-                        queueorgroup = 'groups'
+                    queueorgroup = 'groups'
                 else:
-                        self.__queuemismatch__(astid, queue, 'ami_queueparams')
-                        return
+                    self.__queuemismatch__(astid, queue, 'ami_queueparams')
+                    return
                 
                 if self.weblist[queueorgroup][astid].update_queuestats(queue, event):
-                        # send an update only if something changed
-                        log.info('%s ami_queueparams : %s' % (astid, event))
-                        tosend = { 'class' : queueorgroup,
-                                   'function' : 'sendlist',
-                                   'payload' : { astid : { queue : self.weblist[queueorgroup][astid].keeplist[queue] } }
-                                   }
-                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid,
-                                                         self.weblist[queueorgroup][astid].getcontext(queue))
+                    # send an update only if something changed
+                    log.info('%s ami_queueparams : %s' % (astid, event))
+                    tosend = { 'class' : queueorgroup,
+                               'function' : 'sendlist',
+                               'payload' : { astid : { queue : self.weblist[queueorgroup][astid].keeplist[queue] } }
+                               }
+                    self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid,
+                                                     self.weblist[queueorgroup][astid].getcontext(queue))
                 return
         
         def ami_queuemember(self, astid, event):
                 # log.info('%s ami_queuemember : %s' % (astid, event))
                 if astid not in self.weblist['queues']:
-                        log.warning('%s ami_queuemember : no queue list has been defined' % astid)
-                        return
+                    log.warning('%s ami_queuemember : no queue list has been defined' % astid)
+                    return
                 queue = event.get('Queue')
                 location = event.get('Location')
                 if self.weblist['queues'][astid].hasqueue(queue):
-                        queueorgroup = 'queues'
+                    queueorgroup = 'queues'
                 elif self.weblist['groups'][astid].hasqueue(queue):
-                        queueorgroup = 'groups'
+                    queueorgroup = 'groups'
                 else:
-                        self.__queuemismatch__(astid, queue, 'ami_queuemember')
-                        return
+                    self.__queuemismatch__(astid, queue, 'ami_queuemember')
+                    return
                 
                 context_queue = self.weblist[queueorgroup][astid].getcontext(queue)
                 if location.startswith('Agent/'):
-                        if self.weblist['agents'].has_key(astid):
-                                agent_id = self.weblist['agents'][astid].reverse_index.get(location[6:])
-                                thisagent = self.weblist['agents'][astid].keeplist[agent_id]
-                                context_member = thisagent.get('context')
+                    if self.weblist['agents'].has_key(astid):
+                        agent_id = self.weblist['agents'][astid].reverse_index.get(location[6:])
+                        if agent_id:
+                            thisagent = self.weblist['agents'][astid].keeplist[agent_id]
+                            context_member = thisagent.get('context')
                         else:
-                                context_member = None
+                            log.warning('%s ami_queuemember : no agent_id for location %s' % (astid, location))
+                            context_member = None
+                    else:
+                        context_member = None
                 else:
-                        context_member = context_queue
-                        
+                    context_member = context_queue
+                    
                 if not self.__check_context__(context_member, context_queue):
-                        return
+                    return
                 
                 if location.startswith('Agent/'):
-                        self.weblist[queueorgroup][astid].queuememberupdate(queue, location, event)
-                        if self.weblist['agents'][astid].queuememberupdate(queue, queueorgroup, location[6:], event):
-                                self.__peragent_queue_summary__(astid, queueorgroup, agent_id, 'ami_queuemember')
-                                tosend = { 'class' : 'agents',
-                                           'function' : 'sendlist',
-                                           'payload' : { astid : { agent_id : thisagent } }
-                                           }
-                                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_member)
+                    self.weblist[queueorgroup][astid].queuememberupdate(queue, location, event)
+                    if self.weblist['agents'][astid].queuememberupdate(queue, queueorgroup, location[6:], event):
+                        self.__peragent_queue_summary__(astid, queueorgroup, agent_id, 'ami_queuemember')
+                        tosend = { 'class' : 'agents',
+                                   'function' : 'sendlist',
+                                   'payload' : { astid : { agent_id : thisagent } }
+                                   }
+                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_member)
                 else:
-                        # sip@queue
-                        nlocations = self.__nlocations__(astid, location, context_queue)
-                        if nlocations:
-                                self.weblist[queueorgroup][astid].queuememberupdate(queue, nlocations[0], event)
+                    # sip@queue
+                    nlocations = self.__nlocations__(astid, location, context_queue)
+                    if nlocations:
+                        self.weblist[queueorgroup][astid].queuememberupdate(queue, nlocations[0], event)
                 return
         
         def __nlocations__(self, astid, location, context):
@@ -4664,28 +4684,28 @@ class XivoCTICommand(BaseCommand):
                         return
                 
         def __find_agentid_by_agentnum__(self, astid, agent_number):
-                agent_id = None
-                if astid in self.weblist['agents']:
-                        agent_id = self.weblist['agents'][astid].reverse_index.get(agent_number)
-                return agent_id
+            agent_id = None
+            if astid in self.weblist['agents']:
+                agent_id = self.weblist['agents'][astid].reverse_index.get(agent_number)
+            return agent_id
         
         def __find_channel_by_agentnum__(self, astid, agent_number):
-                chans = []
-                for uinfo in self.__find_userinfos_by_agentnum__(astid, agent_number):
-                        techref = uinfo.get('techlist')[0]
-                        for v, vv in self.uniqueids[astid].iteritems(): ## XXX
-                                if 'channel' in vv:
-                                        if techref == self.__phoneid_from_channel__(astid, vv['channel']):
-                                                chans.append(vv['channel'])
-                return chans
+            chans = []
+            for uinfo in self.__find_userinfos_by_agentnum__(astid, agent_number):
+                techref = uinfo.get('techlist')[0]
+                for v, vv in self.uniqueids[astid].iteritems(): ## XXX
+                    if 'channel' in vv:
+                        if techref == self.__phoneid_from_channel__(astid, vv['channel']):
+                            chans.append(vv['channel'])
+            return chans
         
         def __find_userinfos_by_agentnum__(self, astid, agent_number):
-                userinfos = []
-                agent_id = self.__find_agentid_by_agentnum__(astid, agent_number)
-                for uinfo in self.ulist_ng.keeplist.itervalues():
-                        if 'agentid' in uinfo and uinfo.get('agentid') == agent_id and uinfo.get('astid') == astid:
-                                userinfos.append(uinfo)
-                return userinfos
+            userinfos = []
+            agent_id = self.__find_agentid_by_agentnum__(astid, agent_number)
+            for uinfo in self.ulist_ng.keeplist.itervalues():
+                if 'agentid' in uinfo and uinfo.get('agentid') == agent_id and uinfo.get('astid') == astid:
+                    userinfos.append(uinfo)
+            return userinfos
         
         def __agent__(self, userinfo, commandargs):
                 myastid = None
