@@ -1,6 +1,6 @@
 2009-03-06  Corentin Le Gall <clegall@proformatique.com>
 
-	pf_manager_dtmf.patch
+	passerted_issue8824.patch
 	$Revision$
 	$Date$
         RPID management
