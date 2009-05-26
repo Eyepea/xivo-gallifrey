@@ -1,0 +1,26 @@
+2009-05-26  Adrien DELLE CAVE <decryptus@proformatique.com>
+
+	deadlock_chan_local_issue14112.patch
+	$Revision$
+	$Date$
+
+	https://issues.asterisk.org/view.php?id=14112
+	https://issues.asterisk.org/file_download.php?file_id=21855&type=bug
+
+	Fixed deadlock in local channel.
+
+Index: asterisk-1.4.24/channels/chan_local.c
+===================================================================
+--- asterisk-1.4.24.orig/channels/chan_local.c		2009-05-26 12:09:41.000000000 +0200
++++ asterisk-1.4.24/channels/chan_local.c		2009-05-26 12:10:15.000000000 +0200
+@@ -372,7 +372,9 @@
+ 		ast_moh_stop(ast);
+ 	} else {
+ 		/* Queue up a frame representing the indication as a control frame */
+-		ast_mutex_lock(&p->lock);
++		while (ast_mutex_trylock(&p->lock)) {
++			DEADLOCK_AVOIDANCE(&ast->lock);
++		}
+ 		isoutbound = IS_OUTBOUND(ast, p);
+ 		f.subclass = condition;
+ 		f.data = (void*)data;
