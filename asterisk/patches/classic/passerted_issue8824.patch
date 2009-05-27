@@ -13,8 +13,8 @@
 
 Index: asterisk-1.4.24/apps/app_dial.c
 ===================================================================
---- asterisk-1.4.24.orig/apps/app_dial.c	2009-03-25 15:21:12.000000000 +0100
-+++ asterisk-1.4.24/apps/app_dial.c	2009-03-25 15:31:18.000000000 +0100
+--- asterisk-1.4.24.orig/apps/app_dial.c	2009-05-27 12:56:37.000000000 +0200
++++ asterisk-1.4.24/apps/app_dial.c	2009-05-27 12:58:33.000000000 +0200
 @@ -114,11 +114,8 @@
  "           party has answered, but before the call gets bridged. The 'called'\n"
  "           DTMF string is sent to the called party, and the 'calling' DTMF\n"
@@ -451,8 +451,8 @@ Index: asterisk-1.4.24/apps/app_dial.c
  		   XXX If we're forcibly removed, these outgoing calls won't get
 Index: asterisk-1.4.24/apps/app_directed_pickup.c
 ===================================================================
---- asterisk-1.4.24.orig/apps/app_directed_pickup.c	2009-03-25 15:21:12.000000000 +0100
-+++ asterisk-1.4.24/apps/app_directed_pickup.c	2009-03-25 15:31:18.000000000 +0100
+--- asterisk-1.4.24.orig/apps/app_directed_pickup.c	2009-05-27 12:56:37.000000000 +0200
++++ asterisk-1.4.24/apps/app_directed_pickup.c	2009-05-27 12:58:33.000000000 +0200
 @@ -62,6 +62,9 @@
  	if (option_debug)
  		ast_log(LOG_DEBUG, "Call pickup on '%s' by '%s'\n", target->name, chan->name);
@@ -465,8 +465,8 @@ Index: asterisk-1.4.24/apps/app_directed_pickup.c
  		return -1;
 Index: asterisk-1.4.24/apps/app_followme.c
 ===================================================================
---- asterisk-1.4.24.orig/apps/app_followme.c	2009-03-25 15:21:12.000000000 +0100
-+++ asterisk-1.4.24/apps/app_followme.c	2009-03-25 15:31:18.000000000 +0100
+--- asterisk-1.4.24.orig/apps/app_followme.c	2009-05-27 12:56:37.000000000 +0200
++++ asterisk-1.4.24/apps/app_followme.c	2009-05-27 12:58:33.000000000 +0200
 @@ -829,7 +829,7 @@
  					
  			outbound = ast_request("Local", ast_best_codec(caller->nativeformats), dialarg, &dg);
@@ -478,8 +478,8 @@ Index: asterisk-1.4.24/apps/app_followme.c
  					ast_verbose(VERBOSE_PREFIX_3 "calling %s\n", dialarg);
 Index: asterisk-1.4.24/apps/app_queue.c
 ===================================================================
---- asterisk-1.4.24.orig/apps/app_queue.c	2009-03-25 15:29:52.000000000 +0100
-+++ asterisk-1.4.24/apps/app_queue.c	2009-03-25 15:31:18.000000000 +0100
+--- asterisk-1.4.24.orig/apps/app_queue.c	2009-05-27 12:56:37.000000000 +0200
++++ asterisk-1.4.24/apps/app_queue.c	2009-05-27 12:58:33.000000000 +0200
 @@ -1885,15 +1885,39 @@
  	tmp->chan->appl = "AppQueue";
  	tmp->chan->data = "(Outgoing Line)";
@@ -570,8 +570,8 @@ Index: asterisk-1.4.24/apps/app_queue.c
  							do_hang(o);
 Index: asterisk-1.4.24/channels/chan_agent.c
 ===================================================================
---- asterisk-1.4.24.orig/channels/chan_agent.c	2009-03-25 15:21:12.000000000 +0100
-+++ asterisk-1.4.24/channels/chan_agent.c	2009-03-25 15:31:18.000000000 +0100
+--- asterisk-1.4.24.orig/channels/chan_agent.c	2009-05-27 12:56:37.000000000 +0200
++++ asterisk-1.4.24/channels/chan_agent.c	2009-05-27 12:58:33.000000000 +0200
 @@ -734,8 +734,7 @@
  		/* Call on this agent */
  		if (option_verbose > 2)
@@ -584,8 +584,8 @@ Index: asterisk-1.4.24/channels/chan_agent.c
  		CLEANUP(ast,p);
 Index: asterisk-1.4.24/channels/chan_dahdi.c
 ===================================================================
---- asterisk-1.4.24.orig/channels/chan_dahdi.c	2009-03-25 15:21:12.000000000 +0100
-+++ asterisk-1.4.24/channels/chan_dahdi.c	2009-03-25 15:31:18.000000000 +0100
+--- asterisk-1.4.24.orig/channels/chan_dahdi.c	2009-05-27 12:56:37.000000000 +0200
++++ asterisk-1.4.24/channels/chan_dahdi.c	2009-05-27 12:58:33.000000000 +0200
 @@ -2172,7 +2172,7 @@
  				}
  				p->callwaitcas = 0;
@@ -676,8 +676,8 @@ Index: asterisk-1.4.24/channels/chan_dahdi.c
  		/* User-user info */
 Index: asterisk-1.4.24/channels/chan_h323.c
 ===================================================================
---- asterisk-1.4.24.orig/channels/chan_h323.c	2009-03-25 15:21:12.000000000 +0100
-+++ asterisk-1.4.24/channels/chan_h323.c	2009-03-25 15:31:18.000000000 +0100
+--- asterisk-1.4.24.orig/channels/chan_h323.c	2009-05-27 12:56:37.000000000 +0200
++++ asterisk-1.4.24/channels/chan_h323.c	2009-05-27 12:58:33.000000000 +0200
 @@ -614,18 +614,18 @@
  	/* make sure null terminated */
  	called_addr[sizeof(called_addr) - 1] = '\0';
@@ -707,8 +707,8 @@ Index: asterisk-1.4.24/channels/chan_h323.c
  		if (!strcasecmp(addr, "UNKNOWN"))
 Index: asterisk-1.4.24/channels/chan_iax2.c
 ===================================================================
---- asterisk-1.4.24.orig/channels/chan_iax2.c	2009-03-25 15:21:12.000000000 +0100
-+++ asterisk-1.4.24/channels/chan_iax2.c	2009-03-25 15:31:18.000000000 +0100
+--- asterisk-1.4.24.orig/channels/chan_iax2.c	2009-05-27 12:56:37.000000000 +0200
++++ asterisk-1.4.24/channels/chan_iax2.c	2009-05-27 12:58:33.000000000 +0200
 @@ -270,6 +270,8 @@
  						     response, so that we've achieved a three-way handshake with
  						     them before sending voice or anything else*/
@@ -975,8 +975,8 @@ Index: asterisk-1.4.24/channels/chan_iax2.c
  		v = v->next;
 Index: asterisk-1.4.24/channels/chan_local.c
 ===================================================================
---- asterisk-1.4.24.orig/channels/chan_local.c	2009-03-25 15:21:12.000000000 +0100
-+++ asterisk-1.4.24/channels/chan_local.c	2009-03-25 15:31:18.000000000 +0100
+--- asterisk-1.4.24.orig/channels/chan_local.c	2009-05-27 12:56:38.000000000 +0200
++++ asterisk-1.4.24/channels/chan_local.c	2009-05-27 12:58:33.000000000 +0200
 @@ -480,15 +480,19 @@
  	 * Note that cid_num and cid_name aren't passed in the ast_channel_alloc
  	 * call, so it's done here instead.
@@ -1008,8 +1008,8 @@ Index: asterisk-1.4.24/channels/chan_local.c
  	ast_string_field_set(p->chan, musicclass, p->owner->musicclass);
 Index: asterisk-1.4.24/channels/chan_mgcp.c
 ===================================================================
---- asterisk-1.4.24.orig/channels/chan_mgcp.c	2009-03-25 15:21:12.000000000 +0100
-+++ asterisk-1.4.24/channels/chan_mgcp.c	2009-03-25 15:31:18.000000000 +0100
+--- asterisk-1.4.24.orig/channels/chan_mgcp.c	2009-05-27 12:56:38.000000000 +0200
++++ asterisk-1.4.24/channels/chan_mgcp.c	2009-05-27 12:58:33.000000000 +0200
 @@ -893,7 +893,7 @@
  			transmit_modify_request(sub->next);
  		}
@@ -1021,8 +1021,8 @@ Index: asterisk-1.4.24/channels/chan_mgcp.c
  		if (sub->next->owner && !ast_strlen_zero(sub->next->cxident) && !ast_strlen_zero(sub->next->callid)) {
 Index: asterisk-1.4.24/channels/chan_misdn.c
 ===================================================================
---- asterisk-1.4.24.orig/channels/chan_misdn.c	2009-03-25 15:21:12.000000000 +0100
-+++ asterisk-1.4.24/channels/chan_misdn.c	2009-03-25 15:31:18.000000000 +0100
+--- asterisk-1.4.24.orig/channels/chan_misdn.c	2009-05-27 12:56:38.000000000 +0200
++++ asterisk-1.4.24/channels/chan_misdn.c	2009-05-27 12:58:33.000000000 +0200
 @@ -2208,11 +2208,11 @@
  		ast_copy_string(newbc->dad, ext, sizeof(newbc->dad));
  	}
@@ -1041,8 +1041,8 @@ Index: asterisk-1.4.24/channels/chan_misdn.c
  	newbc->capability = ast->transfercapability;
 Index: asterisk-1.4.24/channels/chan_phone.c
 ===================================================================
---- asterisk-1.4.24.orig/channels/chan_phone.c	2009-03-25 15:21:12.000000000 +0100
-+++ asterisk-1.4.24/channels/chan_phone.c	2009-03-25 15:31:19.000000000 +0100
+--- asterisk-1.4.24.orig/channels/chan_phone.c	2009-05-27 12:56:38.000000000 +0200
++++ asterisk-1.4.24/channels/chan_phone.c	2009-05-27 12:58:33.000000000 +0200
 @@ -311,13 +311,13 @@
  		snprintf(cid.min, sizeof(cid.min),     "%02d", tm.tm_min);
  	}
@@ -1063,8 +1063,8 @@ Index: asterisk-1.4.24/channels/chan_phone.c
  
 Index: asterisk-1.4.24/channels/chan_sip.c
 ===================================================================
---- asterisk-1.4.24.orig/channels/chan_sip.c	2009-03-25 15:31:16.000000000 +0100
-+++ asterisk-1.4.24/channels/chan_sip.c	2009-03-25 15:31:19.000000000 +0100
+--- asterisk-1.4.24.orig/channels/chan_sip.c	2009-05-27 12:58:31.000000000 +0200
++++ asterisk-1.4.24/channels/chan_sip.c	2009-05-27 12:58:33.000000000 +0200
 @@ -197,8 +197,6 @@
  #define MAX(a,b) ((a) > (b) ? (a) : (b))
  #endif
@@ -1448,7 +1448,7 @@ Index: asterisk-1.4.24/channels/chan_sip.c
  /*! \brief Convert registration state status to string */
  static char *regstate2str(enum sipregistrystate regstate)
  {
-@@ -9077,6 +9119,113 @@
+@@ -9102,6 +9144,113 @@
  	return res;
  }
  
@@ -1562,7 +1562,7 @@ Index: asterisk-1.4.24/channels/chan_sip.c
  /*! \brief Get referring dnis */
  static int get_rdnis(struct sip_pvt *p, struct sip_request *oreq)
  {
-@@ -9612,38 +9761,6 @@
+@@ -9637,38 +9786,6 @@
  	return output;
  }
  
@@ -1601,7 +1601,7 @@ Index: asterisk-1.4.24/channels/chan_sip.c
  /*! \brief  Check if matching user or peer is defined 
   	Match user on From: user name and peer on IP/port
  	This is used on first invite (not re-invites) and subscribe requests 
-@@ -9657,8 +9774,6 @@
+@@ -9682,8 +9799,6 @@
  	struct sip_peer *peer;
  	char from[256], *c;
  	char *of;
@@ -1610,7 +1610,7 @@ Index: asterisk-1.4.24/channels/chan_sip.c
  	enum check_auth_result res = AUTH_SUCCESSFUL;
  	char *t;
  	char calleridname[50];
-@@ -9680,11 +9795,6 @@
+@@ -9705,11 +9820,6 @@
  	if (calleridname[0])
  		ast_string_field_set(p, cid_name, calleridname);
  
@@ -1622,7 +1622,7 @@ Index: asterisk-1.4.24/channels/chan_sip.c
  	of = get_in_brackets(from);
  	if (ast_strlen_zero(p->exten)) {
  		t = uri2;
-@@ -9741,18 +9851,8 @@
+@@ -9766,18 +9876,8 @@
  			ast_rtp_codec_setpref(p->rtp, &p->prefs);
  			p->autoframing = user->autoframing;
  		}
@@ -1643,7 +1643,7 @@ Index: asterisk-1.4.24/channels/chan_sip.c
  
  		if (!(res = check_auth(p, req, user->name, user->secret, user->md5secret, sipmethod, uri2, reliable, ast_test_flag(req, SIP_PKT_IGNORE)))) {
  			if (sip_cancel_destroy(p))
-@@ -9768,14 +9868,18 @@
+@@ -9793,14 +9893,18 @@
  				ast_set_flag(&p->flags[0], SIP_CALL_LIMIT);
  			if (!ast_strlen_zero(user->context))
  				ast_string_field_set(p, context, user->context);
@@ -1669,7 +1669,7 @@ Index: asterisk-1.4.24/channels/chan_sip.c
  			ast_string_field_set(p, username, user->name);
  			ast_string_field_set(p, peername, user->name);
  			ast_string_field_set(p, peersecret, user->secret);
-@@ -9789,9 +9893,6 @@
+@@ -9814,9 +9918,6 @@
  			p->amaflags = user->amaflags;
  			p->callgroup = user->callgroup;
  			p->pickupgroup = user->pickupgroup;
@@ -1679,7 +1679,7 @@ Index: asterisk-1.4.24/channels/chan_sip.c
  			/* Set default codec settings for this call */
  			p->capability = user->capability;		/* User codec choice */
  			p->jointcapability = user->capability;		/* Our codecs */
-@@ -9852,15 +9953,6 @@
+@@ -9877,15 +9978,6 @@
  			if (p->sipoptions)
  				peer->sipoptions = p->sipoptions;
  
@@ -1695,7 +1695,7 @@ Index: asterisk-1.4.24/channels/chan_sip.c
  			do_setnat(p, ast_test_flag(&p->flags[0], SIP_NAT_ROUTE));
  
  			ast_string_field_set(p, peersecret, peer->secret);
-@@ -9905,14 +9997,18 @@
+@@ -9930,14 +10022,18 @@
  					/* XXX this takes the name from the caller... can we override ? */
  					ast_string_field_set(p, authname, peer->username);
  				}
@@ -1721,7 +1721,7 @@ Index: asterisk-1.4.24/channels/chan_sip.c
  				ast_string_field_set(p, fullcontact, peer->fullcontact);
  				if (!ast_strlen_zero(peer->context))
  					ast_string_field_set(p, context, peer->context);
-@@ -9953,14 +10049,9 @@
+@@ -9978,14 +10074,9 @@
  					res = AUTH_FAKE_AUTH; /* reject with fake authorization request */
  				else
  					res = AUTH_SECRET_FAILED; /* we don't want any guests, authentication will fail */
@@ -1739,7 +1739,7 @@ Index: asterisk-1.4.24/channels/chan_sip.c
  		}
  
  	}
-@@ -12446,6 +12537,9 @@
+@@ -12471,6 +12562,9 @@
  		if (!ast_test_flag(req, SIP_PKT_IGNORE) && (p->invitestate != INV_CANCELLED) && sip_cancel_destroy(p))
  			ast_log(LOG_WARNING, "Unable to cancel SIP destruction.  Expect bad things.\n");
  		if (!ast_test_flag(req, SIP_PKT_IGNORE) && p->owner) {
@@ -1749,7 +1749,7 @@ Index: asterisk-1.4.24/channels/chan_sip.c
  			ast_queue_control(p->owner, AST_CONTROL_RINGING);
  			if (p->owner->_state != AST_STATE_UP) {
  				ast_setstate(p->owner, AST_STATE_RINGING);
-@@ -12466,6 +12560,12 @@
+@@ -12491,6 +12585,12 @@
  	case 183:	/* Session progress */
  		if (!ast_test_flag(req, SIP_PKT_IGNORE) && (p->invitestate != INV_CANCELLED) && sip_cancel_destroy(p))
  			ast_log(LOG_WARNING, "Unable to cancel SIP destruction.  Expect bad things.\n");
@@ -1762,7 +1762,7 @@ Index: asterisk-1.4.24/channels/chan_sip.c
  		/* Ignore 183 Session progress without SDP */
  		if (find_sdp(req)) {
  			if (p->invitestate != INV_CANCELLED)
-@@ -13062,7 +13162,7 @@
+@@ -13090,7 +13190,7 @@
  			break;
  		case 200:	/* 200 OK */
  			p->authtries = 0;	/* Reset authentication counter */
@@ -1771,7 +1771,7 @@ Index: asterisk-1.4.24/channels/chan_sip.c
  				/* We successfully transmitted a message 
  					or a video update request in INFO */
  				/* Nothing happens here - the message is inside a dialog */
-@@ -14594,6 +14694,10 @@
+@@ -14622,6 +14722,10 @@
  			parse_ok_contact(p, req);
  		} else {	/* Re-invite on existing call */
  			ast_clear_flag(&p->flags[0], SIP_OUTGOING);	/* This is now an inbound dialog */
@@ -1782,7 +1782,7 @@ Index: asterisk-1.4.24/channels/chan_sip.c
  			/* Handle SDP here if we already have an owner */
  			if (find_sdp(req)) {
  				if (process_sdp(p, req)) {
-@@ -15082,6 +15186,25 @@
+@@ -15110,6 +15214,25 @@
  				ast_log(LOG_DEBUG, "SIP attended transfer: Unlocking channel %s\n", targetcall_pvt->owner->name);
  			ast_channel_unlock(targetcall_pvt->owner);
  		}
@@ -1808,7 +1808,7 @@ Index: asterisk-1.4.24/channels/chan_sip.c
  	}
  	return 1;
  }
-@@ -16052,11 +16175,11 @@
+@@ -16080,11 +16203,11 @@
  				ast_log(LOG_DEBUG, "That's odd...  Got a response on a call we dont know about. Cseq %d Cmd %s\n", seqno, cmd);
  			ast_set_flag(&p->flags[0], SIP_NEEDDESTROY);
  			return 0;
@@ -1822,7 +1822,7 @@ Index: asterisk-1.4.24/channels/chan_sip.c
  			/* ignore means "don't do anything with it" but still have to 
  			   respond appropriately  */
  			ignore = TRUE;
-@@ -17174,6 +17297,9 @@
+@@ -17207,6 +17330,9 @@
  	} else if (!strcasecmp(v->name, "t38pt_usertpsource")) {
  		ast_set_flag(&mask[1], SIP_PAGE2_UDPTL_DESTINATION);
  		ast_set2_flag(&flags[1], ast_true(v->value), SIP_PAGE2_UDPTL_DESTINATION);
@@ -1834,8 +1834,8 @@ Index: asterisk-1.4.24/channels/chan_sip.c
  
 Index: asterisk-1.4.24/channels/chan_skinny.c
 ===================================================================
---- asterisk-1.4.24.orig/channels/chan_skinny.c	2009-03-25 15:21:12.000000000 +0100
-+++ asterisk-1.4.24/channels/chan_skinny.c	2009-03-25 15:31:19.000000000 +0100
+--- asterisk-1.4.24.orig/channels/chan_skinny.c	2009-05-27 12:56:38.000000000 +0200
++++ asterisk-1.4.24/channels/chan_skinny.c	2009-05-27 12:58:33.000000000 +0200
 @@ -1780,6 +1780,50 @@
  	}
  }
@@ -1953,8 +1953,8 @@ Index: asterisk-1.4.24/channels/chan_skinny.c
  		return -1; /* Tell asterisk to provide inband signalling */
 Index: asterisk-1.4.24/channels/iax2-parser.c
 ===================================================================
---- asterisk-1.4.24.orig/channels/iax2-parser.c	2009-03-25 15:21:12.000000000 +0100
-+++ asterisk-1.4.24/channels/iax2-parser.c	2009-03-25 15:31:19.000000000 +0100
+--- asterisk-1.4.24.orig/channels/iax2-parser.c	2009-05-27 12:56:38.000000000 +0200
++++ asterisk-1.4.24/channels/iax2-parser.c	2009-05-27 12:58:33.000000000 +0200
 @@ -477,7 +477,9 @@
  		"PROCDNG",
  		"HOLD   ",
@@ -1969,7 +1969,7 @@ Index: asterisk-1.4.24/channels/iax2-parser.c
 Index: asterisk-1.4.24/funcs/func_connectedline.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.4.24/funcs/func_connectedline.c	2009-03-25 15:31:19.000000000 +0100
++++ asterisk-1.4.24/funcs/func_connectedline.c	2009-05-27 12:58:33.000000000 +0200
 @@ -0,0 +1,131 @@
 +/*
 + * Asterisk -- An open source telephony toolkit.
@@ -2104,8 +2104,8 @@ Index: asterisk-1.4.24/funcs/func_connectedline.c
 +AST_MODULE_INFO_STANDARD(ASTERISK_GPL_KEY, "Connected Line dialplan function");
 Index: asterisk-1.4.24/include/asterisk/channel.h
 ===================================================================
---- asterisk-1.4.24.orig/include/asterisk/channel.h	2009-03-25 15:21:12.000000000 +0100
-+++ asterisk-1.4.24/include/asterisk/channel.h	2009-03-25 15:31:19.000000000 +0100
+--- asterisk-1.4.24.orig/include/asterisk/channel.h	2009-05-27 12:56:38.000000000 +0200
++++ asterisk-1.4.24/include/asterisk/channel.h	2009-05-27 12:58:33.000000000 +0200
 @@ -197,6 +197,23 @@
  	int cid_tns;		/*!< Callerid Transit Network Select */
  };
@@ -2184,8 +2184,8 @@ Index: asterisk-1.4.24/include/asterisk/channel.h
  }
 Index: asterisk-1.4.24/include/asterisk/frame.h
 ===================================================================
---- asterisk-1.4.24.orig/include/asterisk/frame.h	2009-03-25 15:21:12.000000000 +0100
-+++ asterisk-1.4.24/include/asterisk/frame.h	2009-03-25 15:31:19.000000000 +0100
+--- asterisk-1.4.24.orig/include/asterisk/frame.h	2009-05-27 12:56:38.000000000 +0200
++++ asterisk-1.4.24/include/asterisk/frame.h	2009-05-27 12:58:33.000000000 +0200
 @@ -86,6 +86,7 @@
  	\arg \b UNHOLD	Call is back from hold
  	\arg \b VIDUPDATE	Video update requested
@@ -2204,8 +2204,8 @@ Index: asterisk-1.4.24/include/asterisk/frame.h
  #define AST_SMOOTHER_FLAG_G729		(1 << 0)
 Index: asterisk-1.4.24/main/channel.c
 ===================================================================
---- asterisk-1.4.24.orig/main/channel.c	2009-03-25 15:30:40.000000000 +0100
-+++ asterisk-1.4.24/main/channel.c	2009-03-25 15:31:19.000000000 +0100
+--- asterisk-1.4.24.orig/main/channel.c	2009-05-27 12:56:38.000000000 +0200
++++ asterisk-1.4.24/main/channel.c	2009-05-27 12:58:33.000000000 +0200
 @@ -1217,6 +1217,20 @@
  		free(cid->cid_rdnis);
  }
@@ -2470,8 +2470,8 @@ Index: asterisk-1.4.24/main/channel.c
 +}
 Index: asterisk-1.4.24/main/dial.c
 ===================================================================
---- asterisk-1.4.24.orig/main/dial.c	2009-03-25 15:21:12.000000000 +0100
-+++ asterisk-1.4.24/main/dial.c	2009-03-25 15:31:19.000000000 +0100
+--- asterisk-1.4.24.orig/main/dial.c	2009-05-27 12:56:38.000000000 +0200
++++ asterisk-1.4.24/main/dial.c	2009-05-27 12:58:33.000000000 +0200
 @@ -363,6 +363,11 @@
  				ast_verbose (VERBOSE_PREFIX_3 "%s requested a source update, passing it to %s\n", channel->owner->name, chan->name);
  			ast_indicate(chan, AST_CONTROL_SRCUPDATE);
@@ -2486,8 +2486,8 @@ Index: asterisk-1.4.24/main/dial.c
  				ast_verbose (VERBOSE_PREFIX_3 "%s is proceeding, passing it to %s\n", channel->owner->name, chan->name);
 Index: asterisk-1.4.24/main/rtp.c
 ===================================================================
---- asterisk-1.4.24.orig/main/rtp.c	2009-03-25 15:21:12.000000000 +0100
-+++ asterisk-1.4.24/main/rtp.c	2009-03-25 15:31:19.000000000 +0100
+--- asterisk-1.4.24.orig/main/rtp.c	2009-05-27 12:56:38.000000000 +0200
++++ asterisk-1.4.24/main/rtp.c	2009-05-27 12:58:33.000000000 +0200
 @@ -3034,7 +3034,8 @@
  			if ((fr->subclass == AST_CONTROL_HOLD) ||
  			    (fr->subclass == AST_CONTROL_UNHOLD) ||
@@ -2510,8 +2510,8 @@ Index: asterisk-1.4.24/main/rtp.c
  					if (p0_callback)
 Index: asterisk-1.4.24/res/res_features.c
 ===================================================================
---- asterisk-1.4.24.orig/res/res_features.c	2009-03-25 15:27:14.000000000 +0100
-+++ asterisk-1.4.24/res/res_features.c	2009-03-25 15:31:19.000000000 +0100
+--- asterisk-1.4.24.orig/res/res_features.c	2009-05-27 12:56:38.000000000 +0200
++++ asterisk-1.4.24/res/res_features.c	2009-05-27 12:58:33.000000000 +0200
 @@ -2820,7 +2820,9 @@
  	}
  	if (cur) {

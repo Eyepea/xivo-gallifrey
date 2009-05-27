@@ -11,8 +11,8 @@
 
 Index: asterisk-1.4.24/channels/chan_local.c
 ===================================================================
---- asterisk-1.4.24.orig/channels/chan_local.c		2009-05-26 12:09:41.000000000 +0200
-+++ asterisk-1.4.24/channels/chan_local.c		2009-05-26 12:10:15.000000000 +0200
+--- asterisk-1.4.24.orig/channels/chan_local.c	2009-05-27 12:58:33.000000000 +0200
++++ asterisk-1.4.24/channels/chan_local.c	2009-05-27 12:58:36.000000000 +0200
 @@ -372,7 +372,9 @@
  		ast_moh_stop(ast);
  	} else {

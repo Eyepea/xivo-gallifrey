@@ -11,9 +11,9 @@
 
 Index: asterisk-1.4.24/channels/chan_sip.c
 ===================================================================
---- asterisk-1.4.24.orig/channels/chan_sip.c	2009-03-25 15:31:14.000000000 +0100
-+++ asterisk-1.4.24/channels/chan_sip.c	2009-03-25 15:31:16.000000000 +0100
-@@ -16451,6 +16451,20 @@
+--- asterisk-1.4.24.orig/channels/chan_sip.c	2009-05-27 12:58:29.000000000 +0200
++++ asterisk-1.4.24/channels/chan_sip.c	2009-05-27 12:58:31.000000000 +0200
+@@ -16479,6 +16479,20 @@
  	if (peer->mwipvt) {
  		/* Base message on subscription */
  		p = peer->mwipvt;

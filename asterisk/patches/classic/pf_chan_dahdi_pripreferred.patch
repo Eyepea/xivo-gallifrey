@@ -12,8 +12,8 @@
 
 Index: asterisk-1.4.24/channels/chan_dahdi.c
 ===================================================================
---- asterisk-1.4.24.orig/channels/chan_dahdi.c	2009-03-27 16:52:53.000000000 +0100
-+++ asterisk-1.4.24/channels/chan_dahdi.c	2009-03-27 19:32:21.000000000 +0100
+--- asterisk-1.4.24.orig/channels/chan_dahdi.c	2009-05-27 12:58:33.000000000 +0200
++++ asterisk-1.4.24/channels/chan_dahdi.c	2009-05-27 12:58:39.000000000 +0200
 @@ -589,6 +589,13 @@
  	 */
  	unsigned int priexclusive:1;

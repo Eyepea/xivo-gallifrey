@@ -15,8 +15,8 @@
 
 Index: asterisk-1.4.24/apps/app_dial.c
 ===================================================================
---- asterisk-1.4.24.orig/apps/app_dial.c	2009-01-30 18:47:41.000000000 +0100
-+++ asterisk-1.4.24/apps/app_dial.c	2009-03-25 15:21:12.000000000 +0100
+--- asterisk-1.4.24.orig/apps/app_dial.c	2009-05-27 12:17:59.000000000 +0200
++++ asterisk-1.4.24/apps/app_dial.c	2009-05-27 12:56:37.000000000 +0200
 @@ -395,16 +395,21 @@
  static void senddialevent(struct ast_channel *src, struct ast_channel *dst)
  {
@@ -51,8 +51,8 @@ Index: asterisk-1.4.24/apps/app_dial.c
  static struct ast_channel *wait_for_answer(struct ast_channel *in, struct dial_localuser *outgoing, int *to, struct ast_flags *peerflags, int *sentringing, char *status, size_t statussize, int busystart, int nochanstart, int congestionstart, int priority_jump, int *result)
 Index: asterisk-1.4.24/apps/app_meetme.c
 ===================================================================
---- asterisk-1.4.24.orig/apps/app_meetme.c	2009-03-03 00:34:13.000000000 +0100
-+++ asterisk-1.4.24/apps/app_meetme.c	2009-03-25 13:58:52.000000000 +0100
+--- asterisk-1.4.24.orig/apps/app_meetme.c	2009-05-27 12:17:59.000000000 +0200
++++ asterisk-1.4.24/apps/app_meetme.c	2009-05-27 12:18:03.000000000 +0200
 @@ -1818,11 +1818,22 @@
  
  	if (!sent_event) {
@@ -203,8 +203,8 @@ Index: asterisk-1.4.24/apps/app_meetme.c
  	res |= ast_register_application(app, conf_exec, synopsis, descrip);
 Index: asterisk-1.4.24/main/manager.c
 ===================================================================
---- asterisk-1.4.24.orig/main/manager.c	2009-03-25 13:58:52.000000000 +0100
-+++ asterisk-1.4.24/main/manager.c	2009-03-25 13:58:52.000000000 +0100
+--- asterisk-1.4.24.orig/main/manager.c	2009-05-27 12:17:59.000000000 +0200
++++ asterisk-1.4.24/main/manager.c	2009-05-27 12:18:03.000000000 +0200
 @@ -1564,49 +1564,53 @@
  				elapsed_seconds = now.tv_sec - c->cdr->start.tv_sec;
  			}
@@ -302,8 +302,8 @@ Index: asterisk-1.4.24/main/manager.c
  		if (!all)
 Index: asterisk-1.4.24/res/res_features.c
 ===================================================================
---- asterisk-1.4.24.orig/res/res_features.c	2009-03-25 13:58:52.000000000 +0100
-+++ asterisk-1.4.24/res/res_features.c	2009-03-25 15:27:14.000000000 +0100
+--- asterisk-1.4.24.orig/res/res_features.c	2009-05-27 12:17:59.000000000 +0200
++++ asterisk-1.4.24/res/res_features.c	2009-05-27 12:56:38.000000000 +0200
 @@ -421,7 +421,7 @@
  {
  	struct ast_context *con;
@@ -423,9 +423,95 @@ Index: asterisk-1.4.24/res/res_features.c
  	}
 Index: asterisk-1.4.24/channels/chan_sip.c
 ===================================================================
---- asterisk-1.4.24.orig/channels/chan_sip.c	2009-03-25 13:58:52.000000000 +0100
-+++ asterisk-1.4.24/channels/chan_sip.c	2009-03-25 15:21:21.000000000 +0100
-@@ -15042,6 +15042,19 @@
+--- asterisk-1.4.24.orig/channels/chan_sip.c	2009-05-27 12:17:59.000000000 +0200
++++ asterisk-1.4.24/channels/chan_sip.c	2009-05-27 12:58:03.000000000 +0200
+@@ -8158,7 +8158,12 @@
+ 
+ 	destroy_association(peer);	/* remove registration data from storage */
+ 	
+-	manager_event(EVENT_FLAG_SYSTEM, "PeerStatus", "Peer: SIP/%s\r\nPeerStatus: Unregistered\r\nCause: Expired\r\n", peer->name);
++	manager_event(EVENT_FLAG_SYSTEM,
++                      "PeerStatus",
++                      "Peer: SIP/%s\r\n"
++                      "PeerStatus: Unregistered\r\n"
++                      "Cause: Expired\r\n",
++                      peer->name);
+ 	register_peer_exten(peer, FALSE);	/* Remove regexten */
+ 	peer->expire = -1;
+ 	ast_device_state_changed("SIP/%s", peer->name);
+@@ -8419,7 +8424,11 @@
+ 		if (option_verbose > 2)
+ 			ast_verbose(VERBOSE_PREFIX_3 "Unregistered SIP '%s'\n", peer->name);
+ 
+-		manager_event(EVENT_FLAG_SYSTEM, "PeerStatus", "Peer: SIP/%s\r\nPeerStatus: Unregistered\r\n", peer->name);
++		manager_event(EVENT_FLAG_SYSTEM,
++                              "PeerStatus",
++                              "Peer: SIP/%s\r\n"
++                              "PeerStatus: Unregistered\r\n",
++                              peer->name);
+ 		return PARSE_REGISTER_UPDATE;
+ 	}
+ 
+@@ -8506,8 +8515,7 @@
+ 	snprintf(data, sizeof(data), "%s:%d:%d:%s:%s", ast_inet_ntoa(peer->addr.sin_addr), ntohs(peer->addr.sin_port), expiry, peer->username, peer->fullcontact);
+ 	if (!ast_test_flag(&peer->flags[1], SIP_PAGE2_RT_FROMCONTACT)) 
+ 		ast_db_put("SIP/Registry", peer->name, data);
+-	manager_event(EVENT_FLAG_SYSTEM, "PeerStatus", "Peer: SIP/%s\r\nPeerStatus: Registered\r\n", peer->name);
+-
++        
+ 	/* Is this a new IP address for us? */
+ 	if (option_verbose > 2 && inaddrcmp(&peer->addr, &oldsin)) {
+ 		ast_verbose(VERBOSE_PREFIX_3 "Registered SIP '%s' at %s port %d\n", peer->name, ast_inet_ntoa(peer->addr.sin_addr), ntohs(peer->addr.sin_port));
+@@ -8522,6 +8530,19 @@
+ 		if (option_verbose > 3)
+ 			ast_verbose(VERBOSE_PREFIX_3 "Saved useragent \"%s\" for peer %s\n", peer->useragent, peer->name);  
+ 	}
++        
++	manager_event(EVENT_FLAG_SYSTEM,
++                      "PeerStatus",
++                      "Peer: SIP/%s\r\n"
++                      "PeerStatus: Registered\r\n"
++                      "PeerIP: %s\r\n"
++                      "PeerPort: %d\r\n"
++                      "UserAgent: %s\r\n",
++                      peer->name,
++                      ast_inet_ntoa(peer->addr.sin_addr),
++                      ntohs(peer->addr.sin_port),
++                      useragent);
++        
+ 	return PARSE_REGISTER_UPDATE;
+ }
+ 
+@@ -9030,7 +9051,11 @@
+ 			case PARSE_REGISTER_UPDATE:
+ 				/* Say OK and ask subsystem to retransmit msg counter */
+ 				transmit_response_with_date(p, "200 OK", req);
+-				manager_event(EVENT_FLAG_SYSTEM, "PeerStatus", "Peer: SIP/%s\r\nPeerStatus: Registered\r\n", peer->name);
++				manager_event(EVENT_FLAG_SYSTEM,
++                                              "PeerStatus",
++                                              "Peer: SIP/%s\r\n"
++                                              "PeerStatus: Registered\r\n",
++                                              peer->name);
+ 				peer->lastmsgssent = -1;
+ 				res = 0;
+ 				break;
+@@ -12948,9 +12973,12 @@
+ 			peer->name, s, pingtime, peer->maxms);
+ 		ast_device_state_changed("SIP/%s", peer->name);
+ 		ast_update_realtime("sippeers", "name", peer->name, "lastms", str_lastms, NULL);
+-		manager_event(EVENT_FLAG_SYSTEM, "PeerStatus",
+-			"Peer: SIP/%s\r\nPeerStatus: %s\r\nTime: %d\r\n",
+-			peer->name, s, pingtime);
++		manager_event(EVENT_FLAG_SYSTEM,
++                              "PeerStatus",
++                              "Peer: SIP/%s\r\n"
++                              "PeerStatus: %s\r\n"
++                              "Time: %d\r\n",
++                              peer->name, s, pingtime);
+ 	}
+ 
+ 	if (!AST_SCHED_DEL(sched, peer->pokeexpire)) {
+@@ -15042,6 +15070,19 @@
  	ast_set_flag(&transferer->flags[0], SIP_DEFER_BYE_ON_TRANSFER);	/* Delay hangup */
  
  	/* Perform the transfer */
@@ -445,7 +531,7 @@ Index: asterisk-1.4.24/channels/chan_sip.c
  	res = attempt_transfer(current, &target);
  	ast_mutex_unlock(&targetcall_pvt->lock);
  	if (res) {
-@@ -15308,6 +15321,22 @@
+@@ -15308,6 +15349,22 @@
  		ast_clear_flag(&p->flags[0], SIP_GOTREFER);	
  		p->refer->status = REFER_200OK;
  		append_history(p, "Xfer", "REFER to call parking.");
@@ -468,7 +554,7 @@ Index: asterisk-1.4.24/channels/chan_sip.c
  		if (sipdebug && option_debug > 3)
  			ast_log(LOG_DEBUG, "SIP transfer to parking: trying to park %s. Parked by %s\n", current.chan2->name, current.chan1->name);
  		sip_park(current.chan2, current.chan1, req, seqno);
-@@ -15379,6 +15408,22 @@
+@@ -15379,6 +15436,22 @@
  	res = ast_async_goto(current.chan2, p->refer->refer_to_context, p->refer->refer_to, 1);
  
  	if (!res) {
@@ -491,10 +577,24 @@ Index: asterisk-1.4.24/channels/chan_sip.c
  		/* Success  - we have a new channel */
  		if (option_debug > 2)
  			ast_log(LOG_DEBUG, "%s transfer succeeded. Telling transferer.\n", p->refer->attendedtransfer? "Attended" : "Blind");
+@@ -16657,7 +16730,12 @@
+ 	if (peer->lastms > -1) {
+ 		ast_log(LOG_NOTICE, "Peer '%s' is now UNREACHABLE!  Last qualify: %d\n", peer->name, peer->lastms);
+ 		ast_update_realtime("sippeers", "name", peer->name, "lastms", "-1", NULL);
+-		manager_event(EVENT_FLAG_SYSTEM, "PeerStatus", "Peer: SIP/%s\r\nPeerStatus: Unreachable\r\nTime: %d\r\n", peer->name, -1);
++		manager_event(EVENT_FLAG_SYSTEM,
++                              "PeerStatus",
++                              "Peer: SIP/%s\r\n"
++                              "PeerStatus: Unreachable\r\n"
++                              "Time: %d\r\n",
++                              peer->name, -1);
+ 	}
+ 	if (peer->call)
+ 		sip_destroy(peer->call);
 Index: asterisk-1.4.24/main/channel.c
 ===================================================================
---- asterisk-1.4.24.orig/main/channel.c	2009-03-25 13:58:52.000000000 +0100
-+++ asterisk-1.4.24/main/channel.c	2009-03-25 15:30:40.000000000 +0100
+--- asterisk-1.4.24.orig/main/channel.c	2009-05-27 12:17:59.000000000 +0200
++++ asterisk-1.4.24/main/channel.c	2009-05-27 12:56:38.000000000 +0200
 @@ -978,6 +978,12 @@
  		chan->_softhangup |= AST_SOFTHANGUP_DEV;
  		ast_channel_unlock(chan);
@@ -647,8 +747,8 @@ Index: asterisk-1.4.24/main/channel.c
  
 Index: asterisk-1.4.24/apps/app_queue.c
 ===================================================================
---- asterisk-1.4.24.orig/apps/app_queue.c	2009-03-03 23:48:18.000000000 +0100
-+++ asterisk-1.4.24/apps/app_queue.c	2009-03-25 15:29:52.000000000 +0100
+--- asterisk-1.4.24.orig/apps/app_queue.c	2009-05-27 12:17:59.000000000 +0200
++++ asterisk-1.4.24/apps/app_queue.c	2009-05-27 12:56:37.000000000 +0200
 @@ -616,17 +616,19 @@
  				}
  
@@ -949,8 +1049,8 @@ Index: asterisk-1.4.24/apps/app_queue.c
  		ast_mutex_unlock(&q->lock);
 Index: asterisk-1.4.24/res/res_agi.c
 ===================================================================
---- asterisk-1.4.24.orig/res/res_agi.c	2009-03-25 13:58:52.000000000 +0100
-+++ asterisk-1.4.24/res/res_agi.c	2009-03-25 13:58:52.000000000 +0100
+--- asterisk-1.4.24.orig/res/res_agi.c	2009-05-27 12:17:59.000000000 +0200
++++ asterisk-1.4.24/res/res_agi.c	2009-05-27 12:18:03.000000000 +0200
 @@ -414,6 +414,7 @@
  	/* ANI/DNIS */
  	fdprintf(fd, "agi_callerid: %s\n", S_OR(chan->cid.cid_num, "unknown"));

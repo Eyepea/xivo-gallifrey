@@ -9,9 +9,9 @@
 
 Index: asterisk-1.4.24/channels/chan_sip.c
 ===================================================================
---- asterisk-1.4.24.orig/channels/chan_sip.c	2009-04-15 19:15:17.000000000 +0200
-+++ asterisk-1.4.24/channels/chan_sip.c		2009-04-15 19:15:11.000000000 +0200
-@@ -14434,7 +14434,10 @@
+--- asterisk-1.4.24.orig/channels/chan_sip.c	2009-05-27 12:58:33.000000000 +0200
++++ asterisk-1.4.24/channels/chan_sip.c	2009-05-27 12:58:44.000000000 +0200
+@@ -14462,7 +14462,10 @@
  		return -1;
  	}
  
@@ -23,7 +23,7 @@ Index: asterisk-1.4.24/channels/chan_sip.c
  
  	/* There is no point in capturing the return value since pickup_exec
  	   doesn't return anything meaningful unless the passed data is an empty
-@@ -14614,8 +14617,18 @@
+@@ -14642,8 +14645,18 @@
  					error = 1;
  				} else {
  					ast_log(LOG_NOTICE, "Trying to pick up %s@%s\n", subscription->exten, subscription->context);
@@ -46,8 +46,8 @@ Index: asterisk-1.4.24/channels/chan_sip.c
  						ast_channel_unlock(subscription->owner);
 Index: asterisk-1.4.24/apps/app_directed_pickup.c
 ===================================================================
---- asterisk-1.4.24.orig/apps/app_directed_pickup.c	2009-04-15 19:06:28.000000000 +0200
-+++ asterisk-1.4.24/apps/app_directed_pickup.c		2009-04-15 19:17:07.000000000 +0200
+--- asterisk-1.4.24.orig/apps/app_directed_pickup.c	2009-05-27 12:58:33.000000000 +0200
++++ asterisk-1.4.24/apps/app_directed_pickup.c	2009-05-27 12:58:44.000000000 +0200
 @@ -115,22 +115,33 @@
  /* Attempt to pick up specified mark */
  static int pickup_by_mark(struct ast_channel *chan, char *mark)

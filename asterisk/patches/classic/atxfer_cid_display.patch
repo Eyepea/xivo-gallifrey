@@ -8,8 +8,8 @@
 
 Index: asterisk-1.4.24/res/res_features.c
 ===================================================================
---- asterisk-1.4.24.orig/res/res_features.c	2009-04-08 16:28:10.000000000 +0200
-+++ asterisk-1.4.24/res/res_features.c	2009-04-08 16:28:38.000000000 +0200
+--- asterisk-1.4.24.orig/res/res_features.c	2009-05-27 12:58:38.000000000 +0200
++++ asterisk-1.4.24/res/res_features.c	2009-05-27 12:58:41.000000000 +0200
 @@ -989,6 +989,7 @@
  		return builtin_parkcall(chan, peer, config, NULL, sense, NULL);
  	}
@@ -66,7 +66,7 @@ Index: asterisk-1.4.24/res/res_features.c
  	return -1;	/* XXX meaning the channel is bridged ? */
  }
  
-@@ -1405,12 +1435,20 @@
+@@ -1405,12 +1430,20 @@
  	struct ast_channel *active_channel;
  	int res = 0, ready = 0;
  	
@@ -87,7 +87,7 @@ Index: asterisk-1.4.24/res/res_features.c
  		if (!ast_call(chan, data, timeout)) {
  			struct timeval started;
  			int x, len = 0;
-@@ -1480,6 +1518,7 @@
+@@ -1480,6 +1513,7 @@
  							ready=1;
  							break;
  						} else if (f->subclass != -1) {
@@ -95,7 +95,7 @@ Index: asterisk-1.4.24/res/res_features.c
  							ast_log(LOG_NOTICE, "Don't know what to do about control frame: %d\n", f->subclass);
  						}
  						/* else who cares */
-@@ -1549,6 +1588,9 @@
+@@ -1549,6 +1583,9 @@
  	if (outstate)
  		*outstate = state;
  
