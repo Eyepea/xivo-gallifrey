@@ -49,7 +49,12 @@ class Linksys(PhoneVendorMixin):
                       ('spa3102', 'SPA-3102'),
                       ('pap2t', 'PAP2T'))
 
-    LINKSYS_MACADDR_PREFIX = ('1:00:0e:08', '1:00:18:f8', '1:00:1c:10', '1:00:1e:e5', '1:00:1d:7e')
+    LINKSYS_MACADDR_PREFIX = ('1:00:0e:08',
+                              '1:00:18:f8',
+                              '1:00:1c:10',
+                              '1:00:1d:7e',
+                              '1:00:1e:e5',
+                              '1:00:21:29')
 
     LINKSYS_COMMON_HTTP_USER = "admin"
     LINKSYS_COMMON_HTTP_PASS = "adminpass"
