@@ -81,6 +81,16 @@ if(isset($error_js[0]) === true)
 		</li>
 		<li id="smenu-tab-2"
 		    class="moo"
+		    onclick="xivo_smenu_click(this,'moc','sb-part-transfer');"
+		    onmouseout="xivo_smenu_out(this,'moo');"
+		    onmouseover="xivo_smenu_over(this,'mov');">
+			<div class="tab">
+				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_transfers');?></a></span>
+			</div>
+			<span class="span-right">&nbsp;</span>
+		</li>
+		<li id="smenu-tab-3"
+		    class="moo"
 		    onclick="xivo_smenu_click(this,'moc','sb-part-voicemail');"
 		    onmouseout="xivo_smenu_out(this,'moo');"
 		    onmouseover="xivo_smenu_over(this,'mov');">
@@ -89,7 +99,7 @@ if(isset($error_js[0]) === true)
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
-		<li id="smenu-tab-3"
+		<li id="smenu-tab-4"
 		    class="moo"
 		    onclick="xivo_smenu_click(this,'moc','sb-part-forward');"
 		    onmouseout="xivo_smenu_out(this,'moo');"
@@ -99,7 +109,7 @@ if(isset($error_js[0]) === true)
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
-		<li id="smenu-tab-4"
+		<li id="smenu-tab-5"
 		    class="moo"
 		    onclick="xivo_smenu_click(this,'moc','sb-part-agent');"
 		    onmouseout="xivo_smenu_out(this,'moo');"
@@ -109,13 +119,23 @@ if(isset($error_js[0]) === true)
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
-		<li id="smenu-tab-5"
+		<li id="smenu-tab-6"
+		    class="moo"
+		    onclick="xivo_smenu_click(this,'moc','sb-part-parking');"
+		    onmouseout="xivo_smenu_out(this,'moo');"
+		    onmouseover="xivo_smenu_over(this,'mov');">
+			<div class="tab">
+				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_parking');?></a></span>
+			</div>
+			<span class="span-right">&nbsp;</span>
+		</li>
+		<li id="smenu-tab-7"
 		    class="moo-last"
 		    onclick="xivo_smenu_click(this,'moc','sb-part-last',1);"
 		    onmouseout="xivo_smenu_out(this,'moo',1);"
 		    onmouseover="xivo_smenu_over(this,'mov',1);">
 			<div class="tab">
-				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_parking');?></a></span>
+				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_advanced');?></a></span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
@@ -133,23 +153,7 @@ if(isset($error_js[0]) === true)
 ?>
 	<div id="sb-part-first">
 <?php
-	echo	$form->text(array('desc'	=> $this->bbf('fm_featuremap_blindxfer'),
-				  'name'	=> 'featuremap[blindxfer]',
-				  'labelid'	=> 'featuremap-blindxfer',
-				  'size'	=> 15,
-				  'value'	=> $this->get_varra('featuremap',array('blindxfer','var_val')),
-				  'default'	=> $element['featuremap']['blindxfer']['default'],
-				  'invalid'	=> isset($invalid['featuremap']['blindxfer']))),
-
-		$form->text(array('desc'	=> $this->bbf('fm_featuremap_atxfer'),
-				  'name'	=> 'featuremap[atxfer]',
-				  'labelid'	=> 'featuremap-atxfer',
-				  'size'	=> 15,
-				  'value'	=> $this->get_varra('featuremap',array('atxfer','var_val')),
-				  'default'	=> $element['featuremap']['atxfer']['default'],
-				  'invalid'	=> isset($invalid['featuremap']['atxfer']))),
-
-		$form->text(array('desc'	=> $this->bbf('fm_featuremap_automon'),
+	echo	$form->text(array('desc'	=> $this->bbf('fm_featuremap_automon'),
 				  'name'	=> 'featuremap[automon]',
 				  'labelid'	=> 'featuremap-automon',
 				  'size'	=> 15,
@@ -170,7 +174,7 @@ if(isset($error_js[0]) === true)
 				      'labelid'	=> 'extenfeatures-enable-recsnd',
 				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('recsnd','commented')) === false))),
 
-		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures_recsnd'),
+		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
 				  'name'	=> 'extenfeatures[recsnd][exten]',
 				  'labelid'	=> 'extenfeatures-recsnd',
 				  'size'	=> 15,
@@ -183,7 +187,7 @@ if(isset($error_js[0]) === true)
 				      'labelid'	=> 'extenfeatures-enable-phonestatus',
 				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('phonestatus','commented')) === false))),
 
-		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures_phonestatus'),
+		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
 				  'name'	=> 'extenfeatures[phonestatus][exten]',
 				  'labelid'	=> 'extenfeatures-phonestatus',
 				  'size'	=> 15,
@@ -196,7 +200,7 @@ if(isset($error_js[0]) === true)
 				      'labelid'	=> 'extenfeatures-enable-enablednd',
 				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('enablednd','commented')) === false))),
 
-		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures_enablednd'),
+		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
 				  'name'	=> 'extenfeatures[enablednd][exten]',
 				  'labelid'	=> 'extenfeatures-enablednd',
 				  'size'	=> 15,
@@ -209,7 +213,7 @@ if(isset($error_js[0]) === true)
 				      'labelid'	=> 'extenfeatures-enable-incallrec',
 				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('incallrec','commented')) === false))),
 
-		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures_incallrec'),
+		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
 				  'name'	=> 'extenfeatures[incallrec][exten]',
 				  'labelid'	=> 'extenfeatures-incallrec',
 				  'size'	=> 15,
@@ -222,7 +226,7 @@ if(isset($error_js[0]) === true)
 				      'labelid'	=> 'extenfeatures-enable-incallfilter',
 				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('incallfilter','commented')) === false))),
 
-		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures_incallfilter'),
+		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
 				  'name'	=> 'extenfeatures[incallfilter][exten]',
 				  'labelid'	=> 'extenfeatures-incallfilter',
 				  'size'	=> 15,
@@ -245,7 +249,7 @@ if(isset($error_js[0]) === true)
 ?>
 		<div class="fm-field">
 <?php
-	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures_pickup'),
+	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
 				  'name'	=> 'extenfeatures[pickup][exten]',
 				  'field'	=> false,
 				  'labelid'	=> 'extenfeatures-pickup',
@@ -268,7 +272,7 @@ if(isset($error_js[0]) === true)
 				      'labelid'	=> 'extenfeatures-enable-calllistening',
 				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('calllistening','commented')) === false))),
 
-		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures_calllistening'),
+		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
 				  'name'	=> 'extenfeatures[calllistening][exten]',
 				  'labelid'	=> 'extenfeatures-calllistening',
 				  'size'	=> 15,
@@ -281,7 +285,7 @@ if(isset($error_js[0]) === true)
 				      'labelid'	=> 'extenfeatures-enable-directoryaccess',
 				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('directoryaccess','commented')) === false))),
 
-		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures_directoryaccess'),
+		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
 				  'name'	=> 'extenfeatures[directoryaccess][exten]',
 				  'labelid'	=> 'extenfeatures-directoryaccess',
 				  'size'	=> 15,
@@ -296,7 +300,7 @@ if(isset($error_js[0]) === true)
 ?>
 		<div class="fm-field">
 <?php
-	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures_bsfilter'),
+	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
 				  'name'	=> 'extenfeatures[bsfilter][exten]',
 				  'field'	=> false,
 				  'labelid'	=> 'extenfeatures-bsfilter',
@@ -319,13 +323,58 @@ if(isset($error_js[0]) === true)
 				      'labelid'	=> 'extenfeatures-enable-guestprov',
 				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('guestprov','commented')) === false))),
 
-		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures_guestprov'),
+		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
 				  'name'	=> 'extenfeatures[guestprov][exten]',
 				  'labelid'	=> 'extenfeatures-guestprov',
 				  'size'	=> 15,
 				  'value'	=> $this->get_varra('extenfeatures',array('guestprov','exten')),
 				  'default'	=> $element['extenfeatures']['guestprov']['default'],
 				  'invalid'	=> isset($invalid['extenfeatures']['guestprov'])));
+?>
+	</div>
+
+	<div id="sb-part-transfer" class="b-nodisplay">
+<?php
+	echo	$form->text(array('desc'	=> $this->bbf('fm_featuremap_blindxfer'),
+				  'name'	=> 'featuremap[blindxfer]',
+				  'labelid'	=> 'featuremap-blindxfer',
+				  'size'	=> 15,
+				  'value'	=> $this->get_varra('featuremap',array('blindxfer','var_val')),
+				  'default'	=> $element['featuremap']['blindxfer']['default'],
+				  'invalid'	=> isset($invalid['featuremap']['blindxfer']))),
+
+		$form->text(array('desc'	=> $this->bbf('fm_featuremap_atxfer'),
+				  'name'	=> 'featuremap[atxfer]',
+				  'labelid'	=> 'featuremap-atxfer',
+				  'size'	=> 15,
+				  'value'	=> $this->get_varra('featuremap',array('atxfer','var_val')),
+				  'default'	=> $element['featuremap']['atxfer']['default'],
+				  'invalid'	=> isset($invalid['featuremap']['atxfer']))),
+
+		$form->select(array('desc'	=> $this->bbf('fm_generalfeatures_transferdigittimeout'),
+				    'name'	=> 'generalfeatures[transferdigittimeout]',
+				    'labelid'	=> 'generalfeatures-transferdigittimeout',
+				    'key'	=> false,
+				    'bbf'	=> array('paramkey','fm_generalfeatures_transferdigittimeout-opt'),
+				    'value'	=> $this->get_varra('generalfeatures',array('transferdigittimeout','var_val')),
+				    'default'	=> $element['generalfeatures']['transferdigittimeout']['default']),
+			      $element['generalfeatures']['transferdigittimeout']['value']),
+
+		$form->select(array('desc'	=> $this->bbf('fm_generalfeatures_xfersound'),
+				    'name'	=> 'generalfeatures[xfersound]',
+				    'labelid'	=> 'generalfeatures-xfersound',
+				    'empty'	=> $this->bbf('fm_generalfeatures_xfersound-opt-default'),
+				    'default'	=> $element['generalfeatures']['xfersound']['default'],
+				    'value'	=> $this->get_varra('generalfeatures',array('xfersound','var_val'))),
+			      $sound_list),
+
+		$form->select(array('desc'	=> $this->bbf('fm_generalfeatures_xferfailsound'),
+				    'name'	=> 'generalfeatures[xferfailsound]',
+				    'labelid'	=> 'generalfeatures-xferfailsound',
+				    'empty'	=> $this->bbf('fm_generalfeatures_xferfailsound-opt-default'),
+				    'default'	=> $element['generalfeatures']['xferfailsound']['default'],
+				    'value'	=> $this->get_varra('generalfeatures',array('xferfailsound','var_val'))),
+			      $sound_list);
 ?>
 	</div>
 
@@ -336,7 +385,7 @@ if(isset($error_js[0]) === true)
 				      'labelid'	=> 'extenfeatures-enable-enablevm',
 				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('enablevm','commented')) === false))),
 
-		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures_enablevm'),
+		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
 				  'name'	=> 'extenfeatures[enablevm][exten]',
 				  'labelid'	=> 'extenfeatures-enablevm',
 				  'size'	=> 15,
@@ -344,82 +393,225 @@ if(isset($error_js[0]) === true)
 				  'default'	=> $element['extenfeatures']['enablevm']['default'],
 				  'invalid'	=> isset($invalid['extenfeatures']['enablevm']))),
 
-		$form->checkbox(array('desc'	=> $this->bbf('fm_extenfeatures_enable-voicemsg'),
-				      'name'	=> 'extenfeatures[voicemsg][enable]',
-				      'labelid'	=> 'extenfeatures-enable-voicemsg',
-				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('voicemsg','commented')) === false))),
-
-		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures_voicemsg'),
-				  'name'	=> 'extenfeatures[voicemsg][exten]',
-				  'labelid'	=> 'extenfeatures-voicemsg',
-				  'size'	=> 15,
-				  'value'	=> $this->get_varra('extenfeatures',array('voicemsg','exten')),
-				  'default'	=> $element['extenfeatures']['voicemsg']['default'],
-				  'invalid'	=> isset($invalid['extenfeatures']['voicemsg']))),
-
-		$form->checkbox(array('desc'	=> $this->bbf('fm_extenfeatures_enable-vmdelete'),
-				      'name'	=> 'extenfeatures[vmdelete][enable]',
-				      'labelid'	=> 'extenfeatures-enable-vmdelete',
-				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('vmdelete','commented')) === false))),
-
-		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures_vmdelete'),
-				  'name'	=> 'extenfeatures[vmdelete][exten]',
-				  'labelid'	=> 'extenfeatures-vmdelete',
-				  'size'	=> 15,
-				  'value'	=> $this->get_varra('extenfeatures',array('vmdelete','exten')),
-				  'default'	=> $element['extenfeatures']['vmdelete']['default'],
-				  'invalid'	=> isset($invalid['extenfeatures']['vmdelete']))),
-
-		$form->checkbox(array('desc'	=> $this->bbf('fm_extenfeatures_enable-vmbox'),
-				      'name'	=> 'extenfeatures[vmbox][enable]',
-				      'labelid'	=> 'extenfeatures-enable-vmbox',
-				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('vmbox','commented')) === false)));
+		$form->checkbox(array('desc'	=> $this->bbf('fm_extenfeatures_enable-enablevmslt'),
+				      'name'	=> 'extenfeatures[enablevmslt][enable]',
+				      'labelid'	=> 'extenfeatures-enable-enablevmslt',
+				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('enablevmslt','commented')) === false)));
 ?>
 		<div class="fm-field">
 <?php
-	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures_vmbox'),
-				  'name'	=> 'extenfeatures[vmbox][exten]',
+	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
+				  'name'	=> 'extenfeatures[enablevmslt][exten]',
 				  'field'	=> false,
-				  'labelid'	=> 'extenfeatures-vmbox',
+				  'labelid'	=> 'extenfeatures-enablevmslt',
 				  'size'	=> 15,
-				  'value'	=> $this->get_varra('extenfeatures',array('vmbox','exten')),
-				  'default'	=> $element['extenfeatures']['vmbox']['default'],
-				  'invalid'	=> isset($invalid['extenfeatures']['vmbox']))),
+				  'value'	=> $this->get_varra('extenfeatures',array('enablevmslt','exten')),
+				  'default'	=> $element['extenfeatures']['enablevmslt']['default'],
+				  'invalid'	=> isset($invalid['extenfeatures']['enablevmslt']))),
 
 		$form->select(array('field'	=> false,
-				    'name'	=> 'extenfeatures[list-vmbox]',
-				    'labelid'	=> 'extenfeatures-list-vmbox',
+				    'name'	=> 'extenfeatures[list-enablevmslt]',
+				    'labelid'	=> 'extenfeatures-list-enablevmslt',
 				    'key'	=> false,
 				    'empty'	=> true),
 			      array('*',range(3,11)),
-			      'onchange="xivo_exten_pattern(\'it-extenfeatures-vmbox\',this.value);"');
+			      'onchange="xivo_exten_pattern(\'it-extenfeatures-enablevmslt\',this.value);"');
 ?>
 		</div>
 <?php
-	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_extenfeatures_enable-vmuser'),
-				      'name'	=> 'extenfeatures[vmuser][enable]',
-				      'labelid'	=> 'extenfeatures-enable-vmuser',
-				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('vmuser','commented')) === false)));
+	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_extenfeatures_enable-enablevmbox'),
+				      'name'	=> 'extenfeatures[enablevmbox][enable]',
+				      'labelid'	=> 'extenfeatures-enable-enablevmbox',
+				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('enablevmbox','commented')) === false))),
+
+		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
+				  'name'	=> 'extenfeatures[enablevmbox][exten]',
+				  'labelid'	=> 'extenfeatures-enablevmbox',
+				  'size'	=> 15,
+				  'value'	=> $this->get_varra('extenfeatures',array('enablevmbox','exten')),
+				  'default'	=> $element['extenfeatures']['enablevmbox']['default'],
+				  'invalid'	=> isset($invalid['extenfeatures']['enablevmbox']))),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_extenfeatures_enable-enablevmboxslt'),
+				      'name'	=> 'extenfeatures[enablevmboxslt][enable]',
+				      'labelid'	=> 'extenfeatures-enable-enablevmboxslt',
+				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('enablevmboxslt','commented')) === false)));
+?>
+		<div class="fm-field">
+<?php
+	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
+				  'name'	=> 'extenfeatures[enablevmboxslt][exten]',
+				  'field'	=> false,
+				  'labelid'	=> 'extenfeatures-enablevmboxslt',
+				  'size'	=> 15,
+				  'value'	=> $this->get_varra('extenfeatures',array('enablevmboxslt','exten')),
+				  'default'	=> $element['extenfeatures']['enablevmboxslt']['default'],
+				  'invalid'	=> isset($invalid['extenfeatures']['enablevmboxslt']))),
+
+		$form->select(array('field'	=> false,
+				    'name'	=> 'extenfeatures[list-enablevmboxslt]',
+				    'labelid'	=> 'extenfeatures-list-enablevmboxslt',
+				    'key'	=> false,
+				    'empty'	=> true),
+			      array('*',range(3,11)),
+			      'onchange="xivo_exten_pattern(\'it-extenfeatures-enablevmboxslt\',this.value);"');
+?>
+		</div>
+<?php
+	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_extenfeatures_enable-vmusermsg'),
+				      'name'	=> 'extenfeatures[vmusermsg][enable]',
+				      'labelid'	=> 'extenfeatures-enable-vmusermsg',
+				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('vmusermsg','commented')) === false))),
+
+		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
+				  'name'	=> 'extenfeatures[vmusermsg][exten]',
+				  'labelid'	=> 'extenfeatures-vmusermsg',
+				  'size'	=> 15,
+				  'value'	=> $this->get_varra('extenfeatures',array('vmusermsg','exten')),
+				  'default'	=> $element['extenfeatures']['vmusermsg']['default'],
+				  'invalid'	=> isset($invalid['extenfeatures']['vmusermsg']))),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_extenfeatures_enable-vmboxmsgslt'),
+				      'name'	=> 'extenfeatures[vmboxmsgslt][enable]',
+				      'labelid'	=> 'extenfeatures-enable-vmboxmsgslt',
+				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('vmboxmsgslt','commented')) === false)));
+?>
+		<div class="fm-field">
+<?php
+	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
+				  'name'	=> 'extenfeatures[vmboxmsgslt][exten]',
+				  'field'	=> false,
+				  'labelid'	=> 'extenfeatures-vmboxmsgslt',
+				  'size'	=> 15,
+				  'value'	=> $this->get_varra('extenfeatures',array('vmboxmsgslt','exten')),
+				  'default'	=> $element['extenfeatures']['vmboxmsgslt']['default'],
+				  'invalid'	=> isset($invalid['extenfeatures']['vmboxmsgslt']))),
+
+		$form->select(array('field'	=> false,
+				    'name'	=> 'extenfeatures[list-vmboxmsgslt]',
+				    'labelid'	=> 'extenfeatures-list-vmboxmsgslt',
+				    'key'	=> false,
+				    'empty'	=> true),
+			      array('*',range(3,11)),
+			      'onchange="xivo_exten_pattern(\'it-extenfeatures-vmboxmsgslt\',this.value);"');
+?>
+		</div>
+<?php
+	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_extenfeatures_enable-vmuserslt'),
+				      'name'	=> 'extenfeatures[vmuserslt][enable]',
+				      'labelid'	=> 'extenfeatures-enable-vmuserslt',
+				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('vmuserslt','commented')) === false)));
 ?>
 
 		<div class="fm-field">
 <?php
-	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures_vmuser'),
-				  'name'	=> 'extenfeatures[vmuser][exten]',
+	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
+				  'name'	=> 'extenfeatures[vmuserslt][exten]',
 				  'field'	=> false,
-				  'labelid'	=> 'extenfeatures-vmuser',
+				  'labelid'	=> 'extenfeatures-vmuserslt',
 				  'size'	=> 15,
-				  'value'	=> $this->get_varra('extenfeatures',array('vmuser','exten')),
-				  'default'	=> $element['extenfeatures']['vmuser']['default'],
-				  'invalid'	=> isset($invalid['extenfeatures']['vmuser']))),
+				  'value'	=> $this->get_varra('extenfeatures',array('vmuserslt','exten')),
+				  'default'	=> $element['extenfeatures']['vmuserslt']['default'],
+				  'invalid'	=> isset($invalid['extenfeatures']['vmuserslt']))),
 
 		$form->select(array('field'	=> false,
-				    'name'	=> 'extenfeatures[list-vmuser]',
-				    'labelid'	=> 'extenfeatures-list-vmuser',
+				    'name'	=> 'extenfeatures[list-vmuserslt]',
+				    'labelid'	=> 'extenfeatures-list-vmuserslt',
 				    'key'	=> false,
 				    'empty'	=> true),
 			      array('*',range(3,11)),
-			      'onchange="xivo_exten_pattern(\'it-extenfeatures-vmuser\',this.value);"');
+			      'onchange="xivo_exten_pattern(\'it-extenfeatures-vmuserslt\',this.value);"');
+?>
+		</div>
+<?php
+	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_extenfeatures_enable-vmboxslt'),
+				      'name'	=> 'extenfeatures[vmboxslt][enable]',
+				      'labelid'	=> 'extenfeatures-enable-vmboxslt',
+				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('vmboxslt','commented')) === false)));
+?>
+		<div class="fm-field">
+<?php
+	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
+				  'name'	=> 'extenfeatures[vmboxslt][exten]',
+				  'field'	=> false,
+				  'labelid'	=> 'extenfeatures-vmboxslt',
+				  'size'	=> 15,
+				  'value'	=> $this->get_varra('extenfeatures',array('vmboxslt','exten')),
+				  'default'	=> $element['extenfeatures']['vmboxslt']['default'],
+				  'invalid'	=> isset($invalid['extenfeatures']['vmboxslt']))),
+
+		$form->select(array('field'	=> false,
+				    'name'	=> 'extenfeatures[list-vmboxslt]',
+				    'labelid'	=> 'extenfeatures-list-vmboxslt',
+				    'key'	=> false,
+				    'empty'	=> true),
+			      array('*',range(3,11)),
+			      'onchange="xivo_exten_pattern(\'it-extenfeatures-vmboxslt\',this.value);"');
+?>
+		</div>
+<?php
+	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_extenfeatures_enable-vmuserpurge'),
+				      'name'	=> 'extenfeatures[vmuserpurge][enable]',
+				      'labelid'	=> 'extenfeatures-enable-vmuserpurge',
+				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('vmuserpurge','commented')) === false))),
+
+		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
+				  'name'	=> 'extenfeatures[vmuserpurge][exten]',
+				  'labelid'	=> 'extenfeatures-vmuserpurge',
+				  'size'	=> 15,
+				  'value'	=> $this->get_varra('extenfeatures',array('vmuserpurge','exten')),
+				  'default'	=> $element['extenfeatures']['vmuserpurge']['default'],
+				  'invalid'	=> isset($invalid['extenfeatures']['vmuserpurge']))),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_extenfeatures_enable-vmuserpurgeslt'),
+				      'name'	=> 'extenfeatures[vmuserpurgeslt][enable]',
+				      'labelid'	=> 'extenfeatures-enable-vmuserpurgeslt',
+				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('vmuserpurgeslt','commented')) === false)));
+?>
+		<div class="fm-field">
+<?php
+	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
+				  'name'	=> 'extenfeatures[vmuserpurgeslt][exten]',
+				  'field'	=> false,
+				  'labelid'	=> 'extenfeatures-vmuserpurgeslt',
+				  'size'	=> 15,
+				  'value'	=> $this->get_varra('extenfeatures',array('vmuserpurgeslt','exten')),
+				  'default'	=> $element['extenfeatures']['vmuserpurgeslt']['default'],
+				  'invalid'	=> isset($invalid['extenfeatures']['vmuserpurgeslt']))),
+
+		$form->select(array('field'	=> false,
+				    'name'	=> 'extenfeatures[list-vmuserpurgeslt]',
+				    'labelid'	=> 'extenfeatures-list-vmuserpurgeslt',
+				    'key'	=> false,
+				    'empty'	=> true),
+			      array('*',range(3,11)),
+			      'onchange="xivo_exten_pattern(\'it-extenfeatures-vmuserpurgeslt\',this.value);"');
+?>
+		</div>
+<?php
+	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_extenfeatures_enable-vmboxpurgeslt'),
+				      'name'	=> 'extenfeatures[vmboxpurgeslt][enable]',
+				      'labelid'	=> 'extenfeatures-enable-vmboxpurgeslt',
+				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('vmboxpurgeslt','commented')) === false)));
+?>
+		<div class="fm-field">
+<?php
+	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
+				  'name'	=> 'extenfeatures[vmboxpurgeslt][exten]',
+				  'field'	=> false,
+				  'labelid'	=> 'extenfeatures-vmboxpurgeslt',
+				  'size'	=> 15,
+				  'value'	=> $this->get_varra('extenfeatures',array('vmboxpurgeslt','exten')),
+				  'default'	=> $element['extenfeatures']['vmboxpurgeslt']['default'],
+				  'invalid'	=> isset($invalid['extenfeatures']['vmboxpurgeslt']))),
+
+		$form->select(array('field'	=> false,
+				    'name'	=> 'extenfeatures[list-vmboxpurgeslt]',
+				    'labelid'	=> 'extenfeatures-list-vmboxpurgeslt',
+				    'key'	=> false,
+				    'empty'	=> true),
+			      array('*',range(3,11)),
+			      'onchange="xivo_exten_pattern(\'it-extenfeatures-vmboxpurgeslt\',this.value);"');
 ?>
 		</div>
 	</div>
@@ -431,7 +623,7 @@ if(isset($error_js[0]) === true)
 				      'labelid'	=> 'extenfeatures-enable-fwdundoall',
 				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('fwdundoall','commented')) === false))),
 
-		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures_fwdundoall'),
+		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
 				  'name'	=> 'extenfeatures[fwdundoall][exten]',
 				  'labelid'	=> 'extenfeatures-fwdundoall',
 				  'size'	=> 15,
@@ -444,7 +636,7 @@ if(isset($error_js[0]) === true)
 				      'labelid'	=> 'extenfeatures-enable-fwdundorna',
 				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('fwdundorna','commented')) === false))),
 
-		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures_fwdundorna'),
+		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
 				  'name'	=> 'extenfeatures[fwdundorna][exten]',
 				  'labelid'	=> 'extenfeatures-fwdundorna',
 				  'size'	=> 15,
@@ -457,7 +649,7 @@ if(isset($error_js[0]) === true)
 				      'labelid'	=> 'extenfeatures-enable-fwdundobusy',
 				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('fwdundobusy','commented')) === false))),
 
-		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures_fwdundobusy'),
+		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
 				  'name'	=> 'extenfeatures[fwdundobusy][exten]',
 				  'labelid'	=> 'extenfeatures-fwdundobusy',
 				  'size'	=> 15,
@@ -470,7 +662,7 @@ if(isset($error_js[0]) === true)
 				      'labelid'	=> 'extenfeatures-enable-fwdundounc',
 				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('fwdundounc','commented')) === false))),
 
-		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures_fwdundounc'),
+		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
 				  'name'	=> 'extenfeatures[fwdundounc][exten]',
 				  'labelid'	=> 'extenfeatures-fwdundounc',
 				  'size'	=> 15,
@@ -485,7 +677,7 @@ if(isset($error_js[0]) === true)
 ?>
 		<div class="fm-field">
 <?php
-	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures_fwdrna'),
+	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
 				  'name'	=> 'extenfeatures[fwdrna][exten]',
 				  'field'	=> false,
 				  'labelid'	=> 'extenfeatures-fwdrna',
@@ -511,7 +703,7 @@ if(isset($error_js[0]) === true)
 ?>
 		<div class="fm-field">
 <?php
-	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures_fwdbusy'),
+	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
 				  'name'	=> 'extenfeatures[fwdbusy][exten]',
 				  'field'	=> false,
 				  'labelid'	=> 'extenfeatures-fwdbusy',
@@ -537,7 +729,7 @@ if(isset($error_js[0]) === true)
 ?>
 		<div class="fm-field">
 <?php
-	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures_fwdunc'),
+	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
 				  'name'	=> 'extenfeatures[fwdunc][exten]',
 				  'field'	=> false,
 				  'labelid'	=> 'extenfeatures-fwdunc',
@@ -566,7 +758,7 @@ if(isset($error_js[0]) === true)
 ?>
 		<div class="fm-field">
 <?php
-	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures_agentstaticlogin'),
+	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
 				  'name'	=> 'extenfeatures[agentstaticlogin][exten]',
 				  'field'	=> false,
 				  'labelid'	=> 'extenfeatures-agentstaticlogin',
@@ -591,7 +783,7 @@ if(isset($error_js[0]) === true)
 ?>
 	<div class="fm-field">
 <?php
-	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures_agentstaticlogoff'),
+	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
 				  'name'	=> 'extenfeatures[agentstaticlogoff][exten]',
 				  'field'	=> false,
 				  'labelid'	=> 'extenfeatures-agentstaticlogoff',
@@ -612,19 +804,31 @@ if(isset($error_js[0]) === true)
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_extenfeatures_enable-agentdynamiclogin'),
 				      'name'	=> 'extenfeatures[agentdynamiclogin][enable]',
 				      'labelid'	=> 'extenfeatures-enable-agentdynamiclogin',
-				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('agentdynamiclogin','commented')) === false))),
-
-		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures_agentdynamiclogin'),
+				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('agentdynamiclogin','commented')) === false)));
+?>
+		<div class="fm-field">
+<?php
+	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
 				  'name'	=> 'extenfeatures[agentdynamiclogin][exten]',
+				  'field'	=> false,
 				  'labelid'	=> 'extenfeatures-agentdynamiclogin',
 				  'size'	=> 15,
 				  'value'	=> $this->get_varra('extenfeatures',array('agentdynamiclogin','exten')),
 				  'default'	=> $element['extenfeatures']['agentdynamiclogin']['default'],
-				  'invalid'	=> isset($invalid['extenfeatures']['agentdynamiclogin'])));
+				  'invalid'	=> isset($invalid['extenfeatures']['agentdynamiclogin']))),
+
+		$form->select(array('field'	=> false,
+				    'name'	=> 'extenfeatures[list-agentdynamiclogin]',
+				    'labelid'	=> 'extenfeatures-list-agentdynamiclogin',
+				    'key'	=> false,
+				    'empty'	=> true),
+			      array('*',range(3,11)),
+			      'onchange="xivo_exten_pattern(\'it-extenfeatures-agentdynamiclogin\',this.value);"');
 ?>
+		</div>
 	</div>
 
-	<div id="sb-part-last" class="b-nodisplay">
+	<div id="sb-part-parking" class="b-nodisplay">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_generalfeatures_parkext'),
 				  'name'	=> 'generalfeatures[parkext]',
@@ -674,18 +878,13 @@ if(isset($error_js[0]) === true)
 				      'name'	=> 'generalfeatures[adsipark]',
 				      'labelid'	=> 'generalfeatures-adsipark',
 				      'checked'	=> $this->get_varra('generalfeatures',array('adsipark','var_val')),
-				      'default'	=> $element['generalfeatures']['adsipark']['default'])),
+				      'default'	=> $element['generalfeatures']['adsipark']['default']));
+?>
+	</div>
 
-		$form->select(array('desc'	=> $this->bbf('fm_generalfeatures_transferdigittimeout'),
-				    'name'	=> 'generalfeatures[transferdigittimeout]',
-				    'labelid'	=> 'generalfeatures-transferdigittimeout',
-				    'key'	=> false,
-				    'bbf'	=> array('paramkey','fm_generalfeatures_transferdigittimeout-opt'),
-				    'value'	=> $this->get_varra('generalfeatures',array('transferdigittimeout','var_val')),
-				    'default'	=> $element['generalfeatures']['transferdigittimeout']['default']),
-			      $element['generalfeatures']['transferdigittimeout']['value']),
-
-		$form->select(array('desc'	=> $this->bbf('fm_generalfeatures_featuredigittimeout'),
+	<div id="sb-part-last" class="b-nodisplay">
+<?php
+	echo	$form->select(array('desc'	=> $this->bbf('fm_generalfeatures_featuredigittimeout'),
 				    'name'	=> 'generalfeatures[featuredigittimeout]',
 				    'labelid'	=> 'generalfeatures-featuredigittimeout',
 				    'key'	=> false,
@@ -700,22 +899,6 @@ if(isset($error_js[0]) === true)
 				    'empty'	=> $this->bbf('fm_generalfeatures_courtesytone-opt-default'),
 				    'default'	=> $element['generalfeatures']['courtesytone']['default'],
 				    'value'	=> $this->get_varra('generalfeatures',array('courtesytone','var_val'))),
-			      $sound_list),
-
-		$form->select(array('desc'	=> $this->bbf('fm_generalfeatures_xfersound'),
-				    'name'	=> 'generalfeatures[xfersound]',
-				    'labelid'	=> 'generalfeatures-xfersound',
-				    'empty'	=> $this->bbf('fm_generalfeatures_xfersound-opt-default'),
-				    'default'	=> $element['generalfeatures']['xfersound']['default'],
-				    'value'	=> $this->get_varra('generalfeatures',array('xfersound','var_val'))),
-			      $sound_list),
-
-		$form->select(array('desc'	=> $this->bbf('fm_generalfeatures_xferfailsound'),
-				    'name'	=> 'generalfeatures[xferfailsound]',
-				    'labelid'	=> 'generalfeatures-xferfailsound',
-				    'empty'	=> $this->bbf('fm_generalfeatures_xferfailsound-opt-default'),
-				    'default'	=> $element['generalfeatures']['xferfailsound']['default'],
-				    'value'	=> $this->get_varra('generalfeatures',array('xferfailsound','var_val'))),
 			      $sound_list);
 ?>
 	</div>

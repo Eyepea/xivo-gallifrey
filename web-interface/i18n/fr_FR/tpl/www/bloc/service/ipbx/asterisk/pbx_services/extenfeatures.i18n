@@ -4,6 +4,9 @@ Gestion des extensions
 ; smenu_general
 Général
 
+; smenu_transfers
+Transferts
+
 ; smenu_voicemail
 Messagerie vocale
 
@@ -16,11 +19,11 @@ Agents
 ; smenu_parking
 Parking
 
-; fm_featuremap_blindxfer
-Transfert direct :
+; smenu_advanced
+Avancé
 
-; fm_featuremap_atxfer
-Transfert indirect :
+; fm_extenfeatures-extension
+Extension :
 
 ; fm_featuremap_automon
 Enregistrement d'appel à la volée :
@@ -31,32 +34,17 @@ Raccrocher :
 ; fm_extenfeatures_enable-recsnd
 Enregistrement sonore :
 
-; fm_extenfeatures_recsnd
-Extension :
-
 ; fm_extenfeatures_enable-phonestatus
 Statut du téléphone :
-
-; fm_extenfeatures_phonestatus
-Extension :
 
 ; fm_extenfeatures_enable-enablednd
 Ne pas déranger :
 
-; fm_extenfeatures_enablednd
-Extension :
-
 ; fm_extenfeatures_enable-incallrec
-Enregistrement d'appel entrant :
-
-; fm_extenfeatures_incallrec
-Extension :
+Enregistrement des appels entrants :
 
 ; fm_extenfeatures_enable-incallfilter
-Filtrage d'appel entrant :
-
-; fm_extenfeatures_incallfilter
-Extension :
+Active le filtrage des appels entrants :
 
 ; fm_generalfeatures_pickupexten
 Interception de groupe :
@@ -64,122 +52,110 @@ Interception de groupe :
 ; fm_extenfeatures_enable-pickup
 Interception d'appel :
 
-; fm_extenfeatures_pickup
-Extension :
-
 ; fm_extenfeatures_enable-calllistening
 Ecouter les appels en cours :
 
-; fm_extenfeatures_calllistening
-Extension :
-
 ; fm_extenfeatures_enable-directoryaccess
-Accéder à l'annuaire :
-
-; fm_extenfeatures_directoryaccess
-Extension :
+Accès à l'annuaire :
 
 ; fm_extenfeatures_enable-bsfilter
 Filtrage Patron - Secrétaire :
 
-; fm_extenfeatures_bsfilter
-Extension :
-
 ; fm_extenfeatures_enable-guestprov
 Initialisation d'un téléphone :
 
-; fm_extenfeatures_guestprov
-Extension :
+; fm_featuremap_blindxfer
+Transfert direct :
+
+; fm_featuremap_atxfer
+Transfert indirect :
+
+; fm_generalfeatures_transferdigittimeout
+Délai d'attente pour la numérotation d'un transfert :
+
+; fm_generalfeatures_transferdigittimeout-opt(1)
+1 seconde
+
+; fm_generalfeatures_transferdigittimeout-opt
+%s secondes
+
+; fm_generalfeatures_transferdigittimeout-opt(60)
+1 minute
+
+; fm_generalfeatures_xfersound
+Fichier son d'un transfert réussi :
+
+; fm_generalfeatures_xfersound-opt-default
+Défaut
+
+; fm_generalfeatures_xferfailsound
+Fichier son d'un transfert échoué :
+
+; fm_generalfeatures_xferfailsound-opt-default
+Défaut
 
 ; fm_extenfeatures_enable-enablevm
+Active la messagerie vocale de l'utilisateur :
+
+; fm_extenfeatures_enable-enablevmslt
+Active la messagerie vocale de l'utilisateur précisé :
+
+; fm_extenfeatures_enable-enablevmbox
 Active la messagerie vocale :
 
-; fm_extenfeatures_enablevm
-Extension :
+; fm_extenfeatures_enable-enablevmboxslt
+Active la messagerie vocale précisée :
 
-; fm_extenfeatures_enable-voicemsg
-Consulter la messagerie vocale :
+; fm_extenfeatures_enable-vmusermsg
+Consultation de la messagerie vocale de l'utilisateur :
 
-; fm_extenfeatures_voicemsg
-Extension :
+; fm_extenfeatures_enable-vmboxmsgslt
+Consultation de la messagerie vocale précisée :
 
-; fm_extenfeatures_enable-vmdelete
-Supprimer les messages de la messagerie vocale :
+; fm_extenfeatures_enable-vmuserslt
+Accès à la messagerie vocale de l'utilisateur précisé :
 
-; fm_extenfeatures_vmdelete
-Extension :
+; fm_extenfeatures_enable-vmboxslt
+Accès à la messagerie vocale précisée :
 
-; fm_extenfeatures_enable-vmbox
-Accès à la messagerie vocale :
+; fm_extenfeatures_enable-vmuserpurge
+Supprime les messages vocaux de l'utilisateur :
 
-; fm_extenfeatures_vmbox
-Extension :
+; fm_extenfeatures_enable-vmuserpurgeslt
+Supprime les messages vocaux de l'utilisateur précisé :
 
-; fm_extenfeatures_enable-vmuser
-Accès à la messagerie vocale d'un utilisateur :
-
-; fm_extenfeatures_vmuser
-Extension :
+; fm_extenfeatures_enable-vmboxpurgeslt
+Supprime les messages de la boîte vocale précisée :
 
 ; fm_extenfeatures_enable-fwdundoall
 Désactive tous les renvois :
 
-; fm_extenfeatures_fwdundoall
-Extension :
-
 ; fm_extenfeatures_enable-fwdundorna
 Désactive le renvoi sur non réponse :
-
-; fm_extenfeatures_fwdundorna
-Extension :
 
 ; fm_extenfeatures_enable-fwdundobusy
 Désactive le renvoi sur occupation :
 
-; fm_extenfeatures_fwdundobusy
-Extension :
-
 ; fm_extenfeatures_enable-fwdundounc
 Désactive le renvoi inconditionnel :
-
-; fm_extenfeatures_fwdundounc
-Extension :
 
 ; fm_extenfeatures_enable-fwdrna
 Active le renvoi sur non réponse :
 
-; fm_extenfeatures_fwdrna
-Extension :
-
 ; fm_extenfeatures_enable-fwdbusy
 Active le renvoi sur occupation :
-
-; fm_extenfeatures_fwdbusy
-Extension :
 
 ; fm_extenfeatures_enable-fwdunc
 Active le renvoi inconditionnel :
 
-; fm_extenfeatures_fwdunc
-Extension :
-
 ; fm_extenfeatures_enable-agentstaticlogin
-Connecter un agent statique :
-
-; fm_extenfeatures_agentstaticlogin
-Extension :
+Connecte un agent statique :
 
 ; fm_extenfeatures_enable-agentstaticlogoff
-Déconnecter un agent statique :
-
-; fm_extenfeatures_agentstaticlogoff
-Extension :
+Déconnecte un agent statique :
 
 ; fm_extenfeatures_enable-agentdynamiclogin
-Connecter un agent dynamique :
-
-; fm_extenfeatures_agentdynamiclogin
-Extension :
+Connecte un agent dynamique :
 
 ; fm_generalfeatures_parkext
 Extension :
@@ -214,18 +190,6 @@ Chercher l'appel suivant :
 ; fm_generalfeatures_adsipark
 Utiliser les annonces ADSI :
 
-; fm_generalfeatures_transferdigittimeout
-Délai d'attente pour la numérotation d'un transfert :
-
-; fm_generalfeatures_transferdigittimeout-opt(1)
-1 seconde
-
-; fm_generalfeatures_transferdigittimeout-opt
-%s secondes
-
-; fm_generalfeatures_transferdigittimeout-opt(60)
-1 minute
-
 ; fm_generalfeatures_featuredigittimeout
 Délai d'attente pour la numérotation d'une fonctionnalité  :
 
@@ -239,18 +203,6 @@ Délai d'attente pour la numérotation d'une fonctionnalité  :
 Fichier son de la tonalité :
 
 ; fm_generalfeatures_courtesytone-opt-default
-Défaut
-
-; fm_generalfeatures_xfersound
-Fichier son d'un transfert réussi :
-
-; fm_generalfeatures_xfersound-opt-default
-Défaut
-
-; fm_generalfeatures_xferfailsound
-Fichier son d'un transfert échoué :
-
-; fm_generalfeatures_xferfailsound-opt-default
 Défaut
 
 ; fm_success-save

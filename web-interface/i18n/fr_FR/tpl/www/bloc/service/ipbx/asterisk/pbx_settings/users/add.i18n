@@ -167,10 +167,10 @@ Activer les transferts :
 Activer l'enregistrement à la volée :
 
 ; fm_userfeatures_callrecord
-Activer l'enregistrement d'appel entrant :
+Activer l'enregistrement des appels entrants :
 
 ; fm_userfeatures_callfilter
-Filtrage d'appel :
+Activer le filtrage des appels entrants :
 
 ; fm_userfeatures_enablednd
 Ne pas déranger :
@@ -496,20 +496,20 @@ Enregistrement d'appel à la volée
 ; fm_phonefunckey_extension-typeval-opt-featuremap-disconnect
 Raccrocher
 
-; fm_phonefunckey_extension-typeval-opt-extenfeatures-voicemsg
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-vmusermsg
 Consulter la messagerie vocale
 
 ; fm_phonefunckey_extension-typeval-opt-extenfeatures-fwdundoall
-Désactive tous les renvois
+Désactiver tous les renvois
 
 ; fm_phonefunckey_extension-typeval-opt-extenfeatures-fwdundorna
-Désactive le renvoi sur non réponse
+Désactiver le renvoi sur non réponse
 
 ; fm_phonefunckey_extension-typeval-opt-extenfeatures-fwdundobusy
-Désactive le renvoi sur occupation
+Désactiver le renvoi sur occupation
 
 ; fm_phonefunckey_extension-typeval-opt-extenfeatures-fwdundounc
-Désactive le renvoi inconditionnel
+Désactiver le renvoi inconditionnel
 
 ; fm_phonefunckey_extension-typeval-opt-extenfeatures-recsnd
 Enregistrement sonore
@@ -518,25 +518,22 @@ Enregistrement sonore
 Statut du téléphone
 
 ; fm_phonefunckey_extension-typeval-opt-extenfeatures-enablevm
-Active la messagerie vocale
+Activer la messagerie vocale
 
 ; fm_phonefunckey_extension-typeval-opt-extenfeatures-enablednd
 Ne pas déranger
 
 ; fm_phonefunckey_extension-typeval-opt-extenfeatures-incallrec
-Enregistrement d'appel entrant
+Enregistrement des appels entrants
 
 ; fm_phonefunckey_extension-typeval-opt-extenfeatures-incallfilter
-Filtrage d'appel entrant
-
-; fm_phonefunckey_extension-typeval-opt-extenfeatures-agentdynamiclogin
-Connecter un agent dynamique
+Activer le filtrage des appels entrants
 
 ; fm_phonefunckey_extension-typeval-opt-extenfeatures-calllistening
 Ecouter les appels en cours
 
-; fm_phonefunckey_extension-typeval-opt-extenfeatures-vmdelete
-Supprimer les messages de la boîte vocale
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-vmuserpurge
+Supprimer les messages vocaux
 
 ; fm_phonefunckey_extension-typeval-opt-extenfeatures-directoryaccess
 Accéder à l'annuaire

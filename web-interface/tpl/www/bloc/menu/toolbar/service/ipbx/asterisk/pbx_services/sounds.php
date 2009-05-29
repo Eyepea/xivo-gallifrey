@@ -27,16 +27,22 @@ $dir = $this->get_var('dir');
 
 $param = array('act' => 'add');
 
+if(($search = (string) $this->get_var('search')) === ''):
+	$searchjs = '';
+else:
+	$searchjs = 'xivo_fm[\'fm-files-list\'][\'search\'].value = \''.$dhtml->escape($search).'\';';
+endif;
+
 if($act !== 'listdir' && $act !== 'adddir'):
 	$param['dir'] = $dir;
 else:
 	$dir = '';
 endif;
 
-if(($search = (string) $this->get_var('search')) === ''):
-	$searchjs = '';
+if($dir === '' && $search === ''):
+	$dirjs = '';
 else:
-	$searchjs = 'xivo_fm[\'fm-files-list\'][\'search\'].value = \''.$dhtml->escape($search).'\';';
+	$dirjs = 'xivo_fm[\'fm-files-list\'][\'dir\'].value = \''.$dhtml->escape($dir).'\';';
 endif;
 
 ?>
@@ -78,7 +84,8 @@ endif;
 					    'value'	=> $dir),
 				      $this->get_var('list_dirs'),
 				      'style="margin-left: 20px;"
-				       onchange="this.form[\'act\'].value = this.value === \'\'
+				       onchange="'.($act === 'list' ? 'this.form[\'search\'].value = \'\';' : '').'
+						 this.form[\'act\'].value = this.value === \'\'
 									    ? \'listdir\'
 									    : \'list\';
 						 return(this.form.submit());"');
@@ -126,6 +133,7 @@ if($act === 'list'):
 			<a href="#"
 			   onclick="this.tmp = xivo_fm['fm-files-list']['act'].value;
 				    xivo_fm['fm-files-list']['act'].value = 'deletes';
+				    <?=$searchjs,$dirjs?>
 				    return(confirm('<?=$dhtml->escape($this->bbf('toolbar_adv_menu_delete_confirm'));?>')
 			    		   ? xivo_fm['fm-files-list'].submit()
 					   : xivo_fm['fm-files-list']['act'] = this.tmp);">

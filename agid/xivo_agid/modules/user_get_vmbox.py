@@ -24,7 +24,7 @@ def user_get_vmbox(agi, cursor, args):
 
     xlen = len(args)
 
-    if xlen > 0:
+    if xlen > 0 and args[0] != '':
         try:
             if xlen == 1:
                 context = objects.User(agi, cursor, xid=int(userid)).context

@@ -22,8 +22,10 @@ $array = array();
 
 $array['exten'] = array();
 $array['exten']['agentdynamiclogin'] = array();
-$array['exten']['agentdynamiclogin']['app'] = 'AgentLogin';
-$array['exten']['agentdynamiclogin']['appdata'] = '';
+$array['exten']['agentdynamiclogin']['app'] = 'Macro';
+$array['exten']['agentdynamiclogin']['appdata'] = array();
+$array['exten']['agentdynamiclogin']['appdata'][0] = 'agentdynamiclogin';
+$array['exten']['agentdynamiclogin']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['exten']['agentstaticlogin'] = array();
 $array['exten']['agentstaticlogin']['app'] = 'Macro';
@@ -58,6 +60,22 @@ $array['exten']['enablednd']['appdata'] = 'enablednd';
 $array['exten']['enablevm'] = array();
 $array['exten']['enablevm']['app'] = 'Macro';
 $array['exten']['enablevm']['appdata'] = 'enablevm';
+
+$array['exten']['enablevmbox'] = array();
+$array['exten']['enablevmbox']['app'] = 'Macro';
+$array['exten']['enablevmbox']['appdata'] = 'enablevmbox';
+
+$array['exten']['enablevmboxslt'] = array();
+$array['exten']['enablevmboxslt']['app'] = 'Macro';
+$array['exten']['enablevmboxslt']['appdata'] = array();
+$array['exten']['enablevmboxslt']['appdata'][0] = 'enablevmbox';
+$array['exten']['enablevmboxslt']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
+
+$array['exten']['enablevmslt'] = array();
+$array['exten']['enablevmslt']['app'] = 'Macro';
+$array['exten']['enablevmslt']['appdata'] = array();
+$array['exten']['enablevmslt']['appdata'][0] = 'enablevm';
+$array['exten']['enablevmslt']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['exten']['fwdbusy'] = array();
 $array['exten']['fwdbusy']['app'] = 'Macro';
@@ -119,30 +137,48 @@ $array['exten']['recsnd']['appdata'] = array();
 $array['exten']['recsnd']['appdata'][0] = 'recsnd';
 $array['exten']['recsnd']['appdata'][1] = 'wav';
 
-$array['exten']['vmbox'] = array();
-$array['exten']['vmbox']['app'] = 'Macro';
-$array['exten']['vmbox']['appdata'] = array();
-$array['exten']['vmbox']['appdata'][0] = 'vmbox';
-$array['exten']['vmbox']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
+$array['exten']['vmboxmsgslt'] = array();
+$array['exten']['vmboxmsgslt']['app'] = 'Macro';
+$array['exten']['vmboxmsgslt']['appdata'] = array();
+$array['exten']['vmboxmsgslt']['appdata'][0] = 'vmboxmsg';
+$array['exten']['vmboxmsgslt']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
 
-$array['exten']['vmdelete'] = array();
-$array['exten']['vmdelete']['app'] = 'Macro';
-$array['exten']['vmdelete']['appdata'] = 'vmdelete';
+$array['exten']['vmboxpurgeslt'] = array();
+$array['exten']['vmboxpurgeslt']['app'] = 'Macro';
+$array['exten']['vmboxpurgeslt']['appdata'] = array();
+$array['exten']['vmboxpurgeslt']['appdata'][0] = 'vmboxpurge';
+$array['exten']['vmboxpurgeslt']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
 
-$array['exten']['vmuser'] = array();
-$array['exten']['vmuser']['app'] = 'Macro';
-$array['exten']['vmuser']['appdata'] = array();
-$array['exten']['vmuser']['appdata'][0] = 'vmuser';
-$array['exten']['vmuser']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
+$array['exten']['vmboxslt'] = array();
+$array['exten']['vmboxslt']['app'] = 'Macro';
+$array['exten']['vmboxslt']['appdata'] = array();
+$array['exten']['vmboxslt']['appdata'][0] = 'vmbox';
+$array['exten']['vmboxslt']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
 
-$array['exten']['voicemsg'] = array();
-$array['exten']['voicemsg']['app'] = 'Macro';
-$array['exten']['voicemsg']['appdata'] = 'voicemsg';
+$array['exten']['vmusermsg'] = array();
+$array['exten']['vmusermsg']['app'] = 'Macro';
+$array['exten']['vmusermsg']['appdata'] = 'vmusermsg';
+
+$array['exten']['vmuserpurge'] = array();
+$array['exten']['vmuserpurge']['app'] = 'Macro';
+$array['exten']['vmuserpurge']['appdata'] = 'vmuserpurge';
+
+$array['exten']['vmuserpurgeslt'] = array();
+$array['exten']['vmuserpurgeslt']['app'] = 'Macro';
+$array['exten']['vmuserpurgeslt']['appdata'] = array();
+$array['exten']['vmuserpurgeslt']['appdata'][0] = 'vmuserpurge';
+$array['exten']['vmuserpurgeslt']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
+
+$array['exten']['vmuserslt'] = array();
+$array['exten']['vmuserslt']['app'] = 'Macro';
+$array['exten']['vmuserslt']['appdata'] = array();
+$array['exten']['vmuserslt']['appdata'][0] = 'vmuser';
+$array['exten']['vmuserslt']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['element'] = array();
 
 $array['element']['agentdynamiclogin'] = array();
-$array['element']['agentdynamiclogin']['default'] = '*33';
+$array['element']['agentdynamiclogin']['default'] = '*33.';
 
 $array['element']['agentstaticlogin'] = array();
 $array['element']['agentstaticlogin']['default'] = '*31.';
@@ -163,7 +199,16 @@ $array['element']['enablednd'] = array();
 $array['element']['enablednd']['default'] = '*25';
 
 $array['element']['enablevm'] = array();
-$array['element']['enablevm']['default'] = '*24';
+$array['element']['enablevm']['default'] = '*90';
+
+$array['element']['enablevmbox'] = array();
+$array['element']['enablevmbox']['default'] = '*91';
+
+$array['element']['enablevmboxslt'] = array();
+$array['element']['enablevmboxslt']['default'] = '*91.';
+
+$array['element']['enablevmslt'] = array();
+$array['element']['enablevmslt']['default'] = '*90.';
 
 $array['element']['fwdbusy'] = array();
 $array['element']['fwdbusy']['default'] = '*23.';
@@ -204,20 +249,29 @@ $array['element']['pickup']['default'] = '*8.';
 $array['element']['recsnd'] = array();
 $array['element']['recsnd']['default'] = '*9';
 
-$array['element']['vmbox'] = array();
-$array['element']['vmbox']['default'] = '*6.';
+$array['element']['vmboxmsgslt'] = array();
+$array['element']['vmboxmsgslt']['default'] = '*99.';
 
-$array['element']['vmdelete'] = array();
-$array['element']['vmdelete']['default'] = '*35';
+$array['element']['vmboxpurgeslt'] = array();
+$array['element']['vmboxpurgeslt']['default'] = '*93.';
 
-$array['element']['vmuser'] = array();
-$array['element']['vmuser']['default'] = '*7.';
+$array['element']['vmboxslt'] = array();
+$array['element']['vmboxslt']['default'] = '*97.';
 
-$array['element']['voicemsg'] = array();
-$array['element']['voicemsg']['default'] = '*98';
+$array['element']['vmusermsg'] = array();
+$array['element']['vmusermsg']['default'] = '*98';
+
+$array['element']['vmuserpurge'] = array();
+$array['element']['vmuserpurge']['default'] = '*92';
+
+$array['element']['vmuserpurgeslt'] = array();
+$array['element']['vmuserpurgeslt']['default'] = '*92.';
+
+$array['element']['vmuserslt'] = array();
+$array['element']['vmuserslt']['default'] = '*96.';
 
 $array['filter'] = array();
-$array['filter']['agentdynamiclogin'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
+$array['filter']['agentdynamiclogin'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['agentstaticlogin'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['agentstaticlogoff'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['bsfilter'] = array('minlen' => 1,'maxlen' => 40);
@@ -225,6 +279,9 @@ $array['filter']['calllistening'] = array('minlen' => 1,'maxlen' => 40,'regexp' 
 $array['filter']['directoryaccess'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
 $array['filter']['enablednd'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
 $array['filter']['enablevm'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
+$array['filter']['enablevmbox'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
+$array['filter']['enablevmboxslt'] = array('minlen' => 1,'maxlen' => 40);
+$array['filter']['enablevmslt'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['fwdbusy'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['fwdrna'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['fwdunc'] = array('minlen' => 1,'maxlen' => 40);
@@ -238,9 +295,12 @@ $array['filter']['incallrec'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '
 $array['filter']['phonestatus'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
 $array['filter']['pickup'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['recsnd'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
-$array['filter']['vmbox'] = array('minlen' => 1,'maxlen' => 40);
-$array['filter']['vmdelete'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
-$array['filter']['vmuser'] = array('minlen' => 1,'maxlen' => 40);
-$array['filter']['voicemsg'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*]+$/');
+$array['filter']['vmboxmsgslt'] = array('minlen' => 1,'maxlen' => 40);
+$array['filter']['vmboxpurgeslt'] = array('minlen' => 1,'maxlen' => 40);
+$array['filter']['vmboxslt'] = array('minlen' => 1,'maxlen' => 40);
+$array['filter']['vmusermsg'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*]+$/');
+$array['filter']['vmuserpurge'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
+$array['filter']['vmuserpurgeslt'] = array('minlen' => 1,'maxlen' => 40);
+$array['filter']['vmuserslt'] = array('minlen' => 1,'maxlen' => 40);
 
 ?>

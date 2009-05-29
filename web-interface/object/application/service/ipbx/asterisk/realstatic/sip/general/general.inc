@@ -107,11 +107,11 @@ class xivo_application_service_asterisk_realstatic_sip_general extends xivo_appl
 				if(($appextenfeatures = &$this->_service->get_application('extenfeatures')) === false)
 					return(false);
 
-				$voicemsg = array();
-				$voicemsg['name'] = 'voicemsg';
-				$voicemsg['exten'] = $rs['var_val'];
+				$vmusermsg = array();
+				$vmusermsg['name'] = 'vmusermsg';
+				$vmusermsg['exten'] = $rs['var_val'];
 
-				if($appextenfeatures->set($voicemsg) === false
+				if($appextenfeatures->set($vmusermsg) === false
 				|| $appextenfeatures->save() === false)
 					return(false);
 				break;

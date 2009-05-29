@@ -250,7 +250,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 		|| $this->get_errnb() > 0
 		|| ($name = $this->save_extenfeatures()) === false
 		|| $this->save_extenumbers($name) === false
-		|| ($name === 'voicemsg' && $this->save_sip_vmexten() === false) === true)
+		|| ($name === 'vmusermsg' && $this->save_sip_vmexten() === false) === true)
 		{
 			$r = false;
 			$this->_reverse_save();
@@ -312,7 +312,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 		else if(($rs = $this->get_result('extenfeatures')) === false
 		|| is_array($rs) === false
 		|| isset($rs['name'],$rs['exten']) === false
-		|| $rs['name'] !== 'voicemsg')
+		|| $rs['name'] !== 'vmusermsg')
 		{
 			$this->_set_error('extenfeatures','invalid data');
 			return(false);

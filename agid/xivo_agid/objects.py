@@ -138,7 +138,7 @@ class BossSecretaryFilter:
         res = cursor.fetchone()
 
         if not res:
-            raise LookupError("Unable to find call filter ID for boss (number = '%s', context = '%s')" % (boss_number, boss_context))
+            raise LookupError("Unable to find call filter ID for boss (number = %r, context = %r)" % (boss_number, boss_context))
 
         protocol = res['userfeatures.protocol']
         protocolid = res['userfeatures.protocolid']
@@ -254,20 +254,25 @@ class BossSecretaryFilter:
 
 
 class VMBox:
-    def __init__(self, agi, cursor, xid=None, mailbox=None, context=None):
+    def __init__(self, agi, cursor, xid=None, mailbox=None, context=None, commentcond=True):
         self.agi = agi
         self.cursor = cursor
 
-        vm_columns = ('mailbox', 'context', 'email')
+        vm_columns = ('mailbox', 'context', 'password', 'email', 'commented')
         vmf_columns = ('skipcheckpass',)
         columns = ["voicemail." + c for c in vm_columns] + ["voicemailfeatures." + c for c in vmf_columns]
+
+        if commentcond:
+            where_comment = "AND voicemail.commented = 0"
+        else:
+            where_comment = ""
 
         if xid:
             cursor.query("SELECT ${columns} FROM voicemail "
                          "INNER JOIN voicemailfeatures "
                          "ON voicemail.uniqueid = voicemailfeatures.voicemailid "
-                         "WHERE voicemail.uniqueid = %s "
-                         "AND voicemail.commented = 0",
+                         "WHERE voicemail.uniqueid = %s " +
+                         where_comment,
                          columns,
                          (xid,))
         elif mailbox and context:
@@ -276,8 +281,8 @@ class VMBox:
                          "INNER JOIN voicemailfeatures "
                          "ON voicemail.uniqueid = voicemailfeatures.voicemailid "
                          "WHERE voicemail.mailbox = %s "
-                         "AND voicemail.context IN (" + ", ".join(["%s"] * len(contextinclude)) + ") "
-                         "AND voicemail.commented = 0",
+                         "AND voicemail.context IN (" + ", ".join(["%s"] * len(contextinclude)) + ") " +
+                         where_comment,
                          columns,
                          [mailbox] + contextinclude)
         else:
@@ -291,8 +296,26 @@ class VMBox:
         self.id = xid
         self.mailbox = res['voicemail.mailbox']
         self.context = res['voicemail.context']
+        self.password = res['voicemail.password']
         self.email = res['voicemail.email']
+        self.commented = res['voicemail.commented']
         self.skipcheckpass = res['voicemailfeatures.skipcheckpass']
+
+    def toggle_enable(self, enabled=None):
+        if enabled is None:
+            enabled = int(not self.commented)
+        else:
+            enabled = int(bool(enabled))
+
+        self.cursor.query("UPDATE voicemail "
+                          "SET commented = %s "
+                          "WHERE id = %s",
+                          parameters = (enabled, self.id))
+
+        if self.cursor.rowcount != 1:
+            raise DBUpdateException("Unable to perform the requested update")
+
+        return enabled
 
 
 class User:
@@ -373,7 +396,7 @@ class User:
         self.outcallerid = res['outcallerid']
         self.preprocess_subroutine = res['preprocess_subroutine']
         self.mobilephonenumber = res['mobilephonenumber']
-        bsfilter = res['bsfilter']
+        self.bsfilter = res['bsfilter']
 
         if self.destunc == '':
             self.enableunc = 0
@@ -386,7 +409,7 @@ class User:
 
         self.interface = protocol_intf_and_suffix(cursor, self.protocol, 'user', self.protocolid)[0]
 
-        if bsfilter == "boss":
+        if self.bsfilter == "boss":
             try:
                 self.filter = BossSecretaryFilter(agi, cursor, self.number, self.context)
             except LookupError:

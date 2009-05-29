@@ -24,7 +24,7 @@ def vmbox_get_info(agi, cursor, args):
 
     xlen = len(args)
 
-    if xlen > 0:
+    if xlen > 0 and args[0] != '':
         try:
             if xlen == 1:
                 userid = int(agi.get_variable('XIVO_USERID'))

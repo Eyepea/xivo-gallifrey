@@ -29,7 +29,7 @@ def fwdundoall(agi, cursor, args):
 
     try:
         user.reset()
-    except DBUpdateException, e:
+    except objects.DBUpdateException, e:
         agi.verbose(str(e))
 
 agid.register(fwdundoall)
