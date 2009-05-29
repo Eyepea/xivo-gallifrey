@@ -70,6 +70,8 @@ from xivo import anysql
 from xivo.BackSQL import backmysql
 from xivo.BackSQL import backsqlite
 
+from xivo_ctiservers.client_connection import ClientConnection
+
 log = logging.getLogger('xivocti')
 
 XIVOVERSION_NUM = '1.1'
