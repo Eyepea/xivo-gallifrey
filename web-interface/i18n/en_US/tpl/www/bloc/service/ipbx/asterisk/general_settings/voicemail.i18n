@@ -325,6 +325,9 @@ Format of the attached file:
 ; fm_voicemail-mailcmd
 Program to be used to send e-mails:
 
+; fm_voicemail-locale
+Locale:
+
 ; fm_voicemail-charset
 Encoding:
 

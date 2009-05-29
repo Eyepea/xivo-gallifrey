@@ -173,6 +173,10 @@ $array['element']['serveremail'] = array();
 $array['element']['serveremail']['default'] = 'xivo';
 $array['element']['serveremail']['setdef'] = true;
 
+$array['element']['locale'] = array();
+$array['element']['locale']['default'] = 'en_US.UTF-8';
+$array['element']['locale']['null'] = true;
+
 $array['element']['charset'] = array();
 $array['element']['charset']['default'] = 'UTF-8';
 $array['element']['charset']['forcedef'] = true;
@@ -182,7 +186,7 @@ $array['element']['fromstring']['default'] = 'XIVO PBX';
 $array['element']['fromstring']['setdef'] = true;
 
 $array['element']['emaildateformat'] = array();
-$array['element']['emaildateformat']['default'] = '%A, %B %d, %Y à %r';
+$array['element']['emaildateformat']['default'] = '%A, %B %d, %Y at %r';
 $array['element']['emaildateformat']['setdef'] = true;
 
 $array['element']['pbxskip'] = array();
@@ -300,6 +304,7 @@ $array['filter']['volgain'] = array('cast' => 'float','between' => array(-5,5));
 //$array['filter']['mailcmd'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 160);
 $array['filter']['mailcmd'] = array('set' => false);
 $array['filter']['serveremail'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9@\-_\.]+$/i','maxlen' => 80);
+$array['filter']['locale'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9@\-_\.]+$/i','maxlen' => 32);
 $array['filter']['charset'] = array('set' => false);
 $array['filter']['fromstring'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9\-_\. ]+$/i','maxlen' => 100);
 $array['filter']['emaildateformat'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 32);

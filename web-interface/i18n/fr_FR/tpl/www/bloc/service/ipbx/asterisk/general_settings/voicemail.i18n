@@ -178,6 +178,9 @@ Augmenter/diminuer le volume sonore du fichier joint :
 ; fm_voicemail-mailcmd
 Programme d'envoi d'e-mail :
 
+; fm_voicemail-locale
+Localisation :
+
 ; fm_voicemail-charset
 Encodage :
 

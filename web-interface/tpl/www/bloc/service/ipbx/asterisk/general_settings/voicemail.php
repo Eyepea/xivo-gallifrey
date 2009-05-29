@@ -445,6 +445,13 @@ endif;
 				  'default'	=> $element['voicemail']['mailcmd']['default']),
 			    'class="it-readonly" readonly="readonly"'),
 
+		$form->text(array('desc'	=> $this->bbf('fm_voicemail-locale'),
+				  'name'	=> 'voicemail[locale]',
+				  'labelid'	=> 'voicemail-locale',
+				  'size'	=> 15,
+				  'value'	=> $this->get_varra('voicemail',array('locale','var_val')),
+				  'default'	=> $element['voicemail']['locale']['default'])),
+
 		$form->text(array('desc'	=> $this->bbf('fm_voicemail-charset'),
 				  'name'	=> 'voicemail[charset]',
 				  'labelid'	=> 'voicemail-charset',
