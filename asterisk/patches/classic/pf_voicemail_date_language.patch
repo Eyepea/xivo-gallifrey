@@ -29,32 +29,33 @@ Index: asterisk-1.4.24/apps/app_voicemail.c
  static char charset[32] = "ISO-8859-1";
  
  static unsigned char adsifdn[4] = "\x00\x00\x00\x0F";
-@@ -3164,7 +3168,23 @@
+@@ -3164,7 +3168,25 @@
  	fprintf(p, "Date: %s" ENDL, date);
  
  	/* Set date format for voicemail mail */
--	strftime(date, sizeof(date), emaildateformat, &tm);
++#if defined(_XLOCALE_H) || defined(_LOCALE_H)
 +	if (*locale) {
-+#ifdef _XLOCALE_H
++	#if defined(_XLOCALE_H)
 +		locale_t loc;
 +		loc = newlocale(LC_TIME_MASK, locale, NULL);
 +		strftime_l(date, sizeof(date), emaildateformat, &tm, loc);
 +		freelocale(loc);
-+#elif defined _LOCALE_H
++	#elif defined(_LOCALE_H)
 +		char *loc = ast_strdup(setlocale(LC_TIME, NULL));
 +		setlocale(LC_TIME, locale);
 +		strftime(date, sizeof(date), emaildateformat, &tm);
 +		setlocale(LC_TIME, loc);
 +		ast_free(loc);
-+#else
-+		strftime(date, sizeof(date), emaildateformat, &tm);
-+#endif
++	#endif
 +	} else
 +		strftime(date, sizeof(date), emaildateformat, &tm);
++#else
+ 	strftime(date, sizeof(date), emaildateformat, &tm);
++#endif
  
  	if (*fromstring) {
  		struct ast_channel *ast;
-@@ -8637,6 +8657,7 @@
+@@ -8637,6 +8659,7 @@
  		memset(fromstring,0,sizeof(fromstring));
  		memset(pagerfromstring,0,sizeof(pagerfromstring));
  		memset(emailtitle,0,sizeof(emailtitle));
@@ -62,7 +63,7 @@ Index: asterisk-1.4.24/apps/app_voicemail.c
  		strcpy(charset, "ISO-8859-1");
  		if (emailbody) {
  			free(emailbody);
-@@ -8660,6 +8681,8 @@
+@@ -8660,6 +8683,8 @@
  			ast_copy_string(fromstring,s,sizeof(fromstring));
  		if ((s = ast_variable_retrieve(cfg, "general", "pagerfromstring")))
  			ast_copy_string(pagerfromstring,s,sizeof(pagerfromstring));
