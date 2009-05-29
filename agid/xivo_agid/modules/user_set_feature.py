@@ -58,7 +58,7 @@ def user_set_feature(agi, cursor, args):
                 agi.appexec('Authenticate', passwd)
 
         try:
-            enabled = user.toggle_feature(feature)
+            user.toggle_feature(feature)
         except objects.DBUpdateException, e:
             agi.verbose(str(e))
 

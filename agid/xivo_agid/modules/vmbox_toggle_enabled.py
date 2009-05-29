@@ -59,11 +59,11 @@ def vmbox_toggle_enabled(agi, cursor, args):
         agi.appexec('Authenticate', vmbox.password)
 
     try:
-        enabled = vmbox.toggle_enable()
+        vmbox.toggle_enable()
     except objects.DBUpdateException, e:
         agi.verbose(str(e))
 
     agi.set_variable('XIVO_VMBOXID', vmbox.id)
-    agi.set_variable('XIVO_VMBOX_ENABLED', enabled)
+    agi.set_variable('XIVO_VMBOX_ENABLED', int(not vmbox.commented))
 
 agid.register(vmbox_toggle_enabled)

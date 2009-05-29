@@ -258,7 +258,7 @@ class VMBox:
         self.agi = agi
         self.cursor = cursor
 
-        vm_columns = ('mailbox', 'context', 'password', 'email', 'commented')
+        vm_columns = ('uniqueid', 'mailbox', 'context', 'password', 'email', 'commented')
         vmf_columns = ('skipcheckpass',)
         columns = ["voicemail." + c for c in vm_columns] + ["voicemailfeatures." + c for c in vmf_columns]
 
@@ -293,7 +293,7 @@ class VMBox:
         if not res:
             raise LookupError("Unable to find voicemail box (id: %s, mailbox: %s, context: %s)" % (xid, mailbox, context))
 
-        self.id = xid
+        self.id = res['voicemail.uniqueid']
         self.mailbox = res['voicemail.mailbox']
         self.context = res['voicemail.context']
         self.password = res['voicemail.password']
@@ -305,7 +305,7 @@ class VMBox:
         if enabled is None:
             enabled = int(not self.commented)
         else:
-            enabled = int(bool(enabled))
+            enabled = int(not bool(enabled))
 
         self.cursor.query("UPDATE voicemail "
                           "SET commented = %s "
@@ -314,8 +314,8 @@ class VMBox:
 
         if self.cursor.rowcount != 1:
             raise DBUpdateException("Unable to perform the requested update")
-
-        return enabled
+        else:
+            self.commented = enabled
 
 
 class User:
@@ -428,15 +428,7 @@ class User:
         else:
             self.vmbox = None
 
-    # XXX Database and object not updated consistently.
     def reset(self):
-        self.enableunc = False
-        self.destunc = ""
-        self.enablerna = False
-        self.destrna = ""
-        self.enablebusy = False
-        self.destbusy = ""
-
         self.cursor.query("UPDATE userfeatures "
                           "SET enableunc = 0, "
                           "    destunc = '', "
@@ -449,8 +441,14 @@ class User:
 
         if self.cursor.rowcount != 1:
             raise DBUpdateException("Unable to perform the requested update")
+        else:
+            self.enableunc = False
+            self.destunc = ""
+            self.enablerna = False
+            self.destrna = ""
+            self.enablebusy = False
+            self.destbusy = ""
 
-    # XXX Database and object not updated consistently.
     def set_feature(self, feature, enabled, arg):
         enabled = int(bool(enabled))
 
@@ -459,16 +457,7 @@ class User:
         else:
             dest = ""
 
-        if feature == "unc":
-            self.enableunc = enabled
-            self.destunc = dest
-        elif feature == "rna":
-            self.enablerna = enabled
-            self.destrna = dest
-        elif feature == "busy":
-            self.enablebusy = enabled
-            self.destbusy = dest
-        else:
+        if feature not in ("unc", "rna", "busy"):
             raise ValueError("invalid feature")
 
         self.cursor.query("UPDATE userfeatures "
@@ -479,26 +468,19 @@ class User:
 
         if self.cursor.rowcount != 1:
             raise DBUpdateException("Unable to perform the requested update")
+        else:
+            setattr(self, "enable%s" % feature, enabled)
+            setattr(self, "dest%s" % feature, enabled)
 
     def toggle_feature(self, feature):
-        toggle = lambda x: int(not x)
-
         if feature == "vm":
-            self.enablevoicemail = toggle(self.enablevoicemail)
-            enabled = self.enablevoicemail
             feature = "enablevoicemail"
         elif feature == "dnd":
-            self.enablednd = toggle(self.enablednd)
-            enabled = self.enablednd
             feature = "enablednd"
-        elif feature == "callrecord":
-            self.callrecord = toggle(self.callrecord)
-            enabled = self.callrecord
-        elif feature == "callfilter":
-            self.callfilter = toggle(self.callfilter)
-            enabled = self.callfilter
-        else:
+        elif feature not in ("callrecord", "callfilter"):
             raise ValueError("invalid feature")
+
+        enabled = int(not getattr(self, feature))
 
         self.cursor.query("UPDATE userfeatures "
                           "SET %s = %%s "
@@ -507,8 +489,8 @@ class User:
 
         if self.cursor.rowcount != 1:
             raise DBUpdateException("Unable to perform the requested update")
-
-        return enabled
+        else:
+            setattr(self, feature, enabled)
 
 
 class Group:
