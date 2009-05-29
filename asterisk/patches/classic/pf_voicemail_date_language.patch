@@ -41,13 +41,13 @@ Index: asterisk-1.4.24/apps/app_voicemail.c
  	/* Set date format for voicemail mail */
 +#ifdef HAVE_LOCALE_H
 +	if (*locale) {
-+		char *loc = ast_strdup(setlocale(LC_TIME, NULL));
 +		ast_mutex_lock(&setlocale_emaildate_lock);
++		char *loc = ast_strdup(setlocale(LC_TIME, NULL));
 +		setlocale(LC_TIME, locale);
 +		strftime(date, sizeof(date), emaildateformat, &tm);
 +		setlocale(LC_TIME, loc);
-+		ast_mutex_unlock(&setlocale_emaildate_lock);
 +		ast_free(loc);
++		ast_mutex_unlock(&setlocale_emaildate_lock);
 +	} else
 +		strftime(date, sizeof(date), emaildateformat, &tm);
 +#else
