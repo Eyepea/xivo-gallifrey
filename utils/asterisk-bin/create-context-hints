@@ -30,7 +30,7 @@ cursor.query("SELECT ${columns} FROM extensions "
              "AND name = %s "
              "AND context = %s",
              ('exten',),
-             ('voicemsg', 'xivo-features'))
+             ('vmusermsg', 'xivo-features'))
 res = cursor.fetchone()
 
 if res:
@@ -174,5 +174,6 @@ for (context,) in res:
 if vmexten:
     print "[xivo-features]"
     print "exten = _%s.,1,AGI(agi://${XIVO_AGID_IP}/user_get_vmbox,${EXTEN:%d})" % (vmexten, len(vmexten))
+    print "exten = _%s.,n,Macro(pickup,0)" % vmexten
     print "exten = _%s.,n,VoiceMailMain(${XIVO_MAILBOX}@${XIVO_MAILBOX_CONTEXT}|${XIVO_VMMAIN_OPTIONS})" % vmexten
     print "exten = _%s.,n,Hangup()" % vmexten
