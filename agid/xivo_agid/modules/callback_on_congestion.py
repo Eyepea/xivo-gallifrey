@@ -43,13 +43,13 @@ def callback_on_congestion(agi, cursor, args):
     spooldir = agi.get_variable('GETCONF(SPOOL_DIR)')
 
     if srcnum in (None, ''):
-        agi.dp_break("Unable to find srcnum, srcnum = '%s'" % srcnum)
+        agi.dp_break("Unable to find srcnum, srcnum = %r" % srcnum)
 
     if dstnum in (None, ''):
-        agi.dp_break("Unable to find dstnum, dstnum = '%s'" % dstnum)
+        agi.dp_break("Unable to find dstnum, dstnum = %r" % dstnum)
 
     if not context:
-        agi.dp_break("Unable to find context, context = '%s'" % context)
+        agi.dp_break("Unable to find context, context = %r" % context)
 
     if not spooldir:
         agi.dp_break("Unable to fetch AST_SPOOL_DIR")

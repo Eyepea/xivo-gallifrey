@@ -35,7 +35,7 @@ def callback(agi, cursor, args):
     spooldir = agi.get_variable('GETCONF(SPOOL_DIR)')
 
     if srcnum in (None, ''):
-        agi.dp_break("Unable to find srcnum, srcnum = '%s'" % srcnum)
+        agi.dp_break("Unable to find srcnum, srcnum = %r" % srcnum)
 
     if not spooldir:
         agi.dp_break("Unable to fetch AST_SPOOL_DIR")
