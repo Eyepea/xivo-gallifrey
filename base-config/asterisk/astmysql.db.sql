@@ -1166,9 +1166,10 @@ INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','att
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','volgain',0);
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','mailcmd','/usr/sbin/sendmail -t');
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','serveremail','xivo');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','locale','fr_FR.UTF-8');
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','charset','UTF-8');
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','fromstring','XIVO PBX');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','emaildateformat','%A, %B %d, %Y à %r');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','emaildateformat','%A %d %B %Y à %H:%M:%S %Z');
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','pbxskip','no');
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','emailsubject','Messagerie XIVO');
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','emailbody','Bonjour ${VM_NAME} !
