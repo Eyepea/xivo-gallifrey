@@ -309,7 +309,7 @@ class VMBox:
 
         self.cursor.query("UPDATE voicemail "
                           "SET commented = %s "
-                          "WHERE id = %s",
+                          "WHERE uniqueid = %s",
                           parameters = (enabled, self.id))
 
         if self.cursor.rowcount != 1:
