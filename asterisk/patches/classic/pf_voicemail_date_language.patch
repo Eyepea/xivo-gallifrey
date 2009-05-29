@@ -35,14 +35,15 @@ Index: asterisk-1.4.24/apps/app_voicemail.c
  static unsigned char adsifdn[4] = "\x00\x00\x00\x0F";
  static unsigned char adsisec[4] = "\x9B\xDB\xF7\xAC";
  static int adsiver = 1;
-@@ -3164,7 +3172,20 @@
+@@ -3164,7 +3173,21 @@
  	fprintf(p, "Date: %s" ENDL, date);
  
  	/* Set date format for voicemail mail */
 +#ifdef HAVE_LOCALE_H
 +	if (*locale) {
++		char *loc;
 +		ast_mutex_lock(&setlocale_emaildate_lock);
-+		char *loc = ast_strdup(setlocale(LC_TIME, NULL));
++		loc = ast_strdup(setlocale(LC_TIME, NULL));
 +		setlocale(LC_TIME, locale);
 +		strftime(date, sizeof(date), emaildateformat, &tm);
 +		setlocale(LC_TIME, loc);
