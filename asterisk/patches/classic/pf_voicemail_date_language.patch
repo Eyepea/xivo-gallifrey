@@ -1,0 +1,73 @@
+2007-08-20  Corentin Le Gall <clegall@proformatique.com>
+
+	pf_voicemail_date_language.patch
+	$Revision$
+	$Date$
+
+	The date language is appropriately set in the main body of
+	voicemail-issued e-mails.
+
+Index: asterisk-1.4.24/apps/app_voicemail.c
+===================================================================
+--- asterisk-1.4.24.orig/apps/app_voicemail.c	2009-03-06 19:23:09.000000000 +0100
++++ asterisk-1.4.24/apps/app_voicemail.c	2009-05-29 12:32:10.000000000 +0200
+@@ -65,6 +65,9 @@
+ #include <sys/types.h>
+ #include <sys/mman.h>
+ #include <time.h>
++#ifdef HAVE_LOCALE_H
++#include <locale.h>
++#endif
+ #include <dirent.h>
+ #ifdef IMAP_STORAGE
+ #include <ctype.h>
+@@ -576,6 +579,7 @@
+ static char fromstring[100];
+ static char pagerfromstring[100];
+ static char emailtitle[100];
++static char locale[32];
+ static char charset[32] = "ISO-8859-1";
+ 
+ static unsigned char adsifdn[4] = "\x00\x00\x00\x0F";
+@@ -3164,7 +3168,23 @@
+ 	fprintf(p, "Date: %s" ENDL, date);
+ 
+ 	/* Set date format for voicemail mail */
+-	strftime(date, sizeof(date), emaildateformat, &tm);
++	if (*locale) {
++#ifdef _XLOCALE_H
++		locale_t loc;
++		loc = newlocale(LC_TIME_MASK, locale, NULL);
++		strftime_l(date, sizeof(date), emaildateformat, &tm, loc);
++		freelocale(loc);
++#elif defined _LOCALE_H
++		char *loc = ast_strdup(setlocale(LC_TIME, NULL));
++		setlocale(LC_TIME, locale);
++		strftime(date, sizeof(date), emaildateformat, &tm);
++		setlocale(LC_TIME, loc);
++		ast_free(loc);
++#else
++		strftime(date, sizeof(date), emaildateformat, &tm);
++#endif
++	} else
++		strftime(date, sizeof(date), emaildateformat, &tm);
+ 
+ 	if (*fromstring) {
+ 		struct ast_channel *ast;
+@@ -8637,6 +8657,7 @@
+ 		memset(fromstring,0,sizeof(fromstring));
+ 		memset(pagerfromstring,0,sizeof(pagerfromstring));
+ 		memset(emailtitle,0,sizeof(emailtitle));
++		memset(locale,0,sizeof(locale));
+ 		strcpy(charset, "ISO-8859-1");
+ 		if (emailbody) {
+ 			free(emailbody);
+@@ -8660,6 +8681,8 @@
+ 			ast_copy_string(fromstring,s,sizeof(fromstring));
+ 		if ((s = ast_variable_retrieve(cfg, "general", "pagerfromstring")))
+ 			ast_copy_string(pagerfromstring,s,sizeof(pagerfromstring));
++		if ((s = ast_variable_retrieve(cfg, "general", "locale")))
++			ast_copy_string(locale,s,sizeof(locale));
+ 		if ((s = ast_variable_retrieve(cfg, "general", "charset")))
+ 			ast_copy_string(charset,s,sizeof(charset));
+ 		if ((s = ast_variable_retrieve(cfg, "general", "adsifdn"))) {
