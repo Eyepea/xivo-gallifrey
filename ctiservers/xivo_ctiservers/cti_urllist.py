@@ -73,13 +73,13 @@ class UrlList:
                 except urllib2.URLError, uerr:
                         errnum = uerr.reason[0]
                         if errnum == 113: # No route to host
-                                log.error('(UrlList) %s %s : %s' % (self.url, uerr.args[0].__class__, uerr.reason))
+                            log.error('(UrlList) %s %s : %s' % (self.url, uerr.args[0].__class__, uerr.reason))
                         elif errnum == 111: # Connection refused
-                                log.error('(UrlList) %s %s : %s' % (self.url, uerr.args[0].__class__, uerr.reason))
+                            log.error('(UrlList) %s %s : %s' % (self.url, uerr.args[0].__class__, uerr.reason))
                         else:
-                                # The connect operation timed out
-                                # The read operation timed out
-                                log.exception('(UrlList) %s %s : (untracked) %s' % (self.url, uerr.args[0].__class__, uerr.reason))
+                            # The connect operation timed out
+                            # The read operation timed out
+                            log.exception('(UrlList) %s %s : (untracked) %s' % (self.url, uerr.args[0].__class__, uerr.reason))
                         return -1
                 except Exception:
                         log.exception('(UrlList) unable to open URL %s' % self.url)

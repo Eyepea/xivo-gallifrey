@@ -62,25 +62,25 @@ class Fax:
                 log.info('size = %s (%d), number = %s, hide = %s'
                          % (self.size, len(buffer), self.number, self.hide))
                 if self.hide != '0':
-                        callerid = 'anonymous'
-                        
+                    callerid = 'anonymous'
+                    
                 reply = 'ko;unknown'
                 comm = commands.getoutput('file -b %s' % tmpfilepath)
                 brieffile = ' '.join(comm.split()[0:2])
                 if brieffile == 'PDF document,':
-                        pdf2fax_command = '%s -o %s %s' % (PDF2FAX, faxfilepath, tmpfilepath)
-                        log.info('fax (ref %s) PDF to TIF(F) : %s' % (self.reference, pdf2fax_command))
-                        reply = 'ko;convert-pdftif'
-                        sysret = os.system(pdf2fax_command)
-                        ret = os.WEXITSTATUS(sysret)
-                        if ret != 0:
-                                log.warning('fax (ref %s) PDF to TIF(F) returned : %s (exitstatus = %s, stopsignal = %s)'
-                                            % (self.reference, sysret, ret, os.WSTOPSIG(sysret)))
+                    pdf2fax_command = '%s -o %s %s' % (PDF2FAX, faxfilepath, tmpfilepath)
+                    log.info('fax (ref %s) PDF to TIF(F) : %s' % (self.reference, pdf2fax_command))
+                    reply = 'ko;convert-pdftif'
+                    sysret = os.system(pdf2fax_command)
+                    ret = os.WEXITSTATUS(sysret)
+                    if ret != 0:
+                        log.warning('fax (ref %s) PDF to TIF(F) returned : %s (exitstatus = %s, stopsignal = %s)'
+                                    % (self.reference, sysret, ret, os.WSTOPSIG(sysret)))
                 else:
-                        reply = 'ko;filetype'
-                        log.warning('fax (ref %s) the file received is a <%s> one : format not supported' % (self.reference, brieffile))
-                        ret = -1
-                        
+                    reply = 'ko;filetype'
+                    log.warning('fax (ref %s) the file received is a <%s> one : format not supported' % (self.reference, brieffile))
+                    ret = -1
+                    
                 if ret == 0:
                         if os.path.exists(PATH_SPOOL_ASTERISK_FAX):
                                 try:

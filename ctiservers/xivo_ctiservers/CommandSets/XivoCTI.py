@@ -4882,21 +4882,23 @@ class XivoCTICommand(BaseCommand):
         Deals only with the strict agent definitions.
         The 'user' part is dealt with only once the login has succeded, see ami_agentcallbacklogin.
         """
-        agentitem = self.weblist['agents'][astid].keeplist[agent_id]
-        # override the previously set value
-        if agentphonenumber:
-            agentitem['agentphonenumber'] = agentphonenumber
-            
-        agentphonenumber = agentitem.get('agentphonenumber')
-        agentnum = agentitem.get('number')
-        if agentnum and agentphonenumber:
-            if agentphonenumber.isdigit():
-                self.__ami_execute__(astid, 'agentcallbacklogin',
-                                     agentnum,
-                                     agentphonenumber,
-                                     agentitem.get('context'), agentitem.get('ackcall'))
-            else:
-                log.warning('%s __login_agent__ your agentphonenumber %s is not a digit' % (astid, agentphonenumber))
+        if agent_id and self.weblist['agents'][astid].keeplist.has_key(agent_id):
+            agentitem = self.weblist['agents'][astid].keeplist[agent_id]
+            # override the previously set value
+            if agentphonenumber:
+                agentitem['agentphonenumber'] = agentphonenumber
+                
+            agentphonenumber = agentitem.get('agentphonenumber')
+            agentnum = agentitem.get('number')
+            if agentnum and agentphonenumber:
+                if agentphonenumber.isdigit():
+                    self.__ami_execute__(astid, 'agentcallbacklogin',
+                                         agentnum,
+                                         agentphonenumber,
+                                         agentitem.get('context'), agentitem.get('ackcall'))
+                else:
+                    log.warning('%s __login_agent__ your agentphonenumber %s is not a digit'
+                                % (astid, agentphonenumber))
         return
     
     def __logout_agent__(self, astid, agent_id):
@@ -4905,16 +4907,17 @@ class XivoCTICommand(BaseCommand):
         Deals only with the strict agent definitions.
         The 'user' part is dealt with only once the logout has succeded, see ami_agentcallbacklogoff.
         """
-        agentitem = self.weblist['agents'][astid].keeplist[agent_id]
-        agentnum = agentitem.get('number')
-        # we could possibly delete agentitem['agentphonenumber'] here, but maybe not
-        if agentnum:
-            self.__ami_execute__(astid, 'agentlogoff',
-                                 agentnum)
-            agentlogoff_retry = threading.Timer(0.1, self.__callback_timer__, ('agentlogoff',))
-            agentlogoff_retry.start()
-            self.timerthreads_agentlogoff_retry[agentlogoff_retry] = {'astid' : astid,
-                                                                      'agentnumber' : agentnum}
+        if agent_id and self.weblist['agents'][astid].keeplist.has_key(agent_id):
+            agentitem = self.weblist['agents'][astid].keeplist[agent_id]
+            agentnum = agentitem.get('number')
+            # we could possibly delete agentitem['agentphonenumber'] here, but maybe not
+            if agentnum:
+                self.__ami_execute__(astid, 'agentlogoff',
+                                     agentnum)
+                agentlogoff_retry = threading.Timer(0.1, self.__callback_timer__, ('agentlogoff',))
+                agentlogoff_retry.start()
+                self.timerthreads_agentlogoff_retry[agentlogoff_retry] = {'astid' : astid,
+                                                                          'agentnumber' : agentnum}
         return
     
     
