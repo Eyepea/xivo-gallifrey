@@ -59,7 +59,7 @@ def vmbox_toggle_enabled(agi, cursor, args):
         agi.appexec('Authenticate', vmbox.password)
 
     try:
-        enabled = vmbox.toggle_feature()
+        enabled = vmbox.toggle_enable()
     except objects.DBUpdateException, e:
         agi.verbose(str(e))
 
