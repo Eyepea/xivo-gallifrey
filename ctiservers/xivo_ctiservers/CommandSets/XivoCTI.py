@@ -960,6 +960,7 @@ class XivoCTICommand(BaseCommand):
                                     'id' : gitem.get('id'),
                                     
                                     'agents_in_queue' : {},
+                                    'phones_in_queue' : {},
                                     'channels' : {},
                                     'queuestats' : {}
                                     }
@@ -979,6 +980,7 @@ class XivoCTICommand(BaseCommand):
                                     'id' : qitem.get('id'),
                                     
                                     'agents_in_queue' : {},
+                                    'phones_in_queue' : {},
                                     'channels' : {},
                                     'queuestats' : {}
                                     }
@@ -1453,7 +1455,12 @@ class XivoCTICommand(BaseCommand):
                                 userinfos.append(uinfo)
                     elif where in ['incomingqueue', 'incominggroup']:
                         queuename = event.get('Queue')
-                        queueorgroup = where[8:] + 's'
+                        if self.weblist['queues'][astid].hasqueue(queuename):
+                            queueorgroup = 'queues'
+                            queueid = self.weblist['queues'][astid].reverse_index[queuename]
+                        elif self.weblist['groups'][astid].hasqueue(queuename):
+                            queueorgroup = 'groups'
+                            queueid = self.weblist['groups'][astid].reverse_index[queuename]
                         # find who are the queue members
                         for agent_channel, status in self.weblist[queueorgroup][astid].keeplist[queueid]['agents_in_queue'].iteritems():
                             # XXX sip@queue
@@ -2321,6 +2328,7 @@ class XivoCTICommand(BaseCommand):
             if uid1info.get('link'):
                 if uid1info['link'].startswith('Agent/') and 'join' in uid1info:
                     queuename = uid1info['join'].get('queuename')
+                    queueid = uid1info['join'].get('queueid')
                     queueorgroup = uid1info['join'].get('queueorgroup')
                     clength = {'Xivo-Wait' : uid1info['time-link'] - uid1info['time-newchannel'],
                                'Xivo-Chat' : uid1info['time-unlink'] - uid1info['time-link']
@@ -4357,6 +4365,7 @@ class XivoCTICommand(BaseCommand):
             queuecontext = self.weblist[queueorgroup][astid].getcontext(queueid)
             if uniqueid in self.uniqueids[astid]:
                 self.uniqueids[astid][uniqueid]['join'] = {'queuename' : queuename,
+                                                           'queueid' : queueid,
                                                            'queueorgroup' : queueorgroup,
                                                            'time' : time.time()}
                 self.uniqueids[astid][uniqueid]['calleridnum'] = clidnum
@@ -5345,7 +5354,6 @@ class XivoCTICommand(BaseCommand):
                                     if qv.get('Paused') == '1':
                                         self.__ami_execute__(astid, 'queuepause', queuename,
                                                              'Agent/%s' % agentnumber, 'false')
-                                        
             elif actionname in ['agentlogin', 'agentlogout']:
                 agentphonenumber = args.get('agentphonenumber')
                 agentids = self.__mergelist__(userinfo, args.get('agentids').split(','))
