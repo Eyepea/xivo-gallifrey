@@ -445,13 +445,6 @@ endif;
 				  'default'	=> $element['voicemail']['mailcmd']['default']),
 			    'class="it-readonly" readonly="readonly"'),
 
-		$form->text(array('desc'	=> $this->bbf('fm_voicemail-locale'),
-				  'name'	=> 'voicemail[locale]',
-				  'labelid'	=> 'voicemail-locale',
-				  'size'	=> 15,
-				  'value'	=> $this->get_varra('voicemail',array('locale','var_val')),
-				  'default'	=> $element['voicemail']['locale']['default'])),
-
 		$form->text(array('desc'	=> $this->bbf('fm_voicemail-charset'),
 				  'name'	=> 'voicemail[charset]',
 				  'labelid'	=> 'voicemail-charset',
@@ -480,6 +473,13 @@ endif;
 				  'size'	=> 15,
 				  'value'	=> $this->get_varra('voicemail',array('emaildateformat','var_val')),
 				  'default'	=> $element['voicemail']['emaildateformat']['default'])),
+
+		$form->text(array('desc'	=> $this->bbf('fm_voicemail-emaildatelocale'),
+				  'name'	=> 'voicemail[emaildatelocale]',
+				  'labelid'	=> 'voicemail-emaildatelocale',
+				  'size'	=> 15,
+				  'value'	=> $this->get_varra('voicemail',array('emaildatelocale','var_val')),
+				  'default'	=> $element['voicemail']['emaildatelocale']['default'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_voicemail-pbxskip'),
 				      'name'	=> 'voicemail[pbxskip]',

@@ -178,9 +178,6 @@ Augmenter/diminuer le volume sonore du fichier joint :
 ; fm_voicemail-mailcmd
 Programme d'envoi d'e-mail :
 
-; fm_voicemail-locale
-Localisation :
-
 ; fm_voicemail-charset
 Encodage :
 
@@ -192,6 +189,9 @@ Expéditeur :
 
 ; fm_voicemail-emaildateformat
 Format de la date :
+
+; fm_voicemail-emaildatelocale
+Localisation de la date :
 
 ; fm_voicemail-pbxskip
 Enlever "[PBX]:" du sujet :

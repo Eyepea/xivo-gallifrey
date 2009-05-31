@@ -325,9 +325,6 @@ Format of the attached file:
 ; fm_voicemail-mailcmd
 Program to be used to send e-mails:
 
-; fm_voicemail-locale
-Locale:
-
 ; fm_voicemail-charset
 Encoding:
 
@@ -339,6 +336,9 @@ Sender:
 
 ; fm_voicemail-emaildateformat
 Date format:
+
+; fm_voicemail-emaildatelocale
+Date locale:
 
 ; fm_voicemail-pbxskip
 Remove "[PBX]:" from the subject:
