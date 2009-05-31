@@ -73,6 +73,9 @@ Utiliser ENUM :
 ; fm_outcall_internal
 Interne :
 
+; fm_outcall_preprocess-subroutine
+Sous-routine de prétraitement :
+
 ; fm_outcall_hangupringtime
 Temps de sonnerie avant de raccrocher :
 

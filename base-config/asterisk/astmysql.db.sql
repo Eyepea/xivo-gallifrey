@@ -566,6 +566,7 @@ CREATE TABLE `outcall` (
  `callerid` varchar(80) NOT NULL DEFAULT '',
  `useenum` tinyint(1) NOT NULL DEFAULT 0,
  `internal` tinyint(1) NOT NULL DEFAULT 0,
+ `preprocess_subroutine` varchar(39),
  `hangupringtime` smallint(3) unsigned NOT NULL DEFAULT 0,
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)

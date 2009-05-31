@@ -84,6 +84,9 @@ def outgoing_user_set_features(agi, cursor, args):
         # BUGBUG the context is missing in the filename TODO use ids
         agi.set_variable('XIVO_CALLRECORDFILE', "user-%s-%s-%s.wav" % (srcnum, orig_dstnum, int(time.time())))
 
+    if outcall.preprocess_subroutine:
+        agi.set_variable('XIVO_OUTCALLPREPROCESS_SUBROUTINE', outcall.preprocess_subroutine)
+
     if outcall.hangupringtime:
         agi.set_variable('XIVO_HANGUPRINGTIME', outcall.hangupringtime)
 

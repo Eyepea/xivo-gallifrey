@@ -882,7 +882,7 @@ class Outcall:
 
         columns = ('id', 'exten', 'context', 'externprefix', 'stripnum',
                    'setcallerid', 'callerid', 'useenum', 'internal',
-                   'hangupringtime')
+                   'preprocess_subroutine', 'hangupringtime')
 
         if xid:
             cursor.query("SELECT ${columns} FROM outcall "
@@ -915,6 +915,7 @@ class Outcall:
         self.callerid = res['callerid']
         self.useenum = res['useenum']
         self.internal = res['internal']
+        self.preprocess_subroutine = res['preprocess_subroutine']
         self.hangupringtime = res['hangupringtime']
 
         if not feature_list:

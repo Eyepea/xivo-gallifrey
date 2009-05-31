@@ -172,6 +172,13 @@ endif;
 				      'checked'	=> $info['outcall']['internal'],
 				      'default'	=> $element['outcall']['internal']['default'])),
 
+		$form->text(array('desc'	=> $this->bbf('fm_outcall_preprocess-subroutine'),
+				  'name'	=> 'outcall[preprocess_subroutine]',
+				  'labelid'	=> 'outcall-preprocess-subroutine',
+				  'size'	=> 15,
+				  'default'	=> $element['outcall']['preprocess_subroutine']['default'],
+				  'value'	=> $info['outcall']['preprocess_subroutine'])),
+
 		$form->select(array('desc'	=> $this->bbf('fm_outcall_hangupringtime'),
 				    'name'	=> 'outcall[hangupringtime]',
 				    'labelid'	=> 'outcall-hangupringtime',
