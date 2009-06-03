@@ -200,6 +200,8 @@ class Thomson(PhoneVendorMixin):
                   'user_phone_number':  provinfo['number'],
                   'user_phone_passwd':  provinfo['passwd'],
                   'user_vmail_addr':    provinfo['vmailaddr'],
+                  'asterisk_ipv4':      self.ASTERISK_IPV4,
+                  'ntp_server_ipv4':    self.NTP_SERVER_IPV4,
                   'simultcalls':        multilines,
                   # <WARNING: THIS FIELD MUST STAY IN LOWER CASE IN THE TEMPLATE AND MAC SPECIFIC FILE>
                   'config_sn':          self.__generate_timestamp(),
