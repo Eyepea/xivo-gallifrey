@@ -202,6 +202,8 @@ class Aastra(PhoneVendorMixin):
                   'user_phone_ident':   provinfo['ident'],
                   'user_phone_number':  provinfo['number'],
                   'user_phone_passwd':  provinfo['passwd'],
+                  'asterisk_ipv4':      self.ASTERISK_IPV4,
+                  'ntp_server_ipv4':    self.NTP_SERVER_IPV4,
                   'function_keys': function_keys_config_lines,
                 },
                 cfg_filename,
