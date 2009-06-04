@@ -75,15 +75,22 @@ def incoming_queue_set_features(agi, cursor, args):
             continue
 
         if user.number:
-                pickupmark.append("%s%%%s" % (user.number, user.context))
+            pickupmark.append("%s%%%s" % (user.number, user.context))
 
     agi.set_variable('__PICKUPMARK', '&'.join(pickupmark))
 
     if queue.preprocess_subroutine:
-        agi.set_variable('XIVO_QUEUEPREPROCESS_SUBROUTINE', queue.preprocess_subroutine)
+        preprocess_subroutine = queue.preprocess_subroutine
+    else:
+        preprocess_subroutine = ""
 
     if queue.timeout:
-        agi.set_variable('XIVO_QUEUETIMEOUT', queue.timeout)
+        timeout = queue.timeout
+    else:
+        timeout = ""
+
+    agi.set_variable('XIVO_QUEUEPREPROCESS_SUBROUTINE', preprocess_subroutine)
+    agi.set_variable('XIVO_QUEUETIMEOUT', timeout)
 
     queue.set_dial_actions()
 

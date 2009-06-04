@@ -44,7 +44,11 @@ def handynumbers(agi, cursor, args):
     agi.set_variable('XIVO_TRUNKEXTEN', dstnum)
 
     if trunk.intfsuffix:
-        agi.set_variable('XIVO_TRUNKSUFFIX', trunk.intfsuffix)
+        intfsuffix = trunk.intfsuffix
+    else:
+        intfsuffix = ""
+
+    agi.set_variable('XIVO_TRUNKSUFFIX', intfsuffix)
 
     if user and user.outcallerid and user.outcallerid != 'default':
         objects.CallerID.set(agi, user.outcallerid)

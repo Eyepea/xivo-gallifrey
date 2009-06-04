@@ -44,8 +44,11 @@ def user_get_vmbox(agi, cursor, args):
         agi.dp_break("User has no voicemail box (id: %d)" % user.id)
 
     if user.vmbox.skipcheckpass:
-        agi.set_variable('XIVO_VMMAIN_OPTIONS', "s")
+        vmmain_options = "s"
+    else:
+        vmmain_options = ""
 
+    agi.set_variable('XIVO_VMMAIN_OPTIONS', vmmain_options)
     agi.set_variable('XIVO_MAILBOX', user.vmbox.mailbox)
     agi.set_variable('XIVO_MAILBOX_CONTEXT', user.vmbox.context)
 

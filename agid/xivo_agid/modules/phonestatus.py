@@ -29,34 +29,61 @@ def phonestatus(agi, cursor, args):
     except (ValueError, LookupError), e:
         agi.dp_break(str(e))
 
-    if feature_list.fwdunc:
-        agi.set_variable('XIVO_ENABLEUNC', user.enableunc)
+    enableunc   = ""
+    destunc     = ""
+    enablebusy  = ""
+    destbusy    = ""
+    enablerna   = ""
+    destrna     = ""
 
-        if user.enableunc:
-            agi.set_variable('XIVO_DESTUNC', user.destunc)
+    if feature_list.fwdunc:
+        enableunc = user.enableunc
+
+        if enableunc:
+            destunc = user.destunc
 
     if feature_list.fwdbusy:
-        agi.set_variable('XIVO_ENABLEBUSY', user.enablebusy)
+        enablebusy = user.enablebusy
 
-        if user.enablebusy:
-            agi.set_variable('XIVO_DESTBUSY', user.destbusy)
+        if enablebusy:
+            destbusy = user.destbusy
 
     if feature_list.fwdrna:
-        agi.set_variable('XIVO_ENABLERNA', user.enablerna)
+        enablerna = user.enablerna
 
-        if user.enablerna:
-            agi.set_variable('XIVO_DESTRNA', user.destrna)
+        if enablerna:
+            destrna = user.destrna
+
+    agi.set_variable('XIVO_ENABLEUNC', enableunc)
+    agi.set_variable('XIVO_DESTUNC', destunc)
+    agi.set_variable('XIVO_ENABLEBUSY', enablebusy)
+    agi.set_variable('XIVO_DESTBUSY', destbusy)
+    agi.set_variable('XIVO_ENABLERNA', enablerna)
+    agi.set_variable('XIVO_DESTRNA', destrna)
 
     if user.vmbox:
-        agi.set_variable('XIVO_ENABLEVOICEMAIL', user.enablevoicemail)
+        enablevoicemail = user.enablevoicemail
+    else:
+        enablevoicemail = ""
 
     if feature_list.incallfilter:
-        agi.set_variable('XIVO_INCALLFILTER', user.callfilter)
+        incallfilter = user.callfilter
+    else:
+        incallfilter = ""
 
     if feature_list.incallrec:
-        agi.set_variable('XIVO_CALLRECORD', user.callrecord)
+        callrecord = user.callrecord
+    else:
+        callrecord = ""
 
     if feature_list.enablednd:
-        agi.set_variable('XIVO_ENABLEDND', user.enablednd)
+        enablednd = user.enablednd
+    else:
+        enablednd = ""
+
+    agi.set_variable('XIVO_ENABLEVOICEMAIL', enablevoicemail)
+    agi.set_variable('XIVO_INCALLFILTER', incallfilter)
+    agi.set_variable('XIVO_CALLRECORD', callrecord)
+    agi.set_variable('XIVO_ENABLEDND', enablednd)
 
 agid.register(phonestatus)

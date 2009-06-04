@@ -761,12 +761,19 @@ class DialAction:
         self.agi.set_variable('XIVO_FWD_%s_ISDA' % xtype, "1")
 
         if self.actionarg1:
-            self.agi.set_variable('XIVO_FWD_%s_ACTIONARG1' % xtype,
-                             self.actionarg1.replace('|', ';'))
+            actionarg1 = self.actionarg1.replace('|', ';')
+        else:
+            actionarg1 = ""
 
         if self.actionarg2:
-            self.agi.set_variable('XIVO_FWD_%s_ACTIONARG2' % xtype,
-                             self.actionarg2)
+            actionarg2 = self.actionarg2
+        else:
+            actionarg2 = ""
+
+        self.agi.set_variable('XIVO_FWD_%s_ACTIONARG1' % xtype,
+                              actionarg1)
+        self.agi.set_variable('XIVO_FWD_%s_ACTIONARG2' % xtype,
+                              actionarg2)
 
 
 class Trunk:

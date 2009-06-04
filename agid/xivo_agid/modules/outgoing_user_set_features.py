@@ -72,7 +72,11 @@ def outgoing_user_set_features(agi, cursor, args):
         agi.set_variable('XIVO_TRUNKEXTEN%d' % i, dstnum)
 
         if trunk.intfsuffix:
-            agi.set_variable('XIVO_TRUNKSUFFIX%d' % i, trunk.intfsuffix)
+            intfsuffix = trunk.intfsuffix
+        else:
+            intfsuffix = ""
+
+        agi.set_variable('XIVO_TRUNKSUFFIX%d' % i, intfsuffix)
 
     if callerid:
         objects.CallerID.set(agi, callerid)
@@ -82,15 +86,24 @@ def outgoing_user_set_features(agi, cursor, args):
 
     if callrecord and feature_list.incallrec:
         # BUGBUG the context is missing in the filename TODO use ids
-        agi.set_variable('XIVO_CALLRECORDFILE', "user-%s-%s-%s.wav" % (srcnum, orig_dstnum, int(time.time())))
+        callrecordfile = "user-%s-%s-%s.wav" % (srcnum, orig_dstnum, int(time.time()))
+    else:
+        callrecordfile = ""
 
     if outcall.preprocess_subroutine:
-        agi.set_variable('XIVO_OUTCALLPREPROCESS_SUBROUTINE', outcall.preprocess_subroutine)
+        preprocess_subroutine = outcall.preprocess_subroutine
+    else:
+        preprocess_subroutine = ""
 
     if outcall.hangupringtime:
-        agi.set_variable('XIVO_HANGUPRINGTIME', outcall.hangupringtime)
+        hangupringtime = outcall.hangupringtime
+    else:
+        hangupringtime = ""
 
     agi.set_variable('XIVO_OUTCALLID', outcall.id)
     agi.set_variable('XIVO_CALLOPTIONS', options)
+    agi.set_variable('XIVO_CALLRECORDFILE', callrecordfile)
+    agi.set_variable('XIVO_OUTCALLPREPROCESS_SUBROUTINE', preprocess_subroutine)
+    agi.set_variable('XIVO_HANGUPRINGTIME', hangupringtime)
 
 agid.register(outgoing_user_set_features)

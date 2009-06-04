@@ -66,15 +66,22 @@ def incoming_meetme_set_features(agi, cursor, args):
 
     if meetme.enableexitcontext and meetme.exitcontext:
         options += "X"
-        agi.set_variable('MEETME_EXIT_CONTEXT', meetme.exitcontext)
+        exitcontext = meetme.exitcontext
+    else:
+        exitcontext = ""
+
+    if meetme.preprocess_subroutine:
+        preprocess_subroutine = meetme.preprocess_subroutine
+    else:
+        preprocess_subroutine = ""
+
+    agi.set_variable('MEETME_EXIT_CONTEXT', exitcontext)
+    agi.set_variable('MEETME_RECORDINGFILE', "meetme-%s-%s" % (meetme.number, int(time.time())))
 
     agi.set_variable('XIVO_REAL_NUMBER', meetme.number)
     agi.set_variable('XIVO_REAL_CONTEXT', meetme.context)
-    agi.set_variable('MEETME_RECORDINGFILE', "meetme-%s-%s" % (meetme.number, int(time.time())))
     agi.set_variable('XIVO_MEETMENUMBER', meetme.number)
     agi.set_variable('XIVO_MEETMEOPTIONS', options)
-
-    if meetme.preprocess_subroutine:
-        agi.set_variable('XIVO_MEETMEPREPROCESS_SUBROUTINE', meetme.preprocess_subroutine)
+    agi.set_variable('XIVO_MEETMEPREPROCESS_SUBROUTINE', preprocess_subroutine)
 
 agid.register(incoming_meetme_set_features)

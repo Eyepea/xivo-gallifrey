@@ -111,39 +111,63 @@ def incoming_user_set_features(agi, cursor, args):
     agi.set_variable('XIVO_SIMULTCALLS', user.simultcalls)
 
     if user.ringseconds > 0:
-        agi.set_variable('XIVO_RINGSECONDS', user.ringseconds)
+        ringseconds = user.ringseconds
+    else:
+        ringseconds = ""
+
+    agi.set_variable('XIVO_RINGSECONDS', ringseconds)
 
     if feature_list.enablednd:
-        agi.set_variable('XIVO_ENABLEDND', user.enablednd)
+        enablednd = user.enablednd
     else:
-        agi.set_variable('XIVO_ENABLEDND', 0)
+        enablednd = 0
+
+    agi.set_variable('XIVO_ENABLEDND', enablednd)
+
+    enablevoicemail = 0
+    mailbox         = ""
+    mailbox_context = ""
+    useremail       = ""
 
     if feature_list.enablevm:
-        agi.set_variable('XIVO_ENABLEVOICEMAIL', user.enablevoicemail)
+        enablevoicemail = user.enablevoicemail
 
         if user.vmbox:
-            agi.set_variable('XIVO_MAILBOX', user.vmbox.mailbox)
-            agi.set_variable('XIVO_MAILBOX_CONTEXT', user.vmbox.context)
+            mailbox         = user.vmbox.mailbox
+            mailbox_context = user.vmbox.context
 
             if user.vmbox.email:
-                agi.set_variable('XIVO_USEREMAIL', user.vmbox.email)
-    else:
-        agi.set_variable('XIVO_ENABLEVOICEMAIL', 0)
+                useremail = user.vmbox.email
+
+    agi.set_variable('XIVO_ENABLEVOICEMAIL', enablevoicemail)
+    agi.set_variable('XIVO_MAILBOX', mailbox)
+    agi.set_variable('XIVO_MAILBOX_CONTEXT', mailbox_context)
+    agi.set_variable('XIVO_USEREMAIL', useremail)
+
+    enableunc       = ""
+    unc_action      = ""
+    unc_actionarg1  = ""
+    unc_actionarg2  = ""
 
     if feature_list.fwdunc:
-        agi.set_variable('XIVO_ENABLEUNC', user.enableunc)
+        enableunc = user.enableunc
 
-        if user.enableunc:
-            agi.set_variable('XIVO_FWD_USER_UNC_ACTION', 'extension')
-            agi.set_variable('XIVO_FWD_USER_UNC_ACTIONARG1', user.destunc)
-            agi.set_variable('XIVO_FWD_USER_UNC_ACTIONARG2', user.context)
-    else:
-        agi.set_variable('XIVO_ENABLEUNC', 0)
+        if enableunc:
+            unc_action      = 'extension'
+            unc_actionarg1  = user.destunc
+            unc_actionarg2  = user.context
+
+    agi.set_variable('XIVO_ENABLEUNC', enableunc)
+    agi.set_variable('XIVO_FWD_USER_UNC_ACTION', unc_action)
+    agi.set_variable('XIVO_FWD_USER_UNC_ACTIONARG1', unc_actionarg1)
+    agi.set_variable('XIVO_FWD_USER_UNC_ACTIONARG2', unc_actionarg2)
+
+    enablebusy = ""
 
     if feature_list.fwdbusy:
-        agi.set_variable('XIVO_ENABLEBUSY', user.enablebusy)
+        enablebusy = user.enablebusy
 
-        if user.enablebusy:
+        if enablebusy:
             agi.set_variable('XIVO_FWD_USER_BUSY_ACTION', 'extension')
             agi.set_variable('XIVO_FWD_USER_BUSY_ACTIONARG1', user.destbusy)
             agi.set_variable('XIVO_FWD_USER_BUSY_ACTIONARG2', user.context)
@@ -151,9 +175,15 @@ def incoming_user_set_features(agi, cursor, args):
             objects.DialAction(agi, cursor, 'busy', 'user', user.id).set_variables()
     else:
         agi.set_variable('XIVO_FWD_USER_BUSY_ACTION', 'none')
+        agi.set_variable('XIVO_FWD_USER_BUSY_ACTIONARG1', "")
+        agi.set_variable('XIVO_FWD_USER_BUSY_ACTIONARG2', "")
+
+    agi.set_variable('XIVO_ENABLEBUSY', enablebusy)
+
+    enablerna = ""
 
     if feature_list.fwdrna:
-        agi.set_variable('XIVO_ENABLERNA', user.enablerna)
+        enablerna = user.enablerna
 
         if user.enablerna:
             agi.set_variable('XIVO_FWD_USER_NOANSWER_ACTION', 'extension')
@@ -162,22 +192,36 @@ def incoming_user_set_features(agi, cursor, args):
         else:
             objects.DialAction(agi, cursor, 'noanswer', 'user', user.id).set_variables()
     else:
-        agi.set_variable('XIVO_FWD_USER_RNA_ACTION', 'none')
+        agi.set_variable('XIVO_FWD_USER_NOANSWER_ACTION', 'none')
+        agi.set_variable('XIVO_FWD_USER_NOANSWER_ACTIONARG1', "")
+        agi.set_variable('XIVO_FWD_USER_NOANSWER_ACTIONARG2', "")
+
+    agi.set_variable('XIVO_ENABLERNA', enablerna)
 
     objects.DialAction(agi, cursor, 'congestion', 'user', user.id).set_variables()
     objects.DialAction(agi, cursor, 'chanunavail', 'user', user.id).set_variables()
 
-    if feature_list.incallrec and user.callrecord:
-        # BUGBUG the context is missing in the filename TODO use ids
-        agi.set_variable('XIVO_CALLRECORDFILE', "user-%s-%s-%s.wav" % (srcnum, dstnum, int(time.time())))
-
     if user.musiconhold:
         agi.set_variable('CHANNEL(musicclass)', user.musiconhold)
 
+    if feature_list.incallrec and user.callrecord:
+        # BUGBUG the context is missing in the filename TODO use ids
+        callrecordfile = "user-%s-%s-%s.wav" % (srcnum, dstnum, int(time.time()))
+    else:
+        callrecordfile = ""
+
     if user.preprocess_subroutine:
-        agi.set_variable('XIVO_USERPREPROCESS_SUBROUTINE', user.preprocess_subroutine)
+        preprocess_subroutine = user.preprocess_subroutine
+    else:
+        preprocess_subroutine = ""
 
     if user.mobilephonenumber:
-        agi.set_variable('XIVO_MOBILEPHONENUMBER', user.mobilephonenumber)
+        mobilephonenumber = user.mobilephonenumber
+    else:
+        mobilephonenumber = ""
+
+    agi.set_variable('XIVO_CALLRECORDFILE', callrecordfile)
+    agi.set_variable('XIVO_USERPREPROCESS_SUBROUTINE', preprocess_subroutine)
+    agi.set_variable('XIVO_MOBILEPHONENUMBER', mobilephonenumber)
 
 agid.register(incoming_user_set_features)

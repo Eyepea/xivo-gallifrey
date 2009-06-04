@@ -61,15 +61,22 @@ def incoming_group_set_features(agi, cursor, args):
             continue
 
         if user.number:
-                pickupmark.append("%s%%%s" % (user.number, user.context))
+            pickupmark.append("%s%%%s" % (user.number, user.context))
 
     agi.set_variable('__PICKUPMARK', '&'.join(pickupmark))
 
     if group.preprocess_subroutine:
-        agi.set_variable('XIVO_GROUPPREPROCESS_SUBROUTINE', group.preprocess_subroutine)
+        preprocess_subroutine = group.preprocess_subroutine
+    else:
+        preprocess_subroutine = ""
 
     if group.timeout:
-        agi.set_variable('XIVO_GROUPTIMEOUT', group.timeout)
+        timeout = group.timeout
+    else:
+        timeout = ""
+
+    agi.set_variable('XIVO_GROUPPREPROCESS_SUBROUTINE', preprocess_subroutine)
+    agi.set_variable('XIVO_GROUPTIMEOUT', timeout)
 
     group.set_dial_actions()
 

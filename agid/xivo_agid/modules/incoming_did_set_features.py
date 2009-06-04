@@ -25,14 +25,17 @@ def incoming_did_set_features(agi, cursor, args):
 
     did = objects.DID(agi, cursor, exten = exten_pattern, context = context)
 
+    if did.preprocess_subroutine:
+        preprocess_subroutine = did.preprocess_subroutine
+    else:
+        preprocess_subroutine = ""
+
     agi.set_variable('XIVO_REAL_NUMBER', did.exten)
     agi.set_variable('XIVO_REAL_CONTEXT', did.context)
     agi.set_variable('XIVO_FAXDETECT_ENABLE', did.faxdetectenable)
     agi.set_variable('XIVO_FAXDETECT_TIMEOUT', did.faxdetecttimeout)
     agi.set_variable('XIVO_FAXDETECT_EMAIL', did.faxdetectemail)
-
-    if did.preprocess_subroutine:
-        agi.set_variable('XIVO_DIDPREPROCESS_SUBROUTINE', did.preprocess_subroutine)
+    agi.set_variable('XIVO_DIDPREPROCESS_SUBROUTINE', preprocess_subroutine)
 
     did.set_dial_actions()
     did.rewrite_cid()

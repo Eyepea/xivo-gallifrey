@@ -41,9 +41,13 @@ def vmbox_get_info(agi, cursor, args):
         except (ValueError, LookupError), e:
             agi.dp_break(str(e))
 
-    if vmbox.skipcheckpass:
-        agi.set_variable('XIVO_VMMAIN_OPTIONS', "s")
 
+    if vmbox.skipcheckpass:
+        vmmain_options = "s"
+    else:
+        vmmain_options = ""
+
+    agi.set_variable('XIVO_VMMAIN_OPTIONS', vmmain_options)
     agi.set_variable('XIVO_MAILBOX', vmbox.mailbox)
     agi.set_variable('XIVO_MAILBOX_CONTEXT', vmbox.context)
 
