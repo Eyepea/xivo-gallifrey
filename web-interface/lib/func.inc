@@ -61,7 +61,7 @@ function xivo_size_iec($size)
 	for($c = 0;$size >= 1024 && $c < 8;$c++)
 		$size /= 1024;
 
-	return(array(xivo_strfloat($size),$arr[$c]));
+	return(array(strval($size),$arr[$c]));
 }
 
 function xivo_size_si_to_byte($from,$size)
@@ -82,7 +82,7 @@ function xivo_size_si_to_byte($from,$size)
 	if(($pos = array_search($from,$arr,true)) === false)
 		return(false);
 
-	return(xivo_strfloat($size *= pow(1000,$pos)));
+	return(strval($size *= pow(1000,$pos)));
 }
 
 function xivo_bool($bool)
@@ -134,14 +134,6 @@ function xivo_haslen($val,$key=null)
 	return(isset($val{0}));
 }
 
-function xivo_strfloat($val)
-{
-	if(is_float($val) === true)
-		return(str_replace(',','.',$val));
-
-	return(strval($val));
-}
-
 function xivo_digit($str=0,$def=null,$t=false)
 {
 	if(ctype_digit(strval($str)) === true)
@@ -170,8 +162,6 @@ function xivo_xdigit($str=0,$def=null,$t=false)
 
 function xivo_uint($str,$def=0,$t=false)
 {
-	$def = intval($def);
-
 	if(is_scalar($str) === false)
 		$str = 0;
 	else
@@ -188,10 +178,8 @@ function xivo_uint($str,$def=0,$t=false)
 	return($str);
 }
 
-function xivo_ufloat($str,$def=0,$t=false,$strval=false)
+function xivo_ufloat($str,$def=0,$t=false)
 {
-	$def = floatval($def);
-
 	if(is_scalar($str) === false)
 		$str = 0;
 	else
@@ -202,13 +190,11 @@ function xivo_ufloat($str,$def=0,$t=false,$strval=false)
 			$str = (float) substr($str,1);
 	}
 
-	if((string) $def !== '0' && (string) $str === '0')
+	if($def !== 0 && (string) $str === '0')
 		$str = (bool) $t === false ? $def : xivo_ufloat($def);
 
-	if((string) $str === '0')
+	if(is_scalar($str) === true && (string) $str === '0')
 		return(0);
-	else if((bool) $strval === true)
-		return(xivo_strfloat($str));
 
 	return($str);
 }
@@ -226,6 +212,31 @@ function xivo_ulongint($str,$def=0,$t=false)
 		$str = 0;
 
 	return($str);
+}
+
+function xivo_unumber($str,$def=0,$t=false)
+{
+	$str = strval($str);
+
+	if(preg_match('/^0*([0-9]+(?:\.[0-9]+)?)0*$/',$str,$match) === 1)
+	{
+		if(($str = rtrim($match[1],'.0')) === '')
+			$str = 0;
+
+		return($str);
+	}
+
+	$str = (bool) $t === false ? strval($def) : xivo_unumber($def);
+
+	if($str === '0')
+		$str = 0;
+	
+	return($str);
+}
+
+function xivo_is_unumber($str)
+{
+	return((bool) preg_match('/^[0-9]+(?:\.[0-9]+)?$/',strval($str)));
 }
 
 function xivo_sgraph($str='',$def=null,$t=false)

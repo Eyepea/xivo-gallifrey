@@ -244,7 +244,7 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 			case 'meetme':
 				return($this->_voicemenu->chk_dest_meetme($actionarg1,null,$disable));
 			case 'voicemail':
-				return($this->_voicemenu->chk_dest_voicemail($actionarg1,null,$disable));
+				return($this->_voicemenu->chk_dest_voicemail($actionarg1,$actionarg2,null,$disable));
 			case 'schedule':
 				return($this->_voicemenu->chk_dest_schedule($actionarg1,null,$disable));
 			case 'voicemenu':

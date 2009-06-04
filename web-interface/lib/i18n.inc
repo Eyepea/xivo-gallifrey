@@ -173,6 +173,48 @@ class xivo_i18n
 		return(xivo_i18n::mediator('set_babelfish_path'));
 	}
 
+	function vsprintf_l($format,$locale,$value)
+	{
+		if($locale === null && defined('XIVO_I18N_BABELFISH_REAL_LOCALE') === true)
+			$locale = XIVO_I18N_BABELFISH_REAL_LOCALE;
+
+		$loc = setlocale(LC_ALL,null);
+		setlocale(LC_ALL,$locale);
+		$r = vsprintf(xivo_printf_escape($format,count($value)),$value);
+		setlocale(LC_ALL,$loc);
+
+		return($r);
+	}
+
+	function strftime_l($format,$locale,$timestamp=null)
+	{
+		if($locale === null && defined('XIVO_I18N_BABELFISH_REAL_LOCALE') === true)
+			$locale = XIVO_I18N_BABELFISH_REAL_LOCALE;
+
+		$loc = setlocale(LC_TIME,null);
+		setlocale(LC_TIME,$locale);
+		if($timestamp === null)
+			$r = strftime($format);
+		else
+			$r = strftime($format,$timestamp);
+		setlocale(LC_TIME,$loc);
+
+		return($r);
+	}
+
+	function gmlcstrftime_l($format,$time,$locale)
+	{
+		if($locale === null && defined('XIVO_I18N_BABELFISH_REAL_LOCALE') === true)
+			$locale = XIVO_I18N_BABELFISH_REAL_LOCALE;
+
+		$loc = setlocale(LC_TIME,null);
+		setlocale(LC_TIME,$locale);
+		$r = xivo_gmlcstrftime($format,$time);
+		setlocale(LC_TIME,$loc);
+
+		return($r);
+	}
+
 	function mediator($func,$name='',$value='')
 	{
 		static $mediator, $territory, $language = null;
@@ -193,7 +235,7 @@ class xivo_i18n
 		if($func === 'set_babelfish_path')
 			return($mediator->set_babelfish_path());
 
-		if($mediator->chk($name) === false)
+		if($mediator->chk($name) === false && $func !== 'attrib')
 			return($r);
 
 		switch($func)
@@ -439,17 +481,17 @@ class xivo_i18n
 
 				if(empty($value) === false)
 				{
-					$value = array_map('xivo_strfloat',array_filter($value,'is_scalar'));
+					$value = array_map('strval',array_filter($value,'is_scalar'));
 					$name_args = $name.'('.implode('|',$value).')';
 
 					if(isset($babelfish[$namespace][$name_args]) === true)
-						return(vsprintf(xivo_printf_escape($babelfish[$namespace][$name_args],
-										   count($value)),
-								$value));
+						return(xivo_i18n::vsprintf_l($babelfish[$namespace][$name_args],
+									     null,
+									     $value));
 					else if(isset($babelfish['_empty_'][$name_args]) === true)
-						return(vsprintf(xivo_printf_escape($babelfish['_empty_'][$name_args],
-										   count($value)),
-								$value));
+						return(xivo_i18n::vsprintf_l($babelfish['_empty_'][$name_args],
+									     null,
+									     $value));
 				}
 
 				if(isset($babelfish[$namespace][$name]) === false)
@@ -463,7 +505,7 @@ class xivo_i18n
 				$r = (string) $babelfish[$namespace][$name];
 
 				if(empty($value) === false)
-					$r = vsprintf(xivo_printf_escape($r,count($value)),$value);
+					$r = xivo_i18n::vsprintf_l($r,null,$value);
 				break;
 		}
 

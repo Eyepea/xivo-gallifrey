@@ -35,7 +35,12 @@ xivo_dialaction_actiontype['user'] = ['actiontype','actionarg1','actionarg2'];
 xivo_dialaction_actiontype['group'] = ['actiontype','actionarg1','actionarg2'];
 xivo_dialaction_actiontype['queue'] = ['actiontype','actionarg1','actionarg2'];
 xivo_dialaction_actiontype['meetme'] = ['actiontype','actionarg1'];
-xivo_dialaction_actiontype['voicemail'] = ['actiontype','actionarg1'];
+xivo_dialaction_actiontype['voicemail'] = ['actiontype',
+					   'actionarg1',
+					   'actionarg2-b',
+					   'actionarg2-s',
+					   'actionarg2-u',
+					   'actionarg2-j'];
 xivo_dialaction_actiontype['schedule'] = ['actiontype','actionarg1'];
 xivo_dialaction_actiontype['voicemenu'] = ['actiontype','actionarg1'];
 xivo_dialaction_actiontype['extension'] = ['actiontype','actionarg1','actionarg2'];

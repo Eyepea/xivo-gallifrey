@@ -79,7 +79,9 @@ $page = $url->pager($pager['pages'],
 		<td class="td-left" colspan="2"><?=xivo_htmlen($ref['login']);?></td>
 		<td><?=xivo_htmlen($ref['passwd']);?></td>
 		<td><?=$ref['meta']?></td>
-		<td><?=strftime($this->bbf('date_format_yymmdd'),$ref['dcreate']);?></td>
+		<td><?=xivo_i18n::strftime_l($this->bbf('date_format_yymmdd'),
+					     null,
+					     $ref['dcreate']);?></td>
 		<td><?=$this->bbf('valid_'.intval((bool) $ref['valid']));?></td>
 		<td class="td-right" colspan="2">
 <?php

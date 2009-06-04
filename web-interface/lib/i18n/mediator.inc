@@ -315,15 +315,13 @@ class xivo_i18n_mediator
 				$r = $this->set_locale();
 		}
 
-		$this->_set_locale($r);
-
 		if(empty($this->_attrib['territory']) === false)
 			$this->set_timezone();
 
 		return(($this->_attrib['locale'] = $r));
 	}
 
-	function _set_locale($locale)
+	function get_real_locale($locale)
 	{
 		$locale = (string) $locale;
 
@@ -342,8 +340,9 @@ class xivo_i18n_mediator
 		$locales[] = $info['locale'];
 		$locales[] = $info['lang'];
 
+		$loc = setlocale(LC_ALL,null);
 		$r = setlocale(LC_ALL,$locales);
-		setlocale(LC_MESSAGES,NULL);
+		setlocale(LC_ALL,$loc);
 
 		return($r);
 	}
@@ -518,11 +517,15 @@ class xivo_i18n_mediator
 					continue;
 				else if($define === true)
 				{
+					if(($real_locale = $this->get_real_locale($nlocale)) === false)
+						$real_locale = $nlocale;
+
 					define('XIVO_I18N_BABELFISH_LANGUAGE',
 						$this->_mediator['locale']->get_language($nlocale));
 					define('XIVO_I18N_BABELFISH_TERRITORY',
 						$this->_mediator['locale']->get_territory($nlocale));
 					define('XIVO_I18N_BABELFISH_LOCALE',$nlocale);
+					define('XIVO_I18N_BABELFISH_REAL_LOCALE',$real_locale);
 					define('XIVO_I18N_BABELFISH_PATH',$dir);
 				}
 				return($dir);
@@ -535,9 +538,13 @@ class xivo_i18n_mediator
 		{
 			if($define === true)
 			{
+				if(($real_locale = $this->get_real_locale($locale)) === false)
+					$real_locale = $locale;
+
 				define('XIVO_I18N_BABELFISH_LANGUAGE',$this->_mediator['locale']->get_language($locale));
 				define('XIVO_I18N_BABELFISH_TERRITORY',$this->_mediator['locale']->get_territory($locale));
 				define('XIVO_I18N_BABELFISH_LOCALE',$locale);
+				define('XIVO_I18N_BABELFISH_REAL_LOCALE',$real_locale);
 				define('XIVO_I18N_BABELFISH_PATH',$dir);
 			}
 			return($dir);

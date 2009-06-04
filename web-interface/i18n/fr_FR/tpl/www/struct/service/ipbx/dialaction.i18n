@@ -58,6 +58,18 @@ Messagerie vocale
 ; fm_dialaction_voicemail-actionarg1
 Renvoyez vers :
 
+; fm_dialaction_voicemail-actionarg2-b
+Jouer le message d'occupation :
+
+; fm_dialaction_voicemail-actionarg2-s
+Ne pas jouer le message d'introduction :
+
+; fm_dialaction_voicemail-actionarg2-u
+Jouer le message de non disponibilité :
+
+; fm_dialaction_voicemail-actionarg2-j
+Utiliser la méthode n+101 :
+
 ; fm_dialaction_actiontype-opt-schedule
 Horaire
 

@@ -157,7 +157,7 @@ $dhtml->write_js($js_result);
 				  'field'	=> false,
 				  'name'	=> 'dbeg',
 				  'labelid'	=> 'dbeg',
-				  'default'	=> $element['dbeg']['default'],
+				  'default'	=> xivo_i18n::strftime_l('%Y-%m-%d',null),
 				  'value'	=> $info['dbeg']));
 ?>
 <a href="#"
@@ -503,7 +503,9 @@ endif;
 		     						   ? 'table-row'
 								   : 'none';">
 		<td class="td-left">
-			<a href="#" onclick="return(false);"><?=strftime($this->bbf('date_format_yymmddhhiiss'),
+			<a href="#" onclick="return(false);"><?=xivo_i18n::strftime_l(
+								$this->bbf('date_format_yymmddhhiiss'),
+								null,
 								strtotime($ref['calldate']));?></a>
 		</td>
 		<td><?=$src?></td>

@@ -39,7 +39,31 @@ if(empty($list) === false):
 				    'invalid'	=> ($linked === false && $action === 'voicemail'),
 				    'default'	=> $element['dialaction']['actionarg1']['default'],
 				    'value'	=> $this->get_varra('dialaction',array($event,'voicemail','actionarg1'))),
-			      $list);
+			      $list),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_dialaction_voicemail-actionarg2-b'),
+				      'name'	=> 'dialaction['.$event.'][actionarg2][b]',
+				      'labelid'	=> 'dialaction-'.$event.'-voicemail-actionarg2-b',
+				      'checked'	=> $this->get_varra('dialaction',array($event,'voicemail','actionarg2','b')),
+				      'value'	=> 'b')),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_dialaction_voicemail-actionarg2-s'),
+				      'name'	=> 'dialaction['.$event.'][actionarg2][s]',
+				      'labelid'	=> 'dialaction-'.$event.'-voicemail-actionarg2-s',
+				      'checked'	=> $this->get_varra('dialaction',array($event,'voicemail','actionarg2','s')),
+				      'value'	=> 's')),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_dialaction_voicemail-actionarg2-u'),
+				      'name'	=> 'dialaction['.$event.'][actionarg2][u]',
+				      'labelid'	=> 'dialaction-'.$event.'-voicemail-actionarg2-u',
+				      'checked'	=> $this->get_varra('dialaction',array($event,'voicemail','actionarg2','u')),
+				      'value'	=> 'u')),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_dialaction_voicemail-actionarg2-j'),
+				      'name'	=> 'dialaction['.$event.'][actionarg2][j]',
+				      'labelid'	=> 'dialaction-'.$event.'-voicemail-actionarg2-j',
+				      'checked'	=> $this->get_varra('dialaction',array($event,'voicemail','actionarg2','j')),
+				      'value'	=> 'j'));
 
 	if($event === 'voicemenuflow'):
 		echo	$form->button(array('name'	=> 'add-defapplication-voicemail',

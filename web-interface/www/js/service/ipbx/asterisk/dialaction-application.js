@@ -170,11 +170,35 @@ function xivo_ast_defapplication_voicemail(dialevent,targetid)
 {
 	if((voicemail = xivo_eid('it-dialaction-'+dialevent+'-voicemail-actionarg1')) === false
 	|| voicemail.type !== 'select-one'
-	|| xivo_is_undef(voicemail.options[voicemail.selectedIndex]) === true)
+	|| xivo_is_undef(voicemail.options[voicemail.selectedIndex]) === true
+	|| (option_b = xivo_eid('it-dialaction-'+dialevent+'-voicemail-actionarg2-b')) === false
+	|| (option_s = xivo_eid('it-dialaction-'+dialevent+'-voicemail-actionarg2-s')) === false
+	|| (option_u = xivo_eid('it-dialaction-'+dialevent+'-voicemail-actionarg2-u')) === false
+	|| (option_j = xivo_eid('it-dialaction-'+dialevent+'-voicemail-actionarg2-j')) === false)
 		return(false);
 
 	var optargs = new Array('\''+voicemail.options[voicemail.selectedIndex].text+'\'');
 	var valargs = new Array(voicemail.value);
+
+	var options = '';
+
+	if(option_b.checked === true)
+		options += 'b';
+
+	if(option_s.checked === true)
+		options += 's';
+
+	if(option_u.checked === true)
+		options += 'u';
+
+	if(option_j.checked === true)
+		options += 'j';
+
+	if(options.length > 0)
+	{
+		optargs.push(options);
+		valargs.push(options);
+	}
 
 	return(xivo_ast_set_defapplication('macro|voicemail',targetid,optargs,valargs));
 }
@@ -307,13 +331,13 @@ function xivo_ast_defapplication_sound(dialevent,targetid)
 
 	var options = '';
 
-	if(option_skip.checked == true)
+	if(option_skip.checked === true)
 		options += 'skip';
 
-	if(option_noanswer.checked == true)
+	if(option_noanswer.checked === true)
 		options += 'noanswer';
 
-	if(option_j.checked == true)
+	if(option_j.checked === true)
 		options += 'j';
 
 	if(options.length > 0)

@@ -104,7 +104,9 @@ $page = $url->pager($pager['pages'],
 						 'id'	=> $ref['name'],
 						 'page'	=> $pager['page']));?>
 		</td>
-		<td><?=strftime($this->bbf('date_format_yymmddhhii'),$ref['mtime']);?></td>
+		<td><?=xivo_i18n::strftime_l($this->bbf('date_format_yymmddhhii'),
+					     null,
+					     $ref['mtime']);?></td>
 		<td class="td-right" colspan="2">
 <?php
 			echo	$url->href_html($url->img_html('img/site/button/edit.gif',

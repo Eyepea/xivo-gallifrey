@@ -68,7 +68,9 @@ $page = $url->pager($pager['pages'],
 					 'id'	=> $ref['name']));?>
 		</td>
 		<td class="td-center"><?=$this->bbf('size_iec_'.$size[1],$size[0]);?></td>
-		<td class="td-right" colspan="2"><?=strftime($this->bbf('date_format_yymmddhhii'),$ref['stat']['mtime']);?></td>
+		<td class="td-right" colspan="2"><?=xivo_i18n::strftime_l($this->bbf('date_format_yymmddhhii'),
+									  null,
+									  $ref['stat']['mtime']);?></td>
 	</tr>
 <?php
 		endfor;
