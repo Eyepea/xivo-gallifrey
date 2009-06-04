@@ -65,6 +65,7 @@ NameVirtualHost *:80
 	</Location>
 
 	# Used for Aastra phones provisioning
+	Alias /provisioning/Aastra/aastra.cfg /tftpboot/Aastra/aastra.php
 	Alias /provisioning/Aastra/ /tftpboot/Aastra/
 	<Location /provisioning/Aastra/>
 		Allow from all
