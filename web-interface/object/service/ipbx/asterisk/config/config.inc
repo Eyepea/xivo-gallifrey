@@ -97,6 +97,10 @@ define('XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN_EXTEN','(?:[0-9\*#]{1,40}'.
 						 '|(?:[0-9\*#]*'.
 						 XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN.
 						 '[0-9\*#]*)+)');
+define('XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN_EXTEN_EXTENDED','(?:[a-zA-Z0-9_\*#]{1,40}'.
+							  '|(?:[a-zA-Z0-9_\*#]*'.
+							  XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN.
+							  '[a-zA-Z0-9_\*#]*)+)');
 define('XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN_CONTEXT','(?:'.XIVO_SRE_IPBX_AST_REGEXP_CONTEXT.
 						   '|(?:[a-zA-Z0-9_-]*'.
 						   XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN.

@@ -21,7 +21,7 @@
 $array['element'] = array();
 
 $array['element']['dbeg'] = array();
-$array['element']['dbeg']['default'] = strftime('%Y-%m-%d');
+$array['element']['dbeg']['default'] = '';
 $array['element']['dbeg']['unset'] = true;
 
 $array['element']['dend'] = array();

@@ -160,7 +160,7 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 		$r['action'] = 'sound';
 		$r['actionarg1'] = $actionarg1;
 
-		if(isset($actionarg2{0}) === false)
+		if(xivo_haslen($actionarg2) === false)
 			return($r);
 
 		$r['actionarg2'] = '';
@@ -270,7 +270,7 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 					$context));
 	}
 
-	function chk_dest_voicemail($actionarg1,$id=null,$disable=null)
+	function chk_dest_voicemail($actionarg1,$actionarg2='',$id=null,$disable=null)
 	{
 		if($id !== null)
 			$id = xivo_ulongint($id);
@@ -283,6 +283,22 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 		$r = array();
 		$r['action'] = 'voicemail';
 		$r['actionarg1'] = $info['uniqueid'];
+		$r['actionarg2'] = '';
+
+		if(xivo_haslen($actionarg2) === false)
+			return($r);
+
+		if(strpos($actionarg2,'b') !== false)
+			$r['actionarg2'] .= 'b';
+
+		if(strpos($actionarg2,'s') !== false)
+			$r['actionarg2'] .= 's';
+
+		if(strpos($actionarg2,'u') !== false)
+			$r['actionarg2'] .= 'u';
+
+		if(strpos($actionarg2,'j') !== false)
+			$r['actionarg2'] .= 'j';
 
 		return($r);
 	}

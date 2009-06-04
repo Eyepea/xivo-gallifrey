@@ -80,18 +80,35 @@ class xivo_service_asterisk_dialaction extends xivo_service_asterisk_abstract
 			$data[$exp[0]]['actionarg1'] = $data['actionarg1'];
 			$data[$exp[0]]['actionarg2'] = $data['actionarg2'];
 
-			if($exp[0] === 'sound')
+			switch($exp[0])
 			{
-				$data['sound']['actionarg2'] = array();
+				case 'sound':
+					$data['sound']['actionarg2'] = array();
 
-				if(strpos($data['actionarg2'],'skip') !== false)
-					$data['sound']['actionarg2']['skip'] = true;
+					if(strpos($data['actionarg2'],'skip') !== false)
+						$data['sound']['actionarg2']['skip'] = true;
 
-				if(strpos($data['actionarg2'],'noanswer') !== false)
-					$data['sound']['actionarg2']['noanswer'] = true;
+					if(strpos($data['actionarg2'],'noanswer') !== false)
+						$data['sound']['actionarg2']['noanswer'] = true;
 
-				if(strpos($data['actionarg2'],'j') !== false)
-					$data['sound']['actionarg2']['j'] = true;
+					if(strpos($data['actionarg2'],'j') !== false)
+						$data['sound']['actionarg2']['j'] = true;
+					break;
+				case 'voicemail':
+					$data['voicemail']['actionarg2'] = array();
+
+					if(strpos($data['actionarg2'],'b') !== false)
+						$data['voicemail']['actionarg2']['b'] = true;
+
+					if(strpos($data['actionarg2'],'s') !== false)
+						$data['voicemail']['actionarg2']['s'] = true;
+
+					if(strpos($data['actionarg2'],'u') !== false)
+						$data['voicemail']['actionarg2']['u'] = true;
+
+					if(strpos($data['actionarg2'],'j') !== false)
+						$data['voicemail']['actionarg2']['j'] = true;
+					break;
 			}
 		}
 
@@ -176,15 +193,27 @@ class xivo_service_asterisk_dialaction extends xivo_service_asterisk_abstract
 			case 'endcall:hangup':
 				return($this->chk_dest_endcall('hangup'));
 			case 'user':
+				if(xivo_haslen($actionarg2) === true
+				&& xivo_is_unumber($actionarg2) === false)
+					return(false);
+
 				return($this->chk_dest_user($actionarg1,$actionarg2,$id,$disable));
 			case 'group':
+				if(xivo_haslen($actionarg2) === true
+				&& xivo_is_unumber($actionarg2) === false)
+					return(false);
+
 				return($this->chk_dest_group($actionarg1,$actionarg2,$id,$disable));
 			case 'queue':
+				if(xivo_haslen($actionarg2) === true
+				&& xivo_is_unumber($actionarg2) === false)
+					return(false);
+
 				return($this->chk_dest_queue($actionarg1,$actionarg2,$id,$disable));
 			case 'meetme':
 				return($this->chk_dest_meetme($actionarg1,null,$disable));
 			case 'voicemail':
-				return($this->chk_dest_voicemail($actionarg1,null,$disable));
+				return($this->chk_dest_voicemail($actionarg1,$actionarg2,null,$disable));
 			case 'schedule':
 				return($this->chk_dest_schedule($actionarg1,$id,$disable));
 			case 'voicemenu':

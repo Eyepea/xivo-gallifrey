@@ -194,7 +194,7 @@ $array['app']['goto']['arg'][0] = array('set'		=> false,
 					'regexp'	=> '/^'.XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN_CONTEXT.'$/');
 $array['app']['goto']['arg'][1] = array('set'		=> false,
 					'chk'		=> 2,
-					'regexp'	=> '/^'.XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN_EXTEN.'$/');
+					'regexp'	=> '/^'.XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN_EXTEN_EXTENDED.'$/');
 $array['app']['goto']['arg'][2] = array('minlen'	=> 1,
 					'regexp'	=> '/^(?:[a-zA-Z0-9_\+\-]{1,42}'.
 							   '|(?:[a-zA-Z0-9_\+\-]*'.
