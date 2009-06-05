@@ -90,21 +90,6 @@ class Aastra(PhoneVendorMixin):
 
             # once we have been authenticated, we can POST the appropriate commands
 
-            # first : upgrade
-            # this seems to be compulsory when taking the phones out of their box, since the tftpboot parameters
-            # can not handle the Aastra/ subdirectory with the out-of-the-box version
-            subprocess.call([self.CURL_CMD,
-                             "--retry", "0",
-                             "--connect-timeout", str(cnx_to),
-                             "--max-time", str(max_to),
-                             "-s",
-                             "-o", "/dev/null",
-                             "-u", "%s:%s" % (user, passwd),
-                             "http://%s/upgrade.html" % self.phone['ipv4'],
-                             "-d", "tftp=%s&file=Aastra/%s.st" % (self.ASTERISK_IPV4, self.phone['model'])],
-                            close_fds = True)
-
-            # then reset
             subprocess.call([self.CURL_CMD,
                              "--retry", "0",
                              "--connect-timeout", str(cnx_to),
@@ -282,7 +267,7 @@ class Aastra(PhoneVendorMixin):
 
             for line in (
                 '    log("boot Aastra %s");\n' % model,
-                '    option tftp-server-name "http://%s/provisioning/Aastra/";\n' % addresses['bootServer'],
+                '    option tftp-server-name "http://%s/provisioning/Aastra";\n' % addresses['bootServer'],
                 '    next-server %s;\n' % addresses['bootServer'],
                 '}\n',
                 '\n'):
@@ -293,7 +278,7 @@ class Aastra(PhoneVendorMixin):
                 'subclass "phone-mac-address-prefix" %s {\n' % macaddr_prefix,
                 '    if not exists vendor-class-identifier {\n',
                 '        log("class Aastra prefix %s");\n' % macaddr_prefix,
-                '        option tftp-server-name "http://%s/provisioning/Aastra/";\n' % addresses['bootServer'],
+                '        option tftp-server-name "http://%s/provisioning/Aastra";\n' % addresses['bootServer'],
                 '        next-server %s;\n' % addresses['bootServer'],
                 '    }\n',
                 '}\n',
