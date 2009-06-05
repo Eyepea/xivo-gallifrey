@@ -42,7 +42,7 @@ if($prevpos > 0):
 			       $prevparam,
 			       true,
 			       $argseparator,
-			       false).'"';
+			       false);
 else:
 	$previous = '';
 endif;
@@ -76,6 +76,13 @@ if(is_array($list) === false || ($nb = count($list)) === 0):
 			'</MenuItem>',"\n";
 	endif;
 else:
+	if($has_softkeys === false):
+		echo	'<MenuItem>',"\n",
+			'<Prompt>[',$xmlvendor->escape($this->bbf('phone_back')),']</Prompt>',"\n",
+			'<URI>',$previous,'</URI>',"\n",
+			'</MenuItem>',"\n";
+	endif;
+
 	for($i = 0;$i < $nb;$i++):
 		$ref = &$list[$i];
 
