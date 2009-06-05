@@ -22,7 +22,7 @@ require_once(xivo_file::joinpath(XIVO_PATH_LIB,'tpl','module.inc'));
 
 class xivo_tpl_xmlphone extends xivo_tpl_module
 {
-	var $_vendor		= null;
+	var $_vendor	= null;
 
 	function xivo_tpl_xmlphone(&$tpl)
 	{
@@ -67,63 +67,6 @@ class xivo_tpl_xmlphone extends xivo_tpl_module
 
 		return(false);
 	}
-/*
-	function _load_vendor($vendor)
-	{
-		if(($vendor = $this->chk_vendor($vendor)) === false)
-			return(false);
-
-		$dir = array(XIVO_PATH_LIB,
-			     'tpl',
-			     'module',
-			     'xmlphone',
-			     $vendor);
-
-		$classname = 'xivo_tpl_xmlphone_'.$vendor;
-
-		if(xivo::load_class($classname,$dir,$vendor) === false)
-			return(false);
-
-		return(new $classname());
-
-		switch($vendor)
-		{
-			case 'aastra':
-				$this->_tag['menu'] = 'AastraIPPhoneTextMenu';
-				$this->_tag['directory'] = 'AastraIPPhoneDirectory';
-				$this->_tag['input'] = 'AastraIPPhoneInputScreen';
-				$this->_argseparator = '&amp;';
-				$this->_cdata = true;
-				$this->_escape = false;
-				$this->_utf8 = false;
-				break;
-			case 'snom':
-				$this->_tag['menu'] = 'SnomIPPhoneMenu';
-				$this->_tag['directory'] = 'SnomIPPhoneDirectory';
-				$this->_tag['input'] = 'SnomIPPhoneInput';
-				$this->_argseparator = '&';
-				$this->_cdata = false;
-				$this->_escape = false;
-				$this->_utf8 = true;
-				break;
-			case 'thomson':
-				$this->_tag['menu'] = 'ThomsonPhoneMenu';
-				$this->_tag['directory'] = 'ThomsonPhoneBook';
-				$this->_tag['input'] = '';
-				$this->_argseparator = '&amp;';
-				$this->_cdata = true;
-				$this->_escape = false;
-				$this->_utf8 = false;
-				break;
-			default:
-				return(false);
-		}
-
-		$this->_vendor = $vendor;
-
-		return(true);
-	}
-*/
 
 	function get_vendor()
 	{
