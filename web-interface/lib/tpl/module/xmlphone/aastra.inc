@@ -28,10 +28,11 @@ class xivo_tpl_xmlphone_aastra extends xivo_tpl_xmlphone_abstract
 	var $_cdata		= true;
 	var $_escape		= false;
 	var $_utf8		= false;
-	var $_model_standardize	= array('51i' => '6751i',
-					'53i' => '6753i',
-					'55i' => '6755i',
-					'57i' => '6757i');
+	var $_model_standardize	= array('51i'		=> '6751i',
+					'53i'		=> '6753i',
+					'55i'		=> '6755i',
+					'57i'		=> '6757i',
+					'57i CT'	=> '6757i CT');
 
 	function xivo_tpl_xmlphone_aastra()
 	{
@@ -41,7 +42,7 @@ class xivo_tpl_xmlphone_aastra extends xivo_tpl_xmlphone_abstract
 	function get_model()
 	{
 		if(isset($_SERVER['HTTP_USER_AGENT']) === false
-		|| preg_match('/^Aastra((?:67)?5[1357]|673[01]i(?: CT)?) /',
+		|| preg_match('/^Aastra((?:(?:67)?5[1357]|673[01])i(?: CT)?) /',
 			      $_SERVER['HTTP_USER_AGENT'],
 			      $match) !== 1)
 			return(null);
@@ -55,8 +56,6 @@ class xivo_tpl_xmlphone_aastra extends xivo_tpl_xmlphone_abstract
 	{
 		switch($this->_model)
 		{
-			case '9480i':
-			case '9480i CT':
 			case '6755i':
 			case '6757i':
 			case '6757i CT':
