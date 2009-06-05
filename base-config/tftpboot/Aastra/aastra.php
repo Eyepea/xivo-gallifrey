@@ -21,13 +21,14 @@
 
 define('AASTRA_CONF_FILENAME','aastra.cfg');
 
-$modelstandardize = array('51i' => '6751i',
-			  '53i' => '6753i',
-			  '55i' => '6755i',
-			  '57i' => '6757i');
+$modelstandardize = array('51i'		=> '6751i',
+			  '53i'		=> '6753i',
+			  '55i' 	=> '6755i',
+			  '57i'		=> '6757i',
+			  '57i CT'	=> '6757i CT');
 
 if(isset($_SERVER['HTTP_USER_AGENT']) === false
-|| preg_match('/^Aastra((?:67)?5[1357]|673[01]i) /',
+|| preg_match('/^Aastra((?:(?:67)?5[1357]|673[01])i(?: CT)?) /',
 	      $_SERVER['HTTP_USER_AGENT'],
 	      $match) !== 1)
 	die();
