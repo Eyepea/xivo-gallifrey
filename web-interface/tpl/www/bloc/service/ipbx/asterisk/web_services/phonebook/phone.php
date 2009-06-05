@@ -18,13 +18,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$xmlphone = &$this->get_module('xmlphone',
-			       array('vendor'	=> $this->get_var('vendor')));
+$xmlphone = &$this->get_module('xmlphone');
+$xmlvendor = $xmlphone->factory($this->get_var('vendor'));
 
-if(($vendor = $directory = $xmlphone->get_vendor()) === false)
+if(($vendor = $directory = $xmlvendor->get_vendor()) === false)
 	xivo_die('Error/Invalid Vendor and User-Agent');
 
-header($xmlphone->get_header_contenttype());
+header($xmlvendor->get_header_contenttype());
 
 switch($vendor)
 {

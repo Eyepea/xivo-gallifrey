@@ -19,28 +19,29 @@
 #
 
 $url = &$this->get_module('url');
-$xmlphone = &$this->get_module('xmlphone',array('vendor' => $this->get_var('vendor')));
+$xmlphone = &$this->get_module('xmlphone');
+$xmlvendor = $xmlphone->factory($this->get_var('vendor'));
 
 $list = $this->get_var('list');
 $pos = (int) $this->get_var('pos');
 $prevpos = $this->get_var('prevpos');
 
-$tagdirectory = $xmlphone->get_tag('directory');
+$tagdirectory = $xmlvendor->tag_directory();
 
 echo '<',$tagdirectory,'>',"\n";
 
-if($xmlphone->get_vendor() === 'thomson' && $prevpos > 0):
+if($xmlvendor->get_vendor() === 'thomson' && $prevpos > 0):
 	$prevparam = array();
 	$prevparam['node'] = 1;
 	$prevparam['pos'] = floor($pos / $prevpos) * $prevpos;
 	$prevparam['name'] = $this->get_var('name');
 
 	echo	'<MenuItem>',"\n",
-		'<Item>[',$xmlphone->escape($this->bbf('phone_back')),']</Item>',"\n",
+		'<Item>[',$xmlvendor->escape($this->bbf('phone_back')),']</Item>',"\n",
 		'<URL>',$url->href('service/ipbx/web_services/phonebook/search',
 				   $prevparam,
 				   true,
-				   $xmlphone->get_argseparator(),
+				   $xmlvendor->arg_separator(),
 				   false),
 		'</URL>',"\n",
 		'</MenuItem>',"\n";
@@ -48,7 +49,7 @@ endif;
 
 if(is_array($list) === false || ($nb = count($list)) === 0):
 	echo	'<DirectoryEntry>',"\n",
-		'<Name>',$xmlphone->escape($this->bbf('phone_noentries')),'</Name>',"\n",
+		'<Name>',$xmlvendor->escape($this->bbf('phone_noentries')),'</Name>',"\n",
 		'<Telephone></Telephone>',"\n",
 		'</DirectoryEntry>',"\n";
 else:
@@ -66,8 +67,8 @@ else:
 		endif;
 
 		echo	'<DirectoryEntry>',"\n",
-			'<Name>',$xmlphone->escape($name),'</Name>',"\n",
-			'<Telephone>',$xmlphone->escape($ref['phone']),'</Telephone>',"\n",
+			'<Name>',$xmlvendor->escape($name),'</Name>',"\n",
+			'<Telephone>',$xmlvendor->escape($ref['phone']),'</Telephone>',"\n",
 			'</DirectoryEntry>',"\n";
 	endfor;
 endif;

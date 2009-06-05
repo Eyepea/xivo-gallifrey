@@ -23,33 +23,38 @@ require_once(xivo_file::joinpath(XIVO_PATH_LIB,'tpl','module.inc'));
 class xivo_tpl_xmlphone extends xivo_tpl_module
 {
 	var $_vendor		= null;
-	var $_tag		= array();
-	var $_argseparator	= '&amp;';
-	var $_cdata		= false;
-	var $_escape		= true;
-	var $_utf8		= true;
 
-	function xivo_tpl_xmlphone(&$tpl,$param=array())
+	function xivo_tpl_xmlphone(&$tpl)
 	{
 		$this->_tpl = &$tpl;
-		$this->load_init($param);
 	}
 
-	function load_init($param)
+	function factory($vendor)
 	{
-		if(is_array($param) === false
-		|| isset($param['vendor']) === false
-		|| $this->_load_vendor($param['vendor']) === false)
-		{
-			$this->_vendor = null;
-			return(false);
-		}
+		$this->_vendor = null;
 
-		return(true);
+		if(($vendor = $this->chk_vendor($vendor)) === false)
+			return(false);
+
+		$dir = array('tpl',
+			     'module',
+			     'xmlphone');
+
+		$classname = 'xivo_tpl_xmlphone_'.$vendor;
+
+		if(xivo::load_class($classname,$dir,$vendor) === false)
+			return(false);
+
+		$this->_vendor = $vendor;
+
+		return(new $classname());
 	}
 
 	function chk_vendor($vendor)
 	{
+		if(is_scalar($vendor) === false)
+			return(false);
+
 		$vendor = strtolower($vendor);
 
 		switch($vendor)
@@ -62,11 +67,24 @@ class xivo_tpl_xmlphone extends xivo_tpl_module
 
 		return(false);
 	}
-
+/*
 	function _load_vendor($vendor)
 	{
 		if(($vendor = $this->chk_vendor($vendor)) === false)
 			return(false);
+
+		$dir = array(XIVO_PATH_LIB,
+			     'tpl',
+			     'module',
+			     'xmlphone',
+			     $vendor);
+
+		$classname = 'xivo_tpl_xmlphone_'.$vendor;
+
+		if(xivo::load_class($classname,$dir,$vendor) === false)
+			return(false);
+
+		return(new $classname());
 
 		switch($vendor)
 		{
@@ -105,6 +123,7 @@ class xivo_tpl_xmlphone extends xivo_tpl_module
 
 		return(true);
 	}
+*/
 
 	function get_vendor()
 	{
@@ -112,46 +131,6 @@ class xivo_tpl_xmlphone extends xivo_tpl_module
 			return(false);
 
 		return($this->_vendor);
-	}
-
-	function get_header_contenttype()
-	{
-		$charset = (bool) $this->_utf8 === true ? 'utf-8' : 'iso-8859-15';
-
-		return('Content-Type: text/xml; charset='.$charset);
-	}
-
-	function get_argseparator()
-	{
-		return($this->_argseparator);
-	}
-
-	function get_tag($name)
-	{
-		if($this->_vendor === null || isset($this->_tag[$name]) === false)
-			return(false);
-
-		return($this->_tag[$name]);
-	}
-
-	function is_utf8()
-	{
-		return((bool) $this->_utf8);
-	}
-
-	function escape($str,$force=true)
-	{
-		if(is_scalar($str) === false)
-			return('');
-		else if((bool) $this->_cdata === true)
-			$str = '<![CDATA['.$str.']]>';
-		else if((bool) $this->_escape === true || (bool) $force === true)
-			$str = xivo_htmlsc($str,ENT_NOQUOTES);
-
-		if((bool) $this->_utf8 === false)
-			$str = utf8_decode($str);
-
-		return($str);
 	}
 }
 

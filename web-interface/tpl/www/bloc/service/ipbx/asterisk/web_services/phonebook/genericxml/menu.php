@@ -19,20 +19,21 @@
 #
 
 $url = &$this->get_module('url');
-$xmlphone = &$this->get_module('xmlphone',array('vendor' => $this->get_var('vendor')));
+$xmlphone = &$this->get_module('xmlphone');
+$xmlvendor = $xmlphone->factory($this->get_var('vendor'));
 
 $list = $this->get_var('list');
 $node = $this->get_var('node');
 
-$tagmenu = $xmlphone->get_tag('menu');
-$argseparator = $xmlphone->get_argseparator();
+$tagmenu = $xmlvendor->tag_menu();
+$argseparator = $xmlvendor->arg_separator();
 
 if(is_array($list) === false || ($nb = count($list)) === 0):
-	$tagdirectory = $xmlphone->get_tag('directory');
+	$tagdirectory = $xmlvendor->tag_directory();
 
 	echo	'<',$tagdirectory,'>',"\n",
 		'<DirectoryEntry>',"\n",
-		'<Name>',$xmlphone->escape($this->bbf('phone_noentries')),'</Name>',"\n",
+		'<Name>',$xmlvendor->escape($this->bbf('phone_noentries')),'</Name>',"\n",
 		'<Telephone></Telephone>',"\n",
 		'</DirectoryEntry>',"\n",
 		'</',$tagdirectory,'>';
@@ -49,7 +50,7 @@ else:
 		$prevparam['prevpos'] = $this->get_var('prevpos');
 
 		echo	'<MenuItem>',"\n",
-			'<Name>[',$xmlphone->escape($this->bbf('phone_back')),']</Name>',"\n",
+			'<Name>[',$xmlvendor->escape($this->bbf('phone_back')),']</Name>',"\n",
 			'<URL>',$url->href('service/ipbx/web_services/phonebook/search',
 					   $prevparam,
 					   true,
@@ -89,9 +90,9 @@ else:
 		$param['pos'] = $ref[2];
 
 		echo	'<MenuItem>',"\n",
-			'<Name>',$xmlphone->escape(xivo_trunc($name1,8,'.','',true)),
-				 $xmlphone->escape(' > ',false),
-				 $xmlphone->escape(xivo_trunc($name2,8,'.','',true)),
+			'<Name>',$xmlvendor->escape(xivo_trunc($name1,8,'.','',true)),
+				 $xmlvendor->escape(' > ',false),
+				 $xmlvendor->escape(xivo_trunc($name2,8,'.','',true)),
 			'</Name>',"\n",
 			'<URL>',$url->href('service/ipbx/web_services/phonebook/search',
 				$param,

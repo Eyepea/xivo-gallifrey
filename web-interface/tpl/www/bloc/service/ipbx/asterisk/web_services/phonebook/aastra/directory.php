@@ -19,13 +19,18 @@
 #
 
 $url = &$this->get_module('url');
-$xmlphone = &$this->get_module('xmlphone',array('vendor' => $this->get_var('vendor')));
+$xmlphone = &$this->get_module('xmlphone');
+$xmlvendor = $xmlphone->factory($this->get_var('vendor'));
 
 $list = $this->get_var('list');
 $pos = (int) $this->get_var('pos');
 $prevpos = $this->get_var('prevpos');
 
-$tagdirectory = $xmlphone->get_tag('directory');
+$tagmenu = $xmlvendor->tag_menu();
+$tagdirectory = $xmlvendor->tag_directory();
+
+$argseparator = $xmlvendor->arg_separator();
+$has_softkeys = $xmlvendor->has_softkeys();
 
 if($prevpos > 0):
 	$prevparam = array();
@@ -33,22 +38,43 @@ if($prevpos > 0):
 	$prevparam['pos'] = floor($pos / $prevpos) * $prevpos;
 	$prevparam['name'] = $this->get_var('name');
 
-	$previous = ' previous="'.$url->href('service/ipbx/web_services/phonebook/search',
-				  $prevparam,
-				  true,
-				  $xmlphone->get_argseparator(),
-				  false).'"';
+	$previous = $url->href('service/ipbx/web_services/phonebook/search',
+			       $prevparam,
+			       true,
+			       $argseparator,
+			       false).'"';
 else:
 	$previous = '';
 endif;
 
-echo '<',$tagdirectory,$previous,' destroyOnExit="yes" style="none">',"\n";
+if($has_softkeys === true):
+	$tagmain = $tagdirectory;
+
+	echo	'<',$tagdirectory,
+		($previous === '' ? '' : 'previous="'.$previous.'"'),
+		' destroyOnExit="yes">',"\n";
+else:
+	$tagmain = $tagmenu;
+
+	echo	'<',$tagmenu,' style="none" destroyOnExit="yes">',"\n";
+endif;
 
 if(is_array($list) === false || ($nb = count($list)) === 0):
-	echo	'<MenuItem>',"\n",
-		'<Prompt>',$xmlphone->escape($this->bbf('phone_noentries')),'</Prompt>',"\n",
-		'<URI></URI>',"\n",
-		'</MenuItem>',"\n";
+	if($has_softkeys === true):
+		echo	'<MenuItem>',"\n",
+			'<Prompt>',$xmlvendor->escape($this->bbf('phone_noentries')),'</Prompt>',"\n",
+			'<URI></URI>',"\n",
+			'</MenuItem>',"\n";
+	else:
+		echo	'<MenuItem>',"\n",
+			'<Prompt>',$xmlvendor->escape($this->bbf('phone_noentries')),'</Prompt>',"\n",
+			'<URI></URI>',"\n",
+			'</MenuItem>',"\n",
+			'<MenuItem>',"\n",
+			'<Prompt>[',$xmlvendor->escape($this->bbf('phone_back')),']</Prompt>',"\n",
+			'<URI>',$previous,'</URI>',"\n",
+			'</MenuItem>',"\n";
+	endif;
 else:
 	for($i = 0;$i < $nb;$i++):
 		$ref = &$list[$i];
@@ -64,12 +90,13 @@ else:
 		endif;
 
 		echo	'<MenuItem>',"\n",
-			'<Prompt>',$xmlphone->escape($name),'</Prompt>',"\n",
-			'<URI>',$xmlphone->escape($ref['phone']),'</URI>',"\n",
+			'<Prompt>',$xmlvendor->escape($name),'</Prompt>',"\n",
+			'<URI>',($has_softkeys === false ? 'Dial:' : ''),
+				$xmlvendor->escape($ref['phone']),'</URI>',"\n",
 			'</MenuItem>',"\n";
 	endfor;
 endif;
 
-echo '</',$tagdirectory,'>';
+echo '</',$tagmain,'>';
 
 ?>

@@ -18,13 +18,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$xmlphone = &$this->get_module('xmlphone',array('vendor' => $this->get_var('vendor')));
-$taginput = $xmlphone->get_tag('input');
+$xmlphone = &$this->get_module('xmlphone');
+$xmlvendor = $xmlphone->factory($this->get_var('vendor'));
+
+$taginput = $xmlvendor->tag_input();
 
 ?>
 <<?=$taginput?> type="string" editable="yes">
-	<Title><?=$xmlphone->escape($this->bbf('phone_search-title'));?></Title>
-	<Prompt><?=$xmlphone->escape($this->bbf('phone_search-prompt'));?></Prompt>
-	<URL><?=$xmlphone->escape($this->url('service/ipbx/web_services/phonebook/search',true));?></URL>
+	<Title><?=$xmlvendor->escape($this->bbf('phone_search-title'));?></Title>
+	<Prompt><?=$xmlvendor->escape($this->bbf('phone_search-prompt'));?></Prompt>
+	<URL><?=$xmlvendor->escape($this->url('service/ipbx/web_services/phonebook/search',true));?></URL>
 	<Parameter>name</Parameter>
 </<?=$taginput?>>

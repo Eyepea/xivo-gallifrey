@@ -19,24 +19,39 @@
 #
 
 $url = &$this->get_module('url');
-$xmlphone = &$this->get_module('xmlphone',array('vendor' => $this->get_var('vendor')));
+$xmlphone = &$this->get_module('xmlphone');
+$xmlvendor = $xmlphone->factory($this->get_var('vendor'));
 
 $list = $this->get_var('list');
 $node = $this->get_var('node');
 
-$tagmenu = $xmlphone->get_tag('menu');
-$argseparator = $xmlphone->get_argseparator();
+$tagmenu = $xmlvendor->tag_menu();
+$argseparator = $xmlvendor->arg_separator();
 
 if(is_array($list) === false || ($nb = count($list)) === 0):
-	$tagdirectory = $xmlphone->get_tag('directory');
-	$previous = ' previous="'.$this->url('service/ipbx/web_services/phonebook/search',true).'"';
+	$previous = $this->url('service/ipbx/web_services/phonebook/search',true);
 
-	echo	'<',$tagdirectory,$previous,' destroyOnExit="yes" style="none">',"\n",
-		'<MenuItem>',"\n",
-		'<Prompt>',$xmlphone->escape($this->bbf('phone_noentries')),'</Prompt>',"\n",
-		'<URI></URI>',"\n",
-		'</MenuItem>',"\n",
-		'</',$tagdirectory,'>';
+	if($xmlvendor->has_softkeys() === true):
+		$tagdirectory = $xmlvendor->tag_directory();
+
+		echo	'<',$tagdirectory,' previous="',$previous,'" destroyOnExit="yes">',"\n",
+			'<MenuItem>',"\n",
+			'<Prompt>',$xmlvendor->escape($this->bbf('phone_noentries')),'</Prompt>',"\n",
+			'<URI></URI>',"\n",
+			'</MenuItem>',"\n",
+			'</',$tagdirectory,'>';
+	else:
+		echo	'<',$tagmenu,' style="none" destroyOnExit="yes">',"\n",
+			'<MenuItem>',"\n",
+			'<Prompt>',$xmlvendor->escape($this->bbf('phone_noentries')),'</Prompt>',"\n",
+			'<URI></URI>',"\n",
+			'</MenuItem>',"\n",
+			'<MenuItem>',"\n",
+			'<Prompt>[',$xmlvendor->escape($this->bbf('phone_back')),']</Prompt>',"\n",
+			'<URI>',$previous,'</URI>',"\n",
+			'</MenuItem>',"\n",
+			'</',$tagmenu,'>',"\n";
+	endif;
 else:
 	echo '<',$tagmenu,' style="none" destroyOnExit="yes">',"\n";
 
@@ -50,7 +65,7 @@ else:
 		$prevparam['prevpos'] = $this->get_var('prevpos');
 
 		echo	'<MenuItem>',"\n",
-			'<Prompt>[',$xmlphone->escape($this->bbf('phone_back')),']</Prompt>',"\n",
+			'<Prompt>[',$xmlvendor->escape($this->bbf('phone_back')),']</Prompt>',"\n",
 			'<URI>',$url->href('service/ipbx/web_services/phonebook/search',
 					   $prevparam,
 					   true,
@@ -91,7 +106,7 @@ else:
 
 		echo	'<MenuItem>',"\n",
 			'<Prompt>',
-			$xmlphone->escape(xivo_trunc($name1,8,'.','',true).' > '.xivo_trunc($name2,8,'.','',true)),
+			$xmlvendor->escape(xivo_trunc($name1,8,'.','',true).' > '.xivo_trunc($name2,8,'.','',true)),
 			'</Prompt>',"\n",
 			'<URI>',$url->href('service/ipbx/web_services/phonebook/search',
 					   $param,
