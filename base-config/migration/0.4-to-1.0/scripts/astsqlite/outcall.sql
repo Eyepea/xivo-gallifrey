@@ -1,0 +1,29 @@
+INSERT INTO tmp_outcall (
+	id,
+	name,
+	exten,
+	context,
+	externprefix,
+	stripnum,
+	setcallerid,
+	callerid,
+	useenum,
+	internal,
+	preprocess_subroutine,
+	hangupringtime,
+	commented)
+SELECT
+	outcall.id,
+	outcall.name,
+	outcall.exten,
+	outcall.context,
+	outcall.externprefix,
+	outcall.stripnum,
+	outcall.setcallerid,
+	outcall.callerid,
+	outcall.useenum,
+	outcall.internal,
+	NULL,
+	outcall.hangupringtime,
+	outcall.commented
+FROM outcall;
