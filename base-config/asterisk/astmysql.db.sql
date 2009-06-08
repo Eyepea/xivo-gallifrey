@@ -757,7 +757,7 @@ CREATE TABLE `queuemember` (
  `interface` varchar(128) NOT NULL,
  `penalty` tinyint(2) unsigned NOT NULL DEFAULT 0,
  `call-limit` tinyint(2) unsigned NOT NULL DEFAULT 0,
- `paused` tinyint(1) DEFAULT NULL,
+ `paused` tinyint(1),
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  `usertype` enum('agent','user') NOT NULL,
  `userid` int(10) unsigned NOT NULL,

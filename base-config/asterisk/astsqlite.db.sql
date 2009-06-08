@@ -718,7 +718,7 @@ CREATE TABLE queuemember (
  interface varchar(128) NOT NULL,
  penalty tinyint unsigned NOT NULL DEFAULT 0,
  "call-limit" tinyint unsigned NOT NULL DEFAULT 0,
- paused tinyint unsigned DEFAULT NULL,
+ paused tinyint unsigned,
  commented tinyint(1) NOT NULL DEFAULT 0,
  usertype varchar(5) NOT NULL,
  userid integer unsigned NOT NULL,
