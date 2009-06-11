@@ -91,10 +91,10 @@ version: 5.1.6
 files: pap2t-5-1-6.zip
 
 [pap2t-5-1-6.zip]
-url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%2Fzip&blobheadervalue2=inline%3B+filename%3DPAP2T_v5.1.6_fw.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193765607333&ssbinary=true&lid=6115325776B08
-size: 1504430
-md5sum: c35ffdd7c60372305e59bf376362b022
-sha1sum: c8a2c48e06e3bd89de6f444824a41ebc7e1d57f5
+url: http://downloads.xivo.fr/firmware/Linksys/pap2t-5-1-6.zip
+size: 734611
+md5sum: e7ba2044430f20c01110e3e46e865349
+sha1sum: 76e5279b2f6f41beade87f85ba1c28b34c2a049d
 
 # Linksys SPA901 5.1.5
 [lsspa901_515]
@@ -104,10 +104,24 @@ version: 5.1.5
 files: spa901-5-1-5.zip
 
 [spa901-5-1-5.zip]
-url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%2Fzip&blobheadervalue2=inline%3B+filename%3Dspa901-5.1.5.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193769501566&ssbinary=true&lid=6160326362B04
-size: 1607399
-md5sum: 598c35cbcf851a17f58da4d0a9c62bbb
-sha1sum: 2cc6bfeb64812ca80a69cbe51296e3db2b68a491
+url: http://downloads.xivo.fr/firmware/Linksys/spa901-5-1-5.zip
+size: 790126
+md5sum: 6c92d3d962f5896a32c6190a2e702513
+sha1sum: cff1a62082ed114fef2a7634a0e7b5cbb14eea52
+
+# Linksys SPA921 5.1.8
+[lsspa921_518]
+brand: Linksys
+model: SPA921
+version: 5.1.8
+files: spa941-5-1-8.zip
+
+# Linksys SPA922 6.1.5a
+[lsspa922_615a]
+brand: Linksys
+model: SPA922
+version: 6.1.5a
+files: SPA9X2_Dictionaries_v615.zip spa942-5-2-8.zip spa942-6-1-5a.zip
 
 # Linksys SPA941 5.1.8
 [lsspa941_518]
@@ -117,23 +131,29 @@ version: 5.1.8
 files: spa941-5-1-8.zip
 
 [spa941-5-1-8.zip]
-url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%2Fzip&blobheadervalue2=inline%3B+filename%3Dspa941-5.1.8.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193770292308&ssbinary=true&lid=4571655272B10
-size: 1548720
-md5sum: b6c99b91bbb1625d088b4f3a90794522
-sha1sum: fe3616d709599763fd27fc5afebd1c8f71a95b9c
+url: http://downloads.xivo.fr/firmware/Linksys/spa941-5-1-8.zip
+size: 756584
+md5sum: e2610e2646a5beb9770f4eed73a3073e
+sha1sum: 2b32106a2193b3e9d64ea5e1a732745c385b26a4
 
-# Linksys SPA942 6.1.3a
-[lsspa942_613a]
+# Linksys SPA942 6.1.5a
+[lsspa942_615a]
 brand: Linksys
 model: SPA942
-version: 6.1.3a
-files: SPA9X2_Dictionaries_v615.zip spa942-6-1-3a.zip
+version: 6.1.5a
+files: SPA9X2_Dictionaries_v615.zip spa942-5-2-8.zip spa942-6-1-5a.zip
 
-[spa942-6-1-3a.zip]
-url: ftp://ftp.linksys.com/downloads/NA/firmware/spa942-6-1-3a.zip
-size: 3513620
-md5sum: 30e05d16a9b47ab68c5bdda39b1ec2aa
-sha1sum: b260aff0ff8311f328c35d06528f5f865b9a5367
+[spa942-5-2-8.zip]
+url: http://downloads.xivo.fr/firmware/Linksys/spa942-5-2-8.zip
+size: 879295
+md5sum: e93af37471a9727cdf0627b19433007d
+sha1sum: 76428a78e7e70e884d47141e3bd626876ecaf220
+
+[spa942-6-1-5a.zip]
+url: http://downloads.xivo.fr/firmware/Linksys/spa942-6-1-5a.zip
+size: 956441
+md5sum: 9a47c223bdbbbc776e90da42f2196a6b
+sha1sum: 6b7732df053f42dce1ec0cf9b2fa8f1defe46e15
 
 # Linksys SPA962 6.1.5a
 [lsspa962_615a]
@@ -144,22 +164,22 @@ files: SPA9X2_Dictionaries_v615.zip spa962-6-1-5a.zip
 
 [spa962-6-1-5a.zip]
 url: http://downloads.xivo.fr/firmware/Linksys/spa962-6-1-5a.zip
-size: 2355809
-md5sum: b8d6009cb7b2ce079c082575d55bd9e1
-sha1sum: 5ef25e1c891832a6e87813ce1e534f1034688b06
+size: 1119259
+md5sum: ade48124fc30008a439749b3e3895fa1
+sha1sum: 02bbb8786572c4deb00134e41f981a23f01820f8
 
-# Linksys SPA3102
-[lsspa3102_517]
+# Linksys SPA3102 5.1.10
+[lsspa3102_5110]
 brand: Linksys
 model: SPA3102
-version: 5.1.7
-files: spa3102-5-1-7.zip
+version: 5.1.10
+files: spa3102-5-1-10.zip
 
-[spa3102-5-1-7.zip]
-url: http://www.linksys.com/servlet/Satellite?blobcol=urldata&blobheadername1=Content-Type&blobheadername2=Content-Disposition&blobheadervalue1=application%2Fzip&blobheadervalue2=inline%3B+filename%3Dspa3102-5.1.7.zip&blobkey=id&blobtable=MungoBlobs&blobwhere=1193768671799&ssbinary=true&lid=6139069263B06
-size: 2033784
-md5sum: b3d65bc5ab21991c169fb33c054d666a
-sha1sum: af66b4ed914ada3ecdd6b64a3378316be8f34ba3
+[spa3102-5-1-10.zip]
+url: http://downloads.xivo.fr/firmware/Linksys/spa3102-5-1-10.zip
+size: 1005565
+md5sum: d6d2e6ae61cd952784969de8615f78b2
+sha1sum: 75305f786a0c799f921f2a77b2c2ff36d1522652
 
 # Linksys SPA8000 6.1.3
 [lsspa8000_613]
@@ -169,10 +189,10 @@ version: 6.1.3
 files: spa8000-6-1-3.zip
 
 [spa8000-6-1-3.zip]
-url: ftp://ftp.linksys.com/downloads/NA/firmware/SPA8000_v6.1.3_fw.zip
-size: 3783070
-md5sum: bb9512cf8ba07a78b12a94b4f153396d
-sha1sum: 86171bd8d65497e594b79a03188acbe51b4e32e9
+url: http://downloads.xivo.fr/firmware/Linksys/spa8000-6-1-3.zip
+size: 1069281
+md5sum: c90de19ba70b93c4b9ea755e68e47647
+sha1sum: 6b1ca5196dea149a350a621d0d8157f2ea2c1e55
 
 # Languages files for Linksys SPA9X2 phones 6.1.5
 [SPA9X2_Dictionaries_v615.zip]
