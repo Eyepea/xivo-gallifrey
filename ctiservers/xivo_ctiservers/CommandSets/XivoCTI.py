@@ -3096,9 +3096,10 @@ class XivoCTICommand(BaseCommand):
                 
                 for uinfo in self.__find_userinfos_by_agentid__(astid, agent_id):
                     self.__fill_user_ctilog__(uinfo, 'agent_login_dyn')
-                    userid = uinfo.get('xivo_userid')
-                    if userid:
-                        self.__ami_execute__(astid, 'setvar', 'XIVO_AGENTBYUSERID_%s' % userid, agent_number)
+                    # XXX: Uncomment when user accounts and phones will be splitted
+                    #userid = uinfo.get('xivo_userid')
+                    #if userid:
+                    #    self.__ami_execute__(astid, 'setvar', 'XIVO_AGENTBYUSERID_%s' % userid, agent_number)
             else:
                 log.warning('%s ami_agentlogin : no agent %s' % (astid, agent_number))
         return
@@ -3123,9 +3124,10 @@ class XivoCTICommand(BaseCommand):
                 
                 for uinfo in self.__find_userinfos_by_agentid__(astid, agent_id):
                     self.__fill_user_ctilog__(uinfo, 'agent_logout_dyn')
-                    userid = uinfo.get('xivo_userid')
-                    if userid:
-                        self.__ami_execute__(astid, 'setvar', 'XIVO_AGENTBYUSERID_%s' % userid, '')
+                    # XXX: Uncomment when user accounts and phones will be splitted
+                    #userid = uinfo.get('xivo_userid')
+                    #if userid:
+                    #    self.__ami_execute__(astid, 'setvar', 'XIVO_AGENTBYUSERID_%s' % userid, '')
             else:
                 log.warning('%s ami_agentlogoff : no agent %s' % (astid, agent_number))
         return
@@ -3163,9 +3165,10 @@ class XivoCTICommand(BaseCommand):
                 for uinfo in self.__find_userinfos_by_agentid__(astid, agent_id):
                     self.__fill_user_ctilog__(uinfo, 'agent_login')
                     # XXX fill with agentphonenumber too ?
-                    userid = uinfo.get('xivo_userid')
-                    if userid:
-                        self.__ami_execute__(astid, 'setvar', 'XIVO_AGENTBYUSERID_%s' % userid, agent_number)
+                    # XXX: Uncomment when user accounts and phones will be splitted
+                    #userid = uinfo.get('xivo_userid')
+                    #if userid:
+                    #    self.__ami_execute__(astid, 'setvar', 'XIVO_AGENTBYUSERID_%s' % userid, agent_number)
             else:
                 log.warning('%s ami_agentcallbacklogin : no agent %s' % (astid, agent_number))
         return
@@ -3210,9 +3213,10 @@ class XivoCTICommand(BaseCommand):
                 
                 for uinfo in self.__find_userinfos_by_agentid__(astid, agent_id):
                     self.__fill_user_ctilog__(uinfo, 'agent_logout')
-                    userid = uinfo.get('xivo_userid')
-                    if userid:
-                        self.__ami_execute__(astid, 'setvar', 'XIVO_AGENTBYUSERID_%s' % userid, '')
+                    # XXX: Uncomment when user accounts and phones will be splitted
+                    #userid = uinfo.get('xivo_userid')
+                    #if userid:
+                    #    self.__ami_execute__(astid, 'setvar', 'XIVO_AGENTBYUSERID_%s' % userid, '')
         else:
             log.warning('%s ami_agentcallbacklogoff : no agent %s' % (astid, agent_number))
         return
