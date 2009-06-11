@@ -310,22 +310,13 @@ static struct ast_custom_function validexten_function = {
 };
 
 
-static const char *set_one_name = "SetOne";
-static const char *set_one_synopsis = "Set exactly one channel variable and allow the rvalue to contain pipes characters";
-static const char *set_one_description =
-"  SetOne(name=value)\n"
-"This application can be used to set the value of one channel variable, with an\n"
-"rvalue which is allowed to contain pipe characters.\n"
-"If the variable name is prefixed with _, the variable will be inherited into\n"
-"channels created from the current channel. If the variable name is prefixed\n"
-"with __, the variable will be inherited into channels created from the current\n"
-"channel and all children channels.\n";
-static int set_one(struct ast_channel *chan, void *data)
+static int set_parse(struct ast_channel *chan, void *data, int ifempty)
 {
 	char *params;
 	char *scan;
 	char *varname;
 	char *content;
+	const char *tmp = NULL;
 	int paren = 0;
 
 	if (ast_strlen_zero(data))
@@ -346,13 +337,44 @@ static int set_one(struct ast_channel *chan, void *data)
 	varname = params;
 	*scan = '\0';
 	content = scan + 1;
-	
-	pbx_builtin_setvar_helper(chan, varname, content);
+
+	if (!ifempty || !(tmp = pbx_builtin_getvar_helper(chan, varname)) || ast_strlen_zero(tmp)) {
+		pbx_builtin_setvar_helper(chan, varname, content);
+	}
 	return 0;
 
 error:
 	ast_log(LOG_WARNING, "Set requires a variable name, an '=' sign, and a string to affect to the variable.\n");
 	return 0;
+}
+
+static const char *set_one_name = "SetOne";
+static const char *set_one_synopsis = "Set exactly one channel variable and allow the rvalue to contain pipes characters";
+static const char *set_one_description =
+"  SetOne(name=value)\n"
+"This application can be used to set the value of one channel variable, with an\n"
+"rvalue which is allowed to contain pipe characters.\n"
+"If the variable name is prefixed with _, the variable will be inherited into\n"
+"channels created from the current channel. If the variable name is prefixed\n"
+"with __, the variable will be inherited into channels created from the current\n"
+"channel and all children channels.\n";
+static int set_one(struct ast_channel *chan, void *data)
+{
+	return set_parse(chan, data, 0);
+}
+
+static const char *set_ifempty_name = "SetIfEmpty";
+static const char *set_ifempty_synopsis = "Set exactly one channel variable if the variable has no length or doesn't exist";
+static const char *set_ifempty_description =
+"  SetIfEmpty(name=value)\n"
+"This application set the value of one channel variable if the variable has no length or doesn't exist.\n"
+"If the variable name is prefixed with _, the variable will be inherited into\n"
+"channels created from the current channel. If the variable name is prefixed\n"
+"with __, the variable will be inherited into channels created from the current\n"
+"channel and all children channels.\n";
+static int set_ifempty(struct ast_channel *chan, void *data)
+{
+	return set_parse(chan, data, 1);
 }
 
 static int loaded;
@@ -364,8 +386,15 @@ static int load_module(void)
 	ast_custom_function_register(&funcexists_function);
 	ast_custom_function_register(&validexten_function);
 	if (ast_register_application(
-			set_one_name, set_one,
-			set_one_synopsis, set_one_description) < 0) {
+			set_one_name,
+			set_one,
+			set_one_synopsis,
+			set_one_description) < 0
+	    || ast_register_application(
+	    		set_ifempty_name,
+			set_ifempty,
+			set_ifempty_synopsis,
+			set_ifempty_description) < 0) {
 		ast_custom_function_unregister(&validexten_function);
 		ast_custom_function_unregister(&funcexists_function);
 		ast_custom_function_unregister(&appexists_function);
@@ -382,6 +411,7 @@ static int unload_module(void)
 	if (!loaded)
 		return 0;
 	ast_unregister_application(set_one_name);
+	ast_unregister_application(set_ifempty_name);
 	ast_custom_function_unregister(&validexten_function);
 	ast_custom_function_unregister(&funcexists_function);
 	ast_custom_function_unregister(&appexists_function);
