@@ -18,7 +18,7 @@ UPDATE extensions
 SET appdata = 'agentstaticlogoff|${EXTEN:'||LENGTH(exten)||'}',
     exten = '_'||exten||'.'
 WHERE name = 'agentstaticlogoff'
-AND SUBSTR(exten,0,1) != '_'
+AND SUBSTR(exten,1,1) != '_'
 AND appdata NOT LIKE 'agentstaticlogoff|${EXTEN:%}';
 
 UPDATE extensions
@@ -43,4 +43,4 @@ WHERE name = 'pickup' AND appdata NOT LIKE '%${CONTEXT}@PICKUPMARK';
 
 UPDATE extensions
 SET appdata = appdata||'|'
-WHERE app = 'Macro' AND appdata LIKE 'voicemail|%' AND SUBSTR(appdata,LENGTH(appdata),1) != '|';
+WHERE app = 'Macro' AND appdata LIKE 'voicemail|%' AND SUBSTR(appdata,-1,1) != '|';

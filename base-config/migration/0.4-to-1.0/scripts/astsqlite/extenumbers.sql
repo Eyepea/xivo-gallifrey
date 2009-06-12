@@ -19,7 +19,7 @@ SET exten = '_'||exten||'.',
     extenhash = 'UPDATE_SHA1_HASH'
 WHERE type = 'extenfeatures'
 AND typeval = 'agentstaticlogoff'
-AND SUBSTR(exten,0,1) != '_';
+AND SUBSTR(exten,1,1) != '_';
 
 UPDATE extenumbers
 SET exten = '*90',
