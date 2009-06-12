@@ -310,7 +310,7 @@ static struct ast_custom_function validexten_function = {
 };
 
 
-static int set_parse(struct ast_channel *chan, void *data, int ifempty)
+static int _set_parse(struct ast_channel *chan, void *data, int ifempty)
 {
 	char *params;
 	char *scan;
@@ -360,7 +360,7 @@ static const char *set_one_description =
 "channel and all children channels.\n";
 static int set_one(struct ast_channel *chan, void *data)
 {
-	return set_parse(chan, data, 0);
+	return _set_parse(chan, data, 0);
 }
 
 static const char *set_ifempty_name = "SetIfEmpty";
@@ -374,7 +374,7 @@ static const char *set_ifempty_description =
 "channel and all children channels.\n";
 static int set_ifempty(struct ast_channel *chan, void *data)
 {
-	return set_parse(chan, data, 1);
+	return _set_parse(chan, data, 1);
 }
 
 static int loaded;
