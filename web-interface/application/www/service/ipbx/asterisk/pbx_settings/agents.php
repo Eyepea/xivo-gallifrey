@@ -56,14 +56,17 @@ switch($act)
 
 		$appagentgroup = &$ipbx->get_application('agentgroup');
 
-		$result = null;
+		$result = $fm_save = null;
 
 		if(isset($_QR['fm_send']) === true
 		&& xivo_issa('agentgroup',$_QR) === true)
 		{
 			if($appagentgroup->set_add($_QR) === false
 			|| $appagentgroup->add() === false)
+			{
+				$fm_save = false;
 				$result = $appagentgroup->get_result();
+			}
 			else
 				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 		}
@@ -112,6 +115,7 @@ switch($act)
 									array('name'	=> SORT_ASC));
 
 		$_HTML->set_var('info',$result);
+		$_HTML->set_var('fm_save',$fm_save);
 		$_HTML->set_var('element',$appagentgroup->get_elements());
 		$_HTML->set_var('amember',$amember);
 		$_HTML->set_var('queues',$queues);
@@ -151,7 +155,7 @@ switch($act)
 							 true)) !== false)
 			$qmember['list'] = $queues;
 
-		$result = null;
+		$result = $fm_save = null;
 		$return = &$info;
 
 		if(isset($_QR['fm_send']) === true
@@ -161,7 +165,10 @@ switch($act)
 
 			if($appagentgroup->set_edit($_QR) === false
 			|| $appagentgroup->edit() === false)
+			{
+				$fm_save = false;
 				$result = $appagentgroup->get_result();
+			}
 			else
 				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 		}
@@ -210,6 +217,7 @@ switch($act)
 
 		$_HTML->set_var('id',$info['agentgroup']['id']);
 		$_HTML->set_var('info',$return);
+		$_HTML->set_var('fm_save',$fm_save);
 		$_HTML->set_var('element',$appagentgroup->get_elements());
 		$_HTML->set_var('amember',$amember);
 		$_HTML->set_var('queues',$queues);
@@ -313,7 +321,7 @@ switch($act)
 
 		$appagent = &$ipbx->get_application('agent');
 
-		$result = null;
+		$result = $fm_save = null;
 
 		if(isset($_QR['fm_send']) === true
 		&& xivo_issa('afeatures',$_QR) === true
@@ -321,7 +329,10 @@ switch($act)
 		{
 			if($appagent->set_add($_QR) === false
 			|| $appagent->add() === false)
+			{
+				$fm_save = false;
 				$result = $appagent->get_result();
+			}
 			else
 			{
 				$ipbx->discuss('module reload chan_agent.so');
@@ -371,6 +382,7 @@ switch($act)
 		}
 
 		$_HTML->set_var('info',$result);
+		$_HTML->set_var('fm_save',$fm_save);
 		$_HTML->set_var('element',$appagent->get_elements());
 		$_HTML->set_var('umember',$umember);
 		$_HTML->set_var('queues',$queues);
@@ -418,7 +430,7 @@ switch($act)
 							 true)) !== false)
 			$qmember['list'] = $queues;
 
-		$result = null;
+		$result = $fm_save = null;
 		$return = &$info;
 
 		if(isset($_QR['fm_send']) === true
@@ -429,7 +441,10 @@ switch($act)
 
 			if($appagent->set_edit($_QR) === false
 			|| $appagent->edit() === false)
+			{
+				$fm_save = false;
 				$result = $appagent->get_result();
+			}
 			else
 			{
 				$ipbx->discuss('module reload chan_agent.so');
@@ -486,6 +501,7 @@ switch($act)
 
 		$_HTML->set_var('id',$info['afeatures']['id']);
 		$_HTML->set_var('info',$return);
+		$_HTML->set_var('fm_save',$fm_save);
 		$_HTML->set_var('element',$appagent->get_elements());
 		$_HTML->set_var('umember',$umember);
 		$_HTML->set_var('queues',$queues);

@@ -31,7 +31,7 @@ switch($act)
 	case 'add':
 		$appcallfilter = &$ipbx->get_application('callfilter',array('type' => 'bosssecretary'));
 
-		$result = $callfiltermember = null;
+		$result = $fm_save = $callfiltermember = null;
 
 		$secretary['slt'] = $secretary = array();
 		$secretary['list'] = $appcallfilter->get_secretary_users(null,true);
@@ -41,6 +41,7 @@ switch($act)
 			if($appcallfilter->set_add($_QR) === false
 			|| $appcallfilter->add() === false)
 			{
+				$fm_save = false;
 				$result = $appcallfilter->get_result();
 				$result['dialaction'] = $appcallfilter->get_dialaction_result();
 
@@ -73,6 +74,7 @@ switch($act)
 		}
 
 		$_HTML->set_var('info',$result);
+		$_HTML->set_var('fm_save',$fm_save);
 		$_HTML->set_var('dialaction',$result['dialaction']);
 		$_HTML->set_var('element',$appcallfilter->get_elements());
 		$_HTML->set_var('destination_list',$appcallfilter->get_dialaction_destination_list());
@@ -92,7 +94,7 @@ switch($act)
 		if(isset($_QR['id']) === false || ($info = $appcallfilter->get($_QR['id'])) === false)
 			$_QRY->go($_HTML->url('service/ipbx/call_management/callfilter'),$param);
 
-		$result = $callfiltermember = null;
+		$result = $fm_save = $callfiltermember = null;
 		$return = &$info;
 
 		$secretary['slt'] = $secretary = array();
@@ -105,6 +107,7 @@ switch($act)
 			if($appcallfilter->set_edit($_QR) === false
 			|| $appcallfilter->edit() === false)
 			{
+				$fm_save = false;
 				$result = $appcallfilter->get_result();
 				$result['dialaction'] = $appcallfilter->get_dialaction_result();
 			}
@@ -138,6 +141,7 @@ switch($act)
 
 		$_HTML->set_var('id',$info['callfilter']['id']);
 		$_HTML->set_var('info',$return);
+		$_HTML->set_var('fm_save',$fm_save);
 		$_HTML->set_var('dialaction',$return['dialaction']);
 		$_HTML->set_var('element',$appcallfilter->get_elements());
 		$_HTML->set_var('destination_list',$appcallfilter->get_dialaction_destination_list());

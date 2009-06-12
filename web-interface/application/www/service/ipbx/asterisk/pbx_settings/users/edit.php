@@ -23,7 +23,7 @@ if(isset($_QR['id']) === false || ($info = $appuser->get($_QR['id'])) === false)
 
 $return = &$info;
 
-$result = $error = null;
+$result = $fm_save = $error = null;
 
 if(isset($info['protocol']['allow']) === true)
 	$allow = $info['protocol']['allow'];
@@ -93,6 +93,7 @@ if(isset($_QR['fm_send']) === true
 	if($appuser->set_edit($_QR,$_QR['protocol']['protocol']) === false
 	|| $appuser->edit() === false)
 	{
+		$fm_save = false;
 		$result = $appuser->get_result();
 		$result['dialaction'] = $appuser->get_dialaction_result();
 		$result['phonefunckey'] = $appuser->get_phonefunckey_result();
@@ -208,6 +209,7 @@ else
 $_HTML->set_var('id',$info['ufeatures']['id']);
 $_HTML->set_var('info',$return);
 $_HTML->set_var('error',$error);
+$_HTML->set_var('fm_save',$fm_save);
 $_HTML->set_var('voicemail',$return['voicemail']);
 $_HTML->set_var('dialaction',$return['dialaction']);
 $_HTML->set_var('dialaction_from','user');

@@ -28,7 +28,7 @@ $apphnumbersspecial = $ipbx->get_application('handynumbers',array('type' => 'spe
 $info['emergency'] = $apphnumbersemergency->get();
 $info['special'] = $apphnumbersspecial->get();
 
-$fm_save = false;
+$fm_save = null;
 $fm_smenu_tab = $fm_smenu_part = '';
 
 if(isset($_QR['fm_send']) === true)

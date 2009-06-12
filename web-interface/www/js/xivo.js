@@ -970,15 +970,19 @@ function xivo_menu_active()
 	var xivo_menu_active = 'mn-'+xivo_api_path_info.replace(/\//g,'--');
 	xivo_menu_active = xivo_menu_active.replace(/_/g,'-');
 
-	if((xivo_menu_active = xivo_eid(xivo_menu_active)) != false)
+	if((xivo_menu_active = xivo_eid(xivo_menu_active)) !== false)
 		xivo_menu_active.className = 'mn-active';
 }
 
-function xivo_form_success(str)
+function xivo_form_result(success,str)
 {
 	str = String(str);
+	if(Boolean(success) === true)
+		txtclassname = 'fm-txt-success';
+	else
+		txtclassname = 'fm-txt-error';
 
-	if(str == 'undefined' || str.length == 0 || xivo_eid('tooltips') == false)
+	if(str === 'undefined' || str.length === 0 || xivo_eid('tooltips') === false)
 		var property = {innerHTML: '&nbsp;'};
 	else
 	{
@@ -986,7 +990,7 @@ function xivo_form_success(str)
 		str = str.replace(/\|/g,'\\|');
 		str = str.replace(/:/g,'\\:');
 
-		var property = {className: 'fm-txt-success', innerHTML: str};
+		var property = {className: txtclassname, innerHTML: str};
 	}
 
 	xivo_chg_property_attrib(xivo_eid('tooltips'),property);
@@ -994,21 +998,21 @@ function xivo_form_success(str)
 
 function xivo_get_parent_by_tagname(obj,tag)
 {
-	if(xivo_is_object(obj) == false
-	|| xivo_is_string(tag) == false)
+	if(xivo_is_object(obj) === false
+	|| xivo_is_string(tag) === false)
 		return(false);
 
 	tag = tag.toLowerCase();
 
 	for(var i = 0;i < 10;i++)
 	{
-		if(xivo_is_undef(obj.parentNode) == true
-		|| xivo_is_undef(obj.tagName) == true)
+		if(xivo_is_undef(obj.parentNode) === true
+		|| xivo_is_undef(obj.tagName) === true)
 			return(false);
 
 		obj = obj.parentNode;
 
-		if(obj.tagName.toLowerCase() == tag)
+		if(obj.tagName.toLowerCase() === tag)
 			return(obj);
 	}
 

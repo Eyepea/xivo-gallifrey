@@ -31,13 +31,14 @@ switch($act)
 	case 'add':
 		$appvoicemenu = &$ipbx->get_application('voicemenu');
 
-		$result = $error = null;
+		$result = $fm_save = $error = null;
 
 		if(isset($_QR['fm_send']) === true && xivo_issa('voicemenu',$_QR) === true)
 		{
 			if($appvoicemenu->set_add($_QR) === false
 			|| $appvoicemenu->add() === false)
 			{
+				$fm_save = false;
 				$result = $appvoicemenu->get_result();
 				$error = $appvoicemenu->get_error();
 			}
@@ -64,6 +65,7 @@ switch($act)
 		$_HTML->set_var('info',$result);
 		$_HTML->set_var('error',$error);
 		$_HTML->set_var('voicemenuevent',&$result['voicemenuevent-data']);
+		$_HTML->set_var('fm_save',$fm_save);
 		$_HTML->set_var('element',$appvoicemenu->get_elements());
 		$_HTML->set_var('voicemail_list',$appvoicemenu->get_voicemail_list());
 		$_HTML->set_var('destination_list',$appvoicemenu->get_destination_list());
@@ -79,7 +81,7 @@ switch($act)
 		|| ($info = $appvoicemenu->get($_QR['id'])) === false)
 			$_QRY->go($_HTML->url('service/ipbx/call_management/voicemenu'),$param);
 
-		$result = $error = null;
+		$result = $fm_save = $error = null;
 		$return = &$info;
 
 		if(isset($_QR['fm_send']) === true && xivo_issa('voicemenu',$_QR) === true)
@@ -89,6 +91,7 @@ switch($act)
 			if($appvoicemenu->set_edit($_QR) === false
 			|| $appvoicemenu->edit() === false)
 			{
+				$fm_save = false;
 				$result = $appvoicemenu->get_result();
 				$error = $appvoicemenu->get_error();
 			}
@@ -113,6 +116,7 @@ switch($act)
 		$_HTML->set_var('info',$return);
 		$_HTML->set_var('error',$error);
 		$_HTML->set_var('voicemenuevent',&$return['voicemenuevent-data']);
+		$_HTML->set_var('fm_save',$fm_save);
 		$_HTML->set_var('element',$appvoicemenu->get_elements());
 		$_HTML->set_var('voicemail_list',$appvoicemenu->get_voicemail_list());
 		$_HTML->set_var('destination_list',$appvoicemenu->get_destination_list());

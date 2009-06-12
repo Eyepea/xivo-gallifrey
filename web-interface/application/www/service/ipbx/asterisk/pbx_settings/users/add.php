@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$result = $error = null;
+$result = $fm_save = $error = null;
 
 $allow = array();
 
@@ -83,6 +83,7 @@ if(isset($_QR['fm_send']) === true
 	if($appuser->set_add($_QR,$_QR['protocol']['protocol']) === false
 	|| $appuser->add() === false)
 	{
+		$fm_save = false;
 		$result = $appuser->get_result();
 		$result['dialaction'] = $appuser->get_dialaction_result();
 		$result['phonefunckey'] = $appuser->get_phonefunckey_result();
@@ -196,6 +197,7 @@ else
 
 $_HTML->set_var('info',$result);
 $_HTML->set_var('error',$error);
+$_HTML->set_var('fm_save',$fm_save);
 $_HTML->set_var('voicemail',$result['voicemail']);
 $_HTML->set_var('dialaction',$result['dialaction']);
 $_HTML->set_var('dialaction_from','user');

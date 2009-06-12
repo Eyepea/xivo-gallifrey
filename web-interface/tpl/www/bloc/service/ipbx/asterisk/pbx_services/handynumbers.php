@@ -27,8 +27,10 @@ $smenu = $this->get_var('fm_smenu');
 
 $handynumbers_js = array();
 
-if($this->get_var('fm_save') === true):
-	$handynumbers_js[] = 'xivo_form_success(\''.$dhtml->escape($this->bbf('fm_success-save')).'\');';
+if(($fm_save = $this->get_var('fm_save')) === true):
+	$handynumbers_js[] = 'xivo_form_result(true,\''.$dhtml->escape($this->bbf('fm_success-save')).'\');';
+elseif($fm_save === false):
+	$handynumbers_js[] = 'xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');';
 endif;
 
 if(($smenu_tab = $this->get_var('fm_smenu_tab')) !== '' && ($smenu_part = $this->get_var('fm_smenu_part')) !== ''):

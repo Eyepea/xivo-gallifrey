@@ -31,13 +31,14 @@ switch($act)
 	case 'add':
 		$appschedule = &$ipbx->get_application('schedule');
 
-		$result = null;
+		$result = $fm_save = null;
 
 		if(isset($_QR['fm_send']) === true && xivo_issa('schedule',$_QR) === true)
 		{
 			if($appschedule->set_add($_QR) === false
 			|| $appschedule->add() === false)
 			{
+				$fm_save = false;
 				$result = $appschedule->get_result_for_display();
 				$result['dialaction'] = $appschedule->get_dialaction_result();
 			}
@@ -53,6 +54,7 @@ switch($act)
 		$_HTML->set_var('info',$result);
 		$_HTML->set_var('dialaction',$result['dialaction']);
 		$_HTML->set_var('dialaction_from','schedule');
+		$_HTML->set_var('fm_save',$fm_save);
 		$_HTML->set_var('element',$appschedule->get_elements());
 		$_HTML->set_var('context_list',$appschedule->get_context_list());
 		$_HTML->set_var('destination_list',$appschedule->get_dialaction_destination_list());
@@ -68,7 +70,7 @@ switch($act)
 		|| ($info = $appschedule->get($_QR['id'])) === false)
 			$_QRY->go($_HTML->url('service/ipbx/call_management/schedule'),$param);
 
-		$result = null;
+		$result = $fm_save = null;
 		$return = &$info;
 
 		if(isset($_QR['fm_send']) === true && xivo_issa('schedule',$_QR) === true)
@@ -78,6 +80,7 @@ switch($act)
 			if($appschedule->set_edit($_QR) === false
 			|| $appschedule->edit() === false)
 			{
+				$fm_save = false;
 				$result = $appschedule->get_result_for_display();
 				$result['dialaction'] = $appschedule->get_dialaction_result();
 			}
@@ -94,6 +97,7 @@ switch($act)
 		$_HTML->set_var('info',$return);
 		$_HTML->set_var('dialaction',$return['dialaction']);
 		$_HTML->set_var('dialaction_from','schedule');
+		$_HTML->set_var('fm_save',$fm_save);
 		$_HTML->set_var('element',$appschedule->get_elements());
 		$_HTML->set_var('destination_list',$appschedule->get_dialaction_destination_list());
 		$_HTML->set_var('context_list',$appschedule->get_context_list());

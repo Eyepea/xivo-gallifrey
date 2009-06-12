@@ -31,7 +31,7 @@ switch($act)
 	case 'add':
 		$appqueue = &$ipbx->get_application('queue');
 
-		$result = null;
+		$result = $fm_save = null;
 
 		$pannounce = array();
 		$pannounce['list'] = $appqueue->get_announce();
@@ -72,6 +72,7 @@ switch($act)
 			if($appqueue->set_add($_QR) === false
 			|| $appqueue->add() === false)
 			{
+				$fm_save = false;
 				$result = $appqueue->get_result();
 				$result['dialaction'] = $appqueue->get_dialaction_result();
 			}
@@ -165,6 +166,7 @@ switch($act)
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
 		$_HTML->set_var('info',$result);
+		$_HTML->set_var('fm_save',$fm_save);
 		$_HTML->set_var('dialaction',$result['dialaction']);
 		$_HTML->set_var('dialaction_from','queue');
 		$_HTML->set_var('element',$appqueue->get_elements());
@@ -183,7 +185,7 @@ switch($act)
 		if(isset($_QR['id']) === false || ($info = $appqueue->get($_QR['id'])) === false)
 			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
 
-		$result = null;
+		$result = $fm_save = null;
 		$return = &$info;
 
 		$pannounce = array();
@@ -227,6 +229,7 @@ switch($act)
 			if($appqueue->set_edit($_QR) === false
 			|| $appqueue->edit() === false)
 			{
+				$fm_save = false;
 				$result = $appqueue->get_result();
 				$result['dialaction'] = $appqueue->get_dialaction_result();
 			}
@@ -321,6 +324,7 @@ switch($act)
 
 		$_HTML->set_var('id',$info['qfeatures']['id']);
 		$_HTML->set_var('info',$return);
+		$_HTML->set_var('fm_save',$fm_save);
 		$_HTML->set_var('dialaction',$return['dialaction']);
 		$_HTML->set_var('dialaction_from','queue');
 		$_HTML->set_var('element',$appqueue->get_elements());

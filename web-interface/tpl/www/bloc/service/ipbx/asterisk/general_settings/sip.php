@@ -26,8 +26,10 @@ $element = $this->get_var('element');
 $moh_list = $this->get_var('moh_list');
 $context_list = $this->get_var('context_list');
 
-if($this->get_var('fm_save') === true):
-	$dhtml->write_js('xivo_form_success(\''.$dhtml->escape($this->bbf('fm_success-save')).'\');');
+if(($fm_save = $this->get_var('fm_save')) === true):
+	$dhtml->write_js('xivo_form_result(true,\''.$dhtml->escape($this->bbf('fm_success-save')).'\');');
+elseif($fm_save === false):
+	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
 endif;
 
 ?>

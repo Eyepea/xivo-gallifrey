@@ -32,6 +32,10 @@ $rcallincall = $this->get_var('rcallincall');
 $rcalloutcall = $this->get_var('rcalloutcall');
 $rcallexten = $this->get_var('rcallexten');
 
+if($this->get_var('fm_save') === false):
+	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
+endif;
+
 ?>
 
 <div id="sb-part-first">

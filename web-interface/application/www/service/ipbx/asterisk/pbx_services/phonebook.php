@@ -33,13 +33,16 @@ $appphonebook = &$ipbx->get_application('phonebook');
 switch($act)
 {
 	case 'add':
-		$result = null;
+		$result = $fm_save = null;
 
 		if(isset($_QR['fm_send']) === true && xivo_issa('phonebook',$_QR) === true)
 		{
 			if($appphonebook->set_add($_QR) === false
 			|| $appphonebook->add() === false)
+			{
+				$fm_save = false;
 				$result = $appphonebook->get_result();
+			}
 			else
 				$_QRY->go($_HTML->url('service/ipbx/pbx_services/phonebook'),$param);
 		}
@@ -56,9 +59,10 @@ switch($act)
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
+		$_HTML->set_var('info',$result);
+		$_HTML->set_var('fm_save',$fm_save);
 		$_HTML->set_var('element',$appphonebook->get_elements());
 		$_HTML->set_var('territory',xivo_i18n::get_territory_translated_list());
-		$_HTML->set_var('info',$result);
 		break;
 	case 'edit':
 		$appphonebook = &$ipbx->get_application('phonebook');
@@ -66,7 +70,7 @@ switch($act)
 		if(isset($_QR['id']) === false || ($info = $appphonebook->get($_QR['id'])) === false)
 			$_QRY->go($_HTML->url('service/ipbx/pbx_services/phonebook'),$param);
 
-		$result = null;
+		$result = $fm_save = null;
 		$return = &$info;
 
 		if(isset($_QR['fm_send']) === true && xivo_issa('phonebook',$_QR) === true)
@@ -75,7 +79,10 @@ switch($act)
 
 			if($appphonebook->set_edit($_QR) === false
 			|| $appphonebook->edit() === false)
+			{
+				$fm_save = false;
 				$result = $appphonebook->get_result();
+			}
 			else
 				$_QRY->go($_HTML->url('service/ipbx/pbx_services/phonebook'),$param);
 		}
@@ -93,11 +100,12 @@ switch($act)
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
 		$_HTML->set_var('id',$info['phonebook']['id']);
-		$_HTML->set_var('element',$appphonebook->get_elements());
-		$_HTML->set_var('territory',xivo_i18n::get_territory_translated_list());
 		$_HTML->set_var('info',$return);
 		$_HTML->set_var('phonebookaddress',$return['phonebookaddress']);
 		$_HTML->set_var('phonebooknumber',$return['phonebooknumber']);
+		$_HTML->set_var('fm_save',$fm_save);
+		$_HTML->set_var('element',$appphonebook->get_elements());
+		$_HTML->set_var('territory',xivo_i18n::get_territory_translated_list());
 		break;
 	case 'delete':
 		$param['page'] = $page;

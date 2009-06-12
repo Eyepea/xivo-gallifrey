@@ -31,7 +31,7 @@ switch($act)
 	case 'add':
 		$appgroup = &$ipbx->get_application('group');
 
-		$result = null;
+		$result = $fm_save = null;
 
 		$user = $rightcall = array();
 		$user['slt'] = $rightcall['slt'] = array();
@@ -56,6 +56,7 @@ switch($act)
 			if($appgroup->set_add($_QR) === false
 			|| $appgroup->add() === false)
 			{
+				$fm_save = false;
 				$result = $appgroup->get_result();
 				$result['dialaction'] = $appgroup->get_dialaction_result();
 			}
@@ -104,6 +105,7 @@ switch($act)
 		}
 
 		$_HTML->set_var('info',$result);
+		$_HTML->set_var('fm_save',$fm_save);
 		$_HTML->set_var('dialaction',$result['dialaction']);
 		$_HTML->set_var('dialaction_from','group');
 		$_HTML->set_var('element',$appgroup->get_elements());
@@ -125,7 +127,7 @@ switch($act)
 		if(isset($_QR['id']) === false || ($info = $appgroup->get($_QR['id'])) === false)
 			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
 
-		$result = null;
+		$result = $fm_save = null;
 		$return = &$info;
 
 		$user = $rightcall = array();
@@ -153,6 +155,7 @@ switch($act)
 			if($appgroup->set_edit($_QR) === false
 			|| $appgroup->edit() === false)
 			{
+				$fm_save = false;
 				$result = $appgroup->get_result();
 				$result['dialaction'] = $appgroup->get_dialaction_result();
 			}
@@ -202,6 +205,7 @@ switch($act)
 
 		$_HTML->set_var('id',$info['gfeatures']['id']);
 		$_HTML->set_var('info',$return);
+		$_HTML->set_var('fm_save',$fm_save);
 		$_HTML->set_var('dialaction',$return['dialaction']);
 		$_HTML->set_var('dialaction_from','group');
 		$_HTML->set_var('element',$appgroup->get_elements());

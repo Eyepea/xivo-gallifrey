@@ -31,13 +31,16 @@ switch($act)
 	case 'add':
 		$appldapfilter = &$ipbx->get_application('ldapfilter');
 
-		$result = null;
+		$result = $fm_save = null;
 
 		if(isset($_QR['fm_send']) === true && xivo_issa('ldapfilter',$_QR) === true)
 		{
 			if($appldapfilter->set_add($_QR) === false
 			|| $appldapfilter->add() === false)
+			{
+				$fm_save = false;
 				$result = $appldapfilter->get_result();
+			}
 			else
 				$_QRY->go($_HTML->url('service/ipbx/system_management/ldapfilter'),$param);
 		}
@@ -54,6 +57,7 @@ switch($act)
 		}
 
 		$_HTML->set_var('info',$result);
+		$_HTML->set_var('fm_save',$fm_save);
 		$_HTML->set_var('element',$appldapfilter->get_elements());
 		$_HTML->set_var('ldapservers',$appldapfilter->get_ldapservers_list(null,array('name' => SORT_ASC)));
 
@@ -67,7 +71,7 @@ switch($act)
 		if(isset($_QR['id']) === false || ($info = $appldapfilter->get($_QR['id'])) === false)
 			$_QRY->go($_HTML->url('service/ipbx/system_management/ldapfilter'),$param);
 
-		$result = null;
+		$result = $fm_save = null;
 		$return = &$info;
 
 		if(isset($_QR['fm_send']) === true && xivo_issa('ldapfilter',$_QR) === true)
@@ -76,7 +80,10 @@ switch($act)
 
 			if($appldapfilter->set_edit($_QR) === false
 			|| $appldapfilter->edit() === false)
+			{
+				$fm_save = false;
 				$result = $appldapfilter->get_result();
+			}
 			else
 				$_QRY->go($_HTML->url('service/ipbx/system_management/ldapfilter'),$param);
 		}
@@ -94,6 +101,7 @@ switch($act)
 
 		$_HTML->set_var('id',$info['ldapfilter']['id']);
 		$_HTML->set_var('info',$return);
+		$_HTML->set_var('fm_save',$fm_save);
 		$_HTML->set_var('element',$appldapfilter->get_elements());
 		$_HTML->set_var('ldapservers',$appldapfilter->get_ldapservers_list(null,array('name' => SORT_ASC)));
 

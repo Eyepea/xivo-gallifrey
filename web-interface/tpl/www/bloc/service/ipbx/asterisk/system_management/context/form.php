@@ -29,6 +29,11 @@ $user_list = $group_list = $queue_list = $meetme_list = $incall_list = false;
 
 $contextinc = $this->get_var('contextinc');
 
+if($this->get_var('fm_save') === false):
+	$dhtml = &$this->get_module('dhtml');
+	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
+endif;
+
 if(xivo_issa('contextnumbers',$info) === true):
 
 	$context_js = array();

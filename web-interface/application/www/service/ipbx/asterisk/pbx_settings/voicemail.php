@@ -35,13 +35,16 @@ switch($act)
 	case 'add':
 		$appvoicemail = &$ipbx->get_application('voicemail');
 
-		$result = null;
+		$result = $fm_save = null;
 
 		if(isset($_QR['fm_send']) === true && xivo_issa('voicemail',$_QR) === true)
 		{
 			if($appvoicemail->set_add($_QR) === false
 			|| $appvoicemail->add() === false)
+			{
+				$fm_save = false;
 				$result = $appvoicemail->get_result();
+			}
 			else
 				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/voicemail'),$param);
 		}
@@ -50,6 +53,7 @@ switch($act)
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
 		$_HTML->set_var('info',$result);
+		$_HTML->set_var('fm_save',$fm_save);
 		$_HTML->set_var('element',$appvoicemail->get_elements());
 		$_HTML->set_var('tz_list',$appvoicemail->get_timezones());
 		$_HTML->set_var('context_list',$appvoicemail->get_context_list());
@@ -61,7 +65,7 @@ switch($act)
 		|| ($info = $appvoicemail->get($_QR['id'])) === false)
 			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/voicemail'),$param);
 
-		$result = null;
+		$result = $fm_save = null;
 		$return = &$info;
 
 		if(isset($_QR['fm_send']) === true && xivo_issa('voicemail',$_QR) === true)
@@ -70,7 +74,10 @@ switch($act)
 
 			if($appvoicemail->set_edit($_QR) === false
 			|| $appvoicemail->edit() === false)
+			{
+				$fm_save = false;
 				$result = $appvoicemail->get_result();
+			}
 			else
 				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/voicemail'),$param);
 		}
@@ -80,6 +87,7 @@ switch($act)
 
 		$_HTML->set_var('id',$info['voicemail']['uniqueid']);
 		$_HTML->set_var('info',$return);
+		$_HTML->set_var('fm_save',$fm_save);
 		$_HTML->set_var('element',$appvoicemail->get_elements());
 		$_HTML->set_var('tz_list',$appvoicemail->get_timezones());
 		$_HTML->set_var('context_list',$appvoicemail->get_context_list());

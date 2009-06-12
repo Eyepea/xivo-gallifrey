@@ -61,6 +61,12 @@ Oui
 ; fm_bool-opt(no)
 Non
 
+; fm_success-save
+Le formulaire a bien été sauvegardé.
+
+; fm_error-save
+Une erreur s'est produite lors de la sauvegarde du formulaire.
+
 ; fm_bt-add
 Ajouter
 

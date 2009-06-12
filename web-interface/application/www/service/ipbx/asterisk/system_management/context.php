@@ -31,7 +31,7 @@ switch($act)
 	case 'add':
 		$appcontext = &$ipbx->get_application('context');
 
-		$result = $error = null;
+		$result = $fm_save = $error = null;
 
 		$contextinc = array();
 		$contextinc['slt'] = array();
@@ -79,6 +79,7 @@ switch($act)
 			if($appcontext->set_add($_QR) === false
 			|| $appcontext->add() === false)
 			{
+				$fm_save = false;
 				$result = $appcontext->get_result();
 				$error = $appcontext->get_error();
 			}
@@ -102,6 +103,7 @@ switch($act)
 
 		$_HTML->set_var('info',$result);
 		$_HTML->set_var('error',$error);
+		$_HTML->set_var('fm_save',$fm_save);
 		$_HTML->set_var('element',$appcontext->get_elements());
 		$_HTML->set_var('contextinc',$contextinc);
 		$_HTML->set_var('entities',$appcontext->get_entities_list(null,array('displayname' => SORT_ASC)));
@@ -116,7 +118,7 @@ switch($act)
 		if(isset($_QR['id']) === false || ($info = $appcontext->get($_QR['id'])) === false)
 			$_QRY->go($_HTML->url('service/ipbx/system_management/context'),$param);
 
-		$result = $error = null;
+		$result = $fm_save = $error = null;
 		$return = &$info;
 
 		$contextinc = array();
@@ -170,6 +172,7 @@ switch($act)
 			if($appcontext->set_edit($_QR) === false
 			|| $appcontext->edit() === false)
 			{
+				$fm_save = false;
 				$result = $appcontext->get_result();
 				$error = $appcontext->get_error();
 			}
@@ -194,6 +197,7 @@ switch($act)
 		$_HTML->set_var('id',$info['context']['name']);
 		$_HTML->set_var('info',$return);
 		$_HTML->set_var('error',$error);
+		$_HTML->set_var('fm_save',$fm_save);
 		$_HTML->set_var('element',$appcontext->get_elements());
 		$_HTML->set_var('contextinc',$contextinc);
 		$_HTML->set_var('entities',$appcontext->get_entities_list(null,array('displayname' => SORT_ASC)));

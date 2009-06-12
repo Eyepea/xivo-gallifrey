@@ -18,7 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-	$form = &$this->get_module('form');
+$form = &$this->get_module('form');
+
 ?>
 
 <div class="b-infos b-form">
